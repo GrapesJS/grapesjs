@@ -164,7 +164,12 @@ const Property = Backbone.Model.extend(
       let value = isUndefined(val) ? this.get('value') : val;
 
       if (fn && !isUndefined(value)) {
-        value = `${fn}(${value})`;
+        if(fn === 'url'){
+          value = `${fn}('${value}')`;
+        }else{
+          value = `${fn}(${value})`;
+        }
+
       }
 
       if (this.get('important')) {
