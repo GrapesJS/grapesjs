@@ -78,7 +78,7 @@ At this point, a good question would be, how the editor assignes those types by 
 
 ### Component Recognition and Component Type Stack
 
-As we said before, when you pass an HTML string as a component to the editor, that string is parsed and compiled to the [Component Definition](#component-definition) with a new `type` property. To understand what `type` should be assigned, for each parsed HTML Element, the editor iterates over all the defined components, called **Component Type Stack**, and checks via `isComponent` method (we will see it later) if that component type is appropriate for that element. The Component Type Stack is just a simple array of components but the important part is the order of those components. Any new added Custom Component (we'll see later how to create them) goes on top of the Component Type Stack and each element returned from the parser iterates the stack from top to bottom (the last element of the stack is the `default` one), the iteration stops once one of the component returns a truthy value from the `isComponent` method.
+As we said before, when you pass an HTML string as a component to the editor, that string is parsed and compiled to the [Component Definition](#component-definition) with a new `type` property. To understand what `type` should be assigned, for each parsed HTML Element, the editor iterates over all the defined components, called **Component Type Stack**, and checks via `isComponent` method (we will see it later) if that component type is appropriate for that element. The Component Type Stack is just a simple array of component types but what is matter is the order of those types. Any new added custom **Component Type** (we'll see later how to create them) goes on top of the Component Type Stack and each element returned from the parser iterates the stack from top to bottom (the last element of the stack is the `default` one), the iteration stops once one of the component returns a truthy value from the `isComponent` method.
 
 SVG - ComponentTypeStack
 
@@ -87,7 +87,7 @@ If you're importing big chunks of HTML code you might want to improve the perfor
 :::
 
 
-### Component Creation
+### Component instance
 
 Once the **Component Definition** is ready and the type is assigned, the [Component](api/component) instance can be created (known also as the **Model**). Let's step back to our previous example with the HTML string, the result of the `append` method is an array of added components.
 
@@ -135,15 +135,18 @@ JSON.stringify(component)
 For storing/loading all the components you should rely on the [Storage Manager](modules/storage)
 :::
 
-The Component instance is responable for the **final data** (eg. HTML, JSON) of your templates, so if you need, for example, to update/add some attribute in the HTML you need to update its component (eg. `component.addAttributes({ title: 'Title added' })`), so the Component/Model is your **Source of Truth**.
+So, the **Component instance** is responable for the **final data** (eg. HTML, JSON) of your templates. If you need, for example, to update/add some attribute in the HTML you need to update its component (eg. `component.addAttributes({ title: 'Title added' })`), so the Component/Model is your **Source of Truth**.
 
 
 
-### Component Rendering
 
-Another important thing of components is how they are rendered in the **canvas**, this aspect is handled by the **View** of the component. It has nothing to do with the **final data**, you can return a big `<div>...</div>` string as HTML of your component but render it as a simple image in the canvas (think about placeholders for complex/dynamic data).
+
+### Component rendering
+
+Another important part of components is how they are rendered in the **canvas**, this aspect is handled by the **View** of the component. It has nothing to do with the **final data**, you can return a big `<div>...</div>` string as HTML of your component but render it as a simple image in the canvas (think about placeholders for complex/dynamic data).
 
 So, by default, the view of components is automatically synced with the data of its models (you can't have a View without a Model). If you update the attribute of the component or append a new one as a child, the view will render it in the canvas.
+
 Unfotunatelly, sometimes, you might need some additional logic to handle better the component result. Think about allowing a user build its `<table>` element, for this specific case you might want to add custom buttons in the canvas, so it'd be easier adding/removing columns/rows. To handle those cases you can rely on the View, where you can add additional DOM component, attach events, etc. All of this will be completely unrelated with the final HTML of the `<table>` (the result the user would expect) as it handled by the Model.
 Once the component is rendered (when you actually see it in the canvas) you can always access its View and the DOM element.
 
@@ -155,22 +158,24 @@ const view = component.getView();
 const el =  component.getEl();
 ```
 
-So generally, the View is something you wouldn't need to change as the default one handles already the sync with the Model but in case you'd need more control over elements (eg. custom UI in canvas) you'll probably need to create a custom component and extend the default View with your logic. We'll see later how to create custom components.
+So, generally, the View is something you wouldn't need to change as the default one handles already the sync with the Model but in case you'd need more control over elements (eg. custom UI in canvas) you'll probably need to create a custom component type and extend the default View with your logic. We'll see later how to create custom Component Types.
 
 
 So far we have seen the core concept behind Components and how they work. The **Model/Component** is the **source of truth** for the final code of templates (eg. the HTML export relies on it) and the *View/ComponentView* is what is used by the editor to **preview our components** to users in the canvas.
 
 
+<!--
 TODO
 A more advanced use case of custom components is an implementation of a custom renderer inside of them
+-->
 
 
 
 
 
-## Built-in Components
+## Built-in Component Types
 
-Here below you can see the list of built-in components, ordered by their position in the Component Type Stack
+Here below you can see the list of built-in component types, ordered by their position in the **Component Type Stack**
 
 * [`cell`](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/ComponentTableCell.js) - Component for handle `<td>` and `<th>` elements
 * [`row`](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/ComponentTableRow.js) - Component for handle `<tr>` elements
@@ -195,14 +200,119 @@ Here below you can see the list of built-in components, ordered by their positio
 
 
 
-## Define new Component
+## Define new Component Type
 
-Now that we know how components work, we can start exploring the process of creating new **Custom Components**.
+Now that we know how components work, we can start exploring the process of creating new **Component Types**.
 
-Let's say we want to make the editor understand and handle better `<input>` elements
+The first rule of defining new component types is to place the code inside a plugin. This is necessary if you want to load your custom types at the beginning, before any component initialization (eg. a template loaded from DB). The plugin is loaded before component fetch (eg. in case of Storage use) so it's a perfect place to define component types.
 
-First of all, place your components inside a plugin
+```js
+const myNewComponentTypes = editor => {
+  editor.DomComponents.addType(/* API for component type definition */);
+};
 
+const editor = grapesjs.init({
+  container : '#gjs',
+  // ...
+  plugins: [ myNewComponentTypes ],
+});
+```
+
+Let's say we want to make the editor understand and handle better `<input>` elements. This is how we would start defining our new component type
+
+```js
+editor.DomComponents.addType('my-input-type', {
+  // Make the editor understand when to bind `my-input-type`
+  isComponent: el => el.tagName === 'INPUT',
+
+  // Model definition
+  model: {
+    defaults: {
+      tagName: 'input',
+      attributes: { // Default attributes
+        type: 'text',
+        name: 'default-name',
+        placeholder: 'Insert text here',
+      },
+      traits: [
+        'name',
+        'placeholder',
+        { type: 'checkbox', name: 'required' },
+      ],
+    }
+  }
+});
+```
+
+With this code the editor will be able to understand simple text `<input>`s, assign default attributes and show some trait for a better attribute handling.
+
+::: tip
+To understand better how Traits work you should read its [dedicated page](Traits.html) but we highly sugggest to read it after you've finished reading this one
+:::
+
+Let's see in detail what we have done so far. The first thing to notice is the `isComponent` function, we have mentioned it already in [this](#component-recognition-and-component-type-stack) section and we need it to make the editor understand `<input>` during the component recognition step.
+It receives only the `el` argument, which is the parsed HTMLElement node and expects a truthy value in case the element satisfies your logic condition. So, if we add this HTML string as component
+
+```js
+// ...after editor initialization
+editor.addComponents(`<input name="my-test" title="hello"/>`)
+```
+
+The resultant Component Definition will be
+
+```js
+{
+  type: 'my-input-type',
+  attributes: {
+    name: 'my-test',
+    title: 'hello',
+  },
+}
+```
+
+If you need you can also customize the resultant Component Definition by returning an object as the result:
+
+```js
+editor.DomComponents.addType('my-input-type', {
+  isComponent: el => {
+    if (el.tagName === 'INPUT') {
+      // You should explicitly declare the type of your resultant
+      // object, otherwise the `default` one will be used
+      const result = { type: 'my-input-type' };
+
+      if (/* some other condition */) {
+        result.attributes = { title: 'Hi' };
+      }
+
+      return result;
+    }
+  },
+  // ...
+});
+```
+
+**Be aware** that this method will probably receive ANY parsed element from your canvas (eg. on load or on add) and not all the nodes have the same inteface (eg. properties/methods).
+If you do this:
+
+```js
+// ...
+// Print elements
+isComponent: el => {
+    console.log(el);
+    return el.tagName === 'INPUT';
+},
+
+// ...
+editor.addComponents(`<div>
+  I'm a text node
+  <!-- I'm a comment node -->
+  <img alt="Image here"/>
+  <input/>
+</div>`);
+```
+
+
+It's important to understand that `isComponent` is executed only if the parsing is required (eg. by adding components as HTML string or initializing the editor with `fromElement`)
 
 
 
