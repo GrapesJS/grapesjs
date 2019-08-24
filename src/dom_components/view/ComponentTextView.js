@@ -1,6 +1,8 @@
 import { on, off } from 'utils/mixins';
 import ComponentView from './ComponentView';
 
+const compProt = ComponentView.prototype;
+
 export default ComponentView.extend({
   events: {
     dblclick: 'onActive',
@@ -8,7 +10,7 @@ export default ComponentView.extend({
   },
 
   initialize(o) {
-    ComponentView.prototype.initialize.apply(this, arguments);
+    compProt.initialize.apply(this, arguments);
     this.disableEditing = this.disableEditing.bind(this);
     const model = this.model;
     const em = this.em;
@@ -16,6 +18,12 @@ export default ComponentView.extend({
     this.listenTo(model, 'change:content', this.updateContentText);
     this.listenTo(model, 'sync:content', this.syncContent);
     this.rte = em && em.get('RichTextEditor');
+  },
+
+  handleDragStart(ev) {
+    event.preventDefault();
+    event.stopPropagation();
+    return !this.rteEnabled && compProt.handleDragStart.call(this, ev);
   },
 
   updateContentText(m, v, opts = {}) {
