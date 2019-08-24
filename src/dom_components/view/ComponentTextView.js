@@ -21,8 +21,8 @@ export default ComponentView.extend({
   },
 
   handleDragStart(ev) {
-    event.preventDefault();
-    event.stopPropagation();
+    ev.preventDefault();
+    ev.stopPropagation();
     return !this.rteEnabled && compProt.handleDragStart.call(this, ev);
   },
 
