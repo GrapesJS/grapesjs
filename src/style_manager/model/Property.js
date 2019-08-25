@@ -162,12 +162,13 @@ const Property = Backbone.Model.extend(
     getFullValue(val) {
       const fn = this.get('functionName');
       let value = isUndefined(val) ? this.get('value') : val;
+      const hasValue = !isUndefined(value);
 
-      if (fn && !isUndefined(value)) {
+      if (fn && hasValue) {
         value = `${fn}(${value})`;
       }
 
-      if (this.get('important')) {
+      if (hasValue && this.get('important')) {
         value = `${value} !important`;
       }
 
