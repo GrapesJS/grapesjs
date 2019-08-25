@@ -20,12 +20,6 @@ export default ComponentView.extend({
     this.rte = em && em.get('RichTextEditor');
   },
 
-  handleDragStart(ev) {
-    ev.preventDefault();
-    ev.stopPropagation();
-    return !this.rteEnabled && compProt.handleDragStart.call(this, ev);
-  },
-
   updateContentText(m, v, opts = {}) {
     !opts.fromDisable && this.disableEditing();
   },
@@ -159,5 +153,17 @@ export default ComponentView.extend({
     // Avoid closing edit mode on component click
     this.$el.off('mousedown', this.disablePropagation);
     this.$el[method]('mousedown', this.disablePropagation);
+
+    // Fixes #2210 but use this also as a replacement
+    // of this fix: bd7b804f3b46eb45b4398304b2345ce870f232d2
+    if (this.config.draggableComponents) {
+      let { el } = this;
+
+      while (el) {
+        el.draggable = enable ? !1 : !0;
+        el = el.parentNode;
+        el.tagName == 'BODY' && (el = 0);
+      }
+    }
   }
 });
