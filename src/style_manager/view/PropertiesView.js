@@ -1,4 +1,5 @@
 import Backbone from 'backbone';
+import { appendAtIndex } from 'utils/dom';
 
 export default Backbone.View.extend({
   initialize(o) {
@@ -15,12 +16,13 @@ export default Backbone.View.extend({
     this.listenTo(coll, 'reset', this.render);
   },
 
-  addTo(model) {
-    this.add(model);
+  addTo(model, coll, opts) {
+    this.add(model, null, opts);
   },
 
-  add(model, frag) {
-    var view = new model.typeView({
+  add(model, frag, opts = {}) {
+    const appendTo = frag || this.el;
+    const view = new model.typeView({
       model,
       name: model.get('name'),
       id: this.pfx + model.get('property'),
@@ -36,14 +38,10 @@ export default Backbone.View.extend({
     }
 
     view.render();
-    const el = view.el;
+    const rendered = view.el;
     this.properties.push(view);
 
-    if (frag) {
-      frag.appendChild(el);
-    } else {
-      this.el.appendChild(el);
-    }
+    appendAtIndex(appendTo, rendered, opts.at);
   },
 
   render() {

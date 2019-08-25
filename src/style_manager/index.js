@@ -174,6 +174,7 @@ export default () => {
      * @param {Array<Object>} [property.properties=[]] Nested properties for composite and stack type
      * @param {Array<Object>} [property.layers=[]] Layers for stack properties
      * @param {Array<Object>} [property.list=[]] List of possible options for radio and select types
+     * @param  {Object} [options={}] Options
      * @return {Property|null} Added Property or `null` in case sector doesn't exist
      * @example
      * var property = styleManager.addProperty('mySector',{
@@ -188,12 +189,13 @@ export default () => {
      *      value: '200px',
      *      name: '200',
      *    }],
-     * });
+     * }, { at: 0 });
+     * // With `at: 0` we place the new property at the beginning of the collection
      */
-    addProperty(sectorId, property) {
+    addProperty(sectorId, property, opts = {}) {
       const sector = this.getSector(sectorId, { warn: 1 });
       let prop = null;
-      if (sector) prop = sector.get('properties').add(property);
+      if (sector) prop = sector.get('properties').add(property, opts);
 
       return prop;
     },
