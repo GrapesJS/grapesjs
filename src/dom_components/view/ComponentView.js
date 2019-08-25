@@ -3,6 +3,7 @@ import { isArray, isEmpty, each, keys } from 'underscore';
 import Components from '../model/Components';
 import ComponentsView from './ComponentsView';
 import Selectors from 'selector_manager/model/Selectors';
+import { replaceWith } from 'utils/dom';
 
 export default Backbone.View.extend({
   className() {
@@ -354,7 +355,7 @@ export default Backbone.View.extend({
     this.el = '';
     this._ensureElement();
     this.$el.data({ model, collection });
-    el.replaceWith(this.el);
+    replaceWith(el, this.el);
     this.render();
   },
 

@@ -9,6 +9,10 @@ export const empty = node => {
   while (node.firstChild) node.removeChild(node.firstChild);
 };
 
+export const replaceWith = (oldEl, newEl) => {
+  oldEl.parentNode.replaceChild(newEl, oldEl);
+};
+
 export const appendAtIndex = (parent, child, index) => {
   const { childNodes } = parent;
   const total = childNodes.length;
