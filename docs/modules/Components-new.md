@@ -250,6 +250,9 @@ With this code the editor will be able to understand simple text `<input>`s, ass
 To understand better how Traits work you should read its [dedicated page](Traits.html) but we highly sugggest to read it after you've finished reading this one
 :::
 
+
+### isComponent
+
 Let's see in detail what we have done so far. The first thing to notice is the `isComponent` function, we have mentioned it already in [this](#component-recognition-and-component-type-stack) section and we need it to make the editor understand `<input>` during the component recognition step.
 It receives only the `el` argument, which is the parsed HTMLElement node and expects a truthy value in case the element satisfies your logic condition. So, if we add this HTML string as component
 
@@ -331,8 +334,143 @@ editor.addComponents({
 editor.addComponents('<some-element data-gjs-type="some-component">...');
 ```
 
+One more tip, if you define a component type without the `isComponent`, the only way for the editor to see that component will be with a declared type (via object like `{ type: '...' }` or using `data-gjs-type`)
 
 
+### Model
+
+Now that we got how `isComponent` works we can start to explore the `model` property.
+The `model` is probably the one you'll use the most as is what is used for the description of your component and the first thing you can see is its `defaults` key which just stands for *default component properties* and it reflects the already described [Component Definition](#component-definition)
+
+The model defines also what you will see as the resultant HTML (the export code) and you've probably noticed the use of `tagName` (if not specified the `div` will be used) and `attributes` properties on the model.
+
+One another important property (not used because `<input/>` doesn't need it) might be `components`, which defines default internal components
+
+```js
+defaults: {
+  tagName: 'div',
+  attributes: { title: 'Hello' },
+  // Can be a string
+  components: `
+    <h1>Header test</h1>
+    <p>Paragraph test</p>
+  `,
+  // A component definiton
+  components: {
+    tagName: 'h1',
+    components: 'Header test',
+  },
+  // Array of strings/component definitons
+  components: [
+    {
+      tagName: 'h1',
+      components: 'Header test',
+    },
+    '<p>Paragraph test</p>',
+  ],
+  // Or a function, which get as an argument the current
+  // model and expects as the return one of the possible
+  // values described above
+  components: model => {
+    return `<h1>Header test: ${model.get('type')}</h1>`;
+  },
+}
+```
+
+#### Read and update the model
+
+You can read and update the model properties wherever you have the reference to it. Here some references to the most useful API
+
+```js
+// let's use the selected component
+const modelComponent = editor.getSelected();
+
+// All model props
+const props = modelComponent.props();
+
+// Get single property
+const tagName = modelComponent.get('tagName');
+
+// Update single property
+modelComponent.set('tagName', '...');
+
+// Update multiple properties
+modelComponent.set({
+  tagName: '...',
+  // ...
+});
+
+
+// Some helpers
+
+// Get all attributes
+const attrs = modelComponent.getAttributes();
+
+// Add attributes
+modelComponent.addAttributes({ title: 'Test' });
+
+// Replace all attributes
+modelComponent.setAttributes({ title: 'Test' });
+
+// Get the collection of all inner components
+modelComponent.components().forEach(
+  inner => console.log(inner.props())
+);
+
+// Update the inner content with an HTML string/Component Definitions
+const addedComponents = modelComponent.components(`<div>...</div>`);
+
+// Find components by query string
+modelComponent.find(`.query-string[example=value]`).forEach(
+  inner => console.log(inner.props())
+);
+```
+
+:::tip
+To know all the available methods/properties check the [Component API](/api/component.html)
+:::
+
+#### Listen to properties changes
+
+If you need to setup listeners to properties changes you can set them up in the `init` method
+
+```js
+editor.DomComponents.addType('my-input-type', {
+  // ...
+  model: {
+    defaults: {
+      // ...
+      someprop: 'initial value',
+    },
+
+    init() {
+      this.on('change:someprop', this.handlePropChange);
+      // Listen to any attribute change
+      this.on('change:attributes', this.handleAttrChange);
+      // Listen to title attribute change
+      this.on('change:attributes:title', this.handleTitleChange);
+    },
+
+    handlePropChange() {
+      const { someprop } = this.props();
+      console.log('New value of someprop: ', someprop);
+    },
+
+    handleAttrChange() {
+      console.log('Attributes updated: ', this.getAttributes());
+    },
+
+    handleTitleChange() {
+      console.log('Attribute title updated: ', this.getAttributes().title);
+    },
+  }
+});
+```
+
+
+* Listen properties (check bellow for lifrcycle)
+
+* Check all properties and methods, Component API
 
 
 --- OLD
