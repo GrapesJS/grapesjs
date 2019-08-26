@@ -128,7 +128,7 @@ export default {
   // Avoid default properties from storable JSON data, like `components` and `styles`.
   // With this option enabled your data will be smaller (usefull if need to
   // save some storage space)
-  avoidDefaults: 0,
+  avoidDefaults: 1,
 
   // (experimental)
   // The structure of components is always on the screen but it's not the same
