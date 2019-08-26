@@ -291,7 +291,7 @@ editor.DomComponents.addType('my-input-type', {
 });
 ```
 
-**Be aware** that this method will probably receive ANY parsed element from your canvas (eg. on load or on add) and not all the nodes have the same inteface (eg. properties/methods).
+**Be aware** that this method will probably receive ANY parsed element from your canvas (eg. on load or on add) and not all the nodes have the same interface (eg. properties/methods).
 If you do this:
 
 ```js
@@ -311,8 +311,27 @@ editor.addComponents(`<div>
 </div>`);
 ```
 
+You will see printing all the nodes, so doing something like this `el.getAttribute('...')` (which will work on the div but not on the text node), without an appropriate check, will break the code.
 
-It's important to understand that `isComponent` is executed only if the parsing is required (eg. by adding components as HTML string or initializing the editor with `fromElement`)
+
+It's also important to understand that `isComponent` is executed only if the parsing is required (eg. by adding components as HTML string or initializing the editor with `fromElement`). In case the type is already defined, there is no need for the `isComponent` to be executed.
+Let's see some examples:
+
+```js
+// isComponent will be executed on some-element
+editor.addComponents('<some-element>...</some-element>');
+
+// isComponent WON'T be executed on ANY provided object
+// If the object without `type`, the `default` one will be used
+editor.addComponents({
+  type: 'some-component',
+});
+
+// isComponent WON'T be executed as we're forcing the type
+editor.addComponents('<some-element data-gjs-type="some-component">...');
+```
+
+
 
 
 
