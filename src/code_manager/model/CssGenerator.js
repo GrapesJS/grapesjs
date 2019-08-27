@@ -20,7 +20,7 @@ export default Backbone.Model.extend({
     const avoidInline = em && em.getConfig('avoidInlineStyle');
     const style = model.styleToString();
     const classes = model.get('classes');
-    const wrappesIsBody = opts.wrappesIsBody;
+    const wrapperIsBody = opts.wrapperIsBody;
     const isWrapper = model.get('wrapper');
     this.ids.push(`#${model.getId()}`);
 
@@ -29,7 +29,7 @@ export default Backbone.Model.extend({
 
     if (!avoidInline && style) {
       let selector = `#${model.getId()}`;
-      selector = wrappesIsBody && isWrapper ? 'body' : selector;
+      selector = wrapperIsBody && isWrapper ? 'body' : selector;
       code = `${selector}{${style}}`;
     }
 
