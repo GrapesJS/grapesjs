@@ -32,7 +32,7 @@ module.exports = env => {
   }
 
   return {
-    entry: './src',
+    entry: './src/index.ts',
     output: output,
     plugins: plugins,
     mode: isProd ? 'production' : 'development',
@@ -54,6 +54,10 @@ module.exports = env => {
         loader: 'babel-loader',
         include: /src/,
         options: { cacheDirectory: true },
+      }, {
+        test: /\.ts$/,
+        loader: 'ts-loader',
+        include: /src/
       }],
     },
     resolve: {

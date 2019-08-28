@@ -1,16 +1,17 @@
 import $ from 'cash-dom';
 import Editor from './editor';
 import { isElement, isFunction } from 'underscore';
-import polyfills from 'utils/polyfills';
+import polyfills from './utils/polyfills';
 import PluginManager from './plugin_manager';
+import { EditorConfig } from "./editor/config/config";
 
 polyfills();
 
-const plugins = new PluginManager();
+const plugins = PluginManager();
 const editors = [];
 const defaultConfig = {
   // If true renders editor on init
-  autorender: 1,
+  autorender: true,
 
   // Array of plugins to init
   plugins: [],
@@ -44,7 +45,7 @@ export default {
    *   style: '.hello{color: red}',
    * })
    */
-  init(config = {}) {
+  init(config:EditorConfig) {
     const els = config.container;
     if (!els) throw new Error("'container' is required");
     config = { ...defaultConfig, ...config };
@@ -59,6 +60,7 @@ export default {
       // Try to search in global context
       if (!plugin) {
         const wplg = window[pluginId];
+        // @ts-ignore
         plugin = wplg && wplg.default ? wplg.default : wplg;
       }
 

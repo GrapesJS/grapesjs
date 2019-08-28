@@ -6,7 +6,11 @@
   "license": "BSD-3-Clause",
   "homepage": "http://grapesjs.com",
   "main": "dist/grapes.min.js",
-  "sideEffects": [ "*.vue", "*.css", "*.scss" ],
+  "sideEffects": [
+    "*.vue",
+    "*.css",
+    "*.scss"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/artf/grapesjs.git"
@@ -28,6 +32,7 @@
     "@babel/core": "^7.5.5",
     "@babel/plugin-transform-runtime": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
+    "@types/backbone": "^1.4.1",
     "babel-loader": "^8.0.6",
     "documentation": "^8.1.2",
     "eslint": "^6.1.0",
@@ -40,6 +45,8 @@
     "prettier": "^1.18.2",
     "sinon": "^7.4.1",
     "string-replace-loader": "^2.2.0",
+    "ts-loader": "^6.0.4",
+    "typescript": "^3.5.3",
     "vuepress": "^0.10.2",
     "webpack": "^4.39.1",
     "webpack-cli": "^3.3.6",

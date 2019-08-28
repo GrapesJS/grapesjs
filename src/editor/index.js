@@ -99,13 +99,13 @@
  * @module Editor
  */
 import $ from 'cash-dom';
-import defaults from './config/config';
+import { editorConfig } from './config/config.ts';
 import EditorModel from './model/Editor';
 import EditorView from './view/EditorView';
 
 export default (config = {}) => {
   const c = {
-    ...defaults,
+    ...editorConfig,
     ...config
   };
 

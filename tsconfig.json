@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": [
+      "es2016",
+      "dom",
+      "es5"
+    ],
+    "outDir": "dist",
+    "module": "es2015",
+    "removeComments": true,
+    "moduleResolution": "node",
+    "typeRoots": [
+      "node_modules/@types/"
+    ],
+    "types": [
+      "node"
+    ]
+  },
+  "exclude": ["node_modules", "dist"]
+}
