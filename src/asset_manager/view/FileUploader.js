@@ -115,12 +115,20 @@ export default Backbone.View.extend(
         body.append(param, params[param]);
       }
 
+      var fileSize = 0;
+
       if (this.multiUpload) {
         for (let i = 0; i < files.length; i++) {
           body.append(`${config.uploadName}[]`, files[i]);
+          fileSize += files[i].size;
         }
       } else if (files.length) {
         body.append(config.uploadName, files[0]);
+        fileSize += files[0].size;
+      }
+      if (config.uploadMaxFileSize > 0 && config.uploadMaxFileSize <= fileSize / 1024) {
+        alert(config.uploadMaxFileSizeAlertText || 'The file(s) you have selected to add exceed your space limit');
+        return;
       }
 
       var target = this.target;
