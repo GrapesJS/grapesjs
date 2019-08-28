@@ -181,7 +181,9 @@ export default Backbone.View.extend({
 
   getInputElem() {
     const { input, $input } = this;
-    return input || ($input && $input.get(0)) || this.getElInput();
+    return (
+      input || ($input && $input.get && $input.get(0)) || this.getElInput()
+    );
   },
 
   getModelValue() {
