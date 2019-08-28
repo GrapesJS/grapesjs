@@ -47,7 +47,16 @@ export default Backbone.View.extend({
       ...(draggableComponents && { dragstart: 'handleDragStart' })
     };
     this.delegateEvents();
-    !modelOpt.temporary && this.init();
+    !modelOpt.temporary && this.init(this._clbObj());
+  },
+
+  _clbObj() {
+    const { em, model, el } = this;
+    return {
+      editor: em && em.getEditor(),
+      model,
+      el
+    };
   },
 
   /**
@@ -400,7 +409,7 @@ export default Backbone.View.extend({
     const { em, model, modelOpt } = this;
 
     if (!modelOpt.temporary) {
-      this.onRender();
+      this.onRender(this._clbObj());
       em && em.trigger('component:mount', model);
     }
   },

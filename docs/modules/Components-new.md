@@ -426,13 +426,15 @@ modelComponent.find(`.query-string[example=value]`).forEach(
 );
 ```
 
+You'll notice that, on any change, the component in the canvas and its export code are changing accordingly
+
 :::tip
 To know all the available methods/properties check the [Component API](/api/component.html)
 :::
 
-#### Listen to properties changes
+#### Listen to property changes
 
-If you need to setup listeners to properties changes you can set them up in the `init` method
+If you need to accomplish some kind of action on some property change you can setup listeners in the `init` method
 
 ```js
 editor.DomComponents.addType('my-input-type', {
@@ -467,10 +469,81 @@ editor.DomComponents.addType('my-input-type', {
 });
 ```
 
+You'll find other lifecycle methods, like `init`, [below](#lifecycle-hooks)
 
-* Listen properties (check bellow for lifrcycle)
+Now let's go back to our input component integration and see another useful part for the component customization
 
-* Check all properties and methods, Component API
+
+### View
+
+Generally, when you create a component in GrapesJS you expect to see in the canvas the preview of what you've defined in the model. Indeed, by default, the editor does the exact thing and updates the element in the canvas when something in the model changes (eg. attributes, tag, etc.) to obtain the classic WYSIWYG (What You See Is What You Get) experience. Unfortunately, not always the simpliest thing is the right one, by building components for the builder you will notice that sometimes you'll need something more:
+  * You want to improve the experience of editing of the component.
+    A perfect example is the TextComponent, its view is enriched with a built-in RTE (Rich Text Editor) which enables the user to edit the text faster by double clicking on it.
+    So you'll probably feel a need adding actions to react on some DOM events or even custom UI elements (eg. buttons) around the component.
+  * The DOM representation of the component acts differently from what you expect, so you need to change some behaviour.
+    An example could be a VideoComponent which, for example, is loaded from Youtube via iframe. Once the iframe is loaded, everything inside it is in a different context, the editor is not able to see it, indeed if you point your cursor on the iframe you'll interact with the video and not the editor, so you can't event select your component. To workaround this "issue", in the render, we disabled the pointer interaction with the iframe and wrapped it with another element (without the wrapper the editor would select the parent component). Obviosly, all of this changes has nothing to do with the final code, the result will always be a simple iframe
+  * You need to customize the content or fill it with some data from the server
+
+For all of this cases you can use the `view` in your component type defintion. The input component is probably not the best use case for this scenario but we'll try to cover most of the cases with an example below
+
+```js
+editor.DomComponents.addType('my-input-type', {
+  // ...
+  model: {
+    // ...
+  },
+  view: {
+    // Add easily component specific listeners with `events`
+    // Being component specific (eg. you can't attach here listeners to window)
+    // you don't need to care about removing them when the component is removed,
+    // they will be managed automatically by the editor
+    events: {
+      click: 'clickOnElement',
+      // You can also make use of event delegation
+      // and listen to events bubbled from some inner element
+      'dblclick .inner-el': 'innerElClick',
+    },
+
+    innerElClick(ev) {
+      ev.stopPropagation();
+      // ...
+
+      // If you need you can access the model from any function in the view
+      this.model.components('Update inner components');
+    },
+
+    // On init you can create listeners, like in the model, or start some other
+    // function at the beginning
+    init({ model }) {
+      this.on('');
+    },
+
+    // Do something with the content once the element is rendered.
+    // The DOM element is passed as `el` in the argument object,
+    // but you can access it from any function via `this.el`
+    onRender({ el }) {
+      const btn = document.createElement('button');
+      btn.value = '+';
+      // Avoid adding events on inner elements, use `events`
+      btn.addEventListener('click', () => {});
+      el.appendChild(btn);
+    },
+
+    // Example of async content
+    async onRender({ el, model }) {
+      const asyncContent = await fetchSomething({
+        someDataFromModel: model.get('someData'),
+      });
+      // Rememebr that this changes exist only inside the editor canvas
+      // None of the DOM change is stored in your template data
+      el.appendChild(asyncContent);
+    }
+  },
+});
+```
+
+
+* Show how to customize HTML
 
 
 --- OLD
