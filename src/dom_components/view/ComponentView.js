@@ -65,9 +65,20 @@ export default Backbone.View.extend({
   init() {},
 
   /**
+   * Remove callback
+   */
+  removed() {},
+
+  /**
    * Callback executed when the `active` event is triggered on component
    */
   onActive() {},
+
+  remove() {
+    Backbone.View.prototype.remove.apply(this, arguments);
+    this.removed(this._clbObj());
+    return this;
+  },
 
   handleDragStart(event) {
     event.preventDefault();

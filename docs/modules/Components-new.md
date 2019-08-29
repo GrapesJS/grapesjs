@@ -493,6 +493,9 @@ editor.DomComponents.addType('my-input-type', {
     // ...
   },
   view: {
+    // Be default, the tag of the element is the same of the model
+    tagName: 'div',
+
     // Add easily component specific listeners with `events`
     // Being component specific (eg. you can't attach here listeners to window)
     // you don't need to care about removing them when the component is removed,
@@ -515,7 +518,18 @@ editor.DomComponents.addType('my-input-type', {
     // On init you can create listeners, like in the model, or start some other
     // function at the beginning
     init({ model }) {
-      this.on('');
+      // Do something in view on model property change
+      this.listenTo(model, 'change:prop', this.handlePropChange);
+
+      // If you attach listeners on outside objects remember to unbind
+      // them in `removed` function in order to avoid memory leaks
+      this.onDocClick = this.onDocClick.bind(this);
+      document.addEventListener('click', this.onDocClick)
+    },
+
+    // Callback triggered when the element is removed from the canvas
+    removed() {
+      document.removeEventListener('click', this.onDocClick)
     },
 
     // Do something with the content once the element is rendered.
@@ -535,15 +549,13 @@ editor.DomComponents.addType('my-input-type', {
         someDataFromModel: model.get('someData'),
       });
       // Rememebr that this changes exist only inside the editor canvas
-      // None of the DOM change is stored in your template data
+      // None of the DOM change is stored in your template data,
+      // if you need to store something, use the model properties
       el.appendChild(asyncContent);
     }
   },
 });
 ```
-
-
-* Show how to customize HTML
 
 
 --- OLD
