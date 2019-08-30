@@ -578,6 +578,10 @@ export default () => {
      */
     getFrameWrapperEl() {
       return CanvasView.frame.getWrapper();
+    },
+
+    getFrames() {
+      return canvas.get('frames').map(item => item);
     }
   };
 };
