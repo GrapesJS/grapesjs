@@ -6,6 +6,8 @@ export default Backbone.Model.extend({
     width: '',
     height: '',
     head: '',
+    x: 0,
+    y: 0,
     attributes: {}
   },
 

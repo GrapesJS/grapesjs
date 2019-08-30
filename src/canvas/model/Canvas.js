@@ -1,9 +1,11 @@
 import Backbone from 'backbone';
 import Frame from './Frame';
+import Frames from './Frames';
 
 export default Backbone.Model.extend({
   defaults: {
     frame: '',
+    frames: '',
     wrapper: '',
     rulers: false,
     zoom: 100,
@@ -17,6 +19,7 @@ export default Backbone.Model.extend({
     styles.forEach(style => frame.addLink(style));
     scripts.forEach(script => frame.addScript(script));
     this.set('frame', frame);
+    this.set('frames', new Frames([frame]));
     this.listenTo(this, 'change:zoom', this.onZoomChange);
   },
 

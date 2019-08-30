@@ -14,11 +14,23 @@ export default Backbone.View.extend({
 
   initialize(o) {
     bindAll(this, 'updateOffset');
+    const { model } = this;
     this.config = o.config || {};
     this.ppfx = this.config.pStylePrefix || '';
     this.em = this.config.em;
-    this.listenTo(this.model, 'change:head', this.updateHead);
+    this.listenTo(model, 'change:head', this.updateHead);
+    this.listenTo(model, 'change:x change:y', this.updatePos);
     this.listenTo(this.em, 'change:device', this.updateDim);
+    this.updatePos();
+  },
+
+  updatePos() {
+    const { model, el } = this;
+    const { x, y } = model.attributes;
+    const { style } = el;
+    style.left = isNaN(x) ? x : `${x}px`;
+    style.top = isNaN(y) ? y : `${y}px`;
+    this.updateOffset();
   },
 
   /**
@@ -53,8 +65,10 @@ export default Backbone.View.extend({
   },
 
   updateOffset() {
-    const em = this.em;
-    const offset = em.get('Canvas').getOffset();
+    const { em } = this;
+    const cv = em.get('Canvas');
+    if (!cv) return;
+    const offset = cv.getOffset();
     em.set('canvasOffset', offset);
     em.runDefault({ preserveSelected: 1 });
     this.$el.off(motionsEv, this.updateOffset);
