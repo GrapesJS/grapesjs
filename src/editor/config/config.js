@@ -117,7 +117,7 @@ export default {
   exportWrapper: 0,
 
   // The wrapper, if visible, will be shown as a `<body>`
-  wrappesIsBody: 1,
+  wrapperIsBody: 1,
 
   // Usually when you update the `style` of the component this changes the
   // element's `style` attribute. Unfortunately, inline styling doesn't allow
