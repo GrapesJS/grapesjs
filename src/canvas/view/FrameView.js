@@ -1,6 +1,8 @@
 import Backbone from 'backbone';
 import { bindAll } from 'underscore';
-import { appendVNodes, empty } from 'utils/dom';
+import CssRulesView from 'css_composer/view/CssRulesView';
+import ComponentView from 'dom_components/view/ComponentView';
+import { appendVNodes, empty, append } from 'utils/dom';
 
 const motionsEv =
   'transitionend oTransitionEnd transitionend webkitTransitionEnd';
@@ -74,6 +76,10 @@ export default Backbone.View.extend({
     this.$el.off(motionsEv, this.updateOffset);
   },
 
+  getWindow() {
+    return this.$el.get(0).contentWindow;
+  },
+
   getDoc() {
     return this.$el.get(0).contentDocument;
   },
@@ -93,5 +99,149 @@ export default Backbone.View.extend({
   render() {
     this.$el.attr({ class: this.ppfx + 'frame' });
     return this;
+  },
+
+  renderBody() {
+    const { config, model, ppfx } = this;
+    const root = model.get('root');
+    const styles = model.get('styles');
+    const { em } = config;
+    const body = this.getBody();
+    const conf = em.get('Config');
+    const win = this.getWindow();
+
+    // Should be handled by `head`
+    // config.styles.forEach(style => {
+    //   externalStyles += `<link rel="stylesheet" href="${style}"/>`;
+    // });
+    // externalStyles && head.append(externalStyles);
+
+    const colorWarn = '#ffca6f';
+
+    // I need all this styles to make the editor work properly
+    // Remove `html { height: 100%;}` from the baseCss as it gives jumpings
+    // effects (on ENTER) with RTE like CKEditor (maybe some bug there?!?)
+    // With `body {height: auto;}` jumps in CKEditor are removed but in
+    // Firefox is impossible to drag stuff in empty canvas, so bring back
+    // `body {height: 100%;}`.
+    // For the moment I give the priority to Firefox as it might be
+    // CKEditor's issue
+    append(
+      body,
+      `<style>
+      ${em.config.baseCss || ''}
+
+      .${ppfx}dashed *[data-highlightable] {
+        outline: 1px dashed rgba(170,170,170,0.7);
+        outline-offset: -2px;
+      }
+
+      .${ppfx}comp-selected {
+        outline: 3px solid #3b97e3 !important;
+        outline-offset: -3px;
+      }
+
+      .${ppfx}comp-selected-parent {
+        outline: 2px solid ${colorWarn} !important
+      }
+
+      .${ppfx}no-select {
+        user-select: none;
+        -webkit-user-select:none;
+        -moz-user-select: none;
+      }
+
+      .${ppfx}freezed {
+        opacity: 0.5;
+        pointer-events: none;
+      }
+
+      .${ppfx}no-pointer {
+        pointer-events: none;
+      }
+
+      .${ppfx}plh-image {
+        background: #f5f5f5;
+        border: none;
+        height: 100px;
+        width: 100px;
+        display: block;
+        outline: 3px solid #ffca6f;
+        cursor: pointer;
+        outline-offset: -2px
+      }
+
+      .${ppfx}grabbing {
+        cursor: grabbing;
+        cursor: -webkit-grabbing;
+      }
+
+      .${ppfx}is__grabbing {
+        overflow-x: hidden;
+      }
+
+      .${ppfx}is__grabbing,
+      .${ppfx}is__grabbing * {
+        cursor: grabbing !important;
+      }
+
+      ${conf.canvasCss || ''}
+      ${conf.protectedCss || ''}
+    </style>`
+    );
+    append(body, new ComponentView({ model: root }).render().el);
+    append(body, new CssRulesView({ collection: styles }).render().el);
+    body.append(this.getJsContainer());
+    em.trigger('loaded');
+    win.onscroll = this.onFrameScroll;
+    this.frame.updateOffset();
+
+    // Avoid the default link behaviour in the canvas
+    body.on(
+      'click',
+      ev => ev && ev.target.tagName == 'A' && ev.preventDefault()
+    );
+    // Avoid the default form behaviour
+    body.on('submit', ev => ev && ev.preventDefault());
+
+    // When the iframe is focused the event dispatcher is not the same so
+    // I need to delegate all events to the parent document
+    const doc = document;
+    const fdoc = this.frame.el.contentDocument;
+
+    // Unfortunately just creating `KeyboardEvent(e.type, e)` is not enough,
+    // the keyCode/which will be always `0`. Even if it's an old/deprecated
+    // property keymaster (and many others) still use it... using `defineProperty`
+    // hack seems the only way
+    const createCustomEvent = (e, cls) => {
+      let oEvent;
+      try {
+        oEvent = new window[cls](e.type, e);
+      } catch (e) {
+        oEvent = document.createEvent(cls);
+        oEvent.initEvent(e.type, true, true);
+      }
+      oEvent.keyCodeVal = e.keyCode;
+      oEvent._parentEvent = e;
+      ['keyCode', 'which'].forEach(prop => {
+        Object.defineProperty(oEvent, prop, {
+          get() {
+            return this.keyCodeVal;
+          }
+        });
+      });
+      return oEvent;
+    };
+
+    [
+      { event: 'keydown keyup keypress', class: 'KeyboardEvent' },
+      { event: 'wheel', class: 'WheelEvent' }
+    ].forEach(obj =>
+      obj.event.split(' ').forEach(event => {
+        fdoc.addEventListener(event, e =>
+          this.el.dispatchEvent(createCustomEvent(e, obj.class))
+        );
+      })
+    );
   }
 });

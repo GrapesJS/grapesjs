@@ -1,4 +1,6 @@
 import Backbone from 'backbone';
+import Component from 'dom_components/model/Component';
+import CssRules from 'css_composer/model/CssRules';
 
 export default Backbone.Model.extend({
   defaults: {
@@ -8,11 +10,16 @@ export default Backbone.Model.extend({
     head: '',
     x: 0,
     y: 0,
+    root: 0,
+    styles: 0,
     attributes: {}
   },
 
   initialize() {
+    const { root, styles } = this.attributes;
     this.set('head', []);
+    !root && this.set('root', new Component());
+    !styles && this.set('styles', new CssRules());
   },
 
   getHead() {
