@@ -5,6 +5,7 @@ export default Backbone.View.extend({
   initialize(o) {
     this.opts = o || {};
     this.config = o.config || {};
+    this.em = this.config.em;
     const coll = this.collection;
     this.listenTo(coll, 'add', this.addTo);
     this.listenTo(coll, 'reset', this.resetChildren);
@@ -80,9 +81,10 @@ export default Backbone.View.extend({
    * */
   addToCollection(model, fragmentEl, index) {
     if (!this.compView) this.compView = require('./ComponentView').default;
-    const { config, opts } = this;
+    const { config, opts, em } = this;
     const fragment = fragmentEl || null;
-    const dt = opts.componentTypes;
+    const dt =
+      opts.componentTypes || (em && em.get('DomComponents').getTypes());
     const type = model.get('type');
     let viewObject = this.compView;
 
