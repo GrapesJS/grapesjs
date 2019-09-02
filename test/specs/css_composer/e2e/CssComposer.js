@@ -130,7 +130,6 @@ module.exports = {
         // ruleOut is a Model
         ruleOut = JSON.parse(JSON.stringify(ruleOut));
         var ruleResult = {
-          mediaText: '',
           selectors: [
             {
               active: true,
@@ -141,12 +140,6 @@ module.exports = {
               protected: false
             }
           ],
-          atRuleType: '',
-          singleAtRule: 0,
-          important: 0,
-          selectorsAdd: '',
-          state: '',
-          stylable: true,
           style: {
             color: 'red',
             width: '10px'
@@ -181,28 +174,16 @@ module.exports = {
         rule1Out = JSON.parse(JSON.stringify(rule1Out));
         rule2Out = JSON.parse(JSON.stringify(rule2Out));
         var rule1Result = {
-          atRuleType: '',
-          singleAtRule: 0,
-          important: 0,
-          mediaText: '',
           selectors: [],
           selectorsAdd: '*',
-          state: '',
-          stylable: true,
           style: {
             color: 'red',
             width: '10px'
           }
         };
         var rule2Result = {
-          atRuleType: '',
-          singleAtRule: 0,
-          important: 0,
-          mediaText: '',
           selectors: [],
           selectorsAdd: 'p',
-          state: '',
-          stylable: true,
           style: {
             height: '20px',
             width: '20px'
