@@ -25,6 +25,8 @@ export const appendAtIndex = (parent, child, index) => {
   }
 };
 
+export const append = (parent, child) => appendAtIndex(parent, child);
+
 /**
  * Append an array of vNodes to an element
  * @param {HTMLElement} node HTML element
