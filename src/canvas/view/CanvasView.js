@@ -475,7 +475,8 @@ export default Backbone.View.extend({
   },
 
   render() {
-    const { el, $el, ppfx, model, config } = this;
+    const { el, $el, ppfx, model, config, em } = this;
+    const cssc = em.get('CssComposer');
     const wrapper = model.get('wrapper');
     $el.html(this.template());
     const $frames = $el.find('[data-frames]');
@@ -485,7 +486,8 @@ export default Backbone.View.extend({
     if (wrapper && typeof wrapper.render == 'function') {
       model.get('frame').set({
         wrapper,
-        root: wrapper.getWrapper()
+        root: wrapper.getWrapper(),
+        styles: cssc.getAll()
       });
       $frames.append(this.frame.render().el);
       var frame = this.frame;
