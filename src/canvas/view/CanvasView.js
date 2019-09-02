@@ -495,7 +495,7 @@ export default Backbone.View.extend({
     // Render all frames
     const frames = new FramesView({
       collection: model.get('frames'),
-      config
+      config: { ...config, renderContent: 1 }
     });
     frames.render();
     $frames.append(frames.el);

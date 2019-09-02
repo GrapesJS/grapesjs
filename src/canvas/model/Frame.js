@@ -18,7 +18,7 @@ export default Backbone.Model.extend({
   initialize() {
     const { root, styles } = this.attributes;
     this.set('head', []);
-    !root && this.set('root', new Component());
+    !root && this.set('root', new Component({ type: 'wrapper' }));
     !styles && this.set('styles', new CssRules());
   },
 

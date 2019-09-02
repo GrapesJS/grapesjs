@@ -2,7 +2,14 @@ import Backbone from 'backbone';
 import { bindAll } from 'underscore';
 import CssRulesView from 'css_composer/view/CssRulesView';
 import ComponentView from 'dom_components/view/ComponentView';
-import { appendVNodes, empty, append } from 'utils/dom';
+import {
+  appendVNodes,
+  empty,
+  append,
+  createEl,
+  createCustomEvent
+} from 'utils/dom';
+import { on, off } from 'utils/mixins';
 
 const motionsEv =
   'transitionend oTransitionEnd transitionend webkitTransitionEnd';
@@ -96,8 +103,20 @@ export default Backbone.View.extend({
     return this.$el.contents().find('body > div');
   },
 
+  getJsContainer() {
+    if (!this.jsContainer) {
+      this.jsContainer = createEl('div', { class: `${this.ppfx}js-cont` });
+    }
+
+    return this.jsContainer;
+  },
+
   render() {
-    this.$el.attr({ class: this.ppfx + 'frame' });
+    const { el, $el, ppfx, config } = this;
+    $el.attr({ class: ppfx + 'frame' });
+    if (config.renderContent) {
+      el.onload = this.renderBody.bind(this);
+    }
     return this;
   },
 
@@ -106,9 +125,10 @@ export default Backbone.View.extend({
     const root = model.get('root');
     const styles = model.get('styles');
     const { em } = config;
+    const win = this.getWindow();
+    const doc = this.getDoc();
     const body = this.getBody();
     const conf = em.get('Config');
-    const win = this.getWindow();
 
     // Should be handled by `head`
     // config.styles.forEach(style => {
@@ -129,7 +149,33 @@ export default Backbone.View.extend({
     append(
       body,
       `<style>
-      ${em.config.baseCss || ''}
+      * {
+        box-sizing: border-box;
+      }
+      html, body, [data-gjs-type=wrapper] {
+        min-height: 100%;
+      }
+      body {
+        margin: 0;
+        height: 100%;
+        background-color: #fff
+      }
+      [data-gjs-type=wrapper] {
+        overflow: auto;
+        overflow-x: hidden;
+      }
+
+      * ::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.1)
+      }
+
+      * ::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2)
+      }
+
+      * ::-webkit-scrollbar {
+        width: 10px
+      }
 
       .${ppfx}dashed *[data-highlightable] {
         outline: 1px dashed rgba(170,170,170,0.7);
@@ -190,56 +236,29 @@ export default Backbone.View.extend({
     </style>`
     );
     append(body, new ComponentView({ model: root }).render().el);
-    append(body, new CssRulesView({ collection: styles }).render().el);
-    body.append(this.getJsContainer());
-    em.trigger('loaded');
-    win.onscroll = this.onFrameScroll;
-    this.frame.updateOffset();
+    append(body, new CssRulesView({ collection: styles, config }).render().el);
+    append(body, this.getJsContainer());
+    // em.trigger('loaded'); // I need to manage only the first one maybe
+    // win.onscroll = this.onFrameScroll; // TODO
+    this.updateOffset(); // TOFIX (check if I need it)
 
-    // Avoid the default link behaviour in the canvas
-    body.on(
+    // Avoid some default behaviours
+    on(
+      body,
       'click',
       ev => ev && ev.target.tagName == 'A' && ev.preventDefault()
     );
-    // Avoid the default form behaviour
-    body.on('submit', ev => ev && ev.preventDefault());
+    on(body, 'submit', ev => ev && ev.preventDefault());
 
     // When the iframe is focused the event dispatcher is not the same so
     // I need to delegate all events to the parent document
-    const doc = document;
-    const fdoc = this.frame.el.contentDocument;
-
-    // Unfortunately just creating `KeyboardEvent(e.type, e)` is not enough,
-    // the keyCode/which will be always `0`. Even if it's an old/deprecated
-    // property keymaster (and many others) still use it... using `defineProperty`
-    // hack seems the only way
-    const createCustomEvent = (e, cls) => {
-      let oEvent;
-      try {
-        oEvent = new window[cls](e.type, e);
-      } catch (e) {
-        oEvent = document.createEvent(cls);
-        oEvent.initEvent(e.type, true, true);
-      }
-      oEvent.keyCodeVal = e.keyCode;
-      oEvent._parentEvent = e;
-      ['keyCode', 'which'].forEach(prop => {
-        Object.defineProperty(oEvent, prop, {
-          get() {
-            return this.keyCodeVal;
-          }
-        });
-      });
-      return oEvent;
-    };
-
     [
       { event: 'keydown keyup keypress', class: 'KeyboardEvent' },
       { event: 'wheel', class: 'WheelEvent' }
     ].forEach(obj =>
       obj.event.split(' ').forEach(event => {
-        fdoc.addEventListener(event, e =>
-          this.el.dispatchEvent(createCustomEvent(e, obj.class))
+        doc.addEventListener(event, ev =>
+          this.el.dispatchEvent(createCustomEvent(ev, obj.class))
         );
       })
     );
