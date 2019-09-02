@@ -235,7 +235,7 @@ export default Backbone.View.extend({
       ${conf.protectedCss || ''}
     </style>`
     );
-    append(body, new ComponentView({ model: root }).render().el);
+    append(body, new ComponentView({ model: root, config }).render().el);
     append(body, new CssRulesView({ collection: styles, config }).render().el);
     append(body, this.getJsContainer());
     // em.trigger('loaded'); // I need to manage only the first one maybe

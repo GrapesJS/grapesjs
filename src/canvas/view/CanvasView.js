@@ -476,13 +476,17 @@ export default Backbone.View.extend({
 
   render() {
     const { el, $el, ppfx, model, config } = this;
-    this.wrapper = model.get('wrapper');
+    const wrapper = model.get('wrapper');
     $el.html(this.template());
     const $frames = $el.find('[data-frames]');
     this.framesArea = $frames.get(0);
+    this.wrapper = wrapper;
 
-    if (this.wrapper && typeof this.wrapper.render == 'function') {
-      model.get('frame').set('wrapper', this.wrapper);
+    if (wrapper && typeof wrapper.render == 'function') {
+      model.get('frame').set({
+        wrapper,
+        root: wrapper.getWrapper()
+      });
       $frames.append(this.frame.render().el);
       var frame = this.frame;
       if (this.config.scripts.length === 0) {
