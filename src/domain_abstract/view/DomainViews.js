@@ -9,9 +9,12 @@ export default Backbone.View.extend({
 
   itemType: 'type',
 
-  initialize(opts, config) {
-    this.config = config || {};
+  initialize(opts = {}, config) {
+    this.config = config || opts.config || {};
+    this.init();
   },
+
+  init() {},
 
   /**
    * Add new model to the collection
@@ -70,6 +73,9 @@ export default Backbone.View.extend({
       }, this);
 
     this.$el.append(frag);
+    this.onRender();
     return this;
-  }
+  },
+
+  onRender() {}
 });

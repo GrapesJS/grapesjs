@@ -4,8 +4,13 @@ import FrameView from './FrameView';
 export default DomainViews.extend({
   itemView: FrameView,
 
-  initialize(opts) {
-    this.config = { editor: opts.editor || '' };
+  init() {
     this.listenTo(this.collection, 'reset', this.render);
+  },
+
+  onRender() {
+    const { config, $el } = this;
+    const { em } = config;
+    em && $el.attr({ class: `${em.getConfig('stylePrefix')}frames` });
   }
 });
