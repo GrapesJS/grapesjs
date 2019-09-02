@@ -24,13 +24,13 @@ export default Backbone.View.extend({
     this.updatePos();
   },
 
-  updatePos() {
+  updatePos(md) {
     const { model, el } = this;
     const { x, y } = model.attributes;
     const { style } = el;
     style.left = isNaN(x) ? x : `${x}px`;
     style.top = isNaN(y) ? y : `${y}px`;
-    this.updateOffset();
+    md && this.updateOffset();
   },
 
   /**

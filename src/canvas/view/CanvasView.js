@@ -9,6 +9,7 @@ import {
   getElRect
 } from 'utils/mixins';
 import FrameView from './FrameView';
+import FramesView from './FramesView';
 
 const $ = Backbone.$;
 let timerZoom;
@@ -474,7 +475,7 @@ export default Backbone.View.extend({
   },
 
   render() {
-    const { el, $el, ppfx, model } = this;
+    const { el, $el, ppfx, model, config } = this;
     this.wrapper = model.get('wrapper');
     $el.html(this.template());
     const $frames = $el.find('[data-frames]');
@@ -490,6 +491,15 @@ export default Backbone.View.extend({
         this.renderScripts(); // will call renderBody later
       }
     }
+
+    // Render all frames
+    const frames = new FramesView({
+      collection: model.get('frames'),
+      config
+    });
+    frames.render();
+    $frames.append(frames.el);
+
     $el.find('[data-tools]').append(`
       <div id="${ppfx}tools" style="pointer-events:none">
         <div class="${ppfx}highlighter"></div>
