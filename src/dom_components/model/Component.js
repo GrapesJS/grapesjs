@@ -71,7 +71,7 @@ const avoidInline = em => em && em.getConfig('avoidInlineStyle');
  * @property {Boolean} [hoverable=true] Shows a highlight outline when hovering on the element if `true`. Default: `true`
  * @property {Boolean} [void=false] This property is used by the HTML exporter as void elements don't have closing tags, eg. `<br/>`, `<hr/>`, etc. Default: `false`
  * @property {String} [content=''] Content of the component (not escaped) which will be appended before children rendering. Default: `''`
- * @property {String} [icon=''] Component's icon, this string will be inserted before the name (in Layers and badge), eg. it can be an HTML string '<i class="fa fa-square-o"></i>'. Default: `''`
+ * @property {String} [icon=''] Component's icon, this string will be inserted before the name (in Layers and badge), eg. it can be an HTML string '<i class="far fa-square"></i>'. Default: `''`
  * @property {String|Function} [script=''] Component's javascript. More about it [here](/modules/Components-js.html). Default: `''`
  * @property {String|Function} [script-export=''] You can specify javascript available only in export functions (eg. when you get the HTML).
  * If this property is defined it will overwrite the `script` one (in export functions). Default: `''`
