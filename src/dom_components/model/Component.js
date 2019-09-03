@@ -80,7 +80,7 @@ const avoidInline = em => em && em.getConfig('avoidInlineStyle');
  *  For example if you create a component likes this: `{ removable: false, draggable: false, propagate: ['removable', 'draggable'] }`
  *  and append some new component inside, the new added component will get the exact same properties indicated in the `propagate` array (and the `propagate` property itself). Default: `[]`
  * @property {Array<Object>} [toolbar=null] Set an array of items to show up inside the toolbar when the component is selected (move, clone, delete).
- * Eg. `toolbar: [ { attributes: {class: 'fa fa-arrows'}, command: 'tlb-move' }, ... ]`.
+ * Eg. `toolbar: [ { attributes: {class: 'fas fa-arrows-alt'}, command: 'tlb-move' }, ... ]`.
  * By default, when `toolbar` property is falsy the editor will add automatically commands like `move`, `delete`, etc. based on its properties.
  * @property {Collection<Component>} [components=null] Children components. Default: `null`
  */
@@ -661,7 +661,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
         if (model.get('draggable')) {
           tb.push({
             attributes: {
-              class: `fa fa-arrows ${ppfx}no-touch-actions`,
+              class: `fas fa-arrows-alt ${ppfx}no-touch-actions`,
               draggable: true
             },
             //events: hasDnd(this.em) ? { dragstart: 'execCommand' } : '',
@@ -676,7 +676,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
         }
         if (model.get('removable')) {
           tb.push({
-            attributes: { class: 'fa fa-trash-o' },
+            attributes: { class: 'far fa-trash-alt' },
             command: 'tlb-delete'
           });
         }

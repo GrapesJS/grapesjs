@@ -53,7 +53,7 @@ export default Backbone.View.extend({
       </div>
       <div class="${this.clsCount}">${count || ''}</div>
       <div class="${this.clsMove}" data-toggle-move>
-        <i class="fa fa-arrows"></i>
+        <i class="fas fa-arrows-alt"></i>
       </div>
       <div class="${this.clsChildren}"></div>`;
   },

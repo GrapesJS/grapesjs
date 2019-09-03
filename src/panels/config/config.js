@@ -22,7 +22,7 @@ export default {
         {
           active: true,
           id: swv,
-          className: 'fa fa-square-o',
+          className: 'far fa-square',
           command: swv,
           context: swv,
           attributes: { title: 'View components' }
@@ -36,7 +36,7 @@ export default {
         },
         {
           id: ful,
-          className: 'fa fa-arrows-alt',
+          className: 'fas fa-arrows-alt',
           command: ful,
           context: ful,
           attributes: { title: 'Fullscreen' }
