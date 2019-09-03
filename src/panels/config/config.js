@@ -36,7 +36,7 @@ export default {
         },
         {
           id: ful,
-          className: 'fas fa-arrows-alt',
+          className: 'fas fa-expand-arrows-alt',
           command: ful,
           context: ful,
           attributes: { title: 'Fullscreen' }
