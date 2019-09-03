@@ -6506,7 +6506,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
   function paddingVert(display) {return display.mover.offsetHeight - display.lineSpace.offsetHeight}
   function paddingH(display) {
     if (display.cachedPaddingH) { return display.cachedPaddingH }
-    var e = removeChildrenAndAdd(display.measure, elt("pre", "x"));
+    var e = removeChildrenAndAdd(display.measure, elt("pre", "x", "CodeMirror-line-like"));
     var style = window.getComputedStyle ? window.getComputedStyle(e) : e.currentStyle;
     var data = {left: parseInt(style.paddingLeft), right: parseInt(style.paddingRight)};
     if (!isNaN(data.left) && !isNaN(data.right)) { display.cachedPaddingH = data; }
@@ -6900,7 +6900,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
   function PosWithInfo(line, ch, sticky, outside, xRel) {
     var pos = Pos(line, ch, sticky);
     pos.xRel = xRel;
-    if (outside) { pos.outside = true; }
+    if (outside) { pos.outside = outside; }
     return pos
   }
 
@@ -6909,16 +6909,16 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
   function coordsChar(cm, x, y) {
     var doc = cm.doc;
     y += cm.display.viewOffset;
-    if (y < 0) { return PosWithInfo(doc.first, 0, null, true, -1) }
+    if (y < 0) { return PosWithInfo(doc.first, 0, null, -1, -1) }
     var lineN = lineAtHeight(doc, y), last = doc.first + doc.size - 1;
     if (lineN > last)
-      { return PosWithInfo(doc.first + doc.size - 1, getLine(doc, last).text.length, null, true, 1) }
+      { return PosWithInfo(doc.first + doc.size - 1, getLine(doc, last).text.length, null, 1, 1) }
     if (x < 0) { x = 0; }
 
     var lineObj = getLine(doc, lineN);
     for (;;) {
       var found = coordsCharInner(cm, lineObj, lineN, x, y);
-      var collapsed = collapsedSpanAround(lineObj, found.ch + (found.xRel > 0 ? 1 : 0));
+      var collapsed = collapsedSpanAround(lineObj, found.ch + (found.xRel > 0 || found.outside > 0 ? 1 : 0));
       if (!collapsed) { return found }
       var rangeEnd = collapsed.find(1);
       if (rangeEnd.line == lineN) { return rangeEnd }
@@ -7006,7 +7006,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
       // base X position
       var coords = cursorCoords(cm, Pos(lineNo$$1, ch, sticky), "line", lineObj, preparedMeasure);
       baseX = coords.left;
-      outside = y < coords.top || y >= coords.bottom;
+      outside = y < coords.top ? -1 : y >= coords.bottom ? 1 : 0;
     }
 
     ch = skipExtendingChars(lineObj.text, ch, 1);
@@ -7075,7 +7075,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
   function textHeight(display) {
     if (display.cachedTextHeight != null) { return display.cachedTextHeight }
     if (measureText == null) {
-      measureText = elt("pre");
+      measureText = elt("pre", null, "CodeMirror-line-like");
       // Measure a bunch of lines, for browsers that compute
       // fractional heights.
       for (var i = 0; i < 49; ++i) {
@@ -7095,7 +7095,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
   function charWidth(display) {
     if (display.cachedCharWidth != null) { return display.cachedCharWidth }
     var anchor = elt("span", "xxxxxxxxxx");
-    var pre = elt("pre", [anchor]);
+    var pre = elt("pre", [anchor], "CodeMirror-line-like");
     removeChildrenAndAdd(display.measure, pre);
     var rect = anchor.getBoundingClientRect(), width = (rect.right - rect.left) / 10;
     if (width > 2) { display.cachedCharWidth = width; }
@@ -9625,6 +9625,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
     if (doc.cm) { makeChangeSingleDocInEditor(doc.cm, change, spans); }
     else { updateDoc(doc, change, spans); }
     setSelectionNoUndo(doc, selAfter, sel_dontScroll);
+
+    if (doc.cantEdit && skipAtomic(doc, Pos(doc.firstLine(), 0)))
+      { doc.cantEdit = false; }
   }
 
   // Handle the interaction of a change to a document with the editor
@@ -13977,7 +13980,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
 
   addLegacyProps(CodeMirror);
 
-  CodeMirror.version = "5.48.2";
+  CodeMirror.version = "5.48.4";
 
   return CodeMirror;
 
@@ -29172,7 +29175,7 @@ var avoidInline = function avoidInline(em) {
  *  For example if you create a component likes this: `{ removable: false, draggable: false, propagate: ['removable', 'draggable'] }`
  *  and append some new component inside, the new added component will get the exact same properties indicated in the `propagate` array (and the `propagate` property itself). Default: `[]`
  * @property {Array<Object>} [toolbar=null] Set an array of items to show up inside the toolbar when the component is selected (move, clone, delete).
- * Eg. `toolbar: [ { attributes: {class: 'fa fa-arrows'}, command: 'tlb-move' }, ... ]`.
+ * Eg. `toolbar: [ { attributes: {class: 'fas fa-arrows-alt'}, command: 'tlb-move' }, ... ]`.
  * By default, when `toolbar` property is falsy the editor will add automatically commands like `move`, `delete`, etc. based on its properties.
  * @property {Collection<Component>} [components=null] Children components. Default: `null`
  */
@@ -29784,7 +29787,7 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_4___default.a.Model.extend(dom
       if (model.get('draggable')) {
         tb.push({
           attributes: {
-            class: "fa fa-arrows ".concat(ppfx, "no-touch-actions"),
+            class: "fas fa-arrows-alt ".concat(ppfx, "no-touch-actions"),
             draggable: true
           },
           //events: hasDnd(this.em) ? { dragstart: 'execCommand' } : '',
@@ -29804,7 +29807,7 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_4___default.a.Model.extend(dom
       if (model.get('removable')) {
         tb.push({
           attributes: {
-            class: 'fa fa-trash-o'
+            class: 'far fa-trash-alt'
           },
           command: 'tlb-delete'
         });
@@ -30494,7 +30497,7 @@ var svgAttrs = 'xmlns="http://www.w3.org/2000/svg" width="100" viewBox="0 0 24 2
         if (!hasButtonBool) {
           tb.push({
             attributes: {
-              class: 'fa fa-pencil'
+              class: 'fas fa-pencil-alt'
             },
             command: cmdName
           });
@@ -36113,7 +36116,7 @@ var defaultConfig = {
   editors: editors,
   plugins: plugins,
   // Will be replaced on build
-  version: '0.15.3',
+  version: '<# VERSION #>',
 
   /**
    * Initialize the editor with passed options
@@ -37035,7 +37038,7 @@ var ItemsView;
     var name = model.getName();
     var icon = model.getIcon();
     var clsBase = "".concat(pfx, "layer");
-    return "\n      ".concat(hidable ? "<i class=\"".concat(pfx, "layer-vis fa fa-eye ").concat(this.isVisible() ? '' : 'fa-eye-slash', "\" data-toggle-visible></i>") : '', "\n      <div class=\"").concat(clsTitleC, "\">\n        <div class=\"").concat(clsTitle, "\" style=\"padding-left: ").concat(gut, "\" data-toggle-select>\n          <div class=\"").concat(pfx, "layer-title-inn\">\n            <i class=\"").concat(clsCaret, "\" data-toggle-open></i>\n            ").concat(icon ? "<span class=\"".concat(clsBase, "__icon\">").concat(icon, "</span>") : '', "\n            <span class=\"").concat(clsInput, "\" data-name>").concat(name, "</span>\n          </div>\n        </div>\n      </div>\n      <div class=\"").concat(this.clsCount, "\">").concat(count || '', "</div>\n      <div class=\"").concat(this.clsMove, "\" data-toggle-move>\n        <i class=\"fa fa-arrows\"></i>\n      </div>\n      <div class=\"").concat(this.clsChildren, "\"></div>");
+    return "\n      ".concat(hidable ? "<i class=\"".concat(pfx, "layer-vis fa fa-eye ").concat(this.isVisible() ? '' : 'fa-eye-slash', "\" data-toggle-visible></i>") : '', "\n      <div class=\"").concat(clsTitleC, "\">\n        <div class=\"").concat(clsTitle, "\" style=\"padding-left: ").concat(gut, "\" data-toggle-select>\n          <div class=\"").concat(pfx, "layer-title-inn\">\n            <i class=\"").concat(clsCaret, "\" data-toggle-open></i>\n            ").concat(icon ? "<span class=\"".concat(clsBase, "__icon\">").concat(icon, "</span>") : '', "\n            <span class=\"").concat(clsInput, "\" data-name>").concat(name, "</span>\n          </div>\n        </div>\n      </div>\n      <div class=\"").concat(this.clsCount, "\">").concat(count || '', "</div>\n      <div class=\"").concat(this.clsMove, "\" data-toggle-move>\n        <i class=\"fas fa-arrows-alt\"></i>\n      </div>\n      <div class=\"").concat(this.clsChildren, "\"></div>");
   },
   initialize: function initialize() {
     var o = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -37562,7 +37565,7 @@ var prv = 'preview';
     buttons: [{
       active: true,
       id: swv,
-      className: 'fa fa-square-o',
+      className: 'far fa-square',
       command: swv,
       context: swv,
       attributes: {
@@ -37578,7 +37581,7 @@ var prv = 'preview';
       }
     }, {
       id: ful,
-      className: 'fa fa-arrows-alt',
+      className: 'fas fa-arrows-alt',
       command: ful,
       context: ful,
       attributes: {
@@ -44200,7 +44203,7 @@ __webpack_require__.r(__webpack_exports__);
     var pfx = this.pfx,
         ppfx = this.ppfx;
     var label = "Layer ".concat(model.get('index'));
-    return "\n      <div id=\"".concat(pfx, "move\" class=\"").concat(ppfx, "no-touch-actions\" data-move-layer>\n        <i class=\"fa fa-arrows\"></i>\n      </div>\n      <div id=\"").concat(pfx, "label\">").concat(label, "</div>\n      <div id=\"").concat(pfx, "preview-box\">\n      \t<div id=\"").concat(pfx, "preview\" data-preview></div>\n      </div>\n      <div id=\"").concat(pfx, "close-layer\" class=\"").concat(pfx, "btn-close\" data-close-layer>\n        &Cross;\n      </div>\n      <div id=\"").concat(pfx, "inputs\" data-properties></div>\n      <div style=\"clear:both\"></div>\n    ");
+    return "\n      <div id=\"".concat(pfx, "move\" class=\"").concat(ppfx, "no-touch-actions\" data-move-layer>\n        <i class=\"fas fa-arrows-alt\"></i>\n      </div>\n      <div id=\"").concat(pfx, "label\">").concat(label, "</div>\n      <div id=\"").concat(pfx, "preview-box\">\n      \t<div id=\"").concat(pfx, "preview\" data-preview></div>\n      </div>\n      <div id=\"").concat(pfx, "close-layer\" class=\"").concat(pfx, "btn-close\" data-close-layer>\n        &Cross;\n      </div>\n      <div id=\"").concat(pfx, "inputs\" data-properties></div>\n      <div style=\"clear:both\"></div>\n    ");
   },
   initialize: function initialize() {
     var o = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
