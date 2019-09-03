@@ -48,12 +48,21 @@ export default {
     const methods = { on, off };
     const body = this.getCanvasBody();
     const win = this.getContentWindow();
-    methods[method](body, 'mouseover', this.onHover);
-    methods[method](body, 'mouseout', this.onOut);
-    methods[method](body, 'click touchend', this.onClick);
-    methods[method](win, 'scroll resize', this.onFrameScroll);
-    em[method]('component:toggled', this.onSelect, this);
-    em[method]('change:componentHovered', this.onHovered, this);
+    const trigger = (win, body) => {
+      methods[method](body, 'mouseover', this.onHover);
+      methods[method](body, 'mouseout', this.onOut);
+      methods[method](body, 'click touchend', this.onClick);
+      methods[method](win, 'scroll resize', this.onFrameScroll);
+      em[method]('component:toggled', this.onSelect, this);
+      em[method]('change:componentHovered', this.onHovered, this);
+    };
+    trigger(win, body);
+    em.get('Canvas')
+      .getFrames()
+      .forEach(frame => {
+        const { view } = frame;
+        trigger(view.getWindow(), view.getBody());
+      });
   },
 
   /**

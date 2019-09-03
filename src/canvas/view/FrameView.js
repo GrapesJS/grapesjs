@@ -31,6 +31,7 @@ export default Backbone.View.extend({
     this.listenTo(model, 'change:x change:y', this.updatePos);
     this.listenTo(this.em, 'change:device', this.updateDim);
     this.updatePos();
+    model.view = this;
   },
 
   updatePos(md) {
