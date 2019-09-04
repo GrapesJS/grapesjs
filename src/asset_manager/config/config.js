@@ -100,5 +100,14 @@ export default {
   modalTitle: 'Select Image',
 
   //Default placeholder for input
-  inputPlaceholder: 'http://path/to/the/image.jpg'
+  inputPlaceholder: 'http://path/to/the/image.jpg',
+
+  //method called before upload, on return false upload is canceled.
+  // @example
+  // beforeUpload: (files) => {
+  //   // logic...
+  //   var stopUpload = true;
+  //   if(stopUpload) return false;
+  // }
+  beforeUpload: null
 };
