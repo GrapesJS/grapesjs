@@ -362,6 +362,10 @@ export default Backbone.Model.extend({
     this.set('componentHovered', model, opts);
   },
 
+  getHovered() {
+    return this.get('componentHovered');
+  },
+
   /**
    * Set components inside editor's canvas. This method overrides actual components
    * @param {Object|string} components HTML string or components model

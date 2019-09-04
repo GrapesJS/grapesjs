@@ -161,7 +161,7 @@ $guide_pad: 5px;
     outline: 3px solid $colorBlue;
   }
 
-  ##{$app-prefix}tools {
+  ##{$app-prefix}tools, .#{$app-prefix}tools {
     width: 100%;
     height: 100%;
     position: absolute;

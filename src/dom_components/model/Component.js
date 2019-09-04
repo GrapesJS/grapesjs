@@ -185,6 +185,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       this.listenTo(this, 'change:tagName', this.tagUpdated);
       this.listenTo(this, 'change:attributes', this.attrUpdated);
       this.set('status', '');
+      this.views = [];
 
       // Register global updates for collection properties
       ['classes', 'traits', 'components'].forEach(name => {
