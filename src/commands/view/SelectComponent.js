@@ -17,9 +17,6 @@ export default {
     this.startSelectComponent();
     const { em } = this.config;
     showOffsets = 1;
-
-    em.on('component:update', this.updateAttached, this);
-    em.on('change:canvasOffset', this.updateAttached, this);
   },
 
   /**
@@ -55,8 +52,10 @@ export default {
       methods[method](win, 'scroll resize', this.onFrameScroll);
       em[method]('component:toggled', this.onSelect, this);
       em[method]('change:componentHovered', this.onHovered, this);
+      em[method]('component:update', this.updateAttached, this);
+      em[method]('change:canvasOffset', this.updateAttached, this);
     };
-    trigger(win, body);
+    trigger(win, body); // TODO remove
     em.get('Canvas')
       .getFrames()
       .forEach(frame => {
@@ -72,10 +71,11 @@ export default {
    */
   onHover(e) {
     e.stopPropagation();
-    let trg = e.target;
-    let $el = $(trg);
+    const trg = e.target;
+    const $el = $(trg);
     let model = $el.data('model');
 
+    // Get first valid model
     if (!model) {
       let parent = $el.parent();
       while (!model && parent.length > 0) {
@@ -90,6 +90,7 @@ export default {
       this.updateAttached();
     }
 
+    // Get first valid hoverable model
     if (model && !model.get('hoverable')) {
       let parent = model && model.parent();
       while (parent && !parent.get('hoverable')) parent = parent.parent();
@@ -614,7 +615,7 @@ export default {
    * On frame scroll callback
    * @private
    */
-  onFrameScroll() {
+  onFrameScroll(ev) {
     const el = this.cacheEl;
 
     if (el) {
@@ -684,20 +685,18 @@ export default {
   run(editor) {
     this.editor = editor && editor.get('Editor');
     this.enable();
-    this.onSelect();
   },
 
   stop(ed, sender, opts = {}) {
     const { em, editor } = this;
+    const hovered = em.getHovered();
     this.stopSelectComponent();
     !opts.preserveSelected && em.setSelected(null);
+    if (!hovered) return;
     this.clean();
     this.onOut();
     this.hideFixedElementOffset();
     this.canvas.getToolbarEl().style.display = 'none';
     editor && editor.stopCommand('resize');
-
-    em.off('component:update', this.updateAttached, this);
-    em.off('change:canvasOffset', this.updateAttached, this);
   }
 };

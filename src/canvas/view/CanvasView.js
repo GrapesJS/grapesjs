@@ -37,6 +37,7 @@ export default Backbone.View.extend({
     this.ppfx = this.config.pStylePrefix || '';
     this.className = this.config.stylePrefix + 'canvas';
     this.listenTo(this.em, 'change:canvasOffset', this.clearOff);
+    this.listenTo(this.em, 'frame:scroll', this.onFrameScroll);
     this.listenTo(model, 'change:zoom change:x change:y', this.updateFrames);
     this.toggleListeners(1);
     this.frame = new FrameView({
@@ -125,12 +126,12 @@ export default Backbone.View.extend({
    * Update tools position
    * @private
    */
-  onFrameScroll() {
-    var u = 'px';
-    var body = this.frame.el.contentDocument.body;
+  onFrameScroll({ body = {} } = {}) {
+    const u = 'px';
+    const bodyEl = this.frame.el.contentDocument.body;
     const zoom = this.getZoom();
-    this.toolsEl.style.top = '-' + body.scrollTop * zoom + u;
-    this.toolsEl.style.left = '-' + body.scrollLeft * zoom + u;
+    this.toolsEl.style.top = '-' + bodyEl.scrollTop * zoom + u;
+    this.toolsEl.style.left = '-' + bodyEl.scrollLeft * zoom + u;
     this.em.trigger('canvasScroll');
   },
 
@@ -498,15 +499,9 @@ export default Backbone.View.extend({
       }
     }
 
-    // Render all frames
-    const frames = new FramesView({
-      collection: model.get('frames'),
-      config: { ...config, renderContent: 1 }
-    });
-    frames.render();
-    $frames.append(frames.el);
-
-    $el.find('[data-tools]').append(`
+    const toolsWrp = $el.find('[data-tools]');
+    this.toolsWrapper = toolsWrp.get(0);
+    toolsWrp.append(`
       <div id="${ppfx}tools" style="pointer-events:none">
         <div class="${ppfx}highlighter"></div>
         <div class="${ppfx}badge"></div>
@@ -531,6 +526,19 @@ export default Backbone.View.extend({
     this.fixedOffsetEl = el.querySelector(`.${ppfx}offset-fixed-v`);
     this.toolsEl = toolsEl;
     this.el.className = this.className;
+
+    // Render all frames
+    const frames = new FramesView({
+      collection: model.get('frames'),
+      config: {
+        ...config,
+        renderContent: 1,
+        canvasView: this
+      }
+    });
+    frames.render();
+    $frames.append(frames.el);
+
     return this;
   }
 });

@@ -40,6 +40,7 @@ export default Backbone.View.extend({
     this.listenTo(model, 'active', this.onActive);
     $el.data('model', model);
     model.view = this;
+    model.views.push(this);
     this.initClasses();
     this.initComponents({ avoidRender: 1 });
     this.events = {

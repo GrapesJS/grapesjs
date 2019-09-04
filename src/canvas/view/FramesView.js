@@ -1,8 +1,8 @@
 import DomainViews from 'domain_abstract/view/DomainViews';
-import FrameView from './FrameView';
+import FrameWrapView from './FrameWrapView';
 
 export default DomainViews.extend({
-  itemView: FrameView,
+  itemView: FrameWrapView,
 
   init() {
     this.listenTo(this.collection, 'reset', this.render);

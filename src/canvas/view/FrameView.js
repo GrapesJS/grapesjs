@@ -84,12 +84,16 @@ export default Backbone.View.extend({
     this.$el.off(motionsEv, this.updateOffset);
   },
 
+  getEl() {
+    return this.el;
+  },
+
   getWindow() {
-    return this.$el.get(0).contentWindow;
+    return this.getEl().contentWindow;
   },
 
   getDoc() {
-    return this.$el.get(0).contentDocument;
+    return this.getEl().contentDocument;
   },
 
   getHead() {
@@ -101,7 +105,7 @@ export default Backbone.View.extend({
   },
 
   getWrapper() {
-    return this.$el.contents().find('body > div');
+    return this.getBody().querySelector('[data-gjs-type=wrapper]');
   },
 
   getJsContainer() {
@@ -110,6 +114,10 @@ export default Backbone.View.extend({
     }
 
     return this.jsContainer;
+  },
+
+  remove() {
+    Backbone.View.prototype.remove.apply(this, arguments);
   },
 
   render() {
@@ -240,7 +248,6 @@ export default Backbone.View.extend({
     append(body, new CssRulesView({ collection: styles, config }).render().el);
     append(body, this.getJsContainer());
     // em.trigger('loaded'); // I need to manage only the first one maybe
-    // win.onscroll = this.onFrameScroll; // TODO
     this.updateOffset(); // TOFIX (check if I need it)
 
     // Avoid some default behaviours
@@ -263,5 +270,7 @@ export default Backbone.View.extend({
         );
       })
     );
+
+    this.trigger('loaded');
   }
 });

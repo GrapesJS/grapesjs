@@ -68,7 +68,8 @@ export default () => {
     init(config = {}) {
       c = {
         ...defaults,
-        ...config
+        ...config,
+        module: this
       };
 
       this.em = c.em;
