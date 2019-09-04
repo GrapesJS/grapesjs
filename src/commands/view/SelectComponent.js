@@ -54,6 +54,7 @@ export default {
       em[method]('change:componentHovered', this.onHovered, this);
       em[method]('component:update', this.updateAttached, this);
       em[method]('change:canvasOffset', this.updateAttached, this);
+      em[method]('frame:scroll', this.onFrameScroll);
     };
     trigger(win, body); // TODO remove
     em.get('Canvas')
@@ -138,7 +139,9 @@ export default {
     this.editor.runCommand('show-offset', {
       el,
       elPos: pos,
-      force: 1
+      force: 1,
+      top: this.frameRect(el, 1, pos),
+      left: this.frameRect(el, 0, pos)
     });
   },
 
@@ -313,6 +316,13 @@ export default {
     }
   },
 
+  frameRect(el, top = 1, pos) {
+    const side = top ? 'top' : 'left';
+    const { scrollTop = 0, scrollLeft = 0 } = el.ownerDocument.body || {};
+
+    return pos[side] - (top ? scrollTop : scrollLeft);
+  },
+
   /**
    * Update highlighter element
    * @param {HTMLElement} el
@@ -334,8 +344,8 @@ export default {
     var hlEl = this.canvas.getHighlighter();
     var hlStyle = hlEl.style;
     var unit = 'px';
-    hlStyle.left = pos.left + unit;
-    hlStyle.top = pos.top + unit;
+    hlStyle.left = this.frameRect(el, 0, pos) + unit;
+    hlStyle.top = this.frameRect(el, 1, pos) + unit;
     hlStyle.height = pos.height + unit;
     hlStyle.width = pos.width + unit;
     hlStyle.display = 'block';

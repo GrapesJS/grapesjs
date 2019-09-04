@@ -26,6 +26,14 @@ export default {
 
     var canvas = editor.Canvas;
     var pos = opt.elPos || canvas.getElementPos(el);
+
+    if (opt.top) {
+      pos.top = opt.top;
+    }
+    if (opt.left) {
+      pos.left = opt.left;
+    }
+
     var style = window.getComputedStyle(el);
     var ppfx = this.ppfx;
     var stateVar = state + 'State';

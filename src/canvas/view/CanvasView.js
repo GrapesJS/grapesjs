@@ -127,12 +127,12 @@ export default Backbone.View.extend({
    * @private
    */
   onFrameScroll({ body = {} } = {}) {
-    const u = 'px';
-    const bodyEl = this.frame.el.contentDocument.body;
-    const zoom = this.getZoom();
-    this.toolsEl.style.top = '-' + bodyEl.scrollTop * zoom + u;
-    this.toolsEl.style.left = '-' + bodyEl.scrollLeft * zoom + u;
-    this.em.trigger('canvasScroll');
+    // const u = 'px';
+    // const bodyEl = this.frame.el.contentDocument.body;
+    // const zoom = this.getZoom();
+    // this.toolsEl.style.top = '-' + bodyEl.scrollTop * zoom + u;
+    // this.toolsEl.style.left = '-' + bodyEl.scrollLeft * zoom + u;
+    // this.em.trigger('canvasScroll');
   },
 
   /**
