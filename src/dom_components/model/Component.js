@@ -1074,7 +1074,10 @@ const Component = Backbone.Model.extend(Styleable).extend(
         // If at least one match is found I have to track this change for a
         // better optimization inside JS generator
         this.scriptUpdated();
-        return this.attributes[v] || '';
+        const result = this.attributes[v] || '';
+        return isArray(result) || typeof result == 'object'
+          ? JSON.stringify(result)
+          : result;
       });
 
       return scr;
