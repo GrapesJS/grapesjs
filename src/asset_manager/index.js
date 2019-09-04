@@ -347,14 +347,6 @@ export default () => {
      */
     onDblClick(func) {
       c.onDblClick = func;
-    },
-
-    /**
-     * Update config uploadMaxFileSize
-     * @param {int} maxKb
-     */
-    setUploadMaxFileSize(maxKb) {
-      c.uploadMaxFileSize = maxKb;
     }
   };
 };

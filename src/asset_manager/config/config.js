@@ -100,11 +100,5 @@ export default {
   modalTitle: 'Select Image',
 
   //Default placeholder for input
-  inputPlaceholder: 'http://path/to/the/image.jpg',
-
-  //Max file size which can be uploaded in KB, 0 is no limit and default
-  uploadMaxFileSize: 0,
-
-  //alert text when file size limit is reached
-  uploadMaxFileSizeAlertText: null
+  inputPlaceholder: 'http://path/to/the/image.jpg'
 };
