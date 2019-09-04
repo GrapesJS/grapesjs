@@ -317,10 +317,11 @@ export default {
   },
 
   frameRect(el, top = 1, pos) {
+    const zoom = this.em.getZoomDecimal();
     const side = top ? 'top' : 'left';
     const { scrollTop = 0, scrollLeft = 0 } = el.ownerDocument.body || {};
 
-    return pos[side] - (top ? scrollTop : scrollLeft);
+    return pos[side] - (top ? scrollTop : scrollLeft) * zoom;
   },
 
   /**
@@ -634,6 +635,8 @@ export default {
       const model = this.em.getSelected();
       const viewEl = model && model.getEl();
       viewEl && this.updateToolbarPos(viewEl);
+      this.updateHighlighter(el, elPos);
+      this.showElementOffset(el, elPos);
     }
   },
 
