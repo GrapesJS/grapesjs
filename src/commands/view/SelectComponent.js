@@ -572,14 +572,14 @@ export default {
 
     if (pos) {
       const frameOffset = canvas.getCanvasView().getFrameOffset();
+      pos.top = this.frameRect(el, 1, pos);
+      pos.left = this.frameRect(el, 0, pos);
 
       // Scroll with the window if the top edge is reached and the
       // element is bigger than the canvas
-      if (
-        pos.top <= pos.canvasTop &&
-        !(pos.elementHeight + pos.targetHeight >= frameOffset.height)
-      ) {
-        pos.top = pos.elementTop + pos.elementHeight;
+      const fullHeight = pos.elementHeight + pos.targetHeight;
+      if (pos.top <= pos.canvasTop && !(fullHeight >= frameOffset.height)) {
+        pos.top = pos.top + fullHeight;
       }
 
       // Check left position of the toolbar
