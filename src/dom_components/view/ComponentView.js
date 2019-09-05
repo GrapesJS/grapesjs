@@ -172,7 +172,7 @@ export default Backbone.View.extend({
     const status = this.model.get('status');
     const pfx = this.pfx;
     const ppfx = this.ppfx;
-    const selectedCls = `${pfx}selected`;
+    const selectedCls = `${ppfx}selected`;
     const selectedParentCls = `${selectedCls}-parent`;
     const freezedCls = `${ppfx}freezed`;
     const hoveredCls = `${ppfx}hovered`;
