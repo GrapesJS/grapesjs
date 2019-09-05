@@ -108,6 +108,11 @@ export default Backbone.View.extend(
     uploadFile(e, clb) {
       const files = e.dataTransfer ? e.dataTransfer.files : e.target.files;
       const { config } = this;
+      const { beforeUpload } = config;
+
+      const beforeUploadResponse = beforeUpload && beforeUpload(files);
+      if (beforeUploadResponse === false) return;
+
       const body = new FormData();
       const { params, customFetch } = config;
 
