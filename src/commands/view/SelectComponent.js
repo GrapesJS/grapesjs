@@ -282,15 +282,14 @@ export default {
    * @private
    * */
   updateBadge(el, pos) {
-    var $el = $(el);
-    var canvas = this.canvas;
-    var config = canvas.getConfig();
+    const { canvas } = this;
+    const config = canvas.getConfig();
     const ppfx = config.pStylePrefix || '';
-    var customeLabel = config.customBadgeLabel;
+    const customeLabel = config.customBadgeLabel;
+    const model = $(el).data('model');
     this.cacheEl = el;
-    var model = $el.data('model');
     if (!model || !model.get('badgable')) return;
-    var badge = this.getBadge();
+    const badge = this.getBadge();
     const icon = model.getIcon();
     const clsBadge = `${ppfx}badge`;
     let badgeLabel = `${
@@ -299,21 +298,19 @@ export default {
       <div class="${clsBadge}__name">${model.getName()}</div>`;
     badgeLabel = customeLabel ? customeLabel(model) : badgeLabel;
     badge.innerHTML = badgeLabel;
-    var bStyle = badge.style;
-    var u = 'px';
-    bStyle.display = 'block';
-    var canvasPos = this.getCanvasPosition();
 
-    if (canvasPos) {
-      const canvasTop = canvasPos.top;
-      const canvasLeft = canvasPos.left;
-      const posTop = pos.top - (badge ? badge.offsetHeight : 0);
-      const badgeW = badge ? badge.offsetWidth : 0;
-      var top = posTop < canvasTop ? canvasTop : posTop;
-      var left = pos.left + badgeW < canvasLeft ? canvasLeft : pos.left;
-      bStyle.top = top + u;
-      bStyle.left = left + u;
-    }
+    const u = 'px';
+    const bStyle = badge.style;
+    bStyle.display = 'block';
+    const badgeH = badge ? badge.offsetHeight : 0;
+    const posTop = this.frameRect(el, 1, pos) - badgeH;
+    const badgeW = badge ? badge.offsetWidth : 0;
+    const top = posTop < 0 ? 0 : posTop;
+    const posLeft = this.frameRect(el, 0, pos);
+    const left = posLeft + badgeW < 0 ? 0 : posLeft;
+
+    bStyle.top = top + u;
+    bStyle.left = left + u;
   },
 
   frameRect(el, top = 1, pos) {
