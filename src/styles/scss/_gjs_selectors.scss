@@ -3,7 +3,7 @@
 }
 
 .#{$clm-prefix}select {
-  @extend .#{$sm-prefix}field.#{$sm-prefix}select;
+  @extend .#{$sm-prefix}field, .#{$sm-prefix}select;
 }
 
 .#{$clm-prefix}tags {

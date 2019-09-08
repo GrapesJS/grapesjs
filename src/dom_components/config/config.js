@@ -41,7 +41,7 @@ export default {
    * It might be useful to transform custom objects (es. some framework specific JSX) to GrapesJS component one.
    * This custom function will be executed on ANY new added component to the editor so make smart checks/conditions
    * to avoid doing useless executions
-   * By default, GrapesJS supports already React Element
+   * By default, GrapesJS supports already elements generated from React JSX preset
    * @example
    * processor: (obj) => {
    *  if (obj.$$typeof) { // eg. this is a React Element

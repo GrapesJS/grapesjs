@@ -78,7 +78,7 @@ export default Backbone.Model.extend(Styleable).extend({
     const state = this.get('state');
     const wrapper = this.get('wrapper');
     const addSelector = this.get('selectorsAdd');
-    const isBody = wrapper && em && em.getConfig('wrappesIsBody');
+    const isBody = wrapper && em && em.getConfig('wrapperIsBody');
     const selectors = isBody ? 'body' : this.get('selectors').getFullString();
     const stateStr = state ? `:${state}` : '';
     selectors && result.push(`${selectors}${stateStr}`);

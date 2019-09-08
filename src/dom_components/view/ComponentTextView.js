@@ -1,6 +1,8 @@
 import { on, off } from 'utils/mixins';
 import ComponentView from './ComponentView';
 
+const compProt = ComponentView.prototype;
+
 export default ComponentView.extend({
   events: {
     dblclick: 'onActive',
@@ -8,7 +10,7 @@ export default ComponentView.extend({
   },
 
   initialize(o) {
-    ComponentView.prototype.initialize.apply(this, arguments);
+    compProt.initialize.apply(this, arguments);
     this.disableEditing = this.disableEditing.bind(this);
     const model = this.model;
     const em = this.em;
@@ -151,5 +153,17 @@ export default ComponentView.extend({
     // Avoid closing edit mode on component click
     this.$el.off('mousedown', this.disablePropagation);
     this.$el[method]('mousedown', this.disablePropagation);
+
+    // Fixes #2210 but use this also as a replacement
+    // of this fix: bd7b804f3b46eb45b4398304b2345ce870f232d2
+    if (this.config.draggableComponents) {
+      let { el } = this;
+
+      while (el) {
+        el.draggable = enable ? !1 : !0;
+        el = el.parentNode;
+        el.tagName == 'BODY' && (el = 0);
+      }
+    }
   }
 });
