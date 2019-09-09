@@ -166,7 +166,7 @@ export default {
   storageManager: {},
 
   //Configurations for Rich Text Editor
-  rte: {},
+  richTextEditor: {},
 
   //Configurations for DomComponents
   domComponents: {},

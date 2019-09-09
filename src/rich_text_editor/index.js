@@ -5,7 +5,7 @@
  * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/rich_text_editor/config/config.js)
  * ```js
  * const editor = grapesjs.init({
- *  rte: {
+ *  richTextEditor: {
  *    // options
  *  }
  * })
@@ -52,20 +52,20 @@ export default () => {
      */
     name: 'RichTextEditor',
 
+    getConfig() {
+      return config;
+    },
+
     /**
      * Initialize module. Automatically called with a new instance of the editor
      * @param {Object} opts Options
      * @private
      */
     init(opts = {}) {
-      config = opts;
-
-      for (let name in defaults) {
-        if (!(name in config)) {
-          config[name] = defaults[name];
-        }
-      }
-
+      config = {
+        ...defaults,
+        ...opts
+      };
       const ppfx = config.pStylePrefix;
 
       if (ppfx) {
