@@ -318,6 +318,14 @@ export default {
     return pos[side] - (top ? scrollTop : scrollLeft) * zoom;
   },
 
+  frameRect(el, top = 1, pos) {
+    const zoom = this.em.getZoomDecimal();
+    const side = top ? 'top' : 'left';
+    const { scrollTop = 0, scrollLeft = 0 } = el.ownerDocument.body || {};
+
+    return pos[side] - (top ? scrollTop : scrollLeft) * zoom;
+  },
+
   /**
    * Update highlighter element
    * @param {HTMLElement} el
