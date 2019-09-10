@@ -362,7 +362,7 @@ export default Backbone.View.extend({
   },
 
   /**
-   * Returns element's data info
+   * Returns element's rect info
    * @param {HTMLElement} el
    * @return {Object}
    * @private

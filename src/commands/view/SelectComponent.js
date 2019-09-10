@@ -1,5 +1,5 @@
 import Backbone from 'backbone';
-import { bindAll, isElement, isUndefined } from 'underscore';
+import { bindAll, isElement, isUndefined, debounce } from 'underscore';
 import { on, off, getUnitFromValue, isTaggableNode } from 'utils/mixins';
 import ToolbarView from 'dom_components/view/ToolbarView';
 import Toolbar from 'dom_components/model/Toolbar';
@@ -54,7 +54,7 @@ export default {
       em[method]('change:componentHovered', this.onHovered, this);
       em[method]('component:update', this.updateAttached, this);
       em[method]('change:canvasOffset', this.updateAttached, this);
-      em[method]('frame:scroll', this.onFrameScroll);
+      // em[method]('frame:scroll', this.onFrameScroll);
     };
     trigger(win, body); // TODO remove
     em.get('Canvas')
@@ -85,12 +85,6 @@ export default {
       }
     }
 
-    // Adjust tools scroll top
-    if (!this.adjScroll) {
-      this.adjScroll = 1;
-      this.updateAttached();
-    }
-
     // Get first valid hoverable model
     if (model && !model.get('hoverable')) {
       let parent = model && model.parent();
@@ -102,13 +96,17 @@ export default {
   },
 
   onHovered(em, component) {
-    const trg = component && component.getEl();
-    if (trg) {
-      const pos = this.getElementPos(trg);
-      this.updateBadge(trg, pos);
-      this.updateHighlighter(trg, pos);
-      this.showElementOffset(trg, pos);
+    const el = component && component.getEl();
+
+    if (el) {
+      const pos = this.getElementPos(el);
+      this.elHovered = { el, pos };
+      this.updateToolsHover(el, pos);
     }
+  },
+
+  getElHovered() {
+    return this.elHovered || {};
   },
 
   /**
@@ -287,7 +285,6 @@ export default {
     const ppfx = config.pStylePrefix || '';
     const customeLabel = config.customBadgeLabel;
     const model = $(el).data('model');
-    this.cacheEl = el;
     if (!model || !model.get('badgable')) return;
     const badge = this.getBadge();
     const icon = model.getIcon();
@@ -359,11 +356,10 @@ export default {
     // Get the selected model directly from the Editor as the event might
     // be triggered manually without the model
     const model = this.em.getSelected();
-    const view = model && model.view;
+    const el = model && model.getEl();
     this.updateToolbar(model);
 
-    if (view) {
-      const { el } = view;
+    if (el) {
       this.showFixedElementOffset(el);
       this.hideElementOffset();
       this.hideHighlighter();
@@ -525,7 +521,6 @@ export default {
     }
 
     var toolbar = model.get('toolbar');
-    var ppfx = this.ppfx;
     var showToolbar = em.get('Config').showToolbar;
 
     if (showToolbar && toolbar && toolbar.length) {
@@ -542,10 +537,8 @@ export default {
       }
 
       this.toolbar.reset(toolbar);
-      const view = model.view;
       toolbarStyle.top = '-100px';
       toolbarStyle.left = 0;
-      setTimeout(() => view && this.updateToolbarPos(view.el), 0);
     } else {
       toolbarStyle.display = 'none';
     }
@@ -556,39 +549,42 @@ export default {
    * @param {HTMLElement} el
    * @param {Object} pos
    */
-  updateToolbarPos(el, elPos) {
+  updateToolbarPos(el, pos) {
     const { canvas } = this;
     const unit = 'px';
     const toolbarEl = canvas.getToolbarEl();
     const toolbarStyle = toolbarEl.style;
     toolbarStyle.opacity = 0;
-    const pos = canvas.getTargetToElementDim(toolbarEl, el, {
-      elPos,
-      event: 'toolbarPosUpdate'
-    });
 
     if (pos) {
-      const frameOffset = canvas.getCanvasView().getFrameOffset();
-      pos.top = this.frameRect(el, 1, pos);
-      pos.left = this.frameRect(el, 0, pos);
+      const cv = canvas.getCanvasView();
+      const frCvOff = cv.getPosition();
+      const frameOffset = cv.getFrameOffset();
+      const toolbarH = toolbarEl ? toolbarEl.offsetHeight : 0;
+      const toolbarW = toolbarEl ? toolbarEl.offsetWidth : 0;
+      let top = this.frameRect(el, 1, pos) - toolbarH;
+      let left = this.frameRect(el, 0, pos) + pos.width - toolbarW;
+      left = left < 0 ? 0 : left;
 
       // Scroll with the window if the top edge is reached and the
       // element is bigger than the canvas
-      const fullHeight = pos.elementHeight + pos.targetHeight;
-      if (pos.top <= pos.canvasTop && !(fullHeight >= frameOffset.height)) {
-        pos.top = pos.top + fullHeight;
+      const fullHeight = pos.height + toolbarH;
+      const elIsShort = fullHeight < frameOffset.height;
+
+      if (top < frCvOff.top && elIsShort) {
+        top = top + fullHeight;
+      } else if (top < 0) {
+        top = top > -pos.height ? 0 : top + fullHeight - toolbarH;
       }
 
       // Check left position of the toolbar
-      const elRight = pos.elementLeft + pos.elementWidth;
-      let left = elRight - pos.targetWidth;
+      const leftR = left + toolbarW;
 
-      if (elRight > pos.canvasWidth) {
-        left -= elRight - pos.canvasWidth;
+      if (leftR > frCvOff.width) {
+        left -= leftR - frCvOff.width;
       }
 
-      left = left < 0 ? 0 : left;
-      toolbarStyle.top = `${pos.top}${unit}`;
+      toolbarStyle.top = `${top}${unit}`;
       toolbarStyle.left = `${left}${unit}`;
       toolbarStyle.opacity = '';
     }
@@ -624,34 +620,41 @@ export default {
    * @private
    */
   onFrameScroll(ev) {
-    const el = this.cacheEl;
+    const { el } = this.getElHovered();
+    const pos = this.getElementPos(el); // TODO check if this could be cached
+    const model = this.em.getSelected();
+    const viewEl = model && model.getEl();
+    el && this.updateToolsHover(el, pos);
+    viewEl && this.updateToolbarPos(viewEl, this.getElementPos(viewEl));
+  },
 
-    if (el) {
-      const elPos = this.getElementPos(el);
-      this.updateBadge(el, elPos);
-      const model = this.em.getSelected();
-      const viewEl = model && model.getEl();
-      viewEl && this.updateToolbarPos(viewEl);
-      this.updateHighlighter(el, elPos);
-      this.showElementOffset(el, elPos);
-    }
+  /**
+   * Update tools visible on hover
+   * @param {HTMLElement} el
+   * @param {Object} pos
+   */
+  updateToolsHover(el, pos) {
+    this.updateBadge(el, pos);
+    this.updateHighlighter(el, pos);
+    this.showElementOffset(el, pos);
   },
 
   /**
    * Update attached elements, eg. component toolbar
    */
-  updateAttached() {
+  updateAttached: debounce(function() {
     const { resizer, em } = this;
     const model = em.getSelected();
-    const view = model && model.view;
+    const el = model && model.getEl();
 
-    if (view) {
-      const { el } = view;
-      this.updateToolbarPos(el);
+    if (el && this.elSelected !== el) {
+      this.elSelected = el;
+      const pos = this.getElementPos(el);
+      this.updateToolbarPos(el, pos);
       this.showFixedElementOffset(el);
       resizer && resizer.updateContainer();
     }
-  },
+  }),
 
   /**
    * Returns element's data info
