@@ -4,7 +4,7 @@ title: Component Manager
 
 # Component Manager
 
-The Component is the base element for template composition. It is atomic, so elements like images, text boxes, maps, etc. fit the definition of a Component. The concept of the component was made to allow the developer to bind different behaviors to different elements. Like for example, opening the Asset Manager on double click of the image.
+The Component is a base element of the template. It might be something simple and atomic like an image or a text box, but also complex structures, more probably composed by other components, like sections or pages. The concept of the component was made to allow the developer to bind different behaviors to different elements. For example, opening the Asset Manager on double click of the image is a custom behavior binded to that particular type of element.
 
 ::: warning
 This guide is referring to GrapesJS v0.14.67 or higher
@@ -18,7 +18,11 @@ This guide is referring to GrapesJS v0.14.67 or higher
 
 ## How Components work?
 
-Let's see in detail how components work by looking at all steps from adding an HTML string to the editor.
+Let's see in detail how components work by looking at all the steps from adding an HTML string to the editor.
+
+::: tip
+All the following snippets can be run  directly in console from the [main demo](https://grapesjs.com/demo.html)
+:::
 
 This is how we can add new components to the canvas:
 
@@ -38,7 +42,7 @@ editor.getWrapper().append(`<div>...`);
 ```
 
 ::: tip
-If you need to append a component in a specific position, you can use `at` option. To add a component on top of all others (in the same collection) you would use
+If you need to append a component in at a specific position, you can use `at` option. So, to add a component on top of all others (in the same collection) you would use
 ```js
 component.append('<div>...', { at: 0 })
 ```
@@ -53,7 +57,7 @@ component.append('<div>...', { at: parseInt(length / 2, 10) })
 
 ### Component Definition
 
-In the first step the HTML string is parsed and trasformed to what is called **Component Definition**, so the result of the input would be:
+In the first step, the HTML string is parsed and transformed to what is called **Component Definition**, so the result of the input above would be:
 
 ```js
 {
@@ -75,29 +79,30 @@ In the first step the HTML string is parsed and trasformed to what is called **C
 }
 ```
 
-The real **Component Definition** would be a little bit bigger so we reduced the JSON for the sake of simplicity.
+The real **Component Definition** would be a little bit bigger so so we'd reduced the JSON for the sake of simplicity.
 
-You can notice the result is similar to what is generally called a **Virtual DOM**, a lightweight rappresentation of the DOM element. This actually helps the editor to keep track of the state of our elements and make performance-friendly changes/updates.
-The meaning of properties like `tagName`, `attributes` and `components` are quite obvious, but what about `type`?! This particular property specifies the actual **Component** of our **Component Definition** (you check the list of default components [below](#built-in-components)) and if it's omitted, the default one will be used `type: 'default'`.
-At this point, a good question would be, how the editor assignes those types by starting from a simple HTML string? This step is identified as **Component Recognition** and it's explained in detail in the next paragraph.
+You might notice the result is similar to what is generally called a **Virtual DOM**, a lightweight representation of the DOM element. This actually helps the editor to keep track of the state of our elements and make performance-friendly changes/updates.
+The meaning of properties like `tagName`, `attributes` and `components` are quite obvious, but what about `type`?! This particular property specifies the **Component Type** of our **Component Definition** (you check the list of default components [below](#built-in-component-types)) and if it's omitted, the default one will be used `type: 'default'`.
+At this point, a good question would be, how the editor assigns those types by starting from a simple HTML string? This step is identified as **Component Recognition** and it's explained in detail in the next paragraph.
 
 
 
 ### Component Recognition and Component Type Stack
 
-As we said before, when you pass an HTML string as a component to the editor, that string is parsed and compiled to the [Component Definition](#component-definition) with a new `type` property. To understand what `type` should be assigned, for each parsed HTML Element, the editor iterates over all the defined components, called **Component Type Stack**, and checks via `isComponent` method (we will see it later) if that component type is appropriate for that element. The Component Type Stack is just a simple array of component types but what is matter is the order of those types. Any new added custom **Component Type** (we'll see later how to create them) goes on top of the Component Type Stack and each element returned from the parser iterates the stack from top to bottom (the last element of the stack is the `default` one), the iteration stops once one of the component returns a truthy value from the `isComponent` method.
+As we mentioned before, when you pass an HTML string as a component to the editor, that string is parsed and compiled to the [Component Definition] with a new `type` property. To understand what `type` should be assigned, for each parsed HTML Element, the editor iterates over all the defined components, called **Component Type Stack**, and checks via `isComponent` method (we will see it later) if that component type is appropriate for that element. The Component Type Stack is just a simple array of component types but what is matter is the order of those types. Any new added custom **Component Type** (we'll see later how to create them) goes on top of the Component Type Stack and each element returned from the parser iterates the stack from top to bottom (the last element of the stack is the `default` one), the iteration stops once one of the component returns a truthy value from the `isComponent` method.
 
-SVG - ComponentTypeStack
+<img :src="$withBase('/component-type-stack.svg')" class="img-ctr">
 
 ::: tip
-If you're importing big chunks of HTML code you might want to improve the performances by skipping the parsing and the component recognition steps by passing directly Component Definiton objects or using the JSX syntax. Read more about it here...TODO
+If you're importing big string chunks of HTML code you might want to improve the performances by skipping the parsing and the component recognition steps by passing directly Component Definition objects or using the JSX syntax.
+Read [here](#setup-jsx-syntax) about how to setup JSX syntax parser
 :::
 
 
 
 ### Component instance
 
-Once the **Component Definition** is ready and the type is assigned, the [Component](api/component) instance can be created (known also as the **Model**). Let's step back to our previous example with the HTML string, the result of the `append` method is an array of added components.
+Once the **Component Definition** is ready and the type is assigned, the [Component] instance can be created (known also as the **Model**). Let's step back to our previous example with the HTML string, the result of the `append` method is an array of added components.
 
 ```js
 const component = editor.addComponents(`<div>
@@ -124,7 +129,7 @@ const innerComponents = component.components();
 component.components(`<div>Component 1</div><div>Component 2</div>`);
 ```
 
-Each component can define its own properties and methods but all of them will always extend, at least, the `default` one (then you will see how to create new custom components and how to extend the already defined) so it's good to check the [Component API](api/component) to see all available properties and methods.
+Each component can define its own properties and methods but all of them will always extend, at least, the `default` one (then you will see how to create new custom components and how to extend the already defined) so it's good to check the [Component API] to see all available properties and methods.
 
 The **main purpose of the Component** is to keep track of its data and to return them when necessary. One common thing you might need to ask from the component is to show its current HTML
 
@@ -350,7 +355,7 @@ One more tip, if you define a component type without the `isComponent`, the only
 ### Model
 
 Now that we got how `isComponent` works we can start to explore the `model` property.
-The `model` is probably the one you'll use the most as is what is used for the description of your component and the first thing you can see is its `defaults` key which just stands for *default component properties* and it reflects the already described [Component Definition](#component-definition)
+The `model` is probably the one you'll use the most as is what is used for the description of your component and the first thing you can see is its `defaults` key which just stands for *default component properties* and it reflects the already described [Component Definition]
 
 The model defines also what you will see as the resultant HTML (the export code) and you've probably noticed the use of `tagName` (if not specified the `div` will be used) and `attributes` properties on the model.
 
@@ -365,12 +370,12 @@ defaults: {
     <h1>Header test</h1>
     <p>Paragraph test</p>
   `,
-  // A component definiton
+  // A component definition
   components: {
     tagName: 'h1',
     components: 'Header test',
   },
-  // Array of strings/component definitons
+  // Array of strings/component definitions
   components: [
     {
       tagName: 'h1',
@@ -439,7 +444,7 @@ modelComponent.find(`.query-string[example=value]`).forEach(
 You'll notice that, on any change, the component in the canvas and its export code are changing accordingly
 
 :::tip
-To know all the available methods/properties check the [Component API](/api/component.html)
+To know all the available methods/properties check the [Component API]
 :::
 
 #### Listen to property changes
@@ -736,3 +741,86 @@ editor.on(`component:remove`, model => console.log('Global hook: component:remov
 
 If you want to know how to create Components with javascript attached (eg. counters, galleries, slideshows, etc.) check the dedicated page
 [Components & JS](Components-js.html)
+
+
+
+
+
+## Tips
+
+### JSX syntax
+
+If you're importing big chunks of HTML string into the editor (eg. defined via Blocks) JSX might be a great compromise between perfomances and code readibility as it allows you to skip the parser and the component recognition steps by keeping the HTML syntax.
+By default, GrapesJS understands objects generated from React JSX preset, so, if you're working in the React app probably you're already using JSX and you don't need to do anything else, your environment is already configured to parse JSX in javascript files.
+
+So, intead of writing this:
+```js
+// I'm adding a string, so the parser and the component recognition steps will be executed
+editor.addComponents(`<div>
+  <span data-gjs-type="custom-component" data-gjs-prop="someValue" title="foo">
+    Hello!
+  </span>
+</div>`);
+```
+or this
+```js
+// I'm passing the Component Definition, so heavy steps will be skipped but the code is less readable
+editor.addComponents({
+  tagName: 'div',
+  components: [
+    {...}
+  ],
+});
+```
+you can use this format
+```js
+editor.addComponents(<div>
+  <custom-component data-gjs-prop="someValue" title="foo">
+    Hello!
+  </custom-component>
+</div>);
+```
+Another cool feature with the JSX parser is the ability to pass component types as element tags `<custom-component>` instead of `data-gjs-type="custom-component"`
+
+#### Setup JSX syntax
+
+For those who is not using React you have the following options:
+
+* GrapesJS has an option, `config.domComponents.processor`, thats allows you to easily implement other JSX presets. This scenario is useful if you work with a framework different from React but that uses JSX (eg. Vue). In that case, the result object from JSX pragma function (React uses `React.createElement`) will be different (you can log the JSX to see the result object) and you have to transform that in GrapesJS [Component Definition] object. Below an example of usage
+
+```js
+grapesjs.init({
+  // ...
+  domComponents: {
+    processor: (obj) => {
+     if (obj.$$typeof) { // eg. this is a React Element
+        const compDef = {
+         type: obj.type,
+         components: obj.props.children,
+         ...
+        };
+        ...
+        return compDef;
+     }
+    }
+  }
+})
+```
+
+* In case you need to support JSX from scratch (you don't use a framework which supports JSX) you have, at first, implement the parser which transforms JSX in your files in something JS-readable.
+
+In case you use Babel, it's just a matter of adding few plugins: `@babel/plugin-syntax-jsx` and `@babel-plugin-transform-react`. Then update your `.babelrc` file
+  ```json
+  {
+    “plugins”: [
+      “@babel/plugin-syntax-jsx”,
+      [“@babel/plugin-transform-react-jsx”]
+    ]
+  }
+  ```
+
+  You can also customize the pragma function which executes the transformation `[“@babel/plugin-transform-react-jsx”, { “pragma”: “customCreateEl” }]`, by default `React.createElement` is used (you'll need a React instance available in the file to make it work).
+
+  [Component Definition]: <#component-definition>
+  [Component]: </api/component.html>
+  [Component API]: </api/component.html>
