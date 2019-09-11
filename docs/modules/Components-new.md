@@ -170,10 +170,10 @@ const view = component.getView();
 const el =  component.getEl();
 ```
 
-So, generally, the View is something you wouldn't need to change as the default one handles already the sync with the Model but in case you'd need more control over elements (eg. custom UI in canvas) you'll probably need to create a custom component type and extend the default View with your logic. We'll see later how to create custom Component Types.
+Generally, the View is something you wouldn't need to change as the default one handles already the sync with the Model but in case you'd need more control over elements (eg. custom UI in canvas) you'll probably need to create a custom component type and extend the default View with your logic. We'll see later how to create custom Component Types.
 
 
-So far we have seen the core concept behind Components and how they work. The **Model/Component** is the **source of truth** for the final code of templates (eg. the HTML export relies on it) and the *View/ComponentView* is what is used by the editor to **preview our components** to users in the canvas.
+So far we have seen the core concept behind Components and how they work. The **Model/Component** is the **source of truth** for the final code of templates (eg. the HTML export relies on it) and the **View/ComponentView** is what is used by the editor to **preview our components** to users in the canvas.
 
 
 <!--
@@ -212,9 +212,9 @@ Here below you can see the list of built-in component types, ordered by their po
 
 
 
-## Define new Component Type
+## Define Custom Component Type
 
-Now that we know how components work, we can start exploring the process of creating new **Component Types**.
+Now that we know how components work, we can start exploring the process of creating custom **Component Types**.
 
 <u>The first rule of defining new component types is to place the code inside a plugin</u>. This is necessary if you want to load your custom types at the beginning, before any component initialization (eg. a template loaded from DB). The plugin is loaded before component fetch (eg. in case of Storage use) so it's a perfect place to define component types.
 
@@ -239,10 +239,11 @@ editor.DomComponents.addType('my-input-type', {
 
   // Model definition
   model: {
+    // Default properties
     defaults: {
       tagName: 'input',
       draggable: 'form, form *', // Can be dropped only inside `form` elements
-      droppable: false, // Can't drop other elements inside it
+      droppable: false, // Can't drop other elements inside
       attributes: { // Default attributes
         type: 'text',
         name: 'default-name',
@@ -258,17 +259,17 @@ editor.DomComponents.addType('my-input-type', {
 });
 ```
 
-With this code the editor will be able to understand simple text `<input>`s, assign default attributes and show some trait for a better attribute handling.
+With this code, the editor will be able to understand simple text `<input>`s, assign default attributes and show some trait for a better attribute handling.
 
 ::: tip
-To understand better how Traits work you should read its [dedicated page](Traits.html) but we highly sugggest to read it after you've finished reading this one
+To understand better how Traits work you should read its [dedicated page](Traits.html) but we highly suggest to read it after you've finished reading this one
 :::
 
 
 
 ### isComponent
 
-Let's see in detail what we have done so far. The first thing to notice is the `isComponent` function, we have mentioned it already in [this](#component-recognition-and-component-type-stack) section and we need it to make the editor understand `<input>` during the component recognition step.
+Let's see in detail what we have done so far. The first thing to notice is the `isComponent` function, we have already mentioned its usage in [this](#component-recognition-and-component-type-stack) section and we need it to make the editor understand `<input>` during the component recognition step.
 It receives only the `el` argument, which is the parsed HTMLElement node and expects a truthy value in case the element satisfies your logic condition. So, if we add this HTML string as component
 
 ```js
@@ -309,6 +310,10 @@ editor.DomComponents.addType('my-input-type', {
 });
 ```
 
+::: danger
+Keep the `isComponent` function as simple as possible
+:::
+
 **Be aware** that this method will probably receive ANY parsed element from your canvas (eg. on load or on add) and not all the nodes have the same interface (eg. properties/methods).
 If you do this:
 
@@ -329,7 +334,7 @@ editor.addComponents(`<div>
 </div>`);
 ```
 
-You will see printing all the nodes, so doing something like this `el.getAttribute('...')` (which will work on the div but not on the text node), without an appropriate check, will break the code.
+You will see printing all the nodes, so doing something like this `el.getAttribute('...')` in your `isComponent` (which will work on the `div` but not on the `text node`), without an appropriate check, will break the code.
 
 
 It's also important to understand that `isComponent` is executed only if the parsing is required (eg. by adding components as HTML string or initializing the editor with `fromElement`). In case the type is already defined, there is no need for the `isComponent` to be executed.
@@ -339,8 +344,8 @@ Let's see some examples:
 // isComponent will be executed on some-element
 editor.addComponents('<some-element>...</some-element>');
 
-// isComponent WON'T be executed on ANY provided object
-// If the object without `type`, the `default` one will be used
+// isComponent WON'T be executed on OBJECTS
+// If the object has no `type` key, the `default` one will be used
 editor.addComponents({
   type: 'some-component',
 });
@@ -349,7 +354,7 @@ editor.addComponents({
 editor.addComponents('<some-element data-gjs-type="some-component">...');
 ```
 
-One more tip, if you define a component type without the `isComponent`, the only way for the editor to see that component will be with a declared type (via object like `{ type: '...' }` or using `data-gjs-type`)
+If you define the Component Type without using `isComponent`, the only way for the editor to see that component will be with an explicitly declared type (via an object `{ type: '...' }` or using `data-gjs-type`).
 
 
 
@@ -401,13 +406,13 @@ You can read and update the model properties wherever you have the reference to 
 // let's use the selected component
 const modelComponent = editor.getSelected();
 
-// All model props
+// Get all the model properties
 const props = modelComponent.props();
 
-// Get single property
+// Get a single property
 const tagName = modelComponent.get('tagName');
 
-// Update single property
+// Update a single property
 modelComponent.set('tagName', '...');
 
 // Update multiple properties
@@ -450,7 +455,7 @@ To know all the available methods/properties check the [Component API]
 
 #### Listen to property changes
 
-If you need to accomplish some kind of action on some property change you can setup listeners in the `init` method
+If you need to accomplish some kind of action on some property change you can set up listeners in the `init` method
 
 ```js
 editor.DomComponents.addType('my-input-type', {
@@ -493,15 +498,18 @@ Now let's go back to our input component integration and see another useful part
 
 ### View
 
-Generally, when you create a component in GrapesJS you expect to see in the canvas the preview of what you've defined in the model. Indeed, by default, the editor does the exact thing and updates the element in the canvas when something in the model changes (eg. attributes, tag, etc.) to obtain the classic WYSIWYG (What You See Is What You Get) experience. Unfortunately, not always the simpliest thing is the right one, by building components for the builder you will notice that sometimes you'll need something more:
+Generally, when you create a component in GrapesJS you expect to see in the canvas the preview of what you've defined in the model. Indeed, by default, the editor does the exact thing and updates the element in the canvas when something in the model changes (eg. attributes, tag, etc.) to obtain the classic **WYSIWYG** (What You See Is What You Get) experience. Unfortunately, not always the simplest thing is the right one, by building components for the builder you will notice that sometimes you'll need something more:
   * You want to improve the experience of editing of the component.
-    A perfect example is the TextComponent, its view is enriched with a built-in RTE (Rich Text Editor) which enables the user to edit the text faster by double clicking on it.
+    A perfect example is the TextComponent, its view is enriched with a built-in RTE (Rich Text Editor) which enables the user to edit the text faster by double-clicking on it.
+
     So you'll probably feel a need adding actions to react on some DOM events or even custom UI elements (eg. buttons) around the component.
-  * The DOM representation of the component acts differently from what you expect, so you need to change some behaviour.
-    An example could be a VideoComponent which, for example, is loaded from Youtube via iframe. Once the iframe is loaded, everything inside it is in a different context, the editor is not able to see it, indeed if you point your cursor on the iframe you'll interact with the video and not the editor, so you can't event select your component. To workaround this "issue", in the render, we disabled the pointer interaction with the iframe and wrapped it with another element (without the wrapper the editor would select the parent component). Obviosly, all of this changes has nothing to do with the final code, the result will always be a simple iframe
+
+  * The DOM representation of the component acts differently from what you'd expect, so you need to change some behavior.
+    An example could be a VideoComponent which, for example, is loaded from Youtube via iframe. Once the iframe is loaded, everything inside it is in a different context, the editor is not able to see it, indeed if you point your cursor on the iframe you'll interact with the video and not the editor, so you can't even select your component. To workaround this "issue", in the render, we disabled the pointer interaction with the iframe and wrapped it with another element (without the wrapper the editor would select the parent component). Obviously, all of these changes have nothing to do with the final code, the result will always be a simple iframe
+
   * You need to customize the content or fill it with some data from the server
 
-For all of this cases you can use the `view` in your component type defintion. The input component is probably not the best use case for this scenario but we'll try to cover most of the cases with an example below
+For all of these cases, you can use the `view` in your Component Type Definition. The `<input>` component is probably not the best use case for this scenario but we'll try to cover most of the cases with an example below
 
 ```js
 editor.DomComponents.addType('my-input-type', {
@@ -555,7 +563,8 @@ editor.DomComponents.addType('my-input-type', {
     onRender({ el }) {
       const btn = document.createElement('button');
       btn.value = '+';
-      // Avoid adding events on inner elements, use `events`
+      // This is just an example, AVOID adding events on inner elements,
+      // use `events` for these cases
       btn.addEventListener('click', () => {});
       el.appendChild(btn);
     },
@@ -565,9 +574,9 @@ editor.DomComponents.addType('my-input-type', {
       const asyncContent = await fetchSomething({
         someDataFromModel: model.get('someData'),
       });
-      // Rememebr that this changes exist only inside the editor canvas
+      // Remember, these changes exist only inside the editor canvas
       // None of the DOM change is stored in your template data,
-      // if you need to store something, use the model properties
+      // if you need to store something, update the model properties
       el.appendChild(asyncContent);
     }
   },
