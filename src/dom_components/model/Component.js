@@ -406,8 +406,9 @@ const Component = Backbone.Model.extend(Styleable).extend(
       const { opt } = this;
 
       if (em && em.getConfig('avoidInlineStyle') && !opt.temporary) {
+        const style = this.get('style') || {};
         prop = isString(prop) ? this.parseStyle(prop) : prop;
-        prop = { ...prop, ...this.get('style') };
+        prop = { ...prop, ...style };
         const state = this.get('state');
         const cc = em.get('CssComposer');
         const propOrig = this.getStyle();
