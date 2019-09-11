@@ -125,6 +125,7 @@ You can also use methods like `getAttributes`, `setAttributes`, `components`, et
 
 ```js
 const innerComponents = component.components();
+innerComponents.forEach(comp => console.log(comp.toHTML()));
 // Update component content
 component.components(`<div>Component 1</div><div>Component 2</div>`);
 ```
@@ -145,21 +146,21 @@ JSON.stringify(component)
 ```
 
 ::: tip
-For storing/loading all the components you should rely on the [Storage Manager](modules/storage)
+For storing/loading all the components you should rely on the [Storage Manager](/modules/storage.html)
 :::
 
-So, the **Component instance** is responable for the **final data** (eg. HTML, JSON) of your templates. If you need, for example, to update/add some attribute in the HTML you need to update its component (eg. `component.addAttributes({ title: 'Title added' })`), so the Component/Model is your **Source of Truth**.
+So, the **Component instance** is responsible for the **final data** (eg. HTML, JSON) of your templates. If you need, for example, to update/add some attribute in the HTML you need to update its component (eg. `component.addAttributes({ title: 'Title added' })`), so the Component/Model is your **Source of Truth**.
 
 
 
 ### Component rendering
 
-Another important part of components is how they are rendered in the **canvas**, this aspect is handled by the **View** of the component. It has nothing to do with the **final data**, you can return a big `<div>...</div>` string as HTML of your component but render it as a simple image in the canvas (think about placeholders for complex/dynamic data).
+Another important part of components is how they are rendered in the **canvas**, this aspect is handled by its **View**. It has nothing to do with the **final HTML data**, you can return a big `<div>...</div>` string as HTML of your component but render it as a simple image in the canvas (think about placeholders for complex/dynamic data).
 
-So, by default, the view of components is automatically synced with the data of its models (you can't have a View without a Model). If you update the attribute of the component or append a new one as a child, the view will render it in the canvas.
+By default, the view of components is automatically synced with the data of its models (you can't have a View without a Model). If you update the attribute of the component or append a new one as a child, the view will render it in the canvas.
 
-Unfotunatelly, sometimes, you might need some additional logic to handle better the component result. Think about allowing a user build its `<table>` element, for this specific case you might want to add custom buttons in the canvas, so it'd be easier adding/removing columns/rows. To handle those cases you can rely on the View, where you can add additional DOM component, attach events, etc. All of this will be completely unrelated with the final HTML of the `<table>` (the result the user would expect) as it handled by the Model.
-Once the component is rendered (when you actually see it in the canvas) you can always access its View and the DOM element.
+Unfortunately, sometimes, you might need some additional logic to handle better the component result. Think about allowing a user build its `<table>` element, for this specific case you might want to add custom buttons in the canvas, so it'd be easier adding/removing columns/rows. To handle those cases you can rely on the View, where you can add additional DOM component, attach events, etc. All of this will be completely unrelated with the final HTML of the `<table>` (the result the user would expect) as it handled by the Model.
+Once the component is rendered you can always access its View and the DOM element.
 
 ```js
 const component = editor.getSelected();
