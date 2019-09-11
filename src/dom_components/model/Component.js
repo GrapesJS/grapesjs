@@ -184,6 +184,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       this.listenTo(this, 'change:script', this.scriptUpdated);
       this.listenTo(this, 'change:tagName', this.tagUpdated);
       this.listenTo(this, 'change:attributes', this.attrUpdated);
+      this.listenTo(this, 'change:attributes:id', this._idUpdated);
       this.set('status', '');
 
       // Register global updates for collection properties
@@ -1140,6 +1141,11 @@ const Component = Backbone.Model.extend(Styleable).extend(
       const selector = rule && rule.get('selectors').at(0);
       selector && selector.set('name', newId);
       return this;
+    },
+
+    _idUpdated() {
+      const { id } = this.get('attributes') || {};
+      console.log('New ID', id);
     }
   },
   {
