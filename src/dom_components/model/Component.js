@@ -326,8 +326,8 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * Emit changes for each updated attribute
      * @private
      */
-    attrUpdated() {
-      this.setAttributes(this.get('attributes'), { silent: 1 });
+    attrUpdated(m, v, opts = {}) {
+      this.setAttributes(this.get('attributes'), { ...opts, silent: 1 });
     },
 
     /**
@@ -354,7 +354,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       const attrPrev = { ...this.previous('attributes') };
       const diff = shallowDiff(attrPrev, attrs);
       keys(diff).forEach(pr =>
-        this.trigger(`change:attributes:${pr}`, this, diff[pr])
+        this.trigger(`change:attributes:${pr}`, this, diff[pr], opts)
       );
 
       return this;
@@ -1020,10 +1020,10 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * @param {String} id
      * @return {this}
      */
-    setId(id) {
+    setId(id, opts) {
       const attrs = { ...this.get('attributes') };
       attrs.id = id;
-      this.set('attributes', attrs);
+      this.set('attributes', attrs, opts);
       return this;
     },
 
@@ -1143,9 +1143,38 @@ const Component = Backbone.Model.extend(Styleable).extend(
       return this;
     },
 
-    _idUpdated() {
+    _getStyleRule({ id } = {}) {
+      const { em } = this;
+      const idS = id || this.getId();
+      return em && em.get('CssComposer').getIdRule(idS);
+    },
+
+    _getStyleSelector(opts) {
+      const rule = this._getStyleRule(opts);
+      return rule && rule.get('selectors').at(0);
+    },
+
+    _idUpdated(m, v, opts = {}) {
+      if (opts.idUpdate) return;
+
+      const { ccid } = this;
       const { id } = this.get('attributes') || {};
-      console.log('New ID', id);
+      const idPrev = (this.previous('attributes') || {}).id || ccid;
+      const list = Component.getList(this);
+
+      // If the ID already exists I need to rollback to the old one
+      if (list[id]) {
+        return this.setId(idPrev, { idUpdate: 1 });
+      }
+
+      // Remove the old ID reference and add the new one
+      delete list[idPrev];
+      list[id] = this;
+      this.ccid = id;
+
+      // Update the style selector name
+      const selector = this._getStyleSelector({ id: idPrev });
+      selector && selector.set({ name: id, label: id });
     }
   },
   {
