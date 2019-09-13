@@ -603,7 +603,7 @@ domc.addType('some-component', {
     // The `defaults` property is handled differently
     // and will be merged with the old `defaults`
     defaults: {
-      tagName: '...', // Override an old one
+      tagName: '...', // Overrides the old one
       someNewProp: 'Hello', // Add new property
     },
     init() {
@@ -644,18 +644,18 @@ comps.addType('my-new-component', {
 
 ### Extend parent functions
 
-When you need to reuse functions, of the parent you're extending, you can avoid writing something like this:
+When you need to reuse functions, from the parent you're extending, you can avoid writing this:
 ```js
 domc.getType('parent-type').model.prototype.init.apply(this, arguments);
 ```
-by using `extendFn` and `extendFnView` arrays:
+by using `extendFn` and `extendFnView` options:
 ```js
 domc.addType('new-type', {
   extend: 'parent-type',
   extendFn: ['init'], // array of model functions to extend from `parent-type`
   model: {
     init() {
-      // do something;
+      // do something
     },
   }
 });
@@ -664,7 +664,7 @@ The same would be for the view by using `extendFnView`
 
 
 :::tip
-If you need you can also read all the current component types by using `getTypes`
+If you need you can also get all the current component types by using `getTypes`
 ```js
 editor.DomComponents.getTypes().forEach(compType => console.log(compType.id))
 ```
