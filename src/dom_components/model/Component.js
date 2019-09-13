@@ -327,7 +327,11 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * @private
      */
     attrUpdated(m, v, opts = {}) {
-      this.setAttributes(this.get('attributes'), { ...opts, silent: 1 });
+      const attrPrev = { ...this.previous('attributes') };
+      const diff = shallowDiff(attrPrev, this.get('attributes'));
+      keys(diff).forEach(pr =>
+        this.trigger(`change:attributes:${pr}`, this, diff[pr], opts)
+      );
     },
 
     /**
@@ -351,11 +355,6 @@ const Component = Backbone.Model.extend(Styleable).extend(
       delete attrs.style;
 
       this.set('attributes', attrs, opts);
-      const attrPrev = { ...this.previous('attributes') };
-      const diff = shallowDiff(attrPrev, attrs);
-      keys(diff).forEach(pr =>
-        this.trigger(`change:attributes:${pr}`, this, diff[pr], opts)
-      );
 
       return this;
     },
