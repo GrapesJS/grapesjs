@@ -1,4 +1,5 @@
 import Backbone from 'backbone';
+import { isUndefined } from 'underscore';
 import { isTextNode } from 'utils/mixins';
 const $ = Backbone.$;
 
@@ -25,12 +26,12 @@ export default {
     }
 
     var canvas = editor.Canvas;
-    var pos = opt.elPos || canvas.getElementPos(el);
+    var pos = { ...(opt.elPos || canvas.getElementPos(el)) };
 
-    if (opt.top) {
+    if (!isUndefined(opt.top)) {
       pos.top = opt.top;
     }
-    if (opt.left) {
+    if (!isUndefined(opt.left)) {
       pos.left = opt.left;
     }
 

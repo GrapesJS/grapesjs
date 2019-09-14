@@ -97,12 +97,15 @@ export default {
 
   onHovered(em, component) {
     const el = component && component.getEl();
+    let result = {};
 
     if (el) {
       const pos = this.getElementPos(el);
-      this.elHovered = { el, pos };
-      this.updateToolsHover(el, pos);
+      result = { el, pos };
+      this.updateToolsLocal(el, pos);
     }
+
+    this.elHovered = result;
   },
 
   getElHovered() {
@@ -138,8 +141,8 @@ export default {
       el,
       elPos: pos,
       force: 1,
-      top: this.frameRect(el, 1, pos),
-      left: this.frameRect(el, 0, pos)
+      top: 0,
+      left: 0
     });
   },
 
@@ -279,43 +282,34 @@ export default {
    * @param {Object} pos Position object
    * @private
    * */
-  updateBadge(el, pos) {
-    const { canvas } = this;
-    const config = canvas.getConfig();
-    const ppfx = config.pStylePrefix || '';
-    const customeLabel = config.customBadgeLabel;
+  updateBadge(el, pos, opts = {}) {
     const model = $(el).data('model');
     if (!model || !model.get('badgable')) return;
     const badge = this.getBadge();
-    const icon = model.getIcon();
-    const clsBadge = `${ppfx}badge`;
-    let badgeLabel = `${
-      icon ? `<div class="${clsBadge}__icon">${icon}</div>` : ''
-    }
-      <div class="${clsBadge}__name">${model.getName()}</div>`;
-    badgeLabel = customeLabel ? customeLabel(model) : badgeLabel;
-    badge.innerHTML = badgeLabel;
 
-    const u = 'px';
+    if (!opts.posOnly) {
+      const config = this.canvas.getConfig();
+      const icon = model.getIcon();
+      const ppfx = config.pStylePrefix || '';
+      const clsBadge = `${ppfx}badge`;
+      const customeLabel = config.customBadgeLabel;
+      const badgeLabel = `${
+        icon ? `<div class="${clsBadge}__icon">${icon}</div>` : ''
+      }
+        <div class="${clsBadge}__name">${model.getName()}</div>`;
+      badge.innerHTML = customeLabel ? customeLabel(model) : badgeLabel;
+    }
+
+    const un = 'px';
     const bStyle = badge.style;
     bStyle.display = 'block';
     const badgeH = badge ? badge.offsetHeight : 0;
-    const posTop = this.frameRect(el, 1, pos) - badgeH;
-    const badgeW = badge ? badge.offsetWidth : 0;
-    const top = posTop < 0 ? 0 : posTop;
-    const posLeft = this.frameRect(el, 0, pos);
-    const left = posLeft + badgeW < 0 ? 0 : posLeft;
+    const posTop = 0 - badgeH;
+    const top = opts.topOff - badgeH < 0 ? -opts.topOff : posTop;
+    const left = opts.leftOff < 0 ? -opts.leftOff : 0;
 
-    bStyle.top = top + u;
-    bStyle.left = left + u;
-  },
-
-  frameRect(el, top = 1, pos) {
-    const zoom = this.em.getZoomDecimal();
-    const side = top ? 'top' : 'left';
-    const { scrollTop = 0, scrollLeft = 0 } = el.ownerDocument.body || {};
-
-    return pos[side] - (top ? scrollTop : scrollLeft) * zoom;
+    bStyle.top = top + un;
+    bStyle.left = left + un;
   },
 
   frameRect(el, top = 1, pos) {
@@ -347,8 +341,6 @@ export default {
     var hlEl = this.canvas.getHighlighter();
     var hlStyle = hlEl.style;
     var unit = 'px';
-    hlStyle.left = this.frameRect(el, 0, pos) + unit;
-    hlStyle.top = this.frameRect(el, 1, pos) + unit;
     hlStyle.height = pos.height + unit;
     hlStyle.width = pos.width + unit;
     hlStyle.display = 'block';
@@ -627,13 +619,9 @@ export default {
    * On frame scroll callback
    * @private
    */
-  onFrameScroll(ev) {
-    const { el } = this.getElHovered();
-    const pos = this.getElementPos(el); // TODO check if this could be cached
-    const model = this.em.getSelected();
-    const viewEl = model && model.getEl();
-    el && this.updateToolsHover(el, pos);
-    viewEl && this.updateToolbarPos(viewEl, this.getElementPos(viewEl));
+  onFrameScroll() {
+    this.updateToolsGlobal();
+    this.updateToolsLocal();
   },
 
   /**
@@ -641,27 +629,58 @@ export default {
    * @param {HTMLElement} el
    * @param {Object} pos
    */
-  updateToolsHover(el, pos) {
-    this.updateBadge(el, pos);
-    this.updateHighlighter(el, pos);
-    this.showElementOffset(el, pos);
+  updateToolsLocal() {
+    const { el, pos } = this.getElHovered();
+
+    if (!el) {
+      this.lastHovered = 0;
+      return;
+    }
+
+    const isNewEl = this.lastHovered !== el;
+    const badgeOpts = isNewEl ? {} : { posOnly: 1 };
+
+    if (isNewEl) {
+      this.lastHovered = el;
+      this.updateHighlighter(el, pos);
+      this.showElementOffset(el, pos);
+    }
+
+    const unit = 'px';
+    const { style } = this.canvas.getToolsEl();
+    const topOff = this.frameRect(el, 1, pos);
+    const leftOff = this.frameRect(el, 0, pos);
+
+    this.updateBadge(el, pos, {
+      ...badgeOpts,
+      topOff,
+      leftOff
+    });
+
+    style.top = topOff + unit;
+    style.left = leftOff + unit;
+  },
+
+  updateToolsGlobal() {
+    const { resizer, em } = this;
+    const model = em.getSelected();
+    const el = model && model.getEl();
+    if (!el) return;
+
+    if (el && this.elSelected !== el) {
+      this.elSelected = el;
+      const pos = this.getElementPos(el);
+      this.updateToolbarPos(el, pos);
+      this.showFixedElementOffset(el, pos);
+      resizer && resizer.updateContainer();
+    }
   },
 
   /**
    * Update attached elements, eg. component toolbar
    */
   updateAttached: debounce(function() {
-    const { resizer, em } = this;
-    const model = em.getSelected();
-    const el = model && model.getEl();
-
-    if (el && this.elSelected !== el) {
-      this.elSelected = el;
-      const pos = this.getElementPos(el);
-      this.updateToolbarPos(el, pos);
-      this.showFixedElementOffset(el);
-      resizer && resizer.updateContainer();
-    }
+    this.updateToolsGlobal();
   }),
 
   /**
@@ -670,7 +689,7 @@ export default {
    * @return {Object}
    * @private
    */
-  getElementPos(el, badge) {
+  getElementPos(el) {
     return this.canvas.getCanvasView().getElementPos(el);
   },
 
