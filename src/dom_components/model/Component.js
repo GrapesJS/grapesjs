@@ -185,6 +185,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       this.listenTo(this, 'change:script', this.scriptUpdated);
       this.listenTo(this, 'change:tagName', this.tagUpdated);
       this.listenTo(this, 'change:attributes', this.attrUpdated);
+      this.listenTo(this, 'change:attributes:id', this._idUpdated);
       this.set('status', '');
       this.views = [];
 
@@ -327,19 +328,8 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * Emit changes for each updated attribute
      * @private
      */
-    attrUpdated() {
-      this.setAttributes(this.get('attributes'), { silent: 1 });
-    },
-
-    /**
-     * Update attributes of the component
-     * @param {Object} attrs Key value attributes
-     * @return {this}
-     * @example
-     * component.setAttributes({ id: 'test', 'data-key': 'value' });
-     */
-    setAttributes(attrs, opts = {}) {
-      attrs = { ...attrs };
+    attrUpdated(m, v, opts = {}) {
+      const attrs = this.get('attributes');
 
       // Handle classes
       const classes = attrs.class;
@@ -351,13 +341,22 @@ const Component = Backbone.Model.extend(Styleable).extend(
       style && this.setStyle(style);
       delete attrs.style;
 
-      this.set('attributes', attrs, opts);
       const attrPrev = { ...this.previous('attributes') };
-      const diff = shallowDiff(attrPrev, attrs);
+      const diff = shallowDiff(attrPrev, this.get('attributes'));
       keys(diff).forEach(pr =>
-        this.trigger(`change:attributes:${pr}`, this, diff[pr])
+        this.trigger(`change:attributes:${pr}`, this, diff[pr], opts)
       );
+    },
 
+    /**
+     * Update attributes of the component
+     * @param {Object} attrs Key value attributes
+     * @return {this}
+     * @example
+     * component.setAttributes({ id: 'test', 'data-key': 'value' });
+     */
+    setAttributes(attrs, opts = {}) {
+      this.set('attributes', { ...attrs }, opts);
       return this;
     },
 
@@ -408,8 +407,9 @@ const Component = Backbone.Model.extend(Styleable).extend(
       const { opt } = this;
 
       if (em && em.getConfig('avoidInlineStyle') && !opt.temporary) {
+        const style = this.get('style') || {};
         prop = isString(prop) ? this.parseStyle(prop) : prop;
-        prop = { ...prop, ...this.get('style') };
+        prop = { ...prop, ...style };
         const state = this.get('state');
         const cc = em.get('CssComposer');
         const propOrig = this.getStyle();
@@ -1020,10 +1020,10 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * @param {String} id
      * @return {this}
      */
-    setId(id) {
+    setId(id, opts) {
       const attrs = { ...this.get('attributes') };
       attrs.id = id;
-      this.set('attributes', attrs);
+      this.set('attributes', attrs, opts);
       return this;
     },
 
@@ -1141,6 +1141,40 @@ const Component = Backbone.Model.extend(Styleable).extend(
       const selector = rule && rule.get('selectors').at(0);
       selector && selector.set('name', newId);
       return this;
+    },
+
+    _getStyleRule({ id } = {}) {
+      const { em } = this;
+      const idS = id || this.getId();
+      return em && em.get('CssComposer').getIdRule(idS);
+    },
+
+    _getStyleSelector(opts) {
+      const rule = this._getStyleRule(opts);
+      return rule && rule.get('selectors').at(0);
+    },
+
+    _idUpdated(m, v, opts = {}) {
+      if (opts.idUpdate) return;
+
+      const { ccid } = this;
+      const { id } = this.get('attributes') || {};
+      const idPrev = (this.previous('attributes') || {}).id || ccid;
+      const list = Component.getList(this);
+
+      // If the ID already exists I need to rollback to the old one
+      if (list[id]) {
+        return this.setId(idPrev, { idUpdate: 1 });
+      }
+
+      // Remove the old ID reference and add the new one
+      delete list[idPrev];
+      list[id] = this;
+      this.ccid = id;
+
+      // Update the style selector name
+      const selector = this._getStyleSelector({ id: idPrev });
+      selector && selector.set({ name: id, label: id });
     }
   },
   {

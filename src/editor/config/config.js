@@ -123,7 +123,8 @@ export default {
   // element's `style` attribute. Unfortunately, inline styling doesn't allow
   // use of media queries (@media) or even pseudo selectors (eg. :hover).
   // When `avoidInlineStyle` is true all styles are inserted inside the css rule
-  avoidInlineStyle: 0,
+  // @deprecated Don't use this option, we don't support inline styling anymore
+  avoidInlineStyle: 1,
 
   // Avoid default properties from storable JSON data, like `components` and `styles`.
   // With this option enabled your data will be smaller (usefull if need to

@@ -28,6 +28,7 @@ module.exports = {
           domc: dcomp
         };
         obj = new Component({}, compOpts);
+        dcomp.init({ em });
       });
 
       afterEach(() => {
@@ -281,7 +282,7 @@ module.exports = {
       });
 
       test('setAttributes overwrites correctly', () => {
-        obj.setAttributes({ id: 'test', 'data-test': 'value' });
+        obj.setAttributes({ id: 'test', 'data-test': 'value', a: 'b' });
         obj.setAttributes({ 'data-test': 'value2' });
         expect(obj.getAttributes()).toEqual({ 'data-test': 'value2' });
       });
@@ -327,6 +328,32 @@ module.exports = {
         const child = newObj.components().models[0];
         expect(child.get('removable')).toEqual(false);
         expect(child.get('propagate')).toEqual(['removable']);
+      });
+
+      test('Guarantee the uniqueness of components ids', () => {
+        const idName = 'test';
+        const added = dcomp.addComponent(`
+          <div>Comp 1</div>
+          <div id="${idName}" style="color: red">Comp 2</div>
+          <div>Comp 3</div>
+          <style>
+            #test {
+              color: red;
+            }
+          </style>
+        `);
+        const comp1 = added[0];
+        const comp2 = added[1];
+        const comp1Id = comp1.getId();
+        const comp2Sel = comp2._getStyleSelector();
+        expect(comp2Sel.get('name')).toEqual(idName);
+        const idNameNew = `${idName}2`;
+        comp2.setId(idNameNew);
+        // Check if the style selector has changed its name
+        expect(comp2Sel.get('name')).toEqual(idNameNew);
+        comp1.setId(idNameNew);
+        // The id shouldn't change
+        expect(comp1.getId()).toEqual(comp1Id);
       });
 
       test('Ability to stop/change propagation chain', () => {

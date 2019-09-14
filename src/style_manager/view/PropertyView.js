@@ -19,9 +19,9 @@ export default Backbone.View.extend({
   },
 
   templateLabel(model) {
-    const pfx = this.pfx;
-    const icon = model.get('icon');
-    const info = model.get('info');
+    const { pfx } = this;
+    const icon = model.get('icon') || '';
+    const info = model.get('info') || '';
     const parent = model.parent;
 
     return `
