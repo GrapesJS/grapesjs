@@ -9,8 +9,13 @@ export default Backbone.View.extend({
 
   itemType: 'type',
 
+  autoAdd: 0,
+
   initialize(opts = {}, config) {
     this.config = config || opts.config || {};
+
+    this.autoAdd && this.listenTo(this.collection, 'add', this.addTo);
+
     this.init();
   },
 

@@ -583,6 +583,40 @@ export default () => {
 
     getFrames() {
       return canvas.get('frames').map(item => item);
+    },
+
+    /**
+     * Add new frame to canvas
+     * @param {Object} props Frame properties
+     * @example
+     *
+        editor.Canvas.addFrame({
+          name: 'Mobile home page',
+          x: 100, // Position in canvas
+          y: 100,
+          width: 500, // Frame dimensions
+          height: 600,
+          // device: 'DEVICE-ID',
+          components: [
+            '<h1 class="testh">Title frame</h1>',
+            '<p class="testp">Paragraph frame</p>',
+          ],
+          styles: `
+            .testh { color: red; }
+            .testp { color: blue; }
+          `,
+        });
+     */
+    addFrame(props = {}, opts = {}) {
+      return canvas.get('frames').add(
+        {
+          ...props
+        },
+        {
+          ...opts,
+          em: this.em
+        }
+      );
     }
   };
 };

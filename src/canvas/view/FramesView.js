@@ -3,6 +3,7 @@ import FrameWrapView from './FrameWrapView';
 
 export default DomainViews.extend({
   itemView: FrameWrapView,
+  autoAdd: 1,
 
   init() {
     this.listenTo(this.collection, 'reset', this.render);

@@ -11,14 +11,29 @@ export default Backbone.Model.extend({
     x: 0,
     y: 0,
     root: 0,
+    components: 0,
     styles: 0,
     attributes: {}
   },
 
-  initialize() {
-    const { root, styles } = this.attributes;
+  initialize(props, opts = {}) {
+    console.log(props, opts);
+    const { root, styles, components } = this.attributes;
     this.set('head', []);
-    !root && this.set('root', new Component({ type: 'wrapper' }));
+    !root &&
+      this.set(
+        'root',
+        new Component(
+          {
+            type: 'wrapper',
+            components: components || []
+          },
+          {
+            em: opts.em,
+            frame: this
+          }
+        )
+      );
     !styles && this.set('styles', new CssRules());
   },
 

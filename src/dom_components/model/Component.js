@@ -171,6 +171,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       opt.em = em;
       this.opt = opt;
       this.em = em;
+      this.frame = opt.frame;
       this.config = opt.config || {};
       this.set('attributes', {
         ...(this.defaults.attributes || {}),
