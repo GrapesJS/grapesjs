@@ -1,6 +1,7 @@
 import Backbone from 'backbone';
 import Component from 'dom_components/model/Component';
 import CssRules from 'css_composer/model/CssRules';
+import { isString } from 'underscore';
 
 export default Backbone.Model.extend({
   defaults: {
@@ -17,9 +18,13 @@ export default Backbone.Model.extend({
   },
 
   initialize(props, opts = {}) {
-    console.log(props, opts);
     const { root, styles, components } = this.attributes;
     this.set('head', []);
+    const modOpts = {
+      em: opts.em,
+      frame: this
+    };
+
     !root &&
       this.set(
         'root',
@@ -28,13 +33,12 @@ export default Backbone.Model.extend({
             type: 'wrapper',
             components: components || []
           },
-          {
-            em: opts.em,
-            frame: this
-          }
+          modOpts
         )
       );
-    !styles && this.set('styles', new CssRules());
+
+    (!styles || isString(styles)) &&
+      this.set('styles', new CssRules(styles, modOpts));
   },
 
   getHead() {
