@@ -71,9 +71,11 @@ export default Backbone.Collection.extend({
       });
     }
 
-    (isArray(models) ? models : [models])
+    const isMult = isArray(models);
+    models = (isMult ? models : [models])
       .filter(i => i)
-      .forEach(model => this.processDef(model));
+      .map(model => this.processDef(model));
+    models = isMult ? models : models[0];
 
     return Backbone.Collection.prototype.add.apply(this, [models, opt]);
   },
@@ -81,9 +83,10 @@ export default Backbone.Collection.extend({
   /**
    * Process component definition.
    */
-  processDef(model) {
+  processDef(mdl) {
     const { em, config = {} } = this;
     const { processor } = config;
+    let model = { ...mdl }; // Avoid 'Cannot delete property ...'
 
     const modelPr = processor && processor(model);
     if (modelPr) {
@@ -91,8 +94,9 @@ export default Backbone.Collection.extend({
       extend(model, modelPr);
     }
 
-    // React JSX
+    // React JSX preset
     if (model.$$typeof && typeof model.props == 'object') {
+      model.props = { ...model.props };
       const domc = em.get('DomComponents');
       const parser = em.get('Parser');
       const { parserHtml } = parser;
