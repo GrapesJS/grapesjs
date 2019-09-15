@@ -831,7 +831,7 @@ For Babel users, it's just a matter of adding few plugins: `@babel/plugin-syntax
 
   You can also customize the pragma function which executes the transformation `[“@babel/plugin-transform-react-jsx”, { “pragma”: “customCreateEl” }]`, by default `React.createElement` is used (you'll need a React instance available in the file to make it work).
 
-  A complete example of this approach can be found [here](https://codesandbox.io/s/wonderful-dhawan-x07xf)
+  A complete example of this approach can be found [here](https://codesandbox.io/s/x07xf)
 
 
 
