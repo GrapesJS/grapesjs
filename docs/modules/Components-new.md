@@ -7,7 +7,7 @@ title: Component Manager
 The Component is a base element of the template. It might be something simple and atomic like an image or a text box, but also complex structures, more probably composed by other components, like sections or pages. The concept of the component was made to allow the developer to bind different behaviors to different elements. For example, opening the Asset Manager on double click of the image is a custom behavior binded to that particular type of element.
 
 ::: warning
-This guide is referring to GrapesJS v0.14.67 or higher
+This guide is referring to GrapesJS v0.15.5 or higher
 :::
 
 [[toc]]
@@ -760,12 +760,12 @@ If you want to know how to create Components with javascript attached (eg. count
 
 ### JSX syntax
 
-If you're importing big chunks of HTML string into the editor (eg. defined via Blocks) JSX might be a great compromise between perfomances and code readibility as it allows you to skip the parser and the component recognition steps by keeping the HTML syntax.
+If you're importing big chunks of HTML string into the editor (eg. defined via Blocks) JSX might be a great compromise between perfomances and code readibility as it allows you to skip the parsing and the component recognition steps by keeping the HTML syntax.
 By default, GrapesJS understands objects generated from React JSX preset, so, if you're working in the React app probably you're already using JSX and you don't need to do anything else, your environment is already configured to parse JSX in javascript files.
 
 So, intead of writing this:
 ```js
-// I'm adding a string, so the parser and the component recognition steps will be executed
+// I'm adding a string, so the parsing and the component recognition steps will be executed
 editor.addComponents(`<div>
   <span data-gjs-type="custom-component" data-gjs-prop="someValue" title="foo">
     Hello!
@@ -790,11 +790,11 @@ editor.addComponents(<div>
   </custom-component>
 </div>);
 ```
-Another cool feature with the JSX parser is the ability to pass component types as element tags `<custom-component>` instead of `data-gjs-type="custom-component"`
+Another cool feature you will get by using JSX is the ability to pass component types as element tags `<custom-component>` instead of `data-gjs-type="custom-component"`
 
 #### Setup JSX syntax
 
-For those who is not using React you have the following options:
+For those who are not using React you have the following options:
 
 * GrapesJS has an option, `config.domComponents.processor`, thats allows you to easily implement other JSX presets. This scenario is useful if you work with a framework different from React but that uses JSX (eg. Vue). In that case, the result object from JSX pragma function (React uses `React.createElement`) will be different (you can log the JSX to see the result object) and you have to transform that in GrapesJS [Component Definition] object. Below an example of usage
 
@@ -819,17 +819,23 @@ grapesjs.init({
 
 * In case you need to support JSX from scratch (you don't use a framework which supports JSX) you have, at first, implement the parser which transforms JSX in your files in something JS-readable.
 
-In case you use Babel, it's just a matter of adding few plugins: `@babel/plugin-syntax-jsx` and `@babel-plugin-transform-react`. Then update your `.babelrc` file
+For Babel users, it's just a matter of adding few plugins: `@babel/plugin-syntax-jsx` and `@babel-plugin-transform-react`. Then update your `.babelrc` file
   ```json
   {
     “plugins”: [
       “@babel/plugin-syntax-jsx”,
-      [“@babel/plugin-transform-react-jsx”]
+      “@babel/plugin-transform-react-jsx”
     ]
   }
   ```
 
   You can also customize the pragma function which executes the transformation `[“@babel/plugin-transform-react-jsx”, { “pragma”: “customCreateEl” }]`, by default `React.createElement` is used (you'll need a React instance available in the file to make it work).
+
+  A complete example of this approach can be found [here](https://codesandbox.io/s/wonderful-dhawan-x07xf)
+
+
+
+
 
   [Component Definition]: <#component-definition>
   [Component]: </api/component.html>
