@@ -31880,25 +31880,30 @@ var Component;
    * Process component definition.
    */
   processDef: function processDef(mdl) {
+    // Avoid processing Models
+    if (mdl.cid && mdl.ccid) return mdl;
     var em = this.em,
         _this$config = this.config,
         config = _this$config === void 0 ? {} : _this$config;
     var processor = config.processor;
+    var model = mdl;
 
-    var model = _objectSpread({}, mdl); // Avoid 'Cannot delete property ...'
+    if (processor) {
+      model = _objectSpread({}, model); // Avoid 'Cannot delete property ...'
 
+      var modelPr = processor(model);
 
-    var modelPr = processor && processor(model);
-
-    if (modelPr) {
-      Object(underscore__WEBPACK_IMPORTED_MODULE_3__["each"])(model, function (val, key) {
-        return delete model[key];
-      });
-      Object(underscore__WEBPACK_IMPORTED_MODULE_3__["extend"])(model, modelPr);
+      if (modelPr) {
+        Object(underscore__WEBPACK_IMPORTED_MODULE_3__["each"])(model, function (val, key) {
+          return delete model[key];
+        });
+        Object(underscore__WEBPACK_IMPORTED_MODULE_3__["extend"])(model, modelPr);
+      }
     } // React JSX preset
 
 
     if (model.$$typeof && _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0___default()(model.props) == 'object') {
+      model = _objectSpread({}, model);
       model.props = _objectSpread({}, model.props);
       var domc = em.get('DomComponents');
       var parser = em.get('Parser');
@@ -31906,7 +31911,8 @@ var Component;
       Object(underscore__WEBPACK_IMPORTED_MODULE_3__["each"])(model, function (value, key) {
         if (!Object(underscore__WEBPACK_IMPORTED_MODULE_3__["includes"])(['props', 'type'], key)) delete model[key];
       });
-      var props = model.props;
+      var _model = model,
+          props = _model.props;
       var comps = props.children;
       delete props.children;
       delete model.props;
@@ -36222,7 +36228,7 @@ var defaultConfig = {
   editors: editors,
   plugins: plugins,
   // Will be replaced on build
-  version: '0.15.7',
+  version: '0.15.8',
 
   /**
    * Initialize the editor with passed options
