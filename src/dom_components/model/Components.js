@@ -84,18 +84,24 @@ export default Backbone.Collection.extend({
    * Process component definition.
    */
   processDef(mdl) {
+    // Avoid processing Models
+    if (mdl.cid && mdl.ccid) return mdl;
     const { em, config = {} } = this;
     const { processor } = config;
-    let model = { ...mdl }; // Avoid 'Cannot delete property ...'
+    let model = mdl;
 
-    const modelPr = processor && processor(model);
-    if (modelPr) {
-      each(model, (val, key) => delete model[key]);
-      extend(model, modelPr);
+    if (processor) {
+      model = { ...model }; // Avoid 'Cannot delete property ...'
+      const modelPr = processor(model);
+      if (modelPr) {
+        each(model, (val, key) => delete model[key]);
+        extend(model, modelPr);
+      }
     }
 
     // React JSX preset
     if (model.$$typeof && typeof model.props == 'object') {
+      model = { ...model };
       model.props = { ...model.props };
       const domc = em.get('DomComponents');
       const parser = em.get('Parser');
