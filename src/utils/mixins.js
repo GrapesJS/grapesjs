@@ -183,6 +183,11 @@ const isEscKey = ev => getKeyCode(ev) === 27;
 
 const capitalize = str => str.charAt(0).toUpperCase() + str.substring(1);
 
+const getViewEl = el => el.__gjsv;
+const setViewEl = (el, view) => {
+  el.__gjsv = view;
+};
+
 export {
   on,
   off,
@@ -201,5 +206,7 @@ export {
   normalizeFloat,
   getPointerEvent,
   getUnitFromValue,
-  capitalize
+  capitalize,
+  getViewEl,
+  setViewEl
 };

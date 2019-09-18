@@ -168,8 +168,15 @@ export default () => {
      * @return {HTMLElement}
      * @private
      */
-    getToolsEl() {
-      return CanvasView.toolsEl;
+    getToolsEl(compView) {
+      let result = CanvasView.toolsEl;
+      const frameView = compView && compView._getFrame();
+
+      if (frameView) {
+        result = frameView.getToolsEl();
+      }
+
+      return result;
     },
 
     /**

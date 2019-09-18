@@ -1,6 +1,12 @@
 import Backbone from 'backbone';
 import { bindAll, isElement, isUndefined, debounce } from 'underscore';
-import { on, off, getUnitFromValue, isTaggableNode } from 'utils/mixins';
+import {
+  on,
+  off,
+  getUnitFromValue,
+  isTaggableNode,
+  getViewEl
+} from 'utils/mixins';
 import ToolbarView from 'dom_components/view/ToolbarView';
 import Toolbar from 'dom_components/model/Toolbar';
 
@@ -101,15 +107,57 @@ export default {
 
     if (el) {
       const pos = this.getElementPos(el);
-      result = { el, pos };
+      result = { el, pos, component, view: getViewEl(el) };
       this.updateToolsLocal(el, pos);
     }
 
     this.elHovered = result;
   },
 
+  /**
+   * Say what to do after the component was selected
+   * @param {Object}  e
+   * @param {Object}  el
+   * @private
+   * */
+  onSelect(component) {
+    const prevComp = this.getElSelected().component;
+    if (component && component === prevComp) return;
+    console.log('onSelect', component);
+
+    const el = component && component.getEl();
+    let result = {};
+
+    if (el) {
+      const pos = this.getElementPos(el);
+      result = { el, pos, component, view: getViewEl(el) };
+    }
+
+    this.elSelected = result;
+    this.updateToolsGlobal();
+
+    // // Get the selected model directly from the Editor as the event might
+    // // be triggered manually without the model
+    // const model = this.em.getSelected();
+    // const el = model && model.getEl();
+    // this.updateToolbar(model);
+
+    // if (el) {
+    //   this.showFixedElementOffset(el);
+    //   this.hideElementOffset();
+    //   this.hideHighlighter();
+    //   this.initResize(el);
+    // } else {
+    //   this.editor.stopCommand('resize');
+    // }
+  },
+
   getElHovered() {
     return this.elHovered || {};
+  },
+
+  getElSelected() {
+    return this.elSelected || {};
   },
 
   /**
@@ -344,29 +392,6 @@ export default {
     hlStyle.height = pos.height + unit;
     hlStyle.width = pos.width + unit;
     hlStyle.display = 'block';
-  },
-
-  /**
-   * Say what to do after the component was selected
-   * @param {Object}  e
-   * @param {Object}  el
-   * @private
-   * */
-  onSelect() {
-    // Get the selected model directly from the Editor as the event might
-    // be triggered manually without the model
-    const model = this.em.getSelected();
-    const el = model && model.getEl();
-    this.updateToolbar(model);
-
-    if (el) {
-      this.showFixedElementOffset(el);
-      this.hideElementOffset();
-      this.hideHighlighter();
-      this.initResize(el);
-    } else {
-      this.editor.stopCommand('resize');
-    }
   },
 
   /**
@@ -630,7 +655,7 @@ export default {
    * @param {Object} pos
    */
   updateToolsLocal() {
-    const { el, pos } = this.getElHovered();
+    const { el, pos, view } = this.getElHovered();
 
     if (!el) {
       this.lastHovered = 0;
@@ -647,7 +672,7 @@ export default {
     }
 
     const unit = 'px';
-    const { style } = this.canvas.getToolsEl();
+    const { style } = this.canvas.getToolsEl(view);
     const topOff = this.frameRect(el, 1, pos);
     const leftOff = this.frameRect(el, 0, pos);
 
@@ -662,18 +687,41 @@ export default {
   },
 
   updateToolsGlobal() {
-    const { resizer, em } = this;
-    const model = em.getSelected();
-    const el = model && model.getEl();
-    if (!el) return;
+    const { el, pos, component } = this.getElSelected();
 
-    if (el && this.elSelected !== el) {
-      this.elSelected = el;
-      const pos = this.getElementPos(el);
-      this.updateToolbarPos(el, pos);
-      this.showFixedElementOffset(el, pos);
-      resizer && resizer.updateContainer();
+    if (!el) {
+      this.lastSelected = 0;
+      return;
     }
+
+    const isNewEl = this.lastSelected !== el;
+    console.log('updateToolsGlobal', el);
+    if (isNewEl) {
+      console.log('updateToolsGlobal UPDATE toolbar position');
+      this.lastSelected = el;
+      this.updateToolbar(component);
+      this.updateToolbarPos(el, pos);
+    }
+
+    const unit = 'px';
+    const { style } = this.canvas.getToolsEl();
+    const topOff = this.frameRect(el, 1, pos);
+    const leftOff = this.frameRect(el, 0, pos);
+    style.top = topOff + unit;
+    style.left = leftOff + unit;
+
+    // const { resizer, em } = this;
+    // const model = em.getSelected();
+    // const el = model && model.getEl();
+    // if (!el) return;
+
+    // if (el && this.elSelected !== el) {
+    //   this.elSelected = el;
+    //   const pos = this.getElementPos(el);
+    //   this.updateToolbarPos(el, pos);
+    //   this.showFixedElementOffset(el, pos);
+    //   resizer && resizer.updateContainer();
+    // }
   },
 
   /**

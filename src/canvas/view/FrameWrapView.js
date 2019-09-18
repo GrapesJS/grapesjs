@@ -7,7 +7,10 @@ export default Backbone.View.extend({
   initialize(opts = {}, conf = {}) {
     bindAll(this, 'onScroll', 'frameLoaded');
     const { model } = this;
-    const config = opts.config || conf;
+    const config = {
+      ...(opts.config || conf),
+      frameWrapView: this
+    };
     const { canvasView } = config;
     this.cv = canvasView;
     this.config = config;
@@ -70,7 +73,7 @@ export default Backbone.View.extend({
     `
     );
     this.elTools = elTools;
-    cv.toolsWrapper.appendChild(elTools);
+    cv.toolsWrapper.appendChild(elTools); // TODO remove on frame remove
     frame.on('loaded', this.frameLoaded);
 
     return this;

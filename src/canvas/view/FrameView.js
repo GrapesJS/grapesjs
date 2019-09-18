@@ -24,7 +24,10 @@ export default Backbone.View.extend({
   initialize(o) {
     bindAll(this, 'updateOffset');
     const { model } = this;
-    this.config = o.config || {};
+    this.config = {
+      ...(o.config || {}),
+      frameView: this
+    };
     this.ppfx = this.config.pStylePrefix || '';
     this.em = this.config.em;
     this.listenTo(model, 'change:head', this.updateHead);
@@ -114,6 +117,11 @@ export default Backbone.View.extend({
     }
 
     return this.jsContainer;
+  },
+
+  getToolsEl() {
+    const { frameWrapView } = this.config;
+    return frameWrapView && frameWrapView.elTools;
   },
 
   remove() {

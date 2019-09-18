@@ -1,9 +1,10 @@
 import Backbone from 'backbone';
-import { isArray, isEmpty, each, keys } from 'underscore';
+import { isEmpty, each, keys } from 'underscore';
 import Components from '../model/Components';
 import ComponentsView from './ComponentsView';
 import Selectors from 'selector_manager/model/Selectors';
 import { replaceWith } from 'utils/dom';
+import { setViewEl } from 'utils/mixins';
 
 export default Backbone.View.extend({
   className() {
@@ -19,7 +20,7 @@ export default Backbone.View.extend({
     const config = opt.config || {};
     const em = config.em;
     const modelOpt = model.opt || {};
-    const { $el } = this;
+    const { $el, el } = this;
     const { draggableComponents } = config;
     this.opts = opt;
     this.modelOpt = modelOpt;
@@ -39,6 +40,7 @@ export default Backbone.View.extend({
     this.listenTo(model, 'change', this.handleChange);
     this.listenTo(model, 'active', this.onActive);
     $el.data('model', model);
+    setViewEl(el, this);
     model.view = this;
     model.views.push(this);
     this.initClasses();
@@ -373,13 +375,23 @@ export default Backbone.View.extend({
    * Recreate the element of the view
    */
   reset() {
-    const { el, model } = this;
-    const collection = model.components();
+    const { el } = this;
     this.el = '';
     this._ensureElement();
-    this.$el.data({ model, collection });
+    this._setData();
     replaceWith(el, this.el);
     this.render();
+  },
+
+  _setData() {
+    const { model } = this;
+    const collection = model.components();
+    const view = this;
+    this.$el.data({ model, collection, view });
+  },
+
+  _getFrame() {
+    return this.config.frameView;
   },
 
   /**
