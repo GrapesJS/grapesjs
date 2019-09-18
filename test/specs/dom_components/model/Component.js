@@ -330,6 +330,21 @@ module.exports = {
         expect(child.get('propagate')).toEqual(['removable']);
       });
 
+      // This will try to avoid, eventually, issues with circular structures
+      test('Can stringify object after edits', () => {
+        const added = dcomp.addComponent(`
+          <div>
+            <div>Comp 1</div>
+            <div>Comp 2</div>
+            <div>Comp 3</div>
+          </div>
+        `);
+        const comp1 = added.components().at(0);
+        comp1.remove();
+        added.append(comp1);
+        expect(JSON.stringify(added)).toBeTruthy();
+      });
+
       test('Guarantee the uniqueness of components ids', () => {
         const idName = 'test';
         const added = dcomp.addComponent(`

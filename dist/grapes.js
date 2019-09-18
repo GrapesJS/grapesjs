@@ -225,6 +225,10 @@ module.exports = _iterableToArray;
 /***/ (function(module, exports) {
 
 function _iterableToArrayLimit(arr, i) {
+  if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) {
+    return;
+  }
+
   var _arr = [];
   var _n = true;
   var _d = false;
@@ -6506,7 +6510,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
   function paddingVert(display) {return display.mover.offsetHeight - display.lineSpace.offsetHeight}
   function paddingH(display) {
     if (display.cachedPaddingH) { return display.cachedPaddingH }
-    var e = removeChildrenAndAdd(display.measure, elt("pre", "x"));
+    var e = removeChildrenAndAdd(display.measure, elt("pre", "x", "CodeMirror-line-like"));
     var style = window.getComputedStyle ? window.getComputedStyle(e) : e.currentStyle;
     var data = {left: parseInt(style.paddingLeft), right: parseInt(style.paddingRight)};
     if (!isNaN(data.left) && !isNaN(data.right)) { display.cachedPaddingH = data; }
@@ -6900,7 +6904,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
   function PosWithInfo(line, ch, sticky, outside, xRel) {
     var pos = Pos(line, ch, sticky);
     pos.xRel = xRel;
-    if (outside) { pos.outside = true; }
+    if (outside) { pos.outside = outside; }
     return pos
   }
 
@@ -6909,16 +6913,16 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
   function coordsChar(cm, x, y) {
     var doc = cm.doc;
     y += cm.display.viewOffset;
-    if (y < 0) { return PosWithInfo(doc.first, 0, null, true, -1) }
+    if (y < 0) { return PosWithInfo(doc.first, 0, null, -1, -1) }
     var lineN = lineAtHeight(doc, y), last = doc.first + doc.size - 1;
     if (lineN > last)
-      { return PosWithInfo(doc.first + doc.size - 1, getLine(doc, last).text.length, null, true, 1) }
+      { return PosWithInfo(doc.first + doc.size - 1, getLine(doc, last).text.length, null, 1, 1) }
     if (x < 0) { x = 0; }
 
     var lineObj = getLine(doc, lineN);
     for (;;) {
       var found = coordsCharInner(cm, lineObj, lineN, x, y);
-      var collapsed = collapsedSpanAround(lineObj, found.ch + (found.xRel > 0 ? 1 : 0));
+      var collapsed = collapsedSpanAround(lineObj, found.ch + (found.xRel > 0 || found.outside > 0 ? 1 : 0));
       if (!collapsed) { return found }
       var rangeEnd = collapsed.find(1);
       if (rangeEnd.line == lineN) { return rangeEnd }
@@ -7006,7 +7010,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
       // base X position
       var coords = cursorCoords(cm, Pos(lineNo$$1, ch, sticky), "line", lineObj, preparedMeasure);
       baseX = coords.left;
-      outside = y < coords.top || y >= coords.bottom;
+      outside = y < coords.top ? -1 : y >= coords.bottom ? 1 : 0;
     }
 
     ch = skipExtendingChars(lineObj.text, ch, 1);
@@ -7075,7 +7079,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
   function textHeight(display) {
     if (display.cachedTextHeight != null) { return display.cachedTextHeight }
     if (measureText == null) {
-      measureText = elt("pre");
+      measureText = elt("pre", null, "CodeMirror-line-like");
       // Measure a bunch of lines, for browsers that compute
       // fractional heights.
       for (var i = 0; i < 49; ++i) {
@@ -7095,7 +7099,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
   function charWidth(display) {
     if (display.cachedCharWidth != null) { return display.cachedCharWidth }
     var anchor = elt("span", "xxxxxxxxxx");
-    var pre = elt("pre", [anchor]);
+    var pre = elt("pre", [anchor], "CodeMirror-line-like");
     removeChildrenAndAdd(display.measure, pre);
     var rect = anchor.getBoundingClientRect(), width = (rect.right - rect.left) / 10;
     if (width > 2) { display.cachedCharWidth = width; }
@@ -9625,6 +9629,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
     if (doc.cm) { makeChangeSingleDocInEditor(doc.cm, change, spans); }
     else { updateDoc(doc, change, spans); }
     setSelectionNoUndo(doc, selAfter, sel_dontScroll);
+
+    if (doc.cantEdit && skipAtomic(doc, Pos(doc.firstLine(), 0)))
+      { doc.cantEdit = false; }
   }
 
   // Handle the interaction of a change to a document with the editor
@@ -13977,7 +13984,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
 
   addLegacyProps(CodeMirror);
 
-  CodeMirror.version = "5.48.2";
+  CodeMirror.version = "5.48.4";
 
   return CodeMirror;
 
@@ -24612,9 +24619,9 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     }, // Mid x
     {
       type: 'y',
-      y: top + height / 2 // Mid y
-
-    }].map(function (item) {
+      y: top + height / 2
+    } // Mid y
+    ].map(function (item) {
       return _objectSpread({}, item, {
         origin: el,
         originRect: editor.Canvas.getElementPos(el),
@@ -29289,6 +29296,7 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(dom
     this.listenTo(this, 'change:script', this.scriptUpdated);
     this.listenTo(this, 'change:tagName', this.tagUpdated);
     this.listenTo(this, 'change:attributes', this.attrUpdated);
+    this.listenTo(this, 'change:attributes:id', this._idUpdated);
     this.set('status', ''); // Register global updates for collection properties
 
     ['classes', 'traits', 'components'].forEach(function (name) {
@@ -29439,9 +29447,25 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(dom
    * Emit changes for each updated attribute
    * @private
    */
-  attrUpdated: function attrUpdated() {
-    this.setAttributes(this.get('attributes'), {
-      silent: 1
+  attrUpdated: function attrUpdated(m, v) {
+    var _this2 = this;
+
+    var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    var attrs = this.get('attributes'); // Handle classes
+
+    var classes = attrs.class;
+    classes && this.setClass(classes);
+    delete attrs.class; // Handle style
+
+    var style = attrs.style;
+    style && this.setStyle(style);
+    delete attrs.style;
+
+    var attrPrev = _objectSpread({}, this.previous('attributes'));
+
+    var diff = Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["shallowDiff"])(attrPrev, this.get('attributes'));
+    Object(underscore__WEBPACK_IMPORTED_MODULE_2__["keys"])(diff).forEach(function (pr) {
+      return _this2.trigger("change:attributes:".concat(pr), _this2, diff[pr], opts);
     });
   },
 
@@ -29453,26 +29477,8 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(dom
    * component.setAttributes({ id: 'test', 'data-key': 'value' });
    */
   setAttributes: function setAttributes(attrs) {
-    var _this2 = this;
-
     var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    attrs = _objectSpread({}, attrs); // Handle classes
-
-    var classes = attrs.class;
-    classes && this.setClass(classes);
-    delete attrs.class; // Handle style
-
-    var style = attrs.style;
-    style && this.setStyle(style);
-    delete attrs.style;
-    this.set('attributes', attrs, opts);
-
-    var attrPrev = _objectSpread({}, this.previous('attributes'));
-
-    var diff = Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["shallowDiff"])(attrPrev, attrs);
-    Object(underscore__WEBPACK_IMPORTED_MODULE_2__["keys"])(diff).forEach(function (pr) {
-      return _this2.trigger("change:attributes:".concat(pr), _this2, diff[pr]);
-    });
+    this.set('attributes', _objectSpread({}, attrs), opts);
     return this;
   },
 
@@ -29529,8 +29535,9 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(dom
     var opt = this.opt;
 
     if (em && em.getConfig('avoidInlineStyle') && !opt.temporary) {
+      var style = this.get('style') || {};
       prop = Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isString"])(prop) ? this.parseStyle(prop) : prop;
-      prop = _objectSpread({}, prop, {}, this.get('style'));
+      prop = _objectSpread({}, prop, {}, style);
       var state = this.get('state');
       var cc = em.get('CssComposer');
       var propOrig = this.getStyle();
@@ -30164,11 +30171,11 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(dom
    * @param {String} id
    * @return {this}
    */
-  setId: function setId(id) {
+  setId: function setId(id, opts) {
     var attrs = _objectSpread({}, this.get('attributes'));
 
     attrs.id = id;
-    this.set('attributes', attrs);
+    this.set('attributes', attrs, opts);
     return this;
   },
 
@@ -30286,6 +30293,50 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(dom
     var selector = rule && rule.get('selectors').at(0);
     selector && selector.set('name', newId);
     return this;
+  },
+  _getStyleRule: function _getStyleRule() {
+    var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+        id = _ref.id;
+
+    var em = this.em;
+    var idS = id || this.getId();
+    return em && em.get('CssComposer').getIdRule(idS);
+  },
+  _getStyleSelector: function _getStyleSelector(opts) {
+    var rule = this._getStyleRule(opts);
+
+    return rule && rule.get('selectors').at(0);
+  },
+  _idUpdated: function _idUpdated(m, v) {
+    var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    if (opts.idUpdate) return;
+    var ccid = this.ccid;
+
+    var _ref2 = this.get('attributes') || {},
+        id = _ref2.id;
+
+    var idPrev = (this.previous('attributes') || {}).id || ccid;
+    var list = Component.getList(this); // If the ID already exists I need to rollback to the old one
+
+    if (list[id]) {
+      return this.setId(idPrev, {
+        idUpdate: 1
+      });
+    } // Remove the old ID reference and add the new one
+
+
+    delete list[idPrev];
+    list[id] = this;
+    this.ccid = id; // Update the style selector name
+
+    var selector = this._getStyleSelector({
+      id: idPrev
+    });
+
+    selector && selector.set({
+      name: id,
+      label: id
+    });
   }
 }, {
   /**
@@ -31815,40 +31866,53 @@ var Component;
       });
     }
 
-    (Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isArray"])(models) ? models : [models]).filter(function (i) {
+    var isMult = Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isArray"])(models);
+    models = (isMult ? models : [models]).filter(function (i) {
       return i;
-    }).forEach(function (model) {
+    }).map(function (model) {
       return _this.processDef(model);
     });
+    models = isMult ? models : models[0];
     return backbone__WEBPACK_IMPORTED_MODULE_2___default.a.Collection.prototype.add.apply(this, [models, opt]);
   },
 
   /**
    * Process component definition.
    */
-  processDef: function processDef(model) {
+  processDef: function processDef(mdl) {
+    // Avoid processing Models
+    if (mdl.cid && mdl.ccid) return mdl;
     var em = this.em,
         _this$config = this.config,
         config = _this$config === void 0 ? {} : _this$config;
     var processor = config.processor;
-    var modelPr = processor && processor(model);
+    var model = mdl;
 
-    if (modelPr) {
-      Object(underscore__WEBPACK_IMPORTED_MODULE_3__["each"])(model, function (val, key) {
-        return delete model[key];
-      });
-      Object(underscore__WEBPACK_IMPORTED_MODULE_3__["extend"])(model, modelPr);
-    } // React JSX
+    if (processor) {
+      model = _objectSpread({}, model); // Avoid 'Cannot delete property ...'
+
+      var modelPr = processor(model);
+
+      if (modelPr) {
+        Object(underscore__WEBPACK_IMPORTED_MODULE_3__["each"])(model, function (val, key) {
+          return delete model[key];
+        });
+        Object(underscore__WEBPACK_IMPORTED_MODULE_3__["extend"])(model, modelPr);
+      }
+    } // React JSX preset
 
 
     if (model.$$typeof && _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0___default()(model.props) == 'object') {
+      model = _objectSpread({}, model);
+      model.props = _objectSpread({}, model.props);
       var domc = em.get('DomComponents');
       var parser = em.get('Parser');
       var parserHtml = parser.parserHtml;
       Object(underscore__WEBPACK_IMPORTED_MODULE_3__["each"])(model, function (value, key) {
         if (!Object(underscore__WEBPACK_IMPORTED_MODULE_3__["includes"])(['props', 'type'], key)) delete model[key];
       });
-      var props = model.props;
+      var _model = model,
+          props = _model.props;
       var comps = props.children;
       delete props.children;
       delete model.props;
@@ -33012,14 +33076,14 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
     var defaultAttr = _objectSpread({
       'data-gjs-type': type || 'default'
-    }, draggableComponents && {
+    }, draggableComponents ? {
       draggable: true
-    }, {}, highlightable && {
+    } : {}, {}, highlightable ? {
       'data-highlightable': 1
-    }, {}, textable && {
+    } : {}, {}, textable ? {
       contenteditable: 'false',
       'data-gjs-textable': 'true'
-    }); // Remove all current attributes
+    } : {}); // Remove all current attributes
 
 
     Object(underscore__WEBPACK_IMPORTED_MODULE_2__["each"])(el.attributes, function (attr) {
@@ -33472,7 +33536,8 @@ var parseStyle = Object(parser_model_ParserHtml__WEBPACK_IMPORTED_MODULE_3__["de
    * @return {Object}
    */
   getStyle: function getStyle() {
-    return _objectSpread({}, this.get('style'));
+    var style = this.get('style') || {};
+    return _objectSpread({}, style);
   },
 
   /**
@@ -34423,7 +34488,8 @@ __webpack_require__.r(__webpack_exports__);
   // element's `style` attribute. Unfortunately, inline styling doesn't allow
   // use of media queries (@media) or even pseudo selectors (eg. :hover).
   // When `avoidInlineStyle` is true all styles are inserted inside the css rule
-  avoidInlineStyle: 0,
+  // @deprecated Don't use this option, we don't support inline styling anymore
+  avoidInlineStyle: 1,
   // Avoid default properties from storable JSON data, like `components` and `styles`.
   // With this option enabled your data will be smaller (usefull if need to
   // save some storage space)
@@ -34851,6 +34917,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     /**
      * Returns CSS built inside canvas
      * @param {Object} [opts={}] Options
+     * @param {Boolean} [opts.avoidProtected=false] Don't include protected CSS
      * @return {string} CSS string
      */
     getCss: function getCss(opts) {
@@ -36161,7 +36228,7 @@ var defaultConfig = {
   editors: editors,
   plugins: plugins,
   // Will be replaced on build
-  version: '0.15.5',
+  version: '0.15.8',
 
   /**
    * Initialize the editor with passed options
@@ -41743,6 +41810,8 @@ __webpack_require__.r(__webpack_exports__);
   appendTo: '',
   // Text to show in case no element selected
   textNoElement: 'Select an element before using Style Manager',
+  // Text for layers
+  textLayer: 'Layer',
   // Hide the property in case it's not stylable for the
   // selected component (each component has 'stylable' property)
   hideNotStylable: true,
@@ -44254,8 +44323,9 @@ __webpack_require__.r(__webpack_exports__);
   },
   template: function template(model) {
     var pfx = this.pfx,
-        ppfx = this.ppfx;
-    var label = "Layer ".concat(model.get('index'));
+        ppfx = this.ppfx,
+        config = this.config;
+    var label = "".concat(config.textLayer, " ").concat(model.get('index'));
     return "\n      <div id=\"".concat(pfx, "move\" class=\"").concat(ppfx, "no-touch-actions\" data-move-layer>\n        <i class=\"fa fa-arrows\"></i>\n      </div>\n      <div id=\"").concat(pfx, "label\">").concat(label, "</div>\n      <div id=\"").concat(pfx, "preview-box\">\n      \t<div id=\"").concat(pfx, "preview\" data-preview></div>\n      </div>\n      <div id=\"").concat(pfx, "close-layer\" class=\"").concat(pfx, "btn-close\" data-close-layer>\n        &Cross;\n      </div>\n      <div id=\"").concat(pfx, "inputs\" data-properties></div>\n      <div style=\"clear:both\"></div>\n    ");
   },
   initialize: function initialize() {
@@ -45417,8 +45487,8 @@ var clearProp = 'data-clear-style';
   },
   templateLabel: function templateLabel(model) {
     var pfx = this.pfx;
-    var icon = model.get('icon');
-    var info = model.get('info');
+    var icon = model.get('icon') || '';
+    var info = model.get('info') || '';
     var parent = model.parent;
     return "\n      <span class=\"".concat(pfx, "icon ").concat(icon, "\" title=\"").concat(info, "\">\n        ").concat(model.get('name'), "\n      </span>\n      ").concat(!parent ? "<b class=\"".concat(pfx, "clear\" ").concat(clearProp, ">&Cross;</b>") : '', "\n    ");
   },

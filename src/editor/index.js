@@ -282,6 +282,7 @@ export default (config = {}) => {
     /**
      * Returns CSS built inside canvas
      * @param {Object} [opts={}] Options
+     * @param {Boolean} [opts.avoidProtected=false] Don't include protected CSS
      * @return {string} CSS string
      */
     getCss(opts) {

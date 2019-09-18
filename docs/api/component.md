@@ -528,6 +528,7 @@ Set new id on the component
 ### Parameters
 
 -   `id` **[String][1]** 
+-   `opts`  
 
 Returns **this** 
 
