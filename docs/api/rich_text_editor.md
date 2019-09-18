@@ -9,7 +9,7 @@ You can customize the initial state of the module from the editor initialization
 
 ```js
 const editor = grapesjs.init({
- rte: {
+ richTextEditor: {
    // options
  }
 })
