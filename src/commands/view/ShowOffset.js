@@ -39,7 +39,7 @@ export default {
     var ppfx = this.ppfx;
     var stateVar = state + 'State';
     var method = this.getOffsetMethod(state);
-    var offsetViewer = canvas[method]();
+    var offsetViewer = canvas[method](opts.view);
     offsetViewer.style.display = 'block';
 
     var marginT = this['marginT' + state];

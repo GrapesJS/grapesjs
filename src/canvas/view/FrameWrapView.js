@@ -68,7 +68,7 @@ export default Backbone.View.extend({
       <div class="${ppfx}ghost"></div>
       <div class="${ppfx}toolbar" style="pointer-events:all"></div>
       <div class="${ppfx}resizer"></div>
-      <div class="${ppfx}offset-v"></div>
+      <div class="${ppfx}offset-v" data-offset></div>
       <div class="${ppfx}offset-fixed-v"></div>
     `
     );

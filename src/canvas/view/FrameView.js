@@ -125,13 +125,21 @@ export default Backbone.View.extend({
   },
 
   getHighlighter() {
+    return this._getTool('[data-hl]');
+  },
+
+  getOffsetViewerEl() {
+    return this._getTool('[data-offset]');
+  },
+
+  _getTool(name) {
     const toolsEl = this.getToolsEl();
 
-    if (!this.elHighl) {
-      this.elHighl = toolsEl.querySelector('[data-hl]');
+    if (!this[name]) {
+      this[name] = toolsEl.querySelector(name);
     }
 
-    return this.elHighl;
+    return this[name];
   },
 
   remove() {

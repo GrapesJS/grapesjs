@@ -167,17 +167,21 @@ export default () => {
       return compView && compView._getFrame();
     },
 
+    _getLocalEl(globalEl, compView, method) {
+      let result = globalEl;
+      const frameView = this._getCompFrame(compView);
+      result = frameView ? frameView[method]() : result;
+
+      return result;
+    },
+
     /**
      * Returns element containing all canvas tools
      * @return {HTMLElement}
      * @private
      */
     getToolsEl(compView) {
-      let result = CanvasView.toolsEl;
-      const frameView = this._getCompFrame(compView);
-      result = frameView ? frameView.getToolsEl() : result;
-
-      return result;
+      return this._getLocalEl(CanvasView.toolsEl, compView, 'getToolsEl');
     },
 
     /**
@@ -186,11 +190,7 @@ export default () => {
      * @private
      */
     getHighlighter(compView) {
-      let result = CanvasView.hlEl;
-      const frameView = this._getCompFrame(compView);
-      result = frameView ? frameView.getHighlighter() : result;
-
-      return result;
+      return this._getLocalEl(CanvasView.hlEl, compView, 'getHighlighter');
     },
 
     /**
@@ -243,8 +243,12 @@ export default () => {
      * @return {HTMLElement}
      * @private
      */
-    getOffsetViewerEl() {
-      return CanvasView.offsetEl;
+    getOffsetViewerEl(compView) {
+      return this._getLocalEl(
+        CanvasView.offsetEl,
+        compView,
+        'getOffsetViewerEl'
+      );
     },
 
     /**
