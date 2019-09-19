@@ -61,7 +61,7 @@ export default Backbone.View.extend({
       },
       `
       <div class="${ppfx}highlighter" data-hl></div>
-      <div class="${ppfx}badge"></div>
+      <div class="${ppfx}badge" data-badge></div>
       <div class="${ppfx}placeholder">
         <div class="${ppfx}placeholder-int"></div>
       </div>

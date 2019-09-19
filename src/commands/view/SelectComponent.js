@@ -334,7 +334,7 @@ export default {
   updateBadge(el, pos, opts = {}) {
     const model = $(el).data('model');
     if (!model || !model.get('badgable')) return;
-    const badge = this.getBadge();
+    const badge = this.getBadge(opts);
 
     if (!opts.posOnly) {
       const config = this.canvas.getConfig();
@@ -637,8 +637,8 @@ export default {
    * @return {HTMLElement}
    * @private
    */
-  getBadge() {
-    return this.canvas.getBadgeEl();
+  getBadge(opts = {}) {
+    return this.canvas.getBadgeEl(opts.view);
   },
 
   /**
@@ -679,6 +679,7 @@ export default {
 
     this.updateBadge(el, pos, {
       ...badgeOpts,
+      view,
       topOff,
       leftOff
     });

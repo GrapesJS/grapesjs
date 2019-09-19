@@ -198,8 +198,8 @@ export default () => {
      * @return {HTMLElement}
      * @private
      */
-    getBadgeEl() {
-      return CanvasView.badgeEl;
+    getBadgeEl(compView) {
+      return this._getLocalEl(CanvasView.badgeEl, compView, 'getBadgeEl');
     },
 
     /**

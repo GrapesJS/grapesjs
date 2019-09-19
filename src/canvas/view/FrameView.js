@@ -128,6 +128,10 @@ export default Backbone.View.extend({
     return this._getTool('[data-hl]');
   },
 
+  getBadgeEl() {
+    return this._getTool('[data-badge]');
+  },
+
   getOffsetViewerEl() {
     return this._getTool('[data-offset]');
   },
