@@ -124,6 +124,16 @@ export default Backbone.View.extend({
     return frameWrapView && frameWrapView.elTools;
   },
 
+  getHighlighter() {
+    const toolsEl = this.getToolsEl();
+
+    if (!this.elHighl) {
+      this.elHighl = toolsEl.querySelector('[data-hl]');
+    }
+
+    return this.elHighl;
+  },
+
   remove() {
     Backbone.View.prototype.remove.apply(this, arguments);
   },

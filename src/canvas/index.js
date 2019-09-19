@@ -163,6 +163,10 @@ export default () => {
       return body && body.querySelector('#wrapper');
     },
 
+    _getCompFrame(compView) {
+      return compView && compView._getFrame();
+    },
+
     /**
      * Returns element containing all canvas tools
      * @return {HTMLElement}
@@ -170,11 +174,8 @@ export default () => {
      */
     getToolsEl(compView) {
       let result = CanvasView.toolsEl;
-      const frameView = compView && compView._getFrame();
-
-      if (frameView) {
-        result = frameView.getToolsEl();
-      }
+      const frameView = this._getCompFrame(compView);
+      result = frameView ? frameView.getToolsEl() : result;
 
       return result;
     },
@@ -184,8 +185,12 @@ export default () => {
      * @return {HTMLElement}
      * @private
      */
-    getHighlighter() {
-      return CanvasView.hlEl;
+    getHighlighter(compView) {
+      let result = CanvasView.hlEl;
+      const frameView = this._getCompFrame(compView);
+      result = frameView ? frameView.getHighlighter() : result;
+
+      return result;
     },
 
     /**

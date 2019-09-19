@@ -177,7 +177,7 @@ export default {
    * @param {HTMLElement}  el
    * @param {Object} pos
    */
-  showElementOffset(el, pos) {
+  showElementOffset(el, pos, opts = {}) {
     var $el = $(el);
     var model = $el.data('model');
 
@@ -188,6 +188,7 @@ export default {
     this.editor.runCommand('show-offset', {
       el,
       elPos: pos,
+      view: opts.view,
       force: 1,
       top: 0,
       left: 0
@@ -374,7 +375,7 @@ export default {
    * @param {Object} pos Position object
    * @private
    */
-  updateHighlighter(el, pos) {
+  updateHighlighter(el, pos, opts = {}) {
     var $el = $(el);
     var model = $el.data('model');
 
@@ -386,7 +387,7 @@ export default {
       return;
     }
 
-    var hlEl = this.canvas.getHighlighter();
+    var hlEl = this.canvas.getHighlighter(opts.view);
     var hlStyle = hlEl.style;
     var unit = 'px';
     hlStyle.height = pos.height + unit;
@@ -667,8 +668,8 @@ export default {
 
     if (isNewEl) {
       this.lastHovered = el;
-      this.updateHighlighter(el, pos);
-      this.showElementOffset(el, pos);
+      this.updateHighlighter(el, pos, { view });
+      this.showElementOffset(el, pos, { view });
     }
 
     const unit = 'px';
