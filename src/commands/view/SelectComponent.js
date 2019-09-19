@@ -123,7 +123,6 @@ export default {
   onSelect(component) {
     const prevComp = this.getElSelected().component;
     if (component && component === prevComp) return;
-    console.log('onSelect', component);
 
     const el = component && component.getEl();
     let result = {};
@@ -588,8 +587,8 @@ export default {
       const frameOffset = cv.getFrameOffset();
       const toolbarH = toolbarEl ? toolbarEl.offsetHeight : 0;
       const toolbarW = toolbarEl ? toolbarEl.offsetWidth : 0;
-      let top = this.frameRect(el, 1, pos) - toolbarH;
-      let left = this.frameRect(el, 0, pos) + pos.width - toolbarW;
+      let top = 0 - toolbarH;
+      let left = 0 + pos.width - toolbarW;
       left = left < 0 ? 0 : left;
 
       // Scroll with the window if the top edge is reached and the
@@ -646,8 +645,8 @@ export default {
    * @private
    */
   onFrameScroll() {
-    this.updateToolsGlobal();
     this.updateToolsLocal();
+    this.updateToolsGlobal();
   },
 
   /**
@@ -689,7 +688,7 @@ export default {
   },
 
   updateToolsGlobal() {
-    const { el, pos, component } = this.getElSelected();
+    const { el, pos, component, view } = this.getElSelected();
 
     if (!el) {
       this.lastSelected = 0;
