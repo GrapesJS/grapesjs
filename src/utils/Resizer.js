@@ -12,6 +12,7 @@ var defaultOpts = {
   onStart: null,
   onMove: null,
   onEnd: null,
+  onUpdateContainer: () => {},
 
   // Resize unit step
   step: 1,
@@ -154,6 +155,7 @@ class Resizer {
     this.onStart = opts.onStart;
     this.onMove = opts.onMove;
     this.onEnd = opts.onEnd;
+    this.onUpdateContainer = opts.onUpdateContainer;
   }
 
   /**
@@ -370,6 +372,15 @@ class Resizer {
       toUpdate.forEach(pos => (style[pos] = `${rectEl[pos]}px`));
       if (opt.forceShow) style.display = 'block';
     }
+
+    this.onUpdateContainer({
+      el: container,
+      resizer: this,
+      opts: {
+        ...opts,
+        ...opt
+      }
+    });
   }
 
   /**

@@ -59,6 +59,7 @@ export default {
       em[method]('component:toggled', this.onSelect, this);
       em[method]('change:componentHovered', this.onHovered, this);
       em[method]('component:update', this.updateAttached, this);
+      em[method]('component:resize', this.updateAttached, this);
       em[method]('change:canvasOffset', this.updateAttached, this);
       // em[method]('frame:scroll', this.onFrameScroll);
     };
@@ -463,6 +464,11 @@ export default {
           showOffsets = 1;
         },
 
+        onUpdateContainer({ el }) {
+          el.style.top = 0;
+          el.style.left = 0;
+        },
+
         updateTarget(el, rect, options = {}) {
           if (!modelToStyle) {
             return;
@@ -493,10 +499,8 @@ export default {
 
           modelToStyle.setStyle(style, { avoidStore: 1 });
           const updateEvent = `update:component:style`;
-          em &&
-            em.trigger(
-              `${updateEvent}:${keyHeight} ${updateEvent}:${keyWidth}`
-            );
+          const eventToListen = `${updateEvent}:${keyHeight} ${updateEvent}:${keyWidth}`;
+          em && em.trigger(eventToListen);
 
           if (store) {
             modelToStyle.trigger('change:style', modelToStyle, style, {});
@@ -702,7 +706,7 @@ export default {
     }
 
     const unit = 'px';
-    const { style } = this.canvas.getToolsEl();
+    const { style } = this.toggleToolsEl(1);
     const topOff = this.frameRect(el, 1, pos);
     const leftOff = this.frameRect(el, 0, pos);
     style.top = topOff + unit;
