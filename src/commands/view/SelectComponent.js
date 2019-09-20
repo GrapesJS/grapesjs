@@ -108,7 +108,7 @@ export default {
     if (el) {
       const pos = this.getElementPos(el);
       result = { el, pos, component, view: getViewEl(el) };
-      this.updateToolsLocal(el, pos);
+      this.updateToolsLocal();
     }
 
     this.elHovered = result;
@@ -166,9 +166,13 @@ export default {
    */
   onOut(ev) {
     ev && ev.stopPropagation();
-    this.hideBadge();
-    this.hideHighlighter();
-    this.hideElementOffset();
+    this.toggleToolsEl(0, this.getElHovered().view);
+  },
+
+  toggleToolsEl(on, view) {
+    const el = this.canvas.getToolsEl(view);
+    el.style.opacity = on ? 1 : 0;
+    return el;
   },
 
   /**
@@ -177,12 +181,7 @@ export default {
    * @param {Object} pos
    */
   showElementOffset(el, pos, opts = {}) {
-    var $el = $(el);
-    var model = $el.data('model');
-
-    if ((model && model.get('status') == 'selected') || !showOffsets) {
-      return;
-    }
+    if (!showOffsets) return;
 
     this.editor.runCommand('show-offset', {
       el,
@@ -199,9 +198,10 @@ export default {
    * @param {HTMLElement}  el
    * @param {Object} pos
    */
-  hideElementOffset(el, pos) {
-    const { editor } = this;
-    editor && editor.stopCommand('show-offset');
+  hideElementOffset(view) {
+    this.editor.stopCommand('show-offset', {
+      view
+    });
   },
 
   /**
@@ -229,8 +229,8 @@ export default {
   /**
    * Hide Highlighter element
    */
-  hideHighlighter() {
-    this.canvas.getHighlighter().style.display = 'none';
+  hideHighlighter(view) {
+    this.canvas.getHighlighter(view).style.opacity = 0;
   },
 
   /**
@@ -375,23 +375,11 @@ export default {
    * @private
    */
   updateHighlighter(el, pos, opts = {}) {
-    var $el = $(el);
-    var model = $el.data('model');
-
-    if (
-      !model ||
-      !model.get('hoverable') ||
-      model.get('status') == 'selected'
-    ) {
-      return;
-    }
-
-    var hlEl = this.canvas.getHighlighter(opts.view);
-    var hlStyle = hlEl.style;
-    var unit = 'px';
-    hlStyle.height = pos.height + unit;
-    hlStyle.width = pos.width + unit;
-    hlStyle.display = 'block';
+    const { style } = this.canvas.getHighlighter(opts.view);
+    const unit = 'px';
+    style.height = pos.height + unit;
+    style.width = pos.width + unit;
+    style.opacity = '';
   },
 
   /**
@@ -649,30 +637,40 @@ export default {
     this.updateToolsGlobal();
   },
 
+  isCompSelected(comp) {
+    return comp && comp.get('status') === 'selected';
+  },
+
   /**
    * Update tools visible on hover
    * @param {HTMLElement} el
    * @param {Object} pos
    */
   updateToolsLocal() {
-    const { el, pos, view } = this.getElHovered();
+    const { el, pos, view, component } = this.getElHovered();
 
     if (!el) {
       this.lastHovered = 0;
       return;
     }
 
+    const isHoverEn = component.get('hoverable');
     const isNewEl = this.lastHovered !== el;
     const badgeOpts = isNewEl ? {} : { posOnly: 1 };
 
-    if (isNewEl) {
+    if (isNewEl && isHoverEn) {
       this.lastHovered = el;
       this.updateHighlighter(el, pos, { view });
       this.showElementOffset(el, pos, { view });
     }
 
+    if (this.isCompSelected(component)) {
+      this.hideHighlighter(view);
+      this.hideElementOffset(view);
+    }
+
     const unit = 'px';
-    const { style } = this.canvas.getToolsEl(view);
+    const { style } = this.toggleToolsEl(1, view);
     const topOff = this.frameRect(el, 1, pos);
     const leftOff = this.frameRect(el, 0, pos);
 
@@ -696,9 +694,8 @@ export default {
     }
 
     const isNewEl = this.lastSelected !== el;
-    console.log('updateToolsGlobal', el);
+
     if (isNewEl) {
-      console.log('updateToolsGlobal UPDATE toolbar position');
       this.lastSelected = el;
       this.updateToolbar(component);
       this.updateToolbarPos(el, pos);

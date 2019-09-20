@@ -40,7 +40,7 @@ export default {
     var stateVar = state + 'State';
     var method = this.getOffsetMethod(state);
     var offsetViewer = canvas[method](opts.view);
-    offsetViewer.style.display = 'block';
+    offsetViewer.style.opacity = '';
 
     var marginT = this['marginT' + state];
     var marginB = this['marginB' + state];
@@ -157,12 +157,12 @@ export default {
     prStyle.left = pos.left + pos.width - padRight + unit;
   },
 
-  stop(editor, sender, opts) {
+  stop(editor, sender, opts = {}) {
     var opt = opts || {};
     var state = opt.state || '';
     var method = this.getOffsetMethod(state);
     var canvas = editor.Canvas;
-    var offsetViewer = canvas[method]();
-    offsetViewer.style.display = 'none';
+    var offsetViewer = canvas[method](opts.view);
+    offsetViewer.style.opacity = 0;
   }
 };
