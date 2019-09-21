@@ -90,6 +90,8 @@ $guide_pad: 5px;
   }
 
   &badge {
+    white-space: nowrap;
+
     &__icon {
       vertical-align: middle;
       display: inline-block;
@@ -203,6 +205,7 @@ $guide_pad: 5px;
 .#{$app-prefix}toolbar {
   position: absolute;
   background-color: $colorBlue;
+  white-space: nowrap;
   color: white;
   z-index: 10;
   top: 0;

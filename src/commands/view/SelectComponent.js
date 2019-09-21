@@ -586,9 +586,11 @@ export default {
       const frameOffset = cv.getFrameOffset();
       const toolbarH = toolbarEl ? toolbarEl.offsetHeight : 0;
       const toolbarW = toolbarEl ? toolbarEl.offsetWidth : 0;
+      const elRight = pos.left + pos.width;
       let top = 0 - toolbarH;
-      let left = 0 + pos.width - toolbarW;
-      left = left < 0 ? 0 : left;
+      let left = pos.width - toolbarW;
+      left = pos.left < -left ? -pos.left : left;
+      left = elRight > frCvOff.width ? left - (elRight - frCvOff.width) : left;
 
       // Scroll with the window if the top edge is reached and the
       // element is bigger than the canvas
@@ -601,13 +603,6 @@ export default {
         } else {
           top = -opts.topOff < pos.height ? -opts.topOff : pos.height;
         }
-      }
-
-      // Check left position of the toolbar
-      const leftR = left + toolbarW;
-
-      if (leftR > frCvOff.width) {
-        left -= leftR - frCvOff.width;
       }
 
       toolbarStyle.top = `${top}${unit}`;
