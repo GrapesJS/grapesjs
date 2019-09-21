@@ -361,6 +361,13 @@ export default {
     bStyle.left = left + un;
   },
 
+  frameRectOffset(el, pos) {
+    return {
+      top: this.frameRect(el, 1, pos),
+      left: this.frameRect(el, 0, pos)
+    };
+  },
+
   frameRect(el, top = 1, pos) {
     const zoom = this.em.getZoomDecimal();
     const side = top ? 'top' : 'left';
@@ -566,7 +573,7 @@ export default {
    * @param {HTMLElement} el
    * @param {Object} pos
    */
-  updateToolbarPos(el, pos) {
+  updateToolbarPos(el, pos, opts = {}) {
     const { canvas } = this;
     const unit = 'px';
     const toolbarEl = canvas.getToolbarEl();
@@ -588,10 +595,12 @@ export default {
       const fullHeight = pos.height + toolbarH;
       const elIsShort = fullHeight < frameOffset.height;
 
-      if (top < frCvOff.top && elIsShort) {
-        top = top + fullHeight;
-      } else if (top < 0) {
-        top = top > -pos.height ? 0 : top + fullHeight - toolbarH;
+      if (opts.topOff < toolbarH) {
+        if (elIsShort) {
+          top = top + fullHeight;
+        } else {
+          top = -opts.topOff < pos.height ? -opts.topOff : pos.height;
+        }
       }
 
       // Check left position of the toolbar
@@ -600,6 +609,14 @@ export default {
       if (leftR > frCvOff.width) {
         left -= leftR - frCvOff.width;
       }
+
+      console.log({
+        frameOffsetH: frameOffset.height,
+        topOff: opts.topOff,
+        top,
+        elIsShort,
+        toolbarH
+      });
 
       toolbarStyle.top = `${top}${unit}`;
       toolbarStyle.left = `${left}${unit}`;
@@ -675,8 +692,9 @@ export default {
 
     const unit = 'px';
     const { style } = this.toggleToolsEl(1, view);
-    const topOff = this.frameRect(el, 1, pos);
-    const leftOff = this.frameRect(el, 0, pos);
+    const frameOff = this.frameRectOffset(el, pos);
+    const topOff = frameOff.top;
+    const leftOff = frameOff.left;
 
     this.updateBadge(el, pos, {
       ...badgeOpts,
@@ -702,15 +720,20 @@ export default {
     if (isNewEl) {
       this.lastSelected = el;
       this.updateToolbar(component);
-      this.updateToolbarPos(el, pos);
     }
 
     const unit = 'px';
     const { style } = this.toggleToolsEl(1);
-    const topOff = this.frameRect(el, 1, pos);
-    const leftOff = this.frameRect(el, 0, pos);
+    const frameOff = this.frameRectOffset(el, pos);
+    const topOff = frameOff.top;
+    const leftOff = frameOff.left;
     style.top = topOff + unit;
     style.left = leftOff + unit;
+
+    this.updateToolbarPos(el, pos, {
+      topOff,
+      leftOff
+    });
 
     // const { resizer, em } = this;
     // const model = em.getSelected();
