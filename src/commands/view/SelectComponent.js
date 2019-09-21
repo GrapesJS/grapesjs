@@ -610,14 +610,6 @@ export default {
         left -= leftR - frCvOff.width;
       }
 
-      console.log({
-        frameOffsetH: frameOffset.height,
-        topOff: opts.topOff,
-        top,
-        elIsShort,
-        toolbarH
-      });
-
       toolbarStyle.top = `${top}${unit}`;
       toolbarStyle.left = `${left}${unit}`;
       toolbarStyle.opacity = '';
@@ -705,6 +697,8 @@ export default {
 
     style.top = topOff + unit;
     style.left = leftOff + unit;
+    style.width = pos.width + unit;
+    style.height = pos.height + unit;
   },
 
   updateToolsGlobal() {
@@ -729,6 +723,8 @@ export default {
     const leftOff = frameOff.left;
     style.top = topOff + unit;
     style.left = leftOff + unit;
+    style.width = pos.width + unit;
+    style.height = pos.height + unit;
 
     this.updateToolbarPos(el, pos, {
       topOff,
