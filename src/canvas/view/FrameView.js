@@ -73,6 +73,14 @@ export default Backbone.View.extend({
     const un = 'px';
     style.width = isNumber(newW) ? `${newW}${un}` : newW;
     style.height = isNumber(newH) ? `${newH}${un}` : newH;
+    if (!width || !height)
+      model.set(
+        {
+          ...(!width ? { width: el.offsetWidth } : {}),
+          ...(!height ? { height: el.offsetHeight } : {})
+        },
+        { silent: 1 }
+      );
     this.updateOffset();
     // Prevent fixed highlighting box which appears when on
     // component hover during the animation
@@ -167,7 +175,6 @@ export default Backbone.View.extend({
     const root = model.get('root');
     const styles = model.get('styles');
     const { em } = config;
-    const win = this.getWindow();
     const doc = this.getDoc();
     const body = this.getBody();
     const conf = em.get('Config');
@@ -304,6 +311,7 @@ export default Backbone.View.extend({
       })
     );
 
+    this.updateDim();
     this.trigger('loaded');
   }
 });
