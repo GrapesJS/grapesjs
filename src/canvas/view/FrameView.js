@@ -1,5 +1,5 @@
 import Backbone from 'backbone';
-import { bindAll } from 'underscore';
+import { bindAll, isNumber } from 'underscore';
 import CssRulesView from 'css_composer/view/CssRulesView';
 import ComponentView from 'dom_components/view/ComponentView';
 import {
@@ -32,6 +32,7 @@ export default Backbone.View.extend({
     this.em = this.config.em;
     this.listenTo(model, 'change:head', this.updateHead);
     this.listenTo(model, 'change:x change:y', this.updatePos);
+    this.listenTo(model, 'change:width change:height', this.updateDim);
     this.listenTo(this.em, 'change:device', this.updateDim);
     this.updatePos();
     model.view = this;
@@ -60,16 +61,18 @@ export default Backbone.View.extend({
    * @private
    */
   updateDim() {
-    const { em, el, $el } = this;
+    const { em, el, $el, model } = this;
+    const { width, height } = model.attributes;
     const { style } = el;
     const device = em.getDeviceModel();
     const currW = style.width || '';
     const currH = style.height || '';
-    const newW = device ? device.get('width') : '';
-    const newH = device ? device.get('height') : '';
+    const newW = width || (device ? device.get('width') : '');
+    const newH = height || (device ? device.get('height') : '');
     const noChanges = currW == newW && currH == newH;
-    style.width = newW;
-    style.height = newH;
+    const un = 'px';
+    style.width = isNumber(newW) ? `${newW}${un}` : newW;
+    style.height = isNumber(newH) ? `${newH}${un}` : newH;
     this.updateOffset();
     // Prevent fixed highlighting box which appears when on
     // component hover during the animation
