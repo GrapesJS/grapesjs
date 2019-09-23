@@ -371,9 +371,15 @@ export default {
   frameRect(el, top = 1, pos) {
     const zoom = this.em.getZoomDecimal();
     const side = top ? 'top' : 'left';
+    const {
+      offsetTop = 0,
+      offsetLeft = 0
+    } = el.ownerDocument.defaultView.frameElement;
     const { scrollTop = 0, scrollLeft = 0 } = el.ownerDocument.body || {};
+    const scroll = top ? scrollTop : scrollLeft;
+    const offset = top ? offsetTop : offsetLeft;
 
-    return pos[side] - (top ? scrollTop : scrollLeft) * zoom;
+    return pos[side] - (scroll - offset) * zoom;
   },
 
   /**
