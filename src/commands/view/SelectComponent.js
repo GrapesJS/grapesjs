@@ -103,7 +103,6 @@ export default {
   },
 
   onHovered(em, component) {
-    const el = component && component.getEl();
     let result = {};
 
     if (component) {
@@ -114,8 +113,6 @@ export default {
         this.updateToolsLocal(result);
       });
     }
-
-    console.log('Hovered', component);
 
     this.elHovered = result;
   },
@@ -166,6 +163,7 @@ export default {
   },
 
   onOut() {
+    this.em.setHovered(0);
     this.canvas.getFrames().forEach(frame => {
       const el = frame.view.getToolsEl();
       this.toggleToolsEl(0, 0, { el });

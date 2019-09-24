@@ -42,7 +42,7 @@ export default Backbone.View.extend({
     $el.data('model', model);
     setViewEl(el, this);
     model.view = this;
-    model.views.push(this);
+    this._getFrame() && model.views.push(this);
     this.initClasses();
     this.initComponents({ avoidRender: 1 });
     this.events = {
