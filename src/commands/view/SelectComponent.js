@@ -49,21 +49,21 @@ export default {
     const { em } = this;
     const method = enable ? 'on' : 'off';
     const methods = { on, off };
-    const body = this.getCanvasBody();
-    const win = this.getContentWindow();
     const trigger = (win, body) => {
       methods[method](body, 'mouseover', this.onHover);
       methods[method](body, 'mouseout', this.onOut);
       methods[method](body, 'click touchend', this.onClick);
       methods[method](win, 'scroll resize', this.onFrameScroll);
-      em[method]('component:toggled', this.onSelect, this);
-      em[method]('change:componentHovered', this.onHovered, this);
-      em[method]('component:update', this.updateAttached, this);
-      em[method]('component:resize', this.updateAttached, this);
-      em[method]('change:canvasOffset', this.updateAttached, this);
-      // em[method]('frame:scroll', this.onFrameScroll);
     };
-    trigger(win, body); // TODO remove
+    em[method]('component:toggled', this.onSelect, this);
+    em[method]('change:componentHovered', this.onHovered, this);
+    em[method]('component:update', this.updateAttached, this);
+    em[method]('component:resize', this.updateAttached, this);
+    em[method]('change:canvasOffset', this.updateAttached, this);
+    // em[method]('frame:scroll', this.onFrameScroll);
+    // const body = this.getCanvasBody();
+    // const win = this.getContentWindow();
+    // trigger(win, body); // TODO remove
     em.get('Canvas')
       .getFrames()
       .forEach(frame => {
@@ -99,18 +99,23 @@ export default {
       model = parent;
     }
 
-    this.em.setHovered(model, { forceChange: 1 });
+    this.em.setHovered(model);
   },
 
   onHovered(em, component) {
     const el = component && component.getEl();
     let result = {};
 
-    if (el) {
-      const pos = this.getElementPos(el);
-      result = { el, pos, component, view: getViewEl(el) };
-      this.updateToolsLocal();
+    if (component) {
+      component.views.forEach(view => {
+        const el = view.el;
+        const pos = this.getElementPos(el);
+        result = { el, pos, component, view: getViewEl(el) };
+        this.updateToolsLocal(result);
+      });
     }
+
+    console.log('Hovered', component);
 
     this.elHovered = result;
   },
@@ -167,7 +172,11 @@ export default {
    */
   onOut(ev) {
     ev && ev.stopPropagation();
-    this.toggleToolsEl(0, this.getElHovered().view);
+    this.toggleToolsEl(0, getViewEl(ev.target));
+    const from = ev.relatedTarget || ev.toElement;
+    if (!from || from.tagName === 'HTML') {
+      console.log('Im out', from.tagName);
+    }
   },
 
   toggleToolsEl(on, view) {
@@ -660,8 +669,8 @@ export default {
    * @param {HTMLElement} el
    * @param {Object} pos
    */
-  updateToolsLocal() {
-    const { el, pos, view, component } = this.getElHovered();
+  updateToolsLocal(data) {
+    const { el, pos, view, component } = data || this.getElHovered();
 
     if (!el) {
       this.lastHovered = 0;
