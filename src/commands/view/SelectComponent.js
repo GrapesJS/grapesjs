@@ -51,7 +51,7 @@ export default {
     const methods = { on, off };
     const trigger = (win, body) => {
       methods[method](body, 'mouseover', this.onHover);
-      methods[method](body, 'mouseout', this.onOut);
+      methods[method](body, 'mouseleave', this.onOut);
       methods[method](body, 'click touchend', this.onClick);
       methods[method](win, 'scroll resize', this.onFrameScroll);
     };
@@ -165,22 +165,15 @@ export default {
     return this.elSelected || {};
   },
 
-  /**
-   * Out command
-   * @param {Object}  e
-   * @private
-   */
-  onOut(ev) {
-    ev && ev.stopPropagation();
-    this.toggleToolsEl(0, getViewEl(ev.target));
-    const from = ev.relatedTarget || ev.toElement;
-    if (!from || from.tagName === 'HTML') {
-      console.log('Im out', from.tagName);
-    }
+  onOut() {
+    this.canvas.getFrames().forEach(frame => {
+      const el = frame.view.getToolsEl();
+      this.toggleToolsEl(0, 0, { el });
+    });
   },
 
-  toggleToolsEl(on, view) {
-    const el = this.canvas.getToolsEl(view);
+  toggleToolsEl(on, view, opts = {}) {
+    const el = opts.el || this.canvas.getToolsEl(view);
     el.style.opacity = on ? 1 : 0;
     return el;
   },
