@@ -68,7 +68,20 @@ export default Backbone.View.extend({
       <div class="${ppfx}ghost"></div>
       <div class="${ppfx}toolbar" style="pointer-events:all"></div>
       <div class="${ppfx}resizer"></div>
-      <div class="${ppfx}offset-v" data-offset></div>
+      <div class="${ppfx}offset-v" data-offset>
+        <div class="gjs-marginName" data-offset-m>
+          <div class="gjs-margin-v-el gjs-margin-v-top" data-offset-m-t></div>
+          <div class="gjs-margin-v-el gjs-margin-v-bottom" data-offset-m-b></div>
+          <div class="gjs-margin-v-el gjs-margin-v-left" data-offset-m-l></div>
+          <div class="gjs-margin-v-el gjs-margin-v-right" data-offset-m-r></div>
+        </div>
+        <div class="gjs-paddingName" data-offset-m>
+          <div class="gjs-padding-v-el gjs-padding-v-top" data-offset-p-t></div>
+          <div class="gjs-padding-v-el gjs-padding-v-bottom" data-offset-p-b></div>
+          <div class="gjs-padding-v-el gjs-padding-v-left" data-offset-p-l></div>
+          <div class="gjs-padding-v-el gjs-padding-v-right" data-offset-p-r></div>
+        </div>
+      </div>
       <div class="${ppfx}offset-fixed-v"></div>
     `
     );

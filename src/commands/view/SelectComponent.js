@@ -183,7 +183,6 @@ export default {
    */
   showElementOffset(el, pos, opts = {}) {
     if (!showOffsets) return;
-
     this.editor.runCommand('show-offset', {
       el,
       elPos: pos,
@@ -647,7 +646,7 @@ export default {
    * @private
    */
   onFrameScroll() {
-    this.updateToolsLocal();
+    // this.updateToolsLocal();
     this.updateToolsGlobal();
   },
 
