@@ -99,6 +99,7 @@ export default {
       model = parent;
     }
 
+    this.currentDoc = trg.ownerDocument;
     this.em.setHovered(model);
   },
 
@@ -111,10 +112,10 @@ export default {
         const pos = this.getElementPos(el);
         result = { el, pos, component, view: getViewEl(el) };
         this.updateToolsLocal(result);
+
+        if (el.ownerDocument === this.currentDoc) this.elHovered = result;
       });
     }
-
-    this.elHovered = result;
   },
 
   /**
@@ -367,13 +368,17 @@ export default {
     };
   },
 
+  getFrameElFromDoc(doc) {
+    const { defaultView } = doc;
+    return defaultView && defaultView.frameElement;
+  },
+
   frameRect(el, top = 1, pos) {
     const zoom = this.em.getZoomDecimal();
     const side = top ? 'top' : 'left';
-    const {
-      offsetTop = 0,
-      offsetLeft = 0
-    } = el.ownerDocument.defaultView.frameElement;
+    const { offsetTop = 0, offsetLeft = 0 } = this.getFrameElFromDoc(
+      el.ownerDocument
+    );
     const { scrollTop = 0, scrollLeft = 0 } = el.ownerDocument.body || {};
     const scroll = top ? scrollTop : scrollLeft;
     const offset = top ? offsetTop : offsetLeft;
@@ -646,7 +651,7 @@ export default {
    * @private
    */
   onFrameScroll() {
-    // this.updateToolsLocal();
+    this.updateToolsLocal();
     this.updateToolsGlobal();
   },
 
