@@ -60,7 +60,6 @@ export default {
     em[method]('component:update', this.updateAttached, this);
     em[method]('component:resize', this.updateAttached, this);
     em[method]('change:canvasOffset', this.updateAttached, this);
-    // em[method]('frame:scroll', this.onFrameScroll);
     // const body = this.getCanvasBody();
     // const win = this.getContentWindow();
     // trigger(win, body); // TODO remove
@@ -128,7 +127,13 @@ export default {
     const prevComp = this.getElSelected().component;
     if (component && component === prevComp) return;
 
-    const el = component && component.getEl();
+    const view =
+      component &&
+      component.views.filter(
+        view => view.el.ownerDocument === this.currentDoc
+      )[0];
+    let el = view && view.el;
+    if (!el && component) el = component.getEl();
     let result = {};
 
     if (el) {
@@ -164,6 +169,7 @@ export default {
   },
 
   onOut() {
+    this.currentDoc = null;
     this.em.setHovered(0);
     this.canvas.getFrames().forEach(frame => {
       const el = frame.view.getToolsEl();
@@ -707,7 +713,7 @@ export default {
   },
 
   updateToolsGlobal() {
-    const { el, pos, component, view } = this.getElSelected();
+    const { el, pos, component } = this.getElSelected();
 
     if (!el) {
       this.lastSelected = 0;
