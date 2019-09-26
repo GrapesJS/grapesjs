@@ -30,7 +30,14 @@
  * @module Canvas
  */
 
-import { on, off, hasDnd, getElement, getPointerEvent } from 'utils/mixins';
+import {
+  on,
+  off,
+  hasDnd,
+  getElement,
+  getPointerEvent,
+  getViewEl
+} from 'utils/mixins';
 import Droppable from 'utils/Droppable';
 import defaults from './config/config';
 import Canvas from './model/Canvas';
@@ -481,16 +488,8 @@ export default () => {
      */
     scrollTo(el, opts = {}) {
       const elem = getElement(el);
-      const cv = this.getCanvasView();
-      if (!elem) return;
-
-      if (!cv.isElInViewport(elem) || opts.force) {
-        const opt =
-          typeof opts === 'object'
-            ? opts
-            : { behavior: 'smooth', block: 'nearest' };
-        elem.scrollIntoView(opt);
-      }
+      const view = elem && getViewEl(elem);
+      view && view.scrollIntoView(opts);
     },
 
     /**

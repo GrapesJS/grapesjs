@@ -4,7 +4,7 @@ import Components from '../model/Components';
 import ComponentsView from './ComponentsView';
 import Selectors from 'selector_manager/model/Selectors';
 import { replaceWith } from 'utils/dom';
-import { setViewEl } from 'utils/mixins';
+import { setViewEl, getElRect } from 'utils/mixins';
 
 export default Backbone.View.extend({
   className() {
@@ -369,6 +369,38 @@ export default Backbone.View.extend({
     }
 
     return container;
+  },
+
+  isInViewport() {
+    const { el } = this;
+    const elDoc = el.ownerDocument;
+    const { body } = elDoc;
+    const { frameElement } = elDoc.defaultView;
+    const { top, left } = getElRect(el);
+
+    return (
+      top >= 0 &&
+      left >= 0 &&
+      top <= frameElement.offsetHeight + body.scrollTop &&
+      left <= frameElement.offsetWidth + body.scrollLeft
+    );
+  },
+
+  scrollIntoView(opts = {}) {
+    if (!this.isInViewport() || opts.force) {
+      const { el } = this;
+
+      // PATCH: scrollIntoView won't work with multiple requests from iframes
+      if (opts.behavior !== 'smooth') {
+        el.ownerDocument.defaultView.scrollTo(0, el.offsetTop);
+      } else {
+        el.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+          ...opts
+        });
+      }
+    }
   },
 
   /**
