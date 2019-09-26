@@ -1,8 +1,8 @@
-var Backbone = require('backbone');
+import { template } from 'underscore';
+import Backbone from 'backbone';
 
-module.exports = Backbone.View.extend({
-
-  template: _.template(`
+export default Backbone.View.extend({
+  template: template(`
   <div class="<%= pfx %>title">
     <i class="<%= pfx %>caret-icon"></i>
     <%= label %>
@@ -21,16 +21,14 @@ module.exports = Backbone.View.extend({
     this.iconClass = `${pfx}caret-icon`;
     this.activeClass = `${pfx}open`;
     this.className = `${pfx}block-category`;
-    this.events[`click .${pfx}title`]  = 'toggle';
+    this.events[`click .${pfx}title`] = 'toggle';
     this.listenTo(this.model, 'change:open', this.updateVisibility);
     this.delegateEvents();
   },
 
   updateVisibility() {
-    if(this.model.get('open'))
-      this.open();
-    else
-      this.close();
+    if (this.model.get('open')) this.open();
+    else this.close();
   },
 
   open() {
@@ -73,10 +71,11 @@ module.exports = Backbone.View.extend({
   render() {
     this.el.innerHTML = this.template({
       pfx: this.pfx,
-      label: this.model.get('label'),
+      label: this.model.get('label')
     });
     this.el.className = this.className;
+    this.$el.css({ order: this.model.get('order') });
     this.updateVisibility();
     return this;
-  },
+  }
 });

@@ -1,14 +1,13 @@
+import Backbone from 'backbone';
 const $ = Backbone.$;
 
-module.exports = {
-
+export default {
   run(editor, sender, opts = {}) {
     sender && sender.set && sender.set('active', 0);
     const config = editor.getConfig();
     const modal = editor.Modal;
     const pfx = config.stylePrefix;
     this.cm = editor.CodeManager || null;
-
 
     if (!this.$editors) {
       const oHtmlEd = this.buildEditor('htmlmixed', 'hopscotch', 'HTML');
@@ -20,9 +19,13 @@ module.exports = {
       this.$editors = $editors;
     }
 
-    modal.setTitle(config.textViewCode);
-    modal.setContent(this.$editors);
-    modal.open();
+    modal
+      .open({
+        title: config.textViewCode,
+        content: this.$editors
+      })
+      .getModel()
+      .once('change:open', () => editor.stopCommand(this.id));
     this.htmlEditor.setContent(editor.getHtml());
     this.cssEditor.setContent(editor.getCss());
   },
@@ -40,7 +43,7 @@ module.exports = {
       label,
       codeName,
       theme,
-      input,
+      input
     });
 
     const $el = new this.cm.EditorView({
@@ -51,5 +54,5 @@ module.exports = {
     el.init(input);
 
     return { el, $el };
-  },
+  }
 };

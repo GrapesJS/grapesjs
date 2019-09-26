@@ -1,0 +1,48 @@
+.#{$app-prefix} {
+  &traits-label {
+    border-bottom: 1px solid $mainDkColor;
+    font-weight: lighter;
+    margin-bottom: 5px;
+    padding: 10px;
+    text-align: left;
+  }
+
+  &label {
+
+    &-wrp {
+      width: 30%;
+      min-width: 30%;
+    }
+  }
+
+  &field {
+
+    &-wrp {
+      flex-grow: 1;
+    }
+  }
+}
+
+.#{$trt-prefix}header {
+  font-weight: lighter;
+  padding: 10px;
+}
+
+.#{$trt-prefix}trait {
+  display: flex;
+  justify-content: flex-start;
+  padding: 5px 10px;
+  font-weight: lighter;
+  align-items: center;
+  text-align: left;
+
+  &s {
+    font-size: $fontSizeS;
+  }
+
+  .#{$app-prefix}label {
+    text-align: left;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+}

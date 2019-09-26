@@ -1,84 +1,108 @@
+import Backbone from 'backbone';
 import TypeableCollection from 'domain_abstract/model/TypeableCollection';
-const Property = require('./Property');
+import Property from './Property';
+import PropertyStack from './PropertyStack';
+import PropertyStackView from './../view/PropertyStackView';
+import PropertyComposite from './PropertyComposite';
+import PropertyCompositeView from './../view/PropertyCompositeView';
+import PropertyFileView from './../view/PropertyFileView';
+import PropertyColorView from './../view/PropertyColorView';
+import PropertySelect from './PropertySelect';
+import PropertySelectView from './../view/PropertySelectView';
+import PropertyRadio from './PropertyRadio';
+import PropertyRadioView from './../view/PropertyRadioView';
+import PropertySlider from './PropertySlider';
+import PropertySliderView from './../view/PropertySliderView';
+import PropertyInteger from './PropertyInteger';
+import PropertyIntegerView from './../view/PropertyIntegerView';
+import PropertyView from './../view/PropertyView';
 
-module.exports = require('backbone').Collection.extend(TypeableCollection).extend({
+export default Backbone.Collection.extend(TypeableCollection).extend({
   types: [
     {
       id: 'stack',
-      model: require('./PropertyStack'),
-      view: require('./../view/PropertyStackView'),
+      model: PropertyStack,
+      view: PropertyStackView,
       isType(value) {
         if (value && value.type == 'stack') {
           return value;
         }
       }
-    },{
+    },
+    {
       id: 'composite',
-      model: require('./PropertyComposite'),
-      view: require('./../view/PropertyCompositeView'),
+      model: PropertyComposite,
+      view: PropertyCompositeView,
       isType(value) {
         if (value && value.type == 'composite') {
           return value;
         }
       }
-    },{
+    },
+    {
       id: 'file',
       model: Property,
-      view: require('./../view/PropertyFileView'),
+      view: PropertyFileView,
       isType(value) {
         if (value && value.type == 'file') {
           return value;
         }
       }
-    },{
+    },
+    {
       id: 'color',
       model: Property,
-      view: require('./../view/PropertyColorView'),
+      view: PropertyColorView,
       isType(value) {
         if (value && value.type == 'color') {
           return value;
         }
       }
-    },{
+    },
+    {
       id: 'select',
-      model: require('./PropertyRadio'),
-      view: require('./../view/PropertySelectView'),
+      model: PropertySelect,
+      view: PropertySelectView,
       isType(value) {
         if (value && value.type == 'select') {
           return value;
         }
       }
-    },{
+    },
+    {
       id: 'radio',
-      model: require('./PropertyRadio'),
-      view: require('./../view/PropertyRadioView'),
+      model: PropertyRadio,
+      view: PropertyRadioView,
       isType(value) {
         if (value && value.type == 'radio') {
           return value;
         }
       }
-    },{
+    },
+    {
       id: 'slider',
-      model: require('./PropertySlider'),
-      view: require('./../view/PropertySliderView'),
+      model: PropertySlider,
+      view: PropertySliderView,
       isType(value) {
         if (value && value.type == 'slider') {
           return value;
         }
       }
-    },{
+    },
+    {
       id: 'integer',
-      model: require('./PropertyInteger'),
-      view: require('./../view/PropertyIntegerView'),
+      model: PropertyInteger,
+      view: PropertyIntegerView,
       isType(value) {
         if (value && value.type == 'integer') {
           return value;
         }
       }
-    },{
+    },
+    {
       id: 'base',
       model: Property,
-      view: require('./../view/PropertyView'),
+      view: PropertyView,
       isType(value) {
         value.type = 'base';
         return value;
@@ -88,11 +112,13 @@ module.exports = require('backbone').Collection.extend(TypeableCollection).exten
 
   deepClone() {
     const collection = this.clone();
-    collection.reset(collection.map(model => {
-      const cloned = model.clone();
-      cloned.typeView = model.typeView;
-      return cloned;
-    }));
+    collection.reset(
+      collection.map(model => {
+        const cloned = model.clone();
+        cloned.typeView = model.typeView;
+        return cloned;
+      })
+    );
     return collection;
   },
 
@@ -107,6 +133,7 @@ module.exports = require('backbone').Collection.extend(TypeableCollection).exten
     const values = value.split(' ');
     values.forEach((value, i) => {
       const property = this.at(i);
+      if (!property) return;
       properties.push({ ...property.attributes, ...{ value } });
     });
     return properties;
@@ -114,7 +141,7 @@ module.exports = require('backbone').Collection.extend(TypeableCollection).exten
 
   getFullValue() {
     let result = '';
-    this.each(model => result += `${model.getFullValue()} `);
+    this.each(model => (result += `${model.getFullValue()} `));
     return result.trim();
   }
 });

@@ -1,20 +1,19 @@
-import { defaults } from 'underscore';
+import { defaults, isElement } from 'underscore';
+import defaultOpts from './config/config';
+import TraitsView from './view/TraitsView';
 
-module.exports = () => {
+export default () => {
   let c = {};
-  const defaultOpts = require('./config/config');
-  const TraitsView = require('./view/TraitsView');
   let TraitsViewer;
 
   return {
-
     TraitsView,
 
     /**
      * Name of the module
      * @type {String}
      * @private
-    */
+     */
     name: 'TraitManager',
 
     /**
@@ -38,9 +37,18 @@ module.exports = () => {
       TraitsViewer = new TraitsView({
         collection: [],
         editor: c.em,
-        config: c,
+        config: c
       });
       return this;
+    },
+
+    postRender() {
+      const elTo = this.getConfig().appendTo;
+
+      if (elTo) {
+        const el = isElement(elTo) ? elTo : document.querySelector(elTo);
+        el.appendChild(this.render());
+      }
     },
 
     /**
@@ -71,5 +79,8 @@ module.exports = () => {
       return TraitsViewer.itemsView[name];
     },
 
+    render() {
+      return TraitsViewer.render().el;
+    }
   };
 };

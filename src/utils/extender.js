@@ -1,4 +1,6 @@
-module.exports = ({$, Backbone}) => {
+import { isObject, isString, each, isUndefined } from 'underscore';
+
+export default ({ $, Backbone }) => {
   if (Backbone) {
     const ViewProt = Backbone.View.prototype;
     const eventNsMap = {};
@@ -15,7 +17,7 @@ module.exports = ({$, Backbone}) => {
         eventNsMap[vid] = eventMap;
       }
 
-      eventMap.push({eventName, selector, listener});
+      eventMap.push({ eventName, selector, listener });
       return this;
     };
 
@@ -26,7 +28,7 @@ module.exports = ({$, Backbone}) => {
         let eventMap = eventNsMap[vid];
 
         if (eventMap) {
-          eventMap.forEach(({eventName, selector, listener}) => {
+          eventMap.forEach(({ eventName, selector, listener }) => {
             this.$el.off(eventName);
           });
         }
@@ -40,7 +42,7 @@ module.exports = ({$, Backbone}) => {
       let eventMap = eventNsMap[vid];
 
       if (eventMap) {
-        eventMap.forEach(({eventName, selector, listener}) => {
+        eventMap.forEach(({ eventName, selector, listener }) => {
           if (eventName == ev && selector == sel) {
             this.$el.off(eventName);
           }
@@ -55,59 +57,20 @@ module.exports = ({$, Backbone}) => {
     const fn = $.fn;
 
     const splitNamespace = function(name) {
-      const namespaceArray = name.split('.')
-      return ( name.indexOf('.') !== 0 ? [namespaceArray[0], namespaceArray.slice(1)] : [null, namespaceArray] );
-    }
-    /*
-    const CashEvent = function(node, eventName, namespaces, delegate, originalCallback, runOnce) {
-
-      const eventCache = getData(node,'_cashEvents') || setData(node, '_cashEvents', {});
-      const remove = function(c, namespace){
-        if ( c && originalCallback !== c ) { return; }
-        if ( namespace && this.namespaces.indexOf(namespace) < 0 ) { return; }
-        node.removeEventListener(eventName, callback);
-      };
-      const callback = function(e) {
-        var t = this;
-        if (delegate) {
-          t = e.target;
-
-          while (t && !matches(t, delegate)) {
-            if (t === this) {
-              return (t = false);
-            }
-            t = t.parentNode;
-          }
-        }
-
-        if (t) {
-          originalCallback.call(t, e, e.data);
-          if ( runOnce ) { remove(); }
-        }
-
-      };
-
-      this.remove = remove;
-      this.namespaces = namespaces;
-
-      node.addEventListener(eventName, callback);
-
-      eventCache[eventName] = eventCache[eventName] || [];
-      eventCache[eventName].push(this);
-
-      return this;
-    }
-    */
+      const namespaceArray = name.split('.');
+      return name.indexOf('.') !== 0
+        ? [namespaceArray[0], namespaceArray.slice(1)]
+        : [null, namespaceArray];
+    };
 
     const on = $.prototype.on;
     const off = $.prototype.off;
     const trigger = $.prototype.trigger;
     const offset = $.prototype.offset;
-    const getEvents = (eventName) => eventName.split(/[,\s]+/g);
-    const getNamespaces = (eventName) => eventName.split('.');
+    const getEvents = eventName => eventName.split(/[,\s]+/g);
+    const getNamespaces = eventName => eventName.split('.');
 
     fn.on = function(eventName, delegate, callback, runOnce) {
-
       if (typeof eventName == 'string') {
         const events = getEvents(eventName);
 
@@ -130,14 +93,15 @@ module.exports = ({$, Backbone}) => {
 
           return on.call(this, eventName, delegate, callback, runOnce);
         } else {
-          events.forEach((eventName) =>
-            this.on(eventName, delegate, callback, runOnce));
+          events.forEach(eventName =>
+            this.on(eventName, delegate, callback, runOnce)
+          );
           return this;
         }
       } else {
-        return on.call(this, eventName, delegate, callback, runOnce)
+        return on.call(this, eventName, delegate, callback, runOnce);
       }
-    }
+    };
 
     fn.off = function(eventName, callback) {
       if (typeof eventName == 'string') {
@@ -159,13 +123,13 @@ module.exports = ({$, Backbone}) => {
 
           return off.call(this, eventName, callback);
         } else {
-          events.forEach((eventName) => this.off(eventName, callback));
+          events.forEach(eventName => this.off(eventName, callback));
           return this;
         }
       } else {
         return off.call(this, eventName, callback);
       }
-    }
+    };
 
     fn.trigger = function(eventName, data) {
       if (eventName instanceof $.Event) {
@@ -191,54 +155,86 @@ module.exports = ({$, Backbone}) => {
 
           return trigger.call(this, eventName, data);
         } else {
-          events.forEach((eventName) => this.trigger(eventName, data));
+          events.forEach(eventName => this.trigger(eventName, data));
           return this;
         }
       } else {
         return trigger.call(this, eventName, data);
       }
-    }
+    };
 
     fn.hide = function() {
       return this.css('display', 'none');
-    }
+    };
 
     fn.show = function() {
       return this.css('display', 'block');
-    }
+    };
 
     fn.focus = function() {
       const el = this.get(0);
       el && el.focus();
       return this;
-    }
+    };
 
-    fn.remove = function () {
-      return this.each(node => {
-        return node.parentNode && node.parentNode.removeChild(node);
+    // For SVGs in IE
+    (fn.removeClass = function(c) {
+      if (!arguments.length) {
+        return this.attr('class', '');
+      }
+      const classes = isString(c) && c.match(/\S+/g);
+      return classes
+        ? this.each(function(el) {
+            each(classes, function(c) {
+              if (el.classList) {
+                el.classList.remove(c);
+              } else {
+                const val = el.className;
+                const bval = el.className.baseVal;
+
+                if (!isUndefined(bval)) {
+                  val.baseVal = bval.replace(c, '');
+                } else {
+                  el.className = val.replace(c, '');
+                }
+              }
+            });
+          })
+        : this;
+    }),
+      (fn.remove = function() {
+        return this.each(node => {
+          return node.parentNode && node.parentNode.removeChild(node);
+        });
+      }),
+      // For spectrum compatibility
+      (fn.bind = function(ev, h) {
+        return this.on(ev, h);
       });
-    },
-
-    // For spectrum compatibility
-    fn.bind = function(ev, h) {
-      return this.on(ev, h);
-    }
 
     fn.unbind = function(ev, h) {
-      return this.off(ev, h);
-    }
+      if (isObject(ev)) {
+        for (let name in ev) {
+          ev.hasOwnProperty(name) && this.off(name, ev[name]);
+        }
+
+        return this;
+      } else {
+        return this.off(ev, h);
+      }
+    };
 
     fn.click = function(h) {
       return h ? this.on('click', h) : this.trigger('click');
-    }
+    };
 
     fn.change = function(h) {
       return h ? this.on('change', h) : this.trigger('change');
-    }
+    };
 
     fn.keydown = function(h) {
       return h ? this.on('keydown', h) : this.trigger('keydown');
-    }
+    };
 
     fn.delegate = function(selector, events, data, handler) {
       if (!handler) {
@@ -249,21 +245,21 @@ module.exports = ({$, Backbone}) => {
         e.data = data;
         handler(e);
       });
-    }
+    };
 
     fn.scrollLeft = function() {
       let el = this.get(0);
       el = el.nodeType == 9 ? el.defaultView : el;
       let win = el instanceof Window ? el : null;
       return win ? win.pageXOffset : el.scrollLeft || 0;
-    }
+    };
 
     fn.scrollTop = function() {
       let el = this.get(0);
       el = el.nodeType == 9 ? el.defaultView : el;
       let win = el instanceof Window ? el : null;
       return win ? win.pageYOffset : el.scrollTop || 0;
-    }
+    };
 
     fn.offset = function(coords) {
       let top, left;
@@ -291,21 +287,21 @@ module.exports = ({$, Backbone}) => {
       }
 
       return ar;
-    }
+    };
 
     const indexOf = Array.prototype.indexOf;
 
     $.inArray = function(val, arr, i) {
-      return arr == null ? -1 : indexOf.call( arr, val, i );
-    }
+      return arr == null ? -1 : indexOf.call(arr, val, i);
+    };
 
     $.Event = function(src, props) {
-      if (!(this instanceof $.Event) ) {
+      if (!(this instanceof $.Event)) {
         return new $.Event(src, props);
       }
 
       this.type = src;
       this.isDefaultPrevented = () => false;
-    }
+    };
   }
-}
+};

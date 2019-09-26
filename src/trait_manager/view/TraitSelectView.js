@@ -1,13 +1,22 @@
-const TraitView = require('./TraitView');
+import Backbone from 'backbone';
+import { isString, isUndefined } from 'underscore';
+import TraitView from './TraitView';
+
 const $ = Backbone.$;
 
-module.exports = TraitView.extend({
+export default TraitView.extend({
+  init() {
+    this.listenTo(this.model, 'change:options', this.rerender);
+  },
 
-  initialize(o) {
-    TraitView.prototype.initialize.apply(this, arguments);
-    var ppfx = this.ppfx;
-    this.tmpl = '<div class="' + this.fieldClass +'"><div class="' + this.inputhClass +'"></div>'+
-    '<div class="' + ppfx + 'sel-arrow"><div class="' + ppfx + 'd-s-arrow"></div></div> </div>';
+  templateInput() {
+    const { ppfx, clsField } = this;
+    return `<div class="${clsField}">
+      <div data-input></div>
+      <div class="${ppfx}sel-arrow">
+        <div class="${ppfx}d-s-arrow"></div>
+      </div>
+    </div>`;
   },
 
   /**
@@ -16,48 +25,37 @@ module.exports = TraitView.extend({
    * @private
    */
   getInputEl() {
-    if(!this.$input) {
-      var md = this.model;
-      var opts = md.get('options') || [];
-      var input = '<select>';
+    if (!this.$input) {
+      const { model } = this;
+      const opts = model.get('options') || [];
+      let input = '<select>';
 
-      if (opts.length) {
-        _.each(opts, el => {
-          var name, value, style;
-          var attrs = '';
-          if(typeof el === 'string'){
-            name = el;
-            value = el;
-          }else{
-            name = el.name ? el.name : el.value;
-            value = el.value.replace(/"/g,'&quot;');
-            style = el.style ? el.style.replace(/"/g,'&quot;') : '';
-            attrs += style ? 'style="' + style + '"' : '';
-          }
-          input += '<option value="' + value + '" ' + attrs + '>' + name + '</option>';
-        });
-      }
+      opts.forEach(el => {
+        let attrs = '';
+        let name, value, style;
+
+        if (isString(el)) {
+          name = el;
+          value = el;
+        } else {
+          name = el.name || el.label || el.value;
+          value = `${isUndefined(el.value) ? el.id : el.value}`.replace(
+            /"/g,
+            '&quot;'
+          );
+          style = el.style ? el.style.replace(/"/g, '&quot;') : '';
+          attrs += style ? ` style="${style}"` : '';
+        }
+
+        input += `<option value="${value}"${attrs}>${name}</option>`;
+      });
 
       input += '</select>';
-      this.input = input;
-      this.$input = $(this.input);
-
-      var target = this.target;
-      var name = md.get('name');
-      var val = md.get('value');
-
-      if (md.get('changeProp')) {
-        val = val || target.get(name);
-      } else {
-        var attrs = target.get('attributes');
-        val = attrs[name];
-      }
-
-      if(val)
-        this.$input.val(val);
+      this.$input = $(input);
+      let val = model.getTargetValue() || model.get('value');
+      !isUndefined(val) && this.$input.val(val);
     }
 
     return this.$input.get(0);
-  },
-
+  }
 });

@@ -1,9 +1,12 @@
-require('utils/ColorPicker');
-const Input = require('./Input');
+import Backbone from 'backbone';
+import { isUndefined } from 'underscore';
+import ColorPicker from 'utils/ColorPicker';
+import Input from './Input';
+
 const $ = Backbone.$;
+ColorPicker($);
 
-module.exports = Input.extend({
-
+export default Input.extend({
   template() {
     const ppfx = this.ppfx;
     return `
@@ -32,7 +35,8 @@ module.exports = Input.extend({
    */
   setValue(val, opts = {}) {
     const model = this.model;
-    const value = val || model.get('defaults');
+    const def = model.get('defaults');
+    const value = !isUndefined(val) ? val : !isUndefined(def) ? def : '';
     const inputEl = this.getInputEl();
     const colorEl = this.getColorEl();
     const valueClr = value != 'none' ? value : '';
@@ -59,11 +63,14 @@ module.exports = Input.extend({
       var colorEl = $(`<div class="${this.ppfx}field-color-picker"></div>`);
       var cpStyle = colorEl.get(0).style;
       var elToAppend = this.em && this.em.config ? this.em.config.el : '';
-      var colorPickerConfig = this.em && this.em.getConfig && this.em.getConfig("colorPicker") || {};
+      var colorPickerConfig =
+        (this.em && this.em.getConfig && this.em.getConfig('colorPicker')) ||
+        {};
       const getColor = color => {
-        let cl = color.getAlpha() == 1 ? color.toHexString() : color.toRgbString();
+        let cl =
+          color.getAlpha() == 1 ? color.toHexString() : color.toRgbString();
         return cl.replace(/ /g, '');
-      }
+      };
 
       let changed = 0;
       let previousColor;
@@ -73,7 +80,7 @@ module.exports = Input.extend({
         appendTo: elToAppend || 'body',
         maxSelectionSize: 8,
         showPalette: true,
-        showAlpha:   true,
+        showAlpha: true,
         chooseText: 'Ok',
         cancelText: '⨯',
         palette: [],
@@ -98,14 +105,14 @@ module.exports = Input.extend({
           previousColor = getColor(color);
         },
         hide(color) {
-           if (!changed && previousColor) {
-             if (self.noneColor) {
-               previousColor = '';
-             }
-             cpStyle.backgroundColor = previousColor;
-             colorEl.spectrum('set', previousColor);
-             model.setValueFromInput(previousColor, 0);
-           }
+          if (!changed && previousColor) {
+            if (self.noneColor) {
+              previousColor = '';
+            }
+            cpStyle.backgroundColor = previousColor;
+            colorEl.spectrum('set', previousColor);
+            model.setValueFromInput(previousColor, 0);
+          }
         }
       });
 
@@ -120,5 +127,4 @@ module.exports = Input.extend({
     this.getColorEl();
     return this;
   }
-
 });

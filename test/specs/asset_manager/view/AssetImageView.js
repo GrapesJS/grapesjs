@@ -1,76 +1,70 @@
-var AssetImageView = require('asset_manager/view/AssetImageView');
-var AssetImage = require('asset_manager/model/AssetImage');
-var Assets = require('asset_manager/model/Assets');
+import AssetImageView from 'asset_manager/view/AssetImageView';
+import Assets from 'asset_manager/model/Assets';
 
 module.exports = {
   run() {
     let obj;
 
     describe('AssetImageView', () => {
-
-      beforeEach(function () {
-        var coll   = new Assets();
-        var model = coll.add({ type:'image', src: '/test' });
+      beforeEach(() => {
+        var coll = new Assets();
+        var model = coll.add({ type: 'image', src: '/test' });
         obj = new AssetImageView({
           collection: new Assets(),
-          config : {},
+          config: {},
           model
         });
         document.body.innerHTML = '<div id="fixtures"></div>';
         document.body.querySelector('#fixtures').appendChild(obj.render().el);
       });
 
-      afterEach(function () {
+      afterEach(() => {
         obj = null;
         document.body.innerHTML = '';
       });
 
-      it('Object exists', () => {
-        expect(AssetImageView).toExist();
+      test('Object exists', () => {
+        expect(AssetImageView).toBeTruthy();
       });
 
       describe('Asset should be rendered correctly', () => {
+        test('Has preview box', () => {
+          var $asset = obj.$el;
+          expect($asset.find('.preview').length).toEqual(1);
+        });
 
-          it('Has preview box', function() {
-            var $asset = obj.$el;
-            expect($asset.find('.preview').length).toEqual(1);
-          });
+        test('Has meta box', () => {
+          var $asset = obj.$el;
+          expect($asset.find('.meta').length).toEqual(1);
+        });
 
-          it('Has meta box', function() {
-            var $asset = obj.$el;
-            expect($asset.find('.meta').length).toEqual(1);
-          });
-
-          it('Has close button', function() {
-            var $asset = obj.$el;
-            expect($asset.find('[data-toggle=asset-remove]').length).toEqual(1);
-          });
-
+        test('Has close button', () => {
+          var $asset = obj.$el;
+          expect($asset.find('[data-toggle=asset-remove]').length).toEqual(1);
+        });
       });
 
-      it('Could be selected', function() {
-        var spy = expect.spyOn(obj, 'updateTarget');
+      test('Could be selected', () => {
+        var spy = jest.spyOn(obj, 'updateTarget');
         obj.$el.trigger('click');
-        expect(obj.$el.attr('class')).toInclude('highlight');
+        expect(obj.$el.attr('class')).toContain('highlight');
         expect(spy).toHaveBeenCalled();
       });
 
-      it('Could be chosen', function() {
+      test('Could be chosen', () => {
         sinon.stub(obj, 'updateTarget');
-        var spy = expect.spyOn(obj, 'updateTarget');
+        var spy = jest.spyOn(obj, 'updateTarget');
         obj.$el.trigger('dblclick');
         expect(spy).toHaveBeenCalled();
         //obj.updateTarget.calledOnce.should.equal(true);
       });
 
-      it('Could be removed', function() {
+      test('Could be removed', () => {
         var spy = sinon.spy();
-        obj.model.on("remove", spy);
-        obj.onRemove({stopImmediatePropagation() {}});
+        obj.model.on('remove', spy);
+        obj.onRemove({ stopImmediatePropagation() {} });
         expect(spy.called).toEqual(true);
       });
-
     });
-
   }
 };

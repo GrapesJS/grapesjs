@@ -1,23 +1,10 @@
-module.exports = {
-
-  ESCAPE_KEY: 27,
-
+export default {
   stylePrefix: 'com-',
 
+  // Default array of commands
   defaults: [],
 
-  // Editor model
-  em: null,
-
-  // If true center new first-level components
-  firstCentered: true,
-
-  // If true the new component will created with 'height', else 'min-height'
-  newFixedH: false,
-
-  // Minimum height (in px) of new component
-  minComponentH: 50,
-
-  // Minimum width (in px) of component on creation
-  minComponentW: 50,
+  // If true, stateful commands (with `run` and `stop` methods) can't be runned multiple times.
+  // So, if the command is already active, running it again will not execute the `run` method
+  strict: 1
 };

@@ -1,8 +1,7 @@
-var Backbone = require('backbone');
-var ComponentView = require('./ComponentImageView');
+import Backbone from 'backbone';
+import ComponentView from './ComponentImageView';
 
-module.exports = ComponentView.extend({
-
+export default ComponentView.extend({
   tagName: 'div',
 
   events: {},
@@ -21,8 +20,8 @@ module.exports = ComponentView.extend({
   },
 
   getIframe() {
-    if(!this.iframe){
-      var ifrm = document.createElement("iframe");
+    if (!this.iframe) {
+      var ifrm = document.createElement('iframe');
       ifrm.src = this.model.get('src');
       ifrm.frameBorder = 0;
       ifrm.style.height = '100%';
@@ -38,6 +37,5 @@ module.exports = ComponentView.extend({
     this.updateClasses();
     this.el.appendChild(this.getIframe());
     return this;
-  },
-
+  }
 });

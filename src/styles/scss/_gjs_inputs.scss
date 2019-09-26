@@ -81,6 +81,7 @@
 }
 
 .#{$app-prefix}select option,
+.#{$app-prefix}field-select option,
 .#{$clm-prefix}select option,
 .#{$sm-prefix}select option,
 .#{$app-prefix}fields option,
@@ -190,7 +191,10 @@
 /* ??? */
 .#{$app-prefix}field-checkbox {
   padding: 0;
-  width: auto !important;
+  width: 17px;
+  height: 17px;
+  display: block;
+  cursor: pointer;
 
   input {
     display: none;
@@ -318,17 +322,23 @@
   }
 }
 
-.#{$app-prefix}btn-prim {
-  color: inherit;
-  background-color: $mainLhColor;
-  border-radius: 2px;
-  padding: 3px 6px;
-  padding: $inputPadding;
-  cursor: pointer;
-  border: none;
-
-  &:active {
+.#{$app-prefix}btn {
+  &-prim {
+    color: inherit;
     background-color: $mainLhColor;
+    border-radius: 2px;
+    padding: 3px 6px;
+    padding: $inputPadding;
+    cursor: pointer;
+    border: none;
+
+    &:active {
+      background-color: $mainLhColor;
+    }
+  }
+
+  &--full {
+    width: 100%;
   }
 }
 
@@ -340,7 +350,6 @@
   height: 14px;
   margin: 0 5px;
   width: 6px;
-  cursor: pointer;
 }
 
 .#{$app-prefix}add-trasp {

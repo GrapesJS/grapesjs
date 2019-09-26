@@ -1,8 +1,7 @@
-var Backbone = require('backbone');
-var ComponentView = require('./ComponentImageView');
+import Backbone from 'backbone';
+import ComponentView from './ComponentImageView';
 
-module.exports = ComponentView.extend({
-
+export default ComponentView.extend({
   tagName: 'script',
 
   events: {},
@@ -15,20 +14,35 @@ module.exports = ComponentView.extend({
     var content = '';
 
     // If it's an external script
-    if(src) {
+    if (src) {
       var onload = model.get('onload');
       var svar = 'script' + scriptCount;
       var svarNext = 'script' + (scriptCount + 1);
-      content = "var "+svar+" = document.createElement('script');\n" +
-        svar+".onload = function(){\n" +
-          (onload ? onload + "();\n" : '') +
-          "typeof "+svarNext+"Start == 'function' && "+svarNext+"Start();\n" +
-        "};\n" +
-        svar+".src = '" + src + "';\n"+
-        "function "+svar+"Start() { document.body.appendChild("+svar+"); };\n" +
-        (!scriptCount ? svar+"Start();" : '');
-      if(em){
-          em.set('scriptCount', scriptCount + 1);
+      content =
+        'var ' +
+        svar +
+        " = document.createElement('script');\n" +
+        svar +
+        '.onload = function(){\n' +
+        (onload ? onload + '();\n' : '') +
+        'typeof ' +
+        svarNext +
+        "Start == 'function' && " +
+        svarNext +
+        'Start();\n' +
+        '};\n' +
+        svar +
+        ".src = '" +
+        src +
+        "';\n" +
+        'function ' +
+        svar +
+        'Start() { document.body.appendChild(' +
+        svar +
+        '); };\n' +
+        (!scriptCount ? svar + 'Start();' : '');
+      if (em) {
+        em.set('scriptCount', scriptCount + 1);
       }
     } else {
       content = model.get('content');
@@ -36,6 +50,5 @@ module.exports = ComponentView.extend({
 
     this.el.innerHTML = content;
     return this;
-  },
-
+  }
 });

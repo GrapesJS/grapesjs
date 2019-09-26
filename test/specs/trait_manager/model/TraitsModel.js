@@ -1,11 +1,9 @@
-const Trait = require('trait_manager/model/Trait');
-const Component = require('dom_components/model/Component');
+import Trait from 'trait_manager/model/Trait';
+import Component from 'dom_components/model/Component';
 
 module.exports = {
   run() {
-
     describe('TraitModels', () => {
-
       var obj;
       var target;
       var modelName = 'title';
@@ -14,7 +12,7 @@ module.exports = {
         target = new Component();
         obj = new Trait({
           name: modelName,
-          target,
+          target
         });
       });
 
@@ -22,10 +20,9 @@ module.exports = {
         obj = null;
       });
 
-      it('Object exists', () => {
-        expect(Trait).toExist();
+      test('Object exists', () => {
+        expect(Trait).toBeTruthy();
       });
-
     });
   }
-}
+};

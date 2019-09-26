@@ -1,13 +1,21 @@
-var Backbone = require('backbone');
-var Category = require('./Category');
+import Backbone from 'backbone';
+import Category from './Category';
 
-module.exports = Backbone.Model.extend({
-
+export default Backbone.Model.extend({
   defaults: {
+    // If true, triggers an 'active' event on dropped component
+    activate: 0,
+    // If true, the dropped component will be selected
+    select: 0,
+    // If true, all IDs of dropped component and its style will be changed
+    resetId: 0,
+    // Block label
     label: '',
+    // HTML string for the media of the block, eg. SVG icon, image, etc.
+    media: '',
     content: '',
     category: '',
-    attributes: {},
+    attributes: {}
   },
 
   initialize(opts = {}) {
@@ -17,10 +25,9 @@ module.exports = Backbone.Model.extend({
       if (typeof category == 'string') {
         var catObj = new Category({
           id: category,
-          label: category,
+          label: category
         });
       }
     }
-  },
-
+  }
 });

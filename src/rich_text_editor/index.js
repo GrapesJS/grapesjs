@@ -1,36 +1,48 @@
 /**
- * This module allows to customize the toolbar of the Rich Text Editor and use commands from the HTML Editing APIs.
- * For more info about HTML Editing APIs check here:
- * https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand
+ * This module allows to customize the built-in toolbar of the Rich Text Editor and use commands from the [HTML Editing APIs](https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand).
+ * It's highly recommended to keep this toolbar as small as possible, especially from styling commands (eg. 'fontSize') and leave this task to the Style Manager
  *
- * It's highly recommended to keep this toolbar as small as possible, especially from styling commands (eg. 'fontSize')
- * and leave this task to the Style Manager.
+ * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/rich_text_editor/config/config.js)
+ * ```js
+ * const editor = grapesjs.init({
+ *  richTextEditor: {
+ *    // options
+ *  }
+ * })
+ * ```
  *
- * Before using methods you should get first the module from the editor instance, in this way:
+ * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
  *
  * ```js
- * var rte = editor.RichTextEditor;
+ * const rte = editor.RichTextEditor;
  * ```
+ *
+ * * [add](#add)
+ * * [get](#get)
+ * * [getAll](#getall)
+ * * [remove](#remove)
+ * * [getToolbarEl](#gettoolbarel)
+ *
  * @module RichTextEditor
  */
-import RichTextEditor from './model/RichTextEditor';
-import {on, off} from 'utils/mixins'
 
-module.exports = () => {
+import RichTextEditor from './model/RichTextEditor';
+import { on, off } from 'utils/mixins';
+import defaults from './config/config';
+
+export default () => {
   let config = {};
-  const defaults = require('./config/config');
   let toolbar, actions, lastEl, globalRte;
 
   const hideToolbar = () => {
     const style = toolbar.style;
-    const size = '-100px';
+    const size = '-1000px';
     style.top = size;
     style.left = size;
     style.display = 'none';
   };
 
   return {
-
     customRte: null,
 
     /**
@@ -40,20 +52,20 @@ module.exports = () => {
      */
     name: 'RichTextEditor',
 
+    getConfig() {
+      return config;
+    },
+
     /**
      * Initialize module. Automatically called with a new instance of the editor
      * @param {Object} opts Options
      * @private
      */
     init(opts = {}) {
-      config = opts;
-
-      for (let name in defaults) {
-        if (!(name in config)) {
-          config[name] = defaults[name];
-        }
-      }
-
+      config = {
+        ...defaults,
+        ...opts
+      };
       const ppfx = config.pStylePrefix;
 
       if (ppfx) {
@@ -71,7 +83,6 @@ module.exports = () => {
       return this;
     },
 
-
     /**
      * Post render callback
      * @param  {View} ev
@@ -83,7 +94,6 @@ module.exports = () => {
       hideToolbar();
       canvas.getToolsEl().appendChild(toolbar);
     },
-
 
     /**
      * Init the built-in RTE
@@ -99,14 +109,14 @@ module.exports = () => {
       const classes = {
         actionbar: `${pfx}actionbar`,
         button: `${pfx}action`,
-        active: `${pfx}active`,
+        active: `${pfx}active`
       };
       const rte = new RichTextEditor({
         el,
         classes,
         actions,
         actionbar,
-        actionbarContainer,
+        actionbarContainer
       });
       globalRte && globalRte.setEl(el);
 
@@ -128,7 +138,7 @@ module.exports = () => {
      * @example
      * rte.add('bold', {
      *   icon: '<b>B</b>',
-     *   attributes: {title: 'Bold',}
+     *   attributes: {title: 'Bold'},
      *   result: rte => rte.exec('bold')
      * });
      * rte.add('link', {
@@ -158,7 +168,7 @@ module.exports = () => {
      */
     add(name, action = {}) {
       action.name = name;
-      globalRte.addAction(action, {sync: 1});
+      globalRte.addAction(action, { sync: 1 });
     },
 
     /**
@@ -221,23 +231,29 @@ module.exports = () => {
      * Triggered when the offset of the editor is changed
      * @private
      */
-    udpatePosition() {
+    updatePosition() {
       const un = 'px';
       const canvas = config.em.get('Canvas');
       const pos = canvas.getTargetToElementDim(toolbar, lastEl, {
-        event: 'rteToolbarPosUpdate',
+        event: 'rteToolbarPosUpdate'
       });
 
-      if (config.adjustToolbar) {
-        // Move the toolbar down when the top canvas edge is reached
-        if (pos.top <= pos.canvasTop) {
-          pos.top = pos.elementTop + pos.elementHeight;
+      if (pos) {
+        if (config.adjustToolbar) {
+          const frameOffset = canvas.getCanvasView().getFrameOffset();
+          // Move the toolbar down when the top canvas edge is reached
+          if (
+            pos.top <= pos.canvasTop &&
+            !(pos.elementHeight + pos.targetHeight >= frameOffset.height)
+          ) {
+            pos.top = pos.elementTop + pos.elementHeight;
+          }
         }
-      }
 
-      const toolbarStyle = toolbar.style;
-      toolbarStyle.top = pos.top + un;
-      toolbarStyle.left = pos.left + un;
+        const toolbarStyle = toolbar.style;
+        toolbarStyle.top = pos.top + un;
+        toolbarStyle.left = pos.left + un;
+      }
     },
 
     /**
@@ -256,10 +272,10 @@ module.exports = () => {
       rte = customRte ? customRte.enable(el, rte) : this.initRte(el).enable();
 
       if (em) {
-        setTimeout(this.udpatePosition.bind(this), 0);
+        setTimeout(this.updatePosition.bind(this), 0);
         const event = 'change:canvasOffset canvasScroll';
-        em.off(event, this.udpatePosition, this);
-        em.on(event, this.udpatePosition, this);
+        em.off(event, this.updatePosition, this);
+        em.on(event, this.updatePosition, this);
         em.trigger('rte:enable', view, rte);
       }
 
@@ -285,6 +301,6 @@ module.exports = () => {
 
       hideToolbar();
       em && em.trigger('rte:disable', view, rte);
-    },
+    }
   };
 };

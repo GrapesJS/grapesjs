@@ -17,24 +17,25 @@
  *
  * @module CodeManager
  */
-module.exports = () => {
+import { isUndefined } from 'underscore';
+import defaults from './config/config';
+import gHtml from './model/HtmlGenerator';
+import gCss from './model/CssGenerator';
+import gJson from './model/JsonGenerator';
+import gJs from './model/JsGenerator';
+import eCM from './model/CodeMirrorEditor';
+import editorView from './view/EditorView';
 
-  var c = {},
-  defaults = require('./config/config'),
-  gHtml = require('./model/HtmlGenerator'),
-  gCss = require('./model/CssGenerator'),
-  gJson = require('./model/JsonGenerator'),
-  gJs = require('./model/JsGenerator'),
-  eCM = require('./model/CodeMirrorEditor'),
-  editorView = require('./view/EditorView');
-
+export default () => {
+  var c = {};
   var generators = {},
-  defGenerators  = {},
-  viewers = {},
-  defViewers = {};
+    defGenerators = {},
+    viewers = {},
+    defViewers = {};
+
+  const defaultViewer = 'CodeMirror';
 
   return {
-
     getConfig() {
       return c;
     },
@@ -57,16 +58,14 @@ module.exports = () => {
     init(config) {
       c = config || {};
       for (var name in defaults) {
-        if (!(name in c))
-          c[name] = defaults[name];
+        if (!(name in c)) c[name] = defaults[name];
       }
 
       var ppfx = c.pStylePrefix;
-      if(ppfx)
-        c.stylePrefix = ppfx + c.stylePrefix;
+      if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
 
       defGenerators.html = new gHtml();
-      defGenerators.css  = new gCss();
+      defGenerators.css = new gCss();
       defGenerators.json = new gJson();
       defGenerators.js = new gJs();
       defViewers.CodeMirror = new eCM();
@@ -157,6 +156,19 @@ module.exports = () => {
       return viewers;
     },
 
+    createViewer(opts = {}) {
+      const type = !isUndefined(opts.type) ? opts.type : defaultViewer;
+      const viewer = this.getViewer(type) && this.getViewer(type).clone();
+      const cont = document.createElement('div');
+      const txtarea = document.createElement('textarea');
+      cont.appendChild(txtarea);
+      viewer.set(opts);
+      viewer.init(txtarea);
+      viewer.setElement(cont);
+
+      return viewer;
+    },
+
     /**
      * Update code viewer content
      * @param  {Object} viewer Viewer instance
@@ -183,7 +195,7 @@ module.exports = () => {
      * */
     getCode(model, genId, opt = {}) {
       opt.em = c.em;
-      var generator  = this.getGenerator(genId);
+      var generator = this.getGenerator(genId);
       return generator ? generator.build(model, opt) : '';
     },
 
@@ -193,8 +205,7 @@ module.exports = () => {
      * @private
      * */
     loadDefaultGenerators() {
-      for (var id in defGenerators)
-        this.addGenerator(id, defGenerators[id]);
+      for (var id in defGenerators) this.addGenerator(id, defGenerators[id]);
 
       return this;
     },
@@ -205,12 +216,9 @@ module.exports = () => {
      * @private
      * */
     loadDefaultViewers() {
-      for (var id in defViewers)
-        this.addViewer(id, defViewers[id]);
+      for (var id in defViewers) this.addViewer(id, defViewers[id]);
 
       return this;
-    },
-
+    }
   };
-
 };

@@ -1,19 +1,17 @@
 
 .#{$sm-prefix} {
   &clear {
-    font-size: 1rem;
     line-height: 0;
     cursor: pointer;
   }
 
   &header {
-    font-size: 11px;
     font-weight: lighter;
     padding: 10px;
   }
 
   &properties {
-    font-size: 11px;
+    font-size: $fontSizeS;
     padding: 10px 5px;
     display: flex;
     flex-wrap: wrap;
@@ -254,10 +252,10 @@
     margin-bottom: 5px;
     padding: 0 5px;
 
+    &--full,
     &.#{$sm-prefix}composite,
     &.#{$sm-prefix}file,
     &.#{$sm-prefix}list,
-    &.#{$sm-prefix}radio,
     &.#{$sm-prefix}stack,
     &.#{$sm-prefix}slider,
     &.#{$sm-prefix}color {

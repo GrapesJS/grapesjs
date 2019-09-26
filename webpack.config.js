@@ -1,59 +1,67 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const pkg = require('./package.json');
 const webpack = require('webpack');
+const path = require('path');
 const fs = require('fs');
+const rootDir = path.resolve(__dirname);
 let plugins = [];
 
 module.exports = env => {
-
+  const name = pkg.name;
+  const isProd = env === 'prod';
   const output = {
-    filename: './dist/grapes.min.js',
-    library: 'grapesjs',
+    path: path.join(__dirname),
+    filename: 'dist/grapes.min.js',
+    library: name,
+    libraryExport: 'default',
     libraryTarget: 'umd',
   };
 
-  if (env == 'prod') {
+  if (isProd) {
     plugins = [
       new webpack.optimize.ModuleConcatenationPlugin(),
-      new webpack.optimize.UglifyJsPlugin({ minimize:true, compressor: {warnings:false}}),
-      new webpack.BannerPlugin(`${pkg.name} - ${pkg.version}`),
+      new webpack.BannerPlugin(`${name} - ${pkg.version}`),
     ];
-  } else if (env == 'dev') {
-    output.filename = './dist/grapes.js';
+  } else if (env === 'dev') {
+    output.filename = 'dist/grapes.js';
   } else {
     const index = 'index.html';
     const indexDev = `_${index}`;
     const template = fs.existsSync(indexDev) ? indexDev : index;
-    plugins.push(new HtmlWebpackPlugin({ template }));
+    plugins.push(new HtmlWebpackPlugin({ template, inject: false }));
   }
-
-  plugins.push(new webpack.ProvidePlugin({
-    _: 'underscore',
-    Backbone: 'backbone'
-  }));
 
   return {
     entry: './src',
     output: output,
     plugins: plugins,
+    mode: isProd ? 'production' : 'development',
+    devtool: isProd ? 'source-map' : (!env ? 'cheap-module-eval-source-map' : false),
+    devServer: {
+      headers: { 'Access-Control-Allow-Origin': '*' },
+      disableHostCheck: true,
+    },
     module: {
-      loaders: [{
-        test: /grapesjs\/index\.js$/,
+      rules: [{
+        test: /\/index\.js$/,
         loader: 'string-replace-loader',
         query: {
           search: '<# VERSION #>',
           replace: pkg.version
         }
-      },{
+      }, {
         test: /\.js$/,
         loader: 'babel-loader',
-        include: /src/
+        include: /src/,
+        options: { cacheDirectory: true },
       }],
     },
     resolve: {
       modules: ['src', 'node_modules'],
       alias: {
-        jquery: 'cash-dom'
+        jquery: 'cash-dom',
+        backbone: `${rootDir}/node_modules/backbone`,
+        underscore: `${rootDir}/node_modules/underscore`,
       }
     }
   };

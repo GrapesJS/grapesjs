@@ -1,5 +1,5 @@
-const ParserHtml = require('./model/ParserHtml');
-const ParserCss = require('./model/ParserCss');
+import ParserHtml from './model/ParserHtml';
+import ParserCss from './model/ParserCss';
 
 describe('Parser', () => {
   ParserHtml.run();

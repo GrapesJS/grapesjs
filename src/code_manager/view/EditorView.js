@@ -1,8 +1,8 @@
-var Backbone = require('backbone');
+import { template } from 'underscore';
+import Backbone from 'backbone';
 
-module.exports = Backbone.View.extend({
-
-  template: _.template(`
+export default Backbone.View.extend({
+  template: template(`
   <div class="<%= pfx %>editor" id="<%= pfx %><%= codeName %>">
   	<div id="<%= pfx %>title"><%= label %></div>
   	<div id="<%= pfx %>code"></div>
@@ -16,10 +16,9 @@ module.exports = Backbone.View.extend({
   render() {
     var obj = this.model.toJSON();
     obj.pfx = this.pfx;
-    this.$el.html( this.template(obj) );
+    this.$el.html(this.template(obj));
     this.$el.attr('class', this.pfx + 'editor-c');
-    this.$el.find('#'+this.pfx+'code').append(this.model.get('input'));
+    this.$el.find('#' + this.pfx + 'code').append(this.model.get('input'));
     return this;
-  },
-
+  }
 });

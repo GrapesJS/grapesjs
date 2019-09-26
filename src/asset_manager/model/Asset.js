@@ -1,10 +1,11 @@
-module.exports = require('backbone').Model.extend({
+import Backbone from 'backbone';
 
+export default Backbone.Model.extend({
   idAttribute: 'src',
 
   defaults: {
-    type:  '',
-    src:  '',
+    type: '',
+    src: ''
   },
 
   /**
@@ -13,7 +14,9 @@ module.exports = require('backbone').Model.extend({
    * @private
    * */
   getFilename() {
-    return  this.get('src').split('/').pop();
+    return this.get('src')
+      .split('/')
+      .pop();
   },
 
   /**
@@ -22,7 +25,8 @@ module.exports = require('backbone').Model.extend({
    * @private
    * */
   getExtension() {
-    return  this.getFilename().split('.').pop();
-  },
-
+    return this.getFilename()
+      .split('.')
+      .pop();
+  }
 });

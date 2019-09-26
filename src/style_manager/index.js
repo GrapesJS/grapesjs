@@ -1,54 +1,50 @@
 /**
- * With Style Manager you basically build categories (called sectors) of CSS properties which could
- * be used to custom components and classes.
- * You can init the editor with all sectors and properties via configuration
- *
+ * With Style Manager you build categories (called sectors) of CSS properties which could be used to customize the style of components.
+ * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/style_manager/config/config.js)
  * ```js
- * var editor = grapesjs.init({
- *   ...
- *  styleManager: {...} // Check below for the possible properties
- *   ...
- * });
+ * const editor = grapesjs.init({
+ *  styleManager: {
+ *    // options
+ *  }
+ * })
  * ```
  *
- * Before using methods you should get first the module from the editor instance, in this way:
+ * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
  *
  * ```js
- * var styleManager = editor.StyleManager;
+ * const styleManager = editor.StyleManager;
  * ```
+ *
+ * * [getConfig](#getconfig)
+ * * [addSector](#addsector)
+ * * [getSector](#getsector)
+ * * [removeSector](#removesector)
+ * * [getSectors](#getsectors)
+ * * [addProperty](#addproperty)
+ * * [getProperty](#getproperty)
+ * * [removeProperty](#removeproperty)
+ * * [getProperties](#getproperties)
+ * * [getModelToStyle](#getmodeltostyle)
+ * * [addType](#addtype)
+ * * [getType](#gettype)
+ * * [getTypes](#gettypes)
+ * * [createType](#createtype)
  *
  * @module StyleManager
- * @param {Object} config Configurations
- * @param {Array<Object>} [config.sectors=[]] Array of possible sectors
- * @example
- * ...
- * styleManager: {
- *    sectors: [{
- *      id: 'dim',
- *      name: 'Dimension',
- *      properties: [{
- *        name: 'Width',
- *        property: 'width',
- *        type: 'integer',
- *        units: ['px', '%'],
- *        defaults: 'auto',
- *        min: 0,
-          }],
- *     }],
- * }
- * ...
  */
-module.exports = () => {
-  var c = {},
-  defaults = require('./config/config'),
-  Sectors = require('./model/Sectors'),
-  Properties = require('./model/Properties'),
-  SectorsView = require('./view/SectorsView');
+
+import { isElement } from 'underscore';
+import defaults from './config/config';
+import Sectors from './model/Sectors';
+import Properties from './model/Properties';
+import SectorsView from './view/SectorsView';
+
+export default () => {
+  var c = {};
   let properties;
   var sectors, SectView;
 
   return {
-
     /**
      * Name of the module
      * @type {String}
@@ -56,42 +52,47 @@ module.exports = () => {
      */
     name: 'StyleManager',
 
-
     /**
      * Get configuration object
      * @return {Object}
-     * @private
      */
     getConfig() {
       return c;
     },
 
-
     /**
      * Initialize module. Automatically called with a new instance of the editor
      * @param {Object} config Configurations
+     * @private
      */
     init(config) {
-      c = config || {};
-      for (var name in defaults) {
-        if (!(name in c))
-          c[name] = defaults[name];
-      }
-
-      var ppfx = c.pStylePrefix;
-      if(ppfx)
-        c.stylePrefix = ppfx + c.stylePrefix;
-
+      c = { ...defaults, ...config };
+      const ppfx = c.pStylePrefix;
+      this.em = c.em;
+      if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
       properties = new Properties();
-      sectors = new Sectors(c.sectors, c);
-      SectView   = new SectorsView({
+      sectors = new Sectors([], c);
+      SectView = new SectorsView({
         collection: sectors,
         target: c.em,
-        config: c,
+        config: c
       });
+
       return this;
     },
 
+    onLoad() {
+      sectors.add(c.sectors);
+    },
+
+    postRender() {
+      const elTo = this.getConfig().appendTo;
+
+      if (elTo) {
+        const el = isElement(elTo) ? elTo : document.querySelector(elTo);
+        el.appendChild(this.render());
+      }
+    },
 
     /**
      * Add new sector to the collection. If the sector with the same id already exists,
@@ -101,23 +102,26 @@ module.exports = () => {
      * @param  {string} [sector.name='']  Sector's label
      * @param  {Boolean} [sector.open=true] Indicates if the sector should be opened
      * @param  {Array<Object>} [sector.properties=[]] Array of properties
+     * @param  {Object} [options={}] Options
      * @return {Sector} Added Sector
      * @example
      * var sector = styleManager.addSector('mySector',{
      *   name: 'My sector',
      *   open: true,
      *   properties: [{ name: 'My property'}]
-     * });
+     * }, { at: 0 });
+     * // With `at: 0` we place the new sector at the beginning of the collection
      * */
-    addSector(id, sector) {
-      var result = this.getSector(id);
-      if(!result){
+    addSector(id, sector, opts = {}) {
+      let result = this.getSector(id);
+
+      if (!result) {
         sector.id = id;
-        result = sectors.add(sector);
+        result = sectors.add(sector, opts);
       }
+
       return result;
     },
-
 
     /**
      * Get sector by id
@@ -126,11 +130,11 @@ module.exports = () => {
      * @example
      * var sector = styleManager.getSector('mySector');
      * */
-    getSector(id) {
-      var res  = sectors.where({id});
-      return res.length ? res[0] : null;
+    getSector(id, opts = {}) {
+      const res = sectors.where({ id })[0];
+      !res && opts.warn && this._logNoSector(id);
+      return res;
     },
-
 
     /**
      * Remove a sector by id
@@ -140,9 +144,8 @@ module.exports = () => {
      * const removed = styleManager.removeSector('mySector');
      */
     removeSector(id) {
-      return this.getSectors().remove(this.getSector(id));
+      return this.getSectors().remove(this.getSector(id, { warn: 1 }));
     },
-
 
     /**
      * Get all sectors
@@ -151,7 +154,6 @@ module.exports = () => {
     getSectors() {
       return sectors;
     },
-
 
     /**
      * Add property to the sector identified by id
@@ -172,6 +174,7 @@ module.exports = () => {
      * @param {Array<Object>} [property.properties=[]] Nested properties for composite and stack type
      * @param {Array<Object>} [property.layers=[]] Layers for stack properties
      * @param {Array<Object>} [property.list=[]] List of possible options for radio and select types
+     * @param  {Object} [options={}] Options
      * @return {Property|null} Added Property or `null` in case sector doesn't exist
      * @example
      * var property = styleManager.addProperty('mySector',{
@@ -186,18 +189,16 @@ module.exports = () => {
      *      value: '200px',
      *      name: '200',
      *    }],
-     * });
+     * }, { at: 0 });
+     * // With `at: 0` we place the new property at the beginning of the collection
      */
-    addProperty(sectorId, property) {
-      var prop = null;
-      var sector = this.getSector(sectorId);
-
-      if(sector)
-        prop = sector.get('properties').add(property);
+    addProperty(sectorId, property, opts = {}) {
+      const sector = this.getSector(sectorId, { warn: 1 });
+      let prop = null;
+      if (sector) prop = sector.get('properties').add(property, opts);
 
       return prop;
     },
-
 
     /**
      * Get property by its CSS name and sector id
@@ -208,17 +209,16 @@ module.exports = () => {
      * var property = styleManager.getProperty('mySector','min-height');
      */
     getProperty(sectorId, name) {
-      var prop = null;
-      var sector = this.getSector(sectorId);
+      const sector = this.getSector(sectorId, { warn: 1 });
+      let prop = null;
 
-      if(sector){
-        prop = sector.get('properties').where({property: name});
+      if (sector) {
+        prop = sector.get('properties').where({ property: name });
         prop = prop.length == 1 ? prop[0] : prop;
       }
 
       return prop;
     },
-
 
     /**
      * Remove a property from the sector
@@ -233,7 +233,6 @@ module.exports = () => {
       return props && props.remove(this.getProperty(sectorId, name));
     },
 
-
     /**
      * Get properties of the sector
      * @param  {string} sectorId Sector id
@@ -242,15 +241,12 @@ module.exports = () => {
      * var properties = styleManager.getProperties('mySector');
      */
     getProperties(sectorId) {
-      var props = null;
-      var sector = this.getSector(sectorId);
-
-      if(sector)
-        props = sector.get('properties');
+      let props = null;
+      const sector = this.getSector(sectorId, { warn: 1 });
+      if (sector) props = sector.get('properties');
 
       return props;
     },
-
 
     /**
      * Get what to style inside Style Manager. If you select the component
@@ -267,25 +263,39 @@ module.exports = () => {
 
       if (em) {
         const config = em.getConfig();
+        const um = em.get('UndoManager');
         const cssC = em.get('CssComposer');
         const state = !config.devicePreviewMode ? model.get('state') : '';
         const valid = classes.getStyleable();
         const hasClasses = valid.length;
         const opts = { state };
+        let rule;
+
+        // I stop undo manager here as after adding the CSSRule (generally after
+        // selecting the component) and calling undo() it will remove the rule from
+        // the collection, therefore updating it in style manager will not affect it
+        // #268
+        um.stop();
 
         if (hasClasses) {
           const deviceW = em.getCurrentMedia();
-          const CssRule = cssC.get(valid, state, deviceW);
-          if (CssRule) return CssRule;
+          rule = cssC.get(valid, state, deviceW);
+
+          if (!rule) {
+            rule = cssC.add(valid, state, deviceW);
+          }
         } else if (config.avoidInlineStyle) {
-          const rule = cssC.getIdRule(id, opts);
-          return rule ? rule : cssC.setIdRule(id, {}, opts);
+          rule = cssC.getIdRule(id, opts);
+          !rule && (rule = cssC.setIdRule(id, {}, opts));
+          if (model.is('wrapper')) rule.set('wrapper', 1);
         }
+
+        rule && (model = rule);
+        um.start();
       }
 
       return model;
     },
-
 
     /**
      * Add new property type
@@ -294,7 +304,8 @@ module.exports = () => {
      *                            `model` (business logic), `view` (presentation logic)
      *                            and `isType` function which recognize the type of the
      *                            passed entity
-     * addType('my-type', {
+     *@example
+     * styleManager.addType('my-type', {
      *  model: {},
      *  view: {},
      *  isType: (value) => {
@@ -308,7 +319,6 @@ module.exports = () => {
       properties.addType(id, definition);
     },
 
-
     /**
      * Get type
      * @param {string} id Type ID
@@ -318,7 +328,6 @@ module.exports = () => {
       return properties.getType(id);
     },
 
-
     /**
      * Get all types
      * @return {Array}
@@ -326,7 +335,6 @@ module.exports = () => {
     getTypes() {
       return properties.getTypes();
     },
-
 
     /**
      * Create new property from type
@@ -343,7 +351,7 @@ module.exports = () => {
      * propView.model.on('change:value', ...);
      * someContainer.appendChild(propView.el);
      */
-    createType(id, {model = {}, view = {}} = {}) {
+    createType(id, { model = {}, view = {} } = {}) {
       const type = this.getType(id);
 
       if (type) {
@@ -355,14 +363,32 @@ module.exports = () => {
       }
     },
 
+    /**
+     * Select different target for the Style Manager.
+     * It could be a Component, CSSRule, or a string of any CSS selector
+     * @param {Component|CSSRule|String} target
+     * @return {Styleable} A Component or CSSRule
+     */
+    setTarget(target, opts) {
+      return SectView.setTarget(target, opts);
+    },
+
+    getEmitter() {
+      return SectView.propTarget;
+    },
 
     /**
      * Render sectors and properties
      * @return  {HTMLElement}
+     * @private
      * */
     render() {
       return SectView.render().el;
     },
 
+    _logNoSector(sectorId) {
+      const { em } = this;
+      em && em.logWarning(`'${sectorId}' sector not found`);
+    }
   };
 };

@@ -1,7 +1,7 @@
+import Backbone from 'backbone';
 const $ = Backbone.$;
 
-module.exports = {
-
+export default {
   /**
    * Start select position event
    * @param {HTMLElement} trg
@@ -10,7 +10,7 @@ module.exports = {
   startSelectPosition(trg, doc) {
     this.isPointed = false;
     var utils = this.editorModel.get('Utils');
-    if(utils && !this.sorter)
+    if (utils && !this.sorter)
       this.sorter = new utils.Sorter({
         container: this.getCanvasBody(),
         placer: this.canvas.getPlacerEl(),
@@ -23,8 +23,9 @@ module.exports = {
         nested: 1,
         em: this.editorModel,
         canvasRelative: 1,
+        scale: () => this.em.getZoomDecimal()
       });
-    this.sorter.startSort(trg);
+    trg && this.sorter.startSort(trg);
   },
 
   /**
@@ -46,17 +47,27 @@ module.exports = {
    * */
   stopSelectPosition() {
     this.posTargetCollection = null;
-    this.posIndex   = this.posMethod=='after' && this.cDim.length!==0 ? this.posIndex + 1 : this.posIndex; //Normalize
-    if(this.sorter){
+    this.posIndex =
+      this.posMethod == 'after' && this.cDim.length !== 0
+        ? this.posIndex + 1
+        : this.posIndex; //Normalize
+    if (this.sorter) {
       this.sorter.moved = 0;
       this.sorter.endMove();
     }
-    if(this.cDim){
-      this.posIsLastEl  = this.cDim.length!==0 && this.posMethod=='after' && this.posIndex==this.cDim.length;
-      this.posTargetEl   = (this.cDim.length===0 ? $(this.outsideElem) :
-         (!this.posIsLastEl && this.cDim[this.posIndex] ? $(this.cDim[this.posIndex][5]).parent() : $(this.outsideElem) ));
-      this.posTargetModel     = this.posTargetEl.data("model");
-      this.posTargetCollection   = this.posTargetEl.data("model-comp");
+    if (this.cDim) {
+      this.posIsLastEl =
+        this.cDim.length !== 0 &&
+        this.posMethod == 'after' &&
+        this.posIndex == this.cDim.length;
+      this.posTargetEl =
+        this.cDim.length === 0
+          ? $(this.outsideElem)
+          : !this.posIsLastEl && this.cDim[this.posIndex]
+          ? $(this.cDim[this.posIndex][5]).parent()
+          : $(this.outsideElem);
+      this.posTargetModel = this.posTargetEl.data('model');
+      this.posTargetCollection = this.posTargetEl.data('model-comp');
     }
   },
 
@@ -80,15 +91,16 @@ module.exports = {
     var i = index || 0;
     var m = method || 'before';
     var len = dims.length;
-    var isLast  = len !== 0 && m == 'after' && i == len;
-    if(len !== 0 && (
-       (!isLast && !dims[i][4]) ||
-       (dims[i-1] && !dims[i-1][4]) ||
-       (isLast && !dims[i-1][4]) ) )
+    var isLast = len !== 0 && m == 'after' && i == len;
+    if (
+      len !== 0 &&
+      ((!isLast && !dims[i][4]) ||
+        (dims[i - 1] && !dims[i - 1][4]) ||
+        (isLast && !dims[i - 1][4]))
+    )
       return 1;
     return 0;
   },
-
 
   run() {
     this.enable();
@@ -96,7 +108,7 @@ module.exports = {
 
   stop() {
     this.stopSelectPosition();
-    this.$wrapper.css('cursor','');
+    this.$wrapper.css('cursor', '');
     this.$wrapper.unbind();
   }
 };

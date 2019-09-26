@@ -1,8 +1,6 @@
-var Backbone = require('backbone');
-var ComponentView = require('./ComponentTextView');
+import ComponentView from './ComponentTextView';
 
-module.exports = ComponentView.extend({
-
+export default ComponentView.extend({
   render(...args) {
     ComponentView.prototype.render.apply(this, args);
 
@@ -11,6 +9,5 @@ module.exports = ComponentView.extend({
     this.el.addEventListener('click', this.prevDef, true);
 
     return this;
-  },
-
+  }
 });

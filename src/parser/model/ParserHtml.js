@@ -1,12 +1,56 @@
-module.exports = config => {
+import { each, isString } from 'underscore';
 
+export default config => {
   var TEXT_NODE = 'span';
   var c = config;
   var modelAttrStart = 'data-gjs-';
 
   return {
-
     compTypes: '',
+
+    modelAttrStart,
+
+    /**
+     * Extract component props from an attribute object
+     * @param {Object} attr
+     * @returns {Object} An object containing props and attributes without them
+     */
+    splitPropsFromAttr(attr = {}) {
+      const props = {};
+      const attrs = {};
+
+      each(attr, (value, key) => {
+        if (key.indexOf(this.modelAttrStart) === 0) {
+          const modelAttr = key.replace(modelAttrStart, '');
+          const valueLen = value.length;
+          const valStr = value && isString(value);
+          const firstChar = valStr && value.substr(0, 1);
+          const lastChar = valStr && value.substr(valueLen - 1);
+          value = value === 'true' ? true : value;
+          value = value === 'false' ? false : value;
+
+          // Try to parse JSON where it's possible
+          // I can get false positive here (eg. a selector '[data-attr]')
+          // so put it under try/catch and let fail silently
+          try {
+            value =
+              (firstChar == '{' && lastChar == '}') ||
+              (firstChar == '[' && lastChar == ']')
+                ? JSON.parse(value)
+                : value;
+          } catch (e) {}
+
+          props[modelAttr] = value;
+        } else {
+          attrs[key] = value;
+        }
+      });
+
+      return {
+        props,
+        attrs
+      };
+    },
 
     /**
      * Parse style string to object
@@ -22,10 +66,12 @@ module.exports = config => {
       var decls = str.split(';');
       for (var i = 0, len = decls.length; i < len; i++) {
         var decl = decls[i].trim();
-        if(!decl)
-          continue;
+        if (!decl) continue;
         var prop = decl.split(':');
-        result[prop[0].trim()] = prop.slice(1).join(':').trim();
+        result[prop[0].trim()] = prop
+          .slice(1)
+          .join(':')
+          .trim();
       }
       return result;
     },
@@ -40,13 +86,11 @@ module.exports = config => {
      * // ['test1', 'test2', 'test3']
      */
     parseClass(str) {
-      var result = [];
-      var cls = str.split(' ');
-      for (var i = 0, len = cls.length; i < len; i++) {
-        var cl = cls[i].trim();
-        var reg = new RegExp('^' + c.pStylePrefix);
-        if(!cl || reg.test(cl))
-          continue;
+      const result = [];
+      const cls = str.split(' ');
+      for (let i = 0, len = cls.length; i < len; i++) {
+        const cl = cls[i].trim();
+        if (!cl) continue;
         result.push(cl);
       }
       return result;
@@ -73,15 +117,29 @@ module.exports = config => {
         // Start with understanding what kind of component it is
         if (ct) {
           let obj = '';
+          let type =
+            node.getAttribute && node.getAttribute(`${modelAttrStart}type`);
 
-          // Iterate over all available Component Types and
-          // the first with a valid result will be that component
-          for (let it = 0; it < ct.length; it++) {
-            obj = ct[it].model.isComponent(node);
-            if (obj) break;
+          // If the type is already defined, use it
+          if (type) {
+            model = { type };
+          } else {
+            // Iterate over all available Component Types and
+            // the first with a valid result will be that component
+            for (let it = 0; it < ct.length; it++) {
+              const compType = ct[it];
+              obj = compType.model.isComponent(node);
+
+              if (obj) {
+                if (typeof obj !== 'object') {
+                  obj = { type: compType.id };
+                }
+                break;
+              }
+            }
+
+            model = obj;
           }
-
-          model = obj;
         }
 
         // Set tag name if not yet done
@@ -117,8 +175,11 @@ module.exports = config => {
             // I can get false positive here (eg. a selector '[data-attr]')
             // so put it under try/catch and let fail silently
             try {
-              nodeValue = (firstChar == '{' && lastChar == '}') ||
-                (firstChar == '[' && lastChar == ']') ? JSON.parse(nodeValue) : nodeValue;
+              nodeValue =
+                (firstChar == '{' && lastChar == '}') ||
+                (firstChar == '[' && lastChar == ']')
+                  ? JSON.parse(nodeValue)
+                  : nodeValue;
             } catch (e) {}
 
             model[modelAttr] = nodeValue;
@@ -150,9 +211,11 @@ module.exports = config => {
           }
 
           // Throw away empty nodes (keep spaces)
-          const content = node.nodeValue;
-          if (content != ' ' && !content.trim()) {
-            continue;
+          if (!config.keepEmptyTextNodes) {
+            const content = node.nodeValue;
+            if (content != ' ' && !content.trim()) {
+              continue;
+            }
           }
         }
 
@@ -167,8 +230,10 @@ module.exports = config => {
             const comp = comps[ci];
             const cType = comp.type;
 
-            if (['text', 'textnode'].indexOf(cType) < 0 &&
-                c.textTags.indexOf(comp.tagName) < 0 ) {
+            if (
+              ['text', 'textnode'].indexOf(cType) < 0 &&
+              c.textTags.indexOf(comp.tagName) < 0
+            ) {
               allTxt = 0;
               break;
             }
@@ -202,44 +267,38 @@ module.exports = config => {
      */
     parse(str, parserCss) {
       var config = (c.em && c.em.get('Config')) || {};
-      var res = { html: '', css: ''};
+      var res = { html: '', css: '' };
       var el = document.createElement('div');
       el.innerHTML = str;
       var scripts = el.querySelectorAll('script');
       var i = scripts.length;
 
       // Remove all scripts
-      if(!config.allowScripts){
-        while (i--)
-          scripts[i].parentNode.removeChild(scripts[i]);
+      if (!config.allowScripts) {
+        while (i--) scripts[i].parentNode.removeChild(scripts[i]);
       }
 
       // Detach style tags and parse them
-      if(parserCss){
+      if (parserCss) {
         var styleStr = '';
         var styles = el.querySelectorAll('style');
         var j = styles.length;
 
-        while (j--){
+        while (j--) {
           styleStr = styles[j].innerHTML + styleStr;
           styles[j].parentNode.removeChild(styles[j]);
         }
 
-        if(styleStr)
-          res.css = parserCss.parse(styleStr);
+        if (styleStr) res.css = parserCss.parse(styleStr);
       }
 
       var result = this.parseNode(el);
 
-      if(result.length == 1)
-        result = result[0];
+      if (result.length == 1) result = result[0];
 
       res.html = result;
 
       return res;
-
-    },
-
+    }
   };
-
 };

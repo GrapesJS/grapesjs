@@ -1,65 +1,81 @@
 /**
+ * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/commands/config/config.js)
+ * ```js
+ * const editor = grapesjs.init({
+ *  commands: {
+ *    // options
+ *  }
+ * })
+ * ```
+ *
+ * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+ *
+ * ```js
+ * const commands = editor.Commands;
+ * ```
  *
  * * [add](#add)
  * * [get](#get)
+ * * [getAll](#getall)
+ * * [extend](#extend)
  * * [has](#has)
- *
- * You can init the editor with all necessary commands via configuration
- *
- * ```js
- * var editor = grapesjs.init({
- * 	...
- *  commands: {...} // Check below for the properties
- * 	...
- * });
- * ```
- *
- * Before using methods you should get first the module from the editor instance, in this way:
- *
- * ```js
- * var commands = editor.Commands;
- * ```
+ * * [run](#run)
+ * * [stop](#stop)
+ * * [isActive](#isactive)
+ * * [getActive](#getactive)
  *
  * @module Commands
- * @param {Object} config Configurations
- * @param {Array<Object>} [config.defaults=[]] Array of possible commands
- * @example
- * ...
- * commands: {
- * 	defaults: [{
- * 		id: 'helloWorld',
- * 		run:  function(editor, sender){
- * 			alert('Hello world!');
- * 		},
- * 		stop:  function(editor, sender){
- * 			alert('Stop!');
- * 		},
- * 	}],
- * },
- * ...
  */
-import { isFunction } from 'underscore';
 
-module.exports = () => {
+import { isFunction, includes } from 'underscore';
+import CommandAbstract from './view/CommandAbstract';
+import defaults from './config/config';
+
+export default () => {
   let em;
-  var c = {},
-  commands = {},
-  defaultCommands = {},
-  defaults = require('./config/config'),
-  AbsCommands = require('./view/CommandAbstract');
+  let c = {};
+  const commands = {};
+  const defaultCommands = {};
+  const active = {};
+  const commandsDef = [
+    ['preview', 'Preview', 'preview'],
+    ['resize', 'Resize', 'resize'],
+    ['fullscreen', 'Fullscreen', 'fullscreen'],
+    ['copy', 'CopyComponent'],
+    ['paste', 'PasteComponent'],
+    ['canvas-move', 'CanvasMove'],
+    ['canvas-clear', 'CanvasClear'],
+    ['open-code', 'ExportTemplate', 'export-template'],
+    ['open-layers', 'OpenLayers', 'open-layers'],
+    ['open-styles', 'OpenStyleManager', 'open-sm'],
+    ['open-traits', 'OpenTraitManager', 'open-tm'],
+    ['open-blocks', 'OpenBlocks', 'open-blocks'],
+    ['open-assets', 'OpenAssets', 'open-assets'],
+    ['component-select', 'SelectComponent', 'select-comp'],
+    ['component-outline', 'SwitchVisibility', 'sw-visibility'],
+    ['component-offset', 'ShowOffset', 'show-offset'],
+    ['component-move', 'MoveComponent', 'move-comp'],
+    ['component-next', 'ComponentNext'],
+    ['component-prev', 'ComponentPrev'],
+    ['component-enter', 'ComponentEnter'],
+    ['component-exit', 'ComponentExit', 'select-parent'],
+    ['component-delete', 'ComponentDelete'],
+    ['component-style-clear', 'ComponentStyleClear'],
+    ['component-drag', 'ComponentDrag']
+  ];
 
   // Need it here as it would be used below
-  var add = function(id, obj) {
-    if (isFunction(obj)) {
-      obj = { run: obj };
-    }
-
+  const add = function(id, obj) {
+    if (isFunction(obj)) obj = { run: obj };
+    if (!obj.stop) obj.noStop = 1;
     delete obj.initialize;
-    commands[id] = AbsCommands.extend(obj);
+    obj.id = id;
+    commands[id] = CommandAbstract.extend(obj);
     return this;
   };
 
   return {
+    CommandAbstract,
 
     /**
      * Name of the module
@@ -73,164 +89,113 @@ module.exports = () => {
      * @param {Object} config Configurations
      * @private
      */
-    init(config) {
-      c = config || {};
-      for (var name in defaults) {
-        if (!(name in c))
-          c[name] = defaults[name];
-      }
+    init(config = {}) {
+      c = {
+        ...defaults,
+        ...config
+      };
       em = c.em;
-      var ppfx = c.pStylePrefix;
-      if(ppfx)
-        c.stylePrefix = ppfx + c.stylePrefix;
+      const ppfx = c.pStylePrefix;
+      if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
 
       // Load commands passed via configuration
-      for( var k in c.defaults) {
-        var obj = c.defaults[k];
-        if(obj.id)
-          this.add(obj.id, obj);
+      for (let k in c.defaults) {
+        const obj = c.defaults[k];
+        if (obj.id) this.add(obj.id, obj);
       }
-
-      const ViewCode = require('./view/ExportTemplate');
-      defaultCommands['select-comp'] = require('./view/SelectComponent');
-      defaultCommands['create-comp'] = require('./view/CreateComponent');
-      defaultCommands['delete-comp'] = require('./view/DeleteComponent');
-      defaultCommands['image-comp'] = require('./view/ImageComponent');
-      defaultCommands['move-comp'] = require('./view/MoveComponent');
-      defaultCommands['text-comp'] = require('./view/TextComponent');
-      defaultCommands['insert-custom'] = require('./view/InsertCustom');
-      defaultCommands['export-template'] = ViewCode;
-      defaultCommands['sw-visibility'] = require('./view/SwitchVisibility');
-      defaultCommands['open-layers'] = require('./view/OpenLayers');
-      defaultCommands['open-sm'] = require('./view/OpenStyleManager');
-      defaultCommands['open-tm'] = require('./view/OpenTraitManager');
-      defaultCommands['open-blocks'] = require('./view/OpenBlocks');
-      defaultCommands['open-assets'] = require('./view/OpenAssets');
-      defaultCommands['show-offset'] = require('./view/ShowOffset');
-      defaultCommands['select-parent'] = require('./view/SelectParent');
-      defaultCommands.fullscreen = require('./view/Fullscreen');
-      defaultCommands.preview = require('./view/Preview');
-      defaultCommands.resize = require('./view/Resize');
-      defaultCommands.drag = require('./view/Drag');
 
       defaultCommands['tlb-delete'] = {
         run(ed) {
-          var sel = ed.getSelected();
-
-          if(!sel || !sel.get('removable')) {
-            console.warn('The element is not removable');
-            return;
-          }
-
-          ed.select(null);
-          sel.destroy();
-        },
+          return ed.runCommand('core:component-delete');
+        }
       };
 
       defaultCommands['tlb-clone'] = {
         run(ed) {
-          var sel = ed.getSelected();
-
-          if(!sel || !sel.get('copyable')) {
-            console.warn('The element is not clonable');
-            return;
-          }
-
-          var collection = sel.collection;
-          var index = collection.indexOf(sel);
-          collection.add(sel.clone(), {at: index + 1});
-          sel.emitUpdate()
-        },
+          ed.runCommand('core:copy');
+          ed.runCommand('core:paste');
+        }
       };
 
       defaultCommands['tlb-move'] = {
-        run(ed, sender, opts) {
-          var sel = ed.getSelected();
-          var dragger;
+        run(ed, sender, opts = {}) {
+          let dragger;
+          const em = ed.getModel();
+          const event = opts && opts.event;
+          const { target } = opts;
+          const sel = target || ed.getSelected();
+          const selAll = target ? [target] : [...ed.getSelectedAll()];
+          const nativeDrag = event && event.type == 'dragstart';
+          const defComOptions = { preserveSelected: 1 };
+          const modes = ['absolute', 'translate'];
+          const hideTlb = () => em.stopDefault(defComOptions);
 
-          if(!sel || !sel.get('draggable')) {
+          // Dirty patch to prevent parent selection on drop (in absolute mode)
+          em.set('_cmpDrag', 1);
+
+          if (!sel || !sel.get('draggable')) {
             console.warn('The element is not draggable');
             return;
           }
 
-          const onStart = (e, opts) => {
-            console.log('start mouse pos ', opts.start);
-            console.log('el rect ', opts.elRect);
-            var el = opts.el;
-            el.style.position = 'absolute';
-            el.style.margin = 0;
-          };
+          const mode = sel.get('dmode') || em.get('dmode');
+
+          // Without setTimeout the ghost image disappears
+          nativeDrag ? setTimeout(hideTlb, 0) : hideTlb();
 
           const onEnd = (e, opts) => {
-            em.runDefault();
-            em.set('selectedComponent', sel);
-            sel.emitUpdate()
-            dragger && dragger.blur();
+            em.runDefault(defComOptions);
+            selAll.forEach(sel => sel.set('status', 'selected'));
+            ed.select(selAll);
+            sel.emitUpdate();
           };
 
-          const onDrag = (e, opts) => {
-            console.log('Delta ', opts.delta);
-            console.log('Current ', opts.current);
-          };
-
-          var toolbarEl = ed.Canvas.getToolbarEl();
-          toolbarEl.style.display = 'none';
-          var em = ed.getModel();
-          em.stopDefault();
-
-          if (em.get('designerMode')) {
+          if (includes(modes, mode)) {
             // TODO move grabbing func in editor/canvas from the Sorter
-            dragger = editor.runCommand('drag', {
-              el: sel.view.el,
-              options: {
-                event: opts && opts.event,
-                onStart,
-                onDrag,
-                onEnd
-              }
+            dragger = ed.runCommand('core:component-drag', {
+              guidesInfo: 1,
+              mode,
+              target: sel,
+              onEnd,
+              event
             });
           } else {
-            var cmdMove = ed.Commands.get('move-comp');
+            if (nativeDrag) {
+              event.dataTransfer.setDragImage(sel.view.el, 0, 0);
+              //sel.set('status', 'freezed');
+            }
+
+            const cmdMove = ed.Commands.get('move-comp');
             cmdMove.onEndMoveFromModel = onEnd;
-            cmdMove.initSorterFromModel(sel);
+            cmdMove.initSorterFromModels(selAll);
           }
 
-
-          sel.set('status', 'selected');
-        },
+          selAll.forEach(sel => sel.set('status', 'freezed-selected'));
+        }
       };
 
       // Core commands
       defaultCommands['core:undo'] = e => e.UndoManager.undo();
       defaultCommands['core:redo'] = e => e.UndoManager.redo();
-      defaultCommands['core:canvas-clear'] = e => {
-        e.DomComponents.clear();
-        e.CssComposer.clear();
-      };
-      defaultCommands['core:copy'] = ed => {
-        const em = ed.getModel();
-        const model = ed.getSelected();
-
-        if (model && model.get('copyable') && !ed.Canvas.isInputFocused()) {
-          em.set('clipboard', model);
+      commandsDef.forEach(item => {
+        const oldCmd = item[2];
+        const cmd = require(`./view/${item[1]}`).default;
+        const cmdName = `core:${item[0]}`;
+        defaultCommands[cmdName] = cmd;
+        if (oldCmd) {
+          defaultCommands[oldCmd] = cmd;
+          // Propogate old commands (can be removed once we stop to call old commands)
+          ['run', 'stop'].forEach(name => {
+            em.on(`${name}:${oldCmd}`, (...args) =>
+              em.trigger(`${name}:${cmdName}`, ...args)
+            );
+          });
         }
-      };
-      defaultCommands['core:paste'] = ed => {
-        const em = ed.getModel();
-        const clp = em.get('clipboard');
-        const model = ed.getSelected();
-        const coll = model && model.collection;
+      });
 
-        if (coll && clp && !ed.Canvas.isInputFocused()) {
-          const at = coll.indexOf(model) + 1;
-          coll.add(clp.clone(), { at });
-        }
-      };
+      if (c.em) c.model = c.em.get('Canvas');
 
-      if(c.em)
-        c.model = c.em.get('Canvas');
-
-      this.loadDefaultCommands()
+      this.loadDefaultCommands();
 
       return this;
     },
@@ -264,14 +229,45 @@ module.exports = () => {
      * myCommand.run();
      * */
     get(id) {
-      var el = commands[id];
+      let el = commands[id];
 
-      if(typeof el == 'function'){
+      if (isFunction(el)) {
         el = new el(c);
-        commands[id]	= el;
+        commands[id] = el;
+      } else if (!el) {
+        em.logWarning(`'${id}' command not found`);
       }
 
       return el;
+    },
+
+    /**
+     * Extend the command. The command to extend should be defined as an object
+     * @param	{string}	id Command's ID
+     * @param {Object} Object with the new command functions
+     * @returns {this}
+     * @example
+     * commands.extend('old-command', {
+     *  someInnerFunction() {
+     *  // ...
+     *  }
+     * });
+     * */
+    extend(id, cmd = {}) {
+      const command = this.get(id);
+      if (command) {
+        const cmdObj = {
+          ...command.constructor.prototype,
+          ...cmd
+        };
+        this.add(id, cmdObj);
+        // Extend also old name commands if exist
+        const oldCmd = commandsDef.filter(
+          cmd => `core:${cmd[0]}` === id && cmd[2]
+        )[0];
+        oldCmd && this.add(oldCmd[2], cmdObj);
+      }
+      return this;
     },
 
     /**
@@ -284,17 +280,138 @@ module.exports = () => {
     },
 
     /**
+     * Get an object containing all the commands
+     * @return {Object}
+     */
+    getAll() {
+      return commands;
+    },
+
+    /**
+     * Execute the command
+     * @param {String} id Command ID
+     * @param {Object} [options={}] Options
+     * @return {*} The return is defined by the command
+     * @example
+     * commands.run('myCommand', { someOption: 1 });
+     */
+    run(id, options = {}) {
+      return this.runCommand(this.get(id), options);
+    },
+
+    /**
+     * Stop the command
+     * @param {String} id Command ID
+     * @param {Object} [options={}] Options
+     * @return {*} The return is defined by the command
+     * @example
+     * commands.stop('myCommand', { someOption: 1 });
+     */
+    stop(id, options = {}) {
+      return this.stopCommand(this.get(id), options);
+    },
+
+    /**
+     * Check if the command is active. You activate commands with `run`
+     * and disable them with `stop`. If the command was created without `stop`
+     * method it can't be registered as active
+     * @param  {String}  id Command id
+     * @return {Boolean}
+     * @example
+     * const cId = 'some-command';
+     * commands.run(cId);
+     * commands.isActive(cId);
+     * // -> true
+     * commands.stop(cId);
+     * commands.isActive(cId);
+     * // -> false
+     */
+    isActive(id) {
+      return this.getActive().hasOwnProperty(id);
+    },
+
+    /**
+     * Get all active commands
+     * @return {Object}
+     * @example
+     * console.log(commands.getActive());
+     * // -> { someCommand: itsLastReturn, anotherOne: ... };
+     */
+    getActive() {
+      return active;
+    },
+
+    /**
      * Load default commands
      * @return {this}
      * @private
      * */
     loadDefaultCommands() {
       for (var id in defaultCommands) {
-          this.add(id, defaultCommands[id]);
+        this.add(id, defaultCommands[id]);
       }
 
       return this;
     },
-  };
 
+    /**
+     * Run command via its object
+     * @param  {Object} command
+     * @param {Object} options
+     * @return {*} Result of the command
+     * @private
+     */
+    runCommand(command, options = {}) {
+      let result;
+
+      if (command && command.run) {
+        const id = command.id;
+        const editor = em.get('Editor');
+
+        if (!this.isActive(id) || options.force || !c.strict) {
+          result = command.callRun(editor, options);
+          if (id && command.stop && !command.noStop && !options.abort) {
+            active[id] = result;
+          }
+        }
+      }
+
+      return result;
+    },
+
+    /**
+     * Stop the command
+     * @param  {Object} command
+     * @param {Object} options
+     * @return {*} Result of the command
+     * @private
+     */
+    stopCommand(command, options = {}) {
+      let result;
+
+      if (command && command.run) {
+        const id = command.id;
+        const editor = em.get('Editor');
+
+        if (this.isActive(id) || options.force || !c.strict) {
+          if (id) delete active[id];
+          result = command.callStop(editor, options);
+        }
+      }
+
+      return result;
+    },
+
+    /**
+     * Create anonymous Command instance
+     * @param {Object} command Command object
+     * @return {Command}
+     * @private
+     * */
+    create(command) {
+      if (!command.stop) command.noStop = 1;
+      const cmd = CommandAbstract.extend(command);
+      return new cmd(c);
+    }
+  };
 };

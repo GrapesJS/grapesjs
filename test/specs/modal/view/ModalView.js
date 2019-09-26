@@ -1,60 +1,58 @@
-const ModalView = require('modal_dialog/view/ModalView');
-const Modal = require('modal_dialog/model/Modal');
+import ModalView from 'modal_dialog/view/ModalView';
+import Modal from 'modal_dialog/model/Modal';
 
 module.exports = {
   run() {
-      describe('ModalView', () => {
+    describe('ModalView', () => {
+      var model;
+      var view;
+      var editorModel;
 
-        var model;
-        var view;
-        var editorModel;
-
-        beforeEach(() => {
-          model = new Modal();
-          view = new ModalView({
-            model
-          });
-          document.body.innerHTML = '<div id="fixtures"></div>';
-          document.body.querySelector('#fixtures').appendChild(view.render().el);
+      beforeEach(() => {
+        model = new Modal();
+        view = new ModalView({
+          model
         });
+        document.body.innerHTML = '<div id="fixtures"></div>';
+        document.body.querySelector('#fixtures').appendChild(view.render().el);
+      });
 
-        afterEach(() => {
-          view = null;
-          model = null;
-        });
+      afterEach(() => {
+        view = null;
+        model = null;
+      });
 
-        it("The content is not empty", () => {
-          expect(view.el.innerHTML).toExist();
-        });
+      test('The content is not empty', () => {
+        expect(view.el.innerHTML).toBeTruthy();
+      });
 
-        it("Get content", () => {
-          expect(view.getContent()).toExist();
-        });
+      test('Get content', () => {
+        expect(view.getContent()).toBeTruthy();
+      });
 
-        it("Update content", () => {
-          model.set('content', 'test');
-          expect(view.getContent().get(0).innerHTML).toEqual('test');
-        });
+      test('Update content', () => {
+        model.set('content', 'test');
+        expect(view.getContent().get(0).innerHTML).toEqual('test');
+      });
 
-        it("Get title", () => {
-          expect(view.getTitle()).toExist();
-        });
+      test('Get title', () => {
+        expect(view.getTitle()).toBeTruthy();
+      });
 
-        it("Update title", () => {
-          model.set('title', 'test');
-          expect(view.getTitle().innerHTML).toEqual('test');
-        });
+      test('Update title', () => {
+        model.set('title', 'test');
+        expect(view.getTitle().innerHTML).toEqual('test');
+      });
 
-        it("Close by default", () => {
-          view.updateOpen();
-          expect(view.el.style.display).toEqual('none');
-        });
+      test('Close by default', () => {
+        view.updateOpen();
+        expect(view.el.style.display).toEqual('none');
+      });
 
-        it("Open dialog", () => {
-          model.set('open', 1);
-          expect(view.el.style.display).toEqual('');
-        });
-
+      test('Open dialog', () => {
+        model.set('open', 1);
+        expect(view.el.style.display).toEqual('');
+      });
     });
   }
 };

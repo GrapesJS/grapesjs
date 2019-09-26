@@ -1,38 +1,35 @@
-const SectorsView = require('style_manager/view/SectorsView');
-const Sectors = require('style_manager/model/Sectors');
+import SectorsView from 'style_manager/view/SectorsView';
+import Sectors from 'style_manager/model/Sectors';
 
 module.exports = {
   run() {
+    describe('SectorsView', () => {
+      var fixtures;
+      var model;
+      var view;
 
-      describe('SectorsView', () => {
-
-        var fixtures;
-        var model;
-        var view;
-
-        beforeEach(() => {
-          model = new Sectors([]);
-          view = new SectorsView({
-            collection: model
-          });
-          document.body.innerHTML = '<div id="fixtures"></div>';
-          fixtures = document.body.firstChild;
-          fixtures.appendChild(view.render().el);
+      beforeEach(() => {
+        model = new Sectors([]);
+        view = new SectorsView({
+          collection: model
         });
+        document.body.innerHTML = '<div id="fixtures"></div>';
+        fixtures = document.body.firstChild;
+        fixtures.appendChild(view.render().el);
+      });
 
-        afterEach(() => {
-          view.collection.reset();
-        });
+      afterEach(() => {
+        view.collection.reset();
+      });
 
-        it("Collection is empty", () => {
-          expect(view.el.innerHTML).toEqual('');
-        });
+      test('Collection is empty', () => {
+        expect(view.el.innerHTML).toEqual('');
+      });
 
-        it("Add new sectors", () => {
-          view.collection.add([{}, {}]);
-          expect(view.el.children.length).toEqual(2);
-        });
-
+      test('Add new sectors', () => {
+        view.collection.add([{}, {}]);
+        expect(view.el.children.length).toEqual(2);
+      });
     });
   }
 };

@@ -4,6 +4,11 @@
   justify-content: flex-start;
 }
 
+.#{$app-prefix}block-categories {
+  display: flex;
+  flex-direction: column;
+}
+
 .#{$app-prefix}block-category {
   width: 100%;
 
@@ -24,15 +29,17 @@
   @include user-select(none);
 
   width: 45%;
+  min-width: 45px;
   padding: 1em;
   box-sizing: border-box;
-  height: 90px;
+  min-height: 90px;
   cursor: all-scroll;
   font-size: 11px;
   font-weight: lighter;
+  text-align: center;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: space-between;
   border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 3px;
   margin: 10px 2.5% 5px;
@@ -43,10 +50,18 @@
   &:hover {
     box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.15);
   }
+
+  svg {
+    fill: currentColor;
+  }
+
+  &__media {
+    margin-bottom: 10px;
+  }
 }
 
 .#{$app-prefix}block-svg {
-  width: 61%;
+  width: 54px;
   fill: currentColor;
 }
 
@@ -65,6 +80,8 @@
   font-size: 0.65rem;
   font-weight: normal;
   font-family: Helvetica, sans-serif;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .#{$app-prefix}block.#{$app-prefix}bdrag {

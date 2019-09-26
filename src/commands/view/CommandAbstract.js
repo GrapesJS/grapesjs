@@ -1,28 +1,27 @@
-const $ = Backbone.$
+import Backbone from 'backbone';
+const $ = Backbone.$;
 
-module.exports = Backbone.View.extend({
-
+export default Backbone.View.extend({
   /**
    * Initialize method that can't be removed
    * @param  {Object}  o Options
    * @private
    * */
   initialize(o) {
-    this.config        = o || {};
-    this.editorModel   = this.em = this.config.em || {};
-    this.pfx          = this.config.stylePrefix;
-    this.ppfx          = this.config.pStylePrefix;
-    this.hoverClass    = this.pfx + 'hover';
-    this.badgeClass    = this.pfx + 'badge';
-    this.plhClass      = this.pfx + 'placeholder';
-    this.freezClass    = this.ppfx + 'freezed';
+    this.config = o || {};
+    this.editorModel = this.em = this.config.em || {};
+    this.pfx = this.config.stylePrefix;
+    this.ppfx = this.config.pStylePrefix;
+    this.hoverClass = this.pfx + 'hover';
+    this.badgeClass = this.pfx + 'badge';
+    this.plhClass = this.pfx + 'placeholder';
+    this.freezClass = this.ppfx + 'freezed';
 
     this.canvas = this.em.get && this.em.get('Canvas');
 
-    if(this.em.get)
-      this.setElement(this.getCanvas());
+    if (this.em.get) this.setElement(this.getCanvas());
 
-    if(this.canvas){
+    if (this.canvas) {
       this.$canvas = this.$el;
       this.$wrapper = $(this.getCanvasWrapper());
       this.frameEl = this.canvas.getFrameEl();
@@ -94,6 +93,51 @@ module.exports = Backbone.View.extend({
 
   /**
    * Method that run command
+   * @param  {Object}  editor Editor instance
+   * @param  {Object}  [options={}] Options
+   * @private
+   * */
+  callRun(editor, options = {}) {
+    const id = this.id;
+    editor.trigger(`run:${id}:before`, options);
+
+    if (options && options.abort) {
+      editor.trigger(`abort:${id}`, options);
+      return;
+    }
+
+    const sender = options.sender || editor;
+    const result = this.run(editor, sender, options);
+    editor.trigger(`run:${id}`, result, options);
+    editor.trigger('run', id, result, options);
+    return result;
+  },
+
+  /**
+   * Method that run command
+   * @param  {Object}  editor Editor instance
+   * @param  {Object}  [options={}] Options
+   * @private
+   * */
+  callStop(editor, options = {}) {
+    const id = this.id;
+    const sender = options.sender || editor;
+    editor.trigger(`stop:${id}:before`, options);
+    const result = this.stop(editor, sender, options);
+    editor.trigger(`stop:${id}`, result, options);
+    editor.trigger('stop', id, result, options);
+    return result;
+  },
+
+  /**
+   * Stop current command
+   */
+  stopCommand() {
+    this.em.get('Commands').stop(this.id);
+  },
+
+  /**
+   * Method that run command
    * @param  {Object}  em     Editor model
    * @param  {Object}  sender  Button sender
    * @private
@@ -106,6 +150,5 @@ module.exports = Backbone.View.extend({
    * @param  {Object}  sender  Button sender
    * @private
    * */
-  stop(em, sender) {},
-
+  stop(em, sender) {}
 });

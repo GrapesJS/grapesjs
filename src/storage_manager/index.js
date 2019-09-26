@@ -1,21 +1,51 @@
 /**
- * Before using methods you should get first the module from the editor instance, in this way:
+ * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/storage_manager/config/config.js)
+ * ```js
+ * const editor = grapesjs.init({
+ *  storageManager: {
+ *    // options
+ *  }
+ * })
+ * ```
+ *
+ * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
  *
  * ```js
- * var storageManager = editor.StorageManager;
+ * const storageManager = editor.StorageManager;
  * ```
+ *
+ * * [getConfig](#getconfig)
+ * * [isAutosave](#isautosave)
+ * * [setAutosave](#setautosave)
+ * * [getStepsBeforeSave](#getstepsbeforesave)
+ * * [setStepsBeforeSave](#setstepsbeforesave)
+ * * [setStepsBeforeSave](#setstepsbeforesave)
+ * * [getStorages](#getstorages)
+ * * [getCurrent](#getcurrent)
+ * * [getCurrentStorage](#getcurrentstorage)
+ * * [setCurrent](#setcurrent)
+ * * [add](#add)
+ * * [get](#get)
+ * * [store](#store)
+ * * [load](#load)
+ *
+ * @module StorageManager
  */
-module.exports = () => {
-  var c = {},
-  defaults = require('./config/config'),
-  LocalStorage = require('./model/LocalStorage'),
-  RemoteStorage = require('./model/RemoteStorage');
 
+import defaults from './config/config';
+import LocalStorage from './model/LocalStorage';
+import RemoteStorage from './model/RemoteStorage';
+
+export default () => {
+  var c = {};
+  let em;
   var storages = {};
   var defaultStorages = {};
+  const eventStart = 'storage:start';
+  const eventEnd = 'storage:end';
+  const eventError = 'storage:error';
 
   return {
-
     /**
      * Name of the module
      * @type {String}
@@ -41,19 +71,23 @@ module.exports = () => {
      * }
      * ...
      */
-    init(config) {
-      c = config || {};
-
-      for (var name in defaults) {
-        if (!(name in c))
-          c[name] = defaults[name];
-      }
-
-      defaultStorages.remote  = new RemoteStorage(c);
+    init(config = {}) {
+      c = { ...defaults, ...config };
+      em = c.em;
+      if (c._disable) c.type = 0;
+      defaultStorages.remote = new RemoteStorage(c);
       defaultStorages.local = new LocalStorage(c);
       c.currentStorage = c.type;
       this.loadDefaultProviders().setCurrent(c.type);
       return this;
+    },
+
+    /**
+     * Get configuration object
+     * @return {Object}
+     * */
+    getConfig() {
+      return c;
     },
 
     /**
@@ -88,7 +122,7 @@ module.exports = () => {
      * @return {this}
      * */
     setStepsBeforeSave(v) {
-      c.stepsBeforeSave  = v;
+      c.stepsBeforeSave = v;
       return this;
     },
 
@@ -101,15 +135,17 @@ module.exports = () => {
      * @return {this}
      * @example
      * storageManager.add('local2', {
-     *   load: function(keys, clb) {
+     *   load: function(keys, clb, clbErr) {
      *     var res = {};
      *     for (var i = 0, len = keys.length; i < len; i++){
      *       var v = localStorage.getItem(keys[i]);
      *       if(v) res[keys[i]] = v;
      *     }
      *     clb(res); // might be called inside some async method
+     *     // In case of errors...
+     *     // clbErr('Went something wrong');
      *   },
-     *   store: function(data, clb) {
+     *   store: function(data, clb, clbErr) {
      *     for(var key in data)
      *       localStorage.setItem(key, data[key]);
      *     clb(); // might be called inside some async method
@@ -165,13 +201,26 @@ module.exports = () => {
      * storageManager.store({item1: value1, item2: value2});
      * */
     store(data, clb) {
-      var st = this.get(this.getCurrent());
-      var dataF = {};
+      const st = this.get(this.getCurrent());
+      const toStore = {};
+      this.onStart('store', data);
 
-      for(var key in data)
-        dataF[c.id + key] = data[key];
+      for (let key in data) {
+        toStore[c.id + key] = data[key];
+      }
 
-      return st ? st.store(dataF, clb) : null;
+      return st
+        ? st.store(
+            toStore,
+            res => {
+              clb && clb(res);
+              this.onEnd('store', res);
+            },
+            err => {
+              this.onError('store', err);
+            }
+          )
+        : null;
     },
 
     /**
@@ -191,22 +240,35 @@ module.exports = () => {
       var keysF = [];
       var result = {};
 
-      if(typeof keys === 'string')
-        keys = [keys];
+      if (typeof keys === 'string') keys = [keys];
+      this.onStart('load', keys);
 
-      for (var i = 0, len = keys.length; i < len; i++)
+      for (var i = 0, len = keys.length; i < len; i++) {
         keysF.push(c.id + keys[i]);
+      }
 
-      st && st.load(keysF, res => {
-        // Restore keys name
-        var reg = new RegExp('^' + c.id + '');
-        for (var itemKey in res) {
-          var itemKeyR = itemKey.replace(reg, '');
-          result[itemKeyR] = res[itemKey];
-        }
+      if (st) {
+        st.load(
+          keysF,
+          res => {
+            // Restore keys name
+            var reg = new RegExp('^' + c.id + '');
+            for (var itemKey in res) {
+              var itemKeyR = itemKey.replace(reg, '');
+              result[itemKeyR] = res[itemKey];
+            }
 
+            clb && clb(result);
+            this.onEnd('load', result);
+          },
+          err => {
+            clb && clb(result);
+            this.onError('load', err);
+          }
+        );
+      } else {
         clb && clb(result);
-      });
+      }
     },
 
     /**
@@ -215,20 +277,60 @@ module.exports = () => {
      * @private
      * */
     loadDefaultProviders() {
-      for (var id in defaultStorages)
-        this.add(id, defaultStorages[id]);
+      for (var id in defaultStorages) this.add(id, defaultStorages[id]);
       return this;
     },
 
     /**
-     * Get configuration object
-     * @return {Object}
-     * @private
+     * Get current storage
+     * @return {Storage}
      * */
-    getConfig() {
-      return c;
+    getCurrentStorage() {
+      return this.get(this.getCurrent());
     },
 
-  };
+    /**
+     * On start callback
+     * @private
+     */
+    onStart(ctx, data) {
+      if (em) {
+        em.trigger(eventStart);
+        ctx && em.trigger(`${eventStart}:${ctx}`, data);
+      }
+    },
 
+    /**
+     * On end callback
+     * @private
+     */
+    onEnd(ctx, data) {
+      if (em) {
+        em.trigger(eventEnd);
+        ctx && em.trigger(`${eventEnd}:${ctx}`, data);
+      }
+    },
+
+    /**
+     * On error callback
+     * @private
+     */
+    onError(ctx, data) {
+      if (em) {
+        em.trigger(eventError, data);
+        ctx && em.trigger(`${eventError}:${ctx}`, data);
+        this.onEnd(ctx, data);
+      }
+    },
+
+    /**
+     * Check if autoload is possible
+     * @return {Boolean}
+     * @private
+     * */
+    canAutoload() {
+      const storage = this.getCurrentStorage();
+      return storage && this.getConfig().autoload;
+    }
+  };
 };

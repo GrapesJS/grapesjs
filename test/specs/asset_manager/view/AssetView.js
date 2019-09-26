@@ -1,36 +1,39 @@
-var AssetView = require('asset_manager/view/AssetView');
-var Asset = require('asset_manager/model/Asset');
-var Assets = require('asset_manager/model/Assets');
+import Assets from 'asset_manager/model/Assets';
+import AssetView from 'asset_manager/view/AssetView';
 
 module.exports = {
   run() {
-
     describe('AssetView', () => {
+      let testContext;
 
-      beforeEach(function () {
-        var coll   = new Assets();
-        var model = coll.add({src: 'test'});
-        this.view = new AssetView({
-          config : {},
+      beforeEach(() => {
+        testContext = {};
+      });
+
+      beforeEach(() => {
+        var coll = new Assets();
+        var model = coll.add({ src: 'test' });
+        testContext.view = new AssetView({
+          config: {},
           model
         });
         document.body.innerHTML = '<div id="fixtures"></div>';
-        document.body.querySelector('#fixtures').appendChild(this.view.render().el);
+        document.body
+          .querySelector('#fixtures')
+          .appendChild(testContext.view.render().el);
       });
 
-      afterEach(function () {
-        this.view.remove();
+      afterEach(() => {
+        testContext.view.remove();
       });
 
-      it('Object exists', () => {
-        expect(AssetView).toExist();
+      test('Object exists', () => {
+        expect(AssetView).toBeTruthy();
       });
 
-      it('Has correct prefix', function() {
-        expect(this.view.pfx).toEqual('');
+      test('Has correct prefix', () => {
+        expect(testContext.view.pfx).toEqual('');
       });
-
     });
-
   }
-}
+};

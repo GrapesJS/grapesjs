@@ -1,36 +1,40 @@
-module.exports = require('backbone').View.extend({
+import Backbone from 'backbone';
 
-  template({pfx, ppfx, content, title}) {
-    return `<div class="${pfx}dialog ${ppfx}one-bg">
+export default Backbone.View.extend({
+  template({ pfx, ppfx, content, title }) {
+    return `<div class="${pfx}dialog ${ppfx}one-bg ${ppfx}two-color">
       <div class="${pfx}header">
         <div class="${pfx}title">${title}</div>
-        <div class="${pfx}btn-close">&Cross;</div>
+        <div class="${pfx}btn-close" data-close-modal>&Cross;</div>
       </div>
       <div class="${pfx}content">
         <div id="${pfx}c">${content}</div>
         <div style="clear:both"></div>
       </div>
     </div>
-    <div class="${pfx}backlayer"></div>
     <div class="${pfx}collector" style="display: none"></div>`;
   },
 
-  events: {},
+  events: {
+    click: 'onClick',
+    'click [data-close-modal]': 'hide'
+  },
 
   initialize(o) {
     const model = this.model;
     const config = o.config || {};
     const pfx = config.stylePrefix || '';
-    const bkd = config.backdrop;
     this.config = config;
     this.pfx = pfx;
     this.ppfx = config.pStylePrefix || '';
     this.listenTo(model, 'change:open', this.updateOpen);
     this.listenTo(model, 'change:title', this.updateTitle);
     this.listenTo(model, 'change:content', this.updateContent);
-    this.events[`click .${pfx}btn-close`]  = 'hide';
-    bkd && (this.events[`click .${pfx}backlayer`] = 'hide');
-    this.delegateEvents();
+  },
+
+  onClick(e) {
+    const bkd = this.config.backdrop;
+    bkd && e.target === this.el && this.hide();
   },
 
   /**
@@ -39,8 +43,8 @@ module.exports = require('backbone').View.extend({
    * @private
    */
   getCollector() {
-    if(!this.$collector)
-      this.$collector = this.$el.find('.'+this.pfx+'collector');
+    if (!this.$collector)
+      this.$collector = this.$el.find('.' + this.pfx + 'collector');
     return this.$collector;
   },
 
@@ -65,8 +69,7 @@ module.exports = require('backbone').View.extend({
    * @private
    */
   getTitle() {
-    if(!this.$title)
-      this.$title  = this.$el.find('.'+this.pfx+'title');
+    if (!this.$title) this.$title = this.$el.find('.' + this.pfx + 'title');
     return this.$title.get(0);
   },
 
@@ -89,8 +92,7 @@ module.exports = require('backbone').View.extend({
    * */
   updateTitle() {
     var title = this.getTitle();
-    if(title)
-      title.innerHTML = this.model.get('title');
+    if (title) title.innerHTML = this.model.get('title');
   },
 
   /**
@@ -113,7 +115,7 @@ module.exports = require('backbone').View.extend({
    * Show modal
    * @private
    * */
-   show() {
+  show() {
     this.model.set('open', 1);
   },
 
@@ -128,6 +130,5 @@ module.exports = require('backbone').View.extend({
     el.attr('class', `${pfx}container`);
     this.updateOpen();
     return this;
-  },
-
+  }
 });

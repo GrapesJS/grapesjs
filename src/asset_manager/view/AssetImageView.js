@@ -1,16 +1,18 @@
-module.exports = require('./AssetView').extend({
+import { isFunction } from 'underscore';
+import AssetView from './AssetView';
 
+export default AssetView.extend({
   events: {
     'click [data-toggle=asset-remove]': 'onRemove',
     click: 'onClick',
-    dblclick: 'onDblClick',
+    dblclick: 'onDblClick'
   },
 
   getPreview() {
     const pfx = this.pfx;
     const src = this.model.get('src');
     return `
-      <div class="${pfx}preview" style="background-image: url(${src});"></div>
+      <div class="${pfx}preview" style="background-image: url('${src}');"></div>
       <div class="${pfx}preview-bg ${this.ppfx}checker-bg"></div>
     `;
   },
@@ -32,7 +34,7 @@ module.exports = require('./AssetView').extend({
 
   init(o) {
     const pfx = this.pfx;
-    this.className  += ` ${pfx}asset-image`;
+    this.className += ` ${pfx}asset-image`;
   },
 
   /**
@@ -45,7 +47,7 @@ module.exports = require('./AssetView').extend({
     this.collection.trigger('deselectAll');
     this.$el.addClass(this.pfx + 'highlight');
 
-    if (typeof onClick === 'function') {
+    if (isFunction(onClick)) {
       onClick(model);
     } else {
       this.updateTarget(this.collection.target);
@@ -57,11 +59,10 @@ module.exports = require('./AssetView').extend({
    * @private
    * */
   onDblClick() {
-    const em = this.em;
-    var onDblClick = this.config.onDblClick;
-    var model = this.model;
+    const { em, model } = this;
+    const onDblClick = this.config.onDblClick;
 
-    if (typeof onDblClick === 'function') {
+    if (isFunction(onDblClick)) {
       onDblClick(model);
     } else {
       this.updateTarget(this.collection.target);
@@ -69,9 +70,7 @@ module.exports = require('./AssetView').extend({
     }
 
     var onSelect = this.collection.onSelect;
-    if (typeof onSelect == 'function') {
-      onSelect(this.model);
-    }
+    isFunction(onSelect) && onSelect(model);
   },
 
   /**

@@ -1,10 +1,17 @@
-module.exports = {
+export default {
   stylePrefix: 'sm-',
 
   sectors: [],
 
+  // Specify the element to use as a container, string (query) or HTMLElement
+  // With the empty value, nothing will be rendered
+  appendTo: '',
+
   // Text to show in case no element selected
   textNoElement: 'Select an element before using Style Manager',
+
+  // Text for layers
+  textLayer: 'Layer',
 
   // Hide the property in case it's not stylable for the
   // selected component (each component has 'stylable' property)
@@ -24,5 +31,5 @@ module.exports = {
   clearProperties: 0,
 
   // Properties not to take in account for computed styles
-  avoidComputed: ['width', 'height'],
+  avoidComputed: ['width', 'height']
 };

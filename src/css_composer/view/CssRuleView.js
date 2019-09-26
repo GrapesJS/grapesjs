@@ -1,4 +1,6 @@
-module.exports = require('backbone').View.extend({
+import Backbone from 'backbone';
+
+export default Backbone.View.extend({
   tagName: 'style',
 
   initialize(o = {}) {
@@ -10,12 +12,10 @@ module.exports = require('backbone').View.extend({
     this.listenTo(model.get('selectors'), 'change', this.render);
   },
 
-
   render() {
     const model = this.model;
     const important = model.get('important');
-    this.el.innerHTML = this.model.toCSS({important});
+    this.el.innerHTML = this.model.toCSS({ important });
     return this;
-  },
-
+  }
 });

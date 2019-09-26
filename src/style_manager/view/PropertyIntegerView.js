@@ -1,8 +1,9 @@
-const InputNumber = require('domain_abstract/ui/InputNumber');
+import Backbone from 'backbone';
+import PropertyView from './PropertyView';
+
 const $ = Backbone.$;
 
-module.exports = require('./PropertyView').extend({
-
+export default PropertyView.extend({
   templateInput() {
     return '';
   },
@@ -11,10 +12,13 @@ module.exports = require('./PropertyView').extend({
     const model = this.model;
     this.listenTo(model, 'change:unit', this.modelValueChanged);
     this.listenTo(model, 'el:change', this.elementUpdated);
+    this.listenTo(model, 'change:units', this.render);
   },
 
   setValue(value) {
-    this.inputInst.setValue(value, {silent: 1});
+    const parsed = this.model.parseValue(value);
+    value = `${parsed.value}${parsed.unit}`;
+    this.inputInst.setValue(value, { silent: 1 });
   },
 
   onRender() {
@@ -34,4 +38,9 @@ module.exports = require('./PropertyView').extend({
     }
   },
 
+  clearCached() {
+    PropertyView.prototype.clearCached.apply(this, arguments);
+    this.unit = null;
+    this.$unit = null;
+  }
 });

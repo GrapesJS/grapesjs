@@ -1,14 +1,27 @@
+import Backbone from 'backbone';
 import { isString, isArray } from 'underscore';
-const Backbone = require('backbone');
-const Trait = require('./Trait');
-const TraitFactory = require('./TraitFactory');
+import Trait from './Trait';
+import TraitFactory from './TraitFactory';
 
-module.exports = Backbone.Collection.extend({
-
+export default Backbone.Collection.extend({
   model: Trait,
 
   initialize(coll, options = {}) {
     this.em = options.em || '';
+    this.listenTo(this, 'add', this.handleAdd);
+    this.listenTo(this, 'reset', this.handleReset);
+  },
+
+  handleReset(coll, { previousModels = [] } = {}) {
+    previousModels.forEach(model => model.trigger('remove'));
+  },
+
+  handleAdd(model) {
+    const target = this.target;
+
+    if (target) {
+      model.target = target;
+    }
   },
 
   setTarget(target) {
@@ -25,7 +38,7 @@ module.exports = Backbone.Collection.extend({
       const tf = TraitFactory(tmOpts);
 
       if (isString(models)) {
-          models = [models];
+        models = [models];
       }
 
       for (var i = 0, len = models.length; i < len; i++) {

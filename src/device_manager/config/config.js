@@ -1,7 +1,5 @@
-module.exports = {
-
+export default {
   devices: [],
 
-  deviceLabel: 'Device',
-
+  deviceLabel: 'Device'
 };

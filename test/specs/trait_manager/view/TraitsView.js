@@ -1,12 +1,10 @@
-const Trait = require('trait_manager/model/Trait');
-const TraitView = require('trait_manager/view/TraitView');
-const Component = require('dom_components/model/Component');
+import Trait from 'trait_manager/model/Trait';
+import TraitView from 'trait_manager/view/TraitView';
+import Component from 'dom_components/model/Component';
 
 module.exports = {
   run() {
-
     describe('TraitView', () => {
-
       var obj;
       var model;
       var modelName = 'title';
@@ -16,10 +14,10 @@ module.exports = {
         target = new Component();
         model = new Trait({
           name: modelName,
-          target,
+          target
         });
         obj = new TraitView({
-          model,
+          model
         });
       });
 
@@ -29,34 +27,34 @@ module.exports = {
         target = null;
       });
 
-      it('Object exists', () => {
-        expect(Trait).toExist();
+      test('Object exists', () => {
+        expect(Trait).toBeTruthy();
       });
 
-      it('Target has no attributes on init', () => {
+      test('Target has no attributes on init', () => {
         expect(target.get('attributes')).toEqual({});
       });
 
-      it('On update of the value updates the target attributes', () => {
+      test('On update of the value updates the target attributes', () => {
         model.set('value', 'test');
         var eq = {};
         eq[modelName] = 'test';
         expect(target.get('attributes')).toEqual(eq);
       });
 
-      it('Updates on different models do not alter other targets', () => {
+      test('Updates on different models do not alter other targets', () => {
         var target1 = new Component();
         var target2 = new Component();
         var model1 = new Trait({
           name: modelName,
-          target: target1,
+          target: target1
         });
         var model2 = new Trait({
           name: modelName,
-          target: target2,
+          target: target2
         });
-        var obj1 = new TraitView({model: model1});
-        var obj2 = new TraitView({model: model2});
+        var obj1 = new TraitView({ model: model1 });
+        var obj2 = new TraitView({ model: model2 });
 
         model1.set('value', 'test1');
         model2.set('value', 'test2');
@@ -67,7 +65,6 @@ module.exports = {
         expect(target1.get('attributes')).toEqual(eq1);
         expect(target2.get('attributes')).toEqual(eq2);
       });
-
     });
   }
-}
+};

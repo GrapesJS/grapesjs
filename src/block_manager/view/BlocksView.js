@@ -1,11 +1,11 @@
-var Backbone = require('backbone');
-var BlockView = require('./BlockView');
-var CategoryView = require('./CategoryView');
+import Backbone from 'backbone';
+import { isString, isObject, bindAll } from 'underscore';
+import BlockView from './BlockView';
+import CategoryView from './CategoryView';
 
-module.exports = Backbone.View.extend({
-
+export default Backbone.View.extend({
   initialize(opts, config) {
-    _.bindAll(this, 'getSorter', 'onDrag', 'onDrop');
+    bindAll(this, 'getSorter', 'onDrag', 'onDrop');
     this.config = config || {};
     this.categories = opts.categories || '';
     this.renderedCategories = [];
@@ -21,10 +21,17 @@ module.exports = Backbone.View.extend({
     this.tac = 'test-tac';
     this.grabbingCls = this.ppfx + 'grabbing';
 
-    if(this.em){
+    if (this.em) {
       this.config.getSorter = this.getSorter;
       this.canvas = this.em.get('Canvas');
     }
+  },
+
+  updateConfig(opts = {}) {
+    this.config = {
+      ...this.config,
+      ...opts
+    };
   },
 
   /**
@@ -32,9 +39,8 @@ module.exports = Backbone.View.extend({
    * @private
    */
   getSorter() {
-    if(!this.em)
-      return;
-    if(!this.sorter){
+    if (!this.em) return;
+    if (!this.sorter) {
       var utils = this.em.get('Utils');
       var canvas = this.canvas;
       this.sorter = new utils.Sorter({
@@ -51,7 +57,7 @@ module.exports = Backbone.View.extend({
         wmargin: 1,
         nested: 1,
         em: this.em,
-        canvasRelative: 1,
+        canvasRelative: 1
       });
     }
     return this.sorter;
@@ -79,7 +85,7 @@ module.exports = Backbone.View.extend({
     em.runDefault();
 
     if (model && model.get) {
-      if(model.get('activeOnRender')) {
+      if (model.get('activeOnRender')) {
         model.trigger('active');
         model.set('activeOnRender', 0);
       }
@@ -104,21 +110,27 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   add(model, fragment) {
+    const { config } = this;
     var frag = fragment || null;
-    var view = new BlockView({
-      model,
-      attributes: model.get('attributes'),
-    }, this.config);
+    var view = new BlockView(
+      {
+        model,
+        attributes: model.get('attributes')
+      },
+      config
+    );
     var rendered = view.render().el;
     var category = model.get('category');
 
     // Check for categories
-    if (category && this.categories) {
-      if (typeof category == 'string') {
+    if (category && this.categories && !config.ignoreCategories) {
+      if (isString(category)) {
         category = {
           id: category,
           label: category
         };
+      } else if (isObject(category) && !category.id) {
+        category.id = category.label;
       }
 
       var catModel = this.categories.add(category);
@@ -128,9 +140,12 @@ module.exports = Backbone.View.extend({
       model.set('category', catModel);
 
       if (!catView && categories) {
-        catView = new CategoryView({
-          model: catModel
-        }, this.config).render();
+        catView = new CategoryView(
+          {
+            model: catModel
+          },
+          this.config
+        ).render();
         this.renderedCategories[catId] = catView;
         categories.appendChild(catView.el);
       }
@@ -139,10 +154,8 @@ module.exports = Backbone.View.extend({
       return;
     }
 
-    if(frag)
-      frag.appendChild(rendered);
-    else
-      this.append(rendered);
+    if (frag) frag.appendChild(rendered);
+    else this.append(rendered);
   },
 
   getCategoriesEl() {
@@ -155,7 +168,9 @@ module.exports = Backbone.View.extend({
 
   getBlocksEl() {
     if (!this.blocksEl) {
-      this.blocksEl = this.el.querySelector(`.${this.noCatClass} .${this.blockContClass}`);
+      this.blocksEl = this.el.querySelector(
+        `.${this.noCatClass} .${this.blockContClass}`
+      );
     }
 
     return this.blocksEl;
@@ -167,6 +182,7 @@ module.exports = Backbone.View.extend({
   },
 
   render() {
+    const ppfx = this.ppfx;
     const frag = document.createDocumentFragment();
     this.catsEl = null;
     this.blocksEl = null;
@@ -180,8 +196,8 @@ module.exports = Backbone.View.extend({
 
     this.collection.each(model => this.add(model, frag));
     this.append(frag);
-    this.$el.addClass(this.blockContClass + 's')
+    const cls = `${this.blockContClass}s ${ppfx}one-bg ${ppfx}two-color`;
+    this.$el.addClass(cls);
     return this;
-  },
-
+  }
 });

@@ -1,4 +1,18 @@
 /**
+ * With this module is possible to manage components inside the canvas. You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/dom_components/config/config.js)
+ * ```js
+ * const editor = grapesjs.init({
+ *  domComponents: {
+ *    // options
+ *  }
+ * })
+ * ```
+ *
+ * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+ *
+ * ```js
+ * const domComponents = editor.DomComponents;
+ * ```
  *
  * * [getWrapper](#getwrapper)
  * * [getComponents](#getcomponents)
@@ -6,127 +20,163 @@
  * * [clear](#clear)
  * * [load](#load)
  * * [store](#store)
+ * * [addType](#addtype)
+ * * [getType](#gettype)
+ * * [getTypes](#gettypes)
  * * [render](#render)
  *
- * With this module is possible to manage components inside the canvas.
- * Before using methods you should get first the module from the editor instance, in this way:
- *
- * ```js
- * var domComponents = editor.DomComponents;
- * ```
- *
  * @module DomComponents
- * @param {Object} config Configurations
- * @param {string|Array<Object>} [config.components=[]] HTML string or an array of possible components
- * @example
- * ...
- * domComponents: {
- *    components: '<div>Hello world!</div>',
- * }
- * // Or
- * domComponents: {
- *    components: [
- *      { tagName: 'span', style: {color: 'red'}, content: 'Hello'},
- *      { style: {width: '100px', content: 'world!'}}
- *    ],
- * }
- * ...
  */
-module.exports = () => {
+import Backbone from 'backbone';
+import { isEmpty, isObject, isArray, result } from 'underscore';
+import defaults from './config/config';
+import Component from './model/Component';
+import Components from './model/Components';
+import ComponentView from './view/ComponentView';
+import ComponentsView from './view/ComponentsView';
+import ComponentTableCell from './model/ComponentTableCell';
+import ComponentTableCellView from './view/ComponentTableCellView';
+import ComponentTableRow from './model/ComponentTableRow';
+import ComponentTableRowView from './view/ComponentTableRowView';
+import ComponentTable from './model/ComponentTable';
+import ComponentTableView from './view/ComponentTableView';
+import ComponentTableHead from './model/ComponentTableHead';
+import ComponentTableHeadView from './view/ComponentTableHeadView';
+import ComponentTableBody from './model/ComponentTableBody';
+import ComponentTableBodyView from './view/ComponentTableBodyView';
+import ComponentTableFoot from './model/ComponentTableFoot';
+import ComponentTableFootView from './view/ComponentTableFootView';
+import ComponentMap from './model/ComponentMap';
+import ComponentMapView from './view/ComponentMapView';
+import ComponentLink from './model/ComponentLink';
+import ComponentLinkView from './view/ComponentLinkView';
+import ComponentLabel from './model/ComponentLabel';
+import ComponentLabelView from './view/ComponentLabelView';
+import ComponentVideo from './model/ComponentVideo';
+import ComponentVideoView from './view/ComponentVideoView';
+import ComponentImage from './model/ComponentImage';
+import ComponentImageView from './view/ComponentImageView';
+import ComponentScript from './model/ComponentScript';
+import ComponentScriptView from './view/ComponentScriptView';
+import ComponentSvg from './model/ComponentSvg';
+import ComponentSvgView from './view/ComponentSvgView';
+import ComponentComment from './model/ComponentComment';
+import ComponentCommentView from './view/ComponentCommentView';
+import ComponentTextNode from './model/ComponentTextNode';
+import ComponentTextNodeView from './view/ComponentTextNodeView';
+import ComponentText from './model/ComponentText';
+import ComponentTextView from './view/ComponentTextView';
+import ComponentWrapper from './model/ComponentWrapper';
+
+export default () => {
   var c = {};
   let em;
-  const defaults = require('./config/config');
-  const Component = require('./model/Component');
-  const ComponentView = require('./view/ComponentView');
-  const Components = require('./model/Components');
-  const ComponentsView = require('./view/ComponentsView');
+  const componentsById = {};
 
   var component, componentView;
   var componentTypes = [
     {
       id: 'cell',
-      model: require('./model/ComponentTableCell'),
-      view: require('./view/ComponentTableCellView'),
+      model: ComponentTableCell,
+      view: ComponentTableCellView
     },
     {
       id: 'row',
-      model: require('./model/ComponentTableRow'),
-      view: require('./view/ComponentTableRowView'),
+      model: ComponentTableRow,
+      view: ComponentTableRowView
     },
     {
       id: 'table',
-      model: require('./model/ComponentTable'),
-      view: require('./view/ComponentTableView'),
+      model: ComponentTable,
+      view: ComponentTableView
     },
     {
       id: 'thead',
-      model: require('./model/ComponentTableHead'),
-      view: require('./view/ComponentTableHeadView'),
+      model: ComponentTableHead,
+      view: ComponentTableHeadView
     },
     {
       id: 'tbody',
-      model: require('./model/ComponentTableBody'),
-      view: require('./view/ComponentTableBodyView'),
+      model: ComponentTableBody,
+      view: ComponentTableBodyView
     },
     {
       id: 'tfoot',
-      model: require('./model/ComponentTableFoot'),
-      view: require('./view/ComponentTableFootView'),
+      model: ComponentTableFoot,
+      view: ComponentTableFootView
     },
     {
       id: 'map',
-      model: require('./model/ComponentMap'),
-      view: require('./view/ComponentMapView'),
+      model: ComponentMap,
+      view: ComponentMapView
     },
     {
       id: 'link',
-      model: require('./model/ComponentLink'),
-      view: require('./view/ComponentLinkView'),
+      model: ComponentLink,
+      view: ComponentLinkView
+    },
+    {
+      id: 'label',
+      model: ComponentLabel,
+      view: ComponentLabelView
     },
     {
       id: 'video',
-      model: require('./model/ComponentVideo'),
-      view: require('./view/ComponentVideoView'),
+      model: ComponentVideo,
+      view: ComponentVideoView
     },
     {
       id: 'image',
-      model: require('./model/ComponentImage'),
-      view: require('./view/ComponentImageView'),
+      model: ComponentImage,
+      view: ComponentImageView
     },
     {
       id: 'script',
-      model: require('./model/ComponentScript'),
-      view: require('./view/ComponentScriptView'),
+      model: ComponentScript,
+      view: ComponentScriptView
     },
     {
       id: 'svg',
-      model: require('./model/ComponentSvg'),
-      view: require('./view/ComponentSvgView'),
+      model: ComponentSvg,
+      view: ComponentSvgView
+    },
+    {
+      id: 'comment',
+      model: ComponentComment,
+      view: ComponentCommentView
     },
     {
       id: 'textnode',
-      model: require('./model/ComponentTextNode'),
-      view: require('./view/ComponentTextNodeView'),
+      model: ComponentTextNode,
+      view: ComponentTextNodeView
     },
     {
       id: 'text',
-      model: require('./model/ComponentText'),
-      view: require('./view/ComponentTextView'),
+      model: ComponentText,
+      view: ComponentTextView
+    },
+    {
+      id: 'wrapper',
+      model: ComponentWrapper,
+      view: ComponentView
     },
     {
       id: 'default',
       model: Component,
-      view: ComponentView,
-    },
+      view: ComponentView
+    }
   ];
 
   return {
+    Component,
 
     Components,
 
     ComponentsView,
 
     componentTypes,
+
+    componentsById,
 
     /**
      * Name of the module
@@ -141,7 +191,7 @@ module.exports = () => {
      * @private
      */
     getConfig() {
-        return c;
+      return c;
     },
 
     /**
@@ -152,10 +202,8 @@ module.exports = () => {
     storageKey() {
       var keys = [];
       var smc = (c.stm && c.stm.getConfig()) || {};
-      if(smc.storeHtml)
-        keys.push('html');
-      if(smc.storeComponents)
-        keys.push('components');
+      if (smc.storeHtml) keys.push('html');
+      if (smc.storeComponents) keys.push('components');
       return keys;
     },
 
@@ -168,26 +216,33 @@ module.exports = () => {
     init(config) {
       c = config || {};
       em = c.em;
+      this.em = em;
 
       if (em) {
         c.components = em.config.components || c.components;
       }
 
       for (var name in defaults) {
-        if (!(name in c))
-          c[name] = defaults[name];
+        if (!(name in c)) c[name] = defaults[name];
       }
 
       var ppfx = c.pStylePrefix;
-      if(ppfx)
-        c.stylePrefix = ppfx + c.stylePrefix;
+      if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
 
       // Load dependencies
       if (em) {
         c.modal = em.get('Modal') || '';
         c.am = em.get('AssetManager') || '';
         em.get('Parser').compTypes = componentTypes;
-        em.on('change:selectedComponent', this.componentChanged, this);
+        em.on('change:componentHovered', this.componentHovered, this);
+
+        const selected = em.get('selected');
+        em.listenTo(selected, 'add', (sel, c, opts) =>
+          this.selectAdd(sel, opts)
+        );
+        em.listenTo(selected, 'remove', (sel, c, opts) =>
+          this.selectRemove(sel, opts)
+        );
       }
 
       // Build wrapper
@@ -195,9 +250,14 @@ module.exports = () => {
       let wrapper = { ...c.wrapper };
       wrapper['custom-name'] = c.wrapperName;
       wrapper.wrapper = 1;
+      wrapper.type = 'wrapper';
 
       // Components might be a wrapper
-      if (components && components.constructor === Object && components.wrapper) {
+      if (
+        components &&
+        components.constructor === Object &&
+        components.wrapper
+      ) {
         wrapper = { ...components };
         components = components.components || [];
         wrapper.components = [];
@@ -210,16 +270,17 @@ module.exports = () => {
       }
 
       component = new Component(wrapper, {
-        sm: em,
+        em,
         config: c,
         componentTypes,
+        domc: this
       });
-      component.set({ attributes: {id: 'wrapper'}});
+      component.set({ attributes: { id: 'wrapper' } });
 
       componentView = new ComponentView({
         model: component,
         config: c,
-        componentTypes,
+        componentTypes
       });
       return this;
     },
@@ -229,7 +290,7 @@ module.exports = () => {
      * @private
      */
     onLoad() {
-      this.getComponents().reset(c.components);
+      this.setComponents(c.components);
     },
 
     /**
@@ -241,7 +302,6 @@ module.exports = () => {
       this.handleChanges(this.getWrapper(), null, { avoidStore: 1 });
     },
 
-
     /**
      * Handle component changes
      * @private
@@ -251,15 +311,18 @@ module.exports = () => {
       const um = em.get('UndoManager');
       const handleUpdates = em.handleUpdates.bind(em);
       const handleChanges = this.handleChanges.bind(this);
+      const handleChangesColl = this.handleChangesColl.bind(this);
       const handleRemoves = this.handleRemoves.bind(this);
       um && um.add(model);
       um && comps && um.add(comps);
       const evn = 'change:style change:content change:attributes change:src';
 
-      [ [model, evn, handleUpdates],
+      [
+        [model, evn, handleUpdates],
+        [model, 'change:components', handleChangesColl],
         [comps, 'add', handleChanges],
         [comps, 'remove', handleRemoves],
-        [model.get('classes'), 'add remove', handleUpdates],
+        [model.get('classes'), 'add remove', handleUpdates]
       ].forEach(els => {
         em.stopListening(els[0], els[1], els[2]);
         em.listenTo(els[0], els[1], els[2]);
@@ -269,6 +332,20 @@ module.exports = () => {
       comps.each(model => this.handleChanges(model, value, opts));
     },
 
+    handleChangesColl(model, coll) {
+      const um = em.get('UndoManager');
+      if (um && coll instanceof Backbone.Collection) {
+        const handleChanges = this.handleChanges.bind(this);
+        const handleRemoves = this.handleRemoves.bind(this);
+        um.add(coll);
+        [[coll, 'add', handleChanges], [coll, 'remove', handleRemoves]].forEach(
+          els => {
+            em.stopListening(els[0], els[1], els[2]);
+            em.listenTo(els[0], els[1], els[2]);
+          }
+        );
+      }
+    },
 
     /**
      * Triggered when some component is removed
@@ -278,7 +355,6 @@ module.exports = () => {
       !opts.avoidStore && em.handleUpdates(model, value, opts);
     },
 
-
     /**
      * Load components from the passed object, if the object is empty will try to fetch them
      * autonomously from the selected storage
@@ -287,30 +363,37 @@ module.exports = () => {
      * @return {Object} Loaded data
      */
     load(data = '') {
+      const { em } = this;
       let result = '';
 
       if (!data && c.stm) {
         data = c.em.getCacheLoad();
       }
 
-      if (data.components) {
-        try {
-          result = JSON.parse(data.components);
-        } catch (err) {}
-      } else if (data.html) {
-        result = data.html;
+      const { components, html } = data;
+
+      if (components) {
+        if (isObject(components) || isArray(components)) {
+          result = components;
+        } else {
+          try {
+            result = JSON.parse(components);
+          } catch (err) {
+            em && em.logError(err);
+          }
+        }
+      } else if (html) {
+        result = html;
       }
 
       const isObj = result && result.constructor === Object;
 
       if ((result && result.length) || isObj) {
         this.clear();
-        this.getComponents().reset();
 
         // If the result is an object I consider it the wrapper
         if (isObj) {
-          this.getWrapper().set(result)
-          .initComponents().initClasses().loadTraits();
+          this.getWrapper().set(result);
         } else {
           this.getComponents().add(result);
         }
@@ -325,7 +408,7 @@ module.exports = () => {
      * @return {Object} Data to store
      */
     store(noStore) {
-      if(!c.stm) {
+      if (!c.stm) {
         return;
       }
 
@@ -337,8 +420,10 @@ module.exports = () => {
       }
 
       if (keys.indexOf('components') >= 0) {
-        const toStore = c.storeWrapper ?
-          this.getWrapper() : this.getComponents();
+        const { em } = this;
+        // const storeWrap = (em && !em.getConfig('avoidInlineStyle')) || c.storeWrapper;
+        const storeWrap = c.storeWrapper;
+        const toStore = storeWrap ? this.getWrapper() : this.getComponents();
         obj.components = JSON.stringify(toStore);
       }
 
@@ -359,7 +444,7 @@ module.exports = () => {
     },
 
     /**
-     * Returns root component inside the canvas. Something like <body> inside HTML page
+     * Returns root component inside the canvas. Something like `<body>` inside HTML page
      * The wrapper doesn't differ from the original Component Model
      * @return {Component} Root Component
      * @example
@@ -451,9 +536,9 @@ module.exports = () => {
      * @return {this}
      */
     clear() {
-      var c = this.getComponents();
-      for(var i = 0, len = c.length; i < len; i++)
-        c.pop();
+      this.getComponents()
+        .map(i => i)
+        .forEach(i => i.remove());
       return this;
     },
 
@@ -468,33 +553,103 @@ module.exports = () => {
     },
 
     /**
-     * Add new component type
-     * @param {string} type
-     * @param {Object} methods
-     * @private
+     * Add new component type.
+     * Read more about this in [Define New Component](https://grapesjs.com/docs/modules/Components.html#define-new-component)
+     * @param {string} type Component ID
+     * @param {Object} methods Component methods
+     * @return {this}
      */
     addType(type, methods) {
-      var compType = this.getType(type);
-      if(compType) {
+      const { em } = this;
+      const {
+        model = {},
+        view = {},
+        isComponent,
+        extend,
+        extendView,
+        extendFn = [],
+        extendFnView = []
+      } = methods;
+      const compType = this.getType(type);
+      const extendType = this.getType(extend);
+      const extendViewType = this.getType(extendView);
+      const typeToExtend = extendType
+        ? extendType
+        : compType
+        ? compType
+        : this.getType('default');
+      const modelToExt = typeToExtend.model;
+      const viewToExt = extendViewType
+        ? extendViewType.view
+        : typeToExtend.view;
+
+      // Function for extending source object methods
+      const getExtendedObj = (fns, target, srcToExt) =>
+        fns.reduce((res, next) => {
+          const fn = target[next];
+          const parentFn = srcToExt.prototype[next];
+          if (fn && parentFn) {
+            res[next] = function(...args) {
+              parentFn.bind(this)(...args);
+              fn.bind(this)(...args);
+            };
+          }
+          return res;
+        }, {});
+
+      // If the model/view is a simple object I need to extend it
+      if (typeof model === 'object') {
+        methods.model = modelToExt.extend(
+          {
+            ...model,
+            ...getExtendedObj(extendFn, model, modelToExt),
+            defaults: {
+              ...modelToExt.prototype.defaults,
+              ...(result(model, 'defaults') || {})
+            }
+          },
+          {
+            isComponent:
+              compType && !extendType && !isComponent
+                ? modelToExt.isComponent
+                : isComponent || (() => 0)
+          }
+        );
+      }
+
+      if (typeof view === 'object') {
+        methods.view = viewToExt.extend({
+          ...view,
+          ...getExtendedObj(extendFnView, view, viewToExt)
+        });
+      }
+
+      if (compType) {
         compType.model = methods.model;
         compType.view = methods.view;
       } else {
         methods.id = type;
         componentTypes.unshift(methods);
       }
+
+      const event = `component:type:${compType ? 'update' : 'add'}`;
+      em && em.trigger(event, compType || methods);
+
+      return this;
     },
 
     /**
-     * Get component type
-     * @param {string} type
-     * @private
+     * Get component type.
+     * Read more about this in [Define New Component](https://grapesjs.com/docs/modules/Components.html#define-new-component)
+     * @param {string} type Component ID
+     * @return {Object} Component type defintion, eg. `{ model: ..., view: ... }`
      */
     getType(type) {
       var df = componentTypes;
 
       for (var it = 0; it < df.length; it++) {
         var dfId = df[it].id;
-        if(dfId == type) {
+        if (dfId == type) {
           return df[it];
         }
       }
@@ -502,24 +657,70 @@ module.exports = () => {
     },
 
     /**
-     * Triggered when the selected component is changed
+     * Remove component type
+     * @param {string} type Component ID
+     * @returns {Object|undefined} Removed component type, undefined otherwise
+     */
+    removeType(id) {
+      const df = componentTypes;
+      const type = this.getType(id);
+      if (!type) return;
+      const index = df.indexOf(type);
+      df.splice(index, 1);
+      return type;
+    },
+
+    /**
+     * Return the array of all types
+     * @return {Array}
+     */
+    getTypes() {
+      return componentTypes;
+    },
+
+    selectAdd(component, opts = {}) {
+      if (component) {
+        component.set({
+          status: 'selected'
+        });
+        ['component:selected', 'component:toggled'].forEach(event =>
+          this.em.trigger(event, component, opts)
+        );
+      }
+    },
+
+    selectRemove(component, opts = {}) {
+      if (component) {
+        const { em } = this;
+        component.set({
+          status: '',
+          state: ''
+        });
+        ['component:deselected', 'component:toggled'].forEach(event =>
+          this.em.trigger(event, component, opts)
+        );
+      }
+    },
+
+    /**
+     * Triggered when the component is hovered
      * @private
      */
-    componentChanged() {
+    componentHovered() {
       const em = c.em;
-      const model = em.get('selectedComponent');
-      const previousModel = em.previous('selectedComponent');
+      const model = em.get('componentHovered');
+      const previous = em.previous('componentHovered');
+      const state = 'hovered';
 
       // Deselect the previous component
-      if (previousModel) {
-        previousModel.set({
+      previous &&
+        previous.get('status') == state &&
+        previous.set({
           status: '',
-          state: '',
+          state: ''
         });
-      }
 
-      model && model.set('status','selected');
+      model && isEmpty(model.get('status')) && model.set('status', state);
     }
-
   };
 };

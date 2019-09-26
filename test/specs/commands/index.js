@@ -1,67 +1,120 @@
-var Commands = require('commands');
-var Models = require('./model/CommandModels');
+import Backbone from 'backbone';
+import Commands from 'commands';
+import Models from './model/CommandModels';
+import CommandAbstract from './view/CommandAbstract';
 
 describe('Commands', () => {
-
   describe('Main', () => {
+    let obj,
+      commSimple,
+      commRunOnly,
+      commFunc,
+      commName = 'commandTest',
+      commResultRun = 'Run executed',
+      commResultStop = 'Stop executed';
 
-    let obj;
+    const mockEditor = {
+      ...Backbone.Events,
+      get(id) {
+        switch (id) {
+          case 'Canvas':
+            return {
+              getElement: () => ({}),
+              getWrapperEl: () => ({}),
+              getFrameEl: () => ({}),
+              getToolsEl: () => ({}),
+              getBody: () => ({})
+            };
+          case 'Editor':
+            return { ...Backbone.Events };
+          default:
+        }
+        return null;
+      },
+      logWarning() {}
+    };
 
     beforeEach(() => {
-      obj = new Commands().init();
+      commSimple = {
+        run: () => commResultRun,
+        stop: () => commResultStop
+      };
+      commRunOnly = {
+        run: () => commResultRun
+      };
+      commFunc = () => commResultRun;
+      obj = new Commands().init({ em: mockEditor });
     });
 
     afterEach(() => {
       obj = null;
     });
 
-    it('No commands inside', () => {
-      expect(obj.get('test')).toEqual(null);
+    test('No commands inside', () => {
+      expect(obj.get('test')).toBeUndefined();
     });
 
-    it('Push new command', () => {
-      var comm = { test: 'test'};
+    test('Push new command', () => {
+      const comm = { test: 'test' };
+      const len = Object.keys(obj.getAll()).length;
       obj.add('test', comm);
+      expect(obj.has('test')).toBe(true);
+      expect(Object.keys(obj.getAll()).length).toBe(len + 1);
       expect(obj.get('test').test).toEqual('test');
     });
 
-    it('Load default commands at init', () => {
-      expect(obj.get('select-comp')).toNotEqual(null);
-      expect(obj.get('create-comp')).toNotEqual(null);
-      expect(obj.get('delete-comp')).toNotEqual(null);
-      expect(obj.get('image-comp')).toNotEqual(null);
-      expect(obj.get('move-comp')).toNotEqual(null);
-      expect(obj.get('text-comp')).toNotEqual(null);
-      expect(obj.get('insert-custom')).toNotEqual(null);
-      expect(obj.get('export-template')).toNotEqual(null);
-      expect(obj.get('sw-visibility')).toNotEqual(null);
-      expect(obj.get('open-layers')).toNotEqual(null);
-      expect(obj.get('open-sm')).toNotEqual(null);
-      expect(obj.get('open-tm')).toNotEqual(null);
-      expect(obj.get('open-blocks')).toNotEqual(null);
-      expect(obj.get('open-assets')).toNotEqual(null);
-      expect(obj.get('show-offset')).toNotEqual(null);
-      expect(obj.get('select-parent')).toNotEqual(null);
-      expect(obj.get('tlb-delete')).toNotEqual(null);
-      expect(obj.get('tlb-clone')).toNotEqual(null);
-      expect(obj.get('tlb-move')).toNotEqual(null);
-      expect(obj.get('fullscreen')).toNotEqual(null);
-      expect(obj.get('preview')).toNotEqual(null);
-      expect(obj.get('resize')).toNotEqual(null);
-      expect(obj.get('drag')).toNotEqual(null);
-    });
-
-    it('Default commands after loadDefaultCommands', () => {
+    test('Default commands after loadDefaultCommands', () => {
       obj.loadDefaultCommands();
-      expect(obj.get('select-comp')).toNotEqual(null);
+      expect(obj.get('select-comp')).not.toBeUndefined();
     });
 
-    it('Commands module should not have toLoad property', () => {
-      expect(obj.toLoad).toEqual(null);
+    test('Commands module should not have toLoad property', () => {
+      expect(obj.toLoad).toBeUndefined();
     });
 
+    test('Run simple command and check if the state is tracked', () => {
+      // Add the command
+      obj.add(commName, commSimple);
+      expect(obj.isActive(commName)).toBe(false);
+
+      // Start the command
+      let result = obj.run(commName);
+      expect(result).toBe(commResultRun);
+      expect(obj.isActive(commName)).toBe(true);
+      expect(Object.keys(obj.getActive()).length).toBe(1);
+
+      // Stop the command
+      result = obj.stop(commName);
+      expect(result).toBe(commResultStop);
+      expect(obj.isActive(commName)).toBe(false);
+      expect(Object.keys(obj.getActive()).length).toBe(0);
+    });
+
+    test('Run command only with run method, ensure is not tracked', () => {
+      // Add the command
+      obj.add(commName, commRunOnly);
+      expect(obj.isActive(commName)).toBe(false);
+
+      // Start the command
+      let result = obj.run(commName);
+      expect(result).toBe(commResultRun);
+      expect(obj.isActive(commName)).toBe(false);
+      expect(Object.keys(obj.getActive()).length).toBe(0);
+    });
+
+    test('Run function command, ensure is not tracked', () => {
+      // Add the command
+      obj.add(commName, commFunc);
+      expect(obj.isActive(commName)).toBe(false);
+
+      // Start the command
+      let result = obj.run(commName);
+      expect(result).toBe(commResultRun);
+      expect(obj.isActive(commName)).toBe(false);
+      expect(Object.keys(obj.getActive()).length).toBe(0);
+    });
   });
-
 });
 
 Models.run();
+CommandAbstract.run();

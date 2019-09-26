@@ -1,11 +1,9 @@
-module.exports = {
-
+export default {
   stylePrefix: 'mdl-',
 
   title: '',
 
   content: '',
 
-  backdrop: true,
-
-};;
+  backdrop: true
+};

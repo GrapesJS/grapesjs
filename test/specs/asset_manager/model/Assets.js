@@ -1,9 +1,8 @@
-var Assets = require('asset_manager/model/Assets');
+import Assets from 'asset_manager/model/Assets';
 
 module.exports = {
   run() {
     describe('Assets', () => {
-
       var obj;
 
       beforeEach(() => {
@@ -14,11 +13,11 @@ module.exports = {
         obj = null;
       });
 
-      it('Object exists', () => {
-        expect(obj).toExist();
+      test('Object exists', () => {
+        expect(obj).toBeTruthy();
       });
 
-      it('Collection is empty', () => {
+      test('Collection is empty', () => {
         expect(obj.length).toEqual(0);
       });
     });

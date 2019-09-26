@@ -1,9 +1,10 @@
-const Property = require('./Property');
-const InputNumber = require('domain_abstract/ui/InputNumber');
+import { isUndefined } from 'underscore';
+import Property from './Property';
+import InputNumber from 'domain_abstract/ui/InputNumber';
 
-module.exports = Property.extend({
-
-  defaults: { ...Property.prototype.defaults,
+export default Property.extend({
+  defaults: {
+    ...Property.prototype.defaults,
     // Array of units, eg. ['px', '%']
     units: [],
 
@@ -17,9 +18,8 @@ module.exports = Property.extend({
     min: '',
 
     // Maximum value
-    max: '',
+    max: ''
   },
-
 
   init() {
     const unit = this.get('unit');
@@ -31,19 +31,27 @@ module.exports = Property.extend({
     }
   },
 
+  clearValue(opts = {}) {
+    this.set({ value: undefined, unit: undefined }, opts);
+    return this;
+  },
 
   parseValue(val) {
     const parsed = Property.prototype.parseValue.apply(this, arguments);
-    const { value, unit } = this.input.validateInputValue(parsed.value, {deepCheck: 1});
+    const { value, unit } = this.input.validateInputValue(parsed.value, {
+      deepCheck: 1
+    });
     parsed.value = value;
     parsed.unit = unit;
     return parsed;
   },
 
-
   getFullValue() {
-    let value = this.get('value') + this.get('unit');
+    let value = this.get('value');
+    let unit = this.get('unit');
+    value = !isUndefined(value) ? value : '';
+    unit = !isUndefined(unit) && value ? unit : '';
+    value = `${value}${unit}`;
     return Property.prototype.getFullValue.apply(this, [value]);
-  },
-
+  }
 });

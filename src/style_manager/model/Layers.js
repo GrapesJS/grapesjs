@@ -1,7 +1,7 @@
-const Layer = require('./Layer');
+import Backbone from 'backbone';
+import Layer from './Layer';
 
-module.exports = Backbone.Collection.extend({
-
+export default Backbone.Collection.extend({
   model: Layer,
 
   initialize() {
@@ -11,12 +11,16 @@ module.exports = Backbone.Collection.extend({
   },
 
   onAdd(model, c, opts) {
-    if(!opts.noIncrement)
-      model.set('index', this.idx++);
+    if (!opts.noIncrement) model.set('index', this.idx++);
   },
 
   onReset() {
     this.idx = 1;
+  },
+
+  getSeparator() {
+    const { property } = this;
+    return property ? property.get('layerSeparator') : ', ';
   },
 
   /**
@@ -36,9 +40,9 @@ module.exports = Backbone.Collection.extend({
       var cleaned = match.replace(/,\s*/g, ',');
       value = value.replace(match, cleaned);
     });
-    const layerValues = value ? value.split(', ') : [];
+    const layerValues = value ? value.split(this.getSeparator()) : [];
     layerValues.forEach(layerValue => {
-      layers.push({properties: this.properties.parseValue(layerValue)});
+      layers.push({ properties: this.properties.parseValue(layerValue) });
     });
     return layers;
   },
@@ -85,14 +89,13 @@ module.exports = Backbone.Collection.extend({
         const propertyName = propModel.get('property');
 
         if (layerProprs.indexOf(propertyName) < 0) {
-          layer.properties.push({ ...propModel.attributes })
+          layer.properties.push({ ...propModel.attributes });
         }
-      })
+      });
     });
 
     return layers;
   },
-
 
   active(index) {
     this.each(layer => layer.set('active', 0));
@@ -103,7 +106,7 @@ module.exports = Backbone.Collection.extend({
   getFullValue() {
     let result = [];
     this.each(layer => result.push(layer.getFullValue()));
-    return result.join(', ');
+    return result.join(this.getSeparator());
   },
 
   getPropertyValues(property) {
@@ -114,5 +117,4 @@ module.exports = Backbone.Collection.extend({
     });
     return result.join(', ');
   }
-
 });

@@ -1,17 +1,27 @@
-var Backbone = require('backbone');
-var Frame = require('./Frame');
+import Backbone from 'backbone';
+import Frame from './Frame';
 
-module.exports = Backbone.Model.extend({
-
-  defaults :{
+export default Backbone.Model.extend({
+  defaults: {
     frame: '',
     wrapper: '',
     rulers: false,
+    zoom: 100,
+    x: 0,
+    y: 0
   },
 
-  initialize(config) {
-    var conf = this.conf || {};
-    this.set('frame', new Frame(conf.frame));
+  initialize(config = {}) {
+    const { styles = [], scripts = [] } = config;
+    const frame = new Frame();
+    styles.forEach(style => frame.addLink(style));
+    scripts.forEach(script => frame.addScript(script));
+    this.set('frame', frame);
+    this.listenTo(this, 'change:zoom', this.onZoomChange);
   },
 
+  onZoomChange() {
+    const zoom = this.get('zoom');
+    zoom < 1 && this.set('zoom', 1);
+  }
 });

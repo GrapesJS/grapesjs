@@ -1,4 +1,19 @@
 /**
+ * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/modal_dialog/config/config.js)
+ * ```js
+ * const editor = grapesjs.init({
+ *  modal: {
+ *    // options
+ *  }
+ * })
+ * ```
+ *
+ * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+ *
+ * ```js
+ * const modal = editor.Modal;
+ * ```
+ *
  * * [open](#open)
  * * [close](#close)
  * * [isOpen](#isopen)
@@ -6,65 +21,77 @@
  * * [getTitle](#gettitle)
  * * [setContent](#setcontent)
  * * [getContent](#getcontent)
+ * * [onceClose](#onceclose)
+ * * [onceOpen](#onceopen)
  *
- * Before using the methods you should get first the module from the editor instance, in this way:
- *
- * ```js
- * var modal = editor.Modal;
- * ```
  * @module Modal
  */
-module.exports = () => {
-  var c = {},
-  defaults = require('./config/config'),
-  ModalM = require('./model/Modal'),
-  ModalView	= require('./view/ModalView');
+
+import defaults from './config/config';
+import ModalM from './model/Modal';
+import ModalView from './view/ModalView';
+
+export default () => {
+  var c = {};
   var model, modal;
 
-  return {
+  const triggerEvent = (enable, em) => {
+    em && em.trigger(`modal:${enable ? 'open' : 'close'}`);
+  };
 
-  	/**
+  return {
+    /**
      * Name of the module
      * @type {String}
      * @private
      */
     name: 'Modal',
 
+    getConfig() {
+      return c;
+    },
+
     /**
      * Initialize module. Automatically called with a new instance of the editor
      * @param {Object} config Configurations
      * @private
      */
-    init(config) {
-      c = config || {};
-      for (var name in defaults) {
-        if (!(name in c))
-          c[name] = defaults[name];
-      }
+    init(config = {}) {
+      c = {
+        ...defaults,
+        ...config
+      };
 
+      const em = c.em;
+      this.em = em;
       var ppfx = c.pStylePrefix;
-      if(ppfx)
-        c.stylePrefix = ppfx + c.stylePrefix;
+      if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
 
       model = new ModalM(c);
+      model.on('change:open', (m, enb) => triggerEvent(enb, em));
       modal = new ModalView({
         model,
-        config: c,
+        config: c
       });
 
       return this;
     },
 
-    postRender(editorView) {
-      // c.em.config.el || 'body'
-      this.render().appendTo(editorView.el);
+    postRender(view) {
+      const el = view.model.getConfig().el || view.el;
+      this.render().appendTo(el);
     },
 
     /**
      * Open the modal window
+     * @param {Object} [opts={}] Options
+     * @param {String|HTMLElement} [opts.title] Title to set for the modal
+     * @param {String|HTMLElement} [opts.content] Content to set for the modal
      * @return {this}
      */
-    open() {
+    open(opts = {}) {
+      opts.title && this.setTitle(opts.title);
+      opts.content && this.setContent(opts.content);
       modal.show();
       return this;
     },
@@ -75,6 +102,28 @@ module.exports = () => {
      */
     close() {
       modal.hide();
+      return this;
+    },
+
+    /**
+     * Execute callback when the modal will be closed.
+     * The callback will be called one only time
+     * @param {Function} clb
+     * @returns {this}
+     */
+    onceClose(clb) {
+      this.em.once('modal:close', clb);
+      return this;
+    },
+
+    /**
+     * Execute callback when the modal will be opened.
+     * The callback will be called one only time
+     * @param {Function} clb
+     * @returns {this}
+     */
+    onceOpen(clb) {
+      this.em.once('modal:open', clb);
       return this;
     },
 

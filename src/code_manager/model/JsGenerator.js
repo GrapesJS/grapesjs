@@ -1,31 +1,31 @@
-var Backbone = require('backbone');
+import { extend } from 'underscore';
+import Backbone from 'backbone';
 
-module.exports = Backbone.Model.extend({
-
+export default Backbone.Model.extend({
   mapModel(model) {
     var code = '';
-    var script  = model.get('script');
-    var type  = model.get('type');
-    var comps  = model.get('components');
+    var script = model.get('script-export') || model.get('script');
+    var type = model.get('type');
+    var comps = model.get('components');
     var id = model.getId();
 
     if (script) {
       // If the component has scripts we need to expose his ID
       var attr = model.get('attributes');
-      attr = _.extend({}, attr, {id});
-      model.set('attributes', attr);
-      var scrStr = model.getScriptString();
+      attr = extend({}, attr, { id });
+      model.set('attributes', attr, { silent: 1 });
+      var scrStr = model.getScriptString(script);
 
       // If the script was updated, I'll put its code in a separate container
       if (model.get('scriptUpdated')) {
-          this.mapJs[type+'-'+id] = {ids: [id], code: scrStr};
+        this.mapJs[type + '-' + id] = { ids: [id], code: scrStr };
       } else {
         var mapType = this.mapJs[type];
 
-        if(mapType) {
+        if (mapType) {
           mapType.ids.push(id);
         } else {
-          this.mapJs[type] = {ids: [id], code: scrStr};
+          this.mapJs[type] = { ids: [id], code: scrStr };
         }
       }
     }
@@ -43,7 +43,7 @@ module.exports = Backbone.Model.extend({
 
     var code = '';
 
-    for(var type in this.mapJs) {
+    for (var type in this.mapJs) {
       var mapType = this.mapJs[type];
       var ids = '#' + mapType.ids.join(', #');
       code += `
@@ -53,8 +53,6 @@ module.exports = Backbone.Model.extend({
         }`;
     }
 
-
     return code;
-  },
-
+  }
 });

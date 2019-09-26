@@ -1,14 +1,7 @@
-const PropertyView = require('./PropertyView');
-const PropertyIntegerView = require('./PropertyIntegerView');
-const PropertyRadioView = require('./PropertyRadioView');
-const PropertySelectView = require('./PropertySelectView');
-const PropertyColorView = require('./PropertyColorView');
-const PropertyFileView = require('./PropertyFileView');
-const PropertyCompositeView = require('./PropertyCompositeView');
-const PropertyStackView = require('./PropertyStackView');
+import Backbone from 'backbone';
+import { appendAtIndex } from 'utils/dom';
 
-module.exports = Backbone.View.extend({
-
+export default Backbone.View.extend({
   initialize(o) {
     this.config = o.config || {};
     this.pfx = this.config.stylePrefix || '';
@@ -17,19 +10,19 @@ module.exports = Backbone.View.extend({
     this.onChange = o.onChange;
     this.onInputRender = o.onInputRender || {};
     this.customValue = o.customValue || {};
+    this.properties = [];
     const coll = this.collection;
     this.listenTo(coll, 'add', this.addTo);
     this.listenTo(coll, 'reset', this.render);
   },
 
-
-  addTo(model) {
-    this.add(model);
+  addTo(model, coll, opts) {
+    this.add(model, null, opts);
   },
 
-
-  add(model, frag) {
-    var view = new model.typeView({
+  add(model, frag, opts = {}) {
+    const appendTo = frag || this.el;
+    const view = new model.typeView({
       model,
       name: model.get('name'),
       id: this.pfx + model.get('property'),
@@ -37,7 +30,7 @@ module.exports = Backbone.View.extend({
       propTarget: this.propTarget,
       onChange: this.onChange,
       onInputRender: this.onInputRender,
-      config: this.config,
+      config: this.config
     });
 
     if (model.get('type') != 'composite') {
@@ -45,17 +38,14 @@ module.exports = Backbone.View.extend({
     }
 
     view.render();
-    const el = view.el;
+    const rendered = view.el;
+    this.properties.push(view);
 
-    if (frag) {
-      frag.appendChild(el);
-    } else {
-      this.el.appendChild(el);
-    }
+    appendAtIndex(appendTo, rendered, opts.at);
   },
 
-
   render() {
+    this.properties = [];
     const fragment = document.createDocumentFragment();
     this.collection.each(model => this.add(model, fragment));
     this.$el.append(fragment);

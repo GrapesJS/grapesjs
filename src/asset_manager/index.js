@@ -1,53 +1,45 @@
 /**
+ * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/asset_manager/config/config.js)
+ * ```js
+ * const editor = grapesjs.init({
+ *  assetManager: {
+ *    // options
+ *  }
+ * })
+ * ```
+ *
+ * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+ *
+ * ```js
+ * const assetManager = editor.AssetManager;
+ * ```
+ *
  * * [add](#add)
  * * [get](#get)
  * * [getAll](#getall)
  * * [getAllVisible](#getallvisible)
  * * [remove](#remove)
+ * * [store](#store)
+ * * [load](#load)
  * * [getContainer](#getcontainer)
  * * [getAssetsEl](#getassetsel)
  * * [addType](#addtype)
  * * [getType](#gettype)
  * * [getTypes](#gettypes)
- * * [store](#store)
- * * [load](#load)
- *
- * Before using this methods you should get first the module from the editor instance, in this way:
- *
- * ```js
- * var assetManager = editor.AssetManager;
- * ```
  *
  * @module AssetManager
- * @param {Object} config Configurations
- * @param {Array<Object>} [config.assets=[]] Default assets
- * @param {String} [config.uploadText='Drop files here or click to upload'] Upload text
- * @param {String} [config.addBtnText='Add image'] Text for the add button
- * @param {String} [config.upload=''] Where to send upload data. Expects as return a JSON with asset/s object
- * as: {data: [{src:'...'}, {src:'...'}]}
- * @return {this}
- * @example
- * ...
- * {
- * 	assets: [
- *  	{src:'path/to/image.png'},
- *     ...
- *  ],
- *  upload: 'http://dropbox/path', // Set to false to disable it
- *  uploadText: 'Drop files here or click to upload',
- * }
  */
 
-module.exports = () => {
+import defaults from './config/config';
+import Assets from './model/Assets';
+import AssetsView from './view/AssetsView';
+import FileUpload from './view/FileUploader';
+
+export default () => {
   let c = {};
-  const defaults = require('./config/config');
-  const Assets = require('./model/Assets');
-  const AssetsView = require('./view/AssetsView');
-  const FileUpload = require('./view/FileUploader');
   let assets, am, fu;
 
   return {
-
     /**
      * Name of the module
      * @type {String}
@@ -75,8 +67,7 @@ module.exports = () => {
       c = config || {};
 
       for (let name in defaults) {
-        if (!(name in c))
-          c[name] = defaults[name];
+        if (!(name in c)) c[name] = defaults[name];
       }
 
       const ppfx = c.pStylePrefix;
@@ -92,19 +83,19 @@ module.exports = () => {
         // Collection visible in asset manager
         collection: new Assets([]),
         globalCollection: assets,
-        config: c,
+        config: c
       };
       fu = new FileUpload(obj);
       obj.fu = fu;
       am = new AssetsView(obj);
 
       // Setup the sync between the global and public collections
-      assets.listenTo(assets, 'add', (model) => {
+      assets.listenTo(assets, 'add', model => {
         this.getAllVisible().add(model);
         em && em.trigger('asset:add', model);
       });
 
-      assets.listenTo(assets, 'remove', (model) => {
+      assets.listenTo(assets, 'remove', model => {
         this.getAllVisible().remove(model);
         em && em.trigger('asset:remove', model);
       });
@@ -136,7 +127,6 @@ module.exports = () => {
      * }]);
      */
     add(asset, opts = {}) {
-
       // Put the model at the beginning
       if (typeof opts.at == 'undefined') {
         opts.at = 0;
@@ -153,7 +143,7 @@ module.exports = () => {
      * var asset = assetManager.get('http://img.jpg');
      */
     get(src) {
-      return assets.where({src})[0];
+      return assets.where({ src })[0];
     },
 
     /**
@@ -196,8 +186,7 @@ module.exports = () => {
       var obj = {};
       var assets = JSON.stringify(this.getAll().toJSON());
       obj[this.storageKey] = assets;
-      if(!noStore && c.stm)
-        c.stm.store(obj);
+      if (!noStore && c.stm) c.stm.store(obj);
       return obj;
     },
 
@@ -219,7 +208,7 @@ module.exports = () => {
       if (typeof assets == 'string') {
         try {
           assets = JSON.parse(data[name]);
-        } catch(err) {}
+        } catch (err) {}
       }
 
       if (assets && assets.length) {
@@ -272,13 +261,14 @@ module.exports = () => {
     },
 
     /**
-     * Add new type
+     * Add new type. If you want to get more about type definition we suggest to read the [module's page](/modules/Assets.html)
      * @param {string} id Type ID
      * @param {Object} definition Definition of the type. Each definition contains
      *                            `model` (business logic), `view` (presentation logic)
      *                            and `isType` function which recognize the type of the
      *                            passed entity
-     * addType('my-type', {
+     * @example
+     * assetManager.addType('my-type', {
      *  model: {},
      *  view: {},
      *  isType: (value) => {},
@@ -357,7 +347,6 @@ module.exports = () => {
      */
     onDblClick(func) {
       c.onDblClick = func;
-    },
-
+    }
   };
 };

@@ -1,4 +1,3 @@
-var Backbone = require('backbone');
-var ComponentView = require('./ComponentView');
+import ComponentView from './ComponentView';
 
-module.exports = ComponentView.extend({});
+export default ComponentView.extend({});

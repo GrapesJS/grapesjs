@@ -1,12 +1,10 @@
-const Panels = require('panels');
-const Button = require('panels/model/Button');
-const Buttons = require('panels/model/Buttons');
-const Panel = require('panels/model/Panel');
+import Button from 'panels/model/Button';
+import Buttons from 'panels/model/Buttons';
+import Panel from 'panels/model/Panel';
 
 module.exports = {
   run() {
     describe('Button', () => {
-
       var obj;
 
       beforeEach(() => {
@@ -17,15 +15,15 @@ module.exports = {
         obj = null;
       });
 
-      it('Has buttons instance', () => {
+      test('Has buttons instance', () => {
         expect(obj.has('buttons')).toEqual(true);
       });
 
-      it('Has no buttons', () => {
+      test('Has no buttons', () => {
         expect(obj.get('buttons').length).toEqual(0);
       });
 
-      it('Init with other buttons inside correctly', () => {
+      test('Init with other buttons inside correctly', () => {
         obj = new Button({
           buttons: [{}]
         });
@@ -33,10 +31,9 @@ module.exports = {
         expect(obj.get('buttons').length).toEqual(1);
       });
 
-      it('Has a disable attribute with default value as false', () => {
+      test('Has a disable attribute with default value as false', () => {
         expect(obj.get('disable')).toEqual(false);
       });
-
     });
 
     describe('Buttons', () => {
@@ -50,48 +47,47 @@ module.exports = {
         obj = null;
       });
 
-      it('Deactivates buttons', () => {
+      test('Deactivates buttons', () => {
         obj.add({ active: true });
         obj.deactivateAll();
         expect(obj.at(0).get('active')).toEqual(false);
       });
 
-      it('Deactivates buttons with context', () => {
+      test('Deactivates buttons with context', () => {
         obj.add({ active: true });
         obj.deactivateAll('someContext');
         expect(obj.at(0).get('active')).toEqual(true);
       });
 
-      it('Deactivates except one', () => {
+      test('Deactivates except one', () => {
         var btn = obj.add({ active: true });
         obj.deactivateAllExceptOne();
         expect(obj.at(0).get('active')).toEqual(false);
       });
 
-      it('Deactivates except one with model', () => {
+      test('Deactivates except one with model', () => {
         var btn = obj.add({ active: true });
         obj.deactivateAllExceptOne(btn);
         expect(obj.at(0).get('active')).toEqual(true);
       });
-      
-      it('Disable all buttons', () => {
+
+      test('Disable all buttons', () => {
         obj.add({ disable: false });
         obj.disableAllButtons();
         expect(obj.at(0).get('disable')).toEqual(true);
       });
 
-      it('Disables buttons with context', () => {
+      test('Disables buttons with context', () => {
         obj.add({ disable: false, context: 'someContext' });
         obj.disableAllButtons('someContext');
         expect(obj.at(0).get('disable')).toEqual(true);
       });
 
-      it('Disables except one', () => {
+      test('Disables except one', () => {
         var btn = obj.add({ disable: false });
         obj.disableAllButtonsExceptOne(btn);
         expect(obj.at(0).get('disable')).toEqual(false);
       });
-
     });
 
     describe('Panel', () => {
@@ -105,23 +101,22 @@ module.exports = {
         obj = null;
       });
 
-      it('Has buttons instance', () => {
+      test('Has buttons instance', () => {
         expect(obj.has('buttons')).toEqual(true);
         expect(obj.get('buttons') instanceof Buttons).toEqual(true);
       });
 
-      it('Has no buttons', () => {
+      test('Has no buttons', () => {
         expect(obj.get('buttons').length).toEqual(0);
       });
 
-      it('Init with buttons inside correctly', () => {
+      test('Init with buttons inside correctly', () => {
         obj = new Panel({
           buttons: [{}]
         });
         expect(obj.get('buttons') instanceof Buttons).toEqual(true);
         expect(obj.get('buttons').length).toEqual(1);
       });
-
     });
 
     describe('Panels', () => {
@@ -134,8 +129,6 @@ module.exports = {
       afterEach(() => {
         obj = null;
       });
-
     });
-
   }
 };

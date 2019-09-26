@@ -1,15 +1,21 @@
-var Backbone = require('backbone');
-var PanelView = require('./PanelView');
+import Backbone from 'backbone';
+import PanelView from './PanelView';
 
-module.exports = Backbone.View.extend({
-
+export default Backbone.View.extend({
   initialize(o) {
     this.opt = o || {};
     this.config = this.opt.config || {};
     this.pfx = this.config.stylePrefix || '';
-    this.listenTo(this.collection, 'add', this.addTo );
-    this.listenTo(this.collection, 'reset', this.render );
+    const items = this.collection;
+    this.listenTo(items, 'add', this.addTo);
+    this.listenTo(items, 'reset', this.render);
+    this.listenTo(items, 'remove', this.onRemove);
     this.className = this.pfx + 'panels';
+  },
+
+  onRemove(model) {
+    const view = model.view;
+    view && view.remove();
   },
 
   /**
@@ -33,15 +39,20 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   addToCollection(model, fragmentEl) {
-    var fragment = fragmentEl || null;
-    var view = new PanelView({
+    const fragment = fragmentEl || null;
+    const config = this.config;
+    const el = model.get('el');
+    const view = new PanelView({
+      el,
       model,
-      config: this.config,
+      config
     });
-    var rendered = view.render().el;
-    var appendTo = model.get('appendTo');
+    const rendered = view.render().el;
+    const appendTo = model.get('appendTo');
 
-    if (appendTo) {
+    // Do nothing if the panel was requested to be another element
+    if (el) {
+    } else if (appendTo) {
       var appendEl = document.querySelector(appendTo);
       appendEl.appendChild(rendered);
     } else {
@@ -57,15 +68,12 @@ module.exports = Backbone.View.extend({
   },
 
   render() {
-    var fragment = document.createDocumentFragment();
-    this.$el.empty();
-
-    this.collection.each(function(model){
-      this.addToCollection(model, fragment);
-    }, this);
-
-    this.$el.append(fragment);
-    this.$el.attr('class', this.className);
+    const $el = this.$el;
+    const frag = document.createDocumentFragment();
+    $el.empty();
+    this.collection.each(model => this.addToCollection(model, frag));
+    $el.append(frag);
+    $el.attr('class', this.className);
     return this;
   }
 });

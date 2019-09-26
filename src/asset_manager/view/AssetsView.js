@@ -1,11 +1,8 @@
-var AssetView = require('./AssetView');
-var AssetImageView = require('./AssetImageView');
-var FileUploader = require('./FileUploader');
+import Backbone from 'backbone';
 
-module.exports = Backbone.View.extend({
-
+export default Backbone.View.extend({
   events: {
-    submit: 'handleSubmit',
+    submit: 'handleSubmit'
   },
 
   template(view) {
@@ -21,10 +18,6 @@ module.exports = Backbone.View.extend({
           <button class="${ppfx}btn-prim">${view.config.addBtnText}</button>
           <div style="clear:both"></div>
         </form>
-        <div class="${pfx}dips" style="display:none">
-          <button class="fa fa-th <%${ppfx}btnt"></button>
-          <button class="fa fa-th-list <%${ppfx}btnt"></button>
-        </div>
       </div>
       <div class="${pfx}assets" data-el="assets"></div>
       <div style="clear:both"></div>
@@ -64,9 +57,9 @@ module.exports = Backbone.View.extend({
     this.getAssetsEl().scrollTop = 0;
 
     if (handleAdd) {
-      handleAdd(url);
+      handleAdd.bind(this)(url);
     } else {
-      this.options.globalCollection.add(url, {at: 0});
+      this.options.globalCollection.add(url, { at: 0 });
     }
   },
 
@@ -86,7 +79,7 @@ module.exports = Backbone.View.extend({
    * @private
    */
   getAddInput() {
-    if(!this.inputUrl || !this.inputUrl.value)
+    if (!this.inputUrl || !this.inputUrl.value)
       this.inputUrl = this.el.querySelector(`.${this.pfx}add-asset input`);
     return this.inputUrl;
   },
@@ -127,11 +120,11 @@ module.exports = Backbone.View.extend({
     const rendered = new model.typeView({
       model,
       collection,
-      config,
+      config
     }).render().el;
 
     if (fragment) {
-      fragment.appendChild( rendered );
+      fragment.appendChild(rendered);
     } else {
       const assetsEl = this.getAssetsEl();
       if (assetsEl) {
@@ -172,7 +165,7 @@ module.exports = Backbone.View.extend({
     const assets = this.$el.find(`.${this.pfx}assets`);
     assets.empty();
     this.toggleNoAssets(this.collection.length);
-    this.collection.each((model) => this.addAsset(model, fragment));
+    this.collection.each(model => this.addAsset(model, fragment));
     assets.append(fragment);
   },
 

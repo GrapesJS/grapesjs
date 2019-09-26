@@ -1,11 +1,9 @@
-const TraitManager = require('trait_manager');
-const TraitsModel = require('./model/TraitsModel');
-const TraitsView = require('./view/TraitsView');
+import TraitManager from 'trait_manager';
+import TraitsModel from './model/TraitsModel';
+import TraitsView from './view/TraitsView';
 
 describe('TraitManager', () => {
-
   describe('Main', () => {
-
     var obj;
 
     beforeEach(() => {
@@ -15,7 +13,6 @@ describe('TraitManager', () => {
     afterEach(() => {
       obj = null;
     });
-
   });
 
   TraitsModel.run();
