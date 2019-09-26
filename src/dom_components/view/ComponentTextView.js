@@ -161,8 +161,9 @@ export default ComponentView.extend({
 
       while (el) {
         el.draggable = enable ? !1 : !0;
+        // Note: el.parentNode is sometimes null here
         el = el.parentNode;
-        el.tagName == 'BODY' && (el = 0);
+        el && el.tagName == 'BODY' && (el = 0);
       }
     }
   }
