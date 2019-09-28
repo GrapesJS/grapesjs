@@ -75,12 +75,15 @@ export default ComponentView.extend({
    */
   getContent() {
     const { rte } = this;
+    const { activeRte } = rte || {};
     let content = '';
-    if(rte.activeRte && typeof rte.activeRte.getContent === 'function') {
-      content = rte.activeRte.getContent();
+
+    if (activeRte && typeof activeRte.getContent === 'function') {
+      content = activeRte.getContent();
     } else {
       content = this.getChildrenContainer().innerHTML;
     }
+
     return content;
   },
 
