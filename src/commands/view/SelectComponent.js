@@ -280,10 +280,9 @@ export default {
   select(model, event = {}) {
     if (!model) return;
     const ctrlKey = event.ctrlKey || event.metaKey;
-    const shiftKey = event.shiftKey;
-    const { editor } = this;
+    const { shiftKey } = event;
+    const { editor, em } = this;
     const multiple = editor.getConfig('multipleSelection');
-    const em = this.em;
 
     if (ctrlKey && multiple) {
       editor.selectToggle(model);
@@ -325,7 +324,7 @@ export default {
 
       editor.selectAdd(model);
     } else {
-      editor.select(model);
+      editor.select(model, { scroll: {} });
     }
 
     this.initResize(model);

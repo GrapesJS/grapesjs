@@ -387,6 +387,12 @@ export default Backbone.View.extend({
   },
 
   scrollIntoView(opts = {}) {
+    const { el } = this;
+    console.log('scrolling to', el, {
+      elTop: el.offsetTop,
+      frTop: el.ownerDocument.body.scrollTop,
+      isIn: this.isInViewport()
+    });
     if (!this.isInViewport() || opts.force) {
       const { el } = this;
 

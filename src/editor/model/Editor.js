@@ -281,7 +281,6 @@ export default Backbone.Model.extend({
    * @private
    */
   setSelected(el, opts = {}) {
-    const { scroll } = opts;
     const multiple = isArray(el);
     const els = multiple ? el : [el];
     const selected = this.get('selected');
@@ -298,8 +297,6 @@ export default Backbone.Model.extend({
       this.addSelected(model, opts);
       added = model;
     });
-
-    scroll && added && this.get('Canvas').scrollTo(added, scroll);
   },
 
   /**

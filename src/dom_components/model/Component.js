@@ -1039,10 +1039,17 @@ const Component = Backbone.Model.extend(Styleable).extend(
     /**
      * Get the View of the component.
      * This works only if the component is already rendered
+     * @param {Frame} frame Get View of a specific frame
      * @return {ComponentView}
      */
-    getView() {
-      return this.view;
+    getView(frame) {
+      let { view, views } = this;
+
+      if (frame) {
+        view = views.filter(view => view._getFrame() === frame.view)[0];
+      }
+
+      return view;
     },
 
     /**

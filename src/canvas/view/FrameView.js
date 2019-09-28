@@ -34,8 +34,19 @@ export default Backbone.View.extend({
     this.listenTo(model, 'change:x change:y', this.updatePos);
     this.listenTo(model, 'change:width change:height', this.updateDim);
     this.listenTo(this.em, 'change:device', this.updateDim);
+    this.listenTo(this.em, 'component:selected', this.checkSelected);
     this.updatePos();
     model.view = this;
+  },
+
+  checkSelected(component, opts = {}) {
+    console.log('checkSelected from FrameView', this);
+    const view = component && component.getView(this.model);
+
+    if (view) {
+      // avoid scroll if the frame is the current one
+      opts.scroll && view.scrollIntoView(opts.scroll);
+    }
   },
 
   updatePos(md) {
