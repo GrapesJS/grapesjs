@@ -518,7 +518,8 @@ export default {
         this.toolbar = new Toolbar(toolbar);
         var toolbarView = new ToolbarView({
           collection: this.toolbar,
-          editor: this.editor
+          editor: this.editor,
+          em
         });
         toolbarEl.appendChild(toolbarView.render().el);
       }

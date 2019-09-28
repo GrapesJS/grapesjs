@@ -13,13 +13,17 @@ export default Backbone.View.extend({
     return this.model.get('attributes');
   },
 
-  initialize(opts) {
-    this.editor = opts.config.editor;
+  initialize(opts = {}) {
+    const { config = {} } = opts;
+    this.em = config.em;
+    this.editor = config.editor;
   },
 
   handleClick(event) {
     event.preventDefault();
     event.stopPropagation();
+    const { em } = this;
+    em.trigger('toolbar:run:before');
     this.execCommand(event);
   },
 
