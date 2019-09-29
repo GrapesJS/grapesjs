@@ -72,12 +72,27 @@ export default ComponentView.extend({
   },
 
   /**
+   * get content from RTE
+   * @return string
+   */
+  getContent() {
+    const { rte } = this;
+    let content = '';
+    if(rte.activeRte && typeof rte.activeRte.getContent === 'function') {
+      content = rte.activeRte.getContent();
+    } else {
+      content = this.getChildrenContainer().innerHTML;
+    }
+    return content;
+  },
+
+  /**
    * Merge content from the DOM to the model
    */
   syncContent(opts = {}) {
     const { model, rte, rteEnabled } = this;
     if (!rteEnabled && !opts.force) return;
-    const content = this.getChildrenContainer().innerHTML;
+    const content = this.getContent();
     const comps = model.components();
     const contentOpt = { fromDisable: 1, ...opts };
     comps.length && comps.reset(null, opts);
@@ -161,8 +176,9 @@ export default ComponentView.extend({
 
       while (el) {
         el.draggable = enable ? !1 : !0;
+        // Note: el.parentNode is sometimes null here
         el = el.parentNode;
-        el.tagName == 'BODY' && (el = 0);
+        el && el.tagName == 'BODY' && (el = 0);
       }
     }
   }
