@@ -79,6 +79,8 @@ export default {
   onHover(e) {
     e.stopPropagation();
     const trg = e.target;
+    const view = getViewEl(trg);
+    const frameView = view && view._getFrame();
     const $el = $(trg);
     let model = $el.data('model');
 
@@ -100,6 +102,7 @@ export default {
 
     this.currentDoc = trg.ownerDocument;
     this.em.setHovered(model);
+    frameView && this.em.set('currentFrame', frameView);
   },
 
   onHovered(em, component) {

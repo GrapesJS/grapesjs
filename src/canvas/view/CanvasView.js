@@ -36,14 +36,26 @@ export default Backbone.View.extend({
     this.pfx = this.config.stylePrefix || '';
     this.ppfx = this.config.pStylePrefix || '';
     this.className = this.config.stylePrefix + 'canvas';
-    this.listenTo(this.em, 'change:canvasOffset', this.clearOff);
-    this.listenTo(this.em, 'frame:scroll', this.onFrameScroll);
+    const { em } = this;
+    this.listenTo(em, 'change:canvasOffset', this.clearOff);
+    this.listenTo(em, 'frame:scroll', this.onFrameScroll);
+    this.listenTo(em, 'component:selected', this.checkSelected);
     this.listenTo(model, 'change:zoom change:x change:y', this.updateFrames);
     this.toggleListeners(1);
     this.frame = new FrameView({
       model: this.model.get('frame'),
       config: this.config
     });
+  },
+
+  checkSelected(component, opts = {}) {
+    const { scroll } = opts;
+    const currFrame = this.em.get('currentFrame');
+
+    scroll &&
+      component.views.forEach(view => {
+        view._getFrame() !== currFrame && view.scrollIntoView(scroll);
+      });
   },
 
   remove() {
