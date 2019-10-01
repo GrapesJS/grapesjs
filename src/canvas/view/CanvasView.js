@@ -42,10 +42,6 @@ export default Backbone.View.extend({
     this.listenTo(em, 'component:selected', this.checkSelected);
     this.listenTo(model, 'change:zoom change:x change:y', this.updateFrames);
     this.toggleListeners(1);
-    this.frame = new FrameView({
-      model: this.model.get('frame'),
-      config: this.config
-    });
   },
 
   checkSelected(component, opts = {}) {
@@ -502,13 +498,13 @@ export default Backbone.View.extend({
         root: wrapper.getWrapper(),
         styles: cssc.getAll()
       });
-      $frames.append(this.frame.render().el);
-      var frame = this.frame;
-      if (this.config.scripts.length === 0) {
-        frame.el.onload = this.renderBody;
-      } else {
-        this.renderScripts(); // will call renderBody later
-      }
+      // $frames.append(this.frame.render().el);
+      // var frame = this.frame;
+      // if (this.config.scripts.length === 0) {
+      //   frame.el.onload = this.renderBody;
+      // } else {
+      //   this.renderScripts(); // will call renderBody later
+      // }
     }
 
     const toolsWrp = $el.find('[data-tools]');
@@ -540,16 +536,20 @@ export default Backbone.View.extend({
     this.el.className = this.className;
 
     // Render all frames
+    const frms = model.get('frames');
     const frames = new FramesView({
-      collection: model.get('frames'),
+      collection: frms,
       config: {
         ...config,
         renderContent: 1,
         canvasView: this
       }
     });
+    frms.listenToLoad();
+    frms.on('loaded:all', () => em.trigger('loaded'));
     frames.render();
     $frames.append(frames.el);
+    this.frame = frms.at(0).view;
 
     return this;
   }

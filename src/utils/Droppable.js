@@ -2,16 +2,19 @@
   This class makes the canvas droppable
  */
 
-import { on } from 'utils/mixins';
+import { on, off } from 'utils/mixins';
 import { bindAll, indexOf } from 'underscore';
 
 export default class Droppable {
-  constructor(em) {
+  constructor(em, rootEl) {
     this.em = em;
-    const el = em
-      .get('DomComponents')
-      .getWrapper()
-      .getEl();
+    const el =
+      rootEl ||
+      em
+        .get('Canvas')
+        .getFrames()
+        .map(frame => frame.get('root').getEl());
+    const els = Array.isArray(el) ? el : [el];
     this.el = el;
     this.counter = 0;
     bindAll(
@@ -21,12 +24,19 @@ export default class Droppable {
       'handleDrop',
       'handleDragLeave'
     );
-    on(el, 'dragenter', this.handleDragEnter);
-    on(el, 'dragover', this.handleDragOver);
-    on(el, 'drop', this.handleDrop);
-    on(el, 'dragleave', this.handleDragLeave);
+    els.forEach(el => this.toggleEffects(el, 1));
 
     return this;
+  }
+
+  toggleEffects(el, enable) {
+    const methods = { on, off };
+    const method = enable ? 'on' : 'off';
+    methods[method](el, 'dragenter', this.handleDragEnter);
+    methods[method](el, 'dragover', this.handleDragOver);
+    methods[method](el, 'drop', this.handleDrop);
+    methods[method](el, 'dragleave', this.handleDragLeave);
+    console.log('enable on', el);
   }
 
   endDrop(cancel, ev) {

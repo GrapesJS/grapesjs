@@ -81,11 +81,11 @@ export default Backbone.View.extend({
         },
         { silent: 1 }
       );
-    this.updateOffset();
     // Prevent fixed highlighting box which appears when on
     // component hover during the animation
     em.stopDefault({ preserveSelected: 1 });
-    noChanges ? this.updateOffset() : $el.on(motionsEv, this.updateOffset);
+    // TODO in updateOffset make use of internal API instead of Canvas
+    // noChanges ? this.updateOffset() : $el.on(motionsEv, this.updateOffset);
   },
 
   updateOffset() {
@@ -288,7 +288,7 @@ export default Backbone.View.extend({
     append(body, new CssRulesView({ collection: styles, config }).render().el);
     append(body, this.getJsContainer());
     // em.trigger('loaded'); // I need to manage only the first one maybe
-    this.updateOffset(); // TOFIX (check if I need it)
+    //this.updateOffset(); // TOFIX (check if I need it)
 
     // Avoid some default behaviours
     on(
@@ -312,6 +312,6 @@ export default Backbone.View.extend({
     );
 
     this.updateDim();
-    this.trigger('loaded');
+    model.trigger('loaded');
   }
 });

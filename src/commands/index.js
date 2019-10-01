@@ -128,17 +128,15 @@ export default () => {
           const nativeDrag = event && event.type == 'dragstart';
           const defComOptions = { preserveSelected: 1 };
           const modes = ['absolute', 'translate'];
+          const mode = sel.get('dmode') || em.get('dmode');
           const hideTlb = () => em.stopDefault(defComOptions);
 
           // Dirty patch to prevent parent selection on drop (in absolute mode)
           em.set('_cmpDrag', 1);
 
           if (!sel || !sel.get('draggable')) {
-            console.warn('The element is not draggable');
-            return;
+            return em.logWarning('The element is not draggable');
           }
-
-          const mode = sel.get('dmode') || em.get('dmode');
 
           // Without setTimeout the ghost image disappears
           nativeDrag ? setTimeout(hideTlb, 0) : hideTlb();
