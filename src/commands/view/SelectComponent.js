@@ -127,16 +127,13 @@ export default {
    * @private
    * */
   onSelect(component) {
+    const { em } = this;
+    const currentFrame = em.get('currentFrame') || {};
     const prevComp = this.getElSelected().component;
     if (component && component === prevComp) return;
 
-    const view =
-      component &&
-      component.views.filter(
-        view => view.el.ownerDocument === this.currentDoc
-      )[0];
+    const view = component && component.getView(currentFrame.model);
     let el = view && view.el;
-    if (!el && component) el = component.getEl();
     let result = {};
 
     if (el) {
@@ -735,6 +732,7 @@ export default {
     const frameOff = this.frameRectOffset(el, pos);
     const topOff = frameOff.top;
     const leftOff = frameOff.left;
+    console.log({ el, frameOff });
     style.top = topOff + unit;
     style.left = leftOff + unit;
     style.width = pos.width + unit;
@@ -802,7 +800,7 @@ export default {
    * @private
    */
   getContentWindow() {
-    return this.frameEl.contentWindow;
+    return this.canvas.getWindow();
   },
 
   run(editor) {
