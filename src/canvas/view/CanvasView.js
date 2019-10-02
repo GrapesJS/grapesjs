@@ -510,12 +510,14 @@ export default Backbone.View.extend({
     const toolsWrp = $el.find('[data-tools]');
     this.toolsWrapper = toolsWrp.get(0);
     toolsWrp.append(`
-      <div id="${ppfx}tools" style="pointer-events:none">
-        <div class="${ppfx}highlighter"></div>
-        <div class="${ppfx}badge"></div>
+      <div class="${ppfx}tools ${ppfx}tools-gl" style="pointer-events:none">
         <div class="${ppfx}placeholder">
           <div class="${ppfx}placeholder-int"></div>
         </div>
+      </div>
+      <div id="${ppfx}tools" style="pointer-events:none">
+        <div class="${ppfx}highlighter"></div>
+        <div class="${ppfx}badge"></div>
         <div class="${ppfx}ghost"></div>
         <div class="${ppfx}toolbar" style="pointer-events:all"></div>
         <div class="${ppfx}resizer"></div>
