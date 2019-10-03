@@ -329,12 +329,14 @@ export default Backbone.View.extend({
    * @param  {HTMLElement} el
    * @return {Object}
    */
-  offset(el) {
-    var rect = getElRect(el);
-    var docBody = el.ownerDocument.body;
+  offset(el, opts = {}) {
+    const rect = getElRect(el);
+    const docBody = el.ownerDocument.body;
+    const { noScroll } = opts;
+
     return {
-      top: rect.top + docBody.scrollTop,
-      left: rect.left + docBody.scrollLeft,
+      top: rect.top + (noScroll ? 0 : docBody.scrollTop),
+      left: rect.left + (noScroll ? 0 : docBody.scrollLeft),
       width: rect.width,
       height: rect.height
     };
@@ -380,7 +382,7 @@ export default Backbone.View.extend({
     var opt = opts || {};
     var frmOff = this.getFrameOffset();
     var cvsOff = this.getCanvasOffset();
-    var eo = this.offset(el);
+    var eo = this.offset(el, opts);
 
     var frmTop = opt.avoidFrameOffset ? 0 : frmOff.top;
     var frmLeft = opt.avoidFrameOffset ? 0 : frmOff.left;
@@ -424,17 +426,18 @@ export default Backbone.View.extend({
    * @return {Object} obj Position object
    * @private
    */
-  getPosition() {
+  getPosition(opts = {}) {
     const doc = this.frame.el.contentDocument;
     if (!doc) return;
     const bEl = doc.body;
     const zoom = this.getZoom();
     const fo = this.getFrameOffset();
     const co = this.getCanvasOffset();
+    const { noScroll } = opts;
 
     return {
-      top: fo.top + bEl.scrollTop * zoom - co.top,
-      left: fo.left + bEl.scrollLeft * zoom - co.left,
+      top: fo.top + (noScroll ? 0 : bEl.scrollTop) * zoom - co.top,
+      left: fo.left + (noScroll ? 0 : bEl.scrollLeft) * zoom - co.left,
       width: co.width,
       height: co.height
     };

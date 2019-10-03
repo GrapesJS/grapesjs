@@ -440,9 +440,9 @@ export default () => {
      * @return {Object}
      * @private
      */
-    getMouseRelativeCanvas(ev) {
+    getMouseRelativeCanvas(ev, opts) {
       const zoom = this.getZoomDecimal();
-      const { top, left } = CanvasView.getPosition();
+      const { top, left } = CanvasView.getPosition(opts);
 
       return {
         y: ev.clientY * zoom + top,

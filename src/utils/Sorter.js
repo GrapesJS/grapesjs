@@ -306,6 +306,7 @@ export default Backbone.View.extend({
     let srcModel;
     let plh = this.plh;
     this.dropModel = null;
+    this.target = null;
     this.moved = 0;
 
     // Check if the start element is a valid one, if not get the
@@ -433,7 +434,9 @@ export default Backbone.View.extend({
     var rX = e.pageX - this.elL + this.el.scrollLeft;
 
     if (this.canvasRelative && em) {
-      var mousePos = em.get('Canvas').getMouseRelativeCanvas(e);
+      const mousePos = em
+        .get('Canvas')
+        .getMouseRelativeCanvas(e, { noScroll: 1 });
       rX = mousePos.x;
       rY = mousePos.y;
     }
@@ -796,7 +799,7 @@ export default Backbone.View.extend({
 
     if (canvasRelative && em) {
       const canvas = em.get('Canvas');
-      const pos = canvas.getElementPos(el);
+      const pos = canvas.getElementPos(el, { noScroll: 1 });
       const elOffsets = canvas.getElementOffsets(el);
       top = pos.top - elOffsets.marginTop;
       left = pos.left - elOffsets.marginLeft;
