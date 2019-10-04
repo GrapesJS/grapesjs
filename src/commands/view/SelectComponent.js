@@ -57,7 +57,7 @@ export default {
     };
     em[method]('component:toggled', this.onSelect, this);
     em[method]('change:componentHovered', this.onHovered, this);
-    em[method]('component:update', this.updateAttached, this);
+    em[method]('component:update', this.onComponentUpdate, this);
     em[method]('component:resize', this.updateAttached, this);
     em[method]('change:canvasOffset', this.updateAttached, this);
     // const body = this.getCanvasBody();
@@ -126,13 +126,11 @@ export default {
    * @param {Object}  el
    * @private
    * */
-  onSelect() {
+  onSelect: debounce(function() {
     const { em } = this;
     const component = em.getSelected();
+    console.log('onSelect', { component });
     const currentFrame = em.get('currentFrame') || {};
-    const prevComp = this.getElSelected().component;
-    if (component && component === prevComp) return;
-
     const view = component && component.getView(currentFrame.model);
     let el = view && view.el;
     let result = {};
@@ -141,7 +139,7 @@ export default {
       const pos = this.getElementPos(el);
       result = { el, pos, component, view: getViewEl(el) };
     }
-    console.log('onSelect', { result });
+
     this.elSelected = result;
     this.updateToolsGlobal();
 
@@ -153,7 +151,7 @@ export default {
     // } else {
     //   this.editor.stopCommand('resize');
     // }
-  },
+  }),
 
   getElHovered() {
     return this.elHovered || {};
@@ -750,6 +748,11 @@ export default {
   updateAttached: debounce(function() {
     console.log('updateAttach', arguments);
     this.updateToolsGlobal();
+  }),
+
+  onComponentUpdate: debounce(function() {
+    console.log('onComponentUpdate', arguments);
+    this.onSelect();
   }),
 
   /**
