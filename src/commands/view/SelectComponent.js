@@ -145,12 +145,6 @@ export default {
     this.elSelected = result;
     this.updateToolsGlobal();
 
-    // // Get the selected model directly from the Editor as the event might
-    // // be triggered manually without the model
-    // const model = this.em.getSelected();
-    // const el = model && model.getEl();
-    // this.updateToolbar(model);
-
     // if (el) {
     //   this.showFixedElementOffset(el);
     //   this.hideElementOffset();
@@ -637,14 +631,6 @@ export default {
   },
 
   /**
-   * Removes all highlighting effects on components
-   * @private
-   * */
-  clean() {
-    if (this.selEl) this.selEl.removeClass(this.hoverClass);
-  },
-
-  /**
    * Returns badge element
    * @return {HTMLElement}
    * @private
@@ -811,14 +797,10 @@ export default {
 
   stop(ed, sender, opts = {}) {
     const { em, editor } = this;
-    const hovered = em.getHovered();
     this.stopSelectComponent();
     !opts.preserveSelected && em.setSelected(null);
-    if (!hovered) return;
-    this.clean();
     this.onOut();
-    this.hideFixedElementOffset();
-    this.canvas.getToolbarEl().style.display = 'none';
+    this.toggleToolsEl();
     editor && editor.stopCommand('resize');
   }
 };
