@@ -105,7 +105,7 @@ export default Backbone.View.extend({
     em.stopDefault(defOpts);
     em.trigger('canvas:update', ev);
     timerZoom && clearTimeout(timerZoom);
-    timerZoom = setTimeout(() => em.runDefault(defOpts));
+    timerZoom = setTimeout(() => em.runDefault(defOpts), 300);
   },
 
   getZoom() {

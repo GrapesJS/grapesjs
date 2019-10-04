@@ -21,7 +21,6 @@ export default {
   enable() {
     this.frameOff = this.canvasOff = this.adjScroll = null;
     this.startSelectComponent();
-    const { em } = this.config;
     showOffsets = 1;
   },
 
@@ -31,6 +30,7 @@ export default {
    * */
   startSelectComponent() {
     this.toggleSelectComponent(1);
+    this.em.getSelected() && this.onSelect();
   },
 
   /**
