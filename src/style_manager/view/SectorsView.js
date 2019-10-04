@@ -43,7 +43,7 @@ export default Backbone.View.extend({
    * Fired when target is updated
    * @private
    */
-  targetUpdated() {
+  targetUpdated(cmp) {
     const em = this.target;
     const pt = this.propTarget;
     let model = em.getSelected();

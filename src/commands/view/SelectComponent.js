@@ -126,8 +126,9 @@ export default {
    * @param {Object}  el
    * @private
    * */
-  onSelect(component) {
+  onSelect() {
     const { em } = this;
+    const component = em.getSelected();
     const currentFrame = em.get('currentFrame') || {};
     const prevComp = this.getElSelected().component;
     if (component && component === prevComp) return;
@@ -716,6 +717,7 @@ export default {
     const { el, pos, component } = this.getElSelected();
 
     if (!el) {
+      this.toggleToolsEl(); // Hides toolbar
       this.lastSelected = 0;
       return;
     }
@@ -732,7 +734,6 @@ export default {
     const frameOff = this.frameRectOffset(el, pos);
     const topOff = frameOff.top;
     const leftOff = frameOff.left;
-    console.log({ el, frameOff });
     style.top = topOff + unit;
     style.left = leftOff + unit;
     style.width = pos.width + unit;
