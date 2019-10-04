@@ -34,34 +34,34 @@ import Component from './model/Component';
 import Components from './model/Components';
 import ComponentView from './view/ComponentView';
 import ComponentsView from './view/ComponentsView';
-import ComponentTableCell from './model/ComponentTableCell';
-import ComponentTableCellView from './view/ComponentTableCellView';
-import ComponentTableRow from './model/ComponentTableRow';
-import ComponentTableRowView from './view/ComponentTableRowView';
-import ComponentTable from './model/ComponentTable';
-import ComponentTableView from './view/ComponentTableView';
-import ComponentTableHead from './model/ComponentTableHead';
-import ComponentTableHeadView from './view/ComponentTableHeadView';
-import ComponentTableBody from './model/ComponentTableBody';
-import ComponentTableBodyView from './view/ComponentTableBodyView';
-import ComponentTableFoot from './model/ComponentTableFoot';
-import ComponentTableFootView from './view/ComponentTableFootView';
-import ComponentMap from './model/ComponentMap';
-import ComponentMapView from './view/ComponentMapView';
-import ComponentLink from './model/ComponentLink';
-import ComponentLinkView from './view/ComponentLinkView';
+// import ComponentTableCell from './model/ComponentTableCell';
+// import ComponentTableCellView from './view/ComponentTableCellView';
+// import ComponentTableRow from './model/ComponentTableRow';
+// import ComponentTableRowView from './view/ComponentTableRowView';
+// import ComponentTable from './model/ComponentTable';
+// import ComponentTableView from './view/ComponentTableView';
+// import ComponentTableHead from './model/ComponentTableHead';
+// import ComponentTableHeadView from './view/ComponentTableHeadView';
+// import ComponentTableBody from './model/ComponentTableBody';
+// import ComponentTableBodyView from './view/ComponentTableBodyView';
+// import ComponentTableFoot from './model/ComponentTableFoot';
+// import ComponentTableFootView from './view/ComponentTableFootView';
+// import ComponentMap from './model/ComponentMap';
+// import ComponentMapView from './view/ComponentMapView';
+// import ComponentLink from './model/ComponentLink';
+// import ComponentLinkView from './view/ComponentLinkView';
 import ComponentLabel from './model/ComponentLabel';
 import ComponentLabelView from './view/ComponentLabelView';
-import ComponentVideo from './model/ComponentVideo';
-import ComponentVideoView from './view/ComponentVideoView';
-import ComponentImage from './model/ComponentImage';
-import ComponentImageView from './view/ComponentImageView';
-import ComponentScript from './model/ComponentScript';
-import ComponentScriptView from './view/ComponentScriptView';
-import ComponentSvg from './model/ComponentSvg';
-import ComponentSvgView from './view/ComponentSvgView';
-import ComponentComment from './model/ComponentComment';
-import ComponentCommentView from './view/ComponentCommentView';
+// import ComponentVideo from './model/ComponentVideo';
+// import ComponentVideoView from './view/ComponentVideoView';
+// import ComponentImage from './model/ComponentImage';
+// import ComponentImageView from './view/ComponentImageView';
+// import ComponentScript from './model/ComponentScript';
+// import ComponentScriptView from './view/ComponentScriptView';
+// import ComponentSvg from './model/ComponentSvg';
+// import ComponentSvgView from './view/ComponentSvgView';
+// import ComponentComment from './model/ComponentComment';
+// import ComponentCommentView from './view/ComponentCommentView';
 import ComponentTextNode from './model/ComponentTextNode';
 import ComponentTextNodeView from './view/ComponentTextNodeView';
 import ComponentText from './model/ComponentText';
@@ -75,76 +75,76 @@ export default () => {
 
   var component, componentView;
   var componentTypes = [
-    {
-      id: 'cell',
-      model: ComponentTableCell,
-      view: ComponentTableCellView
-    },
-    {
-      id: 'row',
-      model: ComponentTableRow,
-      view: ComponentTableRowView
-    },
-    {
-      id: 'table',
-      model: ComponentTable,
-      view: ComponentTableView
-    },
-    {
-      id: 'thead',
-      model: ComponentTableHead,
-      view: ComponentTableHeadView
-    },
-    {
-      id: 'tbody',
-      model: ComponentTableBody,
-      view: ComponentTableBodyView
-    },
-    {
-      id: 'tfoot',
-      model: ComponentTableFoot,
-      view: ComponentTableFootView
-    },
-    {
-      id: 'map',
-      model: ComponentMap,
-      view: ComponentMapView
-    },
-    {
-      id: 'link',
-      model: ComponentLink,
-      view: ComponentLinkView
-    },
+    // {
+    //   id: 'cell',
+    //   model: ComponentTableCell,
+    //   view: ComponentTableCellView
+    // },
+    // {
+    //   id: 'row',
+    //   model: ComponentTableRow,
+    //   view: ComponentTableRowView
+    // },
+    // {
+    //   id: 'table',
+    //   model: ComponentTable,
+    //   view: ComponentTableView
+    // },
+    // {
+    //   id: 'thead',
+    //   model: ComponentTableHead,
+    //   view: ComponentTableHeadView
+    // },
+    // {
+    //   id: 'tbody',
+    //   model: ComponentTableBody,
+    //   view: ComponentTableBodyView
+    // },
+    // {
+    //   id: 'tfoot',
+    //   model: ComponentTableFoot,
+    //   view: ComponentTableFootView
+    // },
+    // {
+    //   id: 'map',
+    //   model: ComponentMap,
+    //   view: ComponentMapView
+    // },
+    // {
+    //   id: 'link',
+    //   model: ComponentLink,
+    //   view: ComponentLinkView
+    // },
     {
       id: 'label',
       model: ComponentLabel,
       view: ComponentLabelView
     },
-    {
-      id: 'video',
-      model: ComponentVideo,
-      view: ComponentVideoView
-    },
-    {
-      id: 'image',
-      model: ComponentImage,
-      view: ComponentImageView
-    },
-    {
-      id: 'script',
-      model: ComponentScript,
-      view: ComponentScriptView
-    },
-    {
-      id: 'svg',
-      model: ComponentSvg,
-      view: ComponentSvgView
-    },
-    {
-      id: 'comment',
-      model: ComponentComment,
-      view: ComponentCommentView
-    },
+    // {
+    //   id: 'video',
+    //   model: ComponentVideo,
+    //   view: ComponentVideoView
+    // },
+    // {
+    //   id: 'image',
+    //   model: ComponentImage,
+    //   view: ComponentImageView
+    // },
+    // {
+    //   id: 'script',
+    //   model: ComponentScript,
+    //   view: ComponentScriptView
+    // },
+    // {
+    //   id: 'svg',
+    //   model: ComponentSvg,
+    //   view: ComponentSvgView
+    // },
+    // {
+    //   id: 'comment',
+    //   model: ComponentComment,
+    //   view: ComponentCommentView
+    // },
     {
       id: 'textnode',
       model: ComponentTextNode,

@@ -1,10 +1,14 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+
 const pkg = require('./package.json');
 const webpack = require('webpack');
 const path = require('path');
 const fs = require('fs');
 const rootDir = path.resolve(__dirname);
-let plugins = [];
+let plugins = [
+  // new BundleAnalyzerPlugin()
+];
 
 module.exports = env => {
   const name = pkg.name;

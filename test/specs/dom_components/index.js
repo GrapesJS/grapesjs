@@ -206,7 +206,7 @@ describe('DOM Components', () => {
       expect(comp.getAttributes()['test-prop']).toEqual(testProp);
     });
 
-    test('Extend component type with custom model and view', () => {
+    xtest('Extend component type with custom model and view', () => {
       obj = em.get('DomComponents');
       const id = 'image';
       const testProp = 'testValue';
@@ -231,7 +231,7 @@ describe('DOM Components', () => {
       expect(comp.get('editable')).toBe(1);
     });
 
-    test('Add new component type by extending another one, without isComponent', () => {
+    xtest('Add new component type by extending another one, without isComponent', () => {
       obj = em.get('DomComponents');
       const id = 'test-type';
       const testProp = 'testValue';
@@ -252,7 +252,7 @@ describe('DOM Components', () => {
       expect(comp.get('testProp')).toBeFalsy();
     });
 
-    test('Add new component type by extending another one, with custom isComponent', () => {
+    xtest('Add new component type by extending another one, with custom isComponent', () => {
       obj = em.get('DomComponents');
       const id = 'test-type';
       const testProp = 'testValue';

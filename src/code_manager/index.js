@@ -23,7 +23,7 @@ import gHtml from './model/HtmlGenerator';
 import gCss from './model/CssGenerator';
 import gJson from './model/JsonGenerator';
 import gJs from './model/JsGenerator';
-import eCM from './model/CodeMirrorEditor';
+// import eCM from './model/CodeMirrorEditor';
 import editorView from './view/EditorView';
 
 export default () => {
@@ -68,7 +68,7 @@ export default () => {
       defGenerators.css = new gCss();
       defGenerators.json = new gJson();
       defGenerators.js = new gJs();
-      defViewers.CodeMirror = new eCM();
+      // defViewers.CodeMirror = new eCM();
       this.loadDefaultGenerators().loadDefaultViewers();
 
       return this;
