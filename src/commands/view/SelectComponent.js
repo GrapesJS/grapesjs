@@ -141,7 +141,7 @@ export default {
       const pos = this.getElementPos(el);
       result = { el, pos, component, view: getViewEl(el) };
     }
-
+    console.log('onSelect', { result });
     this.elSelected = result;
     this.updateToolsGlobal();
 
@@ -701,7 +701,7 @@ export default {
 
   updateToolsGlobal() {
     const { el, pos, component } = this.getElSelected();
-
+    console.log('updateToolsGlobal', { el });
     if (!el) {
       this.toggleToolsEl(); // Hides toolbar
       this.lastSelected = 0;
@@ -748,6 +748,7 @@ export default {
    * Update attached elements, eg. component toolbar
    */
   updateAttached: debounce(function() {
+    console.log('updateAttach', arguments);
     this.updateToolsGlobal();
   }),
 

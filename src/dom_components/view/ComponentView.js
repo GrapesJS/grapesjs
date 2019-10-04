@@ -127,7 +127,9 @@ export default Backbone.View.extend({
    * @private
    */
   handleChange() {
-    const model = this.model;
+    const { model } = this;
+    const chgArr = keys(model.changed);
+    if (chgArr.length === 1 && chgArr[0] === 'status') return;
     model.emitUpdate();
 
     for (let prop in model.changed) {
