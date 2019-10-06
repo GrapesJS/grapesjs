@@ -239,7 +239,7 @@ export default () => {
       });
 
       if (pos) {
-        if (config.adjustToolbar) {
+        if (config.adjustToolbar && 0) {
           const frameOffset = canvas.getCanvasView().getFrameOffset();
           // Move the toolbar down when the top canvas edge is reached
           if (
@@ -251,8 +251,8 @@ export default () => {
         }
 
         const toolbarStyle = toolbar.style;
-        toolbarStyle.top = pos.top + un;
-        toolbarStyle.left = pos.left + un;
+        toolbarStyle.top = -toolbar.offsetHeight + un;
+        toolbarStyle.left = 0 + un;
       }
     },
 
