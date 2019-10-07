@@ -402,6 +402,72 @@ export default () => {
       return result;
     },
 
+    canvasRectOffset(el, pos) {
+      const getFrameElFromDoc = doc => {
+        const { defaultView } = doc;
+        return defaultView && defaultView.frameElement;
+      };
+
+      const rectOff = (el, top = 1, pos) => {
+        const zoom = this.em.getZoomDecimal();
+        const side = top ? 'top' : 'left';
+        const doc = el.ownerDocument;
+        const { offsetTop = 0, offsetLeft = 0 } = getFrameElFromDoc(doc);
+        const { scrollTop = 0, scrollLeft = 0 } = doc.body || {};
+        const scroll = top ? scrollTop : scrollLeft;
+        const offset = top ? offsetTop : offsetLeft;
+
+        return pos[side] - (scroll - offset) * zoom;
+      };
+
+      return {
+        top: rectOff(el, 1, pos),
+        left: rectOff(el, 0, pos)
+      };
+    },
+
+    getTargetToElementFixed(el, elToMove, opts = {}) {
+      const pos = opts.pos || this.getElementPos(el);
+      const cvOff = opts.canvasOff || this.canvasRectOffset(el, pos);
+      const toolbarH = elToMove.offsetHeight || 0;
+      const toolbarW = elToMove.offsetWidth || 0;
+      const elRight = pos.left + pos.width;
+      const cv = this.getCanvasView();
+      const frCvOff = cv.getPosition();
+      const frameOffset = cv.getFrameOffset();
+      const { event } = opts;
+
+      let top = -toolbarH;
+      let left = pos.width - toolbarW;
+      left = pos.left < -left ? -pos.left : left;
+      left = elRight > frCvOff.width ? left - (elRight - frCvOff.width) : left;
+
+      // Scroll with the window if the top edge is reached and the
+      // element is bigger than the canvas
+      const fullHeight = pos.height + toolbarH;
+      const elIsShort = fullHeight < frameOffset.height;
+
+      if (cvOff.top < toolbarH) {
+        if (elIsShort) {
+          top = top + fullHeight;
+        } else {
+          top = -cvOff.top < pos.height ? -cvOff.top : pos.height;
+        }
+      }
+
+      const result = {
+        top,
+        left,
+        canvasOffsetTop: cvOff.top,
+        canvasOffsetLeft: cvOff.left
+      };
+
+      // In this way I can catch data and also change the position strategy
+      event && this.em.trigger(event, result);
+
+      return result;
+    },
+
     /**
      * Instead of simply returning e.clientX and e.clientY this function
      * calculates also the offset based on the canvas. This is helpful when you

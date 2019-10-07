@@ -17,21 +17,10 @@ export default Backbone.View.extend({
     this.em = config.em;
     this.ppfx = config.pStylePrefix || '';
     this.frame = new FrameView({ model, config });
-    // this.listenTo(canvasView.model, 'change:zoom', this.canvasChange)
   },
-
-  // canvasChange() {
-  //   const zoom = this.config.module.getZoomMultiplier();
-  //   this.elTools.style.transform = `scale(${zoom})`;
-  // },
 
   onScroll() {
     const { frame, em } = this;
-    // const unit = 'px';
-    // const { scrollTop, scrollLeft } = frame.getBody();
-    // const { style } = this.elTools;
-    // style.top = `-${scrollTop}${unit}`;
-    // style.left = `-${scrollLeft}${unit}`;
     em.trigger('frame:scroll', {
       frame,
       body: frame.getBody(),
@@ -87,7 +76,7 @@ export default Backbone.View.extend({
     );
     this.elTools = elTools;
     cv.toolsWrapper.appendChild(elTools); // TODO remove on frame remove
-    frame.on('loaded', this.frameLoaded);
+    frame.model.on('loaded', this.frameLoaded);
 
     return this;
   }
