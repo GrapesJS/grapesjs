@@ -359,31 +359,6 @@ export default {
     bStyle.left = left + un;
   },
 
-  frameRectOffset(el, pos) {
-    return {
-      top: this.frameRect(el, 1, pos),
-      left: this.frameRect(el, 0, pos)
-    };
-  },
-
-  getFrameElFromDoc(doc) {
-    const { defaultView } = doc;
-    return defaultView && defaultView.frameElement;
-  },
-
-  frameRect(el, top = 1, pos) {
-    const zoom = this.em.getZoomDecimal();
-    const side = top ? 'top' : 'left';
-    const { offsetTop = 0, offsetLeft = 0 } = this.getFrameElFromDoc(
-      el.ownerDocument
-    );
-    const { scrollTop = 0, scrollLeft = 0 } = el.ownerDocument.body || {};
-    const scroll = top ? scrollTop : scrollLeft;
-    const offset = top ? offsetTop : offsetLeft;
-
-    return pos[side] - (scroll - offset) * zoom;
-  },
-
   /**
    * Update highlighter element
    * @param {HTMLElement} el
@@ -650,7 +625,7 @@ export default {
 
     const unit = 'px';
     const { style } = this.toggleToolsEl(1, view);
-    const frameOff = this.frameRectOffset(el, pos);
+    const frameOff = this.canvas.canvasRectOffset(el, pos);
     const topOff = frameOff.top;
     const leftOff = frameOff.left;
 
@@ -723,7 +698,6 @@ export default {
   }),
 
   onComponentUpdate: debounce(function() {
-    console.log('onComponentUpdate', arguments);
     this.onSelect();
   }),
 
