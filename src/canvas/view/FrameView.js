@@ -1,5 +1,5 @@
 import Backbone from 'backbone';
-import { bindAll, isNumber } from 'underscore';
+import { bindAll, isNumber, isNull, debounce } from 'underscore';
 import CssRulesView from 'css_composer/view/CssRulesView';
 import ComponentView from 'dom_components/view/ComponentView';
 import {
@@ -33,7 +33,6 @@ export default Backbone.View.extend({
     this.listenTo(model, 'change:head', this.updateHead);
     this.listenTo(model, 'change:x change:y', this.updatePos);
     this.listenTo(model, 'change:width change:height', this.updateDim);
-    this.listenTo(this.em, 'change:device', this.updateDim);
     this.updatePos();
     model.view = this;
   },
@@ -64,39 +63,33 @@ export default Backbone.View.extend({
     const { em, el, $el, model } = this;
     const { width, height } = model.attributes;
     const { style } = el;
-    const device = em.getDeviceModel();
     const currW = style.width || '';
     const currH = style.height || '';
-    const newW = width || (device ? device.get('width') : '');
-    const newH = height || (device ? device.get('height') : '');
+    const newW = width;
+    const newH = height;
     const noChanges = currW == newW && currH == newH;
     const un = 'px';
     style.width = isNumber(newW) ? `${newW}${un}` : newW;
     style.height = isNumber(newH) ? `${newH}${un}` : newH;
-    if (!width || !height)
-      model.set(
-        {
-          ...(!width ? { width: el.offsetWidth } : {}),
-          ...(!height ? { height: el.offsetHeight } : {})
-        },
-        { silent: 1 }
-      );
+
+    // Set width and height from DOM (should be done only once)
+    if (isNull(width) || isNull(height)) {
+      const newDims = {
+        ...(!width ? { width: el.offsetWidth } : {}),
+        ...(!height ? { height: el.offsetHeight } : {})
+      };
+      model.set(newDims, { silent: 1 });
+    }
+
     // Prevent fixed highlighting box which appears when on
     // component hover during the animation
     em.stopDefault({ preserveSelected: 1 });
-    // TODO in updateOffset make use of internal API instead of Canvas
-    // noChanges ? this.updateOffset() : $el.on(motionsEv, this.updateOffset);
+    noChanges ? this.updateOffset() : $el.one(motionsEv, this.updateOffset);
   },
 
-  updateOffset() {
-    const { em } = this;
-    const cv = em.get('Canvas');
-    if (!cv) return;
-    const offset = cv.getOffset();
-    em.set('canvasOffset', offset);
-    em.runDefault({ preserveSelected: 1 });
-    this.$el.off(motionsEv, this.updateOffset);
-  },
+  updateOffset: debounce(function() {
+    this.em.runDefault({ preserveSelected: 1 });
+  }),
 
   getEl() {
     return this.el;

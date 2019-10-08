@@ -14,13 +14,27 @@ export default Backbone.Model.extend({
   },
 
   initialize(config = {}) {
+    const { em } = config;
     const { styles = [], scripts = [] } = config;
     const frame = new Frame({}, config);
     styles.forEach(style => frame.addLink(style));
     scripts.forEach(script => frame.addScript(script));
+    this.em = em;
     this.set('frame', frame);
     this.set('frames', new Frames([frame], config));
     this.listenTo(this, 'change:zoom', this.onZoomChange);
+    this.listenTo(em, 'change:device', this.updateDevice);
+  },
+
+  updateDevice() {
+    const { em } = this;
+    const device = em.getDeviceModel();
+    const { model } = em.get('currentFrame') || {};
+
+    if (model && device) {
+      const { width, height } = device.attributes;
+      model.set({ width, height });
+    }
   },
 
   onZoomChange() {
