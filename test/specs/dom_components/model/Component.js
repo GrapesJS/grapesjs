@@ -540,7 +540,7 @@ module.exports = {
         expect(m instanceof Component).toEqual(true);
       });
 
-      xtest('Creates image component correctly', () => {
+      test('Creates image component correctly', () => {
         var c = new Components({}, compOpts);
         var m = c.add({ type: 'image' });
         expect(m instanceof ComponentImage).toEqual(true);

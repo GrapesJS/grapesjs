@@ -104,7 +104,7 @@ module.exports = {
         expect(obj.parse(str).html).toEqual(result);
       });
 
-      xtest('Parse images nodes', () => {
+      test('Parse images nodes', () => {
         var str = '<img id="test1" src="./index.html"/>';
         var result = {
           tagName: 'img',
