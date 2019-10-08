@@ -22,6 +22,7 @@ export default Backbone.Model.extend({
     this.set('head', []);
     const modOpts = {
       em: opts.em,
+      config: opts.em.get('DomComponents').getConfig(),
       frame: this
     };
 

@@ -50,6 +50,10 @@ export default () => {
      */
     name: 'CssComposer',
 
+    getConfig() {
+      return c;
+    },
+
     /**
      * Mandatory for the storage manager
      * @type {String}

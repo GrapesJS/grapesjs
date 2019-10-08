@@ -284,8 +284,26 @@ export default Backbone.View.extend({
       ${conf.protectedCss || ''}
     </style>`
     );
-    append(body, new ComponentView({ model: root, config }).render().el);
-    append(body, new CssRulesView({ collection: styles, config }).render().el);
+    append(
+      body,
+      new ComponentView({
+        model: root,
+        config: {
+          ...root.config,
+          frameView: this
+        }
+      }).render().el
+    );
+    append(
+      body,
+      new CssRulesView({
+        collection: styles,
+        config: {
+          ...em.get('CssComposer').getConfig(),
+          frameView: this
+        }
+      }).render().el
+    );
     append(body, this.getJsContainer());
     // em.trigger('loaded'); // I need to manage only the first one maybe
     //this.updateOffset(); // TOFIX (check if I need it)

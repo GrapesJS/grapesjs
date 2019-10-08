@@ -15,11 +15,11 @@ export default Backbone.Model.extend({
 
   initialize(config = {}) {
     const { styles = [], scripts = [] } = config;
-    const frame = new Frame();
+    const frame = new Frame({}, config);
     styles.forEach(style => frame.addLink(style));
     scripts.forEach(script => frame.addScript(script));
     this.set('frame', frame);
-    this.set('frames', new Frames([frame]));
+    this.set('frames', new Frames([frame], config));
     this.listenTo(this, 'change:zoom', this.onZoomChange);
   },
 
