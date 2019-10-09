@@ -402,7 +402,7 @@ export default () => {
       return result;
     },
 
-    canvasRectOffset(el, pos) {
+    canvasRectOffset(el, pos, opts = {}) {
       const getFrameElFromDoc = doc => {
         const { defaultView } = doc;
         return defaultView && defaultView.frameElement;
@@ -412,10 +412,16 @@ export default () => {
         const zoom = this.em.getZoomDecimal();
         const side = top ? 'top' : 'left';
         const doc = el.ownerDocument;
-        const { offsetTop = 0, offsetLeft = 0 } = getFrameElFromDoc(doc);
+        const { offsetTop = 0, offsetLeft = 0 } = opts.offset
+          ? getFrameElFromDoc(doc)
+          : {};
         const { scrollTop = 0, scrollLeft = 0 } = doc.body || {};
         const scroll = top ? scrollTop : scrollLeft;
         const offset = top ? offsetTop : offsetLeft;
+
+        // if (!top) {
+        //   console.log('LEFT', { posLeft: pos[side], scroll, offset }, el);
+        // }
 
         return pos[side] - (scroll - offset) * zoom;
       };
@@ -434,7 +440,7 @@ export default () => {
       const elRight = pos.left + pos.width;
       const cv = this.getCanvasView();
       const frCvOff = cv.getPosition();
-      const frameOffset = cv.getFrameOffset();
+      const frameOffset = cv.getFrameOffset(el);
       const { event } = opts;
 
       let top = -toolbarH;
@@ -565,7 +571,7 @@ export default () => {
     startAutoscroll() {
       this.dragging = 1;
       let toListen = this.getScrollListeners();
-      frameRect = CanvasView.getFrameOffset(1);
+      frameRect = CanvasView.getFrameOffset();
 
       // By detaching those from the stack avoid browsers lags
       // Noticeable with "fast" drag of blocks

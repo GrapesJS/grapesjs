@@ -118,8 +118,9 @@ export default Backbone.View.extend({
    * @return {Boolean}
    */
   isElInViewport(el) {
-    const rect = getElRect(getElement(el));
-    const frameRect = this.getFrameOffset();
+    const elem = getElement(el);
+    const rect = getElRect(elem);
+    const frameRect = this.getFrameOffset(elem);
     const rTop = rect.top;
     const rLeft = rect.left;
     return (
@@ -356,8 +357,13 @@ export default Backbone.View.extend({
    * @return {Object}
    * @private
    */
-  getFrameOffset(force = 0) {
-    if (!this.frmOff || force) this.frmOff = this.offset(this.frame.el);
+  getFrameOffset(el) {
+    if (!this.frmOff || el) {
+      const frEl = el
+        ? el.ownerDocument.defaultView.frameElement
+        : this.frame.el;
+      this.frmOff = this.offset(frEl);
+    }
     return this.frmOff;
   },
 
@@ -380,7 +386,7 @@ export default Backbone.View.extend({
   getElementPos(el, opts) {
     const zoom = this.getZoom();
     var opt = opts || {};
-    var frmOff = this.getFrameOffset();
+    var frmOff = this.getFrameOffset(el);
     var cvsOff = this.getCanvasOffset();
     var eo = this.offset(el, opts);
 
