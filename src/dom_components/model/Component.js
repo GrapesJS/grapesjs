@@ -1030,10 +1030,12 @@ const Component = Backbone.Model.extend(Styleable).extend(
     /**
      * Get the DOM element of the component.
      * This works only if the component is already rendered
+     * @param {Frame} frame Specific frame from which taking the element
      * @return {HTMLElement}
      */
-    getEl() {
-      return this.view && this.view.el;
+    getEl(frame) {
+      const view = this.getView(frame);
+      return view && view.el;
     },
 
     /**
@@ -1050,6 +1052,11 @@ const Component = Backbone.Model.extend(Styleable).extend(
       }
 
       return view;
+    },
+
+    getCurrentView() {
+      const frame = (this.em.get('currentFrame') || {}).model;
+      return this.getView(frame);
     },
 
     /**

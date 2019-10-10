@@ -78,7 +78,9 @@ export default Backbone.View.extend({
     return result(this, scale) || 1;
   },
 
-  getContainerEl() {
+  getContainerEl(elem) {
+    if (elem) return elem.ownerDocument.body;
+
     if (!this.el) {
       var el = this.opt.container;
       this.el = typeof el === 'string' ? document.querySelector(el) : el;
@@ -87,11 +89,13 @@ export default Backbone.View.extend({
     return this.el;
   },
 
-  getDocuments() {
+  getDocuments(el) {
     const em = this.em;
-    const canvasDoc = em && em.get('Canvas').getBody().ownerDocument;
+    const elDoc = el
+      ? el.ownerDocument
+      : em && em.get('Canvas').getBody().ownerDocument;
     const docs = [document];
-    canvasDoc && docs.push(canvasDoc);
+    elDoc && docs.push(elDoc);
     return docs;
   },
 
@@ -300,8 +304,8 @@ export default Backbone.View.extend({
     const em = this.em;
     const itemSel = this.itemSel;
     const contSel = this.containerSel;
-    const container = this.getContainerEl();
-    const docs = this.getDocuments();
+    const container = this.getContainerEl(src);
+    const docs = this.getDocuments(src);
     const onStart = this.onStart;
     let srcModel;
     let plh = this.plh;
@@ -328,6 +332,8 @@ export default Backbone.View.extend({
       srcModel = this.getSourceModel(src);
       srcModel && srcModel.set && srcModel.set('status', 'freezed');
     }
+
+    console.log({ src, container, docs });
 
     on(container, 'mousemove dragover', this.onMove);
     on(docs, 'mouseup dragend touchend', this.endMove);
@@ -832,7 +838,10 @@ export default Backbone.View.extend({
     // Get children based on getChildrenContainer
     const trgModel = this.getTargetModel(trg);
     if (trgModel && trgModel.view && !this.ignoreViewChildren) {
-      trg = trgModel.view.getChildrenContainer();
+      const view = trgModel.getCurrentView
+        ? trgModel.getCurrentView()
+        : trgModel.view;
+      trg = view.getChildrenContainer();
     }
 
     each(trg.children, (el, i) => {
@@ -1001,16 +1010,16 @@ export default Backbone.View.extend({
    * @return void
    * */
   endMove(e) {
+    const src = this.eV;
     const moved = [null];
     const docs = this.getDocuments();
-    const container = this.getContainerEl();
+    const container = this.getContainerEl(src);
     const onEndMove = this.onEndMove;
     const { target, lastPos } = this;
     off(container, 'mousemove dragover', this.onMove);
     off(docs, 'mouseup dragend touchend', this.endMove);
     off(docs, 'keydown', this.rollback);
     this.plh.style.display = 'none';
-    let src = this.eV;
 
     if (src && this.selectOnEnd) {
       var srcModel = this.getSourceModel();
