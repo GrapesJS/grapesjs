@@ -1,5 +1,5 @@
 import Backbone from 'backbone';
-import { bindAll, isNumber, isNull, debounce } from 'underscore';
+import { bindAll, isNumber, isString, isNull, debounce } from 'underscore';
 import CssRulesView from 'css_composer/view/CssRulesView';
 import ComponentView from 'dom_components/view/ComponentView';
 import {
@@ -157,10 +157,33 @@ export default Backbone.View.extend({
   render() {
     const { el, $el, ppfx, config } = this;
     $el.attr({ class: ppfx + 'frame' });
-    if (config.renderContent) {
+
+    if (config.scripts.length) {
+      this.renderScripts();
+    } else if (config.renderContent) {
       el.onload = this.renderBody.bind(this);
     }
+
     return this;
+  },
+
+  renderScripts() {
+    const { el, config } = this;
+    const appendScript = scripts => {
+      if (scripts.length > 0) {
+        const src = scripts.shift();
+        const scriptEl = createEl('script', {
+          type: 'text/javascript',
+          ...(isString(src) ? { src } : src)
+        });
+        scriptEl.onerror = scriptEl.onload = appendScript.bind(null, scripts);
+        el.contentDocument.head.appendChild(scriptEl);
+      } else {
+        this.renderBody();
+      }
+    };
+
+    el.onload = () => appendScript([...config.scripts]);
   },
 
   renderBody() {
@@ -169,14 +192,28 @@ export default Backbone.View.extend({
     const styles = model.get('styles');
     const { em } = config;
     const doc = this.getDoc();
+    const head = this.getHead();
     const body = this.getBody();
     const conf = em.get('Config');
+    const extStyles = [];
 
-    // Should be handled by `head`
-    // config.styles.forEach(style => {
-    //   externalStyles += `<link rel="stylesheet" href="${style}"/>`;
-    // });
-    // externalStyles && head.append(externalStyles);
+    config.styles.forEach(href =>
+      extStyles.push(
+        isString(href)
+          ? {
+              tag: 'link',
+              attributes: { href, rel: 'stylesheet' }
+            }
+          : {
+              tag: 'link',
+              attributes: {
+                rel: 'stylesheet',
+                ...href
+              }
+            }
+      )
+    );
+    extStyles.length && appendVNodes(head, extStyles);
 
     const colorWarn = '#ffca6f';
 
