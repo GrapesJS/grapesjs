@@ -67,11 +67,6 @@ export default Backbone.Model.extend({
 
     if (this.get('changeProp')) {
       target.set(name, value, opts);
-      if (name === 'poster') {
-        const attrs = { ...target.get('attributes') };
-        attrs[name] = value;
-        target.set('attributes', attrs, opts);
-      }
     } else {
       const attrs = { ...target.get('attributes') };
       attrs[name] = value;

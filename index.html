@@ -16,6 +16,7 @@
 
   <body>
     <div id="gjs" style="height:0px; overflow:hidden;">
+      <video  src="" poster="https://camo.githubusercontent.com/cf1a042fe34ab268410fdf6050699f20cf0aaef2/68747470733a2f2f796d6d2d6d616c69616e672e6f73732d636e2d68616e677a686f752e616c6979756e63732e636f6d2f796d6d2d6d616c69616e672f6163636573732f796d6d5f313533393538383635353835302e706e67"></video>
       <div class="panel">
         <h1 class="welcome">Welcome to</h1>
         <div class="big-title">
@@ -120,6 +121,11 @@
         label: 'Block',
         attributes: { class:'gjs-fonts gjs-f-b1' },
         content: `<div style="padding-top:50px; padding-bottom:50px; text-align:center">Test block</div>`
+      })
+      editor.BlockManager.add('Video', {
+        label: 'Video',
+        attributes: { class:'gjs-fonts gjs-f-b1' },
+        content: `<video  />`
       })
     </script>
   </body>

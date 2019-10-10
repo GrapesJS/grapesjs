@@ -194,10 +194,6 @@ export default Backbone.View.extend({
 
     if (model.get('changeProp')) {
       value = target.get(name);
-      if (name === 'poster') {
-        const attrs = target.get('attributes');
-        value = model.get('value') || attrs[name];
-      }
     } else {
       const attrs = target.get('attributes');
       value = model.get('value') || attrs[name];
