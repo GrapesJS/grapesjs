@@ -79,7 +79,7 @@ export default Backbone.View.extend({
   },
 
   getContainerEl(elem) {
-    if (elem) return elem.ownerDocument.body;
+    if (elem) this.el = elem;
 
     if (!this.el) {
       var el = this.opt.container;
@@ -300,11 +300,11 @@ export default Backbone.View.extend({
    * Picking component to move
    * @param {HTMLElement} src
    * */
-  startSort(src) {
+  startSort(src, opts = {}) {
     const em = this.em;
     const itemSel = this.itemSel;
     const contSel = this.containerSel;
-    const container = this.getContainerEl(src);
+    const container = this.getContainerEl(opts.container);
     const docs = this.getDocuments(src);
     const onStart = this.onStart;
     let srcModel;
@@ -1013,7 +1013,7 @@ export default Backbone.View.extend({
     const src = this.eV;
     const moved = [null];
     const docs = this.getDocuments();
-    const container = this.getContainerEl(src);
+    const container = this.getContainerEl();
     const onEndMove = this.onEndMove;
     const { target, lastPos } = this;
     off(container, 'mousemove dragover', this.onMove);

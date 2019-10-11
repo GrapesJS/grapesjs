@@ -28,7 +28,7 @@ export default {
         scale: () => this.em.getZoomDecimal()
       });
 
-    trg && this.sorter.startSort(trg);
+    trg && this.sorter.startSort(trg, { container });
   },
 
   /**
