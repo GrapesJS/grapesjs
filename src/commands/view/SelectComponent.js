@@ -58,7 +58,7 @@ export default {
     em[method]('component:toggled', this.onSelect, this);
     em[method]('change:componentHovered', this.onHovered, this);
     em[method]('component:update', this.onComponentUpdate, this);
-    em[method]('component:resize', this.updateAttached, this);
+    em[method]('component:resize', this.updateGlobalPos, this);
     em[method]('change:canvasOffset', this.updateAttached, this);
     // const body = this.getCanvasBody();
     // const win = this.getContentWindow();
@@ -152,6 +152,12 @@ export default {
     //   this.editor.stopCommand('resize');
     // }
   }),
+
+  updateGlobalPos() {
+    const sel = this.getElSelected();
+    sel.pos = this.getElementPos(sel.el);
+    this.updateToolsGlobal();
+  },
 
   getElHovered() {
     return this.elHovered || {};
@@ -445,12 +451,12 @@ export default {
 
         // Update all positioned elements (eg. component toolbar)
         onMove() {
-          editor.trigger('change:canvasOffset');
+          editor.trigger('component:resize');
         },
 
         onEnd(e, opts) {
           toggleBodyClass('remove', e, opts);
-          editor.trigger('change:canvasOffset');
+          editor.trigger('component:resize');
           showOffsets = 1;
         },
 
@@ -490,7 +496,7 @@ export default {
           modelToStyle.setStyle(style, { avoidStore: 1 });
           const updateEvent = `update:component:style`;
           const eventToListen = `${updateEvent}:${keyHeight} ${updateEvent}:${keyWidth}`;
-          em && em.trigger(eventToListen);
+          em && em.trigger(eventToListen, null, null, { noEmit: 1 });
 
           if (store) {
             modelToStyle.trigger('change:style', modelToStyle, style, {});

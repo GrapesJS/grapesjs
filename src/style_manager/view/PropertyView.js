@@ -206,7 +206,7 @@ export default Backbone.View.extend({
   /**
    * Fired when the target is changed
    * */
-  targetUpdated() {
+  targetUpdated(mod, val, opts = {}) {
     this.emitUpdateTarget();
 
     if (!this.checkVisibility()) {
@@ -244,7 +244,7 @@ export default Backbone.View.extend({
       status = '';
     }
 
-    model.setValue(value, 0, { fromTarget: 1 });
+    model.setValue(value, 0, { fromTarget: 1, ...opts });
     this.setStatus(status);
 
     if (em) {
@@ -374,7 +374,7 @@ export default Backbone.View.extend({
     const component = em && em.getSelected();
 
     if (em && component) {
-      em.trigger('component:update', component);
+      !opt.noEmit && em.trigger('component:update', component);
       em.trigger('component:styleUpdate', component, prop);
       em.trigger(`component:styleUpdate:${prop}`, component);
     }

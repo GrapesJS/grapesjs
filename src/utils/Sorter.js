@@ -333,8 +333,6 @@ export default Backbone.View.extend({
       srcModel && srcModel.set && srcModel.set('status', 'freezed');
     }
 
-    console.log({ src, container, docs });
-
     on(container, 'mousemove dragover', this.onMove);
     on(docs, 'mouseup dragend touchend', this.endMove);
     on(docs, 'keydown', this.rollback);
