@@ -183,6 +183,15 @@ export default () => {
     },
 
     /**
+     * Returns element containing all global canvas tools
+     * @return {HTMLElement}
+     * @private
+     */
+    getGlobalToolsEl() {
+      return CanvasView.toolsGlobEl;
+    },
+
+    /**
      * Returns element containing all canvas tools
      * @return {HTMLElement}
      * @private

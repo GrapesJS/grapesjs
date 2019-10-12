@@ -543,6 +543,7 @@ export default Backbone.View.extend({
     this.resizerEl = el.querySelector(`.${ppfx}resizer`);
     this.offsetEl = el.querySelector(`.${ppfx}offset-v`);
     this.fixedOffsetEl = el.querySelector(`.${ppfx}offset-fixed-v`);
+    this.toolsGlobEl = el.querySelector(`.${ppfx}tools-gl`);
     this.toolsEl = toolsEl;
     this.el.className = this.className;
 

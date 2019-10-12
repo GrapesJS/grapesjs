@@ -83,7 +83,7 @@ export default {
       elInfoY.innerHTML = guideContent;
       guidesEl.appendChild(elInfoX);
       guidesEl.appendChild(elInfoY);
-      editor.Canvas.getToolsEl().appendChild(guidesEl);
+      editor.Canvas.getGlobalToolsEl().appendChild(guidesEl);
       this.guidesEl = guidesEl;
       this.elGuideInfoX = elInfoX;
       this.elGuideInfoY = elInfoY;
