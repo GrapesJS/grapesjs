@@ -206,7 +206,8 @@ export default {
 
   getElementGuides(el) {
     const { editor, opts } = this;
-    const { top, height, left, width } = editor.Canvas.getElementPos(el);
+    const originRect = editor.Canvas.getElementPos(el, { noScroll: 1 });
+    const { top, height, left, width } = originRect;
     const guides = [
       { type: 't', y: top }, // Top
       { type: 'b', y: top + height }, // Bottom
@@ -217,10 +218,11 @@ export default {
     ].map(item => ({
       ...item,
       origin: el,
-      originRect: editor.Canvas.getElementPos(el),
+      originRect,
       guide: opts.debug && this.renderGuide(item)
     }));
     guides.forEach(item => this.guides.push(item));
+    console.log('getElementGuides', guides, el);
 
     return guides;
   },

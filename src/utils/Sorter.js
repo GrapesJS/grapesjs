@@ -311,6 +311,7 @@ export default Backbone.View.extend({
     let plh = this.plh;
     this.dropModel = null;
     this.target = null;
+    this.prevTarget = null;
     this.moved = 0;
 
     // Check if the start element is a valid one, if not get the
