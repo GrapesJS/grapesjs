@@ -122,7 +122,7 @@ export default {
   updateGuides(guides) {
     (guides || this.guides).forEach(item => {
       const { origin } = item;
-      const { top, height, left, width } = editor.Canvas.getElementPos(origin);
+      const { top, height, left, width } = this.getElementPos(origin);
 
       switch (item.type) {
         case 't':
@@ -204,9 +204,13 @@ export default {
     return el;
   },
 
+  getElementPos(el) {
+    return this.editor.Canvas.getElementPos(el, { noScroll: 1 });
+  },
+
   getElementGuides(el) {
-    const { editor, opts } = this;
-    const originRect = editor.Canvas.getElementPos(el, { noScroll: 1 });
+    const { opts } = this;
+    const originRect = this.getElementPos(el);
     const { top, height, left, width } = originRect;
     const guides = [
       { type: 't', y: top }, // Top
@@ -222,7 +226,6 @@ export default {
       guide: opts.debug && this.renderGuide(item)
     }));
     guides.forEach(item => this.guides.push(item));
-    console.log('getElementGuides', guides, el);
 
     return guides;
   },
@@ -351,12 +354,12 @@ export default {
    * Render guides with spacing information
    */
   renderGuideInfo(guides = []) {
-    const { guidesStatic, editor } = this;
+    const { guidesStatic } = this;
     this.hideGuidesInfo();
 
     guides.forEach(item => {
       const { origin, x } = item;
-      const rectOrigin = editor.Canvas.getElementPos(origin);
+      const rectOrigin = this.getElementPos(origin);
       const axis = isUndefined(x) ? 'y' : 'x';
       const isY = axis === 'y';
       const origEdge1 = rectOrigin[isY ? 'left' : 'top'];
