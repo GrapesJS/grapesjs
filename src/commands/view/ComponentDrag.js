@@ -1,6 +1,8 @@
 import { keys, bindAll, each, isUndefined } from 'underscore';
 import Dragger from 'utils/Dragger';
 
+const evName = 'dmode';
+
 export default {
   run(editor, sender, opts = {}) {
     bindAll(
@@ -36,7 +38,7 @@ export default {
     this.guidesContainer = this.getGuidesContainer();
     this.guidesTarget = this.getGuidesTarget();
     this.guidesStatic = this.getGuidesStatic();
-    window.guidesTarget = this.guidesTarget;
+    // window.guidesTarget = this.guidesTarget;
     let drg = this.dragger;
 
     if (!drg) {
@@ -48,6 +50,12 @@ export default {
 
     event && drg.start(event);
     this.toggleDrag(1);
+    this.em.trigger(`${evName}:start`, {
+      mode,
+      target,
+      guidesTarget: this.guidesTarget,
+      guidesStatic: this.guidesStatic
+    });
 
     return drg;
   },
@@ -120,9 +128,13 @@ export default {
   },
 
   updateGuides(guides) {
+    let lastEl, lastPos;
     (guides || this.guides).forEach(item => {
       const { origin } = item;
-      const { top, height, left, width } = this.getElementPos(origin);
+      const pos = lastEl === origin ? lastPos : this.getElementPos(origin);
+      const { top, height, left, width } = pos;
+      lastEl = origin;
+      lastPos = pos;
 
       switch (item.type) {
         case 't':
@@ -205,6 +217,7 @@ export default {
   },
 
   getElementPos(el) {
+    el && console.log('getElementPos ' + el.className);
     return this.editor.Canvas.getElementPos(el, { noScroll: 1 });
   },
 
@@ -356,7 +369,6 @@ export default {
   renderGuideInfo(guides = []) {
     const { guidesStatic } = this;
     this.hideGuidesInfo();
-
     guides.forEach(item => {
       const { origin, x } = item;
       const rectOrigin = this.getElementPos(origin);
@@ -376,7 +388,7 @@ export default {
 
       // Find the nearest element
       const res = guidesStatic
-        .filter(stat => stat[axis] === item[axis])
+        .filter(stat => stat.type === item.type)
         .map(stat => {
           const { left, width, top, height } = stat.originRect;
           const statEdge1 = isY ? left : top;
@@ -415,6 +427,16 @@ export default {
         guideInfoStyle[isY ? 'width' : 'height'] = `${size}px`;
         elGuideInfoCnt.innerHTML = `${Math.round(sizeRaw)}px`;
       }
+      console.log({
+        guide: item,
+        guidesStatic,
+        matchStatic: res
+      });
+      this.em.trigger(`${evName}:active`, {
+        guide: item,
+        guidesStatic,
+        matchStatic: res
+      });
     });
   },
 
