@@ -50,14 +50,18 @@ export default {
 
     event && drg.start(event);
     this.toggleDrag(1);
-    this.em.trigger(`${evName}:start`, {
-      mode,
-      target,
-      guidesTarget: this.guidesTarget,
-      guidesStatic: this.guidesStatic
-    });
+    this.em.trigger(`${evName}:start`, this.getEventOpts());
 
     return drg;
+  },
+
+  getEventOpts() {
+    return {
+      mode: this.opts.mode,
+      target: this.target,
+      guidesTarget: this.guidesTarget,
+      guidesStatic: this.guidesStatic
+    };
   },
 
   stop() {
@@ -354,6 +358,7 @@ export default {
     onEnd && onEnd(...args);
     editor.stopCommand(id);
     this.hideGuidesInfo();
+    this.em.trigger(`${evName}:end`, this.getEventOpts());
   },
 
   hideGuidesInfo() {
@@ -414,29 +419,31 @@ export default {
         const statEdge2Raw = isY
           ? rect.left + rect.width
           : rect.top + rect.height;
-        const pos2 = `${isY ? item.y : item.x}px`;
+        const posFirst = isY ? item.y : item.x;
+        const posSecond = isEdge1 ? statEdge2 : origEdge2;
+        const pos2 = `${posFirst}px`;
         const size = isEdge1 ? origEdge1 - statEdge2 : statEdge1 - origEdge2;
         const sizeRaw = isEdge1
           ? origEdge1Raw - statEdge2Raw
           : statEdge1Raw - origEdge2Raw;
         guideInfoStyle.display = '';
         guideInfoStyle[isY ? 'top' : 'left'] = pos2;
-        guideInfoStyle[isY ? 'left' : 'top'] = `${
-          isEdge1 ? statEdge2 : origEdge2
-        }px`;
+        guideInfoStyle[isY ? 'left' : 'top'] = `${posSecond}px`;
         guideInfoStyle[isY ? 'width' : 'height'] = `${size}px`;
         elGuideInfoCnt.innerHTML = `${Math.round(sizeRaw)}px`;
+        this.em.trigger(`${evName}:active`, {
+          ...this.getEventOpts(),
+          guide: item,
+          guidesStatic,
+          matched: res,
+          posFirst,
+          posSecond,
+          size,
+          sizeRaw,
+          elGuideInfo,
+          elGuideInfoCnt
+        });
       }
-      console.log({
-        guide: item,
-        guidesStatic,
-        matchStatic: res
-      });
-      this.em.trigger(`${evName}:active`, {
-        guide: item,
-        guidesStatic,
-        matchStatic: res
-      });
     });
   },
 
