@@ -221,7 +221,6 @@ export default {
   },
 
   getElementPos(el) {
-    el && console.log('getElementPos ' + el.className);
     return this.editor.Canvas.getElementPos(el, { noScroll: 1 });
   },
 
