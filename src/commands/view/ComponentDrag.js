@@ -1,4 +1,4 @@
-import { keys, bindAll, each, isUndefined } from 'underscore';
+import { keys, bindAll, each, isUndefined, debounce } from 'underscore';
 import Dragger from 'utils/Dragger';
 
 const evName = 'dmode';
@@ -38,7 +38,6 @@ export default {
     this.guidesContainer = this.getGuidesContainer();
     this.guidesTarget = this.getGuidesTarget();
     this.guidesStatic = this.getGuidesStatic();
-    // window.guidesTarget = this.guidesTarget;
     let drg = this.dragger;
 
     if (!drg) {
@@ -105,10 +104,14 @@ export default {
       this.elGuideInfoContentY = elInfoY.querySelector(
         `.${pfx}guide-info__content`
       );
-      em.on('canvas:update', () => {
-        this.updateGuides();
-        opts.debug && this.guides.forEach(item => this.renderGuide(item));
-      });
+
+      em.on(
+        'canvas:update frame:scroll',
+        debounce(() => {
+          this.updateGuides();
+          opts.debug && this.guides.forEach(item => this.renderGuide(item));
+        }, 200)
+      );
     }
 
     return guidesEl;
@@ -136,24 +139,10 @@ export default {
     (guides || this.guides).forEach(item => {
       const { origin } = item;
       const pos = lastEl === origin ? lastPos : this.getElementPos(origin);
-      const { top, height, left, width } = pos;
       lastEl = origin;
       lastPos = pos;
-
-      switch (item.type) {
-        case 't':
-          return (item.y = top);
-        case 'b':
-          return (item.y = top + height);
-        case 'l':
-          return (item.x = left);
-        case 'r':
-          return (item.x = left + width);
-        case 'x':
-          return (item.x = left + width / 2);
-        case 'y':
-          return (item.y = top + height / 2);
-      }
+      each(this.getGuidePosUpdate(item, pos), (val, key) => (item[key] = val));
+      item.originRect = pos;
     });
   },
 
@@ -187,9 +176,6 @@ export default {
 
   renderGuide(item = {}) {
     const el = item.guide || document.createElement('div');
-    const { Canvas } = this.editor;
-    const { topScroll, top } = Canvas.getRect();
-    const frameTop = Canvas.getCanvasView().getFrameOffset().top;
     const un = 'px';
     const guideSize = item.active ? 2 : 1;
     let numEl = el.children[0];
@@ -213,7 +199,7 @@ export default {
       el.style.width = `${guideSize}${un}`;
       el.style.height = '100%';
       el.style.left = `${item.x}${un}`;
-      el.style.top = `${topScroll - frameTop + top}${un}`;
+      el.style.top = `0${un}`;
     }
 
     !item.guide && this.guidesContainer.appendChild(el);
