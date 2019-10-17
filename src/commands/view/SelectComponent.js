@@ -60,9 +60,6 @@ export default {
     em[method]('component:update', this.onComponentUpdate, this);
     em[method]('component:resize', this.updateGlobalPos, this);
     em[method]('change:canvasOffset', this.updateAttached, this);
-    // const body = this.getCanvasBody();
-    // const win = this.getContentWindow();
-    // trigger(win, body); // TODO remove
     em.get('Canvas')
       .getFrames()
       .forEach(frame => {
@@ -129,7 +126,6 @@ export default {
   onSelect: debounce(function() {
     const { em } = this;
     const component = em.getSelected();
-    console.log('onSelect', { component });
     const currentFrame = em.get('currentFrame') || {};
     const view = component && component.getView(currentFrame.model);
     let el = view && view.el;
@@ -244,12 +240,12 @@ export default {
    * @param {Event}  e
    * @private
    */
-  onClick(e) {
+  onClick(ev) {
+    ev.stopPropagation();
+    ev.preventDefault();
     const { em } = this;
-    e.stopPropagation();
-    e.preventDefault();
     if (em.get('_cmpDrag')) return em.set('_cmpDrag');
-    const $el = $(e.target);
+    const $el = $(ev.target);
     let model = $el.data('model');
 
     if (!model) {
@@ -262,11 +258,11 @@ export default {
 
     if (model) {
       if (model.get('selectable')) {
-        this.select(model, e);
+        this.select(model, ev);
       } else {
         let parent = model.parent();
         while (parent && !parent.get('selectable')) parent = parent.parent();
-        this.select(parent, e);
+        this.select(parent, ev);
       }
     }
   },

@@ -131,9 +131,6 @@ export default () => {
           const mode = sel.get('dmode') || em.get('dmode');
           const hideTlb = () => em.stopDefault(defComOptions);
 
-          // Dirty patch to prevent parent selection on drop (in absolute mode)
-          em.set('_cmpDrag', 1);
-
           if (!sel || !sel.get('draggable')) {
             return em.logWarning('The element is not draggable');
           }
@@ -149,6 +146,9 @@ export default () => {
           };
 
           if (includes(modes, mode)) {
+            // Dirty patch to prevent parent selection on drop
+            em.set('_cmpDrag', 1);
+
             // TODO move grabbing func in editor/canvas from the Sorter
             dragger = ed.runCommand('core:component-drag', {
               guidesInfo: 1,
