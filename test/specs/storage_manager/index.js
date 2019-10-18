@@ -1,6 +1,8 @@
 import StorageManager from 'storage_manager';
 import Models from './model/Models';
 
+const wait = milliseconds => new Promise(res => setTimeout(res, milliseconds));
+
 describe('Storage Manager', () => {
   describe('Main', () => {
     var obj;
@@ -99,6 +101,51 @@ describe('Storage Manager', () => {
           expect(storeValue).toEqual(data2);
           expect(res).toEqual(data);
         });
+      });
+    });
+
+    describe('With custom async storage', () => {
+      let storeValue;
+      let storageId = 'asyncStorage';
+
+      const storage = {
+        async store(data) {
+          await wait(100);
+          // console.trace('#DATA#', data)
+          storeValue = data;
+        },
+        async load(keys) {
+          await wait(100);
+          return storeValue;
+        }
+      };
+
+      beforeEach(() => {
+        storeValue = [];
+        obj = new StorageManager().init({
+          type: storageId
+        });
+        obj.add(storageId, storage);
+      });
+
+      afterEach(() => {
+        obj = null;
+      });
+
+      test('Store and load data', async () => {
+        const data = {
+          item: 'testData',
+          item2: 'testData2'
+        };
+        const data2 = {};
+        const id = obj.getConfig().id;
+        data2[id + 'item'] = 'testData';
+        data2[id + 'item2'] = 'testData2';
+
+        await obj.store(data);
+        const res = await obj.load(['item', 'item2']);
+        expect(storeValue).toEqual(data2);
+        expect(res).toBeUndefined();
       });
     });
   });

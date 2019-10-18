@@ -35,6 +35,7 @@
 import defaults from './config/config';
 import LocalStorage from './model/LocalStorage';
 import RemoteStorage from './model/RemoteStorage';
+import callbackOrPromise from '../utils/callback-or-promise';
 
 export default () => {
   var c = {};
@@ -205,22 +206,25 @@ export default () => {
       const toStore = {};
       this.onStart('store', data);
 
+      if (!st) {
+        return null;
+      }
+
       for (let key in data) {
         toStore[c.id + key] = data[key];
       }
 
-      return st
-        ? st.store(
-            toStore,
-            res => {
-              clb && clb(res);
-              this.onEnd('store', res);
-            },
-            err => {
-              this.onError('store', err);
-            }
-          )
-        : null;
+      return callbackOrPromise({
+        fn: st.store.bind(st),
+        args: [toStore],
+        success: res => {
+          clb && clb(res);
+          this.onEnd('store', res);
+        },
+        error: err => {
+          this.onError('store', err);
+        }
+      });
     },
 
     /**
@@ -238,37 +242,38 @@ export default () => {
     load(keys, clb) {
       var st = this.get(this.getCurrent());
       var keysF = [];
-      var result = {};
 
       if (typeof keys === 'string') keys = [keys];
       this.onStart('load', keys);
+
+      if (!st) {
+        clb && clb({});
+        return Promise.resolve({});
+      }
 
       for (var i = 0, len = keys.length; i < len; i++) {
         keysF.push(c.id + keys[i]);
       }
 
-      if (st) {
-        st.load(
-          keysF,
-          res => {
-            // Restore keys name
-            var reg = new RegExp('^' + c.id + '');
-            for (var itemKey in res) {
-              var itemKeyR = itemKey.replace(reg, '');
-              result[itemKeyR] = res[itemKey];
-            }
-
-            clb && clb(result);
-            this.onEnd('load', result);
-          },
-          err => {
-            clb && clb(result);
-            this.onError('load', err);
+      return callbackOrPromise({
+        fn: st.store,
+        args: [keysF],
+        success: res => {
+          const result = {};
+          const reg = new RegExp('^' + c.id + '');
+          for (var itemKey in res) {
+            var itemKeyR = itemKey.replace(reg, '');
+            result[itemKeyR] = res[itemKey];
           }
-        );
-      } else {
-        clb && clb(result);
-      }
+
+          clb && clb(result);
+          this.onEnd('load', result);
+        },
+        error: err => {
+          clb && clb({});
+          this.onError('load', err);
+        }
+      });
     },
 
     /**

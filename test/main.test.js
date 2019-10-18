@@ -25,4 +25,6 @@ describe('Main', () => {
   require(`${path}style_manager`);
   require(`${path}trait_manager`);
   require(`${path}grapesjs`);
+  require(`${path}grapesjs`);
+  require(`${path}utils/callback-or-promise`);
 });
