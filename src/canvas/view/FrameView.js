@@ -9,7 +9,7 @@ import {
   createEl,
   createCustomEvent
 } from 'utils/dom';
-import { on, off } from 'utils/mixins';
+import { on, setViewEl } from 'utils/mixins';
 
 const motionsEv =
   'transitionend oTransitionEnd transitionend webkitTransitionEnd';
@@ -23,7 +23,7 @@ export default Backbone.View.extend({
 
   initialize(o) {
     bindAll(this, 'updateOffset');
-    const { model } = this;
+    const { model, el } = this;
     this.config = {
       ...(o.config || {}),
       frameView: this
@@ -35,6 +35,7 @@ export default Backbone.View.extend({
     this.listenTo(model, 'change:width change:height', this.updateDim);
     this.updatePos();
     model.view = this;
+    setViewEl(el, this);
   },
 
   updatePos(md) {

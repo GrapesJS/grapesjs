@@ -38,7 +38,6 @@ export default Backbone.View.extend({
     this.className = this.config.stylePrefix + 'canvas';
     const { em } = this;
     this.listenTo(em, 'change:canvasOffset', this.clearOff);
-    // this.listenTo(em, 'frame:scroll', this.onFrameScroll);
     this.listenTo(em, 'component:selected', this.checkSelected);
     this.listenTo(model, 'change:zoom change:x change:y', this.updateFrames);
     this.toggleListeners(1);

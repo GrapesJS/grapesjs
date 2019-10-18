@@ -695,7 +695,6 @@ export default {
    * Update attached elements, eg. component toolbar
    */
   updateAttached: debounce(function() {
-    console.log('updateAttach', arguments);
     this.updateToolsGlobal();
   }),
 

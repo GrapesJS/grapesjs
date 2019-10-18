@@ -38,6 +38,7 @@ import {
   getPointerEvent,
   getViewEl
 } from 'utils/mixins';
+import { debounce } from 'underscore';
 import Droppable from 'utils/Droppable';
 import defaults from './config/config';
 import Canvas from './model/Canvas';
@@ -579,8 +580,11 @@ export default () => {
      */
     startAutoscroll() {
       this.dragging = 1;
-      let toListen = this.getScrollListeners();
+      const frameEl = this.getFrameEl();
+      const toListen = this.getScrollListeners();
       frameRect = CanvasView.getFrameOffset();
+      this.lastMaxHeight =
+        getViewEl(frameEl).getWrapper().offsetHeight - frameEl.offsetHeight;
 
       // By detaching those from the stack avoid browsers lags
       // Noticeable with "fast" drag of blocks
@@ -601,12 +605,13 @@ export default () => {
      */
     autoscroll() {
       if (this.dragging) {
-        let frameWindow = this.getFrameEl().contentWindow;
-        let actualTop = frameWindow.document.body.scrollTop;
+        const frameWindow = this.getFrameEl().contentWindow;
+        const { body } = frameWindow.document;
+        const actualTop = body.scrollTop;
+        const clientY = this.lastClientY;
+        const limitTop = this.getConfig().autoscrollLimit;
+        const limitBottom = frameRect.height - limitTop;
         let nextTop = actualTop;
-        let clientY = this.lastClientY;
-        let limitTop = this.getConfig().autoscrollLimit;
-        let limitBottom = frameRect.height - limitTop;
 
         if (clientY < limitTop) {
           nextTop -= limitTop - clientY;
@@ -616,10 +621,24 @@ export default () => {
           nextTop += clientY - limitBottom;
         }
 
-        frameWindow.scrollTo(0, nextTop);
+        if (
+          nextTop !== actualTop &&
+          nextTop > 0 &&
+          nextTop < this.lastMaxHeight
+        ) {
+          const toolsEl = this.getGlobalToolsEl();
+          toolsEl.style.opacity = 0;
+          this.showGlobalTools();
+          frameWindow.scrollTo(0, nextTop);
+        }
+
         requestAnimationFrame(this.autoscroll);
       }
     },
+
+    showGlobalTools: debounce(function() {
+      this.getGlobalToolsEl().style.opacity = '';
+    }, 50),
 
     /**
      * Stop autoscroll
