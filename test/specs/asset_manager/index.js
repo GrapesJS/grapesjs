@@ -114,13 +114,4 @@ describe('Asset Manager', () => {
       });
     });
   });
-
-  require('./model/Asset').run();
-  require('./model/AssetImage').run();
-  require('./model/Assets').run();
-
-  require('./view/AssetView').run();
-  require('./view/AssetImageView').run();
-  require('./view/AssetsView').run();
-  require('./view/FileUploader').run();
 });
