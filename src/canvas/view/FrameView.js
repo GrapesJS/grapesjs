@@ -9,7 +9,7 @@ import {
   createEl,
   createCustomEvent
 } from 'utils/dom';
-import { on, setViewEl } from 'utils/mixins';
+import { on, off, setViewEl, getPointerEvent } from 'utils/mixins';
 
 const motionsEv =
   'transitionend oTransitionEnd transitionend webkitTransitionEnd';
@@ -22,7 +22,13 @@ export default Backbone.View.extend({
   },
 
   initialize(o) {
-    bindAll(this, 'updateOffset');
+    bindAll(
+      this,
+      'updateOffset',
+      'updateClientY',
+      'stopAutoscroll',
+      'autoscroll'
+    );
     const { model, el } = this;
     this.config = {
       ...(o.config || {}),
@@ -42,6 +48,7 @@ export default Backbone.View.extend({
     const { model, el } = this;
     const { x, y } = model.attributes;
     const { style } = el;
+    this.rect = 0;
     style.left = isNaN(x) ? x : `${x}px`;
     style.top = isNaN(y) ? y : `${y}px`;
     md && this.updateOffset();
@@ -70,6 +77,7 @@ export default Backbone.View.extend({
     const newH = height;
     const noChanges = currW == newW && currH == newH;
     const un = 'px';
+    this.rect = 0;
     style.width = isNumber(newW) ? `${newW}${un}` : newW;
     style.height = isNumber(newH) ? `${newH}${un}` : newH;
 
@@ -129,6 +137,10 @@ export default Backbone.View.extend({
     return frameWrapView && frameWrapView.elTools;
   },
 
+  getGlobalToolsEl() {
+    return this.em.get('Canvas').getGlobalToolsEl();
+  },
+
   getHighlighter() {
     return this._getTool('[data-hl]');
   },
@@ -139,6 +151,14 @@ export default Backbone.View.extend({
 
   getOffsetViewerEl() {
     return this._getTool('[data-offset]');
+  },
+
+  getRect() {
+    if (!this.rect) {
+      this.rect = this.el.getBoundingClientRect();
+    }
+
+    return this.rect;
   },
 
   _getTool(name) {
@@ -153,6 +173,73 @@ export default Backbone.View.extend({
 
   remove() {
     Backbone.View.prototype.remove.apply(this, arguments);
+  },
+
+  startAutoscroll() {
+    this.lastMaxHeight = this.getWrapper().offsetHeight - this.el.offsetHeight;
+
+    // By detaching those from the stack avoid browsers lags
+    // Noticeable with "fast" drag of blocks
+    setTimeout(() => {
+      this._toggleAutoscrollFx(1);
+      requestAnimationFrame(this.autoscroll);
+    }, 0);
+  },
+
+  autoscroll() {
+    if (this.dragging) {
+      const canvas = this.em.get('Canvas');
+      const win = this.getWindow();
+      const body = this.getBody();
+      const actualTop = body.scrollTop;
+      const clientY = this.lastClientY || 0;
+      const limitTop = canvas.getConfig().autoscrollLimit;
+      const limitBottom = this.getRect().height - limitTop;
+      let nextTop = actualTop;
+
+      if (clientY < limitTop) {
+        nextTop -= limitTop - clientY;
+      }
+
+      if (clientY > limitBottom) {
+        nextTop += clientY - limitBottom;
+      }
+
+      if (
+        nextTop !== actualTop &&
+        nextTop > 0 &&
+        nextTop < this.lastMaxHeight
+      ) {
+        const toolsEl = this.getGlobalToolsEl();
+        toolsEl.style.opacity = 0;
+        this.showGlobalTools();
+        win.scrollTo(0, nextTop);
+      }
+
+      requestAnimationFrame(this.autoscroll);
+    }
+  },
+
+  updateClientY(ev) {
+    ev.preventDefault();
+    this.lastClientY = getPointerEvent(ev).clientY * this.em.getZoomDecimal();
+  },
+
+  showGlobalTools: debounce(function() {
+    this.getGlobalToolsEl().style.opacity = '';
+  }, 50),
+
+  stopAutoscroll() {
+    this.dragging && this._toggleAutoscrollFx();
+  },
+
+  _toggleAutoscrollFx(enable) {
+    this.dragging = enable;
+    const win = this.getWindow();
+    const method = enable ? 'on' : 'off';
+    const mt = { on, off };
+    mt[method](win, 'mousemove dragover', this.updateClientY);
+    mt[method](win, 'mouseup', this.stopAutoscroll);
   },
 
   render() {

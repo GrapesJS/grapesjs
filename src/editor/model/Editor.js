@@ -613,6 +613,14 @@ export default Backbone.Model.extend({
     return this.get('DomComponents').getWrapper();
   },
 
+  getCurrentFrame() {
+    return this.get('currentFrame');
+  },
+
+  getCurrentFrameModel() {
+    return (this.getCurrentFrame() || {}).model;
+  },
+
   /**
    * Return the count of changes made to the content and not yet stored.
    * This count resets at any `store()`

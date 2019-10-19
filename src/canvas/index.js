@@ -93,10 +93,9 @@ export default () => {
       var cm = c.em.get('DomComponents');
       if (cm) this.setWrapper(cm);
 
+      this.model = canvas;
       this.startAutoscroll = this.startAutoscroll.bind(this);
       this.stopAutoscroll = this.stopAutoscroll.bind(this);
-      this.autoscroll = this.autoscroll.bind(this);
-      this.updateClientY = this.updateClientY.bind(this);
       return this;
     },
 
@@ -578,81 +577,18 @@ export default () => {
      * Start autoscroll
      * @private
      */
-    startAutoscroll() {
-      this.dragging = 1;
-      const frameEl = this.getFrameEl();
-      const toListen = this.getScrollListeners();
-      frameRect = CanvasView.getFrameOffset();
-      this.lastMaxHeight =
-        getViewEl(frameEl).getWrapper().offsetHeight - frameEl.offsetHeight;
-
-      // By detaching those from the stack avoid browsers lags
-      // Noticeable with "fast" drag of blocks
-      setTimeout(() => {
-        on(toListen, 'mousemove dragover', this.updateClientY);
-        on(toListen, 'mouseup', this.stopAutoscroll);
-        requestAnimationFrame(this.autoscroll);
-      }, 0);
+    startAutoscroll(frame) {
+      const fr = (frame && frame.view) || this.em.getCurrentFrame();
+      fr && fr.startAutoscroll();
     },
-
-    updateClientY(ev) {
-      ev.preventDefault();
-      this.lastClientY = getPointerEvent(ev).clientY * this.getZoomDecimal();
-    },
-
-    /**
-     * @private
-     */
-    autoscroll() {
-      if (this.dragging) {
-        const frameWindow = this.getFrameEl().contentWindow;
-        const { body } = frameWindow.document;
-        const actualTop = body.scrollTop;
-        const clientY = this.lastClientY;
-        const limitTop = this.getConfig().autoscrollLimit;
-        const limitBottom = frameRect.height - limitTop;
-        let nextTop = actualTop;
-
-        if (clientY < limitTop) {
-          nextTop -= limitTop - clientY;
-        }
-
-        if (clientY > limitBottom) {
-          nextTop += clientY - limitBottom;
-        }
-
-        if (
-          nextTop !== actualTop &&
-          nextTop > 0 &&
-          nextTop < this.lastMaxHeight
-        ) {
-          const toolsEl = this.getGlobalToolsEl();
-          toolsEl.style.opacity = 0;
-          this.showGlobalTools();
-          frameWindow.scrollTo(0, nextTop);
-        }
-
-        requestAnimationFrame(this.autoscroll);
-      }
-    },
-
-    showGlobalTools: debounce(function() {
-      this.getGlobalToolsEl().style.opacity = '';
-    }, 50),
 
     /**
      * Stop autoscroll
      * @private
      */
-    stopAutoscroll() {
-      this.dragging = 0;
-      let toListen = this.getScrollListeners();
-      off(toListen, 'mousemove dragover', this.updateClientY);
-      off(toListen, 'mouseup', this.stopAutoscroll);
-    },
-
-    getScrollListeners() {
-      return [this.getFrameEl().contentWindow];
+    stopAutoscroll(frame) {
+      const fr = (frame && frame.view) || this.em.getCurrentFrame();
+      fr && fr.stopAutoscroll();
     },
 
     postRender() {
