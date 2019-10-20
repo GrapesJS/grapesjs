@@ -35,7 +35,7 @@
 import defaults from './config/config';
 import LocalStorage from './model/LocalStorage';
 import RemoteStorage from './model/RemoteStorage';
-import callbackOrPromise from '../utils/callback-or-promise';
+import callbackOrPromise from 'utils/callback-or-promise';
 
 export default () => {
   var c = {};

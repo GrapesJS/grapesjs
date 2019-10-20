@@ -1,4 +1,4 @@
-import callbackOrPromise from '../../../src/utils/callback-or-promise';
+import callbackOrPromise from 'utils/callback-or-promise';
 
 const waitThenResolveWith = value =>
   new Promise(resolve => setTimeout(() => resolve(value), 100));
