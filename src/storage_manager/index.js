@@ -220,9 +220,11 @@ export default () => {
         success: res => {
           clb && clb(res);
           this.onEnd('store', res);
+          return res;
         },
         error: err => {
           this.onError('store', err);
+          return err;
         }
       });
     },
@@ -256,7 +258,7 @@ export default () => {
       }
 
       return callbackOrPromise({
-        fn: st.store,
+        fn: st.load,
         args: [keysF],
         success: res => {
           const result = {};
@@ -268,6 +270,7 @@ export default () => {
 
           clb && clb(result);
           this.onEnd('load', result);
+          return result;
         },
         error: err => {
           clb && clb({});

@@ -2,7 +2,12 @@ const isThenable = obj =>
   typeof obj === 'object' && typeof obj.then === 'function';
 
 /**
- * Handles calling success and error callbacks once for when a function can return a promise or use callbacks.
+ * Handles calling success and error callbacks once for when a function (`fn`) can return a promise or use callbacks.
+ * @param {Object} options
+ * @param {(...args: any[], onSuccess: () => {}, onError: () => {}) => any} options.fn The function to call asynchronously. Should accept onSuccess and onError callbacks as its last two params.
+ * @param {Array} options.args Arguments to pass to `fn` before the onSuccess and onError params.
+ * @param {Function} options.success Callback to run on success of `fn`. Whatever is returned from `options.success` will be the result of the promise.
+ * @param {Function} options.error Callback to run on error of `fn`.
  */
 const callbackOrPromise = ({
   fn,
@@ -15,16 +20,15 @@ const callbackOrPromise = ({
 
   const onSuccess = res => {
     if (!handledSuccess) {
-      success(res);
       handledSuccess = true;
-      // return res;
+      return success(res);
     }
   };
 
   const onError = err => {
     if (!handledError) {
-      error(err);
       handledError = true;
+      return error(err);
     }
   };
 
