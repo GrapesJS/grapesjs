@@ -145,7 +145,7 @@ describe('Storage Manager', () => {
         await obj.store(data);
         const res = await obj.load(['item', 'item2']);
         expect(storeValue).toEqual(data2);
-        expect(res).toBeUndefined();
+        expect(res).toEqual(data);
       });
     });
   });
