@@ -484,13 +484,11 @@ export default Backbone.Model.extend({
       for (var el in obj) store[el] = obj[el];
     });
 
-    sm.store(store, res => {
+    return sm.store(store, res => {
       clb && clb(res);
       this.set('changesCount', 0);
       this.trigger('storage:store', store);
     });
-
-    return store;
   },
 
   /**
@@ -499,7 +497,7 @@ export default Backbone.Model.extend({
    * @private
    */
   load(clb = null) {
-    this.getCacheLoad(1, res => {
+    return this.getCacheLoad(1, res => {
       this.get('storables').forEach(module => module.load(res));
       clb && clb(res);
     });
@@ -529,7 +527,7 @@ export default Backbone.Model.extend({
       });
     });
 
-    sm.load(load, res => {
+    return sm.load(load, res => {
       this.cacheLoad = res;
       clb && clb(res);
       setTimeout(() => this.trigger('storage:load', res), 0);

@@ -258,7 +258,7 @@ export default () => {
       }
 
       return callbackOrPromise({
-        fn: st.load,
+        fn: st.load.bind(st),
         args: [keysF],
         success: res => {
           const result = {};
