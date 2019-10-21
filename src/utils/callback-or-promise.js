@@ -14,29 +14,33 @@ const callbackOrPromise = ({
   args = [],
   success = () => {},
   error = () => {}
-}) => {
-  let handledSuccess = false;
-  let handledError = false;
+}) =>
+  new Promise((resolve, reject) => {
+    let handledSuccess = false;
+    let handledError = false;
 
-  const onSuccess = res => {
-    if (!handledSuccess) {
-      handledSuccess = true;
-      return success(res);
+    const onSuccess = res => {
+      if (!handledSuccess) {
+        handledSuccess = true;
+        const resolveWith = success(res);
+        resolve(resolveWith);
+        return resolveWith;
+      }
+    };
+
+    const onError = err => {
+      if (!handledError) {
+        handledError = true;
+        const rejectWith = error(err);
+        reject(rejectWith);
+      }
+    };
+
+    const result = fn(...args, onSuccess, onError);
+
+    if (isThenable(result)) {
+      result.then(onSuccess).catch(onError);
     }
-  };
-
-  const onError = err => {
-    if (!handledError) {
-      handledError = true;
-      return error(err);
-    }
-  };
-
-  const result = fn(...args, onSuccess, onError);
-
-  if (isThenable(result)) {
-    return result.then(onSuccess).catch(onError);
-  }
-};
+  });
 
 export default callbackOrPromise;

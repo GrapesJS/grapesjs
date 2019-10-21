@@ -23,7 +23,7 @@ describe('callback or promise util', () => {
     });
 
     expect(fn).toBeCalledTimes(1);
-    expect(result).toBeUndefined();
+    expect(result).toBeInstanceOf(Promise);
     expect(onSuccess).toBeCalledTimes(1);
     expect(onError).toBeCalledTimes(0);
   });
@@ -66,7 +66,7 @@ describe('callback or promise util', () => {
     });
 
     expect(fn).toBeCalledTimes(1);
-    expect(result).toBeUndefined();
+    expect(result).toBeInstanceOf(Promise);
     expect(onSuccess).toBeCalledTimes(0);
     expect(onError).toBeCalledTimes(1);
   });
@@ -77,19 +77,43 @@ describe('callback or promise util', () => {
     const onSuccess = jest.fn();
     const onError = jest.fn(value => {
       expect(value).toBe('error');
+      return value;
     });
 
-    const result = callbackOrPromise({
+    await expect(
+      callbackOrPromise({
+        fn,
+        success: onSuccess,
+        error: onError
+      })
+    ).rejects.toEqual('error');
+
+    expect(fn).toBeCalledTimes(1);
+    expect(onSuccess).toBeCalledTimes(0);
+    expect(onError).toBeCalledTimes(1);
+  });
+
+  test('can await when using callbacks', async () => {
+    const fn = jest.fn(clb => {
+      clb('success');
+    });
+
+    const onSuccess = jest.fn(value => {
+      expect(value).toBe('success');
+      return value;
+    });
+    const onError = jest.fn();
+
+    const result = await callbackOrPromise({
       fn,
       success: onSuccess,
       error: onError
     });
 
     expect(fn).toBeCalledTimes(1);
-    expect(result).toBeInstanceOf(Promise);
-    await result;
-    expect(onSuccess).toBeCalledTimes(0);
-    expect(onError).toBeCalledTimes(1);
+    expect(result).toBe('success');
+    expect(onSuccess).toBeCalledTimes(1);
+    expect(onError).toBeCalledTimes(0);
   });
 
   test('success called only once when mixing callbacks with promises', async () => {
@@ -123,21 +147,18 @@ describe('callback or promise util', () => {
       return waitThenRejectWith('error from promise');
     });
 
-    const onSuccess = jest.fn(value => {
-      // error from callback because it is called first (before the promise resolves)
-      expect(value).toBe('error from callback');
-    });
-    const onError = jest.fn();
+    const onSuccess = jest.fn(v => v);
+    const onError = jest.fn(v => v);
 
-    const result = callbackOrPromise({
-      fn,
-      success: onSuccess,
-      error: onError
-    });
+    await expect(
+      callbackOrPromise({
+        fn,
+        success: onSuccess,
+        error: onError
+      })
+    ).rejects.toEqual('error from callback');
 
     expect(fn).toBeCalledTimes(1);
-    expect(result).toBeInstanceOf(Promise);
-    await result;
     expect(onSuccess).toBeCalledTimes(0);
     expect(onError).toBeCalledTimes(1);
   });

@@ -51,8 +51,8 @@ describe('Storage Manager', () => {
       expect(obj.getCurrent()).toEqual('remote');
     });
 
-    test('Store do not execute if empty', () => {
-      expect(obj.store({ item: 'test' })).toBeUndefined();
+    test('Store do not execute if empty', async () => {
+      expect(await obj.store({ item: 'test' })).toBeUndefined();
     });
 
     test('Load default storages ', () => {
