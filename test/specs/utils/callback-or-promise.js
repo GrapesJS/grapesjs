@@ -72,25 +72,21 @@ describe('callback or promise util', () => {
   });
 
   test('error called once using promises', async () => {
-    const fn = jest.fn(() => waitThenRejectWith('error'));
+    const fn = () => waitThenRejectWith('error');
 
-    const onSuccess = jest.fn();
-    const onError = jest.fn(value => {
+    const onSuccess = x => x;
+    const onError = value => {
       expect(value).toBe('error');
       return value;
-    });
+    };
 
-    await expect(
+    expect(
       callbackOrPromise({
         fn,
         success: onSuccess,
         error: onError
       })
-    ).rejects.toEqual('error');
-
-    expect(fn).toBeCalledTimes(1);
-    expect(onSuccess).toBeCalledTimes(0);
-    expect(onError).toBeCalledTimes(1);
+    ).rejects.toThrow('error');
   });
 
   test('can await when using callbacks', async () => {
