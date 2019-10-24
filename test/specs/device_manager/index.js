@@ -58,6 +58,4 @@ describe('DeviceManager', () => {
       expect(obj.render()).toBeTruthy();
     });
   });
-
-  DevicesView.run();
 });
