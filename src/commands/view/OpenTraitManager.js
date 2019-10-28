@@ -36,7 +36,6 @@ export default {
         .trigger('change:appendContent');
 
       this.target = editor.getModel();
-      debugger;
       this.listenTo(this.target, 'component:toggled', this.toggleTm);
     }
 
