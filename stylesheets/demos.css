@@ -138,3 +138,8 @@ html {
   font-weight: bold;
   font-size: 12px;
 }
+
+.gjs-block-label svg,
+.gjs-block__media svg {
+  width: 54px;
+}
