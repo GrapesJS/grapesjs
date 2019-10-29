@@ -180,20 +180,5 @@ describe('StyleManager', () => {
         expect(prop1.get('name')).toEqual('Width');
       });
     });
-
-    Models.run();
-
-    describe('Views', () => {
-      SectorView.run();
-      SectorsView.run();
-      PropertyView.run();
-      PropertySelectView.run();
-      PropertyRadioView.run();
-      PropertyIntegerView.run();
-      PropertyColorView.run();
-      PropertyCompositeView.run();
-      PropertyStackView.run();
-      LayerView.run();
-    });
   });
 });

@@ -149,6 +149,4 @@ describe('Storage Manager', () => {
       });
     });
   });
-
-  Models.run();
 });
