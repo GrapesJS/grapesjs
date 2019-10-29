@@ -67,6 +67,4 @@ describe('BlockManager', () => {
       expect(obj.getContainer()).toBeTruthy();
     });
   });
-
-  BlocksView.run();
 });

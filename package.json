@@ -97,6 +97,9 @@
     "modulePaths": [
       "./src"
     ],
+    "testMatch": [
+      "<rootDir>/test/specs/**/*.js"
+    ],
     "setupFiles": [
       "<rootDir>/test/setup.js"
     ],
