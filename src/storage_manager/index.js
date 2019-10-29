@@ -257,26 +257,33 @@ export default () => {
         keysF.push(c.id + keys[i]);
       }
 
+      const handleSuccess = res => {
+        const result = {};
+        const reg = new RegExp('^' + c.id + '');
+        for (var itemKey in res) {
+          var itemKeyR = itemKey.replace(reg, '');
+          result[itemKeyR] = res[itemKey];
+        }
+
+        clb && clb(result);
+        this.onEnd('load', result);
+        return result;
+      };
+
+      const handleError = err => {
+        clb && clb({});
+        this.onError('load', err);
+      };
+
+      // Only pass handleSuccess and handleError as callbacks when we have been passed `clb`.
       return callbackOrPromise({
         fn: st.load.bind(st),
         args: [keysF],
-        success: res => {
-          const result = {};
-          const reg = new RegExp('^' + c.id + '');
-          for (var itemKey in res) {
-            var itemKeyR = itemKey.replace(reg, '');
-            result[itemKeyR] = res[itemKey];
-          }
-
-          clb && clb(result);
-          this.onEnd('load', result);
-          return result;
-        },
-        error: err => {
-          clb && clb({});
-          this.onError('load', err);
-        }
-      });
+        success: clb && handleSuccess,
+        error: clb && handleError
+      })
+        .then(!clb && handleSuccess)
+        .catch(!clb && handleError);
     },
 
     /**

@@ -1,5 +1,4 @@
 import StorageManager from 'storage_manager';
-import Models from './model/Models';
 
 const wait = milliseconds => new Promise(res => setTimeout(res, milliseconds));
 
@@ -69,8 +68,8 @@ describe('Storage Manager', () => {
         store(data) {
           storeValue = data;
         },
-        load(keys) {
-          return storeValue;
+        load(keys, clb) {
+          clb(storeValue);
         }
       };
 
@@ -86,7 +85,7 @@ describe('Storage Manager', () => {
         obj = null;
       });
 
-      test('Store and load data', () => {
+      test('Store and load data sync', () => {
         var data = {
           item: 'testData',
           item2: 'testData2'
@@ -96,6 +95,7 @@ describe('Storage Manager', () => {
         data2[id + 'item'] = 'testData';
         data2[id + 'item2'] = 'testData2';
 
+        expect.assertions(2);
         obj.store(data);
         obj.load(['item', 'item2'], res => {
           expect(storeValue).toEqual(data2);

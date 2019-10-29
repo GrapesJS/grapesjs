@@ -31,22 +31,11 @@ describe('callback or promise util', () => {
   test('success called once using promises', async () => {
     const fn = jest.fn(() => waitThenResolveWith('success'));
 
-    const onSuccess = jest.fn(value => {
-      expect(value).toBe('success');
-    });
-    const onError = jest.fn();
-
-    const result = callbackOrPromise({
-      fn,
-      success: onSuccess,
-      error: onError
-    });
+    const result = callbackOrPromise({ fn });
 
     expect(fn).toBeCalledTimes(1);
     expect(result).toBeInstanceOf(Promise);
-    await result;
-    expect(onSuccess).toBeCalledTimes(1);
-    expect(onError).toBeCalledTimes(0);
+    expect(await result).toEqual('success');
   });
 
   test('error called once using callbacks', () => {
@@ -74,22 +63,10 @@ describe('callback or promise util', () => {
   test('error called once using promises', async () => {
     const fn = () => waitThenRejectWith('error');
 
-    const onSuccess = x => x;
-    const onError = value => {
-      expect(value).toBe('error');
-      return value;
-    };
-
-    expect(
-      callbackOrPromise({
-        fn,
-        success: onSuccess,
-        error: onError
-      })
-    ).rejects.toThrow('error');
+    expect(callbackOrPromise({ fn })).rejects.toThrow('error');
   });
 
-  test('can await when using callbacks', async () => {
+  test('cannot await when using callbacks', async () => {
     const fn = jest.fn(clb => {
       clb('success');
     });
@@ -107,7 +84,7 @@ describe('callback or promise util', () => {
     });
 
     expect(fn).toBeCalledTimes(1);
-    expect(result).toBe('success');
+    expect(result).toBeUndefined();
     expect(onSuccess).toBeCalledTimes(1);
     expect(onError).toBeCalledTimes(0);
   });
@@ -119,7 +96,6 @@ describe('callback or promise util', () => {
     });
 
     const onSuccess = jest.fn(value => {
-      // Success from callback because it is called first (before the promise resolves)
       expect(value).toBe('success from callback');
     });
     const onError = jest.fn();
@@ -131,8 +107,8 @@ describe('callback or promise util', () => {
     });
 
     expect(fn).toBeCalledTimes(1);
-    expect(result).toBeInstanceOf(Promise);
-    await result;
+    // We always resolve with undefined when using callbacks
+    expect(await result).toBeUndefined();
     expect(onSuccess).toBeCalledTimes(1);
     expect(onError).toBeCalledTimes(0);
   });
@@ -146,14 +122,14 @@ describe('callback or promise util', () => {
     const onSuccess = jest.fn(v => v);
     const onError = jest.fn(v => v);
 
-    await expect(
-      callbackOrPromise({
-        fn,
-        success: onSuccess,
-        error: onError
-      })
-    ).rejects.toEqual('error from callback');
+    const result = callbackOrPromise({
+      fn,
+      success: onSuccess,
+      error: onError
+    });
 
+    // We don't return anything when using callbacks, even if fn returns a promise
+    expect(await result).toBeUndefined();
     expect(fn).toBeCalledTimes(1);
     expect(onSuccess).toBeCalledTimes(0);
     expect(onError).toBeCalledTimes(1);
@@ -163,6 +139,7 @@ describe('callback or promise util', () => {
     const expectedArgument1 = 'foo';
     const expectedArgument2 = 'bar';
 
+    expect.assertions(5 * 2);
     const fn = (...args) => {
       expect(args.length).toBe(4);
       expect(args[0]).toEqual(expectedArgument1);
@@ -179,8 +156,17 @@ describe('callback or promise util', () => {
 
     // Promises
     callbackOrPromise({
-      fn: async () => fn(),
+      fn: async (...args) => fn(...args),
       args: [expectedArgument1, expectedArgument2]
     });
   });
+
+  // test('successfully wraps and resolves synchronous oprerations', async () => {
+  //   const expected = 'foo';
+  //   const result = await callbackOrPromise({
+  //     fn: () => expected
+  //   });
+
+  //   expect(result).toEqual(expected);
+  // });
 });
