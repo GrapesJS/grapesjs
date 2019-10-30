@@ -75,6 +75,54 @@ export default () => {
     init(opts = {}) {
       this.em = opts.em;
       return this;
+    },
+
+    /**
+     * Get all messages
+     * @param {String} [lang] Specify the language of messages to return
+     * @returns {Object}
+     * @example
+     * i18n.getMessages();
+     * // -> { en: { hello: '...' }, ... }
+     * i18n.getMessages('en');
+     * // -> { hello: '...' }
+     */
+    getMessages(lang) {
+      const { messages } = this.config;
+      return lang ? messages[lang] : messages;
+    },
+
+    /**
+     * Set new set of messages
+     * @param {Object} msg Set of messages
+     * @returns {this}
+     * @example
+     * i18n.getMessages();
+     * // -> { en: { msg1: 'Msg 1', msg2: 'Msg 2', } }
+     * i18n.setMessages({ en: { msg2: 'Msg 2 up', msg3: 'Msg 3', } });
+     * // Set replaced
+     * i18n.getMessages();
+     * // -> { en: { msg2: 'Msg 2 up', msg3: 'Msg 3', } }
+     */
+    setMessages(msg) {
+      this.config.messages = msg;
+      return this;
+    },
+
+    /**
+     * Update messages
+     * @param {Object} msg Set of messages to add
+     * @returns {this}
+     * @example
+     * i18n.getMessages();
+     * // -> { en: { msg1: 'Msg 1', msg2: 'Msg 2', } }
+     * i18n.addMessages({ en: { msg2: 'Msg 2 up', msg3: 'Msg 3', } });
+     * // Set updated
+     * i18n.getMessages();
+     * // -> { en: { msg1: 'Msg 1', msg2: 'Msg 2 up', msg3: 'Msg 3', } }
+     */
+    addMessages(msg) {
+      return this;
     }
   };
 };
