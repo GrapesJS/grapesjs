@@ -22,6 +22,7 @@
  *
  * @module I18n
  */
+import { keys } from 'underscore';
 import messages from './messages';
 
 export default () => {
@@ -122,6 +123,19 @@ export default () => {
      * // -> { en: { msg1: 'Msg 1', msg2: 'Msg 2 up', msg3: 'Msg 3', } }
      */
     addMessages(msg) {
+      const { messages } = this.config;
+      keys(msg).forEach(lang => {
+        const langSet = msg[lang];
+        const currentSet = messages[lang];
+
+        if (!currentSet) {
+          messages[lang] = langSet;
+        } else {
+          keys(langSet).forEach(key => {
+            currentSet[key] = langSet[key];
+          });
+        }
+      });
       return this;
     }
   };
