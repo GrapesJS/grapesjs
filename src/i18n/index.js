@@ -25,11 +25,9 @@
 import messages from './messages';
 
 export default () => {
-  let em;
-  let config;
   const { language } = window.navigator || {};
   const localeDef = language ? language.split('-')[0] : 'en';
-  const configDef = {
+  const config = {
     locale: localeDef,
     localeFallback: 'en',
     counter: 'n',
@@ -39,12 +37,34 @@ export default () => {
   return {
     name: 'I18n',
 
+    config,
+
     /**
      * Get module configurations
      * @returns {Object} Configuration object
      */
     getConfig() {
-      return config;
+      return this.config;
+    },
+
+    /**
+     * Update current locale
+     * @param {String} locale Locale value
+     * @returns {this}
+     * @example
+     * i18n.setLocale('it');
+     */
+    setLocale(locale) {
+      this.config.locale = locale;
+      return this;
+    },
+
+    /**
+     * Get current locale
+     * @returns {String} Current locale value
+     */
+    getLocale() {
+      return this.config.locale;
     },
 
     /**
@@ -53,9 +73,7 @@ export default () => {
      * @private
      */
     init(opts = {}) {
-      config = { ...configDef, ...opts };
-      em = opts.em;
-      this.em = em;
+      this.em = opts.em;
       return this;
     }
   };
