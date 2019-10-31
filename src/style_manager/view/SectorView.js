@@ -1,6 +1,7 @@
 import Backbone from 'backbone';
 import { template } from 'underscore';
 import PropertiesView from './PropertiesView';
+import { gjs_translate } from '../../translate';
 
 export default Backbone.View.extend({
   template: template(`
@@ -83,7 +84,10 @@ export default Backbone.View.extend({
     this.$el.html(
       this.template({
         pfx,
-        label: model.get('name')
+        label: gjs_translate.get(
+          `style_manager.sectors.${model.id}.label`,
+          model.get('name')
+        )
       })
     );
     this.$caret = this.$el.find(`#${pfx}caret`);

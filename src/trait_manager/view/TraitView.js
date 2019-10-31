@@ -1,6 +1,7 @@
 import Backbone from 'backbone';
 import { isUndefined, isString, isFunction } from 'underscore';
 import { capitalize } from 'utils/mixins';
+import { gjs_translate } from '../../translate';
 
 const $ = Backbone.$;
 
@@ -136,7 +137,10 @@ export default Backbone.View.extend({
    */
   getLabel() {
     const { label, name } = this.model.attributes;
-    return capitalize(label || name).replace(/-/g, ' ');
+    console.log(name);
+    return capitalize(
+      gjs_translate.get(`trait_manager.attributes.${name}.label`, label || name)
+    ).replace(/-/g, ' ');
   },
 
   /**

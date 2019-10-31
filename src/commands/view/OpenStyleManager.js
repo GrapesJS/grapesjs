@@ -1,5 +1,6 @@
 import Backbone from 'backbone';
 import StyleManager from 'style_manager';
+import { gjs_translate } from '../../translate';
 
 const $ = Backbone.$;
 
@@ -32,9 +33,11 @@ export default {
       var smConfig = em.StyleManager.getConfig();
       const pfx = smConfig.stylePrefix;
       // Create header
-      this.$header = $(
-        `<div class="${pfx}header">${smConfig.textNoElement}</div>`
+      var header_text = gjs_translate.get(
+        'style_manager.no_element',
+        smConfig.textNoElement
       );
+      this.$header = $(`<div class="${pfx}header">${header_text}</div>`);
       this.$cn.append(this.$header);
 
       // Create panel if not exists

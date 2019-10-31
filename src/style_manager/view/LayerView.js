@@ -1,5 +1,6 @@
 import Backbone from 'backbone';
 import PropertiesView from './PropertiesView';
+import { gjs_translate } from '../../translate';
 
 export default Backbone.View.extend({
   events: {
@@ -11,7 +12,10 @@ export default Backbone.View.extend({
 
   template(model) {
     const { pfx, ppfx, config } = this;
-    const label = `${config.textLayer} ${model.get('index')}`;
+    const label = `${gjs_translate.get(
+      'layer_manager.layer_name',
+      config.textLayer
+    )} ${model.get('index')}`;
 
     return `
       <div id="${pfx}move" class="${ppfx}no-touch-actions" data-move-layer>

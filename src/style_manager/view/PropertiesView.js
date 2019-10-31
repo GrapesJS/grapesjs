@@ -1,5 +1,6 @@
 import Backbone from 'backbone';
 import { appendAtIndex } from 'utils/dom';
+import { gjs_translate } from '../../translate';
 
 export default Backbone.View.extend({
   initialize(o) {
@@ -24,7 +25,7 @@ export default Backbone.View.extend({
     const appendTo = frag || this.el;
     const view = new model.typeView({
       model,
-      name: model.get('name'),
+      name: gjs_translate.get(`properties.${model.id}`, model.get('name')),
       id: this.pfx + model.get('property'),
       target: this.target,
       propTarget: this.propTarget,

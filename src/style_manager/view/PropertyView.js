@@ -2,6 +2,7 @@ import Backbone from 'backbone';
 import { bindAll, isArray, isUndefined, debounce } from 'underscore';
 import { camelCase } from 'utils/mixins';
 import { includes, each } from 'underscore';
+import { gjs_translate } from '../../translate';
 
 const clearProp = 'data-clear-style';
 
@@ -21,12 +22,19 @@ export default Backbone.View.extend({
   templateLabel(model) {
     const { pfx } = this;
     const icon = model.get('icon') || '';
-    const info = model.get('info') || '';
+    const info =
+      gjs_translate.get(
+        `style_manager.properties.${model.id}.info`,
+        model.get('info')
+      ) || '';
     const parent = model.parent;
 
     return `
       <span class="${pfx}icon ${icon}" title="${info}">
-        ${model.get('name')}
+        ${gjs_translate.get(
+          `style_manager.properties.${model.id}.label`,
+          model.get('name')
+        )}
       </span>
       ${!parent ? `<b class="${pfx}clear" ${clearProp}>&Cross;</b>` : ''}
     `;

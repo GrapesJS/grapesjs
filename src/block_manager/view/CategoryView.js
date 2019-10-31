@@ -1,5 +1,6 @@
 import { template } from 'underscore';
 import Backbone from 'backbone';
+import { gjs_translate } from '../../translate';
 
 export default Backbone.View.extend({
   template: template(`
@@ -71,7 +72,10 @@ export default Backbone.View.extend({
   render() {
     this.el.innerHTML = this.template({
       pfx: this.pfx,
-      label: this.model.get('label')
+      label: gjs_translate.get(
+        `categories.${this.model.id}`,
+        this.model.get('label')
+      )
     });
     this.el.className = this.className;
     this.$el.css({ order: this.model.get('order') });

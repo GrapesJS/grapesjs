@@ -5,6 +5,8 @@
 // Author: Brian Grinstead
 // License: MIT
 
+import { gjs_translate } from '../translate';
+
 export default function($, undefined) {
   'use strict';
 
@@ -32,12 +34,24 @@ export default function($, undefined) {
       localStorageKey: false,
       appendTo: 'body',
       maxSelectionSize: 7,
-      cancelText: 'cancel',
-      chooseText: 'choose',
-      togglePaletteMoreText: 'more',
-      togglePaletteLessText: 'less',
-      clearText: 'Clear Color Selection',
-      noColorSelectedText: 'No Color Selected',
+      cancelText: gjs_translate.get('utils.color_picker.cancel_text', 'cancel'),
+      chooseText: gjs_translate.get('utils.color_picker.choose_text', 'choose'),
+      togglePaletteMoreText: gjs_translate.get(
+        'utils.color_picker.more_text',
+        'more'
+      ),
+      togglePaletteLessText: gjs_translate.get(
+        'utils.color_picker.less_text',
+        'less'
+      ),
+      clearText: gjs_translate.get(
+        'utils.color_picker.clear_text',
+        'Clear Color Selection'
+      ),
+      noColorSelectedText: gjs_translate.get(
+        'utils.color_picker.no_color_text',
+        'No Color Selected'
+      ),
       preferredFormat: false,
       className: '', // Deprecated - use containerClassName and replacerClassName instead.
       containerClassName: '',

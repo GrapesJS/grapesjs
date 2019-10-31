@@ -1,5 +1,6 @@
 import Backbone from 'backbone';
 import { isString, isObject, isFunction } from 'underscore';
+import { gjs_translate } from '../../translate';
 
 const $ = Backbone.$;
 
@@ -55,7 +56,15 @@ export default Backbone.View.extend({
    * @return   void
    * */
   updateAttributes() {
-    this.$el.attr(this.model.get('attributes'));
+    const new_attr = [];
+    Object.keys(this.model.get('attributes')).forEach(attr => {
+      const value = this.model.get('attributes')[attr];
+      new_attr[attr] = gjs_translate.get(
+        `buttons.${this.model.id}.attributes.${attr}`,
+        value
+      );
+    });
+    this.$el.attr(new_attr);
     this.updateClassName();
   },
 
@@ -154,7 +163,10 @@ export default Backbone.View.extend({
   },
 
   render() {
-    const label = this.model.get('label');
+    const label = gjs_translate.get(
+      `buttons.${this.model.id}.label`,
+      this.model.get('label')
+    );
     const { $el } = this;
     $el.empty();
     this.updateAttributes();

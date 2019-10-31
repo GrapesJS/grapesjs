@@ -1,5 +1,6 @@
 import { template } from 'underscore';
 import Backbone from 'backbone';
+import { gjs_translate } from '../../translate';
 
 export default Backbone.View.extend({
   template: template(`
@@ -70,7 +71,9 @@ export default Backbone.View.extend({
     var result = '';
     this.collection.each(device => {
       var name = device.get('name');
-      result += '<option value="' + name + '">' + name + '</option>';
+      var key = name.toLowerCase().replace(' ', '_');
+      var label = gjs_translate.get(`command_panel.devices.${key}`, name);
+      result += '<option value="' + name + '">' + label + '</option>';
     });
     return result;
   },
@@ -80,7 +83,10 @@ export default Backbone.View.extend({
     this.$el.html(
       this.template({
         ppfx: pfx,
-        deviceLabel: this.config.deviceLabel
+        deviceLabel: gjs_translate.get(
+          'command_panel.device',
+          this.config.deviceLabel
+        )
       })
     );
     this.devicesEl = this.$el.find('.' + pfx + 'devices');

@@ -1,4 +1,5 @@
 import Backbone from 'backbone';
+import { gjs_translate } from '../../translate';
 
 const $ = Backbone.$;
 
@@ -22,7 +23,10 @@ export default {
       );
       this.$cn.append(this.$header);
       this.$cn2.append(
-        `<div class="${pfx}traits-label">${confTm.labelContainer}</div>`
+        `<div class="${pfx}traits-label">${gjs_translate.get(
+          'trait_manager.label_container',
+          confTm.labelContainer
+        )}</div>`
       );
       this.$cn2.append(tmView.render().el);
       var panels = editor.Panels;

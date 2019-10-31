@@ -1,6 +1,7 @@
 import { template } from 'underscore';
 import Backbone from 'backbone';
 import fetch from 'utils/fetch';
+import { gjs_translate } from '../../translate';
 
 export default Backbone.View.extend(
   {
@@ -247,7 +248,10 @@ export default Backbone.View.extend(
     render() {
       this.$el.html(
         this.template({
-          title: this.config.uploadText,
+          title: gjs_translate.get(
+            'file_uploader.title',
+            this.config.uploadText
+          ),
           uploadId: this.uploadId,
           disabled: this.disabled,
           multiUpload: this.multiUpload,

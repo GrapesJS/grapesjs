@@ -1,4 +1,5 @@
 import Backbone from 'backbone';
+import { gjs_translate } from '../../translate';
 
 export default Backbone.View.extend({
   events: {
@@ -15,7 +16,10 @@ export default Backbone.View.extend({
           <div class="${ppfx}field ${pfx}add-field">
             <input placeholder="${view.config.inputPlaceholder}"/>
           </div>
-          <button class="${ppfx}btn-prim">${view.config.addBtnText}</button>
+          <button class="${ppfx}btn-prim">${gjs_translate.get(
+      'assets.add_button_text',
+      view.config.addBtnText
+    )}</button>
           <div style="clear:both"></div>
         </form>
       </div>

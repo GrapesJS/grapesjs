@@ -1,6 +1,7 @@
 import { isString } from 'underscore';
 import Backbone from 'backbone';
 import PropertyView from './PropertyView';
+import { gjs_translate } from '../../translate';
 
 const $ = Backbone.$;
 
@@ -8,7 +9,10 @@ export default PropertyView.extend({
   templateInput() {
     const pfx = this.pfx;
     const ppfx = this.ppfx;
-    const assetsLabel = this.config.assetsLabel || 'Images';
+    const assetsLabel = gjs_translate.get(
+      `style_manager.properties.assets.label`,
+      this.config.assetsLabel || 'Images'
+    );
     return `
     <div class="${pfx}field ${pfx}file">
       <div id='${pfx}input-holder'>
