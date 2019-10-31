@@ -158,12 +158,13 @@ export default () => {
      * // -> outputs `Msg hello it`
      */
     t(key, params, opts = {}) {
+      const { em } = this;
       const param = params || {};
       const locale = opts.l || this.getLocale();
       const msgSet = this.getMessages(locale) || {};
       const reg = new RegExp(`\{([\\w\\d-]*)\}`, 'g');
       let result = msgSet[key];
-
+      !result && em && em.logWarning(`'${key}' i18n key not found`);
       result = result
         ? result.replace(reg, (m, val) => param[val] || '').trim()
         : result;
