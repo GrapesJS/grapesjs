@@ -20,6 +20,11 @@
  * const i18n = editor.I18n;
  * ```
  *
+ * ### Events
+ * * `i18n:add` - New set of messages is added
+ * * `i18n:update` - The set of messages is updated
+ * * `i18n:locale` - Locale changed
+ *
  * @module I18n
  */
 import { keys } from 'underscore';
@@ -56,7 +61,10 @@ export default () => {
      * i18n.setLocale('it');
      */
     setLocale(locale) {
-      this.config.locale = locale;
+      const { em, config } = this;
+      const evObj = { value: locale, valuePrev: config.locale };
+      em && em.trigger('i18n:locale', evObj);
+      config.locale = locale;
       return this;
     },
 
@@ -106,7 +114,9 @@ export default () => {
      * // -> { en: { msg2: 'Msg 2 up', msg3: 'Msg 3', } }
      */
     setMessages(msg) {
-      this.config.messages = msg;
+      const { em, config } = this;
+      config.messages = msg;
+      em && em.trigger('i18n:update', msg);
       return this;
     },
 
@@ -123,7 +133,10 @@ export default () => {
      * // -> { en: { msg1: 'Msg 1', msg2: 'Msg 2 up', msg3: 'Msg 3', } }
      */
     addMessages(msg) {
+      const { em } = this;
       const { messages } = this.config;
+      em && em.trigger('i18n:add', msg);
+
       keys(msg).forEach(lang => {
         const langSet = msg[lang];
         const currentSet = messages[lang];
@@ -136,6 +149,8 @@ export default () => {
           });
         }
       });
+      this.setMessages(messages); // Need this for the event
+
       return this;
     },
 
@@ -164,7 +179,10 @@ export default () => {
       const msgSet = this.getMessages(locale) || {};
       const reg = new RegExp(`\{([\\w\\d-]*)\}`, 'g');
       let result = msgSet[key];
-      !result && em && em.logWarning(`'${key}' i18n key not found`);
+      !result &&
+        !opts.noWarn &&
+        em &&
+        em.logWarning(`'${key}' i18n key not found`);
       result = result
         ? result.replace(reg, (m, val) => param[val] || '').trim()
         : result;

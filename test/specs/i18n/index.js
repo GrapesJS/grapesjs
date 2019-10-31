@@ -1,14 +1,15 @@
 import I18n from 'i18n';
+import Editor from 'editor/index';
 
 describe('I18n', () => {
   describe('Main', () => {
-    let em;
     let obj;
-    let editor;
+    let editor = Editor().init();
+    let em = editor.getModel();
 
     beforeEach(() => {
       obj = I18n();
-      obj.init();
+      obj.init({ em });
     });
 
     test('Object exists', () => {
@@ -64,7 +65,7 @@ describe('I18n', () => {
         en: { msg1 },
         it: { msg1: `${msg1} it` }
       });
-      expect(obj.t('msg2')).toBe(undefined);
+      expect(obj.t('msg2', 0, { noWarn: 1 })).toBe(undefined);
       expect(obj.t('msg1')).toBe(msg1);
     });
 
@@ -91,6 +92,20 @@ describe('I18n', () => {
       expect(obj.t('msg1', { test: 'Hello' }, { l: 'it' })).toBe(
         'Msg 1 Hello it'
       );
+    });
+
+    test('i18n events', () => {
+      const handlerAdd = jest.fn();
+      const handlerUpdate = jest.fn();
+      const handlerLocale = jest.fn();
+      em.on('i18n:add', handlerAdd);
+      em.on('i18n:update', handlerUpdate);
+      em.on('i18n:locale', handlerLocale);
+      obj.addMessages({ en: { msg1: 'Msg 1', msg2: 'Msg 2' } });
+      obj.setLocale('it');
+      expect(handlerAdd).toBeCalledTimes(1);
+      expect(handlerUpdate).toBeCalledTimes(1);
+      expect(handlerLocale).toBeCalledTimes(1);
     });
   });
 });
