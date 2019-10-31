@@ -1,6 +1,5 @@
 import Backbone from 'backbone';
 import StyleManager from 'style_manager';
-import { gjs_translate } from '../../translate';
 
 const $ = Backbone.$;
 
@@ -33,7 +32,9 @@ export default {
       var smConfig = em.StyleManager.getConfig();
       const pfx = smConfig.stylePrefix;
       // Create header
-      var header_text = gjs_translate.get(
+      /** @var {Localization} **/
+      const localization = em.editor.get('localization');
+      var header_text = localization.get(
         'style_manager.no_element',
         smConfig.textNoElement
       );

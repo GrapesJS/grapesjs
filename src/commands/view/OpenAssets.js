@@ -1,12 +1,12 @@
-import { gjs_translate } from '../../translate';
-
 export default {
   run(editor, sender, opts = {}) {
     const modal = editor.Modal;
     const am = editor.AssetManager;
     const config = am.getConfig();
     const amContainer = am.getContainer();
-    const title = gjs_translate.get(
+    /** @var {Localization} **/
+    const localization = config.em.get('localization');
+    const title = localization.get(
       'assets.modal_title_text',
       opts.modalTitle || config.modalTitle || ''
     );

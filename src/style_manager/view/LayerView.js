@@ -1,6 +1,5 @@
 import Backbone from 'backbone';
 import PropertiesView from './PropertiesView';
-import { gjs_translate } from '../../translate';
 
 export default Backbone.View.extend({
   events: {
@@ -11,8 +10,10 @@ export default Backbone.View.extend({
   },
 
   template(model) {
-    const { pfx, ppfx, config } = this;
-    const label = `${gjs_translate.get(
+    const { em, pfx, ppfx, config } = this;
+    /** @var {Localization} **/
+    const localization = em.get('localization');
+    const label = `${localization.get(
       'layer_manager.layer_name',
       config.textLayer
     )} ${model.get('index')}`;
@@ -38,6 +39,7 @@ export default Backbone.View.extend({
     this.stackModel = o.stackModel || {};
     this.config = o.config || {};
     this.pfx = this.config.stylePrefix || '';
+    this.em = o.config.em;
     this.ppfx = this.config.pStylePrefix || '';
     this.sorter = o.sorter || null;
     this.propsConfig = o.propsConfig || {};

@@ -1,6 +1,5 @@
 import { template } from 'underscore';
 import Backbone from 'backbone';
-import { gjs_translate } from '../../translate';
 
 export default Backbone.View.extend({
   template: template(`
@@ -16,6 +15,7 @@ export default Backbone.View.extend({
   initialize(o = {}, config = {}) {
     this.config = config;
     const pfx = this.config.pStylePrefix || '';
+    this.em = config.em;
     this.pfx = pfx;
     this.caretR = 'fa fa-caret-right';
     this.caretD = 'fa fa-caret-down';
@@ -70,9 +70,12 @@ export default Backbone.View.extend({
   },
 
   render() {
+    const { em } = this;
+    /** @var {Localization} **/
+    const localization = em.get('localization');
     this.el.innerHTML = this.template({
       pfx: this.pfx,
-      label: gjs_translate.get(
+      label: localization.get(
         `categories.${this.model.id}`,
         this.model.get('label')
       )

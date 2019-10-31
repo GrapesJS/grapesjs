@@ -2,7 +2,6 @@ import Backbone from 'backbone';
 import { bindAll, isArray, isUndefined, debounce } from 'underscore';
 import { camelCase } from 'utils/mixins';
 import { includes, each } from 'underscore';
-import { gjs_translate } from '../../translate';
 
 const clearProp = 'data-clear-style';
 
@@ -20,10 +19,12 @@ export default Backbone.View.extend({
   },
 
   templateLabel(model) {
-    const { pfx } = this;
+    const { pfx, em } = this;
     const icon = model.get('icon') || '';
+    /** @var {Localization} **/
+    const localization = em.get('localization');
     const info =
-      gjs_translate.get(
+      localization.get(
         `style_manager.properties.${model.id}.info`,
         model.get('info')
       ) || '';
@@ -31,7 +32,7 @@ export default Backbone.View.extend({
 
     return `
       <span class="${pfx}icon ${icon}" title="${info}">
-        ${gjs_translate.get(
+        ${localization.get(
           `style_manager.properties.${model.id}.label`,
           model.get('name')
         )}

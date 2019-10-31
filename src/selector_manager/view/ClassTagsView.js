@@ -1,7 +1,6 @@
 import { template, debounce } from 'underscore';
 import Backbone from 'backbone';
 import ClassTagView from './ClassTagView';
-import { gjs_translate } from '../../translate';
 
 export default Backbone.View.extend({
   template: template(`
@@ -308,17 +307,20 @@ export default Backbone.View.extend({
     const ppfx = this.ppfx;
     const config = this.config;
     const $el = this.$el;
+    const { em } = this;
+    /** @var {Localization} **/
+    const localization = em ? em.get('localization') : '';
     $el.html(
       this.template({
-        selectedLabel: gjs_translate.get(
+        selectedLabel: localization.get(
           'style_manager.class.selected_label',
           config.selectedLabel
         ),
-        statesLabel: gjs_translate.get(
+        statesLabel: localization.get(
           'style_manager.class.states',
           config.statesLabel
         ),
-        label: gjs_translate.get('style_manager.class.label', config.label),
+        label: localization.get('style_manager.class.label', config.label),
         pfx: this.pfx,
         ppfx: this.ppfx
       })

@@ -1,7 +1,6 @@
 import { isString } from 'underscore';
 import Backbone from 'backbone';
 import PropertyView from './PropertyView';
-import { gjs_translate } from '../../translate';
 
 const $ = Backbone.$;
 
@@ -9,7 +8,10 @@ export default PropertyView.extend({
   templateInput() {
     const pfx = this.pfx;
     const ppfx = this.ppfx;
-    const assetsLabel = gjs_translate.get(
+    const { em } = this;
+    /** @var {Localization} **/
+    const localization = em.get('localization');
+    const assetsLabel = localization.get(
       `style_manager.properties.assets.label`,
       this.config.assetsLabel || 'Images'
     );

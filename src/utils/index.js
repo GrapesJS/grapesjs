@@ -1,6 +1,7 @@
 import Dragger from './Dragger';
 import Sorter from './Sorter';
 import Resizer from './Resizer';
+import Localization from './Localization';
 
 export default () => {
   return {
@@ -20,6 +21,7 @@ export default () => {
 
     Sorter,
     Resizer,
-    Dragger
+    Dragger,
+    Localization
   };
 };

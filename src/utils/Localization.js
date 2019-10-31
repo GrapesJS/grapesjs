@@ -1,10 +1,13 @@
-import { locale_tr } from './locales/tr';
+import { bindAll } from 'underscore';
 
-export const gjs_translate = {
-  default_locale: 'tr',
-  locales: {
-    tr: locale_tr
-  },
+class Localization {
+  constructor(default_locale = 'en', locales = { en: {} }) {
+    this.default_locale = default_locale;
+    this.locales = locales;
+    bindAll(this, 'get', 'setDefaultLocale', 'addLocale');
+    return this;
+  }
+
   get(key, fallback) {
     if (typeof this.locales[this.default_locale] === 'undefined') {
       return fallback;
@@ -17,10 +20,12 @@ export const gjs_translate = {
         return o[i];
       }, this.locales[this.default_locale]) || fallback
     );
-  },
+  }
+
   addLocale(locale, data = {}) {
     this.locales[locale] = data;
-  },
+  }
+
   setDefaultLocale(locale) {
     if (
       (typeof this.locales[locale] === 'undefined' ||
@@ -31,5 +36,11 @@ export const gjs_translate = {
       return;
     }
     this.default_locale = locale;
+  }
+}
+
+export default {
+  init(default_locale = 'en', locales = { en: {} }) {
+    return new Localization(default_locale, locales);
   }
 };

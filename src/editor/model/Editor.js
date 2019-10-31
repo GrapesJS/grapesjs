@@ -2,6 +2,7 @@ import { isUndefined, isArray, contains, toArray, keys } from 'underscore';
 import Backbone from 'backbone';
 import Extender from 'utils/extender';
 import { getModel } from 'utils/mixins';
+import Localization from '../../utils/Localization';
 
 const deps = [
   require('utils'),
@@ -68,6 +69,7 @@ export default Backbone.Model.extend({
     this.set('toLoad', []);
     this.set('storables', []);
     this.set('dmode', c.dragMode);
+    this.set('localization', Localization.init(c.default_locale, c.locales));
     const el = c.el;
     const log = c.log;
     const toLog = log === true ? keys(logs) : isArray(log) ? log : [];

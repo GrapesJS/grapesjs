@@ -1,7 +1,6 @@
 import Backbone from 'backbone';
 import { template } from 'underscore';
 import PropertiesView from './PropertiesView';
-import { gjs_translate } from '../../translate';
 
 export default Backbone.View.extend({
   template: template(`
@@ -16,6 +15,7 @@ export default Backbone.View.extend({
 
   initialize(o) {
     this.config = o.config || {};
+    this.em = this.config.em;
     this.pfx = this.config.stylePrefix || '';
     this.target = o.target || {};
     this.propTarget = o.propTarget || {};
@@ -79,12 +79,14 @@ export default Backbone.View.extend({
   },
 
   render() {
-    const { pfx, model } = this;
+    const { em, pfx, model } = this;
+    /** @var {Localization} **/
+    const localization = em.get('localization');
     const { id } = model.attributes;
     this.$el.html(
       this.template({
         pfx,
-        label: gjs_translate.get(
+        label: localization.get(
           `style_manager.sectors.${model.id}.label`,
           model.get('name')
         )

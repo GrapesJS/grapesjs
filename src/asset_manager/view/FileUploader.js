@@ -1,7 +1,6 @@
 import { template } from 'underscore';
 import Backbone from 'backbone';
 import fetch from 'utils/fetch';
-import { gjs_translate } from '../../translate';
 
 export default Backbone.View.extend(
   {
@@ -19,6 +18,7 @@ export default Backbone.View.extend(
       this.options = opts;
       const c = opts.config || {};
       this.config = c;
+      this.em = c.em;
       this.pfx = c.stylePrefix || '';
       this.ppfx = c.pStylePrefix || '';
       this.target = this.options.globalCollection || {};
@@ -246,9 +246,12 @@ export default Backbone.View.extend(
     },
 
     render() {
+      const { em } = this;
+      /** @var {Localization} **/
+      const localization = em.get('localization');
       this.$el.html(
         this.template({
-          title: gjs_translate.get(
+          title: localization.get(
             'file_uploader.title',
             this.config.uploadText
           ),

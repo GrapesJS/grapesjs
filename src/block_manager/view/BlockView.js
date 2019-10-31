@@ -1,7 +1,6 @@
 import Backbone from 'backbone';
 import { isObject } from 'underscore';
 import { on, off, hasDnd } from 'utils/mixins';
-import { gjs_translate } from '../../translate';
 
 export default Backbone.View.extend({
   events: {
@@ -139,8 +138,10 @@ export default Backbone.View.extend({
 
   render() {
     const { em, el, ppfx, model } = this;
+    /** @var {Localization} **/
+    const localization = em ? em.get('localization') : '';
     const className = `${ppfx}block`;
-    const label = gjs_translate.get(`blocks.${model.id}`, model.get('label'));
+    const label = localization.get(`blocks.${model.id}`, model.get('label'));
     const render = model.get('render');
     const media = model.get('media');
     el.className += ` ${className} ${ppfx}one-bg ${ppfx}four-color-h`;

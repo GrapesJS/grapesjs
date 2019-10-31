@@ -317,5 +317,11 @@ export default {
   keepUnusedStyles: 0,
 
   // TODO
-  multiFrames: 0
+  multiFrames: 0,
+
+  locales: {
+    en: {}
+  },
+
+  default_locale: 'en'
 };

@@ -1,5 +1,4 @@
 import Backbone from 'backbone';
-import { gjs_translate } from '../../translate';
 
 const $ = Backbone.$;
 
@@ -22,8 +21,9 @@ export default {
         `<div class="${confTm.stylePrefix}header">${confTm.textNoElement}</div>`
       );
       this.$cn.append(this.$header);
+      const localization = confTm.em.get('localization');
       this.$cn2.append(
-        `<div class="${pfx}traits-label">${gjs_translate.get(
+        `<div class="${pfx}traits-label">${localization.get(
           'trait_manager.label_container',
           confTm.labelContainer
         )}</div>`

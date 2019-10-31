@@ -1,6 +1,5 @@
 import Backbone from 'backbone';
 import { isString, isObject, isFunction } from 'underscore';
-import { gjs_translate } from '../../translate';
 
 const $ = Backbone.$;
 
@@ -56,10 +55,13 @@ export default Backbone.View.extend({
    * @return   void
    * */
   updateAttributes() {
+    const { em } = this;
+    /** @var {Localization} **/
+    const localization = em ? em.get('localization') : '';
     const new_attr = [];
     Object.keys(this.model.get('attributes')).forEach(attr => {
       const value = this.model.get('attributes')[attr];
-      new_attr[attr] = gjs_translate.get(
+      new_attr[attr] = localization.get(
         `buttons.${this.model.id}.attributes.${attr}`,
         value
       );
@@ -163,7 +165,10 @@ export default Backbone.View.extend({
   },
 
   render() {
-    const label = gjs_translate.get(
+    const { em } = this;
+    /** @var {Localization} **/
+    const localization = em ? em.get('localization') : '';
+    const label = localization.get(
       `buttons.${this.model.id}.label`,
       this.model.get('label')
     );

@@ -1,10 +1,10 @@
 import Backbone from 'backbone';
 import { appendAtIndex } from 'utils/dom';
-import { gjs_translate } from '../../translate';
 
 export default Backbone.View.extend({
   initialize(o) {
     this.config = o.config || {};
+    this.em = o.config.em;
     this.pfx = this.config.stylePrefix || '';
     this.target = o.target || {};
     this.propTarget = o.propTarget || {};
@@ -22,10 +22,13 @@ export default Backbone.View.extend({
   },
 
   add(model, frag, opts = {}) {
+    const { em } = this;
     const appendTo = frag || this.el;
+    /** @var {Localization} **/
+    const localization = em.get('localization');
     const view = new model.typeView({
       model,
-      name: gjs_translate.get(`properties.${model.id}`, model.get('name')),
+      name: localization.get(`properties.${model.id}`, model.get('name')),
       id: this.pfx + model.get('property'),
       target: this.target,
       propTarget: this.propTarget,

@@ -1,5 +1,4 @@
 import Backbone from 'backbone';
-import { gjs_translate } from '../../translate';
 
 export default Backbone.View.extend({
   events: {
@@ -7,6 +6,9 @@ export default Backbone.View.extend({
   },
 
   template(view) {
+    const { em } = this;
+    /** @var {Localization} **/
+    const localization = em.get('localization');
     const pfx = view.pfx;
     const ppfx = view.ppfx;
     return `
@@ -16,7 +18,7 @@ export default Backbone.View.extend({
           <div class="${ppfx}field ${pfx}add-field">
             <input placeholder="${view.config.inputPlaceholder}"/>
           </div>
-          <button class="${ppfx}btn-prim">${gjs_translate.get(
+          <button class="${ppfx}btn-prim">${localization.get(
       'assets.add_button_text',
       view.config.addBtnText
     )}</button>
@@ -32,6 +34,7 @@ export default Backbone.View.extend({
   initialize(o) {
     this.options = o;
     this.config = o.config;
+    this.em = o.config.em;
     this.pfx = this.config.stylePrefix || '';
     this.ppfx = this.config.pStylePrefix || '';
     const coll = this.collection;
