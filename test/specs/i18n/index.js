@@ -56,5 +56,16 @@ describe('I18n', () => {
         it: { msg1: 'Msg 1' }
       });
     });
+
+    test('Translate method with global locale', () => {
+      const msg1 = 'Msg 1';
+      obj.setLocale('en');
+      obj.setMessages({
+        en: { msg1 },
+        it: { msg1: `${msg1} it` }
+      });
+      expect(obj.t('msg2')).toBe(undefined);
+      expect(obj.t('msg1')).toBe(msg1);
+    });
   });
 });

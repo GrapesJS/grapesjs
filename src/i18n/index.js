@@ -137,6 +137,29 @@ export default () => {
         }
       });
       return this;
+    },
+
+    /**
+     * Translate the locale message
+     * @param {String} key Label to translate
+     * @param {Object} params Params for the translation
+     * @returns {String}
+     * @example
+     * obj.setMessages({
+     *  en: { msg: 'Msg', msg2: 'Msg {test}'},
+     *  it: { msg: 'Msg it'},
+     * });
+     * obj.t('msg');
+     * // -> outputs `Msg`
+     * obj.t('msg', { l: 'it' }); // change locale
+     * // -> outputs `Msg it`
+     * obj.t('msg2', { test: 'hello' });  // pass params
+     * // -> outputs `Msg hello`
+     */
+    t(key, params = {}) {
+      const locale = params.l || this.getLocale();
+      const msgSet = this.getMessages(locale) || {};
+      return msgSet[key];
     }
   };
 };
