@@ -67,5 +67,30 @@ describe('I18n', () => {
       expect(obj.t('msg2')).toBe(undefined);
       expect(obj.t('msg1')).toBe(msg1);
     });
+
+    test('Translate method with custom locale', () => {
+      const msg1 = 'Msg 1';
+      const msg1Alt = `${msg1} it`;
+      obj.setLocale('en');
+      obj.setMessages({
+        en: { msg1 },
+        it: { msg1: msg1Alt }
+      });
+      expect(obj.t('msg1', null, { l: 'it' })).toBe(msg1Alt);
+    });
+
+    test('Translate method with a param', () => {
+      const msg1 = 'Msg 1 {test}';
+      const msg1Alt = `${msg1} it`;
+      obj.setLocale('en');
+      obj.setMessages({
+        en: { msg1 },
+        it: { msg1: msg1Alt }
+      });
+      expect(obj.t('msg1', { test: 'Hello' })).toBe('Msg 1 Hello');
+      expect(obj.t('msg1', { test: 'Hello' }, { l: 'it' })).toBe(
+        'Msg 1 Hello it'
+      );
+    });
   });
 });

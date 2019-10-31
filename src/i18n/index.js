@@ -142,24 +142,33 @@ export default () => {
     /**
      * Translate the locale message
      * @param {String} key Label to translate
-     * @param {Object} params Params for the translation
+     * @param {Object} [params] Params for the translation
+     * @param {Object} [opts] Options for the translation
      * @returns {String}
      * @example
      * obj.setMessages({
      *  en: { msg: 'Msg', msg2: 'Msg {test}'},
-     *  it: { msg: 'Msg it'},
+     *  it: { msg2: 'Msg {test} it'},
      * });
      * obj.t('msg');
      * // -> outputs `Msg`
-     * obj.t('msg', { l: 'it' }); // change locale
-     * // -> outputs `Msg it`
-     * obj.t('msg2', { test: 'hello' });  // pass params
+     * obj.t('msg2', { test: 'hello' });  // use params
      * // -> outputs `Msg hello`
+     * obj.t('msg2', { test: 'hello' }, { l: 'it' });  // custom local
+     * // -> outputs `Msg hello it`
      */
-    t(key, params = {}) {
-      const locale = params.l || this.getLocale();
+    t(key, params, opts = {}) {
+      const param = params || {};
+      const locale = opts.l || this.getLocale();
       const msgSet = this.getMessages(locale) || {};
-      return msgSet[key];
+      const reg = new RegExp(`\{([\\w\\d-]*)\}`, 'g');
+      let result = msgSet[key];
+
+      result = result
+        ? result.replace(reg, (m, val) => param[val] || '').trim()
+        : result;
+
+      return result;
     }
   };
 };
