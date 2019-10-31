@@ -118,6 +118,30 @@ You could also grab the content directly from the element with `fromElement` pro
 For more practical example I suggest to look up the code inside this demo: http://grapesjs.com/demo.html
 
 
+## Localization
+
+```html
+<div id="gjs">...</div>
+<script type="text/javascript">
+var locale_tr = {
+    style_manager: {
+      no_element: 'Stilini düzenlemek istediğiniz öğeyi seçiniz',
+    }
+};
+var editor = grapesjs.init({
+    container: '#gjs',
+    fromElement: true,
+    default_locale: 'tr',
+    locales: {
+        tr: locale_tr
+    },
+});
+
+</script>
+```
+
+Check `docs/locales` folder for complete localizations
+
 ## Development
 
 GrapesJS uses [Webpack](https://github.com/webpack/webpack) as a module bundler and [Babel](https://github.com/babel/babel) as a compiler.
