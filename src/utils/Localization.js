@@ -18,7 +18,9 @@ class Localization {
           return;
         }
         return o[i];
-      }, this.locales[this.default_locale]) || fallback
+      }, this.locales[this.default_locale]) ||
+      fallback ||
+      fallback
     );
   }
 

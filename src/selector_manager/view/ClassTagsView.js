@@ -1,6 +1,7 @@
 import { template, debounce } from 'underscore';
 import Backbone from 'backbone';
 import ClassTagView from './ClassTagView';
+import Editor from '../../editor/model/Editor';
 
 export default Backbone.View.extend({
   template: template(`
@@ -308,19 +309,30 @@ export default Backbone.View.extend({
     const config = this.config;
     const $el = this.$el;
     const { em } = this;
+
+    var selected_label = config.selectedLabel;
+    var states_label = config.statesLabel;
+    var label = config.label;
     /** @var {Localization} **/
-    const localization = em ? em.get('localization') : '';
+    var localization =
+      em && typeof em.get === 'function' ? em.get('localization') : undefined;
+    if (typeof localization !== 'undefined') {
+      selected_label = localization.get(
+        'style_manager.class.selected_label',
+        selected_label
+      );
+      states_label = localization.get(
+        'style_manager.class.states',
+        states_label
+      );
+      label = localization.get('style_manager.class.label', label);
+    }
+
     $el.html(
       this.template({
-        selectedLabel: localization.get(
-          'style_manager.class.selected_label',
-          config.selectedLabel
-        ),
-        statesLabel: localization.get(
-          'style_manager.class.states',
-          config.statesLabel
-        ),
-        label: localization.get('style_manager.class.label', config.label),
+        selectedLabel: selected_label,
+        statesLabel: states_label,
+        label: label,
         pfx: this.pfx,
         ppfx: this.ppfx
       })

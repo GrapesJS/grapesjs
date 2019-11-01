@@ -62,7 +62,7 @@ export default Backbone.View.extend({
     this.opt = o;
     this.level = o.level;
     this.config = o.config;
-    this.em = o.config.em;
+    this.em = o.config && o.config.em ? o.config.em : undefined;
     this.ppfx = this.em.get('Config').stylePrefix;
     this.sorter = o.sorter || '';
     this.pfx = this.config.stylePrefix;

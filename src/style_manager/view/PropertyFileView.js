@@ -1,6 +1,7 @@
 import { isString } from 'underscore';
 import Backbone from 'backbone';
 import PropertyView from './PropertyView';
+import Editor from '../../editor/model/Editor';
 
 const $ = Backbone.$;
 
@@ -9,18 +10,24 @@ export default PropertyView.extend({
     const pfx = this.pfx;
     const ppfx = this.ppfx;
     const { em } = this;
+
+    var assets_label = this.config.assetsLabel || 'Images';
     /** @var {Localization} **/
-    const localization = em.get('localization');
-    const assetsLabel = localization.get(
-      `style_manager.properties.assets.label`,
-      this.config.assetsLabel || 'Images'
-    );
+    var localization =
+      em && typeof em.get === 'function' ? em.get('localization') : undefined;
+    if (typeof localization !== 'undefined') {
+      assets_label = localization.get(
+        `style_manager.properties.assets.label`,
+        assets_label
+      );
+    }
+
     return `
     <div class="${pfx}field ${pfx}file">
       <div id='${pfx}input-holder'>
         <div class="${pfx}btn-c">
           <button class="${pfx}btn" id="${pfx}images" type="button">
-            ${assetsLabel}
+            ${assets_label}
           </button>
         </div>
         <div style="clear:both;"></div>

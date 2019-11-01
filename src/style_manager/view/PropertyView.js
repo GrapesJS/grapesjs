@@ -21,21 +21,27 @@ export default Backbone.View.extend({
   templateLabel(model) {
     const { pfx, em } = this;
     const icon = model.get('icon') || '';
+    var info = model.get('info') || '';
+    var label = model.get('name');
     /** @var {Localization} **/
-    const localization = em.get('localization');
-    const info =
-      localization.get(
+    var localization =
+      em && typeof em.get === 'function' ? em.get('localization') : undefined;
+    if (typeof localization !== 'undefined') {
+      info = localization.get(
         `style_manager.properties.${model.id}.info`,
-        model.get('info')
-      ) || '';
+        info
+      );
+      label = localization.get(
+        `style_manager.properties.${model.id}.label`,
+        label
+      );
+    }
+
     const parent = model.parent;
 
     return `
       <span class="${pfx}icon ${icon}" title="${info}">
-        ${localization.get(
-          `style_manager.properties.${model.id}.label`,
-          model.get('name')
-        )}
+        ${label}
       </span>
       ${!parent ? `<b class="${pfx}clear" ${clearProp}>&Cross;</b>` : ''}
     `;

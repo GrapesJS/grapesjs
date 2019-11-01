@@ -11,12 +11,14 @@ export default Backbone.View.extend({
 
   template(model) {
     const { em, pfx, ppfx, config } = this;
+    var label = config.textLayer;
     /** @var {Localization} **/
-    const localization = em.get('localization');
-    const label = `${localization.get(
-      'layer_manager.layer_name',
-      config.textLayer
-    )} ${model.get('index')}`;
+    var localization =
+      em && typeof em.get === 'function' ? em.get('localization') : undefined;
+    if (typeof localization !== 'undefined') {
+      label = localization.get(`layer_manager.layer_name`, config.textLayer);
+    }
+    label = `${label} ${model.get('index')}`;
 
     return `
       <div id="${pfx}move" class="${ppfx}no-touch-actions" data-move-layer>
@@ -39,7 +41,7 @@ export default Backbone.View.extend({
     this.stackModel = o.stackModel || {};
     this.config = o.config || {};
     this.pfx = this.config.stylePrefix || '';
-    this.em = o.config.em;
+    this.em = o.config && o.config.em ? o.config.em : undefined;
     this.ppfx = this.config.pStylePrefix || '';
     this.sorter = o.sorter || null;
     this.propsConfig = o.propsConfig || {};

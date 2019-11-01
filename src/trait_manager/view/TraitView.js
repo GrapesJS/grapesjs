@@ -137,11 +137,18 @@ export default Backbone.View.extend({
   getLabel() {
     const { label, name } = this.model.attributes;
     const { em } = this;
+    var result = (label || name).replace(/-/g, ' ');
     /** @var {Localization} **/
-    const localization = em.get('localization');
-    return capitalize(
-      localization.get(`trait_manager.attributes.${name}.label`, label || name)
-    ).replace(/-/g, ' ');
+    var localization =
+      em && typeof em.get === 'function' ? em.get('localization') : undefined;
+    if (typeof localization !== 'undefined') {
+      result = localization.get(
+        `trait_manager.attributes.${name}.label`,
+        result
+      );
+    }
+
+    return capitalize(result).replace(/-/g, ' ');
   },
 
   /**

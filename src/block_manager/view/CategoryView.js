@@ -71,14 +71,16 @@ export default Backbone.View.extend({
 
   render() {
     const { em } = this;
+    var label = this.model.get('label');
     /** @var {Localization} **/
-    const localization = em.get('localization');
+    var localization =
+      em && typeof em.get === 'function' ? em.get('localization') : undefined;
+    if (typeof localization !== 'undefined') {
+      label = localization.get(`categories.${this.model.id}`, label);
+    }
     this.el.innerHTML = this.template({
       pfx: this.pfx,
-      label: localization.get(
-        `categories.${this.model.id}`,
-        this.model.get('label')
-      )
+      label: label
     });
     this.el.className = this.className;
     this.$el.css({ order: this.model.get('order') });

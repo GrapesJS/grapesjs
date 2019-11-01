@@ -57,14 +57,18 @@ export default Backbone.View.extend({
   updateAttributes() {
     const { em } = this;
     /** @var {Localization} **/
-    const localization = em ? em.get('localization') : '';
+    var localization =
+      em && typeof em.get === 'function' ? em.get('localization') : undefined;
     const new_attr = [];
     Object.keys(this.model.get('attributes')).forEach(attr => {
-      const value = this.model.get('attributes')[attr];
-      new_attr[attr] = localization.get(
-        `buttons.${this.model.id}.attributes.${attr}`,
-        value
-      );
+      let value = this.model.get('attributes')[attr];
+      if (typeof localization !== 'undefined') {
+        value = localization.get(
+          `buttons.${this.model.id}.attributes.${attr}`,
+          value
+        );
+      }
+      new_attr[attr] = value;
     });
     this.$el.attr(new_attr);
     this.updateClassName();
@@ -166,12 +170,13 @@ export default Backbone.View.extend({
 
   render() {
     const { em } = this;
+    var label = this.model.get('label');
     /** @var {Localization} **/
-    const localization = em ? em.get('localization') : '';
-    const label = localization.get(
-      `buttons.${this.model.id}.label`,
-      this.model.get('label')
-    );
+    var localization =
+      em && typeof em.get === 'function' ? em.get('localization') : undefined;
+    if (typeof localization !== 'undefined') {
+      label = localization.get(`buttons.${this.model.id}.label`, label);
+    }
     const { $el } = this;
     $el.empty();
     this.updateAttributes();

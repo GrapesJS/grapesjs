@@ -247,14 +247,16 @@ export default Backbone.View.extend(
 
     render() {
       const { em } = this;
+      var title = this.config.uploadText;
       /** @var {Localization} **/
-      const localization = em.get('localization');
+      var localization =
+        em && typeof em.get === 'function' ? em.get('localization') : undefined;
+      if (typeof localization !== 'undefined') {
+        title = localization.get(`file_uploader.title`, title);
+      }
       this.$el.html(
         this.template({
-          title: localization.get(
-            'file_uploader.title',
-            this.config.uploadText
-          ),
+          title: title,
           uploadId: this.uploadId,
           disabled: this.disabled,
           multiUpload: this.multiUpload,

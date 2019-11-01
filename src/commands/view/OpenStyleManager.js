@@ -32,12 +32,13 @@ export default {
       var smConfig = em.StyleManager.getConfig();
       const pfx = smConfig.stylePrefix;
       // Create header
+      var header_text = smConfig.textNoElement;
       /** @var {Localization} **/
-      const localization = em.editor.get('localization');
-      var header_text = localization.get(
-        'style_manager.no_element',
-        smConfig.textNoElement
-      );
+      var localization =
+        em && typeof em.get === 'function' ? em.get('localization') : undefined;
+      if (typeof localization !== 'undefined') {
+        header_text = localization.get(`style_manager.no_element`, header_text);
+      }
       this.$header = $(`<div class="${pfx}header">${header_text}</div>`);
       this.$cn.append(this.$header);
 

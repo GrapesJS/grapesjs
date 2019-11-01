@@ -1,5 +1,6 @@
 import { template } from 'underscore';
 import Backbone from 'backbone';
+import Editor from '../../editor/model/Editor';
 
 export default Backbone.View.extend({
   template: template(`
@@ -69,12 +70,17 @@ export default Backbone.View.extend({
   getOptions() {
     const { em } = this;
     /** @var {Localization} **/
-    const localization = em ? em.get('localization') : '';
+    var localization =
+      em && typeof em.get === 'function' ? em.get('localization') : undefined;
+
     var result = '';
     this.collection.each(device => {
       var name = device.get('name');
+      var label = name;
       var key = name.toLowerCase().replace(' ', '_');
-      var label = localization.get(`command_panel.devices.${key}`, name);
+      if (typeof localization !== 'undefined') {
+        label = localization.get(`command_panel.devices.${key}`, label);
+      }
       result += '<option value="' + name + '">' + label + '</option>';
     });
     return result;
@@ -82,13 +88,19 @@ export default Backbone.View.extend({
 
   render() {
     var pfx = this.ppfx;
+    const { em } = this;
+    var device_label = this.config.deviceLabel;
+    /** @var {Localization} **/
+    var localization =
+      em && typeof em.get === 'function' ? em.get('localization') : undefined;
+    if (typeof localization !== 'undefined') {
+      device_label = localization.get('command_panel.device', device_label);
+    }
+
     this.$el.html(
       this.template({
         ppfx: pfx,
-        deviceLabel: localization.get(
-          'command_panel.device',
-          this.config.deviceLabel
-        )
+        deviceLabel: device_label
       })
     );
     this.devicesEl = this.$el.find('.' + pfx + 'devices');

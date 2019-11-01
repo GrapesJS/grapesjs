@@ -4,12 +4,15 @@ export default {
     const am = editor.AssetManager;
     const config = am.getConfig();
     const amContainer = am.getContainer();
+    var title = opts.modalTitle || config.modalTitle || '';
     /** @var {Localization} **/
-    const localization = config.em.get('localization');
-    const title = localization.get(
-      'assets.modal_title_text',
-      opts.modalTitle || config.modalTitle || ''
-    );
+    var localization =
+      config && config.em && typeof config.em.get === 'function'
+        ? em.get('localization')
+        : undefined;
+    if (typeof localization !== 'undefined') {
+      title = localization.get(`assets.modal_title_text`, title);
+    }
     const types = opts.types;
     const accept = opts.accept;
 

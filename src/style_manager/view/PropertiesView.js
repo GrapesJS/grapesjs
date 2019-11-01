@@ -4,7 +4,7 @@ import { appendAtIndex } from 'utils/dom';
 export default Backbone.View.extend({
   initialize(o) {
     this.config = o.config || {};
-    this.em = o.config.em;
+    this.em = o.config && o.config.em ? o.config.em : undefined;
     this.pfx = this.config.stylePrefix || '';
     this.target = o.target || {};
     this.propTarget = o.propTarget || {};
@@ -24,11 +24,16 @@ export default Backbone.View.extend({
   add(model, frag, opts = {}) {
     const { em } = this;
     const appendTo = frag || this.el;
+    var name = model.get('name');
     /** @var {Localization} **/
-    const localization = em.get('localization');
+    var localization =
+      em && typeof em.get === 'function' ? em.get('localization') : undefined;
+    if (typeof localization !== 'undefined') {
+      name = localization.get(`properties.${model.id}`, model.get('name'));
+    }
     const view = new model.typeView({
       model,
-      name: localization.get(`properties.${model.id}`, model.get('name')),
+      name: name,
       id: this.pfx + model.get('property'),
       target: this.target,
       propTarget: this.propTarget,

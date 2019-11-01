@@ -138,10 +138,15 @@ export default Backbone.View.extend({
 
   render() {
     const { em, el, ppfx, model } = this;
+    var label = model.get('label');
     /** @var {Localization} **/
-    const localization = em ? em.get('localization') : '';
+    var localization =
+      em && typeof em.get === 'function' ? em.get('localization') : undefined;
+    if (typeof localization !== 'undefined') {
+      label = localization.get(`blocks.${model.id}`, label);
+    }
+
     const className = `${ppfx}block`;
-    const label = localization.get(`blocks.${model.id}`, model.get('label'));
     const render = model.get('render');
     const media = model.get('media');
     el.className += ` ${className} ${ppfx}one-bg ${ppfx}four-color-h`;

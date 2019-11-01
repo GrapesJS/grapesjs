@@ -21,12 +21,20 @@ export default {
         `<div class="${confTm.stylePrefix}header">${confTm.textNoElement}</div>`
       );
       this.$cn.append(this.$header);
-      const localization = confTm.em.get('localization');
+      var label_container = confTm.labelContainer;
+      /** @var {Localization} **/
+      var localization =
+        confTm && confTm.em && typeof confTm.em.get === 'function'
+          ? em.get('localization')
+          : undefined;
+      if (typeof localization !== 'undefined') {
+        label_container = localization.get(
+          `trait_manager.label_container`,
+          label_container
+        );
+      }
       this.$cn2.append(
-        `<div class="${pfx}traits-label">${localization.get(
-          'trait_manager.label_container',
-          confTm.labelContainer
-        )}</div>`
+        `<div class="${pfx}traits-label">${label_container}</div>`
       );
       this.$cn2.append(tmView.render().el);
       var panels = editor.Panels;

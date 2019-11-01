@@ -80,16 +80,22 @@ export default Backbone.View.extend({
 
   render() {
     const { em, pfx, model } = this;
+    var label = model.get('name');
     /** @var {Localization} **/
-    const localization = em.get('localization');
+    var localization =
+      em && typeof em.get === 'function' ? em.get('localization') : undefined;
+    if (typeof localization !== 'undefined') {
+      label = localization.get(
+        `style_manager.sectors.${model.id}.label`,
+        label
+      );
+    }
+
     const { id } = model.attributes;
     this.$el.html(
       this.template({
         pfx,
-        label: localization.get(
-          `style_manager.sectors.${model.id}.label`,
-          model.get('name')
-        )
+        label: label
       })
     );
     this.$caret = this.$el.find(`#${pfx}caret`);

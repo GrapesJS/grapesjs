@@ -7,8 +7,16 @@ export default Backbone.View.extend({
 
   template(view) {
     const { em } = this;
+    var add_button_text = view.config.addBtnText;
     /** @var {Localization} **/
-    const localization = em.get('localization');
+    var localization =
+      em && typeof em.get === 'function' ? em.get('localization') : undefined;
+    if (typeof localization !== 'undefined') {
+      add_button_text = localization.get(
+        `assets.add_button_text`,
+        add_button_text
+      );
+    }
     const pfx = view.pfx;
     const ppfx = view.ppfx;
     return `
@@ -18,10 +26,7 @@ export default Backbone.View.extend({
           <div class="${ppfx}field ${pfx}add-field">
             <input placeholder="${view.config.inputPlaceholder}"/>
           </div>
-          <button class="${ppfx}btn-prim">${localization.get(
-      'assets.add_button_text',
-      view.config.addBtnText
-    )}</button>
+          <button class="${ppfx}btn-prim">${add_button_text}</button>
           <div style="clear:both"></div>
         </form>
       </div>
@@ -34,7 +39,7 @@ export default Backbone.View.extend({
   initialize(o) {
     this.options = o;
     this.config = o.config;
-    this.em = o.config.em;
+    this.em = o.config && o.config.em ? o.config.em : undefined;
     this.pfx = this.config.stylePrefix || '';
     this.ppfx = this.config.pStylePrefix || '';
     const coll = this.collection;
