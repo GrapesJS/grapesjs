@@ -5,6 +5,7 @@ import { getModel } from 'utils/mixins';
 
 const deps = [
   require('utils'),
+  require('i18n'),
   require('keymaps'),
   require('undo_manager'),
   require('storage_manager'),
