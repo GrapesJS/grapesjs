@@ -650,6 +650,24 @@ export default (config = {}) => {
     },
 
     /**
+     * Translate label
+     * @param {String} key Label to translate
+     * @param {Object} [opts] Options for the translation
+     * @param {Object} [opts.params] Params for the translation
+     * @param {Boolean} [opts.noWarn] Avoid warnings in case of missing resources
+     * @returns {String}
+     * @example
+     * editor.t('msg');
+     * // use params
+     * editor.t('msg2', { params: { test: 'hello' } });
+     * // custom local
+     * editor.t('msg2', { params: { test: 'hello' }, l: 'it' });
+     */
+    t(...args) {
+      return em.t(...args);
+    },
+
+    /**
      * Attach event
      * @param  {string} event Event name
      * @param  {Function} callback Callback function

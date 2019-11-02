@@ -104,7 +104,7 @@ export default () => {
       const { messages } = this.config;
       lang &&
         !messages[lang] &&
-        this._warn(`'${lang}' i18n lang set not found`, opts);
+        this._warn(`'${lang}' i18n lang not found`, opts);
       return lang ? messages[lang] : messages;
     },
 

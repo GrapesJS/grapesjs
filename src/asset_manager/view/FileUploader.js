@@ -18,6 +18,7 @@ export default Backbone.View.extend(
       this.options = opts;
       const c = opts.config || {};
       this.config = c;
+      this.em = this.config.em;
       this.pfx = c.stylePrefix || '';
       this.ppfx = c.pStylePrefix || '';
       this.target = this.options.globalCollection || {};
@@ -247,7 +248,7 @@ export default Backbone.View.extend(
     render() {
       this.$el.html(
         this.template({
-          title: this.config.uploadText,
+          title: this.em.t('assets.uploadTitle'),
           uploadId: this.uploadId,
           disabled: this.disabled,
           multiUpload: this.multiUpload,

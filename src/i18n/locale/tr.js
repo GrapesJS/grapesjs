@@ -1,4 +1,9 @@
 export default {
+  assets: {
+    addButton: 'Görsel Ekle',
+    modalTitle: 'Görsel Seçin',
+    uploadTitle: 'Dosya yüklemek için buraya sürükleyin veya tıklayın'
+  },
   deviceManager: {
     device: 'Cihaz',
     desktop: 'Masaüstü',
@@ -170,11 +175,6 @@ export default {
     'link-block': 'Blok Bağlantı',
     quote: 'Alıntı',
     'text-basic': 'Basit Metin'
-  },
-  assets: {
-    addButton: 'Görsel Ekle',
-    modalTitle: 'Görsel Seçin',
-    fileUploadTitle: 'Dosya yüklemek için buraya sürükleyin veya tıklayın'
   },
   utils: {
     colorPicker: {

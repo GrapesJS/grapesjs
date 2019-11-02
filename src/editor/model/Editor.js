@@ -630,6 +630,10 @@ export default Backbone.Model.extend({
     return this.set('dmode', value);
   },
 
+  t(...args) {
+    return this.get('I18n').t(...args);
+  },
+
   /**
    * Returns true if the editor is in absolute mode
    * @returns {Boolean}
