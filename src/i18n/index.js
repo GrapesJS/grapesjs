@@ -4,6 +4,7 @@
  * const editor = grapesjs.init({
  *  i18n: {
  *    locale: 'en',
+ *    localeFallback: 'en',
  *    messages: {
  *      en: {
  *       hello: 'Hello',
@@ -89,6 +90,8 @@ export default () => {
     /**
      * Get all messages
      * @param {String} [lang] Specify the language of messages to return
+     * @param {Object} [opts] Options
+     * @param {Boolean} [opts.noWarn] Avoid warnings in case of missing language
      * @returns {Object}
      * @example
      * i18n.getMessages();
@@ -96,8 +99,14 @@ export default () => {
      * i18n.getMessages('en');
      * // -> { hello: '...' }
      */
-    getMessages(lang) {
-      const { messages } = this.config;
+    getMessages(lang, opts = {}) {
+      const { em, config } = this;
+      const { messages } = config;
+      !opts.noWarn &&
+        lang &&
+        !messages[lang] &&
+        em &&
+        em.logWarning(`'${lang}' i18n lang set not found`);
       return lang ? messages[lang] : messages;
     },
 
@@ -159,6 +168,7 @@ export default () => {
      * @param {String} key Label to translate
      * @param {Object} [params] Params for the translation
      * @param {Object} [opts] Options for the translation
+     * @param {Boolean} [opts.noWarn] Avoid warnings in case of missing resources
      * @returns {String}
      * @example
      * obj.setMessages({
@@ -176,7 +186,7 @@ export default () => {
       const { em } = this;
       const param = params || {};
       const locale = opts.l || this.getLocale();
-      const msgSet = this.getMessages(locale) || {};
+      const msgSet = this.getMessages(locale, opts) || {};
       const reg = new RegExp(`\{([\\w\\d-]*)\}`, 'g');
       let result = msgSet[key];
       !result &&
