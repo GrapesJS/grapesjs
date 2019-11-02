@@ -146,36 +146,6 @@ export default {
   layerManager: {
     layerName: 'Katman'
   },
-  categories: {
-    Basic: 'Genel',
-    Extra: 'Ekstra',
-    Forms: 'Formlar'
-  },
-  blocks: {
-    testBlock: 'Blok',
-    column1: 'Kolon - 1',
-    column2: 'Kolon - 2',
-    column3: 'Kolon - 3',
-    'column3-7': 'Kolon 3-7',
-    text: 'Metin',
-    link: 'Bağlantı',
-    image: 'Resim',
-    video: 'Video',
-    map: 'Harita',
-    'h-navbar': 'Dikey Navbar',
-    countdown: 'Geri Sayım',
-    form: 'Form',
-    input: 'Giriş',
-    textarea: 'Metin Alanı',
-    select: 'Seçim',
-    button: 'Buton',
-    label: 'Etiket',
-    checkbox: 'İşaret Kutusu',
-    radio: 'Seçim Kutusu',
-    'link-block': 'Blok Bağlantı',
-    quote: 'Alıntı',
-    'text-basic': 'Basit Metin'
-  },
   utils: {
     colorPicker: {
       cancel: 'İptal',
