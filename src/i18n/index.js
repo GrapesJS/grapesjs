@@ -29,7 +29,7 @@
  * @module I18n
  */
 import { keys, isUndefined } from 'underscore';
-import messages from './locale';
+import en from './locale/en';
 
 export default () => {
   const { language } = window.navigator || {};
@@ -38,7 +38,7 @@ export default () => {
     locale: localeDef,
     localeFallback: 'en',
     counter: 'n',
-    messages
+    messages: { en }
   };
 
   return {
@@ -83,6 +83,7 @@ export default () => {
      * @private
      */
     init(opts = {}) {
+      this.config = { ...config, ...opts };
       this.em = opts.em;
       return this;
     },

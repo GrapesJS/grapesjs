@@ -24,6 +24,23 @@ describe('I18n', () => {
       expect(obj.getLocale()).toBeTruthy();
     });
 
+    test('Init with config', () => {
+      const locale = 'it';
+      const localeFallback = 'it';
+      const msg = 'Hello!!!';
+      obj.init({
+        em,
+        locale,
+        localeFallback,
+        messages: {
+          en: { msg }
+        }
+      });
+      expect(obj.getLocale()).toBe(locale);
+      expect(obj.getConfig().localeFallback).toBe(localeFallback);
+      expect(obj.getLocale()).toBe(locale);
+    });
+
     test('setLocale and getLocale methods', () => {
       const localeBefore = obj.getLocale();
       const localeNew = `${localeBefore}2`;
