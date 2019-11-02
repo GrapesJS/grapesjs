@@ -69,6 +69,24 @@ describe('I18n', () => {
       expect(obj.t('msg1')).toBe(msg1);
     });
 
+    test('Translate method with object structure', () => {
+      const msg1 = 'Msg level 1';
+      const msg2 = 'Msg level 2';
+      obj.setLocale('en');
+      obj.setMessages({
+        en: {
+          key1: {
+            msg1,
+            key2: {
+              msg2
+            }
+          }
+        }
+      });
+      expect(obj.t('key1.msg1')).toBe(msg1);
+      expect(obj.t('key1.key2.msg2')).toBe(msg2);
+    });
+
     test('Translate method with custom locale', () => {
       const msg1 = 'Msg 1';
       const msg1Alt = `${msg1} it`;

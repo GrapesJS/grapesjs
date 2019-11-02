@@ -100,13 +100,10 @@ export default () => {
      * // -> { hello: '...' }
      */
     getMessages(lang, opts = {}) {
-      const { em, config } = this;
-      const { messages } = config;
-      !opts.noWarn &&
-        lang &&
+      const { messages } = this.config;
+      lang &&
         !messages[lang] &&
-        em &&
-        em.logWarning(`'${lang}' i18n lang set not found`);
+        this._warn(`'${lang}' i18n lang set not found`, opts);
       return lang ? messages[lang] : messages;
     },
 
@@ -189,15 +186,17 @@ export default () => {
       const msgSet = this.getMessages(locale, opts) || {};
       const reg = new RegExp(`\{([\\w\\d-]*)\}`, 'g');
       let result = msgSet[key];
-      !result &&
-        !opts.noWarn &&
-        em &&
-        em.logWarning(`'${key}' i18n key not found`);
+      !result && this._warn(`'${key}' i18n key not found`, opts);
       result = result
         ? result.replace(reg, (m, val) => param[val] || '').trim()
         : result;
 
       return result;
+    },
+
+    _warn(str, opts = {}) {
+      const { em } = this;
+      !opts.noWarn && em && em.logWarning(str);
     }
   };
 };
