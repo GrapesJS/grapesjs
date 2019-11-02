@@ -29,7 +29,7 @@
  * @module I18n
  */
 import { keys, isUndefined } from 'underscore';
-import messages from './messages';
+import messages from './locale';
 
 export default () => {
   const { language } = window.navigator || {};
