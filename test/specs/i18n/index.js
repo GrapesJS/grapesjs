@@ -70,6 +70,7 @@ describe('I18n', () => {
     });
 
     test('Translate method with object structure', () => {
+      const opts = { noWarn: 1 };
       const msg1 = 'Msg level 1';
       const msg2 = 'Msg level 2';
       obj.setLocale('en');
@@ -85,6 +86,8 @@ describe('I18n', () => {
       });
       expect(obj.t('key1.msg1')).toBe(msg1);
       expect(obj.t('key1.key2.msg2')).toBe(msg2);
+      expect(obj.t('key1.key2.msg3', 0, opts)).toBe(undefined);
+      expect(obj.t('key1.key3.msg2', 0, opts)).toBe(undefined);
     });
 
     test('Translate method with custom locale', () => {

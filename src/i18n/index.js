@@ -28,7 +28,7 @@
  *
  * @module I18n
  */
-import { keys } from 'underscore';
+import { keys, isUndefined } from 'underscore';
 import messages from './messages';
 
 export default () => {
@@ -183,10 +183,24 @@ export default () => {
       const { em } = this;
       const param = params || {};
       const locale = opts.l || this.getLocale();
-      const msgSet = this.getMessages(locale, opts) || {};
+      const msgSet = this.getMessages(locale, opts);
+
+      // Lang set is missing
+      if (!msgSet) return;
+
       const reg = new RegExp(`\{([\\w\\d-]*)\}`, 'g');
       let result = msgSet[key];
-      !result && this._warn(`'${key}' i18n key not found`, opts);
+
+      // Check for nested getter
+      if (!result && key.indexOf('.') > 0) {
+        result = key.split('.').reduce((lang, key) => {
+          if (isUndefined(lang)) return;
+          return lang[key];
+        }, msgSet);
+      }
+
+      !result &&
+        this._warn(`'${key}' i18n key not found in '${locale}' lang`, opts);
       result = result
         ? result.replace(reg, (m, val) => param[val] || '').trim()
         : result;
