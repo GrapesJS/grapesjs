@@ -118,6 +118,16 @@ describe('I18n', () => {
       expect(obj.t('msg1', { l: 'it' })).toBe(msg1Alt);
     });
 
+    test('Translate method with fallback locale', () => {
+      const msg1 = 'Msg en';
+      obj.setLocale('it');
+      obj.setMessages({
+        en: { msg1 },
+        it: {}
+      });
+      expect(obj.t('msg1')).toBe(msg1);
+    });
+
     test('Translate method with a param', () => {
       const msg1 = 'Msg 1 {test}';
       const msg1Alt = `${msg1} it`;

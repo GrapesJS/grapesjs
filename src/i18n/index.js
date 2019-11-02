@@ -181,15 +181,33 @@ export default () => {
      * // -> outputs `Msg hello it`
      */
     t(key, opts = {}) {
-      const { em } = this;
+      const { config } = this;
       const param = opts.params || {};
       const locale = opts.l || this.getLocale();
+      const localeFlb = opts.lFlb || config.localeFallback;
+      let result = this._getMsg(key, locale, opts);
+
+      // Try with fallback
+      if (!result) result = this._getMsg(key, localeFlb, opts);
+
+      !result &&
+        this._warn(`'${key}' i18n key not found in '${locale}' lang`, opts);
+      result = result ? this._addParams(result, param) : result;
+
+      return result;
+    },
+
+    _addParams(str, params) {
+      const reg = new RegExp(`\{([\\w\\d-]*)\}`, 'g');
+      return str.replace(reg, (m, val) => params[val] || '').trim();
+    },
+
+    _getMsg(key, locale, opts = {}) {
       const msgSet = this.getMessages(locale, opts);
 
       // Lang set is missing
       if (!msgSet) return;
 
-      const reg = new RegExp(`\{([\\w\\d-]*)\}`, 'g');
       let result = msgSet[key];
 
       // Check for nested getter
@@ -199,12 +217,6 @@ export default () => {
           return lang[key];
         }, msgSet);
       }
-
-      !result &&
-        this._warn(`'${key}' i18n key not found in '${locale}' lang`, opts);
-      result = result
-        ? result.replace(reg, (m, val) => param[val] || '').trim()
-        : result;
 
       return result;
     },
