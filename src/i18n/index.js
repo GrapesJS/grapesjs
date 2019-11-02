@@ -163,8 +163,8 @@ export default () => {
     /**
      * Translate the locale message
      * @param {String} key Label to translate
-     * @param {Object} [params] Params for the translation
      * @param {Object} [opts] Options for the translation
+     * @param {Object} [opts.params] Params for the translation
      * @param {Boolean} [opts.noWarn] Avoid warnings in case of missing resources
      * @returns {String}
      * @example
@@ -174,14 +174,14 @@ export default () => {
      * });
      * obj.t('msg');
      * // -> outputs `Msg`
-     * obj.t('msg2', { test: 'hello' });  // use params
+     * obj.t('msg2', { params: { test: 'hello' } });  // use params
      * // -> outputs `Msg hello`
-     * obj.t('msg2', { test: 'hello' }, { l: 'it' });  // custom local
+     * obj.t('msg2', { l: 'it', params: { test: 'hello' } });  // custom local
      * // -> outputs `Msg hello it`
      */
-    t(key, params, opts = {}) {
+    t(key, opts = {}) {
       const { em } = this;
-      const param = params || {};
+      const param = opts.params || {};
       const locale = opts.l || this.getLocale();
       const msgSet = this.getMessages(locale, opts);
 

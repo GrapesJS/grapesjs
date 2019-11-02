@@ -65,7 +65,7 @@ describe('I18n', () => {
         en: { msg1 },
         it: { msg1: `${msg1} it` }
       });
-      expect(obj.t('msg2', 0, { noWarn: 1 })).toBe(undefined);
+      expect(obj.t('msg2', { noWarn: 1 })).toBe(undefined);
       expect(obj.t('msg1')).toBe(msg1);
     });
 
@@ -86,8 +86,8 @@ describe('I18n', () => {
       });
       expect(obj.t('key1.msg1')).toBe(msg1);
       expect(obj.t('key1.key2.msg2')).toBe(msg2);
-      expect(obj.t('key1.key2.msg3', 0, opts)).toBe(undefined);
-      expect(obj.t('key1.key3.msg2', 0, opts)).toBe(undefined);
+      expect(obj.t('key1.key2.msg3', opts)).toBe(undefined);
+      expect(obj.t('key1.key3.msg2', opts)).toBe(undefined);
     });
 
     test('Translate method with custom locale', () => {
@@ -98,7 +98,7 @@ describe('I18n', () => {
         en: { msg1 },
         it: { msg1: msg1Alt }
       });
-      expect(obj.t('msg1', null, { l: 'it' })).toBe(msg1Alt);
+      expect(obj.t('msg1', { l: 'it' })).toBe(msg1Alt);
     });
 
     test('Translate method with a param', () => {
@@ -109,8 +109,8 @@ describe('I18n', () => {
         en: { msg1 },
         it: { msg1: msg1Alt }
       });
-      expect(obj.t('msg1', { test: 'Hello' })).toBe('Msg 1 Hello');
-      expect(obj.t('msg1', { test: 'Hello' }, { l: 'it' })).toBe(
+      expect(obj.t('msg1', { params: { test: 'Hello' } })).toBe('Msg 1 Hello');
+      expect(obj.t('msg1', { l: 'it', params: { test: 'Hello' } })).toBe(
         'Msg 1 Hello it'
       );
     });
