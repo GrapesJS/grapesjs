@@ -11,9 +11,10 @@ export default Backbone.View.extend({
       <div class="${pfx}assets-header">
         <form class="${pfx}add-asset">
           <div class="${ppfx}field ${pfx}add-field">
-            <input placeholder="${em.t('assets.inputPlh')}"/>
+            <input placeholder="${em && em.t('assets.inputPlh')}"/>
           </div>
-          <button class="${ppfx}btn-prim">${em.t('assets.addButton')}</button>
+          <button class="${ppfx}btn-prim">${em &&
+      em.t('assets.addButton')}</button>
           <div style="clear:both"></div>
         </form>
       </div>

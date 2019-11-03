@@ -72,7 +72,7 @@ export default Backbone.View.extend({
 
     collection.each(device => {
       const { name, id } = device.attributes;
-      const label = em.t(`deviceManager.devices.${id}`) || name;
+      const label = (em && em.t && em.t(`deviceManager.devices.${id}`)) || name;
       result += `<option value="${name}">${label}</option>`;
     });
 
@@ -84,7 +84,7 @@ export default Backbone.View.extend({
     $el.html(
       this.template({
         ppfx,
-        deviceLabel: em.t('deviceManager.device')
+        deviceLabel: em && em.t && em.t('deviceManager.device')
       })
     );
     this.devicesEl = $el.find(`.${ppfx}devices`);

@@ -81,7 +81,7 @@ export default Backbone.View.extend({
   render() {
     const { pfx, model, em, $el } = this;
     const { id, name } = model.attributes;
-    const label = em.t(`styleManager.sectors.${id}`) || name;
+    const label = (em && em.t(`styleManager.sectors.${id}`)) || name;
     $el.html(this.template({ pfx, label }));
     this.$caret = $el.find(`#${pfx}caret`);
     this.renderProperties();

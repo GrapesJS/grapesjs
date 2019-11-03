@@ -246,17 +246,18 @@ export default Backbone.View.extend(
     },
 
     render() {
-      this.$el.html(
+      const { $el, pfx, em } = this;
+      $el.html(
         this.template({
-          title: this.em.t('assets.uploadTitle'),
+          title: em && em.t('assets.uploadTitle'),
           uploadId: this.uploadId,
           disabled: this.disabled,
           multiUpload: this.multiUpload,
-          pfx: this.pfx
+          pfx
         })
       );
       this.initDrop();
-      this.$el.attr('class', this.pfx + 'file-uploader');
+      $el.attr('class', pfx + 'file-uploader');
       return this;
     }
   },

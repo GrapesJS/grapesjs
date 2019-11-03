@@ -94,11 +94,13 @@ export default Backbone.View.extend({
     let result = [];
 
     states.forEach(state =>
-      result.push(`<option value="${state.name}">
-      ${em.t(`selectorManager.states.${state.name}`) ||
-        state.label ||
-        state.name}
-    </option>`)
+      result.push(
+        `<option value="${state.name}">${em.t(
+          `selectorManager.states.${state.name}`
+        ) ||
+          state.label ||
+          state.name}</option>`
+      )
     );
 
     return result.join('');

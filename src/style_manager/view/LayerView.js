@@ -11,7 +11,7 @@ export default Backbone.View.extend({
 
   template(model) {
     const { pfx, ppfx, em } = this;
-    const label = `${em.t('styleManager.layer')} ${model.get('index')}`;
+    const label = `${em && em.t('styleManager.layer')} ${model.get('index')}`;
 
     return `
       <div id="${pfx}move" class="${ppfx}no-touch-actions" data-move-layer>
