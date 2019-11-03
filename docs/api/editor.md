@@ -538,6 +538,30 @@ editor.log('Something done!', { ns: 'from-plugin-x', level: 'info' });
 
 Returns **this** 
 
+## t
+
+Translate label
+
+### Parameters
+
+-   `args` **...any** 
+-   `key` **[String][2]** Label to translate
+-   `opts` **[Object][3]?** Options for the translation
+    -   `opts.params` **[Object][3]?** Params for the translation
+    -   `opts.noWarn` **[Boolean][4]?** Avoid warnings in case of missing resources
+
+### Examples
+
+```javascript
+editor.t('msg');
+// use params
+editor.t('msg2', { params: { test: 'hello' } });
+// custom local
+editor.t('msg2', { params: { test: 'hello' }, l: 'it' });
+```
+
+Returns **[String][2]** 
+
 ## on
 
 Attach event
