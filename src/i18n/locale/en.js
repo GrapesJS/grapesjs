@@ -6,7 +6,18 @@ export default {
     uploadTitle: 'Drop files here or click to upload'
   },
   blocks: {
-    labels: {},
+    labels: {
+      // 'block-id': 'Block Label',
+    },
     categories: {}
+  },
+  deviceManager: {
+    device: 'Device',
+    devices: {
+      desktop: 'Desktop',
+      tablet: 'Tablet',
+      mobileLandscape: 'Mobile Landscape',
+      mobilePortrait: 'Mobile Portrait'
+    }
   }
 };

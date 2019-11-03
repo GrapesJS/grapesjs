@@ -6,10 +6,12 @@ export default {
   },
   deviceManager: {
     device: 'Cihaz',
-    desktop: 'Masaüstü',
-    tablet: 'Tablet',
-    mobileLandscape: 'Mobil Yatay',
-    mobilePortrait: 'Mobil Dikey'
+    devices: {
+      desktop: 'Masaüstü',
+      tablet: 'Tablet',
+      mobileLandscape: 'Mobil Yatay',
+      mobilePortrait: 'Mobil Dikey'
+    }
   },
   styleManager: {
     noEl: 'Stilini düzenlemek istediğiniz öğeyi seçiniz',
