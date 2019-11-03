@@ -47,5 +47,23 @@ export default {
       active: 'Click',
       'nth-of-type(2n)': 'Even/Odd'
     }
+  },
+  styleManager: {
+    empty: 'Select an element before using Style Manager',
+    layer: 'Layer',
+    fileButton: 'Images',
+    sectors: {
+      general: 'General',
+      layout: 'Layout',
+      typography: 'Typography',
+      decorations: 'Decorations',
+      extra: 'Extra',
+      flex: 'Flex',
+      dimension: 'Dimension'
+    },
+    // The core library generates the name by their `property` name
+    properties: {
+      // float: 'Float',
+    }
   }
 };

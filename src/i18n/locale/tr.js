@@ -29,11 +29,12 @@ export default {
   },
   selectorManager: {
     selected: 'Seçili',
-    emptyState: '- DURUM -'
+    emptyState: '- DURUM -',
+    label: 'Sınıflar'
   },
   styleManager: {
-    noEl: 'Stilini düzenlemek istediğiniz öğeyi seçiniz',
-    label: 'Sınıflar',
+    empty: 'Stilini düzenlemek istediğiniz öğeyi seçiniz',
+    layer: 'Katman',
     sectors: {
       general: 'Genel',
       layout: 'Düzen',
@@ -125,8 +126,7 @@ export default {
       'flex-grow': 'Flex Büyüme',
       'flex-shrink': 'Flex Küçülme',
       'align-self': 'Kendini Hizala',
-      'background-color': 'Arkaplan Rengi',
-      assets: 'Görsel'
+      'background-color': 'Arkaplan Rengi'
     }
   },
   traitManager: {
