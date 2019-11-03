@@ -7,7 +7,7 @@ export default {
   // Fallback locale
   localeFallback: 'en',
 
-  // Detect locale by checkig browser language
+  // Detect locale by checking browser language
   detectLocale: 1,
 
   // Show warnings when some of the i18n resources are missing
