@@ -27,10 +27,12 @@ export default {
       }
     }
   },
+  selectorManager: {
+    selected: 'Seçili',
+    emptyState: '- DURUM -'
+  },
   styleManager: {
     noEl: 'Stilini düzenlemek istediğiniz öğeyi seçiniz',
-    selectedLabel: 'Seçili',
-    states: '- DURUM -',
     label: 'Sınıflar',
     sectors: {
       general: 'Genel',

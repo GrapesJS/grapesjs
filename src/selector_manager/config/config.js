@@ -9,20 +9,8 @@ export default {
   // Default selectors
   selectors: [],
 
-  // Label for selectors
-  label: 'Classes',
-
-  // Label for states
-  statesLabel: '- State -',
-
-  selectedLabel: 'Selected',
-
   // States
-  states: [
-    { name: 'hover', label: 'Hover' },
-    { name: 'active', label: 'Click' },
-    { name: 'nth-of-type(2n)', label: 'Even/Odd' }
-  ],
+  states: [{ name: 'hover' }, { name: 'active' }, { name: 'nth-of-type(2n)' }],
 
   // Custom selector name escaping strategy, eg.
   // name => name.replace(' ', '_')

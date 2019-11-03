@@ -37,5 +37,15 @@ export default {
         'open-blocks': 'Open Blocks'
       }
     }
+  },
+  selectorManager: {
+    label: 'Classes',
+    selected: 'Selected',
+    emptyState: '- State -',
+    states: {
+      hover: 'Hover',
+      active: 'Click',
+      'nth-of-type(2n)': 'Even/Odd'
+    }
   }
 };
