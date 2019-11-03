@@ -130,48 +130,12 @@ export default {
     }
   },
   traitManager: {
-    noEl: 'Özelliklerini düzenlemek istediğiniz öğeyi seçiniz',
-    labelContainer: 'Bileşen Özellikleri',
-    attributes: {
-      provider: 'Sağlayıcı',
-      src: 'Kaynak',
-      poster: 'Poster',
-      autoplay: 'Otomatik Oynat',
-      loop: 'Döngü',
-      controls: 'Kontroller',
-      id: 'ID',
-      title: 'Başlık',
-      alt: 'Alt',
-      href: 'Bağlantı',
-      target: 'Hedef',
-      related: 'İlgilileri Göster',
-      modest: 'Modest',
-      startfrom: 'Başlangıç Tarihi',
-      endText: 'Bitiş Yazısı',
-      address: 'Adres',
-      mapType: 'Harita Tipi',
-      zoom: 'Yakınlaşma',
-      type: 'Tip',
-      text: 'Metin',
-      name: 'İsim',
-      value: 'Değer',
-      required: 'Zorunlu mu?',
-      checked: 'Seçildi mi?',
-      for: 'Neresi İçin?',
-      placeholder: 'Boşluk Doldurucu'
-    }
-  },
-  layerManager: {
-    layerName: 'Katman'
-  },
-  utils: {
-    colorPicker: {
-      cancel: 'İptal',
-      choose: 'Seç',
-      more: 'Daha Fazla',
-      less: 'Daha Az',
-      clear: 'Renk Seçimini Temizle',
-      noColor: 'Renk Seçilmedi'
+    empty: 'Özelliklerini düzenlemek istediğiniz öğeyi seçiniz',
+    label: 'Bileşen Özellikleri',
+    traits: {
+      labels: {},
+      attributes: {},
+      options: {}
     }
   }
 };

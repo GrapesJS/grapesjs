@@ -28,7 +28,7 @@
  *
  * @module I18n
  */
-import { keys, isUndefined } from 'underscore';
+import { keys, isUndefined, isString } from 'underscore';
 import config from './config';
 
 export default () => {
@@ -188,7 +188,8 @@ export default () => {
 
       !result &&
         this._debug(`'${key}' i18n key not found in '${locale}' lang`, opts);
-      result = result ? this._addParams(result, param) : result;
+      result =
+        result && isString(result) ? this._addParams(result, param) : result;
 
       return result;
     },

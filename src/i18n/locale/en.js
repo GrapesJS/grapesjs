@@ -1,3 +1,5 @@
+const traitInputAttr = { placeholder: 'eg. Text here' };
+
 export default {
   assets: {
     addButton: 'Add image',
@@ -64,6 +66,30 @@ export default {
     // The core library generates the name by their `property` name
     properties: {
       // float: 'Float',
+    }
+  },
+  traitManager: {
+    empty: 'Select an element before using Trait Manager',
+    label: 'Component settings',
+    traits: {
+      // The core library generates the name by their `name` property
+      labels: {
+        // title: 'Title',
+      },
+      // In a simple trait, like text input, these are used on input attributes
+      attributes: {
+        title: traitInputAttr,
+        alt: traitInputAttr,
+        id: traitInputAttr,
+        href: { placeholder: 'eg. https://google.com' }
+      },
+      // In a trait like select, these are used to translate option names
+      options: {
+        target: {
+          '': 'This window',
+          _blank: 'New window'
+        }
+      }
     }
   }
 };
