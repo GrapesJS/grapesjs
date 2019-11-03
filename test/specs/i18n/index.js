@@ -76,6 +76,44 @@ describe('I18n', () => {
       });
     });
 
+    test('addMessages with deep extend possibility', () => {
+      obj.setMessages({
+        en: {
+          msg1: 'Msg 1',
+          msg2: 'Msg 2',
+          msg3: {
+            msg31: 'Msg 31',
+            msg32: { msg321: 'Msg 321' }
+          }
+        }
+      });
+      obj.addMessages({
+        en: {
+          msg2: { msg21: 'Msg 21' },
+          msg3: {
+            msg32: { msg322: 'Msg 322' },
+            msg33: 'Msg 33'
+          },
+          msg4: 'Msg 4'
+        }
+      });
+      expect(obj.getMessages()).toEqual({
+        en: {
+          msg1: 'Msg 1',
+          msg2: { msg21: 'Msg 21' },
+          msg3: {
+            msg31: 'Msg 31',
+            msg32: {
+              msg321: 'Msg 321',
+              msg322: 'Msg 322'
+            },
+            msg33: 'Msg 33'
+          },
+          msg4: 'Msg 4'
+        }
+      });
+    });
+
     test('Translate method with global locale', () => {
       const msg1 = 'Msg 1';
       obj.setLocale('en');

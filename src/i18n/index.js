@@ -28,8 +28,31 @@
  *
  * @module I18n
  */
-import { keys, isUndefined, isString } from 'underscore';
+import { isUndefined, isString } from 'underscore';
 import config from './config';
+
+const isObj = el => !Array.isArray(el) && el !== null && typeof el === 'object';
+
+const deepAssign = (...args) => {
+  const target = { ...args[0] };
+
+  for (let i = 1; i < args.length; i++) {
+    const source = { ...args[i] };
+
+    for (let key in source) {
+      const targValue = target[key];
+      const srcValue = source[key];
+
+      if (isObj(targValue) && isObj(srcValue)) {
+        target[key] = deepAssign(targValue, srcValue);
+      } else {
+        target[key] = srcValue;
+      }
+    }
+  }
+
+  return target;
+};
 
 export default () => {
   return {
@@ -139,20 +162,7 @@ export default () => {
       const { em } = this;
       const { messages } = this.config;
       em && em.trigger('i18n:add', msg);
-
-      keys(msg).forEach(lang => {
-        const langSet = msg[lang];
-        const currentSet = messages[lang];
-
-        if (!currentSet) {
-          messages[lang] = langSet;
-        } else {
-          keys(langSet).forEach(key => {
-            currentSet[key] = langSet[key];
-          });
-        }
-      });
-      this.setMessages(messages); // Need this for the event
+      this.setMessages(deepAssign(messages, msg));
 
       return this;
     },
