@@ -126,6 +126,12 @@ export default (config = {}) => {
     editor: em,
 
     /**
+     * @property {I18n}
+     * @private
+     */
+    I18n: em.get('I18n'),
+
+    /**
      * @property {DomComponents}
      * @private
      */

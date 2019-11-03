@@ -151,6 +151,9 @@ export default {
   // Dom element
   el: '',
 
+  // Configurations for I18n
+  i18n: {},
+
   // Configurations for Undo Manager
   undoManager: {},
 

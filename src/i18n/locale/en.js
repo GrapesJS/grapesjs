@@ -5,11 +5,15 @@ export default {
     modalTitle: 'Select Image',
     uploadTitle: 'Drop files here or click to upload'
   },
+  // Here just as a reference, GrapesJS core doesn't contain any block,
+  // so this should be omitted from other local files
   blocks: {
     labels: {
       // 'block-id': 'Block Label',
     },
-    categories: {}
+    categories: {
+      // 'category-id': 'Category Label',
+    }
   },
   deviceManager: {
     device: 'Device',

@@ -29,22 +29,29 @@
  * @module I18n
  */
 import { keys, isUndefined } from 'underscore';
-import en from './locale/en';
+import config from './config';
 
 export default () => {
-  const { language } = window.navigator || {};
-  const localeDef = language ? language.split('-')[0] : 'en';
-  const config = {
-    locale: localeDef,
-    localeFallback: 'en',
-    counter: 'n',
-    messages: { en }
-  };
-
   return {
     name: 'I18n',
 
     config,
+
+    /**
+     * Initialize module
+     * @param {Object} config Configurations
+     * @private
+     */
+    init(opts = {}) {
+      this.config = { ...config, ...opts };
+
+      if (this.config.detectLocale) {
+        this.config.locale = this._localLang();
+      }
+
+      this.em = opts.em;
+      return this;
+    },
 
     /**
      * Get module configurations
@@ -78,21 +85,10 @@ export default () => {
     },
 
     /**
-     * Initialize module
-     * @param {Object} config Configurations
-     * @private
-     */
-    init(opts = {}) {
-      this.config = { ...config, ...opts };
-      this.em = opts.em;
-      return this;
-    },
-
-    /**
      * Get all messages
      * @param {String} [lang] Specify the language of messages to return
      * @param {Object} [opts] Options
-     * @param {Boolean} [opts.noWarn] Avoid warnings in case of missing language
+     * @param {Boolean} [opts.debug] Show warnings in case of missing language
      * @returns {Object}
      * @example
      * i18n.getMessages();
@@ -104,7 +100,7 @@ export default () => {
       const { messages } = this.config;
       lang &&
         !messages[lang] &&
-        this._warn(`'${lang}' i18n lang not found`, opts);
+        this._debug(`'${lang}' i18n lang not found`, opts);
       return lang ? messages[lang] : messages;
     },
 
@@ -166,7 +162,7 @@ export default () => {
      * @param {String} key Label to translate
      * @param {Object} [opts] Options for the translation
      * @param {Object} [opts.params] Params for the translation
-     * @param {Boolean} [opts.noWarn] Avoid warnings in case of missing resources
+     * @param {Boolean} [opts.debug] Show warnings in case of missing resources
      * @returns {String}
      * @example
      * obj.setMessages({
@@ -191,10 +187,16 @@ export default () => {
       if (!result) result = this._getMsg(key, localeFlb, opts);
 
       !result &&
-        this._warn(`'${key}' i18n key not found in '${locale}' lang`, opts);
+        this._debug(`'${key}' i18n key not found in '${locale}' lang`, opts);
       result = result ? this._addParams(result, param) : result;
 
       return result;
+    },
+
+    _localLang() {
+      const nav = window.navigator || {};
+      const lang = nav.language || nav.userLanguage;
+      return lang ? lang.split('-')[0] : 'en';
     },
 
     _addParams(str, params) {
@@ -221,9 +223,9 @@ export default () => {
       return result;
     },
 
-    _warn(str, opts = {}) {
-      const { em } = this;
-      !opts.noWarn && em && em.logWarning(str);
+    _debug(str, opts = {}) {
+      const { em, config } = this;
+      (opts.debug || config.debug) && em && em.logWarning(str);
     }
   };
 };
