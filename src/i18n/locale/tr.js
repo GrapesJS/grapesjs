@@ -13,6 +13,20 @@ export default {
       mobilePortrait: 'Mobil Dikey'
     }
   },
+  panels: {
+    buttons: {
+      titles: {
+        preview: 'Önizleme',
+        fullscreen: 'Tam Ekran',
+        'sw-visibility': 'Bileşenleri Göster',
+        'export-template': 'Kodu Göster',
+        'open-sm': 'Stil Düzenleyiciyi Aç',
+        'open-tm': 'Ayarlar',
+        'open-layers': 'Katmanlar',
+        'open-blocks': 'Bloklar'
+      }
+    }
+  },
   styleManager: {
     noEl: 'Stilini düzenlemek istediğiniz öğeyi seçiniz',
     selectedLabel: 'Seçili',
@@ -157,15 +171,5 @@ export default {
       clear: 'Renk Seçimini Temizle',
       noColor: 'Renk Seçilmedi'
     }
-  },
-  buttons: {
-    preview: 'Önizleme',
-    'sw-visibility': 'Bileşenleri Göster',
-    fullscreen: 'Tam Ekran',
-    'export-template': 'Kodu Göster',
-    'open-sm': 'Stil Düzenleyiciyi Aç',
-    'open-tm': 'Ayarlar',
-    'open-layers': 'Katmanlar',
-    'open-blocks': 'Bloklar'
   }
 };

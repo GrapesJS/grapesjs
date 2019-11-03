@@ -1,11 +1,11 @@
-var swv = 'sw-visibility';
-var expt = 'export-template';
-var osm = 'open-sm';
-var otm = 'open-tm';
-var ola = 'open-layers';
-var obl = 'open-blocks';
-var ful = 'fullscreen';
-var prv = 'preview';
+const swv = 'sw-visibility';
+const expt = 'export-template';
+const osm = 'open-sm';
+const otm = 'open-tm';
+const ola = 'open-layers';
+const obl = 'open-blocks';
+const ful = 'fullscreen';
+const prv = 'preview';
 
 export default {
   stylePrefix: 'pn-',

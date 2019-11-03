@@ -23,5 +23,19 @@ export default {
       mobileLandscape: 'Mobile Landscape',
       mobilePortrait: 'Mobile Portrait'
     }
+  },
+  panels: {
+    buttons: {
+      titles: {
+        preview: 'Preview',
+        fullscreen: 'Fullscreen',
+        'sw-visibility': 'View components',
+        'export-template': 'View code',
+        'open-sm': 'Open Style Manager',
+        'open-tm': 'Settings',
+        'open-layers': 'Open Layer Manager',
+        'open-blocks': 'Open Blocks'
+      }
+    }
   }
 };
