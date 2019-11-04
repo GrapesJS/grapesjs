@@ -71,8 +71,7 @@
             "> 1%",
             "ie 11",
             "safari 8"
-          ],
-          "modules": false
+          ]
         }
       ]
     ],
@@ -123,7 +122,7 @@
     "check": "npm run lint && npm run test",
     "build": "npm run check && npm run v:patch && npm run build-dev && webpack --env=prod",
     "build-n": "npm run check && npm run build:css && webpack --env=prod",
-    "build-dev": "webpack --env=dev && npm run build:css",
+    "build-dev": "webpack --env=dev && npm run build:css && npm run build:locale",
     "build:css": "node-sass src/styles/scss/main.scss dist/css/grapes.min.css --output-style compressed",
     "build:locale": "rm -rf ./locale && node scripts/build-locale.js && babel locale -d locale --copy-files --no-comments",
     "v:patch": "npm version --no-git-tag-version patch",
