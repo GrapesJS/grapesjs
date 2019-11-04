@@ -89,6 +89,7 @@ module.exports = {
             ['/modules/Commands', 'Commands'],
             ['/modules/Components', 'Components'],
             ['/modules/Components-js', 'Components & JS'],
+            ['/modules/I18n', 'I18n'],
             ['/modules/Traits', 'Traits'],
             ['/modules/Style-manager', 'Style Manager'],
             ['/modules/Storage', 'Storage Manager'],
