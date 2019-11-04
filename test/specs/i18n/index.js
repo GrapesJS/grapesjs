@@ -42,6 +42,13 @@ describe('I18n', () => {
       expect(obj.getLocale()).toBe(locale);
     });
 
+    test('English always imported', () => {
+      obj.init({
+        messages: { it: {} }
+      });
+      expect(Object.keys(obj.getMessages())).toEqual(['en', 'it']);
+    });
+
     test('setLocale and getLocale methods', () => {
       const localeBefore = obj.getLocale();
       const localeNew = `${localeBefore}2`;

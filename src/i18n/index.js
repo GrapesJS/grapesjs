@@ -6,9 +6,7 @@
  *    locale: 'en',
  *    localeFallback: 'en',
  *    messages: {
- *      en: {
- *       hello: 'Hello',
- *      },
+ *      it: { hello: 'Ciao', ... },
  *      ...
  *    }
  *  }
@@ -66,7 +64,14 @@ export default () => {
      * @private
      */
     init(opts = {}) {
-      this.config = { ...config, ...opts };
+      this.config = {
+        ...config,
+        ...opts,
+        messages: {
+          ...config.messages,
+          ...(opts.messages || {})
+        }
+      };
 
       if (this.config.detectLocale) {
         this.config.locale = this._localLang();
