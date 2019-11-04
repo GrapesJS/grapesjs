@@ -120,7 +120,9 @@ export default {
   },
 
   updateGuides(guides) {
-    const { editor } = this(guides || this.guides).forEach(item => {
+    const { editor } = this;
+
+    (guides || this.guides).forEach(item => {
       const { origin } = item;
       const { top, height, left, width } = editor.Canvas.getElementPos(origin);
 
