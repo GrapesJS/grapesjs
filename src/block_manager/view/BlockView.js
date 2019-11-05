@@ -140,7 +140,7 @@ export default Backbone.View.extend({
     const { em, el, ppfx, model } = this;
     const className = `${ppfx}block`;
     const label =
-      (em && em.t(`blocks.labels.${model.id}`)) || model.get('label');
+      (em && em.t(`blockManager.labels.${model.id}`)) || model.get('label');
     const render = model.get('render');
     const media = model.get('media');
     el.className += ` ${className} ${ppfx}one-bg ${ppfx}four-color-h`;

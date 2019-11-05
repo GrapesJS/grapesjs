@@ -71,7 +71,8 @@ export default Backbone.View.extend({
 
   render() {
     const { em, el, $el, model } = this;
-    const label = em.t(`blocks.categories.${model.id}`) || model.get('label');
+    const label =
+      em.t(`blockManager.categories.${model.id}`) || model.get('label');
     el.innerHTML = this.template({
       pfx: this.pfx,
       label

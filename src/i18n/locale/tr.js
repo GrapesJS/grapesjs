@@ -1,5 +1,5 @@
 export default {
-  assets: {
+  assetManager: {
     addButton: 'Görsel Ekle',
     modalTitle: 'Görsel Seçin',
     uploadTitle: 'Dosya yüklemek için buraya sürükleyin veya tıklayın'

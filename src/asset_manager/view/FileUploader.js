@@ -249,7 +249,7 @@ export default Backbone.View.extend(
       const { $el, pfx, em } = this;
       $el.html(
         this.template({
-          title: em && em.t('assets.uploadTitle'),
+          title: em && em.t('assetManager.uploadTitle'),
           uploadId: this.uploadId,
           disabled: this.disabled,
           multiUpload: this.multiUpload,

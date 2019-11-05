@@ -1,7 +1,7 @@
 const traitInputAttr = { placeholder: 'eg. Text here' };
 
 export default {
-  assets: {
+  assetManager: {
     addButton: 'Add image',
     inputPlh: 'http://path/to/the/image.jpg',
     modalTitle: 'Select Image',
@@ -9,7 +9,7 @@ export default {
   },
   // Here just as a reference, GrapesJS core doesn't contain any block,
   // so this should be omitted from other local files
-  blocks: {
+  blockManager: {
     labels: {
       // 'block-id': 'Block Label',
     },
