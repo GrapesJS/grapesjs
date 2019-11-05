@@ -17,6 +17,25 @@ export default {
       // 'category-id': 'Category Label',
     }
   },
+  domComponents: {
+    names: {
+      '': 'Box',
+      wrapper: 'Body',
+      text: 'Text',
+      comment: 'Comment',
+      image: 'Image',
+      video: 'Video',
+      label: 'Label',
+      link: 'Link',
+      map: 'Map',
+      tfoot: 'Table foot',
+      tbody: 'Table body',
+      thead: 'Table head',
+      table: 'Table',
+      row: 'Table row',
+      cell: 'Table cell'
+    }
+  },
   deviceManager: {
     device: 'Device',
     devices: {
