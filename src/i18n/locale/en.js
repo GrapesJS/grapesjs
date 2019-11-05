@@ -74,13 +74,16 @@ export default {
     traits: {
       // The core library generates the name by their `name` property
       labels: {
+        // id: 'Id',
+        // alt: 'Alt',
         // title: 'Title',
+        // href: 'Href',
       },
       // In a simple trait, like text input, these are used on input attributes
       attributes: {
-        title: traitInputAttr,
-        alt: traitInputAttr,
         id: traitInputAttr,
+        alt: traitInputAttr,
+        title: traitInputAttr,
         href: { placeholder: 'eg. https://google.com' }
       },
       // In a trait like select, these are used to translate option names

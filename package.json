@@ -71,7 +71,8 @@
             "> 1%",
             "ie 11",
             "safari 8"
-          ]
+          ],
+          "modules": false
         }
       ]
     ],
