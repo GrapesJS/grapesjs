@@ -875,7 +875,6 @@ const Component = Backbone.Model.extend(Styleable).extend(
       const i18nPfx = 'domComponents.names.';
       const i18nStr =
         em && (em.t(`${i18nPfx}${type}`) || em.t(`${i18nPfx}${tagName}`));
-      console.log({ i18nStr, type });
       return i18nStr || customName || name;
     },
 
