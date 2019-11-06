@@ -6,15 +6,14 @@ const $ = Backbone.$;
 
 export default PropertyView.extend({
   templateInput() {
-    const pfx = this.pfx;
-    const ppfx = this.ppfx;
-    const assetsLabel = this.config.assetsLabel || 'Images';
+    const { pfx, em } = this;
+
     return `
     <div class="${pfx}field ${pfx}file">
       <div id='${pfx}input-holder'>
         <div class="${pfx}btn-c">
           <button class="${pfx}btn" id="${pfx}images" type="button">
-            ${assetsLabel}
+            ${em.t('styleManager.fileButton')}
           </button>
         </div>
         <div style="clear:both;"></div>

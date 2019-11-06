@@ -40,16 +40,6 @@ describe('File Uploader', () => {
   });
 
   describe('Interprets configurations correctly', () => {
-    test('Has correct title', () => {
-      var view = new FileUploader({
-        config: {
-          uploadText: 'Test'
-        }
-      });
-      view.render();
-      expect(view.$el.find('#title').html()).toEqual('Test');
-    });
-
     test('Could be disabled', () => {
       var view = new FileUploader({
         config: {

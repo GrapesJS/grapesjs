@@ -4,7 +4,7 @@ export default {
     const am = editor.AssetManager;
     const config = am.getConfig();
     const amContainer = am.getContainer();
-    const title = opts.modalTitle || config.modalTitle || '';
+    const title = opts.modalTitle || editor.t('assetManager.modalTitle') || '';
     const types = opts.types;
     const accept = opts.accept;
 

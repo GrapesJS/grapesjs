@@ -26,7 +26,8 @@ export default TraitView.extend({
    */
   getInputEl() {
     if (!this.$input) {
-      const { model } = this;
+      const { model, em } = this;
+      const propName = model.get('name');
       const opts = model.get('options') || [];
       let input = '<select>';
 
@@ -46,8 +47,9 @@ export default TraitView.extend({
           style = el.style ? el.style.replace(/"/g, '&quot;') : '';
           attrs += style ? ` style="${style}"` : '';
         }
-
-        input += `<option value="${value}"${attrs}>${name}</option>`;
+        const resultName =
+          em.t(`traitManager.traits.options.${propName}.${value}`) || name;
+        input += `<option value="${value}"${attrs}>${resultName}</option>`;
       });
 
       input += '</select>';

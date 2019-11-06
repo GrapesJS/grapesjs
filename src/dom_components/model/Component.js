@@ -865,12 +865,17 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * @return {String}
      * */
     getName() {
-      let customName = this.get('name') || this.get('custom-name');
-      let tag = this.get('tagName');
+      const { em } = this;
+      const { type, tagName } = this.attributes;
+      const customName = this.get('name') || this.get('custom-name');
+      let tag = tagName;
       tag = tag == 'div' ? 'box' : tag;
-      let name = this.get('type') || tag;
+      let name = type || tag;
       name = name.charAt(0).toUpperCase() + name.slice(1);
-      return customName || name;
+      const i18nPfx = 'domComponents.names.';
+      const i18nStr =
+        em && (em.t(`${i18nPfx}${type}`) || em.t(`${i18nPfx}${tagName}`));
+      return i18nStr || customName || name;
     },
 
     /**
