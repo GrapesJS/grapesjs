@@ -142,7 +142,7 @@ In this example, the plugin name is `my-plugin-name` and can't be used by other 
 
 ## Boilerplate
 
-If you want to start with a production-ready boilerplate for a named plugin, you might want to try  [grapesjs-plugin-boilerplate](https://github.com/artf/grapesjs-plugin-boilerplate) which you can clone and start developing a named plugin immediately. For more informations check the repository
+For fast plugin development, we highly recommend using [grapesjs-cli](https://github.com/artf/grapesjs-cli) which helps to avoid the hassle of setting up all the dependencies and configurations for development and building (no need to touch Webpack o Babel configurations). For more information check the repository
 
 
 ## Popular Plugins
