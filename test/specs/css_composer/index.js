@@ -3,7 +3,7 @@ import CssRuleView from './view/CssRuleView';
 import CssRulesView from './view/CssRulesView';
 import CssComposer from 'css_composer';
 import e2e from './e2e/CssComposer';
-import utils from './../test_utils.js';
+import utils from './../../test_utils.js';
 import Editor from 'editor/model/Editor';
 
 describe('Css Composer', () => {
@@ -322,9 +322,4 @@ describe('Css Composer', () => {
       expect(obj.getAll().length).toEqual(toTest.length);
     });
   });
-
-  Models.run();
-  CssRuleView.run();
-  CssRulesView.run();
-  e2e.run();
 });

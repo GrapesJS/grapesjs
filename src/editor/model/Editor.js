@@ -5,6 +5,7 @@ import { getModel } from 'utils/mixins';
 
 const deps = [
   require('utils'),
+  require('i18n'),
   require('keymaps'),
   require('undo_manager'),
   require('storage_manager'),
@@ -636,6 +637,10 @@ export default Backbone.Model.extend({
 
   setDragMode(value) {
     return this.set('dmode', value);
+  },
+
+  t(...args) {
+    return this.get('I18n').t(...args);
   },
 
   /**

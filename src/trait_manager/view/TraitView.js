@@ -135,8 +135,12 @@ export default Backbone.View.extend({
    * @private
    */
   getLabel() {
+    const { em } = this;
     const { label, name } = this.model.attributes;
-    return capitalize(label || name).replace(/-/g, ' ');
+    return (
+      em.t(`traitManager.traits.labels.${name}`) ||
+      capitalize(label || name).replace(/-/g, ' ')
+    );
   },
 
   /**
@@ -153,13 +157,17 @@ export default Backbone.View.extend({
    */
   getInputEl() {
     if (!this.$input) {
-      const md = this.model;
+      const { em, model } = this;
+      const md = model;
+      const { name } = model.attributes;
       const plh = md.get('placeholder') || md.get('default') || '';
       const type = md.get('type') || 'text';
       const min = md.get('min');
       const max = md.get('max');
       const value = this.getModelValue();
       const input = $(`<input type="${type}" placeholder="${plh}">`);
+      const i18nAttr = em.t(`traitManager.traits.attributes.${name}`) || {};
+      input.attr(i18nAttr);
 
       if (!isUndefined(value)) {
         md.set({ value }, { silent: true });

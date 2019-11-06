@@ -182,8 +182,8 @@ export default Component.extend(
         {
           label: 'Poster',
           name: 'poster',
-          placeholder: 'eg. ./media/image.jpg',
-          changeProp: 1
+          placeholder: 'eg. ./media/image.jpg'
+          // changeProp: 1
         },
         this.getAutoplayTrait(),
         this.getLoopTrait(),

@@ -1,9 +1,5 @@
 import SelectorManager from 'selector_manager';
 import Selector from 'selector_manager/model/Selector';
-import Models from './model/SelectorModels';
-import ClassTagView from './view/ClassTagView';
-import ClassTagsView from './view/ClassTagsView';
-import e2e from './e2e/ClassManager';
 import Editor from 'editor/model/Editor';
 
 describe('SelectorManager', () => {
@@ -171,13 +167,5 @@ describe('SelectorManager', () => {
       expect(obj.getAll().length).toEqual(1);
       expect(result.length).toEqual(1);
     });
-  });
-
-  Models.run();
-
-  describe('Views', () => {
-    ClassTagView.run();
-    ClassTagsView.run();
-    e2e.run();
   });
 });

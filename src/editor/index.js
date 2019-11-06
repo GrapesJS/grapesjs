@@ -126,6 +126,12 @@ export default (config = {}) => {
     editor: em,
 
     /**
+     * @property {I18n}
+     * @private
+     */
+    I18n: em.get('I18n'),
+
+    /**
      * @property {DomComponents}
      * @private
      */
@@ -647,6 +653,24 @@ export default (config = {}) => {
     log(msg, opts = {}) {
       em.log(msg, opts);
       return this;
+    },
+
+    /**
+     * Translate label
+     * @param {String} key Label to translate
+     * @param {Object} [opts] Options for the translation
+     * @param {Object} [opts.params] Params for the translation
+     * @param {Boolean} [opts.noWarn] Avoid warnings in case of missing resources
+     * @returns {String}
+     * @example
+     * editor.t('msg');
+     * // use params
+     * editor.t('msg2', { params: { test: 'hello' } });
+     * // custom local
+     * editor.t('msg2', { params: { test: 'hello' }, l: 'it' });
+     */
+    t(...args) {
+      return em.t(...args);
     },
 
     /**

@@ -288,6 +288,64 @@ module.exports = _nonIterableSpread;
 
 /***/ }),
 
+/***/ "./node_modules/@babel/runtime/helpers/objectWithoutProperties.js":
+/*!************************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/objectWithoutProperties.js ***!
+  \************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var objectWithoutPropertiesLoose = __webpack_require__(/*! ./objectWithoutPropertiesLoose */ "./node_modules/@babel/runtime/helpers/objectWithoutPropertiesLoose.js");
+
+function _objectWithoutProperties(source, excluded) {
+  if (source == null) return {};
+  var target = objectWithoutPropertiesLoose(source, excluded);
+  var key, i;
+
+  if (Object.getOwnPropertySymbols) {
+    var sourceSymbolKeys = Object.getOwnPropertySymbols(source);
+
+    for (i = 0; i < sourceSymbolKeys.length; i++) {
+      key = sourceSymbolKeys[i];
+      if (excluded.indexOf(key) >= 0) continue;
+      if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue;
+      target[key] = source[key];
+    }
+  }
+
+  return target;
+}
+
+module.exports = _objectWithoutProperties;
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/objectWithoutPropertiesLoose.js":
+/*!*****************************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/objectWithoutPropertiesLoose.js ***!
+  \*****************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function _objectWithoutPropertiesLoose(source, excluded) {
+  if (source == null) return {};
+  var target = {};
+  var sourceKeys = Object.keys(source);
+  var key, i;
+
+  for (i = 0; i < sourceKeys.length; i++) {
+    key = sourceKeys[i];
+    if (excluded.indexOf(key) >= 0) continue;
+    target[key] = source[key];
+  }
+
+  return target;
+}
+
+module.exports = _objectWithoutPropertiesLoose;
+
+/***/ }),
+
 /***/ "./node_modules/@babel/runtime/helpers/slicedToArray.js":
 /*!**************************************************************!*\
   !*** ./node_modules/@babel/runtime/helpers/slicedToArray.js ***!
@@ -4399,10 +4457,28 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
     }
   }
 
-  var Delayed = function() {this.id = null;};
+  var Delayed = function() {
+    this.id = null;
+    this.f = null;
+    this.time = 0;
+    this.handler = bind(this.onTimeout, this);
+  };
+  Delayed.prototype.onTimeout = function (self) {
+    self.id = 0;
+    if (self.time <= +new Date) {
+      self.f();
+    } else {
+      setTimeout(self.handler, self.time - +new Date);
+    }
+  };
   Delayed.prototype.set = function (ms, f) {
-    clearTimeout(this.id);
-    this.id = setTimeout(f, ms);
+    this.f = f;
+    var time = +new Date + ms;
+    if (!this.id || time < this.time) {
+      clearTimeout(this.id);
+      this.id = setTimeout(this.handler, ms);
+      this.time = time;
+    }
   };
 
   function indexOf(array, elt) {
@@ -13885,7 +13961,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
         textarea.style.display = "";
         if (textarea.form) {
           off(textarea.form, "submit", save);
-          if (typeof textarea.form.submit == "function")
+          if (!options.leaveSubmitMethodAlone && typeof textarea.form.submit == "function")
             { textarea.form.submit = realSubmit; }
         }
       };
@@ -13984,7 +14060,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
 
   addLegacyProps(CodeMirror);
 
-  CodeMirror.version = "5.48.4";
+  CodeMirror.version = "5.49.2";
 
   return CodeMirror;
 
@@ -15099,6 +15175,9 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
     } else if (ch == "#") {
       stream.skipToEnd();
       return ret("error", "error");
+    } else if (ch == "<" && stream.match("!--") || ch == "-" && stream.match("->")) {
+      stream.skipToEnd()
+      return ret("comment", "comment")
     } else if (isOperatorChar.test(ch)) {
       if (ch != ">" || !state.lexical || state.lexical.type != ">") {
         if (stream.eat("=")) {
@@ -16323,6 +16402,17 @@ CodeMirror.defineMode("xml", function(editorConf, config_) {
     skipAttribute: function(state) {
       if (state.state == attrValueState)
         state.state = attrState
+    },
+
+    xmlCurrentTag: function(state) {
+      return state.tagName ? {name: state.tagName, close: state.type == "closeTag"} : null
+    },
+
+    xmlCurrentContext: function(state) {
+      var context = []
+      for (var cx = state.context; cx; cx = cx.prev)
+        if (cx.tagName) context.push(cx.tagName)
+      return context.reverse()
     }
   };
 });
@@ -19234,10 +19324,6 @@ __webpack_require__.r(__webpack_exports__);
   //  ]
   // }
   autoAdd: 1,
-  // Text on upload input
-  uploadText: 'Drop files here or click to upload',
-  // Label for the add button
-  addBtnText: 'Add image',
   // To upload your assets, the module uses Fetch API, with this option you
   // overwrite it with something else.
   // It should return a Promise
@@ -19272,10 +19358,6 @@ __webpack_require__.r(__webpack_exports__);
   openAssetsOnDrop: 1,
   // Any dropzone content to append inside dropzone element
   dropzoneContent: '',
-  // Default title for the asset manager modal
-  modalTitle: 'Select Image',
-  //Default placeholder for input
-  inputPlaceholder: 'http://path/to/the/image.jpg',
   //method called before upload, on return false upload is canceled.
   // @example
   // beforeUpload: (files) => {
@@ -19923,23 +20005,30 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _babel_runtime_helpers_objectWithoutProperties__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/objectWithoutProperties */ "./node_modules/@babel/runtime/helpers/objectWithoutProperties.js");
+/* harmony import */ var _babel_runtime_helpers_objectWithoutProperties__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_objectWithoutProperties__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_1__);
 
-/* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_0___default.a.View.extend({
+
+/* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_1___default.a.View.extend({
   events: {
     submit: 'handleSubmit'
   },
-  template: function template(view) {
-    var pfx = view.pfx;
-    var ppfx = view.ppfx;
-    return "\n    <div class=\"".concat(pfx, "assets-cont\">\n      <div class=\"").concat(pfx, "assets-header\">\n        <form class=\"").concat(pfx, "add-asset\">\n          <div class=\"").concat(ppfx, "field ").concat(pfx, "add-field\">\n            <input placeholder=\"").concat(view.config.inputPlaceholder, "\"/>\n          </div>\n          <button class=\"").concat(ppfx, "btn-prim\">").concat(view.config.addBtnText, "</button>\n          <div style=\"clear:both\"></div>\n        </form>\n      </div>\n      <div class=\"").concat(pfx, "assets\" data-el=\"assets\"></div>\n      <div style=\"clear:both\"></div>\n    </div>\n    ");
+  template: function template(_ref) {
+    var pfx = _ref.pfx,
+        ppfx = _ref.ppfx,
+        em = _ref.em,
+        view = _babel_runtime_helpers_objectWithoutProperties__WEBPACK_IMPORTED_MODULE_0___default()(_ref, ["pfx", "ppfx", "em"]);
+
+    return "\n    <div class=\"".concat(pfx, "assets-cont\">\n      <div class=\"").concat(pfx, "assets-header\">\n        <form class=\"").concat(pfx, "add-asset\">\n          <div class=\"").concat(ppfx, "field ").concat(pfx, "add-field\">\n            <input placeholder=\"").concat(em && em.t('assetManager.inputPlh'), "\"/>\n          </div>\n          <button class=\"").concat(ppfx, "btn-prim\">").concat(em && em.t('assetManager.addButton'), "</button>\n          <div style=\"clear:both\"></div>\n        </form>\n      </div>\n      <div class=\"").concat(pfx, "assets\" data-el=\"assets\"></div>\n      <div style=\"clear:both\"></div>\n    </div>\n    ");
   },
   initialize: function initialize(o) {
     this.options = o;
     this.config = o.config;
     this.pfx = this.config.stylePrefix || '';
     this.ppfx = this.config.pStylePrefix || '';
+    this.em = this.config.em;
     var coll = this.collection;
     this.listenTo(coll, 'reset', this.renderAssets);
     this.listenTo(coll, 'add', this.addToAsset);
@@ -20123,6 +20212,7 @@ __webpack_require__.r(__webpack_exports__);
     this.options = opts;
     var c = opts.config || {};
     this.config = c;
+    this.em = this.config.em;
     this.pfx = c.stylePrefix || '';
     this.ppfx = c.pStylePrefix || '';
     this.target = this.options.globalCollection || {};
@@ -20363,15 +20453,18 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   render: function render() {
-    this.$el.html(this.template({
-      title: this.config.uploadText,
+    var $el = this.$el,
+        pfx = this.pfx,
+        em = this.em;
+    $el.html(this.template({
+      title: em && em.t('assetManager.uploadTitle'),
       uploadId: this.uploadId,
       disabled: this.disabled,
       multiUpload: this.multiUpload,
-      pfx: this.pfx
+      pfx: pfx
     }));
     this.initDrop();
-    this.$el.attr('class', this.pfx + 'file-uploader');
+    $el.attr('class', pfx + 'file-uploader');
     return this;
   }
 }, {
@@ -21061,7 +21154,7 @@ __webpack_require__.r(__webpack_exports__);
         ppfx = this.ppfx,
         model = this.model;
     var className = "".concat(ppfx, "block");
-    var label = model.get('label');
+    var label = em && em.t("blockManager.labels.".concat(model.id)) || model.get('label');
     var render = model.get('render');
     var media = model.get('media');
     el.className += " ".concat(className, " ").concat(ppfx, "one-bg ").concat(ppfx, "four-color-h");
@@ -21313,7 +21406,8 @@ __webpack_require__.r(__webpack_exports__);
     var o = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var config = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     this.config = config;
-    var pfx = this.config.pStylePrefix || '';
+    var pfx = config.pStylePrefix || '';
+    this.em = config.em;
     this.pfx = pfx;
     this.caretR = 'fa fa-caret-right';
     this.caretD = 'fa fa-caret-down';
@@ -21359,13 +21453,18 @@ __webpack_require__.r(__webpack_exports__);
     this.getBlocksEl().appendChild(el);
   },
   render: function render() {
-    this.el.innerHTML = this.template({
+    var em = this.em,
+        el = this.el,
+        $el = this.$el,
+        model = this.model;
+    var label = em.t("blockManager.categories.".concat(model.id)) || model.get('label');
+    el.innerHTML = this.template({
       pfx: this.pfx,
-      label: this.model.get('label')
+      label: label
     });
-    this.el.className = this.className;
-    this.$el.css({
-      order: this.model.get('order')
+    el.className = this.className;
+    $el.css({
+      order: model.get('order')
     });
     this.updateVisibility();
     return this;
@@ -22541,7 +22640,7 @@ var timerZoom;
     var id = model.getId();
 
     if (!view.scriptContainer) {
-      view.scriptContainer = $("<div id=\"".concat(id, "\">"));
+      view.scriptContainer = $("<div data-id=\"".concat(id, "\">"));
       this.getJsContainer().appendChild(view.scriptContainer.get(0));
     }
 
@@ -25498,7 +25597,7 @@ __webpack_require__.r(__webpack_exports__);
     var am = editor.AssetManager;
     var config = am.getConfig();
     var amContainer = am.getContainer();
-    var title = opts.modalTitle || config.modalTitle || '';
+    var title = opts.modalTitle || editor.t('assetManager.modalTitle') || '';
     var types = opts.types;
     var accept = opts.accept;
     am.setTarget(opts.target);
@@ -25663,7 +25762,7 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
       var smConfig = em.StyleManager.getConfig();
       var pfx = smConfig.stylePrefix; // Create header
 
-      this.$header = $("<div class=\"".concat(pfx, "header\">").concat(smConfig.textNoElement, "</div>"));
+      this.$header = $("<div class=\"".concat(pfx, "header\">").concat(em.t('styleManager.empty'), "</div>"));
       this.$cn.append(this.$header); // Create panel if not exists
 
       if (!panels.getPanel('views-container')) this.panel = panels.addPanel({
@@ -25721,6 +25820,7 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
 /* harmony default export */ __webpack_exports__["default"] = ({
   run: function run(editor, sender) {
     this.sender = sender;
+    var em = editor.getModel();
     var config = editor.Config;
     var pfx = config.stylePrefix;
     var tm = editor.TraitManager;
@@ -25732,9 +25832,9 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
       this.$cn = $('<div></div>');
       this.$cn2 = $('<div></div>');
       this.$cn.append(this.$cn2);
-      this.$header = $('<div>').append("<div class=\"".concat(confTm.stylePrefix, "header\">").concat(confTm.textNoElement, "</div>"));
+      this.$header = $('<div>').append("<div class=\"".concat(confTm.stylePrefix, "header\">").concat(em.t('traitManager.empty'), "</div>"));
       this.$cn.append(this.$header);
-      this.$cn2.append("<div class=\"".concat(pfx, "traits-label\">").concat(confTm.labelContainer, "</div>"));
+      this.$cn2.append("<div class=\"".concat(pfx, "traits-label\">").concat(em.t('traitManager.label'), "</div>"));
       this.$cn2.append(tmView.render().el);
       var panels = editor.Panels;
       if (!panels.getPanel('views-container')) panelC = panels.addPanel({
@@ -26505,7 +26605,8 @@ var showOffsets;
         this.toolbar = new dom_components_model_Toolbar__WEBPACK_IMPORTED_MODULE_6__["default"](toolbar);
         var toolbarView = new dom_components_view_ToolbarView__WEBPACK_IMPORTED_MODULE_5__["default"]({
           collection: this.toolbar,
-          editor: this.editor
+          editor: this.editor,
+          em: em
         });
         toolbarEl.appendChild(toolbarView.render().el);
       }
@@ -27970,8 +28071,7 @@ var getBlockId = function getBlockId(pfx, order) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
-  devices: [],
-  deviceLabel: 'Device'
+  devices: []
 });
 
 /***/ }),
@@ -27985,9 +28085,17 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _config_config__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./config/config */ "./src/device_manager/config/config.js");
-/* harmony import */ var _model_Devices__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./model/Devices */ "./src/device_manager/model/Devices.js");
-/* harmony import */ var _view_DevicesView__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./view/DevicesView */ "./src/device_manager/view/DevicesView.js");
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _config_config__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./config/config */ "./src/device_manager/config/config.js");
+/* harmony import */ var _model_Devices__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./model/Devices */ "./src/device_manager/model/Devices.js");
+/* harmony import */ var _view_DevicesView__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./view/DevicesView */ "./src/device_manager/view/DevicesView.js");
+
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
 /**
  * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/device_manager/config/config.js)
  * ```js
@@ -28041,14 +28149,19 @@ __webpack_require__.r(__webpack_exports__);
      * @private
      */
     init: function init(config) {
+      var _this = this;
+
       c = config || {};
 
-      for (var name in _config_config__WEBPACK_IMPORTED_MODULE_0__["default"]) {
-        if (!(name in c)) c[name] = _config_config__WEBPACK_IMPORTED_MODULE_0__["default"][name];
+      for (var name in _config_config__WEBPACK_IMPORTED_MODULE_1__["default"]) {
+        if (!(name in c)) c[name] = _config_config__WEBPACK_IMPORTED_MODULE_1__["default"][name];
       }
 
-      devices = new _model_Devices__WEBPACK_IMPORTED_MODULE_1__["default"](c.devices);
-      view = new _view_DevicesView__WEBPACK_IMPORTED_MODULE_2__["default"]({
+      devices = new _model_Devices__WEBPACK_IMPORTED_MODULE_2__["default"]();
+      (c.devices || []).forEach(function (dv) {
+        return _this.add(dv.id || dv.name, dv.width, dv);
+      });
+      view = new _view_DevicesView__WEBPACK_IMPORTED_MODULE_3__["default"]({
         collection: devices,
         config: c
       });
@@ -28057,21 +28170,29 @@ __webpack_require__.r(__webpack_exports__);
 
     /**
      * Add new device to the collection. URLs are supposed to be unique
-     * @param {string} name Device name
-     * @param {string} width Width of the device
-     * @param {Object} opts Custom options
-     * @return {Device} Added device
+     * @param {String} id Device id
+     * @param {String} width Width of the device
+     * @param {Object} [opts] Custom options
+     * @returns {Device} Added device
      * @example
-     * deviceManager.add('Tablet', '900px');
-     * deviceManager.add('Tablet2', '900px', {
+     * deviceManager.add('tablet', '900px');
+     * deviceManager.add('tablet2', '900px', {
      *  height: '300px',
+     *  // At first, GrapesJS tries to localize the name by device id.
+     *  // In case is not found, the `name` property is used (or `id` if name is missing)
+     *  name: 'Tablet 2',
      *  widthMedia: '810px', // the width that will be used for the CSS media
      * });
      */
-    add: function add(name, width, opts) {
-      var obj = opts || {};
-      obj.name = name;
-      obj.width = width;
+    add: function add(id, width) {
+      var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+      var obj = _objectSpread({}, opts, {
+        id: id,
+        name: opts.name || id,
+        width: width
+      });
+
       return devices.add(obj);
     },
 
@@ -28256,22 +28377,30 @@ __webpack_require__.r(__webpack_exports__);
    * @private
    */
   getOptions: function getOptions() {
+    var collection = this.collection,
+        em = this.em;
     var result = '';
-    this.collection.each(function (device) {
-      var name = device.get('name');
-      result += '<option value="' + name + '">' + name + '</option>';
+    collection.each(function (device) {
+      var _device$attributes = device.attributes,
+          name = _device$attributes.name,
+          id = _device$attributes.id;
+      var label = em && em.t && em.t("deviceManager.devices.".concat(id)) || name;
+      result += "<option value=\"".concat(name, "\">").concat(label, "</option>");
     });
     return result;
   },
   render: function render() {
-    var pfx = this.ppfx;
-    this.$el.html(this.template({
-      ppfx: pfx,
-      deviceLabel: this.config.deviceLabel
+    var em = this.em,
+        ppfx = this.ppfx,
+        $el = this.$el,
+        el = this.el;
+    $el.html(this.template({
+      ppfx: ppfx,
+      deviceLabel: em && em.t && em.t('deviceManager.device')
     }));
-    this.devicesEl = this.$el.find('.' + pfx + 'devices');
+    this.devicesEl = $el.find(".".concat(ppfx, "devices"));
     this.devicesEl.append(this.getOptions());
-    this.el.className = pfx + 'devices-c';
+    el.className = "".concat(ppfx, "devices-c");
     return this;
   }
 }));
@@ -30017,12 +30146,18 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(dom
    * @return {String}
    * */
   getName: function getName() {
+    var em = this.em;
+    var _this$attributes = this.attributes,
+        type = _this$attributes.type,
+        tagName = _this$attributes.tagName;
     var customName = this.get('name') || this.get('custom-name');
-    var tag = this.get('tagName');
+    var tag = tagName;
     tag = tag == 'div' ? 'box' : tag;
-    var name = this.get('type') || tag;
+    var name = type || tag;
     name = name.charAt(0).toUpperCase() + name.slice(1);
-    return customName || name;
+    var i18nPfx = 'domComponents.names.';
+    var i18nStr = em && (em.t("".concat(i18nPfx).concat(type)) || em.t("".concat(i18nPfx).concat(tagName)));
+    return i18nStr || customName || name;
   },
 
   /**
@@ -31582,8 +31717,8 @@ var ytnc = 'ytnc';
     }, {
       label: 'Poster',
       name: 'poster',
-      placeholder: 'eg. ./media/image.jpg',
-      changeProp: 1
+      placeholder: 'eg. ./media/image.jpg' // changeProp: 1
+
     }, this.getAutoplayTrait(), this.getLoopTrait(), this.getControlsTrait()];
   },
 
@@ -32143,7 +32278,10 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _ComponentLinkView__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ComponentLinkView */ "./src/dom_components/view/ComponentLinkView.js");
 
-/* harmony default export */ __webpack_exports__["default"] = (_ComponentLinkView__WEBPACK_IMPORTED_MODULE_0__["default"].extend({}));
+/* harmony default export */ __webpack_exports__["default"] = (_ComponentLinkView__WEBPACK_IMPORTED_MODULE_0__["default"].extend({
+  tagName: 'span' // Avoid Firefox bug with label editing #2332
+
+}));
 
 /***/ }),
 
@@ -32475,7 +32613,6 @@ var compProt = _ComponentView__WEBPACK_IMPORTED_MODULE_2__["default"].prototype;
       }
     }
 
-    this.rteEnabled = 1;
     this.toggleEvents(1);
   },
 
@@ -32499,8 +32636,28 @@ var compProt = _ComponentView__WEBPACK_IMPORTED_MODULE_2__["default"].prototype;
       this.syncContent();
     }
 
-    this.rteEnabled = 0;
     this.toggleEvents();
+  },
+
+  /**
+   * get content from RTE
+   * @return string
+   */
+  getContent: function getContent() {
+    var rte = this.rte;
+
+    var _ref = rte || {},
+        activeRte = _ref.activeRte;
+
+    var content = '';
+
+    if (activeRte && typeof activeRte.getContent === 'function') {
+      content = activeRte.getContent();
+    } else {
+      content = this.getChildrenContainer().innerHTML;
+    }
+
+    return content;
   },
 
   /**
@@ -32512,7 +32669,7 @@ var compProt = _ComponentView__WEBPACK_IMPORTED_MODULE_2__["default"].prototype;
         rte = this.rte,
         rteEnabled = this.rteEnabled;
     if (!rteEnabled && !opts.force) return;
-    var content = this.getChildrenContainer().innerHTML;
+    var content = this.getContent();
     var comps = model.components();
 
     var contentOpt = _objectSpread({
@@ -32581,16 +32738,19 @@ var compProt = _ComponentView__WEBPACK_IMPORTED_MODULE_2__["default"].prototype;
    * @param {Boolean} enable
    */
   toggleEvents: function toggleEvents(enable) {
-    var method = enable ? 'on' : 'off';
+    var em = this.em;
     var mixins = {
       on: utils_mixins__WEBPACK_IMPORTED_MODULE_1__["on"],
       off: utils_mixins__WEBPACK_IMPORTED_MODULE_1__["off"]
     };
-    this.em.setEditing(enable); // The ownerDocument is from the frame
+    var method = enable ? 'on' : 'off';
+    em.setEditing(enable);
+    this.rteEnabled = !!enable; // The ownerDocument is from the frame
 
     var elDocs = [this.el.ownerDocument, document];
     mixins.off(elDocs, 'mousedown', this.disableEditing);
-    mixins[method](elDocs, 'mousedown', this.disableEditing); // Avoid closing edit mode on component click
+    mixins[method](elDocs, 'mousedown', this.disableEditing);
+    em[method]('toolbar:run:before', this.disableEditing); // Avoid closing edit mode on component click
 
     this.$el.off('mousedown', this.disablePropagation);
     this.$el[method]('mousedown', this.disablePropagation); // Fixes #2210 but use this also as a replacement
@@ -32600,9 +32760,10 @@ var compProt = _ComponentView__WEBPACK_IMPORTED_MODULE_2__["default"].prototype;
       var el = this.el;
 
       while (el) {
-        el.draggable = enable ? !1 : !0;
+        el.draggable = enable ? !1 : !0; // Note: el.parentNode is sometimes null here
+
         el = el.parentNode;
-        el.tagName == 'BODY' && (el = 0);
+        el && el.tagName == 'BODY' && (el = 0);
       }
     }
   }
@@ -33429,12 +33590,18 @@ __webpack_require__.r(__webpack_exports__);
   attributes: function attributes() {
     return this.model.get('attributes');
   },
-  initialize: function initialize(opts) {
-    this.editor = opts.config.editor;
+  initialize: function initialize() {
+    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var _opts$config = opts.config,
+        config = _opts$config === void 0 ? {} : _opts$config;
+    this.em = config.em;
+    this.editor = config.editor;
   },
   handleClick: function handleClick(event) {
     event.preventDefault();
     event.stopPropagation();
+    var em = this.em;
+    em.trigger('toolbar:run:before');
     this.execCommand(event);
   },
   execCommand: function execCommand(event) {
@@ -33483,9 +33650,11 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ __webpack_exports__["default"] = (domain_abstract_view_DomainViews__WEBPACK_IMPORTED_MODULE_0__["default"].extend({
   itemView: _ToolbarButtonView__WEBPACK_IMPORTED_MODULE_1__["default"],
-  initialize: function initialize(opts) {
+  initialize: function initialize() {
+    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     this.config = {
-      editor: opts.editor || ''
+      editor: opts.editor || '',
+      em: opts.em
     };
     this.listenTo(this.collection, 'reset', this.render);
   }
@@ -34511,6 +34680,8 @@ __webpack_require__.r(__webpack_exports__);
   dragMode: 0,
   // Dom element
   el: '',
+  // Configurations for I18n
+  i18n: {},
   // Configurations for Undo Manager
   undoManager: {},
   //Configurations for Asset Manager
@@ -34540,17 +34711,21 @@ __webpack_require__.r(__webpack_exports__);
   //Configurations for Device Manager
   deviceManager: {
     devices: [{
+      id: 'desktop',
       name: 'Desktop',
       width: ''
     }, {
+      id: 'tablet',
       name: 'Tablet',
       width: '768px',
       widthMedia: '992px'
     }, {
+      id: 'mobileLandscape',
       name: 'Mobile landscape',
       width: '568px',
       widthMedia: '768px'
     }, {
+      id: 'mobilePortrait',
       name: 'Mobile portrait',
       width: '320px',
       widthMedia: '480px'
@@ -34759,6 +34934,12 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
      * @private
      */
     editor: em,
+
+    /**
+     * @property {I18n}
+     * @private
+     */
+    I18n: em.get('I18n'),
 
     /**
      * @property {DomComponents}
@@ -35288,6 +35469,24 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     },
 
     /**
+     * Translate label
+     * @param {String} key Label to translate
+     * @param {Object} [opts] Options for the translation
+     * @param {Object} [opts.params] Params for the translation
+     * @param {Boolean} [opts.noWarn] Avoid warnings in case of missing resources
+     * @returns {String}
+     * @example
+     * editor.t('msg');
+     * // use params
+     * editor.t('msg2', { params: { test: 'hello' } });
+     * // custom local
+     * editor.t('msg2', { params: { test: 'hello' }, l: 'it' });
+     */
+    t: function t() {
+      return em.t.apply(em, arguments);
+    },
+
+    /**
      * Attach event
      * @param  {string} event Event name
      * @param  {Function} callback Callback function
@@ -35406,7 +35605,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 
 
-var deps = [__webpack_require__(/*! utils */ "./src/utils/index.js"), __webpack_require__(/*! keymaps */ "./src/keymaps/index.js"), __webpack_require__(/*! undo_manager */ "./src/undo_manager/index.js"), __webpack_require__(/*! storage_manager */ "./src/storage_manager/index.js"), __webpack_require__(/*! device_manager */ "./src/device_manager/index.js"), __webpack_require__(/*! parser */ "./src/parser/index.js"), __webpack_require__(/*! selector_manager */ "./src/selector_manager/index.js"), __webpack_require__(/*! style_manager */ "./src/style_manager/index.js"), __webpack_require__(/*! modal_dialog */ "./src/modal_dialog/index.js"), __webpack_require__(/*! code_manager */ "./src/code_manager/index.js"), __webpack_require__(/*! panels */ "./src/panels/index.js"), __webpack_require__(/*! rich_text_editor */ "./src/rich_text_editor/index.js"), __webpack_require__(/*! asset_manager */ "./src/asset_manager/index.js"), __webpack_require__(/*! css_composer */ "./src/css_composer/index.js"), __webpack_require__(/*! trait_manager */ "./src/trait_manager/index.js"), __webpack_require__(/*! dom_components */ "./src/dom_components/index.js"), __webpack_require__(/*! navigator */ "./src/navigator/index.js"), __webpack_require__(/*! canvas */ "./src/canvas/index.js"), __webpack_require__(/*! commands */ "./src/commands/index.js"), __webpack_require__(/*! block_manager */ "./src/block_manager/index.js")];
+var deps = [__webpack_require__(/*! utils */ "./src/utils/index.js"), __webpack_require__(/*! i18n */ "./src/i18n/index.js"), __webpack_require__(/*! keymaps */ "./src/keymaps/index.js"), __webpack_require__(/*! undo_manager */ "./src/undo_manager/index.js"), __webpack_require__(/*! storage_manager */ "./src/storage_manager/index.js"), __webpack_require__(/*! device_manager */ "./src/device_manager/index.js"), __webpack_require__(/*! parser */ "./src/parser/index.js"), __webpack_require__(/*! selector_manager */ "./src/selector_manager/index.js"), __webpack_require__(/*! style_manager */ "./src/style_manager/index.js"), __webpack_require__(/*! modal_dialog */ "./src/modal_dialog/index.js"), __webpack_require__(/*! code_manager */ "./src/code_manager/index.js"), __webpack_require__(/*! panels */ "./src/panels/index.js"), __webpack_require__(/*! rich_text_editor */ "./src/rich_text_editor/index.js"), __webpack_require__(/*! asset_manager */ "./src/asset_manager/index.js"), __webpack_require__(/*! css_composer */ "./src/css_composer/index.js"), __webpack_require__(/*! trait_manager */ "./src/trait_manager/index.js"), __webpack_require__(/*! dom_components */ "./src/dom_components/index.js"), __webpack_require__(/*! navigator */ "./src/navigator/index.js"), __webpack_require__(/*! canvas */ "./src/canvas/index.js"), __webpack_require__(/*! commands */ "./src/commands/index.js"), __webpack_require__(/*! block_manager */ "./src/block_manager/index.js")];
 var Collection = backbone__WEBPACK_IMPORTED_MODULE_2___default.a.Collection;
 var timedInterval;
 var updateItr;
@@ -36040,6 +36239,11 @@ var logs = {
   setDragMode: function setDragMode(value) {
     return this.set('dmode', value);
   },
+  t: function t() {
+    var _this$get;
+
+    return (_this$get = this.get('I18n')).t.apply(_this$get, arguments);
+  },
 
   /**
    * Returns true if the editor is in absolute mode
@@ -36180,6 +36384,431 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
     return this;
   }
 }));
+
+/***/ }),
+
+/***/ "./src/i18n/config.js":
+/*!****************************!*\
+  !*** ./src/i18n/config.js ***!
+  \****************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _locale_en__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./locale/en */ "./src/i18n/locale/en.js");
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  // Locale value
+  locale: 'en',
+  // Fallback locale
+  localeFallback: 'en',
+  // Detect locale by checking browser language
+  detectLocale: 1,
+  // Show warnings when some of the i18n resources are missing
+  debug: 0,
+  // Messages to translate
+  messages: {
+    en: _locale_en__WEBPACK_IMPORTED_MODULE_0__["default"]
+  }
+});
+
+/***/ }),
+
+/***/ "./src/i18n/index.js":
+/*!***************************!*\
+  !*** ./src/i18n/index.js ***!
+  \***************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/typeof */ "./node_modules/@babel/runtime/helpers/typeof.js");
+/* harmony import */ var _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _config__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./config */ "./src/i18n/config.js");
+
+
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+/**
+ * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/i18n/config.js)
+ * ```js
+ * const editor = grapesjs.init({
+ *  i18n: {
+ *    locale: 'en',
+ *    localeFallback: 'en',
+ *    messages: {
+ *      it: { hello: 'Ciao', ... },
+ *      ...
+ *    }
+ *  }
+ * })
+ * ```
+ *
+ * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+ *
+ * ```js
+ * const i18n = editor.I18n;
+ * ```
+ *
+ * ### Events
+ * * `i18n:add` - New set of messages is added
+ * * `i18n:update` - The set of messages is updated
+ * * `i18n:locale` - Locale changed
+ *
+ * @module I18n
+ */
+
+
+
+var isObj = function isObj(el) {
+  return !Array.isArray(el) && el !== null && _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_1___default()(el) === 'object';
+};
+
+var deepAssign = function deepAssign() {
+  var target = _objectSpread({}, arguments.length <= 0 ? undefined : arguments[0]);
+
+  for (var i = 1; i < arguments.length; i++) {
+    var source = _objectSpread({}, i < 0 || arguments.length <= i ? undefined : arguments[i]);
+
+    for (var key in source) {
+      var targValue = target[key];
+      var srcValue = source[key];
+
+      if (isObj(targValue) && isObj(srcValue)) {
+        target[key] = deepAssign(targValue, srcValue);
+      } else {
+        target[key] = srcValue;
+      }
+    }
+  }
+
+  return target;
+};
+
+/* harmony default export */ __webpack_exports__["default"] = (function () {
+  return {
+    name: 'I18n',
+    config: _config__WEBPACK_IMPORTED_MODULE_3__["default"],
+
+    /**
+     * Initialize module
+     * @param {Object} config Configurations
+     * @private
+     */
+    init: function init() {
+      var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      this.config = _objectSpread({}, _config__WEBPACK_IMPORTED_MODULE_3__["default"], {}, opts, {
+        messages: _objectSpread({}, _config__WEBPACK_IMPORTED_MODULE_3__["default"].messages, {}, opts.messages || {})
+      });
+
+      if (this.config.detectLocale) {
+        this.config.locale = this._localLang();
+      }
+
+      this.em = opts.em;
+      return this;
+    },
+
+    /**
+     * Get module configurations
+     * @returns {Object} Configuration object
+     */
+    getConfig: function getConfig() {
+      return this.config;
+    },
+
+    /**
+     * Update current locale
+     * @param {String} locale Locale value
+     * @returns {this}
+     * @example
+     * i18n.setLocale('it');
+     */
+    setLocale: function setLocale(locale) {
+      var em = this.em,
+          config = this.config;
+      var evObj = {
+        value: locale,
+        valuePrev: config.locale
+      };
+      em && em.trigger('i18n:locale', evObj);
+      config.locale = locale;
+      return this;
+    },
+
+    /**
+     * Get current locale
+     * @returns {String} Current locale value
+     */
+    getLocale: function getLocale() {
+      return this.config.locale;
+    },
+
+    /**
+     * Get all messages
+     * @param {String} [lang] Specify the language of messages to return
+     * @param {Object} [opts] Options
+     * @param {Boolean} [opts.debug] Show warnings in case of missing language
+     * @returns {Object}
+     * @example
+     * i18n.getMessages();
+     * // -> { en: { hello: '...' }, ... }
+     * i18n.getMessages('en');
+     * // -> { hello: '...' }
+     */
+    getMessages: function getMessages(lang) {
+      var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var messages = this.config.messages;
+      lang && !messages[lang] && this._debug("'".concat(lang, "' i18n lang not found"), opts);
+      return lang ? messages[lang] : messages;
+    },
+
+    /**
+     * Set new set of messages
+     * @param {Object} msg Set of messages
+     * @returns {this}
+     * @example
+     * i18n.getMessages();
+     * // -> { en: { msg1: 'Msg 1', msg2: 'Msg 2', } }
+     * i18n.setMessages({ en: { msg2: 'Msg 2 up', msg3: 'Msg 3', } });
+     * // Set replaced
+     * i18n.getMessages();
+     * // -> { en: { msg2: 'Msg 2 up', msg3: 'Msg 3', } }
+     */
+    setMessages: function setMessages(msg) {
+      var em = this.em,
+          config = this.config;
+      config.messages = msg;
+      em && em.trigger('i18n:update', msg);
+      return this;
+    },
+
+    /**
+     * Update messages
+     * @param {Object} msg Set of messages to add
+     * @returns {this}
+     * @example
+     * i18n.getMessages();
+     * // -> { en: { msg1: 'Msg 1', msg2: 'Msg 2', } }
+     * i18n.addMessages({ en: { msg2: 'Msg 2 up', msg3: 'Msg 3', } });
+     * // Set updated
+     * i18n.getMessages();
+     * // -> { en: { msg1: 'Msg 1', msg2: 'Msg 2 up', msg3: 'Msg 3', } }
+     */
+    addMessages: function addMessages(msg) {
+      var em = this.em;
+      var messages = this.config.messages;
+      em && em.trigger('i18n:add', msg);
+      this.setMessages(deepAssign(messages, msg));
+      return this;
+    },
+
+    /**
+     * Translate the locale message
+     * @param {String} key Label to translate
+     * @param {Object} [opts] Options for the translation
+     * @param {Object} [opts.params] Params for the translation
+     * @param {Boolean} [opts.debug] Show warnings in case of missing resources
+     * @returns {String}
+     * @example
+     * obj.setMessages({
+     *  en: { msg: 'Msg', msg2: 'Msg {test}'},
+     *  it: { msg2: 'Msg {test} it'},
+     * });
+     * obj.t('msg');
+     * // -> outputs `Msg`
+     * obj.t('msg2', { params: { test: 'hello' } });  // use params
+     * // -> outputs `Msg hello`
+     * obj.t('msg2', { l: 'it', params: { test: 'hello' } });  // custom local
+     * // -> outputs `Msg hello it`
+     */
+    t: function t(key) {
+      var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var config = this.config;
+      var param = opts.params || {};
+      var locale = opts.l || this.getLocale();
+      var localeFlb = opts.lFlb || config.localeFallback;
+
+      var result = this._getMsg(key, locale, opts); // Try with fallback
+
+
+      if (!result) result = this._getMsg(key, localeFlb, opts);
+      !result && this._debug("'".concat(key, "' i18n key not found in '").concat(locale, "' lang"), opts);
+      result = result && Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isString"])(result) ? this._addParams(result, param) : result;
+      return result;
+    },
+    _localLang: function _localLang() {
+      var nav = window.navigator || {};
+      var lang = nav.language || nav.userLanguage;
+      return lang ? lang.split('-')[0] : 'en';
+    },
+    _addParams: function _addParams(str, params) {
+      var reg = new RegExp("{([\\w\\d-]*)}", 'g');
+      return str.replace(reg, function (m, val) {
+        return params[val] || '';
+      }).trim();
+    },
+    _getMsg: function _getMsg(key, locale) {
+      var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+      var msgSet = this.getMessages(locale, opts); // Lang set is missing
+
+      if (!msgSet) return;
+      var result = msgSet[key]; // Check for nested getter
+
+      if (!result && key.indexOf('.') > 0) {
+        result = key.split('.').reduce(function (lang, key) {
+          if (Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isUndefined"])(lang)) return;
+          return lang[key];
+        }, msgSet);
+      }
+
+      return result;
+    },
+    _debug: function _debug(str) {
+      var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var em = this.em,
+          config = this.config;
+      (opts.debug || config.debug) && em && em.logWarning(str);
+    }
+  };
+});
+
+/***/ }),
+
+/***/ "./src/i18n/locale/en.js":
+/*!*******************************!*\
+  !*** ./src/i18n/locale/en.js ***!
+  \*******************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+var traitInputAttr = {
+  placeholder: 'eg. Text here'
+};
+/* harmony default export */ __webpack_exports__["default"] = ({
+  assetManager: {
+    addButton: 'Add image',
+    inputPlh: 'http://path/to/the/image.jpg',
+    modalTitle: 'Select Image',
+    uploadTitle: 'Drop files here or click to upload'
+  },
+  // Here just as a reference, GrapesJS core doesn't contain any block,
+  // so this should be omitted from other local files
+  blockManager: {
+    labels: {// 'block-id': 'Block Label',
+    },
+    categories: {// 'category-id': 'Category Label',
+    }
+  },
+  domComponents: {
+    names: {
+      '': 'Box',
+      wrapper: 'Body',
+      text: 'Text',
+      comment: 'Comment',
+      image: 'Image',
+      video: 'Video',
+      label: 'Label',
+      link: 'Link',
+      map: 'Map',
+      tfoot: 'Table foot',
+      tbody: 'Table body',
+      thead: 'Table head',
+      table: 'Table',
+      row: 'Table row',
+      cell: 'Table cell'
+    }
+  },
+  deviceManager: {
+    device: 'Device',
+    devices: {
+      desktop: 'Desktop',
+      tablet: 'Tablet',
+      mobileLandscape: 'Mobile Landscape',
+      mobilePortrait: 'Mobile Portrait'
+    }
+  },
+  panels: {
+    buttons: {
+      titles: {
+        preview: 'Preview',
+        fullscreen: 'Fullscreen',
+        'sw-visibility': 'View components',
+        'export-template': 'View code',
+        'open-sm': 'Open Style Manager',
+        'open-tm': 'Settings',
+        'open-layers': 'Open Layer Manager',
+        'open-blocks': 'Open Blocks'
+      }
+    }
+  },
+  selectorManager: {
+    label: 'Classes',
+    selected: 'Selected',
+    emptyState: '- State -',
+    states: {
+      hover: 'Hover',
+      active: 'Click',
+      'nth-of-type(2n)': 'Even/Odd'
+    }
+  },
+  styleManager: {
+    empty: 'Select an element before using Style Manager',
+    layer: 'Layer',
+    fileButton: 'Images',
+    sectors: {
+      general: 'General',
+      layout: 'Layout',
+      typography: 'Typography',
+      decorations: 'Decorations',
+      extra: 'Extra',
+      flex: 'Flex',
+      dimension: 'Dimension'
+    },
+    // The core library generates the name by their `property` name
+    properties: {// float: 'Float',
+    }
+  },
+  traitManager: {
+    empty: 'Select an element before using Trait Manager',
+    label: 'Component settings',
+    traits: {
+      // The core library generates the name by their `name` property
+      labels: {// id: 'Id',
+        // alt: 'Alt',
+        // title: 'Title',
+        // href: 'Href',
+      },
+      // In a simple trait, like text input, these are used on input attributes
+      attributes: {
+        id: traitInputAttr,
+        alt: traitInputAttr,
+        title: traitInputAttr,
+        href: {
+          placeholder: 'eg. https://google.com'
+        }
+      },
+      // In a trait like select, these are used to translate option names
+      options: {
+        target: {
+          '': 'This window',
+          _blank: 'New window'
+        }
+      }
+    }
+  }
+});
 
 /***/ }),
 
@@ -38263,7 +38892,15 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
    * @return   void
    * */
   updateAttributes: function updateAttributes() {
-    this.$el.attr(this.model.get('attributes'));
+    var em = this.em,
+        model = this.model,
+        $el = this.$el;
+    var attr = model.get('attributes') || {};
+    var title = em && em.t && em.t("panels.buttons.titles.".concat(model.id));
+    $el.attr(attr);
+    title && $el.attr({
+      title: title
+    });
     this.updateClassName();
   },
 
@@ -40215,21 +40852,13 @@ __webpack_require__.r(__webpack_exports__);
   appendTo: '',
   // Default selectors
   selectors: [],
-  // Label for selectors
-  label: 'Classes',
-  // Label for states
-  statesLabel: '- State -',
-  selectedLabel: 'Selected',
   // States
   states: [{
-    name: 'hover',
-    label: 'Hover'
+    name: 'hover'
   }, {
-    name: 'active',
-    label: 'Click'
+    name: 'active'
   }, {
-    name: 'nth-of-type(2n)',
-    label: 'Even/Odd'
+    name: 'nth-of-type(2n)'
   }],
   // Custom selector name escaping strategy, eg.
   // name => name.replace(' ', '_')
@@ -40702,9 +41331,9 @@ __webpack_require__.r(__webpack_exports__);
 var inputProp = 'contentEditable';
 /* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_0___default.a.View.extend({
   template: function template() {
-    var pfx = this.pfx;
-    var ppfx = this.ppfx;
-    var label = this.model.get('label') || '';
+    var pfx = this.pfx,
+        model = this.model;
+    var label = model.get('label') || '';
     return "\n      <span id=\"".concat(pfx, "checkbox\" class=\"fa\" data-tag-status></span>\n      <span id=\"").concat(pfx, "tag-label\" data-tag-name>").concat(label, "</span>\n      <span id=\"").concat(pfx, "close\" data-tag-remove>\n        &Cross;\n      </span>\n    ");
   },
   events: {
@@ -40896,13 +41525,13 @@ __webpack_require__.r(__webpack_exports__);
    * @private
    */
   getStateOptions: function getStateOptions() {
-    var strInput = '';
-
-    for (var i = 0; i < this.states.length; i++) {
-      strInput += '<option value="' + this.states[i].name + '">' + this.states[i].label + '</option>';
-    }
-
-    return strInput;
+    var states = this.states,
+        em = this.em;
+    var result = [];
+    states.forEach(function (state) {
+      return result.push("<option value=\"".concat(state.name, "\">").concat(em.t("selectorManager.states.".concat(state.name)) || state.label || state.name, "</option>"));
+    });
+    return result.join('');
   },
 
   /**
@@ -41108,19 +41737,20 @@ __webpack_require__.r(__webpack_exports__);
     return this.$statesC;
   },
   render: function render() {
-    var ppfx = this.ppfx;
-    var config = this.config;
-    var $el = this.$el;
+    var em = this.em,
+        pfx = this.pfx,
+        ppfx = this.ppfx,
+        $el = this.$el;
     $el.html(this.template({
-      selectedLabel: config.selectedLabel,
-      statesLabel: config.statesLabel,
-      label: config.label,
-      pfx: this.pfx,
-      ppfx: this.ppfx
+      selectedLabel: em.t('selectorManager.selected'),
+      statesLabel: em.t('selectorManager.emptyState'),
+      label: em.t('selectorManager.label'),
+      pfx: pfx,
+      ppfx: ppfx
     }));
     this.$input = $el.find('input#' + this.newInputId);
     this.$addBtn = $el.find('#' + this.addBtnId);
-    this.$classes = $el.find('#' + this.pfx + 'tags-c');
+    this.$classes = $el.find('#' + pfx + 'tags-c');
     this.$states = $el.find('#' + this.stateInputId);
     this.$statesC = $el.find('#' + this.stateInputC);
     this.$states.append(this.getStateOptions());
@@ -41808,10 +42438,6 @@ __webpack_require__.r(__webpack_exports__);
   // Specify the element to use as a container, string (query) or HTMLElement
   // With the empty value, nothing will be rendered
   appendTo: '',
-  // Text to show in case no element selected
-  textNoElement: 'Select an element before using Style Manager',
-  // Text for layers
-  textLayer: 'Layer',
   // Hide the property in case it's not stylable for the
   // selected component (each component has 'stylable' property)
   hideNotStylable: true,
@@ -43936,7 +44562,10 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     // Maximum value
     max: ''
   }),
-  init: function init() {
+  initialize: function initialize() {
+    var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    _Property__WEBPACK_IMPORTED_MODULE_2__["default"].callParentInit(_Property__WEBPACK_IMPORTED_MODULE_2__["default"], this, props, opts);
     var unit = this.get('unit');
     var units = this.get('units');
     this.input = new domain_abstract_ui_InputNumber__WEBPACK_IMPORTED_MODULE_3__["default"]({
@@ -43946,6 +44575,8 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     if (units.length && !unit) {
       this.set('unit', units[0]);
     }
+
+    _Property__WEBPACK_IMPORTED_MODULE_2__["default"].callInit(this, props, opts);
   },
   clearValue: function clearValue() {
     var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -44324,8 +44955,8 @@ __webpack_require__.r(__webpack_exports__);
   template: function template(model) {
     var pfx = this.pfx,
         ppfx = this.ppfx,
-        config = this.config;
-    var label = "".concat(config.textLayer, " ").concat(model.get('index'));
+        em = this.em;
+    var label = "".concat(em && em.t('styleManager.layer'), " ").concat(model.get('index'));
     return "\n      <div id=\"".concat(pfx, "move\" class=\"").concat(ppfx, "no-touch-actions\" data-move-layer>\n        <i class=\"fa fa-arrows\"></i>\n      </div>\n      <div id=\"").concat(pfx, "label\">").concat(label, "</div>\n      <div id=\"").concat(pfx, "preview-box\">\n      \t<div id=\"").concat(pfx, "preview\" data-preview></div>\n      </div>\n      <div id=\"").concat(pfx, "close-layer\" class=\"").concat(pfx, "btn-close\" data-close-layer>\n        &Cross;\n      </div>\n      <div id=\"").concat(pfx, "inputs\" data-properties></div>\n      <div style=\"clear:both\"></div>\n    ");
   },
   initialize: function initialize() {
@@ -44333,6 +44964,7 @@ __webpack_require__.r(__webpack_exports__);
     var model = this.model;
     this.stackModel = o.stackModel || {};
     this.config = o.config || {};
+    this.em = this.config.em;
     this.pfx = this.config.stylePrefix || '';
     this.ppfx = this.config.pStylePrefix || '';
     this.sorter = o.sorter || null;
@@ -44880,10 +45512,9 @@ __webpack_require__.r(__webpack_exports__);
 var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
 /* harmony default export */ __webpack_exports__["default"] = (_PropertyView__WEBPACK_IMPORTED_MODULE_2__["default"].extend({
   templateInput: function templateInput() {
-    var pfx = this.pfx;
-    var ppfx = this.ppfx;
-    var assetsLabel = this.config.assetsLabel || 'Images';
-    return "\n    <div class=\"".concat(pfx, "field ").concat(pfx, "file\">\n      <div id='").concat(pfx, "input-holder'>\n        <div class=\"").concat(pfx, "btn-c\">\n          <button class=\"").concat(pfx, "btn\" id=\"").concat(pfx, "images\" type=\"button\">\n            ").concat(assetsLabel, "\n          </button>\n        </div>\n        <div style=\"clear:both;\"></div>\n      </div>\n      <div id=\"").concat(pfx, "preview-box\">\n        <div id=\"").concat(pfx, "preview-file\"></div>\n        <div id=\"").concat(pfx, "close\">&Cross;</div>\n      </div>\n    </div>\n    ");
+    var pfx = this.pfx,
+        em = this.em;
+    return "\n    <div class=\"".concat(pfx, "field ").concat(pfx, "file\">\n      <div id='").concat(pfx, "input-holder'>\n        <div class=\"").concat(pfx, "btn-c\">\n          <button class=\"").concat(pfx, "btn\" id=\"").concat(pfx, "images\" type=\"button\">\n            ").concat(em.t('styleManager.fileButton'), "\n          </button>\n        </div>\n        <div style=\"clear:both;\"></div>\n      </div>\n      <div id=\"").concat(pfx, "preview-box\">\n        <div id=\"").concat(pfx, "preview-file\"></div>\n        <div id=\"").concat(pfx, "close\">&Cross;</div>\n      </div>\n    </div>\n    ");
   },
   init: function init() {
     var em = this.em;
@@ -45486,11 +46117,18 @@ var clearProp = 'data-clear-style';
     return "\n      <div class=\"".concat(pfx, "label\">\n        ").concat(this.templateLabel(model), "\n      </div>\n      <div class=\"").concat(this.ppfx, "fields\">\n        ").concat(this.templateInput(model), "\n      </div>\n    ");
   },
   templateLabel: function templateLabel(model) {
-    var pfx = this.pfx;
-    var icon = model.get('icon') || '';
-    var info = model.get('info') || '';
+    var pfx = this.pfx,
+        em = this.em;
     var parent = model.parent;
-    return "\n      <span class=\"".concat(pfx, "icon ").concat(icon, "\" title=\"").concat(info, "\">\n        ").concat(model.get('name'), "\n      </span>\n      ").concat(!parent ? "<b class=\"".concat(pfx, "clear\" ").concat(clearProp, ">&Cross;</b>") : '', "\n    ");
+    var _model$attributes = model.attributes,
+        _model$attributes$ico = _model$attributes.icon,
+        icon = _model$attributes$ico === void 0 ? '' : _model$attributes$ico,
+        _model$attributes$inf = _model$attributes.info,
+        info = _model$attributes$inf === void 0 ? '' : _model$attributes$inf,
+        id = _model$attributes.id,
+        name = _model$attributes.name;
+    var label = em && em.t("styleManager.properties.".concat(id)) || name;
+    return "\n      <span class=\"".concat(pfx, "icon ").concat(icon, "\" title=\"").concat(info, "\">\n        ").concat(label, "\n      </span>\n      ").concat(!parent ? "<b class=\"".concat(pfx, "clear\" ").concat(clearProp, ">&Cross;</b>") : '', "\n    ");
   },
   templateInput: function templateInput(model) {
     return "\n      <div class=\"".concat(this.ppfx, "field\">\n        <input placeholder=\"").concat(model.getDefaultValue(), "\"/>\n      </div>\n    ");
@@ -46037,6 +46675,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   initialize: function initialize(o) {
     this.config = o.config || {};
+    this.em = this.config.em;
     this.pfx = this.config.stylePrefix || '';
     this.target = o.target || {};
     this.propTarget = o.propTarget || {};
@@ -46098,15 +46737,20 @@ __webpack_require__.r(__webpack_exports__);
   },
   render: function render() {
     var pfx = this.pfx,
-        model = this.model;
-    var id = model.attributes.id;
-    this.$el.html(this.template({
+        model = this.model,
+        em = this.em,
+        $el = this.$el;
+    var _model$attributes = model.attributes,
+        id = _model$attributes.id,
+        name = _model$attributes.name;
+    var label = em && em.t("styleManager.sectors.".concat(id)) || name;
+    $el.html(this.template({
       pfx: pfx,
-      label: model.get('name')
+      label: label
     }));
-    this.$caret = this.$el.find("#".concat(pfx, "caret"));
+    this.$caret = $el.find("#".concat(pfx, "caret"));
     this.renderProperties();
-    this.$el.attr('class', "".concat(pfx, "sector ").concat(pfx, "sector__").concat(id, " no-select"));
+    $el.attr('class', "".concat(pfx, "sector ").concat(pfx, "sector__").concat(id, " no-select"));
     this.updateOpen();
     return this;
   },
@@ -46347,21 +46991,12 @@ __webpack_require__.r(__webpack_exports__);
   // Specify the element to use as a container, string (query) or HTMLElement
   // With the empty value, nothing will be rendered
   appendTo: '',
-  labelContainer: 'Component settings',
-  // Placeholder label for text input types
-  labelPlhText: 'eg. Text here',
-  // Placeholder label for href input
-  labelPlhHref: 'eg. https://google.com',
   // Default options for the target input
   optionsTarget: [{
-    value: '',
-    name: 'This window'
+    value: ''
   }, {
-    value: '_blank',
-    name: 'New window'
-  }],
-  // Text to show in case no element selected
-  textNoElement: 'Select an element before using Trait Manager'
+    value: '_blank'
+  }]
 });
 
 /***/ }),
@@ -46626,19 +47261,6 @@ __webpack_require__.r(__webpack_exports__);
         switch (prop) {
           case 'target':
             obj.type = 'select';
-            break;
-        } // Define placeholder
-
-
-        switch (prop) {
-          case 'title':
-          case 'alt':
-          case 'id':
-            obj.placeholder = config.labelPlhText;
-            break;
-
-          case 'href':
-            obj.placeholder = config.labelPlhHref;
             break;
         } // Define options
 
@@ -47005,7 +47627,9 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
    */
   getInputEl: function getInputEl() {
     if (!this.$input) {
-      var model = this.model;
+      var model = this.model,
+          em = this.em;
+      var propName = model.get('name');
       var opts = model.get('options') || [];
       var input = '<select>';
       opts.forEach(function (el) {
@@ -47022,7 +47646,8 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
           attrs += style ? " style=\"".concat(style, "\"") : '';
         }
 
-        input += "<option value=\"".concat(value, "\"").concat(attrs, ">").concat(name, "</option>");
+        var resultName = em.t("traitManager.traits.options.".concat(propName, ".").concat(value)) || name;
+        input += "<option value=\"".concat(value, "\"").concat(attrs, ">").concat(resultName, "</option>");
       });
       input += '</select>';
       this.$input = $(input);
@@ -47199,10 +47824,11 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_2___default.a.$;
    * @private
    */
   getLabel: function getLabel() {
+    var em = this.em;
     var _this$model$attribute = this.model.attributes,
         label = _this$model$attribute.label,
         name = _this$model$attribute.name;
-    return Object(utils_mixins__WEBPACK_IMPORTED_MODULE_4__["capitalize"])(label || name).replace(/-/g, ' ');
+    return em.t("traitManager.traits.labels.".concat(name)) || Object(utils_mixins__WEBPACK_IMPORTED_MODULE_4__["capitalize"])(label || name).replace(/-/g, ' ');
   },
 
   /**
@@ -47219,13 +47845,18 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_2___default.a.$;
    */
   getInputEl: function getInputEl() {
     if (!this.$input) {
-      var md = this.model;
+      var em = this.em,
+          model = this.model;
+      var md = model;
+      var name = model.attributes.name;
       var plh = md.get('placeholder') || md.get('default') || '';
       var type = md.get('type') || 'text';
       var min = md.get('min');
       var max = md.get('max');
       var value = this.getModelValue();
       var input = $("<input type=\"".concat(type, "\" placeholder=\"").concat(plh, "\">"));
+      var i18nAttr = em.t("traitManager.traits.attributes.".concat(name)) || {};
+      input.attr(i18nAttr);
 
       if (!Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isUndefined"])(value)) {
         md.set({
