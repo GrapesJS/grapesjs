@@ -11,9 +11,6 @@ import {
 } from 'utils/dom';
 import { on, off, setViewEl, getPointerEvent } from 'utils/mixins';
 
-const motionsEv =
-  'transitionend oTransitionEnd transitionend webkitTransitionEnd';
-
 export default Backbone.View.extend({
   tagName: 'iframe',
 
@@ -22,13 +19,7 @@ export default Backbone.View.extend({
   },
 
   initialize(o) {
-    bindAll(
-      this,
-      'updateOffset',
-      'updateClientY',
-      'stopAutoscroll',
-      'autoscroll'
-    );
+    bindAll(this, 'updateClientY', 'stopAutoscroll', 'autoscroll');
     const { model, el } = this;
     this.config = {
       ...(o.config || {}),
@@ -37,21 +28,8 @@ export default Backbone.View.extend({
     this.ppfx = this.config.pStylePrefix || '';
     this.em = this.config.em;
     this.listenTo(model, 'change:head', this.updateHead);
-    this.listenTo(model, 'change:x change:y', this.updatePos);
-    this.listenTo(model, 'change:width change:height', this.updateDim);
-    this.updatePos();
     model.view = this;
     setViewEl(el, this);
-  },
-
-  updatePos(md) {
-    const { model, el } = this;
-    const { x, y } = model.attributes;
-    const { style } = el;
-    this.rect = 0;
-    style.left = isNaN(x) ? x : `${x}px`;
-    style.top = isNaN(y) ? y : `${y}px`;
-    md && this.updateOffset();
   },
 
   /**
@@ -62,43 +40,6 @@ export default Backbone.View.extend({
     empty(headEl);
     appendVNodes(headEl, this.model.getHead());
   },
-
-  /**
-   * Update dimensions of the frame
-   * @private
-   */
-  updateDim() {
-    const { em, el, $el, model } = this;
-    const { width, height } = model.attributes;
-    const { style } = el;
-    const currW = style.width || '';
-    const currH = style.height || '';
-    const newW = width;
-    const newH = height;
-    const noChanges = currW == newW && currH == newH;
-    const un = 'px';
-    this.rect = 0;
-    style.width = isNumber(newW) ? `${newW}${un}` : newW;
-    style.height = isNumber(newH) ? `${newH}${un}` : newH;
-
-    // Set width and height from DOM (should be done only once)
-    if (isNull(width) || isNull(height)) {
-      const newDims = {
-        ...(!width ? { width: el.offsetWidth } : {}),
-        ...(!height ? { height: el.offsetHeight } : {})
-      };
-      model.set(newDims, { silent: 1 });
-    }
-
-    // Prevent fixed highlighting box which appears when on
-    // component hover during the animation
-    em.stopDefault({ preserveSelected: 1 });
-    noChanges ? this.updateOffset() : $el.one(motionsEv, this.updateOffset);
-  },
-
-  updateOffset: debounce(function() {
-    this.em.runDefault({ preserveSelected: 1 });
-  }),
 
   getEl() {
     return this.el;
@@ -447,7 +388,6 @@ export default Backbone.View.extend({
       })
     );
 
-    this.updateDim();
     model.trigger('loaded');
   }
 });
