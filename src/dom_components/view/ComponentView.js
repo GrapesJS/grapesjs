@@ -79,7 +79,13 @@ export default Backbone.View.extend({
 
   remove() {
     Backbone.View.prototype.remove.apply(this, arguments);
-    const { views } = this.model;
+    const { model } = this;
+    const frameM = this._getFrame().model;
+    model.components().forEach(comp => {
+      const view = comp.getView(frameM);
+      view && view.remove();
+    });
+    const { views } = model;
     views.splice(views.indexOf(this), 1);
     this.removed(this._clbObj());
     return this;

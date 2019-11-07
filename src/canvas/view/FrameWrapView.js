@@ -7,8 +7,12 @@ const motionsEv =
   'transitionend oTransitionEnd transitionend webkitTransitionEnd';
 
 export default Backbone.View.extend({
+  events: {
+    'click [data-action-remove]': 'remove'
+  },
+
   initialize(opts = {}, conf = {}) {
-    bindAll(this, 'onScroll', 'frameLoaded');
+    bindAll(this, 'onScroll', 'frameLoaded', 'updateOffset');
     const { model } = this;
     const config = {
       ...(opts.config || conf),
@@ -23,6 +27,12 @@ export default Backbone.View.extend({
     this.listenTo(model, 'change:x change:y', this.updatePos);
     this.listenTo(model, 'loaded change:width change:height', this.updateDim);
     this.updatePos();
+  },
+
+  remove() {
+    Backbone.View.prototype.remove.apply(this, arguments);
+    this.frame.remove();
+    return this;
   },
 
   updateOffset: debounce(function() {
@@ -87,13 +97,21 @@ export default Backbone.View.extend({
   },
 
   render() {
-    const { frame, $el, ppfx, cv } = this;
+    const { frame, $el, ppfx, cv, model } = this;
     frame.render();
     $el
       .empty()
       .attr({
         class: `${ppfx}frame-wrapper`
       })
+      .append(
+        `<div class="${ppfx}frame-wrapper__header">
+        <div class="${ppfx}frame-wrapper__name">${model.get('name') || ''}</div>
+        <div data-action-remove>
+          <i class="fa fa-trash"></i>
+        </div>
+      </div>`
+      )
       .append(frame.el);
     const elTools = createEl(
       'div',
@@ -129,7 +147,7 @@ export default Backbone.View.extend({
     );
     this.elTools = elTools;
     cv.toolsWrapper.appendChild(elTools); // TODO remove on frame remove
-    frame.model.on('loaded', this.frameLoaded);
+    model.on('loaded', this.frameLoaded);
     return this;
   }
 });

@@ -1,5 +1,5 @@
 import Backbone from 'backbone';
-import { bindAll, isNumber, isString, isNull, debounce } from 'underscore';
+import { bindAll, isString, debounce } from 'underscore';
 import CssRulesView from 'css_composer/view/CssRulesView';
 import ComponentView from 'dom_components/view/ComponentView';
 import {
@@ -113,7 +113,9 @@ export default Backbone.View.extend({
   },
 
   remove() {
+    const { root } = this;
     Backbone.View.prototype.remove.apply(this, arguments);
+    root.remove();
   },
 
   startAutoscroll() {
@@ -343,16 +345,14 @@ export default Backbone.View.extend({
       ${conf.protectedCss || ''}
     </style>`
     );
-    append(
-      body,
-      new ComponentView({
-        model: root,
-        config: {
-          ...root.config,
-          frameView: this
-        }
-      }).render().el
-    );
+    this.root = new ComponentView({
+      model: root,
+      config: {
+        ...root.config,
+        frameView: this
+      }
+    }).render();
+    append(body, this.root.el);
     append(
       body,
       new CssRulesView({
