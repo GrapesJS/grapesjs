@@ -367,9 +367,11 @@ class Resizer {
     const { style } = container;
 
     if (!opts.avoidContainerUpdate && el) {
-      const toUpdate = ['left', 'top', 'width', 'height'];
-      const rectEl = this.getElementPos(el, { target: 'container' });
-      toUpdate.forEach(pos => (style[pos] = `${rectEl[pos]}px`));
+      // On component resize container fits the tool,
+      // to check if this update is required somewhere else point
+      // const toUpdate = ['left', 'top', 'width', 'height'];
+      // const rectEl = this.getElementPos(el, { target: 'container' });
+      // toUpdate.forEach(pos => (style[pos] = `${rectEl[pos]}px`));
       if (opt.forceShow) style.display = 'block';
     }
 

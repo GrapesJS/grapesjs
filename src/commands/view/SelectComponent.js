@@ -456,11 +456,6 @@ export default {
           showOffsets = 1;
         },
 
-        onUpdateContainer({ el }) {
-          el.style.top = 0;
-          el.style.left = 0;
-        },
-
         updateTarget(el, rect, options = {}) {
           if (!modelToStyle) {
             return;
@@ -477,7 +472,7 @@ export default {
           } = config;
           const onlyHeight = ['tc', 'bc'].indexOf(selectedHandler) >= 0;
           const onlyWidth = ['cl', 'cr'].indexOf(selectedHandler) >= 0;
-          const style = modelToStyle.getStyle();
+          const style = {};
           const en = !store ? 1 : ''; // this will trigger the final change
 
           if (!onlyHeight) {
@@ -490,7 +485,7 @@ export default {
             style[keyHeight] = autoHeight ? 'auto' : `${rect.h}${unitHeight}`;
           }
 
-          modelToStyle.setStyle({ ...style, en }, { avoidStore: !store });
+          modelToStyle.addStyle({ ...style, en }, { avoidStore: !store });
           const updateEvent = `update:component:style`;
           const eventToListen = `${updateEvent}:${keyHeight} ${updateEvent}:${keyWidth}`;
           em && em.trigger(eventToListen, null, null, { noEmit: 1 });
