@@ -390,6 +390,7 @@ export default {
       !isElement(elem) && isTaggableNode(elem) ? elem : em.getSelected();
     const resizable = model.get('resizable');
     const el = isElement(elem) ? elem : model.getEl();
+    const framesElStyle = canvas.getFramesEl().style;
     let options = {};
     let modelToStyle;
 
@@ -420,6 +421,7 @@ export default {
           } = config;
           toggleBodyClass('add', e, opts);
           modelToStyle = em.get('StyleManager').getModelToStyle(model);
+          framesElStyle.pointerEvents = 'none';
           const computedStyle = getComputedStyle(el);
           const modelStyle = modelToStyle.getStyle();
 
@@ -453,6 +455,7 @@ export default {
         onEnd(e, opts) {
           toggleBodyClass('remove', e, opts);
           editor.trigger('component:resize');
+          framesElStyle.pointerEvents = '';
           showOffsets = 1;
         },
 

@@ -136,6 +136,10 @@ export default () => {
       return CanvasView.frame.el;
     },
 
+    getFramesEl() {
+      return CanvasView.framesArea;
+    },
+
     /**
      * Get the window instance of the iframe element
      * @return {Window}
