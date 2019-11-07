@@ -478,6 +478,7 @@ export default {
           const onlyHeight = ['tc', 'bc'].indexOf(selectedHandler) >= 0;
           const onlyWidth = ['cl', 'cr'].indexOf(selectedHandler) >= 0;
           const style = modelToStyle.getStyle();
+          const en = !store ? 1 : ''; // this will trigger the final change
 
           if (!onlyHeight) {
             const bodyw = canvas.getBody().offsetWidth;
@@ -489,14 +490,10 @@ export default {
             style[keyHeight] = autoHeight ? 'auto' : `${rect.h}${unitHeight}`;
           }
 
-          modelToStyle.setStyle(style, { avoidStore: 1 });
+          modelToStyle.setStyle({ ...style, en }, { avoidStore: !store });
           const updateEvent = `update:component:style`;
           const eventToListen = `${updateEvent}:${keyHeight} ${updateEvent}:${keyWidth}`;
           em && em.trigger(eventToListen, null, null, { noEmit: 1 });
-
-          if (store) {
-            modelToStyle.trigger('change:style', modelToStyle, style, {});
-          }
         }
       };
 
