@@ -626,6 +626,11 @@ export default () => {
       return zoom ? 1 / zoom : 1;
     },
 
+    toggleFramesEvents(on) {
+      const { style } = this.getFramesEl();
+      style.pointerEvents = on ? '' : 'none';
+    },
+
     /**
      * Returns wrapper element
      * @return {HTMLElement}

@@ -635,6 +635,10 @@ export default Backbone.Model.extend({
     return this.get('Canvas').getZoomDecimal();
   },
 
+  getZoomMultiplier() {
+    return this.get('Canvas').getZoomMultiplier();
+  },
+
   setDragMode(value) {
     return this.set('dmode', value);
   },

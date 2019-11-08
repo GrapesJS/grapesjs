@@ -2,13 +2,15 @@ import Backbone from 'backbone';
 import FrameView from './FrameView';
 import { bindAll, isNumber, isNull, debounce } from 'underscore';
 import { createEl } from 'utils/dom';
+import Dragger from 'utils/Dragger';
 
 const motionsEv =
   'transitionend oTransitionEnd transitionend webkitTransitionEnd';
 
 export default Backbone.View.extend({
   events: {
-    'click [data-action-remove]': 'remove'
+    'click [data-action-remove]': 'remove',
+    'mousedown [data-action-move]': 'startDrag'
   },
 
   initialize(opts = {}, conf = {}) {
@@ -18,15 +20,46 @@ export default Backbone.View.extend({
       ...(opts.config || conf),
       frameWrapView: this
     };
-    const { canvasView } = config;
+    const { canvasView, em } = config;
     this.cv = canvasView;
     this.config = config;
-    this.em = config.em;
+    this.em = em;
+    this.canvas = em && em.get('Canvas');
     this.ppfx = config.pStylePrefix || '';
     this.frame = new FrameView({ model, config });
     this.listenTo(model, 'change:x change:y', this.updatePos);
     this.listenTo(model, 'loaded change:width change:height', this.updateDim);
     this.updatePos();
+    this.setupDragger();
+  },
+
+  setupDragger() {
+    const { canvas, model } = this;
+    let dragX, dragY, zoom;
+    const toggleEffects = on => {
+      canvas.toggleFramesEvents(on);
+    };
+
+    this.dragger = new Dragger({
+      onStart: () => {
+        const { x, y } = model.attributes;
+        zoom = this.em.getZoomMultiplier();
+        dragX = x;
+        dragY = y;
+        toggleEffects();
+      },
+      onEnd: () => toggleEffects(1),
+      setPosition: posOpts => {
+        model.set({
+          x: dragX + posOpts.x * zoom,
+          y: dragY + posOpts.y * zoom
+        });
+      }
+    });
+  },
+
+  startDrag(ev) {
+    ev && this.dragger.start(ev);
   },
 
   remove() {
@@ -106,10 +139,12 @@ export default Backbone.View.extend({
       })
       .append(
         `<div class="${ppfx}frame-wrapper__header">
-        <div class="${ppfx}frame-wrapper__name">${model.get('name') || ''}</div>
-        <div data-action-remove>
-          <i class="fa fa-trash"></i>
+        <div class="${ppfx}frame-wrapper__name" data-action-move>
+          ${model.get('name') || ''}
         </div>
+        <span data-action-remove>
+          <i class="fa fa-trash"></i>
+        </span>
       </div>`
       )
       .append(frame.el);
