@@ -137,6 +137,7 @@ export default Backbone.View.extend({
       .attr({
         class: `${ppfx}frame-wrapper`
       })
+      /*
       .append(
         `<div class="${ppfx}frame-wrapper__header">
         <div class="${ppfx}frame-wrapper__name" data-action-move>
@@ -146,7 +147,7 @@ export default Backbone.View.extend({
           <i class="fa fa-trash"></i>
         </span>
       </div>`
-      )
+      )*/
       .append(frame.el);
     const elTools = createEl(
       'div',
