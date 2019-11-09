@@ -80,7 +80,8 @@ export default Backbone.View.extend({
   remove() {
     Backbone.View.prototype.remove.apply(this, arguments);
     const { model } = this;
-    const frameM = this._getFrame().model;
+    const frame = this._getFrame() || {};
+    const frameM = frame.model;
     model.components().forEach(comp => {
       const view = comp.getView(frameM);
       view && view.remove();

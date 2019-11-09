@@ -259,33 +259,7 @@ export default Backbone.View.extend({
     append(
       body,
       `<style>
-      * {
-        box-sizing: border-box;
-      }
-      html, body, [data-gjs-type=wrapper] {
-        min-height: 100%;
-      }
-      body {
-        margin: 0;
-        height: 100%;
-        background-color: #fff
-      }
-      [data-gjs-type=wrapper] {
-        overflow: auto;
-        overflow-x: hidden;
-      }
-
-      * ::-webkit-scrollbar-track {
-        background: rgba(0, 0, 0, 0.1)
-      }
-
-      * ::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.2)
-      }
-
-      * ::-webkit-scrollbar {
-        width: 10px
-      }
+      ${conf.baseCss || ''}
 
       .${ppfx}dashed *[data-highlightable] {
         outline: 1px dashed rgba(170,170,170,0.7);

@@ -44,9 +44,9 @@ export default Backbone.Collection.extend({
 
   parseString(value, opt = {}) {
     const { em } = this;
+    const { domc } = this.opt;
     const cssc = em.get('CssComposer');
     const parsed = em.get('Parser').parseHtml(value);
-    const domc = em.get('DomComponents');
     // We need this to avoid duplicate IDs
     if (!Component) Component = require('./Component').default;
     Component.checkId(parsed.html, parsed.css, domc.componentsById);

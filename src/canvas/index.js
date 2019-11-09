@@ -133,7 +133,8 @@ export default () => {
      * @return {HTMLIFrameElement}
      */
     getFrameEl() {
-      return CanvasView.frame.el;
+      const { frame } = CanvasView;
+      return frame && frame.el;
     },
 
     getFramesEl() {
@@ -153,7 +154,8 @@ export default () => {
      * @return {HTMLDocument}
      */
     getDocument() {
-      return this.getFrameEl().contentDocument;
+      const frame = this.getFrameEl();
+      return frame && frame.contentDocument;
     },
 
     /**

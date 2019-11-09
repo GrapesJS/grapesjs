@@ -43,7 +43,7 @@ export default {
     * {
       box-sizing: border-box;
     }
-    html, body, #wrapper {
+    html, body, [data-gjs-type=wrapper] {
       min-height: 100%;
     }
     body {
@@ -51,7 +51,7 @@ export default {
       height: 100%;
       background-color: #fff
     }
-    #wrapper {
+    [data-gjs-type=wrapper] {
       overflow: auto;
       overflow-x: hidden;
     }
