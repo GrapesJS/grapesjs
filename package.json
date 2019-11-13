@@ -125,6 +125,7 @@
     "build-dev": "webpack --env=dev && npm run build:css && npm run build:locale",
     "build:css": "node-sass src/styles/scss/main.scss dist/css/grapes.min.css --output-style compressed",
     "build:locale": "rm -rf ./locale && node scripts/build-locale.js && babel locale -d locale --copy-files --no-comments",
+    "build:locale-w": "powershell Remove-Item ./locale -recurse && node scripts/build-locale.js && babel locale -d locale --copy-files --no-comments",
     "v:patch": "npm version --no-git-tag-version patch",
     "start": "run-p start:*",
     "start:css": "npm run build:css -- -w",

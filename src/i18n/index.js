@@ -11,6 +11,15 @@
  *    }
  *  }
  * })
+ *
+ * or
+ *
+ * 其他的配置 在 ./i18n/locale/ 下面的具体文件完成
+ * const editor = grapesjs.init({
+ *  i18n: {
+ *    locale: 'zh'
+ *  }
+ * })
  * ```
  *
  * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
@@ -27,7 +36,7 @@
  * @module I18n
  */
 import { isUndefined, isString } from 'underscore';
-import config from './config';
+import { defaultLang, getLangConfig } from './config';
 
 const isObj = el => !Array.isArray(el) && el !== null && typeof el === 'object';
 
@@ -52,6 +61,8 @@ const deepAssign = (...args) => {
   return target;
 };
 
+const config = getLangConfig(defaultLang);
+
 export default () => {
   return {
     name: 'I18n',
@@ -64,12 +75,15 @@ export default () => {
      * @private
      */
     init(opts = {}) {
+      let optConfig = getLangConfig(opts.locale);
+      if (!optConfig) optConfig = {};
+
       this.config = {
         ...config,
-        ...opts,
+        ...optConfig,
         messages: {
           ...config.messages,
-          ...(opts.messages || {})
+          ...(optConfig.messages || {})
         }
       };
 
