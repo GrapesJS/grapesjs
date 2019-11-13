@@ -38,7 +38,7 @@ let allLangs = [
 
 let getLangConfig = locale => {
   if (!locale) {
-    console.warn('the locale is null');
+    //console.warn('the locale is null');
     return null;
   }
 

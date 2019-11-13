@@ -81,6 +81,7 @@ export default () => {
       this.config = {
         ...config,
         ...optConfig,
+        ...opts,
         messages: {
           ...config.messages,
           ...(optConfig.messages || {}),

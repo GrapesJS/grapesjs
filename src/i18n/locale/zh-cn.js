@@ -12,6 +12,7 @@ export default {
   blockManager: {
     labels: {
       // 'block-id': 'Block Label',
+      testBlock: 'Block'
     },
     categories: {
       // 'category-id': 'Category Label',
@@ -19,10 +20,10 @@ export default {
   },
   domComponents: {
     names: {
-      '': 'Box',
+      '': 'Div',
       wrapper: 'Body',
       text: '文本',
-      comment: 'Comment',
+      comment: '注释',
       image: '图片',
       video: '视频',
       label: '标签',
@@ -33,7 +34,8 @@ export default {
       thead: '表头',
       table: '表格',
       row: '行',
-      cell: '单元格'
+      cell: '单元格',
+      textnode: '文字'
     }
   },
   deviceManager: {
@@ -84,7 +86,84 @@ export default {
     },
     // The core library generates the name by their `property` name
     properties: {
-      // float: 'Float',
+      float: '浮动',
+      display: '显示',
+      position: '位置',
+      top: '上',
+      right: '右',
+      left: '左',
+      bottom: '下',
+      width: '宽度',
+      height: '高度',
+      'max-width': '最大宽度',
+      'max-height': '最大高度',
+      'min-height': '最小高度',
+      margin: '外边距',
+      'margin-top': '上',
+      'margin-right': '右',
+      'margin-bottom': '下',
+      'margin-left': '左',
+      padding: '内边距',
+      'padding-top': '上',
+      'padding-right': '右',
+      'padding-bottom': '下',
+      'padding-left': '左',
+      'font-family': '字体',
+      'font-size': '字号',
+      'font-weight': '粗细',
+      'letter-spacing': '字符间距',
+      color: '颜色',
+      'line-height': '行高',
+      'text-shadow': '文本阴影',
+      'text-shadow-h': '水平',
+      'text-shadow-v': '垂直',
+      'text-shadow-blur': '位置',
+      'text-shadow-color': '颜色',
+      'border-radius': '圆角边框',
+      'border-top-left-radius': '左上角',
+      'border-top-right-radius': '右上角',
+      'border-bottom-left-radius': '左下角',
+      'border-bottom-right-radius': '右下角',
+      border: '边框',
+      'border-width': '宽度',
+      'border-style': '样式',
+      'border-color': '颜色',
+      'background-color': '背景色',
+      'box-shadow': '盒阴影',
+      'box-shadow-v': '垂直',
+      'box-shadow-h': '水平',
+      'box-shadow-blur': '距离',
+      'box-shadow-spread': '尺寸',
+      'box-shadow-color': '颜色',
+      'box-shadow-type': '类型',
+      background: '背景',
+      'background-image': '图片',
+      'background-repeat': '重复',
+      'background-position': '开始位置',
+      'background-attachment': 'attacthment',
+      'background-size': '尺寸',
+      transform: '旋转',
+      'transform-rotate-x': '2Dx轴',
+      'transform-rotate-y': '2Dy轴',
+      'transform-rotate-z': '2Dz轴',
+      'transform-scale-x': '3Dx轴',
+      'transform-scale-y': '3Dy轴',
+      'transform-scale-z': '3Dz轴',
+      transition: '过度',
+      'transition-property': '属性',
+      'transition-duration': '时间',
+      'transition-timing-function': '速度曲线',
+      'align-items': 'align-items',
+      'align-content': 'align-content',
+      order: 'order',
+      'flex-direction': 'flex-direction',
+      'flex-wrap': 'flex-wrap',
+      'flex-basis': 'flex-basis',
+      'flex-grow': 'flex-grow',
+      'flex-shrink': 'flex-shrink',
+      'align-self': 'align-self',
+      'justify-content': 'justify-content',
+      perspective: 'perspective'
     }
   },
   traitManager: {
@@ -93,10 +172,11 @@ export default {
     traits: {
       // The core library generates the name by their `name` property
       labels: {
-        // id: 'Id',
-        // alt: 'Alt',
-        // title: 'Title',
-        // href: 'Href',
+        id: 'Id',
+        alt: 'Alt',
+        title: 'Title',
+        href: 'Href',
+        target: 'Target'
       },
       // In a simple trait, like text input, these are used on input attributes
       attributes: {

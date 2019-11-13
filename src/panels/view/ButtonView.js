@@ -57,7 +57,8 @@ export default Backbone.View.extend({
   updateAttributes() {
     const { em, model, $el } = this;
     const attr = model.get('attributes') || {};
-    const title = em && em.t && em.t(`panels.buttons.titles.${model.id}`);
+    const title =
+      em && em.t && (model.id && em.t(`panels.buttons.titles.${model.id}`));
     $el.attr(attr);
     title && $el.attr({ title });
 
