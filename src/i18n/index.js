@@ -83,7 +83,8 @@ export default () => {
         ...optConfig,
         messages: {
           ...config.messages,
-          ...(optConfig.messages || {})
+          ...(optConfig.messages || {}),
+          ...(opts.messages || {})
         }
       };
 
