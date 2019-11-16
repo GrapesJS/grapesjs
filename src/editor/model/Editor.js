@@ -1,4 +1,11 @@
-import { isUndefined, isArray, contains, toArray, keys } from 'underscore';
+import {
+  isUndefined,
+  isFunction,
+  isArray,
+  contains,
+  toArray,
+  keys
+} from 'underscore';
 import Backbone from 'backbone';
 import Extender from 'utils/extender';
 import { getModel } from 'utils/mixins';
@@ -514,26 +521,23 @@ export default Backbone.Model.extend({
    * @private
    */
   getCacheLoad(force, clb) {
-    var f = force ? 1 : 0;
-    if (this.cacheLoad && !f) return this.cacheLoad;
-    var sm = this.get('StorageManager');
-    var load = [];
+    if (this.cacheLoad && !force) return this.cacheLoad;
+    const sm = this.get('StorageManager');
+    const load = [];
 
     if (!sm) return {};
 
     this.get('storables').forEach(m => {
-      var key = m.storageKey;
-      key = typeof key === 'function' ? key() : key;
-      var keys = key instanceof Array ? key : [key];
-      keys.forEach(k => {
-        load.push(k);
-      });
+      let key = m.storageKey;
+      key = isFunction(key) ? key() : key;
+      const keys = isArray(key) ? key : [key];
+      keys.forEach(k => load.push(k));
     });
 
     sm.load(load, res => {
       this.cacheLoad = res;
       clb && clb(res);
-      setTimeout(() => this.trigger('storage:load', res), 0);
+      setTimeout(() => this.trigger('storage:load', res));
     });
   },
 
