@@ -508,7 +508,9 @@ export default Backbone.Model.extend({
    */
   load(clb = null) {
     this.getCacheLoad(1, res => {
-      this.get('storables').forEach(module => module.load(res));
+      const storables = this.get('storables');
+      storables.forEach(module => module.clear && module.clear());
+      storables.forEach(module => module.load(res));
       clb && clb(res);
     });
   },

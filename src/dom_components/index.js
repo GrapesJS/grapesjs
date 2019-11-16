@@ -389,8 +389,6 @@ export default () => {
       const isObj = result && result.constructor === Object;
 
       if ((result && result.length) || isObj) {
-        this.clear();
-
         // If the result is an object I consider it the wrapper
         if (isObj) {
           this.getWrapper().set(result);
