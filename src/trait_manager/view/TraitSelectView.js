@@ -54,7 +54,7 @@ export default TraitView.extend({
 
       input += '</select>';
       this.$input = $(input);
-      let val = model.getTargetValue() || model.get('value');
+      const val = model.getTargetValue();
       !isUndefined(val) && this.$input.val(val);
     }
 

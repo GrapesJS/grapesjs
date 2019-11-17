@@ -108,7 +108,7 @@ export default {
       // In a trait like select, these are used to translate option names
       options: {
         target: {
-          '': 'This window',
+          false: 'This window',
           _blank: 'New window'
         }
       }
