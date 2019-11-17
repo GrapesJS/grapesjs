@@ -148,6 +148,10 @@ export default {
   // To get more about this feature read: https://github.com/artf/grapesjs/issues/1936
   dragMode: 0,
 
+  // Import asynchronously CSS to use as icons
+  cssIcons:
+    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css',
+
   // Dom element
   el: '',
 
