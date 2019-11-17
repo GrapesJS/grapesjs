@@ -200,9 +200,9 @@ export default Backbone.Model.extend({
 
     if (Mod.storageKey && Mod.store && Mod.load && sm) {
       cfg.stm = sm;
-      const storables = this.get('storables');
-      storables.push(Mod);
-      this.set('storables', storables);
+      // DomComponents should be load before CSS Composer
+      const mth = name == 'domComponents' ? 'unshift' : 'push';
+      this.get('storables')[mth](Mod);
     }
 
     cfg.em = this;
@@ -508,9 +508,7 @@ export default Backbone.Model.extend({
    */
   load(clb = null) {
     this.getCacheLoad(1, res => {
-      const storables = this.get('storables');
-      storables.forEach(module => module.clear && module.clear());
-      storables.forEach(module => module.load(res));
+      this.get('storables').forEach(module => module.load(res));
       clb && clb(res);
     });
   },
