@@ -1,7 +1,7 @@
 import en from './locale/en';
 import it from './locale/it';
 import tr from './locale/tr';
-import zh from './locale/zh-cn';
+import zh from './locale/zh';
 
 let defaultLang = 'en';
 
