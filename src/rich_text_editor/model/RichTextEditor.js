@@ -143,8 +143,6 @@ export default class RichTextEditor {
       btn.className = btn.className.replace(inactive, '').trim();
       btn.className = btn.className.replace(disabled, '').trim();
 
-      console.log(this);
-
       // if there is a state function, which depicts the state,
       // i.e. `active`, `disabled`, then call it
       if (state) {
