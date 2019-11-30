@@ -115,6 +115,3 @@ describe('Commands', () => {
     });
   });
 });
-
-Models.run();
-CommandAbstract.run();

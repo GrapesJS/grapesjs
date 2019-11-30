@@ -34,7 +34,7 @@ export default class Droppable {
     this.counter = 0;
     this.over = 0;
     dragStop && dragStop(cancel);
-    em.runDefault();
+    em.runDefault({ preserveSelected: 1 });
     em.trigger('canvas:dragend', ev);
   }
 

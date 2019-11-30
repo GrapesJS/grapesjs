@@ -14,6 +14,7 @@ images/
 private/
 vendor/
 coverage/
+/locale/
 node_modules/
 bower_components/
 grapesjs-*.tgz

@@ -51,7 +51,7 @@ export default Backbone.View.extend({
           </div>
         </div>
       </div>
-      <div class="${this.clsCount}">${count || ''}</div>
+      <div class="${this.clsCount}" data-count>${count || ''}</div>
       <div class="${this.clsMove}" data-toggle-move>
         <i class="fa fa-arrows"></i>
       </div>
@@ -295,26 +295,21 @@ export default Backbone.View.extend({
    * @return void
    * */
   checkChildren() {
-    const model = this.model;
+    const { model, clsNoChild } = this;
     const count = this.countChildren(model);
-    const pfx = this.pfx;
-    const noChildCls = this.clsNoChild;
     const title = this.$el
       .children(`.${this.clsTitleC}`)
       .children(`.${this.clsTitle}`);
+    let { cnt } = this;
 
-    if (!this.cnt) {
-      this.cnt = this.$el.children(`.${this.clsCount}`);
+    if (!cnt) {
+      cnt = this.$el.children('[data-count]').get(0);
+      this.cnt = cnt;
     }
 
-    if (count) {
-      title.removeClass(noChildCls);
-      this.cnt.html(count);
-    } else {
-      title.addClass(noChildCls);
-      this.cnt.empty();
-      model.set('open', 0);
-    }
+    title[count ? 'removeClass' : 'addClass'](clsNoChild);
+    if (cnt) cnt.innerHTML = count || '';
+    !count && model.set('open', 0);
   },
 
   /**

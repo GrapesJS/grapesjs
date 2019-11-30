@@ -55,6 +55,4 @@ describe('Modal dialog', () => {
       expect(obj.isOpen()).toEqual(false);
     });
   });
-
-  ModalView.run();
 });

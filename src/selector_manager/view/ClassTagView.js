@@ -4,9 +4,9 @@ const inputProp = 'contentEditable';
 
 export default Backbone.View.extend({
   template() {
-    const pfx = this.pfx;
-    const ppfx = this.ppfx;
-    const label = this.model.get('label') || '';
+    const { pfx, model } = this;
+    const label = model.get('label') || '';
+
     return `
       <span id="${pfx}checkbox" class="fa" data-tag-status></span>
       <span id="${pfx}tag-label" data-tag-name>${label}</span>
