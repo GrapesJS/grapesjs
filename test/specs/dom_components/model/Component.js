@@ -3,6 +3,7 @@ import DomComponents from 'dom_components';
 import Component from 'dom_components/model/Component';
 import ComponentImage from 'dom_components/model/ComponentImage';
 import ComponentText from 'dom_components/model/ComponentText';
+import ComponentTextNode from 'dom_components/model/ComponentTextNode';
 import ComponentLink from 'dom_components/model/ComponentLink';
 import ComponentMap from 'dom_components/model/ComponentMap';
 import ComponentVideo from 'dom_components/model/ComponentVideo';
@@ -478,6 +479,36 @@ describe('Text Component', () => {
       content: 'test content'
     });
     expect(obj.toHTML()).toEqual('<div data-test="value">test content</div>');
+  });
+});
+
+describe('Text Node Component', () => {
+  beforeEach(() => {
+    obj = new ComponentTextNode();
+  });
+
+  afterEach(() => {
+    obj = null;
+  });
+
+  test('Has content property', () => {
+    expect(obj.has('content')).toEqual(true);
+  });
+
+  test('Not droppable', () => {
+    expect(obj.get('droppable')).toEqual(false);
+  });
+
+  test('Not editable', () => {
+    expect(obj.get('editable')).toEqual(true);
+  });
+
+  test('Component toHTML with attributes', () => {
+    obj = new ComponentTextNode({
+      attributes: { 'data-test': 'value' },
+      content: `test content &<>"'`
+    });
+    expect(obj.toHTML()).toEqual('test content &amp;&lt;&gt;&quot;&#039;');
   });
 });
 
