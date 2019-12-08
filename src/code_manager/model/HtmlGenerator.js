@@ -5,9 +5,9 @@ export default Backbone.Model.extend({
     const models = model.get('components');
 
     if (opts.exportWrapper) {
-      return opts.wrapperIsBody
-        ? `<body>${this.buildModels(models)}</body>`
-        : model.toHTML();
+      return model.toHTML({
+        ...(opts.wrapperIsBody && { tag: 'body' })
+      });
     }
 
     return this.buildModels(models);
