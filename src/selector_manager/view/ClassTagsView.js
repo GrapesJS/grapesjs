@@ -50,21 +50,17 @@ export default Backbone.View.extend({
     this.events['change #' + this.stateInputId] = 'stateChanged';
     const { em } = this.config;
     const emitter = this.getStyleEmitter();
+    const coll = this.collection;
     this.target = this.config.em;
     this.em = em;
 
+    const toList = 'component:toggled component:update:classes';
+    this.listenTo(em, toList, this.componentChanged);
     this.listenTo(emitter, 'styleManager:update', this.componentChanged);
-    this.listenTo(
-      em,
-      'component:toggled component:update:classes',
-      this.componentChanged
-    );
     this.listenTo(em, 'component:update:classes', this.updateSelector);
-
-    this.listenTo(this.collection, 'add', this.addNew);
-    this.listenTo(this.collection, 'reset', this.renderClasses);
-    this.listenTo(this.collection, 'remove', this.tagRemoved);
-
+    this.listenTo(coll, 'add', this.addNew);
+    this.listenTo(coll, 'reset', this.renderClasses);
+    this.listenTo(coll, 'remove', this.tagRemoved);
     this.delegateEvents();
   },
 
@@ -73,6 +69,12 @@ export default Backbone.View.extend({
     const sm = em && em.get('StyleManager');
     const emitter = sm && sm.getEmitter();
     return emitter || {};
+  },
+
+  getSelectedModel() {
+    const { em, config } = this;
+    const sm = em && em.get('StyleManager');
+    return sm && sm.getModelToStyle(em.getSelected());
   },
 
   /**
@@ -189,7 +191,7 @@ export default Backbone.View.extend({
    * @private
    */
   updateSelector(target) {
-    const { pfx, collection, el } = this;
+    const { pfx, collection, el, config } = this;
     const selected = target || this.getTarget();
     this.compTarget = selected;
     if (!selected || !selected.get) return;
