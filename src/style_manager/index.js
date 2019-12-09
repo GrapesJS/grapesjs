@@ -265,6 +265,8 @@ export default () => {
         const config = em.getConfig();
         const um = em.get('UndoManager');
         const cssC = em.get('CssComposer');
+        const sm = em.get('SelectorManager');
+        const smConf = sm ? sm.getConfig() : {};
         const state = !config.devicePreviewMode ? model.get('state') : '';
         const valid = classes.getStyleable();
         const hasClasses = valid.length;
@@ -277,7 +279,7 @@ export default () => {
         // #268
         um.stop();
 
-        if (hasClasses) {
+        if (hasClasses && !smConf.componentFirst) {
           const deviceW = em.getCurrentMedia();
           rule = cssC.get(valid, state, deviceW);
 

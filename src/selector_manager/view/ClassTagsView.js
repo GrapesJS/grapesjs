@@ -71,12 +71,6 @@ export default Backbone.View.extend({
     return emitter || {};
   },
 
-  // getSelectedModel() {
-  //   const { em, config } = this;
-  //   const sm = em && em.get('StyleManager');
-  //   return sm && sm.getModelToStyle(em.getSelected());
-  // },
-
   /**
    * Triggered when a tag is removed from collection
    * @param {Object} model Removed model
