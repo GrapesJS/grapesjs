@@ -71,11 +71,11 @@ export default Backbone.View.extend({
     return emitter || {};
   },
 
-  getSelectedModel() {
-    const { em, config } = this;
-    const sm = em && em.get('StyleManager');
-    return sm && sm.getModelToStyle(em.getSelected());
-  },
+  // getSelectedModel() {
+  //   const { em, config } = this;
+  //   const sm = em && em.get('StyleManager');
+  //   return sm && sm.getModelToStyle(em.getSelected());
+  // },
 
   /**
    * Triggered when a tag is removed from collection
@@ -192,18 +192,20 @@ export default Backbone.View.extend({
    */
   updateSelector(target) {
     const { pfx, collection, el, config } = this;
+    const { selectedName, componentFirst } = config;
     const selected = target || this.getTarget();
     this.compTarget = selected;
     if (!selected || !selected.get) return;
-
     const state = selected.get('state');
     const coll = collection;
+    const idRes = selected.getId ? `#${selected.getId()}` : '';
     let result = coll.getFullString(selected.getSelectors().getStyleable());
-    result =
-      result ||
-      selected.get('selectorsAdd') ||
-      (selected.getId ? `#${selected.getId()}` : '');
+    result = result || selected.get('selectorsAdd') || idRes;
+    result = componentFirst ? idRes : result;
     result += state ? `:${state}` : '';
+    result = selectedName
+      ? selectedName({ result, state, target: selected })
+      : result;
     const elSel = el.querySelector(`#${pfx}sel`);
     elSel && (elSel.innerHTML = result);
   },

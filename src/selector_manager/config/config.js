@@ -16,6 +16,12 @@ export default {
   // name => name.replace(' ', '_')
   escapeName: 0,
 
+  // Custom selected name strategy (the string you see after 'Selected')
+  // ({ result, state, target }) => {
+  //  return `${result} - ID: ${target.getId()}`
+  // }
+  selectedName: 0,
+
   // When you select a component in the canvas the selected Model (Component or CSS Rule)
   // is passed to the StyleManager which will be then able to be styled, these are the cases:
   // * Selected component doesn't have any classes: Component will be passed
