@@ -11,6 +11,7 @@ export default Backbone.View.extend({
     this.ppfx = config.pStylePrefix || '';
     this.pfx = config.stylePrefix || '';
     this.parent = o.parent;
+    this.parentView = o.parentView;
     const pfx = this.pfx;
     const ppfx = this.ppfx;
     const parent = this.parent;
@@ -72,13 +73,14 @@ export default Backbone.View.extend({
    * @return Object Object created
    * */
   addToCollection(model, fragmentEl, index) {
-    const level = this.level;
+    const { level, parentView } = this;
     var fragment = fragmentEl || null;
     var viewObject = ItemView;
 
     var view = new viewObject({
       level,
       model,
+      parentView,
       config: this.config,
       sorter: this.sorter,
       isCountable: this.isCountable,
