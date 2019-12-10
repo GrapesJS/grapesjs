@@ -77,8 +77,7 @@ export default Backbone.View.extend({
   syncStyle() {
     const target = this.getTarget();
     const style = target.getStyle();
-    const hasStyle = !isEmpty(style); // Remove
-    console.log('syncStyle', { target, style, hasStyle });
+    console.log('syncStyle', { target, style });
   },
 
   getStyleEmitter() {
@@ -185,13 +184,15 @@ export default Backbone.View.extend({
     const target = this.getTarget();
     const sel =
       validSelectors || (target && target.getSelectors().getValid()) || [];
+    let hasStyle;
 
     if (target && config.componentFirst && sel.length) {
       const style = target.getStyle();
-      const hasStyle = !isEmpty(style);
+      hasStyle = !isEmpty(style);
       console.log('checkSync', { style });
-      $btnSyncEl && $btnSyncEl[hasStyle ? 'show' : 'hide']();
     }
+
+    $btnSyncEl && $btnSyncEl[hasStyle ? 'show' : 'hide']();
   }),
 
   getTarget() {
