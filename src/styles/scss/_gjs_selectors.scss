@@ -6,6 +6,23 @@
   @extend .#{$sm-prefix}field, .#{$sm-prefix}select;
 }
 
+##{$clm-prefix}add-tag,
+.#{$clm-prefix}tags-btn {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+  padding: 3px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  min-width: 24px;
+  height: 24px;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.#{$clm-prefix}tags-btn svg {
+  fill: currentColor;
+  display: block;
+}
+
 .#{$clm-prefix}tags {
   @extend .#{$sm-prefix}sector;
 
@@ -31,20 +48,13 @@
     clear: both;
     padding: 5px;
     margin-bottom: 5px;
+    display: flex;
+    flex-wrap: wrap;
   }
 
   ##{$clm-prefix}tags-c {
     display: inline-block;
     vertical-align: top;
-  }
-
-  ##{$clm-prefix}add-tag {
-    background-color: rgba(255, 255, 255, 0.15);
-    border-radius: 2px;
-    padding: $paddElClm;
-    box-shadow: 1px 1px 0 rgba(255, 255, 255, 0.2) inset;
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    cursor: pointer;
   }
 
   ##{$clm-prefix}new {

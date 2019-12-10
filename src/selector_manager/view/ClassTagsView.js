@@ -1,38 +1,47 @@
-import { template, debounce } from 'underscore';
+import { isEmpty, debounce } from 'underscore';
 import Backbone from 'backbone';
 import ClassTagView from './ClassTagView';
 
 export default Backbone.View.extend({
-  template: template(`
-  <div id="<%= pfx %>up">
-    <div id="<%= pfx %>label"><%= label %></div>
-    <div id="<%= pfx %>status-c">
-      <span id="<%= pfx %>input-c">
-        <div class="<%= ppfx %>field <%= ppfx %>select">
-          <span id="<%= ppfx %>input-holder">
-            <select id="<%= pfx %>states">
-              <option value=""><%= statesLabel %></option>
-            </select>
-          </span>
-          <div class="<%= ppfx %>sel-arrow">
-            <div class="<%= ppfx %>d-s-arrow"></div>
+  template({ selectedLabel, statesLabel, label, pfx, ppfx }) {
+    return `
+    <div id="${pfx}up">
+      <div id="${pfx}label">${label}</div>
+      <div id="${pfx}status-c">
+        <span id="${pfx}input-c">
+          <div class="${ppfx}field ${ppfx}select">
+            <span id="${ppfx}input-holder">
+              <select id="${pfx}states">
+                <option value="">${statesLabel}</option>
+              </select>
+            </span>
+            <div class="${ppfx}sel-arrow">
+              <div class="${ppfx}d-s-arrow"></div>
+            </div>
           </div>
-        </div>
+        </span>
+      </div>
+    </div>
+    <div id="${pfx}tags-field" class="${ppfx}field">
+      <div id="${pfx}tags-c"></div>
+      <input id="${pfx}new" />
+      <span id="${pfx}add-tag" class="${pfx}tags-btn">
+      <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path></svg>
+      </span>
+      <span class="${pfx}tags-btn" data-sync-style>
+        <svg viewBox="0 0 24 24"><path d="M12 18c-3.31 0-6-2.69-6-6 0-1 .25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 0 0 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4m0-11V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0 0 20 12c0-4.42-3.58-8-8-8z"></path></svg>
       </span>
     </div>
-  </div>
-  <div id="<%= pfx %>tags-field" class="<%= ppfx %>field">
-    <div id="<%= pfx %>tags-c"></div>
-    <input id="<%= pfx %>new" />
-    <span id="<%= pfx %>add-tag" class="fa fa-plus"></span>
-  </div>
-  <div id="<%= pfx %>sel-help">
-    <div id="<%= pfx %>label"><%= selectedLabel %></div>
-    <div id="<%= pfx %>sel"></div>
-    <div style="clear:both"></div>
-  </div>`),
+    <div id="${pfx}sel-help">
+      <div id="${pfx}label">${selectedLabel}</div>
+      <div id="${pfx}sel"></div>
+      <div style="clear:both"></div>
+    </div>`;
+  },
 
-  events: {},
+  events: {
+    'click [data-sync-style]': 'syncStyle'
+  },
 
   initialize(o = {}) {
     this.config = o.config || {};
@@ -62,6 +71,13 @@ export default Backbone.View.extend({
     this.listenTo(coll, 'reset', this.renderClasses);
     this.listenTo(coll, 'remove', this.tagRemoved);
     this.delegateEvents();
+  },
+
+  syncStyle() {
+    const target = this.getTarget();
+    const style = target.getStyle();
+    const hasStyle = !isEmpty(style); // Remove
+    console.log('syncStyle', { target, style, hasStyle });
   },
 
   getStyleEmitter() {
