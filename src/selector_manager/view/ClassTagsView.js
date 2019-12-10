@@ -25,10 +25,10 @@ export default Backbone.View.extend({
     <div id="${pfx}tags-field" class="${ppfx}field">
       <div id="${pfx}tags-c"></div>
       <input id="${pfx}new" />
-      <span id="${pfx}add-tag" class="${pfx}tags-btn">
-      <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path></svg>
+      <span id="${pfx}add-tag" class="${pfx}tags-btn ${pfx}tags-btn__add">
+        <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path></svg>
       </span>
-      <span class="${pfx}tags-btn" data-sync-style>
+      <span class="${pfx}tags-btn ${pfx}tags-btn__sync" style="display: none" data-sync-style>
         <svg viewBox="0 0 24 24"><path d="M12 18c-3.31 0-6-2.69-6-6 0-1 .25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 0 0 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4m0-11V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0 0 20 12c0-4.42-3.58-8-8-8z"></path></svg>
       </span>
     </div>
@@ -67,6 +67,7 @@ export default Backbone.View.extend({
     this.listenTo(em, toList, this.componentChanged);
     this.listenTo(emitter, 'styleManager:update', this.componentChanged);
     this.listenTo(em, 'component:update:classes', this.updateSelector);
+    this.listenTo(em, 'component:styleUpdate', this.checkSync);
     this.listenTo(coll, 'add', this.addNew);
     this.listenTo(coll, 'reset', this.renderClasses);
     this.listenTo(coll, 'remove', this.tagRemoved);
@@ -162,8 +163,8 @@ export default Backbone.View.extend({
    * @param  {Object} e
    * @private
    */
-  componentChanged: debounce(function(target) {
-    target = target || this.getTarget();
+  componentChanged: debounce(function() {
+    const target = this.getTarget();
     this.compTarget = target;
     let validSelectors = [];
 
@@ -172,10 +173,25 @@ export default Backbone.View.extend({
       state && this.getStates().val(state);
       const selectors = target.getSelectors();
       validSelectors = selectors.getValid();
+      this.checkSync({ validSelectors });
     }
 
     this.collection.reset(validSelectors);
     this.updateStateVis(target);
+  }),
+
+  checkSync: debounce(function({ validSelectors }) {
+    const { $btnSyncEl, config } = this;
+    const target = this.getTarget();
+    const sel =
+      validSelectors || (target && target.getSelectors().getValid()) || [];
+
+    if (target && config.componentFirst && sel.length) {
+      const style = target.getStyle();
+      const hasStyle = !isEmpty(style);
+      console.log('checkSync', { style });
+      $btnSyncEl && $btnSyncEl[hasStyle ? 'show' : 'hide']();
+    }
   }),
 
   getTarget() {
@@ -337,6 +353,7 @@ export default Backbone.View.extend({
     this.$classes = $el.find('#' + pfx + 'tags-c');
     this.$states = $el.find('#' + this.stateInputId);
     this.$statesC = $el.find('#' + this.stateInputC);
+    this.$btnSyncEl = $el.find('[data-sync-style]');
     this.$states.append(this.getStateOptions());
     this.renderClasses();
     $el.attr('class', `${this.className} ${ppfx}one-bg ${ppfx}two-color`);
