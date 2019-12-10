@@ -195,15 +195,17 @@ export default class RichTextEditor {
    */
   syncActions() {
     this.getActions().forEach(action => {
-      if (
-        !action.state ||
-        (action.state && action.state(this, this.doc) >= 0)
-      ) {
-        const event = action.event || 'click';
-        action.btn[`on${event}`] = e => {
-          action.result(this, action);
-          this.updateActiveActions();
-        };
+      if (this.settings.actionbar) {
+        if (
+          !action.state ||
+          (action.state && action.state(this, this.doc) >= 0)
+        ) {
+          const event = action.event || 'click';
+          action.btn[`on${event}`] = e => {
+            action.result(this, action);
+            this.updateActiveActions();
+          };
+        }
       }
     });
   }
