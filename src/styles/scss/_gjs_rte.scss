@@ -33,6 +33,13 @@
   }
 
   &active {
-    background-color: $mainDkColor;
+    background-color: $mainLhColor;
+  }
+  &disabled {
+    color: $mainLhColor;
+    cursor: not-allowed;
+    &:hover {
+      background-color: unset;
+    }
   }
 }
