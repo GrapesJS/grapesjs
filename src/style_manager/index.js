@@ -248,20 +248,6 @@ export default () => {
       return props;
     },
 
-    getRuleToStyle(component, { selectors, state, device }) {
-      const { em } = c;
-      const conf = em.getConfig();
-      const cssC = em.get('CssComposer');
-      const deviceW = device || em.getCurrentMedia();
-      const classes = model.get('classes');
-      const stateValue =
-        state || (!conf.devicePreviewMode ? component.get('state') : '');
-      const valid = selectors || classes.getStyleable();
-      const rule = cssC.get(valid, stateValue, deviceW);
-
-      return rule || cssC.add(valid, stateValue, deviceW);
-    },
-
     /**
      * Get what to style inside Style Manager. If you select the component
      * without classes the entity is the Component itself and all changes will

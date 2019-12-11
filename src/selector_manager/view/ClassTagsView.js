@@ -67,7 +67,7 @@ export default Backbone.View.extend({
     this.listenTo(em, toList, this.componentChanged);
     this.listenTo(emitter, 'styleManager:update', this.componentChanged);
     this.listenTo(em, 'component:update:classes', this.updateSelector);
-    this.listenTo(em, 'component:styleUpdate', this.checkSync); // styleable:change
+    this.listenTo(em, 'styleable:change', this.checkSync); // component:styleUpdate
     this.listenTo(coll, 'add', this.addNew);
     this.listenTo(coll, 'reset', this.renderClasses);
     this.listenTo(coll, 'remove', this.tagRemoved);
@@ -78,25 +78,21 @@ export default Backbone.View.extend({
     // { allSelectors }
     const { em } = this;
     const target = this.getTarget();
-    const style = target.getStyle();
     const cssC = em.get('CssComposer');
     const selectors = target.get('classes');
     const state = target.get('state');
     // const device = em.getCurrentMedia();
     const rule = cssC.get(selectors, state);
-    const ruleComp = cssC.getIdRule(target.getId(), { state });
-    // const rules
-    // const rule =
-    // ruleCss <- componentStyle
-    // ruleCss:state <- componentStyle:state // create if doesn't exists
-    // ruleCss@media <- componentStyle@media // create if doesn't exists
-    console.log('syncStyle', {
-      target,
-      style,
-      selectors,
+    const ruleComponent = cssC.getIdRule(target.getId(), { state });
+    const style = ruleComponent.getStyle();
+    rule.addStyle(style);
+    ruleComponent.setStyle({});
+    em.trigger('component:toggle');
+    em.trigger('component:sync-style', {
+      component: target,
       rule,
-      state,
-      ruleComp
+      ruleComponent,
+      state
     });
   },
 
