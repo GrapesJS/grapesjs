@@ -38,6 +38,7 @@ export default Backbone.View.extend({
     this.listenTo(model, 'change:content', this.updateContent);
     this.listenTo(model, 'change', this.handleChange);
     this.listenTo(model, 'active', this.onActive);
+    this.listenTo(model, 'disable', this.onDisable);
     $el.data('model', model);
     model.view = this;
     this.initClasses();
@@ -73,6 +74,11 @@ export default Backbone.View.extend({
    * Callback executed when the `active` event is triggered on component
    */
   onActive() {},
+
+  /**
+   * Callback executed when the `disable` event is triggered on component
+   */
+  onDisable() {},
 
   remove() {
     Backbone.View.prototype.remove.apply(this, arguments);

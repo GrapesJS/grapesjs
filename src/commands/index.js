@@ -129,6 +129,7 @@ export default () => {
           const defComOptions = { preserveSelected: 1 };
           const modes = ['absolute', 'translate'];
           const hideTlb = () => em.stopDefault(defComOptions);
+          selAll.forEach(sel => sel.trigger('disable'));
 
           // Dirty patch to prevent parent selection on drop (in absolute mode)
           em.set('_cmpDrag', 1);
