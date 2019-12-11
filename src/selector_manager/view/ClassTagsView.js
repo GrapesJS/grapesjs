@@ -82,9 +82,10 @@ export default Backbone.View.extend({
     const selectors = target.get('classes');
     const state = target.get('state');
     // const device = em.getCurrentMedia();
-    const rule = cssC.get(selectors, state);
     const ruleComponent = cssC.getIdRule(target.getId(), { state });
     const style = ruleComponent.getStyle();
+    const rule =
+      cssC.get(selectors, state) || cssC.add(selectors.models, state);
     rule.addStyle(style);
     ruleComponent.setStyle({});
     em.trigger('component:toggle');
