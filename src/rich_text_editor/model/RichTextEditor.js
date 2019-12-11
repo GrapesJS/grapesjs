@@ -5,6 +5,20 @@ import { on, off } from 'utils/mixins';
 
 const RTE_KEY = '_rte';
 
+const btnState = {
+  ACTIVE: 1,
+  INACTIVE: 0,
+  DISABLED: -1
+};
+const isValidAnchor = rte => {
+  const anchor = rte.selection().anchorNode;
+  const parentNode = anchor && anchor.parentNode;
+  const nextSibling = anchor && anchor.nextSibling;
+  return (
+    (parentNode && parentNode.nodeName == 'A') ||
+    (nextSibling && nextSibling.nodeName == 'A')
+  );
+};
 const defActions = {
   bold: {
     name: 'bold',
@@ -37,10 +51,15 @@ const defActions = {
       style: 'font-size:1.4rem;padding:0 4px 2px;',
       title: 'Link'
     },
+    state: (rte, doc) => {
+      if (rte && rte.selection()) {
+        return isValidAnchor(rte) ? btnState.ACTIVE : btnState.INACTIVE;
+      } else {
+        return btnState.INACTIVE;
+      }
+    },
     result: rte => {
-      const anchor = rte.selection().anchorNode;
-      const nextSibling = anchor && anchor.nextSibling;
-      if (nextSibling && nextSibling.nodeName == 'A') {
+      if (isValidAnchor(rte)) {
         rte.exec('unlink');
       } else {
         rte.insertHTML(`<a class="link" href="">${rte.selection()}</a>`);
@@ -78,7 +97,9 @@ export default class RichTextEditor {
       ...{
         actionbar: 'actionbar',
         button: 'action',
-        active: 'active'
+        active: 'active',
+        disabled: 'disabled',
+        inactive: 'inactive'
       },
       ...settings.classes
     };
@@ -114,16 +135,34 @@ export default class RichTextEditor {
     this.getActions().forEach(action => {
       const btn = action.btn;
       const update = action.update;
-      const active = this.classes.active;
+      const { active, inactive, disabled } = { ...this.classes };
+      const state = action.state;
       const name = action.name;
       const doc = this.doc;
       btn.className = btn.className.replace(active, '').trim();
+      btn.className = btn.className.replace(inactive, '').trim();
+      btn.className = btn.className.replace(disabled, '').trim();
 
-      // doc.queryCommandValue(name) != 'false'
-      if (doc.queryCommandSupported(name) && doc.queryCommandState(name)) {
-        btn.className += ` ${active}`;
+      // if there is a state function, which depicts the state,
+      // i.e. `active`, `disabled`, then call it
+      if (state) {
+        switch (state(this, doc)) {
+          case btnState.ACTIVE:
+            btn.className += ` ${active}`;
+            break;
+          case btnState.INACTIVE:
+            btn.className += ` ${inactive}`;
+            break;
+          case btnState.DISABLED:
+            btn.className += ` ${disabled}`;
+            break;
+        }
+      } else {
+        // otherwise default to checking if the name command is supported & enabled
+        if (doc.queryCommandSupported(name) && doc.queryCommandState(name)) {
+          btn.className += ` ${active}`;
+        }
       }
-
       update && update(this, action);
     });
   }
@@ -156,11 +195,18 @@ export default class RichTextEditor {
    */
   syncActions() {
     this.getActions().forEach(action => {
-      const event = action.event || 'click';
-      action.btn[`on${event}`] = e => {
-        action.result(this, action);
-        this.updateActiveActions();
-      };
+      if (this.settings.actionbar) {
+        if (
+          !action.state ||
+          (action.state && action.state(this, this.doc) >= 0)
+        ) {
+          const event = action.event || 'click';
+          action.btn[`on${event}`] = e => {
+            action.result(this, action);
+            this.updateActiveActions();
+          };
+        }
+      }
     });
   }
 
