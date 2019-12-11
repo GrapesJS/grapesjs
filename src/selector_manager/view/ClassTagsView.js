@@ -78,20 +78,21 @@ export default Backbone.View.extend({
     const { em } = this;
     const target = this.getTarget();
     const cssC = em.get('CssComposer');
-    const selectors = target.get('classes');
+    const selectors = target.getSelectors().getValid();
     const state = target.get('state');
     const mediaText = em.getCurrentMedia();
     const ruleComponent = cssC.getIdRule(target.getId(), { state, mediaText });
     const style = ruleComponent.getStyle();
     const rule =
       cssC.get(selectors, state, mediaText) ||
-      cssC.add(selectors.models, state, mediaText);
+      cssC.add(selectors, state, mediaText);
 
     rule.addStyle(style);
     ruleComponent.setStyle({});
     em.trigger('component:toggle');
     em.trigger('component:sync-style', {
       component: target,
+      selectors,
       mediaText,
       rule,
       ruleComponent,
