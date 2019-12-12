@@ -89,7 +89,7 @@ export default Backbone.View.extend({
 
     rule.addStyle(style);
     ruleComponent.setStyle({});
-    em.trigger('component:toggle');
+    em.trigger('component:toggled');
     em.trigger('component:sync-style', {
       component: target,
       selectors,
