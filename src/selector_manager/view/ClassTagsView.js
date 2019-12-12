@@ -209,7 +209,6 @@ export default Backbone.View.extend({
     if (target && config.componentFirst && sel.length) {
       const style = target.getStyle();
       hasStyle = !isEmpty(style);
-      console.log('checkSync', { style });
     }
 
     $btnSyncEl && $btnSyncEl[hasStyle ? 'show' : 'hide']();
