@@ -78,7 +78,7 @@ export default Backbone.View.extend({
     const { em } = this;
     const target = this.getTarget();
     const cssC = em.get('CssComposer');
-    const selectors = target.getSelectors().getValid();
+    const selectors = target.getSelectors().getValid({ noDisabled: 1 });
     const state = target.get('state');
     const mediaText = em.getCurrentMedia();
     const ruleComponent = cssC.getIdRule(target.getId(), { state, mediaText });
