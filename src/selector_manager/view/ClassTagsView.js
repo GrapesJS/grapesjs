@@ -33,7 +33,7 @@ export default Backbone.View.extend({
       </span>
     </div>
     <div id="${pfx}sel-help">
-      <div id="${pfx}label">${selectedLabel}</div>
+      <div id="${pfx}label">${selectedLabel}:</div>
       <div id="${pfx}sel"></div>
       <div style="clear:both"></div>
     </div>`;
@@ -245,7 +245,9 @@ export default Backbone.View.extend({
     if (!selected || !selected.get) return;
     const state = selected.get('state');
     const coll = collection;
-    const idRes = selected.getId ? `#${selected.getId()}` : '';
+    const idRes = selected.getId
+      ? `${selected.getName()}#${selected.getId()}`
+      : '';
     let result = coll.getFullString(selected.getSelectors().getStyleable());
     result = result || selected.get('selectorsAdd') || idRes;
     result = componentFirst ? idRes : result;
