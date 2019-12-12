@@ -24,6 +24,27 @@
   display: block;
 }
 
+.#{$clm-prefix}tag {
+  display: flex;
+  overflow: hidden;
+  align-items: center;
+  border-radius: 3px;
+  margin: 0 3px 3px 0;
+  padding: 5px;
+  cursor: default;
+
+  &-status,
+  &-close {
+    min-width: 12px;
+    flex-shrink: 1;
+
+    svg {
+      vertical-align: middle;
+      fill: currentColor;
+    }
+  }
+}
+
 .#{$clm-prefix}tags {
   @extend .#{$sm-prefix}sector;
 
@@ -54,8 +75,10 @@
   }
 
   ##{$clm-prefix}tags-c {
-    display: inline-block;
+    display: flex;
+    flex-wrap: wrap;
     vertical-align: top;
+    overflow: hidden;
   }
 
   ##{$clm-prefix}new {
@@ -66,17 +89,8 @@
     display: none;
   }
 
-  .#{$clm-prefix}tag {
-    display: inline-block;
-    border-radius: 3px;
-    margin: 0 3px 3px 0;
-    padding: 5px;
-    cursor: default;
-  }
-
   ##{$clm-prefix}close {
-    @extend  .opac50;
-
+    @include opacity(0.85);
     font-size: 20px;
     line-height: 0;
     cursor: pointer;
@@ -84,7 +98,7 @@
     @extend  .no-select;
 
     &:hover {
-      @include opacity(0.7);
+      @include opacity(1);
     }
   }
 
@@ -96,6 +110,8 @@
   }
 
   ##{$clm-prefix}tag-label {
+    text-overflow: ellipsis;
+    overflow: hidden;
     padding: 0 3px;
     cursor: text;
   }
