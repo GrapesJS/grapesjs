@@ -192,12 +192,30 @@ export default Backbone.View.extend({
       state && this.getStates().val(state);
       const selectors = target.getSelectors();
       validSelectors = selectors.getValid();
+
+      if (this.config.componentFirst) {
+        const targets = this.getTargets();
+        const trSelectors = targets.map(tr => tr.getSelectors().getValid());
+        validSelectors = this._commonSelectors(...trSelectors);
+      }
+
       this.checkSync({ validSelectors });
     }
 
     this.collection.reset(validSelectors);
     this.updateStateVis(target);
   }),
+
+  _commonSelectors(...args) {
+    if (!args.length) return [];
+    if (args.length === 1) return args[0];
+    if (args.length === 2)
+      return args[0].filter(item => args[1].indexOf(item) >= 0);
+
+    return args
+      .slice(1)
+      .reduce((acc, item) => this._commonSelectors(acc, item), args[0]);
+  },
 
   checkSync: debounce(function({ validSelectors }) {
     const { $btnSyncEl, config } = this;
