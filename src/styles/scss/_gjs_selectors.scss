@@ -19,29 +19,45 @@
   cursor: pointer;
 }
 
-.#{$clm-prefix}tags-btn svg {
-  fill: currentColor;
-  display: block;
-}
+.#{$clm-prefix} {
+  &tags-btn svg {
+    fill: currentColor;
+    display: block;
+  }
 
-.#{$clm-prefix}tag {
-  display: flex;
-  overflow: hidden;
-  align-items: center;
-  border-radius: 3px;
-  margin: 0 3px 3px 0;
-  padding: 5px;
-  cursor: default;
+  &tag {
+    display: flex;
+    overflow: hidden;
+    align-items: center;
+    border-radius: 3px;
+    margin: 0 3px 3px 0;
+    padding: 5px;
+    cursor: default;
 
-  &-status,
-  &-close {
-    min-width: 12px;
-    flex-shrink: 1;
+    &-status,
+    &-close {
+      min-width: 12px;
+      flex-shrink: 1;
 
-    svg {
-      vertical-align: middle;
-      fill: currentColor;
+      svg {
+        vertical-align: middle;
+        fill: currentColor;
+      }
     }
+  }
+
+  &sels-info {
+    margin-top: 7px;
+  }
+
+  &sel-id {
+    font-size: 0.9em;
+    @include opacity(0.5);
+  }
+
+  &label-sel {
+    float: left;
+    padding-right: 5px;
   }
 }
 

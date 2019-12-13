@@ -32,9 +32,9 @@ export default Backbone.View.extend({
         <svg viewBox="0 0 24 24"><path d="M12 18c-3.31 0-6-2.69-6-6 0-1 .25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 0 0 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4m0-11V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0 0 20 12c0-4.42-3.58-8-8-8z"></path></svg>
       </span>
     </div>
-    <div id="${pfx}sel-help">
-      <div id="${pfx}label">${selectedLabel}:</div>
-      <div id="${pfx}sel"></div>
+    <div class="${pfx}sels-info">
+      <div class="${pfx}label-sel">${selectedLabel}:</div>
+      <div class="${pfx}sels" data-selected></div>
       <div style="clear:both"></div>
     </div>`;
   },
@@ -218,6 +218,10 @@ export default Backbone.View.extend({
     return this.target.getSelected();
   },
 
+  getTargets() {
+    return this.target.getSelectedAll();
+  },
+
   /**
    * Update states visibility. Hides states in case there is no tags
    * inside collection
@@ -237,25 +241,35 @@ export default Backbone.View.extend({
    * @private
    */
   updateSelector(target) {
-    const { pfx, collection, el, config } = this;
-    const { selectedName, componentFirst } = config;
+    const cmpFrst = this.config.componentFirst;
     const selected = target || this.getTarget();
     this.compTarget = selected;
     if (!selected || !selected.get) return;
-    const state = selected.get('state');
-    const coll = collection;
-    const idRes = selected.getId
-      ? `${selected.getName()}#${selected.getId()}`
+    const result = cmpFrst
+      ? this.getTargets()
+          .map(trg => this.__getName(trg))
+          .join(', ')
+      : this.__getName(selected);
+    const elSel = this.el.querySelector('[data-selected]');
+    elSel && (elSel.innerHTML = result);
+  },
+
+  __getName(target) {
+    const { pfx, config } = this;
+    const { selectedName, componentFirst } = config;
+    const coll = this.collection;
+    const selectors = target.getSelectors().getStyleable();
+    const state = target.get('state');
+    const idRes = target.getId
+      ? `<span class="${pfx}sel-cmp">${target.getName()}</span><span class="${pfx}sel-id">#${target.getId()}</span>`
       : '';
-    let result = coll.getFullString(selected.getSelectors().getStyleable());
-    result = result || selected.get('selectorsAdd') || idRes;
+    let result = coll.getFullString(selectors);
+    result = result || target.get('selectorsAdd') || idRes;
     result = componentFirst ? idRes : result;
     result += state ? `:${state}` : '';
-    result = selectedName
-      ? selectedName({ result, state, target: selected })
-      : result;
-    const elSel = el.querySelector(`#${pfx}sel`);
-    elSel && (elSel.innerHTML = result);
+    result = selectedName ? selectedName({ result, state, target }) : result;
+
+    return result;
   },
 
   /**
