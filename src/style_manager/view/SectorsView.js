@@ -51,6 +51,7 @@ export default Backbone.View.extend({
 
     const config = em.get('Config');
     const state = !config.devicePreviewMode ? model.get('state') : '';
+    const { componentFirst } = em.get('SelectorManager').getConfig();
     const el = model.getEl();
     pt.helper = null;
 
@@ -83,6 +84,7 @@ export default Backbone.View.extend({
     model = em.get('StyleManager').getModelToStyle(model);
     state && appendStateRule(model.getStyle());
     pt.model = model;
+    if (componentFirst) pt.targets = em.getSelectedAll();
     pt.trigger('update');
   },
 
