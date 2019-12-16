@@ -78,17 +78,25 @@ export default Backbone.View.extend({
     const { em } = this;
     const target = this.getTarget();
     const cssC = em.get('CssComposer');
-    const selectors = target.getSelectors().getValid({ noDisabled: 1 });
+    const opts = { noDisabled: 1 };
+    const selectors = this.getCommonSelectors({ opts });
     const state = target.get('state');
     const mediaText = em.getCurrentMedia();
-    const ruleComponent = cssC.getIdRule(target.getId(), { state, mediaText });
-    const style = ruleComponent.getStyle();
     const rule =
       cssC.get(selectors, state, mediaText) ||
       cssC.add(selectors, state, mediaText);
+    let style;
 
-    rule.addStyle(style);
-    ruleComponent.setStyle({});
+    this.getTargets().forEach(target => {
+      const ruleComponent = cssC.getIdRule(target.getId(), {
+        state,
+        mediaText
+      });
+      style = ruleComponent.getStyle();
+      ruleComponent.setStyle({});
+    });
+
+    style && rule.addStyle(style);
     em.trigger('component:toggled');
     em.trigger('component:sync-style', {
       component: target,
@@ -184,27 +192,25 @@ export default Backbone.View.extend({
    */
   componentChanged: debounce(function() {
     const target = this.getTarget();
-    this.compTarget = target;
+    // this.compTarget = target;
     let validSelectors = [];
 
     if (target) {
       const state = target.get('state');
       state && this.getStates().val(state);
-      const selectors = target.getSelectors();
-      validSelectors = selectors.getValid();
-
-      if (this.config.componentFirst) {
-        const targets = this.getTargets();
-        const trSelectors = targets.map(tr => tr.getSelectors().getValid());
-        validSelectors = this._commonSelectors(...trSelectors);
-      }
-
+      validSelectors = this.getCommonSelectors();
       this.checkSync({ validSelectors });
     }
 
     this.collection.reset(validSelectors);
     this.updateStateVis(target);
   }),
+
+  getCommonSelectors({ targets, opts = {} } = {}) {
+    const trgs = targets || this.getTargets();
+    const selectors = trgs.map(tr => tr.getSelectors().getValid(opts));
+    return this._commonSelectors(...selectors);
+  },
 
   _commonSelectors(...args) {
     if (!args.length) return [];
