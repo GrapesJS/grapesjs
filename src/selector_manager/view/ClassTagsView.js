@@ -3,16 +3,24 @@ import Backbone from 'backbone';
 import ClassTagView from './ClassTagView';
 
 export default Backbone.View.extend({
-  template({ selectedLabel, statesLabel, label, pfx, ppfx }) {
+  template({
+    labelInfo,
+    labelStates,
+    labelHead,
+    iconSync,
+    iconAdd,
+    pfx,
+    ppfx
+  }) {
     return `
     <div id="${pfx}up">
-      <div id="${pfx}label">${label}</div>
+      <div id="${pfx}label">${labelHead}</div>
       <div id="${pfx}status-c">
         <span id="${pfx}input-c">
           <div class="${ppfx}field ${ppfx}select">
             <span id="${ppfx}input-holder">
               <select id="${pfx}states" data-states>
-                <option value="">${statesLabel}</option>
+                <option value="">${labelStates}</option>
               </select>
             </span>
             <div class="${ppfx}sel-arrow">
@@ -23,17 +31,17 @@ export default Backbone.View.extend({
       </div>
     </div>
     <div id="${pfx}tags-field" class="${ppfx}field">
-      <div id="${pfx}tags-c"></div>
+      <div id="${pfx}tags-c" data-selectors></div>
       <input id="${pfx}new" data-input/>
       <span id="${pfx}add-tag" class="${pfx}tags-btn ${pfx}tags-btn__add" data-add>
-        <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path></svg>
+        ${iconAdd}
       </span>
       <span class="${pfx}tags-btn ${pfx}tags-btn__sync" style="display: none" data-sync-style>
-        <svg viewBox="0 0 24 24"><path d="M12 18c-3.31 0-6-2.69-6-6 0-1 .25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 0 0 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4m0-11V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0 0 20 12c0-4.42-3.58-8-8-8z"></path></svg>
+        ${iconSync}
       </span>
     </div>
     <div class="${pfx}sels-info">
-      <div class="${pfx}label-sel">${selectedLabel}:</div>
+      <div class="${pfx}label-sel">${labelInfo}:</div>
       <div class="${pfx}sels" data-selected></div>
       <div style="clear:both"></div>
     </div>`;
@@ -199,7 +207,8 @@ export default Backbone.View.extend({
     let validSelectors = [];
 
     if (target) {
-      this.getStates().val(state);
+      const statesEl = this.getStates();
+      statesEl && statesEl.val(state);
       validSelectors = this.getCommonSelectors();
       this.checkSync({ validSelectors });
     }
@@ -371,7 +380,7 @@ export default Backbone.View.extend({
    * @private
    */
   getClasses() {
-    return this.$el.find(`#${this.pfx}tags-c`);
+    return this.$el.find('[data-selectors]');
   },
 
   /**
@@ -380,7 +389,10 @@ export default Backbone.View.extend({
    * @private
    */
   getStates() {
-    if (!this.$states) this.$states = this.$el.find('#' + this.stateInputId);
+    if (!this.$states) {
+      const el = this.$el.find('[data-states]');
+      this.$states = el[0] && el;
+    }
     return this.$states;
   },
 
@@ -395,23 +407,28 @@ export default Backbone.View.extend({
   },
 
   render() {
-    const { em, pfx, ppfx, $el } = this;
-    $el.html(
-      this.template({
-        selectedLabel: em.t('selectorManager.selected'),
-        statesLabel: em.t('selectorManager.emptyState'),
-        label: em.t('selectorManager.label'),
-        pfx,
-        ppfx
-      })
-    );
+    const { em, pfx, ppfx, config, $el, el } = this;
+    const { render, iconSync, iconAdd } = config;
+    const tmpOpts = {
+      iconSync,
+      iconAdd,
+      labelHead: em.t('selectorManager.label'),
+      labelStates: em.t('selectorManager.emptyState'),
+      labelInfo: em.t('selectorManager.selected'),
+      ppfx,
+      pfx,
+      el
+    };
+    $el.html(this.template(tmpOpts));
+    const renderRes = render && render(tmpOpts);
+    renderRes && renderRes !== el && $el.empty().append(renderRes);
     this.$input = $el.find('[data-input]');
     this.$addBtn = $el.find('[data-add]');
     this.$classes = $el.find('#' + pfx + 'tags-c');
-    this.$states = $el.find('#' + this.stateInputId);
-    this.$statesC = $el.find('#' + this.stateInputC);
     this.$btnSyncEl = $el.find('[data-sync-style]');
-    this.$states.append(this.getStateOptions());
+    this.$input.hide();
+    const statesEl = this.getStates();
+    statesEl && statesEl.append(this.getStateOptions());
     this.renderClasses();
     $el.attr('class', `${this.className} ${ppfx}one-bg ${ppfx}two-color`);
     return this;
