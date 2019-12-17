@@ -24,8 +24,8 @@ export default Backbone.View.extend({
     </div>
     <div id="${pfx}tags-field" class="${ppfx}field">
       <div id="${pfx}tags-c"></div>
-      <input id="${pfx}new" />
-      <span id="${pfx}add-tag" class="${pfx}tags-btn ${pfx}tags-btn__add">
+      <input id="${pfx}new" data-input/>
+      <span id="${pfx}add-tag" class="${pfx}tags-btn ${pfx}tags-btn__add" data-add>
         <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path></svg>
       </span>
       <span class="${pfx}tags-btn ${pfx}tags-btn__sync" style="display: none" data-sync-style>
@@ -41,6 +41,9 @@ export default Backbone.View.extend({
 
   events: {
     'change [data-states]': 'stateChanged',
+    'click [data-add]': 'startNewTag',
+    'focusout [data-input]': 'endNewTag',
+    'keyup [data-input]': 'onInputKeyUp',
     'click [data-sync-style]': 'syncStyle'
   },
 
@@ -49,14 +52,9 @@ export default Backbone.View.extend({
     this.pfx = this.config.stylePrefix || '';
     this.ppfx = this.config.pStylePrefix || '';
     this.className = this.pfx + 'tags';
-    this.addBtnId = this.pfx + 'add-tag';
-    this.newInputId = this.pfx + 'new';
     this.stateInputId = this.pfx + 'states';
     this.stateInputC = this.pfx + 'input-c';
     this.states = this.config.states || [];
-    this.events['click #' + this.addBtnId] = 'startNewTag';
-    this.events['blur #' + this.newInputId] = 'endNewTag';
-    this.events['keyup #' + this.newInputId] = 'onInputKeyUp';
     const { em } = this.config;
     const emitter = this.getStyleEmitter();
     const coll = this.collection;
@@ -164,8 +162,8 @@ export default Backbone.View.extend({
    * @param {Object} e
    * @private
    */
-  startNewTag(e) {
-    this.$addBtn.get(0).style.display = 'none';
+  startNewTag() {
+    this.$addBtn.css({ display: 'none' });
     this.$input.show().focus();
   },
 
@@ -174,8 +172,8 @@ export default Backbone.View.extend({
    * @param {Object} e
    * @private
    */
-  endNewTag(e) {
-    this.$addBtn.get(0).style.display = '';
+  endNewTag() {
+    this.$addBtn.css({ display: '' });
     this.$input.hide().val('');
   },
 
@@ -316,24 +314,21 @@ export default Backbone.View.extend({
    * @private
    */
   addNewTag(label) {
-    const target = this.target;
-    const component = this.getTarget();
+    const { em } = this;
 
-    if (!label.trim()) {
-      return;
-    }
+    if (!label.trim()) return;
 
-    if (target) {
-      const sm = target.get('SelectorManager');
+    if (em) {
+      const sm = em.get('SelectorManager');
       const model = sm.add({ label });
 
-      if (component) {
-        const compCls = component.getSelectors();
-        compCls.add(model);
+      this.getTargets().forEach(target => {
+        target.getSelectors().add(model);
         this.collection.add(model);
         this.updateStateVis();
-      }
+      });
     }
+
     this.endNewTag();
   },
 
@@ -410,8 +405,8 @@ export default Backbone.View.extend({
         ppfx
       })
     );
-    this.$input = $el.find('input#' + this.newInputId);
-    this.$addBtn = $el.find('#' + this.addBtnId);
+    this.$input = $el.find('[data-input]');
+    this.$addBtn = $el.find('[data-add]');
     this.$classes = $el.find('#' + pfx + 'tags-c');
     this.$states = $el.find('#' + this.stateInputId);
     this.$statesC = $el.find('#' + this.stateInputC);
