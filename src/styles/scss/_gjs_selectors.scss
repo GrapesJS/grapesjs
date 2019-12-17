@@ -126,6 +126,7 @@
   }
 
   ##{$clm-prefix}tag-label {
+    flex-grow: 1;
     text-overflow: ellipsis;
     overflow: hidden;
     padding: 0 3px;
