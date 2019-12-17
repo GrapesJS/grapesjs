@@ -98,8 +98,10 @@ export default Backbone.View.extend({
    */
   removeTag() {
     const { em, model } = this;
-    const sel = em && em.getSelected();
-    if (!model.get('protected') && sel) sel.getSelectors().remove(model);
+    const targets = em && em.getSelectedAll();
+    targets.forEach(sel => {
+      !model.get('protected') && sel && sel.getSelectors().remove(model);
+    });
   },
 
   /**
