@@ -4,6 +4,8 @@ import { isTaggableNode } from 'utils/mixins';
 import { appendAtIndex } from 'utils/dom';
 import SectorView from './SectorView';
 
+const helperCls = 'hc-state';
+
 export default Backbone.View.extend({
   initialize(o = {}) {
     const config = o.config || {};
@@ -23,7 +25,7 @@ export default Backbone.View.extend({
     this.propTarget = target;
     const coll = this.collection;
     const events =
-      'component:toggled component:update:classes component:update:state change:device';
+      'component:toggled component:update:classes change:state change:device';
     this.listenTo(coll, 'add', this.addTo);
     this.listenTo(coll, 'reset', this.render);
     this.listenTo(this.target, events, this.targetUpdated);
@@ -39,18 +41,29 @@ export default Backbone.View.extend({
     this.addToCollection(model, null, opts);
   },
 
+  toggleStateCls(targets = [], enable) {
+    targets.forEach(trg => {
+      const el = trg.getEl();
+      el && el.classList[enable ? 'add' : 'remove'](helperCls);
+    });
+  },
+
   /**
    * Fired when target is updated
    * @private
    */
-  targetUpdated() {
+  targetUpdated(trg) {
     const em = this.target;
     const pt = this.propTarget;
+    const targets = em.getSelectedAll();
     let model = em.getSelected();
+
+    // Clean components
+    trg && !!trg.toHTML && this.toggleStateCls([trg]);
     if (!model) return;
 
     const config = em.get('Config');
-    const state = !config.devicePreviewMode ? model.get('state') : '';
+    const state = !config.devicePreviewMode ? em.get('state') : '';
     const { componentFirst } = em.get('SelectorManager').getConfig();
     const el = model.getEl();
     pt.helper = null;
@@ -64,7 +77,6 @@ export default Backbone.View.extend({
     // Create a new rule for the state as a helper
     const appendStateRule = (style = {}) => {
       const cc = em.get('CssComposer');
-      const helperCls = 'hc-state';
       const rules = cc.getAll();
       let helperRule = cc.getClassRule(helperCls);
 
@@ -82,9 +94,14 @@ export default Backbone.View.extend({
     };
 
     model = em.get('StyleManager').getModelToStyle(model);
-    state && appendStateRule(model.getStyle());
+
+    if (state) {
+      appendStateRule(model.getStyle());
+      this.toggleStateCls(targets, 1);
+    }
+
     pt.model = model;
-    if (componentFirst) pt.targets = em.getSelectedAll();
+    if (componentFirst) pt.targets = targets;
     pt.trigger('update');
   },
 
@@ -96,7 +113,6 @@ export default Backbone.View.extend({
    */
   setTarget(target, opts = {}) {
     const em = this.target;
-    const config = em.get('Config');
     const { targetIsClass, stylable } = opts;
     let model = target;
 
@@ -122,7 +138,6 @@ export default Backbone.View.extend({
       model = rule;
     }
 
-    const state = !config.devicePreviewMode ? model.get('state') : '';
     const pt = this.propTarget;
     pt.model = model;
     pt.trigger('styleManager:update', model);

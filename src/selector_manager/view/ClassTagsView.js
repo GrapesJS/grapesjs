@@ -11,7 +11,7 @@ export default Backbone.View.extend({
         <span id="${pfx}input-c">
           <div class="${ppfx}field ${ppfx}select">
             <span id="${ppfx}input-holder">
-              <select id="${pfx}states">
+              <select id="${pfx}states" data-states>
                 <option value="">${statesLabel}</option>
               </select>
             </span>
@@ -40,6 +40,7 @@ export default Backbone.View.extend({
   },
 
   events: {
+    'change [data-states]': 'stateChanged',
     'click [data-sync-style]': 'syncStyle'
   },
 
@@ -56,7 +57,6 @@ export default Backbone.View.extend({
     this.events['click #' + this.addBtnId] = 'startNewTag';
     this.events['blur #' + this.newInputId] = 'endNewTag';
     this.events['keyup #' + this.newInputId] = 'onInputKeyUp';
-    this.events['change #' + this.stateInputId] = 'stateChanged';
     const { em } = this.config;
     const emitter = this.getStyleEmitter();
     const coll = this.collection;
@@ -66,7 +66,11 @@ export default Backbone.View.extend({
     const toList = 'component:toggled component:update:classes';
     this.listenTo(em, toList, this.componentChanged);
     this.listenTo(emitter, 'styleManager:update', this.componentChanged);
-    this.listenTo(em, 'component:update:classes', this.updateSelector);
+    this.listenTo(
+      em,
+      'component:update:classes change:state',
+      this.updateSelector
+    );
     this.listenTo(em, 'styleable:change change:device', this.checkSync); // component:styleUpdate
     this.listenTo(coll, 'add', this.addNew);
     this.listenTo(coll, 'reset', this.renderClasses);
@@ -80,7 +84,7 @@ export default Backbone.View.extend({
     const cssC = em.get('CssComposer');
     const opts = { noDisabled: 1 };
     const selectors = this.getCommonSelectors({ opts });
-    const state = target.get('state');
+    const state = em.get('state');
     const mediaText = em.getCurrentMedia();
     const rule =
       cssC.get(selectors, state, mediaText) ||
@@ -191,13 +195,13 @@ export default Backbone.View.extend({
    * @private
    */
   componentChanged: debounce(function() {
+    const { em } = this;
     const target = this.getTarget();
-    // this.compTarget = target;
+    const state = em.get('state');
     let validSelectors = [];
 
     if (target) {
-      const state = target.get('state');
-      state && this.getStates().val(state);
+      this.getStates().val(state);
       validSelectors = this.getCommonSelectors();
       this.checkSync({ validSelectors });
     }
@@ -267,7 +271,6 @@ export default Backbone.View.extend({
   updateSelector(target) {
     const cmpFrst = this.config.componentFirst;
     const selected = target || this.getTarget();
-    this.compTarget = selected;
     if (!selected || !selected.get) return;
     const result = cmpFrst
       ? this.getTargets()
@@ -279,21 +282,21 @@ export default Backbone.View.extend({
   },
 
   __getName(target) {
-    const { pfx, config } = this;
+    const { pfx, config, em } = this;
     const { selectedName, componentFirst } = config;
     const coll = this.collection;
     const selectors = target.getSelectors().getStyleable();
-    const state = target.get('state');
+    const state = em.get('state');
     const idRes = target.getId
       ? `<span class="${pfx}sel-cmp">${target.getName()}</span><span class="${pfx}sel-id">#${target.getId()}</span>`
       : '';
     let result = coll.getFullString(selectors);
     result = result || target.get('selectorsAdd') || idRes;
     result = componentFirst ? idRes : result;
-    result += state ? `:${state}` : '';
+    result += state ? `<span class="${pfx}sel-state">:${state}</span>` : '';
     result = selectedName ? selectedName({ result, state, target }) : result;
 
-    return result;
+    return result && `<span class="${pfx}sel">${result}</span>`;
   },
 
   /**
@@ -301,11 +304,10 @@ export default Backbone.View.extend({
    * @param  {Object} e
    * @private
    */
-  stateChanged(e) {
-    if (this.compTarget) {
-      this.compTarget.set('state', this.$states.val());
-      this.updateSelector();
-    }
+  stateChanged(ev) {
+    const { em } = this;
+    const { value } = ev.target;
+    em.set('state', value);
   },
 
   /**
@@ -315,7 +317,7 @@ export default Backbone.View.extend({
    */
   addNewTag(label) {
     const target = this.target;
-    const component = this.compTarget;
+    const component = this.getTarget();
 
     if (!label.trim()) {
       return;

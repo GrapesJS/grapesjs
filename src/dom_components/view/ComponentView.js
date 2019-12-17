@@ -33,7 +33,6 @@ export default Backbone.View.extend({
     this.listenTo(model, 'change:attributes', this.renderAttributes);
     this.listenTo(model, 'change:highlightable', this.updateHighlight);
     this.listenTo(model, 'change:status', this.updateStatus);
-    this.listenTo(model, 'change:state', this.updateState);
     this.listenTo(model, 'change:script', this.reset);
     this.listenTo(model, 'change:content', this.updateContent);
     this.listenTo(model, 'change', this.handleChange);
@@ -147,22 +146,6 @@ export default Backbone.View.extend({
       this.model.get('classes').each(m => {
         clm.add(m.get('name'));
       });
-    }
-  },
-
-  /**
-   * Fires on state update. If the state is not empty will add a helper class
-   * @param  {Event} e
-   * @private
-   * */
-  updateState(e) {
-    var cl = 'hc-state';
-    var state = this.model.get('state');
-
-    if (state) {
-      this.$el.addClass(cl);
-    } else {
-      this.$el.removeClass(cl);
     }
   },
 
