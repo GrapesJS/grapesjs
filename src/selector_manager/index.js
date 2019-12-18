@@ -112,6 +112,7 @@ export default config => {
           model.changedAttributes()
         )
       );
+      em.on('change:state', (m, value) => em.trigger('selector:state', value));
 
       return this;
     },

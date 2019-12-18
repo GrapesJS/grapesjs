@@ -77,6 +77,7 @@
  * * `selector:add` - New selector is add. Passes the new selector as an argument
  * * `selector:remove` - Selector removed. Passes the removed selector as an argument
  * * `selector:update` - Selector updated. Passes the updated selector as an argument
+ * * `selector:state` - State changed. Passes the new state value as an argument
  * ### RTE
  * * `rte:enable` - RTE enabled. The view, on which RTE is enabled, is passed as an argument
  * * `rte:disable` - RTE disabled. The view, on which RTE is disabled, is passed as an argument
