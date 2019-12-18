@@ -103,6 +103,7 @@ export default config => {
       // Global selectors container
       selectors = new Selectors(c.selectors);
       selectors.on('add', model => em.trigger('selector:add', model));
+      selectors.on('remove', model => em.trigger('selector:remove', model));
 
       return this;
     },
