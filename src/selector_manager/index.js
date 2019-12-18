@@ -39,7 +39,9 @@
  * * [add](#add)
  * * [addClass](#addclass)
  * * [get](#get)
- * * [getAll](#getAll)
+ * * [getAll](#getall)
+ * * [setState](#setstate)
+ * * [getState](#getstate)
  *
  * @module SelectorManager
  */
@@ -90,6 +92,7 @@ export default config => {
       };
       const em = c.em;
       const ppfx = c.pStylePrefix;
+      this.em = em;
 
       if (ppfx) {
         c.stylePrefix = ppfx + c.stylePrefix;
@@ -124,6 +127,26 @@ export default config => {
         const el = isElement(elTo) ? elTo : document.querySelector(elTo);
         el.appendChild(this.render([]));
       }
+    },
+
+    /**
+     * Change the selector state
+     * @param {String} value State value
+     * @returns {this}
+     * @example
+     * selectorManager.setState('hover');
+     */
+    setState(value) {
+      this.em.set('state', value);
+      return this;
+    },
+
+    /**
+     * Get the current selector state
+     * @returns {String}
+     */
+    getState() {
+      return this.em.get('state');
     },
 
     addSelector(name, opt = {}) {

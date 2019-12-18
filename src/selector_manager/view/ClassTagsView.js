@@ -195,6 +195,12 @@ export default Backbone.View.extend({
     else if (e.keyCode === 27) this.endNewTag();
   },
 
+  checkStates() {
+    const state = this.em.get('state');
+    const statesEl = this.getStates();
+    statesEl && statesEl.val(state);
+  },
+
   /**
    * Triggered when component is changed
    * @param  {Object} e
@@ -203,12 +209,10 @@ export default Backbone.View.extend({
   componentChanged: debounce(function() {
     const { em } = this;
     const target = this.getTarget();
-    const state = em.get('state');
     let validSelectors = [];
 
     if (target) {
-      const statesEl = this.getStates();
-      statesEl && statesEl.val(state);
+      this.checkStates();
       validSelectors = this.getCommonSelectors();
       this.checkSync({ validSelectors });
     }
@@ -286,6 +290,7 @@ export default Backbone.View.extend({
       : this.__getName(selected);
     const elSel = this.el.querySelector('[data-selected]');
     elSel && (elSel.innerHTML = result);
+    this.checkStates();
   },
 
   __getName(target) {
