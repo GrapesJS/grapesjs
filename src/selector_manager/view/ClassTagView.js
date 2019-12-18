@@ -4,14 +4,14 @@ const inputProp = 'contentEditable';
 
 export default Backbone.View.extend({
   template() {
-    const { pfx, model } = this;
+    const { pfx, model, config } = this;
     const label = model.get('label') || '';
 
     return `
       <span id="${pfx}checkbox" class="${pfx}tag-status" data-tag-status></span>
       <span id="${pfx}tag-label" data-tag-name>${label}</span>
       <span id="${pfx}close" class="${pfx}tag-close" data-tag-remove>
-        <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"></path></svg>
+        ${config.iconTagRemove}
       </span>
     `;
   },
@@ -109,18 +109,15 @@ export default Backbone.View.extend({
    * @private
    */
   updateStatus() {
-    const { model, $el } = this;
+    const { model, $el, config } = this;
+    const { iconTagOn, iconTagOff } = config;
     const $chk = $el.find('[data-tag-status]');
-    const iconOff =
-      '<svg viewBox="0 0 24 24"><path d="M19 3H5c-1.11 0-2 .89-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5a2 2 0 0 0-2-2m0 2v14H5V5h14z"></path></svg>';
-    const iconOn =
-      '<svg viewBox="0 0 24 24"><path d="M19 19H5V5h10V3H5c-1.11 0-2 .89-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-8h-2m-11.09-.92L6.5 11.5 11 16 21 6l-1.41-1.42L11 13.17l-3.09-3.09z"></path></svg>';
 
     if (model.get('active')) {
-      $chk.html(iconOn);
+      $chk.html(iconTagOn);
       $el.removeClass('opac50');
     } else {
-      $chk.html(iconOff);
+      $chk.html(iconTagOff);
       $el.addClass('opac50');
     }
   },
