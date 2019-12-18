@@ -104,6 +104,14 @@ export default config => {
       selectors = new Selectors(c.selectors);
       selectors.on('add', model => em.trigger('selector:add', model));
       selectors.on('remove', model => em.trigger('selector:remove', model));
+      selectors.on('change', model =>
+        em.trigger(
+          'selector:update',
+          model,
+          model.previousAttributes(),
+          model.changedAttributes()
+        )
+      );
 
       return this;
     },
