@@ -57,7 +57,7 @@ const isClass = str => isString(str) && str[0] == '.';
 
 export default config => {
   var c = config || {};
-  var selectors, selectorTags;
+  var selectors;
 
   return {
     Selector,
@@ -98,7 +98,7 @@ export default config => {
         c.stylePrefix = ppfx + c.stylePrefix;
       }
 
-      selectorTags = new ClassTagsView({
+      this.selectorTags = new ClassTagsView({
         collection: new Selectors([], { em, config: c }),
         config: c
       });
@@ -127,6 +127,14 @@ export default config => {
         const el = isElement(elTo) ? elTo : document.querySelector(elTo);
         el.appendChild(this.render([]));
       }
+    },
+
+    select(value, opts = {}) {
+      const targets = Array.isArray(value) ? value : [value];
+      const toSelect = this.em.get('StyleManager').setTarget(targets, opts);
+      const res = toSelect.map(sel => sel.getSelectorsString());
+      this.selectorTags.componentChanged({ targets: res });
+      return this;
     },
 
     /**
@@ -289,12 +297,12 @@ export default config => {
      */
     render(selectors) {
       if (selectors) {
-        var view = new ClassTagsView({
+        this.selectorTags = new ClassTagsView({
           collection: new Selectors(selectors),
           config: c
         });
-        return view.render().el;
-      } else return selectorTags.render().el;
+        return this.selectorTags.render().el;
+      } else return this.selectorTags.render().el;
     }
   };
 };

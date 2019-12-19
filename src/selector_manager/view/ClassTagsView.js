@@ -1,4 +1,4 @@
-import { isEmpty, debounce } from 'underscore';
+import { isEmpty, isArray, isString, debounce } from 'underscore';
 import Backbone from 'backbone';
 import ClassTagView from './ClassTagView';
 
@@ -92,6 +92,7 @@ export default Backbone.View.extend({
     const selectors = this.getCommonSelectors({ opts });
     const state = em.get('state');
     const mediaText = em.getCurrentMedia();
+    const ruleComponents = [];
     const rule =
       cssC.get(selectors, state, mediaText) ||
       cssC.add(selectors, state, mediaText);
@@ -104,6 +105,7 @@ export default Backbone.View.extend({
       });
       style = ruleComponent.getStyle();
       ruleComponent.setStyle({});
+      ruleComponents.push(ruleComponent);
     });
 
     style && rule.addStyle(style);
@@ -113,7 +115,7 @@ export default Backbone.View.extend({
       selectors,
       mediaText,
       rule,
-      ruleComponent,
+      ruleComponents,
       state
     });
   },
@@ -206,14 +208,13 @@ export default Backbone.View.extend({
    * @param  {Object} e
    * @private
    */
-  componentChanged: debounce(function() {
-    const { em } = this;
-    const target = this.getTarget();
+  componentChanged: debounce(function({ targets } = {}) {
+    const target = targets || this.getTarget();
     let validSelectors = [];
 
     if (target) {
       this.checkStates();
-      validSelectors = this.getCommonSelectors();
+      validSelectors = this.getCommonSelectors({ targets });
       this.checkSync({ validSelectors });
     }
 
@@ -223,7 +224,9 @@ export default Backbone.View.extend({
 
   getCommonSelectors({ targets, opts = {} } = {}) {
     const trgs = targets || this.getTargets();
-    const selectors = trgs.map(tr => tr.getSelectors().getValid(opts));
+    const selectors = trgs
+      .map(tr => tr.getSelectors && tr.getSelectors().getValid(opts))
+      .filter(i => i);
     return this._commonSelectors(...selectors);
   },
 
@@ -269,7 +272,7 @@ export default Backbone.View.extend({
   updateStateVis(target) {
     const em = this.em;
     const avoidInline = em && em.getConfig('avoidInlineStyle');
-    const display = this.collection.length || avoidInline ? 'block' : 'none';
+    const display = this.collection.length || avoidInline ? '' : 'none';
     this.getStatesC().css('display', display);
     this.updateSelector(target);
   },
@@ -279,34 +282,37 @@ export default Backbone.View.extend({
    * @return {this}
    * @private
    */
-  updateSelector(target) {
-    const cmpFrst = this.config.componentFirst;
-    const selected = target || this.getTarget();
-    if (!selected || !selected.get) return;
-    const result = cmpFrst
-      ? this.getTargets()
-          .map(trg => this.__getName(trg))
-          .join(', ')
-      : this.__getName(selected);
+  updateSelector(targets) {
     const elSel = this.el.querySelector('[data-selected]');
-    elSel && (elSel.innerHTML = result);
+    const result = [];
+    let trgs = targets || this.getTargets();
+    trgs = isArray(trgs) ? trgs : [trgs];
+
+    trgs.forEach(target => result.push(this.__getName(target)));
+    elSel && (elSel.innerHTML = result.join(', '));
     this.checkStates();
   },
 
   __getName(target) {
     const { pfx, config, em } = this;
     const { selectedName, componentFirst } = config;
-    const coll = this.collection;
-    const selectors = target.getSelectors().getStyleable();
-    const state = em.get('state');
-    const idRes = target.getId
-      ? `<span class="${pfx}sel-cmp">${target.getName()}</span><span class="${pfx}sel-id">#${target.getId()}</span>`
-      : '';
-    let result = coll.getFullString(selectors);
-    result = result || target.get('selectorsAdd') || idRes;
-    result = componentFirst ? idRes : result;
-    result += state ? `<span class="${pfx}sel-state">:${state}</span>` : '';
-    result = selectedName ? selectedName({ result, state, target }) : result;
+    let result;
+
+    if (isString(target)) {
+      result = `<span class="${pfx}sel-gen">${target}</span>`;
+    } else {
+      if (!target || !target.get) return;
+      const selectors = target.getSelectors().getStyleable();
+      const state = em.get('state');
+      const idRes = target.getId
+        ? `<span class="${pfx}sel-cmp">${target.getName()}</span><span class="${pfx}sel-id">#${target.getId()}</span>`
+        : '';
+      result = this.collection.getFullString(selectors);
+      result = result || target.get('selectorsAdd') || idRes;
+      result = componentFirst ? idRes : result;
+      result += state ? `<span class="${pfx}sel-state">:${state}</span>` : '';
+      result = selectedName ? selectedName({ result, state, target }) : result;
+    }
 
     return result && `<span class="${pfx}sel">${result}</span>`;
   },
