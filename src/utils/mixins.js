@@ -209,6 +209,8 @@ const getKeyChar = ev => String.fromCharCode(getKeyCode(ev));
 const isEscKey = ev => getKeyCode(ev) === 27;
 
 const capitalize = str => str.charAt(0).toUpperCase() + str.substring(1);
+const isComponent = obj => obj && obj.toHTML;
+const isRule = obj => obj && obj.toCSS;
 
 export {
   on,
@@ -229,5 +231,7 @@ export {
   getPointerEvent,
   getUnitFromValue,
   capitalize,
-  appendStyles
+  appendStyles,
+  isComponent,
+  isRule
 };

@@ -209,17 +209,17 @@ export default Backbone.View.extend({
    * @private
    */
   componentChanged: debounce(function({ targets } = {}) {
-    const target = targets || this.getTarget();
+    const trgs = targets || this.getTargets();
     let validSelectors = [];
 
-    if (target) {
-      this.checkStates();
-      validSelectors = this.getCommonSelectors({ targets });
+    if (trgs && trgs.length) {
+      validSelectors = this.getCommonSelectors({ targets: trgs });
       this.checkSync({ validSelectors });
     }
 
+    this.checkStates();
     this.collection.reset(validSelectors);
-    this.updateStateVis(target);
+    this.updateStateVis(trgs);
   }),
 
   getCommonSelectors({ targets, opts = {} } = {}) {

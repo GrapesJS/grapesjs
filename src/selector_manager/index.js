@@ -47,6 +47,7 @@
  */
 
 import { isString, isElement, isObject, isArray } from 'underscore';
+import { isComponent, isRule } from 'utils/mixins';
 import defaults from './config/config';
 import Selector from './model/Selector';
 import Selectors from './model/Selectors';
@@ -132,7 +133,14 @@ export default config => {
     select(value, opts = {}) {
       const targets = Array.isArray(value) ? value : [value];
       const toSelect = this.em.get('StyleManager').setTarget(targets, opts);
-      const res = toSelect.map(sel => sel.getSelectorsString());
+      const res = toSelect.map(sel =>
+        isComponent(sel)
+          ? sel
+          : isRule(sel) && !sel.get('selectorsAdd')
+          ? sel
+          : sel.getSelectorsString()
+      );
+      console.log({ res });
       this.selectorTags.componentChanged({ targets: res });
       return this;
     },
