@@ -70,13 +70,10 @@ export default Backbone.View.extend({
     this.em = em;
 
     const toList = 'component:toggled component:update:classes';
+    const toListCls = 'component:update:classes change:state';
     this.listenTo(em, toList, this.componentChanged);
     this.listenTo(emitter, 'styleManager:update', this.componentChanged);
-    this.listenTo(
-      em,
-      'component:update:classes change:state',
-      this.updateSelector
-    );
+    this.listenTo(em, toListCls, this.__handleStateChange);
     this.listenTo(em, 'styleable:change change:device', this.checkSync); // component:styleUpdate
     this.listenTo(coll, 'add', this.addNew);
     this.listenTo(coll, 'reset', this.renderClasses);
@@ -275,6 +272,10 @@ export default Backbone.View.extend({
     const display = this.collection.length || avoidInline ? '' : 'none';
     this.getStatesC().css('display', display);
     this.updateSelector(target);
+  },
+
+  __handleStateChange() {
+    this.updateSelector(this.getTargets());
   },
 
   /**
