@@ -308,8 +308,10 @@ export default Backbone.View.extend({
         ? `<span class="${pfx}sel-cmp">${target.getName()}</span><span class="${pfx}sel-id">#${target.getId()}</span>`
         : '';
       result = this.collection.getFullString(selectors);
-      result = result || target.get('selectorsAdd') || idRes;
-      result = componentFirst ? idRes : result;
+      result = result
+        ? `<span class="${pfx}sel-rule">${result}</span>`
+        : target.get('selectorsAdd') || idRes;
+      result = componentFirst && idRes ? idRes : result;
       result += state ? `<span class="${pfx}sel-state">:${state}</span>` : '';
       result = selectedName ? selectedName({ result, state, target }) : result;
     }
