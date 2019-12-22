@@ -133,14 +133,15 @@ export default config => {
     select(value, opts = {}) {
       const targets = Array.isArray(value) ? value : [value];
       const toSelect = this.em.get('StyleManager').setTarget(targets, opts);
-      const res = toSelect.map(sel =>
-        isComponent(sel)
-          ? sel
-          : isRule(sel) && !sel.get('selectorsAdd')
-          ? sel
-          : sel.getSelectorsString()
-      );
-      console.log({ res });
+      const res = toSelect
+        .filter(i => i)
+        .map(sel =>
+          isComponent(sel)
+            ? sel
+            : isRule(sel) && !sel.get('selectorsAdd')
+            ? sel
+            : sel.getSelectorsString()
+        );
       this.selectorTags.componentChanged({ targets: res });
       return this;
     },
