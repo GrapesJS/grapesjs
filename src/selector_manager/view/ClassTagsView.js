@@ -16,7 +16,7 @@ export default Backbone.View.extend({
     <div id="${pfx}up">
       <div id="${pfx}label">${labelHead}</div>
       <div id="${pfx}status-c">
-        <span id="${pfx}input-c">
+        <span id="${pfx}input-c" data-states-c>
           <div class="${ppfx}field ${ppfx}select">
             <span id="${ppfx}input-holder">
               <select id="${pfx}states" data-states>

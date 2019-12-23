@@ -17,6 +17,7 @@ describe('ClassTagsView', () => {
   var coll;
   var target;
   var em;
+  let compTest;
 
   beforeAll(() => {
     document.body.innerHTML = '<div id="fixtures"></div>';
@@ -30,9 +31,10 @@ describe('ClassTagsView', () => {
 
   beforeEach(() => {
     target = new Editor();
+    em = target;
     coll = new Selectors();
     view = new ClassTagsView({
-      config: { em: target },
+      config: { em },
       collection: coll
     });
 
@@ -42,16 +44,16 @@ describe('ClassTagsView', () => {
       }
     };
 
-    testContext.compTargetStub = new Component();
+    compTest = new Component();
+    testContext.compTargetStub = compTest;
 
     fixtures.innerHTML = '';
     fixture.empty().appendTo(fixtures);
     fixture.append(view.render().el);
     testContext.btnAdd = view.$addBtn;
-    testContext.input = view.$el.find('input#' + view.newInputId);
-    testContext.$tags = fixture.find('#tags-c');
-    testContext.$states = fixture.find('#states');
-    testContext.$statesC = fixture.find('#input-c');
+    testContext.input = view.$el.find('[data-input]');
+    testContext.$tags = fixture.find('[data-selectors]');
+    testContext.$statesC = fixture.find('[data-states-c]');
   });
 
   afterEach(() => {
@@ -81,7 +83,7 @@ describe('ClassTagsView', () => {
   test('Stop tag creation', () => {
     testContext.btnAdd.trigger('click');
     testContext.input.val('test');
-    testContext.input.trigger('blur');
+    testContext.input.trigger('focusout');
     expect(testContext.btnAdd.css('display')).not.toEqual('none');
     expect(testContext.input.css('display')).toEqual('none');
     expect(testContext.input.val()).toEqual(null);
@@ -129,9 +131,8 @@ describe('ClassTagsView', () => {
   });
 
   test('Accept new tags', () => {
-    view.compTarget = testContext.compTargetStub;
+    em.setSelected(compTest);
     view.addNewTag('test');
-    view.compTarget = testContext.compTargetStub;
     view.addNewTag('test2');
     expect(testContext.$tags.children().length).toEqual(2);
   });
@@ -155,19 +156,18 @@ describe('ClassTagsView', () => {
   test('States are visible in case of more tags inside', () => {
     coll.add({ label: 'test' });
     view.updateStateVis();
-    expect(testContext.$statesC.css('display')).toEqual('block');
+    expect(testContext.$statesC.css('display')).toEqual('');
   });
 
   test('Update state visibility on new tag', () => {
     sinon.stub(view, 'updateStateVis');
-    sinon.stub(target, 'get').returns(testContext.targetStub);
-    view.compTarget = testContext.compTargetStub;
+    em.setSelected(compTest);
     view.addNewTag('test');
     expect(view.updateStateVis.called).toEqual(true);
   });
 
   test('Update state visibility on removing of the tag', () => {
-    view.compTarget = testContext.compTargetStub;
+    em.setSelected(compTest);
     view.addNewTag('test');
     sinon.stub(view, 'updateStateVis');
     coll.remove(coll.at(0));
