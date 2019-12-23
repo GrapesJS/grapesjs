@@ -154,7 +154,7 @@ export default config => {
      * selectorManager.setState('hover');
      */
     setState(value) {
-      this.em.set('state', value);
+      this.em.setState(value);
       return this;
     },
 
@@ -163,7 +163,7 @@ export default config => {
      * @returns {String}
      */
     getState() {
-      return this.em.get('state');
+      return this.em.setState();
     },
 
     addSelector(name, opt = {}) {

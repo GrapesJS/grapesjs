@@ -39,19 +39,19 @@ describe('ComponentView', () => {
   });
 
   test('Add helper class on update of state', () => {
-    model.set('state', 'test');
+    em.setSelected(model);
+    em.setState('test');
     expect(fixtures.innerHTML).toEqual(
-      '<div data-gjs-type="default" data-highlightable="1" class="' +
-        hClass +
-        '"></div>'
+      `<div data-gjs-type="default" data-highlightable="1" class="selected ${hClass}"></div>`
     );
   });
 
   test('Clean form helper state', () => {
-    model.set('state', 'test');
-    model.set('state', '');
+    em.setSelected(model);
+    em.setState('test');
+    em.setState();
     expect(fixtures.innerHTML).toEqual(
-      '<div data-gjs-type="default" data-highlightable="1" class=""></div>'
+      '<div data-gjs-type="default" data-highlightable="1" class="selected"></div>'
     );
   });
 

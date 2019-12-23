@@ -57,9 +57,10 @@ export default Backbone.View.extend({
     const pt = this.propTarget;
     const targets = em.getSelectedAll();
     let model = em.getSelected();
+    const mdToClear = trg && !!trg.toHTML ? trg : model;
 
     // Clean components
-    trg && !!trg.toHTML && this.toggleStateCls([trg]);
+    mdToClear && this.toggleStateCls([mdToClear]);
     if (!model) return;
 
     const config = em.get('Config');
