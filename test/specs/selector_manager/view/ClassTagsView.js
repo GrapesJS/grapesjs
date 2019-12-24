@@ -17,6 +17,8 @@ describe('ClassTagsView', () => {
   let target;
   let em;
   let compTest;
+  const getSelectorNames = arr => arr.map(item => item.getFullName());
+  const newComponent = obj => new Component(obj, { em });
 
   beforeAll(() => {
     document.body.innerHTML = '<div id="fixtures"></div>';
@@ -186,7 +188,7 @@ describe('ClassTagsView', () => {
     );
   });
 
-  describe('Testing _commonSelectors', () => {
+  describe('_commonSelectors', () => {
     test('Returns empty array with no arguments', () => {
       expect(view._commonSelectors()).toEqual([]);
     });
@@ -207,6 +209,42 @@ describe('ClassTagsView', () => {
       const item2 = [3, 4, 5, 6];
       const item3 = [30, 5, 6];
       expect(view._commonSelectors(item1, item2, item3)).toEqual([5]);
+    });
+  });
+
+  describe.only('getCommonSelectors', () => {
+    test('Returns empty array with no targets', () => {
+      expect(view.getCommonSelectors({ targets: [] })).toEqual([]);
+    });
+
+    test('Returns the selectors of a single component', () => {
+      const cmp = newComponent({ classes: 'test1 test2 test3' });
+      const selectors = cmp.getSelectors();
+      const result = view.getCommonSelectors({ targets: [cmp] });
+      expect(getSelectorNames(result)).toEqual(getSelectorNames(selectors));
+    });
+
+    test('Returns common selectors of two components', () => {
+      const cmp1 = newComponent({ classes: 'test1 test2 test3' });
+      const cmp2 = newComponent({ classes: 'test1 test2' });
+      const result = view.getCommonSelectors({ targets: [cmp1, cmp2] });
+      expect(getSelectorNames(result)).toEqual(['.test1', '.test2']);
+    });
+
+    test('Returns common selectors of more components', () => {
+      const cmp1 = newComponent({ classes: 'test1 test2 test3' });
+      const cmp2 = newComponent({ classes: 'test1 test2' });
+      const cmp3 = newComponent({ classes: 'test2 test3' });
+      const result = view.getCommonSelectors({ targets: [cmp1, cmp2, cmp3] });
+      expect(getSelectorNames(result)).toEqual(['.test2']);
+    });
+
+    test('Returns empty array with components without common selectors', () => {
+      const cmp1 = newComponent({ classes: 'test1 test2 test3' });
+      const cmp2 = newComponent({ classes: 'test1 test2' });
+      const cmp3 = newComponent({ classes: 'test4' });
+      const result = view.getCommonSelectors({ targets: [cmp1, cmp2, cmp3] });
+      expect(getSelectorNames(result)).toEqual([]);
     });
   });
 
