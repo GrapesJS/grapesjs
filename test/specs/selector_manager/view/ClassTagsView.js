@@ -10,13 +10,12 @@ describe('ClassTagsView', () => {
     testContext = {};
   });
 
-  var view;
-  var fixture;
-  var fixtures;
-  var testLabel;
-  var coll;
-  var target;
-  var em;
+  let view;
+  let fixture;
+  let fixtures;
+  let coll;
+  let target;
+  let em;
   let compTest;
 
   beforeAll(() => {
@@ -185,6 +184,30 @@ describe('ClassTagsView', () => {
     expect(view.getStateOptions()).toEqual(
       '<option value="testName">testLabel</option>'
     );
+  });
+
+  describe('Testing _commonSelectors', () => {
+    test('Returns empty array with no arguments', () => {
+      expect(view._commonSelectors()).toEqual([]);
+    });
+
+    test('Returns the first item if only one argument is passed', () => {
+      const item = [1, 2];
+      expect(view._commonSelectors(item)).toEqual(item);
+    });
+
+    test('Returns corret output with 2 arrays', () => {
+      const item1 = [1, 2, 3, 4];
+      const item2 = [3, 4, 5, 6];
+      expect(view._commonSelectors(item1, item2)).toEqual([3, 4]);
+    });
+
+    test('Returns corret output with more arrays', () => {
+      const item1 = [1, 2, 3, 4, 5];
+      const item2 = [3, 4, 5, 6];
+      const item3 = [30, 5, 6];
+      expect(view._commonSelectors(item1, item2, item3)).toEqual([5]);
+    });
   });
 
   describe('Should be rendered correctly', () => {
