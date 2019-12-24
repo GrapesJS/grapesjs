@@ -195,7 +195,7 @@ export default Backbone.View.extend({
   },
 
   checkStates() {
-    const state = this.em.get('state');
+    const state = this.em.getState();
     const statesEl = this.getStates();
     statesEl && statesEl.val(state);
   },
@@ -214,7 +214,6 @@ export default Backbone.View.extend({
       this.checkSync({ validSelectors });
     }
 
-    this.checkStates();
     this.collection.reset(validSelectors);
     this.updateStateVis(trgs);
   }),
