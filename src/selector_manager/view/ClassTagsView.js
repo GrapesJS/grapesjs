@@ -13,9 +13,9 @@ export default Backbone.View.extend({
     ppfx
   }) {
     return `
-    <div id="${pfx}up">
-      <div id="${pfx}label">${labelHead}</div>
-      <div id="${pfx}status-c">
+    <div id="${pfx}up" class="${pfx}header">
+      <div id="${pfx}label" class="${pfx}header-label">${labelHead}</div>
+      <div id="${pfx}status-c" class="${pfx}header-status">
         <span id="${pfx}input-c" data-states-c>
           <div class="${ppfx}field ${ppfx}select">
             <span id="${ppfx}input-holder">

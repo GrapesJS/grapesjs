@@ -25,6 +25,17 @@
     display: block;
   }
 
+  &header {
+    display: flex;
+    align-items: center;
+    margin: 7px 0;
+
+    &-status {
+      flex-shrink: 1;
+      margin-left: auto;
+    }
+  }
+
   &tag {
     display: flex;
     overflow: hidden;
@@ -67,7 +78,6 @@
   font-size: $fontSizeS;
   padding: 10px 5px;
 
-  ##{$clm-prefix}label,
   ##{$clm-prefix}sel {
     padding: 7px 0;
     float: left;
@@ -76,10 +86,6 @@
   ##{$clm-prefix}sel {
     font-style: italic;
     margin-left: 5px;
-  }
-
-  ##{$clm-prefix}status-c {
-    float: right;
   }
 
   ##{$clm-prefix}tags-field {

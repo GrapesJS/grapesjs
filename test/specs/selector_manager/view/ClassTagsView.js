@@ -250,7 +250,7 @@ describe('ClassTagsView', () => {
     });
   });
 
-  describe.only('updateSelection', () => {
+  describe('updateSelection', () => {
     test('Returns empty array without targets', () => {
       expect(view.updateSelection([])).toEqual([]);
     });
