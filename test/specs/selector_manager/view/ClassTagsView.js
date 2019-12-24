@@ -1,6 +1,7 @@
 import ClassTagsView from 'selector_manager/view/ClassTagsView';
 import Selectors from 'selector_manager/model/Selectors';
 import Component from 'dom_components/model/Component';
+import Rule from 'css_composer/model/CssRule';
 import Editor from 'editor/model/Editor';
 
 describe('ClassTagsView', () => {
@@ -19,6 +20,7 @@ describe('ClassTagsView', () => {
   let compTest;
   const getSelectorNames = arr => arr.map(item => item.getFullName());
   const newComponent = obj => new Component(obj, { em });
+  const newRule = obj => new Rule(obj, { em });
 
   beforeAll(() => {
     document.body.innerHTML = '<div id="fixtures"></div>';
@@ -212,7 +214,7 @@ describe('ClassTagsView', () => {
     });
   });
 
-  describe.only('getCommonSelectors', () => {
+  describe('getCommonSelectors', () => {
     test('Returns empty array with no targets', () => {
       expect(view.getCommonSelectors({ targets: [] })).toEqual([]);
     });
@@ -245,6 +247,40 @@ describe('ClassTagsView', () => {
       const cmp3 = newComponent({ classes: 'test4' });
       const result = view.getCommonSelectors({ targets: [cmp1, cmp2, cmp3] });
       expect(getSelectorNames(result)).toEqual([]);
+    });
+  });
+
+  describe.only('updateSelection', () => {
+    test('Returns empty array without targets', () => {
+      expect(view.updateSelection([])).toEqual([]);
+    });
+
+    test('Returns empty array with invalid selectors', () => {
+      expect(view.updateSelection('body .test')).toEqual([]);
+    });
+
+    test('Returns array with common selectors from Components', () => {
+      const cmp1 = newComponent({ classes: 'test1 test2 test3' });
+      const cmp2 = newComponent({ classes: 'test1 test2' });
+      const cmp3 = newComponent({ classes: 'test2 test3' });
+      const result = view.updateSelection([cmp1, cmp2, cmp3]);
+      expect(getSelectorNames(result)).toEqual(['.test2']);
+    });
+
+    test('Returns array with common selectors from CssRule', () => {
+      const rule1 = newRule({ selectors: 'test1 test2 test3'.split(' ') });
+      const rule2 = newRule({ selectors: 'test1 test2'.split(' ') });
+      const rule3 = newRule({ selectors: 'test2 test3'.split(' ') });
+      const result = view.updateSelection([rule1, rule2, rule3]);
+      expect(getSelectorNames(result)).toEqual(['.test2']);
+    });
+
+    test('Returns array with common selectors from CssRule and Components', () => {
+      const rule1 = newRule({ selectors: 'test1 test2 test3'.split(' ') });
+      const rule2 = newRule({ selectors: 'test1 test2'.split(' ') });
+      const cmp1 = newComponent({ classes: 'test2 test3' });
+      const result = view.updateSelection([rule1, rule2, cmp1]);
+      expect(getSelectorNames(result)).toEqual(['.test2']);
     });
   });
 
