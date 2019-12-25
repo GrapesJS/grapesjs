@@ -83,6 +83,16 @@ export default () => {
       return this;
     },
 
+    destroy() {
+      const { customRte } = this;
+      globalRte && globalRte.destroy();
+      customRte && customRte.destroy && customRte.destroy();
+      toolbar = 0;
+      globalRte = 0;
+      this.actionbar = 0;
+      this.actions = 0;
+    },
+
     /**
      * Post render callback
      * @param  {View} ev
