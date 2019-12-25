@@ -83,6 +83,16 @@ export default () => {
       return this;
     },
 
+    destroy() {
+      const { customRte } = this;
+      globalRte && globalRte.destroy();
+      customRte && customRte.destroy && customRte.destroy();
+      toolbar = 0;
+      globalRte = 0;
+      this.actionbar = 0;
+      this.actions = 0;
+    },
+
     /**
      * Post render callback
      * @param  {View} ev
@@ -105,7 +115,7 @@ export default () => {
       const pfx = this.pfx;
       const actionbarContainer = toolbar;
       const actionbar = this.actionbar;
-      const actions = this.actions || config.actions;
+      const actions = this.actions || [...config.actions];
       const classes = {
         actionbar: `${pfx}actionbar`,
         button: `${pfx}action`,

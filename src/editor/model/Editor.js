@@ -656,7 +656,8 @@ export default Backbone.Model.extend({
       UndoManager,
       Panels,
       Canvas,
-      Keymaps
+      Keymaps,
+      RichTextEditor
     } = this.attributes;
     DomComponents.clear();
     CssComposer.clear();
@@ -664,6 +665,7 @@ export default Backbone.Model.extend({
     Panels.getPanels().reset();
     Canvas.getCanvasView().remove();
     Keymaps.removeAll();
+    RichTextEditor.destroy();
     this.view.remove();
     this.stopListening();
     $(this.config.el)
