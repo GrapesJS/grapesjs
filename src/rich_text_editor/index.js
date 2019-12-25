@@ -115,7 +115,7 @@ export default () => {
       const pfx = this.pfx;
       const actionbarContainer = toolbar;
       const actionbar = this.actionbar;
-      const actions = this.actions || config.actions;
+      const actions = this.actions || [...config.actions];
       const classes = {
         actionbar: `${pfx}actionbar`,
         button: `${pfx}action`,
