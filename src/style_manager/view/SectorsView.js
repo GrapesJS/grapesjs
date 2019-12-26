@@ -68,6 +68,7 @@ export default Backbone.View.extend({
     const { componentFirst } = em.get('SelectorManager').getConfig();
     const el = model.getEl();
     pt.helper = null;
+    pt.targets = null;
 
     // Create computed style container
     if (el && isTaggableNode(el)) {
