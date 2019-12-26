@@ -244,14 +244,12 @@ export default Backbone.View.extend({
       .reduce((acc, item) => this._commonSelectors(acc, item), args[0]);
   },
 
-  checkSync: debounce(function({ validSelectors }) {
-    const { $btnSyncEl, config } = this;
+  checkSync: debounce(function() {
+    const { $btnSyncEl, config, collection } = this;
     const target = this.getTarget();
-    const sel =
-      validSelectors || (target && target.getSelectors().getValid()) || [];
     let hasStyle;
 
-    if (target && config.componentFirst && sel.length) {
+    if (target && config.componentFirst && collection.length) {
       const style = target.getStyle();
       hasStyle = !isEmpty(style);
     }
