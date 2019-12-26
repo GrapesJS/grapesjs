@@ -105,5 +105,11 @@ export default {
 
   getSelectors() {
     return this.get('selectors') || this.get('classes');
+  },
+
+  getSelectorsString() {
+    return this.selectorsToString
+      ? this.selectorsToString()
+      : this.getSelectors().getFullString();
   }
 };

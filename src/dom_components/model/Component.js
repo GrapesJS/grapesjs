@@ -380,7 +380,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       const em = this.em;
 
       if (em && em.getConfig('avoidInlineStyle')) {
-        const state = this.get('state');
+        const state = em.get('state');
         const cc = em.get('CssComposer');
         const rule = cc.getIdRule(this.getId(), { state });
         this.rule = rule;
@@ -408,7 +408,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
         const style = this.get('style') || {};
         prop = isString(prop) ? this.parseStyle(prop) : prop;
         prop = { ...prop, ...style };
-        const state = this.get('state');
+        const state = em.get('state');
         const cc = em.get('CssComposer');
         const propOrig = this.getStyle();
         this.rule = cc.setIdRule(this.getId(), prop, { ...opts, state });

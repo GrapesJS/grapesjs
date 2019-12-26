@@ -159,6 +159,11 @@ export default Backbone.View.extend({
     return this.getTargetModel();
   },
 
+  getTargets() {
+    const { targets } = this.propTarget;
+    return targets || [this.getTarget()];
+  },
+
   /**
    * Returns Styleable model
    * @return {Model|null}
@@ -343,20 +348,30 @@ export default Backbone.View.extend({
    * @param {Object} opt  Options
    * */
   modelValueChanged(e, val, opt = {}) {
-    const em = this.config.em;
     const model = this.model;
     const value = model.getFullValue();
-    const target = this.getTarget();
-    const prop = model.get('property');
-    const onChange = this.onChange;
 
     // Avoid element update if the change comes from it
     if (!opt.fromInput) {
       this.setValue(value);
     }
 
+    this.getTargets().forEach(target => this.__updateTarget(target, opt));
+  },
+
+  __updateTarget(target, opt = {}) {
+    const { model } = this;
+    const { em } = this.config;
+    const prop = model.get('property');
+    const value = model.getFullValue();
+    const onChange = this.onChange;
+
     // Check if component is allowed to be styled
-    if (!target || !this.isTargetStylable() || !this.isComponentStylable()) {
+    if (
+      !target ||
+      !this.isTargetStylable(target) ||
+      !this.isComponentStylable()
+    ) {
       return;
     }
 
@@ -367,10 +382,11 @@ export default Backbone.View.extend({
       if (onChange && !opt.fromParent) {
         onChange(target, this, opt);
       } else {
-        this.updateTargetStyle(value, null, opt);
+        this.updateTargetStyle(value, null, { ...opt, target });
       }
     }
 
+    // TODO: use target if componentFirst
     const component = em && em.getSelected();
 
     if (em && component) {
@@ -388,7 +404,7 @@ export default Backbone.View.extend({
    */
   updateTargetStyle(value, name = '', opts = {}) {
     const property = name || this.model.get('property');
-    const target = this.getTarget();
+    const target = opts.target || this.getTarget();
     const style = target.getStyle();
 
     if (value) {

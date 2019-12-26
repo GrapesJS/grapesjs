@@ -74,7 +74,10 @@
  * * `canvas:dragdata` - On any dataTransfer parse, `DataTransfer` instance and the `result` are passed as arguments.
  *  By changing `result.content` you're able to customize what is dropped
  * ### Selectors
- * * `selector:add` - Triggers when a new selector/class is created
+ * * `selector:add` - New selector is add. Passes the new selector as an argument
+ * * `selector:remove` - Selector removed. Passes the removed selector as an argument
+ * * `selector:update` - Selector updated. Passes the updated selector as an argument
+ * * `selector:state` - State changed. Passes the new state value as an argument
  * ### RTE
  * * `rte:enable` - RTE enabled. The view, on which RTE is enabled, is passed as an argument
  * * `rte:disable` - RTE disabled. The view, on which RTE is disabled, is passed as an argument

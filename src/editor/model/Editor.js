@@ -418,6 +418,24 @@ export default Backbone.Model.extend({
   },
 
   /**
+   * Change the selector state
+   * @param {String} value State value
+   * @returns {this}
+   */
+  setState(value) {
+    this.set('state', value);
+    return this;
+  },
+
+  /**
+   * Get the current selector state
+   * @returns {String}
+   */
+  getState() {
+    return this.get('state');
+  },
+
+  /**
    * Returns HTML built inside canvas
    * @return {string} HTML string
    * @private

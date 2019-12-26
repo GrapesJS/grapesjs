@@ -68,7 +68,8 @@ export default {
     }
   },
   styleManager: {
-    empty: 'Veuillez sélectionner un élément avant d\'utiliser le gestionnaire de style',
+    empty:
+      "Veuillez sélectionner un élément avant d'utiliser le gestionnaire de style",
     layer: 'Calque',
     fileButton: 'Images',
     sectors: {
@@ -132,9 +133,9 @@ export default {
       'box-shadow-h': 'Ombre de boîte: horizontale',
       'box-shadow-v': 'Ombre de boîte: verticale',
       'box-shadow-blur': 'Flou ombre de boîte',
-      'box-shadow-spread': 'Extension d\'ombre de boîte',
-      'box-shadow-color': 'Couleur d\'ombre de boîte',
-      'box-shadow-type': 'Type d\'ombre de boîte',
+      'box-shadow-spread': "Extension d'ombre de boîte",
+      'box-shadow-color': "Couleur d'ombre de boîte",
+      'box-shadow-type': "Type d'ombre de boîte",
       background: 'Fond',
       'background-image': 'Image de fond',
       'background-repeat': 'Répéter fond',
@@ -167,7 +168,8 @@ export default {
     }
   },
   traitManager: {
-    empty: 'Veuillez sélectionner un élément pour modifier les paramètres de cet élément',
+    empty:
+      'Veuillez sélectionner un élément pour modifier les paramètres de cet élément',
     label: 'Paramètres composant',
     traits: {
       // The core library generates the name by their `name` property
@@ -175,7 +177,7 @@ export default {
         id: 'Identifiant',
         alt: 'Texte alternatif',
         title: 'Titre',
-        href: 'Source lien',
+        href: 'Source lien'
       },
       // In a simple trait, like text input, these are used on input attributes
       attributes: {
