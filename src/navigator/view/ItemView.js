@@ -160,7 +160,7 @@ export default Backbone.View.extend({
     const name = inputEl.textContent;
     inputEl.scrollLeft = 0;
     inputEl[inputProp] = false;
-    this.model.set({ name });
+    this.model.set({ 'custom-name': name });
     em && em.setEditing(0);
     $el
       .find(`.${this.inputNameCls}`)
