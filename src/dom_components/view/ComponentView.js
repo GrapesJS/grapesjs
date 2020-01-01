@@ -208,7 +208,7 @@ export default Backbone.View.extend({
     const em = this.em;
     const model = this.model;
 
-    if (em && em.get('avoidInlineStyle')) {
+    if (em && em.getConfig('avoidInlineStyle')) {
       this.el.id = model.getId();
       const style = model.getStyle();
       !isEmpty(style) && model.setStyle(style);
