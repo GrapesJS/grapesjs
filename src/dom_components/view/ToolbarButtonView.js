@@ -13,8 +13,10 @@ export default Backbone.View.extend({
     return this.model.get('attributes');
   },
 
-  initialize(opts) {
-    this.editor = opts.config.editor;
+  initialize(opts = {}) {
+    const { config = {} } = opts;
+    this.em = config.em;
+    this.editor = config.editor;
   },
 
   handleClick(event) {
@@ -35,10 +37,8 @@ export default Backbone.View.extend({
      * https://github.com/artf/grapesjs/issues/2207
      */
 
-    const {
-      left,
-      top
-    } = this.editor.Canvas.getFrameEl().getBoundingClientRect();
+    const { editor } = this;
+    const { left, top } = editor.Canvas.getFrameEl().getBoundingClientRect();
 
     const calibrated = {
       ...event,
@@ -46,6 +46,7 @@ export default Backbone.View.extend({
       clientY: event.clientY - top
     };
 
+    em.trigger('toolbar:run:before');
     this.execCommand(calibrated);
   },
 

@@ -1,4 +1,4 @@
-import { keys, isUndefined, isElement } from 'underscore';
+import { keys, isUndefined, isElement, isArray } from 'underscore';
 
 const elProt = window.Element.prototype;
 const matches =
@@ -6,6 +6,33 @@ const matches =
   elProt.webkitMatchesSelector ||
   elProt.mozMatchesSelector ||
   elProt.msMatchesSelector;
+
+/**
+ * Import styles asynchronously
+ * @param {String|Array<String>} styles
+ */
+const appendStyles = (styles, opts = {}) => {
+  const stls = isArray(styles) ? [...styles] : [styles];
+
+  if (stls.length) {
+    const href = stls.shift();
+
+    if (!opts.unique || !document.querySelector(`link[href="${href}"]`)) {
+      const { head } = document;
+      const link = document.createElement('link');
+      link.href = href;
+      link.rel = 'stylesheet';
+
+      if (opts.prepand) {
+        head.insertBefore(link, head.firstChild);
+      } else {
+        head.appendChild(link);
+      }
+    }
+
+    appendStyles(stls);
+  }
+};
 
 /**
  * Returns shallow diff between 2 objects
@@ -201,5 +228,6 @@ export {
   normalizeFloat,
   getPointerEvent,
   getUnitFromValue,
-  capitalize
+  capitalize,
+  appendStyles
 };

@@ -22,7 +22,8 @@ export default {
    * @return {Object}
    */
   getStyle() {
-    return { ...this.get('style') };
+    const style = this.get('style') || {};
+    return { ...style };
   },
 
   /**

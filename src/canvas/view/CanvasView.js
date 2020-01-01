@@ -440,7 +440,7 @@ export default Backbone.View.extend({
     const id = model.getId();
 
     if (!view.scriptContainer) {
-      view.scriptContainer = $(`<div id="${id}">`);
+      view.scriptContainer = $(`<div data-id="${id}">`);
       this.getJsContainer().appendChild(view.scriptContainer.get(0));
     }
 

@@ -276,12 +276,14 @@ export default Backbone.View.extend({
 
     const defaultAttr = {
       'data-gjs-type': type || 'default',
-      ...(draggableComponents && { draggable: true }),
-      ...(highlightable && { 'data-highlightable': 1 }),
-      ...(textable && {
-        contenteditable: 'false',
-        'data-gjs-textable': 'true'
-      })
+      ...(draggableComponents ? { draggable: true } : {}),
+      ...(highlightable ? { 'data-highlightable': 1 } : {}),
+      ...(textable
+        ? {
+            contenteditable: 'false',
+            'data-gjs-textable': 'true'
+          }
+        : {})
     };
 
     // Remove all current attributes

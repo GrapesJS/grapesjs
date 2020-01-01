@@ -33,7 +33,7 @@ export default {
       const pfx = smConfig.stylePrefix;
       // Create header
       this.$header = $(
-        `<div class="${pfx}header">${smConfig.textNoElement}</div>`
+        `<div class="${pfx}header">${em.t('styleManager.empty')}</div>`
       );
       this.$cn.append(this.$header);
 

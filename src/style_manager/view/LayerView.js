@@ -10,8 +10,8 @@ export default Backbone.View.extend({
   },
 
   template(model) {
-    const { pfx, ppfx } = this;
-    const label = `Layer ${model.get('index')}`;
+    const { pfx, ppfx, em } = this;
+    const label = `${em && em.t('styleManager.layer')} ${model.get('index')}`;
 
     return `
       <div id="${pfx}move" class="${ppfx}no-touch-actions" data-move-layer>
@@ -33,6 +33,7 @@ export default Backbone.View.extend({
     let model = this.model;
     this.stackModel = o.stackModel || {};
     this.config = o.config || {};
+    this.em = this.config.em;
     this.pfx = this.config.stylePrefix || '';
     this.ppfx = this.config.pStylePrefix || '';
     this.sorter = o.sorter || null;

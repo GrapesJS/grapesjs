@@ -15,6 +15,7 @@ export default Backbone.View.extend({
 
   initialize(o) {
     this.config = o.config || {};
+    this.em = this.config.em;
     this.pfx = this.config.stylePrefix || '';
     this.target = o.target || {};
     this.propTarget = o.propTarget || {};
@@ -78,17 +79,13 @@ export default Backbone.View.extend({
   },
 
   render() {
-    const { pfx, model } = this;
-    const { id } = model.attributes;
-    this.$el.html(
-      this.template({
-        pfx,
-        label: model.get('name')
-      })
-    );
-    this.$caret = this.$el.find(`#${pfx}caret`);
+    const { pfx, model, em, $el } = this;
+    const { id, name } = model.attributes;
+    const label = (em && em.t(`styleManager.sectors.${id}`)) || name;
+    $el.html(this.template({ pfx, label }));
+    this.$caret = $el.find(`#${pfx}caret`);
     this.renderProperties();
-    this.$el.attr('class', `${pfx}sector ${pfx}sector__${id} no-select`);
+    $el.attr('class', `${pfx}sector ${pfx}sector__${id} no-select`);
     this.updateOpen();
     return this;
   },

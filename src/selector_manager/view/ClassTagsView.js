@@ -90,16 +90,20 @@ export default Backbone.View.extend({
    * @private
    */
   getStateOptions() {
-    var strInput = '';
-    for (var i = 0; i < this.states.length; i++) {
-      strInput +=
-        '<option value="' +
-        this.states[i].name +
-        '">' +
-        this.states[i].label +
-        '</option>';
-    }
-    return strInput;
+    const { states, em } = this;
+    let result = [];
+
+    states.forEach(state =>
+      result.push(
+        `<option value="${state.name}">${em.t(
+          `selectorManager.states.${state.name}`
+        ) ||
+          state.label ||
+          state.name}</option>`
+      )
+    );
+
+    return result.join('');
   },
 
   /**
@@ -304,21 +308,19 @@ export default Backbone.View.extend({
   },
 
   render() {
-    const ppfx = this.ppfx;
-    const config = this.config;
-    const $el = this.$el;
+    const { em, pfx, ppfx, $el } = this;
     $el.html(
       this.template({
-        selectedLabel: config.selectedLabel,
-        statesLabel: config.statesLabel,
-        label: config.label,
-        pfx: this.pfx,
-        ppfx: this.ppfx
+        selectedLabel: em.t('selectorManager.selected'),
+        statesLabel: em.t('selectorManager.emptyState'),
+        label: em.t('selectorManager.label'),
+        pfx,
+        ppfx
       })
     );
     this.$input = $el.find('input#' + this.newInputId);
     this.$addBtn = $el.find('#' + this.addBtnId);
-    this.$classes = $el.find('#' + this.pfx + 'tags-c');
+    this.$classes = $el.find('#' + pfx + 'tags-c');
     this.$states = $el.find('#' + this.stateInputId);
     this.$statesC = $el.find('#' + this.stateInputC);
     this.$states.append(this.getStateOptions());

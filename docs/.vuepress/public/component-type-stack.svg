@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="572px" height="324px" viewBox="0 0 572 324" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 49.3 (51167) - http://www.bohemiancoding.com/sketch -->
+    <title>Artboard</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g transform="translate(222.000000, 89.000000)">
+            <g>
+                <rect fill="#E67891" x="0" y="0" width="124" height="47" rx="4"></rect>
+                <text font-family="Avenir-Book, Avenir" font-size="15" font-weight="normal" fill="#FFFFFF">
+                    <tspan x="22.1375" y="15">type: image</tspan>
+                </text>
+            </g>
+        </g>
+        <g transform="translate(105.000000, 149.500000) rotate(13.000000) translate(-105.000000, -149.500000) translate(43.000000, 126.000000)">
+            <g>
+                <rect fill="#E67891" x="0" y="0" width="124" height="47" rx="4"></rect>
+                <text font-family="Avenir-Book, Avenir" font-size="15" font-weight="normal" fill="#FFFFFF">
+                    <tspan x="11.8625" y="15">type: new-type</tspan>
+                </text>
+            </g>
+        </g>
+        <g transform="translate(222.000000, 156.000000)">
+            <g>
+                <rect fill="#E67891" x="0" y="0" width="124" height="47" rx="4"></rect>
+                <text font-family="Avenir-Book, Avenir" font-size="15" font-weight="normal" fill="#FFFFFF">
+                    <tspan x="30.2075" y="15">type: text</tspan>
+                </text>
+            </g>
+        </g>
+        <g transform="translate(222.000000, 221.000000)">
+            <g>
+                <rect fill="#E67891" x="0" y="0" width="124" height="47" rx="4"></rect>
+                <text font-family="Avenir-Book, Avenir" font-size="15" font-weight="normal" fill="#FFFFFF">
+                    <tspan x="19.6475" y="15">type: default</tspan>
+                </text>
+            </g>
+        </g>
+        <text font-family="Helvetica-Bold, Helvetica" font-size="15" font-weight="bold" fill="#6E6E6E">
+            <tspan x="201" y="41">Component Type Stack</tspan>
+        </text>
+        <path d="M94,113 C94.4283817,89 126.095048,77 189,77" stroke="#999999"></path>
+        <polygon fill="#999999" points="203 77.5 189 83 189 72"></polygon>
+        <polygon fill="#999999" transform="translate(375.000000, 283.500000) rotate(-270.000000) translate(-375.000000, -283.500000) " points="382 283.5 368 289 368 278"></polygon>
+        <text font-family="Helvetica" font-size="12" font-weight="normal" fill="#6E6E6E">
+            <tspan x="33.8046875" y="214">New Component Type </tspan>
+            <tspan x="62.140625" y="228">goes on top</tspan>
+        </text>
+        <text font-family="Helvetica" font-size="12" font-weight="normal" fill="#6E6E6E">
+            <tspan x="396" y="231">The </tspan>
+            <tspan x="420.011719" y="231" font-family="Helvetica-Bold, Helvetica" font-weight="bold">default </tspan>
+            <tspan x="462.679688" y="231">is the last </tspan>
+            <tspan x="396" y="245">available type</tspan>
+        </text>
+        <text font-family="Helvetica" font-size="12" font-weight="normal" fill="#6E6E6E">
+            <tspan x="396" y="141">Each parsed element goes </tspan>
+            <tspan x="396" y="155">through the stack from TOP </tspan>
+            <tspan x="396" y="169">to BOTTOM</tspan>
+        </text>
+        <path d="M375.5,78.5 L375.5,280.621251" stroke="#999999" stroke-linecap="square"></path>
+        <text font-family="Helvetica" font-size="12" font-weight="normal">
+            <tspan x="396" y="86" fill="#E67891">&lt;span&gt;</tspan>
+            <tspan x="436.037109" y="86" fill="#6E6E6E">New element</tspan>
+            <tspan x="506.068359" y="86" fill="#E67891">&lt;/span&gt;</tspan>
+        </text>
+    </g>
+</svg>
