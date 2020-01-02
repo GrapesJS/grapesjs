@@ -37,7 +37,7 @@ export default Backbone.View.extend({
      * https://github.com/artf/grapesjs/issues/2207
      */
 
-    const { editor } = this;
+    const { editor, em } = this;
     const { left, top } = editor.Canvas.getFrameEl().getBoundingClientRect();
 
     const calibrated = {
