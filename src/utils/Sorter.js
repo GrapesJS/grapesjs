@@ -446,9 +446,10 @@ export default Backbone.View.extend({
     const sourceModel = this.getSourceModel();
     const dims = this.dimsFromTarget(e.target, rX, rY);
     const target = this.target;
-    const targetModel = this.getTargetModel(target);
+    const targetModel = target && this.getTargetModel(target);
     this.selectTargetModel(targetModel);
     if (!targetModel) plh.style.display = 'none';
+    if (!target) return;
 
     this.lastDims = dims;
     const pos = this.findPosition(dims, rX, rY);
