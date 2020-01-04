@@ -68,7 +68,7 @@ As you see the editor attaches a unique ID to all components with scripts and re
 
 Keep in mind that all component scripts are executed only inside the iframe of the canvas (isolated, just like your final template), and therefore are NOT part of the current `document`. All your external libraries (eg. jQuery) are not there, but you'll see later how to manage scripted components with dependencies.
 
-One thing you might be concerned about is a string used for the `script`, definitely not the best way to deal with a code, for this reason GrapesJS is able also to handle functions for you, so the previous example might look like this:
+One thing you might be concerned about is a string used for the `script`. Definitely not the best way to deal with a code, for this reason GrapesJS is also able to handle functions for you, so the previous example might look like this:
 
 ```js
 editor.BlockManager.add('test-block', {
@@ -82,7 +82,7 @@ editor.BlockManager.add('test-block', {
   }
 });
 ```
-This is much better, but be aware of a string conversion, you can't use variables outside of the function scope. Take a look at this scenario:
+This is much better, but be aware though, that the function body is converted to string internally, before it can be placed in the document, so you can't use variables outside of the function scope. Take a look at this scenario:
 
 ```js
 var myVar = 'John';

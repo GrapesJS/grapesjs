@@ -22,9 +22,32 @@ export default Backbone.View.extend({
   handleClick(event) {
     event.preventDefault();
     event.stopPropagation();
-    const { em } = this;
+
+    /*
+     * Since the toolbar lives outside the canvas frame, the event's
+     * generated on it have clientX and clientY relative to the page.
+     *
+     * This causes issues during events like dragging, where they depend
+     * on the clientX and clientY.
+     *
+     * This makes sure the offsets are calculated.
+     *
+     * More information on
+     * https://github.com/artf/grapesjs/issues/2372
+     * https://github.com/artf/grapesjs/issues/2207
+     */
+
+    const { editor, em } = this;
+    const { left, top } = editor.Canvas.getFrameEl().getBoundingClientRect();
+
+    const calibrated = {
+      ...event,
+      clientX: event.clientX - left,
+      clientY: event.clientY - top
+    };
+
     em.trigger('toolbar:run:before');
-    this.execCommand(event);
+    this.execCommand(calibrated);
   },
 
   execCommand(event) {
