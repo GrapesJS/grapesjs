@@ -380,7 +380,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       const em = this.em;
 
       if (em && em.getConfig('avoidInlineStyle')) {
-        const state = this.get('state');
+        const state = em.get('state');
         const cc = em.get('CssComposer');
         const rule = cc.getIdRule(this.getId(), { state });
         this.rule = rule;
@@ -408,7 +408,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
         const style = this.get('style') || {};
         prop = isString(prop) ? this.parseStyle(prop) : prop;
         prop = { ...prop, ...style };
-        const state = this.get('state');
+        const state = em.get('state');
         const cc = em.get('CssComposer');
         const propOrig = this.getStyle();
         this.rule = cc.setIdRule(this.getId(), prop, { ...opts, state });
@@ -867,7 +867,8 @@ const Component = Backbone.Model.extend(Styleable).extend(
     getName() {
       const { em } = this;
       const { type, tagName } = this.attributes;
-      const customName = this.get('name') || this.get('custom-name');
+      const customName = this.get('custom-name');
+      const cName = this.get('name');
       let tag = tagName;
       tag = tag == 'div' ? 'box' : tag;
       let name = type || tag;
@@ -875,7 +876,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       const i18nPfx = 'domComponents.names.';
       const i18nStr =
         em && (em.t(`${i18nPfx}${type}`) || em.t(`${i18nPfx}${tagName}`));
-      return i18nStr || customName || name;
+      return customName || i18nStr || cName || name;
     },
 
     /**
@@ -890,6 +891,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
     /**
      * Return HTML string of the component
      * @param {Object} [opts={}] Options
+     * @param {String} [opts.tag] Custom tagName
      * @param {Object|Function} [opts.attributes=null] You can pass an object of custom attributes to replace
      * with the current one or you can even pass a function to generate attributes dynamically
      * @return {String} HTML string
@@ -918,11 +920,12 @@ const Component = Backbone.Model.extend(Styleable).extend(
     toHTML(opts = {}) {
       const model = this;
       const attrs = [];
-      const classes = [];
-      const tag = model.get('tagName');
+      const customTag = opts.tag;
+      const tag = customTag || model.get('tagName');
       const sTag = model.get('void');
       const customAttr = opts.attributes;
       let attributes = this.getAttrToHTML();
+      delete opts.tag;
 
       // Get custom attributes if requested
       if (customAttr) {

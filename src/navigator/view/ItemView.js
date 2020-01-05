@@ -66,6 +66,7 @@ export default Backbone.View.extend({
     this.ppfx = this.em.get('Config').stylePrefix;
     this.sorter = o.sorter || '';
     this.pfx = this.config.stylePrefix;
+    this.parentView = o.parentView;
     const pfx = this.pfx;
     const ppfx = this.ppfx;
     const model = this.model;
@@ -75,6 +76,7 @@ export default Backbone.View.extend({
     this.listenTo(components, 'remove add reset', this.checkChildren);
     this.listenTo(model, 'change:status', this.updateStatus);
     this.listenTo(model, 'change:open', this.updateOpening);
+    this.listenTo(model, 'change:layerable', this.updateLayerable);
     this.listenTo(model, 'change:style:display', this.updateVisibility);
     this.className = `${pfx}layer ${pfx}layer__t-${type} no-select ${ppfx}two-color`;
     this.inputNameCls = `${ppfx}layer-name`;
@@ -158,7 +160,7 @@ export default Backbone.View.extend({
     const name = inputEl.textContent;
     inputEl.scrollLeft = 0;
     inputEl[inputProp] = false;
-    this.model.set({ name });
+    this.model.set({ 'custom-name': name });
     em && em.setEditing(0);
     $el
       .find(`.${this.inputNameCls}`)
@@ -350,6 +352,12 @@ export default Backbone.View.extend({
     this.render();
   },
 
+  updateLayerable() {
+    const { parentView } = this;
+    const toRerender = parentView || this;
+    toRerender.render();
+  },
+
   render() {
     const { model, config, pfx, ppfx, opt } = this;
     const { isCountable } = opt;
@@ -367,6 +375,7 @@ export default Backbone.View.extend({
       config: this.config,
       sorter: this.sorter,
       opened: this.opt.opened,
+      parentView: this,
       parent: model,
       level
     }).render().$el;

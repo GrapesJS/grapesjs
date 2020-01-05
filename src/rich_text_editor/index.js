@@ -83,6 +83,16 @@ export default () => {
       return this;
     },
 
+    destroy() {
+      const { customRte } = this;
+      globalRte && globalRte.destroy();
+      customRte && customRte.destroy && customRte.destroy();
+      toolbar = 0;
+      globalRte = 0;
+      this.actionbar = 0;
+      this.actions = 0;
+    },
+
     /**
      * Post render callback
      * @param  {View} ev
@@ -105,11 +115,13 @@ export default () => {
       const pfx = this.pfx;
       const actionbarContainer = toolbar;
       const actionbar = this.actionbar;
-      const actions = this.actions || config.actions;
+      const actions = this.actions || [...config.actions];
       const classes = {
         actionbar: `${pfx}actionbar`,
         button: `${pfx}action`,
-        active: `${pfx}active`
+        active: `${pfx}active`,
+        inactive: `${pfx}inactive`,
+        disabled: `${pfx}disabled`
       };
       const rte = new RichTextEditor({
         el,
@@ -165,6 +177,32 @@ export default () => {
      *     }
      *    }
      *   })
+     * // An example with state
+     * const isValidAnchor = (rte) => {
+     *   // a utility function to help determine if the selected is a valid anchor node
+     *   const anchor = rte.selection().anchorNode;
+     *   const parentNode  = anchor && anchor.parentNode;
+     *   const nextSibling = anchor && anchor.nextSibling;
+     *   return (parentNode && parentNode.nodeName == 'A') || (nextSibling && nextSibling.nodeName == 'A')
+     * }
+     * rte.add('toggleAnchor', {
+     *   icon: `<span style="transform:rotate(45deg)">&supdsub;</span>`,
+     *   state: (rte, doc) => {
+     *    if (rte && rte.selection()) {
+     *      // `btnState` is a integer, -1 for disabled, 0 for inactive, 1 for active
+     *      return isValidAnchor(rte) ? btnState.ACTIVE : btnState.INACTIVE;
+     *    } else {
+     *      return btnState.INACTIVE;
+     *    }
+     *   },
+     *   result: (rte, action) => {
+     *     if (isValidAnchor(rte)) {
+     *       rte.exec('unlink');
+     *     } else {
+     *       rte.insertHTML(`<a class="link" href="">${rte.selection()}</a>`);
+     *     }
+     *   }
+     * })
      */
     add(name, action = {}) {
       action.name = name;

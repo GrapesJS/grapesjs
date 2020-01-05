@@ -33,11 +33,11 @@ export default Backbone.View.extend({
     this.listenTo(model, 'change:attributes', this.renderAttributes);
     this.listenTo(model, 'change:highlightable', this.updateHighlight);
     this.listenTo(model, 'change:status', this.updateStatus);
-    this.listenTo(model, 'change:state', this.updateState);
     this.listenTo(model, 'change:script', this.reset);
     this.listenTo(model, 'change:content', this.updateContent);
     this.listenTo(model, 'change', this.handleChange);
     this.listenTo(model, 'active', this.onActive);
+    this.listenTo(model, 'disable', this.onDisable);
     $el.data('model', model);
     model.view = this;
     this.initClasses();
@@ -73,6 +73,11 @@ export default Backbone.View.extend({
    * Callback executed when the `active` event is triggered on component
    */
   onActive() {},
+
+  /**
+   * Callback executed when the `disable` event is triggered on component
+   */
+  onDisable() {},
 
   remove() {
     Backbone.View.prototype.remove.apply(this, arguments);
@@ -145,22 +150,6 @@ export default Backbone.View.extend({
   },
 
   /**
-   * Fires on state update. If the state is not empty will add a helper class
-   * @param  {Event} e
-   * @private
-   * */
-  updateState(e) {
-    var cl = 'hc-state';
-    var state = this.model.get('state');
-
-    if (state) {
-      this.$el.addClass(cl);
-    } else {
-      this.$el.removeClass(cl);
-    }
-  },
-
-  /**
    * Update item on status change
    * @param  {Event} e
    * @private
@@ -219,7 +208,7 @@ export default Backbone.View.extend({
     const em = this.em;
     const model = this.model;
 
-    if (em && em.get('avoidInlineStyle')) {
+    if (em && em.getConfig('avoidInlineStyle')) {
       this.el.id = model.getId();
       const style = model.getStyle();
       !isEmpty(style) && model.setStyle(style);

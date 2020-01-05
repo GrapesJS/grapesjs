@@ -4,14 +4,14 @@ const inputProp = 'contentEditable';
 
 export default Backbone.View.extend({
   template() {
-    const { pfx, model } = this;
+    const { pfx, model, config } = this;
     const label = model.get('label') || '';
 
     return `
-      <span id="${pfx}checkbox" class="fa" data-tag-status></span>
+      <span id="${pfx}checkbox" class="${pfx}tag-status" data-tag-status></span>
       <span id="${pfx}tag-label" data-tag-name>${label}</span>
-      <span id="${pfx}close" data-tag-remove>
-        &Cross;
+      <span id="${pfx}close" class="${pfx}tag-close" data-tag-remove>
+        ${config.iconTagRemove}
       </span>
     `;
   },
@@ -98,8 +98,10 @@ export default Backbone.View.extend({
    */
   removeTag() {
     const { em, model } = this;
-    const sel = em && em.getSelected();
-    if (!model.get('protected') && sel) sel.getSelectors().remove(model);
+    const targets = em && em.getSelectedAll();
+    targets.forEach(sel => {
+      !model.get('protected') && sel && sel.getSelectors().remove(model);
+    });
   },
 
   /**
@@ -107,16 +109,15 @@ export default Backbone.View.extend({
    * @private
    */
   updateStatus() {
-    const { model, $el } = this;
-    const chkOn = 'fa-check-square-o';
-    const chkOff = 'fa-square-o';
+    const { model, $el, config } = this;
+    const { iconTagOn, iconTagOff } = config;
     const $chk = $el.find('[data-tag-status]');
 
     if (model.get('active')) {
-      $chk.removeClass(chkOff).addClass(chkOn);
+      $chk.html(iconTagOn);
       $el.removeClass('opac50');
     } else {
-      $chk.removeClass(chkOn).addClass(chkOff);
+      $chk.html(iconTagOff);
       $el.addClass('opac50');
     }
   },

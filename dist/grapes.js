@@ -23391,16 +23391,26 @@ var maxValue = Number.MAX_VALUE;
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_1__);
 
-/* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_0___default.a.Model.extend({
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+
+/* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_1___default.a.Model.extend({
   build: function build(model) {
     var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     var models = model.get('components');
 
     if (opts.exportWrapper) {
-      return opts.wrapperIsBody ? "<body>".concat(this.buildModels(models), "</body>") : model.toHTML();
+      return model.toHTML(_objectSpread({}, opts.wrapperIsBody && {
+        tag: 'body'
+      }));
     }
 
     return this.buildModels(models);
@@ -23723,8 +23733,11 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
           var hideTlb = function hideTlb() {
             return em.stopDefault(defComOptions);
-          }; // Dirty patch to prevent parent selection on drop (in absolute mode)
+          };
 
+          selAll.forEach(function (sel) {
+            return sel.trigger('disable');
+          }); // Dirty patch to prevent parent selection on drop (in absolute mode)
 
           em.set('_cmpDrag', 1);
 
@@ -25783,7 +25796,12 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
         sender = this.sender;
     if (sender && sender.get && !sender.get('active')) return;
 
-    if (target.getSelectedAll().length === 1) {
+    var _target$get$getConfig = target.get('SelectorManager').getConfig(),
+        componentFirst = _target$get$getConfig.componentFirst;
+
+    var selectedAll = target.getSelectedAll().length;
+
+    if (selectedAll === 1 || selectedAll > 1 && componentFirst) {
       this.$cn2.show();
       this.$header.hide();
     } else {
@@ -29630,7 +29648,7 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(dom
     var em = this.em;
 
     if (em && em.getConfig('avoidInlineStyle')) {
-      var state = this.get('state');
+      var state = em.get('state');
       var cc = em.get('CssComposer');
       var rule = cc.getIdRule(this.getId(), {
         state: state
@@ -29664,7 +29682,7 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(dom
       var style = this.get('style') || {};
       prop = Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isString"])(prop) ? this.parseStyle(prop) : prop;
       prop = _objectSpread({}, prop, {}, style);
-      var state = this.get('state');
+      var state = em.get('state');
       var cc = em.get('CssComposer');
       var propOrig = this.getStyle();
       this.rule = cc.setIdRule(this.getId(), prop, _objectSpread({}, opts, {
@@ -30147,14 +30165,15 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(dom
     var _this$attributes = this.attributes,
         type = _this$attributes.type,
         tagName = _this$attributes.tagName;
-    var customName = this.get('name') || this.get('custom-name');
+    var customName = this.get('custom-name');
+    var cName = this.get('name');
     var tag = tagName;
     tag = tag == 'div' ? 'box' : tag;
     var name = type || tag;
     name = name.charAt(0).toUpperCase() + name.slice(1);
     var i18nPfx = 'domComponents.names.';
     var i18nStr = em && (em.t("".concat(i18nPfx).concat(type)) || em.t("".concat(i18nPfx).concat(tagName)));
-    return i18nStr || customName || name;
+    return customName || i18nStr || cName || name;
   },
 
   /**
@@ -30169,6 +30188,7 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(dom
   /**
    * Return HTML string of the component
    * @param {Object} [opts={}] Options
+   * @param {String} [opts.tag] Custom tagName
    * @param {Object|Function} [opts.attributes=null] You can pass an object of custom attributes to replace
    * with the current one or you can even pass a function to generate attributes dynamically
    * @return {String} HTML string
@@ -30198,11 +30218,12 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(dom
     var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var model = this;
     var attrs = [];
-    var classes = [];
-    var tag = model.get('tagName');
+    var customTag = opts.tag;
+    var tag = customTag || model.get('tagName');
     var sTag = model.get('void');
     var customAttr = opts.attributes;
-    var attributes = this.getAttrToHTML(); // Get custom attributes if requested
+    var attributes = this.getAttrToHTML();
+    delete opts.tag; // Get custom attributes if requested
 
     if (customAttr) {
       if (Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(customAttr)) {
@@ -31466,7 +31487,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     editable: true
   }),
   toHTML: function toHTML() {
-    return this.get('content');
+    return this.get('content').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
   }
 }, {
   isComponent: function isComponent(el) {
@@ -32612,6 +32633,9 @@ var compProt = _ComponentView__WEBPACK_IMPORTED_MODULE_2__["default"].prototype;
 
     this.toggleEvents(1);
   },
+  onDisable: function onDisable() {
+    this.disableEditing();
+  },
 
   /**
    * Disable element content editing
@@ -32983,11 +33007,11 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     this.listenTo(model, 'change:attributes', this.renderAttributes);
     this.listenTo(model, 'change:highlightable', this.updateHighlight);
     this.listenTo(model, 'change:status', this.updateStatus);
-    this.listenTo(model, 'change:state', this.updateState);
     this.listenTo(model, 'change:script', this.reset);
     this.listenTo(model, 'change:content', this.updateContent);
     this.listenTo(model, 'change', this.handleChange);
     this.listenTo(model, 'active', this.onActive);
+    this.listenTo(model, 'disable', this.onDisable);
     $el.data('model', model);
     model.view = this;
     this.initClasses();
@@ -33025,6 +33049,11 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
    * Callback executed when the `active` event is triggered on component
    */
   onActive: function onActive() {},
+
+  /**
+   * Callback executed when the `disable` event is triggered on component
+   */
+  onDisable: function onDisable() {},
   remove: function remove() {
     backbone__WEBPACK_IMPORTED_MODULE_1___default.a.View.prototype.remove.apply(this, arguments);
     this.removed(this._clbObj());
@@ -33096,22 +33125,6 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
   },
 
   /**
-   * Fires on state update. If the state is not empty will add a helper class
-   * @param  {Event} e
-   * @private
-   * */
-  updateState: function updateState(e) {
-    var cl = 'hc-state';
-    var state = this.model.get('state');
-
-    if (state) {
-      this.$el.addClass(cl);
-    } else {
-      this.$el.removeClass(cl);
-    }
-  },
-
-  /**
    * Update item on status change
    * @param  {Event} e
    * @private
@@ -33175,7 +33188,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     var em = this.em;
     var model = this.model;
 
-    if (em && em.get('avoidInlineStyle')) {
+    if (em && em.getConfig('avoidInlineStyle')) {
       this.el.id = model.getId();
       var style = model.getStyle();
       !Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isEmpty"])(style) && model.setStyle(style);
@@ -33575,10 +33588,18 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_1__);
 
-/* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_0___default.a.View.extend({
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+
+/* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_1___default.a.View.extend({
   events: function events() {
     return this.model.get('events') || {
       mousedown: 'handleClick'
@@ -33597,9 +33618,34 @@ __webpack_require__.r(__webpack_exports__);
   handleClick: function handleClick(event) {
     event.preventDefault();
     event.stopPropagation();
-    var em = this.em;
+    /*
+     * Since the toolbar lives outside the canvas frame, the event's
+     * generated on it have clientX and clientY relative to the page.
+     *
+     * This causes issues during events like dragging, where they depend
+     * on the clientX and clientY.
+     *
+     * This makes sure the offsets are calculated.
+     *
+     * More information on
+     * https://github.com/artf/grapesjs/issues/2372
+     * https://github.com/artf/grapesjs/issues/2207
+     */
+
+    var editor = this.editor,
+        em = this.em;
+
+    var _editor$Canvas$getFra = editor.Canvas.getFrameEl().getBoundingClientRect(),
+        left = _editor$Canvas$getFra.left,
+        top = _editor$Canvas$getFra.top;
+
+    var calibrated = _objectSpread({}, event, {
+      clientX: event.clientX - left,
+      clientY: event.clientY - top
+    });
+
     em.trigger('toolbar:run:before');
-    this.execCommand(event);
+    this.execCommand(calibrated);
   },
   execCommand: function execCommand(event) {
     var opts = {
@@ -33796,6 +33842,9 @@ var parseStyle = Object(parser_model_ParserHtml__WEBPACK_IMPORTED_MODULE_3__["de
   },
   getSelectors: function getSelectors() {
     return this.get('selectors') || this.get('classes');
+  },
+  getSelectorsString: function getSelectorsString() {
+    return this.selectorsToString ? this.selectorsToString() : this.getSelectors().getFullString();
   }
 });
 
@@ -34886,7 +34935,10 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
  * * `canvas:dragdata` - On any dataTransfer parse, `DataTransfer` instance and the `result` are passed as arguments.
  *  By changing `result.content` you're able to customize what is dropped
  * ### Selectors
- * * `selector:add` - Triggers when a new selector/class is created
+ * * `selector:add` - New selector is add. Passes the new selector as an argument
+ * * `selector:remove` - Selector removed. Passes the removed selector as an argument
+ * * `selector:update` - Selector updated. Passes the updated selector as an argument
+ * * `selector:state` - State changed. Passes the new state value as an argument
  * ### RTE
  * * `rte:enable` - RTE enabled. The view, on which RTE is enabled, is passed as an argument
  * * `rte:disable` - RTE disabled. The view, on which RTE is disabled, is passed as an argument
@@ -36016,6 +36068,24 @@ var logs = {
   },
 
   /**
+   * Change the selector state
+   * @param {String} value State value
+   * @returns {this}
+   */
+  setState: function setState(value) {
+    this.set('state', value);
+    return this;
+  },
+
+  /**
+   * Get the current selector state
+   * @returns {String}
+   */
+  getState: function getState() {
+    return this.get('state');
+  },
+
+  /**
    * Returns HTML built inside canvas
    * @return {string} HTML string
    * @private
@@ -36261,13 +36331,15 @@ var logs = {
         UndoManager = _this$attributes.UndoManager,
         Panels = _this$attributes.Panels,
         Canvas = _this$attributes.Canvas,
-        Keymaps = _this$attributes.Keymaps;
+        Keymaps = _this$attributes.Keymaps,
+        RichTextEditor = _this$attributes.RichTextEditor;
     DomComponents.clear();
     CssComposer.clear();
     UndoManager.clear().removeAll();
     Panels.getPanels().reset();
     Canvas.getCanvasView().remove();
     Keymaps.removeAll();
+    RichTextEditor.destroy();
     this.view.remove();
     this.stopListening();
     $(this.config.el).empty().attr(this.attrsOrig);
@@ -36861,7 +36933,7 @@ var defaultConfig = {
   editors: editors,
   plugins: plugins,
   // Will be replaced on build
-  version: '0.15.9',
+  version: '0.15.10',
 
   /**
    * Initialize the editor with passed options
@@ -37794,6 +37866,7 @@ var ItemsView;
     this.ppfx = this.em.get('Config').stylePrefix;
     this.sorter = o.sorter || '';
     this.pfx = this.config.stylePrefix;
+    this.parentView = o.parentView;
     var pfx = this.pfx;
     var ppfx = this.ppfx;
     var model = this.model;
@@ -37803,6 +37876,7 @@ var ItemsView;
     this.listenTo(components, 'remove add reset', this.checkChildren);
     this.listenTo(model, 'change:status', this.updateStatus);
     this.listenTo(model, 'change:open', this.updateOpening);
+    this.listenTo(model, 'change:layerable', this.updateLayerable);
     this.listenTo(model, 'change:style:display', this.updateVisibility);
     this.className = "".concat(pfx, "layer ").concat(pfx, "layer__t-").concat(type, " no-select ").concat(ppfx, "two-color");
     this.inputNameCls = "".concat(ppfx, "layer-name");
@@ -37888,7 +37962,7 @@ var ItemsView;
     inputEl.scrollLeft = 0;
     inputEl[inputProp] = false;
     this.model.set({
-      name: name
+      'custom-name': name
     });
     em && em.setEditing(0);
     $el.find(".".concat(this.inputNameCls)).addClass(clsNoEdit).removeClass(clsEdit);
@@ -38076,6 +38150,11 @@ var ItemsView;
     this.initialize(this.opt);
     this.render();
   },
+  updateLayerable: function updateLayerable() {
+    var parentView = this.parentView;
+    var toRerender = parentView || this;
+    toRerender.render();
+  },
   render: function render() {
     var model = this.model,
         config = this.config,
@@ -38097,6 +38176,7 @@ var ItemsView;
       config: this.config,
       sorter: this.sorter,
       opened: this.opt.opened,
+      parentView: this,
       parent: model,
       level: level
     }).render().$el;
@@ -38149,6 +38229,7 @@ __webpack_require__.r(__webpack_exports__);
     this.ppfx = config.pStylePrefix || '';
     this.pfx = config.stylePrefix || '';
     this.parent = o.parent;
+    this.parentView = o.parentView;
     var pfx = this.pfx;
     var ppfx = this.ppfx;
     var parent = this.parent;
@@ -38210,12 +38291,14 @@ __webpack_require__.r(__webpack_exports__);
    * @return Object Object created
    * */
   addToCollection: function addToCollection(model, fragmentEl, index) {
-    var level = this.level;
+    var level = this.level,
+        parentView = this.parentView;
     var fragment = fragmentEl || null;
     var viewObject = _ItemView__WEBPACK_IMPORTED_MODULE_1__["default"];
     var view = new viewObject({
       level: level,
       model: model,
+      parentView: parentView,
       config: this.config,
       sorter: this.sorter,
       isCountable: this.isCountable,
@@ -40188,16 +40271,19 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
-/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _model_RichTextEditor__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./model/RichTextEditor */ "./src/rich_text_editor/model/RichTextEditor.js");
-/* harmony import */ var utils_mixins__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! utils/mixins */ "./src/utils/mixins.js");
-/* harmony import */ var _config_config__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./config/config */ "./src/rich_text_editor/config/config.js");
+/* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ "./node_modules/@babel/runtime/helpers/toConsumableArray.js");
+/* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _model_RichTextEditor__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./model/RichTextEditor */ "./src/rich_text_editor/model/RichTextEditor.js");
+/* harmony import */ var utils_mixins__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! utils/mixins */ "./src/utils/mixins.js");
+/* harmony import */ var _config_config__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./config/config */ "./src/rich_text_editor/config/config.js");
+
 
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 /**
  * This module allows to customize the built-in toolbar of the Rich Text Editor and use commands from the [HTML Editing APIs](https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand).
@@ -40261,7 +40347,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
      */
     init: function init() {
       var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      config = _objectSpread({}, _config_config__WEBPACK_IMPORTED_MODULE_3__["default"], {}, opts);
+      config = _objectSpread({}, _config_config__WEBPACK_IMPORTED_MODULE_4__["default"], {}, opts);
       var ppfx = config.pStylePrefix;
 
       if (ppfx) {
@@ -40274,10 +40360,19 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
       toolbar.className = "".concat(ppfx, "rte-toolbar ").concat(ppfx, "one-bg");
       globalRte = this.initRte(document.createElement('div')); //Avoid closing on toolbar clicking
 
-      Object(utils_mixins__WEBPACK_IMPORTED_MODULE_2__["on"])(toolbar, 'mousedown', function (e) {
+      Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["on"])(toolbar, 'mousedown', function (e) {
         return e.stopPropagation();
       });
       return this;
+    },
+    destroy: function destroy() {
+      var customRte = this.customRte;
+      globalRte && globalRte.destroy();
+      customRte && customRte.destroy && customRte.destroy();
+      toolbar = 0;
+      globalRte = 0;
+      this.actionbar = 0;
+      this.actions = 0;
     },
 
     /**
@@ -40302,13 +40397,17 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
       var pfx = this.pfx;
       var actionbarContainer = toolbar;
       var actionbar = this.actionbar;
-      var actions = this.actions || config.actions;
+
+      var actions = this.actions || _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0___default()(config.actions);
+
       var classes = {
         actionbar: "".concat(pfx, "actionbar"),
         button: "".concat(pfx, "action"),
-        active: "".concat(pfx, "active")
+        active: "".concat(pfx, "active"),
+        inactive: "".concat(pfx, "inactive"),
+        disabled: "".concat(pfx, "disabled")
       };
-      var rte = new _model_RichTextEditor__WEBPACK_IMPORTED_MODULE_1__["default"]({
+      var rte = new _model_RichTextEditor__WEBPACK_IMPORTED_MODULE_2__["default"]({
         el: el,
         classes: classes,
         actions: actions,
@@ -40362,6 +40461,32 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
      *     }
      *    }
      *   })
+     * // An example with state
+     * const isValidAnchor = (rte) => {
+     *   // a utility function to help determine if the selected is a valid anchor node
+     *   const anchor = rte.selection().anchorNode;
+     *   const parentNode  = anchor && anchor.parentNode;
+     *   const nextSibling = anchor && anchor.nextSibling;
+     *   return (parentNode && parentNode.nodeName == 'A') || (nextSibling && nextSibling.nodeName == 'A')
+     * }
+     * rte.add('toggleAnchor', {
+     *   icon: `<span style="transform:rotate(45deg)">&supdsub;</span>`,
+     *   state: (rte, doc) => {
+     *    if (rte && rte.selection()) {
+     *      // `btnState` is a integer, -1 for disabled, 0 for inactive, 1 for active
+     *      return isValidAnchor(rte) ? btnState.ACTIVE : btnState.INACTIVE;
+     *    } else {
+     *      return btnState.INACTIVE;
+     *    }
+     *   },
+     *   result: (rte, action) => {
+     *     if (isValidAnchor(rte)) {
+     *       rte.exec('unlink');
+     *     } else {
+     *       rte.insertHTML(`<a class="link" href="">${rte.selection()}</a>`);
+     *     }
+     *   }
+     * })
      */
     add: function add(name) {
       var action = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -40532,6 +40657,19 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 // and adapted to the GrapesJS's need
 
 var RTE_KEY = '_rte';
+var btnState = {
+  ACTIVE: 1,
+  INACTIVE: 0,
+  DISABLED: -1
+};
+
+var isValidAnchor = function isValidAnchor(rte) {
+  var anchor = rte.selection().anchorNode;
+  var parentNode = anchor && anchor.parentNode;
+  var nextSibling = anchor && anchor.nextSibling;
+  return parentNode && parentNode.nodeName == 'A' || nextSibling && nextSibling.nodeName == 'A';
+};
+
 var defActions = {
   bold: {
     name: 'bold',
@@ -40580,11 +40718,15 @@ var defActions = {
       style: 'font-size:1.4rem;padding:0 4px 2px;',
       title: 'Link'
     },
+    state: function state(rte, doc) {
+      if (rte && rte.selection()) {
+        return isValidAnchor(rte) ? btnState.ACTIVE : btnState.INACTIVE;
+      } else {
+        return btnState.INACTIVE;
+      }
+    },
     result: function result(rte) {
-      var anchor = rte.selection().anchorNode;
-      var nextSibling = anchor && anchor.nextSibling;
-
-      if (nextSibling && nextSibling.nodeName == 'A') {
+      if (isValidAnchor(rte)) {
         rte.exec('unlink');
       } else {
         rte.insertHTML("<a class=\"link\" href=\"\">".concat(rte.selection(), "</a>"));
@@ -40628,7 +40770,9 @@ function () {
     settings.classes = _objectSpread({}, {
       actionbar: 'actionbar',
       button: 'action',
-      active: 'active'
+      active: 'active',
+      disabled: 'disabled',
+      inactive: 'inactive'
     }, {}, settings.classes);
     var classes = settings.classes;
     var actionbar = settings.actionbar;
@@ -40654,6 +40798,16 @@ function () {
   }
 
   _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2___default()(RichTextEditor, [{
+    key: "destroy",
+    value: function destroy() {
+      this.el = 0;
+      this.doc = 0;
+      this.actionbar = 0;
+      this.settings = {};
+      this.classes = {};
+      this.actions = [];
+    }
+  }, {
     key: "setEl",
     value: function setEl(el) {
       this.el = el;
@@ -40667,13 +40821,39 @@ function () {
       this.getActions().forEach(function (action) {
         var btn = action.btn;
         var update = action.update;
-        var active = _this2.classes.active;
+
+        var _this2$classes = _objectSpread({}, _this2.classes),
+            active = _this2$classes.active,
+            inactive = _this2$classes.inactive,
+            disabled = _this2$classes.disabled;
+
+        var state = action.state;
         var name = action.name;
         var doc = _this2.doc;
-        btn.className = btn.className.replace(active, '').trim(); // doc.queryCommandValue(name) != 'false'
+        btn.className = btn.className.replace(active, '').trim();
+        btn.className = btn.className.replace(inactive, '').trim();
+        btn.className = btn.className.replace(disabled, '').trim(); // if there is a state function, which depicts the state,
+        // i.e. `active`, `disabled`, then call it
 
-        if (doc.queryCommandSupported(name) && doc.queryCommandState(name)) {
-          btn.className += " ".concat(active);
+        if (state) {
+          switch (state(_this2, doc)) {
+            case btnState.ACTIVE:
+              btn.className += " ".concat(active);
+              break;
+
+            case btnState.INACTIVE:
+              btn.className += " ".concat(inactive);
+              break;
+
+            case btnState.DISABLED:
+              btn.className += " ".concat(disabled);
+              break;
+          }
+        } else {
+          // otherwise default to checking if the name command is supported & enabled
+          if (doc.queryCommandSupported(name) && doc.queryCommandState(name)) {
+            btn.className += " ".concat(active);
+          }
         }
 
         update && update(_this2, action);
@@ -40714,13 +40894,17 @@ function () {
       var _this3 = this;
 
       this.getActions().forEach(function (action) {
-        var event = action.event || 'click';
+        if (_this3.settings.actionbar) {
+          if (!action.state || action.state && action.state(_this3, _this3.doc) >= 0) {
+            var event = action.event || 'click';
 
-        action.btn["on".concat(event)] = function (e) {
-          action.result(_this3, action);
+            action.btn["on".concat(event)] = function (e) {
+              action.result(_this3, action);
 
-          _this3.updateActiveActions();
-        };
+              _this3.updateActiveActions();
+            };
+          }
+        }
       });
     }
     /**
@@ -40862,7 +41046,79 @@ __webpack_require__.r(__webpack_exports__);
   }],
   // Custom selector name escaping strategy, eg.
   // name => name.replace(' ', '_')
-  escapeName: 0
+  escapeName: 0,
+  // Custom selected name strategy (the string you see after 'Selected')
+  // ({ result, state, target }) => {
+  //  return `${result} - ID: ${target.getId()}`
+  // }
+  selectedName: 0,
+  // Icon used to add new selector
+  iconAdd: '<svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path></svg>',
+  // Icon used to sync styles
+  iconSync: '<svg viewBox="0 0 24 24"><path d="M12 18c-3.31 0-6-2.69-6-6 0-1 .25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 0 0 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4m0-11V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0 0 20 12c0-4.42-3.58-8-8-8z"></path></svg>',
+  // Icon to show when the selector is enabled
+  iconTagOn: '<svg viewBox="0 0 24 24"><path d="M19 19H5V5h10V3H5c-1.11 0-2 .89-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-8h-2m-11.09-.92L6.5 11.5 11 16 21 6l-1.41-1.42L11 13.17l-3.09-3.09z"></path></svg>',
+  // Icon to show when the selector is disabled
+  iconTagOff: '<svg viewBox="0 0 24 24"><path d="M19 3H5c-1.11 0-2 .89-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5a2 2 0 0 0-2-2m0 2v14H5V5h14z"></path></svg>',
+  // Icon used to remove the selector
+  iconTagRemove: '<svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"></path></svg>',
+
+  /**
+   * Custom render function for the Select Manager
+   * @example
+   * render: ({ el, labelHead, labelStates, labelInfo, }) => {
+   *  // You can use the default `el` to extend/edit the current
+   *  // DOM element of the Selector Manager
+   *  const someEl = document.createElement('div');
+   *  // ...
+   *  el.appendChild(someEl);
+   *  // no need to return anything from the function
+   *
+   *  // Create and return a new DOM element
+   *  const newEl = document.createElement('div');
+   *  // ...
+   *  return newEl;
+   *
+   *  // Return an HTML string for a completely different layout.
+   *  // Use `data-*` attributes to make the module recognize some elements:
+   *  // `data-states` - Where to append state `<option>` elements (or just write yours)
+   *  // `data-selectors` - Where to append selectors
+   *  // `data-input` - Input element which is used to add new selectors
+   *  // `data-add` - Element which triggers the add of a new selector on click
+   *  // `data-sync-style` - Element which triggers the sync of styles (visible with `componentFirst` enabled)
+   *  // `data-selected` - Where to print selected selectors
+   *  return `
+   *    <div class="my-sm-header">
+   *     <div>${labelHead}</div>
+   *     <div>
+   *       <select data-states>
+   *         <option value="">${labelStates}</option>
+   *       </select>
+   *     </div>
+   *    </div>
+   *    <div class="my-sm-body">
+   *      <div data-selectors></div>
+   *      <input data-input/>
+   *      <span data-add>Add</span>
+   *      <span data-sync-style>Sync</span>
+   *    </div>
+   *    <div class="my-sm-info">
+   *      <div>${labelInfo}</div>
+   *      <div data-selected></div>
+   *    </div>
+   * `;
+   * }
+   */
+  render: 0,
+  // When you select a component in the canvas the selected Model (Component or CSS Rule)
+  // is passed to the StyleManager which will be then able to be styled, these are the cases:
+  // * Selected component doesn't have any classes: Component will be passed
+  // * Selected component has at least one class: The CSS Rule will be passed
+  //
+  // With this option enabled, also in the second case, the Component will be passed.
+  // This method allows to avoid styling classes directly and make, for example, some
+  // unintended changes below the visible canvas area (when components share same classes)
+  componentFirst: 0
 });
 
 /***/ }),
@@ -40880,10 +41136,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
 /* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _config_config__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./config/config */ "./src/selector_manager/config/config.js");
-/* harmony import */ var _model_Selector__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./model/Selector */ "./src/selector_manager/model/Selector.js");
-/* harmony import */ var _model_Selectors__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./model/Selectors */ "./src/selector_manager/model/Selectors.js");
-/* harmony import */ var _view_ClassTagsView__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./view/ClassTagsView */ "./src/selector_manager/view/ClassTagsView.js");
+/* harmony import */ var utils_mixins__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! utils/mixins */ "./src/utils/mixins.js");
+/* harmony import */ var _config_config__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./config/config */ "./src/selector_manager/config/config.js");
+/* harmony import */ var _model_Selector__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./model/Selector */ "./src/selector_manager/model/Selector.js");
+/* harmony import */ var _model_Selectors__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./model/Selectors */ "./src/selector_manager/model/Selectors.js");
+/* harmony import */ var _view_ClassTagsView__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./view/ClassTagsView */ "./src/selector_manager/view/ClassTagsView.js");
 
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
@@ -40931,10 +41188,13 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
  * * [add](#add)
  * * [addClass](#addclass)
  * * [get](#get)
- * * [getAll](#getAll)
+ * * [getAll](#getall)
+ * * [setState](#setstate)
+ * * [getState](#getstate)
  *
  * @module SelectorManager
  */
+
 
 
 
@@ -40951,10 +41211,10 @@ var isClass = function isClass(str) {
 
 /* harmony default export */ __webpack_exports__["default"] = (function (config) {
   var c = config || {};
-  var selectors, selectorTags;
+  var selectors;
   return {
-    Selector: _model_Selector__WEBPACK_IMPORTED_MODULE_3__["default"],
-    Selectors: _model_Selectors__WEBPACK_IMPORTED_MODULE_4__["default"],
+    Selector: _model_Selector__WEBPACK_IMPORTED_MODULE_4__["default"],
+    Selectors: _model_Selectors__WEBPACK_IMPORTED_MODULE_5__["default"],
 
     /**
      * Name of the module
@@ -40979,25 +41239,35 @@ var isClass = function isClass(str) {
      */
     init: function init() {
       var conf = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      c = _objectSpread({}, _config_config__WEBPACK_IMPORTED_MODULE_2__["default"], {}, conf);
+      c = _objectSpread({}, _config_config__WEBPACK_IMPORTED_MODULE_3__["default"], {}, conf);
       var em = c.em;
       var ppfx = c.pStylePrefix;
+      this.em = em;
 
       if (ppfx) {
         c.stylePrefix = ppfx + c.stylePrefix;
       }
 
-      selectorTags = new _view_ClassTagsView__WEBPACK_IMPORTED_MODULE_5__["default"]({
-        collection: new _model_Selectors__WEBPACK_IMPORTED_MODULE_4__["default"]([], {
+      this.selectorTags = new _view_ClassTagsView__WEBPACK_IMPORTED_MODULE_6__["default"]({
+        collection: new _model_Selectors__WEBPACK_IMPORTED_MODULE_5__["default"]([], {
           em: em,
           config: c
         }),
         config: c
       }); // Global selectors container
 
-      selectors = new _model_Selectors__WEBPACK_IMPORTED_MODULE_4__["default"](c.selectors);
+      selectors = new _model_Selectors__WEBPACK_IMPORTED_MODULE_5__["default"](c.selectors);
       selectors.on('add', function (model) {
         return em.trigger('selector:add', model);
+      });
+      selectors.on('remove', function (model) {
+        return em.trigger('selector:remove', model);
+      });
+      selectors.on('change', function (model) {
+        return em.trigger('selector:update', model, model.previousAttributes(), model.changedAttributes());
+      });
+      em.on('change:state', function (m, value) {
+        return em.trigger('selector:state', value);
       });
       return this;
     },
@@ -41008,6 +41278,40 @@ var isClass = function isClass(str) {
         var el = Object(underscore__WEBPACK_IMPORTED_MODULE_1__["isElement"])(elTo) ? elTo : document.querySelector(elTo);
         el.appendChild(this.render([]));
       }
+    },
+    select: function select(value) {
+      var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var targets = Array.isArray(value) ? value : [value];
+      var toSelect = this.em.get('StyleManager').setTarget(targets, opts);
+      var res = toSelect.filter(function (i) {
+        return i;
+      }).map(function (sel) {
+        return Object(utils_mixins__WEBPACK_IMPORTED_MODULE_2__["isComponent"])(sel) ? sel : Object(utils_mixins__WEBPACK_IMPORTED_MODULE_2__["isRule"])(sel) && !sel.get('selectorsAdd') ? sel : sel.getSelectorsString();
+      });
+      this.selectorTags.componentChanged({
+        targets: res
+      });
+      return this;
+    },
+
+    /**
+     * Change the selector state
+     * @param {String} value State value
+     * @returns {this}
+     * @example
+     * selectorManager.setState('hover');
+     */
+    setState: function setState(value) {
+      this.em.setState(value);
+      return this;
+    },
+
+    /**
+     * Get the current selector state
+     * @returns {String}
+     */
+    getState: function getState() {
+      return this.em.setState();
     },
     addSelector: function addSelector(name) {
       var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -41022,7 +41326,7 @@ var isClass = function isClass(str) {
 
       if (isId(opts.name)) {
         opts.name = opts.name.substr(1);
-        opts.type = _model_Selector__WEBPACK_IMPORTED_MODULE_3__["default"].TYPE_ID;
+        opts.type = _model_Selector__WEBPACK_IMPORTED_MODULE_4__["default"].TYPE_ID;
       } else if (isClass(opts.name)) {
         opts.name = opts.name.substr(1);
       }
@@ -41043,11 +41347,11 @@ var isClass = function isClass(str) {
       return selector;
     },
     getSelector: function getSelector(name) {
-      var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _model_Selector__WEBPACK_IMPORTED_MODULE_3__["default"].TYPE_CLASS;
+      var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _model_Selector__WEBPACK_IMPORTED_MODULE_4__["default"].TYPE_CLASS;
 
       if (isId(name)) {
         name = name.substr(1);
-        type = _model_Selector__WEBPACK_IMPORTED_MODULE_3__["default"].TYPE_ID;
+        type = _model_Selector__WEBPACK_IMPORTED_MODULE_4__["default"].TYPE_ID;
       } else if (isClass(name)) {
         name = name.substr(1);
       }
@@ -41162,7 +41466,7 @@ var isClass = function isClass(str) {
     escapeName: function escapeName(name) {
       var _c = c,
           escapeName = _c.escapeName;
-      return escapeName ? escapeName(name) : _model_Selector__WEBPACK_IMPORTED_MODULE_3__["default"].escapeName(name);
+      return escapeName ? escapeName(name) : _model_Selector__WEBPACK_IMPORTED_MODULE_4__["default"].escapeName(name);
     },
 
     /**
@@ -41173,12 +41477,12 @@ var isClass = function isClass(str) {
      */
     render: function render(selectors) {
       if (selectors) {
-        var view = new _view_ClassTagsView__WEBPACK_IMPORTED_MODULE_5__["default"]({
-          collection: new _model_Selectors__WEBPACK_IMPORTED_MODULE_4__["default"](selectors),
+        this.selectorTags = new _view_ClassTagsView__WEBPACK_IMPORTED_MODULE_6__["default"]({
+          collection: new _model_Selectors__WEBPACK_IMPORTED_MODULE_5__["default"](selectors),
           config: c
         });
-        return view.render().el;
-      } else return selectorTags.render().el;
+        return this.selectorTags.render().el;
+      } else return this.selectorTags.render().el;
     }
   };
 });
@@ -41300,8 +41604,13 @@ __webpack_require__.r(__webpack_exports__);
     });
   },
   getValid: function getValid() {
+    var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+        noDisabled = _ref.noDisabled;
+
     return Object(underscore__WEBPACK_IMPORTED_MODULE_0__["filter"])(this.models, function (item) {
       return !item.get('private');
+    }).filter(function (item) {
+      return noDisabled ? item.get('active') : 1;
     });
   },
   getFullString: function getFullString(collection) {
@@ -41332,9 +41641,10 @@ var inputProp = 'contentEditable';
 /* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_0___default.a.View.extend({
   template: function template() {
     var pfx = this.pfx,
-        model = this.model;
+        model = this.model,
+        config = this.config;
     var label = model.get('label') || '';
-    return "\n      <span id=\"".concat(pfx, "checkbox\" class=\"fa\" data-tag-status></span>\n      <span id=\"").concat(pfx, "tag-label\" data-tag-name>").concat(label, "</span>\n      <span id=\"").concat(pfx, "close\" data-tag-remove>\n        &Cross;\n      </span>\n    ");
+    return "\n      <span id=\"".concat(pfx, "checkbox\" class=\"").concat(pfx, "tag-status\" data-tag-status></span>\n      <span id=\"").concat(pfx, "tag-label\" data-tag-name>").concat(label, "</span>\n      <span id=\"").concat(pfx, "close\" class=\"").concat(pfx, "tag-close\" data-tag-remove>\n        ").concat(config.iconTagRemove, "\n      </span>\n    ");
   },
   events: {
     'click [data-tag-remove]': 'removeTag',
@@ -41421,8 +41731,10 @@ var inputProp = 'contentEditable';
   removeTag: function removeTag() {
     var em = this.em,
         model = this.model;
-    var sel = em && em.getSelected();
-    if (!model.get('protected') && sel) sel.getSelectors().remove(model);
+    var targets = em && em.getSelectedAll();
+    targets.forEach(function (sel) {
+      !model.get('protected') && sel && sel.getSelectors().remove(model);
+    });
   },
 
   /**
@@ -41431,16 +41743,17 @@ var inputProp = 'contentEditable';
    */
   updateStatus: function updateStatus() {
     var model = this.model,
-        $el = this.$el;
-    var chkOn = 'fa-check-square-o';
-    var chkOff = 'fa-square-o';
+        $el = this.$el,
+        config = this.config;
+    var iconTagOn = config.iconTagOn,
+        iconTagOff = config.iconTagOff;
     var $chk = $el.find('[data-tag-status]');
 
     if (model.get('active')) {
-      $chk.removeClass(chkOff).addClass(chkOn);
+      $chk.html(iconTagOn);
       $el.removeClass('opac50');
     } else {
-      $chk.removeClass(chkOn).addClass(chkOff);
+      $chk.html(iconTagOff);
       $el.addClass('opac50');
     }
   },
@@ -41465,43 +41778,95 @@ var inputProp = 'contentEditable';
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
-/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _ClassTagView__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ClassTagView */ "./src/selector_manager/view/ClassTagView.js");
+/* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ "./node_modules/@babel/runtime/helpers/toConsumableArray.js");
+/* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _ClassTagView__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./ClassTagView */ "./src/selector_manager/view/ClassTagView.js");
 
 
 
-/* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_1___default.a.View.extend({
-  template: Object(underscore__WEBPACK_IMPORTED_MODULE_0__["template"])("\n  <div id=\"<%= pfx %>up\">\n    <div id=\"<%= pfx %>label\"><%= label %></div>\n    <div id=\"<%= pfx %>status-c\">\n      <span id=\"<%= pfx %>input-c\">\n        <div class=\"<%= ppfx %>field <%= ppfx %>select\">\n          <span id=\"<%= ppfx %>input-holder\">\n            <select id=\"<%= pfx %>states\">\n              <option value=\"\"><%= statesLabel %></option>\n            </select>\n          </span>\n          <div class=\"<%= ppfx %>sel-arrow\">\n            <div class=\"<%= ppfx %>d-s-arrow\"></div>\n          </div>\n        </div>\n      </span>\n    </div>\n  </div>\n  <div id=\"<%= pfx %>tags-field\" class=\"<%= ppfx %>field\">\n    <div id=\"<%= pfx %>tags-c\"></div>\n    <input id=\"<%= pfx %>new\" />\n    <span id=\"<%= pfx %>add-tag\" class=\"fa fa-plus\"></span>\n  </div>\n  <div id=\"<%= pfx %>sel-help\">\n    <div id=\"<%= pfx %>label\"><%= selectedLabel %></div>\n    <div id=\"<%= pfx %>sel\"></div>\n    <div style=\"clear:both\"></div>\n  </div>"),
-  events: {},
+
+/* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_2___default.a.View.extend({
+  template: function template(_ref) {
+    var labelInfo = _ref.labelInfo,
+        labelStates = _ref.labelStates,
+        labelHead = _ref.labelHead,
+        iconSync = _ref.iconSync,
+        iconAdd = _ref.iconAdd,
+        pfx = _ref.pfx,
+        ppfx = _ref.ppfx;
+    return "\n    <div id=\"".concat(pfx, "up\" class=\"").concat(pfx, "header\">\n      <div id=\"").concat(pfx, "label\" class=\"").concat(pfx, "header-label\">").concat(labelHead, "</div>\n      <div id=\"").concat(pfx, "status-c\" class=\"").concat(pfx, "header-status\">\n        <span id=\"").concat(pfx, "input-c\" data-states-c>\n          <div class=\"").concat(ppfx, "field ").concat(ppfx, "select\">\n            <span id=\"").concat(ppfx, "input-holder\">\n              <select id=\"").concat(pfx, "states\" data-states>\n                <option value=\"\">").concat(labelStates, "</option>\n              </select>\n            </span>\n            <div class=\"").concat(ppfx, "sel-arrow\">\n              <div class=\"").concat(ppfx, "d-s-arrow\"></div>\n            </div>\n          </div>\n        </span>\n      </div>\n    </div>\n    <div id=\"").concat(pfx, "tags-field\" class=\"").concat(ppfx, "field\">\n      <div id=\"").concat(pfx, "tags-c\" data-selectors></div>\n      <input id=\"").concat(pfx, "new\" data-input/>\n      <span id=\"").concat(pfx, "add-tag\" class=\"").concat(pfx, "tags-btn ").concat(pfx, "tags-btn__add\" data-add>\n        ").concat(iconAdd, "\n      </span>\n      <span class=\"").concat(pfx, "tags-btn ").concat(pfx, "tags-btn__sync\" style=\"display: none\" data-sync-style>\n        ").concat(iconSync, "\n      </span>\n    </div>\n    <div class=\"").concat(pfx, "sels-info\">\n      <div class=\"").concat(pfx, "label-sel\">").concat(labelInfo, ":</div>\n      <div class=\"").concat(pfx, "sels\" data-selected></div>\n      <div style=\"clear:both\"></div>\n    </div>");
+  },
+  events: {
+    'change [data-states]': 'stateChanged',
+    'click [data-add]': 'startNewTag',
+    'focusout [data-input]': 'endNewTag',
+    'keyup [data-input]': 'onInputKeyUp',
+    'click [data-sync-style]': 'syncStyle'
+  },
   initialize: function initialize() {
     var o = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     this.config = o.config || {};
     this.pfx = this.config.stylePrefix || '';
     this.ppfx = this.config.pStylePrefix || '';
     this.className = this.pfx + 'tags';
-    this.addBtnId = this.pfx + 'add-tag';
-    this.newInputId = this.pfx + 'new';
     this.stateInputId = this.pfx + 'states';
     this.stateInputC = this.pfx + 'input-c';
     this.states = this.config.states || [];
-    this.events['click #' + this.addBtnId] = 'startNewTag';
-    this.events['blur #' + this.newInputId] = 'endNewTag';
-    this.events['keyup #' + this.newInputId] = 'onInputKeyUp';
-    this.events['change #' + this.stateInputId] = 'stateChanged';
     var em = this.config.em;
     var emitter = this.getStyleEmitter();
+    var coll = this.collection;
     this.target = this.config.em;
     this.em = em;
+    var toList = 'component:toggled component:update:classes';
+    var toListCls = 'component:update:classes change:state';
+    this.listenTo(em, toList, this.componentChanged);
     this.listenTo(emitter, 'styleManager:update', this.componentChanged);
-    this.listenTo(em, 'component:toggled component:update:classes', this.componentChanged);
-    this.listenTo(em, 'component:update:classes', this.updateSelector);
-    this.listenTo(this.collection, 'add', this.addNew);
-    this.listenTo(this.collection, 'reset', this.renderClasses);
-    this.listenTo(this.collection, 'remove', this.tagRemoved);
+    this.listenTo(em, toListCls, this.__handleStateChange);
+    this.listenTo(em, 'styleable:change change:device', this.checkSync); // component:styleUpdate
+
+    this.listenTo(coll, 'add', this.addNew);
+    this.listenTo(coll, 'reset', this.renderClasses);
+    this.listenTo(coll, 'remove', this.tagRemoved);
     this.delegateEvents();
+  },
+  syncStyle: function syncStyle() {
+    var em = this.em;
+    var target = this.getTarget();
+    var cssC = em.get('CssComposer');
+    var opts = {
+      noDisabled: 1
+    };
+    var selectors = this.getCommonSelectors({
+      opts: opts
+    });
+    var state = em.get('state');
+    var mediaText = em.getCurrentMedia();
+    var ruleComponents = [];
+    var rule = cssC.get(selectors, state, mediaText) || cssC.add(selectors, state, mediaText);
+    var style;
+    this.getTargets().forEach(function (target) {
+      var ruleComponent = cssC.getIdRule(target.getId(), {
+        state: state,
+        mediaText: mediaText
+      });
+      style = ruleComponent.getStyle();
+      ruleComponent.setStyle({});
+      ruleComponents.push(ruleComponent);
+    });
+    style && rule.addStyle(style);
+    em.trigger('component:toggled');
+    em.trigger('component:sync-style', {
+      component: target,
+      selectors: selectors,
+      mediaText: mediaText,
+      rule: rule,
+      ruleComponents: ruleComponents,
+      state: state
+    });
   },
   getStyleEmitter: function getStyleEmitter() {
     var em = this.em;
@@ -41548,8 +41913,10 @@ __webpack_require__.r(__webpack_exports__);
    * @param {Object} e
    * @private
    */
-  startNewTag: function startNewTag(e) {
-    this.$addBtn.get(0).style.display = 'none';
+  startNewTag: function startNewTag() {
+    this.$addBtn.css({
+      display: 'none'
+    });
     this.$input.show().focus();
   },
 
@@ -41558,8 +41925,10 @@ __webpack_require__.r(__webpack_exports__);
    * @param {Object} e
    * @private
    */
-  endNewTag: function endNewTag(e) {
-    this.$addBtn.get(0).style.display = '';
+  endNewTag: function endNewTag() {
+    this.$addBtn.css({
+      display: ''
+    });
     this.$input.hide().val('');
   },
 
@@ -41571,29 +41940,90 @@ __webpack_require__.r(__webpack_exports__);
   onInputKeyUp: function onInputKeyUp(e) {
     if (e.keyCode === 13) this.addNewTag(this.$input.val());else if (e.keyCode === 27) this.endNewTag();
   },
+  checkStates: function checkStates() {
+    var state = this.em.getState();
+    var statesEl = this.getStates();
+    statesEl && statesEl.val(state);
+  },
 
   /**
    * Triggered when component is changed
    * @param  {Object} e
    * @private
    */
-  componentChanged: Object(underscore__WEBPACK_IMPORTED_MODULE_0__["debounce"])(function (target) {
-    target = target || this.getTarget();
-    this.compTarget = target;
-    var validSelectors = [];
+  componentChanged: Object(underscore__WEBPACK_IMPORTED_MODULE_1__["debounce"])(function () {
+    var _ref2 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+        targets = _ref2.targets;
 
-    if (target) {
-      var state = target.get('state');
-      state && this.getStates().val(state);
-      var selectors = target.getSelectors();
-      validSelectors = selectors.getValid();
+    this.updateSelection(targets);
+  }),
+  updateSelection: function updateSelection(targets) {
+    var trgs = targets || this.getTargets();
+    trgs = Object(underscore__WEBPACK_IMPORTED_MODULE_1__["isArray"])(trgs) ? trgs : [trgs];
+    var selectors = [];
+
+    if (trgs && trgs.length) {
+      selectors = this.getCommonSelectors({
+        targets: trgs
+      });
+      this.checkSync({
+        validSelectors: selectors
+      });
     }
 
-    this.collection.reset(validSelectors);
-    this.updateStateVis(target);
+    this.collection.reset(selectors);
+    this.updateStateVis(trgs);
+    return selectors;
+  },
+  getCommonSelectors: function getCommonSelectors() {
+    var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+        targets = _ref3.targets,
+        _ref3$opts = _ref3.opts,
+        opts = _ref3$opts === void 0 ? {} : _ref3$opts;
+
+    var trgs = targets || this.getTargets();
+    var selectors = trgs.map(function (tr) {
+      return tr.getSelectors && tr.getSelectors().getValid(opts);
+    }).filter(function (i) {
+      return i;
+    });
+    return this._commonSelectors.apply(this, _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0___default()(selectors));
+  },
+  _commonSelectors: function _commonSelectors() {
+    var _this = this;
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    if (!args.length) return [];
+    if (args.length === 1) return args[0];
+    if (args.length === 2) return args[0].filter(function (item) {
+      return args[1].indexOf(item) >= 0;
+    });
+    return args.slice(1).reduce(function (acc, item) {
+      return _this._commonSelectors(acc, item);
+    }, args[0]);
+  },
+  checkSync: Object(underscore__WEBPACK_IMPORTED_MODULE_1__["debounce"])(function () {
+    var $btnSyncEl = this.$btnSyncEl,
+        config = this.config,
+        collection = this.collection;
+    var target = this.getTarget();
+    var hasStyle;
+
+    if (target && config.componentFirst && collection.length) {
+      var style = target.getStyle();
+      hasStyle = !Object(underscore__WEBPACK_IMPORTED_MODULE_1__["isEmpty"])(style);
+    }
+
+    $btnSyncEl && $btnSyncEl[hasStyle ? 'show' : 'hide']();
   }),
   getTarget: function getTarget() {
     return this.target.getSelected();
+  },
+  getTargets: function getTargets() {
+    return this.target.getSelectedAll();
   },
 
   /**
@@ -41604,9 +42034,12 @@ __webpack_require__.r(__webpack_exports__);
   updateStateVis: function updateStateVis(target) {
     var em = this.em;
     var avoidInline = em && em.getConfig('avoidInlineStyle');
-    var display = this.collection.length || avoidInline ? 'block' : 'none';
+    var display = this.collection.length || avoidInline ? '' : 'none';
     this.getStatesC().css('display', display);
     this.updateSelector(target);
+  },
+  __handleStateChange: function __handleStateChange() {
+    this.updateSelector(this.getTargets());
   },
 
   /**
@@ -41614,20 +42047,46 @@ __webpack_require__.r(__webpack_exports__);
    * @return {this}
    * @private
    */
-  updateSelector: function updateSelector(target) {
+  updateSelector: function updateSelector(targets) {
+    var _this2 = this;
+
+    var elSel = this.el.querySelector('[data-selected]');
+    var result = [];
+    var trgs = targets || this.getTargets();
+    trgs = Object(underscore__WEBPACK_IMPORTED_MODULE_1__["isArray"])(trgs) ? trgs : [trgs];
+    trgs.forEach(function (target) {
+      return result.push(_this2.__getName(target));
+    });
+    elSel && (elSel.innerHTML = result.join(', '));
+    this.checkStates();
+  },
+  __getName: function __getName(target) {
     var pfx = this.pfx,
-        collection = this.collection,
-        el = this.el;
-    var selected = target || this.getTarget();
-    this.compTarget = selected;
-    if (!selected || !selected.get) return;
-    var state = selected.get('state');
-    var coll = collection;
-    var result = coll.getFullString(selected.getSelectors().getStyleable());
-    result = result || selected.get('selectorsAdd') || (selected.getId ? "#".concat(selected.getId()) : '');
-    result += state ? ":".concat(state) : '';
-    var elSel = el.querySelector("#".concat(pfx, "sel"));
-    elSel && (elSel.innerHTML = result);
+        config = this.config,
+        em = this.em;
+    var selectedName = config.selectedName,
+        componentFirst = config.componentFirst;
+    var result;
+
+    if (Object(underscore__WEBPACK_IMPORTED_MODULE_1__["isString"])(target)) {
+      result = "<span class=\"".concat(pfx, "sel-gen\">").concat(target, "</span>");
+    } else {
+      if (!target || !target.get) return;
+      var selectors = target.getSelectors().getStyleable();
+      var state = em.get('state');
+      var idRes = target.getId ? "<span class=\"".concat(pfx, "sel-cmp\">").concat(target.getName(), "</span><span class=\"").concat(pfx, "sel-id\">#").concat(target.getId(), "</span>") : '';
+      result = this.collection.getFullString(selectors);
+      result = result ? "<span class=\"".concat(pfx, "sel-rule\">").concat(result, "</span>") : target.get('selectorsAdd') || idRes;
+      result = componentFirst && idRes ? idRes : result;
+      result += state ? "<span class=\"".concat(pfx, "sel-state\">:").concat(state, "</span>") : '';
+      result = selectedName ? selectedName({
+        result: result,
+        state: state,
+        target: target
+      }) : result;
+    }
+
+    return result && "<span class=\"".concat(pfx, "sel\">").concat(result, "</span>");
   },
 
   /**
@@ -41635,11 +42094,10 @@ __webpack_require__.r(__webpack_exports__);
    * @param  {Object} e
    * @private
    */
-  stateChanged: function stateChanged(e) {
-    if (this.compTarget) {
-      this.compTarget.set('state', this.$states.val());
-      this.updateSelector();
-    }
+  stateChanged: function stateChanged(ev) {
+    var em = this.em;
+    var value = ev.target.value;
+    em.set('state', value);
   },
 
   /**
@@ -41648,25 +42106,23 @@ __webpack_require__.r(__webpack_exports__);
    * @private
    */
   addNewTag: function addNewTag(label) {
-    var target = this.target;
-    var component = this.compTarget;
+    var _this3 = this;
 
-    if (!label.trim()) {
-      return;
-    }
+    var em = this.em;
+    if (!label.trim()) return;
 
-    if (target) {
-      var sm = target.get('SelectorManager');
+    if (em) {
+      var sm = em.get('SelectorManager');
       var model = sm.add({
         label: label
       });
+      this.getTargets().forEach(function (target) {
+        target.getSelectors().add(model);
 
-      if (component) {
-        var compCls = component.getSelectors();
-        compCls.add(model);
-        this.collection.add(model);
-        this.updateStateVis();
-      }
+        _this3.collection.add(model);
+
+        _this3.updateStateVis();
+      });
     }
 
     this.endNewTag();
@@ -41683,7 +42139,7 @@ __webpack_require__.r(__webpack_exports__);
     var fragmentEl = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
     var fragment = fragmentEl;
     var classes = this.getClasses();
-    var rendered = new _ClassTagView__WEBPACK_IMPORTED_MODULE_2__["default"]({
+    var rendered = new _ClassTagView__WEBPACK_IMPORTED_MODULE_3__["default"]({
       model: model,
       config: this.config,
       coll: this.collection
@@ -41697,13 +42153,13 @@ __webpack_require__.r(__webpack_exports__);
    * @private
    */
   renderClasses: function renderClasses() {
-    var _this = this;
+    var _this4 = this;
 
     var frag = document.createDocumentFragment();
     var classes = this.getClasses();
     classes.empty();
     this.collection.each(function (model) {
-      return _this.addToClasses(model, frag);
+      return _this4.addToClasses(model, frag);
     });
     classes.append(frag);
   },
@@ -41714,7 +42170,7 @@ __webpack_require__.r(__webpack_exports__);
    * @private
    */
   getClasses: function getClasses() {
-    return this.$el.find("#".concat(this.pfx, "tags-c"));
+    return this.$el.find('[data-selectors]');
   },
 
   /**
@@ -41723,7 +42179,11 @@ __webpack_require__.r(__webpack_exports__);
    * @private
    */
   getStates: function getStates() {
-    if (!this.$states) this.$states = this.$el.find('#' + this.stateInputId);
+    if (!this.$states) {
+      var el = this.$el.find('[data-states]');
+      this.$states = el[0] && el;
+    }
+
     return this.$states;
   },
 
@@ -41740,20 +42200,32 @@ __webpack_require__.r(__webpack_exports__);
     var em = this.em,
         pfx = this.pfx,
         ppfx = this.ppfx,
-        $el = this.$el;
-    $el.html(this.template({
-      selectedLabel: em.t('selectorManager.selected'),
-      statesLabel: em.t('selectorManager.emptyState'),
-      label: em.t('selectorManager.label'),
+        config = this.config,
+        $el = this.$el,
+        el = this.el;
+    var render = config.render,
+        iconSync = config.iconSync,
+        iconAdd = config.iconAdd;
+    var tmpOpts = {
+      iconSync: iconSync,
+      iconAdd: iconAdd,
+      labelHead: em.t('selectorManager.label'),
+      labelStates: em.t('selectorManager.emptyState'),
+      labelInfo: em.t('selectorManager.selected'),
+      ppfx: ppfx,
       pfx: pfx,
-      ppfx: ppfx
-    }));
-    this.$input = $el.find('input#' + this.newInputId);
-    this.$addBtn = $el.find('#' + this.addBtnId);
+      el: el
+    };
+    $el.html(this.template(tmpOpts));
+    var renderRes = render && render(tmpOpts);
+    renderRes && renderRes !== el && $el.empty().append(renderRes);
+    this.$input = $el.find('[data-input]');
+    this.$addBtn = $el.find('[data-add]');
     this.$classes = $el.find('#' + pfx + 'tags-c');
-    this.$states = $el.find('#' + this.stateInputId);
-    this.$statesC = $el.find('#' + this.stateInputC);
-    this.$states.append(this.getStateOptions());
+    this.$btnSyncEl = $el.find('[data-sync-style]');
+    this.$input.hide();
+    var statesEl = this.getStates();
+    statesEl && statesEl.append(this.getStateOptions());
     this.renderClasses();
     $el.attr('class', "".concat(this.className, " ").concat(ppfx, "one-bg ").concat(ppfx, "two-color"));
     return this;
@@ -42753,7 +43225,9 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
         var config = em.getConfig();
         var um = em.get('UndoManager');
         var cssC = em.get('CssComposer');
-        var state = !config.devicePreviewMode ? model.get('state') : '';
+        var sm = em.get('SelectorManager');
+        var smConf = sm ? sm.getConfig() : {};
+        var state = !config.devicePreviewMode ? em.get('state') : '';
         var valid = classes.getStyleable();
         var hasClasses = valid.length;
         var opts = {
@@ -42766,7 +43240,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
         um.stop();
 
-        if (hasClasses) {
+        if (hasClasses && !smConf.componentFirst) {
           var deviceW = em.getCurrentMedia();
           rule = cssC.get(valid, state, deviceW);
 
@@ -46107,6 +46581,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var utils_mixins__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! utils/mixins */ "./src/utils/mixins.js");
 
 
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+
 
 
 
@@ -46249,6 +46728,10 @@ var clearProp = 'data-clear-style';
    */
   getTarget: function getTarget() {
     return this.getTargetModel();
+  },
+  getTargets: function getTargets() {
+    var targets = this.propTarget.targets;
+    return targets || [this.getTarget()];
   },
 
   /**
@@ -46435,20 +46918,29 @@ var clearProp = 'data-clear-style';
    * @param {Object} opt  Options
    * */
   modelValueChanged: function modelValueChanged(e, val) {
+    var _this3 = this;
+
     var opt = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-    var em = this.config.em;
     var model = this.model;
-    var value = model.getFullValue();
-    var target = this.getTarget();
-    var prop = model.get('property');
-    var onChange = this.onChange; // Avoid element update if the change comes from it
+    var value = model.getFullValue(); // Avoid element update if the change comes from it
 
     if (!opt.fromInput) {
       this.setValue(value);
-    } // Check if component is allowed to be styled
+    }
 
+    this.getTargets().forEach(function (target) {
+      return _this3.__updateTarget(target, opt);
+    });
+  },
+  __updateTarget: function __updateTarget(target) {
+    var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var model = this.model;
+    var em = this.config.em;
+    var prop = model.get('property');
+    var value = model.getFullValue();
+    var onChange = this.onChange; // Check if component is allowed to be styled
 
-    if (!target || !this.isTargetStylable() || !this.isComponentStylable()) {
+    if (!target || !this.isTargetStylable(target) || !this.isComponentStylable()) {
       return;
     } // Avoid target update if the changes comes from it
 
@@ -46459,9 +46951,12 @@ var clearProp = 'data-clear-style';
       if (onChange && !opt.fromParent) {
         onChange(target, this, opt);
       } else {
-        this.updateTargetStyle(value, null, opt);
+        this.updateTargetStyle(value, null, _objectSpread({}, opt, {
+          target: target
+        }));
       }
-    }
+    } // TODO: use target if componentFirst
+
 
     var component = em && em.getSelected();
 
@@ -46482,7 +46977,7 @@ var clearProp = 'data-clear-style';
     var name = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
     var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     var property = name || this.model.get('property');
-    var target = this.getTarget();
+    var target = opts.target || this.getTarget();
     var style = target.getStyle();
 
     if (value) {
@@ -46800,6 +47295,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 
 
+var helperCls = 'hc-state';
 /* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_1___default.a.View.extend({
   initialize: function initialize() {
     var o = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -46818,7 +47314,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     body.removeChild(dummy);
     this.propTarget = target;
     var coll = this.collection;
-    var events = 'component:toggled component:update:classes component:update:state change:device';
+    var events = 'component:toggled component:update:classes change:state change:device';
     this.listenTo(coll, 'add', this.addTo);
     this.listenTo(coll, 'reset', this.render);
     this.listenTo(this.target, events, this.targetUpdated);
@@ -46834,20 +47330,37 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     this.addToCollection(model, null, opts);
   },
+  toggleStateCls: function toggleStateCls() {
+    var targets = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+    var enable = arguments.length > 1 ? arguments[1] : undefined;
+    targets.forEach(function (trg) {
+      var el = trg.getEl();
+      el && el.classList[enable ? 'add' : 'remove'](helperCls);
+    });
+  },
 
   /**
    * Fired when target is updated
    * @private
    */
-  targetUpdated: function targetUpdated() {
+  targetUpdated: function targetUpdated(trg) {
     var em = this.target;
     var pt = this.propTarget;
+    var targets = em.getSelectedAll();
     var model = em.getSelected();
+    var mdToClear = trg && !!trg.toHTML ? trg : model; // Clean components
+
+    mdToClear && this.toggleStateCls([mdToClear]);
     if (!model) return;
     var config = em.get('Config');
-    var state = !config.devicePreviewMode ? model.get('state') : '';
+    var state = !config.devicePreviewMode ? em.get('state') : '';
+
+    var _em$get$getConfig = em.get('SelectorManager').getConfig(),
+        componentFirst = _em$get$getConfig.componentFirst;
+
     var el = model.getEl();
-    pt.helper = null; // Create computed style container
+    pt.helper = null;
+    pt.targets = null; // Create computed style container
 
     if (el && Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["isTaggableNode"])(el)) {
       var stateStr = state ? ":".concat(state) : null;
@@ -46858,7 +47371,6 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     var appendStateRule = function appendStateRule() {
       var style = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
       var cc = em.get('CssComposer');
-      var helperCls = 'hc-state';
       var rules = cc.getAll();
       var helperRule = cc.getClassRule(helperCls);
 
@@ -46876,59 +47388,68 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     };
 
     model = em.get('StyleManager').getModelToStyle(model);
-    state && appendStateRule(model.getStyle());
+
+    if (state) {
+      appendStateRule(model.getStyle());
+      this.toggleStateCls(targets, 1);
+    }
+
     pt.model = model;
+    if (componentFirst) pt.targets = targets;
     pt.trigger('update');
   },
 
   /**
    * Select different target for the Style Manager.
    * It could be a Component, CSSRule, or a string of any CSS selector
-   * @param {Component|CSSRule|String} target
-   * @return {Styleable} A Component or CSSRule
+   * @param {Component|CSSRule|String|Array<Component|CSSRule|String>} target
+   * @return {Array<Styleable>} Array of Components/CSSRules
    */
   setTarget: function setTarget(target) {
     var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     var em = this.target;
-    var config = em.get('Config');
+    var trgs = Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isArray"])(target) ? target : [target];
     var targetIsClass = opts.targetIsClass,
         stylable = opts.stylable;
-    var model = target;
+    var models = [];
+    trgs.forEach(function (target) {
+      var model = target;
 
-    if (Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isString"])(target)) {
-      var rule;
-      var rules = em.get('CssComposer').getAll();
+      if (Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isString"])(target)) {
+        var rule;
+        var rules = em.get('CssComposer').getAll();
 
-      if (targetIsClass) {
-        rule = rules.filter(function (rule) {
-          return rule.get('selectors').getFullString() === target;
-        })[0];
-      }
+        if (targetIsClass) {
+          rule = rules.filter(function (rule) {
+            return rule.get('selectors').getFullString() === target;
+          })[0];
+        }
 
-      if (!rule) {
-        rule = rules.filter(function (rule) {
-          return rule.get('selectorsAdd') === target;
-        })[0];
-      }
+        if (!rule) {
+          rule = rules.filter(function (rule) {
+            return rule.get('selectorsAdd') === target;
+          })[0];
+        }
 
-      if (!rule) {
-        rule = rules.add({
-          selectors: [],
-          selectorsAdd: target
+        if (!rule) {
+          rule = rules.add({
+            selectors: [],
+            selectorsAdd: target
+          });
+        }
+
+        stylable && rule.set({
+          stylable: stylable
         });
+        model = rule;
       }
 
-      stylable && rule.set({
-        stylable: stylable
-      });
-      model = rule;
-    }
-
-    var state = !config.devicePreviewMode ? model.get('state') : '';
+      models.push(model);
+    });
     var pt = this.propTarget;
-    pt.model = model;
-    pt.trigger('styleManager:update', model);
-    return model;
+    pt.targets = models;
+    pt.trigger('update');
+    return models;
   },
 
   /**
@@ -52291,6 +52812,7 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
     if (src) {
       srcModel = this.getSourceModel(src);
       srcModel && srcModel.set && srcModel.set('status', 'freezed');
+      this.srcModel = srcModel;
     }
 
     Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["on"])(container, 'mousemove dragover', this.onMove);
@@ -52376,10 +52898,11 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
       return;
     }
 
-    var prevModel = this.targetModel;
+    var targetModel = this.targetModel; // Reset the previous model but not if it's the same as the source
+    // https://github.com/artf/grapesjs/issues/2478#issuecomment-570314736
 
-    if (prevModel) {
-      prevModel.set('status', '');
+    if (targetModel && targetModel !== this.srcModel) {
+      targetModel.set('status', '');
     }
 
     if (model && model.set) {
@@ -52421,9 +52944,10 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
     var sourceModel = this.getSourceModel();
     var dims = this.dimsFromTarget(e.target, rX, rY);
     var target = this.target;
-    var targetModel = this.getTargetModel(target);
+    var targetModel = target && this.getTargetModel(target);
     this.selectTargetModel(targetModel);
     if (!targetModel) plh.style.display = 'none';
+    if (!target) return;
     this.lastDims = dims;
     var pos = this.findPosition(dims, rX, rY);
 
@@ -53625,7 +54149,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!*****************************!*\
   !*** ./src/utils/mixins.js ***!
   \*****************************/
-/*! exports provided: isCommentNode, isTaggableNode, on, off, hasDnd, upFirst, matches, getModel, getElRect, camelCase, isTextNode, getKeyCode, getKeyChar, isEscKey, getElement, shallowDiff, normalizeFloat, getPointerEvent, getUnitFromValue, capitalize, appendStyles */
+/*! exports provided: isCommentNode, isTaggableNode, on, off, hasDnd, upFirst, matches, getModel, getElRect, camelCase, isTextNode, getKeyCode, getKeyChar, isEscKey, getElement, shallowDiff, normalizeFloat, getPointerEvent, getUnitFromValue, capitalize, appendStyles, isComponent, isRule */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -53651,6 +54175,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getUnitFromValue", function() { return getUnitFromValue; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "capitalize", function() { return capitalize; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "appendStyles", function() { return appendStyles; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isComponent", function() { return isComponent; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isRule", function() { return isRule; });
 /* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ "./node_modules/@babel/runtime/helpers/toConsumableArray.js");
 /* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
@@ -53897,6 +54423,14 @@ var isEscKey = function isEscKey(ev) {
 
 var capitalize = function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.substring(1);
+};
+
+var isComponent = function isComponent(obj) {
+  return obj && obj.toHTML;
+};
+
+var isRule = function isRule(obj) {
+  return obj && obj.toCSS;
 };
 
 

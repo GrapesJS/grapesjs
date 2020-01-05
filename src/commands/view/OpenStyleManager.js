@@ -58,8 +58,10 @@ export default {
   toggleSm() {
     const { target, sender } = this;
     if (sender && sender.get && !sender.get('active')) return;
+    const { componentFirst } = target.get('SelectorManager').getConfig();
+    const selectedAll = target.getSelectedAll().length;
 
-    if (target.getSelectedAll().length === 1) {
+    if (selectedAll === 1 || (selectedAll > 1 && componentFirst)) {
       this.$cn2.show();
       this.$header.hide();
     } else {
