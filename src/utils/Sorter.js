@@ -326,6 +326,7 @@ export default Backbone.View.extend({
     if (src) {
       srcModel = this.getSourceModel(src);
       srcModel && srcModel.set && srcModel.set('status', 'freezed');
+      this.srcModel = srcModel;
     }
 
     on(container, 'mousemove dragover', this.onMove);
@@ -401,9 +402,12 @@ export default Backbone.View.extend({
       return;
     }
 
-    var prevModel = this.targetModel;
-    if (prevModel) {
-      prevModel.set('status', '');
+    const { targetModel } = this;
+
+    // Reset the previous model but not if it's the same as the source
+    // https://github.com/artf/grapesjs/issues/2478#issuecomment-570314736
+    if (targetModel && targetModel !== this.srcModel) {
+      targetModel.set('status', '');
     }
 
     if (model && model.set) {
