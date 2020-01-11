@@ -253,8 +253,9 @@ export default Backbone.View.extend({
     model.setValue(value, 0, { fromTarget: 1 });
 
     if (em) {
-      em.trigger('styleManager:change', this, property, value);
-      em.trigger(`styleManager:change:${property}`, this, value);
+      const data = { status, targetValue, defaultValue, computedValue };
+      em.trigger('styleManager:change', this, property, value, data);
+      em.trigger(`styleManager:change:${property}`, this, value, data);
     }
   },
 

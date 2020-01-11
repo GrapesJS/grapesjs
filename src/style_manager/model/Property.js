@@ -61,7 +61,7 @@ const Property = Backbone.Model.extend(
      * @return {this}
      */
     clearValue(opts = {}) {
-      this.set({ value: undefined }, opts);
+      this.set({ value: undefined, status: '' }, opts);
       return this;
     },
 
