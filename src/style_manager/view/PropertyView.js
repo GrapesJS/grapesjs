@@ -200,7 +200,7 @@ export default Backbone.View.extend({
   setStatus(value) {
     this.model.set('status', value);
     const parent = this.model.parent;
-    parent && value && parent.set('status', value);
+    parent && value == 'updated' && parent.set('status', value);
   },
 
   emitUpdateTarget: debounce(function() {
@@ -249,18 +249,8 @@ export default Backbone.View.extend({
       status = '';
     }
 
-    if (property == 'box-shadow' || property == 'transition') {
-      console.log({
-        property,
-        status,
-        targetValue,
-        computedValue,
-        defaultValue
-      });
-    }
-
-    model.setValue(value, 0, { fromTarget: 1 });
     this.setStatus(status);
+    model.setValue(value, 0, { fromTarget: 1 });
 
     if (em) {
       em.trigger('styleManager:change', this, property, value);
@@ -297,10 +287,10 @@ export default Backbone.View.extend({
    * @private
    */
   getTargetValue(opts = {}) {
-    var result;
-    var model = this.model;
-    var target = this.getTargetModel();
-    var customFetchValue = this.customValue;
+    let result;
+    const { model } = this;
+    const target = this.getTargetModel();
+    const customFetchValue = this.customValue;
 
     if (!target) {
       return result;
@@ -314,7 +304,7 @@ export default Backbone.View.extend({
 
     if (typeof customFetchValue == 'function' && !opts.ignoreCustomValue) {
       let index = model.collection.indexOf(model);
-      let customValue = customFetchValue(this, index);
+      let customValue = customFetchValue(this, index, result);
 
       if (customValue) {
         result = customValue;

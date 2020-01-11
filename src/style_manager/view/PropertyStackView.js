@@ -1,3 +1,4 @@
+import { isUndefined } from 'underscore';
 import PropertyCompositeView from './PropertyCompositeView';
 import LayersView from './LayersView';
 
@@ -21,13 +22,6 @@ export default PropertyCompositeView.extend({
     this.listenTo(model, 'change:stackIndex', this.indexChanged);
     this.listenTo(model, 'updateValue', this.inputValueChanged);
     this.delegateEvents();
-  },
-
-  clear(e) {
-    e && e.stopPropagation();
-    this.model.get('layers').reset();
-    this.model.clearValue();
-    this.targetUpdated();
   },
 
   /**
@@ -138,6 +132,21 @@ export default PropertyCompositeView.extend({
     model.set({ stackIndex: null }, { silent: true });
   },
 
+  getTargetValue(opts = {}) {
+    let result = PropertyCompositeView.prototype.getTargetValue.call(
+      this,
+      opts
+    );
+    const { detached } = this.model.attributes;
+
+    // It might happen that the browser split properties on CSSOM parse
+    if (isUndefined(result) && !detached) {
+      result = this.model.getValueFromStyle(this.getTarget().getStyle());
+    }
+
+    return result;
+  },
+
   onRender() {
     const self = this;
     const model = this.model;
@@ -159,7 +168,10 @@ export default PropertyCompositeView.extend({
           // Update only if there is an actual update (to avoid changes for computed styles)
           // ps: status is calculated in `targetUpdated` method
           if (model.get('status') == 'updated') {
-            model.set('value', model.getFullValue(), opt);
+            const value = model.getFullValue();
+            model.set('value', value, opt);
+            // Try to remove detached properties
+            !value && view.updateTargetStyle(value, null, opt);
           }
         }
       }
@@ -179,8 +191,7 @@ export default PropertyCompositeView.extend({
       stackModel: model,
       config: this.config,
       onChange: propsConfig.onChange,
-      propTarget: propsConfig.propTarget,
-      customValue: propsConfig.customValue
+      propTarget: propsConfig.propTarget
     }).render();
 
     //model.get('properties')
