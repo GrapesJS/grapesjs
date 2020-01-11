@@ -249,6 +249,16 @@ export default Backbone.View.extend({
       status = '';
     }
 
+    if (property == 'box-shadow' || property == 'transition') {
+      console.log({
+        property,
+        status,
+        targetValue,
+        computedValue,
+        defaultValue
+      });
+    }
+
     model.setValue(value, 0, { fromTarget: 1 });
     this.setStatus(status);
 
@@ -328,7 +338,7 @@ export default Backbone.View.extend({
     const notToSkip = avoid.indexOf(property) < 0;
     const value = computed[property];
     const valueDef = computedDef[camelCase(property)];
-    return computed && notToSkip && valueDef !== value && value;
+    return (computed && notToSkip && valueDef !== value && value) || '';
   },
 
   /**

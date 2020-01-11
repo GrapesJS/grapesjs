@@ -124,7 +124,10 @@ export default PropertyCompositeView.extend({
       const style = target ? target.getStyle() : {};
       layersObj = layers.getLayersFromStyle(style);
     } else {
-      let value = this.getTargetValue();
+      let value = this.getTargetValue({ ignoreDefault: 1 });
+
+      if (!value) value = this.getComputedValue();
+
       value = value == model.getDefaultValue() ? '' : value;
       layersObj = layers.getLayersFromValue(value);
     }
@@ -153,7 +156,11 @@ export default PropertyCompositeView.extend({
           const values = self.getLayers().getPropertyValues(subProp);
           view.updateTargetStyle(values, null, opt);
         } else {
-          model.set('value', model.getFullValue(), opt);
+          // Update only if there is an actual update (to avoid changes for computed styles)
+          // ps: status is calculated in `targetUpdated` method
+          if (model.get('status') == 'updated') {
+            model.set('value', model.getFullValue(), opt);
+          }
         }
       }
     };
