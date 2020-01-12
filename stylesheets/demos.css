@@ -143,3 +143,13 @@ html {
 .gjs-block__media svg {
   width: 54px;
 }
+
+/* Temporary fix #2490 */
+.gjs-clm-tag-status,
+.gjs-clm-tag-close {
+    width: 12px;
+    height: 12px;
+}
+.gjs-clm-tags-btn {
+    width: 24px;
+}
