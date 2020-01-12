@@ -40,6 +40,7 @@ export default Backbone.View.extend({
     view.render();
     const rendered = view.el;
     this.properties.push(view);
+    view.updateVisibility();
 
     appendAtIndex(appendTo, rendered, opts.at);
   },
