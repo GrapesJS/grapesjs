@@ -11,7 +11,7 @@ import {
   result,
   keys
 } from 'underscore';
-import { shallowDiff } from 'utils/mixins';
+import { shallowDiff, capitalize } from 'utils/mixins';
 import Styleable from 'domain_abstract/model/Styleable';
 import Backbone from 'backbone';
 import Components from './Components';
@@ -867,16 +867,25 @@ const Component = Backbone.Model.extend(Styleable).extend(
     getName() {
       const { em } = this;
       const { type, tagName } = this.attributes;
-      const customName = this.get('custom-name');
       const cName = this.get('name');
-      let tag = tagName;
-      tag = tag == 'div' ? 'box' : tag;
-      let name = type || tag;
-      name = name.charAt(0).toUpperCase() + name.slice(1);
+      const isDiv = tagName == 'div';
+      const tag = isDiv ? 'box' : tagName;
+      const defName = type || tag;
+      const nameTag = !type && tagName && !isDiv && tagName;
       const i18nPfx = 'domComponents.names.';
-      const i18nStr =
+      const i18nName = cName && em && em.t(`${i18nPfx}${cName}`);
+      const i18nNameTag = nameTag && em && em.t(`${i18nPfx}${nameTag}`);
+      const i18nDefName =
         em && (em.t(`${i18nPfx}${type}`) || em.t(`${i18nPfx}${tagName}`));
-      return customName || i18nStr || cName || name;
+      return (
+        this.get('custom-name') || // Used in Layers (when the user changes the name)
+        i18nName ||
+        cName || // Component name (check if there is a i18n string for it)
+        i18nNameTag ||
+        capitalize(nameTag) || // Try name by tag if there is no valid type
+        i18nDefName ||
+        capitalize(defName) // Use the default name
+      );
     },
 
     /**
