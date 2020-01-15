@@ -30165,15 +30165,20 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(dom
     var _this$attributes = this.attributes,
         type = _this$attributes.type,
         tagName = _this$attributes.tagName;
-    var customName = this.get('custom-name');
     var cName = this.get('name');
-    var tag = tagName;
-    tag = tag == 'div' ? 'box' : tag;
-    var name = type || tag;
-    name = name.charAt(0).toUpperCase() + name.slice(1);
+    var isDiv = tagName == 'div';
+    var tag = isDiv ? 'box' : tagName;
+    var defName = type || tag;
+    var nameTag = !type && tagName && !isDiv && tagName;
     var i18nPfx = 'domComponents.names.';
-    var i18nStr = em && (em.t("".concat(i18nPfx).concat(type)) || em.t("".concat(i18nPfx).concat(tagName)));
-    return customName || i18nStr || cName || name;
+    var i18nName = cName && em && em.t("".concat(i18nPfx).concat(cName));
+    var i18nNameTag = nameTag && em && em.t("".concat(i18nPfx).concat(nameTag));
+    var i18nDefName = em && (em.t("".concat(i18nPfx).concat(type)) || em.t("".concat(i18nPfx).concat(tagName)));
+    return this.get('custom-name') || // Used in Layers (when the user changes the name)
+    i18nName || cName || // Component name (check if there is a i18n string for it)
+    i18nNameTag || Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["capitalize"])(nameTag) || // Try name by tag if there is no valid type
+    i18nDefName || Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["capitalize"])(defName) // Use the default name
+    ;
   },
 
   /**
@@ -32810,9 +32815,14 @@ __webpack_require__.r(__webpack_exports__);
   events: {},
   initialize: function initialize(o) {
     _ComponentView__WEBPACK_IMPORTED_MODULE_1__["default"].prototype.initialize.apply(this, arguments);
-    this.listenTo(this.model, 'change:src', this.updateSrc);
-    this.listenTo(this.model, 'change:loop change:autoplay change:controls change:color change:rel change:modestbranding change:poster', this.updateVideo);
-    this.listenTo(this.model, 'change:provider', this.updateProvider);
+    var model = this.model;
+    var props = ['loop', 'autoplay', 'controls', 'color', 'rel', 'modestbranding', 'poster'];
+    var events = props.map(function (p) {
+      return "change:".concat(p);
+    }).join(' ');
+    this.listenTo(model, 'change:provider', this.updateProvider);
+    this.listenTo(model, 'change:src', this.updateSrc);
+    this.listenTo(model, events, this.updateVideo);
   },
 
   /**
@@ -32943,6 +32953,7 @@ __webpack_require__.r(__webpack_exports__);
     this.updateClasses();
     var prov = this.model.get('provider');
     this.el.appendChild(this.renderByProvider(prov));
+    this.updateVideo();
     return this;
   }
 }));
@@ -36933,7 +36944,7 @@ var defaultConfig = {
   editors: editors,
   plugins: plugins,
   // Will be replaced on build
-  version: '0.15.10',
+  version: '0.15.11',
 
   /**
    * Initialize the editor with passed options
@@ -43838,7 +43849,8 @@ var Property = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.Model.extend({
   clearValue: function clearValue() {
     var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     this.set({
-      value: undefined
+      value: undefined,
+      status: ''
     }, opts);
     return this;
   },
@@ -43948,7 +43960,7 @@ var Property = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.Model.extend({
   getFullValue: function getFullValue(val) {
     var fn = this.get('functionName');
     var value = Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isUndefined"])(val) ? this.get('value') : val;
-    var hasValue = !Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isUndefined"])(value);
+    var hasValue = !Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isUndefined"])(value) && value !== '';
 
     if (fn && hasValue) {
       value = "".concat(fn, "(").concat(value, ")");
@@ -44278,7 +44290,6 @@ __webpack_require__.r(__webpack_exports__);
         switch (prop) {
           case 'float':
           case 'background-color':
-          case 'background-image':
           case 'text-shadow':
             obj.defaults = 'none';
             break;
@@ -45257,6 +45268,15 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
   getFullValue: function getFullValue() {
     return this.get('detached') ? '' : this.get('layers').getFullValue();
   },
+  getValueFromStyle: function getValueFromStyle() {
+    var styles = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var layers = this.getLayers().getLayersFromStyle(styles);
+    return new _Layers__WEBPACK_IMPORTED_MODULE_2__["default"](layers).getFullValue();
+  },
+  clearValue: function clearValue() {
+    this.getLayers().reset();
+    return _PropertyComposite__WEBPACK_IMPORTED_MODULE_1__["default"].prototype.clearValue.apply(this, arguments);
+  },
 
   /**
    * This method allows to customize layers returned from the target
@@ -45753,6 +45773,7 @@ __webpack_require__.r(__webpack_exports__);
     view.render();
     var rendered = view.el;
     this.properties.push(view);
+    view.updateVisibility();
     Object(utils_dom__WEBPACK_IMPORTED_MODULE_1__["appendAtIndex"])(appendTo, rendered, opts.at);
   },
   render: function render() {
@@ -46378,11 +46399,14 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _PropertyCompositeView__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./PropertyCompositeView */ "./src/style_manager/view/PropertyCompositeView.js");
-/* harmony import */ var _LayersView__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./LayersView */ "./src/style_manager/view/LayersView.js");
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _PropertyCompositeView__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./PropertyCompositeView */ "./src/style_manager/view/PropertyCompositeView.js");
+/* harmony import */ var _LayersView__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./LayersView */ "./src/style_manager/view/LayersView.js");
 
 
-/* harmony default export */ __webpack_exports__["default"] = (_PropertyCompositeView__WEBPACK_IMPORTED_MODULE_0__["default"].extend({
+
+/* harmony default export */ __webpack_exports__["default"] = (_PropertyCompositeView__WEBPACK_IMPORTED_MODULE_1__["default"].extend({
   templateInput: function templateInput() {
     var pfx = this.pfx;
     var ppfx = this.ppfx;
@@ -46397,12 +46421,6 @@ __webpack_require__.r(__webpack_exports__);
     this.listenTo(model, 'updateValue', this.inputValueChanged);
     this.delegateEvents();
   },
-  clear: function clear(e) {
-    e && e.stopPropagation();
-    this.model.get('layers').reset();
-    this.model.clearValue();
-    this.targetUpdated();
-  },
 
   /**
    * Fired when the target is updated.
@@ -46415,7 +46433,7 @@ __webpack_require__.r(__webpack_exports__);
         args[_key] = arguments[_key];
       }
 
-      _PropertyCompositeView__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.targetUpdated.apply(this, args);
+      _PropertyCompositeView__WEBPACK_IMPORTED_MODULE_1__["default"].prototype.targetUpdated.apply(this, args);
     } else {
       this.checkVisibility();
     }
@@ -46502,7 +46520,10 @@ __webpack_require__.r(__webpack_exports__);
       var style = target ? target.getStyle() : {};
       layersObj = layers.getLayersFromStyle(style);
     } else {
-      var value = this.getTargetValue();
+      var value = this.getTargetValue({
+        ignoreDefault: 1
+      });
+      if (!value) value = this.getComputedValue();
       value = value == model.getDefaultValue() ? '' : value;
       layersObj = layers.getLayersFromValue(value);
     }
@@ -46515,6 +46536,17 @@ __webpack_require__.r(__webpack_exports__);
     }, {
       silent: true
     });
+  },
+  getTargetValue: function getTargetValue() {
+    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var result = _PropertyCompositeView__WEBPACK_IMPORTED_MODULE_1__["default"].prototype.getTargetValue.call(this, opts);
+    var detached = this.model.attributes.detached; // It might happen that the browser split properties on CSSOM parse
+
+    if (Object(underscore__WEBPACK_IMPORTED_MODULE_0__["isUndefined"])(result) && !detached) {
+      result = this.model.getValueFromStyle(this.getTarget().getStyle());
+    }
+
+    return result;
   },
   onRender: function onRender() {
     var self = this;
@@ -46535,11 +46567,18 @@ __webpack_require__.r(__webpack_exports__);
           var values = self.getLayers().getPropertyValues(subProp);
           view.updateTargetStyle(values, null, opt);
         } else {
-          model.set('value', model.getFullValue(), opt);
+          // Update only if there is an actual update (to avoid changes for computed styles)
+          // ps: status is calculated in `targetUpdated` method
+          if (model.get('status') == 'updated') {
+            var value = model.getFullValue();
+            model.set('value', value, opt); // Try to remove detached properties
+
+            !value && view.updateTargetStyle(value, null, opt);
+          }
         }
       }
     };
-    var layers = new _LayersView__WEBPACK_IMPORTED_MODULE_1__["default"]({
+    var layers = new _LayersView__WEBPACK_IMPORTED_MODULE_2__["default"]({
       collection: this.getLayers(),
       stackModel: model,
       preview: model.get('preview'),
@@ -46553,8 +46592,7 @@ __webpack_require__.r(__webpack_exports__);
       stackModel: model,
       config: this.config,
       onChange: propsConfig.onChange,
-      propTarget: propsConfig.propTarget,
-      customValue: propsConfig.customValue
+      propTarget: propsConfig.propTarget
     }).render(); //model.get('properties')
 
     fieldEl.appendChild(layers);
@@ -46699,11 +46737,11 @@ var clearProp = 'data-clear-style';
   /**
    * Clear the property from the target
    */
-  clear: function clear(e) {
+  clear: function clear(ev) {
     var _this2 = this;
 
-    e && e.stopPropagation();
-    this.model.clearValue(); // Skip one stack with setTimeout to avoid inconsistencies
+    ev && ev.stopPropagation();
+    this.model.clearValue(); // Skip one stack with setTimeout to avoid inconsistencies (eg. visible on padding composite clear)
 
     setTimeout(function () {
       return _this2.targetUpdated();
@@ -46771,7 +46809,7 @@ var clearProp = 'data-clear-style';
   setStatus: function setStatus(value) {
     this.model.set('status', value);
     var parent = this.model.parent;
-    parent && value && parent.set('status', value);
+    parent && value == 'updated' && parent.set('status', value);
   },
   emitUpdateTarget: Object(underscore__WEBPACK_IMPORTED_MODULE_2__["debounce"])(function () {
     var em = this.config.em;
@@ -46817,14 +46855,20 @@ var clearProp = 'data-clear-style';
       status = '';
     }
 
+    this.setStatus(status);
     model.setValue(value, 0, {
       fromTarget: 1
     });
-    this.setStatus(status);
 
     if (em) {
-      em.trigger('styleManager:change', this, property, value);
-      em.trigger("styleManager:change:".concat(property), this, value);
+      var data = {
+        status: status,
+        targetValue: targetValue,
+        defaultValue: defaultValue,
+        computedValue: computedValue
+      };
+      em.trigger('styleManager:change', this, property, value, data);
+      em.trigger("styleManager:change:".concat(property), this, value, data);
     }
   },
   checkVisibility: function checkVisibility() {
@@ -46874,7 +46918,7 @@ var clearProp = 'data-clear-style';
 
     if (typeof customFetchValue == 'function' && !opts.ignoreCustomValue) {
       var index = model.collection.indexOf(model);
-      var customValue = customFetchValue(this, index);
+      var customValue = customFetchValue(this, index, result);
 
       if (customValue) {
         result = customValue;
@@ -46898,7 +46942,7 @@ var clearProp = 'data-clear-style';
     var notToSkip = avoid.indexOf(property) < 0;
     var value = computed[property];
     var valueDef = computedDef[Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["camelCase"])(property)];
-    return computed && notToSkip && valueDef !== value && value;
+    return computed && notToSkip && valueDef !== value && value || '';
   },
 
   /**
@@ -54422,7 +54466,7 @@ var isEscKey = function isEscKey(ev) {
 };
 
 var capitalize = function capitalize(str) {
-  return str.charAt(0).toUpperCase() + str.substring(1);
+  return str && str.charAt(0).toUpperCase() + str.substring(1);
 };
 
 var isComponent = function isComponent(obj) {
