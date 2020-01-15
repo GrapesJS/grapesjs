@@ -963,8 +963,7 @@ describe('PropertyFactory', () => {
         {
           property: 'background-image',
           type: 'file',
-          functionName: 'url',
-          defaults: 'none'
+          functionName: 'url'
         },
         {
           property: 'background-repeat',
