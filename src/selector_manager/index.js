@@ -39,12 +39,15 @@
  * * [add](#add)
  * * [addClass](#addclass)
  * * [get](#get)
- * * [getAll](#getAll)
+ * * [getAll](#getall)
+ * * [setState](#setstate)
+ * * [getState](#getstate)
  *
  * @module SelectorManager
  */
 
 import { isString, isElement, isObject, isArray } from 'underscore';
+import { isComponent, isRule } from 'utils/mixins';
 import defaults from './config/config';
 import Selector from './model/Selector';
 import Selectors from './model/Selectors';
@@ -55,7 +58,7 @@ const isClass = str => isString(str) && str[0] == '.';
 
 export default config => {
   var c = config || {};
-  var selectors, selectorTags;
+  var selectors;
 
   return {
     Selector,
@@ -90,12 +93,13 @@ export default config => {
       };
       const em = c.em;
       const ppfx = c.pStylePrefix;
+      this.em = em;
 
       if (ppfx) {
         c.stylePrefix = ppfx + c.stylePrefix;
       }
 
-      selectorTags = new ClassTagsView({
+      this.selectorTags = new ClassTagsView({
         collection: new Selectors([], { em, config: c }),
         config: c
       });
@@ -103,6 +107,16 @@ export default config => {
       // Global selectors container
       selectors = new Selectors(c.selectors);
       selectors.on('add', model => em.trigger('selector:add', model));
+      selectors.on('remove', model => em.trigger('selector:remove', model));
+      selectors.on('change', model =>
+        em.trigger(
+          'selector:update',
+          model,
+          model.previousAttributes(),
+          model.changedAttributes()
+        )
+      );
+      em.on('change:state', (m, value) => em.trigger('selector:state', value));
 
       return this;
     },
@@ -114,6 +128,42 @@ export default config => {
         const el = isElement(elTo) ? elTo : document.querySelector(elTo);
         el.appendChild(this.render([]));
       }
+    },
+
+    select(value, opts = {}) {
+      const targets = Array.isArray(value) ? value : [value];
+      const toSelect = this.em.get('StyleManager').setTarget(targets, opts);
+      const res = toSelect
+        .filter(i => i)
+        .map(sel =>
+          isComponent(sel)
+            ? sel
+            : isRule(sel) && !sel.get('selectorsAdd')
+            ? sel
+            : sel.getSelectorsString()
+        );
+      this.selectorTags.componentChanged({ targets: res });
+      return this;
+    },
+
+    /**
+     * Change the selector state
+     * @param {String} value State value
+     * @returns {this}
+     * @example
+     * selectorManager.setState('hover');
+     */
+    setState(value) {
+      this.em.setState(value);
+      return this;
+    },
+
+    /**
+     * Get the current selector state
+     * @returns {String}
+     */
+    getState() {
+      return this.em.setState();
     },
 
     addSelector(name, opt = {}) {
@@ -256,12 +306,12 @@ export default config => {
      */
     render(selectors) {
       if (selectors) {
-        var view = new ClassTagsView({
+        this.selectorTags = new ClassTagsView({
           collection: new Selectors(selectors),
           config: c
         });
-        return view.render().el;
-      } else return selectorTags.render().el;
+        return this.selectorTags.render().el;
+      } else return this.selectorTags.render().el;
     }
   };
 };

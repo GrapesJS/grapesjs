@@ -1,4 +1,6 @@
 import Backbone from 'backbone';
+import { appendStyles } from 'utils/mixins';
+
 const $ = Backbone.$;
 
 export default Backbone.View.extend({
@@ -16,24 +18,22 @@ export default Backbone.View.extend({
   },
 
   render() {
-    const model = this.model;
-    const el = this.$el;
-    const conf = this.conf;
-    const contEl = $(conf.el || `body ${conf.container}`);
+    const { model, $el, conf } = this;
     const pfx = conf.stylePrefix;
-    el.empty();
+    const contEl = $(conf.el || `body ${conf.container}`);
+    appendStyles(conf.cssIcons, { unique: 1, prepand: 1 });
+    $el.empty();
 
     if (conf.width) contEl.css('width', conf.width);
-
     if (conf.height) contEl.css('height', conf.height);
 
-    el.append(model.get('Canvas').render());
-    el.append(this.pn.render());
-    el.attr('class', `${pfx}editor ${pfx}one-bg ${pfx}two-color`);
+    $el.append(model.get('Canvas').render());
+    $el.append(this.pn.render());
+    $el.attr('class', `${pfx}editor ${pfx}one-bg ${pfx}two-color`);
     contEl
       .addClass(`${pfx}editor-cont`)
       .empty()
-      .append(el);
+      .append($el);
 
     return this;
   }

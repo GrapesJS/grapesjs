@@ -94,7 +94,7 @@ export default {
       },
       options: {
         target: {
-          '': 'Questa finestra',
+          false: 'Questa finestra',
           _blank: 'Nuova finestra'
         }
       }

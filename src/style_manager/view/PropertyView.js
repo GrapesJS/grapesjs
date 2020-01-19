@@ -132,10 +132,10 @@ export default Backbone.View.extend({
   /**
    * Clear the property from the target
    */
-  clear(e) {
-    e && e.stopPropagation();
+  clear(ev) {
+    ev && ev.stopPropagation();
     this.model.clearValue();
-    // Skip one stack with setTimeout to avoid inconsistencies
+    // Skip one stack with setTimeout to avoid inconsistencies (eg. visible on padding composite clear)
     setTimeout(() => this.targetUpdated());
   },
 
@@ -157,6 +157,11 @@ export default Backbone.View.extend({
    */
   getTarget() {
     return this.getTargetModel();
+  },
+
+  getTargets() {
+    const { targets } = this.propTarget;
+    return targets || [this.getTarget()];
   },
 
   /**
@@ -195,7 +200,7 @@ export default Backbone.View.extend({
   setStatus(value) {
     this.model.set('status', value);
     const parent = this.model.parent;
-    parent && value && parent.set('status', value);
+    parent && value == 'updated' && parent.set('status', value);
   },
 
   emitUpdateTarget: debounce(function() {
@@ -244,12 +249,13 @@ export default Backbone.View.extend({
       status = '';
     }
 
-    model.setValue(value, 0, { fromTarget: 1, ...opts });
     this.setStatus(status);
+    model.setValue(value, 0, { fromTarget: 1, ...opts });
 
     if (em) {
-      em.trigger('styleManager:change', this, property, value);
-      em.trigger(`styleManager:change:${property}`, this, value);
+      const data = { status, targetValue, defaultValue, computedValue };
+      em.trigger('styleManager:change', this, property, value, data);
+      em.trigger(`styleManager:change:${property}`, this, value, data);
     }
   },
 
@@ -282,10 +288,10 @@ export default Backbone.View.extend({
    * @private
    */
   getTargetValue(opts = {}) {
-    var result;
-    var model = this.model;
-    var target = this.getTargetModel();
-    var customFetchValue = this.customValue;
+    let result;
+    const { model } = this;
+    const target = this.getTargetModel();
+    const customFetchValue = this.customValue;
 
     if (!target) {
       return result;
@@ -299,7 +305,7 @@ export default Backbone.View.extend({
 
     if (typeof customFetchValue == 'function' && !opts.ignoreCustomValue) {
       let index = model.collection.indexOf(model);
-      let customValue = customFetchValue(this, index);
+      let customValue = customFetchValue(this, index, result);
 
       if (customValue) {
         result = customValue;
@@ -323,7 +329,7 @@ export default Backbone.View.extend({
     const notToSkip = avoid.indexOf(property) < 0;
     const value = computed[property];
     const valueDef = computedDef[camelCase(property)];
-    return computed && notToSkip && valueDef !== value && value;
+    return (computed && notToSkip && valueDef !== value && value) || '';
   },
 
   /**
@@ -343,20 +349,30 @@ export default Backbone.View.extend({
    * @param {Object} opt  Options
    * */
   modelValueChanged(e, val, opt = {}) {
-    const em = this.config.em;
     const model = this.model;
     const value = model.getFullValue();
-    const target = this.getTarget();
-    const prop = model.get('property');
-    const onChange = this.onChange;
 
     // Avoid element update if the change comes from it
     if (!opt.fromInput) {
       this.setValue(value);
     }
 
+    this.getTargets().forEach(target => this.__updateTarget(target, opt));
+  },
+
+  __updateTarget(target, opt = {}) {
+    const { model } = this;
+    const { em } = this.config;
+    const prop = model.get('property');
+    const value = model.getFullValue();
+    const onChange = this.onChange;
+
     // Check if component is allowed to be styled
-    if (!target || !this.isTargetStylable() || !this.isComponentStylable()) {
+    if (
+      !target ||
+      !this.isTargetStylable(target) ||
+      !this.isComponentStylable()
+    ) {
       return;
     }
 
@@ -367,10 +383,11 @@ export default Backbone.View.extend({
       if (onChange && !opt.fromParent) {
         onChange(target, this, opt);
       } else {
-        this.updateTargetStyle(value, null, opt);
+        this.updateTargetStyle(value, null, { ...opt, target });
       }
     }
 
+    // TODO: use target if componentFirst
     const component = em && em.getSelected();
 
     if (em && component) {
@@ -388,7 +405,7 @@ export default Backbone.View.extend({
    */
   updateTargetStyle(value, name = '', opts = {}) {
     const property = name || this.model.get('property');
-    const target = this.getTarget();
+    const target = opts.target || this.getTarget();
     const style = target.getStyle();
 
     if (value) {

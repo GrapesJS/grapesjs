@@ -6,5 +6,5 @@ export default {
   appendTo: '',
 
   // Default options for the target input
-  optionsTarget: [{ value: '' }, { value: '_blank' }]
+  optionsTarget: [{ value: false }, { value: '_blank' }]
 };

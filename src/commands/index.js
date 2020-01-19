@@ -130,6 +130,7 @@ export default () => {
           const modes = ['absolute', 'translate'];
           const mode = sel.get('dmode') || em.get('dmode');
           const hideTlb = () => em.stopDefault(defComOptions);
+          selAll.forEach(sel => sel.trigger('disable'));
 
           if (!sel || !sel.get('draggable')) {
             return em.logWarning('The element is not draggable');

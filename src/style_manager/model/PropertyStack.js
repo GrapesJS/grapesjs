@@ -36,6 +36,16 @@ export default Property.extend({
     return this.get('detached') ? '' : this.get('layers').getFullValue();
   },
 
+  getValueFromStyle(styles = {}) {
+    const layers = this.getLayers().getLayersFromStyle(styles);
+    return new Layers(layers).getFullValue();
+  },
+
+  clearValue() {
+    this.getLayers().reset();
+    return Property.prototype.clearValue.apply(this, arguments);
+  },
+
   /**
    * This method allows to customize layers returned from the target
    * @param  {Object} target

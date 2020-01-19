@@ -26,6 +26,7 @@ describe('SelectorManager', () => {
 
     test('Able to add default selectors', () => {
       var cm = new SelectorManager().init({
+        em,
         selectors: ['test1', 'test2', 'test3']
       });
       expect(cm.getAll().length).toEqual(3);
