@@ -102,6 +102,27 @@ export default Backbone.View.extend({
     return this.rect;
   },
 
+  /**
+   * Get rect data, not affected by the canvas zoom
+   */
+  getOffsetRect() {
+    const { el } = this;
+    const { scrollTop, scrollLeft } = this.getBody();
+    const height = el.offsetHeight;
+    const width = el.offsetWidth;
+
+    return {
+      top: el.offsetTop,
+      left: el.offsetLeft,
+      height,
+      width,
+      scrollTop,
+      scrollLeft,
+      scrollBottom: scrollTop + height,
+      scrollRight: scrollLeft + width
+    };
+  },
+
   _getTool(name) {
     const toolsEl = this.getToolsEl();
 

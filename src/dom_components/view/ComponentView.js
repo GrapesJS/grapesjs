@@ -378,34 +378,62 @@ export default Backbone.View.extend({
     return container;
   },
 
-  isInViewport() {
+  /**
+   * This returns rect informations not affected by the canvas zoom.
+   * The method `getBoundingClientRect` doesn't work here and we
+   * have to take in account offsetParent
+   */
+  getOffsetRect() {
+    const rect = {};
+    const target = this.el;
+    let gtop = 0;
+    let gleft = 0;
+
+    const assignRect = el => {
+      const { offsetParent } = el;
+
+      if (offsetParent) {
+        gtop += offsetParent.offsetTop;
+        gleft += offsetParent.offsetLeft;
+        assignRect(offsetParent);
+      } else {
+        rect.top = target.offsetTop + gtop;
+        rect.left = target.offsetLeft + gleft;
+        rect.bottom = rect.top + target.offsetHeight;
+        rect.right = rect.left + target.offsetWidth;
+      }
+    };
+    assignRect(target);
+
+    return rect;
+  },
+
+  isInViewport({ rect } = {}) {
     const { el } = this;
     const elDoc = el.ownerDocument;
     const { body } = elDoc;
     const { frameElement } = elDoc.defaultView;
-    const { top, left } = getElRect(el);
+    const { top, left } = rect || this.getOffsetRect();
+    const frame = this._getFrame().getOffsetRect();
 
     return (
-      top >= 0 &&
-      left >= 0 &&
-      top <= frameElement.offsetHeight + body.scrollTop &&
+      top >= frame.scrollTop &&
+      left >= frame.scrollLeft &&
+      top <= frame.scrollBottom &&
       left <= frameElement.offsetWidth + body.scrollLeft
     );
   },
 
   scrollIntoView(opts = {}) {
-    const { el } = this;
-    console.log('scrolling to', el, {
-      elTop: el.offsetTop,
-      frTop: el.ownerDocument.body.scrollTop,
-      isIn: this.isInViewport()
-    });
-    if (!this.isInViewport() || opts.force) {
+    const rect = this.getOffsetRect();
+    const isInViewport = this.isInViewport({ rect });
+
+    if (!isInViewport || opts.force) {
       const { el } = this;
 
       // PATCH: scrollIntoView won't work with multiple requests from iframes
       if (opts.behavior !== 'smooth') {
-        el.ownerDocument.defaultView.scrollTo(0, el.offsetTop);
+        el.ownerDocument.defaultView.scrollTo(0, rect.top);
       } else {
         el.scrollIntoView({
           behavior: 'smooth',
