@@ -114,6 +114,7 @@ export default ComponentView.extend({
           !['text', 'default', ''].some(type => model.is(type)) || textable;
         model.set(
           {
+            _innertext: !selectable,
             editable: selectable && model.get('editable'),
             selectable: selectable,
             hoverable: selectable,

@@ -30,7 +30,11 @@ export default Backbone.View.extend({
     this.attr = model.get('attributes');
     this.classe = this.attr.class || [];
     this.listenTo(model, 'change:style', this.updateStyle);
-    this.listenTo(model, 'change:attributes', this.renderAttributes);
+    this.listenTo(
+      model,
+      'change:attributes change:_innertext',
+      this.renderAttributes
+    );
     this.listenTo(model, 'change:highlightable', this.updateHighlight);
     this.listenTo(model, 'change:status', this.updateStatus);
     this.listenTo(model, 'change:script', this.reset);
@@ -205,11 +209,14 @@ export default Backbone.View.extend({
    * @private
    * */
   updateStyle() {
-    const em = this.em;
-    const model = this.model;
+    const { model, em, el } = this;
 
     if (em && em.getConfig('avoidInlineStyle')) {
-      this.el.id = model.getId();
+      if (model.get('_innertext')) {
+        el.removeAttribute('id');
+      } else {
+        el.id = model.getId();
+      }
       const style = model.getStyle();
       !isEmpty(style) && model.setStyle(style);
     } else {
@@ -260,12 +267,12 @@ export default Backbone.View.extend({
   updateAttributes() {
     const attrs = [];
     const { model, $el, el, config } = this;
-    const { highlightable, textable, type } = model.attributes;
+    const { highlightable, textable, type, _innertext } = model.attributes;
     const { draggableComponents } = config;
 
     const defaultAttr = {
       'data-gjs-type': type || 'default',
-      ...(draggableComponents ? { draggable: true } : {}),
+      ...(draggableComponents && !_innertext ? { draggable: true } : {}),
       ...(highlightable ? { 'data-highlightable': 1 } : {}),
       ...(textable
         ? {
