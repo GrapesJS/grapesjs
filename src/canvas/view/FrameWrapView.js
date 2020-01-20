@@ -87,6 +87,7 @@ export default Backbone.View.extend({
    * @private
    */
   updateDim() {
+    console.log('updateDim');
     const { em, el, $el, model } = this;
     const { width, height } = model.attributes;
     const { style } = el;

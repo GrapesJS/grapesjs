@@ -36,7 +36,15 @@ export default Backbone.View.extend({
     this.pfx = this.config.stylePrefix || '';
     this.ppfx = this.config.pStylePrefix || '';
     this.className = this.config.stylePrefix + 'canvas';
-    const { em } = this;
+    const { em, config } = this;
+    this.frames = new FramesView({
+      collection: model.get('frames'),
+      config: {
+        ...config,
+        canvasView: this,
+        renderContent: 1
+      }
+    });
     this.listenTo(em, 'change:canvasOffset', this.clearOff);
     this.listenTo(em, 'component:selected', this.checkSelected);
     this.listenTo(model, 'change:zoom change:x change:y', this.updateFrames);
@@ -492,7 +500,7 @@ export default Backbone.View.extend({
   },
 
   render() {
-    const { el, $el, ppfx, model, config, em } = this;
+    const { el, $el, ppfx, model, em, frames } = this;
     const cssc = em.get('CssComposer');
     const wrapper = model.get('wrapper');
     $el.html(this.template());
@@ -548,14 +556,6 @@ export default Backbone.View.extend({
 
     // Render all frames
     const frms = model.get('frames');
-    const frames = new FramesView({
-      collection: frms,
-      config: {
-        ...config,
-        renderContent: 1,
-        canvasView: this
-      }
-    });
     frms.listenToLoad();
     frms.on('loaded:all', () => em.trigger('loaded'));
     frames.render();
