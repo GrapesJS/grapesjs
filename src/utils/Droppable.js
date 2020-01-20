@@ -36,7 +36,6 @@ export default class Droppable {
     methods[method](el, 'dragover', this.handleDragOver);
     methods[method](el, 'drop', this.handleDrop);
     methods[method](el, 'dragleave', this.handleDragLeave);
-    console.log('enable on', el);
   }
 
   endDrop(cancel, ev) {
