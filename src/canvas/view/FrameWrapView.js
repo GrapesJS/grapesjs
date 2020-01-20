@@ -134,20 +134,16 @@ export default Backbone.View.extend({
     frame.render();
     $el
       .empty()
-      .attr({
-        class: `${ppfx}frame-wrapper`
-      })
-      /*
-      .append(
-        `<div class="${ppfx}frame-wrapper__header">
-        <div class="${ppfx}frame-wrapper__name" data-action-move>
-          ${model.get('name') || ''}
-        </div>
-        <span data-action-remove>
-          <i class="fa fa-trash"></i>
-        </span>
-      </div>`
-      )*/
+      .attr({ class: `${ppfx}frame-wrapper` })
+      // .append(
+      //   `<div class="${ppfx}frame-wrapper__header">
+      //   <div class="${ppfx}frame-wrapper__name" data-action-move>
+      //     ${model.get('name') || ''}
+      //   </div>
+      //   <span data-action-remove>
+      //     <i class="fa fa-trash"></i>
+      //   </span>
+      // </div>`)
       .append(frame.el);
     const elTools = createEl(
       'div',
