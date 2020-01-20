@@ -145,7 +145,7 @@ export default ComponentView.extend({
     const { em } = this;
 
     // Update toolbars
-    em && em.trigger('change:canvasOffset');
+    em && em.trigger('component:update', this.model);
   },
 
   /**
