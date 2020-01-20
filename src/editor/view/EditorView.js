@@ -13,9 +13,10 @@ export default Backbone.View.extend({
     model.on('loaded', () => {
       this.pn.active();
       this.pn.disableButtons();
-      console.log('editorView runDefault');
-      model.runDefault();
-      setTimeout(() => model.trigger('load', model.get('Editor')));
+      setTimeout(() => {
+        model.runDefault();
+        model.trigger('load', model.get('Editor'));
+      });
     });
   },
 
