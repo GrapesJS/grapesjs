@@ -300,7 +300,8 @@ export default () => {
 
       if (em) {
         setTimeout(this.updatePosition.bind(this), 0);
-        const event = 'change:canvasOffset canvasScroll frame:scroll';
+        const event =
+          'change:canvasOffset canvasScroll frame:scroll component:update';
         em.off(event, this.updatePosition, this);
         em.on(event, this.updatePosition, this);
         em.trigger('rte:enable', view, rte);
