@@ -138,6 +138,8 @@ export default {
 
     this.elSelected = result;
     this.updateToolsGlobal();
+    // This will hide some elements from the select component
+    this.updateToolsLocal(result);
 
     // if (el) {
     //   this.showFixedElementOffset(el);
