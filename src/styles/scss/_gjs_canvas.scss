@@ -113,6 +113,9 @@ $guide_pad: 5px;
     position: absolute;
     width: 100%;
     height: 100%;
+    left: 0;
+    right: 0;
+    margin: auto;
 
     &__header {
       transform: translateY(-100%) translateX(-50%);
