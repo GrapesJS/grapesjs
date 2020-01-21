@@ -70,8 +70,10 @@ export default Backbone.View.extend({
   },
 
   updateOffset: debounce(function() {
-    this.em.runDefault({ preserveSelected: 1 });
-    this.$el.removeClass(this.classAnim);
+    const { em, $el, frame } = this;
+    em.runDefault({ preserveSelected: 1 });
+    $el.removeClass(this.classAnim);
+    em.trigger('frame:resized', { frame });
   }),
 
   updatePos(md) {

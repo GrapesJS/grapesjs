@@ -60,6 +60,7 @@ export default {
     em[method]('component:update', this.onComponentUpdate, this);
     em[method]('component:resize', this.updateGlobalPos, this);
     em[method]('change:canvasOffset', this.updateAttached, this);
+    em[method]('frame:resized', this.onFrameResized, this);
     em.get('Canvas')
       .getFrames()
       .forEach(frame => {
@@ -100,6 +101,10 @@ export default {
     this.currentDoc = trg.ownerDocument;
     this.em.setHovered(model);
     frameView && this.em.set('currentFrame', frameView);
+  },
+
+  onFrameResized() {
+    this.updateToolsLocal({}); // clear last cached component
   },
 
   onHovered(em, component) {
