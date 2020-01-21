@@ -134,9 +134,10 @@ export default Backbone.View.extend({
   },
 
   remove() {
-    const { root } = this;
+    const { root, model } = this;
     Backbone.View.prototype.remove.apply(this, arguments);
     root.remove();
+    model.view = 0;
   },
 
   startAutoscroll() {
