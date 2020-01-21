@@ -28,7 +28,7 @@ export default Backbone.View.extend({
   },
 
   initialize(o) {
-    bindAll(this, 'renderBody', 'onFrameScroll', 'clearOff', 'onKeyPress');
+    bindAll(this, 'clearOff', 'onKeyPress');
     on(window, 'scroll resize', this.clearOff);
     const { model } = this;
     this.config = o.config || {};
@@ -108,7 +108,6 @@ export default Backbone.View.extend({
     this.framesArea.style.transform = `scale(${zoom}) translate(${x *
       mpl}px, ${y * mpl}px)`;
     this.clearOff();
-    this.onFrameScroll();
     em.stopDefault(defOpts);
     em.trigger('canvas:update', ev);
     timerZoom && clearTimeout(timerZoom);
@@ -136,200 +135,6 @@ export default Backbone.View.extend({
       rTop <= frameRect.height &&
       rLeft <= frameRect.width
     );
-  },
-
-  /**
-   * Update tools position
-   * @private
-   */
-  onFrameScroll({ body = {} } = {}) {
-    // const u = 'px';
-    // const bodyEl = this.frame.el.contentDocument.body;
-    // const zoom = this.getZoom();
-    // this.toolsEl.style.top = '-' + bodyEl.scrollTop * zoom + u;
-    // this.toolsEl.style.left = '-' + bodyEl.scrollLeft * zoom + u;
-    // this.em.trigger('canvasScroll');
-  },
-
-  /**
-   * Insert scripts into head, it will call renderBody after all scripts loaded or failed
-   * @private
-   */
-  renderScripts() {
-    var frame = this.frame;
-    var that = this;
-
-    frame.el.onload = () => {
-      var scripts = that.config.scripts.slice(0), // clone
-        counter = 0;
-
-      function appendScript(scripts) {
-        if (scripts.length > 0) {
-          var script = document.createElement('script');
-          script.type = 'text/javascript';
-          script.src = scripts.shift();
-          script.onerror = script.onload = appendScript.bind(null, scripts);
-          frame.el.contentDocument.head.appendChild(script);
-        } else {
-          that.renderBody();
-        }
-      }
-      appendScript(scripts);
-    };
-  },
-
-  /**
-   * Render inside frame's body
-   * @private
-   */
-  renderBody() {
-    const { config, model } = this;
-    const wrap = this.model.get('frame').get('wrapper');
-    const em = config.em;
-
-    if (wrap) {
-      const Canvas = em.get('Canvas');
-      const ppfx = this.ppfx;
-      const body = $(Canvas.getBody());
-      const head = $(Canvas.getDocument().head);
-      const cssc = em.get('CssComposer');
-      const conf = em.get('Config');
-      let externalStyles = '';
-
-      config.styles.forEach(style => {
-        externalStyles += `<link rel="stylesheet" href="${style}"/>`;
-      });
-
-      const colorWarn = '#ffca6f';
-
-      // I need all this styles to make the editor work properly
-      // Remove `html { height: 100%;}` from the baseCss as it gives jumpings
-      // effects (on ENTER) with RTE like CKEditor (maybe some bug there?!?)
-      // With `body {height: auto;}` jumps in CKEditor are removed but in
-      // Firefox is impossible to drag stuff in empty canvas, so bring back
-      // `body {height: 100%;}`.
-      // For the moment I give the priority to Firefox as it might be
-      // CKEditor's issue
-      var frameCss = `
-        ${em.config.baseCss || ''}
-
-        .${ppfx}dashed *[data-highlightable] {
-          outline: 1px dashed rgba(170,170,170,0.7);
-          outline-offset: -2px;
-        }
-
-        .${ppfx}comp-selected {
-          outline: 3px solid #3b97e3 !important;
-          outline-offset: -3px;
-        }
-
-        .${ppfx}comp-selected-parent {
-          outline: 2px solid ${colorWarn} !important
-        }
-
-        .${ppfx}no-select {
-          user-select: none;
-          -webkit-user-select:none;
-          -moz-user-select: none;
-        }
-
-        .${ppfx}freezed {
-          opacity: 0.5;
-          pointer-events: none;
-        }
-
-        .${ppfx}no-pointer {
-          pointer-events: none;
-        }
-
-        .${ppfx}plh-image {
-          background: #f5f5f5;
-          border: none;
-          height: 100px;
-          width: 100px;
-          display: block;
-          outline: 3px solid #ffca6f;
-          cursor: pointer;
-          outline-offset: -2px
-        }
-
-        .${ppfx}grabbing {
-          cursor: grabbing;
-          cursor: -webkit-grabbing;
-        }
-
-        .${ppfx}is__grabbing {
-          overflow-x: hidden;
-        }
-
-        .${ppfx}is__grabbing,
-        .${ppfx}is__grabbing * {
-          cursor: grabbing !important;
-        }
-
-        ${conf.canvasCss || ''}
-        ${conf.protectedCss || ''}
-      `;
-
-      if (externalStyles) {
-        head.append(externalStyles);
-      }
-
-      body.append('<style>' + frameCss + '</style>');
-      body.append(wrap.render()).append(cssc.render());
-      body.append(this.getJsContainer());
-      em.trigger('loaded');
-      this.frame.el.contentWindow.onscroll = this.onFrameScroll;
-      this.frame.updateOffset();
-
-      // Avoid the default link behaviour in the canvas
-      body.on(
-        'click',
-        ev => ev && ev.target.tagName == 'A' && ev.preventDefault()
-      );
-      // Avoid the default form behaviour
-      body.on('submit', ev => ev && ev.preventDefault());
-
-      // When the iframe is focused the event dispatcher is not the same so
-      // I need to delegate all events to the parent document
-      const doc = document;
-      const fdoc = this.frame.el.contentDocument;
-
-      // Unfortunately just creating `KeyboardEvent(e.type, e)` is not enough,
-      // the keyCode/which will be always `0`. Even if it's an old/deprecated
-      // property keymaster (and many others) still use it... using `defineProperty`
-      // hack seems the only way
-      const createCustomEvent = (e, cls) => {
-        let oEvent;
-        try {
-          oEvent = new window[cls](e.type, e);
-        } catch (e) {
-          oEvent = document.createEvent(cls);
-          oEvent.initEvent(e.type, true, true);
-        }
-        oEvent.keyCodeVal = e.keyCode;
-        oEvent._parentEvent = e;
-        ['keyCode', 'which'].forEach(prop => {
-          Object.defineProperty(oEvent, prop, {
-            get() {
-              return this.keyCodeVal;
-            }
-          });
-        });
-        return oEvent;
-      };
-
-      [
-        { event: 'keydown keyup keypress', class: 'KeyboardEvent' },
-        { event: 'wheel', class: 'WheelEvent' }
-      ].forEach(obj =>
-        obj.event.split(' ').forEach(event => {
-          fdoc.addEventListener(event, e =>
-            this.el.dispatchEvent(createCustomEvent(e, obj.class))
-          );
-        })
-      );
-    }
   },
 
   /**
@@ -514,13 +319,6 @@ export default Backbone.View.extend({
         root: wrapper.getWrapper(),
         styles: cssc.getAll()
       });
-      // $frames.append(this.frame.render().el);
-      // var frame = this.frame;
-      // if (this.config.scripts.length === 0) {
-      //   frame.el.onload = this.renderBody;
-      // } else {
-      //   this.renderScripts(); // will call renderBody later
-      // }
     }
 
     const toolsWrp = $el.find('[data-tools]');
