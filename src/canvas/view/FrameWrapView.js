@@ -88,14 +88,14 @@ export default Backbone.View.extend({
    * Update dimensions of the frame
    * @private
    */
-  updateDim() {
+  updateDim: debounce(function() {
     const { em, el, $el, model, classAnim } = this;
     const { width, height } = model.attributes;
     const { style } = el;
     const currW = style.width || '';
     const currH = style.height || '';
-    const newW = width;
-    const newH = height;
+    const newW = width || '';
+    const newH = height || '';
     const noChanges = currW == newW && currH == newH;
     const un = 'px';
     this.frame.rect = 0;
@@ -116,7 +116,7 @@ export default Backbone.View.extend({
     // component hover during the animation
     em.stopDefault({ preserveSelected: 1 });
     noChanges ? this.updateOffset() : $el.one(motionsEv, this.updateOffset);
-  },
+  }),
 
   onScroll() {
     const { frame, em } = this;
