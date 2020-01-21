@@ -120,13 +120,51 @@ $guide_pad: 5px;
       transition: width $frameAnimation, height $frameAnimation;
     }
 
-    &__header {
+    &__top {
       transform: translateY(-100%) translateX(-50%);
+      display: flex;
       padding: 5px 0;
       position: absolute;
       width: 100%;
       left: 50%;
       top: 0;
+
+      &-r {
+        margin-left: auto;
+      }
+    }
+
+    &__left {
+      position: absolute;
+      left: 0;
+      transform: translateX(-100%) translateY(-50%);
+      height: 100%;
+      top: 50%;
+    }
+
+    &__bottom {
+      position: absolute;
+      bottom: 0;
+      transform: translateY(100%) translateX(-50%);
+      width: 100%;
+      left: 50%;
+    }
+
+    &__right {
+      position: absolute;
+      right: 0;
+      transform: translateX(100%) translateY(-50%);
+      height: 100%;
+      top: 50%;
+    }
+
+    &__icon {
+      width: 24px;
+      cursor: pointer;
+
+      > svg {
+        fill: currentColor;
+      }
     }
   }
 }
