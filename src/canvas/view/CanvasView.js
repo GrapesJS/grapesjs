@@ -559,6 +559,7 @@ export default Backbone.View.extend({
     frms.listenToLoad();
     frms.on('loaded:all', () => em.trigger('loaded'));
     frames.render();
+    em.setCurrentFrame(frms.at(0).view);
     $frames.append(frames.el);
     this.frame = frms.at(0).view;
 

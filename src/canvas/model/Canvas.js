@@ -29,7 +29,7 @@ export default Backbone.Model.extend({
   updateDevice() {
     const { em } = this;
     const device = em.getDeviceModel();
-    const { model } = em.get('currentFrame') || {};
+    const model = em.getCurrentFrameModel();
 
     if (model && device) {
       const { width, height } = device.attributes;

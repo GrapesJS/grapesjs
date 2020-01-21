@@ -636,6 +636,10 @@ export default Backbone.Model.extend({
     return this.get('DomComponents').getWrapper();
   },
 
+  setCurrentFrame(frameView) {
+    return this.set('currentFrame', frameView);
+  },
+
   getCurrentFrame() {
     return this.get('currentFrame');
   },
