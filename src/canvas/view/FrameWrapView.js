@@ -35,8 +35,9 @@ export default Backbone.View.extend({
     this.ppfx = config.pStylePrefix || '';
     this.frame = new FrameView({ model, config });
     this.classAnim = `${this.ppfx}frame-wrapper--anim`;
+    this.listenTo(model, 'loaded', this.frameLoaded);
     this.listenTo(model, 'change:x change:y', this.updatePos);
-    this.listenTo(model, 'loaded change:width change:height', this.updateDim);
+    this.listenTo(model, 'change:width change:height', this.updateSize);
     this.updatePos();
     this.setupDragger();
   },
@@ -93,11 +94,15 @@ export default Backbone.View.extend({
     md && this.updateOffset();
   },
 
+  updateSize: debounce(function() {
+    this.updateDim();
+  }),
+
   /**
    * Update dimensions of the frame
    * @private
    */
-  updateDim: debounce(function() {
+  updateDim() {
     const { em, el, $el, model, classAnim } = this;
     const { width, height } = model.attributes;
     const { style } = el;
@@ -125,7 +130,7 @@ export default Backbone.View.extend({
     // component hover during the animation
     em.stopDefault({ preserveSelected: 1 });
     noChanges ? this.updateOffset() : $el.one(motionsEv, this.updateOffset);
-  }),
+  },
 
   onScroll() {
     const { frame, em } = this;
@@ -139,6 +144,7 @@ export default Backbone.View.extend({
   frameLoaded() {
     const { frame } = this;
     frame.getWindow().onscroll = this.onScroll;
+    this.updateDim();
   },
 
   render() {
@@ -212,7 +218,6 @@ export default Backbone.View.extend({
         remove: this.remove,
         startDrag: this.startDrag
       });
-    model.on('loaded', this.frameLoaded);
     return this;
   }
 });

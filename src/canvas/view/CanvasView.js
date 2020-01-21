@@ -8,7 +8,6 @@ import {
   isTextNode,
   getElRect
 } from 'utils/mixins';
-import FrameView from './FrameView';
 import FramesView from './FramesView';
 
 const $ = Backbone.$;
@@ -31,6 +30,7 @@ export default Backbone.View.extend({
     bindAll(this, 'clearOff', 'onKeyPress');
     on(window, 'scroll resize', this.clearOff);
     const { model } = this;
+    const frames = model.get('frames');
     this.config = o.config || {};
     this.em = this.config.em || {};
     this.pfx = this.config.stylePrefix || '';
@@ -38,7 +38,7 @@ export default Backbone.View.extend({
     this.className = this.config.stylePrefix + 'canvas';
     const { em, config } = this;
     this.frames = new FramesView({
-      collection: model.get('frames'),
+      collection: frames,
       config: {
         ...config,
         canvasView: this,
@@ -48,6 +48,7 @@ export default Backbone.View.extend({
     this.listenTo(em, 'change:canvasOffset', this.clearOff);
     this.listenTo(em, 'component:selected', this.checkSelected);
     this.listenTo(model, 'change:zoom change:x change:y', this.updateFrames);
+    this.listenTo(frames, 'loaded:all', () => em.trigger('loaded'));
     this.toggleListeners(1);
   },
 
@@ -355,7 +356,6 @@ export default Backbone.View.extend({
     // Render all frames
     const frms = model.get('frames');
     frms.listenToLoad();
-    frms.on('loaded:all', () => em.trigger('loaded'));
     frames.render();
     em.setCurrentFrame(frms.at(0).view);
     $frames.append(frames.el);
