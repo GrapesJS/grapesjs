@@ -117,6 +117,10 @@ $guide_pad: 5px;
     right: 0;
     margin: auto;
 
+    &--anim {
+      transition: width $frameAnimation, height $frameAnimation;
+    }
+
     &__header {
       transform: translateY(-100%) translateX(-50%);
       padding: 5px 0;

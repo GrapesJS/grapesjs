@@ -27,6 +27,7 @@ export default Backbone.View.extend({
     this.canvas = em && em.get('Canvas');
     this.ppfx = config.pStylePrefix || '';
     this.frame = new FrameView({ model, config });
+    this.classAnim = `${this.ppfx}frame-wrapper--anim`;
     this.listenTo(model, 'change:x change:y', this.updatePos);
     this.listenTo(model, 'loaded change:width change:height', this.updateDim);
     this.updatePos();
@@ -70,6 +71,7 @@ export default Backbone.View.extend({
 
   updateOffset: debounce(function() {
     this.em.runDefault({ preserveSelected: 1 });
+    this.$el.removeClass(this.classAnim);
   }),
 
   updatePos(md) {
@@ -87,7 +89,7 @@ export default Backbone.View.extend({
    * @private
    */
   updateDim() {
-    const { em, el, $el, model } = this;
+    const { em, el, $el, model, classAnim } = this;
     const { width, height } = model.attributes;
     const { style } = el;
     const currW = style.width || '';
@@ -97,6 +99,7 @@ export default Backbone.View.extend({
     const noChanges = currW == newW && currH == newH;
     const un = 'px';
     this.frame.rect = 0;
+    $el.addClass(classAnim);
     style.width = isNumber(newW) ? `${newW}${un}` : newW;
     style.height = isNumber(newH) ? `${newH}${un}` : newH;
 
