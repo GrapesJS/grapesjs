@@ -42,6 +42,12 @@ export default Backbone.Model.extend({
       this.set('styles', new CssRules(styles, modOpts));
   },
 
+  remove() {
+    this.view = 0;
+    const coll = this.collection;
+    return coll && coll.remove(this);
+  },
+
   getHead() {
     return [...this.get('head')];
   },

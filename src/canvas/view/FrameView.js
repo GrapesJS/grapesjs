@@ -15,7 +15,8 @@ export default Backbone.View.extend({
   tagName: 'iframe',
 
   attributes: {
-    allowfullscreen: 'allowfullscreen'
+    allowfullscreen: 'allowfullscreen',
+    'data-frame-el': true
   },
 
   initialize(o) {
@@ -137,7 +138,7 @@ export default Backbone.View.extend({
     const { root, model } = this;
     Backbone.View.prototype.remove.apply(this, arguments);
     root.remove();
-    model.view = 0;
+    model.remove();
   },
 
   startAutoscroll() {

@@ -14,7 +14,14 @@ export default Backbone.View.extend({
   },
 
   initialize(opts = {}, conf = {}) {
-    bindAll(this, 'onScroll', 'frameLoaded', 'updateOffset');
+    bindAll(
+      this,
+      'onScroll',
+      'frameLoaded',
+      'updateOffset',
+      'remove',
+      'startDrag'
+    );
     const { model } = this;
     const config = {
       ...(opts.config || conf),
@@ -135,14 +142,15 @@ export default Backbone.View.extend({
   },
 
   render() {
-    const { frame, $el, ppfx, cv, model } = this;
+    const { frame, $el, ppfx, cv, model, el } = this;
+    const { onRender } = model.attributes;
     frame.render();
     $el
       .empty()
       .attr({ class: `${ppfx}frame-wrapper` })
       .append(
         `
-      <div class="${ppfx}frame-wrapper__top gjs-two-color">
+      <div class="${ppfx}frame-wrapper__top gjs-two-color" data-frame-top>
         <div class="${ppfx}frame-wrapper__name" data-action-move>
           ${model.get('name') || ''}
         </div>
@@ -152,9 +160,9 @@ export default Backbone.View.extend({
           </div>
         </div>
       </div>
-      <div class="${ppfx}frame-wrapper__right"></div>
-      <div class="${ppfx}frame-wrapper__left"></div>
-      <div class="${ppfx}frame-wrapper__bottom"></div>
+      <div class="${ppfx}frame-wrapper__right" data-frame-right></div>
+      <div class="${ppfx}frame-wrapper__left" data-frame-left></div>
+      <div class="${ppfx}frame-wrapper__bottom" data-frame-bottom></div>
       `
       )
       .append(frame.el);
@@ -192,6 +200,18 @@ export default Backbone.View.extend({
     );
     this.elTools = elTools;
     cv.toolsWrapper.appendChild(elTools); // TODO remove on frame remove
+    onRender &&
+      onRender({
+        el,
+        elTop: el.querySelector('[data-frame-top]'),
+        elRight: el.querySelector('[data-frame-right]'),
+        elBottom: el.querySelector('[data-frame-bottom]'),
+        elLeft: el.querySelector('[data-frame-left]'),
+        frame: model,
+        frameWrapperView: this,
+        remove: this.remove,
+        startDrag: this.startDrag
+      });
     model.on('loaded', this.frameLoaded);
     return this;
   }
