@@ -270,13 +270,12 @@ export default Backbone.View.extend({
     const { em, model } = this;
     if (!em) return;
     const property = model.get('property');
-    const data = {
-      ...this._getEventData(),
-      ...addData
-    };
+    const data = { ...this._getEventData(), ...addData };
+    const { id } = data;
 
     em.trigger('style:update', data);
     em.trigger(`style:update:${property}`, data);
+    property !== id && em.trigger(`style:update:${id}`, data);
   },
 
   _getEventData() {
