@@ -32626,13 +32626,14 @@ var compProt = _ComponentView__WEBPACK_IMPORTED_MODULE_2__["default"].prototype;
     }
 
     e && e.stopPropagation && e.stopPropagation();
-    var rte = this.rte;
+    var rte = this.rte,
+        em = this.em;
 
     if (rte) {
       try {
         this.activeRte = rte.enable(this, this.activeRte);
       } catch (err) {
-        console.error(err);
+        em.logError(err);
       }
     }
 
@@ -32649,14 +32650,15 @@ var compProt = _ComponentView__WEBPACK_IMPORTED_MODULE_2__["default"].prototype;
   disableEditing: function disableEditing() {
     var model = this.model,
         rte = this.rte,
-        activeRte = this.activeRte;
+        activeRte = this.activeRte,
+        em = this.em;
     var editable = model.get('editable');
 
     if (rte && editable) {
       try {
         rte.disable(this, activeRte);
       } catch (err) {
-        console.error(err);
+        em.logError(err);
       }
 
       this.syncContent();
@@ -32715,6 +32717,7 @@ var compProt = _ComponentView__WEBPACK_IMPORTED_MODULE_2__["default"].prototype;
           return model.is(type);
         }) || textable;
         model.set(_objectSpread({
+          _innertext: !selectable,
           editable: selectable && model.get('editable'),
           selectable: selectable,
           hoverable: selectable,
@@ -33015,7 +33018,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     this.attr = model.get('attributes');
     this.classe = this.attr.class || [];
     this.listenTo(model, 'change:style', this.updateStyle);
-    this.listenTo(model, 'change:attributes', this.renderAttributes);
+    this.listenTo(model, 'change:attributes change:_innertext', this.renderAttributes);
     this.listenTo(model, 'change:highlightable', this.updateHighlight);
     this.listenTo(model, 'change:status', this.updateStatus);
     this.listenTo(model, 'change:script', this.reset);
@@ -33196,11 +33199,17 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
    * @private
    * */
   updateStyle: function updateStyle() {
-    var em = this.em;
-    var model = this.model;
+    var model = this.model,
+        em = this.em,
+        el = this.el;
 
     if (em && em.getConfig('avoidInlineStyle')) {
-      this.el.id = model.getId();
+      if (model.get('_innertext')) {
+        el.removeAttribute('id');
+      } else {
+        el.id = model.getId();
+      }
+
       var style = model.getStyle();
       !Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isEmpty"])(style) && model.setStyle(style);
     } else {
@@ -33253,12 +33262,13 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     var _model$attributes = model.attributes,
         highlightable = _model$attributes.highlightable,
         textable = _model$attributes.textable,
-        type = _model$attributes.type;
+        type = _model$attributes.type,
+        _innertext = _model$attributes._innertext;
     var draggableComponents = config.draggableComponents;
 
     var defaultAttr = _objectSpread({
       'data-gjs-type': type || 'default'
-    }, draggableComponents ? {
+    }, draggableComponents && !_innertext ? {
       draggable: true
     } : {}, {}, highlightable ? {
       'data-highlightable': 1
@@ -36944,7 +36954,7 @@ var defaultConfig = {
   editors: editors,
   plugins: plugins,
   // Will be replaced on build
-  version: '0.15.11',
+  version: '0.15.12',
 
   /**
    * Initialize the editor with passed options
@@ -46865,11 +46875,39 @@ var clearProp = 'data-clear-style';
         status: status,
         targetValue: targetValue,
         defaultValue: defaultValue,
-        computedValue: computedValue
+        computedValue: computedValue,
+        value: value
       };
       em.trigger('styleManager:change', this, property, value, data);
       em.trigger("styleManager:change:".concat(property), this, value, data);
+
+      this._emitUpdate(data);
     }
+  },
+  _emitUpdate: function _emitUpdate() {
+    var addData = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var em = this.em,
+        model = this.model;
+    if (!em) return;
+    var property = model.get('property');
+
+    var data = _objectSpread({}, this._getEventData(), {}, addData);
+
+    var id = data.id;
+    em.trigger('style:update', data);
+    em.trigger("style:update:".concat(property), data);
+    property !== id && em.trigger("style:update:".concat(id), data);
+  },
+  _getEventData: function _getEventData() {
+    var model = this.model;
+    return {
+      propertyView: this,
+      targets: this.getTargets(),
+      value: model.getFullValue(),
+      property: model,
+      id: model.get('id'),
+      name: model.get('property')
+    };
   },
   checkVisibility: function checkVisibility() {
     var result = 1; // Check if need to hide the property
@@ -47009,6 +47047,8 @@ var clearProp = 'data-clear-style';
       em.trigger('component:styleUpdate', component, prop);
       em.trigger("component:styleUpdate:".concat(prop), component);
     }
+
+    this._emitUpdate();
   },
 
   /**

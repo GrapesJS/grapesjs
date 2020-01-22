@@ -90,6 +90,11 @@ export default Backbone.View.extend({
     this.listenTo(model, 'targetUpdated', this.targetUpdated);
     this.listenTo(model, 'change:visible', this.updateVisibility);
     this.listenTo(model, 'change:status', this.updateStatus);
+    this.listenTo(
+      model,
+      'change:name change:className change:full',
+      this.render
+    );
 
     const init = this.init && this.init.bind(this);
     init && init();
@@ -604,11 +609,12 @@ export default Backbone.View.extend({
     const el = this.el;
     const property = model.get('property');
     const full = model.get('full');
+    const cls = model.get('className') || '';
     const className = `${pfx}property`;
     el.innerHTML = this.template(model);
     el.className = `${className} ${pfx}${model.get(
       'type'
-    )} ${className}__${property}`;
+    )} ${className}__${property} ${cls}`.trim();
     el.className += full ? ` ${className}--full` : '';
     this.updateStatus();
 
