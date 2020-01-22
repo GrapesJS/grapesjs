@@ -253,10 +253,43 @@ export default Backbone.View.extend({
     model.setValue(value, 0, { fromTarget: 1 });
 
     if (em) {
-      const data = { status, targetValue, defaultValue, computedValue };
+      const data = {
+        status,
+        targetValue,
+        defaultValue,
+        computedValue,
+        value
+      };
       em.trigger('styleManager:change', this, property, value, data);
       em.trigger(`styleManager:change:${property}`, this, value, data);
+      this._emitUpdate(data);
     }
+  },
+
+  _emitUpdate(addData = {}) {
+    const { em, model } = this;
+    if (!em) return;
+    const property = model.get('property');
+    const data = {
+      ...this._getEventData(),
+      ...addData
+    };
+
+    em.trigger('style:update', data);
+    em.trigger(`style:update:${property}`, data);
+  },
+
+  _getEventData() {
+    const { model } = this;
+
+    return {
+      propertyView: this,
+      targets: this.getTargets(),
+      value: model.getFullValue(),
+      property: model,
+      id: model.get('id'),
+      name: model.get('property')
+    };
   },
 
   checkVisibility() {
@@ -395,6 +428,8 @@ export default Backbone.View.extend({
       em.trigger('component:styleUpdate', component, prop);
       em.trigger(`component:styleUpdate:${prop}`, component);
     }
+
+    this._emitUpdate();
   },
 
   /**
