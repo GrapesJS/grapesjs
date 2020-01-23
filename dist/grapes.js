@@ -36954,7 +36954,7 @@ var defaultConfig = {
   editors: editors,
   plugins: plugins,
   // Will be replaced on build
-  version: '0.15.12',
+  version: '0.15.13',
 
   /**
    * Initialize the editor with passed options
@@ -46704,6 +46704,7 @@ var clearProp = 'data-clear-style';
     this.listenTo(model, 'targetUpdated', this.targetUpdated);
     this.listenTo(model, 'change:visible', this.updateVisibility);
     this.listenTo(model, 'change:status', this.updateStatus);
+    this.listenTo(model, 'change:name change:className change:full', this.render);
     var init = this.init && this.init.bind(this);
     init && init();
   },
@@ -47215,9 +47216,10 @@ var clearProp = 'data-clear-style';
     var el = this.el;
     var property = model.get('property');
     var full = model.get('full');
+    var cls = model.get('className') || '';
     var className = "".concat(pfx, "property");
     el.innerHTML = this.template(model);
-    el.className = "".concat(className, " ").concat(pfx).concat(model.get('type'), " ").concat(className, "__").concat(property);
+    el.className = "".concat(className, " ").concat(pfx).concat(model.get('type'), " ").concat(className, "__").concat(property, " ").concat(cls).trim();
     el.className += full ? " ".concat(className, "--full") : '';
     this.updateStatus();
     var onRender = this.onRender && this.onRender.bind(this);
