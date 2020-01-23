@@ -32,7 +32,7 @@ import defaults from './config/config';
 
 export default () => {
   let config = {};
-  let toolbar, actions, lastEl, globalRte;
+  let toolbar, actions, lastEl, lastElPos, globalRte;
 
   const hideToolbar = () => {
     const style = toolbar.style;
@@ -272,26 +272,13 @@ export default () => {
     updatePosition() {
       const un = 'px';
       const canvas = config.em.get('Canvas');
-      const pos = canvas.getTargetToElementDim(toolbar, lastEl, {
+      const { style } = toolbar;
+      const pos = canvas.getTargetToElementFixed(lastEl, toolbar, {
         event: 'rteToolbarPosUpdate'
       });
 
-      if (pos) {
-        if (config.adjustToolbar) {
-          const frameOffset = canvas.getCanvasView().getFrameOffset();
-          // Move the toolbar down when the top canvas edge is reached
-          if (
-            pos.top <= pos.canvasTop &&
-            !(pos.elementHeight + pos.targetHeight >= frameOffset.height)
-          ) {
-            pos.top = pos.elementTop + pos.elementHeight;
-          }
-        }
-
-        const toolbarStyle = toolbar.style;
-        toolbarStyle.top = pos.top + un;
-        toolbarStyle.left = pos.left + un;
-      }
+      style.top = pos.top + un;
+      style.left = 0 + un;
     },
 
     /**
@@ -302,16 +289,19 @@ export default () => {
      * */
     enable(view, rte) {
       lastEl = view.el;
+      const canvas = config.em.get('Canvas');
       const em = config.em;
       const el = view.getChildrenContainer();
       const customRte = this.customRte;
+      lastElPos = canvas.getElementPos(lastEl);
 
       toolbar.style.display = '';
       rte = customRte ? customRte.enable(el, rte) : this.initRte(el).enable();
 
       if (em) {
         setTimeout(this.updatePosition.bind(this), 0);
-        const event = 'change:canvasOffset canvasScroll';
+        const event =
+          'change:canvasOffset canvasScroll frame:scroll component:update';
         em.off(event, this.updatePosition, this);
         em.on(event, this.updatePosition, this);
         em.trigger('rte:enable', view, rte);

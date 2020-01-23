@@ -35,13 +35,13 @@ export default ComponentView.extend({
       return;
     }
     e && e.stopPropagation && e.stopPropagation();
-    const rte = this.rte;
+    const { rte, em } = this;
 
     if (rte) {
       try {
         this.activeRte = rte.enable(this, this.activeRte);
       } catch (err) {
-        console.error(err);
+        em.logError(err);
       }
     }
 
@@ -57,14 +57,14 @@ export default ComponentView.extend({
    * @private
    * */
   disableEditing() {
-    const { model, rte, activeRte } = this;
+    const { model, rte, activeRte, em } = this;
     const editable = model.get('editable');
 
     if (rte && editable) {
       try {
         rte.disable(this, activeRte);
       } catch (err) {
-        console.error(err);
+        em.logError(err);
       }
 
       this.syncContent();
@@ -114,6 +114,7 @@ export default ComponentView.extend({
           !['text', 'default', ''].some(type => model.is(type)) || textable;
         model.set(
           {
+            _innertext: !selectable,
             editable: selectable && model.get('editable'),
             selectable: selectable,
             hoverable: selectable,
@@ -144,7 +145,7 @@ export default ComponentView.extend({
     const { em } = this;
 
     // Update toolbars
-    em && em.trigger('change:canvasOffset');
+    em && em.trigger('component:update', this.model);
   },
 
   /**

@@ -13,7 +13,7 @@ export default Backbone.Collection.extend({
 
     this.model = (attrs, options) => {
       var model;
-      var df = opt.componentTypes;
+      const df = opt.em.get('DomComponents').componentTypes;
       options.em = opt.em;
       options.config = opt.config;
       options.componentTypes = df;
@@ -44,11 +44,12 @@ export default Backbone.Collection.extend({
 
   parseString(value, opt = {}) {
     const { em } = this;
+    const { domc } = this.opt;
     const cssc = em.get('CssComposer');
     const parsed = em.get('Parser').parseHtml(value);
     // We need this to avoid duplicate IDs
     if (!Component) Component = require('./Component').default;
-    Component.checkId(parsed.html, parsed.css, this.opt.domc.componentsById);
+    Component.checkId(parsed.html, parsed.css, domc.componentsById);
 
     if (parsed.css && cssc && !opt.temporary) {
       cssc.addCollection(parsed.css, {

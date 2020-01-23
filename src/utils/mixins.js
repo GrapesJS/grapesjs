@@ -212,6 +212,11 @@ const capitalize = str => str && str.charAt(0).toUpperCase() + str.substring(1);
 const isComponent = obj => obj && obj.toHTML;
 const isRule = obj => obj && obj.toCSS;
 
+const getViewEl = el => el.__gjsv;
+const setViewEl = (el, view) => {
+  el.__gjsv = view;
+};
+
 export {
   on,
   off,
@@ -231,6 +236,8 @@ export {
   getPointerEvent,
   getUnitFromValue,
   capitalize,
+  getViewEl,
+  setViewEl,
   appendStyles,
   isComponent,
   isRule

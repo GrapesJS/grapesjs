@@ -225,7 +225,7 @@ export default Backbone.View.extend({
       const model = this.model;
       em.setSelected(model, { fromLayers: 1 });
       const scroll = config.scrollCanvas;
-      scroll && em.get('Canvas').scrollTo(model, scroll);
+      scroll && model.views.forEach(view => view.scrollIntoView(scroll));
     }
   },
 

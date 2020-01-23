@@ -1,18 +1,19 @@
 import DomComponents from 'dom_components';
 import ComponentsView from 'dom_components/view/ComponentsView';
 import Components from 'dom_components/model/Components';
+import Editor from 'editor/model/Editor';
 
 describe('ComponentsView', () => {
-  var $fixtures;
-  var $fixture;
   var model;
   var view;
   var dcomp;
   var compOpts;
+  const em = new Editor();
 
   beforeEach(() => {
     dcomp = new DomComponents();
     compOpts = {
+      em,
       componentTypes: dcomp.componentTypes
     };
     model = new Components([], compOpts);

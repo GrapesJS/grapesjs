@@ -267,6 +267,16 @@ export default (config = {}) => {
      */
     init() {
       em.init(this);
+
+      // Do post render stuff after the iframe is loaded otherwise it'll
+      // be empty during tests
+      em.on('loaded', () => {
+        this.UndoManager.clear();
+        em.get('modules').forEach(module => {
+          module.postRender && module.postRender(editorView);
+        });
+      });
+
       return this;
     },
 
@@ -749,15 +759,6 @@ export default (config = {}) => {
      * @return {HTMLElement}
      */
     render() {
-      // Do post render stuff after the iframe is loaded otherwise it'll
-      // be empty during tests
-      em.on('loaded', () => {
-        this.UndoManager.clear();
-        em.get('modules').forEach(module => {
-          module.postRender && module.postRender(editorView);
-        });
-      });
-
       editorView.render();
       return editorView.el;
     }

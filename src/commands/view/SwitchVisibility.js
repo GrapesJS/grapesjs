@@ -1,9 +1,16 @@
 export default {
   run(ed) {
-    ed.Canvas.getBody().className = this.ppfx + 'dashed';
+    this.toggleVis(ed);
   },
 
   stop(ed) {
-    ed.Canvas.getBody().className = '';
+    this.toggleVis(ed, 0);
+  },
+
+  toggleVis(ed, active = 1) {
+    const method = active ? 'add' : 'remove';
+    ed.Canvas.getFrames().forEach(frame => {
+      frame.view.getBody().classList[method](`${this.ppfx}dashed`);
+    });
   }
 };

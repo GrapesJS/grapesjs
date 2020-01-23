@@ -1,4 +1,5 @@
 import Backbone from 'backbone';
+import { isUndefined } from 'underscore';
 import { isTextNode } from 'utils/mixins';
 const $ = Backbone.$;
 
@@ -25,22 +26,42 @@ export default {
     }
 
     var canvas = editor.Canvas;
-    var pos = opt.elPos || canvas.getElementPos(el);
+    var pos = { ...(opt.elPos || canvas.getElementPos(el)) };
+
+    if (!isUndefined(opt.top)) {
+      pos.top = opt.top;
+    }
+    if (!isUndefined(opt.left)) {
+      pos.left = opt.left;
+    }
+
     var style = window.getComputedStyle(el);
     var ppfx = this.ppfx;
     var stateVar = state + 'State';
     var method = this.getOffsetMethod(state);
-    var offsetViewer = canvas[method]();
-    offsetViewer.style.display = 'block';
+    var offsetViewer = canvas[method](opts.view);
+    offsetViewer.style.opacity = '';
 
-    var marginT = this['marginT' + state];
-    var marginB = this['marginB' + state];
-    var marginL = this['marginL' + state];
-    var marginR = this['marginR' + state];
-    var padT = this['padT' + state];
-    var padB = this['padB' + state];
-    var padL = this['padL' + state];
-    var padR = this['padR' + state];
+    let marginT = this['marginT' + state];
+    let marginB = this['marginB' + state];
+    let marginL = this['marginL' + state];
+    let marginR = this['marginR' + state];
+    let padT = this['padT' + state];
+    let padB = this['padB' + state];
+    let padL = this['padL' + state];
+    let padR = this['padR' + state];
+
+    if (offsetViewer.childNodes.length) {
+      this[stateVar] = '1';
+      marginT = offsetViewer.querySelector('[data-offset-m-t]');
+      marginB = offsetViewer.querySelector('[data-offset-m-b]');
+      marginL = offsetViewer.querySelector('[data-offset-m-l]');
+      marginR = offsetViewer.querySelector('[data-offset-m-r]');
+      padT = offsetViewer.querySelector('[data-offset-p-t]');
+      padB = offsetViewer.querySelector('[data-offset-p-b]');
+      padL = offsetViewer.querySelector('[data-offset-p-l]');
+      padR = offsetViewer.querySelector('[data-offset-p-r]');
+    }
 
     if (!this[stateVar]) {
       var stateLow = state.toLowerCase();
@@ -148,12 +169,12 @@ export default {
     prStyle.left = pos.left + pos.width - padRight + unit;
   },
 
-  stop(editor, sender, opts) {
+  stop(editor, sender, opts = {}) {
     var opt = opts || {};
     var state = opt.state || '';
     var method = this.getOffsetMethod(state);
     var canvas = editor.Canvas;
-    var offsetViewer = canvas[method]();
-    offsetViewer.style.display = 'none';
+    var offsetViewer = canvas[method](opts.view);
+    offsetViewer.style.opacity = 0;
   }
 };

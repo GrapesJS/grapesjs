@@ -5,6 +5,7 @@ export default Backbone.View.extend({
   initialize(o) {
     this.opts = o || {};
     this.config = o.config || {};
+    this.em = this.config.em;
     const coll = this.collection;
     this.listenTo(coll, 'add', this.addTo);
     this.listenTo(coll, 'reset', this.resetChildren);
@@ -12,15 +13,17 @@ export default Backbone.View.extend({
   },
 
   removeChildren(removed, coll, opts = {}) {
-    const em = this.config.em;
-    const view = removed.view;
-    const tempComp = removed.opt.temporary;
+    const { em } = this.config;
     const tempRemove = opts.temporary;
-    if (!view) return;
-    view.remove.apply(view);
-    const { childrenView, scriptContainer } = view;
-    childrenView && childrenView.stopListening();
-    scriptContainer && scriptContainer.remove();
+
+    removed.views.forEach(view => {
+      if (!view) return;
+      view.remove.apply(view);
+      const { childrenView, scriptContainer } = view;
+      childrenView && childrenView.stopListening();
+      scriptContainer && scriptContainer.remove();
+    });
+
     removed.components().forEach(it => this.removeChildren(it, coll, opts));
 
     if (em && !tempRemove) {
@@ -30,6 +33,7 @@ export default Backbone.View.extend({
       delete domc.componentsById[id];
 
       // Remove all related CSS rules
+      // TODO: remove from the frame container
       const allRules = em.get('CssComposer').getAll();
       allRules.remove(
         allRules.filter(
@@ -37,7 +41,7 @@ export default Backbone.View.extend({
         )
       );
 
-      if (!tempComp) {
+      if (!removed.opt.temporary) {
         const cm = em.get('Commands');
         const hasSign = removed.get('style-signature');
         const optStyle = { target: removed };
@@ -80,9 +84,10 @@ export default Backbone.View.extend({
    * */
   addToCollection(model, fragmentEl, index) {
     if (!this.compView) this.compView = require('./ComponentView').default;
-    const { config, opts } = this;
+    const { config, opts, em } = this;
     const fragment = fragmentEl || null;
-    const dt = opts.componentTypes;
+    const dt =
+      opts.componentTypes || (em && em.get('DomComponents').getTypes());
     const type = model.get('type');
     let viewObject = this.compView;
 
