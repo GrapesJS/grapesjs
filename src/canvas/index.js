@@ -648,8 +648,9 @@ export default () => {
     },
 
     /**
-     * Add new frame to canvas
+     * Add new frame to the canvas
      * @param {Object} props Frame properties
+     * @returns {Frame}
      * @example
      *
         editor.Canvas.addFrame({
