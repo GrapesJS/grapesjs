@@ -104,6 +104,7 @@ export default {
   },
 
   onFrameResized() {
+    console.log('onFrameResized');
     this.updateToolsLocal({}); // clear last cached component
   },
 

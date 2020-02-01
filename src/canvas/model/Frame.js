@@ -20,6 +20,7 @@ export default Backbone.Model.extend({
   initialize(props, opts = {}) {
     const { root, styles, components } = this.attributes;
     this.set('head', []);
+    this.em = opts.em;
     const modOpts = {
       em: opts.em,
       config: opts.em.get('DomComponents').getConfig(),
@@ -110,5 +111,9 @@ export default Backbone.Model.extend({
 
   removeScript(src) {
     this.removeHeadByAttr('src', src, 'script');
+  },
+
+  _emitResized(data = {}) {
+    this.em.trigger('frame:resized', { frame: this, ...data });
   }
 });

@@ -20,7 +20,13 @@ export default Backbone.View.extend({
   },
 
   initialize(o) {
-    bindAll(this, 'updateClientY', 'stopAutoscroll', 'autoscroll');
+    bindAll(
+      this,
+      'updateClientY',
+      'stopAutoscroll',
+      'autoscroll',
+      '_emitResize'
+    );
     const { model, el } = this;
     this.config = {
       ...(o.config || {}),
@@ -136,6 +142,7 @@ export default Backbone.View.extend({
 
   remove() {
     const { root, model } = this;
+    this._toggleEffects();
     Backbone.View.prototype.remove.apply(this, arguments);
     root.remove();
     model.remove();
@@ -248,6 +255,7 @@ export default Backbone.View.extend({
     const doc = this.getDoc();
     const head = this.getHead();
     const body = this.getBody();
+    const win = this.getWindow();
     const conf = em.get('Config');
     const extStyles = [];
 
@@ -385,6 +393,16 @@ export default Backbone.View.extend({
       })
     );
 
+    this._toggleEffects(1);
     model.trigger('loaded');
+  },
+
+  _toggleEffects(enable) {
+    const method = enable ? on : off;
+    method(this.getWindow(), 'resize', this._emitResize);
+  },
+
+  _emitResize() {
+    this.model._emitResized();
   }
 });

@@ -81,7 +81,7 @@ export default Backbone.View.extend({
     const { em, $el, frame } = this;
     em.runDefault({ preserveSelected: 1 });
     $el.removeClass(this.classAnim);
-    em.trigger('frame:resized', { frame });
+    frame._emitResized();
   }),
 
   updatePos(md) {
