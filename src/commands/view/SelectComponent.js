@@ -12,7 +12,26 @@ import Toolbar from 'dom_components/model/Toolbar';
 
 const $ = Backbone.$;
 let showOffsets;
-
+/**
+ * This command is responsible for show selecting components and displaying
+ * all the necessary tools around (component toolbar, badge, highlight box, etc.)
+ *
+ * The command manages different boxes to display tools and when something in
+ * the canvas is updated, the command triggers the appropriate method to update
+ * their position (across multiple frames/components):
+ * - Global Tools (updateToolsGlobal)
+ * This box contains tools intended to be displayed only on ONE component per time,
+ * like Component Toolbar (updated by updateToolbar/updateToolbarPos), this means
+ * you won't be able to see more than one Component Toolbar (even with multiple
+ * frames or multiple selected components)
+ * - Local Tools (updateToolsLocal)
+ * Each frame in the canvas has its own local box, so we're able to see more than
+ * one active container at the same time. When you put a mouse over an element
+ * you can see stuff like the highlight box, badge, margins/paddings offsets, etc.
+ * so those elements are inside the Local Tools box
+ *
+ *
+ */
 export default {
   init(o) {
     bindAll(this, 'onHover', 'onOut', 'onClick', 'onFrameScroll');
@@ -53,7 +72,7 @@ export default {
       methods[method](body, 'mouseover', this.onHover);
       methods[method](body, 'mouseleave', this.onOut);
       methods[method](body, 'click touchend', this.onClick);
-      methods[method](win, 'scroll resize', this.onFrameScroll);
+      methods[method](win, 'scroll', this.onFrameScroll);
     };
     em[method]('component:toggled', this.onSelect, this);
     em[method]('change:componentHovered', this.onHovered, this);
@@ -104,8 +123,8 @@ export default {
   },
 
   onFrameResized() {
-    console.log('onFrameResized');
     this.updateToolsLocal({}); // clear last cached component
+    this.updateGlobalPos();
   },
 
   onHovered(em, component) {
@@ -159,6 +178,7 @@ export default {
 
   updateGlobalPos() {
     const sel = this.getElSelected();
+    if (!sel.el) return;
     sel.pos = this.getElementPos(sel.el);
     this.updateToolsGlobal();
   },
