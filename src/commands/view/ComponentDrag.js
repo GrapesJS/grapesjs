@@ -299,12 +299,22 @@ export default {
     target.addStyle(style, { avoidStore: !end });
   },
 
+  _getDragData() {
+    const { target } = this;
+    return {
+      target,
+      parent: target.parent(),
+      index: target.index()
+    };
+  },
+
   onStart() {
     const { target, editor, isTran, opts } = this;
-    const { center } = opts;
+    const { center, onStart } = opts;
     const { Canvas } = editor;
     const style = target.getStyle();
     const position = 'absolute';
+    onStart && onStart(this._getDragData());
     if (isTran) return;
 
     if (style.position !== position) {
@@ -334,13 +344,13 @@ export default {
     opts.debug && guidesTarget.forEach(item => this.renderGuide(item));
     opts.guidesInfo &&
       this.renderGuideInfo(guidesTarget.filter(item => item.active));
-    onDrag && onDrag(...args);
+    onDrag && onDrag(this._getDragData());
   },
 
-  onEnd(...args) {
+  onEnd(ev, dragger, opt = {}) {
     const { editor, opts, id } = this;
     const { onEnd } = opts;
-    onEnd && onEnd(...args);
+    onEnd && onEnd(ev, opt, { event: ev, ...opt, ...this._getDragData() });
     editor.stopCommand(id);
     this.hideGuidesInfo();
     this.em.trigger(`${evName}:end`, this.getEventOpts());

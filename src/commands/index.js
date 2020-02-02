@@ -162,6 +162,8 @@ export default () => {
               guidesInfo: 1,
               mode,
               target: sel,
+              onStart,
+              onDrag,
               onEnd,
               event
             });
