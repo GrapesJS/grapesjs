@@ -150,12 +150,12 @@ export default Backbone.View.extend({
    * @param {Boolean} active
    */
   toggleSortCursor(active) {
-    const em = this.em;
+    const { em } = this;
     const cv = em && em.get('Canvas');
 
     // Avoid updating body className as it causes a huge repaint
     // Noticeable with "fast" drag of blocks
-    active ? cv.startAutoscroll() : cv.stopAutoscroll();
+    cv && (active ? cv.startAutoscroll() : cv.stopAutoscroll());
   },
 
   /**
@@ -327,7 +327,12 @@ export default Backbone.View.extend({
     on(container, 'mousemove dragover', this.onMove);
     on(docs, 'mouseup dragend touchend', this.endMove);
     on(docs, 'keydown', this.rollback);
-    onStart && onStart();
+    onStart &&
+      onStart({
+        target: srcModel,
+        parent: srcModel && srcModel.parent(),
+        index: srcModel && srcModel.index()
+      });
 
     // Avoid strange effects on dragging
     em && em.clearSelection();
@@ -485,7 +490,13 @@ export default Backbone.View.extend({
       }
     }
 
-    isFunction(onMoveClb) && onMoveClb(e);
+    isFunction(onMoveClb) &&
+      onMoveClb({
+        event: e,
+        target: sourceModel,
+        parent: targetModel,
+        index: pos.index + (pos.method == 'after' ? 1 : 0)
+      });
 
     em &&
       em.trigger('sorter:drag', {
@@ -1009,13 +1020,14 @@ export default Backbone.View.extend({
     const container = this.getContainerEl();
     const onEndMove = this.onEndMove;
     const { target, lastPos } = this;
+    let srcModel;
     off(container, 'mousemove dragover', this.onMove);
     off(docs, 'mouseup dragend touchend', this.endMove);
     off(docs, 'keydown', this.rollback);
     this.plh.style.display = 'none';
 
     if (src && this.selectOnEnd) {
-      var srcModel = this.getSourceModel();
+      srcModel = this.getSourceModel();
       if (srcModel && srcModel.set) {
         srcModel.set('status', '');
         srcModel.set('status', 'selected');
@@ -1043,7 +1055,14 @@ export default Backbone.View.extend({
     this.toggleSortCursor();
 
     this.toMove = null;
-    isFunction(onEndMove) && moved.forEach(m => onEndMove(m, this));
+    isFunction(onEndMove) &&
+      moved.forEach(m =>
+        onEndMove(m, this, {
+          target: srcModel,
+          parent: srcModel && srcModel.parent(),
+          index: srcModel && srcModel.index()
+        })
+      );
   },
 
   /**

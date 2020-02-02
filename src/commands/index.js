@@ -139,11 +139,18 @@ export default () => {
           // Without setTimeout the ghost image disappears
           nativeDrag ? setTimeout(hideTlb, 0) : hideTlb();
 
-          const onEnd = (e, opts) => {
+          const onStart = data => {
+            em.trigger('component:drag:start', data);
+          };
+          const onDrag = data => {
+            em.trigger('component:drag', data);
+          };
+          const onEnd = (e, opts, data) => {
             em.runDefault(defComOptions);
             selAll.forEach(sel => sel.set('status', 'selected'));
             ed.select(selAll);
             sel.emitUpdate();
+            em.trigger('component:drag:end', data);
           };
 
           if (includes(modes, mode)) {
@@ -165,6 +172,8 @@ export default () => {
             }
 
             const cmdMove = ed.Commands.get('move-comp');
+            cmdMove.onStart = onStart;
+            cmdMove.onDrag = onDrag;
             cmdMove.onEndMoveFromModel = onEnd;
             cmdMove.initSorterFromModels(selAll);
           }

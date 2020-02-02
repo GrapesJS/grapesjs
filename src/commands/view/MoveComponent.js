@@ -94,9 +94,10 @@ export default extend({}, SelectPosition, SelectComponent, {
     const frame = (this.em.get('currentFrame') || {}).model;
     const el = lastModel.getEl(frame);
     const doc = el.ownerDocument;
-    this.startSelectPosition(el, doc);
+    this.startSelectPosition(el, doc, { onStart: this.onStart });
     this.sorter.draggable = lastModel.get('draggable');
     this.sorter.toMove = models;
+    this.sorter.onMoveClb = this.onDrag;
     this.sorter.onEndMove = this.onEndMoveFromModel.bind(this);
     this.stopSelectComponent();
     on(this.getContentWindow(), 'keydown', this.rollback);

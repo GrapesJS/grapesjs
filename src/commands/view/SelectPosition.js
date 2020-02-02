@@ -7,7 +7,7 @@ export default {
    * @param {HTMLElement} trg
    * @private
    * */
-  startSelectPosition(trg, doc) {
+  startSelectPosition(trg, doc, opts = {}) {
     this.isPointed = false;
     var utils = this.editorModel.get('Utils');
     const container = trg.ownerDocument.body;
@@ -28,6 +28,7 @@ export default {
         scale: () => this.em.getZoomDecimal()
       });
 
+    if (opts.onStart) this.sorter.onStart = opts.onStart;
     trg && this.sorter.startSort(trg, { container });
   },
 
