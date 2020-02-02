@@ -1015,7 +1015,7 @@ export default Backbone.View.extend({
    * */
   endMove(e) {
     const src = this.eV;
-    const moved = [null];
+    const moved = [];
     const docs = this.getDocuments();
     const container = this.getContainerEl();
     const onEndMove = this.onEndMove;
@@ -1026,9 +1026,9 @@ export default Backbone.View.extend({
     off(docs, 'keydown', this.rollback);
     this.plh.style.display = 'none';
 
-    if (src && this.selectOnEnd) {
+    if (src) {
       srcModel = this.getSourceModel();
-      if (srcModel && srcModel.set) {
+      if (this.selectOnEnd && srcModel && srcModel.set) {
         srcModel.set('status', '');
         srcModel.set('status', 'selected');
       }

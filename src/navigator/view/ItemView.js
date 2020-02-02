@@ -244,10 +244,15 @@ export default Backbone.View.extend({
    * */
   startSort(e) {
     e.stopPropagation();
-    const sorter = this.sorter;
+    const { em, sorter } = this;
     // Right or middel click
     if (e.button && e.button !== 0) return;
-    sorter && sorter.startSort(e.target);
+
+    if (sorter) {
+      sorter.onStart = data => em.trigger('component:drag:start', data);
+      sorter.onMoveClb = data => em.trigger('component:drag', data);
+      sorter.startSort(e.target);
+    }
   },
 
   /**

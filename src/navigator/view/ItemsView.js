@@ -29,9 +29,10 @@ export default Backbone.View.extend({
         containerSel: `.${this.className}`,
         itemSel: `.${pfx}layer`,
         ignoreViewChildren: 1,
-        onEndMove(created, sorter) {
+        onEndMove(created, sorter, data) {
           const srcModel = sorter.getSourceModel();
           em.setSelected(srcModel, { forceChange: 1 });
+          em.trigger('component:drag:end', data);
         },
         avoidSelectOnEnd: 1,
         nested: 1,
