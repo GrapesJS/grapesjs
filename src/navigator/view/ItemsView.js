@@ -1,5 +1,6 @@
 import Backbone from 'backbone';
 import ItemView from './ItemView';
+import { eventDrag } from 'dom_components/model/Component';
 
 export default Backbone.View.extend({
   initialize(o = {}) {
@@ -32,7 +33,7 @@ export default Backbone.View.extend({
         onEndMove(created, sorter, data) {
           const srcModel = sorter.getSourceModel();
           em.setSelected(srcModel, { forceChange: 1 });
-          em.trigger('component:drag:end', data);
+          em.trigger(`${eventDrag}:end`, data);
         },
         avoidSelectOnEnd: 1,
         nested: 1,

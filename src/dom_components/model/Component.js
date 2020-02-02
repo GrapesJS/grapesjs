@@ -28,6 +28,8 @@ const escapeRegExp = str => {
 
 const avoidInline = em => em && em.getConfig('avoidInlineStyle');
 
+export const eventDrag = 'component:drag';
+
 /**
  * The Component object represents a single node of our template structure, so when you update its properties the changes are
  * immediately reflected on the canvas and in the code to export (indeed, when you ask to export the code we just go through all

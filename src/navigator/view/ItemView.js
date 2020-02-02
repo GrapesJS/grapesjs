@@ -2,6 +2,7 @@ import { isUndefined, isString } from 'underscore';
 import { getModel } from 'utils/mixins';
 import Backbone from 'backbone';
 import ComponentView from 'dom_components/view/ComponentView';
+import { eventDrag } from 'dom_components/model/Component';
 
 const inputProp = 'contentEditable';
 const $ = Backbone.$;
@@ -249,8 +250,8 @@ export default Backbone.View.extend({
     if (e.button && e.button !== 0) return;
 
     if (sorter) {
-      sorter.onStart = data => em.trigger('component:drag:start', data);
-      sorter.onMoveClb = data => em.trigger('component:drag', data);
+      sorter.onStart = data => em.trigger(`${eventDrag}:start`, data);
+      sorter.onMoveClb = data => em.trigger(eventDrag, data);
       sorter.startSort(e.target);
     }
   },

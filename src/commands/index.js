@@ -30,6 +30,7 @@
 import { isFunction, includes } from 'underscore';
 import CommandAbstract from './view/CommandAbstract';
 import defaults from './config/config';
+import { eventDrag } from 'dom_components/model/Component';
 
 export default () => {
   let em;
@@ -140,17 +141,17 @@ export default () => {
           nativeDrag ? setTimeout(hideTlb, 0) : hideTlb();
 
           const onStart = data => {
-            em.trigger('component:drag:start', data);
+            em.trigger(`${eventDrag}:start`, data);
           };
           const onDrag = data => {
-            em.trigger('component:drag', data);
+            em.trigger(eventDrag, data);
           };
           const onEnd = (e, opts, data) => {
             em.runDefault(defComOptions);
             selAll.forEach(sel => sel.set('status', 'selected'));
             ed.select(selAll);
             sel.emitUpdate();
-            em.trigger('component:drag:end', data);
+            em.trigger(`${eventDrag}:end`, data);
           };
 
           if (includes(modes, mode)) {
