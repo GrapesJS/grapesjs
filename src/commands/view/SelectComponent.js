@@ -19,12 +19,12 @@ let showOffsets;
  * The command manages different boxes to display tools and when something in
  * the canvas is updated, the command triggers the appropriate method to update
  * their position (across multiple frames/components):
- * - Global Tools (updateToolsGlobal)
+ * - Global Tools (updateToolsGlobal/updateGlobalPos)
  * This box contains tools intended to be displayed only on ONE component per time,
  * like Component Toolbar (updated by updateToolbar/updateToolbarPos), this means
  * you won't be able to see more than one Component Toolbar (even with multiple
  * frames or multiple selected components)
- * - Local Tools (updateToolsLocal)
+ * - Local Tools (updateToolsLocal/updateLocalPos)
  * Each frame in the canvas has its own local box, so we're able to see more than
  * one active container at the same time. When you put a mouse over an element
  * you can see stuff like the highlight box, badge, margins/paddings offsets, etc.
