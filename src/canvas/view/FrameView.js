@@ -7,7 +7,8 @@ import {
   empty,
   append,
   createEl,
-  createCustomEvent
+  createCustomEvent,
+  motionsEv
 } from 'utils/dom';
 import { on, off, setViewEl, getPointerEvent } from 'utils/mixins';
 
@@ -25,7 +26,7 @@ export default Backbone.View.extend({
       'updateClientY',
       'stopAutoscroll',
       'autoscroll',
-      '_emitResize'
+      '_emitUpdate'
     );
     const { model, el } = this;
     this.config = {
@@ -399,10 +400,11 @@ export default Backbone.View.extend({
 
   _toggleEffects(enable) {
     const method = enable ? on : off;
-    method(this.getWindow(), 'resize', this._emitResize);
+    const win = this.getWindow();
+    method(win, `${motionsEv} resize`, this._emitUpdate);
   },
 
-  _emitResize() {
-    this.model._emitResized();
+  _emitUpdate() {
+    this.model._emitUpdated();
   }
 });

@@ -1,11 +1,8 @@
 import Backbone from 'backbone';
 import FrameView from './FrameView';
 import { bindAll, isNumber, isNull, debounce } from 'underscore';
-import { createEl } from 'utils/dom';
+import { createEl, motionsEv } from 'utils/dom';
 import Dragger from 'utils/Dragger';
-
-const motionsEv =
-  'transitionend oTransitionEnd transitionend webkitTransitionEnd';
 
 export default Backbone.View.extend({
   events: {
@@ -81,7 +78,7 @@ export default Backbone.View.extend({
     const { em, $el, frame } = this;
     em.runDefault({ preserveSelected: 1 });
     $el.removeClass(this.classAnim);
-    frame.model._emitResized();
+    frame.model._emitUpdated();
   }),
 
   updatePos(md) {
@@ -176,7 +173,7 @@ export default Backbone.View.extend({
       'div',
       {
         class: `${ppfx}tools`,
-        style: 'pointer-events:none'
+        style: 'pointer-events:none; opacity: 0'
       },
       `
       <div class="${ppfx}highlighter" data-hl></div>

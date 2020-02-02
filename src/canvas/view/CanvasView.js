@@ -331,7 +331,6 @@ export default Backbone.View.extend({
         </div>
       </div>
       <div id="${ppfx}tools" style="pointer-events:none">
-        <div class="${ppfx}highlighter"></div>
         <div class="${ppfx}badge"></div>
         <div class="${ppfx}ghost"></div>
         <div class="${ppfx}toolbar" style="pointer-events:all"></div>

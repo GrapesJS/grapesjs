@@ -5,6 +5,9 @@ const KEY_TAG = 'tag';
 const KEY_ATTR = 'attributes';
 const KEY_CHILD = 'children';
 
+export const motionsEv =
+  'transitionend oTransitionEnd transitionend webkitTransitionEnd';
+
 export const empty = node => {
   while (node.firstChild) node.removeChild(node.firstChild);
 };

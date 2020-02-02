@@ -145,28 +145,30 @@ export default {
     // Padding style
     var padTop = parseFloat(style.paddingTop) * zoom;
     ptStyle.height = padTop + unit;
-    ptStyle.width = widthEl;
-    ptStyle.top = pos.top + unit;
-    ptStyle.left = posLeft + unit;
+    // ptStyle.width = widthEl;
+    // ptStyle.top = pos.top + unit;
+    // ptStyle.left = posLeft + unit;
 
     var padBot = parseFloat(style.paddingBottom) * zoom;
     pbStyle.height = padBot + unit;
-    pbStyle.width = widthEl;
-    pbStyle.top = pos.top + pos.height - padBot + unit;
-    pbStyle.left = posLeft + unit;
+    // pbStyle.width = widthEl;
+    // pbStyle.top = pos.top + pos.height - padBot + unit;
+    // pbStyle.left = posLeft + unit;
 
     var padSideH = pos.height - padBot - padTop + unit;
     var padSideT = pos.top + padTop + unit;
     plStyle.height = padSideH;
     plStyle.width = parseFloat(style.paddingLeft) * zoom + unit;
     plStyle.top = padSideT;
-    plStyle.left = pos.left + unit;
+    // plStyle.left = pos.left + unit;
+    //  plStyle.right = 0;
 
     var padRight = parseFloat(style.paddingRight) * zoom;
     prStyle.height = padSideH;
     prStyle.width = padRight + unit;
     prStyle.top = padSideT;
-    prStyle.left = pos.left + pos.width - padRight + unit;
+    // prStyle.left = pos.left + pos.width - padRight + unit;
+    //  prStyle.left = 0;
   },
 
   stop(editor, sender, opts = {}) {

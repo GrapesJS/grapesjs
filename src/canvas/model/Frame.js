@@ -113,7 +113,7 @@ export default Backbone.Model.extend({
     this.removeHeadByAttr('src', src, 'script');
   },
 
-  _emitResized(data = {}) {
-    this.em.trigger('frame:resized', { frame: this, ...data });
+  _emitUpdated(data = {}) {
+    this.em.trigger('frame:updated', { frame: this, ...data });
   }
 });

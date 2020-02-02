@@ -79,7 +79,7 @@ export default {
     em[method]('component:update', this.onComponentUpdate, this);
     em[method]('component:resize', this.updateGlobalPos, this);
     em[method]('change:canvasOffset', this.updateAttached, this);
-    em[method]('frame:resized', this.onFrameResized, this);
+    em[method]('frame:updated', this.onFrameUpdated, this);
     em.get('Canvas')
       .getFrames()
       .forEach(frame => {
@@ -122,8 +122,8 @@ export default {
     frameView && this.em.set('currentFrame', frameView);
   },
 
-  onFrameResized() {
-    this.updateToolsLocal({}); // clear last cached component
+  onFrameUpdated() {
+    this.updateLocalPos();
     this.updateGlobalPos();
   },
 
@@ -181,6 +181,13 @@ export default {
     if (!sel.el) return;
     sel.pos = this.getElementPos(sel.el);
     this.updateToolsGlobal();
+  },
+
+  updateLocalPos() {
+    const sel = this.getElHovered();
+    if (!sel.el) return;
+    sel.pos = this.getElementPos(sel.el);
+    this.updateToolsLocal();
   },
 
   getElHovered() {
@@ -395,12 +402,8 @@ export default {
    * @param {Object} pos Position object
    * @private
    */
-  updateHighlighter(el, pos, opts = {}) {
-    const { style } = this.canvas.getHighlighter(opts.view);
-    const unit = 'px';
-    style.height = pos.height + unit;
-    style.width = pos.width + unit;
-    style.opacity = '';
+  showHighlighter(view) {
+    this.canvas.getHighlighter(view).style.opacity = '';
   },
 
   /**
@@ -611,8 +614,12 @@ export default {
    * @private
    */
   onFrameScroll() {
+    this.updateTools();
+  },
+
+  updateTools() {
     this.updateToolsLocal();
-    this.updateToolsGlobal();
+    this.updateGlobalPos();
   },
 
   isCompSelected(comp) {
@@ -638,7 +645,7 @@ export default {
 
     if (isNewEl && isHoverEn) {
       this.lastHovered = el;
-      this.updateHighlighter(el, pos, { view });
+      this.showHighlighter(view);
       this.showElementOffset(el, pos, { view });
     }
 
