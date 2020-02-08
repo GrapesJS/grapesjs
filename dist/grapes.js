@@ -22310,20 +22310,28 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ "./node_modules/@babel/runtime/helpers/toConsumableArray.js");
-/* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var dom_components_model_Component__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! dom_components/model/Component */ "./src/dom_components/model/Component.js");
-/* harmony import */ var css_composer_model_CssRules__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! css_composer/model/CssRules */ "./src/css_composer/model/CssRules.js");
-/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
-/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ "./node_modules/@babel/runtime/helpers/toConsumableArray.js");
+/* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var dom_components_model_Component__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! dom_components/model/Component */ "./src/dom_components/model/Component.js");
+/* harmony import */ var css_composer_model_CssRules__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! css_composer/model/CssRules */ "./src/css_composer/model/CssRules.js");
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_5__);
+
+
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 
 
 
-/* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_1___default.a.Model.extend({
+/* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_2___default.a.Model.extend({
   defaults: {
     wrapper: '',
     width: null,
@@ -22343,16 +22351,17 @@ __webpack_require__.r(__webpack_exports__);
         styles = _this$attributes.styles,
         components = _this$attributes.components;
     this.set('head', []);
+    this.em = opts.em;
     var modOpts = {
       em: opts.em,
       config: opts.em.get('DomComponents').getConfig(),
       frame: this
     };
-    !root && this.set('root', new dom_components_model_Component__WEBPACK_IMPORTED_MODULE_2__["default"]({
+    !root && this.set('root', new dom_components_model_Component__WEBPACK_IMPORTED_MODULE_3__["default"]({
       type: 'wrapper',
       components: components || []
     }, modOpts));
-    (!styles || Object(underscore__WEBPACK_IMPORTED_MODULE_4__["isString"])(styles)) && this.set('styles', new css_composer_model_CssRules__WEBPACK_IMPORTED_MODULE_3__["default"](styles, modOpts));
+    (!styles || Object(underscore__WEBPACK_IMPORTED_MODULE_5__["isString"])(styles)) && this.set('styles', new css_composer_model_CssRules__WEBPACK_IMPORTED_MODULE_4__["default"](styles, modOpts));
   },
   remove: function remove() {
     this.view = 0;
@@ -22360,10 +22369,10 @@ __webpack_require__.r(__webpack_exports__);
     return coll && coll.remove(this);
   },
   getHead: function getHead() {
-    return _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0___default()(this.get('head'));
+    return _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_1___default()(this.get('head'));
   },
   setHead: function setHead(value) {
-    return this.set('head', _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0___default()(value));
+    return this.set('head', _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_1___default()(value));
   },
   addHeadItem: function addHeadItem(item) {
     var head = this.getHead();
@@ -22410,6 +22419,12 @@ __webpack_require__.r(__webpack_exports__);
   },
   removeScript: function removeScript(src) {
     this.removeHeadByAttr('src', src, 'script');
+  },
+  _emitUpdated: function _emitUpdated() {
+    var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    this.em.trigger('frame:updated', _objectSpread({
+      frame: this
+    }, data));
   }
 }));
 
@@ -22788,7 +22803,7 @@ var timerZoom;
 
     var toolsWrp = $el.find('[data-tools]');
     this.toolsWrapper = toolsWrp.get(0);
-    toolsWrp.append("\n      <div class=\"".concat(ppfx, "tools ").concat(ppfx, "tools-gl\" style=\"pointer-events:none\">\n        <div class=\"").concat(ppfx, "placeholder\">\n          <div class=\"").concat(ppfx, "placeholder-int\"></div>\n        </div>\n      </div>\n      <div id=\"").concat(ppfx, "tools\" style=\"pointer-events:none\">\n        <div class=\"").concat(ppfx, "highlighter\"></div>\n        <div class=\"").concat(ppfx, "badge\"></div>\n        <div class=\"").concat(ppfx, "ghost\"></div>\n        <div class=\"").concat(ppfx, "toolbar\" style=\"pointer-events:all\"></div>\n        <div class=\"").concat(ppfx, "resizer\"></div>\n        <div class=\"").concat(ppfx, "offset-v\"></div>\n        <div class=\"").concat(ppfx, "offset-fixed-v\"></div>\n      </div>\n    "));
+    toolsWrp.append("\n      <div class=\"".concat(ppfx, "tools ").concat(ppfx, "tools-gl\" style=\"pointer-events:none\">\n        <div class=\"").concat(ppfx, "placeholder\">\n          <div class=\"").concat(ppfx, "placeholder-int\"></div>\n        </div>\n      </div>\n      <div id=\"").concat(ppfx, "tools\" style=\"pointer-events:none\">\n        <div class=\"").concat(ppfx, "badge\"></div>\n        <div class=\"").concat(ppfx, "ghost\"></div>\n        <div class=\"").concat(ppfx, "toolbar\" style=\"pointer-events:all\"></div>\n        <div class=\"").concat(ppfx, "resizer\"></div>\n        <div class=\"").concat(ppfx, "offset-v\"></div>\n        <div class=\"").concat(ppfx, "offset-fixed-v\"></div>\n      </div>\n    "));
     var toolsEl = el.querySelector("#".concat(ppfx, "tools"));
     this.hlEl = el.querySelector(".".concat(ppfx, "highlighter"));
     this.badgeEl = el.querySelector(".".concat(ppfx, "badge"));
@@ -22855,7 +22870,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     'data-frame-el': true
   },
   initialize: function initialize(o) {
-    Object(underscore__WEBPACK_IMPORTED_MODULE_3__["bindAll"])(this, 'updateClientY', 'stopAutoscroll', 'autoscroll');
+    Object(underscore__WEBPACK_IMPORTED_MODULE_3__["bindAll"])(this, 'updateClientY', 'stopAutoscroll', 'autoscroll', '_emitUpdate');
     var model = this.model,
         el = this.el;
     this.config = _objectSpread({}, o.config || {}, {
@@ -22962,6 +22977,9 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
   remove: function remove() {
     var root = this.root,
         model = this.model;
+
+    this._toggleEffects();
+
     backbone__WEBPACK_IMPORTED_MODULE_2___default.a.View.prototype.remove.apply(this, arguments);
     root.remove();
     model.remove();
@@ -23082,6 +23100,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     var doc = this.getDoc();
     var head = this.getHead();
     var body = this.getBody();
+    var win = this.getWindow();
     var conf = em.get('Config');
     var extStyles = [];
     config.styles.forEach(function (href) {
@@ -23147,7 +23166,18 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
         });
       });
     });
+
+    this._toggleEffects(1);
+
     model.trigger('loaded');
+  },
+  _toggleEffects: function _toggleEffects(enable) {
+    var method = enable ? utils_mixins__WEBPACK_IMPORTED_MODULE_7__["on"] : utils_mixins__WEBPACK_IMPORTED_MODULE_7__["off"];
+    var win = this.getWindow();
+    method(win, "".concat(utils_dom__WEBPACK_IMPORTED_MODULE_6__["motionsEv"], " resize"), this._emitUpdate);
+  },
+  _emitUpdate: function _emitUpdate() {
+    this.model._emitUpdated();
   }
 }));
 
@@ -23182,7 +23212,6 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 
 
-var motionsEv = 'transitionend oTransitionEnd transitionend webkitTransitionEnd';
 /* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_1___default.a.View.extend({
   events: {
     'click [data-action-remove]': 'remove',
@@ -23264,9 +23293,8 @@ var motionsEv = 'transitionend oTransitionEnd transitionend webkitTransitionEnd'
       preserveSelected: 1
     });
     $el.removeClass(this.classAnim);
-    em.trigger('frame:resized', {
-      frame: frame
-    });
+
+    frame.model._emitUpdated();
   }),
   updatePos: function updatePos(md) {
     var model = this.model,
@@ -23326,7 +23354,7 @@ var motionsEv = 'transitionend oTransitionEnd transitionend webkitTransitionEnd'
     em.stopDefault({
       preserveSelected: 1
     });
-    noChanges ? this.updateOffset() : $el.one(motionsEv, this.updateOffset);
+    noChanges ? this.updateOffset() : $el.one(utils_dom__WEBPACK_IMPORTED_MODULE_4__["motionsEv"], this.updateOffset);
   },
   onScroll: function onScroll() {
     var frame = this.frame,
@@ -23356,7 +23384,7 @@ var motionsEv = 'transitionend oTransitionEnd transitionend webkitTransitionEnd'
     }).append("\n      <div class=\"".concat(ppfx, "frame-wrapper__top gjs-two-color\" data-frame-top>\n        <div class=\"").concat(ppfx, "frame-wrapper__name\" data-action-move>\n          ").concat(model.get('name') || '', "\n        </div>\n        <div class=\"").concat(ppfx, "frame-wrapper__top-r\">\n          <div class=\"").concat(ppfx, "frame-wrapper__icon\" data-action-remove style=\"display: none\">\n            <svg viewBox=\"0 0 24 24\"><path d=\"M19 4h-3.5l-1-1h-5l-1 1H5v2h14M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z\"></path></svg>\n          </div>\n        </div>\n      </div>\n      <div class=\"").concat(ppfx, "frame-wrapper__right\" data-frame-right></div>\n      <div class=\"").concat(ppfx, "frame-wrapper__left\" data-frame-left></div>\n      <div class=\"").concat(ppfx, "frame-wrapper__bottom\" data-frame-bottom></div>\n      ")).append(frame.el);
     var elTools = Object(utils_dom__WEBPACK_IMPORTED_MODULE_4__["createEl"])('div', {
       class: "".concat(ppfx, "tools"),
-      style: 'pointer-events:none'
+      style: 'pointer-events:none; opacity: 0'
     }, "\n      <div class=\"".concat(ppfx, "highlighter\" data-hl></div>\n      <div class=\"").concat(ppfx, "badge\" data-badge></div>\n      <div class=\"").concat(ppfx, "placeholder\">\n        <div class=\"").concat(ppfx, "placeholder-int\"></div>\n      </div>\n      <div class=\"").concat(ppfx, "ghost\"></div>\n      <div class=\"").concat(ppfx, "toolbar\" style=\"pointer-events:all\"></div>\n      <div class=\"").concat(ppfx, "resizer\"></div>\n      <div class=\"").concat(ppfx, "offset-v\" data-offset>\n        <div class=\"gjs-marginName\" data-offset-m>\n          <div class=\"gjs-margin-v-el gjs-margin-v-top\" data-offset-m-t></div>\n          <div class=\"gjs-margin-v-el gjs-margin-v-bottom\" data-offset-m-b></div>\n          <div class=\"gjs-margin-v-el gjs-margin-v-left\" data-offset-m-l></div>\n          <div class=\"gjs-margin-v-el gjs-margin-v-right\" data-offset-m-r></div>\n        </div>\n        <div class=\"gjs-paddingName\" data-offset-m>\n          <div class=\"gjs-padding-v-el gjs-padding-v-top\" data-offset-p-t></div>\n          <div class=\"gjs-padding-v-el gjs-padding-v-bottom\" data-offset-p-b></div>\n          <div class=\"gjs-padding-v-el gjs-padding-v-left\" data-offset-p-l></div>\n          <div class=\"gjs-padding-v-el gjs-padding-v-right\" data-offset-p-r></div>\n        </div>\n      </div>\n      <div class=\"").concat(ppfx, "offset-fixed-v\"></div>\n    "));
     this.elTools = elTools;
     cv.toolsWrapper.appendChild(elTools); // TODO remove on frame remove
@@ -24225,6 +24253,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _view_CommandAbstract__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./view/CommandAbstract */ "./src/commands/view/CommandAbstract.js");
 /* harmony import */ var _config_config__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./config/config */ "./src/commands/config/config.js");
+/* harmony import */ var dom_components_model_Component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! dom_components/model/Component */ "./src/dom_components/model/Component.js");
 
 
 
@@ -24260,6 +24289,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
  *
  * @module Commands
  */
+
 
 
 
@@ -24351,13 +24381,22 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
           nativeDrag ? setTimeout(hideTlb, 0) : hideTlb();
 
-          var onEnd = function onEnd(e, opts) {
+          var onStart = function onStart(data) {
+            em.trigger("".concat(dom_components_model_Component__WEBPACK_IMPORTED_MODULE_5__["eventDrag"], ":start"), data);
+          };
+
+          var onDrag = function onDrag(data) {
+            em.trigger(dom_components_model_Component__WEBPACK_IMPORTED_MODULE_5__["eventDrag"], data);
+          };
+
+          var onEnd = function onEnd(e, opts, data) {
             em.runDefault(defComOptions);
             selAll.forEach(function (sel) {
               return sel.set('status', 'selected');
             });
             ed.select(selAll);
             sel.emitUpdate();
+            em.trigger("".concat(dom_components_model_Component__WEBPACK_IMPORTED_MODULE_5__["eventDrag"], ":end"), data);
           };
 
           if (Object(underscore__WEBPACK_IMPORTED_MODULE_2__["includes"])(modes, mode)) {
@@ -24368,6 +24407,8 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
               guidesInfo: 1,
               mode: mode,
               target: sel,
+              onStart: onStart,
+              onDrag: onDrag,
               onEnd: onEnd,
               event: event
             });
@@ -24377,6 +24418,8 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
             }
 
             var cmdMove = ed.Commands.get('move-comp');
+            cmdMove.onStart = onStart;
+            cmdMove.onDrag = onDrag;
             cmdMove.onEndMoveFromModel = onEnd;
             cmdMove.initSorterFromModels(selAll);
           }
@@ -25421,15 +25464,25 @@ var evName = 'dmode';
       avoidStore: !end
     });
   },
+  _getDragData: function _getDragData() {
+    var target = this.target;
+    return {
+      target: target,
+      parent: target.parent(),
+      index: target.index()
+    };
+  },
   onStart: function onStart() {
     var target = this.target,
         editor = this.editor,
         isTran = this.isTran,
         opts = this.opts;
-    var center = opts.center;
+    var center = opts.center,
+        onStart = opts.onStart;
     var Canvas = editor.Canvas;
     var style = target.getStyle();
     var position = 'absolute';
+    onStart && onStart(this._getDragData());
     if (isTran) return;
 
     if (style.position !== position) {
@@ -25471,14 +25524,17 @@ var evName = 'dmode';
     opts.guidesInfo && this.renderGuideInfo(guidesTarget.filter(function (item) {
       return item.active;
     }));
-    onDrag && onDrag.apply(void 0, arguments);
+    onDrag && onDrag(this._getDragData());
   },
-  onEnd: function onEnd() {
+  onEnd: function onEnd(ev, dragger) {
+    var opt = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     var editor = this.editor,
         opts = this.opts,
         id = this.id;
     var onEnd = opts.onEnd;
-    onEnd && onEnd.apply(void 0, arguments);
+    onEnd && onEnd(ev, opt, _objectSpread({
+      event: ev
+    }, opt, {}, this._getDragData()));
     editor.stopCommand(id);
     this.hideGuidesInfo();
     this.em.trigger("".concat(evName, ":end"), this.getEventOpts());
@@ -26116,9 +26172,12 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
     var frame = (this.em.get('currentFrame') || {}).model;
     var el = lastModel.getEl(frame);
     var doc = el.ownerDocument;
-    this.startSelectPosition(el, doc);
+    this.startSelectPosition(el, doc, {
+      onStart: this.onStart
+    });
     this.sorter.draggable = lastModel.get('draggable');
     this.sorter.toMove = models;
+    this.sorter.onMoveClb = this.onDrag;
     this.sorter.onEndMove = this.onEndMoveFromModel.bind(this);
     this.stopSelectComponent();
     Object(utils_mixins__WEBPACK_IMPORTED_MODULE_2__["on"])(this.getContentWindow(), 'keydown', this.rollback);
@@ -26703,9 +26762,30 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 var $ = backbone__WEBPACK_IMPORTED_MODULE_2___default.a.$;
 var showOffsets;
+/**
+ * This command is responsible for show selecting components and displaying
+ * all the necessary tools around (component toolbar, badge, highlight box, etc.)
+ *
+ * The command manages different boxes to display tools and when something in
+ * the canvas is updated, the command triggers the appropriate method to update
+ * their position (across multiple frames/components):
+ * - Global Tools (updateToolsGlobal/updateGlobalPos)
+ * This box contains tools intended to be displayed only on ONE component per time,
+ * like Component Toolbar (updated by updateToolbar/updateToolbarPos), this means
+ * you won't be able to see more than one Component Toolbar (even with multiple
+ * frames or multiple selected components)
+ * - Local Tools (updateToolsLocal/updateLocalPos)
+ * Each frame in the canvas has its own local box, so we're able to see more than
+ * one active container at the same time. When you put a mouse over an element
+ * you can see stuff like the highlight box, badge, margins/paddings offsets, etc.
+ * so those elements are inside the Local Tools box
+ *
+ *
+ */
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   init: function init(o) {
-    Object(underscore__WEBPACK_IMPORTED_MODULE_3__["bindAll"])(this, 'onHover', 'onOut', 'onClick', 'onFrameScroll');
+    Object(underscore__WEBPACK_IMPORTED_MODULE_3__["bindAll"])(this, 'onHover', 'onOut', 'onClick', 'onFrameScroll', 'onFrameUpdated');
   },
   enable: function enable() {
     this.frameOff = this.canvasOff = this.adjScroll = null;
@@ -26748,15 +26828,16 @@ var showOffsets;
       methods[method](body, 'mouseover', _this.onHover);
       methods[method](body, 'mouseleave', _this.onOut);
       methods[method](body, 'click touchend', _this.onClick);
-      methods[method](win, 'scroll resize', _this.onFrameScroll);
+      methods[method](win, 'scroll', _this.onFrameScroll);
     };
 
+    methods[method](window, 'resize', this.onFrameUpdated);
     em[method]('component:toggled', this.onSelect, this);
     em[method]('change:componentHovered', this.onHovered, this);
     em[method]('component:update', this.onComponentUpdate, this);
     em[method]('component:resize', this.updateGlobalPos, this);
     em[method]('change:canvasOffset', this.updateAttached, this);
-    em[method]('frame:resized', this.onFrameResized, this);
+    em[method]('frame:updated', this.onFrameUpdated, this);
     em.get('Canvas').getFrames().forEach(function (frame) {
       var view = frame.view;
       trigger(view.getWindow(), view.getBody());
@@ -26802,8 +26883,9 @@ var showOffsets;
     this.em.setHovered(model);
     frameView && this.em.set('currentFrame', frameView);
   },
-  onFrameResized: function onFrameResized() {
-    this.updateToolsLocal({}); // clear last cached component
+  onFrameUpdated: function onFrameUpdated() {
+    this.updateLocalPos();
+    this.updateGlobalPos();
   },
   onHovered: function onHovered(em, component) {
     var _this2 = this;
@@ -26868,8 +26950,15 @@ var showOffsets;
   }),
   updateGlobalPos: function updateGlobalPos() {
     var sel = this.getElSelected();
+    if (!sel.el) return;
     sel.pos = this.getElementPos(sel.el);
     this.updateToolsGlobal();
+  },
+  updateLocalPos: function updateLocalPos() {
+    var sel = this.getElHovered();
+    if (!sel.el) return;
+    sel.pos = this.getElementPos(sel.el);
+    this.updateToolsLocal();
   },
   getElHovered: function getElHovered() {
     return this.elHovered || {};
@@ -27095,16 +27184,8 @@ var showOffsets;
    * @param {Object} pos Position object
    * @private
    */
-  updateHighlighter: function updateHighlighter(el, pos) {
-    var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-    var _this$canvas$getHighl = this.canvas.getHighlighter(opts.view),
-        style = _this$canvas$getHighl.style;
-
-    var unit = 'px';
-    style.height = pos.height + unit;
-    style.width = pos.width + unit;
-    style.opacity = '';
+  showHighlighter: function showHighlighter(view) {
+    this.canvas.getHighlighter(view).style.opacity = '';
   },
 
   /**
@@ -27327,8 +27408,11 @@ var showOffsets;
    * @private
    */
   onFrameScroll: function onFrameScroll() {
+    this.updateTools();
+  },
+  updateTools: function updateTools() {
     this.updateToolsLocal();
-    this.updateToolsGlobal();
+    this.updateGlobalPos();
   },
   isCompSelected: function isCompSelected(comp) {
     return comp && comp.get('status') === 'selected';
@@ -27359,9 +27443,7 @@ var showOffsets;
 
     if (isNewEl && isHoverEn) {
       this.lastHovered = el;
-      this.updateHighlighter(el, pos, {
-        view: view
-      });
+      this.showHighlighter(view);
       this.showElementOffset(el, pos, {
         view: view
       });
@@ -27528,6 +27610,7 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
   startSelectPosition: function startSelectPosition(trg, doc) {
     var _this = this;
 
+    var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     this.isPointed = false;
     var utils = this.editorModel.get('Utils');
     var container = trg.ownerDocument.body;
@@ -27547,6 +27630,7 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
         return _this.em.getZoomDecimal();
       }
     });
+    if (opts.onStart) this.sorter.onStart = opts.onStart;
     trg && this.sorter.startSort(trg, {
       container: container
     });
@@ -27782,26 +27866,27 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
     mrStyle.left = posLeft + pos.width + unit; // Padding style
 
     var padTop = parseFloat(style.paddingTop) * zoom;
-    ptStyle.height = padTop + unit;
-    ptStyle.width = widthEl;
-    ptStyle.top = pos.top + unit;
-    ptStyle.left = posLeft + unit;
+    ptStyle.height = padTop + unit; // ptStyle.width = widthEl;
+    // ptStyle.top = pos.top + unit;
+    // ptStyle.left = posLeft + unit;
+
     var padBot = parseFloat(style.paddingBottom) * zoom;
-    pbStyle.height = padBot + unit;
-    pbStyle.width = widthEl;
-    pbStyle.top = pos.top + pos.height - padBot + unit;
-    pbStyle.left = posLeft + unit;
+    pbStyle.height = padBot + unit; // pbStyle.width = widthEl;
+    // pbStyle.top = pos.top + pos.height - padBot + unit;
+    // pbStyle.left = posLeft + unit;
+
     var padSideH = pos.height - padBot - padTop + unit;
     var padSideT = pos.top + padTop + unit;
     plStyle.height = padSideH;
     plStyle.width = parseFloat(style.paddingLeft) * zoom + unit;
-    plStyle.top = padSideT;
-    plStyle.left = pos.left + unit;
+    plStyle.top = padSideT; // plStyle.left = pos.left + unit;
+    //  plStyle.right = 0;
+
     var padRight = parseFloat(style.paddingRight) * zoom;
     prStyle.height = padSideH;
     prStyle.width = padRight + unit;
-    prStyle.top = padSideT;
-    prStyle.left = pos.left + pos.width - padRight + unit;
+    prStyle.top = padSideT; // prStyle.left = pos.left + pos.width - padRight + unit;
+    //  prStyle.left = 0;
   },
   stop: function stop(editor, sender) {
     var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
@@ -30000,11 +30085,12 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 /*!***********************************************!*\
   !*** ./src/dom_components/model/Component.js ***!
   \***********************************************/
-/*! exports provided: default */
+/*! exports provided: eventDrag, default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "eventDrag", function() { return eventDrag; });
 /* harmony import */ var _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/typeof */ "./node_modules/@babel/runtime/helpers/typeof.js");
 /* harmony import */ var _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
@@ -30044,6 +30130,8 @@ var escapeRegExp = function escapeRegExp(str) {
 var avoidInline = function avoidInline(em) {
   return em && em.getConfig('avoidInlineStyle');
 };
+
+var eventDrag = 'component:drag';
 /**
  * The Component object represents a single node of our template structure, so when you update its properties the changes are
  * immediately reflected on the canvas and in the code to export (indeed, when you ask to export the code we just go through all
@@ -30100,7 +30188,6 @@ var avoidInline = function avoidInline(em) {
  * By default, when `toolbar` property is falsy the editor will add automatically commands like `move`, `delete`, etc. based on its properties.
  * @property {Collection<Component>} [components=null] Children components. Default: `null`
  */
-
 
 var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(domain_abstract_model_Styleable__WEBPACK_IMPORTED_MODULE_4__["default"]).extend({
   defaults: {
@@ -35796,6 +35883,9 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
  * * `component:toggled` - Component selection changed, toggled model is passed as an argument to the callback
  * * `component:type:add` - New component type added, the new type is passed as an argument to the callback
  * * `component:type:update` - Component type updated, the updated type is passed as an argument to the callback
+ * * `component:drag:start` - Component drag started. Passed an object, to the callback, containing the `target` (component to drag), `parent` (parent of the component) and `index` (component index in the parent)
+ * * `component:drag` - During component drag. Passed the same object as in `component:drag:start` event, but in this case, `parent` and `index` are updated by the current pointer
+ * * `component:drag:end` - Component drag ended. Passed the same object as in `component:drag:start` event, but in this case, `parent` and `index` are updated by the final pointer
  * ### Blocks
  * * `block:add` - New block added
  * * `block:remove` - Block removed
@@ -37850,7 +37940,7 @@ var defaultConfig = {
   editors: editors,
   plugins: plugins,
   // Will be replaced on build
-  version: '0.15.14',
+  version: '0.15.15',
 
   /**
    * Initialize the editor with passed options
@@ -38737,6 +38827,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
 /* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var dom_components_view_ComponentView__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! dom_components/view/ComponentView */ "./src/dom_components/view/ComponentView.js");
+/* harmony import */ var dom_components_model_Component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! dom_components/model/Component */ "./src/dom_components/model/Component.js");
+
 
 
 
@@ -38969,10 +39061,22 @@ var ItemsView;
    * */
   startSort: function startSort(e) {
     e.stopPropagation();
-    var sorter = this.sorter; // Right or middel click
+    var em = this.em,
+        sorter = this.sorter; // Right or middel click
 
     if (e.button && e.button !== 0) return;
-    sorter && sorter.startSort(e.target);
+
+    if (sorter) {
+      sorter.onStart = function (data) {
+        return em.trigger("".concat(dom_components_model_Component__WEBPACK_IMPORTED_MODULE_4__["eventDrag"], ":start"), data);
+      };
+
+      sorter.onMoveClb = function (data) {
+        return em.trigger(dom_components_model_Component__WEBPACK_IMPORTED_MODULE_4__["eventDrag"], data);
+      };
+
+      sorter.startSort(e.target);
+    }
   },
 
   /**
@@ -39135,6 +39239,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
 /* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _ItemView__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ItemView */ "./src/navigator/view/ItemView.js");
+/* harmony import */ var dom_components_model_Component__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! dom_components/model/Component */ "./src/dom_components/model/Component.js");
+
 
 
 /* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_0___default.a.View.extend({
@@ -39166,11 +39272,12 @@ __webpack_require__.r(__webpack_exports__);
         containerSel: ".".concat(this.className),
         itemSel: ".".concat(pfx, "layer"),
         ignoreViewChildren: 1,
-        onEndMove: function onEndMove(created, sorter) {
+        onEndMove: function onEndMove(created, sorter, data) {
           var srcModel = sorter.getSourceModel();
           em.setSelected(srcModel, {
             forceChange: 1
           });
+          em.trigger("".concat(dom_components_model_Component__WEBPACK_IMPORTED_MODULE_2__["eventDrag"], ":end"), data);
         },
         avoidSelectOnEnd: 1,
         nested: 1,
@@ -53654,7 +53761,7 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
     var cv = em && em.get('Canvas'); // Avoid updating body className as it causes a huge repaint
     // Noticeable with "fast" drag of blocks
 
-    active ? cv.startAutoscroll() : cv.stopAutoscroll();
+    cv && (active ? cv.startAutoscroll() : cv.stopAutoscroll());
   },
 
   /**
@@ -53822,7 +53929,11 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
     Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["on"])(container, 'mousemove dragover', this.onMove);
     Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["on"])(docs, 'mouseup dragend touchend', this.endMove);
     Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["on"])(docs, 'keydown', this.rollback);
-    onStart && onStart(); // Avoid strange effects on dragging
+    onStart && onStart({
+      target: srcModel,
+      parent: srcModel && srcModel.parent(),
+      index: srcModel && srcModel.index()
+    }); // Avoid strange effects on dragging
 
     em && em.clearSelection();
     this.toggleSortCursor(1);
@@ -53981,7 +54092,12 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
       }
     }
 
-    Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(onMoveClb) && onMoveClb(e);
+    Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(onMoveClb) && onMoveClb({
+      event: e,
+      target: sourceModel,
+      parent: targetModel,
+      index: pos.index + (pos.method == 'after' ? 1 : 0)
+    });
     em && em.trigger('sorter:drag', {
       target: target,
       targetModel: targetModel,
@@ -54492,21 +54608,22 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
     var _this3 = this;
 
     var src = this.eV;
-    var moved = [null];
+    var moved = [];
     var docs = this.getDocuments();
     var container = this.getContainerEl();
     var onEndMove = this.onEndMove;
     var target = this.target,
         lastPos = this.lastPos;
+    var srcModel;
     Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["off"])(container, 'mousemove dragover', this.onMove);
     Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["off"])(docs, 'mouseup dragend touchend', this.endMove);
     Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["off"])(docs, 'keydown', this.rollback);
     this.plh.style.display = 'none';
 
-    if (src && this.selectOnEnd) {
-      var srcModel = this.getSourceModel();
+    if (src) {
+      srcModel = this.getSourceModel();
 
-      if (srcModel && srcModel.set) {
+      if (this.selectOnEnd && srcModel && srcModel.set) {
         srcModel.set('status', '');
         srcModel.set('status', 'selected');
       }
@@ -54533,7 +54650,11 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
     this.toggleSortCursor();
     this.toMove = null;
     Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(onEndMove) && moved.forEach(function (m) {
-      return onEndMove(m, _this3);
+      return onEndMove(m, _this3, {
+        target: srcModel,
+        parent: srcModel && srcModel.parent(),
+        index: srcModel && srcModel.index()
+      });
     });
   },
 
@@ -54660,11 +54781,12 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
 /*!**************************!*\
   !*** ./src/utils/dom.js ***!
   \**************************/
-/*! exports provided: empty, replaceWith, appendAtIndex, append, createEl, createCustomEvent, appendVNodes */
+/*! exports provided: motionsEv, empty, replaceWith, appendAtIndex, append, createEl, createCustomEvent, appendVNodes */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "motionsEv", function() { return motionsEv; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "empty", function() { return empty; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "replaceWith", function() { return replaceWith; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "appendAtIndex", function() { return appendAtIndex; });
@@ -54679,6 +54801,7 @@ __webpack_require__.r(__webpack_exports__);
 var KEY_TAG = 'tag';
 var KEY_ATTR = 'attributes';
 var KEY_CHILD = 'children';
+var motionsEv = 'transitionend oTransitionEnd transitionend webkitTransitionEnd';
 var empty = function empty(node) {
   while (node.firstChild) {
     node.removeChild(node.firstChild);
