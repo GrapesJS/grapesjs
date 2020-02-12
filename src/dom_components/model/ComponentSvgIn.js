@@ -15,7 +15,6 @@ export default Component.extend(
   {
     isComponent(el) {
       if (Component.isComponent(el) && el.tagName.toLowerCase() !== 'svg') {
-        console.log('SVG in', el);
         return {
           tagName: el.tagName,
           type: 'svg-in'
