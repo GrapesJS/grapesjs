@@ -1055,14 +1055,17 @@ export default Backbone.View.extend({
     this.toggleSortCursor();
 
     this.toMove = null;
-    isFunction(onEndMove) &&
-      moved.forEach(m =>
-        onEndMove(m, this, {
-          target: srcModel,
-          parent: srcModel && srcModel.parent(),
-          index: srcModel && srcModel.index()
-        })
-      );
+
+    if (isFunction(onEndMove)) {
+      const data = {
+        target: srcModel,
+        parent: srcModel && srcModel.parent(),
+        index: srcModel && srcModel.index()
+      };
+      moved.length
+        ? moved.forEach(m => onEndMove(m, this, data))
+        : onEndMove(null, this, { ...data, cancelled: 1 });
+    }
   },
 
   /**

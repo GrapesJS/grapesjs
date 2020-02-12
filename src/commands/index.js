@@ -154,10 +154,10 @@ export default () => {
             em.trigger(`${eventDrag}:end`, data);
           };
 
-          if (includes(modes, mode)) {
-            // Dirty patch to prevent parent selection on drop
-            em.set('_cmpDrag', 1);
+          // Dirty patch to prevent parent selection on drop
+          em.set('_cmpDrag', 1);
 
+          if (includes(modes, mode)) {
             // TODO move grabbing func in editor/canvas from the Sorter
             dragger = ed.runCommand('core:component-drag', {
               guidesInfo: 1,
