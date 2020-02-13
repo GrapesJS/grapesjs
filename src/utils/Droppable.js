@@ -84,7 +84,7 @@ export default class Droppable {
           if (!cancelled) {
             const comp = wrapper.append(content)[0];
             const { left, top, position } = target.getStyle();
-            comp.setStyle({ left, top, position });
+            comp.addStyle({ left, top, position });
             this.handleDragEnd(comp, dt);
           }
           target.remove();
