@@ -24397,12 +24397,13 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
             ed.select(selAll);
             sel.emitUpdate();
             em.trigger("".concat(dom_components_model_Component__WEBPACK_IMPORTED_MODULE_5__["eventDrag"], ":end"), data);
-          };
+          }; // Dirty patch to prevent parent selection on drop
+
+
+          em.set('_cmpDrag', 1);
 
           if (Object(underscore__WEBPACK_IMPORTED_MODULE_2__["includes"])(modes, mode)) {
-            // Dirty patch to prevent parent selection on drop
-            em.set('_cmpDrag', 1); // TODO move grabbing func in editor/canvas from the Sorter
-
+            // TODO move grabbing func in editor/canvas from the Sorter
             dragger = ed.runCommand('core:component-drag', {
               guidesInfo: 1,
               mode: mode,
@@ -29373,14 +29374,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _model_ComponentScript__WEBPACK_IMPORTED_MODULE_31__ = __webpack_require__(/*! ./model/ComponentScript */ "./src/dom_components/model/ComponentScript.js");
 /* harmony import */ var _view_ComponentScriptView__WEBPACK_IMPORTED_MODULE_32__ = __webpack_require__(/*! ./view/ComponentScriptView */ "./src/dom_components/view/ComponentScriptView.js");
 /* harmony import */ var _model_ComponentSvg__WEBPACK_IMPORTED_MODULE_33__ = __webpack_require__(/*! ./model/ComponentSvg */ "./src/dom_components/model/ComponentSvg.js");
-/* harmony import */ var _view_ComponentSvgView__WEBPACK_IMPORTED_MODULE_34__ = __webpack_require__(/*! ./view/ComponentSvgView */ "./src/dom_components/view/ComponentSvgView.js");
-/* harmony import */ var _model_ComponentComment__WEBPACK_IMPORTED_MODULE_35__ = __webpack_require__(/*! ./model/ComponentComment */ "./src/dom_components/model/ComponentComment.js");
-/* harmony import */ var _view_ComponentCommentView__WEBPACK_IMPORTED_MODULE_36__ = __webpack_require__(/*! ./view/ComponentCommentView */ "./src/dom_components/view/ComponentCommentView.js");
-/* harmony import */ var _model_ComponentTextNode__WEBPACK_IMPORTED_MODULE_37__ = __webpack_require__(/*! ./model/ComponentTextNode */ "./src/dom_components/model/ComponentTextNode.js");
-/* harmony import */ var _view_ComponentTextNodeView__WEBPACK_IMPORTED_MODULE_38__ = __webpack_require__(/*! ./view/ComponentTextNodeView */ "./src/dom_components/view/ComponentTextNodeView.js");
-/* harmony import */ var _model_ComponentText__WEBPACK_IMPORTED_MODULE_39__ = __webpack_require__(/*! ./model/ComponentText */ "./src/dom_components/model/ComponentText.js");
-/* harmony import */ var _view_ComponentTextView__WEBPACK_IMPORTED_MODULE_40__ = __webpack_require__(/*! ./view/ComponentTextView */ "./src/dom_components/view/ComponentTextView.js");
-/* harmony import */ var _model_ComponentWrapper__WEBPACK_IMPORTED_MODULE_41__ = __webpack_require__(/*! ./model/ComponentWrapper */ "./src/dom_components/model/ComponentWrapper.js");
+/* harmony import */ var _model_ComponentSvgIn__WEBPACK_IMPORTED_MODULE_34__ = __webpack_require__(/*! ./model/ComponentSvgIn */ "./src/dom_components/model/ComponentSvgIn.js");
+/* harmony import */ var _view_ComponentSvgView__WEBPACK_IMPORTED_MODULE_35__ = __webpack_require__(/*! ./view/ComponentSvgView */ "./src/dom_components/view/ComponentSvgView.js");
+/* harmony import */ var _model_ComponentComment__WEBPACK_IMPORTED_MODULE_36__ = __webpack_require__(/*! ./model/ComponentComment */ "./src/dom_components/model/ComponentComment.js");
+/* harmony import */ var _view_ComponentCommentView__WEBPACK_IMPORTED_MODULE_37__ = __webpack_require__(/*! ./view/ComponentCommentView */ "./src/dom_components/view/ComponentCommentView.js");
+/* harmony import */ var _model_ComponentTextNode__WEBPACK_IMPORTED_MODULE_38__ = __webpack_require__(/*! ./model/ComponentTextNode */ "./src/dom_components/model/ComponentTextNode.js");
+/* harmony import */ var _view_ComponentTextNodeView__WEBPACK_IMPORTED_MODULE_39__ = __webpack_require__(/*! ./view/ComponentTextNodeView */ "./src/dom_components/view/ComponentTextNodeView.js");
+/* harmony import */ var _model_ComponentText__WEBPACK_IMPORTED_MODULE_40__ = __webpack_require__(/*! ./model/ComponentText */ "./src/dom_components/model/ComponentText.js");
+/* harmony import */ var _view_ComponentTextView__WEBPACK_IMPORTED_MODULE_41__ = __webpack_require__(/*! ./view/ComponentTextView */ "./src/dom_components/view/ComponentTextView.js");
+/* harmony import */ var _model_ComponentWrapper__WEBPACK_IMPORTED_MODULE_42__ = __webpack_require__(/*! ./model/ComponentWrapper */ "./src/dom_components/model/ComponentWrapper.js");
 
 
 
@@ -29417,6 +29419,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
  *
  * @module DomComponents
  */
+
 
 
 
@@ -29511,24 +29514,28 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     model: _model_ComponentScript__WEBPACK_IMPORTED_MODULE_31__["default"],
     view: _view_ComponentScriptView__WEBPACK_IMPORTED_MODULE_32__["default"]
   }, {
+    id: 'svg-in',
+    model: _model_ComponentSvgIn__WEBPACK_IMPORTED_MODULE_34__["default"],
+    view: _view_ComponentSvgView__WEBPACK_IMPORTED_MODULE_35__["default"]
+  }, {
     id: 'svg',
     model: _model_ComponentSvg__WEBPACK_IMPORTED_MODULE_33__["default"],
-    view: _view_ComponentSvgView__WEBPACK_IMPORTED_MODULE_34__["default"]
+    view: _view_ComponentSvgView__WEBPACK_IMPORTED_MODULE_35__["default"]
   }, {
     id: 'comment',
-    model: _model_ComponentComment__WEBPACK_IMPORTED_MODULE_35__["default"],
-    view: _view_ComponentCommentView__WEBPACK_IMPORTED_MODULE_36__["default"]
+    model: _model_ComponentComment__WEBPACK_IMPORTED_MODULE_36__["default"],
+    view: _view_ComponentCommentView__WEBPACK_IMPORTED_MODULE_37__["default"]
   }, {
     id: 'textnode',
-    model: _model_ComponentTextNode__WEBPACK_IMPORTED_MODULE_37__["default"],
-    view: _view_ComponentTextNodeView__WEBPACK_IMPORTED_MODULE_38__["default"]
+    model: _model_ComponentTextNode__WEBPACK_IMPORTED_MODULE_38__["default"],
+    view: _view_ComponentTextNodeView__WEBPACK_IMPORTED_MODULE_39__["default"]
   }, {
     id: 'text',
-    model: _model_ComponentText__WEBPACK_IMPORTED_MODULE_39__["default"],
-    view: _view_ComponentTextView__WEBPACK_IMPORTED_MODULE_40__["default"]
+    model: _model_ComponentText__WEBPACK_IMPORTED_MODULE_40__["default"],
+    view: _view_ComponentTextView__WEBPACK_IMPORTED_MODULE_41__["default"]
   }, {
     id: 'wrapper',
-    model: _model_ComponentWrapper__WEBPACK_IMPORTED_MODULE_41__["default"],
+    model: _model_ComponentWrapper__WEBPACK_IMPORTED_MODULE_42__["default"],
     view: _view_ComponentView__WEBPACK_IMPORTED_MODULE_7__["default"]
   }, {
     id: 'default',
@@ -31973,6 +31980,9 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 /* harmony default export */ __webpack_exports__["default"] = (_Component__WEBPACK_IMPORTED_MODULE_1__["default"].extend({
   defaults: _objectSpread({}, _Component__WEBPACK_IMPORTED_MODULE_1__["default"].prototype.defaults, {
+    resizable: {
+      ratioDefault: 1
+    },
     highlightable: 0
   }),
   getName: function getName() {
@@ -31984,14 +31994,51 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 }, {
   isComponent: function isComponent(el) {
     if (SVGElement && el instanceof SVGElement) {
-      // Some SVG elements require uppercase letters (eg. <linearGradient>)
-      var tagName = el.tagName; // Make the root resizable
-
-      var resizable = tagName == 'svg' ? true : false;
       return {
-        tagName: tagName,
-        type: 'svg',
-        resizable: resizable
+        tagName: el.tagName,
+        type: 'svg'
+      };
+    }
+  }
+}));
+
+/***/ }),
+
+/***/ "./src/dom_components/model/ComponentSvgIn.js":
+/*!****************************************************!*\
+  !*** ./src/dom_components/model/ComponentSvgIn.js ***!
+  \****************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _ComponentSvg__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ComponentSvg */ "./src/dom_components/model/ComponentSvg.js");
+
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+
+/**
+ * Component for inner SVG elements
+ */
+
+/* harmony default export */ __webpack_exports__["default"] = (_ComponentSvg__WEBPACK_IMPORTED_MODULE_1__["default"].extend({
+  defaults: _objectSpread({}, _ComponentSvg__WEBPACK_IMPORTED_MODULE_1__["default"].prototype.defaults, {
+    selectable: false,
+    hoverable: false,
+    layerable: false
+  })
+}, {
+  isComponent: function isComponent(el) {
+    if (_ComponentSvg__WEBPACK_IMPORTED_MODULE_1__["default"].isComponent(el) && el.tagName.toLowerCase() !== 'svg') {
+      return {
+        tagName: el.tagName,
+        type: 'svg-in'
       };
     }
   }
@@ -37940,7 +37987,7 @@ var defaultConfig = {
   editors: editors,
   plugins: plugins,
   // Will be replaced on build
-  version: '0.15.15',
+  version: '0.15.16',
 
   /**
    * Initialize the editor with passed options
@@ -46188,7 +46235,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 /* harmony default export */ __webpack_exports__["default"] = (_PropertyRadio__WEBPACK_IMPORTED_MODULE_1__["default"].extend({
   defaults: function defaults() {
-    return _objectSpread({}, _PropertyRadio__WEBPACK_IMPORTED_MODULE_1__["default"].prototype.defaults, {
+    return _objectSpread({}, _PropertyRadio__WEBPACK_IMPORTED_MODULE_1__["default"].prototype.defaults(), {
       full: 0
     });
   }
@@ -49702,10 +49749,10 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
       config = _objectSpread({}, opts, {}, configDef);
       em = config.em;
       this.em = em;
-      um = new backbone_undo__WEBPACK_IMPORTED_MODULE_1___default.a({
+      um = new backbone_undo__WEBPACK_IMPORTED_MODULE_1___default.a(_objectSpread({
         track: true,
         register: []
-      });
+      }, config));
       um.changeUndoType('change', {
         condition: false
       });
@@ -52879,7 +52926,7 @@ function () {
                   top = _target$getStyle.top,
                   position = _target$getStyle.position;
 
-              comp.setStyle({
+              comp.addStyle({
                 left: left,
                 top: top,
                 position: position
@@ -54649,13 +54696,19 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
     this.selectTargetModel();
     this.toggleSortCursor();
     this.toMove = null;
-    Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(onEndMove) && moved.forEach(function (m) {
-      return onEndMove(m, _this3, {
+
+    if (Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(onEndMove)) {
+      var data = {
         target: srcModel,
         parent: srcModel && srcModel.parent(),
         index: srcModel && srcModel.index()
-      });
-    });
+      };
+      moved.length ? moved.forEach(function (m) {
+        return onEndMove(m, _this3, data);
+      }) : onEndMove(null, this, _objectSpread({}, data, {
+        cancelled: 1
+      }));
+    }
   },
 
   /**
