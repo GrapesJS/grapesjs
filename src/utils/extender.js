@@ -1,57 +1,60 @@
 import { isObject, isString, each, isUndefined } from 'underscore';
 
 export default ({ $, Backbone }) => {
-  if (Backbone) {
-    const ViewProt = Backbone.View.prototype;
-    const eventNsMap = {};
-    ViewProt.eventNsMap = eventNsMap;
+  // if (Backbone) {
+  //   const ViewProt = Backbone.View.prototype;
+  //   const eventNsMap = {};
+  //   ViewProt.eventNsMap = eventNsMap;
 
-    ViewProt.delegate = function(eventName, selector, listener) {
-      const vid = '.delegateEvents' + this.cid;
-      this.$el.on(eventName, selector, listener);
-      //return this;
-      let eventMap = eventNsMap[vid];
+  //   ViewProt.delegate = function(eventName, selector, listener) {
+  //     const vid = '.delegateEvents' + this.cid;
+  //     this.$el.on(eventName, selector, listener);
+  //     //return this;
+  //     let eventMap = eventNsMap[vid];
 
-      if (!eventMap) {
-        eventMap = [];
-        eventNsMap[vid] = eventMap;
-      }
+  //     if (!eventMap) {
+  //       eventMap = [];
+  //       eventNsMap[vid] = eventMap;
+  //     }
 
-      eventMap.push({ eventName, selector, listener });
-      return this;
-    };
+  //     eventMap.push({ eventName, selector, listener });
+  //     return this;
+  //   };
 
-    ViewProt.undelegateEvents = function() {
-      const vid = '.delegateEvents' + this.cid;
-      if (this.$el) {
-        //this.$el.off(); return this;
-        let eventMap = eventNsMap[vid];
+  //   ViewProt.undelegateEvents = function() {
+  //     const vid = '.delegateEvents' + this.cid;
+  //     if (this.$el) {
+  //       //this.$el.off(); return this;
+  //       let eventMap = eventNsMap[vid];
 
-        if (eventMap) {
-          eventMap.forEach(({ eventName, selector, listener }) => {
-            this.$el.off(eventName);
-          });
-        }
-      }
-      return this;
-    };
+  //       if (eventMap) {
+  //         eventMap.forEach(({ eventName, selector, listener }) => {
+  //           this.$el.off(eventName);
+  //         });
+  //       }
 
-    ViewProt.undelegate = function(ev, sel, list) {
-      const vid = '.delegateEvents' + this.cid;
-      //this.$el.off(ev, sel, list); return this;
-      let eventMap = eventNsMap[vid];
+  //       delete eventNsMap[vid];
+  //     }
+  //     return this;
+  //   };
 
-      if (eventMap) {
-        eventMap.forEach(({ eventName, selector, listener }) => {
-          if (eventName == ev && selector == sel) {
-            this.$el.off(eventName);
-          }
-        });
-      }
+  //   ViewProt.undelegate = function(ev, sel, list) {
+  //     const vid = '.delegateEvents' + this.cid;
+  //     //this.$el.off(ev, sel, list); return this;
+  //     let eventMap = eventNsMap[vid];
 
-      return this;
-    };
-  }
+  //     if (eventMap) {
+  //       eventMap.forEach(({ eventName, selector, listener }) => {
+  //         if (eventName == ev && selector == sel) {
+  //           this.$el.off(eventName);
+  //         }
+  //       });
+  //       delete eventNsMap[vid];
+  //     }
+
+  //     return this;
+  //   };
+  // }
 
   if ($ && $.prototype.constructor.name !== 'jQuery') {
     const fn = $.fn;

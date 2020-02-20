@@ -9,37 +9,38 @@ export default Backbone.Collection.extend({
     this.listenTo(this, 'add', this.onAdd);
     this.config = opt.config;
     this.em = opt.em;
-    const { em } = this;
+  },
 
-    this.model = (attrs, options) => {
-      var model;
-      const df = opt.em.get('DomComponents').componentTypes;
-      options.em = opt.em;
-      options.config = opt.config;
-      options.componentTypes = df;
-      options.domc = opt.domc;
+  model(attrs, options) {
+    const { opt } = options.collection;
+    const { em } = opt;
+    let model;
+    const df = em.get('DomComponents').componentTypes;
+    options.em = em;
+    options.config = opt.config;
+    options.componentTypes = df;
+    options.domc = opt.domc;
 
-      for (var it = 0; it < df.length; it++) {
-        var dfId = df[it].id;
-        if (dfId == attrs.type) {
-          model = df[it].model;
-          break;
-        }
+    for (let it = 0; it < df.length; it++) {
+      const dfId = df[it].id;
+      if (dfId == attrs.type) {
+        model = df[it].model;
+        break;
       }
+    }
 
-      if (!model) {
-        // get the last one
-        model = df[df.length - 1].model;
-        em &&
-          attrs.type &&
-          em.logWarning(`Component type '${attrs.type}' not found`, {
-            attrs,
-            options
-          });
-      }
+    // If no model found, get the default one
+    if (!model) {
+      model = df[df.length - 1].model;
+      em &&
+        attrs.type &&
+        em.logWarning(`Component type '${attrs.type}' not found`, {
+          attrs,
+          options
+        });
+    }
 
-      return new model(attrs, options);
-    };
+    return new model(attrs, options);
   },
 
   parseString(value, opt = {}) {
