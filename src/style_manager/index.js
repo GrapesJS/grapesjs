@@ -82,7 +82,8 @@ export default () => {
     },
 
     onLoad() {
-      sectors.add(c.sectors);
+      // Use silent as sectors' view will be created and rendered on StyleManager.render
+      sectors.add(c.sectors, { silent: true });
     },
 
     postRender() {

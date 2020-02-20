@@ -1,6 +1,4 @@
 import Backbone from 'backbone';
-import StyleManager from 'style_manager';
-
 const $ = Backbone.$;
 
 export default {
@@ -27,7 +25,6 @@ export default {
       // Class Manager container
       var clm = em.SelectorManager;
       if (clm) this.$cn2.append(clm.render([]));
-
       this.$cn2.append(em.StyleManager.render());
       var smConfig = em.StyleManager.getConfig();
       const pfx = smConfig.stylePrefix;
