@@ -59,112 +59,114 @@ export default ({ $, Backbone }) => {
   if ($ && $.prototype.constructor.name !== 'jQuery') {
     const fn = $.fn;
 
-    const splitNamespace = function(name) {
-      const namespaceArray = name.split('.');
-      return name.indexOf('.') !== 0
-        ? [namespaceArray[0], namespaceArray.slice(1)]
-        : [null, namespaceArray];
-    };
+    // const splitNamespace = function(name) {
+    //   const namespaceArray = name.split('.');
+    //   return name.indexOf('.') !== 0
+    //     ? [namespaceArray[0], namespaceArray.slice(1)]
+    //     : [null, namespaceArray];
+    // };
 
-    const on = $.prototype.on;
-    const off = $.prototype.off;
-    const trigger = $.prototype.trigger;
-    const offset = $.prototype.offset;
-    const getEvents = eventName => eventName.split(/[,\s]+/g);
-    const getNamespaces = eventName => eventName.split('.');
+    // const on = $.prototype.on;
+    // const off = $.prototype.off;
+    // const trigger = $.prototype.trigger;
+    // const offset = $.prototype.offset;
+    // const getEvents = eventName => eventName.split(/[,\s]+/g);
+    // const getNamespaces = eventName => eventName.split('.');
 
-    fn.on = function(eventName, delegate, callback, runOnce) {
-      if (typeof eventName == 'string') {
-        const events = getEvents(eventName);
+    // fn.on = function(eventName, delegate, callback, runOnce) {
+    //   if (typeof eventName == 'string') {
+    //     const events = getEvents(eventName);
 
-        if (events.length == 1) {
-          eventName = events[0];
-          let namespaces = getNamespaces(eventName);
+    //     if (events.length == 1) {
+    //       eventName = events[0];
+    //       let namespaces = getNamespaces(eventName);
 
-          if (eventName.indexOf('.') !== 0) {
-            eventName = namespaces[0];
-          }
+    //       if (eventName.indexOf('.') !== 0) {
+    //         eventName = namespaces[0];
+    //       }
 
-          namespaces = namespaces.slice(1);
+    //       namespaces = namespaces.slice(1);
 
-          if (namespaces.length) {
-            //console.log('Found event with namespaces', namespaces, eventName, delegate, this);
-            const cashNs = this.data('_cashNs') || [];
-            // cashNs[namespace]
-            this.data('_cashNs', namespaces); // for each ns need to store '.store' => eventName, delegate, callback
-          }
+    //       if (namespaces.length) {
+    //         //console.log('Found event with namespaces', namespaces, eventName, delegate, this);
+    //         const cashNs = this.data('_cashNs') || [];
+    //         // cashNs[namespace]
+    //         this.data('_cashNs', namespaces); // for each ns need to store '.store' => eventName, delegate, callback
+    //       }
 
-          return on.call(this, eventName, delegate, callback, runOnce);
-        } else {
-          events.forEach(eventName =>
-            this.on(eventName, delegate, callback, runOnce)
-          );
-          return this;
-        }
-      } else {
-        return on.call(this, eventName, delegate, callback, runOnce);
-      }
-    };
+    //       return on.call(this, eventName, delegate, callback, runOnce);
+    //     } else {
+    //       events.forEach(eventName =>
+    //         this.on(eventName, delegate, callback, runOnce)
+    //       );
+    //       return this;
+    //     }
+    //   } else {
+    //     return on.call(this, eventName, delegate, callback, runOnce);
+    //   }
+    // };
 
-    fn.off = function(eventName, callback) {
-      if (typeof eventName == 'string') {
-        const events = getEvents(eventName);
+    // fn.off = function(eventName, callback) {
+    //   if (typeof eventName == 'string') {
+    //     const events = getEvents(eventName);
 
-        if (events.length == 1) {
-          eventName = events[0];
-          let namespaces = getNamespaces(eventName);
+    //     if (events.length == 1) {
+    //       eventName = events[0];
+    //       let namespaces = getNamespaces(eventName);
 
-          if (eventName.indexOf('.') !== 0) {
-            eventName = namespaces[0];
-          }
+    //       if (eventName.indexOf('.') !== 0) {
+    //         eventName = namespaces[0];
+    //       }
 
-          namespaces = namespaces.slice(1);
+    //       namespaces = namespaces.slice(1);
 
-          if (namespaces.length) {
-            // Have to off only with the same namespace
-          }
+    //       if (namespaces.length) {
+    //         // Have to off only with the same namespace
+    //       }
 
-          return off.call(this, eventName, callback);
-        } else {
-          events.forEach(eventName => this.off(eventName, callback));
-          return this;
-        }
-      } else {
-        return off.call(this, eventName, callback);
-      }
-    };
+    //       return off.call(this, eventName, callback);
+    //     } else {
+    //       events.forEach(eventName => this.off(eventName, callback));
+    //       return this;
+    //     }
+    //   } else {
+    //     return off.call(this, eventName, callback);
+    //   }
+    // };
 
-    fn.trigger = function(eventName, data) {
-      if (eventName instanceof $.Event) {
-        return this.trigger(eventName.type, data);
-      }
+    // fn.trigger = function(eventName, data) {
+    //   if (eventName instanceof $.Event) {
+    //     return this.trigger(eventName.type, data);
+    //   }
 
-      if (typeof eventName == 'string') {
-        const events = getEvents(eventName);
+    //   if (typeof eventName == 'string') {
+    //     const events = getEvents(eventName);
 
-        if (events.length == 1) {
-          eventName = events[0];
-          let namespaces = getNamespaces(eventName);
+    //     if (events.length == 1) {
+    //       eventName = events[0];
+    //       let namespaces = getNamespaces(eventName);
 
-          if (eventName.indexOf('.') !== 0) {
-            eventName = namespaces[0];
-          }
+    //       if (eventName.indexOf('.') !== 0) {
+    //         eventName = namespaces[0];
+    //       }
 
-          namespaces = namespaces.slice(1);
+    //       namespaces = namespaces.slice(1);
 
-          if (namespaces.length) {
-            // have to trigger with same namespaces and eventName
-          }
+    //       if (namespaces.length) {
+    //         // have to trigger with same namespaces and eventName
+    //       }
 
-          return trigger.call(this, eventName, data);
-        } else {
-          events.forEach(eventName => this.trigger(eventName, data));
-          return this;
-        }
-      } else {
-        return trigger.call(this, eventName, data);
-      }
-    };
+    //       return trigger.call(this, eventName, data);
+    //     } else {
+    //       events.forEach(eventName => this.trigger(eventName, data));
+    //       return this;
+    //     }
+    //   } else {
+    //     return trigger.call(this, eventName, data);
+    //   }
+    // };
+
+    // Additional helpers
 
     fn.hide = function() {
       return this.css('display', 'none');
@@ -181,39 +183,41 @@ export default ({ $, Backbone }) => {
     };
 
     // For SVGs in IE
-    (fn.removeClass = function(c) {
-      if (!arguments.length) {
-        return this.attr('class', '');
-      }
-      const classes = isString(c) && c.match(/\S+/g);
-      return classes
-        ? this.each(function(el) {
-            each(classes, function(c) {
-              if (el.classList) {
-                el.classList.remove(c);
-              } else {
-                const val = el.className;
-                const bval = el.className.baseVal;
+    // (fn.removeClass = function(c) {
+    //   if (!arguments.length) {
+    //     return this.attr('class', '');
+    //   }
+    //   const classes = isString(c) && c.match(/\S+/g);
+    //   return classes
+    //     ? this.each(function(el) {
+    //         each(classes, function(c) {
+    //           if (el.classList) {
+    //             el.classList.remove(c);
+    //           } else {
+    //             const val = el.className;
+    //             const bval = el.className.baseVal;
 
-                if (!isUndefined(bval)) {
-                  val.baseVal = bval.replace(c, '');
-                } else {
-                  el.className = val.replace(c, '');
-                }
-              }
-            });
-          })
-        : this;
-    }),
-      (fn.remove = function() {
-        return this.each(node => {
-          return node.parentNode && node.parentNode.removeChild(node);
-        });
-      }),
-      // For spectrum compatibility
-      (fn.bind = function(ev, h) {
-        return this.on(ev, h);
-      });
+    //             if (!isUndefined(bval)) {
+    //               val.baseVal = bval.replace(c, '');
+    //             } else {
+    //               el.className = val.replace(c, '');
+    //             }
+    //           }
+    //         });
+    //       })
+    //     : this;
+    // }),
+    //   (fn.remove = function() {
+    //     return this.each(node => {
+    //       return node.parentNode && node.parentNode.removeChild(node);
+    //     });
+    //   }),
+
+    // For spectrum compatibility
+
+    fn.bind = function(ev, h) {
+      return this.on(ev, h);
+    };
 
     fn.unbind = function(ev, h) {
       if (isObject(ev)) {
@@ -264,6 +268,7 @@ export default ({ $, Backbone }) => {
       return win ? win.pageYOffset : el.scrollTop || 0;
     };
 
+    const offset = $.prototype.offset;
     fn.offset = function(coords) {
       let top, left;
 
