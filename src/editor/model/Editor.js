@@ -686,6 +686,8 @@ export default Backbone.Model.extend({
    * Destroy editor
    */
   destroyAll() {
+    const editor = this.getEditor();
+    const { editors } = this.config.grapesjs;
     const {
       DomComponents,
       CssComposer,
@@ -695,6 +697,7 @@ export default Backbone.Model.extend({
       Keymaps,
       RichTextEditor
     } = this.attributes;
+    this.stopDefault();
     DomComponents.clear();
     CssComposer.clear();
     UndoManager.clear().removeAll();
@@ -704,6 +707,10 @@ export default Backbone.Model.extend({
     RichTextEditor.destroy();
     this.view.remove();
     this.stopListening();
+    this.clear({ silent: true });
+    this._previousAttributes = {};
+    this.attributes = {};
+    editors.splice(editors.indexOf(editor), 1);
     $(this.config.el)
       .empty()
       .attr(this.attrsOrig);
