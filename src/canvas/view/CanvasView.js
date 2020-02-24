@@ -298,11 +298,13 @@ export default Backbone.View.extend({
    * Get javascript container
    * @private
    */
-  getJsContainer() {
-    if (!this.jsContainer) {
-      this.jsContainer = $(`<div class="${this.ppfx}js-cont">`).get(0);
-    }
-    return this.jsContainer;
+  getJsContainer(view) {
+    const frameView = this.getFrameView(view);
+    return frameView && frameView.getJsContainer();
+  },
+
+  getFrameView(view) {
+    return (view && view._getFrame()) || this.em.get('currentFrame');
   },
 
   render() {
