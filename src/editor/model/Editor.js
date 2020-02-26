@@ -12,29 +12,6 @@ import Extender from 'utils/extender';
 import { getModel } from 'utils/mixins';
 
 Backbone.$ = $;
-const deps = [
-  require('utils'),
-  require('i18n'),
-  require('keymaps'),
-  require('undo_manager'),
-  require('storage_manager'),
-  require('device_manager'),
-  require('parser'),
-  require('selector_manager'),
-  require('style_manager'),
-  require('modal_dialog'),
-  require('code_manager'),
-  require('panels'),
-  require('rich_text_editor'),
-  require('asset_manager'),
-  require('css_composer'),
-  require('trait_manager'),
-  require('dom_components'),
-  require('navigator'),
-  require('canvas'),
-  require('commands'),
-  require('block_manager')
-];
 
 const { Collection } = Backbone;
 let timedInterval;
@@ -71,7 +48,7 @@ export default Backbone.Model.extend({
   },
 
   initialize(c = {}) {
-    this.config = c;
+    this.config = { ...c };
     this.set('Config', c);
     this.set('modules', []);
     this.set('toLoad', []);
@@ -88,6 +65,30 @@ export default Backbone.Model.extend({
           return res;
         }, {})
       : '';
+
+    const deps = [
+      require('utils'),
+      require('i18n')
+      // require('keymaps'),
+      // require('undo_manager'),
+      // require('storage_manager'),
+      // require('device_manager'),
+      // require('parser'),
+      // require('selector_manager'),
+      // require('style_manager'),
+      // require('modal_dialog'),
+      // require('code_manager'),
+      // require('panels'),
+      // require('rich_text_editor'),
+      // require('asset_manager'),
+      // require('css_composer'),
+      // require('trait_manager'),
+      // require('dom_components'),
+      // require('navigator'),
+      // require('canvas'),
+      // require('commands'),
+      // require('block_manager')
+    ];
 
     // Load modules
     deps.forEach(name => this.loadModule(name));
@@ -590,7 +591,8 @@ export default Backbone.Model.extend({
    * @private
    */
   stopDefault(opts = {}) {
-    var command = this.get('Commands').get(this.config.defaultCommand);
+    const cm = this.get('Commands');
+    var command = cm && cm.get(this.config.defaultCommand);
     if (!command) return;
     command.stop(this, this, opts);
     this.defaultRunning = 0;
@@ -698,13 +700,13 @@ export default Backbone.Model.extend({
       RichTextEditor
     } = this.attributes;
     this.stopDefault();
-    DomComponents.clear();
-    CssComposer.clear();
-    UndoManager.clear().removeAll();
-    Panels.getPanels().reset();
-    Canvas.getCanvasView().remove();
-    Keymaps.removeAll();
-    RichTextEditor.destroy();
+    DomComponents && DomComponents.clear();
+    CssComposer && CssComposer.clear();
+    UndoManager && UndoManager.clear().removeAll();
+    Panels && Panels.getPanels().reset();
+    Canvas && Canvas.getCanvasView().remove();
+    Keymaps && Keymaps.removeAll();
+    RichTextEditor && RichTextEditor.destroy();
     this.view.remove();
     this.stopListening();
     this.clear({ silent: true });
@@ -714,6 +716,8 @@ export default Backbone.Model.extend({
     $(this.config.el)
       .empty()
       .attr(this.attrsOrig);
+    this.config = 0;
+    this.attrsOrig = 0;
   },
 
   setEditing(value) {
