@@ -1,4 +1,4 @@
-import { isUndefined } from 'underscore';
+import { isUndefined, keys } from 'underscore';
 import PropertyCompositeView from './PropertyCompositeView';
 import LayersView from './LayersView';
 
@@ -33,6 +33,8 @@ export default PropertyCompositeView.extend({
     if (!this.model.get('detached')) {
       PropertyCompositeView.prototype.targetUpdated.apply(this, args);
     } else {
+      const { status } = this._getTargetData();
+      this.setStatus(status);
       this.checkVisibility();
     }
 
@@ -108,15 +110,30 @@ export default PropertyCompositeView.extend({
    * */
   refreshLayers() {
     let layersObj = [];
-    const model = this.model;
+    const { model, em } = this;
     const layers = this.getLayers();
     const detached = model.get('detached');
     const target = this.getTarget();
+    let style, valueComput, targetAlt;
 
     // With detached layers values will be assigned to their properties
     if (detached) {
-      const style = target ? target.getStyle() : {};
-      layersObj = layers.getLayersFromStyle(style);
+      const selected = em.getSelected();
+      style = target ? target.getStyle() : 0;
+      valueComput = this.getComputedValue();
+
+      // If the style object is empty but the target has a computed value,
+      // that means the style might exist in some other place
+      if ((!style || !keys(style).length) && valueComput && selected) {
+        // The target is a component but the style is in class rules
+        targetAlt = em.get('StyleManager').getModelToStyle(selected, {
+          skipAdd: 1,
+          useClasses: 1
+        });
+        style = targetAlt !== selected ? targetAlt.getStyle() : 0;
+      }
+
+      layersObj = layers.getLayersFromStyle(style || {});
     } else {
       let value = this.getTargetValue({ ignoreDefault: 1 });
 
@@ -127,6 +144,19 @@ export default PropertyCompositeView.extend({
     }
 
     const toAdd = model.getLayersFromTarget(target) || layersObj;
+
+    // const prop = this.model.get('property');
+    // if (['background', 'box-shadow'].indexOf(prop) >= 0) {
+    //   console.log('PROP', prop, {
+    //     style,
+    //     toAdd,
+    //     layersObj,
+    //     targetAlt,
+    //     valueTrg: this.getTargetValue({ ignoreDefault: 1 }),
+    //     valueComput: this.getComputedValue(),
+    //   });
+    // }
+
     layers.reset();
     layers.add(toAdd);
     model.set({ stackIndex: null }, { silent: true });
