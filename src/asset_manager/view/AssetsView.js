@@ -6,17 +6,24 @@ export default Backbone.View.extend({
   },
 
   template({ pfx, ppfx, em, ...view }) {
+    let form = '';
+    if (this.config.showUrlInput) {
+      form = `
+          <form class="${pfx}add-asset">
+            <div class="${ppfx}field ${pfx}add-field">
+              <input placeholder="${em && em.t('assetManager.inputPlh')}"/>
+            </div>
+            <button class="${ppfx}btn-prim">${em &&
+        em.t('assetManager.addButton')}</button>
+            <div style="clear:both"></div>
+          </form>
+      `;
+    }
+
     return `
     <div class="${pfx}assets-cont">
       <div class="${pfx}assets-header">
-        <form class="${pfx}add-asset">
-          <div class="${ppfx}field ${pfx}add-field">
-            <input placeholder="${em && em.t('assetManager.inputPlh')}"/>
-          </div>
-          <button class="${ppfx}btn-prim">${em &&
-      em.t('assetManager.addButton')}</button>
-          <div style="clear:both"></div>
-        </form>
+        ${form}
       </div>
       <div class="${pfx}assets" data-el="assets"></div>
       <div style="clear:both"></div>
