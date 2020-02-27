@@ -105,6 +105,16 @@ export default PropertyCompositeView.extend({
     return this.getLayers().getFullValue();
   },
 
+  _getClassRule() {
+    const { em } = this;
+    const selected = em.getSelected();
+    const targetAlt = em.get('StyleManager').getModelToStyle(selected, {
+      skipAdd: 1,
+      useClasses: 1
+    });
+    return targetAlt !== selected && targetAlt;
+  },
+
   /**
    * Refresh layers
    * */
@@ -113,31 +123,34 @@ export default PropertyCompositeView.extend({
     const { model, em } = this;
     const layers = this.getLayers();
     const detached = model.get('detached');
+    const property = model.get('property');
     const target = this.getTarget();
-    let style, valueComput, targetAlt;
+    const valueComput = this.getComputedValue();
+    const selected = em.getSelected();
+    let style, targetAlt;
 
     // With detached layers values will be assigned to their properties
     if (detached) {
-      const selected = em.getSelected();
       style = target ? target.getStyle() : 0;
-      valueComput = this.getComputedValue();
 
       // If the style object is empty but the target has a computed value,
       // that means the style might exist in some other place
       if ((!style || !keys(style).length) && valueComput && selected) {
-        // The target is a component but the style is in class rules
-        targetAlt = em.get('StyleManager').getModelToStyle(selected, {
-          skipAdd: 1,
-          useClasses: 1
-        });
-        style = targetAlt !== selected ? targetAlt.getStyle() : 0;
+        // The target is a component but the style is in the class rules
+        targetAlt = this._getClassRule();
+        style = targetAlt ? targetAlt.getStyle() : 0;
       }
 
       layersObj = layers.getLayersFromStyle(style || {});
     } else {
       let value = this.getTargetValue({ ignoreDefault: 1 });
 
-      if (!value) value = this.getComputedValue();
+      if (!value && valueComput) {
+        // Computed value is not always reliable due to the browser's CSSOM parser
+        // so, at first, try to check the alternative target style
+        targetAlt = this._getClassRule();
+        value = targetAlt ? targetAlt.getStyle()[property] : valueComput;
+      }
 
       value = value == model.getDefaultValue() ? '' : value;
       layersObj = layers.getLayersFromValue(value);
