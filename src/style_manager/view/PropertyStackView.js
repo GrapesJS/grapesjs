@@ -1,6 +1,9 @@
 import { isUndefined, keys } from 'underscore';
 import PropertyCompositeView from './PropertyCompositeView';
 import LayersView from './LayersView';
+import CssGenerator from 'code_manager/model/CssGenerator';
+
+const cssGen = new CssGenerator();
 
 export default PropertyCompositeView.extend({
   templateInput() {
@@ -116,6 +119,39 @@ export default PropertyCompositeView.extend({
   },
 
   /**
+   * Return the parent style rule of the passed one
+   * @private
+   */
+  _getParentTarget(target) {
+    const { em, model } = this;
+    const property = model.get('property');
+    const targetsDevice = em
+      .get('CssComposer')
+      .getAll()
+      .filter(rule => rule.selectorsToString() === target.getSelectorsString());
+    const map = targetsDevice.reduce((acc, rule) => {
+      acc[rule.getAtRule()] = rule;
+      return acc;
+    }, {});
+    const mapSorted = cssGen.sortMediaObject(map);
+    const sortedRules = mapSorted.map(item => item.value);
+    const currIndex = sortedRules.indexOf(target);
+    const rulesToCheck = sortedRules.splice(0, currIndex);
+    let result;
+
+    for (let i = rulesToCheck.length - 1; i > -1; i--) {
+      const rule = rulesToCheck[i];
+      if (rule.getStyle()[property]) {
+        // only for not detached
+        result = rule;
+        break;
+      }
+    }
+
+    return result;
+  },
+
+  /**
    * Refresh layers
    * */
   refreshLayers() {
@@ -127,7 +163,7 @@ export default PropertyCompositeView.extend({
     const target = this.getTarget();
     const valueComput = this.getComputedValue();
     const selected = em.getSelected();
-    let style, targetAlt;
+    let style, targetAlt, targetAltDevice;
 
     // With detached layers values will be assigned to their properties
     if (detached) {
@@ -146,10 +182,16 @@ export default PropertyCompositeView.extend({
       let value = this.getTargetValue({ ignoreDefault: 1 });
 
       if (!value && valueComput) {
-        // Computed value is not always reliable due to the browser's CSSOM parser
-        // so, at first, try to check the alternative target style
-        targetAlt = this._getClassRule();
-        value = targetAlt ? targetAlt.getStyle()[property] : valueComput;
+        targetAltDevice = this._getParentTarget(target);
+
+        if (targetAltDevice) {
+          value = targetAltDevice.getStyle()[property];
+        } else {
+          // Computed value is not always reliable due to the browser's CSSOM parser
+          // so, at first, try to check the alternative target style
+          targetAlt = this._getClassRule();
+          value = targetAlt ? targetAlt.getStyle()[property] : valueComput;
+        }
       }
 
       value = value == model.getDefaultValue() ? '' : value;
@@ -158,17 +200,18 @@ export default PropertyCompositeView.extend({
 
     const toAdd = model.getLayersFromTarget(target) || layersObj;
 
-    // const prop = this.model.get('property');
-    // if (['background', 'box-shadow'].indexOf(prop) >= 0) {
-    //   console.log('PROP', prop, {
-    //     style,
-    //     toAdd,
-    //     layersObj,
-    //     targetAlt,
-    //     valueTrg: this.getTargetValue({ ignoreDefault: 1 }),
-    //     valueComput: this.getComputedValue(),
-    //   });
-    // }
+    const prop = this.model.get('property');
+    if (['background', 'box-shadow'].indexOf(prop) >= 0) {
+      console.log('PROP', prop, {
+        style,
+        toAdd,
+        layersObj,
+        targetAlt,
+        targetAltDevice,
+        valueTrg: this.getTargetValue({ ignoreDefault: 1 }),
+        valueComput: this.getComputedValue()
+      });
+    }
 
     layers.reset();
     layers.add(toAdd);
