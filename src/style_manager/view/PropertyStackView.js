@@ -108,11 +108,12 @@ export default PropertyCompositeView.extend({
     return this.getLayers().getFullValue();
   },
 
-  _getClassRule() {
+  _getClassRule(opts = {}) {
     const { em } = this;
+    const { skipAdd = 1 } = opts;
     const selected = em.getSelected();
     const targetAlt = em.get('StyleManager').getModelToStyle(selected, {
-      skipAdd: 1,
+      skipAdd,
       useClasses: 1
     });
     return targetAlt !== selected && targetAlt;
@@ -167,30 +168,39 @@ export default PropertyCompositeView.extend({
 
     // With detached layers values will be assigned to their properties
     if (detached) {
-      style = target ? target.getStyle() : 0;
+      style = target ? target.getStyle() : {};
 
       // If the style object is empty but the target has a computed value,
       // that means the style might exist in some other place
-      if ((!style || !keys(style).length) && valueComput && selected) {
+      if (!keys(style).length && valueComput && selected) {
         // The target is a component but the style is in the class rules
         targetAlt = this._getClassRule();
         style = targetAlt ? targetAlt.getStyle() : 0;
       }
 
-      layersObj = layers.getLayersFromStyle(style || {});
+      layersObj = layers.getLayersFromStyle(style);
     } else {
-      let value = this.getTargetValue({ ignoreDefault: 1 });
+      const valueTrg = this.getTargetValue({ ignoreDefault: 1 });
+      let value = valueTrg;
 
+      // Try to check if the style is in another rule
       if (!value && valueComput) {
+        // Styles of the same target but with a higher rule
         targetAltDevice = this._getParentTarget(target);
 
         if (targetAltDevice) {
           value = targetAltDevice.getStyle()[property];
         } else {
           // Computed value is not always reliable due to the browser's CSSOM parser
-          // so, at first, try to check the alternative target style
+          // here we try to look for the style in class rules
           targetAlt = this._getClassRule();
-          value = targetAlt ? targetAlt.getStyle()[property] : valueComput;
+          const valueTargetAlt = targetAlt && targetAlt.getStyle()[property];
+          targetAltDevice =
+            !valueTargetAlt &&
+            this._getParentTarget(this._getClassRule({ skipAdd: 0 }));
+          const valueTrgAltDvc =
+            targetAltDevice && targetAltDevice.getStyle()[property];
+          value = valueTargetAlt || valueTrgAltDvc || valueComput;
         }
       }
 
@@ -199,20 +209,6 @@ export default PropertyCompositeView.extend({
     }
 
     const toAdd = model.getLayersFromTarget(target) || layersObj;
-
-    const prop = this.model.get('property');
-    if (['background', 'box-shadow'].indexOf(prop) >= 0) {
-      console.log('PROP', prop, {
-        style,
-        toAdd,
-        layersObj,
-        targetAlt,
-        targetAltDevice,
-        valueTrg: this.getTargetValue({ ignoreDefault: 1 }),
-        valueComput: this.getComputedValue()
-      });
-    }
-
     layers.reset();
     layers.add(toAdd);
     model.set({ stackIndex: null }, { silent: true });
