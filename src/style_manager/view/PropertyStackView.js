@@ -123,9 +123,10 @@ export default PropertyCompositeView.extend({
    * Return the parent style rule of the passed one
    * @private
    */
-  _getParentTarget(target) {
+  _getParentTarget(target, opts = {}) {
     const { em, model } = this;
     const property = model.get('property');
+    const isValid = opts.isValid || (rule => rule.getStyle()[property]);
     const targetsDevice = em
       .get('CssComposer')
       .getAll()
@@ -142,7 +143,7 @@ export default PropertyCompositeView.extend({
 
     for (let i = rulesToCheck.length - 1; i > -1; i--) {
       const rule = rulesToCheck[i];
-      if (rule.getStyle()[property]) {
+      if (isValid(rule)) {
         // only for not detached
         result = rule;
         break;
@@ -173,9 +174,22 @@ export default PropertyCompositeView.extend({
       // If the style object is empty but the target has a computed value,
       // that means the style might exist in some other place
       if (!keys(style).length && valueComput && selected) {
-        // The target is a component but the style is in the class rules
-        targetAlt = this._getClassRule();
-        style = targetAlt ? targetAlt.getStyle() : 0;
+        // Styles of the same target but with a higher rule
+        const nameFirstProp = model
+          .get('properties')
+          .at(0)
+          .get('property');
+        targetAltDevice = this._getParentTarget(target, {
+          isValid: rule => !isUndefined(rule.getStyle()[nameFirstProp])
+        });
+
+        if (targetAltDevice) {
+          style = targetAltDevice.getStyle();
+        } else {
+          // The target is a component but the style is in the class rules
+          targetAlt = this._getClassRule();
+          style = targetAlt ? targetAlt.getStyle() : {};
+        }
       }
 
       layersObj = layers.getLayersFromStyle(style);
