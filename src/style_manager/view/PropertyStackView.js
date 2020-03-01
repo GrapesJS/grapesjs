@@ -165,7 +165,12 @@ export default PropertyCompositeView.extend({
     const target = this.getTarget();
     const valueComput = this.getComputedValue();
     const selected = em.getSelected();
-    let style, targetAlt, targetAltDevice, valueTargetAlt, valueTrgAltDvc;
+    let resultValue,
+      style,
+      targetAlt,
+      targetAltDevice,
+      valueTargetAlt,
+      valueTrgAltDvc;
 
     // With detached layers values will be assigned to their properties
     if (detached) {
@@ -203,6 +208,7 @@ export default PropertyCompositeView.extend({
         }
       }
 
+      resultValue = style;
       layersObj = layers.getLayersFromStyle(style);
     } else {
       const valueTrg = this.getTargetValue({ ignoreDefault: 1 });
@@ -219,21 +225,23 @@ export default PropertyCompositeView.extend({
           // Computed value is not always reliable due to the browser's CSSOM parser
           // here we try to look for the style in class rules
           targetAlt = this._getClassRule();
-          const valueTargetAlt = targetAlt && targetAlt.getStyle()[property];
+          valueTargetAlt = targetAlt && targetAlt.getStyle()[property];
           targetAltDevice =
             !valueTargetAlt &&
             this._getParentTarget(this._getClassRule({ skipAdd: 0 }));
-          const valueTrgAltDvc =
+          valueTrgAltDvc =
             targetAltDevice && targetAltDevice.getStyle()[property];
           value = valueTargetAlt || valueTrgAltDvc || valueComput;
         }
       }
 
       value = value == model.getDefaultValue() ? '' : value;
+      resultValue = value;
       layersObj = layers.getLayersFromValue(value);
     }
 
-    const toAdd = model.getLayersFromTarget(target) || layersObj;
+    const toAdd =
+      model.getLayersFromTarget(target, { resultValue }) || layersObj;
     layers.reset();
     layers.add(toAdd);
     model.set({ stackIndex: null }, { silent: true });
