@@ -37987,7 +37987,7 @@ var defaultConfig = {
   editors: editors,
   plugins: plugins,
   // Will be replaced on build
-  version: '0.15.17',
+  version: '0.15.18',
 
   /**
    * Initialize the editor with passed options
@@ -47647,7 +47647,7 @@ var cssGen = new code_manager_model_CssGenerator__WEBPACK_IMPORTED_MODULE_3__["d
     var target = this.getTarget();
     var valueComput = this.getComputedValue();
     var selected = em.getSelected();
-    var style, targetAlt, targetAltDevice; // With detached layers values will be assigned to their properties
+    var resultValue, style, targetAlt, targetAltDevice, valueTargetAlt, valueTrgAltDvc; // With detached layers values will be assigned to their properties
 
     if (detached) {
       style = target ? target.getStyle() : {};
@@ -47661,26 +47661,28 @@ var cssGen = new code_manager_model_CssGenerator__WEBPACK_IMPORTED_MODULE_3__["d
 
       if (!Object(underscore__WEBPACK_IMPORTED_MODULE_0__["keys"])(style).length && valueComput && selected) {
         // Styles of the same target but with a higher rule
-        targetAltDevice = this._getParentTarget(target, {
+        var parentOpts = {
           isValid: function isValid(rule) {
             return hasDetachedStyle(rule);
           }
-        });
+        };
+        targetAltDevice = this._getParentTarget(target, parentOpts);
 
         if (targetAltDevice) {
           style = targetAltDevice.getStyle();
         } else {
           // The target is a component but the style is in the class rules
           targetAlt = this._getClassRule();
-          var valueTargetAlt = hasDetachedStyle(targetAlt) && targetAlt.getStyle();
+          valueTargetAlt = hasDetachedStyle(targetAlt) && targetAlt.getStyle();
           targetAltDevice = !valueTargetAlt && this._getParentTarget(this._getClassRule({
             skipAdd: 0
-          }));
-          var valueTrgAltDvc = hasDetachedStyle(targetAltDevice) && targetAltDevice.getStyle();
+          }), parentOpts);
+          valueTrgAltDvc = hasDetachedStyle(targetAltDevice) && targetAltDevice.getStyle();
           style = valueTargetAlt || valueTrgAltDvc || {};
         }
       }
 
+      resultValue = style;
       layersObj = layers.getLayersFromStyle(style);
     } else {
       var valueTrg = this.getTargetValue({
@@ -47698,24 +47700,23 @@ var cssGen = new code_manager_model_CssGenerator__WEBPACK_IMPORTED_MODULE_3__["d
           // Computed value is not always reliable due to the browser's CSSOM parser
           // here we try to look for the style in class rules
           targetAlt = this._getClassRule();
-
-          var _valueTargetAlt = targetAlt && targetAlt.getStyle()[property];
-
-          targetAltDevice = !_valueTargetAlt && this._getParentTarget(this._getClassRule({
+          valueTargetAlt = targetAlt && targetAlt.getStyle()[property];
+          targetAltDevice = !valueTargetAlt && this._getParentTarget(this._getClassRule({
             skipAdd: 0
           }));
-
-          var _valueTrgAltDvc = targetAltDevice && targetAltDevice.getStyle()[property];
-
-          value = _valueTargetAlt || _valueTrgAltDvc || valueComput;
+          valueTrgAltDvc = targetAltDevice && targetAltDevice.getStyle()[property];
+          value = valueTargetAlt || valueTrgAltDvc || valueComput;
         }
       }
 
       value = value == model.getDefaultValue() ? '' : value;
+      resultValue = value;
       layersObj = layers.getLayersFromValue(value);
     }
 
-    var toAdd = model.getLayersFromTarget(target) || layersObj;
+    var toAdd = model.getLayersFromTarget(target, {
+      resultValue: resultValue
+    }) || layersObj;
     layers.reset();
     layers.add(toAdd);
     model.set({
