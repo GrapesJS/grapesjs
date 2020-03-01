@@ -165,7 +165,7 @@ export default PropertyCompositeView.extend({
     const target = this.getTarget();
     const valueComput = this.getComputedValue();
     const selected = em.getSelected();
-    let style, targetAlt, targetAltDevice;
+    let style, targetAlt, targetAltDevice, valueTargetAlt, valueTrgAltDvc;
 
     // With detached layers values will be assigned to their properties
     if (detached) {
@@ -182,21 +182,22 @@ export default PropertyCompositeView.extend({
       // that means the style might exist in some other place
       if (!keys(style).length && valueComput && selected) {
         // Styles of the same target but with a higher rule
-        targetAltDevice = this._getParentTarget(target, {
-          isValid: rule => hasDetachedStyle(rule)
-        });
+        const parentOpts = { isValid: rule => hasDetachedStyle(rule) };
+        targetAltDevice = this._getParentTarget(target, parentOpts);
 
         if (targetAltDevice) {
           style = targetAltDevice.getStyle();
         } else {
           // The target is a component but the style is in the class rules
           targetAlt = this._getClassRule();
-          const valueTargetAlt =
-            hasDetachedStyle(targetAlt) && targetAlt.getStyle();
+          valueTargetAlt = hasDetachedStyle(targetAlt) && targetAlt.getStyle();
           targetAltDevice =
             !valueTargetAlt &&
-            this._getParentTarget(this._getClassRule({ skipAdd: 0 }));
-          const valueTrgAltDvc =
+            this._getParentTarget(
+              this._getClassRule({ skipAdd: 0 }),
+              parentOpts
+            );
+          valueTrgAltDvc =
             hasDetachedStyle(targetAltDevice) && targetAltDevice.getStyle();
           style = valueTargetAlt || valueTrgAltDvc || {};
         }
