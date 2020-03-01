@@ -122,13 +122,22 @@ export default Backbone.View.extend({
    * */
   toggleVisibility(e) {
     e && e.stopPropagation();
-    const model = this.model;
+    const { model } = this;
+    const prevDspKey = '__prev-display';
+    const prevDisplay = model.get(prevDspKey);
     const style = model.getStyle();
-    const hidden = style.display == 'none';
+    const { display } = style;
+    const hidden = display == 'none';
 
     if (hidden) {
       delete style.display;
+
+      if (prevDisplay) {
+        style.display = prevDisplay;
+        model.unset(prevDspKey);
+      }
     } else {
+      display && model.set(prevDspKey, display);
       style.display = 'none';
     }
 
