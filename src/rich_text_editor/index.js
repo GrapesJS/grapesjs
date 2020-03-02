@@ -79,14 +79,19 @@ export default () => {
       globalRte = this.initRte(document.createElement('div'));
 
       //Avoid closing on toolbar clicking
-      on(toolbar, 'mousedown', e => e.stopPropagation());
+      on(toolbar, 'mousedown', this._stopProp);
       return this;
+    },
+
+    _stopProp(e) {
+      e.stopPropagation();
     },
 
     destroy() {
       const { customRte } = this;
       globalRte && globalRte.destroy();
       customRte && customRte.destroy && customRte.destroy();
+      off(toolbar, 'mousedown', this._stopProp);
       toolbar = 0;
       globalRte = 0;
       this.actionbar = 0;

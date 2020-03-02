@@ -14,8 +14,9 @@ export default Backbone.Collection.extend({
 
   onRemove(removed) {
     const em = this.editor;
+    const um = em.get('UndoManager');
     em.stopListening(removed);
-    em.get('UndoManager').remove(removed);
+    um && um.remove(removed);
   },
 
   add(models, opt = {}) {

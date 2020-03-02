@@ -105,13 +105,13 @@
  * @module Editor
  */
 import $ from 'cash-dom';
-// import defaults from './config/config';
+import defaults from './config/config';
 import EditorModel from './model/Editor';
 import EditorView from './view/EditorView';
 
 export default (config = {}) => {
   const c = {
-    ...require('./config/config').default,
+    ...defaults,
     ...config
   };
 
@@ -274,7 +274,8 @@ export default (config = {}) => {
       // Do post render stuff after the iframe is loaded otherwise it'll
       // be empty during tests
       em.on('loaded', () => {
-        this.UndoManager.clear();
+        const um = this.UndoManager;
+        um && um.clear();
         em.get('modules').forEach(module => {
           module.postRender && module.postRender(editorView);
         });

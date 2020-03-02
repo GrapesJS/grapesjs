@@ -22,6 +22,30 @@ Extender({
   $: Backbone.$
 });
 
+const deps = [
+  require('utils'),
+  require('i18n'),
+  // require('keymaps'),
+  // // require('undo_manager'),
+  require('storage_manager'),
+  require('device_manager'),
+  require('parser'),
+  require('selector_manager'),
+  require('style_manager'),
+  require('modal_dialog'),
+  require('code_manager'),
+  require('panels'),
+  require('rich_text_editor'),
+  require('asset_manager'),
+  require('css_composer'),
+  require('trait_manager'),
+  require('dom_components'),
+  require('navigator'),
+  require('canvas'),
+  // require('commands'),
+  require('block_manager')
+];
+
 const logs = {
   debug: console.log,
   info: console.info,
@@ -65,30 +89,6 @@ export default Backbone.Model.extend({
           return res;
         }, {})
       : '';
-
-    const deps = [
-      require('utils'),
-      require('i18n')
-      // require('keymaps'),
-      // require('undo_manager'),
-      // require('storage_manager'),
-      // require('device_manager'),
-      // require('parser'),
-      // require('selector_manager'),
-      // require('style_manager'),
-      // require('modal_dialog'),
-      // require('code_manager'),
-      // require('panels'),
-      // require('rich_text_editor'),
-      // require('asset_manager'),
-      // require('css_composer'),
-      // require('trait_manager'),
-      // require('dom_components'),
-      // require('navigator'),
-      // require('canvas'),
-      // require('commands'),
-      // require('block_manager')
-    ];
 
     // Load modules
     deps.forEach(name => this.loadModule(name));
@@ -192,7 +192,7 @@ export default Backbone.Model.extend({
     const cfgParent = !isUndefined(config[name])
       ? config[name]
       : config[Mod.name];
-    const cfg = cfgParent || {};
+    const cfg = cfgParent ? { ...cfgParent } : {};
     const sm = this.get('StorageManager');
     cfg.pStylePrefix = config.pStylePrefix || '';
 
@@ -578,7 +578,8 @@ export default Backbone.Model.extend({
    * @private
    */
   runDefault(opts = {}) {
-    var command = this.get('Commands').get(this.config.defaultCommand);
+    const cmd = this.get('Commands');
+    const command = cmd && cmd.get(this.config.defaultCommand);
     if (!command || this.defaultRunning) return;
     command.stop(this, this, opts);
     command.run(this, this, opts);
@@ -592,7 +593,7 @@ export default Backbone.Model.extend({
    */
   stopDefault(opts = {}) {
     const cm = this.get('Commands');
-    var command = cm && cm.get(this.config.defaultCommand);
+    const command = cm && cm.get(this.config.defaultCommand);
     if (!command) return;
     command.stop(this, this, opts);
     this.defaultRunning = 0;

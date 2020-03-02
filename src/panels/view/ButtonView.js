@@ -100,13 +100,14 @@ export default Backbone.View.extend({
     if (model.get('active')) {
       !fromCollection && model.collection.deactivateAll(context, model);
       model.set('active', true, { silent: true }).trigger('checkActive');
-      commands.runCommand(command, { ...options, sender: model });
+      commands && commands.runCommand(command, { ...options, sender: model });
 
       // Disable button if the command has no stop method
       command.noStop && model.set('active', false);
     } else {
       $el.removeClass(activeCls);
-      commands.stopCommand(command, { ...options, sender: model, force: 1 });
+      commands &&
+        commands.stopCommand(command, { ...options, sender: model, force: 1 });
     }
   },
 

@@ -59,8 +59,10 @@ export default Backbone.View.extend({
     em.stopListening(removed);
     em.stopListening(removed.get('classes'));
     const um = em.get('UndoManager');
-    um.remove(removed);
-    um.remove(inner);
+    if (um) {
+      um.remove(removed);
+      um.remove(inner);
+    }
   },
 
   /**
