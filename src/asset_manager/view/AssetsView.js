@@ -56,7 +56,7 @@ export default Backbone.View.extend({
     const url = input.value.trim();
     const handleAdd = this.config.handleAdd;
 
-    if (!url) {
+    if (!url || !input) {
       return;
     }
 
