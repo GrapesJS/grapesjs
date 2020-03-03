@@ -75,7 +75,7 @@ export default PropertyView.extend({
     const model = this.model;
 
     var result = {
-      config: this.config,
+      config: { ...this.config, highlightComputed: 0 },
       collection: this.props,
       target: this.target,
       propTarget: this.propTarget,

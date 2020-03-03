@@ -59,6 +59,6 @@ export default Backbone.Model.extend({
   getFullValue() {
     let result = [];
     this.get('properties').each(prop => result.push(prop.getFullValue()));
-    return result.join(' ');
+    return result.join(' ').trim();
   }
 });
