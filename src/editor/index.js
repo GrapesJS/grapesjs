@@ -273,15 +273,17 @@ export default (config = {}) => {
 
       // Do post render stuff after the iframe is loaded otherwise it'll
       // be empty during tests
-      em.on('loaded', () => {
-        const um = this.UndoManager;
-        um && um.clear();
-        em.get('modules').forEach(module => {
-          module.postRender && module.postRender(editorView);
-        });
-      });
+      em.on('loaded', this.loaded);
 
       return this;
+    },
+
+    loaded() {
+      const um = this.UndoManager;
+      um && um.clear();
+      em.get('modules').forEach(module => {
+        module.postRender && module.postRender(editorView);
+      });
     },
 
     /**

@@ -83,7 +83,7 @@ export default class RichTextEditor {
     const settAct = settings.actions || [];
     settAct.forEach((action, i) => {
       if (typeof action === 'string') {
-        action = defActions[action];
+        action = { ...defActions[action] };
       } else if (defActions[action.name]) {
         action = { ...defActions[action.name], ...action };
       }
@@ -91,7 +91,7 @@ export default class RichTextEditor {
     });
     const actions = settAct.length
       ? settAct
-      : Object.keys(defActions).map(action => defActions[action]);
+      : Object.keys(defActions).map(action => ({ ...defActions[action] }));
 
     settings.classes = {
       ...{

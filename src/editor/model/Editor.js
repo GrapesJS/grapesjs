@@ -705,7 +705,7 @@ export default Backbone.Model.extend({
     CssComposer && CssComposer.clear();
     UndoManager && UndoManager.clear().removeAll();
     Panels && Panels.getPanels().reset();
-    Canvas && Canvas.getCanvasView().remove();
+    Canvas && Canvas.clear();
     Keymaps && Keymaps.removeAll();
     RichTextEditor && RichTextEditor.destroy();
     this.view.remove();

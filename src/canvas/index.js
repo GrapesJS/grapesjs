@@ -48,9 +48,6 @@ const { requestAnimationFrame } = window;
 
 export default () => {
   let c = {};
-  let canvas;
-  let frameRect;
-  let CanvasView;
 
   return {
     /**
@@ -58,7 +55,7 @@ export default () => {
      * @private
      */
     getCanvasView() {
-      return CanvasView;
+      return this.CanvasView;
     },
 
     /**
@@ -84,16 +81,16 @@ export default () => {
       const ppfx = c.pStylePrefix;
       if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
 
-      canvas = new Canvas(config);
-      CanvasView = new canvasView({
-        model: canvas,
+      this.canvas = new Canvas(config);
+      this.CanvasView = new canvasView({
+        model: this.canvas,
         config: c
       });
 
       var cm = c.em.get('DomComponents');
       if (cm) this.setWrapper(cm);
 
-      this.model = canvas;
+      this.model = this.canvas;
       this.startAutoscroll = this.startAutoscroll.bind(this);
       this.stopAutoscroll = this.stopAutoscroll.bind(this);
       return this;
@@ -113,7 +110,7 @@ export default () => {
      * @private
      * */
     setWrapper(wrp) {
-      canvas.set('wrapper', wrp);
+      this.canvas.set('wrapper', wrp);
     },
 
     /**
@@ -121,11 +118,11 @@ export default () => {
      * @return {HTMLElement}
      */
     getElement() {
-      return CanvasView.el;
+      return this.CanvasView.el;
     },
 
     getFrame() {
-      return canvas.get('frame');
+      return this.canvas.get('frame');
     },
 
     /**
@@ -133,12 +130,12 @@ export default () => {
      * @return {HTMLIFrameElement}
      */
     getFrameEl() {
-      const { frame } = CanvasView;
+      const { frame } = this.CanvasView;
       return frame && frame.el;
     },
 
     getFramesEl() {
-      return CanvasView.framesArea;
+      return this.CanvasView.framesArea;
     },
 
     /**
@@ -194,7 +191,7 @@ export default () => {
      * @private
      */
     getGlobalToolsEl() {
-      return CanvasView.toolsGlobEl;
+      return this.CanvasView.toolsGlobEl;
     },
 
     /**
@@ -203,7 +200,7 @@ export default () => {
      * @private
      */
     getToolsEl(compView) {
-      return this._getLocalEl(CanvasView.toolsEl, compView, 'getToolsEl');
+      return this._getLocalEl(this.CanvasView.toolsEl, compView, 'getToolsEl');
     },
 
     /**
@@ -212,7 +209,7 @@ export default () => {
      * @private
      */
     getHighlighter(compView) {
-      return this._getLocalEl(CanvasView.hlEl, compView, 'getHighlighter');
+      return this._getLocalEl(this.CanvasView.hlEl, compView, 'getHighlighter');
     },
 
     /**
@@ -221,7 +218,7 @@ export default () => {
      * @private
      */
     getBadgeEl(compView) {
-      return this._getLocalEl(CanvasView.badgeEl, compView, 'getBadgeEl');
+      return this._getLocalEl(this.CanvasView.badgeEl, compView, 'getBadgeEl');
     },
 
     /**
@@ -230,7 +227,7 @@ export default () => {
      * @private
      */
     getPlacerEl() {
-      return CanvasView.placerEl;
+      return this.CanvasView.placerEl;
     },
 
     /**
@@ -239,7 +236,7 @@ export default () => {
      * @private
      */
     getGhostEl() {
-      return CanvasView.ghostEl;
+      return this.CanvasView.ghostEl;
     },
 
     /**
@@ -248,7 +245,7 @@ export default () => {
      * @private
      */
     getToolbarEl() {
-      return CanvasView.toolbarEl;
+      return this.CanvasView.toolbarEl;
     },
 
     /**
@@ -257,7 +254,7 @@ export default () => {
      * @private
      */
     getResizerEl() {
-      return CanvasView.resizerEl;
+      return this.CanvasView.resizerEl;
     },
 
     /**
@@ -267,7 +264,7 @@ export default () => {
      */
     getOffsetViewerEl(compView) {
       return this._getLocalEl(
-        CanvasView.offsetEl,
+        this.CanvasView.offsetEl,
         compView,
         'getOffsetViewerEl'
       );
@@ -279,7 +276,7 @@ export default () => {
      * @private
      */
     getFixedOffsetViewerEl() {
-      return CanvasView.fixedOffsetEl;
+      return this.CanvasView.fixedOffsetEl;
     },
 
     /**
@@ -287,7 +284,7 @@ export default () => {
      * @private
      * */
     render() {
-      return CanvasView.render().el;
+      return this.CanvasView.render().el;
     },
 
     /**
@@ -311,7 +308,7 @@ export default () => {
      * @private
      */
     offset(el) {
-      return CanvasView.offset(el);
+      return this.CanvasView.offset(el);
     },
 
     /**
@@ -333,7 +330,7 @@ export default () => {
      * @private
      */
     getElementPos(el, opts) {
-      return CanvasView.getElementPos(el, opts);
+      return this.CanvasView.getElementPos(el, opts);
     },
 
     /**
@@ -343,7 +340,7 @@ export default () => {
      * @private
      */
     getElementOffsets(el) {
-      return CanvasView.getElementOffsets(el);
+      return this.CanvasView.getElementOffsets(el);
     },
 
     /**
@@ -351,9 +348,9 @@ export default () => {
      * @returns {Object}
      */
     getRect() {
-      const { top, left } = CanvasView.getPosition();
+      const { top, left } = this.CanvasView.getPosition();
       return {
-        ...CanvasView.getCanvasOffset(),
+        ...this.CanvasView.getCanvasOffset(),
         topScroll: top,
         leftScroll: left
       };
@@ -377,9 +374,9 @@ export default () => {
      */
     getTargetToElementDim(target, element, options = {}) {
       var opts = options || {};
-      var canvasPos = CanvasView.getPosition();
+      var canvasPos = this.CanvasView.getPosition();
       if (!canvasPos) return;
-      var pos = opts.elPos || CanvasView.getElementPos(element);
+      var pos = opts.elPos || this.CanvasView.getElementPos(element);
       var toRight = options.toRight || 0;
       var targetHeight = opts.targetHeight || target.offsetHeight;
       var targetWidth = opts.targetWidth || target.offsetWidth;
@@ -529,7 +526,7 @@ export default () => {
      */
     getMouseRelativeCanvas(ev, opts) {
       const zoom = this.getZoomDecimal();
-      const { top, left } = CanvasView.getPosition(opts);
+      const { top, left } = this.CanvasView.getPosition(opts);
 
       return {
         y: ev.clientY * zoom + top,
@@ -607,7 +604,7 @@ export default () => {
      * @returns {this}
      */
     setZoom(value) {
-      canvas.set('zoom', parseFloat(value));
+      this.canvas.set('zoom', parseFloat(value));
       return this;
     },
 
@@ -616,7 +613,7 @@ export default () => {
      * @returns {Number}
      */
     getZoom() {
-      return parseFloat(canvas.get('zoom'));
+      return parseFloat(this.canvas.get('zoom'));
     },
 
     getZoomDecimal() {
@@ -633,6 +630,11 @@ export default () => {
       style.pointerEvents = on ? '' : 'none';
     },
 
+    clear() {
+      const cv = this.getCanvasView();
+      cv && cv.remove();
+    },
+
     /**
      * Returns wrapper element
      * @return {HTMLElement}
@@ -640,11 +642,11 @@ export default () => {
      * @private
      */
     getFrameWrapperEl() {
-      return CanvasView.frame.getWrapper();
+      return this.CanvasView.frame.getWrapper();
     },
 
     getFrames() {
-      return canvas.get('frames').map(item => item);
+      return this.canvas.get('frames').map(item => item);
     },
 
     /**
@@ -671,7 +673,7 @@ export default () => {
         });
      */
     addFrame(props = {}, opts = {}) {
-      return canvas.get('frames').add(
+      return this.canvas.get('frames').add(
         {
           ...props
         },

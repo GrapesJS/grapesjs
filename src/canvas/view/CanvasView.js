@@ -28,7 +28,6 @@ export default Backbone.View.extend({
 
   initialize(o) {
     bindAll(this, 'clearOff', 'onKeyPress');
-    on(window, 'scroll resize', this.clearOff);
     const { model } = this;
     const frames = model.get('frames');
     this.config = o.config || {};
@@ -78,6 +77,7 @@ export default Backbone.View.extend({
     const method = enable ? 'on' : 'off';
     const methods = { on, off };
     methods[method](document, 'keypress', this.onKeyPress);
+    methods[method](window, 'scroll resize', this.clearOff);
   },
 
   onKeyPress(ev) {

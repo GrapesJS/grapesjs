@@ -117,7 +117,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       script: '',
       'script-export': '',
       attributes: '',
-      traits: ['id', 'title'],
+      traits: '',
       propagate: '',
       dmode: '',
       toolbar: null
@@ -568,7 +568,8 @@ const Component = Backbone.Model.extend(Styleable).extend(
       this.stopListening(...toListen);
       this.loadTraits();
       const attrs = { ...this.get('attributes') };
-      const traits = this.get('traits');
+      let traits = this.get('traits');
+      traits = traits === '' ? ['id', 'title'] : traits;
       traits.each(trait => {
         if (!trait.get('changeProp')) {
           const name = trait.get('name');
