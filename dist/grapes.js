@@ -22772,12 +22772,12 @@ var timerZoom;
    * Get javascript container
    * @private
    */
-  getJsContainer: function getJsContainer() {
-    if (!this.jsContainer) {
-      this.jsContainer = $("<div class=\"".concat(this.ppfx, "js-cont\">")).get(0);
-    }
-
-    return this.jsContainer;
+  getJsContainer: function getJsContainer(view) {
+    var frameView = this.getFrameView(view);
+    return frameView && frameView.getJsContainer();
+  },
+  getFrameView: function getFrameView(view) {
+    return view && view._getFrame() || this.em.get('currentFrame');
   },
   render: function render() {
     var el = this.el,
@@ -28554,7 +28554,7 @@ __webpack_require__.r(__webpack_exports__);
     var addSelector = this.get('selectorsAdd');
     var isBody = wrapper && em && em.getConfig('wrapperIsBody');
     var selectors = isBody ? 'body' : this.get('selectors').getFullString();
-    var stateStr = state ? ":".concat(state) : '';
+    var stateStr = state && !opts.skipState ? ":".concat(state) : '';
     selectors && result.push("".concat(selectors).concat(stateStr));
     addSelector && !opts.skipAdd && result.push(addSelector);
     return result.join(', ');
@@ -37987,7 +37987,7 @@ var defaultConfig = {
   editors: editors,
   plugins: plugins,
   // Will be replaced on build
-  version: '0.15.16',
+  version: '0.15.18',
 
   /**
    * Initialize the editor with passed options
@@ -44282,7 +44282,9 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
      * @return {Model}
      */
     getModelToStyle: function getModelToStyle(model) {
+      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
       var em = c.em;
+      var skipAdd = options.skipAdd;
       var classes = model.get('classes');
       var id = model.getId();
 
@@ -44295,6 +44297,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
         var state = !config.devicePreviewMode ? em.get('state') : '';
         var valid = classes.getStyleable();
         var hasClasses = valid.length;
+        var useClasses = !smConf.componentFirst || options.useClasses;
         var opts = {
           state: state
         };
@@ -44305,16 +44308,16 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
         um.stop();
 
-        if (hasClasses && !smConf.componentFirst) {
+        if (hasClasses && useClasses) {
           var deviceW = em.getCurrentMedia();
           rule = cssC.get(valid, state, deviceW);
 
-          if (!rule) {
+          if (!rule && !skipAdd) {
             rule = cssC.add(valid, state, deviceW);
           }
         } else if (config.avoidInlineStyle) {
           rule = cssC.getIdRule(id, opts);
-          !rule && (rule = cssC.setIdRule(id, {}, opts));
+          !rule && !skipAdd && (rule = cssC.setIdRule(id, {}, opts));
           if (model.is('wrapper')) rule.set('wrapper', 1);
         }
 
@@ -44495,7 +44498,7 @@ __webpack_require__.r(__webpack_exports__);
     this.get('properties').each(function (prop) {
       return result.push(prop.getFullValue());
     });
-    return result.join(' ');
+    return result.join(' ').trim();
   }
 }));
 
@@ -46904,13 +46907,21 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _PropertyView__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./PropertyView */ "./src/style_manager/view/PropertyView.js");
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _PropertyView__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./PropertyView */ "./src/style_manager/view/PropertyView.js");
 
 
-var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
-/* harmony default export */ __webpack_exports__["default"] = (_PropertyView__WEBPACK_IMPORTED_MODULE_1__["default"].extend({
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+
+
+var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
+/* harmony default export */ __webpack_exports__["default"] = (_PropertyView__WEBPACK_IMPORTED_MODULE_2__["default"].extend({
   templateInput: function templateInput() {
     var pfx = this.pfx;
     return "\n      <div class=\"".concat(pfx, "field ").concat(pfx, "composite\">\n        <span id=\"").concat(pfx, "input-holder\"></span>\n      </div>\n    ");
@@ -46923,7 +46934,7 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
         args[_key] = arguments[_key];
       }
 
-      _PropertyView__WEBPACK_IMPORTED_MODULE_1__["default"].prototype.inputValueChanged.apply(this, args);
+      _PropertyView__WEBPACK_IMPORTED_MODULE_2__["default"].prototype.inputValueChanged.apply(this, args);
     }
   },
   clear: function clear(e) {
@@ -46931,7 +46942,7 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
     props && props.forEach(function (propView) {
       return propView.clear();
     });
-    _PropertyView__WEBPACK_IMPORTED_MODULE_1__["default"].prototype.clear.apply(this, arguments);
+    _PropertyView__WEBPACK_IMPORTED_MODULE_2__["default"].prototype.clear.apply(this, arguments);
   },
 
   /**
@@ -46983,7 +46994,9 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
     var that = this;
     var model = this.model;
     var result = {
-      config: this.config,
+      config: _objectSpread({}, this.config, {
+        highlightComputed: 0
+      }),
       collection: this.props,
       target: this.target,
       propTarget: this.propTarget,
@@ -47032,7 +47045,7 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
     return value;
   },
   clearCached: function clearCached() {
-    _PropertyView__WEBPACK_IMPORTED_MODULE_1__["default"].prototype.clearCached.apply(this, arguments);
+    _PropertyView__WEBPACK_IMPORTED_MODULE_2__["default"].prototype.clearCached.apply(this, arguments);
     this.$input = null;
     this.props = null;
     this.$props = null;
@@ -47457,9 +47470,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _PropertyCompositeView__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./PropertyCompositeView */ "./src/style_manager/view/PropertyCompositeView.js");
 /* harmony import */ var _LayersView__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./LayersView */ "./src/style_manager/view/LayersView.js");
+/* harmony import */ var code_manager_model_CssGenerator__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! code_manager/model/CssGenerator */ "./src/code_manager/model/CssGenerator.js");
 
 
 
+
+var cssGen = new code_manager_model_CssGenerator__WEBPACK_IMPORTED_MODULE_3__["default"]();
 /* harmony default export */ __webpack_exports__["default"] = (_PropertyCompositeView__WEBPACK_IMPORTED_MODULE_1__["default"].extend({
   templateInput: function templateInput() {
     var pfx = this.pfx;
@@ -47489,6 +47505,10 @@ __webpack_require__.r(__webpack_exports__);
 
       _PropertyCompositeView__WEBPACK_IMPORTED_MODULE_1__["default"].prototype.targetUpdated.apply(this, args);
     } else {
+      var _this$_getTargetData = this._getTargetData(),
+          status = _this$_getTargetData.status;
+
+      this.setStatus(status);
       this.checkVisibility();
     }
 
@@ -47559,30 +47579,144 @@ __webpack_require__.r(__webpack_exports__);
   getLayerValues: function getLayerValues() {
     return this.getLayers().getFullValue();
   },
+  _getClassRule: function _getClassRule() {
+    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var em = this.em;
+    var _opts$skipAdd = opts.skipAdd,
+        skipAdd = _opts$skipAdd === void 0 ? 1 : _opts$skipAdd;
+    var selected = em.getSelected();
+    var targetAlt = em.get('StyleManager').getModelToStyle(selected, {
+      skipAdd: skipAdd,
+      useClasses: 1
+    });
+    return targetAlt !== selected && targetAlt;
+  },
+
+  /**
+   * Return the parent style rule of the passed one
+   * @private
+   */
+  _getParentTarget: function _getParentTarget(target) {
+    var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var em = this.em,
+        model = this.model;
+    var property = model.get('property');
+
+    var isValid = opts.isValid || function (rule) {
+      return rule.getStyle()[property];
+    };
+
+    var targetsDevice = em.get('CssComposer').getAll().filter(function (rule) {
+      return rule.selectorsToString() === target.getSelectorsString();
+    });
+    var map = targetsDevice.reduce(function (acc, rule) {
+      acc[rule.getAtRule()] = rule;
+      return acc;
+    }, {});
+    var mapSorted = cssGen.sortMediaObject(map);
+    var sortedRules = mapSorted.map(function (item) {
+      return item.value;
+    });
+    var currIndex = sortedRules.indexOf(target);
+    var rulesToCheck = sortedRules.splice(0, currIndex);
+    var result;
+
+    for (var i = rulesToCheck.length - 1; i > -1; i--) {
+      var rule = rulesToCheck[i];
+
+      if (isValid(rule)) {
+        // only for not detached
+        result = rule;
+        break;
+      }
+    }
+
+    return result;
+  },
 
   /**
    * Refresh layers
    * */
   refreshLayers: function refreshLayers() {
     var layersObj = [];
-    var model = this.model;
+    var model = this.model,
+        em = this.em;
     var layers = this.getLayers();
     var detached = model.get('detached');
-    var target = this.getTarget(); // With detached layers values will be assigned to their properties
+    var property = model.get('property');
+    var target = this.getTarget();
+    var valueComput = this.getComputedValue();
+    var selected = em.getSelected();
+    var resultValue, style, targetAlt, targetAltDevice, valueTargetAlt, valueTrgAltDvc; // With detached layers values will be assigned to their properties
 
     if (detached) {
-      var style = target ? target.getStyle() : {};
+      style = target ? target.getStyle() : {};
+
+      var hasDetachedStyle = function hasDetachedStyle(rule) {
+        var name = model.get('properties').at(0).get('property');
+        return rule && !Object(underscore__WEBPACK_IMPORTED_MODULE_0__["isUndefined"])(rule.getStyle()[name]);
+      }; // If the style object is empty but the target has a computed value,
+      // that means the style might exist in some other place
+
+
+      if (!Object(underscore__WEBPACK_IMPORTED_MODULE_0__["keys"])(style).length && valueComput && selected) {
+        // Styles of the same target but with a higher rule
+        var parentOpts = {
+          isValid: function isValid(rule) {
+            return hasDetachedStyle(rule);
+          }
+        };
+        targetAltDevice = this._getParentTarget(target, parentOpts);
+
+        if (targetAltDevice) {
+          style = targetAltDevice.getStyle();
+        } else {
+          // The target is a component but the style is in the class rules
+          targetAlt = this._getClassRule();
+          valueTargetAlt = hasDetachedStyle(targetAlt) && targetAlt.getStyle();
+          targetAltDevice = !valueTargetAlt && this._getParentTarget(this._getClassRule({
+            skipAdd: 0
+          }), parentOpts);
+          valueTrgAltDvc = hasDetachedStyle(targetAltDevice) && targetAltDevice.getStyle();
+          style = valueTargetAlt || valueTrgAltDvc || {};
+        }
+      }
+
+      resultValue = style;
       layersObj = layers.getLayersFromStyle(style);
     } else {
-      var value = this.getTargetValue({
+      var valueTrg = this.getTargetValue({
         ignoreDefault: 1
       });
-      if (!value) value = this.getComputedValue();
+      var value = valueTrg; // Try to check if the style is in another rule
+
+      if (!value && valueComput) {
+        // Styles of the same target but with a higher rule
+        targetAltDevice = this._getParentTarget(target);
+
+        if (targetAltDevice) {
+          value = targetAltDevice.getStyle()[property];
+        } else {
+          // Computed value is not always reliable due to the browser's CSSOM parser
+          // here we try to look for the style in class rules
+          targetAlt = this._getClassRule();
+          valueTargetAlt = targetAlt && targetAlt.getStyle()[property];
+          targetAltDevice = !valueTargetAlt && this._getParentTarget(this._getClassRule({
+            skipAdd: 0
+          }));
+          valueTrgAltDvc = targetAltDevice && targetAltDevice.getStyle()[property];
+          value = valueTargetAlt || valueTrgAltDvc || valueComput;
+        }
+      }
+
       value = value == model.getDefaultValue() ? '' : value;
+      resultValue = value;
       layersObj = layers.getLayersFromValue(value);
     }
 
-    var toAdd = model.getLayersFromTarget(target) || layersObj;
+    var toAdd = model.getLayersFromTarget(target, {
+      resultValue: resultValue
+    }) || layersObj;
     layers.reset();
     layers.add(toAdd);
     model.set({
@@ -47664,25 +47798,28 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
-/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
-/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var utils_mixins__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! utils/mixins */ "./src/utils/mixins.js");
+/* harmony import */ var _babel_runtime_helpers_objectWithoutProperties__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/objectWithoutProperties */ "./node_modules/@babel/runtime/helpers/objectWithoutProperties.js");
+/* harmony import */ var _babel_runtime_helpers_objectWithoutProperties__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_objectWithoutProperties__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var utils_mixins__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! utils/mixins */ "./src/utils/mixins.js");
+
 
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 
 
 
 var clearProp = 'data-clear-style';
-/* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_1___default.a.View.extend({
+/* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_2___default.a.View.extend({
   template: function template(model) {
     var pfx = this.pfx;
     return "\n      <div class=\"".concat(pfx, "label\">\n        ").concat(this.templateLabel(model), "\n      </div>\n      <div class=\"").concat(this.ppfx, "fields\">\n        ").concat(this.templateInput(model), "\n      </div>\n    ");
@@ -47704,14 +47841,14 @@ var clearProp = 'data-clear-style';
   templateInput: function templateInput(model) {
     return "\n      <div class=\"".concat(this.ppfx, "field\">\n        <input placeholder=\"").concat(model.getDefaultValue(), "\"/>\n      </div>\n    ");
   },
-  events: _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({
+  events: _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1___default()({
     change: 'inputValueChanged'
   }, "click [".concat(clearProp, "]"), 'clear'),
   initialize: function initialize() {
     var _this = this;
 
     var o = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    Object(underscore__WEBPACK_IMPORTED_MODULE_2__["bindAll"])(this, 'targetUpdated');
+    Object(underscore__WEBPACK_IMPORTED_MODULE_3__["bindAll"])(this, 'targetUpdated');
     this.config = o.config || {};
     var em = this.config.em;
     this.em = em;
@@ -47866,33 +48003,20 @@ var clearProp = 'data-clear-style';
     var parent = this.model.parent;
     parent && value == 'updated' && parent.set('status', value);
   },
-  emitUpdateTarget: Object(underscore__WEBPACK_IMPORTED_MODULE_2__["debounce"])(function () {
+  emitUpdateTarget: Object(underscore__WEBPACK_IMPORTED_MODULE_3__["debounce"])(function () {
     var em = this.config.em;
     em && em.trigger('styleManager:update:target', this.getTarget());
   }),
-
-  /**
-   * Fired when the target is changed
-   * */
-  targetUpdated: function targetUpdated(mod, val) {
-    var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-    this.emitUpdateTarget();
-
-    if (!this.checkVisibility()) {
-      return;
-    }
-
-    var config = this.config;
-    var em = config.em;
-    var model = this.model;
-    var property = model.get('property');
-    var value = '';
-    var status = '';
+  _getTargetData: function _getTargetData() {
+    var model = this.model,
+        config = this.config;
     var targetValue = this.getTargetValue({
       ignoreDefault: 1
     });
     var defaultValue = model.getDefaultValue();
     var computedValue = this.getComputedValue();
+    var value = '';
+    var status = '';
 
     if (targetValue) {
       value = targetValue;
@@ -47911,19 +48035,47 @@ var clearProp = 'data-clear-style';
       status = '';
     }
 
+    return {
+      value: value,
+      status: status,
+      targetValue: targetValue,
+      defaultValue: defaultValue,
+      computedValue: computedValue
+    };
+  },
+
+  /**
+   * Fired when the target is changed
+   * */
+  targetUpdated: function targetUpdated(mod, val) {
+    var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    this.emitUpdateTarget();
+
+    if (!this.checkVisibility()) {
+      return;
+    }
+
+    var config = this.config;
+    var em = config.em;
+    var model = this.model;
+    var property = model.get('property');
+
+    var _this$_getTargetData = this._getTargetData(),
+        status = _this$_getTargetData.status,
+        value = _this$_getTargetData.value,
+        targetData = _babel_runtime_helpers_objectWithoutProperties__WEBPACK_IMPORTED_MODULE_0___default()(_this$_getTargetData, ["status", "value"]);
+
     this.setStatus(status);
     model.setValue(value, 0, _objectSpread({
       fromTarget: 1
     }, opts));
 
     if (em) {
-      var data = {
+      var data = _objectSpread({
         status: status,
-        targetValue: targetValue,
-        defaultValue: defaultValue,
-        computedValue: computedValue,
         value: value
-      };
+      }, targetData);
+
       em.trigger('styleManager:change', this, property, value, data);
       em.trigger("styleManager:change:".concat(property), this, value, data);
 
@@ -48025,7 +48177,7 @@ var clearProp = 'data-clear-style';
     var property = this.model.get('property');
     var notToSkip = avoid.indexOf(property) < 0;
     var value = computed[property];
-    var valueDef = computedDef[Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["camelCase"])(property)];
+    var valueDef = computedDef[Object(utils_mixins__WEBPACK_IMPORTED_MODULE_4__["camelCase"])(property)];
     return computed && notToSkip && valueDef !== value && value || '';
   },
 
@@ -48142,12 +48294,12 @@ var clearProp = 'data-clear-style';
     var stylable = trg.get('stylable'); // Stylable could also be an array indicating with which property
     // the target could be styled
 
-    if (Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isArray"])(stylable)) {
+    if (Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isArray"])(stylable)) {
       stylable = stylable.indexOf(property) >= 0;
     } // Check if the property was signed as unstylable
 
 
-    if (Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isArray"])(unstylable)) {
+    if (Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isArray"])(unstylable)) {
       stylable = unstylable.indexOf(property) < 0;
     } // Check if the property is available only if requested
 
@@ -48161,9 +48313,9 @@ var clearProp = 'data-clear-style';
       var properties = Object.keys(requires);
       sectors.each(function (sector) {
         sector.get('properties').each(function (model) {
-          if (Object(underscore__WEBPACK_IMPORTED_MODULE_2__["includes"])(properties, model.id)) {
+          if (Object(underscore__WEBPACK_IMPORTED_MODULE_3__["includes"])(properties, model.id)) {
             var values = requires[model.id];
-            stylable = stylable && Object(underscore__WEBPACK_IMPORTED_MODULE_2__["includes"])(values, model.get('value'));
+            stylable = stylable && Object(underscore__WEBPACK_IMPORTED_MODULE_3__["includes"])(values, model.get('value'));
           }
         });
       });
@@ -48176,8 +48328,8 @@ var clearProp = 'data-clear-style';
 
       if (parentEl) {
         var styles = window.getComputedStyle(parentEl);
-        Object(underscore__WEBPACK_IMPORTED_MODULE_2__["each"])(requiresParent, function (values, property) {
-          stylable = stylable && styles[property] && Object(underscore__WEBPACK_IMPORTED_MODULE_2__["includes"])(values, styles[property]);
+        Object(underscore__WEBPACK_IMPORTED_MODULE_3__["each"])(requiresParent, function (values, property) {
+          stylable = stylable && styles[property] && Object(underscore__WEBPACK_IMPORTED_MODULE_3__["includes"])(values, styles[property]);
         });
       } else {
         stylable = false;
@@ -48222,7 +48374,7 @@ var clearProp = 'data-clear-style';
    * */
   setValue: function setValue(value) {
     var model = this.model;
-    var val = Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isUndefined"])(value) ? model.getDefaultValue() : value;
+    var val = Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isUndefined"])(value) ? model.getDefaultValue() : value;
     var input = this.getInputEl();
     input && (input.value = val);
   },

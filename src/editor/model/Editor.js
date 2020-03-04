@@ -12,16 +12,6 @@ import Extender from 'utils/extender';
 import { getModel } from 'utils/mixins';
 
 Backbone.$ = $;
-
-const { Collection } = Backbone;
-let timedInterval;
-let updateItr;
-
-Extender({
-  Backbone: Backbone,
-  $: Backbone.$
-});
-
 const deps = [
   require('utils'),
   require('i18n'),
@@ -45,6 +35,15 @@ const deps = [
   // require('commands'),
   require('block_manager')
 ];
+
+const { Collection } = Backbone;
+let timedInterval;
+let updateItr;
+
+Extender({
+  Backbone: Backbone,
+  $: Backbone.$
+});
 
 const logs = {
   debug: console.log,

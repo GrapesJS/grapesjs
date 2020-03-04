@@ -49,7 +49,9 @@ export default {
     const { sender = {} } = this;
     sender.set && sender.set('active', 0);
     const panels = this.getPanels(editor);
-    editor.runCommand('sw-visibility');
+    if (editor.Panels.getButton('options', 'sw-visibility').get('active')) {
+      editor.runCommand('sw-visibility');
+    }
     editor.getModel().runDefault();
     panels.style.display = '';
     const canvas = editor.Canvas.getElement();

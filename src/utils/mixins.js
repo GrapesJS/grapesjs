@@ -17,7 +17,10 @@ const appendStyles = (styles, opts = {}) => {
   if (stls.length) {
     const href = stls.shift();
 
-    if (!opts.unique || !document.querySelector(`link[href="${href}"]`)) {
+    if (
+      href &&
+      (!opts.unique || !document.querySelector(`link[href="${href}"]`))
+    ) {
       const { head } = document;
       const link = document.createElement('link');
       link.href = href;
