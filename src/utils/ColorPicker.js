@@ -694,7 +694,7 @@ export default function($, undefined) {
         return;
       }
 
-      boundElement.trigger(event, [get()]);
+      boundElement.trigger('beforeShow.spectrum', [get()]);
 
       if (callbacks.beforeShow(get()) === false || event.isDefaultPrevented()) {
         return;

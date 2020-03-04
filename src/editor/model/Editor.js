@@ -6,10 +6,12 @@ import {
   toArray,
   keys
 } from 'underscore';
+import $ from 'cash-dom';
 import Backbone from 'backbone';
 import Extender from 'utils/extender';
 import { getModel } from 'utils/mixins';
 
+Backbone.$ = $;
 const deps = [
   require('utils'),
   require('i18n'),
@@ -43,7 +45,6 @@ Extender({
   $: Backbone.$
 });
 
-const $ = Backbone.$;
 const logs = {
   debug: console.log,
   info: console.info,
