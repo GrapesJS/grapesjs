@@ -75,7 +75,7 @@ export default Component.extend(
      */
     getAttrToHTML(...args) {
       const attr = Component.prototype.getAttrToHTML.apply(this, args);
-      const src = this.get('src');
+      const src = this.getSrcResult();
       if (src) attr.src = src;
       return attr;
     },
