@@ -255,8 +255,8 @@ const Component = Backbone.Model.extend(Styleable).extend(
      */
     find(query) {
       const result = [];
-
-      this.view.$el.find(query).each((el, i, $els) => {
+      const $els = this.view.$el.find(query);
+      $els.each(i => {
         const $el = $els.eq(i);
         const model = $el.data('model');
         model && result.push(model);
