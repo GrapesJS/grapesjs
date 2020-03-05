@@ -704,15 +704,15 @@ export default Backbone.Model.extend({
       StyleManager
     } = this.attributes;
     this.stopDefault();
-    DomComponents && DomComponents.clear();
-    CssComposer && CssComposer.clear();
-    UndoManager && UndoManager.clear().removeAll();
-    Panels && Panels.getPanels().reset();
-    Canvas && Canvas.clear();
-    Keymaps && Keymaps.removeAll();
-    RichTextEditor && RichTextEditor.destroy();
-    Commands && Commands.clear();
-    DeviceManager && DeviceManager.destroy();
+    DomComponents.destroy();
+    CssComposer.destroy();
+    UndoManager && UndoManager.destroy();
+    Panels.destroy();
+    Canvas.destroy();
+    Keymaps && Keymaps.destroy();
+    RichTextEditor.destroy();
+    Commands.destroy();
+    DeviceManager.destroy();
     SelectorManager.destroy();
     StyleManager.destroy();
     this.view.remove();

@@ -727,6 +727,10 @@ export default () => {
         });
 
       model && isEmpty(model.get('status')) && model.set('status', state);
+    },
+
+    destroy() {
+      this.clear();
     }
   };
 };

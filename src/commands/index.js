@@ -425,7 +425,7 @@ export default () => {
       return new cmd(c);
     },
 
-    clear() {
+    destroy() {
       em = 0;
       commands = {};
       defaultCommands = {};

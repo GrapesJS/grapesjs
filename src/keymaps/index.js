@@ -212,6 +212,10 @@ export default () => {
     removeAll() {
       Object.keys(keymaps).forEach(keymap => this.remove(keymap));
       return this;
+    },
+
+    destroy() {
+      this.removeAll();
     }
   };
 };

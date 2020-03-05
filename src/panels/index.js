@@ -233,6 +233,10 @@ export default () => {
       });
     },
 
+    destroy() {
+      this.getPanels().reset();
+    },
+
     Panel
   };
 };

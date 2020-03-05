@@ -262,6 +262,10 @@ export default () => {
 
     getInstance() {
       return um;
+    },
+
+    destroy() {
+      this.clear().removeAll();
     }
   };
 };

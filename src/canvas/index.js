@@ -630,7 +630,7 @@ export default () => {
       style.pointerEvents = on ? '' : 'none';
     },
 
-    clear() {
+    destroy() {
       const cv = this.getCanvasView();
       cv && cv.remove();
     },

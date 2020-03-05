@@ -462,6 +462,10 @@ export default () => {
      */
     render() {
       return rulesView.render().el;
+    },
+
+    destroy() {
+      this.clear();
     }
   };
 };
