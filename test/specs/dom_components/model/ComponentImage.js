@@ -1,5 +1,5 @@
-import Component from '../../../../src/dom_components/model/Component';
-import ComponentImage from '../../../../src/dom_components/model/ComponentImage';
+import Component from 'dom_components/model/Component';
+import ComponentImage from 'dom_components/model/ComponentImage';
 
 describe('ComponentImage', () => {
   let componentImage;
