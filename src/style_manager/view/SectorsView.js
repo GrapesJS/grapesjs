@@ -13,6 +13,7 @@ export default Backbone.View.extend({
     this.ppfx = config.pStylePrefix || '';
     this.target = o.target || {};
     this.config = config;
+    this.sectors = [];
 
     // The target that will emit events for properties
     const target = {};
@@ -163,7 +164,7 @@ export default Backbone.View.extend({
   addToCollection(model, fragmentEl, opts = {}) {
     const { pfx, target, propTarget, config, el } = this;
     const appendTo = fragmentEl || el;
-    const rendered = new SectorView({
+    const view = new SectorView({
       model,
       id: `${pfx}${model.get('id')}`,
       name: model.get('name'),
@@ -171,10 +172,17 @@ export default Backbone.View.extend({
       target,
       propTarget,
       config
-    }).render().el;
+    }).render();
+    const rendered = view.el;
     appendAtIndex(appendTo, rendered, opts.at);
+    this.sectors.push(view);
 
     return rendered;
+  },
+
+  remove() {
+    Backbone.View.prototype.remove.apply(this, arguments);
+    this.sectors.forEach(item => item.remove());
   },
 
   render() {

@@ -32,7 +32,7 @@ const deps = [
   require('dom_components'),
   require('navigator'),
   require('canvas'),
-  // require('commands'),
+  require('commands'),
   require('block_manager')
 ];
 
@@ -697,7 +697,11 @@ export default Backbone.Model.extend({
       Panels,
       Canvas,
       Keymaps,
-      RichTextEditor
+      RichTextEditor,
+      Commands,
+      DeviceManager,
+      SelectorManager,
+      StyleManager
     } = this.attributes;
     this.stopDefault();
     DomComponents && DomComponents.clear();
@@ -707,6 +711,10 @@ export default Backbone.Model.extend({
     Canvas && Canvas.clear();
     Keymaps && Keymaps.removeAll();
     RichTextEditor && RichTextEditor.destroy();
+    Commands && Commands.clear();
+    DeviceManager && DeviceManager.destroy();
+    SelectorManager.destroy();
+    StyleManager.destroy();
     this.view.remove();
     this.stopListening();
     this.clear({ silent: true });

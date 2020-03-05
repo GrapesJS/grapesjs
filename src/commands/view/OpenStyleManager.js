@@ -26,24 +26,24 @@ export default {
       var clm = em.SelectorManager;
       if (clm) this.$cn2.append(clm.render([]));
       this.$cn2.append(em.StyleManager.render());
-      var smConfig = em.StyleManager.getConfig();
-      const pfx = smConfig.stylePrefix;
-      // Create header
-      this.$header = $(
-        `<div class="${pfx}header">${em.t('styleManager.empty')}</div>`
-      );
-      this.$cn.append(this.$header);
+      // var smConfig = em.StyleManager.getConfig();
+      // const pfx = smConfig.stylePrefix;
+      // // Create header
+      // this.$header = $(
+      //   `<div class="${pfx}header">${em.t('styleManager.empty')}</div>`
+      // );
+      // this.$cn.append(this.$header);
 
-      // Create panel if not exists
-      if (!panels.getPanel('views-container'))
-        this.panel = panels.addPanel({ id: 'views-container' });
-      else this.panel = panels.getPanel('views-container');
+      // // Create panel if not exists
+      // if (!panels.getPanel('views-container'))
+      //   this.panel = panels.addPanel({ id: 'views-container' });
+      // else this.panel = panels.getPanel('views-container');
 
-      // Add all containers to the panel
-      this.panel.set('appendContent', this.$cn).trigger('change:appendContent');
+      // // Add all containers to the panel
+      // this.panel.set('appendContent', this.$cn).trigger('change:appendContent');
 
-      this.target = em.editor;
-      this.listenTo(this.target, 'component:toggled', this.toggleSm);
+      // this.target = em.editor;
+      // this.listenTo(this.target, 'component:toggled', this.toggleSm);
     }
     this.toggleSm();
   },
@@ -53,18 +53,17 @@ export default {
    * @private
    */
   toggleSm() {
-    const { target, sender } = this;
-    if (sender && sender.get && !sender.get('active')) return;
-    const { componentFirst } = target.get('SelectorManager').getConfig();
-    const selectedAll = target.getSelectedAll().length;
-
-    if (selectedAll === 1 || (selectedAll > 1 && componentFirst)) {
-      this.$cn2.show();
-      this.$header.hide();
-    } else {
-      this.$cn2.hide();
-      this.$header.show();
-    }
+    // const { target, sender } = this;
+    // if (sender && sender.get && !sender.get('active')) return;
+    // const { componentFirst } = target.get('SelectorManager').getConfig();
+    // const selectedAll = target.getSelectedAll().length;
+    // if (selectedAll === 1 || (selectedAll > 1 && componentFirst)) {
+    //   this.$cn2.show();
+    //   this.$header.hide();
+    // } else {
+    //   this.$cn2.hide();
+    //   this.$header.show();
+    // }
   },
 
   stop() {

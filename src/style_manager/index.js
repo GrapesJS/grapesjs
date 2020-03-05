@@ -391,6 +391,13 @@ export default () => {
       return SectView.render().el;
     },
 
+    destroy() {
+      SectView.remove();
+      SectView.target = 0;
+      SectView.propTarget = 0;
+      SectView = 0;
+    },
+
     _logNoSector(sectorId) {
       const { em } = this;
       em && em.logWarning(`'${sectorId}' sector not found`);

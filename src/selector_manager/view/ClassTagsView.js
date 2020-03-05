@@ -120,8 +120,7 @@ export default Backbone.View.extend({
   getStyleEmitter() {
     const { em } = this;
     const sm = em && em.get('StyleManager');
-    const emitter = sm && sm.getEmitter();
-    return emitter || {};
+    return sm && sm.getEmitter();
   },
 
   /**

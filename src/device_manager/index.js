@@ -124,6 +124,10 @@ export default () => {
      */
     render() {
       return view.render().el;
+    },
+
+    destroy() {
+      view.remove();
     }
   };
 };
