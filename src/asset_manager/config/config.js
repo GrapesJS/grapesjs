@@ -97,5 +97,8 @@ export default {
   //   var stopUpload = true;
   //   if(stopUpload) return false;
   // }
-  beforeUpload: null
+  beforeUpload: null,
+
+  // Toggles visiblity of assets url input
+  showUrlInput: true
 };
