@@ -14,7 +14,6 @@ describe('AssetsView', () => {
       globalCollection: new Assets([]),
       fu: new FileUploader({})
     });
-    obj = obj;
     document.body.innerHTML = '<div id="fixtures"></div>';
     obj.render();
     document.body.querySelector('#fixtures').appendChild(obj.el);
@@ -68,16 +67,64 @@ describe('AssetsView', () => {
     expect(obj.getAssetsEl()).toBeTruthy();
   });
 
-  test('Returns not empty url input', () => {
-    expect(obj.getAddInput()).toBeTruthy();
+  describe('Assets input is enabled', () => {
+    var obj;
+    var coll;
+    coll = new Assets([]);
+
+    beforeEach(() => {
+      var config = {
+        showUrlInput: true
+      };
+
+      obj = new AssetsView({
+        config: config,
+        collection: coll,
+        globalCollection: new Assets([]),
+        fu: new FileUploader({})
+      });
+      document.body.innerHTML = '<div id="fixtures"></div>';
+      obj.render();
+      document.body.querySelector('#fixtures').appendChild(obj.el);
+    });
+
+    test('Returns not empty url input', () => {
+      expect(obj.getAddInput()).toBeTruthy();
+    });
+
+    test('Add image asset from input string', () => {
+      obj.getAddInput().value = 'test';
+      obj.handleSubmit({
+        preventDefault() {}
+      });
+      var asset = obj.options.globalCollection.at(0);
+      expect(asset.get('src')).toEqual('test');
+    });
   });
 
-  test('Add image asset from input string', () => {
-    obj.getAddInput().value = 'test';
-    obj.handleSubmit({
-      preventDefault() {}
+  describe('Assets inputs is disabled', () => {
+    var obj;
+    var coll;
+
+    beforeEach(() => {
+      var config = {
+        showUrlInput: false
+      };
+
+      coll = new Assets([]);
+      obj = new AssetsView({
+        config: config,
+        collection: coll,
+        globalCollection: new Assets([]),
+        fu: new FileUploader({})
+      });
+      document.body.innerHTML = '<div id="fixtures"></div>';
+      obj.render();
+      document.body.querySelector('#fixtures').appendChild(obj.el);
     });
-    var asset = obj.options.globalCollection.at(0);
-    expect(asset.get('src')).toEqual('test');
+
+    test('No presence of url input', () => {
+      expect(obj.getAddInput()).toBeFalsy();
+    });
   });
 });
