@@ -61,6 +61,7 @@ export default PropertyView.extend({
         this.$props = propsView.render().$el;
         this.properties = propsView.properties;
         this.$el.find(`#${this.pfx}input-holder`).append(this.$props);
+        this.views.push(propsView);
       }
     }
   },

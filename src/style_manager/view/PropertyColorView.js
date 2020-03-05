@@ -21,6 +21,7 @@ export default PropertyIntegerView.extend({
       this.$color = input.colorEl;
       this.input = this.$input.get(0);
       this.inputInst = input;
+      this.views.push(inputColor);
     }
   }
 });

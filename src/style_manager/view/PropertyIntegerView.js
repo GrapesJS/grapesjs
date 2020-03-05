@@ -35,6 +35,7 @@ export default PropertyView.extend({
       this.$unit = $(this.unit);
       this.input = this.$input.get(0);
       this.inputInst = input;
+      this.views.push(input);
     }
   },
 

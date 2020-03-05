@@ -280,7 +280,7 @@ export default () => {
         // selecting the component) and calling undo() it will remove the rule from
         // the collection, therefore updating it in style manager will not affect it
         // #268
-        um.stop();
+        um && um.stop();
 
         if (hasClasses && useClasses) {
           const deviceW = em.getCurrentMedia();
@@ -296,7 +296,7 @@ export default () => {
         }
 
         rule && (model = rule);
-        um.start();
+        um && um.start();
       }
 
       return model;

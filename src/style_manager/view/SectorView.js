@@ -19,6 +19,7 @@ export default Backbone.View.extend({
     this.pfx = this.config.stylePrefix || '';
     this.target = o.target || {};
     this.propTarget = o.propTarget || {};
+    this.props = [];
     this.caretR = 'fa-caret-right';
     this.caretD = 'fa-caret-down';
     const model = this.model;
@@ -101,6 +102,12 @@ export default Backbone.View.extend({
         config: this.config
       });
       this.$el.append(view.render().el);
+      this.props.push(view);
     }
+  },
+
+  remove() {
+    Backbone.View.prototype.remove.apply(this, arguments);
+    this.props.forEach(item => item.remove());
   }
 });

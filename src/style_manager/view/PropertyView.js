@@ -57,6 +57,7 @@ export default Backbone.View.extend({
     this.onChange = o.onChange;
     this.onInputRender = o.onInputRender || {};
     this.customValue = o.customValue || {};
+    this.views = [];
     const model = this.model;
     this.property = model.get('property');
     this.input = null;
@@ -69,7 +70,11 @@ export default Backbone.View.extend({
       model.set('value', model.getDefaultValue());
     }
 
-    em && em.on(`update:component:style:${this.property}`, this.targetUpdated);
+    this.listenTo(
+      em,
+      `update:component:style:${this.property}`,
+      this.targetUpdated
+    );
     //em && em.on(`styleable:change:${this.property}`, this.targetUpdated);
 
     // Listening to changes of properties in this.requires, so that styleable
@@ -77,7 +82,11 @@ export default Backbone.View.extend({
     const requires = model.get('requires');
     requires &&
       Object.keys(requires).forEach(property => {
-        em && em.on(`component:styleUpdate:${property}`, this.targetUpdated);
+        this.listenTo(
+          em,
+          `component:styleUpdate:${property}`,
+          this.targetUpdated
+        );
       });
 
     this.listenTo(
@@ -632,5 +641,10 @@ export default Backbone.View.extend({
     const onRender = this.onRender && this.onRender.bind(this);
     onRender && onRender();
     this.setValue(model.get('value'), { targetUpdate: 1 });
+  },
+
+  remove() {
+    Backbone.View.prototype.remove.apply(this, arguments);
+    this.views.forEach(item => item.remove());
   }
 });
