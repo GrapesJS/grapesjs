@@ -271,7 +271,8 @@ export default Backbone.Model.extend({
    * @private
    */
   getSelected() {
-    return this.get('selected').last();
+    const sel = this.get('selected');
+    return sel && sel.last();
   },
 
   /**
@@ -688,44 +689,20 @@ export default Backbone.Model.extend({
    * Destroy editor
    */
   destroyAll() {
+    const { config, attrsOrig } = this;
     const editor = this.getEditor();
-    const { editors } = this.config.grapesjs;
-    const {
-      DomComponents,
-      CssComposer,
-      UndoManager,
-      Panels,
-      Canvas,
-      Keymaps,
-      RichTextEditor,
-      Commands,
-      DeviceManager,
-      SelectorManager,
-      StyleManager
-    } = this.attributes;
+    const { editors } = config.grapesjs;
     this.stopDefault();
-    DomComponents.destroy();
-    CssComposer.destroy();
-    UndoManager && UndoManager.destroy();
-    Panels.destroy();
-    Canvas.destroy();
-    Keymaps && Keymaps.destroy();
-    RichTextEditor.destroy();
-    Commands.destroy();
-    DeviceManager.destroy();
-    SelectorManager.destroy();
-    StyleManager.destroy();
+    this.get('modules').forEach(item => item.destroy());
     this.view.remove();
     this.stopListening();
     this.clear({ silent: true });
     this._previousAttributes = {};
     this.attributes = {};
     editors.splice(editors.indexOf(editor), 1);
-    $(this.config.el)
+    $(config.el)
       .empty()
-      .attr(this.attrsOrig);
-    this.config = 0;
-    this.attrsOrig = 0;
+      .attr(attrsOrig);
   },
 
   setEditing(value) {

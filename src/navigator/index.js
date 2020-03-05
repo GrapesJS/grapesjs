@@ -18,6 +18,10 @@ export default () => {
       return this;
     },
 
+    destroy() {
+      layers && layers.remove();
+    },
+
     getConfig() {
       return config;
     },

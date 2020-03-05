@@ -74,6 +74,8 @@ export default () => {
       return this;
     },
 
+    destroy() {},
+
     /**
      * Add new code generator to the collection
      * @param  {string} id Code generator ID

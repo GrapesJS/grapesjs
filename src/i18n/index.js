@@ -81,6 +81,8 @@ export default () => {
       return this;
     },
 
+    destroy() {},
+
     /**
      * Get module configurations
      * @returns {Object} Configuration object

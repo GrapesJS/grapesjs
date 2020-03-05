@@ -42,6 +42,10 @@ export default () => {
       return this;
     },
 
+    destroy() {
+      TraitsViewer.remove();
+    },
+
     postRender() {
       const elTo = this.getConfig().appendTo;
 

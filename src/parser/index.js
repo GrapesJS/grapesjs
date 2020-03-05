@@ -54,6 +54,8 @@ export default () => {
       return this;
     },
 
+    destroy() {},
+
     /**
      * Parse HTML string and return valid model
      * @param  {string} str HTML string

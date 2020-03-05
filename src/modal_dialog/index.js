@@ -77,6 +77,10 @@ export default () => {
       return this;
     },
 
+    destroy() {
+      modal.remove();
+    },
+
     postRender(view) {
       const el = view.model.getConfig().el || view.el;
       this.render().appendTo(el);

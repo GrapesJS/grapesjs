@@ -739,7 +739,8 @@ export default (config = {}) => {
      * Destroy the editor
      */
     destroy() {
-      return em.destroyAll();
+      em.destroyAll();
+      editorView.remove();
     },
 
     /**

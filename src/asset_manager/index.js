@@ -103,6 +103,11 @@ export default () => {
       return this;
     },
 
+    destroy() {
+      fu.remove();
+      am.remove();
+    },
+
     /**
      * Add new asset/s to the collection. URLs are supposed to be unique
      * @param {string|Object|Array<string>|Array<Object>} asset URL strings or an objects representing the resource.

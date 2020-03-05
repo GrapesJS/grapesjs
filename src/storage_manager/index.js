@@ -39,7 +39,7 @@ import RemoteStorage from './model/RemoteStorage';
 export default () => {
   var c = {};
   let em;
-  var storages = {};
+  let storages = {};
   var defaultStorages = {};
   const eventStart = 'storage:start';
   const eventEnd = 'storage:end';
@@ -80,6 +80,10 @@ export default () => {
       c.currentStorage = c.type;
       this.loadDefaultProviders().setCurrent(c.type);
       return this;
+    },
+
+    destroy() {
+      storages = {};
     },
 
     /**

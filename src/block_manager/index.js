@@ -90,6 +90,10 @@ export default () => {
       return this;
     },
 
+    destroy() {
+      blocksView.remove();
+    },
+
     /**
      * Get configuration object
      * @return {Object}
