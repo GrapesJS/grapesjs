@@ -300,7 +300,7 @@ export default PropertyCompositeView.extend({
     }).render().el;
 
     // Will use it to propogate changes
-    new PropertiesView({
+    const propView = new PropertiesView({
       target: this.target,
       collection: this.model.get('properties'),
       stackModel: model,
@@ -308,6 +308,7 @@ export default PropertyCompositeView.extend({
       onChange: propsConfig.onChange,
       propTarget: propsConfig.propTarget
     }).render();
+    this.views.push(propView);
 
     //model.get('properties')
     fieldEl.appendChild(layers);

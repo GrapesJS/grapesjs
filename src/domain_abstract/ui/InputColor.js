@@ -75,46 +75,46 @@ export default Input.extend({
       let changed = 0;
       let previousColor;
       this.$el.find(`[data-colorp-c]`).append(colorEl);
-      // colorEl.spectrum({
-      //   containerClassName: `${ppfx}one-bg ${ppfx}two-color`,
-      //   appendTo: elToAppend || 'body',
-      //   maxSelectionSize: 8,
-      //   showPalette: true,
-      //   showAlpha: true,
-      //   chooseText: 'Ok',
-      //   cancelText: '⨯',
-      //   palette: [],
+      colorEl.spectrum({
+        containerClassName: `${ppfx}one-bg ${ppfx}two-color`,
+        appendTo: elToAppend || 'body',
+        maxSelectionSize: 8,
+        showPalette: true,
+        showAlpha: true,
+        chooseText: 'Ok',
+        cancelText: '⨯',
+        palette: [],
 
-      //   // config expanded here so that the functions below are not overridden
-      //   ...colorPickerConfig,
+        // config expanded here so that the functions below are not overridden
+        ...colorPickerConfig,
 
-      //   move(color) {
-      //     const cl = getColor(color);
-      //     cpStyle.backgroundColor = cl;
-      //     model.setValueFromInput(cl, 0);
-      //   },
-      //   change(color) {
-      //     changed = 1;
-      //     const cl = getColor(color);
-      //     cpStyle.backgroundColor = cl;
-      //     model.setValueFromInput(cl);
-      //     self.noneColor = 0;
-      //   },
-      //   show(color) {
-      //     changed = 0;
-      //     previousColor = getColor(color);
-      //   },
-      //   hide(color) {
-      //     if (!changed && previousColor) {
-      //       if (self.noneColor) {
-      //         previousColor = '';
-      //       }
-      //       cpStyle.backgroundColor = previousColor;
-      //       colorEl.spectrum('set', previousColor);
-      //       model.setValueFromInput(previousColor, 0);
-      //     }
-      //   }
-      // });
+        move(color) {
+          const cl = getColor(color);
+          cpStyle.backgroundColor = cl;
+          model.setValueFromInput(cl, 0);
+        },
+        change(color) {
+          changed = 1;
+          const cl = getColor(color);
+          cpStyle.backgroundColor = cl;
+          model.setValueFromInput(cl);
+          self.noneColor = 0;
+        },
+        show(color) {
+          changed = 0;
+          previousColor = getColor(color);
+        },
+        hide(color) {
+          if (!changed && previousColor) {
+            if (self.noneColor) {
+              previousColor = '';
+            }
+            cpStyle.backgroundColor = previousColor;
+            colorEl.spectrum('set', previousColor);
+            model.setValueFromInput(previousColor, 0);
+          }
+        }
+      });
 
       this.colorEl = colorEl;
     }
@@ -126,5 +126,10 @@ export default Input.extend({
     // This will make the color input available on render
     this.getColorEl();
     return this;
+  },
+
+  remove() {
+    Input.prototype.remove.apply(this, arguments);
+    this.colorEl.spectrum('destroy');
   }
 });
