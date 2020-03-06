@@ -16,7 +16,7 @@ const deps = [
   require('utils'),
   require('i18n'),
   // require('keymaps'),
-  // // require('undo_manager'),
+  require('undo_manager'),
   require('storage_manager'),
   require('device_manager'),
   require('parser'),
