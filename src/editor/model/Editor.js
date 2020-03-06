@@ -698,8 +698,6 @@ export default Backbone.Model.extend({
     this.view.remove();
     this.stopListening();
     this.clear({ silent: true });
-    this._previousAttributes = {};
-    this.attributes = {};
     editors.splice(editors.indexOf(editor), 1);
     $(config.el)
       .empty()
