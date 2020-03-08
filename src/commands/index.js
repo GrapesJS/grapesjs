@@ -131,6 +131,7 @@ export default () => {
           const modes = ['absolute', 'translate'];
           const mode = sel.get('dmode') || em.get('dmode');
           const hideTlb = () => em.stopDefault(defComOptions);
+          const altMode = includes(modes, mode);
           selAll.forEach(sel => sel.trigger('disable'));
 
           if (!sel || !sel.get('draggable')) {
@@ -152,12 +153,12 @@ export default () => {
             ed.select(selAll);
             sel.emitUpdate();
             em.trigger(`${eventDrag}:end`, data);
+
+            // Dirty patch to prevent parent selection on drop
+            (altMode || data.cancelled) && em.set('_cmpDrag', 1);
           };
 
-          // Dirty patch to prevent parent selection on drop
-          em.set('_cmpDrag', 1);
-
-          if (includes(modes, mode)) {
+          if (altMode) {
             // TODO move grabbing func in editor/canvas from the Sorter
             dragger = ed.runCommand('core:component-drag', {
               guidesInfo: 1,
