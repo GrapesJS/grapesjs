@@ -20,10 +20,10 @@ export default Backbone.Collection.extend({
     );
   },
 
-  getFullString(collection) {
+  getFullString(collection, opts = {}) {
     const result = [];
     const coll = collection || this;
-    coll.forEach(selector => result.push(selector.getFullName()));
+    coll.forEach(selector => result.push(selector.getFullName(opts)));
     return result.join('').trim();
   }
 });
