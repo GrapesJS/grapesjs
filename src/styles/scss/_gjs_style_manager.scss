@@ -181,7 +181,7 @@
     }
 
     &.#{$sm-prefix}composite {
-      background-color: rgba(0, 0, 0, 0.1);
+      background-color: $mainDklColor;
       border: 1px solid rgba(0, 0, 0, 0.25);
     }
 
