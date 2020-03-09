@@ -89,7 +89,7 @@ describe('ClassTagsView', () => {
     testContext.input.trigger('focusout');
     expect(testContext.btnAdd.css('display')).not.toEqual('none');
     expect(testContext.input.css('display')).toEqual('none');
-    expect(testContext.input.val()).toEqual(null);
+    expect(testContext.input.val()).toBeFalsy();
   });
 
   test.skip('Check keyup of ESC on input', function() {

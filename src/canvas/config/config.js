@@ -6,6 +6,8 @@ export default {
    * Be aware that these scripts will not be printed in the export code
    * @example
    * scripts: [ 'https://...1.js', 'https://...2.js' ]
+   * * // or passing objects as attributes
+   * scripts: [ { src: '/file.js', someattr: 'value' }, ... ]
    */
   scripts: [],
 
@@ -14,6 +16,8 @@ export default {
    * Be aware that these styles will not be printed in the export code
    * @example
    * styles: [ 'https://...1.css', 'https://...2.css' ]
+   * // or passing objects as attributes
+   * scripts: [ { href: '/style.css', someattr: 'value' }, ... ]
    */
   styles: [],
 

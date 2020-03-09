@@ -13,7 +13,7 @@
   padding: 3px;
   margin-right: 3px;
   border: 1px solid rgba(0, 0, 0, 0.15);
-  min-width: 24px;
+  width: 24px;
   height: 24px;
   box-sizing: border-box;
   cursor: pointer;
@@ -47,7 +47,8 @@
 
     &-status,
     &-close {
-      min-width: 12px;
+      width: 12px;
+      height: 12px;
       flex-shrink: 1;
 
       svg {

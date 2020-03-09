@@ -174,7 +174,6 @@ export default () => ({
       switch (prop) {
         case 'float':
         case 'background-color':
-        case 'background-image':
         case 'text-shadow':
           obj.defaults = 'none';
           break;

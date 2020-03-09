@@ -11,7 +11,7 @@ import {
   result,
   keys
 } from 'underscore';
-import { shallowDiff } from 'utils/mixins';
+import { shallowDiff, capitalize } from 'utils/mixins';
 import Styleable from 'domain_abstract/model/Styleable';
 import Backbone from 'backbone';
 import Components from './Components';
@@ -27,6 +27,8 @@ const escapeRegExp = str => {
 };
 
 const avoidInline = em => em && em.getConfig('avoidInlineStyle');
+
+export const eventDrag = 'component:drag';
 
 /**
  * The Component object represents a single node of our template structure, so when you update its properties the changes are
@@ -171,6 +173,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       opt.em = em;
       this.opt = opt;
       this.em = em;
+      this.frame = opt.frame;
       this.config = opt.config || {};
       this.set('attributes', {
         ...(this.defaults.attributes || {}),
@@ -186,6 +189,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       this.listenTo(this, 'change:attributes', this.attrUpdated);
       this.listenTo(this, 'change:attributes:id', this._idUpdated);
       this.set('status', '');
+      this.views = [];
 
       // Register global updates for collection properties
       ['classes', 'traits', 'components'].forEach(name => {
@@ -251,8 +255,8 @@ const Component = Backbone.Model.extend(Styleable).extend(
      */
     find(query) {
       const result = [];
-
-      this.view.$el.find(query).each((el, i, $els) => {
+      const $els = this.view.$el.find(query);
+      $els.each(i => {
         const $el = $els.eq(i);
         const model = $el.data('model');
         model && result.push(model);
@@ -867,16 +871,25 @@ const Component = Backbone.Model.extend(Styleable).extend(
     getName() {
       const { em } = this;
       const { type, tagName } = this.attributes;
-      const customName = this.get('custom-name');
       const cName = this.get('name');
-      let tag = tagName;
-      tag = tag == 'div' ? 'box' : tag;
-      let name = type || tag;
-      name = name.charAt(0).toUpperCase() + name.slice(1);
+      const isDiv = tagName == 'div';
+      const tag = isDiv ? 'box' : tagName;
+      const defName = type || tag;
+      const nameTag = !type && tagName && !isDiv && tagName;
       const i18nPfx = 'domComponents.names.';
-      const i18nStr =
+      const i18nName = cName && em && em.t(`${i18nPfx}${cName}`);
+      const i18nNameTag = nameTag && em && em.t(`${i18nPfx}${nameTag}`);
+      const i18nDefName =
         em && (em.t(`${i18nPfx}${type}`) || em.t(`${i18nPfx}${tagName}`));
-      return customName || i18nStr || cName || name;
+      return (
+        this.get('custom-name') || // Used in Layers (when the user changes the name)
+        i18nName ||
+        cName || // Component name (check if there is a i18n string for it)
+        i18nNameTag ||
+        capitalize(nameTag) || // Try name by tag if there is no valid type
+        i18nDefName ||
+        capitalize(defName) // Use the default name
+      );
     },
 
     /**
@@ -1036,19 +1049,33 @@ const Component = Backbone.Model.extend(Styleable).extend(
     /**
      * Get the DOM element of the component.
      * This works only if the component is already rendered
+     * @param {Frame} frame Specific frame from which taking the element
      * @return {HTMLElement}
      */
-    getEl() {
-      return this.view && this.view.el;
+    getEl(frame) {
+      const view = this.getView(frame);
+      return view && view.el;
     },
 
     /**
      * Get the View of the component.
      * This works only if the component is already rendered
+     * @param {Frame} frame Get View of a specific frame
      * @return {ComponentView}
      */
-    getView() {
-      return this.view;
+    getView(frame) {
+      let { view, views } = this;
+
+      if (frame) {
+        view = views.filter(view => view._getFrame() === frame.view)[0];
+      }
+
+      return view;
+    },
+
+    getCurrentView() {
+      const frame = (this.em.get('currentFrame') || {}).model;
+      return this.getView(frame);
     },
 
     /**

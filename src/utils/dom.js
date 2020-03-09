@@ -1,9 +1,12 @@
 // DOM helpers
-import { each, isUndefined } from 'underscore';
+import { each, isUndefined, isString } from 'underscore';
 
 const KEY_TAG = 'tag';
 const KEY_ATTR = 'attributes';
 const KEY_CHILD = 'children';
+
+export const motionsEv =
+  'transitionend oTransitionEnd transitionend webkitTransitionEnd';
 
 export const empty = node => {
   while (node.firstChild) node.removeChild(node.firstChild);
@@ -18,11 +21,55 @@ export const appendAtIndex = (parent, child, index) => {
   const total = childNodes.length;
   const at = isUndefined(index) ? total : index;
 
+  if (isString(child)) {
+    parent.insertAdjacentHTML('beforeEnd', child);
+    child = parent.lastChild;
+    parent.removeChild(child);
+  }
+
   if (at >= total) {
     parent.appendChild(child);
   } else {
     parent.insertBefore(child, childNodes[at]);
   }
+};
+
+export const append = (parent, child) => appendAtIndex(parent, child);
+
+export const createEl = (tag, attrs = '', child) => {
+  const el = document.createElement(tag);
+  attrs && each(attrs, (value, key) => el.setAttribute(key, value));
+
+  if (child) {
+    if (isString(child)) el.innerHTML = child;
+    else el.appendChild(child);
+  }
+
+  return el;
+};
+
+// Unfortunately just creating `KeyboardEvent(e.type, e)` is not enough,
+// the keyCode/which will be always `0`. Even if it's an old/deprecated
+// property keymaster (and many others) still use it... using `defineProperty`
+// hack seems the only way
+export const createCustomEvent = (e, cls) => {
+  let oEvent;
+  try {
+    oEvent = new window[cls](e.type, e);
+  } catch (e) {
+    oEvent = document.createEvent(cls);
+    oEvent.initEvent(e.type, true, true);
+  }
+  oEvent.keyCodeVal = e.keyCode;
+  oEvent._parentEvent = e;
+  ['keyCode', 'which'].forEach(prop => {
+    Object.defineProperty(oEvent, prop, {
+      get() {
+        return this.keyCodeVal;
+      }
+    });
+  });
+  return oEvent;
 };
 
 /**

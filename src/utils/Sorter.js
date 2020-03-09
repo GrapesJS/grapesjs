@@ -78,7 +78,9 @@ export default Backbone.View.extend({
     return result(this, scale) || 1;
   },
 
-  getContainerEl() {
+  getContainerEl(elem) {
+    if (elem) this.el = elem;
+
     if (!this.el) {
       var el = this.opt.container;
       this.el = typeof el === 'string' ? document.querySelector(el) : el;
@@ -87,11 +89,13 @@ export default Backbone.View.extend({
     return this.el;
   },
 
-  getDocuments() {
+  getDocuments(el) {
     const em = this.em;
-    const canvasDoc = em && em.get('Canvas').getBody().ownerDocument;
+    const elDoc = el
+      ? el.ownerDocument
+      : em && em.get('Canvas').getBody().ownerDocument;
     const docs = [document];
-    canvasDoc && docs.push(canvasDoc);
+    elDoc && docs.push(elDoc);
     return docs;
   },
 
@@ -146,23 +150,12 @@ export default Backbone.View.extend({
    * @param {Boolean} active
    */
   toggleSortCursor(active) {
-    var em = this.em;
-    var body = document.body;
-    var pfx = this.ppfx || this.pfx;
-    var sortCls = pfx + 'grabbing';
-    var emBody = em ? em.get('Canvas').getBody() : '';
+    const { em } = this;
+    const cv = em && em.get('Canvas');
 
     // Avoid updating body className as it causes a huge repaint
     // Noticeable with "fast" drag of blocks
-    if (active) {
-      em && em.get('Canvas').startAutoscroll();
-      //body.className += ' ' + sortCls;
-      //if (em) emBody.className += ' ' + sortCls;
-    } else {
-      em && em.get('Canvas').stopAutoscroll();
-      //body.className = body.className.replace(sortCls, '').trim();
-      //if(em) emBody.className = emBody.className.replace(sortCls, '').trim();
-    }
+    cv && (active ? cv.startAutoscroll() : cv.stopAutoscroll());
   },
 
   /**
@@ -296,16 +289,18 @@ export default Backbone.View.extend({
    * Picking component to move
    * @param {HTMLElement} src
    * */
-  startSort(src) {
+  startSort(src, opts = {}) {
     const em = this.em;
     const itemSel = this.itemSel;
     const contSel = this.containerSel;
-    const container = this.getContainerEl();
-    const docs = this.getDocuments();
+    const container = this.getContainerEl(opts.container);
+    const docs = this.getDocuments(src);
     const onStart = this.onStart;
     let srcModel;
     let plh = this.plh;
     this.dropModel = null;
+    this.target = null;
+    this.prevTarget = null;
     this.moved = 0;
 
     // Check if the start element is a valid one, if not get the
@@ -332,7 +327,12 @@ export default Backbone.View.extend({
     on(container, 'mousemove dragover', this.onMove);
     on(docs, 'mouseup dragend touchend', this.endMove);
     on(docs, 'keydown', this.rollback);
-    onStart && onStart();
+    onStart &&
+      onStart({
+        target: srcModel,
+        parent: srcModel && srcModel.parent(),
+        index: srcModel && srcModel.index()
+      });
 
     // Avoid strange effects on dragging
     em && em.clearSelection();
@@ -437,7 +437,9 @@ export default Backbone.View.extend({
     var rX = e.pageX - this.elL + this.el.scrollLeft;
 
     if (this.canvasRelative && em) {
-      var mousePos = em.get('Canvas').getMouseRelativeCanvas(e);
+      const mousePos = em
+        .get('Canvas')
+        .getMouseRelativeCanvas(e, { noScroll: 1 });
       rX = mousePos.x;
       rY = mousePos.y;
     }
@@ -488,7 +490,13 @@ export default Backbone.View.extend({
       }
     }
 
-    isFunction(onMoveClb) && onMoveClb(e);
+    isFunction(onMoveClb) &&
+      onMoveClb({
+        event: e,
+        target: sourceModel,
+        parent: targetModel,
+        index: pos.index + (pos.method == 'after' ? 1 : 0)
+      });
 
     em &&
       em.trigger('sorter:drag', {
@@ -801,7 +809,7 @@ export default Backbone.View.extend({
 
     if (canvasRelative && em) {
       const canvas = em.get('Canvas');
-      const pos = canvas.getElementPos(el);
+      const pos = canvas.getElementPos(el, { noScroll: 1 });
       const elOffsets = canvas.getElementOffsets(el);
       top = pos.top - elOffsets.marginTop;
       left = pos.left - elOffsets.marginLeft;
@@ -834,7 +842,10 @@ export default Backbone.View.extend({
     // Get children based on getChildrenContainer
     const trgModel = this.getTargetModel(trg);
     if (trgModel && trgModel.view && !this.ignoreViewChildren) {
-      trg = trgModel.view.getChildrenContainer();
+      const view = trgModel.getCurrentView
+        ? trgModel.getCurrentView()
+        : trgModel.view;
+      trg = view.getChildrenContainer();
     }
 
     each(trg.children, (el, i) => {
@@ -1003,20 +1014,21 @@ export default Backbone.View.extend({
    * @return void
    * */
   endMove(e) {
-    const moved = [null];
+    const src = this.eV;
+    const moved = [];
     const docs = this.getDocuments();
     const container = this.getContainerEl();
     const onEndMove = this.onEndMove;
     const { target, lastPos } = this;
+    let srcModel;
     off(container, 'mousemove dragover', this.onMove);
     off(docs, 'mouseup dragend touchend', this.endMove);
     off(docs, 'keydown', this.rollback);
     this.plh.style.display = 'none';
-    let src = this.eV;
 
-    if (src && this.selectOnEnd) {
-      var srcModel = this.getSourceModel();
-      if (srcModel && srcModel.set) {
+    if (src) {
+      srcModel = this.getSourceModel();
+      if (this.selectOnEnd && srcModel && srcModel.set) {
         srcModel.set('status', '');
         srcModel.set('status', 'selected');
       }
@@ -1043,7 +1055,17 @@ export default Backbone.View.extend({
     this.toggleSortCursor();
 
     this.toMove = null;
-    isFunction(onEndMove) && moved.forEach(m => onEndMove(m, this));
+
+    if (isFunction(onEndMove)) {
+      const data = {
+        target: srcModel,
+        parent: srcModel && srcModel.parent(),
+        index: srcModel && srcModel.index()
+      };
+      moved.length
+        ? moved.forEach(m => onEndMove(m, this, data))
+        : onEndMove(null, this, { ...data, cancelled: 1 });
+    }
   },
 
   /**

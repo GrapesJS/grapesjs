@@ -45,7 +45,7 @@ export default () => {
       config = { ...opts, ...configDef };
       em = config.em;
       this.em = em;
-      um = new UndoManager({ track: true, register: [] });
+      um = new UndoManager({ track: true, register: [], ...config });
       um.changeUndoType('change', { condition: false });
       um.changeUndoType('add', {
         on(model, collection, options = {}) {

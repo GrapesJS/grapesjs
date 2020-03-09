@@ -91,10 +91,13 @@ export default extend({}, SelectPosition, SelectComponent, {
     // Avoid badge showing on move
     this.cacheEl = null;
     const lastModel = models[models.length - 1];
-    const doc = this.frameEl.contentDocument;
-    this.startSelectPosition(lastModel.view.el, doc);
+    const frame = (this.em.get('currentFrame') || {}).model;
+    const el = lastModel.getEl(frame);
+    const doc = el.ownerDocument;
+    this.startSelectPosition(el, doc, { onStart: this.onStart });
     this.sorter.draggable = lastModel.get('draggable');
     this.sorter.toMove = models;
+    this.sorter.onMoveClb = this.onDrag;
     this.sorter.onEndMove = this.onEndMoveFromModel.bind(this);
     this.stopSelectComponent();
     on(this.getContentWindow(), 'keydown', this.rollback);

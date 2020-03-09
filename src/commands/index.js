@@ -30,6 +30,7 @@
 import { isFunction, includes } from 'underscore';
 import CommandAbstract from './view/CommandAbstract';
 import defaults from './config/config';
+import { eventDrag } from 'dom_components/model/Component';
 
 export default () => {
   let em;
@@ -128,35 +129,43 @@ export default () => {
           const nativeDrag = event && event.type == 'dragstart';
           const defComOptions = { preserveSelected: 1 };
           const modes = ['absolute', 'translate'];
+          const mode = sel.get('dmode') || em.get('dmode');
           const hideTlb = () => em.stopDefault(defComOptions);
+          const altMode = includes(modes, mode);
           selAll.forEach(sel => sel.trigger('disable'));
 
-          // Dirty patch to prevent parent selection on drop (in absolute mode)
-          em.set('_cmpDrag', 1);
-
           if (!sel || !sel.get('draggable')) {
-            console.warn('The element is not draggable');
-            return;
+            return em.logWarning('The element is not draggable');
           }
-
-          const mode = sel.get('dmode') || em.get('dmode');
 
           // Without setTimeout the ghost image disappears
           nativeDrag ? setTimeout(hideTlb, 0) : hideTlb();
 
-          const onEnd = (e, opts) => {
+          const onStart = data => {
+            em.trigger(`${eventDrag}:start`, data);
+          };
+          const onDrag = data => {
+            em.trigger(eventDrag, data);
+          };
+          const onEnd = (e, opts, data) => {
             em.runDefault(defComOptions);
             selAll.forEach(sel => sel.set('status', 'selected'));
             ed.select(selAll);
             sel.emitUpdate();
+            em.trigger(`${eventDrag}:end`, data);
+
+            // Dirty patch to prevent parent selection on drop
+            (altMode || data.cancelled) && em.set('_cmpDrag', 1);
           };
 
-          if (includes(modes, mode)) {
+          if (altMode) {
             // TODO move grabbing func in editor/canvas from the Sorter
             dragger = ed.runCommand('core:component-drag', {
               guidesInfo: 1,
               mode,
               target: sel,
+              onStart,
+              onDrag,
               onEnd,
               event
             });
@@ -167,6 +176,8 @@ export default () => {
             }
 
             const cmdMove = ed.Commands.get('move-comp');
+            cmdMove.onStart = onStart;
+            cmdMove.onDrag = onDrag;
             cmdMove.onEndMoveFromModel = onEnd;
             cmdMove.initSorterFromModels(selAll);
           }

@@ -1,5 +1,9 @@
+import { isUndefined, keys } from 'underscore';
 import PropertyCompositeView from './PropertyCompositeView';
 import LayersView from './LayersView';
+import CssGenerator from 'code_manager/model/CssGenerator';
+
+const cssGen = new CssGenerator();
 
 export default PropertyCompositeView.extend({
   templateInput() {
@@ -23,13 +27,6 @@ export default PropertyCompositeView.extend({
     this.delegateEvents();
   },
 
-  clear(e) {
-    e && e.stopPropagation();
-    this.model.get('layers').reset();
-    this.model.clearValue();
-    this.targetUpdated();
-  },
-
   /**
    * Fired when the target is updated.
    * With detached mode the component will be always empty as its value
@@ -39,6 +36,8 @@ export default PropertyCompositeView.extend({
     if (!this.model.get('detached')) {
       PropertyCompositeView.prototype.targetUpdated.apply(this, args);
     } else {
+      const { status } = this._getTargetData();
+      this.setStatus(status);
       this.checkVisibility();
     }
 
@@ -109,30 +108,158 @@ export default PropertyCompositeView.extend({
     return this.getLayers().getFullValue();
   },
 
+  _getClassRule(opts = {}) {
+    const { em } = this;
+    const { skipAdd = 1 } = opts;
+    const selected = em.getSelected();
+    const targetAlt = em.get('StyleManager').getModelToStyle(selected, {
+      skipAdd,
+      useClasses: 1
+    });
+    return targetAlt !== selected && targetAlt;
+  },
+
+  /**
+   * Return the parent style rule of the passed one
+   * @private
+   */
+  _getParentTarget(target, opts = {}) {
+    const { em, model } = this;
+    const property = model.get('property');
+    const isValid = opts.isValid || (rule => rule.getStyle()[property]);
+    const targetsDevice = em
+      .get('CssComposer')
+      .getAll()
+      .filter(rule => rule.selectorsToString() === target.getSelectorsString());
+    const map = targetsDevice.reduce((acc, rule) => {
+      acc[rule.getAtRule()] = rule;
+      return acc;
+    }, {});
+    const mapSorted = cssGen.sortMediaObject(map);
+    const sortedRules = mapSorted.map(item => item.value);
+    const currIndex = sortedRules.indexOf(target);
+    const rulesToCheck = sortedRules.splice(0, currIndex);
+    let result;
+
+    for (let i = rulesToCheck.length - 1; i > -1; i--) {
+      const rule = rulesToCheck[i];
+      if (isValid(rule)) {
+        // only for not detached
+        result = rule;
+        break;
+      }
+    }
+
+    return result;
+  },
+
   /**
    * Refresh layers
    * */
   refreshLayers() {
     let layersObj = [];
-    const model = this.model;
+    const { model, em } = this;
     const layers = this.getLayers();
     const detached = model.get('detached');
+    const property = model.get('property');
     const target = this.getTarget();
+    const valueComput = this.getComputedValue();
+    const selected = em.getSelected();
+    let resultValue,
+      style,
+      targetAlt,
+      targetAltDevice,
+      valueTargetAlt,
+      valueTrgAltDvc;
 
     // With detached layers values will be assigned to their properties
     if (detached) {
-      const style = target ? target.getStyle() : {};
+      style = target ? target.getStyle() : {};
+      const hasDetachedStyle = rule => {
+        const name = model
+          .get('properties')
+          .at(0)
+          .get('property');
+        return rule && !isUndefined(rule.getStyle()[name]);
+      };
+
+      // If the style object is empty but the target has a computed value,
+      // that means the style might exist in some other place
+      if (!keys(style).length && valueComput && selected) {
+        // Styles of the same target but with a higher rule
+        const parentOpts = { isValid: rule => hasDetachedStyle(rule) };
+        targetAltDevice = this._getParentTarget(target, parentOpts);
+
+        if (targetAltDevice) {
+          style = targetAltDevice.getStyle();
+        } else {
+          // The target is a component but the style is in the class rules
+          targetAlt = this._getClassRule();
+          valueTargetAlt = hasDetachedStyle(targetAlt) && targetAlt.getStyle();
+          targetAltDevice =
+            !valueTargetAlt &&
+            this._getParentTarget(
+              this._getClassRule({ skipAdd: 0 }),
+              parentOpts
+            );
+          valueTrgAltDvc =
+            hasDetachedStyle(targetAltDevice) && targetAltDevice.getStyle();
+          style = valueTargetAlt || valueTrgAltDvc || {};
+        }
+      }
+
+      resultValue = style;
       layersObj = layers.getLayersFromStyle(style);
     } else {
-      let value = this.getTargetValue();
+      const valueTrg = this.getTargetValue({ ignoreDefault: 1 });
+      let value = valueTrg;
+
+      // Try to check if the style is in another rule
+      if (!value && valueComput) {
+        // Styles of the same target but with a higher rule
+        targetAltDevice = this._getParentTarget(target);
+
+        if (targetAltDevice) {
+          value = targetAltDevice.getStyle()[property];
+        } else {
+          // Computed value is not always reliable due to the browser's CSSOM parser
+          // here we try to look for the style in class rules
+          targetAlt = this._getClassRule();
+          valueTargetAlt = targetAlt && targetAlt.getStyle()[property];
+          targetAltDevice =
+            !valueTargetAlt &&
+            this._getParentTarget(this._getClassRule({ skipAdd: 0 }));
+          valueTrgAltDvc =
+            targetAltDevice && targetAltDevice.getStyle()[property];
+          value = valueTargetAlt || valueTrgAltDvc || valueComput;
+        }
+      }
+
       value = value == model.getDefaultValue() ? '' : value;
+      resultValue = value;
       layersObj = layers.getLayersFromValue(value);
     }
 
-    const toAdd = model.getLayersFromTarget(target) || layersObj;
+    const toAdd =
+      model.getLayersFromTarget(target, { resultValue }) || layersObj;
     layers.reset();
     layers.add(toAdd);
     model.set({ stackIndex: null }, { silent: true });
+  },
+
+  getTargetValue(opts = {}) {
+    let result = PropertyCompositeView.prototype.getTargetValue.call(
+      this,
+      opts
+    );
+    const { detached } = this.model.attributes;
+
+    // It might happen that the browser split properties on CSSOM parse
+    if (isUndefined(result) && !detached) {
+      result = this.model.getValueFromStyle(this.getTarget().getStyle());
+    }
+
+    return result;
   },
 
   onRender() {
@@ -153,7 +280,14 @@ export default PropertyCompositeView.extend({
           const values = self.getLayers().getPropertyValues(subProp);
           view.updateTargetStyle(values, null, opt);
         } else {
-          model.set('value', model.getFullValue(), opt);
+          // Update only if there is an actual update (to avoid changes for computed styles)
+          // ps: status is calculated in `targetUpdated` method
+          if (model.get('status') == 'updated') {
+            const value = model.getFullValue();
+            model.set('value', value, opt);
+            // Try to remove detached properties
+            !value && view.updateTargetStyle(value, null, opt);
+          }
         }
       }
     };
@@ -172,8 +306,7 @@ export default PropertyCompositeView.extend({
       stackModel: model,
       config: this.config,
       onChange: propsConfig.onChange,
-      propTarget: propsConfig.propTarget,
-      customValue: propsConfig.customValue
+      propTarget: propsConfig.propTarget
     }).render();
 
     //model.get('properties')

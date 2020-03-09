@@ -1,16 +1,52 @@
 import Backbone from 'backbone';
+import Component from 'dom_components/model/Component';
+import CssRules from 'css_composer/model/CssRules';
+import { isString } from 'underscore';
 
 export default Backbone.Model.extend({
   defaults: {
     wrapper: '',
-    width: '',
-    height: '',
+    width: null,
+    height: null,
     head: '',
+    x: 0,
+    y: 0,
+    root: 0,
+    components: 0,
+    styles: 0,
     attributes: {}
   },
 
-  initialize() {
+  initialize(props, opts = {}) {
+    const { root, styles, components } = this.attributes;
     this.set('head', []);
+    this.em = opts.em;
+    const modOpts = {
+      em: opts.em,
+      config: opts.em.get('DomComponents').getConfig(),
+      frame: this
+    };
+
+    !root &&
+      this.set(
+        'root',
+        new Component(
+          {
+            type: 'wrapper',
+            components: components || []
+          },
+          modOpts
+        )
+      );
+
+    (!styles || isString(styles)) &&
+      this.set('styles', new CssRules(styles, modOpts));
+  },
+
+  remove() {
+    this.view = 0;
+    const coll = this.collection;
+    return coll && coll.remove(this);
   },
 
   getHead() {
@@ -75,5 +111,9 @@ export default Backbone.Model.extend({
 
   removeScript(src) {
     this.removeHeadByAttr('src', src, 'script');
+  },
+
+  _emitUpdated(data = {}) {
+    this.em.trigger('frame:updated', { frame: this, ...data });
   }
 });

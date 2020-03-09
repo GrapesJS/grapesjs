@@ -61,7 +61,7 @@ const Property = Backbone.Model.extend(
      * @return {this}
      */
     clearValue(opts = {}) {
-      this.set({ value: undefined }, opts);
+      this.set({ value: undefined, status: '' }, opts);
       return this;
     },
 
@@ -162,7 +162,7 @@ const Property = Backbone.Model.extend(
     getFullValue(val) {
       const fn = this.get('functionName');
       let value = isUndefined(val) ? this.get('value') : val;
-      const hasValue = !isUndefined(value);
+      const hasValue = !isUndefined(value) && value !== '';
 
       if (fn && hasValue) {
         value = `${fn}(${value})`;

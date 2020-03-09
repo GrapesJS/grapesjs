@@ -177,7 +177,7 @@ export default {
         id: 'Identificador',
         alt: 'Título alterno',
         title: 'Título',
-        href: 'Vínculo',
+        href: 'Vínculo'
       },
       // In a simple trait, like text input, these are used on input attributes
       attributes: {

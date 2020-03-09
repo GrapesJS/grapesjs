@@ -30,7 +30,15 @@
  * @module Canvas
  */
 
-import { on, off, hasDnd, getElement, getPointerEvent } from 'utils/mixins';
+import {
+  on,
+  off,
+  hasDnd,
+  getElement,
+  getPointerEvent,
+  getViewEl
+} from 'utils/mixins';
+import { debounce } from 'underscore';
 import Droppable from 'utils/Droppable';
 import defaults from './config/config';
 import Canvas from './model/Canvas';
@@ -68,7 +76,8 @@ export default () => {
     init(config = {}) {
       c = {
         ...defaults,
-        ...config
+        ...config,
+        module: this
       };
 
       this.em = c.em;
@@ -84,10 +93,9 @@ export default () => {
       var cm = c.em.get('DomComponents');
       if (cm) this.setWrapper(cm);
 
+      this.model = canvas;
       this.startAutoscroll = this.startAutoscroll.bind(this);
       this.stopAutoscroll = this.stopAutoscroll.bind(this);
-      this.autoscroll = this.autoscroll.bind(this);
-      this.updateClientY = this.updateClientY.bind(this);
       return this;
     },
 
@@ -125,7 +133,12 @@ export default () => {
      * @return {HTMLIFrameElement}
      */
     getFrameEl() {
-      return CanvasView.frame.el;
+      const { frame } = CanvasView;
+      return frame && frame.el;
+    },
+
+    getFramesEl() {
+      return CanvasView.framesArea;
     },
 
     /**
@@ -141,7 +154,8 @@ export default () => {
      * @return {HTMLDocument}
      */
     getDocument() {
-      return this.getFrameEl().contentDocument;
+      const frame = this.getFrameEl();
+      return frame && frame.contentDocument;
     },
 
     /**
@@ -162,13 +176,34 @@ export default () => {
       return body && body.querySelector('#wrapper');
     },
 
+    _getCompFrame(compView) {
+      return compView && compView._getFrame();
+    },
+
+    _getLocalEl(globalEl, compView, method) {
+      let result = globalEl;
+      const frameView = this._getCompFrame(compView);
+      result = frameView ? frameView[method]() : result;
+
+      return result;
+    },
+
+    /**
+     * Returns element containing all global canvas tools
+     * @return {HTMLElement}
+     * @private
+     */
+    getGlobalToolsEl() {
+      return CanvasView.toolsGlobEl;
+    },
+
     /**
      * Returns element containing all canvas tools
      * @return {HTMLElement}
      * @private
      */
-    getToolsEl() {
-      return CanvasView.toolsEl;
+    getToolsEl(compView) {
+      return this._getLocalEl(CanvasView.toolsEl, compView, 'getToolsEl');
     },
 
     /**
@@ -176,8 +211,8 @@ export default () => {
      * @return {HTMLElement}
      * @private
      */
-    getHighlighter() {
-      return CanvasView.hlEl;
+    getHighlighter(compView) {
+      return this._getLocalEl(CanvasView.hlEl, compView, 'getHighlighter');
     },
 
     /**
@@ -185,8 +220,8 @@ export default () => {
      * @return {HTMLElement}
      * @private
      */
-    getBadgeEl() {
-      return CanvasView.badgeEl;
+    getBadgeEl(compView) {
+      return this._getLocalEl(CanvasView.badgeEl, compView, 'getBadgeEl');
     },
 
     /**
@@ -230,8 +265,12 @@ export default () => {
      * @return {HTMLElement}
      * @private
      */
-    getOffsetViewerEl() {
-      return CanvasView.offsetEl;
+    getOffsetViewerEl(compView) {
+      return this._getLocalEl(
+        CanvasView.offsetEl,
+        compView,
+        'getOffsetViewerEl'
+      );
     },
 
     /**
@@ -378,6 +417,78 @@ export default () => {
       return result;
     },
 
+    canvasRectOffset(el, pos, opts = {}) {
+      const getFrameElFromDoc = doc => {
+        const { defaultView } = doc;
+        return defaultView && defaultView.frameElement;
+      };
+
+      const rectOff = (el, top = 1, pos) => {
+        const zoom = this.em.getZoomDecimal();
+        const side = top ? 'top' : 'left';
+        const doc = el.ownerDocument;
+        const { offsetTop = 0, offsetLeft = 0 } = opts.offset
+          ? getFrameElFromDoc(doc)
+          : {};
+        const { scrollTop = 0, scrollLeft = 0 } = doc.body || {};
+        const scroll = top ? scrollTop : scrollLeft;
+        const offset = top ? offsetTop : offsetLeft;
+
+        // if (!top) {
+        //   console.log('LEFT', { posLeft: pos[side], scroll, offset }, el);
+        // }
+
+        return pos[side] - (scroll - offset) * zoom;
+      };
+
+      return {
+        top: rectOff(el, 1, pos),
+        left: rectOff(el, 0, pos)
+      };
+    },
+
+    getTargetToElementFixed(el, elToMove, opts = {}) {
+      const pos = opts.pos || this.getElementPos(el);
+      const cvOff = opts.canvasOff || this.canvasRectOffset(el, pos);
+      const toolbarH = elToMove.offsetHeight || 0;
+      const toolbarW = elToMove.offsetWidth || 0;
+      const elRight = pos.left + pos.width;
+      const cv = this.getCanvasView();
+      const frCvOff = cv.getPosition();
+      const frameOffset = cv.getFrameOffset(el);
+      const { event } = opts;
+
+      let top = -toolbarH;
+      let left = pos.width - toolbarW;
+      left = pos.left < -left ? -pos.left : left;
+      left = elRight > frCvOff.width ? left - (elRight - frCvOff.width) : left;
+
+      // Scroll with the window if the top edge is reached and the
+      // element is bigger than the canvas
+      const fullHeight = pos.height + toolbarH;
+      const elIsShort = fullHeight < frameOffset.height;
+
+      if (cvOff.top < toolbarH) {
+        if (elIsShort) {
+          top = top + fullHeight;
+        } else {
+          top = -cvOff.top < pos.height ? -cvOff.top : pos.height;
+        }
+      }
+
+      const result = {
+        top,
+        left,
+        canvasOffsetTop: cvOff.top,
+        canvasOffsetLeft: cvOff.left
+      };
+
+      // In this way I can catch data and also change the position strategy
+      event && this.em.trigger(event, result);
+
+      return result;
+    },
+
     /**
      * Instead of simply returning e.clientX and e.clientY this function
      * calculates also the offset based on the canvas. This is helpful when you
@@ -416,9 +527,9 @@ export default () => {
      * @return {Object}
      * @private
      */
-    getMouseRelativeCanvas(ev) {
+    getMouseRelativeCanvas(ev, opts) {
       const zoom = this.getZoomDecimal();
-      const { top, left } = CanvasView.getPosition();
+      const { top, left } = CanvasView.getPosition(opts);
 
       return {
         y: ev.clientY * zoom + top,
@@ -464,79 +575,26 @@ export default () => {
      */
     scrollTo(el, opts = {}) {
       const elem = getElement(el);
-      const cv = this.getCanvasView();
-      if (!elem) return;
-
-      if (!cv.isElInViewport(elem) || opts.force) {
-        const opt =
-          typeof opts === 'object'
-            ? opts
-            : { behavior: 'smooth', block: 'nearest' };
-        elem.scrollIntoView(opt);
-      }
+      const view = elem && getViewEl(elem);
+      view && view.scrollIntoView(opts);
     },
 
     /**
      * Start autoscroll
      * @private
      */
-    startAutoscroll() {
-      this.dragging = 1;
-      let toListen = this.getScrollListeners();
-      frameRect = CanvasView.getFrameOffset(1);
-
-      // By detaching those from the stack avoid browsers lags
-      // Noticeable with "fast" drag of blocks
-      setTimeout(() => {
-        on(toListen, 'mousemove dragover', this.updateClientY);
-        on(toListen, 'mouseup', this.stopAutoscroll);
-        requestAnimationFrame(this.autoscroll);
-      }, 0);
-    },
-
-    updateClientY(ev) {
-      ev.preventDefault();
-      this.lastClientY = getPointerEvent(ev).clientY * this.getZoomDecimal();
-    },
-
-    /**
-     * @private
-     */
-    autoscroll() {
-      if (this.dragging) {
-        let frameWindow = this.getFrameEl().contentWindow;
-        let actualTop = frameWindow.document.body.scrollTop;
-        let nextTop = actualTop;
-        let clientY = this.lastClientY;
-        let limitTop = this.getConfig().autoscrollLimit;
-        let limitBottom = frameRect.height - limitTop;
-
-        if (clientY < limitTop) {
-          nextTop -= limitTop - clientY;
-        }
-
-        if (clientY > limitBottom) {
-          nextTop += clientY - limitBottom;
-        }
-
-        frameWindow.scrollTo(0, nextTop);
-        requestAnimationFrame(this.autoscroll);
-      }
+    startAutoscroll(frame) {
+      const fr = (frame && frame.view) || this.em.getCurrentFrame();
+      fr && fr.startAutoscroll();
     },
 
     /**
      * Stop autoscroll
      * @private
      */
-    stopAutoscroll() {
-      this.dragging = 0;
-      let toListen = this.getScrollListeners();
-      off(toListen, 'mousemove dragover', this.updateClientY);
-      off(toListen, 'mouseup', this.stopAutoscroll);
-    },
-
-    getScrollListeners() {
-      return [this.getFrameEl().contentWindow];
+    stopAutoscroll(frame) {
+      const fr = (frame && frame.view) || this.em.getCurrentFrame();
+      fr && fr.stopAutoscroll();
     },
 
     postRender() {
@@ -570,6 +628,11 @@ export default () => {
       return zoom ? 1 / zoom : 1;
     },
 
+    toggleFramesEvents(on) {
+      const { style } = this.getFramesEl();
+      style.pointerEvents = on ? '' : 'none';
+    },
+
     /**
      * Returns wrapper element
      * @return {HTMLElement}
@@ -578,6 +641,45 @@ export default () => {
      */
     getFrameWrapperEl() {
       return CanvasView.frame.getWrapper();
+    },
+
+    getFrames() {
+      return canvas.get('frames').map(item => item);
+    },
+
+    /**
+     * Add new frame to the canvas
+     * @param {Object} props Frame properties
+     * @returns {Frame}
+     * @example
+     *
+        editor.Canvas.addFrame({
+          name: 'Mobile home page',
+          x: 100, // Position in canvas
+          y: 100,
+          width: 500, // Frame dimensions
+          height: 600,
+          // device: 'DEVICE-ID',
+          components: [
+            '<h1 class="testh">Title frame</h1>',
+            '<p class="testp">Paragraph frame</p>',
+          ],
+          styles: `
+            .testh { color: red; }
+            .testp { color: blue; }
+          `,
+        });
+     */
+    addFrame(props = {}, opts = {}) {
+      return canvas.get('frames').add(
+        {
+          ...props
+        },
+        {
+          ...opts,
+          em: this.em
+        }
+      );
     }
   };
 };

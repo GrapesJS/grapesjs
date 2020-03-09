@@ -62,7 +62,7 @@ describe('CssRulesView', () => {
       })
       .map(widthMedia => parseFloat(widthMedia));
 
-    foundStylesContainers.each(($styleC, idx) => {
+    foundStylesContainers.each((idx, $styleC) => {
       const width = sortedDevicesWidthMedia[idx];
       expect($styleC.id).toEqual(`${prefix}${width ? `-${width}` : ''}`);
     });

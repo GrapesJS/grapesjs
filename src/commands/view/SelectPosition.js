@@ -7,12 +7,14 @@ export default {
    * @param {HTMLElement} trg
    * @private
    * */
-  startSelectPosition(trg, doc) {
+  startSelectPosition(trg, doc, opts = {}) {
     this.isPointed = false;
     var utils = this.editorModel.get('Utils');
+    const container = trg.ownerDocument.body;
+
     if (utils && !this.sorter)
       this.sorter = new utils.Sorter({
-        container: this.getCanvasBody(),
+        container,
         placer: this.canvas.getPlacerEl(),
         containerSel: '*',
         itemSel: '*',
@@ -25,7 +27,9 @@ export default {
         canvasRelative: 1,
         scale: () => this.em.getZoomDecimal()
       });
-    trg && this.sorter.startSort(trg);
+
+    if (opts.onStart) this.sorter.onStart = opts.onStart;
+    trg && this.sorter.startSort(trg, { container });
   },
 
   /**
