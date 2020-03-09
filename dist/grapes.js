@@ -24844,6 +24844,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
             return em.stopDefault(defComOptions);
           };
 
+          var altMode = Object(underscore__WEBPACK_IMPORTED_MODULE_2__["includes"])(modes, mode);
           selAll.forEach(function (sel) {
             return sel.trigger('disable');
           });
@@ -24870,13 +24871,12 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
             });
             ed.select(selAll);
             sel.emitUpdate();
-            em.trigger("".concat(dom_components_model_Component__WEBPACK_IMPORTED_MODULE_5__["eventDrag"], ":end"), data);
-          }; // Dirty patch to prevent parent selection on drop
+            em.trigger("".concat(dom_components_model_Component__WEBPACK_IMPORTED_MODULE_5__["eventDrag"], ":end"), data); // Dirty patch to prevent parent selection on drop
 
+            (altMode || data.cancelled) && em.set('_cmpDrag', 1);
+          };
 
-          em.set('_cmpDrag', 1);
-
-          if (Object(underscore__WEBPACK_IMPORTED_MODULE_2__["includes"])(modes, mode)) {
+          if (altMode) {
             // TODO move grabbing func in editor/canvas from the Sorter
             dragger = ed.runCommand('core:component-drag', {
               guidesInfo: 1,
@@ -27313,8 +27313,7 @@ var showOffsets;
     methods[method](window, 'resize', this.onFrameUpdated);
     em[method]('component:toggled', this.onSelect, this);
     em[method]('change:componentHovered', this.onHovered, this);
-    em[method]('component:update', this.onComponentUpdate, this);
-    em[method]('component:resize', this.updateGlobalPos, this);
+    em[method]('component:resize component:styleUpdate', this.updateGlobalPos, this);
     em[method]('change:canvasOffset', this.updateAttached, this);
     em[method]('frame:updated', this.onFrameUpdated, this);
     em.get('Canvas').getFrames().forEach(function (frame) {
@@ -27418,14 +27417,7 @@ var showOffsets;
     this.elSelected = result;
     this.updateToolsGlobal(); // This will hide some elements from the select component
 
-    this.updateToolsLocal(result); // if (el) {
-    //   this.showFixedElementOffset(el);
-    //   this.hideElementOffset();
-    //   this.hideHighlighter();
-    //   this.initResize(el);
-    // } else {
-    //   this.editor.stopCommand('resize');
-    // }
+    this.updateToolsLocal(result);
   }),
   updateGlobalPos: function updateGlobalPos() {
     var sel = this.getElSelected();
@@ -28007,9 +27999,6 @@ var showOffsets;
    */
   updateAttached: Object(underscore__WEBPACK_IMPORTED_MODULE_3__["debounce"])(function () {
     this.updateToolsGlobal();
-  }),
-  onComponentUpdate: Object(underscore__WEBPACK_IMPORTED_MODULE_3__["debounce"])(function () {
-    this.onSelect();
   }),
 
   /**
@@ -38470,7 +38459,7 @@ var defaultConfig = {
   editors: editors,
   plugins: plugins,
   // Will be replaced on build
-  version: '0.16.1',
+  version: '0.16.2',
 
   /**
    * Initialize the editor with passed options
