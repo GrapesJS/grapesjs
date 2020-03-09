@@ -84,8 +84,11 @@ export default {
     methods[method](window, 'resize', this.onFrameUpdated);
     em[method]('component:toggled', this.onSelect, this);
     em[method]('change:componentHovered', this.onHovered, this);
-    em[method]('component:update', this.onComponentUpdate, this);
-    em[method]('component:resize', this.updateGlobalPos, this);
+    em[method](
+      'component:resize component:styleUpdate',
+      this.updateGlobalPos,
+      this
+    );
     em[method]('change:canvasOffset', this.updateAttached, this);
     em[method]('frame:updated', this.onFrameUpdated, this);
     em.get('Canvas')
@@ -173,15 +176,6 @@ export default {
     this.updateToolsGlobal();
     // This will hide some elements from the select component
     this.updateToolsLocal(result);
-
-    // if (el) {
-    //   this.showFixedElementOffset(el);
-    //   this.hideElementOffset();
-    //   this.hideHighlighter();
-    //   this.initResize(el);
-    // } else {
-    //   this.editor.stopCommand('resize');
-    // }
   }),
 
   updateGlobalPos() {
@@ -733,10 +727,6 @@ export default {
    */
   updateAttached: debounce(function() {
     this.updateToolsGlobal();
-  }),
-
-  onComponentUpdate: debounce(function() {
-    this.onSelect();
   }),
 
   /**
