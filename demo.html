@@ -5,7 +5,7 @@
     <title>GrapesJS Demo - Free Open Source Website Page Builder</title>
     <meta content="Best Free Open Source Responsive Websites Builder" name="description">
     <link rel="stylesheet" href="stylesheets/toastr.min.css">
-    <link rel="stylesheet" href="stylesheets/grapes.min.css?v0.15.10">
+    <link rel="stylesheet" href="stylesheets/grapes.min.css?v0.16.2">
     <link rel="stylesheet" href="stylesheets/grapesjs-preset-webpage.min.css">
     <link rel="stylesheet" href="stylesheets/tooltip.css">
     <link rel="stylesheet" href="stylesheets/grapesjs-plugin-filestack.css">
@@ -16,7 +16,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="js/toastr.min.js"></script>
 
-    <script src="js/grapes.min.js?v0.15.10"></script>
+    <script src="js/grapes.min.js?v0.16.2"></script>
     <script src="js/grapesjs-preset-webpage.min.js?v0.1.11"></script>
     <script src="js/grapesjs-lory-slider.min.js?0.1.5"></script>
     <script src="js/grapesjs-tabs.min.js?0.1.1"></script>
@@ -562,7 +562,6 @@
           color: #444;
           font-weight: 100;
           margin-top: 50px;
-          /*transform: rotateX(0deg) rotateY(-20deg) rotateZ(0deg) scaleX(1) scaleY(1) scaleZ(1);*/
         }
         .am-pre{
           padding:7px;
@@ -984,6 +983,7 @@
           embedAsBase64: 1,
           assets: images
         },
+        selectorManager: { componentFirst: true },
         styleManager: { clearProperties: 1 },
         plugins: [
           'gjs-preset-webpage',
