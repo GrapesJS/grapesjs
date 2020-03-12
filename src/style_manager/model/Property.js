@@ -73,14 +73,7 @@ const Property = Backbone.Model.extend(
      */
     setValue(value, complete = 1, opts = {}) {
       const parsed = this.parseValue(value);
-      this.set(parsed, { ...opts, avoidStore: 1 });
-
-      // It's important to set an empty value, otherwise the
-      // UndoManager won't see the change
-      if (complete) {
-        this.set('value', '', opts);
-        this.set(parsed, opts);
-      }
+      this.set(parsed, { ...opts, avoidStore: !complete });
     },
 
     /**
