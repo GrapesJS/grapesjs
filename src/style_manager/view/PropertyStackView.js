@@ -70,7 +70,7 @@ export default PropertyCompositeView.extend({
     const layers = this.getLayers();
     const properties = model.get('properties').deepClone();
     properties.each(property => property.set('value', ''));
-    const layer = layers.add({ properties });
+    const layer = layers.add({ properties }, { active: 1 });
 
     // In detached mode inputValueChanged will add new 'layer value'
     // to all subprops

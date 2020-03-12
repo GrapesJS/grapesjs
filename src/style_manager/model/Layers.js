@@ -12,6 +12,7 @@ export default Backbone.Collection.extend({
 
   onAdd(model, c, opts) {
     if (!opts.noIncrement) model.set('index', this.idx++);
+    opts.active && this.active(this.indexOf(model));
   },
 
   onReset() {
