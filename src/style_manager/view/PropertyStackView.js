@@ -277,7 +277,8 @@ export default PropertyCompositeView.extend({
 
         if (model.get('detached')) {
           const subProp = subModel.get('property');
-          const values = self.getLayers().getPropertyValues(subProp);
+          const defVal = subModel.getDefaultValue();
+          const values = self.getLayers().getPropertyValues(subProp, defVal);
           view.updateTargetStyle(values, null, opt);
         } else {
           // Update only if there is an actual update (to avoid changes for computed styles)
