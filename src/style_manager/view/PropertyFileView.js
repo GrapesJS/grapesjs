@@ -73,6 +73,7 @@ export default PropertyView.extend({
   setPreviewView(v) {
     const pv = this.$previewBox;
     pv && pv[v ? 'addClass' : 'removeClass'](`${this.pfx}show`);
+    pv && pv.css({ display: v ? 'block' : 'none' });
   },
 
   /**
