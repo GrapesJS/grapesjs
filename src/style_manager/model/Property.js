@@ -145,8 +145,30 @@ const Property = Backbone.Model.extend(
      * @param {String} [separator] Separator
      */
     splitValues(values, separator = ',') {
-      const sep = new RegExp(`${separator}(?![^\\(]*\\))`);
-      return (values || '').split(sep).map(i => i.trim());
+      const res = [];
+      const op = '(';
+      const cl = ')';
+      let curr = '';
+      let acc = 0;
+
+      (values || '').split('').forEach(str => {
+        if (str == op) {
+          acc++;
+          curr = curr + op;
+        } else if (str == cl && acc > 0) {
+          acc--;
+          curr = curr + cl;
+        } else if (str === separator && acc == 0) {
+          res.push(curr);
+          curr = '';
+        } else {
+          curr = curr + str;
+        }
+      });
+
+      curr !== '' && res.push(curr);
+
+      return res.map(i => i.trim());
     },
 
     /**
