@@ -241,7 +241,8 @@ export default PropertyCompositeView.extend({
     }
 
     const toAdd =
-      model.getLayersFromTarget(target, { resultValue }) || layersObj;
+      model.getLayersFromTarget(target, { resultValue, layersObj }) ||
+      layersObj;
     layers.reset();
     layers.add(toAdd);
     model.set({ stackIndex: null }, { silent: true });

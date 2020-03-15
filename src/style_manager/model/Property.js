@@ -136,6 +136,20 @@ const Property = Backbone.Model.extend(
     },
 
     /**
+     * Helper function to safely split a string of values.
+     * Useful when style values are inside functions
+     * eg:
+     * -> input: 'value(1,2,4), 123, value(4,5)' -- default separator: ','
+     * -> output: ['value(1,2,4)', '123', 'value(4,5)']
+     * @param {String} values Values to split
+     * @param {String} [separator] Separator
+     */
+    splitValues(values, separator = ',') {
+      const sep = new RegExp(`${separator}(?![^\\(]*\\))`);
+      return (values || '').split(sep).map(i => i.trim());
+    },
+
+    /**
      * Get the default value
      * @return {string}
      * @private
