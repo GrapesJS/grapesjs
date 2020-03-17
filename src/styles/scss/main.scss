@@ -304,7 +304,6 @@ $colorsAll: (one, $primaryColor),
 .#{$app-prefix}placeholder,
 .#{$nv-prefix}placeholder {
   border-style: solid !important;
-  border-color: $colorGreen;
   outline: none;
   box-sizing: border-box;
   transition: top $animSpeed, left $animSpeed,
@@ -314,7 +313,7 @@ $colorsAll: (one, $primaryColor),
 .#{$app-prefix}placeholder-int,
 .#{$com-prefix}placeholder-int,
 .#{$nv-prefix}placeholder-int {
-	background-color: $colorGreen;
+	background-color: $placeholderColor;
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
 	height: 100%; width: 100%;
 	pointer-events: none;
