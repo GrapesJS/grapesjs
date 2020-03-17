@@ -126,7 +126,9 @@ export default Backbone.View.extend({
       if (isString(preview)) {
         style[stackModel.get('property')] = preview;
       } else {
-        each(preview, (val, prop) => (style[prop] = val));
+        let prvStr = [];
+        each(preview, (val, prop) => prvStr.push(`${prop}:${val}`));
+        previewEl.setAttribute('style', prvStr.join(';'));
       }
     }
   },
