@@ -68,9 +68,16 @@ export default PropertyCompositeView.extend({
   addLayer() {
     const model = this.model;
     const layers = this.getLayers();
+    const prepend = model.get('prepend');
     const properties = model.get('properties').deepClone();
     properties.each(property => property.set('value', ''));
-    const layer = layers.add({ properties }, { active: 1 });
+    const layer = layers.add(
+      { properties },
+      {
+        active: 1,
+        ...(prepend && { at: 0 })
+      }
+    );
 
     // In detached mode inputValueChanged will add new 'layer value'
     // to all subprops
