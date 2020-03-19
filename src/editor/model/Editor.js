@@ -4,7 +4,8 @@ import {
   isArray,
   contains,
   toArray,
-  keys
+  keys,
+  bindAll
 } from 'underscore';
 import $ from 'cash-dom';
 import Backbone from 'backbone';
@@ -80,6 +81,7 @@ export default Backbone.Model.extend({
     const el = c.el;
     const log = c.log;
     const toLog = log === true ? keys(logs) : isArray(log) ? log : [];
+    bindAll(this, 'initBaseColorPicker');
 
     if (el && c.fromElement) this.config.components = el.innerHTML;
     this.attrsOrig = el
@@ -740,6 +742,26 @@ export default Backbone.Model.extend({
 
   logError(msg, opts) {
     this.log(msg, { ...opts, level: 'error' });
+  },
+
+  initBaseColorPicker(el, opts = {}) {
+    const config = this.getConfig();
+    const { colorPicker = {} } = config;
+    const elToAppend = config.el;
+    const ppfx = config.stylePrefix;
+
+    return $(el).spectrum({
+      containerClassName: `${ppfx}one-bg ${ppfx}two-color`,
+      appendTo: elToAppend || 'body',
+      maxSelectionSize: 8,
+      showPalette: true,
+      palette: [],
+      showAlpha: true,
+      chooseText: 'Ok',
+      cancelText: '⨯',
+      ...opts,
+      ...colorPicker
+    });
   },
 
   /**
