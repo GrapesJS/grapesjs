@@ -137,10 +137,10 @@ export default Backbone.View.extend({
 
     if (this.model.get('disable')) return;
 
-    this.toogleActive();
+    this.toggleActive();
   },
 
-  toogleActive() {
+  toggleActive() {
     const { model } = this;
     const { active, togglable } = model.attributes;
 
