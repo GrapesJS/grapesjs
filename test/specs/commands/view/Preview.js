@@ -1,6 +1,6 @@
-import Panel from '../../../../src/panels/model/Panel';
-import Preview from '../../../../src/commands/view/Preview';
-import Button from '../../../../src/panels/model/Button';
+import Panel from 'panels/model/Panel';
+import Preview from 'commands/view/Preview';
+import Button from 'panels/model/Button';
 
 describe('Preview command', () => {
   let fakeButton, fakePanels, fakeEditor;
