@@ -32,7 +32,7 @@ export default Backbone.View.extend({
 
   initialize(o = {}) {
     let model = this.model;
-    this.stackModel = o.stackModel || {};
+    this.stackModel = o.stackModel;
     this.config = o.config || {};
     this.em = this.config.em;
     this.pfx = this.config.stylePrefix || '';

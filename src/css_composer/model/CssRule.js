@@ -4,6 +4,8 @@ import Styleable from 'domain_abstract/model/Styleable';
 import { isEmpty, forEach } from 'underscore';
 import Selectors from 'selector_manager/model/Selectors';
 
+const { CSS } = window;
+
 export default Backbone.Model.extend(Styleable).extend({
   defaults: {
     // Css selectors
