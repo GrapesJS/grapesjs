@@ -182,6 +182,7 @@ $ npm test
 * [grapesjs-component-countdown](https://github.com/artf/grapesjs-component-countdown) - Simple countdown component
 * [grapesjs-style-gradient](https://github.com/artf/grapesjs-style-gradient) - Add `gradient` type input to the Style Manager
 * [grapesjs-style-filter](https://github.com/artf/grapesjs-style-filter) - Add `filter` type input to the Style Manager
+* [grapesjs-style-bg](https://github.com/artf/grapesjs-style-bg) - Full-stack background style property type, with the possibility to add images, colors, and gradients
 * [grapesjs-blocks-flexbox](https://github.com/artf/grapesjs-blocks-flexbox) - Add the flexbox block
 * [grapesjs-lory-slider](https://github.com/artf/grapesjs-lory-slider) - Slider component by using [lory](https://github.com/meandmax/lory)
 * [grapesjs-tabs](https://github.com/artf/grapesjs-tabs) - Simple tabs component
@@ -191,6 +192,7 @@ $ npm test
 * [grapesjs-indexeddb](https://github.com/artf/grapesjs-indexeddb) - Storage wrapper for IndexedDB
 * [grapesjs-firestore](https://github.com/artf/grapesjs-firestore) - Storage wrapper for [Cloud Firestore](https://firebase.google.com/docs/firestore)
 * [grapesjs-parser-postcss](https://github.com/artf/grapesjs-parser-postcss) - Custom CSS parser for GrapesJS by using [PostCSS](https://github.com/postcss/postcss)
+* [grapesjs-typed](https://github.com/artf/grapesjs-typed) - Typed component made by wrapping Typed.js library
 
 ### Presets
 * [grapesjs-preset-webpage](https://github.com/artf/grapesjs-preset-webpage) - Webpage Builder

@@ -68,9 +68,16 @@ export default PropertyCompositeView.extend({
   addLayer() {
     const model = this.model;
     const layers = this.getLayers();
+    const prepend = model.get('prepend');
     const properties = model.get('properties').deepClone();
     properties.each(property => property.set('value', ''));
-    const layer = layers.add({ properties });
+    const layer = layers.add(
+      { properties },
+      {
+        active: 1,
+        ...(prepend && { at: 0 })
+      }
+    );
 
     // In detached mode inputValueChanged will add new 'layer value'
     // to all subprops
@@ -241,7 +248,8 @@ export default PropertyCompositeView.extend({
     }
 
     const toAdd =
-      model.getLayersFromTarget(target, { resultValue }) || layersObj;
+      model.getLayersFromTarget(target, { resultValue, layersObj }) ||
+      layersObj;
     layers.reset();
     layers.add(toAdd);
     model.set({ stackIndex: null }, { silent: true });
@@ -277,7 +285,8 @@ export default PropertyCompositeView.extend({
 
         if (model.get('detached')) {
           const subProp = subModel.get('property');
-          const values = self.getLayers().getPropertyValues(subProp);
+          const defVal = subModel.getDefaultValue();
+          const values = self.getLayers().getPropertyValues(subProp, defVal);
           view.updateTargetStyle(values, null, opt);
         } else {
           // Update only if there is an actual update (to avoid changes for computed styles)

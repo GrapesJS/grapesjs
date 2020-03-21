@@ -49,7 +49,9 @@ const Selector = Backbone.Model.extend(
      * Get full selector name
      * @return {string}
      */
-    getFullName() {
+    getFullName(opts = {}) {
+      const { escape } = opts;
+      const name = this.get('name');
       let init = '';
 
       switch (this.get('type')) {
@@ -61,7 +63,7 @@ const Selector = Backbone.Model.extend(
           break;
       }
 
-      return init + this.get('name');
+      return init + (escape ? escape(name) : name);
     }
   },
   {

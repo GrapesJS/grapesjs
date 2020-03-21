@@ -97,6 +97,7 @@ export default Input.extend({
           changed = 1;
           const cl = getColor(color);
           cpStyle.backgroundColor = cl;
+          model.setValueFromInput(0, 0); // for UndoManager
           model.setValueFromInput(cl);
           self.noneColor = 0;
         },

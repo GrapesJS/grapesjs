@@ -68,14 +68,14 @@ describe('ButtonView', () => {
   });
 
   test('Cancels the click action when button is disabled', () => {
-    const stub = sinon.stub(view, 'toogleActive');
+    const stub = sinon.stub(view, 'toggleActive');
     model.set('disable', true, { silent: true });
     view.clicked();
     expect(stub.called).toEqual(false);
   });
 
   test('Enable the click action when button is enable', () => {
-    const stub = sinon.stub(view, 'toogleActive');
+    const stub = sinon.stub(view, 'toggleActive');
     model.set('disable', false, { silent: true });
     view.clicked();
     expect(stub.called).toEqual(true);

@@ -46,11 +46,13 @@ export default Backbone.View.extend({
   },
 
   render() {
+    const { $el } = this;
     this.properties = [];
     const fragment = document.createDocumentFragment();
     this.collection.each(model => this.add(model, fragment));
-    this.$el.append(fragment);
-    this.$el.attr('class', `${this.pfx}properties`);
+    $el.empty();
+    $el.append(fragment);
+    $el.attr('class', `${this.pfx}properties`);
     return this;
   }
 });

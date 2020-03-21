@@ -1,3 +1,4 @@
+import { isString, each } from 'underscore';
 import Backbone from 'backbone';
 import PropertiesView from './PropertiesView';
 
@@ -31,7 +32,7 @@ export default Backbone.View.extend({
 
   initialize(o = {}) {
     let model = this.model;
-    this.stackModel = o.stackModel || {};
+    this.stackModel = o.stackModel;
     this.config = o.config || {};
     this.em = this.config.em;
     this.pfx = this.config.stylePrefix || '';
@@ -82,11 +83,16 @@ export default Backbone.View.extend({
    * @param {Element} $el
    */
   onPreview(value) {
+    const { stackModel } = this;
+    const detach = stackModel && stackModel.get('detached');
     const values = value.split(' ');
     const lim = 3;
     const result = [];
+    const resultObj = {};
+
     this.model.get('properties').each((prop, index) => {
-      var value = values[index] || '';
+      const property = prop.get('property');
+      let value = detach ? prop.getFullValue() : values[index] || '';
 
       if (value) {
         if (prop.get('type') == 'integer') {
@@ -100,9 +106,10 @@ export default Backbone.View.extend({
       }
 
       result.push(value);
+      resultObj[property] = value;
     });
 
-    return result.join(' ');
+    return detach ? resultObj : result.join(' ');
   },
 
   updatePreview() {
@@ -115,7 +122,14 @@ export default Backbone.View.extend({
       : this.onPreview(value);
 
     if (preview && stackModel && previewEl) {
-      previewEl.style[stackModel.get('property')] = preview;
+      const { style } = previewEl;
+      if (isString(preview)) {
+        style[stackModel.get('property')] = preview;
+      } else {
+        let prvStr = [];
+        each(preview, (val, prop) => prvStr.push(`${prop}:${val}`));
+        previewEl.setAttribute('style', prvStr.join(';'));
+      }
     }
   },
 

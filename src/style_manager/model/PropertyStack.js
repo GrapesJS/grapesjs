@@ -10,6 +10,9 @@ export default Property.extend({
     // The separator used to join layer values
     layerSeparator: ', ',
 
+    // Prepend new layers in the list
+    prepend: 0,
+
     // Layer preview
     preview: 0
   },

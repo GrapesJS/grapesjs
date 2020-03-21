@@ -12,16 +12,15 @@ export default Backbone.Model.extend({
   },
 
   initialize() {
-    const properties = this.get('properties');
+    const prp = this.get('properties');
     var value = this.get('value');
     this.set(
       'properties',
-      properties instanceof Properties ? properties : new Properties(properties)
+      prp instanceof Properties ? prp : new Properties(prp)
     );
-    this.get('properties').forEach(item => {
-      const { collection } = this;
-      item.parent = collection && collection.property;
-    });
+    const props = this.get('properties');
+    props.forEach(this.onPropAdd, this);
+    this.listenTo(props, 'add', this.onPropAdd);
 
     // If there is no value I'll try to get it from values
     // I need value setted to make preview working
@@ -35,6 +34,11 @@ export default Backbone.Model.extend({
 
       this.set('value', val.trim());
     }
+  },
+
+  onPropAdd(prop) {
+    const coll = this.collection;
+    prop.parent = coll && coll.property;
   },
 
   /**
