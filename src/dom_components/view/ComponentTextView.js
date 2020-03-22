@@ -143,9 +143,11 @@ export default ComponentView.extend({
    */
   onInput() {
     const { em } = this;
+    const evPfx = 'component';
+    const ev = [`${evPfx}:update`, `${evPfx}:input`].join(' ');
 
     // Update toolbars
-    em && em.trigger('component:update', this.model);
+    em && em.trigger(ev, this.model);
   },
 
   /**

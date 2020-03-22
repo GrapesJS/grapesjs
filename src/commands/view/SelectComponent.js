@@ -85,7 +85,7 @@ export default {
     em[method]('component:toggled', this.onSelect, this);
     em[method]('change:componentHovered', this.onHovered, this);
     em[method](
-      'component:resize component:styleUpdate',
+      'component:resize component:styleUpdate component:input',
       this.updateGlobalPos,
       this
     );
