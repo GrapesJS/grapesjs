@@ -27318,7 +27318,7 @@ var showOffsets;
     methods[method](window, 'resize', this.onFrameUpdated);
     em[method]('component:toggled', this.onSelect, this);
     em[method]('change:componentHovered', this.onHovered, this);
-    em[method]('component:resize component:styleUpdate', this.updateGlobalPos, this);
+    em[method]('component:resize component:styleUpdate component:input', this.updateGlobalPos, this);
     em[method]('change:canvasOffset', this.updateAttached, this);
     em[method]('frame:updated', this.onFrameUpdated, this);
     em.get('Canvas').getFrames().forEach(function (frame) {
@@ -34141,9 +34141,11 @@ var compProt = _ComponentView__WEBPACK_IMPORTED_MODULE_2__["default"].prototype;
    * @param  {Event} e
    */
   onInput: function onInput() {
-    var em = this.em; // Update toolbars
+    var em = this.em;
+    var evPfx = 'component';
+    var ev = ["".concat(evPfx, ":update"), "".concat(evPfx, ":input")].join(' '); // Update toolbars
 
-    em && em.trigger('component:update', this.model);
+    em && em.trigger(ev, this.model);
   },
 
   /**
@@ -38493,7 +38495,7 @@ var defaultConfig = {
   editors: editors,
   plugins: plugins,
   // Will be replaced on build
-  version: '0.16.3',
+  version: '0.16.4',
 
   /**
    * Initialize the editor with passed options
