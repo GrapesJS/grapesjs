@@ -44,12 +44,12 @@ editor.getWrapper().append(`<div>...`);
 ::: tip
 If you need to append a component in at a specific position, you can use `at` option. So, to add a component on top of all others (in the same collection) you would use
 ```js
-component.append('<div>...', { at: 0 })
+editor.getWrapper().append('<div>...', { at: 0 })
 ```
 or in the middle
 ```js
-const { length } = component.components();
-component.append('<div>...', { at: parseInt(length / 2, 10) })
+const { length } = editor.getWrapper().components();
+editor.getWrapper().append('<div>...', { at: parseInt(length / 2, 10) })
 ```
 :::
 
