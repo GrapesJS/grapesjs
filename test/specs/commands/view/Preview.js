@@ -1,17 +1,17 @@
 import Panel from 'panels/model/Panel';
 import Preview from 'commands/view/Preview';
-import Button from 'panels/model/Button';
 
 describe('Preview command', () => {
-  let fakeButton, fakePanels, fakeEditor;
+  let fakePanels, fakeEditor, fakeIsActive;
 
   beforeEach(() => {
-    fakeButton = new Button();
     fakePanels = [new Panel(), new Panel(), new Panel()];
+    fakeIsActive = false;
 
     fakeEditor = {
       getEl: jest.fn(),
       refresh: jest.fn(),
+      runCommand: jest.fn(),
       stopCommand: jest.fn(),
 
       getModel: jest.fn().mockReturnValue({
@@ -28,13 +28,17 @@ describe('Preview command', () => {
         })
       },
 
+      Commands: {
+        isActive: jest.fn(() => fakeIsActive)
+      },
+
       Panels: {
-        getButton: jest.fn(() => fakeButton),
         getPanels: jest.fn(() => fakePanels)
       }
     };
 
     Preview.panels = undefined;
+    Preview.shouldRunSwVisibility = undefined;
     spyOn(Preview, 'tglPointers');
   });
 
@@ -57,6 +61,24 @@ describe('Preview command', () => {
       Preview.run(fakeEditor);
       fakePanels.forEach(panel => expect(panel.get('visible')).toEqual(false));
     });
+
+    it("should stop the 'sw-visibility' command if active", () => {
+      Preview.run(fakeEditor);
+      expect(fakeEditor.stopCommand).not.toHaveBeenCalled();
+      fakeIsActive = true;
+      Preview.run(fakeEditor);
+      expect(fakeEditor.stopCommand).toHaveBeenCalledWith('sw-visibility');
+    });
+
+    it('should not reset the `shouldRunSwVisibility` state once active if run multiple times', () => {
+      expect(Preview.shouldRunSwVisibility).toBeUndefined();
+      fakeIsActive = true;
+      Preview.run(fakeEditor);
+      expect(Preview.shouldRunSwVisibility).toEqual(true);
+      fakeIsActive = false;
+      Preview.run(fakeEditor);
+      expect(Preview.shouldRunSwVisibility).toEqual(true);
+    });
   });
 
   describe('.stop', () => {
@@ -66,9 +88,13 @@ describe('Preview command', () => {
       fakePanels.forEach(panel => expect(panel.get('visible')).toEqual(true));
     });
 
-    it('should not break when the sw-visibility button is not present', () => {
-      fakeButton = null;
-      expect(() => Preview.stop(fakeEditor)).not.toThrow();
+    it("should run the 'sw-visibility' command if it was active before run", () => {
+      Preview.stop(fakeEditor);
+      expect(fakeEditor.runCommand).not.toHaveBeenCalled();
+      Preview.shouldRunSwVisibility = true;
+      Preview.stop(fakeEditor);
+      expect(fakeEditor.runCommand).toHaveBeenCalledWith('sw-visibility');
+      expect(Preview.shouldRunSwVisibility).toEqual(false);
     });
   });
 });

@@ -8,9 +8,12 @@ export default {
   },
 
   toggleVis(ed, active = 1) {
-    const method = active ? 'add' : 'remove';
-    ed.Canvas.getFrames().forEach(frame => {
-      frame.view.getBody().classList[method](`${this.ppfx}dashed`);
-    });
+    if (!ed.Commands.isActive('preview')) {
+      const method = active ? 'add' : 'remove';
+
+      ed.Canvas.getFrames().forEach(frame => {
+        frame.view.getBody().classList[method](`${this.ppfx}dashed`);
+      });
+    }
   }
 };
