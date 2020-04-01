@@ -1,5 +1,7 @@
 import { each } from 'underscore';
 
+const cmdVis = 'sw-visibility';
+
 export default {
   getPanels(editor) {
     if (!this.panels) {
@@ -19,13 +21,10 @@ export default {
     this.sender = sender;
 
     if (!this.shouldRunSwVisibility) {
-      this.shouldRunSwVisibility = editor.Commands.isActive('sw-visibility');
+      this.shouldRunSwVisibility = editor.Commands.isActive(cmdVis);
     }
 
-    if (this.shouldRunSwVisibility) {
-      editor.stopCommand('sw-visibility');
-    }
-
+    this.shouldRunSwVisibility && editor.stopCommand(cmdVis);
     editor.getModel().stopDefault();
 
     const panels = this.getPanels(editor);
@@ -62,12 +61,11 @@ export default {
     const panels = this.getPanels(editor);
 
     if (this.shouldRunSwVisibility) {
-      editor.runCommand('sw-visibility');
+      editor.runCommand(cmdVis);
       this.shouldRunSwVisibility = false;
     }
 
     editor.getModel().runDefault();
-
     panels.forEach(panel => panel.set('visible', true));
 
     const canvas = editor.Canvas.getElement();
