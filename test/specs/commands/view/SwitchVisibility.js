@@ -1,4 +1,4 @@
-import SwitchVisibility from '../../../../src/commands/view/SwitchVisibility';
+import SwitchVisibility from 'commands/view/SwitchVisibility';
 
 describe('SwitchVisibility command', () => {
   let fakeEditor, fakeFrames, fakeIsActive;
