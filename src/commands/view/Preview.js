@@ -18,7 +18,14 @@ export default {
   run(editor, sender) {
     this.sender = sender;
 
-    editor.stopCommand('sw-visibility');
+    if (!this.shouldRunSwVisibility) {
+      this.shouldRunSwVisibility = editor.Commands.isActive('sw-visibility');
+    }
+
+    if (this.shouldRunSwVisibility) {
+      editor.stopCommand('sw-visibility');
+    }
+
     editor.getModel().stopDefault();
 
     const panels = this.getPanels(editor);
@@ -54,13 +61,9 @@ export default {
     sender.set && sender.set('active', 0);
     const panels = this.getPanels(editor);
 
-    const swVisibilityButton = editor.Panels.getButton(
-      'options',
-      'sw-visibility'
-    );
-
-    if (swVisibilityButton && swVisibilityButton.get('active')) {
+    if (this.shouldRunSwVisibility) {
       editor.runCommand('sw-visibility');
+      this.shouldRunSwVisibility = false;
     }
 
     editor.getModel().runDefault();
