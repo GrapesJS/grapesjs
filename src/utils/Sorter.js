@@ -67,7 +67,6 @@ export default Backbone.View.extend({
     this.selectOnEnd = !o.avoidSelectOnEnd;
     this.scale = o.scale;
     this.activeTextModel = null;
-    this.plhColor = o.plhColor || '#62c462';
 
     if (this.em && this.em.on) {
       this.em.on('change:canvasOffset', this.updateOffset);
@@ -967,8 +966,6 @@ export default Backbone.View.extend({
       h = 0,
       un = 'px',
       margI = 5,
-      brdCol = this.plhColor,
-      brd = 3,
       method = pos.method;
     var elDim = dims[pos.index];
 
