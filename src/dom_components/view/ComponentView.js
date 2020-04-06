@@ -499,6 +499,7 @@ export default Backbone.View.extend({
     if (this.modelOpt.temporary) return this;
     this.renderChildren();
     this.updateScript();
+    setViewEl(this.el, this);
     this.postRender();
 
     return this;
