@@ -117,6 +117,12 @@ export default Input.extend({
         }
       });
 
+      this.em &&
+        this.em.on('component:selected', () => {
+          changed = 1;
+          colorEl.spectrum('hide');
+        });
+
       this.colorEl = colorEl;
     }
     return this.colorEl;
