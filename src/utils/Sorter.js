@@ -1055,6 +1055,8 @@ export default Backbone.View.extend({
     this.toggleSortCursor();
 
     this.toMove = null;
+    this.eventMove = 0;
+    this.dropModel = null;
 
     if (isFunction(onEndMove)) {
       const data = {

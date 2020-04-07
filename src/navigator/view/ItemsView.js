@@ -52,7 +52,8 @@ export default Backbone.View.extend({
   removeChildren(removed) {
     const view = removed.viewLayer;
     if (!view) return;
-    view.remove.apply(view);
+    view.remove();
+    removed.viewLayer = 0;
   },
 
   /**
