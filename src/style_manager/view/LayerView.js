@@ -5,7 +5,7 @@ import PropertiesView from './PropertiesView';
 export default Backbone.View.extend({
   events: {
     click: 'active',
-    'click [data-close-layer]': 'remove',
+    'click [data-close-layer]': 'removeItem',
     'mousedown [data-move-layer]': 'initSorter',
     'touchstart [data-move-layer]': 'initSorter'
   },
@@ -58,9 +58,12 @@ export default Backbone.View.extend({
     if (this.sorter) this.sorter.startSort(this.el);
   },
 
-  remove(e) {
-    if (e && e.stopPropagation) e.stopPropagation();
+  removeItem(ev) {
+    ev && ev.stopPropagation();
+    this.remove();
+  },
 
+  remove(opts = {}) {
     const { model, props } = this;
     const coll = model.collection;
     const stackModel = this.stackModel;
@@ -70,7 +73,7 @@ export default Backbone.View.extend({
 
     if (stackModel && stackModel.set) {
       stackModel.set({ stackIndex: null }, { silent: true });
-      stackModel.trigger('updateValue');
+      !opts.fromTarget && stackModel.trigger('updateValue');
     }
 
     props && props.remove();

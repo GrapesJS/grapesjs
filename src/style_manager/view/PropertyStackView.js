@@ -192,6 +192,7 @@ export default PropertyCompositeView.extend({
     const target = this.getTarget();
     const valueComput = this.getComputedValue();
     const selected = em.getSelected();
+    const updateOpts = { fromTarget: 1 };
     let resultValue,
       style,
       targetAlt,
@@ -270,8 +271,8 @@ export default PropertyCompositeView.extend({
     const toAdd =
       model.getLayersFromTarget(target, { resultValue, layersObj }) ||
       layersObj;
-    layers.reset();
-    layers.add(toAdd);
+    layers.reset(null, updateOpts);
+    layers.add(toAdd, updateOpts);
     model.set({ stackIndex: null }, { silent: true });
   },
 

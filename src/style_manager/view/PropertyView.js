@@ -189,9 +189,9 @@ export default Backbone.View.extend({
    * Triggers when the value of element input/s is changed, so have to update
    * the value of the model which will propogate those changes to the target
    */
-  inputValueChanged(e) {
-    e && e.stopPropagation();
-    this.model.setValue(this.getInputValue(), 1, { fromInput: 1 });
+  inputValueChanged(ev) {
+    ev && ev.stopPropagation();
+    this.model.setValueFromInput(this.getInputValue());
     this.elementUpdated();
   },
 
@@ -405,7 +405,10 @@ export default Backbone.View.extend({
       this.setValue(value);
     }
 
-    this.getTargets().forEach(target => this.__updateTarget(target, opt));
+    // Avoid target update if the changes comes from it
+    if (!opt.fromTarget) {
+      this.getTargets().forEach(target => this.__updateTarget(target, opt));
+    }
   },
 
   __updateTarget(target, opt = {}) {
