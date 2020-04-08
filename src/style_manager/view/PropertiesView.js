@@ -47,12 +47,22 @@ export default Backbone.View.extend({
 
   render() {
     const { $el } = this;
-    this.properties = [];
+    this.clearItems();
     const fragment = document.createDocumentFragment();
     this.collection.each(model => this.add(model, fragment));
     $el.empty();
     $el.append(fragment);
     $el.attr('class', `${this.pfx}properties`);
     return this;
+  },
+
+  remove() {
+    Backbone.View.prototype.remove.apply(this, arguments);
+    this.clearItems();
+  },
+
+  clearItems() {
+    this.properties.forEach(item => item.remove());
+    this.properties = [];
   }
 });

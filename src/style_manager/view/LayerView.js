@@ -61,20 +61,19 @@ export default Backbone.View.extend({
   remove(e) {
     if (e && e.stopPropagation) e.stopPropagation();
 
-    const model = this.model;
-    const collection = model.collection;
+    const { model, props } = this;
+    const coll = model.collection;
     const stackModel = this.stackModel;
 
     Backbone.View.prototype.remove.apply(this, arguments);
-
-    if (collection.contains(model)) {
-      collection.remove(model);
-    }
+    coll && coll.contains(model) && coll.remove(model);
 
     if (stackModel && stackModel.set) {
       stackModel.set({ stackIndex: null }, { silent: true });
       stackModel.trigger('updateValue');
     }
+
+    props && props.remove();
   },
 
   /**
@@ -172,11 +171,13 @@ export default Backbone.View.extend({
       customValue: propsConfig.customValue,
       propTarget: propsConfig.propTarget,
       onChange: propsConfig.onChange
-    }).render().el;
+    });
+    const propsEl = properties.render().el;
 
     el.innerHTML = this.template(model);
     el.className = `${pfx}layer${!preview ? ` ${pfx}no-preview` : ''}`;
-    this.getPropertiesWrapper().appendChild(properties);
+    this.props = properties;
+    this.getPropertiesWrapper().appendChild(propsEl);
     this.updateVisibility();
     this.updatePreview();
     return this;

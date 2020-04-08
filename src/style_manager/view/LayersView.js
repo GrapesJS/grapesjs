@@ -16,6 +16,7 @@ export default Backbone.View.extend({
     this.listenTo(collection, 'add', this.addTo);
     this.listenTo(collection, 'deselectAll', this.deselectAll);
     this.listenTo(collection, 'reset', this.render);
+    this.items = [];
 
     var em = this.config.em || '';
     var utils = em ? em.get('Utils') : '';
@@ -66,14 +67,15 @@ export default Backbone.View.extend({
       model.set('preview', this.preview);
     }
 
-    var view = new LayerView({
+    const view = new LayerView({
       model,
       config,
       sorter,
       stackModel,
       propsConfig
     });
-    var rendered = view.render().el;
+    const rendered = view.render().el;
+    this.items.push(view);
 
     if (fragment) {
       fragment.appendChild(rendered);
@@ -111,6 +113,7 @@ export default Backbone.View.extend({
 
   render() {
     var fragment = document.createDocumentFragment();
+    this.clearItems();
     this.$el.empty();
 
     this.collection.each(function(model) {
@@ -123,5 +126,15 @@ export default Backbone.View.extend({
     if (this.sorter) this.sorter.plh = null;
 
     return this;
+  },
+
+  remove() {
+    this.clearItems();
+    Backbone.View.prototype.remove.apply(this, arguments);
+  },
+
+  clearItems() {
+    this.items.forEach(item => item.remove());
+    this.items = [];
   }
 });
