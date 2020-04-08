@@ -101,15 +101,15 @@ export default PropertyCompositeView.extend({
 
     // In detached mode inputValueChanged will add new 'layer value'
     // to all subprops
-    this.inputValueChanged();
+    this.inputValueChanged({ up: 1 });
 
     // This will set subprops with a new default values
     model.set('stackIndex', layers.indexOf(layer));
   },
 
-  inputValueChanged() {
+  inputValueChanged(opts = {}) {
     const model = this.model;
-    this.elementUpdated();
+    opts.up && this.elementUpdated();
 
     // If not detached I'll just put all the values from layers to property
     // eg. background: layer1Value, layer2Value, layer3Value, ...
