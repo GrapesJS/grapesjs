@@ -25,6 +25,24 @@ export default PropertyCompositeView.extend({
     this.listenTo(model, 'change:stackIndex', this.indexChanged);
     this.listenTo(model, 'updateValue', this.inputValueChanged);
     this.delegateEvents();
+
+    const propsConfig = this.getPropsConfig();
+    this.layers = new LayersView({
+      collection: this.getLayers(),
+      stackModel: model,
+      preview: model.get('preview'),
+      config: this.config,
+      propsConfig
+    });
+    const PropertiesView = require('./PropertiesView').default;
+    this.propsView = new PropertiesView({
+      target: this.target,
+      collection: model.get('properties'),
+      stackModel: model,
+      config: this.config,
+      onChange: propsConfig.onChange,
+      propTarget: propsConfig.propTarget
+    });
   },
 
   /**
@@ -41,7 +59,9 @@ export default PropertyCompositeView.extend({
       this.checkVisibility();
     }
 
-    this.refreshLayers();
+    // I have to wait the update of inner properites (like visibility)
+    // before render layers
+    setTimeout(() => this.refreshLayers());
   },
 
   /**
@@ -270,14 +290,13 @@ export default PropertyCompositeView.extend({
     return result;
   },
 
-  onRender() {
+  getPropsConfig() {
     const self = this;
-    const model = this.model;
-    const fieldEl = this.el.querySelector('[data-layers-wrapper]');
-    const PropertiesView = require('./PropertiesView').default;
-    const propsConfig = {
-      target: this.target,
-      propTarget: this.propTarget,
+    const { model } = self;
+
+    return {
+      target: self.target,
+      propTarget: self.propTarget,
 
       // Things to do when a single sub-property is changed
       onChange(el, view, opt) {
@@ -300,25 +319,12 @@ export default PropertyCompositeView.extend({
         }
       }
     };
-    const layers = new LayersView({
-      collection: this.getLayers(),
-      stackModel: model,
-      preview: model.get('preview'),
-      config: this.config,
-      propsConfig
-    }).render().el;
+  },
 
-    // Will use it to propogate changes
-    new PropertiesView({
-      target: this.target,
-      collection: this.model.get('properties'),
-      stackModel: model,
-      config: this.config,
-      onChange: propsConfig.onChange,
-      propTarget: propsConfig.propTarget
-    }).render();
-
-    //model.get('properties')
-    fieldEl.appendChild(layers);
+  onRender() {
+    const { el, layers, propsView } = this;
+    const fieldEl = el.querySelector('[data-layers-wrapper]');
+    propsView.render(); // Will use it to propogate changes
+    fieldEl.appendChild(layers.render().el);
   }
 });
