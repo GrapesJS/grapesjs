@@ -31,7 +31,9 @@ export default () => {
   let um;
   let config;
   let beforeCache;
-  const configDef = {};
+  const configDef = {
+    maximumStackLength: 500
+  };
 
   return {
     name: 'UndoManager',
