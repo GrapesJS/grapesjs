@@ -266,20 +266,20 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     /**
-     * Find all inner components by component id.
+     * Find all inner components by component type.
      * The advantage of this method over `find` is that you can use it
      * also before rendering the component
-     * @param {String} id Component id
+     * @param {String} type Component type
      * @returns {Array<Component>}
      * @example
      * const allImages = component.findType('image');
      * console.log(allImages[0]) // prints the first found component
      */
-    findType(id) {
+    findType(type) {
       const result = [];
       const find = components =>
         components.forEach(item => {
-          item.is(id) && result.push(item);
+          item.is(type) && result.push(item);
           find(item.components());
         });
       find(this.components());
@@ -298,6 +298,26 @@ const Component = Backbone.Model.extend(Styleable).extend(
     closest(query) {
       const result = this.view.$el.closest(query);
       return result.length && result.data('model');
+    },
+
+    /**
+     * Find the closest parent component by its type.
+     * The advantage of this method over `closest` is that you can use it
+     * also before rendering the component
+     * @param {String} type Component type
+     * @returns {Component} Found component, otherwise `undefined`
+     * @example
+     * const Section = component.closestType('section');
+     * console.log(Section);
+     */
+    closestType(type) {
+      let parent = this.parent();
+
+      while (parent && !parent.is(type)) {
+        parent = parent.parent();
+      }
+
+      return parent;
     },
 
     /**
