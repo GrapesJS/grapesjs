@@ -469,6 +469,13 @@ export default Backbone.View.extend({
       delete style[property];
     }
 
+    // Forces to trigger the change (for UndoManager)
+    if (opts.avoidStore) {
+      style.__ = 1;
+    } else {
+      delete style.__;
+    }
+
     target.setStyle(style, opts);
 
     // Helper is used by `states` like ':hover' to show its preview
