@@ -64,7 +64,6 @@ export default Backbone.Collection.extend({
   getLayersFromStyle(styleObj) {
     const layers = [];
     const properties = this.properties;
-    const propNames = properties.pluck('property');
 
     properties.each(propModel => {
       const style = styleObj[propModel.get('property')];

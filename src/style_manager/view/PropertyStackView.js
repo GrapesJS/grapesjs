@@ -51,17 +51,18 @@ export default PropertyCompositeView.extend({
    * so we gonna check all props and find if it has any difference
    * */
   targetUpdated(...args) {
+    let data;
     if (!this.model.get('detached')) {
-      PropertyCompositeView.prototype.targetUpdated.apply(this, args);
+      data = PropertyCompositeView.prototype.targetUpdated.apply(this, args);
     } else {
-      const { status } = this._getTargetData();
-      this.setStatus(status);
+      data = this._getTargetData();
+      this.setStatus(data.status);
       this.checkVisibility();
     }
 
     // I have to wait the update of inner properites (like visibility)
     // before render layers
-    setTimeout(() => this.refreshLayers());
+    setTimeout(() => this.refreshLayers(data));
   },
 
   /**
@@ -183,7 +184,7 @@ export default PropertyCompositeView.extend({
   /**
    * Refresh layers
    * */
-  refreshLayers() {
+  refreshLayers(opts = {}) {
     let layersObj = [];
     const { model, em } = this;
     const layers = this.getLayers();
@@ -202,7 +203,7 @@ export default PropertyCompositeView.extend({
 
     // With detached layers values will be assigned to their properties
     if (detached) {
-      style = target ? target.getStyle() : {};
+      style = opts.targetValue || {};
       const hasDetachedStyle = rule => {
         const name = model
           .get('properties')
@@ -277,15 +278,19 @@ export default PropertyCompositeView.extend({
   },
 
   getTargetValue(opts = {}) {
+    const { model } = this;
+    const { detached } = model.attributes;
+    const target = this.getTarget();
     let result = PropertyCompositeView.prototype.getTargetValue.call(
       this,
       opts
     );
-    const { detached } = this.model.attributes;
 
     // It might happen that the browser split properties on CSSOM parse
     if (isUndefined(result) && !detached) {
-      result = this.model.getValueFromStyle(this.getTarget().getStyle());
+      result = model.getValueFromStyle(target.getStyle());
+    } else if (detached) {
+      result = model.getValueFromTarget(target);
     }
 
     return result;

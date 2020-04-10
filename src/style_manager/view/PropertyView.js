@@ -266,20 +266,22 @@ export default Backbone.View.extend({
     const { model } = this;
     const property = model.get('property');
     const { status, value, ...targetData } = this._getTargetData();
+    const data = {
+      status,
+      value,
+      ...targetData
+    };
 
     this.setStatus(status);
     model.setValue(value, 0, { fromTarget: 1, ...opts });
 
     if (em) {
-      const data = {
-        status,
-        value,
-        ...targetData
-      };
       em.trigger('styleManager:change', this, property, value, data);
       em.trigger(`styleManager:change:${property}`, this, value, data);
       this._emitUpdate(data);
     }
+
+    return data;
   },
 
   _emitUpdate(addData = {}) {

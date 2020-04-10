@@ -44,7 +44,7 @@ export default Backbone.View.extend({
   toggleStateCls(targets = [], enable) {
     targets.forEach(trg => {
       const el = trg.getEl();
-      el && el.classList[enable ? 'add' : 'remove'](helperCls);
+      el && el.classList && el.classList[enable ? 'add' : 'remove'](helperCls);
     });
   },
 
