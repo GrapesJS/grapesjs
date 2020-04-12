@@ -38587,7 +38587,7 @@ var defaultConfig = {
   editors: editors,
   plugins: plugins,
   // Will be replaced on build
-  version: '0.16.6',
+  version: '0.16.7',
 
   /**
    * Initialize the editor with passed options
@@ -45211,7 +45211,6 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
   getLayersFromStyle: function getLayersFromStyle(styleObj) {
     var layers = [];
     var properties = this.properties;
-    var propNames = properties.pluck('property');
     properties.each(function (propModel) {
       var style = styleObj[propModel.get('property')];
       var values = style ? style.split(', ') : [];
@@ -45546,9 +45545,16 @@ var Property = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.Model.extend({
     var complete = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
     var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     var parsed = this.parseValue(value);
-    this.set(parsed, _objectSpread({}, opts, {
-      avoidStore: !complete
-    }));
+    var avoidStore = !complete;
+    !avoidStore && this.set({
+      value: ''
+    }, {
+      avoidStore: avoidStore,
+      silent: true
+    });
+    this.set(parsed, _objectSpread({
+      avoidStore: avoidStore
+    }, opts));
   },
 
   /**
@@ -46943,8 +46949,10 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
 /* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _PropertyComposite__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./PropertyComposite */ "./src/style_manager/model/PropertyComposite.js");
-/* harmony import */ var _Layers__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Layers */ "./src/style_manager/model/Layers.js");
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _PropertyComposite__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./PropertyComposite */ "./src/style_manager/model/PropertyComposite.js");
+/* harmony import */ var _Layers__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Layers */ "./src/style_manager/model/Layers.js");
 
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
@@ -46953,8 +46961,9 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 
 
-/* harmony default export */ __webpack_exports__["default"] = (_PropertyComposite__WEBPACK_IMPORTED_MODULE_1__["default"].extend({
-  defaults: _objectSpread({}, _PropertyComposite__WEBPACK_IMPORTED_MODULE_1__["default"].prototype.defaults, {
+
+/* harmony default export */ __webpack_exports__["default"] = (_PropertyComposite__WEBPACK_IMPORTED_MODULE_2__["default"].extend({
+  defaults: _objectSpread({}, _PropertyComposite__WEBPACK_IMPORTED_MODULE_2__["default"].prototype.defaults, {
     // Array of layers (which contain properties)
     layers: [],
     // The separator used to join layer values
@@ -46967,13 +46976,13 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
   initialize: function initialize() {
     var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    _PropertyComposite__WEBPACK_IMPORTED_MODULE_1__["default"].callParentInit(_PropertyComposite__WEBPACK_IMPORTED_MODULE_1__["default"], this, props, opts);
+    _PropertyComposite__WEBPACK_IMPORTED_MODULE_2__["default"].callParentInit(_PropertyComposite__WEBPACK_IMPORTED_MODULE_2__["default"], this, props, opts);
     var layers = this.get('layers');
-    var layersColl = new _Layers__WEBPACK_IMPORTED_MODULE_2__["default"](layers);
+    var layersColl = new _Layers__WEBPACK_IMPORTED_MODULE_3__["default"](layers);
     layersColl.property = this;
     layersColl.properties = this.get('properties');
     this.set('layers', layersColl);
-    _PropertyComposite__WEBPACK_IMPORTED_MODULE_1__["default"].callInit(this, props, opts);
+    _PropertyComposite__WEBPACK_IMPORTED_MODULE_2__["default"].callInit(this, props, opts);
   },
   getLayers: function getLayers() {
     return this.get('layers');
@@ -46989,11 +46998,25 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
   getValueFromStyle: function getValueFromStyle() {
     var styles = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var layers = this.getLayers().getLayersFromStyle(styles);
-    return new _Layers__WEBPACK_IMPORTED_MODULE_2__["default"](layers).getFullValue();
+    return new _Layers__WEBPACK_IMPORTED_MODULE_3__["default"](layers).getFullValue();
   },
   clearValue: function clearValue() {
     this.getLayers().reset();
-    return _PropertyComposite__WEBPACK_IMPORTED_MODULE_1__["default"].prototype.clearValue.apply(this, arguments);
+    return _PropertyComposite__WEBPACK_IMPORTED_MODULE_2__["default"].prototype.clearValue.apply(this, arguments);
+  },
+  getValueFromTarget: function getValueFromTarget(target) {
+    var _this$attributes = this.attributes,
+        detached = _this$attributes.detached,
+        property = _this$attributes.property,
+        properties = _this$attributes.properties;
+    var style = target.getStyle();
+    var validStyles = {};
+    properties.forEach(function (prop) {
+      var name = prop.get('property');
+      var value = style[name];
+      if (value) validStyles[name] = value;
+    });
+    return !detached ? style[property] : Object(underscore__WEBPACK_IMPORTED_MODULE_1__["keys"])(validStyles).length ? validStyles : '';
   },
 
   /**
@@ -48245,24 +48268,24 @@ var cssGen = new code_manager_model_CssGenerator__WEBPACK_IMPORTED_MODULE_4__["d
   targetUpdated: function targetUpdated() {
     var _this = this;
 
+    var data;
+
     if (!this.model.get('detached')) {
       for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
         args[_key] = arguments[_key];
       }
 
-      _PropertyCompositeView__WEBPACK_IMPORTED_MODULE_2__["default"].prototype.targetUpdated.apply(this, args);
+      data = _PropertyCompositeView__WEBPACK_IMPORTED_MODULE_2__["default"].prototype.targetUpdated.apply(this, args);
     } else {
-      var _this$_getTargetData = this._getTargetData(),
-          status = _this$_getTargetData.status;
-
-      this.setStatus(status);
+      data = this._getTargetData();
+      this.setStatus(data.status);
       this.checkVisibility();
     } // I have to wait the update of inner properites (like visibility)
     // before render layers
 
 
     setTimeout(function () {
-      return _this.refreshLayers();
+      return _this.refreshLayers(data);
     });
   },
 
@@ -48397,6 +48420,7 @@ var cssGen = new code_manager_model_CssGenerator__WEBPACK_IMPORTED_MODULE_4__["d
    * Refresh layers
    * */
   refreshLayers: function refreshLayers() {
+    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var layersObj = [];
     var model = this.model,
         em = this.em;
@@ -48412,7 +48436,7 @@ var cssGen = new code_manager_model_CssGenerator__WEBPACK_IMPORTED_MODULE_4__["d
     var resultValue, style, targetAlt, targetAltDevice, valueTargetAlt, valueTrgAltDvc; // With detached layers values will be assigned to their properties
 
     if (detached) {
-      style = target ? target.getStyle() : {};
+      style = opts.targetValue || {};
 
       var hasDetachedStyle = function hasDetachedStyle(rule) {
         var name = model.get('properties').at(0).get('property');
@@ -48490,11 +48514,15 @@ var cssGen = new code_manager_model_CssGenerator__WEBPACK_IMPORTED_MODULE_4__["d
   },
   getTargetValue: function getTargetValue() {
     var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var result = _PropertyCompositeView__WEBPACK_IMPORTED_MODULE_2__["default"].prototype.getTargetValue.call(this, opts);
-    var detached = this.model.attributes.detached; // It might happen that the browser split properties on CSSOM parse
+    var model = this.model;
+    var detached = model.attributes.detached;
+    var target = this.getTarget();
+    var result = _PropertyCompositeView__WEBPACK_IMPORTED_MODULE_2__["default"].prototype.getTargetValue.call(this, opts); // It might happen that the browser split properties on CSSOM parse
 
     if (Object(underscore__WEBPACK_IMPORTED_MODULE_1__["isUndefined"])(result) && !detached) {
-      result = this.model.getValueFromStyle(this.getTarget().getStyle());
+      result = model.getValueFromStyle(target.getStyle());
+    } else if (detached) {
+      result = model.getValueFromTarget(target);
     }
 
     return result;
@@ -48814,22 +48842,24 @@ var clearProp = 'data-clear-style';
         value = _this$_getTargetData.value,
         targetData = _babel_runtime_helpers_objectWithoutProperties__WEBPACK_IMPORTED_MODULE_0___default()(_this$_getTargetData, ["status", "value"]);
 
+    var data = _objectSpread({
+      status: status,
+      value: value
+    }, targetData);
+
     this.setStatus(status);
     model.setValue(value, 0, _objectSpread({
       fromTarget: 1
     }, opts));
 
     if (em) {
-      var data = _objectSpread({
-        status: status,
-        value: value
-      }, targetData);
-
       em.trigger('styleManager:change', this, property, value, data);
       em.trigger("styleManager:change:".concat(property), this, value, data);
 
       this._emitUpdate(data);
     }
+
+    return data;
   },
   _emitUpdate: function _emitUpdate() {
     var addData = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -49018,6 +49048,13 @@ var clearProp = 'data-clear-style';
       style[property] = value;
     } else {
       delete style[property];
+    } // Forces to trigger the change (for UndoManager)
+
+
+    if (opts.avoidStore) {
+      style.__ = 1;
+    } else {
+      delete style.__;
     }
 
     target.setStyle(style, opts); // Helper is used by `states` like ':hover' to show its preview
@@ -49370,7 +49407,7 @@ var helperCls = 'hc-state';
     var enable = arguments.length > 1 ? arguments[1] : undefined;
     targets.forEach(function (trg) {
       var el = trg.getEl();
-      el && el.classList[enable ? 'add' : 'remove'](helperCls);
+      el && el.classList && el.classList[enable ? 'add' : 'remove'](helperCls);
     });
   },
 
