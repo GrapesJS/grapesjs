@@ -75,7 +75,7 @@ const Property = Backbone.Model.extend(
       const parsed = this.parseValue(value);
       const avoidStore = !complete;
       !avoidStore && this.set({ value: '' }, { avoidStore, silent: true });
-      this.set(parsed, { ...opts, avoidStore });
+      this.set(parsed, { avoidStore, ...opts });
     },
 
     /**
