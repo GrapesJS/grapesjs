@@ -142,48 +142,56 @@ export default (config = {}) => {
      * @private
      */
     DomComponents: em.get('DomComponents'),
+    Components: em.get('DomComponents'),
 
     /**
      * @property {LayerManager}
      * @private
      */
     LayerManager: em.get('LayerManager'),
+    Layers: em.get('LayerManager'),
 
     /**
      * @property {CssComposer}
      * @private
      */
     CssComposer: em.get('CssComposer'),
+    Css: em.get('CssComposer'),
 
     /**
      * @property {StorageManager}
      * @private
      */
     StorageManager: em.get('StorageManager'),
+    Storage: em.get('StorageManager'),
 
     /**
      * @property {AssetManager}
      * @private
      */
     AssetManager: em.get('AssetManager'),
+    Assets: em.get('AssetManager'),
 
     /**
      * @property {BlockManager}
      * @private
      */
     BlockManager: em.get('BlockManager'),
+    Blocks: em.get('BlockManager'),
 
     /**
      * @property {TraitManager}
      * @private
      */
     TraitManager: em.get('TraitManager'),
+    Traits: em.get('TraitManager'),
 
     /**
      * @property {SelectorManager}
      * @private
      */
     SelectorManager: em.get('SelectorManager'),
+    Selectors: em.get('SelectorManager'),
 
     /**
      * @property {CodeManager}
@@ -220,6 +228,7 @@ export default (config = {}) => {
      * @private
      */
     StyleManager: em.get('StyleManager'),
+    Styles: em.get('StyleManager'),
 
     /**
      * @property {Canvas}
@@ -238,6 +247,7 @@ export default (config = {}) => {
      * @private
      */
     DeviceManager: em.get('DeviceManager'),
+    Devices: em.get('DeviceManager'),
 
     /**
      * @property {RichTextEditor}
