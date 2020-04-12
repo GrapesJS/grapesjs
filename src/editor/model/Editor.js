@@ -77,6 +77,7 @@ export default Backbone.Model.extend({
     this.set('modules', []);
     this.set('toLoad', []);
     this.set('storables', []);
+    this.set('selected', new Collection());
     this.set('dmode', c.dragMode);
     const el = c.el;
     const log = c.log;
@@ -224,7 +225,11 @@ export default Backbone.Model.extend({
    * @return {this}
    * @private
    */
-  init(editor) {
+  init(editor, opts = {}) {
+    if (this.destroyed) {
+      this.initialize(opts);
+      this.destroyed = 0;
+    }
     this.set('Editor', editor);
   },
 
@@ -592,7 +597,8 @@ export default Backbone.Model.extend({
    * @private
    */
   stopDefault(opts = {}) {
-    var command = this.get('Commands').get(this.config.defaultCommand);
+    const commands = this.get('Commands');
+    const command = commands.get(this.config.defaultCommand);
     if (!command) return;
     command.stop(this, this, opts);
     this.defaultRunning = 0;
@@ -688,8 +694,9 @@ export default Backbone.Model.extend({
    * Destroy editor
    */
   destroyAll() {
+    const { config } = this;
     const editor = this.getEditor();
-    const { editors } = this.config.grapesjs;
+    const { editors = [] } = config.grapesjs || {};
     const {
       DomComponents,
       CssComposer,
@@ -710,10 +717,9 @@ export default Backbone.Model.extend({
     this.view.remove();
     this.stopListening();
     this.clear({ silent: true });
-    this._previousAttributes = {};
-    this.attributes = {};
+    this.destroyed = 1;
     editors.splice(editors.indexOf(editor), 1);
-    $(this.config.el)
+    $(config.el)
       .empty()
       .attr(this.attrsOrig);
   },

@@ -278,8 +278,8 @@ export default (config = {}) => {
      * @return {this}
      * @private
      */
-    init() {
-      em.init(this);
+    init(opts = {}) {
+      em.init(this, { ...c, ...opts });
 
       // Do post render stuff after the iframe is loaded otherwise it'll
       // be empty during tests
