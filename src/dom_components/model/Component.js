@@ -1266,6 +1266,8 @@ const Component = Backbone.Model.extend(Styleable).extend(
         model.setId(nextId);
         list[nextId] = model;
       }
+
+      model.components().forEach(i => Component.ensureInList(i));
     },
 
     /**

@@ -25,15 +25,6 @@ export default Backbone.Collection.extend({
     const { domc, em } = this;
     const allByID = domc.allById();
 
-    // Remove stuff registered in DomComponents.handleChanges
-    const inner = removed.components();
-    const um = em.get('UndoManager');
-    em.stopListening(inner);
-    em.stopListening(removed);
-    em.stopListening(removed.get('classes'));
-    um.remove(removed);
-    um.remove(inner);
-
     if (!opts.temporary) {
       // Remove the component from the gloabl list
       const id = removed.getId();
@@ -58,8 +49,19 @@ export default Backbone.Collection.extend({
         em.trigger('component:remove', removed);
       }
 
-      removed.empty(opts);
+      const inner = removed.components();
+      inner.forEach(it => this.removeChildren(it, coll, opts));
+      // removed.empty(opts);
     }
+
+    // Remove stuff registered in DomComponents.handleChanges
+    const inner = removed.components();
+    const um = em.get('UndoManager');
+    em.stopListening(inner);
+    em.stopListening(removed);
+    em.stopListening(removed.get('classes'));
+    um.remove(removed);
+    um.remove(inner);
   },
 
   model(attrs, options) {
