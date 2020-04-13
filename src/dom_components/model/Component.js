@@ -646,6 +646,15 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     /**
+     * Remove all inner components
+     * * @return {this}
+     */
+    empty(opts = {}) {
+      this.components().reset(null, opts);
+      return this;
+    },
+
+    /**
      * Get the parent component, if exists
      * @return {Component}
      * @example

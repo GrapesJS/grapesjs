@@ -13,9 +13,6 @@ export default Backbone.View.extend({
   },
 
   removeChildren(removed, coll, opts = {}) {
-    const { em } = this.config;
-    const tempRemove = opts.temporary;
-
     removed.views.forEach(view => {
       if (!view) return;
       const { childrenView, scriptContainer } = view;
@@ -26,41 +23,6 @@ export default Backbone.View.extend({
 
     const inner = removed.components();
     inner.forEach(it => this.removeChildren(it, coll, opts));
-
-    if (em && !tempRemove) {
-      // Remove the component from the global list
-      const id = removed.getId();
-      const domc = em.get('DomComponents');
-      const sels = em.get('SelectorManager').getAll();
-      delete domc.componentsById[id];
-
-      // Remove all related CSS rules
-      // TODO: remove from the frame container
-      const allRules = em.get('CssComposer').getAll();
-      const rulesRemoved = allRules.remove(
-        allRules.filter(
-          rule => rule.getSelectors().getFullString() === `#${id}`
-        )
-      );
-      sels.remove(rulesRemoved.map(rule => rule.getSelectors().at(0)));
-
-      if (!removed.opt.temporary) {
-        const cm = em.get('Commands');
-        const hasSign = removed.get('style-signature');
-        const optStyle = { target: removed };
-        hasSign && cm.run('core:component-style-clear', optStyle);
-        removed.removed();
-        em.trigger('component:remove', removed);
-      }
-    }
-
-    // Remove stuff registered in DomComponents.handleChanges
-    em.stopListening(inner);
-    em.stopListening(removed);
-    em.stopListening(removed.get('classes'));
-    const um = em.get('UndoManager');
-    um.remove(removed);
-    um.remove(inner);
   },
 
   /**

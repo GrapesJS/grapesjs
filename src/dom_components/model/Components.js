@@ -7,8 +7,58 @@ export default Backbone.Collection.extend({
   initialize(models, opt = {}) {
     this.opt = opt;
     this.listenTo(this, 'add', this.onAdd);
+    this.listenTo(this, 'remove', this.removeChildren);
+    this.listenTo(this, 'reset', this.resetChildren);
     this.config = opt.config;
     this.em = opt.em;
+    this.domc = opt.domc;
+  },
+
+  resetChildren(models, opts = {}) {
+    const coll = this;
+    const { previousModels = [] } = opts;
+    previousModels.forEach(md => this.removeChildren(md, coll, opts));
+  },
+
+  removeChildren(removed, coll, opts = {}) {
+    const { domc, em } = this;
+    const allByID = domc.allById();
+
+    // Remove stuff registered in DomComponents.handleChanges
+    const inner = removed.components();
+    const um = em.get('UndoManager');
+    em.stopListening(inner);
+    em.stopListening(removed);
+    em.stopListening(removed.get('classes'));
+    um.remove(removed);
+    um.remove(inner);
+
+    if (!opts.temporary) {
+      // Remove the component from the gloabl list
+      const id = removed.getId();
+      const sels = em.get('SelectorManager').getAll();
+      const rules = em.get('CssComposer').getAll();
+      delete allByID[id];
+
+      // Remove all component related styles
+      const rulesRemoved = rules.remove(
+        rules.filter(r => r.getSelectors().getFullString() === `#${id}`)
+      );
+
+      // Clean selectors
+      sels.remove(rulesRemoved.map(rule => rule.getSelectors().at(0)));
+
+      if (!removed.opt.temporary) {
+        const cm = em.get('Commands');
+        const hasSign = removed.get('style-signature');
+        const optStyle = { target: removed };
+        hasSign && cm.run('core:component-style-clear', optStyle);
+        removed.removed();
+        em.trigger('component:remove', removed);
+      }
+
+      removed.empty(opts);
+    }
   },
 
   model(attrs, options) {
