@@ -23,7 +23,7 @@ export default Backbone.Collection.extend({
 
   removeChildren(removed, coll, opts = {}) {
     const { domc, em } = this;
-    const allByID = domc.allById();
+    const allByID = domc ? domc.allById() : {};
 
     if (!opts.temporary) {
       // Remove the component from the gloabl list
@@ -192,7 +192,7 @@ export default Backbone.Collection.extend({
     const { domc, em } = this;
     const style = model.getStyle();
     const avoidInline = em && em.getConfig('avoidInlineStyle');
-    domc.Component.ensureInList(model);
+    domc && domc.Component.ensureInList(model);
 
     if (
       !isEmpty(style) &&
