@@ -182,8 +182,8 @@ export default () => {
      * @example
      * um.undo();
      */
-    undo() {
-      !em.isEditing() && um.undo(1);
+    undo(all = true) {
+      !em.isEditing() && um.undo(all);
       return this;
     },
 
@@ -204,8 +204,8 @@ export default () => {
      * @example
      * um.redo();
      */
-    redo() {
-      !em.isEditing() && um.redo(1);
+    redo(all = true) {
+      !em.isEditing() && um.redo(all);
       return this;
     },
 
@@ -274,6 +274,10 @@ export default () => {
       });
 
       return result;
+    },
+
+    getPointer() {
+      return this.getStack().pointer;
     },
 
     /**

@@ -1252,6 +1252,22 @@ const Component = Backbone.Model.extend(Styleable).extend(
       return { tagName: el.tagName ? el.tagName.toLowerCase() : '' };
     },
 
+    ensureInList(model) {
+      const list = Component.getList(model);
+      const id = model.getId();
+      const current = list[id];
+
+      if (!current) {
+        // Insert in list
+        list[id] = model;
+      } else if (current !== model) {
+        // Create new ID
+        const nextId = Component.getIncrementId(id, list);
+        model.setId(nextId);
+        list[nextId] = model;
+      }
+    },
+
     /**
      * Relying simply on the number of components becomes a problem when you
      * store and load them back, you might hit collisions with new components

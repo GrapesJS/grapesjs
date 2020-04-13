@@ -70,18 +70,47 @@ describe('Editor', () => {
     expect(keys(all).length).toBe(initComps);
   });
 
-  test.only('Components are correctly tracked with UndoManager', () => {
+  test('Components are correctly tracked with UndoManager', () => {
     editor.Components.postLoad(); // Init UndoManager
     const all = editor.Components.allById();
     const um = editor.UndoManager;
     const umStack = um.getStack();
     const wrapper = editor.getWrapper();
     expect(umStack.length).toBe(0);
-    wrapper.append(`<div>Component 1</div><div>Component 2</div>`);
+    const comp = wrapper.append(`<div>Component 1</div>`)[0];
     expect(umStack.length).toBe(1);
     wrapper.empty();
-    console.log('Post reset', umStack);
     expect(umStack.length).toBe(2);
+    expect(keys(all).length).toBe(initComps);
+    um.undo(false);
+    expect(keys(all).length).toBe(1 + initComps);
+  });
+
+  test('Components are correctly tracked with UndoManager and mutiple operations', () => {
+    editor.Components.postLoad(); // Init UndoManager
+    const all = editor.Components.allById();
+    const um = editor.UndoManager;
+    const umStack = um.getStack();
+    const wrapper = editor.getWrapper();
+    expect(umStack.length).toBe(0);
+    wrapper.append(`<div>
+        <div>Component 1</div>
+        <div>Component 2</div>
+    </div>`);
+    expect(umStack.length).toBe(1); // UM counts first children
+    expect(keys(all).length).toBe(3 + initComps);
+    wrapper
+      .components()
+      .at(0)
+      .components()
+      .at(0)
+      .remove(); // Remove 1 component
+    // UM registers 2 identical remove undoTypes as Backbone triggers remove from the
+    // collection and the model
+    expect(umStack.length).toBe(3);
+    expect(keys(all).length).toBe(2 + initComps);
+    wrapper.empty();
+    expect(umStack.length).toBe(4);
     expect(keys(all).length).toBe(initComps);
   });
 });

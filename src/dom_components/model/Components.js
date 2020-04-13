@@ -18,6 +18,7 @@ export default Backbone.Collection.extend({
     const coll = this;
     const { previousModels = [] } = opts;
     previousModels.forEach(md => this.removeChildren(md, coll, opts));
+    models.each(model => this.onAdd(model));
   },
 
   removeChildren(removed, coll, opts = {}) {
@@ -186,9 +187,10 @@ export default Backbone.Collection.extend({
   },
 
   onAdd(model, c, opts = {}) {
-    const em = this.em;
+    const { domc, em } = this;
     const style = model.getStyle();
     const avoidInline = em && em.getConfig('avoidInlineStyle');
+    domc.Component.ensureInList(model);
 
     if (
       !isEmpty(style) &&
