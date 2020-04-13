@@ -16,7 +16,9 @@ export default Backbone.Model.extend({
   initialize(config = {}) {
     const { em } = config;
     const { styles = [], scripts = [] } = config;
-    const frame = new Frame({}, config);
+    const root = em && em.getWrapper();
+    const css = em && em.getStyle();
+    const frame = new Frame({ root, styles: css }, config);
     styles.forEach(style => frame.addLink(style));
     scripts.forEach(script => frame.addScript(script));
     this.em = em;

@@ -124,8 +124,8 @@ export default () => {
       return CanvasView.el;
     },
 
-    getFrame() {
-      return canvas.get('frame');
+    getFrame(index) {
+      return index ? this.getFrames()[index] : canvas.get('frame');
     },
 
     /**
