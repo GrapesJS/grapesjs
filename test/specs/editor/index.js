@@ -51,10 +51,9 @@ describe('Editor', () => {
     expect(keys(all).length).toBe(1 + initComps);
   });
 
-  test.only('Components are correctly tracked on add and remove', () => {
+  test('Components are correctly tracked on add and remove', () => {
     const all = editor.Components.allById();
     const wrapper = editor.getWrapper();
-    console.log(keys(all));
     const added = wrapper.append(`
         <div>Component 1</div>
         <div></div>
@@ -66,15 +65,23 @@ describe('Editor', () => {
         <div>Component 3</div>
     `);
     expect(keys(all).length).toBe(4 + initComps);
-    console.log(keys(all));
     wrapper.empty();
-    console.log(keys(all));
     expect(wrapper.components().length).toBe(0);
     expect(keys(all).length).toBe(initComps);
   });
 
-  //   test('New component correctly added', () => {
-  //     const all = editor.Css.getAll();
-  //     expect(all.length).toBe(0);
-  //   });
+  test.only('Components are correctly tracked with UndoManager', () => {
+    editor.Components.postLoad(); // Init UndoManager
+    const all = editor.Components.allById();
+    const um = editor.UndoManager;
+    const umStack = um.getStack();
+    const wrapper = editor.getWrapper();
+    expect(umStack.length).toBe(0);
+    wrapper.append(`<div>Component 1</div><div>Component 2</div>`);
+    expect(umStack.length).toBe(1);
+    wrapper.empty();
+    console.log('Post reset', umStack);
+    expect(umStack.length).toBe(2);
+    expect(keys(all).length).toBe(initComps);
+  });
 });
