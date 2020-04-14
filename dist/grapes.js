@@ -22140,8 +22140,8 @@ var _window = window,
     getElement: function getElement() {
       return CanvasView.el;
     },
-    getFrame: function getFrame() {
-      return canvas.get('frame');
+    getFrame: function getFrame(index) {
+      return index ? this.getFrames()[index] : canvas.get('frame');
     },
 
     /**
@@ -22739,7 +22739,12 @@ __webpack_require__.r(__webpack_exports__);
         styles = _config$styles === void 0 ? [] : _config$styles,
         _config$scripts = config.scripts,
         scripts = _config$scripts === void 0 ? [] : _config$scripts;
-    var frame = new _Frame__WEBPACK_IMPORTED_MODULE_1__["default"]({}, config);
+    var root = em && em.getWrapper();
+    var css = em && em.getStyle();
+    var frame = new _Frame__WEBPACK_IMPORTED_MODULE_1__["default"]({
+      root: root,
+      styles: css
+    }, config);
     styles.forEach(function (style) {
       return frame.addLink(style);
     });
@@ -22988,7 +22993,7 @@ var timerZoom;
     return "\n      <div class=\"".concat(pfx, "canvas__frames\" data-frames></div>\n      <div id=\"").concat(pfx, "tools\" class=\"").concat(pfx, "canvas__tools\" data-tools></div>\n    ");
   },
   initialize: function initialize(o) {
-    Object(underscore__WEBPACK_IMPORTED_MODULE_2__["bindAll"])(this, 'clearOff', 'onKeyPress');
+    Object(underscore__WEBPACK_IMPORTED_MODULE_2__["bindAll"])(this, 'clearOff', 'onKeyPress', 'onCanvasMove');
     Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["on"])(window, 'scroll resize', this.clearOff);
     var model = this.model;
     var frames = model.get('frames');
@@ -23032,13 +23037,15 @@ var timerZoom;
       ev._parentEvent && ev._parentEvent.preventDefault();
     }
   },
+  onCanvasMove: function onCanvasMove(ev) {// const data = { x: ev.clientX, y: ev.clientY };
+    // const data2 = this.em.get('Canvas').getMouseRelativeCanvas(ev);
+    // const data3 = this.em.get('Canvas').getMouseRelativePos(ev);
+    // this.em.trigger('canvas:over', data, data2, data3);
+  },
   toggleListeners: function toggleListeners(enable) {
-    var method = enable ? 'on' : 'off';
-    var methods = {
-      on: utils_mixins__WEBPACK_IMPORTED_MODULE_3__["on"],
-      off: utils_mixins__WEBPACK_IMPORTED_MODULE_3__["off"]
-    };
-    methods[method](document, 'keypress', this.onKeyPress);
+    var el = this.el;
+    var fn = enable ? utils_mixins__WEBPACK_IMPORTED_MODULE_3__["on"] : utils_mixins__WEBPACK_IMPORTED_MODULE_3__["off"];
+    fn(document, 'keypress', this.onKeyPress); // fn(el, 'mousemove dragover', this.onCanvasMove);
   },
   onKeyPress: function onKeyPress(ev) {
     var em = this.em;
@@ -23630,6 +23637,9 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     [{
       event: 'keydown keyup keypress',
       class: 'KeyboardEvent'
+    }, {
+      event: 'mousemove',
+      class: 'MouseEvent'
     }, {
       event: 'wheel',
       class: 'WheelEvent'
@@ -27327,7 +27337,7 @@ var showOffsets;
     em[method]('frame:updated', this.onFrameUpdated, this);
     em.get('Canvas').getFrames().forEach(function (frame) {
       var view = frame.view;
-      trigger(view.getWindow(), view.getBody());
+      view && trigger(view.getWindow(), view.getBody());
     });
   },
 
@@ -27452,9 +27462,9 @@ var showOffsets;
     this.currentDoc = null;
     this.em.setHovered(0);
     this.canvas.getFrames().forEach(function (frame) {
-      var el = frame.view.getToolsEl();
-
-      _this3.toggleToolsEl(0, 0, {
+      var view = frame.view;
+      var el = view && view.getToolsEl();
+      el && _this3.toggleToolsEl(0, 0, {
         el: el
       });
     });
@@ -27462,8 +27472,8 @@ var showOffsets;
   toggleToolsEl: function toggleToolsEl(on, view) {
     var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     var el = opts.el || this.canvas.getToolsEl(view);
-    el.style.opacity = on ? 1 : 0;
-    return el;
+    el && (el.style.opacity = on ? 1 : 0);
+    return el || {};
   },
 
   /**
@@ -30569,6 +30579,9 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
         state: ''
       });
       model && Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isEmpty"])(model.get('status')) && model.set('status', state);
+    },
+    allById: function allById() {
+      return componentsById;
     }
   };
 });
@@ -31265,6 +31278,16 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(dom
   },
 
   /**
+   * Remove all inner components
+   * * @return {this}
+   */
+  empty: function empty() {
+    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    this.components().reset(null, opts);
+    return this;
+  },
+
+  /**
    * Get the parent component, if exists
    * @return {Component}
    * @example
@@ -31889,6 +31912,25 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(dom
     return {
       tagName: el.tagName ? el.tagName.toLowerCase() : ''
     };
+  },
+  ensureInList: function ensureInList(model) {
+    var list = Component.getList(model);
+    var id = model.getId();
+    var current = list[id];
+
+    if (!current) {
+      // Insert in list
+      list[id] = model;
+    } else if (current !== model) {
+      // Create new ID
+      var nextId = Component.getIncrementId(id, list);
+      model.setId(nextId);
+      list[nextId] = model;
+    }
+
+    model.components().forEach(function (i) {
+      return Component.ensureInList(i);
+    });
   },
 
   /**
@@ -33379,8 +33421,76 @@ var Component;
     var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     this.opt = opt;
     this.listenTo(this, 'add', this.onAdd);
+    this.listenTo(this, 'remove', this.removeChildren);
+    this.listenTo(this, 'reset', this.resetChildren);
     this.config = opt.config;
     this.em = opt.em;
+    this.domc = opt.domc;
+  },
+  resetChildren: function resetChildren(models) {
+    var _this = this;
+
+    var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var coll = this;
+    var _opts$previousModels = opts.previousModels,
+        previousModels = _opts$previousModels === void 0 ? [] : _opts$previousModels;
+    previousModels.forEach(function (md) {
+      return _this.removeChildren(md, coll, opts);
+    });
+    models.each(function (model) {
+      return _this.onAdd(model);
+    });
+  },
+  removeChildren: function removeChildren(removed, coll) {
+    var _this2 = this;
+
+    var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    var domc = this.domc,
+        em = this.em;
+    var allByID = domc ? domc.allById() : {};
+
+    if (!opts.temporary) {
+      // Remove the component from the gloabl list
+      var id = removed.getId();
+      var sels = em.get('SelectorManager').getAll();
+      var rules = em.get('CssComposer').getAll();
+      delete allByID[id]; // Remove all component related styles
+
+      var rulesRemoved = rules.remove(rules.filter(function (r) {
+        return r.getSelectors().getFullString() === "#".concat(id);
+      })); // Clean selectors
+
+      sels.remove(rulesRemoved.map(function (rule) {
+        return rule.getSelectors().at(0);
+      }));
+
+      if (!removed.opt.temporary) {
+        var cm = em.get('Commands');
+        var hasSign = removed.get('style-signature');
+        var optStyle = {
+          target: removed
+        };
+        hasSign && cm.run('core:component-style-clear', optStyle);
+        removed.removed();
+        em.trigger('component:remove', removed);
+      }
+
+      var _inner = removed.components();
+
+      _inner.forEach(function (it) {
+        return _this2.removeChildren(it, coll, opts);
+      }); // removed.empty(opts);
+
+    } // Remove stuff registered in DomComponents.handleChanges
+
+
+    var inner = removed.components();
+    var um = em.get('UndoManager');
+    em.stopListening(inner);
+    em.stopListening(removed);
+    em.stopListening(removed.get('classes'));
+    um.remove(removed);
+    um.remove(inner);
   },
   model: function model(attrs, options) {
     var opt = options.collection.opt;
@@ -33431,7 +33541,7 @@ var Component;
     return parsed.html;
   },
   add: function add(models) {
-    var _this = this;
+    var _this3 = this;
 
     var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
@@ -33440,7 +33550,7 @@ var Component;
     } else if (Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isArray"])(models)) {
       models.forEach(function (item, index) {
         if (Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isString"])(item)) {
-          models[index] = _this.parseString(item, opt);
+          models[index] = _this3.parseString(item, opt);
         }
       });
     }
@@ -33449,7 +33559,7 @@ var Component;
     models = (isMult ? models : [models]).filter(function (i) {
       return i;
     }).map(function (model) {
-      return _this.processDef(model);
+      return _this3.processDef(model);
     });
     models = isMult ? models : models[0];
     return backbone__WEBPACK_IMPORTED_MODULE_2___default.a.Collection.prototype.add.apply(this, [models, opt]);
@@ -33516,9 +33626,11 @@ var Component;
   },
   onAdd: function onAdd(model, c) {
     var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-    var em = this.em;
+    var domc = this.domc,
+        em = this.em;
     var style = model.getStyle();
     var avoidInline = em && em.getConfig('avoidInlineStyle');
+    domc && domc.Component.ensureInList(model);
 
     if (!Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isEmpty"])(style) && !avoidInline && em && em.get && em.getConfig('forceClass') && !opts.temporary) {
       var name = model.cid;
@@ -34982,8 +35094,6 @@ __webpack_require__.r(__webpack_exports__);
     var _this = this;
 
     var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-    var em = this.config.em;
-    var tempRemove = opts.temporary;
     removed.views.forEach(function (view) {
       if (!view) return;
       var childrenView = view.childrenView,
@@ -34996,42 +35106,6 @@ __webpack_require__.r(__webpack_exports__);
     inner.forEach(function (it) {
       return _this.removeChildren(it, coll, opts);
     });
-
-    if (em && !tempRemove) {
-      // Remove the component from the global list
-      var id = removed.getId();
-      var domc = em.get('DomComponents');
-      var sels = em.get('SelectorManager').getAll();
-      delete domc.componentsById[id]; // Remove all related CSS rules
-      // TODO: remove from the frame container
-
-      var allRules = em.get('CssComposer').getAll();
-      var rulesRemoved = allRules.remove(allRules.filter(function (rule) {
-        return rule.getSelectors().getFullString() === "#".concat(id);
-      }));
-      sels.remove(rulesRemoved.map(function (rule) {
-        return rule.getSelectors().at(0);
-      }));
-
-      if (!removed.opt.temporary) {
-        var cm = em.get('Commands');
-        var hasSign = removed.get('style-signature');
-        var optStyle = {
-          target: removed
-        };
-        hasSign && cm.run('core:component-style-clear', optStyle);
-        removed.removed();
-        em.trigger('component:remove', removed);
-      }
-    } // Remove stuff registered in DomComponents.handleChanges
-
-
-    em.stopListening(inner);
-    em.stopListening(removed);
-    em.stopListening(removed.get('classes'));
-    var um = em.get('UndoManager');
-    um.remove(removed);
-    um.remove(inner);
   },
 
   /**
@@ -36598,138 +36672,6 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     editor: em,
 
     /**
-     * @property {I18n}
-     * @private
-     */
-    I18n: em.get('I18n'),
-
-    /**
-     * @property {DomComponents}
-     * @private
-     */
-    DomComponents: em.get('DomComponents'),
-
-    /**
-     * @property {LayerManager}
-     * @private
-     */
-    LayerManager: em.get('LayerManager'),
-
-    /**
-     * @property {CssComposer}
-     * @private
-     */
-    CssComposer: em.get('CssComposer'),
-
-    /**
-     * @property {StorageManager}
-     * @private
-     */
-    StorageManager: em.get('StorageManager'),
-
-    /**
-     * @property {AssetManager}
-     * @private
-     */
-    AssetManager: em.get('AssetManager'),
-
-    /**
-     * @property {BlockManager}
-     * @private
-     */
-    BlockManager: em.get('BlockManager'),
-
-    /**
-     * @property {TraitManager}
-     * @private
-     */
-    TraitManager: em.get('TraitManager'),
-
-    /**
-     * @property {SelectorManager}
-     * @private
-     */
-    SelectorManager: em.get('SelectorManager'),
-
-    /**
-     * @property {CodeManager}
-     * @private
-     */
-    CodeManager: em.get('CodeManager'),
-
-    /**
-     * @property {Commands}
-     * @private
-     */
-    Commands: em.get('Commands'),
-
-    /**
-     * @property {Keymaps}
-     * @private
-     */
-    Keymaps: em.get('Keymaps'),
-
-    /**
-     * @property {Modal}
-     * @private
-     */
-    Modal: em.get('Modal'),
-
-    /**
-     * @property {Panels}
-     * @private
-     */
-    Panels: em.get('Panels'),
-
-    /**
-     * @property {StyleManager}
-     * @private
-     */
-    StyleManager: em.get('StyleManager'),
-
-    /**
-     * @property {Canvas}
-     * @private
-     */
-    Canvas: em.get('Canvas'),
-
-    /**
-     * @property {UndoManager}
-     * @private
-     */
-    UndoManager: em.get('UndoManager'),
-
-    /**
-     * @property {DeviceManager}
-     * @private
-     */
-    DeviceManager: em.get('DeviceManager'),
-
-    /**
-     * @property {RichTextEditor}
-     * @private
-     */
-    RichTextEditor: em.get('RichTextEditor'),
-
-    /**
-     * @property {Parser}
-     * @private
-     */
-    Parser: em.get('Parser'),
-
-    /**
-     * @property {Utils}
-     * @private
-     */
-    Utils: em.get('Utils'),
-
-    /**
-     * @property {Utils}
-     * @private
-     */
-    Config: em.get('Config'),
-
-    /**
      * Initialize editor model
      * @return {this}
      * @private
@@ -36737,7 +36679,15 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     init: function init() {
       var _this = this;
 
-      em.init(this); // Do post render stuff after the iframe is loaded otherwise it'll
+      var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      em.init(this, _objectSpread({}, c, {}, opts));
+      ['I18n', 'Utils', 'Config', 'Commands', 'Keymaps', 'Modal', 'Panels', 'Canvas', 'Parser', 'CodeManager', 'UndoManager', 'RichTextEditor', 'DomComponents', ['Components', 'DomComponents'], 'LayerManager', ['Layers', 'LayerManager'], 'CssComposer', ['Css', 'CssComposer'], 'StorageManager', ['Storage', 'StorageManager'], 'AssetManager', ['Assets', 'AssetManager'], 'BlockManager', ['Blocks', 'BlockManager'], 'TraitManager', ['Traits', 'TraitManager'], 'SelectorManager', ['Selectors', 'SelectorManager'], 'StyleManager', ['Styles', 'StyleManager'], 'DeviceManager', ['Devices', 'DeviceManager']].forEach(function (prop) {
+        if (Array.isArray(prop)) {
+          _this[prop[0]] = em.get(prop[1]);
+        } else {
+          _this[prop] = em.get(prop);
+        }
+      }); // Do post render stuff after the iframe is loaded otherwise it'll
       // be empty during tests
 
       em.on('loaded', function () {
@@ -37310,6 +37260,7 @@ var logs = {
     this.set('modules', []);
     this.set('toLoad', []);
     this.set('storables', []);
+    this.set('selected', new Collection());
     this.set('dmode', c.dragMode);
     var el = c.el;
     var log = c.log;
@@ -37467,6 +37418,13 @@ var logs = {
    * @private
    */
   init: function init(editor) {
+    var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+    if (this.destroyed) {
+      this.initialize(opts);
+      this.destroyed = 0;
+    }
+
     this.set('Editor', editor);
   },
   getEditor: function getEditor() {
@@ -37861,7 +37819,8 @@ var logs = {
    */
   stopDefault: function stopDefault() {
     var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var command = this.get('Commands').get(this.config.defaultCommand);
+    var commands = this.get('Commands');
+    var command = commands.get(this.config.defaultCommand);
     if (!command) return;
     command.stop(this, this, opts);
     this.defaultRunning = 0;
@@ -37952,8 +37911,13 @@ var logs = {
    * Destroy editor
    */
   destroyAll: function destroyAll() {
+    var config = this.config;
     var editor = this.getEditor();
-    var editors = this.config.grapesjs.editors;
+
+    var _ref = config.grapesjs || {},
+        _ref$editors = _ref.editors,
+        editors = _ref$editors === void 0 ? [] : _ref$editors;
+
     var _this$attributes = this.attributes,
         DomComponents = _this$attributes.DomComponents,
         CssComposer = _this$attributes.CssComposer,
@@ -37975,10 +37939,9 @@ var logs = {
     this.clear({
       silent: true
     });
-    this._previousAttributes = {};
-    this.attributes = {};
+    this.destroyed = 1;
     editors.splice(editors.indexOf(editor), 1);
-    Object(cash_dom__WEBPACK_IMPORTED_MODULE_2__["default"])(this.config.el).empty().attr(this.attrsOrig);
+    Object(cash_dom__WEBPACK_IMPORTED_MODULE_2__["default"])(config.el).empty().attr(this.attrsOrig);
   },
   setEditing: function setEditing(value) {
     this.set('editing', value);
@@ -38587,7 +38550,7 @@ var defaultConfig = {
   editors: editors,
   plugins: plugins,
   // Will be replaced on build
-  version: '0.16.7',
+  version: '0.16.8',
 
   /**
    * Initialize the editor with passed options
@@ -50838,7 +50801,8 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
      * um.undo();
      */
     undo: function undo() {
-      !em.isEditing() && um.undo(1);
+      var all = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+      !em.isEditing() && um.undo(all);
       return this;
     },
 
@@ -50860,7 +50824,8 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
      * um.redo();
      */
     redo: function redo() {
-      !em.isEditing() && um.redo(1);
+      var all = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+      !em.isEditing() && um.redo(all);
       return this;
     },
 
@@ -50904,6 +50869,33 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
      */
     getStack: function getStack() {
       return um.stack;
+    },
+
+    /**
+     * Get grouped undo manager stack.
+     * The difference between `getStack` is when you do multiple operations at a time,
+     * like appending multiple components:
+     * `editor.getWrapper().append(`<div>C1</div><div>C2</div>`);`
+     * `getStack` will return a collection length of 2.
+     *  `getStackGroup` instead will group them as a single operation (the first
+     * inserted component will be returned in the list) by returning an array length of 1.
+     * @return {Array}
+     */
+    getStackGroup: function getStackGroup() {
+      var result = [];
+      var inserted = [];
+      this.getStack().forEach(function (item) {
+        var index = item.get('magicFusionIndex');
+
+        if (inserted.indexOf(index) < 0) {
+          inserted.push(index);
+          result.push(item);
+        }
+      });
+      return result;
+    },
+    getPointer: function getPointer() {
+      return this.getStack().pointer;
     },
 
     /**
