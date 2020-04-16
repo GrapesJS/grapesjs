@@ -21385,6 +21385,8 @@ __webpack_require__.r(__webpack_exports__);
     resetId: 0,
     // Block label
     label: '',
+    // Disable the drag of the block
+    disable: 0,
     // HTML string for the media of the block, eg. SVG icon, image, etc.
     media: '',
     content: '',
@@ -21549,9 +21551,11 @@ __webpack_require__.r(__webpack_exports__);
    */
   startDrag: function startDrag(e) {
     var config = this.config,
-        em = this.em; //Right or middel click
+        em = this.em,
+        model = this.model;
+    var disable = model.get('disable'); //Right or middel click
 
-    if (e.button !== 0 || !config.getSorter || !this.el.draggable) return;
+    if (e.button !== 0 || !config.getSorter || this.el.draggable || disable) return;
     em.refreshCanvas();
     var sorter = config.getSorter();
     sorter.setDragHelper(this.el, e);
@@ -21627,14 +21631,16 @@ __webpack_require__.r(__webpack_exports__);
         el = this.el,
         ppfx = this.ppfx,
         model = this.model;
+    var disable = model.get('disable');
     var className = "".concat(ppfx, "block");
     var label = em && em.t("blockManager.labels.".concat(model.id)) || model.get('label');
     var render = model.get('render');
     var media = model.get('media');
-    el.className += " ".concat(className, " ").concat(ppfx, "one-bg ").concat(ppfx, "four-color-h");
+    var clsAdd = disable ? "".concat(className, "--disable") : "".concat(ppfx, "four-color-h");
+    el.className = "".concat(className, " ").concat(ppfx, "one-bg ").concat(clsAdd);
     el.innerHTML = "\n      ".concat(media ? "<div class=\"".concat(className, "__media\">").concat(media, "</div>") : '', "\n      <div class=\"").concat(className, "-label\">").concat(label, "</div>\n    ");
     el.title = el.textContent.trim();
-    Object(utils_mixins__WEBPACK_IMPORTED_MODULE_2__["hasDnd"])(em) && el.setAttribute('draggable', true);
+    el.setAttribute('draggable', Object(utils_mixins__WEBPACK_IMPORTED_MODULE_2__["hasDnd"])(em) && !disable ? true : false);
     var result = render && render({
       el: el,
       model: model,
@@ -38531,7 +38537,7 @@ var defaultConfig = {
   editors: editors,
   plugins: plugins,
   // Will be replaced on build
-  version: '0.16.9',
+  version: '0.16.10',
 
   /**
    * Initialize the editor with passed options
