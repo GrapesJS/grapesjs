@@ -76,25 +76,17 @@ export default Backbone.View.extend({
     // changes based on other properties are propagated
     const requires = model.get('requires');
     requires &&
-      Object.keys(requires).forEach(property => {
+      Object.keys(requires).forEach((property) => {
         em && em.on(`component:styleUpdate:${property}`, this.targetUpdated);
       });
 
-    this.listenTo(
-      this.propTarget,
-      'update styleManager:update',
-      this.targetUpdated
-    );
+    this.listenTo(this.propTarget, 'update styleManager:update', this.targetUpdated);
     this.listenTo(model, 'destroy remove', this.remove);
     this.listenTo(model, 'change:value', this.modelValueChanged);
     this.listenTo(model, 'targetUpdated', this.targetUpdated);
     this.listenTo(model, 'change:visible', this.updateVisibility);
     this.listenTo(model, 'change:status', this.updateStatus);
-    this.listenTo(
-      model,
-      'change:name change:className change:full',
-      this.render
-    );
+    this.listenTo(model, 'change:name change:className change:full', this.render);
 
     const init = this.init && this.init.bind(this);
     init && init();
@@ -227,11 +219,7 @@ export default Backbone.View.extend({
       if (config.highlightChanged) {
         status = 'updated';
       }
-    } else if (
-      computedValue &&
-      config.showComputed &&
-      computedValue != defaultValue
-    ) {
+    } else if (computedValue && config.showComputed && computedValue != defaultValue) {
       value = computedValue;
 
       if (config.highlightComputed) {
@@ -405,7 +393,7 @@ export default Backbone.View.extend({
       this.setValue(value);
     }
 
-    this.getTargets().forEach(target => this.__updateTarget(target, opt));
+    this.getTargets().forEach((target) => this.__updateTarget(target, opt));
   },
 
   __updateTarget(target, opt = {}) {
@@ -416,11 +404,7 @@ export default Backbone.View.extend({
     const onChange = this.onChange;
 
     // Check if component is allowed to be styled
-    if (
-      !target ||
-      !this.isTargetStylable(target) ||
-      !this.isComponentStylable()
-    ) {
+    if (!target || !this.isTargetStylable(target) || !this.isComponentStylable()) {
       return;
     }
 
@@ -503,17 +487,14 @@ export default Backbone.View.extend({
 
     // Check if the property is available only if requested
     if (toRequire) {
-      stylable =
-        !target ||
-        (stylableReq &&
-          (stylableReq.indexOf(id) >= 0 || stylableReq.indexOf(property) >= 0));
+      stylable = !target || (stylableReq && (stylableReq.indexOf(id) >= 0 || stylableReq.indexOf(property) >= 0));
     }
 
     // Check if the property is available based on other property's values
     if (sectors && requires) {
       const properties = Object.keys(requires);
-      sectors.each(sector => {
-        sector.get('properties').each(model => {
+      sectors.each((sector) => {
+        sector.get('properties').each((model) => {
           if (includes(properties, model.id)) {
             const values = requires[model.id];
             stylable = stylable && includes(values, model.get('value'));
@@ -529,8 +510,7 @@ export default Backbone.View.extend({
       if (parentEl) {
         const styles = window.getComputedStyle(parentEl);
         each(requiresParent, (values, property) => {
-          stylable =
-            stylable && styles[property] && includes(values, styles[property]);
+          stylable = stylable && styles[property] && includes(values, styles[property]);
         });
       } else {
         stylable = false;
@@ -623,14 +603,12 @@ export default Backbone.View.extend({
     const cls = model.get('className') || '';
     const className = `${pfx}property`;
     el.innerHTML = this.template(model);
-    el.className = `${className} ${pfx}${model.get(
-      'type'
-    )} ${className}__${property} ${cls}`.trim();
+    el.className = `${className} ${pfx}${model.get('type')} ${className}__${property} ${cls}`.trim();
     el.className += full ? ` ${className}--full` : '';
     this.updateStatus();
 
     const onRender = this.onRender && this.onRender.bind(this);
     onRender && onRender();
-    this.setValue(model.get('value'), { targetUpdate: 1 });
+    this.setValue(model.get('value'), { fromTarget: 1 });
   }
 });
