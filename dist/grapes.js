@@ -21551,7 +21551,7 @@ __webpack_require__.r(__webpack_exports__);
     var config = this.config,
         em = this.em; //Right or middel click
 
-    if (e.button !== 0 || !config.getSorter || this.el.draggable) return;
+    if (e.button !== 0 || !config.getSorter || !this.el.draggable) return;
     em.refreshCanvas();
     var sorter = config.getSorter();
     sorter.setDragHelper(this.el, e);
@@ -32862,32 +32862,13 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 /* harmony default export */ __webpack_exports__["default"] = (_Component__WEBPACK_IMPORTED_MODULE_1__["default"].extend({
   defaults: _objectSpread({}, _Component__WEBPACK_IMPORTED_MODULE_1__["default"].prototype.defaults, {
-    type: 'row',
     tagName: 'tr',
     draggable: ['thead', 'tbody', 'tfoot'],
     droppable: ['th', 'td']
-  }),
-  initialize: function initialize(o, opt) {
-    _Component__WEBPACK_IMPORTED_MODULE_1__["default"].prototype.initialize.apply(this, arguments); // Clean the row from non cell components
-
-    var cells = [];
-    var components = this.get('components');
-    components.each(function (model) {
-      return model.is('cell') && cells.push(model);
-    });
-    components.reset(cells);
-  }
+  })
 }, {
   isComponent: function isComponent(el) {
-    var result = '';
-
-    if (el.tagName == 'TR') {
-      result = {
-        type: 'row'
-      };
-    }
-
-    return result;
+    return el.tagName == 'TR' && true;
   }
 }));
 
@@ -35819,7 +35800,7 @@ Object(utils_ColorPicker__WEBPACK_IMPORTED_MODULE_3__["default"])($);
     inputEl.value = value;
     colorEl.get(0).style.backgroundColor = valueClr; // This prevents from adding multiple thumbs in spectrum
 
-    if (opts.fromTarget) {
+    if (opts.fromTarget || opts.fromInput && !opts.avoidStore) {
       colorEl.spectrum('set', valueClr);
       this.noneColor = value == 'none';
     }
@@ -38550,7 +38531,7 @@ var defaultConfig = {
   editors: editors,
   plugins: plugins,
   // Will be replaced on build
-  version: '0.16.8',
+  version: '0.16.9',
 
   /**
    * Initialize the editor with passed options
