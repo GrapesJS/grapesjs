@@ -137,6 +137,27 @@ export default ComponentView.extend({
     }
   },
 
+  getModelsFromEl(el) {
+    const result = [];
+    const children = (el || this.el).childNodes;
+
+    for (let index = 0; index < children.length; index++) {
+      const child = children[index];
+      const model = child.__cashData && child.__cashData.model;
+
+      if (model) {
+        model.components = this.getModelsFromEl(child);
+        if (model.get('content')) {
+          model.attributes.content = child.textContent;
+        }
+        // TODO add attributes;
+        result.push(model);
+      }
+    }
+
+    return result;
+  },
+
   /**
    * Callback on input event
    * @param  {Event} e
