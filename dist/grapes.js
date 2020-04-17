@@ -21632,12 +21632,14 @@ __webpack_require__.r(__webpack_exports__);
         ppfx = this.ppfx,
         model = this.model;
     var disable = model.get('disable');
+    var attr = model.get('attributes') || {};
+    var cls = attr.class || '';
     var className = "".concat(ppfx, "block");
     var label = em && em.t("blockManager.labels.".concat(model.id)) || model.get('label');
     var render = model.get('render');
     var media = model.get('media');
     var clsAdd = disable ? "".concat(className, "--disable") : "".concat(ppfx, "four-color-h");
-    el.className = "".concat(className, " ").concat(ppfx, "one-bg ").concat(clsAdd);
+    el.className = "".concat(cls, " ").concat(className, " ").concat(ppfx, "one-bg ").concat(clsAdd).trim();
     el.innerHTML = "\n      ".concat(media ? "<div class=\"".concat(className, "__media\">").concat(media, "</div>") : '', "\n      <div class=\"").concat(className, "-label\">").concat(label, "</div>\n    ");
     el.title = el.textContent.trim();
     el.setAttribute('draggable', Object(utils_mixins__WEBPACK_IMPORTED_MODULE_2__["hasDnd"])(em) && !disable ? true : false);
@@ -38537,7 +38539,7 @@ var defaultConfig = {
   editors: editors,
   plugins: plugins,
   // Will be replaced on build
-  version: '0.16.10',
+  version: '0.16.11',
 
   /**
    * Initialize the editor with passed options

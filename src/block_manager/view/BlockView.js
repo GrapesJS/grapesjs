@@ -141,13 +141,15 @@ export default Backbone.View.extend({
   render() {
     const { em, el, ppfx, model } = this;
     const disable = model.get('disable');
+    const attr = model.get('attributes') || {};
+    const cls = attr.class || '';
     const className = `${ppfx}block`;
     const label =
       (em && em.t(`blockManager.labels.${model.id}`)) || model.get('label');
     const render = model.get('render');
     const media = model.get('media');
     const clsAdd = disable ? `${className}--disable` : `${ppfx}four-color-h`;
-    el.className = `${className} ${ppfx}one-bg ${clsAdd}`;
+    el.className = `${cls} ${className} ${ppfx}one-bg ${clsAdd}`.trim();
     el.innerHTML = `
       ${media ? `<div class="${className}__media">${media}</div>` : ''}
       <div class="${className}-label">${label}</div>
