@@ -137,13 +137,13 @@ Returns **[Array][4]** Array of components
 
 ## findType
 
-Find all inner components by component id.
+Find all inner components by component type.
 The advantage of this method over `find` is that you can use it
 also before rendering the component
 
 ### Parameters
 
--   `id` **[String][1]** Component id
+-   `type` **[String][1]** Component type
 
 ### Examples
 
@@ -171,6 +171,25 @@ component.closest('div.some-class');
 ```
 
 Returns **[Component][9]** 
+
+## closestType
+
+Find the closest parent component by its type.
+The advantage of this method over `closest` is that you can use it
+also before rendering the component
+
+### Parameters
+
+-   `type` **[String][1]** Component type
+
+### Examples
+
+```javascript
+const Section = component.closestType('section');
+console.log(Section);
+```
+
+Returns **[Component][9]** Found component, otherwise `undefined`
 
 ## replaceWith
 
@@ -359,6 +378,16 @@ console.log(collection.length);
 
 Returns **(Collection | [Array][4]&lt;[Component][9]>)** 
 
+## empty
+
+Remove all inner components
+
+-   @return {this}
+
+### Parameters
+
+-   `opts`   (optional, default `{}`)
+
 ## parent
 
 Get the parent component, if exists
@@ -485,6 +514,7 @@ Return HTML string of the component
 ### Parameters
 
 -   `opts` **[Object][2]** Options (optional, default `{}`)
+    -   `opts.tag` **[String][1]?** Custom tagName
     -   `opts.attributes` **([Object][2] \| [Function][6])** You can pass an object of custom attributes to replace
         with the current one or you can even pass a function to generate attributes dynamically (optional, default `null`)
 
@@ -537,12 +567,20 @@ Returns **this**
 Get the DOM element of the component.
 This works only if the component is already rendered
 
+### Parameters
+
+-   `frame` **Frame** Specific frame from which taking the element
+
 Returns **[HTMLElement][12]** 
 
 ## getView
 
 Get the View of the component.
 This works only if the component is already rendered
+
+### Parameters
+
+-   `frame` **Frame** Get View of a specific frame
 
 Returns **ComponentView** 
 

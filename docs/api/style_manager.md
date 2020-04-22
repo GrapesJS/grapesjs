@@ -214,6 +214,7 @@ one or more classes, the function will return the corresponding CSS Rule
 ### Parameters
 
 -   `model` **Model** 
+-   `options`   (optional, default `{}`)
 
 Returns **Model** 
 
