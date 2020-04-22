@@ -34264,6 +34264,28 @@ var compProt = _ComponentView__WEBPACK_IMPORTED_MODULE_2__["default"].prototype;
       comps.trigger('resetNavigator');
     }
   },
+  getModelsFromEl: function getModelsFromEl(el) {
+    var result = [];
+    var children = (el || this.el).childNodes;
+
+    for (var index = 0; index < children.length; index++) {
+      var child = children[index];
+      var model = child.__cashData && child.__cashData.model;
+
+      if (model) {
+        model.components = this.getModelsFromEl(child);
+
+        if (model.get('content')) {
+          model.attributes.content = child.textContent;
+        } // TODO add attributes;
+
+
+        result.push(model);
+      }
+    }
+
+    return result;
+  },
 
   /**
    * Callback on input event
@@ -38539,7 +38561,7 @@ var defaultConfig = {
   editors: editors,
   plugins: plugins,
   // Will be replaced on build
-  version: '0.16.11',
+  version: '0.16.12',
 
   /**
    * Initialize the editor with passed options
