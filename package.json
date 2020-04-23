@@ -32,6 +32,7 @@
     "@babel/core": "^7.9.0",
     "@babel/plugin-transform-runtime": "^7.9.0",
     "@babel/preset-env": "^7.9.5",
+    "@vuepress/plugin-google-analytics": "^1.4.1",
     "babel-loader": "^8.1.0",
     "documentation": "^8.1.2",
     "eslint": "^6.6.0",

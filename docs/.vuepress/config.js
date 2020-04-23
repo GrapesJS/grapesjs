@@ -6,7 +6,6 @@ module.exports = {
   title: 'GrapesJS',
   description: 'GrapesJS documentation',
   base: '/docs/',
-  ga: 'UA-74284223-1',
   serviceWorker: false, // Enable Service Worker for offline usage
   head: [
     ['link', { rel: 'icon', href: '/logo-icon.png' }],
@@ -106,4 +105,7 @@ module.exports = {
       ],
     }
   },
+  plugins: [
+    [ '@vuepress/google-analytics', { ga: 'UA-74284223-1' } ],
+  ],
 }
