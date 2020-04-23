@@ -7,39 +7,93 @@ export default Backbone.Collection.extend({
   initialize(models, opt = {}) {
     this.opt = opt;
     this.listenTo(this, 'add', this.onAdd);
+    this.listenTo(this, 'remove', this.removeChildren);
+    this.listenTo(this, 'reset', this.resetChildren);
     this.config = opt.config;
     this.em = opt.em;
-    const { em } = this;
+    this.domc = opt.domc;
+  },
 
-    this.model = (attrs, options) => {
-      var model;
-      const df = opt.em.get('DomComponents').componentTypes;
-      options.em = opt.em;
-      options.config = opt.config;
-      options.componentTypes = df;
-      options.domc = opt.domc;
+  resetChildren(models, opts = {}) {
+    const coll = this;
+    const { previousModels = [] } = opts;
+    previousModels.forEach(md => this.removeChildren(md, coll, opts));
+    models.each(model => this.onAdd(model));
+  },
 
-      for (var it = 0; it < df.length; it++) {
-        var dfId = df[it].id;
-        if (dfId == attrs.type) {
-          model = df[it].model;
-          break;
-        }
+  removeChildren(removed, coll, opts = {}) {
+    const { domc, em } = this;
+    const allByID = domc ? domc.allById() : {};
+
+    if (!opts.temporary) {
+      // Remove the component from the gloabl list
+      const id = removed.getId();
+      const sels = em.get('SelectorManager').getAll();
+      const rules = em.get('CssComposer').getAll();
+      delete allByID[id];
+
+      // Remove all component related styles
+      const rulesRemoved = rules.remove(
+        rules.filter(r => r.getSelectors().getFullString() === `#${id}`)
+      );
+
+      // Clean selectors
+      sels.remove(rulesRemoved.map(rule => rule.getSelectors().at(0)));
+
+      if (!removed.opt.temporary) {
+        const cm = em.get('Commands');
+        const hasSign = removed.get('style-signature');
+        const optStyle = { target: removed };
+        hasSign && cm.run('core:component-style-clear', optStyle);
+        removed.removed();
+        em.trigger('component:remove', removed);
       }
 
-      if (!model) {
-        // get the last one
-        model = df[df.length - 1].model;
-        em &&
-          attrs.type &&
-          em.logWarning(`Component type '${attrs.type}' not found`, {
-            attrs,
-            options
-          });
-      }
+      const inner = removed.components();
+      inner.forEach(it => this.removeChildren(it, coll, opts));
+      // removed.empty(opts);
+    }
 
-      return new model(attrs, options);
-    };
+    // Remove stuff registered in DomComponents.handleChanges
+    const inner = removed.components();
+    const um = em.get('UndoManager');
+    em.stopListening(inner);
+    em.stopListening(removed);
+    em.stopListening(removed.get('classes'));
+    um.remove(removed);
+    um.remove(inner);
+  },
+
+  model(attrs, options) {
+    const { opt } = options.collection;
+    const { em } = opt;
+    let model;
+    const df = em.get('DomComponents').componentTypes;
+    options.em = em;
+    options.config = opt.config;
+    options.componentTypes = df;
+    options.domc = opt.domc;
+
+    for (let it = 0; it < df.length; it++) {
+      const dfId = df[it].id;
+      if (dfId == attrs.type) {
+        model = df[it].model;
+        break;
+      }
+    }
+
+    // If no model found, get the default one
+    if (!model) {
+      model = df[df.length - 1].model;
+      em &&
+        attrs.type &&
+        em.logWarning(`Component type '${attrs.type}' not found`, {
+          attrs,
+          options
+        });
+    }
+
+    return new model(attrs, options);
   },
 
   parseString(value, opt = {}) {
@@ -135,9 +189,10 @@ export default Backbone.Collection.extend({
   },
 
   onAdd(model, c, opts = {}) {
-    const em = this.em;
+    const { domc, em } = this;
     const style = model.getStyle();
     const avoidInline = em && em.getConfig('avoidInlineStyle');
+    domc && domc.Component.ensureInList(model);
 
     if (
       !isEmpty(style) &&

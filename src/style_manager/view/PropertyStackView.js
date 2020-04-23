@@ -25,6 +25,24 @@ export default PropertyCompositeView.extend({
     this.listenTo(model, 'change:stackIndex', this.indexChanged);
     this.listenTo(model, 'updateValue', this.inputValueChanged);
     this.delegateEvents();
+
+    const propsConfig = this.getPropsConfig();
+    this.layers = new LayersView({
+      collection: this.getLayers(),
+      stackModel: model,
+      preview: model.get('preview'),
+      config: this.config,
+      propsConfig
+    });
+    const PropertiesView = require('./PropertiesView').default;
+    this.propsView = new PropertiesView({
+      target: this.target,
+      collection: model.get('properties'),
+      stackModel: model,
+      config: this.config,
+      onChange: propsConfig.onChange,
+      propTarget: propsConfig.propTarget
+    });
   },
 
   /**
@@ -33,15 +51,18 @@ export default PropertyCompositeView.extend({
    * so we gonna check all props and find if it has any difference
    * */
   targetUpdated(...args) {
+    let data;
     if (!this.model.get('detached')) {
-      PropertyCompositeView.prototype.targetUpdated.apply(this, args);
+      data = PropertyCompositeView.prototype.targetUpdated.apply(this, args);
     } else {
-      const { status } = this._getTargetData();
-      this.setStatus(status);
+      data = this._getTargetData();
+      this.setStatus(data.status);
       this.checkVisibility();
     }
 
-    this.refreshLayers();
+    // I have to wait the update of inner properites (like visibility)
+    // before render layers
+    setTimeout(() => this.refreshLayers(data));
   },
 
   /**
@@ -81,15 +102,15 @@ export default PropertyCompositeView.extend({
 
     // In detached mode inputValueChanged will add new 'layer value'
     // to all subprops
-    this.inputValueChanged();
+    this.inputValueChanged({ up: 1 });
 
     // This will set subprops with a new default values
     model.set('stackIndex', layers.indexOf(layer));
   },
 
-  inputValueChanged() {
+  inputValueChanged(opts = {}) {
     const model = this.model;
-    this.elementUpdated();
+    opts.up && this.elementUpdated();
 
     // If not detached I'll just put all the values from layers to property
     // eg. background: layer1Value, layer2Value, layer3Value, ...
@@ -163,7 +184,7 @@ export default PropertyCompositeView.extend({
   /**
    * Refresh layers
    * */
-  refreshLayers() {
+  refreshLayers(opts = {}) {
     let layersObj = [];
     const { model, em } = this;
     const layers = this.getLayers();
@@ -172,6 +193,7 @@ export default PropertyCompositeView.extend({
     const target = this.getTarget();
     const valueComput = this.getComputedValue();
     const selected = em.getSelected();
+    const updateOpts = { fromTarget: 1 };
     let resultValue,
       style,
       targetAlt,
@@ -181,7 +203,7 @@ export default PropertyCompositeView.extend({
 
     // With detached layers values will be assigned to their properties
     if (detached) {
-      style = target ? target.getStyle() : {};
+      style = opts.targetValue || {};
       const hasDetachedStyle = rule => {
         const name = model
           .get('properties')
@@ -250,34 +272,37 @@ export default PropertyCompositeView.extend({
     const toAdd =
       model.getLayersFromTarget(target, { resultValue, layersObj }) ||
       layersObj;
-    layers.reset();
-    layers.add(toAdd);
+    layers.reset(null, updateOpts);
+    layers.add(toAdd, updateOpts);
     model.set({ stackIndex: null }, { silent: true });
   },
 
   getTargetValue(opts = {}) {
+    const { model } = this;
+    const { detached } = model.attributes;
+    const target = this.getTarget();
     let result = PropertyCompositeView.prototype.getTargetValue.call(
       this,
       opts
     );
-    const { detached } = this.model.attributes;
 
     // It might happen that the browser split properties on CSSOM parse
     if (isUndefined(result) && !detached) {
-      result = this.model.getValueFromStyle(this.getTarget().getStyle());
+      result = model.getValueFromStyle(target.getStyle());
+    } else if (detached) {
+      result = model.getValueFromTarget(target);
     }
 
     return result;
   },
 
-  onRender() {
+  getPropsConfig() {
     const self = this;
-    const model = this.model;
-    const fieldEl = this.el.querySelector('[data-layers-wrapper]');
-    const PropertiesView = require('./PropertiesView').default;
-    const propsConfig = {
-      target: this.target,
-      propTarget: this.propTarget,
+    const { model } = self;
+
+    return {
+      target: self.target,
+      propTarget: self.propTarget,
 
       // Things to do when a single sub-property is changed
       onChange(el, view, opt) {
@@ -300,25 +325,12 @@ export default PropertyCompositeView.extend({
         }
       }
     };
-    const layers = new LayersView({
-      collection: this.getLayers(),
-      stackModel: model,
-      preview: model.get('preview'),
-      config: this.config,
-      propsConfig
-    }).render().el;
+  },
 
-    // Will use it to propogate changes
-    new PropertiesView({
-      target: this.target,
-      collection: this.model.get('properties'),
-      stackModel: model,
-      config: this.config,
-      onChange: propsConfig.onChange,
-      propTarget: propsConfig.propTarget
-    }).render();
-
-    //model.get('properties')
-    fieldEl.appendChild(layers);
+  onRender() {
+    const { el, layers, propsView } = this;
+    const fieldEl = el.querySelector('[data-layers-wrapper]');
+    propsView.render(); // Will use it to propogate changes
+    fieldEl.appendChild(layers.render().el);
   }
 });

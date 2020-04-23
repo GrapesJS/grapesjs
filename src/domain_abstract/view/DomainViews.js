@@ -14,9 +14,8 @@ export default Backbone.View.extend({
 
   initialize(opts = {}, config) {
     this.config = config || opts.config || {};
-
     this.autoAdd && this.listenTo(this.collection, 'add', this.addTo);
-
+    this.items = [];
     this.init();
   },
 
@@ -45,7 +44,7 @@ export default Backbone.View.extend({
    * @private
    * */
   add(model, fragment) {
-    const { config, reuseView, itemsView = {} } = this;
+    const { config, reuseView, items, itemsView = {} } = this;
     const inputTypes = [
       'button',
       'checkbox',
@@ -91,7 +90,8 @@ export default Backbone.View.extend({
       view = new itemView({ model, config }, config);
     }
 
-    var rendered = view.render().el;
+    items && items.push(view);
+    const rendered = view.render().el;
 
     if (frag) frag.appendChild(rendered);
     else this.$el.append(rendered);
@@ -99,6 +99,7 @@ export default Backbone.View.extend({
 
   render() {
     var frag = document.createDocumentFragment();
+    this.clearItems();
     this.$el.empty();
 
     if (this.collection.length)
@@ -111,5 +112,17 @@ export default Backbone.View.extend({
     return this;
   },
 
-  onRender() {}
+  onRender() {},
+
+  remove() {
+    this.clearItems();
+    Backbone.View.prototype.remove.apply(this, arguments);
+  },
+
+  clearItems() {
+    const items = this.items || [];
+    // TODO Traits do not update the target anymore
+    // items.forEach(item => item.remove());
+    // this.items = [];
+  }
 });

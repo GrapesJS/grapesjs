@@ -27,7 +27,7 @@ export default Backbone.View.extend({
   },
 
   initialize(o) {
-    bindAll(this, 'clearOff', 'onKeyPress');
+    bindAll(this, 'clearOff', 'onKeyPress', 'onCanvasMove');
     on(window, 'scroll resize', this.clearOff);
     const { model } = this;
     const frames = model.get('frames');
@@ -74,10 +74,18 @@ export default Backbone.View.extend({
     }
   },
 
+  onCanvasMove(ev) {
+    // const data = { x: ev.clientX, y: ev.clientY };
+    // const data2 = this.em.get('Canvas').getMouseRelativeCanvas(ev);
+    // const data3 = this.em.get('Canvas').getMouseRelativePos(ev);
+    // this.em.trigger('canvas:over', data, data2, data3);
+  },
+
   toggleListeners(enable) {
-    const method = enable ? 'on' : 'off';
-    const methods = { on, off };
-    methods[method](document, 'keypress', this.onKeyPress);
+    const { el } = this;
+    const fn = enable ? on : off;
+    fn(document, 'keypress', this.onKeyPress);
+    // fn(el, 'mousemove dragover', this.onCanvasMove);
   },
 
   onKeyPress(ev) {

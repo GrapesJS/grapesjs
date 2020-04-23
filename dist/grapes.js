@@ -21385,6 +21385,8 @@ __webpack_require__.r(__webpack_exports__);
     resetId: 0,
     // Block label
     label: '',
+    // Disable the drag of the block
+    disable: 0,
     // HTML string for the media of the block, eg. SVG icon, image, etc.
     media: '',
     content: '',
@@ -21549,9 +21551,11 @@ __webpack_require__.r(__webpack_exports__);
    */
   startDrag: function startDrag(e) {
     var config = this.config,
-        em = this.em; //Right or middel click
+        em = this.em,
+        model = this.model;
+    var disable = model.get('disable'); //Right or middel click
 
-    if (e.button !== 0 || !config.getSorter || this.el.draggable) return;
+    if (e.button !== 0 || !config.getSorter || this.el.draggable || disable) return;
     em.refreshCanvas();
     var sorter = config.getSorter();
     sorter.setDragHelper(this.el, e);
@@ -21627,14 +21631,18 @@ __webpack_require__.r(__webpack_exports__);
         el = this.el,
         ppfx = this.ppfx,
         model = this.model;
+    var disable = model.get('disable');
+    var attr = model.get('attributes') || {};
+    var cls = attr.class || '';
     var className = "".concat(ppfx, "block");
     var label = em && em.t("blockManager.labels.".concat(model.id)) || model.get('label');
     var render = model.get('render');
     var media = model.get('media');
-    el.className += " ".concat(className, " ").concat(ppfx, "one-bg ").concat(ppfx, "four-color-h");
+    var clsAdd = disable ? "".concat(className, "--disable") : "".concat(ppfx, "four-color-h");
+    el.className = "".concat(cls, " ").concat(className, " ").concat(ppfx, "one-bg ").concat(clsAdd).trim();
     el.innerHTML = "\n      ".concat(media ? "<div class=\"".concat(className, "__media\">").concat(media, "</div>") : '', "\n      <div class=\"").concat(className, "-label\">").concat(label, "</div>\n    ");
     el.title = el.textContent.trim();
-    Object(utils_mixins__WEBPACK_IMPORTED_MODULE_2__["hasDnd"])(em) && el.setAttribute('draggable', true);
+    el.setAttribute('draggable', Object(utils_mixins__WEBPACK_IMPORTED_MODULE_2__["hasDnd"])(em) && !disable ? true : false);
     var result = render && render({
       el: el,
       model: model,
@@ -22140,8 +22148,8 @@ var _window = window,
     getElement: function getElement() {
       return CanvasView.el;
     },
-    getFrame: function getFrame() {
-      return canvas.get('frame');
+    getFrame: function getFrame(index) {
+      return index ? this.getFrames()[index] : canvas.get('frame');
     },
 
     /**
@@ -22739,7 +22747,12 @@ __webpack_require__.r(__webpack_exports__);
         styles = _config$styles === void 0 ? [] : _config$styles,
         _config$scripts = config.scripts,
         scripts = _config$scripts === void 0 ? [] : _config$scripts;
-    var frame = new _Frame__WEBPACK_IMPORTED_MODULE_1__["default"]({}, config);
+    var root = em && em.getWrapper();
+    var css = em && em.getStyle();
+    var frame = new _Frame__WEBPACK_IMPORTED_MODULE_1__["default"]({
+      root: root,
+      styles: css
+    }, config);
     styles.forEach(function (style) {
       return frame.addLink(style);
     });
@@ -22988,7 +23001,7 @@ var timerZoom;
     return "\n      <div class=\"".concat(pfx, "canvas__frames\" data-frames></div>\n      <div id=\"").concat(pfx, "tools\" class=\"").concat(pfx, "canvas__tools\" data-tools></div>\n    ");
   },
   initialize: function initialize(o) {
-    Object(underscore__WEBPACK_IMPORTED_MODULE_2__["bindAll"])(this, 'clearOff', 'onKeyPress');
+    Object(underscore__WEBPACK_IMPORTED_MODULE_2__["bindAll"])(this, 'clearOff', 'onKeyPress', 'onCanvasMove');
     Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["on"])(window, 'scroll resize', this.clearOff);
     var model = this.model;
     var frames = model.get('frames');
@@ -23032,13 +23045,15 @@ var timerZoom;
       ev._parentEvent && ev._parentEvent.preventDefault();
     }
   },
+  onCanvasMove: function onCanvasMove(ev) {// const data = { x: ev.clientX, y: ev.clientY };
+    // const data2 = this.em.get('Canvas').getMouseRelativeCanvas(ev);
+    // const data3 = this.em.get('Canvas').getMouseRelativePos(ev);
+    // this.em.trigger('canvas:over', data, data2, data3);
+  },
   toggleListeners: function toggleListeners(enable) {
-    var method = enable ? 'on' : 'off';
-    var methods = {
-      on: utils_mixins__WEBPACK_IMPORTED_MODULE_3__["on"],
-      off: utils_mixins__WEBPACK_IMPORTED_MODULE_3__["off"]
-    };
-    methods[method](document, 'keypress', this.onKeyPress);
+    var el = this.el;
+    var fn = enable ? utils_mixins__WEBPACK_IMPORTED_MODULE_3__["on"] : utils_mixins__WEBPACK_IMPORTED_MODULE_3__["off"];
+    fn(document, 'keypress', this.onKeyPress); // fn(el, 'mousemove dragover', this.onCanvasMove);
   },
   onKeyPress: function onKeyPress(ev) {
     var em = this.em;
@@ -23630,6 +23645,9 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     [{
       event: 'keydown keyup keypress',
       class: 'KeyboardEvent'
+    }, {
+      event: 'mousemove',
+      class: 'MouseEvent'
     }, {
       event: 'wheel',
       class: 'WheelEvent'
@@ -26879,8 +26897,6 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
 /* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var style_manager__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! style_manager */ "./src/style_manager/index.js");
-
 
 var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -27091,6 +27107,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
 /* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_0__);
 
+var cmdVis = 'sw-visibility';
 /* harmony default export */ __webpack_exports__["default"] = ({
   getPanels: function getPanels(editor) {
     if (!this.panels) {
@@ -27110,7 +27127,12 @@ __webpack_require__.r(__webpack_exports__);
     var _this = this;
 
     this.sender = sender;
-    editor.stopCommand('sw-visibility');
+
+    if (!this.shouldRunSwVisibility) {
+      this.shouldRunSwVisibility = editor.Commands.isActive(cmdVis);
+    }
+
+    this.shouldRunSwVisibility && editor.stopCommand(cmdVis);
     editor.getModel().stopDefault();
     var panels = this.getPanels(editor);
     var canvas = editor.Canvas.getElement();
@@ -27148,10 +27170,10 @@ __webpack_require__.r(__webpack_exports__);
         sender = _this$sender === void 0 ? {} : _this$sender;
     sender.set && sender.set('active', 0);
     var panels = this.getPanels(editor);
-    var swVisibilityButton = editor.Panels.getButton('options', 'sw-visibility');
 
-    if (swVisibilityButton && swVisibilityButton.get('active')) {
-      editor.runCommand('sw-visibility');
+    if (this.shouldRunSwVisibility) {
+      editor.runCommand(cmdVis);
+      this.shouldRunSwVisibility = false;
     }
 
     editor.getModel().runDefault();
@@ -27318,12 +27340,12 @@ var showOffsets;
     methods[method](window, 'resize', this.onFrameUpdated);
     em[method]('component:toggled', this.onSelect, this);
     em[method]('change:componentHovered', this.onHovered, this);
-    em[method]('component:resize component:styleUpdate', this.updateGlobalPos, this);
+    em[method]('component:resize component:styleUpdate component:input', this.updateGlobalPos, this);
     em[method]('change:canvasOffset', this.updateAttached, this);
     em[method]('frame:updated', this.onFrameUpdated, this);
     em.get('Canvas').getFrames().forEach(function (frame) {
       var view = frame.view;
-      trigger(view.getWindow(), view.getBody());
+      view && trigger(view.getWindow(), view.getBody());
     });
   },
 
@@ -27448,9 +27470,9 @@ var showOffsets;
     this.currentDoc = null;
     this.em.setHovered(0);
     this.canvas.getFrames().forEach(function (frame) {
-      var el = frame.view.getToolsEl();
-
-      _this3.toggleToolsEl(0, 0, {
+      var view = frame.view;
+      var el = view && view.getToolsEl();
+      el && _this3.toggleToolsEl(0, 0, {
         el: el
       });
     });
@@ -27458,8 +27480,8 @@ var showOffsets;
   toggleToolsEl: function toggleToolsEl(on, view) {
     var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     var el = opts.el || this.canvas.getToolsEl(view);
-    el.style.opacity = on ? 1 : 0;
-    return el;
+    el && (el.style.opacity = on ? 1 : 0);
+    return el || {};
   },
 
   /**
@@ -28056,6 +28078,7 @@ var showOffsets;
     this.onOut();
     this.toggleToolsEl();
     editor && editor.stopCommand('resize');
+    this.editor = 0;
   }
 });
 
@@ -28394,10 +28417,13 @@ __webpack_require__.r(__webpack_exports__);
     var _this = this;
 
     var active = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
-    var method = active ? 'add' : 'remove';
-    ed.Canvas.getFrames().forEach(function (frame) {
-      frame.view.getBody().classList[method]("".concat(_this.ppfx, "dashed"));
-    });
+
+    if (!ed.Commands.isActive('preview')) {
+      var method = active ? 'add' : 'remove';
+      ed.Canvas.getFrames().forEach(function (frame) {
+        frame.view.getBody().classList[method]("".concat(_this.ppfx, "dashed"));
+      });
+    }
   }
 });
 
@@ -29160,21 +29186,21 @@ __webpack_require__.r(__webpack_exports__);
 
 
 /* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_0___default.a.Collection.extend({
+  model: _CssRule__WEBPACK_IMPORTED_MODULE_1__["default"],
   initialize: function initialize(models, opt) {
+    var _this = this;
+
     // Inject editor
-    if (opt && opt.em) this.editor = opt.em; // Not used
+    if (opt && opt.em) this.editor = opt.em; // This will put the listener post CssComposer.postLoad
 
-    this.model = function (attrs, options) {
-      var model;
-      if (!options.em && opt && opt.em) options.em = opt.em;
-
-      switch (1) {
-        default:
-          model = new _CssRule__WEBPACK_IMPORTED_MODULE_1__["default"](attrs, options);
-      }
-
-      return model;
-    };
+    setTimeout(function () {
+      return _this.on('remove', _this.onRemove);
+    });
+  },
+  onRemove: function onRemove(removed) {
+    var em = this.editor;
+    em.stopListening(removed);
+    em.get('UndoManager').remove(removed);
   },
   add: function add(models) {
     var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -30561,6 +30587,9 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
         state: ''
       });
       model && Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isEmpty"])(model.get('status')) && model.set('status', state);
+    },
+    allById: function allById() {
+      return componentsById;
     }
   };
 });
@@ -30856,21 +30885,21 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(dom
   },
 
   /**
-   * Find all inner components by component id.
+   * Find all inner components by component type.
    * The advantage of this method over `find` is that you can use it
    * also before rendering the component
-   * @param {String} id Component id
+   * @param {String} type Component type
    * @returns {Array<Component>}
    * @example
    * const allImages = component.findType('image');
    * console.log(allImages[0]) // prints the first found component
    */
-  findType: function findType(id) {
+  findType: function findType(type) {
     var result = [];
 
     var find = function find(components) {
       return components.forEach(function (item) {
-        item.is(id) && result.push(item);
+        item.is(type) && result.push(item);
         find(item.components());
       });
     };
@@ -30891,6 +30920,26 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(dom
   closest: function closest(query) {
     var result = this.view.$el.closest(query);
     return result.length && result.data('model');
+  },
+
+  /**
+   * Find the closest parent component by its type.
+   * The advantage of this method over `closest` is that you can use it
+   * also before rendering the component
+   * @param {String} type Component type
+   * @returns {Component} Found component, otherwise `undefined`
+   * @example
+   * const Section = component.closestType('section');
+   * console.log(Section);
+   */
+  closestType: function closestType(type) {
+    var parent = this.parent();
+
+    while (parent && !parent.is(type)) {
+      parent = parent.parent();
+    }
+
+    return parent;
   },
 
   /**
@@ -31234,6 +31283,16 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(dom
       coll.reset();
       return _components && this.append(_components);
     }
+  },
+
+  /**
+   * Remove all inner components
+   * * @return {this}
+   */
+  empty: function empty() {
+    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    this.components().reset(null, opts);
+    return this;
   },
 
   /**
@@ -31861,6 +31920,25 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(dom
     return {
       tagName: el.tagName ? el.tagName.toLowerCase() : ''
     };
+  },
+  ensureInList: function ensureInList(model) {
+    var list = Component.getList(model);
+    var id = model.getId();
+    var current = list[id];
+
+    if (!current) {
+      // Insert in list
+      list[id] = model;
+    } else if (current !== model) {
+      // Create new ID
+      var nextId = Component.getIncrementId(id, list);
+      model.setId(nextId);
+      list[nextId] = model;
+    }
+
+    model.components().forEach(function (i) {
+      return Component.ensureInList(i);
+    });
   },
 
   /**
@@ -32792,32 +32870,13 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 /* harmony default export */ __webpack_exports__["default"] = (_Component__WEBPACK_IMPORTED_MODULE_1__["default"].extend({
   defaults: _objectSpread({}, _Component__WEBPACK_IMPORTED_MODULE_1__["default"].prototype.defaults, {
-    type: 'row',
     tagName: 'tr',
     draggable: ['thead', 'tbody', 'tfoot'],
     droppable: ['th', 'td']
-  }),
-  initialize: function initialize(o, opt) {
-    _Component__WEBPACK_IMPORTED_MODULE_1__["default"].prototype.initialize.apply(this, arguments); // Clean the row from non cell components
-
-    var cells = [];
-    var components = this.get('components');
-    components.each(function (model) {
-      return model.is('cell') && cells.push(model);
-    });
-    components.reset(cells);
-  }
+  })
 }, {
   isComponent: function isComponent(el) {
-    var result = '';
-
-    if (el.tagName == 'TR') {
-      result = {
-        type: 'row'
-      };
-    }
-
-    return result;
+    return el.tagName == 'TR' && true;
   }
 }));
 
@@ -33351,38 +33410,106 @@ var Component;
     var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     this.opt = opt;
     this.listenTo(this, 'add', this.onAdd);
+    this.listenTo(this, 'remove', this.removeChildren);
+    this.listenTo(this, 'reset', this.resetChildren);
     this.config = opt.config;
     this.em = opt.em;
-    var em = this.em;
+    this.domc = opt.domc;
+  },
+  resetChildren: function resetChildren(models) {
+    var _this = this;
 
-    this.model = function (attrs, options) {
-      var model;
-      var df = opt.em.get('DomComponents').componentTypes;
-      options.em = opt.em;
-      options.config = opt.config;
-      options.componentTypes = df;
-      options.domc = opt.domc;
+    var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var coll = this;
+    var _opts$previousModels = opts.previousModels,
+        previousModels = _opts$previousModels === void 0 ? [] : _opts$previousModels;
+    previousModels.forEach(function (md) {
+      return _this.removeChildren(md, coll, opts);
+    });
+    models.each(function (model) {
+      return _this.onAdd(model);
+    });
+  },
+  removeChildren: function removeChildren(removed, coll) {
+    var _this2 = this;
 
-      for (var it = 0; it < df.length; it++) {
-        var dfId = df[it].id;
+    var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    var domc = this.domc,
+        em = this.em;
+    var allByID = domc ? domc.allById() : {};
 
-        if (dfId == attrs.type) {
-          model = df[it].model;
-          break;
-        }
+    if (!opts.temporary) {
+      // Remove the component from the gloabl list
+      var id = removed.getId();
+      var sels = em.get('SelectorManager').getAll();
+      var rules = em.get('CssComposer').getAll();
+      delete allByID[id]; // Remove all component related styles
+
+      var rulesRemoved = rules.remove(rules.filter(function (r) {
+        return r.getSelectors().getFullString() === "#".concat(id);
+      })); // Clean selectors
+
+      sels.remove(rulesRemoved.map(function (rule) {
+        return rule.getSelectors().at(0);
+      }));
+
+      if (!removed.opt.temporary) {
+        var cm = em.get('Commands');
+        var hasSign = removed.get('style-signature');
+        var optStyle = {
+          target: removed
+        };
+        hasSign && cm.run('core:component-style-clear', optStyle);
+        removed.removed();
+        em.trigger('component:remove', removed);
       }
 
-      if (!model) {
-        // get the last one
-        model = df[df.length - 1].model;
-        em && attrs.type && em.logWarning("Component type '".concat(attrs.type, "' not found"), {
-          attrs: attrs,
-          options: options
-        });
-      }
+      var _inner = removed.components();
 
-      return new model(attrs, options);
-    };
+      _inner.forEach(function (it) {
+        return _this2.removeChildren(it, coll, opts);
+      }); // removed.empty(opts);
+
+    } // Remove stuff registered in DomComponents.handleChanges
+
+
+    var inner = removed.components();
+    var um = em.get('UndoManager');
+    em.stopListening(inner);
+    em.stopListening(removed);
+    em.stopListening(removed.get('classes'));
+    um.remove(removed);
+    um.remove(inner);
+  },
+  model: function model(attrs, options) {
+    var opt = options.collection.opt;
+    var em = opt.em;
+    var model;
+    var df = em.get('DomComponents').componentTypes;
+    options.em = em;
+    options.config = opt.config;
+    options.componentTypes = df;
+    options.domc = opt.domc;
+
+    for (var it = 0; it < df.length; it++) {
+      var dfId = df[it].id;
+
+      if (dfId == attrs.type) {
+        model = df[it].model;
+        break;
+      }
+    } // If no model found, get the default one
+
+
+    if (!model) {
+      model = df[df.length - 1].model;
+      em && attrs.type && em.logWarning("Component type '".concat(attrs.type, "' not found"), {
+        attrs: attrs,
+        options: options
+      });
+    }
+
+    return new model(attrs, options);
   },
   parseString: function parseString(value) {
     var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -33403,7 +33530,7 @@ var Component;
     return parsed.html;
   },
   add: function add(models) {
-    var _this = this;
+    var _this3 = this;
 
     var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
@@ -33412,7 +33539,7 @@ var Component;
     } else if (Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isArray"])(models)) {
       models.forEach(function (item, index) {
         if (Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isString"])(item)) {
-          models[index] = _this.parseString(item, opt);
+          models[index] = _this3.parseString(item, opt);
         }
       });
     }
@@ -33421,7 +33548,7 @@ var Component;
     models = (isMult ? models : [models]).filter(function (i) {
       return i;
     }).map(function (model) {
-      return _this.processDef(model);
+      return _this3.processDef(model);
     });
     models = isMult ? models : models[0];
     return backbone__WEBPACK_IMPORTED_MODULE_2___default.a.Collection.prototype.add.apply(this, [models, opt]);
@@ -33488,9 +33615,11 @@ var Component;
   },
   onAdd: function onAdd(model, c) {
     var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-    var em = this.em;
+    var domc = this.domc,
+        em = this.em;
     var style = model.getStyle();
     var avoidInline = em && em.getConfig('avoidInlineStyle');
+    domc && domc.Component.ensureInList(model);
 
     if (!Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isEmpty"])(style) && !avoidInline && em && em.get && em.getConfig('forceClass') && !opts.temporary) {
       var name = model.cid;
@@ -34135,15 +34264,39 @@ var compProt = _ComponentView__WEBPACK_IMPORTED_MODULE_2__["default"].prototype;
       comps.trigger('resetNavigator');
     }
   },
+  getModelsFromEl: function getModelsFromEl(el) {
+    var result = [];
+    var children = (el || this.el).childNodes;
+
+    for (var index = 0; index < children.length; index++) {
+      var child = children[index];
+      var model = child.__cashData && child.__cashData.model;
+
+      if (model) {
+        model.components = this.getModelsFromEl(child);
+
+        if (model.get('content')) {
+          model.attributes.content = child.textContent;
+        } // TODO add attributes;
+
+
+        result.push(model);
+      }
+    }
+
+    return result;
+  },
 
   /**
    * Callback on input event
    * @param  {Event} e
    */
   onInput: function onInput() {
-    var em = this.em; // Update toolbars
+    var em = this.em;
+    var evPfx = 'component';
+    var ev = ["".concat(evPfx, ":update"), "".concat(evPfx, ":input")].join(' '); // Update toolbars
 
-    em && em.trigger('component:update', this.model);
+    em && em.trigger(ev, this.model);
   },
 
   /**
@@ -34467,18 +34620,31 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
    */
   onDisable: function onDisable() {},
   remove: function remove() {
-    backbone__WEBPACK_IMPORTED_MODULE_1___default.a.View.prototype.remove.apply(this, arguments);
-    var model = this.model;
-    var frame = this._getFrame() || {};
+    var view = this;
+    backbone__WEBPACK_IMPORTED_MODULE_1___default.a.View.prototype.remove.apply(view, arguments);
+    var model = view.model;
+    var frame = view._getFrame() || {};
     var frameM = frame.model;
     model.components().forEach(function (comp) {
       var view = comp.getView(frameM);
       view && view.remove();
     });
     var views = model.views;
-    views.splice(views.indexOf(this), 1);
-    this.removed(this._clbObj());
-    return this;
+    views.splice(views.indexOf(view), 1);
+    view.removed(view._clbObj());
+    view.$el.data({
+      model: '',
+      collection: '',
+      view: ''
+    });
+    delete view.model;
+    delete view.$el;
+    delete view.el.__gjsv;
+    delete view.childrenView;
+    delete view.scriptContainer;
+    delete view.opts; // delete view.el;
+
+    return view;
   },
   handleDragStart: function handleDragStart(event) {
     event.preventDefault();
@@ -34869,7 +35035,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
   renderChildren: function renderChildren() {
     this.updateContent();
     var container = this.getChildrenContainer();
-    var view = new _ComponentsView__WEBPACK_IMPORTED_MODULE_4__["default"]({
+    var view = this.childrenView || new _ComponentsView__WEBPACK_IMPORTED_MODULE_4__["default"]({
       collection: this.model.get('components'),
       config: this.config,
       componentTypes: this.opts.componentTypes
@@ -34891,6 +35057,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     if (this.modelOpt.temporary) return this;
     this.renderChildren();
     this.updateScript();
+    Object(utils_mixins__WEBPACK_IMPORTED_MODULE_7__["setViewEl"])(this.el, this);
     this.postRender();
     return this;
   },
@@ -34938,43 +35105,18 @@ __webpack_require__.r(__webpack_exports__);
     var _this = this;
 
     var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-    var em = this.config.em;
-    var tempRemove = opts.temporary;
     removed.views.forEach(function (view) {
       if (!view) return;
-      view.remove.apply(view);
       var childrenView = view.childrenView,
           scriptContainer = view.scriptContainer;
       childrenView && childrenView.stopListening();
       scriptContainer && scriptContainer.remove();
+      view.remove.apply(view);
     });
-    removed.components().forEach(function (it) {
+    var inner = removed.components();
+    inner.forEach(function (it) {
       return _this.removeChildren(it, coll, opts);
     });
-
-    if (em && !tempRemove) {
-      // Remove the component from the global list
-      var id = removed.getId();
-      var domc = em.get('DomComponents');
-      delete domc.componentsById[id]; // Remove all related CSS rules
-      // TODO: remove from the frame container
-
-      var allRules = em.get('CssComposer').getAll();
-      allRules.remove(allRules.filter(function (rule) {
-        return rule.getSelectors().getFullString() === "#".concat(id);
-      }));
-
-      if (!removed.opt.temporary) {
-        var cm = em.get('Commands');
-        var hasSign = removed.get('style-signature');
-        var optStyle = {
-          target: removed
-        };
-        hasSign && cm.run('core:component-style-clear', optStyle);
-        removed.removed();
-        em.trigger('component:remove', removed);
-      }
-    }
   },
 
   /**
@@ -35018,6 +35160,9 @@ __webpack_require__.r(__webpack_exports__);
         opts = this.opts,
         em = this.em;
     var fragment = fragmentEl || null;
+    var _config$frameView = config.frameView,
+        frameView = _config$frameView === void 0 ? {} : _config$frameView;
+    var sameFrameView = frameView.model && model.getView(frameView.model);
     var dt = opts.componentTypes || em && em.get('DomComponents').getTypes();
     var type = model.get('type');
     var viewObject = this.compView;
@@ -35029,7 +35174,7 @@ __webpack_require__.r(__webpack_exports__);
       }
     }
 
-    var view = new viewObject({
+    var view = sameFrameView || new viewObject({
       model: model,
       config: config,
       componentTypes: dt
@@ -35063,11 +35208,18 @@ __webpack_require__.r(__webpack_exports__);
 
     return rendered;
   },
-  resetChildren: function resetChildren() {
+  resetChildren: function resetChildren(models) {
     var _this2 = this;
 
+    var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        _ref$previousModels = _ref.previousModels,
+        previousModels = _ref$previousModels === void 0 ? [] : _ref$previousModels;
+
     this.parentEl.innerHTML = '';
-    this.collection.each(function (model) {
+    previousModels.forEach(function (md) {
+      return _this2.removeChildren(md, _this2.collection);
+    });
+    models.each(function (model) {
       return _this2.addToCollection(model);
     });
   },
@@ -35678,7 +35830,7 @@ Object(utils_ColorPicker__WEBPACK_IMPORTED_MODULE_3__["default"])($);
     inputEl.value = value;
     colorEl.get(0).style.backgroundColor = valueClr; // This prevents from adding multiple thumbs in spectrum
 
-    if (opts.fromTarget) {
+    if (opts.fromTarget || opts.fromInput && !opts.avoidStore) {
       colorEl.spectrum('set', valueClr);
       this.noneColor = value == 'none';
     }
@@ -35690,13 +35842,14 @@ Object(utils_ColorPicker__WEBPACK_IMPORTED_MODULE_3__["default"])($);
    */
   getColorEl: function getColorEl() {
     if (!this.colorEl) {
+      var em = this.em;
       var self = this;
       var ppfx = this.ppfx;
       var model = this.model;
       var colorEl = $("<div class=\"".concat(this.ppfx, "field-color-picker\"></div>"));
       var cpStyle = colorEl.get(0).style;
-      var elToAppend = this.em && this.em.config ? this.em.config.el : '';
-      var colorPickerConfig = this.em && this.em.getConfig && this.em.getConfig('colorPicker') || {};
+      var elToAppend = em && em.config ? em.config.el : '';
+      var colorPickerConfig = em && em.getConfig && em.getConfig('colorPicker') || {};
 
       var getColor = function getColor(color) {
         var cl = color.getAlpha() == 1 ? color.toHexString() : color.toRgbString();
@@ -35746,6 +35899,10 @@ Object(utils_ColorPicker__WEBPACK_IMPORTED_MODULE_3__["default"])($);
           }
         }
       }));
+      em && em.on && em.on('component:selected', function () {
+        changed = 1;
+        colorEl.spectrum('hide');
+      });
       this.colorEl = colorEl;
     }
 
@@ -36079,6 +36236,7 @@ __webpack_require__.r(__webpack_exports__);
     var config = arguments.length > 1 ? arguments[1] : undefined;
     this.config = config || opts.config || {};
     this.autoAdd && this.listenTo(this.collection, 'add', this.addTo);
+    this.items = [];
     this.init();
   },
   init: function init() {},
@@ -36108,6 +36266,7 @@ __webpack_require__.r(__webpack_exports__);
   add: function add(model, fragment) {
     var config = this.config,
         reuseView = this.reuseView,
+        items = this.items,
         _this$itemsView = this.itemsView,
         itemsView = _this$itemsView === void 0 ? {} : _this$itemsView;
     var inputTypes = ['button', 'checkbox', 'color', 'date', 'datetime-local', 'email', 'file', 'hidden', 'image', 'month', 'number', 'password', 'radio', 'range', 'reset', 'search', 'submit', 'tel', 'text', 'time', 'url', 'week'];
@@ -36131,11 +36290,13 @@ __webpack_require__.r(__webpack_exports__);
       }, config);
     }
 
+    items && items.push(view);
     var rendered = view.render().el;
     if (frag) frag.appendChild(rendered);else this.$el.append(rendered);
   },
   render: function render() {
     var frag = document.createDocumentFragment();
+    this.clearItems();
     this.$el.empty();
     if (this.collection.length) this.collection.each(function (model) {
       this.add(model, frag);
@@ -36144,7 +36305,16 @@ __webpack_require__.r(__webpack_exports__);
     this.onRender();
     return this;
   },
-  onRender: function onRender() {}
+  onRender: function onRender() {},
+  remove: function remove() {
+    this.clearItems();
+    backbone__WEBPACK_IMPORTED_MODULE_1___default.a.View.prototype.remove.apply(this, arguments);
+  },
+  clearItems: function clearItems() {
+    var items = this.items || []; // TODO Traits do not update the target anymore
+    // items.forEach(item => item.remove());
+    // this.items = [];
+  }
 }));
 
 /***/ }),
@@ -36513,138 +36683,6 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     editor: em,
 
     /**
-     * @property {I18n}
-     * @private
-     */
-    I18n: em.get('I18n'),
-
-    /**
-     * @property {DomComponents}
-     * @private
-     */
-    DomComponents: em.get('DomComponents'),
-
-    /**
-     * @property {LayerManager}
-     * @private
-     */
-    LayerManager: em.get('LayerManager'),
-
-    /**
-     * @property {CssComposer}
-     * @private
-     */
-    CssComposer: em.get('CssComposer'),
-
-    /**
-     * @property {StorageManager}
-     * @private
-     */
-    StorageManager: em.get('StorageManager'),
-
-    /**
-     * @property {AssetManager}
-     * @private
-     */
-    AssetManager: em.get('AssetManager'),
-
-    /**
-     * @property {BlockManager}
-     * @private
-     */
-    BlockManager: em.get('BlockManager'),
-
-    /**
-     * @property {TraitManager}
-     * @private
-     */
-    TraitManager: em.get('TraitManager'),
-
-    /**
-     * @property {SelectorManager}
-     * @private
-     */
-    SelectorManager: em.get('SelectorManager'),
-
-    /**
-     * @property {CodeManager}
-     * @private
-     */
-    CodeManager: em.get('CodeManager'),
-
-    /**
-     * @property {Commands}
-     * @private
-     */
-    Commands: em.get('Commands'),
-
-    /**
-     * @property {Keymaps}
-     * @private
-     */
-    Keymaps: em.get('Keymaps'),
-
-    /**
-     * @property {Modal}
-     * @private
-     */
-    Modal: em.get('Modal'),
-
-    /**
-     * @property {Panels}
-     * @private
-     */
-    Panels: em.get('Panels'),
-
-    /**
-     * @property {StyleManager}
-     * @private
-     */
-    StyleManager: em.get('StyleManager'),
-
-    /**
-     * @property {Canvas}
-     * @private
-     */
-    Canvas: em.get('Canvas'),
-
-    /**
-     * @property {UndoManager}
-     * @private
-     */
-    UndoManager: em.get('UndoManager'),
-
-    /**
-     * @property {DeviceManager}
-     * @private
-     */
-    DeviceManager: em.get('DeviceManager'),
-
-    /**
-     * @property {RichTextEditor}
-     * @private
-     */
-    RichTextEditor: em.get('RichTextEditor'),
-
-    /**
-     * @property {Parser}
-     * @private
-     */
-    Parser: em.get('Parser'),
-
-    /**
-     * @property {Utils}
-     * @private
-     */
-    Utils: em.get('Utils'),
-
-    /**
-     * @property {Utils}
-     * @private
-     */
-    Config: em.get('Config'),
-
-    /**
      * Initialize editor model
      * @return {this}
      * @private
@@ -36652,7 +36690,15 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     init: function init() {
       var _this = this;
 
-      em.init(this); // Do post render stuff after the iframe is loaded otherwise it'll
+      var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      em.init(this, _objectSpread({}, c, {}, opts));
+      ['I18n', 'Utils', 'Config', 'Commands', 'Keymaps', 'Modal', 'Panels', 'Canvas', 'Parser', 'CodeManager', 'UndoManager', 'RichTextEditor', 'DomComponents', ['Components', 'DomComponents'], 'LayerManager', ['Layers', 'LayerManager'], 'CssComposer', ['Css', 'CssComposer'], 'StorageManager', ['Storage', 'StorageManager'], 'AssetManager', ['Assets', 'AssetManager'], 'BlockManager', ['Blocks', 'BlockManager'], 'TraitManager', ['Traits', 'TraitManager'], 'SelectorManager', ['Selectors', 'SelectorManager'], 'StyleManager', ['Styles', 'StyleManager'], 'DeviceManager', ['Devices', 'DeviceManager']].forEach(function (prop) {
+        if (Array.isArray(prop)) {
+          _this[prop[0]] = em.get(prop[1]);
+        } else {
+          _this[prop] = em.get(prop);
+        }
+      }); // Do post render stuff after the iframe is loaded otherwise it'll
       // be empty during tests
 
       em.on('loaded', function () {
@@ -37225,6 +37271,7 @@ var logs = {
     this.set('modules', []);
     this.set('toLoad', []);
     this.set('storables', []);
+    this.set('selected', new Collection());
     this.set('dmode', c.dragMode);
     var el = c.el;
     var log = c.log;
@@ -37382,6 +37429,13 @@ var logs = {
    * @private
    */
   init: function init(editor) {
+    var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+    if (this.destroyed) {
+      this.initialize(opts);
+      this.destroyed = 0;
+    }
+
     this.set('Editor', editor);
   },
   getEditor: function getEditor() {
@@ -37776,7 +37830,8 @@ var logs = {
    */
   stopDefault: function stopDefault() {
     var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var command = this.get('Commands').get(this.config.defaultCommand);
+    var commands = this.get('Commands');
+    var command = commands.get(this.config.defaultCommand);
     if (!command) return;
     command.stop(this, this, opts);
     this.defaultRunning = 0;
@@ -37867,6 +37922,13 @@ var logs = {
    * Destroy editor
    */
   destroyAll: function destroyAll() {
+    var config = this.config;
+    var editor = this.getEditor();
+
+    var _ref = config.grapesjs || {},
+        _ref$editors = _ref.editors,
+        editors = _ref$editors === void 0 ? [] : _ref$editors;
+
     var _this$attributes = this.attributes,
         DomComponents = _this$attributes.DomComponents,
         CssComposer = _this$attributes.CssComposer,
@@ -37875,6 +37937,7 @@ var logs = {
         Canvas = _this$attributes.Canvas,
         Keymaps = _this$attributes.Keymaps,
         RichTextEditor = _this$attributes.RichTextEditor;
+    this.stopDefault();
     DomComponents.clear();
     CssComposer.clear();
     UndoManager.clear().removeAll();
@@ -37884,7 +37947,12 @@ var logs = {
     RichTextEditor.destroy();
     this.view.remove();
     this.stopListening();
-    Object(cash_dom__WEBPACK_IMPORTED_MODULE_2__["default"])(this.config.el).empty().attr(this.attrsOrig);
+    this.clear({
+      silent: true
+    });
+    this.destroyed = 1;
+    editors.splice(editors.indexOf(editor), 1);
+    Object(cash_dom__WEBPACK_IMPORTED_MODULE_2__["default"])(config.el).empty().attr(this.attrsOrig);
   },
   setEditing: function setEditing(value) {
     this.set('editing', value);
@@ -38493,7 +38561,7 @@ var defaultConfig = {
   editors: editors,
   plugins: plugins,
   // Will be replaced on build
-  version: '0.16.3',
+  version: '0.16.12',
 
   /**
    * Initialize the editor with passed options
@@ -38514,7 +38582,9 @@ var defaultConfig = {
     var config = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var els = config.container;
     if (!els) throw new Error("'container' is required");
-    config = _objectSpread({}, defaultConfig, {}, config);
+    config = _objectSpread({}, defaultConfig, {}, config, {
+      grapesjs: this
+    });
     config.el = Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isElement"])(els) ? els : document.querySelector(els);
     var editor = new _editor__WEBPACK_IMPORTED_MODULE_2__["default"](config).init(); // Load plugins
 
@@ -39856,7 +39926,8 @@ __webpack_require__.r(__webpack_exports__);
   removeChildren: function removeChildren(removed) {
     var view = removed.viewLayer;
     if (!view) return;
-    view.remove.apply(view);
+    view.remove();
+    removed.viewLayer = 0;
   },
 
   /**
@@ -44614,7 +44685,10 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
       return this;
     },
     onLoad: function onLoad() {
-      sectors.add(c.sectors);
+      // Use silent as sectors' view will be created and rendered on StyleManager.render
+      sectors.add(c.sectors, {
+        silent: true
+      });
     },
     postRender: function postRender() {
       var elTo = this.getConfig().appendTo;
@@ -45111,7 +45185,6 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
   getLayersFromStyle: function getLayersFromStyle(styleObj) {
     var layers = [];
     var properties = this.properties;
-    var propNames = properties.pluck('property');
     properties.each(function (propModel) {
       var style = styleObj[propModel.get('property')];
       var values = style ? style.split(', ') : [];
@@ -45446,9 +45519,16 @@ var Property = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.Model.extend({
     var complete = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
     var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     var parsed = this.parseValue(value);
-    this.set(parsed, _objectSpread({}, opts, {
-      avoidStore: !complete
-    }));
+    var avoidStore = !complete;
+    !avoidStore && this.set({
+      value: ''
+    }, {
+      avoidStore: avoidStore,
+      silent: true
+    });
+    this.set(parsed, _objectSpread({
+      avoidStore: avoidStore
+    }, opts));
   },
 
   /**
@@ -46843,8 +46923,10 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
 /* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _PropertyComposite__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./PropertyComposite */ "./src/style_manager/model/PropertyComposite.js");
-/* harmony import */ var _Layers__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Layers */ "./src/style_manager/model/Layers.js");
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _PropertyComposite__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./PropertyComposite */ "./src/style_manager/model/PropertyComposite.js");
+/* harmony import */ var _Layers__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Layers */ "./src/style_manager/model/Layers.js");
 
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
@@ -46853,8 +46935,9 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 
 
-/* harmony default export */ __webpack_exports__["default"] = (_PropertyComposite__WEBPACK_IMPORTED_MODULE_1__["default"].extend({
-  defaults: _objectSpread({}, _PropertyComposite__WEBPACK_IMPORTED_MODULE_1__["default"].prototype.defaults, {
+
+/* harmony default export */ __webpack_exports__["default"] = (_PropertyComposite__WEBPACK_IMPORTED_MODULE_2__["default"].extend({
+  defaults: _objectSpread({}, _PropertyComposite__WEBPACK_IMPORTED_MODULE_2__["default"].prototype.defaults, {
     // Array of layers (which contain properties)
     layers: [],
     // The separator used to join layer values
@@ -46867,13 +46950,13 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
   initialize: function initialize() {
     var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    _PropertyComposite__WEBPACK_IMPORTED_MODULE_1__["default"].callParentInit(_PropertyComposite__WEBPACK_IMPORTED_MODULE_1__["default"], this, props, opts);
+    _PropertyComposite__WEBPACK_IMPORTED_MODULE_2__["default"].callParentInit(_PropertyComposite__WEBPACK_IMPORTED_MODULE_2__["default"], this, props, opts);
     var layers = this.get('layers');
-    var layersColl = new _Layers__WEBPACK_IMPORTED_MODULE_2__["default"](layers);
+    var layersColl = new _Layers__WEBPACK_IMPORTED_MODULE_3__["default"](layers);
     layersColl.property = this;
     layersColl.properties = this.get('properties');
     this.set('layers', layersColl);
-    _PropertyComposite__WEBPACK_IMPORTED_MODULE_1__["default"].callInit(this, props, opts);
+    _PropertyComposite__WEBPACK_IMPORTED_MODULE_2__["default"].callInit(this, props, opts);
   },
   getLayers: function getLayers() {
     return this.get('layers');
@@ -46889,11 +46972,25 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
   getValueFromStyle: function getValueFromStyle() {
     var styles = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var layers = this.getLayers().getLayersFromStyle(styles);
-    return new _Layers__WEBPACK_IMPORTED_MODULE_2__["default"](layers).getFullValue();
+    return new _Layers__WEBPACK_IMPORTED_MODULE_3__["default"](layers).getFullValue();
   },
   clearValue: function clearValue() {
     this.getLayers().reset();
-    return _PropertyComposite__WEBPACK_IMPORTED_MODULE_1__["default"].prototype.clearValue.apply(this, arguments);
+    return _PropertyComposite__WEBPACK_IMPORTED_MODULE_2__["default"].prototype.clearValue.apply(this, arguments);
+  },
+  getValueFromTarget: function getValueFromTarget(target) {
+    var _this$attributes = this.attributes,
+        detached = _this$attributes.detached,
+        property = _this$attributes.property,
+        properties = _this$attributes.properties;
+    var style = target.getStyle();
+    var validStyles = {};
+    properties.forEach(function (prop) {
+      var name = prop.get('property');
+      var value = style[name];
+      if (value) validStyles[name] = value;
+    });
+    return !detached ? style[property] : Object(underscore__WEBPACK_IMPORTED_MODULE_1__["keys"])(validStyles).length ? validStyles : '';
   },
 
   /**
@@ -47063,7 +47160,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_1___default.a.View.extend({
   events: {
     click: 'active',
-    'click [data-close-layer]': 'remove',
+    'click [data-close-layer]': 'removeItem',
     'mousedown [data-move-layer]': 'initSorter',
     'touchstart [data-move-layer]': 'initSorter'
   },
@@ -47104,16 +47201,18 @@ __webpack_require__.r(__webpack_exports__);
   initSorter: function initSorter(e) {
     if (this.sorter) this.sorter.startSort(this.el);
   },
-  remove: function remove(e) {
-    if (e && e.stopPropagation) e.stopPropagation();
-    var model = this.model;
-    var collection = model.collection;
+  removeItem: function removeItem(ev) {
+    ev && ev.stopPropagation();
+    this.remove();
+  },
+  remove: function remove() {
+    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var model = this.model,
+        props = this.props;
+    var coll = model.collection;
     var stackModel = this.stackModel;
     backbone__WEBPACK_IMPORTED_MODULE_1___default.a.View.prototype.remove.apply(this, arguments);
-
-    if (collection.contains(model)) {
-      collection.remove(model);
-    }
+    coll && coll.contains(model) && coll.remove(model);
 
     if (stackModel && stackModel.set) {
       stackModel.set({
@@ -47121,8 +47220,10 @@ __webpack_require__.r(__webpack_exports__);
       }, {
         silent: true
       });
-      stackModel.trigger('updateValue');
+      !opts.fromTarget && stackModel.trigger('updateValue');
     }
+
+    props && props.remove();
   },
 
   /**
@@ -47217,10 +47318,12 @@ __webpack_require__.r(__webpack_exports__);
       customValue: propsConfig.customValue,
       propTarget: propsConfig.propTarget,
       onChange: propsConfig.onChange
-    }).render().el;
+    });
+    var propsEl = properties.render().el;
     el.innerHTML = this.template(model);
     el.className = "".concat(pfx, "layer").concat(!preview ? " ".concat(pfx, "no-preview") : '');
-    this.getPropertiesWrapper().appendChild(properties);
+    this.props = properties;
+    this.getPropertiesWrapper().appendChild(propsEl);
     this.updateVisibility();
     this.updatePreview();
     return this;
@@ -47257,7 +47360,8 @@ __webpack_require__.r(__webpack_exports__);
     this.className = "".concat(pfx, "layers ").concat(ppfx, "field");
     this.listenTo(collection, 'add', this.addTo);
     this.listenTo(collection, 'deselectAll', this.deselectAll);
-    this.listenTo(collection, 'reset', this.render);
+    this.listenTo(collection, 'reset', this.reset);
+    this.items = [];
     var em = this.config.em || '';
     var utils = em ? em.get('Utils') : '';
     this.sorter = utils ? new utils.Sorter({
@@ -47311,6 +47415,7 @@ __webpack_require__.r(__webpack_exports__);
       propsConfig: propsConfig
     });
     var rendered = view.render().el;
+    this.items.push(view);
 
     if (fragment) {
       fragment.appendChild(rendered);
@@ -47342,6 +47447,10 @@ __webpack_require__.r(__webpack_exports__);
   deselectAll: function deselectAll() {
     this.$el.find('.' + this.pfx + 'layer').removeClass(this.pfx + 'active');
   },
+  reset: function reset(coll, opts) {
+    this.clearItems(opts);
+    this.render();
+  },
   render: function render() {
     var fragment = document.createDocumentFragment();
     this.$el.empty();
@@ -47352,6 +47461,16 @@ __webpack_require__.r(__webpack_exports__);
     this.$el.attr('class', this.className);
     if (this.sorter) this.sorter.plh = null;
     return this;
+  },
+  remove: function remove() {
+    this.clearItems();
+    backbone__WEBPACK_IMPORTED_MODULE_0___default.a.View.prototype.remove.apply(this, arguments);
+  },
+  clearItems: function clearItems(opts) {
+    this.items.forEach(function (item) {
+      return item.remove(opts);
+    });
+    this.items = [];
   }
 }));
 
@@ -47416,7 +47535,7 @@ __webpack_require__.r(__webpack_exports__);
     var _this = this;
 
     var $el = this.$el;
-    this.properties = [];
+    this.clearItems();
     var fragment = document.createDocumentFragment();
     this.collection.each(function (model) {
       return _this.add(model, fragment);
@@ -47425,6 +47544,16 @@ __webpack_require__.r(__webpack_exports__);
     $el.append(fragment);
     $el.attr('class', "".concat(this.pfx, "properties"));
     return this;
+  },
+  remove: function remove() {
+    backbone__WEBPACK_IMPORTED_MODULE_0___default.a.View.prototype.remove.apply(this, arguments);
+    this.clearItems();
+  },
+  clearItems: function clearItems() {
+    this.properties.forEach(function (item) {
+      return item.remove();
+    });
+    this.properties = [];
   }
 }));
 
@@ -48084,6 +48213,25 @@ var cssGen = new code_manager_model_CssGenerator__WEBPACK_IMPORTED_MODULE_4__["d
     this.listenTo(model, 'change:stackIndex', this.indexChanged);
     this.listenTo(model, 'updateValue', this.inputValueChanged);
     this.delegateEvents();
+    var propsConfig = this.getPropsConfig();
+    this.layers = new _LayersView__WEBPACK_IMPORTED_MODULE_3__["default"]({
+      collection: this.getLayers(),
+      stackModel: model,
+      preview: model.get('preview'),
+      config: this.config,
+      propsConfig: propsConfig
+    });
+
+    var PropertiesView = __webpack_require__(/*! ./PropertiesView */ "./src/style_manager/view/PropertiesView.js").default;
+
+    this.propsView = new PropertiesView({
+      target: this.target,
+      collection: model.get('properties'),
+      stackModel: model,
+      config: this.config,
+      onChange: propsConfig.onChange,
+      propTarget: propsConfig.propTarget
+    });
   },
 
   /**
@@ -48092,21 +48240,27 @@ var cssGen = new code_manager_model_CssGenerator__WEBPACK_IMPORTED_MODULE_4__["d
    * so we gonna check all props and find if it has any difference
    * */
   targetUpdated: function targetUpdated() {
+    var _this = this;
+
+    var data;
+
     if (!this.model.get('detached')) {
       for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
         args[_key] = arguments[_key];
       }
 
-      _PropertyCompositeView__WEBPACK_IMPORTED_MODULE_2__["default"].prototype.targetUpdated.apply(this, args);
+      data = _PropertyCompositeView__WEBPACK_IMPORTED_MODULE_2__["default"].prototype.targetUpdated.apply(this, args);
     } else {
-      var _this$_getTargetData = this._getTargetData(),
-          status = _this$_getTargetData.status;
-
-      this.setStatus(status);
+      data = this._getTargetData();
+      this.setStatus(data.status);
       this.checkVisibility();
-    }
+    } // I have to wait the update of inner properites (like visibility)
+    // before render layers
 
-    this.refreshLayers();
+
+    setTimeout(function () {
+      return _this.refreshLayers(data);
+    });
   },
 
   /**
@@ -48146,13 +48300,16 @@ var cssGen = new code_manager_model_CssGenerator__WEBPACK_IMPORTED_MODULE_4__["d
     })); // In detached mode inputValueChanged will add new 'layer value'
     // to all subprops
 
-    this.inputValueChanged(); // This will set subprops with a new default values
+    this.inputValueChanged({
+      up: 1
+    }); // This will set subprops with a new default values
 
     model.set('stackIndex', layers.indexOf(layer));
   },
   inputValueChanged: function inputValueChanged() {
+    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var model = this.model;
-    this.elementUpdated(); // If not detached I'll just put all the values from layers to property
+    opts.up && this.elementUpdated(); // If not detached I'll just put all the values from layers to property
     // eg. background: layer1Value, layer2Value, layer3Value, ...
 
     if (!model.get('detached')) {
@@ -48237,6 +48394,7 @@ var cssGen = new code_manager_model_CssGenerator__WEBPACK_IMPORTED_MODULE_4__["d
    * Refresh layers
    * */
   refreshLayers: function refreshLayers() {
+    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var layersObj = [];
     var model = this.model,
         em = this.em;
@@ -48246,10 +48404,13 @@ var cssGen = new code_manager_model_CssGenerator__WEBPACK_IMPORTED_MODULE_4__["d
     var target = this.getTarget();
     var valueComput = this.getComputedValue();
     var selected = em.getSelected();
+    var updateOpts = {
+      fromTarget: 1
+    };
     var resultValue, style, targetAlt, targetAltDevice, valueTargetAlt, valueTrgAltDvc; // With detached layers values will be assigned to their properties
 
     if (detached) {
-      style = target ? target.getStyle() : {};
+      style = opts.targetValue || {};
 
       var hasDetachedStyle = function hasDetachedStyle(rule) {
         var name = model.get('properties').at(0).get('property');
@@ -48317,8 +48478,8 @@ var cssGen = new code_manager_model_CssGenerator__WEBPACK_IMPORTED_MODULE_4__["d
       resultValue: resultValue,
       layersObj: layersObj
     }) || layersObj;
-    layers.reset();
-    layers.add(toAdd);
+    layers.reset(null, updateOpts);
+    layers.add(toAdd, updateOpts);
     model.set({
       stackIndex: null
     }, {
@@ -48327,25 +48488,25 @@ var cssGen = new code_manager_model_CssGenerator__WEBPACK_IMPORTED_MODULE_4__["d
   },
   getTargetValue: function getTargetValue() {
     var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var result = _PropertyCompositeView__WEBPACK_IMPORTED_MODULE_2__["default"].prototype.getTargetValue.call(this, opts);
-    var detached = this.model.attributes.detached; // It might happen that the browser split properties on CSSOM parse
+    var model = this.model;
+    var detached = model.attributes.detached;
+    var target = this.getTarget();
+    var result = _PropertyCompositeView__WEBPACK_IMPORTED_MODULE_2__["default"].prototype.getTargetValue.call(this, opts); // It might happen that the browser split properties on CSSOM parse
 
     if (Object(underscore__WEBPACK_IMPORTED_MODULE_1__["isUndefined"])(result) && !detached) {
-      result = this.model.getValueFromStyle(this.getTarget().getStyle());
+      result = model.getValueFromStyle(target.getStyle());
+    } else if (detached) {
+      result = model.getValueFromTarget(target);
     }
 
     return result;
   },
-  onRender: function onRender() {
+  getPropsConfig: function getPropsConfig() {
     var self = this;
-    var model = this.model;
-    var fieldEl = this.el.querySelector('[data-layers-wrapper]');
-
-    var PropertiesView = __webpack_require__(/*! ./PropertiesView */ "./src/style_manager/view/PropertiesView.js").default;
-
-    var propsConfig = {
-      target: this.target,
-      propTarget: this.propTarget,
+    var model = self.model;
+    return {
+      target: self.target,
+      propTarget: self.propTarget,
       // Things to do when a single sub-property is changed
       onChange: function onChange(el, view, opt) {
         var subModel = view.model;
@@ -48367,24 +48528,15 @@ var cssGen = new code_manager_model_CssGenerator__WEBPACK_IMPORTED_MODULE_4__["d
         }
       }
     };
-    var layers = new _LayersView__WEBPACK_IMPORTED_MODULE_3__["default"]({
-      collection: this.getLayers(),
-      stackModel: model,
-      preview: model.get('preview'),
-      config: this.config,
-      propsConfig: propsConfig
-    }).render().el; // Will use it to propogate changes
+  },
+  onRender: function onRender() {
+    var el = this.el,
+        layers = this.layers,
+        propsView = this.propsView;
+    var fieldEl = el.querySelector('[data-layers-wrapper]');
+    propsView.render(); // Will use it to propogate changes
 
-    new PropertiesView({
-      target: this.target,
-      collection: this.model.get('properties'),
-      stackModel: model,
-      config: this.config,
-      onChange: propsConfig.onChange,
-      propTarget: propsConfig.propTarget
-    }).render(); //model.get('properties')
-
-    fieldEl.appendChild(layers);
+    fieldEl.appendChild(layers.render().el);
   }
 }));
 
@@ -48585,11 +48737,9 @@ var clearProp = 'data-clear-style';
    * Triggers when the value of element input/s is changed, so have to update
    * the value of the model which will propogate those changes to the target
    */
-  inputValueChanged: function inputValueChanged(e) {
-    e && e.stopPropagation();
-    this.model.setValue(this.getInputValue(), 1, {
-      fromInput: 1
-    });
+  inputValueChanged: function inputValueChanged(ev) {
+    ev && ev.stopPropagation();
+    this.model.setValueFromInput(this.getInputValue());
     this.elementUpdated();
   },
 
@@ -48666,22 +48816,24 @@ var clearProp = 'data-clear-style';
         value = _this$_getTargetData.value,
         targetData = _babel_runtime_helpers_objectWithoutProperties__WEBPACK_IMPORTED_MODULE_0___default()(_this$_getTargetData, ["status", "value"]);
 
+    var data = _objectSpread({
+      status: status,
+      value: value
+    }, targetData);
+
     this.setStatus(status);
     model.setValue(value, 0, _objectSpread({
       fromTarget: 1
     }, opts));
 
     if (em) {
-      var data = _objectSpread({
-        status: status,
-        value: value
-      }, targetData);
-
       em.trigger('styleManager:change', this, property, value, data);
       em.trigger("styleManager:change:".concat(property), this, value, data);
 
       this._emitUpdate(data);
     }
+
+    return data;
   },
   _emitUpdate: function _emitUpdate() {
     var addData = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -48807,11 +48959,14 @@ var clearProp = 'data-clear-style';
 
     if (!opt.fromInput) {
       this.setValue(value);
-    }
+    } // Avoid target update if the changes comes from it
 
-    this.getTargets().forEach(function (target) {
-      return _this3.__updateTarget(target, opt);
-    });
+
+    if (!opt.fromTarget) {
+      this.getTargets().forEach(function (target) {
+        return _this3.__updateTarget(target, opt);
+      });
+    }
   },
   __updateTarget: function __updateTarget(target) {
     var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -48867,6 +49022,13 @@ var clearProp = 'data-clear-style';
       style[property] = value;
     } else {
       delete style[property];
+    } // Forces to trigger the change (for UndoManager)
+
+
+    if (opts.avoidStore) {
+      style.__ = 1;
+    } else {
+      delete style.__;
     }
 
     target.setStyle(style, opts); // Helper is used by `states` like ':hover' to show its preview
@@ -49023,7 +49185,7 @@ var clearProp = 'data-clear-style';
     var onRender = this.onRender && this.onRender.bind(this);
     onRender && onRender();
     this.setValue(model.get('value'), {
-      targetUpdate: 1
+      fromTarget: 1
     });
   }
 }));
@@ -49219,7 +49381,7 @@ var helperCls = 'hc-state';
     var enable = arguments.length > 1 ? arguments[1] : undefined;
     targets.forEach(function (trg) {
       var el = trg.getEl();
-      el && el.classList[enable ? 'add' : 'remove'](helperCls);
+      el && el.classList && el.classList[enable ? 'add' : 'remove'](helperCls);
     });
   },
 
@@ -50488,7 +50650,9 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
   var um;
   var config;
   var beforeCache;
-  var configDef = {};
+  var configDef = {
+    maximumStackLength: 500
+  };
   return {
     name: 'UndoManager',
 
@@ -50648,7 +50812,8 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
      * um.undo();
      */
     undo: function undo() {
-      !em.isEditing() && um.undo(1);
+      var all = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+      !em.isEditing() && um.undo(all);
       return this;
     },
 
@@ -50670,7 +50835,8 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
      * um.redo();
      */
     redo: function redo() {
-      !em.isEditing() && um.redo(1);
+      var all = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+      !em.isEditing() && um.redo(all);
       return this;
     },
 
@@ -50714,6 +50880,33 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
      */
     getStack: function getStack() {
       return um.stack;
+    },
+
+    /**
+     * Get grouped undo manager stack.
+     * The difference between `getStack` is when you do multiple operations at a time,
+     * like appending multiple components:
+     * `editor.getWrapper().append(`<div>C1</div><div>C2</div>`);`
+     * `getStack` will return a collection length of 2.
+     *  `getStackGroup` instead will group them as a single operation (the first
+     * inserted component will be returned in the list) by returning an array length of 1.
+     * @return {Array}
+     */
+    getStackGroup: function getStackGroup() {
+      var result = [];
+      var inserted = [];
+      this.getStack().forEach(function (item) {
+        var index = item.get('magicFusionIndex');
+
+        if (inserted.indexOf(index) < 0) {
+          inserted.push(index);
+          result.push(item);
+        }
+      });
+      return result;
+    },
+    getPointer: function getPointer() {
+      return this.getStack().pointer;
     },
 
     /**
@@ -55354,13 +55547,11 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
         h = 0,
         un = 'px',
         margI = 5,
-        brdCol = '#62c462',
-        brd = 3,
         method = pos.method;
-    var elDim = dims[pos.index];
-    plh.style.borderColor = 'transparent ' + brdCol;
-    plh.style.borderWidth = brd + un + ' ' + (brd + 2) + un;
-    plh.style.margin = '-' + brd + 'px 0 0';
+    var elDim = dims[pos.index]; // Placeholder orientation
+
+    plh.classList.remove('vertical');
+    plh.classList.add('horizontal');
 
     if (elDim) {
       // If it's not in flow (like 'float' element)
@@ -55369,9 +55560,8 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
         h = elDim[2] - marg * 2 + un;
         t = elDim[0] + marg;
         l = method == 'before' ? elDim[1] - marg : elDim[1] + elDim[3] - marg;
-        plh.style.borderColor = brdCol + ' transparent';
-        plh.style.borderWidth = brd + 2 + un + ' ' + brd + un;
-        plh.style.margin = '0 0 0 -' + brd + 'px';
+        plh.classList.remove('horizontal');
+        plh.classList.add('vertical');
       } else {
         w = elDim[3] + un;
         h = 'auto';
@@ -55449,6 +55639,8 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
     this.selectTargetModel();
     this.toggleSortCursor();
     this.toMove = null;
+    this.eventMove = 0;
+    this.dropModel = null;
 
     if (Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(onEndMove)) {
       var data = {

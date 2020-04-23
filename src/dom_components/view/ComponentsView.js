@@ -13,43 +13,16 @@ export default Backbone.View.extend({
   },
 
   removeChildren(removed, coll, opts = {}) {
-    const { em } = this.config;
-    const tempRemove = opts.temporary;
-
     removed.views.forEach(view => {
       if (!view) return;
-      view.remove.apply(view);
       const { childrenView, scriptContainer } = view;
       childrenView && childrenView.stopListening();
       scriptContainer && scriptContainer.remove();
+      view.remove.apply(view);
     });
 
-    removed.components().forEach(it => this.removeChildren(it, coll, opts));
-
-    if (em && !tempRemove) {
-      // Remove the component from the global list
-      const id = removed.getId();
-      const domc = em.get('DomComponents');
-      delete domc.componentsById[id];
-
-      // Remove all related CSS rules
-      // TODO: remove from the frame container
-      const allRules = em.get('CssComposer').getAll();
-      allRules.remove(
-        allRules.filter(
-          rule => rule.getSelectors().getFullString() === `#${id}`
-        )
-      );
-
-      if (!removed.opt.temporary) {
-        const cm = em.get('Commands');
-        const hasSign = removed.get('style-signature');
-        const optStyle = { target: removed };
-        hasSign && cm.run('core:component-style-clear', optStyle);
-        removed.removed();
-        em.trigger('component:remove', removed);
-      }
-    }
+    const inner = removed.components();
+    inner.forEach(it => this.removeChildren(it, coll, opts));
   },
 
   /**
@@ -86,6 +59,8 @@ export default Backbone.View.extend({
     if (!this.compView) this.compView = require('./ComponentView').default;
     const { config, opts, em } = this;
     const fragment = fragmentEl || null;
+    const { frameView = {} } = config;
+    const sameFrameView = frameView.model && model.getView(frameView.model);
     const dt =
       opts.componentTypes || (em && em.get('DomComponents').getTypes());
     const type = model.get('type');
@@ -97,12 +72,13 @@ export default Backbone.View.extend({
         break;
       }
     }
-
-    const view = new viewObject({
-      model,
-      config,
-      componentTypes: dt
-    });
+    const view =
+      sameFrameView ||
+      new viewObject({
+        model,
+        config,
+        componentTypes: dt
+      });
     let rendered = view.render().el;
 
     if (fragment) {
@@ -134,9 +110,10 @@ export default Backbone.View.extend({
     return rendered;
   },
 
-  resetChildren() {
+  resetChildren(models, { previousModels = [] } = {}) {
     this.parentEl.innerHTML = '';
-    this.collection.each(model => this.addToCollection(model));
+    previousModels.forEach(md => this.removeChildren(md, this.collection));
+    models.each(model => this.addToCollection(model));
   },
 
   render(parent) {

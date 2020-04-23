@@ -727,6 +727,10 @@ export default () => {
         });
 
       model && isEmpty(model.get('status')) && model.set('status', state);
+    },
+
+    allById() {
+      return componentsById;
     }
   };
 };

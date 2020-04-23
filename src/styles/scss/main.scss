@@ -304,17 +304,32 @@ $colorsAll: (one, $primaryColor),
 .#{$app-prefix}placeholder,
 .#{$nv-prefix}placeholder {
   border-style: solid !important;
-  border-color: $colorGreen;
   outline: none;
   box-sizing: border-box;
   transition: top $animSpeed, left $animSpeed,
     width $animSpeed, height $animSpeed;
 }
 
+.#{$app-prefix}placeholder.horizontal,
+.#{$com-prefix}placeholder.horizontal,
+.#{$nv-prefix}placeholder.horizontal {
+  border-color: transparent $placeholderColor;
+  border-width: 3px 5px;
+  margin: -3px 0 0;
+}
+
+.#{$app-prefix}placeholder.vertical,
+.#{$com-prefix}placeholder.vertical,
+.#{$nv-prefix}placeholder.vertical {
+  border-color: $placeholderColor transparent;
+  border-width: 5px 3px;
+  margin: 0 0 0 -3px;
+}
+
 .#{$app-prefix}placeholder-int,
 .#{$com-prefix}placeholder-int,
 .#{$nv-prefix}placeholder-int {
-	background-color: $colorGreen;
+	background-color: $placeholderColor;
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
 	height: 100%; width: 100%;
 	pointer-events: none;

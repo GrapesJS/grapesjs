@@ -19,7 +19,8 @@ describe('ComponentsView', () => {
     model = new Components([], compOpts);
     view = new ComponentsView({
       collection: model,
-      componentTypes: dcomp.componentTypes
+      componentTypes: dcomp.componentTypes,
+      config: { em }
     });
     document.body.innerHTML = '<div id="fixtures"></div>';
     document.body.querySelector('#fixtures').appendChild(view.render().el);

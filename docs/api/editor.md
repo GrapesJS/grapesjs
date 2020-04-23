@@ -37,6 +37,9 @@ editor.on('EVENT-NAME', (some, argument) => {
 -   `component:toggled` - Component selection changed, toggled model is passed as an argument to the callback
 -   `component:type:add` - New component type added, the new type is passed as an argument to the callback
 -   `component:type:update` - Component type updated, the updated type is passed as an argument to the callback
+-   `component:drag:start` - Component drag started. Passed an object, to the callback, containing the `target` (component to drag), `parent` (parent of the component) and `index` (component index in the parent)
+-   `component:drag` - During component drag. Passed the same object as in `component:drag:start` event, but in this case, `parent` and `index` are updated by the current pointer
+-   `component:drag:end` - Component drag ended. Passed the same object as in `component:drag:start` event, but in this case, `parent` and `index` are updated by the final pointer
 
 ### Blocks
 
@@ -93,7 +96,10 @@ editor.on('EVENT-NAME', (some, argument) => {
 
 ### Selectors
 
--   `selector:add` - Triggers when a new selector/class is created
+-   `selector:add` - New selector is add. Passes the new selector as an argument
+-   `selector:remove` - Selector removed. Passes the removed selector as an argument
+-   `selector:update` - Selector updated. Passes the updated selector as an argument
+-   `selector:state` - State changed. Passes the new state value as an argument
 
 ### RTE
 

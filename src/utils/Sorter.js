@@ -966,13 +966,13 @@ export default Backbone.View.extend({
       h = 0,
       un = 'px',
       margI = 5,
-      brdCol = '#62c462',
-      brd = 3,
       method = pos.method;
     var elDim = dims[pos.index];
-    plh.style.borderColor = 'transparent ' + brdCol;
-    plh.style.borderWidth = brd + un + ' ' + (brd + 2) + un;
-    plh.style.margin = '-' + brd + 'px 0 0';
+
+    // Placeholder orientation
+    plh.classList.remove('vertical');
+    plh.classList.add('horizontal');
+
     if (elDim) {
       // If it's not in flow (like 'float' element)
       if (!elDim[4]) {
@@ -980,9 +980,9 @@ export default Backbone.View.extend({
         h = elDim[2] - marg * 2 + un;
         t = elDim[0] + marg;
         l = method == 'before' ? elDim[1] - marg : elDim[1] + elDim[3] - marg;
-        plh.style.borderColor = brdCol + ' transparent';
-        plh.style.borderWidth = brd + 2 + un + ' ' + brd + un;
-        plh.style.margin = '0 0 0 -' + brd + 'px';
+
+        plh.classList.remove('horizontal');
+        plh.classList.add('vertical');
       } else {
         w = elDim[3] + un;
         h = 'auto';
@@ -1055,6 +1055,8 @@ export default Backbone.View.extend({
     this.toggleSortCursor();
 
     this.toMove = null;
+    this.eventMove = 0;
+    this.dropModel = null;
 
     if (isFunction(onEndMove)) {
       const data = {

@@ -1,3 +1,4 @@
+import { keys } from 'underscore';
 import Property from './PropertyComposite';
 import Layers from './Layers';
 
@@ -47,6 +48,24 @@ export default Property.extend({
   clearValue() {
     this.getLayers().reset();
     return Property.prototype.clearValue.apply(this, arguments);
+  },
+
+  getValueFromTarget(target) {
+    const { detached, property, properties } = this.attributes;
+    const style = target.getStyle();
+    const validStyles = {};
+
+    properties.forEach(prop => {
+      const name = prop.get('property');
+      const value = style[name];
+      if (value) validStyles[name] = value;
+    });
+
+    return !detached
+      ? style[property]
+      : keys(validStyles).length
+      ? validStyles
+      : '';
   },
 
   /**

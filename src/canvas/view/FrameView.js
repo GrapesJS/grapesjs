@@ -385,6 +385,7 @@ export default Backbone.View.extend({
     // I need to delegate all events to the parent document
     [
       { event: 'keydown keyup keypress', class: 'KeyboardEvent' },
+      { event: 'mousemove', class: 'MouseEvent' },
       { event: 'wheel', class: 'WheelEvent' }
     ].forEach(obj =>
       obj.event.split(' ').forEach(event => {

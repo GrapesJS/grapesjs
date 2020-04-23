@@ -11,6 +11,8 @@ export default Backbone.Model.extend({
     resetId: 0,
     // Block label
     label: '',
+    // Disable the drag of the block
+    disable: 0,
     // HTML string for the media of the block, eg. SVG icon, image, etc.
     media: '',
     content: '',

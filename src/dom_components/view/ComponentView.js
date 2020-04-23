@@ -87,18 +87,27 @@ export default Backbone.View.extend({
   onDisable() {},
 
   remove() {
-    Backbone.View.prototype.remove.apply(this, arguments);
-    const { model } = this;
-    const frame = this._getFrame() || {};
+    const view = this;
+    Backbone.View.prototype.remove.apply(view, arguments);
+    const { model } = view;
+    const frame = view._getFrame() || {};
     const frameM = frame.model;
     model.components().forEach(comp => {
       const view = comp.getView(frameM);
       view && view.remove();
     });
     const { views } = model;
-    views.splice(views.indexOf(this), 1);
-    this.removed(this._clbObj());
-    return this;
+    views.splice(views.indexOf(view), 1);
+    view.removed(view._clbObj());
+    view.$el.data({ model: '', collection: '', view: '' });
+    delete view.model;
+    delete view.$el;
+    delete view.el.__gjsv;
+    delete view.childrenView;
+    delete view.scriptContainer;
+    delete view.opts;
+    // delete view.el;
+    return view;
   },
 
   handleDragStart(event) {
@@ -474,11 +483,13 @@ export default Backbone.View.extend({
   renderChildren() {
     this.updateContent();
     const container = this.getChildrenContainer();
-    const view = new ComponentsView({
-      collection: this.model.get('components'),
-      config: this.config,
-      componentTypes: this.opts.componentTypes
-    });
+    const view =
+      this.childrenView ||
+      new ComponentsView({
+        collection: this.model.get('components'),
+        config: this.config,
+        componentTypes: this.opts.componentTypes
+      });
 
     view.render(container);
     this.childrenView = view;
@@ -499,6 +510,7 @@ export default Backbone.View.extend({
     if (this.modelOpt.temporary) return this;
     this.renderChildren();
     this.updateScript();
+    setViewEl(this.el, this);
     this.postRender();
 
     return this;
