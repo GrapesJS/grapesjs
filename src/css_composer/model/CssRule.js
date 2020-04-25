@@ -9,7 +9,7 @@ const { CSS } = window;
 export default Backbone.Model.extend(Styleable).extend({
   defaults: {
     // Css selectors
-    selectors: {},
+    selectors: [],
 
     // Additional string css selectors
     selectorsAdd: '',
@@ -48,10 +48,10 @@ export default Backbone.Model.extend(Styleable).extend({
   ensureSelectors() {
     const { em } = this;
     const result = [];
-    const sm = em.get('SelectorManager');
+    const sm = em && em.get('SelectorManager');
     const selectors = this.getSelectors();
     const toInit = Array.isArray(selectors);
-    selectors.forEach(sel => result.push(sm.add(sel)));
+    selectors.forEach(sel => result.push(sm ? sm.add(sel) : sel));
     toInit && this.set('selectors', new Selectors(result));
   },
 
