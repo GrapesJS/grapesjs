@@ -9,7 +9,14 @@ export default Backbone.Collection.extend({
     if (opt && opt.em) this.editor = opt.em;
 
     // This will put the listener post CssComposer.postLoad
-    setTimeout(() => this.on('remove', this.onRemove));
+    setTimeout(() => {
+      this.on('remove', this.onRemove);
+      this.on('add', this.onAdd);
+    });
+  },
+
+  onAdd(model) {
+    model.ensureSelectors();
   },
 
   onRemove(removed) {

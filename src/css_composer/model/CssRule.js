@@ -41,20 +41,18 @@ export default Backbone.Model.extend(Styleable).extend({
 
   initialize(c, opt = {}) {
     this.config = c || {};
-    const em = opt.em;
-    let selectors = this.config.selectors || [];
-    this.em = em;
+    this.em = opt.em;
+    this.ensureSelectors();
+  },
 
-    if (em) {
-      const sm = em.get('SelectorManager');
-      const slct = [];
-      selectors.forEach(selector => {
-        slct.push(sm.add(selector));
-      });
-      selectors = slct;
-    }
-
-    this.set('selectors', new Selectors(selectors));
+  ensureSelectors() {
+    const { em } = this;
+    const result = [];
+    const sm = em.get('SelectorManager');
+    const selectors = this.getSelectors();
+    const toInit = Array.isArray(selectors);
+    selectors.forEach(sel => result.push(sm.add(sel)));
+    toInit && this.set('selectors', new Selectors(result));
   },
 
   /**
