@@ -209,7 +209,7 @@ export default () => {
       } else {
         opt.state = s;
         opt.mediaText = w;
-        opt.selectors = '';
+        opt.selectors = [];
         rule = new CssRule(opt, c);
         rule.get('selectors').add(selectors);
         rules.add(rule);
