@@ -21637,11 +21637,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
       blocks = new _model_Blocks__WEBPACK_IMPORTED_MODULE_3__["default"]([]);
       blocksVisible = new _model_Blocks__WEBPACK_IMPORTED_MODULE_3__["default"]([]);
-      categories = new _model_Categories__WEBPACK_IMPORTED_MODULE_4__["default"]();
-      blocksView = new _view_BlocksView__WEBPACK_IMPORTED_MODULE_5__["default"]({
-        collection: blocksVisible,
-        categories: categories
-      }, c); // Setup the sync between the global and public collections
+      categories = new _model_Categories__WEBPACK_IMPORTED_MODULE_4__["default"](); // Setup the sync between the global and public collections
 
       blocks.listenTo(blocks, 'add', function (model) {
         blocksVisible.add(model);
@@ -21672,12 +21668,22 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
       var blocks = this.getAll();
       !blocks.length && blocks.reset(c.blocks);
     },
+
+    /**
+     * Executed once the main editor instance is rendered
+     * @private
+     */
     postRender: function postRender() {
+      var collection = blocksVisible;
+      blocksView = new _view_BlocksView__WEBPACK_IMPORTED_MODULE_5__["default"]({
+        collection: collection,
+        categories: categories
+      }, c);
       var elTo = this.getConfig().appendTo;
 
       if (elTo) {
         var el = Object(underscore__WEBPACK_IMPORTED_MODULE_1__["isElement"])(elTo) ? elTo : document.querySelector(elTo);
-        el.appendChild(this.render());
+        el.appendChild(this.render(blocksVisible.models));
       }
     },
 
@@ -21801,19 +21807,23 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
       var toRender = blocks || this.getAll().models;
 
       if (opts.external) {
+        var collection = new _model_Blocks__WEBPACK_IMPORTED_MODULE_3__["default"](toRender);
         return new _view_BlocksView__WEBPACK_IMPORTED_MODULE_5__["default"]({
-          collection: new _model_Blocks__WEBPACK_IMPORTED_MODULE_3__["default"](toRender),
+          collection: collection,
           categories: categories
         }, _objectSpread({}, c, {}, opts)).render().el;
       }
 
-      if (!blocksView.rendered) {
-        blocksView.render();
-        blocksView.rendered = 1;
+      if (blocksView) {
+        blocksView.updateConfig(opts);
+        blocksView.collection.reset(toRender);
+
+        if (!blocksView.rendered) {
+          blocksView.render();
+          blocksView.rendered = 1;
+        }
       }
 
-      blocksView.updateConfig(opts);
-      blocksView.collection.reset(toRender);
       return this.getContainer();
     }
   };
@@ -38980,7 +38990,7 @@ var defaultConfig = {
   editors: editors,
   plugins: plugins,
   // Will be replaced on build
-  version: '0.16.13',
+  version: '0.16.14',
 
   /**
    * Initialize the editor with passed options
