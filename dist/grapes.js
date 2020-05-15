@@ -36302,7 +36302,7 @@ Object(utils_ColorPicker__WEBPACK_IMPORTED_MODULE_3__["default"])($);
         chooseText: 'Ok',
         cancelText: '⨯',
         palette: []
-      }, colorPickerConfig, {
+      }, colorPickerConfig, {}, model.get('colorPicker') || {}, {
         move: function move(color) {
           var cl = getColor(color);
           cpStyle.backgroundColor = cl;
@@ -38990,7 +38990,7 @@ var defaultConfig = {
   editors: editors,
   plugins: plugins,
   // Will be replaced on build
-  version: '0.16.14',
+  version: '0.16.15',
 
   /**
    * Initialize the editor with passed options
