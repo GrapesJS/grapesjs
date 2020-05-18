@@ -688,6 +688,7 @@ export default Backbone.Model.extend({
    * Destroy editor
    */
   destroyAll() {
+    console.log('destroyAll!');
     const {
       DomComponents,
       CssComposer,

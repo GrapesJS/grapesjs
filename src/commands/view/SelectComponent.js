@@ -72,6 +72,7 @@ export default {
    * @private
    * */
   toggleSelectComponent(enable) {
+    console.log('toggleSelectComponent!: ', enable);
     const { em } = this;
     const method = enable ? 'on' : 'off';
     const methods = { on, off };
