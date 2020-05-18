@@ -688,7 +688,6 @@ export default Backbone.Model.extend({
    * Destroy editor
    */
   destroyAll() {
-    console.log('destroyAll!');
     const {
       DomComponents,
       CssComposer,
@@ -707,6 +706,8 @@ export default Backbone.Model.extend({
     RichTextEditor.destroy();
     this.view.remove();
     this.stopListening();
+    var command = this.get('Commands').get(this.config.defaultCommand);
+    command.stop(this, this);
     $(this.config.el)
       .empty()
       .attr(this.attrsOrig);

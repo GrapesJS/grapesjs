@@ -434,10 +434,6 @@ export default () => {
         const scroll = top ? scrollTop : scrollLeft;
         const offset = top ? offsetTop : offsetLeft;
 
-        // if (!top) {
-        //   console.log('LEFT', { posLeft: pos[side], scroll, offset }, el);
-        // }
-
         return pos[side] - (scroll - offset) * zoom;
       };
 

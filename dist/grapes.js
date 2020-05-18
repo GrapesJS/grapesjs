@@ -22458,10 +22458,7 @@ var _window = window,
             scrollLeft = _ref2$scrollLeft === void 0 ? 0 : _ref2$scrollLeft;
 
         var scroll = top ? scrollTop : scrollLeft;
-        var offset = top ? offsetTop : offsetLeft; // if (!top) {
-        //   console.log('LEFT', { posLeft: pos[side], scroll, offset }, el);
-        // }
-
+        var offset = top ? offsetTop : offsetLeft;
         return pos[side] - (scroll - offset) * zoom;
       };
 
@@ -27323,7 +27320,10 @@ var showOffsets;
     em[method]('frame:updated', this.onFrameUpdated, this);
     em.get('Canvas').getFrames().forEach(function (frame) {
       var view = frame.view;
-      trigger(view.getWindow(), view.getBody());
+
+      if (view.getDoc()) {
+        trigger(view.getWindow(), view.getBody());
+      }
     });
   },
 
@@ -37884,6 +37884,8 @@ var logs = {
     RichTextEditor.destroy();
     this.view.remove();
     this.stopListening();
+    var command = this.get('Commands').get(this.config.defaultCommand);
+    command.stop(this, this);
     Object(cash_dom__WEBPACK_IMPORTED_MODULE_2__["default"])(this.config.el).empty().attr(this.attrsOrig);
   },
   setEditing: function setEditing(value) {
@@ -38493,7 +38495,7 @@ var defaultConfig = {
   editors: editors,
   plugins: plugins,
   // Will be replaced on build
-  version: '0.16.3',
+  version: '0.16.9',
 
   /**
    * Initialize the editor with passed options
@@ -41334,8 +41336,7 @@ var parseNode = function parseNode(el) {
         condition && (_model.mediaText = condition);
         result.push(_model);
       }
-    } // console.log('LAST PUSH', result[result.length - 1]);
-
+    }
   }
 
   return result;

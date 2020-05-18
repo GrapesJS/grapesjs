@@ -197,7 +197,6 @@ export const parseNode = el => {
         result.push(model);
       }
     }
-    // console.log('LAST PUSH', result[result.length - 1]);
   }
 
   return result;
