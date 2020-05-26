@@ -781,6 +781,5 @@ export default {
     this.onOut();
     this.toggleToolsEl();
     editor && editor.stopCommand('resize');
-    this.editor = 0;
   }
 };
