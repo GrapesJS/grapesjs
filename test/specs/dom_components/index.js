@@ -6,7 +6,7 @@ import ComponentsView from './view/ComponentsView';
 import ComponentTextView from './view/ComponentTextView';
 import ComponentImageView from './view/ComponentImageView';
 import Editor from 'editor/model/Editor';
-import utils from './../test_utils.js';
+import utils from './../../test_utils.js';
 
 describe('DOM Components', () => {
   describe('Main', () => {
@@ -266,14 +266,5 @@ describe('DOM Components', () => {
       expect(comp.get('type')).toBe(id);
       expect(comp.get('editable')).toBe(1);
     });
-  });
-
-  ComponentModels.run();
-
-  describe('Views', () => {
-    ComponentView.run();
-    ComponentsView.run();
-    ComponentTextView.run();
-    ComponentImageView.run();
   });
 });

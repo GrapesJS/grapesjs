@@ -55,7 +55,12 @@ export default Backbone.View.extend({
    * @return   void
    * */
   updateAttributes() {
-    this.$el.attr(this.model.get('attributes'));
+    const { em, model, $el } = this;
+    const attr = model.get('attributes') || {};
+    const title = em && em.t && em.t(`panels.buttons.titles.${model.id}`);
+    $el.attr(attr);
+    title && $el.attr({ title });
+
     this.updateClassName();
   },
 
@@ -132,10 +137,10 @@ export default Backbone.View.extend({
 
     if (this.model.get('disable')) return;
 
-    this.toogleActive();
+    this.toggleActive();
   },
 
-  toogleActive() {
+  toggleActive() {
     const { model } = this;
     const { active, togglable } = model.attributes;
 

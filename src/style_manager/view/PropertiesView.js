@@ -40,16 +40,29 @@ export default Backbone.View.extend({
     view.render();
     const rendered = view.el;
     this.properties.push(view);
+    view.updateVisibility();
 
     appendAtIndex(appendTo, rendered, opts.at);
   },
 
   render() {
-    this.properties = [];
+    const { $el } = this;
+    this.clearItems();
     const fragment = document.createDocumentFragment();
     this.collection.each(model => this.add(model, fragment));
-    this.$el.append(fragment);
-    this.$el.attr('class', `${this.pfx}properties`);
+    $el.empty();
+    $el.append(fragment);
+    $el.attr('class', `${this.pfx}properties`);
     return this;
+  },
+
+  remove() {
+    Backbone.View.prototype.remove.apply(this, arguments);
+    this.clearItems();
+  },
+
+  clearItems() {
+    this.properties.forEach(item => item.remove());
+    this.properties = [];
   }
 });

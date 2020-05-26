@@ -90,6 +90,8 @@ $guide_pad: 5px;
   }
 
   &badge {
+    white-space: nowrap;
+
     &__icon {
       vertical-align: middle;
       display: inline-block;
@@ -103,6 +105,88 @@ $guide_pad: 5px;
     &__name {
       display: inline-block;
       vertical-align: middle;
+    }
+  }
+
+  &frame-wrapper {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    right: 0;
+    margin: auto;
+
+    &--anim {
+      transition: width $frameAnimation, height $frameAnimation;
+    }
+
+    &__top {
+      transform: translateY(-100%) translateX(-50%);
+      display: flex;
+      padding: 5px 0;
+      position: absolute;
+      width: 100%;
+      left: 50%;
+      top: 0;
+
+      &-r {
+        margin-left: auto;
+      }
+    }
+
+    &__left {
+      position: absolute;
+      left: 0;
+      transform: translateX(-100%) translateY(-50%);
+      height: 100%;
+      top: 50%;
+    }
+
+    &__bottom {
+      position: absolute;
+      bottom: 0;
+      transform: translateY(100%) translateX(-50%);
+      width: 100%;
+      left: 50%;
+    }
+
+    &__right {
+      position: absolute;
+      right: 0;
+      transform: translateX(100%) translateY(-50%);
+      height: 100%;
+      top: 50%;
+    }
+
+    &__icon {
+      width: 24px;
+      cursor: pointer;
+
+      > svg {
+        fill: currentColor;
+      }
+    }
+  }
+}
+
+.#{$app-prefix} {
+  &padding-v,
+  &fixedpadding-v {
+    &-top {
+      width: 100%;
+      top: 0;
+      left: 0;
+    }
+    &-right {
+      right: 0;
+    }
+    &-bottom {
+      width: 100%;
+      left: 0;
+      bottom: 0;
+    }
+    &-left {
+      left: 0;
     }
   }
 }
@@ -151,6 +235,8 @@ $guide_pad: 5px;
     outline: 1px solid $colorBlue;
     outline-offset: -1px;
     pointer-events: none;
+    width: 100%;
+    height: 100%;
   }
 
   .#{$app-prefix}highlighter-warning {
@@ -161,7 +247,7 @@ $guide_pad: 5px;
     outline: 3px solid $colorBlue;
   }
 
-  ##{$app-prefix}tools {
+  ##{$app-prefix}tools, .#{$app-prefix}tools {
     width: 100%;
     height: 100%;
     position: absolute;
@@ -203,6 +289,7 @@ $guide_pad: 5px;
 .#{$app-prefix}toolbar {
   position: absolute;
   background-color: $colorBlue;
+  white-space: nowrap;
   color: white;
   z-index: 10;
   top: 0;

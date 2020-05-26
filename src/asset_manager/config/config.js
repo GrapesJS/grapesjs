@@ -49,12 +49,6 @@ export default {
   // }
   autoAdd: 1,
 
-  // Text on upload input
-  uploadText: 'Drop files here or click to upload',
-
-  // Label for the add button
-  addBtnText: 'Add image',
-
   // To upload your assets, the module uses Fetch API, with this option you
   // overwrite it with something else.
   // It should return a Promise
@@ -96,12 +90,6 @@ export default {
   // Any dropzone content to append inside dropzone element
   dropzoneContent: '',
 
-  // Default title for the asset manager modal
-  modalTitle: 'Select Image',
-
-  //Default placeholder for input
-  inputPlaceholder: 'http://path/to/the/image.jpg',
-
   //method called before upload, on return false upload is canceled.
   // @example
   // beforeUpload: (files) => {
@@ -109,5 +97,8 @@ export default {
   //   var stopUpload = true;
   //   if(stopUpload) return false;
   // }
-  beforeUpload: null
+  beforeUpload: null,
+
+  // Toggles visiblity of assets url input
+  showUrlInput: true
 };

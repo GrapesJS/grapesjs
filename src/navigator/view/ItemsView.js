@@ -1,5 +1,6 @@
 import Backbone from 'backbone';
 import ItemView from './ItemView';
+import { eventDrag } from 'dom_components/model/Component';
 
 export default Backbone.View.extend({
   initialize(o = {}) {
@@ -11,6 +12,7 @@ export default Backbone.View.extend({
     this.ppfx = config.pStylePrefix || '';
     this.pfx = config.stylePrefix || '';
     this.parent = o.parent;
+    this.parentView = o.parentView;
     const pfx = this.pfx;
     const ppfx = this.ppfx;
     const parent = this.parent;
@@ -28,9 +30,10 @@ export default Backbone.View.extend({
         containerSel: `.${this.className}`,
         itemSel: `.${pfx}layer`,
         ignoreViewChildren: 1,
-        onEndMove(created, sorter) {
+        onEndMove(created, sorter, data) {
           const srcModel = sorter.getSourceModel();
           em.setSelected(srcModel, { forceChange: 1 });
+          em.trigger(`${eventDrag}:end`, data);
         },
         avoidSelectOnEnd: 1,
         nested: 1,
@@ -49,7 +52,8 @@ export default Backbone.View.extend({
   removeChildren(removed) {
     const view = removed.viewLayer;
     if (!view) return;
-    view.remove.apply(view);
+    view.remove();
+    removed.viewLayer = 0;
   },
 
   /**
@@ -72,13 +76,14 @@ export default Backbone.View.extend({
    * @return Object Object created
    * */
   addToCollection(model, fragmentEl, index) {
-    const level = this.level;
+    const { level, parentView } = this;
     var fragment = fragmentEl || null;
     var viewObject = ItemView;
 
     var view = new viewObject({
       level,
       model,
+      parentView,
       config: this.config,
       sorter: this.sorter,
       isCountable: this.isCountable,

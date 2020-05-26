@@ -12,6 +12,7 @@ var defaultOpts = {
   onStart: null,
   onMove: null,
   onEnd: null,
+  onUpdateContainer: () => {},
 
   // Resize unit step
   step: 1,
@@ -154,6 +155,7 @@ class Resizer {
     this.onStart = opts.onStart;
     this.onMove = opts.onMove;
     this.onEnd = opts.onEnd;
+    this.onUpdateContainer = opts.onUpdateContainer;
   }
 
   /**
@@ -365,11 +367,22 @@ class Resizer {
     const { style } = container;
 
     if (!opts.avoidContainerUpdate && el) {
-      const toUpdate = ['left', 'top', 'width', 'height'];
-      const rectEl = this.getElementPos(el, { target: 'container' });
-      toUpdate.forEach(pos => (style[pos] = `${rectEl[pos]}px`));
+      // On component resize container fits the tool,
+      // to check if this update is required somewhere else point
+      // const toUpdate = ['left', 'top', 'width', 'height'];
+      // const rectEl = this.getElementPos(el, { target: 'container' });
+      // toUpdate.forEach(pos => (style[pos] = `${rectEl[pos]}px`));
       if (opt.forceShow) style.display = 'block';
     }
+
+    this.onUpdateContainer({
+      el: container,
+      resizer: this,
+      opts: {
+        ...opts,
+        ...opt
+      }
+    });
   }
 
   /**

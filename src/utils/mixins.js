@@ -1,4 +1,4 @@
-import { keys, isUndefined, isElement } from 'underscore';
+import { keys, isUndefined, isElement, isArray } from 'underscore';
 
 const elProt = window.Element.prototype;
 const matches =
@@ -6,6 +6,36 @@ const matches =
   elProt.webkitMatchesSelector ||
   elProt.mozMatchesSelector ||
   elProt.msMatchesSelector;
+
+/**
+ * Import styles asynchronously
+ * @param {String|Array<String>} styles
+ */
+const appendStyles = (styles, opts = {}) => {
+  const stls = isArray(styles) ? [...styles] : [styles];
+
+  if (stls.length) {
+    const href = stls.shift();
+
+    if (
+      href &&
+      (!opts.unique || !document.querySelector(`link[href="${href}"]`))
+    ) {
+      const { head } = document;
+      const link = document.createElement('link');
+      link.href = href;
+      link.rel = 'stylesheet';
+
+      if (opts.prepand) {
+        head.insertBefore(link, head.firstChild);
+      } else {
+        head.appendChild(link);
+      }
+    }
+
+    appendStyles(stls);
+  }
+};
 
 /**
  * Returns shallow diff between 2 objects
@@ -181,7 +211,14 @@ const getKeyCode = ev => ev.which || ev.keyCode;
 const getKeyChar = ev => String.fromCharCode(getKeyCode(ev));
 const isEscKey = ev => getKeyCode(ev) === 27;
 
-const capitalize = str => str.charAt(0).toUpperCase() + str.substring(1);
+const capitalize = str => str && str.charAt(0).toUpperCase() + str.substring(1);
+const isComponent = obj => obj && obj.toHTML;
+const isRule = obj => obj && obj.toCSS;
+
+const getViewEl = el => el.__gjsv;
+const setViewEl = (el, view) => {
+  el.__gjsv = view;
+};
 
 export {
   on,
@@ -201,5 +238,10 @@ export {
   normalizeFloat,
   getPointerEvent,
   getUnitFromValue,
-  capitalize
+  capitalize,
+  getViewEl,
+  setViewEl,
+  appendStyles,
+  isComponent,
+  isRule
 };

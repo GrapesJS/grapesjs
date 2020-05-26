@@ -6,7 +6,6 @@ module.exports = {
   title: 'GrapesJS',
   description: 'GrapesJS documentation',
   base: '/docs/',
-  ga: 'UA-74284223-1',
   serviceWorker: false, // Enable Service Worker for offline usage
   head: [
     ['link', { rel: 'icon', href: '/logo-icon.png' }],
@@ -58,6 +57,7 @@ module.exports = {
       '/api/': [
         '',
         ['/api/editor', 'Editor'],
+        ['/api/i18n', 'I18n'],
         ['/api/canvas', 'Canvas'],
         ['/api/assets', 'Asset Manager'],
         ['/api/block_manager', 'Block Manager'],
@@ -88,6 +88,7 @@ module.exports = {
             ['/modules/Commands', 'Commands'],
             ['/modules/Components', 'Components'],
             ['/modules/Components-js', 'Components & JS'],
+            ['/modules/I18n', 'I18n'],
             ['/modules/Traits', 'Traits'],
             ['/modules/Style-manager', 'Style Manager'],
             ['/modules/Storage', 'Storage Manager'],
@@ -104,4 +105,7 @@ module.exports = {
       ],
     }
   },
+  plugins: [
+    [ '@vuepress/google-analytics', { ga: 'UA-74284223-1' } ],
+  ],
 }

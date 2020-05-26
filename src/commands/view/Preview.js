@@ -1,9 +1,11 @@
 import { each } from 'underscore';
 
+const cmdVis = 'sw-visibility';
+
 export default {
   getPanels(editor) {
     if (!this.panels) {
-      this.panels = editor.Panels.getPanelsEl();
+      this.panels = editor.Panels.getPanels();
     }
 
     return this.panels;
@@ -17,8 +19,14 @@ export default {
 
   run(editor, sender) {
     this.sender = sender;
-    editor.stopCommand('sw-visibility');
+
+    if (!this.shouldRunSwVisibility) {
+      this.shouldRunSwVisibility = editor.Commands.isActive(cmdVis);
+    }
+
+    this.shouldRunSwVisibility && editor.stopCommand(cmdVis);
     editor.getModel().stopDefault();
+
     const panels = this.getPanels(editor);
     const canvas = editor.Canvas.getElement();
     const editorEl = editor.getEl();
@@ -34,7 +42,9 @@ export default {
 
     this.helper.style.display = 'inline-block';
     this.tglPointers(editor);
-    panels.style.display = 'none';
+
+    panels.forEach(panel => panel.set('visible', false));
+
     const canvasS = canvas.style;
     canvasS.width = '100%';
     canvasS.height = '100%';
@@ -49,9 +59,15 @@ export default {
     const { sender = {} } = this;
     sender.set && sender.set('active', 0);
     const panels = this.getPanels(editor);
-    editor.runCommand('sw-visibility');
+
+    if (this.shouldRunSwVisibility) {
+      editor.runCommand(cmdVis);
+      this.shouldRunSwVisibility = false;
+    }
+
     editor.getModel().runDefault();
-    panels.style.display = '';
+    panels.forEach(panel => panel.set('visible', true));
+
     const canvas = editor.Canvas.getElement();
     canvas.setAttribute('style', '');
 

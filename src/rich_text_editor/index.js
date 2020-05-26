@@ -32,7 +32,7 @@ import defaults from './config/config';
 
 export default () => {
   let config = {};
-  let toolbar, actions, lastEl, globalRte;
+  let toolbar, actions, lastEl, lastElPos, globalRte;
 
   const hideToolbar = () => {
     const style = toolbar.style;
@@ -83,6 +83,16 @@ export default () => {
       return this;
     },
 
+    destroy() {
+      const { customRte } = this;
+      globalRte && globalRte.destroy();
+      customRte && customRte.destroy && customRte.destroy();
+      toolbar = 0;
+      globalRte = 0;
+      this.actionbar = 0;
+      this.actions = 0;
+    },
+
     /**
      * Post render callback
      * @param  {View} ev
@@ -105,11 +115,13 @@ export default () => {
       const pfx = this.pfx;
       const actionbarContainer = toolbar;
       const actionbar = this.actionbar;
-      const actions = this.actions || config.actions;
+      const actions = this.actions || [...config.actions];
       const classes = {
         actionbar: `${pfx}actionbar`,
         button: `${pfx}action`,
-        active: `${pfx}active`
+        active: `${pfx}active`,
+        inactive: `${pfx}inactive`,
+        disabled: `${pfx}disabled`
       };
       const rte = new RichTextEditor({
         el,
@@ -165,6 +177,32 @@ export default () => {
      *     }
      *    }
      *   })
+     * // An example with state
+     * const isValidAnchor = (rte) => {
+     *   // a utility function to help determine if the selected is a valid anchor node
+     *   const anchor = rte.selection().anchorNode;
+     *   const parentNode  = anchor && anchor.parentNode;
+     *   const nextSibling = anchor && anchor.nextSibling;
+     *   return (parentNode && parentNode.nodeName == 'A') || (nextSibling && nextSibling.nodeName == 'A')
+     * }
+     * rte.add('toggleAnchor', {
+     *   icon: `<span style="transform:rotate(45deg)">&supdsub;</span>`,
+     *   state: (rte, doc) => {
+     *    if (rte && rte.selection()) {
+     *      // `btnState` is a integer, -1 for disabled, 0 for inactive, 1 for active
+     *      return isValidAnchor(rte) ? btnState.ACTIVE : btnState.INACTIVE;
+     *    } else {
+     *      return btnState.INACTIVE;
+     *    }
+     *   },
+     *   result: (rte, action) => {
+     *     if (isValidAnchor(rte)) {
+     *       rte.exec('unlink');
+     *     } else {
+     *       rte.insertHTML(`<a class="link" href="">${rte.selection()}</a>`);
+     *     }
+     *   }
+     * })
      */
     add(name, action = {}) {
       action.name = name;
@@ -234,26 +272,13 @@ export default () => {
     updatePosition() {
       const un = 'px';
       const canvas = config.em.get('Canvas');
-      const pos = canvas.getTargetToElementDim(toolbar, lastEl, {
+      const { style } = toolbar;
+      const pos = canvas.getTargetToElementFixed(lastEl, toolbar, {
         event: 'rteToolbarPosUpdate'
       });
 
-      if (pos) {
-        if (config.adjustToolbar) {
-          const frameOffset = canvas.getCanvasView().getFrameOffset();
-          // Move the toolbar down when the top canvas edge is reached
-          if (
-            pos.top <= pos.canvasTop &&
-            !(pos.elementHeight + pos.targetHeight >= frameOffset.height)
-          ) {
-            pos.top = pos.elementTop + pos.elementHeight;
-          }
-        }
-
-        const toolbarStyle = toolbar.style;
-        toolbarStyle.top = pos.top + un;
-        toolbarStyle.left = pos.left + un;
-      }
+      style.top = pos.top + un;
+      style.left = 0 + un;
     },
 
     /**
@@ -264,16 +289,19 @@ export default () => {
      * */
     enable(view, rte) {
       lastEl = view.el;
+      const canvas = config.em.get('Canvas');
       const em = config.em;
       const el = view.getChildrenContainer();
       const customRte = this.customRte;
+      lastElPos = canvas.getElementPos(lastEl);
 
       toolbar.style.display = '';
       rte = customRte ? customRte.enable(el, rte) : this.initRte(el).enable();
 
       if (em) {
         setTimeout(this.updatePosition.bind(this), 0);
-        const event = 'change:canvasOffset canvasScroll';
+        const event =
+          'change:canvasOffset canvasScroll frame:scroll component:update';
         em.off(event, this.updatePosition, this);
         em.on(event, this.updatePosition, this);
         em.trigger('rte:enable', view, rte);

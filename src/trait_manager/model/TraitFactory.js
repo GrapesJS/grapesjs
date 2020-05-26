@@ -21,18 +21,6 @@ export default (config = {}) => ({
           break;
       }
 
-      // Define placeholder
-      switch (prop) {
-        case 'title':
-        case 'alt':
-        case 'id':
-          obj.placeholder = config.labelPlhText;
-          break;
-        case 'href':
-          obj.placeholder = config.labelPlhHref;
-          break;
-      }
-
       // Define options
       switch (prop) {
         case 'target':

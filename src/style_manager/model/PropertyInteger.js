@@ -21,7 +21,8 @@ export default Property.extend({
     max: ''
   },
 
-  init() {
+  initialize(props = {}, opts = {}) {
+    Property.callParentInit(Property, this, props, opts);
     const unit = this.get('unit');
     const units = this.get('units');
     this.input = new InputNumber({ model: this });
@@ -29,6 +30,7 @@ export default Property.extend({
     if (units.length && !unit) {
       this.set('unit', units[0]);
     }
+    Property.callInit(this, props, opts);
   },
 
   clearValue(opts = {}) {

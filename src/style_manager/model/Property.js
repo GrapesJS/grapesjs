@@ -61,7 +61,7 @@ const Property = Backbone.Model.extend(
      * @return {this}
      */
     clearValue(opts = {}) {
-      this.set({ value: undefined }, opts);
+      this.set({ value: undefined, status: '' }, opts);
       return this;
     },
 
@@ -73,14 +73,9 @@ const Property = Backbone.Model.extend(
      */
     setValue(value, complete = 1, opts = {}) {
       const parsed = this.parseValue(value);
-      this.set(parsed, { ...opts, avoidStore: 1 });
-
-      // It's important to set an empty value, otherwise the
-      // UndoManager won't see the change
-      if (complete) {
-        this.set('value', '', opts);
-        this.set(parsed, opts);
-      }
+      const avoidStore = !complete;
+      !avoidStore && this.set({ value: '' }, { avoidStore, silent: true });
+      this.set(parsed, { avoidStore, ...opts });
     },
 
     /**
@@ -143,6 +138,42 @@ const Property = Backbone.Model.extend(
     },
 
     /**
+     * Helper function to safely split a string of values.
+     * Useful when style values are inside functions
+     * eg:
+     * -> input: 'value(1,2,4), 123, value(4,5)' -- default separator: ','
+     * -> output: ['value(1,2,4)', '123', 'value(4,5)']
+     * @param {String} values Values to split
+     * @param {String} [separator] Separator
+     */
+    splitValues(values, separator = ',') {
+      const res = [];
+      const op = '(';
+      const cl = ')';
+      let curr = '';
+      let acc = 0;
+
+      (values || '').split('').forEach(str => {
+        if (str == op) {
+          acc++;
+          curr = curr + op;
+        } else if (str == cl && acc > 0) {
+          acc--;
+          curr = curr + cl;
+        } else if (str === separator && acc == 0) {
+          res.push(curr);
+          curr = '';
+        } else {
+          curr = curr + str;
+        }
+      });
+
+      curr !== '' && res.push(curr);
+
+      return res.map(i => i.trim());
+    },
+
+    /**
      * Get the default value
      * @return {string}
      * @private
@@ -161,8 +192,13 @@ const Property = Backbone.Model.extend(
      */
     getFullValue(val) {
       const fn = this.get('functionName');
+      const def = this.getDefaultValue();
       let value = isUndefined(val) ? this.get('value') : val;
-      const hasValue = !isUndefined(value);
+      const hasValue = !isUndefined(value) && value !== '';
+
+      if (value && def && value === def) {
+        return def;
+      }
 
       if (fn && hasValue) {
         value = `${fn}(${value})`;

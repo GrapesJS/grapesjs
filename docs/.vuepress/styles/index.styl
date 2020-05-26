@@ -1,9 +1,3 @@
-$accentColor = #e2627f
-$accentColor = #e67891
-$navBarColor = white
-$scrollBarSize = 8px
-$pageWidth = 900px
-
 .img-ctr {
   margin: 0 auto;
   display: block;
@@ -20,7 +14,11 @@ $pageWidth = 900px
   }
 
   .site-name {
-    color: $navBarColor;
+    color: $navBarColor !important;
+  }
+
+  .links {
+    background-color: transparent !important;
   }
 }
 
@@ -31,7 +29,7 @@ $pageWidth = 900px
 @media (min-width: 719px) {
   .nav-links a:hover,
   .nav-links a.router-link-active {
-      color: #ffeff2;
+      color: #ffeff2 !important;
   }
 }
 

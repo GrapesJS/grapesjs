@@ -37,6 +37,9 @@ editor.on('EVENT-NAME', (some, argument) => {
 -   `component:toggled` - Component selection changed, toggled model is passed as an argument to the callback
 -   `component:type:add` - New component type added, the new type is passed as an argument to the callback
 -   `component:type:update` - Component type updated, the updated type is passed as an argument to the callback
+-   `component:drag:start` - Component drag started. Passed an object, to the callback, containing the `target` (component to drag), `parent` (parent of the component) and `index` (component index in the parent)
+-   `component:drag` - During component drag. Passed the same object as in `component:drag:start` event, but in this case, `parent` and `index` are updated by the current pointer
+-   `component:drag:end` - Component drag ended. Passed the same object as in `component:drag:start` event, but in this case, `parent` and `index` are updated by the final pointer
 
 ### Blocks
 
@@ -93,7 +96,10 @@ editor.on('EVENT-NAME', (some, argument) => {
 
 ### Selectors
 
--   `selector:add` - Triggers when a new selector/class is created
+-   `selector:add` - New selector is add. Passes the new selector as an argument
+-   `selector:remove` - Selector removed. Passes the removed selector as an argument
+-   `selector:update` - Selector updated. Passes the updated selector as an argument
+-   `selector:state` - State changed. Passes the new state value as an argument
 
 ### RTE
 
@@ -151,6 +157,7 @@ Returns CSS built inside canvas
 ### Parameters
 
 -   `opts` **[Object][3]** Options (optional, default `{}`)
+    -   `opts.avoidProtected` **[Boolean][4]** Don't include protected CSS (optional, default `false`)
 
 Returns **[string][2]** CSS string
 
@@ -178,7 +185,7 @@ Set components inside editor's canvas. This method overrides actual components
 
 ### Parameters
 
--   `components` **([Array][4]&lt;[Object][3]> | [Object][3] \| [string][2])** HTML string or components model
+-   `components` **([Array][5]&lt;[Object][3]> | [Object][3] \| [string][2])** HTML string or components model
 
 ### Examples
 
@@ -200,9 +207,9 @@ Add components
 
 ### Parameters
 
--   `components` **([Array][4]&lt;[Object][3]> | [Object][3] \| [string][2])** HTML string or components model
+-   `components` **([Array][5]&lt;[Object][3]> | [Object][3] \| [string][2])** HTML string or components model
 -   `opts` **[Object][3]** Options
-    -   `opts.avoidUpdateStyle` **[Boolean][5]** If the HTML string contains styles,
+    -   `opts.avoidUpdateStyle` **[Boolean][4]** If the HTML string contains styles,
         by default, they will be created and, if already exist, updated. When this option
         is true, styles already created will not be updated. (optional, default `false`)
 
@@ -218,7 +225,7 @@ editor.addComponents({
 });
 ```
 
-Returns **[Array][4]&lt;Component>** 
+Returns **[Array][5]&lt;Component>** 
 
 ## getStyle
 
@@ -232,7 +239,7 @@ Set style inside editor's canvas. This method overrides actual style
 
 ### Parameters
 
--   `style` **([Array][4]&lt;[Object][3]> | [Object][3] \| [string][2])** CSS string or style model
+-   `style` **([Array][5]&lt;[Object][3]> | [Object][3] \| [string][2])** CSS string or style model
 
 ### Examples
 
@@ -257,7 +264,7 @@ Returns **Model**
 
 Returns an array of all selected components
 
-Returns **[Array][4]** 
+Returns **[Array][5]** 
 
 ## getSelectedToStyle
 
@@ -277,7 +284,7 @@ Select a component
 
 -   `el` **(Component | [HTMLElement][6])** Component to select
 -   `opts` **[Object][3]?** Options
-    -   `opts.scroll` **[Boolean][5]?** Scroll canvas to the selected element
+    -   `opts.scroll` **[Boolean][4]?** Scroll canvas to the selected element
 
 ### Examples
 
@@ -296,7 +303,7 @@ Add component to selection
 
 ### Parameters
 
--   `el` **(Component | [HTMLElement][6] \| [Array][4])** Component to select
+-   `el` **(Component | [HTMLElement][6] \| [Array][5])** Component to select
 
 ### Examples
 
@@ -312,7 +319,7 @@ Remove component from selection
 
 ### Parameters
 
--   `el` **(Component | [HTMLElement][6] \| [Array][4])** Component to select
+-   `el` **(Component | [HTMLElement][6] \| [Array][5])** Component to select
 
 ### Examples
 
@@ -328,7 +335,7 @@ Toggle component selection
 
 ### Parameters
 
--   `el` **(Component | [HTMLElement][6] \| [Array][4])** Component to select
+-   `el` **(Component | [HTMLElement][6] \| [Array][5])** Component to select
 
 ### Examples
 
@@ -537,6 +544,30 @@ editor.log('Something done!', { ns: 'from-plugin-x', level: 'info' });
 
 Returns **this** 
 
+## t
+
+Translate label
+
+### Parameters
+
+-   `args` **...any** 
+-   `key` **[String][2]** Label to translate
+-   `opts` **[Object][3]?** Options for the translation
+    -   `opts.params` **[Object][3]?** Params for the translation
+    -   `opts.noWarn` **[Boolean][4]?** Avoid warnings in case of missing resources
+
+### Examples
+
+```javascript
+editor.t('msg');
+// use params
+editor.t('msg2', { params: { test: 'hello' } });
+// custom local
+editor.t('msg2', { params: { test: 'hello' }, l: 'it' });
+```
+
+Returns **[String][2]** 
+
 ## on
 
 Attach event
@@ -596,9 +627,9 @@ Returns **[HTMLElement][6]**
 
 [3]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
 
-[5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
 [6]: https://developer.mozilla.org/docs/Web/HTML/Element
 

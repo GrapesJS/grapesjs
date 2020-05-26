@@ -35,6 +35,4 @@ describe('Code Manager', () => {
       expect(obj.getViewer('test')).toEqual('view');
     });
   });
-
-  Models.run();
 });

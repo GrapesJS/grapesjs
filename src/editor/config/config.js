@@ -43,7 +43,7 @@ export default {
     * {
       box-sizing: border-box;
     }
-    html, body, #wrapper {
+    html, body, [data-gjs-type=wrapper] {
       min-height: 100%;
     }
     body {
@@ -51,7 +51,7 @@ export default {
       height: 100%;
       background-color: #fff
     }
-    #wrapper {
+    [data-gjs-type=wrapper] {
       overflow: auto;
       overflow-x: hidden;
     }
@@ -148,8 +148,15 @@ export default {
   // To get more about this feature read: https://github.com/artf/grapesjs/issues/1936
   dragMode: 0,
 
+  // Import asynchronously CSS to use as icons
+  cssIcons:
+    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css',
+
   // Dom element
   el: '',
+
+  // Configurations for I18n
+  i18n: {},
 
   // Configurations for Undo Manager
   undoManager: {},
@@ -194,20 +201,24 @@ export default {
   deviceManager: {
     devices: [
       {
+        id: 'desktop',
         name: 'Desktop',
         width: ''
       },
       {
+        id: 'tablet',
         name: 'Tablet',
         width: '768px',
         widthMedia: '992px'
       },
       {
+        id: 'mobileLandscape',
         name: 'Mobile landscape',
         width: '568px',
         widthMedia: '768px'
       },
       {
+        id: 'mobilePortrait',
         name: 'Mobile portrait',
         width: '320px',
         widthMedia: '480px'

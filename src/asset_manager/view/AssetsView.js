@@ -5,19 +5,25 @@ export default Backbone.View.extend({
     submit: 'handleSubmit'
   },
 
-  template(view) {
-    const pfx = view.pfx;
-    const ppfx = view.ppfx;
+  template({ pfx, ppfx, em, ...view }) {
+    let form = '';
+    if (this.config.showUrlInput) {
+      form = `
+          <form class="${pfx}add-asset">
+            <div class="${ppfx}field ${pfx}add-field">
+              <input placeholder="${em && em.t('assetManager.inputPlh')}"/>
+            </div>
+            <button class="${ppfx}btn-prim">${em &&
+        em.t('assetManager.addButton')}</button>
+            <div style="clear:both"></div>
+          </form>
+      `;
+    }
+
     return `
     <div class="${pfx}assets-cont">
       <div class="${pfx}assets-header">
-        <form class="${pfx}add-asset">
-          <div class="${ppfx}field ${pfx}add-field">
-            <input placeholder="${view.config.inputPlaceholder}"/>
-          </div>
-          <button class="${ppfx}btn-prim">${view.config.addBtnText}</button>
-          <div style="clear:both"></div>
-        </form>
+        ${form}
       </div>
       <div class="${pfx}assets" data-el="assets"></div>
       <div style="clear:both"></div>
@@ -30,6 +36,7 @@ export default Backbone.View.extend({
     this.config = o.config;
     this.pfx = this.config.stylePrefix || '';
     this.ppfx = this.config.pStylePrefix || '';
+    this.em = this.config.em;
     const coll = this.collection;
     this.listenTo(coll, 'reset', this.renderAssets);
     this.listenTo(coll, 'add', this.addToAsset);
@@ -46,7 +53,7 @@ export default Backbone.View.extend({
   handleSubmit(e) {
     e.preventDefault();
     const input = this.getAddInput();
-    const url = input.value.trim();
+    const url = input && input.value.trim();
     const handleAdd = this.config.handleAdd;
 
     if (!url) {

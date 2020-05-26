@@ -44,7 +44,7 @@ export default Input.extend({
     colorEl.get(0).style.backgroundColor = valueClr;
 
     // This prevents from adding multiple thumbs in spectrum
-    if (opts.fromTarget) {
+    if (opts.fromTarget || (opts.fromInput && !opts.avoidStore)) {
       colorEl.spectrum('set', valueClr);
       this.noneColor = value == 'none';
     }
@@ -56,16 +56,16 @@ export default Input.extend({
    */
   getColorEl() {
     if (!this.colorEl) {
+      const { em } = this;
       const self = this;
       const ppfx = this.ppfx;
       var model = this.model;
 
       var colorEl = $(`<div class="${this.ppfx}field-color-picker"></div>`);
       var cpStyle = colorEl.get(0).style;
-      var elToAppend = this.em && this.em.config ? this.em.config.el : '';
+      var elToAppend = em && em.config ? em.config.el : '';
       var colorPickerConfig =
-        (this.em && this.em.getConfig && this.em.getConfig('colorPicker')) ||
-        {};
+        (em && em.getConfig && em.getConfig('colorPicker')) || {};
       const getColor = color => {
         let cl =
           color.getAlpha() == 1 ? color.toHexString() : color.toRgbString();
@@ -97,6 +97,7 @@ export default Input.extend({
           changed = 1;
           const cl = getColor(color);
           cpStyle.backgroundColor = cl;
+          model.setValueFromInput(0, 0); // for UndoManager
           model.setValueFromInput(cl);
           self.noneColor = 0;
         },
@@ -115,6 +116,13 @@ export default Input.extend({
           }
         }
       });
+
+      em &&
+        em.on &&
+        em.on('component:selected', () => {
+          changed = 1;
+          colorEl.spectrum('hide');
+        });
 
       this.colorEl = colorEl;
     }

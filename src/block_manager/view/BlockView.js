@@ -60,9 +60,11 @@ export default Backbone.View.extend({
    * @private
    */
   startDrag(e) {
-    const { config, em } = this;
+    const { config, em, model } = this;
+    const disable = model.get('disable');
     //Right or middel click
-    if (e.button !== 0 || !config.getSorter || this.el.draggable) return;
+    if (e.button !== 0 || !config.getSorter || this.el.draggable || disable)
+      return;
     em.refreshCanvas();
     const sorter = config.getSorter();
     sorter.setDragHelper(this.el, e);
@@ -138,17 +140,22 @@ export default Backbone.View.extend({
 
   render() {
     const { em, el, ppfx, model } = this;
+    const disable = model.get('disable');
+    const attr = model.get('attributes') || {};
+    const cls = attr.class || '';
     const className = `${ppfx}block`;
-    const label = model.get('label');
+    const label =
+      (em && em.t(`blockManager.labels.${model.id}`)) || model.get('label');
     const render = model.get('render');
     const media = model.get('media');
-    el.className += ` ${className} ${ppfx}one-bg ${ppfx}four-color-h`;
+    const clsAdd = disable ? `${className}--disable` : `${ppfx}four-color-h`;
+    el.className = `${cls} ${className} ${ppfx}one-bg ${clsAdd}`.trim();
     el.innerHTML = `
       ${media ? `<div class="${className}__media">${media}</div>` : ''}
       <div class="${className}-label">${label}</div>
     `;
     el.title = el.textContent.trim();
-    hasDnd(em) && el.setAttribute('draggable', true);
+    el.setAttribute('draggable', hasDnd(em) && !disable ? true : false);
     const result = render && render({ el, model, className, prefix: ppfx });
     if (result) el.innerHTML = result;
     return this;

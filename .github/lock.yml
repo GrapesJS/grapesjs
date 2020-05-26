@@ -8,7 +8,9 @@ daysUntilLock: 365
 skipCreatedBefore: false
 
 # Issues and pull requests with these labels will be ignored. Set to `[]` to disable
-exemptLabels: []
+exemptLabels:
+  - no-locking
+  - help-wanted
 
 # Label to add before locking, such as `outdated`. Set to `false` to disable
 lockLabel: outdated

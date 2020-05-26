@@ -11,7 +11,7 @@ import {
   result,
   keys
 } from 'underscore';
-import { shallowDiff } from 'utils/mixins';
+import { shallowDiff, capitalize } from 'utils/mixins';
 import Styleable from 'domain_abstract/model/Styleable';
 import Backbone from 'backbone';
 import Components from './Components';
@@ -27,6 +27,8 @@ const escapeRegExp = str => {
 };
 
 const avoidInline = em => em && em.getConfig('avoidInlineStyle');
+
+export const eventDrag = 'component:drag';
 
 /**
  * The Component object represents a single node of our template structure, so when you update its properties the changes are
@@ -171,6 +173,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       opt.em = em;
       this.opt = opt;
       this.em = em;
+      this.frame = opt.frame;
       this.config = opt.config || {};
       this.set('attributes', {
         ...(this.defaults.attributes || {}),
@@ -186,6 +189,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       this.listenTo(this, 'change:attributes', this.attrUpdated);
       this.listenTo(this, 'change:attributes:id', this._idUpdated);
       this.set('status', '');
+      this.views = [];
 
       // Register global updates for collection properties
       ['classes', 'traits', 'components'].forEach(name => {
@@ -251,8 +255,8 @@ const Component = Backbone.Model.extend(Styleable).extend(
      */
     find(query) {
       const result = [];
-
-      this.view.$el.find(query).each((el, i, $els) => {
+      const $els = this.view.$el.find(query);
+      $els.each(i => {
         const $el = $els.eq(i);
         const model = $el.data('model');
         model && result.push(model);
@@ -262,20 +266,20 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     /**
-     * Find all inner components by component id.
+     * Find all inner components by component type.
      * The advantage of this method over `find` is that you can use it
      * also before rendering the component
-     * @param {String} id Component id
+     * @param {String} type Component type
      * @returns {Array<Component>}
      * @example
      * const allImages = component.findType('image');
      * console.log(allImages[0]) // prints the first found component
      */
-    findType(id) {
+    findType(type) {
       const result = [];
       const find = components =>
         components.forEach(item => {
-          item.is(id) && result.push(item);
+          item.is(type) && result.push(item);
           find(item.components());
         });
       find(this.components());
@@ -294,6 +298,26 @@ const Component = Backbone.Model.extend(Styleable).extend(
     closest(query) {
       const result = this.view.$el.closest(query);
       return result.length && result.data('model');
+    },
+
+    /**
+     * Find the closest parent component by its type.
+     * The advantage of this method over `closest` is that you can use it
+     * also before rendering the component
+     * @param {String} type Component type
+     * @returns {Component} Found component, otherwise `undefined`
+     * @example
+     * const Section = component.closestType('section');
+     * console.log(Section);
+     */
+    closestType(type) {
+      let parent = this.parent();
+
+      while (parent && !parent.is(type)) {
+        parent = parent.parent();
+      }
+
+      return parent;
     },
 
     /**
@@ -380,7 +404,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       const em = this.em;
 
       if (em && em.getConfig('avoidInlineStyle')) {
-        const state = this.get('state');
+        const state = em.get('state');
         const cc = em.get('CssComposer');
         const rule = cc.getIdRule(this.getId(), { state });
         this.rule = rule;
@@ -408,7 +432,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
         const style = this.get('style') || {};
         prop = isString(prop) ? this.parseStyle(prop) : prop;
         prop = { ...prop, ...style };
-        const state = this.get('state');
+        const state = em.get('state');
         const cc = em.get('CssComposer');
         const propOrig = this.getStyle();
         this.rule = cc.setIdRule(this.getId(), prop, { ...opts, state });
@@ -619,6 +643,15 @@ const Component = Backbone.Model.extend(Styleable).extend(
         coll.reset();
         return components && this.append(components);
       }
+    },
+
+    /**
+     * Remove all inner components
+     * * @return {this}
+     */
+    empty(opts = {}) {
+      this.components().reset(null, opts);
+      return this;
     },
 
     /**
@@ -865,12 +898,27 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * @return {String}
      * */
     getName() {
-      let customName = this.get('name') || this.get('custom-name');
-      let tag = this.get('tagName');
-      tag = tag == 'div' ? 'box' : tag;
-      let name = this.get('type') || tag;
-      name = name.charAt(0).toUpperCase() + name.slice(1);
-      return customName || name;
+      const { em } = this;
+      const { type, tagName } = this.attributes;
+      const cName = this.get('name');
+      const isDiv = tagName == 'div';
+      const tag = isDiv ? 'box' : tagName;
+      const defName = type || tag;
+      const nameTag = !type && tagName && !isDiv && tagName;
+      const i18nPfx = 'domComponents.names.';
+      const i18nName = cName && em && em.t(`${i18nPfx}${cName}`);
+      const i18nNameTag = nameTag && em && em.t(`${i18nPfx}${nameTag}`);
+      const i18nDefName =
+        em && (em.t(`${i18nPfx}${type}`) || em.t(`${i18nPfx}${tagName}`));
+      return (
+        this.get('custom-name') || // Used in Layers (when the user changes the name)
+        i18nName ||
+        cName || // Component name (check if there is a i18n string for it)
+        i18nNameTag ||
+        capitalize(nameTag) || // Try name by tag if there is no valid type
+        i18nDefName ||
+        capitalize(defName) // Use the default name
+      );
     },
 
     /**
@@ -885,6 +933,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
     /**
      * Return HTML string of the component
      * @param {Object} [opts={}] Options
+     * @param {String} [opts.tag] Custom tagName
      * @param {Object|Function} [opts.attributes=null] You can pass an object of custom attributes to replace
      * with the current one or you can even pass a function to generate attributes dynamically
      * @return {String} HTML string
@@ -913,11 +962,12 @@ const Component = Backbone.Model.extend(Styleable).extend(
     toHTML(opts = {}) {
       const model = this;
       const attrs = [];
-      const classes = [];
-      const tag = model.get('tagName');
+      const customTag = opts.tag;
+      const tag = customTag || model.get('tagName');
       const sTag = model.get('void');
       const customAttr = opts.attributes;
       let attributes = this.getAttrToHTML();
+      delete opts.tag;
 
       // Get custom attributes if requested
       if (customAttr) {
@@ -1028,19 +1078,33 @@ const Component = Backbone.Model.extend(Styleable).extend(
     /**
      * Get the DOM element of the component.
      * This works only if the component is already rendered
+     * @param {Frame} frame Specific frame from which taking the element
      * @return {HTMLElement}
      */
-    getEl() {
-      return this.view && this.view.el;
+    getEl(frame) {
+      const view = this.getView(frame);
+      return view && view.el;
     },
 
     /**
      * Get the View of the component.
      * This works only if the component is already rendered
+     * @param {Frame} frame Get View of a specific frame
      * @return {ComponentView}
      */
-    getView() {
-      return this.view;
+    getView(frame) {
+      let { view, views } = this;
+
+      if (frame) {
+        view = views.filter(view => view._getFrame() === frame.view)[0];
+      }
+
+      return view;
+    },
+
+    getCurrentView() {
+      const frame = (this.em.get('currentFrame') || {}).model;
+      return this.getView(frame);
     },
 
     /**
@@ -1186,6 +1250,24 @@ const Component = Backbone.Model.extend(Styleable).extend(
      */
     isComponent(el) {
       return { tagName: el.tagName ? el.tagName.toLowerCase() : '' };
+    },
+
+    ensureInList(model) {
+      const list = Component.getList(model);
+      const id = model.getId();
+      const current = list[id];
+
+      if (!current) {
+        // Insert in list
+        list[id] = model;
+      } else if (current !== model) {
+        // Create new ID
+        const nextId = Component.getIncrementId(id, list);
+        model.setId(nextId);
+        list[nextId] = model;
+      }
+
+      model.components().forEach(i => Component.ensureInList(i));
     },
 
     /**

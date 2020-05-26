@@ -1,5 +1,3 @@
 export default {
-  devices: [],
-
-  deviceLabel: 'Device'
+  devices: []
 };

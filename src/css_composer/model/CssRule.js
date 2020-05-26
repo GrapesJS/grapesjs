@@ -4,6 +4,8 @@ import Styleable from 'domain_abstract/model/Styleable';
 import { isEmpty, forEach } from 'underscore';
 import Selectors from 'selector_manager/model/Selectors';
 
+const { CSS } = window;
+
 export default Backbone.Model.extend(Styleable).extend({
   defaults: {
     // Css selectors
@@ -79,8 +81,13 @@ export default Backbone.Model.extend(Styleable).extend({
     const wrapper = this.get('wrapper');
     const addSelector = this.get('selectorsAdd');
     const isBody = wrapper && em && em.getConfig('wrapperIsBody');
-    const selectors = isBody ? 'body' : this.get('selectors').getFullString();
-    const stateStr = state ? `:${state}` : '';
+    const selOpts = {
+      escape: str => (CSS && CSS.escape ? CSS.escape(str) : str)
+    };
+    const selectors = isBody
+      ? 'body'
+      : this.get('selectors').getFullString(0, selOpts);
+    const stateStr = state && !opts.skipState ? `:${state}` : '';
     selectors && result.push(`${selectors}${stateStr}`);
     addSelector && !opts.skipAdd && result.push(addSelector);
     return result.join(', ');
