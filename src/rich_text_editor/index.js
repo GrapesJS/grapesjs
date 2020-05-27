@@ -321,6 +321,16 @@ export default () => {
       const customRte = this.customRte;
       var el = view.getChildrenContainer();
 
+      const childComponents = view.childrenView.collection.models.filter(
+        x => x.attributes.type !== 'textnode'
+      );
+      childComponents.forEach(function(child) {
+        const childId = child.ccid;
+        if (childId) {
+          delete em.get('DomComponents').componentsById[childId];
+        }
+      });
+
       if (customRte) {
         customRte.disable(el, rte);
       } else {
