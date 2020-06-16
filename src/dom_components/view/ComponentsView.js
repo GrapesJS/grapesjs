@@ -79,12 +79,13 @@ export default Backbone.View.extend({
         config,
         componentTypes: dt
       });
-    let rendered = document.createTextNode('');
+    let rendered;
 
     try {
       // Avoid breaking on DOM rendering (eg. invalid attribute name)
       rendered = view.render().el;
     } catch (error) {
+      rendered = document.createTextNode('');
       em.logError(error);
     }
 
