@@ -23608,8 +23608,9 @@ var timerZoom;
    */
   getFrameOffset: function getFrameOffset(el) {
     if (!this.frmOff || el) {
-      var frEl = el ? el.ownerDocument.defaultView.frameElement : this.frame.el;
-      this.frmOff = this.offset(frEl);
+      var frame = this.frame.el;
+      var frEl = el ? el.ownerDocument.defaultView.frameElement : frame;
+      this.frmOff = this.offset(frEl || frame);
     }
 
     return this.frmOff;
@@ -28522,7 +28523,6 @@ var showOffsets;
     this.onOut();
     this.toggleToolsEl();
     editor && editor.stopCommand('resize');
-    this.editor = 0;
   }
 });
 
@@ -34390,6 +34390,7 @@ __webpack_require__.r(__webpack_exports__);
     }
 
     this.el.innerHTML = content;
+    this.postRender();
     return this;
   }
 }));
@@ -35616,7 +35617,15 @@ __webpack_require__.r(__webpack_exports__);
       config: config,
       componentTypes: dt
     });
-    var rendered = view.render().el;
+    var rendered;
+
+    try {
+      // Avoid breaking on DOM rendering (eg. invalid attribute name)
+      rendered = view.render().el;
+    } catch (error) {
+      rendered = document.createTextNode('');
+      em.logError(error);
+    }
 
     if (fragment) {
       fragment.appendChild(rendered);
@@ -38990,7 +38999,7 @@ var defaultConfig = {
   editors: editors,
   plugins: plugins,
   // Will be replaced on build
-  version: '0.16.15',
+  version: '0.16.16',
 
   /**
    * Initialize the editor with passed options
@@ -50920,7 +50929,7 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_2___default.a.$;
     var hasLabel = this.hasLabel && this.hasLabel();
     var cls = "".concat(pfx, "trait");
     this.$input = null;
-    var tmpl = "<div class=\"".concat(cls, "\">\n      ").concat(hasLabel ? "<div class=\"".concat(ppfx, "label-wrp\" data-label></div>") : '', "\n      <div class=\"").concat(ppfx, "field-wrp ").concat(ppfx, "field-wrp--").concat(type, "\" data-input>\n        ").concat(this.templateInput ? Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isFunction"])(this.templateInput) ? this.templateInput(this.getClbOpts()) : this.templateInput : '', "\n      </div>\n    </div>");
+    var tmpl = "<div class=\"".concat(cls, " ").concat(cls, "--").concat(type, "\">\n      ").concat(hasLabel ? "<div class=\"".concat(ppfx, "label-wrp\" data-label></div>") : '', "\n      <div class=\"").concat(ppfx, "field-wrp ").concat(ppfx, "field-wrp--").concat(type, "\" data-input>\n        ").concat(this.templateInput ? Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isFunction"])(this.templateInput) ? this.templateInput(this.getClbOpts()) : this.templateInput : '', "\n      </div>\n    </div>");
     $el.empty().append(tmpl);
     hasLabel && this.renderLabel();
     this.renderField();
