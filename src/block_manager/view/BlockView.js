@@ -139,7 +139,7 @@ export default Backbone.View.extend({
   },
 
   render() {
-    const { em, el, ppfx, model } = this;
+    const { em, el, $el, ppfx, model } = this;
     const disable = model.get('disable');
     const attr = model.get('attributes') || {};
     const cls = attr.class || '';
@@ -149,6 +149,7 @@ export default Backbone.View.extend({
     const render = model.get('render');
     const media = model.get('media');
     const clsAdd = disable ? `${className}--disable` : `${ppfx}four-color-h`;
+    $el.attr(attr);
     el.className = `${cls} ${className} ${ppfx}one-bg ${clsAdd}`.trim();
     el.innerHTML = `
       ${media ? `<div class="${className}__media">${media}</div>` : ''}
