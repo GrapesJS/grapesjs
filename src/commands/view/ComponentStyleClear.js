@@ -5,7 +5,7 @@ export default {
     const { target } = opts;
     const dc = ed.DomComponents;
     const type = target.get('type');
-    const len = dc.getWrapper().find(`[data-gjs-type="${type}"]`).length;
+    const len = dc.getWrapper().findType(type).length;
     const toRemove = [];
 
     if (!len) {
