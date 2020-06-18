@@ -22098,6 +22098,7 @@ __webpack_require__.r(__webpack_exports__);
   render: function render() {
     var em = this.em,
         el = this.el,
+        $el = this.$el,
         ppfx = this.ppfx,
         model = this.model;
     var disable = model.get('disable');
@@ -22108,6 +22109,7 @@ __webpack_require__.r(__webpack_exports__);
     var render = model.get('render');
     var media = model.get('media');
     var clsAdd = disable ? "".concat(className, "--disable") : "".concat(ppfx, "four-color-h");
+    $el.attr(attr);
     el.className = "".concat(cls, " ").concat(className, " ").concat(ppfx, "one-bg ").concat(clsAdd).trim();
     el.innerHTML = "\n      ".concat(media ? "<div class=\"".concat(className, "__media\">").concat(media, "</div>") : '', "\n      <div class=\"").concat(className, "-label\">").concat(label, "</div>\n    ");
     el.title = el.textContent.trim();
@@ -23049,8 +23051,10 @@ var _window = window,
      */
     isInputFocused: function isInputFocused() {
       var doc = this.getDocument();
+      var frame = this.getFrameEl();
       var toIgnore = ['body'].concat(_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0___default()(this.getConfig().notTextable));
-      var focused = doc && doc.activeElement;
+      var docActive = frame && document.activeElement === frame;
+      var focused = docActive ? doc && doc.activeElement : document.activeElement;
       return focused && !toIgnore.some(function (item) {
         return focused.matches(item);
       });
@@ -23522,7 +23526,7 @@ var timerZoom;
     var em = this.em;
     var key = Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["getKeyChar"])(ev);
 
-    if (key === ' ' && em.getZoomDecimal() !== 1) {
+    if (key === ' ' && em.getZoomDecimal() !== 1 && !em.get('Canvas').isInputFocused()) {
       this.preventDefault(ev);
       em.get('Editor').runCommand('core:canvas-move');
     }
@@ -26717,7 +26721,7 @@ __webpack_require__.r(__webpack_exports__);
     var target = opts.target;
     var dc = ed.DomComponents;
     var type = target.get('type');
-    var len = dc.getWrapper().find("[data-gjs-type=\"".concat(type, "\"]")).length;
+    var len = dc.getWrapper().findType(type).length;
     var toRemove = [];
 
     if (!len) {
@@ -31634,8 +31638,9 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(dom
   },
   initClasses: function initClasses() {
     var event = 'change:classes';
+    var attrCls = this.get('attributes').class || [];
     var toListen = [this, event, this.initClasses];
-    var cls = this.get('classes') || [];
+    var cls = this.get('classes') || attrCls;
     var clsArr = Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isString"])(cls) ? cls.split(' ') : cls;
     this.stopListening.apply(this, toListen);
     var classes = this.normalizeClasses(clsArr);
@@ -33415,13 +33420,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
 /* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _ComponentImage__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ComponentImage */ "./src/dom_components/model/ComponentImage.js");
-/* harmony import */ var _Component__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Component */ "./src/dom_components/model/Component.js");
 
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
 
 
 var yt = 'yt';
@@ -33451,12 +33454,25 @@ var ytnc = 'ytnc';
     sources: [],
     attributes: {
       allowfullscreen: 'allowfullscreen'
-    },
-    toolbar: _Component__WEBPACK_IMPORTED_MODULE_2__["default"].prototype.defaults.toolbar
+    }
   }),
   initialize: function initialize(o, opt) {
-    var traits = [];
+    this.em = opt.em;
+    if (this.get('src')) this.parseFromSrc();
+    this.updateTraits();
+    this.listenTo(this, 'change:provider', this.updateTraits);
+    this.listenTo(this, 'change:videoId change:provider', this.updateSrc);
+    _ComponentImage__WEBPACK_IMPORTED_MODULE_1__["default"].prototype.initialize.apply(this, arguments);
+  },
+
+  /**
+   * Update traits by provider
+   * @private
+   */
+  updateTraits: function updateTraits() {
     var prov = this.get('provider');
+    var tagName = 'iframe';
+    var traits;
 
     switch (prov) {
       case yt:
@@ -33469,21 +33485,20 @@ var ytnc = 'ytnc';
         break;
 
       default:
+        tagName = 'video';
         traits = this.getSourceTraits();
     }
 
-    if (this.get('src')) this.parseFromSrc();
-    this.set('traits', traits);
-    _ComponentImage__WEBPACK_IMPORTED_MODULE_1__["default"].prototype.initialize.apply(this, arguments);
-    this.listenTo(this, 'change:provider', this.updateTraits);
-    this.listenTo(this, 'change:videoId change:provider', this.updateSrc);
-  },
-  initToolbar: function initToolbar() {
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
+    this.set({
+      tagName: tagName
+    }, {
+      silent: 1
+    }); // avoid break in view
 
-    _Component__WEBPACK_IMPORTED_MODULE_2__["default"].prototype.initToolbar.apply(this, args);
+    this.set({
+      traits: traits
+    });
+    this.em.trigger('component:toggled');
   },
 
   /**
@@ -33518,20 +33533,25 @@ var ytnc = 'ytnc';
    */
   updateSrc: function updateSrc() {
     var prov = this.get('provider');
+    var src = '';
 
     switch (prov) {
       case yt:
-        this.set('src', this.getYoutubeSrc());
+        src = this.getYoutubeSrc();
         break;
 
       case ytnc:
-        this.set('src', this.getYoutubeNoCookieSrc());
+        src = this.getYoutubeNoCookieSrc();
         break;
 
       case vi:
-        this.set('src', this.getVimeoSrc());
+        src = this.getVimeoSrc();
         break;
     }
+
+    this.set({
+      src: src
+    });
   },
 
   /**
@@ -33540,8 +33560,8 @@ var ytnc = 'ytnc';
    * @private
    */
   getAttrToHTML: function getAttrToHTML() {
-    for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-      args[_key2] = arguments[_key2];
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
     }
 
     var attr = _ComponentImage__WEBPACK_IMPORTED_MODULE_1__["default"].prototype.getAttrToHTML.apply(this, args);
@@ -33560,34 +33580,6 @@ var ytnc = 'ytnc';
     }
 
     return attr;
-  },
-
-  /**
-   * Update traits by provider
-   * @private
-   */
-  updateTraits: function updateTraits() {
-    var prov = this.get('provider');
-    var traits = this.getSourceTraits();
-
-    switch (prov) {
-      case yt:
-      case ytnc:
-        this.set('tagName', 'iframe');
-        traits = this.getYoutubeTraits();
-        break;
-
-      case vi:
-        this.set('tagName', 'iframe');
-        traits = this.getVimeoTraits();
-        break;
-
-      default:
-        this.set('tagName', 'video');
-    }
-
-    this.loadTraits(traits);
-    this.em.trigger('component:toggled');
   },
   // Listen provider change and switch traits, in TraitView listen traits change
 
@@ -38999,7 +38991,7 @@ var defaultConfig = {
   editors: editors,
   plugins: plugins,
   // Will be replaced on build
-  version: '0.16.16',
+  version: '0.16.17',
 
   /**
    * Initialize the editor with passed options
@@ -39152,7 +39144,10 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
       },
       'core:component-delete': {
         keys: 'backspace, delete',
-        handler: 'core:component-delete'
+        handler: 'core:component-delete',
+        opts: {
+          prevent: 1
+        }
       }
     }
   };
@@ -39185,7 +39180,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
       for (var id in defKeys) {
         var value = defKeys[id];
-        this.add(id, value.keys, value.handler);
+        this.add(id, value.keys, value.handler, value.opts || {});
       }
     },
 
@@ -45942,7 +45937,7 @@ var Property = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.Model.extend({
     var parsed = this.parseValue(value);
     var avoidStore = !complete;
     !avoidStore && this.set({
-      value: ''
+      value: undefined
     }, {
       avoidStore: avoidStore,
       silent: true
