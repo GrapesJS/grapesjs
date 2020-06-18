@@ -74,7 +74,8 @@ export default () => {
       },
       'core:component-delete': {
         keys: 'backspace, delete',
-        handler: 'core:component-delete'
+        handler: 'core:component-delete',
+        opts: { prevent: 1 }
       }
     }
   };
@@ -109,7 +110,7 @@ export default () => {
 
       for (let id in defKeys) {
         const value = defKeys[id];
-        this.add(id, value.keys, value.handler);
+        this.add(id, value.keys, value.handler, value.opts || {});
       }
     },
 
