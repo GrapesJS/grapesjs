@@ -152,7 +152,7 @@ export default () => {
         if (ableTorun || opts.force) {
           opts.prevent && canvas.getCanvasView().preventDefault(e);
           typeof handler == 'object'
-            ? handler.run(editor, 0, opt)
+            ? cmd.runCommand(handler, opt)
             : handler(editor, 0, opt);
           const args = [id, h.shortcut, e];
           em.trigger('keymap:emit', ...args);
