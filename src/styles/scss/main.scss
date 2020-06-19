@@ -1,7 +1,7 @@
 /* stylelint-disable */
-@import "~spectrum-colorpicker/spectrum.css";
-@import "~codemirror/lib/codemirror.css";
-@import "~codemirror/theme/hopscotch.css";
+@import "../../../node_modules/spectrum-colorpicker/spectrum";
+@import "../../../node_modules/codemirror/lib/codemirror";
+@import "../../../node_modules/codemirror/theme/hopscotch";
 
 
 @import "gjs_variables.scss";
