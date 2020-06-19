@@ -148,9 +148,9 @@ export default () => {
         // It's safer putting handlers resolution inside the callback
         const opt = { event: e, h };
         handler = isString(handler) ? cmd.get(handler) : handler;
-        opts.prevent && canvas.getCanvasView().preventDefault(e);
         const ableTorun = !em.isEditing() && !editor.Canvas.isInputFocused();
         if (ableTorun || opts.force) {
+          opts.prevent && canvas.getCanvasView().preventDefault(e);
           typeof handler == 'object'
             ? handler.run(editor, 0, opt)
             : handler(editor, 0, opt);
