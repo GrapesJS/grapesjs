@@ -38991,7 +38991,7 @@ var defaultConfig = {
   editors: editors,
   plugins: plugins,
   // Will be replaced on build
-  version: '0.16.17',
+  version: '0.16.18',
 
   /**
    * Initialize the editor with passed options
@@ -39226,11 +39226,11 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
           h: h
         };
         handler = Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isString"])(handler) ? cmd.get(handler) : handler;
-        opts.prevent && canvas.getCanvasView().preventDefault(e);
         var ableTorun = !em.isEditing() && !editor.Canvas.isInputFocused();
 
         if (ableTorun || opts.force) {
-          _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0___default()(handler) == 'object' ? handler.run(editor, 0, opt) : handler(editor, 0, opt);
+          opts.prevent && canvas.getCanvasView().preventDefault(e);
+          _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0___default()(handler) == 'object' ? cmd.runCommand(handler, opt) : handler(editor, 0, opt);
           var args = [id, h.shortcut, e];
           em.trigger.apply(em, ['keymap:emit'].concat(args));
           em.trigger.apply(em, ["keymap:emit:".concat(id)].concat(args));
