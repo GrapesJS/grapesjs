@@ -64,13 +64,6 @@ export default () => {
       blocks = new Blocks([]);
       blocksVisible = new Blocks([]);
       categories = new BlockCategories();
-      blocksView = new BlocksView(
-        {
-          collection: blocksVisible,
-          categories
-        },
-        c
-      );
 
       // Setup the sync between the global and public collections
       blocks.listenTo(blocks, 'add', model => {
@@ -106,12 +99,18 @@ export default () => {
       !blocks.length && blocks.reset(c.blocks);
     },
 
+    /**
+     * Executed once the main editor instance is rendered
+     * @private
+     */
     postRender() {
+      const collection = blocksVisible;
+      blocksView = new BlocksView({ collection, categories }, c);
       const elTo = this.getConfig().appendTo;
 
       if (elTo) {
         const el = isElement(elTo) ? elTo : document.querySelector(elTo);
-        el.appendChild(this.render());
+        el.appendChild(this.render(blocksVisible.models));
       }
     },
 
@@ -234,25 +233,23 @@ export default () => {
       const toRender = blocks || this.getAll().models;
 
       if (opts.external) {
+        const collection = new Blocks(toRender);
         return new BlocksView(
-          {
-            collection: new Blocks(toRender),
-            categories
-          },
-          {
-            ...c,
-            ...opts
-          }
+          { collection, categories },
+          { ...c, ...opts }
         ).render().el;
       }
 
-      if (!blocksView.rendered) {
-        blocksView.render();
-        blocksView.rendered = 1;
+      if (blocksView) {
+        blocksView.updateConfig(opts);
+        blocksView.collection.reset(toRender);
+
+        if (!blocksView.rendered) {
+          blocksView.render();
+          blocksView.rendered = 1;
+        }
       }
 
-      blocksView.updateConfig(opts);
-      blocksView.collection.reset(toRender);
       return this.getContainer();
     }
   };

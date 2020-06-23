@@ -1,5 +1,4 @@
 import Component from './ComponentImage';
-import OComponent from './Component';
 
 const yt = 'yt';
 const vi = 'vi';
@@ -26,13 +25,27 @@ export default Component.extend(
       rel: 1, // YT related videos
       modestbranding: 0, // YT modest branding
       sources: [],
-      attributes: { allowfullscreen: 'allowfullscreen' },
-      toolbar: OComponent.prototype.defaults.toolbar
+      attributes: { allowfullscreen: 'allowfullscreen' }
     },
 
     initialize(o, opt) {
-      var traits = [];
-      var prov = this.get('provider');
+      this.em = opt.em;
+      if (this.get('src')) this.parseFromSrc();
+      this.updateTraits();
+      this.listenTo(this, 'change:provider', this.updateTraits);
+      this.listenTo(this, 'change:videoId change:provider', this.updateSrc);
+      Component.prototype.initialize.apply(this, arguments);
+    },
+
+    /**
+     * Update traits by provider
+     * @private
+     */
+    updateTraits() {
+      const prov = this.get('provider');
+      let tagName = 'iframe';
+      let traits;
+
       switch (prov) {
         case yt:
         case ytnc:
@@ -42,17 +55,13 @@ export default Component.extend(
           traits = this.getVimeoTraits();
           break;
         default:
+          tagName = 'video';
           traits = this.getSourceTraits();
       }
-      if (this.get('src')) this.parseFromSrc();
-      this.set('traits', traits);
-      Component.prototype.initialize.apply(this, arguments);
-      this.listenTo(this, 'change:provider', this.updateTraits);
-      this.listenTo(this, 'change:videoId change:provider', this.updateSrc);
-    },
 
-    initToolbar(...args) {
-      OComponent.prototype.initToolbar.apply(this, args);
+      this.set({ tagName }, { silent: 1 }); // avoid break in view
+      this.set({ traits });
+      this.em.trigger('component:toggled');
     },
 
     /**
@@ -84,18 +93,22 @@ export default Component.extend(
      * @private
      */
     updateSrc() {
-      var prov = this.get('provider');
+      const prov = this.get('provider');
+      let src = '';
+
       switch (prov) {
         case yt:
-          this.set('src', this.getYoutubeSrc());
+          src = this.getYoutubeSrc();
           break;
         case ytnc:
-          this.set('src', this.getYoutubeNoCookieSrc());
+          src = this.getYoutubeNoCookieSrc();
           break;
         case vi:
-          this.set('src', this.getVimeoSrc());
+          src = this.getVimeoSrc();
           break;
       }
+
+      this.set({ src });
     },
 
     /**
@@ -117,30 +130,6 @@ export default Component.extend(
           if (this.get('controls')) attr.controls = 'controls';
       }
       return attr;
-    },
-
-    /**
-     * Update traits by provider
-     * @private
-     */
-    updateTraits() {
-      var prov = this.get('provider');
-      var traits = this.getSourceTraits();
-      switch (prov) {
-        case yt:
-        case ytnc:
-          this.set('tagName', 'iframe');
-          traits = this.getYoutubeTraits();
-          break;
-        case vi:
-          this.set('tagName', 'iframe');
-          traits = this.getVimeoTraits();
-          break;
-        default:
-          this.set('tagName', 'video');
-      }
-      this.loadTraits(traits);
-      this.em.trigger('component:toggled');
     },
 
     // Listen provider change and switch traits, in TraitView listen traits change

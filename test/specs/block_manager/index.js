@@ -14,6 +14,7 @@ describe('BlockManager', () => {
         content: '<h1>Test</h1>'
       };
       obj = new BlockManager().init();
+      obj.postRender();
       obj.render();
     });
 
