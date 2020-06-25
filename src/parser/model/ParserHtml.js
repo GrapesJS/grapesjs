@@ -184,6 +184,11 @@ export default config => {
 
             model[modelAttr] = nodeValue;
           } else {
+            // Check for attributes from props (eg. required, disabled)
+            if (nodeValue === '' && node[nodeName] === true) {
+              nodeValue = true;
+            }
+
             model.attributes[nodeName] = nodeValue;
           }
         }
