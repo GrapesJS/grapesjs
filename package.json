@@ -23,6 +23,7 @@
     "codemirror": "^5.49.2",
     "codemirror-formatting": "^1.0.0",
     "keymaster": "^1.6.2",
+    "node-sass-import": "^2.0.1",
     "promise-polyfill": "^8.1.3",
     "spectrum-colorpicker": "^1.8.0",
     "underscore": "^1.9.1"
@@ -124,7 +125,7 @@
     "build-n": "npm run check && npm run build:css && npm run build-prod",
     "build-dev": "webpack --env=dev && npm run build:css && npm run build:locale",
     "build-prod": "webpack --env=prod",
-    "build:css": "node-sass src/styles/scss/main.scss dist/css/grapes.min.css --output-style compressed",
+    "build:css": "node-sass src/styles/scss/main.scss dist/css/grapes.min.css --importer node_modules/node-sass-import --output-style compressed",
     "build:locale": "rm -rf ./locale && node scripts/build-locale.js && babel locale -d locale --copy-files --no-comments",
     "v:patch": "npm version --no-git-tag-version patch",
     "start": "run-p start:*",
