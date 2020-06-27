@@ -1,10 +1,10 @@
 /* stylelint-disable */
-@import "../../../node_modules/spectrum-colorpicker/spectrum";
-@import "../../../node_modules/codemirror/lib/codemirror";
-@import "../../../node_modules/codemirror/theme/hopscotch";
+@import "spectrum-colorpicker/spectrum";
+@import "codemirror/lib/codemirror";
+@import "codemirror/theme/hopscotch";
 
 
-@import "gjs_variables.scss";
+@import "gjs_variables";
 
 
 @font-face {
