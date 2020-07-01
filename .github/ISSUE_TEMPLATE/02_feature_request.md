@@ -18,9 +18,11 @@ READ and FOLLOW next 3 steps, then REMOVE them before posting the issue
 *Describe your feature request **detailed***
 
 **Is there an alternative at the latest version?**
+
 [ ] Yes (descripe the alternative)
 [ ] No
 
 **Is this related to an issue?**
+
 [ ] Yes (Give a link to the issue)
 [ ] No
