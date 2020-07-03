@@ -468,8 +468,13 @@ export default () => {
       const fullHeight = pos.height + toolbarH;
       const elIsShort = fullHeight < frameOffset.height;
 
+      // if the element fits canvas' bottom border
+      const elFits = frameOffset.height > fullHeight + pos.top;
+
       if (cvOff.top < toolbarH) {
-        if (elIsShort) {
+        if (!elFits) {
+          top -= pos.top - frameOffset.height;
+        } else if (elIsShort) {
           top = top + fullHeight;
         } else {
           top = -cvOff.top < pos.height ? -cvOff.top : pos.height;
