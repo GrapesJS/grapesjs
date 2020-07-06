@@ -108,7 +108,7 @@ export default Backbone.View.extend({
     const model = this.model;
     const hClass = `${pfx}layer-hidden`;
     const hideIcon = 'fa-eye-slash';
-    const hidden = model.getStyle().display == 'none';
+    const hidden = model.getStyle().display === 'none';
     const method = hidden ? 'addClass' : 'removeClass';
     this.$el[method](hClass);
     this.getVisibilityEl()[method](hideIcon);
@@ -297,13 +297,12 @@ export default Backbone.View.extend({
   /**
    * Check if component is visible
    *
-   * @return bool
+   * @return boolean
    * */
   isVisible() {
-    var css = this.model.get('style'),
-      pr = css.display;
-    if (pr && pr == 'none') return;
-    return 1;
+    const { display } = this.model.getStyle();
+
+    return !(display && display === 'none');
   },
 
   /**

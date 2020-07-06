@@ -4,7 +4,7 @@ import Components from '../model/Components';
 import ComponentsView from './ComponentsView';
 import Selectors from 'selector_manager/model/Selectors';
 import { replaceWith } from 'utils/dom';
-import { setViewEl, getElRect } from 'utils/mixins';
+import { setViewEl } from 'utils/mixins';
 
 export default Backbone.View.extend({
   className() {
