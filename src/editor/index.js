@@ -247,6 +247,7 @@ export default (config = {}) => {
     /**
      * Set components inside editor's canvas. This method overrides actual components
      * @param {Array<Object>|Object|string} components HTML string or components model
+     * @param {Object} opt the options object to be used by the [setComponents]{@link em#setComponents} method
      * @return {this}
      * @example
      * editor.setComponents('<div class="cls">New component</div>');
@@ -257,8 +258,8 @@ export default (config = {}) => {
      *   content: 'New component'
      * });
      */
-    setComponents(components) {
-      em.setComponents(components);
+    setComponents(components, opt = {}) {
+      em.setComponents(components, opt);
       return this;
     },
 
@@ -294,6 +295,7 @@ export default (config = {}) => {
     /**
      * Set style inside editor's canvas. This method overrides actual style
      * @param {Array<Object>|Object|string} style CSS string or style model
+     * @param {Object} opt the options object to be used by the [setStyle]{@link em#setStyle} method
      * @return {this}
      * @example
      * editor.setStyle('.cls{color: red}');
@@ -303,8 +305,8 @@ export default (config = {}) => {
      *   style: { color: 'red' }
      * });
      */
-    setStyle(style) {
-      em.setStyle(style);
+    setStyle(style, opt = {}) {
+      em.setStyle(style, opt);
       return this;
     },
 
