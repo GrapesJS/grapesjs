@@ -708,26 +708,13 @@ export default {
     style.height = pos.height + unit;
 
     this.updateToolbarPos({ top: targetToElem.top, left: targetToElem.left });
-
-    // const { resizer, em } = this;
-    // const model = em.getSelected();
-    // const el = model && model.getEl();
-    // if (!el) return;
-
-    // if (el && this.elSelected !== el) {
-    //   this.elSelected = el;
-    //   const pos = this.getElementPos(el);
-    //   this.updateToolbarPos(el, pos);
-    //   this.showFixedElementOffset(el, pos);
-    //   resizer && resizer.updateContainer();
-    // }
   },
 
   /**
    * Update attached elements, eg. component toolbar
    */
   updateAttached: debounce(function() {
-    this.updateToolsGlobal();
+    this.updateGlobalPos();
   }),
 
   /**
