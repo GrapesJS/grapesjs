@@ -548,7 +548,7 @@ export default () => ({
             'Comic Sans MS, cursive' + ss,
             'Courier New, Courier, monospace',
             'Georgia, serif',
-            'Helvetica, serif',
+            'Helvetica' + ss,
             'Impact, Charcoal' + ss,
             'Lucida Sans Unicode, Lucida Grande' + ss,
             'Tahoma, Geneva' + ss,
