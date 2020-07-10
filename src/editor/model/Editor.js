@@ -382,11 +382,12 @@ export default Backbone.Model.extend({
   /**
    * Set components inside editor's canvas. This method overrides actual components
    * @param {Object|string} components HTML string or components model
+   * @param {Object} opt the options object to be used by the [setComponents]{@link setComponents} method
    * @return {this}
    * @private
    */
-  setComponents(components) {
-    return this.get('DomComponents').setComponents(components);
+  setComponents(components, opt = {}) {
+    return this.get('DomComponents').setComponents(components, opt);
   },
 
   /**
@@ -407,13 +408,14 @@ export default Backbone.Model.extend({
   /**
    * Set style inside editor's canvas. This method overrides actual style
    * @param {Object|string} style CSS string or style model
+   * @param {Object} opt the options object to be used by the [CssRules.add]{@link rules#add} method
    * @return {this}
    * @private
    */
-  setStyle(style) {
+  setStyle(style, opt = {}) {
     var rules = this.get('CssComposer').getAll();
     for (var i = 0, len = rules.length; i < len; i++) rules.pop();
-    rules.add(style);
+    rules.add(style, opt);
     return this;
   },
 
