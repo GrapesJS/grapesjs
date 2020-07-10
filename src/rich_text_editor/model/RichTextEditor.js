@@ -40,9 +40,9 @@ const defActions = {
   },
   strikethrough: {
     name: 'strikethrough',
-    icon: '<strike>S</strike>',
+    icon: '<s>S</s>',
     attributes: { title: 'Strike-through' },
-    result: rte => rte.exec('strikeThrough')
+    result: rte => rte.insertHTML(`<s>${rte.selection()}</s>`),
   },
   link: {
     icon: `<span style="transform:rotate(45deg)">&supdsub;</span>`,
