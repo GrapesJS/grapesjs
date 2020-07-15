@@ -176,6 +176,7 @@ export default {
     this.updateToolsGlobal();
     // This will hide some elements from the select component
     this.updateToolsLocal(result);
+    this.initResize(component);
   }),
 
   updateGlobalPos() {
@@ -422,8 +423,7 @@ export default {
     const resizeClass = `${pfx}resizing`;
     const model =
       !isElement(elem) && isTaggableNode(elem) ? elem : em.getSelected();
-    const resizable = model.get('resizable');
-    const el = isElement(elem) ? elem : model.getEl();
+    const resizable = model && model.get('resizable');
     let options = {};
     let modelToStyle;
 
@@ -441,6 +441,7 @@ export default {
     };
 
     if (editor && resizable) {
+      const el = isElement(elem) ? elem : model.getEl();
       options = {
         // Here the resizer is updated with the current element height and width
         onStart(e, opts = {}) {
