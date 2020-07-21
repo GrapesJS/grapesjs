@@ -11,10 +11,19 @@ export default {
     return this.panels;
   },
 
+  preventDrag(opts) {
+    opts.abort = 1;
+  },
+
   tglPointers(editor, val) {
     const body = editor.Canvas.getBody();
     const elP = body.querySelectorAll(`.${this.ppfx}no-pointer`);
     each(elP, item => (item.style.pointerEvents = val ? '' : 'all'));
+  },
+
+  tglEffects(on) {
+    const mthEv = on ? 'on' : 'off';
+    this.em[mthEv]('run:tlb-move:before', this.preventDrag);
   },
 
   run(editor, sender) {
@@ -53,6 +62,7 @@ export default {
     canvasS.padding = '0';
     canvasS.margin = '0';
     editor.refresh();
+    this.tglEffects(1);
   },
 
   stop(editor) {
@@ -77,5 +87,6 @@ export default {
 
     editor.refresh();
     this.tglPointers(editor, 1);
+    this.tglEffects();
   }
 };
