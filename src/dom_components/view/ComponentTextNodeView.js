@@ -7,6 +7,12 @@ export default Backbone.View.extend({
     model.view = this;
   },
   _createElement() {
-    return document.createTextNode(this.model.get('content'));
+    return document.createTextNode('');
+  },
+  render() {
+    const { model, el } = this;
+    if (model.opt.temporary) return this;
+    el.textContent = model.get('content');
+    return this;
   }
 });
