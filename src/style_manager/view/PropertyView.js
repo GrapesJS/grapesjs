@@ -23,6 +23,10 @@ export default Backbone.View.extend({
     const { parent } = model;
     const { icon = '', info = '', id, name } = model.attributes;
     const label = (em && em.t(`styleManager.properties.${id}`)) || name;
+    // if there is an icon, the label should be empty
+    if (!!icon) {
+      label = '';
+    }
 
     return `
       <span class="${pfx}icon ${icon}" title="${info}">
