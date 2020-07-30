@@ -110,6 +110,13 @@ Returns **Collection**
 
 Remove a block by id
 
+
+### Parameters
+
+-   `id` **[string][12]** Block id
+
+Returns **Block** Removed block
+
 ### Examples
 
 ```javascript
@@ -117,12 +124,6 @@ Remove a block by id
 const id = 'button';
 blockManager.remove(id);
 ```
-
-### Parameters
-
--   `id` **[string][12]** Block id
-
-Returns **Block** Removed block
 
 ## getCategories
 
