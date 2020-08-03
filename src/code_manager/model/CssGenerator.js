@@ -121,8 +121,8 @@ export default Backbone.Model.extend({
       }
     });
 
-    if ((selectorStrNoAdd && found) || selectorsAdd || singleAtRule) {
-      const block = rule.getDeclaration();
+    if ((selectorStrNoAdd && found) || selectorsAdd || singleAtRule || rule.attributes.style) {
+      const block = rule.getDeclaration().length > 0 ? rule.getDeclaration() : Object.entries(rule.attributes.style).map(([k, v]) => `${k}:${v}`).join(';') + ';';
       block && (result += block);
     } else {
       dump.push(rule);

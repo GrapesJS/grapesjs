@@ -15,7 +15,7 @@ const atRules = {
 };
 const atRuleKeys = keys(atRules);
 const singleAtRules = ['5', '6', '11', '15'];
-const singleAtRulesNames = ['font-face', 'page', 'counter-style', 'viewport'];
+const singleAtRulesNames = ['font-face', 'counter-style', 'viewport'];
 
 /**
  * Parse selector string to array.
