@@ -5,25 +5,19 @@ export default (config = {}) => ({
    * @return {Array<Object>}
    */
   build(props) {
-    var objs = [];
+    const objs = [];
 
     if (typeof props === 'string') props = [props];
 
-    for (var i = 0; i < props.length; i++) {
-      var obj = {};
-      var prop = props[i];
+    for (let i = 0; i < props.length; i++) {
+      const obj = {};
+      const prop = props[i];
       obj.name = prop;
 
-      // Define type
       switch (prop) {
         case 'target':
           obj.type = 'select';
-          break;
-      }
-
-      // Define options
-      switch (prop) {
-        case 'target':
+          obj.default = false;
           obj.options = config.optionsTarget;
           break;
       }
