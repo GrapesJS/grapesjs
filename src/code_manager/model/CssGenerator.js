@@ -107,11 +107,15 @@ export default Backbone.Model.extend({
     const selectorStrNoAdd = rule.selectorsToString({ skipAdd: 1 });
     const selectorsAdd = rule.get('selectorsAdd');
     const singleAtRule = rule.get('singleAtRule');
+    let isGjsRule = false;
     let found;
 
     // This will not render a rule if there is no its component
     rule.get('selectors').each(selector => {
       const name = selector.getFullName();
+      if (name.startsWith('.gjs')) {
+        isGjsRule = true;
+      }
       if (
         this.compCls.indexOf(name) >= 0 ||
         this.ids.indexOf(name) >= 0 ||
@@ -122,7 +126,9 @@ export default Backbone.Model.extend({
     });
 
     if ((selectorStrNoAdd && found) || selectorsAdd || singleAtRule || rule.attributes.style) {
-      const block = rule.getDeclaration().length > 0 ? rule.getDeclaration() : Object.entries(rule.attributes.style).map(([k, v]) => `${k}:${v}`).join(';') + ';';
+      const entries = Object.entries(rule.attributes.style);
+      const styleStr = entries.length > 0 ? entries.map(([k, v]) => `${k}:${v}`).join(';') + ';' : '';
+      const block = rule.getDeclaration().length > 0 ? rule.getDeclaration() : styleStr;
       block && (result += block);
     } else {
       dump.push(rule);
