@@ -204,7 +204,7 @@ export default {
   onOut() {
     this.currentDoc = null;
     this.em.setHovered(0);
-    this.elHovered = undefined;
+    this.elHovered = 0;
     this.updateToolsLocal();
     this.canvas.getFrames().forEach(frame => {
       const { view } = frame;
