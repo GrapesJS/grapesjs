@@ -397,10 +397,14 @@ export default Backbone.View.extend({
    * Highlight target
    * @param  {Model|null} model
    */
-  selectTargetModel(model) {
+  selectTargetModel(model, source) {
     if (model instanceof Backbone.Collection) {
       return;
     }
+
+    // Prevents loops in Firefox
+    // https://github.com/artf/grapesjs/issues/2911
+    if (source && source === model) return;
 
     const { targetModel } = this;
 
@@ -453,7 +457,7 @@ export default Backbone.View.extend({
     const dims = this.dimsFromTarget(e.target, rX, rY);
     const target = this.target;
     const targetModel = target && this.getTargetModel(target);
-    this.selectTargetModel(targetModel);
+    this.selectTargetModel(targetModel, sourceModel);
     if (!targetModel) plh.style.display = 'none';
     if (!target) return;
 
@@ -474,7 +478,7 @@ export default Backbone.View.extend({
       // If there is a significant changes with the pointer
       if (
         !this.lastPos ||
-        (this.lastPos.index != pos.index || this.lastPos.method != pos.method)
+        this.lastPos.index != pos.index || this.lastPos.method != pos.method
       ) {
         this.movePlaceholder(this.plh, dims, pos, this.prevTargetDim);
         if (!this.$plh) this.$plh = $(this.plh);
