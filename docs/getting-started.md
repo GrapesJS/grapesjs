@@ -714,11 +714,10 @@ To complete our builder let's customize its color palette and to make it more vi
 .gjs-four-color-h:hover {
   color: #ec5896;
 }
-```
+
 
 and here is our final result
 
 <Demo id="final-result">
   <DemoTheme/>
 </Demo>
-
