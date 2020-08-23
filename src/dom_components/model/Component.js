@@ -373,6 +373,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
     /**
      * Update attributes of the component
      * @param {Object} attrs Key value attributes
+     * @param {Object} options Options for the model update
      * @return {this}
      * @example
      * component.setAttributes({ id: 'test', 'data-key': 'value' });
@@ -385,13 +386,14 @@ const Component = Backbone.Model.extend(Styleable).extend(
     /**
      * Add attributes to the component
      * @param {Object} attrs Key value attributes
+     * @param {Object} options Options for the model update
      * @return {this}
      * @example
      * component.addAttributes({ 'data-key': 'value' });
      */
-    addAttributes(attrs) {
+    addAttributes(attrs, opts = {}) {
       const newAttrs = { ...this.getAttributes(), ...attrs };
-      this.setAttributes(newAttrs);
+      this.setAttributes(newAttrs, opts);
 
       return this;
     },
