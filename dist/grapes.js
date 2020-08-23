@@ -27566,12 +27566,20 @@ var cmdVis = 'sw-visibility';
 
     return this.panels;
   },
+  preventDrag: function preventDrag(opts) {
+    opts.abort = 1;
+  },
   tglPointers: function tglPointers(editor, val) {
     var body = editor.Canvas.getBody();
     var elP = body.querySelectorAll(".".concat(this.ppfx, "no-pointer"));
     Object(underscore__WEBPACK_IMPORTED_MODULE_0__["each"])(elP, function (item) {
       return item.style.pointerEvents = val ? '' : 'all';
     });
+  },
+  tglEffects: function tglEffects(on) {
+    var em = this.em;
+    var mthEv = on ? 'on' : 'off';
+    em && em[mthEv]('run:tlb-move:before', this.preventDrag);
   },
   run: function run(editor, sender) {
     var _this = this;
@@ -27614,6 +27622,7 @@ var cmdVis = 'sw-visibility';
     canvasS.padding = '0';
     canvasS.margin = '0';
     editor.refresh();
+    this.tglEffects(1);
   },
   stop: function stop(editor) {
     var _this$sender = this.sender,
@@ -27639,6 +27648,7 @@ var cmdVis = 'sw-visibility';
 
     editor.refresh();
     this.tglPointers(editor, 1);
+    this.tglEffects();
   }
 });
 
@@ -27894,6 +27904,7 @@ var showOffsets;
     this.updateToolsGlobal(); // This will hide some elements from the select component
 
     this.updateToolsLocal(result);
+    this.initResize(component);
   }),
   updateGlobalPos: function updateGlobalPos() {
     var sel = this.getElSelected();
@@ -27918,6 +27929,8 @@ var showOffsets;
 
     this.currentDoc = null;
     this.em.setHovered(0);
+    this.elHovered = 0;
+    this.updateToolsLocal();
     this.canvas.getFrames().forEach(function (frame) {
       var view = frame.view;
       var el = view && view.getToolsEl();
@@ -28148,8 +28161,7 @@ var showOffsets;
     var pfx = config.stylePrefix || '';
     var resizeClass = "".concat(pfx, "resizing");
     var model = !Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isElement"])(elem) && Object(utils_mixins__WEBPACK_IMPORTED_MODULE_4__["isTaggableNode"])(elem) ? elem : em.getSelected();
-    var resizable = model.get('resizable');
-    var el = Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isElement"])(elem) ? elem : model.getEl();
+    var resizable = model && model.get('resizable');
     var options = {};
     var modelToStyle;
 
@@ -28163,6 +28175,7 @@ var showOffsets;
     };
 
     if (editor && resizable) {
+      var el = Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isElement"])(elem) ? elem : model.getEl();
       options = {
         // Here the resizer is updated with the current element height and width
         onStart: function onStart(e) {
@@ -28457,24 +28470,14 @@ var showOffsets;
     this.updateToolbarPos({
       top: targetToElem.top,
       left: targetToElem.left
-    }); // const { resizer, em } = this;
-    // const model = em.getSelected();
-    // const el = model && model.getEl();
-    // if (!el) return;
-    // if (el && this.elSelected !== el) {
-    //   this.elSelected = el;
-    //   const pos = this.getElementPos(el);
-    //   this.updateToolbarPos(el, pos);
-    //   this.showFixedElementOffset(el, pos);
-    //   resizer && resizer.updateContainer();
-    // }
+    });
   },
 
   /**
    * Update attached elements, eg. component toolbar
    */
   updateAttached: Object(underscore__WEBPACK_IMPORTED_MODULE_3__["debounce"])(function () {
-    this.updateToolsGlobal();
+    this.updateGlobalPos();
   }),
 
   /**
@@ -30825,6 +30828,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
      * @param {string} [component.content=''] String inside component
      * @param {Object} [component.style={}] Style object
      * @param {Object} [component.attributes={}] Attribute object
+     * @param {Object} opt the options object to be used by the [Components.add]{@link getComponents} method
      * @return {Component|Array<Component>} Component/s added
      * @example
      * // Example of a new component with some extra property
@@ -30839,7 +30843,8 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
      * });
      */
     addComponent: function addComponent(component) {
-      return this.getComponents().add(component);
+      var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      return this.getComponents().add(component, opt);
     },
 
     /**
@@ -30869,11 +30874,13 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     /**
      * Set components
      * @param {Object|string} components HTML string or components model
+     * @param {Object} opt the options object to be used by the {@link addComponent} method
      * @return {this}
      * @private
      */
     setComponents: function setComponents(components) {
-      this.clear().addComponent(components);
+      var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      this.clear().addComponent(components, opt);
     },
 
     /**
@@ -33447,6 +33454,7 @@ var ytnc = 'ytnc';
     autoplay: 0,
     controls: 1,
     color: '',
+    list: '',
     rel: 1,
     // YT related videos
     modestbranding: 0,
@@ -33515,6 +33523,7 @@ var ytnc = 'ytnc';
       case vi:
         var videoId = uri.pathname.split('/').pop();
         this.set('videoId', videoId);
+        qr.list && this.set('list', qr.list);
         if (qr.autoplay) this.set('autoplay', 1);
         if (qr.loop) this.set('loop', 1);
         if (parseInt(qr.controls) === 0) this.set('controls', 0);
@@ -33722,7 +33731,9 @@ var ytnc = 'ytnc';
   getYoutubeSrc: function getYoutubeSrc() {
     var id = this.get('videoId');
     var url = this.get('ytUrl');
-    url += id + '?';
+    var list = this.get('list');
+    url += id + (id.indexOf('?') < 0 ? '?' : '');
+    url += list ? "&list=".concat(list) : '';
     url += this.get('autoplay') ? '&autoplay=1' : '';
     url += !this.get('controls') ? '&controls=0&showinfo=0' : ''; // Loop works only with playlist enabled
     // https://stackoverflow.com/questions/25779966/youtube-iframe-loop-doesnt-work
@@ -33971,7 +33982,9 @@ var Component;
     } else if (Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isArray"])(models)) {
       models.forEach(function (item, index) {
         if (Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isString"])(item)) {
-          models[index] = _this3.parseString(item, opt);
+          var nodes = _this3.parseString(item, opt);
+
+          models[index] = Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isArray"])(nodes) && !nodes.length ? null : nodes;
         }
       });
     }
@@ -34143,6 +34156,7 @@ __webpack_require__.r(__webpack_exports__);
     dblclick: 'onActive',
     click: 'initResize',
     error: 'onError',
+    load: 'onLoad',
     dragstart: 'noDrag'
   },
   initialize: function initialize(o) {
@@ -34224,6 +34238,10 @@ __webpack_require__.r(__webpack_exports__);
       fallback: 1
     });
     if (fallback) this.el.src = fallback;
+  },
+  onLoad: function onLoad() {
+    // Used to update component tools box (eg. toolbar, resizer) once the image is loaded
+    this.em.trigger('change:canvasOffset');
   },
   noDrag: function noDrag(ev) {
     ev.preventDefault();
@@ -34520,7 +34538,14 @@ __webpack_require__.r(__webpack_exports__);
     model.view = this;
   },
   _createElement: function _createElement() {
-    return document.createTextNode(this.model.get('content'));
+    return document.createTextNode('');
+  },
+  render: function render() {
+    var model = this.model,
+        el = this.el;
+    if (model.opt.temporary) return this;
+    el.textContent = model.get('content');
+    return this;
   }
 }));
 
@@ -37199,6 +37224,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     /**
      * Set components inside editor's canvas. This method overrides actual components
      * @param {Array<Object>|Object|string} components HTML string or components model
+     * @param {Object} opt the options object to be used by the [setComponents]{@link em#setComponents} method
      * @return {this}
      * @example
      * editor.setComponents('<div class="cls">New component</div>');
@@ -37210,7 +37236,8 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
      * });
      */
     setComponents: function setComponents(components) {
-      em.setComponents(components);
+      var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      em.setComponents(components, opt);
       return this;
     },
 
@@ -37246,6 +37273,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     /**
      * Set style inside editor's canvas. This method overrides actual style
      * @param {Array<Object>|Object|string} style CSS string or style model
+     * @param {Object} opt the options object to be used by the [setStyle]{@link em#setStyle} method
      * @return {this}
      * @example
      * editor.setStyle('.cls{color: red}');
@@ -37256,7 +37284,8 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
      * });
      */
     setStyle: function setStyle(style) {
-      em.setStyle(style);
+      var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      em.setStyle(style, opt);
       return this;
     },
 
@@ -38037,11 +38066,13 @@ var logs = {
   /**
    * Set components inside editor's canvas. This method overrides actual components
    * @param {Object|string} components HTML string or components model
+   * @param {Object} opt the options object to be used by the [setComponents]{@link setComponents} method
    * @return {this}
    * @private
    */
   setComponents: function setComponents(components) {
-    return this.get('DomComponents').setComponents(components);
+    var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    return this.get('DomComponents').setComponents(components, opt);
   },
 
   /**
@@ -38060,17 +38091,19 @@ var logs = {
   /**
    * Set style inside editor's canvas. This method overrides actual style
    * @param {Object|string} style CSS string or style model
+   * @param {Object} opt the options object to be used by the [CssRules.add]{@link rules#add} method
    * @return {this}
    * @private
    */
   setStyle: function setStyle(style) {
+    var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     var rules = this.get('CssComposer').getAll();
 
     for (var i = 0, len = rules.length; i < len; i++) {
       rules.pop();
     }
 
-    rules.add(style);
+    rules.add(style, opt);
     return this;
   },
 
@@ -38991,7 +39024,7 @@ var defaultConfig = {
   editors: editors,
   plugins: plugins,
   // Will be replaced on build
-  version: '0.16.18',
+  version: '0.16.19',
 
   /**
    * Initialize the editor with passed options
@@ -39967,7 +40000,7 @@ var ItemsView;
     var model = this.model;
     var hClass = "".concat(pfx, "layer-hidden");
     var hideIcon = 'fa-eye-slash';
-    var hidden = model.getStyle().display == 'none';
+    var hidden = model.getStyle().display === 'none';
     var method = hidden ? 'addClass' : 'removeClass';
     this.$el[method](hClass);
     this.getVisibilityEl()[method](hideIcon);
@@ -40171,13 +40204,13 @@ var ItemsView;
   /**
    * Check if component is visible
    *
-   * @return bool
+   * @return boolean
    * */
   isVisible: function isVisible() {
-    var css = this.model.get('style'),
-        pr = css.display;
-    if (pr && pr == 'none') return;
-    return 1;
+    var _this$model$getStyle = this.model.getStyle(),
+        display = _this$model$getStyle.display;
+
+    return !(display && display === 'none');
   },
 
   /**
@@ -42124,6 +42157,11 @@ __webpack_require__.r(__webpack_exports__);
 
             model[modelAttr] = nodeValue;
           } else {
+            // Check for attributes from props (eg. required, disabled)
+            if (nodeValue === '' && node[nodeName] === true) {
+              nodeValue = true;
+            }
+
             model.attributes[nodeName] = nodeValue;
           }
         } // Check for nested elements but avoid it if already provided
@@ -42779,12 +42817,12 @@ var defActions = {
   },
   strikethrough: {
     name: 'strikethrough',
-    icon: '<strike>S</strike>',
+    icon: '<s>S</s>',
     attributes: {
       title: 'Strike-through'
     },
     result: function result(rte) {
-      return rte.exec('strikeThrough');
+      return rte.insertHTML("<s>".concat(rte.selection(), "</s>"));
     }
   },
   link: {
@@ -46863,7 +46901,7 @@ __webpack_require__.r(__webpack_exports__);
 
           case 'font-family':
             var ss = ', sans-serif';
-            var fonts = ['Arial, Helvetica' + ss, 'Arial Black, Gadget' + ss, 'Brush Script MT' + ss, 'Comic Sans MS, cursive' + ss, 'Courier New, Courier, monospace', 'Georgia, serif', 'Helvetica, serif', 'Impact, Charcoal' + ss, 'Lucida Sans Unicode, Lucida Grande' + ss, 'Tahoma, Geneva' + ss, 'Times New Roman, Times, serif', 'Trebuchet MS, Helvetica' + ss, 'Verdana, Geneva' + ss];
+            var fonts = ['Arial, Helvetica' + ss, 'Arial Black, Gadget' + ss, 'Brush Script MT' + ss, 'Comic Sans MS, cursive' + ss, 'Courier New, Courier, monospace', 'Georgia, serif', 'Helvetica' + ss, 'Impact, Charcoal' + ss, 'Lucida Sans Unicode, Lucida Grande' + ss, 'Tahoma, Geneva' + ss, 'Times New Roman, Times, serif', 'Trebuchet MS, Helvetica' + ss, 'Verdana, Geneva' + ss];
             obj.list = [];
 
             for (var j = 0, l = fonts.length; j < l; j++) {
@@ -50235,17 +50273,12 @@ __webpack_require__.r(__webpack_exports__);
       for (var i = 0; i < props.length; i++) {
         var obj = {};
         var prop = props[i];
-        obj.name = prop; // Define type
+        obj.name = prop;
 
         switch (prop) {
           case 'target':
             obj.type = 'select';
-            break;
-        } // Define options
-
-
-        switch (prop) {
-          case 'target':
+            obj.default = false;
             obj.options = config.optionsTarget;
             break;
         }
@@ -50606,6 +50639,7 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
           em = this.em;
       var propName = model.get('name');
       var opts = model.get('options') || [];
+      var values = [];
       var input = '<select>';
       opts.forEach(function (el) {
         var attrs = '';
@@ -50623,11 +50657,13 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
 
         var resultName = em.t("traitManager.traits.options.".concat(propName, ".").concat(value)) || name;
         input += "<option value=\"".concat(value, "\"").concat(attrs, ">").concat(resultName, "</option>");
+        values.push(value);
       });
       input += '</select>';
       this.$input = $(input);
       var val = model.getTargetValue();
-      !Object(underscore__WEBPACK_IMPORTED_MODULE_1__["isUndefined"])(val) && this.$input.val(val);
+      var valResult = values.indexOf(val) >= 0 ? val : model.get('default');
+      !Object(underscore__WEBPACK_IMPORTED_MODULE_1__["isUndefined"])(valResult) && this.$input.val(valResult);
     }
 
     return this.$input.get(0);
@@ -55391,11 +55427,14 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
    * Highlight target
    * @param  {Model|null} model
    */
-  selectTargetModel: function selectTargetModel(model) {
+  selectTargetModel: function selectTargetModel(model, source) {
     if (model instanceof backbone__WEBPACK_IMPORTED_MODULE_1___default.a.Collection) {
       return;
-    }
+    } // Prevents loops in Firefox
+    // https://github.com/artf/grapesjs/issues/2911
 
+
+    if (source && source === model) return;
     var targetModel = this.targetModel; // Reset the previous model but not if it's the same as the source
     // https://github.com/artf/grapesjs/issues/2478#issuecomment-570314736
 
@@ -55445,7 +55484,7 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
     var dims = this.dimsFromTarget(e.target, rX, rY);
     var target = this.target;
     var targetModel = target && this.getTargetModel(target);
-    this.selectTargetModel(targetModel);
+    this.selectTargetModel(targetModel, sourceModel);
     if (!targetModel) plh.style.display = 'none';
     if (!target) return;
     this.lastDims = dims;
