@@ -22,8 +22,9 @@ export default {
   },
 
   tglEffects(on) {
+    const { em } = this;
     const mthEv = on ? 'on' : 'off';
-    this.em[mthEv]('run:tlb-move:before', this.preventDrag);
+    em && em[mthEv]('run:tlb-move:before', this.preventDrag);
   },
 
   run(editor, sender) {
