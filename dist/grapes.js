@@ -31454,6 +31454,7 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(dom
   /**
    * Update attributes of the component
    * @param {Object} attrs Key value attributes
+   * @param {Object} options Options for the model update
    * @return {this}
    * @example
    * component.setAttributes({ id: 'test', 'data-key': 'value' });
@@ -31467,14 +31468,17 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(dom
   /**
    * Add attributes to the component
    * @param {Object} attrs Key value attributes
+   * @param {Object} options Options for the model update
    * @return {this}
    * @example
    * component.addAttributes({ 'data-key': 'value' });
    */
   addAttributes: function addAttributes(attrs) {
+    var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
     var newAttrs = _objectSpread({}, this.getAttributes(), {}, attrs);
 
-    this.setAttributes(newAttrs);
+    this.setAttributes(newAttrs, opts);
     return this;
   },
 
@@ -39024,7 +39028,7 @@ var defaultConfig = {
   editors: editors,
   plugins: plugins,
   // Will be replaced on build
-  version: '0.16.19',
+  version: '0.16.20',
 
   /**
    * Initialize the editor with passed options
