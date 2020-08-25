@@ -537,7 +537,10 @@ export default Backbone.Model.extend({
    */
   load(clb = null) {
     this.getCacheLoad(1, res => {
-      this.get('storables').forEach(module => module.load(res));
+      this.get('storables').forEach(module => {
+        module.load(res);
+        module.postLoad && module.postLoad(this);
+      });
       clb && clb(res);
     });
   },
