@@ -78,17 +78,13 @@ export default ComponentView.extend({
    * @return string
    */
   getContent() {
-    const { rte } = this;
-    const { activeRte } = rte || {};
-    let content = '';
+    const { activeRte } = this;
+    const canGetRteContent =
+      activeRte && typeof activeRte.getContent === 'function';
 
-    if (activeRte && typeof activeRte.getContent === 'function') {
-      content = activeRte.getContent();
-    } else {
-      content = this.getChildrenContainer().innerHTML;
-    }
-
-    return content;
+    return canGetRteContent
+      ? activeRte.getContent()
+      : this.getChildrenContainer().innerHTML;
   },
 
   /**
