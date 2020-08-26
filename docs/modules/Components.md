@@ -72,7 +72,7 @@ In the first step, the HTML string is parsed and transformed to what is called *
       attributes: { title: 'foo' },
       components: [{
         type: 'textnode',
-        content: 'Hello wdsforld!!!'
+        content: 'Hello world!!!'
       }]
     }
   ]
