@@ -1,14 +1,23 @@
-import Backbone from 'backbone';
+import ComponentView from './ComponentView';
 
-export default Backbone.View.extend({
+export default ComponentView.extend({
   initialize() {
-    const { $el, model } = this;
-    $el.data('model', model);
-    model.view = this;
+    ComponentView.prototype.initialize.apply(this, arguments);
   },
+
+  // Clear methods used on Nodes with attributes
+  _setAttributes() {},
+  renderAttributes() {},
+  setAttribute() {},
+  updateAttributes() {},
+  initClasses() {},
+  initComponents() {},
+  delegateEvents() {},
+
   _createElement() {
     return document.createTextNode('');
   },
+
   render() {
     const { model, el } = this;
     if (model.opt.temporary) return this;
