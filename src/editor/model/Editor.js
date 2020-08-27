@@ -287,7 +287,8 @@ export default Backbone.Model.extend({
    * @private
    */
   getSelectedAll() {
-    return this.get('selected').models;
+    const sel = this.get('selected');
+    return (sel && sel.models) || [];
   },
 
   /**
