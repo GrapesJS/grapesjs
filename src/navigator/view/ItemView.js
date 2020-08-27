@@ -122,7 +122,7 @@ export default Backbone.View.extend({
    * */
   toggleVisibility(e) {
     e && e.stopPropagation();
-    const { model } = this;
+    const { model, em } = this;
     const prevDspKey = '__prev-display';
     const prevDisplay = model.get(prevDspKey);
     const style = model.getStyle();
@@ -142,6 +142,7 @@ export default Backbone.View.extend({
     }
 
     model.setStyle(style);
+    em && em.trigger('component:toggled'); // Updates Style Manager #2938
   },
 
   /**
