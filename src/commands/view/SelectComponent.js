@@ -7,6 +7,7 @@ import {
   isTaggableNode,
   getViewEl
 } from 'utils/mixins';
+import { isVisible } from 'utils/dom';
 import ToolbarView from 'dom_components/view/ToolbarView';
 import Toolbar from 'dom_components/model/Toolbar';
 
@@ -167,7 +168,7 @@ export default {
     let el = view && view.el;
     let result = {};
 
-    if (el) {
+    if (el && isVisible(el)) {
       const pos = this.getElementPos(el);
       result = { el, pos, component, view: getViewEl(el) };
     }
