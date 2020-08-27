@@ -8,6 +8,12 @@ const KEY_CHILD = 'children';
 export const motionsEv =
   'transitionend oTransitionEnd transitionend webkitTransitionEnd';
 
+export const isVisible = el => {
+  return (
+    el && !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length)
+  );
+};
+
 export const empty = node => {
   while (node.firstChild) node.removeChild(node.firstChild);
 };
