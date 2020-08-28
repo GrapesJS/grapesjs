@@ -7,7 +7,7 @@ import {
   isTaggableNode,
   getViewEl
 } from 'utils/mixins';
-import { isVisible } from 'utils/dom';
+import { isVisible, isDoc } from 'utils/dom';
 import ToolbarView from 'dom_components/view/ToolbarView';
 import Toolbar from 'dom_components/model/Toolbar';
 
@@ -116,7 +116,7 @@ export default {
     // Get first valid model
     if (!model) {
       let parent = $el.parent();
-      while (!model && parent.length > 0) {
+      while (!model && parent.length && !isDoc(parent[0])) {
         model = parent.data('model');
         parent = parent.parent();
       }
@@ -292,7 +292,7 @@ export default {
 
     if (!model) {
       let parent = $el.parent();
-      while (!model && parent.length > 0) {
+      while (!model && parent.length && !isDoc(parent[0])) {
         model = parent.data('model');
         parent = parent.parent();
       }
