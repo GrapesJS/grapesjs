@@ -148,6 +148,14 @@ export default {
   // To get more about this feature read: https://github.com/artf/grapesjs/issues/1936
   dragMode: 0,
 
+  // When the editor is placed in a scrollable container (eg. modals) this might
+  // cause elements inside the canvas (eg. floating toolbars) to be misaligned.
+  // To avoid that, you can specify an array of DOM elements on which their scroll will
+  // trigger the canvas update.
+  // Be default, if the array is empty, the first parent element will be appended.
+  // listenToEl: [document.querySelector('#scrollable-el')],
+  listenToEl: [],
+
   // Import asynchronously CSS to use as icons
   cssIcons:
     'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css',

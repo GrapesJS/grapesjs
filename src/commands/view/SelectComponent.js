@@ -41,7 +41,8 @@ export default {
       'onOut',
       'onClick',
       'onFrameScroll',
-      'onFrameUpdated'
+      'onFrameUpdated',
+      'onContainerChange'
     );
   },
 
@@ -74,8 +75,11 @@ export default {
    * */
   toggleSelectComponent(enable) {
     const { em } = this;
+    const listenToEl = em.getConfig('listenToEl');
+    const { parentNode } = em.getContainer();
     const method = enable ? 'on' : 'off';
     const methods = { on, off };
+    !listenToEl.length && parentNode && listenToEl.push(parentNode);
     const trigger = (win, body) => {
       methods[method](body, 'mouseover', this.onHover);
       methods[method](body, 'mouseleave', this.onOut);
@@ -83,6 +87,7 @@ export default {
       methods[method](win, 'scroll', this.onFrameScroll);
     };
     methods[method](window, 'resize', this.onFrameUpdated);
+    methods[method](listenToEl, 'scroll', this.onContainerChange);
     em[method]('component:toggled', this.onSelect, this);
     em[method]('change:componentHovered', this.onHovered, this);
     em[method](
@@ -720,6 +725,10 @@ export default {
   updateAttached: debounce(function() {
     this.updateGlobalPos();
   }),
+
+  onContainerChange: debounce(function() {
+    this.em.refreshCanvas();
+  }, 150),
 
   /**
    * Returns element's data info
