@@ -1,20 +1,16 @@
 import Backbone from 'backbone';
 import { bindAll, isArray, isUndefined, debounce } from 'underscore';
-import { camelCase } from 'utils/mixins';
+import { camelCase, isObject } from 'utils/mixins';
 import { includes, each } from 'underscore';
 
 const clearProp = 'data-clear-style';
 
 export default Backbone.View.extend({
-  template(model) {
-    const pfx = this.pfx;
+  template() {
+    const { pfx, ppfx } = this;
     return `
-      <div class="${pfx}label">
-        ${this.templateLabel(model)}
-      </div>
-      <div class="${this.ppfx}fields">
-        ${this.templateInput(model)}
-      </div>
+      <div class="${pfx}label" data-sm-label></div>
+      <div class="${ppfx}fields" data-sm-fields></div>
     `;
   },
 
@@ -46,7 +42,7 @@ export default Backbone.View.extend({
   },
 
   initialize(o = {}) {
-    bindAll(this, 'targetUpdated');
+    bindAll(this, 'targetUpdated', '__change', '__updateStyle');
     this.config = o.config || {};
     const em = this.config.em;
     this.em = em;
@@ -63,6 +59,7 @@ export default Backbone.View.extend({
     const pfx = this.pfx;
     this.inputHolderId = '#' + pfx + 'input-holder';
     this.sector = model.collection && model.collection.sector;
+    this.__destroyFn = this.destroy ? this.destroy.bind(this) : () => {};
     model.view = this;
 
     if (!model.get('value')) {
@@ -98,6 +95,11 @@ export default Backbone.View.extend({
 
     const init = this.init && this.init.bind(this);
     init && init();
+  },
+
+  remove() {
+    Backbone.View.prototype.remove.apply(this, arguments);
+    this.__destroyFn(this._getClbOpts());
   },
 
   /**
@@ -191,6 +193,7 @@ export default Backbone.View.extend({
    */
   inputValueChanged(ev) {
     ev && ev.stopPropagation();
+    if (this.emit) return;
     this.model.setValueFromInput(this.getInputValue());
     this.elementUpdated();
   },
@@ -588,6 +591,7 @@ export default Backbone.View.extend({
   setValue(value) {
     const model = this.model;
     let val = isUndefined(value) ? model.getDefaultValue() : value;
+    if (this.update) return this.__update(val);
     const input = this.getInputEl();
     input && (input.value = val);
   },
@@ -625,16 +629,63 @@ export default Backbone.View.extend({
     this.$input = null;
   },
 
+  __update(value) {
+    const update = this.update && this.update.bind(this);
+    update &&
+      update({
+        ...this._getClbOpts(),
+        value
+      });
+  },
+
+  __change(...args) {
+    const emit = this.emit && this.emit.bind(this);
+    emit && emit(this._getClbOpts(), ...args);
+  },
+
+  __updateStyle(value, { complete, ...opts } = {}) {
+    const final = complete !== false;
+
+    if (isObject(value)) {
+      this.getTargets().forEach(target =>
+        target.addStyle(value, { avoidStore: !final })
+      );
+    } else {
+      this.model.setValueFromInput(value, complete, opts);
+    }
+
+    final && this.elementUpdated();
+  },
+
+  _getClbOpts() {
+    const { model, el } = this;
+    return {
+      el,
+      props: model.attributes,
+      setProps: (...args) => model.set(...args),
+      change: this.__change,
+      updateStyle: this.__updateStyle,
+      targets: this.getTargets()
+    };
+  },
+
   render() {
     this.clearCached();
-    const pfx = this.pfx;
-    const model = this.model;
-    const el = this.el;
+    const { pfx, model, el, $el } = this;
     const property = model.get('property');
     const full = model.get('full');
     const cls = model.get('className') || '';
     const className = `${pfx}property`;
-    el.innerHTML = this.template(model);
+
+    this.createdEl && this.__destroyFn(this._getClbOpts());
+    $el.empty().append(this.template(model));
+    $el.find('[data-sm-label]').append(this.templateLabel(model));
+    const create = this.create && this.create.bind(this);
+    this.createdEl = create && create(this._getClbOpts());
+    $el
+      .find('[data-sm-fields]')
+      .append(this.createdEl || this.templateInput(model));
+
     el.className = `${className} ${pfx}${model.get(
       'type'
     )} ${className}__${property} ${cls}`.trim();

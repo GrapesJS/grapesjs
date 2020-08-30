@@ -204,7 +204,7 @@ export default () => {
     /**
      * Get property by its CSS name and sector id
      * @param  {string} sectorId Sector id
-     * @param  {string} name CSS property name, eg. 'min-height'
+     * @param  {string} name CSS property name (or id), eg. 'min-height'
      * @return {Property|null}
      * @example
      * var property = styleManager.getProperty('mySector','min-height');
@@ -214,8 +214,11 @@ export default () => {
       let prop = null;
 
       if (sector) {
-        prop = sector.get('properties').where({ property: name });
-        prop = prop.length == 1 ? prop[0] : prop;
+        prop = sector
+          .get('properties')
+          .filter(
+            prop => prop.get('property') === name || prop.get('id') === name
+          )[0];
       }
 
       return prop;
