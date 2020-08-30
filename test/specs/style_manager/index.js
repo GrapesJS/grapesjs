@@ -113,7 +113,7 @@ describe('StyleManager', () => {
         { property: 'test-prop' },
         { property: 'test-prop' }
       ]);
-      expect(obj.getProperty('test', 'test-prop').length).toEqual(1);
+      expect(obj.getProperty('test', 'test-prop')).toBeTruthy();
     });
 
     test('Get inexistent properties', () => {
