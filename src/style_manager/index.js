@@ -211,7 +211,7 @@ export default () => {
      */
     getProperty(sectorId, name) {
       const sector = this.getSector(sectorId, { warn: 1 });
-      let prop = null;
+      let prop;
 
       if (sector) {
         prop = sector
@@ -221,7 +221,7 @@ export default () => {
           )[0];
       }
 
-      return prop;
+      return prop || null;
     },
 
     /**
