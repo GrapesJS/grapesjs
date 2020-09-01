@@ -258,6 +258,9 @@ export default Backbone.View.extend({
    * Fired when the target is changed
    * */
   targetUpdated(mod, val, opts = {}) {
+    //  Skip properties rendered in Stack Layers
+    if (this.config.fromLayer) return;
+
     this.emitUpdateTarget();
 
     if (!this.checkVisibility()) {

@@ -202,7 +202,8 @@ const Property = Backbone.Model.extend(
       }
 
       if (fn && hasValue) {
-        const fnParameter = fn === 'url' ? `'${value}'` : value;
+        const fnParameter =
+          fn === 'url' ? `'${value.replace(/'/g, '')}'` : value;
         value = `${fn}(${fnParameter})`;
       }
 

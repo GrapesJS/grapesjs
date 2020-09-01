@@ -169,7 +169,7 @@ export default Backbone.View.extend({
     const preview = model.get('preview');
     const properties = new PropertiesView({
       collection: model.get('properties'),
-      config: this.config,
+      config: { ...this.config, fromLayer: 1 },
       target: propsConfig.target,
       customValue: propsConfig.customValue,
       propTarget: propsConfig.propTarget,

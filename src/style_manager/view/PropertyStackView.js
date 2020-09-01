@@ -34,6 +34,7 @@ export default PropertyCompositeView.extend({
       config: this.config,
       propsConfig
     });
+    // For detached properties (eg. clear all)
     const PropertiesView = require('./PropertiesView').default;
     this.propsView = new PropertiesView({
       target: this.target,
