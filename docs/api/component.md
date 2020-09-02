@@ -216,6 +216,7 @@ Update attributes of the component
 
 -   `attrs` **[Object][2]** Key value attributes
 -   `opts`   (optional, default `{}`)
+-   `options` **[Object][2]** Options for the model update
 
 ### Examples
 
@@ -232,6 +233,8 @@ Add attributes to the component
 ### Parameters
 
 -   `attrs` **[Object][2]** Key value attributes
+-   `opts`   (optional, default `{}`)
+-   `options` **[Object][2]** Options for the model update
 
 ### Examples
 

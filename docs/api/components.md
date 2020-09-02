@@ -119,6 +119,7 @@ as 'domComponents.getComponents().add(...)'
     -   `component.content` **[string][15]** String inside component (optional, default `''`)
     -   `component.style` **[Object][12]** Style object (optional, default `{}`)
     -   `component.attributes` **[Object][12]** Attribute object (optional, default `{}`)
+-   `opt` **[Object][12]** the options object to be used by the [Components.add][getComponents][3] method (optional, default `{}`)
 
 ### Examples
 

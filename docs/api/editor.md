@@ -186,6 +186,7 @@ Set components inside editor's canvas. This method overrides actual components
 ### Parameters
 
 -   `components` **([Array][5]&lt;[Object][3]> | [Object][3] \| [string][2])** HTML string or components model
+-   `opt` **[Object][3]** the options object to be used by the [setComponents][em#setComponents][6] method (optional, default `{}`)
 
 ### Examples
 
@@ -240,6 +241,7 @@ Set style inside editor's canvas. This method overrides actual style
 ### Parameters
 
 -   `style` **([Array][5]&lt;[Object][3]> | [Object][3] \| [string][2])** CSS string or style model
+-   `opt` **[Object][3]** the options object to be used by the [setStyle][em#setStyle][7] method (optional, default `{}`)
 
 ### Examples
 
@@ -282,7 +284,7 @@ Select a component
 
 ### Parameters
 
--   `el` **(Component | [HTMLElement][6])** Component to select
+-   `el` **(Component | [HTMLElement][8])** Component to select
 -   `opts` **[Object][3]?** Options
     -   `opts.scroll` **[Boolean][4]?** Scroll canvas to the selected element
 
@@ -303,7 +305,7 @@ Add component to selection
 
 ### Parameters
 
--   `el` **(Component | [HTMLElement][6] \| [Array][5])** Component to select
+-   `el` **(Component | [HTMLElement][8] \| [Array][5])** Component to select
 
 ### Examples
 
@@ -319,7 +321,7 @@ Remove component from selection
 
 ### Parameters
 
--   `el` **(Component | [HTMLElement][6] \| [Array][5])** Component to select
+-   `el` **(Component | [HTMLElement][8] \| [Array][5])** Component to select
 
 ### Examples
 
@@ -335,7 +337,7 @@ Toggle component selection
 
 ### Parameters
 
--   `el` **(Component | [HTMLElement][6] \| [Array][5])** Component to select
+-   `el` **(Component | [HTMLElement][8] \| [Array][5])** Component to select
 
 ### Examples
 
@@ -416,7 +418,7 @@ Store data to the current storage
 
 ### Parameters
 
--   `clb` **[Function][7]** Callback function
+-   `clb` **[Function][9]** Callback function
 
 Returns **[Object][3]** Stored data
 
@@ -426,7 +428,7 @@ Load data from the current storage
 
 ### Parameters
 
--   `clb` **[Function][7]** Callback function
+-   `clb` **[Function][9]** Callback function
 
 Returns **[Object][3]** Stored data
 
@@ -435,14 +437,14 @@ Returns **[Object][3]** Stored data
 Returns container element. The one which was indicated as 'container'
 on init method
 
-Returns **[HTMLElement][6]** 
+Returns **[HTMLElement][8]** 
 
 ## getDirtyCount
 
 Return the count of changes made to the content and not yet stored.
 This count resets at any `store()`
 
-Returns **[number][8]** 
+Returns **[number][10]** 
 
 ## setCustomRte
 
@@ -490,7 +492,7 @@ custom parser, pass `null` as the argument
 
 ### Parameters
 
--   `parser` **([Function][7] | null)** Parser function
+-   `parser` **([Function][9] | null)** Parser function
 
 ### Examples
 
@@ -512,7 +514,7 @@ Returns **this**
 ## setDragMode
 
 Change the global drag mode of components.
-To get more about this feature read: [https://github.com/artf/grapesjs/issues/1936][9]
+To get more about this feature read: [https://github.com/artf/grapesjs/issues/1936][11]
 
 ### Parameters
 
@@ -575,7 +577,7 @@ Attach event
 ### Parameters
 
 -   `event` **[string][2]** Event name
--   `callback` **[Function][7]** Callback function
+-   `callback` **[Function][9]** Callback function
 
 Returns **this** 
 
@@ -586,7 +588,7 @@ Attach event and detach it after the first run
 ### Parameters
 
 -   `event` **[string][2]** Event name
--   `callback` **[Function][7]** Callback function
+-   `callback` **[Function][9]** Callback function
 
 Returns **this** 
 
@@ -597,7 +599,7 @@ Detach event
 ### Parameters
 
 -   `event` **[string][2]** Event name
--   `callback` **[Function][7]** Callback function
+-   `callback` **[Function][9]** Callback function
 
 Returns **this** 
 
@@ -619,7 +621,7 @@ Destroy the editor
 
 Render editor
 
-Returns **[HTMLElement][6]** 
+Returns **[HTMLElement][8]** 
 
 [1]: https://github.com/artf/grapesjs/blob/master/src/editor/config/config.js
 
@@ -631,10 +633,14 @@ Returns **[HTMLElement][6]**
 
 [5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
-[6]: https://developer.mozilla.org/docs/Web/HTML/Element
+[6]: em#setComponents
 
-[7]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+[7]: em#setStyle
 
-[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+[8]: https://developer.mozilla.org/docs/Web/HTML/Element
 
-[9]: https://github.com/artf/grapesjs/issues/1936
+[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+
+[10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+
+[11]: https://github.com/artf/grapesjs/issues/1936
