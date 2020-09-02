@@ -39047,7 +39047,7 @@ var defaultConfig = {
   editors: editors,
   plugins: plugins,
   // Will be replaced on build
-  version: '0.16.21',
+  version: '0.16.22',
 
   /**
    * Initialize the editor with passed options
@@ -45409,15 +45409,29 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
      *                            and `isType` function which recognize the type of the
      *                            passed entity
      *@example
-     * styleManager.addType('my-type', {
-     *  model: {},
-     *  view: {},
-     *  isType: (value) => {
-     *    if (value && value.type == 'my-type') {
-     *      return value;
-     *    }
-     *  },
-     * })
+     * styleManager.addType('my-custom-prop', {
+        create({ props, change }) {
+          const el = document.createElement('div');
+          el.innerHTML = '<input type="range" class="my-input" min="10" max="50"/>';
+          const inputEl = el.querySelector('.my-input');
+          inputEl.addEventListener('change', event => change({ event })); // change will trigger the emit
+          inputEl.addEventListener('input', event => change({ event, complete: false }));
+          return el;
+        },
+         emit({ props, updateStyle }, { event, complete }) {
+          const { value } = event.target;
+          const valueRes = value + 'px';
+          // Pass a string value for the exact CSS property or an object containing multiple properties
+          // eg. updateStyle({ [props.property]: valueRes, color: 'red' });
+          updateStyle(valueRes, { complete });
+        },
+         update({ value, el }) {
+          el.querySelector('.my-input').value = parseInt(value, 10);
+        },
+         destroy() {
+          // In order to prevent memory leaks, use this method to clean, eventually, created instances, global event listeners, etc.
+        }
+      })
      */
     addType: function addType(id, definition) {
       properties.addType(id, definition);
@@ -46138,7 +46152,7 @@ var Property = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.Model.extend({
     }
 
     if (fn && hasValue) {
-      var fnParameter = fn === 'url' ? "'".concat(value, "'") : value;
+      var fnParameter = fn === 'url' ? "'".concat(value.replace(/'/g, ''), "'") : value;
       value = "".concat(fn, "(").concat(fnParameter, ")");
     }
 
@@ -47626,14 +47640,22 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/modules/index-all.js");
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _PropertiesView__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./PropertiesView */ "./src/style_manager/view/PropertiesView.js");
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/modules/index-all.js");
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _PropertiesView__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./PropertiesView */ "./src/style_manager/view/PropertiesView.js");
+
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 
-/* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_1___default.a.View.extend({
+
+/* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_2___default.a.View.extend({
   events: {
     click: 'active',
     'click [data-close-layer]': 'removeItem',
@@ -47687,7 +47709,7 @@ __webpack_require__.r(__webpack_exports__);
         props = this.props;
     var coll = model.collection;
     var stackModel = this.stackModel;
-    backbone__WEBPACK_IMPORTED_MODULE_1___default.a.View.prototype.remove.apply(this, arguments);
+    backbone__WEBPACK_IMPORTED_MODULE_2___default.a.View.prototype.remove.apply(this, arguments);
     coll && coll.contains(model) && coll.remove(model);
 
     if (stackModel && stackModel.set) {
@@ -47744,11 +47766,11 @@ __webpack_require__.r(__webpack_exports__);
     if (preview && stackModel && previewEl) {
       var style = previewEl.style;
 
-      if (Object(underscore__WEBPACK_IMPORTED_MODULE_0__["isString"])(preview)) {
+      if (Object(underscore__WEBPACK_IMPORTED_MODULE_1__["isString"])(preview)) {
         style[stackModel.get('property')] = preview;
       } else {
         var prvStr = [];
-        Object(underscore__WEBPACK_IMPORTED_MODULE_0__["each"])(preview, function (val, prop) {
+        Object(underscore__WEBPACK_IMPORTED_MODULE_1__["each"])(preview, function (val, prop) {
           return prvStr.push("".concat(prop, ":").concat(val));
         });
         previewEl.setAttribute('style', prvStr.join(';'));
@@ -47787,9 +47809,11 @@ __webpack_require__.r(__webpack_exports__);
         el = this.el,
         pfx = this.pfx;
     var preview = model.get('preview');
-    var properties = new _PropertiesView__WEBPACK_IMPORTED_MODULE_2__["default"]({
+    var properties = new _PropertiesView__WEBPACK_IMPORTED_MODULE_3__["default"]({
       collection: model.get('properties'),
-      config: this.config,
+      config: _objectSpread({}, this.config, {
+        fromLayer: 1
+      }),
       target: propsConfig.target,
       customValue: propsConfig.customValue,
       propTarget: propsConfig.propTarget,
@@ -48694,7 +48718,7 @@ var cssGen = new code_manager_model_CssGenerator__WEBPACK_IMPORTED_MODULE_4__["d
       preview: model.get('preview'),
       config: this.config,
       propsConfig: propsConfig
-    });
+    }); // For detached properties, used in inputValueChanged (eg. clear all)
 
     var PropertiesView = __webpack_require__(/*! ./PropertiesView */ "./src/style_manager/view/PropertiesView.js").default;
 
@@ -48984,16 +49008,31 @@ var cssGen = new code_manager_model_CssGenerator__WEBPACK_IMPORTED_MODULE_4__["d
       // Things to do when a single sub-property is changed
       onChange: function onChange(el, view, opt) {
         var subModel = view.model;
+        var status = model.get('status');
 
         if (model.get('detached')) {
           var subProp = subModel.get('property');
           var defVal = subModel.getDefaultValue();
-          var values = self.getLayers().getPropertyValues(subProp, defVal);
-          view.updateTargetStyle(values, null, opt);
+          var layers = self.getLayers();
+          var values = layers.getPropertyValues(subProp, defVal);
+          view.updateTargetStyle(values, null, opt); // Update also the target with values of special hidden properties.
+          // This fixes the case of update with computed layers
+
+          if (subProp == 'background-image' && !opt.avoidStore && status == 'computed') {
+            model.get('properties').filter(function (prop) {
+              return prop.get('property').substr(0, 2) == '__';
+            }).forEach(function (prop) {
+              var name = prop.get('property');
+              var value = layers.getPropertyValues(name, prop.getDefaultValue());
+              self.getTargets().forEach(function (tr) {
+                return tr.addStyle(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({}, name, value), opt);
+              });
+            });
+          }
         } else {
           // Update only if there is an actual update (to avoid changes for computed styles)
           // ps: status is calculated in `targetUpdated` method
-          if (model.get('status') == 'updated') {
+          if (status == 'updated') {
             var value = model.getFullValue();
             model.set('value', value, opt); // Try to remove detached properties
 
@@ -49281,6 +49320,8 @@ var clearProp = 'data-clear-style';
    * */
   targetUpdated: function targetUpdated(mod, val) {
     var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    //  Skip properties rendered in Stack Layers
+    if (this.config.fromLayer) return;
     this.emitUpdateTarget();
 
     if (!this.checkVisibility()) {
