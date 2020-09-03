@@ -32,7 +32,7 @@ export default Backbone.Collection.extend({
     const allByID = domc ? domc.allById() : {};
 
     if (!opts.temporary) {
-      // Remove the component from the gloabl list
+      // Remove the component from the global list
       const id = removed.getId();
       const sels = em.get('SelectorManager').getAll();
       const rules = em.get('CssComposer').getAll();
