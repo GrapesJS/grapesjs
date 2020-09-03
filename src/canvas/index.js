@@ -684,6 +684,10 @@ export default () => {
           em: this.em
         }
       );
+    },
+
+    setEnableJs(value) {
+      canvas.set('enableJs', value);
     }
   };
 };

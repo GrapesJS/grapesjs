@@ -107,9 +107,6 @@ export default {
   // Return JS of components inside HTML from 'editor.getHtml()'
   jsInHtml: true,
 
-  // Disable javascript in the whole canvas
-  disableJs: 1,
-
   // Enable native HTML5 drag and drop
   nativeDnD: 1,
 

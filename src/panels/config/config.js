@@ -1,3 +1,4 @@
+const djs = 'disable-js';
 const swv = 'sw-visibility';
 const expt = 'export-template';
 const osm = 'open-sm';
@@ -19,6 +20,14 @@ export default {
     {
       id: 'options',
       buttons: [
+        {
+          active: true,
+          id: djs,
+          className: 'fa fa-file-code-o',
+          command: djs,
+          context: djs,
+          attributes: { title: 'Disable JS' }
+        },
         {
           active: true,
           id: swv,

@@ -62,7 +62,8 @@ export default () => {
     ['component-exit', 'ComponentExit', 'select-parent'],
     ['component-delete', 'ComponentDelete'],
     ['component-style-clear', 'ComponentStyleClear'],
-    ['component-drag', 'ComponentDrag']
+    ['component-drag', 'ComponentDrag'],
+    ['disable-js', 'DisableJs', 'disable-js']
   ];
 
   // Need it here as it would be used below
