@@ -100,10 +100,10 @@ export default () => {
       if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
 
       // Load commands passed via configuration
-      for (let k in c.defaults) {
+      Object.keys(c.defaults).forEach(k => {
         const obj = c.defaults[k];
         if (obj.id) this.add(obj.id, obj);
-      }
+      });
 
       defaultCommands['tlb-delete'] = {
         run(ed) {
