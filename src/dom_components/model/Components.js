@@ -22,6 +22,12 @@ export default Backbone.Collection.extend({
   },
 
   removeChildren(removed, coll, opts = {}) {
+    // Removing a parent component can cause this function
+    // to be called with an already removed child element
+    if (!removed) {
+      return;
+    }
+
     const { domc, em } = this;
     const allByID = domc ? domc.allById() : {};
 
