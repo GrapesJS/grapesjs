@@ -37,6 +37,7 @@ import { isElement } from 'underscore';
 import defaults from './config/config';
 import Sectors from './model/Sectors';
 import Properties from './model/Properties';
+import PropertyFactory from './model/PropertyFactory';
 import SectorsView from './view/SectorsView';
 
 export default () => {
@@ -45,6 +46,8 @@ export default () => {
   var sectors, SectView;
 
   return {
+    PropertyFactory: PropertyFactory(),
+
     /**
      * Name of the module
      * @type {String}
