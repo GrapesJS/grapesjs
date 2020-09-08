@@ -36,6 +36,7 @@ export default Backbone.View.extend({
     this.ppfx = this.config.pStylePrefix || '';
     this.em = this.config.em;
     this.listenTo(model, 'change:head', this.updateHead);
+    this.listenTo(model, 'change:js', this.rerender);
     model.view = this;
     setViewEl(el, this);
   },
@@ -227,6 +228,12 @@ export default Backbone.View.extend({
     }
 
     return this;
+  },
+
+  rerender() {
+    // remove/clean current wrapper
+
+    this.render();
   },
 
   renderScripts() {

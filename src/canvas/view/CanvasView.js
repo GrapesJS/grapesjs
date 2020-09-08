@@ -291,7 +291,7 @@ export default Backbone.View.extend({
     view.el.id = id;
     view.scriptContainer.html('');
 
-    // Do not add javascript to canvas if disableJs is truthy
+    // Do not add javascript to canvas if js is falsy
     if (!js) {
       return;
     }
