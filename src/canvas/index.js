@@ -686,8 +686,8 @@ export default () => {
       );
     },
 
-    setEnableJs(value) {
-      canvas.set('enableJs', value);
+    setJs(value) {
+      canvas.set('js', value);
     }
   };
 };

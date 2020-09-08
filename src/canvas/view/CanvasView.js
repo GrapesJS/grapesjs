@@ -281,7 +281,7 @@ export default Backbone.View.extend({
   updateScript(view) {
     const model = view.model;
     const id = model.getId();
-    const enableJs = this.model.get('enableJs');
+    const js = this.model.get('js');
 
     if (!view.scriptContainer) {
       view.scriptContainer = $(`<div data-id="${id}">`);
@@ -292,7 +292,7 @@ export default Backbone.View.extend({
     view.scriptContainer.html('');
 
     // Do not add javascript to canvas if disableJs is truthy
-    if (!enableJs) {
+    if (!js) {
       return;
     }
 

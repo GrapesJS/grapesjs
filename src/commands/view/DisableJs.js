@@ -1,9 +1,9 @@
 export default {
   run(ed) {
-    ed.Canvas.setEnableJs(true);
+    ed.Canvas.setJs(true);
   },
 
   stop(ed) {
-    ed.Canvas.setEnableJs(false);
+    ed.Canvas.setJs(false);
   }
 };
