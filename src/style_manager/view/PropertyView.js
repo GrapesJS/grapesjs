@@ -427,11 +427,7 @@ export default Backbone.View.extend({
     const onChange = this.onChange;
 
     // Check if component is allowed to be styled
-    if (
-      !target ||
-      !this.isTargetStylable(target) ||
-      !this.isComponentStylable()
-    ) {
+    if (!target || !this.isComponentStylable()) {
       return;
     }
 
