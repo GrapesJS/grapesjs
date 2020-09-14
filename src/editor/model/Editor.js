@@ -710,7 +710,8 @@ export default Backbone.Model.extend({
       Panels,
       Canvas,
       Keymaps,
-      RichTextEditor
+      RichTextEditor,
+      LayerManager
     } = this.attributes;
     this.stopDefault();
     DomComponents.clear();
@@ -720,6 +721,7 @@ export default Backbone.Model.extend({
     Canvas.getCanvasView().remove();
     Keymaps.removeAll();
     RichTextEditor.destroy();
+    LayerManager.destroy();
     this.view.remove();
     this.stopListening();
     this.clear({ silent: true });
