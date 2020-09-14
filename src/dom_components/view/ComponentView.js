@@ -51,10 +51,16 @@ export default Backbone.View.extend({
     this.initComponents({ avoidRender: 1 });
     this.events = {
       ...this.events,
-      ...(draggableComponents && { dragstart: 'handleDragStart' })
+      ...(this.__isDraggable() && { dragstart: 'handleDragStart' })
     };
     this.delegateEvents();
     !modelOpt.temporary && this.init(this._clbObj());
+  },
+
+  __isDraggable() {
+    const { model, config } = this;
+    const { _innertext, draggable } = model.attributes;
+    return config.draggableComponents && draggable && !_innertext;
   },
 
   _clbObj() {
@@ -290,12 +296,11 @@ export default Backbone.View.extend({
   updateAttributes() {
     const attrs = [];
     const { model, $el, el, config } = this;
-    const { highlightable, textable, type, _innertext } = model.attributes;
-    const { draggableComponents } = config;
+    const { highlightable, textable, type } = model.attributes;
 
     const defaultAttr = {
       'data-gjs-type': type || 'default',
-      ...(draggableComponents && !_innertext ? { draggable: true } : {}),
+      ...(this.__isDraggable() ? { draggable: true } : {}),
       ...(highlightable ? { 'data-highlightable': 1 } : {}),
       ...(textable
         ? {
