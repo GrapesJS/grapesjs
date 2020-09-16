@@ -231,7 +231,7 @@ export default Backbone.View.extend({
   },
 
   rerender() {
-    // remove/clean current wrapper
+    this.root.reset();
 
     this.render();
   },

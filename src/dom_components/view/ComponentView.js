@@ -505,6 +505,12 @@ export default Backbone.View.extend({
     this.updateClasses();
   },
 
+  rerender() {
+    this.render();
+
+    return this;
+  },
+
   render() {
     this.renderAttributes();
     if (this.modelOpt.temporary) return this;

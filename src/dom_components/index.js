@@ -344,12 +344,13 @@ export default () => {
         const handleChanges = this.handleChanges.bind(this);
         const handleRemoves = this.handleRemoves.bind(this);
         um.add(coll);
-        [[coll, 'add', handleChanges], [coll, 'remove', handleRemoves]].forEach(
-          els => {
-            em.stopListening(els[0], els[1], els[2]);
-            em.listenTo(els[0], els[1], els[2]);
-          }
-        );
+        [
+          [coll, 'add', handleChanges],
+          [coll, 'remove', handleRemoves]
+        ].forEach(els => {
+          em.stopListening(els[0], els[1], els[2]);
+          em.listenTo(els[0], els[1], els[2]);
+        });
       }
     },
 
@@ -536,6 +537,10 @@ export default () => {
      */
     render() {
       return componentView.render().el;
+    },
+
+    rerender() {
+      return componentView.rerender().el;
     },
 
     /**
