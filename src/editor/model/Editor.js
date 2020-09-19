@@ -614,9 +614,10 @@ export default Backbone.Model.extend({
    * Update canvas dimensions and refresh data useful for tools positioning
    * @private
    */
-  refreshCanvas() {
+  refreshCanvas(opts = {}) {
     this.set('canvasOffset', null);
     this.set('canvasOffset', this.get('Canvas').getOffset());
+    opts.tools && this.trigger('canvas:updateTools');
   },
 
   /**

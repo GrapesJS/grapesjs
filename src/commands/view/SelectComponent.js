@@ -97,6 +97,7 @@ export default {
     );
     em[method]('change:canvasOffset', this.updateAttached, this);
     em[method]('frame:updated', this.onFrameUpdated, this);
+    em[method]('canvas:updateTools', this.onFrameUpdated, this);
     em.get('Canvas')
       .getFrames()
       .forEach(frame => {

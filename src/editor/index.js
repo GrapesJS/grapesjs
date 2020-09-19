@@ -490,8 +490,8 @@ export default (config = {}) => {
      *
      * @private
      */
-    refresh() {
-      em.refreshCanvas();
+    refresh(opts) {
+      em.refreshCanvas(opts);
     },
 
     /**
