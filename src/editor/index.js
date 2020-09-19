@@ -481,14 +481,13 @@ export default (config = {}) => {
     },
 
     /**
-     * Update editor dimensions and refresh data useful for positioning of tools
+     * Update editor dimension offsets
      *
      * This method could be useful when you update, for example, some position
      * of the editor element (eg. canvas, panels, etc.) with CSS, where without
-     * refresh you'll get misleading position of tools (eg. rich text editor,
-     * component highlighter, etc.)
-     *
-     * @private
+     * refresh you'll get misleading position of tools
+     * @param {Object} [options] Options
+     * @param {Boolean} [options.tools=false] Update the position of tools (eg. rich text editor, component highlighter, etc.)
      */
     refresh(opts) {
       em.refreshCanvas(opts);
