@@ -69,7 +69,11 @@ export default Backbone.View.extend({
   getInputEl() {
     if (!this.inputEl) {
       const { model } = this;
-      const plh = model.get('placeholder') || model.get('defaults') || '';
+      const plh =
+        model.get('placeholder') ||
+        model.get('defaults') ||
+        model.get('default') ||
+        '';
       this.inputEl = $(`<input type="text" placeholder="${plh}">`);
     }
 

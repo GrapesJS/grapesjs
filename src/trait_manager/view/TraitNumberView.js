@@ -1,11 +1,14 @@
 import TraitView from './TraitView';
+import { isUndefined } from 'underscore';
 import InputNumber from 'domain_abstract/ui/InputNumber';
 
 export default TraitView.extend({
   getValueForTarget() {
     const { model } = this;
     const { value, unit } = model.attributes;
-    return value ? value + unit : '';
+    return !isUndefined(value) && value !== ''
+      ? value + unit
+      : model.get('default');
   },
 
   /**
