@@ -22,6 +22,7 @@ export default Backbone.Model.extend({
     const target = this.get('target');
     const name = this.get('name');
     const changeProp = this.get('changeProp');
+    !this.get('id') && this.set('id', name);
 
     if (target) {
       this.target = target;
