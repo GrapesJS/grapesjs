@@ -405,7 +405,7 @@ export default Backbone.View.extend({
    * @param {Object} opt  Options
    * */
   modelValueChanged(e, val, opt = {}) {
-    const model = this.model;
+    const { model } = this;
     const value = model.getFullValue();
 
     // Avoid element update if the change comes from it
@@ -416,13 +416,24 @@ export default Backbone.View.extend({
     // Avoid target update if the changes comes from it
     if (!opt.fromTarget) {
       this.getTargets().forEach(target => this.__updateTarget(target, opt));
+
+      // Update the editor and selected components about the change
+      const { em } = this.config;
+      if (!em) return;
+      const prop = model.get('property');
+      const updated = { [prop]: value };
+      em.getSelectedAll().forEach(component => {
+        !opt.noEmit && em.trigger('component:update', component, updated, opt);
+        em.trigger('component:styleUpdate', component, prop, opt);
+        em.trigger(`component:styleUpdate:${prop}`, component, value, opt);
+        component.trigger(`change:style`, component, updated, opt);
+        component.trigger(`change:style:${prop}`, component, value, opt);
+      });
     }
   },
 
   __updateTarget(target, opt = {}) {
     const { model } = this;
-    const { em } = this.config;
-    const prop = model.get('property');
     const value = model.getFullValue();
     const onChange = this.onChange;
 
@@ -440,15 +451,6 @@ export default Backbone.View.extend({
       } else {
         this.updateTargetStyle(value, null, { ...opt, target });
       }
-    }
-
-    // TODO: use target if componentFirst
-    const component = em && em.getSelected();
-
-    if (em && component) {
-      !opt.noEmit && em.trigger('component:update', component);
-      em.trigger('component:styleUpdate', component, prop);
-      em.trigger(`component:styleUpdate:${prop}`, component);
     }
 
     this._emitUpdate();
