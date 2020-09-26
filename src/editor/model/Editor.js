@@ -298,9 +298,13 @@ export default Backbone.Model.extend({
    * @private
    */
   setSelected(el, opts = {}) {
+    const { event } = opts;
+    const ctrlKey = event && (event.ctrlKey || event.metaKey);
+    const { shiftKey } = event || {};
     const multiple = isArray(el);
     const els = multiple ? el : [el];
     const selected = this.get('selected');
+    const mltSel = this.getConfig('multipleSelection');
     let added;
 
     // If an array is passed remove all selected
@@ -310,6 +314,48 @@ export default Backbone.Model.extend({
     els.forEach(el => {
       const model = getModel(el, $);
       if (model && !model.get('selectable')) return;
+
+      // Hanlde multiple selection
+      if (ctrlKey && mltSel) {
+        return this.toggleSelected(model);
+      } else if (shiftKey && mltSel) {
+        this.clearSelection(this.get('Canvas').getWindow());
+        const coll = model.collection;
+        const index = model.index();
+        let min, max;
+
+        // Fin min and max siblings
+        editor.getSelectedAll().forEach(sel => {
+          const selColl = sel.collection;
+          const selIndex = sel.index();
+          if (selColl === coll) {
+            if (selIndex < index) {
+              // First model BEFORE the selected one
+              min = isUndefined(min) ? selIndex : Math.max(min, selIndex);
+            } else if (selIndex > index) {
+              // First model AFTER the selected one
+              max = isUndefined(max) ? selIndex : Math.min(max, selIndex);
+            }
+          }
+        });
+
+        if (!isUndefined(min)) {
+          while (min !== index) {
+            this.addSelected(coll.at(min));
+            min++;
+          }
+        }
+
+        if (!isUndefined(max)) {
+          while (max !== index) {
+            this.addSelected(coll.at(max));
+            max--;
+          }
+        }
+
+        return this.addSelected(model);
+      }
+
       !multiple && this.removeSelected(selected.filter(s => s !== model));
       this.addSelected(model, opts);
       added = model;

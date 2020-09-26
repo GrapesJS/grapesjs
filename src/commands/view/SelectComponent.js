@@ -322,54 +322,7 @@ export default {
    */
   select(model, event = {}) {
     if (!model) return;
-    const ctrlKey = event.ctrlKey || event.metaKey;
-    const { shiftKey } = event;
-    const { editor, em } = this;
-    const multiple = editor.getConfig('multipleSelection');
-
-    if (ctrlKey && multiple) {
-      editor.selectToggle(model);
-    } else if (shiftKey && multiple) {
-      em.clearSelection(editor.Canvas.getWindow());
-      const coll = model.collection;
-      const index = coll.indexOf(model);
-      const selAll = editor.getSelectedAll();
-      let min, max;
-
-      // Fin min and max siblings
-      editor.getSelectedAll().forEach(sel => {
-        const selColl = sel.collection;
-        const selIndex = selColl.indexOf(sel);
-        if (selColl === coll) {
-          if (selIndex < index) {
-            // First model BEFORE the selected one
-            min = isUndefined(min) ? selIndex : Math.max(min, selIndex);
-          } else if (selIndex > index) {
-            // First model AFTER the selected one
-            max = isUndefined(max) ? selIndex : Math.min(max, selIndex);
-          }
-        }
-      });
-
-      if (!isUndefined(min)) {
-        while (min !== index) {
-          editor.selectAdd(coll.at(min));
-          min++;
-        }
-      }
-
-      if (!isUndefined(max)) {
-        while (max !== index) {
-          editor.selectAdd(coll.at(max));
-          max--;
-        }
-      }
-
-      editor.selectAdd(model);
-    } else {
-      editor.select(model, { scroll: {} });
-    }
-
+    this.editor.select(model, { scroll: {}, event });
     this.initResize(model);
   },
 

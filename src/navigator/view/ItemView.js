@@ -234,7 +234,7 @@ export default Backbone.View.extend({
 
     if (em) {
       const model = this.model;
-      em.setSelected(model, { fromLayers: 1 });
+      em.setSelected(model, { fromLayers: 1, event: e });
       const scroll = config.scrollCanvas;
       scroll && model.views.forEach(view => view.scrollIntoView(scroll));
     }
