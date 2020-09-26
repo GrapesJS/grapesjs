@@ -99,7 +99,7 @@ export default () => {
     },
 
     destroy() {
-      return layers.remove();
+      return layers && layers.remove();
     }
   };
 };
