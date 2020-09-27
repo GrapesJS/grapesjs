@@ -1,5 +1,13 @@
 import Backbone from 'backbone';
-import { isEmpty, isArray, isString, each, includes, extend } from 'underscore';
+import {
+  isEmpty,
+  isArray,
+  isString,
+  each,
+  includes,
+  extend,
+  flatten
+} from 'underscore';
 
 let Component;
 
@@ -137,7 +145,7 @@ export default Backbone.Collection.extend({
     models = (isMult ? models : [models])
       .filter(i => i)
       .map(model => this.processDef(model));
-    models = isMult ? models : models[0];
+    models = isMult ? flatten(models, 1) : models[0];
 
     return Backbone.Collection.prototype.add.apply(this, [models, opt]);
   },
