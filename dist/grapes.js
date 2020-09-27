@@ -37192,7 +37192,7 @@ var Component;
     }).map(function (model) {
       return _this3.processDef(model);
     });
-    models = isMult ? models : models[0];
+    models = isMult ? Object(underscore__WEBPACK_IMPORTED_MODULE_3__["flatten"])(models, 1) : models[0];
     return backbone__WEBPACK_IMPORTED_MODULE_2___default.a.Collection.prototype.add.apply(this, [models, opt]);
   },
 
@@ -42287,7 +42287,7 @@ var defaultConfig = {
   editors: editors,
   plugins: plugins,
   // Will be replaced on build
-  version: '0.16.23',
+  version: '0.16.24',
 
   /**
    * Initialize the editor with passed options
