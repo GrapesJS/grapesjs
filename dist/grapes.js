@@ -41206,7 +41206,7 @@ var logs = {
         var index = model.index();
         var min, max; // Fin min and max siblings
 
-        editor.getSelectedAll().forEach(function (sel) {
+        _this5.getSelectedAll().forEach(function (sel) {
           var selColl = sel.collection;
           var selIndex = sel.index();
 
@@ -42287,7 +42287,7 @@ var defaultConfig = {
   editors: editors,
   plugins: plugins,
   // Will be replaced on build
-  version: '0.16.24',
+  version: '0.16.25',
 
   /**
    * Initialize the editor with passed options
