@@ -325,7 +325,7 @@ export default Backbone.Model.extend({
         let min, max;
 
         // Fin min and max siblings
-        editor.getSelectedAll().forEach(sel => {
+        this.getSelectedAll().forEach(sel => {
           const selColl = sel.collection;
           const selIndex = sel.index();
           if (selColl === coll) {
