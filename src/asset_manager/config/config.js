@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   // Default assets
   // eg. [
   //  'https://...image1.png',
@@ -29,6 +29,13 @@ module.exports = {
   // Custom parameters to pass with the upload request, eg. csrf token
   params: {},
 
+  // The credentials setting for the upload request, eg. 'include', 'omit'
+  credentials: 'include',
+
+  // Allow uploading multiple files per request.
+  // If disabled filename will not have '[]' appended
+  multiUpload: true,
+
   // If true, tries to add automatically uploaded assets.
   // To make it work the server should respond with a JSON containing assets
   // in a data key, eg:
@@ -42,19 +49,26 @@ module.exports = {
   // }
   autoAdd: 1,
 
-  // Text on upload input
-  uploadText: 'Drop files here or click to upload',
+  // To upload your assets, the module uses Fetch API, with this option you
+  // overwrite it with something else.
+  // It should return a Promise
+  // @example
+  // customFetch: (url, options) => axios(url, { data: options.body }),
+  customFetch: '',
 
-  // Label for the add button
-  addBtnText: 'Add image',
-
-  // Custom uploadFile function
+  // Custom uploadFile function.
+  // Differently from the `customFetch` option, this gives a total control
+  // over the uploading process, but you also have to emit all `asset:upload:*` events
+  // by yourself (if you need to use them somewhere)
   // @example
   // uploadFile: (e) => {
   //   var files = e.dataTransfer ? e.dataTransfer.files : e.target.files;
   //   // ...send somewhere
   // }
   uploadFile: '',
+
+  // In the absence of 'uploadFile' or 'upload' assets will be embedded as Base64
+  embedAsBase64: 1,
 
   // Handle the image url submit from the built-in 'Add image' form
   // @example
@@ -76,9 +90,15 @@ module.exports = {
   // Any dropzone content to append inside dropzone element
   dropzoneContent: '',
 
-  // Default title for the asset manager modal
-  modalTitle: 'Select Image',
+  //method called before upload, on return false upload is canceled.
+  // @example
+  // beforeUpload: (files) => {
+  //   // logic...
+  //   var stopUpload = true;
+  //   if(stopUpload) return false;
+  // }
+  beforeUpload: null,
 
-  //Default placeholder for input
-  inputPlaceholder: 'http://path/to/the/image.jpg'
+  // Toggles visiblity of assets url input
+  showUrlInput: true
 };

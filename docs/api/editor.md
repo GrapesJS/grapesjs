@@ -23,9 +23,11 @@ editor.on('EVENT-NAME', (some, argument) => {
 
 ### Components
 
+-   `component:create` - Component is created (only the model, is not yet mounted in the canvas), called after the init() method
+-   `component:mount` - Component is mounted to an element and rendered in canvas
 -   `component:add` - Triggered when a new component is added to the editor, the model is passed as an argument to the callback
 -   `component:remove` - Triggered when a component is removed, the model is passed as an argument to the callback
--   `component:clone` - Triggered when a new component is added by a clone command, the model is passed as an argument to the callback
+-   `component:clone` - Triggered when a component is cloned, the new model is passed as an argument to the callback
 -   `component:update` - Triggered when a component is updated (moved, styled, etc.), the model is passed as an argument to the callback
 -   `component:update:{propertyName}` - Listen any property change, the model is passed as an argument to the callback
 -   `component:styleUpdate` - Triggered when the style of the component is updated, the model is passed as an argument to the callback
@@ -33,6 +35,11 @@ editor.on('EVENT-NAME', (some, argument) => {
 -   `component:selected` - New component selected, the selected model is passed as an argument to the callback
 -   `component:deselected` - Component deselected, the deselected model is passed as an argument to the callback
 -   `component:toggled` - Component selection changed, toggled model is passed as an argument to the callback
+-   `component:type:add` - New component type added, the new type is passed as an argument to the callback
+-   `component:type:update` - Component type updated, the updated type is passed as an argument to the callback
+-   `component:drag:start` - Component drag started. Passed an object, to the callback, containing the `target` (component to drag), `parent` (parent of the component) and `index` (component index in the parent)
+-   `component:drag` - During component drag. Passed the same object as in `component:drag:start` event, but in this case, `parent` and `index` are updated by the current pointer
+-   `component:drag:end` - Component drag ended. Passed the same object as in `component:drag:start` event, but in this case, `parent` and `index` are updated by the final pointer
 
 ### Blocks
 
@@ -60,6 +67,7 @@ editor.on('EVENT-NAME', (some, argument) => {
 
 ### Style Manager
 
+-   `styleManager:update:target` - The target (Component or CSSRule) is changed
 -   `styleManager:change` - Triggered on style property change from new selected component, the view of the property is passed as an argument to the callback
 -   `styleManager:change:{propertyName}` - As above but for a specific style property
 
@@ -88,12 +96,20 @@ editor.on('EVENT-NAME', (some, argument) => {
 
 ### Selectors
 
--   `selector:add` - Triggers when a new selector/class is created
+-   `selector:add` - New selector is add. Passes the new selector as an argument
+-   `selector:remove` - Selector removed. Passes the removed selector as an argument
+-   `selector:update` - Selector updated. Passes the updated selector as an argument
+-   `selector:state` - State changed. Passes the new state value as an argument
 
 ### RTE
 
 -   `rte:enable` - RTE enabled. The view, on which RTE is enabled, is passed as an argument
 -   `rte:disable` - RTE disabled. The view, on which RTE is disabled, is passed as an argument
+
+### Modal
+
+-   `modal:open` - Modal is opened
+-   `modal:close` - Modal is closed
 
 ### Commands
 
@@ -102,13 +118,16 @@ editor.on('EVENT-NAME', (some, argument) => {
 -   `run:{commandName}:before` - Triggered before the command is called
 -   `stop:{commandName}:before` - Triggered before the command is called to stop
 -   `abort:{commandName}` - Triggered when the command execution is aborted (`editor.on(`run:preview:before`, opts => opts.abort = 1);`)
+-   `run` - Triggered on run of any command. The id and the result are passed as arguments to the callback
+-   `stop` - Triggered on stop of any command. The id and the result are passed as arguments to the callback
 
 ### General
 
--   `canvasScroll` - Triggered when the canvas is scrolle
+-   `canvasScroll` - Canvas is scrolled
+-   `update` - The structure of the template is updated (its HTML/CSS)
 -   `undo` - Undo executed
 -   `redo` - Redo executed
--   `load` - When the editor is loaded
+-   `load` - Editor is loaded
 
 ## getConfig
 
@@ -138,6 +157,7 @@ Returns CSS built inside canvas
 ### Parameters
 
 -   `opts` **[Object][3]** Options (optional, default `{}`)
+    -   `opts.avoidProtected` **[Boolean][4]** Don't include protected CSS (optional, default `false`)
 
 Returns **[string][2]** CSS string
 
@@ -149,9 +169,15 @@ Returns **[string][2]** JS string
 
 ## getComponents
 
-Returns components in JSON format object
+Return the complete tree of components. Use `getWrapper` to include also the wrapper
 
-Returns **[Object][3]** 
+Returns **Components** 
+
+## getWrapper
+
+Return the wrapper and its all components
+
+Returns **Component** 
 
 ## setComponents
 
@@ -159,7 +185,8 @@ Set components inside editor's canvas. This method overrides actual components
 
 ### Parameters
 
--   `components` **([Array][4]&lt;[Object][3]> | [Object][3] \| [string][2])** HTML string or components model
+-   `components` **([Array][5]&lt;[Object][3]> | [Object][3] \| [string][2])** HTML string or components model
+-   `opt` **[Object][3]** the options object to be used by the [setComponents][em#setComponents][6] method (optional, default `{}`)
 
 ### Examples
 
@@ -181,9 +208,9 @@ Add components
 
 ### Parameters
 
--   `components` **([Array][4]&lt;[Object][3]> | [Object][3] \| [string][2])** HTML string or components model
+-   `components` **([Array][5]&lt;[Object][3]> | [Object][3] \| [string][2])** HTML string or components model
 -   `opts` **[Object][3]** Options
-    -   `opts.avoidUpdateStyle` **[Boolean][5]** If the HTML string contains styles,
+    -   `opts.avoidUpdateStyle` **[Boolean][4]** If the HTML string contains styles,
         by default, they will be created and, if already exist, updated. When this option
         is true, styles already created will not be updated. (optional, default `false`)
 
@@ -199,7 +226,7 @@ editor.addComponents({
 });
 ```
 
-Returns **(Model | [Array][4]&lt;Model>)** 
+Returns **[Array][5]&lt;Component>** 
 
 ## getStyle
 
@@ -213,7 +240,8 @@ Set style inside editor's canvas. This method overrides actual style
 
 ### Parameters
 
--   `style` **([Array][4]&lt;[Object][3]> | [Object][3] \| [string][2])** CSS string or style model
+-   `style` **([Array][5]&lt;[Object][3]> | [Object][3] \| [string][2])** CSS string or style model
+-   `opt` **[Object][3]** the options object to be used by the [setStyle][em#setStyle][7] method (optional, default `{}`)
 
 ### Examples
 
@@ -238,7 +266,7 @@ Returns **Model**
 
 Returns an array of all selected components
 
-Returns **[Array][4]** 
+Returns **[Array][5]** 
 
 ## getSelectedToStyle
 
@@ -256,7 +284,9 @@ Select a component
 
 ### Parameters
 
--   `el` **(Component | [HTMLElement][6])** Component to select
+-   `el` **(Component | [HTMLElement][8])** Component to select
+-   `opts` **[Object][3]?** Options
+    -   `opts.scroll` **[Boolean][4]?** Scroll canvas to the selected element
 
 ### Examples
 
@@ -275,7 +305,7 @@ Add component to selection
 
 ### Parameters
 
--   `el` **(Component | [HTMLElement][6] \| [Array][4])** Component to select
+-   `el` **(Component | [HTMLElement][8] \| [Array][5])** Component to select
 
 ### Examples
 
@@ -291,7 +321,7 @@ Remove component from selection
 
 ### Parameters
 
--   `el` **(Component | [HTMLElement][6] \| [Array][4])** Component to select
+-   `el` **(Component | [HTMLElement][8] \| [Array][5])** Component to select
 
 ### Examples
 
@@ -307,7 +337,7 @@ Toggle component selection
 
 ### Parameters
 
--   `el` **(Component | [HTMLElement][6] \| [Array][4])** Component to select
+-   `el` **(Component | [HTMLElement][8] \| [Array][5])** Component to select
 
 ### Examples
 
@@ -388,7 +418,7 @@ Store data to the current storage
 
 ### Parameters
 
--   `clb` **[Function][7]** Callback function
+-   `clb` **[Function][9]** Callback function
 
 Returns **[Object][3]** Stored data
 
@@ -398,7 +428,7 @@ Load data from the current storage
 
 ### Parameters
 
--   `clb` **[Function][7]** Callback function
+-   `clb` **[Function][9]** Callback function
 
 Returns **[Object][3]** Stored data
 
@@ -407,14 +437,14 @@ Returns **[Object][3]** Stored data
 Returns container element. The one which was indicated as 'container'
 on init method
 
-Returns **[HTMLElement][6]** 
+Returns **[HTMLElement][8]** 
 
 ## getDirtyCount
 
 Return the count of changes made to the content and not yet stored.
 This count resets at any `store()`
 
-Returns **[number][8]** 
+Returns **[number][10]** 
 
 ## setCustomRte
 
@@ -453,6 +483,93 @@ editor.setCustomRte({
 });
 ```
 
+## setCustomParserCss
+
+Replace the default CSS parser with a custom one.
+The parser function receives a CSS string as a parameter and expects
+an array of CSSRule objects as a result. If you need to remove the
+custom parser, pass `null` as the argument
+
+### Parameters
+
+-   `parser` **([Function][9] | null)** Parser function
+
+### Examples
+
+```javascript
+editor.setCustomParserCss(css => {
+ const result = [];
+ // ... parse the CSS string
+ result.push({
+   selectors: '.someclass, div .otherclass',
+   style: { color: 'red' }
+ })
+ // ...
+ return result;
+});
+```
+
+Returns **this** 
+
+## setDragMode
+
+Change the global drag mode of components.
+To get more about this feature read: [https://github.com/artf/grapesjs/issues/1936][11]
+
+### Parameters
+
+-   `value` **[String][2]** Drag mode, options: 'absolute' | 'translate'
+
+Returns **this** 
+
+## log
+
+Trigger event log message
+
+### Parameters
+
+-   `msg` **any** Message to log
+-   `opts` **[Object][3]** Custom options (optional, default `{}`)
+    -   `opts.ns` **[String][2]** Namespace of the log (eg. to use in plugins) (optional, default `''`)
+    -   `opts.level` **[String][2]** Level of the log, `debug`, `info`, `warning`, `error` (optional, default `'debug'`)
+
+### Examples
+
+```javascript
+editor.log('Something done!', { ns: 'from-plugin-x', level: 'info' });
+// This will trigger following events
+// `log`, `log:info`, `log-from-plugin-x`, `log-from-plugin-x:info`
+// Callbacks of those events will always receive the message and
+// options, as arguments, eg:
+// editor.on('log:info', (msg, opts) => console.info(msg, opts))
+```
+
+Returns **this** 
+
+## t
+
+Translate label
+
+### Parameters
+
+-   `args` **...any** 
+-   `key` **[String][2]** Label to translate
+-   `opts` **[Object][3]?** Options for the translation
+    -   `opts.params` **[Object][3]?** Params for the translation
+    -   `opts.noWarn` **[Boolean][4]?** Avoid warnings in case of missing resources
+
+### Examples
+
+```javascript
+editor.t('msg');
+// use params
+editor.t('msg2', { params: { test: 'hello' } });
+// custom local
+editor.t('msg2', { params: { test: 'hello' }, l: 'it' });
+```
+
+Returns **[String][2]** 
+
 ## on
 
 Attach event
@@ -460,7 +577,18 @@ Attach event
 ### Parameters
 
 -   `event` **[string][2]** Event name
--   `callback` **[Function][7]** Callback function
+-   `callback` **[Function][9]** Callback function
+
+Returns **this** 
+
+## once
+
+Attach event and detach it after the first run
+
+### Parameters
+
+-   `event` **[string][2]** Event name
+-   `callback` **[Function][9]** Callback function
 
 Returns **this** 
 
@@ -471,7 +599,7 @@ Detach event
 ### Parameters
 
 -   `event` **[string][2]** Event name
--   `callback` **[Function][7]** Callback function
+-   `callback` **[Function][9]** Callback function
 
 Returns **this** 
 
@@ -493,7 +621,7 @@ Destroy the editor
 
 Render editor
 
-Returns **[HTMLElement][6]** 
+Returns **[HTMLElement][8]** 
 
 [1]: https://github.com/artf/grapesjs/blob/master/src/editor/config/config.js
 
@@ -501,12 +629,18 @@ Returns **[HTMLElement][6]**
 
 [3]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
 
-[5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
-[6]: https://developer.mozilla.org/docs/Web/HTML/Element
+[6]: em#setComponents
 
-[7]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+[7]: em#setStyle
 
-[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+[8]: https://developer.mozilla.org/docs/Web/HTML/Element
+
+[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+
+[10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+
+[11]: https://github.com/artf/grapesjs/issues/1936

@@ -20,98 +20,151 @@
  * * [clear](#clear)
  * * [load](#load)
  * * [store](#store)
+ * * [addType](#addtype)
+ * * [getType](#gettype)
+ * * [getTypes](#gettypes)
  * * [render](#render)
  *
  * @module DomComponents
  */
+import Backbone from 'backbone';
+import { isEmpty, isObject, isArray, result } from 'underscore';
+import defaults from './config/config';
+import Component from './model/Component';
+import Components from './model/Components';
+import ComponentView from './view/ComponentView';
+import ComponentsView from './view/ComponentsView';
+import ComponentTableCell from './model/ComponentTableCell';
+import ComponentTableCellView from './view/ComponentTableCellView';
+import ComponentTableRow from './model/ComponentTableRow';
+import ComponentTableRowView from './view/ComponentTableRowView';
+import ComponentTable from './model/ComponentTable';
+import ComponentTableView from './view/ComponentTableView';
+import ComponentTableHead from './model/ComponentTableHead';
+import ComponentTableHeadView from './view/ComponentTableHeadView';
+import ComponentTableBody from './model/ComponentTableBody';
+import ComponentTableBodyView from './view/ComponentTableBodyView';
+import ComponentTableFoot from './model/ComponentTableFoot';
+import ComponentTableFootView from './view/ComponentTableFootView';
+import ComponentMap from './model/ComponentMap';
+import ComponentMapView from './view/ComponentMapView';
+import ComponentLink from './model/ComponentLink';
+import ComponentLinkView from './view/ComponentLinkView';
+import ComponentLabel from './model/ComponentLabel';
+import ComponentLabelView from './view/ComponentLabelView';
+import ComponentVideo from './model/ComponentVideo';
+import ComponentVideoView from './view/ComponentVideoView';
+import ComponentImage from './model/ComponentImage';
+import ComponentImageView from './view/ComponentImageView';
+import ComponentScript from './model/ComponentScript';
+import ComponentScriptView from './view/ComponentScriptView';
+import ComponentSvg from './model/ComponentSvg';
+import ComponentSvgIn from './model/ComponentSvgIn';
+import ComponentSvgView from './view/ComponentSvgView';
+import ComponentComment from './model/ComponentComment';
+import ComponentCommentView from './view/ComponentCommentView';
+import ComponentTextNode from './model/ComponentTextNode';
+import ComponentTextNodeView from './view/ComponentTextNodeView';
+import ComponentText from './model/ComponentText';
+import ComponentTextView from './view/ComponentTextView';
+import ComponentWrapper from './model/ComponentWrapper';
 
-import { isEmpty } from 'underscore';
-
-module.exports = () => {
+export default () => {
   var c = {};
   let em;
-  const defaults = require('./config/config');
-  const Component = require('./model/Component');
-  const ComponentView = require('./view/ComponentView');
-  const Components = require('./model/Components');
-  const ComponentsView = require('./view/ComponentsView');
+  const componentsById = {};
 
   var component, componentView;
   var componentTypes = [
     {
       id: 'cell',
-      model: require('./model/ComponentTableCell'),
-      view: require('./view/ComponentTableCellView')
+      model: ComponentTableCell,
+      view: ComponentTableCellView
     },
     {
       id: 'row',
-      model: require('./model/ComponentTableRow'),
-      view: require('./view/ComponentTableRowView')
+      model: ComponentTableRow,
+      view: ComponentTableRowView
     },
     {
       id: 'table',
-      model: require('./model/ComponentTable'),
-      view: require('./view/ComponentTableView')
+      model: ComponentTable,
+      view: ComponentTableView
     },
     {
       id: 'thead',
-      model: require('./model/ComponentTableHead'),
-      view: require('./view/ComponentTableHeadView')
+      model: ComponentTableHead,
+      view: ComponentTableHeadView
     },
     {
       id: 'tbody',
-      model: require('./model/ComponentTableBody'),
-      view: require('./view/ComponentTableBodyView')
+      model: ComponentTableBody,
+      view: ComponentTableBodyView
     },
     {
       id: 'tfoot',
-      model: require('./model/ComponentTableFoot'),
-      view: require('./view/ComponentTableFootView')
+      model: ComponentTableFoot,
+      view: ComponentTableFootView
     },
     {
       id: 'map',
-      model: require('./model/ComponentMap'),
-      view: require('./view/ComponentMapView')
+      model: ComponentMap,
+      view: ComponentMapView
     },
     {
       id: 'link',
-      model: require('./model/ComponentLink'),
-      view: require('./view/ComponentLinkView')
+      model: ComponentLink,
+      view: ComponentLinkView
     },
     {
       id: 'label',
-      model: require('./model/ComponentLabel'),
-      view: require('./view/ComponentLabelView')
+      model: ComponentLabel,
+      view: ComponentLabelView
     },
     {
       id: 'video',
-      model: require('./model/ComponentVideo'),
-      view: require('./view/ComponentVideoView')
+      model: ComponentVideo,
+      view: ComponentVideoView
     },
     {
       id: 'image',
-      model: require('./model/ComponentImage'),
-      view: require('./view/ComponentImageView')
+      model: ComponentImage,
+      view: ComponentImageView
     },
     {
       id: 'script',
-      model: require('./model/ComponentScript'),
-      view: require('./view/ComponentScriptView')
+      model: ComponentScript,
+      view: ComponentScriptView
+    },
+    {
+      id: 'svg-in',
+      model: ComponentSvgIn,
+      view: ComponentSvgView
     },
     {
       id: 'svg',
-      model: require('./model/ComponentSvg'),
-      view: require('./view/ComponentSvgView')
+      model: ComponentSvg,
+      view: ComponentSvgView
+    },
+    {
+      id: 'comment',
+      model: ComponentComment,
+      view: ComponentCommentView
     },
     {
       id: 'textnode',
-      model: require('./model/ComponentTextNode'),
-      view: require('./view/ComponentTextNodeView')
+      model: ComponentTextNode,
+      view: ComponentTextNodeView
     },
     {
       id: 'text',
-      model: require('./model/ComponentText'),
-      view: require('./view/ComponentTextView')
+      model: ComponentText,
+      view: ComponentTextView
+    },
+    {
+      id: 'wrapper',
+      model: ComponentWrapper,
+      view: ComponentView
     },
     {
       id: 'default',
@@ -128,6 +181,8 @@ module.exports = () => {
     ComponentsView,
 
     componentTypes,
+
+    componentsById,
 
     /**
      * Name of the module
@@ -201,6 +256,7 @@ module.exports = () => {
       let wrapper = { ...c.wrapper };
       wrapper['custom-name'] = c.wrapperName;
       wrapper.wrapper = 1;
+      wrapper.type = 'wrapper';
 
       // Components might be a wrapper
       if (
@@ -222,7 +278,8 @@ module.exports = () => {
       component = new Component(wrapper, {
         em,
         config: c,
-        componentTypes
+        componentTypes,
+        domc: this
       });
       component.set({ attributes: { id: 'wrapper' } });
 
@@ -260,6 +317,7 @@ module.exports = () => {
       const um = em.get('UndoManager');
       const handleUpdates = em.handleUpdates.bind(em);
       const handleChanges = this.handleChanges.bind(this);
+      const handleChangesColl = this.handleChangesColl.bind(this);
       const handleRemoves = this.handleRemoves.bind(this);
       um && um.add(model);
       um && comps && um.add(comps);
@@ -267,6 +325,7 @@ module.exports = () => {
 
       [
         [model, evn, handleUpdates],
+        [model, 'change:components', handleChangesColl],
         [comps, 'add', handleChanges],
         [comps, 'remove', handleRemoves],
         [model.get('classes'), 'add remove', handleUpdates]
@@ -277,6 +336,21 @@ module.exports = () => {
 
       !opts.avoidStore && handleUpdates('', '', opts);
       comps.each(model => this.handleChanges(model, value, opts));
+    },
+
+    handleChangesColl(model, coll) {
+      const um = em.get('UndoManager');
+      if (um && coll instanceof Backbone.Collection) {
+        const handleChanges = this.handleChanges.bind(this);
+        const handleRemoves = this.handleRemoves.bind(this);
+        um.add(coll);
+        [[coll, 'add', handleChanges], [coll, 'remove', handleRemoves]].forEach(
+          els => {
+            em.stopListening(els[0], els[1], els[2]);
+            em.listenTo(els[0], els[1], els[2]);
+          }
+        );
+      }
     },
 
     /**
@@ -295,33 +369,37 @@ module.exports = () => {
      * @return {Object} Loaded data
      */
     load(data = '') {
+      const { em } = this;
       let result = '';
 
       if (!data && c.stm) {
         data = c.em.getCacheLoad();
       }
 
-      if (data.components) {
-        try {
-          result = JSON.parse(data.components);
-        } catch (err) {}
-      } else if (data.html) {
-        result = data.html;
+      const { components, html } = data;
+
+      if (components) {
+        if (isObject(components) || isArray(components)) {
+          result = components;
+        } else {
+          try {
+            result = JSON.parse(components);
+          } catch (err) {
+            em && em.logError(err);
+          }
+        }
+      } else if (html) {
+        result = html;
       }
 
       const isObj = result && result.constructor === Object;
 
       if ((result && result.length) || isObj) {
         this.clear();
-        this.getComponents().reset();
 
         // If the result is an object I consider it the wrapper
         if (isObj) {
-          this.getWrapper()
-            .set(result)
-            .initComponents()
-            .initClasses()
-            .loadTraits();
+          this.getWrapper().set(result);
         } else {
           this.getComponents().add(result);
         }
@@ -348,9 +426,10 @@ module.exports = () => {
       }
 
       if (keys.indexOf('components') >= 0) {
-        const toStore = c.storeWrapper
-          ? this.getWrapper()
-          : this.getComponents();
+        const { em } = this;
+        // const storeWrap = (em && !em.getConfig('avoidInlineStyle')) || c.storeWrapper;
+        const storeWrap = c.storeWrapper;
+        const toStore = storeWrap ? this.getWrapper() : this.getComponents();
         obj.components = JSON.stringify(toStore);
       }
 
@@ -430,6 +509,7 @@ module.exports = () => {
      * @param {string} [component.content=''] String inside component
      * @param {Object} [component.style={}] Style object
      * @param {Object} [component.attributes={}] Attribute object
+     * @param {Object} opt the options object to be used by the [Components.add]{@link getComponents} method
      * @return {Component|Array<Component>} Component/s added
      * @example
      * // Example of a new component with some extra property
@@ -443,8 +523,8 @@ module.exports = () => {
      *   attributes: { title: 'here' }
      * });
      */
-    addComponent(component) {
-      return this.getComponents().add(component);
+    addComponent(component, opt = {}) {
+      return this.getComponents().add(component, opt);
     },
 
     /**
@@ -463,28 +543,95 @@ module.exports = () => {
      * @return {this}
      */
     clear() {
-      this.getComponents().reset();
+      this.getComponents()
+        .map(i => i)
+        .forEach(i => i.remove());
       return this;
     },
 
     /**
      * Set components
      * @param {Object|string} components HTML string or components model
+     * @param {Object} opt the options object to be used by the {@link addComponent} method
      * @return {this}
      * @private
      */
-    setComponents(components) {
-      this.clear().addComponent(components);
+    setComponents(components, opt = {}) {
+      this.clear().addComponent(components, opt);
     },
 
     /**
-     * Add new component type
-     * @param {string} type
-     * @param {Object} methods
-     * @private
+     * Add new component type.
+     * Read more about this in [Define New Component](https://grapesjs.com/docs/modules/Components.html#define-new-component)
+     * @param {string} type Component ID
+     * @param {Object} methods Component methods
+     * @return {this}
      */
     addType(type, methods) {
-      var compType = this.getType(type);
+      const { em } = this;
+      const {
+        model = {},
+        view = {},
+        isComponent,
+        extend,
+        extendView,
+        extendFn = [],
+        extendFnView = []
+      } = methods;
+      const compType = this.getType(type);
+      const extendType = this.getType(extend);
+      const extendViewType = this.getType(extendView);
+      const typeToExtend = extendType
+        ? extendType
+        : compType
+        ? compType
+        : this.getType('default');
+      const modelToExt = typeToExtend.model;
+      const viewToExt = extendViewType
+        ? extendViewType.view
+        : typeToExtend.view;
+
+      // Function for extending source object methods
+      const getExtendedObj = (fns, target, srcToExt) =>
+        fns.reduce((res, next) => {
+          const fn = target[next];
+          const parentFn = srcToExt.prototype[next];
+          if (fn && parentFn) {
+            res[next] = function(...args) {
+              parentFn.bind(this)(...args);
+              fn.bind(this)(...args);
+            };
+          }
+          return res;
+        }, {});
+
+      // If the model/view is a simple object I need to extend it
+      if (typeof model === 'object') {
+        methods.model = modelToExt.extend(
+          {
+            ...model,
+            ...getExtendedObj(extendFn, model, modelToExt),
+            defaults: {
+              ...modelToExt.prototype.defaults,
+              ...(result(model, 'defaults') || {})
+            }
+          },
+          {
+            isComponent:
+              compType && !extendType && !isComponent
+                ? modelToExt.isComponent
+                : isComponent || (() => 0)
+          }
+        );
+      }
+
+      if (typeof view === 'object') {
+        methods.view = viewToExt.extend({
+          ...view,
+          ...getExtendedObj(extendFnView, view, viewToExt)
+        });
+      }
+
       if (compType) {
         compType.model = methods.model;
         compType.view = methods.view;
@@ -492,12 +639,18 @@ module.exports = () => {
         methods.id = type;
         componentTypes.unshift(methods);
       }
+
+      const event = `component:type:${compType ? 'update' : 'add'}`;
+      em && em.trigger(event, compType || methods);
+
+      return this;
     },
 
     /**
-     * Get component type
-     * @param {string} type
-     * @private
+     * Get component type.
+     * Read more about this in [Define New Component](https://grapesjs.com/docs/modules/Components.html#define-new-component)
+     * @param {string} type Component ID
+     * @return {Object} Component type defintion, eg. `{ model: ..., view: ... }`
      */
     getType(type) {
       var df = componentTypes;
@@ -509,6 +662,28 @@ module.exports = () => {
         }
       }
       return;
+    },
+
+    /**
+     * Remove component type
+     * @param {string} type Component ID
+     * @returns {Object|undefined} Removed component type, undefined otherwise
+     */
+    removeType(id) {
+      const df = componentTypes;
+      const type = this.getType(id);
+      if (!type) return;
+      const index = df.indexOf(type);
+      df.splice(index, 1);
+      return type;
+    },
+
+    /**
+     * Return the array of all types
+     * @return {Array}
+     */
+    getTypes() {
+      return componentTypes;
     },
 
     selectAdd(component, opts = {}) {
@@ -554,6 +729,10 @@ module.exports = () => {
         });
 
       model && isEmpty(model.get('status')) && model.set('status', state);
+    },
+
+    allById() {
+      return componentsById;
     }
   };
 };

@@ -9,7 +9,7 @@ You can customize the initial state of the module from the editor initialization
 
 ```js
 const editor = grapesjs.init({
- rte: {
+ richTextEditor: {
    // options
  }
 })
@@ -41,7 +41,7 @@ Add a new action to the built-in RTE toolbar
 ```javascript
 rte.add('bold', {
   icon: '<b>B</b>',
-  attributes: {title: 'Bold',}
+  attributes: {title: 'Bold'},
   result: rte => rte.exec('bold')
 });
 rte.add('link', {
@@ -68,6 +68,32 @@ rte.add('fontSize', {
     }
    }
   })
+// An example with state
+const isValidAnchor = (rte) => {
+  // a utility function to help determine if the selected is a valid anchor node
+  const anchor = rte.selection().anchorNode;
+  const parentNode  = anchor && anchor.parentNode;
+  const nextSibling = anchor && anchor.nextSibling;
+  return (parentNode && parentNode.nodeName == 'A') || (nextSibling && nextSibling.nodeName == 'A')
+}
+rte.add('toggleAnchor', {
+  icon: `<span style="transform:rotate(45deg)">&supdsub;</span>`,
+  state: (rte, doc) => {
+   if (rte && rte.selection()) {
+     // `btnState` is a integer, -1 for disabled, 0 for inactive, 1 for active
+     return isValidAnchor(rte) ? btnState.ACTIVE : btnState.INACTIVE;
+   } else {
+     return btnState.INACTIVE;
+   }
+  },
+  result: (rte, action) => {
+    if (isValidAnchor(rte)) {
+      rte.exec('unlink');
+    } else {
+      rte.insertHTML(`<a class="link" href="">${rte.selection()}</a>`);
+    }
+  }
+})
 ```
 
 ## get

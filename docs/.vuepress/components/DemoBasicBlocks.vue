@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div id="gjs2">
+    <div class="gjs" id="gjs2">
       <h1>Hello World Component!</h1>
     </div>
     <div id="blocks2"></div>
@@ -8,51 +8,17 @@
 </template>
 
 <script>
-module.exports = {
+import utils from './demos/utils.js';
+
+export default {
   mounted() {
-    window.editor2 = grapesjs.init({
-      container: '#gjs2',
-      fromElement: true,
-      height: '300px',
-      width: 'auto',
-      storageManager: { type: null },
-      panels: { defaults: [] },
-      // ...
-      blockManager: {
-        appendTo: '#blocks2',
-        blocks: [
-          {
-            id: 'section', // id is mandatory
-            label: '<b>Section</b>',
-            attributes: { class:'gjs-block-section' },
-            content: `<section>
-              <h1>This is a simple title</h1>
-              <div>This is just a Lorem text: Lorem ipsum dolor sit amet, consectetur adipiscing elit</div>
-            </section>`,
-          }, {
-            id: 'text',
-            label: 'Text',
-            content: '<div data-gjs-type="text">Insert your text here</div>',
-          }, {
-            id: 'image',
-            label: 'Image',
-            // Select the component once dropped in canavas
-            select: true,
-            // You can pass components as a JSON instead of a simple HTML string,
-            // in this case we also use a defined component type `image`
-            content: { type: 'image' },
-            // This triggers `active` on dropped components
-            activate: true,
-          }
-        ]
-      },
-    });
+    window.editor2 = grapesjs.init(utils.gjsConfigBlocks);
   }
 }
 </script>
 
 <style>
-  #gjs2 {
+  .gjs {
     border: 3px solid #444;
   }
   .gjs-block {

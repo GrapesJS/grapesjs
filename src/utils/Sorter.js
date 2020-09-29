@@ -1,18 +1,33 @@
 import Backbone from 'backbone';
-import { isString, isFunction, isArray } from 'underscore';
-import { on, off, matches, getElement } from 'utils/mixins';
+import {
+  isString,
+  isFunction,
+  isArray,
+  result,
+  each,
+  bindAll
+} from 'underscore';
+import {
+  on,
+  off,
+  matches,
+  getElement,
+  getPointerEvent,
+  isTextNode,
+  getModel
+} from 'utils/mixins';
 const $ = Backbone.$;
 
-module.exports = Backbone.View.extend({
+export default Backbone.View.extend({
   initialize(opt) {
     this.opt = opt || {};
-    _.bindAll(
+    bindAll(
       this,
       'startSort',
       'onMove',
       'endMove',
       'rollback',
-      'udpateOffset',
+      'updateOffset',
       'moveDragHelper'
     );
     var o = opt || {};
@@ -50,14 +65,22 @@ module.exports = Backbone.View.extend({
     this.dragHelper = null;
     this.canvasRelative = o.canvasRelative || 0;
     this.selectOnEnd = !o.avoidSelectOnEnd;
+    this.scale = o.scale;
+    this.activeTextModel = null;
 
     if (this.em && this.em.on) {
-      this.em.on('change:canvasOffset', this.udpateOffset);
-      this.udpateOffset();
+      this.em.on('change:canvasOffset', this.updateOffset);
+      this.updateOffset();
     }
   },
 
-  getContainerEl() {
+  getScale() {
+    return result(this, scale) || 1;
+  },
+
+  getContainerEl(elem) {
+    if (elem) this.el = elem;
+
     if (!this.el) {
       var el = this.opt.container;
       this.el = typeof el === 'string' ? document.querySelector(el) : el;
@@ -66,19 +89,21 @@ module.exports = Backbone.View.extend({
     return this.el;
   },
 
-  getDocuments() {
+  getDocuments(el) {
     const em = this.em;
-    const canvasDoc = em && em.get('Canvas').getBody().ownerDocument;
+    const elDoc = el
+      ? el.ownerDocument
+      : em && em.get('Canvas').getBody().ownerDocument;
     const docs = [document];
-    canvasDoc && docs.push(canvasDoc);
+    elDoc && docs.push(elDoc);
     return docs;
   },
 
   /**
    * Triggered when the offset of the editro is changed
    */
-  udpateOffset() {
-    var offset = this.em.get('canvasOffset');
+  updateOffset() {
+    const offset = this.em.get('canvasOffset') || {};
     this.offTop = offset.top;
     this.offLeft = offset.left;
   },
@@ -88,7 +113,36 @@ module.exports = Backbone.View.extend({
    * @param {String|Object} content
    */
   setDropContent(content) {
+    this.dropModel = null;
     this.dropContent = content;
+  },
+
+  updateTextViewCursorPosition(e) {
+    const Canvas = this.em.get('Canvas');
+    const targetDoc = Canvas.getDocument();
+    let range = null;
+
+    if (targetDoc.caretRangeFromPoint) {
+      // Chrome
+      const poiner = getPointerEvent(e);
+      range = targetDoc.caretRangeFromPoint(poiner.clientX, poiner.clientY);
+    } else if (e.rangeParent) {
+      // Firefox
+      range = targetDoc.createRange();
+      range.setStart(e.rangeParent, e.rangeOffset);
+    }
+
+    const sel = Canvas.getWindow().getSelection();
+    Canvas.getFrameEl().focus();
+    sel.removeAllRanges();
+    range && sel.addRange(range);
+  },
+
+  setContentEditable(model, mode) {
+    if (model) {
+      const el = model.getEl();
+      if (el.contentEditable != mode) el.contentEditable = mode;
+    }
   },
 
   /**
@@ -96,23 +150,12 @@ module.exports = Backbone.View.extend({
    * @param {Boolean} active
    */
   toggleSortCursor(active) {
-    var em = this.em;
-    var body = document.body;
-    var pfx = this.ppfx || this.pfx;
-    var sortCls = pfx + 'grabbing';
-    var emBody = em ? em.get('Canvas').getBody() : '';
+    const { em } = this;
+    const cv = em && em.get('Canvas');
 
     // Avoid updating body className as it causes a huge repaint
     // Noticeable with "fast" drag of blocks
-    if (active) {
-      em && em.get('Canvas').startAutoscroll();
-      //body.className += ' ' + sortCls;
-      //if (em) emBody.className += ' ' + sortCls;
-    } else {
-      em && em.get('Canvas').stopAutoscroll();
-      //body.className = body.className.replace(sortCls, '').trim();
-      //if(em) emBody.className = emBody.className.replace(sortCls, '').trim();
-    }
+    cv && (active ? cv.startAutoscroll() : cv.stopAutoscroll());
   },
 
   /**
@@ -246,16 +289,18 @@ module.exports = Backbone.View.extend({
    * Picking component to move
    * @param {HTMLElement} src
    * */
-  startSort(src) {
+  startSort(src, opts = {}) {
     const em = this.em;
     const itemSel = this.itemSel;
     const contSel = this.containerSel;
-    const container = this.getContainerEl();
-    const docs = this.getDocuments();
+    const container = this.getContainerEl(opts.container);
+    const docs = this.getDocuments(src);
     const onStart = this.onStart;
     let srcModel;
     let plh = this.plh;
     this.dropModel = null;
+    this.target = null;
+    this.prevTarget = null;
     this.moved = 0;
 
     // Check if the start element is a valid one, if not get the
@@ -276,12 +321,18 @@ module.exports = Backbone.View.extend({
     if (src) {
       srcModel = this.getSourceModel(src);
       srcModel && srcModel.set && srcModel.set('status', 'freezed');
+      this.srcModel = srcModel;
     }
 
     on(container, 'mousemove dragover', this.onMove);
-    on(docs, 'mouseup dragend', this.endMove);
+    on(docs, 'mouseup dragend touchend', this.endMove);
     on(docs, 'keydown', this.rollback);
-    onStart && onStart();
+    onStart &&
+      onStart({
+        target: srcModel,
+        parent: srcModel && srcModel.parent(),
+        index: srcModel && srcModel.index()
+      });
 
     // Avoid strange effects on dragging
     em && em.clearSelection();
@@ -303,45 +354,64 @@ module.exports = Backbone.View.extend({
    * Get the model of the current source element (element to drag)
    * @return {Model}
    */
-  getSourceModel(source) {
-    var src = source || this.eV;
-    let dropContent = this.dropContent;
-    let dropModel = this.dropModel;
-    const em = this.em;
+  getSourceModel(source, { target, avoidChildren = 1 } = {}) {
+    const { em, eV } = this;
+    const src = source || eV;
+    let { dropModel, dropContent } = this;
+    const isTextable = src =>
+      src &&
+      target &&
+      src.opt &&
+      src.opt.avoidChildren &&
+      this.isTextableActive(src, target);
 
     if (dropContent && em) {
-      if (!dropModel) {
-        let comps = em.get('DomComponents').getComponents();
-        const opts = {
-          avoidStore: 1,
-          avoidChildren: 1,
-          avoidUpdateStyle: 1,
-          temporary: 1
-        };
-        let tempModel = comps.add(dropContent, opts);
-        dropModel = comps.remove(tempModel, opts);
-        this.dropModel = dropModel instanceof Array ? dropModel[0] : dropModel;
+      if (isTextable(dropModel)) {
+        dropModel = null;
       }
+
+      if (!dropModel) {
+        const comps = em.get('DomComponents').getComponents();
+        const opts = {
+          avoidChildren,
+          avoidStore: 1,
+          avoidUpdateStyle: 1
+        };
+        const tempModel = comps.add(dropContent, { ...opts, temporary: 1 });
+        dropModel = comps.remove(tempModel, opts);
+        dropModel = dropModel instanceof Array ? dropModel[0] : dropModel;
+        this.dropModel = dropModel;
+
+        if (isTextable(dropModel)) {
+          return this.getSourceModel(src, { target, avoidChildren: 0 });
+        }
+      }
+
       return dropModel;
     }
 
-    if (src) {
-      return $(src).data('model');
-    }
+    return src && $(src).data('model');
   },
 
   /**
    * Highlight target
    * @param  {Model|null} model
    */
-  selectTargetModel(model) {
+  selectTargetModel(model, source) {
     if (model instanceof Backbone.Collection) {
       return;
     }
 
-    var prevModel = this.targetModel;
-    if (prevModel) {
-      prevModel.set('status', '');
+    // Prevents loops in Firefox
+    // https://github.com/artf/grapesjs/issues/2911
+    if (source && source === model) return;
+
+    const { targetModel } = this;
+
+    // Reset the previous model but not if it's the same as the source
+    // https://github.com/artf/grapesjs/issues/2478#issuecomment-570314736
+    if (targetModel && targetModel !== this.srcModel) {
+      targetModel.set('status', '');
     }
 
     if (model && model.set) {
@@ -355,11 +425,11 @@ module.exports = Backbone.View.extend({
    * @param {Event} e
    * */
   onMove(e) {
-    const em = this.em;
+    const ev = e;
+    const { em, onMoveClb, plh } = this;
     this.moved = 1;
 
     // Turn placeholder visibile
-    var plh = this.plh;
     var dsp = plh.style.display;
     if (!dsp || dsp === 'none') plh.style.display = 'block';
 
@@ -371,7 +441,9 @@ module.exports = Backbone.View.extend({
     var rX = e.pageX - this.elL + this.el.scrollLeft;
 
     if (this.canvasRelative && em) {
-      var mousePos = em.get('Canvas').getMouseRelativeCanvas(e);
+      const mousePos = em
+        .get('Canvas')
+        .getMouseRelativeCanvas(e, { noScroll: 1 });
       rX = mousePos.x;
       rY = mousePos.y;
     }
@@ -381,42 +453,74 @@ module.exports = Backbone.View.extend({
     this.eventMove = e;
 
     //var targetNew = this.getTargetFromEl(e.target);
+    const sourceModel = this.getSourceModel();
     const dims = this.dimsFromTarget(e.target, rX, rY);
     const target = this.target;
-    const targetModel = this.getTargetModel(target);
-    this.selectTargetModel(targetModel);
+    const targetModel = target && this.getTargetModel(target);
+    this.selectTargetModel(targetModel, sourceModel);
+    if (!targetModel) plh.style.display = 'none';
+    if (!target) return;
 
     this.lastDims = dims;
-    var pos = this.findPosition(dims, rX, rY);
-    // If there is a significant changes with the pointer
-    if (
-      !this.lastPos ||
-      (this.lastPos.index != pos.index || this.lastPos.method != pos.method)
-    ) {
-      this.movePlaceholder(this.plh, dims, pos, this.prevTargetDim);
-      if (!this.$plh) this.$plh = $(this.plh);
+    const pos = this.findPosition(dims, rX, rY);
 
-      // With canvasRelative the offset is calculated automatically for
-      // each element
-      if (!this.canvasRelative) {
-        if (this.offTop) this.$plh.css('top', '+=' + this.offTop + 'px');
-        if (this.offLeft) this.$plh.css('left', '+=' + this.offLeft + 'px');
-      }
+    if (this.isTextableActive(sourceModel, targetModel)) {
+      this.activeTextModel = targetModel;
+      this.setContentEditable(targetModel, true);
 
+      plh.style.display = 'none';
       this.lastPos = pos;
+      this.updateTextViewCursorPosition(ev);
+    } else {
+      this.disableTextable();
+      this.activeTextModel = null;
+
+      // If there is a significant changes with the pointer
+      if (
+        !this.lastPos ||
+        this.lastPos.index != pos.index || this.lastPos.method != pos.method
+      ) {
+        this.movePlaceholder(this.plh, dims, pos, this.prevTargetDim);
+        if (!this.$plh) this.$plh = $(this.plh);
+
+        // With canvasRelative the offset is calculated automatically for
+        // each element
+        if (!this.canvasRelative) {
+          if (this.offTop) this.$plh.css('top', '+=' + this.offTop + 'px');
+          if (this.offLeft) this.$plh.css('left', '+=' + this.offLeft + 'px');
+        }
+
+        this.lastPos = pos;
+      }
     }
 
-    if (typeof this.onMoveClb === 'function') this.onMoveClb(e);
+    isFunction(onMoveClb) &&
+      onMoveClb({
+        event: e,
+        target: sourceModel,
+        parent: targetModel,
+        index: pos.index + (pos.method == 'after' ? 1 : 0)
+      });
 
     em &&
       em.trigger('sorter:drag', {
         target,
         targetModel,
+        sourceModel,
         dims,
         pos,
         x: rX,
         y: rY
       });
+  },
+
+  isTextableActive(src, trg) {
+    return src && src.get && src.get('textable') && trg && trg.is('text');
+  },
+
+  disableTextable() {
+    const { activeTextModel } = this;
+    activeTextModel && activeTextModel.getView().disableEditing();
   },
 
   /**
@@ -447,11 +551,19 @@ module.exports = Backbone.View.extend({
    * @private
    */
   styleInFlow(el, parent) {
-    var style = el.style;
-    var $el = $(el);
+    if (isTextNode(el)) return;
+    const style = el.style || {};
+    const $el = $(el);
+    const $parent = parent && $(parent);
+
     if (style.overflow && style.overflow !== 'visible') return;
     if ($el.css('float') !== 'none') return;
-    if (parent && $(parent).css('display') == 'flex') return;
+    if (
+      $parent &&
+      $parent.css('display') == 'flex' &&
+      $parent.css('flex-direction') !== 'column'
+    )
+      return;
     switch (style.position) {
       case 'static':
       case 'relative':
@@ -483,9 +595,9 @@ module.exports = Backbone.View.extend({
    * @return {Boolean}
    */
   validTarget(trg, src) {
-    let srcModel = this.getSourceModel(src);
+    const trgModel = this.getTargetModel(trg);
+    const srcModel = this.getSourceModel(src, { target: trgModel });
     src = srcModel && srcModel.view && srcModel.view.el;
-    let trgModel = this.getTargetModel(trg);
     trg = trgModel && trgModel.view && trgModel.view.el;
     let result = {
       valid: true,
@@ -500,20 +612,22 @@ module.exports = Backbone.View.extend({
       return result;
     }
 
-    // Check if the target could accept the source
-    let droppable = trgModel.get('droppable');
-    droppable = droppable instanceof Backbone.Collection ? 1 : droppable;
-    droppable = droppable instanceof Array ? droppable.join(', ') : droppable;
-    result.dropInfo = droppable;
-    droppable = isString(droppable) ? this.matches(src, droppable) : droppable;
-    result.droppable = droppable;
-
     // check if the source is draggable in target
     let draggable = srcModel.get('draggable');
     draggable = draggable instanceof Array ? draggable.join(', ') : draggable;
     result.dragInfo = draggable;
     draggable = isString(draggable) ? this.matches(trg, draggable) : draggable;
     result.draggable = draggable;
+
+    // Check if the target could accept the source
+    let droppable = trgModel.get('droppable');
+    droppable = droppable instanceof Backbone.Collection ? 1 : droppable;
+    droppable = droppable instanceof Array ? droppable.join(', ') : droppable;
+    result.dropInfo = droppable;
+    droppable = isString(droppable) ? this.matches(src, droppable) : droppable;
+    droppable =
+      draggable && this.isTextableActive(srcModel, trgModel) ? 1 : droppable;
+    result.droppable = droppable;
 
     if (!droppable || !draggable) {
       result.valid = false;
@@ -694,19 +808,17 @@ module.exports = Backbone.View.extend({
    * @return {Array<number>}
    */
   getDim(el) {
+    const { em, canvasRelative } = this;
     var top, left, height, width;
 
-    if (this.canvasRelative && this.em) {
-      var pos = this.em.get('Canvas').getElementPos(el);
-      var styles = window.getComputedStyle(el);
-      var marginTop = parseFloat(styles['marginTop']);
-      var marginBottom = parseFloat(styles['marginBottom']);
-      var marginRight = parseFloat(styles['marginRight']);
-      var marginLeft = parseFloat(styles['marginLeft']);
-      top = pos.top - marginTop;
-      left = pos.left - marginLeft;
-      height = pos.height + marginTop + marginBottom;
-      width = pos.width + marginLeft + marginRight;
+    if (canvasRelative && em) {
+      const canvas = em.get('Canvas');
+      const pos = canvas.getElementPos(el, { noScroll: 1 });
+      const elOffsets = canvas.getElementOffsets(el);
+      top = pos.top - elOffsets.marginTop;
+      left = pos.left - elOffsets.marginLeft;
+      height = pos.height + elOffsets.marginTop + elOffsets.marginBottom;
+      width = pos.width + elOffsets.marginLeft + elOffsets.marginRight;
     } else {
       var o = this.offset(el);
       top = this.relative
@@ -728,35 +840,36 @@ module.exports = Backbone.View.extend({
    * @retun {Array}
    * */
   getChildrenDim(trg) {
-    var dims = [];
+    const dims = [];
     if (!trg) return dims;
 
     // Get children based on getChildrenContainer
-    var trgModel = this.getTargetModel(trg);
+    const trgModel = this.getTargetModel(trg);
     if (trgModel && trgModel.view && !this.ignoreViewChildren) {
-      trg = trgModel.view.getChildrenContainer();
+      const view = trgModel.getCurrentView
+        ? trgModel.getCurrentView()
+        : trgModel.view;
+      trg = view.getChildrenContainer();
     }
 
-    var ch = trg.children;
+    each(trg.children, (el, i) => {
+      const model = getModel(el, $);
+      const elIndex = model && model.index ? model.index() : i;
 
-    for (var i = 0, len = ch.length; i < len; i++) {
-      var el = ch[i];
-
-      if (!this.matches(el, this.itemSel)) {
-        continue;
+      if (!isTextNode(el) && !this.matches(el, this.itemSel)) {
+        return;
       }
 
-      var dim = this.getDim(el);
-      var dir = this.direction;
+      const dim = this.getDim(el);
+      let dir = this.direction;
 
       if (dir == 'v') dir = true;
       else if (dir == 'h') dir = false;
       else dir = this.isInFlow(el, trg);
 
-      dim.push(dir);
-      dim.push(el);
+      dim.push(dir, el, elIndex);
       dims.push(dim);
-    }
+    });
 
     return dims;
   },
@@ -791,7 +904,7 @@ module.exports = Backbone.View.extend({
    * @retun {Object}
    * */
   findPosition(dims, posX, posY) {
-    var result = { index: 0, method: 'before' };
+    var result = { index: 0, indexEl: 0, method: 'before' };
     var leftLimit = 0,
       xLimit = 0,
       dimRight = 0,
@@ -819,6 +932,7 @@ module.exports = Backbone.View.extend({
       )
         continue;
       result.index = i;
+      result.indexEl = dim[6];
       // If it's not in flow (like 'float' element)
       if (!dim[4]) {
         if (posY < dimDown) yLimit = dimDown;
@@ -856,13 +970,13 @@ module.exports = Backbone.View.extend({
       h = 0,
       un = 'px',
       margI = 5,
-      brdCol = '#62c462',
-      brd = 3,
       method = pos.method;
     var elDim = dims[pos.index];
-    plh.style.borderColor = 'transparent ' + brdCol;
-    plh.style.borderWidth = brd + un + ' ' + (brd + 2) + un;
-    plh.style.margin = '-' + brd + 'px 0 0';
+
+    // Placeholder orientation
+    plh.classList.remove('vertical');
+    plh.classList.add('horizontal');
+
     if (elDim) {
       // If it's not in flow (like 'float' element)
       if (!elDim[4]) {
@@ -870,9 +984,9 @@ module.exports = Backbone.View.extend({
         h = elDim[2] - marg * 2 + un;
         t = elDim[0] + marg;
         l = method == 'before' ? elDim[1] - marg : elDim[1] + elDim[3] - marg;
-        plh.style.borderColor = brdCol + ' transparent';
-        plh.style.borderWidth = brd + 2 + un + ' ' + brd + un;
-        plh.style.margin = '0 0 0 -' + brd + 'px';
+
+        plh.classList.remove('horizontal');
+        plh.classList.add('vertical');
       } else {
         w = elDim[3] + un;
         h = 'auto';
@@ -904,24 +1018,21 @@ module.exports = Backbone.View.extend({
    * @return void
    * */
   endMove(e) {
-    var created;
-    const moved = [null];
+    const src = this.eV;
+    const moved = [];
     const docs = this.getDocuments();
     const container = this.getContainerEl();
     const onEndMove = this.onEndMove;
     const { target, lastPos } = this;
+    let srcModel;
     off(container, 'mousemove dragover', this.onMove);
-    off(docs, 'mouseup dragend', this.endMove);
+    off(docs, 'mouseup dragend touchend', this.endMove);
     off(docs, 'keydown', this.rollback);
-    //this.$document.off('mouseup', this.endMove);
-    //this.$document.off('keydown', this.rollback);
     this.plh.style.display = 'none';
-    var clsReg = new RegExp('(?:^|\\s)' + this.freezeClass + '(?!\\S)', 'gi');
-    let src = this.eV;
 
-    if (src && this.selectOnEnd) {
-      var srcModel = this.getSourceModel();
-      if (srcModel && srcModel.set) {
+    if (src) {
+      srcModel = this.getSourceModel();
+      if (this.selectOnEnd && srcModel && srcModel.set) {
         srcModel.set('status', '');
         srcModel.set('status', 'selected');
       }
@@ -943,11 +1054,24 @@ module.exports = Backbone.View.extend({
       this.dragHelper = null;
     }
 
+    this.disableTextable();
     this.selectTargetModel();
     this.toggleSortCursor();
 
     this.toMove = null;
-    isFunction(onEndMove) && moved.forEach(m => onEndMove(m, this));
+    this.eventMove = 0;
+    this.dropModel = null;
+
+    if (isFunction(onEndMove)) {
+      const data = {
+        target: srcModel,
+        parent: srcModel && srcModel.parent(),
+        index: srcModel && srcModel.index()
+      };
+      moved.length
+        ? moved.forEach(m => onEndMove(m, this, data))
+        : onEndMove(null, this, { ...data, cancelled: 1 });
+    }
   },
 
   /**
@@ -957,11 +1081,11 @@ module.exports = Backbone.View.extend({
    * @param {Object} pos Object with position coordinates
    * */
   move(dst, src, pos) {
-    var em = this.em;
+    const { em, activeTextModel, dropContent } = this;
     const srcEl = getElement(src);
     em && em.trigger('component:dragEnd:before', dst, srcEl, pos); // @depricated
     var warns = [];
-    var index = pos.index;
+    var index = pos.indexEl;
     var modelToDrop, modelTemp, created;
     var validResult = this.validTarget(dst, srcEl);
     var targetCollection = $(dst).data('collection');
@@ -970,9 +1094,9 @@ module.exports = Backbone.View.extend({
     var draggable = validResult.draggable;
     var dropInfo = validResult.dropInfo;
     var dragInfo = validResult.dragInfo;
-    var dropContent = this.dropContent;
-    droppable =
-      validResult.trgModel instanceof Backbone.Collection ? 1 : droppable;
+    const { trgModel } = validResult;
+    droppable = trgModel instanceof Backbone.Collection ? 1 : droppable;
+    const isTextableActive = this.isTextableActive(model, trgModel);
 
     if (targetCollection && droppable && draggable) {
       index = pos.method === 'after' ? index + 1 : index;
@@ -983,8 +1107,8 @@ module.exports = Backbone.View.extend({
         opts.temporary = 1;
         modelTemp = targetCollection.add({}, { ...opts });
 
-        if (model) {
-          modelToDrop = model.collection.remove(model);
+        if (model.collection) {
+          modelToDrop = model.collection.remove(model, { temporary: 1 });
         }
       } else {
         modelToDrop = dropContent;
@@ -992,7 +1116,19 @@ module.exports = Backbone.View.extend({
         opts.avoidUpdateStyle = 1;
       }
 
-      created = targetCollection.add(modelToDrop, opts);
+      if (isTextableActive) {
+        const viewActive = activeTextModel.getView();
+        activeTextModel.trigger('active');
+        const { activeRte } = viewActive;
+        const modelEl = model.getEl();
+        delete model.opt.temporary;
+        model.getView().render();
+        modelEl.setAttribute('data-gjs-textable', 'true');
+        const { outerHTML } = modelEl;
+        activeRte.insertHTML && activeRte.insertHTML(outerHTML);
+      } else {
+        created = targetCollection.add(modelToDrop, opts);
+      }
 
       if (!dropContent) {
         targetCollection.remove(modelTemp);
@@ -1019,7 +1155,15 @@ module.exports = Backbone.View.extend({
     }
 
     em && em.trigger('component:dragEnd', targetCollection, modelToDrop, warns); // @depricated
-    em && em.trigger('sorter:drag:end', targetCollection, modelToDrop, warns);
+    em &&
+      em.trigger('sorter:drag:end', {
+        targetCollection,
+        modelToDrop,
+        warns,
+        validResult,
+        dst,
+        srcEl
+      });
 
     return created;
   },

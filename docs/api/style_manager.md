@@ -29,7 +29,6 @@ const styleManager = editor.StyleManager;
 -   [removeProperty][9]
 -   [getProperties][10]
 -   [getModelToStyle][11]
--   [getModelToStyle][11]
 -   [addType][12]
 -   [getType][13]
 -   [getTypes][14]
@@ -53,6 +52,8 @@ that one will be returned
     -   `sector.name` **[string][17]** Sector's label (optional, default `''`)
     -   `sector.open` **[Boolean][18]** Indicates if the sector should be opened (optional, default `true`)
     -   `sector.properties` **[Array][19]&lt;[Object][16]>** Array of properties (optional, default `[]`)
+-   `opts`   (optional, default `{}`)
+-   `options` **[Object][16]** Options (optional, default `{}`)
 
 ### Examples
 
@@ -61,7 +62,8 @@ var sector = styleManager.addSector('mySector',{
   name: 'My sector',
   open: true,
   properties: [{ name: 'My property'}]
-});
+}, { at: 0 });
+// With `at: 0` we place the new sector at the beginning of the collection
 ```
 
 Returns **Sector** Added Sector
@@ -73,6 +75,7 @@ Get sector by id
 ### Parameters
 
 -   `id` **[string][17]** Sector id
+-   `opts`   (optional, default `{}`)
 
 ### Examples
 
@@ -127,6 +130,8 @@ Add property to the sector identified by id
     -   `property.properties` **[Array][19]&lt;[Object][16]>** Nested properties for composite and stack type (optional, default `[]`)
     -   `property.layers` **[Array][19]&lt;[Object][16]>** Layers for stack properties (optional, default `[]`)
     -   `property.list` **[Array][19]&lt;[Object][16]>** List of possible options for radio and select types (optional, default `[]`)
+-   `opts`   (optional, default `{}`)
+-   `options` **[Object][16]** Options (optional, default `{}`)
 
 ### Examples
 
@@ -143,7 +148,8 @@ var property = styleManager.addProperty('mySector',{
      value: '200px',
      name: '200',
    }],
-});
+}, { at: 0 });
+// With `at: 0` we place the new property at the beginning of the collection
 ```
 
 Returns **(Property | null)** Added Property or `null` in case sector doesn't exist
@@ -155,7 +161,7 @@ Get property by its CSS name and sector id
 ### Parameters
 
 -   `sectorId` **[string][17]** Sector id
--   `name` **[string][17]** CSS property name, eg. 'min-height'
+-   `name` **[string][17]** CSS property name (or id), eg. 'min-height'
 
 ### Examples
 
@@ -208,6 +214,7 @@ one or more classes, the function will return the corresponding CSS Rule
 ### Parameters
 
 -   `model` **Model** 
+-   `options`   (optional, default `{}`)
 
 Returns **Model** 
 
@@ -226,14 +233,28 @@ Add new property type
 ### Examples
 
 ```javascript
-styleManager.addType('my-type', {
- model: {},
- view: {},
- isType: (value) => {
-   if (value && value.type == 'my-type') {
-     return value;
+styleManager.addType('my-custom-prop', {
+   create({ props, change }) {
+     const el = document.createElement('div');
+     el.innerHTML = '<input type="range" class="my-input" min="10" max="50"/>';
+     const inputEl = el.querySelector('.my-input');
+     inputEl.addEventListener('change', event => change({ event })); // change will trigger the emit
+     inputEl.addEventListener('input', event => change({ event, complete: false }));
+     return el;
+   },
+   emit({ props, updateStyle }, { event, complete }) {
+     const { value } = event.target;
+     const valueRes = value + 'px';
+     // Pass a string value for the exact CSS property or an object containing multiple properties
+     // eg. updateStyle({ [props.property]: valueRes, color: 'red' });
+     updateStyle(valueRes, { complete });
+   },
+   update({ value, el }) {
+     el.querySelector('.my-input').value = parseInt(value, 10);
+   },
+   destroy() {
+     // In order to prevent memory leaks, use this method to clean, eventually, created instances, global event listeners, etc.
    }
- },
 })
 ```
 
@@ -276,6 +297,18 @@ someContainer.appendChild(propView.el);
 ```
 
 Returns **PropertyView** 
+
+## setTarget
+
+Select different target for the Style Manager.
+It could be a Component, CSSRule, or a string of any CSS selector
+
+### Parameters
+
+-   `target` **(Component | CSSRule | [String][17])** 
+-   `opts`  
+
+Returns **Styleable** A Component or CSSRule
 
 [1]: https://github.com/artf/grapesjs/blob/master/src/style_manager/config/config.js
 

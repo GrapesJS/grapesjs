@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   // Style prefix
   stylePrefix: 'gjs-',
 
@@ -30,6 +30,11 @@ module.exports = {
   // Width for the editor container
   width: '100%',
 
+  // Type of logs to print with the logger (by default is used the devtool console).
+  // Available by default: debug, info, warning, error
+  // You can use `false` to disable all of them or `true` to print all of them
+  log: ['warning', 'error'],
+
   // By default Grapes injects base CSS into the canvas. For example, it sets body margin to 0
   // and sets a default background color of white. This CSS is desired in most cases.
   // use this property if you wish to overwrite the base CSS to your own CSS. This is most
@@ -38,7 +43,7 @@ module.exports = {
     * {
       box-sizing: border-box;
     }
-    html, body, #wrapper {
+    html, body, [data-gjs-type=wrapper] {
       min-height: 100%;
     }
     body {
@@ -46,7 +51,7 @@ module.exports = {
       height: 100%;
       background-color: #fff
     }
-    #wrapper {
+    [data-gjs-type=wrapper] {
       overflow: auto;
       overflow-x: hidden;
     }
@@ -112,18 +117,19 @@ module.exports = {
   exportWrapper: 0,
 
   // The wrapper, if visible, will be shown as a `<body>`
-  wrappesIsBody: 1,
+  wrapperIsBody: 1,
 
   // Usually when you update the `style` of the component this changes the
   // element's `style` attribute. Unfortunately, inline styling doesn't allow
   // use of media queries (@media) or even pseudo selectors (eg. :hover).
   // When `avoidInlineStyle` is true all styles are inserted inside the css rule
-  avoidInlineStyle: 0,
+  // @deprecated Don't use this option, we don't support inline styling anymore
+  avoidInlineStyle: 1,
 
   // Avoid default properties from storable JSON data, like `components` and `styles`.
   // With this option enabled your data will be smaller (usefull if need to
   // save some storage space)
-  avoidDefaults: 0,
+  avoidDefaults: 1,
 
   // (experimental)
   // The structure of components is always on the screen but it's not the same
@@ -135,8 +141,30 @@ module.exports = {
   // use it later, but this option comes really handy when deal with big templates.
   clearStyles: 0,
 
+  // Specify the global drag mode of components. By default, components are moved
+  // following the HTML flow. Two other options are available:
+  // 'absolute' - Move components absolutely (design tools way)
+  // 'translate' - Use translate CSS from transform property
+  // To get more about this feature read: https://github.com/artf/grapesjs/issues/1936
+  dragMode: 0,
+
+  // When the editor is placed in a scrollable container (eg. modals) this might
+  // cause elements inside the canvas (eg. floating toolbars) to be misaligned.
+  // To avoid that, you can specify an array of DOM elements on which their scroll will
+  // trigger the canvas update.
+  // Be default, if the array is empty, the first parent element will be appended.
+  // listenToEl: [document.querySelector('#scrollable-el')],
+  listenToEl: [],
+
+  // Import asynchronously CSS to use as icons
+  cssIcons:
+    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css',
+
   // Dom element
   el: '',
+
+  // Configurations for I18n
+  i18n: {},
 
   // Configurations for Undo Manager
   undoManager: {},
@@ -154,7 +182,7 @@ module.exports = {
   storageManager: {},
 
   //Configurations for Rich Text Editor
-  rte: {},
+  richTextEditor: {},
 
   //Configurations for DomComponents
   domComponents: {},
@@ -181,20 +209,24 @@ module.exports = {
   deviceManager: {
     devices: [
       {
+        id: 'desktop',
         name: 'Desktop',
         width: ''
       },
       {
+        id: 'tablet',
         name: 'Tablet',
         width: '768px',
         widthMedia: '992px'
       },
       {
+        id: 'mobileLandscape',
         name: 'Mobile landscape',
         width: '568px',
         widthMedia: '768px'
       },
       {
+        id: 'mobilePortrait',
         name: 'Mobile portrait',
         width: '320px',
         widthMedia: '480px'
@@ -216,6 +248,22 @@ module.exports = {
           'right',
           'left',
           'bottom'
+        ]
+      },
+      {
+        name: 'Flex',
+        open: false,
+        buildProps: [
+          'flex-direction',
+          'flex-wrap',
+          'justify-content',
+          'align-items',
+          'align-content',
+          'order',
+          'flex-basis',
+          'flex-grow',
+          'flex-shrink',
+          'align-self'
         ]
       },
       {
@@ -285,5 +333,8 @@ module.exports = {
   textViewCode: 'Code',
 
   // Keep unused styles within the editor
-  keepUnusedStyles: 0
+  keepUnusedStyles: 0,
+
+  // TODO
+  multiFrames: 0
 };

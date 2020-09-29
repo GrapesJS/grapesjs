@@ -1,13 +1,13 @@
 import Backbone from 'backbone';
-const CssRuleView = require('./CssRuleView');
-const CssGroupRuleView = require('./CssGroupRuleView');
+import CssRuleView from './CssRuleView';
+import CssGroupRuleView from './CssGroupRuleView';
+
 const $ = Backbone.$;
 
-// % is not a valid character for classes
-const getBlockId = (pfx, widthMedia) =>
-  `${pfx}${widthMedia ? `-${widthMedia.replace('%', 'pc')}` : ''}`;
+const getBlockId = (pfx, order) =>
+  `${pfx}${order ? `-${parseFloat(order)}` : ''}`;
 
-module.exports = Backbone.View.extend({
+export default Backbone.View.extend({
   initialize(o) {
     const config = o.config || {};
     this.atRules = {};
@@ -42,11 +42,10 @@ module.exports = Backbone.View.extend({
       return;
     }
 
-    var fragment = fragmentEl || null;
-    var viewObject = CssRuleView;
-    var config = this.config;
-    let rendered, view;
+    const fragment = fragmentEl || null;
+    const { config } = this;
     const opts = { model, config };
+    let rendered, view;
 
     // I have to render keyframes of the same name together
     // Unfortunately at the moment I didn't find the way of appending them
@@ -115,28 +114,21 @@ module.exports = Backbone.View.extend({
   render() {
     this.renderStarted = 1;
     this.atRules = {};
-    const $el = this.$el;
+    const { em, $el, className, collection } = this;
     const frag = document.createDocumentFragment();
-    const className = this.className;
     $el.empty();
 
-    // Create devices related DOM structure
-    this.em
+    // Create devices related DOM structure, ensure also to have a default container
+    const prs = em
       .get('DeviceManager')
       .getAll()
-      .map(model => model.get('widthMedia'))
-      .sort(
-        (left, right) =>
-          ((right && right.replace('px', '')) || Number.MAX_VALUE) -
-          ((left && left.replace('px', '')) || Number.MAX_VALUE)
-      )
-      .forEach(widthMedia => {
-        $(`<div id="${getBlockId(className, widthMedia)}"></div>`).appendTo(
-          frag
-        );
-      });
+      .pluck('priority');
+    prs.every(pr => pr) && prs.unshift(0);
+    prs.forEach(pr =>
+      $(`<div id="${getBlockId(className, pr)}"></div>`).appendTo(frag)
+    );
 
-    this.collection.each(model => this.addToCollection(model, frag));
+    collection.each(model => this.addToCollection(model, frag));
     $el.append(frag);
     $el.attr('class', className);
     return this;

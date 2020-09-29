@@ -1,11 +1,12 @@
-const Component = require('./ComponentImage');
-const OComponent = require('./Component');
+import Component from './ComponentImage';
+import OComponent from './Component';
 
-module.exports = Component.extend(
+export default Component.extend(
   {
     defaults: {
       ...Component.prototype.defaults,
       type: 'map',
+      src: '',
       void: 0,
       mapUrl: 'https://maps.google.com/maps',
       tagName: 'iframe',

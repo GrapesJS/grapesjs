@@ -1,8 +1,8 @@
-import _ from 'underscore';
+import { template } from 'underscore';
 import Backbone from 'backbone';
 
-module.exports = Backbone.View.extend({
-  template: _.template(`
+export default Backbone.View.extend({
+  template: template(`
     <div class="<%= ppfx %>device-label"><%= deviceLabel %></div>
     <div class="<%= ppfx %>field <%= ppfx %>select">
       <span id="<%= ppfx %>input-holder">
@@ -67,25 +67,29 @@ module.exports = Backbone.View.extend({
    * @private
    */
   getOptions() {
-    var result = '';
-    this.collection.each(device => {
-      var name = device.get('name');
-      result += '<option value="' + name + '">' + name + '</option>';
+    const { collection, em } = this;
+    let result = '';
+
+    collection.each(device => {
+      const { name, id } = device.attributes;
+      const label = (em && em.t && em.t(`deviceManager.devices.${id}`)) || name;
+      result += `<option value="${name}">${label}</option>`;
     });
+
     return result;
   },
 
   render() {
-    var pfx = this.ppfx;
-    this.$el.html(
+    const { em, ppfx, $el, el } = this;
+    $el.html(
       this.template({
-        ppfx: pfx,
-        deviceLabel: this.config.deviceLabel
+        ppfx,
+        deviceLabel: em && em.t && em.t('deviceManager.device')
       })
     );
-    this.devicesEl = this.$el.find('.' + pfx + 'devices');
+    this.devicesEl = $el.find(`.${ppfx}devices`);
     this.devicesEl.append(this.getOptions());
-    this.el.className = pfx + 'devices-c';
+    el.className = `${ppfx}devices-c`;
     return this;
   }
 });

@@ -1,5 +1,3 @@
-const PluginManager = require('plugin_manager');
-
 describe('GrapesJS', () => {
   describe('Main', () => {
     var obj;
@@ -87,19 +85,17 @@ describe('GrapesJS', () => {
       expect(editor.getStyle().length).toEqual(0);
     });
 
-    test('Editor canvas baseCSS can be overwritten', () => {
+    test.only('Editor canvas baseCSS can be overwritten', () => {
       config.components = htmlString;
       config.baseCss = '#wrapper { background-color: #eee; }';
       config.protectedCss = '';
+      const editor = obj.init(config);
+      const body = editor.Canvas.getBody();
 
-      var editor = obj.init(config);
-
-      expect(window.frames[0].document.documentElement.outerHTML).toContain(
-        config.baseCss
+      expect(body.outerHTML).toContain(config.baseCss);
+      expect(body.outerHTML.replace(/\s+/g, ` `)).not.toContain(
+        `body { margin: 0;`
       );
-      expect(
-        window.frames[0].document.documentElement.outerHTML.replace(/\s+/g, ` `)
-      ).not.toContain(`body { margin: 0;`);
     });
 
     test('Editor canvas baseCSS defaults to sensible values if not defined', () => {
@@ -164,18 +160,19 @@ describe('GrapesJS', () => {
         `
       <style>
         @font-face {
-          font-family: 'Glyphicons Halflings';
-          src: url(https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff2) format('woff2');
+          font-family: 'A';
+          src: url('http://a.link') format('woff2');
         }
         @font-face {
-          font-family: 'Droid Sans';
-          src: url(https://fonts.gstatic.com/s/droidsans/v8/SlGVmQWMvZQIdix7AFxXkHNSbRYXags.woff2) format('woff2');
+          font-family: 'B';
+          src: url('http://b.link') format('woff2');
         }
       </style>` + htmlString;
       const editor = obj.init(config);
       const css = editor.getCss();
       const styles = editor.getStyle();
       expect(styles.length).toEqual(2);
+      expect((css.match(/@font-face/g) || []).length).toEqual(2);
     });
 
     test('Set components as HTML', () => {
@@ -288,6 +285,40 @@ describe('GrapesJS', () => {
       expect(editor.customValue).toEqual('TEST');
     });
 
+    test('Execute inline plugins with custom options', () => {
+      const inlinePlugin = (edt, opts) => {
+        var opts = opts || {};
+        edt.customValue = opts.cVal || '';
+      };
+      config.plugins = [inlinePlugin];
+      config.pluginsOpts = {};
+      config.pluginsOpts[inlinePlugin] = { cVal: 'TEST' };
+      var editor = obj.init(config);
+      expect(editor.customValue).toEqual('TEST');
+    });
+
+    test('Execute inline plugins without any options', () => {
+      const inlinePlugin = edt => {
+        edt.customValue = 'TEST';
+      };
+      config.plugins = [inlinePlugin];
+      config.pluginsOpts = {};
+      var editor = obj.init(config);
+      expect(editor.customValue).toEqual('TEST');
+    });
+
+    test('Use plugins defined on window, with custom options', () => {
+      window.globalPlugin = (edt, opts) => {
+        var opts = opts || {};
+        edt.customValue = opts.cVal || '';
+      };
+      config.plugins = ['globalPlugin'];
+      config.pluginsOpts = {};
+      config.pluginsOpts['globalPlugin'] = { cVal: 'TEST' };
+      var editor = obj.init(config);
+      expect(editor.customValue).toEqual('TEST');
+    });
+
     test('Execute custom command', () => {
       var editor = obj.init(config);
       editor.testVal = '';
@@ -310,7 +341,7 @@ describe('GrapesJS', () => {
           ed.testVal = ed.getHtml() + opts.val;
         }
       });
-      editor.stopCommand('test-command', { val: 5 });
+      editor.stopCommand('test-command', { val: 5, force: 1 });
       expect(editor.testVal).toEqual(htmlString + '5');
     });
 
@@ -430,6 +461,7 @@ describe('GrapesJS', () => {
         el1 = wrapper.find('#el1')[0];
         el2 = wrapper.find('#el2')[0];
         el3 = wrapper.find('#el3')[0];
+        // console.log('wrapper', wrapper.getEl().innerHTML);
       });
 
       test('Select a single component', () => {

@@ -1,6 +1,6 @@
-var Backbone = require('backbone');
-var Panel = require('./Panel');
+import Backbone from 'backbone';
+import Panel from './Panel';
 
-module.exports = Backbone.Collection.extend({
+export default Backbone.Collection.extend({
   model: Panel
 });

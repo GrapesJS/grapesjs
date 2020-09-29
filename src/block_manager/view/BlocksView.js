@@ -1,9 +1,9 @@
+import Backbone from 'backbone';
 import { isString, isObject, bindAll } from 'underscore';
+import BlockView from './BlockView';
+import CategoryView from './CategoryView';
 
-const BlockView = require('./BlockView');
-const CategoryView = require('./CategoryView');
-
-module.exports = require('backbone').View.extend({
+export default Backbone.View.extend({
   initialize(opts, config) {
     bindAll(this, 'getSorter', 'onDrag', 'onDrop');
     this.config = config || {};
@@ -25,6 +25,13 @@ module.exports = require('backbone').View.extend({
       this.config.getSorter = this.getSorter;
       this.canvas = this.em.get('Canvas');
     }
+  },
+
+  updateConfig(opts = {}) {
+    this.config = {
+      ...this.config,
+      ...opts
+    };
   },
 
   /**
@@ -103,19 +110,20 @@ module.exports = require('backbone').View.extend({
    * @private
    * */
   add(model, fragment) {
+    const { config } = this;
     var frag = fragment || null;
     var view = new BlockView(
       {
         model,
         attributes: model.get('attributes')
       },
-      this.config
+      config
     );
     var rendered = view.render().el;
     var category = model.get('category');
 
     // Check for categories
-    if (category && this.categories) {
+    if (category && this.categories && !config.ignoreCategories) {
       if (isString(category)) {
         category = {
           id: category,

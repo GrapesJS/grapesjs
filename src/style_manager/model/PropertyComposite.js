@@ -1,6 +1,6 @@
-const Property = require('./Property');
+import Property from './Property';
 
-module.exports = Property.extend({
+export default Property.extend({
   defaults: {
     ...Property.prototype.defaults,
     // 'background' is a good example where to make a difference
@@ -21,11 +21,13 @@ module.exports = Property.extend({
     separator: ' '
   },
 
-  init() {
+  initialize(props = {}, opts = {}) {
+    Property.callParentInit(Property, this, props, opts);
     const properties = this.get('properties') || [];
-    const Properties = require('./Properties');
+    const Properties = require('./Properties').default;
     this.set('properties', new Properties(properties));
     this.listenTo(this, 'change:value', this.updateValues);
+    Property.callInit(this, props, opts);
   },
 
   /**
@@ -41,17 +43,25 @@ module.exports = Property.extend({
    * Update property values
    */
   updateValues() {
-    const values = this.getFullValue().split(this.get('separator'));
+    const values = this.getFullValue().split(this.getSplitSeparator());
     this.get('properties').each((property, i) => {
       const len = values.length;
       // Try to get value from a shorthand:
       // 11px -> 11px 11px 11px 11xp
       // 11px 22px -> 11px 22px 11px 22xp
       const value =
-        values[i] || values[i % len + (len != 1 && len % 2 ? 1 : 0)];
+        values[i] || values[(i % len) + (len != 1 && len % 2 ? 1 : 0)];
       // There some issue with UndoManager
       //property.setValue(value, 0, {fromParent: 1});
     });
+  },
+
+  /**
+   * Split by sperator but avoid it inside parenthesis
+   * @return {RegExp}
+   */
+  getSplitSeparator() {
+    return new RegExp(`${this.get('separator')}(?![^\\(]*\\))`);
   },
 
   /**
@@ -78,5 +88,14 @@ module.exports = Property.extend({
     }
 
     return this.get('properties').getFullValue();
+  },
+
+  /**
+   * Get property at some index
+   * @param  {Number} index
+   * @return {Object}
+   */
+  getPropertyAt(index) {
+    return this.get('properties').at(index);
   }
 });

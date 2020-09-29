@@ -1,8 +1,8 @@
-module.exports = () => {
-  const Sorter = require('./Sorter');
-  const Resizer = require('./Resizer');
-  const Dragger = require('./Dragger');
+import Dragger from './Dragger';
+import Sorter from './Sorter';
+import Resizer from './Resizer';
 
+export default () => {
   return {
     /**
      * Name of the module

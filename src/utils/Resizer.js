@@ -12,6 +12,7 @@ var defaultOpts = {
   onStart: null,
   onMove: null,
   onEnd: null,
+  onUpdateContainer: () => {},
 
   // Resize unit step
   step: 1,
@@ -44,6 +45,18 @@ var defaultOpts = {
 
   // If true the container of handlers won't be updated
   avoidContainerUpdate: 0,
+
+  // If height is 'auto', this setting will preserve it and only update  width
+  keepAutoHeight: false,
+
+  // If width is 'auto', this setting will preserve it and only update height
+  keepAutoWidth: false,
+
+  // When keepAutoHeight is true and the height has the value 'auto', this is set to true and height isn't updated
+  autoHeight: false,
+
+  // When keepAutoWidth is true and the width has the value 'auto', this is set to true and width isn't updated
+  autoWidth: false,
 
   // Handlers
   tl: 1, // Top left
@@ -142,6 +155,7 @@ class Resizer {
     this.onStart = opts.onStart;
     this.onMove = opts.onMove;
     this.onEnd = opts.onEnd;
+    this.onUpdateContainer = opts.onUpdateContainer;
   }
 
   /**
@@ -206,22 +220,8 @@ class Resizer {
       return;
     }
 
-    // Show the handlers
     this.el = el;
-    const config = this.opts;
-    const unit = 'px';
-    const rect = this.getElementPos(el, { target: 'container' });
-    const container = this.container;
-    const contStyle = container.style;
-
-    if (!config.avoidContainerUpdate) {
-      contStyle.left = rect.left + unit;
-      contStyle.top = rect.top + unit;
-      contStyle.width = rect.width + unit;
-      contStyle.height = rect.height + unit;
-      contStyle.display = 'block';
-    }
-
+    this.updateContainer({ forceShow: 1 });
     on(this.getDocumentEl(), 'mousedown', this.handleMouseDown);
   }
 
@@ -341,7 +341,6 @@ class Resizer {
     const resizer = this;
     const config = this.opts;
     const rect = this.rectDim;
-    const conStyle = this.container.style;
     const updateTarget = this.updateTarget;
     const selectedHandler = this.getSelectedHandler();
     const { unitHeight, unitWidth, keyWidth, keyHeight } = config;
@@ -360,14 +359,30 @@ class Resizer {
       elStyle[keyHeight] = rect.h + unitHeight;
     }
 
-    const unitRect = 'px';
-    const rectEl = this.getElementPos(el, { target: 'container' });
-    if (!config.avoidContainerUpdate) {
-      conStyle.left = rectEl.left + unitRect;
-      conStyle.top = rectEl.top + unitRect;
-      conStyle.width = rectEl.width + unitRect;
-      conStyle.height = rectEl.height + unitRect;
+    this.updateContainer();
+  }
+
+  updateContainer(opt = {}) {
+    const { opts, container, el } = this;
+    const { style } = container;
+
+    if (!opts.avoidContainerUpdate && el) {
+      // On component resize container fits the tool,
+      // to check if this update is required somewhere else point
+      // const toUpdate = ['left', 'top', 'width', 'height'];
+      // const rectEl = this.getElementPos(el, { target: 'container' });
+      // toUpdate.forEach(pos => (style[pos] = `${rectEl[pos]}px`));
+      if (opt.forceShow) style.display = 'block';
     }
+
+    this.onUpdateContainer({
+      el: container,
+      resizer: this,
+      opts: {
+        ...opts,
+        ...opt
+      }
+    });
   }
 
   /**
@@ -485,7 +500,7 @@ class Resizer {
   }
 }
 
-module.exports = {
+export default {
   init(opts) {
     return new Resizer(opts);
   }

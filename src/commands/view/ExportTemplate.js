@@ -1,7 +1,7 @@
 import Backbone from 'backbone';
 const $ = Backbone.$;
 
-module.exports = {
+export default {
   run(editor, sender, opts = {}) {
     sender && sender.set && sender.set('active', 0);
     const config = editor.getConfig();
@@ -19,9 +19,13 @@ module.exports = {
       this.$editors = $editors;
     }
 
-    modal.setTitle(config.textViewCode);
-    modal.setContent(this.$editors);
-    modal.open();
+    modal
+      .open({
+        title: config.textViewCode,
+        content: this.$editors
+      })
+      .getModel()
+      .once('change:open', () => editor.stopCommand(this.id));
     this.htmlEditor.setContent(editor.getHtml());
     this.cssEditor.setContent(editor.getCss());
   },

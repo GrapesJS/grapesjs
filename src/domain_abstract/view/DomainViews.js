@@ -1,6 +1,7 @@
-var Backbone = require('backbone');
+import { includes } from 'underscore';
+import Backbone from 'backbone';
 
-module.exports = Backbone.View.extend({
+export default Backbone.View.extend({
   // Default view
   itemView: '',
 
@@ -9,9 +10,16 @@ module.exports = Backbone.View.extend({
 
   itemType: 'type',
 
-  initialize(opts, config) {
-    this.config = config || {};
+  autoAdd: 0,
+
+  initialize(opts = {}, config) {
+    this.config = config || opts.config || {};
+    this.autoAdd && this.listenTo(this.collection, 'add', this.addTo);
+    this.items = [];
+    this.init();
   },
+
+  init() {},
 
   /**
    * Add new model to the collection
@@ -22,6 +30,13 @@ module.exports = Backbone.View.extend({
     this.add(model);
   },
 
+  itemViewNotFound(type) {
+    const { config, ns } = this;
+    const { em } = config;
+    const warn = `${ns ? `[${ns}]: ` : ''}'${type}' type not found`;
+    em && em.logWarning(warn);
+  },
+
   /**
    * Render new model inside the view
    * @param {Model} model
@@ -29,20 +44,54 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   add(model, fragment) {
+    const { config, reuseView, items, itemsView = {} } = this;
+    const inputTypes = [
+      'button',
+      'checkbox',
+      'color',
+      'date',
+      'datetime-local',
+      'email',
+      'file',
+      'hidden',
+      'image',
+      'month',
+      'number',
+      'password',
+      'radio',
+      'range',
+      'reset',
+      'search',
+      'submit',
+      'tel',
+      'text',
+      'time',
+      'url',
+      'week'
+    ];
     var frag = fragment || null;
     var itemView = this.itemView;
     var typeField = model.get(this.itemType);
-    if (this.itemsView && this.itemsView[typeField]) {
-      itemView = this.itemsView[typeField];
+    let view;
+
+    if (itemsView[typeField]) {
+      itemView = itemsView[typeField];
+    } else if (
+      typeField &&
+      !itemsView[typeField] &&
+      !includes(inputTypes, typeField)
+    ) {
+      this.itemViewNotFound(typeField);
     }
-    var view = new itemView(
-      {
-        model,
-        config: this.config
-      },
-      this.config
-    );
-    var rendered = view.render().el;
+
+    if (model.view && reuseView) {
+      view = model.view;
+    } else {
+      view = new itemView({ model, config }, config);
+    }
+
+    items && items.push(view);
+    const rendered = view.render().el;
 
     if (frag) frag.appendChild(rendered);
     else this.$el.append(rendered);
@@ -50,6 +99,7 @@ module.exports = Backbone.View.extend({
 
   render() {
     var frag = document.createDocumentFragment();
+    this.clearItems();
     this.$el.empty();
 
     if (this.collection.length)
@@ -58,6 +108,21 @@ module.exports = Backbone.View.extend({
       }, this);
 
     this.$el.append(frag);
+    this.onRender();
     return this;
+  },
+
+  onRender() {},
+
+  remove() {
+    this.clearItems();
+    Backbone.View.prototype.remove.apply(this, arguments);
+  },
+
+  clearItems() {
+    const items = this.items || [];
+    // TODO Traits do not update the target anymore
+    // items.forEach(item => item.remove());
+    // this.items = [];
   }
 });

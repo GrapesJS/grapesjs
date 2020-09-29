@@ -1,7 +1,7 @@
-var Backbone = require('backbone');
-var Button = require('./Button');
+import Backbone from 'backbone';
+import Button from './Button';
 
-module.exports = Backbone.Collection.extend({
+export default Backbone.Collection.extend({
   model: Button,
 
   /**
@@ -27,13 +27,12 @@ module.exports = Backbone.Collection.extend({
    *
    * @return  void
    * */
-  deactivateAll(ctx) {
-    var context = ctx || '';
-    this.forEach((model, index) => {
-      if (model.get('context') == context) {
-        model.set('active', false);
-        if (model.get('buttons').length)
-          model.get('buttons').deactivateAll(context);
+  deactivateAll(ctx, sender) {
+    const context = ctx || '';
+    this.forEach(model => {
+      if (model.get('context') == context && model !== sender) {
+        model.set('active', false, { silent: 1 });
+        model.trigger('updateActive', { fromCollection: 1 });
       }
     });
   },
@@ -49,8 +48,6 @@ module.exports = Backbone.Collection.extend({
     this.forEach((model, index) => {
       if (model.get('context') == context) {
         model.set('disable', true);
-        if (model.get('buttons').length)
-          model.get('buttons').disableAllButtons(context);
       }
     });
   },

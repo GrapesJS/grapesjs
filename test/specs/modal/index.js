@@ -1,5 +1,5 @@
-const Modal = require('modal_dialog');
-const ModalView = require('./view/ModalView');
+import Modal from 'modal_dialog';
+import ModalView from './view/ModalView';
 
 describe('Modal dialog', () => {
   describe('Main', () => {
@@ -55,6 +55,4 @@ describe('Modal dialog', () => {
       expect(obj.isOpen()).toEqual(false);
     });
   });
-
-  ModalView.run();
 });

@@ -1,7 +1,7 @@
-var Backbone = require('backbone');
-var LayerView = require('./LayerView');
+import Backbone from 'backbone';
+import LayerView from './LayerView';
 
-module.exports = Backbone.View.extend({
+export default Backbone.View.extend({
   initialize(o) {
     this.config = o.config || {};
     this.stackModel = o.stackModel;
@@ -15,7 +15,8 @@ module.exports = Backbone.View.extend({
     this.className = `${pfx}layers ${ppfx}field`;
     this.listenTo(collection, 'add', this.addTo);
     this.listenTo(collection, 'deselectAll', this.deselectAll);
-    this.listenTo(collection, 'reset', this.render);
+    this.listenTo(collection, 'reset', this.reset);
+    this.items = [];
 
     var em = this.config.em || '';
     var utils = em ? em.get('Utils') : '';
@@ -66,14 +67,15 @@ module.exports = Backbone.View.extend({
       model.set('preview', this.preview);
     }
 
-    var view = new LayerView({
+    const view = new LayerView({
       model,
       config,
       sorter,
       stackModel,
       propsConfig
     });
-    var rendered = view.render().el;
+    const rendered = view.render().el;
+    this.items.push(view);
 
     if (fragment) {
       fragment.appendChild(rendered);
@@ -109,6 +111,11 @@ module.exports = Backbone.View.extend({
     this.$el.find('.' + this.pfx + 'layer').removeClass(this.pfx + 'active');
   },
 
+  reset(coll, opts) {
+    this.clearItems(opts);
+    this.render();
+  },
+
   render() {
     var fragment = document.createDocumentFragment();
     this.$el.empty();
@@ -123,5 +130,15 @@ module.exports = Backbone.View.extend({
     if (this.sorter) this.sorter.plh = null;
 
     return this;
+  },
+
+  remove() {
+    this.clearItems();
+    Backbone.View.prototype.remove.apply(this, arguments);
+  },
+
+  clearItems(opts) {
+    this.items.forEach(item => item.remove(opts));
+    this.items = [];
   }
 });

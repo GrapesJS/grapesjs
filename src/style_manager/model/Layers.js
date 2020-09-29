@@ -1,7 +1,8 @@
+import { isUndefined } from 'underscore';
 import Backbone from 'backbone';
-const Layer = require('./Layer');
+import Layer from './Layer';
 
-module.exports = Backbone.Collection.extend({
+export default Backbone.Collection.extend({
   model: Layer,
 
   initialize() {
@@ -12,10 +13,16 @@ module.exports = Backbone.Collection.extend({
 
   onAdd(model, c, opts) {
     if (!opts.noIncrement) model.set('index', this.idx++);
+    opts.active && this.active(this.indexOf(model));
   },
 
   onReset() {
     this.idx = 1;
+  },
+
+  getSeparator() {
+    const { property } = this;
+    return property ? property.get('layerSeparator') : ', ';
   },
 
   /**
@@ -35,7 +42,7 @@ module.exports = Backbone.Collection.extend({
       var cleaned = match.replace(/,\s*/g, ',');
       value = value.replace(match, cleaned);
     });
-    const layerValues = value ? value.split(', ') : [];
+    const layerValues = value ? value.split(this.getSeparator()) : [];
     layerValues.forEach(layerValue => {
       layers.push({ properties: this.properties.parseValue(layerValue) });
     });
@@ -57,7 +64,6 @@ module.exports = Backbone.Collection.extend({
   getLayersFromStyle(styleObj) {
     const layers = [];
     const properties = this.properties;
-    const propNames = properties.pluck('property');
 
     properties.each(propModel => {
       const style = styleObj[propModel.get('property')];
@@ -101,14 +107,16 @@ module.exports = Backbone.Collection.extend({
   getFullValue() {
     let result = [];
     this.each(layer => result.push(layer.getFullValue()));
-    return result.join(', ');
+    return result.join(this.getSeparator());
   },
 
-  getPropertyValues(property) {
+  getPropertyValues(property, defValue) {
     const result = [];
     this.each(layer => {
       const value = layer.getPropertyValue(property);
-      value && result.push(value);
+      value
+        ? result.push(value)
+        : !isUndefined(defValue) && result.push(defValue);
     });
     return result.join(', ');
   }

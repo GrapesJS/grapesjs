@@ -17,20 +17,23 @@
  *
  * @module CodeManager
  */
-module.exports = () => {
-  var c = {},
-    defaults = require('./config/config'),
-    gHtml = require('./model/HtmlGenerator'),
-    gCss = require('./model/CssGenerator'),
-    gJson = require('./model/JsonGenerator'),
-    gJs = require('./model/JsGenerator'),
-    eCM = require('./model/CodeMirrorEditor'),
-    editorView = require('./view/EditorView');
+import { isUndefined } from 'underscore';
+import defaults from './config/config';
+import gHtml from './model/HtmlGenerator';
+import gCss from './model/CssGenerator';
+import gJson from './model/JsonGenerator';
+import gJs from './model/JsGenerator';
+import eCM from './model/CodeMirrorEditor';
+import editorView from './view/EditorView';
 
+export default () => {
+  var c = {};
   var generators = {},
     defGenerators = {},
     viewers = {},
     defViewers = {};
+
+  const defaultViewer = 'CodeMirror';
 
   return {
     getConfig() {
@@ -151,6 +154,19 @@ module.exports = () => {
      * */
     getViewers() {
       return viewers;
+    },
+
+    createViewer(opts = {}) {
+      const type = !isUndefined(opts.type) ? opts.type : defaultViewer;
+      const viewer = this.getViewer(type) && this.getViewer(type).clone();
+      const cont = document.createElement('div');
+      const txtarea = document.createElement('textarea');
+      cont.appendChild(txtarea);
+      viewer.set(opts);
+      viewer.init(txtarea);
+      viewer.setElement(cont);
+
+      return viewer;
     },
 
     /**

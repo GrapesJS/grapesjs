@@ -1,5 +1,6 @@
 import Backbone from 'backbone';
+import Category from './Category';
 
-module.exports = Backbone.Collection.extend({
-  model: require('./Category')
+export default Backbone.Collection.extend({
+  model: Category
 });

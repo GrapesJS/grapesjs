@@ -1,18 +1,31 @@
-var Component = require('./Component');
+import { result } from 'underscore';
+import Component from './Component';
 
-module.exports = Component.extend(
+const svgAttrs =
+  'xmlns="http://www.w3.org/2000/svg" width="100" viewBox="0 0 24 24" style="fill: rgba(0,0,0,0.15); transform: scale(0.75)"';
+
+export default Component.extend(
   {
     defaults: {
       ...Component.prototype.defaults,
       type: 'image',
       tagName: 'img',
-      src: '',
       void: 1,
       droppable: 0,
       editable: 1,
       highlightable: 0,
-      resizable: 1,
+      resizable: { ratioDefault: 1 },
       traits: ['alt'],
+
+      src: `<svg ${svgAttrs}>
+        <path d="M8.5 13.5l2.5 3 3.5-4.5 4.5 6H5m16 1V5a2 2 0 0 0-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2z"></path>
+      </svg>`,
+
+      // Fallback image in case the src can't be loaded
+      // If you use SVG, xmlns="http://www.w3.org/2000/svg" is required
+      fallback: `<svg ${svgAttrs}>
+        <path d="M2.28 3L1 4.27l2 2V19c0 1.1.9 2 2 2h12.73l2 2L21 21.72 2.28 3m2.55 0L21 19.17V5a2 2 0 0 0-2-2H4.83M8.5 13.5l2.5 3 1-1.25L14.73 18H5l3.5-4.5z"></path>
+      </svg>`,
 
       // File to load asynchronously once the model is rendered
       file: ''
@@ -61,11 +74,25 @@ module.exports = Component.extend(
      * @private
      */
     getAttrToHTML(...args) {
-      var attr = Component.prototype.getAttrToHTML.apply(this, args);
-      delete attr.onmousedown;
-      var src = this.get('src');
+      const attr = Component.prototype.getAttrToHTML.apply(this, args);
+      const src = this.getSrcResult();
       if (src) attr.src = src;
       return attr;
+    },
+
+    getSrcResult(opt = {}) {
+      const src = this.get(opt.fallback ? 'fallback' : 'src') || '';
+      let result = src;
+
+      if (src && src.substr(0, 4) === '<svg') {
+        result = `data:image/svg+xml;base64,${window.btoa(src)}`;
+      }
+
+      return result;
+    },
+
+    isDefaultSrc() {
+      return this.get('src') === result(this, 'defaults').src;
     },
 
     /**

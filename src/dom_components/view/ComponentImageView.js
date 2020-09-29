@@ -1,19 +1,21 @@
-var Backbone = require('backbone');
-var ComponentView = require('./ComponentView');
+import { isString } from 'underscore';
+import ComponentView from './ComponentView';
 
-module.exports = ComponentView.extend({
+export default ComponentView.extend({
   tagName: 'img',
 
   events: {
-    dblclick: 'openModal',
-    click: 'initResize'
+    dblclick: 'onActive',
+    click: 'initResize',
+    error: 'onError',
+    load: 'onLoad',
+    dragstart: 'noDrag'
   },
 
   initialize(o) {
     const model = this.model;
     ComponentView.prototype.initialize.apply(this, arguments);
     this.listenTo(model, 'change:src', this.updateSrc);
-    this.listenTo(model, 'dblclick active', this.openModal);
     this.classEmpty = `${this.ppfx}plh-image`;
     const config = this.config;
     config.modal && (this.modal = config.modal);
@@ -25,6 +27,7 @@ module.exports = ComponentView.extend({
    * Fetch file if exists
    */
   fetchFile() {
+    if (this.modelOpt.temporary) return;
     const model = this.model;
     const file = model.get('file');
 
@@ -36,7 +39,7 @@ module.exports = ComponentView.extend({
         },
         res => {
           const obj = res && res.data && res.data[0];
-          const src = obj && obj.src;
+          const src = obj && (isString(obj) ? obj : obj.src);
           src && model.set({ src });
         }
       );
@@ -50,9 +53,10 @@ module.exports = ComponentView.extend({
    * */
   updateSrc() {
     const { model, classEmpty, $el } = this;
-    const src = model.get('src');
+    const src = model.getSrcResult();
+    const srcExists = src && !model.isDefaultSrc();
     model.addAttributes({ src });
-    $el[src ? 'removeClass' : 'addClass'](classEmpty);
+    $el[srcExists ? 'removeClass' : 'addClass'](classEmpty);
   },
 
   /**
@@ -60,7 +64,8 @@ module.exports = ComponentView.extend({
    * @param  {Object}  e  Event
    * @private
    * */
-  openModal(e) {
+  onActive(ev) {
+    ev && ev.stopPropagation();
     var em = this.opts.config.em;
     var editor = em ? em.get('Editor') : '';
 
@@ -77,16 +82,29 @@ module.exports = ComponentView.extend({
     }
   },
 
+  onError() {
+    const fallback = this.model.getSrcResult({ fallback: 1 });
+    if (fallback) this.el.src = fallback;
+  },
+
+  onLoad() {
+    // Used to update component tools box (eg. toolbar, resizer) once the image is loaded
+    this.em.trigger('change:canvasOffset');
+  },
+
+  noDrag(ev) {
+    ev.preventDefault();
+    return false;
+  },
+
   render() {
-    this.updateAttributes();
-    this.updateClasses();
+    this.renderAttributes();
+    this.updateSrc();
+    const { $el, model } = this;
+    const cls = $el.attr('class') || '';
+    !model.get('src') && $el.attr('class', `${cls} ${this.classEmpty}`.trim());
+    this.postRender();
 
-    var actCls = this.$el.attr('class') || '';
-    if (!this.model.get('src'))
-      this.$el.attr('class', (actCls + ' ' + this.classEmpty).trim());
-
-    // Avoid strange behaviours while try to drag
-    this.$el.attr('onmousedown', 'return false');
     return this;
   }
 });

@@ -29,6 +29,7 @@
   @include user-select(none);
 
   width: 45%;
+  min-width: 45px;
   padding: 1em;
   box-sizing: border-box;
   min-height: 90px;
@@ -48,6 +49,14 @@
 
   &:hover {
     box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.15);
+  }
+
+  svg {
+    fill: currentColor;
+  }
+
+  &__media {
+    margin-bottom: 10px;
   }
 }
 

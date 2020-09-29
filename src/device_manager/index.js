@@ -20,12 +20,12 @@
  *
  * @module DeviceManager
  */
+import defaults from './config/config';
+import Devices from './model/Devices';
+import DevicesView from './view/DevicesView';
 
-module.exports = () => {
-  var c = {},
-    defaults = require('./config/config'),
-    Devices = require('./model/Devices'),
-    DevicesView = require('./view/DevicesView');
+export default () => {
+  var c = {};
   var devices, view;
 
   return {
@@ -58,7 +58,8 @@ module.exports = () => {
         if (!(name in c)) c[name] = defaults[name];
       }
 
-      devices = new Devices(c.devices);
+      devices = new Devices();
+      (c.devices || []).forEach(dv => this.add(dv.id || dv.name, dv.width, dv));
       view = new DevicesView({
         collection: devices,
         config: c
@@ -68,21 +69,27 @@ module.exports = () => {
 
     /**
      * Add new device to the collection. URLs are supposed to be unique
-     * @param {string} name Device name
-     * @param {string} width Width of the device
-     * @param {Object} opts Custom options
-     * @return {Device} Added device
+     * @param {String} id Device id
+     * @param {String} width Width of the device
+     * @param {Object} [opts] Custom options
+     * @returns {Device} Added device
      * @example
-     * deviceManager.add('Tablet', '900px');
-     * deviceManager.add('Tablet2', '900px', {
+     * deviceManager.add('tablet', '900px');
+     * deviceManager.add('tablet2', '900px', {
      *  height: '300px',
+     *  // At first, GrapesJS tries to localize the name by device id.
+     *  // In case is not found, the `name` property is used (or `id` if name is missing)
+     *  name: 'Tablet 2',
      *  widthMedia: '810px', // the width that will be used for the CSS media
      * });
      */
-    add(name, width, opts) {
-      var obj = opts || {};
-      obj.name = name;
-      obj.width = width;
+    add(id, width, opts = {}) {
+      const obj = {
+        ...opts,
+        id,
+        name: opts.name || id,
+        width: width
+      };
       return devices.add(obj);
     },
 

@@ -1,15 +1,16 @@
+const version = require('./../../package.json').version;
+const isDev = process.argv[2] === 'dev';
+const devPath = 'http://localhost:8080/dist';
+
 module.exports = {
   title: 'GrapesJS',
   description: 'GrapesJS documentation',
   base: '/docs/',
-  ga: '', // Google Analytics ID
   serviceWorker: false, // Enable Service Worker for offline usage
   head: [
     ['link', { rel: 'icon', href: '/logo-icon.png' }],
-    //['link', { rel: 'stylesheet', href: 'https://unpkg.com/grapesjs/dist/css/grapes.min.css' }], // dev https://localhost:8080/dist/css/grapes.min.css
-    // ['script', { src: '/grapes.min.js' }], // dev https://localhost:8080/dist/grapes.min.js
-    ['link', { rel: 'stylesheet', href: 'https://localhost:8080/dist/css/grapes.min.css' }],
-    ['script', { src: 'https://localhost:8080/dist/grapes.min.js' }],
+    ['link', { rel: 'stylesheet', href: isDev ? `${devPath}/css/grapes.min.css` : `../stylesheets/grapes.min.css?v${version}` }],
+    ['script', { src: isDev ? `${devPath}/grapes.min.js` : `../js/grapes.min.js?v${version}` }],
   ],
   localesSKIP: {
     '/': {
@@ -56,10 +57,13 @@ module.exports = {
       '/api/': [
         '',
         ['/api/editor', 'Editor'],
+        ['/api/i18n', 'I18n'],
+        ['/api/canvas', 'Canvas'],
         ['/api/assets', 'Asset Manager'],
         ['/api/block_manager', 'Block Manager'],
         ['/api/commands', 'Commands'],
         ['/api/components', 'DOM Components'],
+        ['/api/component', ' - Component'],
         ['/api/panels', 'Panels'],
         ['/api/style_manager', 'Style Manager'],
         ['/api/storage_manager', 'Storage Manager'],
@@ -74,17 +78,20 @@ module.exports = {
       '/': [
         '',
         ['/getting-started', 'Getting Started'],
-        ['/faq', 'FAQ'],
+        // ['/faq', 'FAQ'],
         {
           title: 'Modules',
           collapsable: false,
           children: [
             ['/modules/Assets', 'Assets'],
             ['/modules/Blocks', 'Blocks'],
+            ['/modules/Commands', 'Commands'],
             ['/modules/Components', 'Components'],
             ['/modules/Components-js', 'Components & JS'],
+            ['/modules/I18n', 'I18n'],
             ['/modules/Traits', 'Traits'],
-            ['/modules/Storage', 'Storage'],
+            ['/modules/Style-manager', 'Style Manager'],
+            ['/modules/Storage', 'Storage Manager'],
             ['/modules/Plugins', 'Plugins'],
           ]
         }, {
@@ -92,9 +99,13 @@ module.exports = {
           collapsable: false,
           children: [
             ['/guides/Replace-Rich-Text-Editor', 'Replace Rich Text Editor'],
+            ['/guides/Custom-CSS-parser', 'Use Custom CSS Parser'],
           ]
         }
       ],
     }
   },
+  plugins: [
+    [ '@vuepress/google-analytics', { ga: 'UA-74284223-1' } ],
+  ],
 }

@@ -1,6 +1,5 @@
-var StorageManager = require('storage_manager');
-var AssetManager = require('asset_manager');
-var FileUploader = require('./view/FileUploader');
+import StorageManager from 'storage_manager';
+import AssetManager from 'asset_manager';
 
 describe('Asset Manager', () => {
   describe('Main', () => {
@@ -115,13 +114,4 @@ describe('Asset Manager', () => {
       });
     });
   });
-
-  require('./model/Asset').run();
-  require('./model/AssetImage').run();
-  require('./model/Assets').run();
-
-  require('./view/AssetView').run();
-  require('./view/AssetImageView').run();
-  require('./view/AssetsView').run();
-  require('./view/FileUploader').run();
 });

@@ -25,10 +25,8 @@ const cssComposer = editor.CssComposer;
 -   [get][5]
 -   [getAll][6]
 -   [clear][7]
--   [setIdRule][8]
--   [getIdRule][9]
--   [setClassRule][10]
--   [getClassRule][11]
+-   [setRule][8]
+-   [getRule][9]
 
 ## load
 
@@ -38,9 +36,9 @@ The fetched data will be added to the collection
 
 ### Parameters
 
--   `data` **[Object][12]** Object of data to load
+-   `data` **[Object][10]** Object of data to load
 
-Returns **[Object][12]** Loaded rules
+Returns **[Object][10]** Loaded rules
 
 ## store
 
@@ -48,9 +46,9 @@ Store data to the selected storage
 
 ### Parameters
 
--   `noStore` **[Boolean][13]** If true, won't store
+-   `noStore` **[Boolean][11]** If true, won't store
 
-Returns **[Object][12]** Data to store
+Returns **[Object][10]** Data to store
 
 ## add
 
@@ -58,10 +56,10 @@ Add new rule to the collection, if not yet exists with the same selectors
 
 ### Parameters
 
--   `selectors` **[Array][14]&lt;Selector>** Array of selectors
--   `state` **[String][15]** Css rule state
--   `width` **[String][15]** For which device this style is oriented
--   `opts` **[Object][12]** Other options for the rule (optional, default `{}`)
+-   `selectors` **[Array][12]&lt;Selector>** Array of selectors
+-   `state` **[String][13]** Css rule state
+-   `width` **[String][13]** For which device this style is oriented
+-   `opts` **[Object][10]** Other options for the rule (optional, default `{}`)
 
 ### Examples
 
@@ -84,10 +82,10 @@ Get the rule
 
 ### Parameters
 
--   `selectors` **[Array][14]&lt;Selector>** Array of selectors
--   `state` **[String][15]** Css rule state
--   `width` **[String][15]** For which device this style is oriented
--   `ruleProps` **[Object][12]** Other rule props
+-   `selectors` **[Array][12]&lt;Selector>** Array of selectors
+-   `state` **[String][13]** Css rule state
+-   `width` **[String][13]** For which device this style is oriented
+-   `ruleProps` **[Object][10]** Other rule props
 
 ### Examples
 
@@ -117,82 +115,55 @@ Remove all rules
 
 Returns **this** 
 
-## setIdRule
+## setRule
 
-Add/update the CSS rule with id selector
+Add/update the CSS rule with a generic selector
 
 ### Parameters
 
--   `name` **[string][15]** Id selector name, eg. 'my-id'
--   `style` **[Object][12]** Style properties and values (optional, default `{}`)
--   `opts` **[Object][12]** Custom options, like `state` and `mediaText` (optional, default `{}`)
+-   `selectors` **[string][13]** Selector, eg. '.myclass'
+-   `style` **[Object][10]** Style properties and values
+-   `opts` **[Object][10]** Additional properties (optional, default `{}`)
+    -   `opts.atRuleType` **[String][13]** At-rule type, eg. 'media' (optional, default `''`)
+    -   `opts.atRuleParams` **[String][13]** At-rule parameters, eg. '(min-width: 500px)' (optional, default `''`)
 
 ### Examples
 
 ```javascript
-const rule = cc.setIdRule('myid', { color: 'red' });
-const ruleHover = cc.setIdRule('myid', { color: 'blue' }, { state: 'hover' });
-// This will add current CSS:
-// #myid { color: red }
-// #myid:hover { color: blue }
+// Simple class-based rule
+const rule = cc.setRule('.class1.class2', { color: 'red' });
+console.log(rule.toCSS()) // output: .class1.class2 { color: red }
+// With state and other mixed selector
+const rule = cc.setRule('.class1.class2:hover, div#myid', { color: 'red' });
+// output: .class1.class2:hover, div#myid { color: red }
+// With media
+const rule = cc.setRule('.class1:hover', { color: 'red' }, {
+ atRuleType: 'media',
+ atRuleParams: '(min-width: 500px)',
+});
+// output: @media (min-width: 500px) { .class1:hover { color: red } }
 ```
 
 Returns **CssRule** The new/updated rule
 
-## getIdRule
+## getRule
 
-Get the CSS rule by id selector
+Get the CSS rule by a generic selector
 
 ### Parameters
 
--   `name` **[string][15]** Id selector name, eg. 'my-id'
--   `opts` **[Object][12]** Custom options, like `state` and `mediaText` (optional, default `{}`)
+-   `selectors` **[string][13]** Selector, eg. '.myclass:hover'
+-   `opts`   (optional, default `{}`)
 
 ### Examples
 
 ```javascript
-const rule = cc.getIdRule('myid');
-const ruleHover = cc.setIdRule('myid', { state: 'hover' });
-```
-
-Returns **CssRule** 
-
-## setClassRule
-
-Add/update the CSS rule with class selector
-
-### Parameters
-
--   `name` **[string][15]** Class selector name, eg. 'my-class'
--   `style` **[Object][12]** Style properties and values (optional, default `{}`)
--   `opts` **[Object][12]** Custom options, like `state` and `mediaText` (optional, default `{}`)
-
-### Examples
-
-```javascript
-const rule = cc.setClassRule('myclass', { color: 'red' });
-const ruleHover = cc.setClassRule('myclass', { color: 'blue' }, { state: 'hover' });
-// This will add current CSS:
-// .myclass { color: red }
-// .myclass:hover { color: blue }
-```
-
-Returns **CssRule** The new/updated rule
-
-## getClassRule
-
-Get the CSS rule by class selector
-
-### Parameters
-
--   `name` **[string][15]** Class selector name, eg. 'my-class'
--   `opts` **[Object][12]** Custom options, like `state` and `mediaText` (optional, default `{}`)
-
-### Examples
-
-```javascript
-const rule = cc.getClassRule('myclass');
-const ruleHover = cc.getClassRule('myclass', { state: 'hover' });
+const rule = cc.getRule('.myclass1:hover');
+const rule2 = cc.getRule('.myclass1:hover, div#myid');
+const rule3 = cc.getRule('.myclass1', {
+ atRuleType: 'media',
+ atRuleParams: '(min-width: 500px)',
+});
 ```
 
 Returns **CssRule** 
@@ -211,18 +182,14 @@ Returns **CssRule**
 
 [7]: #clear
 
-[8]: #setidrule
+[8]: #setrule
 
-[9]: #getidrule
+[9]: #getrule
 
-[10]: #setclassrule
+[10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[11]: #getclassrule
+[11]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
 
-[12]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[12]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
-[13]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
-
-[14]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
-
-[15]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[13]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String

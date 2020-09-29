@@ -1,15 +1,15 @@
-import _ from 'underscore';
+import { extend, bindAll } from 'underscore';
 import Backbone from 'backbone';
 import { on, off } from 'utils/mixins';
+import SelectComponent from './SelectComponent';
+import SelectPosition from './SelectPosition';
 
-const SelectComponent = require('./SelectComponent');
-const SelectPosition = require('./SelectPosition');
 const $ = Backbone.$;
 
-module.exports = _.extend({}, SelectPosition, SelectComponent, {
+export default extend({}, SelectPosition, SelectComponent, {
   init(o) {
     SelectComponent.init.apply(this, arguments);
-    _.bindAll(this, 'initSorter', 'rollback', 'onEndMove');
+    bindAll(this, 'initSorter', 'rollback', 'onEndMove');
     this.opt = o;
     this.hoverClass = this.ppfx + 'highlighter-warning';
     this.badgeClass = this.ppfx + 'badge-warning';
@@ -91,10 +91,13 @@ module.exports = _.extend({}, SelectPosition, SelectComponent, {
     // Avoid badge showing on move
     this.cacheEl = null;
     const lastModel = models[models.length - 1];
-    const doc = this.frameEl.contentDocument;
-    this.startSelectPosition(lastModel.view.el, doc);
+    const frame = (this.em.get('currentFrame') || {}).model;
+    const el = lastModel.getEl(frame);
+    const doc = el.ownerDocument;
+    this.startSelectPosition(el, doc, { onStart: this.onStart });
     this.sorter.draggable = lastModel.get('draggable');
     this.sorter.toMove = models;
+    this.sorter.onMoveClb = this.onDrag;
     this.sorter.onEndMove = this.onEndMoveFromModel.bind(this);
     this.stopSelectComponent();
     on(this.getContentWindow(), 'keydown', this.rollback);
@@ -129,7 +132,7 @@ module.exports = _.extend({}, SelectPosition, SelectComponent, {
    * */
   rollback(e, force) {
     var key = e.which || e.keyCode;
-    if (key == this.opt.ESCAPE_KEY || force) {
+    if (key == 27 || force) {
       this.sorter.moved = false;
       this.sorter.endMove();
     }

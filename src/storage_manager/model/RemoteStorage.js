@@ -1,7 +1,8 @@
+import Backbone from 'backbone';
 import fetch from 'utils/fetch';
-import { isUndefined } from 'underscore';
+import { isUndefined, isFunction } from 'underscore';
 
-module.exports = require('backbone').Model.extend({
+export default Backbone.Model.extend({
   fetch,
 
   defaults: {
@@ -10,7 +11,9 @@ module.exports = require('backbone').Model.extend({
     params: {},
     beforeSend() {},
     onComplete() {},
-    contentTypeJson: false
+    contentTypeJson: false,
+    credentials: 'include',
+    fetchOptions: ''
   },
 
   /**
@@ -113,7 +116,7 @@ module.exports = require('backbone').Model.extend({
     }
     fetchOptions = {
       method: opts.method || 'post',
-      credentials: 'include',
+      credentials: this.get('credentials'),
       headers
     };
 
@@ -122,13 +125,20 @@ module.exports = require('backbone').Model.extend({
       fetchOptions.body = body;
     }
 
+    const fetchOpts = this.get('fetchOptions') || {};
+    const addOpts = isFunction(fetchOpts)
+      ? fetchOpts(fetchOptions)
+      : fetchOptions;
+
     this.onStart();
-    this.fetch(url, fetchOptions)
-      .then(
-        res =>
-          ((res.status / 200) | 0) == 1
-            ? res.text()
-            : res.text().then(text => Promise.reject(text))
+    this.fetch(url, {
+      ...fetchOptions,
+      ...(addOpts || {})
+    })
+      .then(res =>
+        ((res.status / 200) | 0) == 1
+          ? res.text()
+          : res.text().then(text => Promise.reject(text))
       )
       .then(text => this.onResponse(text, clb))
       .catch(err => this.onError(err, clbErr));

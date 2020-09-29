@@ -1,12 +1,12 @@
-const DomComponents = require('dom_components');
-const Components = require('dom_components/model/Components');
-const ComponentModels = require('./model/Component');
-const ComponentView = require('./view/ComponentV');
-const ComponentsView = require('./view/ComponentsView');
-const ComponentTextView = require('./view/ComponentTextView');
-const ComponentImageView = require('./view/ComponentImageView');
-const Editor = require('editor/model/Editor');
-const utils = require('./../test_utils.js');
+import DomComponents from 'dom_components';
+import Components from 'dom_components/model/Components';
+import ComponentModels from './model/Component';
+import ComponentView from './view/ComponentV';
+import ComponentsView from './view/ComponentsView';
+import ComponentTextView from './view/ComponentTextView';
+import ComponentImageView from './view/ComponentImageView';
+import Editor from 'editor/model/Editor';
+import utils from './../../test_utils.js';
 
 describe('DOM Components', () => {
   describe('Main', () => {
@@ -98,6 +98,33 @@ describe('DOM Components', () => {
       expect(obj.load()).toEqual([{ test: 1 }]);
     });
 
+    test('Load data with components as a string', () => {
+      const result = [{}, {}];
+      expect(
+        obj.load({
+          components: '[{}, {}]'
+        })
+      ).toEqual(result);
+    });
+
+    test('Load data with components as an array', () => {
+      const result = [{}, {}];
+      expect(
+        obj.load({
+          components: result
+        })
+      ).toEqual(result);
+    });
+
+    test('Load data with components as an object', () => {
+      const result = {};
+      expect(
+        obj.load({
+          components: result
+        })
+      ).toEqual(result);
+    });
+
     test('Wrapper exists', () => {
       expect(obj.getWrapper()).toBeTruthy();
     });
@@ -143,14 +170,101 @@ describe('DOM Components', () => {
         margin: '10px'
       });
     });
-  });
 
-  ComponentModels.run();
+    test('Add new component type with simple model', () => {
+      obj = em.get('DomComponents');
+      const id = 'test-type';
+      const testProp = 'testValue';
+      const initialTypes = obj.componentTypes.length;
+      obj.addType(id, {
+        model: {
+          defaults: {
+            testProp
+          }
+        }
+      });
+      expect(obj.componentTypes.length).toEqual(initialTypes + 1);
+      obj.addComponent(`<div data-gjs-type="${id}"></div>`);
+      const comp = obj.getComponents().at(0);
+      expect(comp.get('type')).toEqual(id);
+      expect(comp.get('testProp')).toEqual(testProp);
+    });
 
-  describe('Views', () => {
-    ComponentView.run();
-    ComponentsView.run();
-    ComponentTextView.run();
-    ComponentImageView.run();
+    test('Add new component type with custom isComponent', () => {
+      obj = em.get('DomComponents');
+      const id = 'test-type';
+      const testProp = 'testValue';
+      obj.addType(id, {
+        isComponent: el => {
+          return el.getAttribute('test-prop') === testProp;
+        }
+      });
+      expect(obj.componentTypes[0].id).toEqual(id);
+      obj.addComponent(`<div test-prop="${testProp}"></div>`);
+      const comp = obj.getComponents().at(0);
+      expect(comp.get('type')).toEqual(id);
+      expect(comp.getAttributes()['test-prop']).toEqual(testProp);
+    });
+
+    test('Extend component type with custom model and view', () => {
+      obj = em.get('DomComponents');
+      const id = 'image';
+      const testProp = 'testValue';
+      const initialTypes = obj.getTypes().length;
+      obj.addType(id, {
+        model: {
+          defaults: () => ({
+            testProp
+          })
+        },
+        view: {
+          onRender() {
+            this.el.style.backgroundColor = 'red';
+          }
+        }
+      });
+      expect(obj.getTypes().length).toBe(initialTypes);
+      obj.addComponent(`<img src="##"/>`);
+      const comp = obj.getComponents().at(0);
+      expect(comp.get('type')).toBe(id);
+      expect(comp.get('testProp')).toBe(testProp);
+      expect(comp.get('editable')).toBe(1);
+    });
+
+    test('Add new component type by extending another one, without isComponent', () => {
+      obj = em.get('DomComponents');
+      const id = 'test-type';
+      const testProp = 'testValue';
+      obj.addType(id, {
+        extend: 'image',
+        model: {
+          defaults: {
+            testProp
+          }
+        }
+      });
+      obj.addComponent(`<img src="##"/>`);
+      expect(obj.getTypes()[0].id).toEqual(id);
+      const comp = obj.getComponents().at(0);
+      // I'm not specifying the isComponent
+      expect(comp.get('type')).toBe('image');
+      expect(comp.get('editable')).toBe(1);
+      expect(comp.get('testProp')).toBeFalsy();
+    });
+
+    test('Add new component type by extending another one, with custom isComponent', () => {
+      obj = em.get('DomComponents');
+      const id = 'test-type';
+      const testProp = 'testValue';
+      obj.addType(id, {
+        extend: 'image',
+        isComponent: el => el.getAttribute('test-prop') === testProp
+      });
+      obj.addComponent(`<img src="##" test-prop="${testProp}"/>`);
+      expect(obj.getTypes()[0].id).toEqual(id);
+      const comp = obj.getComponents().at(0);
+      expect(comp.get('type')).toBe(id);
+      expect(comp.get('editable')).toBe(1);
+    });
   });
 });

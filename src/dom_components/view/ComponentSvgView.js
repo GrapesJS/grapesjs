@@ -1,6 +1,6 @@
-const ComponentView = require('./ComponentView');
+import ComponentView from './ComponentView';
 
-module.exports = ComponentView.extend({
+export default ComponentView.extend({
   _createElement: function(tagName) {
     return document.createElementNS('http://www.w3.org/2000/svg', tagName);
   }

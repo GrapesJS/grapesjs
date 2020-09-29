@@ -26,12 +26,14 @@
 
 import UndoManager from 'backbone-undo';
 
-module.exports = () => {
+export default () => {
   let em;
   let um;
   let config;
   let beforeCache;
-  const configDef = {};
+  const configDef = {
+    maximumStackLength: 500
+  };
 
   return {
     name: 'UndoManager',
@@ -45,7 +47,7 @@ module.exports = () => {
       config = { ...opts, ...configDef };
       em = config.em;
       this.em = em;
-      um = new UndoManager({ track: true, register: [] });
+      um = new UndoManager({ track: true, register: [], ...config });
       um.changeUndoType('change', { condition: false });
       um.changeUndoType('add', {
         on(model, collection, options = {}) {
@@ -180,8 +182,8 @@ module.exports = () => {
      * @example
      * um.undo();
      */
-    undo() {
-      if (!em.get('Canvas').isInputFocused()) um.undo(1);
+    undo(all = true) {
+      !em.isEditing() && um.undo(all);
       return this;
     },
 
@@ -202,8 +204,8 @@ module.exports = () => {
      * @example
      * um.redo();
      */
-    redo() {
-      if (!em.get('Canvas').isInputFocused()) um.redo(1);
+    redo(all = true) {
+      !em.isEditing() && um.redo(all);
       return this;
     },
 
@@ -247,6 +249,35 @@ module.exports = () => {
      */
     getStack() {
       return um.stack;
+    },
+
+    /**
+     * Get grouped undo manager stack.
+     * The difference between `getStack` is when you do multiple operations at a time,
+     * like appending multiple components:
+     * `editor.getWrapper().append(`<div>C1</div><div>C2</div>`);`
+     * `getStack` will return a collection length of 2.
+     *  `getStackGroup` instead will group them as a single operation (the first
+     * inserted component will be returned in the list) by returning an array length of 1.
+     * @return {Array}
+     */
+    getStackGroup() {
+      const result = [];
+      const inserted = [];
+
+      this.getStack().forEach(item => {
+        const index = item.get('magicFusionIndex');
+        if (inserted.indexOf(index) < 0) {
+          inserted.push(index);
+          result.push(item);
+        }
+      });
+
+      return result;
+    },
+
+    getPointer() {
+      return this.getStack().pointer;
     },
 
     /**

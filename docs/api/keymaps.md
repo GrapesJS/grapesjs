@@ -30,12 +30,13 @@ const keymaps = editor.Keymaps;
 -   [get][3]
 -   [getAll][4]
 -   [remove][5]
+-   [removeAll][6]
 
 ## getConfig
 
 Get module configurations
 
-Returns **[Object][6]** Configuration object
+Returns **[Object][7]** Configuration object
 
 ## add
 
@@ -43,9 +44,10 @@ Add new keymap
 
 ### Parameters
 
--   `id` **[string][7]** Keymap id
--   `keys` **[string][7]** Keymap keys, eg. `ctrl+a`, `⌘+z, ctrl+z`
--   `handler` **([Function][8] \| [string][7])** Keymap handler, might be a function
+-   `id` **[string][8]** Keymap id
+-   `keys` **[string][8]** Keymap keys, eg. `ctrl+a`, `⌘+z, ctrl+z`
+-   `handler` **([Function][9] \| [string][8])** Keymap handler, might be a function
+-   `opts` **[Object][7]** Options (optional, default `{}`)
 
 ### Examples
 
@@ -63,7 +65,7 @@ editor.on('keymap:emit', (id, shortcut, e) => {
 })
 ```
 
-Returns **[Object][6]** Added keymap
+Returns **[Object][7]** Added keymap
  or just a command id as a string
 
 ## get
@@ -72,7 +74,7 @@ Get the keymap by id
 
 ### Parameters
 
--   `id` **[string][7]** Keymap id
+-   `id` **[string][8]** Keymap id
 
 ### Examples
 
@@ -81,7 +83,7 @@ keymaps.get('ns:my-keymap');
 // -> {keys, handler};
 ```
 
-Returns **[Object][6]** Keymap object
+Returns **[Object][7]** Keymap object
 
 ## getAll
 
@@ -94,7 +96,7 @@ keymaps.getAll();
 // -> {id1: {}, id2: {}};
 ```
 
-Returns **[Object][6]** 
+Returns **[Object][7]** 
 
 ## remove
 
@@ -102,7 +104,7 @@ Remove the keymap by id
 
 ### Parameters
 
--   `id` **[string][7]** Keymap id
+-   `id` **[string][8]** Keymap id
 
 ### Examples
 
@@ -111,7 +113,13 @@ keymaps.remove('ns:my-keymap');
 // -> {keys, handler};
 ```
 
-Returns **[Object][6]** Removed keymap
+Returns **[Object][7]** Removed keymap
+
+## removeAll
+
+Remove all binded keymaps
+
+Returns **this** 
 
 [1]: #getconfig
 
@@ -123,8 +131,10 @@ Returns **[Object][6]** Removed keymap
 
 [5]: #remove
 
-[6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[6]: #removeall
 
-[7]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[7]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+
+[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function

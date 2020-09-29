@@ -1,45 +1,55 @@
 import { on, off } from 'utils/mixins';
+import ComponentView from './ComponentView';
 
-const ComponentView = require('./ComponentView');
+const compProt = ComponentView.prototype;
 
-module.exports = ComponentView.extend({
+export default ComponentView.extend({
   events: {
-    dblclick: 'enableEditing',
+    dblclick: 'onActive',
     input: 'onInput'
   },
 
   initialize(o) {
-    ComponentView.prototype.initialize.apply(this, arguments);
+    compProt.initialize.apply(this, arguments);
     this.disableEditing = this.disableEditing.bind(this);
     const model = this.model;
     const em = this.em;
-    this.listenTo(model, 'focus active', this.enableEditing);
-    this.listenTo(model, 'change:content', this.updateContent);
+    this.listenTo(model, 'focus', this.onActive);
+    this.listenTo(model, 'change:content', this.updateContentText);
+    this.listenTo(model, 'sync:content', this.syncContent);
     this.rte = em && em.get('RichTextEditor');
+  },
+
+  updateContentText(m, v, opts = {}) {
+    !opts.fromDisable && this.disableEditing();
   },
 
   /**
    * Enable element content editing
    * @private
    * */
-  enableEditing(e) {
-    e && e.stopPropagation && e.stopPropagation();
-    const rte = this.rte;
-
+  onActive(e) {
+    // We place this before stopPropagation in case of nested
+    // text components will not block the editing (#1394)
     if (this.rteEnabled || !this.model.get('editable')) {
       return;
     }
+    e && e.stopPropagation && e.stopPropagation();
+    const { rte, em } = this;
 
     if (rte) {
       try {
         this.activeRte = rte.enable(this, this.activeRte);
       } catch (err) {
-        console.error(err);
+        em.logError(err);
       }
     }
 
-    this.rteEnabled = 1;
     this.toggleEvents(1);
+  },
+
+  onDisable() {
+    this.disableEditing();
   },
 
   /**
@@ -47,62 +57,114 @@ module.exports = ComponentView.extend({
    * @private
    * */
   disableEditing() {
-    const model = this.model;
+    const { model, rte, activeRte, em } = this;
     const editable = model.get('editable');
-    const rte = this.rte;
 
     if (rte && editable) {
       try {
-        rte.disable(this, this.activeRte);
+        rte.disable(this, activeRte);
       } catch (err) {
-        console.error(err);
+        em.logError(err);
       }
 
-      const content = this.getChildrenContainer().innerHTML;
-      const comps = model.get('components');
-      comps.length && comps.reset();
-      model.set('content', '');
+      this.syncContent();
+    }
 
-      // If there is a custom RTE the content is just baked staticly
-      // inside 'content'
-      if (rte.customRte) {
-        // Avoid double content by removing its children components
-        // and force to trigger change
-        model.set('content', content);
-      } else {
-        const clean = model => {
-          model.set({
-            editable: 0,
+    this.toggleEvents();
+  },
+
+  /**
+   * get content from RTE
+   * @return string
+   */
+  getContent() {
+    const { activeRte } = this;
+    const canGetRteContent =
+      activeRte && typeof activeRte.getContent === 'function';
+
+    return canGetRteContent
+      ? activeRte.getContent()
+      : this.getChildrenContainer().innerHTML;
+  },
+
+  /**
+   * Merge content from the DOM to the model
+   */
+  syncContent(opts = {}) {
+    const { model, rte, rteEnabled } = this;
+    if (!rteEnabled && !opts.force) return;
+    const content = this.getContent();
+    const comps = model.components();
+    const contentOpt = { fromDisable: 1, ...opts };
+    comps.length && comps.reset(null, opts);
+    model.set('content', '', contentOpt);
+
+    // If there is a custom RTE the content is just baked staticly
+    // inside 'content'
+    if (rte.customRte) {
+      model.set('content', content, contentOpt);
+    } else {
+      const clean = model => {
+        const textable = !!model.get('textable');
+        const selectable =
+          !['text', 'default', ''].some(type => model.is(type)) || textable;
+        model.set(
+          {
+            _innertext: !selectable,
+            editable: selectable && model.get('editable'),
+            selectable: selectable,
+            hoverable: selectable,
+            removable: textable,
+            draggable: textable,
             highlightable: 0,
-            removable: 0,
-            draggable: 0,
-            copyable: 0,
-            toolbar: ''
-          });
-          model.get('components').each(model => clean(model));
-        };
+            copyable: textable,
+            ...(!textable && { toolbar: '' })
+          },
+          opts
+        );
+        model.get('components').each(model => clean(model));
+      };
 
-        // Avoid re-render on reset with silent option
-        model.trigger('change:content', model);
-        comps.add(content);
-        comps.each(model => clean(model));
-        comps.trigger('resetNavigator');
+      // Avoid re-render on reset with silent option
+      !opts.silent && model.trigger('change:content', model, '', contentOpt);
+      comps.add(content, opts);
+      comps.each(model => clean(model));
+      comps.trigger('resetNavigator');
+    }
+  },
+
+  getModelsFromEl(el) {
+    const result = [];
+    const children = (el || this.el).childNodes;
+
+    for (let index = 0; index < children.length; index++) {
+      const child = children[index];
+      const model = child.__cashData && child.__cashData.model;
+
+      if (model) {
+        model.components = this.getModelsFromEl(child);
+        if (model.get('content')) {
+          model.attributes.content = child.textContent;
+        }
+        // TODO add attributes;
+        result.push(model);
       }
     }
 
-    this.rteEnabled = 0;
-    this.toggleEvents();
+    return result;
   },
 
   /**
    * Callback on input event
    * @param  {Event} e
    */
-  onInput(e) {
+  onInput() {
     const { em } = this;
+    const evPfx = 'component';
+    const ev = [`${evPfx}:update`, `${evPfx}:input`].join(' ');
 
     // Update toolbars
-    em && em.trigger('change:canvasOffset');
+    em && em.trigger(ev, this.model);
   },
 
   /**
@@ -119,17 +181,33 @@ module.exports = ComponentView.extend({
    * @param {Boolean} enable
    */
   toggleEvents(enable) {
-    var method = enable ? 'on' : 'off';
+    const { em } = this;
     const mixins = { on, off };
-    this.em.setEditing(enable);
+    const method = enable ? 'on' : 'off';
+    em.setEditing(enable);
+    this.rteEnabled = !!enable;
 
     // The ownerDocument is from the frame
     var elDocs = [this.el.ownerDocument, document];
     mixins.off(elDocs, 'mousedown', this.disableEditing);
     mixins[method](elDocs, 'mousedown', this.disableEditing);
+    em[method]('toolbar:run:before', this.disableEditing);
 
     // Avoid closing edit mode on component click
     this.$el.off('mousedown', this.disablePropagation);
     this.$el[method]('mousedown', this.disablePropagation);
+
+    // Fixes #2210 but use this also as a replacement
+    // of this fix: bd7b804f3b46eb45b4398304b2345ce870f232d2
+    if (this.config.draggableComponents) {
+      let { el } = this;
+
+      while (el) {
+        el.draggable = enable ? !1 : !0;
+        // Note: el.parentNode is sometimes null here
+        el = el.parentNode;
+        el && el.tagName == 'BODY' && (el = 0);
+      }
+    }
   }
 });

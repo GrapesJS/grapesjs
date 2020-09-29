@@ -1,18 +1,20 @@
 import Backbone from 'backbone';
 const $ = Backbone.$;
 
-module.exports = {
+export default {
   /**
    * Start select position event
    * @param {HTMLElement} trg
    * @private
    * */
-  startSelectPosition(trg, doc) {
+  startSelectPosition(trg, doc, opts = {}) {
     this.isPointed = false;
     var utils = this.editorModel.get('Utils');
+    const container = trg.ownerDocument.body;
+
     if (utils && !this.sorter)
       this.sorter = new utils.Sorter({
-        container: this.getCanvasBody(),
+        container,
         placer: this.canvas.getPlacerEl(),
         containerSel: '*',
         itemSel: '*',
@@ -22,9 +24,12 @@ module.exports = {
         wmargin: 1,
         nested: 1,
         em: this.editorModel,
-        canvasRelative: 1
+        canvasRelative: 1,
+        scale: () => this.em.getZoomDecimal()
       });
-    trg && this.sorter.startSort(trg);
+
+    if (opts.onStart) this.sorter.onStart = opts.onStart;
+    trg && this.sorter.startSort(trg, { container });
   },
 
   /**
@@ -63,8 +68,8 @@ module.exports = {
         this.cDim.length === 0
           ? $(this.outsideElem)
           : !this.posIsLastEl && this.cDim[this.posIndex]
-            ? $(this.cDim[this.posIndex][5]).parent()
-            : $(this.outsideElem);
+          ? $(this.cDim[this.posIndex][5]).parent()
+          : $(this.outsideElem);
       this.posTargetModel = this.posTargetEl.data('model');
       this.posTargetCollection = this.posTargetEl.data('model-comp');
     }

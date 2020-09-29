@@ -1,9 +1,8 @@
 import { isUndefined } from 'underscore';
+import Property from './Property';
+import InputNumber from 'domain_abstract/ui/InputNumber';
 
-const Property = require('./Property');
-const InputNumber = require('domain_abstract/ui/InputNumber');
-
-module.exports = Property.extend({
+export default Property.extend({
   defaults: {
     ...Property.prototype.defaults,
     // Array of units, eg. ['px', '%']
@@ -22,7 +21,8 @@ module.exports = Property.extend({
     max: ''
   },
 
-  init() {
+  initialize(props = {}, opts = {}) {
+    Property.callParentInit(Property, this, props, opts);
     const unit = this.get('unit');
     const units = this.get('units');
     this.input = new InputNumber({ model: this });
@@ -30,6 +30,7 @@ module.exports = Property.extend({
     if (units.length && !unit) {
       this.set('unit', units[0]);
     }
+    Property.callInit(this, props, opts);
   },
 
   clearValue(opts = {}) {

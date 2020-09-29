@@ -694,7 +694,7 @@ export default function($, undefined) {
         return;
       }
 
-      boundElement.trigger(event, [get()]);
+      boundElement.trigger('beforeShow.spectrum', [get()]);
 
       if (callbacks.beforeShow(get()) === false || event.isDefaultPrevented()) {
         return;
@@ -1172,10 +1172,7 @@ export default function($, undefined) {
           return stop();
         }
 
-        var t0 =
-          e.originalEvent &&
-          e.originalEvent.touches &&
-          e.originalEvent.touches[0];
+        var t0 = e && e.touches && e.touches[0];
         var pageX = (t0 && t0.pageX) || e.pageX;
         var pageY = (t0 && t0.pageY) || e.pageY;
 

@@ -1,7 +1,9 @@
 import Backbone from 'backbone';
+import { isUndefined } from 'underscore';
+import { isTextNode } from 'utils/mixins';
 const $ = Backbone.$;
 
-module.exports = {
+export default {
   getOffsetMethod(state) {
     var method = state || '';
     return 'get' + method + 'OffsetViewerEl';
@@ -11,32 +13,55 @@ module.exports = {
     var opt = opts || {};
     var state = opt.state || '';
     var config = editor.getConfig();
+    const zoom = this.em.getZoomDecimal();
+    const el = opt.el || '';
 
     if (
       !config.showOffsets ||
+      isTextNode(el) ||
       (!config.showOffsetsSelected && state == 'Fixed')
     ) {
+      editor.stopCommand(this.id, opts);
       return;
     }
 
     var canvas = editor.Canvas;
-    var el = opt.el || '';
-    var pos = opt.elPos || canvas.getElementPos(el);
+    var pos = { ...(opt.elPos || canvas.getElementPos(el)) };
+
+    if (!isUndefined(opt.top)) {
+      pos.top = opt.top;
+    }
+    if (!isUndefined(opt.left)) {
+      pos.left = opt.left;
+    }
+
     var style = window.getComputedStyle(el);
     var ppfx = this.ppfx;
     var stateVar = state + 'State';
     var method = this.getOffsetMethod(state);
-    var offsetViewer = canvas[method]();
-    offsetViewer.style.display = 'block';
+    var offsetViewer = canvas[method](opts.view);
+    offsetViewer.style.opacity = '';
 
-    var marginT = this['marginT' + state];
-    var marginB = this['marginB' + state];
-    var marginL = this['marginL' + state];
-    var marginR = this['marginR' + state];
-    var padT = this['padT' + state];
-    var padB = this['padB' + state];
-    var padL = this['padL' + state];
-    var padR = this['padR' + state];
+    let marginT = this['marginT' + state];
+    let marginB = this['marginB' + state];
+    let marginL = this['marginL' + state];
+    let marginR = this['marginR' + state];
+    let padT = this['padT' + state];
+    let padB = this['padB' + state];
+    let padL = this['padL' + state];
+    let padR = this['padR' + state];
+
+    if (offsetViewer.childNodes.length) {
+      this[stateVar] = '1';
+      marginT = offsetViewer.querySelector('[data-offset-m-t]');
+      marginB = offsetViewer.querySelector('[data-offset-m-b]');
+      marginL = offsetViewer.querySelector('[data-offset-m-l]');
+      marginR = offsetViewer.querySelector('[data-offset-m-r]');
+      padT = offsetViewer.querySelector('[data-offset-p-t]');
+      padB = offsetViewer.querySelector('[data-offset-p-b]');
+      padL = offsetViewer.querySelector('[data-offset-p-l]');
+      padR = offsetViewer.querySelector('[data-offset-p-r]');
+    }
 
     if (!this[stateVar]) {
       var stateLow = state.toLowerCase();
@@ -78,9 +103,11 @@ module.exports = {
     }
 
     var unit = 'px';
-    var marginLeftSt = style.marginLeft.replace(unit, '');
-    var marginTopSt = parseInt(style.marginTop.replace(unit, ''));
-    var marginBottomSt = parseInt(style.marginBottom.replace(unit, ''));
+    var marginLeftSt = parseFloat(style.marginLeft.replace(unit, '')) * zoom;
+    var marginRightSt = parseFloat(style.marginRight.replace(unit, '')) * zoom;
+    var marginTopSt = parseFloat(style.marginTop.replace(unit, '')) * zoom;
+    var marginBottomSt =
+      parseFloat(style.marginBottom.replace(unit, '')) * zoom;
     var mtStyle = marginT.style;
     var mbStyle = marginB.style;
     var mlStyle = marginL.style;
@@ -89,64 +116,67 @@ module.exports = {
     var pbStyle = padB.style;
     var plStyle = padL.style;
     var prStyle = padR.style;
-    var posLeft = parseInt(pos.left);
+    var posLeft = parseFloat(pos.left);
+    var widthEl = parseFloat(style.width) * zoom + unit;
 
     // Margin style
-    mtStyle.height = style.marginTop;
-    mtStyle.width = style.width;
-    mtStyle.top = pos.top - style.marginTop.replace(unit, '') + unit;
+    mtStyle.height = marginTopSt + unit;
+    mtStyle.width = widthEl;
+    mtStyle.top = pos.top - marginTopSt + unit;
     mtStyle.left = posLeft + unit;
 
-    mbStyle.height = style.marginBottom;
-    mbStyle.width = style.width;
+    mbStyle.height = marginBottomSt + unit;
+    mbStyle.width = widthEl;
     mbStyle.top = pos.top + pos.height + unit;
     mbStyle.left = posLeft + unit;
 
     var marginSideH = pos.height + marginTopSt + marginBottomSt + unit;
     var marginSideT = pos.top - marginTopSt + unit;
     mlStyle.height = marginSideH;
-    mlStyle.width = style.marginLeft;
+    mlStyle.width = marginLeftSt + unit;
     mlStyle.top = marginSideT;
     mlStyle.left = posLeft - marginLeftSt + unit;
 
     mrStyle.height = marginSideH;
-    mrStyle.width = style.marginRight;
+    mrStyle.width = marginRightSt + unit;
     mrStyle.top = marginSideT;
     mrStyle.left = posLeft + pos.width + unit;
 
     // Padding style
-    var padTop = parseInt(style.paddingTop.replace(unit, ''));
-    ptStyle.height = style.paddingTop;
-    ptStyle.width = style.width;
-    ptStyle.top = pos.top + unit;
-    ptStyle.left = posLeft + unit;
+    var padTop = parseFloat(style.paddingTop) * zoom;
+    ptStyle.height = padTop + unit;
+    // ptStyle.width = widthEl;
+    // ptStyle.top = pos.top + unit;
+    // ptStyle.left = posLeft + unit;
 
-    var padBot = parseInt(style.paddingBottom.replace(unit, ''));
-    pbStyle.height = style.paddingBottom;
-    pbStyle.width = style.width;
-    pbStyle.top = pos.top + pos.height - padBot + unit;
-    pbStyle.left = posLeft + unit;
+    var padBot = parseFloat(style.paddingBottom) * zoom;
+    pbStyle.height = padBot + unit;
+    // pbStyle.width = widthEl;
+    // pbStyle.top = pos.top + pos.height - padBot + unit;
+    // pbStyle.left = posLeft + unit;
 
     var padSideH = pos.height - padBot - padTop + unit;
     var padSideT = pos.top + padTop + unit;
     plStyle.height = padSideH;
-    plStyle.width = style.paddingLeft;
+    plStyle.width = parseFloat(style.paddingLeft) * zoom + unit;
     plStyle.top = padSideT;
-    plStyle.left = pos.left + unit;
+    // plStyle.left = pos.left + unit;
+    //  plStyle.right = 0;
 
-    var padRight = parseInt(style.paddingRight.replace(unit, ''));
+    var padRight = parseFloat(style.paddingRight) * zoom;
     prStyle.height = padSideH;
-    prStyle.width = style.paddingRight;
+    prStyle.width = padRight + unit;
     prStyle.top = padSideT;
-    prStyle.left = pos.left + pos.width - padRight + unit;
+    // prStyle.left = pos.left + pos.width - padRight + unit;
+    //  prStyle.left = 0;
   },
 
-  stop(editor, sender, opts) {
+  stop(editor, sender, opts = {}) {
     var opt = opts || {};
     var state = opt.state || '';
     var method = this.getOffsetMethod(state);
     var canvas = editor.Canvas;
-    var offsetViewer = canvas[method]();
-    offsetViewer.style.display = 'none';
+    var offsetViewer = canvas[method](opts.view);
+    offsetViewer.style.opacity = 0;
   }
 };

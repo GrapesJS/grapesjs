@@ -1,13 +1,13 @@
 import Backbone from 'backbone';
 
-module.exports = Backbone.Model.extend({
+export default Backbone.Model.extend({
   build(model, opts = {}) {
     const models = model.get('components');
 
     if (opts.exportWrapper) {
-      return opts.wrappesIsBody
-        ? `<body>${this.buildModels(models)}</body>`
-        : model.toHTML();
+      return model.toHTML({
+        ...(opts.wrapperIsBody && { tag: 'body' })
+      });
     }
 
     return this.buildModels(models);

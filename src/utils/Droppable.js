@@ -2,16 +2,19 @@
   This class makes the canvas droppable
  */
 
-import { on } from 'utils/mixins';
+import { on, off } from 'utils/mixins';
 import { bindAll, indexOf } from 'underscore';
 
 export default class Droppable {
-  constructor(em) {
+  constructor(em, rootEl) {
     this.em = em;
-    const el = em
-      .get('DomComponents')
-      .getWrapper()
-      .getEl();
+    const el =
+      rootEl ||
+      em
+        .get('Canvas')
+        .getFrames()
+        .map(frame => frame.get('root').getEl());
+    const els = Array.isArray(el) ? el : [el];
     this.el = el;
     this.counter = 0;
     bindAll(
@@ -21,22 +24,26 @@ export default class Droppable {
       'handleDrop',
       'handleDragLeave'
     );
-    on(el, 'dragenter', this.handleDragEnter);
-    on(el, 'dragover', this.handleDragOver);
-    on(el, 'drop', this.handleDrop);
-    on(el, 'dragleave', this.handleDragLeave);
+    els.forEach(el => this.toggleEffects(el, 1));
 
     return this;
   }
 
+  toggleEffects(el, enable) {
+    const methods = { on, off };
+    const method = enable ? 'on' : 'off';
+    methods[method](el, 'dragenter', this.handleDragEnter);
+    methods[method](el, 'dragover', this.handleDragOver);
+    methods[method](el, 'drop', this.handleDrop);
+    methods[method](el, 'dragleave', this.handleDragLeave);
+  }
+
   endDrop(cancel, ev) {
-    const em = this.em;
+    const { em, dragStop } = this;
     this.counter = 0;
     this.over = 0;
-    // force out like in BlockView
-    const sorter = this.sorter;
-    cancel && (sorter.moved = 0);
-    sorter.endMove();
+    dragStop && dragStop(cancel);
+    em.runDefault({ preserveSelected: 1 });
     em.trigger('canvas:dragend', ev);
   }
 
@@ -50,40 +57,76 @@ export default class Droppable {
   }
 
   handleDragEnter(ev) {
-    const em = this.em;
+    const { em } = this;
     const dt = ev.dataTransfer;
     this.updateCounter(1, ev);
     if (this.over) return;
     this.over = 1;
     const utils = em.get('Utils');
     const canvas = em.get('Canvas');
-    this.sorter = new utils.Sorter({
-      em,
-      wmargin: 1,
-      nested: 1,
-      canvasRelative: 1,
-      direction: 'a',
-      container: canvas.getBody(),
-      placer: canvas.getPlacerEl(),
-      eventMoving: 'mousemove dragover',
-      containerSel: '*',
-      itemSel: '*',
-      pfx: 'gjs-',
-      onStart: () => em.stopDefault(),
-      onEndMove: model => {
-        em.runDefault();
-        em.set('dragResult', model);
-        model && em.trigger('canvas:drop', dt, model);
-      },
-      document: canvas.getFrameEl().contentDocument
-    });
+    const container = canvas.getBody();
     // For security reason I can't read the drag data on dragenter, but
     // as I need it for the Sorter context I will use `dragContent` or just
     // any not empty element
-    const content = em.get('dragContent') || '<br>';
-    this.sorter.setDropContent(content);
-    this.sorter.startSort();
+    let content = em.get('dragContent') || '<br>';
+    let dragStop, dragContent;
+    em.stopDefault();
+
+    if (em.inAbsoluteMode()) {
+      const wrapper = em.get('DomComponents').getWrapper();
+      const target = wrapper.append({})[0];
+      const dragger = em.get('Commands').run('core:component-drag', {
+        event: ev,
+        guidesInfo: 1,
+        center: 1,
+        target,
+        onEnd: (ev, dragger, { cancelled }) => {
+          if (!cancelled) {
+            const comp = wrapper.append(content)[0];
+            const { left, top, position } = target.getStyle();
+            comp.addStyle({ left, top, position });
+            this.handleDragEnd(comp, dt);
+          }
+          target.remove();
+        }
+      });
+      dragStop = cancel => dragger.stop(ev, { cancel });
+      dragContent = cnt => (content = cnt);
+    } else {
+      const sorter = new utils.Sorter({
+        em,
+        wmargin: 1,
+        nested: 1,
+        canvasRelative: 1,
+        direction: 'a',
+        container,
+        placer: canvas.getPlacerEl(),
+        containerSel: '*',
+        itemSel: '*',
+        pfx: 'gjs-',
+        onEndMove: model => this.handleDragEnd(model, dt),
+        document: canvas.getFrameEl().contentDocument
+      });
+      sorter.setDropContent(content);
+      sorter.startSort();
+      this.sorter = sorter;
+      dragStop = cancel => {
+        cancel && (sorter.moved = 0);
+        sorter.endMove();
+      };
+      dragContent = content => sorter.setDropContent(content);
+    }
+
+    this.dragStop = dragStop;
+    this.dragContent = dragContent;
     em.trigger('canvas:dragenter', dt, content);
+  }
+
+  handleDragEnd(model, dt) {
+    if (!model) return;
+    const { em } = this;
+    em.set('dragResult', model);
+    em.trigger('canvas:drop', dt, model);
   }
 
   /**
@@ -97,23 +140,18 @@ export default class Droppable {
 
   handleDrop(ev) {
     ev.preventDefault();
+    const { dragContent } = this;
     const dt = ev.dataTransfer;
     const content = this.getContentByData(dt).content;
     ev.target.style.border = '';
-
-    if (content) {
-      this.sorter.setDropContent(content);
-    } else {
-      this.sorter.moved = 0;
-    }
-
-    this.endDrop(0, ev);
+    content && dragContent && dragContent(content);
+    this.endDrop(!content, ev);
   }
 
   getContentByData(dataTransfer) {
     const em = this.em;
     const types = dataTransfer.types;
-    const files = dataTransfer.files;
+    const files = dataTransfer.files || [];
     const dragContent = em.get('dragContent');
     let content = dataTransfer.getData('text');
 

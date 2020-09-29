@@ -1,14 +1,16 @@
-const Editor = require('editor/model/Editor');
-const Keymaps = require('keymaps');
+import Editor from 'editor/index';
+import Keymaps from 'keymaps';
 
 describe('Keymaps', () => {
   describe('Main', () => {
     let em;
     let obj;
+    let editor;
 
     beforeEach(() => {
-      em = new Editor();
-      obj = new Keymaps().init({ em });
+      editor = Editor().init();
+      em = editor.getModel();
+      obj = editor.Keymaps;
     });
 
     test('Object exists', () => {
@@ -39,7 +41,7 @@ describe('Keymaps', () => {
       const id = 'test';
       const keys = 'ctrl+a';
       const handler = () => {};
-      const model = obj.add(id, 'ctrl+a', handler);
+      const model = obj.add(id, keys, handler);
       const removed = obj.remove(id);
       expect(obj.get(id)).toEqual(undefined);
       expect(obj.getAll()).toEqual({});
@@ -52,6 +54,66 @@ describe('Keymaps', () => {
       const model = obj.add('tes', 'ctrl+a');
       const removed = obj.remove('tes');
       expect(called).toEqual(1);
+    });
+
+    describe('Given the edit is not on edit mode', () => {
+      beforeEach(() => {
+        em.setEditing(0);
+      });
+
+      it('Should run the handler', () => {
+        const handler = {
+          run: jest.fn(),
+          callRun: jest.fn()
+        };
+        obj.add('test', 'ctrl+a', handler);
+        const keyboardEvent = new KeyboardEvent('keydown', {
+          keyCode: 65,
+          which: 65,
+          ctrlKey: true
+        });
+        document.dispatchEvent(keyboardEvent);
+
+        expect(handler.callRun).toBeCalled();
+      });
+    });
+
+    describe('Given the edit is on edit mode', () => {
+      beforeEach(() => {
+        em.setEditing(1);
+      });
+
+      it('Should not run the handler', () => {
+        const handler = {
+          run: jest.fn(),
+          callRun: jest.fn()
+        };
+        obj.add('test', 'ctrl+a', handler);
+        const keyboardEvent = new KeyboardEvent('keydown', {
+          keyCode: 65,
+          which: 65,
+          ctrlKey: true
+        });
+        document.dispatchEvent(keyboardEvent);
+
+        expect(handler.callRun).toBeCalledTimes(0);
+      });
+
+      it('Should run the handler if checked as force', () => {
+        const handler = {
+          run: jest.fn(),
+          callRun: jest.fn()
+        };
+        obj.add('test', 'ctrl+a', handler, { force: true });
+        const keyboardEvent = new KeyboardEvent('keydown', {
+          keyCode: 65,
+          which: 65,
+          ctrlKey: true
+        });
+        document.dispatchEvent(keyboardEvent);
+
+        expect(handler.callRun).toBeCalled();
+      });
     });
   });
 });

@@ -2,7 +2,7 @@ import defaults from './config/config';
 import ItemView from './view/ItemView';
 import { isElement } from 'underscore';
 
-module.exports = () => {
+export default () => {
   let em;
   let layers;
   let config = {};
@@ -96,6 +96,10 @@ module.exports = () => {
 
     render() {
       return layers.render().el;
+    },
+
+    destroy() {
+      return layers.remove();
     }
   };
 };

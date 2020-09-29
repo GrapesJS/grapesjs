@@ -26,13 +26,13 @@
  * @module BlockManager
  */
 import { isElement } from 'underscore';
+import defaults from './config/config';
+import Blocks from './model/Blocks';
+import BlockCategories from './model/Categories';
+import BlocksView from './view/BlocksView';
 
-module.exports = () => {
-  var c = {},
-    defaults = require('./config/config'),
-    Blocks = require('./model/Blocks'),
-    BlockCategories = require('./model/Categories'),
-    BlocksView = require('./view/BlocksView');
+export default () => {
+  var c = {};
   var blocks, blocksVisible, blocksView;
   var categories = [];
 
@@ -63,15 +63,7 @@ module.exports = () => {
       // Global blocks collection
       blocks = new Blocks([]);
       blocksVisible = new Blocks([]);
-      (categories = new BlockCategories()),
-        (blocksView = new BlocksView(
-          {
-            // Visible collection
-            collection: blocksVisible,
-            categories
-          },
-          c
-        ));
+      categories = new BlockCategories();
 
       // Setup the sync between the global and public collections
       blocks.listenTo(blocks, 'add', model => {
@@ -107,12 +99,18 @@ module.exports = () => {
       !blocks.length && blocks.reset(c.blocks);
     },
 
+    /**
+     * Executed once the main editor instance is rendered
+     * @private
+     */
     postRender() {
+      const collection = blocksVisible;
+      blocksView = new BlocksView({ collection, categories }, c);
       const elTo = this.getConfig().appendTo;
 
       if (elTo) {
         const el = isElement(elTo) ? elTo : document.querySelector(elTo);
-        el.appendChild(this.render());
+        el.appendChild(this.render(blocksVisible.models));
       }
     },
 
@@ -209,8 +207,10 @@ module.exports = () => {
 
     /**
      * Render blocks
-     * @param  {Array} blocks Blocks to render, without the argument will render
-     *                        all global blocks
+     * @param  {Array} blocks Blocks to render, without the argument will render all global blocks
+     * @param  {Object} [opts={}] Options
+     * @param  {Boolean} [opts.external] Render blocks in a new container (HTMLElement will be returned)
+     * @param  {Boolean} [opts.ignoreCategories] Render blocks without categories
      * @return {HTMLElement} Rendered element
      * @example
      * // Render all blocks (inside the global collection)
@@ -218,9 +218,9 @@ module.exports = () => {
      *
      * // Render new set of blocks
      * const blocks = blockManager.getAll();
-     * blockManager.render(blocks.filter(
-     *  block => block.get('category') == 'sections'
-     * ));
+     * const filtered = blocks.filter(block => block.get('category') == 'sections')
+     *
+     * blockManager.render(filtered);
      * // Or a new set from an array
      * blockManager.render([
      *  {label: 'Label text', content: '<div>Content</div>'}
@@ -228,16 +228,32 @@ module.exports = () => {
      *
      * // Back to blocks from the global collection
      * blockManager.render();
+     *
+     * // You can also render your blocks outside of the main block container
+     * const newBlocksEl = blockManager.render(filtered, { external: true });
+     * document.getElementById('some-id').appendChild(newBlocksEl);
      */
-    render(blocks) {
+    render(blocks, opts = {}) {
       const toRender = blocks || this.getAll().models;
 
-      if (!blocksView.rendered) {
-        blocksView.render();
-        blocksView.rendered = 1;
+      if (opts.external) {
+        const collection = new Blocks(toRender);
+        return new BlocksView(
+          { collection, categories },
+          { ...c, ...opts }
+        ).render().el;
       }
 
-      blocksView.collection.reset(toRender);
+      if (blocksView) {
+        blocksView.updateConfig(opts);
+        blocksView.collection.reset(toRender);
+
+        if (!blocksView.rendered) {
+          blocksView.render();
+          blocksView.rendered = 1;
+        }
+      }
+
       return this.getContainer();
     }
   };

@@ -1,5 +1,5 @@
-const StorageManager = require('storage_manager');
-const Models = require('./model/Models');
+import StorageManager from 'storage_manager';
+import Models from './model/Models';
 
 describe('Storage Manager', () => {
   describe('Main', () => {
@@ -102,6 +102,4 @@ describe('Storage Manager', () => {
       });
     });
   });
-
-  Models.run();
 });

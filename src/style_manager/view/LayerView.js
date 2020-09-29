@@ -1,18 +1,21 @@
+import { isString, each } from 'underscore';
 import Backbone from 'backbone';
+import PropertiesView from './PropertiesView';
 
-module.exports = Backbone.View.extend({
+export default Backbone.View.extend({
   events: {
     click: 'active',
-    'click [data-close-layer]': 'remove',
-    'mousedown [data-move-layer]': 'initSorter'
+    'click [data-close-layer]': 'removeItem',
+    'mousedown [data-move-layer]': 'initSorter',
+    'touchstart [data-move-layer]': 'initSorter'
   },
 
   template(model) {
-    const pfx = this.pfx;
-    const label = `Layer ${model.get('index')}`;
+    const { pfx, ppfx, em } = this;
+    const label = `${em && em.t('styleManager.layer')} ${model.get('index')}`;
 
     return `
-      <div id="${pfx}move" data-move-layer>
+      <div id="${pfx}move" class="${ppfx}no-touch-actions" data-move-layer>
         <i class="fa fa-arrows"></i>
       </div>
       <div id="${pfx}label">${label}</div>
@@ -29,19 +32,17 @@ module.exports = Backbone.View.extend({
 
   initialize(o = {}) {
     let model = this.model;
-    this.stackModel = o.stackModel || {};
+    this.stackModel = o.stackModel;
     this.config = o.config || {};
+    this.em = this.config.em;
     this.pfx = this.config.stylePrefix || '';
+    this.ppfx = this.config.pStylePrefix || '';
     this.sorter = o.sorter || null;
     this.propsConfig = o.propsConfig || {};
     this.customPreview = o.onPreview;
     this.listenTo(model, 'destroy remove', this.remove);
     this.listenTo(model, 'change:active', this.updateVisibility);
     this.listenTo(model.get('properties'), 'change', this.updatePreview);
-
-    if (!model.get('preview')) {
-      this.$el.addClass(this.pfx + 'no-preview');
-    }
 
     // For the sorter
     model.view = this;
@@ -57,23 +58,25 @@ module.exports = Backbone.View.extend({
     if (this.sorter) this.sorter.startSort(this.el);
   },
 
-  remove(e) {
-    if (e && e.stopPropagation) e.stopPropagation();
+  removeItem(ev) {
+    ev && ev.stopPropagation();
+    this.remove();
+  },
 
-    const model = this.model;
-    const collection = model.collection;
+  remove(opts = {}) {
+    const { model, props } = this;
+    const coll = model.collection;
     const stackModel = this.stackModel;
 
     Backbone.View.prototype.remove.apply(this, arguments);
-
-    if (collection.contains(model)) {
-      collection.remove(model);
-    }
+    coll && coll.contains(model) && coll.remove(model);
 
     if (stackModel && stackModel.set) {
       stackModel.set({ stackIndex: null }, { silent: true });
-      stackModel.trigger('updateValue');
+      !opts.fromTarget && stackModel.trigger('updateValue');
     }
+
+    props && props.remove();
   },
 
   /**
@@ -82,11 +85,16 @@ module.exports = Backbone.View.extend({
    * @param {Element} $el
    */
   onPreview(value) {
+    const { stackModel } = this;
+    const detach = stackModel && stackModel.get('detached');
     const values = value.split(' ');
     const lim = 3;
     const result = [];
+    const resultObj = {};
+
     this.model.get('properties').each((prop, index) => {
-      var value = values[index] || '';
+      const property = prop.get('property');
+      let value = detach ? prop.getFullValue() : values[index] || '';
 
       if (value) {
         if (prop.get('type') == 'integer') {
@@ -100,9 +108,10 @@ module.exports = Backbone.View.extend({
       }
 
       result.push(value);
+      resultObj[property] = value;
     });
 
-    return result.join(' ');
+    return detach ? resultObj : result.join(' ');
   },
 
   updatePreview() {
@@ -115,7 +124,14 @@ module.exports = Backbone.View.extend({
       : this.onPreview(value);
 
     if (preview && stackModel && previewEl) {
-      previewEl.style[stackModel.get('property')] = preview;
+      const { style } = previewEl;
+      if (isString(preview)) {
+        style[stackModel.get('property')] = preview;
+      } else {
+        let prvStr = [];
+        each(preview, (val, prop) => prvStr.push(`${prop}:${val}`));
+        previewEl.setAttribute('style', prvStr.join(';'));
+      }
     }
   },
 
@@ -148,22 +164,23 @@ module.exports = Backbone.View.extend({
   },
 
   render() {
-    const PropertiesView = require('./PropertiesView');
     const propsConfig = this.propsConfig;
-    const className = `${this.pfx}layer`;
-    const model = this.model;
-    const el = this.el;
+    const { model, el, pfx } = this;
+    const preview = model.get('preview');
     const properties = new PropertiesView({
       collection: model.get('properties'),
-      config: this.config,
+      config: { ...this.config, fromLayer: 1 },
       target: propsConfig.target,
       customValue: propsConfig.customValue,
       propTarget: propsConfig.propTarget,
       onChange: propsConfig.onChange
-    }).render().el;
+    });
+    const propsEl = properties.render().el;
+
     el.innerHTML = this.template(model);
-    el.className = className;
-    this.getPropertiesWrapper().appendChild(properties);
+    el.className = `${pfx}layer${!preview ? ` ${pfx}no-preview` : ''}`;
+    this.props = properties;
+    this.getPropertiesWrapper().appendChild(propsEl);
     this.updateVisibility();
     this.updatePreview();
     return this;

@@ -1,12 +1,12 @@
 import Backbone from 'backbone';
 import { isUndefined } from 'underscore';
 import ColorPicker from 'utils/ColorPicker';
+import Input from './Input';
 
-const Input = require('./Input');
 const $ = Backbone.$;
 ColorPicker($);
 
-module.exports = Input.extend({
+export default Input.extend({
   template() {
     const ppfx = this.ppfx;
     return `
@@ -44,7 +44,7 @@ module.exports = Input.extend({
     colorEl.get(0).style.backgroundColor = valueClr;
 
     // This prevents from adding multiple thumbs in spectrum
-    if (opts.fromTarget) {
+    if (opts.fromTarget || (opts.fromInput && !opts.avoidStore)) {
       colorEl.spectrum('set', valueClr);
       this.noneColor = value == 'none';
     }
@@ -56,16 +56,16 @@ module.exports = Input.extend({
    */
   getColorEl() {
     if (!this.colorEl) {
+      const { em } = this;
       const self = this;
       const ppfx = this.ppfx;
       var model = this.model;
 
       var colorEl = $(`<div class="${this.ppfx}field-color-picker"></div>`);
       var cpStyle = colorEl.get(0).style;
-      var elToAppend = this.em && this.em.config ? this.em.config.el : '';
+      var elToAppend = em && em.config ? em.config.el : '';
       var colorPickerConfig =
-        (this.em && this.em.getConfig && this.em.getConfig('colorPicker')) ||
-        {};
+        (em && em.getConfig && em.getConfig('colorPicker')) || {};
       const getColor = color => {
         let cl =
           color.getAlpha() == 1 ? color.toHexString() : color.toRgbString();
@@ -87,6 +87,7 @@ module.exports = Input.extend({
 
         // config expanded here so that the functions below are not overridden
         ...colorPickerConfig,
+        ...(model.get('colorPicker') || {}),
 
         move(color) {
           const cl = getColor(color);
@@ -97,6 +98,7 @@ module.exports = Input.extend({
           changed = 1;
           const cl = getColor(color);
           cpStyle.backgroundColor = cl;
+          model.setValueFromInput(0, 0); // for UndoManager
           model.setValueFromInput(cl);
           self.noneColor = 0;
         },
@@ -115,6 +117,13 @@ module.exports = Input.extend({
           }
         }
       });
+
+      em &&
+        em.on &&
+        em.on('component:selected', () => {
+          changed = 1;
+          colorEl.spectrum('hide');
+        });
 
       this.colorEl = colorEl;
     }

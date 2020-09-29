@@ -1,8 +1,11 @@
 import { filter } from 'underscore';
-const Selector = require('./Selector');
+import Backbone from 'backbone';
+import Selector from './Selector';
 
-module.exports = require('backbone').Collection.extend({
+export default Backbone.Collection.extend({
   model: Selector,
+
+  modelId: attr => `${attr.name}_${attr.type || Selector.TYPE_CLASS}`,
 
   getStyleable() {
     return filter(
@@ -11,14 +14,16 @@ module.exports = require('backbone').Collection.extend({
     );
   },
 
-  getValid() {
-    return filter(this.models, item => !item.get('private'));
+  getValid({ noDisabled } = {}) {
+    return filter(this.models, item => !item.get('private')).filter(item =>
+      noDisabled ? item.get('active') : 1
+    );
   },
 
-  getFullString(collection) {
+  getFullString(collection, opts = {}) {
     const result = [];
     const coll = collection || this;
-    coll.forEach(selector => result.push(selector.getFullName()));
+    coll.forEach(selector => result.push(selector.getFullName(opts)));
     return result.join('').trim();
   }
 });

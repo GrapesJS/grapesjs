@@ -1,21 +1,134 @@
 import Backbone from 'backbone';
-import { on, off, getElement } from 'utils/mixins';
-const FrameView = require('./FrameView');
-const $ = Backbone.$;
+import { bindAll } from 'underscore';
+import {
+  on,
+  off,
+  getElement,
+  getKeyChar,
+  isTextNode,
+  getElRect
+} from 'utils/mixins';
+import FramesView from './FramesView';
 
-module.exports = Backbone.View.extend({
+const $ = Backbone.$;
+let timerZoom;
+
+export default Backbone.View.extend({
+  events: {
+    wheel: 'onWheel'
+  },
+
+  template() {
+    const { pfx } = this;
+    return `
+      <div class="${pfx}canvas__frames" data-frames></div>
+      <div id="${pfx}tools" class="${pfx}canvas__tools" data-tools></div>
+    `;
+  },
+
   initialize(o) {
-    _.bindAll(this, 'renderBody', 'onFrameScroll', 'clearOff');
+    bindAll(this, 'clearOff', 'onKeyPress', 'onCanvasMove');
     on(window, 'scroll resize', this.clearOff);
+    const { model } = this;
+    const frames = model.get('frames');
     this.config = o.config || {};
     this.em = this.config.em || {};
+    this.pfx = this.config.stylePrefix || '';
     this.ppfx = this.config.pStylePrefix || '';
     this.className = this.config.stylePrefix + 'canvas';
-    this.listenTo(this.em, 'change:canvasOffset', this.clearOff);
-    this.frame = new FrameView({
-      model: this.model.get('frame'),
-      config: this.config
+    const { em, config } = this;
+    this.frames = new FramesView({
+      collection: frames,
+      config: {
+        ...config,
+        canvasView: this,
+        renderContent: 1
+      }
     });
+    this.listenTo(em, 'change:canvasOffset', this.clearOff);
+    this.listenTo(em, 'component:selected', this.checkSelected);
+    this.listenTo(model, 'change:zoom change:x change:y', this.updateFrames);
+    this.listenTo(frames, 'loaded:all', () => em.trigger('loaded'));
+    this.toggleListeners(1);
+  },
+
+  checkSelected(component, opts = {}) {
+    const { scroll } = opts;
+    const currFrame = this.em.get('currentFrame');
+
+    scroll &&
+      component.views.forEach(view => {
+        view._getFrame() !== currFrame && view.scrollIntoView(scroll);
+      });
+  },
+
+  remove() {
+    Backbone.View.prototype.remove.apply(this, arguments);
+    this.toggleListeners();
+  },
+
+  preventDefault(ev) {
+    if (ev) {
+      ev.preventDefault();
+      ev._parentEvent && ev._parentEvent.preventDefault();
+    }
+  },
+
+  onCanvasMove(ev) {
+    // const data = { x: ev.clientX, y: ev.clientY };
+    // const data2 = this.em.get('Canvas').getMouseRelativeCanvas(ev);
+    // const data3 = this.em.get('Canvas').getMouseRelativePos(ev);
+    // this.em.trigger('canvas:over', data, data2, data3);
+  },
+
+  toggleListeners(enable) {
+    const { el } = this;
+    const fn = enable ? on : off;
+    fn(document, 'keypress', this.onKeyPress);
+    // fn(el, 'mousemove dragover', this.onCanvasMove);
+  },
+
+  onKeyPress(ev) {
+    const { em } = this;
+    const key = getKeyChar(ev);
+
+    if (
+      key === ' ' &&
+      em.getZoomDecimal() !== 1 &&
+      !em.get('Canvas').isInputFocused()
+    ) {
+      this.preventDefault(ev);
+      em.get('Editor').runCommand('core:canvas-move');
+    }
+  },
+
+  onWheel(ev) {
+    if ((ev.ctrlKey || ev.metaKey) && this.em.getConfig('multiFrames')) {
+      this.preventDefault(ev);
+      const { model } = this;
+      const delta = Math.max(-1, Math.min(1, ev.wheelDelta || -ev.detail));
+      const zoom = model.get('zoom');
+      model.set('zoom', zoom + delta * 2);
+    }
+  },
+
+  updateFrames(ev) {
+    const { em, model } = this;
+    const { x, y } = model.attributes;
+    const zoom = this.getZoom();
+    const defOpts = { preserveSelected: 1 };
+    const mpl = zoom ? 1 / zoom : 1;
+    this.framesArea.style.transform = `scale(${zoom}) translate(${x *
+      mpl}px, ${y * mpl}px)`;
+    this.clearOff();
+    em.stopDefault(defOpts);
+    em.trigger('canvas:update', ev);
+    timerZoom && clearTimeout(timerZoom);
+    timerZoom = setTimeout(() => em.runDefault(defOpts), 300);
+  },
+
+  getZoom() {
+    return this.em.getZoomDecimal();
   },
 
   /**
@@ -24,8 +137,9 @@ module.exports = Backbone.View.extend({
    * @return {Boolean}
    */
   isElInViewport(el) {
-    const rect = getElement(el).getBoundingClientRect();
-    const frameRect = this.getFrameOffset(1);
+    const elem = getElement(el);
+    const rect = getElRect(elem);
+    const frameRect = this.getFrameOffset(elem);
     const rTop = rect.top;
     const rLeft = rect.left;
     return (
@@ -37,190 +151,18 @@ module.exports = Backbone.View.extend({
   },
 
   /**
-   * Update tools position
-   * @private
-   */
-  onFrameScroll() {
-    var u = 'px';
-    var body = this.frame.el.contentDocument.body;
-    this.toolsEl.style.top = '-' + body.scrollTop + u;
-    this.toolsEl.style.left = '-' + body.scrollLeft + u;
-    this.em.trigger('canvasScroll');
-  },
-
-  /**
-   * Insert scripts into head, it will call renderBody after all scripts loaded or failed
-   * @private
-   */
-  renderScripts() {
-    var frame = this.frame;
-    var that = this;
-
-    frame.el.onload = () => {
-      var scripts = that.config.scripts.slice(0), // clone
-        counter = 0;
-
-      function appendScript(scripts) {
-        if (scripts.length > 0) {
-          var script = document.createElement('script');
-          script.type = 'text/javascript';
-          script.src = scripts.shift();
-          script.onerror = script.onload = appendScript.bind(null, scripts);
-          frame.el.contentDocument.head.appendChild(script);
-        } else {
-          that.renderBody();
-        }
-      }
-      appendScript(scripts);
-    };
-  },
-
-  /**
-   * Render inside frame's body
-   * @private
-   */
-  renderBody() {
-    var wrap = this.model.get('frame').get('wrapper');
-    var em = this.config.em;
-    if (wrap) {
-      var ppfx = this.ppfx;
-      //var body = this.frame.$el.contents().find('body');
-      var body = $(this.frame.el.contentWindow.document.body);
-      var cssc = em.get('CssComposer');
-      var conf = em.get('Config');
-      var confCanvas = this.config;
-      var protCss = conf.protectedCss;
-      var externalStyles = '';
-
-      confCanvas.styles.forEach(style => {
-        externalStyles += `<link rel="stylesheet" href="${style}"/>`;
-      });
-
-      const colorWarn = '#ffca6f';
-
-      // I need all this styles to make the editor work properly
-      // Remove `html { height: 100%;}` from the baseCss as it gives jumpings
-      // effects (on ENTER) with RTE like CKEditor (maybe some bug there?!?)
-      // With `body {height: auto;}` jumps in CKEditor are removed but in
-      // Firefox is impossible to drag stuff in empty canvas, so bring back
-      // `body {height: 100%;}`.
-      // For the moment I give the priority to Firefox as it might be
-      // CKEditor's issue
-      var frameCss = `
-        ${em.config.baseCss || ''}
-
-        .${ppfx}dashed *[data-highlightable] {
-          outline: 1px dashed rgba(170,170,170,0.7);
-          outline-offset: -2px;
-        }
-
-        .${ppfx}comp-selected {
-          outline: 3px solid #3b97e3 !important;
-          outline-offset: -3px;
-        }
-
-        .${ppfx}comp-selected-parent {
-          outline: 2px solid ${colorWarn} !important
-        }
-
-        .${ppfx}no-select {
-          user-select: none;
-          -webkit-user-select:none;
-          -moz-user-select: none;
-        }
-
-        .${ppfx}freezed {
-          opacity: 0.5;
-          pointer-events: none;
-        }
-
-        .${ppfx}no-pointer {
-          pointer-events: none;
-        }
-
-        .${ppfx}plh-image {
-          background: #f5f5f5;
-          border: none;
-          height: 50px;
-          width: 50px;
-          display: block;
-          outline: 3px solid #ffca6f;
-          cursor: pointer;
-          outline-offset: -2px
-        }
-
-        .${ppfx}grabbing {
-          cursor: grabbing;
-          cursor: -webkit-grabbing;
-        }
-
-        ${conf.canvasCss || ''}
-        ${protCss || ''}
-      `;
-
-      if (externalStyles) {
-        body.append(externalStyles);
-      }
-
-      body.append('<style>' + frameCss + '</style>');
-      body.append(wrap.render()).append(cssc.render());
-      body.append(this.getJsContainer());
-      em.trigger('loaded');
-      this.frame.el.contentWindow.onscroll = this.onFrameScroll;
-      this.frame.udpateOffset();
-
-      // When the iframe is focused the event dispatcher is not the same so
-      // I need to delegate all events to the parent document
-      const doc = document;
-      const fdoc = this.frame.el.contentDocument;
-
-      // Unfortunately just creating `KeyboardEvent(e.type, e)` is not enough,
-      // the keyCode/which will be always `0`. Even if it's an old/deprecated
-      // property keymaster (and many others) still use it... using `defineProperty`
-      // hack seems the only way
-      const createCustomEvent = (e, cls) => {
-        let oEvent;
-        try {
-          oEvent = new window[cls](e.type, e);
-        } catch (e) {
-          oEvent = document.createEvent(cls);
-          oEvent.initEvent(e.type, true, true);
-        }
-        oEvent.keyCodeVal = e.keyCode;
-        ['keyCode', 'which'].forEach(prop => {
-          Object.defineProperty(oEvent, prop, {
-            get() {
-              return this.keyCodeVal;
-            }
-          });
-        });
-        return oEvent;
-      };
-
-      [
-        { event: 'keydown keyup', class: 'KeyboardEvent' }
-        //{ event: 'mousedown mousemove mouseup', class: 'MouseEvent' },
-      ].forEach(obj =>
-        obj.event.split(' ').forEach(event => {
-          fdoc.addEventListener(event, e =>
-            doc.dispatchEvent(createCustomEvent(e, obj.class))
-          );
-        })
-      );
-    }
-  },
-
-  /**
    * Get the offset of the element
    * @param  {HTMLElement} el
    * @return {Object}
    */
-  offset(el) {
-    var rect = el.getBoundingClientRect();
-    var docBody = el.ownerDocument.body;
+  offset(el, opts = {}) {
+    const rect = getElRect(el);
+    const docBody = el.ownerDocument.body;
+    const { noScroll } = opts;
+
     return {
-      top: rect.top + docBody.scrollTop,
-      left: rect.left + docBody.scrollLeft,
+      top: rect.top + (noScroll ? 0 : docBody.scrollTop),
+      left: rect.left + (noScroll ? 0 : docBody.scrollLeft),
       width: rect.width,
       height: rect.height
     };
@@ -240,8 +182,12 @@ module.exports = Backbone.View.extend({
    * @return {Object}
    * @private
    */
-  getFrameOffset(force = 0) {
-    if (!this.frmOff || force) this.frmOff = this.offset(this.frame.el);
+  getFrameOffset(el) {
+    if (!this.frmOff || el) {
+      const frame = this.frame.el;
+      const frEl = el ? el.ownerDocument.defaultView.frameElement : frame;
+      this.frmOff = this.offset(frEl || frame);
+    }
     return this.frmOff;
   },
 
@@ -256,27 +202,53 @@ module.exports = Backbone.View.extend({
   },
 
   /**
-   * Returns element's data info
+   * Returns element's rect info
    * @param {HTMLElement} el
    * @return {Object}
    * @private
    */
   getElementPos(el, opts) {
+    const zoom = this.getZoom();
     var opt = opts || {};
-    var frmOff = this.getFrameOffset();
+    var frmOff = this.getFrameOffset(el);
     var cvsOff = this.getCanvasOffset();
-    var eo = this.offset(el);
+    var eo = this.offset(el, opts);
 
     var frmTop = opt.avoidFrameOffset ? 0 : frmOff.top;
     var frmLeft = opt.avoidFrameOffset ? 0 : frmOff.left;
 
-    const top = eo.top + frmTop - cvsOff.top;
-    const left = eo.left + frmLeft - cvsOff.left;
-    // clientHeight/clientWidth are for SVGs
-    const height = el.offsetHeight || el.clientHeight;
-    const width = el.offsetWidth || el.clientWidth;
+    const top = eo.top * zoom + frmTop - cvsOff.top;
+    const left = eo.left * zoom + frmLeft - cvsOff.left;
+    const height = eo.height * zoom;
+    const width = eo.width * zoom;
 
-    return { top, left, height, width };
+    return { top, left, height, width, zoom, rect: eo };
+  },
+
+  /**
+   * Returns element's offsets like margins and paddings
+   * @param {HTMLElement} el
+   * @return {Object}
+   * @private
+   */
+  getElementOffsets(el) {
+    if (!el || isTextNode(el)) return {};
+    const result = {};
+    const styles = window.getComputedStyle(el);
+    [
+      'marginTop',
+      'marginRight',
+      'marginBottom',
+      'marginLeft',
+      'paddingTop',
+      'paddingRight',
+      'paddingBottom',
+      'paddingLeft'
+    ].forEach(offset => {
+      result[offset] = parseFloat(styles[offset]) * this.getZoom();
+    });
+
+    return result;
   },
 
   /**
@@ -284,15 +256,20 @@ module.exports = Backbone.View.extend({
    * @return {Object} obj Position object
    * @private
    */
-  getPosition() {
+  getPosition(opts = {}) {
     const doc = this.frame.el.contentDocument;
     if (!doc) return;
     const bEl = doc.body;
+    const zoom = this.getZoom();
     const fo = this.getFrameOffset();
     const co = this.getCanvasOffset();
+    const { noScroll } = opts;
+
     return {
-      top: fo.top + bEl.scrollTop - co.top,
-      left: fo.left + bEl.scrollLeft - co.left
+      top: fo.top + (noScroll ? 0 : bEl.scrollTop) * zoom - co.top,
+      left: fo.left + (noScroll ? 0 : bEl.scrollLeft) * zoom - co.left,
+      width: co.width,
+      height: co.height
     };
   },
 
@@ -302,17 +279,18 @@ module.exports = Backbone.View.extend({
    * @private
    */
   updateScript(view) {
+    const model = view.model;
+    const id = model.getId();
+
     if (!view.scriptContainer) {
-      view.scriptContainer = $('<div>');
+      view.scriptContainer = $(`<div data-id="${id}">`);
       this.getJsContainer().appendChild(view.scriptContainer.get(0));
     }
 
-    const model = view.model;
-    const id = model.getId();
     view.el.id = id;
     view.scriptContainer.html('');
     // In editor, I make use of setTimeout as during the append process of elements
-    // those will not be available immediatly, therefore 'item' variable
+    // those will not be available immediately, therefore 'item' variable
     const script = document.createElement('script');
     script.innerHTML = `
         setTimeout(function() {
@@ -331,34 +309,42 @@ module.exports = Backbone.View.extend({
    * Get javascript container
    * @private
    */
-  getJsContainer() {
-    if (!this.jsContainer) {
-      this.jsContainer = $(`<div class="${this.ppfx}js-cont">`).get(0);
-    }
-    return this.jsContainer;
+  getJsContainer(view) {
+    const frameView = this.getFrameView(view);
+    return frameView && frameView.getJsContainer();
+  },
+
+  getFrameView(view) {
+    return (view && view._getFrame()) || this.em.get('currentFrame');
   },
 
   render() {
-    this.wrapper = this.model.get('wrapper');
+    const { el, $el, ppfx, model, em, frames } = this;
+    const cssc = em.get('CssComposer');
+    const wrapper = model.get('wrapper');
+    $el.html(this.template());
+    const $frames = $el.find('[data-frames]');
+    this.framesArea = $frames.get(0);
+    this.wrapper = wrapper;
 
-    if (this.wrapper && typeof this.wrapper.render == 'function') {
-      this.model.get('frame').set('wrapper', this.wrapper);
-      this.$el.append(this.frame.render().el);
-      var frame = this.frame;
-      if (this.config.scripts.length === 0) {
-        frame.el.onload = this.renderBody;
-      } else {
-        this.renderScripts(); // will call renderBody later
-      }
+    if (wrapper && typeof wrapper.render == 'function') {
+      model.get('frame').set({
+        wrapper,
+        root: wrapper.getWrapper(),
+        styles: cssc.getAll()
+      });
     }
-    var ppfx = this.ppfx;
-    this.$el.append(`
-      <div id="${ppfx}tools" style="pointer-events:none">
-        <div class="${ppfx}highlighter"></div>
-        <div class="${ppfx}badge"></div>
+
+    const toolsWrp = $el.find('[data-tools]');
+    this.toolsWrapper = toolsWrp.get(0);
+    toolsWrp.append(`
+      <div class="${ppfx}tools ${ppfx}tools-gl" style="pointer-events:none">
         <div class="${ppfx}placeholder">
           <div class="${ppfx}placeholder-int"></div>
         </div>
+      </div>
+      <div id="${ppfx}tools" style="pointer-events:none">
+        <div class="${ppfx}badge"></div>
         <div class="${ppfx}ghost"></div>
         <div class="${ppfx}toolbar" style="pointer-events:all"></div>
         <div class="${ppfx}resizer"></div>
@@ -366,7 +352,6 @@ module.exports = Backbone.View.extend({
         <div class="${ppfx}offset-fixed-v"></div>
       </div>
     `);
-    const el = this.el;
     const toolsEl = el.querySelector(`#${ppfx}tools`);
     this.hlEl = el.querySelector(`.${ppfx}highlighter`);
     this.badgeEl = el.querySelector(`.${ppfx}badge`);
@@ -376,8 +361,18 @@ module.exports = Backbone.View.extend({
     this.resizerEl = el.querySelector(`.${ppfx}resizer`);
     this.offsetEl = el.querySelector(`.${ppfx}offset-v`);
     this.fixedOffsetEl = el.querySelector(`.${ppfx}offset-fixed-v`);
+    this.toolsGlobEl = el.querySelector(`.${ppfx}tools-gl`);
     this.toolsEl = toolsEl;
     this.el.className = this.className;
+
+    // Render all frames
+    const frms = model.get('frames');
+    frms.listenToLoad();
+    frames.render();
+    em.setCurrentFrame(frms.at(0).view);
+    $frames.append(frames.el);
+    this.frame = frms.at(0).view;
+
     return this;
   }
 });

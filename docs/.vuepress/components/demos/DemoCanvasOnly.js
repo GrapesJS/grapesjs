@@ -8,7 +8,7 @@ const editor = grapesjs.init({
   height: '300px',
   width: 'auto',
   // Disable the storage manager for the moment
-  storageManager: { type: null },
+  storageManager: false,
   // Avoid any default panel
   panels: { defaults: [] },
 });

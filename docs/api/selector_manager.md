@@ -2,7 +2,7 @@
 
 ## SelectorManager
 
-Selectors in GrapesJS are used in CSS Composer inside Rules and in Components as classes. To get better this concept let's take
+Selectors in GrapesJS are used in CSS Composer inside Rules and in Components as classes. To illustrate this concept let's take
 a look at this code:
 
 ```css
@@ -46,12 +46,36 @@ const selectorManager = editor.SelectorManager;
 -   [addClass][4]
 -   [get][5]
 -   [getAll][6]
+-   [setState][7]
+-   [getState][8]
 
 ## getConfig
 
 Get configuration object
 
-Returns **[Object][7]** 
+Returns **[Object][9]** 
+
+## setState
+
+Change the selector state
+
+### Parameters
+
+-   `value` **[String][10]** State value
+
+### Examples
+
+```javascript
+selectorManager.setState('hover');
+```
+
+Returns **this** 
+
+## getState
+
+Get the current selector state
+
+Returns **[String][10]** 
 
 ## add
 
@@ -59,23 +83,25 @@ Add a new selector to collection if it's not already exists. Class type is a def
 
 ### Parameters
 
--   `name` **[String][8]** Selector name
--   `opts` **[Object][7]** Selector options (optional, default `{}`)
-    -   `opts.label` **[String][8]** Label for the selector, if it's not provided the label will be the same as the name (optional, default `''`)
-    -   `opts.type` **[String][8]** Type of the selector. At the moment, only 'class' (1) is available (optional, default `1`)
+-   `name` **([String][10] \| [Array][11])** Selector/s name
+-   `opts` **[Object][9]** Selector options (optional, default `{}`)
+    -   `opts.label` **[String][10]** Label for the selector, if it's not provided the label will be the same as the name (optional, default `''`)
+    -   `opts.type` **[String][10]** Type of the selector. At the moment, only 'class' (1) is available (optional, default `1`)
 
 ### Examples
 
 ```javascript
-var selector = selectorManager.add('selectorName');
+const selector = selectorManager.add('selectorName');
 // Same as
-var selector = selectorManager.add('selectorName', {
+const selector = selectorManager.add('selectorName', {
   type: 1,
   label: 'selectorName'
 });
+// Multiple selectors
+const selectors = selectorManager.add(['.class1', '.class2', '#id1']);
 ```
 
-Returns **Model** 
+Returns **(Model | [Array][11])** 
 
 ## addClass
 
@@ -83,7 +109,7 @@ Add class selectors
 
 ### Parameters
 
--   `classes` **([Array][9] \| [string][8])** Array or string of classes
+-   `classes` **([Array][11] \| [string][10])** Array or string of classes
 
 ### Examples
 
@@ -94,7 +120,7 @@ sm.addClass(['class1', 'class2']);
 // -> [SelectorObject, ...]
 ```
 
-Returns **[Array][9]** Array of added selectors
+Returns **[Array][11]** Array of added selectors
 
 ## get
 
@@ -102,23 +128,34 @@ Get the selector by its name
 
 ### Parameters
 
--   `name` **[String][8]** Selector name
--   `type`   (optional, default `Selector.TYPE_CLASS`)
--   `tyoe` **[String][8]** Selector type
+-   `name` **([String][10] \| [Array][11])** Selector name
+-   `type` **[String][10]** Selector type
 
 ### Examples
 
 ```javascript
-var selector = selectorManager.get('selectorName');
+const selector = selectorManager.get('selectorName');
+// or get an array
+const selectors = selectorManager.get(['class1', 'class2']);
 ```
 
-Returns **(Model | null)** 
+Returns **(Model | [Array][11])** 
 
 ## getAll
 
 Get all selectors
 
 Returns **Collection** 
+
+## escapeName
+
+Return escaped selector name
+
+### Parameters
+
+-   `name` **[String][10]** Selector name to escape
+
+Returns **[String][10]** Escaped name
 
 [1]: https://github.com/artf/grapesjs/blob/master/src/selector_manager/config/config.js
 
@@ -130,10 +167,14 @@ Returns **Collection**
 
 [5]: #get
 
-[6]: #getAll
+[6]: #getall
 
-[7]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[7]: #setstate
 
-[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[8]: #getstate
 
-[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+
+[10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+
+[11]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array

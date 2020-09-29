@@ -1,9 +1,9 @@
-import _ from 'underscore';
 import Backbone from 'backbone';
-var PropertiesView = require('./PropertiesView');
+import { template } from 'underscore';
+import PropertiesView from './PropertiesView';
 
-module.exports = Backbone.View.extend({
-  template: _.template(`
+export default Backbone.View.extend({
+  template: template(`
   <div class="<%= pfx %>title" data-sector-title>
     <i id="<%= pfx %>caret" class="fa"></i>
     <%= label %>
@@ -15,6 +15,7 @@ module.exports = Backbone.View.extend({
 
   initialize(o) {
     this.config = o.config || {};
+    this.em = this.config.em;
     this.pfx = this.config.stylePrefix || '';
     this.target = o.target || {};
     this.propTarget = o.propTarget || {};
@@ -78,15 +79,13 @@ module.exports = Backbone.View.extend({
   },
 
   render() {
-    this.$el.html(
-      this.template({
-        pfx: this.pfx,
-        label: this.model.get('name')
-      })
-    );
-    this.$caret = this.$el.find('#' + this.pfx + 'caret');
+    const { pfx, model, em, $el } = this;
+    const { id, name } = model.attributes;
+    const label = (em && em.t(`styleManager.sectors.${id}`)) || name;
+    $el.html(this.template({ pfx, label }));
+    this.$caret = $el.find(`#${pfx}caret`);
     this.renderProperties();
-    this.$el.attr('class', this.pfx + 'sector no-select');
+    $el.attr('class', `${pfx}sector ${pfx}sector__${id} no-select`);
     this.updateOpen();
     return this;
   },

@@ -1,4 +1,6 @@
-module.exports = require('./CssRuleView').extend({
+import CssRuleView from './CssRuleView';
+
+export default CssRuleView.extend({
   _createElement: function(tagName) {
     return document.createTextNode('');
   },

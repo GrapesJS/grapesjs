@@ -1,11 +1,10 @@
-var TraitView = require('./TraitView');
-var InputNumber = require('domain_abstract/ui/InputNumber');
+import TraitView from './TraitView';
+import InputNumber from 'domain_abstract/ui/InputNumber';
 
-module.exports = TraitView.extend({
+export default TraitView.extend({
   getValueForTarget() {
-    var model = this.model;
-    var value = model.get('value');
-    var unit = model.get('unit');
+    const { model } = this;
+    const { value, unit } = model.attributes;
     return value ? value + unit : '';
   },
 
@@ -15,7 +14,7 @@ module.exports = TraitView.extend({
    * @private
    */
   getInputEl() {
-    if (!this.$input) {
+    if (!this.input) {
       var value = this.getModelValue();
       var inputNumber = new InputNumber({
         contClass: this.ppfx + 'field-int',
@@ -27,19 +26,8 @@ module.exports = TraitView.extend({
       this.$unit = this.input.unitEl;
       this.model.set('value', value);
       this.$input.val(value);
+      this.input = inputNumber.el;
     }
-    return this.$input.get(0);
-  },
-
-  /**
-   * Renders input
-   * @private
-   * */
-  renderField() {
-    if (!this.$input) {
-      this.$el.append(this.tmpl);
-      this.getInputEl();
-      this.$el.find('.' + this.inputhClass).prepend(this.input.el);
-    }
+    return this.input;
   }
 });

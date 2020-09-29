@@ -28,16 +28,19 @@ Add new device to the collection. URLs are supposed to be unique
 
 ### Parameters
 
--   `name` **[string][5]** Device name
--   `width` **[string][5]** Width of the device
--   `opts` **[Object][6]** Custom options
+-   `id` **[String][5]** Device id
+-   `width` **[String][5]** Width of the device
+-   `opts` **[Object][6]?** Custom options (optional, default `{}`)
 
 ### Examples
 
 ```javascript
-deviceManager.add('Tablet', '900px');
-deviceManager.add('Tablet2', '900px', {
+deviceManager.add('tablet', '900px');
+deviceManager.add('tablet2', '900px', {
  height: '300px',
+ // At first, GrapesJS tries to localize the name by device id.
+ // In case is not found, the `name` property is used (or `id` if name is missing)
+ name: 'Tablet 2',
  widthMedia: '810px', // the width that will be used for the CSS media
 });
 ```

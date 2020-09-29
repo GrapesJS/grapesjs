@@ -1,10 +1,11 @@
-import { bindAll, isUndefined } from 'underscore';
+import Backbone from 'backbone';
+import { bindAll, isUndefined, indexOf } from 'underscore';
 import { on, off } from 'utils/mixins';
-const Input = require('./Input');
-const Backbone = require('backbone');
+import Input from './Input';
+
 const $ = Backbone.$;
 
-module.exports = Input.extend({
+export default Input.extend({
   events: {
     'change input': 'handleChange',
     'change select': 'handleUnitChange',
@@ -131,7 +132,7 @@ module.exports = Input.extend({
   upArrowClick() {
     const model = this.model;
     const step = model.get('step');
-    let value = parseInt(model.get('value'), 10);
+    let value = parseFloat(model.get('value'));
     value = this.normalizeValue(value + step);
     var valid = this.validateInputValue(value);
     model.set('value', valid.value);
@@ -144,7 +145,7 @@ module.exports = Input.extend({
   downArrowClick() {
     const model = this.model;
     const step = model.get('step');
-    const value = parseInt(model.get('value'), 10);
+    const value = parseFloat(model.get('value'));
     const val = this.normalizeValue(value - step);
     var valid = this.validateInputValue(val);
     model.set('value', valid.value);
@@ -252,7 +253,7 @@ module.exports = Input.extend({
           val = !isNaN(val) ? val : defValue;
           var uN = valCopy.replace(val, '');
           // Check if exists as unit
-          if (_.indexOf(units, uN) >= 0) unit = uN;
+          if (indexOf(units, uN) >= 0) unit = uN;
         }
       }
     }
@@ -269,6 +270,7 @@ module.exports = Input.extend({
 
   render() {
     Input.prototype.render.call(this);
+    this.unitEl = null;
     const unit = this.getUnitEl();
     unit &&
       this.$el

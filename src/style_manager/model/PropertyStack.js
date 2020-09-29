@@ -1,25 +1,89 @@
-const Property = require('./PropertyComposite');
-const Layers = require('./Layers');
+import { keys } from 'underscore';
+import Property from './PropertyComposite';
+import Layers from './Layers';
 
-module.exports = Property.extend({
+export default Property.extend({
   defaults: {
     ...Property.prototype.defaults,
     // Array of layers (which contain properties)
     layers: [],
 
+    // The separator used to join layer values
+    layerSeparator: ', ',
+
+    // Prepend new layers in the list
+    prepend: 0,
+
     // Layer preview
     preview: 0
   },
 
-  init() {
-    Property.prototype.init.apply(this, arguments);
+  initialize(props = {}, opts = {}) {
+    Property.callParentInit(Property, this, props, opts);
     const layers = this.get('layers');
     const layersColl = new Layers(layers);
+    layersColl.property = this;
     layersColl.properties = this.get('properties');
     this.set('layers', layersColl);
+    Property.callInit(this, props, opts);
+  },
+
+  getLayers() {
+    return this.get('layers');
+  },
+
+  getCurrentLayer() {
+    return this.getLayers().filter(layer => layer.get('active'))[0];
   },
 
   getFullValue() {
     return this.get('detached') ? '' : this.get('layers').getFullValue();
+  },
+
+  getValueFromStyle(styles = {}) {
+    const layers = this.getLayers().getLayersFromStyle(styles);
+    return new Layers(layers).getFullValue();
+  },
+
+  clearValue() {
+    this.getLayers().reset();
+    return Property.prototype.clearValue.apply(this, arguments);
+  },
+
+  getValueFromTarget(target) {
+    const { detached, property, properties } = this.attributes;
+    const style = target.getStyle();
+    const validStyles = {};
+
+    properties.forEach(prop => {
+      const name = prop.get('property');
+      const value = style[name];
+      if (value) validStyles[name] = value;
+    });
+
+    return !detached
+      ? style[property]
+      : keys(validStyles).length
+      ? validStyles
+      : '';
+  },
+
+  /**
+   * This method allows to customize layers returned from the target
+   * @param  {Object} target
+   * @return {Array} Should return an array of layers
+   * @example
+   * // return example
+   * [
+   *  {
+   *    properties: [
+   *      { property: 'width', ... }
+   *      { property: 'height', ... }
+   *    ]
+   *  }
+   * ]
+   */
+  getLayersFromTarget(target) {
+    return;
   }
 });

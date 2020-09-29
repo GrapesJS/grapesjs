@@ -2,27 +2,11 @@
 </template>
 
 <script>
-module.exports = {
+import utils from './demos/utils.js';
+
+export default {
   mounted() {
-    /*
-    import('./demos/DemoCanvasOnly.js').then(res => {
-      console.log('import res', res);
-    });
-    */
-    const editor = grapesjs.init({
-      // Indicate where to init the editor. It's also possible to pass an HTMLElement
-      container: '#gjs',
-      // Get the content for the canvas direectly from the element
-      // As an alternative we could use: `components: '<h1>Hello World Component!</h1>'`,
-      fromElement: true,
-      // Size of the editor
-      height: '300px',
-      width: 'auto',
-      // Disable the storage manager for the moment
-      storageManager: { type: null },
-      // Avoid any default panel
-      panels: { defaults: [] },
-    });
+    const editor = grapesjs.init(utils.gjsConfigStart);
   }
 }
 </script>

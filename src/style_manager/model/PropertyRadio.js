@@ -1,10 +1,11 @@
-const Property = require('./Property');
+import Property from './Property';
 
-module.exports = Property.extend({
+export default Property.extend({
   defaults: () => ({
     ...Property.prototype.defaults,
     // Array of options, eg. [{name: 'Label ', value: '100'}]
-    options: []
+    options: [],
+    full: 1
   }),
 
   initialize(...args) {

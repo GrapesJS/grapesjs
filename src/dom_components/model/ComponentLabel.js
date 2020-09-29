@@ -1,6 +1,6 @@
 import Component from './ComponentText';
 
-module.exports = Component.extend(
+export default Component.extend(
   {
     defaults: {
       ...Component.prototype.defaults,

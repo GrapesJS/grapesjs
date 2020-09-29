@@ -3,6 +3,7 @@ import { shallowDiff } from 'utils/mixins';
 import ParserHtml from 'parser/model/ParserHtml';
 
 const parseStyle = ParserHtml().parseStyle;
+
 export default {
   parseStyle,
 
@@ -21,7 +22,8 @@ export default {
    * @return {Object}
    */
   getStyle() {
-    return { ...this.get('style') };
+    const style = this.get('style') || {};
+    return { ...style };
   },
 
   /**
@@ -95,9 +97,20 @@ export default {
       const imp = opts.important;
       const important = isArray(imp) ? imp.indexOf(prop) >= 0 : imp;
       const value = `${style[prop]}${important ? ' !important' : ''}`;
-      value && result.push(`${prop}:${value};`);
+      const propPrv = prop.substr(0, 2) == '__';
+      value && !propPrv && result.push(`${prop}:${value};`);
     }
 
     return result.join('');
+  },
+
+  getSelectors() {
+    return this.get('selectors') || this.get('classes');
+  },
+
+  getSelectorsString() {
+    return this.selectorsToString
+      ? this.selectorsToString()
+      : this.getSelectors().getFullString();
   }
 };

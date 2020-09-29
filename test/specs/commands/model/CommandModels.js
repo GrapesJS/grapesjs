@@ -1,38 +1,34 @@
-const Command = require('commands/model/Command');
-const Commands = require('commands');
+import Command from 'commands/model/Command';
+import Commands from 'commands';
 
-module.exports = {
-  run() {
-    describe('Command', () => {
-      let obj;
+describe('Command', () => {
+  let obj;
 
-      beforeEach(() => {
-        obj = new Command();
-      });
+  beforeEach(() => {
+    obj = new Command();
+  });
 
-      afterEach(() => {
-        obj = null;
-      });
+  afterEach(() => {
+    obj = null;
+  });
 
-      test('Has id property', () => {
-        expect(obj.has('id')).toEqual(true);
-      });
-    });
+  test('Has id property', () => {
+    expect(obj.has('id')).toEqual(true);
+  });
+});
 
-    describe('Commands', () => {
-      var obj;
+describe('Commands', () => {
+  var obj;
 
-      beforeEach(() => {
-        obj = new Commands();
-      });
+  beforeEach(() => {
+    obj = new Commands();
+  });
 
-      afterEach(() => {
-        obj = null;
-      });
+  afterEach(() => {
+    obj = null;
+  });
 
-      test('Object is ok', () => {
-        expect(obj).toBeTruthy();
-      });
-    });
-  }
-};
+  test('Object is ok', () => {
+    expect(obj).toBeTruthy();
+  });
+});

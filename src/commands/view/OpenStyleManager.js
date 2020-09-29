@@ -1,8 +1,7 @@
 import Backbone from 'backbone';
-const StyleManager = require('style_manager');
 const $ = Backbone.$;
 
-module.exports = {
+export default {
   run(em, sender) {
     this.sender = sender;
     if (!this.$cn) {
@@ -26,13 +25,12 @@ module.exports = {
       // Class Manager container
       var clm = em.SelectorManager;
       if (clm) this.$cn2.append(clm.render([]));
-
       this.$cn2.append(em.StyleManager.render());
       var smConfig = em.StyleManager.getConfig();
       const pfx = smConfig.stylePrefix;
       // Create header
       this.$header = $(
-        `<div class="${pfx}header">${smConfig.textNoElement}</div>`
+        `<div class="${pfx}header">${em.t('styleManager.empty')}</div>`
       );
       this.$cn.append(this.$header);
 
@@ -57,8 +55,10 @@ module.exports = {
   toggleSm() {
     const { target, sender } = this;
     if (sender && sender.get && !sender.get('active')) return;
+    const { componentFirst } = target.get('SelectorManager').getConfig();
+    const selectedAll = target.getSelectedAll().length;
 
-    if (target.getSelectedAll().length === 1) {
+    if (selectedAll === 1 || (selectedAll > 1 && componentFirst)) {
       this.$cn2.show();
       this.$header.hide();
     } else {

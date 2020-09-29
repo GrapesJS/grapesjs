@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   run(editor, sender) {
     const bm = editor.BlockManager;
     const pn = editor.Panels;

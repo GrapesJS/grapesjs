@@ -1,4 +1,4 @@
-var Backbone = require('backbone');
+import Backbone from 'backbone';
 
 const TYPE_CLASS = 1;
 const TYPE_ID = 2;
@@ -26,7 +26,8 @@ const Selector = Backbone.Model.extend(
       protected: false
     },
 
-    initialize() {
+    initialize(props, opts = {}) {
+      const { config = {} } = opts;
       const name = this.get('name');
       const label = this.get('label');
 
@@ -36,14 +37,21 @@ const Selector = Backbone.Model.extend(
         this.set('label', name);
       }
 
-      this.set('name', Selector.escapeName(this.get('name')));
+      const namePreEsc = this.get('name');
+      const { escapeName } = config;
+      const nameEsc = escapeName
+        ? escapeName(namePreEsc)
+        : Selector.escapeName(namePreEsc);
+      this.set('name', nameEsc);
     },
 
     /**
      * Get full selector name
      * @return {string}
      */
-    getFullName() {
+    getFullName(opts = {}) {
+      const { escape } = opts;
+      const name = this.get('name');
       let init = '';
 
       switch (this.get('type')) {
@@ -55,7 +63,7 @@ const Selector = Backbone.Model.extend(
           break;
       }
 
-      return init + this.get('name');
+      return init + (escape ? escape(name) : name);
     }
   },
   {
@@ -72,9 +80,9 @@ const Selector = Backbone.Model.extend(
      * @private
      */
     escapeName(name) {
-      return `${name}`.trim().replace(/([^a-z0-9\w-]+)/gi, '-');
+      return `${name}`.trim().replace(/([^a-z0-9\w-\:]+)/gi, '-');
     }
   }
 );
 
-module.exports = Selector;
+export default Selector;

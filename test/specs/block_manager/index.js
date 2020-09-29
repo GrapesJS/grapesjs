@@ -1,5 +1,5 @@
-var BlockManager = require('block_manager');
-var BlocksView = require('./view/BlocksView');
+import BlockManager from 'block_manager';
+import BlocksView from './view/BlocksView';
 
 describe('BlockManager', () => {
   describe('Main', () => {
@@ -14,6 +14,7 @@ describe('BlockManager', () => {
         content: '<h1>Test</h1>'
       };
       obj = new BlockManager().init();
+      obj.postRender();
       obj.render();
     });
 
@@ -67,6 +68,4 @@ describe('BlockManager', () => {
       expect(obj.getContainer()).toBeTruthy();
     });
   });
-
-  BlocksView.run();
 });

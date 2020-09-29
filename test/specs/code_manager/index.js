@@ -1,5 +1,5 @@
-var CodeManager = require('code_manager');
-var Models = require('./model/CodeModels');
+import CodeManager from 'code_manager';
+import Models from './model/CodeModels';
 
 describe('Code Manager', () => {
   describe('Main', () => {
@@ -35,6 +35,4 @@ describe('Code Manager', () => {
       expect(obj.getViewer('test')).toEqual('view');
     });
   });
-
-  Models.run();
 });

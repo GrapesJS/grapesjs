@@ -1,24 +1,28 @@
 import Backbone from 'backbone';
 import { isUndefined } from 'underscore';
 
-module.exports = Backbone.View.extend({
+export default Backbone.View.extend({
   initialize(o) {
     this.opts = o || {};
     this.config = o.config || {};
+    this.em = this.config.em;
     const coll = this.collection;
     this.listenTo(coll, 'add', this.addTo);
     this.listenTo(coll, 'reset', this.resetChildren);
     this.listenTo(coll, 'remove', this.removeChildren);
   },
 
-  removeChildren(removed) {
-    const em = this.config.em;
-    const view = removed.view;
-    if (!view) return;
-    view.remove.apply(view);
-    const children = view.childrenView;
-    children && children.stopListening();
-    em && em.trigger('component:remove', removed);
+  removeChildren(removed, coll, opts = {}) {
+    removed.views.forEach(view => {
+      if (!view) return;
+      const { childrenView, scriptContainer } = view;
+      childrenView && childrenView.stopListening();
+      scriptContainer && scriptContainer.remove();
+      view.remove.apply(view);
+    });
+
+    const inner = removed.components();
+    inner.forEach(it => this.removeChildren(it, coll, opts));
   },
 
   /**
@@ -34,7 +38,11 @@ module.exports = Backbone.View.extend({
     this.addToCollection(model, null, i);
 
     if (em && !opts.temporary) {
-      em.trigger('component:add', model);
+      const triggerAdd = model => {
+        em.trigger('component:add', model);
+        model.components().forEach(comp => triggerAdd(comp));
+      };
+      triggerAdd(model);
     }
   },
 
@@ -48,31 +56,38 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   addToCollection(model, fragmentEl, index) {
-    if (!this.compView) this.compView = require('./ComponentView');
-    var fragment = fragmentEl || null,
-      viewObject = this.compView;
+    if (!this.compView) this.compView = require('./ComponentView').default;
+    const { config, opts, em } = this;
+    const fragment = fragmentEl || null;
+    const { frameView = {} } = config;
+    const sameFrameView = frameView.model && model.getView(frameView.model);
+    const dt =
+      opts.componentTypes || (em && em.get('DomComponents').getTypes());
+    const type = model.get('type');
+    let viewObject = this.compView;
 
-    var dt = this.opts.componentTypes;
-
-    var type = model.get('type');
-
-    for (var it = 0; it < dt.length; it++) {
-      var dtId = dt[it].id;
-      if (dtId == type) {
+    for (let it = 0; it < dt.length; it++) {
+      if (dt[it].id == type) {
         viewObject = dt[it].view;
         break;
       }
     }
-    //viewObject = dt[type] ? dt[type].view : dt.default.view;
+    const view =
+      sameFrameView ||
+      new viewObject({
+        model,
+        config,
+        componentTypes: dt
+      });
+    let rendered;
 
-    var view = new viewObject({
-      model,
-      config: this.config,
-      componentTypes: dt
-    });
-    var rendered = view.render().el;
-    if (view.model.get('type') == 'textnode')
-      rendered = document.createTextNode(view.model.get('content'));
+    try {
+      // Avoid breaking on DOM rendering (eg. invalid attribute name)
+      rendered = view.render().el;
+    } catch (error) {
+      rendered = document.createTextNode('');
+      em.logError(error);
+    }
 
     if (fragment) {
       fragment.appendChild(rendered);
@@ -103,9 +118,10 @@ module.exports = Backbone.View.extend({
     return rendered;
   },
 
-  resetChildren() {
+  resetChildren(models, { previousModels = [] } = {}) {
     this.parentEl.innerHTML = '';
-    this.collection.each(model => this.addToCollection(model));
+    previousModels.forEach(md => this.removeChildren(md, this.collection));
+    models.each(model => this.addToCollection(model));
   },
 
   render(parent) {

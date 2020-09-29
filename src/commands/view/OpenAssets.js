@@ -1,10 +1,10 @@
-module.exports = {
+export default {
   run(editor, sender, opts = {}) {
     const modal = editor.Modal;
     const am = editor.AssetManager;
     const config = am.getConfig();
     const amContainer = am.getContainer();
-    const title = opts.modalTitle || config.modalTitle || '';
+    const title = opts.modalTitle || editor.t('assetManager.modalTitle') || '';
     const types = opts.types;
     const accept = opts.accept;
 
@@ -14,9 +14,9 @@ module.exports = {
     am.onSelect(opts.onSelect);
 
     if (!this.rendered || types) {
-      let assets = am.getAll();
+      let assets = am.getAll().filter(i => 1);
 
-      if (types) {
+      if (types && types.length) {
         assets = assets.filter(a => types.indexOf(a.get('type')) !== -1);
       }
 
@@ -31,8 +31,18 @@ module.exports = {
       uploadEl && uploadEl.setAttribute('accept', accept);
     }
 
-    modal.setTitle(title);
-    modal.setContent(amContainer);
-    modal.open();
+    modal
+      .open({
+        title,
+        content: amContainer
+      })
+      .getModel()
+      .once('change:open', () => editor.stopCommand(this.id));
+    return this;
+  },
+
+  stop(editor) {
+    editor.Modal.close();
+    return this;
   }
 };

@@ -1,14 +1,16 @@
-var TraitView = require('./TraitView');
-var InputColor = require('domain_abstract/ui/InputColor');
+import TraitView from './TraitView';
+import InputColor from 'domain_abstract/ui/InputColor';
 
-module.exports = TraitView.extend({
+export default TraitView.extend({
+  templateInput: '',
+
   /**
    * Returns input element
    * @return {HTMLElement}
    * @private
    */
   getInputEl() {
-    if (!this.$input) {
+    if (!this.input) {
       const model = this.model;
       const value = this.getModelValue();
       const inputColor = new InputColor({
@@ -18,22 +20,10 @@ module.exports = TraitView.extend({
         ppfx: this.ppfx
       });
       const input = inputColor.render();
-      this.$input = input.colorEl;
       input.setValue(value, { fromTarget: 1 });
-      this.input = input;
+      this.input = input.el;
     }
 
-    return this.$input.get(0);
-  },
-
-  /**
-   * Renders input
-   * @private
-   * */
-  renderField() {
-    if (!this.$input) {
-      this.getInputEl();
-      this.$el.append(this.input.el);
-    }
+    return this.input;
   }
 });

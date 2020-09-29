@@ -25,7 +25,6 @@
  * * [removeProperty](#removeproperty)
  * * [getProperties](#getproperties)
  * * [getModelToStyle](#getmodeltostyle)
- * * [getModelToStyle](#getmodeltostyle)
  * * [addType](#addtype)
  * * [getType](#gettype)
  * * [getTypes](#gettypes)
@@ -35,17 +34,20 @@
  */
 
 import { isElement } from 'underscore';
+import defaults from './config/config';
+import Sectors from './model/Sectors';
+import Properties from './model/Properties';
+import PropertyFactory from './model/PropertyFactory';
+import SectorsView from './view/SectorsView';
 
-module.exports = () => {
-  var c = {},
-    defaults = require('./config/config'),
-    Sectors = require('./model/Sectors'),
-    Properties = require('./model/Properties'),
-    SectorsView = require('./view/SectorsView');
+export default () => {
+  var c = {};
   let properties;
   var sectors, SectView;
 
   return {
+    PropertyFactory: PropertyFactory(),
+
     /**
      * Name of the module
      * @type {String}
@@ -67,22 +69,24 @@ module.exports = () => {
      * @private
      */
     init(config) {
-      c = config || {};
-      for (var name in defaults) {
-        if (!(name in c)) c[name] = defaults[name];
-      }
-
-      var ppfx = c.pStylePrefix;
+      c = { ...defaults, ...config };
+      const ppfx = c.pStylePrefix;
+      this.em = c.em;
       if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
-
       properties = new Properties();
-      sectors = new Sectors(c.sectors, c);
+      sectors = new Sectors([], c);
       SectView = new SectorsView({
         collection: sectors,
         target: c.em,
         config: c
       });
+
       return this;
+    },
+
+    onLoad() {
+      // Use silent as sectors' view will be created and rendered on StyleManager.render
+      sectors.add(c.sectors, { silent: true });
     },
 
     postRender() {
@@ -102,20 +106,24 @@ module.exports = () => {
      * @param  {string} [sector.name='']  Sector's label
      * @param  {Boolean} [sector.open=true] Indicates if the sector should be opened
      * @param  {Array<Object>} [sector.properties=[]] Array of properties
+     * @param  {Object} [options={}] Options
      * @return {Sector} Added Sector
      * @example
      * var sector = styleManager.addSector('mySector',{
      *   name: 'My sector',
      *   open: true,
      *   properties: [{ name: 'My property'}]
-     * });
+     * }, { at: 0 });
+     * // With `at: 0` we place the new sector at the beginning of the collection
      * */
-    addSector(id, sector) {
-      var result = this.getSector(id);
+    addSector(id, sector, opts = {}) {
+      let result = this.getSector(id);
+
       if (!result) {
         sector.id = id;
-        result = sectors.add(sector);
+        result = sectors.add(sector, opts);
       }
+
       return result;
     },
 
@@ -126,9 +134,10 @@ module.exports = () => {
      * @example
      * var sector = styleManager.getSector('mySector');
      * */
-    getSector(id) {
-      var res = sectors.where({ id });
-      return res.length ? res[0] : null;
+    getSector(id, opts = {}) {
+      const res = sectors.where({ id })[0];
+      !res && opts.warn && this._logNoSector(id);
+      return res;
     },
 
     /**
@@ -139,7 +148,7 @@ module.exports = () => {
      * const removed = styleManager.removeSector('mySector');
      */
     removeSector(id) {
-      return this.getSectors().remove(this.getSector(id));
+      return this.getSectors().remove(this.getSector(id, { warn: 1 }));
     },
 
     /**
@@ -169,6 +178,7 @@ module.exports = () => {
      * @param {Array<Object>} [property.properties=[]] Nested properties for composite and stack type
      * @param {Array<Object>} [property.layers=[]] Layers for stack properties
      * @param {Array<Object>} [property.list=[]] List of possible options for radio and select types
+     * @param  {Object} [options={}] Options
      * @return {Property|null} Added Property or `null` in case sector doesn't exist
      * @example
      * var property = styleManager.addProperty('mySector',{
@@ -183,13 +193,13 @@ module.exports = () => {
      *      value: '200px',
      *      name: '200',
      *    }],
-     * });
+     * }, { at: 0 });
+     * // With `at: 0` we place the new property at the beginning of the collection
      */
-    addProperty(sectorId, property) {
-      var prop = null;
-      var sector = this.getSector(sectorId);
-
-      if (sector) prop = sector.get('properties').add(property);
+    addProperty(sectorId, property, opts = {}) {
+      const sector = this.getSector(sectorId, { warn: 1 });
+      let prop = null;
+      if (sector) prop = sector.get('properties').add(property, opts);
 
       return prop;
     },
@@ -197,21 +207,24 @@ module.exports = () => {
     /**
      * Get property by its CSS name and sector id
      * @param  {string} sectorId Sector id
-     * @param  {string} name CSS property name, eg. 'min-height'
+     * @param  {string} name CSS property name (or id), eg. 'min-height'
      * @return {Property|null}
      * @example
      * var property = styleManager.getProperty('mySector','min-height');
      */
     getProperty(sectorId, name) {
-      var prop = null;
-      var sector = this.getSector(sectorId);
+      const sector = this.getSector(sectorId, { warn: 1 });
+      let prop;
 
       if (sector) {
-        prop = sector.get('properties').where({ property: name });
-        prop = prop.length == 1 ? prop[0] : prop;
+        prop = sector
+          .get('properties')
+          .filter(
+            prop => prop.get('property') === name || prop.get('id') === name
+          )[0];
       }
 
-      return prop;
+      return prop || null;
     },
 
     /**
@@ -235,9 +248,8 @@ module.exports = () => {
      * var properties = styleManager.getProperties('mySector');
      */
     getProperties(sectorId) {
-      var props = null;
-      var sector = this.getSector(sectorId);
-
+      let props = null;
+      const sector = this.getSector(sectorId, { warn: 1 });
       if (sector) props = sector.get('properties');
 
       return props;
@@ -251,8 +263,9 @@ module.exports = () => {
      * @param  {Model} model
      * @return {Model}
      */
-    getModelToStyle(model) {
+    getModelToStyle(model, options = {}) {
       const em = c.em;
+      const { skipAdd } = options;
       const classes = model.get('classes');
       const id = model.getId();
 
@@ -260,9 +273,12 @@ module.exports = () => {
         const config = em.getConfig();
         const um = em.get('UndoManager');
         const cssC = em.get('CssComposer');
-        const state = !config.devicePreviewMode ? model.get('state') : '';
+        const sm = em.get('SelectorManager');
+        const smConf = sm ? sm.getConfig() : {};
+        const state = !config.devicePreviewMode ? em.get('state') : '';
         const valid = classes.getStyleable();
         const hasClasses = valid.length;
+        const useClasses = !smConf.componentFirst || options.useClasses;
         const opts = { state };
         let rule;
 
@@ -272,18 +288,17 @@ module.exports = () => {
         // #268
         um.stop();
 
-        if (hasClasses) {
+        if (hasClasses && useClasses) {
           const deviceW = em.getCurrentMedia();
           rule = cssC.get(valid, state, deviceW);
 
-          if (!rule) {
+          if (!rule && !skipAdd) {
             rule = cssC.add(valid, state, deviceW);
-            rule.setStyle(model.getStyle());
-            model.setStyle({});
           }
         } else if (config.avoidInlineStyle) {
           rule = cssC.getIdRule(id, opts);
-          !rule && (rule = cssC.setIdRule(id, {}, opts));
+          !rule && !skipAdd && (rule = cssC.setIdRule(id, {}, opts));
+          if (model.is('wrapper')) rule.set('wrapper', 1);
         }
 
         rule && (model = rule);
@@ -301,15 +316,29 @@ module.exports = () => {
      *                            and `isType` function which recognize the type of the
      *                            passed entity
      *@example
-     * styleManager.addType('my-type', {
-     *  model: {},
-     *  view: {},
-     *  isType: (value) => {
-     *    if (value && value.type == 'my-type') {
-     *      return value;
+     * styleManager.addType('my-custom-prop', {
+     *    create({ props, change }) {
+     *      const el = document.createElement('div');
+     *      el.innerHTML = '<input type="range" class="my-input" min="10" max="50"/>';
+     *      const inputEl = el.querySelector('.my-input');
+     *      inputEl.addEventListener('change', event => change({ event })); // change will trigger the emit
+     *      inputEl.addEventListener('input', event => change({ event, complete: false }));
+     *      return el;
+     *    },
+     *    emit({ props, updateStyle }, { event, complete }) {
+     *      const { value } = event.target;
+     *      const valueRes = value + 'px';
+     *      // Pass a string value for the exact CSS property or an object containing multiple properties
+     *      // eg. updateStyle({ [props.property]: valueRes, color: 'red' });
+     *      updateStyle(valueRes, { complete });
+     *    },
+     *    update({ value, el }) {
+     *      el.querySelector('.my-input').value = parseInt(value, 10);
+     *    },
+     *    destroy() {
+     *      // In order to prevent memory leaks, use this method to clean, eventually, created instances, global event listeners, etc.
      *    }
-     *  },
-     * })
+     *})
      */
     addType(id, definition) {
       properties.addType(id, definition);
@@ -360,12 +389,31 @@ module.exports = () => {
     },
 
     /**
+     * Select different target for the Style Manager.
+     * It could be a Component, CSSRule, or a string of any CSS selector
+     * @param {Component|CSSRule|String} target
+     * @return {Styleable} A Component or CSSRule
+     */
+    setTarget(target, opts) {
+      return SectView.setTarget(target, opts);
+    },
+
+    getEmitter() {
+      return SectView.propTarget;
+    },
+
+    /**
      * Render sectors and properties
      * @return  {HTMLElement}
      * @private
      * */
     render() {
       return SectView.render().el;
+    },
+
+    _logNoSector(sectorId) {
+      const { em } = this;
+      em && em.logWarning(`'${sectorId}' sector not found`);
     }
   };
 };

@@ -1,6 +1,8 @@
-const ItemView = require('./ItemView');
+import Backbone from 'backbone';
+import ItemView from './ItemView';
+import { eventDrag } from 'dom_components/model/Component';
 
-module.exports = require('backbone').View.extend({
+export default Backbone.View.extend({
   initialize(o = {}) {
     this.opt = o;
     const config = o.config || {};
@@ -10,6 +12,7 @@ module.exports = require('backbone').View.extend({
     this.ppfx = config.pStylePrefix || '';
     this.pfx = config.stylePrefix || '';
     this.parent = o.parent;
+    this.parentView = o.parentView;
     const pfx = this.pfx;
     const ppfx = this.ppfx;
     const parent = this.parent;
@@ -27,9 +30,10 @@ module.exports = require('backbone').View.extend({
         containerSel: `.${this.className}`,
         itemSel: `.${pfx}layer`,
         ignoreViewChildren: 1,
-        onEndMove(created, sorter) {
+        onEndMove(created, sorter, data) {
           const srcModel = sorter.getSourceModel();
           em.setSelected(srcModel, { forceChange: 1 });
+          em.trigger(`${eventDrag}:end`, data);
         },
         avoidSelectOnEnd: 1,
         nested: 1,
@@ -48,7 +52,8 @@ module.exports = require('backbone').View.extend({
   removeChildren(removed) {
     const view = removed.viewLayer;
     if (!view) return;
-    view.remove.apply(view);
+    view.remove();
+    removed.viewLayer = 0;
   },
 
   /**
@@ -71,17 +76,14 @@ module.exports = require('backbone').View.extend({
    * @return Object Object created
    * */
   addToCollection(model, fragmentEl, index) {
-    const level = this.level;
+    const { level, parentView } = this;
     var fragment = fragmentEl || null;
     var viewObject = ItemView;
-
-    if (!this.isCountable(model, this.config.hideTextnode)) {
-      return;
-    }
 
     var view = new viewObject({
       level,
       model,
+      parentView,
       config: this.config,
       sorter: this.sorter,
       isCountable: this.isCountable,

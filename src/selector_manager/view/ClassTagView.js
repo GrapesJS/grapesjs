@@ -1,16 +1,17 @@
-const Selector = require('./../model/Selector');
+import Backbone from 'backbone';
+
 const inputProp = 'contentEditable';
 
-module.exports = require('backbone').View.extend({
+export default Backbone.View.extend({
   template() {
-    const pfx = this.pfx;
-    const ppfx = this.ppfx;
-    const label = this.model.get('label') || '';
+    const { pfx, model, config } = this;
+    const label = model.get('label') || '';
+
     return `
-      <span id="${pfx}checkbox" class="fa" data-tag-status></span>
+      <span id="${pfx}checkbox" class="${pfx}tag-status" data-tag-status></span>
       <span id="${pfx}tag-label" data-tag-name>${label}</span>
-      <span id="${pfx}close" data-tag-remove>
-        &Cross;
+      <span id="${pfx}close" class="${pfx}tag-close" data-tag-remove>
+        ${config.iconTagRemove}
       </span>
     `;
   },
@@ -23,11 +24,12 @@ module.exports = require('backbone').View.extend({
   },
 
   initialize(o) {
-    this.config = o.config || {};
+    const config = o.config || {};
+    this.config = config;
     this.coll = o.coll || null;
-    this.pfx = this.config.stylePrefix || '';
-    this.ppfx = this.config.pStylePrefix || '';
-    this.target = this.config.em;
+    this.pfx = config.stylePrefix || '';
+    this.ppfx = config.pStylePrefix || '';
+    this.em = config.em;
     this.listenTo(this.model, 'change:active', this.updateStatus);
   },
 
@@ -48,9 +50,11 @@ module.exports = require('backbone').View.extend({
    * @private
    */
   startEditTag() {
+    const { em } = this;
     const inputEl = this.getInputEl();
     inputEl[inputProp] = true;
     inputEl.focus();
+    em && em.setEditing(1);
   },
 
   /**
@@ -62,12 +66,14 @@ module.exports = require('backbone').View.extend({
     const model = this.model;
     const inputEl = this.getInputEl();
     const label = inputEl.textContent;
-    const name = Selector.escapeName(label);
-    const em = this.target;
+    const em = this.em;
     const sm = em && em.get('SelectorManager');
     inputEl[inputProp] = false;
+    em && em.setEditing(0);
 
     if (sm) {
+      const name = sm.escapeName(label);
+
       if (sm.get(name)) {
         inputEl.innerText = model.get('label');
       } else {
@@ -81,7 +87,8 @@ module.exports = require('backbone').View.extend({
    * @private
    */
   changeStatus() {
-    this.model.set('active', !this.model.get('active'));
+    const { model } = this;
+    model.set('active', !model.get('active'));
   },
 
   /**
@@ -89,15 +96,12 @@ module.exports = require('backbone').View.extend({
    * @param {Object} e
    * @private
    */
-  removeTag(e) {
-    const em = this.target;
-    const model = this.model;
-    const coll = this.coll;
-    const el = this.el;
-    const sel = em && em.getSelected();
-    sel && sel.get & sel.get('classes').remove(model);
-    coll && coll.remove(model);
-    setTimeout(() => this.remove(), 0);
+  removeTag() {
+    const { em, model } = this;
+    const targets = em && em.getSelectedAll();
+    targets.forEach(sel => {
+      !model.get('protected') && sel && sel.getSelectors().remove(model);
+    });
   },
 
   /**
@@ -105,17 +109,16 @@ module.exports = require('backbone').View.extend({
    * @private
    */
   updateStatus() {
-    var chkOn = 'fa-check-square-o';
-    var chkOff = 'fa-square-o';
+    const { model, $el, config } = this;
+    const { iconTagOn, iconTagOff } = config;
+    const $chk = $el.find('[data-tag-status]');
 
-    if (!this.$chk) this.$chk = this.$el.find('#' + this.pfx + 'checkbox');
-
-    if (this.model.get('active')) {
-      this.$chk.removeClass(chkOff).addClass(chkOn);
-      this.$el.removeClass('opac50');
+    if (model.get('active')) {
+      $chk.html(iconTagOn);
+      $el.removeClass('opac50');
     } else {
-      this.$chk.removeClass(chkOn).addClass(chkOff);
-      this.$el.addClass('opac50');
+      $chk.html(iconTagOff);
+      $el.addClass('opac50');
     }
   },
 

@@ -1,10 +1,9 @@
+import Backbone from 'backbone';
 import { extend } from 'underscore';
+import Properties from './Properties';
+import PropertyFactory from './PropertyFactory';
 
-const Backbone = require('backbone');
-const Properties = require('./Properties');
-const PropertyFactory = require('./PropertyFactory');
-
-module.exports = Backbone.Model.extend({
+export default Backbone.Model.extend({
   defaults: {
     id: '',
     name: '',
@@ -15,15 +14,16 @@ module.exports = Backbone.Model.extend({
   },
 
   initialize(opts) {
-    var o = opts || {};
-    var props = [];
-    var builded = this.buildProperties(o.buildProps);
-    !this.get('id') && this.set('id', this.get('name'));
+    const o = opts || {};
+    const builded = this.buildProperties(o.buildProps);
+    const name = this.get('name') || '';
+    let props = [];
+    !this.get('id') && this.set('id', name.replace(/ /g, '_').toLowerCase());
 
     if (!builded) props = this.get('properties');
     else props = this.extendProperties(builded);
 
-    var propsModel = new Properties(props);
+    const propsModel = new Properties(props);
     propsModel.sector = this;
     this.set('properties', propsModel);
   },
@@ -53,7 +53,7 @@ module.exports = Backbone.Model.extend({
           var mPProps = mProp.properties;
           if (mPProps && mPProps.length) {
             mProp.properties = this.extendProperties(
-              prop.properties,
+              prop.properties || [],
               mPProps,
               1
             );
@@ -71,7 +71,7 @@ module.exports = Backbone.Model.extend({
       }
     }
 
-    return ex ? isolated : props;
+    return ex ? isolated.filter(i => i) : props;
   },
 
   /**

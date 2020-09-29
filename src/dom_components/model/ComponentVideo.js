@@ -1,9 +1,10 @@
-const Component = require('./ComponentImage');
-const OComponent = require('./Component');
+import Component from './ComponentImage';
+
 const yt = 'yt';
 const vi = 'vi';
+const ytnc = 'ytnc';
 
-module.exports = Component.extend(
+export default Component.extend(
   {
     defaults: {
       ...Component.prototype.defaults,
@@ -11,41 +12,57 @@ module.exports = Component.extend(
       tagName: 'video',
       videoId: '',
       void: 0,
-      provider: '', // on change of provider, traits are switched
+      provider: 'so', // on change of provider, traits are switched
       ytUrl: 'https://www.youtube.com/embed/',
+      ytncUrl: 'https://www.youtube-nocookie.com/embed/',
       viUrl: 'https://player.vimeo.com/video/',
       loop: 0,
+      poster: '',
       muted: 0,
       autoplay: 0,
       controls: 1,
       color: '',
+      list: '',
+      rel: 1, // YT related videos
+      modestbranding: 0, // YT modest branding
       sources: [],
-      attributes: { allowfullscreen: 'allowfullscreen' },
-      toolbar: OComponent.prototype.defaults.toolbar
+      attributes: { allowfullscreen: 'allowfullscreen' }
     },
 
     initialize(o, opt) {
-      var traits = [];
-      var prov = this.get('provider');
+      this.em = opt.em;
+      if (this.get('src')) this.parseFromSrc();
+      this.updateTraits();
+      this.listenTo(this, 'change:provider', this.updateTraits);
+      this.listenTo(this, 'change:videoId change:provider', this.updateSrc);
+      Component.prototype.initialize.apply(this, arguments);
+    },
+
+    /**
+     * Update traits by provider
+     * @private
+     */
+    updateTraits() {
+      const prov = this.get('provider');
+      let tagName = 'iframe';
+      let traits;
+
       switch (prov) {
         case yt:
+        case ytnc:
           traits = this.getYoutubeTraits();
           break;
         case vi:
           traits = this.getVimeoTraits();
           break;
         default:
+          tagName = 'video';
           traits = this.getSourceTraits();
       }
-      if (this.get('src')) this.parseFromSrc();
-      this.set('traits', traits);
-      Component.prototype.initialize.apply(this, arguments);
-      this.listenTo(this, 'change:provider', this.updateTraits);
-      this.listenTo(this, 'change:videoId', this.updateSrc);
-    },
 
-    initToolbar(...args) {
-      OComponent.prototype.initToolbar.apply(this, args);
+      this.set({ tagName }, { silent: 1 }); // avoid break in view
+      this.set({ traits });
+      this.em.trigger('component:toggled');
     },
 
     /**
@@ -57,13 +74,17 @@ module.exports = Component.extend(
       var qr = uri.query;
       switch (prov) {
         case yt:
+        case ytnc:
         case vi:
           var videoId = uri.pathname.split('/').pop();
           this.set('videoId', videoId);
+          qr.list && this.set('list', qr.list);
           if (qr.autoplay) this.set('autoplay', 1);
           if (qr.loop) this.set('loop', 1);
           if (parseInt(qr.controls) === 0) this.set('controls', 0);
           if (qr.color) this.set('color', qr.color);
+          if (qr.rel === '0') this.set('rel', 0);
+          if (qr.modestbranding === '1') this.set('modestbranding', 1);
           break;
         default:
       }
@@ -74,15 +95,22 @@ module.exports = Component.extend(
      * @private
      */
     updateSrc() {
-      var prov = this.get('provider');
+      const prov = this.get('provider');
+      let src = '';
+
       switch (prov) {
         case yt:
-          this.set('src', this.getYoutubeSrc());
+          src = this.getYoutubeSrc();
+          break;
+        case ytnc:
+          src = this.getYoutubeNoCookieSrc();
           break;
         case vi:
-          this.set('src', this.getVimeoSrc());
+          src = this.getVimeoSrc();
           break;
       }
+
+      this.set({ src });
     },
 
     /**
@@ -95,6 +123,7 @@ module.exports = Component.extend(
       var prov = this.get('provider');
       switch (prov) {
         case yt:
+        case ytnc:
         case vi:
           break;
         default:
@@ -103,29 +132,6 @@ module.exports = Component.extend(
           if (this.get('controls')) attr.controls = 'controls';
       }
       return attr;
-    },
-
-    /**
-     * Update traits by provider
-     * @private
-     */
-    updateTraits() {
-      var prov = this.get('provider');
-      var traits = this.getSourceTraits();
-      switch (prov) {
-        case yt:
-          this.set('tagName', 'iframe');
-          traits = this.getYoutubeTraits();
-          break;
-        case vi:
-          this.set('tagName', 'iframe');
-          traits = this.getVimeoTraits();
-          break;
-        default:
-          this.set('tagName', 'video');
-      }
-      this.loadTraits(traits);
-      this.em.trigger('component:toggled');
     },
 
     // Listen provider change and switch traits, in TraitView listen traits change
@@ -141,10 +147,10 @@ module.exports = Component.extend(
         label: 'Provider',
         name: 'provider',
         changeProp: 1,
-        value: this.get('provider'),
         options: [
           { value: 'so', name: 'HTML5 Source' },
           { value: yt, name: 'Youtube' },
+          { value: ytnc, name: 'Youtube (no cookie)' },
           { value: vi, name: 'Vimeo' }
         ]
       };
@@ -163,6 +169,12 @@ module.exports = Component.extend(
           name: 'src',
           placeholder: 'eg. ./media/video.mp4',
           changeProp: 1
+        },
+        {
+          label: 'Poster',
+          name: 'poster',
+          placeholder: 'eg. ./media/image.jpg'
+          // changeProp: 1
         },
         this.getAutoplayTrait(),
         this.getLoopTrait(),
@@ -185,7 +197,19 @@ module.exports = Component.extend(
         },
         this.getAutoplayTrait(),
         this.getLoopTrait(),
-        this.getControlsTrait()
+        this.getControlsTrait(),
+        {
+          type: 'checkbox',
+          label: 'Related',
+          name: 'rel',
+          changeProp: 1
+        },
+        {
+          type: 'checkbox',
+          label: 'Modest',
+          name: 'modestbranding',
+          changeProp: 1
+        }
       ];
     },
 
@@ -264,12 +288,27 @@ module.exports = Component.extend(
     getYoutubeSrc() {
       const id = this.get('videoId');
       let url = this.get('ytUrl');
-      url += id + '?';
+      const list = this.get('list');
+      url += id + (id.indexOf('?') < 0 ? '?' : '');
+      url += list ? `&list=${list}` : '';
       url += this.get('autoplay') ? '&autoplay=1' : '';
       url += !this.get('controls') ? '&controls=0&showinfo=0' : '';
       // Loop works only with playlist enabled
       // https://stackoverflow.com/questions/25779966/youtube-iframe-loop-doesnt-work
       url += this.get('loop') ? `&loop=1&playlist=${id}` : '';
+      url += this.get('rel') ? '' : '&rel=0';
+      url += this.get('modestbranding') ? '&modestbranding=1' : '';
+      return url;
+    },
+
+    /**
+     * Returns url to youtube no cookie video
+     * @return {string}
+     * @private
+     */
+    getYoutubeNoCookieSrc() {
+      let url = this.getYoutubeSrc();
+      url = url.replace(this.get('ytUrl'), this.get('ytncUrl'));
       return url;
     },
 
@@ -300,13 +339,15 @@ module.exports = Component.extend(
     isComponent(el) {
       var result = '';
       var isYtProv = /youtube\.com\/embed/.test(el.src);
+      var isYtncProv = /youtube-nocookie\.com\/embed/.test(el.src);
       var isViProv = /player\.vimeo\.com\/video/.test(el.src);
-      var isExtProv = isYtProv || isViProv;
+      var isExtProv = isYtProv || isYtncProv || isViProv;
       if (el.tagName == 'VIDEO' || (el.tagName == 'IFRAME' && isExtProv)) {
         result = { type: 'video' };
         if (el.src) result.src = el.src;
         if (isExtProv) {
           if (isYtProv) result.provider = yt;
+          else if (isYtncProv) result.provider = ytnc;
           else if (isViProv) result.provider = vi;
         }
       }

@@ -1,15 +1,15 @@
-const StyleManager = require('style_manager');
-const Models = require('./model/Models');
-const SectorView = require('./view/SectorView');
-const SectorsView = require('./view/SectorsView');
-const PropertyView = require('./view/PropertyView');
-const PropertySelectView = require('./view/PropertySelectView');
-const PropertyRadioView = require('./view/PropertyRadioView');
-const PropertyIntegerView = require('./view/PropertyIntegerView');
-const PropertyColorView = require('./view/PropertyColorView');
-const PropertyCompositeView = require('./view/PropertyCompositeView');
-const PropertyStackView = require('./view/PropertyStackView');
-const LayerView = require('./view/LayerView');
+import StyleManager from 'style_manager';
+import Models from './model/Models';
+import SectorView from './view/SectorView';
+import SectorsView from './view/SectorsView';
+import PropertyView from './view/PropertyView';
+import PropertySelectView from './view/PropertySelectView';
+import PropertyRadioView from './view/PropertyRadioView';
+import PropertyIntegerView from './view/PropertyIntegerView';
+import PropertyColorView from './view/PropertyColorView';
+import PropertyCompositeView from './view/PropertyCompositeView';
+import PropertyStackView from './view/PropertyStackView';
+import LayerView from './view/LayerView';
 
 describe('StyleManager', () => {
   describe('Main', () => {
@@ -57,7 +57,7 @@ describe('StyleManager', () => {
     });
 
     test('Get inexistent sector', () => {
-      expect(obj.getSector('test')).toEqual(null);
+      expect(obj.getSector('test')).toBeFalsy();
     });
 
     test('Get sector', () => {
@@ -97,7 +97,7 @@ describe('StyleManager', () => {
     test("Can't get properties without proper name", () => {
       obj.addSector('test', {});
       obj.addProperty('test', [{}, {}]);
-      expect(obj.getProperty('test', 'test-prop')).toEqual([]);
+      expect(obj.getProperty('test', 'test-prop')).toEqual(null);
     });
 
     test('Get property with proper name', () => {
@@ -109,11 +109,11 @@ describe('StyleManager', () => {
 
     test('Get properties with proper name', () => {
       obj.addSector('test', {});
-      var prop1 = obj.addProperty('test', [
+      obj.addProperty('test', [
         { property: 'test-prop' },
         { property: 'test-prop' }
       ]);
-      expect(obj.getProperty('test', 'test-prop').length).toEqual(2);
+      expect(obj.getProperty('test', 'test-prop')).toBeTruthy();
     });
 
     test('Get inexistent properties', () => {
@@ -155,6 +155,7 @@ describe('StyleManager', () => {
             }
           ]
         });
+        obj.onLoad();
       });
 
       afterEach(() => {
@@ -178,21 +179,6 @@ describe('StyleManager', () => {
         var prop1 = obj.getProperty('dim', 'width');
         expect(prop1.get('name')).toEqual('Width');
       });
-    });
-
-    Models.run();
-
-    describe('Views', () => {
-      SectorView.run();
-      SectorsView.run();
-      PropertyView.run();
-      PropertySelectView.run();
-      PropertyRadioView.run();
-      PropertyIntegerView.run();
-      PropertyColorView.run();
-      PropertyCompositeView.run();
-      PropertyStackView.run();
-      LayerView.run();
     });
   });
 });

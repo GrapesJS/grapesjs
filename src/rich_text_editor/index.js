@@ -5,7 +5,7 @@
  * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/rich_text_editor/config/config.js)
  * ```js
  * const editor = grapesjs.init({
- *  rte: {
+ *  richTextEditor: {
  *    // options
  *  }
  * })
@@ -28,15 +28,15 @@
 
 import RichTextEditor from './model/RichTextEditor';
 import { on, off } from 'utils/mixins';
+import defaults from './config/config';
 
-module.exports = () => {
+export default () => {
   let config = {};
-  const defaults = require('./config/config');
-  let toolbar, actions, lastEl, globalRte;
+  let toolbar, actions, lastEl, lastElPos, globalRte;
 
   const hideToolbar = () => {
     const style = toolbar.style;
-    const size = '-100px';
+    const size = '-1000px';
     style.top = size;
     style.left = size;
     style.display = 'none';
@@ -52,20 +52,20 @@ module.exports = () => {
      */
     name: 'RichTextEditor',
 
+    getConfig() {
+      return config;
+    },
+
     /**
      * Initialize module. Automatically called with a new instance of the editor
      * @param {Object} opts Options
      * @private
      */
     init(opts = {}) {
-      config = opts;
-
-      for (let name in defaults) {
-        if (!(name in config)) {
-          config[name] = defaults[name];
-        }
-      }
-
+      config = {
+        ...defaults,
+        ...opts
+      };
       const ppfx = config.pStylePrefix;
 
       if (ppfx) {
@@ -81,6 +81,16 @@ module.exports = () => {
       //Avoid closing on toolbar clicking
       on(toolbar, 'mousedown', e => e.stopPropagation());
       return this;
+    },
+
+    destroy() {
+      const { customRte } = this;
+      globalRte && globalRte.destroy();
+      customRte && customRte.destroy && customRte.destroy();
+      toolbar = 0;
+      globalRte = 0;
+      this.actionbar = 0;
+      this.actions = 0;
     },
 
     /**
@@ -105,11 +115,13 @@ module.exports = () => {
       const pfx = this.pfx;
       const actionbarContainer = toolbar;
       const actionbar = this.actionbar;
-      const actions = this.actions || config.actions;
+      const actions = this.actions || [...config.actions];
       const classes = {
         actionbar: `${pfx}actionbar`,
         button: `${pfx}action`,
-        active: `${pfx}active`
+        active: `${pfx}active`,
+        inactive: `${pfx}inactive`,
+        disabled: `${pfx}disabled`
       };
       const rte = new RichTextEditor({
         el,
@@ -138,7 +150,7 @@ module.exports = () => {
      * @example
      * rte.add('bold', {
      *   icon: '<b>B</b>',
-     *   attributes: {title: 'Bold',}
+     *   attributes: {title: 'Bold'},
      *   result: rte => rte.exec('bold')
      * });
      * rte.add('link', {
@@ -165,6 +177,32 @@ module.exports = () => {
      *     }
      *    }
      *   })
+     * // An example with state
+     * const isValidAnchor = (rte) => {
+     *   // a utility function to help determine if the selected is a valid anchor node
+     *   const anchor = rte.selection().anchorNode;
+     *   const parentNode  = anchor && anchor.parentNode;
+     *   const nextSibling = anchor && anchor.nextSibling;
+     *   return (parentNode && parentNode.nodeName == 'A') || (nextSibling && nextSibling.nodeName == 'A')
+     * }
+     * rte.add('toggleAnchor', {
+     *   icon: `<span style="transform:rotate(45deg)">&supdsub;</span>`,
+     *   state: (rte, doc) => {
+     *    if (rte && rte.selection()) {
+     *      // `btnState` is a integer, -1 for disabled, 0 for inactive, 1 for active
+     *      return isValidAnchor(rte) ? btnState.ACTIVE : btnState.INACTIVE;
+     *    } else {
+     *      return btnState.INACTIVE;
+     *    }
+     *   },
+     *   result: (rte, action) => {
+     *     if (isValidAnchor(rte)) {
+     *       rte.exec('unlink');
+     *     } else {
+     *       rte.insertHTML(`<a class="link" href="">${rte.selection()}</a>`);
+     *     }
+     *   }
+     * })
      */
     add(name, action = {}) {
       action.name = name;
@@ -231,25 +269,16 @@ module.exports = () => {
      * Triggered when the offset of the editor is changed
      * @private
      */
-    udpatePosition() {
+    updatePosition() {
       const un = 'px';
       const canvas = config.em.get('Canvas');
-      const pos = canvas.getTargetToElementDim(toolbar, lastEl, {
+      const { style } = toolbar;
+      const pos = canvas.getTargetToElementFixed(lastEl, toolbar, {
         event: 'rteToolbarPosUpdate'
       });
 
-      if (pos) {
-        if (config.adjustToolbar) {
-          // Move the toolbar down when the top canvas edge is reached
-          if (pos.top <= pos.canvasTop) {
-            pos.top = pos.elementTop + pos.elementHeight;
-          }
-        }
-
-        const toolbarStyle = toolbar.style;
-        toolbarStyle.top = pos.top + un;
-        toolbarStyle.left = pos.left + un;
-      }
+      style.top = pos.top + un;
+      style.left = 0 + un;
     },
 
     /**
@@ -260,18 +289,21 @@ module.exports = () => {
      * */
     enable(view, rte) {
       lastEl = view.el;
+      const canvas = config.em.get('Canvas');
       const em = config.em;
       const el = view.getChildrenContainer();
       const customRte = this.customRte;
+      lastElPos = canvas.getElementPos(lastEl);
 
       toolbar.style.display = '';
       rte = customRte ? customRte.enable(el, rte) : this.initRte(el).enable();
 
       if (em) {
-        setTimeout(this.udpatePosition.bind(this), 0);
-        const event = 'change:canvasOffset canvasScroll';
-        em.off(event, this.udpatePosition, this);
-        em.on(event, this.udpatePosition, this);
+        setTimeout(this.updatePosition.bind(this), 0);
+        const event =
+          'change:canvasOffset canvasScroll frame:scroll component:update';
+        em.off(event, this.updatePosition, this);
+        em.on(event, this.updatePosition, this);
         em.trigger('rte:enable', view, rte);
       }
 

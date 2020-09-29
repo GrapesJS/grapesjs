@@ -1,9 +1,10 @@
-var Backbone = require('backbone');
+import Backbone from 'backbone';
 
-module.exports = Backbone.Model.extend({
+export default Backbone.Model.extend({
   defaults: {
     id: '',
     label: '',
+    tagName: 'span',
     className: '',
     command: '',
     context: '',
@@ -12,6 +13,7 @@ module.exports = Backbone.Model.extend({
     options: {},
     active: false,
     dragDrop: false,
+    togglable: true,
     runDefaultCommand: true,
     stopDefaultCommand: false,
     disable: false
@@ -19,7 +21,7 @@ module.exports = Backbone.Model.extend({
 
   initialize(options) {
     if (this.get('buttons').length) {
-      var Buttons = require('./Buttons');
+      var Buttons = require('./Buttons').default;
       this.set('buttons', new Buttons(this.get('buttons')));
     }
   }
