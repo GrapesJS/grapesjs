@@ -27,15 +27,6 @@ const panelManager = editor.Panels;
 -   [getPanelsEl][8]
 -   [removePanel][9]
 -   [removeButton][10]
--   [render][11]
-
-## init
-
-Initialize module. Automatically called with a new instance of the editor
-
-### Parameters
-
--   `config` **[Object][12]** Configurations
 
 ## getPanels
 
@@ -47,7 +38,7 @@ Returns **Collection** Collection of panel
 
 Returns panels element
 
-Returns **[HTMLElement][13]** 
+Returns **[HTMLElement][11]** 
 
 ## addPanel
 
@@ -75,7 +66,7 @@ Remove a panel from the collection
 
 ### Parameters
 
--   `panel` **([Object][12] | Panel | [String][14])** Object with right properties or an instance of Panel or Painel id
+-   `panel` **([Object][12] | Panel | [String][13])** Object with right properties or an instance of Panel or Painel id
 
 ### Examples
 
@@ -97,7 +88,7 @@ Get panel by ID
 
 ### Parameters
 
--   `id` **[string][14]** Id string
+-   `id` **[string][13]** Id string
 
 ### Examples
 
@@ -113,7 +104,7 @@ Add button to the panel
 
 ### Parameters
 
--   `panelId` **[string][14]** Panel's ID
+-   `panelId` **[string][13]** Panel's ID
 -   `button` **([Object][12] | Button)** Button object or instance of Button
 
 ### Examples
@@ -152,8 +143,8 @@ Remove button from the panel
 
 ### Parameters
 
--   `panelId` **[string][14]** Panel's ID
--   `button` **([Object][12] | Button | [String][14])** Button object or instance of Button or button id
+-   `panelId` **[string][13]** Panel's ID
+-   `button` **([Object][12] | Button | [String][13])** Button object or instance of Button or button id
 
 ### Examples
 
@@ -178,8 +169,8 @@ Get button from the panel
 
 ### Parameters
 
--   `panelId` **[string][14]** Panel's ID
--   `id` **[string][14]** Button's ID
+-   `panelId` **[string][13]** Panel's ID
+-   `id` **[string][13]** Button's ID
 
 ### Examples
 
@@ -188,12 +179,6 @@ var button = panelManager.getButton('myPanel','myButton');
 ```
 
 Returns **(Button | null)** 
-
-## render
-
-Render panels and buttons
-
-Returns **[HTMLElement][13]** 
 
 [1]: https://github.com/artf/grapesjs/blob/master/src/panels/config/config.js
 
@@ -215,10 +200,8 @@ Returns **[HTMLElement][13]**
 
 [10]: #removeButton
 
-[11]: #render
+[11]: https://developer.mozilla.org/docs/Web/HTML/Element
 
 [12]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[13]: https://developer.mozilla.org/docs/Web/HTML/Element
-
-[14]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[13]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String

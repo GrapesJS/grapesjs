@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Traits | GrapesJS</title>
+    <meta name="generator" content="VuePress 1.4.1">
+    <link rel="icon" href="/docs/logo-icon.png">
+    <link rel="stylesheet" href="https://localhost:8080/dist/css/grapes.min.css">
+    <script src="https://localhost:8080/dist/grapes.min.js"></script>
+    <meta name="description" content="GrapesJS documentation">
+    <link rel="preload" href="/docs/assets/css/0.styles.e433ec21.css" as="style"><link rel="preload" href="/docs/assets/js/app.265b9535.js" as="script"><link rel="preload" href="/docs/assets/js/2.40ae62f3.js" as="script"><link rel="preload" href="/docs/assets/js/34.3a6631b3.js" as="script"><link rel="prefetch" href="/docs/assets/js/10.e181bd91.js"><link rel="prefetch" href="/docs/assets/js/11.57106223.js"><link rel="prefetch" href="/docs/assets/js/12.67ac2b0b.js"><link rel="prefetch" href="/docs/assets/js/13.0bb55145.js"><link rel="prefetch" href="/docs/assets/js/14.a63b54a0.js"><link rel="prefetch" href="/docs/assets/js/15.e94dd87d.js"><link rel="prefetch" href="/docs/assets/js/16.5366f8ca.js"><link rel="prefetch" href="/docs/assets/js/17.0ab18149.js"><link rel="prefetch" href="/docs/assets/js/18.a105162f.js"><link rel="prefetch" href="/docs/assets/js/19.c6a6168e.js"><link rel="prefetch" href="/docs/assets/js/20.667b0273.js"><link rel="prefetch" href="/docs/assets/js/21.efdcae94.js"><link rel="prefetch" href="/docs/assets/js/22.d3d5517a.js"><link rel="prefetch" href="/docs/assets/js/23.24180a32.js"><link rel="prefetch" href="/docs/assets/js/24.a75fe812.js"><link rel="prefetch" href="/docs/assets/js/25.8d7b63d1.js"><link rel="prefetch" href="/docs/assets/js/26.8d85fa7c.js"><link rel="prefetch" href="/docs/assets/js/27.22c11948.js"><link rel="prefetch" href="/docs/assets/js/28.0dfa0946.js"><link rel="prefetch" href="/docs/assets/js/29.475a7907.js"><link rel="prefetch" href="/docs/assets/js/3.8f6e7bb5.js"><link rel="prefetch" href="/docs/assets/js/30.dffbe498.js"><link rel="prefetch" href="/docs/assets/js/31.57b79468.js"><link rel="prefetch" href="/docs/assets/js/32.5217350b.js"><link rel="prefetch" href="/docs/assets/js/33.a6186146.js"><link rel="prefetch" href="/docs/assets/js/35.8d6eb96a.js"><link rel="prefetch" href="/docs/assets/js/4.8e62648b.js"><link rel="prefetch" href="/docs/assets/js/5.2a0ddebc.js"><link rel="prefetch" href="/docs/assets/js/6.d61f0648.js"><link rel="prefetch" href="/docs/assets/js/7.2d94a8bc.js"><link rel="prefetch" href="/docs/assets/js/8.48ba0859.js"><link rel="prefetch" href="/docs/assets/js/9.7df1cc0f.js">
+    <link rel="stylesheet" href="/docs/assets/css/0.styles.e433ec21.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/docs/" class="home-link router-link-active"><img src="/docs/logo.png" alt="GrapesJS" class="logo"> <span class="site-name can-hide">GrapesJS</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/docs/" class="nav-link">
+  Docs
+</a></div><div class="nav-item"><a href="/docs/api/" class="nav-link">
+  API Reference
+</a></div><div class="nav-item"><a href="https://opencollective.com/grapesjs" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Support Us
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div><div class="nav-item"><a href="https://twitter.com/grapesjs" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Twitter
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div> <a href="https://github.com/artf/grapesjs" target="_blank" rel="noopener noreferrer" class="repo-link">
+    GitHub
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/docs/" class="nav-link">
+  Docs
+</a></div><div class="nav-item"><a href="/docs/api/" class="nav-link">
+  API Reference
+</a></div><div class="nav-item"><a href="https://opencollective.com/grapesjs" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Support Us
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div><div class="nav-item"><a href="https://twitter.com/grapesjs" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Twitter
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div> <a href="https://github.com/artf/grapesjs" target="_blank" rel="noopener noreferrer" class="repo-link">
+    GitHub
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></nav>  <ul class="sidebar-links"><li><a href="/docs/" class="sidebar-link">Introduction</a></li><li><a href="/docs/getting-started.html" class="sidebar-link">Getting Started</a></li><li><a href="/docs/faq.html" class="sidebar-link">FAQ</a></li><li><section class="sidebar-group depth-0"><p class="sidebar-heading open"><span>Modules</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/docs/modules/Assets.html" class="sidebar-link">Assets</a></li><li><a href="/docs/modules/Blocks.html" class="sidebar-link">Blocks</a></li><li><a href="/docs/modules/Components.html" class="sidebar-link">Components</a></li><li><a href="/docs/modules/Components-js.html" class="sidebar-link">Components &amp; JS</a></li><li><a href="/docs/modules/Traits.html" class="active sidebar-link">Traits</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/docs/modules/Traits.html#built-in-trait-types" class="sidebar-link">Built-in trait types</a></li><li class="sidebar-sub-header"><a href="/docs/modules/Traits.html#add-traits-to-components" class="sidebar-link">Add Traits to Components</a></li><li class="sidebar-sub-header"><a href="/docs/modules/Traits.html#define-new-trait-type" class="sidebar-link">Define new Trait type</a></li></ul></li><li><a href="/docs/modules/Storage.html" class="sidebar-link">Storage</a></li><li><a href="/docs/modules/Plugins.html" class="sidebar-link">Plugins</a></li></ul></section></li><li><section class="sidebar-group depth-0"><p class="sidebar-heading"><span>Guides</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/docs/guides/Replace-Rich-Text-Editor.html" class="sidebar-link">Replace Rich Text Editor</a></li></ul></section></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="traits"><a href="#traits" class="header-anchor">#</a> Traits</h1> <p>In GrapesJS, Traits could define different parameters and behaviors of a single component. The user generally will see traits as <em>Settings</em> of each component. A common use of traits is to customize element attributes (eg. <code>placeholder</code> for inputs) and in this case the editor comes already with some built-in, easy configurable, types.</p> <p></p><div class="table-of-contents"><ul><li><a href="#built-in-trait-types">Built-in trait types</a></li><li><a href="#add-traits-to-components">Add Traits to Components</a></li><li><a href="#define-new-trait-type">Define new Trait type</a></li></ul></div><p></p> <h2 id="built-in-trait-types"><a href="#built-in-trait-types" class="header-anchor">#</a> Built-in trait types</h2> <ul><li>text</li> <li>number</li> <li>checkbox</li> <li>select</li> <li>color</li></ul> <h2 id="add-traits-to-components"><a href="#add-traits-to-components" class="header-anchor">#</a> Add Traits to Components</h2> <p>You can add traits to the component by extending them or while creating a new one. Let's see in this example how to make inputs more customizable by the editor. All components, by default, contain 2 traits: id and title (at the moment of writing). So, if you select an input and open the Settings panel you will see just this:</p> <p>[[img/default-traits.png]]</p> <p>In this case we gonna create a new Component (<a href="Components">check here</a> for more details about the creation of new components) with a new set of traits</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">var</span> editor <span class="token operator">=</span> grapesjs<span class="token punctuation">.</span><span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token operator">...</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> domComps <span class="token operator">=</span> editor<span class="token punctuation">.</span>DomComponents<span class="token punctuation">;</span>
+<span class="token keyword">var</span> dType <span class="token operator">=</span> domComps<span class="token punctuation">.</span><span class="token function">getType</span><span class="token punctuation">(</span><span class="token string">'default'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> dModel <span class="token operator">=</span> dType<span class="token punctuation">.</span>model<span class="token punctuation">;</span>
+<span class="token keyword">var</span> dView <span class="token operator">=</span> dType<span class="token punctuation">.</span>view<span class="token punctuation">;</span>
+
+domComps<span class="token punctuation">.</span><span class="token function">addType</span><span class="token punctuation">(</span><span class="token string">'input'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+    model<span class="token operator">:</span> dModel<span class="token punctuation">.</span><span class="token function">extend</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+      defaults<span class="token operator">:</span> Object<span class="token punctuation">.</span><span class="token function">assign</span><span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span> dModel<span class="token punctuation">.</span>prototype<span class="token punctuation">.</span>defaults<span class="token punctuation">,</span> <span class="token punctuation">{</span>
+        traits<span class="token operator">:</span> <span class="token punctuation">[</span>
+          <span class="token comment">// strings are automatically converted to text types</span>
+          <span class="token string">'name'</span><span class="token punctuation">,</span>
+          <span class="token string">'placeholder'</span><span class="token punctuation">,</span>
+          <span class="token punctuation">{</span>
+            type<span class="token operator">:</span> <span class="token string">'select'</span><span class="token punctuation">,</span>
+            label<span class="token operator">:</span> <span class="token string">'Type'</span><span class="token punctuation">,</span>
+            name<span class="token operator">:</span> <span class="token string">'type'</span><span class="token punctuation">,</span>
+            options<span class="token operator">:</span> <span class="token punctuation">[</span>
+              <span class="token punctuation">{</span>value<span class="token operator">:</span> <span class="token string">'text'</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'Text'</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+              <span class="token punctuation">{</span>value<span class="token operator">:</span> <span class="token string">'email'</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'Email'</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+              <span class="token punctuation">{</span>value<span class="token operator">:</span> <span class="token string">'password'</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'Password'</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+              <span class="token punctuation">{</span>value<span class="token operator">:</span> <span class="token string">'number'</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token string">'Number'</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token punctuation">]</span>
+          <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+            type<span class="token operator">:</span> <span class="token string">'checkbox'</span><span class="token punctuation">,</span>
+            label<span class="token operator">:</span> <span class="token string">'Required'</span><span class="token punctuation">,</span>
+            name<span class="token operator">:</span> <span class="token string">'required'</span><span class="token punctuation">,</span>
+        <span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+      <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+      <span class="token function-variable function">isComponent</span><span class="token operator">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">el</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>el<span class="token punctuation">.</span>tagName <span class="token operator">==</span> <span class="token string">'INPUT'</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+          <span class="token keyword">return</span> <span class="token punctuation">{</span>type<span class="token operator">:</span> <span class="token string">'input'</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+
+    view<span class="token operator">:</span> dView<span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>Now the result will be</p> <p>[[img/input-custom-traits.png]]</p> <p>By default, traits modify attributes of the model (which than reflected in canvas) but you can also have traits which change the property</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token operator">...</span>
+traits<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">{</span>
+    type<span class="token operator">:</span> <span class="token string">'text'</span><span class="token punctuation">,</span>
+    label<span class="token operator">:</span> <span class="token string">'Test'</span><span class="token punctuation">,</span>
+    name<span class="token operator">:</span> <span class="token string">'model-prop-name'</span><span class="token punctuation">,</span>
+    changeProp<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+<span class="token operator">...</span>
+</code></pre></div><p>In this way you're able to listen this changes and react with your own logic</p> <div class="language-js extra-class"><pre class="language-js"><code>editor<span class="token punctuation">.</span>DomComponents<span class="token punctuation">.</span><span class="token function">addType</span><span class="token punctuation">(</span><span class="token string">'input'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+    model<span class="token operator">:</span> dModel<span class="token punctuation">.</span><span class="token function">extend</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+      <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">listenTo</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">,</span> <span class="token string">'change:model-prop-name'</span><span class="token punctuation">,</span> <span class="token keyword">this</span><span class="token punctuation">.</span>doStuff<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+      <span class="token function">doStuff</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token operator">...</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><h2 id="define-new-trait-type"><a href="#define-new-trait-type" class="header-anchor">#</a> Define new Trait type</h2> <p>If built-in types are not enough (eg. something with more complex UI) you can define a new one.
+Let's see this simple <code>textarea</code> element which updates contents of the component.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Each new type extends the default Trait</span>
+editor<span class="token punctuation">.</span>TraitManager<span class="token punctuation">.</span><span class="token function">addType</span><span class="token punctuation">(</span><span class="token string">'content'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+  events<span class="token operator">:</span><span class="token punctuation">{</span>
+    <span class="token string">'keyup'</span><span class="token operator">:</span> <span class="token string">'onChange'</span><span class="token punctuation">,</span>  <span class="token comment">// trigger parent onChange method on keyup</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+  <span class="token comment">/**
+  * Returns the input element
+  * @return {HTMLElement}
+  */</span>
+  <span class="token function-variable function">getInputEl</span><span class="token operator">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token keyword">this</span><span class="token punctuation">.</span>inputEl<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">var</span> input <span class="token operator">=</span> document<span class="token punctuation">.</span><span class="token function">createElement</span><span class="token punctuation">(</span><span class="token string">'textarea'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      input<span class="token punctuation">.</span>value <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>target<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">'content'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">this</span><span class="token punctuation">.</span>inputEl <span class="token operator">=</span> input<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">.</span>inputEl<span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+  <span class="token comment">/**
+   * Triggered when the value of the model is changed
+   */</span>
+  <span class="token function-variable function">onValueChange</span><span class="token operator">:</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>target<span class="token punctuation">.</span><span class="token function">set</span><span class="token punctuation">(</span><span class="token string">'content'</span><span class="token punctuation">,</span> <span class="token keyword">this</span><span class="token punctuation">.</span>model<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">'value'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// And then use it in your component</span>
+<span class="token operator">...</span>
+traits<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">{</span>
+    type<span class="token operator">:</span> <span class="token string">'content'</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+<span class="token operator">...</span>
+</code></pre></div></div> <footer class="page-edit"><div class="edit-link"><a href="https://github.com/artf/grapesjs/edit/dev/docs/modules/Traits.md" target="_blank" rel="noopener noreferrer">Edit this page on GitHub</a> <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></div> <div class="last-updated"><span class="prefix">Last Updated:</span> <span class="time">7/7/2018, 7:48:04 PM</span></div></footer> <div class="page-nav"><p class="inner"><span class="prev">
+      ←
+      <a href="/docs/modules/Components-js.html" class="prev">
+        Components &amp; JS
+      </a></span> <span class="next"><a href="/docs/modules/Storage.html">
+        Storage
+      </a>
+      →
+    </span></p></div> </main></div><div class="global-ui"></div></div>
+    <script src="/docs/assets/js/app.265b9535.js" defer></script><script src="/docs/assets/js/2.40ae62f3.js" defer></script><script src="/docs/assets/js/34.3a6631b3.js" defer></script>
+  </body>
+</html>
