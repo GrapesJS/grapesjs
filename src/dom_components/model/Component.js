@@ -1029,30 +1029,40 @@ const Component = Backbone.Model.extend(Styleable).extend(
       delete obj.traits;
 
       if (this.em.getConfig('avoidDefaults')) {
-        const defaults = result(this, 'defaults');
-
-        forEach(defaults, (value, key) => {
-          if (['type', 'content'].indexOf(key) === -1 && obj[key] === value) {
-            delete obj[key];
-          }
-        });
-
-        if (isEmpty(obj.type)) {
-          delete obj.type;
-        }
-
-        forEach(['attributes', 'style'], prop => {
-          if (isEmpty(defaults[prop]) && isEmpty(obj[prop])) {
-            delete obj[prop];
-          }
-        });
-
-        forEach(['classes', 'components'], prop => {
-          if (isEmpty(defaults[prop]) && !obj[prop].length) {
-            delete obj[prop];
-          }
-        });
+        this.getChangedProps(obj);
       }
+
+      return obj;
+    },
+
+    /**
+     * Return an object containing only changed props
+     */
+    getChangedProps(res) {
+      const obj = res || Backbone.Model.prototype.toJSON.apply(this);
+      const defaults = result(this, 'defaults');
+
+      forEach(defaults, (value, key) => {
+        if (['type', 'content'].indexOf(key) === -1 && obj[key] === value) {
+          delete obj[key];
+        }
+      });
+
+      if (isEmpty(obj.type)) {
+        delete obj.type;
+      }
+
+      forEach(['attributes', 'style'], prop => {
+        if (isEmpty(defaults[prop]) && isEmpty(obj[prop])) {
+          delete obj[prop];
+        }
+      });
+
+      forEach(['classes', 'components'], prop => {
+        if (!obj[prop] || (isEmpty(defaults[prop]) && !obj[prop].length)) {
+          delete obj[prop];
+        }
+      });
 
       return obj;
     },
