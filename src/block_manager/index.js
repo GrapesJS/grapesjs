@@ -179,6 +179,10 @@ export default () => {
      * Remove a block by id
      * @param {string} id Block id
      * @return {Block} Removed block
+     * @example
+     * // Id of the block which need to be removed
+     * const id = 'button';
+     * blockManager.remove(id);
      */
     remove(id) {
       return blocks.remove(id);
