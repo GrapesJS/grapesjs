@@ -115,19 +115,28 @@ export default Backbone.View.extend({
    * Show modal
    * @private
    * */
-  show() {
+  show(opts = {}) {
     this.model.set('open', 1);
+    this.updateAttr(opts.attributes);
+  },
+
+  updateAttr(attr) {
+    const { pfx, $el, el } = this;
+    const currAttr = [].slice.call(el.attributes).map(i => i.name);
+    $el.removeAttr(currAttr.join(' '));
+    $el.attr({
+      ...(attr || {}),
+      class: `${pfx}container ${(attr && attr.class) || ''}`.trim()
+    });
   },
 
   render() {
     const el = this.$el;
-    const pfx = this.pfx;
-    const ppfx = this.ppfx;
     const obj = this.model.toJSON();
     obj.pfx = this.pfx;
     obj.ppfx = this.ppfx;
     el.html(this.template(obj));
-    el.attr('class', `${pfx}container`);
+    this.updateAttr();
     this.updateOpen();
     return this;
   }
