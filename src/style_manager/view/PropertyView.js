@@ -606,7 +606,7 @@ export default Backbone.View.extend({
   },
 
   updateVisibility() {
-    this.el.style.display = this.model.get('visible') ? 'block' : 'none';
+    this.el.style.display = this.model.get('visible') ? '' : 'none';
   },
 
   show() {
