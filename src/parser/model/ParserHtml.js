@@ -271,12 +271,13 @@ export default config => {
      * @return {Object}
      */
     parse(str, parserCss) {
-      var config = (c.em && c.em.get('Config')) || {};
-      var res = { html: '', css: '' };
-      var el = document.createElement('div');
+      const { em } = c;
+      const config = (em && em.get('Config')) || {};
+      const res = { html: '', css: '' };
+      const el = document.createElement('div');
       el.innerHTML = str;
-      var scripts = el.querySelectorAll('script');
-      var i = scripts.length;
+      const scripts = el.querySelectorAll('script');
+      let i = scripts.length;
 
       // Remove all scripts
       if (!config.allowScripts) {
@@ -285,9 +286,9 @@ export default config => {
 
       // Detach style tags and parse them
       if (parserCss) {
-        var styleStr = '';
-        var styles = el.querySelectorAll('style');
-        var j = styles.length;
+        const styles = el.querySelectorAll('style');
+        let j = styles.length;
+        let styleStr = '';
 
         while (j--) {
           styleStr = styles[j].innerHTML + styleStr;
@@ -297,11 +298,9 @@ export default config => {
         if (styleStr) res.css = parserCss.parse(styleStr);
       }
 
-      var result = this.parseNode(el);
-
-      if (result.length == 1) result = result[0];
-
+      const result = this.parseNode(el);
       res.html = result;
+      em && em.trigger('parse:html', { input: str, output: res });
 
       return res;
     }
