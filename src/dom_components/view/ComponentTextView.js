@@ -29,13 +29,19 @@ export default ComponentView.extend({
    * @private
    * */
   onActive(e) {
+    const { rte, em } = this;
+
     // We place this before stopPropagation in case of nested
     // text components will not block the editing (#1394)
-    if (this.rteEnabled || !this.model.get('editable')) {
+    if (
+      this.rteEnabled ||
+      !this.model.get('editable') ||
+      (em && em.isEditing())
+    ) {
       return;
     }
+
     e && e.stopPropagation && e.stopPropagation();
-    const { rte, em } = this;
 
     if (rte) {
       try {
@@ -133,6 +139,7 @@ export default ComponentView.extend({
     }
   },
 
+  /*
   getModelsFromEl(el) {
     const result = [];
     const children = (el || this.el).childNodes;
@@ -142,17 +149,17 @@ export default ComponentView.extend({
       const model = child.__cashData && child.__cashData.model;
 
       if (model) {
-        model.components = this.getModelsFromEl(child);
+        model.attributes.components = this.getModelsFromEl(child);
         if (model.get('content')) {
           model.attributes.content = child.textContent;
         }
-        // TODO add attributes;
         result.push(model);
       }
     }
 
     return result;
   },
+  */
 
   /**
    * Callback on input event
