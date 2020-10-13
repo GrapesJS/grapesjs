@@ -31,7 +31,8 @@ export default Backbone.Collection.extend({
     const coll = this;
     const prev = opts.previousModels || [];
     const toRemove = prev.filter(prev => !models.get(prev.cid));
-    opts.keepIds = getIdsToKeep(prev);
+    const newIds = models.map(i => i.getId());
+    opts.keepIds = getIdsToKeep(prev).filter(pr => newIds.indexOf(pr) >= 0);
     toRemove.forEach(md => this.removeChildren(md, coll, opts));
     models.each(model => this.onAdd(model));
   },
