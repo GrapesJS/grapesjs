@@ -102,12 +102,12 @@ export default ComponentView.extend({
     const content = this.getContent();
     const comps = model.components();
     const contentOpt = { fromDisable: 1, ...opts };
-    comps.length && comps.reset(null, opts);
     model.set('content', '', contentOpt);
 
     // If there is a custom RTE the content is just baked staticly
     // inside 'content'
     if (rte.customRte) {
+      comps.length && comps.reset(null, opts);
       model.set('content', content, contentOpt);
     } else {
       const clean = model => {
@@ -133,33 +133,11 @@ export default ComponentView.extend({
 
       // Avoid re-render on reset with silent option
       !opts.silent && model.trigger('change:content', model, '', contentOpt);
-      comps.add(content, opts);
+      comps.reset(content, opts);
       comps.each(model => clean(model));
       comps.trigger('resetNavigator');
     }
   },
-
-  /*
-  getModelsFromEl(el) {
-    const result = [];
-    const children = (el || this.el).childNodes;
-
-    for (let index = 0; index < children.length; index++) {
-      const child = children[index];
-      const model = child.__cashData && child.__cashData.model;
-
-      if (model) {
-        model.attributes.components = this.getModelsFromEl(child);
-        if (model.get('content')) {
-          model.attributes.content = child.textContent;
-        }
-        result.push(model);
-      }
-    }
-
-    return result;
-  },
-  */
 
   /**
    * Callback on input event

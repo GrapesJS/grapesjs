@@ -299,7 +299,10 @@ export default config => {
       }
 
       const result = this.parseNode(el);
-      res.html = result;
+      // I have to keep it otherwise it breaks the DomComponents.addComponent (returns always array)
+      const resHtml =
+        result.length === 1 && !c.returnArray ? result[0] : result;
+      res.html = resHtml;
       em && em.trigger('parse:html', { input: str, output: res });
 
       return res;

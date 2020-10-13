@@ -9,7 +9,8 @@ describe('ParserHtml', () => {
     var dom = new DomComponents();
     obj = new ParserHtml({
       textTags: ['br', 'b', 'i', 'u'],
-      pStylePrefix: 'gjs-'
+      pStylePrefix: 'gjs-',
+      returnArray: 1
     });
     obj.compTypes = dom.componentTypes;
   });

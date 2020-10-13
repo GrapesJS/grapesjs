@@ -241,13 +241,14 @@ export default Backbone.View.extend({
     const { model, em, el } = this;
 
     if (em && em.getConfig('avoidInlineStyle')) {
-      if (model.get('_innertext')) {
+      const style = model.getStyle();
+      const empty = isEmpty(style);
+      !empty && model.setStyle(style);
+      if (model.get('_innertext') && empty) {
         el.removeAttribute('id');
       } else {
         el.id = model.getId();
       }
-      const style = model.getStyle();
-      !isEmpty(style) && model.setStyle(style);
     } else {
       this.setAttribute('style', model.styleToString());
     }
