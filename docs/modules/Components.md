@@ -684,10 +684,10 @@ use of them for a more generic use case or also listen to them inside other comp
 
 Let's see below the flow of all hooks:
 
-* **Local hook**: `model.init()` method, executed once the model of the component is initiliazed
+* **Local hook**: `model.init()` method, executed once the model of the component is initialized
 * **Global hook**: `component:create` event, called right after `model.init()`. The model is passed as an argument to the callback function.
   Es. `editor.on('component:create', model => console.log('created', model))`
-* **Local hook**: `view.init()` method, executed once the view of the component is initiliazed
+* **Local hook**: `view.init()` method, executed once the view of the component is initialized
 * **Local hook**: `view.onRender()` method, executed once the component is rendered on the canvas
 * **Global hook**: `component:mount` event, called right after `view.onRender()`. The model is passed as an argument to the callback function.
 * **Local hook**: `model.updated()` method, executes when some property of the model is updated.
