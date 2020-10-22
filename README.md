@@ -200,7 +200,7 @@ $ npm test
 * [grapesjs-mjml](https://github.com/artf/grapesjs-mjml) - Newsletter Builder with MJML components
 
 
-Find out more about plugins here: [Creating plugins](https://github.com/artf/grapesjs/wiki/Creating-plugins)
+Find out more about plugins here: [Creating plugins](https://grapesjs.com/docs/modules/Plugins.html)
 
 
 
