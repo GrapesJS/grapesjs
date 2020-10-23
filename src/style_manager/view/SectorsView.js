@@ -149,7 +149,7 @@ export default Backbone.View.extend({
 
     const pt = this.propTarget;
     pt.targets = models;
-    pt.trigger('update');
+    pt.trigger('update', { targets: models });
     return models;
   },
 
