@@ -24970,6 +24970,10 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
      * Remove a block by id
      * @param {string} id Block id
      * @return {Block} Removed block
+     * @example
+     * // Id of the block which need to be removed
+     * const id = 'button';
+     * blockManager.remove(id);
      */
     remove: function remove(id) {
       return blocks.remove(id);
@@ -34434,7 +34438,7 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(dom
     this.frame = opt.frame;
     this.config = opt.config || {};
     this.set('attributes', _objectSpread(_objectSpread({}, this.defaults.attributes || {}), this.get('attributes') || {}));
-    this.ccid = Component.createId(this);
+    this.ccid = Component.createId(this, opt);
     this.initClasses();
     this.initTraits();
     this.initComponents();
@@ -35328,29 +35332,38 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(dom
     delete obj.traits;
 
     if (this.em.getConfig('avoidDefaults')) {
-      var defaults = Object(underscore__WEBPACK_IMPORTED_MODULE_2__["result"])(this, 'defaults');
-      Object(underscore__WEBPACK_IMPORTED_MODULE_2__["forEach"])(defaults, function (value, key) {
-        if (['type', 'content'].indexOf(key) === -1 && obj[key] === value) {
-          delete obj[key];
-        }
-      });
-
-      if (Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isEmpty"])(obj.type)) {
-        delete obj.type;
-      }
-
-      Object(underscore__WEBPACK_IMPORTED_MODULE_2__["forEach"])(['attributes', 'style'], function (prop) {
-        if (Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isEmpty"])(defaults[prop]) && Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isEmpty"])(obj[prop])) {
-          delete obj[prop];
-        }
-      });
-      Object(underscore__WEBPACK_IMPORTED_MODULE_2__["forEach"])(['classes', 'components'], function (prop) {
-        if (Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isEmpty"])(defaults[prop]) && !obj[prop].length) {
-          delete obj[prop];
-        }
-      });
+      this.getChangedProps(obj);
     }
 
+    return obj;
+  },
+
+  /**
+   * Return an object containing only changed props
+   */
+  getChangedProps: function getChangedProps(res) {
+    var obj = res || backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.prototype.toJSON.apply(this);
+    var defaults = Object(underscore__WEBPACK_IMPORTED_MODULE_2__["result"])(this, 'defaults');
+    Object(underscore__WEBPACK_IMPORTED_MODULE_2__["forEach"])(defaults, function (value, key) {
+      if (['type', 'content'].indexOf(key) === -1 && obj[key] === value) {
+        delete obj[key];
+      }
+    });
+
+    if (Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isEmpty"])(obj.type)) {
+      delete obj.type;
+    }
+
+    Object(underscore__WEBPACK_IMPORTED_MODULE_2__["forEach"])(['attributes', 'style'], function (prop) {
+      if (Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isEmpty"])(defaults[prop]) && Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isEmpty"])(obj[prop])) {
+        delete obj[prop];
+      }
+    });
+    Object(underscore__WEBPACK_IMPORTED_MODULE_2__["forEach"])(['classes', 'components'], function (prop) {
+      if (!obj[prop] || Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isEmpty"])(defaults[prop]) && !obj[prop].length) {
+        delete obj[prop];
+      }
+    });
     return obj;
   },
 
@@ -35593,6 +35606,7 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(dom
    * @private
    */
   createId: function createId(model) {
+    var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     var list = Component.getList(model);
 
     var _model$get = model.get('attributes'),
@@ -35601,7 +35615,7 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(dom
     var nextId;
 
     if (id) {
-      nextId = Component.getIncrementId(id, list);
+      nextId = Component.getIncrementId(id, list, opts);
       model.setId(nextId);
     } else {
       nextId = Component.getNewId(list);
@@ -35624,12 +35638,17 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(dom
     return newId;
   },
   getIncrementId: function getIncrementId(id, list) {
+    var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    var _opts$keepIds = opts.keepIds,
+        keepIds = _opts$keepIds === void 0 ? [] : _opts$keepIds;
     var counter = 1;
     var newId = id;
 
-    while (list[newId]) {
-      counter++;
-      newId = "".concat(id, "-").concat(counter);
+    if (keepIds.indexOf(id) < 0) {
+      while (list[newId]) {
+        counter++;
+        newId = "".concat(id, "-").concat(counter);
+      }
     }
 
     return newId;
@@ -35653,14 +35672,17 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(dom
   checkId: function checkId(components) {
     var styles = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
     var list = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    var opts = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
     var comps = Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isArray"])(components) ? components : [components];
+    var _opts$keepIds2 = opts.keepIds,
+        keepIds = _opts$keepIds2 === void 0 ? [] : _opts$keepIds2;
     comps.forEach(function (comp) {
       var _comp$attributes = comp.attributes,
           attributes = _comp$attributes === void 0 ? {} : _comp$attributes,
           components = comp.components;
       var id = attributes.id; // Check if we have collisions with current components
 
-      if (id && list[id]) {
+      if (id && list[id] && keepIds.indexOf(id) < 0) {
         var newId = Component.getIncrementId(id, list);
         attributes.id = newId; // Update passed styles
 
@@ -35672,7 +35694,7 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(dom
         });
       }
 
-      components && Component.checkId(components, styles, list);
+      components && Component.checkId(components, styles, list, opts);
     });
   }
 });
@@ -37038,6 +37060,14 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 
 var Component;
+
+var getIdsToKeep = function getIdsToKeep(prev) {
+  var pr = prev || [];
+  return pr.map(function (comp) {
+    return comp.getId();
+  });
+};
+
 /* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_2___default.a.Collection.extend({
   initialize: function initialize(models) {
     var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -37054,9 +37084,17 @@ var Component;
 
     var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     var coll = this;
-    var _opts$previousModels = opts.previousModels,
-        previousModels = _opts$previousModels === void 0 ? [] : _opts$previousModels;
-    previousModels.forEach(function (md) {
+    var prev = opts.previousModels || [];
+    var toRemove = prev.filter(function (prev) {
+      return !models.get(prev.cid);
+    });
+    var newIds = models.map(function (i) {
+      return i.getId();
+    });
+    opts.keepIds = getIdsToKeep(prev).filter(function (pr) {
+      return newIds.indexOf(pr) >= 0;
+    });
+    toRemove.forEach(function (md) {
       return _this.removeChildren(md, coll, opts);
     });
     models.each(function (model) {
@@ -37083,11 +37121,12 @@ var Component;
       var id = removed.getId();
       var sels = em.get('SelectorManager').getAll();
       var rules = em.get('CssComposer').getAll();
+      var canRemoveStyle = (opts.keepIds || []).indexOf(id) < 0;
       delete allByID[id]; // Remove all component related styles
 
-      var rulesRemoved = rules.remove(rules.filter(function (r) {
+      var rulesRemoved = canRemoveStyle ? rules.remove(rules.filter(function (r) {
         return r.getSelectors().getFullString() === "#".concat(id);
-      })); // Clean selectors
+      })) : []; // Clean selectors
 
       sels.remove(rulesRemoved.map(function (rule) {
         return rule.getSelectors().at(0);
@@ -37159,7 +37198,7 @@ var Component;
     var parsed = em.get('Parser').parseHtml(value); // We need this to avoid duplicate IDs
 
     if (!Component) Component = __webpack_require__(/*! ./Component */ "./src/dom_components/model/Component.js").default;
-    Component.checkId(parsed.html, parsed.css, domc.componentsById);
+    Component.checkId(parsed.html, parsed.css, domc.componentsById, opt);
 
     if (parsed.css && cssc && !opt.temporary) {
       cssc.addCollection(parsed.css, _objectSpread(_objectSpread({}, opt), {}, {
@@ -37173,6 +37212,7 @@ var Component;
     var _this3 = this;
 
     var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    opt.keepIds = getIdsToKeep(opt.previousModels);
 
     if (Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isString"])(models)) {
       models = this.parseString(models, opt);
@@ -37799,15 +37839,15 @@ var compProt = _ComponentView__WEBPACK_IMPORTED_MODULE_2__["default"].prototype;
    * @private
    * */
   onActive: function onActive(e) {
-    // We place this before stopPropagation in case of nested
+    var rte = this.rte,
+        em = this.em; // We place this before stopPropagation in case of nested
     // text components will not block the editing (#1394)
-    if (this.rteEnabled || !this.model.get('editable')) {
+
+    if (this.rteEnabled || !this.model.get('editable') || em && em.isEditing()) {
       return;
     }
 
     e && e.stopPropagation && e.stopPropagation();
-    var rte = this.rte,
-        em = this.em;
 
     if (rte) {
       try {
@@ -37873,11 +37913,11 @@ var compProt = _ComponentView__WEBPACK_IMPORTED_MODULE_2__["default"].prototype;
       fromDisable: 1
     }, opts);
 
-    comps.length && comps.reset(null, opts);
     model.set('content', '', contentOpt); // If there is a custom RTE the content is just baked staticly
     // inside 'content'
 
     if (rte.customRte) {
+      comps.length && comps.reset(null, opts);
       model.set('content', content, contentOpt);
     } else {
       var clean = function clean(model) {
@@ -37904,34 +37944,12 @@ var compProt = _ComponentView__WEBPACK_IMPORTED_MODULE_2__["default"].prototype;
 
 
       !opts.silent && model.trigger('change:content', model, '', contentOpt);
-      comps.add(content, opts);
+      comps.reset(content, opts);
       comps.each(function (model) {
         return clean(model);
       });
       comps.trigger('resetNavigator');
     }
-  },
-  getModelsFromEl: function getModelsFromEl(el) {
-    var result = [];
-    var children = (el || this.el).childNodes;
-
-    for (var index = 0; index < children.length; index++) {
-      var child = children[index];
-      var model = child.__cashData && child.__cashData.model;
-
-      if (model) {
-        model.components = this.getModelsFromEl(child);
-
-        if (model.get('content')) {
-          model.attributes.content = child.textContent;
-        } // TODO add attributes;
-
-
-        result.push(model);
-      }
-    }
-
-    return result;
   },
 
   /**
@@ -38433,14 +38451,15 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
         el = this.el;
 
     if (em && em.getConfig('avoidInlineStyle')) {
-      if (model.get('_innertext')) {
+      var style = model.getStyle();
+      var empty = Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isEmpty"])(style);
+      !empty && model.setStyle(style);
+
+      if (model.get('_innertext') && empty) {
         el.removeAttribute('id');
       } else {
         el.id = model.getId();
       }
-
-      var style = model.getStyle();
-      !Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isEmpty"])(style) && model.setStyle(style);
     } else {
       this.setAttribute('style', model.styleToString());
     }
@@ -39713,7 +39732,7 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
   upArrowClick: function upArrowClick() {
     var model = this.model;
     var step = model.get('step');
-    var value = parseInt(model.get('value'), 10);
+    var value = parseFloat(model.get('value'));
     value = this.normalizeValue(value + step);
     var valid = this.validateInputValue(value);
     model.set('value', valid.value);
@@ -39726,7 +39745,7 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
   downArrowClick: function downArrowClick() {
     var model = this.model;
     var step = model.get('step');
-    var value = parseInt(model.get('value'), 10);
+    var value = parseFloat(model.get('value'));
     var val = this.normalizeValue(value - step);
     var valid = this.validateInputValue(val);
     model.set('value', valid.value);
@@ -40306,6 +40325,9 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
  * ### Modal
  * * `modal:open` - Modal is opened
  * * `modal:close` - Modal is closed
+ * ### Parser
+ * * `parse:html` - On HTML parse, an object containing the input and the output of the parser is passed as an argument
+ * * `parse:css` - On CSS parse, an object containing the input and the output of the parser is passed as an argument
  * ### Commands
  * * `run:{commandName}` - Triggered when some command is called to run (eg. editor.runCommand('preview'))
  * * `stop:{commandName}` - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
@@ -40898,7 +40920,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 
 backbone__WEBPACK_IMPORTED_MODULE_3___default.a.$ = cash_dom__WEBPACK_IMPORTED_MODULE_2__["default"];
-var deps = [__webpack_require__(/*! utils */ "./src/utils/index.js"), __webpack_require__(/*! i18n */ "./src/i18n/index.js"), __webpack_require__(/*! keymaps */ "./src/keymaps/index.js"), __webpack_require__(/*! undo_manager */ "./src/undo_manager/index.js"), __webpack_require__(/*! storage_manager */ "./src/storage_manager/index.js"), __webpack_require__(/*! device_manager */ "./src/device_manager/index.js"), __webpack_require__(/*! parser */ "./src/parser/index.js"), __webpack_require__(/*! selector_manager */ "./src/selector_manager/index.js"), __webpack_require__(/*! style_manager */ "./src/style_manager/index.js"), __webpack_require__(/*! modal_dialog */ "./src/modal_dialog/index.js"), __webpack_require__(/*! code_manager */ "./src/code_manager/index.js"), __webpack_require__(/*! panels */ "./src/panels/index.js"), __webpack_require__(/*! rich_text_editor */ "./src/rich_text_editor/index.js"), __webpack_require__(/*! asset_manager */ "./src/asset_manager/index.js"), __webpack_require__(/*! css_composer */ "./src/css_composer/index.js"), __webpack_require__(/*! trait_manager */ "./src/trait_manager/index.js"), __webpack_require__(/*! dom_components */ "./src/dom_components/index.js"), __webpack_require__(/*! navigator */ "./src/navigator/index.js"), __webpack_require__(/*! canvas */ "./src/canvas/index.js"), __webpack_require__(/*! commands */ "./src/commands/index.js"), __webpack_require__(/*! block_manager */ "./src/block_manager/index.js")];
+var deps = [__webpack_require__(/*! utils */ "./src/utils/index.js"), __webpack_require__(/*! i18n */ "./src/i18n/index.js"), __webpack_require__(/*! keymaps */ "./src/keymaps/index.js"), __webpack_require__(/*! undo_manager */ "./src/undo_manager/index.js"), __webpack_require__(/*! storage_manager */ "./src/storage_manager/index.js"), __webpack_require__(/*! device_manager */ "./src/device_manager/index.js"), __webpack_require__(/*! parser */ "./src/parser/index.js"), __webpack_require__(/*! style_manager */ "./src/style_manager/index.js"), __webpack_require__(/*! selector_manager */ "./src/selector_manager/index.js"), __webpack_require__(/*! modal_dialog */ "./src/modal_dialog/index.js"), __webpack_require__(/*! code_manager */ "./src/code_manager/index.js"), __webpack_require__(/*! panels */ "./src/panels/index.js"), __webpack_require__(/*! rich_text_editor */ "./src/rich_text_editor/index.js"), __webpack_require__(/*! asset_manager */ "./src/asset_manager/index.js"), __webpack_require__(/*! css_composer */ "./src/css_composer/index.js"), __webpack_require__(/*! trait_manager */ "./src/trait_manager/index.js"), __webpack_require__(/*! dom_components */ "./src/dom_components/index.js"), __webpack_require__(/*! navigator */ "./src/navigator/index.js"), __webpack_require__(/*! canvas */ "./src/canvas/index.js"), __webpack_require__(/*! commands */ "./src/commands/index.js"), __webpack_require__(/*! block_manager */ "./src/block_manager/index.js")];
 var Collection = backbone__WEBPACK_IMPORTED_MODULE_3___default.a.Collection;
 var timedInterval;
 var updateItr;
@@ -42287,7 +42309,7 @@ var defaultConfig = {
   editors: editors,
   plugins: plugins,
   // Will be replaced on build
-  version: '0.16.25',
+  version: '0.16.26',
 
   /**
    * Initialize the editor with passed options
@@ -42716,13 +42738,14 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
      * @param {Object} [opts={}] Options
      * @param {String|HTMLElement} [opts.title] Title to set for the modal
      * @param {String|HTMLElement} [opts.content] Content to set for the modal
+     * @param {Object} [opts.attributes] Updates the modal wrapper with custom attributes
      * @return {this}
      */
     open: function open() {
       var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
       opts.title && this.setTitle(opts.title);
       opts.content && this.setContent(opts.content);
-      modal.show();
+      modal.show(opts);
       return this;
     },
 
@@ -42868,10 +42891,18 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_1__);
 
-/* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_0___default.a.View.extend({
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+
+/* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_1___default.a.View.extend({
   template: function template(_ref) {
     var pfx = _ref.pfx,
         ppfx = _ref.ppfx,
@@ -42977,17 +43008,29 @@ __webpack_require__.r(__webpack_exports__);
    * @private
    * */
   show: function show() {
+    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     this.model.set('open', 1);
+    this.updateAttr(opts.attributes);
+  },
+  updateAttr: function updateAttr(attr) {
+    var pfx = this.pfx,
+        $el = this.$el,
+        el = this.el;
+    var currAttr = [].slice.call(el.attributes).map(function (i) {
+      return i.name;
+    });
+    $el.removeAttr(currAttr.join(' '));
+    $el.attr(_objectSpread(_objectSpread({}, attr || {}), {}, {
+      class: "".concat(pfx, "container ").concat(attr && attr.class || '').trim()
+    }));
   },
   render: function render() {
     var el = this.$el;
-    var pfx = this.pfx;
-    var ppfx = this.ppfx;
     var obj = this.model.toJSON();
     obj.pfx = this.pfx;
     obj.ppfx = this.ppfx;
     el.html(this.template(obj));
-    el.attr('class', "".concat(pfx, "container"));
+    this.updateAttr();
     this.updateOpen();
     return this;
   }
@@ -45184,12 +45227,15 @@ __webpack_require__.r(__webpack_exports__);
 
       var result = [];
       var parserCss = config.parserCss,
-          _config$em = config.em,
-          em = _config$em === void 0 ? {} : _config$em;
+          em = config.em;
       var editor = em && em.get && em.get('Editor');
       var nodes = parserCss ? parserCss(str, editor) : Object(_BrowserParserCss__WEBPACK_IMPORTED_MODULE_1__["default"])(str);
       nodes.forEach(function (node) {
         return result = result.concat(_this.checkNode(node));
+      });
+      em && em.trigger('parse:css', {
+        input: str,
+        output: result
       });
       return result;
     },
@@ -45511,7 +45557,8 @@ __webpack_require__.r(__webpack_exports__);
      * @return {Object}
      */
     parse: function parse(str, parserCss) {
-      var config = c.em && c.em.get('Config') || {};
+      var em = c.em;
+      var config = em && em.get('Config') || {};
       var res = {
         html: '',
         css: ''
@@ -45529,9 +45576,9 @@ __webpack_require__.r(__webpack_exports__);
 
 
       if (parserCss) {
-        var styleStr = '';
         var styles = el.querySelectorAll('style');
         var j = styles.length;
+        var styleStr = '';
 
         while (j--) {
           styleStr = styles[j].innerHTML + styleStr;
@@ -45541,9 +45588,14 @@ __webpack_require__.r(__webpack_exports__);
         if (styleStr) res.css = parserCss.parse(styleStr);
       }
 
-      var result = this.parseNode(el);
-      if (result.length == 1) result = result[0];
-      res.html = result;
+      var result = this.parseNode(el); // I have to keep it otherwise it breaks the DomComponents.addComponent (returns always array)
+
+      var resHtml = result.length === 1 && !c.returnArray ? result[0] : result;
+      res.html = resHtml;
+      em && em.trigger('parse:html', {
+        input: str,
+        output: res
+      });
       return res;
     }
   };
@@ -46091,7 +46143,7 @@ var defActions = {
       title: 'Strike-through'
     },
     result: function result(rte) {
-      return rte.insertHTML("<s>".concat(rte.selection(), "</s>"));
+      return rte.exec('strikeThrough');
     }
   },
   link: {
@@ -47199,14 +47251,14 @@ __webpack_require__.r(__webpack_exports__);
     this.stateInputC = this.pfx + 'input-c';
     this.states = this.config.states || [];
     var em = this.config.em;
-    var emitter = this.getStyleEmitter();
     var coll = this.collection;
     this.target = this.config.em;
     this.em = em;
+    var emitter = this.getStyleEmitter();
     var toList = 'component:toggled component:update:classes';
     var toListCls = 'component:update:classes change:state';
     this.listenTo(em, toList, this.componentChanged);
-    this.listenTo(emitter, 'styleManager:update', this.componentChanged);
+    this.listenTo(emitter, 'update', this.componentChanged);
     this.listenTo(em, toListCls, this.__handleStateChange);
     this.listenTo(em, 'styleable:change change:device', this.checkSync); // component:styleUpdate
 
@@ -52394,7 +52446,7 @@ var clearProp = 'data-clear-style';
     requires && Object.keys(requires).forEach(function (property) {
       em && em.on("component:styleUpdate:".concat(property), _this.targetUpdated);
     });
-    this.listenTo(this.propTarget, 'update styleManager:update', this.targetUpdated);
+    this.listenTo(this.propTarget, 'update', this.targetUpdated);
     this.listenTo(model, 'destroy remove', this.remove);
     this.listenTo(model, 'change:value', this.modelValueChanged);
     this.listenTo(model, 'targetUpdated', this.targetUpdated);
@@ -52923,7 +52975,7 @@ var clearProp = 'data-clear-style';
     return this.input;
   },
   updateVisibility: function updateVisibility() {
-    this.el.style.display = this.model.get('visible') ? 'block' : 'none';
+    this.el.style.display = this.model.get('visible') ? '' : 'none';
   },
   show: function show() {
     this.model.set('visible', 1);
@@ -53065,7 +53117,7 @@ __webpack_require__.r(__webpack_exports__);
         show = 1;
       }
     });
-    this.el.style.display = show ? 'block' : 'none';
+    this.el.style.display = show ? '' : 'none';
   },
 
   /**
@@ -53320,7 +53372,9 @@ var helperCls = 'hc-state';
     });
     var pt = this.propTarget;
     pt.targets = models;
-    pt.trigger('update');
+    pt.trigger('update', {
+      targets: models
+    });
     return models;
   },
 
