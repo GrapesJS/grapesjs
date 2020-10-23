@@ -83,6 +83,8 @@ const LandingPage = {
 // ...
 const editor = grapesjs.init({
   ...
+  // If set to true, then the content within the wrapper element overrides the following config,
+  fromElement: false,
   // The `components` accepts HTML string or a JSON of components
   // Here, at first, we check and use components if are already defined, otherwise
   // the HTML string gonna be used
