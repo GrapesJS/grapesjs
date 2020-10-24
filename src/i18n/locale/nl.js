@@ -5,7 +5,7 @@ export default {
     addButton: 'Afbeelding toevoegen',
     inputPlh: 'http://path/to/the/image.jpg',
     modalTitle: 'Selecteer afbeelding',
-    uploadTitle: 'Drop files here or click to upload'
+    uploadTitle: 'Zet bestanden hier neer of klik om te uploaden'
   },
   // Here just as a reference, GrapesJS core doesn't contain any block,
   // so this should be omitted from other local files

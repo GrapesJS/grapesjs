@@ -7,6 +7,7 @@ import {
   isTaggableNode,
   getViewEl
 } from 'utils/mixins';
+import { isVisible, isDoc } from 'utils/dom';
 import ToolbarView from 'dom_components/view/ToolbarView';
 import Toolbar from 'dom_components/model/Toolbar';
 
@@ -40,7 +41,8 @@ export default {
       'onOut',
       'onClick',
       'onFrameScroll',
-      'onFrameUpdated'
+      'onFrameUpdated',
+      'onContainerChange'
     );
   },
 
@@ -73,8 +75,11 @@ export default {
    * */
   toggleSelectComponent(enable) {
     const { em } = this;
+    const listenToEl = em.getConfig('listenToEl');
+    const { parentNode } = em.getContainer();
     const method = enable ? 'on' : 'off';
     const methods = { on, off };
+    !listenToEl.length && parentNode && listenToEl.push(parentNode);
     const trigger = (win, body) => {
       methods[method](body, 'mouseover', this.onHover);
       methods[method](body, 'mouseleave', this.onOut);
@@ -82,6 +87,7 @@ export default {
       methods[method](win, 'scroll', this.onFrameScroll);
     };
     methods[method](window, 'resize', this.onFrameUpdated);
+    methods[method](listenToEl, 'scroll', this.onContainerChange);
     em[method]('component:toggled', this.onSelect, this);
     em[method]('change:componentHovered', this.onHovered, this);
     em[method](
@@ -91,6 +97,7 @@ export default {
     );
     em[method]('change:canvasOffset', this.updateAttached, this);
     em[method]('frame:updated', this.onFrameUpdated, this);
+    em[method]('canvas:updateTools', this.onFrameUpdated, this);
     em.get('Canvas')
       .getFrames()
       .forEach(frame => {
@@ -115,7 +122,7 @@ export default {
     // Get first valid model
     if (!model) {
       let parent = $el.parent();
-      while (!model && parent.length > 0) {
+      while (!model && parent.length && !isDoc(parent[0])) {
         model = parent.data('model');
         parent = parent.parent();
       }
@@ -167,7 +174,7 @@ export default {
     let el = view && view.el;
     let result = {};
 
-    if (el) {
+    if (el && isVisible(el)) {
       const pos = this.getElementPos(el);
       result = { el, pos, component, view: getViewEl(el) };
     }
@@ -176,6 +183,7 @@ export default {
     this.updateToolsGlobal();
     // This will hide some elements from the select component
     this.updateToolsLocal(result);
+    this.initResize(component);
   }),
 
   updateGlobalPos() {
@@ -203,6 +211,8 @@ export default {
   onOut() {
     this.currentDoc = null;
     this.em.setHovered(0);
+    this.elHovered = 0;
+    this.updateToolsLocal();
     this.canvas.getFrames().forEach(frame => {
       const { view } = frame;
       const el = view && view.getToolsEl();
@@ -288,7 +298,7 @@ export default {
 
     if (!model) {
       let parent = $el.parent();
-      while (!model && parent.length > 0) {
+      while (!model && parent.length && !isDoc(parent[0])) {
         model = parent.data('model');
         parent = parent.parent();
       }
@@ -312,54 +322,7 @@ export default {
    */
   select(model, event = {}) {
     if (!model) return;
-    const ctrlKey = event.ctrlKey || event.metaKey;
-    const { shiftKey } = event;
-    const { editor, em } = this;
-    const multiple = editor.getConfig('multipleSelection');
-
-    if (ctrlKey && multiple) {
-      editor.selectToggle(model);
-    } else if (shiftKey && multiple) {
-      em.clearSelection(editor.Canvas.getWindow());
-      const coll = model.collection;
-      const index = coll.indexOf(model);
-      const selAll = editor.getSelectedAll();
-      let min, max;
-
-      // Fin min and max siblings
-      editor.getSelectedAll().forEach(sel => {
-        const selColl = sel.collection;
-        const selIndex = selColl.indexOf(sel);
-        if (selColl === coll) {
-          if (selIndex < index) {
-            // First model BEFORE the selected one
-            min = isUndefined(min) ? selIndex : Math.max(min, selIndex);
-          } else if (selIndex > index) {
-            // First model AFTER the selected one
-            max = isUndefined(max) ? selIndex : Math.min(max, selIndex);
-          }
-        }
-      });
-
-      if (!isUndefined(min)) {
-        while (min !== index) {
-          editor.selectAdd(coll.at(min));
-          min++;
-        }
-      }
-
-      if (!isUndefined(max)) {
-        while (max !== index) {
-          editor.selectAdd(coll.at(max));
-          max--;
-        }
-      }
-
-      editor.selectAdd(model);
-    } else {
-      editor.select(model, { scroll: {} });
-    }
-
+    this.editor.select(model, { scroll: {}, event });
     this.initResize(model);
   },
 
@@ -422,8 +385,7 @@ export default {
     const resizeClass = `${pfx}resizing`;
     const model =
       !isElement(elem) && isTaggableNode(elem) ? elem : em.getSelected();
-    const resizable = model.get('resizable');
-    const el = isElement(elem) ? elem : model.getEl();
+    const resizable = model && model.get('resizable');
     let options = {};
     let modelToStyle;
 
@@ -441,6 +403,7 @@ export default {
     };
 
     if (editor && resizable) {
+      const el = isElement(elem) ? elem : model.getEl();
       options = {
         // Here the resizer is updated with the current element height and width
         onStart(e, opts = {}) {
@@ -708,27 +671,18 @@ export default {
     style.height = pos.height + unit;
 
     this.updateToolbarPos({ top: targetToElem.top, left: targetToElem.left });
-
-    // const { resizer, em } = this;
-    // const model = em.getSelected();
-    // const el = model && model.getEl();
-    // if (!el) return;
-
-    // if (el && this.elSelected !== el) {
-    //   this.elSelected = el;
-    //   const pos = this.getElementPos(el);
-    //   this.updateToolbarPos(el, pos);
-    //   this.showFixedElementOffset(el, pos);
-    //   resizer && resizer.updateContainer();
-    // }
   },
 
   /**
    * Update attached elements, eg. component toolbar
    */
   updateAttached: debounce(function() {
-    this.updateToolsGlobal();
+    this.updateGlobalPos();
   }),
+
+  onContainerChange: debounce(function() {
+    this.em.refreshCanvas();
+  }, 150),
 
   /**
    * Returns element's data info
@@ -781,6 +735,5 @@ export default {
     this.onOut();
     this.toggleToolsEl();
     editor && editor.stopCommand('resize');
-    this.editor = 0;
   }
 };

@@ -87,6 +87,9 @@
  * ### Modal
  * * `modal:open` - Modal is opened
  * * `modal:close` - Modal is closed
+ * ### Parser
+ * * `parse:html` - On HTML parse, an object containing the input and the output of the parser is passed as an argument
+ * * `parse:css` - On CSS parse, an object containing the input and the output of the parser is passed as an argument
  * ### Commands
  * * `run:{commandName}` - Triggered when some command is called to run (eg. editor.runCommand('preview'))
  * * `stop:{commandName}` - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
@@ -247,6 +250,7 @@ export default (config = {}) => {
     /**
      * Set components inside editor's canvas. This method overrides actual components
      * @param {Array<Object>|Object|string} components HTML string or components model
+     * @param {Object} opt the options object to be used by the [setComponents]{@link em#setComponents} method
      * @return {this}
      * @example
      * editor.setComponents('<div class="cls">New component</div>');
@@ -257,8 +261,8 @@ export default (config = {}) => {
      *   content: 'New component'
      * });
      */
-    setComponents(components) {
-      em.setComponents(components);
+    setComponents(components, opt = {}) {
+      em.setComponents(components, opt);
       return this;
     },
 
@@ -294,6 +298,7 @@ export default (config = {}) => {
     /**
      * Set style inside editor's canvas. This method overrides actual style
      * @param {Array<Object>|Object|string} style CSS string or style model
+     * @param {Object} opt the options object to be used by the [setStyle]{@link em#setStyle} method
      * @return {this}
      * @example
      * editor.setStyle('.cls{color: red}');
@@ -303,8 +308,8 @@ export default (config = {}) => {
      *   style: { color: 'red' }
      * });
      */
-    setStyle(style) {
-      em.setStyle(style);
+    setStyle(style, opt = {}) {
+      em.setStyle(style, opt);
       return this;
     },
 
@@ -479,17 +484,16 @@ export default (config = {}) => {
     },
 
     /**
-     * Update editor dimensions and refresh data useful for positioning of tools
+     * Update editor dimension offsets
      *
      * This method could be useful when you update, for example, some position
      * of the editor element (eg. canvas, panels, etc.) with CSS, where without
-     * refresh you'll get misleading position of tools (eg. rich text editor,
-     * component highlighter, etc.)
-     *
-     * @private
+     * refresh you'll get misleading position of tools
+     * @param {Object} [options] Options
+     * @param {Boolean} [options.tools=false] Update the position of tools (eg. rich text editor, component highlighter, etc.)
      */
-    refresh() {
-      em.refreshCanvas();
+    refresh(opts) {
+      em.refreshCanvas(opts);
     },
 
     /**

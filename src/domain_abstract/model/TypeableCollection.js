@@ -124,6 +124,11 @@ export default {
         ? view
         : ViewInst.extend(view || {});
 
+    // New API
+    if (this.extendViewApi && !definition.model && !definition.view) {
+      view = view.extend(definition);
+    }
+
     if (type) {
       type.model = model;
       type.view = view;

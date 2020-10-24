@@ -37,6 +37,7 @@ Open the modal window
 -   `opts` **[Object][11]** Options (optional, default `{}`)
     -   `opts.title` **([String][12] \| [HTMLElement][13])?** Title to set for the modal
     -   `opts.content` **([String][12] \| [HTMLElement][13])?** Content to set for the modal
+    -   `opts.attributes` **[Object][11]?** Updates the modal wrapper with custom attributes
 
 Returns **this** 
 

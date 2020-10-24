@@ -18,6 +18,8 @@ import PropertyIntegerView from './../view/PropertyIntegerView';
 import PropertyView from './../view/PropertyView';
 
 export default Backbone.Collection.extend(TypeableCollection).extend({
+  extendViewApi: 1,
+
   types: [
     {
       id: 'stack',

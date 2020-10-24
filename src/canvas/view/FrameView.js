@@ -259,6 +259,7 @@ export default Backbone.View.extend({
     const win = this.getWindow();
     const conf = em.get('Config');
     const extStyles = [];
+    win._isEditor = true;
 
     config.styles.forEach(href =>
       extStyles.push(

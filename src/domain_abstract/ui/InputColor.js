@@ -87,6 +87,7 @@ export default Input.extend({
 
         // config expanded here so that the functions below are not overridden
         ...colorPickerConfig,
+        ...(model.get('colorPicker') || {}),
 
         move(color) {
           const cl = getColor(color);

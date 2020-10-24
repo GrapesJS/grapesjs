@@ -49,6 +49,7 @@ export default ComponentView.extend({
     }
 
     this.el.innerHTML = content;
+    this.postRender();
     return this;
   }
 });

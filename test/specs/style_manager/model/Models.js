@@ -664,7 +664,7 @@ describe('PropertyFactory', () => {
         { name: 'Comic Sans MS', value: 'Comic Sans MS, cursive' + ss },
         { name: 'Courier New', value: 'Courier New, Courier' + ms },
         { name: 'Georgia', value: 'Georgia, serif' },
-        { name: 'Helvetica', value: 'Helvetica, serif' },
+        { name: 'Helvetica', value: 'Helvetica' + ss },
         { name: 'Impact', value: 'Impact, Charcoal' + ss },
         {
           name: 'Lucida Sans Unicode',

@@ -97,7 +97,7 @@ describe('StyleManager', () => {
     test("Can't get properties without proper name", () => {
       obj.addSector('test', {});
       obj.addProperty('test', [{}, {}]);
-      expect(obj.getProperty('test', 'test-prop')).toEqual([]);
+      expect(obj.getProperty('test', 'test-prop')).toEqual(null);
     });
 
     test('Get property with proper name', () => {
@@ -109,11 +109,11 @@ describe('StyleManager', () => {
 
     test('Get properties with proper name', () => {
       obj.addSector('test', {});
-      var prop1 = obj.addProperty('test', [
+      obj.addProperty('test', [
         { property: 'test-prop' },
         { property: 'test-prop' }
       ]);
-      expect(obj.getProperty('test', 'test-prop').length).toEqual(2);
+      expect(obj.getProperty('test', 'test-prop')).toBeTruthy();
     });
 
     test('Get inexistent properties', () => {

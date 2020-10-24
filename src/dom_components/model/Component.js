@@ -179,7 +179,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
         ...(this.defaults.attributes || {}),
         ...(this.get('attributes') || {})
       });
-      this.ccid = Component.createId(this);
+      this.ccid = Component.createId(this, opt);
       this.initClasses();
       this.initTraits();
       this.initComponents();
@@ -373,6 +373,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
     /**
      * Update attributes of the component
      * @param {Object} attrs Key value attributes
+     * @param {Object} options Options for the model update
      * @return {this}
      * @example
      * component.setAttributes({ id: 'test', 'data-key': 'value' });
@@ -385,13 +386,14 @@ const Component = Backbone.Model.extend(Styleable).extend(
     /**
      * Add attributes to the component
      * @param {Object} attrs Key value attributes
+     * @param {Object} options Options for the model update
      * @return {this}
      * @example
      * component.addAttributes({ 'data-key': 'value' });
      */
-    addAttributes(attrs) {
+    addAttributes(attrs, opts = {}) {
       const newAttrs = { ...this.getAttributes(), ...attrs };
-      this.setAttributes(newAttrs);
+      this.setAttributes(newAttrs, opts);
 
       return this;
     },
@@ -552,8 +554,9 @@ const Component = Backbone.Model.extend(Styleable).extend(
 
     initClasses() {
       const event = 'change:classes';
+      const attrCls = this.get('attributes').class || [];
       const toListen = [this, event, this.initClasses];
-      const cls = this.get('classes') || [];
+      const cls = this.get('classes') || attrCls;
       const clsArr = isString(cls) ? cls.split(' ') : cls;
       this.stopListening(...toListen);
       const classes = this.normalizeClasses(clsArr);
@@ -1026,30 +1029,40 @@ const Component = Backbone.Model.extend(Styleable).extend(
       delete obj.traits;
 
       if (this.em.getConfig('avoidDefaults')) {
-        const defaults = result(this, 'defaults');
-
-        forEach(defaults, (value, key) => {
-          if (['type', 'content'].indexOf(key) === -1 && obj[key] === value) {
-            delete obj[key];
-          }
-        });
-
-        if (isEmpty(obj.type)) {
-          delete obj.type;
-        }
-
-        forEach(['attributes', 'style'], prop => {
-          if (isEmpty(defaults[prop]) && isEmpty(obj[prop])) {
-            delete obj[prop];
-          }
-        });
-
-        forEach(['classes', 'components'], prop => {
-          if (isEmpty(defaults[prop]) && !obj[prop].length) {
-            delete obj[prop];
-          }
-        });
+        this.getChangedProps(obj);
       }
+
+      return obj;
+    },
+
+    /**
+     * Return an object containing only changed props
+     */
+    getChangedProps(res) {
+      const obj = res || Backbone.Model.prototype.toJSON.apply(this);
+      const defaults = result(this, 'defaults');
+
+      forEach(defaults, (value, key) => {
+        if (['type', 'content'].indexOf(key) === -1 && obj[key] === value) {
+          delete obj[key];
+        }
+      });
+
+      if (isEmpty(obj.type)) {
+        delete obj.type;
+      }
+
+      forEach(['attributes', 'style'], prop => {
+        if (isEmpty(defaults[prop]) && isEmpty(obj[prop])) {
+          delete obj[prop];
+        }
+      });
+
+      forEach(['classes', 'components'], prop => {
+        if (!obj[prop] || (isEmpty(defaults[prop]) && !obj[prop].length)) {
+          delete obj[prop];
+        }
+      });
 
       return obj;
     },
@@ -1277,13 +1290,13 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * @return {string}
      * @private
      */
-    createId(model) {
+    createId(model, opts = {}) {
       const list = Component.getList(model);
       let { id } = model.get('attributes');
       let nextId;
 
       if (id) {
-        nextId = Component.getIncrementId(id, list);
+        nextId = Component.getIncrementId(id, list, opts);
         model.setId(nextId);
       } else {
         nextId = Component.getNewId(list);
@@ -1307,13 +1320,16 @@ const Component = Backbone.Model.extend(Styleable).extend(
       return newId;
     },
 
-    getIncrementId(id, list) {
+    getIncrementId(id, list, opts = {}) {
+      const { keepIds = [] } = opts;
       let counter = 1;
       let newId = id;
 
-      while (list[newId]) {
-        counter++;
-        newId = `${id}-${counter}`;
+      if (keepIds.indexOf(id) < 0) {
+        while (list[newId]) {
+          counter++;
+          newId = `${id}-${counter}`;
+        }
       }
 
       return newId;
@@ -1334,14 +1350,15 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * (are not Components/CSSRules yet), for duplicated id and fixes them
      * This method is used in Components.js just after the parsing
      */
-    checkId(components, styles = [], list = {}) {
+    checkId(components, styles = [], list = {}, opts = {}) {
       const comps = isArray(components) ? components : [components];
+      const { keepIds = [] } = opts;
       comps.forEach(comp => {
         const { attributes = {}, components } = comp;
         const { id } = attributes;
 
         // Check if we have collisions with current components
-        if (id && list[id]) {
+        if (id && list[id] && keepIds.indexOf(id) < 0) {
           const newId = Component.getIncrementId(id, list);
           attributes.id = newId;
           // Update passed styles
@@ -1354,7 +1371,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
             });
         }
 
-        components && Component.checkId(components, styles, list);
+        components && Component.checkId(components, styles, list, opts);
       });
     }
   }
