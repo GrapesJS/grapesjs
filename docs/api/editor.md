@@ -111,6 +111,11 @@ editor.on('EVENT-NAME', (some, argument) => {
 -   `modal:open` - Modal is opened
 -   `modal:close` - Modal is closed
 
+### Parser
+
+-   `parse:html` - On HTML parse, an object containing the input and the output of the parser is passed as an argument
+-   `parse:css` - On CSS parse, an object containing the input and the output of the parser is passed as an argument
+
 ### Commands
 
 -   `run:{commandName}` - Triggered when some command is called to run (eg. editor.runCommand('preview'))
@@ -445,6 +450,20 @@ Return the count of changes made to the content and not yet stored.
 This count resets at any `store()`
 
 Returns **[number][10]** 
+
+## refresh
+
+Update editor dimension offsets
+
+This method could be useful when you update, for example, some position
+of the editor element (eg. canvas, panels, etc.) with CSS, where without
+refresh you'll get misleading position of tools
+
+### Parameters
+
+-   `opts`  
+-   `options` **[Object][3]?** Options
+    -   `options.tools` **[Boolean][4]** Update the position of tools (eg. rich text editor, component highlighter, etc.) (optional, default `false`)
 
 ## setCustomRte
 

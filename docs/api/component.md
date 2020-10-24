@@ -548,6 +548,14 @@ component.toHTML({
 
 Returns **[String][1]** HTML string
 
+## getChangedProps
+
+Return an object containing only changed props
+
+### Parameters
+
+-   `res`  
+
 ## getId
 
 Return the component id
@@ -632,6 +640,7 @@ This method is used in Components.js just after the parsing
 -   `components`  
 -   `styles`   (optional, default `[]`)
 -   `list`   (optional, default `{}`)
+-   `opts`   (optional, default `{}`)
 
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 

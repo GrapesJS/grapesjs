@@ -114,6 +114,14 @@ Remove a block by id
 
 -   `id` **[string][12]** Block id
 
+### Examples
+
+```javascript
+// Id of the block which need to be removed
+const id = 'button';
+blockManager.remove(id);
+```
+
 Returns **Block** Removed block
 
 ## getCategories
