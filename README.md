@@ -193,6 +193,9 @@ $ npm test
 * [grapesjs-firestore](https://github.com/artf/grapesjs-firestore) - Storage wrapper for [Cloud Firestore](https://firebase.google.com/docs/firestore)
 * [grapesjs-parser-postcss](https://github.com/artf/grapesjs-parser-postcss) - Custom CSS parser for GrapesJS by using [PostCSS](https://github.com/postcss/postcss)
 * [grapesjs-typed](https://github.com/artf/grapesjs-typed) - Typed component made by wrapping Typed.js library
+* [grapesjs-accordion](https://github.com/Anubhavjain786/grapesjs-accordion) - Simple accordion component
+* [grapesjs-table](https://github.com/Anubhavjain786/grapesjs-table) -  Simple table component
+
 
 ### Presets
 * [grapesjs-preset-webpage](https://github.com/artf/grapesjs-preset-webpage) - Webpage Builder
