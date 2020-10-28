@@ -31,15 +31,16 @@ export default Backbone.View.extend({
    * @return Object Object created
    * */
   addToCollection(model, fragmentEl) {
-    var fragment = fragmentEl || null;
-    var viewObject = ButtonView;
-
-    var view = new viewObject({
+    const fragment = fragmentEl || null;
+    const viewObject = ButtonView;
+    const el = model.get('el');
+    const view = new viewObject({
+      el,
       model,
       config: this.config,
       parentM: this.parentM
     });
-    var rendered = view.render().el;
+    const rendered = view.render().el;
 
     if (fragment) {
       fragment.appendChild(rendered);
