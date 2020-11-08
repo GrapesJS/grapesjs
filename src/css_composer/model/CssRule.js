@@ -41,8 +41,16 @@ export default Backbone.Model.extend(Styleable).extend({
 
   initialize(c, opt = {}) {
     this.config = c || {};
+    this.opt = opt;
     this.em = opt.em;
     this.ensureSelectors();
+  },
+
+  clone() {
+    const opts = { ...this.opt };
+    const attr = { ...this.attributes };
+    attr.selectors = this.get('selectors').map(s => s.clone());
+    return new this.constructor(attr, opts);
   },
 
   ensureSelectors() {

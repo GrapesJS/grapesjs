@@ -861,9 +861,10 @@ const Component = Backbone.Model.extend(Styleable).extend(
      */
     clone() {
       const em = this.em;
-      const style = this.getStyle();
       const attr = { ...this.attributes };
       const opts = { ...this.opt };
+      const id = this.getId();
+      const cssc = em && em.get('CssComposer');
       attr.attributes = { ...attr.attributes };
       delete attr.attributes.id;
       attr.components = [];
@@ -884,14 +885,19 @@ const Component = Backbone.Model.extend(Styleable).extend(
       attr.view = '';
       opts.collection = null;
 
-      if (em && em.getConfig('avoidInlineStyle') && !isEmpty(style)) {
-        attr.style = style;
-      }
-
       const cloned = new this.constructor(attr, opts);
       const event = 'component:clone';
       em && em.trigger(event, cloned);
       this.trigger(event, cloned);
+
+      // Clone component specific rules
+      const newId = `#${cloned.getId()}`;
+      const rulesToClone = cssc ? cssc.getRules(`#${id}`) : [];
+      rulesToClone.forEach(rule => {
+        const newRule = rule.clone();
+        newRule.set('selectors', [newId]);
+        cssc.getAll().add(newRule);
+      });
 
       return cloned;
     },

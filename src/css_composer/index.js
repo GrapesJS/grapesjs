@@ -374,6 +374,24 @@ export default () => {
     },
 
     /**
+     * Find rules, in different states (eg. like `:hover`) and media queries, matching the selector.
+     * @param {string} selector Selector, eg. '.myclass'
+     * @returns {Array<CssRule>}
+     * @example
+     * // Common scenario, take all the component specific rules
+     * const id = someComponent.getId();
+     * const rules = cc.getRules(`#${id}`);
+     * console.log(rules.map(rule => rule.toCSS()))
+     */
+    getRules(selector) {
+      const rules = this.getAll();
+      const result = rules.filter(
+        r => r.getSelectors().getFullString() === selector
+      );
+      return result;
+    },
+
+    /**
      * Add/update the CSS rule with id selector
      * @param {string} name Id selector name, eg. 'my-id'
      * @param {Object} style  Style properties and values
