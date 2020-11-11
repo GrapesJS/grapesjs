@@ -788,7 +788,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
      */
     getTraitIndex(id) {
       const trait = this.getTrait(id);
-      return trait ? this.get('traits').indexOf(trait) : trait;
+      return trait ? this.get('traits').indexOf(trait) : -1;
     },
 
     /**
