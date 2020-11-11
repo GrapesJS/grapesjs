@@ -347,6 +347,15 @@ export default () => {
      */
     onDblClick(func) {
       c.onDblClick = func;
+    },
+
+    destroy() {
+      assets.reset();
+      fu.collection.reset();
+      fu.remove();
+      am.remove();
+      [assets, am, fu].forEach(i => (i = null));
+      c = {};
     }
   };
 };
