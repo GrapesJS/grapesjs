@@ -764,7 +764,8 @@ export default Backbone.Model.extend({
       CodeManager,
       Commands,
       DeviceManager,
-      I18n
+      I18n,
+      Modal
     } = this.attributes;
     this.stopDefault();
     DomComponents.destroy();
@@ -781,6 +782,7 @@ export default Backbone.Model.extend({
     Commands.destroy();
     DeviceManager.destroy();
     I18n.destroy();
+    Modal.destroy();
     this.view.remove();
     this.stopListening();
     this.clear({ silent: true });
