@@ -424,6 +424,10 @@ export default () => {
       if (!command.stop) command.noStop = 1;
       const cmd = CommandAbstract.extend(command);
       return new cmd(c);
+    },
+
+    destroy() {
+      [em, c, commands, defaultCommands, active].forEach(i => (i = {}));
     }
   };
 };

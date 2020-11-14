@@ -761,7 +761,8 @@ export default Backbone.Model.extend({
       LayerManager,
       AssetManager,
       BlockManager,
-      CodeManager
+      CodeManager,
+      Commands
     } = this.attributes;
     this.stopDefault();
     DomComponents.clear();
@@ -775,6 +776,7 @@ export default Backbone.Model.extend({
     AssetManager.destroy();
     BlockManager.destroy();
     CodeManager.destroy();
+    Commands.destroy();
     this.view.remove();
     this.stopListening();
     this.clear({ silent: true });
