@@ -766,7 +766,6 @@ export default Backbone.Model.extend({
     $(config.el)
       .empty()
       .attr(this.attrsOrig);
-    console.log(this);
   },
 
   setEditing(value) {
