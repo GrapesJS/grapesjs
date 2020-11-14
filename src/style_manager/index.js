@@ -414,6 +414,16 @@ export default () => {
     _logNoSector(sectorId) {
       const { em } = this;
       em && em.logWarning(`'${sectorId}' sector not found`);
+    },
+
+    destroy() {
+      [properties, sectors].forEach(coll => {
+        coll.reset();
+        coll.stopListening();
+      });
+      SectView.remove();
+      [c, properties, sectors, SectView].forEach(i => (i = {}));
+      this.em = {};
     }
   };
 };
