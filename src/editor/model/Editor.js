@@ -766,7 +766,7 @@ export default Backbone.Model.extend({
       DeviceManager
     } = this.attributes;
     this.stopDefault();
-    DomComponents.clear();
+    DomComponents.destroy();
     CssComposer.destroy();
     UndoManager.clear().removeAll();
     Panels.getPanels().reset();
