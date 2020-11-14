@@ -772,7 +772,7 @@ export default Backbone.Model.extend({
     UndoManager.clear().removeAll();
     Panels.getPanels().reset();
     Canvas.destroy();
-    Keymaps.removeAll();
+    Keymaps.destroy();
     RichTextEditor.destroy();
     LayerManager.destroy();
     AssetManager.destroy();
