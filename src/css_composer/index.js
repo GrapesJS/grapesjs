@@ -480,6 +480,14 @@ export default () => {
      */
     render() {
       return rulesView.render().el;
+    },
+
+    destroy() {
+      rules.reset();
+      rules.stopListening();
+      rulesView.remove();
+      [em, rules, rulesView].forEach(i => (i = null));
+      c = {};
     }
   };
 };

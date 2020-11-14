@@ -766,7 +766,7 @@ export default Backbone.Model.extend({
     } = this.attributes;
     this.stopDefault();
     DomComponents.clear();
-    CssComposer.clear();
+    CssComposer.destroy();
     UndoManager.clear().removeAll();
     Panels.getPanels().reset();
     Canvas.destroy();
