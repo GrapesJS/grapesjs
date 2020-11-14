@@ -766,7 +766,8 @@ export default Backbone.Model.extend({
       DeviceManager,
       I18n,
       Modal,
-      Parser
+      Parser,
+      SelectorManager
     } = this.attributes;
     this.stopDefault();
     DomComponents.destroy();
@@ -785,6 +786,7 @@ export default Backbone.Model.extend({
     I18n.destroy();
     Modal.destroy();
     Parser.destroy();
+    SelectorManager.destroy();
     this.view.remove();
     this.stopListening();
     this.clear({ silent: true });

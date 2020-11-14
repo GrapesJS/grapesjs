@@ -312,6 +312,15 @@ export default config => {
         });
         return this.selectorTags.render().el;
       } else return this.selectorTags.render().el;
+    },
+
+    destroy() {
+      selectors.reset();
+      selectors.stopListening();
+      this.selectorTags.remove();
+      [c, selectors].forEach(i => (i = {}));
+      this.em = {};
+      this.selectorTags = {};
     }
   };
 };
