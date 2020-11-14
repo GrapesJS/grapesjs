@@ -293,6 +293,12 @@ export default () => {
 
     getInstance() {
       return um;
+    },
+
+    destroy() {
+      this.clear().removeAll();
+      [em, um, config, beforeCache].forEach(i => (i = {}));
+      this.em = {};
     }
   };
 };
