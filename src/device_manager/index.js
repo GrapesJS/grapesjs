@@ -124,6 +124,14 @@ export default () => {
      */
     render() {
       return view.render().el;
+    },
+
+    destroy() {
+      devices.reset();
+      devices.stopListening();
+      view.remove();
+      [devices, view].forEach(i => (i = null));
+      c = {};
     }
   };
 };
