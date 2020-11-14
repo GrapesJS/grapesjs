@@ -760,7 +760,8 @@ export default Backbone.Model.extend({
       RichTextEditor,
       LayerManager,
       AssetManager,
-      BlockManager
+      BlockManager,
+      CodeManager
     } = this.attributes;
     this.stopDefault();
     DomComponents.clear();
@@ -773,6 +774,7 @@ export default Backbone.Model.extend({
     LayerManager.destroy();
     AssetManager.destroy();
     BlockManager.destroy();
+    CodeManager.destroy();
     this.view.remove();
     this.stopListening();
     this.clear({ silent: true });
