@@ -18,6 +18,8 @@ export default () => {
       return this;
     },
 
+    destroy() {},
+
     Sorter,
     Resizer,
     Dragger
