@@ -750,57 +750,23 @@ export default Backbone.Model.extend({
     const { config } = this;
     const editor = this.getEditor();
     const { editors = [] } = config.grapesjs || {};
-    const {
-      DomComponents,
-      CssComposer,
-      UndoManager,
-      Panels,
-      Canvas,
-      Keymaps,
-      RichTextEditor,
-      LayerManager,
-      AssetManager,
-      BlockManager,
-      CodeManager,
-      Commands,
-      DeviceManager,
-      I18n,
-      Modal,
-      Parser,
-      SelectorManager,
-      StorageManager,
-      StyleManager,
-      TraitManager
-    } = this.attributes;
     this.stopDefault();
-    DomComponents.destroy();
-    CssComposer.destroy();
-    UndoManager.destroy();
-    Panels.destroy();
-    Canvas.destroy();
-    Keymaps.destroy();
-    RichTextEditor.destroy();
-    LayerManager.destroy();
-    AssetManager.destroy();
-    BlockManager.destroy();
-    CodeManager.destroy();
-    Commands.destroy();
-    DeviceManager.destroy();
-    I18n.destroy();
-    Modal.destroy();
-    Parser.destroy();
-    SelectorManager.destroy();
-    StorageManager.destroy();
-    StyleManager.destroy();
-    TraitManager.destroy();
+    this.get('modules')
+      .slice()
+      .reverse()
+      .forEach(mod => mod.destroy());
     this.view.remove();
     this.stopListening();
     this.clear({ silent: true });
     this.destroyed = 1;
+    ['config', 'view', '_previousAttributes', '_events', '_listeners'].forEach(
+      i => (this[i] = {})
+    );
     editors.splice(editors.indexOf(editor), 1);
     $(config.el)
       .empty()
       .attr(this.attrsOrig);
+    console.log(this);
   },
 
   setEditing(value) {
