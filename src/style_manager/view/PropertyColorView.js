@@ -9,6 +9,7 @@ export default PropertyIntegerView.extend({
 
   remove() {
     PropertyIntegerView.prototype.remove.apply(this, arguments);
+    this.inputInst.remove();
     ['inputInst', '$color'].forEach(i => (this[i] = {}));
   },
 
