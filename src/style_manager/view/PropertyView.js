@@ -345,7 +345,7 @@ export default Backbone.View.extend({
   getTargetValue(opts = {}) {
     let result;
     const { model } = this;
-    const target = this.getTargetModel();
+    const target = this.getTargets()[0];
     const customFetchValue = this.customValue;
 
     if (!target) {
