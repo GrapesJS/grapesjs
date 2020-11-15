@@ -679,7 +679,7 @@ export default () => {
       canvas.stopListening();
       CanvasView.remove();
       [c, canvas, CanvasView].forEach(i => (i = {}));
-      this.em = {};
+      ['em', 'model', 'droppable'].forEach(i => (this[i] = {}));
     }
   };
 };

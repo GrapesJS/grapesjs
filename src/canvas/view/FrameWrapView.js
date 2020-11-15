@@ -35,6 +35,7 @@ export default Backbone.View.extend({
     this.listenTo(model, 'loaded', this.frameLoaded);
     this.listenTo(model, 'change:x change:y', this.updatePos);
     this.listenTo(model, 'change:width change:height', this.updateSize);
+    this.listenTo(model, 'destroy remove', this.remove);
     this.updatePos();
     this.setupDragger();
   },
@@ -69,8 +70,9 @@ export default Backbone.View.extend({
   },
 
   remove() {
-    Backbone.View.prototype.remove.apply(this, arguments);
     this.frame.remove();
+    this.frame = {};
+    Backbone.View.prototype.remove.apply(this, arguments);
     return this;
   },
 
