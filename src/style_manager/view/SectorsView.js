@@ -31,6 +31,11 @@ export default Backbone.View.extend({
     this.listenTo(this.target, events, this.targetUpdated);
   },
 
+  remove() {
+    Backbone.View.prototype.remove.apply(this, arguments);
+    ['target', 'config', 'propTarget'].forEach(i => (this[i] = {}));
+  },
+
   /**
    * Add to collection
    * @param {Object} model Model
