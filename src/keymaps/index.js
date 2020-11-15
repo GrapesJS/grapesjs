@@ -200,7 +200,7 @@ export default () => {
 
       if (keymap) {
         delete keymaps[id];
-        keymaster.unbind(keymap.keys);
+        keymap.keys.split(',').forEach(k => keymaster.unbind(k.trim()));
         em && em.trigger('keymap:remove', keymap);
         return keymap;
       }
