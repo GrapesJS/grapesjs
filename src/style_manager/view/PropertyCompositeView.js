@@ -27,6 +27,12 @@ export default PropertyView.extend({
     PropertyView.prototype.clear.apply(this, arguments);
   },
 
+  remove() {
+    this.model.get('properties').reset();
+    PropertyView.prototype.remove.apply(this, arguments);
+    ['properties', 'props', '$props'].forEach(i => (this[i] = {}));
+  },
+
   /**
    * Renders input
    * */

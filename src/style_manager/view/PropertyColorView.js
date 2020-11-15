@@ -7,6 +7,11 @@ export default PropertyIntegerView.extend({
     this.inputInst.setValue(value, opts);
   },
 
+  remove() {
+    PropertyIntegerView.prototype.remove.apply(this, arguments);
+    ['inputInst', '$color'].forEach(i => (this[i] = {}));
+  },
+
   onRender() {
     if (!this.input) {
       const ppfx = this.ppfx;

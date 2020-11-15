@@ -95,6 +95,9 @@ export default Backbone.View.extend({
 
   remove() {
     Backbone.View.prototype.remove.apply(this, arguments);
+    ['em', 'target', 'input', '$input', 'propTarget', 'sector'].forEach(
+      i => (this[i] = {})
+    );
     this.__destroyFn(this._getClbOpts());
   },
 
