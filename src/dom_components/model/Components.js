@@ -11,9 +11,21 @@ import {
 
 let Component;
 
-const getIdsToKeep = prev => {
+const getIdsToKeep = (prev, res = []) => {
   const pr = prev || [];
-  return pr.map(comp => comp.getId());
+  pr.forEach(comp => {
+    res.push(comp.getId());
+    getIdsToKeep(comp.components(), res);
+  });
+  return res;
+};
+
+const getNewIds = (items, res = []) => {
+  items.map(item => {
+    res.push(item.getId());
+    getNewIds(item.components(), res);
+  });
+  return res;
 };
 
 export default Backbone.Collection.extend({
@@ -31,7 +43,7 @@ export default Backbone.Collection.extend({
     const coll = this;
     const prev = opts.previousModels || [];
     const toRemove = prev.filter(prev => !models.get(prev.cid));
-    const newIds = models.map(i => i.getId());
+    const newIds = getNewIds(models);
     opts.keepIds = getIdsToKeep(prev).filter(pr => newIds.indexOf(pr) >= 0);
     toRemove.forEach(md => this.removeChildren(md, coll, opts));
     models.each(model => this.onAdd(model));
