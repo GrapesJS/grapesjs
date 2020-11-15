@@ -218,6 +218,7 @@ export default () => {
     destroy() {
       this.removeAll();
       [em, config, keymaps].forEach(i => (i = {}));
+      this.em = {};
     }
   };
 };

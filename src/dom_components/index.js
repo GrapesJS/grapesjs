@@ -740,6 +740,7 @@ export default () => {
       this.clear();
       componentView.remove();
       [c, em, componentsById, component, componentView].forEach(i => (i = {}));
+      this.em = {};
     }
   };
 };

@@ -678,8 +678,8 @@ export default () => {
     destroy() {
       canvas.stopListening();
       CanvasView.remove();
-      [canvas, CanvasView].forEach(i => (i = null));
-      c = {};
+      [c, canvas, CanvasView].forEach(i => (i = {}));
+      this.em = {};
     }
   };
 };
