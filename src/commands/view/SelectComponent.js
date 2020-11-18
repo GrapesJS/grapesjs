@@ -157,6 +157,15 @@ export default {
 
         if (el.ownerDocument === this.currentDoc) this.elHovered = result;
       });
+    } else {
+      this.currentDoc = null;
+      this.elHovered = 0;
+      this.updateToolsLocal();
+      this.canvas.getFrames().forEach(frame => {
+        const { view } = frame;
+        const el = view && view.getToolsEl();
+        el && this.toggleToolsEl(0, 0, { el });
+      });
     }
   },
 
@@ -209,15 +218,7 @@ export default {
   },
 
   onOut() {
-    this.currentDoc = null;
     this.em.setHovered(0);
-    this.elHovered = 0;
-    this.updateToolsLocal();
-    this.canvas.getFrames().forEach(frame => {
-      const { view } = frame;
-      const el = view && view.getToolsEl();
-      el && this.toggleToolsEl(0, 0, { el });
-    });
   },
 
   toggleToolsEl(on, view, opts = {}) {
