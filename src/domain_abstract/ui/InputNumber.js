@@ -11,7 +11,8 @@ export default Input.extend({
     'change select': 'handleUnitChange',
     'click [data-arrow-up]': 'upArrowClick',
     'click [data-arrow-down]': 'downArrowClick',
-    'mousedown [data-arrows]': 'downIncrement'
+    'mousedown [data-arrows]': 'downIncrement',
+    keydown: 'handleKeyDown'
   },
 
   template() {
@@ -79,6 +80,21 @@ export default Input.extend({
     var value = this.getUnitEl().value;
     this.model.set('unit', value);
     this.elementUpdated();
+  },
+
+  /**
+   * Handled when user uses keyboard
+   */
+  handleKeyDown(e) {
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      this.upArrowClick();
+    }
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      this.downArrowClick();
+    }
   },
 
   /**
