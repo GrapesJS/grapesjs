@@ -3,7 +3,7 @@ import Editor from 'editor';
 const { keys } = Object;
 const initComps = 1;
 
-describe.only('Editor', () => {
+describe('Editor', () => {
   let editor;
 
   beforeEach(() => {

@@ -136,6 +136,7 @@ export default Backbone.View.extend({
    * */
   clicked(e) {
     const { model } = this;
+
     if (model.get('bntsVis') || model.get('disable') || !model.get('command'))
       return;
 
