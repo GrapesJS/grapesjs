@@ -262,7 +262,7 @@ export default () => {
       blocks.stopListening();
       blocksVisible.reset();
       categories.reset();
-      blocksView.remove();
+      blocksView && blocksView.remove();
       [blocks, blocksVisible, categories, blocksView].forEach(i => (i = null));
       c = {};
     }

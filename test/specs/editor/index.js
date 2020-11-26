@@ -3,10 +3,11 @@ import Editor from 'editor';
 const { keys } = Object;
 const initComps = 1;
 
-describe('Editor', () => {
-  const editor = new Editor();
+describe.only('Editor', () => {
+  let editor;
 
   beforeEach(() => {
+    editor = new Editor();
     editor.init();
   });
 
