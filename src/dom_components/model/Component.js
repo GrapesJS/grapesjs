@@ -9,6 +9,7 @@ import {
   isString,
   forEach,
   result,
+  bindAll,
   keys
 } from 'underscore';
 import { shallowDiff, capitalize } from 'utils/mixins';
@@ -142,6 +143,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
     removed() {},
 
     initialize(props = {}, opt = {}) {
+      bindAll(this, '__upSymbCls');
       const em = opt.em;
 
       // Propagate properties from parent if indicated
@@ -552,6 +554,18 @@ const Component = Backbone.Model.extend(Styleable).extend(
       return classStr ? classStr.split(' ') : [];
     },
 
+    __getSymbToUp() {
+      const symbol = this.get('__symbol');
+      const isMain = Array.isArray(symbol);
+      return !isMain ? [] : symbol.filter(item => item.collection);
+    },
+
+    __upSymbCls() {
+      this.__getSymbToUp().forEach(child => {
+        child.set({ classes: this.get('classes') });
+      });
+    },
+
     initClasses() {
       const event = 'change:classes';
       const attrCls = this.get('attributes').class || [];
@@ -563,6 +577,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       const selectors = new Selectors([]);
       this.set('classes', selectors);
       selectors.add(classes);
+      selectors.on('add remove reset', this.__upSymbCls);
       this.listenTo(...toListen);
       return this;
     },
@@ -846,6 +861,8 @@ const Component = Backbone.Model.extend(Styleable).extend(
       var clm = em.get('SelectorManager');
       if (!clm) return;
 
+      if (arr.models) return [...arr.models];
+
       arr.forEach(val => {
         var name = '';
 
@@ -862,7 +879,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * Override original clone method
      * @private
      */
-    clone() {
+    clone(opt = {}) {
       const em = this.em;
       const attr = { ...this.attributes };
       const opts = { ...this.opt };
@@ -875,7 +892,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       attr.traits = [];
 
       this.get('components').each((md, i) => {
-        attr.components[i] = md.clone();
+        attr.components[i] = md.clone(opt);
       });
       this.get('traits').each((md, i) => {
         attr.traits[i] = md.clone();
@@ -901,6 +918,14 @@ const Component = Backbone.Model.extend(Styleable).extend(
         newRule.set('selectors', [newId]);
         cssc.getAll().add(newRule);
       });
+
+      // Symbols
+      if (opt.symbol) {
+        const symbols = this.get('__symbol') || [];
+        symbols.push(cloned);
+        this.set('__symbol', symbols);
+        cloned.set('__symbol', this);
+      }
 
       return cloned;
     },
@@ -1036,6 +1061,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       delete obj.attributes.class;
       delete obj.toolbar;
       delete obj.traits;
+      delete obj.__symbol;
 
       if (this.em.getConfig('avoidDefaults')) {
         this.getChangedProps(obj);
