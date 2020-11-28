@@ -58,8 +58,10 @@ export default Backbone.Collection.extend({
 
     const { domc, em } = this;
     const allByID = domc ? domc.allById() : {};
+    const isTemp = opts.temporary;
+    removed.prevColl = this; // This one is required for symbols
 
-    if (!opts.temporary) {
+    if (!isTemp) {
       // Remove the component from the global list
       const id = removed.getId();
       const sels = em.get('SelectorManager').getAll();

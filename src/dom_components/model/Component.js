@@ -323,6 +323,26 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     /**
+     * The method returns a Boolean value indicating whether the passed
+     * component is a descendant of a given component
+     * @param {Component} component Component to check
+     * @returns {Boolean}
+     */
+    contains(component) {
+      let result = !1;
+      if (!component) return result;
+      const contains = components => {
+        !result &&
+          components.forEach(item => {
+            if (item === component) result = !0;
+            !result && contains(item.components());
+          });
+      };
+      contains(this.components());
+      return result;
+    },
+
+    /**
      * Once the tag is updated I have to remove the node and replace it
      * @private
      */
@@ -554,10 +574,14 @@ const Component = Backbone.Model.extend(Styleable).extend(
       return classStr ? classStr.split(' ') : [];
     },
 
-    __getSymbToUp() {
+    __getSymbToUp(opts = {}) {
       const symbol = this.get('__symbol');
       const isMain = Array.isArray(symbol);
-      return !isMain ? [] : symbol.filter(item => item.collection);
+      return !isMain
+        ? []
+        : opts.all
+        ? symbol
+        : symbol.filter(item => item.collection || item.prevColl);
     },
 
     __upSymbCls() {
@@ -598,6 +622,32 @@ const Component = Backbone.Model.extend(Styleable).extend(
           isFunction(components) ? components(this) : components,
           this.opt
         );
+      comps.on('add remove', (m, c, o) => {
+        if (o.add) {
+          const items = m.__getSymbToUp();
+          console.log('Added', m.getId(), m.toHTML(), o, 'toUp', items);
+          this.__getSymbToUp().forEach(parent => {
+            const toAppend =
+              items.filter(item => {
+                const itemParent = item.parent({ prev: 1 });
+                return parent === itemParent || parent.contains(itemParent);
+              })[0] || m.clone({ symbol: 1 });
+            console.log('Added inner', toAppend.getId(), toAppend.toHTML());
+            parent.append(toAppend, o);
+          });
+        } else {
+          console.log(
+            'Removed',
+            m.getId(),
+            m.toHTML(),
+            o,
+            'toUp',
+            m.__getSymbToUp()
+          );
+          m.__getSymbToUp().forEach(item => item.remove(o));
+        }
+      });
+      // TODO reset
       this.listenTo(...toListen);
       return this;
     },
@@ -682,8 +732,8 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * component.parent();
      * // -> Component
      */
-    parent() {
-      const coll = this.collection;
+    parent(opts = {}) {
+      const coll = this.collection || (opts.prev && this.prevColl);
       return coll && coll.parent;
     },
 
@@ -892,7 +942,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       attr.traits = [];
 
       this.get('components').each((md, i) => {
-        attr.components[i] = md.clone(opt);
+        attr.components[i] = md.clone({ ...opt, _inner: 1 });
       });
       this.get('traits').each((md, i) => {
         attr.traits[i] = md.clone();
@@ -925,6 +975,8 @@ const Component = Backbone.Model.extend(Styleable).extend(
         symbols.push(cloned);
         this.set('__symbol', symbols);
         cloned.set('__symbol', this);
+      } else {
+        cloned.set('__symbol', 0);
       }
 
       return cloned;
@@ -1230,9 +1282,9 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * Remove the component
      * @return {this}
      */
-    remove() {
+    remove(opts = {}) {
       const coll = this.collection;
-      return coll && coll.remove(this);
+      return coll && coll.remove(this, opts);
     },
 
     /**
