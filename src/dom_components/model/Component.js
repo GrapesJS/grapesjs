@@ -143,7 +143,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
     removed() {},
 
     initialize(props = {}, opt = {}) {
-      bindAll(this, '__upSymbCls');
+      bindAll(this, '__upSymbCls', '__upSymbComps');
       const em = opt.em;
 
       // Propagate properties from parent if indicated
@@ -590,6 +590,41 @@ const Component = Backbone.Model.extend(Styleable).extend(
       });
     },
 
+    __upSymbComps(m, c, o) {
+      if (!o) {
+        // Reset
+        console.log('Reset', { m, c });
+        this.__getSymbToUp().forEach(item => {
+          const newMods = m.models.map(mod => mod.clone({ symbol: 1 }));
+          item.components().reset(newMods, c);
+        });
+      } else if (o.add) {
+        // Add
+        const items = m.__getSymbToUp();
+        console.log('Added', m.getId(), m.toHTML(), o, 'toUp', items);
+        this.__getSymbToUp().forEach(parent => {
+          const toAppend =
+            items.filter(item => {
+              const itemParent = item.parent({ prev: 1 });
+              return parent === itemParent || parent.contains(itemParent);
+            })[0] || m.clone({ symbol: 1 });
+          console.log('Added inner', toAppend.getId(), toAppend.toHTML());
+          parent.append(toAppend, o);
+        });
+      } else {
+        // Remove
+        console.log(
+          'Removed',
+          m.getId(),
+          m.toHTML(),
+          o,
+          'toUp',
+          m.__getSymbToUp()
+        );
+        m.__getSymbToUp().forEach(item => item.remove(o));
+      }
+    },
+
     initClasses() {
       const event = 'change:classes';
       const attrCls = this.get('attributes').class || [];
@@ -622,32 +657,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
           isFunction(components) ? components(this) : components,
           this.opt
         );
-      comps.on('add remove', (m, c, o) => {
-        if (o.add) {
-          const items = m.__getSymbToUp();
-          console.log('Added', m.getId(), m.toHTML(), o, 'toUp', items);
-          this.__getSymbToUp().forEach(parent => {
-            const toAppend =
-              items.filter(item => {
-                const itemParent = item.parent({ prev: 1 });
-                return parent === itemParent || parent.contains(itemParent);
-              })[0] || m.clone({ symbol: 1 });
-            console.log('Added inner', toAppend.getId(), toAppend.toHTML());
-            parent.append(toAppend, o);
-          });
-        } else {
-          console.log(
-            'Removed',
-            m.getId(),
-            m.toHTML(),
-            o,
-            'toUp',
-            m.__getSymbToUp()
-          );
-          m.__getSymbToUp().forEach(item => item.remove(o));
-        }
-      });
-      // TODO reset
+      comps.on('add remove reset', this.__upSymbComps);
       this.listenTo(...toListen);
       return this;
     },
