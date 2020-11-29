@@ -1133,7 +1133,14 @@ const Component = Backbone.Model.extend(Styleable).extend(
       delete obj.attributes.class;
       delete obj.toolbar;
       delete obj.traits;
-      delete obj.__symbol;
+
+      if (obj.__symbol) {
+        if (Array.isArray(obj.__symbol)) {
+          obj.__symbol = this.__getSymbToUp().map(i => i.getId());
+        } else {
+          obj.__symbol = obj.__symbol.getId();
+        }
+      }
 
       if (this.em.getConfig('avoidDefaults')) {
         this.getChangedProps(obj);
