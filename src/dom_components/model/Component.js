@@ -12,7 +12,7 @@ import {
   bindAll,
   keys
 } from 'underscore';
-import { shallowDiff, capitalize } from 'utils/mixins';
+import { shallowDiff, capitalize, isEmptyObj } from 'utils/mixins';
 import Styleable from 'domain_abstract/model/Styleable';
 import Backbone from 'backbone';
 import Components from './Components';
@@ -143,7 +143,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
     removed() {},
 
     initialize(props = {}, opt = {}) {
-      bindAll(this, '__upSymbCls', '__upSymbComps');
+      bindAll(this, '__upSymbProps', '__upSymbCls', '__upSymbComps');
       const em = opt.em;
 
       // Propagate properties from parent if indicated
@@ -584,6 +584,22 @@ const Component = Backbone.Model.extend(Styleable).extend(
         : symbol.filter(item => item.collection || item.prevColl);
     },
 
+    __upSymbProps() {
+      const changed = this.changedAttributes();
+      const attrs = changed.attributes || {};
+      delete changed.status;
+      delete changed.open;
+      delete changed.__symbol;
+      delete changed.attributes;
+      delete attrs.id;
+      if (!isEmptyObj(attrs)) changed.attributes = attrs;
+      !isEmptyObj(changed) &&
+        this.__getSymbToUp().forEach(child => {
+          // console.log('Symbol change, from', this.getId(), 'to', child.getId(), 'with', changed);
+          child.set(changed);
+        });
+    },
+
     __upSymbCls() {
       this.__getSymbToUp().forEach(child => {
         child.set({ classes: this.get('classes') });
@@ -593,7 +609,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
     __upSymbComps(m, c, o) {
       if (!o) {
         // Reset
-        console.log('Reset', { m, c });
+        // console.log('Reset', { m, c });
         this.__getSymbToUp().forEach(item => {
           const newMods = m.models.map(mod => mod.clone({ symbol: 1 }));
           item.components().reset(newMods, c);
@@ -601,7 +617,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       } else if (o.add) {
         // Add
         const items = m.__getSymbToUp();
-        console.log('Added', m.getId(), m.toHTML(), o, 'toUp', items);
+        // console.log('Added', m.getId(), m.toHTML(), o, 'toUp', items);
         this.__getSymbToUp().forEach(parent => {
           const toAppend =
             items.filter(item => {
@@ -613,14 +629,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
         });
       } else {
         // Remove
-        console.log(
-          'Removed',
-          m.getId(),
-          m.toHTML(),
-          o,
-          'toUp',
-          m.__getSymbToUp()
-        );
+        // console.log( 'Removed', m.getId(), m.toHTML(), o, 'toUp', m.__getSymbToUp());
         m.__getSymbToUp().forEach(item => item.remove(o));
       }
     },
@@ -984,6 +993,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
         const symbols = this.get('__symbol') || [];
         symbols.push(cloned);
         this.set('__symbol', symbols);
+        this.on('change', this.__upSymbProps);
         cloned.set('__symbol', this);
       } else {
         cloned.set('__symbol', 0);
