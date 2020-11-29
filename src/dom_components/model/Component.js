@@ -624,7 +624,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
               const itemParent = item.parent({ prev: 1 });
               return parent === itemParent || parent.contains(itemParent);
             })[0] || m.clone({ symbol: 1 });
-          console.log('Added inner', toAppend.getId(), toAppend.toHTML());
+          // console.log('Added inner', toAppend.getId(), toAppend.toHTML());
           parent.append(toAppend, o);
         });
       } else {
