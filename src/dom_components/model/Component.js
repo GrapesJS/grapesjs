@@ -617,14 +617,14 @@ const Component = Backbone.Model.extend(Styleable).extend(
       } else if (o.add) {
         // Add
         const items = m.__getSymbToUp();
-        // console.log('Added', m.getId(), m.toHTML(), o, 'toUp', items);
+        console.log('Added', m.getId(), m.toHTML(), o, 'toUp', items);
         this.__getSymbToUp().forEach(parent => {
           const toAppend =
             items.filter(item => {
               const itemParent = item.parent({ prev: 1 });
               return parent === itemParent || parent.contains(itemParent);
             })[0] || m.clone({ symbol: 1 });
-          // console.log('Added inner', toAppend.getId(), toAppend.toHTML());
+          console.log('Added inner', toAppend.getId(), toAppend.toHTML());
           parent.append(toAppend, o);
         });
       } else {
