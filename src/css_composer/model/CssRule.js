@@ -60,6 +60,10 @@ export default Backbone.Model.extend(Styleable).extend({
     let sels = this.getSelectors();
     this.stopListening(...toListen);
 
+    if (sels.models) {
+      sels = [...sels.models];
+    }
+
     if (Array.isArray(sels)) {
       const res = sels.filter(i => i).map(i => (sm ? sm.add(i) : i));
       sels = new Selectors(res);
