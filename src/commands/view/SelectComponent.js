@@ -731,9 +731,9 @@ export default {
 
   stop(ed, sender, opts = {}) {
     const { em, editor } = this;
+    this.onHovered(); // force to hide toolbar
     this.stopSelectComponent();
     !opts.preserveSelected && em.setSelected(null);
-    this.onOut();
     this.toggleToolsEl();
     editor && editor.stopCommand('resize');
   }
