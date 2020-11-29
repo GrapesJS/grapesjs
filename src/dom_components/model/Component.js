@@ -192,6 +192,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       this.listenTo(this, 'change:attributes:id', this._idUpdated);
       this.set('status', '');
       this.views = [];
+      this.__isSymbol() && this.__initSymb();
 
       // Register global updates for collection properties
       ['classes', 'traits', 'components'].forEach(name => {
@@ -572,6 +573,16 @@ const Component = Backbone.Model.extend(Styleable).extend(
       const attr = this.getAttributes();
       const classStr = attr.class;
       return classStr ? classStr.split(' ') : [];
+    },
+
+    __initSymb() {
+      if (this.__symbReady) return;
+      this.on('change', this.__upSymbProps);
+      this.__symbReady = 1;
+    },
+
+    __isSymbol() {
+      return isArray(this.get('__symbol'));
     },
 
     __getSymbToUp(opts = {}) {
@@ -993,7 +1004,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
         const symbols = this.get('__symbol') || [];
         symbols.push(cloned);
         this.set('__symbol', symbols);
-        this.on('change', this.__upSymbProps);
+        this.__initSymb();
         cloned.set('__symbol', this);
       } else {
         cloned.set('__symbol', 0);
