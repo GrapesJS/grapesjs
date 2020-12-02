@@ -260,14 +260,20 @@ export default Backbone.Collection.extend({
     const allComp = (domc && domc.allById()) || {};
     const firstAdd = this.__firstAdd;
     const toCheck = isArray(firstAdd) ? firstAdd : [firstAdd];
+    const silent = { silent: true };
     const onAll = comps => {
       comps.forEach(comp => {
         const symbol = comp.get('__symbol');
-        if (symbol && (isString(symbol) || isString(symbol[0]))) {
-          const result = isArray(symbol)
-            ? symbol.map(smb => allComp[smb]).filter(i => i)
-            : allComp[symbol];
-          comp.set('__symbol', result, { silent: true });
+        const symbolOf = comp.get('__symbolOf');
+        if (symbol && isArray(symbol) && isString(symbol[0])) {
+          comp.set(
+            '__symbol',
+            symbol.map(smb => allComp[smb]).filter(i => i),
+            silent
+          );
+        }
+        if (isString(symbolOf)) {
+          comp.set('__symbolOf', allComp[symbol], silent);
         }
         onAll(comp.components());
       });

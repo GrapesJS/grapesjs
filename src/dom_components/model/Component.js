@@ -585,14 +585,31 @@ const Component = Backbone.Model.extend(Styleable).extend(
       return isArray(this.get('__symbol'));
     },
 
-    __getSymbToUp(opts = {}) {
+    __getSymbolOf() {
+      return this.get('__symbolOf');
+    },
+
+    __getSymbToUp() {
       const symbol = this.get('__symbol');
-      const isMain = Array.isArray(symbol);
-      return !isMain
+      return !this.__isSymbol()
         ? []
-        : opts.all
-        ? symbol
         : symbol.filter(item => item.collection || item.prevColl);
+    },
+
+    __getSymbTop(opts) {
+      const isSymbol = this.__isSymbol();
+      let result = this;
+      let parent = this.parent(opts);
+
+      while (
+        parent &&
+        (isSymbol ? parent.__isSymbol() : parent.__getSymbolOf())
+      ) {
+        result = parent;
+        parent = parent.parent(opts);
+      }
+
+      return result;
     },
 
     __upSymbProps() {
@@ -601,6 +618,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       delete changed.status;
       delete changed.open;
       delete changed.__symbol;
+      delete changed.__symbolOf;
       delete changed.attributes;
       delete attrs.id;
       if (!isEmptyObj(attrs)) changed.attributes = attrs;
@@ -627,16 +645,19 @@ const Component = Backbone.Model.extend(Styleable).extend(
         });
       } else if (o.add) {
         // Add
-        const items = m.__getSymbToUp();
-        console.log('Added', m.getId(), m.toHTML(), o, 'toUp', items);
-        this.__getSymbToUp().forEach(parent => {
-          const toAppend =
-            items.filter(item => {
-              const itemParent = item.parent({ prev: 1 });
-              return parent === itemParent || parent.contains(itemParent);
-            })[0] || m.clone({ symbol: 1 });
-          console.log('Added inner', toAppend.getId(), toAppend.toHTML());
-          parent.append(toAppend, o);
+        const addedInstances = m.__getSymbToUp();
+        console.log('Added', m.getId(), m.toHTML(), o, 'toUp', addedInstances);
+        this.__getSymbToUp().forEach(symbInst => {
+          const symbTop = symbInst.__getSymbTop();
+          const inner = addedInstances.filter(addedInst => {
+            const addedTop = addedInst.__getSymbTop({ prev: 1 });
+            return symbTop && addedTop && addedTop === symbTop;
+          })[0];
+          const toAppend = inner || m.clone({ symbol: 1 });
+          console.log('Added inner', toAppend.getId(), toAppend.toHTML(), {
+            inner
+          });
+          symbInst.append(toAppend, o);
         });
       } else {
         // Remove
@@ -1001,13 +1022,15 @@ const Component = Backbone.Model.extend(Styleable).extend(
 
       // Symbols
       if (opt.symbol) {
+        // TODO Check if trying to clone a Symbol (check if parent is symbol)
         const symbols = this.get('__symbol') || [];
         symbols.push(cloned);
         this.set('__symbol', symbols);
         this.__initSymb();
-        cloned.set('__symbol', this);
+        cloned.set('__symbolOf', this);
       } else {
-        cloned.set('__symbol', 0);
+        // If I clone an inner symbol, I have to reset it
+        cloned.unset('__symbol');
       }
 
       return cloned;
@@ -1138,18 +1161,19 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * @return {Object}
      * @private
      */
-    toJSON(...args) {
-      const obj = Backbone.Model.prototype.toJSON.apply(this, args);
+    toJSON(opts = {}) {
+      const obj = Backbone.Model.prototype.toJSON.call(this, opts);
       obj.attributes = this.getAttributes();
       delete obj.attributes.class;
       delete obj.toolbar;
       delete obj.traits;
 
-      if (obj.__symbol) {
-        if (Array.isArray(obj.__symbol)) {
+      if (!opts.keepSymbols) {
+        if (obj.__symbol) {
           obj.__symbol = this.__getSymbToUp().map(i => i.getId());
-        } else {
-          obj.__symbol = obj.__symbol.getId();
+        }
+        if (obj.__symbolOf) {
+          obj.__symbolOf = obj.__symbolOf.getId();
         }
       }
 
