@@ -1247,7 +1247,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       const list = Component.getList(this);
 
       // If the ID already exists I need to rollback to the old one
-      if (list[id]) {
+      if (list[id] || (!id && idPrev)) {
         return this.setId(idPrev, { idUpdate: 1 });
       }
 

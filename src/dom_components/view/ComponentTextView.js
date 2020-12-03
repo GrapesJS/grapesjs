@@ -131,8 +131,6 @@ export default ComponentView.extend({
         model.get('components').each(model => clean(model));
       };
 
-      // Avoid re-render on reset with silent option
-      !opts.silent && model.trigger('change:content', model, '', contentOpt);
       comps.reset(content, opts);
       comps.each(model => clean(model));
       comps.trigger('resetNavigator');
