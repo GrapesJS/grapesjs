@@ -1036,6 +1036,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       delete obj.attributes.class;
       delete obj.toolbar;
       delete obj.traits;
+      delete obj.status;
 
       if (this.em.getConfig('avoidDefaults')) {
         this.getChangedProps(obj);
@@ -1052,7 +1053,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       const defaults = result(this, 'defaults');
 
       forEach(defaults, (value, key) => {
-        if (['type', 'content'].indexOf(key) === -1 && obj[key] === value) {
+        if (['type'].indexOf(key) === -1 && obj[key] === value) {
           delete obj[key];
         }
       });
