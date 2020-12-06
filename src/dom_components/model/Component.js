@@ -1008,6 +1008,8 @@ const Component = Backbone.Model.extend(Styleable).extend(
       });
 
       // Symbols
+      // If I clone an inner symbol, I have to reset it
+      cloned.unset('__symbol');
       if (opt.symbol) {
         // TODO Check if trying to clone a Symbol (check if parent is symbol)
         const symbols = this.get('__symbol') || [];
@@ -1015,9 +1017,6 @@ const Component = Backbone.Model.extend(Styleable).extend(
         this.set('__symbol', symbols);
         this.__initSymb();
         cloned.set('__symbolOf', this);
-      } else {
-        // If I clone an inner symbol, I have to reset it
-        cloned.unset('__symbol');
       }
 
       return cloned;
