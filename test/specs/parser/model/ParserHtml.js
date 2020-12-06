@@ -130,7 +130,7 @@ describe('ParserHtml', () => {
         tagName: 'div',
         attributes: { id: 'test1' },
         type: 'text',
-        content: 'test2 '
+        components: 'test2 '
       }
     ];
     expect(obj.parse(str).html).toEqual(result);
@@ -158,7 +158,7 @@ describe('ParserHtml', () => {
             tagName: ''
           },
           {
-            content: 'b',
+            components: 'b',
             type: 'text',
             tagName: 'b'
           },
@@ -168,7 +168,7 @@ describe('ParserHtml', () => {
             tagName: ''
           },
           {
-            content: 'i',
+            components: 'i',
             tagName: 'i',
             type: 'text'
           },
@@ -178,7 +178,7 @@ describe('ParserHtml', () => {
             tagName: ''
           },
           {
-            content: 'u',
+            components: 'u',
             tagName: 'u',
             type: 'text'
           },
@@ -208,7 +208,7 @@ describe('ParserHtml', () => {
             tagName: ''
           },
           {
-            content: 'b',
+            components: 'b',
             tagName: 'b',
             type: 'text'
           },
@@ -218,7 +218,7 @@ describe('ParserHtml', () => {
             tagName: ''
           },
           {
-            content: 'i',
+            components: 'i',
             tagName: 'i',
             type: 'text'
           },
@@ -230,7 +230,7 @@ describe('ParserHtml', () => {
           {
             tagName: 'div',
             type: 'text',
-            content: 'ABC'
+            components: 'ABC'
           },
           {
             content: ' ',
@@ -238,7 +238,7 @@ describe('ParserHtml', () => {
             tagName: ''
           },
           {
-            content: 'i',
+            components: 'i',
             tagName: 'i',
             type: 'text'
           },
@@ -248,7 +248,7 @@ describe('ParserHtml', () => {
             tagName: ''
           },
           {
-            content: 'u',
+            components: 'u',
             tagName: 'u',
             type: 'text'
           },
@@ -313,7 +313,7 @@ describe('ParserHtml', () => {
           {
             tagName: 'div',
             type: 'text',
-            content: 'nested'
+            components: 'nested'
           },
           {
             tagName: '',
@@ -343,7 +343,7 @@ describe('ParserHtml', () => {
               {
                 tagName: 'span',
                 type: 'text',
-                content: 'nested'
+                components: 'nested'
               }
             ]
           },
@@ -448,7 +448,7 @@ describe('ParserHtml', () => {
           },
           {
             tagName: 'p',
-            content: 'TestText',
+            components: 'TestText',
             type: 'text'
           },
           {
@@ -475,7 +475,7 @@ describe('ParserHtml', () => {
           'data-test': 'test-value'
         },
         type: 'text',
-        content: 'test2 '
+        components: 'test2 '
       }
     ];
     expect(obj.parse(str).html).toEqual(result);
@@ -494,7 +494,7 @@ describe('ParserHtml', () => {
           'data-test': 'test-value'
         },
         type: 'text',
-        content: 'test2 '
+        components: 'test2 '
       }
     ];
     expect(obj.parse(str).html).toEqual(result);
@@ -512,7 +512,7 @@ describe('ParserHtml', () => {
           prop2: 10,
           prop3: true
         },
-        content: 'test2 '
+        components: 'test2 '
       }
     ];
     expect(obj.parse(str).html).toEqual(result);
@@ -526,7 +526,7 @@ describe('ParserHtml', () => {
         attributes: {},
         type: 'text',
         test: ['value1', 'value2'],
-        content: 'test2 '
+        components: 'test2 '
       }
     ];
     expect(obj.parse(str).html).toEqual(result);
