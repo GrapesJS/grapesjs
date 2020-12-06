@@ -1,3 +1,4 @@
+import Selector from 'selector_manager/model/Selector';
 import Selectors from 'selector_manager/model/Selectors';
 import ClassTagsView from 'selector_manager/view/ClassTagsView';
 
@@ -116,6 +117,43 @@ describe('E2E tests', () => {
       expect(spy.called).toEqual(false);
       tagEl.addNewTag('test2');
       expect(spy.called).toEqual(true);
+    });
+
+    test('Selectors are properly transformed to JSON', () => {
+      const model = components.add({
+        classes: [
+          'test1',
+          '.test1a',
+          '#test2',
+          { name: 'test3', label: 'test3' },
+          { name: 'test4', label: 'test4a' },
+          { name: 'test5' },
+          { name: 'test6', type: Selector.TYPE_CLASS },
+          { name: 'test7', type: Selector.TYPE_ID },
+          { name: 'test8', type: Selector.TYPE_CLASS, protected: 1 },
+          { name: 'test9', type: Selector.TYPE_ID, protected: 1 },
+          { label: 'test10' },
+          { label: 'test11', type: Selector.TYPE_ID },
+          { label: 'test12', protected: 1 }
+        ]
+      });
+
+      const modelTr = JSON.parse(JSON.stringify(model));
+      expect(modelTr.classes).toEqual([
+        'test1',
+        'test1a',
+        '#test2',
+        'test3',
+        { name: 'test4', label: 'test4a' },
+        'test5',
+        'test6',
+        '#test7',
+        { name: 'test8', protected: 1 },
+        { name: 'test9', type: Selector.TYPE_ID, protected: 1 },
+        'test10',
+        '#test11',
+        { name: 'test12', protected: 1 }
+      ]);
     });
   });
 });

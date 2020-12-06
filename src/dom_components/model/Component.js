@@ -954,25 +954,12 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * @private
      */
     normalizeClasses(arr) {
-      var res = [];
-      const em = this.em;
-
-      if (!em) return;
-
-      var clm = em.get('SelectorManager');
+      const res = [];
+      const { em } = this;
+      const clm = em && em.get('SelectorManager');
       if (!clm) return;
-
       if (arr.models) return [...arr.models];
-
-      arr.forEach(val => {
-        var name = '';
-
-        if (typeof val === 'string') name = val;
-        else name = val.name;
-
-        var model = clm.add(name);
-        res.push(model);
-      });
+      arr.forEach(val => res.push(clm.add(val)));
       return res;
     },
 
@@ -1167,6 +1154,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       delete obj.attributes.class;
       delete obj.toolbar;
       delete obj.traits;
+      delete obj.status;
 
       if (!opts.keepSymbols) {
         if (obj.__symbol) {
@@ -1192,7 +1180,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       const defaults = result(this, 'defaults');
 
       forEach(defaults, (value, key) => {
-        if (['type', 'content'].indexOf(key) === -1 && obj[key] === value) {
+        if (['type'].indexOf(key) === -1 && obj[key] === value) {
           delete obj[key];
         }
       });
