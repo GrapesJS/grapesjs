@@ -31814,13 +31814,31 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_6___default.a.Model.extend(dom
   __isSymbol: function __isSymbol() {
     return Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isArray"])(this.get('__symbol'));
   },
+  __isSymbolTop: function __isSymbolTop() {
+    var parent = this.parent();
+    return this.__isSymbol() && parent && !parent.__isSymbol();
+  },
+  __getSymbolOf: function __getSymbolOf() {
+    return this.get('__symbolOf');
+  },
   __getSymbToUp: function __getSymbToUp() {
-    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var symbol = this.get('__symbol');
-    var isMain = Array.isArray(symbol);
-    return !isMain ? [] : opts.all ? symbol : symbol.filter(function (item) {
+    return !this.__isSymbol() ? [] : symbol.filter(function (item) {
       return item.collection || item.prevColl;
     });
+  },
+  __getSymbTop: function __getSymbTop(opts) {
+    var isSymbol = this.__isSymbol();
+
+    var result = this;
+    var parent = this.parent(opts);
+
+    while (parent && (isSymbol ? parent.__isSymbol() : parent.__getSymbolOf())) {
+      result = parent;
+      parent = parent.parent(opts);
+    }
+
+    return result;
   },
   __upSymbProps: function __upSymbProps() {
     var changed = this.changedAttributes();
@@ -31828,12 +31846,12 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_6___default.a.Model.extend(dom
     delete changed.status;
     delete changed.open;
     delete changed.__symbol;
+    delete changed.__symbolOf;
     delete changed.attributes;
     delete attrs.id;
     if (!Object(utils_mixins__WEBPACK_IMPORTED_MODULE_4__["isEmptyObj"])(attrs)) changed.attributes = attrs;
     !Object(utils_mixins__WEBPACK_IMPORTED_MODULE_4__["isEmptyObj"])(changed) && this.__getSymbToUp().forEach(function (child) {
-      // console.log('Symbol change, from', this.getId(), 'to', child.getId(), 'with', changed);
-      child.set(changed);
+      return child.set(changed);
     });
   },
   __upSymbCls: function __upSymbCls() {
@@ -31848,7 +31866,6 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_6___default.a.Model.extend(dom
   __upSymbComps: function __upSymbComps(m, c, o) {
     if (!o) {
       // Reset
-      // console.log('Reset', { m, c });
       this.__getSymbToUp().forEach(function (item) {
         var newMods = m.models.map(function (mod) {
           return mod.clone({
@@ -31859,25 +31876,27 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_6___default.a.Model.extend(dom
       });
     } else if (o.add) {
       // Add
-      var items = m.__getSymbToUp();
+      var addedInstances = m.__getSymbToUp(); // console.log('Added', m.getId(), m.toHTML(), o, 'toUp', addedInstances);
 
-      console.log('Added', m.getId(), m.toHTML(), o, 'toUp', items);
 
-      this.__getSymbToUp().forEach(function (parent) {
-        var toAppend = items.filter(function (item) {
-          var itemParent = item.parent({
+      this.__getSymbToUp().forEach(function (symbInst) {
+        var symbTop = symbInst.__getSymbTop();
+
+        var inner = addedInstances.filter(function (addedInst) {
+          var addedTop = addedInst.__getSymbTop({
             prev: 1
           });
-          return parent === itemParent || parent.contains(itemParent);
-        })[0] || m.clone({
+
+          return symbTop && addedTop && addedTop === symbTop;
+        })[0];
+        var toAppend = inner || m.clone({
           symbol: 1
-        });
-        console.log('Added inner', toAppend.getId(), toAppend.toHTML());
-        parent.append(toAppend, o);
+        }); // console.log('Added inner', toAppend.getId(), toAppend.toHTML(), inner);
+
+        symbInst.append(toAppend, o);
       });
     } else {
       // Remove
-      // console.log( 'Removed', m.getId(), m.toHTML(), o, 'toUp', m.__getSymbToUp());
       m.__getSymbToUp().forEach(function (item) {
         return item.remove(o);
       });
@@ -32195,15 +32214,11 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_6___default.a.Model.extend(dom
   normalizeClasses: function normalizeClasses(arr) {
     var res = [];
     var em = this.em;
-    if (!em) return;
-    var clm = em.get('SelectorManager');
+    var clm = em && em.get('SelectorManager');
     if (!clm) return;
     if (arr.models) return _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_1___default()(arr.models);
     arr.forEach(function (val) {
-      var name = '';
-      if (typeof val === 'string') name = val;else name = val.name;
-      var model = clm.add(name);
-      res.push(model);
+      return res.push(clm.add(val));
     });
     return res;
   },
@@ -32227,6 +32242,11 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_6___default.a.Model.extend(dom
     attr.components = [];
     attr.classes = [];
     attr.traits = [];
+
+    if (this.__isSymbolTop()) {
+      opt.symbol = 1;
+    }
+
     this.get('components').each(function (md, i) {
       attr.components[i] = md.clone(_objectSpread({}, opt, {
         _inner: 1
@@ -32241,10 +32261,7 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_6___default.a.Model.extend(dom
     attr.status = '';
     attr.view = '';
     opts.collection = null;
-    var cloned = new this.constructor(attr, opts);
-    var event = 'component:clone';
-    em && em.trigger(event, cloned);
-    this.trigger(event, cloned); // Clone component specific rules
+    var cloned = new this.constructor(attr, opts); // Clone component specific rules
 
     var newId = "#".concat(cloned.getId());
     var rulesToClone = cssc ? cssc.getRules("#".concat(id)) : [];
@@ -32253,19 +32270,24 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_6___default.a.Model.extend(dom
       newRule.set('selectors', [newId]);
       cssc.getAll().add(newRule);
     }); // Symbols
+    // If I clone an inner symbol, I have to reset it
+
+    cloned.unset('__symbol');
 
     if (opt.symbol) {
+      // TODO Check if trying to clone a Symbol (check if parent is symbol)
       var symbols = this.get('__symbol') || [];
       symbols.push(cloned);
       this.set('__symbol', symbols);
 
       this.__initSymb();
 
-      cloned.set('__symbol', this);
-    } else {
-      cloned.set('__symbol', 0);
+      cloned.set('__symbolOf', this);
     }
 
+    var event = 'component:clone';
+    em && em.trigger(event, cloned);
+    this.trigger(event, cloned);
     return cloned;
   },
 
@@ -32391,23 +32413,23 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_6___default.a.Model.extend(dom
    * @private
    */
   toJSON: function toJSON() {
-    for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-      args[_key2] = arguments[_key2];
-    }
-
-    var obj = backbone__WEBPACK_IMPORTED_MODULE_6___default.a.Model.prototype.toJSON.apply(this, args);
+    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var obj = backbone__WEBPACK_IMPORTED_MODULE_6___default.a.Model.prototype.toJSON.call(this, opts);
     obj.attributes = this.getAttributes();
     delete obj.attributes.class;
     delete obj.toolbar;
     delete obj.traits;
+    delete obj.status;
 
-    if (obj.__symbol) {
-      if (Array.isArray(obj.__symbol)) {
+    if (!opts.keepSymbols) {
+      if (obj.__symbol) {
         obj.__symbol = this.__getSymbToUp().map(function (i) {
           return i.getId();
         });
-      } else {
-        obj.__symbol = obj.__symbol.getId();
+      }
+
+      if (obj.__symbolOf) {
+        obj.__symbolOf = obj.__symbolOf.getId();
       }
     }
 
@@ -32425,7 +32447,7 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_6___default.a.Model.extend(dom
     var obj = res || backbone__WEBPACK_IMPORTED_MODULE_6___default.a.Model.prototype.toJSON.apply(this);
     var defaults = Object(underscore__WEBPACK_IMPORTED_MODULE_3__["result"])(this, 'defaults');
     Object(underscore__WEBPACK_IMPORTED_MODULE_3__["forEach"])(defaults, function (value, key) {
-      if (['type', 'content'].indexOf(key) === -1 && obj[key] === value) {
+      if (['type'].indexOf(key) === -1 && obj[key] === value) {
         delete obj[key];
       }
     });
@@ -32544,8 +32566,8 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_6___default.a.Model.extend(dom
     var em = this.em;
     var event = 'component:update' + (property ? ":".concat(property) : '');
 
-    for (var _len3 = arguments.length, args = new Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
-      args[_key3 - 1] = arguments[_key3];
+    for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+      args[_key2 - 1] = arguments[_key2];
     }
 
     property && this.updated.apply(this, [property, property && this.get(property), property && this.previous(property)].concat(args));
@@ -32625,7 +32647,7 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_6___default.a.Model.extend(dom
     var idPrev = (this.previous('attributes') || {}).id || ccid;
     var list = Component.getList(this); // If the ID already exists I need to rollback to the old one
 
-    if (list[id]) {
+    if (list[id] || !id && idPrev) {
       return this.setId(idPrev, {
         idUpdate: 1
       });
@@ -34412,20 +34434,25 @@ var getNewIds = function getNewIds(items) {
     var allComp = domc && domc.allById() || {};
     var firstAdd = this.__firstAdd;
     var toCheck = Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isArray"])(firstAdd) ? firstAdd : [firstAdd];
+    var silent = {
+      silent: true
+    };
 
     var onAll = function onAll(comps) {
       comps.forEach(function (comp) {
         var symbol = comp.get('__symbol');
+        var symbolOf = comp.get('__symbolOf');
 
-        if (symbol && (Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isString"])(symbol) || Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isString"])(symbol[0]))) {
-          var result = Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isArray"])(symbol) ? symbol.map(function (smb) {
+        if (symbol && Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isArray"])(symbol) && Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isString"])(symbol[0])) {
+          comp.set('__symbol', symbol.map(function (smb) {
             return allComp[smb];
           }).filter(function (i) {
             return i;
-          }) : allComp[symbol];
-          comp.set('__symbol', result, {
-            silent: true
-          });
+          }), silent);
+        }
+
+        if (Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isString"])(symbolOf)) {
+          comp.set('__symbolOf', allComp[symbolOf], silent);
         }
 
         onAll(comp.components());
@@ -35064,10 +35091,8 @@ var compProt = _ComponentView__WEBPACK_IMPORTED_MODULE_2__["default"].prototype;
         model.get('components').each(function (model) {
           return clean(model);
         });
-      }; // Avoid re-render on reset with silent option
+      };
 
-
-      !opts.silent && model.trigger('change:content', model, '', contentOpt);
       comps.reset(content, opts);
       comps.each(function (model) {
         return clean(model);
@@ -39452,7 +39477,7 @@ var defaultConfig = {
   editors: editors,
   plugins: plugins,
   // Will be replaced on build
-  version: '0.16.28',
+  version: '0.16.29',
 
   /**
    * Initialize the editor with passed options
@@ -44133,10 +44158,13 @@ var isClass = function isClass(str) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
 /* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/modules/index-all.js");
+
 
 var TYPE_CLASS = 1;
 var TYPE_ID = 2;
-var Selector = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.Model.extend({
+var Model = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.Model;
+var Selector = Model.extend({
   idAttribute: 'name',
   defaults: {
     name: '',
@@ -44168,6 +44196,7 @@ var Selector = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.Model.extend({
     var escapeName = config.escapeName;
     var nameEsc = escapeName ? escapeName(namePreEsc) : Selector.escapeName(namePreEsc);
     this.set('name', nameEsc);
+    this.em = config.em;
   },
 
   /**
@@ -44191,6 +44220,36 @@ var Selector = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.Model.extend({
     }
 
     return init + (escape ? escape(name) : name);
+  },
+  toJSON: function toJSON() {
+    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var em = this.em;
+    var obj = Model.prototype.toJSON.call(this, [opts]);
+    var defaults = Object(underscore__WEBPACK_IMPORTED_MODULE_1__["result"])(this, 'defaults');
+
+    if (em && em.getConfig('avoidDefaults')) {
+      Object(underscore__WEBPACK_IMPORTED_MODULE_1__["forEach"])(defaults, function (value, key) {
+        if (obj[key] === value) {
+          delete obj[key];
+        }
+      });
+
+      if (obj.label === obj.name) {
+        delete obj.label;
+      }
+
+      var objLen = Object(underscore__WEBPACK_IMPORTED_MODULE_1__["keys"])(obj).length;
+
+      if (objLen === 1 && obj.name) {
+        obj = obj.name;
+      }
+
+      if (objLen === 2 && obj.name && obj.type) {
+        obj = this.getFullName();
+      }
+    }
+
+    return obj;
   }
 }, {
   // All type selectors: https://developer.mozilla.org/it/docs/Web/CSS/CSS_Selectors
@@ -51863,7 +51922,9 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
             var result = {
               object: object,
               before: beforeCache,
-              after: object.toJSON()
+              after: object.toJSON({
+                keepSymbols: 1
+              })
             };
             beforeCache = null;
             return result;
