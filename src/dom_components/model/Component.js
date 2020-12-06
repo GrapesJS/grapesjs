@@ -623,10 +623,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       delete attrs.id;
       if (!isEmptyObj(attrs)) changed.attributes = attrs;
       !isEmptyObj(changed) &&
-        this.__getSymbToUp().forEach(child => {
-          // console.log('Symbol change, from', this.getId(), 'to', child.getId(), 'with', changed);
-          child.set(changed);
-        });
+        this.__getSymbToUp().forEach(child => child.set(changed));
     },
 
     __upSymbCls() {
@@ -638,7 +635,6 @@ const Component = Backbone.Model.extend(Styleable).extend(
     __upSymbComps(m, c, o) {
       if (!o) {
         // Reset
-        // console.log('Reset', { m, c });
         this.__getSymbToUp().forEach(item => {
           const newMods = m.models.map(mod => mod.clone({ symbol: 1 }));
           item.components().reset(newMods, c);
@@ -646,7 +642,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       } else if (o.add) {
         // Add
         const addedInstances = m.__getSymbToUp();
-        console.log('Added', m.getId(), m.toHTML(), o, 'toUp', addedInstances);
+        // console.log('Added', m.getId(), m.toHTML(), o, 'toUp', addedInstances);
         this.__getSymbToUp().forEach(symbInst => {
           const symbTop = symbInst.__getSymbTop();
           const inner = addedInstances.filter(addedInst => {
@@ -654,14 +650,11 @@ const Component = Backbone.Model.extend(Styleable).extend(
             return symbTop && addedTop && addedTop === symbTop;
           })[0];
           const toAppend = inner || m.clone({ symbol: 1 });
-          console.log('Added inner', toAppend.getId(), toAppend.toHTML(), {
-            inner
-          });
+          // console.log('Added inner', toAppend.getId(), toAppend.toHTML(), inner);
           symbInst.append(toAppend, o);
         });
       } else {
         // Remove
-        // console.log( 'Removed', m.getId(), m.toHTML(), o, 'toUp', m.__getSymbToUp());
         m.__getSymbToUp().forEach(item => item.remove(o));
       }
     },
@@ -994,9 +987,6 @@ const Component = Backbone.Model.extend(Styleable).extend(
       opts.collection = null;
 
       const cloned = new this.constructor(attr, opts);
-      const event = 'component:clone';
-      em && em.trigger(event, cloned);
-      this.trigger(event, cloned);
 
       // Clone component specific rules
       const newId = `#${cloned.getId()}`;
@@ -1018,6 +1008,10 @@ const Component = Backbone.Model.extend(Styleable).extend(
         this.__initSymb();
         cloned.set('__symbolOf', this);
       }
+
+      const event = 'component:clone';
+      em && em.trigger(event, cloned);
+      this.trigger(event, cloned);
 
       return cloned;
     },
