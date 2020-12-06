@@ -39477,7 +39477,7 @@ var defaultConfig = {
   editors: editors,
   plugins: plugins,
   // Will be replaced on build
-  version: '0.16.29',
+  version: '0.16.30',
 
   /**
    * Initialize the editor with passed options
@@ -42704,7 +42704,7 @@ __webpack_require__.r(__webpack_exports__);
 
           if (nodeChild === 1 && firstChild.nodeType === 3) {
             !model.type && (model.type = 'text');
-            model.content = firstChild.nodeValue;
+            model.components = firstChild.nodeValue;
           } else {
             model.components = this.parseNode(node);
           }
