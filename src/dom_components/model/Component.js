@@ -585,6 +585,11 @@ const Component = Backbone.Model.extend(Styleable).extend(
       return isArray(this.get('__symbol'));
     },
 
+    __isSymbolTop() {
+      const parent = this.parent();
+      return this.__isSymbol() && parent && !parent.__isSymbol();
+    },
+
     __getSymbolOf() {
       return this.get('__symbolOf');
     },
@@ -971,6 +976,10 @@ const Component = Backbone.Model.extend(Styleable).extend(
       attr.components = [];
       attr.classes = [];
       attr.traits = [];
+
+      if (this.__isSymbolTop()) {
+        opt.symbol = 1;
+      }
 
       this.get('components').each((md, i) => {
         attr.components[i] = md.clone({ ...opt, _inner: 1 });
