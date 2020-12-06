@@ -8,7 +8,7 @@ describe('ButtonView', () => {
   var btnClass = 'btn';
 
   beforeEach(() => {
-    model = new Button();
+    model = new Button({ command: 'fake-command' });
     view = new ButtonView({
       model: model
     });

@@ -255,6 +255,16 @@ export default () => {
       }
 
       return this.getContainer();
+    },
+
+    destroy() {
+      blocks.reset();
+      blocks.stopListening();
+      blocksVisible.reset();
+      categories.reset();
+      blocksView && blocksView.remove();
+      [blocks, blocksVisible, categories, blocksView].forEach(i => (i = null));
+      c = {};
     }
   };
 };

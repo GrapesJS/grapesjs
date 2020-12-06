@@ -95,6 +95,9 @@ export default Backbone.View.extend({
 
   remove() {
     Backbone.View.prototype.remove.apply(this, arguments);
+    ['em', 'target', 'input', '$input', 'propTarget', 'sector'].forEach(
+      i => (this[i] = {})
+    );
     this.__destroyFn(this._getClbOpts());
   },
 
@@ -167,6 +170,10 @@ export default Backbone.View.extend({
     return targets || [this.getTarget()];
   },
 
+  getFirstTarget() {
+    return this.getTargets()[0];
+  },
+
   /**
    * Returns Styleable model
    * @return {Model|null}
@@ -209,7 +216,7 @@ export default Backbone.View.extend({
 
   emitUpdateTarget: debounce(function() {
     const em = this.config.em;
-    em && em.trigger('styleManager:update:target', this.getTarget());
+    em && em.trigger('styleManager:update:target', this.getFirstTarget());
   }),
 
   _getTargetData() {
@@ -342,7 +349,7 @@ export default Backbone.View.extend({
   getTargetValue(opts = {}) {
     let result;
     const { model } = this;
-    const target = this.getTargetModel();
+    const target = this.getFirstTarget();
     const customFetchValue = this.customValue;
 
     if (!target) {
@@ -460,7 +467,7 @@ export default Backbone.View.extend({
    */
   updateTargetStyle(value, name = '', opts = {}) {
     const property = name || this.model.get('property');
-    const target = opts.target || this.getTarget();
+    const target = opts.target || this.getFirstTarget();
     const style = target.getStyle();
 
     if (value) {
@@ -489,7 +496,7 @@ export default Backbone.View.extend({
    * @return {Boolean}
    */
   isTargetStylable(target) {
-    const trg = target || this.getTarget();
+    const trg = target || this.getFirstTarget();
     const model = this.model;
     const id = model.get('id');
     const property = model.get('property');

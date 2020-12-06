@@ -11,7 +11,8 @@ export default Input.extend({
     'change select': 'handleUnitChange',
     'click [data-arrow-up]': 'upArrowClick',
     'click [data-arrow-down]': 'downArrowClick',
-    'mousedown [data-arrows]': 'downIncrement'
+    'mousedown [data-arrows]': 'downIncrement',
+    keydown: 'handleKeyDown'
   },
 
   template() {
@@ -79,6 +80,21 @@ export default Input.extend({
     var value = this.getUnitEl().value;
     this.model.set('unit', value);
     this.elementUpdated();
+  },
+
+  /**
+   * Handled when user uses keyboard
+   */
+  handleKeyDown(e) {
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      this.upArrowClick();
+    }
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      this.downArrowClick();
+    }
   },
 
   /**
@@ -235,6 +251,8 @@ export default Input.extend({
     var unit = model.get('unit') || (units.length && units[0]) || '';
     var max = model.get('max');
     var min = model.get('min');
+    var limitlessMax = !!model.get('limitlessMax');
+    var limitlessMin = !!model.get('limitlessMin');
 
     if (opt.deepCheck) {
       var fixed = model.get('fixedValues') || [];
@@ -258,8 +276,10 @@ export default Input.extend({
       }
     }
 
-    if (!isUndefined(max) && max !== '') val = val > max ? max : val;
-    if (!isUndefined(min) && min !== '') val = val < min ? min : val;
+    if (!limitlessMax && !isUndefined(max) && max !== '')
+      val = val > max ? max : val;
+    if (!limitlessMax && !isUndefined(min) && min !== '')
+      val = val < min ? min : val;
 
     return {
       force,

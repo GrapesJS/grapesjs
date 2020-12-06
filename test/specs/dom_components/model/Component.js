@@ -274,9 +274,9 @@ describe('Component', () => {
   });
 
   test('setAttributes overwrites correctly', () => {
-    obj.setAttributes({ id: 'test', 'data-test': 'value', a: 'b' });
-    obj.setAttributes({ 'data-test': 'value2' });
-    expect(obj.getAttributes()).toEqual({ 'data-test': 'value2' });
+    obj.setAttributes({ id: 'test', 'data-test': 'value', a: 'b', b: 'c' });
+    obj.setAttributes({ id: 'test2', 'data-test': 'value2' });
+    expect(obj.getAttributes()).toEqual({ id: 'test2', 'data-test': 'value2' });
   });
 
   test('append() returns always an array', () => {

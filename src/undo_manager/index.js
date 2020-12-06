@@ -81,7 +81,7 @@ export default () => {
             const result = {
               object,
               before: beforeCache,
-              after: object.toJSON()
+              after: object.toJSON({ keepSymbols: 1 })
             };
             beforeCache = null;
             return result;
@@ -293,6 +293,12 @@ export default () => {
 
     getInstance() {
       return um;
+    },
+
+    destroy() {
+      this.clear().removeAll();
+      [em, um, config, beforeCache].forEach(i => (i = {}));
+      this.em = {};
     }
   };
 };

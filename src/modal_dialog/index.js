@@ -202,6 +202,12 @@ export default () => {
      */
     render() {
       return modal.render().$el;
+    },
+
+    destroy() {
+      modal.remove();
+      [c, model, modal].forEach(i => (i = {}));
+      this.em = {};
     }
   };
 };

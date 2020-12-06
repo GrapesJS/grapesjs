@@ -4,9 +4,10 @@ const { keys } = Object;
 const initComps = 1;
 
 describe('Editor', () => {
-  const editor = new Editor();
+  let editor;
 
   beforeEach(() => {
+    editor = new Editor();
     editor.init();
   });
 
@@ -47,8 +48,8 @@ describe('Editor', () => {
   test('Components are correctly tracked on add', () => {
     const all = editor.Components.allById();
     const wrapper = editor.getWrapper();
-    wrapper.append('<div>Component</div>');
-    expect(keys(all).length).toBe(1 + initComps);
+    wrapper.append('<div>Component</div>'); // Div component + textnode
+    expect(keys(all).length).toBe(2 + initComps);
   });
 
   test('Components are correctly tracked on add and remove', () => {
@@ -58,13 +59,13 @@ describe('Editor', () => {
         <div>Component 1</div>
         <div></div>
     `);
-    expect(keys(all).length).toBe(2 + initComps);
+    expect(keys(all).length).toBe(3 + initComps);
     const secComp = added[1];
     secComp.append(`
         <div>Component 2</div>
         <div>Component 3</div>
     `);
-    expect(keys(all).length).toBe(4 + initComps);
+    expect(keys(all).length).toBe(7 + initComps);
     wrapper.empty();
     expect(wrapper.components().length).toBe(0);
     expect(keys(all).length).toBe(initComps);
@@ -83,7 +84,7 @@ describe('Editor', () => {
     expect(umStack.length).toBe(2);
     expect(keys(all).length).toBe(initComps);
     um.undo(false);
-    expect(keys(all).length).toBe(1 + initComps);
+    expect(keys(all).length).toBe(2 + initComps);
   });
 
   test('Components are correctly tracked with UndoManager and mutiple operations', () => {
@@ -98,7 +99,7 @@ describe('Editor', () => {
         <div>Component 2</div>
     </div>`);
     expect(umStack.length).toBe(1); // UM counts first children
-    expect(keys(all).length).toBe(3 + initComps);
+    expect(keys(all).length).toBe(5 + initComps);
     wrapper
       .components()
       .at(0)
@@ -108,7 +109,7 @@ describe('Editor', () => {
     // UM registers 2 identical remove undoTypes as Backbone triggers remove from the
     // collection and the model
     expect(umStack.length).toBe(3);
-    expect(keys(all).length).toBe(2 + initComps);
+    expect(keys(all).length).toBe(3 + initComps);
     wrapper.empty();
     expect(umStack.length).toBe(4);
     expect(keys(all).length).toBe(initComps);

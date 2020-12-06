@@ -191,7 +191,7 @@ export default PropertyCompositeView.extend({
     const layers = this.getLayers();
     const detached = model.get('detached');
     const property = model.get('property');
-    const target = this.getTarget();
+    const target = this.getFirstTarget();
     const valueComput = this.getComputedValue();
     const selected = em.getSelected();
     const updateOpts = { fromTarget: 1 };
@@ -281,7 +281,7 @@ export default PropertyCompositeView.extend({
   getTargetValue(opts = {}) {
     const { model } = this;
     const { detached } = model.attributes;
-    const target = this.getTarget();
+    const target = this.getFirstTarget();
     let result = PropertyCompositeView.prototype.getTargetValue.call(
       this,
       opts

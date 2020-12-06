@@ -81,6 +81,11 @@ export default () => {
 
     render() {
       return TraitsViewer.render().el;
+    },
+
+    destroy() {
+      TraitsViewer.remove();
+      [c, TraitsViewer].forEach(i => (i = {}));
     }
   };
 };

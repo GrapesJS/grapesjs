@@ -30,26 +30,15 @@
  * @module Canvas
  */
 
-import {
-  on,
-  off,
-  hasDnd,
-  getElement,
-  getPointerEvent,
-  getViewEl
-} from 'utils/mixins';
-import { debounce } from 'underscore';
+import { hasDnd, getElement, getViewEl } from 'utils/mixins';
 import Droppable from 'utils/Droppable';
 import defaults from './config/config';
 import Canvas from './model/Canvas';
 import canvasView from './view/CanvasView';
 
-const { requestAnimationFrame } = window;
-
 export default () => {
   let c = {};
   let canvas;
-  let frameRect;
   let CanvasView;
 
   return {
@@ -684,6 +673,13 @@ export default () => {
           em: this.em
         }
       );
+    },
+
+    destroy() {
+      canvas.stopListening();
+      CanvasView.remove();
+      [c, canvas, CanvasView].forEach(i => (i = {}));
+      ['em', 'model', 'droppable'].forEach(i => (this[i] = {}));
     }
   };
 };

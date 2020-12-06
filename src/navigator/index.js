@@ -99,7 +99,8 @@ export default () => {
     },
 
     destroy() {
-      return layers && layers.remove();
+      layers && layers.remove();
+      [em, layers, config].forEach(i => (i = {}));
     }
   };
 };

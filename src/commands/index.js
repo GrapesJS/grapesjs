@@ -32,38 +32,39 @@ import CommandAbstract from './view/CommandAbstract';
 import defaults from './config/config';
 import { eventDrag } from 'dom_components/model/Component';
 
+const commandsDef = [
+  ['preview', 'Preview', 'preview'],
+  ['resize', 'Resize', 'resize'],
+  ['fullscreen', 'Fullscreen', 'fullscreen'],
+  ['copy', 'CopyComponent'],
+  ['paste', 'PasteComponent'],
+  ['canvas-move', 'CanvasMove'],
+  ['canvas-clear', 'CanvasClear'],
+  ['open-code', 'ExportTemplate', 'export-template'],
+  ['open-layers', 'OpenLayers', 'open-layers'],
+  ['open-styles', 'OpenStyleManager', 'open-sm'],
+  ['open-traits', 'OpenTraitManager', 'open-tm'],
+  ['open-blocks', 'OpenBlocks', 'open-blocks'],
+  ['open-assets', 'OpenAssets', 'open-assets'],
+  ['component-select', 'SelectComponent', 'select-comp'],
+  ['component-outline', 'SwitchVisibility', 'sw-visibility'],
+  ['component-offset', 'ShowOffset', 'show-offset'],
+  ['component-move', 'MoveComponent', 'move-comp'],
+  ['component-next', 'ComponentNext'],
+  ['component-prev', 'ComponentPrev'],
+  ['component-enter', 'ComponentEnter'],
+  ['component-exit', 'ComponentExit', 'select-parent'],
+  ['component-delete', 'ComponentDelete'],
+  ['component-style-clear', 'ComponentStyleClear'],
+  ['component-drag', 'ComponentDrag']
+];
+
 export default () => {
   let em;
   let c = {};
   const commands = {};
   const defaultCommands = {};
   const active = {};
-  const commandsDef = [
-    ['preview', 'Preview', 'preview'],
-    ['resize', 'Resize', 'resize'],
-    ['fullscreen', 'Fullscreen', 'fullscreen'],
-    ['copy', 'CopyComponent'],
-    ['paste', 'PasteComponent'],
-    ['canvas-move', 'CanvasMove'],
-    ['canvas-clear', 'CanvasClear'],
-    ['open-code', 'ExportTemplate', 'export-template'],
-    ['open-layers', 'OpenLayers', 'open-layers'],
-    ['open-styles', 'OpenStyleManager', 'open-sm'],
-    ['open-traits', 'OpenTraitManager', 'open-tm'],
-    ['open-blocks', 'OpenBlocks', 'open-blocks'],
-    ['open-assets', 'OpenAssets', 'open-assets'],
-    ['component-select', 'SelectComponent', 'select-comp'],
-    ['component-outline', 'SwitchVisibility', 'sw-visibility'],
-    ['component-offset', 'ShowOffset', 'show-offset'],
-    ['component-move', 'MoveComponent', 'move-comp'],
-    ['component-next', 'ComponentNext'],
-    ['component-prev', 'ComponentPrev'],
-    ['component-enter', 'ComponentEnter'],
-    ['component-exit', 'ComponentExit', 'select-parent'],
-    ['component-delete', 'ComponentDelete'],
-    ['component-style-clear', 'ComponentStyleClear'],
-    ['component-drag', 'ComponentDrag']
-  ];
 
   // Need it here as it would be used below
   const add = function(id, obj) {
@@ -424,6 +425,10 @@ export default () => {
       if (!command.stop) command.noStop = 1;
       const cmd = CommandAbstract.extend(command);
       return new cmd(c);
+    },
+
+    destroy() {
+      [em, c, commands, defaultCommands, active].forEach(i => (i = {}));
     }
   };
 };

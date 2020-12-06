@@ -200,7 +200,7 @@ export default () => {
 
       if (keymap) {
         delete keymaps[id];
-        keymaster.unbind(keymap.keys);
+        keymap.keys.split(', ').forEach(k => keymaster.unbind(k.trim()));
         em && em.trigger('keymap:remove', keymap);
         return keymap;
       }
@@ -213,6 +213,12 @@ export default () => {
     removeAll() {
       Object.keys(keymaps).forEach(keymap => this.remove(keymap));
       return this;
+    },
+
+    destroy() {
+      this.removeAll();
+      [em, config, keymaps].forEach(i => (i = {}));
+      this.em = {};
     }
   };
 };

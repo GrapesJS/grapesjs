@@ -79,7 +79,7 @@ In the first step, the HTML string is parsed and transformed to what is called *
 }
 ```
 
-The real **Component Definition** would be a little bit bigger so so we'd reduced the JSON for the sake of simplicity.
+The real **Component Definition** would be a little bit bigger so we've reduced the JSON for the sake of simplicity.
 
 You might notice the result is similar to what is generally called a **Virtual DOM**, a lightweight representation of the DOM element. This actually helps the editor to keep track of the state of our elements and make performance-friendly changes/updates.
 The meaning of properties like `tagName`, `attributes` and `components` are quite obvious, but what about `type`?! This particular property specifies the **Component Type** of our **Component Definition** (you check the list of default components [below](#built-in-component-types)) and if it's omitted, the default one will be used `type: 'default'`.

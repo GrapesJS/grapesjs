@@ -128,16 +128,7 @@ describe('E2E tests', () => {
     // ruleOut is a Model
     ruleOut = JSON.parse(JSON.stringify(ruleOut));
     var ruleResult = {
-      selectors: [
-        {
-          active: true,
-          label: 'test1',
-          name: 'test1',
-          type: clsm.Selector.TYPE_CLASS,
-          private: false,
-          protected: false
-        }
-      ],
+      selectors: ['test1'],
       style: {
         color: 'red',
         width: '10px'

@@ -6,14 +6,27 @@ import {
   each,
   includes,
   extend,
-  flatten
+  flatten,
+  debounce
 } from 'underscore';
 
 let Component;
 
-const getIdsToKeep = prev => {
+const getIdsToKeep = (prev, res = []) => {
   const pr = prev || [];
-  return pr.map(comp => comp.getId());
+  pr.forEach(comp => {
+    res.push(comp.getId());
+    getIdsToKeep(comp.components(), res);
+  });
+  return res;
+};
+
+const getNewIds = (items, res = []) => {
+  items.map(item => {
+    res.push(item.getId());
+    getNewIds(item.components(), res);
+  });
+  return res;
 };
 
 export default Backbone.Collection.extend({
@@ -31,7 +44,7 @@ export default Backbone.Collection.extend({
     const coll = this;
     const prev = opts.previousModels || [];
     const toRemove = prev.filter(prev => !models.get(prev.cid));
-    const newIds = models.map(i => i.getId());
+    const newIds = getNewIds(models);
     opts.keepIds = getIdsToKeep(prev).filter(pr => newIds.indexOf(pr) >= 0);
     toRemove.forEach(md => this.removeChildren(md, coll, opts));
     models.each(model => this.onAdd(model));
@@ -46,8 +59,10 @@ export default Backbone.Collection.extend({
 
     const { domc, em } = this;
     const allByID = domc ? domc.allById() : {};
+    const isTemp = opts.temporary;
+    removed.prevColl = this; // This one is required for symbols
 
-    if (!opts.temporary) {
+    if (!isTemp) {
       // Remove the component from the global list
       const id = removed.getId();
       const sels = em.get('SelectorManager').getAll();
@@ -159,8 +174,9 @@ export default Backbone.Collection.extend({
       .filter(i => i)
       .map(model => this.processDef(model));
     models = isMult ? flatten(models, 1) : models[0];
-
-    return Backbone.Collection.prototype.add.apply(this, [models, opt]);
+    const result = Backbone.Collection.prototype.add.apply(this, [models, opt]);
+    this.__firstAdd = result;
+    return result;
   },
 
   /**
@@ -235,5 +251,33 @@ export default Backbone.Collection.extend({
       model.setStyle({});
       model.addClass(name);
     }
-  }
+
+    this.__onAddEnd();
+  },
+
+  __onAddEnd: debounce(function() {
+    const { domc } = this;
+    const allComp = (domc && domc.allById()) || {};
+    const firstAdd = this.__firstAdd;
+    const toCheck = isArray(firstAdd) ? firstAdd : [firstAdd];
+    const silent = { silent: true };
+    const onAll = comps => {
+      comps.forEach(comp => {
+        const symbol = comp.get('__symbol');
+        const symbolOf = comp.get('__symbolOf');
+        if (symbol && isArray(symbol) && isString(symbol[0])) {
+          comp.set(
+            '__symbol',
+            symbol.map(smb => allComp[smb]).filter(i => i),
+            silent
+          );
+        }
+        if (isString(symbolOf)) {
+          comp.set('__symbolOf', allComp[symbolOf], silent);
+        }
+        onAll(comp.components());
+      });
+    };
+    onAll(toCheck);
+  })
 });
