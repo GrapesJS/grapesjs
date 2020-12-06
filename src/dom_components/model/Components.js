@@ -273,7 +273,7 @@ export default Backbone.Collection.extend({
           );
         }
         if (isString(symbolOf)) {
-          comp.set('__symbolOf', allComp[symbol], silent);
+          comp.set('__symbolOf', allComp[symbolOf], silent);
         }
         onAll(comp.components());
       });
