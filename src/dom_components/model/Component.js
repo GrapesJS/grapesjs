@@ -9,9 +9,10 @@ import {
   isString,
   forEach,
   result,
+  bindAll,
   keys
 } from 'underscore';
-import { shallowDiff, capitalize } from 'utils/mixins';
+import { shallowDiff, capitalize, isEmptyObj } from 'utils/mixins';
 import Styleable from 'domain_abstract/model/Styleable';
 import Backbone from 'backbone';
 import Components from './Components';
@@ -142,6 +143,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
     removed() {},
 
     initialize(props = {}, opt = {}) {
+      bindAll(this, '__upSymbProps', '__upSymbCls', '__upSymbComps');
       const em = opt.em;
 
       // Propagate properties from parent if indicated
@@ -190,6 +192,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       this.listenTo(this, 'change:attributes:id', this._idUpdated);
       this.set('status', '');
       this.views = [];
+      this.__isSymbol() && this.__initSymb();
 
       // Register global updates for collection properties
       ['classes', 'traits', 'components'].forEach(name => {
@@ -318,6 +321,26 @@ const Component = Backbone.Model.extend(Styleable).extend(
       }
 
       return parent;
+    },
+
+    /**
+     * The method returns a Boolean value indicating whether the passed
+     * component is a descendant of a given component
+     * @param {Component} component Component to check
+     * @returns {Boolean}
+     */
+    contains(component) {
+      let result = !1;
+      if (!component) return result;
+      const contains = components => {
+        !result &&
+          components.forEach(item => {
+            if (item === component) result = !0;
+            !result && contains(item.components());
+          });
+      };
+      contains(this.components());
+      return result;
     },
 
     /**
@@ -552,6 +575,95 @@ const Component = Backbone.Model.extend(Styleable).extend(
       return classStr ? classStr.split(' ') : [];
     },
 
+    __initSymb() {
+      if (this.__symbReady) return;
+      this.on('change', this.__upSymbProps);
+      this.__symbReady = 1;
+    },
+
+    __isSymbol() {
+      return isArray(this.get('__symbol'));
+    },
+
+    __isSymbolTop() {
+      const parent = this.parent();
+      return this.__isSymbol() && parent && !parent.__isSymbol();
+    },
+
+    __getSymbolOf() {
+      return this.get('__symbolOf');
+    },
+
+    __getSymbToUp() {
+      const symbol = this.get('__symbol');
+      return !this.__isSymbol()
+        ? []
+        : symbol.filter(item => item.collection || item.prevColl);
+    },
+
+    __getSymbTop(opts) {
+      const isSymbol = this.__isSymbol();
+      let result = this;
+      let parent = this.parent(opts);
+
+      while (
+        parent &&
+        (isSymbol ? parent.__isSymbol() : parent.__getSymbolOf())
+      ) {
+        result = parent;
+        parent = parent.parent(opts);
+      }
+
+      return result;
+    },
+
+    __upSymbProps() {
+      const changed = this.changedAttributes();
+      const attrs = changed.attributes || {};
+      delete changed.status;
+      delete changed.open;
+      delete changed.__symbol;
+      delete changed.__symbolOf;
+      delete changed.attributes;
+      delete attrs.id;
+      if (!isEmptyObj(attrs)) changed.attributes = attrs;
+      !isEmptyObj(changed) &&
+        this.__getSymbToUp().forEach(child => child.set(changed));
+    },
+
+    __upSymbCls() {
+      this.__getSymbToUp().forEach(child => {
+        child.set({ classes: this.get('classes') });
+      });
+    },
+
+    __upSymbComps(m, c, o) {
+      if (!o) {
+        // Reset
+        this.__getSymbToUp().forEach(item => {
+          const newMods = m.models.map(mod => mod.clone({ symbol: 1 }));
+          item.components().reset(newMods, c);
+        });
+      } else if (o.add) {
+        // Add
+        const addedInstances = m.__getSymbToUp();
+        // console.log('Added', m.getId(), m.toHTML(), o, 'toUp', addedInstances);
+        this.__getSymbToUp().forEach(symbInst => {
+          const symbTop = symbInst.__getSymbTop();
+          const inner = addedInstances.filter(addedInst => {
+            const addedTop = addedInst.__getSymbTop({ prev: 1 });
+            return symbTop && addedTop && addedTop === symbTop;
+          })[0];
+          const toAppend = inner || m.clone({ symbol: 1 });
+          // console.log('Added inner', toAppend.getId(), toAppend.toHTML(), inner);
+          symbInst.append(toAppend, o);
+        });
+      } else {
+        // Remove
+        m.__getSymbToUp().forEach(item => item.remove(o));
+      }
+    },
+
     initClasses() {
       const event = 'change:classes';
       const attrCls = this.get('attributes').class || [];
@@ -563,6 +675,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       const selectors = new Selectors([]);
       this.set('classes', selectors);
       selectors.add(classes);
+      selectors.on('add remove reset', this.__upSymbCls);
       this.listenTo(...toListen);
       return this;
     },
@@ -583,6 +696,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
           isFunction(components) ? components(this) : components,
           this.opt
         );
+      comps.on('add remove reset', this.__upSymbComps);
       this.listenTo(...toListen);
       return this;
     },
@@ -667,8 +781,8 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * component.parent();
      * // -> Component
      */
-    parent() {
-      const coll = this.collection;
+    parent(opts = {}) {
+      const coll = this.collection || (opts.prev && this.prevColl);
       return coll && coll.parent;
     },
 
@@ -838,23 +952,12 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * @private
      */
     normalizeClasses(arr) {
-      var res = [];
-      const em = this.em;
-
-      if (!em) return;
-
-      var clm = em.get('SelectorManager');
+      const res = [];
+      const { em } = this;
+      const clm = em && em.get('SelectorManager');
       if (!clm) return;
-
-      arr.forEach(val => {
-        var name = '';
-
-        if (typeof val === 'string') name = val;
-        else name = val.name;
-
-        var model = clm.add(name);
-        res.push(model);
-      });
+      if (arr.models) return [...arr.models];
+      arr.forEach(val => res.push(clm.add(val)));
       return res;
     },
 
@@ -862,7 +965,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * Override original clone method
      * @private
      */
-    clone() {
+    clone(opt = {}) {
       const em = this.em;
       const attr = { ...this.attributes };
       const opts = { ...this.opt };
@@ -874,8 +977,12 @@ const Component = Backbone.Model.extend(Styleable).extend(
       attr.classes = [];
       attr.traits = [];
 
+      if (this.__isSymbolTop()) {
+        opt.symbol = 1;
+      }
+
       this.get('components').each((md, i) => {
-        attr.components[i] = md.clone();
+        attr.components[i] = md.clone({ ...opt, _inner: 1 });
       });
       this.get('traits').each((md, i) => {
         attr.traits[i] = md.clone();
@@ -889,9 +996,6 @@ const Component = Backbone.Model.extend(Styleable).extend(
       opts.collection = null;
 
       const cloned = new this.constructor(attr, opts);
-      const event = 'component:clone';
-      em && em.trigger(event, cloned);
-      this.trigger(event, cloned);
 
       // Clone component specific rules
       const newId = `#${cloned.getId()}`;
@@ -901,6 +1005,22 @@ const Component = Backbone.Model.extend(Styleable).extend(
         newRule.set('selectors', [newId]);
         cssc.getAll().add(newRule);
       });
+
+      // Symbols
+      // If I clone an inner symbol, I have to reset it
+      cloned.unset('__symbol');
+      if (opt.symbol) {
+        // TODO Check if trying to clone a Symbol (check if parent is symbol)
+        const symbols = this.get('__symbol') || [];
+        symbols.push(cloned);
+        this.set('__symbol', symbols);
+        this.__initSymb();
+        cloned.set('__symbolOf', this);
+      }
+
+      const event = 'component:clone';
+      em && em.trigger(event, cloned);
+      this.trigger(event, cloned);
 
       return cloned;
     },
@@ -1030,12 +1150,22 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * @return {Object}
      * @private
      */
-    toJSON(...args) {
-      const obj = Backbone.Model.prototype.toJSON.apply(this, args);
+    toJSON(opts = {}) {
+      const obj = Backbone.Model.prototype.toJSON.call(this, opts);
       obj.attributes = this.getAttributes();
       delete obj.attributes.class;
       delete obj.toolbar;
       delete obj.traits;
+      delete obj.status;
+
+      if (!opts.keepSymbols) {
+        if (obj.__symbol) {
+          obj.__symbol = this.__getSymbToUp().map(i => i.getId());
+        }
+        if (obj.__symbolOf) {
+          obj.__symbolOf = obj.__symbolOf.getId();
+        }
+      }
 
       if (this.em.getConfig('avoidDefaults')) {
         this.getChangedProps(obj);
@@ -1052,7 +1182,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       const defaults = result(this, 'defaults');
 
       forEach(defaults, (value, key) => {
-        if (['type', 'content'].indexOf(key) === -1 && obj[key] === value) {
+        if (['type'].indexOf(key) === -1 && obj[key] === value) {
           delete obj[key];
         }
       });
@@ -1204,9 +1334,9 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * Remove the component
      * @return {this}
      */
-    remove() {
+    remove(opts = {}) {
       const coll = this.collection;
-      return coll && coll.remove(this);
+      return coll && coll.remove(this, opts);
     },
 
     /**
@@ -1247,7 +1377,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       const list = Component.getList(this);
 
       // If the ID already exists I need to rollback to the old one
-      if (list[id]) {
+      if (list[id] || (!id && idPrev)) {
         return this.setId(idPrev, { idUpdate: 1 });
       }
 

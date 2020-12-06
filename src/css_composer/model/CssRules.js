@@ -16,7 +16,7 @@ export default Backbone.Collection.extend({
   },
 
   onAdd(model) {
-    model.ensureSelectors();
+    model.ensureSelectors(); // required for undo
   },
 
   onRemove(removed) {

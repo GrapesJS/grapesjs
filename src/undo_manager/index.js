@@ -81,7 +81,7 @@ export default () => {
             const result = {
               object,
               before: beforeCache,
-              after: object.toJSON()
+              after: object.toJSON({ keepSymbols: 1 })
             };
             beforeCache = null;
             return result;

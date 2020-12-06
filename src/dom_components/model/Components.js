@@ -6,7 +6,8 @@ import {
   each,
   includes,
   extend,
-  flatten
+  flatten,
+  debounce
 } from 'underscore';
 
 let Component;
@@ -58,8 +59,10 @@ export default Backbone.Collection.extend({
 
     const { domc, em } = this;
     const allByID = domc ? domc.allById() : {};
+    const isTemp = opts.temporary;
+    removed.prevColl = this; // This one is required for symbols
 
-    if (!opts.temporary) {
+    if (!isTemp) {
       // Remove the component from the global list
       const id = removed.getId();
       const sels = em.get('SelectorManager').getAll();
@@ -171,8 +174,9 @@ export default Backbone.Collection.extend({
       .filter(i => i)
       .map(model => this.processDef(model));
     models = isMult ? flatten(models, 1) : models[0];
-
-    return Backbone.Collection.prototype.add.apply(this, [models, opt]);
+    const result = Backbone.Collection.prototype.add.apply(this, [models, opt]);
+    this.__firstAdd = result;
+    return result;
   },
 
   /**
@@ -247,5 +251,33 @@ export default Backbone.Collection.extend({
       model.setStyle({});
       model.addClass(name);
     }
-  }
+
+    this.__onAddEnd();
+  },
+
+  __onAddEnd: debounce(function() {
+    const { domc } = this;
+    const allComp = (domc && domc.allById()) || {};
+    const firstAdd = this.__firstAdd;
+    const toCheck = isArray(firstAdd) ? firstAdd : [firstAdd];
+    const silent = { silent: true };
+    const onAll = comps => {
+      comps.forEach(comp => {
+        const symbol = comp.get('__symbol');
+        const symbolOf = comp.get('__symbolOf');
+        if (symbol && isArray(symbol) && isString(symbol[0])) {
+          comp.set(
+            '__symbol',
+            symbol.map(smb => allComp[smb]).filter(i => i),
+            silent
+          );
+        }
+        if (isString(symbolOf)) {
+          comp.set('__symbolOf', allComp[symbolOf], silent);
+        }
+        onAll(comp.components());
+      });
+    };
+    onAll(toCheck);
+  })
 });
