@@ -296,14 +296,17 @@ export default Backbone.View.extend({
     // In editor, I make use of setTimeout as during the append process of elements
     // those will not be available immediately, therefore 'item' variable
     const script = document.createElement('script');
+    const scriptFn = model.getScriptString();
+    const scriptFnStr = model.get('script-props')
+      ? scriptFn
+      : `function(){${scriptFn};}`;
+    const scriptProps = JSON.stringify(model.__getScriptProps());
     script.innerHTML = `
-        setTimeout(function() {
-          var item = document.getElementById('${id}');
-          if (!item) return;
-          (function(){
-            ${model.getScriptString()};
-          }.bind(item))()
-        }, 1);`;
+      setTimeout(function() {
+        var item = document.getElementById('${id}');
+        if (!item) return;
+        (${scriptFnStr}.bind(item))(${scriptProps})
+      }, 1);`;
     // #873
     // Adding setTimeout will make js components work on init of the editor
     setTimeout(() => view.scriptContainer.get(0).appendChild(script), 0);

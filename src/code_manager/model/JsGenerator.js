@@ -15,17 +15,26 @@ export default Backbone.Model.extend({
       attr = extend({}, attr, { id });
       model.set('attributes', attr, { silent: 1 });
       var scrStr = model.getScriptString(script);
+      const scrProps = model.get('script-props');
 
       // If the script was updated, I'll put its code in a separate container
-      if (model.get('scriptUpdated')) {
+      if (model.get('scriptUpdated') && !scrProps) {
         this.mapJs[type + '-' + id] = { ids: [id], code: scrStr };
       } else {
-        var mapType = this.mapJs[type];
+        let props;
+        const mapType = this.mapJs[type];
+
+        if (scrProps) {
+          props = model.__getScriptProps();
+        }
 
         if (mapType) {
           mapType.ids.push(id);
+          if (props) mapType.props[id] = props;
         } else {
-          this.mapJs[type] = { ids: [id], code: scrStr };
+          const res = { ids: [id], code: scrStr };
+          if (props) res.props = { [id]: props };
+          this.mapJs[type] = res;
         }
       }
     }
@@ -40,17 +49,29 @@ export default Backbone.Model.extend({
   build(model) {
     this.mapJs = {};
     this.mapModel(model);
+    let code = '';
 
-    var code = '';
+    for (let type in this.mapJs) {
+      const mapType = this.mapJs[type];
 
-    for (var type in this.mapJs) {
-      var mapType = this.mapJs[type];
-      var ids = '#' + mapType.ids.join(', #');
-      code += `
-        var items = document.querySelectorAll('${ids}');
-        for (var i = 0, len = items.length; i < len; i++) {
-          (function(){${mapType.code}}.bind(items[i]))();
-        }`;
+      if (mapType.props) {
+        code += `
+          var props = ${JSON.stringify(mapType.props)};
+          var ids = Object.keys(props).map(function(id) { return '#'+id }).join(',');
+          var els = document.querySelectorAll(ids);
+          for (var i = 0, len = els.length; i < len; i++) {
+            var el = els[i];
+            (${mapType.code}.bind(el))(props[el.id]);
+          }`;
+      } else {
+        // Deprecated
+        const ids = '#' + mapType.ids.join(', #');
+        code += `
+          var items = document.querySelectorAll('${ids}');
+          for (var i = 0, len = items.length; i < len; i++) {
+            (function(){${mapType.code}}.bind(items[i]))();
+          }`;
+      }
     }
 
     return code;

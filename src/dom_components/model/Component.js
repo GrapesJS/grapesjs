@@ -116,6 +116,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       style: '', // Component related style
       classes: '', // Array of classes
       script: '',
+      'script-props': '',
       'script-export': '',
       attributes: '',
       traits: ['id', 'title'],
@@ -1259,6 +1260,15 @@ const Component = Backbone.Model.extend(Styleable).extend(
       return this.getView(frame);
     },
 
+    __getScriptProps() {
+      const modelProps = this.props();
+      const scrProps = this.get('script-props') || [];
+      return scrProps.reduce((acc, prop) => {
+        acc[prop] = modelProps[prop];
+        return acc;
+      }, {});
+    },
+
     /**
      * Return script in string format, cleans 'function() {..' from scripts
      * if it's a function
@@ -1267,35 +1277,39 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * @private
      */
     getScriptString(script) {
-      var scr = script || this.get('script');
+      let scr = script || this.get('script');
 
       if (!scr) {
         return scr;
       }
 
-      // Need to convert script functions to strings
-      if (typeof scr == 'function') {
-        var scrStr = scr.toString().trim();
-        scrStr = scrStr
-          .replace(/^function[\s\w]*\(\)\s?\{/, '')
-          .replace(/\}$/, '');
-        scr = scrStr.trim();
+      if (this.get('script-props')) {
+        scr = scr.toString().trim();
+      } else {
+        // Deprecated
+        // Need to convert script functions to strings
+        if (typeof scr == 'function') {
+          var scrStr = scr.toString().trim();
+          scrStr = scrStr
+            .replace(/^function[\s\w]*\(\)\s?\{/, '')
+            .replace(/\}$/, '');
+          scr = scrStr.trim();
+        }
+
+        var config = this.em.getConfig();
+        var tagVarStart = escapeRegExp(config.tagVarStart || '{[ ');
+        var tagVarEnd = escapeRegExp(config.tagVarEnd || ' ]}');
+        var reg = new RegExp(`${tagVarStart}([\\w\\d-]*)${tagVarEnd}`, 'g');
+        scr = scr.replace(reg, (match, v) => {
+          // If at least one match is found I have to track this change for a
+          // better optimization inside JS generator
+          this.scriptUpdated();
+          const result = this.attributes[v] || '';
+          return isArray(result) || typeof result == 'object'
+            ? JSON.stringify(result)
+            : result;
+        });
       }
-
-      var config = this.em.getConfig();
-      var tagVarStart = escapeRegExp(config.tagVarStart || '{[ ');
-      var tagVarEnd = escapeRegExp(config.tagVarEnd || ' ]}');
-      var reg = new RegExp(`${tagVarStart}([\\w\\d-]*)${tagVarEnd}`, 'g');
-      scr = scr.replace(reg, (match, v) => {
-        // If at least one match is found I have to track this change for a
-        // better optimization inside JS generator
-        this.scriptUpdated();
-        const result = this.attributes[v] || '';
-        return isArray(result) || typeof result == 'object'
-          ? JSON.stringify(result)
-          : result;
-      });
-
       return scr;
     },
 
