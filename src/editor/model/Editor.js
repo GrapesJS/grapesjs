@@ -247,15 +247,13 @@ export default Backbone.Model.extend({
    * */
   handleUpdates(model, val, opt = {}) {
     // Component has been added temporarily - do not update storage or record changes
-    if (opt.temporary) {
+    if (opt.temporary || opt.noCount || opt.avoidStore) {
       return;
     }
 
-    timedInterval && clearInterval(timedInterval);
+    timedInterval && clearTimeout(timedInterval);
     timedInterval = setTimeout(() => {
-      if (!opt.avoidStore) {
-        this.set('changesCount', this.get('changesCount') + 1, opt);
-      }
+      this.set('changesCount', this.get('changesCount') + 1, opt);
     }, 0);
   },
 
