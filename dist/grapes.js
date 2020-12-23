@@ -23792,7 +23792,10 @@ var timerZoom;
     // those will not be available immediately, therefore 'item' variable
 
     var script = document.createElement('script');
-    script.innerHTML = "\n        setTimeout(function() {\n          var item = document.getElementById('".concat(id, "');\n          if (!item) return;\n          (function(){\n            ").concat(model.getScriptString(), ";\n          }.bind(item))()\n        }, 1);"); // #873
+    var scriptFn = model.getScriptString();
+    var scriptFnStr = model.get('script-props') ? scriptFn : "function(){".concat(scriptFn, ";}");
+    var scriptProps = JSON.stringify(model.__getScriptProps());
+    script.innerHTML = "\n      setTimeout(function() {\n        var item = document.getElementById('".concat(id, "');\n        if (!item) return;\n        (").concat(scriptFnStr, ".bind(item))(").concat(scriptProps, ")\n      }, 1);"); // #873
     // Adding setTimeout will make js components work on init of the editor
 
     setTimeout(function () {
@@ -25107,12 +25110,15 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/modules/index-all.js");
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/modules/index-all.js");
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_2__);
 
 
-/* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_1___default.a.Model.extend({
+
+/* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_2___default.a.Model.extend({
   mapModel: function mapModel(model) {
     var code = '';
     var script = model.get('script-export') || model.get('script');
@@ -25123,29 +25129,38 @@ __webpack_require__.r(__webpack_exports__);
     if (script) {
       // If the component has scripts we need to expose his ID
       var attr = model.get('attributes');
-      attr = Object(underscore__WEBPACK_IMPORTED_MODULE_0__["extend"])({}, attr, {
+      attr = Object(underscore__WEBPACK_IMPORTED_MODULE_1__["extend"])({}, attr, {
         id: id
       });
       model.set('attributes', attr, {
         silent: 1
       });
-      var scrStr = model.getScriptString(script); // If the script was updated, I'll put its code in a separate container
+      var scrStr = model.getScriptString(script);
+      var scrProps = model.get('script-props'); // If the script was updated, I'll put its code in a separate container
 
-      if (model.get('scriptUpdated')) {
+      if (model.get('scriptUpdated') && !scrProps) {
         this.mapJs[type + '-' + id] = {
           ids: [id],
           code: scrStr
         };
       } else {
+        var props;
         var mapType = this.mapJs[type];
+
+        if (scrProps) {
+          props = model.__getScriptProps();
+        }
 
         if (mapType) {
           mapType.ids.push(id);
+          if (props) mapType.props[id] = props;
         } else {
-          this.mapJs[type] = {
+          var res = {
             ids: [id],
             code: scrStr
           };
+          if (props) res.props = _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({}, id, props);
+          this.mapJs[type] = res;
         }
       }
     }
@@ -25162,8 +25177,14 @@ __webpack_require__.r(__webpack_exports__);
 
     for (var type in this.mapJs) {
       var mapType = this.mapJs[type];
-      var ids = '#' + mapType.ids.join(', #');
-      code += "\n        var items = document.querySelectorAll('".concat(ids, "');\n        for (var i = 0, len = items.length; i < len; i++) {\n          (function(){").concat(mapType.code, "}.bind(items[i]))();\n        }");
+
+      if (mapType.props) {
+        code += "\n          var props = ".concat(JSON.stringify(mapType.props), ";\n          var ids = Object.keys(props).map(function(id) { return '#'+id }).join(',');\n          var els = document.querySelectorAll(ids);\n          for (var i = 0, len = els.length; i < len; i++) {\n            var el = els[i];\n            (").concat(mapType.code, ".bind(el))(props[el.id]);\n          }");
+      } else {
+        // Deprecated
+        var ids = '#' + mapType.ids.join(', #');
+        code += "\n          var items = document.querySelectorAll('".concat(ids, "');\n          for (var i = 0, len = items.length; i < len; i++) {\n            (function(){").concat(mapType.code, "}.bind(items[i]))();\n          }");
+      }
     }
 
     return code;
@@ -29091,7 +29112,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
       em.stopListening(rules, ev, this.handleChange);
       em.listenTo(rules, ev, this.handleChange);
       rules.each(function (rule) {
-        return _this.handleChange(rule, {
+        return _this.handleChange(rule, null, {
           avoidStore: 1
         });
       });
@@ -29101,8 +29122,8 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
      * Handle rule changes
      * @private
      */
-    handleChange: function handleChange(model) {
-      var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    handleChange: function handleChange(model, val) {
+      var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
       var ev = 'change:style';
       var um = em.get('UndoManager');
       um && um.add(model);
@@ -29165,7 +29186,8 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
      * @param {Array<Selector>} selectors Array of selectors
      * @param {String} state Css rule state
      * @param {String} width For which device this style is oriented
-     * @param {Object} opts Other options for the rule
+     * @param {Object} props Other props for the rule
+     * @param {Object} opts Options for the add of new rule
      * @return {Model}
      * @example
      * var sm = editor.SelectorManager;
@@ -29179,6 +29201,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
      * */
     add: function add(selectors, state, width) {
       var opts = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+      var addOpts = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
       var s = state || '';
       var w = width || '';
 
@@ -29195,8 +29218,8 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
         opt.mediaText = w;
         opt.selectors = [];
         rule = new _model_CssRule__WEBPACK_IMPORTED_MODULE_3__["default"](opt, c);
-        rule.get('selectors').add(selectors);
-        rules.add(rule);
+        rule.get('selectors').add(selectors, addOpts);
+        rules.add(rule, addOpts);
         return rule;
       }
     },
@@ -29396,15 +29419,17 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     setIdRule: function setIdRule(name) {
       var style = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
       var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+      var _opts$addOpts = opts.addOpts,
+          addOpts = _opts$addOpts === void 0 ? {} : _opts$addOpts;
       var state = opts.state || '';
       var media = opts.mediaText || em.getCurrentMedia();
       var sm = em.get('SelectorManager');
       var selector = sm.add({
         name: name,
         type: selector_manager_model_Selector__WEBPACK_IMPORTED_MODULE_7__["default"].TYPE_ID
-      });
-      var rule = this.add(selector, state, media);
-      rule.setStyle(style, opts);
+      }, addOpts);
+      var rule = this.add(selector, state, media, {}, addOpts);
+      rule.setStyle(style, _objectSpread({}, opts, {}, addOpts));
       return rule;
     },
 
@@ -31325,6 +31350,7 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_6___default.a.Model.extend(dom
     classes: '',
     // Array of classes
     script: '',
+    'script-props': '',
     'script-export': '',
     attributes: '',
     traits: ['id', 'title'],
@@ -32524,6 +32550,14 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_6___default.a.Model.extend(dom
     var frame = (this.em.get('currentFrame') || {}).model;
     return this.getView(frame);
   },
+  __getScriptProps: function __getScriptProps() {
+    var modelProps = this.props();
+    var scrProps = this.get('script-props') || [];
+    return scrProps.reduce(function (acc, prop) {
+      acc[prop] = modelProps[prop];
+      return acc;
+    }, {});
+  },
 
   /**
    * Return script in string format, cleans 'function() {..' from scripts
@@ -32539,27 +32573,33 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_6___default.a.Model.extend(dom
 
     if (!scr) {
       return scr;
-    } // Need to convert script functions to strings
-
-
-    if (typeof scr == 'function') {
-      var scrStr = scr.toString().trim();
-      scrStr = scrStr.replace(/^function[\s\w]*\(\)\s?\{/, '').replace(/\}$/, '');
-      scr = scrStr.trim();
     }
 
-    var config = this.em.getConfig();
-    var tagVarStart = escapeRegExp(config.tagVarStart || '{[ ');
-    var tagVarEnd = escapeRegExp(config.tagVarEnd || ' ]}');
-    var reg = new RegExp("".concat(tagVarStart, "([\\w\\d-]*)").concat(tagVarEnd), 'g');
-    scr = scr.replace(reg, function (match, v) {
-      // If at least one match is found I have to track this change for a
-      // better optimization inside JS generator
-      _this6.scriptUpdated();
+    if (this.get('script-props')) {
+      scr = scr.toString().trim();
+    } else {
+      // Deprecated
+      // Need to convert script functions to strings
+      if (typeof scr == 'function') {
+        var scrStr = scr.toString().trim();
+        scrStr = scrStr.replace(/^function[\s\w]*\(\)\s?\{/, '').replace(/\}$/, '');
+        scr = scrStr.trim();
+      }
 
-      var result = _this6.attributes[v] || '';
-      return Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isArray"])(result) || _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0___default()(result) == 'object' ? JSON.stringify(result) : result;
-    });
+      var config = this.em.getConfig();
+      var tagVarStart = escapeRegExp(config.tagVarStart || '{[ ');
+      var tagVarEnd = escapeRegExp(config.tagVarEnd || ' ]}');
+      var reg = new RegExp("".concat(tagVarStart, "([\\w\\d-]*)").concat(tagVarEnd), 'g');
+      scr = scr.replace(reg, function (match, v) {
+        // If at least one match is found I have to track this change for a
+        // better optimization inside JS generator
+        _this6.scriptUpdated();
+
+        var result = _this6.attributes[v] || '';
+        return Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isArray"])(result) || _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0___default()(result) == 'object' ? JSON.stringify(result) : result;
+      });
+    }
+
     return scr;
   },
   emitUpdate: function emitUpdate(property) {
@@ -38318,15 +38358,13 @@ var logs = {
     var opt = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
     // Component has been added temporarily - do not update storage or record changes
-    if (opt.temporary) {
+    if (opt.temporary || opt.noCount || opt.avoidStore) {
       return;
     }
 
-    timedInterval && clearInterval(timedInterval);
+    timedInterval && clearTimeout(timedInterval);
     timedInterval = setTimeout(function () {
-      if (!opt.avoidStore) {
-        _this4.set('changesCount', _this4.get('changesCount') + 1, opt);
-      }
+      _this4.set('changesCount', _this4.get('changesCount') + 1, opt);
     }, 0);
   },
 
@@ -39477,7 +39515,7 @@ var defaultConfig = {
   editors: editors,
   plugins: plugins,
   // Will be replaced on build
-  version: '0.16.30',
+  version: '0.16.31',
 
   /**
    * Initialize the editor with passed options
@@ -45936,8 +45974,12 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
         var valid = classes.getStyleable();
         var hasClasses = valid.length;
         var useClasses = !smConf.componentFirst || options.useClasses;
+        var addOpts = {
+          noCount: 1
+        };
         var opts = {
-          state: state
+          state: state,
+          addOpts: addOpts
         };
         var rule; // I stop undo manager here as after adding the CSSRule (generally after
         // selecting the component) and calling undo() it will remove the rule from
@@ -45951,7 +45993,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
           rule = cssC.get(valid, state, deviceW);
 
           if (!rule && !skipAdd) {
-            rule = cssC.add(valid, state, deviceW);
+            rule = cssC.add(valid, state, deviceW, {}, addOpts);
           }
         } else if (config.avoidInlineStyle) {
           rule = cssC.getIdRule(id, opts);
@@ -48678,7 +48720,8 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     var _this = this;
 
     _PropertyIntegerView__WEBPACK_IMPORTED_MODULE_1__["default"].prototype.remove.apply(this, arguments);
-    this.inputInst.remove();
+    var inp = this.inputInst;
+    inp && inp.remove();
     ['inputInst', '$color'].forEach(function (i) {
       return _this[i] = {};
     });
