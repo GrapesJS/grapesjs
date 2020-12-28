@@ -144,6 +144,7 @@ export default (config = {}) => {
 
       [
         'I18n',
+        'UI',
         'Utils',
         'Config',
         'Commands',
