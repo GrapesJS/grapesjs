@@ -73,7 +73,8 @@ export default Backbone.Collection.extend({
       // Remove all component related styles
       const rulesRemoved = canRemoveStyle
         ? rules.remove(
-            rules.filter(r => r.getSelectors().getFullString() === `#${id}`)
+            rules.filter(r => r.getSelectors().getFullString() === `#${id}`),
+            opts
           )
         : [];
 
