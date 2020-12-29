@@ -88,7 +88,7 @@ export default {
     };
     methods[method](window, 'resize', this.onFrameUpdated);
     methods[method](listenToEl, 'scroll', this.onContainerChange);
-    em[method]('component:toggled', this.onSelect, this);
+    em[method]('component:toggled component:remove', this.onSelect, this);
     em[method]('change:componentHovered', this.onHovered, this);
     em[method](
       'component:resize component:styleUpdate component:input',

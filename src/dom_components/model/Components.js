@@ -86,6 +86,7 @@ export default Backbone.Collection.extend({
         const optStyle = { target: removed };
         hasSign && cm.run('core:component-style-clear', optStyle);
         removed.removed();
+        removed.trigger('removed');
         em.trigger('component:remove', removed);
       }
 

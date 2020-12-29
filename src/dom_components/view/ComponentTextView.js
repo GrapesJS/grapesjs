@@ -164,7 +164,7 @@ export default ComponentView.extend({
    * @param {Boolean} enable
    */
   toggleEvents(enable) {
-    const { em } = this;
+    const { em, model } = this;
     const mixins = { on, off };
     const method = enable ? 'on' : 'off';
     em.setEditing(enable);
@@ -175,6 +175,7 @@ export default ComponentView.extend({
     mixins.off(elDocs, 'mousedown', this.disableEditing);
     mixins[method](elDocs, 'mousedown', this.disableEditing);
     em[method]('toolbar:run:before', this.disableEditing);
+    model[method]('removed', this.disableEditing);
 
     // Avoid closing edit mode on component click
     this.$el.off('mousedown', this.disablePropagation);
