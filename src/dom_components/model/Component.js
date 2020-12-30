@@ -191,6 +191,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       this.listenTo(this, 'change:tagName', this.tagUpdated);
       this.listenTo(this, 'change:attributes', this.attrUpdated);
       this.listenTo(this, 'change:attributes:id', this._idUpdated);
+      this.on('change:toolbar', this.__emitUpdateTlb);
       this.set('status', '');
       this.views = [];
       this.__isSymbol() && this.__initSymb();
@@ -207,6 +208,10 @@ const Component = Backbone.Model.extend(Styleable).extend(
         this.init();
         em && em.trigger('component:create', this);
       }
+    },
+
+    __emitUpdateTlb() {
+      this.emitUpdate('toolbar');
     },
 
     /**

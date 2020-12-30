@@ -95,6 +95,7 @@ export default {
       this.updateGlobalPos,
       this
     );
+    em[method]('component:update:toolbar', this._upToolbar, this);
     em[method]('change:canvasOffset', this.updateAttached, this);
     em[method]('frame:updated', this.onFrameUpdated, this);
     em[method]('canvas:updateTools', this.onFrameUpdated, this);
@@ -640,7 +641,11 @@ export default {
     style.height = pos.height + unit;
   },
 
-  updateToolsGlobal() {
+  _upToolbar: debounce(function() {
+    this.updateToolsGlobal({ force: 1 });
+  }),
+
+  updateToolsGlobal(opts = {}) {
     const { el, pos, component } = this.getElSelected();
 
     if (!el) {
@@ -652,7 +657,7 @@ export default {
     const { canvas } = this;
     const isNewEl = this.lastSelected !== el;
 
-    if (isNewEl) {
+    if (isNewEl || opts.force) {
       this.lastSelected = el;
       this.updateToolbar(component);
     }
