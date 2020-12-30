@@ -66,16 +66,25 @@ export default Backbone.View.extend({
       model.set('value', model.getDefaultValue());
     }
 
-    em && em.on(`update:component:style:${this.property}`, this.targetUpdated);
-    //em && em.on(`styleable:change:${this.property}`, this.targetUpdated);
+    if (em) {
+      this.listenTo(
+        em,
+        `update:component:style:${this.property}`,
+        this.targetUpdated
+      );
+      //this.listenTo(em, `styleable:change:${this.property}`, this.targetUpdated);
 
-    // Listening to changes of properties in this.requires, so that styleable
-    // changes based on other properties are propagated
-    const requires = model.get('requires');
-    requires &&
+      // Listening to changes of properties in this.requires, so that styleable
+      // changes based on other properties are propagated
+      const requires = model.get('requires') || {};
       Object.keys(requires).forEach(property => {
-        em && em.on(`component:styleUpdate:${property}`, this.targetUpdated);
+        this.listenTo(
+          em,
+          `component:styleUpdate:${property}`,
+          this.targetUpdated
+        );
       });
+    }
 
     this.listenTo(this.propTarget, 'update', this.targetUpdated);
     this.listenTo(model, 'destroy remove', this.remove);
