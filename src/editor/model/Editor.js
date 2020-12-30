@@ -488,7 +488,7 @@ export default Backbone.Model.extend({
    * @returns {String}
    */
   getState() {
-    return this.get('state');
+    return this.get('state') || '';
   },
 
   /**

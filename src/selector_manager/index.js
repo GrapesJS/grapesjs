@@ -163,7 +163,7 @@ export default config => {
      * @returns {String}
      */
     getState() {
-      return this.em.setState();
+      return this.em.getState();
     },
 
     addSelector(name, opt = {}) {
