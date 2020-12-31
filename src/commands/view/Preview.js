@@ -29,6 +29,8 @@ export default {
 
   run(editor, sender) {
     this.sender = sender;
+    this.selected = [...editor.getSelectedAll()];
+    editor.select();
 
     if (!this.shouldRunSwVisibility) {
       this.shouldRunSwVisibility = editor.Commands.isActive(cmdVis);
@@ -67,7 +69,7 @@ export default {
   },
 
   stop(editor) {
-    const { sender = {} } = this;
+    const { sender = {}, selected } = this;
     sender.set && sender.set('active', 0);
     const panels = this.getPanels(editor);
 
@@ -81,6 +83,8 @@ export default {
 
     const canvas = editor.Canvas.getElement();
     canvas.setAttribute('style', '');
+    selected && editor.select(selected);
+    delete this.selected;
 
     if (this.helper) {
       this.helper.style.display = 'none';
