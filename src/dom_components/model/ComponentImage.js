@@ -10,7 +10,7 @@ export default Component.extend(
       ...Component.prototype.defaults,
       type: 'image',
       tagName: 'img',
-      void: 1,
+      void: true,
       droppable: 0,
       editable: 1,
       highlightable: 0,

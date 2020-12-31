@@ -4,6 +4,7 @@ export default Component.extend(
   {
     defaults: {
       ...Component.prototype.defaults,
+      tagName: '',
       droppable: false,
       layerable: false,
       editable: true
