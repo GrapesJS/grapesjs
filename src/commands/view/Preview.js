@@ -19,7 +19,10 @@ export default {
     const { em } = this;
     const mthEv = on ? 'on' : 'off';
     if (em) {
-      const body = em.get('Canvas').getBody();
+      const canvas = em.get('Canvas');
+      const body = canvas.getBody();
+      const tlb = canvas.getToolbarEl();
+      tlb && (tlb.style.display = on ? 'none' : '');
       const elP = body.querySelectorAll(`.${this.ppfx}no-pointer`);
       each(elP, item => (item.style.pointerEvents = on ? 'all' : ''));
       em[mthEv]('run:tlb-move:before', this.preventDrag);
