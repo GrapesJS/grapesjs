@@ -1163,6 +1163,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       delete obj.toolbar;
       delete obj.traits;
       delete obj.status;
+      delete obj.open; // used in Layers
 
       if (!opts.keepSymbols) {
         if (obj.__symbol) {
