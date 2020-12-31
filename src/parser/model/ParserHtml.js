@@ -202,7 +202,10 @@ export default config => {
           // just make it content of the current node
           if (nodeChild === 1 && firstChild.nodeType === 3) {
             !model.type && (model.type = 'text');
-            model.components = firstChild.nodeValue;
+            model.components = {
+              type: 'textnode',
+              content: firstChild.nodeValue
+            };
           } else {
             model.components = this.parseNode(node);
           }
