@@ -15,16 +15,15 @@ export default {
     opts.abort = 1;
   },
 
-  tglPointers(editor, val) {
-    const body = editor.Canvas.getBody();
-    const elP = body.querySelectorAll(`.${this.ppfx}no-pointer`);
-    each(elP, item => (item.style.pointerEvents = val ? '' : 'all'));
-  },
-
   tglEffects(on) {
     const { em } = this;
     const mthEv = on ? 'on' : 'off';
-    em && em[mthEv]('run:tlb-move:before', this.preventDrag);
+    if (em) {
+      const body = em.get('Canvas').getBody();
+      const elP = body.querySelectorAll(`.${this.ppfx}no-pointer`);
+      each(elP, item => (item.style.pointerEvents = on ? 'all' : ''));
+      em[mthEv]('run:tlb-move:before', this.preventDrag);
+    }
   },
 
   run(editor, sender) {
@@ -53,7 +52,6 @@ export default {
     }
 
     this.helper.style.display = 'inline-block';
-    this.tglPointers(editor);
 
     panels.forEach(panel => panel.set('visible', false));
 
@@ -91,7 +89,6 @@ export default {
     }
 
     editor.refresh();
-    this.tglPointers(editor, 1);
     this.tglEffects();
   }
 };
