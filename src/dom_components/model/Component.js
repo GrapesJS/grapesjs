@@ -1360,6 +1360,22 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     /**
+     * Move the component to another destination component
+     * @param {Component} component Destination component (so the current one will be appended as a child)
+     * @param {Object} opts Options for the append action
+     * @returns {this}
+     * @example
+     * // Move the selected component on top of the wrapper
+     * const dest = editor.getWrapper();
+     * editor.getSelected().move(dest, { at: 0 });
+     */
+    move(component, opts = {}) {
+      this.remove({ temporary: 1 });
+      component && component.append(this, opts);
+      return this;
+    },
+
+    /**
      * Reset id of the component and any of its style rule
      * @param {Object} [opts={}] Options
      * @return {this}
