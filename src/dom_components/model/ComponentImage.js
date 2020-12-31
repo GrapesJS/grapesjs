@@ -96,6 +96,21 @@ export default Component.extend(
     },
 
     /**
+     * Return a shallow copy of the model's attributes for JSON
+     * stringification.
+     * @return {Object}
+     * @private
+     */
+    toJSON(...args) {
+      const obj = Component.prototype.toJSON.apply(this, args);
+      if (obj.src === obj.attributes.src) {
+        delete obj.src;
+      }
+
+      return obj;
+    },
+
+    /**
      * Parse uri
      * @param  {string} uri
      * @return {object}
