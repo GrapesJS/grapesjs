@@ -16,7 +16,6 @@
     "url": "https://github.com/artf/grapesjs.git"
   },
   "dependencies": {
-    "@babel/runtime": "^7.9.2",
     "backbone": "1.3.3",
     "backbone-undo": "^0.2.5",
     "cash-dom": "^2.3.9",
@@ -28,15 +27,10 @@
     "underscore": "^1.9.1"
   },
   "devDependencies": {
-    "@babel/cli": "^7.8.4",
-    "@babel/core": "^7.9.0",
-    "@babel/plugin-transform-runtime": "^7.9.0",
-    "@babel/preset-env": "^7.9.5",
-    "@vuepress/plugin-google-analytics": "^1.5.4",
-    "babel-loader": "^8.1.0",
+    "@vuepress/plugin-google-analytics": "^1.7.1",
     "documentation": "^8.1.2",
     "eslint": "^6.6.0",
-    "html-webpack-plugin": "^3.2.0",
+    "grapesjs-cli": "^1.0.13",
     "husky": "^2.7.0",
     "jest": "^24.9.0",
     "lint-staged": "^8.2.1",
@@ -45,11 +39,7 @@
     "sass": "^1.29.0",
     "sinon": "^7.5.0",
     "string-replace-loader": "^2.2.0",
-    "vuepress": "^1.5.4",
-    "webpack": "^4.41.2",
-    "webpack-cli": "^3.3.10",
-    "webpack-dev-server": "^3.9.0",
-    "whatwg-fetch": "^3.0.0"
+    "vuepress": "^1.7.1"
   },
   "keywords": [
     "grapes",
@@ -120,17 +110,15 @@
     "docs:deploy": "docs/deploy.sh",
     "lint": "eslint src",
     "check": "npm run lint && npm run test",
-    "build": "npm run check && npm run v:patch && npm run build-dev && npm run build-prod",
-    "build-n": "npm run check && npm run build:css && npm run build-prod",
-    "build-dev": "webpack --env=dev && npm run build:css && npm run build:locale",
-    "build-prod": "webpack --env=prod",
+    "build": "npm run check && npm run v:patch && npm run-s build:*",
+    "build-n": "npm run check && npm run build:css && npm run-s build:*",
+    "build:js": "grapesjs-cli build --targets=\"> 1%, ie 11, safari 8, not dead\" --statsOutput=\"stats.json\"",
     "build:css": "sass src/styles/scss/main.scss dist/css/grapes.min.css --no-source-map --style=compressed --load-path=node_modules",
     "build:locale": "rm -rf ./locale && node scripts/build-locale.js && babel locale -d locale --copy-files --no-comments",
     "v:patch": "npm version --no-git-tag-version patch",
     "start": "run-p start:*",
+    "start:js": "grapesjs-cli serve",
     "start:css": "npm run build:css -- --watch",
-    "start:js": "webpack-dev-server --open --progress --colors",
-    "stats": "webpack --env=prod --profile --json > stats.json && webpack-bundle-analyzer stats.json",
     "format": "prettier --single-quote --write './{src,test}/**/*.js'",
     "test": "jest",
     "test:dev": "jest --watch"
