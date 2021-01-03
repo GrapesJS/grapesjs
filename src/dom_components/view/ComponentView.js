@@ -38,7 +38,7 @@ export default Backbone.View.extend({
     );
     this.listenTo(model, 'change:highlightable', this.updateHighlight);
     this.listenTo(model, 'change:status', this.updateStatus);
-    this.listenTo(model, 'change:script', this.reset);
+    this.listenTo(model, 'change:script rerender', this.reset);
     this.listenTo(model, 'change:content', this.updateContent);
     this.listenTo(model, 'change', this.handleChange);
     this.listenTo(model, 'active', this.onActive);

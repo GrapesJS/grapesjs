@@ -187,6 +187,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       this.initTraits();
       this.initComponents();
       this.initToolbar();
+      this.initScriptProps();
       this.listenTo(this, 'change:script', this.scriptUpdated);
       this.listenTo(this, 'change:tagName', this.tagUpdated);
       this.listenTo(this, 'change:attributes', this.attrUpdated);
@@ -726,6 +727,25 @@ const Component = Backbone.Model.extend(Styleable).extend(
       this.listenTo(...toListen);
       changed && em && em.trigger('component:toggled');
       return this;
+    },
+
+    initScriptProps() {
+      if (this.opt.temporary) return;
+      const prop = 'script-props';
+      const toListen = [`change:${prop}`, this.initScriptProps];
+      this.off(...toListen);
+      const prevProps = this.previous(prop) || [];
+      const newProps = this.get(prop) || [];
+      const prevPropsEv = prevProps.map(e => `change:${e}`).join(' ');
+      const newPropsEv = newProps.map(e => `change:${e}`).join(' ');
+      prevPropsEv && this.off(prevPropsEv, this.__scriptPropsChange);
+      newPropsEv && this.on(newPropsEv, this.__scriptPropsChange);
+      this.on(...toListen);
+    },
+
+    __scriptPropsChange(m, v, opts = {}) {
+      if (opts.avoidStore) return;
+      this.trigger('rerender');
     },
 
     /**
