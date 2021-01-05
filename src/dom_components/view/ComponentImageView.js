@@ -54,8 +54,9 @@ export default ComponentView.extend({
   updateSrc() {
     const { model, classEmpty, $el } = this;
     const src = model.getSrcResult();
+    const referrerPolicy = 'origin';
     const srcExists = src && !model.isDefaultSrc();
-    model.addAttributes({ src });
+    model.addAttributes({ src, referrerPolicy });
     $el[srcExists ? 'removeClass' : 'addClass'](classEmpty);
   },
 
