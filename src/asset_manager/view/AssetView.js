@@ -41,6 +41,7 @@ export default Backbone.View.extend({
     if (target && target.set) {
       target.set('attributes', clone(target.get('attributes')));
       target.set('src', this.model.get('src'));
+      target.set('referrerPolicy', 'origin');
     }
   },
 
