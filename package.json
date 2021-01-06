@@ -39,7 +39,8 @@
     "sass": "^1.29.0",
     "sinon": "^7.5.0",
     "string-replace-loader": "^2.2.0",
-    "vuepress": "^1.7.1"
+    "vuepress": "^1.7.1",
+    "whatwg-fetch": "^3.5.0"
   },
   "keywords": [
     "grapes",
