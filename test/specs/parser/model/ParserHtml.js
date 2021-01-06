@@ -313,7 +313,7 @@ describe('ParserHtml', () => {
           {
             tagName: 'div',
             type: 'text',
-            components: { type: 'textnode', content: 'nexted' }
+            components: { type: 'textnode', content: 'nested' }
           },
           {
             tagName: '',
