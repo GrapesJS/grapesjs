@@ -30,7 +30,7 @@
     "@vuepress/plugin-google-analytics": "^1.7.1",
     "documentation": "^8.1.2",
     "eslint": "^6.6.0",
-    "grapesjs-cli": "^1.0.13",
+    "grapesjs-cli": "^1.0.14",
     "husky": "^2.7.0",
     "jest": "^24.9.0",
     "lint-staged": "^8.2.1",
