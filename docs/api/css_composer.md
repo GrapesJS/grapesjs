@@ -59,7 +59,9 @@ Add new rule to the collection, if not yet exists with the same selectors
 -   `selectors` **[Array][12]&lt;Selector>** Array of selectors
 -   `state` **[String][13]** Css rule state
 -   `width` **[String][13]** For which device this style is oriented
--   `opts` **[Object][10]** Other options for the rule (optional, default `{}`)
+-   `opts` **[Object][10]** Options for the add of new rule (optional, default `{}`)
+-   `addOpts`   (optional, default `{}`)
+-   `props` **[Object][10]** Other props for the rule
 
 ### Examples
 
@@ -167,6 +169,25 @@ const rule3 = cc.getRule('.myclass1', {
 ```
 
 Returns **CssRule** 
+
+## getRules
+
+Find rules, in different states (eg. like `:hover`) and media queries, matching the selector.
+
+### Parameters
+
+-   `selector` **[string][13]** Selector, eg. '.myclass'
+
+### Examples
+
+```javascript
+// Common scenario, take all the component specific rules
+const id = someComponent.getId();
+const rules = cc.getRules(`#${id}`);
+console.log(rules.map(rule => rule.toCSS()))
+```
+
+Returns **[Array][12]&lt;CssRule>** 
 
 [1]: https://github.com/artf/grapesjs/blob/master/src/css_composer/config/config.js
 

@@ -191,6 +191,17 @@ console.log(Section);
 
 Returns **[Component][9]** Found component, otherwise `undefined`
 
+## contains
+
+The method returns a Boolean value indicating whether the passed
+component is a descendant of a given component
+
+### Parameters
+
+-   `component` **[Component][9]** Component to check
+
+Returns **[Boolean][3]** 
+
 ## replaceWith
 
 Replace a component with another one
@@ -394,6 +405,10 @@ Remove all inner components
 ## parent
 
 Get the parent component, if exists
+
+### Parameters
+
+-   `opts`   (optional, default `{}`)
 
 ### Examples
 
@@ -616,6 +631,29 @@ Returns **this**
 ## remove
 
 Remove the component
+
+### Parameters
+
+-   `opts`   (optional, default `{}`)
+
+Returns **this** 
+
+## move
+
+Move the component to another destination component
+
+### Parameters
+
+-   `component` **[Component][9]** Destination component (so the current one will be appended as a child)
+-   `opts` **[Object][2]** Options for the append action (optional, default `{}`)
+
+### Examples
+
+```javascript
+// Move the selected component on top of the wrapper
+const dest = editor.getWrapper();
+editor.getSelected().move(dest, { at: 0 });
+```
 
 Returns **this** 
 
