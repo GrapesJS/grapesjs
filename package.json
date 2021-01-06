@@ -1,7 +1,7 @@
 {
   "name": "grapesjs",
   "description": "Free and Open Source Web Builder Framework",
-  "version": "0.16.31",
+  "version": "0.16.34",
   "author": "Artur Arseniev",
   "license": "BSD-3-Clause",
   "homepage": "http://grapesjs.com",
@@ -27,6 +27,7 @@
     "underscore": "^1.9.1"
   },
   "devDependencies": {
+    "@babel/cli": "^7.12.10",
     "@vuepress/plugin-google-analytics": "^1.7.1",
     "documentation": "^8.1.2",
     "eslint": "^6.6.0",
@@ -111,12 +112,10 @@
     "docs:deploy": "docs/deploy.sh",
     "lint": "eslint src",
     "check": "npm run lint && npm run test",
-    "build": "npm run check && npm run v:patch && npm run-s build:*",
-    "build-n": "npm run check && npm run build:css && npm run-s build:*",
+    "build": "npm run check && run-s build:*",
     "build:js": "grapesjs-cli build --targets=\"> 1%, ie 11, safari 8, not dead\" --statsOutput=\"stats.json\"",
     "build:css": "sass src/styles/scss/main.scss dist/css/grapes.min.css --no-source-map --style=compressed --load-path=node_modules",
     "build:locale": "rm -rf ./locale && node scripts/build-locale.js && babel locale -d locale --copy-files --no-comments",
-    "v:patch": "npm version --no-git-tag-version patch",
     "start": "run-p start:*",
     "start:js": "grapesjs-cli serve",
     "start:css": "npm run build:css -- --watch",
