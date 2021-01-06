@@ -7,7 +7,7 @@ title: Components & JS
 In this guide you'll see how to attach component related scripts and deal with external JavaScript libraries (eg. counters, galleries, slideshows, etc.)
 
 ::: warning
-This guide is referring to GrapesJS v0.16.31 or higher.<br><br>
+This guide is referring to GrapesJS v0.16.34 or higher.<br><br>
 To get a better understanding of the content in this guide, we recommend reading [Components](Components.html) and [Traits] first
 :::
 
