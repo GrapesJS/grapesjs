@@ -48,6 +48,14 @@ const Selector = Model.extend(
       this.em = config.em;
     },
 
+    isId() {
+      return this.get('type') === TYPE_ID;
+    },
+
+    isClass() {
+      return this.get('type') === TYPE_CLASS;
+    },
+
     /**
      * Get full selector name
      * @return {string}

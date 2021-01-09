@@ -198,7 +198,7 @@ export default (config = {}) => {
     /**
      * Returns configuration object
      * @param  {string} [prop] Property name
-     * @return {any} Returns the configuration object or
+     * @returns {any} Returns the configuration object or
      *  the value of the specified property
      */
     getConfig(prop) {
@@ -207,7 +207,9 @@ export default (config = {}) => {
 
     /**
      * Returns HTML built inside canvas
-     * @return {string} HTML string
+     * @param {Object} [opts={}] Options
+     * @param {Boolean} [opts.cleanId=false] Remove unnecessary IDs (eg. those created automatically)
+     * @returns {string} HTML string
      */
     getHtml(opts) {
       return em.getHtml(opts);
@@ -217,7 +219,7 @@ export default (config = {}) => {
      * Returns CSS built inside canvas
      * @param {Object} [opts={}] Options
      * @param {Boolean} [opts.avoidProtected=false] Don't include protected CSS
-     * @return {string} CSS string
+     * @returns {string} CSS string
      */
     getCss(opts) {
       return em.getCss(opts);
@@ -225,7 +227,7 @@ export default (config = {}) => {
 
     /**
      * Returns JS of all components
-     * @return {string} JS string
+     * @returns {string} JS string
      */
     getJs() {
       return em.getJs();
