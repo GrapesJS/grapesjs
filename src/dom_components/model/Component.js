@@ -195,7 +195,6 @@ const Component = Backbone.Model.extend(Styleable).extend(
       this.on('change:toolbar', this.__emitUpdateTlb);
       this.set('status', '');
       this.views = [];
-      this.__isSymbol() && this.__initSymb();
 
       // Register global updates for collection properties
       ['classes', 'traits', 'components'].forEach(name => {
@@ -207,6 +206,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
 
       if (!opt.temporary) {
         this.init();
+        this.__isSymbol() && this.__initSymb();
         em && em.trigger('component:create', this);
       }
     },
@@ -382,7 +382,6 @@ const Component = Backbone.Model.extend(Styleable).extend(
      */
     attrUpdated(m, v, opts = {}) {
       const attrs = this.get('attributes');
-
       // Handle classes
       const classes = attrs.class;
       classes && this.setClass(classes);
@@ -422,10 +421,13 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * component.addAttributes({ 'data-key': 'value' });
      */
     addAttributes(attrs, opts = {}) {
-      const newAttrs = { ...this.getAttributes(), ...attrs };
-      this.setAttributes(newAttrs, opts);
-
-      return this;
+      return this.setAttributes(
+        {
+          ...this.getAttributes({ noClass: 1 }),
+          ...attrs
+        },
+        opts
+      );
     },
 
     /**
@@ -482,7 +484,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * Return all component's attributes
      * @return {Object}
      */
-    getAttributes() {
+    getAttributes(opts = {}) {
       const { em } = this;
       const classes = [];
       const attributes = { ...this.get('attributes') };
@@ -490,10 +492,12 @@ const Component = Backbone.Model.extend(Styleable).extend(
       const id = this.getId();
 
       // Add classes
-      this.get('classes').forEach(cls =>
-        classes.push(isString(cls) ? cls : cls.get('name'))
-      );
-      classes.length && (attributes.class = classes.join(' '));
+      if (!opts.noClass) {
+        this.get('classes').forEach(cls =>
+          classes.push(isString(cls) ? cls : cls.get('name'))
+        );
+        classes.length && (attributes.class = classes.join(' '));
+      }
 
       // Check if we need an ID on the component
       if (!has(attributes, 'id')) {

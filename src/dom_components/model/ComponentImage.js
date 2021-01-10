@@ -33,8 +33,8 @@ export default Component.extend(
 
     initialize(o, opt) {
       Component.prototype.initialize.apply(this, arguments);
-      var attr = this.get('attributes');
-      if (attr.src) this.set('src', attr.src);
+      const { src } = this.get('attributes');
+      if (src) this.set('src', src, { silent: 1 });
     },
 
     initToolbar(...args) {
