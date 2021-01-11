@@ -7,10 +7,14 @@ import PluginManager from './plugin_manager';
 polyfills();
 
 const plugins = new PluginManager();
-const editors = [];
+const editors = new Map();
+let defaultId = 0;
 const defaultConfig = {
   // If true renders editor on init
   autorender: 1,
+
+  // Default id for relational map
+  editorId: defaultId,
 
   // Array of plugins to init
   plugins: [],
@@ -33,6 +37,7 @@ export default {
    * Initialize the editor with passed options
    * @param {Object} config Configuration object
    * @param {string|HTMLElement} config.container Selector which indicates where render the editor
+   * @param {string|number} config.editorId Id to relate to an instance of the editor
    * @param {Boolean} [config.autorender=true] If true, auto-render the content
    * @param {Array} [config.plugins=[]] Array of plugins to execute on start
    * @param {Object} [config.pluginsOpts={}] Custom options for plugins
@@ -76,8 +81,22 @@ export default {
     // is a good point to load stuff like components, css rules, etc.
     editor.getModel().loadOnStart();
     config.autorender && editor.render();
-    editors.push(editor);
+
+    if (config.editorId) {
+      editors.set(config.editorId, editor);
+    } else {
+      editors.set(defaultId++, editor);
+    }
 
     return editor;
+  },
+
+  /**
+   * Returns and instance of the editor based on given id.
+   * @param {string|number} id
+   * @returns {Editor} Editor instance.
+   */
+  getEditorById(id) {
+    return editors ? editors.get(id) : undefined;
   }
 };
