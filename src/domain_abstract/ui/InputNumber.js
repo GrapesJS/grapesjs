@@ -278,7 +278,7 @@ export default Input.extend({
 
     if (!limitlessMax && !isUndefined(max) && max !== '')
       val = val > max ? max : val;
-    if (!limitlessMax && !isUndefined(min) && min !== '')
+    if (!limitlessMin && !isUndefined(min) && min !== '')
       val = val < min ? min : val;
 
     return {
