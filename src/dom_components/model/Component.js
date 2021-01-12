@@ -20,9 +20,6 @@ import Selector from 'selector_manager/model/Selector';
 import Selectors from 'selector_manager/model/Selectors';
 import Traits from 'trait_manager/model/Traits';
 
-const componentList = {};
-let componentIndex = 0;
-
 const escapeRegExp = str => {
   return str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
 };
@@ -30,6 +27,7 @@ const escapeRegExp = str => {
 const avoidInline = em => em && em.getConfig('avoidInlineStyle');
 
 export const eventDrag = 'component:drag';
+export const keySymbol2w = '__symbol2w';
 
 /**
  * The Component object represents a single node of our template structure, so when you update its properties the changes are
@@ -605,11 +603,21 @@ const Component = Backbone.Model.extend(Styleable).extend(
       return this.get('__symbolOf');
     },
 
-    __getSymbToUp() {
+    __getSymbToUp(opts = {}) {
       const symbol = this.get('__symbol');
-      return !this.__isSymbol()
+      const symbolOf = this.__getSymbolOf();
+      let result = !this.__isSymbol()
         ? []
-        : symbol.filter(item => item.collection || item.prevColl);
+        : symbol.filter(md => md.collection || md.prevColl);
+
+      if (opts.useMain && symbolOf) {
+        result = [symbolOf];
+      }
+      if (opts.fromInstance) {
+        result = result.filter(i => i !== opts.fromInstance);
+      }
+
+      return result;
     },
 
     __getSymbTop(opts) {
@@ -649,29 +657,90 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     __upSymbComps(m, c, o) {
+      const { fromInstance } = o || c || {};
+      const useMain = this.get(keySymbol2w) && !fromInstance;
+      const toUpOpts = { useMain, fromInstance };
+
       if (!o) {
         // Reset
-        this.__getSymbToUp().forEach(item => {
+        !this.opt.temporary &&
+          console.log(
+            'Reset cid',
+            this.cid,
+            o,
+            'isSymb',
+            this.__isSymbol(),
+            'symbToUp',
+            this.__getSymbToUp(toUpOpts),
+            { toUpOpts }
+          );
+        this.__getSymbToUp(toUpOpts).forEach(symb => {
           const newMods = m.models.map(mod => mod.clone({ symbol: 1 }));
-          item.components().reset(newMods, c);
+          symb.components().reset(newMods, { fromInstance: this, ...c });
         });
       } else if (o.add) {
         // Add
-        const addedInstances = m.__getSymbToUp();
-        // console.log('Added', m.getId(), m.toHTML(), o, 'toUp', addedInstances);
-        this.__getSymbToUp().forEach(symbInst => {
-          const symbTop = symbInst.__getSymbTop();
-          const inner = addedInstances.filter(addedInst => {
+        const addedInstances = m.__getSymbToUp(toUpOpts);
+        !m.opt.temporary &&
+          console.log(
+            'Added cid',
+            this.cid,
+            m.toHTML(),
+            o,
+            'toUp',
+            addedInstances,
+            'isSymb',
+            this.__isSymbol(),
+            'symbToUp',
+            this.__getSymbToUp(toUpOpts),
+            { toUpOpts }
+          );
+        // Here, before appending new symbol, I have to ensure there no already previosly
+        // created symbol (eg. used mainly when drag components around)
+        this.__getSymbToUp(toUpOpts).forEach(symb => {
+          const symbTop = symb.__getSymbTop();
+          const symbPrev = addedInstances.filter(addedInst => {
             const addedTop = addedInst.__getSymbTop({ prev: 1 });
             return symbTop && addedTop && addedTop === symbTop;
           })[0];
-          const toAppend = inner || m.clone({ symbol: 1 });
-          // console.log('Added inner', toAppend.getId(), toAppend.toHTML(), inner);
-          symbInst.append(toAppend, o);
+          const toAppend = symbPrev || m.clone({ symbol: 1 });
+
+          // If this is the instance which triggered the main update
+          // I have to realign it as other instances
+          // if (fromInstance === symb) {
+          //   const appended = o.toAppend;
+          //   const symbMain = appended.get('__symbol')[0];
+          //   appended.set('__symbolOf', symbMain);
+          //   appended.unset('__symbol');
+          //   symbMain.unset('__symbolOf');
+          //   symbMain.get('__symbol').push(appended);
+          //   !m.opt.temporary && console.log('Exit, fromInstance === symb', fromInstance, 'toAppend', appended, symbMain.get('__symbol'))
+          //   return;
+          // }
+          console.log('Added inner', toAppend.cid, toAppend.toHTML(), {
+            symb,
+            symbPrev,
+            toAppend
+          });
+          symb.append(toAppend, { fromInstance: this, toAppend: m, ...o });
         });
       } else {
         // Remove
-        m.__getSymbToUp().forEach(item => item.remove(o));
+        !m.opt.temporary &&
+          console.log(
+            'Remove cid',
+            m.cid,
+            m.toHTML(),
+            o,
+            'isSymb',
+            this.__isSymbol(),
+            'symbToUp',
+            m.__getSymbToUp(toUpOpts),
+            { toUpOpts }
+          );
+        m.__getSymbToUp(toUpOpts).forEach(symb =>
+          symb.remove({ fromInstance: m, ...o })
+        );
       }
     },
 
@@ -1040,12 +1109,12 @@ const Component = Backbone.Model.extend(Styleable).extend(
       // If I clone an inner symbol, I have to reset it
       cloned.unset('__symbol');
       if (opt.symbol) {
-        // TODO Check if trying to clone a Symbol (check if parent is symbol)
         const symbols = this.get('__symbol') || [];
         symbols.push(cloned);
         this.set('__symbol', symbols);
         this.__initSymb();
         cloned.set('__symbolOf', this);
+        opt.symbol2w && cloned.set(keySymbol2w, 1);
       }
 
       const event = 'component:clone';
