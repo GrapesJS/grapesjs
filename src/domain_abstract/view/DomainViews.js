@@ -12,6 +12,8 @@ export default Backbone.View.extend({
 
   autoAdd: 0,
 
+  filteredComponentes: [],
+
   initialize(opts = {}, config) {
     this.config = config || opts.config || {};
     this.autoAdd && this.listenTo(this.collection, 'add', this.addTo);

@@ -15,6 +15,7 @@ export default Backbone.Model.extend({
     default: '',
     placeholder: '',
     changeProp: 0,
+    visible: true,
     options: []
   },
 
