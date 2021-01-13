@@ -1022,7 +1022,6 @@ const Component = Backbone.Model.extend(Styleable).extend(
       });
 
       attr.status = '';
-      attr.view = '';
       opts.collection = null;
 
       const cloned = new this.constructor(attr, opts);
