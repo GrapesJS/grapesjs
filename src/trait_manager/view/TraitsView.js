@@ -31,6 +31,12 @@ export default DomainViews.extend({
     const toListen = 'component:toggled';
     this.listenTo(this.em, toListen, this.updatedCollection);
     this.listenTo(this, 'updateComps', this.filterCollection);
+    this.searchField = new TraitSearchView({
+      editor: this.em,
+      ppfx: this.ppfx,
+      traitsView: this
+    }).render();
+
     this.updatedCollection();
   },
 
@@ -43,26 +49,19 @@ export default DomainViews.extend({
     const comp = this.em.getSelected();
     this.el.className = `${this.className} ${ppfx}one-bg ${ppfx}two-color`;
     this.collection = comp ? comp.get('traits') : [];
-    this.searchField =
-      this.collection.length > 0
-        ? new TraitSearchView({
-            ppfx: this.ppfx,
-            traits: this.collection,
-            traitsView: this
-          })
-        : this.searchField;
-
     this.collection.each &&
       this.collection.each(function(model) {
         model.set('visible', true);
       });
+    if (this.searchField && this.searchField.traits)
+      this.searchField.traits = this.collection;
 
+    this.searchField = this.searchField.render();
     this.render();
   },
 
-  filterCollection(fc) {
-    console.log('event has triggered');
-    this.collection = fc;
+  filterCollection() {
+    // this.collection = fc;
     this.render();
   },
 
@@ -71,7 +70,7 @@ export default DomainViews.extend({
     this.clearItems();
     this.$el.empty();
 
-    this.searchField && this.$el.append(this.searchField.render().el);
+    this.searchField && this.$el.append(this.searchField.el);
     if (this.collection.length)
       this.collection.each(function(model) {
         model.get('visible') && this.add(model, frag);

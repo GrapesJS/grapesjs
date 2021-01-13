@@ -4,8 +4,14 @@ import Backbone from 'backbone';
 const $ = Backbone.$;
 
 export default Backbone.View.extend({
+  bs: 'Backspace',
+
+  events: {},
+
+  traits: [],
+
   events: {
-    change: 'handleChange'
+    input: 'handleChange'
   },
 
   holderClass() {
@@ -19,23 +25,31 @@ export default Backbone.View.extend({
   initialize(o = {}) {
     console.log('Trait Search initialized');
     const ppfx = o.ppfx || '';
+    this.em = o.editor;
     this.ppfx = ppfx;
     this.traits = o.traits ? o.traits : [];
     this.tv = o.traitsView;
-    this.inputEl = $('<input type="text">');
+    this.inputEl = $(
+      `<input type="text" placeholder="${this.em.t(
+        'traitManager.searchLabel'
+      )}" forcefocus>`
+    );
   },
 
   template() {
-    const pfx = this.pfx;
     return `
     <div class=${this.holderClass()}>
     </div>
     `;
   },
 
+  getInputElement() {
+    return this.inputEl.get(0);
+  },
+
   handleChange(e) {
     e.stopPropagation();
-    const inputEl = this.inputEl.get(0);
+    const inputEl = this.getInputElement();
     const value = inputEl.value;
     var index = 1;
     this.traits.models.forEach(element => {
@@ -47,22 +61,23 @@ export default Backbone.View.extend({
       }
 
       if (index >= self.traits.models.length) {
-        self.tv.trigger('updateComps', self.traits);
+        self.tv.trigger('updateComps');
       } else {
         index++;
       }
     });
-  },
-
-  getInputElement() {
-    return this.inputEl.get(0);
+    this.getInputElement().focus();
   },
 
   render() {
-    const el = this.$el;
-    el.addClass(this.inputClass());
-    el.html(this.template());
-    el.find(`.${this.holderClass()}`).append(this.getInputElement());
+    if (!this.rendered) {
+      const el = this.$el;
+      el.addClass(this.inputClass());
+      el.html(this.template());
+      el.find(`.${this.holderClass()}`).append(this.getInputElement());
+      this.rendered = true;
+    }
+
     return this;
   }
 });
