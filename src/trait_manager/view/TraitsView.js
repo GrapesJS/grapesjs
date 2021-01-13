@@ -44,13 +44,17 @@ export default DomainViews.extend({
     this.el.className = `${this.className} ${ppfx}one-bg ${ppfx}two-color`;
     this.collection = comp ? comp.get('traits') : [];
     this.searchField =
-      !this.searchField && this.collection.length > 0
-        ? new TraitSearchView({ traits: this.collection, traitsView: this })
+      this.collection.length > 0
+        ? new TraitSearchView({
+            ppfx: this.ppfx,
+            traits: this.collection,
+            traitsView: this
+          })
         : this.searchField;
 
     this.collection.each &&
       this.collection.each(function(model) {
-        model.attributes.visible = true;
+        model.set('visible', true);
       });
 
     this.render();
@@ -70,7 +74,7 @@ export default DomainViews.extend({
     this.searchField && this.$el.append(this.searchField.render().el);
     if (this.collection.length)
       this.collection.each(function(model) {
-        model.attributes.visible && this.add(model, frag);
+        model.get('visible') && this.add(model, frag);
       }, this);
 
     this.$el.append(frag);
