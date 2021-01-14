@@ -56,7 +56,6 @@ export default DomainViews.extend({
     if (this.searchField && this.searchField.traits)
       this.searchField.traits = this.collection;
 
-    this.searchField = this.searchField.render();
     this.render();
   },
 
