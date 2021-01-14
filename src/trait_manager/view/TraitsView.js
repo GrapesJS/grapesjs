@@ -30,12 +30,14 @@ export default DomainViews.extend({
     this.className = this.pfx + 'traits';
     const toListen = 'component:toggled';
     this.listenTo(this.em, toListen, this.updatedCollection);
-    this.listenTo(this, 'updateComps', this.filterCollection);
-    this.searchField = new TraitSearchView({
-      editor: this.em,
-      ppfx: this.ppfx,
-      traitsView: this
-    }).render();
+    if (this.config.showSearch) {
+      this.listenTo(this, 'updateComps', this.filterCollection);
+      this.searchField = new TraitSearchView({
+        editor: this.em,
+        ppfx: this.ppfx,
+        traitsView: this
+      }).render();
+    }
 
     this.updatedCollection();
   },
@@ -60,7 +62,6 @@ export default DomainViews.extend({
   },
 
   filterCollection() {
-    // this.collection = fc;
     this.render();
   },
 
