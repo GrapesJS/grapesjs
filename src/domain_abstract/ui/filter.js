@@ -21,7 +21,6 @@ export default Backbone.View.extend({
   },
 
   initialize(o = {}) {
-    console.log('Trait Search initialized');
     const ppfx = o.ppfx || '';
     (this.clb = o.clb), (this.em = o.editor);
     this.ppfx = ppfx;

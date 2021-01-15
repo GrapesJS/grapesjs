@@ -2,6 +2,7 @@ import Backbone from 'backbone';
 import { isString, isObject, bindAll } from 'underscore';
 import BlockView from './BlockView';
 import CategoryView from './CategoryView';
+import Filter from 'domain_abstract/ui/Filter';
 
 export default Backbone.View.extend({
   initialize(opts, config) {
@@ -24,6 +25,14 @@ export default Backbone.View.extend({
     if (this.em) {
       this.config.getSorter = this.getSorter;
       this.canvas = this.em.get('Canvas');
+    }
+
+    if (this.config.showSearch) {
+      this.searchField = new Filter({
+        clb: this.searchCallBack.bind(this),
+        editor: this.em,
+        ppfx: this.ppfx
+      }).render();
     }
   },
 
@@ -61,6 +70,17 @@ export default Backbone.View.extend({
       });
     }
     return this.sorter;
+  },
+
+  /**
+   * @private
+   */
+  searchCallBack(value) {
+    this.categories.forEach(function(category) {
+      if (category.label === value) {
+        category.set('visible', false);
+      }
+    });
   },
 
   /**
@@ -187,14 +207,15 @@ export default Backbone.View.extend({
     this.catsEl = null;
     this.blocksEl = null;
     this.renderedCategories = [];
+
     this.el.innerHTML = `
       <div class="${this.catsClass}"></div>
       <div class="${this.noCatClass}">
         <div class="${this.blockContClass}"></div>
       </div>
     `;
-
     this.collection.each(model => this.add(model, frag));
+    this.el.append(this.searchField.el);
     this.append(frag);
     const cls = `${this.blockContClass}s ${ppfx}one-bg ${ppfx}two-color`;
     this.$el.addClass(cls);

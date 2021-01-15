@@ -5,7 +5,7 @@ import TraitCheckboxView from './TraitCheckboxView';
 import TraitNumberView from './TraitNumberView';
 import TraitColorView from './TraitColorView';
 import TraitButtonView from './TraitButtonView';
-import TraitSearchView from './TraitSearchView';
+import Filter from 'domain_abstract/ui/Filter';
 
 export default DomainViews.extend({
   ns: 'Traits',
@@ -31,7 +31,7 @@ export default DomainViews.extend({
     const toListen = 'component:toggled';
     this.listenTo(this.em, toListen, this.updatedCollection);
     if (this.config.showSearch) {
-      this.searchField = new TraitSearchView({
+      this.searchField = new Filter({
         clb: this.searchCallBack.bind(this),
         editor: this.em,
         ppfx: this.ppfx

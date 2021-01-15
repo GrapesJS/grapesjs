@@ -17,6 +17,7 @@ export default Backbone.Model.extend({
     media: '',
     content: '',
     category: '',
+    visible: true,
     attributes: {}
   },
 
