@@ -8,8 +8,6 @@ export default Backbone.View.extend({
 
   events: {},
 
-  traits: [],
-
   events: {
     input: 'handleChange'
   },
@@ -25,14 +23,12 @@ export default Backbone.View.extend({
   initialize(o = {}) {
     console.log('Trait Search initialized');
     const ppfx = o.ppfx || '';
-    this.em = o.editor;
+    (this.clb = o.clb), (this.em = o.editor);
     this.ppfx = ppfx;
-    this.traits = o.traits ? o.traits : [];
-    this.tv = o.traitsView;
     this.inputEl = $(
       `<input type="text" placeholder="${this.em.t(
         'traitManager.searchLabel'
-      )}" forcefocus>`
+      )}">`
     );
   },
 
@@ -51,21 +47,7 @@ export default Backbone.View.extend({
     e.stopPropagation();
     const inputEl = this.getInputElement();
     const value = inputEl.value;
-    var index = 1;
-    this.traits.models.forEach(element => {
-      self = this;
-      if (!element.get('name').includes(value)) {
-        element.set('visible', false);
-      } else {
-        element.set('visible', true);
-      }
-
-      if (index >= self.traits.models.length) {
-        self.tv.trigger('updateComps');
-      } else {
-        index++;
-      }
-    });
+    this.clb && this.clb(value);
     this.getInputElement().focus();
   },
 

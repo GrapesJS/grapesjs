@@ -31,11 +31,10 @@ export default DomainViews.extend({
     const toListen = 'component:toggled';
     this.listenTo(this.em, toListen, this.updatedCollection);
     if (this.config.showSearch) {
-      this.listenTo(this, 'updateComps', this.filterCollection);
       this.searchField = new TraitSearchView({
+        clb: this.searchCallBack.bind(this),
         editor: this.em,
-        ppfx: this.ppfx,
-        traitsView: this
+        ppfx: this.ppfx
       }).render();
     }
 
@@ -55,14 +54,25 @@ export default DomainViews.extend({
       this.collection.each(function(model) {
         model.set('visible', true);
       });
-    if (this.searchField && this.searchField.traits)
-      this.searchField.traits = this.collection;
 
     this.render();
   },
 
-  filterCollection() {
-    this.render();
+  searchCallBack(value) {
+    var index = 1;
+    this.collection.forEach(element => {
+      if (!element.get('name').includes(value)) {
+        element.set('visible', false);
+      } else {
+        element.set('visible', true);
+      }
+
+      if (index >= this.collection.length) {
+        this.render();
+      } else {
+        index++;
+      }
+    });
   },
 
   render() {
