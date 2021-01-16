@@ -469,7 +469,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
         const propOrig = this.getStyle();
         this.rule = cc.setIdRule(this.getId(), prop, { ...opts, state });
         const diff = shallowDiff(propOrig, prop);
-        this.set('style', {}, { silent: 1 });
+        this.set('style', '', { silent: 1 });
         keys(diff).forEach(pr => this.trigger(`change:style:${pr}`));
       } else {
         prop = Styleable.setStyle.apply(this, arguments);
@@ -1091,7 +1091,6 @@ const Component = Backbone.Model.extend(Styleable).extend(
       });
 
       attr.status = '';
-      attr.view = '';
       opts.collection = null;
 
       const cloned = new this.constructor(attr, opts);
@@ -1222,11 +1221,11 @@ const Component = Backbone.Model.extend(Styleable).extend(
         }
       }
 
-      let attrString = attrs.length ? ` ${attrs.join(' ')}` : '';
-      let code = `<${tag}${attrString}${sTag ? '/' : ''}>${model.get(
-        'content'
-      )}`;
-      model.get('components').each(comp => (code += comp.toHTML(opts)));
+      const comps = model.get('components');
+      const content = !comps.length ? model.get('content') : '';
+      const attrString = attrs.length ? ` ${attrs.join(' ')}` : '';
+      let code = `<${tag}${attrString}${sTag ? '/' : ''}>${content}`;
+      comps.forEach(comp => (code += comp.toHTML(opts)));
       !sTag && (code += `</${tag}>`);
 
       return code;

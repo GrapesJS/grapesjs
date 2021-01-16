@@ -331,7 +331,9 @@ export default Backbone.View.extend({
    * @private
    * */
   updateContent() {
-    this.getChildrenContainer().innerHTML = this.model.get('content');
+    const content = this.model.get('content');
+    const hasComps = this.model.components().length;
+    this.getChildrenContainer().innerHTML = hasComps ? '' : content;
   },
 
   /**
