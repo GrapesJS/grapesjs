@@ -149,11 +149,13 @@ export default () => {
             em.trigger(eventDrag, data);
           };
           const onEnd = (e, opts, data) => {
-            em.runDefault(defComOptions);
             selAll.forEach(sel => sel.set('status', 'selected'));
             ed.select(selAll);
             sel.emitUpdate();
             em.trigger(`${eventDrag}:end`, data);
+
+            // Defer selectComponent in order to prevent canvas "freeze" #2692
+            setTimeout(() => em.runDefault(defComOptions));
 
             // Dirty patch to prevent parent selection on drop
             (altMode || data.cancelled) && em.set('_cmpDrag', 1);
