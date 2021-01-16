@@ -9,8 +9,7 @@ import {
   flatten,
   debounce
 } from 'underscore';
-
-let Component;
+import Component, { keySymbol, keySymbols } from './Component';
 
 const getIdsToKeep = (prev, res = []) => {
   const pr = prev || [];
@@ -144,7 +143,6 @@ export default Backbone.Collection.extend({
     const cssc = em.get('CssComposer');
     const parsed = em.get('Parser').parseHtml(value);
     // We need this to avoid duplicate IDs
-    if (!Component) Component = require('./Component').default;
     Component.checkId(parsed.html, parsed.css, domc.componentsById, opt);
 
     if (parsed.css && cssc && !opt.temporary) {
@@ -179,7 +177,7 @@ export default Backbone.Collection.extend({
     models = isMult ? flatten(models, 1) : models[0];
 
     // if (parent && parent.get('__symbol2w') && !opt.__fromSymb) {
-    //   const symb = parent.__getSymbolOf();
+    //   const symb = parent.__getSymbol();
     //   console.log('Trying to add to symbol', symb, 'this models', models, opt);
     //   return symb.components().add(models, {...opt, __fromSymb: 1, });
     // } else if (parent && parent.__isSymbol()) {
@@ -275,17 +273,17 @@ export default Backbone.Collection.extend({
     const silent = { silent: true };
     const onAll = comps => {
       comps.forEach(comp => {
-        const symbol = comp.get('__symbol');
-        const symbolOf = comp.get('__symbolOf');
+        const symbol = comp.get(keySymbols);
+        const symbolOf = comp.get(keySymbol);
         if (symbol && isArray(symbol) && isString(symbol[0])) {
           comp.set(
-            '__symbol',
+            keySymbols,
             symbol.map(smb => allComp[smb]).filter(i => i),
             silent
           );
         }
         if (isString(symbolOf)) {
-          comp.set('__symbolOf', allComp[symbolOf], silent);
+          comp.set(keySymbol, allComp[symbolOf], silent);
         }
         onAll(comp.components());
       });

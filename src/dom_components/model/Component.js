@@ -27,8 +27,8 @@ const escapeRegExp = str => {
 const avoidInline = em => em && em.getConfig('avoidInlineStyle');
 
 export const eventDrag = 'component:drag';
+export const keySymbols = '__symbols';
 export const keySymbol = '__symbol';
-export const keySymbolOf = '__symbol';
 export const keySymbol2w = '__symbol2w';
 
 /**
@@ -593,7 +593,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     __isSymbol() {
-      return isArray(this.get(keySymbol));
+      return isArray(this.get(keySymbols));
     },
 
     __isSymbolTop() {
@@ -601,13 +601,13 @@ const Component = Backbone.Model.extend(Styleable).extend(
       return this.__isSymbol() && parent && !parent.__isSymbol();
     },
 
-    __getSymbolOf() {
-      return this.get(keySymbolOf);
+    __getSymbol() {
+      return this.get(keySymbol);
     },
 
     __getSymbToUp(opts = {}) {
-      const symbol = this.get(keySymbol);
-      const symbolOf = this.__getSymbolOf();
+      const symbol = this.get(keySymbols);
+      const symbolOf = this.__getSymbol();
       let result = !this.__isSymbol()
         ? []
         : symbol.filter(md => md.collection || md.prevColl);
@@ -629,7 +629,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
 
       while (
         parent &&
-        (isSymbol ? parent.__isSymbol() : parent.__getSymbolOf())
+        (isSymbol ? parent.__isSymbol() : parent.__getSymbol())
       ) {
         result = parent;
         parent = parent.parent(opts);
@@ -643,8 +643,8 @@ const Component = Backbone.Model.extend(Styleable).extend(
       const attrs = changed.attributes || {};
       delete changed.status;
       delete changed.open;
+      delete changed[keySymbols];
       delete changed[keySymbol];
-      delete changed[keySymbolOf];
       delete changed.attributes;
       delete attrs.id;
       if (!isEmptyObj(attrs)) changed.attributes = attrs;
@@ -1108,14 +1108,12 @@ const Component = Backbone.Model.extend(Styleable).extend(
 
       // Symbols
       // If I clone an inner symbol, I have to reset it
-      cloned.unset(keySymbol);
+      cloned.unset(keySymbols);
       if (opt.symbol) {
-        const symbols = this.get(keySymbol) || [];
-        symbols.push(cloned);
-        this.set(keySymbol, symbols);
-        this.__initSymb();
-        cloned.set(keySymbolOf, this);
-        opt.symbol2w && cloned.set(keySymbol2w, 1);
+        cloned.set(keySymbols, [this]);
+        [this, cloned].map(i => i.__initSymb());
+        this.set(keySymbol, cloned);
+        // opt.symbol2w && cloned.set(keySymbol2w, 1);
       }
 
       const event = 'component:clone';
@@ -1260,11 +1258,11 @@ const Component = Backbone.Model.extend(Styleable).extend(
       delete obj.open; // used in Layers
 
       if (!opts.keepSymbols) {
-        if (obj.__symbol) {
-          obj.__symbol = this.__getSymbToUp().map(i => i.getId());
+        if (obj[keySymbols]) {
+          obj[keySymbols] = this.__getSymbToUp().map(i => i.getId());
         }
-        if (obj.__symbolOf) {
-          obj.__symbolOf = obj.__symbolOf.getId();
+        if (obj[keySymbol]) {
+          obj[keySymbol] = obj[keySymbol].getId();
         }
       }
 
