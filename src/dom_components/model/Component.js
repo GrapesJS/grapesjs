@@ -27,6 +27,8 @@ const escapeRegExp = str => {
 const avoidInline = em => em && em.getConfig('avoidInlineStyle');
 
 export const eventDrag = 'component:drag';
+export const keySymbol = '__symbol';
+export const keySymbolOf = '__symbol';
 export const keySymbol2w = '__symbol2w';
 
 /**
@@ -591,7 +593,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     __isSymbol() {
-      return isArray(this.get('__symbol'));
+      return isArray(this.get(keySymbol));
     },
 
     __isSymbolTop() {
@@ -600,11 +602,11 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     __getSymbolOf() {
-      return this.get('__symbolOf');
+      return this.get(keySymbolOf);
     },
 
     __getSymbToUp(opts = {}) {
-      const symbol = this.get('__symbol');
+      const symbol = this.get(keySymbol);
       const symbolOf = this.__getSymbolOf();
       let result = !this.__isSymbol()
         ? []
@@ -641,8 +643,8 @@ const Component = Backbone.Model.extend(Styleable).extend(
       const attrs = changed.attributes || {};
       delete changed.status;
       delete changed.open;
-      delete changed.__symbol;
-      delete changed.__symbolOf;
+      delete changed[keySymbol];
+      delete changed[keySymbolOf];
       delete changed.attributes;
       delete attrs.id;
       if (!isEmptyObj(attrs)) changed.attributes = attrs;
@@ -1106,13 +1108,13 @@ const Component = Backbone.Model.extend(Styleable).extend(
 
       // Symbols
       // If I clone an inner symbol, I have to reset it
-      cloned.unset('__symbol');
+      cloned.unset(keySymbol);
       if (opt.symbol) {
-        const symbols = this.get('__symbol') || [];
+        const symbols = this.get(keySymbol) || [];
         symbols.push(cloned);
-        this.set('__symbol', symbols);
+        this.set(keySymbol, symbols);
         this.__initSymb();
-        cloned.set('__symbolOf', this);
+        cloned.set(keySymbolOf, this);
         opt.symbol2w && cloned.set(keySymbol2w, 1);
       }
 
