@@ -684,14 +684,11 @@ const Component = Backbone.Model.extend(Styleable).extend(
         const addedInstances = m.__getSymbToUp(toUpOpts);
         !m.opt.temporary &&
           console.log(
-            'Added cid',
-            this.cid,
-            m.toHTML(),
-            o,
-            'toUp',
+            `Added cid ${m.cid} (symb: ${m.__isSymbol()}) in ${
+              this.cid
+            } (symb: ${this.__isSymbol()})`,
+            'SymbToUp added',
             addedInstances,
-            'isSymb',
-            this.__isSymbol(),
             'symbToUp',
             this.__getSymbToUp(toUpOpts),
             { toUpOpts }
@@ -705,7 +702,6 @@ const Component = Backbone.Model.extend(Styleable).extend(
             return symbTop && addedTop && addedTop === symbTop;
           })[0];
           const toAppend = symbPrev || m.clone({ symbol: 1 });
-
           // If this is the instance which triggered the main update
           // I have to realign it as other instances
           // if (fromInstance === symb) {
@@ -718,11 +714,15 @@ const Component = Backbone.Model.extend(Styleable).extend(
           //   !m.opt.temporary && console.log('Exit, fromInstance === symb', fromInstance, 'toAppend', appended, symbMain.get('__symbol'))
           //   return;
           // }
-          console.log('Added inner', toAppend.cid, toAppend.toHTML(), {
-            symb,
-            symbPrev,
-            toAppend
-          });
+          !m.opt.temporary &&
+            console.log(
+              'Added inner',
+              toAppend.cid,
+              'of',
+              symb.cid,
+              `(symb ${symb.__isSymbol()})`,
+              { symb, symbPrev, toAppend }
+            );
           symb.append(toAppend, { fromInstance: this, toAppend: m, ...o });
         });
       } else {
@@ -1114,9 +1114,15 @@ const Component = Backbone.Model.extend(Styleable).extend(
         symbol.get(keySymbols).push(cloned);
         cloned.__initSymb();
       } else if (opt.symbol) {
-        cloned.set(keySymbols, [this]);
-        [this, cloned].map(i => i.__initSymb());
-        this.set(keySymbol, cloned);
+        if (this.__isSymbol()) {
+          this.get(keySymbols).push(cloned);
+          cloned.set(keySymbol, this);
+          cloned.__initSymb();
+        } else {
+          cloned.set(keySymbols, [this]);
+          [this, cloned].map(i => i.__initSymb());
+          this.set(keySymbol, cloned);
+        }
         // opt.symbol2w && cloned.set(keySymbol2w, 1);
       }
 
