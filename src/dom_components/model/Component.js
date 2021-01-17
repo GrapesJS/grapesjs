@@ -606,17 +606,16 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     __getSymbToUp(opts = {}) {
-      const symbol = this.get(keySymbols);
-      const symbolOf = this.__getSymbol();
-      let result = !this.__isSymbol()
-        ? []
-        : symbol.filter(md => md.collection || md.prevColl);
+      const { fromInstance } = opts;
+      const symbols = this.get(keySymbols) || [];
+      const symbol = this.__getSymbol();
+      let result =
+        symbol && !fromInstance
+          ? [symbol]
+          : symbols.filter(md => md.collection || md.prevColl);
 
-      if (opts.useMain && symbolOf) {
-        result = [symbolOf];
-      }
-      if (opts.fromInstance) {
-        result = result.filter(i => i !== opts.fromInstance);
+      if (fromInstance) {
+        result = result.filter(i => i !== fromInstance);
       }
 
       return result;
@@ -660,7 +659,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
 
     __upSymbComps(m, c, o) {
       const { fromInstance } = o || c || {};
-      const useMain = this.get(keySymbol2w) && !fromInstance;
+      const useMain = !fromInstance;
       const toUpOpts = { useMain, fromInstance };
 
       if (!o) {
