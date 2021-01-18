@@ -76,9 +76,24 @@ export default Backbone.View.extend({
    * @private
    */
   searchCallBack(value) {
-    this.categories.forEach(function(category) {
-      if (category.label === value) {
-        category.set('visible', false);
+    var index = 1;
+    const processedValue = value.toLowerCase();
+    this.collection.models.forEach(model => {
+      const blockLabel = model.get('label').toLowerCase();
+      const categoryLabel = model.get('category').id;
+      if (
+        !blockLabel.includes(processedValue) &&
+        !categoryLabel.toLowerCase().includes(processedValue)
+      ) {
+        model.set('visible', false);
+      } else {
+        model.set('visible', true);
+      }
+
+      if (index >= this.collection.length) {
+        this.render();
+      } else {
+        index++;
       }
     });
   },
@@ -214,8 +229,11 @@ export default Backbone.View.extend({
         <div class="${this.blockContClass}"></div>
       </div>
     `;
-    this.collection.each(model => this.add(model, frag));
-    this.el.append(this.searchField.el);
+
+    this.el.prepend(this.searchField.el);
+    this.collection.each(
+      model => model.get('visible') && this.add(model, frag)
+    );
     this.append(frag);
     const cls = `${this.blockContClass}s ${ppfx}one-bg ${ppfx}two-color`;
     this.$el.addClass(cls);
