@@ -598,7 +598,11 @@ const Component = Backbone.Model.extend(Styleable).extend(
 
     __isSymbolTop() {
       const parent = this.parent();
-      return this.__isSymbol() && parent && !parent.__isSymbol();
+      return (
+        parent &&
+        ((this.__isSymbol() && !parent.__isSymbol()) ||
+          (this.__getSymbol() && !parent.__getSymbol()))
+      );
     },
 
     __getSymbol() {
@@ -734,14 +738,14 @@ const Component = Backbone.Model.extend(Styleable).extend(
             m.toHTML(),
             o,
             'isSymb',
-            this.__isSymbol(),
+            m.__isSymbol(),
             'symbToUp',
             m.__getSymbToUp(toUpOpts),
             { toUpOpts }
           );
-        m.__getSymbToUp(toUpOpts).forEach(symb =>
-          symb.remove({ fromInstance: m, ...o })
-        );
+        const symbToUp = m.__getSymbToUp(toUpOpts);
+        !m.__isSymbolTop() &&
+          symbToUp.forEach(symb => symb.remove({ fromInstance: m, ...o }));
       }
     },
 
