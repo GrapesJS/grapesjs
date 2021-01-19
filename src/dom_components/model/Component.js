@@ -609,6 +609,10 @@ const Component = Backbone.Model.extend(Styleable).extend(
       return this.get(keySymbol);
     },
 
+    __getSymbols() {
+      return this.get(keySymbols);
+    },
+
     __getSymbToUp(opts = {}) {
       const { fromInstance } = opts;
       const symbols = this.get(keySymbols) || [];
