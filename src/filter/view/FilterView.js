@@ -33,12 +33,12 @@ export default Backbone.View.extend({
 
   template() {
     return `
-      <div style="padding: .2em; display: flex; justify-content: flex-start; align-items: center;">
+      <div style="padding: .2em; display: flex; justify-content: flex-end; ">
+        <div class=${this.holderClass()} style="justify-content: flex-start;">
+        </div>
         <span class="${this.ppfx}clm-tags-btn" data-clear>
           ${this.iconDelete} 
         </span> 
-        <div class=${this.holderClass()}>
-        </div>
       </div>
     `;
   },
