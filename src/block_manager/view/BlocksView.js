@@ -2,7 +2,7 @@ import Backbone from 'backbone';
 import { isString, isObject, bindAll } from 'underscore';
 import BlockView from './BlockView';
 import CategoryView from './CategoryView';
-import Filter from 'domain_abstract/ui/Filter';
+import Filter from 'filter/view/FilterView';
 
 export default Backbone.View.extend({
   initialize(opts, config) {
@@ -230,7 +230,7 @@ export default Backbone.View.extend({
       </div>
     `;
 
-    this.el.prepend(this.searchField.el);
+    this.searchField && this.el.prepend(this.searchField.el);
     this.collection.each(
       model => model.get('visible') && this.add(model, frag)
     );

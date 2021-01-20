@@ -9,8 +9,12 @@ export default Backbone.View.extend({
   events: {},
 
   events: {
-    input: 'handleChange'
+    input: 'handleChange',
+    'click [data-clear]': 'clearInput'
   },
+
+  iconDelete:
+    '<svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"></path></svg>',
 
   holderClass() {
     return `${this.ppfx}input-holder`;
@@ -22,23 +26,29 @@ export default Backbone.View.extend({
 
   initialize(o = {}) {
     const ppfx = o.ppfx || '';
-    (this.clb = o.clb), (this.em = o.editor);
+    this.clb = o.clb;
+    this.em = o.editor;
     this.ppfx = ppfx;
-    this.inputEl = $(
-      `<input type="text" placeholder="${this.em.t(
-        'traitManager.searchLabel'
-      )}">`
-    );
   },
 
   template() {
     return `
-    <div class=${this.holderClass()}>
-    </div>
+      <div style="padding: .2em; display: flex; justify-content: flex-start; align-items: center;">
+        <span class="${this.ppfx}clm-tags-btn" data-clear>
+          ${this.iconDelete} 
+        </span> 
+        <div class=${this.holderClass()}>
+        </div>
+      </div>
     `;
   },
 
   getInputElement() {
+    if (!this.inputEl) {
+      const label = this.em ? this.em.t('panels.searchLabel') : '';
+      this.inputEl = $(`<input type="text" placeholder="${label}">`);
+    }
+
     return this.inputEl.get(0);
   },
 
@@ -48,6 +58,12 @@ export default Backbone.View.extend({
     const value = inputEl.value;
     this.clb && this.clb(value);
     this.getInputElement().focus();
+  },
+
+  clearInput(e) {
+    const inputEl = this.getInputElement();
+    inputEl.value = '';
+    this.clb && this.clb('');
   },
 
   render() {

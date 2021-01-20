@@ -5,7 +5,7 @@ import TraitCheckboxView from './TraitCheckboxView';
 import TraitNumberView from './TraitNumberView';
 import TraitColorView from './TraitColorView';
 import TraitButtonView from './TraitButtonView';
-import Filter from 'domain_abstract/ui/Filter';
+import Filter from 'filter/view/FilterView';
 
 export default DomainViews.extend({
   ns: 'Traits',
