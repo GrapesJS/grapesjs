@@ -5,7 +5,6 @@ export default Backbone.Model.extend({
     id: '',
     label: '',
     open: true,
-    attributes: {},
-    visible: true
+    attributes: {}
   }
 });
