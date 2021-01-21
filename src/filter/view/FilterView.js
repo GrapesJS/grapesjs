@@ -34,7 +34,7 @@ export default Backbone.View.extend({
   template() {
     return `
       <div style="padding: .2em; display: flex; justify-content: flex-end; ">
-        <div class=${this.holderClass()} style="justify-content: flex-start;">
+        <div class=${this.holderClass()} style="justify-content: flex-start; width: 100%">
         </div>
         <span class="${this.ppfx}clm-tags-btn" data-clear>
           ${this.iconDelete} 
@@ -63,7 +63,7 @@ export default Backbone.View.extend({
   clearInput(e) {
     const inputEl = this.getInputElement();
     inputEl.value = '';
-    this.clb && this.clb('');
+    this.clb && this.clb(inputEl.value);
   },
 
   render() {
