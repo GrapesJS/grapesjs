@@ -57,7 +57,8 @@ export default {
         'open-layers': 'Open Layer Manager',
         'open-blocks': 'Open Blocks'
       }
-    }
+    },
+    searchLabel: 'filter'
   },
   selectorManager: {
     label: 'Classes',

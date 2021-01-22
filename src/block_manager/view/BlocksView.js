@@ -2,6 +2,7 @@ import Backbone from 'backbone';
 import { isString, isObject, bindAll } from 'underscore';
 import BlockView from './BlockView';
 import CategoryView from './CategoryView';
+import Filter from 'filter/view/FilterView';
 
 export default Backbone.View.extend({
   initialize(opts, config) {
@@ -24,6 +25,14 @@ export default Backbone.View.extend({
     if (this.em) {
       this.config.getSorter = this.getSorter;
       this.canvas = this.em.get('Canvas');
+    }
+
+    if (this.config.showSearch) {
+      this.searchField = new Filter({
+        clb: this.searchCallBack.bind(this),
+        editor: this.em,
+        ppfx: this.ppfx
+      }).render();
     }
   },
 
@@ -61,6 +70,33 @@ export default Backbone.View.extend({
       });
     }
     return this.sorter;
+  },
+
+  /**
+   * @private
+   */
+  searchCallBack(value) {
+    var index = 1;
+    const processedValue = value ? value.toLowerCase() : '';
+    this.collection.models.forEach(model => {
+      const blockLabel = model.get('label').toLowerCase();
+      const category = model.get('category');
+      const categoryLabel = category ? category.id.toLowerCase() : '';
+      if (
+        !blockLabel.includes(processedValue) &&
+        !categoryLabel.includes(processedValue)
+      ) {
+        model.set('visible', false);
+      } else {
+        model.set('visible', true);
+      }
+
+      if (index >= this.collection.length) {
+        this.render();
+      } else {
+        index++;
+      }
+    });
   },
 
   /**
@@ -187,6 +223,7 @@ export default Backbone.View.extend({
     this.catsEl = null;
     this.blocksEl = null;
     this.renderedCategories = [];
+
     this.el.innerHTML = `
       <div class="${this.catsClass}"></div>
       <div class="${this.noCatClass}">
@@ -194,7 +231,10 @@ export default Backbone.View.extend({
       </div>
     `;
 
-    this.collection.each(model => this.add(model, frag));
+    this.searchField && this.el.prepend(this.searchField.el);
+    this.collection.each(
+      model => model.get('visible') && this.add(model, frag)
+    );
     this.append(frag);
     const cls = `${this.blockContClass}s ${ppfx}one-bg ${ppfx}two-color`;
     this.$el.addClass(cls);

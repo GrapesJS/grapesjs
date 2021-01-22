@@ -5,6 +5,7 @@ import TraitCheckboxView from './TraitCheckboxView';
 import TraitNumberView from './TraitNumberView';
 import TraitColorView from './TraitColorView';
 import TraitButtonView from './TraitButtonView';
+import Filter from 'filter/view/FilterView';
 
 export default DomainViews.extend({
   ns: 'Traits',
@@ -29,6 +30,14 @@ export default DomainViews.extend({
     this.className = this.pfx + 'traits';
     const toListen = 'component:toggled';
     this.listenTo(this.em, toListen, this.updatedCollection);
+    if (this.config.showSearch) {
+      this.searchField = new Filter({
+        clb: this.inclusiveSearchCallBack.bind(this),
+        editor: this.em,
+        ppfx: this.ppfx
+      }).render();
+    }
+
     this.updatedCollection();
   },
 
@@ -41,6 +50,45 @@ export default DomainViews.extend({
     const comp = this.em.getSelected();
     this.el.className = `${this.className} ${ppfx}one-bg ${ppfx}two-color`;
     this.collection = comp ? comp.get('traits') : [];
+    // Need to guard access to each, due to being undefined in some observed cases where collection is not a backbone collection.
+    this.collection.each &&
+      this.collection.each(function(model) {
+        model.set('visible', true);
+      });
+
     this.render();
+  },
+
+  inclusiveSearchCallBack(value) {
+    var index = 1;
+    this.collection.forEach(element => {
+      if (!element.get('name').includes(value)) {
+        element.set('visible', false);
+      } else {
+        element.set('visible', true);
+      }
+
+      if (index >= this.collection.length) {
+        this.render();
+      } else {
+        index++;
+      }
+    });
+  },
+
+  render() {
+    var frag = document.createDocumentFragment();
+    this.clearItems();
+    this.$el.empty();
+
+    this.searchField && this.$el.append(this.searchField.el);
+    if (this.collection.length)
+      this.collection.each(function(model) {
+        model.get('visible') && this.add(model, frag);
+      }, this);
+
+    this.$el.append(frag);
+    this.onRender();
+    return this;
   }
 });

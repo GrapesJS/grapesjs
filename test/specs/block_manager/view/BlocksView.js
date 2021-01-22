@@ -25,6 +25,9 @@ describe('BlocksView', () => {
     expect(view.el.outerHTML).toBeTruthy();
   });
 
+  test('The search field is undefined', () => {
+    expect(view.searchField).toEqual(undefined);
+  });
   test('No children inside', () => {
     expect(view.getBlocksEl().children.length).toEqual(0);
   });
@@ -53,7 +56,8 @@ describe('BlocksView', () => {
           collection: model
         },
         {
-          pStylePrefix: ppfx
+          pStylePrefix: ppfx,
+          showSearch: true
         }
       );
       document.body.innerHTML = '<div id="fixtures"></div>';
@@ -68,6 +72,10 @@ describe('BlocksView', () => {
       expect(view.getBlocksEl().getAttribute('class')).toEqual(
         ppfx + 'blocks-c'
       );
+    });
+
+    test('The search field is defined', () => {
+      expect(view.searchField).toBeTruthy();
     });
   });
 });
