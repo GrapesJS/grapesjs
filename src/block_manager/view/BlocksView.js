@@ -77,13 +77,14 @@ export default Backbone.View.extend({
    */
   searchCallBack(value) {
     var index = 1;
-    const processedValue = value.toLowerCase();
+    const processedValue = value ? value.toLowerCase() : '';
     this.collection.models.forEach(model => {
       const blockLabel = model.get('label').toLowerCase();
-      const categoryLabel = model.get('category').id;
+      const category = model.get('category');
+      const categoryLabel = category ? category.id.toLowerCase() : '';
       if (
         !blockLabel.includes(processedValue) &&
-        !categoryLabel.toLowerCase().includes(processedValue)
+        !categoryLabel.includes(processedValue)
       ) {
         model.set('visible', false);
       } else {
