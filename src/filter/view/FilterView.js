@@ -4,10 +4,6 @@ import Backbone from 'backbone';
 const $ = Backbone.$;
 
 export default Backbone.View.extend({
-  bs: 'Backspace',
-
-  events: {},
-
   events: {
     input: 'handleChange',
     'click [data-clear]': 'clearInput'
@@ -33,12 +29,14 @@ export default Backbone.View.extend({
 
   template() {
     return `
-      <div style="padding: .2em; display: flex; justify-content: flex-end;">
-        <div class=${this.holderClass()} style="justify-content: flex-start; width: 100%">
+      <div style="padding: 5px; display: flex; justify-content: flex-end;">
+        <div class=${this.holderClass()} style="display: flex; width: 100%">
         </div>
-        <span class="${this.ppfx}clm-tags-btn" data-clear>
+        <span class="${
+          this.ppfx
+        }clm-tags-btn" style="justify-content: flex-center;" data-clear>
           ${this.iconDelete} 
-        </span> 
+        </span>
       </div>
     `;
   },

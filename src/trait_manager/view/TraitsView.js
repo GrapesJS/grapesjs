@@ -32,7 +32,7 @@ export default DomainViews.extend({
     this.listenTo(this.em, toListen, this.updatedCollection);
     if (this.config.showSearch) {
       this.searchField = new Filter({
-        clb: this.searchCallBack.bind(this),
+        clb: this.inclusiveSearchCallBack.bind(this),
         editor: this.em,
         ppfx: this.ppfx
       }).render();
@@ -50,6 +50,7 @@ export default DomainViews.extend({
     const comp = this.em.getSelected();
     this.el.className = `${this.className} ${ppfx}one-bg ${ppfx}two-color`;
     this.collection = comp ? comp.get('traits') : [];
+    // Need to guard access to each, due to being undefined in some observed cases where collection is not a backbone collection.
     this.collection.each &&
       this.collection.each(function(model) {
         model.set('visible', true);
@@ -58,7 +59,7 @@ export default DomainViews.extend({
     this.render();
   },
 
-  searchCallBack(value) {
+  inclusiveSearchCallBack(value) {
     var index = 1;
     this.collection.forEach(element => {
       if (!element.get('name').includes(value)) {
