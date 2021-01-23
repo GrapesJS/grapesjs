@@ -175,7 +175,7 @@ export default Backbone.View.extend({
       'div',
       {
         class: `${ppfx}tools`,
-        style: 'pointer-events:none; opacity: 0'
+        style: 'pointer-events:none; display: none'
       },
       `
       <div class="${ppfx}highlighter" data-hl></div>

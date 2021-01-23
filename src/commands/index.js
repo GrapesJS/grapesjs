@@ -130,14 +130,15 @@ export default () => {
           const nativeDrag = event && event.type == 'dragstart';
           const defComOptions = { preserveSelected: 1 };
           const modes = ['absolute', 'translate'];
-          const mode = sel.get('dmode') || em.get('dmode');
-          const hideTlb = () => em.stopDefault(defComOptions);
-          const altMode = includes(modes, mode);
-          selAll.forEach(sel => sel.trigger('disable'));
 
           if (!sel || !sel.get('draggable')) {
             return em.logWarning('The element is not draggable');
           }
+
+          const mode = sel.get('dmode') || em.get('dmode');
+          const hideTlb = () => em.stopDefault(defComOptions);
+          const altMode = includes(modes, mode);
+          selAll.forEach(sel => sel.trigger('disable'));
 
           // Without setTimeout the ghost image disappears
           nativeDrag ? setTimeout(hideTlb, 0) : hideTlb();
