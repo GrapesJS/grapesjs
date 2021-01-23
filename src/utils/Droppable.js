@@ -41,9 +41,7 @@ export default class Droppable {
   endDrop(cancel, ev) {
     const { em, dragStop } = this;
     this.counter = 0;
-    this.over = 0;
     dragStop && dragStop(cancel);
-    em.runDefault({ preserveSelected: 1 });
     em.trigger('canvas:dragend', ev);
   }
 
@@ -72,6 +70,7 @@ export default class Droppable {
     let dragStop, dragContent;
     em.stopDefault();
 
+    // Select the right drag provider
     if (em.inAbsoluteMode()) {
       const wrapper = em.get('DomComponents').getWrapper();
       const target = wrapper.append({})[0];
@@ -81,12 +80,13 @@ export default class Droppable {
         center: 1,
         target,
         onEnd: (ev, dragger, { cancelled }) => {
+          let comp;
           if (!cancelled) {
-            const comp = wrapper.append(content)[0];
+            comp = wrapper.append(content)[0];
             const { left, top, position } = target.getStyle();
             comp.addStyle({ left, top, position });
-            this.handleDragEnd(comp, dt);
           }
+          this.handleDragEnd(comp, dt);
           target.remove();
         }
       });
@@ -123,10 +123,13 @@ export default class Droppable {
   }
 
   handleDragEnd(model, dt) {
-    if (!model) return;
     const { em } = this;
-    em.set('dragResult', model);
-    em.trigger('canvas:drop', dt, model);
+    this.over = 0;
+    if (model) {
+      em.set('dragResult', model);
+      em.trigger('canvas:drop', dt, model);
+    }
+    em.runDefault({ preserveSelected: 1 });
   }
 
   /**
@@ -138,6 +141,10 @@ export default class Droppable {
     this.em.trigger('canvas:dragover', ev);
   }
 
+  /**
+   * WARNING: This function might fail to run on drop, for example, when the
+   * drop, accidentally, happens on some external element (DOM not inside the iframe)
+   */
   handleDrop(ev) {
     ev.preventDefault();
     const { dragContent } = this;
