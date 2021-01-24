@@ -117,4 +117,83 @@ describe('Symbols', () => {
     // The new main Symbol should keep the track of all instances
     expect(symbAdded.__getSymbols().length).toBe(allInst.length);
   });
+
+  describe('Creating 3 symbols in the wrapper', () => {
+    let allInst, all, comp, symbol, compInitChild;
+    beforeEach(() => {
+      comp = wrapper.append(compMultipleNodes)[0];
+      compInitChild = comp.components().length;
+      symbol = createSymbol(comp);
+      const comp2 = createSymbol(comp);
+      const comp3 = createSymbol(comp);
+      allInst = [comp, comp2, comp3];
+      all = [...allInst, symbol];
+    });
+
+    afterEach(() => {
+      wrapper.components().reset();
+    });
+
+    test('The wrapper contains all the symbols', () => {
+      expect(wrapper.components().length).toBe(all.length);
+    });
+
+    test('All symbols contain the same amount of children', () => {
+      all.forEach(cmp => expect(cmp.components().length).toBe(compInitChild));
+    });
+
+    test('Adding a new component to a symbol, it will be propogated to all instances', () => {
+      symbol.append(simpleComp, { at: 0 })[0];
+      all.forEach(cmp =>
+        expect(cmp.components().length).toBe(compInitChild + 1)
+      );
+    });
+
+    test('Adding a new component to an instance of the symbol, it will be propogated to all symbols', () => {
+      comp.append(simpleComp, { at: 0 })[0];
+      all.forEach(cmp =>
+        expect(cmp.components().length).toBe(compInitChild + 1)
+      );
+    });
+
+    test('Moving a new added component, will propagate the action in all symbols', () => {
+      const added = comp.append(simpleComp)[0];
+      const newChildLen = compInitChild + 1;
+      added.move(comp, { at: 0 });
+      const symbRef = added.__getSymbol();
+      // All symbols still have the same amount of components
+      all.forEach(cmp => expect(cmp.components().length).toBe(newChildLen));
+      // All instances refer to the same symbol
+      allInst.forEach(cmp =>
+        expect(
+          cmp
+            .components()
+            .at(0)
+            .__getSymbol()
+        ).toBe(symbRef)
+      );
+      // The moved symbol contains all its instances
+      expect(
+        symbol
+          .components()
+          .at(0)
+          .__getSymbols().length
+      ).toBe(allInst.length);
+    });
+
+    test('Adding a class, reflects changes to all symbols', () => {
+      const initSel = symbol.getSelectorsString();
+      all.forEach(cmp => expect(cmp.getSelectorsString()).toBe(initSel));
+      // Adding a class to a symbol
+      symbol.addClass('myclass');
+      const newSel = symbol.getSelectorsString();
+      expect(newSel).not.toBe(initSel);
+      all.forEach(cmp => expect(cmp.getSelectorsString()).toBe(newSel));
+      // Adding a class to an instance
+      comp.addClass('myclass2');
+      const newSel2 = comp.getSelectorsString();
+      expect(newSel2).not.toBe(newSel);
+      all.forEach(cmp => expect(cmp.getSelectorsString()).toBe(newSel2));
+    });
+  });
 });

@@ -586,6 +586,17 @@ const Component = Backbone.Model.extend(Styleable).extend(
       return classStr ? classStr.split(' ') : [];
     },
 
+    __logSymbol(type, toUp, opts = {}) {
+      // const symbols = this.__getSymbols();
+      // console.log(`symbols:${type}`,
+      //   this.cid,
+      //   'hasSymbol', this.__getSymbol() ? 'Y' : 'N',
+      //   'hasSymbols', symbols ? symbols.length : 'N',
+      //   'toUp', toUp.map(i => i.cid),
+      //   'opts', opts
+      // );
+    },
+
     __initSymb() {
       if (this.__symbReady) return;
       this.on('change', this.__upSymbProps);
@@ -645,7 +656,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       return result;
     },
 
-    __upSymbProps() {
+    __upSymbProps(m, opts = {}) {
       const changed = this.changedAttributes();
       const attrs = changed.attributes || {};
       delete changed.status;
@@ -655,20 +666,25 @@ const Component = Backbone.Model.extend(Styleable).extend(
       delete changed.attributes;
       delete attrs.id;
       if (!isEmptyObj(attrs)) changed.attributes = attrs;
-      !isEmptyObj(changed) &&
-        this.__getSymbToUp().forEach(child => child.set(changed));
+      if (!isEmptyObj(changed)) {
+        const toUp = this.__getSymbToUp(opts);
+        this.__logSymbol('props', toUp, { opts, changed });
+        toUp.forEach(child => child.set(changed, opts));
+      }
     },
 
-    __upSymbCls() {
-      this.__getSymbToUp().forEach(child => {
-        child.set({ classes: this.get('classes') });
+    __upSymbCls(m, c, opts = {}) {
+      const toUp = this.__getSymbToUp();
+      this.__logSymbol('classes', toUp, { opts });
+      toUp.forEach(child => {
+        // This will propagate the change up to __upSymbProps
+        child.set('classes', this.get('classes'), { fromInstance: this });
       });
     },
 
     __upSymbComps(m, c, o) {
       const { fromInstance } = o || c || {};
-      const useMain = !fromInstance;
-      const toUpOpts = { useMain, fromInstance };
+      const toUpOpts = { fromInstance };
 
       if (!o) {
         // Reset
@@ -753,7 +769,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       }
     },
 
-    initClasses() {
+    initClasses(m, c, opts = {}) {
       const event = 'change:classes';
       const attrCls = this.get('attributes').class || [];
       const toListen = [this, event, this.initClasses];
@@ -762,7 +778,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       this.stopListening(...toListen);
       const classes = this.normalizeClasses(clsArr);
       const selectors = new Selectors([]);
-      this.set('classes', selectors);
+      this.set('classes', selectors, opts);
       selectors.add(classes);
       selectors.on('add remove reset', this.__upSymbCls);
       this.listenTo(...toListen);
