@@ -156,7 +156,7 @@ describe('Symbols', () => {
       );
     });
 
-    test('Moving a new added component, will propagate the action in all symbols', () => {
+    test('Moving a new added component in the instance, will propagate the action in all symbols', () => {
       const added = comp.append(simpleComp)[0];
       const newChildLen = compInitChild + 1;
       added.move(comp, { at: 0 });
@@ -179,6 +179,15 @@ describe('Symbols', () => {
           .at(0)
           .__getSymbols().length
       ).toBe(allInst.length);
+    });
+
+    test.skip('Moving a new added component in the symbol, will propagate the action in all instances', () => {
+      const added = symbol.append(simpleComp)[0];
+      const newChildLen = compInitChild + 1;
+      added.move(symbol, { at: 0 });
+      const symbRef = added.__getSymbol();
+      // All symbols still have the same amount of components
+      all.forEach(cmp => expect(cmp.components().length).toBe(newChildLen));
     });
 
     test('Adding a class, reflects changes to all symbols', () => {

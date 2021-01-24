@@ -587,14 +587,21 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     __logSymbol(type, toUp, opts = {}) {
-      // const symbols = this.__getSymbols();
-      // console.log(`symbols:${type}`,
-      //   this.cid,
-      //   'hasSymbol', this.__getSymbol() ? 'Y' : 'N',
-      //   'hasSymbols', symbols ? symbols.length : 'N',
-      //   'toUp', toUp.map(i => i.cid),
-      //   'opts', opts
-      // );
+      const symbol = this.__getSymbol();
+      const symbols = this.__getSymbols();
+      if (!symbol && !symbols) return;
+      console.log(
+        `symbols:${type}`,
+        this.cid,
+        'hasSymbol',
+        symbol ? 'Y' : 'N',
+        'hasSymbols',
+        symbols ? symbols.length : 'N',
+        'toUp',
+        toUp.map(i => i.cid),
+        'opts',
+        opts
+      );
     },
 
     __initSymb() {
@@ -689,85 +696,37 @@ const Component = Backbone.Model.extend(Styleable).extend(
       const toUpOpts = { fromInstance };
 
       if (!o) {
-        // Reset
-        // !this.opt.temporary &&
-        //   console.log(
-        //     'Reset cid',
-        //     this.cid,
-        //     o,
-        //     'isSymb',
-        //     this.__isSymbol(),
-        //     'symbToUp',
-        //     this.__getSymbToUp(toUpOpts),
-        //     { toUpOpts }
-        //   );
-        this.__getSymbToUp(toUpOpts).forEach(symb => {
+        const toUp = this.__getSymbToUp(toUpOpts);
+        this.__logSymbol('reset', toUp);
+        toUp.forEach(symb => {
           const newMods = m.models.map(mod => mod.clone({ symbol: 1 }));
           symb.components().reset(newMods, { fromInstance: this, ...c });
         });
       } else if (o.add) {
         // Add
         const addedInstances = m.__getSymbToUp(toUpOpts);
-        // !m.opt.temporary &&
-        //   console.log(
-        //     `Added cid ${m.cid} (symb: ${m.__isSymbol()}) in ${
-        //       this.cid
-        //     } (symb: ${this.__isSymbol()})`,
-        //     'SymbToUp added',
-        //     addedInstances,
-        //     'symbToUp',
-        //     this.__getSymbToUp(toUpOpts),
-        //     { toUpOpts }
-        //   );
-        // Here, before appending new symbol, I have to ensure there no already previosly
-        // created symbol (eg. used mainly when drag components around)
-        this.__getSymbToUp(toUpOpts).forEach(symb => {
+        const toUp = this.__getSymbToUp(toUpOpts);
+        !m.opt.temporary &&
+          this.__logSymbol('add', toUp, { opts: o, addedInstances, added: m });
+        // Here, before appending new symbol, I have to ensure there are no previosly
+        // created symbols (eg. used mainly when drag components around)
+        toUp.forEach(symb => {
           const symbTop = symb.__getSymbTop();
           const symbPrev = addedInstances.filter(addedInst => {
             const addedTop = addedInst.__getSymbTop({ prev: 1 });
             return symbTop && addedTop && addedTop === symbTop;
           })[0];
           const toAppend = symbPrev || m.clone({ symbol: 1 });
-          // If this is the instance which triggered the main update
-          // I have to realign it as other instances
-          // if (fromInstance === symb) {
-          //   const appended = o.toAppend;
-          //   const symbMain = appended.get('__symbol')[0];
-          //   appended.set('__symbolOf', symbMain);
-          //   appended.unset('__symbol');
-          //   symbMain.unset('__symbolOf');
-          //   symbMain.get('__symbol').push(appended);
-          //   !m.opt.temporary && console.log('Exit, fromInstance === symb', fromInstance, 'toAppend', appended, symbMain.get('__symbol'))
-          //   return;
-          // }
-          // !m.opt.temporary &&
-          //   console.log(
-          //     'Added inner',
-          //     toAppend.cid,
-          //     'of',
-          //     symb.cid,
-          //     `(symb ${symb.__isSymbol()})`,
-          //     { symb, symbPrev, toAppend }
-          //   );
           symb.append(toAppend, { fromInstance: this, toAppend: m, ...o });
         });
       } else {
-        // Remove
-        // !m.opt.temporary &&
-        //   console.log(
-        //     'Remove cid',
-        //     m.cid,
-        //     m.toHTML(),
-        //     o,
-        //     'isSymb',
-        //     m.__isSymbol(),
-        //     'symbToUp',
-        //     m.__getSymbToUp(toUpOpts),
-        //     { toUpOpts }
-        //   );
-        const symbToUp = m.__getSymbToUp(toUpOpts);
-        !m.__isSymbolTop() &&
-          symbToUp.forEach(symb => symb.remove({ fromInstance: m, ...o }));
+        if (!m.__isSymbolTop()) {
+          // Allow removing single instances
+          const toUp = m.__getSymbToUp(toUpOpts);
+          !m.opt.temporary &&
+            this.__logSymbol('remove', toUp, { opts: o, removed: m.cid });
+          toUp.forEach(symb => symb.remove({ fromInstance: m, ...o }));
+        }
       }
     },
 
