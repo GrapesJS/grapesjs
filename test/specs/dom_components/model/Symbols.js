@@ -138,7 +138,7 @@ describe('Symbols', () => {
       expect(wrapper.components().length).toBe(all.length);
     });
 
-    test('All symbols contain the same amount of children', () => {
+    test('All the symbols contain the same amount of children', () => {
       all.forEach(cmp => expect(cmp.components().length).toBe(compInitChild));
     });
 
@@ -194,6 +194,40 @@ describe('Symbols', () => {
       const newSel2 = comp.getSelectorsString();
       expect(newSel2).not.toBe(newSel);
       all.forEach(cmp => expect(cmp.getSelectorsString()).toBe(newSel2));
+    });
+
+    test('Updating some prop, reflects changes to all symbols', () => {
+      const propKey = 'someprop';
+      const propValue = 'somevalue';
+      all.forEach(cmp => expect(cmp.get(propKey)).toBeFalsy());
+      // Updating the symbol
+      symbol.set(propKey, propValue);
+      all.forEach(cmp => expect(cmp.get(propKey)).toBe(propValue));
+      // Updating the instance
+      const propValue2 = 'somevalue2';
+      comp.set(propKey, propValue2);
+      all.forEach(cmp => expect(cmp.get(propKey)).toBe(propValue2));
+    });
+
+    test('Updating some attribute, reflects changes to all symbols', () => {
+      const attrKey = 'data-attr';
+      const attrValue = 'somevalue';
+      all.forEach(cmp => expect(cmp.getAttributes()[attrKey]).toBeFalsy());
+      // Updating the symbol
+      symbol.addAttributes({ [attrKey]: attrValue });
+      all.forEach(cmp => expect(cmp.getAttributes()[attrKey]).toBe(attrValue));
+      // Updating the instance with another attribute
+      const attrKey2 = 'data-attr2';
+      const attrValue2 = 'somevalue2';
+      comp.addAttributes({ [attrKey2]: attrValue2 });
+      all.forEach(cmp => {
+        const attrs = cmp.getAttributes();
+        expect(attrs[attrKey]).toBe(attrValue);
+        expect(attrs[attrKey2]).toBe(attrValue2);
+      });
+      // All symbols still have the same HTML
+      const symbHtml = symbol.toHTML();
+      all.forEach(cmp => expect(cmp.toHTML()).toBe(symbHtml));
     });
   });
 });

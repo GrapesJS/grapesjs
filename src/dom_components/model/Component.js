@@ -669,7 +669,9 @@ const Component = Backbone.Model.extend(Styleable).extend(
       if (!isEmptyObj(changed)) {
         const toUp = this.__getSymbToUp(opts);
         this.__logSymbol('props', toUp, { opts, changed });
-        toUp.forEach(child => child.set(changed, opts));
+        toUp.forEach(child =>
+          child.set(changed, { fromInstance: this, ...opts })
+        );
       }
     },
 
