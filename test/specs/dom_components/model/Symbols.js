@@ -120,6 +120,13 @@ describe('Symbols', () => {
 
   describe('Creating 3 symbols in the wrapper', () => {
     let allInst, all, comp, symbol, compInitChild;
+
+    const getFirstInnSymbol = cmp =>
+      cmp
+        .components()
+        .at(0)
+        .__getSymbol();
+
     beforeEach(() => {
       comp = wrapper.append(compMultipleNodes)[0];
       compInitChild = comp.components().length;
@@ -149,13 +156,18 @@ describe('Symbols', () => {
       );
       // Check symbol references
       expect(added.__getSymbols().length).toBe(allInst.length);
+      allInst.forEach(cmp => expect(getFirstInnSymbol(cmp)).toBe(added));
     });
 
     test('Adding a new component to an instance of the symbol, it will be propogated to all symbols', () => {
-      comp.append(simpleComp, { at: 0 })[0];
+      const added = comp.append(simpleComp, { at: 0 })[0];
       all.forEach(cmp =>
         expect(cmp.components().length).toBe(compInitChild + 1)
       );
+      // Check symbol references
+      const addSymb = added.__getSymbol();
+      expect(symbol.components().at(0)).toBe(addSymb);
+      allInst.forEach(cmp => expect(getFirstInnSymbol(cmp)).toBe(addSymb));
     });
 
     test('Moving a new added component in the instance, will propagate the action in all symbols', () => {
@@ -166,14 +178,7 @@ describe('Symbols', () => {
       // All symbols still have the same amount of components
       all.forEach(cmp => expect(cmp.components().length).toBe(newChildLen));
       // All instances refer to the same symbol
-      allInst.forEach(cmp =>
-        expect(
-          cmp
-            .components()
-            .at(0)
-            .__getSymbol()
-        ).toBe(symbRef)
-      );
+      allInst.forEach(cmp => expect(getFirstInnSymbol(cmp)).toBe(symbRef));
       // The moved symbol contains all its instances
       expect(
         symbol
