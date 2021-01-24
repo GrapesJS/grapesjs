@@ -4,7 +4,11 @@ import { keySymbol, keySymbols } from 'dom_components/model/Component';
 describe('Symbols', () => {
   let editor;
   let wrapper;
-  const createSymbol = comp => comp.clone({ symbol: 1 });
+  const createSymbol = comp => {
+    const symbol = comp.clone({ symbol: 1 });
+    comp.parent().append(symbol, { at: comp.index() + 1 });
+    return symbol;
+  };
   const simpleComp = '<div data-a="b">Component</div>';
   const compMultipleNodes = `<div data-v="a">
     <div data-v="b">Component 1</div>
@@ -77,8 +81,6 @@ describe('Symbols', () => {
     const comp = wrapper.append(simpleComp)[0];
     const symbol = createSymbol(comp);
     const comp2 = createSymbol(comp);
-    wrapper.append(symbol);
-    wrapper.append(comp2);
     expect(wrapper.components().length).toBe(3);
     comp.remove();
     expect(wrapper.components().length).toBe(2);
@@ -91,13 +93,11 @@ describe('Symbols', () => {
     const symbol = createSymbol(comp);
     // Create and add 2 instances
     const comp2 = createSymbol(comp);
-    wrapper.append(comp2);
     const comp3 = createSymbol(comp2);
-    wrapper.append(comp3);
     const allInst = [comp, comp2, comp3];
     const all = [...allInst, symbol];
     all.forEach(cmp => expect(cmp.components().length).toBe(compLen));
-    expect(wrapper.components().length).toBe(3);
+    expect(wrapper.components().length).toBe(4);
     // Append new component to one of the instances
     const added = comp3.append(simpleComp, { at: 0 })[0];
     // The append should be propagated
