@@ -694,6 +694,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
     __upSymbComps(m, c, o) {
       const { fromInstance } = o || c || {};
       const toUpOpts = { fromInstance };
+      const isTemp = m.opt.temporary;
 
       if (!o) {
         const toUp = this.__getSymbToUp(toUpOpts);
@@ -705,9 +706,14 @@ const Component = Backbone.Model.extend(Styleable).extend(
       } else if (o.add) {
         // Add
         const addedInstances = m.__getSymbToUp(toUpOpts);
+        const isMainSymb = !!this.__getSymbols();
         const toUp = this.__getSymbToUp(toUpOpts);
-        !m.opt.temporary &&
-          this.__logSymbol('add', toUp, { opts: o, addedInstances, added: m });
+        !isTemp &&
+          this.__logSymbol('add', toUp, {
+            opts: o,
+            addedInstances,
+            added: m.cid
+          });
         // Here, before appending new symbol, I have to ensure there are no previosly
         // created symbols (eg. used mainly when drag components around)
         toUp.forEach(symb => {
@@ -716,14 +722,15 @@ const Component = Backbone.Model.extend(Styleable).extend(
             const addedTop = addedInst.__getSymbTop({ prev: 1 });
             return symbTop && addedTop && addedTop === symbTop;
           })[0];
-          const toAppend = symbPrev || m.clone({ symbol: 1 });
+          const toAppend =
+            symbPrev || m.clone({ symbol: 1, symbolInv: isMainSymb });
           symb.append(toAppend, { fromInstance: this, toAppend: m, ...o });
         });
       } else {
         if (!m.__isSymbolTop()) {
           // Allow removing single instances
           const toUp = m.__getSymbToUp(toUpOpts);
-          !m.opt.temporary &&
+          !isTemp &&
             this.__logSymbol('remove', toUp, { opts: o, removed: m.cid });
           toUp.forEach(symb => symb.remove({ fromInstance: m, ...o }));
         }
@@ -1100,10 +1107,17 @@ const Component = Backbone.Model.extend(Styleable).extend(
         cloned.__initSymb();
       } else if (opt.symbol) {
         if (this.__isSymbol()) {
+          // Already a symbol, cloned should be an instance
           this.get(keySymbols).push(cloned);
           cloned.set(keySymbol, this);
           cloned.__initSymb();
+        } else if (opt.symbolInv) {
+          // Inverted, cloned is the instance, the origin is the main symbol
+          this.set(keySymbols, [cloned]);
+          cloned.set(keySymbol, this);
+          [this, cloned].map(i => i.__initSymb());
         } else {
+          // Cloned becomes the main symbol
           cloned.set(keySymbols, [this]);
           [this, cloned].map(i => i.__initSymb());
           this.set(keySymbol, cloned);

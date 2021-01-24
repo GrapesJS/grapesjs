@@ -143,10 +143,12 @@ describe('Symbols', () => {
     });
 
     test('Adding a new component to a symbol, it will be propogated to all instances', () => {
-      symbol.append(simpleComp, { at: 0 })[0];
+      const added = symbol.append(simpleComp, { at: 0 })[0];
       all.forEach(cmp =>
         expect(cmp.components().length).toBe(compInitChild + 1)
       );
+      // Check symbol references
+      expect(added.__getSymbols().length).toBe(allInst.length);
     });
 
     test('Adding a new component to an instance of the symbol, it will be propogated to all symbols', () => {
