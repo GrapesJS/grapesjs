@@ -672,17 +672,17 @@ const Component = Backbone.Model.extend(Styleable).extend(
 
       if (!o) {
         // Reset
-        !this.opt.temporary &&
-          console.log(
-            'Reset cid',
-            this.cid,
-            o,
-            'isSymb',
-            this.__isSymbol(),
-            'symbToUp',
-            this.__getSymbToUp(toUpOpts),
-            { toUpOpts }
-          );
+        // !this.opt.temporary &&
+        //   console.log(
+        //     'Reset cid',
+        //     this.cid,
+        //     o,
+        //     'isSymb',
+        //     this.__isSymbol(),
+        //     'symbToUp',
+        //     this.__getSymbToUp(toUpOpts),
+        //     { toUpOpts }
+        //   );
         this.__getSymbToUp(toUpOpts).forEach(symb => {
           const newMods = m.models.map(mod => mod.clone({ symbol: 1 }));
           symb.components().reset(newMods, { fromInstance: this, ...c });
@@ -690,17 +690,17 @@ const Component = Backbone.Model.extend(Styleable).extend(
       } else if (o.add) {
         // Add
         const addedInstances = m.__getSymbToUp(toUpOpts);
-        !m.opt.temporary &&
-          console.log(
-            `Added cid ${m.cid} (symb: ${m.__isSymbol()}) in ${
-              this.cid
-            } (symb: ${this.__isSymbol()})`,
-            'SymbToUp added',
-            addedInstances,
-            'symbToUp',
-            this.__getSymbToUp(toUpOpts),
-            { toUpOpts }
-          );
+        // !m.opt.temporary &&
+        //   console.log(
+        //     `Added cid ${m.cid} (symb: ${m.__isSymbol()}) in ${
+        //       this.cid
+        //     } (symb: ${this.__isSymbol()})`,
+        //     'SymbToUp added',
+        //     addedInstances,
+        //     'symbToUp',
+        //     this.__getSymbToUp(toUpOpts),
+        //     { toUpOpts }
+        //   );
         // Here, before appending new symbol, I have to ensure there no already previosly
         // created symbol (eg. used mainly when drag components around)
         this.__getSymbToUp(toUpOpts).forEach(symb => {
@@ -722,31 +722,31 @@ const Component = Backbone.Model.extend(Styleable).extend(
           //   !m.opt.temporary && console.log('Exit, fromInstance === symb', fromInstance, 'toAppend', appended, symbMain.get('__symbol'))
           //   return;
           // }
-          !m.opt.temporary &&
-            console.log(
-              'Added inner',
-              toAppend.cid,
-              'of',
-              symb.cid,
-              `(symb ${symb.__isSymbol()})`,
-              { symb, symbPrev, toAppend }
-            );
+          // !m.opt.temporary &&
+          //   console.log(
+          //     'Added inner',
+          //     toAppend.cid,
+          //     'of',
+          //     symb.cid,
+          //     `(symb ${symb.__isSymbol()})`,
+          //     { symb, symbPrev, toAppend }
+          //   );
           symb.append(toAppend, { fromInstance: this, toAppend: m, ...o });
         });
       } else {
         // Remove
-        !m.opt.temporary &&
-          console.log(
-            'Remove cid',
-            m.cid,
-            m.toHTML(),
-            o,
-            'isSymb',
-            m.__isSymbol(),
-            'symbToUp',
-            m.__getSymbToUp(toUpOpts),
-            { toUpOpts }
-          );
+        // !m.opt.temporary &&
+        //   console.log(
+        //     'Remove cid',
+        //     m.cid,
+        //     m.toHTML(),
+        //     o,
+        //     'isSymb',
+        //     m.__isSymbol(),
+        //     'symbToUp',
+        //     m.__getSymbToUp(toUpOpts),
+        //     { toUpOpts }
+        //   );
         const symbToUp = m.__getSymbToUp(toUpOpts);
         !m.__isSymbolTop() &&
           symbToUp.forEach(symb => symb.remove({ fromInstance: m, ...o }));

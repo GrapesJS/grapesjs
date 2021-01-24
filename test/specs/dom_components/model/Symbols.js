@@ -21,12 +21,9 @@ describe('Symbols', () => {
     editor.destroy();
   });
 
-  beforeEach(() => {
-    console.log('Symbols before each');
-  });
+  beforeEach(() => {});
 
   afterEach(() => {
-    console.log('Symbols after each');
     wrapper.components().reset();
   });
 
@@ -80,10 +77,11 @@ describe('Symbols', () => {
     const comp = wrapper.append(simpleComp)[0];
     const symbol = createSymbol(comp);
     const comp2 = createSymbol(comp);
+    wrapper.append(symbol);
     wrapper.append(comp2);
-    expect(wrapper.components().length).toBe(2);
+    expect(wrapper.components().length).toBe(3);
     comp.remove();
-    expect(wrapper.components().length).toBe(1);
+    expect(wrapper.components().length).toBe(2);
     expect(comp2.__getSymbol()).toBe(symbol);
   });
 
