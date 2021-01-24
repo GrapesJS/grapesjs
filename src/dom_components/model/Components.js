@@ -176,14 +176,6 @@ export default Backbone.Collection.extend({
       .map(model => this.processDef(model));
     models = isMult ? flatten(models, 1) : models[0];
 
-    // if (parent && parent.get('__symbol2w') && !opt.__fromSymb) {
-    //   const symb = parent.__getSymbol();
-    //   console.log('Trying to add to symbol', symb, 'this models', models, opt);
-    //   return symb.components().add(models, {...opt, __fromSymb: 1, });
-    // } else if (parent && parent.__isSymbol()) {
-    //   opt.__fromSymb = 1;
-    // }
-
     const result = Backbone.Collection.prototype.add.apply(this, [models, opt]);
     this.__firstAdd = result;
     return result;
