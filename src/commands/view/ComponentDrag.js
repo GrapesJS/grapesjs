@@ -308,7 +308,7 @@ export default {
     };
   },
 
-  onStart() {
+  onStart(event) {
     const { target, editor, isTran, opts } = this;
     const { center, onStart } = opts;
     const { Canvas } = editor;
