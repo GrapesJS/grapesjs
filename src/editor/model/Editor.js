@@ -453,14 +453,14 @@ export default Backbone.Model.extend({
   /**
    * Set style inside editor's canvas. This method overrides actual style
    * @param {Object|string} style CSS string or style model
-   * @param {Object} opt the options object to be used by the [CssRules.add]{@link rules#add} method
+   * @param {Object} opt the options object to be used by the `CssRules.add` method
    * @return {this}
    * @private
    */
   setStyle(style, opt = {}) {
-    var rules = this.get('CssComposer').getAll();
-    for (var i = 0, len = rules.length; i < len; i++) rules.pop();
-    rules.add(style, opt);
+    const cssc = this.get('CssComposer');
+    cssc.clear(opt);
+    cssc.getAll().add(style, opt);
     return this;
   },
 
