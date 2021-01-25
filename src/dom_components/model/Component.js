@@ -590,18 +590,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       const symbol = this.__getSymbol();
       const symbols = this.__getSymbols();
       if (!symbol && !symbols) return;
-      console.log(
-        `symbols:${type}`,
-        this.cid,
-        'hasSymbol',
-        symbol ? 'Y' : 'N',
-        'hasSymbols',
-        symbols ? symbols.length : 'N',
-        'toUp',
-        toUp.map(i => i.cid),
-        'opts',
-        opts
-      );
+      this.em.log(type, { model: this, toUp, context: 'symbols', opts });
     },
 
     __initSymb() {
