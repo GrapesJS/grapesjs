@@ -1,5 +1,5 @@
 import Backbone from 'backbone';
-import Category from './Category';
+import Category from 'category/model/Category';
 
 export default Backbone.Model.extend({
   defaults: {

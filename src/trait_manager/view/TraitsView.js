@@ -62,7 +62,6 @@ export default DomainViews.extend({
     this.collection.each &&
       this.collection.each(function(model) {
         model.set('visible', true);
-        if (index < 1) model.set('category', '' + ++index);
       });
 
     this.render();
@@ -162,8 +161,14 @@ export default DomainViews.extend({
 
   inclusiveSearchCallBack(value) {
     var index = 1;
+    const processedValue = value ? value.toLowerCase() : '';
     this.collection.forEach(element => {
-      if (!element.get('name').includes(value)) {
+      const category = element.get('category');
+      const categoryLabel = category ? category.id.toLowerCase() : '';
+      if (
+        !element.get('name').includes(processedValue) &&
+        !categoryLabel.includes(processedValue)
+      ) {
         element.set('visible', false);
       } else {
         element.set('visible', true);
