@@ -1,7 +1,7 @@
 import Backbone from 'backbone';
 import { isString, isObject, bindAll } from 'underscore';
 import BlockView from './BlockView';
-import CategoryView from './CategoryView';
+import CategoryView from 'category/view/CategoryView';
 import Filter from 'filter/view/FilterView';
 
 export default Backbone.View.extend({

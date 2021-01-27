@@ -7,7 +7,7 @@ export default Backbone.View.extend({
     <i class="<%= pfx %>caret-icon"></i>
     <%= label %>
   </div>
-  <div class="<%= pfx %>blocks-c"></div>
+  <div class="<%= pfx %>c"></div>
   `),
 
   events: {},
@@ -21,7 +21,7 @@ export default Backbone.View.extend({
     this.caretD = 'fa fa-caret-down';
     this.iconClass = `${pfx}caret-icon`;
     this.activeClass = `${pfx}open`;
-    this.className = `${pfx}block-category`;
+    this.className = `${pfx}category`;
     this.events[`click .${pfx}title`] = 'toggle';
     this.listenTo(this.model, 'change:open', this.updateVisibility);
     this.delegateEvents();
@@ -59,7 +59,7 @@ export default Backbone.View.extend({
 
   getBlocksEl() {
     if (!this.blocksEl) {
-      this.blocksEl = this.el.querySelector('.' + this.pfx + 'blocks-c');
+      this.blocksEl = this.el.querySelector('.' + this.pfx + 'c');
     }
 
     return this.blocksEl;
@@ -71,8 +71,9 @@ export default Backbone.View.extend({
 
   render() {
     const { em, el, $el, model } = this;
-    const label =
-      em.t(`blockManager.categories.${model.id}`) || model.get('label');
+    const label = em
+      ? em.t(`blockManager.categories.${model.id}`) || model.get('label')
+      : model.get('label');
     el.innerHTML = this.template({
       pfx: this.pfx,
       label

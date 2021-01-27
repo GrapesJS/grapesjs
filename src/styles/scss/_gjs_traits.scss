@@ -46,3 +46,30 @@
     overflow: hidden;
   }
 }
+
+.#{$app-prefix}category {
+  width: 100%;
+
+  &.#{$app-prefix}open {
+    @extend .#{$app-prefix}category-open;
+  }
+
+  .#{$app-prefix}title {
+    @extend .#{$app-prefix}category-title;
+  }
+
+  .#{$app-prefix}caret-icon {
+    margin-right: 5px;
+  }
+}
+
+.#{$app-prefix}categories {
+  display: flex;
+  flex-direction: column;
+}
+
+.#{$app-prefix}c {
+  flex: 0 0 100%;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}

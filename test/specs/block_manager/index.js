@@ -39,6 +39,16 @@ describe('BlockManager', () => {
       expect(obj.getAll().length).toEqual(1);
     });
 
+    test('Add new Block with category', () => {
+      optsTest = {
+        label: 'Heading',
+        category: 'test',
+        content: '<h1>Test</h1>'
+      };
+      var model = obj.add(idTest, optsTest);
+      expect(obj.getCategories().length).toBe(1);
+    });
+
     test('Added block has correct data', () => {
       var model = obj.add(idTest, optsTest);
       expect(model.get('label')).toEqual(optsTest.label);
