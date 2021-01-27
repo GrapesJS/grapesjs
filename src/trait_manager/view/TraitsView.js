@@ -34,7 +34,7 @@ export default DomainViews.extend({
     this.className = this.pfx + 'traits';
     this.catsClass = `${this.ppfx}categories`;
     this.noCatClass = `${this.ppfx}no-cat`;
-    this.blockContClass = `${this.ppfx}c`;
+    this.contClass = `${this.ppfx}c`;
     const toListen = 'component:toggled';
     this.listenTo(this.em, toListen, this.updatedCollection);
     if (this.config.showSearch) {
@@ -195,7 +195,6 @@ export default DomainViews.extend({
     this.clearItems();
     this.$el.empty();
     this.catsEl = null;
-    this.blocksEl = null;
     this.renderedCategories = [];
 
     this.el.innerHTML = `
@@ -210,7 +209,7 @@ export default DomainViews.extend({
       }, this);
 
     this.$el.append(frag);
-    const cls = `${this.blockContClass}s ${this.ppfx}one-bg ${this.ppfx}two-color`;
+    const cls = `${this.contClass}s ${this.ppfx}one-bg ${this.ppfx}two-color`;
     this.$el.addClass(cls);
     this.onRender();
     return this;
