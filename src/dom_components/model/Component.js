@@ -431,6 +431,22 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     /**
+     * Remove attributes from the component
+     * @param {String|Array<String>} attrs Array of attributes to remove
+     * @param {Object} options Options for the model update
+     * @return {this}
+     * @example
+     * component.removeAttributes('some-attr');
+     * component.removeAttributes(['some-attr1', 'some-attr2']);
+     */
+    removeAttributes(attrs = [], opts = {}) {
+      const attrArr = Array.isArray(attrs) ? attrs : [attrs];
+      const compAttr = this.getAttributes();
+      attrArr.map(i => delete compAttr[i]);
+      return this.setAttributes(compAttr, opts);
+    },
+
+    /**
      * Get the style of the component
      * @return {Object}
      */
