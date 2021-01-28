@@ -822,7 +822,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
     /**
      * Add new component children
      * @param  {Component|String} components Component to add
-     * @param {Object} [opts={}] Options, same as in `model.add()`(from backbone)
+     * @param {Object} [opts={}] Options for the append action
      * @return {Array} Array of appended components
      * @example
      * someComponent.get('components').length // -> 0
@@ -832,6 +832,8 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * // You can pass components directly
      * otherComponent.append(otherComponent2);
      * otherComponent.append([otherComponent3, otherComponent4]);
+     * // append at specific index (eg. at the beginning)
+     * someComponent.append(otherComponent, { at: 0 });
      */
     append(components, opts = {}) {
       const result = this.components().add(components, opts);
@@ -842,6 +844,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * Set new collection if `components` are provided, otherwise the
      * current collection is returned
      * @param  {Component|String} [components] Components to set
+     * @param {Object} [opts={}] Options, same as in `Component.append()`
      * @return {Collection|Array<Component>}
      * @example
      * // Set new collection
@@ -851,14 +854,14 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * console.log(collection.length);
      * // -> 2
      */
-    components(components) {
+    components(components, opts = {}) {
       const coll = this.get('components');
 
       if (isUndefined(components)) {
         return coll;
       } else {
-        coll.reset();
-        return components && this.append(components);
+        coll.reset(null, opts);
+        return components && this.append(components, opts);
       }
     },
 
