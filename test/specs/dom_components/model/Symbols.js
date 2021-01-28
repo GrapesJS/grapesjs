@@ -270,5 +270,18 @@ describe('Symbols', () => {
       const innerSymb = allInst.map(i => getInnerComp(i, 1));
       expect(clonedSymb.__getSymbols()).toEqual(innerSymb);
     });
+
+    test('Cloning a component in a symbol, reflects changes to all instances', () => {
+      const clonedSymb = duplicate(getInnerComp(symbol));
+      const cloned = getInnerComp(comp, 1);
+      const newLen = symbol.components().length;
+      // As above
+      expect(newLen).toBe(compInitChild + 1);
+      expect(cloned.__getSymbol()).toBe(clonedSymb);
+      all.forEach(cmp => expect(cmp.components().length).toBe(newLen));
+      allInst.forEach(cmp => expect(getInnSymbol(cmp, 1)).toBe(clonedSymb));
+      const innerSymb = allInst.map(i => getInnerComp(i, 1));
+      expect(clonedSymb.__getSymbols()).toEqual(innerSymb);
+    });
   });
 });
