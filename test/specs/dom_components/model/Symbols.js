@@ -9,6 +9,11 @@ describe('Symbols', () => {
     comp.parent().append(symbol, { at: comp.index() + 1 });
     return symbol;
   };
+  const duplicate = comp => {
+    const cloned = comp.clone({});
+    comp.parent().append(cloned, { at: comp.index() + 1 });
+    return cloned;
+  };
   const simpleComp = '<div data-a="b">Component</div>';
   const compMultipleNodes = `<div data-v="a">
     <div data-v="b">Component 1</div>
@@ -120,11 +125,16 @@ describe('Symbols', () => {
 
   describe('Creating 3 symbols in the wrapper', () => {
     let allInst, all, comp, symbol, compInitChild;
-
+    const getInnerComp = (cmp, i = 0) => cmp.components().at(i);
     const getFirstInnSymbol = cmp =>
       cmp
         .components()
         .at(0)
+        .__getSymbol();
+    const getInnSymbol = (cmp, i = 0) =>
+      cmp
+        .components()
+        .at(i)
         .__getSymbol();
 
     beforeEach(() => {
@@ -244,6 +254,21 @@ describe('Symbols', () => {
       // All symbols still have the same HTML
       const symbHtml = symbol.toHTML();
       all.forEach(cmp => expect(cmp.toHTML()).toBe(symbHtml));
+    });
+
+    test('Cloning a component in an instance, reflects changes to all symbols', () => {
+      const cloned = duplicate(comp.components().at(0));
+      const clonedSymb = symbol.components().at(1);
+      const newLen = comp.components().length;
+      expect(newLen).toBe(compInitChild + 1);
+      expect(cloned.__getSymbol()).toBe(clonedSymb);
+      // All symbols have the same amount of components
+      all.forEach(cmp => expect(cmp.components().length).toBe(newLen));
+      // All instances refer to the same symbol
+      allInst.forEach(cmp => expect(getInnSymbol(cmp, 1)).toBe(clonedSymb));
+      // Symbol contains the reference of instances
+      const innerSymb = allInst.map(i => getInnerComp(i, 1));
+      expect(clonedSymb.__getSymbols()).toEqual(innerSymb);
     });
   });
 });

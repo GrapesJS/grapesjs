@@ -1106,11 +1106,17 @@ const Component = Backbone.Model.extend(Styleable).extend(
       // If I clone an inner symbol, I have to reset it
       cloned.unset(keySymbols);
       const symbol = this.__getSymbol();
+      const symbols = this.__getSymbols();
 
-      if (symbol) {
+      if (!opt.symbol && (symbol || symbols)) {
+        cloned.unset(keySymbol);
+        cloned.unset(keySymbols);
+      } else if (symbol) {
+        // Contains already a reference to a symbol
         symbol.get(keySymbols).push(cloned);
         cloned.__initSymb();
       } else if (opt.symbol) {
+        // Request to create a symbol
         if (this.__isSymbol()) {
           // Already a symbol, cloned should be an instance
           this.get(keySymbols).push(cloned);
