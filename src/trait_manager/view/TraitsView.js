@@ -36,6 +36,8 @@ export default DomainViews.extend({
     this.noCatClass = `${this.ppfx}no-cat`;
     this.contClass = `${this.ppfx}c`;
     const toListen = 'component:toggled';
+    this.config.catClass = 'c';
+
     this.listenTo(this.em, toListen, this.updatedCollection);
     if (this.config.showSearch) {
       this.searchField = new Filter({

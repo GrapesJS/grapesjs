@@ -21,7 +21,7 @@ export default Backbone.View.extend({
     this.em = this.config.em;
     this.tac = 'test-tac';
     this.grabbingCls = this.ppfx + 'grabbing';
-
+    this.config.catClass = 'blocks-c';
     if (this.em) {
       this.config.getSorter = this.getSorter;
       this.canvas = this.em.get('Canvas');

@@ -7,7 +7,7 @@ export default Backbone.View.extend({
     <i class="<%= pfx %>caret-icon"></i>
     <%= label %>
   </div>
-  <div class="<%= pfx %>c"></div>
+  <div class="<%= pfx %><%= catClass %>"></div>
   `),
 
   events: {},
@@ -17,6 +17,7 @@ export default Backbone.View.extend({
     const pfx = config.pStylePrefix || '';
     this.em = config.em;
     this.pfx = pfx;
+    this.catClass = config.catClass;
     this.caretR = 'fa fa-caret-right';
     this.caretD = 'fa fa-caret-down';
     this.iconClass = `${pfx}caret-icon`;
@@ -59,7 +60,7 @@ export default Backbone.View.extend({
 
   getBlocksEl() {
     if (!this.blocksEl) {
-      this.blocksEl = this.el.querySelector('.' + this.pfx + 'c');
+      this.blocksEl = this.el.querySelector('.' + this.pfx + this.catClass);
     }
 
     return this.blocksEl;
@@ -76,7 +77,8 @@ export default Backbone.View.extend({
       : model.get('label');
     el.innerHTML = this.template({
       pfx: this.pfx,
-      label
+      label,
+      catClass: this.catClass
     });
     el.className = this.className;
     $el.css({ order: model.get('order') });
