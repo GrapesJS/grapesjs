@@ -50,6 +50,7 @@ export default {
     config = { ...defaultConfig, ...config, grapesjs: this };
     config.el = isElement(els) ? els : document.querySelector(els);
     const editor = new Editor(config).init();
+    const em = editor.getModel();
 
     // Load plugins
     config.plugins.forEach(pluginId => {
@@ -67,14 +68,17 @@ export default {
       } else if (isFunction(pluginId)) {
         pluginId(editor, plgOptions);
       } else {
-        console.warn(`Plugin ${pluginId} not found`);
+        em.logWarning(`Plugin ${pluginId} not found`, {
+          context: 'plugins',
+          plugin: pluginId
+        });
       }
     });
 
     // Execute `onLoad` on modules once all plugins are initialized.
     // A plugin might have extended/added some custom type so this
     // is a good point to load stuff like components, css rules, etc.
-    editor.getModel().loadOnStart();
+    em.loadOnStart();
     config.autorender && editor.render();
     editors.push(editor);
 
