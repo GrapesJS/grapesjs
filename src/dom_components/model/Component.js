@@ -1470,8 +1470,15 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * @return {this}
      */
     remove(opts = {}) {
+      const { em } = this;
       const coll = this.collection;
-      return coll && coll.remove(this, opts);
+      const remove = () => coll && coll.remove(this, opts);
+      const rmOpts = {};
+      [this, em].map(i =>
+        i.trigger('component:remove:before', this, remove, rmOpts)
+      );
+      !rmOpts.abort && remove();
+      return this;
     },
 
     /**
