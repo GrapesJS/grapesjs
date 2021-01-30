@@ -511,7 +511,10 @@ export default Backbone.View.extend({
   renderAttributes() {
     this.updateAttributes();
     this.updateClasses();
+    this.onAttrUpdate();
   },
+
+  onAttrUpdate() {},
 
   render() {
     this.renderAttributes();
