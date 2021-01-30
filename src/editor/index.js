@@ -22,6 +22,7 @@
  * * `component:mount` - Component is mounted to an element and rendered in canvas
  * * `component:add` - Triggered when a new component is added to the editor, the model is passed as an argument to the callback
  * * `component:remove` - Triggered when a component is removed, the model is passed as an argument to the callback
+ * * `component:remove:before` - Triggered before the remove of the component, the model, remove function (if aborted via options, with this function you can complete the remove) and options (use options.abort = true to prevent remove), are passed as arguments to the callback
  * * `component:clone` - Triggered when a component is cloned, the new model is passed as an argument to the callback
  * * `component:update` - Triggered when a component is updated (moved, styled, etc.), the model is passed as an argument to the callback
  * * `component:update:{propertyName}` - Listen any property change, the model is passed as an argument to the callback
