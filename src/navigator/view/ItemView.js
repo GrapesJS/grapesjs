@@ -1,4 +1,4 @@
-import { isUndefined, isString } from 'underscore';
+import { isUndefined, isString, bindAll } from 'underscore';
 import { getModel } from 'utils/mixins';
 import Backbone from 'backbone';
 import ComponentView from 'dom_components/view/ComponentView';
@@ -61,9 +61,12 @@ export default Backbone.View.extend({
   },
 
   initialize(o = {}) {
+    bindAll(this, '__render');
     this.opt = o;
     this.level = o.level;
-    this.config = o.config;
+    const config = o.config || {};
+    const { onInit } = config;
+    this.config = config;
     this.em = o.config.em;
     this.ppfx = this.em.get('Config').stylePrefix;
     this.sorter = o.sorter || '';
@@ -94,6 +97,11 @@ export default Backbone.View.extend({
     this.$el.data('model', model);
     this.$el.data('collection', components);
     model.viewLayer = this;
+    onInit.bind(this)({
+      component: model,
+      render: this.__render,
+      listenTo: this.listenTo
+    });
   },
 
   getVisibilityEl() {
@@ -419,6 +427,13 @@ export default Backbone.View.extend({
     this.updateOpening();
     this.updateStatus();
     this.updateVisibility();
+    this.__render();
     return this;
+  },
+
+  __render() {
+    const { model, config, el } = this;
+    const { onRender } = config;
+    onRender.bind(this)({ component: model, el });
   }
 });
