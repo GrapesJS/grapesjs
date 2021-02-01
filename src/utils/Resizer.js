@@ -458,14 +458,14 @@ class Resizer {
     const maxDim = opts.maxDim;
     const deltaX = data.delta.x;
     const deltaY = data.delta.y;
-    const startW = startDim.w;
-    const startH = startDim.h;
     const parentW = this.parentDim.w;
     const parentH = this.parentDim.h;
-    const currentPosX = this.currentPos.x;
-    const currentPosY = this.currentPos.y;
     const unitWidth = this.opts.unitWidth;
     const unitHeight = this.opts.unitHeight;
+    const startW =
+      unitWidth === '%' ? (startDim.w / 100) * parentW : startDim.w;
+    const startH =
+      unitWidth === '%' ? (startDim.h / 100) * parentH : startDim.h;
     var box = {
       t: 0,
       l: 0,
@@ -479,30 +479,35 @@ class Resizer {
     if (~attr.indexOf('r')) {
       value =
         unitWidth === '%'
-          ? normalizeFloat((currentPosX / parentW) * 100, 0.01)
+          ? normalizeFloat(((startW + deltaX * step) / parentW) * 100, 0.01)
           : normalizeFloat(startW + deltaX * step, step);
       value = Math.max(minDim, value);
       maxDim && (value = Math.min(maxDim, value));
       box.w = value;
     }
     if (~attr.indexOf('b')) {
-      console.log(this.parentDim);
       value =
         unitHeight === '%'
-          ? normalizeFloat((currentPosY / parentH) * 100, 0.01)
-          : normalizeFloat(startW + deltaX * step, step);
+          ? normalizeFloat(((startH + deltaY * step) / parentH) * 100, 0.01)
+          : normalizeFloat(startH + deltaY * step, step);
       value = Math.max(minDim, value);
       maxDim && (value = Math.min(maxDim, value));
       box.h = value;
     }
     if (~attr.indexOf('l')) {
-      value = normalizeFloat(startW - deltaX * step, step);
+      value =
+        unitWidth === '%'
+          ? normalizeFloat(((startW - deltaX * step) / parentW) * 100, 0.01)
+          : normalizeFloat(startW - deltaX * step, step);
       value = Math.max(minDim, value);
       maxDim && (value = Math.min(maxDim, value));
       box.w = value;
     }
     if (~attr.indexOf('t')) {
-      value = normalizeFloat(startH - deltaY * step, step);
+      value =
+        unitHeight === '%'
+          ? normalizeFloat(((startH - deltaY * step) / parentH) * 100, 0.01)
+          : normalizeFloat(startH - deltaY * step, step);
       value = Math.max(minDim, value);
       maxDim && (value = Math.min(maxDim, value));
       box.h = value;
