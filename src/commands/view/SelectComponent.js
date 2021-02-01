@@ -463,7 +463,14 @@ export default {
           }
 
           const { store, selectedHandler, config } = options;
-          const { keyHeight, keyWidth, autoHeight, autoWidth } = config;
+          const {
+            keyHeight,
+            keyWidth,
+            autoHeight,
+            autoWidth,
+            unitWidth,
+            unitHeight
+          } = config;
           const onlyHeight = ['tc', 'bc'].indexOf(selectedHandler) >= 0;
           const onlyWidth = ['cl', 'cr'].indexOf(selectedHandler) >= 0;
           const style = {};
@@ -472,11 +479,11 @@ export default {
           if (!onlyHeight) {
             const bodyw = canvas.getBody().offsetWidth;
             const width = rect.w < bodyw ? rect.w : bodyw;
-            style[keyWidth] = autoWidth ? 'auto' : `${width}px`;
+            style[keyWidth] = autoWidth ? 'auto' : `${width}${unitWidth}`;
           }
 
           if (!onlyWidth) {
-            style[keyHeight] = autoHeight ? 'auto' : `${rect.h}px`;
+            style[keyHeight] = autoHeight ? 'auto' : `${rect.h}${unitHeight}`;
           }
 
           modelToStyle.addStyle({ ...style, en }, { avoidStore: !store });
