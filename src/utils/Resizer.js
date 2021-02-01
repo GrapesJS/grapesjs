@@ -80,6 +80,7 @@ var createHandler = (name, opts) => {
 var getBoundingRect = (el, win) => {
   var w = win || window;
   var rect = el.getBoundingClientRect();
+  console.log('here');
   return {
     left: rect.left + w.pageXOffset,
     top: rect.top + w.pageYOffset,
@@ -193,6 +194,14 @@ class Resizer {
   }
 
   /**
+   * Returns the parent of the focused element
+   * @return {HTMLElement}
+   */
+  getParentEl() {
+    return this.el.parentElement;
+  }
+
+  /**
    * Returns documents
    */
   getDocumentEl() {
@@ -247,10 +256,12 @@ class Resizer {
     e.preventDefault();
     e.stopPropagation();
     const el = this.el;
+    const parentEl = this.getParentEl();
     const resizer = this;
     const config = this.opts || {};
     var attrName = 'data-' + config.prefix + 'handler';
     var rect = this.getElementPos(el, { target: 'el' });
+    var parentRect = this.getElementPos(parentEl);
     this.handlerAttr = e.target.getAttribute(attrName);
     this.clickedHandler = e.target;
     this.startDim = {
@@ -268,6 +279,12 @@ class Resizer {
     this.startPos = {
       x: e.clientX,
       y: e.clientY
+    };
+    this.parentDim = {
+      t: parentRect.top,
+      l: parentRect.left,
+      w: parentRect.width,
+      h: parentRect.height
     };
 
     // Listen events
@@ -443,6 +460,12 @@ class Resizer {
     const deltaY = data.delta.y;
     const startW = startDim.w;
     const startH = startDim.h;
+    const parentW = this.parentDim.w;
+    const parentH = this.parentDim.h;
+    const currentPosX = this.currentPos.x;
+    const currentPosY = this.currentPos.y;
+    const unitWidth = this.opts.unitWidth;
+    const unitHeight = this.opts.unitHeight;
     var box = {
       t: 0,
       l: 0,
@@ -454,13 +477,20 @@ class Resizer {
 
     var attr = data.handlerAttr;
     if (~attr.indexOf('r')) {
-      value = normalizeFloat(startW + deltaX * step, step);
+      value =
+        unitWidth === '%'
+          ? normalizeFloat((currentPosX / parentW) * 100, 0.01)
+          : normalizeFloat(startW + deltaX * step, step);
       value = Math.max(minDim, value);
       maxDim && (value = Math.min(maxDim, value));
       box.w = value;
     }
     if (~attr.indexOf('b')) {
-      value = normalizeFloat(startH + deltaY * step, step);
+      console.log(this.parentDim);
+      value =
+        unitHeight === '%'
+          ? normalizeFloat((currentPosY / parentH) * 100, 0.01)
+          : normalizeFloat(startW + deltaX * step, step);
       value = Math.max(minDim, value);
       maxDim && (value = Math.min(maxDim, value));
       box.h = value;
