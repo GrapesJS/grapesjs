@@ -191,6 +191,9 @@ export default class Droppable {
     } else if (indexOf(types, 'text/json') >= 0) {
       const json = dataTransfer.getData('text/json');
       json && (content = JSON.parse(json));
+    } else if (types.length === 1 && types[0] === 'text/plain') {
+      // Avoid dropping non-selectable and non-editable text nodes inside the editor
+      content = `<div>${content}</div>`;
     }
 
     const result = { content };
