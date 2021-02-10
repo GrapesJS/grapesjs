@@ -198,13 +198,16 @@ describe('Symbols', () => {
       ).toBe(allInst.length);
     });
 
-    test.skip('Moving a new added component in the symbol, will propagate the action in all instances', () => {
+    test('Moving a new added component in the symbol, will propagate the action in all instances', () => {
       const added = symbol.append(simpleComp)[0];
       const newChildLen = compInitChild + 1;
       added.move(symbol, { at: 0 });
-      const symbRef = added.__getSymbol();
       // All symbols still have the same amount of components
       all.forEach(cmp => expect(cmp.components().length).toBe(newChildLen));
+      // All instances refer to the same symbol
+      allInst.forEach(cmp => expect(getFirstInnSymbol(cmp)).toBe(added));
+      // The moved symbol contains all its instances
+      expect(added.__getSymbols().length).toBe(allInst.length);
     });
 
     test('Adding a class, reflects changes to all symbols', () => {
