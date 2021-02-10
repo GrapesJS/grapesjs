@@ -15,10 +15,17 @@ describe('Symbols', () => {
     return cloned;
   };
   const simpleComp = '<div data-a="b">Component</div>';
+  const simpleComp2 = '<div data-b="c">Component 2</div>';
   const compMultipleNodes = `<div data-v="a">
     <div data-v="b">Component 1</div>
     <div data-v="c">Component 2</div>
   </div>`;
+
+  let allInst, all, comp, symbol, compInitChild;
+  let secComp;
+  const getInnerComp = (cmp, i = 0) => cmp.components().at(i);
+  const getFirstInnSymbol = cmp => getInnerComp(cmp).__getSymbol();
+  const getInnSymbol = (cmp, i = 0) => getInnerComp(cmp, i).__getSymbol();
 
   beforeAll(() => {
     editor = new Editor();
@@ -124,19 +131,6 @@ describe('Symbols', () => {
   });
 
   describe('Creating 3 symbols in the wrapper', () => {
-    let allInst, all, comp, symbol, compInitChild;
-    const getInnerComp = (cmp, i = 0) => cmp.components().at(i);
-    const getFirstInnSymbol = cmp =>
-      cmp
-        .components()
-        .at(0)
-        .__getSymbol();
-    const getInnSymbol = (cmp, i = 0) =>
-      cmp
-        .components()
-        .at(i)
-        .__getSymbol();
-
     beforeEach(() => {
       comp = wrapper.append(compMultipleNodes)[0];
       compInitChild = comp.components().length;
@@ -285,6 +279,24 @@ describe('Symbols', () => {
       allInst.forEach(cmp => expect(getInnSymbol(cmp, 1)).toBe(clonedSymb));
       const innerSymb = allInst.map(i => getInnerComp(i, 1));
       expect(clonedSymb.__getSymbols()).toEqual(innerSymb);
+    });
+  });
+
+  describe('Nested symbols', () => {
+    beforeEach(() => {
+      comp = wrapper.append(compMultipleNodes)[0];
+      compInitChild = comp.components().length;
+      symbol = createSymbol(comp);
+      const comp2 = createSymbol(comp);
+      const comp3 = createSymbol(comp);
+      allInst = [comp, comp2, comp3];
+      all = [...allInst, symbol];
+      // For the second symbol
+      secComp = wrapper.append(simpleComp2)[0];
+    });
+
+    afterEach(() => {
+      wrapper.components().reset();
     });
   });
 });
