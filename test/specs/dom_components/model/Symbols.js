@@ -22,7 +22,7 @@ describe('Symbols', () => {
   </div>`;
 
   let allInst, all, comp, symbol, compInitChild;
-  let secComp;
+  let secComp, secSymbol;
   const getInnerComp = (cmp, i = 0) => cmp.components().at(i);
   const getFirstInnSymbol = cmp => getInnerComp(cmp).__getSymbol();
   const getInnSymbol = (cmp, i = 0) => getInnerComp(cmp, i).__getSymbol();
@@ -291,12 +291,32 @@ describe('Symbols', () => {
       const comp3 = createSymbol(comp);
       allInst = [comp, comp2, comp3];
       all = [...allInst, symbol];
-      // For the second symbol
+      // Second symbol
       secComp = wrapper.append(simpleComp2)[0];
+      secSymbol = createSymbol(secComp);
     });
 
     afterEach(() => {
       wrapper.components().reset();
+    });
+
+    test('Second symbol created properly', () => {
+      const symbs = secSymbol.__getSymbols();
+      expect(secSymbol.__isSymbol()).toBe(true);
+      expect(secComp.__getSymbol()).toBe(secSymbol);
+      expect(symbs.length).toBe(1);
+      expect(symbs[0]).toBe(secComp);
+      expect(secComp.toHTML()).toBe(secSymbol.toHTML());
+    });
+
+    test('Moving the instance, of the second symbol, inside the first symbol, propagates correctly to all first instances', () => {
+      const added = symbol.append(secComp)[0];
+      // The added component is still the second instance
+      expect(added).toBe(secComp);
+      // The added component still has the reference to the second symbol
+      expect(added.__getSymbol()).toBe(secSymbol);
+      // The added component is propogated to other instances (of the first symbol)
+      expect(added.__getSymbols().length).toBe(allInst.length);
     });
   });
 });
