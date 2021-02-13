@@ -15,7 +15,7 @@ describe('Symbols', () => {
     return cloned;
   };
   const simpleComp = '<div data-a="b">Component</div>';
-  const simpleComp2 = '<div data-b="c">Component 2</div>';
+  const simpleComp2 = '<div data-b="c">Component 3</div>';
   const compMultipleNodes = `<div data-v="a">
     <div data-v="b">Component 1</div>
     <div data-v="c">Component 2</div>
@@ -176,20 +176,18 @@ describe('Symbols', () => {
 
     test('Moving a new added component in the instance, will propagate the action in all symbols', () => {
       const added = comp.append(simpleComp)[0];
+      expect(added.index()).toBe(compInitChild);
       const newChildLen = compInitChild + 1;
       added.move(comp, { at: 0 });
+      expect(added.index()).toBe(0); // extra checks
+      expect(added.parent()).toBe(comp);
       const symbRef = added.__getSymbol();
       // All symbols still have the same amount of components
       all.forEach(cmp => expect(cmp.components().length).toBe(newChildLen));
       // All instances refer to the same symbol
       allInst.forEach(cmp => expect(getFirstInnSymbol(cmp)).toBe(symbRef));
       // The moved symbol contains all its instances
-      expect(
-        symbol
-          .components()
-          .at(0)
-          .__getSymbols().length
-      ).toBe(allInst.length);
+      expect(getInnerComp(symbol).__getSymbols().length).toBe(allInst.length);
     });
 
     test('Moving a new added component in the symbol, will propagate the action in all instances', () => {
@@ -309,14 +307,48 @@ describe('Symbols', () => {
       expect(secComp.toHTML()).toBe(secSymbol.toHTML());
     });
 
-    test('Moving the instance, of the second symbol, inside the first symbol, propagates correctly to all first instances', () => {
+    test('Adding the instance, of the second symbol, inside the first symbol, propagates correctly to all first instances', () => {
       const added = symbol.append(secComp)[0];
       // The added component is still the second instance
       expect(added).toBe(secComp);
       // The added component still has the reference to the second symbol
       expect(added.__getSymbol()).toBe(secSymbol);
-      // The added component is propogated to other instances (of the first symbol)
-      expect(added.__getSymbols().length).toBe(allInst.length);
+      // The main second symbol now has the reference to all its instances
+      const secInstans = secSymbol.__getSymbols();
+      expect(secInstans.length).toBe(all.length);
+      // All instances still refer to the second symbol
+      secInstans.forEach(secInst =>
+        expect(secInst.__getSymbol()).toBe(secSymbol)
+      );
+    });
+
+    test('Adding the instance, of the second symbol, inside one of the first instances, propagates correctly to all first symbols', () => {
+      const added = comp.append(secComp)[0];
+      // The added component is still the second instance
+      expect(added).toBe(secComp);
+      // The added component still has the reference to the second symbol
+      expect(added.__getSymbol()).toBe(secSymbol);
+      // The main second symbol now has the reference to all its instances
+      const secInstans = secSymbol.__getSymbols();
+      expect(secInstans.length).toBe(all.length);
+      // All instances still refer to the second symbol
+      secInstans.forEach(secInst =>
+        expect(secInst.__getSymbol()).toBe(secSymbol)
+      );
+    });
+
+    test('Moving the second instance inside first instances, propagates correctly to all other first symbols', () => {
+      const added = comp.append(secComp)[0];
+      expect(added.parent()).toBe(comp); // extra checks
+      expect(added.index()).toBe(compInitChild);
+      const secInstansArr = secSymbol.__getSymbols().map(i => i.cid);
+      expect(secInstansArr.length).toBe(all.length);
+      added.move(comp, { at: 0 });
+      // After the move, the symbol still have the same references
+      const secInstansArr2 = secSymbol.__getSymbols().map(i => i.cid);
+      expect(secInstansArr2).toEqual(secInstansArr);
+      // All second instances refer to the same second symbol
+      all.forEach(c => expect(getFirstInnSymbol(c)).toBe(secSymbol));
     });
   });
 });

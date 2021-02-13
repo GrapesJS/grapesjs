@@ -622,9 +622,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
     __isSymbolTop() {
       const parent = this.parent();
       return (
-        parent &&
-        ((this.__isSymbol() && !parent.__isSymbol()) ||
-          (this.__getSymbol() && !parent.__getSymbol()))
+        !parent || (parent && !parent.__isSymbol() && !parent.__getSymbol())
       );
     },
 
@@ -653,14 +651,10 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     __getSymbTop(opts) {
-      const isSymbol = this.__isSymbol();
       let result = this;
       let parent = this.parent(opts);
 
-      while (
-        parent &&
-        (isSymbol ? parent.__isSymbol() : parent.__getSymbol())
-      ) {
+      while (parent && (parent.__isSymbol() || parent.__getSymbol())) {
         result = parent;
         parent = parent.parent(opts);
       }
@@ -710,16 +704,23 @@ const Component = Backbone.Model.extend(Styleable).extend(
         });
       } else if (o.add) {
         // Add
-        const addedInstances = m.__getSymbToUp(toUpOpts);
+        let addedInstances = [];
         const isMainSymb = !!this.__getSymbols();
         const toUp = this.__getSymbToUp(toUpOpts);
+        if (toUp.length) {
+          const addSymb = m.__getSymbol();
+          addedInstances =
+            (addSymb ? addSymb.__getSymbols() : m.__getSymbols()) || [];
+          addedInstances = [...addedInstances];
+          addedInstances.push(addSymb ? addSymb : m);
+        }
         !isTemp &&
           this.__logSymbol('add', toUp, {
             opts: o,
-            addedInstances,
+            addedInstances: addedInstances.map(c => c.cid),
             added: m.cid
           });
-        // Here, before appending new symbol, I have to ensure there are no previosly
+        // Here, before appending a new symbol, I have to ensure there are no previosly
         // created symbols (eg. used mainly when drag components around)
         toUp.forEach(symb => {
           const symbTop = symb.__getSymbTop();
@@ -729,15 +730,33 @@ const Component = Backbone.Model.extend(Styleable).extend(
           })[0];
           const toAppend =
             symbPrev || m.clone({ symbol: 1, symbolInv: isMainSymb });
-          symb.append(toAppend, { fromInstance: this, toAppend: m, ...o });
+          symb.append(toAppend, { fromInstance: this, ...o });
         });
       } else {
+        // Allow removing single instances
         if (!m.__isSymbolTop()) {
-          // Allow removing single instances
           const toUp = m.__getSymbToUp(toUpOpts);
           !isTemp &&
             this.__logSymbol('remove', toUp, { opts: o, removed: m.cid });
-          toUp.forEach(symb => symb.remove({ fromInstance: m, ...o }));
+          toUp.forEach(symb => {
+            const opts = { fromInstance: m, ...o };
+            // In case of nested symbols, I only need to propagate changes to its instances
+            if (symb.__isSymbolTop() && symb.__getSymbols()) {
+              const toUpInst = symb.__getSymbToUp({
+                fromInstance: m,
+                ...toUpOpts
+              });
+              this.__logSymbol('remove-inst', toUpInst, {
+                opts: o,
+                symbol: symb
+              });
+              toUpInst.forEach(inst => {
+                inst.remove(opts);
+              });
+            } else {
+              symb.remove(opts);
+            }
+          });
         }
       }
     },
@@ -836,7 +855,17 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * someComponent.append(otherComponent, { at: 0 });
      */
     append(components, opts = {}) {
-      const result = this.components().add(components, opts);
+      const compArr = isArray(components) ? components : [components];
+      const toAppend = compArr.map(comp => {
+        if (isString(comp)) {
+          return comp;
+        } else {
+          // I have to remove components from the old container before adding them to a new one
+          comp.collection && comp.collection.remove(comp, { temporary: 1 });
+          return comp;
+        }
+      });
+      const result = this.components().add(toAppend, opts);
       return isArray(result) ? result : [result];
     },
 
