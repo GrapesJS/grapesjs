@@ -309,7 +309,10 @@ export default Backbone.View.extend({
       }, 1);`;
     // #873
     // Adding setTimeout will make js components work on init of the editor
-    setTimeout(() => view.scriptContainer.get(0).appendChild(script), 0);
+    setTimeout(() => {
+      const scr = view.scriptContainer;
+      scr && scr.get(0).appendChild(script);
+    }, 0);
   },
 
   /**
