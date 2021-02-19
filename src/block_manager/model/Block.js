@@ -1,5 +1,4 @@
 import Backbone from 'backbone';
-import Category from './Category';
 
 export default Backbone.Model.extend({
   defaults: {
@@ -18,18 +17,5 @@ export default Backbone.Model.extend({
     content: '',
     category: '',
     attributes: {}
-  },
-
-  initialize(opts = {}) {
-    let category = this.get('category');
-
-    if (category) {
-      if (typeof category == 'string') {
-        var catObj = new Category({
-          id: category,
-          label: category
-        });
-      }
-    }
   }
 });
