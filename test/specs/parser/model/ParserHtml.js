@@ -130,7 +130,7 @@ describe('ParserHtml', () => {
         tagName: 'div',
         attributes: { id: 'test1' },
         type: 'text',
-        components: 'test2 '
+        components: { type: 'textnode', content: 'test2 ' }
       }
     ];
     expect(obj.parse(str).html).toEqual(result);
@@ -158,7 +158,7 @@ describe('ParserHtml', () => {
             tagName: ''
           },
           {
-            components: 'b',
+            components: { type: 'textnode', content: 'b' },
             type: 'text',
             tagName: 'b'
           },
@@ -168,7 +168,7 @@ describe('ParserHtml', () => {
             tagName: ''
           },
           {
-            components: 'i',
+            components: { type: 'textnode', content: 'i' },
             tagName: 'i',
             type: 'text'
           },
@@ -178,7 +178,7 @@ describe('ParserHtml', () => {
             tagName: ''
           },
           {
-            components: 'u',
+            components: { type: 'textnode', content: 'u' },
             tagName: 'u',
             type: 'text'
           },
@@ -208,7 +208,7 @@ describe('ParserHtml', () => {
             tagName: ''
           },
           {
-            components: 'b',
+            components: { type: 'textnode', content: 'b' },
             tagName: 'b',
             type: 'text'
           },
@@ -218,7 +218,7 @@ describe('ParserHtml', () => {
             tagName: ''
           },
           {
-            components: 'i',
+            components: { type: 'textnode', content: 'i' },
             tagName: 'i',
             type: 'text'
           },
@@ -230,7 +230,7 @@ describe('ParserHtml', () => {
           {
             tagName: 'div',
             type: 'text',
-            components: 'ABC'
+            components: { type: 'textnode', content: 'ABC' }
           },
           {
             content: ' ',
@@ -238,7 +238,7 @@ describe('ParserHtml', () => {
             tagName: ''
           },
           {
-            components: 'i',
+            components: { type: 'textnode', content: 'i' },
             tagName: 'i',
             type: 'text'
           },
@@ -248,7 +248,7 @@ describe('ParserHtml', () => {
             tagName: ''
           },
           {
-            components: 'u',
+            components: { type: 'textnode', content: 'u' },
             tagName: 'u',
             type: 'text'
           },
@@ -313,7 +313,7 @@ describe('ParserHtml', () => {
           {
             tagName: 'div',
             type: 'text',
-            components: 'nested'
+            components: { type: 'textnode', content: 'nested' }
           },
           {
             tagName: '',
@@ -343,7 +343,7 @@ describe('ParserHtml', () => {
               {
                 tagName: 'span',
                 type: 'text',
-                components: 'nested'
+                components: { type: 'textnode', content: 'nested' }
               }
             ]
           },
@@ -448,7 +448,7 @@ describe('ParserHtml', () => {
           },
           {
             tagName: 'p',
-            components: 'TestText',
+            components: { type: 'textnode', content: 'TestText' },
             type: 'text'
           },
           {
@@ -475,7 +475,7 @@ describe('ParserHtml', () => {
           'data-test': 'test-value'
         },
         type: 'text',
-        components: 'test2 '
+        components: { type: 'textnode', content: 'test2 ' }
       }
     ];
     expect(obj.parse(str).html).toEqual(result);
@@ -494,7 +494,7 @@ describe('ParserHtml', () => {
           'data-test': 'test-value'
         },
         type: 'text',
-        components: 'test2 '
+        components: { type: 'textnode', content: 'test2 ' }
       }
     ];
     expect(obj.parse(str).html).toEqual(result);
@@ -512,7 +512,7 @@ describe('ParserHtml', () => {
           prop2: 10,
           prop3: true
         },
-        components: 'test2 '
+        components: { type: 'textnode', content: 'test2 ' }
       }
     ];
     expect(obj.parse(str).html).toEqual(result);
@@ -526,7 +526,7 @@ describe('ParserHtml', () => {
         attributes: {},
         type: 'text',
         test: ['value1', 'value2'],
-        components: 'test2 '
+        components: { type: 'textnode', content: 'test2 ' }
       }
     ];
     expect(obj.parse(str).html).toEqual(result);

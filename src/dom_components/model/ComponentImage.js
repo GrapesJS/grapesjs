@@ -10,7 +10,7 @@ export default Component.extend(
       ...Component.prototype.defaults,
       type: 'image',
       tagName: 'img',
-      void: 1,
+      void: true,
       droppable: 0,
       editable: 1,
       highlightable: 0,
@@ -33,8 +33,8 @@ export default Component.extend(
 
     initialize(o, opt) {
       Component.prototype.initialize.apply(this, arguments);
-      var attr = this.get('attributes');
-      if (attr.src) this.set('src', attr.src);
+      const { src } = this.get('attributes');
+      if (src) this.set('src', src, { silent: 1 });
     },
 
     initToolbar(...args) {
@@ -93,6 +93,21 @@ export default Component.extend(
 
     isDefaultSrc() {
       return this.get('src') === result(this, 'defaults').src;
+    },
+
+    /**
+     * Return a shallow copy of the model's attributes for JSON
+     * stringification.
+     * @return {Object}
+     * @private
+     */
+    toJSON(...args) {
+      const obj = Component.prototype.toJSON.apply(this, args);
+      if (obj.src === obj.attributes.src) {
+        delete obj.src;
+      }
+
+      return obj;
     },
 
     /**

@@ -15,20 +15,24 @@ export default {
     opts.abort = 1;
   },
 
-  tglPointers(editor, val) {
-    const body = editor.Canvas.getBody();
-    const elP = body.querySelectorAll(`.${this.ppfx}no-pointer`);
-    each(elP, item => (item.style.pointerEvents = val ? '' : 'all'));
-  },
-
   tglEffects(on) {
     const { em } = this;
     const mthEv = on ? 'on' : 'off';
-    em && em[mthEv]('run:tlb-move:before', this.preventDrag);
+    if (em) {
+      const canvas = em.get('Canvas');
+      const body = canvas.getBody();
+      const tlb = canvas.getToolbarEl();
+      tlb && (tlb.style.display = on ? 'none' : '');
+      const elP = body.querySelectorAll(`.${this.ppfx}no-pointer`);
+      each(elP, item => (item.style.pointerEvents = on ? 'all' : ''));
+      em[mthEv]('run:tlb-move:before', this.preventDrag);
+    }
   },
 
   run(editor, sender) {
     this.sender = sender;
+    this.selected = [...editor.getSelectedAll()];
+    editor.select();
 
     if (!this.shouldRunSwVisibility) {
       this.shouldRunSwVisibility = editor.Commands.isActive(cmdVis);
@@ -51,7 +55,6 @@ export default {
     }
 
     this.helper.style.display = 'inline-block';
-    this.tglPointers(editor);
 
     panels.forEach(panel => panel.set('visible', false));
 
@@ -67,7 +70,7 @@ export default {
   },
 
   stop(editor) {
-    const { sender = {} } = this;
+    const { sender = {}, selected } = this;
     sender.set && sender.set('active', 0);
     const panels = this.getPanels(editor);
 
@@ -81,13 +84,14 @@ export default {
 
     const canvas = editor.Canvas.getElement();
     canvas.setAttribute('style', '');
+    selected && editor.select(selected);
+    delete this.selected;
 
     if (this.helper) {
       this.helper.style.display = 'none';
     }
 
     editor.refresh();
-    this.tglPointers(editor, 1);
     this.tglEffects();
   }
 };

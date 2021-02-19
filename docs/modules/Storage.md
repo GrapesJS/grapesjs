@@ -29,7 +29,7 @@ const editor = grapesjs.init({
   },
 });
 ```
-The `id` option is used to prevent collisions (quite common with localStorage) in case of multiple editors on the same page, therefore you will see parameters passed like `{ 'gjs-components': '...', 'gjs-style': '...', }`
+The `id` option is used to prevent collisions (quite common with localStorage) in case of multiple editors on the same page, therefore you will see parameters passed like `{ 'gjs-components': '...', 'gjs-styles': '...', }`
 
 If you need to disable the storage manager you can pass any empty `type`:
 ```js
@@ -69,7 +69,7 @@ As you can see we've left some default option unchanged, increased changes neces
 
 ## Store and load templates
 
-Even without a fully working endpoint, you can see what is sent from the editor by triggering the store and looking in the network panel of the inspector. GrapesJS sends mainly 4 types of parameters and it prefixes them with the `gjs-` key (you can disable it via `storageManager.id`). From the parameters, you will get the final result in 'gjs-html' and 'gjs-css' and this is what actually your end-users will gonna see on the final template/page. The other two, 'gjs-components' and 'gjs-style', are a JSON representation of your template and therefore those should be used for the template editing. **So be careful**, GrapesJS is able to start from any HTML/CSS but use this approach only for importing already existent HTML templates, once the user starts editing, rely always on JSON objects because the HTML doesn't contain information about your components. You can achieve it in a pretty straightforward way and if you load your page by server-side you don't even need to load asynchronously your data (so you can turn off the `autoload`).
+Even without a fully working endpoint, you can see what is sent from the editor by triggering the store and looking in the network panel of the inspector. GrapesJS sends mainly 4 types of parameters and it prefixes them with the `gjs-` key (you can disable it via `storageManager.id`). From the parameters, you will get the final result in 'gjs-html' and 'gjs-css' and this is what actually your end-users will gonna see on the final template/page. The other two, 'gjs-components' and 'gjs-styles', are a JSON representation of your template and therefore those should be used for the template editing. **So be careful**, GrapesJS is able to start from any HTML/CSS but use this approach only for importing already existent HTML templates, once the user starts editing, rely always on JSON objects because the HTML doesn't contain information about your components. You can achieve it in a pretty straightforward way and if you load your page by server-side you don't even need to load asynchronously your data (so you can turn off the `autoload`).
 
 ```js
 // Lets say, for instance, you start with your already defined HTML template and you'd like to
@@ -135,7 +135,7 @@ When you **load** the template, return a JSON object with the data you have (don
 {
   // `gjs-` is the id prefix
   'gjs-components': [{ tagName: 'div', ... }, {...}, ...],
-  'gjs-style': [{...}, {...}, ...],
+  'gjs-styles': [{...}, {...}, ...],
 }
 ```
 Be sure to have a correct `Content-Type` response header, eg. in PHP you would do something like this:
@@ -143,7 +143,7 @@ Be sure to have a correct `Content-Type` response header, eg. in PHP you would d
 header('Content-Type: application/json');
 echo json_encode([
   'gjs-components': [...],
-  'gjs-style': [...],
+  'gjs-styles': [...],
 ]);
 ```
 
@@ -173,7 +173,7 @@ const SimpleStorage = {};
 editor.StorageManager.add('simple-storage', {
   /**
    * Load the data
-   * @param  {Array} keys Array containing values to load, eg, ['gjs-components', 'gjs-style', ...]
+   * @param  {Array} keys Array containing values to load, eg, ['gjs-components', 'gjs-styles', ...]
    * @param  {Function} clb Callback function to call when the load is ended
    * @param  {Function} clbErr Callback function to call in case of errors
    */

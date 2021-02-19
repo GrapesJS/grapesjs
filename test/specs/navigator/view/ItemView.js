@@ -1,4 +1,5 @@
-import ItemView from '../../../../src/navigator/view/ItemView';
+import ItemView from 'navigator/view/ItemView';
+import config from 'navigator/config/config';
 
 describe('ItemView', () => {
   let itemView, fakeModel, fakeModelStyle;
@@ -15,6 +16,7 @@ describe('ItemView', () => {
     itemView = new ItemView({
       model: fakeModel,
       config: {
+        ...config,
         em: {
           get: jest.fn(() => ({ stylePrefix: '' }))
         }

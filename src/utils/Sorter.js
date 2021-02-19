@@ -478,7 +478,8 @@ export default Backbone.View.extend({
       // If there is a significant changes with the pointer
       if (
         !this.lastPos ||
-        this.lastPos.index != pos.index || this.lastPos.method != pos.method
+        this.lastPos.index != pos.index ||
+        this.lastPos.method != pos.method
       ) {
         this.movePlaceholder(this.plh, dims, pos, this.prevTargetDim);
         if (!this.$plh) this.$plh = $(this.plh);
@@ -1084,17 +1085,17 @@ export default Backbone.View.extend({
     const { em, activeTextModel, dropContent } = this;
     const srcEl = getElement(src);
     em && em.trigger('component:dragEnd:before', dst, srcEl, pos); // @depricated
-    var warns = [];
-    var index = pos.indexEl;
-    var modelToDrop, modelTemp, created;
-    var validResult = this.validTarget(dst, srcEl);
-    var targetCollection = $(dst).data('collection');
-    var model = validResult.srcModel;
-    var droppable = validResult.droppable;
-    var draggable = validResult.draggable;
-    var dropInfo = validResult.dropInfo;
-    var dragInfo = validResult.dragInfo;
-    const { trgModel } = validResult;
+    let index = pos.indexEl;
+    let modelToDrop, modelTemp, created;
+    const warns = [];
+    const validResult = this.validTarget(dst, srcEl);
+    const targetCollection = $(dst).data('collection');
+    const model = validResult.srcModel;
+    let { droppable } = validResult;
+    const { trgModel, draggable } = validResult;
+    const dropInfo =
+      validResult.dropInfo || (trgModel && trgModel.get('droppable'));
+    const dragInfo = validResult.dragInfo || (model && model.get('draggable'));
     droppable = trgModel instanceof Backbone.Collection ? 1 : droppable;
     const isTextableActive = this.isTextableActive(model, trgModel);
 
@@ -1138,24 +1139,24 @@ export default Backbone.View.extend({
 
       // This will cause to recalculate children dimensions
       this.prevTarget = null;
-    } else {
-      if (!targetCollection) {
-        warns.push('Target collection not found');
-      }
-
-      if (!droppable) {
+    } else if (em) {
+      !targetCollection && warns.push('Target collection not found');
+      !droppable &&
+        dropInfo &&
         warns.push(`Target is not droppable, accepts [${dropInfo}]`);
-      }
-
-      if (!draggable) {
+      !draggable &&
+        dragInfo &&
         warns.push(`Component not draggable, acceptable by [${dragInfo}]`);
-      }
-
-      console.warn('Invalid target position: ' + warns.join(', '));
+      em.logWarning('Invalid target position', {
+        errors: warns,
+        model,
+        context: 'sorter',
+        target: trgModel
+      });
     }
 
-    em && em.trigger('component:dragEnd', targetCollection, modelToDrop, warns); // @depricated
-    em &&
+    if (em) {
+      em.trigger('component:dragEnd', targetCollection, modelToDrop, warns); // @depricated
       em.trigger('sorter:drag:end', {
         targetCollection,
         modelToDrop,
@@ -1164,6 +1165,7 @@ export default Backbone.View.extend({
         dst,
         srcEl
       });
+    }
 
     return created;
   },

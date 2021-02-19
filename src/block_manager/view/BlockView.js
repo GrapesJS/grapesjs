@@ -102,7 +102,7 @@ export default Backbone.View.extend({
 
       if (model.get('activate') || oldActive) {
         result.trigger('active');
-        result.set(oldKey, 0);
+        result.unset(oldKey);
       }
 
       if (model.get('select')) {

@@ -22,6 +22,7 @@
  * * `component:mount` - Component is mounted to an element and rendered in canvas
  * * `component:add` - Triggered when a new component is added to the editor, the model is passed as an argument to the callback
  * * `component:remove` - Triggered when a component is removed, the model is passed as an argument to the callback
+ * * `component:remove:before` - Triggered before the remove of the component, the model, remove function (if aborted via options, with this function you can complete the remove) and options (use options.abort = true to prevent remove), are passed as arguments to the callback
  * * `component:clone` - Triggered when a component is cloned, the new model is passed as an argument to the callback
  * * `component:update` - Triggered when a component is updated (moved, styled, etc.), the model is passed as an argument to the callback
  * * `component:update:{propertyName}` - Listen any property change, the model is passed as an argument to the callback
@@ -198,7 +199,7 @@ export default (config = {}) => {
     /**
      * Returns configuration object
      * @param  {string} [prop] Property name
-     * @return {any} Returns the configuration object or
+     * @returns {any} Returns the configuration object or
      *  the value of the specified property
      */
     getConfig(prop) {
@@ -207,7 +208,9 @@ export default (config = {}) => {
 
     /**
      * Returns HTML built inside canvas
-     * @return {string} HTML string
+     * @param {Object} [opts={}] Options
+     * @param {Boolean} [opts.cleanId=false] Remove unnecessary IDs (eg. those created automatically)
+     * @returns {string} HTML string
      */
     getHtml(opts) {
       return em.getHtml(opts);
@@ -217,7 +220,7 @@ export default (config = {}) => {
      * Returns CSS built inside canvas
      * @param {Object} [opts={}] Options
      * @param {Boolean} [opts.avoidProtected=false] Don't include protected CSS
-     * @return {string} CSS string
+     * @returns {string} CSS string
      */
     getCss(opts) {
       return em.getCss(opts);
@@ -225,7 +228,7 @@ export default (config = {}) => {
 
     /**
      * Returns JS of all components
-     * @return {string} JS string
+     * @returns {string} JS string
      */
     getJs() {
       return em.getJs();

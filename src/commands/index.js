@@ -130,14 +130,15 @@ export default () => {
           const nativeDrag = event && event.type == 'dragstart';
           const defComOptions = { preserveSelected: 1 };
           const modes = ['absolute', 'translate'];
-          const mode = sel.get('dmode') || em.get('dmode');
-          const hideTlb = () => em.stopDefault(defComOptions);
-          const altMode = includes(modes, mode);
-          selAll.forEach(sel => sel.trigger('disable'));
 
           if (!sel || !sel.get('draggable')) {
             return em.logWarning('The element is not draggable');
           }
+
+          const mode = sel.get('dmode') || em.get('dmode');
+          const hideTlb = () => em.stopDefault(defComOptions);
+          const altMode = includes(modes, mode);
+          selAll.forEach(sel => sel.trigger('disable'));
 
           // Without setTimeout the ghost image disappears
           nativeDrag ? setTimeout(hideTlb, 0) : hideTlb();
@@ -149,11 +150,13 @@ export default () => {
             em.trigger(eventDrag, data);
           };
           const onEnd = (e, opts, data) => {
-            em.runDefault(defComOptions);
             selAll.forEach(sel => sel.set('status', 'selected'));
             ed.select(selAll);
             sel.emitUpdate();
             em.trigger(`${eventDrag}:end`, data);
+
+            // Defer selectComponent in order to prevent canvas "freeze" #2692
+            setTimeout(() => em.runDefault(defComOptions));
 
             // Dirty patch to prevent parent selection on drop
             (altMode || data.cancelled) && em.set('_cmpDrag', 1);

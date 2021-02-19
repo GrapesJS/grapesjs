@@ -2,6 +2,7 @@ import { isArray } from 'underscore';
 
 export default {
   run(ed, sender, opts = {}) {
+    const toSelect = [];
     let components = opts.component || ed.getSelectedAll();
     components = isArray(components) ? [...components] : [components];
 
@@ -16,7 +17,10 @@ export default {
         });
       }
       component.remove();
+      component.collection && toSelect.push(component);
     });
+
+    toSelect.length && ed.select(toSelect);
 
     return components;
   }

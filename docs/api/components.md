@@ -151,6 +151,10 @@ Returns **[HTMLElement][16]**
 
 Remove all components
 
+### Parameters
+
+-   `opts`   (optional, default `{}`)
+
 Returns **this** 
 
 ## addType

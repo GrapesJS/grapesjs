@@ -38,7 +38,7 @@ export default Backbone.View.extend({
     );
     this.listenTo(model, 'change:highlightable', this.updateHighlight);
     this.listenTo(model, 'change:status', this.updateStatus);
-    this.listenTo(model, 'change:script', this.reset);
+    this.listenTo(model, 'change:script rerender', this.reset);
     this.listenTo(model, 'change:content', this.updateContent);
     this.listenTo(model, 'change', this.handleChange);
     this.listenTo(model, 'active', this.onActive);
@@ -331,7 +331,9 @@ export default Backbone.View.extend({
    * @private
    * */
   updateContent() {
-    this.getChildrenContainer().innerHTML = this.model.get('content');
+    const content = this.model.get('content');
+    const hasComps = this.model.components().length;
+    this.getChildrenContainer().innerHTML = hasComps ? '' : content;
   },
 
   /**
@@ -509,7 +511,10 @@ export default Backbone.View.extend({
   renderAttributes() {
     this.updateAttributes();
     this.updateClasses();
+    this.onAttrUpdate();
   },
+
+  onAttrUpdate() {},
 
   render() {
     this.renderAttributes();

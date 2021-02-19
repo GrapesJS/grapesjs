@@ -119,6 +119,12 @@ export default {
   // The wrapper, if visible, will be shown as a `<body>`
   wrapperIsBody: 1,
 
+  // Pass default available options wherever `editor.getHtml()` is called
+  optsHtml: {},
+
+  // Pass default available options wherever `editor.getCss()` is called
+  optsCss: {},
+
   // Usually when you update the `style` of the component this changes the
   // element's `style` attribute. Unfortunately, inline styling doesn't allow
   // use of media queries (@media) or even pseudo selectors (eg. :hover).

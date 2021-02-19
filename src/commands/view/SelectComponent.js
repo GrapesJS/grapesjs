@@ -88,13 +88,14 @@ export default {
     };
     methods[method](window, 'resize', this.onFrameUpdated);
     methods[method](listenToEl, 'scroll', this.onContainerChange);
-    em[method]('component:toggled', this.onSelect, this);
+    em[method]('component:toggled component:remove', this.onSelect, this);
     em[method]('change:componentHovered', this.onHovered, this);
     em[method](
       'component:resize component:styleUpdate component:input',
       this.updateGlobalPos,
       this
     );
+    em[method]('component:update:toolbar', this._upToolbar, this);
     em[method]('change:canvasOffset', this.updateAttached, this);
     em[method]('frame:updated', this.onFrameUpdated, this);
     em[method]('canvas:updateTools', this.onFrameUpdated, this);
@@ -223,7 +224,7 @@ export default {
 
   toggleToolsEl(on, view, opts = {}) {
     const el = opts.el || this.canvas.getToolsEl(view);
-    el && (el.style.opacity = on ? 1 : 0);
+    el && (el.style.display = on ? '' : 'none');
     return el || {};
   },
 
@@ -508,29 +509,19 @@ export default {
    * @param {Object} mod
    */
   updateToolbar(mod) {
-    var em = this.config.em;
-    var model = mod == em ? em.getSelected() : mod;
-    var toolbarEl = this.canvas.getToolbarEl();
-    var toolbarStyle = toolbarEl.style;
+    const { em } = this.config;
+    const model = mod == em ? em.getSelected() : mod;
+    const toolbarEl = this.canvas.getToolbarEl();
+    const toolbarStyle = toolbarEl.style;
+    const toolbar = model.get('toolbar');
+    const showToolbar = em.get('Config').showToolbar;
 
-    if (!model) {
-      // By putting `toolbarStyle.display = 'none'` will cause kind
-      // of freezed effect with component selection (probably by iframe
-      // switching)
-      toolbarStyle.opacity = 0;
-      return;
-    }
-
-    var toolbar = model.get('toolbar');
-    var showToolbar = em.get('Config').showToolbar;
-
-    if (showToolbar && toolbar && toolbar.length) {
-      toolbarStyle.opacity = '';
+    if (model && showToolbar && toolbar && toolbar.length) {
       toolbarStyle.display = '';
       if (!this.toolbar) {
         toolbarEl.innerHTML = '';
         this.toolbar = new Toolbar(toolbar);
-        var toolbarView = new ToolbarView({
+        const toolbarView = new ToolbarView({
           collection: this.toolbar,
           editor: this.editor,
           em
@@ -640,7 +631,11 @@ export default {
     style.height = pos.height + unit;
   },
 
-  updateToolsGlobal() {
+  _upToolbar: debounce(function() {
+    this.updateToolsGlobal({ force: 1 });
+  }),
+
+  updateToolsGlobal(opts = {}) {
     const { el, pos, component } = this.getElSelected();
 
     if (!el) {
@@ -652,7 +647,7 @@ export default {
     const { canvas } = this;
     const isNewEl = this.lastSelected !== el;
 
-    if (isNewEl) {
+    if (isNewEl || opts.force) {
       this.lastSelected = el;
       this.updateToolbar(component);
     }

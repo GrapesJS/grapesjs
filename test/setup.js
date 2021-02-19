@@ -1,3 +1,4 @@
+import 'whatwg-fetch';
 import _ from 'underscore';
 import Backbone from 'backbone';
 import sinon from 'sinon';

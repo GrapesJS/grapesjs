@@ -279,7 +279,8 @@ export default () => {
         const valid = classes.getStyleable();
         const hasClasses = valid.length;
         const useClasses = !smConf.componentFirst || options.useClasses;
-        const opts = { state };
+        const addOpts = { noCount: 1 };
+        const opts = { state, addOpts };
         let rule;
 
         // I stop undo manager here as after adding the CSSRule (generally after
@@ -293,7 +294,7 @@ export default () => {
           rule = cssC.get(valid, state, deviceW);
 
           if (!rule && !skipAdd) {
-            rule = cssC.add(valid, state, deviceW);
+            rule = cssC.add(valid, state, deviceW, {}, addOpts);
           }
         } else if (config.avoidInlineStyle) {
           rule = cssC.getIdRule(id, opts);

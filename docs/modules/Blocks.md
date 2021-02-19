@@ -6,6 +6,10 @@ title: Block Manager
 
 <p align="center"><img src="http://grapesjs.com/img/sc-grapesjs-blocks-prp.jpg" alt="GrapesJS - Block Manager" height="400" align="center"/></p>
 
+::: warning
+To get a better understanding of the content in this guide, we recommend reading [Components](Components.html) first
+:::
+
 [[toc]]
 
 The Block is a group of [Components] and can be easily reused inside templates.

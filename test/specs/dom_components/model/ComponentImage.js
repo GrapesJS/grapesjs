@@ -8,6 +8,10 @@ describe('ComponentImage', () => {
     componentImage = new ComponentImage();
   });
 
+  test('`src` property is defined after initializing', () => {
+    expect(componentImage.get('src')).toBeDefined();
+  });
+
   describe('.getAttrToHTML', () => {
     let getSrcResultSpy;
     const fakeAttributes = {};
