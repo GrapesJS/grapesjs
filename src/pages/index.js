@@ -1,10 +1,16 @@
 import { isString } from 'underscore';
+import Pages from './model/Pages';
+import Page from './model/Page';
 
 export default () => {
   const evPfx = `page:`;
 
   return {
     name: 'Pages',
+
+    Page,
+
+    Pages,
 
     /**
      * Initialize module
@@ -14,7 +20,7 @@ export default () => {
     init(opts = {}) {
       const { em } = opts;
       this.config = { ...opts };
-      const pages = [];
+      const pages = new Pages();
       pages.on('add', (p, c, o) => em.trigger(`${evPfx}add`, p, o));
       pages.on('remove', (p, c, o) => em.trigger(`${evPfx}remove`, p, o));
       this.em = em;
