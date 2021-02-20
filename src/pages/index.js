@@ -19,12 +19,15 @@ export default () => {
      */
     init(opts = {}) {
       const { em } = opts;
-      this.config = { ...opts };
-      const pages = new Pages();
+      const cnf = { ...opts };
+      this.config = cnf;
+      const defPages = cnf.pages || [];
+      const pages = new Pages(defPages);
+      this.pages = pages;
+      !pages.length && this.add({ type: 'main' });
       pages.on('add', (p, c, o) => em.trigger(`${evPfx}add`, p, o));
       pages.on('remove', (p, c, o) => em.trigger(`${evPfx}remove`, p, o));
       this.em = em;
-      this.pages = pages;
 
       return this;
     },
