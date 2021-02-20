@@ -153,6 +153,7 @@ export default (config = {}) => {
         'Panels',
         'Canvas',
         'Parser',
+        'Pages',
         'CodeManager',
         'UndoManager',
         'RichTextEditor',

@@ -2,9 +2,9 @@ import { isString } from 'underscore';
 import Pages from './model/Pages';
 import Page from './model/Page';
 
-export default () => {
-  const evPfx = `page:`;
+export const evPfx = `page:`;
 
+export default () => {
   return {
     name: 'Pages',
 
