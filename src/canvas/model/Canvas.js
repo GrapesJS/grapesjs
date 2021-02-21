@@ -29,8 +29,9 @@ export default Backbone.Model.extend({
     this.listenTo(em, evPageSelect, this._pageUpdated);
   },
 
-  _pageUpdated(page) {
-    console.log('Page updated', page);
+  _pageUpdated(page, prev) {
+    prev && prev.getFrames().map(frame => frame.disable());
+    this.set('frames', page.getFrames());
   },
 
   updateDevice() {

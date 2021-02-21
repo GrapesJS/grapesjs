@@ -100,10 +100,10 @@ export default () => {
      * @returns {this}
      */
     select(pg) {
-      const { em } = this;
+      const { em, selected } = this;
       const page = isString(pg) ? this.get(pg) : pg;
       this.selected = page;
-      em && em.trigger(evPageSelect, page);
+      em && em.trigger(evPageSelect, page, selected);
       return this;
     },
 

@@ -40,9 +40,27 @@ export default Backbone.Model.extend({
       this.set('styles', new CssRules(styles, modOpts));
   },
 
+  /*
+  frames: [
+    {
+        components: '<div id="wrapper">...</div>',
+        styles: '#wrapper{...}, .class{...}',
+    }, {
+        component: 'i123', // get reference on render
+        style: 'rules-id' // get reference on render
+    }, {
+        components: '<div id="wrapper2">...</div>',
+        style: 'rules-id', // get reference on render
+    }
+]
+  */
   getComponent() {},
 
   getStyle() {},
+
+  disable() {
+    this.trigger('disable');
+  },
 
   remove() {
     this.view = 0;
