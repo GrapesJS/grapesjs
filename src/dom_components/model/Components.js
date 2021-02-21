@@ -36,7 +36,7 @@ export default Backbone.Collection.extend({
     this.listenTo(this, 'reset', this.resetChildren);
     this.config = opt.config;
     this.em = opt.em;
-    this.domc = opt.domc;
+    this.domc = opt.domc || this.em.get('DomComponents');
   },
 
   resetChildren(models, opts = {}) {
@@ -138,8 +138,7 @@ export default Backbone.Collection.extend({
   },
 
   parseString(value, opt = {}) {
-    const { em } = this;
-    const { domc } = this.opt;
+    const { em, domc } = this;
     const cssc = em.get('CssComposer');
     const parsed = em.get('Parser').parseHtml(value);
     // We need this to avoid duplicate IDs
