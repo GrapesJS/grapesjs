@@ -1,62 +1,46 @@
 import Backbone from 'backbone';
-import Component from 'dom_components/model/Component';
-import CssRules from 'css_composer/model/CssRules';
-import { isString } from 'underscore';
+import Component from 'dom_components/model/ComponentWrapper';
+import { isComponent, isObject } from 'utils/mixins';
 
 export default Backbone.Model.extend({
   defaults: () => ({
+    x: 0,
+    y: 0,
+    attributes: {},
     width: null,
     height: null,
     head: [],
-    x: 0,
-    y: 0,
-    root: 0,
-    components: 0,
-    styles: 0,
-    attributes: {}
+    components: '',
+    styles: ''
   }),
 
   initialize(props, opts = {}) {
     const { config } = opts;
     const { em } = config;
-    const { root, styles, components } = this.attributes;
+    const { styles, components } = this.attributes;
     const conf = em.get('DomComponents').getConfig();
+    const allRules = em.get('CssComposer').getAll();
     this.em = em;
     const modOpts = { em, config: conf, frame: this };
 
-    !root &&
-      this.set(
-        'root',
-        new Component(
-          {
-            type: 'wrapper',
-            components: components || []
-          },
-          modOpts
-        )
-      );
+    if (!isComponent(components)) {
+      this.set('components', new Component({ components }, modOpts));
+    }
 
-    (!styles || isString(styles)) &&
-      this.set('styles', new CssRules(styles, modOpts));
+    if (!styles) {
+      this.set('styles', allRules);
+    } else if (!isObject(styles)) {
+      allRules.add(styles);
+    }
   },
 
-  /*
-  frames: [
-    {
-        components: '<div id="wrapper">...</div>',
-        styles: '#wrapper{...}, .class{...}',
-    }, {
-        component: 'i123', // get reference on render
-        style: 'rules-id' // get reference on render
-    }, {
-        components: '<div id="wrapper2">...</div>',
-        style: 'rules-id', // get reference on render
-    }
-]
-  */
-  getComponent() {},
+  getComponents() {
+    return this.get('components');
+  },
 
-  getStyle() {},
+  getStyles() {
+    return this.get('styles');
+  },
 
   disable() {
     this.trigger('disable');

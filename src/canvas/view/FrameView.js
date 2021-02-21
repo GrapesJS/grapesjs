@@ -252,8 +252,8 @@ export default Backbone.View.extend({
 
   renderBody() {
     const { config, model, ppfx } = this;
-    const root = model.get('root');
-    const styles = model.get('styles');
+    const components = model.getComponents();
+    const styles = model.getStyles();
     const { em } = config;
     const doc = this.getDoc();
     const head = this.getHead();
@@ -355,9 +355,9 @@ export default Backbone.View.extend({
     </style>`
     );
     this.root = new ComponentView({
-      model: root,
+      model: components,
       config: {
-        ...root.config,
+        ...components.config,
         frameView: this
       }
     }).render();
