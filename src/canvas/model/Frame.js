@@ -4,29 +4,25 @@ import CssRules from 'css_composer/model/CssRules';
 import { isString } from 'underscore';
 
 export default Backbone.Model.extend({
-  defaults: {
+  defaults: () => ({
     width: null,
     height: null,
-    head: '',
+    head: [],
     x: 0,
     y: 0,
     root: 0,
     components: 0,
     styles: 0,
     attributes: {}
-  },
+  }),
 
   initialize(props, opts = {}) {
     const { config } = opts;
     const { em } = config;
     const { root, styles, components } = this.attributes;
-    this.set('head', []);
+    const conf = em.get('DomComponents').getConfig();
     this.em = em;
-    const modOpts = {
-      em,
-      config: em.get('DomComponents').getConfig(),
-      frame: this
-    };
+    const modOpts = { em, config: conf, frame: this };
 
     !root &&
       this.set(
@@ -43,6 +39,10 @@ export default Backbone.Model.extend({
     (!styles || isString(styles)) &&
       this.set('styles', new CssRules(styles, modOpts));
   },
+
+  getComponent() {},
+
+  getStyle() {},
 
   remove() {
     this.view = 0;

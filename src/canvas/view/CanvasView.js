@@ -330,20 +330,9 @@ export default Backbone.View.extend({
 
   render() {
     const { el, $el, ppfx, model, em, frames } = this;
-    const cssc = em.get('CssComposer');
-    const wrapper = model.get('wrapper');
     $el.html(this.template());
     const $frames = $el.find('[data-frames]');
     this.framesArea = $frames.get(0);
-    this.wrapper = wrapper;
-
-    if (wrapper && typeof wrapper.render == 'function') {
-      model.get('frame').set({
-        wrapper,
-        root: wrapper.getWrapper(),
-        styles: cssc.getAll()
-      });
-    }
 
     const toolsWrp = $el.find('[data-tools]');
     this.toolsWrapper = toolsWrp.get(0);
