@@ -1,4 +1,5 @@
 import { isString } from 'underscore';
+import { createId } from 'utils/mixins';
 import Pages from './model/Pages';
 import Page from './model/Page';
 
@@ -24,7 +25,8 @@ export default () => {
       const defPages = cnf.pages || [];
       const pages = new Pages(defPages);
       this.pages = pages;
-      !pages.length && this.add({ type: 'main' });
+      const mainPage = !pages.length ? this.add({ type: 'main' }) : pages.at(0);
+      this.select(mainPage);
       pages.on('add', (p, c, o) => em.trigger(`${evPfx}add`, p, o));
       pages.on('remove', (p, c, o) => em.trigger(`${evPfx}remove`, p, o));
       this.em = em;
@@ -70,15 +72,23 @@ export default () => {
       return this.pages;
     },
 
+    getAllMap() {
+      return this.getAll().reduce((acc, i) => {
+        acc[i.get('id')] = i;
+        return acc;
+      }, {});
+    },
+
     /**
      * Select page
      * @param {String|Page} page Page or page id
      * @returns {this}
      */
     select(pg) {
+      const { em } = this;
       const page = isString(pg) ? this.get(pg) : pg;
       this.selected = page;
-      this.em.trigger(`${evPfx}:select`, page);
+      em && em.trigger(`${evPfx}:select`, page);
       return this;
     },
 
@@ -98,9 +108,17 @@ export default () => {
       ['selected', 'config', 'em', 'pages'].map(i => (this[i] = 0));
     },
 
-    // TODO
     _createId() {
-      return Math.random();
+      const pages = this.getAll();
+      const len = pages.length + 16;
+      const pagesMap = this.getAllMap();
+      let id;
+
+      do {
+        id = createId(len);
+      } while (pagesMap[id]);
+
+      return id;
     }
   };
 };
