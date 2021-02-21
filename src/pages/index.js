@@ -25,7 +25,7 @@ export default () => {
       const cnf = { ...opts };
       this.config = cnf;
       const defPages = cnf.pages || [];
-      const pages = new Pages(defPages);
+      const pages = new Pages(defPages, cnf);
       this.pages = pages;
       const mainPage = !pages.length
         ? this.add({ type: typeMain })
@@ -46,7 +46,9 @@ export default () => {
      */
     add(props, opts = {}) {
       props.id = props.id || this._createId();
-      return this.pages.add(props, opts);
+      const page = this.pages.add(props, opts);
+      opts.select && this.select(page);
+      return page;
     },
 
     /**

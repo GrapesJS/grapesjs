@@ -1,12 +1,13 @@
 import { bindAll } from 'underscore';
-import Backbone from 'backbone';
+import { Collection } from 'backbone';
 import model from './Frame';
 
-export default Backbone.Collection.extend({
+export default Collection.extend({
   model,
 
-  initialize() {
+  initialize(models, config = {}) {
     bindAll(this, 'itemLoaded');
+    this.config = config;
   },
 
   itemLoaded() {
@@ -26,5 +27,10 @@ export default Backbone.Collection.extend({
 
   listenToLoadItems(on) {
     this.forEach(item => item[on ? 'on' : 'off']('loaded', this.itemLoaded));
+  },
+
+  add(m, o = {}) {
+    const { config } = this;
+    return Collection.prototype.add.call(this, m, { ...o, config });
   }
 });

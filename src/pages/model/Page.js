@@ -6,8 +6,8 @@ export default Model.extend({
     frames: []
   }),
 
-  initialize(props = {}) {
-    this.set('frames', new Frames(this.get('frames')));
+  initialize(props, opts = {}) {
+    this.set('frames', new Frames(this.get('frames'), opts.config));
   },
 
   getFrames() {

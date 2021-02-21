@@ -1,6 +1,5 @@
 import Backbone from 'backbone';
-import Frame from './Frame';
-import Frames from './Frames';
+import { evPageSelect } from 'pages';
 
 export default Backbone.Model.extend({
   defaults: {
@@ -18,14 +17,8 @@ export default Backbone.Model.extend({
     const root = em && em.getWrapper();
     const css = em && em.getStyle();
     const mainPage = em.get('Pages').getMain();
-    let frames = mainPage.getFrames();
-    let frame = mainPage.getMainFrame();
-
-    if (!frame) {
-      frame = new Frame({ root, styles: css }, config);
-      frames.add(frame);
-    }
-
+    const frames = mainPage.getFrames();
+    const frame = mainPage.getMainFrame() || frames.add({ root, styles: css });
     styles.forEach(style => frame.addLink(style));
     scripts.forEach(script => frame.addScript(script));
     this.em = em;
@@ -33,7 +26,11 @@ export default Backbone.Model.extend({
     this.set('frames', frames);
     this.listenTo(this, 'change:zoom', this.onZoomChange);
     this.listenTo(em, 'change:device', this.updateDevice);
-    // TODO this.listenTo(em, 'page:select', this.updateFrames);
+    this.listenTo(em, evPageSelect, this._pageUpdated);
+  },
+
+  _pageUpdated(page) {
+    console.log('Page updated', page);
   },
 
   updateDevice() {

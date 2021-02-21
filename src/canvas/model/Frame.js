@@ -17,12 +17,14 @@ export default Backbone.Model.extend({
   },
 
   initialize(props, opts = {}) {
+    const { config } = opts;
+    const { em } = config;
     const { root, styles, components } = this.attributes;
     this.set('head', []);
-    this.em = opts.em;
+    this.em = em;
     const modOpts = {
-      em: opts.em,
-      config: opts.em.get('DomComponents').getConfig(),
+      em,
+      config: em.get('DomComponents').getConfig(),
       frame: this
     };
 
