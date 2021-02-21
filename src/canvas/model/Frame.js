@@ -1,5 +1,5 @@
 import Backbone from 'backbone';
-import Component from 'dom_components/model/ComponentWrapper';
+import Component from 'dom_components/model/Component';
 import { isComponent, isObject } from 'utils/mixins';
 
 export default Backbone.Model.extend({
@@ -24,7 +24,10 @@ export default Backbone.Model.extend({
     const modOpts = { em, config: conf, frame: this };
 
     if (!isComponent(components)) {
-      this.set('components', new Component({ components }, modOpts));
+      this.set(
+        'components',
+        new Component({ type: 'wrapper', components }, modOpts)
+      );
     }
 
     if (!styles) {
