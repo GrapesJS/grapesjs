@@ -23,7 +23,6 @@ export default Backbone.View.extend({
 
     if (this.canvas) {
       this.$canvas = this.$el;
-      // this.$wrapper = $(this.getCanvasWrapper());
       // this.frameEl = this.canvas.getFrameEl();
       this.canvasTool = this.getCanvasTools();
       // this.bodyEl = this.getCanvasBody();
@@ -53,14 +52,6 @@ export default Backbone.View.extend({
    */
   getCanvasBody() {
     return this.canvas.getBody();
-  },
-
-  /**
-   * Get canvas wrapper element
-   * @return {HTMLElement}
-   */
-  getCanvasWrapper() {
-    return this.canvas.getWrapperEl();
   },
 
   /**

@@ -20,7 +20,6 @@
  * * [getWindow](#getwindow)
  * * [getDocument](#getdocument)
  * * [getBody](#getbody)
- * * [getWrapperEl](#getwrapperel)
  * * [setCustomBadgeLabel](#setcustombadgelabel)
  * * [hasFocus](#hasfocus)
  * * [scrollTo](#scrollto)
@@ -79,9 +78,6 @@ export default () => {
         config: c
       });
 
-      var cm = c.em.get('DomComponents');
-      if (cm) this.setWrapper(cm);
-
       this.model = canvas;
       this.startAutoscroll = this.startAutoscroll.bind(this);
       this.stopAutoscroll = this.stopAutoscroll.bind(this);
@@ -94,15 +90,6 @@ export default () => {
      */
     getConfig() {
       return c;
-    },
-
-    /**
-     * Add wrapper
-     * @param	{Object}	wrp Wrapper
-     * @private
-     * */
-    setWrapper(wrp) {
-      canvas.set('wrapper', wrp);
     },
 
     /**
@@ -154,15 +141,6 @@ export default () => {
     getBody() {
       const doc = this.getDocument();
       return doc && doc.body;
-    },
-
-    /**
-     * Get the wrapper element containing all the components
-     * @return {HTMLElement}
-     */
-    getWrapperEl() {
-      const body = this.getBody();
-      return body && body.querySelector('#wrapper');
     },
 
     _getCompFrame(compView) {
@@ -624,16 +602,6 @@ export default () => {
     toggleFramesEvents(on) {
       const { style } = this.getFramesEl();
       style.pointerEvents = on ? '' : 'none';
-    },
-
-    /**
-     * Returns wrapper element
-     * @return {HTMLElement}
-     * ????
-     * @private
-     */
-    getFrameWrapperEl() {
-      return CanvasView.frame.getWrapper();
     },
 
     getFrames() {

@@ -6,7 +6,6 @@ export default Backbone.Model.extend({
   defaults: {
     frame: '',
     frames: '',
-    wrapper: '',
     rulers: false,
     zoom: 100,
     x: 0,
@@ -18,14 +17,23 @@ export default Backbone.Model.extend({
     const { styles = [], scripts = [] } = config;
     const root = em && em.getWrapper();
     const css = em && em.getStyle();
-    const frame = new Frame({ root, styles: css }, config);
+    const mainPage = em.get('Pages').getMain();
+    let frames = mainPage.getFrames();
+    let frame = mainPage.getMainFrame();
+
+    if (!frame) {
+      frame = new Frame({ root, styles: css }, config);
+      frames.add(frame);
+    }
+
     styles.forEach(style => frame.addLink(style));
     scripts.forEach(script => frame.addScript(script));
     this.em = em;
     this.set('frame', frame);
-    this.set('frames', new Frames([frame], config));
+    this.set('frames', frames);
     this.listenTo(this, 'change:zoom', this.onZoomChange);
     this.listenTo(em, 'change:device', this.updateDevice);
+    // TODO this.listenTo(em, 'page:select', this.updateFrames);
   },
 
   updateDevice() {

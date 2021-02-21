@@ -5,7 +5,6 @@ import { isString } from 'underscore';
 
 export default Backbone.Model.extend({
   defaults: {
-    wrapper: '',
     width: null,
     height: null,
     head: '',

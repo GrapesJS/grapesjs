@@ -3,7 +3,9 @@ import { createId } from 'utils/mixins';
 import Pages from './model/Pages';
 import Page from './model/Page';
 
-export const evPfx = `page:`;
+export const evPfx = 'page:';
+export const evPageSelect = `${evPfx}select`;
+const typeMain = 'main';
 
 export default () => {
   return {
@@ -25,7 +27,9 @@ export default () => {
       const defPages = cnf.pages || [];
       const pages = new Pages(defPages);
       this.pages = pages;
-      const mainPage = !pages.length ? this.add({ type: 'main' }) : pages.at(0);
+      const mainPage = !pages.length
+        ? this.add({ type: typeMain })
+        : this.getMain();
       this.select(mainPage);
       pages.on('add', (p, c, o) => em.trigger(`${evPfx}add`, p, o));
       pages.on('remove', (p, c, o) => em.trigger(`${evPfx}remove`, p, o));
@@ -66,6 +70,15 @@ export default () => {
     },
 
     /**
+     * Get main page
+     * @returns {Page}
+     */
+    getMain() {
+      const pages = this.getAll();
+      return pages.filter(p => p.get('type') === typeMain)[0] || pages.at(0);
+    },
+
+    /**
      * Get all pages
      */
     getAll() {
@@ -88,7 +101,7 @@ export default () => {
       const { em } = this;
       const page = isString(pg) ? this.get(pg) : pg;
       this.selected = page;
-      em && em.trigger(`${evPfx}:select`, page);
+      em && em.trigger(evPageSelect, page);
       return this;
     },
 
