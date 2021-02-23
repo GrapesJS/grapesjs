@@ -258,28 +258,30 @@ export default Backbone.Collection.extend({
   },
 
   __onAddEnd: debounce(function() {
-    const { domc } = this;
-    const allComp = (domc && domc.allById()) || {};
-    const firstAdd = this.__firstAdd;
-    const toCheck = isArray(firstAdd) ? firstAdd : [firstAdd];
-    const silent = { silent: true };
-    const onAll = comps => {
-      comps.forEach(comp => {
-        const symbol = comp.get(keySymbols);
-        const symbolOf = comp.get(keySymbol);
-        if (symbol && isArray(symbol) && isString(symbol[0])) {
-          comp.set(
-            keySymbols,
-            symbol.map(smb => allComp[smb]).filter(i => i),
-            silent
-          );
-        }
-        if (isString(symbolOf)) {
-          comp.set(keySymbol, allComp[symbolOf], silent);
-        }
-        onAll(comp.components());
-      });
-    };
-    onAll(toCheck);
+    // TODO to check symbols on load, probably this might be removed as symbols
+    // are always recovered from the model
+    // const { domc } = this;
+    // const allComp = (domc && domc.allById()) || {};
+    // const firstAdd = this.__firstAdd;
+    // const toCheck = isArray(firstAdd) ? firstAdd : [firstAdd];
+    // const silent = { silent: true };
+    // const onAll = comps => {
+    //   comps.forEach(comp => {
+    //     const symbol = comp.get(keySymbols);
+    //     const symbolOf = comp.get(keySymbol);
+    //     if (symbol && isArray(symbol) && isString(symbol[0])) {
+    //       comp.set(
+    //         keySymbols,
+    //         symbol.map(smb => allComp[smb]).filter(i => i),
+    //         silent
+    //       );
+    //     }
+    //     if (isString(symbolOf)) {
+    //       comp.set(keySymbol, allComp[symbolOf], silent);
+    //     }
+    //     onAll(comp.components());
+    //   });
+    // };
+    // onAll(toCheck);
   })
 });

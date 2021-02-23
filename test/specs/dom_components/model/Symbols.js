@@ -14,6 +14,10 @@ describe('Symbols', () => {
     comp.parent().append(cloned, { at: comp.index() + 1 });
     return cloned;
   };
+  const simpleCompDef = {
+    type: 'text',
+    components: [{ type: 'textnode', content: 'Component' }]
+  };
   const simpleComp = '<div data-a="b">Component</div>';
   const simpleComp2 = '<div data-b="c">Component 3</div>';
   const compMultipleNodes = `<div data-v="a">
@@ -26,6 +30,22 @@ describe('Symbols', () => {
   const getInnerComp = (cmp, i = 0) => cmp.components().at(i);
   const getFirstInnSymbol = cmp => getInnerComp(cmp).__getSymbol();
   const getInnSymbol = (cmp, i = 0) => getInnerComp(cmp, i).__getSymbol();
+  const basicSymbUpdate = (cFrom, cTo) => {
+    const rand = (Math.random() + 1).toString(36).slice(-7);
+    const newAttr = { class: `cls-${rand}`, [`myattr-${rand}`]: `val-${rand}` };
+    cFrom.setAttributes(newAttr);
+    cFrom.components(`New text content ${rand}`);
+    const toAttr = cTo.getAttributes();
+    delete toAttr.id;
+    const htmlOpts = {
+      attributes: (m, attr) => {
+        delete attr.id;
+        return attr;
+      }
+    };
+    expect(toAttr).toEqual(newAttr);
+    expect(cFrom.toHTML(htmlOpts)).toBe(cTo.toHTML(htmlOpts));
+  };
 
   beforeAll(() => {
     editor = new Editor({ symbols: 1 });
@@ -107,17 +127,31 @@ describe('Symbols', () => {
     comp.set(keySymbol, idSymb);
     symbol.set(keySymbols, [idComp]);
     // Check updates from instance
-    const newAttr = { class: 'test', myattr: 'myvalue' };
-    comp.setAttributes(newAttr);
-    comp.components('New text content');
-    expect(symbol.getAttributes()).toEqual(newAttr);
-    expect(symbol.toHTML()).toBe(comp.toHTML());
+    basicSymbUpdate(comp, symbol);
     // Check updates from symbol
-    const newAttr2 = { class: 'test2', myattr2: 'myvalue2' };
-    symbol.setAttributes(newAttr2);
-    symbol.components('New text content2');
-    expect(comp.getAttributes()).toEqual(newAttr2);
-    expect(symbol.toHTML()).toBe(comp.toHTML());
+    basicSymbUpdate(symbol, comp);
+  });
+
+  test('Symbols recovers correctly from serialization', () => {
+    const idComp = 'c1';
+    const idSymb = 's1';
+    const defComp = {
+      ...simpleCompDef,
+      [keySymbol]: idSymb,
+      attributes: { id: idComp }
+    };
+    const defSymb = {
+      ...simpleCompDef,
+      [keySymbols]: [idComp],
+      attributes: { id: idSymb }
+    };
+    const [comp, symbol] = wrapper.append([defComp, defSymb]);
+    expect(comp.__getSymbol()).toBe(symbol);
+    expect(comp.get(keySymbol)).toBe(symbol);
+    expect(symbol.__getSymbols()[0]).toBe(comp);
+    expect(symbol.get(keySymbols)[0]).toBe(comp);
+    basicSymbUpdate(comp, symbol);
+    basicSymbUpdate(symbol, comp);
   });
 
   test("Removing one instance doesn't affect others", () => {

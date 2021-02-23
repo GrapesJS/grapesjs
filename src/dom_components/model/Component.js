@@ -206,7 +206,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
 
       if (!opt.temporary) {
         this.init();
-        this.__isSymbol() && this.__initSymb();
+        this.__isSymbolOrInst() && this.__initSymb();
         em && em.trigger('component:create', this);
       }
     },
@@ -619,9 +619,13 @@ const Component = Backbone.Model.extend(Styleable).extend(
       return isArray(this.get(keySymbols));
     },
 
+    __isSymbolOrInst() {
+      return !!(this.__isSymbol() || this.get(keySymbol));
+    },
+
     __isSymbolTop() {
       const parent = this.parent();
-      const symb = this.__isSymbol() || this.__getSymbol();
+      const symb = this.__isSymbolOrInst();
       return (
         symb &&
         (!parent || (parent && !parent.__isSymbol() && !parent.__getSymbol()))
@@ -666,7 +670,6 @@ const Component = Backbone.Model.extend(Styleable).extend(
       const { fromInstance } = opts;
       const symbols = this.__getSymbols() || [];
       const symbol = this.__getSymbol();
-      !symbols.filter && console.log('!symbols.filter', symbols);
       let result =
         symbol && !fromInstance
           ? [symbol]
