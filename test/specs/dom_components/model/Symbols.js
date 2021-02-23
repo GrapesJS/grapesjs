@@ -28,7 +28,7 @@ describe('Symbols', () => {
   const getInnSymbol = (cmp, i = 0) => getInnerComp(cmp, i).__getSymbol();
 
   beforeAll(() => {
-    editor = new Editor();
+    editor = new Editor({ symbols: 1 });
     wrapper = editor.getWrapper();
   });
 

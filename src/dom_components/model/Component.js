@@ -637,6 +637,8 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     __getSymbToUp(opts = {}) {
+      const { em } = this;
+      const symbEnabled = em && em.get('symbols');
       const { fromInstance } = opts;
       const symbols = this.get(keySymbols) || [];
       const symbol = this.__getSymbol();
@@ -649,7 +651,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
         result = result.filter(i => i !== fromInstance);
       }
 
-      return result;
+      return symbEnabled ? result : [];
     },
 
     __getSymbTop(opts) {
