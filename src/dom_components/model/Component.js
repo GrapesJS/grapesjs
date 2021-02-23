@@ -206,7 +206,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
 
       if (!opt.temporary) {
         this.init();
-        this.__isSymbol() && this.__initSymb();
+        this.__isSymbolOrInst() && this.__initSymb();
         em && em.trigger('component:create', this);
       }
     },
@@ -619,24 +619,56 @@ const Component = Backbone.Model.extend(Styleable).extend(
       return isArray(this.get(keySymbols));
     },
 
+    __isSymbolOrInst() {
+      return !!(this.__isSymbol() || this.get(keySymbol));
+    },
+
     __isSymbolTop() {
       const parent = this.parent();
+      const symb = this.__isSymbolOrInst();
       return (
-        !parent || (parent && !parent.__isSymbol() && !parent.__getSymbol())
+        symb &&
+        (!parent || (parent && !parent.__isSymbol() && !parent.__getSymbol()))
       );
     },
 
+    __getAllById() {
+      const { em } = this;
+      return em ? em.get('DomComponents').allById() : {};
+    },
+
     __getSymbol() {
-      return this.get(keySymbol);
+      let symb = this.get(keySymbol);
+      if (symb && isString(symb)) {
+        const ref = this.__getAllById()[symb];
+        if (ref) {
+          symb = ref;
+          this.set(keySymbol, ref);
+        } else {
+          symb = 0;
+        }
+      }
+      return symb;
     },
 
     __getSymbols() {
-      return this.get(keySymbols);
+      let symbs = this.get(keySymbols);
+      if (symbs && isArray(symbs)) {
+        symbs.forEach((symb, idx) => {
+          if (symb && isString(symb)) {
+            symbs[idx] = this.__getAllById()[symb];
+          }
+        });
+        symbs = symbs.filter(symb => symb && !isString(symb));
+      }
+      return symbs;
     },
 
     __getSymbToUp(opts = {}) {
+      const { em } = this;
+      const symbEnabled = em && em.get('symbols');
       const { fromInstance } = opts;
-      const symbols = this.get(keySymbols) || [];
+      const symbols = this.__getSymbols() || [];
       const symbol = this.__getSymbol();
       let result =
         symbol && !fromInstance
@@ -647,7 +679,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
         result = result.filter(i => i !== fromInstance);
       }
 
-      return result;
+      return symbEnabled ? result : [];
     },
 
     __getSymbTop(opts) {
