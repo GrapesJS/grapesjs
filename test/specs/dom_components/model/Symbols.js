@@ -98,6 +98,28 @@ describe('Symbols', () => {
     expect(jsonSymb[keySymbols]).toEqual([idComp]);
   });
 
+  test('Serialized symbol references are always recovered', () => {
+    const comp = wrapper.append(simpleComp)[0];
+    const symbol = createSymbol(comp);
+    const idComp = comp.getId();
+    const idSymb = symbol.getId();
+    // Serialize symbols
+    comp.set(keySymbol, idSymb);
+    symbol.set(keySymbols, [idComp]);
+    // Check updates from instance
+    const newAttr = { class: 'test', myattr: 'myvalue' };
+    comp.setAttributes(newAttr);
+    comp.components('New text content');
+    expect(symbol.getAttributes()).toEqual(newAttr);
+    expect(symbol.toHTML()).toBe(comp.toHTML());
+    // Check updates from symbol
+    const newAttr2 = { class: 'test2', myattr2: 'myvalue2' };
+    symbol.setAttributes(newAttr2);
+    symbol.components('New text content2');
+    expect(comp.getAttributes()).toEqual(newAttr2);
+    expect(symbol.toHTML()).toBe(comp.toHTML());
+  });
+
   test("Removing one instance doesn't affect others", () => {
     const comp = wrapper.append(simpleComp)[0];
     const symbol = createSymbol(comp);
