@@ -621,8 +621,10 @@ const Component = Backbone.Model.extend(Styleable).extend(
 
     __isSymbolTop() {
       const parent = this.parent();
+      const symb = this.__isSymbol() || this.__getSymbol();
       return (
-        !parent || (parent && !parent.__isSymbol() && !parent.__getSymbol())
+        symb &&
+        (!parent || (parent && !parent.__isSymbol() && !parent.__getSymbol()))
       );
     },
 

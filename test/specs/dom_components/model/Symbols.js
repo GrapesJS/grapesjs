@@ -43,6 +43,8 @@ describe('Symbols', () => {
     wrapper.components().reset();
   });
 
+  // TODO check that clone itself doesn't create symbols
+
   test('Create symbol from a component', () => {
     const comp = wrapper.append(simpleComp)[0];
     const symbol = createSymbol(comp);
