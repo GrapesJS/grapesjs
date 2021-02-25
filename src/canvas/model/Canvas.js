@@ -14,7 +14,7 @@ export default Backbone.Model.extend({
   initialize(config = {}) {
     const { em } = config;
     const { styles = [], scripts = [] } = config;
-    const mainPage = em.get('Pages').getMain();
+    const mainPage = em.get('PageManager').getMain();
     const frames = mainPage.getFrames();
     const frame =
       mainPage.getMainFrame() ||

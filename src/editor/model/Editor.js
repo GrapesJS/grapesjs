@@ -16,7 +16,6 @@ Backbone.$ = $;
 const deps = [
   require('utils'),
   require('i18n'),
-  require('pages'),
   require('keymaps'),
   require('undo_manager'),
   require('storage_manager'),
@@ -32,6 +31,7 @@ const deps = [
   require('css_composer'),
   require('trait_manager'),
   require('dom_components'),
+  require('pages'),
   require('navigator'),
   require('canvas'),
   require('commands'),
@@ -80,6 +80,7 @@ export default Backbone.Model.extend({
     this.set('storables', []);
     this.set('selected', new Collection());
     this.set('dmode', c.dragMode);
+    this.set('hasPages', !!c.pageManager);
     const el = c.el;
     const log = c.log;
     const toLog = log === true ? keys(logs) : isArray(log) ? log : [];

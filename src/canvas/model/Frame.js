@@ -34,6 +34,7 @@ export default Backbone.Model.extend({
       this.set('styles', allRules);
     } else if (!isObject(styles)) {
       allRules.add(styles);
+      this.set('styles', allRules);
     }
   },
 

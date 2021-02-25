@@ -9,7 +9,7 @@ const typeMain = 'main';
 
 export default () => {
   return {
-    name: 'Pages',
+    name: 'PageManager',
 
     Page,
 
