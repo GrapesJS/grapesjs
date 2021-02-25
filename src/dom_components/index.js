@@ -228,8 +228,6 @@ export default () => {
         c.components = em.config.components || c.components;
       }
 
-      if (em.get('hasPages')) c.components = '';
-
       for (var name in defaults) {
         if (!(name in c)) c[name] = defaults[name];
       }
@@ -251,6 +249,11 @@ export default () => {
         em.listenTo(selected, 'remove', (sel, c, opts) =>
           this.selectRemove(sel, opts)
         );
+      }
+
+      if (em.get('hasPages')) {
+        c.components = '';
+        return this;
       }
 
       // Build wrapper
@@ -298,7 +301,7 @@ export default () => {
      * @private
      */
     onLoad() {
-      this.setComponents(c.components);
+      c.components && this.setComponents(c.components);
     },
 
     /**
@@ -450,7 +453,11 @@ export default () => {
      * @private
      */
     getComponent() {
-      return component;
+      return this.em
+        .get('PageManager')
+        .getSelected()
+        .getMainFrame()
+        .getComponents();
     },
 
     /**
