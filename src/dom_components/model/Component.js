@@ -1699,8 +1699,10 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * not ok, as it was shared between multiple editor instances
      */
     getList(model) {
-      const domc = model.opt && model.opt.domc;
-      return domc ? domc.componentsById : {};
+      const { opt = {} } = model;
+      const { domc, em } = opt;
+      const dm = domc || (em && em.get('DomComponents'));
+      return dm ? dm.componentsById : {};
     },
 
     /**
