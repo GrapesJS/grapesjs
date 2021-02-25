@@ -228,6 +228,8 @@ export default () => {
         c.components = em.config.components || c.components;
       }
 
+      if (em.get('hasPages')) c.components = '';
+
       for (var name in defaults) {
         if (!(name in c)) c[name] = defaults[name];
       }
