@@ -64,7 +64,7 @@ describe('Pages', () => {
   //   describe.only('Enable page manager', () => {});
 
   describe.only('Init with pages', () => {
-    let idPage1, idComp1, idComp2, comp1, comp2, initPages;
+    let idPage1, idComp1, idComp2, comp1, comp2, initPages, allbyId;
     const createCompDef = id => ({
       attributes: {
         id,
@@ -97,6 +97,15 @@ describe('Pages', () => {
               styles: `#${idComp2} { color: blue }`
             }
           ]
+        },
+        {
+          id: 'page-3',
+          frames: [
+            {
+              components: '<div id="comp3">Component 3</div>',
+              styles: `#comp3 { color: green }`
+            }
+          ]
         }
       ];
       editor = new Editor({
@@ -107,7 +116,8 @@ describe('Pages', () => {
       em = editor.getModel();
       domc = em.get('DomComponents');
       pm = em.get('PageManager');
-      initCmpLen = Object.keys(domc.allById()).length;
+      allbyId = domc.allById();
+      initCmpLen = Object.keys(allbyId).length;
     });
 
     afterAll(() => {
@@ -121,17 +131,26 @@ describe('Pages', () => {
       const pages = pm.getAll();
       expect(pages.length).toBe(initPages.length);
       pages.map(page => {
+        // All pages should have an ID
         expect(page.get('id')).toBeTruthy();
+        // The main component is always a wrapper
         expect(
           page
             .getMainFrame()
             .getComponent()
-            .get('type')
-        ).toBe('wrapper');
+            .is('wrapper')
+        ).toBe(true);
       });
+      // Components container should contain the same amount of wrappers as pages
+      const wrappers = Object.keys(allbyId)
+        .map(id => allbyId[id])
+        .filter(i => i.is('wrapper'));
+      expect(wrappers.length).toBe(initPages.length);
+      // Components container should contain the right amount of components
+      // Number of wrappers (eg. 3) where each one containes 1 component and 1 textnode (3 * 3)
+      expect(initCmpLen).toBe(initPages.length * 3);
+      // Each page contains 1 rule per component
+      expect(em.get('CssComposer').getAll().length).toBe(initPages.length);
     });
-    // test('Pages are created', () => {
-    //     expect(pm.getAll().length).toBe(initPages.length);
-    // });
   });
 });
