@@ -26,6 +26,10 @@
 
 import UndoManager from 'backbone-undo';
 
+export const evPfx = 'um:';
+export const evSelect = `${evPfx}select`;
+const typeMain = 'main';
+
 export default () => {
   let em;
   let um;
@@ -105,7 +109,46 @@ export default () => {
       );
       ['undo', 'redo'].forEach(ev => um.on(ev, () => em.trigger(ev)));
 
+      const umObj = { id: typeMain, um };
+      this.all = [umObj];
+      this.select(typeMain, { silent: 1 });
+
       return this;
+    },
+
+    /**
+     * Get all undo instances (eg. from all pages)
+     */
+    getAll() {
+      return this.all;
+    },
+
+    /**
+     * Get undo instance by id
+     */
+    getInst(id, opts = {}) {
+      return this.getAll().filter(i => i.id === id)[0];
+    },
+
+    addInst(id, um) {
+      let result = this.getInst(id);
+      if (!result) {
+        result = { id, um };
+        this.getAll().push(result);
+      }
+      return result;
+    },
+
+    select(id, opts = {}) {
+      const { selected } = this;
+      const inst = this.getInst(id);
+      this.selected = inst;
+      console.log('Select um', inst, opts);
+      !opts.silent && this.em.trigger(evSelect, inst, selected);
+    },
+
+    getSelected() {
+      return this.selected;
     },
 
     /**
@@ -128,7 +171,7 @@ export default () => {
      * um.add(someModelOrCollection);
      */
     add(entity) {
-      um.register(entity);
+      this._um().register(entity);
       return this;
     },
 
@@ -140,7 +183,7 @@ export default () => {
      * um.remove(someModelOrCollection);
      */
     remove(entity) {
-      um.unregister(entity);
+      this._um().unregister(entity);
       return this;
     },
 
@@ -151,7 +194,7 @@ export default () => {
      * um.removeAll();
      */
     removeAll() {
-      um.unregisterAll();
+      this._um().unregisterAll();
       return this;
     },
 
@@ -162,7 +205,7 @@ export default () => {
      * um.start();
      */
     start() {
-      um.startTracking();
+      this._um().startTracking();
       return this;
     },
 
@@ -173,7 +216,7 @@ export default () => {
      * um.stop();
      */
     stop() {
-      um.stopTracking();
+      this._um().stopTracking();
       return this;
     },
 
@@ -184,7 +227,7 @@ export default () => {
      * um.undo();
      */
     undo(all = true) {
-      !em.isEditing() && um.undo(all);
+      !em.isEditing() && this._um().undo(all);
       return this;
     },
 
@@ -195,7 +238,7 @@ export default () => {
      * um.undoAll();
      */
     undoAll() {
-      um.undoAll();
+      this._um().undoAll();
       return this;
     },
 
@@ -206,7 +249,7 @@ export default () => {
      * um.redo();
      */
     redo(all = true) {
-      !em.isEditing() && um.redo(all);
+      !em.isEditing() && this._um().redo(all);
       return this;
     },
 
@@ -217,7 +260,7 @@ export default () => {
      * um.redoAll();
      */
     redoAll() {
-      um.redoAll();
+      this._um().redoAll();
       return this;
     },
 
@@ -228,7 +271,7 @@ export default () => {
      * um.hasUndo();
      */
     hasUndo() {
-      return um.isAvailable('undo');
+      return this._um().isAvailable('undo');
     },
 
     /**
@@ -238,7 +281,7 @@ export default () => {
      * um.hasRedo();
      */
     hasRedo() {
-      return um.isAvailable('redo');
+      return this._um().isAvailable('redo');
     },
 
     /**
@@ -249,7 +292,7 @@ export default () => {
      * stack.each(item => ...);
      */
     getStack() {
-      return um.stack;
+      return this._um().stack;
     },
 
     /**
@@ -288,8 +331,12 @@ export default () => {
      * um.clear();
      */
     clear() {
-      um.clear();
+      this._um().clear();
       return this;
+    },
+
+    _um() {
+      return this.getInstance();
     },
 
     getInstance() {
@@ -299,6 +346,7 @@ export default () => {
     destroy() {
       this.clear().removeAll();
       [em, um, config, beforeCache].forEach(i => (i = {}));
+      ['all', 'selected'].forEach(i => (this[i] = {}));
       this.em = {};
     }
   };

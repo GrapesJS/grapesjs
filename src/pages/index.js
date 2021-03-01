@@ -30,10 +30,10 @@ export default () => {
       const mainPage = !pages.length
         ? this.add({ type: typeMain })
         : this.getMain();
-      this.select(mainPage);
+      this.em = em;
+      this.select(mainPage, { silent: 1, main: 1 });
       pages.on('add', (p, c, o) => em.trigger(`${evPfx}add`, p, o));
       pages.on('remove', (p, c, o) => em.trigger(`${evPfx}remove`, p, o));
-      this.em = em;
 
       return this;
     },
@@ -99,11 +99,12 @@ export default () => {
      * @param {String|Page} page Page or page id
      * @returns {this}
      */
-    select(pg) {
+    select(pg, opts = {}) {
       const { em, selected } = this;
       const page = isString(pg) ? this.get(pg) : pg;
       this.selected = page;
-      em && em.trigger(evPageSelect, page, selected);
+      em.get('UndoManager').select(page.id, { ...opts, create: 1 });
+      !opts.silent && em.trigger(evPageSelect, page, selected);
       return this;
     },
 
