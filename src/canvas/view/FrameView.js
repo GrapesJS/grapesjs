@@ -252,7 +252,7 @@ export default Backbone.View.extend({
 
   renderBody() {
     const { config, model, ppfx } = this;
-    const components = model.getComponents();
+    const components = model.getComponent();
     const styles = model.getStyles();
     const { em } = config;
     const doc = this.getDoc();

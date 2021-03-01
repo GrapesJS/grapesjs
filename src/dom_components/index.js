@@ -453,11 +453,14 @@ export default () => {
      * @private
      */
     getComponent() {
-      return this.em
-        .get('PageManager')
-        .getSelected()
-        .getMainFrame()
-        .getComponents();
+      return (
+        component ||
+        this.em
+          .get('PageManager')
+          .getSelected()
+          .getMainFrame()
+          .getComponent()
+      );
     },
 
     /**

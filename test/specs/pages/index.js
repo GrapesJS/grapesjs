@@ -61,6 +61,8 @@ describe('Pages', () => {
     expect(initCmpLen).toBe(1);
   });
 
+  //   describe.only('Enable page manager', () => {});
+
   describe.only('Init with pages', () => {
     let idPage1, idComp1, idComp2, comp1, comp2, initPages;
     const createCompDef = id => ({
@@ -98,7 +100,7 @@ describe('Pages', () => {
         }
       ];
       editor = new Editor({
-        pages: {
+        pageManager: {
           pages: initPages
         }
       });
@@ -120,7 +122,12 @@ describe('Pages', () => {
       expect(pages.length).toBe(initPages.length);
       pages.map(page => {
         expect(page.get('id')).toBeTruthy();
-        // expect(page.getMainFrame().getComponents().get('type')).toBe('wrapper');
+        expect(
+          page
+            .getMainFrame()
+            .getComponent()
+            .get('type')
+        ).toBe('wrapper');
       });
     });
     // test('Pages are created', () => {

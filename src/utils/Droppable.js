@@ -13,7 +13,7 @@ export default class Droppable {
       em
         .get('Canvas')
         .getFrames()
-        .map(frame => frame.getComponents().getEl());
+        .map(frame => frame.getComponent().getEl());
     const els = Array.isArray(el) ? el : [el];
     this.el = el;
     this.counter = 0;

@@ -38,7 +38,7 @@ export default Backbone.Model.extend({
     }
   },
 
-  getComponents() {
+  getComponent() {
     return this.get('components');
   },
 
