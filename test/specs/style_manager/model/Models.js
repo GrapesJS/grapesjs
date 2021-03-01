@@ -925,7 +925,7 @@ describe('PropertyFactory', () => {
           property: 'box-shadow-blur',
           type: 'integer',
           units: ['px'],
-          defaults: '5px',
+          defaults: '0px',
           min: 0
         },
         {

@@ -237,7 +237,7 @@ export default () => ({
           obj.defaults = 1;
           break;
         case 'box-shadow-blur':
-          obj.defaults = '5px';
+          obj.defaults = '0px';
           break;
         case 'top':
         case 'right':
