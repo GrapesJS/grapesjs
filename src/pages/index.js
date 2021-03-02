@@ -103,8 +103,6 @@ export default () => {
       const { em, selected } = this;
       const page = isString(pg) ? this.get(pg) : pg;
       this.selected = page;
-      const um = em.get('UndoManager');
-      um && um.select(page.id, { ...opts, create: 1 });
       !opts.silent && em.trigger(evPageSelect, page, selected);
       return this;
     },

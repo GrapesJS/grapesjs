@@ -26,12 +26,9 @@
 
 import UndoManager from 'backbone-undo';
 
-export const evPfx = 'um:';
-export const evSelect = `${evPfx}select`;
-const typeMain = 'main';
-
 export default () => {
   let em;
+  let um;
   let config;
   let beforeCache;
   const configDef = {
@@ -51,16 +48,7 @@ export default () => {
       config = { ...opts, ...configDef };
       em = config.em;
       this.em = em;
-      const umObj = { id: typeMain, um: this._createInst(config) };
-      this.all = [umObj];
-      this.select(typeMain, { silent: 1 });
-
-      return this;
-    },
-
-    _createInst(conf) {
-      const { em } = this;
-      const um = new UndoManager({ track: true, register: [], ...conf });
+      um = new UndoManager({ track: true, register: [], ...config });
       um.changeUndoType('change', { condition: false });
       um.changeUndoType('add', {
         on(model, collection, options = {}) {
@@ -117,51 +105,7 @@ export default () => {
       );
       ['undo', 'redo'].forEach(ev => um.on(ev, () => em.trigger(ev)));
 
-      return um;
-    },
-
-    /**
-     * Get all undo instances (eg. from all pages)
-     */
-    getAll() {
-      return this.all;
-    },
-
-    /**
-     * Get undo instance by id
-     */
-    getInst(id) {
-      return this.getAll().filter(i => i.id === id)[0];
-    },
-
-    addInst(id, um, opts = {}) {
-      let result = this.getInst(id);
-      if (!result) {
-        result = { id, um };
-        this.getAll().push(result);
-      }
-      return result;
-    },
-
-    select(id, opts = {}) {
-      const { selected } = this;
-      let inst = this.getInst(id);
-
-      if (opts.main) {
-        inst = this.getInst(typeMain);
-        inst.id = id;
-      } else if (!inst && opts.create) {
-        inst = this.addInst(id, this._createInst(config), opts);
-      }
-      selected && selected.um.stopTracking();
-      this.selected = inst;
-      inst && inst.um.startTracking();
-      !opts.silent && this.em.trigger(evSelect, inst, selected);
-      return inst;
-    },
-
-    getSelected() {
-      return this.selected;
+      return this;
     },
 
     /**
@@ -184,7 +128,7 @@ export default () => {
      * um.add(someModelOrCollection);
      */
     add(entity) {
-      this._um().register(entity);
+      um.register(entity);
       return this;
     },
 
@@ -196,7 +140,7 @@ export default () => {
      * um.remove(someModelOrCollection);
      */
     remove(entity) {
-      this._um().unregister(entity);
+      um.unregister(entity);
       return this;
     },
 
@@ -207,7 +151,7 @@ export default () => {
      * um.removeAll();
      */
     removeAll() {
-      this._um().unregisterAll();
+      um.unregisterAll();
       return this;
     },
 
@@ -218,7 +162,7 @@ export default () => {
      * um.start();
      */
     start() {
-      this._um().startTracking();
+      um.startTracking();
       return this;
     },
 
@@ -229,7 +173,7 @@ export default () => {
      * um.stop();
      */
     stop() {
-      this._um().stopTracking();
+      um.stopTracking();
       return this;
     },
 
@@ -240,7 +184,7 @@ export default () => {
      * um.undo();
      */
     undo(all = true) {
-      !em.isEditing() && this._um().undo(all);
+      !em.isEditing() && um.undo(all);
       return this;
     },
 
@@ -251,7 +195,7 @@ export default () => {
      * um.undoAll();
      */
     undoAll() {
-      this._um().undoAll();
+      um.undoAll();
       return this;
     },
 
@@ -262,7 +206,7 @@ export default () => {
      * um.redo();
      */
     redo(all = true) {
-      !em.isEditing() && this._um().redo(all);
+      !em.isEditing() && um.redo(all);
       return this;
     },
 
@@ -273,7 +217,7 @@ export default () => {
      * um.redoAll();
      */
     redoAll() {
-      this._um().redoAll();
+      um.redoAll();
       return this;
     },
 
@@ -284,7 +228,7 @@ export default () => {
      * um.hasUndo();
      */
     hasUndo() {
-      return this._um().isAvailable('undo');
+      return um.isAvailable('undo');
     },
 
     /**
@@ -294,7 +238,7 @@ export default () => {
      * um.hasRedo();
      */
     hasRedo() {
-      return this._um().isAvailable('redo');
+      return um.isAvailable('redo');
     },
 
     /**
@@ -305,7 +249,7 @@ export default () => {
      * stack.each(item => ...);
      */
     getStack() {
-      return this._um().stack;
+      return um.stack;
     },
 
     /**
@@ -344,22 +288,17 @@ export default () => {
      * um.clear();
      */
     clear() {
-      this._um().clear();
+      um.clear();
       return this;
     },
 
-    _um() {
-      return this.getInstance();
-    },
-
     getInstance() {
-      return this.getSelected().um;
+      return um;
     },
 
     destroy() {
       this.clear().removeAll();
-      [em, config, beforeCache].forEach(i => (i = {}));
-      ['all', 'selected'].forEach(i => (this[i] = {}));
+      [em, um, config, beforeCache].forEach(i => (i = {}));
       this.em = {};
     }
   };
