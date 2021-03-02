@@ -87,12 +87,13 @@ export default () => {
      * @param {Object} [opts={}] Options
      * @param {String|HTMLElement} [opts.title] Title to set for the modal
      * @param {String|HTMLElement} [opts.content] Content to set for the modal
+     * @param {Object} [opts.attributes] Updates the modal wrapper with custom attributes
      * @return {this}
      */
     open(opts = {}) {
       opts.title && this.setTitle(opts.title);
       opts.content && this.setContent(opts.content);
-      modal.show();
+      modal.show(opts);
       return this;
     },
 
@@ -201,6 +202,12 @@ export default () => {
      */
     render() {
       return modal.render().$el;
+    },
+
+    destroy() {
+      modal.remove();
+      [c, model, modal].forEach(i => (i = {}));
+      this.em = {};
     }
   };
 };

@@ -1,5 +1,5 @@
 import Backbone from 'backbone';
-import { bindAll, isString, debounce } from 'underscore';
+import { bindAll, isString, debounce, isUndefined } from 'underscore';
 import CssRulesView from 'css_composer/view/CssRulesView';
 import ComponentView from 'dom_components/view/ComponentView';
 import {
@@ -162,11 +162,12 @@ export default Backbone.View.extend({
 
   autoscroll() {
     if (this.dragging) {
+      const { lastClientY } = this;
       const canvas = this.em.get('Canvas');
       const win = this.getWindow();
       const body = this.getBody();
       const actualTop = body.scrollTop;
-      const clientY = this.lastClientY || 0;
+      const clientY = lastClientY || 0;
       const limitTop = canvas.getConfig().autoscrollLimit;
       const limitBottom = this.getRect().height - limitTop;
       let nextTop = actualTop;
@@ -180,6 +181,7 @@ export default Backbone.View.extend({
       }
 
       if (
+        !isUndefined(lastClientY) && // Fixes #3134
         nextTop !== actualTop &&
         nextTop > 0 &&
         nextTop < this.lastMaxHeight
@@ -259,6 +261,7 @@ export default Backbone.View.extend({
     const win = this.getWindow();
     const conf = em.get('Config');
     const extStyles = [];
+    win._isEditor = true;
 
     config.styles.forEach(href =>
       extStyles.push(
@@ -385,7 +388,7 @@ export default Backbone.View.extend({
     // I need to delegate all events to the parent document
     [
       { event: 'keydown keyup keypress', class: 'KeyboardEvent' },
-      { event: 'mousemove', class: 'MouseEvent' },
+      { event: 'mousedown mousemove mouseup', class: 'MouseEvent' },
       { event: 'wheel', class: 'WheelEvent' }
     ].forEach(obj =>
       obj.event.split(' ').forEach(event => {

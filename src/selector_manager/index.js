@@ -163,7 +163,7 @@ export default config => {
      * @returns {String}
      */
     getState() {
-      return this.em.setState();
+      return this.em.getState();
     },
 
     addSelector(name, opt = {}) {
@@ -312,6 +312,15 @@ export default config => {
         });
         return this.selectorTags.render().el;
       } else return this.selectorTags.render().el;
+    },
+
+    destroy() {
+      selectors.reset();
+      selectors.stopListening();
+      this.selectorTags.remove();
+      [c, selectors].forEach(i => (i = {}));
+      this.em = {};
+      this.selectorTags = {};
     }
   };
 };

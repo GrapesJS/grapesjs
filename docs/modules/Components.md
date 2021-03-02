@@ -72,14 +72,14 @@ In the first step, the HTML string is parsed and transformed to what is called *
       attributes: { title: 'foo' },
       components: [{
         type: 'textnode',
-        content: 'Hello wdsforld!!!'
+        content: 'Hello world!!!'
       }]
     }
   ]
 }
 ```
 
-The real **Component Definition** would be a little bit bigger so so we'd reduced the JSON for the sake of simplicity.
+The real **Component Definition** would be a little bit bigger so we've reduced the JSON for the sake of simplicity.
 
 You might notice the result is similar to what is generally called a **Virtual DOM**, a lightweight representation of the DOM element. This actually helps the editor to keep track of the state of our elements and make performance-friendly changes/updates.
 The meaning of properties like `tagName`, `attributes` and `components` are quite obvious, but what about `type`?! This particular property specifies the **Component Type** of our **Component Definition** (you check the list of default components [below](#built-in-component-types)) and if it's omitted, the default one will be used `type: 'default'`.
@@ -684,10 +684,10 @@ use of them for a more generic use case or also listen to them inside other comp
 
 Let's see below the flow of all hooks:
 
-* **Local hook**: `model.init()` method, executed once the model of the component is initiliazed
+* **Local hook**: `model.init()` method, executed once the model of the component is initialized
 * **Global hook**: `component:create` event, called right after `model.init()`. The model is passed as an argument to the callback function.
   Es. `editor.on('component:create', model => console.log('created', model))`
-* **Local hook**: `view.init()` method, executed once the view of the component is initiliazed
+* **Local hook**: `view.init()` method, executed once the view of the component is initialized
 * **Local hook**: `view.onRender()` method, executed once the component is rendered on the canvas
 * **Global hook**: `component:mount` event, called right after `view.onRender()`. The model is passed as an argument to the callback function.
 * **Local hook**: `model.updated()` method, executes when some property of the model is updated.

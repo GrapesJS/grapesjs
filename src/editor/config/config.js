@@ -119,6 +119,12 @@ export default {
   // The wrapper, if visible, will be shown as a `<body>`
   wrapperIsBody: 1,
 
+  // Pass default available options wherever `editor.getHtml()` is called
+  optsHtml: {},
+
+  // Pass default available options wherever `editor.getCss()` is called
+  optsCss: {},
+
   // Usually when you update the `style` of the component this changes the
   // element's `style` attribute. Unfortunately, inline styling doesn't allow
   // use of media queries (@media) or even pseudo selectors (eg. :hover).
@@ -147,6 +153,14 @@ export default {
   // 'translate' - Use translate CSS from transform property
   // To get more about this feature read: https://github.com/artf/grapesjs/issues/1936
   dragMode: 0,
+
+  // When the editor is placed in a scrollable container (eg. modals) this might
+  // cause elements inside the canvas (eg. floating toolbars) to be misaligned.
+  // To avoid that, you can specify an array of DOM elements on which their scroll will
+  // trigger the canvas update.
+  // Be default, if the array is empty, the first parent element will be appended.
+  // listenToEl: [document.querySelector('#scrollable-el')],
+  listenToEl: [],
 
   // Import asynchronously CSS to use as icons
   cssIcons:

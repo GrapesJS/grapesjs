@@ -87,10 +87,11 @@ export default () => {
       const { customRte } = this;
       globalRte && globalRte.destroy();
       customRte && customRte.destroy && customRte.destroy();
-      toolbar = 0;
-      globalRte = 0;
       this.actionbar = 0;
       this.actions = 0;
+      [config, toolbar, actions, lastEl, lastElPos, globalRte].forEach(
+        i => (i = {})
+      );
     },
 
     /**

@@ -96,6 +96,11 @@ export default () => {
 
     render() {
       return layers.render().el;
+    },
+
+    destroy() {
+      layers && layers.remove();
+      [em, layers, config].forEach(i => (i = {}));
     }
   };
 };

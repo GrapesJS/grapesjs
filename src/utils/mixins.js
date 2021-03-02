@@ -210,6 +210,9 @@ const getPointerEvent = ev =>
 const getKeyCode = ev => ev.which || ev.keyCode;
 const getKeyChar = ev => String.fromCharCode(getKeyCode(ev));
 const isEscKey = ev => getKeyCode(ev) === 27;
+const isObject = val =>
+  val !== null && !Array.isArray(val) && typeof val === 'object';
+const isEmptyObj = val => Object.keys(val).length <= 0;
 
 const capitalize = str => str && str.charAt(0).toUpperCase() + str.substring(1);
 const isComponent = obj => obj && obj.toHTML;
@@ -242,6 +245,8 @@ export {
   getViewEl,
   setViewEl,
   appendStyles,
+  isObject,
+  isEmptyObj,
   isComponent,
   isRule
 };

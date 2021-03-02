@@ -28,6 +28,10 @@ describe('Preview command', () => {
         })
       },
 
+      select: jest.fn(),
+
+      getSelectedAll: jest.fn().mockReturnValue([]),
+
       Commands: {
         isActive: jest.fn(() => fakeIsActive)
       },
@@ -39,7 +43,6 @@ describe('Preview command', () => {
 
     Preview.panels = undefined;
     Preview.shouldRunSwVisibility = undefined;
-    spyOn(Preview, 'tglPointers');
   });
 
   describe('.getPanels', () => {

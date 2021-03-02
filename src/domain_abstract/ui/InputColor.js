@@ -28,6 +28,11 @@ export default Input.extend({
     return `${this.ppfx}input-holder`;
   },
 
+  remove() {
+    Input.prototype.remove.apply(this, arguments);
+    this.colorEl.spectrum('destroy');
+  },
+
   /**
    * Set value to the model
    * @param {string} val

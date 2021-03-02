@@ -113,14 +113,14 @@ export default () => {
       um && um.add(rules);
       em.stopListening(rules, ev, this.handleChange);
       em.listenTo(rules, ev, this.handleChange);
-      rules.each(rule => this.handleChange(rule, { avoidStore: 1 }));
+      rules.each(rule => this.handleChange(rule, null, { avoidStore: 1 }));
     },
 
     /**
      * Handle rule changes
      * @private
      */
-    handleChange(model, opts = {}) {
+    handleChange(model, val, opts = {}) {
       const ev = 'change:style';
       const um = em.get('UndoManager');
       um && um.add(model);
@@ -183,7 +183,8 @@ export default () => {
      * @param {Array<Selector>} selectors Array of selectors
      * @param {String} state Css rule state
      * @param {String} width For which device this style is oriented
-     * @param {Object} opts Other options for the rule
+     * @param {Object} props Other props for the rule
+     * @param {Object} opts Options for the add of new rule
      * @return {Model}
      * @example
      * var sm = editor.SelectorManager;
@@ -195,7 +196,7 @@ export default () => {
      *   color: '#fff',
      * });
      * */
-    add(selectors, state, width, opts = {}) {
+    add(selectors, state, width, opts = {}, addOpts = {}) {
       var s = state || '';
       var w = width || '';
       var opt = { ...opts };
@@ -211,8 +212,8 @@ export default () => {
         opt.mediaText = w;
         opt.selectors = [];
         rule = new CssRule(opt, c);
-        rule.get('selectors').add(selectors);
-        rules.add(rule);
+        rule.get('selectors').add(selectors, addOpts);
+        rules.add(rule, addOpts);
         return rule;
       }
     },
@@ -256,8 +257,8 @@ export default () => {
      * Remove all rules
      * @return {this}
      */
-    clear() {
-      this.getAll().reset();
+    clear(opts = {}) {
+      this.getAll().reset(null, opts);
       return this;
     },
 
@@ -374,6 +375,24 @@ export default () => {
     },
 
     /**
+     * Find rules, in different states (eg. like `:hover`) and media queries, matching the selector.
+     * @param {string} selector Selector, eg. '.myclass'
+     * @returns {Array<CssRule>}
+     * @example
+     * // Common scenario, take all the component specific rules
+     * const id = someComponent.getId();
+     * const rules = cc.getRules(`#${id}`);
+     * console.log(rules.map(rule => rule.toCSS()))
+     */
+    getRules(selector) {
+      const rules = this.getAll();
+      const result = rules.filter(
+        r => r.getSelectors().getFullString() === selector
+      );
+      return result;
+    },
+
+    /**
      * Add/update the CSS rule with id selector
      * @param {string} name Id selector name, eg. 'my-id'
      * @param {Object} style  Style properties and values
@@ -388,12 +407,13 @@ export default () => {
      * // #myid:hover { color: blue }
      */
     setIdRule(name, style = {}, opts = {}) {
+      const { addOpts = {} } = opts;
       const state = opts.state || '';
       const media = opts.mediaText || em.getCurrentMedia();
       const sm = em.get('SelectorManager');
-      const selector = sm.add({ name, type: Selector.TYPE_ID });
-      const rule = this.add(selector, state, media);
-      rule.setStyle(style, opts);
+      const selector = sm.add({ name, type: Selector.TYPE_ID }, addOpts);
+      const rule = this.add(selector, state, media, {}, addOpts);
+      rule.setStyle(style, { ...opts, ...addOpts });
       return rule;
     },
 
@@ -462,6 +482,14 @@ export default () => {
      */
     render() {
       return rulesView.render().el;
+    },
+
+    destroy() {
+      rules.reset();
+      rules.stopListening();
+      rulesView.remove();
+      [em, rules, rulesView].forEach(i => (i = null));
+      c = {};
     }
   };
 };

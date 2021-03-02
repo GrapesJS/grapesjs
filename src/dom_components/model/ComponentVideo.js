@@ -22,6 +22,7 @@ export default Component.extend(
       autoplay: 0,
       controls: 1,
       color: '',
+      list: '',
       rel: 1, // YT related videos
       modestbranding: 0, // YT modest branding
       sources: [],
@@ -77,6 +78,7 @@ export default Component.extend(
         case vi:
           var videoId = uri.pathname.split('/').pop();
           this.set('videoId', videoId);
+          qr.list && this.set('list', qr.list);
           if (qr.autoplay) this.set('autoplay', 1);
           if (qr.loop) this.set('loop', 1);
           if (parseInt(qr.controls) === 0) this.set('controls', 0);
@@ -286,7 +288,9 @@ export default Component.extend(
     getYoutubeSrc() {
       const id = this.get('videoId');
       let url = this.get('ytUrl');
-      url += id + '?';
+      const list = this.get('list');
+      url += id + (id.indexOf('?') < 0 ? '?' : '');
+      url += list ? `&list=${list}` : '';
       url += this.get('autoplay') ? '&autoplay=1' : '';
       url += !this.get('controls') ? '&controls=0&showinfo=0' : '';
       // Loop works only with playlist enabled

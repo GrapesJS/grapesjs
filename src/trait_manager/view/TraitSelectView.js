@@ -29,6 +29,7 @@ export default TraitView.extend({
       const { model, em } = this;
       const propName = model.get('name');
       const opts = model.get('options') || [];
+      const values = [];
       let input = '<select>';
 
       opts.forEach(el => {
@@ -50,12 +51,14 @@ export default TraitView.extend({
         const resultName =
           em.t(`traitManager.traits.options.${propName}.${value}`) || name;
         input += `<option value="${value}"${attrs}>${resultName}</option>`;
+        values.push(value);
       });
 
       input += '</select>';
       this.$input = $(input);
       const val = model.getTargetValue();
-      !isUndefined(val) && this.$input.val(val);
+      const valResult = values.indexOf(val) >= 0 ? val : model.get('default');
+      !isUndefined(valResult) && this.$input.val(valResult);
     }
 
     return this.$input.get(0);

@@ -34,6 +34,7 @@ export default PropertyCompositeView.extend({
       config: this.config,
       propsConfig
     });
+    // For detached properties, used in inputValueChanged (eg. clear all)
     const PropertiesView = require('./PropertiesView').default;
     this.propsView = new PropertiesView({
       target: this.target,
@@ -190,7 +191,7 @@ export default PropertyCompositeView.extend({
     const layers = this.getLayers();
     const detached = model.get('detached');
     const property = model.get('property');
-    const target = this.getTarget();
+    const target = this.getFirstTarget();
     const valueComput = this.getComputedValue();
     const selected = em.getSelected();
     const updateOpts = { fromTarget: 1 };
@@ -280,7 +281,7 @@ export default PropertyCompositeView.extend({
   getTargetValue(opts = {}) {
     const { model } = this;
     const { detached } = model.attributes;
-    const target = this.getTarget();
+    const target = this.getFirstTarget();
     let result = PropertyCompositeView.prototype.getTargetValue.call(
       this,
       opts
@@ -307,16 +308,39 @@ export default PropertyCompositeView.extend({
       // Things to do when a single sub-property is changed
       onChange(el, view, opt) {
         const subModel = view.model;
+        const status = model.get('status');
 
         if (model.get('detached')) {
           const subProp = subModel.get('property');
           const defVal = subModel.getDefaultValue();
-          const values = self.getLayers().getPropertyValues(subProp, defVal);
+          const layers = self.getLayers();
+          const values = layers.getPropertyValues(subProp, defVal);
           view.updateTargetStyle(values, null, opt);
+          // Update also the target with values of special hidden properties.
+          // This fixes the case of update with computed layers
+          if (
+            subProp == 'background-image' &&
+            !opt.avoidStore &&
+            status == 'computed'
+          ) {
+            model
+              .get('properties')
+              .filter(prop => prop.get('property').substr(0, 2) == '__')
+              .forEach(prop => {
+                const name = prop.get('property');
+                const value = layers.getPropertyValues(
+                  name,
+                  prop.getDefaultValue()
+                );
+                self
+                  .getTargets()
+                  .forEach(tr => tr.addStyle({ [name]: value }, opt));
+              });
+          }
         } else {
           // Update only if there is an actual update (to avoid changes for computed styles)
           // ps: status is calculated in `targetUpdated` method
-          if (model.get('status') == 'updated') {
+          if (status == 'updated') {
             const value = model.getFullValue();
             model.set('value', value, opt);
             // Try to remove detached properties

@@ -81,13 +81,15 @@ export default Backbone.View.extend({
    * @private
    */
   onDrop(model) {
-    const em = this.em;
+    const { em } = this;
     em.runDefault();
 
     if (model && model.get) {
-      if (model.get('activeOnRender')) {
+      const oldActive = 'activeOnRender';
+
+      if (model.get(oldActive)) {
         model.trigger('active');
-        model.set('activeOnRender', 0);
+        model.unset(oldActive);
       }
 
       em.trigger('block:drag:stop', model);

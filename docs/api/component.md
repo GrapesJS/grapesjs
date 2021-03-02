@@ -191,6 +191,17 @@ console.log(Section);
 
 Returns **[Component][9]** Found component, otherwise `undefined`
 
+## contains
+
+The method returns a Boolean value indicating whether the passed
+component is a descendant of a given component
+
+### Parameters
+
+-   `component` **[Component][9]** Component to check
+
+Returns **[Boolean][3]** 
+
 ## replaceWith
 
 Replace a component with another one
@@ -216,6 +227,7 @@ Update attributes of the component
 
 -   `attrs` **[Object][2]** Key value attributes
 -   `opts`   (optional, default `{}`)
+-   `options` **[Object][2]** Options for the model update
 
 ### Examples
 
@@ -232,6 +244,8 @@ Add attributes to the component
 ### Parameters
 
 -   `attrs` **[Object][2]** Key value attributes
+-   `opts`   (optional, default `{}`)
+-   `options` **[Object][2]** Options for the model update
 
 ### Examples
 
@@ -392,6 +406,10 @@ Remove all inner components
 
 Get the parent component, if exists
 
+### Parameters
+
+-   `opts`   (optional, default `{}`)
+
 ### Examples
 
 ```javascript
@@ -545,6 +563,14 @@ component.toHTML({
 
 Returns **[String][1]** HTML string
 
+## getChangedProps
+
+Return an object containing only changed props
+
+### Parameters
+
+-   `res`  
+
 ## getId
 
 Return the component id
@@ -606,6 +632,29 @@ Returns **this**
 
 Remove the component
 
+### Parameters
+
+-   `opts`   (optional, default `{}`)
+
+Returns **this** 
+
+## move
+
+Move the component to another destination component
+
+### Parameters
+
+-   `component` **[Component][9]** Destination component (so the current one will be appended as a child)
+-   `opts` **[Object][2]** Options for the append action (optional, default `{}`)
+
+### Examples
+
+```javascript
+// Move the selected component on top of the wrapper
+const dest = editor.getWrapper();
+editor.getSelected().move(dest, { at: 0 });
+```
+
 Returns **this** 
 
 ## getList
@@ -629,6 +678,7 @@ This method is used in Components.js just after the parsing
 -   `components`  
 -   `styles`   (optional, default `[]`)
 -   `list`   (optional, default `{}`)
+-   `opts`   (optional, default `{}`)
 
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 

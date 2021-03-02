@@ -38,7 +38,7 @@ export default Backbone.View.extend({
     );
     this.listenTo(model, 'change:highlightable', this.updateHighlight);
     this.listenTo(model, 'change:status', this.updateStatus);
-    this.listenTo(model, 'change:script', this.reset);
+    this.listenTo(model, 'change:script rerender', this.reset);
     this.listenTo(model, 'change:content', this.updateContent);
     this.listenTo(model, 'change', this.handleChange);
     this.listenTo(model, 'active', this.onActive);
@@ -51,10 +51,16 @@ export default Backbone.View.extend({
     this.initComponents({ avoidRender: 1 });
     this.events = {
       ...this.events,
-      ...(draggableComponents && { dragstart: 'handleDragStart' })
+      ...(this.__isDraggable() && { dragstart: 'handleDragStart' })
     };
     this.delegateEvents();
     !modelOpt.temporary && this.init(this._clbObj());
+  },
+
+  __isDraggable() {
+    const { model, config } = this;
+    const { _innertext, draggable } = model.attributes;
+    return config.draggableComponents && draggable && !_innertext;
   },
 
   _clbObj() {
@@ -235,13 +241,14 @@ export default Backbone.View.extend({
     const { model, em, el } = this;
 
     if (em && em.getConfig('avoidInlineStyle')) {
-      if (model.get('_innertext')) {
+      const style = model.getStyle();
+      const empty = isEmpty(style);
+      !empty && model.setStyle(style);
+      if (model.get('_innertext') && empty) {
         el.removeAttribute('id');
       } else {
         el.id = model.getId();
       }
-      const style = model.getStyle();
-      !isEmpty(style) && model.setStyle(style);
     } else {
       this.setAttribute('style', model.styleToString());
     }
@@ -290,12 +297,11 @@ export default Backbone.View.extend({
   updateAttributes() {
     const attrs = [];
     const { model, $el, el, config } = this;
-    const { highlightable, textable, type, _innertext } = model.attributes;
-    const { draggableComponents } = config;
+    const { highlightable, textable, type } = model.attributes;
 
     const defaultAttr = {
       'data-gjs-type': type || 'default',
-      ...(draggableComponents && !_innertext ? { draggable: true } : {}),
+      ...(this.__isDraggable() ? { draggable: true } : {}),
       ...(highlightable ? { 'data-highlightable': 1 } : {}),
       ...(textable
         ? {
@@ -325,7 +331,9 @@ export default Backbone.View.extend({
    * @private
    * */
   updateContent() {
-    this.getChildrenContainer().innerHTML = this.model.get('content');
+    const content = this.model.get('content');
+    const hasComps = this.model.components().length;
+    this.getChildrenContainer().innerHTML = hasComps ? '' : content;
   },
 
   /**
@@ -503,7 +511,10 @@ export default Backbone.View.extend({
   renderAttributes() {
     this.updateAttributes();
     this.updateClasses();
+    this.onAttrUpdate();
   },
+
+  onAttrUpdate() {},
 
   render() {
     this.renderAttributes();

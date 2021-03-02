@@ -37,7 +37,7 @@ export default Backbone.View.extend({
         show = 1;
       }
     });
-    this.el.style.display = show ? 'block' : 'none';
+    this.el.style.display = show ? '' : 'none';
   },
 
   /**

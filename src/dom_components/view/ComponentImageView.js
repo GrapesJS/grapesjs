@@ -13,13 +13,9 @@ export default ComponentView.extend({
   },
 
   initialize(o) {
-    const model = this.model;
     ComponentView.prototype.initialize.apply(this, arguments);
-    this.listenTo(model, 'change:src', this.updateSrc);
+    this.listenTo(this.model, 'change:src', this.updateSrc);
     this.classEmpty = `${this.ppfx}plh-image`;
-    const config = this.config;
-    config.modal && (this.modal = config.modal);
-    config.am && (this.am = config.am);
     this.fetchFile();
   },
 

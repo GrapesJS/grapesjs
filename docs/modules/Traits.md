@@ -299,7 +299,7 @@ editor.TraitManager.addType('href-next', {
   createInput({ trait }) {
     // Here we can decide to use properties from the trait
     const traitOpts = trait.get('options') || [];
-    const options = traitOpts.lenght ? traitOpts : [
+    const options = traitOpts.length ? traitOpts : [
       { id: 'url', name: 'URL' },
       { id: 'email', name: 'Email' },
     ];

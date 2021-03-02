@@ -327,7 +327,7 @@ export default () => {
         [model, evn, handleUpdates],
         [model, 'change:components', handleChangesColl],
         [comps, 'add', handleChanges],
-        [comps, 'remove', handleRemoves],
+        [comps, 'remove reset', handleRemoves],
         [model.get('classes'), 'add remove', handleUpdates]
       ].forEach(els => {
         em.stopListening(els[0], els[1], els[2]);
@@ -344,12 +344,13 @@ export default () => {
         const handleChanges = this.handleChanges.bind(this);
         const handleRemoves = this.handleRemoves.bind(this);
         um.add(coll);
-        [[coll, 'add', handleChanges], [coll, 'remove', handleRemoves]].forEach(
-          els => {
-            em.stopListening(els[0], els[1], els[2]);
-            em.listenTo(els[0], els[1], els[2]);
-          }
-        );
+        [
+          [coll, 'add', handleChanges],
+          [coll, 'remove reset', handleRemoves]
+        ].forEach(els => {
+          em.stopListening(els[0], els[1], els[2]);
+          em.listenTo(els[0], els[1], els[2]);
+        });
       }
     },
 
@@ -357,8 +358,9 @@ export default () => {
      * Triggered when some component is removed
      * @private
      * */
-    handleRemoves(model, value, opts = {}) {
-      !opts.avoidStore && em.handleUpdates(model, value, opts);
+    handleRemoves(m, value, opt) {
+      const opts = opt || value; // in case of reset
+      em.handleUpdates(m, value, opts);
     },
 
     /**
@@ -542,10 +544,10 @@ export default () => {
      * Remove all components
      * @return {this}
      */
-    clear() {
+    clear(opts = {}) {
       this.getComponents()
         .map(i => i)
-        .forEach(i => i.remove());
+        .forEach(i => i.remove(opts));
       return this;
     },
 
@@ -557,7 +559,7 @@ export default () => {
      * @private
      */
     setComponents(components, opt = {}) {
-      this.clear().addComponent(components, opt);
+      this.clear(opt).addComponent(components, opt);
     },
 
     /**
@@ -733,6 +735,13 @@ export default () => {
 
     allById() {
       return componentsById;
+    },
+
+    destroy() {
+      this.clear();
+      componentView.remove();
+      [c, em, componentsById, component, componentView].forEach(i => (i = {}));
+      this.em = {};
     }
   };
 };

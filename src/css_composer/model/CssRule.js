@@ -41,18 +41,36 @@ export default Backbone.Model.extend(Styleable).extend({
 
   initialize(c, opt = {}) {
     this.config = c || {};
+    this.opt = opt;
     this.em = opt.em;
     this.ensureSelectors();
   },
 
+  clone() {
+    const opts = { ...this.opt };
+    const attr = { ...this.attributes };
+    attr.selectors = this.get('selectors').map(s => s.clone());
+    return new this.constructor(attr, opts);
+  },
+
   ensureSelectors() {
     const { em } = this;
-    const result = [];
     const sm = em && em.get('SelectorManager');
-    const selectors = this.getSelectors();
-    const toInit = Array.isArray(selectors);
-    selectors.forEach(sel => result.push(sm ? sm.add(sel) : sel));
-    toInit && this.set('selectors', new Selectors(result));
+    const toListen = [this, 'change:selectors', this.ensureSelectors];
+    let sels = this.getSelectors();
+    this.stopListening(...toListen);
+
+    if (sels.models) {
+      sels = [...sels.models];
+    }
+
+    if (Array.isArray(sels)) {
+      const res = sels.filter(i => i).map(i => (sm ? sm.add(i) : i));
+      sels = new Selectors(res);
+    }
+
+    this.set('selectors', sels);
+    this.listenTo(...toListen);
   },
 
   /**

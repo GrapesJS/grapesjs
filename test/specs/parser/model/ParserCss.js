@@ -9,7 +9,8 @@ describe('ParserCss', () => {
   beforeEach(() => {
     config = {
       em: {
-        getCustomParserCss: () => customParser
+        getCustomParserCss: () => customParser,
+        trigger: () => {}
       }
     };
     obj = new ParserCss(config);

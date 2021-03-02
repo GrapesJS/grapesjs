@@ -11,7 +11,7 @@ GrapesJS ships with features and tools that enable you to craft easy to use buil
 
 
 ## Why GrapesJS?
-GrapesJS was designed  primarily to for use inside Content Management Systems to speed up the creation of dynamic templates and replace common WYSIWYG editors. Which are good for content editing, but inappropriate for creating HTML structures. Instead of creating an application we decided to create an extensible framework that could be used by anyone for any purpose.
+GrapesJS was designed  primarily for use inside Content Management Systems to speed up the creation of dynamic templates and replace common WYSIWYG editors. Which are good for content editing, but inappropriate for creating HTML structures. Instead of creating an application we decided to create an extensible framework that could be used by anyone for any purpose.
 
 
 

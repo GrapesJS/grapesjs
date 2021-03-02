@@ -29,13 +29,19 @@ export default ComponentView.extend({
    * @private
    * */
   onActive(e) {
+    const { rte, em } = this;
+
     // We place this before stopPropagation in case of nested
     // text components will not block the editing (#1394)
-    if (this.rteEnabled || !this.model.get('editable')) {
+    if (
+      this.rteEnabled ||
+      !this.model.get('editable') ||
+      (em && em.isEditing())
+    ) {
       return;
     }
+
     e && e.stopPropagation && e.stopPropagation();
-    const { rte, em } = this;
 
     if (rte) {
       try {
@@ -78,17 +84,13 @@ export default ComponentView.extend({
    * @return string
    */
   getContent() {
-    const { rte } = this;
-    const { activeRte } = rte || {};
-    let content = '';
+    const { activeRte } = this;
+    const canGetRteContent =
+      activeRte && typeof activeRte.getContent === 'function';
 
-    if (activeRte && typeof activeRte.getContent === 'function') {
-      content = activeRte.getContent();
-    } else {
-      content = this.getChildrenContainer().innerHTML;
-    }
-
-    return content;
+    return canGetRteContent
+      ? activeRte.getContent()
+      : this.getChildrenContainer().innerHTML;
   },
 
   /**
@@ -100,12 +102,12 @@ export default ComponentView.extend({
     const content = this.getContent();
     const comps = model.components();
     const contentOpt = { fromDisable: 1, ...opts };
-    comps.length && comps.reset(null, opts);
     model.set('content', '', contentOpt);
 
     // If there is a custom RTE the content is just baked staticly
     // inside 'content'
     if (rte.customRte) {
+      comps.length && comps.reset(null, opts);
       model.set('content', content, contentOpt);
     } else {
       const clean = model => {
@@ -129,33 +131,10 @@ export default ComponentView.extend({
         model.get('components').each(model => clean(model));
       };
 
-      // Avoid re-render on reset with silent option
-      !opts.silent && model.trigger('change:content', model, '', contentOpt);
-      comps.add(content, opts);
+      comps.reset(content, opts);
       comps.each(model => clean(model));
       comps.trigger('resetNavigator');
     }
-  },
-
-  getModelsFromEl(el) {
-    const result = [];
-    const children = (el || this.el).childNodes;
-
-    for (let index = 0; index < children.length; index++) {
-      const child = children[index];
-      const model = child.__cashData && child.__cashData.model;
-
-      if (model) {
-        model.components = this.getModelsFromEl(child);
-        if (model.get('content')) {
-          model.attributes.content = child.textContent;
-        }
-        // TODO add attributes;
-        result.push(model);
-      }
-    }
-
-    return result;
   },
 
   /**
@@ -185,7 +164,7 @@ export default ComponentView.extend({
    * @param {Boolean} enable
    */
   toggleEvents(enable) {
-    const { em } = this;
+    const { em, model } = this;
     const mixins = { on, off };
     const method = enable ? 'on' : 'off';
     em.setEditing(enable);
@@ -196,6 +175,7 @@ export default ComponentView.extend({
     mixins.off(elDocs, 'mousedown', this.disableEditing);
     mixins[method](elDocs, 'mousedown', this.disableEditing);
     em[method]('toolbar:run:before', this.disableEditing);
+    model[method]('removed', this.disableEditing);
 
     // Avoid closing edit mode on component click
     this.$el.off('mousedown', this.disablePropagation);

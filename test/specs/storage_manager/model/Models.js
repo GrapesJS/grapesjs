@@ -1,4 +1,3 @@
-import 'whatwg-fetch';
 import LocalStorage from 'storage_manager/model/LocalStorage';
 import RemoteStorage from 'storage_manager/model/RemoteStorage';
 

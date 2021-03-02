@@ -34,6 +34,7 @@ export default () => {
   const configDef = {
     maximumStackLength: 500
   };
+  const hasSkip = opts => opts.avoidStore || opts.noUndo;
 
   return {
     name: 'UndoManager',
@@ -51,7 +52,7 @@ export default () => {
       um.changeUndoType('change', { condition: false });
       um.changeUndoType('add', {
         on(model, collection, options = {}) {
-          if (options.avoidStore) return;
+          if (hasSkip(options)) return;
           return {
             object: collection,
             before: undefined,
@@ -62,7 +63,7 @@ export default () => {
       });
       um.changeUndoType('remove', {
         on(model, collection, options = {}) {
-          if (options.avoidStore) return;
+          if (hasSkip(options)) return;
           return {
             object: collection,
             before: model,
@@ -75,13 +76,13 @@ export default () => {
         on(object, value, opt = {}) {
           !beforeCache && (beforeCache = object.previousAttributes());
 
-          if (opt.avoidStore) {
+          if (hasSkip(opt)) {
             return;
           } else {
             const result = {
               object,
               before: beforeCache,
-              after: object.toJSON()
+              after: object.toJSON({ keepSymbols: 1 })
             };
             beforeCache = null;
             return result;
@@ -293,6 +294,12 @@ export default () => {
 
     getInstance() {
       return um;
+    },
+
+    destroy() {
+      this.clear().removeAll();
+      [em, um, config, beforeCache].forEach(i => (i = {}));
+      this.em = {};
     }
   };
 };

@@ -72,6 +72,11 @@ export default () => {
      */
     parseCss(str) {
       return pCss.parse(str);
+    },
+
+    destroy() {
+      [conf, pHtml, pCss].forEach(i => (i = {}));
+      ['em', 'parserCss', 'parserHtml'].forEach(i => (this[i] = {}));
     }
   };
 };

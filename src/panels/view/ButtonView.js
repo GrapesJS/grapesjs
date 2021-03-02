@@ -89,6 +89,8 @@ export default Backbone.View.extend({
     const commandName = model.get('command');
     let command = {};
 
+    if (!commandName) return;
+
     if (commands && isString(commandName)) {
       command = commands.get(commandName) || {};
     } else if (isFunction(commandName)) {
@@ -133,15 +135,16 @@ export default Backbone.View.extend({
    * @return   void
    * */
   clicked(e) {
-    if (this.model.get('bntsVis')) return;
+    const { model } = this;
 
-    if (this.model.get('disable')) return;
+    if (model.get('bntsVis') || model.get('disable') || !model.get('command'))
+      return;
 
     this.toggleActive();
   },
 
   toggleActive() {
-    const { model } = this;
+    const { model, em } = this;
     const { active, togglable } = model.attributes;
 
     if (active && !togglable) return;
@@ -149,19 +152,18 @@ export default Backbone.View.extend({
     model.set('active', !active);
 
     // If the stop is requested
-    var command = this.em.get('Commands').get('select-comp');
-
     if (active) {
-      if (model.get('runDefaultCommand')) this.em.runDefault();
+      if (model.get('runDefaultCommand')) em.runDefault();
     } else {
-      if (model.get('stopDefaultCommand')) this.em.stopDefault();
+      if (model.get('stopDefaultCommand')) em.stopDefault();
     }
   },
 
   render() {
-    const label = this.model.get('label');
+    const { model } = this;
+    const label = model.get('label');
     const { $el } = this;
-    $el.empty();
+    !model.get('el') && $el.empty();
     this.updateAttributes();
     label && $el.append(label);
     this.checkActive();

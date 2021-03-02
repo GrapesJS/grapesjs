@@ -22,6 +22,7 @@
  * * `component:mount` - Component is mounted to an element and rendered in canvas
  * * `component:add` - Triggered when a new component is added to the editor, the model is passed as an argument to the callback
  * * `component:remove` - Triggered when a component is removed, the model is passed as an argument to the callback
+ * * `component:remove:before` - Triggered before the remove of the component, the model, remove function (if aborted via options, with this function you can complete the remove) and options (use options.abort = true to prevent remove), are passed as arguments to the callback
  * * `component:clone` - Triggered when a component is cloned, the new model is passed as an argument to the callback
  * * `component:update` - Triggered when a component is updated (moved, styled, etc.), the model is passed as an argument to the callback
  * * `component:update:{propertyName}` - Listen any property change, the model is passed as an argument to the callback
@@ -87,6 +88,9 @@
  * ### Modal
  * * `modal:open` - Modal is opened
  * * `modal:close` - Modal is closed
+ * ### Parser
+ * * `parse:html` - On HTML parse, an object containing the input and the output of the parser is passed as an argument
+ * * `parse:css` - On CSS parse, an object containing the input and the output of the parser is passed as an argument
  * ### Commands
  * * `run:{commandName}` - Triggered when some command is called to run (eg. editor.runCommand('preview'))
  * * `stop:{commandName}` - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
@@ -195,7 +199,7 @@ export default (config = {}) => {
     /**
      * Returns configuration object
      * @param  {string} [prop] Property name
-     * @return {any} Returns the configuration object or
+     * @returns {any} Returns the configuration object or
      *  the value of the specified property
      */
     getConfig(prop) {
@@ -204,7 +208,9 @@ export default (config = {}) => {
 
     /**
      * Returns HTML built inside canvas
-     * @return {string} HTML string
+     * @param {Object} [opts={}] Options
+     * @param {Boolean} [opts.cleanId=false] Remove unnecessary IDs (eg. those created automatically)
+     * @returns {string} HTML string
      */
     getHtml(opts) {
       return em.getHtml(opts);
@@ -214,7 +220,7 @@ export default (config = {}) => {
      * Returns CSS built inside canvas
      * @param {Object} [opts={}] Options
      * @param {Boolean} [opts.avoidProtected=false] Don't include protected CSS
-     * @return {string} CSS string
+     * @returns {string} CSS string
      */
     getCss(opts) {
       return em.getCss(opts);
@@ -222,7 +228,7 @@ export default (config = {}) => {
 
     /**
      * Returns JS of all components
-     * @return {string} JS string
+     * @returns {string} JS string
      */
     getJs() {
       return em.getJs();
@@ -481,17 +487,16 @@ export default (config = {}) => {
     },
 
     /**
-     * Update editor dimensions and refresh data useful for positioning of tools
+     * Update editor dimension offsets
      *
      * This method could be useful when you update, for example, some position
      * of the editor element (eg. canvas, panels, etc.) with CSS, where without
-     * refresh you'll get misleading position of tools (eg. rich text editor,
-     * component highlighter, etc.)
-     *
-     * @private
+     * refresh you'll get misleading position of tools
+     * @param {Object} [options] Options
+     * @param {Boolean} [options.tools=false] Update the position of tools (eg. rich text editor, component highlighter, etc.)
      */
-    refresh() {
-      em.refreshCanvas();
+    refresh(opts) {
+      em.refreshCanvas(opts);
     },
 
     /**

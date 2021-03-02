@@ -64,15 +64,14 @@ export default Backbone.View.extend({
     this.stateInputC = this.pfx + 'input-c';
     this.states = this.config.states || [];
     const { em } = this.config;
-    const emitter = this.getStyleEmitter();
     const coll = this.collection;
     this.target = this.config.em;
     this.em = em;
-
+    const emitter = this.getStyleEmitter();
     const toList = 'component:toggled component:update:classes';
     const toListCls = 'component:update:classes change:state';
     this.listenTo(em, toList, this.componentChanged);
-    this.listenTo(emitter, 'styleManager:update', this.componentChanged);
+    this.listenTo(emitter, 'update', this.componentChanged);
     this.listenTo(em, toListCls, this.__handleStateChange);
     this.listenTo(em, 'styleable:change change:device', this.checkSync); // component:styleUpdate
     this.listenTo(coll, 'add', this.addNew);
@@ -306,8 +305,9 @@ export default Backbone.View.extend({
     if (isString(target)) {
       result = `<span class="${pfx}sel-gen">${target}</span>`;
     } else {
-      if (!target || !target.get) return;
-      const selectors = target.getSelectors().getStyleable();
+      const sel = target && target.get && target.getSelectors();
+      if (!sel) return;
+      const selectors = sel.getStyleable();
       const state = em.get('state');
       const idRes = target.getId
         ? `<span class="${pfx}sel-cmp">${target.getName()}</span><span class="${pfx}sel-id">#${target.getId()}</span>`

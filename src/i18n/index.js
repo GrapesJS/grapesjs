@@ -242,6 +242,11 @@ export default () => {
     _debug(str, opts = {}) {
       const { em, config } = this;
       (opts.debug || config.debug) && em && em.logWarning(str);
+    },
+
+    destroy() {
+      this.config = config;
+      this.em = {};
     }
   };
 };

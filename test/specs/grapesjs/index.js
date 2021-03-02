@@ -85,7 +85,7 @@ describe('GrapesJS', () => {
       expect(editor.getStyle().length).toEqual(0);
     });
 
-    test.only('Editor canvas baseCSS can be overwritten', () => {
+    test('Editor canvas baseCSS can be overwritten', () => {
       config.components = htmlString;
       config.baseCss = '#wrapper { background-color: #eee; }';
       config.protectedCss = '';

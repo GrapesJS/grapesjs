@@ -7,6 +7,7 @@ import {
   isTaggableNode,
   getViewEl
 } from 'utils/mixins';
+import { isVisible, isDoc } from 'utils/dom';
 import ToolbarView from 'dom_components/view/ToolbarView';
 import Toolbar from 'dom_components/model/Toolbar';
 
@@ -40,7 +41,8 @@ export default {
       'onOut',
       'onClick',
       'onFrameScroll',
-      'onFrameUpdated'
+      'onFrameUpdated',
+      'onContainerChange'
     );
   },
 
@@ -73,8 +75,11 @@ export default {
    * */
   toggleSelectComponent(enable) {
     const { em } = this;
+    const listenToEl = em.getConfig('listenToEl');
+    const { parentNode } = em.getContainer();
     const method = enable ? 'on' : 'off';
     const methods = { on, off };
+    !listenToEl.length && parentNode && listenToEl.push(parentNode);
     const trigger = (win, body) => {
       methods[method](body, 'mouseover', this.onHover);
       methods[method](body, 'mouseleave', this.onOut);
@@ -82,15 +87,18 @@ export default {
       methods[method](win, 'scroll', this.onFrameScroll);
     };
     methods[method](window, 'resize', this.onFrameUpdated);
-    em[method]('component:toggled', this.onSelect, this);
+    methods[method](listenToEl, 'scroll', this.onContainerChange);
+    em[method]('component:toggled component:remove', this.onSelect, this);
     em[method]('change:componentHovered', this.onHovered, this);
     em[method](
       'component:resize component:styleUpdate component:input',
       this.updateGlobalPos,
       this
     );
+    em[method]('component:update:toolbar', this._upToolbar, this);
     em[method]('change:canvasOffset', this.updateAttached, this);
     em[method]('frame:updated', this.onFrameUpdated, this);
+    em[method]('canvas:updateTools', this.onFrameUpdated, this);
     em.get('Canvas')
       .getFrames()
       .forEach(frame => {
@@ -115,7 +123,7 @@ export default {
     // Get first valid model
     if (!model) {
       let parent = $el.parent();
-      while (!model && parent.length > 0) {
+      while (!model && parent.length && !isDoc(parent[0])) {
         model = parent.data('model');
         parent = parent.parent();
       }
@@ -150,6 +158,15 @@ export default {
 
         if (el.ownerDocument === this.currentDoc) this.elHovered = result;
       });
+    } else {
+      this.currentDoc = null;
+      this.elHovered = 0;
+      this.updateToolsLocal();
+      this.canvas.getFrames().forEach(frame => {
+        const { view } = frame;
+        const el = view && view.getToolsEl();
+        el && this.toggleToolsEl(0, 0, { el });
+      });
     }
   },
 
@@ -167,7 +184,7 @@ export default {
     let el = view && view.el;
     let result = {};
 
-    if (el) {
+    if (el && isVisible(el)) {
       const pos = this.getElementPos(el);
       result = { el, pos, component, view: getViewEl(el) };
     }
@@ -202,18 +219,12 @@ export default {
   },
 
   onOut() {
-    this.currentDoc = null;
     this.em.setHovered(0);
-    this.canvas.getFrames().forEach(frame => {
-      const { view } = frame;
-      const el = view && view.getToolsEl();
-      el && this.toggleToolsEl(0, 0, { el });
-    });
   },
 
   toggleToolsEl(on, view, opts = {}) {
     const el = opts.el || this.canvas.getToolsEl(view);
-    el && (el.style.opacity = on ? 1 : 0);
+    el && (el.style.display = on ? '' : 'none');
     return el || {};
   },
 
@@ -289,7 +300,7 @@ export default {
 
     if (!model) {
       let parent = $el.parent();
-      while (!model && parent.length > 0) {
+      while (!model && parent.length && !isDoc(parent[0])) {
         model = parent.data('model');
         parent = parent.parent();
       }
@@ -313,54 +324,7 @@ export default {
    */
   select(model, event = {}) {
     if (!model) return;
-    const ctrlKey = event.ctrlKey || event.metaKey;
-    const { shiftKey } = event;
-    const { editor, em } = this;
-    const multiple = editor.getConfig('multipleSelection');
-
-    if (ctrlKey && multiple) {
-      editor.selectToggle(model);
-    } else if (shiftKey && multiple) {
-      em.clearSelection(editor.Canvas.getWindow());
-      const coll = model.collection;
-      const index = coll.indexOf(model);
-      const selAll = editor.getSelectedAll();
-      let min, max;
-
-      // Fin min and max siblings
-      editor.getSelectedAll().forEach(sel => {
-        const selColl = sel.collection;
-        const selIndex = selColl.indexOf(sel);
-        if (selColl === coll) {
-          if (selIndex < index) {
-            // First model BEFORE the selected one
-            min = isUndefined(min) ? selIndex : Math.max(min, selIndex);
-          } else if (selIndex > index) {
-            // First model AFTER the selected one
-            max = isUndefined(max) ? selIndex : Math.min(max, selIndex);
-          }
-        }
-      });
-
-      if (!isUndefined(min)) {
-        while (min !== index) {
-          editor.selectAdd(coll.at(min));
-          min++;
-        }
-      }
-
-      if (!isUndefined(max)) {
-        while (max !== index) {
-          editor.selectAdd(coll.at(max));
-          max--;
-        }
-      }
-
-      editor.selectAdd(model);
-    } else {
-      editor.select(model, { scroll: {} });
-    }
-
+    this.editor.select(model, { scroll: {}, event });
     this.initResize(model);
   },
 
@@ -545,29 +509,19 @@ export default {
    * @param {Object} mod
    */
   updateToolbar(mod) {
-    var em = this.config.em;
-    var model = mod == em ? em.getSelected() : mod;
-    var toolbarEl = this.canvas.getToolbarEl();
-    var toolbarStyle = toolbarEl.style;
+    const { em } = this.config;
+    const model = mod == em ? em.getSelected() : mod;
+    const toolbarEl = this.canvas.getToolbarEl();
+    const toolbarStyle = toolbarEl.style;
+    const toolbar = model.get('toolbar');
+    const showToolbar = em.get('Config').showToolbar;
 
-    if (!model) {
-      // By putting `toolbarStyle.display = 'none'` will cause kind
-      // of freezed effect with component selection (probably by iframe
-      // switching)
-      toolbarStyle.opacity = 0;
-      return;
-    }
-
-    var toolbar = model.get('toolbar');
-    var showToolbar = em.get('Config').showToolbar;
-
-    if (showToolbar && toolbar && toolbar.length) {
-      toolbarStyle.opacity = '';
+    if (model && showToolbar && toolbar && toolbar.length) {
       toolbarStyle.display = '';
       if (!this.toolbar) {
         toolbarEl.innerHTML = '';
         this.toolbar = new Toolbar(toolbar);
-        var toolbarView = new ToolbarView({
+        const toolbarView = new ToolbarView({
           collection: this.toolbar,
           editor: this.editor,
           em
@@ -677,7 +631,11 @@ export default {
     style.height = pos.height + unit;
   },
 
-  updateToolsGlobal() {
+  _upToolbar: debounce(function() {
+    this.updateToolsGlobal({ force: 1 });
+  }),
+
+  updateToolsGlobal(opts = {}) {
     const { el, pos, component } = this.getElSelected();
 
     if (!el) {
@@ -689,7 +647,7 @@ export default {
     const { canvas } = this;
     const isNewEl = this.lastSelected !== el;
 
-    if (isNewEl) {
+    if (isNewEl || opts.force) {
       this.lastSelected = el;
       this.updateToolbar(component);
     }
@@ -717,6 +675,10 @@ export default {
   updateAttached: debounce(function() {
     this.updateGlobalPos();
   }),
+
+  onContainerChange: debounce(function() {
+    this.em.refreshCanvas();
+  }, 150),
 
   /**
    * Returns element's data info
@@ -764,9 +726,9 @@ export default {
 
   stop(ed, sender, opts = {}) {
     const { em, editor } = this;
+    this.onHovered(); // force to hide toolbar
     this.stopSelectComponent();
     !opts.preserveSelected && em.setSelected(null);
-    this.onOut();
     this.toggleToolsEl();
     editor && editor.stopCommand('resize');
   }

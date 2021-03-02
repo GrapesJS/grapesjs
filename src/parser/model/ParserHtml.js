@@ -202,7 +202,10 @@ export default config => {
           // just make it content of the current node
           if (nodeChild === 1 && firstChild.nodeType === 3) {
             !model.type && (model.type = 'text');
-            model.content = firstChild.nodeValue;
+            model.components = {
+              type: 'textnode',
+              content: firstChild.nodeValue
+            };
           } else {
             model.components = this.parseNode(node);
           }
@@ -271,12 +274,13 @@ export default config => {
      * @return {Object}
      */
     parse(str, parserCss) {
-      var config = (c.em && c.em.get('Config')) || {};
-      var res = { html: '', css: '' };
-      var el = document.createElement('div');
+      const { em } = c;
+      const config = (em && em.get('Config')) || {};
+      const res = { html: '', css: '' };
+      const el = document.createElement('div');
       el.innerHTML = str;
-      var scripts = el.querySelectorAll('script');
-      var i = scripts.length;
+      const scripts = el.querySelectorAll('script');
+      let i = scripts.length;
 
       // Remove all scripts
       if (!config.allowScripts) {
@@ -285,9 +289,9 @@ export default config => {
 
       // Detach style tags and parse them
       if (parserCss) {
-        var styleStr = '';
-        var styles = el.querySelectorAll('style');
-        var j = styles.length;
+        const styles = el.querySelectorAll('style');
+        let j = styles.length;
+        let styleStr = '';
 
         while (j--) {
           styleStr = styles[j].innerHTML + styleStr;
@@ -297,11 +301,12 @@ export default config => {
         if (styleStr) res.css = parserCss.parse(styleStr);
       }
 
-      var result = this.parseNode(el);
-
-      if (result.length == 1) result = result[0];
-
-      res.html = result;
+      const result = this.parseNode(el);
+      // I have to keep it otherwise it breaks the DomComponents.addComponent (returns always array)
+      const resHtml =
+        result.length === 1 && !c.returnArray ? result[0] : result;
+      res.html = resHtml;
+      em && em.trigger('parse:html', { input: str, output: res });
 
       return res;
     }
