@@ -153,8 +153,9 @@ export default () => {
       } else if (!inst && opts.create) {
         inst = this.addInst(id, this._createInst(config), opts);
       }
-
+      selected && selected.um.stopTracking();
       this.selected = inst;
+      inst && inst.um.startTracking();
       !opts.silent && this.em.trigger(evSelect, inst, selected);
       return inst;
     },
