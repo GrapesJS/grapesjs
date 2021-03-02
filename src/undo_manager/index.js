@@ -32,7 +32,6 @@ const typeMain = 'main';
 
 export default () => {
   let em;
-  let um;
   let config;
   let beforeCache;
   const configDef = {
@@ -52,7 +51,16 @@ export default () => {
       config = { ...opts, ...configDef };
       em = config.em;
       this.em = em;
-      um = new UndoManager({ track: true, register: [], ...config });
+      const umObj = { id: typeMain, um: this._createInst(config) };
+      this.all = [umObj];
+      this.select(typeMain, { silent: 1 });
+
+      return this;
+    },
+
+    _createInst(conf) {
+      const { em } = this;
+      const um = new UndoManager({ track: true, register: [], ...conf });
       um.changeUndoType('change', { condition: false });
       um.changeUndoType('add', {
         on(model, collection, options = {}) {
@@ -109,11 +117,7 @@ export default () => {
       );
       ['undo', 'redo'].forEach(ev => um.on(ev, () => em.trigger(ev)));
 
-      const umObj = { id: typeMain, um };
-      this.all = [umObj];
-      this.select(typeMain, { silent: 1 });
-
-      return this;
+      return um;
     },
 
     /**
@@ -126,11 +130,11 @@ export default () => {
     /**
      * Get undo instance by id
      */
-    getInst(id, opts = {}) {
+    getInst(id) {
       return this.getAll().filter(i => i.id === id)[0];
     },
 
-    addInst(id, um) {
+    addInst(id, um, opts = {}) {
       let result = this.getInst(id);
       if (!result) {
         result = { id, um };
@@ -141,10 +145,18 @@ export default () => {
 
     select(id, opts = {}) {
       const { selected } = this;
-      const inst = this.getInst(id);
+      let inst = this.getInst(id);
+
+      if (opts.main) {
+        inst = this.getInst(typeMain);
+        inst.id = id;
+      } else if (!inst && opts.create) {
+        inst = this.addInst(id, this._createInst(config), opts);
+      }
+
       this.selected = inst;
-      console.log('Select um', inst, opts);
       !opts.silent && this.em.trigger(evSelect, inst, selected);
+      return inst;
     },
 
     getSelected() {
@@ -340,12 +352,12 @@ export default () => {
     },
 
     getInstance() {
-      return um;
+      return this.getSelected().um;
     },
 
     destroy() {
       this.clear().removeAll();
-      [em, um, config, beforeCache].forEach(i => (i = {}));
+      [em, config, beforeCache].forEach(i => (i = {}));
       ['all', 'selected'].forEach(i => (this[i] = {}));
       this.em = {};
     }
