@@ -68,6 +68,7 @@ import ComponentTextNodeView from './view/ComponentTextNodeView';
 import ComponentText from './model/ComponentText';
 import ComponentTextView from './view/ComponentTextView';
 import ComponentWrapper from './model/ComponentWrapper';
+import { evPageSelect } from 'pages';
 
 export default () => {
   var c = {};
@@ -249,6 +250,14 @@ export default () => {
         em.listenTo(selected, 'remove', (sel, c, opts) =>
           this.selectRemove(sel, opts)
         );
+        em.on(evPageSelect, page => {
+          const wrp = page.getMainFrame().getComponent();
+          console.log('selected page', page.attributes, 'UM inited', wrp.__um);
+          if (!wrp.__um) {
+            wrp.__um = 1;
+            this.handleChanges(wrp, null, { avoidStore: 1 });
+          }
+        });
       }
 
       if (em.get('hasPages')) {
@@ -310,7 +319,9 @@ export default () => {
      * @private
      */
     postLoad(em) {
-      this.handleChanges(this.getWrapper(), null, { avoidStore: 1 });
+      const wrp = this.getWrapper();
+      this.handleChanges(wrp, null, { avoidStore: 1 });
+      wrp.__um = 1;
     },
 
     /**
