@@ -99,12 +99,13 @@ export default config => {
     /**
      * Get data from the node element
      * @param  {HTMLElement} el DOM element to traverse
-     * @param  {string} parent_type The type of the parent model
+     * @param  {bool} parent_allow_text The parent model can contain text
      * @return {Array<Object>}
      */
-    parseNode(el, parent_type) {
+    parseNode(el, parent_allow_text) {
       const result = [];
       const nodes = el.childNodes;
+      var allow_text = false;
 
       for (var i = 0, len = nodes.length; i < len; i++) {
         const node = nodes[i];
@@ -196,6 +197,8 @@ export default config => {
 
         // Check for nested elements but avoid it if already provided
         if (nodeChild && !model.components) {
+          allow_text = ['cell', 'map', 'link', 'label', 'script'].indexOf(model.type) != -1;
+          
           // Avoid infinite nested text nodes
           const firstChild = node.childNodes[0];
 
@@ -206,14 +209,14 @@ export default config => {
               type: 'textnode',
               content: firstChild.nodeValue
             };
-            if(!model.type) {
+            if (!model.type) {
               model.type = 'text';
               model.components = child;
-            } else {
+            } else if (allow_text) {
               model.components = {type:'text', components:child};
             }
           } else {
-            model.components = this.parseNode(node, model.type);
+            model.components = this.parseNode(node, allow_text);
           }
         }
 
@@ -223,13 +226,17 @@ export default config => {
             if (nodePrev.type == 'textnode') {
               nodePrev.content += model.content;
               continue;
-            } else if(nodePrev.type == 'text') {
+            } else if (nodePrev.type == 'text') {
+              const comps = nodePrev.components;
+              if (!Array.isArray(comps) {
+                nodePrev.components = [comps]; 
+              }
               nodePrev.components.push(model);
               continue;
             }
           }
           
-          if (parent_type) {
+          if (parent_allow_text) {
             result.push({type:'text', components:model});
             continue;
           }
