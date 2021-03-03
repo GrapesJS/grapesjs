@@ -25,6 +25,7 @@
  */
 
 import UndoManager from 'backbone-undo';
+import { isArray, isBoolean } from 'underscore';
 
 export default () => {
   let em;
@@ -49,7 +50,36 @@ export default () => {
       em = config.em;
       this.em = em;
       um = new UndoManager({ track: true, register: [], ...config });
-      um.changeUndoType('change', { condition: false });
+      um.changeUndoType('change', {
+        condition: object => {
+          const hasUndo = object.get('_undo');
+          if (hasUndo) {
+            if (isBoolean(hasUndo)) return true;
+            if (isArray(hasUndo)) {
+              const changed = Object.keys(object.changedAttributes());
+              if (changed.some(chn => hasUndo.indexOf(hasUndo) >= 0))
+                return true;
+            }
+          }
+          // console.log('UndoType change', object.attributes, object.changedAttributes());
+          return false;
+        },
+        on(object, v, opt = {}) {
+          !beforeCache && (beforeCache = object.previousAttributes());
+
+          if (hasSkip(opt)) {
+            return;
+          } else {
+            const result = {
+              object,
+              before: beforeCache,
+              after: object.toJSON({ fromUndo: 1 })
+            };
+            beforeCache = null;
+            return result;
+          }
+        }
+      });
       um.changeUndoType('add', {
         on(model, collection, options = {}) {
           if (hasSkip(options)) return;

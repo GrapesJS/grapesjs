@@ -38,6 +38,13 @@ export default () => {
       return this;
     },
 
+    postLoad() {
+      const { em } = this;
+      const um = em.get('UndoManager');
+      const pages = this.getAll();
+      um && um.add(pages);
+    },
+
     /**
      * Add new page
      * @param {Object} props Page properties
