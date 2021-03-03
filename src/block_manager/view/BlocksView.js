@@ -139,7 +139,7 @@ export default Backbone.View.extend({
       var catId = catModel.get('id');
       var catView = this.renderedCategories[catId];
       var categories = this.getCategoriesEl();
-      model.set('category', catModel);
+      model.set('category', catModel, { silent: true });
 
       if (!catView && categories) {
         catView = new CategoryView(
