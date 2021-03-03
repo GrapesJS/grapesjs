@@ -200,6 +200,7 @@ export default Backbone.View.extend({
     this.append(frag);
     const cls = `${this.blockContClass}s ${ppfx}one-bg ${ppfx}two-color`;
     this.$el.addClass(cls);
+    this.rendered = true;
     return this;
   }
 });
