@@ -228,7 +228,7 @@ export default config => {
               continue;
             } else if (nodePrev.type == 'text') {
               const comps = nodePrev.components;
-              if (!Array.isArray(comps) {
+              if (!Array.isArray(comps)) {
                 nodePrev.components = [comps]; 
               }
               nodePrev.components.push(model);
