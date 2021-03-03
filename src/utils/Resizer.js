@@ -80,7 +80,6 @@ var createHandler = (name, opts) => {
 var getBoundingRect = (el, win) => {
   var w = win || window;
   var rect = el.getBoundingClientRect();
-  console.log('here');
   return {
     left: rect.left + w.pageXOffset,
     top: rect.top + w.pageYOffset,
@@ -465,7 +464,7 @@ class Resizer {
     const startW =
       unitWidth === '%' ? (startDim.w / 100) * parentW : startDim.w;
     const startH =
-      unitWidth === '%' ? (startDim.h / 100) * parentH : startDim.h;
+      unitHeight === '%' ? (startDim.h / 100) * parentH : startDim.h;
     var box = {
       t: 0,
       l: 0,
