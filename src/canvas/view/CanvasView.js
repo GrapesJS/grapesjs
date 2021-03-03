@@ -299,7 +299,7 @@ export default Backbone.View.extend({
     const scriptFn = model.getScriptString();
     const scriptFnStr = model.get('script-props')
       ? scriptFn
-      : `function(){${scriptFn};}`;
+      : `function(){\n${scriptFn}\n;}`;
     const scriptProps = JSON.stringify(model.__getScriptProps());
     script.innerHTML = `
       setTimeout(function() {
