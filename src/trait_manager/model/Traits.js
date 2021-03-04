@@ -1,5 +1,5 @@
 import Backbone from 'backbone';
-import { isString, isArray } from 'underscore';
+import { isString, isArray, isObject } from 'underscore';
 import Trait from './Trait';
 import TraitFactory from './TraitFactory';
 
@@ -30,6 +30,10 @@ export default Backbone.Collection.extend({
 
   add(models, opt) {
     const em = this.em;
+
+    if (isObject(models)) {
+      models.target = this.target;
+    }
 
     // Use TraitFactory if necessary
     if (isString(models) || isArray(models)) {
