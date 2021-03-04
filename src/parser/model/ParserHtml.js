@@ -209,7 +209,7 @@ export default config => {
               type: 'textnode',
               content: firstChild.nodeValue
             };
-            if (!model.type) {
+            if (!model.type || model.type == 'text') {
               model.type = 'text';
               model.components = child;
             } else if (allow_text) {
