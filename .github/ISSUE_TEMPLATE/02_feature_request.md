@@ -19,7 +19,7 @@ READ and FOLLOW next 3 steps, then REMOVE them before posting the issue
 
 **Is there an alternative at the latest version?**
 
-[ ] Yes (descripe the alternative)
+[ ] Yes (describe the alternative)
 [ ] No
 
 **Is this related to an issue?**
