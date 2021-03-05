@@ -19,10 +19,10 @@ READ and FOLLOW next 3 steps, then REMOVE them before posting the issue
 
 **Is there an alternative at the latest version?**
 
-[ ] Yes (describe the alternative)
-[ ] No
+ - [ ] Yes (describe the alternative)
+ - [ ] No
 
 **Is this related to an issue?**
 
-[ ] Yes (Give a link to the issue)
-[ ] No
+ - [ ] Yes (Give a link to the issue)
+ - [ ] No
