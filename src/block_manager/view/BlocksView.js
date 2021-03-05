@@ -139,7 +139,7 @@ export default Backbone.View.extend({
       var catId = catModel.get('id');
       var catView = this.renderedCategories[catId];
       var categories = this.getCategoriesEl();
-      model.set('category', catModel);
+      model.set('category', catModel, { silent: true });
 
       if (!catView && categories) {
         catView = new CategoryView(
@@ -200,6 +200,7 @@ export default Backbone.View.extend({
     this.append(frag);
     const cls = `${this.blockContClass}s ${ppfx}one-bg ${ppfx}two-color`;
     this.$el.addClass(cls);
+    this.rendered = true;
     return this;
   }
 });
