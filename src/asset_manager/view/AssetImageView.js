@@ -80,5 +80,18 @@ export default AssetView.extend({
   onRemove(e) {
     e.stopImmediatePropagation();
     this.model.collection.remove(this.model);
+  },
+
+  /**
+   * Update target if exists
+   * @param {Model} target
+   * @private
+   * */
+  updateTarget(target) {
+    if (target && target.set) {
+      target.set('attributes', clone(target.get('attributes')));
+      target.set('srcset', this.model.get('srcset'));
+      target.set('src', this.model.get('src'));
+    }
   }
 });
