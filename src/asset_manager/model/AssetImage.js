@@ -5,6 +5,7 @@ export default Asset.extend({
     ...Asset.prototype.defaults,
     type: 'image',
     unitDim: 'px',
+    srcset: '',
     height: 0,
     width: 0
   }
