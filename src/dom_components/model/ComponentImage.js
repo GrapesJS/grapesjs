@@ -26,6 +26,8 @@ export default Component.extend(
       fallback: `<svg ${svgAttrs}>
         <path d="M2.28 3L1 4.27l2 2V19c0 1.1.9 2 2 2h12.73l2 2L21 21.72 2.28 3m2.55 0L21 19.17V5a2 2 0 0 0-2-2H4.83M8.5 13.5l2.5 3 1-1.25L14.73 18H5l3.5-4.5z"></path>
       </svg>`,
+      
+      srcset: '',
 
       // File to load asynchronously once the model is rendered
       file: ''
@@ -33,8 +35,9 @@ export default Component.extend(
 
     initialize(o, opt) {
       Component.prototype.initialize.apply(this, arguments);
-      const { src } = this.get('attributes');
+      const { src, srcset } = this.get('attributes');
       if (src) this.set('src', src, { silent: 1 });
+      if (srcset) this.set('srcset', srcset, { silent: 1 });
     },
 
     initToolbar(...args) {
@@ -76,6 +79,9 @@ export default Component.extend(
     getAttrToHTML(...args) {
       const attr = Component.prototype.getAttrToHTML.apply(this, args);
       const src = this.getSrcResult();
+      const srcset = this.get('srcset');
+
+      if (srcset) attr.srcset = srcset;
       if (src) attr.src = src;
       return attr;
     },
