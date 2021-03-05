@@ -1,5 +1,6 @@
 import { isString } from 'underscore';
 import { createId } from 'utils/mixins';
+import { Model } from 'backbone';
 import Pages from './model/Pages';
 import Page from './model/Page';
 
@@ -27,21 +28,27 @@ export default () => {
       const defPages = cnf.pages || [];
       const pages = new Pages(defPages, cnf);
       this.pages = pages;
+      const model = new Model({ _undo: true });
       const mainPage = !pages.length
         ? this.add({ type: typeMain })
         : this.getMain();
       this.em = em;
+      this.model = model;
       this.select(mainPage, { silent: 1, main: 1 });
       pages.on('add', (p, c, o) => em.trigger(`${evPfx}add`, p, o));
       pages.on('remove', (p, c, o) => em.trigger(`${evPfx}remove`, p, o));
+      model.on('change:selected', (m, page) =>
+        em.trigger(evPageSelect, page, m.previous('selected'))
+      );
 
       return this;
     },
 
     postLoad() {
-      const { em } = this;
+      const { em, model } = this;
       const um = em.get('UndoManager');
       const pages = this.getAll();
+      um && um.add(model);
       um && um.add(pages);
     },
 
@@ -109,8 +116,9 @@ export default () => {
     select(pg, opts = {}) {
       const { em, selected } = this;
       const page = isString(pg) ? this.get(pg) : pg;
-      this.selected = page;
-      !opts.silent && em.trigger(evPageSelect, page, selected);
+      // this.selected = page;
+      this.model.set('selected', page, opts);
+      // !opts.silent && em.trigger(evPageSelect, page, selected);
       return this;
     },
 
@@ -119,7 +127,7 @@ export default () => {
      * @returns {Page}
      */
     getSelected() {
-      return this.selected;
+      return this.model.get('selected');
     },
 
     /**
@@ -127,7 +135,9 @@ export default () => {
      */
     destroy() {
       this.pages.off().reset();
-      ['selected', 'config', 'em', 'pages'].map(i => (this[i] = 0));
+      this.model.stopListening();
+      this.model.clear({ silent: true });
+      ['selected', 'config', 'em', 'pages', 'model'].map(i => (this[i] = 0));
     },
 
     _createId() {
