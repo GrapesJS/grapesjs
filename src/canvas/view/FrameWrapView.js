@@ -69,10 +69,12 @@ export default Backbone.View.extend({
     ev && this.dragger.start(ev);
   },
 
-  remove() {
-    this.frame.remove();
-    this.frame = {};
+  remove(opts) {
+    this.frame.remove(opts);
     Backbone.View.prototype.remove.apply(this, arguments);
+    ['frame', 'dragger', 'cv', 'em', 'canvas', 'elTools'].forEach(
+      i => (this[i] = {})
+    );
     return this;
   },
 

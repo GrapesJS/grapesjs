@@ -142,11 +142,9 @@ export default Backbone.View.extend({
   },
 
   remove() {
-    const { root, model } = this;
     this._toggleEffects();
+    this.wrapper.remove();
     Backbone.View.prototype.remove.apply(this, arguments);
-    root.remove();
-    model.remove();
   },
 
   startAutoscroll() {
@@ -252,7 +250,6 @@ export default Backbone.View.extend({
 
   renderBody() {
     const { config, model, ppfx } = this;
-    const components = model.getComponent();
     const styles = model.getStyles();
     const { em } = config;
     const doc = this.getDoc();
@@ -354,14 +351,15 @@ export default Backbone.View.extend({
       ${conf.protectedCss || ''}
     </style>`
     );
-    this.root = new ComponentView({
-      model: components,
+    const component = model.getComponent();
+    this.wrapper = new ComponentView({
+      model: component,
       config: {
-        ...components.config,
+        ...component.config,
         frameView: this
       }
     }).render();
-    append(body, this.root.el);
+    append(body, this.wrapper.el);
     append(
       body,
       new CssRulesView({

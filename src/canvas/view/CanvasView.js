@@ -36,17 +36,17 @@ export default Backbone.View.extend({
     this.pfx = this.config.stylePrefix || '';
     this.ppfx = this.config.pStylePrefix || '';
     this.className = this.config.stylePrefix + 'canvas';
-    const { em, config } = this;
-    this.initFrames();
+    const { em } = this;
+    this._initFrames();
     this.listenTo(em, 'change:canvasOffset', this.clearOff);
     this.listenTo(em, 'component:selected', this.checkSelected);
     this.listenTo(model, 'change:zoom change:x change:y', this.updateFrames);
-    this.listenTo(model, 'change:frames', this._renderFrames);
+    this.listenTo(model, 'change:frames', this._onFramesUpdate);
     this.listenTo(frames, 'loaded:all', () => em.trigger('loaded'));
     this.toggleListeners(1);
   },
 
-  initFrames() {
+  _initFrames() {
     const { frames, model, config } = this;
     frames && frames.remove();
     this.frames = new FramesView({
@@ -335,14 +335,20 @@ export default Backbone.View.extend({
     return (view && view._getFrame()) || this.em.get('currentFrame');
   },
 
+  _onFramesUpdate() {
+    this._initFrames();
+    this._renderFrames();
+  },
+
   _renderFrames() {
-    this.initFrames();
     const { model, frames, em, framesArea } = this;
     const frms = model.get('frames');
+    frms.listenToLoad();
     frames.render();
-    em.setCurrentFrame(frms.at(0).view);
+    const mainFrame = frms.at(0).view;
+    em.setCurrentFrame(mainFrame);
     framesArea.appendChild(frames.el);
-    this.frame = frms.at(0).view;
+    this.frame = mainFrame;
   },
 
   render() {
@@ -381,13 +387,7 @@ export default Backbone.View.extend({
     this.toolsEl = toolsEl;
     this.el.className = this.className;
 
-    // Render all frames
-    const frms = model.get('frames');
-    frms.listenToLoad();
-    frames.render();
-    em.setCurrentFrame(frms.at(0).view);
-    $frames.append(frames.el);
-    this.frame = frms.at(0).view;
+    this._renderFrames();
 
     return this;
   }
