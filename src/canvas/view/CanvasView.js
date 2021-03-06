@@ -42,12 +42,8 @@ export default Backbone.View.extend({
     this.listenTo(em, 'component:selected', this.checkSelected);
     this.listenTo(model, 'change:zoom change:x change:y', this.updateFrames);
     this.listenTo(model, 'change:frames', this._onFramesUpdate);
-    this.listenTo(frames, 'loaded:all', this._framesLoaded);
+    frames.once('loaded:all', () => em.trigger('loaded'));
     this.toggleListeners(1);
-  },
-
-  _framesLoaded() {
-    this.em.trigger('loaded');
   },
 
   _onFramesUpdate() {
