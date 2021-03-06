@@ -33,6 +33,9 @@ export default Backbone.Model.extend({
   },
 
   _pageUpdated(page, prev) {
+    const { em } = this;
+    em.setSelected();
+    em.stopDefault(); // We have to stop before changing current frames
     prev && prev.getFrames().map(frame => frame.disable());
     this.set('frames', page.getFrames());
   },

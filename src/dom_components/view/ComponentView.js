@@ -112,6 +112,7 @@ export default Backbone.View.extend({
     delete view.childrenView;
     delete view.scriptContainer;
     delete view.opts;
+    delete model.view;
     // delete view.el;
     return view;
   },
