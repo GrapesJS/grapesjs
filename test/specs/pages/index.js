@@ -46,7 +46,7 @@ describe('Pages', () => {
       .getMain()
       .getFrames()
       .at(0);
-    const frameCmp = frame.getComponents();
+    const frameCmp = frame.getComponent();
     expect(frameCmp.is('wrapper')).toBe(true);
   });
 
@@ -55,7 +55,7 @@ describe('Pages', () => {
       .getMain()
       .getFrames()
       .at(0);
-    const frameCmp = frame.getComponents();
+    const frameCmp = frame.getComponent();
     expect(frameCmp.components().length).toBe(0);
     expect(frame.getStyles().length).toBe(0);
     expect(initCmpLen).toBe(1);
@@ -63,7 +63,7 @@ describe('Pages', () => {
 
   //   describe.only('Enable page manager', () => {});
 
-  describe.only('Init with pages', () => {
+  describe.skip('Init with pages', () => {
     let idPage1, idComp1, idComp2, comp1, comp2, initPages, allbyId;
     const createCompDef = id => ({
       attributes: {
