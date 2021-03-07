@@ -16,5 +16,10 @@ export default Model.extend({
 
   getMainFrame() {
     return this.getFrames().at(0);
+  },
+
+  getMainComponent() {
+    const frame = this.getMainFrame();
+    return frame && frame.getComponent();
   }
 });

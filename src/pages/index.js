@@ -114,11 +114,12 @@ export default () => {
      * @returns {this}
      */
     select(pg, opts = {}) {
-      const { em, selected } = this;
+      const { em } = this;
       const page = isString(pg) ? this.get(pg) : pg;
-      // this.selected = page;
+      const mainComp = page.getMainComponent();
       this.model.set('selected', page, opts);
-      // !opts.silent && em.trigger(evPageSelect, page, selected);
+      const lm = em.get('LayerManager');
+      lm && mainComp && lm.setRoot(mainComp);
       return this;
     },
 
