@@ -20,6 +20,14 @@ export default () => {
 
     Pages,
 
+    events: {
+      select: evPageSelect,
+      add: evPageAdd,
+      addBefore: evPageAddBefore,
+      remove: evPageRemove,
+      removeBefore: evPageRemoveBefore
+    },
+
     /**
      * Initialize module
      * @param {Object} config Configurations
@@ -30,6 +38,7 @@ export default () => {
       const { em } = opts;
       const cnf = { ...opts };
       this.config = cnf;
+      this.em = em;
       const defPages = cnf.pages || [];
       const pages = new Pages(defPages, cnf);
       this.pages = pages;
@@ -37,7 +46,6 @@ export default () => {
       const mainPage = !pages.length
         ? this.add({ type: typeMain })
         : this.getMain();
-      this.em = em;
       this.model = model;
       this.select(mainPage, { silent: 1, main: 1 });
       pages.on('add', (p, c, o) => em.trigger(evPageAdd, p, o));
@@ -70,11 +78,16 @@ export default () => {
      * @returns {Page}
      */
     add(props, opts = {}) {
+      const { em } = this;
       props.id = props.id || this._createId();
       props.frames = props.frames || [{}];
-      const page = this.pages.add(props, opts);
-      opts.select && this.select(page);
-      return page;
+      const add = () => {
+        const page = this.pages.add(props, opts);
+        opts.select && this.select(page);
+        return page;
+      };
+      em.trigger(evPageAddBefore, props, add, opts);
+      return !opts.abort && add();
     },
 
     /**
@@ -82,10 +95,15 @@ export default () => {
      * @param {String|Page} page Page or page id
      * @returns {Page}
      */
-    remove(pg) {
+    remove(pg, opts = {}) {
+      const { em } = this;
       const page = isString(pg) ? this.get(pg) : pg;
-      page && this.pages.remove(page);
-      return page;
+      const rm = () => {
+        page && this.pages.remove(page, opts);
+        return page;
+      };
+      em.trigger(evPageRemoveBefore, page, rm, opts);
+      return !opts.abort && rm();
     },
 
     /**
