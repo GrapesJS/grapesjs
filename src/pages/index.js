@@ -1,4 +1,4 @@
-import { isString } from 'underscore';
+import { isString, bindAll } from 'underscore';
 import { createId } from 'utils/mixins';
 import { Model } from 'backbone';
 import Pages from './model/Pages';
@@ -22,6 +22,7 @@ export default () => {
      * @private
      */
     init(opts = {}) {
+      bindAll(this, '_onPageChange');
       const { em } = opts;
       const cnf = { ...opts };
       this.config = cnf;
@@ -37,11 +38,17 @@ export default () => {
       this.select(mainPage, { silent: 1, main: 1 });
       pages.on('add', (p, c, o) => em.trigger(`${evPfx}add`, p, o));
       pages.on('remove', (p, c, o) => em.trigger(`${evPfx}remove`, p, o));
-      model.on('change:selected', (m, page) =>
-        em.trigger(evPageSelect, page, m.previous('selected'))
-      );
+      model.on('change:selected', this._onPageChange);
 
       return this;
+    },
+
+    _onPageChange(m, page) {
+      const { em } = this;
+      const lm = em.get('LayerManager');
+      const mainComp = page.getMainComponent();
+      lm && mainComp && lm.setRoot(mainComp);
+      em.trigger(evPageSelect, page, m.previous('selected'));
     },
 
     postLoad() {
@@ -115,12 +122,8 @@ export default () => {
      * @returns {this}
      */
     select(pg, opts = {}) {
-      const { em } = this;
       const page = isString(pg) ? this.get(pg) : pg;
-      const mainComp = page.getMainComponent();
       this.model.set('selected', page, opts);
-      const lm = em.get('LayerManager');
-      lm && mainComp && lm.setRoot(mainComp);
       return this;
     },
 
