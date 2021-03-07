@@ -196,7 +196,7 @@ export default Backbone.Model.extend({
     const cfgParent = !isUndefined(config[name])
       ? config[name]
       : config[Mod.name];
-    const cfg = cfgParent || {};
+    const cfg = cfgParent === true ? {} : cfgParent || {};
     const sm = this.get('StorageManager');
     cfg.pStylePrefix = config.pStylePrefix || '';
 

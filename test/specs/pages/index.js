@@ -8,7 +8,7 @@ describe('Pages', () => {
   let pm;
 
   beforeAll(() => {
-    editor = new Editor();
+    editor = new Editor({ pageManager: true });
     em = editor.getModel();
     domc = em.get('DomComponents');
     pm = em.get('PageManager');
@@ -59,6 +59,18 @@ describe('Pages', () => {
     expect(frameCmp.components().length).toBe(0);
     expect(frame.getStyles().length).toBe(0);
     expect(initCmpLen).toBe(1);
+  });
+
+  test('Adding new page with selection', () => {
+    const name = 'Test page';
+    const page = pm.add({ name }, { select: 1 });
+    expect(page.id).toBeTruthy();
+    expect(page.get('name')).toBe(name);
+    expect(pm.getSelected()).toBe(page);
+    expect(pm.getAll().length).toBe(2);
+    const pageComp = page.getMainComponent();
+    expect(pageComp.is('wrapper')).toBe(true);
+    expect(pageComp.components().length).toBe(0);
   });
 
   //   describe.only('Enable page manager', () => {});

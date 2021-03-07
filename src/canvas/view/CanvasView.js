@@ -347,7 +347,7 @@ export default Backbone.View.extend({
     frames.render();
     const mainFrame = frms.at(0).view;
     em.setCurrentFrame(mainFrame);
-    framesArea.appendChild(frames.el);
+    framesArea && framesArea.appendChild(frames.el);
     this.frame = mainFrame;
   },
 

@@ -206,7 +206,8 @@ export default Backbone.View.extend({
     `
     );
     this.elTools = elTools;
-    cv.toolsWrapper.appendChild(elTools); // TODO remove on frame remove
+    const twrp = cv.toolsWrapper;
+    twrp && twrp.appendChild(elTools); // TODO remove on frame remove
     onRender &&
       onRender({
         el,

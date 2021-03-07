@@ -60,6 +60,7 @@ export default () => {
      */
     add(props, opts = {}) {
       props.id = props.id || this._createId();
+      props.frames = props.frames || [{}];
       const page = this.pages.add(props, opts);
       opts.select && this.select(page);
       return page;
