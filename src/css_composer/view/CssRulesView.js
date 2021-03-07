@@ -104,10 +104,7 @@ export default Backbone.View.extend({
 
   getMediaWidth(mediaText) {
     return (
-      mediaText &&
-      mediaText
-        .replace(`(${this.em.getConfig('mediaCondition')}: `, '')
-        .replace(')', '')
+      mediaText && mediaText.replace(/\((min|max)-width: /, '').replace(')', '')
     );
   },
 

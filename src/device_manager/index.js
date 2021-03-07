@@ -58,6 +58,12 @@ export default () => {
         if (!(name in c)) c[name] = defaults[name];
       }
 
+      // --- I need to pass the default mediaCondition config parameter to device
+      c.devices.forEach(
+        dv => (dv.defaultMediaCondition = c.em.config.mediaCondition)
+      );
+      // ---
+
       devices = new Devices();
       (c.devices || []).forEach(dv => this.add(dv.id || dv.name, dv.width, dv));
       view = new DevicesView({

@@ -5,8 +5,20 @@ export default Backbone.Collection.extend({
   model: Device,
 
   comparator: (left, right) => {
-    const max = Number.MAX_VALUE;
-    return (right.get('priority') || max) - (left.get('priority') || max);
+    const rightP = right.get('priority');
+    const leftP = left.get('priority');
+    const rightC = right.get('mediaCondition');
+    const leftC = left.get('mediaCondition');
+
+    if (!leftC || !rightC) {
+      return leftC == rightC || !rightC ? 1 : -1;
+    }
+
+    if (leftC == rightC) {
+      return (rightP - leftP) * (leftC == 'max-width' ? 1 : -1);
+    }
+
+    return rightC == 'max-width' ? -1 : 1;
   },
 
   getSorted() {
