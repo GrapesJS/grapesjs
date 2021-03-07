@@ -750,8 +750,9 @@ export default () => {
     },
 
     destroy() {
-      this.clear();
-      componentView.remove();
+      const all = this.allById();
+      Object.keys(all).forEach(id => all[id] && all[id].remove());
+      componentView && componentView.remove();
       [c, em, componentsById, component, componentView].forEach(i => (i = {}));
       this.em = {};
     }

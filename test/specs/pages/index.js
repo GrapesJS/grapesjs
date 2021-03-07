@@ -73,8 +73,6 @@ describe('Pages', () => {
     expect(pageComp.components().length).toBe(0);
   });
 
-  //   describe.only('Enable page manager', () => {});
-
   describe.skip('Init with pages', () => {
     let idPage1, idComp1, idComp2, comp1, comp2, initPages, allbyId;
     const createCompDef = id => ({
@@ -164,5 +162,33 @@ describe('Pages', () => {
       // Each page contains 1 rule per component
       expect(em.get('CssComposer').getAll().length).toBe(initPages.length);
     });
+  });
+});
+
+describe('Managing pages', () => {
+  let editor;
+  let em;
+  let domc;
+  let initCmpLen;
+  let pm;
+
+  beforeEach(() => {
+    editor = new Editor({ pageManager: true });
+    em = editor.getModel();
+    domc = em.get('DomComponents');
+    pm = em.get('PageManager');
+    initCmpLen = Object.keys(domc.allById()).length;
+  });
+
+  afterEach(() => {
+    editor.destroy();
+    pm = 0;
+    em = 0;
+    domc = 0;
+  });
+
+  test('Able to abort page add', () => {
+    pm.add({});
+    expect(pm.getAll().length).toBe(2);
   });
 });
