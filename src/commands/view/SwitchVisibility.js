@@ -16,11 +16,9 @@ export default {
   toggleVis(ed, active = 1) {
     if (!ed.Commands.isActive('preview')) {
       const cv = ed.Canvas;
+      const mth = active ? 'on' : 'off';
       cv.getFrames().forEach(frame => this._upFrame(frame, active));
-      cv.getModel()[active ? 'on' : 'off'](
-        'change:frames',
-        this._onFramesChange
-      );
+      cv.getModel()[mth]('change:frames', this._onFramesChange);
     }
   },
 
