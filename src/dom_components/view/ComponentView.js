@@ -102,6 +102,8 @@ export default Backbone.View.extend({
       const view = comp.getView(frameM);
       view && view.remove();
     });
+    const cv = view.childrenView;
+    cv && cv.remove();
     const { views } = model;
     views.splice(views.indexOf(view), 1);
     view.removed(view._clbObj());
