@@ -1,8 +1,12 @@
-import Backbone from 'backbone';
+import { Model } from 'backbone';
+import { result, forEach, isEmpty } from 'underscore';
 import Component from 'dom_components/model/Component';
 import { isComponent, isObject } from 'utils/mixins';
 
-export default Backbone.Model.extend({
+const keyAutoW = '__aw';
+const keyAutoH = '__ah';
+
+export default Model.extend({
   defaults: () => ({
     x: 0,
     y: 0,
@@ -36,6 +40,9 @@ export default Backbone.Model.extend({
       allRules.add(styles);
       this.set('styles', allRules);
     }
+
+    !props.width && this.set(keyAutoW, 1);
+    !props.height && this.set(keyAutoH, 1);
   },
 
   getComponent() {
@@ -122,5 +129,29 @@ export default Backbone.Model.extend({
 
   _emitUpdated(data = {}) {
     this.em.trigger('frame:updated', { frame: this, ...data });
+  },
+
+  toJSON(opts = {}) {
+    const obj = Model.prototype.toJSON.call(this, opts);
+    const defaults = result(this, 'defaults');
+
+    delete obj.styles;
+    obj[keyAutoW] && delete obj.width;
+    obj[keyAutoH] && delete obj.height;
+
+    // Remove private keys
+    forEach(obj, (value, key) => {
+      key.indexOf('__') === 0 && delete obj[key];
+    });
+
+    forEach(defaults, (value, key) => {
+      if (obj[key] === value) delete obj[key];
+    });
+
+    forEach(['attributes', 'head'], prop => {
+      if (isEmpty(obj[prop])) delete obj[prop];
+    });
+
+    return obj;
   }
 });
