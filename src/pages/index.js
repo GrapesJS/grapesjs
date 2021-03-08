@@ -6,6 +6,7 @@ import Page from './model/Page';
 
 export const evPfx = 'page:';
 export const evPageSelect = `${evPfx}select`;
+export const evPageUpdate = `${evPfx}update`;
 export const evPageAdd = `${evPfx}add`;
 export const evPageAddBefore = `${evPageAdd}:before`;
 export const evPageRemove = `${evPfx}remove`;
@@ -22,6 +23,7 @@ export default () => {
 
     events: {
       select: evPageSelect,
+      update: evPageUpdate,
       add: evPageAdd,
       addBefore: evPageAddBefore,
       remove: evPageRemove,
@@ -50,6 +52,9 @@ export default () => {
       this.select(mainPage, { silent: 1, main: 1 });
       pages.on('add', (p, c, o) => em.trigger(evPageAdd, p, o));
       pages.on('remove', (p, c, o) => em.trigger(evPageRemove, p, o));
+      pages.on('change', (p, c) => {
+        em.trigger(evPageUpdate, p, p.changedAttributes(), c);
+      });
       model.on('change:selected', this._onPageChange);
 
       return this;

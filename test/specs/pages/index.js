@@ -239,4 +239,15 @@ describe('Managing pages', () => {
     pm.remove(page.id);
     expect(pm.getAll().length).toBe(1);
   });
+
+  test('Change page', () => {
+    const event = jest.fn();
+    em.on(pm.events.update, event);
+    const page = pm.add({});
+    const up = { name: 'Test' };
+    const opts = { myopts: 1 };
+    page.set(up, opts);
+    expect(event).toBeCalledTimes(1);
+    expect(event).toBeCalledWith(page, up, opts);
+  });
 });
