@@ -84,6 +84,10 @@ export default () => {
       return this;
     },
 
+    getModel() {
+      return canvas;
+    },
+
     /**
      * Get the configuration object
      * @return {Object}
