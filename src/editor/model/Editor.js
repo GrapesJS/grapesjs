@@ -575,7 +575,7 @@ export default Backbone.Model.extend({
     });
 
     sm.store(store, res => {
-      clb && clb(res);
+      clb && clb(res, store);
       this.set('changesCount', 0);
       this.trigger('storage:store', store);
     });

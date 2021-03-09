@@ -421,8 +421,8 @@ export default () => {
      * @return {Object} Data to store
      */
     store(noStore) {
-      if (!c.stm) {
-        return;
+      if (!c.stm || this.em.get('hasPages')) {
+        return {};
       }
 
       var obj = {};
@@ -433,7 +433,6 @@ export default () => {
       }
 
       if (keys.indexOf('components') >= 0) {
-        const { em } = this;
         // const storeWrap = (em && !em.getConfig('avoidInlineStyle')) || c.storeWrapper;
         const storeWrap = c.storeWrapper;
         const toStore = storeWrap ? this.getWrapper() : this.getComponents();

@@ -17,6 +17,8 @@ export default () => {
   return {
     name: 'PageManager',
 
+    storageKey: 'pages',
+
     Page,
 
     Pages,
@@ -170,6 +172,30 @@ export default () => {
       this.model.stopListening();
       this.model.clear({ silent: true });
       ['selected', 'config', 'em', 'pages', 'model'].map(i => (this[i] = 0));
+    },
+
+    store(noStore) {
+      if (!this.em.get('hasPages')) return {};
+      const obj = {};
+      const cnf = this.config;
+      obj[this.storageKey] = JSON.stringify(this.getAll());
+      if (!noStore && cnf.stm) cnf.stm.store(obj);
+      return obj;
+    },
+
+    load(data = {}) {
+      const key = this.storageKey;
+      let res = data[key] || [];
+
+      if (typeof res == 'string') {
+        try {
+          res = JSON.parse(data[key]);
+        } catch (err) {}
+      }
+
+      res && res.length && this.getAll().reset(res);
+
+      return res;
     },
 
     _createId() {
