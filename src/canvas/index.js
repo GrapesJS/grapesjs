@@ -29,8 +29,7 @@
  * @module Canvas
  */
 
-import { hasDnd, getElement, getViewEl } from 'utils/mixins';
-import Droppable from 'utils/Droppable';
+import { getElement, getViewEl } from 'utils/mixins';
 import defaults from './config/config';
 import Canvas from './model/Canvas';
 import canvasView from './view/CanvasView';
@@ -570,10 +569,6 @@ export default () => {
     stopAutoscroll(frame) {
       const fr = (frame && frame.view) || this.em.getCurrentFrame();
       fr && fr.stopAutoscroll();
-    },
-
-    postRender() {
-      if (hasDnd(c.em)) this.droppable = new Droppable(c.em);
     },
 
     /**

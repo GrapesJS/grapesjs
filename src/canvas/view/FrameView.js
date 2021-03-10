@@ -2,6 +2,7 @@ import Backbone from 'backbone';
 import { bindAll, isString, debounce, isUndefined } from 'underscore';
 import CssRulesView from 'css_composer/view/CssRulesView';
 import ComponentView from 'dom_components/view/ComponentView';
+import Droppable from 'utils/Droppable';
 import {
   appendVNodes,
   empty,
@@ -10,7 +11,7 @@ import {
   createCustomEvent,
   motionsEv
 } from 'utils/dom';
-import { on, off, setViewEl, getPointerEvent } from 'utils/mixins';
+import { on, off, setViewEl, hasDnd, getPointerEvent } from 'utils/mixins';
 
 export default Backbone.View.extend({
   tagName: 'iframe',
@@ -397,6 +398,7 @@ export default Backbone.View.extend({
     );
 
     this._toggleEffects(1);
+    this.droppable = hasDnd(em) && new Droppable(em, this.wrapper.el);
     model.trigger('loaded');
   },
 
