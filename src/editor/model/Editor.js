@@ -98,6 +98,7 @@ export default Backbone.Model.extend({
     deps.forEach(name => this.loadModule(name));
     this.on('change:componentHovered', this.componentHovered, this);
     this.on('change:changesCount', this.updateChanges, this);
+    this.on('change:readyLoad change:readyCanvas', this._checkReady, this);
     toLog.forEach(e => this.listenLog(e));
 
     // Deprecations
@@ -113,6 +114,16 @@ export default Backbone.Model.extend({
         });
       }
     );
+  },
+
+  _checkReady() {
+    if (
+      this.get('readyLoad') &&
+      this.get('readyCanvas') &&
+      !this.get('ready')
+    ) {
+      this.set('ready', 1);
+    }
   },
 
   getContainer() {
@@ -152,6 +163,7 @@ export default Backbone.Model.extend({
     const postLoad = () => {
       const modules = this.get('modules');
       modules.forEach(module => module.postLoad && module.postLoad(this));
+      this.set('readyLoad', 1);
       clb && clb();
     };
 

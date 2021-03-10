@@ -187,7 +187,7 @@ export default (config = {}) => {
 
       // Do post render stuff after the iframe is loaded otherwise it'll
       // be empty during tests
-      em.once('loaded', () => {
+      em.once('change:ready', () => {
         this.UndoManager.clear();
         em.get('modules').forEach(module => {
           module.postRender && module.postRender(editorView);

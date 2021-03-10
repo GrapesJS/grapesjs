@@ -52,7 +52,8 @@ export default Backbone.View.extend({
   _initFrames() {
     const { frames, model, config, em } = this;
     const collection = model.get('frames');
-    collection.once('loaded:all', () => em.trigger('loaded'));
+    em.set('readyCanvas', 0);
+    collection.once('loaded:all', () => em.set('readyCanvas', 1));
     frames && frames.remove();
     this.frames = new FramesView({
       collection,
