@@ -28,9 +28,8 @@ export default Model.extend({
     const modOpts = { em, config: conf, frame: this };
 
     if (!isComponent(components)) {
-      const wrp = isObject(components)
-        ? components
-        : { type: 'wrapper', components };
+      const wrp = isObject(components) ? components : { components };
+      wrp.type = 'wrapper';
       this.set('components', new Component(wrp, modOpts));
     }
 
