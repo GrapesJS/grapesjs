@@ -30,7 +30,6 @@ export default Backbone.View.extend({
     bindAll(this, 'clearOff', 'onKeyPress', 'onCanvasMove');
     on(window, 'scroll resize', this.clearOff);
     const { model } = this;
-    const frames = model.get('frames');
     this.config = o.config || {};
     this.em = this.config.em || {};
     this.pfx = this.config.stylePrefix || '';
@@ -42,7 +41,6 @@ export default Backbone.View.extend({
     this.listenTo(em, 'component:selected', this.checkSelected);
     this.listenTo(model, 'change:zoom change:x change:y', this.updateFrames);
     this.listenTo(model, 'change:frames', this._onFramesUpdate);
-    frames.once('loaded:all', () => em.trigger('loaded'));
     this.toggleListeners(1);
   },
 
@@ -52,10 +50,12 @@ export default Backbone.View.extend({
   },
 
   _initFrames() {
-    const { frames, model, config } = this;
+    const { frames, model, config, em } = this;
+    const collection = model.get('frames');
+    collection.once('loaded:all', () => em.trigger('loaded'));
     frames && frames.remove();
     this.frames = new FramesView({
-      collection: model.get('frames'),
+      collection,
       config: {
         ...config,
         canvasView: this,
@@ -341,6 +341,7 @@ export default Backbone.View.extend({
   },
 
   _renderFrames() {
+    if (!this.ready) return;
     const { model, frames, em, framesArea } = this;
     const frms = model.get('frames');
     frms.listenToLoad();
@@ -386,7 +387,7 @@ export default Backbone.View.extend({
     this.toolsGlobEl = el.querySelector(`.${ppfx}tools-gl`);
     this.toolsEl = toolsEl;
     this.el.className = this.className;
-
+    this.ready = 1;
     this._renderFrames();
 
     return this;

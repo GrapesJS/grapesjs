@@ -57,6 +57,7 @@ export default () => {
       pages.on('change', (p, c) => {
         em.trigger(evPageUpdate, p, p.changedAttributes(), c);
       });
+      pages.on('reset', coll => coll.at(0) && this.select(coll.at(0)));
       model.on('change:selected', this._onPageChange);
 
       return this;

@@ -28,10 +28,10 @@ export default Model.extend({
     const modOpts = { em, config: conf, frame: this };
 
     if (!isComponent(components)) {
-      this.set(
-        'components',
-        new Component({ type: 'wrapper', components }, modOpts)
-      );
+      const wrp = isObject(components)
+        ? components
+        : { type: 'wrapper', components };
+      this.set('components', new Component(wrp, modOpts));
     }
 
     if (!styles) {

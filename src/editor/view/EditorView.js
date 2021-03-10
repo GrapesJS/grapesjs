@@ -10,7 +10,8 @@ export default Backbone.View.extend({
     this.conf = model.config;
     this.pn = model.get('Panels');
     this.cv = model.get('Canvas');
-    model.on('loaded', () => {
+    model.once('loaded', () => {
+      console.log('LOADED EditorView');
       this.pn.active();
       this.pn.disableButtons();
       setTimeout(() => {
