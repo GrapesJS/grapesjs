@@ -1,5 +1,5 @@
 import { isUndefined, isString, bindAll } from 'underscore';
-import { getModel } from 'utils/mixins';
+import { getModel, isEscKey, isEnterKey } from 'utils/mixins';
 import Backbone from 'backbone';
 import ComponentView from 'dom_components/view/ComponentView';
 import { eventDrag } from 'dom_components/model/Component';
@@ -18,6 +18,7 @@ export default Backbone.View.extend({
     'mouseover [data-toggle-select]': 'handleHover',
     'mouseout [data-toggle-select]': 'handleHoverOut',
     'dblclick [data-name]': 'handleEdit',
+    'keydown [data-name]': 'handleEditKey',
     'focusout [data-name]': 'handleEditEnd'
   },
 
@@ -163,11 +164,17 @@ export default Backbone.View.extend({
     const inputEl = this.getInputName();
     inputEl[inputProp] = true;
     inputEl.focus();
+    document.execCommand('selectAll', false, null);
     em && em.setEditing(1);
     $el
       .find(`.${this.inputNameCls}`)
       .removeClass(clsNoEdit)
       .addClass(clsEdit);
+  },
+
+  handleEditKey(ev) {
+    ev.stopPropagation();
+    (isEscKey(ev) || isEnterKey(ev)) && this.handleEditEnd(ev);
   },
 
   /**
