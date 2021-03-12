@@ -19,8 +19,8 @@ READ and FOLLOW next 3 steps, then REMOVE them before posting the issue
 
 **Are you able to reproduce the bug from the demo?**
 
-[ ] Yes
-[ ] No
+ - [ ] Yes
+ - [ ] No
 
 **What is the expected behavior?**
 
@@ -28,9 +28,9 @@ READ and FOLLOW next 3 steps, then REMOVE them before posting the issue
 
 **What is the current behavior?**
 
-*Descripe the bug **detailed***
+*Describe the bug **detailed***
 
 **Are you able to attach screenshots, screencasts or a live demo?**
 
-[ ] Yes (attach)
-[ ] No
+ - [ ] Yes (attach)
+ - [ ] No
