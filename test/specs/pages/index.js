@@ -12,6 +12,7 @@ describe('Pages', () => {
     em = editor.getModel();
     domc = em.get('DomComponents');
     pm = em.get('PageManager');
+    pm.onLoad();
     initCmpLen = Object.keys(domc.allById()).length;
   });
 
@@ -73,7 +74,7 @@ describe('Pages', () => {
     expect(pageComp.components().length).toBe(0);
   });
 
-  describe.skip('Init with pages', () => {
+  describe('Init with pages', () => {
     let idPage1, idComp1, idComp2, comp1, comp2, initPages, allbyId;
     const createCompDef = id => ({
       attributes: {
@@ -126,6 +127,7 @@ describe('Pages', () => {
       em = editor.getModel();
       domc = em.get('DomComponents');
       pm = em.get('PageManager');
+      pm.onLoad();
       allbyId = domc.allById();
       initCmpLen = Object.keys(allbyId).length;
     });
@@ -177,6 +179,7 @@ describe('Managing pages', () => {
     em = editor.getModel();
     domc = em.get('DomComponents');
     pm = em.get('PageManager');
+    editor.getModel().loadOnStart();
     initCmpLen = Object.keys(domc.allById()).length;
   });
 

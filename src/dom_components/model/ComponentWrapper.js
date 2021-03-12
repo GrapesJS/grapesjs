@@ -3,7 +3,7 @@ import Component from './Component';
 
 export default Component.extend(
   {
-    defaults: () => ({
+    defaults: {
       ...Component.prototype.defaults,
       removable: false,
       copyable: false,
@@ -19,7 +19,7 @@ export default Component.extend(
         'background-position',
         'background-size'
       ]
-    })
+    }
   },
   {
     isComponent() {

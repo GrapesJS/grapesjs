@@ -43,15 +43,10 @@ export default () => {
       const cnf = { ...opts };
       this.config = cnf;
       this.em = em;
-      const defPages = cnf.pages || [];
-      const pages = new Pages(defPages, cnf);
+      const pages = new Pages([], cnf);
       this.pages = pages;
       const model = new Model({ _undo: true });
-      const mainPage = !pages.length
-        ? this.add({ type: typeMain })
-        : this.getMain();
       this.model = model;
-      this.select(mainPage, { silent: 1, main: 1 });
       pages.on('add', (p, c, o) => em.trigger(evPageAdd, p, o));
       pages.on('remove', (p, c, o) => em.trigger(evPageRemove, p, o));
       pages.on('change', (p, c) => {
@@ -61,6 +56,16 @@ export default () => {
       model.on('change:selected', this._onPageChange);
 
       return this;
+    },
+
+    onLoad() {
+      const pages = this.getAll();
+      const opt = { silent: true };
+      pages.add(this.config.pages || [], opt);
+      const mainPage = !pages.length
+        ? this.add({ type: typeMain }, opt)
+        : this.getMain();
+      this.select(mainPage, opt);
     },
 
     _onPageChange(m, page) {
@@ -94,7 +99,7 @@ export default () => {
         opts.select && this.select(page);
         return page;
       };
-      em.trigger(evPageAddBefore, props, add, opts);
+      !opts.silent && em.trigger(evPageAddBefore, props, add, opts);
       return !opts.abort && add();
     },
 
@@ -110,7 +115,7 @@ export default () => {
         page && this.pages.remove(page, opts);
         return page;
       };
-      em.trigger(evPageRemoveBefore, page, rm, opts);
+      !opts.silent && em.trigger(evPageRemoveBefore, page, rm, opts);
       return !opts.abort && rm();
     },
 

@@ -28,7 +28,6 @@ export default Backbone.View.extend({
 
   initialize(o) {
     bindAll(this, 'clearOff', 'onKeyPress', 'onCanvasMove');
-    on(window, 'scroll resize', this.clearOff);
     const { model } = this;
     this.config = o.config || {};
     this.em = this.config.em || {};
@@ -102,6 +101,7 @@ export default Backbone.View.extend({
     const { el } = this;
     const fn = enable ? on : off;
     fn(document, 'keypress', this.onKeyPress);
+    fn(window, 'scroll resize', this.clearOff);
     // fn(el, 'mousemove dragover', this.onCanvasMove);
   },
 

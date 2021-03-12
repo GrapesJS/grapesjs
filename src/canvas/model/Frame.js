@@ -31,7 +31,7 @@ export default Model.extend({
       const wrp = isObject(components) ? components : { components };
       wrp.type = 'wrapper';
       const Wrapper = domc.getType('wrapper').model;
-      this.set('components', new Wrapper({ ...conf.wrapper, ...wrp }, modOpts));
+      this.set('components', new Wrapper(wrp, modOpts));
     }
 
     if (!styles) {

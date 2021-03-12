@@ -70,17 +70,19 @@ export default () => {
       this.em = c.em;
       const ppfx = c.pStylePrefix;
       if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
-
       canvas = new Canvas(config);
-      CanvasView = new canvasView({
-        model: canvas,
-        config: c
-      });
-
       this.model = canvas;
       this.startAutoscroll = this.startAutoscroll.bind(this);
       this.stopAutoscroll = this.stopAutoscroll.bind(this);
       return this;
+    },
+
+    onLoad() {
+      this.model.init();
+      CanvasView = new canvasView({
+        model: canvas,
+        config: c
+      });
     },
 
     getModel() {

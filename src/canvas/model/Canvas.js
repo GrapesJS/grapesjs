@@ -13,6 +13,15 @@ export default Backbone.Model.extend({
 
   initialize(config = {}) {
     const { em } = config;
+    this.config = config;
+    this.em = em;
+    this.listenTo(this, 'change:zoom', this.onZoomChange);
+    this.listenTo(em, 'change:device', this.updateDevice);
+    this.listenTo(em, evPageSelect, this._pageUpdated);
+  },
+
+  init() {
+    const { em, config } = this;
     const { styles = [], scripts = [] } = config;
     const mainPage = em.get('PageManager').getMain();
     const frames = mainPage.getFrames();
@@ -24,18 +33,14 @@ export default Backbone.Model.extend({
       });
     styles.forEach(style => frame.addLink(style));
     scripts.forEach(script => frame.addScript(script));
-    this.em = em;
     this.set('frame', frame);
     this.set('frames', frames);
-    this.listenTo(this, 'change:zoom', this.onZoomChange);
-    this.listenTo(em, 'change:device', this.updateDevice);
-    this.listenTo(em, evPageSelect, this._pageUpdated);
   },
 
   _pageUpdated(page, prev) {
     const { em } = this;
     em.setSelected();
-    em.stopDefault(); // We have to stop before changing current frames
+    em.get('readyCanvas') && em.stopDefault(); // We have to stop before changing current frames
     prev && prev.getFrames().map(frame => frame.disable());
     this.set('frames', page.getFrames());
   },
