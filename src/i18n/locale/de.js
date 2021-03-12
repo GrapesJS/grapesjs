@@ -72,7 +72,7 @@ export default {
   styleManager: {
     empty:
       "Wählen Sie ein Element aus bevor Sie den Stil Manager nutzen",
-    layer: 'Evene',
+    layer: 'Ebene',
     fileButton: 'Bilder',
     sectors: {
       general: 'Allgemein',
