@@ -1,6 +1,5 @@
 import { Model } from 'backbone';
 import { result, forEach, isEmpty } from 'underscore';
-import Component from 'dom_components/model/Component';
 import { isComponent, isObject } from 'utils/mixins';
 
 const keyAutoW = '__aw';
@@ -22,7 +21,8 @@ export default Model.extend({
     const { config } = opts;
     const { em } = config;
     const { styles, components } = this.attributes;
-    const conf = em.get('DomComponents').getConfig();
+    const domc = em.get('DomComponents');
+    const conf = domc.getConfig();
     const allRules = em.get('CssComposer').getAll();
     this.em = em;
     const modOpts = { em, config: conf, frame: this };
@@ -30,7 +30,8 @@ export default Model.extend({
     if (!isComponent(components)) {
       const wrp = isObject(components) ? components : { components };
       wrp.type = 'wrapper';
-      this.set('components', new Component(wrp, modOpts));
+      const Wrapper = domc.getType('wrapper').model;
+      this.set('components', new Wrapper({ ...conf.wrapper, ...wrp }, modOpts));
     }
 
     if (!styles) {
