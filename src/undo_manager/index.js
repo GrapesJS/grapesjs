@@ -307,6 +307,26 @@ export default () => {
       return result;
     },
 
+    __getStackRead() {
+      const result = {};
+      const createItem = item => {
+        const { type, after, before, object } = item.attributes;
+        return {
+          type,
+          after,
+          before,
+          object
+        };
+      };
+      this.getStack().forEach(item => {
+        const index = item.get('magicFusionIndex');
+        const value = createItem(item);
+        if (!result[index]) result[index] = [value];
+        else result[index].push(value);
+      });
+      return Object.keys(result).map(i => result[i]);
+    },
+
     getPointer() {
       return this.getStack().pointer;
     },

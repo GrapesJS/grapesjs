@@ -43,6 +43,16 @@ export default Model.extend({
 
     !props.width && this.set(keyAutoW, 1);
     !props.height && this.set(keyAutoH, 1);
+
+    // this._initUm();
+  },
+
+  _initUm() {
+    const um = this.em.get('UndoManager');
+    const component = this.getComponent();
+    if (!um) return;
+    um.add(component);
+    console.log({ component, um });
   },
 
   getComponent() {
