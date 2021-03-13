@@ -95,7 +95,7 @@ describe('Pages', () => {
           id: idPage1,
           frames: [
             {
-              components: [comp1],
+              component: [comp1],
               styles: `#${idComp1} { color: red }`
             }
           ]
@@ -104,7 +104,7 @@ describe('Pages', () => {
           id: 'page-2',
           frames: [
             {
-              components: [comp2],
+              component: [comp2],
               styles: `#${idComp2} { color: blue }`
             }
           ]
@@ -113,7 +113,7 @@ describe('Pages', () => {
           id: 'page-3',
           frames: [
             {
-              components: '<div id="comp3">Component 3</div>',
+              component: '<div id="comp3">Component 3</div>',
               styles: `#comp3 { color: green }`
             }
           ]

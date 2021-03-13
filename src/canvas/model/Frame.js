@@ -13,25 +13,25 @@ export default Model.extend({
     width: null,
     height: null,
     head: [],
-    components: '',
+    component: '',
     styles: ''
   }),
 
   initialize(props, opts = {}) {
     const { config } = opts;
     const { em } = config;
-    const { styles, components } = this.attributes;
+    const { styles, component } = this.attributes;
     const domc = em.get('DomComponents');
     const conf = domc.getConfig();
     const allRules = em.get('CssComposer').getAll();
     this.em = em;
     const modOpts = { em, config: conf, frame: this };
 
-    if (!isComponent(components)) {
-      const wrp = isObject(components) ? components : { components };
-      wrp.type = 'wrapper';
+    if (!isComponent(component)) {
+      const wrp = isObject(component) ? component : { components: component };
+      !wrp.type && (wrp.type = 'wrapper');
       const Wrapper = domc.getType('wrapper').model;
-      this.set('components', new Wrapper(wrp, modOpts));
+      this.set('component', new Wrapper(wrp, modOpts));
     }
 
     if (!styles) {
@@ -46,7 +46,7 @@ export default Model.extend({
   },
 
   getComponent() {
-    return this.get('components');
+    return this.get('component');
   },
 
   getStyles() {

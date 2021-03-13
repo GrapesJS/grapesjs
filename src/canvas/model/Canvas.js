@@ -28,7 +28,7 @@ export default Backbone.Model.extend({
     const frame =
       mainPage.getMainFrame() ||
       frames.add({
-        components: em.getWrapper(),
+        component: em.getWrapper(),
         styles: em.getStyle()
       });
     styles.forEach(style => frame.addLink(style));
