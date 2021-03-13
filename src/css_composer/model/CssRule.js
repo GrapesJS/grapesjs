@@ -178,13 +178,10 @@ export default Backbone.Model.extend(Styleable).extend({
     var wd = width || '';
     var selectorsAdd = ruleProps.selectorsAdd || '';
     var atRuleType = ruleProps.atRuleType || '';
-    var cId = 'cid';
-    //var a1 = _.pluck(selectors.models || selectors, cId);
-    //var a2 = _.pluck(this.get('selectors').models, cId);
     if (!(selectors instanceof Array) && !selectors.models)
       selectors = [selectors];
-    var a1 = map(selectors.models || selectors, model => model.get('name'));
-    var a2 = map(this.get('selectors').models, model => model.get('name'));
+    var a1 = map(selectors.models || selectors, model => model.getFullName());
+    var a2 = map(this.get('selectors').models, model => model.getFullName());
     var f = false;
 
     if (a1.length !== a2.length) return f;
