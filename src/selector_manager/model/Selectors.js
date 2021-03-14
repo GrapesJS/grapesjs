@@ -2,28 +2,26 @@ import { filter } from 'underscore';
 import Backbone from 'backbone';
 import Selector from './Selector';
 
-export default Backbone.Collection.extend({
-  model: Selector,
+export default class Selectors extends Backbone.Collection {
+    getStyleable() {
+        return filter(
+          this.models,
+          item => item.get('active') && !item.get('private')
+        );
+    }
 
-  modelId: attr => `${attr.name}_${attr.type || Selector.TYPE_CLASS}`,
+    getValid({ noDisabled } = {}) {
+        return filter(this.models, item => !item.get('private')).filter(item =>
+          noDisabled ? item.get('active') : 1
+        );
+    }
 
-  getStyleable() {
-    return filter(
-      this.models,
-      item => item.get('active') && !item.get('private')
-    );
-  },
-
-  getValid({ noDisabled } = {}) {
-    return filter(this.models, item => !item.get('private')).filter(item =>
-      noDisabled ? item.get('active') : 1
-    );
-  },
-
-  getFullString(collection, opts = {}) {
-    const result = [];
-    const coll = collection || this;
-    coll.forEach(selector => result.push(selector.getFullName(opts)));
-    return result.join('').trim();
-  }
-});
+    getFullString(collection, opts = {}) {
+        const result = [];
+        const coll = collection || this;
+        coll.forEach(selector => result.push(selector.getFullName(opts)));
+        return result.join('').trim();
+    }
+}
+Selectors.prototype.model = Selector;
+Selectors.prototype.modelId = attr => `${attr.name}_${attr.type || Selector.TYPE_CLASS}`;

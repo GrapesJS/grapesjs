@@ -1,7 +1,14 @@
 import Backbone from 'backbone';
 
-export default Backbone.Model.extend({
-  defaults: {
+export default class Button extends Backbone.Model {
+    initialize(options) {
+        if (this.get('buttons').length) {
+          var Buttons = require('./Buttons').default;
+          this.set('buttons', new Buttons(this.get('buttons')));
+        }
+    }
+}
+Button.prototype.defaults = {
     id: '',
     label: '',
     tagName: 'span',
@@ -17,12 +24,4 @@ export default Backbone.Model.extend({
     runDefaultCommand: true,
     stopDefaultCommand: false,
     disable: false
-  },
-
-  initialize(options) {
-    if (this.get('buttons').length) {
-      var Buttons = require('./Buttons').default;
-      this.set('buttons', new Buttons(this.get('buttons')));
-    }
-  }
-});
+  };

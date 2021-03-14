@@ -1,9 +1,24 @@
 import Backbone from 'backbone';
 
-export default Backbone.Model.extend({
-  idAttribute: 'name',
+export default class Device extends Backbone.Model {
+    initialize() {
+        this.get('widthMedia') === null &&
+          this.set('widthMedia', this.get('width'));
+        this.get('width') === null && this.set('width', this.get('widthMedia'));
+        !this.get('priority') &&
+          this.set('priority', parseFloat(this.get('widthMedia')) || 0);
+        const toCheck = ['width', 'height', 'widthMedia'];
+        toCheck.forEach(prop => this.checkUnit(prop));
+    }
 
-  defaults: {
+    checkUnit(prop) {
+        const pr = this.get(prop) || '';
+        const noUnit = (parseFloat(pr) || 0).toString() === pr.toString();
+        noUnit && this.set(prop, `${pr}px`);
+    }
+}
+Device.prototype.idAttribute = 'name';
+Device.prototype.defaults = {
     name: '',
 
     // Width to set for the editor iframe
@@ -18,21 +33,4 @@ export default Backbone.Model.extend({
 
     // Setup the order of media queries
     priority: null
-  },
-
-  initialize() {
-    this.get('widthMedia') === null &&
-      this.set('widthMedia', this.get('width'));
-    this.get('width') === null && this.set('width', this.get('widthMedia'));
-    !this.get('priority') &&
-      this.set('priority', parseFloat(this.get('widthMedia')) || 0);
-    const toCheck = ['width', 'height', 'widthMedia'];
-    toCheck.forEach(prop => this.checkUnit(prop));
-  },
-
-  checkUnit(prop) {
-    const pr = this.get(prop) || '';
-    const noUnit = (parseFloat(pr) || 0).toString() === pr.toString();
-    noUnit && this.set(prop, `${pr}px`);
-  }
-});
+  };

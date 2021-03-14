@@ -1,7 +1,8 @@
 import Backbone from 'backbone';
 
-export default Backbone.Model.extend({
-  defaults: {
+export default class Block extends Backbone.Model {
+}
+Block.prototype.defaults = {
     // If true, triggers an 'active' event on dropped component
     activate: 0,
     // If true, the dropped component will be selected
@@ -17,5 +18,4 @@ export default Backbone.Model.extend({
     content: '',
     category: '',
     attributes: {}
-  }
-});
+  };

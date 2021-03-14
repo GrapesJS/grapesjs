@@ -3,8 +3,9 @@ import AssetImage from './AssetImage';
 import AssetImageView from './../view/AssetImageView';
 import TypeableCollection from 'domain_abstract/model/TypeableCollection';
 
-export default Backbone.Collection.extend(TypeableCollection).extend({
-  types: [
+export default class Assets extends Backbone.Collection.extend(TypeableCollection) {
+}
+Assets.prototype.types = [
     {
       id: 'image',
       model: AssetImage,
@@ -19,5 +20,4 @@ export default Backbone.Collection.extend(TypeableCollection).extend({
         return value;
       }
     }
-  ]
-});
+  ];

@@ -17,10 +17,44 @@ import PropertyInteger from './PropertyInteger';
 import PropertyIntegerView from './../view/PropertyIntegerView';
 import PropertyView from './../view/PropertyView';
 
-export default Backbone.Collection.extend(TypeableCollection).extend({
-  extendViewApi: 1,
+export default class Properties extends Backbone.Collection.extend(TypeableCollection) {
+    deepClone() {
+        const collection = this.clone();
+        collection.reset(
+          collection.map(model => {
+            const cloned = model.clone();
+            cloned.typeView = model.typeView;
+            return cloned;
+          })
+        );
+        return collection;
+    }
 
-  types: [
+    /**
+     * Parse a value and return an array splitted by properties
+     * @param  {string} value
+     * @return {Array}
+     * @return
+     */
+    parseValue(value) {
+        const properties = [];
+        const values = value.split(' ');
+        values.forEach((value, i) => {
+          const property = this.at(i);
+          if (!property) return;
+          properties.push({ ...property.attributes, ...{ value } });
+        });
+        return properties;
+    }
+
+    getFullValue() {
+        let result = '';
+        this.each(model => (result += `${model.getFullValue()} `));
+        return result.trim();
+    }
+}
+Properties.prototype.extendViewApi = 1;
+Properties.prototype.types = [
     {
       id: 'stack',
       model: PropertyStack,
@@ -110,40 +144,4 @@ export default Backbone.Collection.extend(TypeableCollection).extend({
         return value;
       }
     }
-  ],
-
-  deepClone() {
-    const collection = this.clone();
-    collection.reset(
-      collection.map(model => {
-        const cloned = model.clone();
-        cloned.typeView = model.typeView;
-        return cloned;
-      })
-    );
-    return collection;
-  },
-
-  /**
-   * Parse a value and return an array splitted by properties
-   * @param  {string} value
-   * @return {Array}
-   * @return
-   */
-  parseValue(value) {
-    const properties = [];
-    const values = value.split(' ');
-    values.forEach((value, i) => {
-      const property = this.at(i);
-      if (!property) return;
-      properties.push({ ...property.attributes, ...{ value } });
-    });
-    return properties;
-  },
-
-  getFullValue() {
-    let result = '';
-    this.each(model => (result += `${model.getFullValue()} `));
-    return result.trim();
-  }
-});
+  ];

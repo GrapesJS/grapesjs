@@ -4,157 +4,141 @@ import { bindAll, isNumber, isNull, debounce } from 'underscore';
 import { createEl, motionsEv } from 'utils/dom';
 import Dragger from 'utils/Dragger';
 
-export default Backbone.View.extend({
-  events: {
-    'click [data-action-remove]': 'remove',
-    'mousedown [data-action-move]': 'startDrag'
-  },
-
-  initialize(opts = {}, conf = {}) {
-    bindAll(
-      this,
-      'onScroll',
-      'frameLoaded',
-      'updateOffset',
-      'remove',
-      'startDrag'
-    );
-    const { model } = this;
-    const config = {
-      ...(opts.config || conf),
-      frameWrapView: this
-    };
-    const { canvasView, em } = config;
-    this.cv = canvasView;
-    this.config = config;
-    this.em = em;
-    this.canvas = em && em.get('Canvas');
-    this.ppfx = config.pStylePrefix || '';
-    this.frame = new FrameView({ model, config });
-    this.classAnim = `${this.ppfx}frame-wrapper--anim`;
-    this.listenTo(model, 'loaded', this.frameLoaded);
-    this.listenTo(model, 'change:x change:y', this.updatePos);
-    this.listenTo(model, 'change:width change:height', this.updateSize);
-    this.listenTo(model, 'destroy remove', this.remove);
-    this.updatePos();
-    this.setupDragger();
-  },
-
-  setupDragger() {
-    const { canvas, model } = this;
-    let dragX, dragY, zoom;
-    const toggleEffects = on => {
-      canvas.toggleFramesEvents(on);
-    };
-
-    this.dragger = new Dragger({
-      onStart: () => {
-        const { x, y } = model.attributes;
-        zoom = this.em.getZoomMultiplier();
-        dragX = x;
-        dragY = y;
-        toggleEffects();
-      },
-      onEnd: () => toggleEffects(1),
-      setPosition: posOpts => {
-        model.set({
-          x: dragX + posOpts.x * zoom,
-          y: dragY + posOpts.y * zoom
-        });
-      }
-    });
-  },
-
-  startDrag(ev) {
-    ev && this.dragger.start(ev);
-  },
-
-  remove() {
-    this.frame.remove();
-    this.frame = {};
-    Backbone.View.prototype.remove.apply(this, arguments);
-    return this;
-  },
-
-  updateOffset: debounce(function() {
-    const { em, $el, frame } = this;
-    em.runDefault({ preserveSelected: 1 });
-    $el.removeClass(this.classAnim);
-    frame.model._emitUpdated();
-  }),
-
-  updatePos(md) {
-    const { model, el } = this;
-    const { x, y } = model.attributes;
-    const { style } = el;
-    this.frame.rect = 0;
-    style.left = isNaN(x) ? x : `${x}px`;
-    style.top = isNaN(y) ? y : `${y}px`;
-    md && this.updateOffset();
-  },
-
-  updateSize: debounce(function() {
-    this.updateDim();
-  }),
-
-  /**
-   * Update dimensions of the frame
-   * @private
-   */
-  updateDim() {
-    const { em, el, $el, model, classAnim } = this;
-    const { width, height } = model.attributes;
-    const { style } = el;
-    const currW = style.width || '';
-    const currH = style.height || '';
-    const newW = width || '';
-    const newH = height || '';
-    const noChanges = currW == newW && currH == newH;
-    const un = 'px';
-    this.frame.rect = 0;
-    $el.addClass(classAnim);
-    style.width = isNumber(newW) ? `${newW}${un}` : newW;
-    style.height = isNumber(newH) ? `${newH}${un}` : newH;
-
-    // Set width and height from DOM (should be done only once)
-    if (isNull(width) || isNull(height)) {
-      const newDims = {
-        ...(!width ? { width: el.offsetWidth } : {}),
-        ...(!height ? { height: el.offsetHeight } : {})
-      };
-      model.set(newDims, { silent: 1 });
+export default class FrameWrapView extends Backbone.View {
+    initialize(opts = {}, conf = {}) {
+        bindAll(
+          this,
+          'onScroll',
+          'frameLoaded',
+          'updateOffset',
+          'remove',
+          'startDrag'
+        );
+        const { model } = this;
+        const config = {
+          ...(opts.config || conf),
+          frameWrapView: this
+        };
+        const { canvasView, em } = config;
+        this.cv = canvasView;
+        this.config = config;
+        this.em = em;
+        this.canvas = em && em.get('Canvas');
+        this.ppfx = config.pStylePrefix || '';
+        this.frame = new FrameView({ model, config });
+        this.classAnim = `${this.ppfx}frame-wrapper--anim`;
+        this.listenTo(model, 'loaded', this.frameLoaded);
+        this.listenTo(model, 'change:x change:y', this.updatePos);
+        this.listenTo(model, 'change:width change:height', this.updateSize);
+        this.listenTo(model, 'destroy remove', this.remove);
+        this.updatePos();
+        this.setupDragger();
     }
 
-    // Prevent fixed highlighting box which appears when on
-    // component hover during the animation
-    em.stopDefault({ preserveSelected: 1 });
-    noChanges ? this.updateOffset() : $el.one(motionsEv, this.updateOffset);
-  },
+    setupDragger() {
+        const { canvas, model } = this;
+            let dragX, dragY, zoom;
+            const toggleEffects = on => {
+              canvas.toggleFramesEvents(on);
+            };
 
-  onScroll() {
-    const { frame, em } = this;
-    em.trigger('frame:scroll', {
-      frame,
-      body: frame.getBody(),
-      target: frame.getWindow()
-    });
-  },
+            this.dragger = new Dragger({
+              onStart: () => {
+                const { x, y } = model.attributes;
+                zoom = this.em.getZoomMultiplier();
+                dragX = x;
+                dragY = y;
+                toggleEffects();
+              },
+              onEnd: () => toggleEffects(1),
+              setPosition: posOpts => {
+                model.set({
+                  x: dragX + posOpts.x * zoom,
+                  y: dragY + posOpts.y * zoom
+                });
+              }
+            });
+    }
 
-  frameLoaded() {
-    const { frame } = this;
-    frame.getWindow().onscroll = this.onScroll;
-    this.updateDim();
-  },
+    startDrag(ev) {
+        ev && this.dragger.start(ev);
+    }
 
-  render() {
-    const { frame, $el, ppfx, cv, model, el } = this;
-    const { onRender } = model.attributes;
-    frame.render();
-    $el
-      .empty()
-      .attr({ class: `${ppfx}frame-wrapper` })
-      .append(
-        `
+    remove() {
+        this.frame.remove();
+        this.frame = {};
+        Backbone.View.prototype.remove.apply(this, arguments);
+        return this;
+    }
+
+    updatePos(md) {
+        const { model, el } = this;
+        const { x, y } = model.attributes;
+        const { style } = el;
+        this.frame.rect = 0;
+        style.left = isNaN(x) ? x : `${x}px`;
+        style.top = isNaN(y) ? y : `${y}px`;
+        md && this.updateOffset();
+    }
+
+    /**
+     * Update dimensions of the frame
+     * @private
+     */
+    updateDim() {
+        const { em, el, $el, model, classAnim } = this;
+            const { width, height } = model.attributes;
+            const { style } = el;
+            const currW = style.width || '';
+            const currH = style.height || '';
+            const newW = width || '';
+            const newH = height || '';
+            const noChanges = currW == newW && currH == newH;
+            const un = 'px';
+            this.frame.rect = 0;
+            $el.addClass(classAnim);
+            style.width = isNumber(newW) ? `${newW}${un}` : newW;
+            style.height = isNumber(newH) ? `${newH}${un}` : newH;
+
+            // Set width and height from DOM (should be done only once)
+            if (isNull(width) || isNull(height)) {
+              const newDims = {
+                ...(!width ? { width: el.offsetWidth } : {}),
+                ...(!height ? { height: el.offsetHeight } : {})
+              };
+              model.set(newDims, { silent: 1 });
+            }
+
+            // Prevent fixed highlighting box which appears when on
+            // component hover during the animation
+            em.stopDefault({ preserveSelected: 1 });
+            noChanges ? this.updateOffset() : $el.one(motionsEv, this.updateOffset);
+    }
+
+    onScroll() {
+        const { frame, em } = this;
+        em.trigger('frame:scroll', {
+          frame,
+          body: frame.getBody(),
+          target: frame.getWindow()
+        });
+    }
+
+    frameLoaded() {
+        const { frame } = this;
+        frame.getWindow().onscroll = this.onScroll;
+        this.updateDim();
+    }
+
+    render() {
+        const { frame, $el, ppfx, cv, model, el } = this;
+        const { onRender } = model.attributes;
+        frame.render();
+        $el
+          .empty()
+          .attr({ class: `${ppfx}frame-wrapper` })
+          .append(
+            `
       <div class="${ppfx}frame-wrapper__top gjs-two-color" data-frame-top>
         <div class="${ppfx}frame-wrapper__name" data-action-move>
           ${model.get('name') || ''}
@@ -169,15 +153,15 @@ export default Backbone.View.extend({
       <div class="${ppfx}frame-wrapper__left" data-frame-left></div>
       <div class="${ppfx}frame-wrapper__bottom" data-frame-bottom></div>
       `
-      )
-      .append(frame.el);
-    const elTools = createEl(
-      'div',
-      {
-        class: `${ppfx}tools`,
-        style: 'pointer-events:none; display: none'
-      },
-      `
+          )
+          .append(frame.el);
+        const elTools = createEl(
+          'div',
+          {
+            class: `${ppfx}tools`,
+            style: 'pointer-events:none; display: none'
+          },
+          `
       <div class="${ppfx}highlighter" data-hl></div>
       <div class="${ppfx}badge" data-badge></div>
       <div class="${ppfx}placeholder">
@@ -202,21 +186,34 @@ export default Backbone.View.extend({
       </div>
       <div class="${ppfx}offset-fixed-v"></div>
     `
-    );
-    this.elTools = elTools;
-    cv.toolsWrapper.appendChild(elTools); // TODO remove on frame remove
-    onRender &&
-      onRender({
-        el,
-        elTop: el.querySelector('[data-frame-top]'),
-        elRight: el.querySelector('[data-frame-right]'),
-        elBottom: el.querySelector('[data-frame-bottom]'),
-        elLeft: el.querySelector('[data-frame-left]'),
-        frame: model,
-        frameWrapperView: this,
-        remove: this.remove,
-        startDrag: this.startDrag
-      });
-    return this;
-  }
-});
+        );
+        this.elTools = elTools;
+        cv.toolsWrapper.appendChild(elTools); // TODO remove on frame remove
+        onRender &&
+          onRender({
+            el,
+            elTop: el.querySelector('[data-frame-top]'),
+            elRight: el.querySelector('[data-frame-right]'),
+            elBottom: el.querySelector('[data-frame-bottom]'),
+            elLeft: el.querySelector('[data-frame-left]'),
+            frame: model,
+            frameWrapperView: this,
+            remove: this.remove,
+            startDrag: this.startDrag
+          });
+        return this;
+    }
+}
+FrameWrapView.prototype.events = {
+    'click [data-action-remove]': 'remove',
+    'mousedown [data-action-move]': 'startDrag'
+  };
+FrameWrapView.prototype.updateOffset = debounce(function() {
+    const { em, $el, frame } = this;
+    em.runDefault({ preserveSelected: 1 });
+    $el.removeClass(this.classAnim);
+    frame.model._emitUpdated();
+  });
+FrameWrapView.prototype.updateSize = debounce(function() {
+    this.updateDim();
+  });

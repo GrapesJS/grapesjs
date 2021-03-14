@@ -1,8 +1,8 @@
 import Backbone from 'backbone';
 
-export default Backbone.Model.extend({
-  defaults: {
+export default class ToolbarButton extends Backbone.Model {
+}
+ToolbarButton.prototype.defaults = {
     command: '',
     attributes: {}
-  }
-});
+  };
