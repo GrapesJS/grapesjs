@@ -122,7 +122,9 @@ const Component = Backbone.Model.extend(Styleable).extend(
       traits: ['id', 'title'],
       propagate: '',
       dmode: '',
-      toolbar: null
+      toolbar: null,
+      _undo: true,
+      _undoexc: ['status', 'open']
     },
 
     /**
@@ -193,6 +195,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       this.listenTo(this, 'change:attributes', this.attrUpdated);
       this.listenTo(this, 'change:attributes:id', this._idUpdated);
       this.on('change:toolbar', this.__emitUpdateTlb);
+      this.on('change', this.__onChange);
       this.set('status', '');
       this.views = [];
 
@@ -209,6 +212,27 @@ const Component = Backbone.Model.extend(Styleable).extend(
         this.__isSymbolOrInst() && this.__initSymb();
         em && em.trigger('component:create', this);
       }
+    },
+
+    _initUm() {
+      const um = this.em.get('UndoManager');
+      if (!um) return;
+      um.add(this);
+      um.add(this.components());
+    },
+
+    __onChange(m, opts) {
+      const changed = this.changedAttributes();
+      ['status', 'open', 'toolbar', 'traits'].forEach(
+        name => delete changed[name]
+      );
+      // Propagate component prop changes
+      !isEmptyObj(changed) && this.__changesUp(opts);
+    },
+
+    __changesUp(opts) {
+      const { em, frame } = this;
+      [frame, em].forEach(md => md && md.changesUp(opts));
     },
 
     __emitUpdateTlb() {
@@ -720,10 +744,12 @@ const Component = Backbone.Model.extend(Styleable).extend(
         // This will propagate the change up to __upSymbProps
         child.set('classes', this.get('classes'), { fromInstance: this });
       });
+      this.__changesUp(opts);
     },
 
     __upSymbComps(m, c, o) {
-      const { fromInstance } = o || c || {};
+      const optUp = o || c || {};
+      const { fromInstance } = optUp;
       const toUpOpts = { fromInstance };
       const isTemp = m.opt.temporary;
 
@@ -791,6 +817,8 @@ const Component = Backbone.Model.extend(Styleable).extend(
           });
         }
       }
+
+      this.__changesUp(optUp);
     },
 
     initClasses(m, c, opts = {}) {

@@ -252,7 +252,7 @@ export default Backbone.Collection.extend({
       model.setStyle({});
       model.addClass(name);
     }
-
+    model._initUm();
     this.__onAddEnd();
   },
 

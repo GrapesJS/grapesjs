@@ -1,5 +1,5 @@
 import { Model } from 'backbone';
-import { result, forEach, isEmpty } from 'underscore';
+import { result, forEach, isEmpty, debounce } from 'underscore';
 import { isComponent, isObject } from 'utils/mixins';
 
 const keyAutoW = '__aw';
@@ -9,6 +9,7 @@ export default Model.extend({
   defaults: () => ({
     x: 0,
     y: 0,
+    changesCount: 0,
     attributes: {},
     width: null,
     height: null,
@@ -44,16 +45,15 @@ export default Model.extend({
     !props.width && this.set(keyAutoW, 1);
     !props.height && this.set(keyAutoH, 1);
 
-    // this._initUm();
+    this.getComponent()._initUm();
   },
 
-  _initUm() {
-    const um = this.em.get('UndoManager');
-    const component = this.getComponent();
-    if (!um) return;
-    um.add(component);
-    console.log({ component, um });
-  },
+  changesUp: debounce(function(opt = {}) {
+    if (opt.temporary || opt.noCount || opt.avoidStore) {
+      return;
+    }
+    this.set('changesCount', this.get('changesCount') + 1);
+  }),
 
   getComponent() {
     return this.get('component');
@@ -146,6 +146,7 @@ export default Model.extend({
     const defaults = result(this, 'defaults');
 
     delete obj.styles;
+    delete obj.changesCount;
     obj[keyAutoW] && delete obj.width;
     obj[keyAutoH] && delete obj.height;
 

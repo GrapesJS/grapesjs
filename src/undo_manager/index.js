@@ -36,6 +36,7 @@ export default () => {
     maximumStackLength: 500
   };
   const hasSkip = opts => opts.avoidStore || opts.noUndo;
+  const getChanged = obj => Object.keys(obj.changedAttributes());
 
   return {
     name: 'UndoManager',
@@ -54,14 +55,17 @@ export default () => {
         condition: object => {
           const hasUndo = object.get('_undo');
           if (hasUndo) {
+            const undoExc = object.get('_undoexc');
+            if (isArray(undoExc)) {
+              if (getChanged(object).some(chn => undoExc.indexOf(chn) >= 0))
+                return false;
+            }
             if (isBoolean(hasUndo)) return true;
             if (isArray(hasUndo)) {
-              const changed = Object.keys(object.changedAttributes());
-              if (changed.some(chn => hasUndo.indexOf(hasUndo) >= 0))
+              if (getChanged(object).some(chn => hasUndo.indexOf(chn) >= 0))
                 return true;
             }
           }
-          // console.log('UndoType change', object.attributes, object.changedAttributes());
           return false;
         },
         on(object, v, opt = {}) {

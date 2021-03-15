@@ -271,6 +271,10 @@ export default Backbone.Model.extend({
     }, 0);
   },
 
+  changesUp(opts) {
+    this.handleUpdates(0, 0, opts);
+  },
+
   /**
    * Callback on component hover
    * @param   {Object}   Model
