@@ -44,8 +44,6 @@ export default Model.extend({
 
     !props.width && this.set(keyAutoW, 1);
     !props.height && this.set(keyAutoH, 1);
-
-    this.getComponent()._initUm();
   },
 
   changesUp: debounce(function(opt = {}) {

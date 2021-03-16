@@ -97,12 +97,10 @@ export default Backbone.Collection.extend({
 
     // Remove stuff registered in DomComponents.handleChanges
     const inner = removed.components();
-    const um = em.get('UndoManager');
     em.stopListening(inner);
     em.stopListening(removed);
     em.stopListening(removed.get('classes'));
-    um.remove(removed);
-    um.remove(inner);
+    removed.__postRemove();
   },
 
   model(attrs, options) {
@@ -252,7 +250,8 @@ export default Backbone.Collection.extend({
       model.setStyle({});
       model.addClass(name);
     }
-    model._initUm();
+
+    model.__postAdd({ recursive: 1 });
     this.__onAddEnd();
   },
 

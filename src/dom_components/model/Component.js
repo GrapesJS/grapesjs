@@ -208,17 +208,31 @@ const Component = Backbone.Model.extend(Styleable).extend(
       });
 
       if (!opt.temporary) {
+        this.__postAdd();
         this.init();
         this.__isSymbolOrInst() && this.__initSymb();
         em && em.trigger('component:create', this);
       }
     },
 
-    _initUm() {
+    __postAdd(opts = {}) {
       const um = this.em.get('UndoManager');
-      if (!um) return;
-      um.add(this);
-      um.add(this.components());
+      const comps = this.components();
+      if (um && !this.__hasUm) {
+        um.add(this);
+        um.add(comps);
+        this.__hasUm = 1;
+      }
+      opts.recursive && comps.map(c => c.__postAdd(opts));
+    },
+
+    __postRemove() {
+      const um = this.em.get('UndoManager');
+      if (um) {
+        um.remove(this);
+        um.remove(this.components());
+        delete this.__hasUm;
+      }
     },
 
     __onChange(m, opts) {
