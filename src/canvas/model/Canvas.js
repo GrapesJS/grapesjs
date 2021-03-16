@@ -25,12 +25,7 @@ export default Backbone.Model.extend({
     const { styles = [], scripts = [] } = config;
     const mainPage = em.get('PageManager').getMain();
     const frames = mainPage.getFrames();
-    const frame =
-      mainPage.getMainFrame() ||
-      frames.add({
-        component: em.getWrapper(),
-        styles: em.getStyle()
-      });
+    const frame = mainPage.getMainFrame();
     styles.forEach(style => frame.addLink(style));
     scripts.forEach(script => frame.addScript(script));
     this.set('frame', frame);

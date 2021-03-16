@@ -98,7 +98,7 @@ export default () => {
      * @private
      */
     onLoad() {
-      rules.add(c.rules);
+      rules.add(c.rules, { silent: 1 });
     },
 
     /**
@@ -289,7 +289,7 @@ export default () => {
         }
 
         var modelExists = this.get(newSels, rule.state, rule.mediaText, rule);
-        var model = this.add(newSels, rule.state, rule.mediaText, rule);
+        var model = this.add(newSels, rule.state, rule.mediaText, rule, opts);
         var updateStyle = !modelExists || !opts.avoidUpdateStyle;
         const style = rule.style || {};
 
@@ -297,7 +297,7 @@ export default () => {
           let styleUpdate = opts.extend
             ? { ...model.get('style'), ...style }
             : style;
-          model.set('style', styleUpdate);
+          model.set('style', styleUpdate, opts);
         }
 
         result.push(model);

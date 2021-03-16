@@ -253,46 +253,8 @@ export default () => {
 
       if (em.get('hasPages')) {
         c.components = '';
-        return this;
       }
 
-      // Build wrapper
-      let components = c.components;
-      let wrapper = { ...c.wrapper };
-      wrapper['custom-name'] = c.wrapperName;
-      wrapper.wrapper = 1;
-      wrapper.type = 'wrapper';
-
-      // Components might be a wrapper
-      if (
-        components &&
-        components.constructor === Object &&
-        components.wrapper
-      ) {
-        wrapper = { ...components };
-        components = components.components || [];
-        wrapper.components = [];
-
-        // Have to put back the real object of components
-        if (em) {
-          em.config.components = components;
-          c.components = components;
-        }
-      }
-
-      component = new Component(wrapper, {
-        em,
-        config: c,
-        componentTypes,
-        domc: this
-      });
-      component.set({ attributes: { id: 'wrapper' } });
-
-      componentView = new ComponentView({
-        model: component,
-        config: c,
-        componentTypes
-      });
       return this;
     },
 
@@ -301,7 +263,7 @@ export default () => {
      * @private
      */
     onLoad() {
-      c.components && this.setComponents(c.components);
+      c.components && this.setComponents(c.components, { silent: 1 });
     },
 
     /**
@@ -388,14 +350,11 @@ export default () => {
      * @private
      */
     getComponent() {
-      return (
-        component ||
-        this.em
-          .get('PageManager')
-          .getSelected()
-          .getMainFrame()
-          .getComponent()
-      );
+      return this.em
+        .get('PageManager')
+        .getSelected()
+        .getMainFrame()
+        .getComponent();
     },
 
     /**
