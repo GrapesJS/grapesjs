@@ -49,6 +49,10 @@ describe('Symbols', () => {
 
   beforeAll(() => {
     editor = new Editor({ symbols: 1 });
+    editor
+      .getModel()
+      .get('PageManager')
+      .onLoad();
     wrapper = editor.getWrapper();
   });
 

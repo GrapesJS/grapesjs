@@ -216,7 +216,8 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     __postAdd(opts = {}) {
-      const um = this.em.get('UndoManager');
+      const { em } = this;
+      const um = em && em.get('UndoManager');
       const comps = this.components();
       if (um && !this.__hasUm) {
         um.add(this);
@@ -227,7 +228,8 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     __postRemove() {
-      const um = this.em.get('UndoManager');
+      const { em } = this;
+      const um = em && em.get('UndoManager');
       if (um) {
         um.remove(this);
         um.remove(this.components());
@@ -1387,7 +1389,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
         if (obj[keySymbols]) {
           obj[keySymbols] = this.__getSymbToUp().map(i => i.getId());
         }
-        if (obj[keySymbol]) {
+        if (obj[keySymbol] && !isString(obj[keySymbol])) {
           obj[keySymbol] = obj[keySymbol].getId();
         }
       }

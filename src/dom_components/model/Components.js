@@ -34,9 +34,10 @@ export default Backbone.Collection.extend({
     this.listenTo(this, 'add', this.onAdd);
     this.listenTo(this, 'remove', this.removeChildren);
     this.listenTo(this, 'reset', this.resetChildren);
-    this.config = opt.config;
-    this.em = opt.em;
-    this.domc = opt.domc || this.em.get('DomComponents');
+    const { em, config } = opt;
+    this.config = config;
+    this.em = em;
+    this.domc = opt.domc || (em && em.get('DomComponents'));
   },
 
   resetChildren(models, opts = {}) {
