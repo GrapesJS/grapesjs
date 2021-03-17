@@ -106,34 +106,7 @@ export default () => {
           };
         }
       });
-      const customUndoType = {
-        on(object, value, opt = {}) {
-          !beforeCache && (beforeCache = object.previousAttributes());
 
-          if (hasSkip(opt)) {
-            return;
-          } else {
-            const result = {
-              object,
-              before: beforeCache,
-              after: object.toJSON({ keepSymbols: 1 })
-            };
-            beforeCache = null;
-            return result;
-          }
-        },
-
-        undo(model, bf, af, opt) {
-          model.set(bf);
-        },
-
-        redo(model, bf, af, opt) {
-          model.set(af);
-        }
-      };
-
-      const events = ['style', 'attributes', 'content', 'src'];
-      events.forEach(ev => um.addUndoType(`change:${ev}`, customUndoType));
       um.on('undo redo', () =>
         em.trigger('component:toggled change:canvasOffset')
       );

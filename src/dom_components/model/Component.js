@@ -220,7 +220,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       const um = em && em.get('UndoManager');
       const comps = this.components();
       if (um && !this.__hasUm) {
-        um.add(this);
+        // um.add(this);
         um.add(comps);
         this.__hasUm = 1;
       }
@@ -865,6 +865,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       const addChild = !this.opt.avoidChildren;
       this.set('components', comps);
       addChild &&
+        components &&
         comps.add(
           isFunction(components) ? components(this) : components,
           this.opt
