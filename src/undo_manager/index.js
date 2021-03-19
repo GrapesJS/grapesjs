@@ -85,8 +85,8 @@ export default () => {
         }
       });
       um.changeUndoType('add', {
-        on(model, collection, options = {}) {
-          if (hasSkip(options)) return;
+        on: (model, collection, options = {}) => {
+          if (hasSkip(options) || !this.isRegistered(collection)) return;
           return {
             object: collection,
             before: undefined,
@@ -96,8 +96,8 @@ export default () => {
         }
       });
       um.changeUndoType('remove', {
-        on(model, collection, options = {}) {
-          if (hasSkip(options)) return;
+        on: (model, collection, options = {}) => {
+          if (hasSkip(options) || !this.isRegistered(collection)) return;
           return {
             object: collection,
             before: model,
@@ -246,6 +246,16 @@ export default () => {
      */
     hasRedo() {
       return um.isAvailable('redo');
+    },
+
+    /**
+     * Check if the entity (Model/Collection) to tracked
+     * Note: New Components and CSSRules will be added automatically
+     * @param {Model|Collection} entity Entity to track
+     * @returns {Boolean}
+     */
+    isRegistered(obj) {
+      return !!this.getInstance().objectRegistry.isRegistered(obj);
     },
 
     /**
