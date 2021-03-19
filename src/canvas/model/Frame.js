@@ -16,7 +16,8 @@ export default Model.extend({
     head: [],
     component: '',
     styles: '',
-    _undo: true
+    _undo: true,
+    _undoexc: ['changesCount']
   }),
 
   initialize(props, opts = {}) {
@@ -144,6 +145,7 @@ export default Model.extend({
     const obj = Model.prototype.toJSON.call(this, opts);
     const defaults = result(this, 'defaults');
 
+    if (opts.fromUndo) delete obj.component;
     delete obj.styles;
     delete obj.changesCount;
     obj[keyAutoW] && delete obj.width;

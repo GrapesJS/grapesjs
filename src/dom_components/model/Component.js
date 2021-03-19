@@ -1384,7 +1384,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       delete obj.status;
       delete obj.open; // used in Layers
 
-      if (!opts.keepSymbols) {
+      if (!opts.fromUndo) {
         if (obj[keySymbols]) {
           obj[keySymbols] = this.__getSymbToUp().map(i => i.getId());
         }
