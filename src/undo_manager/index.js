@@ -68,9 +68,9 @@ export default () => {
           }
           return false;
         },
-        on(object, v, opt = {}) {
+        on(object, v, opts) {
           !beforeCache && (beforeCache = object.previousAttributes());
-
+          const opt = opts || v || {};
           if (hasSkip(opt)) {
             return;
           } else {

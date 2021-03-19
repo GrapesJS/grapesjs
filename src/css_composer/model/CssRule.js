@@ -36,7 +36,9 @@ export default Backbone.Model.extend(Styleable).extend({
     // If true, sets '!important' on all properties
     // You can use an array to specify properties to set important
     // Used in view
-    important: 0
+    important: 0,
+
+    _undo: true
   },
 
   initialize(c, opt = {}) {
