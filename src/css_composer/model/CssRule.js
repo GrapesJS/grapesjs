@@ -3,6 +3,7 @@ import Backbone from 'backbone';
 import Styleable from 'domain_abstract/model/Styleable';
 import { isEmpty, forEach } from 'underscore';
 import Selectors from 'selector_manager/model/Selectors';
+import { isEmptyObj } from 'utils/mixins';
 
 const { CSS } = window;
 
@@ -46,6 +47,13 @@ export default Backbone.Model.extend(Styleable).extend({
     this.opt = opt;
     this.em = opt.em;
     this.ensureSelectors();
+    this.on('change', this.__onChange);
+  },
+
+  __onChange(m, opts) {
+    const { em } = this;
+    const changed = this.changedAttributes();
+    !isEmptyObj(changed) && em && em.changesUp(opts);
   },
 
   clone() {
