@@ -33,7 +33,8 @@ export default () => {
   let config;
   let beforeCache;
   const configDef = {
-    maximumStackLength: 500
+    maximumStackLength: 500,
+    trackSelection: 1
   };
   const hasSkip = opts => opts.avoidStore || opts.noUndo;
   const getChanged = obj => Object.keys(obj.changedAttributes());
@@ -113,6 +114,10 @@ export default () => {
       ['undo', 'redo'].forEach(ev => um.on(ev, () => em.trigger(ev)));
 
       return this;
+    },
+
+    postLoad() {
+      config.trackSelection && em && this.add(em.get('selected'));
     },
 
     /**

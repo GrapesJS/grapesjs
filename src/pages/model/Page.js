@@ -3,7 +3,8 @@ import Frames from 'canvas/model/Frames';
 
 export default Model.extend({
   defaults: () => ({
-    frames: []
+    frames: [],
+    _undo: true
   }),
 
   initialize(props, opts = {}) {

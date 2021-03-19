@@ -15,7 +15,8 @@ export default Model.extend({
     height: null,
     head: [],
     component: '',
-    styles: ''
+    styles: '',
+    _undo: true
   }),
 
   initialize(props, opts = {}) {
