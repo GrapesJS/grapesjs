@@ -8,7 +8,13 @@ export default Model.extend({
   }),
 
   initialize(props, opts = {}) {
-    this.set('frames', new Frames(this.get('frames'), opts.config));
+    const { config = {} } = opts;
+    const { em } = config;
+    this.em = em;
+    const frames = new Frames(this.get('frames'), config);
+    this.set('frames', frames);
+    const um = em && em.get('UndoManager');
+    um && um.add(frames);
   },
 
   getFrames() {
