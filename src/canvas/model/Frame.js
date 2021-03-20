@@ -48,6 +48,10 @@ export default Model.extend({
     !props.height && this.set(keyAutoH, 1);
   },
 
+  onRemove() {
+    this.getComponent().remove({ root: 1 });
+  },
+
   changesUp: debounce(function(opt = {}) {
     if (opt.temporary || opt.noCount || opt.avoidStore) {
       return;

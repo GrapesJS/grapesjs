@@ -17,6 +17,10 @@ export default Model.extend({
     um && um.add(frames);
   },
 
+  onRemove() {
+    this.get('frames').reset();
+  },
+
   getFrames() {
     return this.get('frames');
   },

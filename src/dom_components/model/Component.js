@@ -1576,7 +1576,10 @@ const Component = Backbone.Model.extend(Styleable).extend(
     remove(opts = {}) {
       const { em } = this;
       const coll = this.collection;
-      const remove = () => coll && coll.remove(this, opts);
+      const remove = () => {
+        coll && coll.remove(this, opts);
+        opts.root && this.components('');
+      };
       const rmOpts = { ...opts };
       [this, em].map(i =>
         i.trigger('component:remove:before', this, remove, rmOpts)
