@@ -93,12 +93,8 @@ describe('Pages', () => {
       initPages = [
         {
           id: idPage1,
-          frames: [
-            {
-              component: [comp1],
-              styles: `#${idComp1} { color: red }`
-            }
-          ]
+          component: [comp1],
+          styles: `#${idComp1} { color: red }`
         },
         {
           id: 'page-2',

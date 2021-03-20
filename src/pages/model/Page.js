@@ -10,8 +10,15 @@ export default Model.extend({
   initialize(props, opts = {}) {
     const { config = {} } = opts;
     const { em } = config;
+    const defFrame = {};
     this.em = em;
-    const frames = new Frames(this.get('frames'), config);
+    if (!props.frames) {
+      defFrame.component = props.component;
+      defFrame.styles = props.styles;
+      ['component', 'styles'].map(i => this.unset(i));
+    }
+    const frms = props.frames || [defFrame];
+    const frames = new Frames(frms, config);
     this.set('frames', frames);
     const um = em && em.get('UndoManager');
     um && um.add(frames);
