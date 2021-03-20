@@ -4,7 +4,8 @@ import { Model } from 'backbone';
 import Pages from './model/Pages';
 import Page from './model/Page';
 
-export const evPfx = 'page:';
+export const evAll = 'page';
+export const evPfx = `${evAll}:`;
 export const evPageSelect = `${evPfx}select`;
 export const evPageUpdate = `${evPfx}update`;
 export const evPageAdd = `${evPfx}add`;
@@ -24,6 +25,7 @@ export default () => {
     Pages,
 
     events: {
+      all: evAll,
       select: evPageSelect,
       update: evPageUpdate,
       add: evPageAdd,
@@ -53,13 +55,19 @@ export default () => {
         em.trigger(evPageUpdate, p, p.changedAttributes(), c);
       });
       pages.on('reset', coll => coll.at(0) && this.select(coll.at(0)));
+      pages.on('all', this.__onChange, this);
       model.on('change:selected', this._onPageChange);
 
       return this;
     },
 
+    __onChange(event, page, coll, opts) {
+      const options = opts || coll;
+      this.em.trigger(evAll, { event, page, options });
+    },
+
     onLoad() {
-      const pages = this.getAll();
+      const { pages } = this;
       const opt = { silent: true };
       pages.add(this.config.pages || [], opt);
       const mainPage = !pages.length
@@ -79,9 +87,8 @@ export default () => {
     postLoad() {
       const { em, model } = this;
       const um = em.get('UndoManager');
-      const pages = this.getAll();
       um && um.add(model);
-      um && um.add(pages);
+      um && um.add(this.pages);
     },
 
     /**
@@ -133,15 +140,16 @@ export default () => {
      * @returns {Page}
      */
     getMain() {
-      const pages = this.getAll();
+      const { pages } = this;
       return pages.filter(p => p.get('type') === typeMain)[0] || pages.at(0);
     },
 
     /**
      * Get all pages
+     * @returns {Array<Page>}
      */
     getAll() {
-      return this.pages;
+      return this.pages.models;
     },
 
     getAllMap() {
@@ -158,7 +166,7 @@ export default () => {
      */
     select(pg, opts = {}) {
       const page = isString(pg) ? this.get(pg) : pg;
-      this.model.set('selected', page, opts);
+      page && this.model.set('selected', page, opts);
       return this;
     },
 
@@ -199,7 +207,7 @@ export default () => {
         } catch (err) {}
       }
 
-      res && res.length && this.getAll().reset(res);
+      res && res.length && this.pages.reset(res);
 
       return res;
     },
