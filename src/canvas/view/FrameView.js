@@ -405,7 +405,7 @@ export default Backbone.View.extend({
   _toggleEffects(enable) {
     const method = enable ? on : off;
     const win = this.getWindow();
-    method(win, `${motionsEv} resize`, this._emitUpdate);
+    win && method(win, `${motionsEv} resize`, this._emitUpdate);
   },
 
   _emitUpdate() {
