@@ -1345,7 +1345,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
         if (obj[keySymbols]) {
           obj[keySymbols] = this.__getSymbToUp().map(i => i.getId());
         }
-        if (obj[keySymbol]) {
+        if (obj[keySymbol] && !isString(obj[keySymbol])) {
           obj[keySymbol] = obj[keySymbol].getId();
         }
       }
