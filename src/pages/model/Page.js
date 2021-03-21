@@ -1,4 +1,5 @@
 import { Model } from 'backbone';
+import { result, forEach } from 'underscore';
 import Frames from 'canvas/model/Frames';
 
 export default Model.extend({
@@ -39,5 +40,21 @@ export default Model.extend({
   getMainComponent() {
     const frame = this.getMainFrame();
     return frame && frame.getComponent();
+  },
+
+  toJSON(opts = {}) {
+    const obj = Model.prototype.toJSON.call(this, opts);
+    const defaults = result(this, 'defaults');
+
+    // Remove private keys
+    forEach(obj, (value, key) => {
+      key.indexOf('_') === 0 && delete obj[key];
+    });
+
+    forEach(defaults, (value, key) => {
+      if (obj[key] === value) delete obj[key];
+    });
+
+    return obj;
   }
 });

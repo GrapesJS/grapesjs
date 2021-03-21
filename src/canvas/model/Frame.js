@@ -147,7 +147,16 @@ export default Model.extend({
 
   toJSON(opts = {}) {
     const obj = Model.prototype.toJSON.call(this, opts);
+    const { em } = this;
+    const sm = em && em.get('StorageManager');
+    const smc = sm && sm.getConfig();
     const defaults = result(this, 'defaults');
+
+    if (smc && !opts.fromUndo) {
+      const opts = { component: this.getComponent() };
+      if (smc.storeHtml) obj.html = em.getHtml(opts);
+      if (smc.storeCss) obj.css = em.getCss(opts);
+    }
 
     if (opts.fromUndo) delete obj.component;
     delete obj.styles;
@@ -157,7 +166,7 @@ export default Model.extend({
 
     // Remove private keys
     forEach(obj, (value, key) => {
-      key.indexOf('__') === 0 && delete obj[key];
+      key.indexOf('_') === 0 && delete obj[key];
     });
 
     forEach(defaults, (value, key) => {

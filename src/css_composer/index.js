@@ -151,9 +151,10 @@ export default () => {
      */
     store(noStore) {
       if (!c.stm) return;
-      var obj = {};
-      var keys = this.storageKey();
-      if (keys.indexOf('css') >= 0) obj.css = c.em.getCss();
+      const obj = {};
+      const keys = this.storageKey();
+      const hasPages = em && em.get('hasPages');
+      if (keys.indexOf('css') >= 0 && !hasPages) obj.css = c.em.getCss();
       if (keys.indexOf('styles') >= 0) obj.styles = JSON.stringify(rules);
       if (!noStore) c.stm.store(obj);
       return obj;

@@ -520,8 +520,8 @@ export default Backbone.Model.extend({
     const { optsHtml } = config;
     const exportWrapper = config.exportWrapper;
     const wrapperIsBody = config.wrapperIsBody;
-    const js = config.jsInHtml ? this.getJs() : '';
-    var wrp = this.get('DomComponents').getComponent();
+    const js = config.jsInHtml ? this.getJs(opts) : '';
+    var wrp = opts.component || this.get('DomComponents').getComponent();
     var html = this.get('CodeManager').getCode(wrp, 'html', {
       exportWrapper,
       wrapperIsBody,
@@ -547,7 +547,7 @@ export default Backbone.Model.extend({
       ? opts.keepUnusedStyles
       : config.keepUnusedStyles;
     const cssc = this.get('CssComposer');
-    const wrp = this.get('DomComponents').getComponent();
+    const wrp = opts.component || this.get('DomComponents').getComponent();
     const protCss = !avoidProt ? config.protectedCss : '';
 
     return (
@@ -566,8 +566,8 @@ export default Backbone.Model.extend({
    * @return {string} JS string
    * @private
    */
-  getJs() {
-    var wrp = this.get('DomComponents').getWrapper();
+  getJs(opts = {}) {
+    var wrp = opts.component || this.get('DomComponents').getWrapper();
     return this.get('CodeManager')
       .getCode(wrp, 'js')
       .trim();
