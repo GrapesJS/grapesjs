@@ -12,6 +12,10 @@ export default Backbone.View.extend({
 
   events: {},
 
+  attributes() {
+    return this.model.get('attributes');
+  },
+
   initialize(o = {}, config = {}) {
     this.config = config;
     const pfx = config.pStylePrefix || '';
@@ -25,6 +29,7 @@ export default Backbone.View.extend({
     this.events[`click .${pfx}title`] = 'toggle';
     this.listenTo(this.model, 'change:open', this.updateVisibility);
     this.delegateEvents();
+    this.model.view = this;
   },
 
   updateVisibility() {
@@ -33,13 +38,13 @@ export default Backbone.View.extend({
   },
 
   open() {
-    this.el.className = `${this.className} ${this.activeClass}`;
+    this.$el.addClass(this.activeClass);
     this.getIconEl().className = `${this.iconClass} ${this.caretD}`;
     this.getBlocksEl().style.display = '';
   },
 
   close() {
-    this.el.className = this.className;
+    this.$el.removeClass(this.activeClass);
     this.getIconEl().className = `${this.iconClass} ${this.caretR}`;
     this.getBlocksEl().style.display = 'none';
   },
@@ -77,7 +82,7 @@ export default Backbone.View.extend({
       pfx: this.pfx,
       label
     });
-    el.className = this.className;
+    $el.addClass(this.className);
     $el.css({ order: model.get('order') });
     this.updateVisibility();
 
