@@ -222,7 +222,7 @@ export default {
       {
         id: 'tablet',
         name: 'Tablet',
-        width: '768px',
+        width: '769px',
         widthMedia: '992px'
       },
       {
