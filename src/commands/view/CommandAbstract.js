@@ -18,16 +18,6 @@ export default Backbone.View.extend({
     this.freezClass = this.ppfx + 'freezed';
 
     this.canvas = this.em.get && this.em.get('Canvas');
-
-    if (this.em.get) this.setElement(this.getCanvas());
-
-    if (this.canvas) {
-      this.$canvas = this.$el;
-      // this.frameEl = this.canvas.getFrameEl();
-      this.canvasTool = this.getCanvasTools();
-      // this.bodyEl = this.getCanvasBody();
-    }
-
     this.init(this.config);
   },
 
