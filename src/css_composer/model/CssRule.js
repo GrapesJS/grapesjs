@@ -63,7 +63,7 @@ export default Backbone.Model.extend(Styleable).extend({
     return new this.constructor(attr, opts);
   },
 
-  ensureSelectors() {
+  ensureSelectors(m, c, opts) {
     const { em } = this;
     const sm = em && em.get('SelectorManager');
     const toListen = [this, 'change:selectors', this.ensureSelectors];
@@ -79,7 +79,7 @@ export default Backbone.Model.extend(Styleable).extend({
       sels = new Selectors(res);
     }
 
-    this.set('selectors', sels);
+    this.set('selectors', sels, opts);
     this.listenTo(...toListen);
   },
 
