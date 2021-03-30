@@ -143,8 +143,9 @@ export default Backbone.View.extend({
   },
 
   remove() {
+    const wrp = this.wrapper;
     this._toggleEffects();
-    this.wrapper.remove();
+    wrp && wrp.remove();
     Backbone.View.prototype.remove.apply(this, arguments);
   },
 
