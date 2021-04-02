@@ -73,13 +73,14 @@ export default Backbone.View.extend({
     this.frame.remove(opts);
     Backbone.View.prototype.remove.apply(this, arguments);
     ['frame', 'dragger', 'cv', 'em', 'canvas', 'elTools'].forEach(
-      i => (this[i] = {})
+      i => (this[i] = 0)
     );
     return this;
   },
 
   updateOffset: debounce(function() {
     const { em, $el, frame } = this;
+    if (!em) return;
     em.runDefault({ preserveSelected: 1 });
     $el.removeClass(this.classAnim);
     frame.model._emitUpdated();
