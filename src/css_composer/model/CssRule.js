@@ -102,11 +102,10 @@ export default Backbone.Model.extend(Styleable).extend({
    */
   selectorsToString(opts = {}) {
     const result = [];
-    const { em } = this;
     const state = this.get('state');
     const wrapper = this.get('wrapper');
     const addSelector = this.get('selectorsAdd');
-    const isBody = wrapper && em && em.getConfig('wrapperIsBody');
+    const isBody = wrapper && opts.body;
     const selOpts = {
       escape: str => (CSS && CSS.escape ? CSS.escape(str) : str)
     };
@@ -126,7 +125,7 @@ export default Backbone.Model.extend(Styleable).extend({
    */
   getDeclaration(opts = {}) {
     let result = '';
-    const selectors = this.selectorsToString();
+    const selectors = this.selectorsToString(opts);
     const style = this.styleToString(opts);
     const singleAtRule = this.get('singleAtRule');
 
