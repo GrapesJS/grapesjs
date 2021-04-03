@@ -1,7 +1,7 @@
 import { map } from 'underscore';
 import Backbone from 'backbone';
 import Styleable from 'domain_abstract/model/Styleable';
-import { isEmpty, forEach } from 'underscore';
+import { isEmpty, forEach, isString } from 'underscore';
 import Selectors from 'selector_manager/model/Selectors';
 import { isEmptyObj } from 'utils/mixins';
 
@@ -73,6 +73,8 @@ export default Backbone.Model.extend(Styleable).extend({
     if (sels.models) {
       sels = [...sels.models];
     }
+
+    sels = isString(sels) ? [sels] : sels;
 
     if (Array.isArray(sels)) {
       const res = sels.filter(i => i).map(i => (sm ? sm.add(i) : i));
