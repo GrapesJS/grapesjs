@@ -347,10 +347,11 @@ export default Backbone.View.extend({
     const frms = model.get('frames');
     frms.listenToLoad();
     frames.render();
-    const mainFrame = frms.at(0).view;
-    em.setCurrentFrame(mainFrame);
+    const mainFrame = frms.at(0);
+    const currFrame = mainFrame && mainFrame.view;
+    em.setCurrentFrame(currFrame);
     framesArea && framesArea.appendChild(frames.el);
-    this.frame = mainFrame;
+    this.frame = currFrame;
   },
 
   render() {
