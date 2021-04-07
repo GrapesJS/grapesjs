@@ -558,7 +558,7 @@ export default Backbone.View.extend({
     const $parent = parent && $(parent);
 
     if (style.overflow && style.overflow !== 'visible') return;
-    if ($el.css('float') !== 'none') return;
+    if ($el.css('float') && $el.css('float') !== 'none') return;
     if (
       $parent &&
       $parent.css('display') == 'flex' &&
@@ -622,13 +622,22 @@ export default Backbone.View.extend({
 
     // Check if the target could accept the source
     let droppable = trgModel.get('droppable');
-    droppable = droppable instanceof Backbone.Collection ? 1 : droppable;
-    droppable = droppable instanceof Array ? droppable.join(', ') : droppable;
-    result.dropInfo = droppable;
-    droppable = isString(droppable) ? this.matches(src, droppable) : droppable;
-    droppable =
-      draggable && this.isTextableActive(srcModel, trgModel) ? 1 : droppable;
-    result.droppable = droppable;
+    if (typeof droppable === 'function') {
+      let res = droppable(src, trg);
+      result.droppable = res;
+      result.dropInfo = res;
+      droppable = res;
+    } else {
+      droppable = droppable instanceof Backbone.Collection ? 1 : droppable;
+      droppable = droppable instanceof Array ? droppable.join(', ') : droppable;
+      result.dropInfo = droppable;
+      droppable = isString(droppable)
+        ? this.matches(src, droppable)
+        : droppable;
+      droppable =
+        draggable && this.isTextableActive(srcModel, trgModel) ? 1 : droppable;
+      result.droppable = droppable;
+    }
 
     if (!droppable || !draggable) {
       result.valid = false;
