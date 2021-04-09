@@ -565,6 +565,14 @@ export default Backbone.View.extend({
       $parent.css('flex-direction') !== 'column'
     )
       return;
+    if (
+      $parent &&
+      $parent.css('display') == 'flex' &&
+      $parent.css('flex-direction') === 'column'
+    )
+      return true;
+    if ($el.css('float') !== 'none') return;
+
     switch (style.position) {
       case 'static':
       case 'relative':
