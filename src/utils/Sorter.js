@@ -555,10 +555,13 @@ export default Backbone.View.extend({
     if (isTextNode(el)) return;
     const style = el.style || {};
     const $el = $(el);
-    const $parent = parent && $(parent);
+    let $parent = parent && $(parent);
+    if(parent.shadowRoot){
+      const slot = parent.shadowRoot.querySelector('slot');
+      if(slot) $parent = $(slot).css('display') === 'contents'?$(slot.parentElement):$(slot);
+    }
 
     if (style.overflow && style.overflow !== 'visible') return;
-    if ($el.css('float') !== 'none') return;
     if (
       $parent &&
       $parent.css('display') == 'flex' &&
