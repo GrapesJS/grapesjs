@@ -106,26 +106,19 @@ export default Backbone.View.extend({
    */
   updateDim() {
     const { em, el, $el, model, classAnim } = this;
-    const { width, height } = model.attributes;
-    const { style } = el;
-    const currW = style.width || '';
-    const currH = style.height || '';
-    const newW = width || '';
-    const newH = height || '';
-    const noChanges = currW == newW && currH == newH;
-    const un = 'px';
     this.frame.rect = 0;
     $el.addClass(classAnim);
-    style.width = isNumber(newW) ? `${newW}${un}` : newW;
-    style.height = isNumber(newH) ? `${newH}${un}` : newH;
+    const { noChanges, width, height } = this.__handleSize();
 
     // Set width and height from DOM (should be done only once)
     if (isNull(width) || isNull(height)) {
-      const newDims = {
-        ...(!width ? { width: el.offsetWidth } : {}),
-        ...(!height ? { height: el.offsetHeight } : {})
-      };
-      model.set(newDims, { silent: 1 });
+      model.set(
+        {
+          ...(!width ? { width: el.offsetWidth } : {}),
+          ...(!height ? { height: el.offsetHeight } : {})
+        },
+        { silent: 1 }
+      );
     }
 
     // Prevent fixed highlighting box which appears when on
@@ -149,9 +142,25 @@ export default Backbone.View.extend({
     this.updateDim();
   },
 
+  __handleSize() {
+    const un = 'px';
+    const { model, el } = this;
+    const { style } = el;
+    const { width, height } = model.attributes;
+    const currW = style.width || '';
+    const currH = style.height || '';
+    const newW = width || '';
+    const newH = height || '';
+    const noChanges = currW == newW && currH == newH;
+    style.width = isNumber(newW) ? `${newW}${un}` : newW;
+    style.height = isNumber(newH) ? `${newH}${un}` : newH;
+    return { noChanges, width, height, newW, newH };
+  },
+
   render() {
     const { frame, $el, ppfx, cv, model, el } = this;
     const { onRender } = model.attributes;
+    this.__handleSize();
     frame.render();
     $el
       .empty()
