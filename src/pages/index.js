@@ -7,6 +7,7 @@ import Page from './model/Page';
 export const evAll = 'page';
 export const evPfx = `${evAll}:`;
 export const evPageSelect = `${evPfx}select`;
+export const evPageSelectBefore = `${evPageSelect}:before`;
 export const evPageUpdate = `${evPfx}update`;
 export const evPageAdd = `${evPfx}add`;
 export const evPageAddBefore = `${evPageAdd}:before`;
@@ -28,6 +29,7 @@ export default () => {
     events: {
       all: evAll,
       select: evPageSelect,
+      selectBefore: evPageSelectBefore,
       update: evPageUpdate,
       add: evPageAdd,
       addBefore: evPageAddBefore,
@@ -167,7 +169,10 @@ export default () => {
      */
     select(pg, opts = {}) {
       const page = isString(pg) ? this.get(pg) : pg;
-      page && this.model.set('selected', page, opts);
+      if (page) {
+        this.em.trigger(evPageSelectBefore, page, opts);
+        this.model.set('selected', page, opts);
+      }
       return this;
     },
 
