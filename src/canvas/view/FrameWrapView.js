@@ -1,7 +1,7 @@
 import Backbone from 'backbone';
 import FrameView from './FrameView';
 import { bindAll, isNumber, isNull, debounce } from 'underscore';
-import { createEl, motionsEv } from 'utils/dom';
+import { createEl } from 'utils/dom';
 import Dragger from 'utils/Dragger';
 
 export default Backbone.View.extend({
@@ -124,7 +124,7 @@ export default Backbone.View.extend({
     // Prevent fixed highlighting box which appears when on
     // component hover during the animation
     em.stopDefault({ preserveSelected: 1 });
-    noChanges ? this.updateOffset() : $el.one(motionsEv, this.updateOffset);
+    noChanges ? this.updateOffset() : setTimeout(this.updateOffset, 350);
   },
 
   onScroll() {
