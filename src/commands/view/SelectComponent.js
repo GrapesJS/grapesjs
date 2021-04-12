@@ -613,7 +613,8 @@ export default {
     }
 
     const unit = 'px';
-    const { style } = this.toggleToolsEl(1, view);
+    const toolsEl = this.toggleToolsEl(1, view);
+    const { style } = toolsEl;
     const frameOff = this.canvas.canvasRectOffset(el, pos);
     const topOff = frameOff.top;
     const leftOff = frameOff.left;
@@ -629,11 +630,27 @@ export default {
     style.left = leftOff + unit;
     style.width = pos.width + unit;
     style.height = pos.height + unit;
+
+    this._trgToolUp('local', {
+      component,
+      el: toolsEl,
+      top: topOff,
+      left: leftOff,
+      width: pos.width,
+      height: pos.height
+    });
   },
 
   _upToolbar: debounce(function() {
     this.updateToolsGlobal({ force: 1 });
   }),
+
+  _trgToolUp(type, opts = {}) {
+    this.em.trigger('canvas:tools:update', {
+      type,
+      ...opts
+    });
+  },
 
   updateToolsGlobal(opts = {}) {
     const { el, pos, component } = this.getElSelected();
@@ -653,7 +670,8 @@ export default {
     }
 
     const unit = 'px';
-    const { style } = this.toggleToolsEl(1);
+    const toolsEl = this.toggleToolsEl(1);
+    const { style } = toolsEl;
     const targetToElem = canvas.getTargetToElementFixed(
       el,
       canvas.getToolbarEl(),
@@ -667,6 +685,14 @@ export default {
     style.height = pos.height + unit;
 
     this.updateToolbarPos({ top: targetToElem.top, left: targetToElem.left });
+    this._trgToolUp('global', {
+      component,
+      el: toolsEl,
+      top: topOff,
+      left: leftOff,
+      width: pos.width,
+      height: pos.height
+    });
   },
 
   /**
