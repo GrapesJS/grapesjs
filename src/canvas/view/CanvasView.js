@@ -355,7 +355,7 @@ export default Backbone.View.extend({
   },
 
   render() {
-    const { el, $el, ppfx, model, em, frames } = this;
+    const { el, $el, ppfx, config } = this;
     $el.html(this.template());
     const $frames = $el.find('[data-frames]');
     this.framesArea = $frames.get(0);
@@ -369,6 +369,7 @@ export default Backbone.View.extend({
         </div>
       </div>
       <div id="${ppfx}tools" style="pointer-events:none">
+        ${config.extHl ? `<div class="${ppfx}highlighter-sel"></div>` : ''}
         <div class="${ppfx}badge"></div>
         <div class="${ppfx}ghost"></div>
         <div class="${ppfx}toolbar" style="pointer-events:all"></div>

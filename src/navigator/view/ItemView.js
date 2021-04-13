@@ -313,7 +313,8 @@ export default Backbone.View.extend({
   updateStatus(e) {
     ComponentView.prototype.updateStatus.apply(this, [
       {
-        avoidHover: !this.config.highlightHover
+        avoidHover: !this.config.highlightHover,
+        noExtHl: 1
       }
     ]);
   },
