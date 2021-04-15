@@ -9,7 +9,6 @@ export default Component.extend({
   },
 
   toHTML() {
-    this.trigger('sync:content', { silent: 1 });
     return Component.prototype.toHTML.apply(this, arguments);
   }
 });

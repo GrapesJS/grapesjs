@@ -123,6 +123,8 @@ const Component = Backbone.Model.extend(Styleable).extend(
       propagate: '',
       dmode: '',
       toolbar: null,
+      [keySymbol]: 0,
+      [keySymbols]: 0,
       _undo: true,
       _undoexc: ['status', 'open']
     },
