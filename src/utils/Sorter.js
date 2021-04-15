@@ -564,16 +564,9 @@ export default Backbone.View.extend({
     if (style.overflow && style.overflow !== 'visible') return;
     if (
       $parent &&
-      $parent.css('display') == 'flex' &&
-      $parent.css('flex-direction') !== 'column'
+      $parent.css('display') == 'flex'
     )
-      return;
-    if (
-      $parent &&
-      $parent.css('display') == 'flex' &&
-      $parent.css('flex-direction') === 'column'
-    )
-      return true;
+      return $parent.css('flex-direction') === 'column';
     if ($el.css('float') !== 'none') return;
 
     switch (style.position) {
