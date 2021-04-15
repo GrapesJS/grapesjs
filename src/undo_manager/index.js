@@ -108,9 +108,10 @@ export default () => {
         }
       });
 
-      um.on('undo redo', () =>
-        em.trigger('component:toggled change:canvasOffset')
-      );
+      um.on('undo redo', () => {
+        em.trigger('component:toggled change:canvasOffset');
+        em.getSelectedAll().map(c => c.trigger('rerender:layer'));
+      });
       ['undo', 'redo'].forEach(ev => um.on(ev, () => em.trigger(ev)));
 
       return this;
