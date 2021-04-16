@@ -30,6 +30,8 @@ export const eventDrag = 'component:drag';
 export const keySymbols = '__symbols';
 export const keySymbol = '__symbol';
 export const keySymbol2w = '__symbol2w';
+export const keyUpdate = 'component:update';
+export const keyUpdateInside = `${keyUpdate}-inside`;
 
 /**
  * The Component object represents a single node of our template structure, so when you update its properties the changes are
@@ -198,6 +200,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       this.listenTo(this, 'change:attributes:id', this._idUpdated);
       this.on('change:toolbar', this.__emitUpdateTlb);
       this.on('change', this.__onChange);
+      this.on(keyUpdateInside, this.__propToParent);
       this.set('status', '');
       this.views = [];
 
@@ -243,12 +246,25 @@ const Component = Backbone.Model.extend(Styleable).extend(
         name => delete changed[name]
       );
       // Propagate component prop changes
-      !isEmptyObj(changed) && this.__changesUp(opts);
+      if (!isEmptyObj(changed)) {
+        this.__changesUp(opts);
+        this.__propSelfToParent({ component: this, changed, options: opts });
+      }
     },
 
     __changesUp(opts) {
       const { em, frame } = this;
       [frame, em].forEach(md => md && md.changesUp(opts));
+    },
+
+    __propSelfToParent(props) {
+      this.trigger(keyUpdate, props);
+      this.__propToParent(props);
+    },
+
+    __propToParent(props) {
+      const parent = this.parent();
+      parent && parent.trigger(keyUpdateInside, props);
     },
 
     __emitUpdateTlb() {
@@ -1541,17 +1557,24 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     emitUpdate(property, ...args) {
-      const em = this.em;
-      const event = 'component:update' + (property ? `:${property}` : '');
+      const { em } = this;
+      const event = keyUpdate + (property ? `:${property}` : '');
+      const item = property && this.get(property);
       property &&
         this.updated(
           property,
-          property && this.get(property),
+          item,
           property && this.previous(property),
           ...args
         );
       this.trigger(event, ...args);
       em && em.trigger(event, this, ...args);
+      ['components', 'classes'].indexOf(property) >= 0 &&
+        this.__propSelfToParent({
+          component: this,
+          changed: { [property]: item },
+          options: args[2] || args[1] || {}
+        });
     },
 
     /**
