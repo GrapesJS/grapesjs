@@ -1238,13 +1238,13 @@ const Component = Backbone.Model.extend(Styleable).extend(
         cloned.unset(keySymbols);
       } else if (symbol) {
         // Contains already a reference to a symbol
-        symbol.get(keySymbols).push(cloned);
+        symbol.set(keySymbols, [...symbol.__getSymbols(), cloned]);
         cloned.__initSymb();
       } else if (opt.symbol) {
         // Request to create a symbol
         if (this.__isSymbol()) {
           // Already a symbol, cloned should be an instance
-          this.get(keySymbols).push(cloned);
+          this.set(keySymbols, [...symbols, cloned]);
           cloned.set(keySymbol, this);
           cloned.__initSymb();
         } else if (opt.symbolInv) {
