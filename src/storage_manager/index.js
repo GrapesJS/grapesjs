@@ -37,6 +37,7 @@ import LocalStorage from './model/LocalStorage';
 import RemoteStorage from './model/RemoteStorage';
 
 const eventStart = 'storage:start';
+const eventAfter = 'storage:after';
 const eventEnd = 'storage:end';
 const eventError = 'storage:error';
 
@@ -214,6 +215,7 @@ export default () => {
         ? st.store(
             toStore,
             res => {
+              this.onAfter('store', res);
               clb && clb(res);
               this.onEnd('store', res);
             },
@@ -259,6 +261,7 @@ export default () => {
               result[itemKeyR] = res[itemKey];
             }
 
+            this.onAfter('load', result);
             clb && clb(result);
             this.onEnd('load', result);
           },
@@ -298,6 +301,17 @@ export default () => {
       if (em) {
         em.trigger(eventStart);
         ctx && em.trigger(`${eventStart}:${ctx}`, data);
+      }
+    },
+
+    /**
+     * On after callback (before passing data to the callback)
+     * @private
+     */
+    onAfter(ctx, data) {
+      if (em) {
+        em.trigger(eventAfter);
+        ctx && em.trigger(`${eventAfter}:${ctx}`, data);
       }
     },
 

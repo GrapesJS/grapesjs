@@ -35,6 +35,9 @@ export default {
    */
   autoscrollLimit: 50,
 
+  // Experimental: external highlighter box
+  extHl: 0,
+
   /**
    * When some textable component is selected and focused (eg. input or text component) the editor
    * stops some commands (eg. disables the copy/paste of components with CTRL+C/V to allow the copy/paste of the text).

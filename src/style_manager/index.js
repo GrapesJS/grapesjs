@@ -299,7 +299,7 @@ export default () => {
         } else if (config.avoidInlineStyle) {
           rule = cssC.getIdRule(id, opts);
           !rule && !skipAdd && (rule = cssC.setIdRule(id, {}, opts));
-          if (model.is('wrapper')) rule.set('wrapper', 1);
+          if (model.is('wrapper')) rule.set('wrapper', 1, addOpts);
         }
 
         rule && (model = rule);

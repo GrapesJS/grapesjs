@@ -13,6 +13,7 @@ export default Backbone.View.extend({
     model.once('change:ready', () => {
       this.pn.active();
       this.pn.disableButtons();
+      model.set('changesCount', 0);
       setTimeout(() => {
         model.trigger('load', model.get('Editor'));
       });

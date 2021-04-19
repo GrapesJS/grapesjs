@@ -347,14 +347,15 @@ export default Backbone.View.extend({
     const frms = model.get('frames');
     frms.listenToLoad();
     frames.render();
-    const mainFrame = frms.at(0).view;
-    em.setCurrentFrame(mainFrame);
+    const mainFrame = frms.at(0);
+    const currFrame = mainFrame && mainFrame.view;
+    em.setCurrentFrame(currFrame);
     framesArea && framesArea.appendChild(frames.el);
-    this.frame = mainFrame;
+    this.frame = currFrame;
   },
 
   render() {
-    const { el, $el, ppfx, model, em, frames } = this;
+    const { el, $el, ppfx, config } = this;
     $el.html(this.template());
     const $frames = $el.find('[data-frames]');
     this.framesArea = $frames.get(0);
@@ -368,6 +369,7 @@ export default Backbone.View.extend({
         </div>
       </div>
       <div id="${ppfx}tools" style="pointer-events:none">
+        ${config.extHl ? `<div class="${ppfx}highlighter-sel"></div>` : ''}
         <div class="${ppfx}badge"></div>
         <div class="${ppfx}ghost"></div>
         <div class="${ppfx}toolbar" style="pointer-events:all"></div>

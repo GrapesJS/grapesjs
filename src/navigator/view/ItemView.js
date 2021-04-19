@@ -47,7 +47,7 @@ export default Backbone.View.extend({
       }
       <div class="${clsTitleC}">
         <div class="${clsTitle}" style="padding-left: ${gut}" data-toggle-select>
-          <div class="${pfx}layer-title-inn">
+          <div class="${pfx}layer-title-inn" title="${name}">
             <i class="${clsCaret}" data-toggle-open></i>
             ${icon ? `<span class="${clsBase}__icon">${icon}</span>` : ''}
             <span class="${clsInput}" data-name>${name}</span>
@@ -84,6 +84,7 @@ export default Backbone.View.extend({
     this.listenTo(model, 'change:open', this.updateOpening);
     this.listenTo(model, 'change:layerable', this.updateLayerable);
     this.listenTo(model, 'change:style:display', this.updateVisibility);
+    this.listenTo(model, 'rerender:layer', this.render);
     this.className = `${pfx}layer ${pfx}layer__t-${type} no-select ${ppfx}two-color`;
     this.inputNameCls = `${ppfx}layer-name`;
     this.clsTitleC = `${pfx}layer-title-c`;
@@ -312,7 +313,8 @@ export default Backbone.View.extend({
   updateStatus(e) {
     ComponentView.prototype.updateStatus.apply(this, [
       {
-        avoidHover: !this.config.highlightHover
+        avoidHover: !this.config.highlightHover,
+        noExtHl: 1
       }
     ]);
   },
@@ -441,6 +443,8 @@ export default Backbone.View.extend({
   __render() {
     const { model, config, el } = this;
     const { onRender } = config;
-    onRender.bind(this)({ component: model, el });
+    const opt = { component: model, el };
+    onRender.bind(this)(opt);
+    this.em.trigger('layer:render', opt);
   }
 });

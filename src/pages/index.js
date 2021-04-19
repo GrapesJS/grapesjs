@@ -7,11 +7,13 @@ import Page from './model/Page';
 export const evAll = 'page';
 export const evPfx = `${evAll}:`;
 export const evPageSelect = `${evPfx}select`;
+export const evPageSelectBefore = `${evPageSelect}:before`;
 export const evPageUpdate = `${evPfx}update`;
 export const evPageAdd = `${evPfx}add`;
 export const evPageAddBefore = `${evPageAdd}:before`;
 export const evPageRemove = `${evPfx}remove`;
 export const evPageRemoveBefore = `${evPageRemove}:before`;
+const chnSel = 'change:selected';
 const typeMain = 'main';
 
 export default () => {
@@ -27,6 +29,7 @@ export default () => {
     events: {
       all: evAll,
       select: evPageSelect,
+      selectBefore: evPageSelectBefore,
       update: evPageUpdate,
       add: evPageAdd,
       addBefore: evPageAddBefore,
@@ -56,7 +59,7 @@ export default () => {
       });
       pages.on('reset', coll => coll.at(0) && this.select(coll.at(0)));
       pages.on('all', this.__onChange, this);
-      model.on('change:selected', this._onPageChange);
+      model.on(chnSel, this._onPageChange);
 
       return this;
     },
@@ -76,12 +79,13 @@ export default () => {
       this.select(mainPage, opt);
     },
 
-    _onPageChange(m, page) {
+    _onPageChange(m, page, opts) {
       const { em } = this;
       const lm = em.get('LayerManager');
       const mainComp = page.getMainComponent();
       lm && mainComp && lm.setRoot(mainComp);
       em.trigger(evPageSelect, page, m.previous('selected'));
+      this.__onChange(chnSel, page, opts);
     },
 
     postLoad() {
@@ -165,7 +169,10 @@ export default () => {
      */
     select(pg, opts = {}) {
       const page = isString(pg) ? this.get(pg) : pg;
-      page && this.model.set('selected', page, opts);
+      if (page) {
+        this.em.trigger(evPageSelectBefore, page, opts);
+        this.model.set('selected', page, opts);
+      }
       return this;
     },
 

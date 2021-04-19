@@ -141,6 +141,11 @@ export default Model.extend({
     this.removeHeadByAttr('src', src, 'script');
   },
 
+  getPage() {
+    const coll = this.collection;
+    return coll && coll.page;
+  },
+
   _emitUpdated(data = {}) {
     this.em.trigger('frame:updated', { frame: this, ...data });
   },

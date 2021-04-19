@@ -5,17 +5,16 @@ export default Backbone.View.extend({
 
   initialize(o = {}) {
     this.config = o.config || {};
-    const model = this.model;
-    const toTrack = 'change:style change:state change:mediaText';
-    this.listenTo(model, toTrack, this.render);
+    const { model } = this;
+    this.listenTo(model, 'change', this.render);
     this.listenTo(model, 'destroy remove', this.remove);
     this.listenTo(model.get('selectors'), 'change', this.render);
   },
 
   render() {
-    const model = this.model;
+    const { model, el } = this;
     const important = model.get('important');
-    this.el.innerHTML = this.model.toCSS({ important });
+    el.innerHTML = model.toCSS({ important });
     return this;
   }
 });

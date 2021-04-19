@@ -20,6 +20,7 @@ export default Model.extend({
     }
     const frms = props.frames || [defFrame];
     const frames = new Frames(frms, config);
+    frames.page = this;
     this.set('frames', frames);
     const um = em && em.get('UndoManager');
     um && um.add(frames);
