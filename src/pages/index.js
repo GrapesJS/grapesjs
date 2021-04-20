@@ -132,7 +132,7 @@ export default () => {
     /**
      * Add new page
      * @param {Object} props Page properties
-     * @param {Object} [options] Options
+     * @param {Object} [opts] Options
      * @returns {Page}
      * @example
      * const newPage = pageManager.add({
@@ -163,14 +163,14 @@ export default () => {
      * const somePage = pageManager.get('page-id');
      * pageManager.remove(somePage);
      */
-    remove(pg, opts = {}) {
+    remove(page, opts = {}) {
       const { em } = this;
-      const page = isString(pg) ? this.get(pg) : pg;
+      const pg = isString(page) ? this.get(page) : page;
       const rm = () => {
-        page && this.pages.remove(page, opts);
-        return page;
+        pg && this.pages.remove(pg, opts);
+        return pg;
       };
-      !opts.silent && em.trigger(evPageRemoveBefore, page, rm, opts);
+      !opts.silent && em.trigger(evPageRemoveBefore, pg, rm, opts);
       return !opts.abort && rm();
     },
 
@@ -223,11 +223,11 @@ export default () => {
      * const somePage = pageManager.get('page-id');
      * pageManager.select(somePage);
      */
-    select(pg, opts = {}) {
-      const page = isString(pg) ? this.get(pg) : pg;
-      if (page) {
-        this.em.trigger(evPageSelectBefore, page, opts);
-        this.model.set('selected', page, opts);
+    select(page, opts = {}) {
+      const pg = isString(page) ? this.get(page) : page;
+      if (pg) {
+        this.em.trigger(evPageSelectBefore, pg, opts);
+        this.model.set('selected', pg, opts);
       }
       return this;
     },
