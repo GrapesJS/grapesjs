@@ -1,3 +1,37 @@
+/**
+ * You can customize the initial state of the module from the editor initialization
+ * ```js
+ * const editor = grapesjs.init({
+ *  ....
+ *  pageManager: {
+ *    pages: [
+ *      {
+ *        id: 'page-id',
+ *        styles: `.my-class { color: red }`, // or a JSON of styles
+ *        component: '<div class="my-class">My element</div>', // or a JSON of components
+ *      }
+ *   ]
+ *  },
+ * })
+ * ```
+ *
+ * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+ *
+ * ```js
+ * const pageManager = editor.Pages;
+ * ```
+ *
+ * * [add](#add)
+ * * [get](#get)
+ * * [getAll](#getall)
+ * * [getMain](#getmain)
+ * * [remove](#remove)
+ * * [select](#select)
+ * * [getSelected](#getselected)
+ *
+ * @module PageManager
+ */
+
 import { isString, bindAll } from 'underscore';
 import { createId } from 'utils/mixins';
 import { Model } from 'backbone';
@@ -100,6 +134,12 @@ export default () => {
      * @param {Object} props Page properties
      * @param {Object} [options] Options
      * @returns {Page}
+     * @example
+     * const newPage = pageManager.add({
+     *  id: 'new-page-id', // without an explicit ID, a random one will be created
+     *  styles: `.my-class { color: red }`, // or a JSON of styles
+     *  component: '<div class="my-class">My element</div>', // or a JSON of components
+     * });
      */
     add(props, opts = {}) {
       const { em } = this;
@@ -117,6 +157,11 @@ export default () => {
      * Remove page
      * @param {String|Page} page Page or page id
      * @returns {Page}
+     * @example
+     * const removedPage = pageManager.remove('page-id');
+     * // or by passing the page
+     * const somePage = pageManager.get('page-id');
+     * pageManager.remove(somePage);
      */
     remove(pg, opts = {}) {
       const { em } = this;
@@ -133,14 +178,18 @@ export default () => {
      * Get page by id
      * @param {String} id Page id
      * @returns {Page}
+     * @example
+     * const somePage = pageManager.get('page-id');
      */
     get(id) {
       return this.pages.filter(p => p.get('id') === id)[0];
     },
 
     /**
-     * Get main page
+     * Get main page (the first one available)
      * @returns {Page}
+     * @example
+     * const mainPage = pageManager.getMain();
      */
     getMain() {
       const { pages } = this;
@@ -150,6 +199,8 @@ export default () => {
     /**
      * Get all pages
      * @returns {Array<Page>}
+     * @example
+     * const arrayOfPages = pageManager.getAll();
      */
     getAll() {
       return this.pages.models;
@@ -163,9 +214,14 @@ export default () => {
     },
 
     /**
-     * Select page
+     * Change the selected page. This will switch the page rendered in canvas
      * @param {String|Page} page Page or page id
      * @returns {this}
+     * @example
+     * pageManager.select('page-id');
+     * // or by passing the page
+     * const somePage = pageManager.get('page-id');
+     * pageManager.select(somePage);
      */
     select(pg, opts = {}) {
       const page = isString(pg) ? this.get(pg) : pg;
@@ -179,14 +235,13 @@ export default () => {
     /**
      * Get the selected page
      * @returns {Page}
+     * @example
+     * const selectedPage = pageManager.getSelected();
      */
     getSelected() {
       return this.model.get('selected');
     },
 
-    /**
-     * Destroy all
-     */
     destroy() {
       this.pages.off().reset();
       this.model.stopListening();
