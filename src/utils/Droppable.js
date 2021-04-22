@@ -13,7 +13,7 @@ export default class Droppable {
       em
         .get('Canvas')
         .getFrames()
-        .map(frame => frame.get('root').getEl());
+        .map(frame => frame.getComponent().getEl());
     const els = Array.isArray(el) ? el : [el];
     this.el = el;
     this.counter = 0;
@@ -62,7 +62,6 @@ export default class Droppable {
     this.over = 1;
     const utils = em.get('Utils');
     const canvas = em.get('Canvas');
-    const container = canvas.getBody();
     // For security reason I can't read the drag data on dragenter, but
     // as I need it for the Sorter context I will use `dragContent` or just
     // any not empty element
@@ -99,13 +98,13 @@ export default class Droppable {
         nested: 1,
         canvasRelative: 1,
         direction: 'a',
-        container,
+        container: this.el,
         placer: canvas.getPlacerEl(),
         containerSel: '*',
         itemSel: '*',
         pfx: 'gjs-',
         onEndMove: model => this.handleDragEnd(model, dt),
-        document: canvas.getFrameEl().contentDocument
+        document: this.el.ownerDocument
       });
       sorter.setDropContent(content);
       sorter.startSort();

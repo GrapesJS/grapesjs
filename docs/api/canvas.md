@@ -24,36 +24,35 @@ const canvas = editor.Canvas;
 -   [getWindow][5]
 -   [getDocument][6]
 -   [getBody][7]
--   [getWrapperEl][8]
--   [setCustomBadgeLabel][9]
--   [hasFocus][10]
--   [scrollTo][11]
--   [setZoom][12]
--   [getZoom][13]
+-   [setCustomBadgeLabel][8]
+-   [hasFocus][9]
+-   [scrollTo][10]
+-   [setZoom][11]
+-   [getZoom][12]
 
 ## getConfig
 
 Get the configuration object
 
-Returns **[Object][14]** 
+Returns **[Object][13]** 
 
 ## getElement
 
 Get the canvas element
 
-Returns **[HTMLElement][15]** 
+Returns **[HTMLElement][14]** 
 
 ## getFrameEl
 
 Get the iframe element of the canvas
 
-Returns **[HTMLIFrameElement][16]** 
+Returns **[HTMLIFrameElement][15]** 
 
 ## getWindow
 
 Get the window instance of the iframe element
 
-Returns **[Window][17]** 
+Returns **[Window][16]** 
 
 ## getDocument
 
@@ -65,13 +64,7 @@ Returns **HTMLDocument**
 
 Get the body of the iframe element
 
-Returns **[HTMLBodyElement][18]** 
-
-## getWrapperEl
-
-Get the wrapper element containing all the components
-
-Returns **[HTMLElement][15]** 
+Returns **[HTMLBodyElement][17]** 
 
 ## setCustomBadgeLabel
 
@@ -79,7 +72,7 @@ Set custom badge naming strategy
 
 ### Parameters
 
--   `f` **[Function][19]** 
+-   `f` **[Function][18]** 
 
 ### Examples
 
@@ -93,13 +86,13 @@ canvas.setCustomBadgeLabel(function(component){
 
 Get canvas rectangular data
 
-Returns **[Object][14]** 
+Returns **[Object][13]** 
 
 ## hasFocus
 
 Check if the canvas is focused
 
-Returns **[Boolean][20]** 
+Returns **[Boolean][19]** 
 
 ## scrollTo
 
@@ -110,9 +103,9 @@ passed to it. For instance, you can scroll smoothly by using
 
 ### Parameters
 
--   `el` **([HTMLElement][15] | Component)** 
--   `opts` **[Object][14]** Options, same as options for `scrollIntoView` (optional, default `{}`)
-    -   `opts.force` **[Boolean][20]** Force the scroll, even if the element is already visible (optional, default `false`)
+-   `el` **([HTMLElement][14] | Component)** 
+-   `opts` **[Object][13]** Options, same as options for `scrollIntoView` (optional, default `{}`)
+    -   `opts.force` **[Boolean][19]** Force the scroll, even if the element is already visible (optional, default `false`)
 
 ### Examples
 
@@ -130,7 +123,7 @@ Set zoom value
 
 ### Parameters
 
--   `value` **[Number][21]** The zoom value, from 0 to 100
+-   `value` **[Number][20]** The zoom value, from 0 to 100
 
 Returns **this** 
 
@@ -138,7 +131,7 @@ Returns **this**
 
 Get zoom value
 
-Returns **[Number][21]** 
+Returns **[Number][20]** 
 
 ## addFrame
 
@@ -146,7 +139,7 @@ Add new frame to the canvas
 
 ### Parameters
 
--   `props` **[Object][14]** Frame properties (optional, default `{}`)
+-   `props` **[Object][13]** Frame properties (optional, default `{}`)
 -   `opts`   (optional, default `{}`)
 
 ### Examples
@@ -186,30 +179,28 @@ Returns **Frame**
 
 [7]: #getbody
 
-[8]: #getwrapperel
+[8]: #setcustombadgelabel
 
-[9]: #setcustombadgelabel
+[9]: #hasfocus
 
-[10]: #hasfocus
+[10]: #scrollto
 
-[11]: #scrollto
+[11]: #setzoom
 
-[12]: #setzoom
+[12]: #getzoom
 
-[13]: #getzoom
+[13]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[14]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[14]: https://developer.mozilla.org/docs/Web/HTML/Element
 
-[15]: https://developer.mozilla.org/docs/Web/HTML/Element
+[15]: https://developer.mozilla.org/docs/Web/API/HTMLIFrameElement
 
-[16]: https://developer.mozilla.org/docs/Web/API/HTMLIFrameElement
+[16]: https://developer.mozilla.org/docs/Web/API/Window
 
-[17]: https://developer.mozilla.org/docs/Web/API/Window
+[17]: https://developer.mozilla.org/docs/Web/HTML/Element/body
 
-[18]: https://developer.mozilla.org/docs/Web/HTML/Element/body
+[18]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
 
-[19]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+[19]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
 
-[20]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
-
-[21]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+[20]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number

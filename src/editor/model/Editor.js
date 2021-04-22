@@ -28,6 +28,7 @@ const deps = [
   require('panels'),
   require('rich_text_editor'),
   require('asset_manager'),
+  require('pages'),
   require('css_composer'),
   require('trait_manager'),
   require('dom_components'),
@@ -79,6 +80,7 @@ export default Backbone.Model.extend({
     this.set('storables', []);
     this.set('selected', new Collection());
     this.set('dmode', c.dragMode);
+    this.set('hasPages', !!c.pageManager);
     const el = c.el;
     const log = c.log;
     const toLog = log === true ? keys(logs) : isArray(log) ? log : [];
@@ -96,6 +98,7 @@ export default Backbone.Model.extend({
     deps.forEach(name => this.loadModule(name));
     this.on('change:componentHovered', this.componentHovered, this);
     this.on('change:changesCount', this.updateChanges, this);
+    this.on('change:readyLoad change:readyCanvas', this._checkReady, this);
     toLog.forEach(e => this.listenLog(e));
 
     // Deprecations
@@ -111,6 +114,16 @@ export default Backbone.Model.extend({
         });
       }
     );
+  },
+
+  _checkReady() {
+    if (
+      this.get('readyLoad') &&
+      this.get('readyCanvas') &&
+      !this.get('ready')
+    ) {
+      this.set('ready', 1);
+    }
   },
 
   getContainer() {
@@ -150,6 +163,7 @@ export default Backbone.Model.extend({
     const postLoad = () => {
       const modules = this.get('modules');
       modules.forEach(module => module.postLoad && module.postLoad(this));
+      this.set('readyLoad', 1);
       clb && clb();
     };
 
@@ -194,7 +208,7 @@ export default Backbone.Model.extend({
     const cfgParent = !isUndefined(config[name])
       ? config[name]
       : config[Mod.name];
-    const cfg = cfgParent || {};
+    const cfg = cfgParent === true ? {} : cfgParent || {};
     const sm = this.get('StorageManager');
     cfg.pStylePrefix = config.pStylePrefix || '';
 
@@ -255,6 +269,10 @@ export default Backbone.Model.extend({
     timedInterval = setTimeout(() => {
       this.set('changesCount', this.get('changesCount') + 1, opt);
     }, 0);
+  },
+
+  changesUp(opts) {
+    this.handleUpdates(0, 0, opts);
   },
 
   /**
@@ -502,8 +520,8 @@ export default Backbone.Model.extend({
     const { optsHtml } = config;
     const exportWrapper = config.exportWrapper;
     const wrapperIsBody = config.wrapperIsBody;
-    const js = config.jsInHtml ? this.getJs() : '';
-    var wrp = this.get('DomComponents').getComponent();
+    const js = config.jsInHtml ? this.getJs(opts) : '';
+    var wrp = opts.component || this.get('DomComponents').getComponent();
     var html = this.get('CodeManager').getCode(wrp, 'html', {
       exportWrapper,
       wrapperIsBody,
@@ -529,7 +547,7 @@ export default Backbone.Model.extend({
       ? opts.keepUnusedStyles
       : config.keepUnusedStyles;
     const cssc = this.get('CssComposer');
-    const wrp = this.get('DomComponents').getComponent();
+    const wrp = opts.component || this.get('DomComponents').getComponent();
     const protCss = !avoidProt ? config.protectedCss : '';
 
     return (
@@ -548,8 +566,8 @@ export default Backbone.Model.extend({
    * @return {string} JS string
    * @private
    */
-  getJs() {
-    var wrp = this.get('DomComponents').getWrapper();
+  getJs(opts = {}) {
+    var wrp = opts.component || this.get('DomComponents').getWrapper();
     return this.get('CodeManager')
       .getCode(wrp, 'js')
       .trim();
@@ -573,7 +591,7 @@ export default Backbone.Model.extend({
     });
 
     sm.store(store, res => {
-      clb && clb(res);
+      clb && clb(res, store);
       this.set('changesCount', 0);
       this.trigger('storage:store', store);
     });

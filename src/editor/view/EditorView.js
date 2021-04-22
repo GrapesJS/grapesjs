@@ -10,11 +10,11 @@ export default Backbone.View.extend({
     this.conf = model.config;
     this.pn = model.get('Panels');
     this.cv = model.get('Canvas');
-    model.on('loaded', () => {
+    model.once('change:ready', () => {
       this.pn.active();
       this.pn.disableButtons();
+      model.set('changesCount', 0);
       setTimeout(() => {
-        model.runDefault();
         model.trigger('load', model.get('Editor'));
       });
     });

@@ -1,12 +1,10 @@
-import { bindAll } from 'underscore';
 import { Collection } from 'backbone';
-import model from './Frame';
+import Page from './Page';
 
 export default Collection.extend({
-  model,
+  model: Page,
 
   initialize(models, config = {}) {
-    bindAll(this, 'itemLoaded');
     this.config = config;
     this.on('reset', this.onReset);
     this.on('remove', this.onRemove);
@@ -19,25 +17,6 @@ export default Collection.extend({
 
   onRemove(removed) {
     removed && removed.onRemove();
-  },
-
-  itemLoaded() {
-    this.loadedItems++;
-
-    if (this.loadedItems >= this.itemsToLoad) {
-      this.trigger('loaded:all');
-      this.listenToLoadItems(0);
-    }
-  },
-
-  listenToLoad() {
-    this.loadedItems = 0;
-    this.itemsToLoad = this.length;
-    this.listenToLoadItems(1);
-  },
-
-  listenToLoadItems(on) {
-    this.forEach(item => item[on ? 'on' : 'off']('loaded', this.itemLoaded));
   },
 
   add(m, o = {}) {

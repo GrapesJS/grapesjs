@@ -28,28 +28,40 @@ export default Backbone.View.extend({
 
   initialize(o) {
     bindAll(this, 'clearOff', 'onKeyPress', 'onCanvasMove');
-    on(window, 'scroll resize', this.clearOff);
     const { model } = this;
-    const frames = model.get('frames');
     this.config = o.config || {};
     this.em = this.config.em || {};
     this.pfx = this.config.stylePrefix || '';
     this.ppfx = this.config.pStylePrefix || '';
     this.className = this.config.stylePrefix + 'canvas';
-    const { em, config } = this;
+    const { em } = this;
+    this._initFrames();
+    this.listenTo(em, 'change:canvasOffset', this.clearOff);
+    this.listenTo(em, 'component:selected', this.checkSelected);
+    this.listenTo(model, 'change:zoom change:x change:y', this.updateFrames);
+    this.listenTo(model, 'change:frames', this._onFramesUpdate);
+    this.toggleListeners(1);
+  },
+
+  _onFramesUpdate() {
+    this._initFrames();
+    this._renderFrames();
+  },
+
+  _initFrames() {
+    const { frames, model, config, em } = this;
+    const collection = model.get('frames');
+    em.set('readyCanvas', 0);
+    collection.once('loaded:all', () => em.set('readyCanvas', 1));
+    frames && frames.remove();
     this.frames = new FramesView({
-      collection: frames,
+      collection,
       config: {
         ...config,
         canvasView: this,
         renderContent: 1
       }
     });
-    this.listenTo(em, 'change:canvasOffset', this.clearOff);
-    this.listenTo(em, 'component:selected', this.checkSelected);
-    this.listenTo(model, 'change:zoom change:x change:y', this.updateFrames);
-    this.listenTo(frames, 'loaded:all', () => em.trigger('loaded'));
-    this.toggleListeners(1);
   },
 
   checkSelected(component, opts = {}) {
@@ -89,6 +101,7 @@ export default Backbone.View.extend({
     const { el } = this;
     const fn = enable ? on : off;
     fn(document, 'keypress', this.onKeyPress);
+    fn(window, 'scroll resize', this.clearOff);
     // fn(el, 'mousemove dragover', this.onCanvasMove);
   },
 
@@ -328,22 +341,24 @@ export default Backbone.View.extend({
     return (view && view._getFrame()) || this.em.get('currentFrame');
   },
 
+  _renderFrames() {
+    if (!this.ready) return;
+    const { model, frames, em, framesArea } = this;
+    const frms = model.get('frames');
+    frms.listenToLoad();
+    frames.render();
+    const mainFrame = frms.at(0);
+    const currFrame = mainFrame && mainFrame.view;
+    em.setCurrentFrame(currFrame);
+    framesArea && framesArea.appendChild(frames.el);
+    this.frame = currFrame;
+  },
+
   render() {
-    const { el, $el, ppfx, model, em, frames } = this;
-    const cssc = em.get('CssComposer');
-    const wrapper = model.get('wrapper');
+    const { el, $el, ppfx, config } = this;
     $el.html(this.template());
     const $frames = $el.find('[data-frames]');
     this.framesArea = $frames.get(0);
-    this.wrapper = wrapper;
-
-    if (wrapper && typeof wrapper.render == 'function') {
-      model.get('frame').set({
-        wrapper,
-        root: wrapper.getWrapper(),
-        styles: cssc.getAll()
-      });
-    }
 
     const toolsWrp = $el.find('[data-tools]');
     this.toolsWrapper = toolsWrp.get(0);
@@ -354,6 +369,7 @@ export default Backbone.View.extend({
         </div>
       </div>
       <div id="${ppfx}tools" style="pointer-events:none">
+        ${config.extHl ? `<div class="${ppfx}highlighter-sel"></div>` : ''}
         <div class="${ppfx}badge"></div>
         <div class="${ppfx}ghost"></div>
         <div class="${ppfx}toolbar" style="pointer-events:all"></div>
@@ -374,14 +390,8 @@ export default Backbone.View.extend({
     this.toolsGlobEl = el.querySelector(`.${ppfx}tools-gl`);
     this.toolsEl = toolsEl;
     this.el.className = this.className;
-
-    // Render all frames
-    const frms = model.get('frames');
-    frms.listenToLoad();
-    frames.render();
-    em.setCurrentFrame(frms.at(0).view);
-    $frames.append(frames.el);
-    this.frame = frms.at(0).view;
+    this.ready = 1;
+    this._renderFrames();
 
     return this;
   }

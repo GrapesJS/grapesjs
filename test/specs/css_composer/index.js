@@ -321,5 +321,25 @@ describe('Css Composer', () => {
       });
       expect(obj.getAll().length).toEqual(toTest.length);
     });
+
+    test('Get the right rule, containg similar selector names', () => {
+      const all = obj.getAll();
+      const name = 'rule-test';
+      const selClass = `.${name}`;
+      const selId = `#${name}`;
+      const decl = `{colore:red;}`;
+      all.add(`${selClass}${decl} ${selId}${decl}`);
+      expect(all.length).toBe(2);
+      const ruleClass = all.at(0);
+      const ruleId = all.at(1);
+      // Pre-check
+      expect(ruleClass.selectorsToString()).toBe(selClass);
+      expect(ruleId.selectorsToString()).toBe(selId);
+      expect(ruleClass.toCSS()).toBe(`${selClass}${decl}`);
+      expect(ruleId.toCSS()).toBe(`${selId}${decl}`);
+      // Check the get with the right rule
+      expect(obj.get(ruleClass.getSelectors())).toBe(ruleClass);
+      expect(obj.get(ruleId.getSelectors())).toBe(ruleId);
+    });
   });
 });

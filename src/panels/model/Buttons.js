@@ -31,8 +31,7 @@ export default Backbone.Collection.extend({
     const context = ctx || '';
     this.forEach(model => {
       if (model.get('context') == context && model !== sender) {
-        model.set('active', false, { silent: 1 });
-        model.trigger('updateActive', { fromCollection: 1 });
+        model.set('active', false, { fromCollection: 1 });
       }
     });
   },

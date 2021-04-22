@@ -1,8 +1,9 @@
 import { map } from 'underscore';
 import Backbone from 'backbone';
 import Styleable from 'domain_abstract/model/Styleable';
-import { isEmpty, forEach } from 'underscore';
+import { isEmpty, forEach, isString } from 'underscore';
 import Selectors from 'selector_manager/model/Selectors';
+import { isEmptyObj } from 'utils/mixins';
 
 const { CSS } = window;
 
@@ -36,7 +37,9 @@ export default Backbone.Model.extend(Styleable).extend({
     // If true, sets '!important' on all properties
     // You can use an array to specify properties to set important
     // Used in view
-    important: 0
+    important: 0,
+
+    _undo: true
   },
 
   initialize(c, opt = {}) {
@@ -44,6 +47,13 @@ export default Backbone.Model.extend(Styleable).extend({
     this.opt = opt;
     this.em = opt.em;
     this.ensureSelectors();
+    this.on('change', this.__onChange);
+  },
+
+  __onChange(m, opts) {
+    const { em } = this;
+    const changed = this.changedAttributes();
+    !isEmptyObj(changed) && em && em.changesUp(opts);
   },
 
   clone() {
@@ -53,7 +63,7 @@ export default Backbone.Model.extend(Styleable).extend({
     return new this.constructor(attr, opts);
   },
 
-  ensureSelectors() {
+  ensureSelectors(m, c, opts) {
     const { em } = this;
     const sm = em && em.get('SelectorManager');
     const toListen = [this, 'change:selectors', this.ensureSelectors];
@@ -64,12 +74,14 @@ export default Backbone.Model.extend(Styleable).extend({
       sels = [...sels.models];
     }
 
+    sels = isString(sels) ? [sels] : sels;
+
     if (Array.isArray(sels)) {
       const res = sels.filter(i => i).map(i => (sm ? sm.add(i) : i));
       sels = new Selectors(res);
     }
 
-    this.set('selectors', sels);
+    this.set('selectors', sels, opts);
     this.listenTo(...toListen);
   },
 
@@ -92,11 +104,10 @@ export default Backbone.Model.extend(Styleable).extend({
    */
   selectorsToString(opts = {}) {
     const result = [];
-    const { em } = this;
     const state = this.get('state');
     const wrapper = this.get('wrapper');
     const addSelector = this.get('selectorsAdd');
-    const isBody = wrapper && em && em.getConfig('wrapperIsBody');
+    const isBody = wrapper && opts.body;
     const selOpts = {
       escape: str => (CSS && CSS.escape ? CSS.escape(str) : str)
     };
@@ -116,7 +127,7 @@ export default Backbone.Model.extend(Styleable).extend({
    */
   getDeclaration(opts = {}) {
     let result = '';
-    const selectors = this.selectorsToString();
+    const selectors = this.selectorsToString(opts);
     const style = this.styleToString(opts);
     const singleAtRule = this.get('singleAtRule');
 
@@ -178,13 +189,10 @@ export default Backbone.Model.extend(Styleable).extend({
     var wd = width || '';
     var selectorsAdd = ruleProps.selectorsAdd || '';
     var atRuleType = ruleProps.atRuleType || '';
-    var cId = 'cid';
-    //var a1 = _.pluck(selectors.models || selectors, cId);
-    //var a2 = _.pluck(this.get('selectors').models, cId);
     if (!(selectors instanceof Array) && !selectors.models)
       selectors = [selectors];
-    var a1 = map(selectors.models || selectors, model => model.get('name'));
-    var a2 = map(this.get('selectors').models, model => model.get('name'));
+    var a1 = map(selectors.models || selectors, model => model.getFullName());
+    var a2 = map(this.get('selectors').models, model => model.getFullName());
     var f = false;
 
     if (a1.length !== a2.length) return f;

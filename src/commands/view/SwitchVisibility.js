@@ -1,4 +1,10 @@
+import { bindAll } from 'underscore';
+
 export default {
+  init() {
+    bindAll(this, '_onFramesChange');
+  },
+
   run(ed) {
     this.toggleVis(ed);
   },
@@ -9,11 +15,19 @@ export default {
 
   toggleVis(ed, active = 1) {
     if (!ed.Commands.isActive('preview')) {
-      const method = active ? 'add' : 'remove';
-
-      ed.Canvas.getFrames().forEach(frame => {
-        frame.view.getBody().classList[method](`${this.ppfx}dashed`);
-      });
+      const cv = ed.Canvas;
+      const mth = active ? 'on' : 'off';
+      cv.getFrames().forEach(frame => this._upFrame(frame, active));
+      cv.getModel()[mth]('change:frames', this._onFramesChange);
     }
+  },
+
+  _onFramesChange(m, frames) {
+    frames.forEach(frame => this._upFrame(frame, 1));
+  },
+
+  _upFrame(frame, active) {
+    const method = active ? 'add' : 'remove';
+    frame.view.getBody().classList[method](`${this.ppfx}dashed`);
   }
 };

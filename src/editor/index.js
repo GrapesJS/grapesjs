@@ -99,6 +99,8 @@
  * * `abort:{commandName}` - Triggered when the command execution is aborted (`editor.on(`run:preview:before`, opts => opts.abort = 1);`)
  * * `run` - Triggered on run of any command. The id and the result are passed as arguments to the callback
  * * `stop` - Triggered on stop of any command. The id and the result are passed as arguments to the callback
+ * ### Pages
+ * Check the [Pages](/api/pages.html) module.
  * ### General
  * * `canvasScroll` - Canvas is scrolled
  * * `update` - The structure of the template is updated (its HTML/CSS)
@@ -156,6 +158,7 @@ export default (config = {}) => {
         'CodeManager',
         'UndoManager',
         'RichTextEditor',
+        ['Pages', 'PageManager'],
         'DomComponents',
         ['Components', 'DomComponents'],
         'LayerManager',
@@ -186,7 +189,7 @@ export default (config = {}) => {
 
       // Do post render stuff after the iframe is loaded otherwise it'll
       // be empty during tests
-      em.on('loaded', () => {
+      em.once('change:ready', () => {
         this.UndoManager.clear();
         em.get('modules').forEach(module => {
           module.postRender && module.postRender(editorView);

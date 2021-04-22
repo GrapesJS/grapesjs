@@ -30,6 +30,8 @@ export const eventDrag = 'component:drag';
 export const keySymbols = '__symbols';
 export const keySymbol = '__symbol';
 export const keySymbol2w = '__symbol2w';
+export const keyUpdate = 'component:update';
+export const keyUpdateInside = `${keyUpdate}-inside`;
 
 /**
  * The Component object represents a single node of our template structure, so when you update its properties the changes are
@@ -122,7 +124,11 @@ const Component = Backbone.Model.extend(Styleable).extend(
       traits: ['id', 'title'],
       propagate: '',
       dmode: '',
-      toolbar: null
+      toolbar: null,
+      [keySymbol]: 0,
+      [keySymbols]: 0,
+      _undo: true,
+      _undoexc: ['status', 'open']
     },
 
     /**
@@ -193,6 +199,8 @@ const Component = Backbone.Model.extend(Styleable).extend(
       this.listenTo(this, 'change:attributes', this.attrUpdated);
       this.listenTo(this, 'change:attributes:id', this._idUpdated);
       this.on('change:toolbar', this.__emitUpdateTlb);
+      this.on('change', this.__onChange);
+      this.on(keyUpdateInside, this.__propToParent);
       this.set('status', '');
       this.views = [];
 
@@ -205,10 +213,58 @@ const Component = Backbone.Model.extend(Styleable).extend(
       });
 
       if (!opt.temporary) {
+        this.__postAdd();
         this.init();
         this.__isSymbolOrInst() && this.__initSymb();
         em && em.trigger('component:create', this);
       }
+    },
+
+    __postAdd(opts = {}) {
+      const { em } = this;
+      const um = em && em.get('UndoManager');
+      const comps = this.components();
+      if (um && !this.__hasUm) {
+        um.add(comps);
+        this.__hasUm = 1;
+      }
+      opts.recursive && comps.map(c => c.__postAdd(opts));
+    },
+
+    __postRemove() {
+      const { em } = this;
+      const um = em && em.get('UndoManager');
+      if (um) {
+        um.remove(this.components());
+        delete this.__hasUm;
+      }
+    },
+
+    __onChange(m, opts) {
+      const changed = this.changedAttributes();
+      ['status', 'open', 'toolbar', 'traits'].forEach(
+        name => delete changed[name]
+      );
+      // Propagate component prop changes
+      if (!isEmptyObj(changed)) {
+        this.__changesUp(opts);
+        this.__propSelfToParent({ component: this, changed, options: opts });
+      }
+    },
+
+    __changesUp(opts) {
+      const { em, frame } = this;
+      [frame, em].forEach(md => md && md.changesUp(opts));
+    },
+
+    __propSelfToParent(props) {
+      this.trigger(keyUpdate, props);
+      this.__propToParent(props);
+    },
+
+    __propToParent(props) {
+      const parent = this.parent();
+      parent && parent.trigger(keyUpdateInside, props);
     },
 
     __emitUpdateTlb() {
@@ -720,10 +776,12 @@ const Component = Backbone.Model.extend(Styleable).extend(
         // This will propagate the change up to __upSymbProps
         child.set('classes', this.get('classes'), { fromInstance: this });
       });
+      this.__changesUp(opts);
     },
 
     __upSymbComps(m, c, o) {
-      const { fromInstance } = o || c || {};
+      const optUp = o || c || {};
+      const { fromInstance } = optUp;
       const toUpOpts = { fromInstance };
       const isTemp = m.opt.temporary;
 
@@ -791,6 +849,8 @@ const Component = Backbone.Model.extend(Styleable).extend(
           });
         }
       }
+
+      this.__changesUp(optUp);
     },
 
     initClasses(m, c, opts = {}) {
@@ -821,6 +881,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       const addChild = !this.opt.avoidChildren;
       this.set('components', comps);
       addChild &&
+        components &&
         comps.add(
           isFunction(components) ? components(this) : components,
           this.opt
@@ -1177,13 +1238,13 @@ const Component = Backbone.Model.extend(Styleable).extend(
         cloned.unset(keySymbols);
       } else if (symbol) {
         // Contains already a reference to a symbol
-        symbol.get(keySymbols).push(cloned);
+        symbol.set(keySymbols, [...symbol.__getSymbols(), cloned]);
         cloned.__initSymb();
       } else if (opt.symbol) {
         // Request to create a symbol
         if (this.__isSymbol()) {
           // Already a symbol, cloned should be an instance
-          this.get(keySymbols).push(cloned);
+          this.set(keySymbols, [...symbols, cloned]);
           cloned.set(keySymbol, this);
           cloned.__initSymb();
         } else if (opt.symbolInv) {
@@ -1341,7 +1402,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       delete obj.status;
       delete obj.open; // used in Layers
 
-      if (!opts.keepSymbols) {
+      if (!opts.fromUndo) {
         if (obj[keySymbols]) {
           obj[keySymbols] = this.__getSymbToUp().map(i => i.getId());
         }
@@ -1496,17 +1557,24 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     emitUpdate(property, ...args) {
-      const em = this.em;
-      const event = 'component:update' + (property ? `:${property}` : '');
+      const { em } = this;
+      const event = keyUpdate + (property ? `:${property}` : '');
+      const item = property && this.get(property);
       property &&
         this.updated(
           property,
-          property && this.get(property),
+          item,
           property && this.previous(property),
           ...args
         );
       this.trigger(event, ...args);
       em && em.trigger(event, this, ...args);
+      ['components', 'classes'].indexOf(property) >= 0 &&
+        this.__propSelfToParent({
+          component: this,
+          changed: { [property]: item },
+          options: args[2] || args[1] || {}
+        });
     },
 
     /**
@@ -1533,7 +1601,10 @@ const Component = Backbone.Model.extend(Styleable).extend(
     remove(opts = {}) {
       const { em } = this;
       const coll = this.collection;
-      const remove = () => coll && coll.remove(this, opts);
+      const remove = () => {
+        coll && coll.remove(this, opts);
+        opts.root && this.components('');
+      };
       const rmOpts = { ...opts };
       [this, em].map(i =>
         i.trigger('component:remove:before', this, remove, rmOpts)
@@ -1699,8 +1770,10 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * not ok, as it was shared between multiple editor instances
      */
     getList(model) {
-      const domc = model.opt && model.opt.domc;
-      return domc ? domc.componentsById : {};
+      const { opt = {} } = model;
+      const { domc, em } = opt;
+      const dm = domc || (em && em.get('DomComponents'));
+      return dm ? dm.componentsById : {};
     },
 
     /**

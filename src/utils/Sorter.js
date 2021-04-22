@@ -1112,7 +1112,7 @@ export default Backbone.View.extend({
           modelToDrop = model.collection.remove(model, { temporary: 1 });
         }
       } else {
-        modelToDrop = dropContent;
+        modelToDrop = isFunction(dropContent) ? dropContent() : dropContent;
         opts.silent = false;
         opts.avoidUpdateStyle = 1;
       }
@@ -1156,7 +1156,7 @@ export default Backbone.View.extend({
     }
 
     if (em) {
-      em.trigger('component:dragEnd', targetCollection, modelToDrop, warns); // @depricated
+      em.trigger('component:dragEnd', targetCollection, modelToDrop, warns); // @deprecated
       em.trigger('sorter:drag:end', {
         targetCollection,
         modelToDrop,
