@@ -558,7 +558,8 @@ export default Backbone.View.extend({
     const $parent = parent && $(parent);
 
     if (style.overflow && style.overflow !== 'visible') return;
-    if ($el.css('float') && $el.css('float') !== 'none') return;
+    const propFloat = $el.css('float');
+    if (propFloat && propFloat !== 'none') return;
     if (
       $parent &&
       $parent.css('display') == 'flex' &&
@@ -623,7 +624,7 @@ export default Backbone.View.extend({
     // Check if the target could accept the source
     let droppable = trgModel.get('droppable');
     if (typeof droppable === 'function') {
-      let res = droppable(src, trg);
+      let res = droppable(srcModel, trgModel);
       result.droppable = res;
       result.dropInfo = res;
       droppable = res;

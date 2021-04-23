@@ -436,15 +436,15 @@ describe('Sorter', () => {
     });
   });
 
-  describe.only('Valid Target with components', () => {
+  describe('Valid Target with components', () => {
     var parentModel;
     var parentView;
     var sorter;
 
     beforeEach(() => {
       parentModel = new Component({
-        droppable: (src, target) => {
-          if (src.className === 'canDrop') {
+        droppable: (srcModel, trgModel) => {
+          if (srcModel.getEl().className === 'canDrop') {
             return true;
           }
           return false;
