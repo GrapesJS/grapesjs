@@ -623,8 +623,9 @@ export default Backbone.View.extend({
 
     // Check if the target could accept the source
     let droppable = trgModel.get('droppable');
-    if (typeof droppable === 'function') {
-      let res = droppable(srcModel, trgModel);
+
+    if (isFunction(droppable)) {
+      const res = droppable(srcModel, trgModel);
       result.droppable = res;
       result.dropInfo = res;
       droppable = res;
