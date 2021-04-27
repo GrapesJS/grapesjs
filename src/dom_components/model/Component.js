@@ -59,7 +59,7 @@ export const keyUpdateInside = `${keyUpdate}-inside`;
  *  eg. `'.some-class[title=Hello], [data-gjs-type=column]'` means you can drag the component only inside elements
  *  containing `some-class` class and `Hello` title, and `column` components. Default: `true`
  * @property {Boolean|String|Function} [droppable=true] Indicates if it's possible to drop other components inside. You can use
- * a query string as with `draggable`. Default: `true`
+ * a query string as with `draggable`. In the case of a function, target and destination components are passed as arguments, return a Boolean to indicate if the drop is possible. Default: `true`
  * @property {Boolean} [badgable=true] Set to false if you don't want to see the badge (with the name) over the component. Default: `true`
  * @property {Boolean|Array<String>} [stylable=true] True if it's possible to style the component.
  * You can also indicate an array of CSS properties which is possible to style, eg. `['color', 'width']`, all other properties
