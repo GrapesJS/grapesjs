@@ -267,7 +267,9 @@ export default Backbone.Model.extend({
 
     timedInterval && clearTimeout(timedInterval);
     timedInterval = setTimeout(() => {
-      this.set('changesCount', this.get('changesCount') + 1, opt);
+      const curr = this.get('changesCount') || 0;
+      const { unset, ...opts } = opt;
+      this.set('changesCount', curr + 1, opts);
     }, 0);
   },
 
