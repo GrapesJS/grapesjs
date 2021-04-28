@@ -830,6 +830,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
             this.__logSymbol('remove', toUp, { opts: o, removed: m.cid });
           toUp.forEach(symb => {
             const opts = { fromInstance: m, ...o };
+
             // In case of nested symbols, I only need to propagate changes to its instances
             if (symb.__isSymbolTop() && symb.__getSymbols()) {
               const toUpInst = symb.__getSymbToUp({
@@ -848,6 +849,15 @@ const Component = Backbone.Model.extend(Styleable).extend(
             }
           });
         }
+
+        // Remove instance reference from the symbol
+        const symb = m.__getSymbol();
+        symb &&
+          !o.temporary &&
+          symb.set(
+            keySymbols,
+            symb.__getSymbols().filter(i => i !== m)
+          );
       }
 
       this.__changesUp(optUp);

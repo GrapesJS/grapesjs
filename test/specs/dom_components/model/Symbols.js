@@ -222,6 +222,12 @@ describe('Symbols', () => {
       all.forEach(cmp => expect(cmp.components().length).toBe(compInitChild));
     });
 
+    test('Removing one instance, will remove the reference from the symbol', () => {
+      expect(symbol.__getSymbols().length).toBe(allInst.length);
+      allInst[2].remove();
+      expect(symbol.__getSymbols().length).toBe(allInst.length - 1);
+    });
+
     test('Adding a new component to a symbol, it will be propogated to all instances', () => {
       const added = symbol.append(simpleComp, { at: 0 })[0];
       all.forEach(cmp =>
