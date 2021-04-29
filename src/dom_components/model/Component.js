@@ -734,21 +734,19 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     __getSymbToUp(opts = {}) {
+      let result = [];
       const { em } = this;
       const symbEnabled = em && em.get('symbols');
-      const { fromInstance } = opts;
-      const symbols = this.__getSymbols() || [];
-      const symbol = this.__getSymbol();
-      let result =
-        symbol && !fromInstance
-          ? [symbol]
-          : symbols.filter(md => md.collection || md.prevColl);
 
-      if (fromInstance) {
-        result = result.filter(i => i !== fromInstance);
+      if (opts.fromInstance || opts.noPropagate || !symbEnabled) {
+        return result;
       }
 
-      return symbEnabled ? result : [];
+      const symbols = this.__getSymbols() || [];
+      const symbol = this.__getSymbol();
+      const all = symbol ? [symbol, ...(symbol.__getSymbols() || [])] : symbols;
+
+      return all.filter(s => s !== this);
     },
 
     __getSymbTop(opts) {
@@ -852,6 +850,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
               toRemove && toRemove.remove({ fromInstance: parent, ...opts });
             };
           }
+
           !isTemp &&
             this.__logSymbol('remove', toUp, {
               opts: o,
@@ -859,30 +858,6 @@ const Component = Backbone.Model.extend(Styleable).extend(
               isSymbNested
             });
           toUp.forEach(toUpFn);
-
-          // toUp.forEach(symb => {
-          //   if (isSymbNested) {
-          //     const toRemove = symb.parent().components().at(index);
-          //     toRemove && toRemove.remove(opts);
-          //   // }
-
-          //   // // In case of nested symbols, I only need to propagate changes to its instances
-          //   // if (symb.__isSymbolTop() && symb.__getSymbols()) {
-          //   //   const toUpInst = symb.__getSymbToUp({
-          //   //     fromInstance: m,
-          //   //     ...toUpOpts
-          //   //   });
-          //   //   this.__logSymbol('remove-inst', toUpInst, {
-          //   //     opts: o,
-          //   //     symbol: symb
-          //   //   });
-          //   //   toUpInst.forEach(inst => {
-          //   //     inst.remove(opts);
-          //   //   });
-          //   } else {
-          //     symb.remove(opts);
-          //   }
-          // });
         }
 
         // Remove instance reference from the symbol

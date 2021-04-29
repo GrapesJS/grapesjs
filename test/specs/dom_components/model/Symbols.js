@@ -423,6 +423,8 @@ describe('Symbols', () => {
       added.remove();
       // All first symbols will remove their copy and only the secComp2 will remain
       expect(secSymbol.__getSymbols().length).toBe(1);
+      // First symbols has the previous number of components inside
+      all.forEach(s => expect(s.components().length).toBe(compInitChild));
     });
 
     test('Moving the second instance inside first instances, propagates correctly to all other first symbols', () => {
