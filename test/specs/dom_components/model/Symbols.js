@@ -384,6 +384,7 @@ describe('Symbols', () => {
 
     test('Adding the instance, of the second symbol, inside the first symbol, propagates correctly to all first instances', () => {
       const added = symbol.append(secComp)[0];
+      expect(added.__isSymbolNested()).toBe(true);
       // The added component is still the second instance
       expect(added).toBe(secComp);
       // The added component still has the reference to the second symbol
@@ -410,6 +411,18 @@ describe('Symbols', () => {
       secInstans.forEach(secInst =>
         expect(secInst.__getSymbol()).toBe(secSymbol)
       );
+    });
+
+    test('Adding the instance, of the second symbol, inside one of the first instances, and then removing it, will not affect second instances outside', () => {
+      const secComp2 = createSymbol(secComp);
+      const added = comp.append(secComp)[0];
+      expect(secComp2.__isSymbolNested()).toBe(false);
+      const secInstans = secSymbol.__getSymbols();
+      expect(secInstans.length).toBe(all.length + 1); // + 1 is secComp2
+      // Remove the second instance, added in one of the first instances
+      added.remove();
+      // All first symbols will remove their copy and only the secComp2 will remain
+      expect(secSymbol.__getSymbols().length).toBe(1);
     });
 
     test('Moving the second instance inside first instances, propagates correctly to all other first symbols', () => {

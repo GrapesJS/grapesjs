@@ -688,6 +688,19 @@ const Component = Backbone.Model.extend(Styleable).extend(
       );
     },
 
+    __isSymbolNested() {
+      if (!this.__isSymbolOrInst() || this.__isSymbolTop()) return false;
+      const symbTopSelf = (this.__isSymbol()
+        ? this
+        : this.__getSymbol()
+      ).__getSymbTop();
+      const symbTop = this.__getSymbTop();
+      const symbTopMain = symbTop.__isSymbol()
+        ? symbTop
+        : symbTop.__getSymbol();
+      return symbTopMain !== symbTopSelf;
+    },
+
     __getAllById() {
       const { em } = this;
       return em ? em.get('DomComponents').allById() : {};
@@ -823,31 +836,53 @@ const Component = Backbone.Model.extend(Styleable).extend(
           symb.append(toAppend, { fromInstance: this, ...o });
         });
       } else {
-        // Allow removing single instances
+        // Propagate remove only if the component is an inner symbol
         if (!m.__isSymbolTop()) {
-          const toUp = m.__getSymbToUp(toUpOpts);
-          !isTemp &&
-            this.__logSymbol('remove', toUp, { opts: o, removed: m.cid });
-          toUp.forEach(symb => {
-            const opts = { fromInstance: m, ...o };
+          const { index } = o;
+          const opts = { fromInstance: m, ...o };
+          const isSymbNested = m.__isSymbolNested();
+          let toUpFn = symb => symb.remove(opts);
+          let toUp = m.__getSymbToUp(toUpOpts);
 
-            // In case of nested symbols, I only need to propagate changes to its instances
-            if (symb.__isSymbolTop() && symb.__getSymbols()) {
-              const toUpInst = symb.__getSymbToUp({
-                fromInstance: m,
-                ...toUpOpts
-              });
-              this.__logSymbol('remove-inst', toUpInst, {
-                opts: o,
-                symbol: symb
-              });
-              toUpInst.forEach(inst => {
-                inst.remove(opts);
-              });
-            } else {
-              symb.remove(opts);
-            }
-          });
+          if (isSymbNested) {
+            const parent = m.parent();
+            toUp = parent.__getSymbToUp(toUpOpts);
+            toUpFn = symb => {
+              const toRemove = symb.components().at(index);
+              toRemove && toRemove.remove({ fromInstance: parent, ...opts });
+            };
+          }
+          !isTemp &&
+            this.__logSymbol('remove', toUp, {
+              opts: o,
+              removed: m.cid,
+              isSymbNested
+            });
+          toUp.forEach(toUpFn);
+
+          // toUp.forEach(symb => {
+          //   if (isSymbNested) {
+          //     const toRemove = symb.parent().components().at(index);
+          //     toRemove && toRemove.remove(opts);
+          //   // }
+
+          //   // // In case of nested symbols, I only need to propagate changes to its instances
+          //   // if (symb.__isSymbolTop() && symb.__getSymbols()) {
+          //   //   const toUpInst = symb.__getSymbToUp({
+          //   //     fromInstance: m,
+          //   //     ...toUpOpts
+          //   //   });
+          //   //   this.__logSymbol('remove-inst', toUpInst, {
+          //   //     opts: o,
+          //   //     symbol: symb
+          //   //   });
+          //   //   toUpInst.forEach(inst => {
+          //   //     inst.remove(opts);
+          //   //   });
+          //   } else {
+          //     symb.remove(opts);
+          //   }
+          // });
         }
 
         // Remove instance reference from the symbol
