@@ -244,10 +244,10 @@ export default () => {
 
         const selected = em.get('selected');
         em.listenTo(selected, 'add', (sel, c, opts) =>
-          this.selectAdd(sel, opts)
+          this.selectAdd(selected.getComponent(sel), opts)
         );
         em.listenTo(selected, 'remove', (sel, c, opts) =>
-          this.selectRemove(sel, opts)
+          this.selectRemove(selected.getComponent(sel), opts)
         );
       }
 

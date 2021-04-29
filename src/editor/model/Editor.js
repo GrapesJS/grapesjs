@@ -11,6 +11,7 @@ import $ from 'cash-dom';
 import Backbone from 'backbone';
 import Extender from 'utils/extender';
 import { getModel } from 'utils/mixins';
+import Selected from './Selected';
 
 Backbone.$ = $;
 const deps = [
@@ -58,7 +59,7 @@ export default Backbone.Model.extend({
   defaults() {
     return {
       editing: 0,
-      selected: new Collection(),
+      selected: 0,
       clipboard: null,
       dmode: 0,
       componentHovered: null,
@@ -78,7 +79,7 @@ export default Backbone.Model.extend({
     this.set('modules', []);
     this.set('toLoad', []);
     this.set('storables', []);
-    this.set('selected', new Collection());
+    this.set('selected', new Selected());
     this.set('dmode', c.dragMode);
     this.set('hasPages', !!c.pageManager);
     const el = c.el;
@@ -296,7 +297,7 @@ export default Backbone.Model.extend({
    * @private
    */
   getSelected() {
-    return this.get('selected').last();
+    return this.get('selected').lastComponent();
   },
 
   /**
@@ -305,8 +306,7 @@ export default Backbone.Model.extend({
    * @private
    */
   getSelectedAll() {
-    const sel = this.get('selected');
-    return (sel && sel.models) || [];
+    return this.get('selected').allComponents();
   },
 
   /**
@@ -320,8 +320,8 @@ export default Backbone.Model.extend({
     const ctrlKey = event && (event.ctrlKey || event.metaKey);
     const { shiftKey } = event || {};
     const multiple = isArray(el);
-    const els = multiple ? el : [el];
-    const selected = this.get('selected');
+    const els = (multiple ? el : [el]).map(el => getModel(el, $));
+    const selected = this.getSelectedAll();
     const mltSel = this.getConfig('multipleSelection');
     let added;
 
@@ -393,8 +393,8 @@ export default Backbone.Model.extend({
     models.forEach(model => {
       if (model && !model.get('selectable')) return;
       const selected = this.get('selected');
-      opts.forceChange && selected.remove(model, opts);
-      selected.push(model, opts);
+      opts.forceChange && this.removeSelected(model, opts);
+      selected.addComponent(model, opts);
     });
   },
 
@@ -405,7 +405,7 @@ export default Backbone.Model.extend({
    * @private
    */
   removeSelected(el, opts = {}) {
-    this.get('selected').remove(getModel(el, $), opts);
+    this.get('selected').removeComponent(getModel(el, $), opts);
   },
 
   /**
@@ -419,7 +419,7 @@ export default Backbone.Model.extend({
     const models = isArray(model) ? model : [model];
 
     models.forEach(model => {
-      if (this.get('selected').contains(model)) {
+      if (this.get('selected').hasComponent(model)) {
         this.removeSelected(model, opts);
       } else {
         this.addSelected(model, opts);
