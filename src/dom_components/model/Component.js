@@ -738,7 +738,12 @@ const Component = Backbone.Model.extend(Styleable).extend(
       const { em } = this;
       const symbEnabled = em && em.get('symbols');
 
-      if (opts.fromInstance || opts.noPropagate || !symbEnabled) {
+      if (
+        opts.fromInstance ||
+        opts.noPropagate ||
+        opts.fromUndo ||
+        !symbEnabled
+      ) {
         return result;
       }
 
@@ -781,7 +786,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     __upSymbCls(m, c, opts = {}) {
-      const toUp = this.__getSymbToUp();
+      const toUp = this.__getSymbToUp(opts);
       this.__logSymbol('classes', toUp, { opts });
       toUp.forEach(child => {
         // This will propagate the change up to __upSymbProps
@@ -792,8 +797,8 @@ const Component = Backbone.Model.extend(Styleable).extend(
 
     __upSymbComps(m, c, o) {
       const optUp = o || c || {};
-      const { fromInstance } = optUp;
-      const toUpOpts = { fromInstance };
+      const { fromInstance, fromUndo } = optUp;
+      const toUpOpts = { fromInstance, fromUndo };
       const isTemp = m.opt.temporary;
 
       if (!o) {
@@ -1424,7 +1429,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
 
       if (!opts.fromUndo) {
         if (obj[keySymbols]) {
-          obj[keySymbols] = this.__getSymbToUp().map(i => i.getId());
+          obj[keySymbols] = (this.__getSymbols() || []).map(i => i.getId());
         }
         if (obj[keySymbol] && !isString(obj[keySymbol])) {
           obj[keySymbol] = obj[keySymbol].getId();

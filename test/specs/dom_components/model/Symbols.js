@@ -27,6 +27,7 @@ describe('Symbols', () => {
 
   let allInst, all, comp, symbol, compInitChild;
   let secComp, secSymbol;
+  const getUm = cmp => cmp.em.get('UndoManager');
   const getInnerComp = (cmp, i = 0) => cmp.components().at(i);
   const getFirstInnSymbol = cmp => getInnerComp(cmp).__getSymbol();
   const getInnSymbol = (cmp, i = 0) => getInnerComp(cmp, i).__getSymbol();
@@ -247,6 +248,22 @@ describe('Symbols', () => {
       const addSymb = added.__getSymbol();
       expect(symbol.components().at(0)).toBe(addSymb);
       allInst.forEach(cmp => expect(getFirstInnSymbol(cmp)).toBe(addSymb));
+    });
+
+    test('Adding a new component to an instance of the symbol, works correctly with Undo Manager', () => {
+      const added = comp.append(simpleComp, { at: 0 })[0];
+      const um = getUm(added);
+      um.undo();
+      all.forEach(cmp => expect(cmp.components().length).toBe(compInitChild));
+      um.redo();
+      um.undo();
+      um.redo(); // check multiple undo/redo
+      all.forEach(cmp =>
+        expect(cmp.components().length).toBe(compInitChild + 1)
+      );
+      // Check symbol references
+      const addSymbs = added.__getSymbol().__getSymbols();
+      expect(addSymbs.length).toBe(allInst.length);
     });
 
     test('Moving a new added component in the instance, will propagate the action in all symbols', () => {
