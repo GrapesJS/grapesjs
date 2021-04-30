@@ -29,7 +29,7 @@ const avoidInline = em => em && em.getConfig('avoidInlineStyle');
 export const eventDrag = 'component:drag';
 export const keySymbols = '__symbols';
 export const keySymbol = '__symbol';
-export const keySymbol2w = '__symbol2w';
+export const keySymbolOvrd = '__symbol_ovrd';
 export const keyUpdate = 'component:update';
 export const keyUpdateInside = `${keyUpdate}-inside`;
 
@@ -127,6 +127,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       toolbar: null,
       [keySymbol]: 0,
       [keySymbols]: 0,
+      [keySymbolOvrd]: 0,
       _undo: true,
       _undoexc: ['status', 'open']
     },
@@ -733,6 +734,11 @@ const Component = Backbone.Model.extend(Styleable).extend(
       return symbs;
     },
 
+    __isSymbOvrd(prop) {
+      const ovrd = this.get(keySymbolOvrd);
+      return ovrd === true || (isArray(ovrd) && ovrd.indexOf(prop) >= 0);
+    },
+
     __getSymbToUp(opts = {}) {
       let result = [];
       const { em } = this;
@@ -773,11 +779,16 @@ const Component = Backbone.Model.extend(Styleable).extend(
       delete changed.open;
       delete changed[keySymbols];
       delete changed[keySymbol];
+      delete changed[keySymbolOvrd];
       delete changed.attributes;
       delete attrs.id;
       if (!isEmptyObj(attrs)) changed.attributes = attrs;
       if (!isEmptyObj(changed)) {
         const toUp = this.__getSymbToUp(opts);
+        keys(changed).map(prop => {
+          if (this.__isSymbOvrd(prop)) delete changed[prop];
+        });
+
         this.__logSymbol('props', toUp, { opts, changed });
         toUp.forEach(child =>
           child.set(changed, { fromInstance: this, ...opts })
@@ -803,7 +814,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
 
       if (!o) {
         const toUp = this.__getSymbToUp(toUpOpts);
-        this.__logSymbol('reset', toUp);
+        this.__logSymbol('reset', toUp, { components: m.models });
         toUp.forEach(symb => {
           const newMods = m.models.map(mod => mod.clone({ symbol: 1 }));
           symb.components().reset(newMods, { fromInstance: this, ...c });
@@ -1283,7 +1294,6 @@ const Component = Backbone.Model.extend(Styleable).extend(
           [this, cloned].map(i => i.__initSymb());
           this.set(keySymbol, cloned);
         }
-        // opt.symbol2w && cloned.set(keySymbol2w, 1);
       }
 
       const event = 'component:clone';

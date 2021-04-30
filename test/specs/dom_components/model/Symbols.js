@@ -1,5 +1,9 @@
 import Editor from 'editor';
-import { keySymbol, keySymbols } from 'dom_components/model/Component';
+import {
+  keySymbol,
+  keySymbols,
+  keySymbolOvrd
+} from 'dom_components/model/Component';
 
 describe('Symbols', () => {
   let editor;
@@ -380,6 +384,17 @@ describe('Symbols', () => {
       allInst.forEach(cmp => expect(getInnSymbol(cmp, 1)).toBe(clonedSymb));
       const innerSymb = allInst.map(i => getInnerComp(i, 1));
       expect(clonedSymb.__getSymbols()).toEqual(innerSymb);
+    });
+
+    describe.only('Symbols override', () => {
+      test('Symbol is not propagating data if override is set', () => {
+        const propKey = 'someprop';
+        const propValue = 'somevalue';
+        symbol.set(keySymbolOvrd, true);
+        symbol.set(propKey, propValue);
+        // symbol.set(propKey, propValue);
+        allInst.forEach(cmp => expect(cmp.get(propKey)).toBeFalsy());
+      });
     });
   });
 
