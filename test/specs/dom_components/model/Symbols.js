@@ -386,7 +386,7 @@ describe('Symbols', () => {
       expect(clonedSymb.__getSymbols()).toEqual(innerSymb);
     });
 
-    describe.only('Symbols override', () => {
+    describe('Symbols override', () => {
       test('Symbol with override returns correctly instances to update', () => {
         expect(symbol.__getSymbToUp().length).toBe(allInst.length);
         // With override as `true`, it will return empty array with any 'changed'
@@ -435,13 +435,28 @@ describe('Symbols', () => {
       });
 
       test('Symbol is not propagating components data if override is set', () => {
-        symbol.set(keySymbolOvrd, true);
+        symbol.set(keySymbolOvrd, ['components']);
         const innCompsLen = symbol.components().length;
         all.forEach(cmp => expect(cmp.components().length).toBe(innCompsLen));
         symbol.components('Test text');
         // The symbol has changed, but istances should remain the same
         expect(symbol.components().length).toBe(1);
-        allInst.forEach(cmp => expect(cmp.toHTML()).toBe(symbol.toHTML()));
+        allInst.forEach(cmp => expect(cmp.toHTML()).toBe(comp.toHTML()));
+        allInst.forEach(cmp =>
+          expect(cmp.components().length).toBe(innCompsLen)
+        );
+        // Check for add action
+        symbol.append('<div>B</div><div>C</div>');
+        expect(symbol.components().length).toBe(3);
+        allInst.forEach(cmp =>
+          expect(cmp.components().length).toBe(innCompsLen)
+        );
+        // Check for remove action
+        symbol
+          .components()
+          .at(0)
+          .remove();
+        expect(symbol.components().length).toBe(2);
         allInst.forEach(cmp =>
           expect(cmp.components().length).toBe(innCompsLen)
         );

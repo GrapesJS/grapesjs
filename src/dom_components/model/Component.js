@@ -819,6 +819,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       const toUpOpts = { fromInstance, fromUndo };
       const isTemp = m.opt.temporary;
 
+      // Reset
       if (!o) {
         const toUp = this.__getSymbToUp({
           ...toUpOpts,
@@ -829,11 +830,14 @@ const Component = Backbone.Model.extend(Styleable).extend(
           const newMods = m.models.map(mod => mod.clone({ symbol: 1 }));
           symb.components().reset(newMods, { fromInstance: this, ...c });
         });
-      } else if (o.add) {
         // Add
+      } else if (o.add) {
         let addedInstances = [];
         const isMainSymb = !!this.__getSymbols();
-        const toUp = this.__getSymbToUp(toUpOpts);
+        const toUp = this.__getSymbToUp({
+          ...toUpOpts,
+          changed: 'components:add'
+        });
         if (toUp.length) {
           const addSymb = m.__getSymbol();
           addedInstances =
@@ -859,6 +863,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
             symbPrev || m.clone({ symbol: 1, symbolInv: isMainSymb });
           symb.append(toAppend, { fromInstance: this, ...o });
         });
+        // Remove
       } else {
         // Remove instance reference from the symbol
         const symb = m.__getSymbol();
