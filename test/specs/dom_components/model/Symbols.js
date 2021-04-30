@@ -387,13 +387,64 @@ describe('Symbols', () => {
     });
 
     describe.only('Symbols override', () => {
-      test('Symbol is not propagating data if override is set', () => {
+      test('Symbol with override returns correctly instances to update', () => {
+        expect(symbol.__getSymbToUp().length).toBe(allInst.length);
+        // With override as `true`, it will return empty array with any 'changed'
+        symbol.set(keySymbolOvrd, true);
+        expect(symbol.__getSymbToUp({ changed: 'anything' }).length).toBe(0);
+        // With override as an array with props, changed option will count
+        symbol.set(keySymbolOvrd, ['components']);
+        expect(symbol.__getSymbToUp({ changed: 'anything' }).length).toBe(
+          allInst.length
+        );
+        symbol.set(keySymbolOvrd, ['components']);
+        expect(symbol.__getSymbToUp({ changed: 'components' }).length).toBe(0);
+        expect(
+          symbol.__getSymbToUp({ changed: 'components:reset' }).length
+        ).toBe(0);
+        // Support also overrides with type of actions
+        symbol.set(keySymbolOvrd, ['components:change']); // specific change
+        expect(symbol.__getSymbToUp({ changed: 'components' }).length).toBe(
+          allInst.length
+        );
+        expect(
+          symbol.__getSymbToUp({ changed: 'components:change' }).length
+        ).toBe(0);
+      });
+
+      test('Symbol is not propagating props data if override is set', () => {
         const propKey = 'someprop';
         const propValue = 'somevalue';
         symbol.set(keySymbolOvrd, true);
+        // Single prop update
         symbol.set(propKey, propValue);
-        // symbol.set(propKey, propValue);
         allInst.forEach(cmp => expect(cmp.get(propKey)).toBeFalsy());
+        // Multiple props
+        symbol.set({ prop1: 'value1', prop2: 'value2' });
+        allInst.forEach(cmp => {
+          expect(cmp.get('prop1')).toBeFalsy();
+          expect(cmp.get('prop2')).toBeFalsy();
+        });
+        // Override applied on specific properties
+        symbol.set(keySymbolOvrd, ['prop1']);
+        symbol.set({ prop1: 'value1-2', prop2: 'value2-2' });
+        allInst.forEach(cmp => {
+          expect(cmp.get('prop1')).toBeFalsy();
+          expect(cmp.get('prop2')).toBe('value2-2');
+        });
+      });
+
+      test('Symbol is not propagating components data if override is set', () => {
+        symbol.set(keySymbolOvrd, true);
+        const innCompsLen = symbol.components().length;
+        all.forEach(cmp => expect(cmp.components().length).toBe(innCompsLen));
+        symbol.components('Test text');
+        // The symbol has changed, but istances should remain the same
+        expect(symbol.components().length).toBe(1);
+        allInst.forEach(cmp => expect(cmp.toHTML()).toBe(symbol.toHTML()));
+        allInst.forEach(cmp =>
+          expect(cmp.components().length).toBe(innCompsLen)
+        );
       });
     });
   });

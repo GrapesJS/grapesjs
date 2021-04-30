@@ -734,20 +734,27 @@ const Component = Backbone.Model.extend(Styleable).extend(
       return symbs;
     },
 
-    __isSymbOvrd(prop) {
+    __isSymbOvrd(prop = '') {
       const ovrd = this.get(keySymbolOvrd);
-      return ovrd === true || (isArray(ovrd) && ovrd.indexOf(prop) >= 0);
+      const [prp] = prop.split(':');
+      const props = prop !== prp ? [prop, prp] : [prop];
+      return (
+        ovrd === true ||
+        (isArray(ovrd) && props.some(p => ovrd.indexOf(p) >= 0))
+      );
     },
 
     __getSymbToUp(opts = {}) {
       let result = [];
       const { em } = this;
+      const { changed } = opts;
       const symbEnabled = em && em.get('symbols');
 
       if (
         opts.fromInstance ||
         opts.noPropagate ||
         opts.fromUndo ||
+        (changed && this.__isSymbOvrd(changed)) ||
         !symbEnabled
       ) {
         return result;
@@ -813,7 +820,10 @@ const Component = Backbone.Model.extend(Styleable).extend(
       const isTemp = m.opt.temporary;
 
       if (!o) {
-        const toUp = this.__getSymbToUp(toUpOpts);
+        const toUp = this.__getSymbToUp({
+          ...toUpOpts,
+          changed: 'components:reset'
+        });
         this.__logSymbol('reset', toUp, { components: m.models });
         toUp.forEach(symb => {
           const newMods = m.models.map(mod => mod.clone({ symbol: 1 }));
