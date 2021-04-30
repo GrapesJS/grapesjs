@@ -229,6 +229,17 @@ describe('Symbols', () => {
       expect(symbol.__getSymbols().length).toBe(allInst.length - 1);
     });
 
+    test('Removing one instance, works with UndoManager', done => {
+      setTimeout(() => {
+        // This will commit the undo
+        const um = getUm(comp);
+        allInst[0].remove();
+        um.undo();
+        expect(symbol.__getSymbols().length).toBe(allInst.length);
+        done();
+      });
+    });
+
     test('Adding a new component to a symbol, it will be propogated to all instances', () => {
       const added = symbol.append(simpleComp, { at: 0 })[0];
       all.forEach(cmp =>

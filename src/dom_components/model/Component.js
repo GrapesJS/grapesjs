@@ -839,6 +839,15 @@ const Component = Backbone.Model.extend(Styleable).extend(
           symb.append(toAppend, { fromInstance: this, ...o });
         });
       } else {
+        // Remove instance reference from the symbol
+        const symb = m.__getSymbol();
+        symb &&
+          !o.temporary &&
+          symb.set(
+            keySymbols,
+            symb.__getSymbols().filter(i => i !== m)
+          );
+
         // Propagate remove only if the component is an inner symbol
         if (!m.__isSymbolTop()) {
           const { index } = o;
@@ -864,15 +873,6 @@ const Component = Backbone.Model.extend(Styleable).extend(
             });
           toUp.forEach(toUpFn);
         }
-
-        // Remove instance reference from the symbol
-        const symb = m.__getSymbol();
-        symb &&
-          !o.temporary &&
-          symb.set(
-            keySymbols,
-            symb.__getSymbols().filter(i => i !== m)
-          );
       }
 
       this.__changesUp(optUp);
@@ -1428,11 +1428,13 @@ const Component = Backbone.Model.extend(Styleable).extend(
       delete obj.open; // used in Layers
 
       if (!opts.fromUndo) {
-        if (obj[keySymbols]) {
-          obj[keySymbols] = (this.__getSymbols() || []).map(i => i.getId());
+        const symbol = obj[keySymbol];
+        const symbols = obj[keySymbols];
+        if (symbols && isArray(symbols)) {
+          obj[keySymbols] = symbols.map(i => (i.getId ? i.getId() : i));
         }
-        if (obj[keySymbol] && !isString(obj[keySymbol])) {
-          obj[keySymbol] = obj[keySymbol].getId();
+        if (symbol && !isString(symbol)) {
+          obj[keySymbol] = symbol.getId();
         }
       }
 

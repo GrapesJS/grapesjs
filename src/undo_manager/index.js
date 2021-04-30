@@ -48,7 +48,7 @@ export default () => {
      * @private
      */
     init(opts = {}) {
-      config = { ...opts, ...configDef };
+      config = { ...configDef, ...opts };
       em = config.em;
       this.em = em;
       const fromUndo = true;
