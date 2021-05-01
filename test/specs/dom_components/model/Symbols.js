@@ -434,6 +434,33 @@ describe('Symbols', () => {
         });
       });
 
+      test('On symbol props update, those having override are ignored', () => {
+        const propKey = 'someprop';
+        const propValue = 'somevalue';
+        comp.set(keySymbolOvrd, true);
+        symbol.set(propKey, propValue);
+        // All symbols are updated except the one with override
+        all.forEach(cmp => {
+          if (cmp === comp) {
+            expect(cmp.get(propKey)).toBeFalsy();
+          } else {
+            expect(cmp.get(propKey)).toBe(propValue);
+          }
+        });
+        comp.set(keySymbolOvrd, ['prop1']);
+        symbol.set({ prop1: 'value1', prop2: 'value2' });
+        // Only the overrided property is ignored
+        all.forEach(cmp => {
+          if (cmp === comp) {
+            expect(cmp.get('prop1')).toBeFalsy();
+            expect(cmp.get('prop2')).toBe('value2');
+          } else {
+            expect(cmp.get('prop1')).toBe('value1');
+            expect(cmp.get('prop2')).toBe('value2');
+          }
+        });
+      });
+
       test('Symbol is not propagating components data if override is set', () => {
         symbol.set(keySymbolOvrd, ['components']);
         const innCompsLen = symbol.components().length;

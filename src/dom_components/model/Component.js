@@ -754,8 +754,9 @@ const Component = Backbone.Model.extend(Styleable).extend(
         opts.fromInstance ||
         opts.noPropagate ||
         opts.fromUndo ||
-        (changed && this.__isSymbOvrd(changed)) ||
-        !symbEnabled
+        !symbEnabled ||
+        // Avoid updating others if the current component has override
+        (changed && this.__isSymbOvrd(changed))
       ) {
         return result;
       }
@@ -763,8 +764,12 @@ const Component = Backbone.Model.extend(Styleable).extend(
       const symbols = this.__getSymbols() || [];
       const symbol = this.__getSymbol();
       const all = symbol ? [symbol, ...(symbol.__getSymbols() || [])] : symbols;
+      result = all
+        .filter(s => s !== this)
+        // Avoid updating those with override
+        .filter(s => !(changed && s.__isSymbOvrd(changed)));
 
-      return all.filter(s => s !== this);
+      return result;
     },
 
     __getSymbTop(opts) {
@@ -792,14 +797,20 @@ const Component = Backbone.Model.extend(Styleable).extend(
       if (!isEmptyObj(attrs)) changed.attributes = attrs;
       if (!isEmptyObj(changed)) {
         const toUp = this.__getSymbToUp(opts);
+        // Avoid propagating overrides to other symbols
         keys(changed).map(prop => {
           if (this.__isSymbOvrd(prop)) delete changed[prop];
         });
 
         this.__logSymbol('props', toUp, { opts, changed });
-        toUp.forEach(child =>
-          child.set(changed, { fromInstance: this, ...opts })
-        );
+        toUp.forEach(child => {
+          const propsChanged = { ...changed };
+          // Avoid updating those with override
+          keys(propsChanged).map(prop => {
+            if (child.__isSymbOvrd(prop)) delete propsChanged[prop];
+          });
+          child.set(propsChanged, { fromInstance: this, ...opts });
+        });
       }
     },
 
