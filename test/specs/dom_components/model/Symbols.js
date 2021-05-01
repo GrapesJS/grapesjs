@@ -488,6 +488,37 @@ describe('Symbols', () => {
           expect(cmp.components().length).toBe(innCompsLen)
         );
       });
+
+      test('On symbol components update, those having override are ignored', () => {
+        comp.set(keySymbolOvrd, ['components']);
+        const innCompsLen = comp.components().length;
+        // Check reset action
+        symbol.components('Test text');
+        all.forEach(cmp => {
+          expect(cmp.components().length).toBe(cmp === comp ? innCompsLen : 1);
+        });
+        // Align comp with others
+        comp.components('Test text');
+        all.forEach(cmp => expect(cmp.components().length).toBe(1));
+
+        // Check add action
+        symbol.append('<div>A</div>');
+        all.forEach(cmp => {
+          expect(cmp.components().length).toBe(cmp === comp ? 1 : 2);
+        });
+        // Align comp with others
+        comp.append('<div>A</div>');
+        all.forEach(cmp => expect(cmp.components().length).toBe(2));
+
+        // Check remove action
+        symbol
+          .components()
+          .at(0)
+          .remove();
+        all.forEach(cmp => {
+          expect(cmp.components().length).toBe(cmp === comp ? 2 : 1);
+        });
+      });
     });
   });
 
