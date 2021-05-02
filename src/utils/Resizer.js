@@ -58,6 +58,9 @@ var defaultOpts = {
   // When keepAutoWidth is true and the width has the value 'auto', this is set to true and width isn't updated
   autoWidth: false,
 
+  // When clicking away from the canvas, continue to show the resize handles
+  showWhenFocusOffCanvas: true,
+
   // Handlers
   tl: 1, // Top left
   tc: 1, // Top center
@@ -424,6 +427,16 @@ class Resizer {
       this.start(e);
     } else if (el !== this.el) {
       this.selectedHandler = '';
+      // if the document of the clicked element is not the document that contains this
+      // component, don't blur it. (When clicking in property grid)
+      const docEls = this.getDocumentEl();
+      if (
+        this.opts.showWhenFocusOffCanvas &&
+        docEls.length &&
+        el.ownerDocument !== docEls[0]
+      ) {
+        return;
+      }
       this.blur();
     }
   }
