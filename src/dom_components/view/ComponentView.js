@@ -102,6 +102,8 @@ export default Backbone.View.extend({
       const view = comp.getView(frameM);
       view && view.remove();
     });
+    const cv = view.childrenView;
+    cv && cv.remove();
     const { views } = model;
     views.splice(views.indexOf(view), 1);
     view.removed(view._clbObj());
@@ -188,23 +190,24 @@ export default Backbone.View.extend({
    * @private
    * */
   updateStatus(opts = {}) {
-    const em = this.em;
+    const { em } = this;
+    const { extHl } = em ? em.get('Canvas').getConfig() : {};
     const el = this.el;
     const status = this.model.get('status');
-    const pfx = this.pfx;
     const ppfx = this.ppfx;
     const selectedCls = `${ppfx}selected`;
     const selectedParentCls = `${selectedCls}-parent`;
     const freezedCls = `${ppfx}freezed`;
     const hoveredCls = `${ppfx}hovered`;
     const toRemove = [selectedCls, selectedParentCls, freezedCls, hoveredCls];
+    const selCls = extHl && !opts.noExtHl ? '' : selectedCls;
     this.$el.removeClass(toRemove.join(' '));
     var actualCls = el.getAttribute('class') || '';
     var cls = '';
 
     switch (status) {
       case 'selected':
-        cls = `${actualCls} ${selectedCls}`;
+        cls = `${actualCls} ${selCls}`;
         break;
       case 'selected-parent':
         cls = `${actualCls} ${selectedParentCls}`;
@@ -213,7 +216,7 @@ export default Backbone.View.extend({
         cls = `${actualCls} ${freezedCls}`;
         break;
       case 'freezed-selected':
-        cls = `${actualCls} ${freezedCls} ${selectedCls}`;
+        cls = `${actualCls} ${freezedCls} ${selCls}`;
         break;
       case 'hovered':
         cls = !opts.avoidHover ? `${actualCls} ${hoveredCls}` : '';

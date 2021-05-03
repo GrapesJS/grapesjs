@@ -122,7 +122,7 @@ export default Backbone.Model.extend({
     });
 
     if ((selectorStrNoAdd && found) || selectorsAdd || singleAtRule) {
-      const block = rule.getDeclaration();
+      const block = rule.getDeclaration({ body: 1 });
       block && (result += block);
     } else {
       dump.push(rule);

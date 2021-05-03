@@ -210,6 +210,7 @@ const getPointerEvent = ev =>
 const getKeyCode = ev => ev.which || ev.keyCode;
 const getKeyChar = ev => String.fromCharCode(getKeyCode(ev));
 const isEscKey = ev => getKeyCode(ev) === 27;
+const isEnterKey = ev => getKeyCode(ev) === 13;
 const isObject = val =>
   val !== null && !Array.isArray(val) && typeof val === 'object';
 const isEmptyObj = val => Object.keys(val).length <= 0;
@@ -221,6 +222,17 @@ const isRule = obj => obj && obj.toCSS;
 const getViewEl = el => el.__gjsv;
 const setViewEl = (el, view) => {
   el.__gjsv = view;
+};
+
+const createId = (length = 16) => {
+  let result = '';
+  const chars =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const len = chars.length;
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * len));
+  }
+  return result;
 };
 
 export {
@@ -236,6 +248,7 @@ export {
   getKeyCode,
   getKeyChar,
   isEscKey,
+  isEnterKey,
   getElement,
   shallowDiff,
   normalizeFloat,
@@ -248,5 +261,6 @@ export {
   isObject,
   isEmptyObj,
   isComponent,
+  createId,
   isRule
 };

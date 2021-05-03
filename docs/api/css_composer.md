@@ -115,6 +115,10 @@ Returns **Collection**
 
 Remove all rules
 
+### Parameters
+
+-   `opts`   (optional, default `{}`)
+
 Returns **this** 
 
 ## setRule

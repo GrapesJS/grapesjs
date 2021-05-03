@@ -34,9 +34,10 @@ export default Backbone.Collection.extend({
     this.listenTo(this, 'add', this.onAdd);
     this.listenTo(this, 'remove', this.removeChildren);
     this.listenTo(this, 'reset', this.resetChildren);
-    this.config = opt.config;
-    this.em = opt.em;
-    this.domc = opt.domc;
+    const { em, config } = opt;
+    this.config = config;
+    this.em = em;
+    this.domc = opt.domc || (em && em.get('DomComponents'));
   },
 
   resetChildren(models, opts = {}) {
@@ -97,12 +98,10 @@ export default Backbone.Collection.extend({
 
     // Remove stuff registered in DomComponents.handleChanges
     const inner = removed.components();
-    const um = em.get('UndoManager');
     em.stopListening(inner);
     em.stopListening(removed);
     em.stopListening(removed.get('classes'));
-    um.remove(removed);
-    um.remove(inner);
+    removed.__postRemove();
   },
 
   model(attrs, options) {
@@ -138,8 +137,7 @@ export default Backbone.Collection.extend({
   },
 
   parseString(value, opt = {}) {
-    const { em } = this;
-    const { domc } = this.opt;
+    const { em, domc } = this;
     const cssc = em.get('CssComposer');
     const parsed = em.get('Parser').parseHtml(value);
     // We need this to avoid duplicate IDs
@@ -254,6 +252,7 @@ export default Backbone.Collection.extend({
       model.addClass(name);
     }
 
+    model.__postAdd({ recursive: 1 });
     this.__onAddEnd();
   },
 

@@ -9,6 +9,10 @@ export default DomainViews.extend({
     this.listenTo(this.collection, 'reset', this.render);
   },
 
+  onRemoveBefore(items, opts) {
+    items.forEach(item => item.remove(opts));
+  },
+
   onRender() {
     const { config, $el } = this;
     const { em } = config;

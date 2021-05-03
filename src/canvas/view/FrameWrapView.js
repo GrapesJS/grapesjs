@@ -1,7 +1,7 @@
 import Backbone from 'backbone';
 import FrameView from './FrameView';
 import { bindAll, isNumber, isNull, debounce } from 'underscore';
-import { createEl, motionsEv } from 'utils/dom';
+import { createEl } from 'utils/dom';
 import Dragger from 'utils/Dragger';
 
 export default Backbone.View.extend({
@@ -69,15 +69,18 @@ export default Backbone.View.extend({
     ev && this.dragger.start(ev);
   },
 
-  remove() {
-    this.frame.remove();
-    this.frame = {};
+  remove(opts) {
+    this.frame.remove(opts);
     Backbone.View.prototype.remove.apply(this, arguments);
+    ['frame', 'dragger', 'cv', 'em', 'canvas', 'elTools'].forEach(
+      i => (this[i] = 0)
+    );
     return this;
   },
 
   updateOffset: debounce(function() {
     const { em, $el, frame } = this;
+    if (!em) return;
     em.runDefault({ preserveSelected: 1 });
     $el.removeClass(this.classAnim);
     frame.model._emitUpdated();
@@ -103,32 +106,25 @@ export default Backbone.View.extend({
    */
   updateDim() {
     const { em, el, $el, model, classAnim } = this;
-    const { width, height } = model.attributes;
-    const { style } = el;
-    const currW = style.width || '';
-    const currH = style.height || '';
-    const newW = width || '';
-    const newH = height || '';
-    const noChanges = currW == newW && currH == newH;
-    const un = 'px';
     this.frame.rect = 0;
     $el.addClass(classAnim);
-    style.width = isNumber(newW) ? `${newW}${un}` : newW;
-    style.height = isNumber(newH) ? `${newH}${un}` : newH;
+    const { noChanges, width, height } = this.__handleSize();
 
     // Set width and height from DOM (should be done only once)
     if (isNull(width) || isNull(height)) {
-      const newDims = {
-        ...(!width ? { width: el.offsetWidth } : {}),
-        ...(!height ? { height: el.offsetHeight } : {})
-      };
-      model.set(newDims, { silent: 1 });
+      model.set(
+        {
+          ...(!width ? { width: el.offsetWidth } : {}),
+          ...(!height ? { height: el.offsetHeight } : {})
+        },
+        { silent: 1 }
+      );
     }
 
     // Prevent fixed highlighting box which appears when on
     // component hover during the animation
     em.stopDefault({ preserveSelected: 1 });
-    noChanges ? this.updateOffset() : $el.one(motionsEv, this.updateOffset);
+    noChanges ? this.updateOffset() : setTimeout(this.updateOffset, 350);
   },
 
   onScroll() {
@@ -146,9 +142,25 @@ export default Backbone.View.extend({
     this.updateDim();
   },
 
+  __handleSize() {
+    const un = 'px';
+    const { model, el } = this;
+    const { style } = el;
+    const { width, height } = model.attributes;
+    const currW = style.width || '';
+    const currH = style.height || '';
+    const newW = width || '';
+    const newH = height || '';
+    const noChanges = currW == newW && currH == newH;
+    style.width = isNumber(newW) ? `${newW}${un}` : newW;
+    style.height = isNumber(newH) ? `${newH}${un}` : newH;
+    return { noChanges, width, height, newW, newH };
+  },
+
   render() {
     const { frame, $el, ppfx, cv, model, el } = this;
     const { onRender } = model.attributes;
+    this.__handleSize();
     frame.render();
     $el
       .empty()
@@ -204,7 +216,8 @@ export default Backbone.View.extend({
     `
     );
     this.elTools = elTools;
-    cv.toolsWrapper.appendChild(elTools); // TODO remove on frame remove
+    const twrp = cv.toolsWrapper;
+    twrp && twrp.appendChild(elTools); // TODO remove on frame remove
     onRender &&
       onRender({
         el,

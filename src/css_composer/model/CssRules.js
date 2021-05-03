@@ -22,8 +22,8 @@ export default Collection.extend({
     return result.filter(i => i.style);
   },
 
-  onAdd(model) {
-    model.ensureSelectors(); // required for undo
+  onAdd(model, c, o) {
+    model.ensureSelectors(model, c, o); // required for undo
   },
 
   onRemove(removed) {

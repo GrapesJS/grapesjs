@@ -19,7 +19,13 @@ describe('DOM Components', () => {
         loadCompsOnRender: 0
       },
       get() {
-        return;
+        return {};
+      },
+      on() {
+        return this;
+      },
+      listenTo() {
+        return this;
       },
       getHtml() {
         return 'testHtml';
@@ -47,11 +53,13 @@ describe('DOM Components', () => {
       em = new Editor({
         avoidInlineStyle: 1
       });
+      em.get('PageManager').onLoad();
       config = {
         em,
         storeWrapper: 1
       };
-      obj = new DomComponents().init(config);
+      obj = em.get('DomComponents');
+      // obj = new DomComponents().init(config);
     });
 
     afterEach(() => {
@@ -80,8 +88,10 @@ describe('DOM Components', () => {
 
     test('Store data', () => {
       setSmConfig();
-      setEm();
-      //obj.getWrapper().get('components').add({});
+      (em.getHtml = () => {
+        return 'testHtml';
+      }),
+        (obj = em.get('DomComponents').init(config));
       var expected = {
         html: 'testHtml',
         components: JSON.stringify(obj.getWrapper())
@@ -141,10 +151,6 @@ describe('DOM Components', () => {
     test('Add more components at once', () => {
       var comp = obj.addComponent([{}, {}]);
       expect(obj.getComponents().length).toEqual(2);
-    });
-
-    test('Render wrapper', () => {
-      expect(obj.render()).toBeTruthy();
     });
 
     test('Import propertly components and styles with the same ids', () => {

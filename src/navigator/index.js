@@ -50,7 +50,7 @@ export default () => {
      * @return {self}
      */
     setRoot(el) {
-      layers.setRoot(el);
+      layers && layers.setRoot(el);
       return this;
     },
 

@@ -186,6 +186,18 @@ um.hasRedo();
 
 Returns **[Boolean][16]** 
 
+## isRegistered
+
+Check if the entity (Model/Collection) to tracked
+Note: New Components and CSSRules will be added automatically
+
+### Parameters
+
+-   `obj`  
+-   `entity` **(Model | Collection)** Entity to track
+
+Returns **[Boolean][16]** 
+
 ## getStack
 
 Get stack of changes

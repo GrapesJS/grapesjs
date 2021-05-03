@@ -20,7 +20,6 @@
  * * [getWindow](#getwindow)
  * * [getDocument](#getdocument)
  * * [getBody](#getbody)
- * * [getWrapperEl](#getwrapperel)
  * * [setCustomBadgeLabel](#setcustombadgelabel)
  * * [hasFocus](#hasfocus)
  * * [scrollTo](#scrollto)
@@ -30,8 +29,7 @@
  * @module Canvas
  */
 
-import { hasDnd, getElement, getViewEl } from 'utils/mixins';
-import Droppable from 'utils/Droppable';
+import { getElement, getViewEl } from 'utils/mixins';
 import defaults from './config/config';
 import Canvas from './model/Canvas';
 import canvasView from './view/CanvasView';
@@ -72,20 +70,23 @@ export default () => {
       this.em = c.em;
       const ppfx = c.pStylePrefix;
       if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
-
       canvas = new Canvas(config);
-      CanvasView = new canvasView({
-        model: canvas,
-        config: c
-      });
-
-      var cm = c.em.get('DomComponents');
-      if (cm) this.setWrapper(cm);
-
       this.model = canvas;
       this.startAutoscroll = this.startAutoscroll.bind(this);
       this.stopAutoscroll = this.stopAutoscroll.bind(this);
       return this;
+    },
+
+    onLoad() {
+      this.model.init();
+      CanvasView = new canvasView({
+        model: canvas,
+        config: c
+      });
+    },
+
+    getModel() {
+      return canvas;
     },
 
     /**
@@ -94,15 +95,6 @@ export default () => {
      */
     getConfig() {
       return c;
-    },
-
-    /**
-     * Add wrapper
-     * @param	{Object}	wrp Wrapper
-     * @private
-     * */
-    setWrapper(wrp) {
-      canvas.set('wrapper', wrp);
     },
 
     /**
@@ -154,15 +146,6 @@ export default () => {
     getBody() {
       const doc = this.getDocument();
       return doc && doc.body;
-    },
-
-    /**
-     * Get the wrapper element containing all the components
-     * @return {HTMLElement}
-     */
-    getWrapperEl() {
-      const body = this.getBody();
-      return body && body.querySelector('#wrapper');
     },
 
     _getCompFrame(compView) {
@@ -590,10 +573,6 @@ export default () => {
       fr && fr.stopAutoscroll();
     },
 
-    postRender() {
-      if (hasDnd(c.em)) this.droppable = new Droppable(c.em);
-    },
-
     /**
      * Set zoom value
      * @param {Number} value The zoom value, from 0 to 100
@@ -624,16 +603,6 @@ export default () => {
     toggleFramesEvents(on) {
       const { style } = this.getFramesEl();
       style.pointerEvents = on ? '' : 'none';
-    },
-
-    /**
-     * Returns wrapper element
-     * @return {HTMLElement}
-     * ????
-     * @private
-     */
-    getFrameWrapperEl() {
-      return CanvasView.frame.getWrapper();
     },
 
     getFrames() {
