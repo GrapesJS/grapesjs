@@ -106,7 +106,7 @@
     "build:css": "sass src/styles/scss/main.scss dist/css/grapes.min.css --no-source-map --style=compressed --load-path=node_modules",
     "build:locale": "rm -rf ./locale && node scripts/build-locale.js && babel locale -d locale --copy-files --no-comments",
     "start": "run-p start:*",
-    "start:js": "grapesjs-cli serve",
+    "start:js": "grapesjs-cli serve -p 8082",
     "start:css": "npm run build:css -- --watch",
     "format": "prettier --single-quote --write './{src,test}/**/*.js'",
     "test": "jest",

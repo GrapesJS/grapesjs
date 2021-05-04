@@ -79,6 +79,7 @@ export default class Frame extends Model {
     if (opt.temporary || opt.noCount || opt.avoidStore) {
       return;
     }
+    this.getPage() && this.em.trigger('page:frame:updated', this);
     this.set('changesCount', this.get('changesCount') + 1);
   }
 
