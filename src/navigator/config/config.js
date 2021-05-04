@@ -58,5 +58,17 @@ export default {
    *  }
    * }
    */
-  onRender: () => {}
+  onRender: () => {},
+
+  /**
+   * Extend Layer view object (view/ItemView.js)
+   * @example
+   * extend: {
+   *   setName(name) {
+   *     // this.model is the component of the layer
+   *     this.model.set('another-prop-for-name', name);
+   *   },
+   * },
+   */
+  extend: {}
 };

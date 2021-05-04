@@ -188,12 +188,16 @@ export default Backbone.View.extend({
     const name = inputEl.textContent;
     inputEl.scrollLeft = 0;
     inputEl[inputProp] = false;
-    this.model.set({ 'custom-name': name });
+    this.setName(name, { component: this.model, propName: 'custom-name' });
     em && em.setEditing(0);
     $el
       .find(`.${this.inputNameCls}`)
       .addClass(clsNoEdit)
       .removeClass(clsEdit);
+  },
+
+  setName(name, { propName }) {
+    this.model.set(propName, name);
   },
 
   /**
@@ -410,6 +414,7 @@ export default Backbone.View.extend({
     }
 
     const children = new ItemsView({
+      ItemView: opt.ItemView,
       collection: model.get('components'),
       config: this.config,
       sorter: this.sorter,
