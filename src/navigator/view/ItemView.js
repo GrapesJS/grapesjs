@@ -408,6 +408,7 @@ export default Backbone.View.extend({
     const vis = this.isVisible();
     const el = this.$el.empty();
     const level = this.level + 1;
+    this.inputName = 0;
 
     if (isUndefined(ItemsView)) {
       ItemsView = require('./ItemsView').default;
