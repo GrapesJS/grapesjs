@@ -494,7 +494,7 @@ export default {
       };
 
       if (typeof resizable == 'object') {
-        options = { ...options, ...resizable };
+        options = { ...options, ...resizable, parent: options };
       }
 
       this.resizer = editor.runCommand('resize', { el, options, force: 1 });
