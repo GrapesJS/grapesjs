@@ -47,7 +47,7 @@ export default Backbone.Model.extend({
 
     if (model && device) {
       const { width, height } = device.attributes;
-      model.set({ width, height });
+      model.set({ width, height }, { noUndo: 1 });
     }
   },
 

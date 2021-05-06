@@ -78,7 +78,8 @@ export default Model.extend({
   },
 
   getHead() {
-    return [...this.get('head')];
+    const head = this.get('head') || [];
+    return [...head];
   },
 
   setHead(value) {
