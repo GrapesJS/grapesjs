@@ -5,6 +5,7 @@ const rootDir = path.resolve(__dirname);
 
 export default ({ config }) => ({
   ...config,
+  mode: 'development',
   output: {
     ...config.output,
     filename: 'grapes.min.js',

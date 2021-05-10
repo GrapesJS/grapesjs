@@ -101,7 +101,13 @@ export default () => {
       pages.on('change', (p, c) => {
         em.trigger(evPageUpdate, p, p.changedAttributes(), c);
       });
-      pages.on('reset', coll => coll.at(0) && this.select(coll.at(0)));
+      pages.on('reset', coll => {
+        const mainPage = !coll.length
+          ? this.add({ type: typeMain })
+          : this.getMain();
+
+        this.select(mainPage);
+      });
       pages.on('all', this.__onChange, this);
       model.on(chnSel, this._onPageChange);
 
