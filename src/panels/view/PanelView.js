@@ -120,6 +120,8 @@ export default Backbone.View.extend({
     const cls = `${this.className} ${this.id} ${ppfx}one-bg ${ppfx}two-color`;
     $el.addClass(cls);
 
+    this.toggleVisible();
+
     if (this.buttons.length) {
       var buttons = new ButtonsView({
         collection: this.buttons,
