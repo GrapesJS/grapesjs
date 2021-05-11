@@ -1,4 +1,4 @@
-import { isString, isObject } from 'underscore';
+import { isString, isObject, object } from 'underscore';
 import CategoryView from 'category/view/CategoryView';
 import DomainViews from 'domain_abstract/view/DomainViews';
 import TraitView from './TraitView';
@@ -8,6 +8,7 @@ import TraitNumberView from './TraitNumberView';
 import TraitColorView from './TraitColorView';
 import TraitButtonView from './TraitButtonView';
 import Filter from 'filter/view/FilterView';
+import Backbone from 'backbone';
 
 export default DomainViews.extend({
   ns: 'Traits',
@@ -56,9 +57,36 @@ export default DomainViews.extend({
    */
   updatedCollection() {
     const ppfx = this.ppfx;
-    const comp = this.em.getSelected();
+    const comp = this.em.getSelectedAll();
+    // check if there are more than one component selected and get the last selected value (last elemented pushed)
+    this.lastComp = comp.length > 0 ? comp[comp.length - 1] : undefined;
     this.el.className = `${this.className} ${ppfx}one-bg ${ppfx}two-color`;
-    this.collection = comp ? comp.get('traits') : [];
+    this.collection = {}; // object used as a map.
+
+    comp.length &&
+      comp.forEach(comp => {
+        var self = this; // need to keep upper level scope
+        self.lastComp.get('traits').each(trait => {
+          var tta;
+          if (
+            (tta = comp.get('traits').findWhere({ name: trait.get('name') }))
+          ) {
+            if (self.collection[tta.id]) {
+              self.collection[tta.id].push(tta);
+            } else {
+              self.collection[tta.id] = [tta];
+            }
+          }
+        });
+      });
+
+    // process buckets and clean out unwanted data
+    Object.keys(this.collection).forEach(key => {
+      if (this.collection[key] && this.collection[key].length != comp.length) {
+        delete this.collection[key];
+      }
+    });
+
     // Need to guard access to each, due to being undefined in some observed cases where collection is not a backbone collection.
     this.collection.each &&
       this.collection.each(function(model) {
@@ -74,7 +102,7 @@ export default DomainViews.extend({
    * @param {Object} fragment Fragment collection
    * @private
    * */
-  add(model, fragment) {
+  add(models, fragment) {
     const { config, reuseView, items, itemsView = {} } = this;
     const inputTypes = [
       'button',
@@ -102,8 +130,8 @@ export default DomainViews.extend({
     ];
     var frag = fragment || null;
     var itemView = this.itemView;
-    var typeField = model.get(this.itemType);
-    var category = model.get('category');
+    var typeField = models ? models[0].get(this.itemType) : '';
+    var category = models ? models[0].get('category') : '';
     let view;
 
     if (itemsView[typeField]) {
@@ -115,12 +143,7 @@ export default DomainViews.extend({
     ) {
       this.itemViewNotFound(typeField);
     }
-
-    if (model.view && reuseView) {
-      view = model.view;
-    } else {
-      view = new itemView({ model, config }, config);
-    }
+    view = new itemView({ model: models, config }, config);
 
     if (category && this.categories && !config.ignoreCategories) {
       if (isString(category)) {
@@ -137,7 +160,7 @@ export default DomainViews.extend({
       var categories = this.getCategoriesEl();
       var catView = this.renderedCategories[catId];
       var categories = this.getCategoriesEl();
-      model.set('category', catModel);
+      models[0].set('category', catModel);
 
       if (!catView && categories) {
         catView = new CategoryView(
@@ -149,6 +172,7 @@ export default DomainViews.extend({
         this.renderedCategories[catId] = catView;
         categories.appendChild(catView.el);
       }
+
       catView && catView.append(view.render().el);
       return;
     }
@@ -163,7 +187,7 @@ export default DomainViews.extend({
   inclusiveSearchCallBack(value) {
     var index = 1;
     const processedValue = value ? value.toLowerCase() : '';
-    this.collection.forEach(element => {
+    this.collection.keys(key => {
       const category = element.get('category');
       const categoryLabel = category ? category.id.toLowerCase() : '';
       if (
@@ -205,10 +229,14 @@ export default DomainViews.extend({
 
     this.searchField && this.$el.prepend(this.searchField.el);
 
-    if (this.collection.length)
-      this.collection.each(function(model) {
-        model.get('visible') && this.add(model, frag);
+    if (Object.keys(this.collection).length) {
+      Object.keys(this.collection).forEach(key => {
+        this.collection[key].forEach(modelRef => {
+          modelRef.get('visible');
+        });
+        this.add(this.collection[key], frag);
       }, this);
+    }
 
     this.$el.append(frag);
     const cls = `${this.contClass}s ${this.ppfx}one-bg ${this.ppfx}two-color`;

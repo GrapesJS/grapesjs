@@ -11,7 +11,7 @@ export default Backbone.View.extend({
   appendInput: 1,
 
   attributes() {
-    return this.model.get('attributes');
+    return this.model && this.model[0].get('attributes');
   },
 
   templateLabel() {
@@ -28,25 +28,33 @@ export default Backbone.View.extend({
   initialize(o = {}) {
     const { config = {} } = o;
     const { model, eventCapture } = this;
-    const { target } = model;
-    const { type } = model.attributes;
+    //const { target } = model;
+    const type = model ? model[0].attributes.type : '';
     this.config = config;
     this.em = config.em;
     this.pfx = config.stylePrefix || '';
     this.ppfx = config.pStylePrefix || '';
-    this.target = target;
+    // this.target = target;
     const { ppfx } = this;
     this.clsField = `${ppfx}field ${ppfx}field-${type}`;
     [
       ['change:value', this.onValueChange],
       ['remove', this.removeView]
     ].forEach(([event, clb]) => {
-      model.off(event, clb);
-      this.listenTo(model, event, clb);
+      model &&
+        model.forEach(modelRef => {
+          modelRef.off(event, clb);
+          this.listenTo(modelRef, event, clb);
+        });
     });
-    model.view = this;
-    this.listenTo(model, 'change:label', this.render);
-    this.listenTo(model, 'change:placeholder', this.rerender);
+
+    model &&
+      model.forEach(modelRef => {
+        modelRef.view = this;
+        this.listenTo(modelRef, 'change:label', this.render);
+        this.listenTo(modelRef, 'change:placeholder', this.rerender);
+      });
+
     eventCapture.forEach(event => (this.events[event] = 'onChange'));
     this.delegateEvents();
     this.init();
@@ -54,7 +62,7 @@ export default Backbone.View.extend({
 
   getClbOpts() {
     return {
-      component: this.target,
+      component: this.model,
       trait: this.model,
       elInput: this.getInputElem()
     };
@@ -78,8 +86,11 @@ export default Backbone.View.extend({
   onChange(event) {
     const el = this.getInputElem();
     if (el && !isUndefined(el.value)) {
-      this.model.set('value', el.value);
+      this.model.forEach(modelRef => {
+        modelRef.set('value', el.value);
+      });
     }
+
     this.onEvent({
       ...this.getClbOpts(),
       event
@@ -87,7 +98,7 @@ export default Backbone.View.extend({
   },
 
   getValueForTarget() {
-    return this.model.get('value');
+    return this.model[0].get('value');
   },
 
   setInputValue(value) {
@@ -114,15 +125,15 @@ export default Backbone.View.extend({
    * @private
    */
   renderLabel() {
-    const { $el, target } = this;
+    const { $el, model } = this;
     const label = this.getLabel();
-    let tpl = this.templateLabel(target);
+    let tpl = this.templateLabel(model[0]);
 
     if (this.createLabel) {
       tpl =
         this.createLabel({
           label,
-          component: target,
+          component: model[0],
           trait: this
         }) || '';
     }
@@ -137,7 +148,9 @@ export default Backbone.View.extend({
    */
   getLabel() {
     const { em } = this;
-    const { label, name } = this.model.attributes;
+    const { label, name } = this.model
+      ? this.model[0].attributes
+      : { label: '', name: '' };
     return (
       em.t(`traitManager.traits.labels.${name}`) ||
       capitalize(label || name).replace(/-/g, ' ')
@@ -148,7 +161,7 @@ export default Backbone.View.extend({
    * Returns current target component
    */
   getComponent() {
-    return this.target;
+    return this.model[0];
   },
 
   /**
@@ -159,8 +172,8 @@ export default Backbone.View.extend({
   getInputEl() {
     if (!this.$input) {
       const { em, model } = this;
-      const md = model;
-      const { name } = model.attributes;
+      const md = model ? model[0] : undefined;
+      const { name } = model ? model[0].attributes : { name: '' };
       const plh = md.get('placeholder') || md.get('default') || '';
       const type = md.get('type') || 'text';
       const min = md.get('min');
@@ -198,14 +211,14 @@ export default Backbone.View.extend({
   getModelValue() {
     let value;
     const model = this.model;
-    const target = this.target;
-    const name = model.get('name');
+    const target = this.model[0];
+    const name = model ? model[0].get('name') : '';
 
-    if (model.get('changeProp')) {
+    if (model && model[0].get('changeProp')) {
       value = target.get(name);
     } else {
-      const attrs = target.get('attributes');
-      value = model.get('value') || attrs[name];
+      const attrs = target.attributes;
+      value = (model && model[0].get('value')) || attrs[name];
     }
 
     return !isUndefined(value) ? value : '';
@@ -243,7 +256,7 @@ export default Backbone.View.extend({
   },
 
   hasLabel() {
-    const { label } = this.model.attributes;
+    const { label } = this.model ? this.model[0].attributes : { label: '' };
     return !this.noLabel && label !== false;
   },
 
@@ -258,7 +271,7 @@ export default Backbone.View.extend({
 
   render() {
     const { $el, pfx, ppfx, model } = this;
-    const { type, id } = model.attributes;
+    const { type, id } = model ? model[0].attributes : { type: '', id: '' };
     const hasLabel = this.hasLabel && this.hasLabel();
     const cls = `${pfx}trait`;
     this.$input = null;

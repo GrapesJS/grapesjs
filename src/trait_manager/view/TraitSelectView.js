@@ -27,8 +27,8 @@ export default TraitView.extend({
   getInputEl() {
     if (!this.$input) {
       const { model, em } = this;
-      const propName = model.get('name');
-      const opts = model.get('options') || [];
+      const propName = model && model[0].get('name');
+      const opts = (model && model[0].get('options')) || [];
       const values = [];
       let input = '<select>';
 
@@ -56,8 +56,9 @@ export default TraitView.extend({
 
       input += '</select>';
       this.$input = $(input);
-      const val = model.getTargetValue();
-      const valResult = values.indexOf(val) >= 0 ? val : model.get('default');
+      const val = model && model[0].getTargetValue();
+      const valResult =
+        model && values.indexOf(val) >= 0 ? val : model[0].get('default');
       !isUndefined(valResult) && this.$input.val(valResult);
     }
 
