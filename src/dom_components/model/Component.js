@@ -887,14 +887,18 @@ const Component = Backbone.Model.extend(Styleable).extend(
 
         // Propagate remove only if the component is an inner symbol
         if (!m.__isSymbolTop()) {
+          const rmEv = 'components:remove';
           const { index } = o;
+          const parent = m.parent();
           const opts = { fromInstance: m, ...o };
           const isSymbNested = m.__isSymbolNested();
           let toUpFn = symb => symb.remove(opts);
-          let toUp = m.__getSymbToUp(toUpOpts);
+          // Check if the parent allows the removing
+          let toUp = !parent.__isSymbOvrd(rmEv)
+            ? m.__getSymbToUp(toUpOpts)
+            : [];
 
           if (isSymbNested) {
-            const parent = m.parent();
             toUp = parent.__getSymbToUp(toUpOpts);
             toUpFn = symb => {
               const toRemove = symb.components().at(index);

@@ -478,12 +478,17 @@ describe('Symbols', () => {
         allInst.forEach(cmp =>
           expect(cmp.components().length).toBe(innCompsLen)
         );
+      });
+
+      test('Symbol is not removing components data if override is set', () => {
+        symbol.set(keySymbolOvrd, ['components']);
+        const innCompsLen = symbol.components().length;
         // Check for remove action
         symbol
           .components()
           .at(0)
           .remove();
-        expect(symbol.components().length).toBe(2);
+        expect(symbol.components().length).toBe(innCompsLen - 1);
         allInst.forEach(cmp =>
           expect(cmp.components().length).toBe(innCompsLen)
         );
