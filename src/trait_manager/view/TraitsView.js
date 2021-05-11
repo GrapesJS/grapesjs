@@ -130,8 +130,8 @@ export default DomainViews.extend({
     ];
     var frag = fragment || null;
     var itemView = this.itemView;
-    var typeField = models ? models[0].get(this.itemType) : '';
-    var category = models ? models[0].get('category') : '';
+    var typeField = models ? models[models.length - 1].get(this.itemType) : '';
+    var category = models ? models[models.length - 1].get('category') : '';
     let view;
 
     if (itemsView[typeField]) {
@@ -143,7 +143,7 @@ export default DomainViews.extend({
     ) {
       this.itemViewNotFound(typeField);
     }
-    view = new itemView({ model: models, config }, config);
+    view = new itemView({ models: models, config }, config);
 
     if (category && this.categories && !config.ignoreCategories) {
       if (isString(category)) {
@@ -160,7 +160,7 @@ export default DomainViews.extend({
       var categories = this.getCategoriesEl();
       var catView = this.renderedCategories[catId];
       var categories = this.getCategoriesEl();
-      models[0].set('category', catModel);
+      models[models.length - 1].set('category', catModel);
 
       if (!catView && categories) {
         catView = new CategoryView(
@@ -187,19 +187,20 @@ export default DomainViews.extend({
   inclusiveSearchCallBack(value) {
     var index = 1;
     const processedValue = value ? value.toLowerCase() : '';
-    this.collection.keys(key => {
-      const category = element.get('category');
-      const categoryLabel = category ? category.id.toLowerCase() : '';
-      if (
-        !element.get('name').includes(processedValue) &&
-        !categoryLabel.includes(processedValue)
-      ) {
-        element.set('visible', false);
-      } else {
-        element.set('visible', true);
-      }
-
-      if (index >= this.collection.length) {
+    Object.keys(this.collection).forEach(key => {
+      this.collection[key].forEach(comp => {
+        const category = comp.get('category');
+        const categoryLabel = category ? category.id.toLowerCase() : '';
+        if (
+          !comp.get('name').includes(processedValue) &&
+          !categoryLabel.includes(processedValue)
+        ) {
+          comp.set('visible', false);
+        } else {
+          comp.set('visible', true);
+        }
+      });
+      if (index >= Object.keys(this.collection).length) {
         this.render();
       } else {
         index++;
@@ -231,10 +232,8 @@ export default DomainViews.extend({
 
     if (Object.keys(this.collection).length) {
       Object.keys(this.collection).forEach(key => {
-        this.collection[key].forEach(modelRef => {
-          modelRef.get('visible');
-        });
-        this.add(this.collection[key], frag);
+        this.collection[key][0].get('visible') &&
+          this.add(this.collection[key], frag);
       }, this);
     }
 
