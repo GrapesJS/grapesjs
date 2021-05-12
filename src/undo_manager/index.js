@@ -73,9 +73,10 @@ export default () => {
         on(object, v, opts) {
           !beforeCache && (beforeCache = object.previousAttributes());
           const opt = opts || v || {};
-          setTimeout(() => {
-            beforeCache = null;
-          });
+          opt.noUndo &&
+            setTimeout(() => {
+              beforeCache = null;
+            });
           if (hasSkip(opt)) {
             return;
           } else {
