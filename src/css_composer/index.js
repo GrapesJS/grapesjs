@@ -27,7 +27,7 @@
  * @module CssComposer
  */
 
-import { isArray } from 'underscore';
+import { isArray, isUndefined } from 'underscore';
 import defaults from './config/config';
 import CssRule from './model/CssRule';
 import CssRules from './model/CssRules';
@@ -455,6 +455,21 @@ export default () => {
       const media = opts.mediaText || em.getCurrentMedia();
       const selector = em.get('SelectorManager').get(name, Selector.TYPE_CLASS);
       return selector && this.get(selector, state, media);
+    },
+
+    getComponentRules(cmp, opts = {}) {
+      let { state, mediaText, current } = opts;
+      if (current) {
+        state = em.get('state') || '';
+        mediaText = em.getCurrentMedia();
+      }
+      const id = cmp.getId();
+      const rules = this.getAll().filter(r => {
+        if (!isUndefined(state) && r.get('state') !== state) return;
+        if (!isUndefined(mediaText) && r.get('mediaText') !== mediaText) return;
+        return r.getSelectorsString() === `#${id}`;
+      });
+      return rules;
     },
 
     /**
