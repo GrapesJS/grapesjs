@@ -565,9 +565,13 @@ const Component = Backbone.Model.extend(Styleable).extend(
 
       // Add classes
       if (!opts.noClass) {
-        this.get('classes').forEach(cls =>
-          classes.push(isString(cls) ? cls : cls.get('name'))
-        );
+        this.get('classes').forEach(cls => {
+          if (isString(cls)) {
+            classes.push(cls);
+          } else if (!opts.forHTML || !cls.get('editonly')) {
+            classes.push(cls.get('name'));
+          }
+        });
         classes.length && (attributes.class = classes.join(' '));
       }
 
@@ -1382,7 +1386,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * @private
      */
     getAttrToHTML() {
-      var attr = this.getAttributes();
+      var attr = this.getAttributes({ forHTML: true });
       delete attr.style;
       return attr;
     },
