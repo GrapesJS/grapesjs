@@ -25,7 +25,11 @@ const Selector = Model.extend(
       private: false,
 
       // If true, can't be removed from the attacched element
-      protected: false
+      protected: false,
+
+      // If true, selector is applied only inside editor
+      // Will not be present in export code
+      editonly: false
     },
 
     initialize(props, opts = {}) {

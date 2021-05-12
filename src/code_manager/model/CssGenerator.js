@@ -107,19 +107,22 @@ export default Backbone.Model.extend({
     const selectorStrNoAdd = rule.selectorsToString({ skipAdd: 1 });
     const selectorsAdd = rule.get('selectorsAdd');
     const singleAtRule = rule.get('singleAtRule');
-    let found;
 
-    // This will not render a rule if there is no its component
-    rule.get('selectors').each(selector => {
-      const name = selector.getFullName();
-      if (
-        this.compCls.indexOf(name) >= 0 ||
-        this.ids.indexOf(name) >= 0 ||
-        opts.keepUnusedStyles
-      ) {
-        found = 1;
-      }
-    });
+    const selectors = rule.get('selectors').models;
+
+    // This rule will render in case:
+    // * all of selectors are not editonly
+    // * if some component is using the rule or keepUnusedStyles is enabled
+    const found =
+      selectors.every(s => !s.get('editonly')) &&
+      selectors.some(s => {
+        const name = s.getFullName();
+        return (
+          this.compCls.indexOf(name) >= 0 ||
+          this.ids.indexOf(name) >= 0 ||
+          opts.keepUnusedStyles
+        );
+      });
 
     if ((selectorStrNoAdd && found) || selectorsAdd || singleAtRule) {
       const block = rule.getDeclaration({ body: 1 });
