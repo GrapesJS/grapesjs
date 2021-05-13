@@ -9,8 +9,7 @@ import {
   flatten,
   debounce
 } from 'underscore';
-
-let Component;
+import Component, { keySymbol, keySymbols } from './Component';
 
 const getIdsToKeep = (prev, res = []) => {
   const pr = prev || [];
@@ -144,7 +143,6 @@ export default Backbone.Collection.extend({
     const cssc = em.get('CssComposer');
     const parsed = em.get('Parser').parseHtml(value);
     // We need this to avoid duplicate IDs
-    if (!Component) Component = require('./Component').default;
     Component.checkId(parsed.html, parsed.css, domc.componentsById, opt);
 
     if (parsed.css && cssc && !opt.temporary) {
@@ -158,6 +156,7 @@ export default Backbone.Collection.extend({
   },
 
   add(models, opt = {}) {
+    const { parent } = this;
     opt.keepIds = getIdsToKeep(opt.previousModels);
 
     if (isString(models)) {
@@ -176,6 +175,7 @@ export default Backbone.Collection.extend({
       .filter(i => i)
       .map(model => this.processDef(model));
     models = isMult ? flatten(models, 1) : models[0];
+
     const result = Backbone.Collection.prototype.add.apply(this, [models, opt]);
     this.__firstAdd = result;
     return result;
@@ -258,28 +258,30 @@ export default Backbone.Collection.extend({
   },
 
   __onAddEnd: debounce(function() {
-    const { domc } = this;
-    const allComp = (domc && domc.allById()) || {};
-    const firstAdd = this.__firstAdd;
-    const toCheck = isArray(firstAdd) ? firstAdd : [firstAdd];
-    const silent = { silent: true };
-    const onAll = comps => {
-      comps.forEach(comp => {
-        const symbol = comp.get('__symbol');
-        const symbolOf = comp.get('__symbolOf');
-        if (symbol && isArray(symbol) && isString(symbol[0])) {
-          comp.set(
-            '__symbol',
-            symbol.map(smb => allComp[smb]).filter(i => i),
-            silent
-          );
-        }
-        if (isString(symbolOf)) {
-          comp.set('__symbolOf', allComp[symbolOf], silent);
-        }
-        onAll(comp.components());
-      });
-    };
-    onAll(toCheck);
+    // TODO to check symbols on load, probably this might be removed as symbols
+    // are always recovered from the model
+    // const { domc } = this;
+    // const allComp = (domc && domc.allById()) || {};
+    // const firstAdd = this.__firstAdd;
+    // const toCheck = isArray(firstAdd) ? firstAdd : [firstAdd];
+    // const silent = { silent: true };
+    // const onAll = comps => {
+    //   comps.forEach(comp => {
+    //     const symbol = comp.get(keySymbols);
+    //     const symbolOf = comp.get(keySymbol);
+    //     if (symbol && isArray(symbol) && isString(symbol[0])) {
+    //       comp.set(
+    //         keySymbols,
+    //         symbol.map(smb => allComp[smb]).filter(i => i),
+    //         silent
+    //       );
+    //     }
+    //     if (isString(symbolOf)) {
+    //       comp.set(keySymbol, allComp[symbolOf], silent);
+    //     }
+    //     onAll(comp.components());
+    //   });
+    // };
+    // onAll(toCheck);
   })
 });

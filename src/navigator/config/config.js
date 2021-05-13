@@ -34,5 +34,29 @@ export default {
   scrollLayers: { behavior: 'auto', block: 'nearest' },
 
   // Highlight when a layer component is hovered
-  highlightHover: 1
+  highlightHover: 1,
+
+  /**
+   * WARNING: Experimental option
+   * A callback triggered once the component layer is initialized.
+   * Useful to trigger updates on some component prop change.
+   * @example
+   * onInit({ component, render, listenTo }) {
+   *  listenTo(component, 'change:some-prop', render);
+   * };
+   */
+  onInit: () => {},
+
+  /**
+   * WARNING: Experimental option
+   * A callback triggered once the component layer is rendered.
+   * A callback useful to update the layer DOM on some component change
+   * @example
+   * onRender({ component, el }) { // el is the DOM of the layer
+   *  if (component.get('some-prop')) {
+   *    // do changes using the `el` DOM
+   *  }
+   * }
+   */
+  onRender: () => {}
 };

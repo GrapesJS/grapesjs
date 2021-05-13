@@ -1,5 +1,5 @@
-import { isUndefined, isString } from 'underscore';
-import { getModel } from 'utils/mixins';
+import { isUndefined, isString, bindAll } from 'underscore';
+import { getModel, isEscKey, isEnterKey } from 'utils/mixins';
 import Backbone from 'backbone';
 import ComponentView from 'dom_components/view/ComponentView';
 import { eventDrag } from 'dom_components/model/Component';
@@ -13,11 +13,12 @@ export default Backbone.View.extend({
     'mousedown [data-toggle-move]': 'startSort',
     'touchstart [data-toggle-move]': 'startSort',
     'click [data-toggle-visible]': 'toggleVisibility',
+    'click [data-toggle-open]': 'toggleOpening',
     'click [data-toggle-select]': 'handleSelect',
     'mouseover [data-toggle-select]': 'handleHover',
     'mouseout [data-toggle-select]': 'handleHoverOut',
-    'click [data-toggle-open]': 'toggleOpening',
     'dblclick [data-name]': 'handleEdit',
+    'keydown [data-name]': 'handleEditKey',
     'focusout [data-name]': 'handleEditEnd'
   },
 
@@ -61,9 +62,12 @@ export default Backbone.View.extend({
   },
 
   initialize(o = {}) {
+    bindAll(this, '__render');
     this.opt = o;
     this.level = o.level;
-    this.config = o.config;
+    const config = o.config || {};
+    const { onInit } = config;
+    this.config = config;
     this.em = o.config.em;
     this.ppfx = this.em.get('Config').stylePrefix;
     this.sorter = o.sorter || '';
@@ -94,6 +98,11 @@ export default Backbone.View.extend({
     this.$el.data('model', model);
     this.$el.data('collection', components);
     model.viewLayer = this;
+    onInit.bind(this)({
+      component: model,
+      render: this.__render,
+      listenTo: this.listenTo
+    });
   },
 
   getVisibilityEl() {
@@ -155,11 +164,17 @@ export default Backbone.View.extend({
     const inputEl = this.getInputName();
     inputEl[inputProp] = true;
     inputEl.focus();
+    document.execCommand('selectAll', false, null);
     em && em.setEditing(1);
     $el
       .find(`.${this.inputNameCls}`)
       .removeClass(clsNoEdit)
       .addClass(clsEdit);
+  },
+
+  handleEditKey(ev) {
+    ev.stopPropagation();
+    (isEscKey(ev) || isEnterKey(ev)) && this.handleEditEnd(ev);
   },
 
   /**
@@ -219,11 +234,12 @@ export default Backbone.View.extend({
    * @return void
    * */
   toggleOpening(e) {
-    e.stopPropagation();
+    const { model } = this;
+    e.stopImmediatePropagation();
 
-    if (!this.model.get('components').length) return;
+    if (!model.get('components').length) return;
 
-    this.model.set('open', !this.model.get('open'));
+    model.set('open', !model.get('open'));
   },
 
   /**
@@ -231,10 +247,9 @@ export default Backbone.View.extend({
    */
   handleSelect(e) {
     e.stopPropagation();
-    const { em, config } = this;
+    const { em, config, model } = this;
 
     if (em) {
-      const model = this.model;
       em.setSelected(model, { fromLayers: 1, event: e });
       const scroll = config.scrollCanvas;
       scroll && model.views.forEach(view => view.scrollIntoView(scroll));
@@ -419,6 +434,13 @@ export default Backbone.View.extend({
     this.updateOpening();
     this.updateStatus();
     this.updateVisibility();
+    this.__render();
     return this;
+  },
+
+  __render() {
+    const { model, config, el } = this;
+    const { onRender } = config;
+    onRender.bind(this)({ component: model, el });
   }
 });

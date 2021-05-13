@@ -257,8 +257,8 @@ export default () => {
      * Remove all rules
      * @return {this}
      */
-    clear() {
-      this.getAll().reset();
+    clear(opts = {}) {
+      this.getAll().reset(null, opts);
       return this;
     },
 

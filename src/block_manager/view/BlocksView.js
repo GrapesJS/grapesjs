@@ -117,13 +117,15 @@ export default Backbone.View.extend({
    * @private
    */
   onDrop(model) {
-    const em = this.em;
+    const { em } = this;
     em.runDefault();
 
     if (model && model.get) {
-      if (model.get('activeOnRender')) {
+      const oldActive = 'activeOnRender';
+
+      if (model.get(oldActive)) {
         model.trigger('active');
-        model.set('activeOnRender', 0);
+        model.unset(oldActive);
       }
 
       em.trigger('block:drag:stop', model);
@@ -173,7 +175,7 @@ export default Backbone.View.extend({
       var catId = catModel.get('id');
       var catView = this.renderedCategories[catId];
       var categories = this.getCategoriesEl();
-      model.set('category', catModel);
+      model.set('category', catModel, { silent: true });
 
       if (!catView && categories) {
         catView = new CategoryView(
@@ -238,6 +240,7 @@ export default Backbone.View.extend({
     this.append(frag);
     const cls = `${this.blockContClass}s ${ppfx}one-bg ${ppfx}two-color`;
     this.$el.addClass(cls);
+    this.rendered = true;
     return this;
   }
 });

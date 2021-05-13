@@ -210,6 +210,7 @@ const getPointerEvent = ev =>
 const getKeyCode = ev => ev.which || ev.keyCode;
 const getKeyChar = ev => String.fromCharCode(getKeyCode(ev));
 const isEscKey = ev => getKeyCode(ev) === 27;
+const isEnterKey = ev => getKeyCode(ev) === 13;
 const isObject = val =>
   val !== null && !Array.isArray(val) && typeof val === 'object';
 const isEmptyObj = val => Object.keys(val).length <= 0;
@@ -236,6 +237,7 @@ export {
   getKeyCode,
   getKeyChar,
   isEscKey,
+  isEnterKey,
   getElement,
   shallowDiff,
   normalizeFloat,

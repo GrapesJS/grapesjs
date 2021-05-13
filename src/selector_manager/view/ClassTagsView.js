@@ -305,8 +305,9 @@ export default Backbone.View.extend({
     if (isString(target)) {
       result = `<span class="${pfx}sel-gen">${target}</span>`;
     } else {
-      if (!target || !target.get) return;
-      const selectors = target.getSelectors().getStyleable();
+      const sel = target && target.get && target.getSelectors();
+      if (!sel) return;
+      const selectors = sel.getStyleable();
       const state = em.get('state');
       const idRes = target.getId
         ? `<span class="${pfx}sel-cmp">${target.getName()}</span><span class="${pfx}sel-id">#${target.getId()}</span>`

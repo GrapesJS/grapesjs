@@ -327,7 +327,7 @@ export default () => {
         [model, evn, handleUpdates],
         [model, 'change:components', handleChangesColl],
         [comps, 'add', handleChanges],
-        [comps, 'remove', handleRemoves],
+        [comps, 'remove reset', handleRemoves],
         [model.get('classes'), 'add remove', handleUpdates]
       ].forEach(els => {
         em.stopListening(els[0], els[1], els[2]);
@@ -346,7 +346,7 @@ export default () => {
         um.add(coll);
         [
           [coll, 'add', handleChanges],
-          [coll, 'remove', handleRemoves]
+          [coll, 'remove reset', handleRemoves]
         ].forEach(els => {
           em.stopListening(els[0], els[1], els[2]);
           em.listenTo(els[0], els[1], els[2]);
@@ -358,8 +358,9 @@ export default () => {
      * Triggered when some component is removed
      * @private
      * */
-    handleRemoves(model, value, opts = {}) {
-      !opts.avoidStore && em.handleUpdates(model, value, opts);
+    handleRemoves(m, value, opt) {
+      const opts = opt || value; // in case of reset
+      em.handleUpdates(m, value, opts);
     },
 
     /**

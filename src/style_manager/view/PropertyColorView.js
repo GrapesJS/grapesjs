@@ -10,7 +10,7 @@ export default PropertyIntegerView.extend({
   remove() {
     PropertyIntegerView.prototype.remove.apply(this, arguments);
     const inp = this.inputInst;
-    inp && inp.remove();
+    inp && inp.remove && inp.remove();
     ['inputInst', '$color'].forEach(i => (this[i] = {}));
   },
 
