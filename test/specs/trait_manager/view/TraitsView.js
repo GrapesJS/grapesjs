@@ -15,7 +15,7 @@ describe('TraitView', () => {
       target
     });
     obj = new TraitView({
-      model
+      models: [model]
     });
   });
 
@@ -51,8 +51,8 @@ describe('TraitView', () => {
       name: modelName,
       target: target2
     });
-    var obj1 = new TraitView({ model: model1 });
-    var obj2 = new TraitView({ model: model2 });
+    var obj1 = new TraitView({ models: [model1] });
+    var obj2 = new TraitView({ models: [model2] });
 
     model1.set('value', 'test1');
     model2.set('value', 'test2');

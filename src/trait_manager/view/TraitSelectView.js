@@ -6,7 +6,7 @@ const $ = Backbone.$;
 
 export default TraitView.extend({
   init() {
-    this.listenTo(this.model, 'change:options', this.rerender);
+    this.listenTo(this.models, 'change:options', this.rerender);
   },
 
   templateInput() {
@@ -26,9 +26,9 @@ export default TraitView.extend({
    */
   getInputEl() {
     if (!this.$input) {
-      const { model, em } = this;
-      const propName = model.get('name');
-      const opts = model.get('options') || [];
+      const { models, em } = this;
+      const propName = models && models[0].get('name');
+      const opts = (models && models[0].get('options')) || [];
       const values = [];
       let input = '<select>';
 
@@ -56,8 +56,9 @@ export default TraitView.extend({
 
       input += '</select>';
       this.$input = $(input);
-      const val = model.getTargetValue();
-      const valResult = values.indexOf(val) >= 0 ? val : model.get('default');
+      const val = models && models[0].getTargetValue();
+      const valResult =
+        models && values.indexOf(val) >= 0 ? val : models[0].get('default');
       !isUndefined(valResult) && this.$input.val(valResult);
     }
 
