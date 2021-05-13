@@ -11,7 +11,7 @@ export default Backbone.View.extend({
   appendInput: 1,
 
   attributes() {
-    return this.model && this.models[0].get('attributes');
+    return this.models && this.models[0].get('attributes');
   },
 
   templateLabel() {
@@ -220,6 +220,7 @@ export default Backbone.View.extend({
       value = target.get(name);
     } else {
       const attrs = target.attributes;
+
       value = (models && models[0].get('value')) || attrs[name];
     }
 
