@@ -1050,7 +1050,7 @@ export default Backbone.View.extend({
       }
     }
 
-    if (this.moved) {
+    if (this.moved && target) {
       const toMove = this.toMove;
       const toMoveArr = isArray(toMove) ? toMove : toMove ? [toMove] : [src];
       toMoveArr.forEach(model => {
