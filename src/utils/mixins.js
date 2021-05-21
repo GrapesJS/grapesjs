@@ -78,21 +78,21 @@ const shallowDiff = (objOrig, objNew) => {
   return result;
 };
 
-const on = (el, ev, fn) => {
+const on = (el, ev, fn, opts) => {
   ev = ev.split(/\s+/);
   el = el instanceof Array ? el : [el];
 
   for (let i = 0; i < ev.length; ++i) {
-    el.forEach(elem => elem.addEventListener(ev[i], fn));
+    el.forEach(elem => elem.addEventListener(ev[i], fn, opts));
   }
 };
 
-const off = (el, ev, fn) => {
+const off = (el, ev, fn, opts) => {
   ev = ev.split(/\s+/);
   el = el instanceof Array ? el : [el];
 
   for (let i = 0; i < ev.length; ++i) {
-    el.forEach(elem => elem.removeEventListener(ev[i], fn));
+    el.forEach(elem => elem.removeEventListener(ev[i], fn, opts));
   }
 };
 
