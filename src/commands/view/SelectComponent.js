@@ -192,7 +192,7 @@ export default {
     this.elSelected = result;
     this.updateToolsGlobal();
     // This will hide some elements from the select component
-    this.updateToolsLocal(result);
+    this.updateLocalPos(result);
     this.initResize(component);
   }),
 
@@ -203,11 +203,11 @@ export default {
     this.updateToolsGlobal();
   },
 
-  updateLocalPos() {
+  updateLocalPos(data) {
     const sel = this.getElHovered();
     if (!sel.el) return;
     sel.pos = this.getElementPos(sel.el);
-    this.updateToolsLocal();
+    this.updateToolsLocal(data);
   },
 
   getElHovered() {
