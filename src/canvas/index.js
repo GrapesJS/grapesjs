@@ -646,7 +646,7 @@ export default () => {
 
     destroy() {
       canvas.stopListening();
-      CanvasView.remove();
+      CanvasView && CanvasView.remove();
       [c, canvas, CanvasView].forEach(i => (i = {}));
       ['em', 'model', 'droppable'].forEach(i => (this[i] = {}));
     }
