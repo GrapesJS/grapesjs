@@ -1,28 +1,6 @@
 export default {
   stylePrefix: 'comp-',
 
-  wrapperId: 'wrapper',
-
-  wrapperName: 'Body',
-
-  // Default wrapper configuration
-  wrapper: {
-    removable: false,
-    copyable: false,
-    draggable: false,
-    components: [],
-    traits: [],
-    stylable: [
-      'background',
-      'background-color',
-      'background-image',
-      'background-repeat',
-      'background-attachment',
-      'background-position',
-      'background-size'
-    ]
-  },
-
   // Could be used for default components
   components: [],
 
