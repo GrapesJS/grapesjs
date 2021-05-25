@@ -75,9 +75,9 @@ export default Backbone.View.extend({
   },
 
   remove() {
+    this.frames.remove();
     const frm = this.model.get('frames');
     frm.remove(frm.models);
-    this.frames.remove();
     this.frames = {};
     Backbone.View.prototype.remove.apply(this, arguments);
     this.toggleListeners();
