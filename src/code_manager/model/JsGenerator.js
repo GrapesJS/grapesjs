@@ -69,7 +69,7 @@ export default Backbone.Model.extend({
         code += `
           var items = document.querySelectorAll('${ids}');
           for (var i = 0, len = items.length; i < len; i++) {
-            (function(){${mapType.code}}.bind(items[i]))();
+            (function(){\n${mapType.code}\n}.bind(items[i]))();
           }`;
       }
     }

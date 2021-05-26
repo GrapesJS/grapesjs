@@ -1,5 +1,5 @@
 import defaults from './config/config';
-import ItemView from './view/ItemView';
+import View from './view/ItemView';
 import { isElement } from 'underscore';
 
 export default () => {
@@ -14,7 +14,6 @@ export default () => {
       config = { ...defaults, ...opts };
       config.stylePrefix = opts.pStylePrefix;
       em = config.em;
-
       return this;
     },
 
@@ -23,7 +22,9 @@ export default () => {
     },
 
     onLoad() {
+      const ItemView = View.extend(config.extend);
       layers = new ItemView({
+        ItemView,
         level: 0,
         config,
         opened: config.opened || {},
@@ -50,7 +51,7 @@ export default () => {
      * @return {self}
      */
     setRoot(el) {
-      layers.setRoot(el);
+      layers && layers.setRoot(el);
       return this;
     },
 

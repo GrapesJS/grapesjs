@@ -13,27 +13,41 @@ export default Backbone.View.extend({
   },
 
   initialize(o) {
-    var cls = this.model.get('className');
-    this.config = o.config || {};
-    this.em = this.config.em || {};
+    const { model } = this;
+    const cls = model.get('className');
+    const { command, listen } = model.attributes;
+    const config = o.config || {};
+    const { em } = config;
+    this.config = config;
+    this.em = em;
     const pfx = this.config.stylePrefix || '';
     const ppfx = this.config.pStylePrefix || '';
     this.pfx = pfx;
     this.ppfx = this.config.pStylePrefix || '';
-    this.id = pfx + this.model.get('id');
+    this.id = pfx + model.get('id');
     this.activeCls = `${pfx}active ${ppfx}four-color`;
     this.disableCls = `${ppfx}disabled`;
     this.btnsVisCls = `${pfx}visible`;
     this.className = pfx + 'btn' + (cls ? ' ' + cls : '');
-    this.listenTo(this.model, 'change', this.render);
-    this.listenTo(this.model, 'change:active updateActive', this.updateActive);
-    this.listenTo(this.model, 'checkActive', this.checkActive);
-    this.listenTo(this.model, 'change:bntsVis', this.updateBtnsVis);
-    this.listenTo(this.model, 'change:attributes', this.updateAttributes);
-    this.listenTo(this.model, 'change:className', this.updateClassName);
-    this.listenTo(this.model, 'change:disable', this.updateDisable);
+    this.listenTo(model, 'change', this.render);
+    this.listenTo(model, 'change:active updateActive', this.updateActive);
+    this.listenTo(model, 'checkActive', this.checkActive);
+    this.listenTo(model, 'change:bntsVis', this.updateBtnsVis);
+    this.listenTo(model, 'change:attributes', this.updateAttributes);
+    this.listenTo(model, 'change:className', this.updateClassName);
+    this.listenTo(model, 'change:disable', this.updateDisable);
 
-    if (this.em && this.em.get) this.commands = this.em.get('Commands');
+    if (em && isString(command) && listen) {
+      const chnOpt = { fromListen: 1 };
+      this.listenTo(em, `run:${command}`, () =>
+        model.set('active', true, chnOpt)
+      );
+      this.listenTo(em, `stop:${command}`, () =>
+        model.set('active', false, chnOpt)
+      );
+    }
+
+    if (em && em.get) this.commands = em.get('Commands');
   },
 
   /**
@@ -81,9 +95,9 @@ export default Backbone.View.extend({
    *
    * @return   void
    * */
-  updateActive(opts = {}) {
+  updateActive(m, v, opts = {}) {
     const { model, commands, $el, activeCls } = this;
-    const { fromCollection } = opts;
+    const { fromCollection, fromListen } = opts;
     const context = model.get('context');
     const options = model.get('options');
     const commandName = model.get('command');
@@ -102,13 +116,15 @@ export default Backbone.View.extend({
     if (model.get('active')) {
       !fromCollection && model.collection.deactivateAll(context, model);
       model.set('active', true, { silent: true }).trigger('checkActive');
-      commands.runCommand(command, { ...options, sender: model });
+      !fromListen &&
+        commands.runCommand(command, { ...options, sender: model });
 
       // Disable button if the command has no stop method
       command.noStop && model.set('active', false);
     } else {
       $el.removeClass(activeCls);
-      commands.stopCommand(command, { ...options, sender: model, force: 1 });
+      !fromListen &&
+        commands.stopCommand(command, { ...options, sender: model, force: 1 });
     }
   },
 

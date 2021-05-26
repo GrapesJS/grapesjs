@@ -114,9 +114,15 @@ export default Backbone.View.extend({
 
   onRender() {},
 
-  remove() {
+  onRemoveBefore() {},
+  onRemove() {},
+
+  remove(opts = {}) {
+    const { items } = this;
+    this.onRemoveBefore(items, opts);
     this.clearItems();
     Backbone.View.prototype.remove.apply(this, arguments);
+    this.onRemove(items, opts);
   },
 
   clearItems() {

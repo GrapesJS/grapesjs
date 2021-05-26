@@ -15,11 +15,14 @@ const $ = Backbone.$;
 let obj;
 let dcomp;
 let compOpts;
-let em = new Editor({});
+let em;
 
 describe('Component', () => {
   beforeEach(() => {
-    dcomp = new DomComponents();
+    em = new Editor();
+    dcomp = em.get('DomComponents');
+    em.get('PageManager').onLoad();
+    // dcomp = new DomComponents();
     compOpts = {
       em,
       componentTypes: dcomp.componentTypes,
@@ -589,7 +592,8 @@ describe('Video Component', () => {
 describe('Components', () => {
   beforeEach(() => {
     em = new Editor({});
-    dcomp = new DomComponents();
+    dcomp = em.get('DomComponents');
+    em.get('PageManager').onLoad();
     compOpts = {
       em,
       componentTypes: dcomp.componentTypes
@@ -616,7 +620,8 @@ describe('Components', () => {
 
   test('Avoid conflicting components with the same ID', () => {
     const em = new Editor({});
-    dcomp = new DomComponents();
+    dcomp = em.get('DomComponents');
+    em.get('PageManager').onLoad();
     dcomp.init({ em });
     const id = 'myid';
     const idB = 'myid2';

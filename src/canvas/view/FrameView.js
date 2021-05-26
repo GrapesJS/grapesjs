@@ -2,6 +2,7 @@ import Backbone from 'backbone';
 import { bindAll, isString, debounce, isUndefined } from 'underscore';
 import CssRulesView from 'css_composer/view/CssRulesView';
 import ComponentView from 'dom_components/view/ComponentView';
+import Droppable from 'utils/Droppable';
 import {
   appendVNodes,
   empty,
@@ -10,7 +11,7 @@ import {
   createCustomEvent,
   motionsEv
 } from 'utils/dom';
-import { on, off, setViewEl, getPointerEvent } from 'utils/mixins';
+import { on, off, setViewEl, hasDnd, getPointerEvent } from 'utils/mixins';
 
 export default Backbone.View.extend({
   tagName: 'iframe',
@@ -142,11 +143,10 @@ export default Backbone.View.extend({
   },
 
   remove() {
-    const { root, model } = this;
+    const wrp = this.wrapper;
     this._toggleEffects();
+    wrp && wrp.remove();
     Backbone.View.prototype.remove.apply(this, arguments);
-    root.remove();
-    model.remove();
   },
 
   startAutoscroll() {
@@ -252,8 +252,7 @@ export default Backbone.View.extend({
 
   renderBody() {
     const { config, model, ppfx } = this;
-    const root = model.get('root');
-    const styles = model.get('styles');
+    const styles = model.getStyles();
     const { em } = config;
     const doc = this.getDoc();
     const head = this.getHead();
@@ -354,14 +353,15 @@ export default Backbone.View.extend({
       ${conf.protectedCss || ''}
     </style>`
     );
-    this.root = new ComponentView({
-      model: root,
+    const component = model.getComponent();
+    this.wrapper = new ComponentView({
+      model: component,
       config: {
-        ...root.config,
+        ...component.config,
         frameView: this
       }
     }).render();
-    append(body, this.root.el);
+    append(body, this.wrapper.el);
     append(
       body,
       new CssRulesView({
@@ -399,13 +399,14 @@ export default Backbone.View.extend({
     );
 
     this._toggleEffects(1);
+    this.droppable = hasDnd(em) && new Droppable(em, this.wrapper.el);
     model.trigger('loaded');
   },
 
   _toggleEffects(enable) {
     const method = enable ? on : off;
     const win = this.getWindow();
-    method(win, `${motionsEv} resize`, this._emitUpdate);
+    win && method(win, `${motionsEv} resize`, this._emitUpdate);
   },
 
   _emitUpdate() {

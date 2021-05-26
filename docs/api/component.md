@@ -255,6 +255,25 @@ component.addAttributes({ 'data-key': 'value' });
 
 Returns **this** 
 
+## removeAttributes
+
+Remove attributes from the component
+
+### Parameters
+
+-   `attrs` **([String][1] \| [Array][4]&lt;[String][1]>)** Array of attributes to remove (optional, default `[]`)
+-   `opts`   (optional, default `{}`)
+-   `options` **[Object][2]** Options for the model update
+
+### Examples
+
+```javascript
+component.removeAttributes('some-attr');
+component.removeAttributes(['some-attr1', 'some-attr2']);
+```
+
+Returns **this** 
+
 ## getStyle
 
 Get the style of the component
@@ -281,6 +300,10 @@ Returns **[Object][2]**
 ## getAttributes
 
 Return all component's attributes
+
+### Parameters
+
+-   `opts`   (optional, default `{}`)
 
 Returns **[Object][2]** 
 
@@ -354,7 +377,7 @@ Add new component children
 ### Parameters
 
 -   `components` **([Component][9] \| [String][1])** Component to add
--   `opts` **[Object][2]** Options, same as in `model.add()`(from backbone) (optional, default `{}`)
+-   `opts` **[Object][2]** Options for the append action (optional, default `{}`)
 
 ### Examples
 
@@ -366,6 +389,8 @@ someComponent.get('components').length // -> 2
 // You can pass components directly
 otherComponent.append(otherComponent2);
 otherComponent.append([otherComponent3, otherComponent4]);
+// append at specific index (eg. at the beginning)
+someComponent.append(otherComponent, { at: 0 });
 ```
 
 Returns **[Array][4]** Array of appended components
@@ -378,6 +403,7 @@ current collection is returned
 ### Parameters
 
 -   `components` **([Component][9] \| [String][1])?** Components to set
+-   `opts` **[Object][2]** Options, same as in `Component.append()` (optional, default `{}`)
 
 ### Examples
 

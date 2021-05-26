@@ -1,5 +1,4 @@
 import Backbone from 'backbone';
-import ItemView from './ItemView';
 import { eventDrag } from 'dom_components/model/Component';
 
 export default Backbone.View.extend({
@@ -76,11 +75,11 @@ export default Backbone.View.extend({
    * @return Object Object created
    * */
   addToCollection(model, fragmentEl, index) {
-    const { level, parentView } = this;
-    var fragment = fragmentEl || null;
-    var viewObject = ItemView;
-
-    var view = new viewObject({
+    const { level, parentView, opt } = this;
+    const { ItemView } = opt;
+    const fragment = fragmentEl || null;
+    const rendered = new ItemView({
+      ItemView,
       level,
       model,
       parentView,
@@ -88,8 +87,7 @@ export default Backbone.View.extend({
       sorter: this.sorter,
       isCountable: this.isCountable,
       opened: this.opt.opened
-    });
-    var rendered = view.render().el;
+    }).render().el;
 
     if (fragment) {
       fragment.appendChild(rendered);

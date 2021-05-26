@@ -27,7 +27,7 @@
  * @module CssComposer
  */
 
-import { isArray } from 'underscore';
+import { isArray, isUndefined } from 'underscore';
 import defaults from './config/config';
 import CssRule from './model/CssRule';
 import CssRules from './model/CssRules';
@@ -98,7 +98,7 @@ export default () => {
      * @private
      */
     onLoad() {
-      rules.add(c.rules);
+      rules.add(c.rules, { silent: 1 });
     },
 
     /**
@@ -106,28 +106,9 @@ export default () => {
      * @param  {Editor} em
      * @private
      */
-    postLoad(em) {
-      const ev = 'add remove';
-      const rules = this.getAll();
-      const um = em.get('UndoManager');
-      um && um.add(rules);
-      em.stopListening(rules, ev, this.handleChange);
-      em.listenTo(rules, ev, this.handleChange);
-      rules.each(rule => this.handleChange(rule, null, { avoidStore: 1 }));
-    },
-
-    /**
-     * Handle rule changes
-     * @private
-     */
-    handleChange(model, val, opts = {}) {
-      const ev = 'change:style';
-      const um = em.get('UndoManager');
-      um && um.add(model);
-      const handleUpdates = em.handleUpdates.bind(em);
-      em.stopListening(model, ev, handleUpdates);
-      em.listenTo(model, ev, handleUpdates);
-      !opts.avoidStore && handleUpdates('', '', opts);
+    postLoad() {
+      const um = em && em.get('UndoManager');
+      um && um.add(this.getAll());
     },
 
     /**
@@ -170,9 +151,10 @@ export default () => {
      */
     store(noStore) {
       if (!c.stm) return;
-      var obj = {};
-      var keys = this.storageKey();
-      if (keys.indexOf('css') >= 0) obj.css = c.em.getCss();
+      const obj = {};
+      const keys = this.storageKey();
+      const hasPages = em && em.get('hasPages');
+      if (keys.indexOf('css') >= 0 && !hasPages) obj.css = c.em.getCss();
       if (keys.indexOf('styles') >= 0) obj.styles = JSON.stringify(rules);
       if (!noStore) c.stm.store(obj);
       return obj;
@@ -289,7 +271,7 @@ export default () => {
         }
 
         var modelExists = this.get(newSels, rule.state, rule.mediaText, rule);
-        var model = this.add(newSels, rule.state, rule.mediaText, rule);
+        var model = this.add(newSels, rule.state, rule.mediaText, rule, opts);
         var updateStyle = !modelExists || !opts.avoidUpdateStyle;
         const style = rule.style || {};
 
@@ -297,7 +279,7 @@ export default () => {
           let styleUpdate = opts.extend
             ? { ...model.get('style'), ...style }
             : style;
-          model.set('style', styleUpdate);
+          model.set('style', styleUpdate, opts);
         }
 
         result.push(model);
@@ -473,6 +455,21 @@ export default () => {
       const media = opts.mediaText || em.getCurrentMedia();
       const selector = em.get('SelectorManager').get(name, Selector.TYPE_CLASS);
       return selector && this.get(selector, state, media);
+    },
+
+    getComponentRules(cmp, opts = {}) {
+      let { state, mediaText, current } = opts;
+      if (current) {
+        state = em.get('state') || '';
+        mediaText = em.getCurrentMedia();
+      }
+      const id = cmp.getId();
+      const rules = this.getAll().filter(r => {
+        if (!isUndefined(state) && r.get('state') !== state) return;
+        if (!isUndefined(mediaText) && r.get('mediaText') !== mediaText) return;
+        return r.getSelectorsString() === `#${id}`;
+      });
+      return rules;
     },
 
     /**

@@ -84,11 +84,11 @@ export default {
       methods[method](body, 'mouseover', this.onHover);
       methods[method](body, 'mouseleave', this.onOut);
       methods[method](body, 'click touchend', this.onClick);
-      methods[method](win, 'scroll', this.onFrameScroll);
+      methods[method](win, 'scroll', this.onFrameScroll, true);
     };
     methods[method](window, 'resize', this.onFrameUpdated);
     methods[method](listenToEl, 'scroll', this.onContainerChange);
-    em[method]('component:toggled component:remove', this.onSelect, this);
+    em[method]('component:toggled component:update', this.onSelect, this);
     em[method]('change:componentHovered', this.onHovered, this);
     em[method](
       'component:resize component:styleUpdate component:input',
@@ -192,7 +192,7 @@ export default {
     this.elSelected = result;
     this.updateToolsGlobal();
     // This will hide some elements from the select component
-    this.updateToolsLocal(result);
+    this.updateLocalPos(result);
     this.initResize(component);
   }),
 
@@ -203,11 +203,11 @@ export default {
     this.updateToolsGlobal();
   },
 
-  updateLocalPos() {
+  updateLocalPos(data) {
     const sel = this.getElHovered();
     if (!sel.el) return;
     sel.pos = this.getElementPos(sel.el);
-    this.updateToolsLocal();
+    this.updateToolsLocal(data);
   },
 
   getElHovered() {
@@ -494,7 +494,7 @@ export default {
       };
 
       if (typeof resizable == 'object') {
-        options = { ...options, ...resizable };
+        options = { ...options, ...resizable, parent: options };
       }
 
       this.resizer = editor.runCommand('resize', { el, options, force: 1 });
@@ -576,7 +576,7 @@ export default {
   },
 
   updateTools() {
-    this.updateToolsLocal();
+    this.updateLocalPos();
     this.updateGlobalPos();
   },
 
@@ -613,7 +613,8 @@ export default {
     }
 
     const unit = 'px';
-    const { style } = this.toggleToolsEl(1, view);
+    const toolsEl = this.toggleToolsEl(1, view);
+    const { style } = toolsEl;
     const frameOff = this.canvas.canvasRectOffset(el, pos);
     const topOff = frameOff.top;
     const leftOff = frameOff.left;
@@ -629,11 +630,27 @@ export default {
     style.left = leftOff + unit;
     style.width = pos.width + unit;
     style.height = pos.height + unit;
+
+    this._trgToolUp('local', {
+      component,
+      el: toolsEl,
+      top: topOff,
+      left: leftOff,
+      width: pos.width,
+      height: pos.height
+    });
   },
 
   _upToolbar: debounce(function() {
     this.updateToolsGlobal({ force: 1 });
   }),
+
+  _trgToolUp(type, opts = {}) {
+    this.em.trigger('canvas:tools:update', {
+      type,
+      ...opts
+    });
+  },
 
   updateToolsGlobal(opts = {}) {
     const { el, pos, component } = this.getElSelected();
@@ -653,7 +670,8 @@ export default {
     }
 
     const unit = 'px';
-    const { style } = this.toggleToolsEl(1);
+    const toolsEl = this.toggleToolsEl(1);
+    const { style } = toolsEl;
     const targetToElem = canvas.getTargetToElementFixed(
       el,
       canvas.getToolbarEl(),
@@ -667,6 +685,14 @@ export default {
     style.height = pos.height + unit;
 
     this.updateToolbarPos({ top: targetToElem.top, left: targetToElem.left });
+    this._trgToolUp('global', {
+      component,
+      el: toolsEl,
+      top: topOff,
+      left: leftOff,
+      width: pos.width,
+      height: pos.height
+    });
   },
 
   /**

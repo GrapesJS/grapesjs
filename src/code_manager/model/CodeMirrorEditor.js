@@ -6,6 +6,8 @@ import 'codemirror/mode/css/css';
 import 'codemirror-formatting';
 
 export default Backbone.Model.extend({
+  CodeMirror,
+
   defaults: {
     input: '',
     label: '',

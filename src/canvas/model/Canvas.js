@@ -1,12 +1,10 @@
 import Backbone from 'backbone';
-import Frame from './Frame';
-import Frames from './Frames';
+import { evPageSelect } from 'pages';
 
 export default Backbone.Model.extend({
   defaults: {
     frame: '',
     frames: '',
-    wrapper: '',
     rulers: false,
     zoom: 100,
     x: 0,
@@ -15,17 +13,31 @@ export default Backbone.Model.extend({
 
   initialize(config = {}) {
     const { em } = config;
-    const { styles = [], scripts = [] } = config;
-    const root = em && em.getWrapper();
-    const css = em && em.getStyle();
-    const frame = new Frame({ root, styles: css }, config);
-    styles.forEach(style => frame.addLink(style));
-    scripts.forEach(script => frame.addScript(script));
+    this.config = config;
     this.em = em;
-    this.set('frame', frame);
-    this.set('frames', new Frames([frame], config));
     this.listenTo(this, 'change:zoom', this.onZoomChange);
     this.listenTo(em, 'change:device', this.updateDevice);
+    this.listenTo(em, evPageSelect, this._pageUpdated);
+  },
+
+  init() {
+    const { em, config } = this;
+    const { styles = [], scripts = [] } = config;
+    const mainPage = em.get('PageManager').getMain();
+    const frames = mainPage.getFrames();
+    const frame = mainPage.getMainFrame();
+    styles.forEach(style => frame.addLink(style));
+    scripts.forEach(script => frame.addScript(script));
+    this.set('frame', frame);
+    this.set('frames', frames);
+  },
+
+  _pageUpdated(page, prev) {
+    const { em } = this;
+    em.setSelected();
+    em.get('readyCanvas') && em.stopDefault(); // We have to stop before changing current frames
+    prev && prev.getFrames().map(frame => frame.disable());
+    this.set('frames', page.getFrames());
   },
 
   updateDevice() {
@@ -35,7 +47,7 @@ export default Backbone.Model.extend({
 
     if (model && device) {
       const { width, height } = device.attributes;
-      model.set({ width, height });
+      model.set({ width, height }, { noUndo: 1 });
     }
   },
 

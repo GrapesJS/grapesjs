@@ -1,5 +1,5 @@
 import { isUndefined, isString, bindAll } from 'underscore';
-import { getModel } from 'utils/mixins';
+import { getModel, isEscKey, isEnterKey } from 'utils/mixins';
 import Backbone from 'backbone';
 import ComponentView from 'dom_components/view/ComponentView';
 import { eventDrag } from 'dom_components/model/Component';
@@ -18,6 +18,7 @@ export default Backbone.View.extend({
     'mouseover [data-toggle-select]': 'handleHover',
     'mouseout [data-toggle-select]': 'handleHoverOut',
     'dblclick [data-name]': 'handleEdit',
+    'keydown [data-name]': 'handleEditKey',
     'focusout [data-name]': 'handleEditEnd'
   },
 
@@ -46,7 +47,7 @@ export default Backbone.View.extend({
       }
       <div class="${clsTitleC}">
         <div class="${clsTitle}" style="padding-left: ${gut}" data-toggle-select>
-          <div class="${pfx}layer-title-inn">
+          <div class="${pfx}layer-title-inn" title="${name}">
             <i class="${clsCaret}" data-toggle-open></i>
             ${icon ? `<span class="${clsBase}__icon">${icon}</span>` : ''}
             <span class="${clsInput}" data-name>${name}</span>
@@ -83,6 +84,7 @@ export default Backbone.View.extend({
     this.listenTo(model, 'change:open', this.updateOpening);
     this.listenTo(model, 'change:layerable', this.updateLayerable);
     this.listenTo(model, 'change:style:display', this.updateVisibility);
+    this.listenTo(model, 'rerender:layer', this.render);
     this.className = `${pfx}layer ${pfx}layer__t-${type} no-select ${ppfx}two-color`;
     this.inputNameCls = `${ppfx}layer-name`;
     this.clsTitleC = `${pfx}layer-title-c`;
@@ -163,11 +165,17 @@ export default Backbone.View.extend({
     const inputEl = this.getInputName();
     inputEl[inputProp] = true;
     inputEl.focus();
+    document.execCommand('selectAll', false, null);
     em && em.setEditing(1);
     $el
       .find(`.${this.inputNameCls}`)
       .removeClass(clsNoEdit)
       .addClass(clsEdit);
+  },
+
+  handleEditKey(ev) {
+    ev.stopPropagation();
+    (isEscKey(ev) || isEnterKey(ev)) && this.handleEditEnd(ev);
   },
 
   /**
@@ -180,12 +188,16 @@ export default Backbone.View.extend({
     const name = inputEl.textContent;
     inputEl.scrollLeft = 0;
     inputEl[inputProp] = false;
-    this.model.set({ 'custom-name': name });
+    this.setName(name, { component: this.model, propName: 'custom-name' });
     em && em.setEditing(0);
     $el
       .find(`.${this.inputNameCls}`)
       .addClass(clsNoEdit)
       .removeClass(clsEdit);
+  },
+
+  setName(name, { propName }) {
+    this.model.set(propName, name);
   },
 
   /**
@@ -305,7 +317,8 @@ export default Backbone.View.extend({
   updateStatus(e) {
     ComponentView.prototype.updateStatus.apply(this, [
       {
-        avoidHover: !this.config.highlightHover
+        avoidHover: !this.config.highlightHover,
+        noExtHl: 1
       }
     ]);
   },
@@ -395,12 +408,14 @@ export default Backbone.View.extend({
     const vis = this.isVisible();
     const el = this.$el.empty();
     const level = this.level + 1;
+    this.inputName = 0;
 
     if (isUndefined(ItemsView)) {
       ItemsView = require('./ItemsView').default;
     }
 
     const children = new ItemsView({
+      ItemView: opt.ItemView,
       collection: model.get('components'),
       config: this.config,
       sorter: this.sorter,
@@ -434,6 +449,8 @@ export default Backbone.View.extend({
   __render() {
     const { model, config, el } = this;
     const { onRender } = config;
-    onRender.bind(this)({ component: model, el });
+    const opt = { component: model, el };
+    onRender.bind(this)(opt);
+    this.em.trigger('layer:render', opt);
   }
 });
