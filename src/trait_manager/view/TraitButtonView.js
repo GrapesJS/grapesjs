@@ -2,11 +2,13 @@ import { isString } from 'underscore';
 import TraitView from './TraitView';
 
 export default TraitView.extend({
-  events: {
-    'click button': 'handleClick'
-  },
+  eventCapture: ['click button'],
 
   templateInput: '',
+
+  onChange() {
+    this.handleClick();
+  },
 
   handleClick() {
     const { model, em } = this;
