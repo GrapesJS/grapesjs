@@ -106,7 +106,7 @@ export default () => {
     },
 
     getFrame(index) {
-      return index ? this.getFrames()[index] : canvas.get('frame');
+      return this.getFrames()[index || 0];
     },
 
     /**
