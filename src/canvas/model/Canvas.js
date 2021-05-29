@@ -1,15 +1,17 @@
-import Backbone from 'backbone';
+import { Model } from 'backbone';
 import { evPageSelect } from 'pages';
 
-export default Backbone.Model.extend({
-  defaults: {
-    frame: '',
-    frames: '',
-    rulers: false,
-    zoom: 100,
-    x: 0,
-    y: 0
-  },
+export default class Canvas extends Model {
+  defaults() {
+    return {
+      frame: '',
+      frames: '',
+      rulers: false,
+      zoom: 100,
+      x: 0,
+      y: 0
+    };
+  }
 
   initialize(config = {}) {
     const { em } = config;
@@ -18,7 +20,7 @@ export default Backbone.Model.extend({
     this.listenTo(this, 'change:zoom', this.onZoomChange);
     this.listenTo(em, 'change:device', this.updateDevice);
     this.listenTo(em, evPageSelect, this._pageUpdated);
-  },
+  }
 
   init() {
     const { em, config } = this;
@@ -30,7 +32,7 @@ export default Backbone.Model.extend({
     scripts.forEach(script => frame.addScript(script));
     this.set('frame', frame);
     this.set('frames', frames);
-  },
+  }
 
   _pageUpdated(page, prev) {
     const { em } = this;
@@ -38,7 +40,7 @@ export default Backbone.Model.extend({
     em.get('readyCanvas') && em.stopDefault(); // We have to stop before changing current frames
     prev && prev.getFrames().map(frame => frame.disable());
     this.set('frames', page.getFrames());
-  },
+  }
 
   updateDevice() {
     const { em } = this;
@@ -49,10 +51,10 @@ export default Backbone.Model.extend({
       const { width, height } = device.attributes;
       model.set({ width, height }, { noUndo: 1 });
     }
-  },
+  }
 
   onZoomChange() {
     const zoom = this.get('zoom');
     zoom < 1 && this.set('zoom', 1);
   }
-});
+}
