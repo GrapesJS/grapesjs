@@ -87,7 +87,7 @@ Returns **Collection**
 
 ## getAllVisible
 
-Return the visible collection, which containes assets actually rendered
+Return the visible collection, which contains assets actually rendered
 
 Returns **Collection** 
 
