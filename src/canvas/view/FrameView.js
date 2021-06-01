@@ -36,7 +36,9 @@ export default Backbone.View.extend({
     };
     this.ppfx = this.config.pStylePrefix || '';
     this.em = this.config.em;
+    const cvModel = this.getCanvasModel();
     this.listenTo(model, 'change:head', this.updateHead);
+    this.listenTo(cvModel, 'change:styles', this.renderStyles);
     model.view = this;
     setViewEl(el, this);
   },
@@ -52,6 +54,10 @@ export default Backbone.View.extend({
 
   getEl() {
     return this.el;
+  },
+
+  getCanvasModel() {
+    return this.em.get('Canvas').getModel();
   },
 
   getWindow() {
@@ -219,20 +225,15 @@ export default Backbone.View.extend({
   },
 
   render() {
-    const { el, $el, ppfx, config } = this;
-    $el.attr({ class: ppfx + 'frame' });
-
-    if (config.scripts.length) {
-      this.renderScripts();
-    } else if (config.renderContent) {
-      el.onload = this.renderBody.bind(this);
-    }
-
+    const { $el, ppfx } = this;
+    $el.attr({ class: `${ppfx}frame` });
+    this.renderScripts();
     return this;
   },
 
   renderScripts() {
-    const { el, config } = this;
+    const { el } = this;
+    const canvas = this.getCanvasModel();
     const appendScript = scripts => {
       if (scripts.length > 0) {
         const src = scripts.shift();
@@ -247,38 +248,49 @@ export default Backbone.View.extend({
       }
     };
 
-    el.onload = () => appendScript([...config.scripts]);
+    el.onload = () => appendScript([...canvas.get('scripts')]);
+  },
+
+  renderStyles(opts = {}) {
+    const head = this.getHead();
+    const canvas = this.getCanvasModel();
+    const normalize = stls =>
+      stls.map(href => ({
+        tag: 'link',
+        attributes: {
+          rel: 'stylesheet',
+          ...(isString(href) ? { href } : href)
+        }
+      }));
+    const prevStyles = normalize(opts.prev || canvas.previous('styles'));
+    const styles = normalize(canvas.get('styles'));
+    const toRemove = [];
+    const toAdd = [];
+    const find = (items, stack, res) => {
+      items.forEach(item => {
+        const { href } = item.attributes;
+        const has = stack.some(s => s.attributes.href === href);
+        !has && res.push(item);
+      });
+    };
+    find(styles, prevStyles, toAdd);
+    find(prevStyles, styles, toRemove);
+    toRemove.forEach(stl => {
+      const el = head.querySelector(`link[href="${stl.attributes.href}"]`);
+      el && el.parentNode.removeChild(el);
+    });
+    appendVNodes(head, toAdd);
   },
 
   renderBody() {
     const { config, model, ppfx } = this;
-    const styles = model.getStyles();
     const { em } = config;
     const doc = this.getDoc();
-    const head = this.getHead();
     const body = this.getBody();
     const win = this.getWindow();
     const conf = em.get('Config');
-    const extStyles = [];
     win._isEditor = true;
-
-    config.styles.forEach(href =>
-      extStyles.push(
-        isString(href)
-          ? {
-              tag: 'link',
-              attributes: { href, rel: 'stylesheet' }
-            }
-          : {
-              tag: 'link',
-              attributes: {
-                rel: 'stylesheet',
-                ...href
-              }
-            }
-      )
-    );
-    extStyles.length && appendVNodes(head, extStyles);
+    this.renderStyles({ prev: [] });
 
     const colorWarn = '#ffca6f';
 
@@ -365,7 +377,7 @@ export default Backbone.View.extend({
     append(
       body,
       new CssRulesView({
-        collection: styles,
+        collection: model.getStyles(),
         config: {
           ...em.get('CssComposer').getConfig(),
           frameView: this

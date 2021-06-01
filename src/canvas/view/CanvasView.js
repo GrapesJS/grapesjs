@@ -58,8 +58,7 @@ export default Backbone.View.extend({
       collection,
       config: {
         ...config,
-        canvasView: this,
-        renderContent: 1
+        canvasView: this
       }
     });
   },

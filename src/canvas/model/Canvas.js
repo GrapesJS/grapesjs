@@ -9,11 +9,15 @@ export default class Canvas extends Model {
       rulers: false,
       zoom: 100,
       x: 0,
-      y: 0
+      y: 0,
+      // Scripts to apply on all frames
+      scripts: [],
+      // Styles to apply on all frames
+      styles: []
     };
   }
 
-  initialize(config = {}) {
+  initialize(props, config = {}) {
     const { em } = config;
     this.config = config;
     this.em = em;
@@ -23,15 +27,14 @@ export default class Canvas extends Model {
   }
 
   init() {
-    const { em, config } = this;
-    const { styles = [], scripts = [] } = config;
-    const mainPage = em.get('PageManager').getMain();
-    const frames = mainPage.getFrames();
-    const frame = mainPage.getMainFrame();
-    styles.forEach(style => frame.addLink(style));
-    scripts.forEach(script => frame.addScript(script));
-    this.set('frame', frame);
-    this.set('frames', frames);
+    const { em } = this;
+    this.set(
+      'frames',
+      em
+        .get('PageManager')
+        .getMain()
+        .getFrames()
+    );
   }
 
   _pageUpdated(page, prev) {
