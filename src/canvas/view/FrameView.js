@@ -47,9 +47,33 @@ export default Backbone.View.extend({
    * Update `<head>` content of the frame
    */
   updateHead() {
+    const { model } = this;
     const headEl = this.getHead();
-    empty(headEl);
-    appendVNodes(headEl, this.model.getHead());
+    const toRemove = [];
+    const toAdd = [];
+    const current = model.get('head');
+    const prev = model.previous('head');
+    const attrStr = (attr = {}) =>
+      Object.keys(attr)
+        .sort()
+        .map(i => `[${i}="${attr[i]}"]`)
+        .join('');
+    const find = (items, stack, res) => {
+      items.forEach(item => {
+        const { tag, attributes } = item;
+        const has = stack.some(
+          s => s.tag === tag && attrStr(s.attributes) === attrStr(attributes)
+        );
+        !has && res.push(item);
+      });
+    };
+    find(current, prev, toAdd);
+    find(prev, current, toRemove);
+    toRemove.forEach(stl => {
+      const el = headEl.querySelector(`${stl.tag}${attrStr(stl.attributes)}`);
+      el && el.parentNode.removeChild(el);
+    });
+    appendVNodes(headEl, toAdd);
   },
 
   getEl() {
