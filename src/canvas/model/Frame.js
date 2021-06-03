@@ -27,8 +27,9 @@ export default Model.extend({
     const domc = em.get('DomComponents');
     const conf = domc.getConfig();
     const allRules = em.get('CssComposer').getAll();
+    const idMap = {};
     this.em = em;
-    const modOpts = { em, config: conf, frame: this };
+    const modOpts = { em, config: conf, frame: this, idMap };
 
     if (!isComponent(component)) {
       const wrp = isObject(component) ? component : { components: component };
@@ -40,6 +41,20 @@ export default Model.extend({
     if (!styles) {
       this.set('styles', allRules);
     } else if (!isObject(styles)) {
+      // Avoid losing styles on remapped components
+      const idMapKeys = Object.keys(idMap);
+      if (idMapKeys.length && Array.isArray(styles)) {
+        styles.forEach(style => {
+          const sel = style.selectors;
+          if (sel && sel.length == 1) {
+            const sSel = sel[0];
+            const idSel = sSel.name && sSel.type === 2 && sSel;
+            if (idSel && idMap[idSel.name]) {
+              idSel.name = idMap[idSel.name];
+            }
+          }
+        });
+      }
       allRules.add(styles);
       this.set('styles', allRules);
     }

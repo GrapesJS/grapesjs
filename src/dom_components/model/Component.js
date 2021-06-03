@@ -1791,12 +1791,14 @@ const Component = Backbone.Model.extend(Styleable).extend(
      */
     createId(model, opts = {}) {
       const list = Component.getList(model);
+      const { idMap = {} } = opts;
       let { id } = model.get('attributes');
       let nextId;
 
       if (id) {
         nextId = Component.getIncrementId(id, list, opts);
         model.setId(nextId);
+        if (id !== nextId) idMap[id] = nextId;
       } else {
         nextId = Component.getNewId(list);
       }
