@@ -1,10 +1,11 @@
 import Backbone from 'backbone';
-import { isUndefined, each } from 'underscore';
+import { bindAll, isUndefined, each } from 'underscore';
 
 const maxValue = Number.MAX_VALUE;
 
 export default Backbone.Model.extend({
   initialize() {
+    bindAll(this, 'sortRules');
     this.compCls = [];
     this.ids = [];
   },
@@ -159,5 +160,15 @@ export default Backbone.Model.extend({
       const right = isMobFirst ? b.key : a.key;
       return this.getQueryLength(left) - this.getQueryLength(right);
     });
+  },
+
+  sortRules(a, b) {
+    const getKey = rule => rule.get('mediaText');
+    const isMobFirst = [getKey(a), getKey(b)].every(
+      q => q.indexOf('min-width') !== -1
+    );
+    const left = isMobFirst ? getKey(a) : getKey(b);
+    const right = isMobFirst ? getKey(b) : getKey(a);
+    return this.getQueryLength(left) - this.getQueryLength(right);
   }
 });
