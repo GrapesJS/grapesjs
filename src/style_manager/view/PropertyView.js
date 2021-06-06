@@ -151,6 +151,7 @@ export default Backbone.View.extend({
   clear(ev) {
     ev && ev.stopPropagation();
     this.model.clearValue();
+    this.__unset();
     // Skip one stack with setTimeout to avoid inconsistencies (eg. visible on padding composite clear)
     setTimeout(() => this.targetUpdated());
   },
@@ -642,6 +643,11 @@ export default Backbone.View.extend({
     this.clearEl = null;
     this.input = null;
     this.$input = null;
+  },
+
+  __unset() {
+    const unset = this.unset && this.unset.bind(this);
+    unset && unset(this._getClbOpts());
   },
 
   __update(value) {
