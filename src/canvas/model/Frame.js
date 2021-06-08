@@ -1,5 +1,5 @@
 import { Model } from 'backbone';
-import { result, forEach, isEmpty, debounce } from 'underscore';
+import { result, forEach, isEmpty, debounce, isString } from 'underscore';
 import { isComponent, isObject } from 'utils/mixins';
 
 const keyAutoW = '__aw';
@@ -51,10 +51,16 @@ export default Model.extend({
             const idSel = sSel.name && sSel.type === 2 && sSel;
             if (idSel && idMap[idSel.name]) {
               idSel.name = idMap[idSel.name];
+            } else if (isString(sSel) && sSel[0] === '#') {
+              const prevId = sSel.substring(1);
+              if (prevId && idMap[prevId]) {
+                sel[0] = `#${idMap[prevId]}`;
+              }
             }
           }
         });
       }
+
       allRules.add(styles);
       this.set('styles', allRules);
     }
