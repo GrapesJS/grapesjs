@@ -2,11 +2,13 @@ import { Model } from 'backbone';
 import { result, forEach } from 'underscore';
 import Frames from 'canvas/model/Frames';
 
-export default Model.extend({
-  defaults: () => ({
-    frames: [],
-    _undo: true
-  }),
+export default class Page extends Model {
+  defaults() {
+    return {
+      frames: [],
+      _undo: true
+    };
+  }
 
   initialize(props, opts = {}) {
     const { config = {} } = opts;
@@ -24,24 +26,24 @@ export default Model.extend({
     this.set('frames', frames);
     const um = em && em.get('UndoManager');
     um && um.add(frames);
-  },
+  }
 
   onRemove() {
     this.get('frames').reset();
-  },
+  }
 
   getFrames() {
     return this.get('frames');
-  },
+  }
 
   getMainFrame() {
     return this.getFrames().at(0);
-  },
+  }
 
   getMainComponent() {
     const frame = this.getMainFrame();
     return frame && frame.getComponent();
-  },
+  }
 
   toJSON(opts = {}) {
     const obj = Model.prototype.toJSON.call(this, opts);
@@ -58,4 +60,4 @@ export default Model.extend({
 
     return obj;
   }
-});
+}
