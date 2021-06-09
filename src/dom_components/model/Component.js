@@ -1479,7 +1479,9 @@ const Component = Backbone.Model.extend(Styleable).extend(
         const symbol = obj[keySymbol];
         const symbols = obj[keySymbols];
         if (symbols && isArray(symbols)) {
-          obj[keySymbols] = symbols.map(i => (i.getId ? i.getId() : i));
+          obj[keySymbols] = symbols
+            .filter(i => i)
+            .map(i => (i.getId ? i.getId() : i));
         }
         if (symbol && !isString(symbol)) {
           obj[keySymbol] = symbol.getId();
