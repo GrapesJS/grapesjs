@@ -270,6 +270,7 @@ export default Backbone.View.extend({
 
     // Regenerate status class
     this.updateStatus();
+    this.onAttrUpdate();
   },
 
   /**
@@ -514,7 +515,6 @@ export default Backbone.View.extend({
   renderAttributes() {
     this.updateAttributes();
     this.updateClasses();
-    this.onAttrUpdate();
   },
 
   onAttrUpdate() {},
