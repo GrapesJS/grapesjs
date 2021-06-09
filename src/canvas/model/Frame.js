@@ -5,20 +5,22 @@ import { isComponent, isObject } from 'utils/mixins';
 const keyAutoW = '__aw';
 const keyAutoH = '__ah';
 
-export default Model.extend({
-  defaults: () => ({
-    x: 0,
-    y: 0,
-    changesCount: 0,
-    attributes: {},
-    width: null,
-    height: null,
-    head: [],
-    component: '',
-    styles: '',
-    _undo: true,
-    _undoexc: ['changesCount']
-  }),
+export default class Frame extends Model {
+  defaults() {
+    return {
+      x: 0,
+      y: 0,
+      changesCount: 0,
+      attributes: {},
+      width: null,
+      height: null,
+      head: [],
+      component: '',
+      styles: '',
+      _undo: true,
+      _undoexc: ['changesCount']
+    };
+  }
 
   initialize(props, opts = {}) {
     const { config } = opts;
@@ -67,51 +69,51 @@ export default Model.extend({
 
     !props.width && this.set(keyAutoW, 1);
     !props.height && this.set(keyAutoH, 1);
-  },
+  }
 
   onRemove() {
     this.getComponent().remove({ root: 1 });
-  },
+  }
 
-  changesUp: debounce(function(opt = {}) {
+  changesUp(opt = {}) {
     if (opt.temporary || opt.noCount || opt.avoidStore) {
       return;
     }
     this.set('changesCount', this.get('changesCount') + 1);
-  }),
+  }
 
   getComponent() {
     return this.get('component');
-  },
+  }
 
   getStyles() {
     return this.get('styles');
-  },
+  }
 
   disable() {
     this.trigger('disable');
-  },
+  }
 
   remove() {
     this.view = 0;
     const coll = this.collection;
     return coll && coll.remove(this);
-  },
+  }
 
   getHead() {
     const head = this.get('head') || [];
     return [...head];
-  },
+  }
 
   setHead(value) {
     return this.set('head', [...value]);
-  },
+  }
 
   addHeadItem(item) {
     const head = this.getHead();
     head.push(item);
     this.setHead(head);
-  },
+  }
 
   getHeadByAttr(attr, value, tag) {
     const head = this.getHead();
@@ -121,7 +123,7 @@ export default Model.extend({
         item.attributes[attr] == value &&
         (!tag || tag === item.tag)
     )[0];
-  },
+  }
 
   removeHeadByAttr(attr, value, tag) {
     const head = this.getHead();
@@ -132,7 +134,7 @@ export default Model.extend({
       head.splice(index, 1);
       this.setHead(head);
     }
-  },
+  }
 
   addLink(href) {
     const tag = 'link';
@@ -144,11 +146,11 @@ export default Model.extend({
           rel: 'stylesheet'
         }
       });
-  },
+  }
 
   removeLink(href) {
     this.removeHeadByAttr('href', href, 'link');
-  },
+  }
 
   addScript(src) {
     const tag = 'script';
@@ -157,20 +159,20 @@ export default Model.extend({
         tag,
         attributes: { src }
       });
-  },
+  }
 
   removeScript(src) {
     this.removeHeadByAttr('src', src, 'script');
-  },
+  }
 
   getPage() {
     const coll = this.collection;
     return coll && coll.page;
-  },
+  }
 
   _emitUpdated(data = {}) {
     this.em.trigger('frame:updated', { frame: this, ...data });
-  },
+  }
 
   toJSON(opts = {}) {
     const obj = Model.prototype.toJSON.call(this, opts);
@@ -206,4 +208,4 @@ export default Model.extend({
 
     return obj;
   }
-});
+}
