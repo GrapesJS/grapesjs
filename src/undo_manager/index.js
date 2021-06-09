@@ -25,7 +25,7 @@
  */
 
 import UndoManager from 'backbone-undo';
-import { isArray, isBoolean } from 'underscore';
+import { isArray, isBoolean, isEmpty } from 'underscore';
 
 export default () => {
   let em;
@@ -80,12 +80,16 @@ export default () => {
           if (hasSkip(opt)) {
             return;
           } else {
+            const after = object.toJSON({ fromUndo });
             const result = {
               object,
               before: beforeCache,
-              after: object.toJSON({ fromUndo })
+              after
             };
             beforeCache = null;
+            // Skip undo in case of empty changes
+            if (isEmpty(after)) return;
+
             return result;
           }
         }
