@@ -144,8 +144,9 @@ export default Backbone.Collection.extend({
     Component.checkId(parsed.html, parsed.css, domc.componentsById, opt);
 
     if (parsed.css && cssc && !opt.temporary) {
+      const { at, ...optsToPass } = opt;
       cssc.addCollection(parsed.css, {
-        ...opt,
+        ...optsToPass,
         extend: 1
       });
     }
