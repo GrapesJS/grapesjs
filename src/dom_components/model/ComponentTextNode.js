@@ -7,6 +7,7 @@ export default Component.extend(
       tagName: '',
       droppable: false,
       layerable: false,
+      selectable: false,
       editable: true
     },
 
