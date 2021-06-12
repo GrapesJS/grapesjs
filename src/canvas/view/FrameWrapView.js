@@ -1,7 +1,7 @@
 import Backbone from 'backbone';
 import FrameView from './FrameView';
 import { bindAll, isNumber, isNull, debounce } from 'underscore';
-import { createEl } from 'utils/dom';
+import { createEl, removeEl } from 'utils/dom';
 import Dragger from 'utils/Dragger';
 
 export default Backbone.View.extend({
@@ -71,6 +71,7 @@ export default Backbone.View.extend({
 
   remove(opts) {
     this.frame.remove(opts);
+    removeEl(this.elTools);
     Backbone.View.prototype.remove.apply(this, arguments);
     ['frame', 'dragger', 'cv', 'em', 'canvas', 'elTools'].forEach(
       i => (this[i] = 0)
@@ -160,6 +161,7 @@ export default Backbone.View.extend({
   render() {
     const { frame, $el, ppfx, cv, model, el } = this;
     const { onRender } = model.attributes;
+    frame && frame.remove();
     this.__handleSize();
     frame.render();
     $el

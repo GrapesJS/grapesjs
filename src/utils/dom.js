@@ -10,6 +10,11 @@ export const motionsEv =
 
 export const isDoc = el => el && el.nodeType === 9;
 
+export const removeEl = el => {
+  const parent = el && el.parentNode;
+  parent && parent.removeChild(el);
+};
+
 export const isVisible = el => {
   return (
     el && !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length)
