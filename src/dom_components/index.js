@@ -350,11 +350,9 @@ export default () => {
      * @private
      */
     getComponent() {
-      return this.em
-        .get('PageManager')
-        .getSelected()
-        .getMainFrame()
-        .getComponent();
+      const sel = this.em.get('PageManager').getSelected();
+      const frame = sel && sel.getMainFrame();
+      return frame && frame.getComponent();
     },
 
     /**
@@ -399,7 +397,8 @@ export default () => {
      * wrapperChildren.remove(comp2);
      */
     getComponents() {
-      return this.getWrapper().get('components');
+      const wrp = this.getWrapper();
+      return wrp && wrp.get('components');
     },
 
     /**
