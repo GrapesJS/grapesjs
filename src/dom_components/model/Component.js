@@ -185,7 +185,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       this.frame = opt.frame;
       this.config = opt.config || {};
       this.set('attributes', {
-        ...(this.defaults.attributes || {}),
+        ...(result(this, 'defaults').attributes || {}),
         ...(this.get('attributes') || {})
       });
       this.ccid = Component.createId(this, opt);

@@ -68,6 +68,8 @@ import ComponentTextNodeView from './view/ComponentTextNodeView';
 import ComponentText from './model/ComponentText';
 import ComponentTextView from './view/ComponentTextView';
 import ComponentWrapper from './model/ComponentWrapper';
+import ComponentFrame from './model/ComponentFrame';
+import ComponentFrameView from './view/ComponentFrameView';
 
 export default () => {
   var c = {};
@@ -145,6 +147,11 @@ export default () => {
       id: 'svg',
       model: ComponentSvg,
       view: ComponentSvgView
+    },
+    {
+      id: 'iframe',
+      model: ComponentFrame,
+      view: ComponentFrameView
     },
     {
       id: 'comment',
