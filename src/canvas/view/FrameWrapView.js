@@ -32,6 +32,8 @@ export default Backbone.View.extend({
     this.ppfx = config.pStylePrefix || '';
     this.frame = new FrameView({ model, config });
     this.classAnim = `${this.ppfx}frame-wrapper--anim`;
+    this.updateOffset = debounce(this.updateOffset.bind(this));
+    this.updateSize = debounce(this.updateSize.bind(this));
     this.listenTo(model, 'loaded', this.frameLoaded);
     this.listenTo(model, 'change:x change:y', this.updatePos);
     this.listenTo(model, 'change:width change:height', this.updateSize);
@@ -79,13 +81,13 @@ export default Backbone.View.extend({
     return this;
   },
 
-  updateOffset: debounce(function() {
+  updateOffset() {
     const { em, $el, frame } = this;
     if (!em) return;
     em.runDefault({ preserveSelected: 1 });
     $el.removeClass(this.classAnim);
     frame.model._emitUpdated();
-  }),
+  },
 
   updatePos(md) {
     const { model, el } = this;
@@ -97,9 +99,9 @@ export default Backbone.View.extend({
     md && this.updateOffset();
   },
 
-  updateSize: debounce(function() {
+  updateSize() {
     this.updateDim();
-  }),
+  },
 
   /**
    * Update dimensions of the frame
