@@ -28,7 +28,7 @@ export default ComponentView.extend({
    * Enable element content editing
    * @private
    * */
-  onActive(e) {
+  async onActive(e) {
     const { rte, em } = this;
 
     // We place this before stopPropagation in case of nested
@@ -45,7 +45,7 @@ export default ComponentView.extend({
 
     if (rte) {
       try {
-        this.activeRte = rte.enable(this, this.activeRte);
+        this.activeRte = await rte.enable(this, this.activeRte);
       } catch (err) {
         em.logError(err);
       }

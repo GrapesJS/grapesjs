@@ -289,25 +289,27 @@ export default () => {
      * @param {Object} rte The instance of already defined RTE
      * @private
      * */
-    enable(view, rte) {
+    async enable(view, rte) {
       lastEl = view.el;
+      const { customRte } = this;
       const canvas = config.em.get('Canvas');
       const em = config.em;
       const el = view.getChildrenContainer();
-      const customRte = this.customRte;
       lastElPos = canvas.getElementPos(lastEl);
 
       toolbar.style.display = '';
-      rte = customRte ? customRte.enable(el, rte) : this.initRte(el).enable();
+      const rteInst = await (customRte
+        ? customRte.enable(el, rte)
+        : this.initRte(el).enable());
 
       if (em) {
         setTimeout(this.updatePosition.bind(this), 0);
         em.off(eventsUp, this.updatePosition, this);
         em.on(eventsUp, this.updatePosition, this);
-        em.trigger('rte:enable', view, rte);
+        em.trigger('rte:enable', view, rteInst);
       }
 
-      return rte;
+      return rteInst;
     },
 
     /**
