@@ -3,7 +3,7 @@ const traitInputAttr = { placeholder: 'bijv. Tekst hier' };
 export default {
   assetManager: {
     addButton: 'Afbeelding toevoegen',
-    inputPlh: 'http://path/to/the/image.jpg',
+    inputPlh: 'http://link/naar/de/afbeelding.jpg',
     modalTitle: 'Selecteer afbeelding',
     uploadTitle: 'Zet bestanden hier neer of klik om te uploaden'
   },
@@ -177,14 +177,23 @@ export default {
         id: 'ID',
         alt: 'Alternatieve tekst',
         title: 'Titel',
-        href: 'Link'
+        href: 'Link',
+        loop: 'Herhalen',
+        controls: 'Bediening',
+        poster: 'Voorbeeld',
+        src: 'Bron',
+        provider: 'Aanbieder',
+        modestbranding: 'Verberg logo',
+        autoplay: 'Auto afspelen'
       },
       // In a simple trait, like text input, these are used on input attributes
       attributes: {
         id: traitInputAttr,
         alt: traitInputAttr,
         title: traitInputAttr,
-        href: { placeholder: 'Bijv. https://www.google.nl' }
+        href: { placeholder: 'Bijv. https://www.google.nl' },
+        src: { placeholder: 'Bijv. ./videos/video.mp4'},
+        poster: { placeholder: 'Bijv. ./afbeeldingen/afbeelding.jpg' }
       },
       // In a trait like select, these are used to translate option names
       options: {
