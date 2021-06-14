@@ -11,10 +11,10 @@ export default {
   // so this should be omitted from other local files
   blockManager: {
     labels: {
-      // 'block-id': 'Block Label',
+      'block-id': 'Block Label',
     },
     categories: {
-      // 'category-id': 'Categorie Label',
+      'category-id': 'Categorie Label',
     }
   },
   domComponents: {
@@ -28,9 +28,9 @@ export default {
       label: 'Label',
       link: 'Link',
       map: 'Kaart',
-      tfoot: 'Tabel foot',
-      tbody: 'Tabel body',
-      thead: 'Tabel head',
+      tfoot: 'Tabel voet',
+      tbody: 'Tabel data',
+      thead: 'Tabel titel',
       table: 'Tabel',
       row: 'Tabel rij',
       cell: 'Tabel cel'
@@ -61,7 +61,7 @@ export default {
   },
   selectorManager: {
     label: 'Classes',
-    selected: 'Selecteer',
+    selected: 'Geselecteerd',
     emptyState: '- Status -',
     states: {
       hover: 'Zweven',
@@ -95,12 +95,12 @@ export default {
       height: 'Hoogte',
       'max-width': 'Breedte max.',
       'max-height': 'Hoogte max.',
-      margin: 'Buiten afstand',
+      margin: 'Buiten afstand (marge)',
       'margin-top': 'Buiten afstand boven',
       'margin-right': 'Buiten afstand rechts',
       'margin-left': 'Buiten afstand links',
       'margin-bottom': 'Buiten afstand onder',
-      padding: 'Binnen afstand',
+      padding: 'Binnen afstand (marge)',
       'padding-top': 'Binnen afstand boven',
       'padding-left': 'Binnen afstand links',
       'padding-right': 'Binnen afstand rechts',
@@ -121,11 +121,11 @@ export default {
       'border-top-right': 'Rand boven rechts',
       'border-bottom-left': 'Rand onder links',
       'border-bottom-right': 'Rand onder rechts',
-      'border-radius-top-left': 'Rand straal boven links',
-      'border-radius-top-right': 'Rand straal boven rechts',
-      'border-radius-bottom-left': 'Rand straal onder links',
-      'border-radius-bottom-right': 'Rand straal onder rechts',
-      'border-radius': 'Rand straal',
+      'border-radius-top-left': 'Hoek afronden boven links',
+      'border-radius-top-right': 'Hoek afronden boven rechts',
+      'border-radius-bottom-left': 'Hoek afronden onder links',
+      'border-radius-bottom-right': 'Hoek afronden onder rechts',
+      'border-radius': 'Hoek afronden',
       border: 'Rand',
       'border-width': 'Rand breedte',
       'border-style': 'Rand stijl',
@@ -165,17 +165,17 @@ export default {
       'flex-basis': 'Flex basis',
       'flex-grow': 'Flex groei',
       'flex-shrink': 'Flex krimp',
-      'align-self': 'Lijn jezelf uit'
+      'align-self': 'Onderdeel uitlijnen'
     }
   },
   traitManager: {
-    empty: 'Selecteer een element voordat je Trait Manager kan gebruiken.',
+    empty: 'Selecteer een element voordat je eigenschappen kan aanpassen.',
     label: 'Component instellingen',
     traits: {
       // The core library generates the name by their `name` property
       labels: {
         id: 'ID',
-        alt: 'Tekst alternatief',
+        alt: 'Alternatieve tekst',
         title: 'Titel',
         href: 'Link'
       },
@@ -184,7 +184,7 @@ export default {
         id: traitInputAttr,
         alt: traitInputAttr,
         title: traitInputAttr,
-        href: { placeholder: 'Bijv. https://google.com' }
+        href: { placeholder: 'Bijv. https://www.google.nl' }
       },
       // In a trait like select, these are used to translate option names
       options: {
