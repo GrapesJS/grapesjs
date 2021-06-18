@@ -356,18 +356,18 @@ describe('ParserCss', () => {
     expect(obj.parse(str)).toEqual([result]);
   });
 
-  test.skip('Parse CSS with custom async parser', async () => {
-    var str = '.test1 { color:red }';
-    var result = {
-      selectors: ['test1'],
-      style: { color: 'blue' }
-    };
-    obj = new ParserCss({
-      parserCss: async () => [result]
-    });
-    const cssResult = await obj.parse(str);
-    expect(cssResult).toEqual([result]);
-  });
+  // test.skip('Parse CSS with custom async parser', async () => {
+  //   var str = '.test1 { color:red }';
+  //   var result = {
+  //     selectors: ['test1'],
+  //     style: { color: 'blue' }
+  //   };
+  //   obj = new ParserCss({
+  //     parserCss: async () => [result]
+  //   });
+  //   const cssResult = await obj.parse(str);
+  //   expect(cssResult).toEqual([result]);
+  // });
 
   test('Check node with font-face rule', () => {
     const style = {

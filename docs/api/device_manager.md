@@ -18,9 +18,9 @@ Once the editor is instantiated you can use its API. Before using these methods 
 const deviceManager = editor.DeviceManager;
 ```
 
--   [add][2]
--   [get][3]
--   [getAll][4]
+*   [add][2]
+*   [get][3]
+*   [getAll][4]
 
 ## add
 
@@ -28,9 +28,9 @@ Add new device to the collection. URLs are supposed to be unique
 
 ### Parameters
 
--   `id` **[String][5]** Device id
--   `width` **[String][5]** Width of the device
--   `opts` **[Object][6]?** Custom options (optional, default `{}`)
+*   `id` **[String][5]** Device id
+*   `width` **[String][5]** Width of the device
+*   `opts` **[Object][6]?** Custom options (optional, default `{}`)
 
 ### Examples
 
@@ -53,7 +53,7 @@ Return device by name
 
 ### Parameters
 
--   `name` **[string][5]** Name of the device
+*   `name` **[string][5]** Name of the device
 
 ### Examples
 

@@ -18,17 +18,17 @@ Once the editor is instantiated you can use its API. Before using these methods 
 const canvas = editor.Canvas;
 ```
 
--   [getConfig][2]
--   [getElement][3]
--   [getFrameEl][4]
--   [getWindow][5]
--   [getDocument][6]
--   [getBody][7]
--   [setCustomBadgeLabel][8]
--   [hasFocus][9]
--   [scrollTo][10]
--   [setZoom][11]
--   [getZoom][12]
+*   [getConfig][2]
+*   [getElement][3]
+*   [getFrameEl][4]
+*   [getWindow][5]
+*   [getDocument][6]
+*   [getBody][7]
+*   [setCustomBadgeLabel][8]
+*   [hasFocus][9]
+*   [scrollTo][10]
+*   [setZoom][11]
+*   [getZoom][12]
 
 ## getConfig
 
@@ -72,7 +72,7 @@ Set custom badge naming strategy
 
 ### Parameters
 
--   `f` **[Function][18]** 
+*   `f` **[Function][18]** 
 
 ### Examples
 
@@ -103,9 +103,10 @@ passed to it. For instance, you can scroll smoothly by using
 
 ### Parameters
 
--   `el` **([HTMLElement][14] | Component)** 
--   `opts` **[Object][13]** Options, same as options for `scrollIntoView` (optional, default `{}`)
-    -   `opts.force` **[Boolean][19]** Force the scroll, even if the element is already visible (optional, default `false`)
+*   `el` **([HTMLElement][14] | Component)** 
+*   `opts` **[Object][13]** Options, same as options for `scrollIntoView` (optional, default `{}`)
+
+    *   `opts.force` **[Boolean][19]** Force the scroll, even if the element is already visible (optional, default `false`)
 
 ### Examples
 
@@ -123,7 +124,7 @@ Set zoom value
 
 ### Parameters
 
--   `value` **[Number][20]** The zoom value, from 0 to 100
+*   `value` **[Number][20]** The zoom value, from 0 to 100
 
 Returns **this** 
 
@@ -139,8 +140,8 @@ Add new frame to the canvas
 
 ### Parameters
 
--   `props` **[Object][13]** Frame properties (optional, default `{}`)
--   `opts`   (optional, default `{}`)
+*   `props` **[Object][13]** Frame properties (optional, default `{}`)
+*   `opts`   (optional, default `{}`)
 
 ### Examples
 

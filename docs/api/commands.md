@@ -18,15 +18,15 @@ Once the editor is instantiated you can use its API. Before using these methods 
 const commands = editor.Commands;
 ```
 
--   [add][2]
--   [get][3]
--   [getAll][4]
--   [extend][5]
--   [has][6]
--   [run][7]
--   [stop][8]
--   [isActive][9]
--   [getActive][10]
+*   [add][2]
+*   [get][3]
+*   [getAll][4]
+*   [extend][5]
+*   [has][6]
+*   [run][7]
+*   [stop][8]
+*   [isActive][9]
+*   [getActive][10]
 
 ## add
 
@@ -34,10 +34,10 @@ Add new command to the collection
 
 ### Parameters
 
--   `id` **[string][11]** Command's ID
--   `command` **([Object][12] \| [Function][13])** Object representing your command,
-     By passing just a function it's intended as a stateless command
-     (just like passing an object with only `run` method).
+*   `id` **[string][11]** Command's ID
+*   `command` **([Object][12] | [Function][13])** Object representing your command,
+    By passing just a function it's intended as a stateless command
+    (just like passing an object with only `run` method).
 
 ### Examples
 
@@ -61,7 +61,7 @@ Get command by ID
 
 ### Parameters
 
--   `id` **[string][11]** Command's ID
+*   `id` **[string][11]** Command's ID
 
 ### Examples
 
@@ -78,9 +78,9 @@ Extend the command. The command to extend should be defined as an object
 
 ### Parameters
 
--   `id` **[string][11]** Command's ID
--   `cmd`   (optional, default `{}`)
--   `Object` **[Object][12]** with the new command functions
+*   `id` **[string][11]** Command's ID
+*   `cmd`   (optional, default `{}`)
+*   `Object` **[Object][12]** with the new command functions
 
 ### Examples
 
@@ -100,7 +100,7 @@ Check if command exists
 
 ### Parameters
 
--   `id` **[string][11]** Command's ID
+*   `id` **[string][11]** Command's ID
 
 Returns **[Boolean][14]** 
 
@@ -116,8 +116,8 @@ Execute the command
 
 ### Parameters
 
--   `id` **[String][11]** Command ID
--   `options` **[Object][12]** Options (optional, default `{}`)
+*   `id` **[String][11]** Command ID
+*   `options` **[Object][12]** Options (optional, default `{}`)
 
 ### Examples
 
@@ -133,8 +133,8 @@ Stop the command
 
 ### Parameters
 
--   `id` **[String][11]** Command ID
--   `options` **[Object][12]** Options (optional, default `{}`)
+*   `id` **[String][11]** Command ID
+*   `options` **[Object][12]** Options (optional, default `{}`)
 
 ### Examples
 
@@ -152,7 +152,7 @@ method it can't be registered as active
 
 ### Parameters
 
--   `id` **[String][11]** Command id
+*   `id` **[String][11]** Command id
 
 ### Examples
 

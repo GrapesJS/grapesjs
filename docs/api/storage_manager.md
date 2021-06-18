@@ -18,20 +18,20 @@ Once the editor is instantiated you can use its API. Before using these methods 
 const storageManager = editor.StorageManager;
 ```
 
--   [getConfig][2]
--   [isAutosave][3]
--   [setAutosave][4]
--   [getStepsBeforeSave][5]
--   [setStepsBeforeSave][6]
--   [setStepsBeforeSave][6]
--   [getStorages][7]
--   [getCurrent][8]
--   [getCurrentStorage][9]
--   [setCurrent][10]
--   [add][11]
--   [get][12]
--   [store][13]
--   [load][14]
+*   [getConfig][2]
+*   [isAutosave][3]
+*   [setAutosave][4]
+*   [getStepsBeforeSave][5]
+*   [setStepsBeforeSave][6]
+*   [setStepsBeforeSave][6]
+*   [getStorages][7]
+*   [getCurrent][8]
+*   [getCurrentStorage][9]
+*   [setCurrent][10]
+*   [add][11]
+*   [get][12]
+*   [store][13]
+*   [load][14]
 
 ## getConfig
 
@@ -51,7 +51,7 @@ Set autosave value
 
 ### Parameters
 
--   `v` **[Boolean][16]** 
+*   `v` **[Boolean][16]** 
 
 Returns **this** 
 
@@ -67,7 +67,7 @@ Set steps required before trigger autosave
 
 ### Parameters
 
--   `v` **[number][17]** 
+*   `v` **[number][17]** 
 
 Returns **this** 
 
@@ -77,10 +77,11 @@ Add new storage
 
 ### Parameters
 
--   `id` **[string][18]** Storage ID
--   `storage` **[Object][15]** Storage wrapper
-    -   `storage.load` **[Function][19]** Load method
-    -   `storage.store` **[Function][19]** Store method
+*   `id` **[string][18]** Storage ID
+*   `storage` **[Object][15]** Storage wrapper
+
+    *   `storage.load` **[Function][19]** Load method
+    *   `storage.store` **[Function][19]** Store method
 
 ### Examples
 
@@ -112,7 +113,7 @@ Returns storage by id
 
 ### Parameters
 
--   `id` **[string][18]** Storage ID
+*   `id` **[string][18]** Storage ID
 
 Returns **([Object][15] | null)** 
 
@@ -134,7 +135,7 @@ Set current storage type
 
 ### Parameters
 
--   `id` **[string][18]** Storage ID
+*   `id` **[string][18]** Storage ID
 
 Returns **this** 
 
@@ -144,8 +145,8 @@ Store key-value resources in the current storage
 
 ### Parameters
 
--   `data` **[Object][15]** Data in key-value format, eg. {item1: value1, item2: value2}
--   `clb` **[Function][19]** Callback function
+*   `data` **[Object][15]** Data in key-value format, eg. {item1: value1, item2: value2}
+*   `clb` **[Function][19]** Callback function
 
 ### Examples
 
@@ -161,8 +162,8 @@ Load resource from the current storage by keys
 
 ### Parameters
 
--   `keys` **([string][18] \| [Array][20]&lt;[string][18]>)** Keys to load
--   `clb` **[Function][19]** Callback function
+*   `keys` **([string][18] | [Array][20]<[string][18]>)** Keys to load
+*   `clb` **[Function][19]** Callback function
 
 ### Examples
 

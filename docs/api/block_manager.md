@@ -18,15 +18,15 @@ Once the editor is instantiated you can use its API. Before using these methods 
 const blockManager = editor.BlockManager;
 ```
 
--   [add][2]
--   [get][3]
--   [getAll][4]
--   [getAllVisible][5]
--   [remove][6]
--   [getConfig][7]
--   [getCategories][8]
--   [getContainer][9]
--   [render][10]
+*   [add][2]
+*   [get][3]
+*   [getAll][4]
+*   [getAllVisible][5]
+*   [remove][6]
+*   [getConfig][7]
+*   [getCategories][8]
+*   [getContainer][9]
+*   [render][10]
 
 ## getConfig
 
@@ -44,16 +44,17 @@ Add new block to the collection.
 
 ### Parameters
 
--   `id` **[string][12]** Block id
--   `opts` **[Object][11]** Options
-    -   `opts.label` **[string][12]** Name of the block
-    -   `opts.content` **[string][12]** HTML content
-    -   `opts.category` **([string][12] \| [Object][11])** Group the block inside a catgegory.
-                                             You should pass objects with id property, eg:
-                                             {id: 'some-uid', label: 'My category'}
-                                             The string will be converted in:
-                                             'someid' => {id: 'someid', label: 'someid'}
-    -   `opts.attributes` **[Object][11]** Block attributes (optional, default `{}`)
+*   `id` **[string][12]** Block id
+*   `opts` **[Object][11]** Options
+
+    *   `opts.label` **[string][12]** Name of the block
+    *   `opts.content` **[string][12]** HTML content
+    *   `opts.category` **([string][12] | [Object][11])** Group the block inside a catgegory.
+        You should pass objects with id property, eg:
+        {id: 'some-uid', label: 'My category'}
+        The string will be converted in:
+        'someid' => {id: 'someid', label: 'someid'}
+    *   `opts.attributes` **[Object][11]** Block attributes (optional, default `{}`)
 
 ### Examples
 
@@ -76,7 +77,7 @@ Return the block by id
 
 ### Parameters
 
--   `id` **[string][12]** Block id
+*   `id` **[string][12]** Block id
 
 ### Examples
 
@@ -112,7 +113,7 @@ Remove a block by id
 
 ### Parameters
 
--   `id` **[string][12]** Block id
+*   `id` **[string][12]** Block id
 
 ### Examples
 
@@ -143,10 +144,11 @@ Render blocks
 
 ### Parameters
 
--   `blocks` **[Array][13]** Blocks to render, without the argument will render all global blocks
--   `opts` **[Object][11]** Options (optional, default `{}`)
-    -   `opts.external` **[Boolean][15]?** Render blocks in a new container (HTMLElement will be returned)
-    -   `opts.ignoreCategories` **[Boolean][15]?** Render blocks without categories
+*   `blocks` **[Array][13]** Blocks to render, without the argument will render all global blocks
+*   `opts` **[Object][11]** Options (optional, default `{}`)
+
+    *   `opts.external` **[Boolean][15]?** Render blocks in a new container (HTMLElement will be returned)
+    *   `opts.ignoreCategories` **[Boolean][15]?** Render blocks without categories
 
 ### Examples
 

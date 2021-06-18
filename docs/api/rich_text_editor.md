@@ -21,11 +21,11 @@ Once the editor is instantiated you can use its API. Before using these methods 
 const rte = editor.RichTextEditor;
 ```
 
--   [add][3]
--   [get][4]
--   [getAll][5]
--   [remove][6]
--   [getToolbarEl][7]
+*   [add][3]
+*   [get][4]
+*   [getAll][5]
+*   [remove][6]
+*   [getToolbarEl][7]
 
 ## add
 
@@ -33,8 +33,8 @@ Add a new action to the built-in RTE toolbar
 
 ### Parameters
 
--   `name` **[string][8]** Action name
--   `action` **[Object][9]** Action options (optional, default `{}`)
+*   `name` **[string][8]** Action name
+*   `action` **[Object][9]** Action options (optional, default `{}`)
 
 ### Examples
 
@@ -102,7 +102,7 @@ Get the action by its name
 
 ### Parameters
 
--   `name` **[string][8]** Action name
+*   `name` **[string][8]** Action name
 
 ### Examples
 
@@ -125,7 +125,7 @@ Remove the action from the toolbar
 
 ### Parameters
 
--   `name` **[string][8]** 
+*   `name` **[string][8]** 
 
 ### Examples
 
