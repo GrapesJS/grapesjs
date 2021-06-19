@@ -167,7 +167,7 @@ export default ComponentView.extend({
     const { em, model } = this;
     const mixins = { on, off };
     const method = enable ? 'on' : 'off';
-    em.setEditing(enable);
+    em.setEditing(enable ? this : 0);
     this.rteEnabled = !!enable;
 
     // The ownerDocument is from the frame
