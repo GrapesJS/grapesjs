@@ -80,11 +80,13 @@ export default Backbone.View.extend({
     const type = model.get('type') || 'default';
     model.set('open', false);
     this.listenTo(components, 'remove add reset', this.checkChildren);
-    this.listenTo(model, 'change:status', this.updateStatus);
-    this.listenTo(model, 'change:open', this.updateOpening);
-    this.listenTo(model, 'change:layerable', this.updateLayerable);
-    this.listenTo(model, 'change:style:display', this.updateVisibility);
-    this.listenTo(model, 'rerender:layer', this.render);
+    [
+      ['change:status', this.updateStatus],
+      ['change:open', this.updateOpening],
+      ['change:layerable', this.updateLayerable],
+      ['change:style:display', this.updateVisibility],
+      ['rerender:layer', this.render]
+    ].forEach(item => this.listenTo(model, item[0], item[1]));
     this.className = `${pfx}layer ${pfx}layer__t-${type} no-select ${ppfx}two-color`;
     this.inputNameCls = `${ppfx}layer-name`;
     this.clsTitleC = `${pfx}layer-title-c`;
