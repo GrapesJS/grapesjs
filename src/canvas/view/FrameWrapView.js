@@ -108,8 +108,9 @@ export default Backbone.View.extend({
    * @private
    */
   updateDim() {
-    const { em, el, $el, model, classAnim } = this;
-    this.frame.rect = 0;
+    const { em, el, $el, model, classAnim, frame } = this;
+    if (!frame) return;
+    frame.rect = 0;
     $el.addClass(classAnim);
     const { noChanges, width, height } = this.__handleSize();
 

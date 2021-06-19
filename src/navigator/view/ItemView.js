@@ -394,7 +394,7 @@ export default Backbone.View.extend({
     this.stopListening();
     this.model = model;
     this.initialize(this.opt);
-    this.render();
+    this._rendered && this.render();
   },
 
   updateLayerable() {
@@ -403,8 +403,19 @@ export default Backbone.View.extend({
     toRerender.render();
   },
 
+  __clearItems() {
+    const { items } = this;
+    items && items.remove();
+  },
+
+  remove() {
+    Backbone.View.prototype.remove.apply(this, arguments);
+    this.__clearItems();
+  },
+
   render() {
     const { model, config, pfx, ppfx, opt } = this;
+    this.__clearItems();
     const { isCountable } = opt;
     const hidden = isCountable && !isCountable(model, config.hideTextnode);
     const vis = this.isVisible();
@@ -416,7 +427,7 @@ export default Backbone.View.extend({
       ItemsView = require('./ItemsView').default;
     }
 
-    const children = new ItemsView({
+    this.items = new ItemsView({
       ItemView: opt.ItemView,
       collection: model.get('components'),
       config: this.config,
@@ -425,7 +436,8 @@ export default Backbone.View.extend({
       parentView: this,
       parent: model,
       level
-    }).render().$el;
+    });
+    const children = this.items.render().$el;
 
     if (!this.config.showWrapper && level === 1) {
       el.append(children);
@@ -445,6 +457,7 @@ export default Backbone.View.extend({
     this.updateStatus();
     this.updateVisibility();
     this.__render();
+    this._rendered = 1;
     return this;
   },
 
