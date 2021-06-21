@@ -231,10 +231,12 @@ export default (config = {}) => {
 
     /**
      * Returns JS of all components
+     * @param {Object} [opts={}] Options
+     * @param {Component} [opts.component] Get the JS of a particular component
      * @returns {string} JS string
      */
-    getJs() {
-      return em.getJs();
+    getJs(opts) {
+      return em.getJs(opts);
     },
 
     /**
