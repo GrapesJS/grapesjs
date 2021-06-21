@@ -42,6 +42,7 @@ export default Backbone.View.extend({
 
     const calibrated = {
       ...event,
+      originalEvent: event,
       clientX: event.clientX - left,
       clientY: event.clientY - top
     };
