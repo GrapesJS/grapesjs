@@ -256,7 +256,9 @@ export default Backbone.View.extend({
   },
 
   renderScripts() {
-    const { el } = this;
+    const { el, model, em } = this;
+    const evLoad = 'frame:load';
+    const evOpts = { el, model, view: this };
     const canvas = this.getCanvasModel();
     const appendScript = scripts => {
       if (scripts.length > 0) {
@@ -269,10 +271,14 @@ export default Backbone.View.extend({
         el.contentDocument.head.appendChild(scriptEl);
       } else {
         this.renderBody();
+        em && em.trigger(evLoad, evOpts);
       }
     };
 
-    el.onload = () => appendScript([...canvas.get('scripts')]);
+    el.onload = () => {
+      em && em.trigger(`${evLoad}:before`, evOpts);
+      appendScript([...canvas.get('scripts')]);
+    };
   },
 
   renderStyles(opts = {}) {
