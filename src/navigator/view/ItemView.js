@@ -5,6 +5,7 @@ import ComponentView from 'dom_components/view/ComponentView';
 import { eventDrag } from 'dom_components/model/Component';
 
 const inputProp = 'contentEditable';
+const styleOpts = { mediaText: '' };
 const $ = Backbone.$;
 let ItemsView;
 
@@ -121,7 +122,7 @@ export default Backbone.View.extend({
     const model = this.model;
     const hClass = `${pfx}layer-hidden`;
     const hideIcon = 'fa-eye-slash';
-    const hidden = model.getStyle().display === 'none';
+    const hidden = model.getStyle(styleOpts).display === 'none';
     const method = hidden ? 'addClass' : 'removeClass';
     this.$el[method](hClass);
     this.getVisibilityEl()[method](hideIcon);
@@ -138,7 +139,7 @@ export default Backbone.View.extend({
     const { model, em } = this;
     const prevDspKey = '__prev-display';
     const prevDisplay = model.get(prevDspKey);
-    const style = model.getStyle();
+    const style = model.getStyle(styleOpts);
     const { display } = style;
     const hidden = display == 'none';
 
@@ -154,7 +155,7 @@ export default Backbone.View.extend({
       style.display = 'none';
     }
 
-    model.setStyle(style);
+    model.setStyle(style, styleOpts);
     em && em.trigger('component:toggled'); // Updates Style Manager #2938
   },
 

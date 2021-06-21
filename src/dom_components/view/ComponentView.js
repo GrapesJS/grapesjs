@@ -240,10 +240,10 @@ export default Backbone.View.extend({
    * Update style attribute
    * @private
    * */
-  updateStyle() {
+  updateStyle(m, v, opts = {}) {
     const { model, em, el } = this;
 
-    if (em && em.getConfig('avoidInlineStyle')) {
+    if (em && em.getConfig('avoidInlineStyle') && !opts.inline) {
       const style = model.getStyle();
       const empty = isEmpty(style);
       !empty && model.setStyle(style);
@@ -253,7 +253,7 @@ export default Backbone.View.extend({
         el.id = model.getId();
       }
     } else {
-      this.setAttribute('style', model.styleToString());
+      this.setAttribute('style', model.styleToString(opts));
     }
   },
 
