@@ -17,7 +17,7 @@ export default {
    * @example
    * styles: [ 'https://...1.css', 'https://...2.css' ]
    * // or passing objects as attributes
-   * scripts: [ { href: '/style.css', someattr: 'value' }, ... ]
+   * styles: [ { href: '/style.css', someattr: 'value' }, ... ]
    */
   styles: [],
 

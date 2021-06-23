@@ -1,7 +1,6 @@
 import {
   isUndefined,
   isFunction,
-  isObject,
   isArray,
   isEmpty,
   isBoolean,
@@ -12,7 +11,7 @@ import {
   bindAll,
   keys
 } from 'underscore';
-import { shallowDiff, capitalize, isEmptyObj } from 'utils/mixins';
+import { shallowDiff, capitalize, isEmptyObj, isObject } from 'utils/mixins';
 import Styleable from 'domain_abstract/model/Styleable';
 import Backbone from 'backbone';
 import Components from './Components';
@@ -66,7 +65,6 @@ export const keyUpdateInside = `${keyUpdate}-inside`;
  * will be hidden from the style manager. Default: `true`
  * @property {Array<String>} [stylable-require=[]] Indicate an array of style properties to show up which has been marked as `toRequire`. Default: `[]`
  * @property {Array<String>} [unstylable=[]] Indicate an array of style properties which should be hidden from the style manager. Default: `[]`
- * @property {Array<String>} [style-signature=''] This option comes handy when you need to remove or export strictly component-specific rules. Be default, if this option is not empty, the editor will remove rules when there are no components, of that type, in the canvas. Eg. '['.navbar', '[navbar-']'. Default: `''`
  * @property {Boolean} [highlightable=true] It can be highlighted with 'dotted' borders if true. Default: `true`
  * @property {Boolean} [copyable=true] True if it's possible to clone the component. Default: `true`
  * @property {Boolean} [resizable=false] Indicates if it's possible to resize the component. It's also possible to pass an object as [options for the Resizer](https://github.com/artf/grapesjs/blob/master/src/utils/Resizer.js). Default: `false`
@@ -186,7 +184,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       this.frame = opt.frame;
       this.config = opt.config || {};
       this.set('attributes', {
-        ...(this.defaults.attributes || {}),
+        ...(result(this, 'defaults').attributes || {}),
         ...(this.get('attributes') || {})
       });
       this.ccid = Component.createId(this, opt);
@@ -408,14 +406,11 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     /**
-     * Once the tag is updated I have to remove the node and replace it
+     * Once the tag is updated I have to rerender the element
      * @private
      */
     tagUpdated() {
-      const coll = this.collection;
-      const at = coll.indexOf(this);
-      coll.remove(this);
-      coll.add(this, { at });
+      this.trigger('rerender');
     },
 
     /**
@@ -507,13 +502,13 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * Get the style of the component
      * @return {Object}
      */
-    getStyle() {
+    getStyle(opts = {}) {
       const em = this.em;
 
-      if (em && em.getConfig('avoidInlineStyle')) {
+      if (em && em.getConfig('avoidInlineStyle') && !opts.inline) {
         const state = em.get('state');
         const cc = em.get('CssComposer');
-        const rule = cc.getIdRule(this.getId(), { state });
+        const rule = cc.getIdRule(this.getId(), { state, ...opts });
         this.rule = rule;
 
         if (rule) {
@@ -535,13 +530,18 @@ const Component = Backbone.Model.extend(Styleable).extend(
       const em = this.em;
       const { opt } = this;
 
-      if (em && em.getConfig('avoidInlineStyle') && !opt.temporary) {
+      if (
+        em &&
+        em.getConfig('avoidInlineStyle') &&
+        !opt.temporary &&
+        !opts.inline
+      ) {
         const style = this.get('style') || {};
         prop = isString(prop) ? this.parseStyle(prop) : prop;
         prop = { ...prop, ...style };
         const state = em.get('state');
         const cc = em.get('CssComposer');
-        const propOrig = this.getStyle();
+        const propOrig = this.getStyle(opts);
         this.rule = cc.setIdRule(this.getId(), prop, { ...opts, state });
         const diff = shallowDiff(propOrig, prop);
         this.set('style', '', { silent: 1 });
@@ -572,20 +572,33 @@ const Component = Backbone.Model.extend(Styleable).extend(
         classes.length && (attributes.class = classes.join(' '));
       }
 
+      // Add style
+      if (!opts.noStyle) {
+        const style = this.get('style');
+        if (isObject(style) && !isEmptyObj(style)) {
+          attributes.style = this.styleToString({ inline: 1 });
+        }
+      }
+
       // Check if we need an ID on the component
       if (!has(attributes, 'id')) {
-        let hasStyle;
+        let addId;
 
         // If we don't rely on inline styling we have to check
         // for the ID selector
         if (avoidInline(em)) {
-          hasStyle = sm && sm.get(id, sm.Selector.TYPE_ID);
+          addId = sm && sm.get(id, sm.Selector.TYPE_ID);
         } else if (!isEmpty(this.getStyle())) {
-          hasStyle = 1;
+          addId = 1;
         }
 
-        if (hasStyle) {
-          attributes.id = this.getId();
+        // Symbols should always have an id
+        if (this.__getSymbol() || this.__getSymbols()) {
+          addId = 1;
+        }
+
+        if (addId) {
+          attributes.id = id;
         }
       }
 
@@ -1474,7 +1487,9 @@ const Component = Backbone.Model.extend(Styleable).extend(
         const symbol = obj[keySymbol];
         const symbols = obj[keySymbols];
         if (symbols && isArray(symbols)) {
-          obj[keySymbols] = symbols.map(i => (i.getId ? i.getId() : i));
+          obj[keySymbols] = symbols
+            .filter(i => i)
+            .map(i => (i.getId ? i.getId() : i));
         }
         if (symbol && !isString(symbol)) {
           obj[keySymbol] = symbol.getId();
@@ -1791,12 +1806,14 @@ const Component = Backbone.Model.extend(Styleable).extend(
      */
     createId(model, opts = {}) {
       const list = Component.getList(model);
+      const { idMap = {} } = opts;
       let { id } = model.get('attributes');
       let nextId;
 
       if (id) {
         nextId = Component.getIncrementId(id, list, opts);
         model.setId(nextId);
+        if (id !== nextId) idMap[id] = nextId;
       } else {
         nextId = Component.getNewId(list);
       }

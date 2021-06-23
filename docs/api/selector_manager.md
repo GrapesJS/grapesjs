@@ -19,9 +19,9 @@ span > #send-btn.btn{
 
 In this scenario we get:
 
--   span     -> selector of type `tag`
--   send-btn -> selector of type `id`
--   btn      -> selector of type `class`
+*   span     -> selector of type `tag`
+*   send-btn -> selector of type `id`
+*   btn      -> selector of type `class`
 
 So, for example, being `btn` the same class entity it'll be easier to refactor and track things.
 
@@ -41,13 +41,13 @@ Once the editor is instantiated you can use its API. Before using these methods 
 const selectorManager = editor.SelectorManager;
 ```
 
--   [getConfig][2]
--   [add][3]
--   [addClass][4]
--   [get][5]
--   [getAll][6]
--   [setState][7]
--   [getState][8]
+*   [getConfig][2]
+*   [add][3]
+*   [addClass][4]
+*   [get][5]
+*   [getAll][6]
+*   [setState][7]
+*   [getState][8]
 
 ## getConfig
 
@@ -61,7 +61,7 @@ Change the selector state
 
 ### Parameters
 
--   `value` **[String][10]** State value
+*   `value` **[String][10]** State value
 
 ### Examples
 
@@ -83,10 +83,11 @@ Add a new selector to collection if it's not already exists. Class type is a def
 
 ### Parameters
 
--   `name` **([String][10] \| [Array][11])** Selector/s name
--   `opts` **[Object][9]** Selector options (optional, default `{}`)
-    -   `opts.label` **[String][10]** Label for the selector, if it's not provided the label will be the same as the name (optional, default `''`)
-    -   `opts.type` **[String][10]** Type of the selector. At the moment, only 'class' (1) is available (optional, default `1`)
+*   `name` **([String][10] | [Array][11])** Selector/s name
+*   `opts` **[Object][9]** Selector options (optional, default `{}`)
+
+    *   `opts.label` **[String][10]** Label for the selector, if it's not provided the label will be the same as the name (optional, default `''`)
+    *   `opts.type` **[String][10]** Type of the selector. At the moment, only 'class' (1) is available (optional, default `1`)
 
 ### Examples
 
@@ -109,7 +110,7 @@ Add class selectors
 
 ### Parameters
 
--   `classes` **([Array][11] \| [string][10])** Array or string of classes
+*   `classes` **([Array][11] | [string][10])** Array or string of classes
 
 ### Examples
 
@@ -128,8 +129,8 @@ Get the selector by its name
 
 ### Parameters
 
--   `name` **([String][10] \| [Array][11])** Selector name
--   `type` **[String][10]** Selector type
+*   `name` **([String][10] | [Array][11])** Selector name
+*   `type` **[String][10]** Selector type
 
 ### Examples
 
@@ -153,7 +154,7 @@ Return escaped selector name
 
 ### Parameters
 
--   `name` **[String][10]** Selector name to escape
+*   `name` **[String][10]** Selector name to escape
 
 Returns **[String][10]** Escaped name
 

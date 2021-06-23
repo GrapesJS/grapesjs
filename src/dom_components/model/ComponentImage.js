@@ -103,7 +103,7 @@ export default Component.extend(
      */
     toJSON(...args) {
       const obj = Component.prototype.toJSON.apply(this, args);
-      if (obj.src === obj.attributes.src) {
+      if (obj.attributes && obj.src === obj.attributes.src) {
         delete obj.src;
       }
 

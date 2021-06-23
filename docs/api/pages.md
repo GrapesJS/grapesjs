@@ -27,21 +27,21 @@ const pageManager = editor.Pages;
 
 ## Available Events
 
--   `page:add` - Added new page. The page is passed as an argument to the callback
--   `page:remove` - Page removed. The page is passed as an argument to the callback
--   `page:select` - New page selected. The newly selected page and the previous one, are passed as arguments to the callback
--   `page:update` - Page updated. The updated page and the object containing changes are passed as arguments to the callback
--   `page` - Catch-all event for all the events mentioned above. An object containing all the available data about the triggered event is passed as an argument to the callback
+*   `page:add` - Added new page. The page is passed as an argument to the callback
+*   `page:remove` - Page removed. The page is passed as an argument to the callback
+*   `page:select` - New page selected. The newly selected page and the previous one, are passed as arguments to the callback
+*   `page:update` - Page updated. The updated page and the object containing changes are passed as arguments to the callback
+*   `page` - Catch-all event for all the events mentioned above. An object containing all the available data about the triggered event is passed as an argument to the callback
 
 ## Methods
 
--   [add][1]
--   [get][2]
--   [getAll][3]
--   [getMain][4]
--   [remove][5]
--   [select][6]
--   [getSelected][7]
+*   [add][1]
+*   [get][2]
+*   [getAll][3]
+*   [getMain][4]
+*   [remove][5]
+*   [select][6]
+*   [getSelected][7]
 
 ## add
 
@@ -49,8 +49,8 @@ Add new page
 
 ### Parameters
 
--   `props` **[Object][8]** Page properties
--   `opts` **[Object][8]?** Options (optional, default `{}`)
+*   `props` **[Object][8]** Page properties
+*   `opts` **[Object][8]?** Options (optional, default `{}`)
 
 ### Examples
 
@@ -70,8 +70,8 @@ Remove page
 
 ### Parameters
 
--   `page` **([String][9] | Page)** Page or page id
--   `opts`   (optional, default `{}`)
+*   `page` **([String][9] | Page)** Page or page id
+*   `opts`   (optional, default `{}`)
 
 ### Examples
 
@@ -90,7 +90,7 @@ Get page by id
 
 ### Parameters
 
--   `id` **[String][9]** Page id
+*   `id` **[String][9]** Page id
 
 ### Examples
 
@@ -122,7 +122,7 @@ Get all pages
 const arrayOfPages = pageManager.getAll();
 ```
 
-Returns **[Array][10]&lt;Page>** 
+Returns **[Array][10]\<Page>** 
 
 ## select
 
@@ -130,8 +130,8 @@ Change the selected page. This will switch the page rendered in canvas
 
 ### Parameters
 
--   `page` **([String][9] | Page)** Page or page id
--   `opts`   (optional, default `{}`)
+*   `page` **([String][9] | Page)** Page or page id
+*   `opts`   (optional, default `{}`)
 
 ### Examples
 

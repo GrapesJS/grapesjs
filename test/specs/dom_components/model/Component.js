@@ -267,6 +267,7 @@ describe('Component', () => {
     expect(obj.getAttributes()).toEqual({
       id: 'test',
       class: 'class1 class2',
+      style: 'color:white;background:#fff;',
       'data-test': 'value'
     });
     expect(obj.get('classes').length).toEqual(2);

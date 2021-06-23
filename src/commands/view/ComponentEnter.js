@@ -5,7 +5,7 @@ export default {
 
     ed.getSelectedAll().forEach(component => {
       const coll = component.components();
-      const next = coll && coll.at(0);
+      const next = coll && coll.filter(c => c.get('selectable'))[0];
       next && toSelect.push(next);
     });
 

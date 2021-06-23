@@ -155,7 +155,7 @@ export default () => {
     },
 
     /**
-     * Return the visible collection, which containes assets actually rendered
+     * Return the visible collection, which contains assets actually rendered
      * @return {Collection}
      */
     getAllVisible() {

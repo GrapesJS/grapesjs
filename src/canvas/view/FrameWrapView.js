@@ -1,7 +1,7 @@
 import Backbone from 'backbone';
 import FrameView from './FrameView';
 import { bindAll, isNumber, isNull, debounce } from 'underscore';
-import { createEl } from 'utils/dom';
+import { createEl, removeEl } from 'utils/dom';
 import Dragger from 'utils/Dragger';
 
 export default Backbone.View.extend({
@@ -32,6 +32,8 @@ export default Backbone.View.extend({
     this.ppfx = config.pStylePrefix || '';
     this.frame = new FrameView({ model, config });
     this.classAnim = `${this.ppfx}frame-wrapper--anim`;
+    this.updateOffset = debounce(this.updateOffset.bind(this));
+    this.updateSize = debounce(this.updateSize.bind(this));
     this.listenTo(model, 'loaded', this.frameLoaded);
     this.listenTo(model, 'change:x change:y', this.updatePos);
     this.listenTo(model, 'change:width change:height', this.updateSize);
@@ -71,6 +73,7 @@ export default Backbone.View.extend({
 
   remove(opts) {
     this.frame.remove(opts);
+    removeEl(this.elTools);
     Backbone.View.prototype.remove.apply(this, arguments);
     ['frame', 'dragger', 'cv', 'em', 'canvas', 'elTools'].forEach(
       i => (this[i] = 0)
@@ -78,13 +81,13 @@ export default Backbone.View.extend({
     return this;
   },
 
-  updateOffset: debounce(function() {
+  updateOffset() {
     const { em, $el, frame } = this;
     if (!em) return;
     em.runDefault({ preserveSelected: 1 });
     $el.removeClass(this.classAnim);
     frame.model._emitUpdated();
-  }),
+  },
 
   updatePos(md) {
     const { model, el } = this;
@@ -96,17 +99,18 @@ export default Backbone.View.extend({
     md && this.updateOffset();
   },
 
-  updateSize: debounce(function() {
+  updateSize() {
     this.updateDim();
-  }),
+  },
 
   /**
    * Update dimensions of the frame
    * @private
    */
   updateDim() {
-    const { em, el, $el, model, classAnim } = this;
-    this.frame.rect = 0;
+    const { em, el, $el, model, classAnim, frame } = this;
+    if (!frame) return;
+    frame.rect = 0;
     $el.addClass(classAnim);
     const { noChanges, width, height } = this.__handleSize();
 
@@ -160,6 +164,7 @@ export default Backbone.View.extend({
   render() {
     const { frame, $el, ppfx, cv, model, el } = this;
     const { onRender } = model.attributes;
+    frame && frame.remove();
     this.__handleSize();
     frame.render();
     $el

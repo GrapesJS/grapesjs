@@ -68,9 +68,10 @@ export default () => {
       };
 
       this.em = c.em;
+      const { scripts, styles } = c;
       const ppfx = c.pStylePrefix;
       if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
-      canvas = new Canvas(config);
+      canvas = new Canvas({ scripts, styles }, config);
       this.model = canvas;
       this.startAutoscroll = this.startAutoscroll.bind(this);
       this.stopAutoscroll = this.stopAutoscroll.bind(this);
@@ -106,7 +107,7 @@ export default () => {
     },
 
     getFrame(index) {
-      return index ? this.getFrames()[index] : canvas.get('frame');
+      return this.getFrames()[index || 0];
     },
 
     /**

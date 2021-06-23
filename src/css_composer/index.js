@@ -389,9 +389,9 @@ export default () => {
      * // #myid:hover { color: blue }
      */
     setIdRule(name, style = {}, opts = {}) {
-      const { addOpts = {} } = opts;
+      const { addOpts = {}, mediaText } = opts;
       const state = opts.state || '';
-      const media = opts.mediaText || em.getCurrentMedia();
+      const media = !isUndefined(mediaText) ? mediaText : em.getCurrentMedia();
       const sm = em.get('SelectorManager');
       const selector = sm.add({ name, type: Selector.TYPE_ID }, addOpts);
       const rule = this.add(selector, state, media, {}, addOpts);
@@ -410,8 +410,9 @@ export default () => {
      * const ruleHover = cc.setIdRule('myid', { state: 'hover' });
      */
     getIdRule(name, opts = {}) {
+      const { mediaText } = opts;
       const state = opts.state || '';
-      const media = opts.mediaText || em.getCurrentMedia();
+      const media = !isUndefined(mediaText) ? mediaText : em.getCurrentMedia();
       const selector = em.get('SelectorManager').get(name, Selector.TYPE_ID);
       return selector && this.get(selector, state, media);
     },

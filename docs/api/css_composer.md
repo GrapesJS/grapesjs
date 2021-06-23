@@ -19,14 +19,14 @@ Once the editor is instantiated you can use its API. Before using these methods 
 const cssComposer = editor.CssComposer;
 ```
 
--   [load][2]
--   [store][3]
--   [add][4]
--   [get][5]
--   [getAll][6]
--   [clear][7]
--   [setRule][8]
--   [getRule][9]
+*   [load][2]
+*   [store][3]
+*   [add][4]
+*   [get][5]
+*   [getAll][6]
+*   [clear][7]
+*   [setRule][8]
+*   [getRule][9]
 
 ## load
 
@@ -36,7 +36,7 @@ The fetched data will be added to the collection
 
 ### Parameters
 
--   `data` **[Object][10]** Object of data to load
+*   `data` **[Object][10]** Object of data to load
 
 Returns **[Object][10]** Loaded rules
 
@@ -46,7 +46,7 @@ Store data to the selected storage
 
 ### Parameters
 
--   `noStore` **[Boolean][11]** If true, won't store
+*   `noStore` **[Boolean][11]** If true, won't store
 
 Returns **[Object][10]** Data to store
 
@@ -56,12 +56,12 @@ Add new rule to the collection, if not yet exists with the same selectors
 
 ### Parameters
 
--   `selectors` **[Array][12]&lt;Selector>** Array of selectors
--   `state` **[String][13]** Css rule state
--   `width` **[String][13]** For which device this style is oriented
--   `opts` **[Object][10]** Options for the add of new rule (optional, default `{}`)
--   `addOpts`   (optional, default `{}`)
--   `props` **[Object][10]** Other props for the rule
+*   `selectors` **[Array][12]\<Selector>** Array of selectors
+*   `state` **[String][13]** Css rule state
+*   `width` **[String][13]** For which device this style is oriented
+*   `opts` **[Object][10]** Options for the add of new rule (optional, default `{}`)
+*   `addOpts`   (optional, default `{}`)
+*   `props` **[Object][10]** Other props for the rule
 
 ### Examples
 
@@ -84,10 +84,10 @@ Get the rule
 
 ### Parameters
 
--   `selectors` **[Array][12]&lt;Selector>** Array of selectors
--   `state` **[String][13]** Css rule state
--   `width` **[String][13]** For which device this style is oriented
--   `ruleProps` **[Object][10]** Other rule props
+*   `selectors` **[Array][12]\<Selector>** Array of selectors
+*   `state` **[String][13]** Css rule state
+*   `width` **[String][13]** For which device this style is oriented
+*   `ruleProps` **[Object][10]** Other rule props
 
 ### Examples
 
@@ -117,7 +117,7 @@ Remove all rules
 
 ### Parameters
 
--   `opts`   (optional, default `{}`)
+*   `opts`   (optional, default `{}`)
 
 Returns **this** 
 
@@ -127,11 +127,12 @@ Add/update the CSS rule with a generic selector
 
 ### Parameters
 
--   `selectors` **[string][13]** Selector, eg. '.myclass'
--   `style` **[Object][10]** Style properties and values
--   `opts` **[Object][10]** Additional properties (optional, default `{}`)
-    -   `opts.atRuleType` **[String][13]** At-rule type, eg. 'media' (optional, default `''`)
-    -   `opts.atRuleParams` **[String][13]** At-rule parameters, eg. '(min-width: 500px)' (optional, default `''`)
+*   `selectors` **[string][13]** Selector, eg. '.myclass'
+*   `style` **[Object][10]** Style properties and values
+*   `opts` **[Object][10]** Additional properties (optional, default `{}`)
+
+    *   `opts.atRuleType` **[String][13]** At-rule type, eg. 'media' (optional, default `''`)
+    *   `opts.atRuleParams` **[String][13]** At-rule parameters, eg. '(min-width: 500px)' (optional, default `''`)
 
 ### Examples
 
@@ -158,8 +159,8 @@ Get the CSS rule by a generic selector
 
 ### Parameters
 
--   `selectors` **[string][13]** Selector, eg. '.myclass:hover'
--   `opts`   (optional, default `{}`)
+*   `selectors` **[string][13]** Selector, eg. '.myclass:hover'
+*   `opts`   (optional, default `{}`)
 
 ### Examples
 
@@ -180,7 +181,7 @@ Find rules, in different states (eg. like `:hover`) and media queries, matching 
 
 ### Parameters
 
--   `selector` **[string][13]** Selector, eg. '.myclass'
+*   `selector` **[string][13]** Selector, eg. '.myclass'
 
 ### Examples
 
@@ -191,7 +192,7 @@ const rules = cc.getRules(`#${id}`);
 console.log(rules.map(rule => rule.toCSS()))
 ```
 
-Returns **[Array][12]&lt;CssRule>** 
+Returns **[Array][12]\<CssRule>** 
 
 [1]: https://github.com/artf/grapesjs/blob/master/src/css_composer/config/config.js
 

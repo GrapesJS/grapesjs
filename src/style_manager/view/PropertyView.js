@@ -1,9 +1,10 @@
 import Backbone from 'backbone';
 import { bindAll, isArray, isUndefined, debounce } from 'underscore';
-import { camelCase, isObject } from 'utils/mixins';
+import { camelCase, isObject, find } from 'utils/mixins';
 import { includes, each } from 'underscore';
 
 const clearProp = 'data-clear-style';
+const evStyleUp = 'component:styleUpdate';
 
 export default Backbone.View.extend({
   template() {
@@ -150,6 +151,7 @@ export default Backbone.View.extend({
   clear(ev) {
     ev && ev.stopPropagation();
     this.model.clearValue();
+    this.__unset();
     // Skip one stack with setTimeout to avoid inconsistencies (eg. visible on padding composite clear)
     setTimeout(() => this.targetUpdated());
   },
@@ -292,6 +294,7 @@ export default Backbone.View.extend({
 
     this.setStatus(status);
     model.setValue(value, 0, { fromTarget: 1, ...opts });
+    this.__update(value);
 
     if (em) {
       em.trigger('styleManager:change', this, property, value, data);
@@ -436,8 +439,8 @@ export default Backbone.View.extend({
       const updated = { [prop]: value };
       em.getSelectedAll().forEach(component => {
         !opt.noEmit && em.trigger('component:update', component, updated, opt);
-        em.trigger('component:styleUpdate', component, prop, opt);
-        em.trigger(`component:styleUpdate:${prop}`, component, value, opt);
+        em.trigger(evStyleUp, component, prop, opt);
+        em.trigger(`${evStyleUp}:${prop}`, component, value, opt);
         component.trigger(`change:style`, component, updated, opt);
         component.trigger(`change:style:${prop}`, component, value, opt);
       });
@@ -642,6 +645,11 @@ export default Backbone.View.extend({
     this.$input = null;
   },
 
+  __unset() {
+    const unset = this.unset && this.unset.bind(this);
+    unset && unset(this._getClbOpts());
+  },
+
   __update(value) {
     const update = this.update && this.update.bind(this);
     update &&
@@ -657,28 +665,40 @@ export default Backbone.View.extend({
   },
 
   __updateStyle(value, { complete, ...opts } = {}) {
+    const { em, model } = this;
+    const prop = model.get('property');
     const final = complete !== false;
 
     if (isObject(value)) {
-      this.getTargets().forEach(target =>
-        target.addStyle(value, { avoidStore: !final })
-      );
+      this.getTargets().forEach(target => {
+        target.addStyle(value, { avoidStore: !final });
+        em && em.trigger(evStyleUp, target, prop, opts);
+      });
     } else {
-      this.model.setValueFromInput(value, complete, opts);
+      model.setValueFromInput(value, complete, opts);
     }
 
     final && this.elementUpdated();
   },
 
   _getClbOpts() {
-    const { model, el } = this;
+    const { model, el, createdEl, propTarget } = this;
+    const prop = model.get('property');
+    const computed = propTarget.computed || {};
+    const parentRules = propTarget.parentRules || [];
+    const parentRule = find(parentRules, rule => !!rule.getStyle()[prop]);
     return {
       el,
+      createdEl,
       props: model.attributes,
       setProps: (...args) => model.set(...args),
       change: this.__change,
       updateStyle: this.__updateStyle,
-      targets: this.getTargets()
+      targets: this.getTargets(), // Used to update selected targets
+      target: this.getFirstTarget(), // Used to update custom UI
+      computed,
+      parentRules, // All parent rules
+      parentRule // First parent rule containing the same property
     };
   },
 

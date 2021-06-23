@@ -161,6 +161,12 @@ export const isCommentNode = el => el && el.nodeType === 8;
  */
 export const isTaggableNode = el => el && !isTextNode(el) && !isCommentNode(el);
 
+export const find = (arr, test) => {
+  let result = null;
+  arr.some((el, i) => (test(el, i, arr) ? ((result = el), 1) : 0));
+  return result;
+};
+
 /**
  * Ensure to fetch the model from the input argument
  * @param  {HTMLElement|Component} el Component or HTML element

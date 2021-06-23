@@ -101,14 +101,15 @@ export default Backbone.View.extend({
     };
 
     const sm = em.get('StyleManager');
-    model = sm.getModelToStyle(model);
+    const target = sm.getModelToStyle(model);
 
     if (state) {
-      appendStateRule(model.getStyle());
+      appendStateRule(target.getStyle());
       this.toggleStateCls(targets, 1);
     }
 
-    pt.model = model;
+    pt.model = target;
+    pt.parentRules = sm.getParentRules(target, state);
     if (componentFirst) {
       pt.targets = targets.map(t => sm.getModelToStyle(t)).filter(Boolean);
     }

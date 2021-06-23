@@ -18,16 +18,16 @@ Once the editor is instantiated you can use its API. Before using these methods 
 const domComponents = editor.DomComponents;
 ```
 
--   [getWrapper][2]
--   [getComponents][3]
--   [addComponent][4]
--   [clear][5]
--   [load][6]
--   [store][7]
--   [addType][8]
--   [getType][9]
--   [getTypes][10]
--   [render][11]
+*   [getWrapper][2]
+*   [getComponents][3]
+*   [addComponent][4]
+*   [clear][5]
+*   [load][6]
+*   [store][7]
+*   [addType][8]
+*   [getType][9]
+*   [getTypes][10]
+*   [render][11]
 
 ## load
 
@@ -37,7 +37,7 @@ The fetched data will be added to the collection
 
 ### Parameters
 
--   `data` **[Object][12]** Object of data to load (optional, default `''`)
+*   `data` **[Object][12]** Object of data to load (optional, default `''`)
 
 Returns **[Object][12]** Loaded data
 
@@ -47,7 +47,7 @@ Store components on the selected storage
 
 ### Parameters
 
--   `noStore` **[Boolean][13]** If true, won't store
+*   `noStore` **[Boolean][13]** If true, won't store
 
 Returns **[Object][12]** Data to store
 
@@ -107,19 +107,20 @@ as 'domComponents.getComponents().add(...)'
 
 ### Parameters
 
--   `component` **([Object][12] | Component | [Array][14]&lt;[Object][12]>)** Component/s to add
-    -   `component.tagName` **[string][15]** Tag name (optional, default `'div'`)
-    -   `component.type` **[string][15]** Type of the component. Available: ''(default), 'text', 'image' (optional, default `''`)
-    -   `component.removable` **[boolean][13]** If component is removable (optional, default `true`)
-    -   `component.draggable` **[boolean][13]** If is possible to move the component around the structure (optional, default `true`)
-    -   `component.droppable` **[boolean][13]** If is possible to drop inside other components (optional, default `true`)
-    -   `component.badgable` **[boolean][13]** If the badge is visible when the component is selected (optional, default `true`)
-    -   `component.stylable` **[boolean][13]** If is possible to style component (optional, default `true`)
-    -   `component.copyable` **[boolean][13]** If is possible to copy&paste the component (optional, default `true`)
-    -   `component.content` **[string][15]** String inside component (optional, default `''`)
-    -   `component.style` **[Object][12]** Style object (optional, default `{}`)
-    -   `component.attributes` **[Object][12]** Attribute object (optional, default `{}`)
--   `opt` **[Object][12]** the options object to be used by the [Components.add][getComponents][3] method (optional, default `{}`)
+*   `component` **([Object][12] | Component | [Array][14]<[Object][12]>)** Component/s to add
+
+    *   `component.tagName` **[string][15]** Tag name (optional, default `'div'`)
+    *   `component.type` **[string][15]** Type of the component. Available: ''(default), 'text', 'image' (optional, default `''`)
+    *   `component.removable` **[boolean][13]** If component is removable (optional, default `true`)
+    *   `component.draggable` **[boolean][13]** If is possible to move the component around the structure (optional, default `true`)
+    *   `component.droppable` **[boolean][13]** If is possible to drop inside other components (optional, default `true`)
+    *   `component.badgable` **[boolean][13]** If the badge is visible when the component is selected (optional, default `true`)
+    *   `component.stylable` **[boolean][13]** If is possible to style component (optional, default `true`)
+    *   `component.copyable` **[boolean][13]** If is possible to copy\&paste the component (optional, default `true`)
+    *   `component.content` **[string][15]** String inside component (optional, default `''`)
+    *   `component.style` **[Object][12]** Style object (optional, default `{}`)
+    *   `component.attributes` **[Object][12]** Attribute object (optional, default `{}`)
+*   `opt` **[Object][12]** the options object to be used by the \[Components.add][getComponents][3] method (optional, default `{}`)
 
 ### Examples
 
@@ -136,7 +137,7 @@ var comp1 = domComponents.addComponent({
 });
 ```
 
-Returns **(Component | [Array][14]&lt;Component>)** Component/s added
+Returns **(Component | [Array][14]\<Component>)** Component/s added
 
 ## render
 
@@ -153,7 +154,7 @@ Remove all components
 
 ### Parameters
 
--   `opts`   (optional, default `{}`)
+*   `opts`   (optional, default `{}`)
 
 Returns **this** 
 
@@ -164,8 +165,8 @@ Read more about this in [Define New Component][17]
 
 ### Parameters
 
--   `type` **[string][15]** Component ID
--   `methods` **[Object][12]** Component methods
+*   `type` **[string][15]** Component ID
+*   `methods` **[Object][12]** Component methods
 
 Returns **this** 
 
@@ -176,7 +177,7 @@ Read more about this in [Define New Component][17]
 
 ### Parameters
 
--   `type` **[string][15]** Component ID
+*   `type` **[string][15]** Component ID
 
 Returns **[Object][12]** Component type defintion, eg. `{ model: ..., view: ... }`
 
@@ -186,10 +187,10 @@ Remove component type
 
 ### Parameters
 
--   `id`  
--   `type` **[string][15]** Component ID
+*   `id`  
+*   `type` **[string][15]** Component ID
 
-Returns **([Object][12] \| [undefined][18])** Removed component type, undefined otherwise
+Returns **([Object][12] | [undefined][18])** Removed component type, undefined otherwise
 
 ## getTypes
 
