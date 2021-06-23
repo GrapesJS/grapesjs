@@ -406,14 +406,11 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     /**
-     * Once the tag is updated I have to remove the node and replace it
+     * Once the tag is updated I have to rerender the element
      * @private
      */
     tagUpdated() {
-      const coll = this.collection;
-      const at = coll.indexOf(this);
-      coll.remove(this);
-      coll.add(this, { at });
+      this.trigger('rerender');
     },
 
     /**
