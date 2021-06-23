@@ -177,7 +177,10 @@ export default ComponentView.extend({
     mixins.off(elDocs, 'mousedown', this.disableEditing);
     mixins[method](elDocs, 'mousedown', this.disableEditing);
     em[method]('toolbar:run:before', this.disableEditing);
-    model && model[method]('removed', this.disableEditing);
+    if (model) {
+      model[method]('removed', this.disableEditing);
+      model.trigger(`rte:${enable ? 'enable' : 'disable'}`);
+    }
 
     // Avoid closing edit mode on component click
     $el && $el.off('mousedown', this.disablePropagation);
