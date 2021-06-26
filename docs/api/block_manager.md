@@ -49,7 +49,7 @@ Add new block to the collection.
 
     *   `opts.label` **[string][12]** Name of the block
     *   `opts.content` **[string][12]** HTML content
-    *   `opts.category` **([string][12] | [Object][11])** Group the block inside a catgegory.
+    *   `opts.category` **([string][12] | [Object][11])** Group the block inside a category.
         You should pass objects with id property, eg:
         {id: 'some-uid', label: 'My category'}
         The string will be converted in:
