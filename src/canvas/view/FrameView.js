@@ -30,6 +30,7 @@ export default Backbone.View.extend({
       '_emitUpdate'
     );
     const { model, el } = this;
+    this.tools = {};
     this.config = {
       ...(o.config || {}),
       frameView: this
@@ -163,18 +164,20 @@ export default Backbone.View.extend({
   },
 
   _getTool(name) {
+    const { tools } = this;
     const toolsEl = this.getToolsEl();
 
-    if (!this[name]) {
-      this[name] = toolsEl.querySelector(name);
+    if (!tools[name]) {
+      tools[name] = toolsEl.querySelector(name);
     }
 
-    return this[name];
+    return tools[name];
   },
 
   remove() {
     const wrp = this.wrapper;
     this._toggleEffects();
+    this.tools = {};
     wrp && wrp.remove();
     Backbone.View.prototype.remove.apply(this, arguments);
   },
