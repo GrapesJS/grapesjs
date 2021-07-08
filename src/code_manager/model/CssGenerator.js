@@ -40,11 +40,13 @@ export default Backbone.Model.extend({
   },
 
   build(model, opts = {}) {
-    const cssc = opts.cssc;
+    const { json } = opts;
     const em = opts.em || '';
+    const cssc = opts.cssc || (em && em.get('CssComposer'));
     this.em = em;
     this.compCls = [];
     this.ids = [];
+    const codeJson = [];
     var code = this.buildFromModel(model, opts);
     const clearStyles =
       isUndefined(opts.clearStyles) && em
@@ -69,7 +71,13 @@ export default Backbone.Model.extend({
           return;
         }
 
-        code += this.buildFromRule(rule, dump, opts);
+        const res = this.buildFromRule(rule, dump, opts);
+
+        if (json) {
+          codeJson.push(res);
+        } else {
+          code += res;
+        }
       });
 
       this.sortMediaObject(atRules).forEach(item => {
@@ -85,6 +93,8 @@ export default Backbone.Model.extend({
           } else {
             rulesStr += ruleStr;
           }
+
+          json && codeJson.push(ruleStr);
         });
 
         if (rulesStr) {
@@ -95,7 +105,7 @@ export default Backbone.Model.extend({
       em && clearStyles && rules.remove(dump);
     }
 
-    return code;
+    return json ? codeJson.filter(r => r) : code;
   },
 
   /**
@@ -124,7 +134,7 @@ export default Backbone.Model.extend({
 
     if ((selectorStrNoAdd && found) || selectorsAdd || singleAtRule) {
       const block = rule.getDeclaration({ body: 1 });
-      block && (result += block);
+      block && (opts.json ? (result = rule) : (result += block));
     } else {
       dump.push(rule);
     }
