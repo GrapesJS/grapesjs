@@ -83,7 +83,7 @@ const on = (el, ev, fn, opts) => {
   el = el instanceof Array ? el : [el];
 
   for (let i = 0; i < ev.length; ++i) {
-    el.forEach(elem => elem.addEventListener(ev[i], fn, opts));
+    el.forEach(elem => elem && elem.addEventListener(ev[i], fn, opts));
   }
 };
 
@@ -92,7 +92,7 @@ const off = (el, ev, fn, opts) => {
   el = el instanceof Array ? el : [el];
 
   for (let i = 0; i < ev.length; ++i) {
-    el.forEach(elem => elem.removeEventListener(ev[i], fn, opts));
+    el.forEach(elem => elem && elem.removeEventListener(ev[i], fn, opts));
   }
 };
 
