@@ -46,19 +46,20 @@ export default Backbone.Model.extend({
     this.em = em;
     this.compCls = [];
     this.ids = [];
+    this.model = model;
     const codeJson = [];
-    var code = this.buildFromModel(model, opts);
+    let code = model ? this.buildFromModel(model, opts) : '';
     const clearStyles =
       isUndefined(opts.clearStyles) && em
         ? em.getConfig('clearStyles')
         : opts.clearStyles;
 
     if (cssc) {
-      const rules = cssc.getAll();
+      const rules = opts.rules || cssc.getAll();
       const atRules = {};
       const dump = [];
 
-      rules.each(rule => {
+      rules.forEach(rule => {
         const atRule = rule.getAtRule();
 
         if (atRule) {
@@ -102,7 +103,7 @@ export default Backbone.Model.extend({
         }
       });
 
-      em && clearStyles && rules.remove(dump);
+      em && clearStyles && rules.remove && rules.remove(dump);
     }
 
     return json ? codeJson.filter(r => r) : code;
@@ -115,6 +116,7 @@ export default Backbone.Model.extend({
    */
   buildFromRule(rule, dump, opts = {}) {
     let result = '';
+    const { model } = this;
     const selectorStrNoAdd = rule.selectorsToString({ skipAdd: 1 });
     const selectorsAdd = rule.get('selectorsAdd');
     const singleAtRule = rule.get('singleAtRule');
@@ -132,7 +134,7 @@ export default Backbone.Model.extend({
       }
     });
 
-    if ((selectorStrNoAdd && found) || selectorsAdd || singleAtRule) {
+    if ((selectorStrNoAdd && found) || selectorsAdd || singleAtRule || !model) {
       const block = rule.getDeclaration({ body: 1 });
       block && (opts.json ? (result = rule) : (result += block));
     } else {
