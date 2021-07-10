@@ -526,7 +526,7 @@ export default () => {
             ...model,
             ...getExtendedObj(extendFn, model, modelToExt),
             defaults: {
-              ...modelToExt.prototype.defaults,
+              ...(result(modelToExt.prototype, 'defaults') || {}),
               ...(result(model, 'defaults') || {})
             }
           },
