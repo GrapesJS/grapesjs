@@ -80,15 +80,17 @@ export const createCustomEvent = (e, cls) => {
     oEvent = document.createEvent(cls);
     oEvent.initEvent(e.type, true, true);
   }
-  oEvent.keyCodeVal = e.keyCode;
   oEvent._parentEvent = e;
-  ['keyCode', 'which'].forEach(prop => {
-    Object.defineProperty(oEvent, prop, {
-      get() {
-        return this.keyCodeVal;
-      }
+  if (e.type.startsWith('key')) {
+    oEvent.keyCodeVal = e.keyCode;
+    ['keyCode', 'which'].forEach(prop => {
+      Object.defineProperty(oEvent, prop, {
+        get() {
+          return this.keyCodeVal;
+        }
+      });
     });
-  });
+  }
   return oEvent;
 };
 
