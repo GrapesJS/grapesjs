@@ -74,14 +74,15 @@ export const createEl = (tag, attrs = '', child) => {
 // hack seems the only way
 export const createCustomEvent = (e, cls) => {
   let oEvent;
+  const { type } = e;
   try {
-    oEvent = new window[cls](e.type, e);
-  } catch (e) {
+    oEvent = new window[cls](type, e);
+  } catch (err) {
     oEvent = document.createEvent(cls);
-    oEvent.initEvent(e.type, true, true);
+    oEvent.initEvent(type, true, true);
   }
   oEvent._parentEvent = e;
-  if (e.type.startsWith('key')) {
+  if (type.indexOf('key') === 0) {
     oEvent.keyCodeVal = e.keyCode;
     ['keyCode', 'which'].forEach(prop => {
       Object.defineProperty(oEvent, prop, {
