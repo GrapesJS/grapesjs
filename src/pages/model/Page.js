@@ -36,10 +36,33 @@ export default class Page extends Model {
     return this.get('frames');
   }
 
+  /**
+   * Get all frames
+   * @returns {Array<Frame>}
+   * @example
+   * const arrayOfFrames = page.getAllFrames();
+   */
+  getAllFrames() {
+    return this.getFrames().models || [];
+  }
+
+  /**
+   * Get the first frame of the page (identified always as the main one)
+   * @returns {Frame}
+   * @example
+   * const mainFrame = page.getMainFrame();
+   */
   getMainFrame() {
     return this.getFrames().at(0);
   }
 
+  /**
+   * Get the root component (usually is the `wrapper` component) from the main frame
+   * @returns {Component}
+   * @example
+   * const rootComponent = page.getMainComponent();
+   * console.log(rootComponent.toHTML());
+   */
   getMainComponent() {
     const frame = this.getMainFrame();
     return frame && frame.getComponent();
