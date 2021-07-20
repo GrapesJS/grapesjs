@@ -1,6 +1,7 @@
 const version = require('./../../package.json').version;
 const isDev = process.argv[2] === 'dev';
 const devPath = 'http://localhost:8080/dist';
+const subDivider = " ‍  ‍  ‍ ";
 
 module.exports = {
   title: 'GrapesJS',
@@ -63,9 +64,10 @@ module.exports = {
         ['/api/block_manager', 'Block Manager'],
         ['/api/commands', 'Commands'],
         ['/api/components', 'DOM Components'],
-        ['/api/component', ' - Component'],
+        ['/api/component', `${subDivider}Component`],
         ['/api/panels', 'Panels'],
         ['/api/pages', 'Pages'],
+        ['/api/page', `${subDivider}Page`],
         ['/api/style_manager', 'Style Manager'],
         ['/api/storage_manager', 'Storage Manager'],
         ['/api/device_manager', 'Device Manager'],

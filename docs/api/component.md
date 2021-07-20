@@ -277,6 +277,10 @@ Returns **this**
 
 Get the style of the component
 
+#### Parameters
+
+*   `opts`   (optional, default `{}`)
+
 Returns **[Object][2]** 
 
 ### setStyle

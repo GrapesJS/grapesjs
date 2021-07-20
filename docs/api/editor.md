@@ -179,6 +179,12 @@ Returns **[string][3]** CSS string
 
 Returns JS of all components
 
+### Parameters
+
+*   `opts` **[Object][4]** Options (optional, default `{}`)
+
+    *   `opts.component` **Component?** Get the JS of a particular component
+
 Returns **[string][3]** JS string
 
 ## getComponents
