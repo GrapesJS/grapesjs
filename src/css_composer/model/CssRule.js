@@ -1,5 +1,5 @@
 import { map } from 'underscore';
-import Backbone from 'backbone';
+import { Model } from 'backbone';
 import Styleable from 'domain_abstract/model/Styleable';
 import { isEmpty, forEach, isString } from 'underscore';
 import Selectors from 'selector_manager/model/Selectors';
@@ -7,40 +7,42 @@ import { isEmptyObj } from 'utils/mixins';
 
 const { CSS } = window;
 
-export default Backbone.Model.extend(Styleable).extend({
-  defaults: {
-    // Css selectors
-    selectors: [],
+export default class CssRule extends Model.extend(Styleable) {
+  defaults() {
+    return {
+      // Css selectors
+      selectors: [],
 
-    // Additional string css selectors
-    selectorsAdd: '',
+      // Additional string css selectors
+      selectorsAdd: '',
 
-    // Css properties style
-    style: {},
+      // Css properties style
+      style: {},
 
-    // On which device width this rule should be rendered, eg. @media (max-width: 1000px)
-    mediaText: '',
+      // On which device width this rule should be rendered, eg. @media (max-width: 1000px)
+      mediaText: '',
 
-    // State of the rule, eg: hover | pressed | focused
-    state: '',
+      // State of the rule, eg: hover | pressed | focused
+      state: '',
 
-    // Indicates if the rule is stylable
-    stylable: true,
+      // Indicates if the rule is stylable
+      stylable: true,
 
-    // Type of at-rule, eg. 'media', 'font-face', etc.
-    atRuleType: '',
+      // Type of at-rule, eg. 'media', 'font-face', etc.
+      atRuleType: '',
 
-    // This particolar property is used only on at-rules, like 'page' or
-    // 'font-face', where the block containes only style declarations
-    singleAtRule: 0,
+      // This particolar property is used only on at-rules, like 'page' or
+      // 'font-face', where the block containes only style declarations
+      singleAtRule: 0,
 
-    // If true, sets '!important' on all properties
-    // You can use an array to specify properties to set important
-    // Used in view
-    important: 0,
+      // If true, sets '!important' on all properties
+      // You can use an array to specify properties to set important
+      // Used in view
+      important: 0,
 
-    _undo: true
-  },
+      _undo: true
+    };
+  }
 
   initialize(c, opt = {}) {
     this.config = c || {};
@@ -48,20 +50,20 @@ export default Backbone.Model.extend(Styleable).extend({
     this.em = opt.em;
     this.ensureSelectors();
     this.on('change', this.__onChange);
-  },
+  }
 
   __onChange(m, opts) {
     const { em } = this;
     const changed = this.changedAttributes();
     !isEmptyObj(changed) && em && em.changesUp(opts);
-  },
+  }
 
   clone() {
     const opts = { ...this.opt };
     const attr = { ...this.attributes };
     attr.selectors = this.get('selectors').map(s => s.clone());
     return new this.constructor(attr, opts);
-  },
+  }
 
   ensureSelectors(m, c, opts) {
     const { em } = this;
@@ -83,7 +85,7 @@ export default Backbone.Model.extend(Styleable).extend({
 
     this.set('selectors', sels, opts);
     this.listenTo(...toListen);
-  },
+  }
 
   /**
    * Returns an at-rule statement if possible, eg. '@media (...)', '@keyframes'
@@ -96,7 +98,7 @@ export default Backbone.Model.extend(Styleable).extend({
     const typeStr = type ? `@${type}` : condition ? '@media' : '';
 
     return typeStr + (condition && typeStr ? ` ${condition}` : '');
-  },
+  }
 
   /**
    * Return selectors fo the rule as a string
@@ -118,7 +120,7 @@ export default Backbone.Model.extend(Styleable).extend({
     selectors && result.push(`${selectors}${stateStr}`);
     addSelector && !opts.skipAdd && result.push(addSelector);
     return result.join(', ');
-  },
+  }
 
   /**
    * Get declaration block
@@ -136,7 +138,7 @@ export default Backbone.Model.extend(Styleable).extend({
     }
 
     return result;
-  },
+  }
 
   /**
    * Returns CSS string of the rule
@@ -154,13 +156,13 @@ export default Backbone.Model.extend(Styleable).extend({
     }
 
     return result;
-  },
+  }
 
   toJSON(...args) {
-    const obj = Backbone.Model.prototype.toJSON.apply(this, args);
+    const obj = Model.prototype.toJSON.apply(this, args);
 
     if (this.em.getConfig('avoidDefaults')) {
-      const defaults = this.defaults;
+      const defaults = this.defaults();
 
       forEach(defaults, (value, key) => {
         if (obj[key] === value) {
@@ -173,7 +175,7 @@ export default Backbone.Model.extend(Styleable).extend({
     }
 
     return obj;
-  },
+  }
 
   /**
    * Compare the actual model with parameters
@@ -216,4 +218,4 @@ export default Backbone.Model.extend(Styleable).extend({
 
     return true;
   }
-});
+}
