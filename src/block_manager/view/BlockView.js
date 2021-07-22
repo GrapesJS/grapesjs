@@ -99,14 +99,15 @@ export default Backbone.View.extend({
     if (result) {
       const oldKey = 'activeOnRender';
       const oldActive = result.get && result.get(oldKey);
+      const toActive = model.get('activate') || oldActive;
 
-      if (model.get('activate') || oldActive) {
-        result.trigger('active');
-        result.unset(oldKey);
+      if (model.get('select') || toActive) {
+        em.setSelected(result);
       }
 
-      if (model.get('select')) {
-        em.setSelected(result);
+      if (toActive) {
+        result.trigger('active');
+        result.unset(oldKey);
       }
 
       if (model.get('resetId')) {
