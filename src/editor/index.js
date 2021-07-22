@@ -306,7 +306,6 @@ export default (config = {}) => {
     /**
      * Set style inside editor's canvas. This method overrides actual style
      * @param {Array<Object>|Object|string} style CSS string or style model
-     * @param {Object} opt the options object to be used by the [setStyle]{@link em#setStyle} method
      * @return {this}
      * @example
      * editor.setStyle('.cls{color: red}');
@@ -319,6 +318,17 @@ export default (config = {}) => {
     setStyle(style, opt = {}) {
       em.setStyle(style, opt);
       return this;
+    },
+
+    /**
+     * Add styles to the editor
+     * @param {Array<Object>|Object|string} style CSS string or style model
+     * @returns {Array<CssRule>} Array of created CssRule instances
+     * @example
+     * editor.addStyle('.cls{color: red}');
+     */
+    addStyle(style, opts = {}) {
+      return em.addStyle(style, opts);
     },
 
     /**

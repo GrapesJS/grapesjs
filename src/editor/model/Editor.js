@@ -485,6 +485,17 @@ export default Backbone.Model.extend({
   },
 
   /**
+   * Add styles to the editor
+   * @param {Array<Object>|Object|string} style CSS string or style model
+   * @returns {Array<CssRule>}
+   * @private
+   */
+  addStyle(style, opts = {}) {
+    const res = this.getStyle().add(style, opts);
+    return isArray(res) ? res : [res];
+  },
+
+  /**
    * Returns rules/style model from the editor's canvas
    * @return {Rules}
    * @private
