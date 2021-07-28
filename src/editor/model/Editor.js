@@ -807,6 +807,10 @@ export default Backbone.Model.extend({
       .attr(this.attrsOrig);
   },
 
+  getEditing() {
+    return this.get('editing');
+  },
+
   setEditing(value) {
     this.set('editing', value);
     return this;

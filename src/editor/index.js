@@ -417,6 +417,20 @@ export default (config = {}) => {
     },
 
     /**
+     * Returns, if active, the Component enabled in rich text editing mode.
+     * @returns {Component|null}
+     * @example
+     * const textComp = editor.getEditing();
+     * if (textComp) {
+     *  console.log('HTML: ', textComp.toHTML());
+     * }
+     */
+    getEditing() {
+      const res = em.getEditing();
+      return (res && res.model) || null;
+    },
+
+    /**
      * Set device to the editor. If the device exists it will
      * change the canvas to the proper width
      * @param {string} name Name of the device
