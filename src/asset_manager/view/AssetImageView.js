@@ -1,5 +1,6 @@
 import { isFunction } from 'underscore';
 import AssetView from './AssetView';
+import html from 'utils/html';
 
 export default AssetView.extend({
   events: {
@@ -9,24 +10,23 @@ export default AssetView.extend({
   },
 
   getPreview() {
-    const pfx = this.pfx;
-    const src = this.model.get('src');
-    return `
+    const { pfx, ppfx, model } = this;
+    const src = model.get('src');
+    return html`
       <div class="${pfx}preview" style="background-image: url('${src}');"></div>
-      <div class="${pfx}preview-bg ${this.ppfx}checker-bg"></div>
+      <div class="${pfx}preview-bg ${ppfx}checker-bg"></div>
     `;
   },
 
   getInfo() {
-    const pfx = this.pfx;
-    const model = this.model;
+    const { pfx, model } = this;
     let name = model.get('name');
     let width = model.get('width');
     let height = model.get('height');
     let unit = model.get('unitDim');
     let dim = width && height ? `${width}x${height}${unit}` : '';
     name = name || model.getFilename();
-    return `
+    return html`
       <div class="${pfx}name">${name}</div>
       <div class="${pfx}dimensions">${dim}</div>
     `;
