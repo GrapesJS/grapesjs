@@ -13,8 +13,9 @@ export default Component.extend(
     },
 
     toHTML() {
+      const parent = this.parent();
       const cnt = this.get('content');
-      return escape(cnt);
+      return parent && parent.is('script') ? cnt : escape(cnt);
     }
   },
   {
