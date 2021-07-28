@@ -167,6 +167,16 @@ export const find = (arr, test) => {
   return result;
 };
 
+export const escape = (str = '') => {
+  return `${str}`
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
+    .replace(/`/g, '&#96;');
+};
+
 /**
  * Ensure to fetch the model from the input argument
  * @param  {HTMLElement|Component} el Component or HTML element
