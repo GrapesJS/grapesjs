@@ -114,6 +114,7 @@ import $ from 'cash-dom';
 import defaults from './config/config';
 import EditorModel from './model/Editor';
 import EditorView from './view/EditorView';
+import html from 'utils/html';
 
 export default (config = {}) => {
   const c = {
@@ -709,6 +710,19 @@ export default (config = {}) => {
     render() {
       editorView.render();
       return editorView.el;
-    }
+    },
+
+    /**
+     * Print safe HTML by using ES6 tagged template strings.
+     * @param {Array<String>} literals
+     * @param  {Array<String>} substs
+     * @returns {String}
+     * @example
+     * const unsafeStr = '<script>....</script>';
+     * const safeStr = '<b>Hello</b>';
+     * // Use `$${var}` to avoid escaping
+     * const strHtml = editor.html`Escaped ${unsafeStr}, unescaped $${safeStr}`;
+     */
+    html
   };
 };
