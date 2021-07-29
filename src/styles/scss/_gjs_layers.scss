@@ -16,6 +16,7 @@ $layerNameSpacing: 5px !default;
     position: relative;
     background-color: rgba(0, 0, 0, 0.1);
     font-size: $fontSizeS;
+    display: grid;
 
     &-hidden {
       @include opacity(0.55);
