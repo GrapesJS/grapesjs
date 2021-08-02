@@ -262,7 +262,7 @@ Set style inside editor's canvas. This method overrides actual style
 ### Parameters
 
 *   `style` **([Array][6]<[Object][4]> | [Object][4] | [string][3])** CSS string or style model
-*   `opt` **[Object][4]** the options object to be used by the \[setStyle][em#setStyle][8] method (optional, default `{}`)
+*   `opt`   (optional, default `{}`)
 
 ### Examples
 
@@ -276,6 +276,23 @@ editor.setStyle({
 ```
 
 Returns **this** 
+
+## addStyle
+
+Add styles to the editor
+
+### Parameters
+
+*   `style` **([Array][6]<[Object][4]> | [Object][4] | [string][3])** CSS string or style model
+*   `opts`   (optional, default `{}`)
+
+### Examples
+
+```javascript
+editor.addStyle('.cls{color: red}');
+```
+
+Returns **[Array][6]\<CssRule>** Array of created CssRule instances
 
 ## getSelected
 
@@ -305,7 +322,7 @@ Select a component
 
 ### Parameters
 
-*   `el` **(Component | [HTMLElement][9])** Component to select
+*   `el` **(Component | [HTMLElement][8])** Component to select
 *   `opts` **[Object][4]?** Options
 
     *   `opts.scroll` **[Boolean][5]?** Scroll canvas to the selected element
@@ -327,7 +344,7 @@ Add component to selection
 
 ### Parameters
 
-*   `el` **(Component | [HTMLElement][9] | [Array][6])** Component to select
+*   `el` **(Component | [HTMLElement][8] | [Array][6])** Component to select
 
 ### Examples
 
@@ -343,7 +360,7 @@ Remove component from selection
 
 ### Parameters
 
-*   `el` **(Component | [HTMLElement][9] | [Array][6])** Component to select
+*   `el` **(Component | [HTMLElement][8] | [Array][6])** Component to select
 
 ### Examples
 
@@ -359,7 +376,7 @@ Toggle component selection
 
 ### Parameters
 
-*   `el` **(Component | [HTMLElement][9] | [Array][6])** Component to select
+*   `el` **(Component | [HTMLElement][8] | [Array][6])** Component to select
 
 ### Examples
 
@@ -368,6 +385,21 @@ editor.selectToggle(model);
 ```
 
 Returns **this** 
+
+## getEditing
+
+Returns, if active, the Component enabled in rich text editing mode.
+
+### Examples
+
+```javascript
+const textComp = editor.getEditing();
+if (textComp) {
+ console.log('HTML: ', textComp.toHTML());
+}
+```
+
+Returns **(Component | null)** 
 
 ## setDevice
 
@@ -440,7 +472,7 @@ Store data to the current storage
 
 ### Parameters
 
-*   `clb` **[Function][10]** Callback function
+*   `clb` **[Function][9]** Callback function
 
 Returns **[Object][4]** Stored data
 
@@ -450,7 +482,7 @@ Load data from the current storage
 
 ### Parameters
 
-*   `clb` **[Function][10]** Callback function
+*   `clb` **[Function][9]** Callback function
 
 Returns **[Object][4]** Stored data
 
@@ -459,14 +491,14 @@ Returns **[Object][4]** Stored data
 Returns container element. The one which was indicated as 'container'
 on init method
 
-Returns **[HTMLElement][9]** 
+Returns **[HTMLElement][8]** 
 
 ## getDirtyCount
 
 Return the count of changes made to the content and not yet stored.
 This count resets at any `store()`
 
-Returns **[number][11]** 
+Returns **[number][10]** 
 
 ## refresh
 
@@ -529,7 +561,7 @@ custom parser, pass `null` as the argument
 
 ### Parameters
 
-*   `parser` **([Function][10] | null)** Parser function
+*   `parser` **([Function][9] | null)** Parser function
 
 ### Examples
 
@@ -551,7 +583,7 @@ Returns **this**
 ## setDragMode
 
 Change the global drag mode of components.
-To get more about this feature read: [https://github.com/artf/grapesjs/issues/1936][12]
+To get more about this feature read: [https://github.com/artf/grapesjs/issues/1936][11]
 
 ### Parameters
 
@@ -616,7 +648,7 @@ Attach event
 ### Parameters
 
 *   `event` **[string][3]** Event name
-*   `callback` **[Function][10]** Callback function
+*   `callback` **[Function][9]** Callback function
 
 Returns **this** 
 
@@ -627,7 +659,7 @@ Attach event and detach it after the first run
 ### Parameters
 
 *   `event` **[string][3]** Event name
-*   `callback` **[Function][10]** Callback function
+*   `callback` **[Function][9]** Callback function
 
 Returns **this** 
 
@@ -638,7 +670,7 @@ Detach event
 ### Parameters
 
 *   `event` **[string][3]** Event name
-*   `callback` **[Function][10]** Callback function
+*   `callback` **[Function][9]** Callback function
 
 Returns **this** 
 
@@ -660,7 +692,27 @@ Destroy the editor
 
 Render editor
 
-Returns **[HTMLElement][9]** 
+Returns **[HTMLElement][8]** 
+
+## html
+
+Print safe HTML by using ES6 tagged template strings.
+
+### Parameters
+
+*   `literals` **[Array][6]<[String][3]>** 
+*   `substs` **[Array][6]<[String][3]>** 
+
+### Examples
+
+```javascript
+const unsafeStr = '<script>....</script>';
+const safeStr = '<b>Hello</b>';
+// Use `$${var}` to avoid escaping
+const strHtml = editor.html`Escaped ${unsafeStr}, unescaped $${safeStr}`;
+```
+
+Returns **[String][3]** 
 
 [1]: https://github.com/artf/grapesjs/blob/master/src/editor/config/config.js
 
@@ -676,12 +728,10 @@ Returns **[HTMLElement][9]**
 
 [7]: em#setComponents
 
-[8]: em#setStyle
+[8]: https://developer.mozilla.org/docs/Web/HTML/Element
 
-[9]: https://developer.mozilla.org/docs/Web/HTML/Element
+[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
 
-[10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+[10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
 
-[11]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
-
-[12]: https://github.com/artf/grapesjs/issues/1936
+[11]: https://github.com/artf/grapesjs/issues/1936
