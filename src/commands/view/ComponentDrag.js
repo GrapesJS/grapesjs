@@ -269,8 +269,8 @@ export default {
       x = this.getTranslate(transform);
       y = this.getTranslate(transform, 'y');
     } else {
-      x = parseFloat(left);
-      y = parseFloat(top);
+      x = parseFloat(left || 0);
+      y = parseFloat(top || 0);
     }
 
     return { x, y };
