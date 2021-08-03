@@ -3,9 +3,9 @@ import { Model } from 'backbone';
 import Styleable from 'domain_abstract/model/Styleable';
 import { isEmpty, forEach, isString } from 'underscore';
 import Selectors from 'selector_manager/model/Selectors';
-import { isEmptyObj } from 'utils/mixins';
+import { isEmptyObj, hasWin } from 'utils/mixins';
 
-const { CSS } = window;
+const { CSS } = hasWin() ? window : {};
 
 export default class CssRule extends Model.extend(Styleable) {
   defaults() {
