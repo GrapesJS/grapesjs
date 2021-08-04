@@ -80,10 +80,6 @@ export default () => {
 
     onLoad() {
       this.model.init();
-      CanvasView = new canvasView({
-        model: canvas,
-        config: c
-      });
     },
 
     getModel() {
@@ -115,7 +111,7 @@ export default () => {
      * @return {HTMLIFrameElement}
      */
     getFrameEl() {
-      const { frame } = CanvasView;
+      const { frame } = CanvasView || {};
       return frame && frame.el;
     },
 
@@ -260,6 +256,11 @@ export default () => {
      * @private
      * */
     render() {
+      CanvasView && CanvasView.remove();
+      CanvasView = new canvasView({
+        model: canvas,
+        config: c
+      });
       return CanvasView.render().el;
     },
 

@@ -5,7 +5,8 @@ import {
   off,
   getUnitFromValue,
   isTaggableNode,
-  getViewEl
+  getViewEl,
+  hasWin
 } from 'utils/mixins';
 import { isVisible, isDoc } from 'utils/dom';
 import ToolbarView from 'dom_components/view/ToolbarView';
@@ -746,11 +747,13 @@ export default {
   },
 
   run(editor) {
+    if (!hasWin()) return;
     this.editor = editor && editor.get('Editor');
     this.enable();
   },
 
   stop(ed, sender, opts = {}) {
+    if (!hasWin()) return;
     const { em, editor } = this;
     this.onHovered(); // force to hide toolbar
     this.stopSelectComponent();

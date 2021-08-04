@@ -27,7 +27,7 @@
  */
 
 import RichTextEditor from './model/RichTextEditor';
-import { on, off } from 'utils/mixins';
+import { on, hasWin } from 'utils/mixins';
 import defaults from './config/config';
 
 export default () => {
@@ -75,6 +75,7 @@ export default () => {
 
       this.pfx = config.stylePrefix;
       actions = config.actions || [];
+      if (!hasWin()) return this;
       toolbar = document.createElement('div');
       toolbar.className = `${ppfx}rte-toolbar ${ppfx}one-bg`;
       globalRte = this.initRte(document.createElement('div'));

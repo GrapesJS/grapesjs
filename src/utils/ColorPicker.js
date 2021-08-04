@@ -4,9 +4,11 @@
 // https://github.com/bgrins/spectrum
 // Author: Brian Grinstead
 // License: MIT
+import { hasWin } from 'utils/mixins';
 
 export default function($, undefined) {
   'use strict';
+  if (!hasWin()) return;
 
   var defaultOpts = {
       // Callbacks

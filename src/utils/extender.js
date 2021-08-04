@@ -1,7 +1,7 @@
 import { isObject, isString, each, isUndefined } from 'underscore';
 
 export default ({ $ }) => {
-  if ($ && $.prototype.constructor.name !== 'jQuery') {
+  if ($ && $.prototype && $.prototype.constructor.name !== 'jQuery') {
     const fn = $.fn;
 
     // Additional helpers

@@ -123,11 +123,8 @@ export default (config = {}) => {
   };
 
   c.pStylePrefix = c.stylePrefix;
-  var em = new EditorModel(c);
-  var editorView = new EditorView({
-    model: em,
-    config: c
-  });
+  let em = new EditorModel(c);
+  let editorView;
 
   return {
     $,
@@ -490,12 +487,34 @@ export default (config = {}) => {
     },
 
     /**
+     * Get the JSON data object, which could be stored and loaded back with `editor.loadData(json)`
+     * @returns {Object}
+     * @example
+     * console.log(editor.storeData());
+     * // { pages: [...], styles: [...], ... }
+     */
+    storeData() {
+      return em.storeData();
+    },
+
+    /**
      * Load data from the current storage
      * @param {Function} clb Callback function
      * @return {Object} Stored data
      */
     load(clb) {
       return em.load(clb);
+    },
+
+    /**
+     * Load data from the JSON data object
+     * @param {Object} data Data to load
+     * @return {Object} Loaded object
+     * @example
+     * editor.loadData({ pages: [...], styles: [...], ... })
+     */
+    loadData(data) {
+      return em.loadData(data);
     },
 
     /**
@@ -691,7 +710,7 @@ export default (config = {}) => {
      * @private
      */
     getEl() {
-      return editorView.el;
+      return editorView && editorView.el;
     },
 
     /**
@@ -708,8 +727,12 @@ export default (config = {}) => {
      * @return {HTMLElement}
      */
     render() {
-      editorView.render();
-      return editorView.el;
+      editorView && editorView.remove();
+      editorView = new EditorView({
+        model: em,
+        config: c
+      });
+      return editorView.render().el;
     },
 
     /**

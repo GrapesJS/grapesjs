@@ -1,6 +1,7 @@
 import { isUndefined } from 'underscore';
 import Property from './Property';
 import InputNumber from 'domain_abstract/ui/InputNumber';
+import { hasWin } from 'utils/mixins';
 
 export default Property.extend({
   defaults: {
@@ -25,7 +26,7 @@ export default Property.extend({
     Property.callParentInit(Property, this, props, opts);
     const unit = this.get('unit');
     const units = this.get('units');
-    this.input = new InputNumber({ model: this });
+    this.input = hasWin() && new InputNumber({ model: this });
 
     if (units.length && !unit) {
       this.set('unit', units[0]);

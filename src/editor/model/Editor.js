@@ -10,7 +10,7 @@ import {
 import $ from 'cash-dom';
 import Backbone from 'backbone';
 import Extender from 'utils/extender';
-import { getModel } from 'utils/mixins';
+import { getModel, hasWin } from 'utils/mixins';
 import Selected from './Selected';
 
 Backbone.$ = $;
@@ -597,16 +597,10 @@ export default Backbone.Model.extend({
    * @private
    */
   store(clb) {
-    var sm = this.get('StorageManager');
-    var store = {};
+    const sm = this.get('StorageManager');
     if (!sm) return;
 
-    // Fetch what to store
-    this.get('storables').forEach(m => {
-      var obj = m.store(1);
-      for (var el in obj) store[el] = obj[el];
-    });
-
+    const store = this.storeData();
     sm.store(store, res => {
       clb && clb(res, store);
       this.set('changesCount', 0);
@@ -616,6 +610,14 @@ export default Backbone.Model.extend({
     return store;
   },
 
+  storeData() {
+    let result = {};
+    this.get('storables').forEach(m => {
+      result = { ...result, ...m.store(1) };
+    });
+    return result;
+  },
+
   /**
    * Load data from the current storage
    * @param {Function} clb Callback function
@@ -623,12 +625,21 @@ export default Backbone.Model.extend({
    */
   load(clb = null) {
     this.getCacheLoad(1, res => {
-      this.get('storables').forEach(module => {
-        module.load(res);
-        module.postLoad && module.postLoad(this);
-      });
+      this.loadData(res);
       clb && clb(res);
     });
+  },
+
+  loadData(data = {}) {
+    const sm = this.get('StorageManager');
+    const result = sm.__clearKeys(data);
+
+    this.get('storables').forEach(module => {
+      module.load(result);
+      module.postLoad && module.postLoad(this);
+    });
+
+    return result;
   },
 
   /**
@@ -690,7 +701,7 @@ export default Backbone.Model.extend({
   stopDefault(opts = {}) {
     const commands = this.get('Commands');
     const command = commands.get(this.config.defaultCommand);
-    if (!command) return;
+    if (!command || !this.defaultRunning) return;
     command.stop(this, this, opts);
     this.defaultRunning = 0;
   },
@@ -786,7 +797,7 @@ export default Backbone.Model.extend({
    * Destroy editor
    */
   destroyAll() {
-    const { config } = this;
+    const { config, view } = this;
     const editor = this.getEditor();
     const { editors = [] } = config.grapesjs || {};
     this.stopDefault();
@@ -794,7 +805,7 @@ export default Backbone.Model.extend({
       .slice()
       .reverse()
       .forEach(mod => mod.destroy());
-    this.view.remove();
+    view && view.remove();
     this.stopListening();
     this.clear({ silent: true });
     this.destroyed = 1;
@@ -802,9 +813,10 @@ export default Backbone.Model.extend({
       i => (this[i] = {})
     );
     editors.splice(editors.indexOf(editor), 1);
-    $(config.el)
-      .empty()
-      .attr(this.attrsOrig);
+    hasWin() &&
+      $(config.el)
+        .empty()
+        .attr(this.attrsOrig);
   },
 
   getEditing() {
