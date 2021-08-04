@@ -228,8 +228,7 @@ export default () => {
 
     /**
      * Render assets
-     * @param  {array} assets Assets to render, without the argument will render
-     *                        all global assets
+     * @param  {array} assets Assets to render, without the argument will render all global assets
      * @return {HTMLElement}
      * @example
      * // Render all assets
@@ -243,8 +242,6 @@ export default () => {
      */
     render(assts) {
       const toRender = assts || this.getAll().models;
-      fu && fu.remove();
-      am && am.remove();
 
       if (!am) {
         const obj = {
@@ -255,9 +252,6 @@ export default () => {
         fu = new FileUpload(obj);
         obj.fu = fu;
         am = new AssetsView(obj);
-      }
-
-      if (!am.rendered) {
         am.render();
       }
 

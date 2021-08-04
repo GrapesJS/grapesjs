@@ -13,7 +13,7 @@ export default {
     am.onSelect(opts.onSelect);
 
     if (!this.rendered || types) {
-      let assets = am.getAll().filter(i => 1);
+      let assets = am.getAll().filter(i => i);
 
       if (types && types.length) {
         assets = assets.filter(a => types.indexOf(a.get('type')) !== -1);
@@ -30,18 +30,7 @@ export default {
       uploadEl && uploadEl.setAttribute('accept', accept);
     }
 
-    modal
-      .open({
-        title,
-        content: this.rendered
-      })
-      .getModel()
-      .once('change:open', () => editor.stopCommand(this.id));
-    return this;
-  },
-
-  stop(editor) {
-    editor.Modal.close();
+    modal.open({ title, content: this.rendered });
     return this;
   }
 };
