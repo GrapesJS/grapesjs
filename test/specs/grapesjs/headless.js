@@ -1,7 +1,6 @@
 /**
  * @jest-environment node
  */
-let editor;
 
 describe('GrapesJS Headless', () => {
   test('Can init and destroy an editor', () => {
@@ -11,6 +10,7 @@ describe('GrapesJS Headless', () => {
   });
 
   describe('Headless operations', () => {
+    let editor;
     const cmpObj = {
       attributes: { class: 'cls', test: 'value' },
       components: { type: 'textnode', content: 'Test' }
