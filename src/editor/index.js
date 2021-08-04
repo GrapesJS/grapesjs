@@ -487,6 +487,17 @@ export default (config = {}) => {
     },
 
     /**
+     * Get the JSON data object, which could be stored and loaded back with `editor.loadData(json)`
+     * @returns {Object}
+     * @example
+     * console.log(editor.storeData());
+     * // { pages: [...], styles: [...], ... }
+     */
+    storeData() {
+      return em.storeData();
+    },
+
+    /**
      * Load data from the current storage
      * @param {Function} clb Callback function
      * @return {Object} Stored data

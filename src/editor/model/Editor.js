@@ -597,16 +597,10 @@ export default Backbone.Model.extend({
    * @private
    */
   store(clb) {
-    var sm = this.get('StorageManager');
-    var store = {};
+    const sm = this.get('StorageManager');
     if (!sm) return;
 
-    // Fetch what to store
-    this.get('storables').forEach(m => {
-      var obj = m.store(1);
-      for (var el in obj) store[el] = obj[el];
-    });
-
+    const store = this.storeData();
     sm.store(store, res => {
       clb && clb(res, store);
       this.set('changesCount', 0);
@@ -614,6 +608,14 @@ export default Backbone.Model.extend({
     });
 
     return store;
+  },
+
+  storeData() {
+    let result = {};
+    this.get('storables').forEach(m => {
+      result = { ...result, ...m.store(1) };
+    });
+    return result;
   },
 
   /**
