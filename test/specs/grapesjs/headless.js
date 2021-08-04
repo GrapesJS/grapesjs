@@ -34,6 +34,16 @@ describe('GrapesJS Headless', () => {
       expect(editor.getCss()).toBe(editor.getConfig().protectedCss); // same as default
     });
 
-    test('Add styles', () => {});
+    test('Add styles', () => {
+      const res = editor.addStyle({
+        selectors: [{ name: 'gjs-row' }],
+        style: { color: 'red' }
+      });
+      expect(res.length).toBe(1);
+      const rule = res[0];
+      const result = '.gjs-row{color:red;}';
+      expect(rule.toCSS()).toBe(result);
+      expect(editor.Selectors.getAll().length).toBe(1); // 1 selector is created
+    });
   });
 });
