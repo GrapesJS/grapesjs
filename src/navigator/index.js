@@ -22,14 +22,6 @@ export default () => {
     },
 
     onLoad() {
-      const ItemView = View.extend(config.extend);
-      layers = new ItemView({
-        ItemView,
-        level: 0,
-        config,
-        opened: config.opened || {},
-        model: em.get('DomComponents').getWrapper()
-      });
       em && em.on('component:selected', this.componentChanged);
       this.componentChanged();
     },
@@ -60,7 +52,7 @@ export default () => {
      * @return {Component}
      */
     getRoot() {
-      return layers.model;
+      return layers && layers.model;
     },
 
     /**
@@ -96,6 +88,15 @@ export default () => {
     },
 
     render() {
+      const ItemView = View.extend(config.extend);
+      layers && layers.remove();
+      layers = new ItemView({
+        ItemView,
+        level: 0,
+        config,
+        opened: config.opened || {},
+        model: em.get('DomComponents').getWrapper()
+      });
       return layers.render().el;
     },
 

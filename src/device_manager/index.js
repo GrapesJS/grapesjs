@@ -60,10 +60,7 @@ export default () => {
 
       devices = new Devices();
       (c.devices || []).forEach(dv => this.add(dv.id || dv.name, dv.width, dv));
-      view = new DevicesView({
-        collection: devices,
-        config: c
-      });
+
       return this;
     },
 
@@ -123,13 +120,18 @@ export default () => {
      * @private
      */
     render() {
+      view && view.remove();
+      view = new DevicesView({
+        collection: devices,
+        config: c
+      });
       return view.render().el;
     },
 
     destroy() {
       devices.reset();
       devices.stopListening();
-      view.remove();
+      view && view.remove();
       [devices, view].forEach(i => (i = null));
       c = {};
     }

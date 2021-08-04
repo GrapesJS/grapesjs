@@ -69,10 +69,6 @@ export default () => {
 
       model = new ModalM(c);
       model.on('change:open', (m, enb) => triggerEvent(enb, em));
-      modal = new ModalView({
-        model,
-        config: c
-      });
 
       return this;
     },
@@ -201,11 +197,16 @@ export default () => {
      * @private
      */
     render() {
+      modal && modal.remove();
+      modal = new ModalView({
+        model,
+        config: c
+      });
       return modal.render().$el;
     },
 
     destroy() {
-      modal.remove();
+      modal && modal.remove();
       [c, model, modal].forEach(i => (i = {}));
       this.em = {};
     }

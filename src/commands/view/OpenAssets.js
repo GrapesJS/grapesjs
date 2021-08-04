@@ -3,7 +3,6 @@ export default {
     const modal = editor.Modal;
     const am = editor.AssetManager;
     const config = am.getConfig();
-    const amContainer = am.getContainer();
     const title = opts.modalTitle || editor.t('assetManager.modalTitle') || '';
     const types = opts.types;
     const accept = opts.accept;
@@ -21,11 +20,11 @@ export default {
       }
 
       am.render(assets);
-      this.rendered = 1;
+      this.rendered = am.getContainer();
     }
 
     if (accept) {
-      const uploadEl = amContainer.querySelector(
+      const uploadEl = this.rendered.querySelector(
         `input#${config.stylePrefix}uploadFile`
       );
       uploadEl && uploadEl.setAttribute('accept', accept);
@@ -34,7 +33,7 @@ export default {
     modal
       .open({
         title,
-        content: amContainer
+        content: this.rendered
       })
       .getModel()
       .once('change:open', () => editor.stopCommand(this.id));

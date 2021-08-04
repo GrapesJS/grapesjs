@@ -67,11 +67,10 @@ export default Backbone.View.extend({
     const coll = this.collection;
     this.target = this.config.em;
     this.em = em;
-    const emitter = this.getStyleEmitter();
     const toList = 'component:toggled component:update:classes';
     const toListCls = 'component:update:classes change:state';
     this.listenTo(em, toList, this.componentChanged);
-    this.listenTo(emitter, 'update', this.componentChanged);
+    this.listenTo(em, 'styleManager:update', this.componentChanged);
     this.listenTo(em, toListCls, this.__handleStateChange);
     this.listenTo(em, 'styleable:change change:device', this.checkSync); // component:styleUpdate
     this.listenTo(coll, 'add', this.addNew);
@@ -114,13 +113,6 @@ export default Backbone.View.extend({
       ruleComponents,
       state
     });
-  },
-
-  getStyleEmitter() {
-    const { em } = this;
-    const sm = em && em.get('StyleManager');
-    const emitter = sm && sm.getEmitter();
-    return emitter || {};
   },
 
   /**

@@ -57,10 +57,6 @@ export default () => {
       if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
 
       panels = new Panels(c.defaults);
-      PanelsViewObj = new PanelsView({
-        collection: panels,
-        config: c
-      });
       return this;
     },
 
@@ -77,7 +73,7 @@ export default () => {
      * @return {HTMLElement}
      */
     getPanelsEl() {
-      return PanelsViewObj.el;
+      return PanelsViewObj && PanelsViewObj.el;
     },
 
     /**
@@ -205,6 +201,11 @@ export default () => {
      * @private
      */
     render() {
+      PanelsViewObj && PanelsViewObj.remove();
+      PanelsViewObj = new PanelsView({
+        collection: panels,
+        config: c
+      });
       return PanelsViewObj.render().el;
     },
 
@@ -235,7 +236,7 @@ export default () => {
     destroy() {
       panels.reset();
       panels.stopListening();
-      PanelsViewObj.remove();
+      PanelsViewObj && PanelsViewObj.remove();
       [c, panels, PanelsViewObj].forEach(i => (i = {}));
     },
 

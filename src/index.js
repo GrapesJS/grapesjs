@@ -36,6 +36,7 @@ export default {
    * @param {Boolean} [config.autorender=true] If true, auto-render the content
    * @param {Array} [config.plugins=[]] Array of plugins to execute on start
    * @param {Object} [config.pluginsOpts={}] Custom options for plugins
+   * @param {Boolean} [config.headless=false] Init headless editor
    * @return {Editor} Editor instance
    * @example
    * var editor = grapesjs.init({
@@ -45,10 +46,12 @@ export default {
    * })
    */
   init(config = {}) {
+    const { headless } = config;
     const els = config.container;
-    if (!els) throw new Error("'container' is required");
+    if (!els && !headless) throw new Error("'container' is required");
     config = { ...defaultConfig, ...config, grapesjs: this };
-    config.el = isElement(els) ? els : document.querySelector(els);
+    config.el =
+      !headless && (isElement(els) ? els : document.querySelector(els));
     const editor = new Editor(config).init();
     const em = editor.getModel();
 
@@ -79,7 +82,7 @@ export default {
     // A plugin might have extended/added some custom type so this
     // is a good point to load stuff like components, css rules, etc.
     em.loadOnStart();
-    config.autorender && editor.render();
+    config.autorender && !headless && editor.render();
     editors.push(editor);
 
     return editor;

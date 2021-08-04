@@ -37,7 +37,7 @@ import FileUpload from './view/FileUploader';
 
 export default () => {
   let c = {};
-  let assets, am, fu;
+  let assets, assetsVis, am, fu;
 
   return {
     /**
@@ -79,15 +79,7 @@ export default () => {
 
       // Global assets collection
       assets = new Assets([]);
-      const obj = {
-        // Collection visible in asset manager
-        collection: new Assets([]),
-        globalCollection: assets,
-        config: c
-      };
-      fu = new FileUpload(obj);
-      obj.fu = fu;
-      am = new AssetsView(obj);
+      assetsVis = new Assets([]);
 
       // Setup the sync between the global and public collections
       assets.listenTo(assets, 'add', model => {
@@ -159,7 +151,7 @@ export default () => {
      * @return {Collection}
      */
     getAllVisible() {
-      return am.collection;
+      return assetsVis;
     },
 
     /**
@@ -251,12 +243,25 @@ export default () => {
      */
     render(assets) {
       const toRender = assets || this.getAll().models;
+      fu && fu.remove();
+      am && am.remove();
+
+      if (!am) {
+        const obj = {
+          collection: assetsVis, // Collection visible in asset manager
+          globalCollection: assets,
+          config: c
+        };
+        fu = new FileUpload(obj);
+        obj.fu = fu;
+        am = new AssetsView(obj);
+      }
 
       if (!am.rendered) {
         am.render();
       }
 
-      am.collection.reset(toRender);
+      assetsVis.reset(toRender);
       return this.getContainer();
     },
 
@@ -310,7 +315,7 @@ export default () => {
     },
 
     postRender(editorView) {
-      c.dropzone && fu.initDropzone(editorView);
+      c.dropzone && fu && fu.initDropzone(editorView);
     },
 
     /**
@@ -319,7 +324,7 @@ export default () => {
      * @private
      * */
     setTarget(m) {
-      am.collection.target = m;
+      assetsVis.target = m;
     },
 
     /**
@@ -328,7 +333,7 @@ export default () => {
      * @private
      * */
     onSelect(f) {
-      am.collection.onSelect = f;
+      assetsVis.onSelect = f;
     },
 
     /**
@@ -351,9 +356,9 @@ export default () => {
 
     destroy() {
       assets.reset();
-      fu.collection.reset();
-      fu.remove();
-      am.remove();
+      assetsVis.reset();
+      fu && fu.remove();
+      am && am.remove();
       [assets, am, fu].forEach(i => (i = null));
       c = {};
     }

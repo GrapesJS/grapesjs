@@ -1,24 +1,10 @@
 import DomainViews from 'domain_abstract/view/DomainViews';
 import TraitView from './TraitView';
-import TraitSelectView from './TraitSelectView';
-import TraitCheckboxView from './TraitCheckboxView';
-import TraitNumberView from './TraitNumberView';
-import TraitColorView from './TraitColorView';
-import TraitButtonView from './TraitButtonView';
 
 export default DomainViews.extend({
   ns: 'Traits',
   itemView: TraitView,
   reuseView: 1,
-
-  itemsView: {
-    text: TraitView,
-    number: TraitNumberView,
-    select: TraitSelectView,
-    checkbox: TraitCheckboxView,
-    color: TraitColorView,
-    button: TraitButtonView
-  },
 
   initialize(o = {}) {
     const config = o.config || {};

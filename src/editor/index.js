@@ -123,11 +123,8 @@ export default (config = {}) => {
   };
 
   c.pStylePrefix = c.stylePrefix;
-  var em = new EditorModel(c);
-  var editorView = new EditorView({
-    model: em,
-    config: c
-  });
+  let em = new EditorModel(c);
+  let editorView;
 
   return {
     $,
@@ -691,7 +688,7 @@ export default (config = {}) => {
      * @private
      */
     getEl() {
-      return editorView.el;
+      return editorView && editorView.el;
     },
 
     /**
@@ -708,8 +705,12 @@ export default (config = {}) => {
      * @return {HTMLElement}
      */
     render() {
-      editorView.render();
-      return editorView.el;
+      editorView && editorView.remove();
+      editorView = new EditorView({
+        model: em,
+        config: c
+      });
+      return editorView.render().el;
     },
 
     /**

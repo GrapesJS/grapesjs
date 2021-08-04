@@ -114,6 +114,7 @@ export default Backbone.View.extend({
       pt.targets = targets.map(t => sm.getModelToStyle(t)).filter(Boolean);
     }
     pt.trigger('update');
+    em.trigger('styleManager:update');
   },
 
   /**
