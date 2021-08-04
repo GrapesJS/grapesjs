@@ -10,7 +10,7 @@ import {
 import $ from 'cash-dom';
 import Backbone from 'backbone';
 import Extender from 'utils/extender';
-import { getModel } from 'utils/mixins';
+import { getModel, hasWin } from 'utils/mixins';
 import Selected from './Selected';
 
 Backbone.$ = $;
@@ -786,7 +786,7 @@ export default Backbone.Model.extend({
    * Destroy editor
    */
   destroyAll() {
-    const { config } = this;
+    const { config, view } = this;
     const editor = this.getEditor();
     const { editors = [] } = config.grapesjs || {};
     this.stopDefault();
@@ -794,7 +794,7 @@ export default Backbone.Model.extend({
       .slice()
       .reverse()
       .forEach(mod => mod.destroy());
-    this.view.remove();
+    view && view.remove();
     this.stopListening();
     this.clear({ silent: true });
     this.destroyed = 1;
@@ -802,9 +802,10 @@ export default Backbone.Model.extend({
       i => (this[i] = {})
     );
     editors.splice(editors.indexOf(editor), 1);
-    $(config.el)
-      .empty()
-      .attr(this.attrsOrig);
+    hasWin() &&
+      $(config.el)
+        .empty()
+        .attr(this.attrsOrig);
   },
 
   getEditing() {
