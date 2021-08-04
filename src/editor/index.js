@@ -496,6 +496,17 @@ export default (config = {}) => {
     },
 
     /**
+     * Load data from the JSON data object
+     * @param {Object} data Data to load
+     * @return {Object} Loaded object
+     * @example
+     * editor.loadData({ pages: [...], styles: [...], ... })
+     */
+    loadData(data) {
+      return em.loadData(data);
+    },
+
+    /**
      * Returns container element. The one which was indicated as 'container'
      * on init method
      * @return {HTMLElement}

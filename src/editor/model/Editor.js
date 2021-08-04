@@ -623,12 +623,21 @@ export default Backbone.Model.extend({
    */
   load(clb = null) {
     this.getCacheLoad(1, res => {
-      this.get('storables').forEach(module => {
-        module.load(res);
-        module.postLoad && module.postLoad(this);
-      });
+      this.loadData(res);
       clb && clb(res);
     });
+  },
+
+  loadData(data = {}) {
+    const sm = this.get('StorageManager');
+    const result = sm.__clearKeys(data);
+
+    this.get('storables').forEach(module => {
+      module.load(result);
+      module.postLoad && module.postLoad(this);
+    });
+
+    return result;
   },
 
   /**
