@@ -111,7 +111,7 @@ export default () => {
      * @return {HTMLIFrameElement}
      */
     getFrameEl() {
-      const { frame } = CanvasView;
+      const { frame } = CanvasView || {};
       return frame && frame.el;
     },
 
