@@ -241,8 +241,8 @@ export default () => {
      *  asset => asset.get('category') == 'cats'
      * ));
      */
-    render(assets) {
-      const toRender = assets || this.getAll().models;
+    render(assts) {
+      const toRender = assts || this.getAll().models;
       fu && fu.remove();
       am && am.remove();
 
