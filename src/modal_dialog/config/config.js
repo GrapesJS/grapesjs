@@ -5,5 +5,16 @@ export default {
 
   content: '',
 
-  backdrop: true
+  backdrop: true,
+
+  /**
+   * Extend ModalView object (view/ModalView.js)
+   * @example
+   * extend: {
+   *   template() {
+   *     return '<div>...New modal template...</div>';
+   *   },
+   * },
+   */
+  extend: {}
 };

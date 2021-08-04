@@ -89,7 +89,8 @@ export default () => {
     open(opts = {}) {
       opts.title && this.setTitle(opts.title);
       opts.content && this.setContent(opts.content);
-      modal.show(opts);
+      model.open();
+      modal && modal.updateAttr(opts.attributes);
       return this;
     },
 
@@ -98,7 +99,7 @@ export default () => {
      * @return {this}
      */
     close() {
-      modal.hide();
+      model.close();
       return this;
     },
 
@@ -197,8 +198,9 @@ export default () => {
      * @private
      */
     render() {
+      const View = ModalView.extend(c.extend);
       modal && modal.remove();
-      modal = new ModalView({
+      modal = new View({
         model,
         config: c
       });
