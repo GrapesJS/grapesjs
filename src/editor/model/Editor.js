@@ -701,7 +701,7 @@ export default Backbone.Model.extend({
   stopDefault(opts = {}) {
     const commands = this.get('Commands');
     const command = commands.get(this.config.defaultCommand);
-    if (!command) return;
+    if (!command || !this.defaultRunning) return;
     command.stop(this, this, opts);
     this.defaultRunning = 0;
   },
