@@ -336,6 +336,7 @@ export default {
    * @private
    * */
   updateBadge(el, pos, opts = {}) {
+    const { canvas } = this;
     const model = $(el).data('model');
     if (!model || !model.get('badgable')) return;
     const badge = this.getBadge(opts);
@@ -356,9 +357,12 @@ export default {
     const un = 'px';
     const bStyle = badge.style;
     bStyle.display = 'block';
-    const badgeH = badge ? badge.offsetHeight : 0;
-    const posTop = 0 - badgeH;
-    const top = opts.topOff - badgeH < 0 ? -opts.topOff : posTop;
+
+    const targetToElem = canvas.getTargetToElementFixed(el, badge, {
+      pos: pos
+    });
+
+    const top = targetToElem.top; //opts.topOff - badgeH < 0 ? -opts.topOff : posTop;
     const left = opts.leftOff < 0 ? -opts.leftOff : 0;
 
     bStyle.top = top + un;
