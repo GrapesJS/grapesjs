@@ -1,4 +1,34 @@
-// PoC
+export default (str, config = {}) => {
+  const { htmlResult } = config;
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(str, config.htmlType);
+
+  return htmlResult ? htmlResult(doc, str) : doc.body;
+};
+
+/**
+ * POC, custom html parser specs
+ * Parse an HTML string to an array of nodes
+ * example
+ * parse(`<div class="mycls" data-test>Hello</div><span>World <b>example</b></span>`)
+ * // result
+ * [
+ *  {
+ *      tagName: 'div',
+ *      attributes: { class: 'mycls', 'data-test': '' },
+ *      childNodes: ['Hello'],
+ *  },{
+ *      tagName: 'span',
+ *      childNodes: [
+ *          'World ',
+ *          {
+ *              tagName: 'b',
+ *              childNodes: ['example'],
+ *          }
+ *       ],
+ *  }
+ * ]
+ *
 
 export const parseNodes = nodes => {
   const result = [];
@@ -44,29 +74,7 @@ export const parseNode = el => {
   };
 };
 
-/**
- * Parse an HTML string to an array of nodes
- * @example
- * parse(`<div class="mycls" data-test>Hello</div><span>World <b>example</b></span>`)
- * // result
- * [
- *  {
- *      tagName: 'div',
- *      attributes: { class: 'mycls', 'data-test': '' },
- *      childNodes: ['Hello'],
- *  },{
- *      tagName: 'span',
- *      childNodes: [
- *          'World ',
- *          {
- *              tagName: 'b',
- *              childNodes: ['example'],
- *          }
- *       ],
- *  }
- * ]
- */
-export default (str, config) => {
+export default (str, config = {}) => {
   const result = [];
   const el = document.createElement('div');
   el.innerHTML = str;
@@ -79,3 +87,4 @@ export default (str, config) => {
 
   return result;
 };
+ */
