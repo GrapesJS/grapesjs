@@ -1,7 +1,7 @@
 export default (str, config = {}) => {
   const { htmlResult } = config;
   const parser = new DOMParser();
-  const doc = parser.parseFromString(str, config.htmlType);
+  const doc = parser.parseFromString(str, config.htmlType || 'text/html');
 
   return htmlResult ? htmlResult(doc, str) : doc.body;
 };

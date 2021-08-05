@@ -4,9 +4,9 @@ export default {
   // Custom CSS parser
   parserCss: null,
 
-  // Default DOMParser mime type
+  // DOMParser mime type (default 'text/html')
   // @see https://developer.mozilla.org/en-US/docs/Web/API/DOMParser/parseFromString
-  htmlType: 'text/html',
+  htmlType: null,
 
   // Custom function which tells which root Element to extract
   // from the DOMParser.parseFromString result
