@@ -209,6 +209,7 @@ export default function($, undefined) {
       resize = throttle(reflow, 10),
       visible = false,
       isDragging = false,
+      isDefault = true,
       dragWidth = 0,
       dragHeight = 0,
       dragHelperHeight = 0,
@@ -784,6 +785,7 @@ export default function($, undefined) {
         isEmpty = true;
       } else {
         isEmpty = false;
+        isDefault = !color; // if no color is available an empty string will be passed.  tinycolor will then set it to #000
         newColor = tinycolor(color);
         newHsv = newColor.toHsv();
 
@@ -958,7 +960,7 @@ export default function($, undefined) {
     function updateOriginalInput(fireCallback) {
       var color = get(),
         displayColor = '',
-        hasChanged = !tinycolor.equals(color, colorOnShow);
+        hasChanged = isDefault ? true : !tinycolor.equals(color, colorOnShow);
 
       if (color) {
         displayColor = color.toString(currentPreferredFormat);
