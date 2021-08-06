@@ -210,8 +210,8 @@ export default (config = {}) => {
     /**
      * Returns HTML built inside canvas
      * @param {Object} [opts={}] Options
-     * @param {Boolean} [opts.cleanId=false] Remove unnecessary IDs (eg. those created automatically)
      * @param {Component} [opts.component] Return the HTML of a specific Component
+     * @param {Boolean} [opts.cleanId=false] Remove unnecessary IDs (eg. those created automatically)
      * @returns {string} HTML string
      */
     getHtml(opts) {
@@ -221,8 +221,10 @@ export default (config = {}) => {
     /**
      * Returns CSS built inside canvas
      * @param {Object} [opts={}] Options
+     * @param {Component} [opts.component] Return the CSS of a specific Component
+     * @param {Boolean} [opts.json=false] Return an array of CssRules instead of the CSS string
      * @param {Boolean} [opts.avoidProtected=false] Don't include protected CSS
-     * @returns {string} CSS string
+     * @returns {String|Array<CssRule>} CSS string or array of CssRules
      */
     getCss(opts) {
       return em.getCss(opts);
@@ -231,8 +233,8 @@ export default (config = {}) => {
     /**
      * Returns JS of all components
      * @param {Object} [opts={}] Options
-     * @param {Component} [opts.component] Get the JS of a particular component
-     * @returns {string} JS string
+     * @param {Component} [opts.component] Get the JS of a specific component
+     * @returns {String} JS string
      */
     getJs(opts) {
       return em.getJs(opts);

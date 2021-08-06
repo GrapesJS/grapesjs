@@ -561,16 +561,16 @@ export default Backbone.Model.extend({
     const cssc = this.get('CssComposer');
     const wrp = opts.component || this.get('DomComponents').getComponent();
     const protCss = !avoidProt ? config.protectedCss : '';
-
-    return wrp
-      ? protCss +
-          this.get('CodeManager').getCode(wrp, 'css', {
-            cssc,
-            wrapperIsBody,
-            keepUnusedStyles,
-            ...optsCss
-          })
-      : '';
+    const css =
+      wrp &&
+      this.get('CodeManager').getCode(wrp, 'css', {
+        cssc,
+        wrapperIsBody,
+        keepUnusedStyles,
+        ...optsCss,
+        ...opts
+      });
+    return wrp ? (opts.json ? css : protCss + css) : '';
   },
 
   /**
