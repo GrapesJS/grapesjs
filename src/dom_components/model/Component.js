@@ -1720,120 +1720,6 @@ export default class Component extends Model.extend(Styleable) {
     const selector = this._getStyleSelector({ id: idPrev });
     selector && selector.set({ name: id, label: id });
   }
-
-  static ensureInList(model) {
-    const list = Component.getList(model);
-    const id = model.getId();
-    const current = list[id];
-
-    if (!current) {
-      // Insert in list
-      list[id] = model;
-    } else if (current !== model) {
-      // Create new ID
-      const nextId = Component.getIncrementId(id, list);
-      model.setId(nextId);
-      list[nextId] = model;
-    }
-
-    model.components().forEach(i => Component.ensureInList(i));
-  }
-
-  /**
-   * Relying simply on the number of components becomes a problem when you
-   * store and load them back, you might hit collisions with new components
-   * @param  {Model} model
-   * @return {string}
-   * @private
-   */
-  static createId(model, opts = {}) {
-    const list = Component.getList(model);
-    const { idMap = {} } = opts;
-    let { id } = model.get('attributes');
-    let nextId;
-
-    if (id) {
-      nextId = Component.getIncrementId(id, list, opts);
-      model.setId(nextId);
-      if (id !== nextId) idMap[id] = nextId;
-    } else {
-      nextId = Component.getNewId(list);
-    }
-
-    list[nextId] = model;
-    return nextId;
-  }
-
-  static getNewId(list) {
-    const count = Object.keys(list).length;
-    // Testing 1000000 components with `+ 2` returns 0 collisions
-    const ilen = count.toString().length + 2;
-    const uid = (Math.random() + 1.1).toString(36).slice(-ilen);
-    let newId = `i${uid}`;
-
-    while (list[newId]) {
-      newId = Component.getNewId(list);
-    }
-
-    return newId;
-  }
-
-  static getIncrementId(id, list, opts = {}) {
-    const { keepIds = [] } = opts;
-    let counter = 1;
-    let newId = id;
-
-    if (keepIds.indexOf(id) < 0) {
-      while (list[newId]) {
-        counter++;
-        newId = `${id}-${counter}`;
-      }
-    }
-
-    return newId;
-  }
-
-  /**
-   * The list of components is taken from the Components module.
-   * Initially, the list, was set statically on the Component object but it was
-   * not ok, as it was shared between multiple editor instances
-   */
-  static getList(model) {
-    const { opt = {} } = model;
-    const { domc, em } = opt;
-    const dm = domc || (em && em.get('DomComponents'));
-    return dm ? dm.componentsById : {};
-  }
-
-  /**
-   * This method checks, for each parsed component and style object
-   * (are not Components/CSSRules yet), for duplicated id and fixes them
-   * This method is used in Components.js just after the parsing
-   */
-  static checkId(components, styles = [], list = {}, opts = {}) {
-    const comps = isArray(components) ? components : [components];
-    const { keepIds = [] } = opts;
-    comps.forEach(comp => {
-      const { attributes = {}, components } = comp;
-      const { id } = attributes;
-
-      // Check if we have collisions with current components
-      if (id && list[id] && keepIds.indexOf(id) < 0) {
-        const newId = Component.getIncrementId(id, list);
-        attributes.id = newId;
-        // Update passed styles
-        isArray(styles) &&
-          styles.forEach(style => {
-            const { selectors } = style;
-            selectors.forEach((sel, idx) => {
-              if (sel === `#${id}`) selectors[idx] = `#${newId}`;
-            });
-          });
-      }
-
-      components && Component.checkId(components, styles, list, opts);
-    });
-  }
 }
 
 /**
@@ -1846,6 +1732,120 @@ export default class Component extends Model.extend(Styleable) {
  */
 Component.isComponent = el => {
   return { tagName: el.tagName ? el.tagName.toLowerCase() : '' };
+};
+
+Component.ensureInList = model => {
+  const list = Component.getList(model);
+  const id = model.getId();
+  const current = list[id];
+
+  if (!current) {
+    // Insert in list
+    list[id] = model;
+  } else if (current !== model) {
+    // Create new ID
+    const nextId = Component.getIncrementId(id, list);
+    model.setId(nextId);
+    list[nextId] = model;
+  }
+
+  model.components().forEach(i => Component.ensureInList(i));
+};
+
+/**
+ * Relying simply on the number of components becomes a problem when you
+ * store and load them back, you might hit collisions with new components
+ * @param  {Model} model
+ * @return {string}
+ * @private
+ */
+Component.createId = (model, opts = {}) => {
+  const list = Component.getList(model);
+  const { idMap = {} } = opts;
+  let { id } = model.get('attributes');
+  let nextId;
+
+  if (id) {
+    nextId = Component.getIncrementId(id, list, opts);
+    model.setId(nextId);
+    if (id !== nextId) idMap[id] = nextId;
+  } else {
+    nextId = Component.getNewId(list);
+  }
+
+  list[nextId] = model;
+  return nextId;
+};
+
+Component.getNewId = list => {
+  const count = Object.keys(list).length;
+  // Testing 1000000 components with `+ 2` returns 0 collisions
+  const ilen = count.toString().length + 2;
+  const uid = (Math.random() + 1.1).toString(36).slice(-ilen);
+  let newId = `i${uid}`;
+
+  while (list[newId]) {
+    newId = Component.getNewId(list);
+  }
+
+  return newId;
+};
+
+Component.getIncrementId = (id, list, opts = {}) => {
+  const { keepIds = [] } = opts;
+  let counter = 1;
+  let newId = id;
+
+  if (keepIds.indexOf(id) < 0) {
+    while (list[newId]) {
+      counter++;
+      newId = `${id}-${counter}`;
+    }
+  }
+
+  return newId;
+};
+
+/**
+ * The list of components is taken from the Components module.
+ * Initially, the list, was set statically on the Component object but it was
+ * not ok, as it was shared between multiple editor instances
+ */
+Component.getList = model => {
+  const { opt = {} } = model;
+  const { domc, em } = opt;
+  const dm = domc || (em && em.get('DomComponents'));
+  return dm ? dm.componentsById : {};
+};
+
+/**
+ * This method checks, for each parsed component and style object
+ * (are not Components/CSSRules yet), for duplicated id and fixes them
+ * This method is used in Components.js just after the parsing
+ */
+Component.checkId = (components, styles = [], list = {}, opts = {}) => {
+  const comps = isArray(components) ? components : [components];
+  const { keepIds = [] } = opts;
+  comps.forEach(comp => {
+    const { attributes = {}, components } = comp;
+    const { id } = attributes;
+
+    // Check if we have collisions with current components
+    if (id && list[id] && keepIds.indexOf(id) < 0) {
+      const newId = Component.getIncrementId(id, list);
+      attributes.id = newId;
+      // Update passed styles
+      isArray(styles) &&
+        styles.forEach(style => {
+          const { selectors } = style;
+          selectors.forEach((sel, idx) => {
+            if (sel === `#${id}`) selectors[idx] = `#${newId}`;
+          });
+        });
+    }
+
+    components && Component.checkId(components, styles, list, opts);
+  });
 };
 
 Component.prototype.defaults = {
