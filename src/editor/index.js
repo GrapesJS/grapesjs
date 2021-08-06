@@ -211,6 +211,7 @@ export default (config = {}) => {
      * Returns HTML built inside canvas
      * @param {Object} [opts={}] Options
      * @param {Boolean} [opts.cleanId=false] Remove unnecessary IDs (eg. those created automatically)
+     * @param {Component} [opts.component] Return the HTML of a specific Component
      * @returns {string} HTML string
      */
     getHtml(opts) {
