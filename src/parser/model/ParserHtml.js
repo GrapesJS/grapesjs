@@ -128,6 +128,7 @@ export default config => {
             // the first with a valid result will be that component
             for (let it = 0; it < ct.length; it++) {
               const compType = ct[it];
+              console.log({ compType, model: compType.model });
               obj = compType.model.isComponent(node);
 
               if (obj) {
