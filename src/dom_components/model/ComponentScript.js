@@ -1,10 +1,13 @@
 import Component from './Component';
 
+const type = 'script';
+
 export default Component.extend(
   {
     defaults: {
       ...Component.prototype.defaults,
-      type: 'script',
+      type,
+      tagName: type,
       droppable: false,
       draggable: false,
       layerable: false
@@ -13,7 +16,7 @@ export default Component.extend(
   {
     isComponent(el) {
       if (el.tagName == 'SCRIPT') {
-        var result = { type: 'script' };
+        const result = { type };
 
         if (el.src) {
           result.src = el.src;
