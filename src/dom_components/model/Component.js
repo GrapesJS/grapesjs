@@ -1402,14 +1402,19 @@ export default class Component extends Model.extend(Styleable) {
       }
     }
 
-    const comps = model.get('components');
-    const content = !comps.length ? model.get('content') : '';
     const attrString = attrs.length ? ` ${attrs.join(' ')}` : '';
-    let code = `<${tag}${attrString}${sTag ? '/' : ''}>${content}`;
-    comps.forEach(comp => (code += comp.toHTML(opts)));
+    const inner = model.__innerHTML(opts);
+    let code = `<${tag}${attrString}${sTag ? '/' : ''}>${inner}`;
     !sTag && (code += `</${tag}>`);
 
     return code;
+  }
+
+  __innerHTML(opts = {}) {
+    const cmps = this.components();
+    return !cmps.length
+      ? this.get('content')
+      : cmps.map(c => c.toHTML(opts)).join('');
   }
 
   /**
