@@ -1,4 +1,5 @@
 import { each, isString } from 'underscore';
+import BrowserParserHtml from './BrowserParserHtml';
 
 export default config => {
   var TEXT_NODE = 'span';
@@ -275,15 +276,14 @@ export default config => {
      */
     parse(str, parserCss) {
       const { em } = c;
-      const config = (em && em.get('Config')) || {};
+      const conf = (em && em.get('Config')) || {};
       const res = { html: '', css: '' };
-      const el = document.createElement('div');
-      el.innerHTML = str;
+      const el = BrowserParserHtml(str, config);
       const scripts = el.querySelectorAll('script');
       let i = scripts.length;
 
       // Remove all scripts
-      if (!config.allowScripts) {
+      if (!conf.allowScripts) {
         while (i--) scripts[i].parentNode.removeChild(scripts[i]);
       }
 
