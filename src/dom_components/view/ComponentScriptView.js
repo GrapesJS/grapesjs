@@ -32,7 +32,7 @@ export default ComponentView.extend({
       `;
       em && em.set('scriptCount', scriptCount + 1);
     } else {
-      content = model.get('content');
+      content = model.__innerHTML();
     }
 
     this.el.innerHTML = content;
