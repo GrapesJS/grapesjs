@@ -32,6 +32,10 @@ describe('Component Types', () => {
     expectedType('<img src="img.png" attr-test="value"/>', 'image');
   });
 
+  test('<label> is correctly recognized', () => {
+    expectedType('<label>Hello</label>', 'label');
+  });
+
   test('<script> is correctly recognized', () => {
     // const scr = 'console.log("Inline script");'; // issues with jsdom parser
     const scr = ``;
