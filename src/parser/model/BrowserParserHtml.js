@@ -1,9 +1,22 @@
-export default (str, config = {}) => {
-  const { htmlResult } = config;
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(str, config.htmlType || 'text/html');
+const htmlType = 'text/html';
+// const defaultType = 'application/xml';
+const defaultType = htmlType;
 
-  return htmlResult ? htmlResult(doc, str) : doc.body;
+export default (str, config = {}) => {
+  const parser = new DOMParser();
+  const mimeType = config.htmlType || defaultType;
+  const toHTML = mimeType === htmlType;
+  const strF = toHTML ? str : `<div>${str}</div>`;
+  const doc = parser.parseFromString(strF, mimeType);
+  let res;
+
+  if (toHTML) {
+    res = doc.body;
+  } else {
+    res = doc.firstChild;
+  }
+
+  return res;
 };
 
 /**
