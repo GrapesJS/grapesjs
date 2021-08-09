@@ -1,3 +1,5 @@
+import { each } from 'underscore';
+
 const htmlType = 'text/html';
 // const defaultType = 'application/xml';
 const defaultType = htmlType;
@@ -11,7 +13,16 @@ export default (str, config = {}) => {
   let res;
 
   if (toHTML) {
-    res = doc.body;
+    // Replicate the old parser in order to avoid breaking changes
+    const { head, body } = doc;
+    // Move all scripts at the bottom of the page
+    const scripts = head.querySelectorAll('script');
+    each(scripts, node => body.appendChild(node));
+    // Move inside body all head children
+    const hEls = [];
+    each(head.children, n => hEls.push(n));
+    each(hEls, (node, i) => body.insertBefore(node, body.children[i]));
+    res = body;
   } else {
     res = doc.firstChild;
   }
