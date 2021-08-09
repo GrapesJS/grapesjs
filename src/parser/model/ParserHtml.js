@@ -5,6 +5,7 @@ export default config => {
   var TEXT_NODE = 'span';
   var c = config;
   var modelAttrStart = 'data-gjs-';
+  const event = 'parse:html';
 
   return {
     compTypes: '',
@@ -301,12 +302,13 @@ export default config => {
         if (styleStr) res.css = parserCss.parse(styleStr);
       }
 
+      em && em.trigger(`${event}:root`, { input: str, root: el });
       const result = this.parseNode(el);
       // I have to keep it otherwise it breaks the DomComponents.addComponent (returns always array)
       const resHtml =
         result.length === 1 && !c.returnArray ? result[0] : result;
       res.html = resHtml;
-      em && em.trigger('parse:html', { input: str, output: res });
+      em && em.trigger(event, { input: str, output: res });
 
       return res;
     }

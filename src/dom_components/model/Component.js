@@ -11,7 +11,13 @@ import {
   bindAll,
   keys
 } from 'underscore';
-import { shallowDiff, capitalize, isEmptyObj, isObject } from 'utils/mixins';
+import {
+  shallowDiff,
+  capitalize,
+  isEmptyObj,
+  isObject,
+  toLowerCase
+} from 'utils/mixins';
 import Styleable from 'domain_abstract/model/Styleable';
 import { Model } from 'backbone';
 import Components from './Components';
@@ -1736,7 +1742,7 @@ export default class Component extends Model.extend(Styleable) {
  * @private
  */
 Component.isComponent = el => {
-  return { tagName: el.tagName ? el.tagName.toLowerCase() : '' };
+  return { tagName: toLowerCase(el.tagName) };
 };
 
 Component.ensureInList = model => {

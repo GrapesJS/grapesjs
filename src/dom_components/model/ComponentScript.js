@@ -1,4 +1,5 @@
 import Component from './Component';
+import { toLowerCase } from 'utils/mixins';
 
 const type = 'script';
 
@@ -15,7 +16,7 @@ export default Component.extend(
   },
   {
     isComponent(el) {
-      if (el.tagName == 'SCRIPT') {
+      if (toLowerCase(el.tagName) == type) {
         const result = { type };
 
         if (el.src) {
