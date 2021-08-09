@@ -33,7 +33,11 @@ describe('Component Types', () => {
   });
 
   test('<label> is correctly recognized', () => {
-    expectedType('<label>Hello</label>', 'label');
+    expectedType('<label attr-test="value">Hello</label>', 'label');
+  });
+
+  test('<a> is correctly recognized', () => {
+    expectedType('<a href="/link">link</a>', 'link');
   });
 
   test('<script> is correctly recognized', () => {
