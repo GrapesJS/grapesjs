@@ -4,6 +4,13 @@ describe('Component Types', () => {
   let editor;
   let wrapper;
 
+  const expectedType = (input, type) => {
+    const cmp = wrapper.append(input)[0];
+    expect(wrapper.components().length).toBe(1);
+    expect(cmp.toHTML()).toBe(input);
+    expect(cmp.is(type)).toBe(true);
+  };
+
   beforeAll(() => {
     editor = new Editor({ allowScripts: 1 });
     editor
@@ -21,23 +28,21 @@ describe('Component Types', () => {
     wrapper.components().reset();
   });
 
+  test('<img> is correctly recognized', () => {
+    expectedType('<img src="img.png" attr-test="value"/>', 'image');
+  });
+
   test('<script> is correctly recognized', () => {
     // const scr = 'console.log("Inline script");'; // issues with jsdom parser
     const scr = ``;
-    const scrFull = `<script attr-test="value">${scr}</script>`;
-    const cmp = wrapper.append(scrFull)[0];
-    expect(wrapper.components().length).toBe(1);
-    expect(cmp.toHTML()).toBe(scrFull);
-    expect(cmp.is('script')).toBe(true);
+    expectedType(`<script attr-test="value">${scr}</script>`, 'script');
   });
 
   test('<iframe> is correctly recognized', () => {
-    const str =
-      '<iframe frameborder="0" src="/somewhere" attr-test="value"></iframe>';
-    const cmp = wrapper.append(str)[0];
-    expect(wrapper.components().length).toBe(1);
-    expect(cmp.toHTML()).toBe(str);
-    expect(cmp.is('iframe')).toBe(true);
+    expectedType(
+      `<iframe frameborder="0" src="/somewhere" attr-test="value"></iframe>`,
+      'iframe'
+    );
   });
 
   test.skip('<svg> is correctly recognized', () => {

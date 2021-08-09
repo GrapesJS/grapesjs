@@ -1,5 +1,6 @@
 import { result } from 'underscore';
 import Component from './Component';
+import { toLowerCase } from 'utils/mixins';
 
 const svgAttrs =
   'xmlns="http://www.w3.org/2000/svg" width="100" viewBox="0 0 24 24" style="fill: rgba(0,0,0,0.15); transform: scale(0.75)"';
@@ -138,20 +139,6 @@ export default Component.extend(
     }
   },
   {
-    /**
-     * Detect if the passed element is a valid component.
-     * In case the element is valid an object abstracted
-     * from the element will be returned
-     * @param {HTMLElement}
-     * @return {Object}
-     * @private
-     */
-    isComponent(el) {
-      var result = '';
-      if (el.tagName == 'IMG') {
-        result = { type: 'image' };
-      }
-      return result;
-    }
+    isComponent: el => toLowerCase(el.tagName) === 'img'
   }
 );
