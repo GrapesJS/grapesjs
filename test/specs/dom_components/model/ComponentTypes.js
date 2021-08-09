@@ -4,10 +4,10 @@ describe('Component Types', () => {
   let editor;
   let wrapper;
 
-  const expectedType = (input, type) => {
+  const expectedType = (input, type, opts = {}) => {
     const cmp = wrapper.append(input)[0];
     expect(wrapper.components().length).toBe(1);
-    expect(cmp.toHTML()).toBe(input);
+    !opts.skipHtml && expect(cmp.toHTML()).toBe(input);
     expect(cmp.is(type)).toBe(true);
   };
 
@@ -38,6 +38,10 @@ describe('Component Types', () => {
 
   test('<a> is correctly recognized', () => {
     expectedType('<a href="/link">link</a>', 'link');
+  });
+
+  test('<table> is correctly recognized', () => {
+    expectedType('<table></table>', 'table', { skipHtml: 1 });
   });
 
   test('<script> is correctly recognized', () => {
