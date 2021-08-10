@@ -17,6 +17,7 @@ const cmds = [
   ['device_manager/index.js', 'device_manager.md'],
   ['selector_manager/index.js', 'selector_manager.md'],
   ['css_composer/index.js', 'css_composer.md'],
+  ['css_composer/model/CssRule.js', 'css_rule.md'],
   ['modal_dialog/index.js', 'modal_dialog.md'],
   ['rich_text_editor/index.js', 'rich_text_editor.md'],
   ['keymaps/index.js', 'keymaps.md'],
@@ -25,6 +26,7 @@ const cmds = [
   ['i18n/index.js', 'i18n.md'],
   ['pages/index.js', 'pages.md'],
   ['pages/model/Page.js', 'page.md'],
+  ['parser/index.js', 'parser.md'],
 ].map(entry =>
   `${binRoot}documentation build ${srcRoot}/${entry[0]} -o ${docRoot}/api/${entry[1]} -f md --shallow --markdown-toc false`)
 .join(' && ');

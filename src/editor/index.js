@@ -88,9 +88,6 @@
  * ### Modal
  * * `modal:open` - Modal is opened
  * * `modal:close` - Modal is closed
- * ### Parser
- * * `parse:html` - On HTML parse, an object containing the input and the output of the parser is passed as an argument
- * * `parse:css` - On CSS parse, an object containing the input and the output of the parser is passed as an argument
  * ### Commands
  * * `run:{commandName}` - Triggered when some command is called to run (eg. editor.runCommand('preview'))
  * * `stop:{commandName}` - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
@@ -99,6 +96,8 @@
  * * `abort:{commandName}` - Triggered when the command execution is aborted (`editor.on(`run:preview:before`, opts => opts.abort = 1);`)
  * * `run` - Triggered on run of any command. The id and the result are passed as arguments to the callback
  * * `stop` - Triggered on stop of any command. The id and the result are passed as arguments to the callback
+ * ### Parser
+ * Check the [Parser](/api/parser.html) module.
  * ### Pages
  * Check the [Pages](/api/pages.html) module.
  * ### General

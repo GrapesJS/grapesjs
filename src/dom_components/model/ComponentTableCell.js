@@ -1,4 +1,5 @@
 import Component from './Component';
+import { toLowerCase } from 'utils/mixins';
 
 export default Component.extend(
   {
@@ -10,18 +11,6 @@ export default Component.extend(
     }
   },
   {
-    isComponent(el) {
-      let result = '';
-      const tag = el.tagName;
-
-      if (tag == 'TD' || tag == 'TH') {
-        result = {
-          type: 'cell',
-          tagName: tag.toLowerCase()
-        };
-      }
-
-      return result;
-    }
+    isComponent: el => ['td', 'th'].indexOf(toLowerCase(el.tagName)) >= 0
   }
 );

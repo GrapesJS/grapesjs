@@ -1,4 +1,5 @@
 import Component from './Component';
+import { toLowerCase } from 'utils/mixins';
 
 const type = 'iframe';
 
@@ -17,6 +18,6 @@ export default Component.extend(
     }
   },
   {
-    isComponent: el => el.tagName === 'IFRAME'
+    isComponent: el => toLowerCase(el.tagName) === type
   }
 );

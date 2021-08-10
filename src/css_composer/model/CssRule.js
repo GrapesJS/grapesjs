@@ -88,8 +88,14 @@ export default class CssRule extends Model.extend(Styleable) {
   }
 
   /**
-   * Returns an at-rule statement if possible, eg. '@media (...)', '@keyframes'
-   * @return {string}
+   * Return the at-rule statement when exists, eg. '@media (...)', '@keyframes'
+   * @returns {String}
+   * @example
+   * const cssRule = editor.Css.setRule('.class1', { color: 'red' }, {
+   *  atRuleType: 'media',
+   *  atRuleParams: '(min-width: 500px)'
+   * });
+   * cssRule.getAtRule(); // "@media (min-width: 500px)"
    */
   getAtRule() {
     const type = this.get('atRuleType');
@@ -101,8 +107,14 @@ export default class CssRule extends Model.extend(Styleable) {
   }
 
   /**
-   * Return selectors fo the rule as a string
-   * @return {string}
+   * Return selectors of the rule as a string
+   * @param {Object} [opts] Options
+   * @param {Boolean} [opts.skipState] Skip state from the result
+   * @returns {String}
+   * @example
+   * const cssRule = editor.Css.setRule('.class1:hover', { color: 'red' });
+   * cssRule.selectorsToString(); // ".class1:hover"
+   * cssRule.selectorsToString({ skipState: true }); // ".class1"
    */
   selectorsToString(opts = {}) {
     const result = [];
@@ -123,9 +135,15 @@ export default class CssRule extends Model.extend(Styleable) {
   }
 
   /**
-   * Get declaration block
-   * @param {Object} [opts={}] Options
-   * @return {string}
+   * Get declaration block (without the at-rule statement)
+   * @param {Object} [opts={}] Options (same as in `selectorsToString`)
+   * @returns {String}
+   * @example
+   * const cssRule = editor.Css.setRule('.class1', { color: 'red' }, {
+   *  atRuleType: 'media',
+   *  atRuleParams: '(min-width: 500px)'
+   * });
+   * cssRule.getDeclaration() // ".class1{color:red;}"
    */
   getDeclaration(opts = {}) {
     let result = '';
@@ -141,9 +159,15 @@ export default class CssRule extends Model.extend(Styleable) {
   }
 
   /**
-   * Returns CSS string of the rule
-   * @param {Object} [opts={}] Options
-   * @return {string}
+   * Return the CSS string of the rule
+   * @param {Object} [opts={}] Options (same as in `getDeclaration`)
+   * @return {String} CSS string
+   * @example
+   * const cssRule = editor.Css.setRule('.class1', { color: 'red' }, {
+   *  atRuleType: 'media',
+   *  atRuleParams: '(min-width: 500px)'
+   * });
+   * cssRule.toCSS() // "@media (min-width: 500px){.class1{color:red;}}"
    */
   toCSS(opts = {}) {
     let result = '';

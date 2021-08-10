@@ -160,8 +160,8 @@ Render assets
 
 ### Parameters
 
-*   `assets` **[array][16]** Assets to render, without the argument will render
-    all global assets
+*   `assts`  
+*   `assets` **[array][16]** Assets to render, without the argument will render all global assets
 
 ### Examples
 

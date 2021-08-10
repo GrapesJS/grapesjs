@@ -2,6 +2,8 @@
 
 ## Component
 
+**Extends Model.extend(Styleable)**
+
 The Component object represents a single node of our template structure, so when you update its properties the changes are
 immediately reflected on the canvas and in the code to export (indeed, when you ask to export the code we just go through all
 the tree of nodes).
