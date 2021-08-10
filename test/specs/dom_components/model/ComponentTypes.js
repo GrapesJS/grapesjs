@@ -8,7 +8,8 @@ describe('Component Types', () => {
     const cmp = wrapper.append(input)[0];
     expect(wrapper.components().length).toBe(opts.total || 1);
     !opts.skipHtml && expect(cmp.toHTML()).toBe(input);
-    expect(cmp.is(type)).toBe(true);
+    const res = opts.getType ? wrapper.findType(type)[0] : cmp;
+    expect(res.is(type)).toBe(true);
   };
 
   beforeAll(() => {
@@ -45,15 +46,17 @@ describe('Component Types', () => {
   });
 
   test('<thead> is correctly recognized', () => {
-    expectedType('<thead></thead>', 'thead', { skipHtml: 1 });
+    expectedType('<table><thead> </thead></table>', 'thead', { getType: 1 });
   });
 
   test('<tbody> is correctly recognized', () => {
-    expectedType('<tbody></tbody>', 'tbody', { skipHtml: 1 });
+    expectedType('<table><tbody> </tbody></table>', 'tbody', { getType: 1 });
   });
 
   test('<tr> is correctly recognized', () => {
-    expectedType('<tr></tr>', 'row');
+    expectedType('<table><tbody><tr> </tr></tbody></table>', 'row', {
+      getType: 1
+    });
   });
 
   test('<video> is correctly recognized', () => {
@@ -61,12 +64,17 @@ describe('Component Types', () => {
   });
 
   test('<td> & <th> are correctly recognized', () => {
-    expectedType('<td></td>', 'cell');
-    expectedType('<th></th>', 'cell', { total: 2 });
+    expectedType('<table><tbody><tr><td></td></tr></tbody></table>', 'cell', {
+      getType: 1
+    });
+    expectedType('<table><tbody><tr><th></th></tr></tbody></table>', 'cell', {
+      total: 2,
+      getType: 1
+    });
   });
 
   test('<tfoot> is correctly recognized', () => {
-    expectedType('<tfoot></tfoot>', 'tfoot', { skipHtml: 1 });
+    expectedType('<table><tfoot> </tfoot></table>', 'tfoot', { getType: 1 });
   });
 
   test('<script> is correctly recognized', () => {
