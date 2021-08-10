@@ -53,6 +53,10 @@ describe('Component Types', () => {
     expectedType('<th></th>', 'cell', { total: 2 });
   });
 
+  test('<tfoot> is correctly recognized', () => {
+    expectedType('<tfoot></tfoot>', 'tfoot', { skipHtml: 1 });
+  });
+
   test('<script> is correctly recognized', () => {
     // const scr = 'console.log("Inline script");'; // issues with jsdom parser
     const scr = ``;
