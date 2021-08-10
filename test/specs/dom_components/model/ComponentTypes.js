@@ -6,7 +6,7 @@ describe('Component Types', () => {
 
   const expectedType = (input, type, opts = {}) => {
     const cmp = wrapper.append(input)[0];
-    expect(wrapper.components().length).toBe(1);
+    expect(wrapper.components().length).toBe(opts.total || 1);
     !opts.skipHtml && expect(cmp.toHTML()).toBe(input);
     expect(cmp.is(type)).toBe(true);
   };
@@ -46,6 +46,11 @@ describe('Component Types', () => {
 
   test('<tbody> is correctly recognized', () => {
     expectedType('<tbody></tbody>', 'tbody', { skipHtml: 1 });
+  });
+
+  test('<td> & <th> are correctly recognized', () => {
+    expectedType('<td></td>', 'cell');
+    expectedType('<th></th>', 'cell', { total: 2 });
   });
 
   test('<script> is correctly recognized', () => {
