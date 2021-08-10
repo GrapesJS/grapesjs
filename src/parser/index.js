@@ -56,7 +56,7 @@ export default () => {
      * Get the configuration object
      * @returns {Object} Configuration object
      * @example
-     * console.log(parser.getConfig())
+     * console.log(Parser.getConfig())
      */
     getConfig() {
       return conf;
@@ -66,29 +66,32 @@ export default () => {
      * Parse HTML string and return the object containing the Component Definition
      * @param  {String} input HTML string to parse
      * @param  {Object} [options] Options
-     * @param  {String} [options.htmlType] [HTML mime type](https://developer.mozilla.org/en-US/docs/Web/API/DOMParser/parseFromString) to parse
+     * @param  {String} [options.htmlType] [HTML mime type](https://developer.mozilla.org/en-US/docs/Web/API/DOMParser/parseFromString#Argument02) to parse
      * @returns {Object} Object containing the result `{ html: ..., css: ... }`
      * @example
      * const resHtml = Parser.parseHtml(`<table><div>Hi</div></table>`, {
      *   htmlType: 'text/html', // default
      * });
      * // By using the `text/html`, this will fix automatically all the HTML syntax issues
-     * // Indeed the final rappresetnation, in this case, will be `<div>Hi</div><table></table>`
+     * // Indeed the final representation, in this case, will be `<div>Hi</div><table></table>`
      * const resXml = Parser.parseHtml(`<table><div>Hi</div></table>`, {
      *   htmlType: 'application/xml',
      * });
      * // This will preserve the original format as, from the XML point of view, is a valid format
      */
-    parseHtml(input, opts = {}) {
+    parseHtml(input, options = {}) {
       const { em, compTypes } = this;
       pHtml.compTypes = em ? em.get('DomComponents').getTypes() : compTypes;
-      return pHtml.parse(input, pCss, opts);
+      return pHtml.parse(input, pCss, options);
     },
 
     /**
      * Parse CSS string and return an array of valid definition objects for CSSRules
      * @param  {String} input CSS string to parse
-     * @return {Array<Object>} Array containing the result
+     * @returns {Array<Object>} Array containing the result
+     * @example
+     * const res = Parser.parseCss('.cls { color: red }');
+     * // [{ ... }]
      */
     parseCss(input) {
       return pCss.parse(input);

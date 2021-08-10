@@ -77,6 +77,7 @@ module.exports = {
         ['/api/rich_text_editor', 'Rich Text Editor'],
         ['/api/keymaps', 'Keymaps'],
         ['/api/undo_manager', 'Undo Manager'],
+        ['/api/parser', 'Parser'],
       ],
       '/': [
         '',
