@@ -44,6 +44,10 @@ describe('Component Types', () => {
     expectedType('<table></table>', 'table', { skipHtml: 1 });
   });
 
+  test('<tbody> is correctly recognized', () => {
+    expectedType('<tbody></tbody>', 'tbody', { skipHtml: 1 });
+  });
+
   test('<script> is correctly recognized', () => {
     // const scr = 'console.log("Inline script");'; // issues with jsdom parser
     const scr = ``;
