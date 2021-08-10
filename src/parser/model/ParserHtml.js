@@ -2,9 +2,8 @@ import { each, isString } from 'underscore';
 import BrowserParserHtml from './BrowserParserHtml';
 
 export default config => {
-  var TEXT_NODE = 'span';
-  var c = config;
-  var modelAttrStart = 'data-gjs-';
+  let c = config;
+  const modelAttrStart = 'data-gjs-';
   const event = 'parse:html';
 
   return {
@@ -283,11 +282,12 @@ export default config => {
      * @param  {ParserCss} parserCss In case there is style tags inside HTML
      * @return {Object}
      */
-    parse(str, parserCss) {
+    parse(str, parserCss, opts = {}) {
       const { em } = c;
       const conf = (em && em.get('Config')) || {};
-      const res = { html: '', css: '' };
-      const el = BrowserParserHtml(str, config);
+      const res = { html: null, css: null };
+      const cf = { ...config, ...opts };
+      const el = BrowserParserHtml(str, cf);
       const scripts = el.querySelectorAll('script');
       let i = scripts.length;
 
