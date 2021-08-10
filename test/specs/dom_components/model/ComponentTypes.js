@@ -52,6 +52,10 @@ describe('Component Types', () => {
     expectedType('<tbody></tbody>', 'tbody', { skipHtml: 1 });
   });
 
+  test('<tr> is correctly recognized', () => {
+    expectedType('<tr></tr>', 'row');
+  });
+
   test('<td> & <th> are correctly recognized', () => {
     expectedType('<td></td>', 'cell');
     expectedType('<th></th>', 'cell', { total: 2 });
