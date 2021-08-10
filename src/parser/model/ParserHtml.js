@@ -1,4 +1,4 @@
-import { each, isString } from 'underscore';
+import { each, isString, isFunction } from 'underscore';
 import BrowserParserHtml from './BrowserParserHtml';
 
 export default config => {
@@ -287,7 +287,9 @@ export default config => {
       const conf = (em && em.get('Config')) || {};
       const res = { html: null, css: null };
       const cf = { ...config, ...opts };
-      const el = BrowserParserHtml(str, cf);
+      const el = isFunction(cf.parserHtml)
+        ? cf.parserHtml(str, cf)
+        : BrowserParserHtml(str, cf);
       const scripts = el.querySelectorAll('script');
       let i = scripts.length;
 
