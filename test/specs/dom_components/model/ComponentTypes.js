@@ -56,6 +56,10 @@ describe('Component Types', () => {
     expectedType('<tr></tr>', 'row');
   });
 
+  test('<video> is correctly recognized', () => {
+    expectedType('<video></video>', 'video', { skipHtml: 1 });
+  });
+
   test('<td> & <th> are correctly recognized', () => {
     expectedType('<td></td>', 'cell');
     expectedType('<th></th>', 'cell', { total: 2 });
