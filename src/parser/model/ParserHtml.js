@@ -103,7 +103,7 @@ export default config => {
      * @param  {HTMLElement} el DOM element to traverse
      * @return {Array<Object>}
      */
-    parseNode(el) {
+    parseNode(el, opts = {}) {
       const result = [];
       const nodes = el.childNodes;
 
@@ -130,7 +130,7 @@ export default config => {
             // the first with a valid result will be that component
             for (let it = 0; it < ct.length; it++) {
               const compType = ct[it];
-              obj = compType.model.isComponent(node);
+              obj = compType.model.isComponent(node, opts);
 
               if (obj) {
                 if (typeof obj !== 'object') {
@@ -209,7 +209,10 @@ export default config => {
               content: firstChild.nodeValue
             };
           } else {
-            model.components = this.parseNode(node);
+            model.components = this.parseNode(node, {
+              inSvg: model.type === 'svg',
+              ...opts
+            });
           }
         }
 
