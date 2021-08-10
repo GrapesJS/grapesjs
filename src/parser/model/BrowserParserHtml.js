@@ -1,7 +1,7 @@
 import { each } from 'underscore';
 
 const htmlType = 'text/html';
-const defaultType = 'application/xml';
+const defaultType = htmlType; // 'application/xml';
 
 export default (str, config = {}) => {
   const parser = new DOMParser();
