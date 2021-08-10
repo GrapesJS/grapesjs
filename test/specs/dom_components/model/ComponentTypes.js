@@ -44,6 +44,10 @@ describe('Component Types', () => {
     expectedType('<table></table>', 'table', { skipHtml: 1 });
   });
 
+  test('<thead> is correctly recognized', () => {
+    expectedType('<thead></thead>', 'thead', { skipHtml: 1 });
+  });
+
   test('<tbody> is correctly recognized', () => {
     expectedType('<tbody></tbody>', 'tbody', { skipHtml: 1 });
   });
