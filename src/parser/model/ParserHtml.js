@@ -232,6 +232,11 @@ export default config => {
           }
         }
 
+        // Check for custom void elements (valid in XML)
+        if (!nodeChild && `${node.outerHTML}`.slice(-2) === '/>') {
+          model.void = true;
+        }
+
         // If all children are texts and there is some textnode the parent should
         // be text too otherwise I'm unable to edit texnodes
         const comps = model.components;

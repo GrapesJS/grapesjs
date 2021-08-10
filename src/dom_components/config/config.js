@@ -35,7 +35,8 @@ export default {
    */
   processor: 0,
 
-  // List of void elements
+  // List of HTML void elements
+  // https://www.w3.org/TR/2011/WD-html-markup-20110113/syntax.html#void-elements
   voidElements: [
     'area',
     'base',
