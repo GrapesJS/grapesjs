@@ -17,6 +17,7 @@ const cmds = [
   ['device_manager/index.js', 'device_manager.md'],
   ['selector_manager/index.js', 'selector_manager.md'],
   ['css_composer/index.js', 'css_composer.md'],
+  ['css_composer/model/CssRule.js', 'css_rule.md'],
   ['modal_dialog/index.js', 'modal_dialog.md'],
   ['rich_text_editor/index.js', 'rich_text_editor.md'],
   ['keymaps/index.js', 'keymaps.md'],

@@ -36,7 +36,7 @@ Get the configuration object
 ### Examples
 
 ```javascript
-console.log(parser.getConfig())
+console.log(Parser.getConfig())
 ```
 
 Returns **[Object][5]** Configuration object
@@ -48,8 +48,7 @@ Parse HTML string and return the object containing the Component Definition
 ### Parameters
 
 *   `input` **[String][6]** HTML string to parse
-*   `opts`   (optional, default `{}`)
-*   `options` **[Object][5]?** Options
+*   `options` **[Object][5]?** Options (optional, default `{}`)
 
     *   `options.htmlType` **[String][6]?** [HTML mime type][7] to parse
 
@@ -60,7 +59,7 @@ const resHtml = Parser.parseHtml(`<table><div>Hi</div></table>`, {
   htmlType: 'text/html', // default
 });
 // By using the `text/html`, this will fix automatically all the HTML syntax issues
-// Indeed the final rappresetnation, in this case, will be `<div>Hi</div><table></table>`
+// Indeed the final representation, in this case, will be `<div>Hi</div><table></table>`
 const resXml = Parser.parseHtml(`<table><div>Hi</div></table>`, {
   htmlType: 'application/xml',
 });
@@ -77,6 +76,13 @@ Parse CSS string and return an array of valid definition objects for CSSRules
 
 *   `input` **[String][6]** CSS string to parse
 
+### Examples
+
+```javascript
+const res = Parser.parseCss('.cls { color: red }');
+// [{ ... }]
+```
+
 Returns **[Array][8]<[Object][5]>** Array containing the result
 
 [1]: https://github.com/artf/grapesjs/blob/master/src/parser/config/config.js
@@ -91,6 +97,6 @@ Returns **[Array][8]<[Object][5]>** Array containing the result
 
 [6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-[7]: https://developer.mozilla.org/en-US/docs/Web/API/DOMParser/parseFromString
+[7]: https://developer.mozilla.org/en-US/docs/Web/API/DOMParser/parseFromString#Argument02
 
 [8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array

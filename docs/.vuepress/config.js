@@ -73,6 +73,7 @@ module.exports = {
         ['/api/device_manager', 'Device Manager'],
         ['/api/selector_manager', 'Selector Manager'],
         ['/api/css_composer', 'CSS Composer'],
+        ['/api/css_rule', `${subDivider}CssRule`],
         ['/api/modal_dialog', 'Modal'],
         ['/api/rich_text_editor', 'Rich Text Editor'],
         ['/api/keymaps', 'Keymaps'],
