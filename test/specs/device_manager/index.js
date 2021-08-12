@@ -1,19 +1,25 @@
-import DeviceManager from 'device_manager';
-import DevicesView from './view/DevicesView';
+import Editor from 'editor';
 
 describe('DeviceManager', () => {
   describe('Main', () => {
-    var obj;
-    var testNameDevice;
-    var testWidthDevice;
+    let obj;
+    let testNameDevice;
+    let testWidthDevice;
+    let editor;
 
     beforeEach(() => {
       testNameDevice = 'Tablet';
       testWidthDevice = '100px';
-      obj = new DeviceManager().init();
+      editor = new Editor({
+        deviceManager: {
+          devices: []
+        }
+      }).init();
+      obj = editor.Devices;
     });
 
     afterEach(() => {
+      editor.destroy();
       obj = null;
     });
 
