@@ -67,8 +67,8 @@ export default () => {
       update: evUpdate,
       add: evAdd,
       // addBefore: evAddBefore,
-      remove: evRemove
-      // removeBefore: evRemoveBefore
+      remove: evRemove,
+      removeBefore: evRemoveBefore
     },
 
     init(config = {}) {
@@ -78,9 +78,11 @@ export default () => {
 
       devices = new Devices();
       (c.devices || []).forEach(dv => this.add(dv.id || dv.name, dv.width, dv));
-      devices.on('add', (m, c, o) => em.trigger(evAdd, m, o));
-      devices.on('all', this.__catchAllEvent, this);
       this.all = devices;
+      devices
+        .on('add', (m, c, o) => em.trigger(evAdd, m, o))
+        .on('remove', (m, c, o) => em.trigger(evRemove, m, o))
+        .on('all', this.__catchAllEvent, this);
 
       return this;
     },
@@ -145,24 +147,17 @@ export default () => {
     },
 
     /**
-     * Remove devie
-     * @param {String|[Device]} page Page or page id
-     * @returns {[Page]}
+     * Remove device
+     * @param {String|[Device]} device Device or device id
+     * @returns {[Device]} Removed device
      * @example
-     * const removedPage = pageManager.remove('page-id');
-     * // or by passing the page
-     * const somePage = pageManager.get('page-id');
-     * pageManager.remove(somePage);
+     * const removed = deviceManager.remove('device-id');
+     * // or by passing the Device
+     * const device = deviceManager.get('device-id');
+     * deviceManager.remove(device);
      */
-    remove(page, opts = {}) {
-      // const { em } = this;
-      // const pg = isString(page) ? this.get(page) : page;
-      // const rm = () => {
-      //   pg && this.pages.remove(pg, opts);
-      //   return pg;
-      // };
-      // !opts.silent && em.trigger(evPageRemoveBefore, pg, rm, opts);
-      // return !opts.abort && rm();
+    remove(device, opts = {}) {
+      return this.__remove(device, opts);
     },
 
     /**

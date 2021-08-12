@@ -1,3 +1,4 @@
+import { isString } from 'underscore';
 import { createId } from 'utils/mixins';
 
 export default {
@@ -15,6 +16,17 @@ export default {
       acc[i.get('id')] = i;
       return acc;
     }, {});
+  },
+
+  __remove(model, opts = {}) {
+    const { em } = this;
+    const md = isString(model) ? this.get(model) : model;
+    const rm = () => {
+      md && this.all.remove(md, opts);
+      return md;
+    };
+    !opts.silent && em && em.trigger(this.events.removeBefore, md, rm, opts);
+    return !opts.abort && rm();
   },
 
   __catchAllEvent(event, model, coll, opts) {

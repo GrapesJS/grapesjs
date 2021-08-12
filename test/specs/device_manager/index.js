@@ -103,6 +103,24 @@ describe('DeviceManager', () => {
       expect(model).toBe(model2);
     });
 
+    test('Remove device', () => {
+      const id = 'device';
+      const all = obj.getAll();
+      const model = obj.add({ id });
+      expect(all.length).toEqual(1);
+      const eventFn = jest.fn();
+      const eventFnAll = jest.fn();
+      em.on(obj.events.remove, eventFn);
+      em.on(obj.events.all, eventFnAll);
+
+      const removed = obj.remove(id);
+      expect(all.length).toEqual(0);
+      expect(model).toBe(removed);
+      // Check for events
+      expect(eventFn).toBeCalledTimes(1);
+      expect(eventFnAll).toBeCalled();
+    });
+
     test('Render devices', () => {
       expect(obj.render()).toBeTruthy();
     });
