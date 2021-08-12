@@ -25,38 +25,15 @@ import Devices from './model/Devices';
 import DevicesView from './view/DevicesView';
 
 export default () => {
-  var c = {};
-  var devices, view;
+  let c = {};
+  let devices;
+  let view;
 
   return {
-    /**
-     * Name of the module
-     * @type {String}
-     * @private
-     */
     name: 'DeviceManager',
 
-    /**
-     * Initialize module. Automatically called with a new instance of the editor
-     * @param {Object} config Configurations
-     * @param {Array<Object>} [config.devices=[]] Default devices
-     * @example
-     * ...
-     * {
-     *    devices: [
-     *      {name: 'Desktop', width: ''}
-     *      {name: 'Tablet', width: '991px'}
-     *    ],
-     * }
-     * ...
-     * @return {this}
-     * @private
-     */
-    init(config) {
-      c = config || {};
-      for (var name in defaults) {
-        if (!(name in c)) c[name] = defaults[name];
-      }
+    init(config = {}) {
+      c = { ...defaults, ...config };
 
       devices = new Devices();
       (c.devices || []).forEach(dv => this.add(dv.id || dv.name, dv.width, dv));
@@ -65,10 +42,10 @@ export default () => {
     },
 
     /**
-     * Add new device to the collection. URLs are supposed to be unique
+     * Add new device.
      * @param {String} id Device id
      * @param {String} width Width of the device
-     * @param {Object} [opts] Custom options
+     * @param {Object} [options] Custom options
      * @returns {Device} Added device
      * @example
      * deviceManager.add('tablet', '900px');
@@ -80,11 +57,11 @@ export default () => {
      *  widthMedia: '810px', // the width that will be used for the CSS media
      * });
      */
-    add(id, width, opts = {}) {
+    add(id, width, options = {}) {
       const obj = {
-        ...opts,
+        ...options,
         id,
-        name: opts.name || id,
+        name: options.name || id,
         width: width
       };
       return devices.add(obj);
@@ -114,11 +91,6 @@ export default () => {
       return devices;
     },
 
-    /**
-     * Render devices
-     * @return {string} HTML string
-     * @private
-     */
     render() {
       view && view.remove();
       view = new DevicesView({
