@@ -40,6 +40,7 @@ async function generateDocs () {
       .then(output => {
         const res = output
           .replace(/\*\*\\\[/g, '**[')
+          .replace(/\*\*\(\\\[/g, '**([')
           .replace(/<\\\[/g, '<[')
           .replace(/\| \\\[/g, '| [')
           .replace('**Extends Model**', '');

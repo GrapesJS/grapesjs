@@ -751,7 +751,7 @@ Returns **[String][5]**
 
 [1]: https://github.com/artf/grapesjs/blob/master/src/editor/config/config.js
 
-[2]: /api/devices.html
+[2]: /api/device_manager.html
 
 [3]: /api/parser.html
 

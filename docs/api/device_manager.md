@@ -30,7 +30,10 @@ const deviceManager = editor.Devices;
 
 *   [add][2]
 *   [get][3]
-*   [getAll][4]
+*   [getDevices][4]
+*   [remove][5]
+*   [select][6]
+*   [getSelected][7]
 
 [Device]: device.html
 
@@ -40,7 +43,7 @@ Add new device
 
 ### Parameters
 
-*   `props` **[Object][5]** Device properties
+*   `props` **[Object][8]** Device properties
 *   `options`   (optional, default `{}`)
 
 ### Examples
@@ -65,11 +68,11 @@ Returns **[Device]** Added device
 
 ## get
 
-Return device by name
+Return device by ID
 
 ### Parameters
 
-*   `name` **[String][6]** Name of the device
+*   `id` **[String][9]** ID of the device
 
 ### Examples
 
@@ -79,7 +82,27 @@ console.log(JSON.stringify(device));
 // {name: 'Tablet', width: '900px'}
 ```
 
-Returns **[Device]** 
+Returns **([Device] | null)** 
+
+## remove
+
+Remove device
+
+### Parameters
+
+*   `device` **([String][9] | [Device])** Device or device id
+*   `opts`   (optional, default `{}`)
+
+### Examples
+
+```javascript
+const removed = deviceManager.remove('device-id');
+// or by passing the Device
+const device = deviceManager.get('device-id');
+deviceManager.remove(device);
+```
+
+Returns **[Device]** Removed device
 
 ## getDevices
 
@@ -93,7 +116,37 @@ console.log(JSON.stringify(devices));
 // [{name: 'Desktop', width: ''}, ...]
 ```
 
-Returns **[Array][7]<[Device]>** 
+Returns **[Array][10]<[Device]>** 
+
+## select
+
+Change the selected device. This will update the frame in the canvas
+
+### Parameters
+
+*   `device` **([String][9] | [Device])** Device or device id
+*   `opts`   (optional, default `{}`)
+
+### Examples
+
+```javascript
+deviceManager.select('some-id');
+// or by passing the page
+const device = deviceManager.get('some-id');
+deviceManager.select(device);
+```
+
+## getSelected
+
+Get the selected device
+
+### Examples
+
+```javascript
+const selected = deviceManager.getSelected();
+```
+
+Returns **[Device]** 
 
 [1]: https://github.com/artf/grapesjs/blob/master/src/device_manager/config/config.js
 
@@ -101,10 +154,16 @@ Returns **[Array][7]<[Device]>**
 
 [3]: #get
 
-[4]: #getAll
+[4]: #getdevices
 
-[5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[5]: #remove
 
-[6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[6]: #select
 
-[7]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[7]: #getselected
+
+[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+
+[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+
+[10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
