@@ -85,17 +85,18 @@ export default () => {
      * @param {Object} props Device properties
      * @returns {[Device]} Added device
      * @example
-     * deviceManager.add({
+     * const device1 = deviceManager.add({
      *  // Without an explicit ID, the `name` will be taken. In case of missing `name`, a random ID will be created.
      *  id: 'tablet',
      *  name: 'Tablet',
      *  width: '900px', // This width will be applied on the canvas frame and for the CSS media
      * });
-     * deviceManager.add({
+     * const device2 = deviceManager.add({
      *  id: 'tablet2',
      *  name: 'Tablet 2',
      *  width: '800px', // This width will be applied on the canvas frame
      *  widthMedia: '810px', // This width that will be used for the CSS media
+     *  height: '600px', // Height will be applied on the canvas frame
      * });
      */
     add(props, options = {}) {
