@@ -121,6 +121,17 @@ describe('DeviceManager', () => {
       expect(eventFnAll).toBeCalled();
     });
 
+    test('Update device', () => {
+      const event = jest.fn();
+      em.on(obj.events.update, event);
+      const model = obj.add({});
+      const up = { name: 'Test' };
+      const opts = { myopts: 1 };
+      model.set(up, opts);
+      expect(event).toBeCalledTimes(1);
+      expect(event).toBeCalledWith(model, up, opts);
+    });
+
     test('Render devices', () => {
       expect(obj.render()).toBeTruthy();
     });

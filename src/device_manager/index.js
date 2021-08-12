@@ -74,15 +74,12 @@ export default () => {
     init(config = {}) {
       c = { ...defaults, ...config };
       const { em } = c;
-      this.em = em;
 
       devices = new Devices();
       (c.devices || []).forEach(dv => this.add(dv.id || dv.name, dv.width, dv));
+      this.em = em;
       this.all = devices;
-      devices
-        .on('add', (m, c, o) => em.trigger(evAdd, m, o))
-        .on('remove', (m, c, o) => em.trigger(evRemove, m, o))
-        .on('all', this.__catchAllEvent, this);
+      this.__initListen();
 
       return this;
     },

@@ -18,6 +18,19 @@ export default {
     }, {});
   },
 
+  __initListen() {
+    const { all, em, events } = this;
+    all &&
+      em &&
+      all
+        .on('add', (m, c, o) => em.trigger(events.add, m, o))
+        .on('remove', (m, c, o) => em.trigger(events.remove, m, o))
+        .on('change', (p, c) =>
+          em.trigger(events.update, p, p.changedAttributes(), c)
+        )
+        .on('all', this.__catchAllEvent, this);
+  },
+
   __remove(model, opts = {}) {
     const { em } = this;
     const md = isString(model) ? this.get(model) : model;
