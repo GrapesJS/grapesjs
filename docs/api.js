@@ -36,9 +36,11 @@ async function generateDocs () {
     ['parser/index.js', 'parser.md'],
   ].map(async (file) =>
     documentation.build([`${srcRoot}/${file[0]}`], { shallow: true })
-      .then(documentation.formats.md)
+      .then(cm => documentation.formats.md(cm, /*{ markdownToc: true }*/))
       .then(output => {
-        const res = output.replace(/\*\*\\\[/g, '**[');
+        const res = output
+          .replace(/\*\*\\\[/g, '**[')
+          .replace('**Extends Model**', '');
         fs.writeFileSync(`${docRoot}/api/${file[1]}`, res);
         log('Created', file[1]);
       })

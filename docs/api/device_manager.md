@@ -36,24 +36,28 @@ const deviceManager = editor.Devices;
 
 ## add
 
-Add new device.
+Add new device
 
 ### Parameters
 
-*   `id` **[String][5]** Device id
-*   `width` **[String][5]** Width of the device
-*   `options` **[Object][6]?** Custom options (optional, default `{}`)
+*   `props` **[Object][5]** Device properties
+*   `options`   (optional, default `{}`)
 
 ### Examples
 
 ```javascript
-deviceManager.add('tablet', '900px');
-deviceManager.add('tablet2', '900px', {
- height: '300px',
- // At first, GrapesJS tries to localize the name by device id.
- // In case is not found, the `name` property is used (or `id` if name is missing)
+const device1 = deviceManager.add({
+ // Without an explicit ID, the `name` will be taken. In case of missing `name`, a random ID will be created.
+ id: 'tablet',
+ name: 'Tablet',
+ width: '900px', // This width will be applied on the canvas frame and for the CSS media
+});
+const device2 = deviceManager.add({
+ id: 'tablet2',
  name: 'Tablet 2',
- widthMedia: '810px', // the width that will be used for the CSS media
+ width: '800px', // This width will be applied on the canvas frame
+ widthMedia: '810px', // This width that will be used for the CSS media
+ height: '600px', // Height will be applied on the canvas frame
 });
 ```
 
@@ -61,11 +65,11 @@ Returns **[Device]** Added device
 
 ## get
 
-Return device by name.
+Return device by name
 
 ### Parameters
 
-*   `name` **[String][5]** Name of the device
+*   `name` **[String][6]** Name of the device
 
 ### Examples
 
@@ -99,6 +103,6 @@ Returns **Collection**
 
 [4]: #getAll
 
-[5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
