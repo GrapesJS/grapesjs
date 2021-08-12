@@ -96,6 +96,8 @@
  * * `abort:{commandName}` - Triggered when the command execution is aborted (`editor.on(`run:preview:before`, opts => opts.abort = 1);`)
  * * `run` - Triggered on run of any command. The id and the result are passed as arguments to the callback
  * * `stop` - Triggered on stop of any command. The id and the result are passed as arguments to the callback
+ * ### Devices
+ * Check the [Devices](/api/devices.html) module.
  * ### Parser
  * Check the [Parser](/api/parser.html) module.
  * ### Pages

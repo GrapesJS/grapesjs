@@ -1,24 +1,24 @@
-import Backbone from 'backbone';
+import { Model } from 'backbone';
 
-export default Backbone.Model.extend({
-  idAttribute: 'name',
+export default class Device extends Model {
+  defaults() {
+    return {
+      name: '',
 
-  defaults: {
-    name: '',
+      // Width to set for the editor iframe
+      width: null,
 
-    // Width to set for the editor iframe
-    width: null,
+      // Height to set for the editor iframe
+      height: '',
 
-    // Height to set for the editor iframe
-    height: '',
+      // The width which will be used in media queries,
+      // If empty the width will be used
+      widthMedia: null,
 
-    // The width which will be used in media queries,
-    // If empty the width will be used
-    widthMedia: null,
-
-    // Setup the order of media queries
-    priority: null
-  },
+      // Setup the order of media queries
+      priority: null
+    };
+  }
 
   initialize() {
     this.get('widthMedia') === null &&
@@ -28,11 +28,19 @@ export default Backbone.Model.extend({
       this.set('priority', parseFloat(this.get('widthMedia')) || 0);
     const toCheck = ['width', 'height', 'widthMedia'];
     toCheck.forEach(prop => this.checkUnit(prop));
-  },
+  }
+
+  /**
+   * Get device width.
+   * @returns {String}
+   */
+  getWidth() {
+    return this.get('width');
+  }
 
   checkUnit(prop) {
     const pr = this.get(prop) || '';
     const noUnit = (parseFloat(pr) || 0).toString() === pr.toString();
     noUnit && this.set(prop, `${pr}px`);
   }
-});
+}
