@@ -30,6 +30,7 @@
  * @module Devices
  */
 import { isString } from 'underscore';
+import Module from 'common/module';
 import defaults from './config/config';
 import Device from './model/Device';
 import Devices from './model/Devices';
@@ -51,6 +52,8 @@ export default () => {
   let view;
 
   return {
+    ...Module,
+
     name: 'DeviceManager',
 
     Device,
@@ -60,12 +63,12 @@ export default () => {
     events: {
       all: evAll,
       select: evSelect,
-      selectBefore: evSelectBefore,
+      // selectBefore: evSelectBefore,
       update: evUpdate,
       add: evAdd,
-      addBefore: evAddBefore,
-      remove: evRemove,
-      removeBefore: evRemoveBefore
+      // addBefore: evAddBefore,
+      remove: evRemove
+      // removeBefore: evRemoveBefore
     },
 
     init(config = {}) {
@@ -76,7 +79,8 @@ export default () => {
       devices = new Devices();
       (c.devices || []).forEach(dv => this.add(dv.id || dv.name, dv.width, dv));
       devices.on('add', (m, c, o) => em.trigger(evAdd, m, o));
-      this.devices = devices;
+      devices.on('all', this.__catchAllEvent, this);
+      this.all = devices;
 
       return this;
     },
@@ -118,20 +122,47 @@ export default () => {
         result = props;
       }
 
+      if (!result.id) {
+        result.id = result.name || this._createId();
+      }
+
       return devices.add(result, opts);
     },
 
     /**
-     * Return device by name
-     * @param  {String} name Name of the device
-     * @returns {[Device]}
+     * Return device by ID
+     * @param  {String} id ID of the device
+     * @returns {[Device]|null}
      * @example
      * const device = deviceManager.get('Tablet');
      * console.log(JSON.stringify(device));
      * // {name: 'Tablet', width: '900px'}
      */
-    get(name) {
-      return devices.get(name);
+    get(id) {
+      // Support old API
+      const byName = this.getAll().filter(d => d.get('name') === id)[0];
+      return byName || devices.get(id) || null;
+    },
+
+    /**
+     * Remove devie
+     * @param {String|[Device]} page Page or page id
+     * @returns {[Page]}
+     * @example
+     * const removedPage = pageManager.remove('page-id');
+     * // or by passing the page
+     * const somePage = pageManager.get('page-id');
+     * pageManager.remove(somePage);
+     */
+    remove(page, opts = {}) {
+      // const { em } = this;
+      // const pg = isString(page) ? this.get(page) : page;
+      // const rm = () => {
+      //   pg && this.pages.remove(pg, opts);
+      //   return pg;
+      // };
+      // !opts.silent && em.trigger(evPageRemoveBefore, pg, rm, opts);
+      // return !opts.abort && rm();
     },
 
     /**
@@ -160,8 +191,8 @@ export default () => {
     },
 
     destroy() {
-      devices.reset();
       devices.stopListening();
+      devices.reset();
       view && view.remove();
       [devices, view].forEach(i => (i = null));
       c = {};
