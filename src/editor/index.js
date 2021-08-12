@@ -426,8 +426,7 @@ export default (config = {}) => {
      * }
      */
     getEditing() {
-      const res = em.getEditing();
-      return (res && res.model) || null;
+      return em.getEditing();
     },
 
     /**

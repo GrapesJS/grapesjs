@@ -609,6 +609,10 @@ export default Backbone.Model.extend({
 
   storeData() {
     let result = {};
+    // Sync content if there is an active RTE
+    const editingCmp = this.getEditing();
+    editingCmp && editingCmp.trigger('sync:content', { noCount: true });
+
     this.get('storables').forEach(m => {
       result = { ...result, ...m.store(1) };
     });
@@ -817,7 +821,8 @@ export default Backbone.Model.extend({
   },
 
   getEditing() {
-    return this.get('editing');
+    const res = this.get('editing');
+    return (res && res.model) || null;
   },
 
   setEditing(value) {
