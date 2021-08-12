@@ -12,12 +12,6 @@
 *   `widthMedia` **[String][1]?** The width which will be used in media queries, If empty the width will be used
 *   `priority` **[Number][2]?** Setup the order of media queries
 
-### getWidth
-
-Get device width.
-
-Returns **[String][1]** 
-
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
 [2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number

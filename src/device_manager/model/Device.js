@@ -1,7 +1,7 @@
 import { Model } from 'backbone';
 
 /**
- * @typedef Component
+ * @typedef Device
  * @property {String} [name=''] Device type, eg. `Mobile`
  * @property {String} [width] Width to set for the editor iframe, eg. '900px'
  * @property {String} [height=''] Height to set for the editor iframe, eg. '600px'
@@ -27,14 +27,6 @@ export default class Device extends Model {
       this.set('priority', parseFloat(this.get('widthMedia')) || 0);
     const toCheck = ['width', 'height', 'widthMedia'];
     toCheck.forEach(prop => this.checkUnit(prop));
-  }
-
-  /**
-   * Get device width.
-   * @returns {String}
-   */
-  getWidth() {
-    return this.get('width');
   }
 
   checkUnit(prop) {
