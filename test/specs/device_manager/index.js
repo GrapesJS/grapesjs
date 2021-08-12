@@ -132,6 +132,33 @@ describe('DeviceManager', () => {
       expect(event).toBeCalledWith(model, up, opts);
     });
 
+    test('Select device', () => {
+      const event = jest.fn();
+      const eventAll = jest.fn();
+      const model = obj.add({ id: 'dev-1' });
+      const model2 = obj.add({ id: 'dev-2' });
+
+      em.on(obj.events.select, event);
+      em.on(obj.events.all, eventAll);
+      // Select from the manager
+      obj.select(model);
+      expect(em.get('device')).toBe('dev-1');
+      expect(obj.getSelected()).toBe(model);
+      expect(event).toBeCalledTimes(1);
+      expect(eventAll).toBeCalled();
+
+      // Select from the manager with id
+      obj.select('dev-2');
+      expect(em.get('device')).toBe('dev-2');
+      expect(obj.getSelected()).toBe(model2);
+      expect(event).toBeCalledTimes(2);
+
+      // Select from the editor
+      em.set('device', 'dev-1');
+      expect(obj.getSelected()).toBe(model);
+      expect(event).toBeCalledTimes(3);
+    });
+
     test('Render devices', () => {
       expect(obj.render()).toBeTruthy();
     });

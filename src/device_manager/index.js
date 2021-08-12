@@ -45,6 +45,7 @@ export const evAdd = `${evPfx}add`;
 export const evAddBefore = `${evAdd}:before`;
 export const evRemove = `${evPfx}remove`;
 export const evRemoveBefore = `${evRemove}:before`;
+const chnSel = 'change:device';
 
 export default () => {
   let c = {};
@@ -80,8 +81,18 @@ export default () => {
       this.em = em;
       this.all = devices;
       this.__initListen();
+      em.on(chnSel, this._onSelect, this);
 
       return this;
+    },
+
+    _onSelect(m, deviceId, opts) {
+      const { em, events } = this;
+      const prevId = m.previous('device');
+      const newDevice = this.get(deviceId);
+      const ev = events.select;
+      em.trigger(ev, newDevice, this.get(prevId));
+      this.__catchAllEvent(ev, newDevice, opts);
     },
 
     /**
@@ -167,6 +178,31 @@ export default () => {
      */
     getDevices() {
       return devices.models;
+    },
+
+    /**
+     * Change the selected device. This will update the frame in the canvas
+     * @param {String|[Device]} device Device or device id
+     * @example
+     * deviceManager.select('some-id');
+     * // or by passing the page
+     * const device = deviceManager.get('some-id');
+     * deviceManager.select(device);
+     */
+    select(device, opts = {}) {
+      const md = isString(device) ? this.get(device) : device;
+      md && this.em.set('device', md.get('id'), opts);
+      return this;
+    },
+
+    /**
+     * Get the selected device
+     * @returns {[Device]}
+     * @example
+     * const selected = deviceManager.getSelected();
+     */
+    getSelected() {
+      return this.get(this.em.get('device'));
     },
 
     getAll() {
