@@ -23,7 +23,10 @@
  * ## Methods
  * * [add](#add)
  * * [get](#get)
- * * [getAll](#getAll)
+ * * [getDevices](#getdevices)
+ * * [remove](#remove)
+ * * [select](#select)
+ * * [getSelected](#getselected)
  *
  * [Device]: device.html
  *
