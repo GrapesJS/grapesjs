@@ -76,6 +76,7 @@ export default () => {
       devices = new Devices();
       (c.devices || []).forEach(dv => this.add(dv.id || dv.name, dv.width, dv));
       devices.on('add', (m, c, o) => em.trigger(evAdd, m, o));
+      this.devices = devices;
 
       return this;
     },
@@ -125,7 +126,7 @@ export default () => {
      * @param  {String} name Name of the device
      * @returns {[Device]}
      * @example
-     * var device = deviceManager.get('Tablet');
+     * const device = deviceManager.get('Tablet');
      * console.log(JSON.stringify(device));
      * // {name: 'Tablet', width: '900px'}
      */
@@ -134,13 +135,17 @@ export default () => {
     },
 
     /**
-     * Return all devices.
-     * @return {Collection}
+     * Return all devices
+     * @returns {Array<[Device]>}
      * @example
-     * var devices = deviceManager.getAll();
+     * const devices = deviceManager.getDevices();
      * console.log(JSON.stringify(devices));
      * // [{name: 'Desktop', width: ''}, ...]
      */
+    getDevices() {
+      return devices.models;
+    },
+
     getAll() {
       return devices;
     },

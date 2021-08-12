@@ -40,6 +40,8 @@ async function generateDocs () {
       .then(output => {
         const res = output
           .replace(/\*\*\\\[/g, '**[')
+          .replace(/<\\\[/g, '<[')
+          .replace(/\| \\\[/g, '| [')
           .replace('**Extends Model**', '');
         fs.writeFileSync(`${docRoot}/api/${file[1]}`, res);
         log('Created', file[1]);

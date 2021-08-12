@@ -74,26 +74,26 @@ Return device by name
 ### Examples
 
 ```javascript
-var device = deviceManager.get('Tablet');
+const device = deviceManager.get('Tablet');
 console.log(JSON.stringify(device));
 // {name: 'Tablet', width: '900px'}
 ```
 
 Returns **[Device]** 
 
-## getAll
+## getDevices
 
-Return all devices.
+Return all devices
 
 ### Examples
 
 ```javascript
-var devices = deviceManager.getAll();
+const devices = deviceManager.getDevices();
 console.log(JSON.stringify(devices));
 // [{name: 'Desktop', width: ''}, ...]
 ```
 
-Returns **Collection** 
+Returns **[Array][7]<[Device]>** 
 
 [1]: https://github.com/artf/grapesjs/blob/master/src/device_manager/config/config.js
 
@@ -106,3 +106,5 @@ Returns **Collection**
 [5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
 [6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+
+[7]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array

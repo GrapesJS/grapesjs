@@ -43,6 +43,8 @@ const pageManager = editor.Pages;
 *   [select][6]
 *   [getSelected][7]
 
+[Page]: page.html
+
 ## add
 
 Add new page
@@ -62,7 +64,7 @@ const newPage = pageManager.add({
 });
 ```
 
-Returns **Page** 
+Returns **[Page]** 
 
 ## remove
 
@@ -70,7 +72,7 @@ Remove page
 
 ### Parameters
 
-*   `page` **([String][9] | Page)** Page or page id
+*   `page` **([String][9] | [Page])** Page or page id
 *   `opts`   (optional, default `{}`)
 
 ### Examples
@@ -82,7 +84,7 @@ const somePage = pageManager.get('page-id');
 pageManager.remove(somePage);
 ```
 
-Returns **Page** 
+Returns **[Page]** 
 
 ## get
 
@@ -98,7 +100,7 @@ Get page by id
 const somePage = pageManager.get('page-id');
 ```
 
-Returns **Page** 
+Returns **[Page]** 
 
 ## getMain
 
@@ -110,7 +112,7 @@ Get main page (the first one available)
 const mainPage = pageManager.getMain();
 ```
 
-Returns **Page** 
+Returns **[Page]** 
 
 ## getAll
 
@@ -122,7 +124,7 @@ Get all pages
 const arrayOfPages = pageManager.getAll();
 ```
 
-Returns **[Array][10]\<Page>** 
+Returns **[Array][10]<[Page]>** 
 
 ## select
 
@@ -130,7 +132,7 @@ Change the selected page. This will switch the page rendered in canvas
 
 ### Parameters
 
-*   `page` **([String][9] | Page)** Page or page id
+*   `page` **([String][9] | [Page])** Page or page id
 *   `opts`   (optional, default `{}`)
 
 ### Examples
@@ -154,7 +156,7 @@ Get the selected page
 const selectedPage = pageManager.getSelected();
 ```
 
-Returns **Page** 
+Returns **[Page]** 
 
 [1]: #add
 
