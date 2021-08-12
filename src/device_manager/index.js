@@ -29,6 +29,7 @@
  *
  * @module Devices
  */
+import { isString } from 'underscore';
 import defaults from './config/config';
 import Device from './model/Device';
 import Devices from './model/Devices';
@@ -69,37 +70,53 @@ export default () => {
 
     init(config = {}) {
       c = { ...defaults, ...config };
+      const { em } = c;
+      this.em = em;
 
       devices = new Devices();
       (c.devices || []).forEach(dv => this.add(dv.id || dv.name, dv.width, dv));
+      devices.on('add', (m, c, o) => em.trigger(evAdd, m, o));
 
       return this;
     },
 
     /**
-     * Add new device.
-     * @param {String} id Device id
-     * @param {String} width Width of the device
-     * @param {Object} [options] Custom options
+     * Add new device
+     * @param {Object} props Device properties
      * @returns {[Device]} Added device
      * @example
-     * deviceManager.add('tablet', '900px');
-     * deviceManager.add('tablet2', '900px', {
-     *  height: '300px',
-     *  // At first, GrapesJS tries to localize the name by device id.
-     *  // In case is not found, the `name` property is used (or `id` if name is missing)
+     * deviceManager.add({
+     *  // Without an explicit ID, the `name` will be taken. In case of missing `name`, a random ID will be created.
+     *  id: 'tablet',
+     *  name: 'Tablet',
+     *  width: '900px', // This width will be applied on the canvas frame and for the CSS media
+     * });
+     * deviceManager.add({
+     *  id: 'tablet2',
      *  name: 'Tablet 2',
-     *  widthMedia: '810px', // the width that will be used for the CSS media
+     *  width: '800px', // This width will be applied on the canvas frame
+     *  widthMedia: '810px', // This width that will be used for the CSS media
      * });
      */
-    add(id, width, options = {}) {
-      const obj = {
-        ...options,
-        id,
-        name: options.name || id,
-        width: width
-      };
-      return devices.add(obj);
+    add(props, options = {}) {
+      let result;
+      let opts = options;
+
+      // Support old API
+      if (isString(props)) {
+        const width = options;
+        opts = arguments[2] || {};
+        result = {
+          ...opts,
+          id: props,
+          name: opts.name || props,
+          width
+        };
+      } else {
+        result = props;
+      }
+
+      return devices.add(result, opts);
     },
 
     /**
@@ -116,7 +133,7 @@ export default () => {
     },
 
     /**
-     * Return all devices
+     * Return all devices.
      * @return {Collection}
      * @example
      * var devices = deviceManager.getAll();

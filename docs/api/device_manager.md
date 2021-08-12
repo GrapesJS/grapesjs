@@ -61,7 +61,7 @@ Returns **[Device]** Added device
 
 ## get
 
-Return device by name
+Return device by name.
 
 ### Parameters
 
@@ -79,7 +79,7 @@ Returns **[Device]**
 
 ## getAll
 
-Return all devices
+Return all devices.
 
 ### Examples
 
