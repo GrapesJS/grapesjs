@@ -62,17 +62,17 @@ export default ComponentView.extend({
    * */
   onActive(ev) {
     ev && ev.stopPropagation();
-    var em = this.opts.config.em;
-    var editor = em ? em.get('Editor') : '';
+    const { em, model } = this;
+    const ed = em && em.get('Editor');
 
-    if (editor && this.model.get('editable')) {
-      editor.runCommand('open-assets', {
-        target: this.model,
+    if (ed && model.get('editable')) {
+      ed.runCommand('open-assets', {
+        target: model,
         types: ['image'],
         accept: 'image/*',
         onSelect() {
-          editor.Modal.close();
-          editor.AssetManager.setTarget(null);
+          ed.Modal.close();
+          ed.AssetManager.setTarget(null);
         }
       });
     }
