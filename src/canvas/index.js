@@ -25,6 +25,8 @@
  * * [scrollTo](#scrollto)
  * * [setZoom](#setzoom)
  * * [getZoom](#getzoom)
+ * * [getCoords](#getcoords)
+ * * [setCoords](#setcoords)
  *
  * [Component]: component.html
  *

@@ -30,11 +30,19 @@ const canvas = editor.Canvas;
 *   [setZoom][11]
 *   [getZoom][12]
 
+[Component]: component.html
+
 ## getConfig
 
 Get the configuration object
 
-Returns **[Object][13]** 
+### Examples
+
+```javascript
+console.log(canvas.getConfig())
+```
+
+Returns **[Object][13]** Configuration object
 
 ## getElement
 
@@ -44,25 +52,25 @@ Returns **[HTMLElement][14]**
 
 ## getFrameEl
 
-Get the iframe element of the canvas
+Get the main frame element of the canvas
 
 Returns **[HTMLIFrameElement][15]** 
 
 ## getWindow
 
-Get the window instance of the iframe element
+Get the main frame window instance
 
 Returns **[Window][16]** 
 
 ## getDocument
 
-Get the document of the iframe element
+Get the main frame document element
 
 Returns **HTMLDocument** 
 
 ## getBody
 
-Get the body of the iframe element
+Get the main frame body element
 
 Returns **[HTMLBodyElement][17]** 
 
@@ -103,7 +111,7 @@ passed to it. For instance, you can scroll smoothly by using
 
 ### Parameters
 
-*   `el` **([HTMLElement][14] | Component)** 
+*   `el` **([HTMLElement][14] | [Component])** 
 *   `opts` **[Object][13]** Options, same as options for `scrollIntoView` (optional, default `{}`)
 
     *   `opts.force` **[Boolean][19]** Force the scroll, even if the element is already visible (optional, default `false`)
@@ -120,19 +128,63 @@ canvas.scrollTo(selected, { force: true });
 
 ## setZoom
 
-Set zoom value
+Set canvas zoom value
 
 ### Parameters
 
 *   `value` **[Number][20]** The zoom value, from 0 to 100
 
+### Examples
+
+```javascript
+canvas.setZoom(50); // set zoom to 50%
+```
+
 Returns **this** 
 
 ## getZoom
 
-Get zoom value
+Get canvas zoom value
+
+### Examples
+
+```javascript
+canvas.setZoom(50); // set zoom to 50%
+const zoom = canvas.getZoom(); // 50
+```
 
 Returns **[Number][20]** 
+
+## setCoords
+
+Set canvas position coordinates
+
+### Parameters
+
+*   `x` **[Number][20]** Horizontal position
+*   `y` **[Number][20]** Vertical position
+
+### Examples
+
+```javascript
+canvas.setCoords(100, 100);
+```
+
+Returns **this** 
+
+## getCoords
+
+Get canvas position coordinates
+
+### Examples
+
+```javascript
+canvas.setCoords(100, 100);
+const coords = canvas.getCoords();
+// { x: 100, y: 100 }
+```
+
+Returns **[Object][13]** Object containing coordinates
 
 ## addFrame
 
@@ -146,21 +198,21 @@ Add new frame to the canvas
 ### Examples
 
 ```javascript
-editor.Canvas.addFrame({
-name: 'Mobile home page',
-x: 100, // Position in canvas
-y: 100,
-width: 500, // Frame dimensions
-height: 600,
-// device: 'DEVICE-ID',
-components: [
-'<h1 class="testh">Title frame</h1>',
-'<p class="testp">Paragraph frame</p>',
-],
-styles: `
-.testh { color: red; }
-.testp { color: blue; }
-`,
+canvas.addFrame({
+  name: 'Mobile home page',
+  x: 100, // Position in canvas
+  y: 100,
+  width: 500, // Frame dimensions
+  height: 600,
+  // device: 'DEVICE-ID',
+  components: [
+    '<h1 class="testh">Title frame</h1>',
+    '<p class="testp">Paragraph frame</p>',
+  ],
+  styles: `
+    .testh { color: red; }
+    .testp { color: blue; }
+  `,
 });
 ```
 
