@@ -28,6 +28,8 @@ const blockManager = editor.BlockManager;
 *   [getContainer][9]
 *   [render][10]
 
+[Block]: block.html
+
 ## getConfig
 
 Get configuration object
@@ -69,7 +71,7 @@ blockManager.add('h1-block', {
 });
 ```
 
-Returns **Block** Added block
+Returns **[Block]** Added block
 
 ## get
 
@@ -86,6 +88,8 @@ const block = blockManager.get('h1-block');
 console.log(JSON.stringify(block));
 // {label: 'Heading', content: '<h1>Put your ...', ...}
 ```
+
+Returns **[Block]** 
 
 ## getAll
 
@@ -123,7 +127,7 @@ const id = 'button';
 blockManager.remove(id);
 ```
 
-Returns **Block** Removed block
+Returns **[Block]** Removed block
 
 ## getCategories
 
