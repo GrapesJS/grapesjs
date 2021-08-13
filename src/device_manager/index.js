@@ -80,9 +80,10 @@ export default () => {
       const { em } = c;
 
       devices = new Devices();
-      (c.devices || []).forEach(dv => this.add(dv.id || dv.name, dv.width, dv));
+      c.devices.forEach(dv => this.add(dv));
       this.em = em;
       this.all = devices;
+      this.select(c.default || devices.at(0));
       this.__initListen();
       em.on(chnSel, this._onSelect, this);
 

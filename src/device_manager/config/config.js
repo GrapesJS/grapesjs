@@ -1,4 +1,8 @@
 export default {
+  // The device `id` to select on start, if not indicated, the first available from `devices` will be used.
+  default: null,
+
+  // Default devices
   devices: [
     {
       id: 'desktop',

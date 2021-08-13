@@ -28,13 +28,10 @@ export default class Canvas extends Model {
 
   init() {
     const { em } = this;
-    this.set(
-      'frames',
-      em
-        .get('PageManager')
-        .getMain()
-        .getFrames()
-    );
+    const mainPage = em.get('PageManager').getMain();
+    const frame = mainPage.getMainFrame();
+    this.set('frames', mainPage.getFrames());
+    this.updateDevice({ frame });
   }
 
   _pageUpdated(page, prev) {
@@ -45,10 +42,10 @@ export default class Canvas extends Model {
     this.set('frames', page.getFrames());
   }
 
-  updateDevice() {
+  updateDevice(opts = {}) {
     const { em } = this;
     const device = em.getDeviceModel();
-    const model = em.getCurrentFrameModel();
+    const model = opts.frame || em.getCurrentFrameModel();
 
     if (model && device) {
       const { width, height } = device.attributes;
