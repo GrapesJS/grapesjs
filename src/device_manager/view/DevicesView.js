@@ -61,7 +61,7 @@ export default class DevicesView extends View {
     var devEl = this.devicesEl;
     if (em && em.getDeviceModel && devEl) {
       var device = em.getDeviceModel();
-      var name = device ? device.get('name') : '';
+      var name = device ? device.get('id') : '';
       devEl.val(name);
     }
   }
@@ -78,7 +78,7 @@ export default class DevicesView extends View {
     collection.each(device => {
       const { name, id } = device.attributes;
       const label = (em && em.t && em.t(`deviceManager.devices.${id}`)) || name;
-      result += `<option value="${name}">${label}</option>`;
+      result += `<option value="${id}">${label}</option>`;
     });
 
     return result;
@@ -90,6 +90,7 @@ export default class DevicesView extends View {
     $el.html(this.template({ ppfx, label }));
     this.devicesEl = $el.find(`.${ppfx}devices`);
     this.devicesEl.append(this.getOptions());
+    this.devicesEl.val(em.get('device'));
     el.className = `${ppfx}devices-c`;
     return this;
   }
