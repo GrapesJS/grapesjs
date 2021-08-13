@@ -575,7 +575,7 @@ export default () => {
      * @param {Number} value The zoom value, from 0 to 100
      * @returns {this}
      * @example
-     * canvas.setZoom(50) // set zoom to 50%
+     * canvas.setZoom(50); // set zoom to 50%
      */
     setZoom(value) {
       canvas.set('zoom', parseFloat(value));
@@ -586,11 +586,37 @@ export default () => {
      * Get canvas zoom value
      * @returns {Number}
      * @example
-     * canvas.setZoom(50) // set zoom to 50%
-     * const zoom = canvas.getZoom() // 50
+     * canvas.setZoom(50); // set zoom to 50%
+     * const zoom = canvas.getZoom(); // 50
      */
     getZoom() {
       return parseFloat(canvas.get('zoom'));
+    },
+
+    /**
+     * Set canvas position coordinates
+     * @param {Number} x Horizontal position
+     * @param {Number} y Vertical position
+     * @returns {this}
+     * @example
+     * canvas.setCoords(100, 100);
+     */
+    setCoords(x, y) {
+      canvas.set({ x: parseFloat(x), y: parseFloat(y) });
+      return this;
+    },
+
+    /**
+     * Get canvas position coordinates
+     * @returns {Object} Object containing coordinates
+     * @example
+     * canvas.setCoords(100, 100);
+     * const coords = canvas.getCoords();
+     * // { x: 100, y: 100 }
+     */
+    getCoords() {
+      const { x, y } = canvas.attributes;
+      return { x, y };
     },
 
     getZoomDecimal() {
