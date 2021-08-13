@@ -62,6 +62,7 @@ module.exports = {
         ['/api/canvas', 'Canvas'],
         ['/api/assets', 'Asset Manager'],
         ['/api/block_manager', 'Block Manager'],
+        ['/api/block', `${subDivider}Block`],
         ['/api/commands', 'Commands'],
         ['/api/components', 'DOM Components'],
         ['/api/component', `${subDivider}Component`],

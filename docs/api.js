@@ -14,6 +14,7 @@ async function generateDocs () {
     ['editor/index.js', 'editor.md'],
     ['asset_manager/index.js', 'assets.md'],
     ['block_manager/index.js', 'block_manager.md'],
+    ['block_manager/model/Block.js', 'block.md'],
     ['commands/index.js', 'commands.md'],
     ['dom_components/index.js', 'components.md'],
     ['dom_components/model/Component.js', 'component.md'],

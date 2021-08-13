@@ -29,6 +29,8 @@ const canvas = editor.Canvas;
 *   [scrollTo][10]
 *   [setZoom][11]
 *   [getZoom][12]
+*   [getCoords][13]
+*   [setCoords][14]
 
 [Component]: component.html
 
@@ -42,25 +44,25 @@ Get the configuration object
 console.log(canvas.getConfig())
 ```
 
-Returns **[Object][13]** Configuration object
+Returns **[Object][15]** Configuration object
 
 ## getElement
 
 Get the canvas element
 
-Returns **[HTMLElement][14]** 
+Returns **[HTMLElement][16]** 
 
 ## getFrameEl
 
 Get the main frame element of the canvas
 
-Returns **[HTMLIFrameElement][15]** 
+Returns **[HTMLIFrameElement][17]** 
 
 ## getWindow
 
 Get the main frame window instance
 
-Returns **[Window][16]** 
+Returns **[Window][18]** 
 
 ## getDocument
 
@@ -72,7 +74,7 @@ Returns **HTMLDocument**
 
 Get the main frame body element
 
-Returns **[HTMLBodyElement][17]** 
+Returns **[HTMLBodyElement][19]** 
 
 ## setCustomBadgeLabel
 
@@ -80,7 +82,7 @@ Set custom badge naming strategy
 
 ### Parameters
 
-*   `f` **[Function][18]** 
+*   `f` **[Function][20]** 
 
 ### Examples
 
@@ -94,13 +96,13 @@ canvas.setCustomBadgeLabel(function(component){
 
 Get canvas rectangular data
 
-Returns **[Object][13]** 
+Returns **[Object][15]** 
 
 ## hasFocus
 
 Check if the canvas is focused
 
-Returns **[Boolean][19]** 
+Returns **[Boolean][21]** 
 
 ## scrollTo
 
@@ -111,10 +113,10 @@ passed to it. For instance, you can scroll smoothly by using
 
 ### Parameters
 
-*   `el` **([HTMLElement][14] | [Component])** 
-*   `opts` **[Object][13]** Options, same as options for `scrollIntoView` (optional, default `{}`)
+*   `el` **([HTMLElement][16] | [Component])** 
+*   `opts` **[Object][15]** Options, same as options for `scrollIntoView` (optional, default `{}`)
 
-    *   `opts.force` **[Boolean][19]** Force the scroll, even if the element is already visible (optional, default `false`)
+    *   `opts.force` **[Boolean][21]** Force the scroll, even if the element is already visible (optional, default `false`)
 
 ### Examples
 
@@ -132,7 +134,7 @@ Set canvas zoom value
 
 ### Parameters
 
-*   `value` **[Number][20]** The zoom value, from 0 to 100
+*   `value` **[Number][22]** The zoom value, from 0 to 100
 
 ### Examples
 
@@ -153,7 +155,7 @@ canvas.setZoom(50); // set zoom to 50%
 const zoom = canvas.getZoom(); // 50
 ```
 
-Returns **[Number][20]** 
+Returns **[Number][22]** 
 
 ## setCoords
 
@@ -161,8 +163,8 @@ Set canvas position coordinates
 
 ### Parameters
 
-*   `x` **[Number][20]** Horizontal position
-*   `y` **[Number][20]** Vertical position
+*   `x` **[Number][22]** Horizontal position
+*   `y` **[Number][22]** Vertical position
 
 ### Examples
 
@@ -184,7 +186,7 @@ const coords = canvas.getCoords();
 // { x: 100, y: 100 }
 ```
 
-Returns **[Object][13]** Object containing coordinates
+Returns **[Object][15]** Object containing coordinates
 
 ## addFrame
 
@@ -192,7 +194,7 @@ Add new frame to the canvas
 
 ### Parameters
 
-*   `props` **[Object][13]** Frame properties (optional, default `{}`)
+*   `props` **[Object][15]** Frame properties (optional, default `{}`)
 *   `opts`   (optional, default `{}`)
 
 ### Examples
@@ -242,18 +244,22 @@ Returns **Frame**
 
 [12]: #getzoom
 
-[13]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[13]: #getcoords
 
-[14]: https://developer.mozilla.org/docs/Web/HTML/Element
+[14]: #setcoords
 
-[15]: https://developer.mozilla.org/docs/Web/API/HTMLIFrameElement
+[15]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[16]: https://developer.mozilla.org/docs/Web/API/Window
+[16]: https://developer.mozilla.org/docs/Web/HTML/Element
 
-[17]: https://developer.mozilla.org/docs/Web/HTML/Element/body
+[17]: https://developer.mozilla.org/docs/Web/API/HTMLIFrameElement
 
-[18]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+[18]: https://developer.mozilla.org/docs/Web/API/Window
 
-[19]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[19]: https://developer.mozilla.org/docs/Web/HTML/Element/body
 
-[20]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+[20]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+
+[21]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+
+[22]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
