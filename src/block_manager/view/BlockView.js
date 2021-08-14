@@ -28,7 +28,7 @@ export default Backbone.View.extend({
     if (!onClick) {
       return;
     } else if (isFunction(onClick)) {
-      return onClick(em.getEditor(), model, { event: ev });
+      return onClick(model, em.getEditor(), { event: ev });
     }
     const sorter = config.getSorter();
     const content = model.get('content');
