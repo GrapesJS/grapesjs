@@ -1859,6 +1859,10 @@ Component.checkId = (components, styles = [], list = {}, opts = {}) => {
   });
 };
 
+Component.getDefaults = function() {
+  return result(this.prototype, 'defaults');
+};
+
 Component.prototype.defaults = {
   tagName: 'div',
   type: '',
