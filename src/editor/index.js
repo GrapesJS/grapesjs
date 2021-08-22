@@ -313,7 +313,7 @@ export default (config = {}) => {
      * editor.setStyle('.cls{color: red}');
      * //or
      * editor.setStyle({
-     *   selectors: ['cls']
+     *   selectors: ['cls'],
      *   style: { color: 'red' }
      * });
      */
