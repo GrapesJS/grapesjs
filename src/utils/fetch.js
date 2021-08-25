@@ -1,8 +1,11 @@
 import Promise from 'promise-polyfill';
+import { hasWin } from 'utils/mixins';
 
-window.Promise = window.Promise || Promise;
+if (hasWin()) {
+  window.Promise = window.Promise || Promise;
+}
 
-export default (typeof fetch == 'function'
+export default typeof fetch == 'function'
   ? fetch.bind()
   : (url, options) => {
       return new Promise((res, rej) => {
@@ -30,4 +33,4 @@ export default (typeof fetch == 'function'
         // Include body only if present
         options.body ? req.send(options.body) : req.send();
       });
-    });
+    };

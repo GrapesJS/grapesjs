@@ -25,6 +25,10 @@
  * * [scrollTo](#scrollto)
  * * [setZoom](#setzoom)
  * * [getZoom](#getzoom)
+ * * [getCoords](#getcoords)
+ * * [setCoords](#setcoords)
+ *
+ * [Component]: component.html
  *
  * @module Canvas
  */
@@ -48,11 +52,6 @@ export default () => {
       return CanvasView;
     },
 
-    /**
-     * Name of the module
-     * @type {String}
-     * @private
-     */
     name: 'Canvas',
 
     /**
@@ -80,10 +79,6 @@ export default () => {
 
     onLoad() {
       this.model.init();
-      CanvasView = new canvasView({
-        model: canvas,
-        config: c
-      });
     },
 
     getModel() {
@@ -92,7 +87,9 @@ export default () => {
 
     /**
      * Get the configuration object
-     * @return {Object}
+     * @returns {Object} Configuration object
+     * @example
+     * console.log(canvas.getConfig())
      */
     getConfig() {
       return c;
@@ -100,7 +97,7 @@ export default () => {
 
     /**
      * Get the canvas element
-     * @return {HTMLElement}
+     * @returns {HTMLElement}
      */
     getElement() {
       return CanvasView.el;
@@ -111,11 +108,11 @@ export default () => {
     },
 
     /**
-     * Get the iframe element of the canvas
-     * @return {HTMLIFrameElement}
+     * Get the main frame element of the canvas
+     * @returns {HTMLIFrameElement}
      */
     getFrameEl() {
-      const { frame } = CanvasView;
+      const { frame } = CanvasView || {};
       return frame && frame.el;
     },
 
@@ -124,16 +121,16 @@ export default () => {
     },
 
     /**
-     * Get the window instance of the iframe element
-     * @return {Window}
+     * Get the main frame window instance
+     * @returns {Window}
      */
     getWindow() {
       return this.getFrameEl().contentWindow;
     },
 
     /**
-     * Get the document of the iframe element
-     * @return {HTMLDocument}
+     * Get the main frame document element
+     * @returns {HTMLDocument}
      */
     getDocument() {
       const frame = this.getFrameEl();
@@ -141,7 +138,7 @@ export default () => {
     },
 
     /**
-     * Get the body of the iframe element
+     * Get the main frame body element
      * @return {HTMLBodyElement}
      */
     getBody() {
@@ -163,7 +160,7 @@ export default () => {
 
     /**
      * Returns element containing all global canvas tools
-     * @return {HTMLElement}
+     * @returns {HTMLElement}
      * @private
      */
     getGlobalToolsEl() {
@@ -172,7 +169,7 @@ export default () => {
 
     /**
      * Returns element containing all canvas tools
-     * @return {HTMLElement}
+     * @returns {HTMLElement}
      * @private
      */
     getToolsEl(compView) {
@@ -181,7 +178,7 @@ export default () => {
 
     /**
      * Returns highlighter element
-     * @return {HTMLElement}
+     * @returns {HTMLElement}
      * @private
      */
     getHighlighter(compView) {
@@ -190,7 +187,7 @@ export default () => {
 
     /**
      * Returns badge element
-     * @return {HTMLElement}
+     * @returns {HTMLElement}
      * @private
      */
     getBadgeEl(compView) {
@@ -199,7 +196,7 @@ export default () => {
 
     /**
      * Returns placer element
-     * @return {HTMLElement}
+     * @returns {HTMLElement}
      * @private
      */
     getPlacerEl() {
@@ -208,7 +205,7 @@ export default () => {
 
     /**
      * Returns ghost element
-     * @return {HTMLElement}
+     * @returns {HTMLElement}
      * @private
      */
     getGhostEl() {
@@ -217,7 +214,7 @@ export default () => {
 
     /**
      * Returns toolbar element
-     * @return {HTMLElement}
+     * @returns {HTMLElement}
      * @private
      */
     getToolbarEl() {
@@ -226,7 +223,7 @@ export default () => {
 
     /**
      * Returns resizer element
-     * @return {HTMLElement}
+     * @returns {HTMLElement}
      * @private
      */
     getResizerEl() {
@@ -235,7 +232,7 @@ export default () => {
 
     /**
      * Returns offset viewer element
-     * @return {HTMLElement}
+     * @returns {HTMLElement}
      * @private
      */
     getOffsetViewerEl(compView) {
@@ -248,24 +245,25 @@ export default () => {
 
     /**
      * Returns fixed offset viewer element
-     * @return {HTMLElement}
+     * @returns {HTMLElement}
      * @private
      */
     getFixedOffsetViewerEl() {
       return CanvasView.fixedOffsetEl;
     },
 
-    /**
-     * Render canvas
-     * @private
-     * */
     render() {
+      CanvasView && CanvasView.remove();
+      CanvasView = new canvasView({
+        model: canvas,
+        config: c
+      });
       return CanvasView.render().el;
     },
 
     /**
      * Get frame position
-     * @return {Object}
+     * @returns {Object}
      * @private
      */
     getOffset() {
@@ -280,7 +278,7 @@ export default () => {
     /**
      * Get the offset of the passed component element
      * @param  {HTMLElement} el
-     * @return {Object}
+     * @returns {Object}
      * @private
      */
     offset(el) {
@@ -302,7 +300,7 @@ export default () => {
     /**
      * Get element position relative to the canvas
      * @param {HTMLElement} el
-     * @return {Object}
+     * @returns {Object}
      * @private
      */
     getElementPos(el, opts) {
@@ -312,7 +310,7 @@ export default () => {
     /**
      * Returns element's offsets like margins and paddings
      * @param {HTMLElement} el
-     * @return {Object}
+     * @returns {Object}
      * @private
      */
     getElementOffsets(el) {
@@ -512,7 +510,7 @@ export default () => {
 
     /**
      * Check if the canvas is focused
-     * @return {Boolean}
+     * @returns {Boolean}
      */
     hasFocus() {
       return this.getDocument().hasFocus();
@@ -540,7 +538,7 @@ export default () => {
      * executed via `scrollIntoView` API and options of this method are
      * passed to it. For instance, you can scroll smoothly by using
      * `{ behavior: 'smooth' }`.
-     * @param  {HTMLElement|Component} el
+     * @param  {HTMLElement|[Component]} el
      * @param  {Object} [opts={}] Options, same as options for `scrollIntoView`
      * @param  {Boolean} [opts.force=false] Force the scroll, even if the element is already visible
      * @example
@@ -575,9 +573,11 @@ export default () => {
     },
 
     /**
-     * Set zoom value
+     * Set canvas zoom value
      * @param {Number} value The zoom value, from 0 to 100
      * @returns {this}
+     * @example
+     * canvas.setZoom(50); // set zoom to 50%
      */
     setZoom(value) {
       canvas.set('zoom', parseFloat(value));
@@ -585,11 +585,40 @@ export default () => {
     },
 
     /**
-     * Get zoom value
+     * Get canvas zoom value
      * @returns {Number}
+     * @example
+     * canvas.setZoom(50); // set zoom to 50%
+     * const zoom = canvas.getZoom(); // 50
      */
     getZoom() {
       return parseFloat(canvas.get('zoom'));
+    },
+
+    /**
+     * Set canvas position coordinates
+     * @param {Number} x Horizontal position
+     * @param {Number} y Vertical position
+     * @returns {this}
+     * @example
+     * canvas.setCoords(100, 100);
+     */
+    setCoords(x, y) {
+      canvas.set({ x: parseFloat(x), y: parseFloat(y) });
+      return this;
+    },
+
+    /**
+     * Get canvas position coordinates
+     * @returns {Object} Object containing coordinates
+     * @example
+     * canvas.setCoords(100, 100);
+     * const coords = canvas.getCoords();
+     * // { x: 100, y: 100 }
+     */
+    getCoords() {
+      const { x, y } = canvas.attributes;
+      return { x, y };
     },
 
     getZoomDecimal() {
@@ -615,23 +644,22 @@ export default () => {
      * @param {Object} props Frame properties
      * @returns {Frame}
      * @example
-     *
-        editor.Canvas.addFrame({
-          name: 'Mobile home page',
-          x: 100, // Position in canvas
-          y: 100,
-          width: 500, // Frame dimensions
-          height: 600,
-          // device: 'DEVICE-ID',
-          components: [
-            '<h1 class="testh">Title frame</h1>',
-            '<p class="testp">Paragraph frame</p>',
-          ],
-          styles: `
-            .testh { color: red; }
-            .testp { color: blue; }
-          `,
-        });
+     * canvas.addFrame({
+     *   name: 'Mobile home page',
+     *   x: 100, // Position in canvas
+     *   y: 100,
+     *   width: 500, // Frame dimensions
+     *   height: 600,
+     *   // device: 'DEVICE-ID',
+     *   components: [
+     *     '<h1 class="testh">Title frame</h1>',
+     *     '<p class="testp">Paragraph frame</p>',
+     *   ],
+     *   styles: `
+     *     .testh { color: red; }
+     *     .testp { color: blue; }
+     *   `,
+     * });
      */
     addFrame(props = {}, opts = {}) {
       return canvas.get('frames').add(

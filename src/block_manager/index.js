@@ -23,6 +23,8 @@
  * * [getContainer](#getcontainer)
  * * [render](#render)
  *
+ * [Block]: block.html
+ *
  * @module BlockManager
  */
 import { isElement } from 'underscore';
@@ -120,13 +122,13 @@ export default () => {
      * @param {Object} opts Options
      * @param {string} opts.label Name of the block
      * @param {string} opts.content HTML content
-     * @param {string|Object} opts.category Group the block inside a catgegory.
+     * @param {string|Object} opts.category Group the block inside a category.
      *                                      You should pass objects with id property, eg:
      *                                      {id: 'some-uid', label: 'My category'}
      *                                      The string will be converted in:
      *                                      'someid' => {id: 'someid', label: 'someid'}
      * @param {Object} [opts.attributes={}] Block attributes
-     * @return {Block} Added block
+     * @returns {[Block]} Added block
      * @example
      * blockManager.add('h1-block', {
      *   label: 'Heading',
@@ -146,6 +148,7 @@ export default () => {
     /**
      * Return the block by id
      * @param  {string} id Block id
+     * @returns {[Block]}
      * @example
      * const block = blockManager.get('h1-block');
      * console.log(JSON.stringify(block));
@@ -178,7 +181,7 @@ export default () => {
     /**
      * Remove a block by id
      * @param {string} id Block id
-     * @return {Block} Removed block
+     * @returns {[Block]} Removed block
      * @example
      * // Id of the block which need to be removed
      * const id = 'button';

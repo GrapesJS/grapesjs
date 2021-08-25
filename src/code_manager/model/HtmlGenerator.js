@@ -1,6 +1,6 @@
-import Backbone from 'backbone';
+import { Model } from 'backbone';
 
-export default Backbone.Model.extend({
+export default class HTMLGenerator extends Model {
   build(model, opts = {}) {
     const models = model.components();
     const htmlOpts = {};
@@ -36,16 +36,16 @@ export default Backbone.Model.extend({
     if (opts.exportWrapper) {
       return model.toHTML({
         ...htmlOpts,
-        ...(opts.wrapperIsBody && { tag: 'body' })
+        ...(opts.wrapperIsBody && model.is('wrapper') && { tag: 'body' })
       });
     }
 
     return this.buildModels(models, htmlOpts);
-  },
+  }
 
   buildModels(models, opts = {}) {
     let code = '';
     models.forEach(mod => (code += mod.toHTML(opts)));
     return code;
   }
-});
+}

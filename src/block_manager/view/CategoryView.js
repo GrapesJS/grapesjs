@@ -1,20 +1,20 @@
-import { template } from 'underscore';
-import Backbone from 'backbone';
+import { View } from 'backbone';
+import html from 'utils/html';
 
-export default Backbone.View.extend({
-  template: template(`
-  <div class="<%= pfx %>title">
-    <i class="<%= pfx %>caret-icon"></i>
-    <%= label %>
-  </div>
-  <div class="<%= pfx %>blocks-c"></div>
-  `),
-
-  events: {},
+export default class CategoryView extends View {
+  template({ pfx, label }) {
+    return html`
+      <div class="${pfx}title">
+        <i class="${pfx}caret-icon"></i>
+        ${label}
+      </div>
+      <div class="${pfx}blocks-c"></div>
+    `;
+  }
 
   attributes() {
     return this.model.get('attributes');
-  },
+  }
 
   initialize(o = {}, config = {}) {
     this.config = config;
@@ -26,33 +26,34 @@ export default Backbone.View.extend({
     this.iconClass = `${pfx}caret-icon`;
     this.activeClass = `${pfx}open`;
     this.className = `${pfx}block-category`;
+    this.events = {};
     this.events[`click .${pfx}title`] = 'toggle';
     this.listenTo(this.model, 'change:open', this.updateVisibility);
     this.delegateEvents();
     this.model.view = this;
-  },
+  }
 
   updateVisibility() {
     if (this.model.get('open')) this.open();
     else this.close();
-  },
+  }
 
   open() {
     this.$el.addClass(this.activeClass);
     this.getIconEl().className = `${this.iconClass} ${this.caretD}`;
     this.getBlocksEl().style.display = '';
-  },
+  }
 
   close() {
     this.$el.removeClass(this.activeClass);
     this.getIconEl().className = `${this.iconClass} ${this.caretR}`;
     this.getBlocksEl().style.display = 'none';
-  },
+  }
 
   toggle() {
     var model = this.model;
     model.set('open', !model.get('open'));
-  },
+  }
 
   getIconEl() {
     if (!this.iconEl) {
@@ -60,7 +61,7 @@ export default Backbone.View.extend({
     }
 
     return this.iconEl;
-  },
+  }
 
   getBlocksEl() {
     if (!this.blocksEl) {
@@ -68,24 +69,21 @@ export default Backbone.View.extend({
     }
 
     return this.blocksEl;
-  },
+  }
 
   append(el) {
     this.getBlocksEl().appendChild(el);
-  },
+  }
 
   render() {
-    const { em, el, $el, model } = this;
+    const { em, el, $el, model, pfx } = this;
     const label =
       em.t(`blockManager.categories.${model.id}`) || model.get('label');
-    el.innerHTML = this.template({
-      pfx: this.pfx,
-      label
-    });
+    el.innerHTML = this.template({ pfx, label });
     $el.addClass(this.className);
     $el.css({ order: model.get('order') });
     this.updateVisibility();
 
     return this;
   }
-});
+}

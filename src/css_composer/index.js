@@ -86,10 +86,6 @@ export default () => {
 
       em = c.em;
       rules = new CssRules([], c);
-      rulesView = new CssRulesView({
-        collection: rules,
-        config: c
-      });
       return this;
     },
 
@@ -479,13 +475,18 @@ export default () => {
      * @private
      */
     render() {
+      rulesView && rulesView.remove();
+      rulesView = new CssRulesView({
+        collection: rules,
+        config: c
+      });
       return rulesView.render().el;
     },
 
     destroy() {
       rules.reset();
       rules.stopListening();
-      rulesView.remove();
+      rulesView && rulesView.remove();
       [em, rules, rulesView].forEach(i => (i = null));
       c = {};
     }

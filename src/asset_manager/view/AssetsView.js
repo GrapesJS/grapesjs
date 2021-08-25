@@ -182,7 +182,6 @@ export default Backbone.View.extend({
     this.$el.append(fuRendered).append(this.template(this));
     this.el.className = `${this.ppfx}asset-manager`;
     this.renderAssets();
-    this.rendered = 1;
     return this;
   }
 });

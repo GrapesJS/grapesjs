@@ -1,9 +1,19 @@
-import Backbone from 'backbone';
+import { Model } from 'backbone';
 
-export default Backbone.Model.extend({
-  defaults: {
-    title: '',
-    content: '',
-    open: false
+export default class Modal extends Model {
+  defaults() {
+    return {
+      title: '',
+      content: '',
+      open: false
+    };
   }
-});
+
+  open() {
+    this.set('open', true);
+  }
+
+  close() {
+    this.set('open', false);
+  }
+}

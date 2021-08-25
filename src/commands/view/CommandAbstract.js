@@ -1,7 +1,6 @@
-import Backbone from 'backbone';
-const $ = Backbone.$;
+import { Model } from 'backbone';
 
-export default Backbone.View.extend({
+export default Model.extend({
   /**
    * Initialize method that can't be removed
    * @param  {Object}  o Options

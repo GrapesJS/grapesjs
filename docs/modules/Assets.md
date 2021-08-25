@@ -140,14 +140,16 @@ const editor = grapesjs.init({
        type: 'image',
        src: 'http://placehold.it/350x250/459ba8/fff/image2.jpg',
        height: 350,
-       width: 250
+       width: 250, 
+       name: 'displayName'
      },
      {
        // As the 'image' is the base type of assets, omitting it will
        // be set as `image` by default
        src: 'http://placehold.it/350x250/79c267/fff/image3.jpg',
        height: 350,
-       width: 250
+       width: 250,
+       name: 'displayName'
      },
     ],
   }

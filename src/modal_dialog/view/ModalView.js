@@ -1,6 +1,6 @@
-import Backbone from 'backbone';
+import { View } from 'backbone';
 
-export default Backbone.View.extend({
+export default class ModalView extends View {
   template({ pfx, ppfx, content, title }) {
     return `<div class="${pfx}dialog ${ppfx}one-bg ${ppfx}two-color">
       <div class="${pfx}header">
@@ -13,12 +13,14 @@ export default Backbone.View.extend({
       </div>
     </div>
     <div class="${pfx}collector" style="display: none"></div>`;
-  },
+  }
 
-  events: {
-    click: 'onClick',
-    'click [data-close-modal]': 'hide'
-  },
+  events() {
+    return {
+      click: 'onClick',
+      'click [data-close-modal]': 'hide'
+    };
+  }
 
   initialize(o) {
     const model = this.model;
@@ -30,12 +32,12 @@ export default Backbone.View.extend({
     this.listenTo(model, 'change:open', this.updateOpen);
     this.listenTo(model, 'change:title', this.updateTitle);
     this.listenTo(model, 'change:content', this.updateContent);
-  },
+  }
 
   onClick(e) {
     const bkd = this.config.backdrop;
     bkd && e.target === this.el && this.hide();
-  },
+  }
 
   /**
    * Returns collector element
@@ -46,7 +48,7 @@ export default Backbone.View.extend({
     if (!this.$collector)
       this.$collector = this.$el.find('.' + this.pfx + 'collector');
     return this.$collector;
-  },
+  }
 
   /**
    * Returns content element
@@ -61,7 +63,7 @@ export default Backbone.View.extend({
     }
 
     return this.$content;
-  },
+  }
 
   /**
    * Returns title element
@@ -71,7 +73,7 @@ export default Backbone.View.extend({
   getTitle() {
     if (!this.$title) this.$title = this.$el.find('.' + this.pfx + 'title');
     return this.$title.get(0);
-  },
+  }
 
   /**
    * Update content
@@ -84,7 +86,7 @@ export default Backbone.View.extend({
     const body = this.model.get('content');
     children.length && coll.append(children);
     content.empty().append(body);
-  },
+  }
 
   /**
    * Update title
@@ -93,7 +95,7 @@ export default Backbone.View.extend({
   updateTitle() {
     var title = this.getTitle();
     if (title) title.innerHTML = this.model.get('title');
-  },
+  }
 
   /**
    * Update open
@@ -101,24 +103,23 @@ export default Backbone.View.extend({
    * */
   updateOpen() {
     this.el.style.display = this.model.get('open') ? '' : 'none';
-  },
+  }
 
   /**
    * Hide modal
    * @private
    * */
   hide() {
-    this.model.set('open', 0);
-  },
+    this.model.close();
+  }
 
   /**
    * Show modal
    * @private
    * */
-  show(opts = {}) {
-    this.model.set('open', 1);
-    this.updateAttr(opts.attributes);
-  },
+  show() {
+    this.model.open();
+  }
 
   updateAttr(attr) {
     const { pfx, $el, el } = this;
@@ -128,7 +129,7 @@ export default Backbone.View.extend({
       ...(attr || {}),
       class: `${pfx}container ${(attr && attr.class) || ''}`.trim()
     });
-  },
+  }
 
   render() {
     const el = this.$el;
@@ -140,4 +141,4 @@ export default Backbone.View.extend({
     this.updateOpen();
     return this;
   }
-});
+}

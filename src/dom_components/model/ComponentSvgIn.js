@@ -13,13 +13,6 @@ export default Component.extend(
     }
   },
   {
-    isComponent(el) {
-      if (Component.isComponent(el) && el.tagName.toLowerCase() !== 'svg') {
-        return {
-          tagName: el.tagName,
-          type: 'svg-in'
-        };
-      }
-    }
+    isComponent: (el, opts = {}) => !!opts.inSvg
   }
 );

@@ -75,11 +75,6 @@ export default () => {
       if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
       properties = new Properties();
       sectors = new Sectors([], c);
-      SectView = new SectorsView({
-        collection: sectors,
-        target: c.em,
-        config: c
-      });
 
       return this;
     },
@@ -427,6 +422,12 @@ export default () => {
      * @private
      * */
     render() {
+      SectView && SectView.remove();
+      SectView = new SectorsView({
+        collection: sectors,
+        target: c.em,
+        config: c
+      });
       return SectView.render().el;
     },
 
@@ -440,7 +441,7 @@ export default () => {
         coll.reset();
         coll.stopListening();
       });
-      SectView.remove();
+      SectView && SectView.remove();
       [c, properties, sectors, SectView].forEach(i => (i = {}));
       this.em = {};
     }

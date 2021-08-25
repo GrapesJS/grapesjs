@@ -71,9 +71,14 @@ export default Backbone.View.extend({
     ev && this.dragger.start(ev);
   },
 
-  remove(opts) {
-    this.frame.remove(opts);
+  __clear(opts) {
+    const { frame } = this;
+    frame && frame.remove(opts);
     removeEl(this.elTools);
+  },
+
+  remove(opts) {
+    this.__clear(opts);
     Backbone.View.prototype.remove.apply(this, arguments);
     ['frame', 'dragger', 'cv', 'em', 'canvas', 'elTools'].forEach(
       i => (this[i] = 0)
@@ -164,7 +169,7 @@ export default Backbone.View.extend({
   render() {
     const { frame, $el, ppfx, cv, model, el } = this;
     const { onRender } = model.attributes;
-    frame && frame.remove();
+    this.__clear();
     this.__handleSize();
     frame.render();
     $el

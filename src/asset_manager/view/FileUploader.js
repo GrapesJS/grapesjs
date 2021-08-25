@@ -1,16 +1,25 @@
-import { template } from 'underscore';
 import Backbone from 'backbone';
 import fetch from 'utils/fetch';
+import html from 'utils/html';
 
 export default Backbone.View.extend(
   {
-    template: template(`
-  <form>
-    <div id="<%= pfx %>title"><%= title %></div>
-    <input type="file" id="<%= uploadId %>" name="file" accept="*/*" <%= disabled ? 'disabled' : '' %> <%= multiUpload ? 'multiple' : '' %>/>
-    <div style="clear:both;"></div>
-  </form>
-  `),
+    template({ pfx, title, uploadId, disabled, multiUpload }) {
+      return html`
+        <form>
+          <div id="${pfx}title">${title}</div>
+          <input
+            type="file"
+            id="${uploadId}"
+            name="file"
+            accept="*/*"
+            ${disabled ? 'disabled' : ''}
+            ${multiUpload ? 'multiple' : ''}
+          />
+          <div style="clear:both;"></div>
+        </form>
+      `;
+    },
 
     events: {},
 

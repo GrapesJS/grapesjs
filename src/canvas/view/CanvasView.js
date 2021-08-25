@@ -75,8 +75,6 @@ export default Backbone.View.extend({
 
   remove() {
     this.frames.remove();
-    const frm = this.model.get('frames');
-    frm.remove(frm.models);
     this.frames = {};
     Backbone.View.prototype.remove.apply(this, arguments);
     this.toggleListeners();
@@ -201,7 +199,8 @@ export default Backbone.View.extend({
   getFrameOffset(el) {
     if (!this.frmOff || el) {
       const frame = this.frame.el;
-      const frEl = el ? el.ownerDocument.defaultView.frameElement : frame;
+      const winEl = el && el.ownerDocument.defaultView;
+      const frEl = winEl ? winEl.frameElement : frame;
       this.frmOff = this.offset(frEl || frame);
     }
     return this.frmOff;
