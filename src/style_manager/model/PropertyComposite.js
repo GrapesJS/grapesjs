@@ -1,4 +1,5 @@
 import Property from './Property';
+import { isArray } from 'underscore';
 
 export default Property.extend({
   defaults: {
@@ -25,6 +26,18 @@ export default Property.extend({
     Property.callParentInit(Property, this, props, opts);
     const properties = this.get('properties') || [];
     const Properties = require('./Properties').default;
+    if (this.get('value')) {
+      const values = this.get('value').split(this.getSplitSeparator());
+      for (let index = 0; index < properties.length; index++) {
+        if (!values[index]) {
+          continue;
+        }
+
+        if (isArray(properties)) {
+          properties[index]['value'] = values[index];
+        }
+      }
+    }
     this.set('properties', new Properties(properties));
     this.listenTo(this, 'change:value', this.updateValues);
     Property.callInit(this, props, opts);
@@ -52,7 +65,7 @@ export default Property.extend({
       const value =
         values[i] || values[(i % len) + (len != 1 && len % 2 ? 1 : 0)];
       // There some issue with UndoManager
-      //property.setValue(value, 0, {fromParent: 1});
+      property.setValue(value, 0, { fromParent: 1 });
     });
   },
 
