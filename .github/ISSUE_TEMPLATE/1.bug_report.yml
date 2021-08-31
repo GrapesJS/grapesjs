@@ -11,9 +11,9 @@ body:
         Note: before creating a bug issue, search in GitHub Issues to check if a similar bug was already reported.
   - type: checkboxes
     attributes:
-      label: GrapesJS version
+      label: GrapesJS latest version [![npm](https://img.shields.io/npm/v/grapesjs.svg)](https://www.npmjs.com/package/grapesjs)
       description: |
-        As the bug you're facing might be already fixed, we ask you to ensure to use the latest version available (current version [![npm](https://img.shields.io/npm/v/grapesjs.svg)](https://www.npmjs.com/package/grapesjs)).
+        As the bug you're facing might be already fixed, we ask you to ensure to use the latest version available.
       options:
         - label: I confirm to use the latest version of GrapesJS
           required: true
