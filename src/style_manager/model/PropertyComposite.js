@@ -65,7 +65,7 @@ export default Property.extend({
       const value =
         values[i] || values[(i % len) + (len != 1 && len % 2 ? 1 : 0)];
       // There some issue with UndoManager
-      property.setValue(value, 0, { fromParent: 1 });
+      // property.setValue(value, 0, { fromParent: 1 });
     });
   },
 
