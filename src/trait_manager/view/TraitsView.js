@@ -8,14 +8,14 @@ export default DomainViews.extend({
 
   initialize(o = {}) {
     const config = o.config || {};
+    const pfx = config.stylePrefix || '';
+    const em = o.editor;
     this.config = config;
-    this.em = o.editor;
-    this.pfx = config.stylePrefix || '';
+    this.em = em;
+    this.pfx = pfx;
     this.ppfx = config.pStylePrefix || '';
-    this.className = this.pfx + 'traits';
-    const toListen = 'component:toggled';
-    this.listenTo(this.em, toListen, this.updatedCollection);
-    this.updatedCollection();
+    this.className = `${pfx}traits`;
+    this.listenTo(em, 'component:toggled', this.updatedCollection);
   },
 
   /**
@@ -23,9 +23,9 @@ export default DomainViews.extend({
    * @private
    */
   updatedCollection() {
-    const ppfx = this.ppfx;
-    const comp = this.em.getSelected();
-    this.el.className = `${this.className} ${ppfx}one-bg ${ppfx}two-color`;
+    const { ppfx, className, em } = this;
+    const comp = em.getSelected();
+    this.el.className = `${className} ${ppfx}one-bg ${ppfx}two-color`;
     this.collection = comp ? comp.get('traits') : [];
     this.render();
   }
