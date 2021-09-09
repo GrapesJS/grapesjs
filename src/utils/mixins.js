@@ -11,6 +11,11 @@ const matches =
   elProt.mozMatchesSelector ||
   elProt.msMatchesSelector;
 
+export const getUiClass = (em, defCls) => {
+  const { stylePrefix, customUI } = em.getConfig();
+  return [customUI && `${stylePrefix}cui`, defCls].filter(i => i).join(' ');
+};
+
 /**
  * Import styles asynchronously
  * @param {String|Array<String>} styles
