@@ -5,6 +5,7 @@ export default class Modal extends Model {
     return {
       title: '',
       content: '',
+      attributes: {},
       open: false
     };
   }

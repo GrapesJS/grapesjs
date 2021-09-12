@@ -72,7 +72,9 @@ export default () => {
       model.on('change:open', (m, enb) => triggerEvent(enb, em));
       model.on(
         'change',
-        debounce(() => em.trigger('modal', this._evData()))
+        debounce(() => {
+          em.trigger('modal', this._evData());
+        })
       );
 
       return this;
@@ -100,10 +102,12 @@ export default () => {
      * @return {this}
      */
     open(opts = {}) {
+      const attr = opts.attributes || {};
       opts.title && this.setTitle(opts.title);
       opts.content && this.setContent(opts.content);
+      model.set('attributes', attr);
       model.open();
-      modal && modal.updateAttr(opts.attributes);
+      modal && modal.updateAttr(attr);
       return this;
     },
 
