@@ -213,8 +213,9 @@ export default () => {
     render() {
       if (this.getConfig().custom) return;
       const View = ModalView.extend(c.extend);
-      modal && modal.remove();
+      const el = modal && modal.el;
       modal = new View({
+        el,
         model,
         config: c
       });
