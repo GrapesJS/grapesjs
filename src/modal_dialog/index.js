@@ -75,7 +75,8 @@ export default () => {
 
     postRender(view) {
       const el = view.model.getConfig().el || view.el;
-      this.render().appendTo(el);
+      const res = this.render();
+      res && res.appendTo(el);
     },
 
     /**
@@ -198,6 +199,7 @@ export default () => {
      * @private
      */
     render() {
+      if (this.getConfig().custom) return;
       const View = ModalView.extend(c.extend);
       modal && modal.remove();
       modal = new View({
