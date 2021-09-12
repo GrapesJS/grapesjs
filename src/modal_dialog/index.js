@@ -27,6 +27,7 @@
  * @module Modal
  */
 
+import { debounce } from 'underscore';
 import defaults from './config/config';
 import ModalM from './model/Modal';
 import ModalView from './view/ModalView';
@@ -69,8 +70,19 @@ export default () => {
 
       model = new ModalM(c);
       model.on('change:open', (m, enb) => triggerEvent(enb, em));
+      model.on(
+        'change',
+        debounce(() => em.trigger('modal', this._evData()))
+      );
 
       return this;
+    },
+
+    _evData() {
+      return {
+        ...model.attributes,
+        close: () => this.close()
+      };
     },
 
     postRender(view) {
