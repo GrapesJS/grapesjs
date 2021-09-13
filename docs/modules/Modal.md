@@ -58,7 +58,7 @@ Modal.setContent('New content');
 // Execute one-time callback on modal close
 Modal.onceClose(() => {
  console.log('My last modal is closed');
-})
+});
 ```
 
 ## Customization
@@ -101,3 +101,5 @@ For a more advanced usage
 
 
 ## Events
+
+For a complete list of available events, you can check it [here](/api/modal_dialog.html#available-events).

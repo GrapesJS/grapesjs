@@ -14,6 +14,10 @@
  * const modal = editor.Modal;
  * ```
  *
+ * ## Available Events
+ * * `modal` - Generic
+ *
+ * ## Methods
  * * [open](#open)
  * * [close](#close)
  * * [isOpen](#isopen)
@@ -99,7 +103,13 @@ export default () => {
      * @param {String|HTMLElement} [opts.title] Title to set for the modal
      * @param {String|HTMLElement} [opts.content] Content to set for the modal
      * @param {Object} [opts.attributes] Updates the modal wrapper with custom attributes
-     * @return {this}
+     * @returns {this}
+     * @example
+     * modal.open({
+     *   title: 'My title',
+     *   content: 'My content',
+     *   attributes: { class: 'my-class' },
+     * });
      */
     open(opts = {}) {
       const attr = opts.attributes || {};
@@ -113,7 +123,9 @@ export default () => {
 
     /**
      * Close the modal window
-     * @return {this}
+     * @returns {this}
+     * @example
+     * modal.close();
      */
     close() {
       model.close();
@@ -123,8 +135,12 @@ export default () => {
     /**
      * Execute callback when the modal will be closed.
      * The callback will be called one only time
-     * @param {Function} clb
+     * @param {Function} clb Callback to call
      * @returns {this}
+     * @example
+     * modal.onceClose(() => {
+     *  console.log('The modal is closed');
+     * });
      */
     onceClose(clb) {
       this.em.once('modal:close', clb);
@@ -134,8 +150,12 @@ export default () => {
     /**
      * Execute callback when the modal will be opened.
      * The callback will be called one only time
-     * @param {Function} clb
+     * @param {Function} clb Callback to call
      * @returns {this}
+     * @example
+     * modal.onceOpen(() => {
+     *  console.log('The modal is opened');
+     * });
      */
     onceOpen(clb) {
       this.em.once('modal:open', clb);
@@ -144,7 +164,9 @@ export default () => {
 
     /**
      * Checks if the modal window is open
-     * @return {Boolean}
+     * @returns {Boolean}
+     * @example
+     * modal.isOpen(); // true | false
      */
     isOpen() {
       return !!model.get('open');
@@ -153,7 +175,7 @@ export default () => {
     /**
      * Set the title to the modal window
      * @param {string | HTMLElement} title Title
-     * @return {this}
+     * @returns {this}
      * @example
      * // pass a string
      * modal.setTitle('Some title');
@@ -169,7 +191,7 @@ export default () => {
 
     /**
      * Returns the title of the modal window
-     * @return {string | HTMLElement}
+     * @returns {string | HTMLElement}
      */
     getTitle() {
       return model.get('title');
@@ -178,7 +200,7 @@ export default () => {
     /**
      * Set the content of the modal window
      * @param {string | HTMLElement} content Content
-     * @return {this}
+     * @returns {this}
      * @example
      * // pass a string
      * modal.setContent('Some content');
@@ -195,7 +217,9 @@ export default () => {
 
     /**
      * Get the content of the modal window
-     * @return {string | HTMLElement}
+     * @returns {string | HTMLElement}
+     * @example
+     * modal.getContent();
      */
     getContent() {
       return model.get('content');
