@@ -15,7 +15,9 @@
  * ```
  *
  * ## Available Events
- * * `modal` - Generic
+ * * `modal:open` - Modal is opened
+ * * `modal:close` - Modal is closed
+ * * `modal` - Event triggered on any change related to the modal. An object containing all the available data about the triggered event is passed as an argument to the callback.
  *
  * ## Methods
  * * [open](#open)
@@ -192,6 +194,8 @@ export default () => {
     /**
      * Returns the title of the modal window
      * @returns {string | HTMLElement}
+     * @example
+     * modal.getTitle();
      */
     getTitle() {
       return model.get('title');
