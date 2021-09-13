@@ -97,7 +97,25 @@ Your custom CSS has to be loaded after the GrapesJS one.
 
 ### Custom Modal
 
-For a more advanced usage
+For more advanced usage, you can completely replace the default modal with one of your own. All you have to do is to indicate the editor your intent to use a custom modal and then subscribe to the `modal` event that will give you all the information on any requested change.
+
+```js
+const editor = grapesjs.init({
+    // ...
+    modal: { custom: true },
+});
+
+editor.on('modal', props => {
+    // The `props` will contain all the information you need in order to update your custom modal.
+    // props.open - Indicates if the modal should be open
+    // props.title - Modal title
+    // props.content - Modal content
+    // props.attributes - Modal custom attributes (eg. class)
+    // props.close - A callback to use when you want to close the modal programmatically
+
+    // Here you would put the logic to control your modal.
+})
+```
 
 
 ## Events
