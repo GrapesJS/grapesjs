@@ -24,8 +24,8 @@ const editor = grapesjs.init({ ... });
 // Open modal
 const openModal = () => {
     editor.Modal.open({
-        title: 'My title',
-        content: 'My content',
+        title: 'My title', // string | HTMLElement
+        content: 'My content', // string | HTMLElement
     });
 };
 // Create a simple custom button that will open the modal
@@ -34,198 +34,70 @@ document.body.insertAdjacentHTML('afterbegin',`
 `);
 ```
 
+## Using API
 
+By using other [available APIs](/api/modal_dialog.html) you have full control of the modal (eg. updating content/title, closing the modal, etc.).
 
-## Update strings
-
-If you need to change some default language strings you can easily update them by using [I18n API](/api/i18n.html).
-To find the correth path of the string you can check the [`en` locale file] and follow its inner path inside the locale object.
-
-Let's say we want to update the default message of the empty state in Style Manager when no elements are selected.
-
-<img :src="$withBase('/sm-empty-state.jpg')">
-
-From the `en` locale file you can see it by following the path below
+Here are a few examples:
 
 ```js
-{
-    ...
-    styleManager: {
-        empty: 'Select an element before using Style Manager',
-        ...
-    },
-    ...
+const { Modal } = editor;
+
+// close the modal
+Modal.close();
+
+// Check if the modal is open
+Modal.isOpen();
+
+// Update title
+Modal.setTitle('New title');
+
+// Update content
+Modal.setContent('New content');
+
+// Execute one-time callback on modal close
+Modal.onceClose(() => {
+ console.log('My last modal is closed');
+})
+```
+
+## Customization
+
+The modal can be fully customized and you have different available options.
+The fastest and the easiest one is to use your specific CSS for the modal element. With a few lines of CSS your modal can be completely adapted to your choices.
+
+```css
+.gjs-mdl-dialog {
+    background-color: white;
+    color: #333;
 }
 ```
 
-So now to update it you'll do this
+In case you have to customize a specific modal differently, you can rely on your custom class attributes.
 
 ```js
-editor.I18n.addMessages({
-    en: { // indicate the locale to update
-        styleManager: {
-            empty: 'New empty state message',
-        }
-    }
-});
-```
-
-Even if the UI shows correctly the updated message, we highly suggest to do all the API calls wrapped in a [plugin](Plugins.html)
-
-```js
-const myPlugin = editor => {
-    editor.I18n.addMessages({ ... });
-    // ...
-}
-
-grapesjs.init({
-  // ...
-  plugins: [myPlugin],
-});
-```
-
-### Generated strings
-
-Not all the strings are indicated in the `en` local file as some of them can be generated from `id`s, `name`s, etc.
-If you look back at the `styleManager` path from the `en` file you'll notice the empty `properties` key
-
-```js
-...
-styleManager: {
-    ...
-    properties: {
-        // float: 'Float',
+editor.Modal.open({
+    title: 'My title',
+    content: 'My content',
+    attributes: {
+        class: 'my-small-modal',
     },
-    ...
-},
-...
-```
-
-This object is used to translate property names inside StyleManager, so if you need, for instance, to change the auto-generated names for the `margin` properties
-
-<img :src="$withBase('/margin-strings.jpg')">
-
-you'd this
-
-```js
-editor.I18n.addMessages({
-    en: {
-        styleManager: {
-            properties: {
-                // The key is the property name (or id)
-                'margin-top': 'Top',
-                'margin-right': 'Right',
-                'margin-left': 'Left',
-                'margin-bottom': 'Bottom',
-            },
-        }
-    }
 });
 ```
 
-<!--
-### Updates post rendering
-
-If you try to update strings, by using API, once the UI is rendered you'll see no changes.
-...
-We need to find the way to update the UI
--->
-
-
-
-## Adding new language
-
-If you want to support GrapesJS by adding a new language to our repository all you need to do is to follow steps below:
-
-1. First of all, be sure to check the language file in [`src/i18n/locale`](https://github.com/artf/grapesjs/blob/master/src/i18n/locale) doesn't exist already
-1. [Open a new issue](https://github.com/artf/grapesjs/issues/new?title=XX%20Language%20support) to avoid overlap with other contributos. To be sure, check also no one else has opened already an issue for the same language
-1. Start a new branch from `dev`
-1. Copy (in the same folder) and rename the [`en` locale file] to the name of your language of choice (be sure to be compliant to [ISO 639-1])
-1. Now you can start translating strings
-1. By following comments you'll probably notice that some keys are not indicated (eg. `styleManager.properties`), for the reference you can check other locale files
-1. Once you've done, you can create a new Pull Request on GitHub from your branch to `dev` by making also a reference to your issue in order to close it automatically once it's merged (your PR message should contain `Closes #1234` where 1234 is the issue ID)
-
-
-
-## Plugin development
+```css
+.my-small-modal .gjs-mdl-dialog {
+    max-width: 300px;
+}
+```
 
 ::: warning
-This section is dedicated **only** to plugin developers and can also be skipped in case you use [grapesjs-cli](https://github.com/artf/grapesjs-cli) to init your plugin project
+Your custom CSS has to be loaded after the GrapesJS one.
 :::
 
-If you're developing a plugin for GrapesJS and you need to support some string localization or simply change the default one, we recommend the following structure.
+### Custom Modal
 
-```
-plugin-dir
-- package.json
-- README.md
-- ...
-- src
-    - index.js
-    - locale // create the locale foldar in your src
-        - en.js // All default strings should be placed here
-```
-
-For your plugin specific strings, place them under the plugin name key
-
-```js
-// src/locale/en.js
-export default {
-    'grapesjs-plugin-name': {
-        yourKey: 'Your value',
-    }
-}
-```
-
-In your `index.js` use the `en.js` file and add `i18n` option to allow import of other local files
-
-```js
-// src/index.js
-import en from 'locale/en';
-
-export default (editor, opts = {}) => {
-    const options = {
-        i18n: {},
-        // ...
-        ...opts,
-    };
-
-    // ...
-
-    editor.I18n.addMessages({
-        en,
-        ...options.i18n,
-    });
-}
-```
-
-The next step would be to compile your locale files into `<rootDir>/locale` directory to make them easily accessible by your users. This folder could be ignored in your git repository be should be deployd to the npm registry
-
-::: warning
-Remember that you can skip all these long steps and init your project with [grapesjs-cli](https://github.com/artf/grapesjs-cli). This will create all the necessary folders/files/commands for you (during `init` command this step is flagged `true` by default and we recommend to keep it even in case the i18n is not required in your project)
-:::
+For a more advanced usage
 
 
-At the end, your plugin users will be able to import other locale files (if they exist) in this way
-
-```js
-import grapesjs from 'grapesjs';
-
-// Import from your plugin
-import yourPlugin from 'grapesjs-your-plugin';
-import ch from 'grapesjs-your-plugin/locale/ch';
-import fr from 'grapesjs-your-plugin/locale/fr';
-
-const editor = grapesjs.init({
-  ...
-  plugins: [ yourPlugin ],
-  pluginsOpts: {
-      [yourPlugin]: {
-          i18n: { ch, fr }
-      }
-  }
-});
-```
-
-[ISO 639-1]: <https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes>
-[`en` locale file]: <https://github.com/artf/grapesjs/blob/master/src/i18n/locale/en.js>
+## Events

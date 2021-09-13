@@ -155,7 +155,12 @@ export default () => {
      * @param {string | HTMLElement} title Title
      * @return {this}
      * @example
-     * modal.setTitle('New title');
+     * // pass a string
+     * modal.setTitle('Some title');
+     * // or an HTMLElement
+     * const el = document.createElement('div');
+     * el.innerText =  'New title';
+     * modal.setTitle(el);
      */
     setTitle(title) {
       model.set('title', title);
@@ -164,7 +169,7 @@ export default () => {
 
     /**
      * Returns the title of the modal window
-     * @return {string}
+     * @return {string | HTMLElement}
      */
     getTitle() {
       return model.get('title');
@@ -175,7 +180,12 @@ export default () => {
      * @param {string | HTMLElement} content Content
      * @return {this}
      * @example
-     * modal.setContent('<div>Some HTML content</div>');
+     * // pass a string
+     * modal.setContent('Some content');
+     * // or an HTMLElement
+     * const el = document.createElement('div');
+     * el.innerText =  'New content';
+     * modal.setContent(el);
      */
     setContent(content) {
       model.set('content', ' ');
@@ -185,7 +195,7 @@ export default () => {
 
     /**
      * Get the content of the modal window
-     * @return {string}
+     * @return {string | HTMLElement}
      */
     getContent() {
       return model.get('content');
