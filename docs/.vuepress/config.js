@@ -99,6 +99,7 @@ module.exports = {
             ['/modules/Traits', 'Traits'],
             ['/modules/Style-manager', 'Style Manager'],
             ['/modules/Storage', 'Storage Manager'],
+            ['/modules/Modal', 'Modal'],
             ['/modules/Plugins', 'Plugins'],
           ]
         }, {

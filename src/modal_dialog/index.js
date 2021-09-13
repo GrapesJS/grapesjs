@@ -152,7 +152,7 @@ export default () => {
 
     /**
      * Set the title to the modal window
-     * @param {string} title Title
+     * @param {string | HTMLElement} title Title
      * @return {this}
      * @example
      * modal.setTitle('New title');
@@ -172,7 +172,7 @@ export default () => {
 
     /**
      * Set the content of the modal window
-     * @param {string|HTMLElement} content Content
+     * @param {string | HTMLElement} content Content
      * @return {this}
      * @example
      * modal.setContent('<div>Some HTML content</div>');
