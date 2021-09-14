@@ -258,6 +258,7 @@ export default () => {
      * ));
      */
     render(assts) {
+      if (this.getConfig('custom')) return;
       const toRender = assts || this.getAll().models;
 
       if (!am) {

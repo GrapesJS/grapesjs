@@ -99,6 +99,9 @@ export default {
   // }
   beforeUpload: null,
 
+  // Avoid rendering the default asset manager.
+  custom: false,
+
   // Toggles visiblity of assets url input
   showUrlInput: true
 };
