@@ -251,7 +251,11 @@ export default () => {
         };
         fu = new FileUpload(obj);
         obj.fu = fu;
-        am = new AssetsView(obj);
+        const el = am && am.el;
+        am = new AssetsView({
+          el,
+          ...obj
+        });
         am.render();
       }
 
