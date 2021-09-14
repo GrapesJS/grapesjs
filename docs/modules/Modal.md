@@ -114,7 +114,7 @@ editor.on('modal', props => {
     // props.close (Function) - A callback to use when you want to close the modal programmatically
 
     // Here you would put the logic to control your modal.
-})
+});
 ```
 
 

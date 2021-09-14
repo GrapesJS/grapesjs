@@ -33,7 +33,7 @@
  * @module Modal
  */
 
-import { debounce, isString } from 'underscore';
+import { debounce, isFunction, isString } from 'underscore';
 import { createText } from '../utils/dom';
 import defaults from './config/config';
 import ModalM from './model/Modal';
@@ -80,7 +80,10 @@ export default () => {
       model.on(
         'change',
         debounce(() => {
-          em.trigger('modal', this._evData());
+          const data = this._evData();
+          const { custom } = this.getConfig();
+          isFunction(custom) && custom(data);
+          em.trigger('modal', data);
         })
       );
 
