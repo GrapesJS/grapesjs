@@ -68,6 +68,8 @@ export const createEl = (tag, attrs = '', child) => {
   return el;
 };
 
+export const createText = str => document.createTextNode(str);
+
 // Unfortunately just creating `KeyboardEvent(e.type, e)` is not enough,
 // the keyCode/which will be always `0`. Even if it's an old/deprecated
 // property keymaster (and many others) still use it... using `defineProperty`

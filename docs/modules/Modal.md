@@ -107,11 +107,11 @@ const editor = grapesjs.init({
 
 editor.on('modal', props => {
     // The `props` will contain all the information you need in order to update your custom modal.
-    // props.open - Indicates if the modal should be open
-    // props.title - Modal title
-    // props.content - Modal content
-    // props.attributes - Modal custom attributes (eg. class)
-    // props.close - A callback to use when you want to close the modal programmatically
+    // props.open (boolean) - Indicates if the modal should be open
+    // props.title (Node) - Modal title
+    // props.content (Node) - Modal content
+    // props.attributes (Object) - Modal custom attributes (eg. class)
+    // props.close (Function) - A callback to use when you want to close the modal programmatically
 
     // Here you would put the logic to control your modal.
 })

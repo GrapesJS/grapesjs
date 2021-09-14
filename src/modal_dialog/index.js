@@ -33,7 +33,8 @@
  * @module Modal
  */
 
-import { debounce } from 'underscore';
+import { debounce, isString } from 'underscore';
+import { createText } from '../utils/dom';
 import defaults from './config/config';
 import ModalM from './model/Modal';
 import ModalView from './view/ModalView';
@@ -87,8 +88,14 @@ export default () => {
     },
 
     _evData() {
+      const titl = this.getTitle();
+      const cnt = this.getContent();
+      const { open, attributes } = model.attributes;
       return {
-        ...model.attributes,
+        open,
+        attributes,
+        title: isString(titl) ? createText(titl) : titl,
+        content: isString(cnt) ? createText(cnt) : cnt.get ? cnt.get(0) : cnt,
         close: () => this.close()
       };
     },
