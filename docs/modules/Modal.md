@@ -43,7 +43,7 @@ Here are a few examples:
 ```js
 const { Modal } = editor;
 
-// close the modal
+// Close the modal
 Modal.close();
 
 // Check if the modal is open
