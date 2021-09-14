@@ -13,7 +13,17 @@
  * ```js
  * const assetManager = editor.AssetManager;
  * ```
+ * ## Available Events
+ * * `asset:add` - Added new asset. The [Asset] is passed as an argument to the callback.
+ * * `asset:remove` - Asset removed. The [Asset] is passed as an argument to the callback.
+ * * `asset:update` - Asset updated. The updated [Asset] and the object containing changes are passed as arguments to the callback.
+ * * `asset:upload:start` - Before the upload is started.
+ * * `asset:upload:end` - After the upload is ended.
+ * * `asset:upload:error` - On any error in upload, passes the error as an argument.
+ * * `asset:upload:response` - On upload response, passes the result as an argument.
+ * * `asset` - Catch-all event for all the events mentioned above. An object containing all the available data about the triggered event is passed as an argument to the callback.
  *
+ * ## Methods
  * * [add](#add)
  * * [get](#get)
  * * [getAll](#getall)
@@ -26,6 +36,8 @@
  * * [addType](#addtype)
  * * [getType](#gettype)
  * * [getTypes](#gettypes)
+ *
+ * [Asset]: asset.html
  *
  * @module AssetManager
  */
@@ -96,6 +108,11 @@ export default () => {
       assets.on('remove', model => this.getAllVisible().remove(model));
 
       return this;
+    },
+
+    __propEv(ev, ...data) {
+      this.em.trigger(ev, ...data);
+      this.getAll().trigger(ev, ...data);
     },
 
     /**
@@ -247,7 +264,8 @@ export default () => {
         const obj = {
           collection: assetsVis, // Collection visible in asset manager
           globalCollection: assets,
-          config: c
+          config: c,
+          module: this
         };
         fu = new FileUpload(obj);
         obj.fu = fu;
