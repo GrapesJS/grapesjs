@@ -117,6 +117,10 @@ editor.on('modal', props => {
 });
 ```
 
+Here an example of using the Bootstrap modal.
+
+<demo-viewer value="x70amv3f" height="500" darkcode/>
+
 
 ## Events
 

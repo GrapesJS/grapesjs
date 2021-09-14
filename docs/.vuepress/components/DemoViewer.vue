@@ -22,11 +22,16 @@ export default {
             type: String,
             default: '300',
         },
+        darkcode: {
+            type: Boolean,
+            default: false,
+        },
     },
     computed: {
         src() {
-            const { value, user } = this;
-            return `//jsfiddle.net/${user}/${value}/embedded/js,html,css,result`;
+            const { value, user, darkcode } = this;
+            const dcStr = darkcode ? '/dark/?menuColor=fff&fontColor=333&accentColor=e67891' : '';
+            return `//jsfiddle.net/${user}/${value}/embedded/js,html,css,result${dcStr}`;
         }
     }
 }
