@@ -180,7 +180,7 @@ export default () => {
      * const asset = assetManager.get('http://img.jpg');
      * assetManager.remove(asset);
      */
-    remove(asset) {
+    remove(asset, opts) {
       return this.__remove(asset, opts);
     },
 
