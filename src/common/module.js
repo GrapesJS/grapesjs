@@ -46,7 +46,10 @@ export default {
     const { em, events } = this;
     const options = opts || coll;
     em && events.all && em.trigger(events.all, { event, model, options });
+    this.__customEvent();
   },
+
+  __customEvent() {},
 
   _createId(len = 16) {
     const all = this.getAll();

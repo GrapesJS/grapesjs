@@ -30,32 +30,43 @@
  * @module AssetManager
  */
 
+import Module from 'common/module';
 import defaults from './config/config';
+import Asset from './model/Assets';
 import Assets from './model/Assets';
 import AssetsView from './view/AssetsView';
 import FileUpload from './view/FileUploader';
+
+export const evAll = 'asset';
+export const evPfx = `${evAll}:`;
+export const evSelect = `${evPfx}select`;
+export const evUpdate = `${evPfx}update`;
+export const evAdd = `${evPfx}add`;
+export const evRemove = `${evPfx}remove`;
+export const evRemoveBefore = `${evRemove}:before`;
 
 export default () => {
   let c = {};
   let assets, assetsVis, am, fu;
 
   return {
-    /**
-     * Name of the module
-     * @type {String}
-     * @private
-     */
+    ...Module,
+
     name: 'AssetManager',
 
-    /**
-     * Mandatory for the storage manager
-     * @type {String}
-     * @private
-     */
     storageKey: 'assets',
 
-    getConfig() {
-      return c;
+    Asset,
+
+    Assets,
+
+    events: {
+      all: evAll,
+      select: evSelect,
+      update: evUpdate,
+      add: evAdd,
+      remove: evRemove,
+      removeBefore: evRemoveBefore
     },
 
     /**
@@ -63,15 +74,12 @@ export default () => {
      * @param {Object} config Configurations
      * @private
      */
-    init(config) {
-      c = config || {};
-
-      for (let name in defaults) {
-        if (!(name in c)) c[name] = defaults[name];
-      }
-
+    init(config = {}) {
+      c = { ...defaults, ...config };
       const ppfx = c.pStylePrefix;
-      const em = c.em;
+      const { em } = c;
+      this.config = c;
+      this.em = em;
 
       if (ppfx) {
         c.stylePrefix = ppfx + c.stylePrefix;
@@ -80,43 +88,34 @@ export default () => {
       // Global assets collection
       assets = new Assets([]);
       assetsVis = new Assets([]);
+      this.all = assets;
+      this.__initListen();
 
       // Setup the sync between the global and public collections
-      assets.listenTo(assets, 'add', model => {
-        this.getAllVisible().add(model);
-        em && em.trigger('asset:add', model);
-      });
-
-      assets.listenTo(assets, 'remove', model => {
-        this.getAllVisible().remove(model);
-        em && em.trigger('asset:remove', model);
-      });
+      assets.on('add', model => this.getAllVisible().add(model));
+      assets.on('remove', model => this.getAllVisible().remove(model));
 
       return this;
     },
 
     /**
      * Add new asset/s to the collection. URLs are supposed to be unique
-     * @param {string|Object|Array<string>|Array<Object>} asset URL strings or an objects representing the resource.
+     * @param {String|Object|Array<String>|Array<Object>} asset URL strings or an objects representing the resource.
      * @param {Object} [opts] Options
-     * @return {Model}
+     * @returns {[Asset]}
      * @example
-     * // In case of strings, would be interpreted as images
+     * // As strings
      * assetManager.add('http://img.jpg');
      * assetManager.add(['http://img.jpg', './path/to/img.png']);
      *
-     * // Using objects you could indicate the type and other meta informations
+     * // Using objects you can indicate the type and other meta informations
      * assetManager.add({
+     *  // type: 'image',	// image is default
      * 	src: 'http://img.jpg',
-     * 	//type: 'image',	//image is default
      * 	height: 300,
      *	width: 200,
      * });
-     * assetManager.add([{
-     * 	src: 'http://img.jpg',
-     * },{
-     * 	src: './path/to/img.png',
-     * }]);
+     * assetManager.add([{ src: 'img2.jpg' }, { src: 'img2.png' }]);
      */
     add(asset, opts = {}) {
       // Put the model at the beginning
@@ -128,19 +127,19 @@ export default () => {
     },
 
     /**
-     * Returns the asset by URL
-     * @param  {string} src URL of the asset
-     * @return {Object} Object representing the asset
+     * Return asset by URL
+     * @param  {String} src URL of the asset
+     * @returns {[Asset]|null} Object representing the asset
      * @example
-     * var asset = assetManager.get('http://img.jpg');
+     * const asset = assetManager.get('http://img.jpg');
      */
     get(src) {
-      return assets.where({ src })[0];
+      return assets.where({ src })[0] || null;
     },
 
     /**
      * Return the global collection, containing all the assets
-     * @return {Collection}
+     * @returns {Collection<[Asset]>}
      */
     getAll() {
       return assets;
@@ -148,35 +147,36 @@ export default () => {
 
     /**
      * Return the visible collection, which contains assets actually rendered
-     * @return {Collection}
+     * @returns {Collection<[Asset]>}
      */
     getAllVisible() {
       return assetsVis;
     },
 
     /**
-     * Remove the asset by its URL
-     * @param  {string} src URL of the asset
-     * @return {this}
+     * Remove asset
+     * @param {String|[Asset]} asset Asset or asset URL
+     * @returns {[Asset]} Removed asset
      * @example
-     * assetManager.remove('http://img.jpg');
+     * const removed = assetManager.remove('http://img.jpg');
+     * // or by passing the Asset
+     * const asset = assetManager.get('http://img.jpg');
+     * assetManager.remove(asset);
      */
-    remove(src) {
-      var asset = this.get(src);
-      this.getAll().remove(asset);
-      return this;
+    remove(asset) {
+      return this.__remove(asset, opts);
     },
 
     /**
      * Store assets data to the selected storage
      * @param {Boolean} noStore If true, won't store
-     * @return {Object} Data to store
+     * @returns {Object} Data to store
      * @example
      * var assets = assetManager.store();
      */
     store(noStore) {
-      var obj = {};
-      var assets = JSON.stringify(this.getAll().toJSON());
+      const obj = {};
+      const assets = JSON.stringify(this.getAll().toJSON());
       obj[this.storageKey] = assets;
       if (!noStore && c.stm) c.stm.store(obj);
       return obj;
@@ -186,7 +186,7 @@ export default () => {
      * Load data from the passed object.
      * The fetched data will be added to the collection.
      * @param {Object} data Object of data to load
-     * @return {Object} Loaded assets
+     * @returns {Object} Loaded assets
      * @example
      * var assets = assetManager.load({
      * 	assets: [...]
@@ -212,7 +212,7 @@ export default () => {
 
     /**
      * Return the Asset Manager Container
-     * @return {HTMLElement}
+     * @returns {HTMLElement}
      */
     getContainer() {
       return am.el;
@@ -220,7 +220,7 @@ export default () => {
 
     /**
      *  Get assets element container
-     * @return {HTMLElement}
+     * @returns {HTMLElement}
      */
     getAssetsEl() {
       return am.el.querySelector('[data-el=assets]');
@@ -229,7 +229,7 @@ export default () => {
     /**
      * Render assets
      * @param  {array} assets Assets to render, without the argument will render all global assets
-     * @return {HTMLElement}
+     * @returns {HTMLElement}
      * @example
      * // Render all assets
      * assetManager.render();
@@ -284,7 +284,7 @@ export default () => {
     /**
      * Get type
      * @param {string} id Type ID
-     * @return {Object} Type definition
+     * @returns {Object} Type definition
      */
     getType(id) {
       return this.getAll().getType(id);
@@ -292,7 +292,7 @@ export default () => {
 
     /**
      * Get types
-     * @return {Array}
+     * @returns {Array}
      */
     getTypes() {
       return this.getAll().getTypes();
@@ -353,6 +353,8 @@ export default () => {
     },
 
     destroy() {
+      assets.stopListening();
+      assetsVis.stopListening();
       assets.reset();
       assetsVis.reset();
       fu && fu.remove();
