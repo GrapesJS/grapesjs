@@ -30,7 +30,14 @@ export default {
       uploadEl && uploadEl.setAttribute('accept', accept);
     }
 
-    modal.open({ title, content: this.rendered });
+    modal
+      .open({ title, content: this.rendered })
+      .onceClose(() => editor.stopCommand(this.id));
     return this;
+  },
+
+  stop(editor) {
+    const { Modal } = editor;
+    Modal && Modal.close();
   }
 };
