@@ -121,7 +121,10 @@ export default () => {
      */
     open(options = {}) {
       const cmd = this.em.get('Commands');
-      cmd.run('open-assets', options);
+      cmd.run('open-assets', {
+        types: ['image'],
+        ...options
+      });
     },
 
     /**
