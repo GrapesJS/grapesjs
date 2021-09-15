@@ -81,11 +81,6 @@ export default () => {
       removeBefore: evRemoveBefore
     },
 
-    /**
-     * Initialize module
-     * @param {Object} config Configurations
-     * @private
-     */
     init(config = {}) {
       c = { ...defaults, ...config };
       const ppfx = c.pStylePrefix;
@@ -113,6 +108,24 @@ export default () => {
     __propEv(ev, ...data) {
       this.em.trigger(ev, ...data);
       this.getAll().trigger(ev, ...data);
+    },
+
+    /**
+     * Open the asset manager.
+     * @param {Object} [options] Options for the asset manager.
+     * @param {Array<String} [options.types=['image']] Types of assets to show.
+     */
+    open(options = {}) {
+      const cmd = this.em.get('Commands');
+      cmd.run('open-assets', options);
+    },
+
+    /**
+     * Close the asset manager.
+     */
+    close() {
+      const cmd = this.em.get('Commands');
+      cmd.stop('open-assets');
     },
 
     /**
