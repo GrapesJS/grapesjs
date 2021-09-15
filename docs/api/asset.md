@@ -9,6 +9,32 @@
 *   `type` **[String][1]** Asset type, eg. 'image'.
 *   `src` **[String][1]** Asset URL, eg. '[https://.../image.png][2]'.
 
+### getType
+
+Get asset type.
+
+#### Examples
+
+```javascript
+// Asset: { src: 'https://.../image.png', type: 'image' }
+asset.getType(); // -> 'image'
+```
+
+Returns **[String][1]** 
+
+### getSrc
+
+Get asset URL.
+
+#### Examples
+
+```javascript
+// Asset: { src: 'https://.../image.png'  }
+asset.getSrc(); // -> 'https://.../image.png'
+```
+
+Returns **[String][1]** 
+
 ### getFilename
 
 Get filename of the asset (based on `src`).
