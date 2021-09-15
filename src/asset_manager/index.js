@@ -113,7 +113,11 @@ export default () => {
     /**
      * Open the asset manager.
      * @param {Object} [options] Options for the asset manager.
-     * @param {Array<String} [options.types=['image']] Types of assets to show.
+     * @param {Array<String>} [options.types=['image']] Types of assets to show.
+     * @example
+     * assetManager.open();
+     * // with your custom types (you should have assets with those types declared)
+     * assetManager.open({ types: ['doc'] });
      */
     open(options = {}) {
       const cmd = this.em.get('Commands');
@@ -122,6 +126,8 @@ export default () => {
 
     /**
      * Close the asset manager.
+     * @example
+     * assetManager.close();
      */
     close() {
       const cmd = this.em.get('Commands');

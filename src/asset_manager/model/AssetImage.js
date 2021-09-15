@@ -1,11 +1,13 @@
 import Asset from './Asset';
 
-export default Asset.extend({
-  defaults: {
-    ...Asset.prototype.defaults,
-    type: 'image',
-    unitDim: 'px',
-    height: 0,
-    width: 0
+export default class AssetImage extends Asset {
+  defaults() {
+    return {
+      ...Asset.getDefaults(),
+      type: 'image',
+      unitDim: 'px',
+      height: 0,
+      width: 0
+    };
   }
-});
+}

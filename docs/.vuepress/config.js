@@ -61,6 +61,7 @@ module.exports = {
         ['/api/i18n', 'I18n'],
         ['/api/canvas', 'Canvas'],
         ['/api/assets', 'Asset Manager'],
+        ['/api/asset', `${subDivider}Asset`],
         ['/api/block_manager', 'Block Manager'],
         ['/api/block', `${subDivider}Block`],
         ['/api/commands', 'Commands'],
