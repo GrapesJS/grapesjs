@@ -165,7 +165,7 @@ export default () => {
     /**
      * Return asset by URL
      * @param  {String} src URL of the asset
-     * @returns {[Asset]|null} Object representing the asset
+     * @returns {[Asset]|null}
      * @example
      * const asset = assetManager.get('http://img.jpg');
      */
