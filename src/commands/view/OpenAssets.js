@@ -11,6 +11,9 @@ export default {
     am.onClick(opts.onClick);
     am.onDblClick(opts.onDblClick);
     am.onSelect(opts.onSelect);
+    am.__behaviour({
+      select: opts.select
+    });
 
     if (!this.rendered || types) {
       let assets = am.getAll().filter(i => i);

@@ -60,6 +60,7 @@ export const evRemoveBefore = `${evRemove}:before`;
 export default () => {
   let c = {};
   let assets, assetsVis, am, fu;
+  const assetCmd = 'open-assets';
 
   return {
     ...Module,
@@ -114,14 +115,25 @@ export default () => {
      * Open the asset manager.
      * @param {Object} [options] Options for the asset manager.
      * @param {Array<String>} [options.types=['image']] Types of assets to show.
+     * @param {Function} [options.select] Type of operation to perform on asset selection. If not specified, nothing will happen.
      * @example
-     * assetManager.open();
+     * assetManager.open({
+     *  select(asset, complete = false) {
+     *    const selected = editor.getSelected();
+     *    if (selected && selected.is('image')) {
+     *      selected.addAttributes({ src: asset.getSrc() });
+     *      // The default AssetManager UI will trigger `select(asset)` on click
+     *      // and `select(asset, true)` on double-click
+     *      complete && assetManager.close();
+     *    }
+     *  }
+     * });
      * // with your custom types (you should have assets with those types declared)
-     * assetManager.open({ types: ['doc'] });
+     * assetManager.open({ types: ['doc'], ... });
      */
     open(options = {}) {
       const cmd = this.em.get('Commands');
-      cmd.run('open-assets', {
+      cmd.run(assetCmd, {
         types: ['image'],
         ...options
       });
@@ -134,7 +146,7 @@ export default () => {
      */
     close() {
       const cmd = this.em.get('Commands');
-      cmd.stop('open-assets');
+      cmd.stop(assetCmd);
     },
 
     /**
@@ -393,6 +405,17 @@ export default () => {
       c.onDblClick = func;
     },
 
+    __behaviour(opts = {}) {
+      return (this._bhv = {
+        ...(this._bhv || {}),
+        ...opts
+      });
+    },
+
+    __getBehaviour(opts = {}) {
+      return this._bhv || {};
+    },
+
     destroy() {
       assets.stopListening();
       assetsVis.stopListening();
@@ -401,6 +424,7 @@ export default () => {
       fu && fu.remove();
       am && am.remove();
       [assets, am, fu].forEach(i => (i = null));
+      this._bhv = {};
       c = {};
     }
   };

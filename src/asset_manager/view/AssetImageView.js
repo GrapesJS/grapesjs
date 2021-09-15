@@ -43,12 +43,15 @@ export default AssetView.extend({
    * */
   onClick() {
     const { model, pfx } = this;
+    const { select } = this.__getBhv();
     const { onClick } = this.config;
     const coll = this.collection;
     coll.trigger('deselectAll');
     this.$el.addClass(pfx + 'highlight');
 
-    if (isFunction(onClick)) {
+    if (isFunction(select)) {
+      select(model, false);
+    } else if (isFunction(onClick)) {
       onClick(model);
     } else {
       this.updateTarget(coll.target);
@@ -61,10 +64,13 @@ export default AssetView.extend({
    * */
   onDblClick() {
     const { em, model } = this;
+    const { select } = this.__getBhv();
     const { onDblClick } = this.config;
     const { target, onSelect } = this.collection;
 
-    if (isFunction(onDblClick)) {
+    if (isFunction(select)) {
+      select(model, true);
+    } else if (isFunction(onDblClick)) {
       onDblClick(model);
     } else {
       this.updateTarget(target);
