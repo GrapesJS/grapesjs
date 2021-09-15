@@ -118,11 +118,11 @@ export default () => {
      * @param {Function} [options.select] Type of operation to perform on asset selection. If not specified, nothing will happen.
      * @example
      * assetManager.open({
-     *  select(asset, complete = false) {
+     *  select(asset, complete) {
      *    const selected = editor.getSelected();
      *    if (selected && selected.is('image')) {
      *      selected.addAttributes({ src: asset.getSrc() });
-     *      // The default AssetManager UI will trigger `select(asset)` on click
+     *      // The default AssetManager UI will trigger `select(asset, false)` on asset click
      *      // and `select(asset, true)` on double-click
      *      complete && assetManager.close();
      *    }
@@ -135,6 +135,7 @@ export default () => {
       const cmd = this.em.get('Commands');
       cmd.run(assetCmd, {
         types: ['image'],
+        select: () => {},
         ...options
       });
     },

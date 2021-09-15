@@ -55,13 +55,24 @@ Open the asset manager.
 *   `options` **[Object][14]?** Options for the asset manager. (optional, default `{}`)
 
     *   `options.types` **[Array][15]<[String][16]>** Types of assets to show. (optional, default `['image']`)
+    *   `options.select` **[Function][17]?** Type of operation to perform on asset selection. If not specified, nothing will happen.
 
 ### Examples
 
 ```javascript
-assetManager.open();
+assetManager.open({
+ select(asset, complete) {
+   const selected = editor.getSelected();
+   if (selected && selected.is('image')) {
+     selected.addAttributes({ src: asset.getSrc() });
+     // The default AssetManager UI will trigger `select(asset, false)` on asset click
+     // and `select(asset, true)` on double-click
+     complete && assetManager.close();
+   }
+ }
+});
 // with your custom types (you should have assets with those types declared)
-assetManager.open({ types: ['doc'] });
+assetManager.open({ types: ['doc'], ... });
 ```
 
 ## close
@@ -116,7 +127,7 @@ Return asset by URL
 const asset = assetManager.get('http://img.jpg');
 ```
 
-Returns **([Asset] | null)** Object representing the asset
+Returns **([Asset] | null)** 
 
 ## getAll
 
@@ -156,7 +167,7 @@ Store assets data to the selected storage
 
 ### Parameters
 
-*   `noStore` **[Boolean][17]** If true, won't store
+*   `noStore` **[Boolean][18]** If true, won't store
 
 ### Examples
 
@@ -189,13 +200,13 @@ Returns **[Object][14]** Loaded assets
 
 Return the Asset Manager Container
 
-Returns **[HTMLElement][18]** 
+Returns **[HTMLElement][19]** 
 
 ## getAssetsEl
 
 Get assets element container
 
-Returns **[HTMLElement][18]** 
+Returns **[HTMLElement][19]** 
 
 ## render
 
@@ -219,11 +230,11 @@ assetManager.render(assets.filter(
 ));
 ```
 
-Returns **[HTMLElement][18]** 
+Returns **[HTMLElement][19]** 
 
 ## addType
 
-Add new type. If you want to get more about type definition we suggest to read the [module's page][19]
+Add new type. If you want to get more about type definition we suggest to read the [module's page][20]
 
 ### Parameters
 
@@ -291,8 +302,10 @@ Returns **[Array][15]**
 
 [16]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-[17]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[17]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
 
-[18]: https://developer.mozilla.org/docs/Web/HTML/Element
+[18]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
 
-[19]: /modules/Assets.html
+[19]: https://developer.mozilla.org/docs/Web/HTML/Element
+
+[20]: /modules/Assets.html
