@@ -151,6 +151,17 @@ export default () => {
     },
 
     /**
+     * Checks if the asset manager is open
+     * @returns {Boolean}
+     * @example
+     * assetManager.isOpen(); // true | false
+     */
+    isOpen() {
+      const cmd = this.em.get('Commands');
+      return cmd.isActive(assetCmd);
+    },
+
+    /**
      * Add new asset/s to the collection. URLs are supposed to be unique
      * @param {String|Object|Array<String>|Array<Object>} asset URL strings or an objects representing the resource.
      * @param {Object} [opts] Options
