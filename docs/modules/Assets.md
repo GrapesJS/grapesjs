@@ -25,7 +25,6 @@ const editor = grapesjs.init({
 });
 ```
 
-
 You can update most of them later by using `getConfig` inside of the module
 
 ```js
@@ -78,6 +77,7 @@ The built-in Asset Manager modal is implemented and is showing up when requested
 <img :src="$withBase('/assets-builtin-modal.png')">
 
 
+<!--
 Making the modal appear is registered with a command, so you can make it appear with this
 
 ```js
@@ -94,18 +94,117 @@ editor.runCommand('open-assets', {
 });
 ```
 
-
 Now you should be able to change the image of the component.
+-->
 
 
 
 
 
-## Using programmatically <Badge text="0.17.26+"/>
+## Uploading assets
 
-## Customization
+The default Asset Manager includes also an easy to use, drag-and-drop uploader with a few UI helpers. The default uploader is already visible when you open the Asset Manager.
 
-If you want to customize the Asset Manager after the initialization you have to use its [APIs](API-Asset-Manager)
+
+<img :src="$withBase('/assets-uploader.png')">
+
+
+You can click on the uploader to select your files or just drag them directly from your computer to trigger the uploader. Obviously, before it will work you have to setup your server to receive your assets and specify the upload endpoint in your configuration
+
+
+```js
+const editor = grapesjs.init({
+  ...
+  assetManager: {
+    ...
+    // Upload endpoint, set `false` to disable upload, default `false`
+    upload: 'https://endpoint/upload/assets',
+
+    // The name used in POST to pass uploaded files, default: `'files'`
+    uploadName: 'files',
+    ...
+  },
+  ...
+});
+```
+
+
+### Listeners
+
+If you want to execute an action before/after the uploading process (eg. loading animation) or even on response, you can make use of these listeners
+
+```js
+// The upload is started
+editor.on('asset:upload:start', () => {
+  startAnimation();
+});
+
+// The upload is ended (completed or not)
+editor.on('asset:upload:end', () => {
+  endAnimation();
+});
+
+// Error handling
+editor.on('asset:upload:error', (err) => {
+  notifyError(err);
+});
+
+// Do something on response
+editor.on('asset:upload:response', (response) => {
+  ...
+});
+```
+
+
+### Response
+
+When the uploading is over, by default (via config parameter `autoAdd: 1`), the editor expects to receive a JSON of uploaded assets in a `data` key as a response and tries to add them to the main collection. The JSON might look like this:
+
+```js
+{
+  data: [
+    'https://.../image.png',
+    // ...
+    {
+      src: 'https://.../image2.png',
+      type: 'image',
+      height: 100,
+      width: 200,
+    },
+    // ...
+  ]
+}
+```
+
+
+<!-- Deprecated
+### Setup Dropzone
+
+There is another helper which improves the uploading of assets: A full-width editor dropzone.
+
+<img :src="$withBase('/assets-full-dropzone.gif')">
+
+
+All you have to do is to activate it and possibly set a custom content (you might also want to hide the default uploader)
+
+```js
+const editor = grapesjs.init({
+  ...
+  assetManager: {
+    ...,
+    dropzone: 1,
+    dropzoneContent: '<div class="dropzone-inner">Drop here your assets</div>'
+  }
+});
+``` -->
+
+
+
+
+
+## Programmatic usage
+
+If you need to manage your assets programmatically you have to use its [APIs][API-Asset-Manager]
 
 ```js
 // Get the Asset Manager module first
@@ -163,18 +262,59 @@ You can also mix arrays of assets
 ```js
 am.render([...assets1, ...assets2, ...assets3]);
 ```
-
+<!--
 If you want to customize the asset manager container you can get its `HTMLElement`
 
 ```js
 am.getContainer().insertAdjacentHTML('afterbegin', '<div><button type="button">Click</button></div>');
 ```
+-->
+
+In case you want to update or remove an asset, you can make use of this methods
+
+```js
+// Get the asset via its `src`
+const asset = am.get('http://.../img.jpg');
+
+// Update asset property
+asset.set({ src: 'http://.../new-img.jpg' });
+
+// Remove asset
+am.remove(asset); // or via src, am.remove('http://.../new-img.jpg');
+```
 
 For more APIs methods check out the [API Reference](API-Asset-Manager)
 
+### Custom select logic
+
+::: warning
+This section is referring to GrapesJS v0.17.26 or higher
+:::
+
+You can open the Asset Manager with your own select logic.
+
+```js
+am.open({
+ types: ['image'], // This is the default option
+ // Without select, nothing will happen on asset selection
+ select(asset, complete) {
+   const selected = editor.getSelected();
+
+   if (selected && selected.is('image')) {
+     selected.addAttributes({ src: asset.getSrc() });
+     // The default AssetManager UI will trigger `select(asset, false)`
+     // on asset click and `select(asset, true)` on double-click
+     complete && am.close();
+   }
+ }
+});
+```
 
 
 
+
+
+## Customization
 
 ### Define new Asset type
 
@@ -384,119 +524,9 @@ am.addType('image', {
 
 
 
-## Uploading assets
-
-Asset Manager includes an easy to use, drag-and-drop uploader with a few UI helpers. The default uploader is already visible when you open the Asset Manager.
-
-
-<img :src="$withBase('/assets-uploader.png')">
-
-
-You can click on the uploader to select your files or just drag them directly from your computer to trigger the uploader. Obviously, before it will work you have to setup your server to receive your assets and specify the upload endpoint in your configuration
-
-
-```js
-let editor = grapesjs.init({
-  ...
-  assetManager: {
-    ...
-    // Upload endpoint, set `false` to disable upload, default `false`
-    upload: 'https://endpoint/upload/assets',
-
-    // The name used in POST to pass uploaded files, default: `'files'`
-    uploadName: 'files',
-    ...
-  },
-  ...
-});
-```
-
-
-
-
-
-### Listeners
-
-If you want to execute an action before/after the uploading process (eg. loading animation) or even on response, you can make use of these listeners
-
-```js
-// The upload is started
-editor.on('asset:upload:start', () => {
-  ...
-  startAnimation();
-});
-
-// The upload is ended (completed or not)
-editor.on('asset:upload:end', () => {
-  ...
-  endAnimation();
-});
-
-// Error handling
-editor.on('asset:upload:error', (err) => {
-  ...
-  notifyError(err);
-});
-
-// Do something on response
-editor.on('asset:upload:response', (response) => {
-  ...
-});
-```
-
-
-
-
-
-### Response
-
-When the uploading is over, by default (via config parameter `autoAdd: 1`), the editor expects to receive a JSON blob of uploaded assets in a `data` key as a response and tries to add them to the main collection. The JSON might look like this:
-
-```js
-{
-  data: [
-    'https://.../image.png',
-    // ...
-    {
-      src: 'https://.../image2.png',
-      type: 'image',
-      height: 100,
-      width: 200,
-    },
-    // ...
-  ]
-}
-```
-
-
-
-
-
-<!-- Deprecated
-### Setup Dropzone
-
-There is another helper which improves the uploading of assets: A full-width editor dropzone.
-
-<img :src="$withBase('/assets-full-dropzone.gif')">
-
-
-All you have to do is to activate it and possibly set a custom content (you might also want to hide the default uploader)
-
-```js
-const editor = grapesjs.init({
-  ...
-  assetManager: {
-    ...,
-    dropzone: 1,
-    dropzoneContent: '<div class="dropzone-inner">Drop here your assets</div>'
-  }
-});
-``` -->
-
-
-
-
-
 ## Events
 
 For a complete list of available events, you can check it [here](/api/assets.html#available-events).
+
+
+[API-Asset-Manager]: </api/assets.html>
