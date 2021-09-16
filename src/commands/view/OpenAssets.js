@@ -1,11 +1,23 @@
 export default {
+  open(content) {
+    const { editor, title } = this;
+    const { Modal } = editor;
+    Modal.open({ title, content }).onceClose(() => editor.stopCommand(this.id));
+  },
+
+  close() {
+    const { Modal } = this.editor;
+    Modal && Modal.close();
+  },
+
   run(editor, sender, opts = {}) {
+    this.editor = editor;
     const modal = editor.Modal;
     const am = editor.AssetManager;
     const config = am.getConfig();
-    const title = opts.modalTitle || editor.t('assetManager.modalTitle') || '';
     const types = opts.types;
     const accept = opts.accept;
+    this.title = opts.modalTitle || editor.t('assetManager.modalTitle') || '';
 
     am.setTarget(opts.target);
     am.onClick(opts.onClick);
@@ -33,14 +45,12 @@ export default {
       uploadEl && uploadEl.setAttribute('accept', accept);
     }
 
-    modal
-      .open({ title, content: this.rendered })
-      .onceClose(() => editor.stopCommand(this.id));
+    this.open(this.rendered);
     return this;
   },
 
   stop(editor) {
-    const { Modal } = editor;
-    Modal && Modal.close();
+    this.editor = editor;
+    this.close(this.rendered);
   }
 };

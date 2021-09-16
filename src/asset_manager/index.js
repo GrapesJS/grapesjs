@@ -56,6 +56,7 @@ export const evUpdate = `${evPfx}update`;
 export const evAdd = `${evPfx}add`;
 export const evRemove = `${evPfx}remove`;
 export const evRemoveBefore = `${evRemove}:before`;
+export const evCustom = `${evRemove}:custom`;
 
 export default () => {
   let c = {};
@@ -79,7 +80,8 @@ export default () => {
       update: evUpdate,
       add: evAdd,
       remove: evRemove,
-      removeBefore: evRemoveBefore
+      removeBefore: evRemoveBefore,
+      custom: evCustom
     },
 
     init(config = {}) {
