@@ -31,18 +31,17 @@ const assetManager = editor.AssetManager;
 
 ## Methods
 
-*   [add][2]
-*   [get][3]
-*   [getAll][4]
-*   [getAllVisible][5]
-*   [remove][6]
-*   [store][7]
-*   [load][8]
-*   [getContainer][9]
-*   [getAssetsEl][10]
-*   [addType][11]
-*   [getType][12]
-*   [getTypes][13]
+*   [open][2]
+*   [close][3]
+*   [isOpen][4]
+*   [add][5]
+*   [get][6]
+*   [getAll][7]
+*   [getAllVisible][8]
+*   [remove][9]
+*   [store][10]
+*   [load][11]
+*   [getContainer][12]
 
 [Asset]: asset.html
 
@@ -52,10 +51,10 @@ Open the asset manager.
 
 ### Parameters
 
-*   `options` **[Object][14]?** Options for the asset manager. (optional, default `{}`)
+*   `options` **[Object][13]?** Options for the asset manager. (optional, default `{}`)
 
-    *   `options.types` **[Array][15]<[String][16]>** Types of assets to show. (optional, default `['image']`)
-    *   `options.select` **[Function][17]?** Type of operation to perform on asset selection. If not specified, nothing will happen.
+    *   `options.types` **[Array][14]<[String][15]>** Types of assets to show. (optional, default `['image']`)
+    *   `options.select` **[Function][16]?** Type of operation to perform on asset selection. If not specified, nothing will happen.
 
 ### Examples
 
@@ -85,14 +84,26 @@ Close the asset manager.
 assetManager.close();
 ```
 
+## isOpen
+
+Checks if the asset manager is open
+
+### Examples
+
+```javascript
+assetManager.isOpen(); // true | false
+```
+
+Returns **[Boolean][17]** 
+
 ## add
 
 Add new asset/s to the collection. URLs are supposed to be unique
 
 ### Parameters
 
-*   `asset` **([String][16] | [Object][14] | [Array][15]<[String][16]> | [Array][15]<[Object][14]>)** URL strings or an objects representing the resource.
-*   `opts` **[Object][14]?** Options (optional, default `{}`)
+*   `asset` **([String][15] | [Object][13] | [Array][14]<[String][15]> | [Array][14]<[Object][13]>)** URL strings or an objects representing the resource.
+*   `opts` **[Object][13]?** Options (optional, default `{}`)
 
 ### Examples
 
@@ -119,7 +130,7 @@ Return asset by URL
 
 ### Parameters
 
-*   `src` **[String][16]** URL of the asset
+*   `src` **[String][15]** URL of the asset
 
 ### Examples
 
@@ -147,7 +158,7 @@ Remove asset
 
 ### Parameters
 
-*   `asset` **([String][16] | [Asset])** Asset or asset URL
+*   `asset` **([String][15] | [Asset])** Asset or asset URL
 *   `opts`  
 
 ### Examples
@@ -167,7 +178,7 @@ Store assets data to the selected storage
 
 ### Parameters
 
-*   `noStore` **[Boolean][18]** If true, won't store
+*   `noStore` **[Boolean][17]** If true, won't store
 
 ### Examples
 
@@ -175,7 +186,7 @@ Store assets data to the selected storage
 var assets = assetManager.store();
 ```
 
-Returns **[Object][14]** Data to store
+Returns **[Object][13]** Data to store
 
 ## load
 
@@ -184,7 +195,7 @@ The fetched data will be added to the collection.
 
 ### Parameters
 
-*   `data` **[Object][14]** Object of data to load (optional, default `{}`)
+*   `data` **[Object][13]** Object of data to load (optional, default `{}`)
 
 ### Examples
 
@@ -194,19 +205,13 @@ var assets = assetManager.load({
 })
 ```
 
-Returns **[Object][14]** Loaded assets
+Returns **[Object][13]** Loaded assets
 
 ## getContainer
 
 Return the Asset Manager Container
 
-Returns **[HTMLElement][19]** 
-
-## getAssetsEl
-
-Get assets element container
-
-Returns **[HTMLElement][19]** 
+Returns **[HTMLElement][18]** 
 
 ## render
 
@@ -215,7 +220,7 @@ Render assets
 ### Parameters
 
 *   `assts`  
-*   `assets` **[array][15]** Assets to render, without the argument will render all global assets
+*   `assets` **[array][14]** Assets to render, without the argument will render all global assets
 
 ### Examples
 
@@ -230,82 +235,40 @@ assetManager.render(assets.filter(
 ));
 ```
 
-Returns **[HTMLElement][19]** 
-
-## addType
-
-Add new type. If you want to get more about type definition we suggest to read the [module's page][20]
-
-### Parameters
-
-*   `id` **[string][16]** Type ID
-*   `definition` **[Object][14]** Definition of the type. Each definition contains
-    `model` (business logic), `view` (presentation logic)
-    and `isType` function which recognize the type of the
-    passed entity
-
-### Examples
-
-```javascript
-assetManager.addType('my-type', {
- model: {},
- view: {},
- isType: (value) => {},
-})
-```
-
-## getType
-
-Get type
-
-### Parameters
-
-*   `id` **[string][16]** Type ID
-
-Returns **[Object][14]** Type definition
-
-## getTypes
-
-Get types
-
-Returns **[Array][15]** 
+Returns **[HTMLElement][18]** 
 
 [1]: https://github.com/artf/grapesjs/blob/master/src/asset_manager/config/config.js
 
-[2]: #add
+[2]: #open
 
-[3]: #get
+[3]: #close
 
-[4]: #getall
+[4]: #isopen
 
-[5]: #getallvisible
+[5]: #add
 
-[6]: #remove
+[6]: #get
 
-[7]: #store
+[7]: #getall
 
-[8]: #load
+[8]: #getallvisible
 
-[9]: #getcontainer
+[9]: #remove
 
-[10]: #getassetsel
+[10]: #store
 
-[11]: #addtype
+[11]: #load
 
-[12]: #gettype
+[12]: #getcontainer
 
-[13]: #gettypes
+[13]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[14]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[14]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
-[15]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[15]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-[16]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[16]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
 
-[17]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+[17]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
 
-[18]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
-
-[19]: https://developer.mozilla.org/docs/Web/HTML/Element
-
-[20]: /modules/Assets.html
+[18]: https://developer.mozilla.org/docs/Web/HTML/Element
