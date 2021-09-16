@@ -1,3 +1,5 @@
+import { createEl } from '../../utils/dom';
+
 export default {
   open(content) {
     const { editor, title } = this;
@@ -11,38 +13,43 @@ export default {
   },
 
   run(editor, sender, opts = {}) {
-    this.editor = editor;
-    const modal = editor.Modal;
     const am = editor.AssetManager;
     const config = am.getConfig();
-    const types = opts.types;
-    const accept = opts.accept;
+    const { types = [], accept, select } = opts;
     this.title = opts.modalTitle || editor.t('assetManager.modalTitle') || '';
+    this.editor = editor;
 
     am.setTarget(opts.target);
     am.onClick(opts.onClick);
     am.onDblClick(opts.onDblClick);
     am.onSelect(opts.onSelect);
     am.__behaviour({
-      select: opts.select
+      select,
+      types
     });
 
-    if (!this.rendered || types) {
-      let assets = am.getAll().filter(i => i);
+    if (config.custom) {
+      this.rendered = this.rendered || createEl('div');
+      am.__behaviour({ container: this.rendered });
+      am.__trgCustom();
+    } else {
+      if (!this.rendered || types) {
+        let assets = am.getAll().filter(i => i);
 
-      if (types && types.length) {
-        assets = assets.filter(a => types.indexOf(a.get('type')) !== -1);
+        if (types && types.length) {
+          assets = assets.filter(a => types.indexOf(a.get('type')) !== -1);
+        }
+
+        am.render(assets);
+        this.rendered = am.getContainer();
       }
 
-      am.render(assets);
-      this.rendered = am.getContainer();
-    }
-
-    if (accept) {
-      const uploadEl = this.rendered.querySelector(
-        `input#${config.stylePrefix}uploadFile`
-      );
-      uploadEl && uploadEl.setAttribute('accept', accept);
+      if (accept) {
+        const uploadEl = this.rendered.querySelector(
+          `input#${config.stylePrefix}uploadFile`
+        );
+        uploadEl && uploadEl.setAttribute('accept', accept);
+      }
     }
 
     this.open(this.rendered);

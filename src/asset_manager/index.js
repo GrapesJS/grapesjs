@@ -24,6 +24,9 @@
  * * `asset` - Catch-all event for all the events mentioned above. An object containing all the available data about the triggered event is passed as an argument to the callback.
  *
  * ## Methods
+ * * [open](#open)
+ * * [close](#close)
+ * * [isOpen](#isopen)
  * * [add](#add)
  * * [get](#get)
  * * [getAll](#getall)
@@ -32,16 +35,13 @@
  * * [store](#store)
  * * [load](#load)
  * * [getContainer](#getcontainer)
- * * [getAssetsEl](#getassetsel)
- * * [addType](#addtype)
- * * [getType](#gettype)
- * * [getTypes](#gettypes)
  *
  * [Asset]: asset.html
  *
  * @module AssetManager
  */
 
+import { debounce, isFunction } from 'underscore';
 import Module from 'common/module';
 import defaults from './config/config';
 import Asset from './model/Assets';
@@ -56,7 +56,7 @@ export const evUpdate = `${evPfx}update`;
 export const evAdd = `${evPfx}add`;
 export const evRemove = `${evPfx}remove`;
 export const evRemoveBefore = `${evRemove}:before`;
-export const evCustom = `${evRemove}:custom`;
+export const evCustom = `${evPfx}custom`;
 
 export default () => {
   let c = {};
@@ -113,6 +113,26 @@ export default () => {
       this.getAll().trigger(ev, ...data);
     },
 
+    __onAllEvent() {
+      this.__trgCustom();
+    },
+
+    __trgCustom: debounce(function() {
+      const bhv = this.__getBehaviour();
+      this.em.trigger(this.events.custom, {
+        am: this,
+        open: this.isOpen(),
+        assets: this.getAll().models,
+        types: bhv.types || [],
+        container: bhv.container,
+        close: () => this.close(),
+        select: (asset, complete) => {
+          const res = this.add(asset);
+          isFunction(bhv.select) && bhv.select(res, complete);
+        }
+      });
+    }),
+
     /**
      * Open the asset manager.
      * @param {Object} [options] Options for the asset manager.
@@ -160,7 +180,7 @@ export default () => {
      */
     isOpen() {
       const cmd = this.em.get('Commands');
-      return cmd.isActive(assetCmd);
+      return !!(cmd && cmd.isActive(assetCmd));
     },
 
     /**
@@ -280,12 +300,14 @@ export default () => {
      * @returns {HTMLElement}
      */
     getContainer() {
-      return am.el;
+      const bhv = this.__getBehaviour();
+      return bhv.container || (am && am.el);
     },
 
     /**
      *  Get assets element container
      * @returns {HTMLElement}
+     * @private
      */
     getAssetsEl() {
       return am.el.querySelector('[data-el=assets]');
@@ -337,6 +359,7 @@ export default () => {
      *                            `model` (business logic), `view` (presentation logic)
      *                            and `isType` function which recognize the type of the
      *                            passed entity
+     * @private
      * @example
      * assetManager.addType('my-type', {
      *  model: {},
@@ -352,6 +375,7 @@ export default () => {
      * Get type
      * @param {string} id Type ID
      * @returns {Object} Type definition
+     * @private
      */
     getType(id) {
       return this.getAll().getType(id);
@@ -360,6 +384,7 @@ export default () => {
     /**
      * Get types
      * @returns {Array}
+     * @private
      */
     getTypes() {
       return this.getAll().getTypes();

@@ -13,7 +13,7 @@ export default {
 
   getAllMap() {
     return this.getAll().reduce((acc, i) => {
-      acc[i.get('id')] = i;
+      acc[i.get(i.idAttribute)] = i;
       return acc;
     }, {});
   },
