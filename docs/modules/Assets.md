@@ -13,7 +13,7 @@ In this section, you will see how to setup and take the full advantage of built-
 
 ## Configuration
 
-To change default configurations you'll have to pass `assetManager` property with the main configuration object
+To change default configurations you'd need to pass the `assetManager` property with the main configuration object
 
 ```js
 const editor = grapesjs.init({
@@ -32,94 +32,7 @@ You can update most of them later by using `getConfig` inside of the module
 const amConfig = editor.AssetManager.getConfig();
 ```
 
-
-Below is a list of currently available options
-
-```js
-  // Default assets
-  // eg. [
-  //  'https://...image1.png',
-  //  'https://...image2.png',
-  //  {type: 'image', src: 'https://...image3.png', someOtherCustomProp: 1},
-  //  ..
-  // ]
-  assets: [],
-
-  // Content to add where there is no assets to show
-  // eg. 'No <b>assets</b> here, drag to upload'
-  noAssets: '',
-
-  // Upload endpoint, set `false` to disable upload
-  // upload: 'https://endpoint/upload/assets',
-  // upload: false,
-  upload: 0,
-
-  // The name used in POST to pass uploaded files
-  uploadName: 'files',
-
-  // Custom headers to pass with the upload request
-  headers: {},
-
-  // Custom parameters to pass with the upload request, eg. csrf token
-  params: {},
-
-  // The credentials setting for the upload request, eg. 'include', 'omit'
-  credentials: 'include',
-
-  // Allow uploading multiple files per request.
-  // If disabled filename will not have '[]' appended
-  multiUpload: true,
-
-  // If true, tries to add automatically uploaded assets.
-  // To make it work the server should respond with a JSON containing assets
-  // in a data key, eg:
-  // {
-  //  data: [
-  //    'https://.../image.png',
-  //    ...
-  //    {src: 'https://.../image2.png'},
-  //    ...
-  //  ]
-  // }
-  autoAdd: 1,
-
-  // Text on upload input
-  uploadText: 'Drop files here or click to upload',
-
-  // Label for the add button
-  addBtnText: 'Add image',
-
-  // Custom uploadFile function
-  // @example
-  // uploadFile: (e) => {
-  //   var files = e.dataTransfer ? e.dataTransfer.files : e.target.files;
-  //   // ...send somewhere
-  // }
-  uploadFile: '',
-
-  // Handle the image url submit from the built-in 'Add image' form
-  // @example
-  // handleAdd: (textFromInput) => {
-  //   // some check...
-  //   editor.AssetManager.add(textFromInput);
-  // }
-  handleAdd: '',
-
-  // Enable an upload dropzone on the entire editor (not document) when dragging
-  // files over it
-  dropzone: 1,
-
-  // Open the asset manager once files are been dropped via the dropzone
-  openAssetsOnDrop: 1,
-
-  // Any dropzone content to append inside dropzone element
-  dropzoneContent: '',
-
-  // Default title for the asset manager modal
-  modalTitle: 'Select Image',
-```
-
-Sometimes the code gets ahead of the docs, therefore we'd suggest to keep an eye at the current state of configurations by checking the dedicated source file [Asset Manager Config](https://github.com/artf/grapesjs/blob/dev/src/asset_manager/config/config.js)
+Check the full list of available options here: [Asset Manager Config](https://github.com/artf/grapesjs/blob/master/src/asset_manager/config/config.js)
 
 
 
@@ -140,7 +53,7 @@ const editor = grapesjs.init({
        type: 'image',
        src: 'http://placehold.it/350x250/459ba8/fff/image2.jpg',
        height: 350,
-       width: 250, 
+       width: 250,
        name: 'displayName'
      },
      {
@@ -187,6 +100,8 @@ Now you should be able to change the image of the component.
 
 
 
+
+## Using programmatically <Badge text="0.17.26+"/>
 
 ## Customization
 
@@ -557,6 +472,7 @@ When the uploading is over, by default (via config parameter `autoAdd: 1`), the 
 
 
 
+<!-- Deprecated
 ### Setup Dropzone
 
 There is another helper which improves the uploading of assets: A full-width editor dropzone.
@@ -575,7 +491,7 @@ const editor = grapesjs.init({
     dropzoneContent: '<div class="dropzone-inner">Drop here your assets</div>'
   }
 });
-```
+``` -->
 
 
 
@@ -583,12 +499,4 @@ const editor = grapesjs.init({
 
 ## Events
 
-Currently available events you can listen to
-
-* `asset:add` - New asset added
-* `asset:remove` - Asset removed
-* `asset:upload:start` - Before the upload is started
-* `asset:upload:end` - After the upload is ended
-* `asset:upload:error` - On any error in upload, passes the error as an argument
-* `asset:upload:response` - On upload response, passes the result as an argument
-
+For a complete list of available events, you can check it [here](/api/assets.html#available-events).
