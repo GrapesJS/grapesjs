@@ -336,6 +336,7 @@ editor.on('asset:custom', props => {
     // props.types (Array<String>) - Array request asset types, eg. ['image'],
     // props.container (HTMLElement) - The element where you should place your UI
     // props.close (Function) - A callback to close the Asset Manager
+    // props.remove (Function<Asset>) - A callback to remove an asset
     // props.select (Function<Asset, boolean>) - A callback to invoke when you want to select the asset
 
     // Here you would put the logic to render/update your UI.

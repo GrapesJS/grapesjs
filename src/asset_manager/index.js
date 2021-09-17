@@ -126,6 +126,7 @@ export default () => {
         types: bhv.types || [],
         container: bhv.container,
         close: () => this.close(),
+        remove: (...args) => this.remove(...args),
         select: (asset, complete) => {
           const res = this.add(asset);
           isFunction(bhv.select) && bhv.select(res, complete);
