@@ -316,6 +316,38 @@ am.open({
 
 ## Customization
 
+The default Asset Manager UI is great for simple things, but except the possibility to tweak some CSS style, adding more complex things like a Search, filters, etc. requires a replace of the defualt UI.
+
+All you have to do is to indicate the editor your intent to use a custom UI and then subscribe to the `asset:custom` event that will give you all the information on any requested change.
+
+```js
+const editor = grapesjs.init({
+    // ...
+    assetManager: {
+      // ...
+      custom: true,
+    },
+});
+
+editor.on('asset:custom', props => {
+    // The `props` will contain all the information you need in order to update your UI.
+    // props.open (boolean) - Indicates if the Asset Manager is open
+    // props.assets (Array<Asset>) - Array of all assets
+    // props.types (Array<String>) - Array request asset types, eg. ['image'],
+    // props.container (HTMLElement) - The element where you should place your UI
+    // props.close (Function) - A callback to close the Asset Manager
+    // props.select (Function<Asset, boolean>) - A callback to invoke when you want to select the asset
+
+    // Here you would put the logic to render/update your UI.
+});
+```
+
+Here an example of using custom Asset Manager with a Vue component.
+
+<demo-viewer value="x70amv3f" height="500" darkcode/>
+
+
+<!--
 ### Define new Asset type
 
 Generally speaking, images aren't the only asset you'll use, it could be a `video`, `svg-icon`, or any other kind of `document`. Each type of asset is applied in our templates/pages differently. If you need to change the image of the Component all you need is another `url` in `src` attribute. However In case of a `svg-icon`, its not the same, you might want to replace the element with a new `<svg>` content. Besides this you also have to deal with the presentation/preview of the asset inside the panel/modal. For example, showing a thumbnail for big images or the possibility to preview videos.
@@ -469,9 +501,6 @@ am.addType('svg-icon', {
 ```
 
 
-
-
-
 ### Extend Asset Types
 
 Extending asset types is basically the same as adding them, you can choose what type to extend and how.
@@ -518,7 +547,7 @@ am.addType('image', {
     }
   },
 })
-```
+``` -->
 
 
 
