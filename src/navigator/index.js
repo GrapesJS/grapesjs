@@ -1,5 +1,5 @@
 import defaults from './config/config';
-import ItemView from './view/ItemView';
+import View from './view/ItemView';
 import { isElement } from 'underscore';
 
 export default () => {
@@ -14,7 +14,6 @@ export default () => {
       config = { ...defaults, ...opts };
       config.stylePrefix = opts.pStylePrefix;
       em = config.em;
-
       return this;
     },
 
@@ -23,12 +22,6 @@ export default () => {
     },
 
     onLoad() {
-      layers = new ItemView({
-        level: 0,
-        config,
-        opened: config.opened || {},
-        model: em.get('DomComponents').getWrapper()
-      });
       em && em.on('component:selected', this.componentChanged);
       this.componentChanged();
     },
@@ -59,7 +52,7 @@ export default () => {
      * @return {Component}
      */
     getRoot() {
-      return layers.model;
+      return layers && layers.model;
     },
 
     /**
@@ -95,6 +88,15 @@ export default () => {
     },
 
     render() {
+      const ItemView = View.extend(config.extend);
+      layers && layers.remove();
+      layers = new ItemView({
+        ItemView,
+        level: 0,
+        config,
+        opened: config.opened || {},
+        model: em.get('DomComponents').getWrapper()
+      });
       return layers.render().el;
     },
 

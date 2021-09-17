@@ -1,13 +1,30 @@
 import { defaults, isElement } from 'underscore';
 import defaultOpts from './config/config';
 import TraitsView from './view/TraitsView';
+import TraitView from './view/TraitView';
+import TraitSelectView from './view/TraitSelectView';
+import TraitCheckboxView from './view/TraitCheckboxView';
+import TraitNumberView from './view/TraitNumberView';
+import TraitColorView from './view/TraitColorView';
+import TraitButtonView from './view/TraitButtonView';
 
 export default () => {
   let c = {};
+  let types = {};
   let TraitsViewer;
+  const typesDef = {
+    text: TraitView,
+    number: TraitNumberView,
+    select: TraitSelectView,
+    checkbox: TraitCheckboxView,
+    color: TraitColorView,
+    button: TraitButtonView
+  };
 
   return {
     TraitsView,
+
+    types,
 
     /**
      * Name of the module
@@ -33,12 +50,8 @@ export default () => {
       c = config;
       defaults(c, defaultOpts);
       const ppfx = c.pStylePrefix;
+      types = { ...typesDef };
       ppfx && (c.stylePrefix = `${ppfx}${c.stylePrefix}`);
-      TraitsViewer = new TraitsView({
-        collection: [],
-        editor: c.em,
-        config: c
-      });
       return this;
     },
 
@@ -66,8 +79,8 @@ export default () => {
      * @param {Object} methods Object representing the trait
      */
     addType(name, trait) {
-      var itemView = TraitsViewer.itemView;
-      TraitsViewer.itemsView[name] = itemView.extend(trait);
+      const baseView = types.text;
+      types[name] = baseView.extend(trait);
     },
 
     /**
@@ -76,16 +89,23 @@ export default () => {
      * @return {Object}
      */
     getType(name) {
-      return TraitsViewer.itemsView[name];
+      return types[name];
     },
 
     render() {
+      TraitsViewer && TraitsViewer.remove();
+      TraitsViewer = new TraitsView({
+        collection: [],
+        editor: c.em,
+        config: c
+      });
+      TraitsViewer.itemsView = types;
       return TraitsViewer.render().el;
     },
 
     destroy() {
-      TraitsViewer.remove();
-      [c, TraitsViewer].forEach(i => (i = {}));
+      TraitsViewer && TraitsViewer.remove();
+      [c, types, TraitsViewer].forEach(i => (i = {}));
     }
   };
 };

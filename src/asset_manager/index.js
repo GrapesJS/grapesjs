@@ -37,7 +37,7 @@ import FileUpload from './view/FileUploader';
 
 export default () => {
   let c = {};
-  let assets, am, fu;
+  let assets, assetsVis, am, fu;
 
   return {
     /**
@@ -79,15 +79,7 @@ export default () => {
 
       // Global assets collection
       assets = new Assets([]);
-      const obj = {
-        // Collection visible in asset manager
-        collection: new Assets([]),
-        globalCollection: assets,
-        config: c
-      };
-      fu = new FileUpload(obj);
-      obj.fu = fu;
-      am = new AssetsView(obj);
+      assetsVis = new Assets([]);
 
       // Setup the sync between the global and public collections
       assets.listenTo(assets, 'add', model => {
@@ -155,11 +147,11 @@ export default () => {
     },
 
     /**
-     * Return the visible collection, which containes assets actually rendered
+     * Return the visible collection, which contains assets actually rendered
      * @return {Collection}
      */
     getAllVisible() {
-      return am.collection;
+      return assetsVis;
     },
 
     /**
@@ -236,8 +228,7 @@ export default () => {
 
     /**
      * Render assets
-     * @param  {array} assets Assets to render, without the argument will render
-     *                        all global assets
+     * @param  {array} assets Assets to render, without the argument will render all global assets
      * @return {HTMLElement}
      * @example
      * // Render all assets
@@ -249,14 +240,22 @@ export default () => {
      *  asset => asset.get('category') == 'cats'
      * ));
      */
-    render(assets) {
-      const toRender = assets || this.getAll().models;
+    render(assts) {
+      const toRender = assts || this.getAll().models;
 
-      if (!am.rendered) {
+      if (!am) {
+        const obj = {
+          collection: assetsVis, // Collection visible in asset manager
+          globalCollection: assets,
+          config: c
+        };
+        fu = new FileUpload(obj);
+        obj.fu = fu;
+        am = new AssetsView(obj);
         am.render();
       }
 
-      am.collection.reset(toRender);
+      assetsVis.reset(toRender);
       return this.getContainer();
     },
 
@@ -310,7 +309,7 @@ export default () => {
     },
 
     postRender(editorView) {
-      c.dropzone && fu.initDropzone(editorView);
+      c.dropzone && fu && fu.initDropzone(editorView);
     },
 
     /**
@@ -319,7 +318,7 @@ export default () => {
      * @private
      * */
     setTarget(m) {
-      am.collection.target = m;
+      assetsVis.target = m;
     },
 
     /**
@@ -328,7 +327,7 @@ export default () => {
      * @private
      * */
     onSelect(f) {
-      am.collection.onSelect = f;
+      assetsVis.onSelect = f;
     },
 
     /**
@@ -351,9 +350,9 @@ export default () => {
 
     destroy() {
       assets.reset();
-      fu.collection.reset();
-      fu.remove();
-      am.remove();
+      assetsVis.reset();
+      fu && fu.remove();
+      am && am.remove();
       [assets, am, fu].forEach(i => (i = null));
       c = {};
     }

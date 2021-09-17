@@ -4,7 +4,6 @@
 [![Chat](https://img.shields.io/badge/chat-discord-7289da.svg)](https://discord.gg/QAbgGXq)
 [![CDNJS](https://img.shields.io/cdnjs/v/grapesjs.svg)](https://cdnjs.com/libraries/grapesjs)
 [![npm](https://img.shields.io/npm/v/grapesjs.svg)](https://www.npmjs.com/package/grapesjs)
-[![BrowserStack Status](https://www.browserstack.com/automate/badge.svg?badge_key=QksxaStYaGI3eE5VMDlPTEh0Z3hYOXEwRWNMc1ZYT0lNbEJxMWdOZWFDZz0tLWlqcFVWb05PMmlQMmU3emFIZkFNWVE9PQ==--e89345be5e303d515276e3accd6f1316dfa857ab)](https://www.browserstack.com/automate/public-build/QksxaStYaGI3eE5VMDlPTEh0Z3hYOXEwRWNMc1ZYT0lNbEJxMWdOZWFDZz0tLWlqcFVWb05PMmlQMmU3emFIZkFNWVE9PQ==--e89345be5e303d515276e3accd6f1316dfa857ab)
 
 
 <p align="center"><img src="http://grapesjs.com/img/grapesjs-front-page-m.jpg" alt="GrapesJS" width="500" align="center"/></p>
@@ -18,9 +17,9 @@ GrapesJS is a free and open source Web Builder Framework which helps building HT
 
 Generally any 'template system', that you'd find in various applications like CMS, is composed by the **structure** (HTML), **style** (CSS) and **variables**, which are then replaced with other templates and contents on server-side and rendered on client.
 
-This demos show examples of what is possible to achieve:
-Webpage Demo - http://grapesjs.com/demo.html
-Newsletter Demo - http://grapesjs.com/demo-newsletter-editor.html
+This demos show examples of what is possible to achieve:<br/>
+Webpage Demo - http://grapesjs.com/demo.html<br/>
+Newsletter Demo - http://grapesjs.com/demo-newsletter-editor.html<br/>
 
 
 
@@ -99,41 +98,23 @@ For the development purpose you should follow instructions below.
 </script>
 ```
 
-You could also grab the content directly from the element with `fromElement` property
-
-```html
-<div id="gjs">
-  <div class="txt-red">Hello world!</div>
-  <style>.txt-red{color: red}</style>
-</div>
-
-<script type="text/javascript">
-  var editor = grapesjs.init({
-      container : '#gjs',
-      fromElement: true,
-  });
-</script>
-```
-
-For more practical example I suggest to look up the code inside this demo: http://grapesjs.com/demo.html
+For a more practical example I'd suggest looking up the code inside this demo: http://grapesjs.com/demo.html
 
 
 ## Development
 
-GrapesJS uses [Webpack](https://github.com/webpack/webpack) as a module bundler and [Babel](https://github.com/babel/babel) as a compiler.
-
-Clone the repository and install all the necessary dependencies
+Clone the repository and install all the necessary dependencies (`yarn` is highly recommended)
 
 ```sh
 $ git clone https://github.com/artf/grapesjs.git
 $ cd grapesjs
-$ npm i
+$ yarn
 ```
 
 Start the dev server
 
 ```sh
-$ npm start
+$ yarn start
 ```
 
 Once the development server is started you should be able to reach the demo page (eg. `http://localhost:8080`)
@@ -161,7 +142,7 @@ API References could be found here: [API-Reference]
 ## Testing
 
 ```sh
-$ npm test
+$ yarn test
 ```
 
 
@@ -208,35 +189,13 @@ Find out more about plugins here: [Creating plugins](https://grapesjs.com/docs/m
 
 ## Support
 
-If you like the project support it with a donation of your choice or become a backer/sponsor via [Open Collective](https://opencollective.com/grapesjs)
+If you like the project and you wish to see it grow, please consider supporting us with a donation of your choice or become a backer/sponsor via [Open Collective](https://opencollective.com/grapesjs)
 
 [![PayPalMe](http://grapesjs.com/img/ppme.png)](https://paypal.me/grapesjs)
 [![Bitcoin](https://user-images.githubusercontent.com/11614725/52977952-87235f80-33cf-11e9-9607-7a9a354e1155.png)](https://commerce.coinbase.com/checkout/fc90b940-558d-408b-a166-28a823c98173)
 
-<a href="https://opencollective.com/grapesjs/sponsors/0/website"><img src="https://opencollective.com/grapesjs/sponsors/0/avatar"></a>
-<a href="https://opencollective.com/grapesjs/sponsors/1/website"><img src="https://opencollective.com/grapesjs/sponsors/1/avatar"></a>
-<a href="https://opencollective.com/grapesjs/sponsors/2/website"><img src="https://opencollective.com/grapesjs/sponsors/2/avatar"></a>
-<a href="https://opencollective.com/grapesjs/sponsors/3/website"><img src="https://opencollective.com/grapesjs/sponsors/3/avatar"></a>
-<a href="https://opencollective.com/grapesjs/sponsors/4/website"><img src="https://opencollective.com/grapesjs/sponsors/4/avatar"></a>
-<a href="https://opencollective.com/grapesjs/sponsors/5/website"><img src="https://opencollective.com/grapesjs/sponsors/5/avatar"></a>
-<a href="https://opencollective.com/grapesjs/sponsors/6/website"><img src="https://opencollective.com/grapesjs/sponsors/6/avatar"></a>
-<a href="https://opencollective.com/grapesjs/sponsors/7/website"><img src="https://opencollective.com/grapesjs/sponsors/7/avatar"></a>
-<a href="https://opencollective.com/grapesjs/sponsors/8/website"><img src="https://opencollective.com/grapesjs/sponsors/8/avatar"></a>
-<a href="https://opencollective.com/grapesjs/sponsors/9/website"><img src="https://opencollective.com/grapesjs/sponsors/9/avatar"></a>
-
-<a href="https://opencollective.com/grapesjs/backers/0/website"><img src="https://opencollective.com/grapesjs/backers/0/avatar"></a>
-<a href="https://opencollective.com/grapesjs/backers/1/website"><img src="https://opencollective.com/grapesjs/backers/1/avatar"></a>
-<a href="https://opencollective.com/grapesjs/backers/2/website"><img src="https://opencollective.com/grapesjs/backers/2/avatar"></a>
-<a href="https://opencollective.com/grapesjs/backers/3/website"><img src="https://opencollective.com/grapesjs/backers/3/avatar"></a>
-<a href="https://opencollective.com/grapesjs/backers/4/website"><img src="https://opencollective.com/grapesjs/backers/4/avatar"></a>
-<a href="https://opencollective.com/grapesjs/backers/5/website"><img src="https://opencollective.com/grapesjs/backers/5/avatar"></a>
-<a href="https://opencollective.com/grapesjs/backers/6/website"><img src="https://opencollective.com/grapesjs/backers/6/avatar"></a>
-<a href="https://opencollective.com/grapesjs/backers/7/website"><img src="https://opencollective.com/grapesjs/backers/7/avatar"></a>
-<a href="https://opencollective.com/grapesjs/backers/8/website"><img src="https://opencollective.com/grapesjs/backers/8/avatar"></a>
-<a href="https://opencollective.com/grapesjs/backers/9/website"><img src="https://opencollective.com/grapesjs/backers/9/avatar"></a>
-<a href="https://opencollective.com/grapesjs/backers/10/website"><img src="https://opencollective.com/grapesjs/backers/10/avatar"></a>
-<a href="https://opencollective.com/grapesjs/backers/11/website"><img src="https://opencollective.com/grapesjs/backers/11/avatar"></a>
-<a href="https://opencollective.com/grapesjs/backers/12/website"><img src="https://opencollective.com/grapesjs/backers/12/avatar"></a>
+<a href="https://opencollective.com/grapesjs"><img src="https://opencollective.com/grapesjs/tiers/sponsors.svg?avatarHeight=64"></a>
+<a href="https://opencollective.com/grapesjs"><img src="https://opencollective.com/grapesjs/tiers/backers.svg?avatarHeight=64"></a>
 
 <br>
 

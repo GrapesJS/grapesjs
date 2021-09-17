@@ -1,6 +1,7 @@
 const version = require('./../../package.json').version;
 const isDev = process.argv[2] === 'dev';
 const devPath = 'http://localhost:8080/dist';
+const subDivider = " ‍  ‍  ‍ ";
 
 module.exports = {
   title: 'GrapesJS',
@@ -61,20 +62,25 @@ module.exports = {
         ['/api/canvas', 'Canvas'],
         ['/api/assets', 'Asset Manager'],
         ['/api/block_manager', 'Block Manager'],
+        ['/api/block', `${subDivider}Block`],
         ['/api/commands', 'Commands'],
         ['/api/components', 'DOM Components'],
-        ['/api/component', ' - Component'],
+        ['/api/component', `${subDivider}Component`],
         ['/api/panels', 'Panels'],
         ['/api/pages', 'Pages'],
+        ['/api/page', `${subDivider}Page`],
         ['/api/style_manager', 'Style Manager'],
         ['/api/storage_manager', 'Storage Manager'],
         ['/api/device_manager', 'Device Manager'],
+        ['/api/device', `${subDivider}Device`],
         ['/api/selector_manager', 'Selector Manager'],
         ['/api/css_composer', 'CSS Composer'],
+        ['/api/css_rule', `${subDivider}CssRule`],
         ['/api/modal_dialog', 'Modal'],
         ['/api/rich_text_editor', 'Rich Text Editor'],
         ['/api/keymaps', 'Keymaps'],
         ['/api/undo_manager', 'Undo Manager'],
+        ['/api/parser', 'Parser'],
       ],
       '/': [
         '',

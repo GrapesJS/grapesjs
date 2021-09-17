@@ -267,6 +267,7 @@ describe('Component', () => {
     expect(obj.getAttributes()).toEqual({
       id: 'test',
       class: 'class1 class2',
+      style: 'color:white;background:#fff;',
       'data-test': 'value'
     });
     expect(obj.get('classes').length).toEqual(2);
@@ -440,21 +441,18 @@ describe('Image Component', () => {
 
   test('Refuse not img element', () => {
     var el = document.createElement('div');
-    obj = ComponentImage.isComponent(el);
-    expect(obj).toEqual('');
+    expect(ComponentImage.isComponent(el)).toEqual(false);
   });
 
   test('Component parse img element', () => {
     var el = document.createElement('img');
-    obj = ComponentImage.isComponent(el);
-    expect(obj).toEqual({ type: 'image' });
+    expect(ComponentImage.isComponent(el)).toEqual(true);
   });
 
   test('Component parse img element with src', () => {
     var el = document.createElement('img');
     el.src = 'http://localhost/';
-    obj = ComponentImage.isComponent(el);
-    expect(obj).toEqual({ type: 'image' });
+    expect(ComponentImage.isComponent(el)).toEqual(true);
   });
 });
 

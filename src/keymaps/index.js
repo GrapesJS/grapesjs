@@ -32,7 +32,10 @@
  */
 
 import { isString } from 'underscore';
-import keymaster from 'keymaster';
+import { hasWin } from 'utils/mixins';
+import keymaster from 'utils/keymaster';
+
+hasWin() && keymaster.init(window);
 
 export default () => {
   let em;

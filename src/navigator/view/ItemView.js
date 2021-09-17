@@ -5,6 +5,7 @@ import ComponentView from 'dom_components/view/ComponentView';
 import { eventDrag } from 'dom_components/model/Component';
 
 const inputProp = 'contentEditable';
+const styleOpts = { mediaText: '' };
 const $ = Backbone.$;
 let ItemsView;
 
@@ -80,11 +81,13 @@ export default Backbone.View.extend({
     const type = model.get('type') || 'default';
     model.set('open', false);
     this.listenTo(components, 'remove add reset', this.checkChildren);
-    this.listenTo(model, 'change:status', this.updateStatus);
-    this.listenTo(model, 'change:open', this.updateOpening);
-    this.listenTo(model, 'change:layerable', this.updateLayerable);
-    this.listenTo(model, 'change:style:display', this.updateVisibility);
-    this.listenTo(model, 'rerender:layer', this.render);
+    [
+      ['change:status', this.updateStatus],
+      ['change:open', this.updateOpening],
+      ['change:layerable', this.updateLayerable],
+      ['change:style:display', this.updateVisibility],
+      ['rerender:layer', this.render]
+    ].forEach(item => this.listenTo(model, item[0], item[1]));
     this.className = `${pfx}layer ${pfx}layer__t-${type} no-select ${ppfx}two-color`;
     this.inputNameCls = `${ppfx}layer-name`;
     this.clsTitleC = `${pfx}layer-title-c`;
@@ -119,7 +122,7 @@ export default Backbone.View.extend({
     const model = this.model;
     const hClass = `${pfx}layer-hidden`;
     const hideIcon = 'fa-eye-slash';
-    const hidden = model.getStyle().display === 'none';
+    const hidden = model.getStyle(styleOpts).display === 'none';
     const method = hidden ? 'addClass' : 'removeClass';
     this.$el[method](hClass);
     this.getVisibilityEl()[method](hideIcon);
@@ -136,7 +139,7 @@ export default Backbone.View.extend({
     const { model, em } = this;
     const prevDspKey = '__prev-display';
     const prevDisplay = model.get(prevDspKey);
-    const style = model.getStyle();
+    const style = model.getStyle(styleOpts);
     const { display } = style;
     const hidden = display == 'none';
 
@@ -152,7 +155,7 @@ export default Backbone.View.extend({
       style.display = 'none';
     }
 
-    model.setStyle(style);
+    model.setStyle(style, styleOpts);
     em && em.trigger('component:toggled'); // Updates Style Manager #2938
   },
 
@@ -188,12 +191,16 @@ export default Backbone.View.extend({
     const name = inputEl.textContent;
     inputEl.scrollLeft = 0;
     inputEl[inputProp] = false;
-    this.model.set({ 'custom-name': name });
+    this.setName(name, { component: this.model, propName: 'custom-name' });
     em && em.setEditing(0);
     $el
       .find(`.${this.inputNameCls}`)
       .addClass(clsNoEdit)
       .removeClass(clsEdit);
+  },
+
+  setName(name, { propName }) {
+    this.model.set(propName, name);
   },
 
   /**
@@ -388,7 +395,7 @@ export default Backbone.View.extend({
     this.stopListening();
     this.model = model;
     this.initialize(this.opt);
-    this.render();
+    this._rendered && this.render();
   },
 
   updateLayerable() {
@@ -397,19 +404,32 @@ export default Backbone.View.extend({
     toRerender.render();
   },
 
+  __clearItems() {
+    const { items } = this;
+    items && items.remove();
+  },
+
+  remove() {
+    Backbone.View.prototype.remove.apply(this, arguments);
+    this.__clearItems();
+  },
+
   render() {
     const { model, config, pfx, ppfx, opt } = this;
+    this.__clearItems();
     const { isCountable } = opt;
     const hidden = isCountable && !isCountable(model, config.hideTextnode);
     const vis = this.isVisible();
     const el = this.$el.empty();
     const level = this.level + 1;
+    this.inputName = 0;
 
     if (isUndefined(ItemsView)) {
       ItemsView = require('./ItemsView').default;
     }
 
-    const children = new ItemsView({
+    this.items = new ItemsView({
+      ItemView: opt.ItemView,
       collection: model.get('components'),
       config: this.config,
       sorter: this.sorter,
@@ -417,7 +437,8 @@ export default Backbone.View.extend({
       parentView: this,
       parent: model,
       level
-    }).render().$el;
+    });
+    const children = this.items.render().$el;
 
     if (!this.config.showWrapper && level === 1) {
       el.append(children);
@@ -437,6 +458,7 @@ export default Backbone.View.extend({
     this.updateStatus();
     this.updateVisibility();
     this.__render();
+    this._rendered = 1;
     return this;
   },
 

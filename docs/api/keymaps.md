@@ -25,12 +25,12 @@ Once the editor is instantiated you can use its API. Before using these methods 
 const keymaps = editor.Keymaps;
 ```
 
--   [getConfig][1]
--   [add][2]
--   [get][3]
--   [getAll][4]
--   [remove][5]
--   [removeAll][6]
+*   [getConfig][1]
+*   [add][2]
+*   [get][3]
+*   [getAll][4]
+*   [remove][5]
+*   [removeAll][6]
 
 ## getConfig
 
@@ -44,10 +44,10 @@ Add new keymap
 
 ### Parameters
 
--   `id` **[string][8]** Keymap id
--   `keys` **[string][8]** Keymap keys, eg. `ctrl+a`, `⌘+z, ctrl+z`
--   `handler` **([Function][9] \| [string][8])** Keymap handler, might be a function
--   `opts` **[Object][7]** Options (optional, default `{}`)
+*   `id` **[string][8]** Keymap id
+*   `keys` **[string][8]** Keymap keys, eg. `ctrl+a`, `⌘+z, ctrl+z`
+*   `handler` **([Function][9] | [string][8])** Keymap handler, might be a function
+*   `opts` **[Object][7]** Options (optional, default `{}`)
 
 ### Examples
 
@@ -66,7 +66,7 @@ editor.on('keymap:emit', (id, shortcut, e) => {
 ```
 
 Returns **[Object][7]** Added keymap
- or just a command id as a string
+or just a command id as a string
 
 ## get
 
@@ -74,7 +74,7 @@ Get the keymap by id
 
 ### Parameters
 
--   `id` **[string][8]** Keymap id
+*   `id` **[string][8]** Keymap id
 
 ### Examples
 
@@ -104,7 +104,7 @@ Remove the keymap by id
 
 ### Parameters
 
--   `id` **[string][8]** Keymap id
+*   `id` **[string][8]** Keymap id
 
 ### Examples
 

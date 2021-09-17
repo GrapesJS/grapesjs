@@ -5,7 +5,8 @@ import {
   off,
   getUnitFromValue,
   isTaggableNode,
-  getViewEl
+  getViewEl,
+  hasWin
 } from 'utils/mixins';
 import { isVisible, isDoc } from 'utils/dom';
 import ToolbarView from 'dom_components/view/ToolbarView';
@@ -84,11 +85,11 @@ export default {
       methods[method](body, 'mouseover', this.onHover);
       methods[method](body, 'mouseleave', this.onOut);
       methods[method](body, 'click touchend', this.onClick);
-      methods[method](win, 'scroll', this.onFrameScroll);
+      methods[method](win, 'scroll', this.onFrameScroll, true);
     };
     methods[method](window, 'resize', this.onFrameUpdated);
     methods[method](listenToEl, 'scroll', this.onContainerChange);
-    em[method]('component:toggled component:remove', this.onSelect, this);
+    em[method]('component:toggled component:update', this.onSelect, this);
     em[method]('change:componentHovered', this.onHovered, this);
     em[method](
       'component:resize component:styleUpdate component:input',
@@ -192,7 +193,7 @@ export default {
     this.elSelected = result;
     this.updateToolsGlobal();
     // This will hide some elements from the select component
-    this.updateToolsLocal(result);
+    this.updateLocalPos(result);
     this.initResize(component);
   }),
 
@@ -203,11 +204,11 @@ export default {
     this.updateToolsGlobal();
   },
 
-  updateLocalPos() {
+  updateLocalPos(data) {
     const sel = this.getElHovered();
     if (!sel.el) return;
     sel.pos = this.getElementPos(sel.el);
-    this.updateToolsLocal();
+    this.updateToolsLocal(data);
   },
 
   getElHovered() {
@@ -335,6 +336,7 @@ export default {
    * @private
    * */
   updateBadge(el, pos, opts = {}) {
+    const { canvas } = this;
     const model = $(el).data('model');
     if (!model || !model.get('badgable')) return;
     const badge = this.getBadge(opts);
@@ -355,9 +357,12 @@ export default {
     const un = 'px';
     const bStyle = badge.style;
     bStyle.display = 'block';
-    const badgeH = badge ? badge.offsetHeight : 0;
-    const posTop = 0 - badgeH;
-    const top = opts.topOff - badgeH < 0 ? -opts.topOff : posTop;
+
+    const targetToElem = canvas.getTargetToElementFixed(el, badge, {
+      pos: pos
+    });
+
+    const top = targetToElem.top; //opts.topOff - badgeH < 0 ? -opts.topOff : posTop;
     const left = opts.leftOff < 0 ? -opts.leftOff : 0;
 
     bStyle.top = top + un;
@@ -494,7 +499,7 @@ export default {
       };
 
       if (typeof resizable == 'object') {
-        options = { ...options, ...resizable };
+        options = { ...options, ...resizable, parent: options };
       }
 
       this.resizer = editor.runCommand('resize', { el, options, force: 1 });
@@ -576,7 +581,7 @@ export default {
   },
 
   updateTools() {
-    this.updateToolsLocal();
+    this.updateLocalPos();
     this.updateGlobalPos();
   },
 
@@ -746,11 +751,13 @@ export default {
   },
 
   run(editor) {
+    if (!hasWin()) return;
     this.editor = editor && editor.get('Editor');
     this.enable();
   },
 
   stop(ed, sender, opts = {}) {
+    if (!hasWin()) return;
     const { em, editor } = this;
     this.onHovered(); // force to hide toolbar
     this.stopSelectComponent();

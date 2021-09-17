@@ -18,15 +18,15 @@ Once the editor is instantiated you can use its API. Before using these methods 
 const modal = editor.Modal;
 ```
 
--   [open][2]
--   [close][3]
--   [isOpen][4]
--   [setTitle][5]
--   [getTitle][6]
--   [setContent][7]
--   [getContent][8]
--   [onceClose][9]
--   [onceOpen][10]
+*   [open][2]
+*   [close][3]
+*   [isOpen][4]
+*   [setTitle][5]
+*   [getTitle][6]
+*   [setContent][7]
+*   [getContent][8]
+*   [onceClose][9]
+*   [onceOpen][10]
 
 ## open
 
@@ -34,10 +34,11 @@ Open the modal window
 
 ### Parameters
 
--   `opts` **[Object][11]** Options (optional, default `{}`)
-    -   `opts.title` **([String][12] \| [HTMLElement][13])?** Title to set for the modal
-    -   `opts.content` **([String][12] \| [HTMLElement][13])?** Content to set for the modal
-    -   `opts.attributes` **[Object][11]?** Updates the modal wrapper with custom attributes
+*   `opts` **[Object][11]** Options (optional, default `{}`)
+
+    *   `opts.title` **([String][12] | [HTMLElement][13])?** Title to set for the modal
+    *   `opts.content` **([String][12] | [HTMLElement][13])?** Content to set for the modal
+    *   `opts.attributes` **[Object][11]?** Updates the modal wrapper with custom attributes
 
 Returns **this** 
 
@@ -54,7 +55,7 @@ The callback will be called one only time
 
 ### Parameters
 
--   `clb` **[Function][14]** 
+*   `clb` **[Function][14]** 
 
 Returns **this** 
 
@@ -65,7 +66,7 @@ The callback will be called one only time
 
 ### Parameters
 
--   `clb` **[Function][14]** 
+*   `clb` **[Function][14]** 
 
 Returns **this** 
 
@@ -81,7 +82,7 @@ Set the title to the modal window
 
 ### Parameters
 
--   `title` **[string][12]** Title
+*   `title` **[string][12]** Title
 
 ### Examples
 
@@ -103,7 +104,7 @@ Set the content of the modal window
 
 ### Parameters
 
--   `content` **([string][12] \| [HTMLElement][13])** Content
+*   `content` **([string][12] | [HTMLElement][13])** Content
 
 ### Examples
 

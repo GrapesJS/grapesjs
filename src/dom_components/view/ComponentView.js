@@ -108,13 +108,6 @@ export default Backbone.View.extend({
     views.splice(views.indexOf(view), 1);
     view.removed(view._clbObj());
     view.$el.data({ model: '', collection: '', view: '' });
-    delete view.model;
-    delete view.$el;
-    delete view.el.__gjsv;
-    delete view.childrenView;
-    delete view.scriptContainer;
-    delete view.opts;
-    // delete view.el;
     return view;
   },
 
@@ -240,10 +233,10 @@ export default Backbone.View.extend({
    * Update style attribute
    * @private
    * */
-  updateStyle() {
+  updateStyle(m, v, opts = {}) {
     const { model, em, el } = this;
 
-    if (em && em.getConfig('avoidInlineStyle')) {
+    if (em && em.getConfig('avoidInlineStyle') && !opts.inline) {
       const style = model.getStyle();
       const empty = isEmpty(style);
       !empty && model.setStyle(style);
@@ -253,7 +246,7 @@ export default Backbone.View.extend({
         el.id = model.getId();
       }
     } else {
-      this.setAttribute('style', model.styleToString());
+      this.setAttribute('style', model.styleToString(opts));
     }
   },
 
@@ -270,6 +263,7 @@ export default Backbone.View.extend({
 
     // Regenerate status class
     this.updateStatus();
+    this.onAttrUpdate();
   },
 
   /**
@@ -299,7 +293,7 @@ export default Backbone.View.extend({
    * */
   updateAttributes() {
     const attrs = [];
-    const { model, $el, el, config } = this;
+    const { model, $el, el } = this;
     const { highlightable, textable, type } = model.attributes;
 
     const defaultAttr = {
@@ -317,6 +311,7 @@ export default Backbone.View.extend({
     // Remove all current attributes
     each(el.attributes, attr => attrs.push(attr.nodeName));
     attrs.forEach(attr => $el.removeAttr(attr));
+    this.updateStyle();
     const attr = {
       ...defaultAttr,
       ...model.getAttributes()
@@ -326,7 +321,6 @@ export default Backbone.View.extend({
     keys(attr).forEach(key => attr[key] === false && delete attr[key]);
 
     $el.attr(attr);
-    this.updateStyle();
   },
 
   /**
@@ -514,7 +508,6 @@ export default Backbone.View.extend({
   renderAttributes() {
     this.updateAttributes();
     this.updateClasses();
-    this.onAttrUpdate();
   },
 
   onAttrUpdate() {},

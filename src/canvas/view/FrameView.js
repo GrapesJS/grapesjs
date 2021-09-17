@@ -30,13 +30,16 @@ export default Backbone.View.extend({
       '_emitUpdate'
     );
     const { model, el } = this;
+    this.tools = {};
     this.config = {
       ...(o.config || {}),
       frameView: this
     };
     this.ppfx = this.config.pStylePrefix || '';
     this.em = this.config.em;
+    const cvModel = this.getCanvasModel();
     this.listenTo(model, 'change:head', this.updateHead);
+    this.listenTo(cvModel, 'change:styles', this.renderStyles);
     model.view = this;
     setViewEl(el, this);
   },
@@ -45,13 +48,41 @@ export default Backbone.View.extend({
    * Update `<head>` content of the frame
    */
   updateHead() {
+    const { model } = this;
     const headEl = this.getHead();
-    empty(headEl);
-    appendVNodes(headEl, this.model.getHead());
+    const toRemove = [];
+    const toAdd = [];
+    const current = model.get('head');
+    const prev = model.previous('head');
+    const attrStr = (attr = {}) =>
+      Object.keys(attr)
+        .sort()
+        .map(i => `[${i}="${attr[i]}"]`)
+        .join('');
+    const find = (items, stack, res) => {
+      items.forEach(item => {
+        const { tag, attributes } = item;
+        const has = stack.some(
+          s => s.tag === tag && attrStr(s.attributes) === attrStr(attributes)
+        );
+        !has && res.push(item);
+      });
+    };
+    find(current, prev, toAdd);
+    find(prev, current, toRemove);
+    toRemove.forEach(stl => {
+      const el = headEl.querySelector(`${stl.tag}${attrStr(stl.attributes)}`);
+      el && el.parentNode.removeChild(el);
+    });
+    appendVNodes(headEl, toAdd);
   },
 
   getEl() {
     return this.el;
+  },
+
+  getCanvasModel() {
+    return this.em.get('Canvas').getModel();
   },
 
   getWindow() {
@@ -133,18 +164,20 @@ export default Backbone.View.extend({
   },
 
   _getTool(name) {
+    const { tools } = this;
     const toolsEl = this.getToolsEl();
 
-    if (!this[name]) {
-      this[name] = toolsEl.querySelector(name);
+    if (!tools[name]) {
+      tools[name] = toolsEl.querySelector(name);
     }
 
-    return this[name];
+    return tools[name];
   },
 
   remove() {
     const wrp = this.wrapper;
     this._toggleEffects();
+    this.tools = {};
     wrp && wrp.remove();
     Backbone.View.prototype.remove.apply(this, arguments);
   },
@@ -219,20 +252,17 @@ export default Backbone.View.extend({
   },
 
   render() {
-    const { el, $el, ppfx, config } = this;
-    $el.attr({ class: ppfx + 'frame' });
-
-    if (config.scripts.length) {
-      this.renderScripts();
-    } else if (config.renderContent) {
-      el.onload = this.renderBody.bind(this);
-    }
-
+    const { $el, ppfx } = this;
+    $el.attr({ class: `${ppfx}frame` });
+    this.renderScripts();
     return this;
   },
 
   renderScripts() {
-    const { el, config } = this;
+    const { el, model, em } = this;
+    const evLoad = 'frame:load';
+    const evOpts = { el, model, view: this };
+    const canvas = this.getCanvasModel();
     const appendScript = scripts => {
       if (scripts.length > 0) {
         const src = scripts.shift();
@@ -244,41 +274,56 @@ export default Backbone.View.extend({
         el.contentDocument.head.appendChild(scriptEl);
       } else {
         this.renderBody();
+        em && em.trigger(evLoad, evOpts);
       }
     };
 
-    el.onload = () => appendScript([...config.scripts]);
+    el.onload = () => {
+      em && em.trigger(`${evLoad}:before`, evOpts);
+      appendScript([...canvas.get('scripts')]);
+    };
+  },
+
+  renderStyles(opts = {}) {
+    const head = this.getHead();
+    const canvas = this.getCanvasModel();
+    const normalize = stls =>
+      stls.map(href => ({
+        tag: 'link',
+        attributes: {
+          rel: 'stylesheet',
+          ...(isString(href) ? { href } : href)
+        }
+      }));
+    const prevStyles = normalize(opts.prev || canvas.previous('styles'));
+    const styles = normalize(canvas.get('styles'));
+    const toRemove = [];
+    const toAdd = [];
+    const find = (items, stack, res) => {
+      items.forEach(item => {
+        const { href } = item.attributes;
+        const has = stack.some(s => s.attributes.href === href);
+        !has && res.push(item);
+      });
+    };
+    find(styles, prevStyles, toAdd);
+    find(prevStyles, styles, toRemove);
+    toRemove.forEach(stl => {
+      const el = head.querySelector(`link[href="${stl.attributes.href}"]`);
+      el && el.parentNode.removeChild(el);
+    });
+    appendVNodes(head, toAdd);
   },
 
   renderBody() {
     const { config, model, ppfx } = this;
-    const styles = model.getStyles();
     const { em } = config;
     const doc = this.getDoc();
-    const head = this.getHead();
     const body = this.getBody();
     const win = this.getWindow();
     const conf = em.get('Config');
-    const extStyles = [];
     win._isEditor = true;
-
-    config.styles.forEach(href =>
-      extStyles.push(
-        isString(href)
-          ? {
-              tag: 'link',
-              attributes: { href, rel: 'stylesheet' }
-            }
-          : {
-              tag: 'link',
-              attributes: {
-                rel: 'stylesheet',
-                ...href
-              }
-            }
-      )
-    );
-    extStyles.length && appendVNodes(head, extStyles);
+    this.renderStyles({ prev: [] });
 
     const colorWarn = '#ffca6f';
 
@@ -365,7 +410,7 @@ export default Backbone.View.extend({
     append(
       body,
       new CssRulesView({
-        collection: styles,
+        collection: model.getStyles(),
         config: {
           ...em.get('CssComposer').getConfig(),
           frameView: this

@@ -18,18 +18,18 @@ Once the editor is instantiated you can use its API. Before using these methods 
 const assetManager = editor.AssetManager;
 ```
 
--   [add][2]
--   [get][3]
--   [getAll][4]
--   [getAllVisible][5]
--   [remove][6]
--   [store][7]
--   [load][8]
--   [getContainer][9]
--   [getAssetsEl][10]
--   [addType][11]
--   [getType][12]
--   [getTypes][13]
+*   [add][2]
+*   [get][3]
+*   [getAll][4]
+*   [getAllVisible][5]
+*   [remove][6]
+*   [store][7]
+*   [load][8]
+*   [getContainer][9]
+*   [getAssetsEl][10]
+*   [addType][11]
+*   [getType][12]
+*   [getTypes][13]
 
 ## add
 
@@ -37,8 +37,8 @@ Add new asset/s to the collection. URLs are supposed to be unique
 
 ### Parameters
 
--   `asset` **([string][14] \| [Object][15] \| [Array][16]&lt;[string][14]> | [Array][16]&lt;[Object][15]>)** URL strings or an objects representing the resource.
--   `opts` **[Object][15]?** Options (optional, default `{}`)
+*   `asset` **([string][14] | [Object][15] | [Array][16]<[string][14]> | [Array][16]<[Object][15]>)** URL strings or an objects representing the resource.
+*   `opts` **[Object][15]?** Options (optional, default `{}`)
 
 ### Examples
 
@@ -69,7 +69,7 @@ Returns the asset by URL
 
 ### Parameters
 
--   `src` **[string][14]** URL of the asset
+*   `src` **[string][14]** URL of the asset
 
 ### Examples
 
@@ -87,7 +87,7 @@ Returns **Collection**
 
 ## getAllVisible
 
-Return the visible collection, which containes assets actually rendered
+Return the visible collection, which contains assets actually rendered
 
 Returns **Collection** 
 
@@ -97,7 +97,7 @@ Remove the asset by its URL
 
 ### Parameters
 
--   `src` **[string][14]** URL of the asset
+*   `src` **[string][14]** URL of the asset
 
 ### Examples
 
@@ -113,7 +113,7 @@ Store assets data to the selected storage
 
 ### Parameters
 
--   `noStore` **[Boolean][17]** If true, won't store
+*   `noStore` **[Boolean][17]** If true, won't store
 
 ### Examples
 
@@ -130,7 +130,7 @@ The fetched data will be added to the collection.
 
 ### Parameters
 
--   `data` **[Object][15]** Object of data to load (optional, default `{}`)
+*   `data` **[Object][15]** Object of data to load (optional, default `{}`)
 
 ### Examples
 
@@ -160,8 +160,8 @@ Render assets
 
 ### Parameters
 
--   `assets` **[array][16]** Assets to render, without the argument will render
-                           all global assets
+*   `assts`  
+*   `assets` **[array][16]** Assets to render, without the argument will render all global assets
 
 ### Examples
 
@@ -184,11 +184,11 @@ Add new type. If you want to get more about type definition we suggest to read t
 
 ### Parameters
 
--   `id` **[string][14]** Type ID
--   `definition` **[Object][15]** Definition of the type. Each definition contains
-                               `model` (business logic), `view` (presentation logic)
-                               and `isType` function which recognize the type of the
-                               passed entity
+*   `id` **[string][14]** Type ID
+*   `definition` **[Object][15]** Definition of the type. Each definition contains
+    `model` (business logic), `view` (presentation logic)
+    and `isType` function which recognize the type of the
+    passed entity
 
 ### Examples
 
@@ -206,7 +206,7 @@ Get type
 
 ### Parameters
 
--   `id` **[string][14]** Type ID
+*   `id` **[string][14]** Type ID
 
 Returns **[Object][15]** Type definition
 

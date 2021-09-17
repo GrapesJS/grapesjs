@@ -18,14 +18,14 @@ Once the editor is instantiated you can use its API. Before using these methods 
 const panelManager = editor.Panels;
 ```
 
--   [addPanel][2]
--   [addButton][3]
--   [getButton][4]
--   [getPanel][5]
--   [getPanels][6]
--   [getPanelsEl][7]
--   [removePanel][8]
--   [removeButton][9]
+*   [addPanel][2]
+*   [addButton][3]
+*   [getButton][4]
+*   [getPanel][5]
+*   [getPanels][6]
+*   [getPanelsEl][7]
+*   [removePanel][8]
+*   [removeButton][9]
 
 ## getPanels
 
@@ -45,7 +45,7 @@ Add new panel to the collection
 
 ### Parameters
 
--   `panel` **([Object][11] | Panel)** Object with right properties or an instance of Panel
+*   `panel` **([Object][11] | Panel)** Object with right properties or an instance of Panel
 
 ### Examples
 
@@ -65,7 +65,7 @@ Remove a panel from the collection
 
 ### Parameters
 
--   `panel` **([Object][11] | Panel | [String][12])** Object with right properties or an instance of Panel or Painel id
+*   `panel` **([Object][11] | Panel | [String][12])** Object with right properties or an instance of Panel or Painel id
 
 ### Examples
 
@@ -87,7 +87,7 @@ Get panel by ID
 
 ### Parameters
 
--   `id` **[string][12]** Id string
+*   `id` **[string][12]** Id string
 
 ### Examples
 
@@ -103,8 +103,8 @@ Add button to the panel
 
 ### Parameters
 
--   `panelId` **[string][12]** Panel's ID
--   `button` **([Object][11] | Button)** Button object or instance of Button
+*   `panelId` **[string][12]** Panel's ID
+*   `button` **([Object][11] | Button)** Button object or instance of Button
 
 ### Examples
 
@@ -142,9 +142,9 @@ Remove button from the panel
 
 ### Parameters
 
--   `panelId` **[String][12]** Panel's ID
--   `button`  
--   `buttonId` **[String][12]** Button's ID
+*   `panelId` **[String][12]** Panel's ID
+*   `button`  
+*   `buttonId` **[String][12]** Button's ID
 
 ### Examples
 
@@ -168,8 +168,8 @@ Get button from the panel
 
 ### Parameters
 
--   `panelId` **[string][12]** Panel's ID
--   `id` **[string][12]** Button's ID
+*   `panelId` **[string][12]** Panel's ID
+*   `id` **[string][12]** Button's ID
 
 ### Examples
 

@@ -1,28 +1,6 @@
 export default {
   stylePrefix: 'comp-',
 
-  wrapperId: 'wrapper',
-
-  wrapperName: 'Body',
-
-  // Default wrapper configuration
-  wrapper: {
-    removable: false,
-    copyable: false,
-    draggable: false,
-    components: [],
-    traits: [],
-    stylable: [
-      'background',
-      'background-color',
-      'background-image',
-      'background-repeat',
-      'background-attachment',
-      'background-position',
-      'background-size'
-    ]
-  },
-
   // Could be used for default components
   components: [],
 
@@ -57,7 +35,8 @@ export default {
    */
   processor: 0,
 
-  // List of void elements
+  // List of HTML void elements
+  // https://www.w3.org/TR/2011/WD-html-markup-20110113/syntax.html#void-elements
   voidElements: [
     'area',
     'base',

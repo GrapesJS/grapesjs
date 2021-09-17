@@ -10,6 +10,18 @@ export const motionsEv =
 
 export const isDoc = el => el && el.nodeType === 9;
 
+export const removeEl = el => {
+  const parent = el && el.parentNode;
+  parent && parent.removeChild(el);
+};
+
+export const find = (el, query) => el.querySelectorAll(query);
+
+export const attrUp = (el, attrs = {}) =>
+  el &&
+  el.setAttribute &&
+  each(attrs, (value, key) => el.setAttribute(key, value));
+
 export const isVisible = el => {
   return (
     el && !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length)
@@ -62,21 +74,24 @@ export const createEl = (tag, attrs = '', child) => {
 // hack seems the only way
 export const createCustomEvent = (e, cls) => {
   let oEvent;
+  const { type } = e;
   try {
-    oEvent = new window[cls](e.type, e);
-  } catch (e) {
+    oEvent = new window[cls](type, e);
+  } catch (err) {
     oEvent = document.createEvent(cls);
-    oEvent.initEvent(e.type, true, true);
+    oEvent.initEvent(type, true, true);
   }
-  oEvent.keyCodeVal = e.keyCode;
   oEvent._parentEvent = e;
-  ['keyCode', 'which'].forEach(prop => {
-    Object.defineProperty(oEvent, prop, {
-      get() {
-        return this.keyCodeVal;
-      }
+  if (type.indexOf('key') === 0) {
+    oEvent.keyCodeVal = e.keyCode;
+    ['keyCode', 'which'].forEach(prop => {
+      Object.defineProperty(oEvent, prop, {
+        get() {
+          return this.keyCodeVal;
+        }
+      });
     });
-  });
+  }
   return oEvent;
 };
 

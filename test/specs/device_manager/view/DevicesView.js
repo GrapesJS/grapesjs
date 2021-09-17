@@ -1,9 +1,8 @@
 import DevicesView from 'device_manager/view/DevicesView';
 import Devices from 'device_manager/model/Devices';
+import { Model } from 'backbone';
 
 describe('DevicesView', () => {
-  var $fixtures;
-  var $fixture;
   var model;
   var view;
   var editorModel;
@@ -12,7 +11,8 @@ describe('DevicesView', () => {
   beforeEach(() => {
     model = new Devices([]);
     view = new DevicesView({
-      collection: model
+      collection: model,
+      config: { em: new Model() }
     });
     document.body.innerHTML = '<div id="fixtures"></div>';
     document.body.querySelector('#fixtures').appendChild(view.render().el);
@@ -37,7 +37,7 @@ describe('DevicesView', () => {
 
   describe('With configs', () => {
     beforeEach(() => {
-      editorModel = new Backbone.Model();
+      editorModel = new Model();
       model = new Devices([{ name: 'test1' }, { name: 'test2' }]);
       view = new DevicesView({
         collection: model,

@@ -27,7 +27,7 @@
  * @module CssComposer
  */
 
-import { isArray } from 'underscore';
+import { isArray, isUndefined } from 'underscore';
 import defaults from './config/config';
 import CssRule from './model/CssRule';
 import CssRules from './model/CssRules';
@@ -86,10 +86,6 @@ export default () => {
 
       em = c.em;
       rules = new CssRules([], c);
-      rulesView = new CssRulesView({
-        collection: rules,
-        config: c
-      });
       return this;
     },
 
@@ -389,9 +385,9 @@ export default () => {
      * // #myid:hover { color: blue }
      */
     setIdRule(name, style = {}, opts = {}) {
-      const { addOpts = {} } = opts;
+      const { addOpts = {}, mediaText } = opts;
       const state = opts.state || '';
-      const media = opts.mediaText || em.getCurrentMedia();
+      const media = !isUndefined(mediaText) ? mediaText : em.getCurrentMedia();
       const sm = em.get('SelectorManager');
       const selector = sm.add({ name, type: Selector.TYPE_ID }, addOpts);
       const rule = this.add(selector, state, media, {}, addOpts);
@@ -410,8 +406,9 @@ export default () => {
      * const ruleHover = cc.setIdRule('myid', { state: 'hover' });
      */
     getIdRule(name, opts = {}) {
+      const { mediaText } = opts;
       const state = opts.state || '';
-      const media = opts.mediaText || em.getCurrentMedia();
+      const media = !isUndefined(mediaText) ? mediaText : em.getCurrentMedia();
       const selector = em.get('SelectorManager').get(name, Selector.TYPE_ID);
       return selector && this.get(selector, state, media);
     },
@@ -457,19 +454,39 @@ export default () => {
       return selector && this.get(selector, state, media);
     },
 
+    getComponentRules(cmp, opts = {}) {
+      let { state, mediaText, current } = opts;
+      if (current) {
+        state = em.get('state') || '';
+        mediaText = em.getCurrentMedia();
+      }
+      const id = cmp.getId();
+      const rules = this.getAll().filter(r => {
+        if (!isUndefined(state) && r.get('state') !== state) return;
+        if (!isUndefined(mediaText) && r.get('mediaText') !== mediaText) return;
+        return r.getSelectorsString() === `#${id}`;
+      });
+      return rules;
+    },
+
     /**
      * Render the block of CSS rules
      * @return {HTMLElement}
      * @private
      */
     render() {
+      rulesView && rulesView.remove();
+      rulesView = new CssRulesView({
+        collection: rules,
+        config: c
+      });
       return rulesView.render().el;
     },
 
     destroy() {
       rules.reset();
       rules.stopListening();
-      rulesView.remove();
+      rulesView && rulesView.remove();
       [em, rules, rulesView].forEach(i => (i = null));
       c = {};
     }

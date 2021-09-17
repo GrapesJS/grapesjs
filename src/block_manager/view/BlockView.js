@@ -1,5 +1,5 @@
 import Backbone from 'backbone';
-import { isObject } from 'underscore';
+import { isFunction, isObject } from 'underscore';
 import { on, off, hasDnd } from 'utils/mixins';
 
 export default Backbone.View.extend({
@@ -21,9 +21,15 @@ export default Backbone.View.extend({
     this.listenTo(model, 'change', this.render);
   },
 
-  handleClick() {
+  handleClick(ev) {
     const { config, model, em } = this;
-    if (!config.appendOnClick) return;
+    const onClick = model.get('onClick') || config.appendOnClick;
+    em.trigger('block:click', model, ev);
+    if (!onClick) {
+      return;
+    } else if (isFunction(onClick)) {
+      return onClick(model, em.getEditor(), { event: ev });
+    }
     const sorter = config.getSorter();
     const content = model.get('content');
     const selected = em.getSelected();
@@ -99,14 +105,15 @@ export default Backbone.View.extend({
     if (result) {
       const oldKey = 'activeOnRender';
       const oldActive = result.get && result.get(oldKey);
+      const toActive = model.get('activate') || oldActive;
 
-      if (model.get('activate') || oldActive) {
-        result.trigger('active');
-        result.unset(oldKey);
+      if (model.get('select') || toActive) {
+        em.setSelected(result);
       }
 
-      if (model.get('select')) {
-        em.setSelected(result);
+      if (toActive) {
+        result.trigger('active');
+        result.unset(oldKey);
       }
 
       if (model.get('resetId')) {

@@ -5,7 +5,7 @@
 .idea
 npm-debug.log*
 yarn-error.log
-yarn.lock
+package-lock.json
 style/.sass-cache/
 stats.json
 

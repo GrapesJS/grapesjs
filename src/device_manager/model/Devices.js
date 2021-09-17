@@ -1,10 +1,8 @@
-import Backbone from 'backbone';
+import { Collection } from 'backbone';
 import Device from './Device';
 
-export default Backbone.Collection.extend({
-  model: Device,
-
-  comparator: (left, right) => {
+export default class Devices extends Collection {
+  comparator(left, right) {
     const rightP = right.get('priority');
     const leftP = left.get('priority');
     const rightC = right.get('mediaCondition');
@@ -19,9 +17,11 @@ export default Backbone.Collection.extend({
     }
 
     return rightC == 'max-width' ? -1 : 1;
-  },
+  }
 
   getSorted() {
     return this.sort();
   }
-});
+}
+
+Devices.prototype.model = Device;
