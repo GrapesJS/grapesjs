@@ -316,7 +316,7 @@ am.open({
 
 ## Customization
 
-The default Asset Manager UI is great for simple things, but except the possibility to tweak some CSS style, adding more complex things like a Search, filters, etc. requires a replace of the defualt UI.
+The default Asset Manager UI is great for simple things, but except the possibility to tweak some CSS style, adding more complex things like a search input, filters, etc. requires a replace of the defualt UI.
 
 All you have to do is to indicate the editor your intent to use a custom UI and then subscribe to the `asset:custom` event that will give you all the information on any requested change.
 
@@ -333,11 +333,11 @@ editor.on('asset:custom', props => {
     // The `props` will contain all the information you need in order to update your UI.
     // props.open (boolean) - Indicates if the Asset Manager is open
     // props.assets (Array<Asset>) - Array of all assets
-    // props.types (Array<String>) - Array request asset types, eg. ['image'],
-    // props.container (HTMLElement) - The element where you should place your UI
+    // props.types (Array<String>) - Array of asset types requested, eg. ['image'],
     // props.close (Function) - A callback to close the Asset Manager
     // props.remove (Function<Asset>) - A callback to remove an asset
-    // props.select (Function<Asset, boolean>) - A callback to invoke when you want to select the asset
+    // props.select (Function<Asset, boolean>) - A callback to select an asset
+    // props.container (HTMLElement) - The element where you can append your UI
 
     // Here you would put the logic to render/update your UI.
 });
