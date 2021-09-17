@@ -1,13 +1,22 @@
+import { isFunction } from 'underscore';
 import { createEl } from '../../utils/dom';
 
 export default {
   open(content) {
-    const { editor, title } = this;
+    const { editor, title, config } = this;
+    const { custom } = config;
+    if (isFunction(custom.open)) {
+      return custom.open(content);
+    }
     const { Modal } = editor;
     Modal.open({ title, content }).onceClose(() => editor.stopCommand(this.id));
   },
 
-  close() {
+  close(content) {
+    const { custom } = this.config;
+    if (isFunction(custom.close)) {
+      return custom.close(content);
+    }
     const { Modal } = this.editor;
     Modal && Modal.close();
   },
@@ -18,6 +27,7 @@ export default {
     const { types = [], accept, select } = opts;
     this.title = opts.modalTitle || editor.t('assetManager.modalTitle') || '';
     this.editor = editor;
+    this.config = config;
 
     am.setTarget(opts.target);
     am.onClick(opts.onClick);
@@ -25,11 +35,13 @@ export default {
     am.onSelect(opts.onSelect);
     am.__behaviour({
       select,
-      types
+      types,
+      options: opts
     });
 
     if (config.custom) {
       this.rendered = this.rendered || createEl('div');
+      this.rendered.className = `${config.stylePrefix}custom-wrp`;
       am.__behaviour({ container: this.rendered });
       am.__trgCustom();
     } else {

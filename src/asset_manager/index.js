@@ -113,11 +113,11 @@ export default () => {
       this.getAll().trigger(ev, ...data);
     },
 
-    __onAllEvent() {
+    __onAllEvent: debounce(function() {
       this.__trgCustom();
-    },
+    }),
 
-    __trgCustom: debounce(function() {
+    __trgCustom() {
       const bhv = this.__getBehaviour();
       if (!bhv.container && !this.getConfig('custom').open) {
         return;
@@ -133,9 +133,11 @@ export default () => {
         select: (asset, complete) => {
           const res = this.add(asset);
           isFunction(bhv.select) && bhv.select(res, complete);
-        }
+        },
+        // extra
+        options: bhv.options || {}
       });
-    }),
+    },
 
     /**
      * Open the asset manager.

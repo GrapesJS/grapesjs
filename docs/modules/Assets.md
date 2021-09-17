@@ -345,7 +345,7 @@ editor.on('asset:custom', props => {
 
 Here an example of using custom Asset Manager with a Vue component.
 
-<demo-viewer value="x70amv3f" height="500" darkcode/>
+<demo-viewer value="wbj4tmqk" height="500" darkcode/>
 
 
 <!--
