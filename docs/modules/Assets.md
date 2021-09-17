@@ -337,7 +337,7 @@ editor.on('asset:custom', props => {
     // props.close (Function) - A callback to close the Asset Manager
     // props.remove (Function<Asset>) - A callback to remove an asset
     // props.select (Function<Asset, boolean>) - A callback to select an asset
-    // props.container (HTMLElement) - The element where you can append your UI
+    // props.container (HTMLElement) - The element where you should append your UI
 
     // Here you would put the logic to render/update your UI.
 });

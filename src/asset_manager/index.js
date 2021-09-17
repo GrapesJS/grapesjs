@@ -119,6 +119,9 @@ export default () => {
 
     __trgCustom: debounce(function() {
       const bhv = this.__getBehaviour();
+      if (!bhv.container && !this.getConfig('custom').open) {
+        return;
+      }
       this.em.trigger(this.events.custom, {
         am: this,
         open: this.isOpen(),
