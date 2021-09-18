@@ -13,6 +13,7 @@
  * ```js
  * const assetManager = editor.AssetManager;
  * ```
+ *
  * ## Available Events
  * * `asset:open` - Asset Manager opened.
  * * `asset:close` - Asset Manager closed.
@@ -23,6 +24,7 @@
  * * `asset:upload:error` - On any error in upload, passes the error as an argument.
  * * `asset:upload:response` - On upload response, passes the result as an argument.
  * * `asset` - Catch-all event for all the events mentioned above. An object containing all the available data about the triggered event is passed as an argument to the callback.
+ * * `asset:custom` - Event for handling custom Asset Manager UI.
  *
  * ## Methods
  * * [open](#open)
