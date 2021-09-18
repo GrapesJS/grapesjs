@@ -347,6 +347,31 @@ Here an example of using custom Asset Manager with a Vue component.
 
 <demo-viewer value="wbj4tmqk" height="500" darkcode/>
 
+The example above is the right way if you need to replace the default UI, but as you might notice we append the mounted element to the container `props.container.appendChild(this.$el);`.
+This is required as the Asset Manager, by default, is placed in the [Modal](/modules/Modal.html).
+
+How to approach the case when your Asset Manager is a completely independent/external module (eg. should be showed in its own custom modal)? Not a problem, you can bind the Asset Manager state via `assetManager.custom.open`.
+
+```js
+const editor = grapesjs.init({
+    // ...
+    assetManager: {
+      // ...
+      custom: {
+        open(props) {
+          // `props` are the same used in `asset:custom` event
+          // ...
+          // Init and open your external Asset Manager
+        },
+        close(props) {
+          // Close the external Asset Manager
+        },
+      },
+    },
+});
+```
+It's important to declare also the `close` function, the editor should be able to close the Asset Manager via `am.close()`.
+
 
 <!--
 ### Define new Asset type
