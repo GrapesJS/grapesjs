@@ -362,6 +362,12 @@ const editor = grapesjs.init({
           // `props` are the same used in `asset:custom` event
           // ...
           // Init and open your external Asset Manager
+          // ...
+          // IMPORTANT:
+          // When the external library is closed you have to comunicate
+          // this state back to the editor, otherwise GrapesJS will think
+          // the Asset Manager is still open.
+          // example: myAssetManager.on('close', () => props.close())
         },
         close(props) {
           // Close the external Asset Manager

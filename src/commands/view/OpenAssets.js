@@ -3,19 +3,19 @@ import { createEl } from '../../utils/dom';
 
 export default {
   open(content) {
-    const { editor, title, config } = this;
+    const { editor, title, config, am } = this;
     const { custom } = config;
     if (isFunction(custom.open)) {
-      return custom.open(content);
+      return custom.open(am.__customData());
     }
     const { Modal } = editor;
     Modal.open({ title, content }).onceClose(() => editor.stopCommand(this.id));
   },
 
-  close(content) {
+  close() {
     const { custom } = this.config;
     if (isFunction(custom.close)) {
-      return custom.close(content);
+      return custom.close(this.am.__customData());
     }
     const { Modal } = this.editor;
     Modal && Modal.close();
@@ -28,6 +28,7 @@ export default {
     this.title = opts.modalTitle || editor.t('assetManager.modalTitle') || '';
     this.editor = editor;
     this.config = config;
+    this.am = am;
 
     am.setTarget(opts.target);
     am.onClick(opts.onClick);

@@ -122,7 +122,12 @@ export default () => {
       if (!bhv.container && !this.getConfig('custom').open) {
         return;
       }
-      this.em.trigger(this.events.custom, {
+      this.em.trigger(this.events.custom, this.__customData());
+    },
+
+    __customData() {
+      const bhv = this.__getBehaviour();
+      return {
         am: this,
         open: this.isOpen(),
         assets: this.getAll().models,
@@ -136,7 +141,7 @@ export default () => {
         },
         // extra
         options: bhv.options || {}
-      });
+      };
     },
 
     /**
