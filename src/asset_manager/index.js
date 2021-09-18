@@ -14,7 +14,8 @@
  * const assetManager = editor.AssetManager;
  * ```
  * ## Available Events
- * * `asset:add` - Added new asset. The [Asset] is passed as an argument to the callback.
+ * * `asset:open` - Asset Manager opened.
+ * * `asset:close` - Asset Manager closed.
  * * `asset:remove` - Asset removed. The [Asset] is passed as an argument to the callback.
  * * `asset:update` - Asset updated. The updated [Asset] and the object containing changes are passed as arguments to the callback.
  * * `asset:upload:start` - Before the upload is started.
@@ -57,6 +58,8 @@ export const evAdd = `${evPfx}add`;
 export const evRemove = `${evPfx}remove`;
 export const evRemoveBefore = `${evRemove}:before`;
 export const evCustom = `${evPfx}custom`;
+export const evOpen = `${evPfx}open`;
+export const evClose = `${evPfx}close`;
 
 export default () => {
   let c = {};
@@ -81,7 +84,9 @@ export default () => {
       add: evAdd,
       remove: evRemove,
       removeBefore: evRemoveBefore,
-      custom: evCustom
+      custom: evCustom,
+      open: evOpen,
+      close: evClose
     },
 
     init(config = {}) {
@@ -413,6 +418,9 @@ export default () => {
 
     onLoad() {
       this.getAll().reset(c.assets);
+      const { em, events } = this;
+      em.on(`run:${assetCmd}`, () => this.__propEv(events.open));
+      em.on(`stop:${assetCmd}`, () => this.__propEv(events.close));
     },
 
     postRender(editorView) {
