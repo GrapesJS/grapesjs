@@ -18,6 +18,14 @@ Once the editor is instantiated you can use its API. Before using these methods 
 const modal = editor.Modal;
 ```
 
+## Available Events
+
+*   `modal:open` - Modal is opened
+*   `modal:close` - Modal is closed
+*   `modal` - Event triggered on any change related to the modal. An object containing all the available data about the triggered event is passed as an argument to the callback.
+
+## Methods
+
 *   [open][2]
 *   [close][3]
 *   [isOpen][4]
@@ -40,11 +48,27 @@ Open the modal window
     *   `opts.content` **([String][12] | [HTMLElement][13])?** Content to set for the modal
     *   `opts.attributes` **[Object][11]?** Updates the modal wrapper with custom attributes
 
+### Examples
+
+```javascript
+modal.open({
+  title: 'My title',
+  content: 'My content',
+  attributes: { class: 'my-class' },
+});
+```
+
 Returns **this** 
 
 ## close
 
 Close the modal window
+
+### Examples
+
+```javascript
+modal.close();
+```
 
 Returns **this** 
 
@@ -55,7 +79,15 @@ The callback will be called one only time
 
 ### Parameters
 
-*   `clb` **[Function][14]** 
+*   `clb` **[Function][14]** Callback to call
+
+### Examples
+
+```javascript
+modal.onceClose(() => {
+ console.log('The modal is closed');
+});
+```
 
 Returns **this** 
 
@@ -66,13 +98,27 @@ The callback will be called one only time
 
 ### Parameters
 
-*   `clb` **[Function][14]** 
+*   `clb` **[Function][14]** Callback to call
+
+### Examples
+
+```javascript
+modal.onceOpen(() => {
+ console.log('The modal is opened');
+});
+```
 
 Returns **this** 
 
 ## isOpen
 
 Checks if the modal window is open
+
+### Examples
+
+```javascript
+modal.isOpen(); // true | false
+```
 
 Returns **[Boolean][15]** 
 
@@ -82,12 +128,17 @@ Set the title to the modal window
 
 ### Parameters
 
-*   `title` **[string][12]** Title
+*   `title` **([string][12] | [HTMLElement][13])** Title
 
 ### Examples
 
 ```javascript
-modal.setTitle('New title');
+// pass a string
+modal.setTitle('Some title');
+// or an HTMLElement
+const el = document.createElement('div');
+el.innerText =  'New title';
+modal.setTitle(el);
 ```
 
 Returns **this** 
@@ -96,7 +147,13 @@ Returns **this**
 
 Returns the title of the modal window
 
-Returns **[string][12]** 
+### Examples
+
+```javascript
+modal.getTitle();
+```
+
+Returns **([string][12] | [HTMLElement][13])** 
 
 ## setContent
 
@@ -109,7 +166,12 @@ Set the content of the modal window
 ### Examples
 
 ```javascript
-modal.setContent('<div>Some HTML content</div>');
+// pass a string
+modal.setContent('Some content');
+// or an HTMLElement
+const el = document.createElement('div');
+el.innerText =  'New content';
+modal.setContent(el);
 ```
 
 Returns **this** 
@@ -118,7 +180,13 @@ Returns **this**
 
 Get the content of the modal window
 
-Returns **[string][12]** 
+### Examples
+
+```javascript
+modal.getContent();
+```
+
+Returns **([string][12] | [HTMLElement][13])** 
 
 [1]: https://github.com/artf/grapesjs/blob/master/src/modal_dialog/config/config.js
 

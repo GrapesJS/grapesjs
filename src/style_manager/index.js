@@ -422,8 +422,9 @@ export default () => {
      * @private
      * */
     render() {
-      SectView && SectView.remove();
+      const el = SectView && SectView.el;
       SectView = new SectorsView({
+        el,
         collection: sectors,
         target: c.em,
         config: c

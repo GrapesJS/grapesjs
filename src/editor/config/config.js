@@ -316,5 +316,9 @@ export default {
   keepUnusedStyles: 0,
 
   // TODO
-  multiFrames: 0
+  multiFrames: 0,
+
+  // Experimental: don't use.
+  // Avoid default UI styles
+  customUI: false
 };

@@ -1,0 +1,63 @@
+name: 🐞 Bug report
+description: Create a bug report for GrapesJS.
+title: "BUG: "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        In order to understand and fix the issue, we ask you to fill correctly all the statements/questions.
+        **If you don't indicate a reproducible demo with relative steps to reproduce the bug, the issue might be CLOSED.**
+        Note: before creating a bug issue, search in GitHub Issues to check if a similar bug was already reported.
+  - type: checkboxes
+    attributes:
+      label: GrapesJS version
+      description: |
+        As the bug you're facing might be already fixed, we ask you to ensure to use the latest version available [![npm](https://img.shields.io/npm/v/grapesjs.svg)](https://www.npmjs.com/package/grapesjs).
+      options:
+        - label: I confirm to use the latest version of GrapesJS
+          required: true
+  - type: input
+    attributes:
+      label: What browser are you using?
+      placeholder: ex. Chrome v91
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Reproducible demo link
+      description: |
+        Use one of these starter templates to create your demo: [JSFiddle](https://jsfiddle.net/szLp8h4n) - [CodeSandbox](https://codesandbox.io/s/1r0w2pk1vl).
+        You can also indicate one of our offical demos if the bug is reproducible there.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Describe the bug
+      description: |
+        Indicate, step by step, how to reproduce the bug, what is the expected behavior and which is the current one.
+        If you're also able to create a video of the issue, that would be extremely helpful.
+      value: |
+        **How to reproduce the bug?**
+        1. ...
+        2. ...
+
+        **What is the expected behavior?**
+        ...
+
+        **What is the current behavior?**
+        ...
+
+        If is necessary to execute some code in order to reproduce the bug, paste it here below:
+        ```js
+        // your code here
+        ```
+    validations:
+      required: true
+  - type: checkboxes
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/artf/grapesjs/blob/dev/CODE_OF_CONDUCT.md)
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true

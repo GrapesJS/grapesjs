@@ -4,7 +4,7 @@ title: Component Manager
 
 # Component Manager
 
-The Component is a base element of the template. It might be something simple and atomic like an image or a text box, but also complex structures, more probably composed by other components, like sections or pages. The concept of the component was made to allow the developer to bind different behaviors to different elements. For example, opening the Asset Manager on double click of the image is a custom behavior binded to that particular type of element.
+The Component is a base element of the template. It might be something simple and atomic like an image or a text box, but also complex structures, more probably composed by other components, like sections or pages. The concept of the component was made to allow the developer to bind different behaviors to different elements. For example, opening the Asset Manager on double click of the image is a custom behavior bound to that particular type of element.
 
 ::: warning
 This guide is referring to GrapesJS v0.15.8 or higher

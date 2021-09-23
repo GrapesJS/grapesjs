@@ -63,17 +63,17 @@ export default ComponentView.extend({
   onActive(ev) {
     ev && ev.stopPropagation();
     const { em, model } = this;
-    const ed = em && em.get('Editor');
+    const am = em && em.get('AssetManager');
 
-    if (ed && model.get('editable')) {
-      ed.runCommand('open-assets', {
+    if (am && model.get('editable')) {
+      am.open({
+        select(asset, complete) {
+          model.set({ src: asset.getSrc() });
+          complete && am.close();
+        },
         target: model,
         types: ['image'],
-        accept: 'image/*',
-        onSelect() {
-          ed.Modal.close();
-          ed.AssetManager.setTarget(null);
-        }
+        accept: 'image/*'
       });
     }
   },

@@ -17,6 +17,12 @@ export default Backbone.View.extend({
     init && init(o);
   },
 
+  __getBhv() {
+    const { em } = this;
+    const am = em && em.get('AssetManager');
+    return (am && am.__getBehaviour()) || {};
+  },
+
   template() {
     const pfx = this.pfx;
     return `

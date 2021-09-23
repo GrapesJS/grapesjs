@@ -14,6 +14,12 @@
  * const modal = editor.Modal;
  * ```
  *
+ * ## Available Events
+ * * `modal:open` - Modal is opened
+ * * `modal:close` - Modal is closed
+ * * `modal` - Event triggered on any change related to the modal. An object containing all the available data about the triggered event is passed as an argument to the callback.
+ *
+ * ## Methods
  * * [open](#open)
  * * [close](#close)
  * * [isOpen](#isopen)
@@ -27,6 +33,8 @@
  * @module Modal
  */
 
+import { debounce, isFunction, isString } from 'underscore';
+import { createText } from '../utils/dom';
 import defaults from './config/config';
 import ModalM from './model/Modal';
 import ModalView from './view/ModalView';
@@ -69,13 +77,36 @@ export default () => {
 
       model = new ModalM(c);
       model.on('change:open', (m, enb) => triggerEvent(enb, em));
+      model.on(
+        'change',
+        debounce(() => {
+          const data = this._evData();
+          const { custom } = this.getConfig();
+          isFunction(custom) && custom(data);
+          em.trigger('modal', data);
+        })
+      );
 
       return this;
     },
 
+    _evData() {
+      const titl = this.getTitle();
+      const cnt = this.getContent();
+      const { open, attributes } = model.attributes;
+      return {
+        open,
+        attributes,
+        title: isString(titl) ? createText(titl) : titl,
+        content: isString(cnt) ? createText(cnt) : cnt.get ? cnt.get(0) : cnt,
+        close: () => this.close()
+      };
+    },
+
     postRender(view) {
       const el = view.model.getConfig().el || view.el;
-      this.render().appendTo(el);
+      const res = this.render();
+      res && res.appendTo(el);
     },
 
     /**
@@ -84,19 +115,29 @@ export default () => {
      * @param {String|HTMLElement} [opts.title] Title to set for the modal
      * @param {String|HTMLElement} [opts.content] Content to set for the modal
      * @param {Object} [opts.attributes] Updates the modal wrapper with custom attributes
-     * @return {this}
+     * @returns {this}
+     * @example
+     * modal.open({
+     *   title: 'My title',
+     *   content: 'My content',
+     *   attributes: { class: 'my-class' },
+     * });
      */
     open(opts = {}) {
+      const attr = opts.attributes || {};
       opts.title && this.setTitle(opts.title);
       opts.content && this.setContent(opts.content);
+      model.set('attributes', attr);
       model.open();
-      modal && modal.updateAttr(opts.attributes);
+      modal && modal.updateAttr(attr);
       return this;
     },
 
     /**
      * Close the modal window
-     * @return {this}
+     * @returns {this}
+     * @example
+     * modal.close();
      */
     close() {
       model.close();
@@ -106,8 +147,12 @@ export default () => {
     /**
      * Execute callback when the modal will be closed.
      * The callback will be called one only time
-     * @param {Function} clb
+     * @param {Function} clb Callback to call
      * @returns {this}
+     * @example
+     * modal.onceClose(() => {
+     *  console.log('The modal is closed');
+     * });
      */
     onceClose(clb) {
       this.em.once('modal:close', clb);
@@ -117,8 +162,12 @@ export default () => {
     /**
      * Execute callback when the modal will be opened.
      * The callback will be called one only time
-     * @param {Function} clb
+     * @param {Function} clb Callback to call
      * @returns {this}
+     * @example
+     * modal.onceOpen(() => {
+     *  console.log('The modal is opened');
+     * });
      */
     onceOpen(clb) {
       this.em.once('modal:open', clb);
@@ -127,7 +176,9 @@ export default () => {
 
     /**
      * Checks if the modal window is open
-     * @return {Boolean}
+     * @returns {Boolean}
+     * @example
+     * modal.isOpen(); // true | false
      */
     isOpen() {
       return !!model.get('open');
@@ -135,10 +186,15 @@ export default () => {
 
     /**
      * Set the title to the modal window
-     * @param {string} title Title
-     * @return {this}
+     * @param {string | HTMLElement} title Title
+     * @returns {this}
      * @example
-     * modal.setTitle('New title');
+     * // pass a string
+     * modal.setTitle('Some title');
+     * // or an HTMLElement
+     * const el = document.createElement('div');
+     * el.innerText =  'New title';
+     * modal.setTitle(el);
      */
     setTitle(title) {
       model.set('title', title);
@@ -147,7 +203,9 @@ export default () => {
 
     /**
      * Returns the title of the modal window
-     * @return {string}
+     * @returns {string | HTMLElement}
+     * @example
+     * modal.getTitle();
      */
     getTitle() {
       return model.get('title');
@@ -155,10 +213,15 @@ export default () => {
 
     /**
      * Set the content of the modal window
-     * @param {string|HTMLElement} content Content
-     * @return {this}
+     * @param {string | HTMLElement} content Content
+     * @returns {this}
      * @example
-     * modal.setContent('<div>Some HTML content</div>');
+     * // pass a string
+     * modal.setContent('Some content');
+     * // or an HTMLElement
+     * const el = document.createElement('div');
+     * el.innerText =  'New content';
+     * modal.setContent(el);
      */
     setContent(content) {
       model.set('content', ' ');
@@ -168,7 +231,9 @@ export default () => {
 
     /**
      * Get the content of the modal window
-     * @return {string}
+     * @returns {string | HTMLElement}
+     * @example
+     * modal.getContent();
      */
     getContent() {
       return model.get('content');
@@ -198,9 +263,11 @@ export default () => {
      * @private
      */
     render() {
+      if (this.getConfig().custom) return;
       const View = ModalView.extend(c.extend);
-      modal && modal.remove();
+      const el = modal && modal.el;
       modal = new View({
+        el,
         model,
         config: c
       });

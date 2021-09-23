@@ -42,13 +42,6 @@
  * * `block:drag:start` - Started dragging block, model of the block is passed as an argument
  * * `block:drag` - Dragging block, the block's model and the drag event are passed as arguments
  * * `block:drag:stop` - Dragging of the block is stopped. As agruments for the callback you get, the dropped component model (if dropped successfully) and the model of the block
- * ### Assets
- * * `asset:add` - New asset added
- * * `asset:remove` - Asset removed
- * * `asset:upload:start` - Before the upload is started
- * * `asset:upload:end` - After the upload is ended
- * * `asset:upload:error` - On any error in upload, passes the error as an argument
- * * `asset:upload:response` - On upload response, passes the result as an argument
  * ### Keymaps
  * * `keymap:add` - New keymap added. The new keyamp object is passed as an argument
  * * `keymap:remove` - Keymap removed. The removed keyamp object is passed as an argument
@@ -85,9 +78,6 @@
  * ### RTE
  * * `rte:enable` - RTE enabled. The view, on which RTE is enabled, is passed as an argument
  * * `rte:disable` - RTE disabled. The view, on which RTE is disabled, is passed as an argument
- * ### Modal
- * * `modal:open` - Modal is opened
- * * `modal:close` - Modal is closed
  * ### Commands
  * * `run:{commandName}` - Triggered when some command is called to run (eg. editor.runCommand('preview'))
  * * `stop:{commandName}` - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
@@ -96,6 +86,10 @@
  * * `abort:{commandName}` - Triggered when the command execution is aborted (`editor.on(`run:preview:before`, opts => opts.abort = 1);`)
  * * `run` - Triggered on run of any command. The id and the result are passed as arguments to the callback
  * * `stop` - Triggered on stop of any command. The id and the result are passed as arguments to the callback
+ * ### Assets
+ * Check the [Assets](/api/assets.html) module.
+ * ### Modal
+ * Check the [Modal](/api/modal_dialog.html) module.
  * ### Devices
  * Check the [Devices](/api/device_manager.html) module.
  * ### Parser

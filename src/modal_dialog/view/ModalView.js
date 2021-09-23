@@ -70,9 +70,9 @@ export default class ModalView extends View {
    * @return {HTMLElement}
    * @private
    */
-  getTitle() {
+  getTitle(opts = {}) {
     if (!this.$title) this.$title = this.$el.find('.' + this.pfx + 'title');
-    return this.$title.get(0);
+    return opts.$ ? this.$title : this.$title.get(0);
   }
 
   /**
@@ -93,8 +93,8 @@ export default class ModalView extends View {
    * @private
    * */
   updateTitle() {
-    var title = this.getTitle();
-    if (title) title.innerHTML = this.model.get('title');
+    const title = this.getTitle({ $: true });
+    title && title.empty().append(this.model.get('title'));
   }
 
   /**

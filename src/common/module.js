@@ -13,7 +13,7 @@ export default {
 
   getAllMap() {
     return this.getAll().reduce((acc, i) => {
-      acc[i.get('id')] = i;
+      acc[i.get(i.idAttribute)] = i;
       return acc;
     }, {});
   },
@@ -46,7 +46,10 @@ export default {
     const { em, events } = this;
     const options = opts || coll;
     em && events.all && em.trigger(events.all, { event, model, options });
+    this.__onAllEvent();
   },
+
+  __onAllEvent() {},
 
   _createId(len = 16) {
     const all = this.getAll();

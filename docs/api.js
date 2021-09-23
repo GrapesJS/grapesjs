@@ -13,6 +13,7 @@ async function generateDocs () {
   await Promise.all([
     ['editor/index.js', 'editor.md'],
     ['asset_manager/index.js', 'assets.md'],
+    ['asset_manager/model/Asset.js', 'asset.md'],
     ['block_manager/index.js', 'block_manager.md'],
     ['block_manager/model/Block.js', 'block.md'],
     ['commands/index.js', 'commands.md'],

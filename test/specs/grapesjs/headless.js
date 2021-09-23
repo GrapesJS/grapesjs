@@ -41,6 +41,35 @@ describe('GrapesJS Headless', () => {
       expect(editor.getCss()).toBe(''); // same as default
     });
 
+    test('Add components with children', () => {
+      const res = editor.addComponents([
+        {
+          tagName: 'h1',
+          type: 'text',
+          components: [
+            {
+              type: 'textnode',
+              removable: false,
+              draggable: false,
+              highlightable: 0,
+              copyable: false,
+              selectable: true,
+              content: 'Hello!',
+              _innertext: false
+            }
+          ]
+        }
+      ]);
+      expect(res.length).toBe(1);
+      const resHtml = '<h1>Hello!</h1>';
+      const comp = res[0];
+      expect(comp.toHTML()).toBe(resHtml);
+      expect(editor.Selectors.getAll().length).toBe(0);
+      expect(editor.Css.getAll().length).toBe(0);
+      expect(editor.getHtml()).toBe(resHtml);
+      expect(editor.getCss()).toBe('');
+    });
+
     test('Add styles', () => {
       const res = editor.addStyle(styleObj);
       expect(res.length).toBe(1);

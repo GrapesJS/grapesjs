@@ -10,7 +10,6 @@ import TraitButtonView from './view/TraitButtonView';
 
 export default () => {
   let c = {};
-  let types = {};
   let TraitsViewer;
   const typesDef = {
     text: TraitView,
@@ -23,8 +22,6 @@ export default () => {
 
   return {
     TraitsView,
-
-    types,
 
     /**
      * Name of the module
@@ -50,7 +47,7 @@ export default () => {
       c = config;
       defaults(c, defaultOpts);
       const ppfx = c.pStylePrefix;
-      types = { ...typesDef };
+      this.types = { ...typesDef };
       ppfx && (c.stylePrefix = `${ppfx}${c.stylePrefix}`);
       return this;
     },
@@ -79,8 +76,8 @@ export default () => {
      * @param {Object} methods Object representing the trait
      */
     addType(name, trait) {
-      const baseView = types.text;
-      types[name] = baseView.extend(trait);
+      const baseView = this.getType('text');
+      this.types[name] = baseView.extend(trait);
     },
 
     /**
@@ -89,23 +86,33 @@ export default () => {
      * @return {Object}
      */
     getType(name) {
-      return types[name];
+      return this.getTypes()[name];
+    },
+
+    /**
+     * Get all trait types
+     * @returns {Object}
+     */
+    getTypes() {
+      return this.types;
     },
 
     render() {
-      TraitsViewer && TraitsViewer.remove();
+      const el = TraitsViewer && TraitsViewer.el;
       TraitsViewer = new TraitsView({
+        el,
         collection: [],
         editor: c.em,
         config: c
       });
-      TraitsViewer.itemsView = types;
-      return TraitsViewer.render().el;
+      TraitsViewer.itemsView = this.getTypes();
+      TraitsViewer.updatedCollection();
+      return TraitsViewer.el;
     },
 
     destroy() {
       TraitsViewer && TraitsViewer.remove();
-      [c, types, TraitsViewer].forEach(i => (i = {}));
+      [c, TraitsViewer].forEach(i => (i = {}));
     }
   };
 };
