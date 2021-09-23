@@ -6,15 +6,58 @@ title: Block Manager
 
 <p align="center"><img src="http://grapesjs.com/img/sc-grapesjs-blocks-prp.jpg" alt="GrapesJS - Block Manager" height="400" align="center"/></p>
 
+A [Block] is a simple object which allows the end-user to reuse your [Components]. It can be connected to a single [Component] or to a complex composition of them. In this guide, you will see how to setup and take full advantage of the built-in Block Manager UI in GrapesJS.
+The default UI is a lightweight component with built-in Drag & Drop support, but as you'll see next in this guide, it's easy to extend and create your own UI manager.
+
 ::: warning
 To get a better understanding of the content in this guide, we recommend reading [Components](Components.html) first
 :::
 
 [[toc]]
 
-The Block is a group of [Components] and can be easily reused inside templates.
 
-The difference between components and blocks: The component is more atomic, so a single image,  a text box or a map is a component. The block is what the end user will drag inside the canvas, so it could contain a single image (single Component) or the entire section like, for example, the footer with a lot of components inside (texts, images, inputs, etc).
+## Configuration
+
+To change the default configurations you have to pass the `blockManager` property with the main configuration object.
+
+```js
+const editor = grapesjs.init({
+  ...
+  blockManager: {
+    blocks: [...],
+    ...
+  }
+});
+```
+
+Check the full list of available options here: [Block Manager Config](https://github.com/artf/grapesjs/blob/master/src/block_manager/config/config.js)
+
+
+## Initialization
+
+By default, Block Manager UI is considered a hidden component. Currently, the GrapesJS core, renders default panels and buttons that allow you to show them, but in long term, this is something that might will change. Here below you can see how to init the editor without default panels and immediately rendered Block Manager UI.
+
+```js
+const editor = grapesjs.init({
+  container: '#gjs',
+  height: '100%',
+  storageManager: false,
+  panels: { defaults: [] }, // Avoid default panels
+  blockManager: {
+    blocks: [
+      {
+        label: 'Image', // Label of the block
+        content: { type: 'image' } // `image` component
+      }
+    ],
+  }
+});
+```
+
+
+
+
+The difference between components and blocks: The component is more atomic, so a single image, a text box or a map is a component. The block is what the end user will drag inside the canvas, so it could contain a single image (single Component) or the entire section like, for example, the footer with a lot of components inside (texts, images, inputs, etc).
 
 Check out the [Components] page to see the list of built-in components and how to create your own.
 
@@ -126,6 +169,7 @@ blockManager.add('some-block-id', {
 
 
 
+[Block]: </api/block.html>
 [Component]: </api/component.html>
 [Components]: <Components.html>
 [Blocks API]: </api/block_manager.html>

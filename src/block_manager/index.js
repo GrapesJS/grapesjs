@@ -55,6 +55,7 @@ export default () => {
     init(config) {
       c = config || {};
       const em = c.em;
+      this.em = em;
 
       for (let name in defaults) {
         if (!(name in c)) {
@@ -112,6 +113,10 @@ export default () => {
 
       if (elTo) {
         const el = isElement(elTo) ? elTo : document.querySelector(elTo);
+        if (!el)
+          return this.em.logWarning(
+            `[${this.name}]: appendTo element not found`
+          );
         el.appendChild(this.render(blocksVisible.models));
       }
     },
