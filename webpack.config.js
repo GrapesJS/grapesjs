@@ -9,7 +9,6 @@ export default ({ config }) => ({
     ...config.output,
     filename: 'grapes.min.js',
     libraryExport: 'default',
-    globalObject: `typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : this)`,
   },
   devServer: {
     headers: { 'Access-Control-Allow-Origin': '*' },
