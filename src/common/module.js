@@ -51,6 +51,10 @@ export default {
 
   __onAllEvent() {},
 
+  __logWarn(str) {
+    this.em.logWarning(`[${this.name}]: ${str}`);
+  },
+
   _createId(len = 16) {
     const all = this.getAll();
     const ln = all.length + len;

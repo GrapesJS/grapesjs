@@ -28,6 +28,7 @@
  * @module BlockManager
  */
 import { isElement } from 'underscore';
+import Module from 'common/module';
 import defaults from './config/config';
 import Blocks from './model/Blocks';
 import BlockCategories from './model/Categories';
@@ -39,6 +40,8 @@ export default () => {
   var categories = [];
 
   return {
+    ...Module,
+
     /**
      * Name of the module
      * @type {String}
@@ -113,10 +116,7 @@ export default () => {
 
       if (elTo) {
         const el = isElement(elTo) ? elTo : document.querySelector(elTo);
-        if (!el)
-          return this.em.logWarning(
-            `[${this.name}]: appendTo element not found`
-          );
+        if (!el) return this.__logWarn('"appendTo" element not found');
         el.appendChild(this.render(blocksVisible.models));
       }
     },
