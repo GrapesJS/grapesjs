@@ -132,9 +132,10 @@ Using HTML strings as `content` is not wrong, in some cases you don't need the f
 ```
 In such a case, all rendered elements will be converted to the best suited default component (eg. `.el-Y` elements will be treated like `text` components). The user will be able to style and drag them with no particular restrictions.
 
-Thanks to Components' [isComponet](http://localhost:8081/docs/modules/Components.html#define-custom-component-type) feature (executed post parsing), you're still able to bind your rendered elements to components and enforce an extra logic. Here an example how you would enforce all `.el-Y` elements to be placed only inside `.el-X` one, without touching any part of the original HTML used in the `content`.
+Thanks to Components' [isComponet](http://localhost:8081/docs/modules/Components.html#iscomponent) feature (executed post parsing), you're still able to bind your rendered elements to components and enforce an extra logic. Here an example how you would enforce all `.el-Y` elements to be placed only inside `.el-X` one, without touching any part of the original HTML used in the `content`.
 
 ```js
+// Your component
 editor.Components.addType('cmp-Y', {
   // Detect '.el-Y' elements
   isComponent: el => el.classList?.contains('el-Y'),
@@ -146,6 +147,42 @@ editor.Components.addType('cmp-Y', {
   }
 });
 ```
+Another alternative is to leverage `data-gjs-*` attributes (used by GrapesJS parser) to attach properties to components.
+```js
+// -- [Option 1]: Declare type in HTML strings --
+{
+  // ...
+  content: `<div class="el-X">
+    <div data-gjs-type="cmp-Y" class="el-Y el-A">Element A</div>
+    <div data-gjs-type="cmp-Y" class="el-Y el-B">Element B</div>
+    <div data-gjs-type="cmp-Y" class="el-Y el-C">Element C</div>
+  </div>`
+}
+// Component
+editor.Components.addType('cmp-Y', {
+  // You don't need `isComponent` anymore as you declare types already on elements
+  model: {
+    defaults: {
+      name: 'Component Y', // Simple custom name
+      draggable: '.el-X', // Add `draggable` logic
+    }
+  }
+});
+
+// -- [Option 2]: Declare properties in HTML strings (less recommended) --
+{
+  // ...
+  content: `<div class="el-X">
+    <div data-gjs-name="Component Y" data-gjs-draggable=".el-X" class="el-Y el-A">Element A</div>
+    <div data-gjs-name="Component Y" data-gjs-draggable=".el-X" class="el-Y el-B">Element B</div>
+    <div data-gjs-name="Component Y" data-gjs-draggable=".el-X" class="el-Y el-C">Element C</div>
+  </div>`
+}
+// No need for a custom component.
+// You're already defining properties of each element.
+```
+
+
 
 ## Important caveats
 
