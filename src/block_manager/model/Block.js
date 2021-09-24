@@ -20,7 +20,7 @@ export default class Block extends Model {
       media: '',
       category: '',
       activate: false,
-      select: false,
+      select: null,
       resetId: false,
       disable: false,
       onClick: null,

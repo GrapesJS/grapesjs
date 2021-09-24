@@ -106,8 +106,9 @@ export default Backbone.View.extend({
       const oldKey = 'activeOnRender';
       const oldActive = result.get && result.get(oldKey);
       const toActive = model.get('activate') || oldActive;
+      const toSelect = model.get('select');
 
-      if (model.get('select') || toActive) {
+      if (toSelect || (toActive && toSelect !== false)) {
         em.setSelected(result);
       }
 
