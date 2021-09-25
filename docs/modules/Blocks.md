@@ -225,7 +225,7 @@ Don't put non serializable properties, like functions, in your blocks, keep them
 This will work, but if you try to save and reload a stored project, those will disappear.
 
 ### Avoid styles
-Don't put styles in your blocks.
+Don't put styles in your blocks, keep them in your components.
 ```js
 // Your block
 {

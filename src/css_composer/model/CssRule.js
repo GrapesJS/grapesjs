@@ -40,6 +40,8 @@ export default class CssRule extends Model.extend(Styleable) {
       // Used in view
       important: 0,
 
+      group: '',
+
       _undo: true
     };
   }

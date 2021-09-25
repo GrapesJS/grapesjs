@@ -82,6 +82,11 @@ export default Backbone.Collection.extend({
       sels.remove(rulesRemoved.map(rule => rule.getSelectors().at(0)));
 
       if (!removed.opt.temporary) {
+        const hasStyles = removed.get('styles');
+        const cm = em.get('Commands');
+        em.get('Commands').run('core:component-style-clear', {
+          target: removed
+        });
         // Deprecate 'style-signature'
         // const cm = em.get('Commands');
         // const hasSign = removed.get('style-signature');

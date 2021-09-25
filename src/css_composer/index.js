@@ -27,7 +27,8 @@
  * @module CssComposer
  */
 
-import { isArray, isUndefined } from 'underscore';
+import { isArray, isString, isUndefined, each } from 'underscore';
+import { isObject } from 'utils/mixins';
 import defaults from './config/config';
 import CssRule from './model/CssRule';
 import CssRules from './model/CssRules';
@@ -243,14 +244,20 @@ export default () => {
     /**
      * Add a raw collection of rule objects
      * This method overrides styles, in case, of already defined rule
-     * @param {Array<Object>} data Array of rule objects, eg . [{selectors: ['class1'], style: {....}}, ..]
+     * @param {String|Array<Object>} data CSS string or an array of rule objects, eg. [{selectors: ['class1'], style: {....}}, ..]
      * @param {Object} opts Options
+     * @param {Object} props Additional properties to add on rules
      * @return {Array<Model>}
      * @private
      */
-    addCollection(data, opts = {}) {
-      var result = [];
-      var d = data instanceof Array ? data : [data];
+    addCollection(data, opts = {}, props = {}) {
+      const result = [];
+
+      if (isString(data)) {
+        data = em.get('Parser').parseCss(data);
+      }
+
+      const d = data instanceof Array ? data : [data];
 
       for (var i = 0, l = d.length; i < l; i++) {
         var rule = d[i] || {};
@@ -270,6 +277,8 @@ export default () => {
         var model = this.add(newSels, rule.state, rule.mediaText, rule, opts);
         var updateStyle = !modelExists || !opts.avoidUpdateStyle;
         const style = rule.style || {};
+
+        isObject(props) && model.set(props, opts);
 
         if (updateStyle) {
           let styleUpdate = opts.extend

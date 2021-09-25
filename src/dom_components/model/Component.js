@@ -176,6 +176,13 @@ export default class Component extends Model.extend(Styleable) {
     });
 
     if (!opt.temporary) {
+      // Add component styles
+      const cssc = em && em.get('CssComposer');
+      const { styles, type } = this.attributes;
+      if (styles && cssc) {
+        cssc.addCollection(styles, {}, { group: `cmp:${type}` });
+      }
+
       this.__postAdd();
       this.init();
       this.__isSymbolOrInst() && this.__initSymb();

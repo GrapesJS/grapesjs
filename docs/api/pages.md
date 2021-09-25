@@ -38,12 +38,15 @@ const pageManager = editor.Pages;
 *   [add][1]
 *   [get][2]
 *   [getAll][3]
-*   [getMain][4]
-*   [remove][5]
-*   [select][6]
-*   [getSelected][7]
+*   [getAllWrappers][4]
+*   [getMain][5]
+*   [remove][6]
+*   [select][7]
+*   [getSelected][8]
 
 [Page]: page.html
+
+[Component]: component.html
 
 ## add
 
@@ -51,8 +54,8 @@ Add new page
 
 ### Parameters
 
-*   `props` **[Object][8]** Page properties
-*   `opts` **[Object][8]?** Options (optional, default `{}`)
+*   `props` **[Object][9]** Page properties
+*   `opts` **[Object][9]?** Options (optional, default `{}`)
 
 ### Examples
 
@@ -72,7 +75,7 @@ Remove page
 
 ### Parameters
 
-*   `page` **([String][9] | [Page])** Page or page id
+*   `page` **([String][10] | [Page])** Page or page id
 *   `opts`   (optional, default `{}`)
 
 ### Examples
@@ -92,7 +95,7 @@ Get page by id
 
 ### Parameters
 
-*   `id` **[String][9]** Page id
+*   `id` **[String][10]** Page id
 
 ### Examples
 
@@ -124,7 +127,21 @@ Get all pages
 const arrayOfPages = pageManager.getAll();
 ```
 
-Returns **[Array][10]<[Page]>** 
+Returns **[Array][11]<[Page]>** 
+
+## getAllWrappers
+
+Get wrapper components (aka body) from all pages and frames.
+
+### Examples
+
+```javascript
+// Get all the `image` components from the project
+const wrappers = pageManager.getAllWrappers();
+const allImages = wrappers.map(wrp => wrp.findType('image')).flat();
+```
+
+Returns **[Array][11]<[Component]>** 
 
 ## select
 
@@ -132,7 +149,7 @@ Change the selected page. This will switch the page rendered in canvas
 
 ### Parameters
 
-*   `page` **([String][9] | [Page])** Page or page id
+*   `page` **([String][10] | [Page])** Page or page id
 *   `opts`   (optional, default `{}`)
 
 ### Examples
@@ -164,16 +181,18 @@ Returns **[Page]**
 
 [3]: #getall
 
-[4]: #getmain
+[4]: #getallwrappers
 
-[5]: #remove
+[5]: #getmain
 
-[6]: #select
+[6]: #remove
 
-[7]: #getselected
+[7]: #select
 
-[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[8]: #getselected
 
-[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+
+[11]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
