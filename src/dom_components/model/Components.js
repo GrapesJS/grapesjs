@@ -162,6 +162,7 @@ export default Backbone.Collection.extend({
     if (isString(models)) {
       models = this.parseString(models, opt);
     } else if (isArray(models)) {
+      models = [...models];
       models.forEach((item, index) => {
         if (isString(item)) {
           const nodes = this.parseString(item, opt);

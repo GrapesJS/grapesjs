@@ -12,6 +12,9 @@ The default UI is a lightweight component with built-in Drag & Drop support, but
 ::: warning
 To get a better understanding of the content in this guide, we recommend reading [Components] first
 :::
+::: warning
+This guide is referring to GrapesJS v0.17.27 or higher
+:::
 
 [[toc]]
 
@@ -221,7 +224,21 @@ Don't put non serializable properties, like functions, in your blocks, keep them
 ```
 This will work, but if you try to save and reload a stored project, those will disappear.
 
-
+### Avoid styles
+Don't put styles in your blocks.
+```js
+// Your block
+{
+  content: [
+    { type: 'my-cmp', styles: '.cmp { color: red }' },
+    `
+    <div class="el">Element</div>
+    <style>.el { color: blue }</style>
+    `,
+  ],
+}
+```
+If you remove those components from the canvas, the CSS code generator will be able to skip some of those from the output, but
 
 
 ## DONT PUT IDS in your content
