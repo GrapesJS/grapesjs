@@ -1,5 +1,5 @@
 import Backbone from 'backbone';
-import { isFunction, isObject } from 'underscore';
+import { isFunction, isObject, isArray } from 'underscore';
 import { on, off, hasDnd } from 'utils/mixins';
 
 export default Backbone.View.extend({
@@ -107,18 +107,19 @@ export default Backbone.View.extend({
       const oldActive = result.get && result.get(oldKey);
       const toActive = model.get('activate') || oldActive;
       const toSelect = model.get('select');
+      const first = isArray(result) ? result[0] : result;
 
       if (toSelect || (toActive && toSelect !== false)) {
-        em.setSelected(result);
+        em.setSelected(first);
       }
 
       if (toActive) {
-        result.trigger('active');
-        result.unset(oldKey);
+        first.trigger('active');
+        first.unset(oldKey);
       }
 
       if (model.get('resetId')) {
-        result.onAll(model => model.resetId());
+        first.onAll(model => model.resetId());
       }
     }
 

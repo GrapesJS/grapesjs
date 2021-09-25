@@ -118,7 +118,7 @@ editor.Components.addType('my-cmp-alt', {
 ```
 
 ### HTML strings
-Using HTML strings as `content` is not wrong, in some cases you don't need the finest control over components and want to leave the user full freedom on template composition (eg. static site builder editor with HTML copy-pasted from some framework like [Tailwind Components](https://tailwindcomponents.com/))
+Using HTML strings as `content` is not wrong, in some cases you don't need the finest control over components and want to leave the user full freedom on template composition (eg. static site builder editor with HTML copy-pasted from a framework like [Tailwind Components](https://tailwindcomponents.com/))
 ```js
 // Your block
 {
@@ -169,7 +169,7 @@ editor.Components.addType('cmp-Y', {
   }
 });
 
-// -- [Option 2]: Declare properties in HTML strings (less recommended) --
+// -- [Option 2]: Declare properties in HTML strings (less recommended option) --
 {
   // ...
   content: `<div class="el-X">
@@ -182,6 +182,23 @@ editor.Components.addType('cmp-Y', {
 // You're already defining properties of each element.
 ```
 
+Here we showed all the possibilities you have with HTML strings, but we strongly advise against the abuse of the `Option 2` and to stick to a more component-oriented approach.
+Without a proper component type, not only your HTML will be harder to read, but all those defined properties will be "hard-coded" to a generic component of those elements. So, if one day you decide to "upgrade" the logic of the component (eg. `draggable: '.el-X'` -> `draggable: '.el-X, .el-Z'`), you won't be able.
+
+
+### Mixed
+It's also possible to mix components with HTML strings by passing an array.
+```js
+{
+  // ...
+  // Options like `activate`/`select` will be triggered only on the first component.
+  activate: true,
+  content: [
+    { type: 'image' },
+    `<div>Extra</div>`
+  ]
+}
+```
 
 
 ## Important caveats
