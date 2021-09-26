@@ -44,6 +44,7 @@
 import { isElement } from 'underscore';
 import Module from 'common/module';
 import defaults from './config/config';
+import Block from './model/Block';
 import Blocks from './model/Blocks';
 import BlockCategories from './model/Categories';
 import BlocksView from './view/BlocksView';
@@ -67,6 +68,10 @@ export default () => {
     ...Module,
 
     name: 'BlockManager',
+
+    Block,
+
+    Blocks,
 
     events: {
       all: evAll,
