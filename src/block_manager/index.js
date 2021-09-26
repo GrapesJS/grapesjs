@@ -46,7 +46,8 @@ import Module from 'common/module';
 import defaults from './config/config';
 import Block from './model/Block';
 import Blocks from './model/Blocks';
-import BlockCategories from './model/Categories';
+import Category from './model/Category';
+import Categories from './model/Categories';
 import BlocksView from './view/BlocksView';
 
 export const evAll = 'block';
@@ -73,6 +74,10 @@ export default () => {
 
     Blocks,
 
+    Category,
+
+    Categories,
+
     events: {
       all: evAll,
       update: evUpdate,
@@ -92,7 +97,7 @@ export default () => {
       // Global blocks collection
       blocks = new Blocks([]);
       blocksVisible = new Blocks([]);
-      categories = new BlockCategories();
+      categories = new Categories();
       this.all = blocks;
       this.__initListen();
 
