@@ -22,6 +22,7 @@ const assetManager = editor.AssetManager;
 
 *   `asset:open` - Asset Manager opened.
 *   `asset:close` - Asset Manager closed.
+*   `asset:add` - Asset added. The [Asset] is passed as an argument to the callback.
 *   `asset:remove` - Asset removed. The [Asset] is passed as an argument to the callback.
 *   `asset:update` - Asset updated. The updated [Asset] and the object containing changes are passed as arguments to the callback.
 *   `asset:upload:start` - Before the upload is started.

@@ -22,6 +22,7 @@
  * ## Available Events
  * * `block:add` - Block added. The [Block] is passed as an argument to the callback.
  * * `block:remove` - Block removed. The [Block] is passed as an argument to the callback.
+ * * `block:update` - Block updated. The [Block] and the object containing changes are passed as arguments to the callback.
  * * `block:drag:start` - Started dragging block, model of the block is passed as an argument
  * * `block:drag` - Dragging block, the block's model and the drag event are passed as arguments
  * * `block:drag:stop` - Dragging of the block is stopped. As agruments for the callback you get, the dropped component model (if dropped successfully) and the model of the block
@@ -52,8 +53,8 @@ import BlocksView from './view/BlocksView';
 
 export const evAll = 'block';
 export const evPfx = `${evAll}:`;
-export const evUpdate = `${evPfx}update`;
 export const evAdd = `${evPfx}add`;
+export const evUpdate = `${evPfx}update`;
 export const evRemove = `${evPfx}remove`;
 export const evRemoveBefore = `${evRemove}:before`;
 // export const evCustom = `${evPfx}custom`;
@@ -117,18 +118,11 @@ export default () => {
       return c;
     },
 
-    /**
-     * Load default blocks if the collection is empty
-     */
     onLoad() {
       const blocks = this.getAll();
       !blocks.length && blocks.reset(c.blocks);
     },
 
-    /**
-     * Executed once the main editor instance is rendered
-     * @private
-     */
     postRender() {
       const collection = blocksVisible;
       blocksView = new BlocksView({ collection, categories }, c);
@@ -142,17 +136,9 @@ export default () => {
     },
 
     /**
-     * Add new block to the collection.
-     * @param {string} id Block id
-     * @param {Object} opts Options
-     * @param {string} opts.label Name of the block
-     * @param {string} opts.content HTML content
-     * @param {string|Object} opts.category Group the block inside a category.
-     *                                      You should pass objects with id property, eg:
-     *                                      {id: 'some-uid', label: 'My category'}
-     *                                      The string will be converted in:
-     *                                      'someid' => {id: 'someid', label: 'someid'}
-     * @param {Object} [opts.attributes={}] Block attributes
+     * Add new block.
+     * @param {String} id Block ID
+     * @param {[Block]} props Block properties
      * @returns {[Block]} Added block
      * @example
      * blockManager.add('h1-block', {
@@ -164,15 +150,15 @@ export default () => {
      *   }
      * });
      */
-    add(id, opts) {
-      var obj = opts || {};
-      obj.id = id;
-      return blocks.add(obj);
+    add(id, props, opts = {}) {
+      const prp = props || {};
+      prp.id = id;
+      return blocks.add(prp, opts);
     },
 
     /**
-     * Return the block by id
-     * @param  {string} id Block id
+     * Get the block by id.
+     * @param  {String} id Block id
      * @returns {[Block]}
      * @example
      * const block = blockManager.get('h1-block');
@@ -185,7 +171,7 @@ export default () => {
 
     /**
      * Return all blocks.
-     * @return {Collection<[Block]>}
+     * @returns {Collection<[Block]>}
      * @example
      * const blocks = blockManager.getAll();
      * console.log(JSON.stringify(blocks));
@@ -197,7 +183,7 @@ export default () => {
 
     /**
      * Return the visible collection, which containes blocks actually rendered
-     * @return {Collection}
+     * @returns {Collection<[Block]>}
      */
     getAllVisible() {
       return blocksVisible;
@@ -213,8 +199,8 @@ export default () => {
      * const block = blockManager.get('BLOCK_ID');
      * blockManager.remove(block);
      */
-    remove(id, opts) {
-      return this.__remove(id, opts);
+    remove(block, opts = {}) {
+      return this.__remove(block, opts);
     },
 
     /**

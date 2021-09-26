@@ -307,7 +307,7 @@ For a complete list of available events, you can check it [here](/api/block_mana
 
 
 
-
+<!--
 ## Custom render <Badge text="0.14.55+"/>
 
 If you need to customize the aspect of each block you can pass a `render` callback function in the block definition. Let's see how it works.
@@ -350,6 +350,7 @@ blockManager.add('some-block-id', {
 });
 ```
 <img :src="$withBase('/block-custom-render2.jpg')">
+-->
 
 
 
