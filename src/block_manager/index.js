@@ -48,6 +48,16 @@ import Blocks from './model/Blocks';
 import BlockCategories from './model/Categories';
 import BlocksView from './view/BlocksView';
 
+export const evAll = 'block';
+export const evPfx = `${evAll}:`;
+export const evUpdate = `${evPfx}update`;
+export const evAdd = `${evPfx}add`;
+export const evRemove = `${evPfx}remove`;
+export const evRemoveBefore = `${evRemove}:before`;
+// export const evCustom = `${evPfx}custom`;
+// export const evOpen = `${evPfx}open`;
+// export const evClose = `${evPfx}close`;
+
 export default () => {
   var c = {};
   var blocks, blocksVisible, blocksView;
@@ -56,49 +66,35 @@ export default () => {
   return {
     ...Module,
 
-    /**
-     * Name of the module
-     * @type {String}
-     * @private
-     */
     name: 'BlockManager',
 
-    /**
-     * Initialize module. Automatically called with a new instance of the editor
-     * @param {Object} config Configurations
-     * @return {this}
-     * @private
-     */
-    init(config) {
-      c = config || {};
-      const em = c.em;
-      this.em = em;
+    events: {
+      all: evAll,
+      update: evUpdate,
+      add: evAdd,
+      remove: evRemove,
+      removeBefore: evRemoveBefore
+      // custom: evCustom,
+      // open: evOpen,
+      // close: evClose
+    },
 
-      for (let name in defaults) {
-        if (!(name in c)) {
-          c[name] = defaults[name];
-        }
-      }
+    init(config = {}) {
+      c = { ...defaults, ...config };
+      const { em } = c;
+      this.em = em;
 
       // Global blocks collection
       blocks = new Blocks([]);
       blocksVisible = new Blocks([]);
       categories = new BlockCategories();
+      this.all = blocks;
+      this.__initListen();
 
       // Setup the sync between the global and public collections
-      blocks.listenTo(blocks, 'add', model => {
-        blocksVisible.add(model);
-        em && em.trigger('block:add', model);
-      });
-
-      blocks.listenTo(blocks, 'remove', model => {
-        blocksVisible.remove(model);
-        em && em.trigger('block:remove', model);
-      });
-
-      blocks.listenTo(blocks, 'reset', coll => {
-        blocksVisible.reset(coll.models);
-      });
+      blocks.on('add', model => blocksVisible.add(model));
+      blocks.on('remove', model => blocksVisible.remove(model));
+      blocks.on('reset', coll => blocksVisible.reset(coll.models));
 
       return this;
     },
@@ -178,8 +174,8 @@ export default () => {
     },
 
     /**
-     * Return all blocks
-     * @return {Collection}
+     * Return all blocks.
+     * @return {Collection<[Block]>}
      * @example
      * const blocks = blockManager.getAll();
      * console.log(JSON.stringify(blocks));
@@ -198,16 +194,17 @@ export default () => {
     },
 
     /**
-     * Remove a block by id
-     * @param {string} id Block id
+     * Remove block.
+     * @param {String|[Block]} block Block or block ID
      * @returns {[Block]} Removed block
      * @example
-     * // Id of the block which need to be removed
-     * const id = 'button';
-     * blockManager.remove(id);
+     * const removed = blockManager.remove('BLOCK_ID');
+     * // or by passing the Block
+     * const block = blockManager.get('BLOCK_ID');
+     * blockManager.remove(block);
      */
-    remove(id) {
-      return blocks.remove(id);
+    remove(id, opts) {
+      return this.__remove(id, opts);
     },
 
     /**
@@ -280,12 +277,10 @@ export default () => {
     },
 
     destroy() {
-      blocks.reset();
-      blocks.stopListening();
-      blocksVisible.reset();
-      categories.reset();
+      const colls = [blocks, blocksVisible, categories];
+      colls.map(c => c.stopListening());
+      colls.map(c => c.reset());
       blocksView && blocksView.remove();
-      [blocks, blocksVisible, categories, blocksView].forEach(i => (i = null));
       c = {};
     }
   };
