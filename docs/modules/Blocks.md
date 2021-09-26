@@ -150,7 +150,12 @@ editor.Components.addType('cmp-Y', {
   }
 });
 ```
-Another alternative is to leverage `data-gjs-*` attributes (used by GrapesJS parser) to attach properties to components.
+Another alternative is to leverage `data-gjs-*` attributes to attach properties to components.
+
+::: tip
+You can use most of the available [Component properties](/api/component.html#properties).
+:::
+
 ```js
 // -- [Option 1]: Declare type in HTML strings --
 {
