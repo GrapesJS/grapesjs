@@ -36,12 +36,6 @@
  * * `component:drag:start` - Component drag started. Passed an object, to the callback, containing the `target` (component to drag), `parent` (parent of the component) and `index` (component index in the parent)
  * * `component:drag` - During component drag. Passed the same object as in `component:drag:start` event, but in this case, `parent` and `index` are updated by the current pointer
  * * `component:drag:end` - Component drag ended. Passed the same object as in `component:drag:start` event, but in this case, `parent` and `index` are updated by the final pointer
- * ### Blocks
- * * `block:add` - New block added
- * * `block:remove` - Block removed
- * * `block:drag:start` - Started dragging block, model of the block is passed as an argument
- * * `block:drag` - Dragging block, the block's model and the drag event are passed as arguments
- * * `block:drag:stop` - Dragging of the block is stopped. As agruments for the callback you get, the dropped component model (if dropped successfully) and the model of the block
  * ### Keymaps
  * * `keymap:add` - New keymap added. The new keyamp object is passed as an argument
  * * `keymap:remove` - Keymap removed. The removed keyamp object is passed as an argument
@@ -86,6 +80,8 @@
  * * `abort:{commandName}` - Triggered when the command execution is aborted (`editor.on(`run:preview:before`, opts => opts.abort = 1);`)
  * * `run` - Triggered on run of any command. The id and the result are passed as arguments to the callback
  * * `stop` - Triggered on stop of any command. The id and the result are passed as arguments to the callback
+ * ### Blocks
+ * Check the [Blocks](/api/block_manager.html) module.
  * ### Assets
  * Check the [Assets](/api/assets.html) module.
  * ### Modal

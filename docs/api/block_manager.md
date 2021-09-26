@@ -18,6 +18,16 @@ Once the editor is instantiated you can use its API. Before using these methods 
 const blockManager = editor.BlockManager;
 ```
 
+## Available Events
+
+*   `block:add` - New block added
+*   `block:remove` - Block removed
+*   `block:drag:start` - Started dragging block, model of the block is passed as an argument
+*   `block:drag` - Dragging block, the block's model and the drag event are passed as arguments
+*   `block:drag:stop` - Dragging of the block is stopped. As agruments for the callback you get, the dropped component model (if dropped successfully) and the model of the block
+
+## Methods
+
 *   [add][2]
 *   [get][3]
 *   [getAll][4]

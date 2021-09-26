@@ -8,11 +8,25 @@
  * })
  * ```
  *
- * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+ * Once the editor is instantiated you can use its API and listen to its events. Before using these methods, you should get the module from the instance.
  *
  * ```js
+ * // Listen to events
+ * editor.on('block:add', (block) => { ... });
+ *
+ * // Use the API
  * const blockManager = editor.BlockManager;
+ * blockManager.add(...);
  * ```
+ *
+ * ## Available Events
+ * * `block:add` - Block added. The [Block] is passed as an argument to the callback.
+ * * `block:remove` - Block removed. The [Block] is passed as an argument to the callback.
+ * * `block:drag:start` - Started dragging block, model of the block is passed as an argument
+ * * `block:drag` - Dragging block, the block's model and the drag event are passed as arguments
+ * * `block:drag:stop` - Dragging of the block is stopped. As agruments for the callback you get, the dropped component model (if dropped successfully) and the model of the block
+ *
+ * ## Methods
  * * [add](#add)
  * * [get](#get)
  * * [getAll](#getall)

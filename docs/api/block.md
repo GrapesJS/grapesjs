@@ -9,10 +9,10 @@
 *   `label` **[String][1]** Block label, eg. `My block`
 *   `content` **([String][1] | [Object][2])** The content of the block. Might be an HTML string or a [Component Defintion][3]
 *   `media` **[String][1]?** HTML string for the media/icon of the block, eg. `<svg ...`, `<img ...`, etc.
-*   `category` **[String][1]?** Block category
-*   `activate` **[Boolean][4]?** If true, triggers an the `active` event on dropped component
-*   `select` **[Boolean][4]?** If true, the dropped component will be selected
-*   `resetId` **[Boolean][4]?** If true, all IDs of dropped components and their styles will be changed
+*   `category` **[String][1]?** Block category, eg. `Basic blocks`
+*   `activate` **[Boolean][4]?** If true, triggers the `active` event on the dropped component.
+*   `select` **[Boolean][4]?** If true, the dropped component will be selected.
+*   `resetId` **[Boolean][4]?** If true, all IDs of dropped components and their styles will be changed.
 *   `disable` **[Boolean][4]?** Disable the block from being interacted
 *   `onClick` **[Function][5]?** Custom behavior on click, eg. `(block, editor) => editor.getWrapper().append(block.get('content'))`
 *   `attributes` **[Object][2]?** Block attributes to apply in the view element
