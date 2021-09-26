@@ -225,20 +225,71 @@ Don't put non serializable properties, like functions, in your blocks, keep them
 This will work, but if you try to save and reload a stored project, those will disappear.
 
 ### Avoid styles
-Don't put styles in your blocks, keep them in your components.
+Don't put styles in your blocks, keep them always in your components.
 ```js
 // Your block
 {
   content: [
+    // BAD: You risk to create conflicting styles
     { type: 'my-cmp', styles: '.cmp { color: red }' },
+    { type: 'my-cmp', styles: '.cmp { color: green }' },
+
+    // REALLY BAD: There is no safe way for the editor to know how to connect
+    // your styles and clean them, in case all related components are removed.
     `
     <div class="el">Element</div>
-    <style>.el { color: blue }</style>
+    <div class="el2">Element 2</div>
+    <style>
+      .el { color: blue }
+      .el2 { color: violet }
+    </style>
     `,
   ],
 }
 ```
-If you remove those components from the canvas, the CSS code generator will be able to skip some of those from the output, but
+<!-- Styles imported via component definition, by using the `styles` property, are connected to that specific component type. This allows the editor to remove automatically those styles if all related components are deleted. -->
+
+With the component-oriented approach, you put yourself in a risk of conflicting styles and having a lot of useless redundant styles definitions in your project JSON.
+
+With the HTML string, if you remove all related elements, the editor is not even able to clean those styles from the project JSON, as there is no safe way to connect them.
+
+
+
+
+
+## Programmatic usage
+If you need to manage your blocks programmatically you can use its [APIs][Blocks API].
+
+::: warning
+All Blocks API methods update mainly your Block Manager UI, it has nothing to do with Components already dropped in the canvas.
+:::
+
+Below an example of commonly used methods.
+```js
+// Get the BlockManager module first
+const bm = editor.Blocks; // `Blocks` is an alias of `BlockManager`
+
+// Add a new Block
+const block = bm.add('BLOCK-ID', {
+  // Your block properties...
+  label: 'My block',
+  content: '...',
+});
+
+// Get the Block
+const block2 = bm.get('BLOCK-ID-2');
+
+// Update the Block properties
+block2.set({
+  label: 'Updated block',
+});
+
+// Remove the Block
+const removedBlock = bm.remove('BLOCK-ID-2');
+```
+
+To know more about the available block properties, check the [Block API Reference][Block].
+
 
 
 ## DONT PUT IDS in your content
