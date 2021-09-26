@@ -21,10 +21,6 @@ describe('BlockManager', () => {
       };
 
       obj = editor.Blocks;
-
-      // obj = new BlockManager().init();
-      // obj.postRender();
-      // obj.render();
     });
 
     afterEach(() => {
@@ -73,12 +69,13 @@ describe('BlockManager', () => {
       expect(model).toEqual(model2);
     });
 
-    test.skip('Render blocks', () => {
+    test('Render blocks', () => {
+      obj.postRender();
       obj.render();
       expect(obj.getContainer()).toBeTruthy();
     });
 
-    describe.only('Events', () => {
+    describe('Events', () => {
       test('Add triggers proper events', () => {
         const eventAdd = jest.fn();
         const eventAll = jest.fn();
@@ -94,15 +91,28 @@ describe('BlockManager', () => {
         const eventBfRm = jest.fn();
         const eventRm = jest.fn();
         const eventAll = jest.fn();
+        obj.add(idTest, optsTest);
         editor.on(obj.events.removeBefore, eventBfRm);
         editor.on(obj.events.remove, eventRm);
         editor.on(obj.events.all, eventAll);
-        obj.add(idTest, optsTest);
         const removed = obj.remove(idTest);
         expect(obj.getAll().length).toBe(0);
         expect(eventBfRm).toBeCalledTimes(1);
         expect(eventRm).toBeCalledTimes(1);
         expect(eventRm).toBeCalledWith(removed, expect.anything());
+        expect(eventAll).toBeCalled();
+      });
+
+      test('Update triggers proper events', () => {
+        const eventUp = jest.fn();
+        const eventAll = jest.fn();
+        const added = obj.add(idTest, optsTest);
+        const newProps = { label: 'Heading 2' };
+        editor.on(obj.events.update, eventUp);
+        editor.on(obj.events.all, eventAll);
+        added.set(newProps);
+        expect(eventUp).toBeCalledTimes(1);
+        expect(eventUp).toBeCalledWith(added, newProps, expect.anything());
         expect(eventAll).toBeCalled();
       });
     });
