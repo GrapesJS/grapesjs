@@ -281,7 +281,7 @@ export default () => {
       });
 
       style.top = pos.top + un;
-      style.left = 0 + un;
+      style.left = pos.left + un;
     },
 
     /**
