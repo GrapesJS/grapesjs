@@ -1,23 +1,44 @@
-export default {
-  run(editor, sender) {
-    const bm = editor.BlockManager;
-    const pn = editor.Panels;
+import { createEl } from '../../utils/dom';
 
-    if (!this.blocks) {
-      bm.render();
+export default {
+  open() {
+    const { container, editor, bm } = this;
+
+    if (this.firstRender) {
       const id = 'views-container';
-      const blocks = document.createElement('div');
+      const pn = editor.Panels;
       const panels = pn.getPanel(id) || pn.addPanel({ id });
-      blocks.appendChild(bm.getContainer());
-      panels.set('appendContent', blocks).trigger('change:appendContent');
-      this.blocks = blocks;
+      panels.set('appendContent', container).trigger('change:appendContent');
+      if (!bm.getConfig().custom) container.appendChild(bm.render());
     }
 
-    this.blocks.style.display = 'block';
+    if (container) container.style.display = 'block';
+  },
+
+  close() {
+    const { container } = this;
+    if (container) container.style.display = 'none';
+  },
+
+  run(editor, sender) {
+    const bm = editor.Blocks;
+    this.firstRender = !this.container;
+    this.container = this.container || createEl('div');
+    this.editor = editor;
+    this.bm = bm;
+    const { container } = this;
+    bm.__behaviour({
+      container
+    });
+
+    if (bm.getConfig().custom) {
+      bm.__trgCustom();
+    }
+
+    this.open();
   },
 
   stop() {
-    const blocks = this.blocks;
-    blocks && (blocks.style.display = 'none');
+    this.close();
   }
 };

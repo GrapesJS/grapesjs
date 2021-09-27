@@ -57,9 +57,7 @@ export const evAdd = `${evPfx}add`;
 export const evUpdate = `${evPfx}update`;
 export const evRemove = `${evPfx}remove`;
 export const evRemoveBefore = `${evRemove}:before`;
-// export const evCustom = `${evPfx}custom`;
-// export const evOpen = `${evPfx}open`;
-// export const evClose = `${evPfx}close`;
+export const evCustom = `${evPfx}custom`;
 
 export default () => {
   var c = {};
@@ -84,10 +82,8 @@ export default () => {
       update: evUpdate,
       add: evAdd,
       remove: evRemove,
-      removeBefore: evRemoveBefore
-      // custom: evCustom,
-      // open: evOpen,
-      // close: evClose
+      removeBefore: evRemoveBefore,
+      custom: evCustom
     },
 
     init(config = {}) {
@@ -108,6 +104,30 @@ export default () => {
       blocks.on('reset', coll => blocksVisible.reset(coll.models));
 
       return this;
+    },
+
+    __trgCustom() {
+      this.em.trigger(this.events.custom, this.__customData());
+    },
+
+    __customData() {
+      const bhv = this.__getBehaviour();
+      return {
+        bm: this,
+        blocks: this.getAll().models,
+        container: bhv.container
+      };
+    },
+
+    __behaviour(opts = {}) {
+      return (this._bhv = {
+        ...(this._bhv || {}),
+        ...opts
+      });
+    },
+
+    __getBehaviour() {
+      return this._bhv || {};
     },
 
     /**

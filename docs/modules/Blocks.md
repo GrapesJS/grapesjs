@@ -299,6 +299,36 @@ To know more about the available block properties, check the [Block API Referenc
 
 
 
+## Customization
+The default Block Manager UI is great for simple things, but except the possibility to tweak some CSS style, adding more complex elements requires a replace of the defualt UI.
+
+All you have to do is to indicate the editor your intent to use a custom UI and then subscribe to the `block:custom` event that will give you all the information on any requested change.
+
+```js
+const editor = grapesjs.init({
+    // ...
+    blockManager: {
+      // ...
+      custom: true,
+    },
+});
+
+editor.on('block:custom', props => {
+    // The `props` will contain all the information you need in order to update your UI.
+    // props.open (boolean) - Indicates if the Asset Manager is open
+    // props.assets (Array<Asset>) - Array of all assets
+    // props.types (Array<String>) - Array of asset types requested, eg. ['image'],
+    // props.close (Function) - A callback to close the Asset Manager
+    // props.remove (Function<Asset>) - A callback to remove an asset
+    // props.select (Function<Asset, boolean>) - A callback to select an asset
+    // props.container (HTMLElement) - The element where you should append your UI
+
+    // Here you would put the logic to render/update your UI.
+});
+```
+
+
+
 ## Events
 
 For a complete list of available events, you can check it [here](/api/block_manager.html#available-events).
