@@ -1,4 +1,5 @@
 import { Model } from 'common';
+import { isFunction } from 'underscore';
 
 /**
  * @property {String} label Block label, eg. `My block`
@@ -26,5 +27,46 @@ export default class Block extends Model {
       onClick: null,
       attributes: {}
     };
+  }
+
+  /**
+   * Get block id
+   * @returns {String}
+   */
+  getId() {
+    return this.id;
+  }
+
+  /**
+   * Get block label
+   * @returns {String}
+   */
+  getLabel() {
+    return this.get('label');
+  }
+
+  /**
+   * Get block media
+   * @returns {String}
+   */
+  getMedia() {
+    return this.get('media');
+  }
+
+  /**
+   * Get block content
+   * @returns {Object|String|Array<Object|String>} Component definition | HTML string
+   */
+  getContent() {
+    return this.get('content');
+  }
+
+  /**
+   * Get block category label
+   * @returns {String}
+   */
+  getCategoryLabel() {
+    const ctg = this.get('category');
+    return isFunction(ctg.get) ? ctg.get('label') : ctg.label ? ctg.label : ctg;
   }
 }

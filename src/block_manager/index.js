@@ -153,6 +153,8 @@ export default () => {
         if (!el) return this.__logWarn('"appendTo" element not found');
         el.appendChild(this.render(blocksVisible.models));
       }
+
+      this.__trgCustom();
     },
 
     /**
