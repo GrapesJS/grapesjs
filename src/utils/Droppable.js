@@ -38,6 +38,37 @@ export default class Droppable {
     methods[method](el, 'dragleave', this.handleDragLeave);
   }
 
+  __customTglEff(enable) {
+    const method = enable ? on : off;
+    const doc = this.el.ownerDocument;
+    const frameEl = doc.defaultView.frameElement;
+    this.sortOpts = enable
+      ? {
+          onStart({ sorter }) {
+            on(frameEl, 'pointermove', sorter.onMove);
+          },
+          onEnd({ sorter }) {
+            off(frameEl, 'pointermove', sorter.onMove);
+          },
+          customTarget({ event }) {
+            return doc.elementFromPoint(event.clientX, event.clientY);
+          }
+        }
+      : null;
+    method(frameEl, 'pointerenter', this.handleDragEnter);
+    method(frameEl, 'pointermove', this.handleDragOver);
+    method(document, 'pointerup', this.handleDrop);
+    method(frameEl, 'pointerout', this.handleDragLeave);
+
+    // Test with touche devices (seems like frameEl is not capturing pointer events).
+    // on/off(document, 'pointermove', sorter.onMove); // for the sorter
+    // enable && this.handleDragEnter({}); // no way to use pointerenter/pointerout
+  }
+
+  startCustom() {
+    this.__customTglEff(true);
+  }
+
   endDrop(cancel, ev) {
     const { em, dragStop } = this;
     this.counter = 0;
@@ -104,7 +135,8 @@ export default class Droppable {
         itemSel: '*',
         pfx: 'gjs-',
         onEndMove: model => this.handleDragEnd(model, dt),
-        document: this.el.ownerDocument
+        document: this.el.ownerDocument,
+        ...(this.sortOpts || {})
       });
       sorter.setDropContent(content);
       sorter.startSort();
@@ -152,14 +184,15 @@ export default class Droppable {
     ev.target.style.border = '';
     content && dragContent && dragContent(content);
     this.endDrop(!content, ev);
+    this.__customTglEff(false);
   }
 
-  getContentByData(dataTransfer) {
+  getContentByData(dt) {
     const em = this.em;
-    const types = dataTransfer.types;
-    const files = dataTransfer.files || [];
+    const types = dt && dt.types;
+    const files = (dt && dt.files) || [];
     const dragContent = em.get('dragContent');
-    let content = dataTransfer.getData('text');
+    let content = dt && dt.getData('text');
 
     if (files.length) {
       content = [];
@@ -178,9 +211,7 @@ export default class Droppable {
     } else if (dragContent) {
       content = dragContent;
     } else if (indexOf(types, 'text/html') >= 0) {
-      content = dataTransfer
-        .getData('text/html')
-        .replace(/<\/?meta[^>]*>/g, '');
+      content = dt && dt.getData('text/html').replace(/<\/?meta[^>]*>/g, '');
     } else if (indexOf(types, 'text/uri-list') >= 0) {
       content = {
         type: 'link',
@@ -188,7 +219,7 @@ export default class Droppable {
         content: content
       };
     } else if (indexOf(types, 'text/json') >= 0) {
-      const json = dataTransfer.getData('text/json');
+      const json = dt && dt.getData('text/json');
       json && (content = JSON.parse(json));
     } else if (types.length === 1 && types[0] === 'text/plain') {
       // Avoid dropping non-selectable and non-editable text nodes inside the editor
@@ -196,7 +227,7 @@ export default class Droppable {
     }
 
     const result = { content };
-    em.trigger('canvas:dragdata', dataTransfer, result);
+    em.trigger('canvas:dragdata', dt, result);
 
     return result;
   }

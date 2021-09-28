@@ -48,6 +48,8 @@ export default Backbone.View.extend({
     this.freezeClass = o.freezeClass || this.pfx + 'freezed';
     this.onStart = o.onStart || '';
     this.onEndMove = o.onEndMove || '';
+    this.customTarget = o.customTarget;
+    this.onEnd = o.onEnd;
     this.direction = o.direction || 'v'; // v (vertical), h (horizontal), a (auto)
     this.onMoveClb = o.onMove || '';
     this.relative = o.relative || 0;
@@ -329,6 +331,7 @@ export default Backbone.View.extend({
     on(docs, 'keydown', this.rollback);
     onStart &&
       onStart({
+        sorter: this,
         target: srcModel,
         parent: srcModel && srcModel.parent(),
         index: srcModel && srcModel.index()
@@ -426,7 +429,7 @@ export default Backbone.View.extend({
    * */
   onMove(e) {
     const ev = e;
-    const { em, onMoveClb, plh } = this;
+    const { em, onMoveClb, plh, customTarget } = this;
     this.moved = 1;
 
     // Turn placeholder visibile
@@ -454,7 +457,10 @@ export default Backbone.View.extend({
 
     //var targetNew = this.getTargetFromEl(e.target);
     const sourceModel = this.getSourceModel();
-    const dims = this.dimsFromTarget(e.target, rX, rY);
+    const targetEl = customTarget
+      ? customTarget({ sorter: this, event: e })
+      : e.target;
+    const dims = this.dimsFromTarget(targetEl, rX, rY);
     const target = this.target;
     const targetModel = target && this.getTargetModel(target);
     this.selectTargetModel(targetModel, sourceModel);
@@ -1035,10 +1041,11 @@ export default Backbone.View.extend({
     const docs = this.getDocuments();
     const container = this.getContainerEl();
     const onEndMove = this.onEndMove;
+    const onEnd = this.onEnd;
     const { target, lastPos } = this;
     let srcModel;
-    off(container, 'mousemove dragover', this.onMove);
-    off(docs, 'mouseup dragend touchend', this.endMove);
+    off(container, 'mousemove dragover pointermove', this.onMove);
+    off(docs, 'mouseup dragend touchend pointerup', this.endMove);
     off(docs, 'keydown', this.rollback);
     this.plh.style.display = 'none';
 
@@ -1084,6 +1091,8 @@ export default Backbone.View.extend({
         ? moved.forEach(m => onEndMove(m, this, data))
         : onEndMove(null, this, { ...data, cancelled: 1 });
     }
+
+    isFunction(onEnd) && onEnd({ sorter: this });
   },
 
   /**

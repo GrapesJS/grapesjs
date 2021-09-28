@@ -115,8 +115,22 @@ export default () => {
       return {
         bm: this,
         blocks: this.getAll().models,
-        container: bhv.container
+        container: bhv.container,
+        drag: block => {
+          const cnt = block.getContent ? block.getContent() : block;
+          this.em.set('dragContent', cnt);
+          this.__startSorter(block);
+        }
       };
+    },
+
+    __startSorter(block) {
+      // block:drag
+      const frameViews = this.em
+        .get('Canvas')
+        .getFrames()
+        .map(frame => frame.view);
+      frameViews.forEach(fv => fv.droppable.startCustom());
     },
 
     __behaviour(opts = {}) {
