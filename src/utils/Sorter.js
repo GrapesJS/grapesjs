@@ -1044,8 +1044,8 @@ export default Backbone.View.extend({
     const onEnd = this.onEnd;
     const { target, lastPos } = this;
     let srcModel;
-    off(container, 'mousemove dragover pointermove', this.onMove);
-    off(docs, 'mouseup dragend touchend pointerup', this.endMove);
+    off(container, 'mousemove dragover', this.onMove);
+    off(docs, 'mouseup dragend touchend', this.endMove);
     off(docs, 'keydown', this.rollback);
     this.plh.style.display = 'none';
 
