@@ -466,7 +466,6 @@ export default Backbone.View.extend({
     this.selectTargetModel(targetModel, sourceModel);
     if (!targetModel) plh.style.display = 'none';
     if (!target) return;
-
     this.lastDims = dims;
     const pos = this.findPosition(dims, rX, rY);
 
@@ -827,16 +826,16 @@ export default Backbone.View.extend({
    */
   getDim(el) {
     const { em, canvasRelative } = this;
-    var top, left, height, width;
+    const canvas = em && em.get('Canvas');
+    const offsets = canvas ? canvas.getElementOffsets(el) : {};
+    let top, left, height, width;
 
     if (canvasRelative && em) {
-      const canvas = em.get('Canvas');
       const pos = canvas.getElementPos(el, { noScroll: 1 });
-      const elOffsets = canvas.getElementOffsets(el);
-      top = pos.top - elOffsets.marginTop;
-      left = pos.left - elOffsets.marginLeft;
-      height = pos.height + elOffsets.marginTop + elOffsets.marginBottom;
-      width = pos.width + elOffsets.marginLeft + elOffsets.marginRight;
+      top = pos.top; // - offsets.marginTop;
+      left = pos.left; // - offsets.marginLeft;
+      height = pos.height; // + offsets.marginTop + offsets.marginBottom;
+      width = pos.width; // + offsets.marginLeft + offsets.marginRight;
     } else {
       var o = this.offset(el);
       top = this.relative
@@ -849,7 +848,7 @@ export default Backbone.View.extend({
       width = el.offsetWidth;
     }
 
-    return [top, left, height, width];
+    return { top, left, height, width, offsets };
   },
 
   /**
@@ -885,7 +884,9 @@ export default Backbone.View.extend({
       else if (dir == 'h') dir = false;
       else dir = this.isInFlow(el, trg);
 
-      dim.push(dir, el, elIndex);
+      dim.dir = dir;
+      dim.el = el;
+      dim.indexEl = elIndex;
       dims.push(dim);
     });
 
@@ -904,10 +905,10 @@ export default Backbone.View.extend({
     var off = this.borderOffset;
     var x = rX || 0;
     var y = rY || 0;
-    var t = dim[0];
-    var l = dim[1];
-    var h = dim[2];
-    var w = dim[3];
+    var t = dim.top;
+    var l = dim.left;
+    var h = dim.height;
+    var w = dim.width;
     if (t + off > y || y > t + h - off || l + off > x || x > l + w - off)
       result = 1;
 
@@ -934,25 +935,26 @@ export default Backbone.View.extend({
     // Each dim is: Top, Left, Height, Width
     for (var i = 0, len = dims.length; i < len; i++) {
       dim = dims[i];
+      const { top, left, height, width } = dim;
       // Right position of the element. Left + Width
-      dimRight = dim[1] + dim[3];
+      dimRight = left + width;
       // Bottom position of the element. Top + Height
-      dimDown = dim[0] + dim[2];
+      dimDown = top + height;
       // X center position of the element. Left + (Width / 2)
-      xCenter = dim[1] + dim[3] / 2;
+      xCenter = left + width / 2;
       // Y center position of the element. Top + (Height / 2)
-      yCenter = dim[0] + dim[2] / 2;
+      yCenter = top + height / 2;
       // Skip if over the limits
       if (
-        (xLimit && dim[1] > xLimit) ||
+        (xLimit && left > xLimit) ||
         (yLimit && yCenter >= yLimit) || // >= avoid issue with clearfixes
         (leftLimit && dimRight < leftLimit)
       )
         continue;
       result.index = i;
-      result.indexEl = dim[6];
+      result.indexEl = dim.indexEl;
       // If it's not in flow (like 'float' element)
-      if (!dim[4]) {
+      if (!dim.dir) {
         if (posY < dimDown) yLimit = dimDown;
         //If x lefter than center
         if (posX < xCenter) {
@@ -978,7 +980,7 @@ export default Backbone.View.extend({
    * @param {HTMLElement} phl
    * @param {Array<Array>} dims
    * @param {Object} pos Position object
-   * @param {Array<number>} trgDim target dimensions
+   * @param {Array<number>} trgDim target dimensions ([top, left, height, width])
    * */
   movePlaceholder(plh, dims, pos, trgDim) {
     var marg = 0,
@@ -989,7 +991,7 @@ export default Backbone.View.extend({
       un = 'px',
       margI = 5,
       method = pos.method;
-    var elDim = dims[pos.index];
+    const elDim = dims[pos.index];
 
     // Placeholder orientation
     plh.classList.remove('vertical');
@@ -997,29 +999,34 @@ export default Backbone.View.extend({
 
     if (elDim) {
       // If it's not in flow (like 'float' element)
-      if (!elDim[4]) {
+      const { top, left, height, width } = elDim;
+      if (!elDim.dir) {
         w = 'auto';
-        h = elDim[2] - marg * 2 + un;
-        t = elDim[0] + marg;
-        l = method == 'before' ? elDim[1] - marg : elDim[1] + elDim[3] - marg;
+        h = height - marg * 2 + un;
+        t = top + marg;
+        l = method == 'before' ? left - marg : left + width - marg;
 
         plh.classList.remove('horizontal');
         plh.classList.add('vertical');
       } else {
-        w = elDim[3] + un;
+        w = width + un;
         h = 'auto';
-        t = method == 'before' ? elDim[0] - marg : elDim[0] + elDim[2] - marg;
-        l = elDim[1];
+        t = method == 'before' ? top - marg : top + height - marg;
+        l = left;
       }
     } else {
+      // Placeholder inside the component
       if (!this.nested) {
         plh.style.display = 'none';
         return;
       }
       if (trgDim) {
-        t = trgDim[0] + margI;
-        l = trgDim[1] + margI;
-        w = parseInt(trgDim[3]) - margI * 2 + un;
+        const offset = trgDim.offsets || {};
+        const pT = offset.paddingTop || margI;
+        const pL = offset.paddingLeft || margI;
+        t = trgDim.top + pT;
+        l = trgDim.left + pL;
+        w = parseInt(trgDim.width) - pL * 2 + un;
         h = 'auto';
       }
     }
