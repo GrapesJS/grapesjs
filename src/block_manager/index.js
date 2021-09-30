@@ -44,7 +44,7 @@
  *
  * @module BlockManager
  */
-import { isElement } from 'underscore';
+import { isElement, isArray } from 'underscore';
 import Module from 'common/module';
 import defaults from './config/config';
 import Block from './model/Block';
@@ -59,6 +59,9 @@ export const evAdd = `${evPfx}add`;
 export const evUpdate = `${evPfx}update`;
 export const evRemove = `${evPfx}remove`;
 export const evRemoveBefore = `${evRemove}:before`;
+export const evDrag = `${evPfx}drag`;
+export const evDragStart = `${evDrag}:start`;
+export const evDragStop = `${evDrag}:stop`;
 export const evCustom = `${evPfx}custom`;
 
 export default () => {
@@ -85,6 +88,9 @@ export default () => {
       add: evAdd,
       remove: evRemove,
       removeBefore: evRemoveBefore,
+      drag: evDrag,
+      dragStart: evDragStart,
+      dragEnd: evDragStop,
       custom: evCustom
     },
 
@@ -118,22 +124,55 @@ export default () => {
         bm: this,
         blocks: this.getAll().models,
         container: bhv.container,
-        drag: block => {
-          const cnt = block.getContent ? block.getContent() : block;
-          this.__sorterStart(cnt);
-        },
-        dragStop: cancel => this.__sorterEnd(cancel)
+        dragStart: (block, ev) => this.startDrag(block, ev),
+        drag: ev => this.__drag(ev),
+        dragStop: cancel => this.endDrag(cancel)
       };
     },
 
-    __sorterStart(content) {
-      // block:drag
-      this.em.set('dragContent', content);
-      this.__getFrameViews().forEach(fv => fv.droppable.startCustom());
+    __startDrag(block, ev) {
+      const { em, events } = this;
+      const content = block.getContent ? block.getContent() : block;
+      this._dragBlock = block;
+      em.set({ dragResult: null, dragContent: content });
+      [em, blocks].map(i => i.trigger(events.dragStart, block, ev));
     },
 
-    __sorterEnd(cancel) {
-      this.__getFrameViews().forEach(fv => fv.droppable.endCustom(cancel));
+    __drag(ev) {
+      const { em, events } = this;
+      const block = this._dragBlock;
+      [em, blocks].map(i => i.trigger(events.drag, block, ev));
+    },
+
+    __endDrag() {
+      const { em, events } = this;
+      const block = this._dragBlock;
+      const cmp = em.get('dragResult');
+      this._dragBlock = null;
+
+      if (cmp) {
+        const oldKey = 'activeOnRender';
+        const oldActive = cmp.get && cmp.get(oldKey);
+        const toActive = block.get('activate') || oldActive;
+        const toSelect = block.get('select');
+        const first = isArray(cmp) ? cmp[0] : cmp;
+
+        if (toSelect || (toActive && toSelect !== false)) {
+          em.setSelected(first);
+        }
+
+        if (toActive) {
+          first.trigger('active');
+          oldActive && first.unset(oldKey);
+        }
+
+        if (block.get('resetId')) {
+          first.onAll(block => block.resetId());
+        }
+      }
+
+      em.set({ dragResult: null, dragContent: null });
+      [em, blocks].map(i => i.trigger(events.dragEnd, cmp, block));
     },
 
     __getFrameViews() {
@@ -152,6 +191,16 @@ export default () => {
 
     __getBehaviour() {
       return this._bhv || {};
+    },
+
+    startDrag(block, ev) {
+      this.__startDrag(block, ev);
+      this.__getFrameViews().forEach(fv => fv.droppable.startCustom());
+    },
+
+    endDrag(cancel) {
+      this.__getFrameViews().forEach(fv => fv.droppable.endCustom(cancel));
+      this.__endDrag();
     },
 
     /**
