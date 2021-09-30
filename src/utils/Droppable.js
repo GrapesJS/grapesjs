@@ -69,10 +69,15 @@ export default class Droppable {
     this.__customTglEff(true);
   }
 
+  endCustom(cancel) {
+    this.endDrop(cancel);
+  }
+
   endDrop(cancel, ev) {
     const { em, dragStop } = this;
     this.counter = 0;
     dragStop && dragStop(cancel);
+    this.__customTglEff(false);
     em.trigger('canvas:dragend', ev);
   }
 
@@ -184,7 +189,6 @@ export default class Droppable {
     ev.target.style.border = '';
     content && dragContent && dragContent(content);
     this.endDrop(!content, ev);
-    this.__customTglEff(false);
   }
 
   getContentByData(dt) {
