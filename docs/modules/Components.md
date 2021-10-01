@@ -747,6 +747,45 @@ editor.on(`component:remove`, model => console.log('Global hook: component:remov
 
 
 
+## Components & CSS
+
+::: warning
+This section is referring to GrapesJS v0.17.27 or higher
+:::
+
+If you need to add component-related styles, you can do it via `styles` property.
+
+```js
+domc.addType('component-css', {
+  model: {
+    defaults: {
+      attributes: { class: 'cmp-css' },
+      components: `
+        <span>Component with styles<span>
+        <div class="cmp-css-a">Component A</div>
+        <div class="cmp-css-b">Component B</div>
+      `,
+      styles: `
+        .cmp-css { color: red }
+        .cmp-css-a { color: green }
+        .cmp-css-b { color: blue }
+
+        @media (max-width: 992px) {
+          .cmp-css{ color: darkred; }
+          .cmp-css-a { color: darkgreen }
+          .cmp-css-b { color: darkblue }
+        }
+      `,
+    },
+  },
+});
+```
+This approach allows the editor to group these styles (CSSRule instances) and remove them accordingly in case all references of the same component are removed.
+
+
+
+
+
 ## Components & JS
 
 If you want to know how to create Components with javascript attached (eg. counters, galleries, slideshows, etc.) check the dedicated page

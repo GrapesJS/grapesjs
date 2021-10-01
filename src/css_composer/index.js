@@ -190,6 +190,7 @@ export default () => {
         opt.state = s;
         opt.mediaText = w;
         opt.selectors = [];
+        w && (opt.atRuleType = 'media');
         rule = new CssRule(opt, c);
         rule.get('selectors').add(selectors, addOpts);
         rules.add(rule, addOpts);
@@ -199,16 +200,16 @@ export default () => {
 
     /**
      * Get the rule
-     * @param {Array<Selector>} selectors Array of selectors
-     * @param {String} state Css rule state
-     * @param {String} width For which device this style is oriented
+     * @param {String|Array<Selector>} selectors Array of selectors or selector string, eg `.myClass1.myClass2`
+     * @param {String} state Css rule state, eg. 'hover'
+     * @param {String} width Media rule value, eg. '(max-width: 992px)'
      * @param {Object} ruleProps Other rule props
      * @return  {Model|null}
      * @example
-     * var sm = editor.SelectorManager;
-     * var sel1 = sm.add('myClass1');
-     * var sel2 = sm.add('myClass2');
-     * var rule = cssComposer.get([sel1, sel2], 'hover');
+     * const sm = editor.SelectorManager;
+     * const sel1 = sm.add('myClass1');
+     * const sel2 = sm.add('myClass2');
+     * const rule = cssComposer.get([sel1, sel2], 'hover', '(max-width: 992px)');
      * // Update the style
      * rule.set('style', {
      *   width: '300px',
@@ -216,12 +217,18 @@ export default () => {
      * });
      * */
     get(selectors, state, width, ruleProps) {
-      var rule = null;
-      rules.each(m => {
-        if (rule) return;
-        if (m.compare(selectors, state, width, ruleProps)) rule = m;
-      });
-      return rule;
+      let slc = selectors;
+      if (isString(selectors)) {
+        const sm = em.get('SelectorManager');
+        const singleSel = selectors.split(',')[0].trim();
+        const node = em
+          .get('Parser')
+          .parserCss.checkNode({ selectors: singleSel })[0];
+        slc = sm.get(node.selectors);
+      }
+      return (
+        rules.find(rule => rule.compare(slc, state, width, ruleProps)) || null
+      );
     },
 
     /**

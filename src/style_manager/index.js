@@ -287,7 +287,13 @@ export default () => {
         if (hasClasses && useClasses) {
           const deviceW = em.getCurrentMedia();
           rule = cssC.get(valid, state, deviceW);
-
+          console.log('SM', {
+            valid,
+            state,
+            deviceW,
+            rule,
+            validNames: valid.map(v => v.getFullName())
+          });
           if (!rule && !skipAdd) {
             rule = cssC.add(valid, state, deviceW, {}, addOpts);
           }
