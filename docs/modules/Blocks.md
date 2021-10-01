@@ -315,17 +315,19 @@ const editor = grapesjs.init({
 
 editor.on('block:custom', props => {
     // The `props` will contain all the information you need in order to update your UI.
-    // props.open (boolean) - Indicates if the Asset Manager is open
-    // props.assets (Array<Asset>) - Array of all assets
-    // props.types (Array<String>) - Array of asset types requested, eg. ['image'],
-    // props.close (Function) - A callback to close the Asset Manager
-    // props.remove (Function<Asset>) - A callback to remove an asset
-    // props.select (Function<Asset, boolean>) - A callback to select an asset
-    // props.container (HTMLElement) - The element where you should append your UI
+    // props.blocks (Array<Block>) - Array of all blocks
+    // props.dragStart (Function<Block>) - A callback to trigger the start of block dragging.
+    // props.dragStop (Function<Block>) - A callback to trigger the stop of block dragging.
+    // props.container (HTMLElement) - The default element where you can append your UI
 
     // Here you would put the logic to render/update your UI.
 });
 ```
+
+Here an example of using custom Block Manager with a Vue component.
+
+<demo-viewer value="wbj4tmqk" height="500" darkcode/>
+
 
 
 

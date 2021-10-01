@@ -70,7 +70,7 @@ export default class Droppable {
   }
 
   endCustom(cancel) {
-    this.endDrop(cancel);
+    this.over ? this.endDrop(cancel) : this.__customTglEff(false);
   }
 
   endDrop(cancel, ev) {
