@@ -239,16 +239,15 @@ Don't put styles in your blocks, keep them always in your components.
     { type: 'my-cmp', styles: '.cmp { color: red }' },
     { type: 'my-cmp', styles: '.cmp { color: green }' },
 
-    // REALLY BAD: There is no safe way for the editor to know how to connect
-    // your styles and clean them, in case all related components are removed.
-    `
-    <div class="el">Element</div>
+    // REALLY BAD: In case all related components are removed,
+    // there is no safe way for the editor to know how to connect
+    // and clean your styles.
+    `<div class="el">Element</div>
     <div class="el2">Element 2</div>
     <style>
       .el { color: blue }
       .el2 { color: violet }
-    </style>
-    `,
+    </style>`,
   ],
 }
 ```
@@ -256,7 +255,7 @@ Don't put styles in your blocks, keep them always in your components.
 
 With the component-oriented approach, you put yourself in a risk of conflicting styles and having a lot of useless redundant styles definitions in your project JSON.
 
-With the HTML string, if you remove all related elements, the editor is not even able to clean those styles from the project JSON, as there is no safe way to connect them.
+With the HTML string, if you remove all related elements, the editor is not able to clean those styles from the project JSON, as there is no safe way to connect them.
 
 
 
