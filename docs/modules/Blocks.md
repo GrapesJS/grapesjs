@@ -326,9 +326,9 @@ editor.on('block:custom', props => {
 
 Here an example of using custom Block Manager with a Vue component.
 
-<demo-viewer value="wbj4tmqk" height="500" darkcode/>
+<demo-viewer value="xyofm1qr" height="500" darkcode/>
 
-
+From the demo above you can also see how we decided to hide our custom Block Manager and append it to the default container, but that is up to your preferences.
 
 
 ## Events
