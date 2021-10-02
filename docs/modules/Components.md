@@ -780,8 +780,64 @@ domc.addType('component-css', {
   },
 });
 ```
-This approach allows the editor to group these styles (CSSRule instances) and remove them accordingly in case all references of the same component are removed.
+This approach allows the editor to group these styles ([CssRule] instances) and remove them accordingly in case all references of the same component are removed.
 
+::: danger Important caveat
+&nbsp;
+:::
+
+In the example above we used one custom component and default sub-components. Styles are declared on our custom component only, that means if you remove all `.cmp-css-a` and `.cmp-css-b` instances from the canvas, their CssRules will still be stored in the project (**here we're not talking about the CSS export, which is able to skip not used rules, but instances stored in your project JSON**).
+
+The cleanest approach would be to follow component-oriented styling, where you declare styles only in the scope of the component itself. This is how it would look like with the example above.
+
+```js
+domc.addType('cmp-a', {
+  model: {
+    defaults: {
+      attributes: { class: 'cmp-css-a' },
+      components: 'Component A',
+      styles: `
+        .cmp-css-a { color: green }
+        @media (max-width: 992px) {
+          .cmp-css-a { color: darkgreen }
+        }
+      `,
+    }
+  },
+});
+domc.addType('cmp-b', {
+  model: {
+    defaults: {
+      attributes: { class: 'cmp-css-b' },
+      components: 'Component B',
+      styles: `
+        .cmp-css-b { color: blue }
+        @media (max-width: 992px) {
+          .cmp-css-b { color: darkblue }
+        }
+      `,
+    }
+  },
+});
+domc.addType('component-css', {
+  model: {
+    defaults: {
+      attributes: { class: 'cmp-css' },
+      components: [
+        '<span>Component with styles<span>',
+        { type: 'cmp-a' },
+        { type: 'cmp-b' },
+      ],
+      styles: `
+        .cmp-css { color: red }
+        @media (max-width: 992px) {
+          .cmp-css{ color: darkred; }
+        }
+      `,
+    },
+  },
+});
+```
 
 
 
@@ -878,4 +934,5 @@ For Babel users, it's just a matter of adding few plugins: `@babel/plugin-syntax
 
   [Component Definition]: <#component-definition>
   [Component]: </api/component.html>
+  [CssRule]: </api/css_rule.html>
   [Component API]: </api/component.html>
