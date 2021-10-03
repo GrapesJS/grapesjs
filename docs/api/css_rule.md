@@ -18,7 +18,7 @@
 
 ### getAtRule
 
-Return the at-rule statement when exists, eg. `@media (...)`, `@keyframes`
+Returns the at-rule statement when exists, eg. `@media (...)`, `@keyframes`
 
 #### Examples
 

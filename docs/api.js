@@ -32,6 +32,7 @@ async function generateDocs () {
     ['keymaps/index.js', 'keymaps.md'],
     ['undo_manager/index.js', 'undo_manager.md'],
     ['canvas/index.js', 'canvas.md'],
+    ['canvas/model/Frame.js', 'frame.md'],
     ['i18n/index.js', 'i18n.md'],
     ['pages/index.js', 'pages.md'],
     ['pages/model/Page.js', 'page.md'],

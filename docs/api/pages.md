@@ -87,7 +87,7 @@ const somePage = pageManager.get('page-id');
 pageManager.remove(somePage);
 ```
 
-Returns **[Page]** 
+Returns **[Page]** Removed Page
 
 ## get
 
@@ -136,8 +136,8 @@ Get wrapper components (aka body) from all pages and frames.
 ### Examples
 
 ```javascript
-// Get all the `image` components from the project
 const wrappers = pageManager.getAllWrappers();
+// Get all `image` components from the project
 const allImages = wrappers.map(wrp => wrp.findType('image')).flat();
 ```
 

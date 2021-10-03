@@ -1,5 +1,5 @@
 import { bindAll } from 'underscore';
-import { Collection } from 'backbone';
+import { Collection } from 'common';
 import model from './Frame';
 
 export default class Frames extends Collection {

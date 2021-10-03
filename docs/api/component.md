@@ -46,6 +46,7 @@ component.get('tagName');
 *   `selectable` **[Boolean][3]?** Allow component to be selected when clicked. Default: `true`
 *   `hoverable` **[Boolean][3]?** Shows a highlight outline when hovering on the element if `true`. Default: `true`
 *   `void` **[Boolean][3]?** This property is used by the HTML exporter as void elements don't have closing tags, eg. `<br/>`, `<hr/>`, etc. Default: `false`
+*   `styles` **[String][1]?** Component related styles, eg. `.my-component-class { color: red }`
 *   `content` **[String][1]?** Content of the component (not escaped) which will be appended before children rendering. Default: `''`
 *   `icon` **[String][1]?** Component's icon, this string will be inserted before the name (in Layers and badge), eg. it can be an HTML string '<i class="fa fa-square-o"></i>'. Default: `''`
 *   `script` **([String][1] | [Function][4])?** Component's javascript. More about it [here][7]. Default: `''`
