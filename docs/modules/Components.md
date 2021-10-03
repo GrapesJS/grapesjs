@@ -850,6 +850,10 @@ grapesjs.init({
 ```
 :::
 
+### External CSS
+
+If you need to load external component-specific CSS, you have to rely on the `script` property. For more details please refer to [Components & JS](Components-js.html).
+
 
 
 ## Components & JS
