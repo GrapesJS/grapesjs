@@ -29,6 +29,7 @@
  * * [setCoords](#setcoords)
  *
  * [Component]: component.html
+ * [Frame]: frame.html
  *
  * @module Canvas
  */
@@ -642,7 +643,7 @@ export default () => {
     /**
      * Add new frame to the canvas
      * @param {Object} props Frame properties
-     * @returns {Frame}
+     * @returns {[Frame]}
      * @example
      * canvas.addFrame({
      *   name: 'Mobile home page',
