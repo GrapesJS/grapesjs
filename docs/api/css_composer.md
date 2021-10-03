@@ -2,7 +2,7 @@
 
 ## CssComposer
 
-This module contains and manage CSS rules for the template inside the canvas.
+This module manages CSS rules in the canvas.
 You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object][1]
 
 ```js
@@ -19,13 +19,32 @@ Once the editor is instantiated you can use its API. Before using these methods 
 const css = editor.Css;
 ```
 
-*   [setRule][2]
-*   [getRule][3]
-*   [getRules][4]
-*   [remove][5]
-*   [clear][6]
+*   [addRules][2]
+*   [setRule][3]
+*   [getRule][4]
+*   [getRules][5]
+*   [remove][6]
+*   [clear][7]
 
 [CssRule]: css_rule.html
+
+## addRules
+
+Add CssRules via CSS string.
+
+### Parameters
+
+*   `css` **[String][8]** CSS string of rules to add.
+
+### Examples
+
+```javascript
+const addedRules = css.addRules('.my-cls{ color: red } @media (max-width: 992px) { .my-cls{ color: darkred } }');
+// Check rules
+console.log(addedRules.map(rule => rule.toCSS()));
+```
+
+Returns **[Array][9]<[CssRule]>** Array of rules
 
 ## setRule
 
@@ -33,12 +52,12 @@ Add/update the CssRule.
 
 ### Parameters
 
-*   `selectors` **[string][7]** Selector, eg. `.myclass`
-*   `style` **[Object][8]** Style properties and values
-*   `opts` **[Object][8]** Additional properties (optional, default `{}`)
+*   `selectors` **[String][8]** Selector string, eg. `.myclass`
+*   `style` **[Object][10]** Style properties and values
+*   `opts` **[Object][10]** Additional properties (optional, default `{}`)
 
-    *   `opts.atRuleType` **[String][7]** At-rule type, eg. 'media' (optional, default `''`)
-    *   `opts.atRuleParams` **[String][7]** At-rule parameters, eg. `(min-width: 500px)` (optional, default `''`)
+    *   `opts.atRuleType` **[String][8]** At-rule type, eg. `media` (optional, default `''`)
+    *   `opts.atRuleParams` **[String][8]** At-rule parameters, eg. `(min-width: 500px)` (optional, default `''`)
 
 ### Examples
 
@@ -65,11 +84,11 @@ Get the CssRule.
 
 ### Parameters
 
-*   `selectors` **[String][7]** Selector string, eg. `.myclass:hover`
-*   `opts` **[Object][8]** Additional properties (optional, default `{}`)
+*   `selectors` **[String][8]** Selector string, eg. `.myclass:hover`
+*   `opts` **[Object][10]** Additional properties (optional, default `{}`)
 
-    *   `opts.atRuleType` **[String][7]** At-rule type, eg. 'media' (optional, default `''`)
-    *   `opts.atRuleParams` **[String][7]** At-rule parameters, eg. '(min-width: 500px)' (optional, default `''`)
+    *   `opts.atRuleType` **[String][8]** At-rule type, eg. `media` (optional, default `''`)
+    *   `opts.atRuleParams` **[String][8]** At-rule parameters, eg. '(min-width: 500px)' (optional, default `''`)
 
 ### Examples
 
@@ -90,15 +109,17 @@ Get all rules or filtered by a matching selector.
 
 ### Parameters
 
-*   `selector` **[String][7]** Selector, eg. '.myclass' (optional, default `''`)
+*   `selector` **[String][8]** Selector, eg. `.myclass` (optional, default `''`)
 
 ### Examples
 
 ```javascript
-// Common scenario, take all the component specific rules
+// Take all the component specific rules
 const id = someComponent.getId();
 const rules = css.getRules(`#${id}`);
 console.log(rules.map(rule => rule.toCSS()))
+// All rules in the project
+console.log(css.getRules())
 ```
 
 Returns **[Array][9]<[CssRule]>** 
@@ -109,7 +130,7 @@ Remove rule, by CssRule or matching selector (eg. the selector will match also a
 
 ### Parameters
 
-*   `rule` **([String][7] | [CssRule] | [Array][9]<[CssRule]>)** CssRule or matching selector.
+*   `rule` **([String][8] | [CssRule] | [Array][9]<[CssRule]>)** CssRule or matching selector.
 
 ### Examples
 
@@ -135,18 +156,20 @@ Returns **this**
 
 [1]: https://github.com/artf/grapesjs/blob/master/src/css_composer/config/config.js
 
-[2]: #setrule
+[2]: #addrules
 
-[3]: #getrule
+[3]: #setrule
 
-[4]: #getrules
+[4]: #getrule
 
-[5]: #remove
+[5]: #getrules
 
-[6]: #clear
+[6]: #remove
 
-[7]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[7]: #clear
 
-[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
 [9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+
+[10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object

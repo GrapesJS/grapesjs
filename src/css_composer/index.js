@@ -1,5 +1,5 @@
 /**
- * This module contains and manage CSS rules for the template inside the canvas.
+ * This module manages CSS rules in the canvas.
  * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/css_composer/config/config.js)
  * ```js
  * const editor = grapesjs.init({
@@ -15,6 +15,7 @@
  * const css = editor.Css;
  * ```
  *
+ * * [addRules](#addrules)
  * * [setRule](#setrule)
  * * [getRule](#getrule)
  * * [getRules](#getrules)
@@ -288,6 +289,19 @@ export default () => {
       }
 
       return result;
+    },
+
+    /**
+     * Add CssRules via CSS string.
+     * @param {String} css CSS string of rules to add.
+     * @returns {Array<[CssRule]>} Array of rules
+     * @example
+     * const addedRules = css.addRules('.my-cls{ color: red } @media (max-width: 992px) { .my-cls{ color: darkred } }');
+     * // Check rules
+     * console.log(addedRules.map(rule => rule.toCSS()));
+     */
+    addRules(css) {
+      return this.addCollection(css);
     },
 
     /**
