@@ -168,7 +168,7 @@ export default () => {
     /**
      * Remove page
      * @param {String|[Page]} page Page or page id
-     * @returns {[Page]}
+     * @returns {[Page]} Removed Page
      * @example
      * const removedPage = pageManager.remove('page-id');
      * // or by passing the page
@@ -222,8 +222,8 @@ export default () => {
      * Get wrapper components (aka body) from all pages and frames.
      * @returns {Array<[Component]>}
      * @example
-     * // Get all the `image` components from the project
      * const wrappers = pageManager.getAllWrappers();
+     * // Get all `image` components from the project
      * const allImages = wrappers.map(wrp => wrp.findType('image')).flat();
      */
     getAllWrappers() {
