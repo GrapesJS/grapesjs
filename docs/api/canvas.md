@@ -34,6 +34,8 @@ const canvas = editor.Canvas;
 
 [Component]: component.html
 
+[Frame]: frame.html
+
 ## getConfig
 
 Get the configuration object
@@ -218,7 +220,7 @@ canvas.addFrame({
 });
 ```
 
-Returns **Frame** 
+Returns **[Frame]** 
 
 [1]: https://github.com/artf/grapesjs/blob/master/src/canvas/config/config.js
 
