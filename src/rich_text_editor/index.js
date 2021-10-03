@@ -277,7 +277,8 @@ export default () => {
       const canvas = config.em.get('Canvas');
       const { style } = toolbar;
       const pos = canvas.getTargetToElementFixed(lastEl, toolbar, {
-        event: 'rteToolbarPosUpdate'
+        event: 'rteToolbarPosUpdate',
+        left: 0
       });
 
       style.top = pos.top + un;

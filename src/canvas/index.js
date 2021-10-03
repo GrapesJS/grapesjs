@@ -34,6 +34,7 @@
  * @module Canvas
  */
 
+import { isUndefined } from 'underscore';
 import { getElement, getViewEl } from 'utils/mixins';
 import defaults from './config/config';
 import Canvas from './model/Canvas';
@@ -431,7 +432,7 @@ export default () => {
       const { event } = opts;
 
       let top = -toolbarH;
-      let left = pos.width - toolbarW;
+      let left = !isUndefined(opts.left) ? opts.left : pos.width - toolbarW;
       left = pos.left < -left ? -pos.left : left;
       left = elRight > frCvOff.width ? left - (elRight - frCvOff.width) : left;
 
