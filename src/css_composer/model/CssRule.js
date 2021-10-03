@@ -79,7 +79,7 @@ export default class CssRule extends Model.extend(Styleable) {
   }
 
   /**
-   * Return the at-rule statement when exists, eg. `@media (...)`, `@keyframes`
+   * Returns the at-rule statement when exists, eg. `@media (...)`, `@keyframes`
    * @returns {String}
    * @example
    * const cssRule = editor.Css.setRule('.class1', { color: 'red' }, {

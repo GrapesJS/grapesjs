@@ -838,7 +838,17 @@ domc.addType('component-css', {
   },
 });
 ```
-
+::: tip Component-first styling
+By default, when you select a component in the canvas and apply styles on it, changes will be applied on its existent classes. This will result on changing of all the components with those applied classes. If you need the style to be applied only on the specific selected component you have to select componentFirst strategy in this way.
+```js
+grapesjs.init({
+  ...
+  selectorManager: {
+    componentFirst: true,
+  },
+})
+```
+:::
 
 
 
