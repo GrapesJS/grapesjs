@@ -42,7 +42,7 @@ editor.getWrapper().append(`<div>...`);
 ```
 
 ::: tip
-If you need to append a component in at a specific position, you can use `at` option. So, to add a component on top of all others (in the same collection) you would use
+If you need to append a component at a specific position, you can use `at` option. So, to add a component on top of all others (in the same collection) you would use
 ```js
 component.append('<div>...', { at: 0 })
 ```

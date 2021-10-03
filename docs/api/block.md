@@ -17,6 +17,36 @@
 *   `onClick` **[Function][5]?** Custom behavior on click, eg. `(block, editor) => editor.getWrapper().append(block.get('content'))`
 *   `attributes` **[Object][2]?** Block attributes to apply in the view element
 
+### getId
+
+Get block id
+
+Returns **[String][1]** 
+
+### getLabel
+
+Get block label
+
+Returns **[String][1]** 
+
+### getMedia
+
+Get block media
+
+Returns **[String][1]** 
+
+### getContent
+
+Get block content
+
+Returns **([Object][2] | [String][1] | [Array][6]<([Object][2] | [String][1])>)** Component definition | HTML string
+
+### getCategoryLabel
+
+Get block category label
+
+Returns **[String][1]** 
+
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
 [2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
@@ -26,3 +56,5 @@
 [4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
 
 [5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+
+[6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array

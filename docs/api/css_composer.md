@@ -84,18 +84,18 @@ Get the rule
 
 ### Parameters
 
-*   `selectors` **[Array][12]\<Selector>** Array of selectors
-*   `state` **[String][13]** Css rule state
-*   `width` **[String][13]** For which device this style is oriented
+*   `selectors` **([String][13] | [Array][12]\<Selector>)** Array of selectors or selector string, eg `.myClass1.myClass2`
+*   `state` **[String][13]** Css rule state, eg. 'hover'
+*   `width` **[String][13]** Media rule value, eg. '(max-width: 992px)'
 *   `ruleProps` **[Object][10]** Other rule props
 
 ### Examples
 
 ```javascript
-var sm = editor.SelectorManager;
-var sel1 = sm.add('myClass1');
-var sel2 = sm.add('myClass2');
-var rule = cssComposer.get([sel1, sel2], 'hover');
+const sm = editor.SelectorManager;
+const sel1 = sm.add('myClass1');
+const sel2 = sm.add('myClass2');
+const rule = cssComposer.get([sel1, sel2], 'hover', '(max-width: 992px)');
 // Update the style
 rule.set('style', {
   width: '300px',

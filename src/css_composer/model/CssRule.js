@@ -6,41 +6,31 @@ import { isEmptyObj, hasWin } from 'utils/mixins';
 
 const { CSS } = hasWin() ? window : {};
 
+/**
+ * @typedef CssRule
+ * @property {Array<Selector>} selectors Array of selectors
+ * @property {Object} style Object containing style definitions
+ * @property {String} [selectorsAdd=''] Additional string css selectors
+ * @property {String} [atRuleType=''] Type of at-rule, eg. `media`, 'font-face'
+ * @property {String} [mediaText=''] At-rule value, eg. `(max-width: 1000px)`
+ * @property {Boolean} [singleAtRule=false] This property is used only on at-rules, like 'page' or 'font-face', where the block containes only style declarations
+ * @property {String} [state=''] State of the rule, eg: `hover`, `focused`
+ * @property {Boolean|Array<String>} [important=false] If true, sets `!important` on all properties. You can also pass an array to specify properties on which use important
+ * @property {Boolean} [stylable=true] Indicates if the rule is stylable from the editor
+ */
 export default class CssRule extends Model.extend(Styleable) {
   defaults() {
     return {
-      // Css selectors
       selectors: [],
-
-      // Additional string css selectors
       selectorsAdd: '',
-
-      // Css properties style
       style: {},
-
-      // On which device width this rule should be rendered, eg. `(max-width: 1000px)`
       mediaText: '',
-
-      // State of the rule, eg: hover | pressed | focused
       state: '',
-
-      // Indicates if the rule is stylable
       stylable: true,
-
-      // Type of at-rule, eg. 'media', 'font-face', etc.
       atRuleType: '',
-
-      // This particolar property is used only on at-rules, like 'page' or
-      // 'font-face', where the block containes only style declarations
       singleAtRule: false,
-
-      // If true, sets '!important' on all properties
-      // You can use an array to specify properties to set important
-      // Used in view
       important: false,
-
       group: '',
-
       _undo: true
     };
   }
@@ -89,7 +79,7 @@ export default class CssRule extends Model.extend(Styleable) {
   }
 
   /**
-   * Return the at-rule statement when exists, eg. '@media (...)', '@keyframes'
+   * Return the at-rule statement when exists, eg. `@media (...)`, `@keyframes`
    * @returns {String}
    * @example
    * const cssRule = editor.Css.setRule('.class1', { color: 'red' }, {

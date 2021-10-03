@@ -28,9 +28,10 @@ blockManager.add(...);
 *   `block:add` - Block added. The [Block] is passed as an argument to the callback.
 *   `block:remove` - Block removed. The [Block] is passed as an argument to the callback.
 *   `block:update` - Block updated. The [Block] and the object containing changes are passed as arguments to the callback.
-*   `block:drag:start` - Started dragging block, model of the block is passed as an argument
-*   `block:drag` - Dragging block, the block's model and the drag event are passed as arguments
-*   `block:drag:stop` - Dragging of the block is stopped. As agruments for the callback you get, the dropped component model (if dropped successfully) and the model of the block
+*   `block:drag:start` - Started dragging block, the [Block] is passed as an argument.
+*   `block:drag` - Dragging block, the [Block] is passed as an argument.
+*   `block:drag:stop` - Dragging of the block is stopped. The dropped [Component] (if dropped successfully) and the [Block] are passed as arguments.
+*   `block` - Catch-all event for all the events mentioned above. An object containing all the available data about the triggered event is passed as an argument to the callback.
 
 ## Methods
 
@@ -45,6 +46,8 @@ blockManager.add(...);
 *   [render][10]
 
 [Block]: block.html
+
+[Component]: component.html
 
 ## getConfig
 
