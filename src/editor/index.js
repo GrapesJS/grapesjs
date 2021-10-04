@@ -729,6 +729,19 @@ export default (config = {}) => {
     },
 
     /**
+     * Trigger a callback once the editor is loaded and rendered.
+     * The callback will be executed immediately if the method is called on the already rendered editor.
+     * @param  {Function} clb Event to trigger
+     * @example
+     * editor.onReady(() => {
+     *   // perform actions
+     * });
+     */
+    onReady(clb) {
+      em.get('ready') ? clb(this) : em.on('load', clb);
+    },
+
+    /**
      * Print safe HTML by using ES6 tagged template strings.
      * @param {Array<String>} literals
      * @param  {Array<String>} substs
