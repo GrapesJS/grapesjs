@@ -34,6 +34,7 @@
  */
 
 import { isElement } from 'underscore';
+import Module from 'common/module';
 import defaults from './config/config';
 import Sectors from './model/Sectors';
 import Properties from './model/Properties';
@@ -46,6 +47,8 @@ export default () => {
   var sectors, SectView;
 
   return {
+    ...Module,
+
     PropertyFactory: PropertyFactory(),
 
     /**
@@ -89,6 +92,7 @@ export default () => {
 
       if (elTo) {
         const el = isElement(elTo) ? elTo : document.querySelector(elTo);
+        if (!el) return this.__logWarn('"appendTo" element not found');
         el.appendChild(this.render());
       }
     },
