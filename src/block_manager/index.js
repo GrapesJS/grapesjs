@@ -104,6 +104,7 @@ export default () => {
       blocksVisible = new Blocks([]);
       categories = new Categories();
       this.all = blocks;
+      blocks.add(c.blocks);
       this.__initListen();
 
       // Setup the sync between the global and public collections
@@ -209,11 +210,6 @@ export default () => {
      */
     getConfig() {
       return c;
-    },
-
-    onLoad() {
-      const blocks = this.getAll();
-      !blocks.length && blocks.reset(c.blocks);
     },
 
     postRender() {
