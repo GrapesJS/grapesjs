@@ -4,13 +4,13 @@ import { createEl } from '../../utils/dom';
 export default {
   open() {
     const { container, editor, bm, config } = this;
-    const { custom } = config;
+    const { custom, appendTo } = config;
 
     if (isFunction(custom.open)) {
       return custom.open(bm.__customData());
     }
 
-    if (this.firstRender) {
+    if (this.firstRender && !appendTo) {
       const id = 'views-container';
       const pn = editor.Panels;
       const panels = pn.getPanel(id) || pn.addPanel({ id });
@@ -32,7 +32,7 @@ export default {
     if (container) container.style.display = 'none';
   },
 
-  run(editor, sender) {
+  run(editor) {
     const bm = editor.Blocks;
     this.config = bm.getConfig();
     this.firstRender = !this.container;
