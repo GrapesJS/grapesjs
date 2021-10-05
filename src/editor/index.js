@@ -731,7 +731,7 @@ export default (config = {}) => {
     /**
      * Trigger a callback once the editor is loaded and rendered.
      * The callback will be executed immediately if the method is called on the already rendered editor.
-     * @param  {Function} clb Event to trigger
+     * @param  {Function} clb Callback to trigger
      * @example
      * editor.onReady(() => {
      *   // perform actions

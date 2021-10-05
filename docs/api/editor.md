@@ -719,6 +719,23 @@ Render editor
 
 Returns **[HTMLElement][13]** 
 
+## onReady
+
+Trigger a callback once the editor is loaded and rendered.
+The callback will be executed immediately if the method is called on the already rendered editor.
+
+### Parameters
+
+*   `clb` **[Function][14]** Callback to trigger
+
+### Examples
+
+```javascript
+editor.onReady(() => {
+  // perform actions
+});
+```
+
 ## html
 
 Print safe HTML by using ES6 tagged template strings.
