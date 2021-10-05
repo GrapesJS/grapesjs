@@ -385,7 +385,7 @@ export default () => {
         const editor = em.get('Editor');
 
         if (!this.isActive(id) || options.force || !c.strict) {
-          result = command.callRun(editor, options);
+          result = editor && command.callRun(editor, options);
           if (id && command.stop && !command.noStop && !options.abort) {
             active[id] = result;
           }
