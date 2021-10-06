@@ -18,6 +18,8 @@ export default () => {
       return this;
     },
 
+    ItemView,
+
     getConfig() {
       return config;
     },
