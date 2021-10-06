@@ -7,13 +7,15 @@ import {
   keys,
   bindAll
 } from 'underscore';
-import $ from 'cash-dom';
 import Backbone from 'backbone';
 import Extender from 'utils/extender';
 import { getModel, hasWin } from 'utils/mixins';
 import Selected from './Selected';
 
+const cash = hasWin() ? require('cash-dom') : null;
+const $ = (cash && cash.default) || cash;
 Backbone.$ = $;
+
 const deps = [
   require('utils'),
   require('i18n'),
@@ -39,7 +41,6 @@ const deps = [
   require('block_manager')
 ];
 
-const { Collection } = Backbone;
 let timedInterval;
 let updateItr;
 

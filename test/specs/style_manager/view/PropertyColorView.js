@@ -1,3 +1,4 @@
+import Backbone from 'backbone';
 import PropertyColorView from 'style_manager/view/PropertyColorView';
 import Property from 'style_manager/model/Property';
 import Component from 'dom_components/model/Component';

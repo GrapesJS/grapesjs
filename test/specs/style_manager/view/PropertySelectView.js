@@ -1,3 +1,4 @@
+import Backbone from 'backbone';
 import PropertySelectView from 'style_manager/view/PropertySelectView';
 import Property from 'style_manager/model/PropertyRadio';
 import Editor from 'editor/model/Editor';

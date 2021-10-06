@@ -3,8 +3,8 @@ import { isUndefined } from 'underscore';
 import ColorPicker from 'utils/ColorPicker';
 import Input from './Input';
 
-const $ = Backbone.$;
-ColorPicker($);
+const { $ } = Backbone;
+$ && ColorPicker($);
 
 export default Input.extend({
   template() {
