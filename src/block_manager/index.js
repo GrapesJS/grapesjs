@@ -100,11 +100,10 @@ export default () => {
       this.em = em;
 
       // Global blocks collection
-      blocks = new Blocks([]);
-      blocksVisible = new Blocks([]);
+      blocks = new Blocks(c.blocks);
+      blocksVisible = new Blocks(blocks.models);
       categories = new Categories();
       this.all = blocks;
-      blocks.add(c.blocks);
       this.__initListen();
 
       // Setup the sync between the global and public collections
