@@ -48,6 +48,8 @@
 
 import { isString, isElement, isObject, isArray } from 'underscore';
 import { isComponent, isRule } from 'utils/mixins';
+import { Model } from 'common';
+import Module from 'common/module';
 import defaults from './config/config';
 import Selector from './model/Selector';
 import Selectors from './model/Selectors';
@@ -56,29 +58,37 @@ import ClassTagsView from './view/ClassTagsView';
 const isId = str => isString(str) && str[0] == '#';
 const isClass = str => isString(str) && str[0] == '.';
 
-export default config => {
-  var c = config || {};
-  var selectors;
+export const evAll = 'selector';
+export const evPfx = `${evAll}:`;
+export const evAdd = `${evPfx}add`;
+export const evUpdate = `${evPfx}update`;
+export const evRemove = `${evPfx}remove`;
+export const evRemoveBefore = `${evRemove}:before`;
+export const evCustom = `${evPfx}custom`;
 
+export default () => {
   return {
+    ...Module,
+
+    name: 'SelectorManager',
+
     Selector,
 
     Selectors,
 
-    /**
-     * Name of the module
-     * @type {String}
-     * @private
-     */
-    name: 'SelectorManager',
+    events: {
+      all: evAll,
+      update: evUpdate,
+      add: evAdd,
+      remove: evRemove,
+      removeBefore: evRemoveBefore,
+      custom: evCustom
+    },
 
     /**
      * Get configuration object
      * @return {Object}
      */
-    getConfig() {
-      return c;
-    },
 
     /**
      * Initialize module. Automatically called with a new instance of the editor
@@ -87,40 +97,49 @@ export default config => {
      * @private
      */
     init(conf = {}) {
-      c = {
-        ...defaults,
-        ...conf
-      };
-      const em = c.em;
-      const ppfx = c.pStylePrefix;
-      this.em = em;
+      this.__initConfig(defaults, conf);
+      const config = this.getConfig();
+      const em = config.em;
+      const ppfx = config.pStylePrefix;
 
       if (ppfx) {
-        c.stylePrefix = ppfx + c.stylePrefix;
+        config.stylePrefix = ppfx + config.stylePrefix;
       }
 
       // Global selectors container
-      selectors = new Selectors(c.selectors);
-      selectors.on('add', model => em.trigger('selector:add', model));
-      selectors.on('remove', model => em.trigger('selector:remove', model));
-      selectors.on('change', model =>
-        em.trigger(
-          'selector:update',
-          model,
-          model.previousAttributes(),
-          model.changedAttributes()
-        )
-      );
+      this.all = new Selectors(config.selectors);
+      this.model = new Model({ _undo: true });
+      this.__initListen();
+
+      // selectors.on('add', model => em.trigger('selector:add', model));
+      // selectors.on('remove', model => em.trigger('selector:remove', model));
+      // selectors.on('change', model =>
+      //   em.trigger(
+      //     'selector:update',
+      //     model,
+      //     model.previousAttributes(),
+      //     model.changedAttributes()
+      //   )
+      // );
       em.on('change:state', (m, value) => em.trigger('selector:state', value));
 
       return this;
     },
+
+    // postLoad() {
+    //   this.__postLoad();
+    //   const { em, model } = this;
+    //   const um = em.get('UndoManager');
+    //   um && um.add(model);
+    //   um && um.add(this.pages);
+    // },
 
     postRender() {
       const elTo = this.getConfig().appendTo;
 
       if (elTo) {
         const el = isElement(elTo) ? elTo : document.querySelector(elTo);
+        if (!el) return this.__logWarn('"appendTo" element not found');
         el.appendChild(this.render([]));
       }
     },
@@ -183,12 +202,12 @@ export default config => {
       }
 
       const cname = opts.name;
-      const selector = cname
-        ? this.get(cname, opts.type)
-        : selectors.where(opts)[0];
+      const config = this.getConfig();
+      const all = this.getAll();
+      const selector = cname ? this.get(cname, opts.type) : all.where(opts)[0];
 
       if (!selector) {
-        return selectors.add(opts, { config: c });
+        return all.add(opts, { config });
       }
 
       return selector;
@@ -202,7 +221,7 @@ export default config => {
         name = name.substr(1);
       }
 
-      return selectors.where({ name, type })[0];
+      return this.getAll().where({ name, type })[0];
     },
 
     /**
@@ -276,13 +295,14 @@ export default config => {
       }
     },
 
+    remove(selector, opts) {
+      return this.__remove(selector, opts);
+    },
+
     /**
      * Get all selectors
      * @return {Collection}
      * */
-    getAll() {
-      return selectors;
-    },
 
     /**
      * Return escaped selector name
@@ -290,7 +310,7 @@ export default config => {
      * @returns {String} Escaped name
      */
     escapeName(name) {
-      const { escapeName } = c;
+      const { escapeName } = this.getConfig();
       return escapeName ? escapeName(name) : Selector.escapeName(name);
     },
 
@@ -302,10 +322,11 @@ export default config => {
      */
     render(selectors) {
       const { em, selectorTags } = this;
+      const config = this.getConfig();
       selectorTags && selectorTags.remove();
       this.selectorTags = new ClassTagsView({
-        collection: new Selectors(selectors || [], { em, config: c }),
-        config: c
+        collection: new Selectors(selectors || [], { em, config }),
+        config
       });
 
       return this.selectorTags.render().el;
@@ -313,10 +334,10 @@ export default config => {
 
     destroy() {
       const { selectorTags } = this;
-      selectors.reset();
-      selectors.stopListening();
+      const all = this.getAll();
+      all.stopListening();
+      all.reset();
       selectorTags && selectorTags.remove();
-      [c, selectors].forEach(i => (i = {}));
       this.em = {};
       this.selectorTags = {};
     }

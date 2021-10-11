@@ -14,6 +14,7 @@ describe('SelectorManager', () => {
 
     afterEach(() => {
       obj = null;
+      em.destroy();
     });
 
     test('Object exists', () => {
@@ -167,6 +168,51 @@ describe('SelectorManager', () => {
       const result = obj.addClass('class1');
       expect(obj.getAll().length).toEqual(1);
       expect(result.length).toEqual(1);
+    });
+
+    describe('Events', () => {
+      test('Add triggers proper events', () => {
+        const itemTest = 'sel';
+        const eventAdd = jest.fn();
+        const eventAll = jest.fn();
+        em.on(obj.events.add, eventAdd);
+        em.on(obj.events.all, eventAll);
+        const added = obj.add(itemTest);
+        expect(eventAdd).toBeCalledTimes(1);
+        expect(eventAdd).toBeCalledWith(added, expect.anything());
+        expect(eventAll).toBeCalled();
+      });
+
+      test('Remove triggers proper events', () => {
+        const itemTest = 'sel';
+        const eventBfRm = jest.fn();
+        const eventRm = jest.fn();
+        const eventAll = jest.fn();
+        obj.add(itemTest);
+        em.on(obj.events.removeBefore, eventBfRm);
+        em.on(obj.events.remove, eventRm);
+        em.on(obj.events.all, eventAll);
+        const removed = obj.remove(itemTest);
+        expect(obj.getAll().length).toBe(0);
+        expect(eventBfRm).toBeCalledTimes(1);
+        expect(eventRm).toBeCalledTimes(1);
+        expect(eventRm).toBeCalledWith(removed, expect.anything());
+        expect(eventAll).toBeCalled();
+      });
+
+      test('Update triggers proper events', () => {
+        const itemTest = 'sel';
+        const eventUp = jest.fn();
+        const eventAll = jest.fn();
+        const added = obj.add(itemTest);
+        const newProps = { label: 'Heading 2' };
+        em.on(obj.events.update, eventUp);
+        em.on(obj.events.all, eventAll);
+        added.set(newProps);
+        expect(eventUp).toBeCalledTimes(1);
+        expect(eventUp).toBeCalledWith(added, newProps, expect.anything());
+        expect(eventAll).toBeCalled();
+      });
     });
   });
 });

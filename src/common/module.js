@@ -18,6 +18,14 @@ export default {
     }, {});
   },
 
+  __initConfig(def = {}, conf = {}) {
+    this.config = {
+      ...def,
+      ...conf
+    };
+    this.em = this.config.em;
+  },
+
   __initListen() {
     const { all, em, events } = this;
     all &&
