@@ -215,7 +215,7 @@ export default () => {
      * const arrayOfPages = pageManager.getAll();
      */
     getAll() {
-      return this.pages.models;
+      return [...this.pages.models];
     },
 
     /**
