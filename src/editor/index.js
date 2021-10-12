@@ -64,11 +64,6 @@
  * * `canvas:dragend` - When a drag operation is ended, `DataTransfer` instance passed as an argument
  * * `canvas:dragdata` - On any dataTransfer parse, `DataTransfer` instance and the `result` are passed as arguments.
  *  By changing `result.content` you're able to customize what is dropped
- * ### Selectors
- * * `selector:add` - New selector is add. Passes the new selector as an argument
- * * `selector:remove` - Selector removed. Passes the removed selector as an argument
- * * `selector:update` - Selector updated. Passes the updated selector as an argument
- * * `selector:state` - State changed. Passes the new state value as an argument
  * ### RTE
  * * `rte:enable` - RTE enabled. The view, on which RTE is enabled, is passed as an argument
  * * `rte:disable` - RTE disabled. The view, on which RTE is disabled, is passed as an argument
@@ -80,6 +75,8 @@
  * * `abort:{commandName}` - Triggered when the command execution is aborted (`editor.on(`run:preview:before`, opts => opts.abort = 1);`)
  * * `run` - Triggered on run of any command. The id and the result are passed as arguments to the callback
  * * `stop` - Triggered on stop of any command. The id and the result are passed as arguments to the callback
+ * ### Selectors
+ * Check the [Selectors](/api/selector_manager.html) module.
  * ### Blocks
  * Check the [Blocks](/api/block_manager.html) module.
  * ### Assets

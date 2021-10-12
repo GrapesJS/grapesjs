@@ -29,12 +29,25 @@
  * })
  * ```
  *
- * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+ * Once the editor is instantiated you can use its API and listen to its events. Before using these methods, you should get the module from the instance.
  *
  * ```js
- * const selectorManager = editor.SelectorManager;
+ * // Listen to events
+ * editor.on('selector:add', (selector) => { ... });
+ *
+ * // Use the API
+ * const sm = editor.Selectors;
+ * sm.add(...);
  * ```
  *
+ * ## Available Events
+ * * `selector:add` - Selector added. The [Selector] is passed as an argument to the callback.
+ * * `selector:remove` - Selector removed. The [Selector] is passed as an argument to the callback.
+ * * `selector:update` - Selector updated. The [Selector] and the object containing changes are passed as arguments to the callback.
+ * * `selector:state` - State changed. Passes the new state value as an argument.
+ * * `selector` - Catch-all event for all the events mentioned above. An object containing all the available data about the triggered event is passed as an argument to the callback.
+ *
+ * ## Methods
  * * [getConfig](#getconfig)
  * * [add](#add)
  * * [addClass](#addclass)
@@ -42,6 +55,8 @@
  * * [getAll](#getall)
  * * [setState](#setstate)
  * * [getState](#getstate)
+ *
+ * [Selector]: selector.html
  *
  * @module SelectorManager
  */
@@ -110,17 +125,6 @@ export default () => {
       this.all = new Selectors(config.selectors);
       this.model = new Model({ _undo: true });
       this.__initListen();
-
-      // selectors.on('add', model => em.trigger('selector:add', model));
-      // selectors.on('remove', model => em.trigger('selector:remove', model));
-      // selectors.on('change', model =>
-      //   em.trigger(
-      //     'selector:update',
-      //     model,
-      //     model.previousAttributes(),
-      //     model.changedAttributes()
-      //   )
-      // );
       em.on('change:state', (m, value) => em.trigger('selector:state', value));
 
       return this;
@@ -301,6 +305,8 @@ export default () => {
 
     /**
      * Get all selectors
+     * @name getAll
+     * @function
      * @return {Collection}
      * */
 
