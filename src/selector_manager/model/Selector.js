@@ -4,24 +4,23 @@ import { result, forEach, keys } from 'underscore';
 const TYPE_CLASS = 1;
 const TYPE_ID = 2;
 
+/**
+ * @typedef Selector
+ * @property {String} name Selector name, eg. `my-class`
+ * @property {String} label Selector label, eg. `My Class`
+ * @property {Number} [type=1] Type of the selector. 1 (class) | 2 (id)
+ * @property {Boolean} [active=true] If not active, it's not selectable by the Style Manager.
+ * @property {Boolean} [private=false] If true, it can't be seen by the Style Manager, but it will be rendered in the canvas and in export code.
+ * @property {Boolean} [protected=false] If true, it can't be removed from the attacched component.
+ */
 export default class Selector extends Model {
   defaults() {
     return {
       name: '',
-
       label: '',
-
-      // Type of the selector
       type: TYPE_CLASS,
-
-      // If not active it's not selectable by the style manager (uncheckboxed)
       active: true,
-
-      // Can't be seen by the style manager, therefore even by the user
-      // Will be rendered only in export code
       private: false,
-
-      // If true, can't be removed from the attacched element
       protected: false
     };
   }
@@ -55,24 +54,28 @@ export default class Selector extends Model {
   }
 
   /**
-   * Get full selector name
-   * @return {string}
+   * Get full selector name.
+   * @returns {String}
+   * @example
+   * // Given such selector: { name: 'my-selector', type: 2 }
+   * console.log(selector.getFullName());
+   * // -> `#my-selector`
    */
   getFullName(opts = {}) {
     const { escape } = opts;
     const name = this.get('name');
-    let init = '';
+    let pfx = '';
 
     switch (this.get('type')) {
       case TYPE_CLASS:
-        init = '.';
+        pfx = '.';
         break;
       case TYPE_ID:
-        init = '#';
+        pfx = '#';
         break;
     }
 
-    return init + (escape ? escape(name) : name);
+    return pfx + (escape ? escape(name) : name);
   }
 
   toJSON(opts = {}) {

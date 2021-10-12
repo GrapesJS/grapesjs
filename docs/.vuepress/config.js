@@ -76,6 +76,7 @@ module.exports = {
         ['/api/device_manager', 'Device Manager'],
         ['/api/device', `${subDivider}Device`],
         ['/api/selector_manager', 'Selector Manager'],
+        ['/api/selector', `${subDivider}Selector`],
         ['/api/css_composer', 'CSS Composer'],
         ['/api/css_rule', `${subDivider}CssRule`],
         ['/api/modal_dialog', 'Modal'],
