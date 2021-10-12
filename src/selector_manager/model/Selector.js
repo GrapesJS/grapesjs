@@ -53,14 +53,6 @@ export default class Selector extends Model {
     return this.get('type') === TYPE_CLASS;
   }
 
-  /**
-   * Get full selector name.
-   * @returns {String}
-   * @example
-   * // Given such selector: { name: 'my-selector', type: 2 }
-   * console.log(selector.getFullName());
-   * // -> `#my-selector`
-   */
   getFullName(opts = {}) {
     const { escape } = opts;
     const name = this.get('name');
@@ -76,6 +68,18 @@ export default class Selector extends Model {
     }
 
     return pfx + (escape ? escape(name) : name);
+  }
+
+  /**
+   * Get selector as a string.
+   * @returns {String}
+   * @example
+   * // Given such selector: { name: 'my-selector', type: 2 }
+   * console.log(selector.toString());
+   * // -> `#my-selector`
+   */
+  toString() {
+    return this.getFullName();
   }
 
   toJSON(opts = {}) {

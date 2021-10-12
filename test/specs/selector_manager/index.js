@@ -39,8 +39,9 @@ describe('SelectorManager', () => {
     });
 
     test('Default new selector is a class type', () => {
-      obj.add('test');
+      const added = obj.add('test');
       expect(obj.get('test').get('type')).toEqual(obj.Selector.TYPE_CLASS);
+      expect(added.getFullName()).toBe('.test');
     });
 
     test('Add a selector as an id', () => {
@@ -49,6 +50,7 @@ describe('SelectorManager', () => {
       expect(sel.get('name')).toEqual(name);
       expect(sel.get('label')).toEqual(name);
       expect(obj.get(`#${name}`).get('type')).toEqual(obj.Selector.TYPE_ID);
+      expect(sel.getFullName()).toBe('#test');
     });
 
     test('Check name property', () => {
@@ -72,9 +74,10 @@ describe('SelectorManager', () => {
     });
 
     test('Adding 2 selectors with the same name is not possible', () => {
-      obj.add('test');
-      obj.add('test');
+      const add1 = obj.add('test');
+      const add2 = obj.add('test');
       expect(obj.getAll().length).toEqual(1);
+      expect(add1).toBe(add2);
     });
 
     test('Add multiple selectors', () => {

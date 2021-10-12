@@ -3,6 +3,10 @@ import { Collection } from 'common';
 import Selector from './Selector';
 
 export default class Selectors extends Collection {
+  modelId(attr) {
+    return `${attr.name}_${attr.type || Selector.TYPE_CLASS}`;
+  }
+
   getStyleable() {
     return filter(
       this.models,
@@ -25,5 +29,3 @@ export default class Selectors extends Collection {
 }
 
 Selectors.prototype.model = Selector;
-Selectors.prototype.modelId = attr =>
-  `${attr.name}_${attr.type || Selector.TYPE_CLASS}`;

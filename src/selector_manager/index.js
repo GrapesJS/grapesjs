@@ -50,7 +50,6 @@
  * ## Methods
  * * [getConfig](#getconfig)
  * * [add](#add)
- * * [addClass](#addclass)
  * * [get](#get)
  * * [getAll](#getall)
  * * [setState](#setstate)
@@ -185,33 +184,35 @@ export default () => {
       return this.em.getState();
     },
 
-    addSelector(name, opt = {}) {
-      let opts = { ...opt };
+    addSelector(name, opts = {}, cOpts = {}) {
+      let props = { ...opts };
 
       if (isObject(name)) {
-        opts = name;
+        props = name;
       } else {
-        opts.name = name;
+        props.name = name;
       }
 
-      if (isId(opts.name)) {
-        opts.name = opts.name.substr(1);
-        opts.type = Selector.TYPE_ID;
-      } else if (isClass(opts.name)) {
-        opts.name = opts.name.substr(1);
+      if (isId(props.name)) {
+        props.name = props.name.substr(1);
+        props.type = Selector.TYPE_ID;
+      } else if (isClass(props.name)) {
+        props.name = props.name.substr(1);
       }
 
-      if (opts.label && !opts.name) {
-        opts.name = this.escapeName(opts.label);
+      if (props.label && !props.name) {
+        props.name = this.escapeName(props.label);
       }
 
-      const cname = opts.name;
+      const cname = props.name;
       const config = this.getConfig();
       const all = this.getAll();
-      const selector = cname ? this.get(cname, opts.type) : all.where(opts)[0];
+      const selector = cname
+        ? this.get(cname, props.type)
+        : all.where(props)[0];
 
       if (!selector) {
-        return all.add(opts, { config });
+        return all.add(props, { ...cOpts, config });
       }
 
       return selector;
@@ -230,26 +231,20 @@ export default () => {
 
     /**
      * Add a new selector to collection if it's not already exists. Class type is a default one
-     * @param {String|Array} name Selector/s name
-     * @param {Object} opts Selector options
-     * @param {String} [opts.label=''] Label for the selector, if it's not provided the label will be the same as the name
-     * @param {String} [opts.type=1] Type of the selector. At the moment, only 'class' (1) is available
-     * @return {Model|Array}
+     * @param {Object} props Selector properties, eg. `{ name: 'my-class', label: 'My class' }`
+     * @param {Object} [opts] Selector options
+     * @return {[Selector]}
      * @example
-     * const selector = selectorManager.add('selectorName');
-     * // Same as
-     * const selector = selectorManager.add('selectorName', {
-     *   type: 1,
-     *   label: 'selectorName'
-     * });
-     * // Multiple selectors
-     * const selectors = selectorManager.add(['.class1', '.class2', '#id1']);
+     * const selector = selectorManager.add({ name: 'my-class', label: 'My class' });
+     * console.log(selector.toString()) // `.my-class`
      * */
-    add(name, opts = {}) {
-      if (isArray(name)) {
-        return name.map(item => this.addSelector(item, opts));
+    add(props, opts = {}) {
+      const cOpts = isString(props) ? {} : opts;
+      // Keep support for arrays but avoid it in docs
+      if (isArray(props)) {
+        return props.map(item => this.addSelector(item, opts, cOpts));
       } else {
-        return this.addSelector(name, opts);
+        return this.addSelector(props, opts, cOpts);
       }
     },
 
@@ -257,6 +252,7 @@ export default () => {
      * Add class selectors
      * @param {Array|string} classes Array or string of classes
      * @return {Array} Array of added selectors
+     * @private
      * @example
      * sm.addClass('class1');
      * sm.addClass('class1 class2');
