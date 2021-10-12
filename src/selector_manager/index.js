@@ -329,8 +329,9 @@ export default () => {
     render(selectors) {
       const { em, selectorTags } = this;
       const config = this.getConfig();
-      selectorTags && selectorTags.remove();
+      const el = selectorTags && selectorTags.el;
       this.selectorTags = new ClassTagsView({
+        el,
         collection: new Selectors(selectors || [], { em, config }),
         config
       });
