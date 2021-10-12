@@ -151,6 +151,42 @@ describe('SelectorManager', () => {
       expect(obj.get(name, type)).toBe(added);
     });
 
+    test('Add selectors as string identifiers', () => {
+      const cls = '.my-class';
+      const id = '#my-id';
+      const addedCls = obj.add(cls);
+      const addedId = obj.add(id);
+      expect(addedCls.toString()).toBe(cls);
+      expect(addedId.toString()).toBe(id);
+    });
+
+    test('Get selectors as string identifiers', () => {
+      const cls = '.my-class';
+      const id = '#my-id';
+      const addedCls = obj.add(cls);
+      const addedId = obj.add(id);
+      expect(obj.get(cls)).toBe(addedCls);
+      expect(obj.get(id)).toBe(addedId);
+    });
+
+    test('Remove selectors as string identifiers', () => {
+      const cls = '.my-class';
+      const id = '#my-id';
+      const addedCls = obj.add(cls);
+      const addedId = obj.add(id);
+      expect(obj.getAll().length).toBe(2);
+      expect(obj.remove(cls)).toBe(addedCls);
+      expect(obj.remove(id)).toBe(addedId);
+      expect(obj.getAll().length).toBe(0);
+    });
+
+    test('Remove selector as instance', () => {
+      const addedCls = obj.add('.my-class');
+      expect(obj.getAll().length).toBe(1);
+      expect(obj.remove(addedCls)).toBe(addedCls);
+      expect(obj.getAll().length).toBe(0);
+    });
+
     test('addClass single class string', () => {
       const result = obj.addClass('class1');
       expect(result.length).toEqual(1);

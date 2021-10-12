@@ -231,12 +231,16 @@ export default () => {
     },
 
     /**
-     * Add a new selector to collection if it's not already exists. Class type is a default one
-     * @param {Object} props Selector properties, eg. `{ name: 'my-class', label: 'My class' }`
+     * Add a new selector to collection if it's not already exists.
+     * You can pass selectors properties or string identifiers.
+     * @param {Object|String} props Selector properties or string identifiers, eg. `{ name: 'my-class', label: 'My class' }`, `.my-cls`
      * @param {Object} [opts] Selector options
      * @return {[Selector]}
      * @example
      * const selector = selectorManager.add({ name: 'my-class', label: 'My class' });
+     * console.log(selector.toString()) // `.my-class`
+     * // Same as
+     * const selector = selectorManager.add('.my-class');
      * console.log(selector.toString()) // `.my-class`
      * */
     add(props, opts = {}) {
@@ -273,13 +277,12 @@ export default () => {
 
     /**
      * Get the selector by its name/type
-     * @param {String} name Selector name
-     * @param {Number} [type=1] Selector type, default is class
-     * @return {[Selector]|null}
+     * @param {String} name Selector name or string identifier
+     * @returns {[Selector]|null}
      * @example
-     * const selector = selectorManager.get('my-class');
+     * const selector = selectorManager.get('.my-class');
      * // Get Id
-     * const selectorId = selectorManager.get('my-id', 2);
+     * const selectorId = selectorManager.get('#my-id');
      * */
     get(name, type) {
       // Keep support for arrays but avoid it in docs
@@ -321,6 +324,7 @@ export default () => {
      * Return escaped selector name
      * @param {String} name Selector name to escape
      * @returns {String} Escaped name
+     * @private
      */
     escapeName(name) {
       const { escapeName } = this.getConfig();
