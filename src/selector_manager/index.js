@@ -102,15 +102,11 @@ export default () => {
 
     /**
      * Get configuration object
+     * @name getConfig
+     * @function
      * @return {Object}
      */
 
-    /**
-     * Initialize module. Automatically called with a new instance of the editor
-     * @param {Object} config Configurations
-     * @return {this}
-     * @private
-     */
     init(conf = {}) {
       this.__initConfig(defaults, conf);
       const config = this.getConfig();
@@ -165,26 +161,6 @@ export default () => {
       return this;
     },
 
-    /**
-     * Change the selector state
-     * @param {String} value State value
-     * @returns {this}
-     * @example
-     * selectorManager.setState('hover');
-     */
-    setState(value) {
-      this.em.setState(value);
-      return this;
-    },
-
-    /**
-     * Get the current selector state
-     * @returns {String}
-     */
-    getState() {
-      return this.em.getState();
-    },
-
     addSelector(name, opts = {}, cOpts = {}) {
       let props = { ...opts };
 
@@ -231,7 +207,7 @@ export default () => {
     },
 
     /**
-     * Add a new selector to collection if it's not already exists.
+     * Add a new selector to the collection if it does not already exist.
      * You can pass selectors properties or string identifiers.
      * @param {Object|String} props Selector properties or string identifiers, eg. `{ name: 'my-class', label: 'My class' }`, `.my-cls`
      * @param {Object} [opts] Selector options
@@ -314,10 +290,30 @@ export default () => {
     },
 
     /**
+     * Change the selector state
+     * @param {String} value State value
+     * @returns {this}
+     * @example
+     * selectorManager.setState('hover');
+     */
+    setState(value) {
+      this.em.setState(value);
+      return this;
+    },
+
+    /**
+     * Get the current selector state
+     * @returns {String}
+     */
+    getState() {
+      return this.em.getState();
+    },
+
+    /**
      * Get all selectors
      * @name getAll
      * @function
-     * @return {Collection}
+     * @return {Collection<[Selector]>}
      * */
 
     /**

@@ -13,19 +13,15 @@
 *   `private` **[Boolean][3]?** If true, it can't be seen by the Style Manager, but it will be rendered in the canvas and in export code.
 *   `protected` **[Boolean][3]?** If true, it can't be removed from the attacched component.
 
-### getFullName
+### toString
 
-Get full selector name.
-
-#### Parameters
-
-*   `opts`   (optional, default `{}`)
+Get selector as a string.
 
 #### Examples
 
 ```javascript
 // Given such selector: { name: 'my-selector', type: 2 }
-console.log(selector.getFullName());
+console.log(selector.toString());
 // -> `#my-selector`
 ```
 

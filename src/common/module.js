@@ -3,6 +3,10 @@ import { createId } from 'utils/mixins';
 
 export default {
   getConfig(name) {
+    return this.__getConfig(name);
+  },
+
+  __getConfig(name) {
     const res = this.config || {};
     return name ? res[name] : res;
   },

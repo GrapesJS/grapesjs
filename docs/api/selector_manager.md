@@ -58,23 +58,79 @@ sm.add(...);
 
 *   [getConfig][2]
 *   [add][3]
-*   [addClass][4]
-*   [get][5]
+*   [get][4]
+*   [remove][5]
 *   [getAll][6]
 *   [setState][7]
 *   [getState][8]
 
 [Selector]: selector.html
 
-## init
+## getConfig
 
 Get configuration object
 
+Returns **[Object][9]** 
+
+## add
+
+Add a new selector to the collection if it does not already exist.
+You can pass selectors properties or string identifiers.
+
 ### Parameters
 
-*   `conf`   (optional, default `{}`)
+*   `props` **([Object][9] | [String][10])** Selector properties or string identifiers, eg. `{ name: 'my-class', label: 'My class' }`, `.my-cls`
+*   `opts` **[Object][9]?** Selector options (optional, default `{}`)
 
-Returns **[Object][9]** 
+### Examples
+
+```javascript
+const selector = selectorManager.add({ name: 'my-class', label: 'My class' });
+console.log(selector.toString()) // `.my-class`
+// Same as
+const selector = selectorManager.add('.my-class');
+console.log(selector.toString()) // `.my-class`
+```
+
+Returns **[Selector]** 
+
+## get
+
+Get the selector by its name/type
+
+### Parameters
+
+*   `name` **[String][10]** Selector name or string identifier
+*   `type`  
+
+### Examples
+
+```javascript
+const selector = selectorManager.get('.my-class');
+// Get Id
+const selectorId = selectorManager.get('#my-id');
+```
+
+Returns **([Selector] | null)** 
+
+## remove
+
+Remove Selector.
+
+### Parameters
+
+*   `selector` **([String][10] | [Selector])** Selector instance or Selector string identifier
+*   `opts`  
+
+### Examples
+
+```javascript
+const removed = selectorManager.remove('.myclass');
+// or by passing the Selector
+selectorManager.remove(selectorManager.get('.myclass'));
+```
+
+Returns **[Selector]** Removed Selector
 
 ## setState
 
@@ -98,86 +154,11 @@ Get the current selector state
 
 Returns **[String][10]** 
 
-## add
-
-Add a new selector to collection if it's not already exists. Class type is a default one
-
-### Parameters
-
-*   `name` **([String][10] | [Array][11])** Selector/s name
-*   `opts` **[Object][9]** Selector options (optional, default `{}`)
-
-    *   `opts.label` **[String][10]** Label for the selector, if it's not provided the label will be the same as the name (optional, default `''`)
-    *   `opts.type` **[String][10]** Type of the selector. At the moment, only 'class' (1) is available (optional, default `1`)
-
-### Examples
-
-```javascript
-const selector = selectorManager.add('selectorName');
-// Same as
-const selector = selectorManager.add('selectorName', {
-  type: 1,
-  label: 'selectorName'
-});
-// Multiple selectors
-const selectors = selectorManager.add(['.class1', '.class2', '#id1']);
-```
-
-Returns **(Model | [Array][11])** 
-
-## addClass
-
-Add class selectors
-
-### Parameters
-
-*   `classes` **([Array][11] | [string][10])** Array or string of classes
-
-### Examples
-
-```javascript
-sm.addClass('class1');
-sm.addClass('class1 class2');
-sm.addClass(['class1', 'class2']);
-// -> [SelectorObject, ...]
-```
-
-Returns **[Array][11]** Array of added selectors
-
-## get
-
-Get the selector by its name
-
-### Parameters
-
-*   `name` **([String][10] | [Array][11])** Selector name
-*   `type` **[String][10]** Selector type
-
-### Examples
-
-```javascript
-const selector = selectorManager.get('selectorName');
-// or get an array
-const selectors = selectorManager.get(['class1', 'class2']);
-```
-
-Returns **(Model | [Array][11])** 
-
 ## getAll
 
 Get all selectors
 
-Returns **Collection** 
-
-## escapeName
-
-Return escaped selector name
-
-### Parameters
-
-*   `name` **[String][10]** Selector name to escape
-
-Returns **[String][10]** Escaped name
+Returns **Collection<[Selector]>** 
 
 [1]: https://github.com/artf/grapesjs/blob/master/src/selector_manager/config/config.js
 
@@ -185,9 +166,9 @@ Returns **[String][10]** Escaped name
 
 [3]: #add
 
-[4]: #addclass
+[4]: #get
 
-[5]: #get
+[5]: #remove
 
 [6]: #getall
 
@@ -198,5 +179,3 @@ Returns **[String][10]** Escaped name
 [9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
 [10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
-
-[11]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
