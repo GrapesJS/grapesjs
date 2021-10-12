@@ -51,6 +51,7 @@
  * * [getConfig](#getconfig)
  * * [add](#add)
  * * [get](#get)
+ * * [remove](#remove)
  * * [getAll](#getall)
  * * [setState](#setstate)
  * * [getState](#getstate)
@@ -296,6 +297,15 @@ export default () => {
       }
     },
 
+    /**
+     * Remove Selector.
+     * @param {String|[Selector]} selector Selector instance or Selector string identifier
+     * @returns {[Selector]} Removed Selector
+     * @example
+     * const removed = selectorManager.remove('.myclass');
+     * // or by passing the Selector
+     * selectorManager.remove(selectorManager.get('.myclass'));
+     */
     remove(selector, opts) {
       return this.__remove(selector, opts);
     },
