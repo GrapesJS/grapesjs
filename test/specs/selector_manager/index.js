@@ -140,7 +140,15 @@ describe('SelectorManager', () => {
     });
 
     test('Get empty class', () => {
-      expect(obj.get('test')).toEqual(undefined);
+      expect(obj.get('test')).toEqual(null);
+    });
+
+    test('Get id selector', () => {
+      const name = 'my-id';
+      const type = Selector.TYPE_ID;
+      const added = obj.add({ name, type });
+      expect(obj.get(name)).toEqual(null);
+      expect(obj.get(name, type)).toBe(added);
     });
 
     test('addClass single class string', () => {

@@ -271,16 +271,17 @@ export default () => {
     },
 
     /**
-     * Get the selector by its name
-     * @param {String|Array} name Selector name
-     * @param {String} type Selector type
-     * @return {Model|Array}
+     * Get the selector by its name/type
+     * @param {String} name Selector name
+     * @param {Number} [type=1] Selector type, default is class
+     * @return {[Selector]|null}
      * @example
-     * const selector = selectorManager.get('selectorName');
-     * // or get an array
-     * const selectors = selectorManager.get(['class1', 'class2']);
+     * const selector = selectorManager.get('my-class');
+     * // Get Id
+     * const selectorId = selectorManager.get('my-id', 2);
      * */
     get(name, type) {
+      // Keep support for arrays but avoid it in docs
       if (isArray(name)) {
         const result = [];
         const selectors = name
@@ -291,7 +292,7 @@ export default () => {
         );
         return result;
       } else {
-        return this.getSelector(name, type);
+        return this.getSelector(name, type) || null;
       }
     },
 
