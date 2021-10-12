@@ -25,6 +25,7 @@ async function generateDocs () {
     ['device_manager/index.js', 'device_manager.md'],
     ['device_manager/model/Device.js', 'device.md'],
     ['selector_manager/index.js', 'selector_manager.md'],
+    ['selector_manager/model/Selector.js', 'selector.md'],
     ['css_composer/index.js', 'css_composer.md'],
     ['css_composer/model/CssRule.js', 'css_rule.md'],
     ['modal_dialog/index.js', 'modal_dialog.md'],

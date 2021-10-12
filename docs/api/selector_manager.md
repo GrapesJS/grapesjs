@@ -35,11 +35,26 @@ const editor = grapesjs.init({
 })
 ```
 
-Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+Once the editor is instantiated you can use its API and listen to its events. Before using these methods, you should get the module from the instance.
 
 ```js
-const selectorManager = editor.SelectorManager;
+// Listen to events
+editor.on('selector:add', (selector) => { ... });
+
+// Use the API
+const sm = editor.Selectors;
+sm.add(...);
 ```
+
+## Available Events
+
+*   `selector:add` - Selector added. The [Selector] is passed as an argument to the callback.
+*   `selector:remove` - Selector removed. The [Selector] is passed as an argument to the callback.
+*   `selector:update` - Selector updated. The [Selector] and the object containing changes are passed as arguments to the callback.
+*   `selector:state` - State changed. Passes the new state value as an argument.
+*   `selector` - Catch-all event for all the events mentioned above. An object containing all the available data about the triggered event is passed as an argument to the callback.
+
+## Methods
 
 *   [getConfig][2]
 *   [add][3]
@@ -49,9 +64,15 @@ const selectorManager = editor.SelectorManager;
 *   [setState][7]
 *   [getState][8]
 
-## getConfig
+[Selector]: selector.html
+
+## init
 
 Get configuration object
+
+### Parameters
+
+*   `conf`   (optional, default `{}`)
 
 Returns **[Object][9]** 
 
