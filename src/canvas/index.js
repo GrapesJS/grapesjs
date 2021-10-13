@@ -38,6 +38,7 @@ import defaults from './config/config';
 import Canvas from './model/Canvas';
 import canvasView from './view/CanvasView';
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default () => {
   let c = {};
   let canvas;
@@ -449,6 +450,48 @@ export default () => {
 
       const result = {
         top,
+        left,
+        canvasOffsetTop: cvOff.top,
+        canvasOffsetLeft: cvOff.left
+      };
+
+      // In this way I can catch data and also change the position strategy
+      event && this.em.trigger(event, result);
+
+      return result;
+    },
+
+    getTargetToElementFixedBottom(el, elToMove, opts = {}) {
+      const pos = opts.pos || this.getElementPos(el);
+      const cvOff = opts.canvasOff || this.canvasRectOffset(el, pos);
+      const toolbarH = elToMove.offsetHeight || 0;
+      const toolbarW = elToMove.offsetWidth || 0;
+      const elRight = pos.left + pos.width;
+      const cv = this.getCanvasView();
+      const frCvOff = cv.getPosition();
+      const frameOffset = cv.getFrameOffset(el);
+      const { event } = opts;
+
+      let bottom = -toolbarH;
+      let left = pos.width - toolbarW;
+      left = pos.left < -left ? -pos.left : left;
+      left = elRight > frCvOff.width ? left - (elRight - frCvOff.width) : left;
+
+      // Scroll with the window if the bottom edge is reached and the
+      // element is bigger than the canvas
+      const fullHeight = pos.height + toolbarH;
+      const elIsShort = fullHeight < frameOffset.height;
+
+      if (frCvOff.height - (cvOff.top + pos.height) < toolbarH) {
+        if (elIsShort) {
+          bottom = bottom + fullHeight;
+        } else {
+          bottom = -cvOff.top < pos.height ? -cvOff.top : pos.height;
+        }
+      }
+
+      const result = {
+        bottom,
         left,
         canvasOffsetTop: cvOff.top,
         canvasOffsetLeft: cvOff.left

@@ -1,3 +1,4 @@
+/* eslint-disable import/no-anonymous-default-export */
 import Backbone from 'backbone';
 import { bindAll, isElement, isUndefined, debounce } from 'underscore';
 import {
