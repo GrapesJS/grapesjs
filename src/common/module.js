@@ -1,4 +1,4 @@
-import { isString } from 'underscore';
+import { isString, isElement } from 'underscore';
 import { createId } from 'utils/mixins';
 
 export default {
@@ -59,6 +59,16 @@ export default {
     const options = opts || coll;
     em && events.all && em.trigger(events.all, { event, model, options });
     this.__onAllEvent();
+  },
+
+  __appendTo() {
+    const elTo = this.getConfig().appendTo;
+
+    if (elTo) {
+      const el = isElement(elTo) ? elTo : document.querySelector(elTo);
+      if (!el) return this.__logWarn('"appendTo" element not found');
+      el.appendChild(this.render());
+    }
   },
 
   __onAllEvent() {},
