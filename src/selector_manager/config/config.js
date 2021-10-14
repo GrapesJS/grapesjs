@@ -9,7 +9,7 @@ export default {
   // Default selectors
   selectors: [],
 
-  // States
+  // Default states
   states: [{ name: 'hover' }, { name: 'active' }, { name: 'nth-of-type(2n)' }],
 
   // Custom selector name escaping strategy, eg.

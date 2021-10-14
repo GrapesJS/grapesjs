@@ -61,7 +61,7 @@
  * @module SelectorManager
  */
 
-import { isString, isElement, isObject, isArray } from 'underscore';
+import { isString, debounce, isObject, isArray, isEmpty } from 'underscore';
 import { isComponent, isRule } from 'utils/mixins';
 import { Model } from 'common';
 import Module from 'common/module';
@@ -119,11 +119,35 @@ export default () => {
 
       // Global selectors container
       this.all = new Selectors(config.selectors);
+      this.selected = new Selectors([], { em, config });
       this.model = new Model({ _undo: true });
       this.__initListen();
       em.on('change:state', (m, value) => em.trigger('selector:state', value));
+      const listenTo =
+        'component:toggled component:update:classes styleManager:update change:state';
+      this.model.listenTo(em, listenTo, () => this.__update());
 
       return this;
+    },
+
+    __update: debounce(function() {
+      this.__trgCustom();
+    }),
+
+    __trgCustom() {
+      this.em.trigger(this.events.custom, this.__customData());
+    },
+
+    __customData() {
+      const common = this.__getCommon();
+      return {
+        sm: this,
+        common,
+        states: this.getStates(),
+        selected: this.getSelected(),
+        add: prop => this.__addToCommon(prop), // add selector to common selection
+        remove: '' // remove selector from selection
+      };
     },
 
     // postLoad() {
@@ -136,6 +160,7 @@ export default () => {
 
     postRender() {
       this.__appendTo();
+      this.__trgCustom();
     },
 
     select(value, opts = {}) {
@@ -153,6 +178,10 @@ export default () => {
         );
       selTags && selTags.componentChanged({ targets: res });
       return this;
+    },
+
+    getSelected() {
+      return this.em.get('StyleManager').getTargets();
     },
 
     addSelector(name, opts = {}, cOpts = {}) {
@@ -296,11 +325,20 @@ export default () => {
     },
 
     /**
-     * Get the current selector state
+     * Get the current selector state value
      * @returns {String}
      */
     getState() {
       return this.em.getState();
+    },
+
+    /**
+     * Get states
+     * @returns {Array<State>}
+     * @private
+     */
+    getStates() {
+      return this.config.states;
     },
 
     /**
@@ -331,9 +369,11 @@ export default () => {
       const { em, selectorTags } = this;
       const config = this.getConfig();
       const el = selectorTags && selectorTags.el;
+      this.selected.reset(selectors);
       this.selectorTags = new ClassTagsView({
         el,
-        collection: new Selectors(selectors || [], { em, config }),
+        collection: this.selected,
+        module: this,
         config
       });
 
@@ -341,13 +381,75 @@ export default () => {
     },
 
     destroy() {
-      const { selectorTags } = this;
+      const { selectorTags, model } = this;
       const all = this.getAll();
+      model.stopListening();
       all.stopListening();
       all.reset();
       selectorTags && selectorTags.remove();
       this.em = {};
       this.selectorTags = {};
+    },
+
+    // __toSync(common = []) {
+    //   const cmpFirst = this.getConfig().componentFirst;
+    //   const cmp = this.em.getSelected();
+    //   let result = null;
+
+    //   if (cmp && cmpFirst && common.length) {
+    //     const style = cmp.getStyle();
+    //     result = !isEmpty(style) ? style : null;
+    //   }
+
+    //   return result;
+    // },
+
+    /**
+     * Get common selectors from the current selection.
+     * @return {Array<Selector>}
+     * @private
+     */
+    __getCommon() {
+      return this.__getCommonSelectors(this.em.getSelectedAll());
+    },
+
+    __getCommonSelectors(components, opts = {}) {
+      const selectors = components
+        .map(cmp => cmp.getSelectors && cmp.getSelectors().getValid(opts))
+        .filter(Boolean);
+      return this.__common(...selectors);
+    },
+
+    __common(...args) {
+      if (!args.length) return [];
+      if (args.length === 1) return args[0];
+      if (args.length === 2)
+        return args[0].filter(item => args[1].indexOf(item) >= 0);
+
+      return args
+        .slice(1)
+        .reduce((acc, item) => this.__common(acc, item), args[0]);
+    },
+
+    getSelected() {
+      return [...this.selected.models];
+    },
+
+    addSelected(props) {
+      const added = this.add(props);
+      // TODO: target should be the one from StyleManager
+      this.em.getSelectedAll().forEach(target => {
+        target.getSelectors().add(added);
+      });
+      // TODO: update selected collection
+    },
+
+    removeSelected(selector) {
+      this.em.getSelectedAll().forEach(trg => {
+        !selector.get('protected') &&
+          trg &&
+          trg.getSelectors().remove(selector);
+      });
     }
   };
 };

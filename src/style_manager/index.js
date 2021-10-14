@@ -416,6 +416,11 @@ export default () => {
       return SectView.setTarget(target, opts);
     },
 
+    getTargets() {
+      const { propTarget } = SectView || {};
+      return (propTarget && propTarget.targets) || [];
+    },
+
     getEmitter() {
       return SectView.propTarget;
     },

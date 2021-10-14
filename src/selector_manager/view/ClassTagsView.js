@@ -66,6 +66,7 @@ export default Backbone.View.extend({
     const { em } = this.config;
     const coll = this.collection;
     this.target = this.config.em;
+    this.module = o.module;
     this.em = em;
     const toList = 'component:toggled component:update:classes';
     const toListCls = 'component:update:classes change:state';
@@ -212,27 +213,17 @@ export default Backbone.View.extend({
 
     this.collection.reset(selectors);
     this.updateStateVis(trgs);
-
+    this.module.__trgCustom();
     return selectors;
   },
 
   getCommonSelectors({ targets, opts = {} } = {}) {
     const trgs = targets || this.getTargets();
-    const selectors = trgs
-      .map(tr => tr.getSelectors && tr.getSelectors().getValid(opts))
-      .filter(i => i);
-    return this._commonSelectors(...selectors);
+    return this.module.__getCommonSelectors(trgs, opts);
   },
 
   _commonSelectors(...args) {
-    if (!args.length) return [];
-    if (args.length === 1) return args[0];
-    if (args.length === 2)
-      return args[0].filter(item => args[1].indexOf(item) >= 0);
-
-    return args
-      .slice(1)
-      .reduce((acc, item) => this._commonSelectors(acc, item), args[0]);
+    return this.module.__common(...args);
   },
 
   checkSync: debounce(function() {
@@ -332,23 +323,12 @@ export default Backbone.View.extend({
    * @param  {Object} e
    * @private
    */
-  addNewTag(label) {
-    const { em } = this;
-
-    if (!label.trim()) return;
-
-    if (em) {
-      const sm = em.get('SelectorManager');
-      const model = sm.add({ label });
-
-      this.getTargets().forEach(target => {
-        target.getSelectors().add(model);
-        this.collection.add(model);
-        this.updateStateVis();
-      });
-    }
-
+  addNewTag(value) {
+    const label = value.trim();
+    if (!label) return;
+    this.module.addSelected({ label });
     this.endNewTag();
+    // this.updateStateVis(); // Check if required
   },
 
   /**
@@ -364,7 +344,8 @@ export default Backbone.View.extend({
     const rendered = new ClassTagView({
       model,
       config: this.config,
-      coll: this.collection
+      coll: this.collection,
+      module: this.module
     }).render().el;
 
     fragment ? fragment.appendChild(rendered) : classes.append(rendered);
