@@ -481,12 +481,13 @@ export default () => {
       // element is bigger than the canvas
       const fullHeight = pos.height + toolbarH;
       const elIsShort = fullHeight < frameOffset.height;
+      const cvOffBottom = cvOff.top + pos.height;
 
-      if (frCvOff.height - (cvOff.top + pos.height) < toolbarH) {
+      if (frCvOff.height - cvOffBottom < toolbarH) {
         if (elIsShort) {
           bottom = bottom + fullHeight;
         } else {
-          bottom = -cvOff.top < pos.height ? -cvOff.top : pos.height;
+          bottom = cvOff.top < 0 ? cvOffBottom - frCvOff.height : pos.height;
         }
       }
 
