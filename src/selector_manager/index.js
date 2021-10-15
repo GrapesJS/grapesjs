@@ -120,11 +120,14 @@ export default () => {
       // Global selectors container
       this.all = new Selectors(config.selectors);
       this.selected = new Selectors([], { em, config });
-      this.model = new Model({ _undo: true });
+      this.model = new Model({ cFirst: config.componentFirst, _undo: true });
       this.__initListen();
       em.on('change:state', (m, value) => em.trigger('selector:state', value));
+      this.model.on('change:cFirst', (m, value) =>
+        em.trigger('selector:type', value)
+      );
       const listenTo =
-        'component:toggled component:update:classes styleManager:update change:state';
+        'component:toggled component:update:classes styleManager:update change:state selector:type';
       this.model.listenTo(em, listenTo, () => this.__update());
 
       return this;
@@ -450,6 +453,15 @@ export default () => {
           trg &&
           trg.getSelectors().remove(selector);
       });
+    },
+
+    getComponentFirst() {
+      return this.getConfig().componentFirst;
+    },
+
+    setComponentFirst(value) {
+      this.getConfig().componentFirst = value;
+      this.model.set({ cFirst: value });
     }
   };
 };
