@@ -1,51 +1,31 @@
 import Selector from 'selector_manager/model/Selector';
-import Selectors from 'selector_manager/model/Selectors';
-import ClassTagsView from 'selector_manager/view/ClassTagsView';
 
 describe('E2E tests', () => {
-  var fixtures;
-  var components;
-  var tagEl;
-  var gjs;
-
-  var instClassTagViewer = (gjs, fixtures) => {
-    var tagEl;
-    var clm = gjs.editor.get('SelectorManager');
-
-    if (clm) {
-      tagEl = new ClassTagsView({
-        collection: new Selectors([]),
-        config: { em: gjs.editor }
-      }).render();
-      fixtures.appendChild(tagEl.el);
-    }
-
-    return tagEl;
-  };
-  /*
-    before(function () {
-      this.$fixtures  = $("#fixtures");
-      this.$fixture   = $('<div id="SelectorManager-fixture"></div>');
-    });
-*/
-  beforeEach(() => {
-    document.body.innerHTML =
-      '<div id="fixtures"><div id="SelectorManager-fixture"></div></div>';
-    fixtures = document.body.firstChild;
-    gjs = grapesjs.init({
-      stylePrefix: '',
-      storageManager: { autoload: 0, type: 0 },
-      assetManager: {
-        storageType: 'none'
-      },
-      container: '#SelectorManager-fixture'
-    });
-  });
+  let fixtures;
+  let components;
+  let tagEl;
+  let gjs;
+  let module;
 
   describe('Interaction with Components', () => {
     beforeEach(() => {
+      document.body.innerHTML =
+        '<div id="fixtures"><div id="SelectorManager-fixture"></div></div>';
+      fixtures = document.body.firstChild;
+      gjs = grapesjs.init({
+        stylePrefix: '',
+        storageManager: { autoload: 0, type: 0 },
+        assetManager: { storageType: 'none' },
+        container: '#SelectorManager-fixture'
+      });
       components = gjs.getComponents();
-      tagEl = instClassTagViewer(gjs, fixtures);
+      module = gjs.Selectors;
+      fixtures.appendChild(module.render());
+      tagEl = module.selectorTags;
+    });
+
+    afterEach(() => {
+      gjs.destroy();
     });
 
     test('Assign correctly new class to component', () => {
@@ -85,15 +65,18 @@ describe('E2E tests', () => {
       gjs.select(model);
       tagEl.addNewTag('test');
       tagEl.addNewTag('test');
-      expect(model.getSelectors().length).toEqual(1);
+      const sels = model.getSelectors();
+      // Component has 1 selector
+      expect(sels.length).toEqual(1);
+      expect(sels.at(0).get('name')).toEqual('test');
+      // One only selector added
+      expect(module.getAll().length).toEqual(1);
       expect(
-        model
-          .getSelectors()
+        module
+          .getAll()
           .at(0)
           .get('name')
       ).toEqual('test');
-      expect(tagEl.collection.length).toEqual(1);
-      expect(tagEl.collection.at(0).get('name')).toEqual('test');
     });
 
     test('Removing from container removes also from selected component', () => {
