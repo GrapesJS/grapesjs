@@ -61,13 +61,14 @@
  * @module SelectorManager
  */
 
-import { isString, debounce, isObject, isArray, isEmpty } from 'underscore';
+import { isString, debounce, isObject, isArray } from 'underscore';
 import { isComponent, isRule } from 'utils/mixins';
-import { Model } from 'common';
+import { Model, Collection } from 'common';
 import Module from 'common/module';
 import defaults from './config/config';
 import Selector from './model/Selector';
 import Selectors from './model/Selectors';
+import State from './model/State';
 import ClassTagsView from './view/ClassTagsView';
 
 const isId = str => isString(str) && str[0] == '#';
@@ -80,6 +81,7 @@ export const evUpdate = `${evPfx}update`;
 export const evRemove = `${evPfx}remove`;
 export const evRemoveBefore = `${evRemove}:before`;
 export const evCustom = `${evPfx}custom`;
+export const evState = `${evPfx}state`;
 
 export default () => {
   return {
@@ -97,6 +99,7 @@ export default () => {
       add: evAdd,
       remove: evRemove,
       removeBefore: evRemoveBefore,
+      state: evState,
       custom: evCustom
     },
 
@@ -120,8 +123,12 @@ export default () => {
       // Global selectors container
       this.all = new Selectors(config.selectors);
       this.selected = new Selectors([], { em, config });
+      this.states = new Collection(config.states, { model: State });
       this.model = new Model({ cFirst: config.componentFirst, _undo: true });
-      this.__initListen();
+      this.__initListen({
+        collections: [this.states, this.selected],
+        propagate: [{ entity: this.states, event: this.events.state }]
+      });
       em.on('change:state', (m, value) => em.trigger('selector:state', value));
       this.model.on('change:cFirst', (m, value) =>
         em.trigger('selector:type', value)
@@ -129,6 +136,10 @@ export default () => {
       const listenTo =
         'component:toggled component:update:classes styleManager:update change:state selector:type';
       this.model.listenTo(em, listenTo, () => this.__update());
+
+      em.on(this.events.all, (...args) => {
+        console.log('All event', args);
+      });
 
       return this;
     },
@@ -338,10 +349,23 @@ export default () => {
     /**
      * Get states
      * @returns {Array<State>}
-     * @private
      */
     getStates() {
-      return this.config.states;
+      return [...this.states.models];
+    },
+
+    /**
+     * Set a new collection of states
+     * @param {Array<Object>} states Array of new states
+     * @returns {Array<State>}
+     * @example
+     * const states = selectorManager.setStates([
+     *   { name: 'hover', label: 'Hover' },
+     *   { name: 'nth-of-type(2n)', label: 'Even/Odd' }
+     * ]);
+     */
+    setStates(states, opts) {
+      return this.states.reset(states, opts);
     },
 
     /**
@@ -393,19 +417,6 @@ export default () => {
       this.em = {};
       this.selectorTags = {};
     },
-
-    // __toSync(common = []) {
-    //   const cmpFirst = this.getConfig().componentFirst;
-    //   const cmp = this.em.getSelected();
-    //   let result = null;
-
-    //   if (cmp && cmpFirst && common.length) {
-    //     const style = cmp.getStyle();
-    //     result = !isEmpty(style) ? style : null;
-    //   }
-
-    //   return result;
-    // },
 
     /**
      * Get common selectors from the current selection.
