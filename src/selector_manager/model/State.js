@@ -26,7 +26,7 @@ export default class State extends Model {
    * @returns {String}
    */
   getLabel() {
-    return this.get('label');
+    return this.get('label') || this.getName();
   }
 }
 

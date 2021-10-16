@@ -30,7 +30,7 @@ export default {
     this.em = this.config.em;
   },
 
-  __initListen() {
+  __initListen(opts = {}) {
     const { all, em, events } = this;
     all &&
       em &&
@@ -41,6 +41,16 @@ export default {
           em.trigger(events.update, p, p.changedAttributes(), c)
         )
         .on('all', this.__catchAllEvent, this);
+    // Register collections
+    this.cls = [all].concat(opts.collections || []);
+    // Propagate events
+    (opts.propagate || []).forEach(({ entity, event }) => {
+      entity.on('all', (ev, model, coll, opts) => {
+        const options = opts || coll;
+        const opt = { event: ev, ...options };
+        [em, all].map(md => md.trigger(event, model, opt));
+      });
+    });
   },
 
   __remove(model, opts = {}) {
@@ -88,5 +98,13 @@ export default {
     } while (allMap[id]);
 
     return id;
+  },
+
+  __destroy() {
+    this.cls.forEach(coll => {
+      coll.stopListening();
+      coll.reset();
+    });
+    this.em = 0;
   }
 };

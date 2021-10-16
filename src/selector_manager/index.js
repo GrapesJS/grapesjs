@@ -44,7 +44,7 @@
  * * `selector:add` - Selector added. The [Selector] is passed as an argument to the callback.
  * * `selector:remove` - Selector removed. The [Selector] is passed as an argument to the callback.
  * * `selector:update` - Selector updated. The [Selector] and the object containing changes are passed as arguments to the callback.
- * * `selector:state` - State changed. Passes the new state value as an argument.
+ * * `selector:state` - States changed. An object containing all the available data about the triggered event is passed as an argument to the callback.
  * * `selector` - Catch-all event for all the events mentioned above. An object containing all the available data about the triggered event is passed as an argument to the callback.
  *
  * ## Methods
@@ -134,12 +134,8 @@ export default () => {
         em.trigger('selector:type', value)
       );
       const listenTo =
-        'component:toggled component:update:classes styleManager:update change:state selector:type';
+        'component:toggled component:update:classes styleManager:update selector:state selector:type';
       this.model.listenTo(em, listenTo, () => this.__update());
-
-      em.on(this.events.all, (...args) => {
-        console.log('All event', args);
-      });
 
       return this;
     },
@@ -409,12 +405,9 @@ export default () => {
 
     destroy() {
       const { selectorTags, model } = this;
-      const all = this.getAll();
       model.stopListening();
-      all.stopListening();
-      all.reset();
+      this.__destroy();
       selectorTags && selectorTags.remove();
-      this.em = {};
       this.selectorTags = {};
     },
 
