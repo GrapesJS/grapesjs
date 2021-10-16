@@ -209,8 +209,8 @@ export default config => {
             };
           } else {
             model.components = this.parseNode(node, {
-              inSvg: model.type === 'svg',
-              ...opts
+              ...opts,
+              inSvg: opts.inSvg || model.type === 'svg'
             });
           }
         }
