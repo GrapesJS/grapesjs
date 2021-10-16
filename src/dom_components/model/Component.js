@@ -53,6 +53,8 @@ export const keyUpdateInside = `${keyUpdate}-inside`;
  * // -> 'span'
  * ```
  *
+ * [Component]: component.html
+ *
  * @typedef Component
  * @property {String} [type=''] Component type, eg. `text`, `image`, `video`, etc.
  * @property {String} [tagName='div'] HTML tag of the component, eg. `span`. Default: `div`
@@ -268,7 +270,7 @@ export default class Component extends Model.extend(Styleable) {
    */
   index() {
     const { collection } = this;
-    return collection && collection.indexOf(this);
+    return collection ? collection.indexOf(this) : 0;
   }
 
   /**
@@ -1016,9 +1018,9 @@ export default class Component extends Model.extend(Styleable) {
   /**
    * Set new collection if `components` are provided, otherwise the
    * current collection is returned
-   * @param  {Component|String} [components] Components to set
+   * @param  {Component|String} [components] Component Definitions or HTML string
    * @param {Object} [opts={}] Options, same as in `Component.append()`
-   * @return {Collection|Array<Component>}
+   * @returns {Collection|Array<[Component]>}
    * @example
    * // Set new collection
    * component.components('<span></span><div></div>');
@@ -1034,8 +1036,33 @@ export default class Component extends Model.extend(Styleable) {
       return coll;
     } else {
       coll.reset(null, opts);
-      return components && this.append(components, opts);
+      return components ? this.append(components, opts) : [];
     }
+  }
+
+  /**
+   * If exists, returns the child component at specific index.
+   * @param {Number} index Index of the component to return
+   * @returns {[Component]|null}
+   * @example
+   * // Return first child
+   * component.getChildAt(0);
+   * // Return second child
+   * component.getChildAt(1);
+   */
+  getChildAt(index) {
+    return this.components().at(index || 0) || null;
+  }
+
+  /**
+   * If exists, returns the last child component.
+   * @returns {[Component]|null}
+   * @example
+   * const lastChild = component.getLastChild();
+   */
+  getLastChild() {
+    const children = this.components();
+    return children.at(children.length - 1) || null;
   }
 
   /**
@@ -1049,14 +1076,14 @@ export default class Component extends Model.extend(Styleable) {
 
   /**
    * Get the parent component, if exists
-   * @return {Component}
+   * @return {Component|null}
    * @example
    * component.parent();
    * // -> Component
    */
   parent(opts = {}) {
     const coll = this.collection || (opts.prev && this.prevColl);
-    return coll && coll.parent;
+    return coll ? coll.parent : null;
   }
 
   /**
