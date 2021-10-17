@@ -11,8 +11,8 @@ export default {
     return name ? res[name] : res;
   },
 
-  getAll() {
-    return this.all || [];
+  getAll(opts = {}) {
+    return this.all ? (opts.array ? [...this.all.models] : this.all) : [];
   },
 
   getAllMap() {

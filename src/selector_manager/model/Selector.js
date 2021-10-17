@@ -82,6 +82,31 @@ export default class Selector extends Model {
     return this.getFullName();
   }
 
+  /**
+   * Get selector label.
+   * @returns {String}
+   * @example
+   * // Given such selector: { name: 'my-selector', label: 'My selector' }
+   * console.log(selector.getLabel());
+   * // -> `My selector`
+   */
+  getLabel() {
+    return this.get('label');
+  }
+
+  /**
+   * Update selector label.
+   * @param {String} label New label
+   * @example
+   * // Given such selector: { name: 'my-selector', label: 'My selector' }
+   * selector.setLabel('New Label')
+   * console.log(selector.getLabel());
+   * // -> `New Label`
+   */
+  setLabel(label) {
+    return this.set('label', label);
+  }
+
   toJSON(opts = {}) {
     const { em } = this;
     let obj = Model.prototype.toJSON.call(this, [opts]);
