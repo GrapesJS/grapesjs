@@ -17,6 +17,38 @@ export default class Property extends Model {
   init() {}
 
   /**
+   * Get property id.
+   * @returns {String}
+   */
+  getId() {
+    return this.get('id');
+  }
+
+  /**
+   * Get property type.
+   * @returns {String}
+   */
+  getType() {
+    return this.get('type');
+  }
+
+  /**
+   * Get property name (usually is the CSS property name).
+   * @returns {String}
+   */
+  getName() {
+    return this.get('property');
+  }
+
+  /**
+   * Get property label.
+   * @returns {String}
+   */
+  getLabel() {
+    return this.get('name');
+  }
+
+  /**
    * Clear the value
    * @return {this}
    * @private
