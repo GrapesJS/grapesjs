@@ -1,5 +1,5 @@
 import { Model } from 'common';
-import { isUndefined, isString } from 'underscore';
+import { isUndefined, isString, result } from 'underscore';
 import { capitalize } from 'utils/mixins';
 
 export default class Property extends Model {
@@ -46,6 +46,15 @@ export default class Property extends Model {
    */
   getLabel() {
     return this.get('name');
+  }
+
+  /**
+   * Get property value.
+   * @returns {String}
+   */
+  getValue() {
+    const val = this.get('value');
+    return isUndefined(val) ? this.getDefaultValue() : val;
   }
 
   /**
@@ -221,6 +230,10 @@ Property.callParentInit = function(property, ctx, props, opts = {}) {
 
 Property.callInit = function(context, props, opts = {}) {
   !opts.skipInit && context.init(props, opts);
+};
+
+Property.getDefaults = function() {
+  return result(this.prototype, 'defaults');
 };
 
 Property.prototype.defaults = {
