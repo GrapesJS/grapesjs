@@ -27,6 +27,37 @@ console.log(selector.toString());
 
 Returns **[String][1]** 
 
+### getLabel
+
+Get selector label.
+
+#### Examples
+
+```javascript
+// Given such selector: { name: 'my-selector', label: 'My selector' }
+console.log(selector.getLabel());
+// -> `My selector`
+```
+
+Returns **[String][1]** 
+
+### setLabel
+
+Update selector label.
+
+#### Parameters
+
+*   `label` **[String][1]** New label
+
+#### Examples
+
+```javascript
+// Given such selector: { name: 'my-selector', label: 'My selector' }
+selector.setLabel('New Label')
+console.log(selector.getLabel());
+// -> `New Label`
+```
+
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
 [2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number

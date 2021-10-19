@@ -19,6 +19,8 @@ component.get('tagName');
 // -> 'span'
 ```
 
+[Component]: component.html
+
 ### Properties
 
 *   `type` **[String][1]?** Component type, eg. `text`, `image`, `video`, etc.
@@ -408,7 +410,7 @@ current collection is returned
 
 #### Parameters
 
-*   `components` **([Component][9] | [String][1])?** Components to set
+*   `components` **([Component][9] | [String][1])?** Component Definitions or HTML string
 *   `opts` **[Object][2]** Options, same as in `Component.append()` (optional, default `{}`)
 
 #### Examples
@@ -422,7 +424,38 @@ console.log(collection.length);
 // -> 2
 ```
 
-Returns **(Collection | [Array][5]<[Component][9]>)** 
+Returns **(Collection | [Array][5]<[[Component][9]]>)** 
+
+### getChildAt
+
+If exists, returns the child component at specific index.
+
+#### Parameters
+
+*   `index` **[Number][10]** Index of the component to return
+
+#### Examples
+
+```javascript
+// Return first child
+component.getChildAt(0);
+// Return second child
+component.getChildAt(1);
+```
+
+Returns **([[Component][9]] | null)** 
+
+### getLastChild
+
+If exists, returns the last child component.
+
+#### Examples
+
+```javascript
+const lastChild = component.getLastChild();
+```
+
+Returns **([[Component][9]] | null)** 
 
 ### empty
 
@@ -449,7 +482,7 @@ component.parent();
 // -> Component
 ```
 
-Returns **[Component][9]** 
+Returns **([Component][9] | null)** 
 
 ### getTrait
 

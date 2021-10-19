@@ -30,12 +30,15 @@
  * * [getTypes](#gettypes)
  * * [createType](#createtype)
  *
+ * [Sector]: sector.html
+ *
  * @module StyleManager
  */
 
 import { isElement } from 'underscore';
 import Module from 'common/module';
 import defaults from './config/config';
+import Sector from './model/Sector';
 import Sectors from './model/Sectors';
 import Properties from './model/Properties';
 import PropertyFactory from './model/PropertyFactory';
@@ -48,6 +51,8 @@ export default () => {
 
   return {
     ...Module,
+
+    Sector,
 
     PropertyFactory: PropertyFactory(),
 
@@ -129,7 +134,7 @@ export default () => {
     /**
      * Get sector by id
      * @param {string} id  Sector id
-     * @return {Sector|null}
+     * @return {[Sector]|null}
      * @example
      * var sector = styleManager.getSector('mySector');
      * */
@@ -152,10 +157,12 @@ export default () => {
 
     /**
      * Get all sectors
-     * @return {Sectors} Collection of sectors
+     * @returns {Array<[Sector]>} Collection of sectors
+     * @example
+     * const sectors = styleManager.getSectors();
      * */
     getSectors() {
-      return sectors;
+      return sectors && sectors.models ? [...sectors.models] : [];
     },
 
     /**

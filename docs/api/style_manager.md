@@ -34,6 +34,8 @@ const styleManager = editor.StyleManager;
 *   [getTypes][14]
 *   [createType][15]
 
+[Sector]: sector.html
+
 ## getConfig
 
 Get configuration object
@@ -106,7 +108,7 @@ Returns **Sector** Removed sector
 
 Get all sectors
 
-Returns **Sectors** Collection of sectors
+Returns **[Array][19]<[Sector]>** Collection of sectors
 
 ## addProperty
 

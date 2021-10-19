@@ -51,7 +51,7 @@ sm.add(...);
 *   `selector:add` - Selector added. The [Selector] is passed as an argument to the callback.
 *   `selector:remove` - Selector removed. The [Selector] is passed as an argument to the callback.
 *   `selector:update` - Selector updated. The [Selector] and the object containing changes are passed as arguments to the callback.
-*   `selector:state` - State changed. Passes the new state value as an argument.
+*   `selector:state` - States changed. An object containing all the available data about the triggered event is passed as an argument to the callback.
 *   `selector` - Catch-all event for all the events mentioned above. An object containing all the available data about the triggered event is passed as an argument to the callback.
 
 ## Methods
@@ -150,9 +150,35 @@ Returns **this**
 
 ## getState
 
-Get the current selector state
+Get the current selector state value
 
 Returns **[String][10]** 
+
+## getStates
+
+Get states
+
+Returns **[Array][11]\<State>** 
+
+## setStates
+
+Set a new collection of states
+
+### Parameters
+
+*   `states` **[Array][11]<[Object][9]>** Array of new states
+*   `opts`  
+
+### Examples
+
+```javascript
+const states = selectorManager.setStates([
+  { name: 'hover', label: 'Hover' },
+  { name: 'nth-of-type(2n)', label: 'Even/Odd' }
+]);
+```
+
+Returns **[Array][11]\<State>** 
 
 ## getAll
 
@@ -179,3 +205,5 @@ Returns **Collection<[Selector]>**
 [9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
 [10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+
+[11]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array

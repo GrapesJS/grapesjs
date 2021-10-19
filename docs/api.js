@@ -21,6 +21,7 @@ async function generateDocs () {
     ['dom_components/model/Component.js', 'component.md'],
     ['panels/index.js', 'panels.md'],
     ['style_manager/index.js', 'style_manager.md'],
+    ['style_manager/model/Sector.js', 'sector.md'],
     ['storage_manager/index.js', 'storage_manager.md'],
     ['device_manager/index.js', 'device_manager.md'],
     ['device_manager/model/Device.js', 'device.md'],

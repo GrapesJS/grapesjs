@@ -1,17 +1,28 @@
-import Backbone from 'backbone';
+import { Model } from 'common';
 import { extend } from 'underscore';
 import Properties from './Properties';
 import PropertyFactory from './PropertyFactory';
 
-export default Backbone.Model.extend({
-  defaults: {
-    id: '',
-    name: '',
-    open: true,
-    buildProps: '',
-    extendBuilded: 1,
-    properties: []
-  },
+/**
+ * @typedef Sector
+ * @property {String} id Sector id, eg. `typography`
+ * @property {String} name Sector name, eg. `Typography`
+ * @property {Boolean} [open=true] Indicates the open state.
+ * @property {Array<Object>} [properties=[]] Indicate an array of Property defintions
+ *
+ * [Property]: property.html
+ */
+export default class Sector extends Model {
+  defaults() {
+    return {
+      id: '',
+      name: '',
+      open: true,
+      buildProps: '',
+      extendBuilded: 1,
+      properties: []
+    };
+  }
 
   initialize(opts) {
     const o = opts || {};
@@ -26,7 +37,56 @@ export default Backbone.Model.extend({
     const propsModel = new Properties(props);
     propsModel.sector = this;
     this.set('properties', propsModel);
-  },
+  }
+
+  /**
+   * Get sector id.
+   * @returns {String}
+   */
+  getId() {
+    return this.get('id');
+  }
+
+  /**
+   * Get sector name.
+   * @returns {String}
+   */
+  getName() {
+    return this.get('name');
+  }
+
+  /**
+   * Update sector name.
+   * @param {String} value New sector name
+   */
+  setName(value) {
+    return this.set('name', value);
+  }
+
+  /**
+   * Check if the sector is open
+   * @returns {Boolean}
+   */
+  isOpen() {
+    return !!this.get('open');
+  }
+
+  /**
+   * Update Sector open state
+   * @param {Boolean} value
+   */
+  setOpen(value) {
+    return this.set('open', value);
+  }
+
+  /**
+   * Get sector properties.
+   * @returns {Array<[Property]>}
+   */
+  getProperties() {
+    const props = this.get('properties');
+    return props.models ? [...props.models] : props;
+  }
 
   /**
    * Extend properties
@@ -72,7 +132,7 @@ export default Backbone.Model.extend({
     }
 
     return ex ? isolated.filter(i => i) : props;
-  },
+  }
 
   /**
    * Build properties
@@ -92,4 +152,4 @@ export default Backbone.Model.extend({
 
     return r;
   }
-});
+}
