@@ -144,6 +144,7 @@ export default ComponentView.extend({
     ComponentView.prototype.render.apply(this, args);
     this.updateClasses();
     var prov = this.model.get('provider');
+    this.el.innerHTML = '';
     this.el.appendChild(this.renderByProvider(prov));
     this.updateVideo();
     return this;
