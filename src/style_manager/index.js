@@ -104,28 +104,28 @@ export default () => {
 
     /**
      * Add new sector to the collection. If the sector with the same id already exists,
-     * that one will be returned
+     * that one will be returned.
      * @param {string} id Sector id
      * @param  {Object} sector  Object representing sector
      * @param  {string} [sector.name='']  Sector's label
      * @param  {Boolean} [sector.open=true] Indicates if the sector should be opened
      * @param  {Array<Object>} [sector.properties=[]] Array of properties
      * @param  {Object} [options={}] Options
-     * @return {Sector} Added Sector
+     * @return {[Sector]} Added Sector
      * @example
-     * var sector = styleManager.addSector('mySector',{
+     * const sector = styleManager.addSector('mySector',{
      *   name: 'My sector',
      *   open: true,
      *   properties: [{ name: 'My property'}]
      * }, { at: 0 });
      * // With `at: 0` we place the new sector at the beginning of the collection
      * */
-    addSector(id, sector, opts = {}) {
+    addSector(id, sector, options = {}) {
       let result = this.getSector(id);
 
       if (!result) {
         sector.id = id;
-        result = sectors.add(sector, opts);
+        result = sectors.add(sector, options);
       }
 
       return result;
@@ -136,18 +136,18 @@ export default () => {
      * @param {string} id  Sector id
      * @return {[Sector]|null}
      * @example
-     * var sector = styleManager.getSector('mySector');
+     * const sector = styleManager.getSector('mySector');
      * */
     getSector(id, opts = {}) {
       const res = sectors.where({ id })[0];
       !res && opts.warn && this._logNoSector(id);
-      return res;
+      return res || null;
     },
 
     /**
      * Remove a sector by id
      * @param  {string} id Sector id
-     * @return {Sector} Removed sector
+     * @return {[Sector]} Removed sector
      * @example
      * const removed = styleManager.removeSector('mySector');
      */
