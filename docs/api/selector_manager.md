@@ -63,6 +63,11 @@ sm.add(...);
 *   [getAll][6]
 *   [setState][7]
 *   [getState][8]
+*   [getSelected][9]
+*   [addSelected][10]
+*   [removeSelected][11]
+*   [setComponentFirst][12]
+*   [getComponentFirst][13]
 
 [Selector]: selector.html
 
@@ -70,7 +75,7 @@ sm.add(...);
 
 Get configuration object
 
-Returns **[Object][9]** 
+Returns **[Object][14]** 
 
 ## add
 
@@ -79,8 +84,8 @@ You can pass selectors properties or string identifiers.
 
 ### Parameters
 
-*   `props` **([Object][9] | [String][10])** Selector properties or string identifiers, eg. `{ name: 'my-class', label: 'My class' }`, `.my-cls`
-*   `opts` **[Object][9]?** Selector options (optional, default `{}`)
+*   `props` **([Object][14] | [String][15])** Selector properties or string identifiers, eg. `{ name: 'my-class', label: 'My class' }`, `.my-cls`
+*   `opts` **[Object][14]?** Selector options (optional, default `{}`)
 
 ### Examples
 
@@ -100,7 +105,7 @@ Get the selector by its name/type
 
 ### Parameters
 
-*   `name` **[String][10]** Selector name or string identifier
+*   `name` **[String][15]** Selector name or string identifier
 *   `type`  
 
 ### Examples
@@ -119,7 +124,7 @@ Remove Selector.
 
 ### Parameters
 
-*   `selector` **([String][10] | [Selector])** Selector instance or Selector string identifier
+*   `selector` **([String][15] | [Selector])** Selector instance or Selector string identifier
 *   `opts`  
 
 ### Examples
@@ -138,7 +143,7 @@ Change the selector state
 
 ### Parameters
 
-*   `value` **[String][10]** State value
+*   `value` **[String][15]** State value
 
 ### Examples
 
@@ -152,13 +157,13 @@ Returns **this**
 
 Get the current selector state value
 
-Returns **[String][10]** 
+Returns **[String][15]** 
 
 ## getStates
 
 Get states
 
-Returns **[Array][11]\<State>** 
+Returns **[Array][16]\<State>** 
 
 ## setStates
 
@@ -166,7 +171,7 @@ Set a new collection of states
 
 ### Parameters
 
-*   `states` **[Array][11]<[Object][9]>** Array of new states
+*   `states` **[Array][16]<[Object][14]>** Array of new states
 *   `opts`  
 
 ### Examples
@@ -178,7 +183,64 @@ const states = selectorManager.setStates([
 ]);
 ```
 
-Returns **[Array][11]\<State>** 
+Returns **[Array][16]\<State>** 
+
+## getSelected
+
+Get commonly selected selectors, based on all selected components.
+
+### Examples
+
+```javascript
+const selected = selectorManager.getSelected();
+console.log(selected.map(s => s.toString()))
+```
+
+Returns **[Array][16]<[Selector]>** 
+
+## addSelected
+
+Add new selector to all selected components.
+
+### Parameters
+
+*   `props` **([Object][14] | [String][15])** Selector properties or string identifiers, eg. `{ name: 'my-class', label: 'My class' }`, `.my-cls`
+
+### Examples
+
+```javascript
+selectorManager.addSelected('.new-class');
+```
+
+## removeSelected
+
+Remove a common selector from all selected components.
+
+### Parameters
+
+*   `selector` **([String][15] | [Selector])** Selector instance or Selector string identifier
+
+### Examples
+
+```javascript
+selectorManager.removeSelected('.myclass');
+```
+
+## setComponentFirst
+
+Update component-first option.
+If the component-first is enabled, all the style changes will be applied on selected components (ID rules) instead
+of selectors (which would change styles on all components with those classes).
+
+### Parameters
+
+*   `value` **[Boolean][17]** 
+
+## getComponentFirst
+
+Get the value of component-first option.
+
+Returns **[Boolean][17]** 
 
 ## getAll
 
@@ -202,8 +264,20 @@ Returns **Collection<[Selector]>**
 
 [8]: #getstate
 
-[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[9]: #getselected
 
-[10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[10]: #addselected
 
-[11]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[11]: #removeselected
+
+[12]: #setcomponentfirst
+
+[13]: #getcomponentfirst
+
+[14]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+
+[15]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+
+[16]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+
+[17]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
