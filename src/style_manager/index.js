@@ -24,19 +24,27 @@
  * * [getProperty](#getproperty)
  * * [removeProperty](#removeproperty)
  * * [getProperties](#getproperties)
- * * [getModelToStyle](#getmodeltostyle)
  * * [addType](#addtype)
  * * [getType](#gettype)
  * * [getTypes](#gettypes)
  * * [createType](#createtype)
  *
  * [Sector]: sector.html
+ * [CssRule]: css_rule.html
+ * [Component]: component.html
  *
  * @module StyleManager
  */
 
-import { isElement } from 'underscore';
+import {
+  isElement,
+  isUndefined,
+  isArray,
+  isString,
+  debounce
+} from 'underscore';
 import Module from 'common/module';
+import { Model } from 'common';
 import defaults from './config/config';
 import Sector from './model/Sector';
 import Sectors from './model/Sectors';
@@ -79,10 +87,21 @@ export default () => {
     init(config) {
       c = { ...defaults, ...config };
       const ppfx = c.pStylePrefix;
-      this.em = c.em;
+      const { em } = c;
+      this.em = em;
       if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
       properties = new Properties();
       sectors = new Sectors([], c);
+      this.model = new Model({ targets: [] });
+      const toListen =
+        'component:toggled component:update:classes change:state change:device frame:resized';
+      em.on(
+        toListen,
+        debounce(() => {
+          this.select(em.getSelectedAll());
+          em.trigger('style:custom');
+        })
+      );
 
       return this;
     },
@@ -268,6 +287,7 @@ export default () => {
      * one or more classes, the function will return the corresponding CSS Rule
      * @param  {Model} model
      * @return {Model}
+     * @private
      */
     getModelToStyle(model, options = {}) {
       const em = c.em;
@@ -275,7 +295,7 @@ export default () => {
       const classes = model.get('classes');
       const id = model.getId();
 
-      if (em) {
+      if (em && classes) {
         const config = em.getConfig();
         const um = em.get('UndoManager');
         const cssC = em.get('CssComposer');
@@ -319,7 +339,7 @@ export default () => {
       const { em } = c;
       let result = [];
 
-      if (em) {
+      if (em && target) {
         const cssC = em.get('CssComposer');
         const cssGen = em.get('CodeManager').getGenerator('css');
         const all = cssC
@@ -413,12 +433,6 @@ export default () => {
       }
     },
 
-    /**
-     * Select different target for the Style Manager.
-     * It could be a Component, CSSRule, or a string of any CSS selector
-     * @param {Component|CSSRule|String} target
-     * @return {Styleable} A Component or CSSRule
-     */
     setTarget(target, opts) {
       return SectView.setTarget(target, opts);
     },
@@ -426,6 +440,55 @@ export default () => {
     getTargets() {
       const { propTarget } = SectView || {};
       return (propTarget && propTarget.targets) || [];
+    },
+
+    /**
+     * Select different target for the Style Manager.
+     * It could be a Component, CSSRule, or a string of any CSS selector
+     * @param {[Component]|[CSSRule]|String} target
+     * @return {Array<[Component]|[CSSRule]>} Array containing selected Components or CSSRules
+     */
+    select(target, opts = {}) {
+      const { em } = this;
+      const trgs = isArray(target) ? target : [target];
+      const { stylable } = opts;
+      const cssc = em.get('CssComposer');
+      let targets = [];
+
+      trgs.filter(Boolean).forEach(target => {
+        let model = target;
+
+        if (isString(target)) {
+          const rule = cssc.getRule(target) || cssc.setRule(target);
+          !isUndefined(stylable) && rule.set({ stylable });
+          model = rule;
+        }
+
+        targets.push(model);
+      });
+
+      targets = targets.map(t => this.getModelToStyle(t));
+      const lastTarget = targets.slice().reverse()[0];
+      const lastTargetParents = this.getParentRules(lastTarget);
+      this.model.set({ targets, lastTarget, lastTargetParents });
+      console.log('After', {
+        targets,
+        lastTarget: lastTarget && lastTarget.toCSS(),
+        lastTargetParents: lastTargetParents.map(t => t.toCSS())
+      });
+      return targets;
+    },
+
+    getSelected() {
+      return this.model.get('targets');
+    },
+
+    getLastSelected() {
+      return this.model.get('lastTarget') || null;
+    },
+
+    getSelectedParents() {
+      return this.model.get('lastTargetParents') || [];
     },
 
     getEmitter() {
