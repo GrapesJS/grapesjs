@@ -188,17 +188,16 @@ describe('ClassTagsView', () => {
     });
   });
 
-  test('Output correctly state options', () => {
-    var view = new ClassTagsView({
-      config: {
-        em: target,
-        states: [{ name: 'testName', label: 'testLabel' }]
-      },
-      collection: coll
+  test('Output correctly state options', done => {
+    target
+      .get('SelectorManager')
+      .setStates([{ name: 'testName', label: 'testLabel' }]);
+    setTimeout(() => {
+      const res =
+        '<option value="">- State -</option><option value="testName">testLabel</option>';
+      expect(view.getStates()[0].innerHTML).toEqual(res);
+      done();
     });
-    expect(view.getStateOptions()).toEqual(
-      '<option value="testName">testLabel</option>'
-    );
   });
 
   describe('_commonSelectors', () => {
