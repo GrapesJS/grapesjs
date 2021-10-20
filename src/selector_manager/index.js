@@ -55,6 +55,11 @@
  * * [getAll](#getall)
  * * [setState](#setstate)
  * * [getState](#getstate)
+ * * [getSelected](#getselected)
+ * * [addSelected](#addselected)
+ * * [removeSelected](#removeselected)
+ * * [setComponentFirst](#setcomponentfirst)
+ * * [getComponentFirst](#getcomponentfirst)
  *
  * [Selector]: selector.html
  *
@@ -365,6 +370,65 @@ export default () => {
     },
 
     /**
+     * Get commonly selected selectors, based on all selected components.
+     * @returns {Array<[Selector]>}
+     * @example
+     * const selected = selectorManager.getSelected();
+     * console.log(selected.map(s => s.toString()))
+     */
+    getSelected() {
+      return this.__getCommon();
+    },
+
+    /**
+     * Add new selector to all selected components.
+     * @param {Object|String} props Selector properties or string identifiers, eg. `{ name: 'my-class', label: 'My class' }`, `.my-cls`
+     * @example
+     * selectorManager.addSelected('.new-class');
+     */
+    addSelected(props) {
+      const added = this.add(props);
+      // TODO: target should be the one from StyleManager
+      this.em.getSelectedAll().forEach(target => {
+        target.getSelectors().add(added);
+      });
+      // TODO: update selected collection
+    },
+
+    /**
+     * Remove a common selector from all selected components.
+     * @param {String|[Selector]} selector Selector instance or Selector string identifier
+     * @example
+     * selectorManager.removeSelected('.myclass');
+     */
+    removeSelected(selector) {
+      this.em.getSelectedAll().forEach(trg => {
+        !selector.get('protected') &&
+          trg &&
+          trg.getSelectors().remove(selector);
+      });
+    },
+
+    /**
+     * Update component-first option.
+     * If the component-first is enabled, all the style changes will be applied on selected components (ID rules) instead
+     * of selectors (which would change styles on all components with those classes).
+     * @param {Boolean} value
+     */
+    setComponentFirst(value) {
+      this.getConfig().componentFirst = value;
+      this.model.set({ cFirst: value });
+    },
+
+    /**
+     * Get the value of component-first option.
+     * @return {Boolean}
+     */
+    getComponentFirst() {
+      return this.getConfig().componentFirst;
+    },
+
+    /**
      * Get all selectors
      * @name getAll
      * @function
@@ -436,36 +500,6 @@ export default () => {
       return args
         .slice(1)
         .reduce((acc, item) => this.__common(acc, item), args[0]);
-    },
-
-    getSelected() {
-      return [...this.selected.models];
-    },
-
-    addSelected(props) {
-      const added = this.add(props);
-      // TODO: target should be the one from StyleManager
-      this.em.getSelectedAll().forEach(target => {
-        target.getSelectors().add(added);
-      });
-      // TODO: update selected collection
-    },
-
-    removeSelected(selector) {
-      this.em.getSelectedAll().forEach(trg => {
-        !selector.get('protected') &&
-          trg &&
-          trg.getSelectors().remove(selector);
-      });
-    },
-
-    getComponentFirst() {
-      return this.getConfig().componentFirst;
-    },
-
-    setComponentFirst(value) {
-      this.getConfig().componentFirst = value;
-      this.model.set({ cFirst: value });
     }
   };
 };
