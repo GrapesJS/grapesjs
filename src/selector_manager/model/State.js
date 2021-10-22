@@ -22,7 +22,7 @@ export default class State extends Model {
   }
 
   /**
-   * Get state label
+   * Get state label. If label was not provided, the name will be returned.
    * @returns {String}
    */
   getLabel() {
