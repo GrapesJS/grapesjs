@@ -284,7 +284,8 @@ Get the style of the component
 
 #### Parameters
 
-*   `opts`   (optional, default `{}`)
+*   `options`   (optional, default `{}`)
+*   `optsAdd`   (optional, default `{}`)
 
 Returns **[Object][2]** 
 

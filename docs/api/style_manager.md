@@ -36,6 +36,10 @@ const styleManager = editor.StyleManager;
 
 [Sector]: sector.html
 
+[CssRule]: css_rule.html
+
+[Component]: component.html
+
 ## getConfig
 
 Get configuration object
@@ -308,17 +312,17 @@ someContainer.appendChild(propView.el);
 
 Returns **PropertyView** 
 
-## setTarget
+## select
 
 Select different target for the Style Manager.
 It could be a Component, CSSRule, or a string of any CSS selector
 
 ### Parameters
 
-*   `target` **(Component | CSSRule | [String][17])** 
-*   `opts`  
+*   `target` **([Component] | [CSSRule] | [String][17])** 
+*   `opts`   (optional, default `{}`)
 
-Returns **Styleable** A Component or CSSRule
+Returns **[Array][19]<(\[Component] | [CSSRule])>** Array containing selected Components or CSSRules
 
 [1]: https://github.com/artf/grapesjs/blob/master/src/style_manager/config/config.js
 
