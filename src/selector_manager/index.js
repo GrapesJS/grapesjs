@@ -55,6 +55,8 @@
  * * [getAll](#getall)
  * * [setState](#setstate)
  * * [getState](#getstate)
+ * * [getStates](#getstates)
+ * * [setStates](#setstates)
  * * [getSelected](#getselected)
  * * [addSelected](#addselected)
  * * [removeSelected](#removeselected)
@@ -62,6 +64,7 @@
  * * [getComponentFirst](#getcomponentfirst)
  *
  * [Selector]: selector.html
+ * [State]: state.html
  *
  * @module SelectorManager
  */
@@ -349,7 +352,7 @@ export default () => {
 
     /**
      * Get states
-     * @returns {Array<State>}
+     * @returns {Array<[State]>}
      */
     getStates() {
       return [...this.states.models];
@@ -358,7 +361,7 @@ export default () => {
     /**
      * Set a new collection of states
      * @param {Array<Object>} states Array of new states
-     * @returns {Array<State>}
+     * @returns {Array<[State]>}
      * @example
      * const states = selectorManager.setStates([
      *   { name: 'hover', label: 'Hover' },
