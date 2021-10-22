@@ -476,8 +476,10 @@ export default class Component extends Model.extend(Styleable) {
    * Get the style of the component
    * @return {Object}
    */
-  getStyle(opts = {}) {
+  getStyle(options = {}, optsAdd = {}) {
     const em = this.em;
+    const prop = isString(options) ? options : '';
+    const opts = prop ? optsAdd : options;
 
     if (em && em.getConfig('avoidInlineStyle') && !opts.inline) {
       const state = em.get('state');
@@ -486,11 +488,11 @@ export default class Component extends Model.extend(Styleable) {
       this.rule = rule;
 
       if (rule) {
-        return rule.getStyle();
+        return rule.getStyle(prop);
       }
     }
 
-    return Styleable.getStyle.call(this);
+    return Styleable.getStyle.call(this, prop);
   }
 
   /**
