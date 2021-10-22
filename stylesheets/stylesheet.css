@@ -674,6 +674,18 @@ a {
   margin-right: 15px;
 }
 
+.sp-gold-item {
+  max-width: 250px;
+}
+
+.sp-logo {
+  max-width: 100%;;
+}
+
+.flex-center {
+  justify-content: center;
+}
+
 .footer-content {
   background-color: #222;
   min-height: 350px;
