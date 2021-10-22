@@ -24,6 +24,7 @@
  * * [getProperty](#getproperty)
  * * [removeProperty](#removeproperty)
  * * [getProperties](#getproperties)
+ * * [getModelToStyle](#getmodeltostyle)
  * * [addType](#addtype)
  * * [getType](#gettype)
  * * [getTypes](#gettypes)
@@ -287,7 +288,6 @@ export default () => {
      * one or more classes, the function will return the corresponding CSS Rule
      * @param  {Model} model
      * @return {Model}
-     * @private
      */
     getModelToStyle(model, options = {}) {
       const em = c.em;
