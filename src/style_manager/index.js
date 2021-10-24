@@ -471,11 +471,6 @@ export default () => {
       const lastTarget = targets.slice().reverse()[0];
       const lastTargetParents = this.getParentRules(lastTarget);
       this.model.set({ targets, lastTarget, lastTargetParents });
-      console.log('After', {
-        targets,
-        lastTarget: lastTarget && lastTarget.toCSS(),
-        lastTargetParents: lastTargetParents.map(t => t.toCSS())
-      });
       return targets;
     },
 

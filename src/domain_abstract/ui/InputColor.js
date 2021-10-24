@@ -6,6 +6,12 @@ import Input from './Input';
 const { $ } = Backbone;
 $ && ColorPicker($);
 
+const getColor = color => {
+  const name = color.getFormat() === 'name' && color.toName();
+  const cl = color.getAlpha() == 1 ? color.toHexString() : color.toRgbString();
+  return name || cl.replace(/ /g, '');
+};
+
 export default Input.extend({
   template() {
     const ppfx = this.ppfx;
@@ -31,6 +37,21 @@ export default Input.extend({
   remove() {
     Input.prototype.remove.apply(this, arguments);
     this.colorEl.spectrum('destroy');
+  },
+
+  __onInputChange(val) {
+    let value = val;
+    const colorEl = this.getColorEl();
+
+    // Check the color by using the ColorPicker's parser
+    if (colorEl) {
+      colorEl.spectrum('set', value);
+      const tc = colorEl.spectrum('get');
+      const color = value && getColor(tc);
+      color && (value = color);
+    }
+
+    this.model.set({ value }, { fromInput: 1 });
   },
 
   /**
@@ -71,16 +92,12 @@ export default Input.extend({
       var elToAppend = em && em.config ? em.config.el : '';
       var colorPickerConfig =
         (em && em.getConfig && em.getConfig('colorPicker')) || {};
-      const getColor = color => {
-        let cl =
-          color.getAlpha() == 1 ? color.toHexString() : color.toRgbString();
-        return cl.replace(/ /g, '');
-      };
 
       let changed = 0;
       let previousColor;
       this.$el.find(`[data-colorp-c]`).append(colorEl);
       colorEl.spectrum({
+        color: model.getValue() || false,
         containerClassName: `${ppfx}one-bg ${ppfx}two-color`,
         appendTo: elToAppend || 'body',
         maxSelectionSize: 8,
@@ -123,12 +140,12 @@ export default Input.extend({
         }
       });
 
-      em &&
-        em.on &&
-        em.on('component:selected', () => {
+      if (em && em.on) {
+        this.listenTo(em, 'component:selected', () => {
           changed = 1;
           colorEl.spectrum('hide');
         });
+      }
 
       this.colorEl = colorEl;
     }
