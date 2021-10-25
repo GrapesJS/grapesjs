@@ -312,18 +312,6 @@ someContainer.appendChild(propView.el);
 
 Returns **PropertyView** 
 
-## select
-
-Select different target for the Style Manager.
-It could be a Component, CSSRule, or a string of any CSS selector
-
-### Parameters
-
-*   `target` **([Component] | [CSSRule] | [String][17])** 
-*   `opts`   (optional, default `{}`)
-
-Returns **[Array][19]<(\[Component] | [CSSRule])>** Array containing selected Components or CSSRules
-
 [1]: https://github.com/artf/grapesjs/blob/master/src/style_manager/config/config.js
 
 [2]: #getconfig
