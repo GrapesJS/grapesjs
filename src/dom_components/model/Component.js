@@ -199,6 +199,7 @@ export default class Component extends Model.extend(Styleable) {
     const comps = this.components();
     if (um && !this.__hasUm) {
       um.add(comps);
+      um.add(this.getSelectors());
       this.__hasUm = 1;
     }
     opts.recursive && comps.map(c => c.__postAdd(opts));
@@ -209,6 +210,7 @@ export default class Component extends Model.extend(Styleable) {
     const um = em && em.get('UndoManager');
     if (um) {
       um.remove(this.components());
+      um.remove(this.getSelectors());
       delete this.__hasUm;
     }
   }
