@@ -447,6 +447,7 @@ export default () => {
      * It could be a Component, CSSRule, or a string of any CSS selector
      * @param {[Component]|[CSSRule]|String} target
      * @return {Array<[Component]|[CSSRule]>} Array containing selected Components or CSSRules
+     * @private
      */
     select(target, opts = {}) {
       const { em } = this;
@@ -471,6 +472,18 @@ export default () => {
       const lastTarget = targets.slice().reverse()[0];
       const lastTargetParents = this.getParentRules(lastTarget);
       this.model.set({ targets, lastTarget, lastTargetParents });
+
+      // Update all property values
+      // if (lastTarget && em.getConfig('customUI')) {
+      //   const style = lastTarget.getStyle();
+      //   sectors.map(sector => {
+      //     sector.getProperties().map(prop => {
+      //       const value = style[prop.getName()];
+      //       !isUndefined(value) && prop.setValue(value);
+      //     })
+      //   })
+      // }
+
       return targets;
     },
 
