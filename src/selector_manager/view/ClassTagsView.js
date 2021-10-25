@@ -1,4 +1,4 @@
-import { isEmpty, isArray, isString, debounce } from 'underscore';
+import { isEmpty, isArray, isString, debounce, sortBy } from 'underscore';
 import Backbone from 'backbone';
 import ClassTagView from './ClassTagView';
 
@@ -32,13 +32,14 @@ export default Backbone.View.extend({
     </div>
     <div id="${pfx}tags-field" class="${ppfx}field">
       <div id="${pfx}tags-c" data-selectors></div>
-      <input id="${pfx}new" data-input/>
+      <input id="${pfx}new" list="${pfx}selector-list" autocomplete="off" data-input/>
       <span id="${pfx}add-tag" class="${pfx}tags-btn ${pfx}tags-btn__add" data-add>
         ${iconAdd}
       </span>
       <span class="${pfx}tags-btn ${pfx}tags-btn__sync" style="display: none" data-sync-style>
         ${iconSync}
       </span>
+      <datalist id="${pfx}selector-list" data-selector-list></datalist>
     </div>
     <div class="${pfx}sels-info">
       <div class="${pfx}label-sel">${labelInfo}:</div>
@@ -122,6 +123,7 @@ export default Backbone.View.extend({
    */
   tagRemoved(model) {
     this.updateStateVis();
+    this.getAllSelectors();
   },
 
   /**
@@ -153,6 +155,7 @@ export default Backbone.View.extend({
    */
   addNew(model) {
     this.addToClasses(model);
+    this.getAllSelectors();
   },
 
   /**
@@ -198,6 +201,7 @@ export default Backbone.View.extend({
    */
   componentChanged: debounce(function({ targets } = {}) {
     this.updateSelection(targets);
+    this.getAllSelectors();
   }),
 
   updateSelection(targets) {
@@ -416,6 +420,25 @@ export default Backbone.View.extend({
     return this.$statesC;
   },
 
+  getAllSelectors() {
+    const selectorManager = this.em.get('SelectorManager');
+    let allSelectors = selectorManager
+      .getAll()
+      .getValid({ noDisabled: 0 })
+      .filter(selector => {
+        return selector.get('type') === this.collection.model.TYPE_CLASS;
+      });
+    let selectorOptions = '';
+    allSelectors = sortBy(allSelectors, function(selector) {
+      return selector.get('name');
+    });
+    allSelectors.forEach(selectors => {
+      selectorOptions += `<option value="${selectors.get('name')}"></option>`;
+    });
+    const classList = this.el.querySelector('[data-selector-list]');
+    classList.innerHTML = selectorOptions;
+  },
+
   render() {
     const { em, pfx, ppfx, config, $el, el } = this;
     const { render, iconSync, iconAdd } = config;
@@ -430,6 +453,7 @@ export default Backbone.View.extend({
       el
     };
     $el.html(this.template(tmpOpts));
+    this.getAllSelectors();
     const renderRes = render && render(tmpOpts);
     renderRes && renderRes !== el && $el.empty().append(renderRes);
     this.$input = $el.find('[data-input]');
