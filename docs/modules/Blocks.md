@@ -390,6 +390,6 @@ blockManager.add('some-block-id', {
 [Block]: </api/block.html>
 [Component]: </api/component.html>
 [Components]: <Components.html>
-[Getting Started]: <getting-started.html>
+[Getting Started]: </getting-started.html>
 [Blocks API]: </api/block_manager.html>
 [Component Definition]: <Components.html#component-definition>

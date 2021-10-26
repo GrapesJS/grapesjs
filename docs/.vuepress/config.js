@@ -102,6 +102,7 @@ module.exports = {
             ['/modules/Assets', 'Assets'],
             ['/modules/Commands', 'Commands'],
             ['/modules/I18n', 'I18n'],
+            ['/modules/Selectors', 'Selectors'],
             ['/modules/Style-manager', 'Style Manager'],
             ['/modules/Storage', 'Storage Manager'],
             ['/modules/Modal', 'Modal'],
