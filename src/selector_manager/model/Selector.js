@@ -108,6 +108,22 @@ export default class Selector extends Model {
     return this.set('label', label);
   }
 
+  /**
+   * Get selector active state.
+   * @returns {Boolean}
+   */
+  getActive() {
+    return this.get('active');
+  }
+
+  /**
+   * Update selector active state.
+   * @param {Boolean} value New active state
+   */
+  setActive(value) {
+    return this.set('active', value);
+  }
+
   toJSON(opts = {}) {
     const { em } = this;
     let obj = Model.prototype.toJSON.call(this, [opts]);
