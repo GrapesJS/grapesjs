@@ -69,6 +69,15 @@ The label **Selected** indicates on which CSS query styles will be applied, so i
 }
 ```
 
+You can also disable specific selectors and change the state (eg. Hover) in order to switch the target of styling.
+
+<img :src="$withBase('/sm-disable-selector.jpg')" alt="Disabled selectors" style="display: block; margin: auto"/>
+
+
+
+
+## Component-first styling
+
 
 
 
