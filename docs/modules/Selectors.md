@@ -112,11 +112,29 @@ If you need to manage your selectors programmatically you can use its [APIs][Sel
 
 The default UI can handle most of the common tasks but in case you need a more advanced logic/elements, that requires a replace of the default UI.
 
-All you have to do is to indicate the editor your intent to use a custom UI and then subscribe to the `block:custom` event that will give you all the information on any requested change.
+All you have to do is to indicate the editor your intent to use a custom UI and then subscribe to the `selector:custom` event that will trigger on any necessary update of the UI.
+
+```js
+const editor = grapesjs.init({
+    // ...
+    selectorManager: {
+      custom: true,
+      // ...
+    },
+});
+
+editor.on('selector:custom', props => {
+    // props.container (HTMLElement) - The default element where you can append your UI
+
+    // Here you would put the logic to render/update your UI.
+});
+```
+
+In the example below we'll replicate most of the default functionality by using solely the Selector Manager API.
+
+<demo-viewer value="v8cgkLfr" height="500" darkcode/>
 
 
-
-In the example below we'll replicate most of the default functionality by using only the Selector Manager API.
 
 
 
@@ -127,8 +145,6 @@ For a complete list of available events, you can check it [here](/api/selector_m
 
 [Selector]: </api/selector.html>
 [Style Manager]: <Style-manager.html>
-[Component]: </api/component.html>
 [Components]: <Components.html>
 [Getting Started]: </getting-started.html>
 [Selector API]: </api/selector_manager.html>
-[Component Definition]: <Components.html#component-definition>
