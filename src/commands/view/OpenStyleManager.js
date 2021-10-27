@@ -21,10 +21,12 @@ export default {
         devicePanel.set('appendContent', dvEl).trigger(trgEvCnt);
       }
 
-      // Class Manager container
+      // Selector Manager container
       const slm = em.SelectorManager;
       const slmConfig = slm.getConfig();
-      if (!slmConfig.appendTo) {
+      if (slmConfig.custom) {
+        slm.__trgCustom({ container: this.$cn2.get(0) });
+      } else if (!slmConfig.appendTo) {
         this.$cn2.append(slm.render([]));
       }
 

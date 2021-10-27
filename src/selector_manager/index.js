@@ -152,19 +152,16 @@ export default () => {
       this.__trgCustom();
     }),
 
-    __trgCustom() {
-      this.em.trigger(this.events.custom, this.__customData());
+    __trgCustom(opts) {
+      this.em.trigger(this.events.custom, this.__customData(opts));
     },
 
-    __customData() {
-      const common = this.__getCommon();
+    __customData(opts = {}) {
+      const { container } = opts;
       return {
-        sm: this,
-        common,
         states: this.getStates(),
         selected: this.getSelected(),
-        add: prop => this.__addToCommon(prop), // add selector to common selection
-        remove: '' // remove selector from selection
+        container
       };
     },
 
@@ -413,7 +410,7 @@ export default () => {
      * @returns {Array<[Component]|[CssRule]>}
      * @example
      * const targetsToStyle = selectorManager.getSelectedTargets();
-     * console.log(targetsToStyle.map(target => target.getSelectors().map(slc => slc.toString()).join('')))
+     * console.log(targetsToStyle.map(target => target.getSelectorsString()))
      */
     getSelectedTargets() {
       return this.em.get('StyleManager').getTargets();
