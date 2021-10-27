@@ -95,7 +95,7 @@ export default () => {
       sectors = new Sectors([], c);
       this.model = new Model({ targets: [] });
       const toListen =
-        'component:toggled component:update:classes change:state change:device frame:resized';
+        'component:toggled component:update:classes change:state change:device frame:resized selector:type';
       em.on(
         toListen,
         debounce(() => {
