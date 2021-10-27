@@ -299,7 +299,7 @@ To know more about the available block properties, check the [Block API Referenc
 
 
 ## Customization
-The default Block Manager UI is great for simple things, but except the possibility to tweak some CSS style, adding more complex elements requires a replace of the defualt UI.
+The default Block Manager UI is great for simple things, but except the possibility to tweak some CSS style, adding more complex elements requires a replace of the default UI.
 
 All you have to do is to indicate the editor your intent to use a custom UI and then subscribe to the `block:custom` event that will give you all the information on any requested change.
 

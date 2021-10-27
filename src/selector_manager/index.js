@@ -198,10 +198,6 @@ export default () => {
       return this;
     },
 
-    getSelected() {
-      return this.em.get('StyleManager').getTargets();
-    },
-
     addSelector(name, opts = {}, cOpts = {}) {
       let props = { ...opts };
 
@@ -410,6 +406,17 @@ export default () => {
           trg &&
           trg.getSelectors().remove(selector);
       });
+    },
+
+    /**
+     * Get the array of currently selected targets.
+     * @returns {Array<[Component]|[CssRule]>}
+     * @example
+     * const targetsToStyle = selectorManager.getSelectedTargets();
+     * console.log(targetsToStyle.map(target => target.getSelectors().map(slc => slc.toString()).join('')))
+     */
+    getSelectedTargets() {
+      return this.em.get('StyleManager').getTargets();
     },
 
     /**

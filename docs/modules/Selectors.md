@@ -76,9 +76,28 @@ You can also disable specific selectors and change the state (eg. Hover) in orde
 
 
 
-## Component-first styling
+## Component-first selectors
 
+By default, selecting components with classes will indicate their selectors as target style. That means that any change in Style Manager will be applied to all components containing those **Selected** classes.
 
+In case you need to select single components as style targets, you can enable `componentFirst` option.
+
+```js
+const editor = grapesjs.init({
+  // ...
+  selectorManager: {
+    componentFirst: true,
+  },
+});
+```
+
+This option enables also the possibility to style multiple components and the ability to sync common selectors with the current component styles (the refresh icon).
+
+<img :src="$withBase('/sm-component-first.jpg')" alt="Component First" style="display: block; margin: auto"/>
+
+::: warning
+With multiple selection, the Style Manager shows always styles of the last selected component.
+:::
 
 
 
@@ -86,18 +105,12 @@ You can also disable specific selectors and change the state (eg. Hover) in orde
 If you need to manage your selectors programmatically you can use its [APIs][Selector API].
 
 
-Below an example of commonly used methods.
-```js
-// ...
-```
-
-
 
 
 
 ## Customization
 
-The default UI is great for simple things, but except the possibility to tweak some CSS style, adding more complex elements requires a replace of the defualt UI.
+The default UI can handle most of the common tasks but in case you need a more advanced logic/elements, that requires a replace of the default UI.
 
 
 
