@@ -68,18 +68,23 @@ sm.add(...);
 *   [getSelected][11]
 *   [addSelected][12]
 *   [removeSelected][13]
-*   [setComponentFirst][14]
-*   [getComponentFirst][15]
+*   [getSelectedTargets][14]
+*   [setComponentFirst][15]
+*   [getComponentFirst][16]
 
 [Selector]: selector.html
 
 [State]: state.html
 
+[Component]: component.html
+
+[CssRule]: css_rule.html
+
 ## getConfig
 
 Get configuration object
 
-Returns **[Object][16]** 
+Returns **[Object][17]** 
 
 ## add
 
@@ -88,8 +93,8 @@ You can pass selectors properties or string identifiers.
 
 ### Parameters
 
-*   `props` **([Object][16] | [String][17])** Selector properties or string identifiers, eg. `{ name: 'my-class', label: 'My class' }`, `.my-cls`
-*   `opts` **[Object][16]?** Selector options (optional, default `{}`)
+*   `props` **([Object][17] | [String][18])** Selector properties or string identifiers, eg. `{ name: 'my-class', label: 'My class' }`, `.my-cls`
+*   `opts` **[Object][17]?** Selector options (optional, default `{}`)
 
 ### Examples
 
@@ -109,7 +114,7 @@ Get the selector by its name/type
 
 ### Parameters
 
-*   `name` **[String][17]** Selector name or string identifier
+*   `name` **[String][18]** Selector name or string identifier
 *   `type`  
 
 ### Examples
@@ -128,7 +133,7 @@ Remove Selector.
 
 ### Parameters
 
-*   `selector` **([String][17] | [Selector])** Selector instance or Selector string identifier
+*   `selector` **([String][18] | [Selector])** Selector instance or Selector string identifier
 *   `opts`  
 
 ### Examples
@@ -147,7 +152,7 @@ Change the selector state
 
 ### Parameters
 
-*   `value` **[String][17]** State value
+*   `value` **[String][18]** State value
 
 ### Examples
 
@@ -161,13 +166,13 @@ Returns **this**
 
 Get the current selector state value
 
-Returns **[String][17]** 
+Returns **[String][18]** 
 
 ## getStates
 
 Get states
 
-Returns **[Array][18]<[State]>** 
+Returns **[Array][19]<[State]>** 
 
 ## setStates
 
@@ -175,7 +180,7 @@ Set a new collection of states
 
 ### Parameters
 
-*   `states` **[Array][18]<[Object][16]>** Array of new states
+*   `states` **[Array][19]<[Object][17]>** Array of new states
 *   `opts`  
 
 ### Examples
@@ -187,7 +192,7 @@ const states = selectorManager.setStates([
 ]);
 ```
 
-Returns **[Array][18]<[State]>** 
+Returns **[Array][19]<[State]>** 
 
 ## getSelected
 
@@ -200,7 +205,7 @@ const selected = selectorManager.getSelected();
 console.log(selected.map(s => s.toString()))
 ```
 
-Returns **[Array][18]<[Selector]>** 
+Returns **[Array][19]<[Selector]>** 
 
 ## addSelected
 
@@ -208,7 +213,7 @@ Add new selector to all selected components.
 
 ### Parameters
 
-*   `props` **([Object][16] | [String][17])** Selector properties or string identifiers, eg. `{ name: 'my-class', label: 'My class' }`, `.my-cls`
+*   `props` **([Object][17] | [String][18])** Selector properties or string identifiers, eg. `{ name: 'my-class', label: 'My class' }`, `.my-cls`
 
 ### Examples
 
@@ -222,13 +227,26 @@ Remove a common selector from all selected components.
 
 ### Parameters
 
-*   `selector` **([String][17] | [Selector])** Selector instance or Selector string identifier
+*   `selector` **([String][18] | [Selector])** Selector instance or Selector string identifier
 
 ### Examples
 
 ```javascript
 selectorManager.removeSelected('.myclass');
 ```
+
+## getSelectedTargets
+
+Get the array of currently selected targets.
+
+### Examples
+
+```javascript
+const targetsToStyle = selectorManager.getSelectedTargets();
+console.log(targetsToStyle.map(target => target.getSelectorsString()))
+```
+
+Returns **[Array][19]<([Component] | [CssRule])>** 
 
 ## setComponentFirst
 
@@ -238,13 +256,13 @@ of selectors (which would change styles on all components with those classes).
 
 ### Parameters
 
-*   `value` **[Boolean][19]** 
+*   `value` **[Boolean][20]** 
 
 ## getComponentFirst
 
 Get the value of component-first option.
 
-Returns **[Boolean][19]** 
+Returns **[Boolean][20]** 
 
 ## getAll
 
@@ -278,14 +296,16 @@ Returns **Collection<[Selector]>**
 
 [13]: #removeselected
 
-[14]: #setcomponentfirst
+[14]: #getselectedtargets
 
-[15]: #getcomponentfirst
+[15]: #setcomponentfirst
 
-[16]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[16]: #getcomponentfirst
 
-[17]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[17]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[18]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[18]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-[19]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[19]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+
+[20]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean

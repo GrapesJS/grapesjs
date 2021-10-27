@@ -48,6 +48,7 @@ async function generateDocs () {
           .replace(/\*\*\\\[/g, '**[')
           .replace(/\*\*\(\\\[/g, '**([')
           .replace(/<\\\[/g, '<[')
+          .replace(/<\(\\\[/g, '<([')
           .replace(/\| \\\[/g, '| [')
           .replace('**Extends Model**', '');
         fs.writeFileSync(`${docRoot}/api/${file[1]}`, res);

@@ -58,6 +58,20 @@ console.log(selector.getLabel());
 // -> `New Label`
 ```
 
+### getActive
+
+Get selector active state.
+
+Returns **[Boolean][3]** 
+
+### setActive
+
+Update selector active state.
+
+#### Parameters
+
+*   `value` **[Boolean][3]** New active state
+
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
 [2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number

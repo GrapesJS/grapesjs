@@ -60,11 +60,14 @@
  * * [getSelected](#getselected)
  * * [addSelected](#addselected)
  * * [removeSelected](#removeselected)
+ * * [getSelectedTargets](#getselectedtargets)
  * * [setComponentFirst](#setcomponentfirst)
  * * [getComponentFirst](#getcomponentfirst)
  *
  * [Selector]: selector.html
  * [State]: state.html
+ * [Component]: component.html
+ * [CssRule]: css_rule.html
  *
  * @module SelectorManager
  */
