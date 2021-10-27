@@ -112,7 +112,11 @@ If you need to manage your selectors programmatically you can use its [APIs][Sel
 
 The default UI can handle most of the common tasks but in case you need a more advanced logic/elements, that requires a replace of the default UI.
 
+All you have to do is to indicate the editor your intent to use a custom UI and then subscribe to the `block:custom` event that will give you all the information on any requested change.
 
+
+
+In the example below we'll replicate most of the default functionality by using only the Selector Manager API.
 
 
 
