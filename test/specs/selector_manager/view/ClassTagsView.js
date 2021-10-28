@@ -308,4 +308,23 @@ describe('ClassTagsView', () => {
       expect(view.$el.find('#states')[0]).toBeTruthy();
     });
   });
+
+  describe('getAllSelectors', () => {
+    test('Data list should be empty', () => {
+      view.getAllSelectors();
+      expect(view.$el.find('[data-selector-list]')[0].children.length).toEqual(
+        0
+      );
+    });
+
+    test('Data list should be have children option', () => {
+      const selectorManager = target.get('SelectorManager');
+      const mockSelector = 'testSelector';
+      selectorManager.add(mockSelector);
+      view.getAllSelectors();
+      expect(view.$el.find('[data-selector-list]')[0].children[0].text).toEqual(
+        mockSelector
+      );
+    });
+  });
 });

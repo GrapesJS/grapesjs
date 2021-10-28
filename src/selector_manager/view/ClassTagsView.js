@@ -408,7 +408,9 @@ export default Backbone.View.extend({
       return selector.get('name');
     });
     allSelectors.forEach(selectors => {
-      selectorOptions += `<option value="${selectors.get('name')}"></option>`;
+      selectorOptions += `<option value="${selectors.get(
+        'name'
+      )}">${selectors.get('name')}</option>`;
     });
     const classList = this.el.querySelector('[data-selector-list]');
     classList.innerHTML = selectorOptions;
