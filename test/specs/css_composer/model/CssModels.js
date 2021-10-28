@@ -49,6 +49,7 @@ describe('CssRule', () => {
     var s2 = obj.get('selectors').add({ name: 'test2' });
     obj.set('state', 'hover');
     obj.set('mediaText', '1000');
+    obj.set('atRuleType', 'media');
     expect(obj.compare([s1, s2])).toEqual(false);
     expect(obj.compare([s1, s2], 'hover')).toEqual(false);
     expect(obj.compare([s2, s1], 'hover', '1000')).toEqual(true);

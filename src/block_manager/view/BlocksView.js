@@ -5,7 +5,7 @@ import CategoryView from './CategoryView';
 
 export default Backbone.View.extend({
   initialize(opts, config) {
-    bindAll(this, 'getSorter', 'onDrag', 'onDrop');
+    bindAll(this, 'getSorter', 'onDrag', 'onDrop', 'onMove');
     this.config = config || {};
     this.categories = opts.categories || '';
     this.renderedCategories = [];

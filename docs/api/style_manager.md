@@ -34,6 +34,12 @@ const styleManager = editor.StyleManager;
 *   [getTypes][14]
 *   [createType][15]
 
+[Sector]: sector.html
+
+[CssRule]: css_rule.html
+
+[Component]: component.html
+
 ## getConfig
 
 Get configuration object
@@ -43,7 +49,7 @@ Returns **[Object][16]**
 ## addSector
 
 Add new sector to the collection. If the sector with the same id already exists,
-that one will be returned
+that one will be returned.
 
 ### Parameters
 
@@ -53,13 +59,12 @@ that one will be returned
     *   `sector.name` **[string][17]** Sector's label (optional, default `''`)
     *   `sector.open` **[Boolean][18]** Indicates if the sector should be opened (optional, default `true`)
     *   `sector.properties` **[Array][19]<[Object][16]>** Array of properties (optional, default `[]`)
-*   `opts`   (optional, default `{}`)
 *   `options` **[Object][16]** Options (optional, default `{}`)
 
 ### Examples
 
 ```javascript
-var sector = styleManager.addSector('mySector',{
+const sector = styleManager.addSector('mySector',{
   name: 'My sector',
   open: true,
   properties: [{ name: 'My property'}]
@@ -67,7 +72,7 @@ var sector = styleManager.addSector('mySector',{
 // With `at: 0` we place the new sector at the beginning of the collection
 ```
 
-Returns **Sector** Added Sector
+Returns **[Sector]** Added Sector
 
 ## getSector
 
@@ -81,10 +86,10 @@ Get sector by id
 ### Examples
 
 ```javascript
-var sector = styleManager.getSector('mySector');
+const sector = styleManager.getSector('mySector');
 ```
 
-Returns **(Sector | null)** 
+Returns **([Sector] | null)** 
 
 ## removeSector
 
@@ -100,13 +105,19 @@ Remove a sector by id
 const removed = styleManager.removeSector('mySector');
 ```
 
-Returns **Sector** Removed sector
+Returns **[Sector]** Removed sector
 
 ## getSectors
 
 Get all sectors
 
-Returns **Sectors** Collection of sectors
+### Examples
+
+```javascript
+const sectors = styleManager.getSectors();
+```
+
+Returns **[Array][19]<[Sector]>** Collection of sectors
 
 ## addProperty
 
@@ -300,18 +311,6 @@ someContainer.appendChild(propView.el);
 ```
 
 Returns **PropertyView** 
-
-## setTarget
-
-Select different target for the Style Manager.
-It could be a Component, CSSRule, or a string of any CSS selector
-
-### Parameters
-
-*   `target` **(Component | CSSRule | [String][17])** 
-*   `opts`  
-
-Returns **Styleable** A Component or CSSRule
 
 [1]: https://github.com/artf/grapesjs/blob/master/src/style_manager/config/config.js
 

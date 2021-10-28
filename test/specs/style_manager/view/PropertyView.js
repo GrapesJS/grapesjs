@@ -1,3 +1,4 @@
+import Backbone from 'backbone';
 import PropertyView from 'style_manager/view/PropertyView';
 import Property from 'style_manager/model/Property';
 import Editor from 'editor/model/Editor';

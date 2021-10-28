@@ -1,22 +1,32 @@
-import { template } from 'underscore';
 import Backbone from 'backbone';
 import fetch from 'utils/fetch';
+import html from 'utils/html';
 
 export default Backbone.View.extend(
   {
-    template: template(`
-  <form>
-    <div id="<%= pfx %>title"><%= title %></div>
-    <input type="file" id="<%= uploadId %>" name="file" accept="*/*" <%= disabled ? 'disabled' : '' %> <%= multiUpload ? 'multiple' : '' %>/>
-    <div style="clear:both;"></div>
-  </form>
-  `),
+    template({ pfx, title, uploadId, disabled, multiUpload }) {
+      return html`
+        <form>
+          <div id="${pfx}title">${title}</div>
+          <input
+            type="file"
+            id="${uploadId}"
+            name="file"
+            accept="*/*"
+            ${disabled ? 'disabled' : ''}
+            ${multiUpload ? 'multiple' : ''}
+          />
+          <div style="clear:both;"></div>
+        </form>
+      `;
+    },
 
     events: {},
 
     initialize(opts = {}) {
       this.options = opts;
       const c = opts.config || {};
+      this.module = c.module;
       this.config = c;
       this.em = this.config.em;
       this.pfx = c.stylePrefix || '';
@@ -45,8 +55,8 @@ export default Backbone.View.extend(
      * @private
      */
     onUploadStart() {
-      const em = this.config.em;
-      em && em.trigger('asset:upload:start');
+      const { module } = this;
+      module && module.__propEv('asset:upload:start');
     },
 
     /**
@@ -55,9 +65,8 @@ export default Backbone.View.extend(
      * @private
      */
     onUploadEnd(res) {
-      const { $el, config } = this;
-      const em = config.em;
-      em && em.trigger('asset:upload:end', res);
+      const { $el, module } = this;
+      module && module.__propEv('asset:upload:end', res);
       const input = $el.find('input');
       input && input.val('');
     },
@@ -68,10 +77,10 @@ export default Backbone.View.extend(
      * @private
      */
     onUploadError(err) {
-      const em = this.config.em;
+      const { module } = this;
       console.error(err);
       this.onUploadEnd(err);
-      em && em.trigger('asset:upload:error', err);
+      module && module.__propEv('asset:upload:error', err);
     },
 
     /**
@@ -80,9 +89,7 @@ export default Backbone.View.extend(
      * @private
      */
     onUploadResponse(text, clb) {
-      const em = this.config.em;
-      const config = this.config;
-      const target = this.target;
+      const { module, config, target } = this;
       let json;
       try {
         json = typeof text === 'string' ? JSON.parse(text) : text;
@@ -90,7 +97,7 @@ export default Backbone.View.extend(
         json = text;
       }
 
-      em && em.trigger('asset:upload:response', json);
+      module && module.__propEv('asset:upload:response', json);
 
       if (config.autoAdd && target) {
         target.add(json.data, { at: 0 });

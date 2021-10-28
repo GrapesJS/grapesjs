@@ -12,11 +12,28 @@ const editor = grapesjs.init({
 })
 ```
 
-Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+Once the editor is instantiated you can use its API and listen to its events. Before using these methods, you should get the module from the instance.
 
 ```js
+// Listen to events
+editor.on('block:add', (block) => { ... });
+
+// Use the API
 const blockManager = editor.BlockManager;
+blockManager.add(...);
 ```
+
+## Available Events
+
+*   `block:add` - Block added. The [Block] is passed as an argument to the callback.
+*   `block:remove` - Block removed. The [Block] is passed as an argument to the callback.
+*   `block:update` - Block updated. The [Block] and the object containing changes are passed as arguments to the callback.
+*   `block:drag:start` - Started dragging block, the [Block] is passed as an argument.
+*   `block:drag` - Dragging block, the [Block] is passed as an argument.
+*   `block:drag:stop` - Dragging of the block is stopped. The dropped [Component] (if dropped successfully) and the [Block] are passed as arguments.
+*   `block` - Catch-all event for all the events mentioned above. An object containing all the available data about the triggered event is passed as an argument to the callback.
+
+## Methods
 
 *   [add][2]
 *   [get][3]
@@ -28,33 +45,25 @@ const blockManager = editor.BlockManager;
 *   [getContainer][9]
 *   [render][10]
 
+[Block]: block.html
+
+[Component]: component.html
+
 ## getConfig
 
 Get configuration object
 
 Returns **[Object][11]** 
 
-## onLoad
-
-Load default blocks if the collection is empty
-
 ## add
 
-Add new block to the collection.
+Add new block.
 
 ### Parameters
 
-*   `id` **[string][12]** Block id
-*   `opts` **[Object][11]** Options
-
-    *   `opts.label` **[string][12]** Name of the block
-    *   `opts.content` **[string][12]** HTML content
-    *   `opts.category` **([string][12] | [Object][11])** Group the block inside a category.
-        You should pass objects with id property, eg:
-        {id: 'some-uid', label: 'My category'}
-        The string will be converted in:
-        'someid' => {id: 'someid', label: 'someid'}
-    *   `opts.attributes` **[Object][11]** Block attributes (optional, default `{}`)
+*   `id` **[String][12]** Block ID
+*   `props` **[Block]** Block properties
+*   `opts`   (optional, default `{}`)
 
 ### Examples
 
@@ -69,15 +78,15 @@ blockManager.add('h1-block', {
 });
 ```
 
-Returns **Block** Added block
+Returns **[Block]** Added block
 
 ## get
 
-Return the block by id
+Get the block by id.
 
 ### Parameters
 
-*   `id` **[string][12]** Block id
+*   `id` **[String][12]** Block id
 
 ### Examples
 
@@ -87,9 +96,11 @@ console.log(JSON.stringify(block));
 // {label: 'Heading', content: '<h1>Put your ...', ...}
 ```
 
+Returns **[Block]** 
+
 ## getAll
 
-Return all blocks
+Return all blocks.
 
 ### Examples
 
@@ -99,31 +110,33 @@ console.log(JSON.stringify(blocks));
 // [{label: 'Heading', content: '<h1>Put your ...'}, ...]
 ```
 
-Returns **Collection** 
+Returns **Collection<[Block]>** 
 
 ## getAllVisible
 
 Return the visible collection, which containes blocks actually rendered
 
-Returns **Collection** 
+Returns **Collection<[Block]>** 
 
 ## remove
 
-Remove a block by id
+Remove block.
 
 ### Parameters
 
-*   `id` **[string][12]** Block id
+*   `block` **([String][12] | [Block])** Block or block ID
+*   `opts`   (optional, default `{}`)
 
 ### Examples
 
 ```javascript
-// Id of the block which need to be removed
-const id = 'button';
-blockManager.remove(id);
+const removed = blockManager.remove('BLOCK_ID');
+// or by passing the Block
+const block = blockManager.get('BLOCK_ID');
+blockManager.remove(block);
 ```
 
-Returns **Block** Removed block
+Returns **[Block]** Removed block
 
 ## getCategories
 

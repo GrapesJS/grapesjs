@@ -2,6 +2,8 @@
 
 ## Component
 
+**Extends Model.extend(Styleable)**
+
 The Component object represents a single node of our template structure, so when you update its properties the changes are
 immediately reflected on the canvas and in the code to export (indeed, when you ask to export the code we just go through all
 the tree of nodes).
@@ -16,6 +18,8 @@ component.set({
 component.get('tagName');
 // -> 'span'
 ```
+
+[Component]: component.html
 
 ### Properties
 
@@ -44,6 +48,7 @@ component.get('tagName');
 *   `selectable` **[Boolean][3]?** Allow component to be selected when clicked. Default: `true`
 *   `hoverable` **[Boolean][3]?** Shows a highlight outline when hovering on the element if `true`. Default: `true`
 *   `void` **[Boolean][3]?** This property is used by the HTML exporter as void elements don't have closing tags, eg. `<br/>`, `<hr/>`, etc. Default: `false`
+*   `styles` **[String][1]?** Component related styles, eg. `.my-component-class { color: red }`
 *   `content` **[String][1]?** Content of the component (not escaped) which will be appended before children rendering. Default: `''`
 *   `icon` **[String][1]?** Component's icon, this string will be inserted before the name (in Layers and badge), eg. it can be an HTML string '<i class="fa fa-square-o"></i>'. Default: `''`
 *   `script` **([String][1] | [Function][4])?** Component's javascript. More about it [here][7]. Default: `''`
@@ -279,7 +284,8 @@ Get the style of the component
 
 #### Parameters
 
-*   `opts`   (optional, default `{}`)
+*   `options`   (optional, default `{}`)
+*   `optsAdd`   (optional, default `{}`)
 
 Returns **[Object][2]** 
 
@@ -405,7 +411,7 @@ current collection is returned
 
 #### Parameters
 
-*   `components` **([Component][9] | [String][1])?** Components to set
+*   `components` **([Component][9] | [String][1])?** Component Definitions or HTML string
 *   `opts` **[Object][2]** Options, same as in `Component.append()` (optional, default `{}`)
 
 #### Examples
@@ -419,7 +425,38 @@ console.log(collection.length);
 // -> 2
 ```
 
-Returns **(Collection | [Array][5]<[Component][9]>)** 
+Returns **(Collection | [Array][5]<[[Component][9]]>)** 
+
+### getChildAt
+
+If exists, returns the child component at specific index.
+
+#### Parameters
+
+*   `index` **[Number][10]** Index of the component to return
+
+#### Examples
+
+```javascript
+// Return first child
+component.getChildAt(0);
+// Return second child
+component.getChildAt(1);
+```
+
+Returns **([[Component][9]] | null)** 
+
+### getLastChild
+
+If exists, returns the last child component.
+
+#### Examples
+
+```javascript
+const lastChild = component.getLastChild();
+```
+
+Returns **([[Component][9]] | null)** 
 
 ### empty
 
@@ -446,7 +483,7 @@ component.parent();
 // -> Component
 ```
 
-Returns **[Component][9]** 
+Returns **([Component][9] | null)** 
 
 ### getTrait
 

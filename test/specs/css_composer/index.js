@@ -1,8 +1,4 @@
-import Models from './model/CssModels';
-import CssRuleView from './view/CssRuleView';
-import CssRulesView from './view/CssRulesView';
 import CssComposer from 'css_composer';
-import e2e from './e2e/CssComposer';
 import utils from './../../test_utils.js';
 import Editor from 'editor/model/Editor';
 
@@ -32,6 +28,12 @@ describe('Css Composer', () => {
       config.em = editorModel;
     };
 
+    const getCSS = obj =>
+      obj
+        .getAll()
+        .map(r => r.toCSS())
+        .join('');
+
     beforeEach(() => {
       em = new Editor({});
       config = { em };
@@ -39,7 +41,7 @@ describe('Css Composer', () => {
     });
 
     afterEach(() => {
-      obj = null;
+      em.destroy();
     });
 
     test('Object exists', () => {
@@ -340,6 +342,56 @@ describe('Css Composer', () => {
       // Check the get with the right rule
       expect(obj.get(ruleClass.getSelectors())).toBe(ruleClass);
       expect(obj.get(ruleId.getSelectors())).toBe(ruleId);
+    });
+
+    describe('Collections', () => {
+      test('Add a single rule as CSS string', () => {
+        const cssRule = `.test-rule{color:red;}`;
+        obj.addCollection(cssRule);
+        expect(obj.getAll().length).toEqual(1);
+        expect(getCSS(obj)).toEqual(cssRule);
+      });
+      test('Add multiple rules as CSS string', () => {
+        const cssRules = [
+          `.test-rule{color:red;}`,
+          `.test-rule:hover{color:blue;}`,
+          `@media (max-width: 992px){.test-rule{color:darkred;}}`,
+          `@media (max-width: 992px){.test-rule:hover{color:darkblue;}}`
+        ];
+        const cssString = cssRules.join('');
+        obj.addCollection(cssString);
+        expect(obj.getAll().length).toEqual(cssRules.length);
+        expect(getCSS(obj)).toEqual(cssString);
+      });
+      test('Able to return the rule inserted as string', () => {
+        const cssRule = `
+        .test-rule1 {color:red;}
+        .test-rule2:hover {
+          color: blue;
+        }
+        @media (max-width: 992px) {
+          .test-rule3 {
+            color: darkred;
+          }
+          .test-rule4:hover {
+            color: darkblue;
+          }
+        }
+        `;
+        const result = obj.addCollection(cssRule);
+        const [rule1, rule2, rule3, rule4] = result;
+        expect(result.length).toEqual(4);
+        expect(obj.getAll().length).toEqual(4);
+
+        expect(obj.get('.test-rule1')).toBe(rule1);
+        expect(obj.get('.test-rule1', 'hover')).toBe(null);
+        expect(obj.get('.test-rule2', 'hover')).toBe(rule2);
+        expect(rule3.get('mediaText')).toBe('(max-width: 992px)');
+        expect(obj.get('.test-rule3', null, '(max-width: 992px)')).toBe(rule3);
+        expect(obj.get('.test-rule4', 'hover', '(max-width: 992px)')).toBe(
+          rule4
+        );
+      });
     });
   });
 });

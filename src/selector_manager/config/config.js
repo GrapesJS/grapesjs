@@ -9,7 +9,7 @@ export default {
   // Default selectors
   selectors: [],
 
-  // States
+  // Default states
   states: [{ name: 'hover' }, { name: 'active' }, { name: 'nth-of-type(2n)' }],
 
   // Custom selector name escaping strategy, eg.
@@ -43,7 +43,7 @@ export default {
     '<svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"></path></svg>',
 
   /**
-   * Custom render function for the Select Manager
+   * Custom render function for the Selector Manager
    * @example
    * render: ({ el, labelHead, labelStates, labelInfo, }) => {
    *  // You can use the default `el` to extend/edit the current
@@ -98,5 +98,8 @@ export default {
   // With this option enabled, also in the second case, the Component will be passed.
   // This method allows to avoid styling classes directly and make, for example, some
   // unintended changes below the visible canvas area (when components share same classes)
-  componentFirst: 0
+  componentFirst: 0,
+
+  // Avoid rendering the default Selector Manager UI.
+  custom: false
 };

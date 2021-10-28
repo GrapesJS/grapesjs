@@ -38,7 +38,8 @@ describe('ClassTagsView', () => {
     coll = new Selectors();
     view = new ClassTagsView({
       config: { em },
-      collection: coll
+      collection: coll,
+      module: em.get('SelectorManager')
     });
 
     testContext.targetStub = {
@@ -60,6 +61,7 @@ describe('ClassTagsView', () => {
   });
 
   afterEach(() => {
+    target.destroy();
     delete view.collection;
   });
 
@@ -133,11 +135,14 @@ describe('ClassTagsView', () => {
     expect(testContext.$tags.html()).toEqual('');
   });
 
-  test('Accept new tags', () => {
+  test('Accept new tags', done => {
     em.setSelected(compTest);
     view.addNewTag('test');
     view.addNewTag('test2');
-    expect(testContext.$tags.children().length).toEqual(2);
+    setTimeout(() => {
+      expect(testContext.$tags.children().length).toEqual(2);
+      done();
+    });
   });
 
   test('New tag correctly added', () => {
@@ -162,32 +167,37 @@ describe('ClassTagsView', () => {
     expect(testContext.$statesC.css('display')).toEqual('');
   });
 
-  test('Update state visibility on new tag', () => {
+  test('Update state visibility on new tag', done => {
     sinon.stub(view, 'updateStateVis');
     em.setSelected(compTest);
     view.addNewTag('test');
-    expect(view.updateStateVis.called).toEqual(true);
+    setTimeout(() => {
+      expect(view.updateStateVis.called).toEqual(true);
+      done();
+    });
   });
 
-  test('Update state visibility on removing of the tag', () => {
+  test('Update state visibility on removing of the tag', done => {
     em.setSelected(compTest);
     view.addNewTag('test');
     sinon.stub(view, 'updateStateVis');
     coll.remove(coll.at(0));
-    expect(view.updateStateVis.calledOnce).toEqual(true);
+    setTimeout(() => {
+      expect(view.updateStateVis.calledOnce).toEqual(true);
+      done();
+    });
   });
 
-  test('Output correctly state options', () => {
-    var view = new ClassTagsView({
-      config: {
-        em: target,
-        states: [{ name: 'testName', label: 'testLabel' }]
-      },
-      collection: coll
+  test('Output correctly state options', done => {
+    target
+      .get('SelectorManager')
+      .setStates([{ name: 'testName', label: 'testLabel' }]);
+    setTimeout(() => {
+      const res =
+        '<option value="">- State -</option><option value="testName">testLabel</option>';
+      expect(view.getStates()[0].innerHTML).toEqual(res);
+      done();
     });
-    expect(view.getStateOptions()).toEqual(
-      '<option value="testName">testLabel</option>'
-    );
   });
 
   describe('_commonSelectors', () => {

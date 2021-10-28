@@ -1,5 +1,7 @@
 import Component from './ComponentImage';
+import { toLowerCase } from 'utils/mixins';
 
+const type = 'video';
 const yt = 'yt';
 const vi = 'vi';
 const ytnc = 'ytnc';
@@ -8,8 +10,8 @@ export default Component.extend(
   {
     defaults: {
       ...Component.prototype.defaults,
-      type: 'video',
-      tagName: 'video',
+      type,
+      tagName: type,
       videoId: '',
       void: 0,
       provider: 'so', // on change of provider, traits are switched
@@ -337,14 +339,18 @@ export default Component.extend(
      * @private
      */
     isComponent(el) {
-      var result = '';
-      var isYtProv = /youtube\.com\/embed/.test(el.src);
-      var isYtncProv = /youtube-nocookie\.com\/embed/.test(el.src);
-      var isViProv = /player\.vimeo\.com\/video/.test(el.src);
-      var isExtProv = isYtProv || isYtncProv || isViProv;
-      if (el.tagName == 'VIDEO' || (el.tagName == 'IFRAME' && isExtProv)) {
+      let result = '';
+      const { tagName, src } = el;
+      const isYtProv = /youtube\.com\/embed/.test(src);
+      const isYtncProv = /youtube-nocookie\.com\/embed/.test(src);
+      const isViProv = /player\.vimeo\.com\/video/.test(src);
+      const isExtProv = isYtProv || isYtncProv || isViProv;
+      if (
+        toLowerCase(tagName) == type ||
+        (toLowerCase(tagName) == 'iframe' && isExtProv)
+      ) {
         result = { type: 'video' };
-        if (el.src) result.src = el.src;
+        if (src) result.src = src;
         if (isExtProv) {
           if (isYtProv) result.provider = yt;
           else if (isYtncProv) result.provider = ytnc;

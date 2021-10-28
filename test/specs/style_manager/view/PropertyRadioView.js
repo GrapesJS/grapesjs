@@ -1,3 +1,4 @@
+import Backbone from 'backbone';
 import PropertyRadioView from 'style_manager/view/PropertyRadioView';
 import Property from 'style_manager/model/Property';
 import Component from 'dom_components/model/Component';

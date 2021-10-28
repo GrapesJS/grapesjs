@@ -32,15 +32,19 @@
  * * [add](#add)
  * * [get](#get)
  * * [getAll](#getall)
+ * * [getAllWrappers](#getallwrappers)
  * * [getMain](#getmain)
  * * [remove](#remove)
  * * [select](#select)
  * * [getSelected](#getselected)
  *
+ * [Page]: page.html
+ * [Component]: component.html
+ *
  * @module Pages
  */
 
-import { isString, bindAll } from 'underscore';
+import { isString, bindAll, unique, flatten } from 'underscore';
 import { createId } from 'utils/mixins';
 import { Model } from 'backbone';
 import Pages from './model/Pages';
@@ -141,7 +145,7 @@ export default () => {
      * Add new page
      * @param {Object} props Page properties
      * @param {Object} [opts] Options
-     * @returns {Page}
+     * @returns {[Page]}
      * @example
      * const newPage = pageManager.add({
      *  id: 'new-page-id', // without an explicit ID, a random one will be created
@@ -163,8 +167,8 @@ export default () => {
 
     /**
      * Remove page
-     * @param {String|Page} page Page or page id
-     * @returns {Page}
+     * @param {String|[Page]} page Page or page id
+     * @returns {[Page]} Removed Page
      * @example
      * const removedPage = pageManager.remove('page-id');
      * // or by passing the page
@@ -185,7 +189,7 @@ export default () => {
     /**
      * Get page by id
      * @param {String} id Page id
-     * @returns {Page}
+     * @returns {[Page]}
      * @example
      * const somePage = pageManager.get('page-id');
      */
@@ -195,7 +199,7 @@ export default () => {
 
     /**
      * Get main page (the first one available)
-     * @returns {Page}
+     * @returns {[Page]}
      * @example
      * const mainPage = pageManager.getMain();
      */
@@ -206,12 +210,31 @@ export default () => {
 
     /**
      * Get all pages
-     * @returns {Array<Page>}
+     * @returns {Array<[Page]>}
      * @example
      * const arrayOfPages = pageManager.getAll();
      */
     getAll() {
-      return this.pages.models;
+      return [...this.pages.models];
+    },
+
+    /**
+     * Get wrapper components (aka body) from all pages and frames.
+     * @returns {Array<[Component]>}
+     * @example
+     * const wrappers = pageManager.getAllWrappers();
+     * // Get all `image` components from the project
+     * const allImages = wrappers.map(wrp => wrp.findType('image')).flat();
+     */
+    getAllWrappers() {
+      const pages = this.getAll();
+      return unique(
+        flatten(
+          pages.map(page =>
+            page.getAllFrames().map(frame => frame.getComponent())
+          )
+        )
+      );
     },
 
     getAllMap() {
@@ -223,7 +246,7 @@ export default () => {
 
     /**
      * Change the selected page. This will switch the page rendered in canvas
-     * @param {String|Page} page Page or page id
+     * @param {String|[Page]} page Page or page id
      * @returns {this}
      * @example
      * pageManager.select('page-id');
@@ -242,7 +265,7 @@ export default () => {
 
     /**
      * Get the selected page
-     * @returns {Page}
+     * @returns {[Page]}
      * @example
      * const selectedPage = pageManager.getSelected();
      */

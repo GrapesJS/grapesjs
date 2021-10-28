@@ -7,13 +7,15 @@ import {
   keys,
   bindAll
 } from 'underscore';
-import $ from 'cash-dom';
 import Backbone from 'backbone';
 import Extender from 'utils/extender';
 import { getModel, hasWin } from 'utils/mixins';
 import Selected from './Selected';
 
+const cash = hasWin() ? require('cash-dom') : null;
+const $ = (cash && cash.default) || cash;
 Backbone.$ = $;
+
 const deps = [
   require('utils'),
   require('i18n'),
@@ -39,7 +41,6 @@ const deps = [
   require('block_manager')
 ];
 
-const { Collection } = Backbone;
 let timedInterval;
 let updateItr;
 
@@ -123,7 +124,7 @@ export default Backbone.Model.extend({
       this.get('readyCanvas') &&
       !this.get('ready')
     ) {
-      this.set('ready', 1);
+      this.set('ready', true);
     }
   },
 
@@ -171,7 +172,7 @@ export default Backbone.Model.extend({
     if (sm && sm.canAutoload()) {
       this.load(postLoad);
     } else {
-      postLoad();
+      setTimeout(postLoad);
     }
   },
 
@@ -262,7 +263,7 @@ export default Backbone.Model.extend({
    * */
   handleUpdates(model, val, opt = {}) {
     // Component has been added temporarily - do not update storage or record changes
-    if (opt.temporary || opt.noCount || opt.avoidStore) {
+    if (opt.temporary || opt.noCount || opt.avoidStore || !this.get('ready')) {
       return;
     }
 
@@ -529,14 +530,12 @@ export default Backbone.Model.extend({
    * @private
    */
   getHtml(opts = {}) {
-    const config = this.config;
-    const { optsHtml } = config;
-    const exportWrapper = config.exportWrapper;
-    const wrapperIsBody = config.wrapperIsBody;
+    const { config } = this;
+    const { optsHtml, exportWrapper, wrapperIsBody } = config;
     const js = config.jsInHtml ? this.getJs(opts) : '';
-    var wrp = opts.component || this.get('DomComponents').getComponent();
-    var html = wrp
-      ? this.get('CodeManager').getCode(wrp, 'html', {
+    const cmp = opts.component || this.get('DomComponents').getComponent();
+    let html = cmp
+      ? this.get('CodeManager').getCode(cmp, 'html', {
           exportWrapper,
           wrapperIsBody,
           ...optsHtml,
@@ -555,8 +554,7 @@ export default Backbone.Model.extend({
    */
   getCss(opts = {}) {
     const config = this.config;
-    const { optsCss } = config;
-    const wrapperIsBody = config.wrapperIsBody;
+    const { optsCss, wrapperIsBody } = config;
     const avoidProt = opts.avoidProtected;
     const keepUnusedStyles = !isUndefined(opts.keepUnusedStyles)
       ? opts.keepUnusedStyles
@@ -564,16 +562,16 @@ export default Backbone.Model.extend({
     const cssc = this.get('CssComposer');
     const wrp = opts.component || this.get('DomComponents').getComponent();
     const protCss = !avoidProt ? config.protectedCss : '';
-
-    return wrp
-      ? protCss +
-          this.get('CodeManager').getCode(wrp, 'css', {
-            cssc,
-            wrapperIsBody,
-            keepUnusedStyles,
-            ...optsCss
-          })
-      : '';
+    const css =
+      wrp &&
+      this.get('CodeManager').getCode(wrp, 'css', {
+        cssc,
+        wrapperIsBody,
+        keepUnusedStyles,
+        ...optsCss,
+        ...opts
+      });
+    return wrp ? (opts.json ? css : protCss + css) : '';
   },
 
   /**
@@ -612,6 +610,10 @@ export default Backbone.Model.extend({
 
   storeData() {
     let result = {};
+    // Sync content if there is an active RTE
+    const editingCmp = this.getEditing();
+    editingCmp && editingCmp.trigger('sync:content', { noCount: true });
+
     this.get('storables').forEach(m => {
       result = { ...result, ...m.store(1) };
     });
@@ -820,7 +822,8 @@ export default Backbone.Model.extend({
   },
 
   getEditing() {
-    return this.get('editing');
+    const res = this.get('editing');
+    return (res && res.model) || null;
   },
 
   setEditing(value) {

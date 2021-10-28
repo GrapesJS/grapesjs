@@ -1,5 +1,4 @@
 import Backbone from 'backbone';
-import DomComponents from 'dom_components';
 import Component from 'dom_components/model/Component';
 import ComponentImage from 'dom_components/model/ComponentImage';
 import ComponentText from 'dom_components/model/ComponentText';
@@ -441,21 +440,18 @@ describe('Image Component', () => {
 
   test('Refuse not img element', () => {
     var el = document.createElement('div');
-    obj = ComponentImage.isComponent(el);
-    expect(obj).toEqual('');
+    expect(ComponentImage.isComponent(el)).toEqual(false);
   });
 
   test('Component parse img element', () => {
     var el = document.createElement('img');
-    obj = ComponentImage.isComponent(el);
-    expect(obj).toEqual({ type: 'image' });
+    expect(ComponentImage.isComponent(el)).toEqual(true);
   });
 
   test('Component parse img element with src', () => {
     var el = document.createElement('img');
     el.src = 'http://localhost/';
-    obj = ComponentImage.isComponent(el);
-    expect(obj).toEqual({ type: 'image' });
+    expect(ComponentImage.isComponent(el)).toEqual(true);
   });
 });
 

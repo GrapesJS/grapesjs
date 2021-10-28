@@ -1,4 +1,4 @@
-import { Model } from 'backbone';
+import { Model } from 'common';
 import { result, forEach } from 'underscore';
 import Frames from 'canvas/model/Frames';
 
@@ -34,6 +34,32 @@ export default class Page extends Model {
 
   getFrames() {
     return this.get('frames');
+  }
+
+  /**
+   * Get page id
+   * @returns {String}
+   */
+  getId() {
+    return this.id;
+  }
+
+  /**
+   * Get page name
+   * @returns {String}
+   */
+  getName() {
+    return this.get('name');
+  }
+
+  /**
+   * Update page name
+   * @param {String} name New page name
+   * @example
+   * page.setName('New name');
+   */
+  setName(name) {
+    return this.get({ name });
   }
 
   /**

@@ -1,5 +1,6 @@
 import Component from './ComponentImage';
 import OComponent from './Component';
+import { toLowerCase } from 'utils/mixins';
 
 export default Component.extend(
   {
@@ -100,7 +101,10 @@ export default Component.extend(
      */
     isComponent(el) {
       var result = '';
-      if (el.tagName == 'IFRAME' && /maps\.google\.com/.test(el.src)) {
+      if (
+        toLowerCase(el.tagName) == 'iframe' &&
+        /maps\.google\.com/.test(el.src)
+      ) {
         result = { type: 'map', src: el.src };
       }
       return result;

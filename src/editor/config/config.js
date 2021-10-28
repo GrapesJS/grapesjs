@@ -212,33 +212,7 @@ export default {
   selectorManager: {},
 
   //Configurations for Device Manager
-  deviceManager: {
-    devices: [
-      {
-        id: 'desktop',
-        name: 'Desktop',
-        width: ''
-      },
-      {
-        id: 'tablet',
-        name: 'Tablet',
-        width: '768px',
-        widthMedia: '992px'
-      },
-      {
-        id: 'mobileLandscape',
-        name: 'Mobile landscape',
-        width: '568px',
-        widthMedia: '768px'
-      },
-      {
-        id: 'mobilePortrait',
-        name: 'Mobile portrait',
-        width: '320px',
-        widthMedia: '480px'
-      }
-    ]
-  },
+  deviceManager: {},
 
   //Configurations for Style Manager
   styleManager: {
@@ -342,5 +316,9 @@ export default {
   keepUnusedStyles: 0,
 
   // TODO
-  multiFrames: 0
+  multiFrames: 0,
+
+  // Experimental: don't use.
+  // Avoid default UI styles
+  customUI: false
 };

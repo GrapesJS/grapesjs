@@ -2,12 +2,19 @@ import { keys, isUndefined, isElement, isArray } from 'underscore';
 
 export const hasWin = () => typeof window !== 'undefined';
 
+export const toLowerCase = str => (str || '').toLowerCase();
+
 const elProt = hasWin() ? window.Element.prototype : {};
 const matches =
   elProt.matches ||
   elProt.webkitMatchesSelector ||
   elProt.mozMatchesSelector ||
   elProt.msMatchesSelector;
+
+export const getUiClass = (em, defCls) => {
+  const { stylePrefix, customUI } = em.getConfig();
+  return [customUI && `${stylePrefix}cui`, defCls].filter(i => i).join(' ');
+};
 
 /**
  * Import styles asynchronously

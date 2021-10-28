@@ -47,14 +47,14 @@ export default {
   //    ...
   //  ]
   // }
-  autoAdd: 1,
+  autoAdd: true,
 
   // To upload your assets, the module uses Fetch API, with this option you
   // overwrite it with something else.
   // It should return a Promise
   // @example
   // customFetch: (url, options) => axios(url, { data: options.body }),
-  customFetch: '',
+  customFetch: null,
 
   // Custom uploadFile function.
   // Differently from the `customFetch` option, this gives a total control
@@ -65,10 +65,10 @@ export default {
   //   var files = e.dataTransfer ? e.dataTransfer.files : e.target.files;
   //   // ...send somewhere
   // }
-  uploadFile: '',
+  uploadFile: null,
 
   // In the absence of 'uploadFile' or 'upload' assets will be embedded as Base64
-  embedAsBase64: 1,
+  embedAsBase64: true,
 
   // Handle the image url submit from the built-in 'Add image' form
   // @example
@@ -76,21 +76,9 @@ export default {
   //   // some check...
   //   editor.AssetManager.add(textFromInput);
   // }
-  handleAdd: '',
+  handleAdd: null,
 
-  // Enable an upload dropzone on the entire editor (not document) when dragging
-  // files over it
-  // If active the dropzone disable/hide the upload dropzone in asset modal,
-  // otherwise you will get double drops (#507)
-  dropzone: 0,
-
-  // Open the asset manager once files are been dropped via the dropzone
-  openAssetsOnDrop: 1,
-
-  // Any dropzone content to append inside dropzone element
-  dropzoneContent: '',
-
-  //method called before upload, on return false upload is canceled.
+  // Method called before upload, on return false upload is canceled.
   // @example
   // beforeUpload: (files) => {
   //   // logic...
@@ -100,5 +88,23 @@ export default {
   beforeUpload: null,
 
   // Toggles visiblity of assets url input
-  showUrlInput: true
+  showUrlInput: true,
+
+  // Avoid rendering the default asset manager.
+  custom: false,
+
+  // WARNING: all the options below are considered DEPRECATED.
+  // ---------------------------------------------------------------
+
+  // Enable an upload dropzone on the entire editor (not document) when dragging
+  // files over it
+  // If active the dropzone disable/hide the upload dropzone in asset modal,
+  // otherwise you will get double drops (#507)
+  dropzone: false,
+
+  // Open the asset manager once files are been dropped via the dropzone
+  openAssetsOnDrop: 1,
+
+  // Any dropzone content to append inside dropzone element
+  dropzoneContent: ''
 };

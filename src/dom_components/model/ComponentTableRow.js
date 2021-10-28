@@ -1,15 +1,18 @@
 import Component from './Component';
+import { toLowerCase } from 'utils/mixins';
+
+const tagName = 'tr';
 
 export default Component.extend(
   {
     defaults: {
       ...Component.prototype.defaults,
-      tagName: 'tr',
+      tagName,
       draggable: ['thead', 'tbody', 'tfoot'],
       droppable: ['th', 'td']
     }
   },
   {
-    isComponent: el => el.tagName == 'TR' && true
+    isComponent: el => toLowerCase(el.tagName) === tagName
   }
 );

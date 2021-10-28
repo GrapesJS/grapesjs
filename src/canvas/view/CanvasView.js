@@ -6,7 +6,8 @@ import {
   getElement,
   getKeyChar,
   isTextNode,
-  getElRect
+  getElRect,
+  getUiClass
 } from 'utils/mixins';
 import FramesView from './FramesView';
 
@@ -353,7 +354,7 @@ export default Backbone.View.extend({
   },
 
   render() {
-    const { el, $el, ppfx, config } = this;
+    const { el, $el, ppfx, config, em } = this;
     $el.html(this.template());
     const $frames = $el.find('[data-frames]');
     this.framesArea = $frames.get(0);
@@ -387,7 +388,7 @@ export default Backbone.View.extend({
     this.fixedOffsetEl = el.querySelector(`.${ppfx}offset-fixed-v`);
     this.toolsGlobEl = el.querySelector(`.${ppfx}tools-gl`);
     this.toolsEl = toolsEl;
-    this.el.className = this.className;
+    this.el.className = getUiClass(em, this.className);
     this.ready = 1;
     this._renderFrames();
 

@@ -120,23 +120,20 @@ export default PropertyView.extend({
    *
    * @return void
    * */
-  openAssetManager(e) {
-    const { em, modal } = this;
-    const editor = em ? em.get('Editor') : '';
+  openAssetManager() {
+    const { em } = this;
+    const am = em && em.get('AssetManager');
+    const handleAsset = a => this.spreadUrl(isString(a) ? a : a.get('src'));
 
-    if (editor) {
-      editor.runCommand('open-assets', {
-        types: ['image'],
-        accept: 'image/*',
+    am &&
+      am.open({
+        select(asset, complete) {
+          handleAsset(asset);
+          complete && am.close();
+        },
         target: this.getTargetModel(),
-        onClick() {},
-        onDblClick() {},
-        onSelect: asset => {
-          modal.close();
-          const url = isString(asset) ? asset : asset.get('src');
-          this.spreadUrl(url);
-        }
+        types: ['image'],
+        accept: 'image/*'
       });
-    }
   }
 });

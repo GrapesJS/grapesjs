@@ -35,25 +35,116 @@ const editor = grapesjs.init({
 })
 ```
 
-Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+Once the editor is instantiated you can use its API and listen to its events. Before using these methods, you should get the module from the instance.
 
 ```js
-const selectorManager = editor.SelectorManager;
+// Listen to events
+editor.on('selector:add', (selector) => { ... });
+
+// Use the API
+const sm = editor.Selectors;
+sm.add(...);
 ```
+
+## Available Events
+
+*   `selector:add` - Selector added. The [Selector] is passed as an argument to the callback.
+*   `selector:remove` - Selector removed. The [Selector] is passed as an argument to the callback.
+*   `selector:update` - Selector updated. The [Selector] and the object containing changes are passed as arguments to the callback.
+*   `selector:state` - States changed. An object containing all the available data about the triggered event is passed as an argument to the callback.
+*   `selector` - Catch-all event for all the events mentioned above. An object containing all the available data about the triggered event is passed as an argument to the callback.
+
+## Methods
 
 *   [getConfig][2]
 *   [add][3]
-*   [addClass][4]
-*   [get][5]
+*   [get][4]
+*   [remove][5]
 *   [getAll][6]
 *   [setState][7]
 *   [getState][8]
+*   [getStates][9]
+*   [setStates][10]
+*   [getSelected][11]
+*   [addSelected][12]
+*   [removeSelected][13]
+*   [getSelectedTargets][14]
+*   [setComponentFirst][15]
+*   [getComponentFirst][16]
+
+[Selector]: selector.html
+
+[State]: state.html
+
+[Component]: component.html
+
+[CssRule]: css_rule.html
 
 ## getConfig
 
 Get configuration object
 
-Returns **[Object][9]** 
+Returns **[Object][17]** 
+
+## add
+
+Add a new selector to the collection if it does not already exist.
+You can pass selectors properties or string identifiers.
+
+### Parameters
+
+*   `props` **([Object][17] | [String][18])** Selector properties or string identifiers, eg. `{ name: 'my-class', label: 'My class' }`, `.my-cls`
+*   `opts` **[Object][17]?** Selector options (optional, default `{}`)
+
+### Examples
+
+```javascript
+const selector = selectorManager.add({ name: 'my-class', label: 'My class' });
+console.log(selector.toString()) // `.my-class`
+// Same as
+const selector = selectorManager.add('.my-class');
+console.log(selector.toString()) // `.my-class`
+```
+
+Returns **[Selector]** 
+
+## get
+
+Get the selector by its name/type
+
+### Parameters
+
+*   `name` **[String][18]** Selector name or string identifier
+*   `type`  
+
+### Examples
+
+```javascript
+const selector = selectorManager.get('.my-class');
+// Get Id
+const selectorId = selectorManager.get('#my-id');
+```
+
+Returns **([Selector] | null)** 
+
+## remove
+
+Remove Selector.
+
+### Parameters
+
+*   `selector` **([String][18] | [Selector])** Selector instance or Selector string identifier
+*   `opts`  
+
+### Examples
+
+```javascript
+const removed = selectorManager.remove('.myclass');
+// or by passing the Selector
+selectorManager.remove(selectorManager.get('.myclass'));
+```
+
+Returns **[Selector]** Removed Selector
 
 ## setState
 
@@ -61,7 +152,7 @@ Change the selector state
 
 ### Parameters
 
-*   `value` **[String][10]** State value
+*   `value` **[String][18]** State value
 
 ### Examples
 
@@ -73,90 +164,111 @@ Returns **this**
 
 ## getState
 
-Get the current selector state
+Get the current selector state value
 
-Returns **[String][10]** 
+Returns **[String][18]** 
 
-## add
+## getStates
 
-Add a new selector to collection if it's not already exists. Class type is a default one
+Get states
+
+Returns **[Array][19]<[State]>** 
+
+## setStates
+
+Set a new collection of states
 
 ### Parameters
 
-*   `name` **([String][10] | [Array][11])** Selector/s name
-*   `opts` **[Object][9]** Selector options (optional, default `{}`)
-
-    *   `opts.label` **[String][10]** Label for the selector, if it's not provided the label will be the same as the name (optional, default `''`)
-    *   `opts.type` **[String][10]** Type of the selector. At the moment, only 'class' (1) is available (optional, default `1`)
+*   `states` **[Array][19]<[Object][17]>** Array of new states
+*   `opts`  
 
 ### Examples
 
 ```javascript
-const selector = selectorManager.add('selectorName');
-// Same as
-const selector = selectorManager.add('selectorName', {
-  type: 1,
-  label: 'selectorName'
-});
-// Multiple selectors
-const selectors = selectorManager.add(['.class1', '.class2', '#id1']);
+const states = selectorManager.setStates([
+  { name: 'hover', label: 'Hover' },
+  { name: 'nth-of-type(2n)', label: 'Even/Odd' }
+]);
 ```
 
-Returns **(Model | [Array][11])** 
+Returns **[Array][19]<[State]>** 
 
-## addClass
+## getSelected
 
-Add class selectors
-
-### Parameters
-
-*   `classes` **([Array][11] | [string][10])** Array or string of classes
+Get commonly selected selectors, based on all selected components.
 
 ### Examples
 
 ```javascript
-sm.addClass('class1');
-sm.addClass('class1 class2');
-sm.addClass(['class1', 'class2']);
-// -> [SelectorObject, ...]
+const selected = selectorManager.getSelected();
+console.log(selected.map(s => s.toString()))
 ```
 
-Returns **[Array][11]** Array of added selectors
+Returns **[Array][19]<[Selector]>** 
 
-## get
+## addSelected
 
-Get the selector by its name
+Add new selector to all selected components.
 
 ### Parameters
 
-*   `name` **([String][10] | [Array][11])** Selector name
-*   `type` **[String][10]** Selector type
+*   `props` **([Object][17] | [String][18])** Selector properties or string identifiers, eg. `{ name: 'my-class', label: 'My class' }`, `.my-cls`
 
 ### Examples
 
 ```javascript
-const selector = selectorManager.get('selectorName');
-// or get an array
-const selectors = selectorManager.get(['class1', 'class2']);
+selectorManager.addSelected('.new-class');
 ```
 
-Returns **(Model | [Array][11])** 
+## removeSelected
+
+Remove a common selector from all selected components.
+
+### Parameters
+
+*   `selector` **([String][18] | [Selector])** Selector instance or Selector string identifier
+
+### Examples
+
+```javascript
+selectorManager.removeSelected('.myclass');
+```
+
+## getSelectedTargets
+
+Get the array of currently selected targets.
+
+### Examples
+
+```javascript
+const targetsToStyle = selectorManager.getSelectedTargets();
+console.log(targetsToStyle.map(target => target.getSelectorsString()))
+```
+
+Returns **[Array][19]<([Component] | [CssRule])>** 
+
+## setComponentFirst
+
+Update component-first option.
+If the component-first is enabled, all the style changes will be applied on selected components (ID rules) instead
+of selectors (which would change styles on all components with those classes).
+
+### Parameters
+
+*   `value` **[Boolean][20]** 
+
+## getComponentFirst
+
+Get the value of component-first option.
+
+Returns **[Boolean][20]** 
 
 ## getAll
 
 Get all selectors
 
-Returns **Collection** 
-
-## escapeName
-
-Return escaped selector name
-
-### Parameters
-
-*   `name` **[String][10]** Selector name to escape
-
-Returns **[String][10]** Escaped name
+Returns **Collection<[Selector]>** 
 
 [1]: https://github.com/artf/grapesjs/blob/master/src/selector_manager/config/config.js
 
@@ -164,9 +276,9 @@ Returns **[String][10]** Escaped name
 
 [3]: #add
 
-[4]: #addclass
+[4]: #get
 
-[5]: #get
+[5]: #remove
 
 [6]: #getall
 
@@ -174,8 +286,26 @@ Returns **[String][10]** Escaped name
 
 [8]: #getstate
 
-[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[9]: #getstates
 
-[10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[10]: #setstates
 
-[11]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[11]: #getselected
+
+[12]: #addselected
+
+[13]: #removeselected
+
+[14]: #getselectedtargets
+
+[15]: #setcomponentfirst
+
+[16]: #getcomponentfirst
+
+[17]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+
+[18]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+
+[19]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+
+[20]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean

@@ -42,15 +42,19 @@ export default AssetView.extend({
    * @private
    * */
   onClick() {
-    var onClick = this.config.onClick;
-    var model = this.model;
-    this.collection.trigger('deselectAll');
-    this.$el.addClass(this.pfx + 'highlight');
+    const { model, pfx } = this;
+    const { select } = this.__getBhv();
+    const { onClick } = this.config;
+    const coll = this.collection;
+    coll.trigger('deselectAll');
+    this.$el.addClass(pfx + 'highlight');
 
-    if (isFunction(onClick)) {
+    if (isFunction(select)) {
+      select(model, false);
+    } else if (isFunction(onClick)) {
       onClick(model);
     } else {
-      this.updateTarget(this.collection.target);
+      this.updateTarget(coll.target);
     }
   },
 
@@ -60,16 +64,18 @@ export default AssetView.extend({
    * */
   onDblClick() {
     const { em, model } = this;
-    const onDblClick = this.config.onDblClick;
+    const { select } = this.__getBhv();
+    const { onDblClick } = this.config;
+    const { target, onSelect } = this.collection;
 
-    if (isFunction(onDblClick)) {
+    if (isFunction(select)) {
+      select(model, true);
+    } else if (isFunction(onDblClick)) {
       onDblClick(model);
     } else {
-      this.updateTarget(this.collection.target);
+      this.updateTarget(target);
       em && em.get('Modal').close();
     }
-
-    var onSelect = this.collection.onSelect;
     isFunction(onSelect) && onSelect(model);
   },
 

@@ -30,11 +30,24 @@
  * * [getTypes](#gettypes)
  * * [createType](#createtype)
  *
+ * [Sector]: sector.html
+ * [CssRule]: css_rule.html
+ * [Component]: component.html
+ *
  * @module StyleManager
  */
 
-import { isElement } from 'underscore';
+import {
+  isElement,
+  isUndefined,
+  isArray,
+  isString,
+  debounce
+} from 'underscore';
+import Module from 'common/module';
+import { Model } from 'common';
 import defaults from './config/config';
+import Sector from './model/Sector';
 import Sectors from './model/Sectors';
 import Properties from './model/Properties';
 import PropertyFactory from './model/PropertyFactory';
@@ -46,6 +59,10 @@ export default () => {
   var sectors, SectView;
 
   return {
+    ...Module,
+
+    Sector,
+
     PropertyFactory: PropertyFactory(),
 
     /**
@@ -71,10 +88,21 @@ export default () => {
     init(config) {
       c = { ...defaults, ...config };
       const ppfx = c.pStylePrefix;
-      this.em = c.em;
+      const { em } = c;
+      this.em = em;
       if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
       properties = new Properties();
       sectors = new Sectors([], c);
+      this.model = new Model({ targets: [] });
+      const toListen =
+        'component:toggled component:update:classes change:state change:device frame:resized selector:type';
+      em.on(
+        toListen,
+        debounce(() => {
+          this.select(em.getSelectedAll());
+          em.trigger('style:custom');
+        })
+      );
 
       return this;
     },
@@ -89,34 +117,35 @@ export default () => {
 
       if (elTo) {
         const el = isElement(elTo) ? elTo : document.querySelector(elTo);
+        if (!el) return this.__logWarn('"appendTo" element not found');
         el.appendChild(this.render());
       }
     },
 
     /**
      * Add new sector to the collection. If the sector with the same id already exists,
-     * that one will be returned
+     * that one will be returned.
      * @param {string} id Sector id
      * @param  {Object} sector  Object representing sector
      * @param  {string} [sector.name='']  Sector's label
      * @param  {Boolean} [sector.open=true] Indicates if the sector should be opened
      * @param  {Array<Object>} [sector.properties=[]] Array of properties
      * @param  {Object} [options={}] Options
-     * @return {Sector} Added Sector
+     * @return {[Sector]} Added Sector
      * @example
-     * var sector = styleManager.addSector('mySector',{
+     * const sector = styleManager.addSector('mySector',{
      *   name: 'My sector',
      *   open: true,
      *   properties: [{ name: 'My property'}]
      * }, { at: 0 });
      * // With `at: 0` we place the new sector at the beginning of the collection
      * */
-    addSector(id, sector, opts = {}) {
+    addSector(id, sector, options = {}) {
       let result = this.getSector(id);
 
       if (!result) {
         sector.id = id;
-        result = sectors.add(sector, opts);
+        result = sectors.add(sector, options);
       }
 
       return result;
@@ -125,20 +154,20 @@ export default () => {
     /**
      * Get sector by id
      * @param {string} id  Sector id
-     * @return {Sector|null}
+     * @return {[Sector]|null}
      * @example
-     * var sector = styleManager.getSector('mySector');
+     * const sector = styleManager.getSector('mySector');
      * */
     getSector(id, opts = {}) {
       const res = sectors.where({ id })[0];
       !res && opts.warn && this._logNoSector(id);
-      return res;
+      return res || null;
     },
 
     /**
      * Remove a sector by id
      * @param  {string} id Sector id
-     * @return {Sector} Removed sector
+     * @return {[Sector]} Removed sector
      * @example
      * const removed = styleManager.removeSector('mySector');
      */
@@ -148,10 +177,12 @@ export default () => {
 
     /**
      * Get all sectors
-     * @return {Sectors} Collection of sectors
+     * @returns {Array<[Sector]>} Collection of sectors
+     * @example
+     * const sectors = styleManager.getSectors();
      * */
     getSectors() {
-      return sectors;
+      return sectors && sectors.models ? [...sectors.models] : [];
     },
 
     /**
@@ -264,7 +295,7 @@ export default () => {
       const classes = model.get('classes');
       const id = model.getId();
 
-      if (em) {
+      if (em && classes) {
         const config = em.getConfig();
         const um = em.get('UndoManager');
         const cssC = em.get('CssComposer');
@@ -308,7 +339,7 @@ export default () => {
       const { em } = c;
       let result = [];
 
-      if (em) {
+      if (em && target) {
         const cssC = em.get('CssComposer');
         const cssGen = em.get('CodeManager').getGenerator('css');
         const all = cssC
@@ -402,14 +433,70 @@ export default () => {
       }
     },
 
+    setTarget(target, opts) {
+      return SectView.setTarget(target, opts);
+    },
+
+    getTargets() {
+      const { propTarget } = SectView || {};
+      return (propTarget && propTarget.targets) || [];
+    },
+
     /**
      * Select different target for the Style Manager.
      * It could be a Component, CSSRule, or a string of any CSS selector
-     * @param {Component|CSSRule|String} target
-     * @return {Styleable} A Component or CSSRule
+     * @param {[Component]|[CSSRule]|String} target
+     * @return {Array<[Component]|[CSSRule]>} Array containing selected Components or CSSRules
+     * @private
      */
-    setTarget(target, opts) {
-      return SectView.setTarget(target, opts);
+    select(target, opts = {}) {
+      const { em } = this;
+      const trgs = isArray(target) ? target : [target];
+      const { stylable } = opts;
+      const cssc = em.get('CssComposer');
+      let targets = [];
+
+      trgs.filter(Boolean).forEach(target => {
+        let model = target;
+
+        if (isString(target)) {
+          const rule = cssc.getRule(target) || cssc.setRule(target);
+          !isUndefined(stylable) && rule.set({ stylable });
+          model = rule;
+        }
+
+        targets.push(model);
+      });
+
+      targets = targets.map(t => this.getModelToStyle(t));
+      const lastTarget = targets.slice().reverse()[0];
+      const lastTargetParents = this.getParentRules(lastTarget);
+      this.model.set({ targets, lastTarget, lastTargetParents });
+
+      // Update all property values
+      // if (lastTarget && em.getConfig('customUI')) {
+      //   const style = lastTarget.getStyle();
+      //   sectors.map(sector => {
+      //     sector.getProperties().map(prop => {
+      //       const value = style[prop.getName()];
+      //       !isUndefined(value) && prop.setValue(value);
+      //     })
+      //   })
+      // }
+
+      return targets;
+    },
+
+    getSelected() {
+      return this.model.get('targets');
+    },
+
+    getLastSelected() {
+      return this.model.get('lastTarget') || null;
+    },
+
+    getSelectedParents() {
+      return this.model.get('lastTargetParents') || [];
     },
 
     getEmitter() {
@@ -422,8 +509,9 @@ export default () => {
      * @private
      * */
     render() {
-      SectView && SectView.remove();
+      const el = SectView && SectView.el;
       SectView = new SectorsView({
+        el,
         collection: sectors,
         target: c.em,
         config: c

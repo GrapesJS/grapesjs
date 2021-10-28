@@ -7,13 +7,15 @@ export default {
     this.sender = sender;
     const em = editor.getModel();
 
-    var config = editor.Config;
-    var pfx = config.stylePrefix;
-    var tm = editor.TraitManager;
-    var panelC;
+    const config = editor.Config;
+    const pfx = config.stylePrefix;
+    const tm = editor.TraitManager;
+    const confTm = tm.getConfig();
+    let panelC;
+
+    if (confTm.appendTo) return;
 
     if (!this.$cn) {
-      var confTm = tm.getConfig();
       this.$cn = $('<div></div>');
       this.$cn2 = $('<div></div>');
       this.$cn.append(this.$cn2);

@@ -434,6 +434,7 @@ export default Backbone.View.extend({
     [
       { event: 'keydown keyup keypress', class: 'KeyboardEvent' },
       { event: 'mousedown mousemove mouseup', class: 'MouseEvent' },
+      { event: 'pointerdown pointermove pointerup', class: 'PointerEvent' },
       { event: 'wheel', class: 'WheelEvent' }
     ].forEach(obj =>
       obj.event.split(' ').forEach(event => {

@@ -203,6 +203,12 @@ $guide_pad: 5px !default;
   left: 0;
   top: $canvasTop;
 
+  &.#{$cui-cls} {
+    width: 100%;
+    height: 100%;
+    top: 0;
+  }
+
   &#{gjs-is(grab)},
   &#{gjs-is(grabbing)} {
     .#{$cv-prefix}canvas__frames {

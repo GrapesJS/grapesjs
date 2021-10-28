@@ -531,4 +531,38 @@ describe('ParserHtml', () => {
     ];
     expect(obj.parse(str).html).toEqual(result);
   });
+
+  test('SVG is properly parsed', () => {
+    const str = `<div>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M13 12h7v1.5h-7m0-4h7V11h-7m0 3.5h7V16h-7m8-12H3c-1.1 0-2 .9-2 2v13c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2m0 15h-9V6h9"></path>
+      </svg>
+    </div>`;
+    const result = [
+      {
+        tagName: 'div',
+        components: [
+          {
+            type: 'svg',
+            tagName: 'svg',
+            attributes: {
+              xmlns: 'http://www.w3.org/2000/svg',
+              viewBox: '0 0 24 24'
+            },
+            components: [
+              {
+                tagName: 'path',
+                attributes: {
+                  d:
+                    'M13 12h7v1.5h-7m0-4h7V11h-7m0 3.5h7V16h-7m8-12H3c-1.1 0-2 .9-2 2v13c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2m0 15h-9V6h9'
+                },
+                type: 'svg-in'
+              }
+            ]
+          }
+        ]
+      }
+    ];
+    expect(obj.parse(str).html).toEqual(result);
+  });
 });

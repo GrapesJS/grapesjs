@@ -58,8 +58,12 @@ export default Backbone.View.extend({
   handleChange(e) {
     e.stopPropagation();
     const value = this.getInputEl().value;
-    this.model.set({ value }, { fromInput: 1 });
+    this.__onInputChange(value);
     this.elementUpdated();
+  },
+
+  __onInputChange(value) {
+    this.model.set({ value }, { fromInput: 1 });
   },
 
   /**

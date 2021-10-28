@@ -82,11 +82,9 @@ export default Backbone.Collection.extend({
       sels.remove(rulesRemoved.map(rule => rule.getSelectors().at(0)));
 
       if (!removed.opt.temporary) {
-        // Deprecate 'style-signature'
-        // const cm = em.get('Commands');
-        // const hasSign = removed.get('style-signature');
-        // const optStyle = { target: removed };
-        // hasSign && cm.run('core:component-style-clear', optStyle);
+        em.get('Commands').run('core:component-style-clear', {
+          target: removed
+        });
         removed.removed();
         removed.trigger('removed');
         em.trigger('component:remove', removed);
@@ -162,6 +160,7 @@ export default Backbone.Collection.extend({
     if (isString(models)) {
       models = this.parseString(models, opt);
     } else if (isArray(models)) {
+      models = [...models];
       models.forEach((item, index) => {
         if (isString(item)) {
           const nodes = this.parseString(item, opt);
