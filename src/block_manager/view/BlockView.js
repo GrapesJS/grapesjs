@@ -1,5 +1,5 @@
 import Backbone from 'backbone';
-import { isFunction, isObject } from 'underscore';
+import { isFunction } from 'underscore';
 import { on, off, hasDnd } from 'utils/mixins';
 
 export default Backbone.View.extend({
@@ -19,6 +19,10 @@ export default Backbone.View.extend({
     this.ppfx = config.pStylePrefix || '';
     this.listenTo(model, 'destroy remove', this.remove);
     this.listenTo(model, 'change', this.render);
+  },
+
+  __getModule() {
+    return this.em.get('BlockManager');
   },
 
   handleClick(ev) {
@@ -80,53 +84,15 @@ export default Backbone.View.extend({
   },
 
   handleDragStart(ev) {
-    const { em, model } = this;
-    const content = model.get('content');
-    const isObj = isObject(content);
-    const data = isObj ? JSON.stringify(content) : content;
-    em.set('dragResult');
-
-    // Note: data are not available on dragenter for security reason,
-    // we have to use dragContent as we need it for the Sorter context
-    // IE11 supports only 'text' data type
-    ev.dataTransfer.setData('text', data);
-    em.set('dragContent', content);
-    em.trigger('block:drag:start', model, ev);
+    this.__getModule().__startDrag(this.model, ev);
   },
 
   handleDrag(ev) {
-    this.em.trigger('block:drag', this.model, ev);
+    this.__getModule().__drag(ev);
   },
 
   handleDragEnd() {
-    const { em, model } = this;
-    const result = em.get('dragResult');
-
-    if (result) {
-      const oldKey = 'activeOnRender';
-      const oldActive = result.get && result.get(oldKey);
-      const toActive = model.get('activate') || oldActive;
-
-      if (model.get('select') || toActive) {
-        em.setSelected(result);
-      }
-
-      if (toActive) {
-        result.trigger('active');
-        result.unset(oldKey);
-      }
-
-      if (model.get('resetId')) {
-        result.onAll(model => model.resetId());
-      }
-    }
-
-    em.set({
-      dragResult: null,
-      dragContent: null
-    });
-
-    em.trigger('block:drag:stop', result, model);
+    this.__getModule().__endDrag();
   },
 
   /**

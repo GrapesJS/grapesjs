@@ -1,3 +1,4 @@
+import Backbone from 'backbone';
 import PropertyIntegerView from 'style_manager/view/PropertyIntegerView';
 import PropertyInteger from 'style_manager/model/PropertyInteger';
 import Component from 'dom_components/model/Component';

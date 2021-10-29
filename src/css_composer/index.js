@@ -1,5 +1,5 @@
 /**
- * This module contains and manage CSS rules for the template inside the canvas.
+ * This module manages CSS rules in the canvas.
  * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/css_composer/config/config.js)
  * ```js
  * const editor = grapesjs.init({
@@ -12,22 +12,23 @@
  * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
  *
  * ```js
- * const cssComposer = editor.CssComposer;
+ * const css = editor.Css;
  * ```
  *
- * * [load](#load)
- * * [store](#store)
- * * [add](#add)
- * * [get](#get)
- * * [getAll](#getall)
- * * [clear](#clear)
+ * * [addRules](#addrules)
  * * [setRule](#setrule)
  * * [getRule](#getrule)
+ * * [getRules](#getrules)
+ * * [remove](#remove)
+ * * [clear](#clear)
+ *
+ * [CssRule]: css_rule.html
  *
  * @module CssComposer
  */
 
-import { isArray, isUndefined } from 'underscore';
+import { isArray, isString, isUndefined, each } from 'underscore';
+import { isObject } from 'utils/mixins';
 import defaults from './config/config';
 import CssRule from './model/CssRule';
 import CssRules from './model/CssRules';
@@ -113,6 +114,7 @@ export default () => {
      * The fetched data will be added to the collection
      * @param {Object} data Object of data to load
      * @return {Object} Loaded rules
+     * @private
      */
     load(data) {
       var d = data || '';
@@ -144,6 +146,7 @@ export default () => {
      * Store data to the selected storage
      * @param {Boolean} noStore If true, won't store
      * @return {Object} Data to store
+     * @private
      */
     store(noStore) {
       if (!c.stm) return;
@@ -164,6 +167,7 @@ export default () => {
      * @param {Object} props Other props for the rule
      * @param {Object} opts Options for the add of new rule
      * @return {Model}
+     * @private
      * @example
      * var sm = editor.SelectorManager;
      * var sel1 = sm.add('myClass1');
@@ -189,6 +193,7 @@ export default () => {
         opt.state = s;
         opt.mediaText = w;
         opt.selectors = [];
+        w && (opt.atRuleType = 'media');
         rule = new CssRule(opt, c);
         rule.get('selectors').add(selectors, addOpts);
         rules.add(rule, addOpts);
@@ -198,16 +203,17 @@ export default () => {
 
     /**
      * Get the rule
-     * @param {Array<Selector>} selectors Array of selectors
-     * @param {String} state Css rule state
-     * @param {String} width For which device this style is oriented
+     * @param {String|Array<Selector>} selectors Array of selectors or selector string, eg `.myClass1.myClass2`
+     * @param {String} state Css rule state, eg. 'hover'
+     * @param {String} width Media rule value, eg. '(max-width: 992px)'
      * @param {Object} ruleProps Other rule props
      * @return  {Model|null}
+     * @private
      * @example
-     * var sm = editor.SelectorManager;
-     * var sel1 = sm.add('myClass1');
-     * var sel2 = sm.add('myClass2');
-     * var rule = cssComposer.get([sel1, sel2], 'hover');
+     * const sm = editor.SelectorManager;
+     * const sel1 = sm.add('myClass1');
+     * const sel2 = sm.add('myClass2');
+     * const rule = cssComposer.get([sel1, sel2], 'hover', '(max-width: 992px)');
      * // Update the style
      * rule.set('style', {
      *   width: '300px',
@@ -215,42 +221,41 @@ export default () => {
      * });
      * */
     get(selectors, state, width, ruleProps) {
-      var rule = null;
-      rules.each(m => {
-        if (rule) return;
-        if (m.compare(selectors, state, width, ruleProps)) rule = m;
-      });
-      return rule;
+      let slc = selectors;
+      if (isString(selectors)) {
+        const sm = em.get('SelectorManager');
+        const singleSel = selectors.split(',')[0].trim();
+        const node = em
+          .get('Parser')
+          .parserCss.checkNode({ selectors: singleSel })[0];
+        slc = sm.get(node.selectors);
+      }
+      return (
+        rules.find(rule => rule.compare(slc, state, width, ruleProps)) || null
+      );
     },
 
-    /**
-     * Get the collection of rules
-     * @return {Collection}
-     * */
     getAll() {
       return rules;
     },
 
     /**
-     * Remove all rules
-     * @return {this}
-     */
-    clear(opts = {}) {
-      this.getAll().reset(null, opts);
-      return this;
-    },
-
-    /**
      * Add a raw collection of rule objects
      * This method overrides styles, in case, of already defined rule
-     * @param {Array<Object>} data Array of rule objects, eg . [{selectors: ['class1'], style: {....}}, ..]
+     * @param {String|Array<Object>} data CSS string or an array of rule objects, eg. [{selectors: ['class1'], style: {....}}, ..]
      * @param {Object} opts Options
+     * @param {Object} props Additional properties to add on rules
      * @return {Array<Model>}
      * @private
      */
-    addCollection(data, opts = {}) {
-      var result = [];
-      var d = data instanceof Array ? data : [data];
+    addCollection(data, opts = {}, props = {}) {
+      const result = [];
+
+      if (isString(data)) {
+        data = em.get('Parser').parseCss(data);
+      }
+
+      const d = data instanceof Array ? data : [data];
 
       for (var i = 0, l = d.length; i < l; i++) {
         var rule = d[i] || {};
@@ -271,6 +276,8 @@ export default () => {
         var updateStyle = !modelExists || !opts.avoidUpdateStyle;
         const style = rule.style || {};
 
+        isObject(props) && model.set(props, opts);
+
         if (updateStyle) {
           let styleUpdate = opts.extend
             ? { ...model.get('style'), ...style }
@@ -285,22 +292,35 @@ export default () => {
     },
 
     /**
-     * Add/update the CSS rule with a generic selector
-     * @param {string} selectors Selector, eg. '.myclass'
+     * Add CssRules via CSS string.
+     * @param {String} css CSS string of rules to add.
+     * @returns {Array<[CssRule]>} Array of rules
+     * @example
+     * const addedRules = css.addRules('.my-cls{ color: red } @media (max-width: 992px) { .my-cls{ color: darkred } }');
+     * // Check rules
+     * console.log(addedRules.map(rule => rule.toCSS()));
+     */
+    addRules(css) {
+      return this.addCollection(css);
+    },
+
+    /**
+     * Add/update the CssRule.
+     * @param {String} selectors Selector string, eg. `.myclass`
      * @param {Object} style  Style properties and values
      * @param {Object} [opts={}]  Additional properties
-     * @param {String} [opts.atRuleType='']  At-rule type, eg. 'media'
-     * @param {String} [opts.atRuleParams='']  At-rule parameters, eg. '(min-width: 500px)'
-     * @return {CssRule} The new/updated rule
+     * @param {String} [opts.atRuleType='']  At-rule type, eg. `media`
+     * @param {String} [opts.atRuleParams='']  At-rule parameters, eg. `(min-width: 500px)`
+     * @returns {[CssRule]} The new/updated CssRule
      * @example
      * // Simple class-based rule
-     * const rule = cc.setRule('.class1.class2', { color: 'red' });
+     * const rule = css.setRule('.class1.class2', { color: 'red' });
      * console.log(rule.toCSS()) // output: .class1.class2 { color: red }
      * // With state and other mixed selector
-     * const rule = cc.setRule('.class1.class2:hover, div#myid', { color: 'red' });
+     * const rule = css.setRule('.class1.class2:hover, div#myid', { color: 'red' });
      * // output: .class1.class2:hover, div#myid { color: red }
      * // With media
-     * const rule = cc.setRule('.class1:hover', { color: 'red' }, {
+     * const rule = css.setRule('.class1:hover', { color: 'red' }, {
      *  atRuleType: 'media',
      *  atRuleParams: '(min-width: 500px)',
      * });
@@ -324,15 +344,16 @@ export default () => {
     },
 
     /**
-     * Get the CSS rule by a generic selector
-     * @param {string} selectors Selector, eg. '.myclass:hover'
-     * @param {String} [opts.atRuleType='']  At-rule type, eg. 'media'
+     * Get the CssRule.
+     * @param {String} selectors Selector string, eg. `.myclass:hover`
+     * @param {Object} [opts={}]  Additional properties
+     * @param {String} [opts.atRuleType='']  At-rule type, eg. `media`
      * @param {String} [opts.atRuleParams='']  At-rule parameters, eg. '(min-width: 500px)'
-     * @return {CssRule}
+     * @returns {[CssRule]}
      * @example
-     * const rule = cc.getRule('.myclass1:hover');
-     * const rule2 = cc.getRule('.myclass1:hover, div#myid');
-     * const rule3 = cc.getRule('.myclass1', {
+     * const rule = css.getRule('.myclass1:hover');
+     * const rule2 = css.getRule('.myclass1:hover, div#myid');
+     * const rule3 = css.getRule('.myclass1', {
      *  atRuleType: 'media',
      *  atRuleParams: '(min-width: 500px)',
      * });
@@ -353,17 +374,20 @@ export default () => {
     },
 
     /**
-     * Find rules, in different states (eg. like `:hover`) and media queries, matching the selector.
-     * @param {string} selector Selector, eg. '.myclass'
-     * @returns {Array<CssRule>}
+     * Get all rules or filtered by a matching selector.
+     * @param {String} [selector=''] Selector, eg. `.myclass`
+     * @returns {Array<[CssRule]>}
      * @example
-     * // Common scenario, take all the component specific rules
+     * // Take all the component specific rules
      * const id = someComponent.getId();
-     * const rules = cc.getRules(`#${id}`);
+     * const rules = css.getRules(`#${id}`);
      * console.log(rules.map(rule => rule.toCSS()))
+     * // All rules in the project
+     * console.log(css.getRules())
      */
     getRules(selector) {
       const rules = this.getAll();
+      if (!selector) return [...rules.models];
       const result = rules.filter(
         r => r.getSelectors().getFullString() === selector
       );
@@ -378,8 +402,8 @@ export default () => {
      * @return {CssRule} The new/updated rule
      * @private
      * @example
-     * const rule = cc.setIdRule('myid', { color: 'red' });
-     * const ruleHover = cc.setIdRule('myid', { color: 'blue' }, { state: 'hover' });
+     * const rule = css.setIdRule('myid', { color: 'red' });
+     * const ruleHover = css.setIdRule('myid', { color: 'blue' }, { state: 'hover' });
      * // This will add current CSS:
      * // #myid { color: red }
      * // #myid:hover { color: blue }
@@ -402,8 +426,8 @@ export default () => {
      * @return {CssRule}
      * @private
      * @example
-     * const rule = cc.getIdRule('myid');
-     * const ruleHover = cc.setIdRule('myid', { state: 'hover' });
+     * const rule = css.getIdRule('myid');
+     * const ruleHover = css.setIdRule('myid', { state: 'hover' });
      */
     getIdRule(name, opts = {}) {
       const { mediaText } = opts;
@@ -421,8 +445,8 @@ export default () => {
      * @return {CssRule} The new/updated rule
      * @private
      * @example
-     * const rule = cc.setClassRule('myclass', { color: 'red' });
-     * const ruleHover = cc.setClassRule('myclass', { color: 'blue' }, { state: 'hover' });
+     * const rule = css.setClassRule('myclass', { color: 'red' });
+     * const ruleHover = css.setClassRule('myclass', { color: 'blue' }, { state: 'hover' });
      * // This will add current CSS:
      * // .myclass { color: red }
      * // .myclass:hover { color: blue }
@@ -444,14 +468,40 @@ export default () => {
      * @return {CssRule}
      * @private
      * @example
-     * const rule = cc.getClassRule('myclass');
-     * const ruleHover = cc.getClassRule('myclass', { state: 'hover' });
+     * const rule = css.getClassRule('myclass');
+     * const ruleHover = css.getClassRule('myclass', { state: 'hover' });
      */
     getClassRule(name, opts = {}) {
       const state = opts.state || '';
       const media = opts.mediaText || em.getCurrentMedia();
       const selector = em.get('SelectorManager').get(name, Selector.TYPE_CLASS);
       return selector && this.get(selector, state, media);
+    },
+
+    /**
+     * Remove rule, by CssRule or matching selector (eg. the selector will match also at-rules like `@media`)
+     * @param {String|[CssRule]|Array<[CssRule]>} rule CssRule or matching selector.
+     * @return {Array<[CssRule]>} Removed rules
+     * @example
+     * // Remove by CssRule
+     * const toRemove = css.getRules('.my-cls');
+     * css.remove(toRemove);
+     * // Remove by selector
+     * css.remove('.my-cls-2');
+     */
+    remove(rule) {
+      const toRemove = isString(rule) ? this.getRules(rule) : rule;
+      const result = this.getAll().remove(toRemove);
+      return isArray(result) ? result : [result];
+    },
+
+    /**
+     * Remove all rules
+     * @return {this}
+     */
+    clear(opts = {}) {
+      this.getAll().reset(null, opts);
+      return this;
     },
 
     getComponentRules(cmp, opts = {}) {

@@ -1,12 +1,9 @@
-import Backbone from 'backbone';
-import Layers from 'navigator';
-
-const $ = Backbone.$;
-
 export default {
   run(editor) {
     const lm = editor.LayerManager;
     const pn = editor.Panels;
+
+    if (lm.getConfig().appendTo) return;
 
     if (!this.layers) {
       const id = 'views-container';
@@ -21,7 +18,7 @@ export default {
   },
 
   stop() {
-    const layers = this.layers;
+    const { layers } = this;
     layers && (layers.style.display = 'none');
   }
 };

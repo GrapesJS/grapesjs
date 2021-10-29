@@ -3,15 +3,7 @@ import Backbone from 'backbone';
 import ClassTagView from './ClassTagView';
 
 export default Backbone.View.extend({
-  template({
-    labelInfo,
-    labelStates,
-    labelHead,
-    iconSync,
-    iconAdd,
-    pfx,
-    ppfx
-  }) {
+  template({ labelInfo, labelHead, iconSync, iconAdd, pfx, ppfx }) {
     return `
     <div id="${pfx}up" class="${pfx}header">
       <div id="${pfx}label" class="${pfx}header-label">${labelHead}</div>
@@ -19,9 +11,7 @@ export default Backbone.View.extend({
         <span id="${pfx}input-c" data-states-c>
           <div class="${ppfx}field ${ppfx}select">
             <span id="${ppfx}input-holder">
-              <select id="${pfx}states" data-states>
-                <option value="">${labelStates}</option>
-              </select>
+              <select id="${pfx}states" data-states></select>
             </span>
             <div class="${ppfx}sel-arrow">
               <div class="${ppfx}d-s-arrow"></div>
@@ -66,6 +56,8 @@ export default Backbone.View.extend({
     const { em } = this.config;
     const coll = this.collection;
     this.target = this.config.em;
+    const md = o.module;
+    this.module = md;
     this.em = em;
     const toList = 'component:toggled component:update:classes';
     const toListCls = 'component:update:classes change:state';
@@ -76,6 +68,11 @@ export default Backbone.View.extend({
     this.listenTo(coll, 'add', this.addNew);
     this.listenTo(coll, 'reset', this.renderClasses);
     this.listenTo(coll, 'remove', this.tagRemoved);
+    this.listenTo(
+      md.getAll(),
+      md.events.state,
+      debounce(() => this.renderStates())
+    );
     this.delegateEvents();
   },
 
@@ -122,28 +119,6 @@ export default Backbone.View.extend({
    */
   tagRemoved(model) {
     this.updateStateVis();
-  },
-
-  /**
-   * Create select input with states
-   * @return {string} String of options
-   * @private
-   */
-  getStateOptions() {
-    const { states, em } = this;
-    let result = [];
-
-    states.forEach(state =>
-      result.push(
-        `<option value="${state.name}">${em.t(
-          `selectorManager.states.${state.name}`
-        ) ||
-          state.label ||
-          state.name}</option>`
-      )
-    );
-
-    return result.join('');
   },
 
   /**
@@ -212,27 +187,17 @@ export default Backbone.View.extend({
 
     this.collection.reset(selectors);
     this.updateStateVis(trgs);
-
+    this.module.__trgCustom();
     return selectors;
   },
 
   getCommonSelectors({ targets, opts = {} } = {}) {
     const trgs = targets || this.getTargets();
-    const selectors = trgs
-      .map(tr => tr.getSelectors && tr.getSelectors().getValid(opts))
-      .filter(i => i);
-    return this._commonSelectors(...selectors);
+    return this.module.__getCommonSelectors(trgs, opts);
   },
 
   _commonSelectors(...args) {
-    if (!args.length) return [];
-    if (args.length === 1) return args[0];
-    if (args.length === 2)
-      return args[0].filter(item => args[1].indexOf(item) >= 0);
-
-    return args
-      .slice(1)
-      .reduce((acc, item) => this._commonSelectors(acc, item), args[0]);
+    return this.module.__common(...args);
   },
 
   checkSync: debounce(function() {
@@ -332,23 +297,12 @@ export default Backbone.View.extend({
    * @param  {Object} e
    * @private
    */
-  addNewTag(label) {
-    const { em } = this;
-
-    if (!label.trim()) return;
-
-    if (em) {
-      const sm = em.get('SelectorManager');
-      const model = sm.add({ label });
-
-      this.getTargets().forEach(target => {
-        target.getSelectors().add(model);
-        this.collection.add(model);
-        this.updateStateVis();
-      });
-    }
-
+  addNewTag(value) {
+    const label = value.trim();
+    if (!label) return;
+    this.module.addSelected({ label });
     this.endNewTag();
+    // this.updateStateVis(); // Check if required
   },
 
   /**
@@ -364,7 +318,8 @@ export default Backbone.View.extend({
     const rendered = new ClassTagView({
       model,
       config: this.config,
-      coll: this.collection
+      coll: this.collection,
+      module: this.module
     }).render().el;
 
     fragment ? fragment.appendChild(rendered) : classes.append(rendered);
@@ -416,6 +371,26 @@ export default Backbone.View.extend({
     return this.$statesC;
   },
 
+  renderStates() {
+    const { module, em } = this;
+    const labelStates = em.t('selectorManager.emptyState');
+    const options = module
+      .getStates()
+      .map(state => {
+        const label =
+          em.t(`selectorManager.states.${state.id}`) ||
+          state.getLabel() ||
+          state.id;
+        return `<option value="${state.id}">${label}</option>`;
+      })
+      .join('');
+
+    const statesEl = this.getStates();
+    statesEl &&
+      statesEl.html(`<option value="">${labelStates}</option>${options}`);
+    this.checkStates();
+  },
+
   render() {
     const { em, pfx, ppfx, config, $el, el } = this;
     const { render, iconSync, iconAdd } = config;
@@ -423,7 +398,6 @@ export default Backbone.View.extend({
       iconSync,
       iconAdd,
       labelHead: em.t('selectorManager.label'),
-      labelStates: em.t('selectorManager.emptyState'),
       labelInfo: em.t('selectorManager.selected'),
       ppfx,
       pfx,
@@ -437,8 +411,7 @@ export default Backbone.View.extend({
     this.$classes = $el.find('#' + pfx + 'tags-c');
     this.$btnSyncEl = $el.find('[data-sync-style]');
     this.$input.hide();
-    const statesEl = this.getStates();
-    statesEl && statesEl.append(this.getStateOptions());
+    this.renderStates();
     this.renderClasses();
     $el.attr('class', `${this.className} ${ppfx}one-bg ${ppfx}two-color`);
     return this;

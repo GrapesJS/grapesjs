@@ -1,28 +1,18 @@
-import StyleManager from 'style_manager';
-import Models from './model/Models';
-import SectorView from './view/SectorView';
-import SectorsView from './view/SectorsView';
-import PropertyView from './view/PropertyView';
-import PropertySelectView from './view/PropertySelectView';
-import PropertyRadioView from './view/PropertyRadioView';
-import PropertyIntegerView from './view/PropertyIntegerView';
-import PropertyColorView from './view/PropertyColorView';
-import PropertyCompositeView from './view/PropertyCompositeView';
-import PropertyStackView from './view/PropertyStackView';
-import LayerView from './view/LayerView';
+import Editor from 'editor/model/Editor';
 
 describe('StyleManager', () => {
   describe('Main', () => {
-    var obj;
+    let obj;
+    let em;
 
     beforeEach(() => {
-      obj = new StyleManager().init({
-        sectors: []
-      });
+      em = new Editor({});
+      obj = em.get('StyleManager');
     });
 
     afterEach(() => {
       obj = null;
+      em.destroy();
     });
 
     test('Object exists', () => {
@@ -37,7 +27,7 @@ describe('StyleManager', () => {
       obj.addSector('test', {
         name: 'Test name'
       });
-      var sector = obj.getSectors().at(0);
+      var sector = obj.getSectors({ array: true })[0];
       expect(obj.getSectors().length).toEqual(1);
       expect(sector.get('id')).toEqual('test');
       expect(sector.get('name')).toEqual('Test name');
@@ -127,39 +117,43 @@ describe('StyleManager', () => {
 
     describe('Init with configuration', () => {
       beforeEach(() => {
-        obj = new StyleManager().init({
-          sectors: [
-            {
-              id: 'dim',
-              name: 'Dimension',
-              properties: [
-                {
-                  name: 'Width',
-                  property: 'width'
-                },
-                {
-                  name: 'Height',
-                  property: 'height'
-                }
-              ]
-            },
-            {
-              id: 'pos',
-              name: 'position',
-              properties: [
-                {
-                  name: 'Width',
-                  property: 'width'
-                }
-              ]
-            }
-          ]
+        em = new Editor({
+          StyleManager: {
+            sectors: [
+              {
+                id: 'dim',
+                name: 'Dimension',
+                properties: [
+                  {
+                    name: 'Width',
+                    property: 'width'
+                  },
+                  {
+                    name: 'Height',
+                    property: 'height'
+                  }
+                ]
+              },
+              {
+                id: 'pos',
+                name: 'position',
+                properties: [
+                  {
+                    name: 'Width',
+                    property: 'width'
+                  }
+                ]
+              }
+            ]
+          }
         });
+        obj = em.get('StyleManager');
         obj.onLoad();
       });
 
       afterEach(() => {
         obj = null;
+        em.destroy();
       });
 
       test('Sectors added', () => {

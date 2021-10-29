@@ -16,5 +16,9 @@ export default {
   // }
   appendOnClick: false,
 
-  blocks: []
+  // Default blocks
+  blocks: [],
+
+  // Avoid rendering the default block manager.
+  custom: false
 };

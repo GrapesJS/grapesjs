@@ -23,9 +23,10 @@ export default Backbone.View.extend({
     'focusout [data-tag-name]': 'endEditTag'
   },
 
-  initialize(o) {
+  initialize(o = {}) {
     const config = o.config || {};
     this.config = config;
+    this.module = o.module;
     this.coll = o.coll || null;
     this.pfx = config.stylePrefix || '';
     this.ppfx = config.pStylePrefix || '';
@@ -97,11 +98,7 @@ export default Backbone.View.extend({
    * @private
    */
   removeTag() {
-    const { em, model } = this;
-    const targets = em && em.getSelectedAll();
-    targets.forEach(sel => {
-      !model.get('protected') && sel && sel.getSelectors().remove(model);
-    });
+    this.module.removeSelected(this.model);
   },
 
   /**

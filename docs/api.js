@@ -21,10 +21,13 @@ async function generateDocs () {
     ['dom_components/model/Component.js', 'component.md'],
     ['panels/index.js', 'panels.md'],
     ['style_manager/index.js', 'style_manager.md'],
+    ['style_manager/model/Sector.js', 'sector.md'],
     ['storage_manager/index.js', 'storage_manager.md'],
     ['device_manager/index.js', 'device_manager.md'],
     ['device_manager/model/Device.js', 'device.md'],
     ['selector_manager/index.js', 'selector_manager.md'],
+    ['selector_manager/model/Selector.js', 'selector.md'],
+    ['selector_manager/model/State.js', 'state.md'],
     ['css_composer/index.js', 'css_composer.md'],
     ['css_composer/model/CssRule.js', 'css_rule.md'],
     ['modal_dialog/index.js', 'modal_dialog.md'],
@@ -32,6 +35,7 @@ async function generateDocs () {
     ['keymaps/index.js', 'keymaps.md'],
     ['undo_manager/index.js', 'undo_manager.md'],
     ['canvas/index.js', 'canvas.md'],
+    ['canvas/model/Frame.js', 'frame.md'],
     ['i18n/index.js', 'i18n.md'],
     ['pages/index.js', 'pages.md'],
     ['pages/model/Page.js', 'page.md'],
@@ -44,6 +48,7 @@ async function generateDocs () {
           .replace(/\*\*\\\[/g, '**[')
           .replace(/\*\*\(\\\[/g, '**([')
           .replace(/<\\\[/g, '<[')
+          .replace(/<\(\\\[/g, '<([')
           .replace(/\| \\\[/g, '| [')
           .replace('**Extends Model**', '');
         fs.writeFileSync(`${docRoot}/api/${file[1]}`, res);

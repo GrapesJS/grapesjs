@@ -1,4 +1,5 @@
 import path from 'path';
+import webpack from 'webpack';
 import pkg from './package.json';
 
 const rootDir = path.resolve(__dirname);
@@ -16,14 +17,8 @@ export default ({ config }) => ({
   },
   module: {
     rules: [
-      {
-        test: /\/index\.js$/,
-        loader: 'string-replace-loader',
-        query: {
-          search: '<# VERSION #>',
-          replace: pkg.version
-        }
-      },
+      // Disable AMD in vendors
+      { test: /\.js$/, parser: { amd: false } },
       ...config.module.rules,
     ],
   },
@@ -35,4 +30,8 @@ export default ({ config }) => ({
       underscore: `${rootDir}/node_modules/underscore`,
     }
   },
+  plugins: [
+    new webpack.DefinePlugin({ __GJS_VERSION__: `'${pkg.version}'` }),
+    ...config.plugins,
+  ]
 });

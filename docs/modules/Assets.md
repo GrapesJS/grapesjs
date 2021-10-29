@@ -316,7 +316,7 @@ am.open({
 
 ## Customization
 
-The default Asset Manager UI is great for simple things, but except the possibility to tweak some CSS style, adding more complex things like a search input, filters, etc. requires a replace of the defualt UI.
+The default Asset Manager UI is great for simple things, but except the possibility to tweak some CSS style, adding more complex things like a search input, filters, etc. requires a replace of the default UI.
 
 All you have to do is to indicate the editor your intent to use a custom UI and then subscribe to the `asset:custom` event that will give you all the information on any requested change.
 

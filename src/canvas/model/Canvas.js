@@ -1,4 +1,4 @@
-import { Model } from 'backbone';
+import { Model } from 'common';
 import { evPageSelect } from 'pages';
 
 export default class Canvas extends Model {

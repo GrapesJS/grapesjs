@@ -502,7 +502,7 @@ export default function($, undefined) {
         // since the set function will not run (default color is black).
         updateUI();
         currentPreferredFormat =
-          opts.preferredFormat || tinycolor(initialColor).format;
+          opts.preferredFormat || tinycolor(initialColor).getFormat();
 
         addColorToSelectionPalette(initialColor);
       } else {

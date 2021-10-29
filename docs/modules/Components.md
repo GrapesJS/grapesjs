@@ -42,7 +42,7 @@ editor.getWrapper().append(`<div>...`);
 ```
 
 ::: tip
-If you need to append a component in at a specific position, you can use `at` option. So, to add a component on top of all others (in the same collection) you would use
+If you need to append a component at a specific position, you can use `at` option. So, to add a component on top of all others (in the same collection) you would use
 ```js
 component.append('<div>...', { at: 0 })
 ```
@@ -747,6 +747,115 @@ editor.on(`component:remove`, model => console.log('Global hook: component:remov
 
 
 
+## Components & CSS
+
+::: warning
+This section is referring to GrapesJS v0.17.27 or higher
+:::
+
+If you need to add component-related styles, you can do it via `styles` property.
+
+```js
+domc.addType('component-css', {
+  model: {
+    defaults: {
+      attributes: { class: 'cmp-css' },
+      components: `
+        <span>Component with styles<span>
+        <div class="cmp-css-a">Component A</div>
+        <div class="cmp-css-b">Component B</div>
+      `,
+      styles: `
+        .cmp-css { color: red }
+        .cmp-css-a { color: green }
+        .cmp-css-b { color: blue }
+
+        @media (max-width: 992px) {
+          .cmp-css{ color: darkred; }
+          .cmp-css-a { color: darkgreen }
+          .cmp-css-b { color: darkblue }
+        }
+      `,
+    },
+  },
+});
+```
+This approach allows the editor to group these styles ([CssRule] instances) and remove them accordingly in case all references of the same component are removed.
+
+::: danger Important caveat
+&nbsp;
+:::
+
+In the example above we used one custom component and default sub-components. Styles are declared on our custom component only, that means if you remove all `.cmp-css-a` and `.cmp-css-b` instances from the canvas, their CssRules will still be stored in the project (**here we're not talking about the CSS export, which is able to skip not used rules, but instances stored in your project JSON**).
+
+The cleanest approach would be to follow component-oriented styling, where you declare styles only in the scope of the component itself. This is how it would look like with the example above.
+
+```js
+domc.addType('cmp-a', {
+  model: {
+    defaults: {
+      attributes: { class: 'cmp-css-a' },
+      components: 'Component A',
+      styles: `
+        .cmp-css-a { color: green }
+        @media (max-width: 992px) {
+          .cmp-css-a { color: darkgreen }
+        }
+      `,
+    }
+  },
+});
+domc.addType('cmp-b', {
+  model: {
+    defaults: {
+      attributes: { class: 'cmp-css-b' },
+      components: 'Component B',
+      styles: `
+        .cmp-css-b { color: blue }
+        @media (max-width: 992px) {
+          .cmp-css-b { color: darkblue }
+        }
+      `,
+    }
+  },
+});
+domc.addType('component-css', {
+  model: {
+    defaults: {
+      attributes: { class: 'cmp-css' },
+      components: [
+        '<span>Component with styles<span>',
+        { type: 'cmp-a' },
+        { type: 'cmp-b' },
+      ],
+      styles: `
+        .cmp-css { color: red }
+        @media (max-width: 992px) {
+          .cmp-css{ color: darkred; }
+        }
+      `,
+    },
+  },
+});
+```
+::: tip Component-first styling
+By default, when you select a component in the canvas and apply styles on it, changes will be applied on its existent classes. This will result on changing of all the components with those applied classes. If you need the style to be applied only on the specific selected component you have to select componentFirst strategy in this way.
+```js
+grapesjs.init({
+  ...
+  selectorManager: {
+    componentFirst: true,
+  },
+})
+```
+:::
+
+### External CSS
+
+If you need to load external component-specific CSS, you have to rely on the `script` property. For more details please refer to [Components & JS](Components-js.html).
+
+
+
 ## Components & JS
 
 If you want to know how to create Components with javascript attached (eg. counters, galleries, slideshows, etc.) check the dedicated page
@@ -839,4 +948,5 @@ For Babel users, it's just a matter of adding few plugins: `@babel/plugin-syntax
 
   [Component Definition]: <#component-definition>
   [Component]: </api/component.html>
+  [CssRule]: </api/css_rule.html>
   [Component API]: </api/component.html>

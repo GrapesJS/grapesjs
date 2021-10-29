@@ -1,7 +1,5 @@
 import Backbone from 'backbone';
 import Commands from 'commands';
-import Models from './model/CommandModels';
-import CommandAbstract from './view/CommandAbstract';
 
 describe('Commands', () => {
   describe('Main', () => {

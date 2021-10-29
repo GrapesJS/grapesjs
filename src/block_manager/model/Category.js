@@ -1,10 +1,12 @@
-import Backbone from 'backbone';
+import { Model } from 'common';
 
-export default Backbone.Model.extend({
-  defaults: {
-    id: '',
-    label: '',
-    open: true,
-    attributes: {}
+export default class Category extends Model {
+  defaults() {
+    return {
+      id: '',
+      label: '',
+      open: true,
+      attributes: {}
+    };
   }
-});
+}

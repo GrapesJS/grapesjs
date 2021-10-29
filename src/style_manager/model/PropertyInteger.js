@@ -22,6 +22,22 @@ export default Property.extend({
     max: ''
   },
 
+  /**
+   * Get property units.
+   * @returns {Array<String>}
+   */
+  getUnits() {
+    return this.get('units') || [];
+  },
+
+  /**
+   * Get property unit value.
+   * @returns {String}
+   */
+  getValueUnit() {
+    return this.get('unit');
+  },
+
   initialize(props = {}, opts = {}) {
     Property.callParentInit(Property, this, props, opts);
     const unit = this.get('unit');

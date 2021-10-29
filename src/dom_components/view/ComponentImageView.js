@@ -95,6 +95,7 @@ export default ComponentView.extend({
 
   render() {
     this.renderAttributes();
+    if (this.modelOpt.temporary) return this;
     this.updateSrc();
     const { $el, model } = this;
     const cls = $el.attr('class') || '';

@@ -53,6 +53,8 @@ export const keyUpdateInside = `${keyUpdate}-inside`;
  * // -> 'span'
  * ```
  *
+ * [Component]: component.html
+ *
  * @typedef Component
  * @property {String} [type=''] Component type, eg. `text`, `image`, `video`, etc.
  * @property {String} [tagName='div'] HTML tag of the component, eg. `span`. Default: `div`
@@ -79,6 +81,7 @@ export const keyUpdateInside = `${keyUpdate}-inside`;
  * @property {Boolean} [selectable=true] Allow component to be selected when clicked. Default: `true`
  * @property {Boolean} [hoverable=true] Shows a highlight outline when hovering on the element if `true`. Default: `true`
  * @property {Boolean} [void=false] This property is used by the HTML exporter as void elements don't have closing tags, eg. `<br/>`, `<hr/>`, etc. Default: `false`
+ * @property {String} [styles=''] Component related styles, eg. `.my-component-class { color: red }`
  * @property {String} [content=''] Content of the component (not escaped) which will be appended before children rendering. Default: `''`
  * @property {String} [icon=''] Component's icon, this string will be inserted before the name (in Layers and badge), eg. it can be an HTML string '<i class="fa fa-square-o"></i>'. Default: `''`
  * @property {String|Function} [script=''] Component's javascript. More about it [here](/modules/Components-js.html). Default: `''`
@@ -176,6 +179,13 @@ export default class Component extends Model.extend(Styleable) {
     });
 
     if (!opt.temporary) {
+      // Add component styles
+      const cssc = em && em.get('CssComposer');
+      const { styles, type } = this.attributes;
+      if (styles && cssc) {
+        cssc.addCollection(styles, {}, { group: `cmp:${type}` });
+      }
+
       this.__postAdd();
       this.init();
       this.__isSymbolOrInst() && this.__initSymb();
@@ -189,6 +199,7 @@ export default class Component extends Model.extend(Styleable) {
     const comps = this.components();
     if (um && !this.__hasUm) {
       um.add(comps);
+      um.add(this.getSelectors());
       this.__hasUm = 1;
     }
     opts.recursive && comps.map(c => c.__postAdd(opts));
@@ -199,6 +210,7 @@ export default class Component extends Model.extend(Styleable) {
     const um = em && em.get('UndoManager');
     if (um) {
       um.remove(this.components());
+      um.remove(this.getSelectors());
       delete this.__hasUm;
     }
   }
@@ -260,7 +272,7 @@ export default class Component extends Model.extend(Styleable) {
    */
   index() {
     const { collection } = this;
-    return collection && collection.indexOf(this);
+    return collection ? collection.indexOf(this) : 0;
   }
 
   /**
@@ -466,8 +478,10 @@ export default class Component extends Model.extend(Styleable) {
    * Get the style of the component
    * @return {Object}
    */
-  getStyle(opts = {}) {
+  getStyle(options = {}, optsAdd = {}) {
     const em = this.em;
+    const prop = isString(options) ? options : '';
+    const opts = prop ? optsAdd : options;
 
     if (em && em.getConfig('avoidInlineStyle') && !opts.inline) {
       const state = em.get('state');
@@ -476,11 +490,11 @@ export default class Component extends Model.extend(Styleable) {
       this.rule = rule;
 
       if (rule) {
-        return rule.getStyle();
+        return rule.getStyle(prop);
       }
     }
 
-    return Styleable.getStyle.call(this);
+    return Styleable.getStyle.call(this, prop);
   }
 
   /**
@@ -1008,9 +1022,9 @@ export default class Component extends Model.extend(Styleable) {
   /**
    * Set new collection if `components` are provided, otherwise the
    * current collection is returned
-   * @param  {Component|String} [components] Components to set
+   * @param  {Component|String} [components] Component Definitions or HTML string
    * @param {Object} [opts={}] Options, same as in `Component.append()`
-   * @return {Collection|Array<Component>}
+   * @returns {Collection|Array<[Component]>}
    * @example
    * // Set new collection
    * component.components('<span></span><div></div>');
@@ -1026,8 +1040,33 @@ export default class Component extends Model.extend(Styleable) {
       return coll;
     } else {
       coll.reset(null, opts);
-      return components && this.append(components, opts);
+      return components ? this.append(components, opts) : [];
     }
+  }
+
+  /**
+   * If exists, returns the child component at specific index.
+   * @param {Number} index Index of the component to return
+   * @returns {[Component]|null}
+   * @example
+   * // Return first child
+   * component.getChildAt(0);
+   * // Return second child
+   * component.getChildAt(1);
+   */
+  getChildAt(index) {
+    return this.components().at(index || 0) || null;
+  }
+
+  /**
+   * If exists, returns the last child component.
+   * @returns {[Component]|null}
+   * @example
+   * const lastChild = component.getLastChild();
+   */
+  getLastChild() {
+    const children = this.components();
+    return children.at(children.length - 1) || null;
   }
 
   /**
@@ -1041,14 +1080,14 @@ export default class Component extends Model.extend(Styleable) {
 
   /**
    * Get the parent component, if exists
-   * @return {Component}
+   * @return {Component|null}
    * @example
    * component.parent();
    * // -> Component
    */
   parent(opts = {}) {
     const coll = this.collection || (opts.prev && this.prevColl);
-    return coll && coll.parent;
+    return coll ? coll.parent : null;
   }
 
   /**
@@ -1887,7 +1926,8 @@ Component.prototype.defaults = {
   status: '', // State, eg. 'selected'
   content: '',
   icon: '',
-  style: '', // Component related style
+  style: '',
+  styles: '', // Component related styles
   classes: '', // Array of classes
   script: '',
   'script-props': '',

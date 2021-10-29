@@ -277,11 +277,11 @@ export default () => {
       const canvas = config.em.get('Canvas');
       const { style } = toolbar;
       const pos = canvas.getTargetToElementFixed(lastEl, toolbar, {
-        event: 'rteToolbarPosUpdate'
+        event: 'rteToolbarPosUpdate',
+        left: 0
       });
-
-      style.top = pos.top + un;
-      style.left = 0 + un;
+      style.top = (pos.top || 0) + un;
+      style.left = (pos.left || 0) + un;
     },
 
     /**

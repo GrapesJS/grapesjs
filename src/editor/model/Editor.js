@@ -7,13 +7,15 @@ import {
   keys,
   bindAll
 } from 'underscore';
-import $ from 'cash-dom';
 import Backbone from 'backbone';
 import Extender from 'utils/extender';
 import { getModel, hasWin } from 'utils/mixins';
 import Selected from './Selected';
 
+const cash = hasWin() ? require('cash-dom') : null;
+const $ = (cash && cash.default) || cash;
 Backbone.$ = $;
+
 const deps = [
   require('utils'),
   require('i18n'),
@@ -39,7 +41,6 @@ const deps = [
   require('block_manager')
 ];
 
-const { Collection } = Backbone;
 let timedInterval;
 let updateItr;
 
@@ -123,7 +124,7 @@ export default Backbone.Model.extend({
       this.get('readyCanvas') &&
       !this.get('ready')
     ) {
-      this.set('ready', 1);
+      this.set('ready', true);
     }
   },
 
@@ -171,7 +172,7 @@ export default Backbone.Model.extend({
     if (sm && sm.canAutoload()) {
       this.load(postLoad);
     } else {
-      postLoad();
+      setTimeout(postLoad);
     }
   },
 
@@ -262,7 +263,7 @@ export default Backbone.Model.extend({
    * */
   handleUpdates(model, val, opt = {}) {
     // Component has been added temporarily - do not update storage or record changes
-    if (opt.temporary || opt.noCount || opt.avoidStore) {
+    if (opt.temporary || opt.noCount || opt.avoidStore || !this.get('ready')) {
       return;
     }
 

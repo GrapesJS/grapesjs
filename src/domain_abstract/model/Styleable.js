@@ -21,9 +21,10 @@ export default {
    * Get style object
    * @return {Object}
    */
-  getStyle() {
+  getStyle(prop) {
     const style = this.get('style') || {};
-    return { ...style };
+    const result = { ...style };
+    return prop && isString(prop) ? result[prop] : result;
   },
 
   /**

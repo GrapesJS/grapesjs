@@ -32,17 +32,19 @@
  * * [add](#add)
  * * [get](#get)
  * * [getAll](#getall)
+ * * [getAllWrappers](#getallwrappers)
  * * [getMain](#getmain)
  * * [remove](#remove)
  * * [select](#select)
  * * [getSelected](#getselected)
  *
  * [Page]: page.html
+ * [Component]: component.html
  *
  * @module Pages
  */
 
-import { isString, bindAll } from 'underscore';
+import { isString, bindAll, unique, flatten } from 'underscore';
 import { createId } from 'utils/mixins';
 import { Model } from 'backbone';
 import Pages from './model/Pages';
@@ -166,7 +168,7 @@ export default () => {
     /**
      * Remove page
      * @param {String|[Page]} page Page or page id
-     * @returns {[Page]}
+     * @returns {[Page]} Removed Page
      * @example
      * const removedPage = pageManager.remove('page-id');
      * // or by passing the page
@@ -213,7 +215,26 @@ export default () => {
      * const arrayOfPages = pageManager.getAll();
      */
     getAll() {
-      return this.pages.models;
+      return [...this.pages.models];
+    },
+
+    /**
+     * Get wrapper components (aka body) from all pages and frames.
+     * @returns {Array<[Component]>}
+     * @example
+     * const wrappers = pageManager.getAllWrappers();
+     * // Get all `image` components from the project
+     * const allImages = wrappers.map(wrp => wrp.findType('image')).flat();
+     */
+    getAllWrappers() {
+      const pages = this.getAll();
+      return unique(
+        flatten(
+          pages.map(page =>
+            page.getAllFrames().map(frame => frame.getComponent())
+          )
+        )
+      );
     },
 
     getAllMap() {
