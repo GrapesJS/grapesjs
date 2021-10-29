@@ -111,13 +111,17 @@ Returns **[Sector]** Removed sector
 
 Get all sectors
 
+### Parameters
+
+*   `opts`   (optional, default `{}`)
+
 ### Examples
 
 ```javascript
 const sectors = styleManager.getSectors();
 ```
 
-Returns **[Array][19]<[Sector]>** Collection of sectors
+Returns **Collection<[Sector]>** Collection of sectors
 
 ## addProperty
 
