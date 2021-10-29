@@ -177,12 +177,16 @@ export default () => {
 
     /**
      * Get all sectors
-     * @returns {Array<[Sector]>} Collection of sectors
+     * @returns {Collection<[Sector]>} Collection of sectors
      * @example
      * const sectors = styleManager.getSectors();
      * */
-    getSectors() {
-      return sectors && sectors.models ? [...sectors.models] : [];
+    getSectors(opts = {}) {
+      return sectors && sectors.models
+        ? opts.array
+          ? [...sectors.models]
+          : sectors
+        : [];
     },
 
     /**

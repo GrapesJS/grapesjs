@@ -27,7 +27,7 @@ describe('StyleManager', () => {
       obj.addSector('test', {
         name: 'Test name'
       });
-      var sector = obj.getSectors()[0];
+      var sector = obj.getSectors({ array: true })[0];
       expect(obj.getSectors().length).toEqual(1);
       expect(sector.get('id')).toEqual('test');
       expect(sector.get('name')).toEqual('Test name');
