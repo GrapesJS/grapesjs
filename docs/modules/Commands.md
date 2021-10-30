@@ -264,7 +264,7 @@ The Commands module offers also a set of events that you can use to intercept th
 
 ### Intercept run and stop
 
-By using our previosly created `my-command-modal` command let's see which events we can listen to
+By using our previously created `my-command-modal` command let's see which events we can listen to
 
 ```js
 editor.on('run:my-command-modal', () => {

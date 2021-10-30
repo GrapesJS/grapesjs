@@ -59,7 +59,7 @@ export default {
 
   // Pass custom options to fetch API (remote storage)
   // You can pass a simple object: { someOption: 'someValue' }
-  // or a function wich returns and object to add:
+  // or a function which returns and object to add:
   // currentOpts => {
   //  return currentOpts.method === 'post' ?  { method: 'patch' } : {};
   // }
