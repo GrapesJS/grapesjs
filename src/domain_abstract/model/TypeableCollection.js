@@ -7,7 +7,9 @@ const View = Backbone.View;
 export default {
   types: [],
 
-  initialize(models, opts) {
+  initialize(models, opts = {}) {
+    const { em } = opts;
+    this.em = em;
     this.model = (attrs = {}, options = {}) => {
       let Model, View, type;
 
@@ -24,7 +26,7 @@ export default {
         attrs = typeFound.attributes;
       }
 
-      const model = new Model(attrs, options);
+      const model = new Model(attrs, { ...options, em });
       model.typeView = View;
       return model;
     };

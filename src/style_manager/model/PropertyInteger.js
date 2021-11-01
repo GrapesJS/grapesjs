@@ -34,8 +34,16 @@ export default Property.extend({
    * Get property unit value.
    * @returns {String}
    */
-  getValueUnit() {
+  getUnit() {
     return this.get('unit');
+  },
+
+  /**
+   * Update property unit value.
+   * @returns {String}
+   */
+  upUnit(unit, opts) {
+    return this._up({ unit }, opts);
   },
 
   initialize(props = {}, opts = {}) {
@@ -45,7 +53,7 @@ export default Property.extend({
     this.input = hasWin() && new InputNumber({ model: this });
 
     if (units.length && !unit) {
-      this.set('unit', units[0]);
+      this.set('unit', units[0], { silent: 1 });
     }
     Property.callInit(this, props, opts);
   },

@@ -24,8 +24,9 @@ export default class Sector extends Model {
     };
   }
 
-  initialize(opts) {
-    const o = opts || {};
+  initialize(prp, opts = {}) {
+    const { em } = opts;
+    const o = prp || {};
     const builded = this.buildProperties(o.buildProps);
     const name = this.get('name') || '';
     let props = [];
@@ -34,7 +35,7 @@ export default class Sector extends Model {
     if (!builded) props = this.get('properties');
     else props = this.extendProperties(builded);
 
-    const propsModel = new Properties(props);
+    const propsModel = new Properties(props, { em });
     propsModel.sector = this;
     this.set('properties', propsModel);
   }

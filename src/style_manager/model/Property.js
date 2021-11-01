@@ -1,9 +1,10 @@
 import { Model } from 'common';
-import { isUndefined, isString, result } from 'underscore';
+import { isUndefined, isString, result, keys } from 'underscore';
 import { capitalize } from 'utils/mixins';
 
 export default class Property extends Model {
   initialize(props = {}, opts = {}) {
+    this.em = opts.em;
     const id = this.get('id') || '';
     const name = this.get('name') || '';
     !this.get('property') &&
@@ -11,7 +12,31 @@ export default class Property extends Model {
     const prop = this.get('property');
     !this.get('id') && this.set('id', prop);
     !name && this.set('name', capitalize(prop).replace(/-/g, ' '));
+    this.on('change', this.__upTargets);
     Property.callInit(this, props, opts);
+  }
+
+  __upTargets() {
+    const { em } = this;
+    if (!em || !em.getConfig('customUI')) return;
+    const sm = em.get('StyleManager');
+    const name = this.getName();
+    const value = this.getFullValue();
+
+    const changed = this.changedAttributes();
+    const previous = keys(changed).reduce((a, i) => {
+      a[i] = this.previous(i);
+      return a;
+    }, {});
+    console.log('Update targets', { name, value, changed, previous });
+
+    sm.addStyleTargets({ [name]: value });
+  }
+
+  _up(props, opts = {}) {
+    const { preview, ...rest } = opts;
+    props.__p = preview;
+    return this.set(props, { ...rest, avoidStore: !!preview });
   }
 
   init() {}
@@ -55,6 +80,11 @@ export default class Property extends Model {
   getValue() {
     const val = this.get('value');
     return isUndefined(val) ? this.getDefaultValue() : val;
+  }
+
+  upValue(value, opts) {
+    const parsed = this.parseValue(value);
+    return this._up(parsed, opts);
   }
 
   /**

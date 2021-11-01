@@ -95,8 +95,9 @@ export default () => {
       sectors = new Sectors([], c);
       this.model = new Model({ targets: [] });
       const toListen =
-        'component:toggled component:update:classes change:state change:device frame:resized selector:type';
-      em.on(
+        'component:toggled component:update:classes change:state change:device frame:resized selector:type styleable:change';
+      this.model.listenTo(
+        em,
         toListen,
         debounce(() => {
           this.select(em.getSelectedAll());
@@ -478,17 +479,21 @@ export default () => {
       this.model.set({ targets, lastTarget, lastTargetParents });
 
       // Update all property values
-      // if (lastTarget && em.getConfig('customUI')) {
-      //   const style = lastTarget.getStyle();
-      //   sectors.map(sector => {
-      //     sector.getProperties().map(prop => {
-      //       const value = style[prop.getName()];
-      //       !isUndefined(value) && prop.setValue(value);
-      //     })
-      //   })
-      // }
+      if (lastTarget && em.getConfig('customUI')) {
+        const style = lastTarget.getStyle();
+        sectors.map(sector => {
+          sector.getProperties().map(prop => {
+            const value = style[prop.getName()];
+            prop.upValue(isUndefined(value) ? '' : value);
+          });
+        });
+      }
 
       return targets;
+    },
+
+    addStyleTargets(style) {
+      this.getSelected().map(t => t.addStyle(style));
     },
 
     getSelected() {
