@@ -1,5 +1,5 @@
 import { Model } from 'common';
-import { extend } from 'underscore';
+import { extend, isString } from 'underscore';
 import Properties from './Properties';
 import PropertyFactory from './PropertyFactory';
 
@@ -32,8 +32,15 @@ export default class Sector extends Model {
     let props = [];
     !this.get('id') && this.set('id', name.replace(/ /g, '_').toLowerCase());
 
-    if (!builded) props = this.get('properties');
-    else props = this.extendProperties(builded);
+    if (!builded) {
+      props = this.get('properties')
+        .map(prop => (isString(prop) ? this.buildProperties(prop)[0] : prop))
+        .filter(Boolean);
+    } else {
+      props = this.extendProperties(builded);
+    }
+
+    props = props.map(prop => this.checkExtend(prop));
 
     const propsModel = new Properties(props, { em });
     propsModel.sector = this;
@@ -89,6 +96,12 @@ export default class Sector extends Model {
     return props.models ? [...props.models] : props;
   }
 
+  getProperty(id) {
+    return (
+      this.getProperties().filter(prop => prop.get('id') === id)[0] || null
+    );
+  }
+
   /**
    * Extend properties
    * @param {Array<Object>} props Start properties
@@ -135,6 +148,18 @@ export default class Sector extends Model {
     return ex ? isolated.filter(i => i) : props;
   }
 
+  checkExtend(prop) {
+    const { extend, ...rest } = prop || {};
+    if (extend) {
+      return {
+        ...(this.buildProperties([extend])[0] || {}),
+        ...rest
+      };
+    } else {
+      return prop;
+    }
+  }
+
   /**
    * Build properties
    * @param {Array<string>} propr Array of props as sting
@@ -142,15 +167,12 @@ export default class Sector extends Model {
    * @private
    */
   buildProperties(props) {
-    var r;
-    var buildP = props || [];
+    const buildP = props || [];
 
-    if (!buildP.length) return;
+    if (!buildP.length) return [];
 
-    if (!this.propFactory) this.propFactory = new PropertyFactory();
+    this.propFactory = this.propFactory || new PropertyFactory();
 
-    r = this.propFactory.build(buildP);
-
-    return r;
+    return this.propFactory.build(buildP);
   }
 }
