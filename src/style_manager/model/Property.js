@@ -16,7 +16,7 @@ export default class Property extends Model {
     Property.callInit(this, props, opts);
   }
 
-  __upTargets() {
+  __upTargets(p, opts = {}) {
     const { em } = this;
     if (!em || !em.getConfig('customUI')) return;
     const sm = em.get('StyleManager');
@@ -28,9 +28,9 @@ export default class Property extends Model {
       a[i] = this.previous(i);
       return a;
     }, {});
-    console.log('Update targets', { name, value, changed, previous });
+    console.log('Update targets', { name, value, changed, previous, opts });
 
-    sm.addStyleTargets({ [name]: value });
+    !opts.__up && sm.addStyleTargets({ [name]: value });
   }
 
   _up(props, opts = {}) {
@@ -83,8 +83,13 @@ export default class Property extends Model {
   }
 
   upValue(value, opts) {
-    const parsed = this.parseValue(value);
+    const parsed =
+      value === null ? this.__getClearProps() : this.parseValue(value);
     return this._up(parsed, opts);
+  }
+
+  __getClearProps() {
+    return { value: '', status: '' };
   }
 
   /**

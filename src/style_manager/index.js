@@ -99,7 +99,7 @@ export default () => {
       this.model.listenTo(
         em,
         toListen,
-        debounce(() => {
+        debounce((...args) => {
           this.select(em.getSelectedAll());
           em.trigger('style:custom');
         })
@@ -484,7 +484,7 @@ export default () => {
         sectors.map(sector => {
           sector.getProperties().map(prop => {
             const value = style[prop.getName()];
-            prop.upValue(isUndefined(value) ? '' : value);
+            prop.upValue(isUndefined(value) ? null : value, { __up: true });
           });
         });
       }

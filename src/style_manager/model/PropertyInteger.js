@@ -63,6 +63,13 @@ export default Property.extend({
     return this;
   },
 
+  __getClearProps() {
+    return {
+      ...Property.prototype.__getClearProps(),
+      unit: ''
+    };
+  },
+
   parseValue(val) {
     const parsed = Property.prototype.parseValue.apply(this, arguments);
     const { value, unit } = this.input.validateInputValue(parsed.value, {
