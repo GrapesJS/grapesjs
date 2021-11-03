@@ -564,7 +564,7 @@ export default () => {
      * Get component type.
      * Read more about this in [Define New Component](https://grapesjs.com/docs/modules/Components.html#define-new-component)
      * @param {string} type Component ID
-     * @return {Object} Component type defintion, eg. `{ model: ..., view: ... }`
+     * @return {Object} Component type definition, eg. `{ model: ..., view: ... }`
      */
     getType(type) {
       var df = componentTypes;

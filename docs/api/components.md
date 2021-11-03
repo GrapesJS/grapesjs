@@ -179,7 +179,7 @@ Read more about this in [Define New Component][17]
 
 *   `type` **[string][15]** Component ID
 
-Returns **[Object][12]** Component type defintion, eg. `{ model: ..., view: ... }`
+Returns **[Object][12]** Component type definition, eg. `{ model: ..., view: ... }`
 
 ## removeType
 

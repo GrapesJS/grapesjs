@@ -506,7 +506,7 @@ describe('GrapesJS', () => {
         editor.selectToggle([el1, el2, el3]);
         expect(editor.getSelected()).toBe(el2);
         expect(editor.getSelectedAll().length).toBe(2);
-        // Add mutiple
+        // Add multiple
         editor.selectAdd([el2, el3]);
         expect(editor.getSelected()).toBe(el3);
         expect(editor.getSelectedAll().length).toBe(3);
