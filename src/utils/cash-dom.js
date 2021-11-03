@@ -1214,7 +1214,7 @@ fn.text = function(content) {
 // @require core/cash.js
 // @require core/variables.js
 
-var docEle = doc.documentElement;
+var docEle = doc && doc.documentElement;
 
 fn.offset = function() {
   var ele = this[0];

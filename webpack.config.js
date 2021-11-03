@@ -23,7 +23,7 @@ export default ({ config }) => ({
   resolve: {
     modules: ['src', 'node_modules'],
     alias: {
-      jquery: 'cash-dom',
+      jquery: 'utils/cash-dom',
       backbone: `${rootDir}/node_modules/backbone`,
       underscore: `${rootDir}/node_modules/underscore`,
     }
