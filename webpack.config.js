@@ -17,8 +17,6 @@ export default ({ config }) => ({
   },
   module: {
     rules: [
-      // Disable AMD in vendors
-      { test: /\.js$/, parser: { amd: false } },
       ...config.module.rules,
     ],
   },
