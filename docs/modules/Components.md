@@ -872,7 +872,7 @@ If you want to know how to create Components with javascript attached (eg. count
 If you're importing big chunks of HTML string into the editor (eg. defined via Blocks) JSX might be a great compromise between perfomances and code readibility as it allows you to skip the parsing and the component recognition steps by keeping the HTML syntax.
 By default, GrapesJS understands objects generated from React JSX preset, so, if you're working in the React app probably you're already using JSX and you don't need to do anything else, your environment is already configured to parse JSX in javascript files.
 
-So, intead of writing this:
+So, instead of writing this:
 ```js
 // I'm adding a string, so the parsing and the component recognition steps will be executed
 editor.addComponents(`<div>

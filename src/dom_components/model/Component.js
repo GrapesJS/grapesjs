@@ -850,7 +850,7 @@ export default class Component extends Model.extend(Styleable) {
           addedInstances: addedInstances.map(c => c.cid),
           added: m.cid
         });
-      // Here, before appending a new symbol, I have to ensure there are no previosly
+      // Here, before appending a new symbol, I have to ensure there are no previously
       // created symbols (eg. used mainly when drag components around)
       toUp.forEach(symb => {
         const symbTop = symb.__getSymbTop();
