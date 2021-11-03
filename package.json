@@ -80,10 +80,7 @@
     ],
     "setupFiles": [
       "<rootDir>/test/setup.js"
-    ],
-    "moduleNameMapper": {
-      "^jquery$": "cash-dom"
-    }
+    ]
   },
   "husky": {
     "hooks": {
