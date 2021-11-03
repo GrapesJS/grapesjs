@@ -8,12 +8,11 @@ import {
   bindAll
 } from 'underscore';
 import Backbone from 'backbone';
+import $ from 'utils/cash-dom';
 import Extender from 'utils/extender';
 import { getModel, hasWin } from 'utils/mixins';
 import Selected from './Selected';
 
-const cash = hasWin() ? require('cash-dom') : null;
-const $ = (cash && cash.default) || cash;
 Backbone.$ = $;
 
 const deps = [
