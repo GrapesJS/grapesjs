@@ -67,10 +67,15 @@ export default class Property extends Model {
 
   /**
    * Get property label.
+   * @param {Object} [opts={}] Options
+   * @param {Boolean} [opts.locale=true] Use the locale string from i18n module
    * @returns {String}
    */
-  getLabel() {
-    return this.get('name');
+  getLabel(opts = {}) {
+    const { locale = true } = opts;
+    const id = this.getId();
+    const name = this.get('name');
+    return (locale && this.em?.t(`styleManager.properties.${id}`)) || name;
   }
 
   /**

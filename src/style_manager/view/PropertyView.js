@@ -16,10 +16,10 @@ export default Backbone.View.extend({
   },
 
   templateLabel(model) {
-    const { pfx, em } = this;
+    const { pfx } = this;
     const { parent } = model;
-    const { icon = '', info = '', id, name } = model.attributes;
-    const label = (em && em.t(`styleManager.properties.${id}`)) || name;
+    const { icon = '', info = '' } = model.attributes;
+    const label = model.getLabel();
 
     return `
       <span class="${pfx}icon ${icon}" title="${info}">
