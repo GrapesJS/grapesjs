@@ -41,6 +41,15 @@ export default class PropertyRadio extends Property {
   }
 
   /**
+   * Get the option id from the option object.
+   * @param {Object} option Option object
+   * @returns {String} Option id
+   */
+  getOptionId(option) {
+    return option.id || option.value;
+  }
+
+  /**
    * Get option label.
    * @param {String} id Option id
    * @param {Object} [opts={}] Options
@@ -50,7 +59,7 @@ export default class PropertyRadio extends Property {
   getOptionLabel(id, opts = {}) {
     const { locale = true } = opts;
     const options = this.getOptions();
-    const option = options.filter(o => o.id === id || o.value === id)[0] || {};
+    const option = options.filter(o => this.getOptionId(o) === id)[0] || {};
     const label = option.label || option.name || id;
     const propId = this.getId();
     return (

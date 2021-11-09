@@ -25,7 +25,7 @@ export default PropertyView.extend({
           const cls = opt.className
             ? `${opt.className} ${pfx}icon ${itemCls}`
             : '';
-          const id = opt.id || opt.value;
+          const id = model.getOptionId(opt);
           const elId = `${prop}-${id}-${cid}`;
           const labelEl = cls ? '' : model.getOptionLabel(id);
           const titleAttr = opt.title ? `title="${opt.title}"` : '';
