@@ -86,6 +86,13 @@ export default {
     properties: {
       // float: 'Float',
     }
+    // Translate options in style properties
+    // options: {
+    //   float: { // Id of the property
+    //     ...
+    //     left: 'Left', // {option id}: {Option label}
+    //   }
+    // }
   },
   traitManager: {
     empty: 'Select an element before using Trait Manager',

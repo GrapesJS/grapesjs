@@ -2,7 +2,6 @@ import PropertyView from './PropertyView';
 
 export default PropertyView.extend({
   templateInput() {
-    const pfx = this.pfx;
     const ppfx = this.ppfx;
     return `
       <div class="${ppfx}field ${ppfx}field-radio">
@@ -11,32 +10,30 @@ export default PropertyView.extend({
   },
 
   onRender() {
-    const pfx = this.pfx;
-    const ppfx = this.ppfx;
+    const { pfx, ppfx, model } = this;
     const itemCls = `${ppfx}radio-item-label`;
-    const model = this.model;
     const prop = model.get('property');
     const options = model.get('list') || model.get('options') || [];
-    const { cid } = model;
     const clsInput = `${pfx}radio ${pfx}radio-${prop}`;
+    const { cid } = model;
 
     if (!this.input) {
       if (options && options.length) {
         let inputStr = '';
 
-        options.forEach(el => {
-          let cl = el.className ? `${el.className} ${pfx}icon ${itemCls}` : '';
-          let id = `${prop}-${el.value}-${cid}`;
-          let labelTxt = el.name || el.value;
-          let titleAttr = el.title ? `title="${el.title}"` : '';
+        options.forEach(opt => {
+          const cls = opt.className
+            ? `${opt.className} ${pfx}icon ${itemCls}`
+            : '';
+          const id = opt.id || opt.value;
+          const elId = `${prop}-${id}-${cid}`;
+          const labelEl = cls ? '' : model.getOptionLabel(id);
+          const titleAttr = opt.title ? `title="${opt.title}"` : '';
           inputStr += `
             <div class="${ppfx}radio-item">
-              <input type="radio" class="${clsInput}" id="${id}" name="${prop}-${cid}" value="${
-            el.value
-          }"/>
-              <label class="${cl || itemCls}" ${titleAttr} for="${id}">${
-            cl ? '' : labelTxt
-          }</label>
+              <input type="radio" class="${clsInput}" id="${elId}" name="${prop}-${cid}" value="${id}"/>
+              <label class="${cls ||
+                itemCls}" ${titleAttr} for="${elId}">${labelEl}</label>
             </div>
           `;
         });
