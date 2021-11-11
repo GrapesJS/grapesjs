@@ -84,7 +84,16 @@ export default class Property extends Model {
    */
   getValue() {
     const val = this.get('value');
-    return isUndefined(val) || val === '' ? this.getDefaultValue() : val;
+    return !this.hasValue() ? this.getDefaultValue() : val;
+  }
+
+  /**
+   * Check if the property has value
+   * @returns {Boolean}
+   */
+  hasValue() {
+    const val = this.get('value');
+    return !isUndefined(val) && val !== '';
   }
 
   /**
