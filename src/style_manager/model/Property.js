@@ -84,7 +84,14 @@ export default class Property extends Model {
    */
   getValue() {
     const val = this.get('value');
-    return isUndefined(val) ? this.getDefaultValue() : val;
+    return isUndefined(val) || val === '' ? this.getDefaultValue() : val;
+  }
+
+  /**
+   * Clear value
+   */
+  clear() {
+    this._up(this.__getClearProps());
   }
 
   upValue(value, opts) {
@@ -224,7 +231,8 @@ export default class Property extends Model {
    * @private
    */
   getDefaultValue() {
-    return this.get('defaults');
+    const def = this.get('default');
+    return !isUndefined(def) ? def : this.get('defaults');
   }
 
   /**
