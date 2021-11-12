@@ -53,6 +53,11 @@ import Properties from './model/Properties';
 import PropertyFactory from './model/PropertyFactory';
 import SectorsView from './view/SectorsView';
 
+export const evAll = 'style';
+export const evPfx = `${evAll}:`;
+export const evPropUp = `${evPfx}property:update`;
+export const evCustom = `${evPfx}custom`;
+
 export default () => {
   var c = {};
   let properties;
@@ -65,11 +70,12 @@ export default () => {
 
     PropertyFactory: PropertyFactory(),
 
-    /**
-     * Name of the module
-     * @type {String}
-     * @private
-     */
+    events: {
+      all: evAll,
+      propertyUpdate: evPropUp,
+      custom: evCustom
+    },
+
     name: 'StyleManager',
 
     /**
@@ -101,11 +107,19 @@ export default () => {
         toListen,
         debounce((...args) => {
           this.select(em.getSelectedAll());
-          em.trigger('style:custom');
+          this.__trgCustom();
         })
       );
 
       return this;
+    },
+
+    __trgCustom() {
+      this.em.trigger(this.events.custom);
+    },
+
+    __trgEv(event, ...data) {
+      this.em.trigger(event, ...data);
     },
 
     onLoad() {

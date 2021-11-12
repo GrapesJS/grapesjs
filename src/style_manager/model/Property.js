@@ -23,13 +23,13 @@ export default class Property extends Model {
     const name = this.getName();
     const value = this.getFullValue();
 
-    const changed = this.changedAttributes();
-    const previous = keys(changed).reduce((a, i) => {
+    const to = this.changedAttributes();
+    const from = keys(to).reduce((a, i) => {
       a[i] = this.previous(i);
       return a;
     }, {});
-    console.log('Update targets', { name, value, changed, previous, opts });
 
+    sm.__trgEv(sm.events.propertyUpdate, { property: this, from, to });
     !opts.__up && sm.addStyleTargets({ [name]: value });
   }
 
