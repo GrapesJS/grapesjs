@@ -82,9 +82,10 @@ export default class Property extends Model {
    * Get property value.
    * @returns {String}
    */
-  getValue() {
+  getValue(opts = {}) {
+    const { noDefault } = opts;
     const val = this.get('value');
-    return !this.hasValue() ? this.getDefaultValue() : val;
+    return !this.hasValue() && !noDefault ? this.getDefaultValue() : val;
   }
 
   /**
@@ -105,7 +106,9 @@ export default class Property extends Model {
 
   upValue(value, opts) {
     const parsed =
-      value === null ? this.__getClearProps() : this.parseValue(value);
+      value === null || value === ''
+        ? this.__getClearProps()
+        : this.parseValue(value);
     return this._up(parsed, opts);
   }
 
