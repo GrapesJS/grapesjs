@@ -1,4 +1,4 @@
-import { isString, isArray, keys } from 'underscore';
+import { isString, isArray, keys, isUndefined } from 'underscore';
 import { shallowDiff } from 'utils/mixins';
 import ParserHtml from 'parser/model/ParserHtml';
 
@@ -113,5 +113,25 @@ export default {
     return this.selectorsToString
       ? this.selectorsToString()
       : this.getSelectors().getFullString();
+  },
+
+  _validate(attr, opts) {
+    const { style } = attr;
+    const em = this.em || opts.em;
+    const onBeforeStyle = em?.get('CssComposer')?.getConfig().onBeforeStyle;
+
+    if (style && onBeforeStyle) {
+      const newStyle = onBeforeStyle({ ...style });
+      newStyle &&
+        keys(style).map(prop => {
+          if (isUndefined(newStyle[prop])) delete attr.style[prop];
+        });
+      newStyle &&
+        keys(newStyle).map(prop => {
+          attr.style[prop] = newStyle[prop];
+        });
+    }
+
+    return true;
   }
 };
