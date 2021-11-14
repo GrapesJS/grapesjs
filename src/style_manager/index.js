@@ -58,6 +58,8 @@ export const evPfx = `${evAll}:`;
 export const evPropUp = `${evPfx}property:update`;
 export const evCustom = `${evPfx}custom`;
 
+const propDef = value => value || value === 0;
+
 export default () => {
   var c = {};
   let properties;
@@ -495,10 +497,33 @@ export default () => {
       // Update all property values
       if (lastTarget && em.getConfig('customUI')) {
         const style = lastTarget.getStyle();
+        const parentStyles = lastTargetParents.map(p => ({
+          target: p,
+          style: p.getStyle()
+        }));
+
         sectors.map(sector => {
           sector.getProperties().map(prop => {
-            const value = style[prop.getName()];
-            prop.upValue(isUndefined(value) ? null : value, { __up: true });
+            const name = prop.getName();
+            const value = style[name];
+            const hasVal = propDef(value);
+            let newValue = hasVal ? value : null;
+            let parentTarget = null;
+
+            if (!hasVal) {
+              newValue = null;
+              const parentItem = parentStyles.filter(p =>
+                propDef(p.style[name])
+              )[0];
+
+              if (parentItem) {
+                newValue = parentItem.style[name];
+                parentTarget = parentItem.target;
+              }
+            }
+
+            prop.__setParentTarget(parentTarget);
+            prop.upValue(newValue, { __up: true });
           });
         });
       }

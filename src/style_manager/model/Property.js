@@ -276,6 +276,14 @@ export default class Property extends Model {
 
     return value || '';
   }
+
+  __setParentTarget(value) {
+    this.__parentTarget = value;
+  }
+
+  getParentTarget() {
+    return this.__parentTarget || null;
+  }
 }
 
 Property.callParentInit = function(property, ctx, props, opts = {}) {
