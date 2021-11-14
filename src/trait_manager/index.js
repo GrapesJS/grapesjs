@@ -73,11 +73,10 @@ export default () => {
     /**
      * Add new trait type
      * @param {string} name Type name
-     * @param {Object} methods Object representing the trait
+     * @param {Object} type Object representing the trait type
      */
-    addType(name, trait) {
-      const baseView = this.getType('text');
-      this.types[name] = baseView.extend(trait);
+    addType(name, type) {
+      this.types[name] = type;
     },
 
     /**
