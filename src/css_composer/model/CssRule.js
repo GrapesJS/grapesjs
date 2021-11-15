@@ -20,6 +20,7 @@ const { CSS } = hasWin() ? window : {};
  * @property {Boolean} [stylable=true] Indicates if the rule is stylable from the editor
  *
  * [Device]: device.html
+ * [State]: state.html
  */
 export default class CssRule extends Model.extend(Styleable) {
   defaults() {
@@ -171,6 +172,20 @@ export default class CssRule extends Model.extend(Styleable) {
       devices.filter(d => d.getWidthMedia() === getMediaLength(mediaText))[0] ||
       null
     );
+  }
+
+  /**
+   * Get the State the rule is related to.
+   * @returns {[State]|null}
+   * @example
+   * const state = rule.getState();
+   * console.log(state?.getLabel());
+   */
+  getState() {
+    const { em } = this;
+    const stateValue = this.get('state');
+    const states = em.get('SelectorManager').getStates() || [];
+    return states.filter(s => s.getName() === stateValue)[0] || null;
   }
 
   /**
