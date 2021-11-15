@@ -109,9 +109,9 @@ export default {
     return this.get('selectors') || this.get('classes');
   },
 
-  getSelectorsString() {
+  getSelectorsString(opts) {
     return this.selectorsToString
-      ? this.selectorsToString()
+      ? this.selectorsToString(opts)
       : this.getSelectors().getFullString();
   },
 
