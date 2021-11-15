@@ -2,6 +2,7 @@ import { Model } from 'backbone';
 import Styleable from 'domain_abstract/model/Styleable';
 import { isEmpty, forEach, isString, isArray } from 'underscore';
 import Selectors from 'selector_manager/model/Selectors';
+import { getMediaLength } from 'code_manager/model/CssGenerator';
 import { isEmptyObj, hasWin } from 'utils/mixins';
 
 const { CSS } = hasWin() ? window : {};
@@ -17,6 +18,8 @@ const { CSS } = hasWin() ? window : {};
  * @property {String} [state=''] State of the rule, eg: `hover`, `focused`
  * @property {Boolean|Array<String>} [important=false] If true, sets `!important` on all properties. You can also pass an array to specify properties on which use important
  * @property {Boolean} [stylable=true] Indicates if the rule is stylable from the editor
+ *
+ * [Device]: device.html
  */
 export default class CssRule extends Model.extend(Styleable) {
   defaults() {
@@ -147,6 +150,27 @@ export default class CssRule extends Model.extend(Styleable) {
     }
 
     return result;
+  }
+
+  /**
+   * Get the Device the rule is related to.
+   * @returns {[Device]|null}
+   * @example
+   * const device = rule.getDevice();
+   * console.log(device?.getName());
+   */
+  getDevice() {
+    const { em } = this;
+    const { atRuleType, mediaText } = this.attributes;
+    const devices = em?.get('DeviceManager').getDevices() || [];
+    const deviceDefault = devices.filter(d => d.getWidthMedia() === '')[0];
+    if (atRuleType !== 'media' || !mediaText) {
+      return deviceDefault || null;
+    }
+    return (
+      devices.filter(d => d.getWidthMedia() === getMediaLength(mediaText))[0] ||
+      null
+    );
   }
 
   /**
