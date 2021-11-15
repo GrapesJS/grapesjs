@@ -145,7 +145,7 @@ export default () => {
         em.trigger('selector:type', value)
       );
       const listenTo =
-        'component:toggled component:update:classes styleManager:update selector:state selector:type';
+        'component:toggled component:update:classes change:device styleManager:update selector:state selector:type';
       this.model.listenTo(em, listenTo, () => this.__update());
 
       return this;
