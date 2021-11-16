@@ -90,11 +90,15 @@ export default class Property extends Model {
 
   /**
    * Check if the property has value
+   * @param {Object} [opts={}] Options
+   * @param {Boolean} [opts.noParent=false] Ignore the value if from parent target.
    * @returns {Boolean}
    */
-  hasValue() {
+  hasValue(opts = {}) {
+    const { noParent } = opts;
+    const parentValue = noParent && this.getParentTarget();
     const val = this.get('value');
-    return !isUndefined(val) && val !== '';
+    return !isUndefined(val) && val !== '' && !parentValue;
   }
 
   /**

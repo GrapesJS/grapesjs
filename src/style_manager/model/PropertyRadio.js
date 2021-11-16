@@ -16,7 +16,7 @@ export default class PropertyRadio extends Property {
   getOptions() {
     // support old list property
     const { options, list } = this.attributes;
-    return options && options.length ? options : list;
+    return (options && options.length ? options : list) || [];
   }
 
   /**
