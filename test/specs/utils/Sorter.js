@@ -458,8 +458,8 @@ describe('Sorter', () => {
       test('Droppable function', () => {
         var srcModel = new Component({
           tagName: 'div',
-          draggable: true, // Can't move it
-          content: 'Content text', // Text inside component
+          draggable: true,
+          content: 'Content text',
           attributes: { class: 'canDrop' }
         });
         var srcView = new ComponentTextView({
