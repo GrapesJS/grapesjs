@@ -124,7 +124,6 @@ Check the [Pages][8] module.
 
 ### General
 
-*   `canvasScroll` - Canvas is scrolled
 *   `update` - The structure of the template is updated (its HTML/CSS)
 *   `undo` - Undo executed
 *   `redo` - Redo executed
