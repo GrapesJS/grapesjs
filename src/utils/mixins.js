@@ -1,6 +1,15 @@
 import { keys, isUndefined, isElement, isArray } from 'underscore';
 
+export const isDef = value => typeof value !== 'undefined';
+
 export const hasWin = () => typeof window !== 'undefined';
+
+export const getGlobal = () =>
+  typeof globalThis !== 'undefined'
+    ? globalThis
+    : typeof window !== 'undefined'
+    ? window
+    : global;
 
 export const toLowerCase = str => (str || '').toLowerCase();
 
