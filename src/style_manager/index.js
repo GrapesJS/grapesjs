@@ -363,13 +363,27 @@ export default () => {
       if (em && target) {
         const cssC = em.get('CssComposer');
         const cssGen = em.get('CodeManager').getGenerator('css');
-        const cmp = target.toHTML ? true : target.getComponent();
-        console.log({ cmp });
-        const all = cssC
-          .getRules(target.getSelectors().getFullString())
+        const cmp = target.toHTML ? target : target.getComponent();
+        const sel = em.getSelected();
+        let cmpRules = [];
+        let otherRules = [];
+
+        // Componente related rule
+        if (cmp) {
+          cmpRules = cssC.getRules(`#${cmp.getId()}`);
+          otherRules = cssC.getRules(sel.getSelectors().getFullString());
+        } else {
+          cmpRules = cssC.getRules(`#${sel.getId()}`);
+          otherRules = cssC.getRules(target.getSelectors().getFullString());
+        }
+
+        const all = otherRules
+          .concat(cmpRules)
           .filter(rule => (state ? rule.get('state') === state : 1))
           .sort(cssGen.sortRules)
           .reverse();
+
+        // Slice removes rules not related to the current device
         result = all.slice(all.indexOf(target) + 1);
       }
 

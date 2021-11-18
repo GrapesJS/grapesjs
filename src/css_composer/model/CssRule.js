@@ -147,7 +147,7 @@ export default class CssRule extends Model.extend(Styleable) {
     const style = this.styleToString(opts);
     const singleAtRule = this.get('singleAtRule');
 
-    if ((selectors || singleAtRule) && style) {
+    if ((selectors || singleAtRule) && (style || opts.allowEmpty)) {
       result = singleAtRule ? style : `${selectors}{${style}}`;
     }
 
@@ -218,7 +218,9 @@ export default class CssRule extends Model.extend(Styleable) {
     let result = '';
     const atRule = this.getAtRule();
     const block = this.getDeclaration(opts);
-    block && (result = block);
+    if (block || opts.allowEmpty) {
+      result = block;
+    }
 
     if (atRule && result) {
       result = `${atRule}{${result}}`;
