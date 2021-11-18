@@ -102,12 +102,12 @@ export default () => {
       properties = new Properties();
       sectors = new Sectors([], c);
       this.model = new Model({ targets: [] });
-      const toListen =
+      const ev =
         'component:toggled component:update:classes change:state change:device frame:resized selector:type styleable:change';
       this.model.listenTo(
         em,
-        toListen,
-        debounce((...args) => {
+        ev,
+        debounce(() => {
           this.select(em.getSelectedAll());
           this.__trgCustom();
         })
@@ -493,46 +493,13 @@ export default () => {
       const lastTarget = targets.slice().reverse()[0];
       const lastTargetParents = this.getParentRules(lastTarget);
       this.model.set({ targets, lastTarget, lastTargetParents });
-
-      // Update all property values
-      if (lastTarget && em.getConfig('customUI')) {
-        const style = lastTarget.getStyle();
-        const parentStyles = lastTargetParents.map(p => ({
-          target: p,
-          style: p.getStyle()
-        }));
-
-        sectors.map(sector => {
-          sector.getProperties().map(prop => {
-            const name = prop.getName();
-            const value = style[name];
-            const hasVal = propDef(value);
-            let newValue = hasVal ? value : null;
-            let parentTarget = null;
-
-            if (!hasVal) {
-              newValue = null;
-              const parentItem = parentStyles.filter(p =>
-                propDef(p.style[name])
-              )[0];
-
-              if (parentItem) {
-                newValue = parentItem.style[name];
-                parentTarget = parentItem.target;
-              }
-            }
-
-            prop.__setParentTarget(parentTarget);
-            prop.upValue(newValue, { __up: true });
-          });
-        });
-      }
+      this.__upProps(opts);
 
       return targets;
     },
 
-    addStyleTargets(style) {
-      this.getSelected().map(t => t.addStyle(style));
+    addStyleTargets(style, opts) {
+      this.getSelected().map(t => t.addStyle(style, opts));
     },
 
     getSelected() {
@@ -570,6 +537,44 @@ export default () => {
     _logNoSector(sectorId) {
       const { em } = this;
       em && em.logWarning(`'${sectorId}' sector not found`);
+    },
+
+    __upProps(opts) {
+      const lastTarget = this.getLastSelected();
+      if (!lastTarget || !this.em.getConfig('customUI')) return;
+
+      const lastTargetParents = this.getSelectedParents();
+      const style = lastTarget.getStyle();
+      const parentStyles = lastTargetParents.map(p => ({
+        target: p,
+        style: p.getStyle()
+      }));
+
+      sectors.map(sector => {
+        sector.getProperties().map(prop => {
+          const name = prop.getName();
+          const value = style[name];
+          const hasVal = propDef(value);
+          let newValue = hasVal ? value : null;
+          let parentTarget = null;
+
+          if (!hasVal) {
+            newValue = null;
+            const parentItem = parentStyles.filter(p =>
+              propDef(p.style[name])
+            )[0];
+
+            if (parentItem) {
+              newValue = parentItem.style[name];
+              parentTarget = parentItem.target;
+            }
+          }
+
+          prop.__setParentTarget(parentTarget);
+          prop.getFullValue() !== newValue &&
+            prop.upValue(newValue, { ...opts, __up: true });
+        });
+      });
     },
 
     destroy() {

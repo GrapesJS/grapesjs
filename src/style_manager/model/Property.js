@@ -30,13 +30,14 @@ export default class Property extends Model {
     }, {});
 
     sm.__trgEv(sm.events.propertyUpdate, { property: this, from, to });
-    !opts.__up && sm.addStyleTargets({ [name]: value });
+    !opts.__up &&
+      sm.addStyleTargets({ [name]: value, __p: !!opts.avoidStore }, opts);
   }
 
   _up(props, opts = {}) {
-    const { preview, ...rest } = opts;
-    props.__p = preview;
-    return this.set(props, { ...rest, avoidStore: !!preview });
+    const { partial, ...rest } = opts;
+    props.__p = !!partial;
+    return this.set(props, { ...rest, avoidStore: !!partial });
   }
 
   init() {}
