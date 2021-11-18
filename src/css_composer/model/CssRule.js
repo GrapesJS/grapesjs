@@ -21,6 +21,7 @@ const { CSS } = hasWin() ? window : {};
  *
  * [Device]: device.html
  * [State]: state.html
+ * [Component]: component.html
  */
 export default class CssRule extends Model.extend(Styleable) {
   defaults() {
@@ -186,6 +187,20 @@ export default class CssRule extends Model.extend(Styleable) {
     const stateValue = this.get('state');
     const states = em.get('SelectorManager').getStates() || [];
     return states.filter(s => s.getName() === stateValue)[0] || null;
+  }
+
+  /**
+   * Returns the related Component (valid only for component-specific rules).
+   * @returns {[Component]|null}
+   * @example
+   * const cmp = rule.getComponent();
+   * console.log(cmp?.toHTML());
+   */
+  getComponent() {
+    const sel = this.getSelectors();
+    const sngl = sel.length == 1 && sel.at(0);
+    const cmpId = sngl && sngl.isId() && sngl.get('name');
+    return (cmpId && this.em?.get('DomComponents').getById(cmpId)) || null;
   }
 
   /**

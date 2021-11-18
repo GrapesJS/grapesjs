@@ -363,6 +363,8 @@ export default () => {
       if (em && target) {
         const cssC = em.get('CssComposer');
         const cssGen = em.get('CodeManager').getGenerator('css');
+        const cmp = target.toHTML ? true : target.getComponent();
+        console.log({ cmp });
         const all = cssC
           .getRules(target.getSelectors().getFullString())
           .filter(rule => (state ? rule.get('state') === state : 1))

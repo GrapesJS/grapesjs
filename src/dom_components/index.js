@@ -649,6 +649,10 @@ export default () => {
       return componentsById;
     },
 
+    getById(id) {
+      return componentsById[id] || null;
+    },
+
     destroy() {
       const all = this.allById();
       Object.keys(all).forEach(id => all[id] && all[id].remove());
