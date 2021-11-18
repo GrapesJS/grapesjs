@@ -379,7 +379,9 @@ export default () => {
 
         const all = otherRules
           .concat(cmpRules)
-          .filter(rule => (state ? rule.get('state') === state : 1))
+          .filter(rule =>
+            !isUndefined(state) ? rule.get('state') === state : 1
+          )
           .sort(cssGen.sortRules)
           .reverse();
 
@@ -507,7 +509,7 @@ export default () => {
 
       targets = targets.map(t => this.getModelToStyle(t));
       const lastTarget = targets.slice().reverse()[0];
-      const lastTargetParents = this.getParentRules(lastTarget);
+      const lastTargetParents = this.getParentRules(lastTarget, em.getState());
       this.model.set({ targets, lastTarget, lastTargetParents });
       this.__upProps(opts);
 
