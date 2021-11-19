@@ -82,10 +82,9 @@ export default Input.extend({
    */
   getColorEl() {
     if (!this.colorEl) {
-      const { em } = this;
+      const { em, model } = this;
       const self = this;
       const ppfx = this.ppfx;
-      var model = this.model;
 
       var colorEl = $(`<div class="${this.ppfx}field-color-picker"></div>`);
       var cpStyle = colorEl.get(0).style;
