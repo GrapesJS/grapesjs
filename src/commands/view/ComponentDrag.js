@@ -321,17 +321,31 @@ export default {
     const { Canvas } = editor;
     const style = target.getStyle();
     const position = 'absolute';
+    const relPos = [position, 'relative'];
     onStart && onStart(this._getDragData());
     if (isTran) return;
 
     if (style.position !== position) {
       let { left, top, width, height } = Canvas.offset(target.getEl());
+      let parent = target.parent();
+      let parentRel;
 
-      // Check if to center the target to the pointer position
+      // Check for the relative parent
+      do {
+        const pStyle = parent.getStyle();
+        parentRel = relPos.indexOf(pStyle.position) >= 0 ? parent : null;
+        parent = parent.parent();
+      } while (parent && !parentRel);
+
+      // Center the target to the pointer position (used in Droppable for Blocks)
       if (center) {
         const { x, y } = Canvas.getMouseRelativeCanvas(event);
         left = x;
         top = y;
+      } else if (parentRel) {
+        const offsetP = Canvas.offset(parentRel.getEl());
+        left = left - offsetP.left;
+        top = top - offsetP.top;
       }
 
       this.setPosition({
