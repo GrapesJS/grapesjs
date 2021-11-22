@@ -34,7 +34,7 @@ export default () => {
   let config = {};
   let toolbar, actions, lastEl, lastElPos, globalRte;
   const eventsUp =
-    'change:canvasOffset canvasScroll frame:scroll component:update';
+    'change:canvasOffset frame:scroll component:update';
   const hideToolbar = () => {
     const style = toolbar.style;
     const size = '-1000px';
