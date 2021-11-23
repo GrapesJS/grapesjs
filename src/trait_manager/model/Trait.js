@@ -47,6 +47,10 @@ export default Backbone.Model.extend({
     this.set({ value }, { fromTarget: 1 });
   },
 
+  getValue() {
+    return this.getTargetValue();
+  },
+
   getTargetValue() {
     const name = this.get('name');
     const target = this.target;

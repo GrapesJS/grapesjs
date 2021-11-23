@@ -325,7 +325,7 @@ export default {
    */
   select(model, event = {}) {
     if (!model) return;
-    this.editor.select(model, { scroll: {}, event });
+    this.editor.select(model, { event });
     this.initResize(model);
   },
 

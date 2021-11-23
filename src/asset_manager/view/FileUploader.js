@@ -26,7 +26,7 @@ export default Backbone.View.extend(
     initialize(opts = {}) {
       this.options = opts;
       const c = opts.config || {};
-      this.module = c.module;
+      this.module = opts.module;
       this.config = c;
       this.em = this.config.em;
       this.pfx = c.stylePrefix || '';

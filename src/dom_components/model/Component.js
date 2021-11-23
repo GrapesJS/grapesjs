@@ -61,10 +61,10 @@ export const keyUpdateInside = `${keyUpdate}-inside`;
  * @property {Object} [attributes={}] Key-value object of the component's attributes, eg. `{ title: 'Hello' }` Default: `{}`
  * @property {String} [name=''] Name of the component. Will be used, for example, in Layers and badges
  * @property {Boolean} [removable=true] When `true` the component is removable from the canvas, default: `true`
- * @property {Boolean|String} [draggable=true] Indicates if it's possible to drag the component inside others.
+ * @property {Boolean|String|Function} [draggable=true] Indicates if it's possible to drag the component inside others.
  *  You can also specify a query string to indentify elements,
  *  eg. `'.some-class[title=Hello], [data-gjs-type=column]'` means you can drag the component only inside elements
- *  containing `some-class` class and `Hello` title, and `column` components. Default: `true`
+ *  containing `some-class` class and `Hello` title, and `column` components. In the case of a function, target and destination components are passed as arguments, return a Boolean to indicate if the drag is possible. Default: `true`
  * @property {Boolean|String|Function} [droppable=true] Indicates if it's possible to drop other components inside. You can use
  * a query string as with `draggable`. In the case of a function, target and destination components are passed as arguments, return a Boolean to indicate if the drop is possible. Default: `true`
  * @property {Boolean} [badgable=true] Set to false if you don't want to see the badge (with the name) over the component. Default: `true`
@@ -951,9 +951,8 @@ export default class Component extends Model.extend(Styleable) {
   initTraits(changed) {
     const { em } = this;
     const event = 'change:traits';
-    const toListen = [this, event, this.initTraits];
-    this.stopListening(...toListen);
-    this.loadTraits();
+    this.off(event, this.initTraits);
+    this.__loadTraits();
     const attrs = { ...this.get('attributes') };
     const traits = this.get('traits');
     traits.each(trait => {
@@ -964,7 +963,7 @@ export default class Component extends Model.extend(Styleable) {
       }
     });
     traits.length && this.set('attributes', attrs);
-    this.listenTo(...toListen);
+    this.on(event, this.initTraits);
     changed && em && em.trigger('component:toggled');
     return this;
   }
@@ -1141,46 +1140,71 @@ export default class Component extends Model.extend(Styleable) {
     }
   }
 
-  /**
-   * Load traits
-   * @param  {Array} traits
-   * @private
-   */
-  loadTraits(traits, opts = {}) {
-    traits = traits || this.get('traits');
-    traits = isFunction(traits) ? traits(this) : traits;
+  __loadTraits(tr, opts = {}) {
+    let traitsI = tr || this.get('traits');
 
-    if (!(traits instanceof Traits)) {
-      const trt = new Traits([], this.opt);
-      trt.setTarget(this);
+    if (!(traitsI instanceof Traits)) {
+      traitsI = isFunction(traitsI) ? traitsI(this) : traitsI;
+      const traits = new Traits([], this.opt);
+      traits.setTarget(this);
 
-      if (traits.length) {
-        traits.forEach(tr => tr.attributes && delete tr.attributes.value);
-        trt.add(traits);
+      if (traitsI.length) {
+        traitsI.forEach(tr => tr.attributes && delete tr.attributes.value);
+        traits.add(traitsI);
       }
 
-      this.set('traits', trt, opts);
+      this.set({ traits }, opts);
     }
 
     return this;
   }
 
   /**
-   * Get the trait by id/name
+   * Get traits.
+   * @returns {Array<Trait>}
+   * @example
+   * const traits = component.getTraits();
+   * console.log(traits);
+   * // [Trait, Trait, Trait, ...]
+   */
+  getTraits() {
+    this.__loadTraits();
+    return [...this.get('traits').models];
+  }
+
+  /**
+   * Replace current collection of traits with a new one.
+   * @param {Array<Object>} traits Array of trait definitions
+   * @returns {Array<Trait>}
+   * @example
+   * const traits = component.setTraits([{ type: 'checkbox', name: 'disabled'}, ...]);
+   * console.log(traits);
+   * // [Trait, ...]
+   */
+  setTraits(traits) {
+    const tr = isArray(traits) ? traits : [traits];
+    this.set({ traits: tr });
+    return this.getTraits();
+  }
+
+  /**
+   * Get the trait by id/name.
    * @param  {String} id The `id` or `name` of the trait
-   * @return {Trait} Trait model
+   * @return {Trait|null} Trait getModelToStyle
    * @example
    * const traitTitle = component.getTrait('title');
    * traitTitle && traitTitle.set('label', 'New label');
    */
   getTrait(id) {
-    return this.get('traits').filter(trait => {
-      return trait.get('id') === id || trait.get('name') === id;
-    })[0];
+    return (
+      this.getTraits().filter(trait => {
+        return trait.get('id') === id || trait.get('name') === id;
+      })[0] || null
+    );
   }
 
   /**
-   * Update a trait
+   * Update a trait.
    * @param  {String} id The `id` or `name` of the trait
    * @param  {Object} props Object with the props to update
    * @return {this}
@@ -1191,10 +1215,9 @@ export default class Component extends Model.extend(Styleable) {
    * });
    */
   updateTrait(id, props) {
-    const { em } = this;
     const trait = this.getTrait(id);
     trait && trait.set(props);
-    em && em.trigger('component:toggled');
+    this.em?.trigger('component:toggled');
     return this;
   }
 
@@ -1215,25 +1238,25 @@ export default class Component extends Model.extend(Styleable) {
   /**
    * Remove trait/s by id/s.
    * @param  {String|Array<String>} id The `id`/`name` of the trait (or an array)
-   * @return {Array} Array of removed traits
+   * @return {Array<Trait>} Array of removed traits
    * @example
    * component.removeTrait('title');
    * component.removeTrait(['title', 'id']);
    */
   removeTrait(id) {
-    const { em } = this;
     const ids = isArray(id) ? id : [id];
     const toRemove = ids.map(id => this.getTrait(id));
-    const removed = this.get('traits').remove(toRemove);
-    em && em.trigger('component:toggled');
-    return removed;
+    const traits = this.get('traits');
+    const removed = toRemove.length ? traits.remove(toRemove) : [];
+    this.em?.trigger('component:toggled');
+    return isArray(removed) ? removed : [removed];
   }
 
   /**
-   * Add trait/s by id/s.
+   * Add new trait/s.
    * @param  {String|Object|Array<String|Object>} trait Trait to add (or an array of traits)
    * @param  {Options} opts Options for the add
-   * @return {Array} Array of added traits
+   * @return {Array<Trait>} Array of added traits
    * @example
    * component.addTrait('title', { at: 1 }); // Add title trait (`at` option is the position index)
    * component.addTrait({
@@ -1243,10 +1266,10 @@ export default class Component extends Model.extend(Styleable) {
    * component.addTrait(['title', {...}, ...]);
    */
   addTrait(trait, opts = {}) {
-    const { em } = this;
+    this.__loadTraits();
     const added = this.get('traits').add(trait, opts);
-    em && em.trigger('component:toggled');
-    return added;
+    this.em?.trigger('component:toggled');
+    return isArray(added) ? added : [added];
   }
 
   /**

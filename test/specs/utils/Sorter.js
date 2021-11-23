@@ -436,56 +436,100 @@ describe('Sorter', () => {
   });
 
   describe('Valid Target with components', () => {
-    var parentModel;
-    var parentView;
-    var sorter;
+    describe('Droppable', () => {
+      var parentModel;
+      var parentView;
 
-    beforeEach(() => {
-      parentModel = new Component({
-        droppable: (srcModel, trgModel) => {
-          if (srcModel.getEl().className === 'canDrop') {
-            return true;
+      beforeEach(() => {
+        parentModel = new Component({
+          droppable: (srcModel, trgModel) => {
+            return srcModel.getEl().className === 'canDrop';
           }
-          return false;
-        }
-      });
-      parentView = new ComponentTextView({
-        model: parentModel
+        });
+        parentView = new ComponentTextView({
+          model: parentModel
+        });
       });
 
-      sorter = new Sorter({ container: parentView.el });
+      afterEach(() => {
+        parentView.remove();
+      });
+
+      test('Droppable function', () => {
+        var srcModel = new Component({
+          tagName: 'div',
+          draggable: true,
+          content: 'Content text',
+          attributes: { class: 'canDrop' }
+        });
+        var srcView = new ComponentTextView({
+          model: srcModel
+        });
+
+        expect(obj.validTarget(parentView.el, srcView.el).valid).toEqual(true);
+      });
+
+      test('Not droppable function', () => {
+        var srcModel = new Component({
+          tagName: 'div',
+          draggable: true,
+          content: 'Content text',
+          attributes: { class: 'cannotDrop' }
+        });
+        var srcView = new ComponentTextView({
+          model: srcModel
+        });
+
+        expect(obj.validTarget(parentView.el, srcView.el).valid).toEqual(false);
+      });
     });
 
-    afterEach(() => {
-      parentView.remove();
-    });
+    describe('Draggable', () => {
+      var srcModel;
+      var srcView;
 
-    test('Droppable function', () => {
-      var srcModel = new Component({
-        tagName: 'div',
-        draggable: true, // Can't move it
-        content: 'Content text', // Text inside component
-        attributes: { class: 'canDrop' }
-      });
-      var srcView = new ComponentTextView({
-        model: srcModel
-      });
-
-      expect(obj.validTarget(parentView.el, srcView.el).valid).toEqual(true);
-    });
-
-    test('Not droppable function', () => {
-      var srcModel = new Component({
-        tagName: 'div',
-        draggable: true,
-        content: 'Content text',
-        attributes: { class: 'cannotDrop' }
-      });
-      var srcView = new ComponentTextView({
-        model: srcModel
+      beforeEach(() => {
+        srcModel = new Component({
+          draggable: (srcModel, trgModel) => {
+            return trgModel.getEl().className === 'canDrag';
+          }
+        });
+        srcView = new ComponentTextView({
+          model: srcModel
+        });
       });
 
-      expect(obj.validTarget(parentView.el, srcView.el).valid).toEqual(false);
+      afterEach(() => {
+        srcView.remove();
+      });
+
+      test('Draggable function', () => {
+        var parentModel = new Component({
+          tagName: 'div',
+          droppable: true,
+          content: 'Content text',
+          attributes: { class: 'canDrag' }
+        });
+        var parentView = new ComponentTextView({
+          model: parentModel
+        });
+
+        expect(obj.validTarget(parentView.el, srcView.el).valid).toEqual(true);
+      });
+
+      test('Not draggable function', () => {
+        var parentModel = new Component({
+          tagName: 'div',
+          droppable: true,
+          content: 'Content text',
+          attributes: { class: 'cannotDrag' }
+        });
+        var parentView = new ComponentTextView({
+          model: parentModel
+        });
+
+        expect(obj.validTarget(parentView.el, srcView.el).valid).toEqual(false);
+      });
     });
   });
 });
