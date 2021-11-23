@@ -4,10 +4,22 @@ describe('StyleManager', () => {
   describe('Main', () => {
     let obj;
     let em;
+    let domc;
+    let dv;
+    let cssc;
+    let sm;
 
     beforeEach(() => {
-      em = new Editor({});
+      em = new Editor({
+        mediaCondition: 'max-width',
+        avoidInlineStyle: true
+      });
+      domc = em.get('DomComponents');
+      cssc = em.get('CssComposer');
+      dv = em.get('DeviceManager');
+      sm = em.get('SelectorManager');
       obj = em.get('StyleManager');
+      em.get('PageManager').onLoad();
     });
 
     afterEach(() => {
@@ -113,6 +125,79 @@ describe('StyleManager', () => {
 
     test('Renders correctly', () => {
       expect(obj.render()).toBeTruthy();
+    });
+
+    describe.only('Parent rules', () => {
+      test('No parents without selection', () => {
+        expect(obj.getSelectedParents()).toEqual([]);
+      });
+
+      test('Single class, multiple devices', done => {
+        const cmp = domc.addComponent(`<div class="cls"></div>`);
+        const [rule1, rule2] = cssc.addRules(`
+          .cls { color: red; }
+          @media (max-width: 992px) {
+            .cls { color: blue; }
+          }
+        `);
+        dv.select('tablet');
+        em.setSelected(cmp);
+        setTimeout(() => {
+          expect(obj.getLastSelected()).toBe(rule2);
+          expect(obj.getSelectedParents()).toEqual([rule1]);
+          done();
+        });
+      });
+
+      test('With ID, multiple devices', done => {
+        sm.setComponentFirst(true);
+        const cmp = domc.addComponent(`<div class="cls" id="id-test"></div>`);
+        const [rule1, rule2] = cssc.addRules(`
+          #id-test { color: red; }
+          @media (max-width: 992px) {
+            #id-test { color: blue; }
+          }
+        `);
+        dv.select('tablet');
+        em.setSelected(cmp);
+        setTimeout(() => {
+          expect(obj.getLastSelected()).toBe(rule2);
+          expect(obj.getSelectedParents()).toEqual([rule1]);
+          done();
+        });
+      });
+
+      test('With ID + class, multiple devices', done => {
+        sm.setComponentFirst(true);
+        const cmp = domc.addComponent(`<div class="cls" id="id-test"></div>`);
+        const [rule1, rule2] = cssc.addRules(`
+          .cls { color: red; }
+          @media (max-width: 992px) {
+            #id-test { color: blue; }
+          }
+        `);
+        dv.select('tablet');
+        em.setSelected(cmp);
+        setTimeout(() => {
+          expect(obj.getLastSelected()).toBe(rule2);
+          expect(obj.getSelectedParents()).toEqual([rule1]);
+          done();
+        });
+      });
+
+      test('Mixed classes', done => {
+        const cmp = domc.addComponent(`<div class="cls1 cls2"></div>`);
+        const [rule1, rule2] = cssc.addRules(`
+          .cls1 { color: red; }
+          .cls1.cls2 { color: blue; }
+        `);
+        em.setSelected(cmp);
+        setTimeout(() => {
+          // expect(obj.getLastSelected()).toBe(rule2);
+          // expect(obj.getSelectedParents()).toEqual([rule1]);
+          done();
+        });
+      });
     });
 
     describe('Init with configuration', () => {

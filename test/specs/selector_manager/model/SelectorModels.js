@@ -61,4 +61,54 @@ describe('Selectors', () => {
     obj.add([{ name: 'test' }, { name: 'test2', type: Selector.TYPE_ID }]);
     expect(obj.getFullString()).toEqual('.test#test2');
   });
+
+  test('getFullName with combination of 2 classes', () => {
+    obj.add([{ name: 'a' }, { name: 'b' }]);
+    expect(
+      obj.getFullName({
+        combination: true,
+        array: true
+      })
+    ).toEqual(['.a', '.a.b', '.b']);
+
+    expect(obj.getFullName({ combination: true })).toEqual('.a,.a.b,.b');
+    expect(obj.getFullName({ array: true })).toEqual(['.a', '.b']);
+    expect(obj.getFullName()).toEqual('.a.b');
+  });
+
+  test('getFullName with combination of 3 classes', () => {
+    obj.add([{ name: 'c' }, { name: 'b' }, { name: 'a' }]);
+    expect(
+      obj.getFullName({
+        combination: true,
+        array: true
+      })
+    ).toEqual(['.a', '.a.b', '.a.b.c', '.a.c', '.b', '.b.c', '.c']);
+  });
+
+  test('getFullName with combination of 4 classes', () => {
+    obj.add([{ name: 'd' }, { name: 'c' }, { name: 'b' }, { name: 'a' }]);
+    expect(
+      obj.getFullName({
+        combination: true,
+        array: true
+      })
+    ).toEqual([
+      '.a',
+      '.a.b',
+      '.a.b.c',
+      '.a.b.c.d',
+      '.a.b.d',
+      '.a.c',
+      '.a.c.d',
+      '.a.d',
+      '.b',
+      '.b.c',
+      '.b.c.d',
+      '.b.d',
+      '.c',
+      '.c.d',
+      '.d'
+    ]);
+  });
 });
