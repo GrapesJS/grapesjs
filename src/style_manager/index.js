@@ -365,16 +365,19 @@ export default () => {
         const cssGen = em.get('CodeManager').getGenerator('css');
         const cmp = target.toHTML ? target : target.getComponent();
         const sel = em.getSelected();
+        const optsSel = { combination: true, array: true };
         let cmpRules = [];
         let otherRules = [];
 
         // Componente related rule
         if (cmp) {
           cmpRules = cssC.getRules(`#${cmp.getId()}`);
-          otherRules = cssC.getRules(sel.getSelectors().getFullString());
+          otherRules = cssC.getRules(sel.getSelectors().getFullName(optsSel));
         } else {
           cmpRules = cssC.getRules(`#${sel.getId()}`);
-          otherRules = cssC.getRules(target.getSelectors().getFullString());
+          otherRules = cssC.getRules(
+            target.getSelectors().getFullName(optsSel)
+          );
         }
 
         const all = otherRules

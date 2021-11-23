@@ -193,8 +193,8 @@ describe('StyleManager', () => {
         `);
         em.setSelected(cmp);
         setTimeout(() => {
-          // expect(obj.getLastSelected()).toBe(rule2);
-          // expect(obj.getSelectedParents()).toEqual([rule1]);
+          expect(obj.getLastSelected()).toBe(rule2);
+          expect(obj.getSelectedParents()).toEqual([rule1]);
           done();
         });
       });

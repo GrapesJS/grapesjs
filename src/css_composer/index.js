@@ -388,8 +388,11 @@ export default () => {
     getRules(selector) {
       const rules = this.getAll();
       if (!selector) return [...rules.models];
+      const sels = isString(selector)
+        ? selector.split(',').map(s => s.trim())
+        : selector;
       const result = rules.filter(
-        r => r.getSelectors().getFullString() === selector
+        r => sels.indexOf(r.getSelectors().getFullString()) >= 0
       );
       return result;
     },
