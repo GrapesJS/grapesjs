@@ -190,9 +190,12 @@ describe('StyleManager', () => {
         const [rule1, rule2] = cssc.addRules(`
           .cls1 { color: red; }
           .cls1.cls2 { color: blue; }
+          .cls2 { color: green; }
+          .cls1.cls3 { color: green; }
         `);
         em.setSelected(cmp);
         setTimeout(() => {
+          expect(obj.getSelectedParents().length).toBe(1);
           expect(obj.getLastSelected()).toBe(rule2);
           expect(obj.getSelectedParents()).toEqual([rule1]);
           done();
