@@ -127,7 +127,7 @@ describe('StyleManager', () => {
       expect(obj.render()).toBeTruthy();
     });
 
-    describe.only('Parent rules', () => {
+    describe('Parent rules', () => {
       test('No parents without selection', () => {
         expect(obj.getSelectedParents()).toEqual([]);
       });
