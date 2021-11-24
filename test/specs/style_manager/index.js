@@ -177,6 +177,19 @@ describe('StyleManager', () => {
         expect(obj.getSelectedParents()).toEqual([rule2]);
       });
 
+      test('With ID + class, component first', () => {
+        sm.setComponentFirst(true);
+        const cmp = domc.addComponent(`<div class="cls" id="id-test"></div>`);
+        const [rule1, rule2] = cssc.addRules(`
+          .cls { color: red; }
+          #id-test { color: blue; }
+        `);
+        em.setSelected(cmp);
+        obj.__upSel();
+        expect(obj.getLastSelected()).toBe(rule2);
+        expect(obj.getSelectedParents()).toEqual([rule1]);
+      });
+
       test('With ID + class, multiple devices', () => {
         sm.setComponentFirst(true);
         const cmp = domc.addComponent(`<div class="cls" id="id-test"></div>`);

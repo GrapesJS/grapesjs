@@ -370,20 +370,22 @@ export default () => {
         const optsSel = { combination: true, array: true };
         let cmpRules = [];
         let otherRules = [];
+        let rules = [];
 
         // Componente related rule
         if (cmp) {
           cmpRules = cssC.getRules(`#${cmp.getId()}`);
           otherRules = cssC.getRules(sel.getSelectors().getFullName(optsSel));
+          rules = otherRules.concat(cmpRules);
         } else {
           cmpRules = cssC.getRules(`#${sel.getId()}`);
           otherRules = cssC.getRules(
             target.getSelectors().getFullName(optsSel)
           );
+          rules = cmpRules.concat(otherRules);
         }
 
-        const all = cmpRules
-          .concat(otherRules)
+        const all = rules
           .filter(rule =>
             !isUndefined(state) ? rule.get('state') === state : 1
           )
@@ -392,11 +394,6 @@ export default () => {
 
         // Slice removes rules not related to the current device
         result = all.slice(all.indexOf(target) + 1);
-        console.log({
-          target: target.toCSS(),
-          all: all.map(r => r.toCSS()),
-          result: result.map(r => r.toCSS())
-        });
       }
 
       return result;
