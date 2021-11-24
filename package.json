@@ -34,7 +34,7 @@
     "jest": "^24.9.0",
     "lint-staged": "^8.2.1",
     "npm-run-all": "^4.1.5",
-    "prettier": "^1.18.2",
+    "prettier": "^2.4.1",
     "sass": "^1.42.1",
     "sinon": "^7.5.0",
     "vuepress": "^1.8.2",
@@ -66,7 +66,7 @@
   },
   "lint-staged": {
     "{src,test}/**/*.js": [
-      "prettier --single-quote --print-width 100 --write",
+      "prettier --single-quote --print-width 120 --arrow-parens avoid --write",
       "git add"
     ]
   },

@@ -69,7 +69,7 @@ export default () => {
     events: {
       all: evAll,
       propertyUpdate: evPropUp,
-      custom: evCustom
+      custom: evCustom,
     },
 
     name: 'StyleManager',
@@ -96,21 +96,14 @@ export default () => {
       properties = new Properties();
       sectors = new Sectors([], c);
       this.model = new Model({ targets: [] });
-      const ev =
-        'component:toggled component:update:classes change:state change:device frame:resized selector:type';
-      this.model.listenTo(
-        em,
-        ev,
-        debounce(() => this.__upSel())
-      );
-      this.model.listenTo(
-        em,
-        'styleable:change',
-        debounce(() => {
-          this.__upProps();
-          this.__trgCustom();
-        })
-      );
+      const ev = 'component:toggled component:update:classes change:state change:device frame:resized selector:type';
+      const upAll = debounce(() => this.__upSel());
+      const upProps = debounce(() => {
+        this.__upProps();
+        this.__trgCustom();
+      });
+      this.model.listenTo(em, ev, upAll);
+      this.model.listenTo(em, 'styleable:change', upProps);
 
       return this;
     },
@@ -264,9 +257,7 @@ export default () => {
       let prop;
 
       if (sector) {
-        prop = sector
-          .get('properties')
-          .filter(prop => prop.get('property') === name || prop.get('id') === name)[0];
+        prop = sector.get('properties').filter(prop => prop.get('property') === name || prop.get('id') === name)[0];
       }
 
       return prop || null;
@@ -466,7 +457,7 @@ export default () => {
         return new type.view({
           model: new type.model(model),
           config: c,
-          ...view
+          ...view,
         });
       }
     },
@@ -546,7 +537,7 @@ export default () => {
         el,
         collection: sectors,
         target: c.em,
-        config: c
+        config: c,
       });
       return SectView.render().el;
     },
@@ -564,7 +555,7 @@ export default () => {
       const style = lastTarget.getStyle();
       const parentStyles = lastTargetParents.map(p => ({
         target: p,
-        style: p.getStyle()
+        style: p.getStyle(),
       }));
 
       sectors.map(sector => {
@@ -599,6 +590,6 @@ export default () => {
       SectView && SectView.remove();
       [c, properties, sectors, SectView].forEach(i => (i = {}));
       this.em = {};
-    }
+    },
   };
 };
