@@ -149,7 +149,7 @@ describe('StyleManager', () => {
         });
       });
 
-      test('With ID, multiple devices', done => {
+      test('With ID, multiple devices', () => {
         sm.setComponentFirst(true);
         const cmp = domc.addComponent(`<div class="cls" id="id-test"></div>`);
         const [rule1, rule2] = cssc.addRules(`
@@ -160,14 +160,24 @@ describe('StyleManager', () => {
         `);
         dv.select('tablet');
         em.setSelected(cmp);
-        setTimeout(() => {
-          expect(obj.getLastSelected()).toBe(rule2);
-          expect(obj.getSelectedParents()).toEqual([rule1]);
-          done();
-        });
+        obj.__upSel();
+        expect(obj.getLastSelected()).toBe(rule2);
+        expect(obj.getSelectedParents()).toEqual([rule1]);
       });
 
-      test('With ID + class, multiple devices', done => {
+      test('With ID + class, class first', () => {
+        const cmp = domc.addComponent(`<div class="cls" id="id-test"></div>`);
+        const [rule1, rule2] = cssc.addRules(`
+          .cls { color: red; }
+          #id-test { color: blue; }
+        `);
+        em.setSelected(cmp);
+        obj.__upSel();
+        expect(obj.getLastSelected()).toBe(rule1);
+        expect(obj.getSelectedParents()).toEqual([rule2]);
+      });
+
+      test('With ID + class, multiple devices', () => {
         sm.setComponentFirst(true);
         const cmp = domc.addComponent(`<div class="cls" id="id-test"></div>`);
         const [rule1, rule2] = cssc.addRules(`
@@ -178,14 +188,12 @@ describe('StyleManager', () => {
         `);
         dv.select('tablet');
         em.setSelected(cmp);
-        setTimeout(() => {
-          expect(obj.getLastSelected()).toBe(rule2);
-          expect(obj.getSelectedParents()).toEqual([rule1]);
-          done();
-        });
+        obj.__upSel();
+        expect(obj.getLastSelected()).toBe(rule2);
+        expect(obj.getSelectedParents()).toEqual([rule1]);
       });
 
-      test('Mixed classes', done => {
+      test('Mixed classes', () => {
         const cmp = domc.addComponent(`<div class="cls1 cls2"></div>`);
         const [rule1, rule2] = cssc.addRules(`
           .cls1 { color: red; }
@@ -194,12 +202,10 @@ describe('StyleManager', () => {
           .cls1.cls3 { color: green; }
         `);
         em.setSelected(cmp);
-        setTimeout(() => {
-          expect(obj.getSelectedParents().length).toBe(1);
-          expect(obj.getLastSelected()).toBe(rule2);
-          expect(obj.getSelectedParents()).toEqual([rule1]);
-          done();
-        });
+        obj.__upSel();
+        expect(obj.getSelectedParents().length).toBe(1);
+        expect(obj.getLastSelected()).toBe(rule2);
+        expect(obj.getSelectedParents()).toEqual([rule1]);
       });
     });
 

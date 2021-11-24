@@ -107,13 +107,15 @@ export default () => {
       this.model.listenTo(
         em,
         ev,
-        debounce(() => {
-          this.select(em.getSelectedAll());
-          this.__trgCustom();
-        })
+        debounce(() => this.__upSel())
       );
 
       return this;
+    },
+
+    __upSel() {
+      this.select(this.em.getSelectedAll());
+      this.__trgCustom();
     },
 
     __trgCustom() {
@@ -380,8 +382,8 @@ export default () => {
           );
         }
 
-        const all = otherRules
-          .concat(cmpRules)
+        const all = cmpRules
+          .concat(otherRules)
           .filter(rule =>
             !isUndefined(state) ? rule.get('state') === state : 1
           )
@@ -390,6 +392,11 @@ export default () => {
 
         // Slice removes rules not related to the current device
         result = all.slice(all.indexOf(target) + 1);
+        console.log({
+          target: target.toCSS(),
+          all: all.map(r => r.toCSS()),
+          result: result.map(r => r.toCSS())
+        });
       }
 
       return result;
