@@ -37,13 +37,7 @@
  * @module StyleManager
  */
 
-import {
-  isElement,
-  isUndefined,
-  isArray,
-  isString,
-  debounce
-} from 'underscore';
+import { isElement, isUndefined, isArray, isString, debounce } from 'underscore';
 import Module from 'common/module';
 import { Model } from 'common';
 import defaults from './config/config';
@@ -103,11 +97,19 @@ export default () => {
       sectors = new Sectors([], c);
       this.model = new Model({ targets: [] });
       const ev =
-        'component:toggled component:update:classes change:state change:device frame:resized selector:type styleable:change';
+        'component:toggled component:update:classes change:state change:device frame:resized selector:type';
       this.model.listenTo(
         em,
         ev,
         debounce(() => this.__upSel())
+      );
+      this.model.listenTo(
+        em,
+        'styleable:change',
+        debounce(() => {
+          this.__upProps();
+          this.__trgCustom();
+        })
       );
 
       return this;
@@ -201,11 +203,7 @@ export default () => {
      * const sectors = styleManager.getSectors();
      * */
     getSectors(opts = {}) {
-      return sectors && sectors.models
-        ? opts.array
-          ? [...sectors.models]
-          : sectors
-        : [];
+      return sectors && sectors.models ? (opts.array ? [...sectors.models] : sectors) : [];
     },
 
     /**
@@ -268,9 +266,7 @@ export default () => {
       if (sector) {
         prop = sector
           .get('properties')
-          .filter(
-            prop => prop.get('property') === name || prop.get('id') === name
-          )[0];
+          .filter(prop => prop.get('property') === name || prop.get('id') === name)[0];
       }
 
       return prop || null;
@@ -379,16 +375,12 @@ export default () => {
           rules = otherRules.concat(cmpRules);
         } else {
           cmpRules = cssC.getRules(`#${sel.getId()}`);
-          otherRules = cssC.getRules(
-            target.getSelectors().getFullName(optsSel)
-          );
+          otherRules = cssC.getRules(target.getSelectors().getFullName(optsSel));
           rules = cmpRules.concat(otherRules);
         }
 
         const all = rules
-          .filter(rule =>
-            !isUndefined(state) ? rule.get('state') === state : 1
-          )
+          .filter(rule => (!isUndefined(state) ? rule.get('state') === state : 1))
           .sort(cssGen.sortRules)
           .reverse();
 
@@ -585,9 +577,7 @@ export default () => {
 
           if (!hasVal) {
             newValue = null;
-            const parentItem = parentStyles.filter(p =>
-              propDef(p.style[name])
-            )[0];
+            const parentItem = parentStyles.filter(p => propDef(p.style[name]))[0];
 
             if (parentItem) {
               newValue = parentItem.style[name];
@@ -596,8 +586,7 @@ export default () => {
           }
 
           prop.__setParentTarget(parentTarget);
-          prop.getFullValue() !== newValue &&
-            prop.upValue(newValue, { ...opts, __up: true });
+          prop.getFullValue() !== newValue && prop.upValue(newValue, { ...opts, __up: true });
         });
       });
     },
