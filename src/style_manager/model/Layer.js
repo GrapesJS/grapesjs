@@ -38,7 +38,8 @@ export default Backbone.Model.extend({
   },
 
   getIndex() {
-    return this.collection.indexOf(this);
+    const coll = this.collection;
+    return coll ? coll.indexOf(this) : -1;
   },
 
   onPropAdd(prop) {

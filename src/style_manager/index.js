@@ -50,6 +50,7 @@ import SectorsView from './view/SectorsView';
 export const evAll = 'style';
 export const evPfx = `${evAll}:`;
 export const evPropUp = `${evPfx}property:update`;
+export const evLayerSelect = `${evPfx}layer:select`;
 export const evCustom = `${evPfx}custom`;
 
 const propDef = value => value || value === 0;
@@ -69,6 +70,7 @@ export default () => {
     events: {
       all: evAll,
       propertyUpdate: evPropUp,
+      layerSelect: evLayerSelect,
       custom: evCustom,
     },
 
@@ -96,14 +98,18 @@ export default () => {
       properties = new Properties();
       sectors = new Sectors([], c);
       this.model = new Model({ targets: [] });
+
+      // Triggers for the selection refresh and properties
       const ev = 'component:toggled component:update:classes change:state change:device frame:resized selector:type';
       const upAll = debounce(() => this.__upSel());
+      this.model.listenTo(em, ev, upAll);
+
+      // Triggers only for properties (avoid selection refresh)
       const upProps = debounce(() => {
         this.__upProps();
         this.__trgCustom();
       });
-      this.model.listenTo(em, ev, upAll);
-      this.model.listenTo(em, 'styleable:change', upProps);
+      this.model.listenTo(em, `styleable:change ${evLayerSelect}`, upProps);
 
       return this;
     },
@@ -577,7 +583,7 @@ export default () => {
           }
 
           prop.__setParentTarget(parentTarget);
-          prop.getFullValue() !== newValue && prop.upValue(newValue, { ...opts, __up: true });
+          prop.__getFullValue() !== newValue && prop.upValue(newValue, { ...opts, __up: true });
         });
       });
     },

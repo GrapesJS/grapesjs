@@ -15,12 +15,16 @@ export default class Property extends Model {
     Property.callInit(this, props, opts);
   }
 
+  __hasCustom() {
+    return !!this.em?.getConfig('customUI');
+  }
+
   __upTargets(p, opts = {}) {
+    if (!this.__hasCustom()) return;
     const { em } = this;
-    if (!em || !em.getConfig('customUI')) return;
     const sm = em.get('StyleManager');
     const name = this.getName();
-    const value = this.getFullValue();
+    const value = this.__getFullValue();
 
     const to = this.changedAttributes();
     const from = keys(to).reduce((a, i) => {
@@ -249,6 +253,10 @@ export default class Property extends Model {
   getDefaultValue() {
     const def = this.get('default');
     return !isUndefined(def) ? def : this.get('defaults');
+  }
+
+  __getFullValue() {
+    return this.getFullValue();
   }
 
   /**

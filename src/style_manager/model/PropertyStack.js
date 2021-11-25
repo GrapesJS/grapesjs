@@ -22,6 +22,9 @@ export default Property.extend({
 
     // Parse single layer value string
     parseLayer: null,
+
+    // Current selected layer
+    selectedLayer: null,
   },
 
   initialize(props = {}, opts = {}) {
@@ -31,14 +34,21 @@ export default Property.extend({
     layersColl.property = this;
     layersColl.properties = this.get('properties');
     this.set('layers', layersColl, { silent: true });
+    this.on('change:selectedLayer', this.__upSelected);
     Property.callInit(this, props, opts);
+  },
+
+  __upSelected() {
+    if (!this.__hasCustom()) return;
+    const sm = this.em.get('StyleManager');
+    sm.__trgEv(sm.events.layerSelect, { property: this });
   },
 
   _up(props, opts = {}) {
     const { __layers = [], ...rest } = props;
     const layers = __layers.map(values => ({ values }));
     this.getLayers().reset(layers);
-    console.log('_up from stack', this.get('property'), { layers, rest, opts });
+    console.log('_up from stack', this.get('property'), { layers, rest, opts, currValue: this.getFullValue() });
     return Property.prototype._up.call(this, rest, opts);
   },
 
@@ -64,6 +74,22 @@ export default Property.extend({
   },
 
   /**
+   * Select layer
+   * @param {[Layer]} layer
+   */
+  selectLayer(layer) {
+    return this.set('selectedLayer', layer);
+  },
+
+  /**
+   * Get selected layer
+   * @returns {[Layer] | null}
+   */
+  getSelectLayer() {
+    return this.get('selectedLayer');
+  },
+
+  /**
    * Get style object from layer values
    * @param {[Layer]} layer
    */
@@ -85,6 +111,18 @@ export default Property.extend({
       : {
           [this.getName()]: result.map(r => r.value).join(sep),
         };
+  },
+
+  __getFullValue() {
+    if (this.get('detached')) return '';
+    const name = this.getName();
+
+    return this.getLayers()
+      .map(l => this.getStyleFromLayer(l))
+      .map(s => s[name])
+      .filter(Boolean)
+      .map(v => v?.trim())
+      .join(this.get('layerSeparator'));
   },
 
   getLayers() {
