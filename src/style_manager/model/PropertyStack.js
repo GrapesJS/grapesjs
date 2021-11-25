@@ -41,6 +41,17 @@ export default Property.extend({
   __upSelected() {
     if (!this.__hasCustom()) return;
     const sm = this.em.get('StyleManager');
+    const selected = this.getSelectLayer();
+    const values = selected?.getValues();
+
+    // Update properties by layer value
+    values &&
+      this.getProperties().forEach(prop => {
+        const name = prop.getName();
+        const value = values[name];
+        !isUndefined(value) && prop.upValue(value, { __up: true });
+      });
+
     sm.__trgEv(sm.events.layerSelect, { property: this });
   },
 
