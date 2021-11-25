@@ -37,6 +37,13 @@ export default Backbone.Model.extend({
     return this.get('values');
   },
 
+  upValues(props = {}) {
+    return this.set('values', {
+      ...this.getValues(),
+      ...props,
+    });
+  },
+
   getIndex() {
     const coll = this.collection;
     return coll ? coll.indexOf(this) : -1;

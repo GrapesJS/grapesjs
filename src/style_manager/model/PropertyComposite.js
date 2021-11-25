@@ -23,9 +23,10 @@ export default Property.extend({
 
   initialize(props = {}, opts = {}) {
     Property.callParentInit(Property, this, props, opts);
+    const { em } = this;
     const properties = this.get('properties') || [];
     const Properties = require('./Properties').default;
-    this.set('properties', new Properties(properties), { silent: 1 });
+    this.set('properties', new Properties(properties, { em }), { silent: 1 });
     this.listenTo(this, 'change:value', this.updateValues);
     Property.callInit(this, props, opts);
   },

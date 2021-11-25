@@ -35,7 +35,18 @@ export default Property.extend({
     layersColl.properties = this.get('properties');
     this.set('layers', layersColl, { silent: true });
     this.on('change:selectedLayer', this.__upSelected);
+    this.listenTo(this.get('properties'), 'change', this.__upProperties);
     Property.callInit(this, props, opts);
+  },
+
+  __upProperties(prop, opts = {}) {
+    const layer = this.getSelectLayer();
+    if (opts.__up || !layer) return;
+    const name = prop.getName();
+    layer.upValues({ [name]: prop.__getFullValue() });
+    const value = this.__getFullValue();
+    console.log('__upProperties', prop.getName(), { value });
+    this.upValue(value, opts);
   },
 
   __upSelected() {
@@ -97,7 +108,8 @@ export default Property.extend({
    * @returns {[Layer] | null}
    */
   getSelectLayer() {
-    return this.get('selectedLayer');
+    const layer = this.get('selectedLayer');
+    return layer?.getIndex() >= 0 ? layer : null;
   },
 
   /**
