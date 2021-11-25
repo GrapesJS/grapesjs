@@ -1,6 +1,9 @@
-import { keys } from 'underscore';
+import { keys, isUndefined } from 'underscore';
 import Property from './PropertyComposite';
 import Layers from './Layers';
+
+const VALUES_REG = /,(?![^\(]*\))/;
+const PARTS_REG = /\s(?![^(]*\))/;
 
 export default Property.extend({
   defaults: {
@@ -15,7 +18,10 @@ export default Property.extend({
     prepend: 0,
 
     // Layer preview
-    preview: 0
+    preview: 0,
+
+    // Parse single layer value string
+    parseLayer: null,
   },
 
   initialize(props = {}, opts = {}) {
@@ -26,6 +32,59 @@ export default Property.extend({
     layersColl.properties = this.get('properties');
     this.set('layers', layersColl, { silent: true });
     Property.callInit(this, props, opts);
+  },
+
+  _up(props, opts = {}) {
+    const { __layers = [], ...rest } = props;
+    const layers = __layers.map(values => ({ values }));
+    this.getLayers().reset(layers);
+    console.log('_up from stack', this.get('property'), { layers, rest, opts });
+    return Property.prototype._up.call(this, rest, opts);
+  },
+
+  __parseValue(value) {
+    const result = this.parseValue(value);
+    result.__layers = value
+      .split(VALUES_REG)
+      .map(v => v.trim())
+      .map(v => this.__parseLayer(v))
+      .filter(Boolean);
+
+    return result;
+  },
+
+  __parseLayer(value) {
+    const parseFn = this.get('parseLayer');
+    const values = value.split(PARTS_REG);
+    return parseFn ? parseFn({ value, values }) : values;
+  },
+
+  addLayer(props = {}) {
+    return this.get('layers').push({ properties: [] });
+  },
+
+  /**
+   * Get style object from layer values
+   * @param {[Layer]} layer
+   */
+  getStyleFromLayer(layer) {
+    const sep = this.get('separator');
+    const values = layer.getValues();
+    const result = this.getProperties().map(prop => {
+      const name = prop.getName();
+      const val = values[name];
+      const value = isUndefined(val) ? prop.getDefaultValue() : val;
+      return { name, value };
+    });
+
+    return this.get('detached')
+      ? result.reduce((acc, item) => {
+          acc[item.name] = item.value;
+          return acc;
+        }, {})
+      : {
+          [this.getName()]: result.map(r => r.value).join(sep),
+        };
   },
 
   getLayers() {
@@ -61,11 +120,7 @@ export default Property.extend({
       if (value) validStyles[name] = value;
     });
 
-    return !detached
-      ? style[property]
-      : keys(validStyles).length
-      ? validStyles
-      : '';
+    return !detached ? style[property] : keys(validStyles).length ? validStyles : '';
   },
 
   /**
@@ -85,5 +140,5 @@ export default Property.extend({
    */
   getLayersFromTarget(target) {
     return;
-  }
+  },
 });

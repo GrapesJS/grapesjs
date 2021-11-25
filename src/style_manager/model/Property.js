@@ -7,8 +7,7 @@ export default class Property extends Model {
     this.em = opts.em;
     const id = this.get('id') || '';
     const name = this.get('name') || '';
-    !this.get('property') &&
-      this.set('property', (name || id).replace(/ /g, '-'));
+    !this.get('property') && this.set('property', (name || id).replace(/ /g, '-'));
     const prop = this.get('property');
     !this.get('id') && this.set('id', prop);
     !name && this.set('name', capitalize(prop).replace(/-/g, ' '));
@@ -30,8 +29,7 @@ export default class Property extends Model {
     }, {});
 
     sm.__trgEv(sm.events.propertyUpdate, { property: this, from, to });
-    !opts.__up &&
-      sm.addStyleTargets({ [name]: value, __p: !!opts.avoidStore }, opts);
+    !opts.__up && sm.addStyleTargets({ [name]: value, __p: !!opts.avoidStore }, opts);
   }
 
   _up(props, opts = {}) {
@@ -110,11 +108,12 @@ export default class Property extends Model {
   }
 
   upValue(value, opts) {
-    const parsed =
-      value === null || value === ''
-        ? this.__getClearProps()
-        : this.parseValue(value);
+    const parsed = value === null || value === '' ? this.__getClearProps() : this.__parseValue(value);
     return this._up(parsed, opts);
+  }
+
+  __parseValue(value) {
+    return this.parseValue(value);
   }
 
   __getClearProps() {
@@ -291,21 +290,21 @@ export default class Property extends Model {
   }
 }
 
-Property.callParentInit = function(property, ctx, props, opts = {}) {
+Property.callParentInit = function (property, ctx, props, opts = {}) {
   property.prototype.initialize.apply(ctx, [
     props,
     {
       ...opts,
-      skipInit: 1
-    }
+      skipInit: 1,
+    },
   ]);
 };
 
-Property.callInit = function(context, props, opts = {}) {
+Property.callInit = function (context, props, opts = {}) {
   !opts.skipInit && context.init(props, opts);
 };
 
-Property.getDefaults = function() {
+Property.getDefaults = function () {
   return result(this.prototype, 'defaults');
 };
 
@@ -345,5 +344,5 @@ Property.prototype.defaults = {
 
   // Specifies dependency on properties of the parent of the selected object.
   // Property is shown only when all conditions are matched.
-  requiresParent: null
+  requiresParent: null,
 };

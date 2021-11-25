@@ -18,7 +18,7 @@ export default Property.extend({
     properties: [],
 
     // Separator between properties
-    separator: ' '
+    separator: ' ',
   },
 
   initialize(props = {}, opts = {}) {
@@ -49,8 +49,7 @@ export default Property.extend({
       // Try to get value from a shorthand:
       // 11px -> 11px 11px 11px 11xp
       // 11px 22px -> 11px 22px 11px 22xp
-      const value =
-        values[i] || values[(i % len) + (len != 1 && len % 2 ? 1 : 0)];
+      const value = values[i] || values[(i % len) + (len != 1 && len % 2 ? 1 : 0)];
       // There some issue with UndoManager
       //property.setValue(value, 0, {fromParent: 1});
     });
@@ -97,5 +96,13 @@ export default Property.extend({
    */
   getPropertyAt(index) {
     return this.get('properties').at(index);
-  }
+  },
+
+  getProperties() {
+    return [...this.get('properties').models];
+  },
+
+  getProperty(id) {
+    return this.get('properties').filter(prop => prop.get('id') === id)[0] || null;
+  },
 });

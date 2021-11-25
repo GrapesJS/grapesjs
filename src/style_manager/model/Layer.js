@@ -8,16 +8,13 @@ export default Backbone.Model.extend({
     values: {},
     active: false,
     preview: false,
-    properties: []
+    properties: [],
   },
 
   initialize() {
     const prp = this.get('properties');
     var value = this.get('value');
-    this.set(
-      'properties',
-      prp instanceof Properties ? prp : new Properties(prp)
-    );
+    this.set('properties', prp instanceof Properties ? prp : new Properties(prp));
     const props = this.get('properties');
     props.forEach(this.onPropAdd, this);
     this.listenTo(props, 'add', this.onPropAdd);
@@ -34,6 +31,14 @@ export default Backbone.Model.extend({
 
       this.set('value', val.trim());
     }
+  },
+
+  getValues() {
+    return this.get('values');
+  },
+
+  getIndex() {
+    return this.collection.indexOf(this);
   },
 
   onPropAdd(prop) {
@@ -64,5 +69,5 @@ export default Backbone.Model.extend({
     let result = [];
     this.get('properties').each(prop => result.push(prop.getFullValue()));
     return result.join(' ').trim();
-  }
+  },
 });
