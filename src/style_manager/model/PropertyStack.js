@@ -45,7 +45,6 @@ export default Property.extend({
     const name = prop.getName();
     layer.upValues({ [name]: prop.__getFullValue() });
     const value = this.__getFullValue();
-    console.log('__upProperties', prop.getName(), { value });
     this.upValue(value, opts);
   },
 
@@ -68,9 +67,18 @@ export default Property.extend({
 
   _up(props, opts = {}) {
     const { __layers = [], ...rest } = props;
-    const layers = __layers.map(values => ({ values }));
-    this.getLayers().reset(layers);
-    console.log('_up from stack', this.get('property'), { layers, rest, opts, currValue: this.getFullValue() });
+    const layers = this.getLayers();
+    const layersNew = __layers.map(values => ({ values }));
+
+    if (layers.length === layersNew.length) {
+      layersNew.map((layer, n) => {
+        layers.at(n)?.upValues(layer.value);
+      });
+    } else {
+      this.getLayers().reset(layersNew);
+    }
+
+    console.log('_up from stack', this.get('property'), { layersNew, rest, opts, currValue: this.getFullValue() });
     return Property.prototype._up.call(this, rest, opts);
   },
 
