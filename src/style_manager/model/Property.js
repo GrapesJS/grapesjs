@@ -19,12 +19,18 @@ export default class Property extends Model {
     return !!this.em?.getConfig('customUI');
   }
 
+  __getParentProp() {
+    return this.collection?.opts?.parentProp;
+  }
+
   __upTargets(p, opts = {}) {
     if (!this.__hasCustom()) return;
     const { em } = this;
     const sm = em.get('StyleManager');
     const name = this.getName();
     const value = this.__getFullValue();
+    const parentProp = this.__getParentProp();
+    const applyStyle = !opts.__up && !parentProp;
 
     const to = this.changedAttributes();
     const from = keys(to).reduce((a, i) => {
@@ -33,7 +39,7 @@ export default class Property extends Model {
     }, {});
 
     sm.__trgEv(sm.events.propertyUpdate, { property: this, from, to });
-    !opts.__up && sm.addStyleTargets({ [name]: value, __p: !!opts.avoidStore }, opts);
+    applyStyle && sm.addStyleTargets({ [name]: value, __p: !!opts.avoidStore }, opts);
   }
 
   _up(props, opts = {}) {
