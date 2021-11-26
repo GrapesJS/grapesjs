@@ -38,8 +38,8 @@ export default class Property extends Model {
 
   _up(props, opts = {}) {
     const { partial, ...rest } = opts;
-    props.__p = !!partial;
-    return this.set(props, { ...rest, avoidStore: !!partial });
+    props.__p = !!(rest.avoidStore || partial);
+    return this.set(props, { ...rest, avoidStore: props.__p });
   }
 
   init() {}

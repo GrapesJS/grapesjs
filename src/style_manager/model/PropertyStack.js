@@ -78,7 +78,7 @@ export default Property.extend({
       this.getLayers().reset(layersNew);
     }
 
-    console.log('_up from stack', this.get('property'), { layersNew, rest, opts, currValue: this.getFullValue() });
+    console.log('_up from stack', this.get('property'), { layersNew, rest, opts });
     return Property.prototype._up.call(this, rest, opts);
   },
 
