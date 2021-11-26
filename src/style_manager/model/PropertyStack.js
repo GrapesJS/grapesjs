@@ -48,7 +48,7 @@ export default Property.extend({
     this.upValue(value, opts);
   },
 
-  __upSelected() {
+  __upSelected({ noEvent } = {}) {
     if (!this.__hasCustom()) return;
     const sm = this.em.get('StyleManager');
     const selected = this.getSelectLayer();
@@ -62,7 +62,7 @@ export default Property.extend({
         !isUndefined(value) && prop.upValue(value, { __up: true });
       });
 
-    sm.__trgEv(sm.events.layerSelect, { property: this });
+    !noEvent && sm.__trgEv(sm.events.layerSelect, { property: this });
   },
 
   _up(props, opts = {}) {
@@ -72,13 +72,14 @@ export default Property.extend({
 
     if (layers.length === layersNew.length) {
       layersNew.map((layer, n) => {
-        layers.at(n)?.upValues(layer.value);
+        layers.at(n)?.upValues(layer.values);
       });
     } else {
       this.getLayers().reset(layersNew);
     }
 
     console.log('_up from stack', this.get('property'), { layersNew, rest, opts });
+    this.__upSelected({ noEvent: true });
     return Property.prototype._up.call(this, rest, opts);
   },
 
