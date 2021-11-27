@@ -1,5 +1,6 @@
 import Backbone from 'backbone';
 import Properties from './Properties';
+import { camelCase } from 'utils/mixins';
 
 export default Backbone.Model.extend({
   defaults: {
@@ -33,8 +34,15 @@ export default Backbone.Model.extend({
     }
   },
 
-  getValues() {
-    return this.get('values');
+  getValues(opts = {}) {
+    const values = this.get('values');
+
+    return opts.camelCase
+      ? Object.keys(values).reduce((res, key) => {
+          res[camelCase(key)] = values[key];
+          return res;
+        }, {})
+      : values;
   },
 
   upValues(props = {}) {

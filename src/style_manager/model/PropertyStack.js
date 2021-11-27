@@ -1,6 +1,7 @@
 import { keys, isUndefined } from 'underscore';
 import Property from './PropertyComposite';
 import Layers from './Layers';
+import { camelCase } from 'utils/mixins';
 
 const VALUES_REG = /,(?![^\(]*\))/;
 const PARTS_REG = /\s(?![^(]*\))/;
@@ -125,7 +126,7 @@ export default Property.extend({
    * Get style object from layer values
    * @param {[Layer]} layer
    */
-  getStyleFromLayer(layer) {
+  getStyleFromLayer(layer, opts = {}) {
     const sep = this.get('separator');
     const values = layer.getValues();
     const result = this.getProperties().map(prop => {
@@ -134,8 +135,7 @@ export default Property.extend({
       const value = isUndefined(val) ? prop.getDefaultValue() : val;
       return { name, value };
     });
-
-    return this.get('detached')
+    const style = this.get('detached')
       ? result.reduce((acc, item) => {
           acc[item.name] = item.value;
           return acc;
@@ -143,6 +143,13 @@ export default Property.extend({
       : {
           [this.getName()]: result.map(r => r.value).join(sep),
         };
+
+    return opts.camelCase
+      ? Object.keys(style).reduce((res, key) => {
+          res[camelCase(key)] = style[key];
+          return res;
+        }, {})
+      : style;
   },
 
   __getFullValue() {
