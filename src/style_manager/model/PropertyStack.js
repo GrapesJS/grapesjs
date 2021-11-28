@@ -37,6 +37,7 @@ export default Property.extend({
     this.set('layers', layersColl, { silent: true });
     this.on('change:selectedLayer', this.__upSelected);
     this.listenTo(this.get('properties'), 'change', this.__upProperties);
+    this.listenTo(layersColl, 'add remove', this.__upLayers);
     Property.callInit(this, props, opts);
   },
 
@@ -47,6 +48,11 @@ export default Property.extend({
     layer.upValues({ [name]: prop.__getFullValue() });
     const value = this.__getFullValue();
     this.upValue(value, opts);
+  },
+
+  __upLayers(m, c, o) {
+    const value = this.__getFullValue();
+    this.upValue(value);
   },
 
   __upSelected({ noEvent } = {}, opts = {}) {
@@ -101,8 +107,30 @@ export default Property.extend({
     return parseFn ? parseFn({ value, values }) : values;
   },
 
-  addLayer(props = {}) {
-    return this.get('layers').push({ properties: [] });
+  /**
+   * Add new layer to the stack
+   * @param {Object} [props={}] Layer props
+   * @param {Object} [opts={}] Options
+   * @returns {[Layer]}
+   */
+  addLayer(props = {}, opts = {}) {
+    const values = {};
+    this.getProperties().forEach(prop => {
+      const name = prop.getName();
+      const value = props[name];
+      values[name] = isUndefined(value) ? prop.getDefaultValue() : value;
+    });
+    const layer = this.get('layers').push({ values }, opts);
+
+    return layer;
+  },
+
+  /**
+   * Remove layer
+   * @param {[Layer]} layer
+   */
+  removeLayer(layer) {
+    this.get('layers').remove(layer);
   },
 
   /**
