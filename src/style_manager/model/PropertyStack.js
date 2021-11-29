@@ -42,7 +42,7 @@ export default Property.extend({
   },
 
   __upProperties(prop, opts = {}) {
-    const layer = this.getSelectLayer();
+    const layer = this.getSelectedLayer();
     if (opts.__up || !layer) return;
     const name = prop.getName();
     layer.upValues({ [name]: prop.__getFullValue() });
@@ -58,7 +58,7 @@ export default Property.extend({
   __upSelected({ noEvent } = {}, opts = {}) {
     if (!this.__hasCustom()) return;
     const sm = this.em.get('StyleManager');
-    const selected = this.getSelectLayer();
+    const selected = this.getSelectedLayer();
     const values = selected?.getValues();
 
     // Update properties by layer value
@@ -145,9 +145,9 @@ export default Property.extend({
    * Get selected layer
    * @returns {[Layer] | null}
    */
-  getSelectLayer() {
+  getSelectedLayer() {
     const layer = this.get('selectedLayer');
-    return layer?.getIndex() >= 0 ? layer : null;
+    return layer && layer.getIndex() >= 0 ? layer : null;
   },
 
   /**
