@@ -24,12 +24,30 @@ export default Property.extend({
   initialize(props = {}, opts = {}) {
     Property.callParentInit(Property, this, props, opts);
     const { em } = this;
-    const properties = this.get('properties') || [];
     const Properties = require('./Properties').default;
-    this.set('properties', new Properties(properties, { em, parentProp: this }), { silent: 1 });
+    const properties = new Properties(this.get('properties') || [], { em, parentProp: this });
+    this.set('properties', properties, { silent: 1 });
+    this.listenTo(properties, 'change', this.__upProperties);
     this.listenTo(this, 'change:value', this.updateValues);
     Property.callInit(this, props, opts);
   },
+
+  __upProperties(prop, opts = {}) {
+    if (!this.__hasCustom()) return;
+    // if [detached] -> sm.addStyleTargets({ [prop.getName()]: prop.__getFullValue(), __p: !!opts.avoidStore }, opts)
+    // else -> sm.addStyleTargets({ [this.getName()]: this.__getFullValue(), __p: !!opts.avoidStore }, opts)
+  },
+
+  __getFullValue() {
+    if (this.get('detached')) return '';
+
+    return this.getProperties()
+      .map(p => p.__getFullValue())
+      .join(this.get('separator'));
+  },
+
+  // TODO
+  // in Property -> __upTargetsStyle({ [name]: value }, opt);
 
   /**
    * Clear the value

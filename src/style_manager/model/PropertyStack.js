@@ -36,7 +36,6 @@ export default Property.extend({
     layersColl.properties = this.get('properties');
     this.set('layers', layersColl, { silent: true });
     this.on('change:selectedLayer', this.__upSelected);
-    this.listenTo(this.get('properties'), 'change', this.__upProperties);
     this.listenTo(layersColl, 'add remove', this.__upLayers);
     Property.callInit(this, props, opts);
   },
