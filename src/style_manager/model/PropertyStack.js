@@ -84,7 +84,6 @@ export default Property.extend({
       this.getLayers().reset(layersNew);
     }
 
-    console.log('_up from stack', this.get('property'), { layersNew, rest, opts });
     this.__upSelected({ noEvent: true }, opts);
     return Property.prototype._up.call(this, rest, opts);
   },

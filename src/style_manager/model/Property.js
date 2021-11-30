@@ -39,7 +39,12 @@ export default class Property extends Model {
     }, {});
 
     sm.__trgEv(sm.events.propertyUpdate, { property: this, from, to });
-    applyStyle && sm.addStyleTargets({ [name]: value, __p: !!opts.avoidStore }, opts);
+    applyStyle && this.__upTargetsStyle({ [name]: value }, opts);
+  }
+
+  __upTargetsStyle(style, opts) {
+    const sm = this.em?.get('StyleManager');
+    sm?.addStyleTargets({ ...style, __p: !!opts.avoidStore }, opts);
   }
 
   _up(props, opts = {}) {
