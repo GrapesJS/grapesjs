@@ -1,3 +1,4 @@
+import { isString } from 'underscore';
 import Property from './Property';
 
 export default Property.extend({
@@ -17,8 +18,11 @@ export default Property.extend({
     // Array of sub properties
     properties: [],
 
-    // Separator between properties
+    // Separator to use to split property values (only for not detached properties)
     separator: ' ',
+
+    // Separator to use to join property values (only for not detached properties)
+    join: null,
   },
 
   initialize(props = {}, opts = {}) {
@@ -45,10 +49,17 @@ export default Property.extend({
   __getFullValue() {
     if (this.get('detached')) return '';
     // TODO custom build of the value (eg. toValue({ values }), toStyle({ values, name }) )
+    // const values = this.getValues();
 
     return this.getProperties()
-      .map(p => p.__getFullValue())
-      .join(this.get('separator'));
+      .map(p => p.__getFullValue({ withDefault: 1 }))
+      .filter(Boolean)
+      .join(this.__getJoin());
+  },
+
+  __getJoin() {
+    const join = this.get('join');
+    return isString(join) ? join : this.get('separator');
   },
 
   /**
@@ -60,8 +71,7 @@ export default Property.extend({
   getValues({ byName } = {}) {
     return this.getProperties().reduce((res, prop) => {
       const key = byName ? prop.getName() : prop.getId();
-      const value = prop.hasValue() ? prop.__getFullValue() : prop.getDefaultValue();
-      res[key] = `${value}`;
+      res[key] = `${prop.__getFullValue({ withDefault: 1 })}`;
       return res;
     }, {});
   },

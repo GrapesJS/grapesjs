@@ -263,11 +263,11 @@ export default class Property extends Model {
    */
   getDefaultValue() {
     const def = this.get('default');
-    return !isUndefined(def) ? def : this.get('defaults');
+    return `${!isUndefined(def) ? def : this.get('defaults')}`;
   }
 
-  __getFullValue() {
-    return this.getFullValue();
+  __getFullValue({ withDefault } = {}) {
+    return !this.hasValue() && withDefault ? this.getDefaultValue() : this.getFullValue();
   }
 
   /**
