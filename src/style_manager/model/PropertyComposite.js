@@ -44,10 +44,26 @@ export default Property.extend({
 
   __getFullValue() {
     if (this.get('detached')) return '';
+    // TODO custom build of the value (eg. toValue({ values }), toStyle({ values, name }) )
 
     return this.getProperties()
       .map(p => p.__getFullValue())
       .join(this.get('separator'));
+  },
+
+  /**
+   * Get current values of properties
+   * @param {Object} [opts={}] Options
+   * @param {Boolean} [opts.byName=false] Use property name as key instead of ID
+   * @returns {Object}
+   */
+  getValues({ byName } = {}) {
+    return this.getProperties().reduce((res, prop) => {
+      const key = byName ? prop.getName() : prop.getId();
+      const value = prop.hasValue() ? prop.__getFullValue() : prop.getDefaultValue();
+      res[key] = `${value}`;
+      return res;
+    }, {});
   },
 
   /**
