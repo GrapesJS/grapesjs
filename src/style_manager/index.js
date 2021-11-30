@@ -566,26 +566,30 @@ export default () => {
 
       sectors.map(sector => {
         sector.getProperties().map(prop => {
-          const name = prop.getName();
-          const value = style[name];
-          const hasVal = propDef(value);
-          let newValue = hasVal ? value : null;
-          let parentTarget = null;
-
-          if (!hasVal) {
-            newValue = null;
-            const parentItem = parentStyles.filter(p => propDef(p.style[name]))[0];
-
-            if (parentItem) {
-              newValue = parentItem.style[name];
-              parentTarget = parentItem.target;
-            }
-          }
-
-          prop.__setParentTarget(parentTarget);
-          prop.__getFullValue() !== newValue && prop.upValue(newValue, { ...opts, __up: true });
+          this.__upProp(prop, style, parentStyles, opts);
         });
       });
+    },
+
+    __upProp(prop, style, parentStyles, opts) {
+      const name = prop.getName();
+      const value = style[name];
+      const hasVal = propDef(value);
+      let newValue = hasVal ? value : null;
+      let parentTarget = null;
+
+      if (!hasVal) {
+        newValue = null;
+        const parentItem = parentStyles.filter(p => propDef(p.style[name]))[0];
+
+        if (parentItem) {
+          newValue = parentItem.style[name];
+          parentTarget = parentItem.target;
+        }
+      }
+
+      prop.__setParentTarget(parentTarget);
+      prop.__getFullValue() !== newValue && prop.upValue(newValue, { ...opts, __up: true });
     },
 
     destroy() {
