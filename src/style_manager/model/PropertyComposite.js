@@ -62,6 +62,11 @@ export default Property.extend({
     return isString(join) ? join : this.get('separator');
   },
 
+  clear() {
+    this.getProperties().map(p => p.clear());
+    return Property.prototype.clear.apply(this, arguments);
+  },
+
   /**
    * Get current values of properties
    * @param {Object} [opts={}] Options
