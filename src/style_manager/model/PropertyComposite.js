@@ -118,6 +118,10 @@ export default Property.extend({
     return this.get('properties').at(index);
   },
 
+  isDetached() {
+    return !!this.get('detached');
+  },
+
   getProperties() {
     return [...this.get('properties').models];
   },
