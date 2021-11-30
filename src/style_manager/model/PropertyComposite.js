@@ -34,8 +34,12 @@ export default Property.extend({
 
   __upProperties(prop, opts = {}) {
     if (!this.__hasCustom()) return;
-    // if [detached] -> sm.addStyleTargets({ [prop.getName()]: prop.__getFullValue(), __p: !!opts.avoidStore }, opts)
-    // else -> sm.addStyleTargets({ [this.getName()]: this.__getFullValue(), __p: !!opts.avoidStore }, opts)
+
+    if (this.get('detached')) {
+      this.__upTargetsStyle({ [prop.getName()]: prop.__getFullValue() }, opts);
+    } else {
+      this.upValue(this.__getFullValue(), opts);
+    }
   },
 
   __getFullValue() {
@@ -45,9 +49,6 @@ export default Property.extend({
       .map(p => p.__getFullValue())
       .join(this.get('separator'));
   },
-
-  // TODO
-  // in Property -> __upTargetsStyle({ [name]: value }, opt);
 
   /**
    * Clear the value
