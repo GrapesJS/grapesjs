@@ -1,0 +1,44 @@
+$pfx: 'gjs-';
+$pfxam: $pfx + 'am-';
+
+.#{$pfxam}assets-cont .#{$pfxam}asset-image {
+  border-bottom: none;
+  float: left;
+  width: 20%;
+  height: 150px;
+  box-sizing: border-box;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.#{$pfxam}preview-cont,
+.#{$pfxam}assets-cont ##{$pfxam}meta,
+.#{$pfxam}assets-cont ##{$pfxam}preview-cont {
+  width: 100%;
+}
+
+.#{$pfxam}assets-cont ##{$pfxam}preview-cont {
+  height: 100px;
+}
+
+.#{$pfxam}assets-cont ##{$pfxam}close {
+  right: 10px;
+  top: 10px;
+  z-index: 1;
+  line-height: 0;
+}
+
+.#{$pfx}btn-filestack {
+  margin-bottom: 10px;
+}
+
+.#{$pfxam}assets-cont {
+  height: 400px;
+}
+
+.#{$pfxam}assets {
+  height: 345px;
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 5px;
+  margin: 0 -10px;
+}

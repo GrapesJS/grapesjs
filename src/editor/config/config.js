@@ -164,7 +164,7 @@ export default {
 
   // Import asynchronously CSS to use as icons
   cssIcons:
-    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css',
+    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css',
 
   // Dom element
   el: '',
@@ -275,10 +275,10 @@ export default {
           {
             property: 'text-align',
             list: [
-              { value: 'left', className: 'fa fa-align-left' },
-              { value: 'center', className: 'fa fa-align-center' },
-              { value: 'right', className: 'fa fa-align-right' },
-              { value: 'justify', className: 'fa fa-align-justify' }
+              { value: 'left', className: 'fas fa-align-left' },
+              { value: 'center', className: 'fas fa-align-center' },
+              { value: 'right', className: 'fas fa-align-right' },
+              { value: 'justify', className: 'fas fa-align-justify' }
             ]
           }
         ]

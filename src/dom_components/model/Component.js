@@ -83,7 +83,7 @@ export const keyUpdateInside = `${keyUpdate}-inside`;
  * @property {Boolean} [void=false] This property is used by the HTML exporter as void elements don't have closing tags, eg. `<br/>`, `<hr/>`, etc. Default: `false`
  * @property {String} [styles=''] Component related styles, eg. `.my-component-class { color: red }`
  * @property {String} [content=''] Content of the component (not escaped) which will be appended before children rendering. Default: `''`
- * @property {String} [icon=''] Component's icon, this string will be inserted before the name (in Layers and badge), eg. it can be an HTML string '<i class="fa fa-square-o"></i>'. Default: `''`
+ * @property {String} [icon=''] Component's icon, this string will be inserted before the name (in Layers and badge), eg. it can be an HTML string '<i class="far fa-square"></i>'. Default: `''`
  * @property {String|Function} [script=''] Component's javascript. More about it [here](/modules/Components-js.html). Default: `''`
  * @property {String|Function} [script-export=''] You can specify javascript available only in export functions (eg. when you get the HTML).
  * If this property is defined it will overwrite the `script` one (in export functions). Default: `''`
@@ -92,7 +92,7 @@ export const keyUpdateInside = `${keyUpdate}-inside`;
  *  For example if you create a component likes this: `{ removable: false, draggable: false, propagate: ['removable', 'draggable'] }`
  *  and append some new component inside, the new added component will get the exact same properties indicated in the `propagate` array (and the `propagate` property itself). Default: `[]`
  * @property {Array<Object>} [toolbar=null] Set an array of items to show up inside the toolbar when the component is selected (move, clone, delete).
- * Eg. `toolbar: [ { attributes: {class: 'fa fa-arrows'}, command: 'tlb-move' }, ... ]`.
+ * Eg. `toolbar: [ { attributes: {class: 'fas fa-arrows-alt'}, command: 'tlb-move' }, ... ]`.
  * By default, when `toolbar` property is falsy the editor will add automatically commands like `move`, `delete`, etc. based on its properties.
  * @property {Collection<Component>} [components=null] Children components. Default: `null`
  */
@@ -1110,14 +1110,14 @@ export default class Component extends Model.extend(Styleable) {
       var tb = [];
       if (model.collection) {
         tb.push({
-          attributes: { class: 'fa fa-arrow-up' },
+          attributes: { class: 'fas fa-arrow-up' },
           command: ed => ed.runCommand('core:component-exit', { force: 1 })
         });
       }
       if (model.get('draggable')) {
         tb.push({
           attributes: {
-            class: `fa fa-arrows ${ppfx}no-touch-actions`,
+            class: `fas fa-arrows-alt ${ppfx}no-touch-actions`,
             draggable: true
           },
           //events: hasDnd(this.em) ? { dragstart: 'execCommand' } : '',
@@ -1126,13 +1126,13 @@ export default class Component extends Model.extend(Styleable) {
       }
       if (model.get('copyable')) {
         tb.push({
-          attributes: { class: 'fa fa-clone' },
+          attributes: { class: 'far fa-clone' },
           command: 'tlb-clone'
         });
       }
       if (model.get('removable')) {
         tb.push({
-          attributes: { class: 'fa fa-trash-o' },
+          attributes: { class: 'fas fa-trash' },
           command: 'tlb-delete'
         });
       }
