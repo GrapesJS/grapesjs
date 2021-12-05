@@ -60,7 +60,7 @@ export default Component.extend(
 
           if (!hasButtonBool) {
             tb.push({
-              attributes: { class: 'fa fa-pencil' },
+              attributes: { class: 'fas fa-pencil-alt' },
               command: cmdName
             });
             this.set('toolbar', tb);

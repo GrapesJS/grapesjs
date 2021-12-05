@@ -22,28 +22,28 @@ export default {
         {
           active: true,
           id: swv,
-          className: 'fa fa-square-o',
+          className: 'far fa-square',
           command: swv,
           context: swv,
           attributes: { title: 'View components' }
         },
         {
           id: prv,
-          className: 'fa fa-eye',
+          className: 'fas fa-eye',
           command: prv,
           context: prv,
           attributes: { title: 'Preview' }
         },
         {
           id: ful,
-          className: 'fa fa-arrows-alt',
+          className: 'fas fa-arrows-alt',
           command: ful,
           context: ful,
           attributes: { title: 'Fullscreen' }
         },
         {
           id: expt,
-          className: 'fa fa-code',
+          className: 'fas fa-code',
           command: expt,
           attributes: { title: 'View code' }
         }
@@ -54,7 +54,7 @@ export default {
       buttons: [
         {
           id: osm,
-          className: 'fa fa-paint-brush',
+          className: 'fas fa-paint-brush',
           command: osm,
           active: true,
           togglable: 0,
@@ -62,21 +62,21 @@ export default {
         },
         {
           id: otm,
-          className: 'fa fa-cog',
+          className: 'fas fa-cog',
           command: otm,
           togglable: 0,
           attributes: { title: 'Settings' }
         },
         {
           id: ola,
-          className: 'fa fa-bars',
+          className: 'fas fa-bars',
           command: ola,
           togglable: 0,
           attributes: { title: 'Open Layer Manager' }
         },
         {
           id: obl,
-          className: 'fa fa-th-large',
+          className: 'fas fa-th-large',
           command: obl,
           togglable: 0,
           attributes: { title: 'Open Blocks' }

@@ -21,8 +21,8 @@ export default class CategoryView extends View {
     const pfx = config.pStylePrefix || '';
     this.em = config.em;
     this.pfx = pfx;
-    this.caretR = 'fa fa-caret-right';
-    this.caretD = 'fa fa-caret-down';
+    this.caretR = 'fas fa-caret-right';
+    this.caretD = 'fas fa-caret-down';
     this.iconClass = `${pfx}caret-icon`;
     this.activeClass = `${pfx}open`;
     this.className = `${pfx}block-category`;

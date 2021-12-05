@@ -69,7 +69,13 @@
   fill: currentColor;
 }
 
-.#{$app-prefix}block.fa {
+.#{$app-prefix}block.fas {
+  font-size: 2em;
+  line-height: 2em;
+  padding: 11px;
+}
+
+.#{$app-prefix}block.far {
   font-size: 2em;
   line-height: 2em;
   padding: 11px;

@@ -30,7 +30,7 @@ export default Backbone.View.extend({
     const addClass = !count ? this.clsNoChild : '';
     const clsTitle = `${this.clsTitle} ${addClass}`;
     const clsTitleC = `${this.clsTitleC} ${ppfx}one-bg`;
-    const clsCaret = `${this.clsCaret} fa fa-chevron-right`;
+    const clsCaret = `${this.clsCaret} fas fa-chevron-right`;
     const clsInput = `${this.inputNameCls} ${clsNoEdit} ${ppfx}no-app`;
     const level = this.level + 1;
     const gut = `${30 + level * 10}px`;
@@ -41,7 +41,7 @@ export default Backbone.View.extend({
     return `
       ${
         hidable
-          ? `<i class="${pfx}layer-vis fa fa-eye ${
+          ? `<i class="${pfx}layer-vis fas fa-eye ${
               this.isVisible() ? '' : 'fa-eye-slash'
             }" data-toggle-visible></i>`
           : ''
@@ -57,7 +57,7 @@ export default Backbone.View.extend({
       </div>
       <div class="${this.clsCount}" data-count>${count || ''}</div>
       <div class="${this.clsMove}" data-toggle-move>
-        <i class="fa fa-arrows"></i>
+        <i class="fas fa-arrows-alt"></i>
       </div>
       <div class="${this.clsChildren}"></div>`;
   },
