@@ -23,6 +23,10 @@ export default Property.extend({
 
     // Separator to use to join property values (only for not detached properties)
     join: null,
+
+    fromStyle: null,
+
+    toStyle: null,
   },
 
   initialize(props = {}, opts = {}) {
@@ -37,19 +41,41 @@ export default Property.extend({
   },
 
   __upProperties(prop, opts = {}) {
-    if (!this.__hasCustom()) return;
+    if (!this.__hasCustom() || opts.__up) return;
 
-    if (this.get('detached')) {
+    if (this.isDetached()) {
       this.__upTargetsStyle({ [prop.getName()]: prop.__getFullValue() }, opts);
     } else {
       this.upValue(this.__getFullValue(), opts);
     }
   },
 
-  __getFullValue() {
-    if (this.get('detached')) return '';
+  __upTargetsStyle(style, opts) {
+    // const sm = this.em?.get('StyleManager');
+    // sm?.addStyleTargets({ ...style, __p: !!opts.avoidStore }, opts);
+    const toStyle = this.get('toStyle');
+    let newStyle = style;
+
+    if (toStyle) {
+      const values = this.getValues();
+      newStyle = toStyle({ values, style, opts });
+    }
+
+    return Property.prototype.__upTargetsStyle.call(this, newStyle, opts);
+  },
+
+  // TODO? upValue -> if not detached, update properties
+
+  __getFullValue(opts = {}) {
+    if (this.isDetached() || opts.__clear) {
+      return '';
+    }
+
     // TODO custom build of the value (eg. toValue({ values }), toStyle({ values, name }) )
-    // const values = this.getValues();
+
+    // if (this.get('toStyle')) {
+    //   const values = this.getValues();
+    // }
 
     return this.getProperties()
       .map(p => p.__getFullValue({ withDefault: 1 }))
@@ -64,7 +90,7 @@ export default Property.extend({
 
   clear() {
     this.getProperties().map(p => p.clear());
-    return Property.prototype.clear.apply(this, arguments);
+    return Property.prototype.clear.call(this, { __clear: true });
   },
 
   /**
@@ -84,6 +110,7 @@ export default Property.extend({
   /**
    * Clear the value
    * @return {this}
+   * @deprecated
    */
   clearValue(opts = {}) {
     this.get('properties').each(property => property.clearValue());
@@ -92,6 +119,7 @@ export default Property.extend({
 
   /**
    * Update property values
+   * @deprecated
    */
   updateValues() {
     const values = this.getFullValue().split(this.getSplitSeparator());
