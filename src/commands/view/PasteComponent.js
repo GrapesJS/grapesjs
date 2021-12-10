@@ -9,7 +9,10 @@ export default {
     if (clp && selected) {
       ed.getSelectedAll().forEach(comp => {
         if (!comp) return;
+
         const coll = comp.collection;
+        if (!coll) return;
+
         const at = coll.indexOf(comp) + 1;
         const copyable = clp.filter(cop => cop.get('copyable'));
         let added;
@@ -17,7 +20,10 @@ export default {
         if (contains(clp, comp) && comp.get('copyable')) {
           added = coll.add(comp.clone(), { at });
         } else {
-          added = coll.add(copyable.map(cop => cop.clone()), { at });
+          added = coll.add(
+            copyable.map(cop => cop.clone()),
+            { at }
+          );
         }
 
         added = isArray(added) ? added : [added];
