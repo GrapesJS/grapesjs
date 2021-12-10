@@ -86,12 +86,12 @@ export default Property.extend({
   },
 
   __getFromStyle(style = {}) {
-    let result = {};
+    let result = style;
     const fromStyle = this.get('fromStyle');
 
     if (fromStyle) {
       result = fromStyle(style);
-    } else if (!this.isDetached()) {
+    } else {
       const name = this.getName();
       const value = style[name];
       if (value) {
@@ -104,9 +104,11 @@ export default Property.extend({
           const value = values[i] || values[(i % len) + (len != 1 && len % 2 ? 1 : 0)];
           result[prop.getId()] = value || '';
         });
+        result = {
+          ...style,
+          ...result,
+        };
       }
-    } else {
-      result = style;
     }
 
     return result;

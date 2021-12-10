@@ -105,6 +105,12 @@ export default Property.extend({
     return parseFn ? parseFn({ value, values }) : values;
   },
 
+  __getFromStyle(style = {}) {
+    const fromStyle = this.get('fromStyle');
+
+    return fromStyle ? fromStyle(style) : style;
+  },
+
   /**
    * Add new layer to the stack
    * @param {Object} [props={}] Layer props
