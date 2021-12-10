@@ -55,11 +55,12 @@ export default Property.extend({
     }
   },
 
-  __upTargetsStyle(style, opts) {
+  __upTargetsStyle(style, opts = {}) {
     const toStyle = this.get('toStyle');
+    const { __clear } = opts;
     let newStyle = style;
 
-    if (toStyle && !opts.__clear) {
+    if (toStyle && !__clear) {
       const values = this.getValues();
       newStyle = toStyle(values, { ...opts, style });
     }
@@ -121,8 +122,12 @@ export default Property.extend({
   },
 
   clear() {
-    this.getProperties().map(p => p.clear({ __clearIn: true }));
+    this.getProperties().map(p => p.clear({ __clearIn: !this.isDetached() }));
     return Property.prototype.clear.call(this);
+  },
+
+  hasValue(opts) {
+    return this.getProperties().some(prop => prop.hasValue(opts));
   },
 
   /**
