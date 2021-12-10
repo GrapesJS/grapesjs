@@ -85,6 +85,33 @@ export default Property.extend({
     return isString(join) ? join : this.get('separator');
   },
 
+  __getFromStyle(style = {}) {
+    let result = {};
+    const fromStyle = this.get('fromStyle');
+
+    if (fromStyle) {
+      result = fromStyle(style);
+    } else if (!this.isDetached()) {
+      const name = this.getName();
+      const value = style[name];
+      if (value) {
+        const values = value.split(this.getSplitSeparator());
+        this.getProperties().forEach((prop, i) => {
+          const len = values.length;
+          // Try to get value from a shorthand:
+          // 11px -> 11px 11px 11px 11xp
+          // 11px 22px -> 11px 22px 11px 22xp
+          const value = values[i] || values[(i % len) + (len != 1 && len % 2 ? 1 : 0)];
+          result[prop.getId()] = value || '';
+        });
+      }
+    } else {
+      result = style;
+    }
+
+    return result;
+  },
+
   clear() {
     this.getProperties().map(p => p.clear({ __clearIn: true }));
     return Property.prototype.clear.call(this);

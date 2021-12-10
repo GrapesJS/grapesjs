@@ -570,16 +570,11 @@ export default () => {
           const props = prop.getProperties?.();
 
           if (props) {
-            const fromStyle = prop.get('fromStyle');
-            let newStyle = style;
-            let newParentStyles = parentStyles;
-            if (fromStyle) {
-              newStyle = fromStyle(style);
-              newParentStyles = parentStyles.map(p => ({
-                ...p,
-                style: fromStyle(p.style),
-              }));
-            }
+            const newStyle = prop.__getFromStyle(style);
+            const newParentStyles = parentStyles.map(p => ({
+              ...p,
+              style: prop.__getFromStyle(p.style),
+            }));
             props.forEach(prop => this.__upProp(prop, newStyle, newParentStyles, opts));
           }
         });
