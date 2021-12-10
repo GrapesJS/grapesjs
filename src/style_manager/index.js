@@ -571,9 +571,16 @@ export default () => {
 
           if (props) {
             const fromStyle = prop.get('fromStyle');
-            // TODO parentStyles should be as newStyle
-            const newStyle = fromStyle ? fromStyle(style) : style;
-            props.forEach(prop => this.__upProp(prop, newStyle, parentStyles, opts));
+            let newStyle = style;
+            let newParentStyles = parentStyles;
+            if (fromStyle) {
+              newStyle = fromStyle(style);
+              newParentStyles = parentStyles.map(p => ({
+                ...p,
+                style: fromStyle(p.style),
+              }));
+            }
+            props.forEach(prop => this.__upProp(prop, newStyle, newParentStyles, opts));
           }
         });
       });
