@@ -60,6 +60,12 @@ export default Property.extend({
       newStyle = toStyle(values, { ...opts, style });
     }
 
+    if (!this.isDetached()) {
+      this.getProperties().map(prop => {
+        newStyle[prop.getName()] = '';
+      });
+    }
+
     return Property.prototype.__upTargetsStyle.call(this, newStyle, opts);
   },
 
