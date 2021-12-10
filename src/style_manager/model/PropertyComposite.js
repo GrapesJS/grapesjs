@@ -41,7 +41,7 @@ export default Property.extend({
   },
 
   __upProperties(prop, opts = {}) {
-    if (!this.__hasCustom() || opts.__up) return;
+    if (!this.__hasCustom() || opts.__up || opts.__clearIn) return;
 
     if (this.isDetached()) {
       this.__upTargetsStyle({ [prop.getName()]: prop.__getFullValue() }, opts);
@@ -51,12 +51,10 @@ export default Property.extend({
   },
 
   __upTargetsStyle(style, opts) {
-    // const sm = this.em?.get('StyleManager');
-    // sm?.addStyleTargets({ ...style, __p: !!opts.avoidStore }, opts);
     const toStyle = this.get('toStyle');
     let newStyle = style;
 
-    if (toStyle) {
+    if (toStyle && !opts.__clear) {
       const values = this.getValues();
       newStyle = toStyle({ values, style, opts });
     }
@@ -64,18 +62,10 @@ export default Property.extend({
     return Property.prototype.__upTargetsStyle.call(this, newStyle, opts);
   },
 
-  // TODO? upValue -> if not detached, update properties
-
   __getFullValue(opts = {}) {
     if (this.isDetached() || opts.__clear) {
       return '';
     }
-
-    // TODO custom build of the value (eg. toValue({ values }), toStyle({ values, name }) )
-
-    // if (this.get('toStyle')) {
-    //   const values = this.getValues();
-    // }
 
     return this.getProperties()
       .map(p => p.__getFullValue({ withDefault: 1 }))
@@ -89,8 +79,8 @@ export default Property.extend({
   },
 
   clear() {
-    this.getProperties().map(p => p.clear());
-    return Property.prototype.clear.call(this, { __clear: true });
+    this.getProperties().map(p => p.clear({ __clearIn: true }));
+    return Property.prototype.clear.call(this);
   },
 
   /**

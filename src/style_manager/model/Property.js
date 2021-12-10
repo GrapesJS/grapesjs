@@ -28,7 +28,7 @@ export default class Property extends Model {
     const { em } = this;
     const sm = em.get('StyleManager');
     const name = this.getName();
-    const value = this.__getFullValue(opts);
+    const value = opts.__clear ? '' : this.__getFullValue(opts);
     const parentProp = this.__getParentProp();
     const applyStyle = !opts.__up && !parentProp;
 
@@ -119,7 +119,7 @@ export default class Property extends Model {
    * Clear value
    */
   clear(opts = {}) {
-    this._up(this.__getClearProps(), opts);
+    this._up(this.__getClearProps(), { ...opts, __clear: true });
   }
 
   upValue(value, opts) {
