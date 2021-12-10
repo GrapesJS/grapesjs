@@ -44,7 +44,11 @@ export default Property.extend({
     if (!this.__hasCustom() || opts.__up || opts.__clearIn) return;
 
     if (this.isDetached()) {
-      this.__upTargetsStyle({ [prop.getName()]: prop.__getFullValue() }, opts);
+      const style = this.getProperties().reduce((acc, prop) => {
+        acc[prop.getName()] = prop.hasValue({ noParent: true }) ? prop.__getFullValue() : '';
+        return acc;
+      }, {});
+      this.__upTargetsStyle({ ...style, [prop.getName()]: prop.__getFullValue() }, opts);
     } else {
       const { __clear, ...rest } = opts;
       this.upValue(this.__getFullValue(), rest);
@@ -60,7 +64,9 @@ export default Property.extend({
       newStyle = toStyle(values, { ...opts, style });
     }
 
-    if (!this.isDetached()) {
+    if (this.isDetached()) {
+      newStyle[this.getName()] = '';
+    } else {
       this.getProperties().map(prop => {
         newStyle[prop.getName()] = '';
       });
