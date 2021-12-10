@@ -46,7 +46,8 @@ export default Property.extend({
     if (this.isDetached()) {
       this.__upTargetsStyle({ [prop.getName()]: prop.__getFullValue() }, opts);
     } else {
-      this.upValue(this.__getFullValue(), opts);
+      const { __clear, ...rest } = opts;
+      this.upValue(this.__getFullValue(), rest);
     }
   },
 
@@ -56,7 +57,7 @@ export default Property.extend({
 
     if (toStyle && !opts.__clear) {
       const values = this.getValues();
-      newStyle = toStyle({ values, style, opts });
+      newStyle = toStyle(values, { ...opts, style });
     }
 
     return Property.prototype.__upTargetsStyle.call(this, newStyle, opts);
