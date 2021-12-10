@@ -566,14 +566,14 @@ export default () => {
 
       sectors.map(sector => {
         sector.getProperties().map(prop => {
+          this.__upProp(prop, style, parentStyles, opts);
           const props = prop.getProperties?.();
-          if (props /*&& prop.isDetached?.()*/) {
+
+          if (props) {
             const fromStyle = prop.get('fromStyle');
             // TODO parentStyles should be as newStyle
             const newStyle = fromStyle ? fromStyle(style) : style;
             props.forEach(prop => this.__upProp(prop, newStyle, parentStyles, opts));
-          } else {
-            this.__upProp(prop, style, parentStyles, opts);
           }
         });
       });
