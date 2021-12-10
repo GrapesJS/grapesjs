@@ -93,7 +93,7 @@ export default Property.extend({
   },
 
   __getFromStyle(style = {}) {
-    let result = style;
+    let result = {};
     const fromStyle = this.get('fromStyle');
 
     if (fromStyle) {
@@ -112,9 +112,11 @@ export default Property.extend({
           result[prop.getId()] = value || '';
         });
         result = {
-          ...style,
           ...result,
+          ...style,
         };
+      } else {
+        result = style;
       }
     }
 
