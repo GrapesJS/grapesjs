@@ -50,6 +50,11 @@ export default Property.extend({
     this.upValue(value, opts);
   },
 
+  __upTargets(p, opts = {}) {
+    if (opts.__select) return;
+    return PropertyBase.prototype._up.call(this, p, opts);
+  },
+
   __upLayers(m, c, o) {
     const value = this.__getFullValue();
     this.upValue(value);
@@ -147,7 +152,7 @@ export default Property.extend({
    * @param {[Layer]} layer
    */
   selectLayer(layer) {
-    return this.set('selectedLayer', layer);
+    return this.set('selectedLayer', layer, { __select: true });
   },
 
   /**
