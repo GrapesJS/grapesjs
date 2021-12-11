@@ -84,7 +84,12 @@ describe('StyleManager properties logic', () => {
       expect(style[propInTest]).toBe('55%');
       expect(compTypeProp.hasValue()).toBe(true);
       expect(compTypePropInn.hasValue()).toBe(true);
-      otherProps.forEach(prop => expect(style[prop]).toBe(''));
+      otherProps.forEach(prop => {
+        expect(style[prop]).toBe('');
+        if (prop !== propTest) {
+          expect(compTypeProp.getProperty(prop).hasValue()).toBe(false);
+        }
+      });
     });
   });
 });
