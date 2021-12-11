@@ -68,13 +68,23 @@ describe('StyleManager properties logic', () => {
       expect(compTypePropInn).toBeTruthy();
     });
 
+    test('Inner property has no value', () => {
+      expect(compTypeProp.hasValue()).toBe(false);
+      expect(compTypePropInn.hasValue()).toBe(false);
+    });
+
     test('Rule selected', () => {
       expect(obj.getLastSelected()).toBe(rule1);
     });
 
     test('Updating inner property, it reflects on the rule', () => {
-      compTypePropInn.upValue('55');
-      expect(rule1.getStyle()).toBe(1);
+      compTypePropInn.upValue('55%');
+      const style = rule1.getStyle();
+      const otherProps = Object.keys(style).filter(p => p.indexOf('padding') >= 0 && p !== propInTest);
+      expect(style[propInTest]).toBe('55%');
+      expect(compTypeProp.hasValue()).toBe(true);
+      expect(compTypePropInn.hasValue()).toBe(true);
+      otherProps.forEach(prop => expect(style[prop]).toBe(''));
     });
   });
 });
