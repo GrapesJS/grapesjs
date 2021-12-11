@@ -1,5 +1,6 @@
 import { keys, isUndefined } from 'underscore';
 import Property from './PropertyComposite';
+import PropertyBase from './Property';
 import Layers from './Layers';
 import { camelCase } from 'utils/mixins';
 
@@ -109,6 +110,10 @@ export default Property.extend({
     const fromStyle = this.get('fromStyle');
 
     return fromStyle ? fromStyle(style) : style;
+  },
+
+  hasValue(opts) {
+    return PropertyBase.prototype.hasValue.call(this, opts);
   },
 
   /**
