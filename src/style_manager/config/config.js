@@ -25,5 +25,8 @@ export default {
   clearProperties: true,
 
   // Properties not to take in account for computed styles
-  avoidComputed: ['width', 'height']
+  avoidComputed: ['width', 'height'],
+
+  // Avoid rendering the default style manager.
+  custom: false,
 };

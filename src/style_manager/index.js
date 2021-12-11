@@ -555,7 +555,7 @@ export default () => {
 
     __upProps(opts) {
       const lastTarget = this.getLastSelected();
-      if (!lastTarget || !this.em.getConfig('customUI')) return;
+      if (!lastTarget || !this.getConfig().custom) return;
 
       const lastTargetParents = this.getSelectedParents();
       const style = lastTarget.getStyle();

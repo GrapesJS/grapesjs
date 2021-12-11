@@ -16,7 +16,7 @@ export default class Property extends Model {
   }
 
   __hasCustom() {
-    return !!this.em?.getConfig('customUI');
+    return !!this.em?.get('StyleManager').getConfig().custom;
   }
 
   __getParentProp() {
