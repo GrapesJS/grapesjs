@@ -581,6 +581,10 @@ export default () => {
       });
     },
 
+    getBuiltIn(prop = '') {
+      return this.PropertyFactory.build(prop);
+    },
+
     __upProp(prop, style, parentStyles, opts) {
       const name = prop.getName();
       const value = style[name];
