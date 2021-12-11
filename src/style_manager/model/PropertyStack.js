@@ -52,7 +52,11 @@ export default Property.extend({
 
   __upTargets(p, opts = {}) {
     if (opts.__select) return;
-    return PropertyBase.prototype._up.call(this, p, opts);
+    return PropertyBase.prototype.__upTargets.call(this, p, opts);
+  },
+
+  __upTargetsStyle(style, opts) {
+    return PropertyBase.prototype.__upTargetsStyle.call(this, style, opts);
   },
 
   __upLayers(m, c, o) {

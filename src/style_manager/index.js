@@ -569,7 +569,7 @@ export default () => {
           this.__upProp(prop, style, parentStyles, opts);
           const props = prop.getProperties?.();
 
-          if (props) {
+          if (props && prop.getType() !== 'stack') {
             const newStyle = prop.__getFromStyle(style);
             const newParentStyles = parentStyles.map(p => ({
               ...p,
