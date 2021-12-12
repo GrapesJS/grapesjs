@@ -582,7 +582,7 @@ export default () => {
     },
 
     getBuiltIn(prop = '') {
-      return this.PropertyFactory.build(prop);
+      return this.PropertyFactory.build(prop)[0] || null;
     },
 
     __upProp(prop, style, parentStyles, opts) {
