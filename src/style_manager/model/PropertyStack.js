@@ -168,12 +168,12 @@ export default Property.extend({
     if (!hasProps) {
       return [];
     } else {
+      const sep = this.getLayerSeparator();
+      const sepParts = this.getPartsSeparator();
       const fromStyle = this.get('fromStyle');
-      let result = fromStyle ? fromStyle(style, { property: this }) : [];
+      let result = fromStyle ? fromStyle(style, { property: this, separatorLayers: sep }) : [];
 
       if (!fromStyle) {
-        const sep = this.getLayerSeparator();
-        const sepParts = this.getPartsSeparator();
         // Get layers from the main property
         const layers = splitStyleName(style, name, sep)
           .map(value => value.split(sepParts))

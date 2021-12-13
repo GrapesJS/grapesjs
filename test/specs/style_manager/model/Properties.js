@@ -159,6 +159,25 @@ describe('StyleManager properties logic', () => {
       ]);
     });
 
+    test('Custom fromStyle', () => {
+      compTypeProp.set('fromStyle', (style, { separatorLayers }) => {
+        const layerValues = style[propTest].split(separatorLayers);
+        return layerValues.map(value => ({ value }));
+      });
+      expect(
+        compTypeProp.__getLayersFromStyle({
+          [propTest]: 'rgba(valueA-1, valueB-1), rgba(valueA-2, valueB-2)',
+        })
+      ).toEqual([
+        {
+          value: 'rgba(valueA-1, valueB-1)',
+        },
+        {
+          value: 'rgba(valueA-2, valueB-2)',
+        },
+      ]);
+    });
+
     test('Layers has the right values', () => {
       expect(compTypeProp.getLayer(0).getValues()).toEqual({
         [propATest]: 'valueA-1',
