@@ -568,15 +568,18 @@ export default () => {
         sector.getProperties().map(prop => {
           this.__upProp(prop, style, parentStyles, opts);
           const props = prop.getProperties?.();
-          const isStack = prop.getType() === 'stack';
 
-          if (props && !isStack) {
-            const newStyle = prop.__getFromStyle(style);
-            const newParentStyles = parentStyles.map(p => ({
-              ...p,
-              style: prop.__getFromStyle(p.style),
-            }));
-            props.forEach(prop => this.__upProp(prop, newStyle, newParentStyles, opts));
+          if (props) {
+            if (prop.getType() === 'stack') {
+              prop.__setLayers(prop.__getLayersFromStyle(style));
+            } else {
+              const newStyle = prop.__getFromStyle(style);
+              const newParentStyles = parentStyles.map(p => ({
+                ...p,
+                style: prop.__getFromStyle(p.style),
+              }));
+              props.forEach(prop => this.__upProp(prop, newStyle, newParentStyles, opts));
+            }
           }
         });
       });

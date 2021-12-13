@@ -105,6 +105,17 @@ export default Property.extend({
     return Property.prototype._up.call(this, rest, opts);
   },
 
+  __setLayers(newLayers = []) {
+    const layers = this.getLayers();
+    const layersNew = newLayers.map(values => ({ values }));
+
+    if (layers.length === layersNew.length) {
+      layersNew.map((layer, n) => layers.at(n)?.upValues(layer.values));
+    } else {
+      this.getLayers().reset(layersNew);
+    }
+  },
+
   __parseValue(value) {
     const result = this.parseValue(value);
     result.__layers = value

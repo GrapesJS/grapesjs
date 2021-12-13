@@ -183,7 +183,7 @@ describe('StyleManager properties logic', () => {
       compTypeProp.getProperty(propCTest).upValue('valueC-2-mod');
       expect(rule1.getStyle()).toEqual({
         __p: false,
-        [propTest]: 'valueA-1 valueB-1-mod valueC-1, valueA-2 valueB-2 valueC-2-mod',
+        [propTest]: 'valueA-1 valueB-1-mod valueC-1-ext, valueA-2 valueB-2 valueC-2-mod',
       });
     });
 
