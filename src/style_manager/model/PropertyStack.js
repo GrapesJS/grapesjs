@@ -112,7 +112,14 @@ export default Property.extend({
   __parseLayer(value) {
     const parseFn = this.get('parseLayer');
     const values = value.split(PARTS_REG);
-    return parseFn ? parseFn({ value, values }) : values;
+    const properties = this.getProperties();
+    return parseFn
+      ? parseFn({ value, values })
+      : properties.reduce((acc, prop, i) => {
+          const value = values[i];
+          acc[prop.getId()] = !isUndefined(value) ? value : prop.getDefaultValue();
+          return acc;
+        }, {});
   },
 
   __getFromStyle(style = {}) {
@@ -212,6 +219,10 @@ export default Property.extend({
 
   getLayers() {
     return this.get('layers');
+  },
+
+  getLayer(index = 0) {
+    return this.getLayers().at(index);
   },
 
   getCurrentLayer() {

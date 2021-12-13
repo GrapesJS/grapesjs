@@ -10,6 +10,7 @@ describe('StyleManager properties logic', () => {
   let cmp;
   let rule1;
   let rule2;
+  const sectorTest = 'sector-test';
 
   beforeEach(() => {
     em = new Editor({
@@ -24,12 +25,6 @@ describe('StyleManager properties logic', () => {
     obj = em.get('StyleManager');
     em.get('PageManager').onLoad();
     cmp = domc.addComponent(`<div class="cls"></div>`);
-    [rule1, rule2] = cssc.addRules(`
-        .cls { color: red; }
-        @media (max-width: 992px) {
-            .cls { color: blue; }
-        }
-    `);
   });
 
   afterEach(() => {
@@ -38,13 +33,13 @@ describe('StyleManager properties logic', () => {
   });
 
   describe('Composite type', () => {
-    const sectorTest = 'sector-test';
     const propTest = 'padding';
     const propInTest = 'padding-top';
     let compTypeProp;
     let compTypePropInn;
 
     beforeEach(() => {
+      rule1 = cssc.addRules(`.cls { color: red; }`)[0];
       obj.addSector(sectorTest, {
         properties: [
           {
@@ -89,6 +84,59 @@ describe('StyleManager properties logic', () => {
         if (prop !== propTest) {
           expect(compTypeProp.getProperty(prop).hasValue()).toBe(false);
         }
+      });
+    });
+  });
+
+  describe('Stack type (not detached)', () => {
+    const propTest = 'stack-prop';
+    const propATest = `${propTest}-a`;
+    const propBTest = `${propTest}-b`;
+    const propCTest = `${propTest}-c`;
+    let compTypeProp;
+    let compTypePropInn;
+
+    beforeEach(() => {
+      rule1 = cssc.addRules(`
+        .cls {
+            ${propTest}: valueA-1 valueB-1 valueC-1, valueA-2 valueB-2 valueC-2;
+        }
+      `)[0];
+      obj.addSector(sectorTest, {
+        properties: [
+          {
+            type: 'stack',
+            property: propTest,
+            properties: [{ property: propATest }, { property: propBTest }, { property: propCTest }],
+          },
+        ],
+      });
+      compTypeProp = obj.getProperty(sectorTest, propTest);
+      compTypePropInn = compTypeProp.getProperty(propATest);
+      em.setSelected(cmp);
+      obj.__upSel();
+    });
+
+    test('Property exists', () => {
+      expect(compTypeProp).toBeTruthy();
+      expect(compTypePropInn).toBeTruthy();
+      expect(compTypeProp.getProperties().length).toBe(3);
+    });
+
+    test('Has the right number of layers', () => {
+      expect(compTypeProp.getLayers().length).toBe(2);
+    });
+
+    test('Layers has the right values', () => {
+      expect(compTypeProp.getLayer(0).getValues()).toEqual({
+        [propATest]: 'valueA-1',
+        [propBTest]: 'valueB-1',
+        [propCTest]: 'valueC-1',
+      });
+      expect(compTypeProp.getLayer(1).getValues()).toEqual({
+        [propATest]: 'valueA-2',
+        [propBTest]: 'valueB-2',
+        [propCTest]: 'valueC-2',
       });
     });
   });
