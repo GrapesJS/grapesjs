@@ -167,6 +167,15 @@ export default Property.extend({
   },
 
   /**
+   * Select layer at index
+   * @param {Number} index Index of the layer to select
+   */
+  selectLayerAt(index = 0) {
+    const layer = this.getLayer(index);
+    return layer && this.selectLayer(layer);
+  },
+
+  /**
    * Get selected layer
    * @returns {[Layer] | null}
    */
@@ -222,7 +231,7 @@ export default Property.extend({
   },
 
   getLayer(index = 0) {
-    return this.getLayers().at(index);
+    return this.getLayers().at(index) || null;
   },
 
   getCurrentLayer() {

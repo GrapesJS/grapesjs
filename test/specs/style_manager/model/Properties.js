@@ -93,13 +93,14 @@ describe('StyleManager properties logic', () => {
     const propATest = `${propTest}-a`;
     const propBTest = `${propTest}-b`;
     const propCTest = `${propTest}-c`;
+    const propStyleValue = 'valueA-1 valueB-1 valueC-1, valueA-2 valueB-2 valueC-2';
     let compTypeProp;
     let compTypePropInn;
 
     beforeEach(() => {
       rule1 = cssc.addRules(`
         .cls {
-            ${propTest}: valueA-1 valueB-1 valueC-1, valueA-2 valueB-2 valueC-2;
+            ${propTest}: ${propStyleValue};
         }
       `)[0];
       obj.addSector(sectorTest, {
@@ -127,6 +128,10 @@ describe('StyleManager properties logic', () => {
       expect(compTypeProp.getLayers().length).toBe(2);
     });
 
+    test('Has no selected layer', () => {
+      expect(compTypeProp.getSelectedLayer()).toBe(null);
+    });
+
     test('Layers has the right values', () => {
       expect(compTypeProp.getLayer(0).getValues()).toEqual({
         [propATest]: 'valueA-1',
@@ -137,6 +142,18 @@ describe('StyleManager properties logic', () => {
         [propATest]: 'valueA-2',
         [propBTest]: 'valueB-2',
         [propCTest]: 'valueC-2',
+      });
+    });
+
+    test('Updating inner property, it reflects on the rule', () => {
+      expect(rule1.getStyle()).toEqual({ [propTest]: propStyleValue });
+      compTypeProp.selectLayerAt(0);
+      compTypeProp.getProperty(propBTest).upValue('valueB-1-mod');
+      compTypeProp.selectLayerAt(1);
+      compTypeProp.getProperty(propCTest).upValue('valueC-2-mod');
+      expect(rule1.getStyle()).toEqual({
+        __p: false,
+        [propTest]: 'valueA-1 valueB-1-mod valueC-1, valueA-2 valueB-2 valueC-2-mod',
       });
     });
   });
