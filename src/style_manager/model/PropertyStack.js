@@ -20,8 +20,11 @@ export default Property.extend({
     // Array of layers (which contain properties)
     layers: [],
 
-    // The separator used to join layer values
+    // The separator used to split layer values
     layerSeparator: ', ',
+
+    // The separator used to join layer values
+    layerJoin: ', ',
 
     // Prepend new layers in the list
     prepend: 0,
@@ -74,6 +77,7 @@ export default Property.extend({
   },
 
   __upTargetsStyleProps(opts = {}) {
+    // TODO same as getStyleFromLayers
     if (!this.isDetached()) {
       const style = this.getProperties().reduce((acc, prop) => {
         acc[prop.getName()] = '';
@@ -269,8 +273,9 @@ export default Property.extend({
   },
 
   /**
-   * Get style object from layer values
+   * Get style object from layer
    * @param {[Layer]} layer
+   * @returns {Object} Style object
    */
   getStyleFromLayer(layer, opts = {}) {
     const sep = this.get('separator');
@@ -296,6 +301,39 @@ export default Property.extend({
           return res;
         }, {})
       : style;
+  },
+
+  /**
+   * Get style object from current layers
+   * @returns {Object} Style object
+   */
+  getStyleFromLayers() {
+    let result = {};
+    const layers = this.getLayers();
+    const styles = layers.map(l => this.getStyleFromLayer(l));
+    styles.forEach(style => {
+      keys(style).map(key => {
+        if (!result[key]) result[key] = [];
+        result[key].push(style[key]);
+      });
+    });
+    keys(result).map(key => {
+      result[key] = result[key].join(this.__getJoinLayers());
+    });
+
+    if (!this.isDetached()) {
+      const style = this.getProperties().reduce((acc, prop) => {
+        acc[prop.getName()] = '';
+        return acc;
+      }, {});
+      result = { ...result, ...style };
+    }
+
+    return result;
+  },
+
+  __getJoinLayers() {
+    return this.get('layerJoin');
   },
 
   __getFullValue() {

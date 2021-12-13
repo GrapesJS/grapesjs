@@ -178,6 +178,15 @@ describe('StyleManager properties logic', () => {
       ]);
     });
 
+    test('getStyleFromLayers', () => {
+      expect(compTypeProp.getStyleFromLayers()).toEqual({
+        [propTest]: 'valueA-1 valueB-1 valueC-1-ext, valueA-2 valueB-2 valueC-2-ext',
+        [propATest]: '',
+        [propBTest]: '',
+        [propCTest]: '',
+      });
+    });
+
     test('Layers has the right values', () => {
       expect(compTypeProp.getLayer(0).getValues()).toEqual({
         [propATest]: 'valueA-1',
