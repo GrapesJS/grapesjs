@@ -321,7 +321,9 @@ export default Property.extend({
       result[key] = result[key].join(this.__getJoinLayers());
     });
 
-    if (!this.isDetached()) {
+    if (this.isDetached()) {
+      result[this.getName()] = '';
+    } else {
       const style = this.getProperties().reduce((acc, prop) => {
         acc[prop.getName()] = '';
         return acc;
