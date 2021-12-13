@@ -93,7 +93,9 @@ describe('StyleManager properties logic', () => {
     const propATest = `${propTest}-a`;
     const propBTest = `${propTest}-b`;
     const propCTest = `${propTest}-c`;
+    const propsTest = [propATest, propBTest, propCTest];
     const propStyleValue = 'valueA-1 valueB-1 valueC-1, valueA-2 valueB-2 valueC-2';
+    const propStyleExtValue = 'valueC-1-ext, valueC-2-ext';
     let compTypeProp;
     let compTypePropInn;
 
@@ -101,6 +103,7 @@ describe('StyleManager properties logic', () => {
       rule1 = cssc.addRules(`
         .cls {
             ${propTest}: ${propStyleValue};
+            ${propCTest}: ${propStyleExtValue};
         }
       `)[0];
       obj.addSector(sectorTest, {
@@ -108,7 +111,7 @@ describe('StyleManager properties logic', () => {
           {
             type: 'stack',
             property: propTest,
-            properties: [{ property: propATest }, { property: propBTest }, { property: propCTest }],
+            properties: propsTest.map(property => ({ property })),
           },
         ],
       });
@@ -132,21 +135,24 @@ describe('StyleManager properties logic', () => {
       expect(compTypeProp.getSelectedLayer()).toBe(null);
     });
 
-    test('Layers has the right values', () => {
+    test.only('Layers has the right values', () => {
       expect(compTypeProp.getLayer(0).getValues()).toEqual({
         [propATest]: 'valueA-1',
         [propBTest]: 'valueB-1',
-        [propCTest]: 'valueC-1',
+        [propCTest]: 'valueC-1-ext',
       });
       expect(compTypeProp.getLayer(1).getValues()).toEqual({
         [propATest]: 'valueA-2',
         [propBTest]: 'valueB-2',
-        [propCTest]: 'valueC-2',
+        [propCTest]: 'valueC-2-ext',
       });
     });
 
     test('Updating inner property, it reflects on the rule', () => {
-      expect(rule1.getStyle()).toEqual({ [propTest]: propStyleValue });
+      expect(rule1.getStyle()).toEqual({
+        [propTest]: propStyleValue,
+        [propCTest]: propStyleExtValue,
+      });
       compTypeProp.selectLayerAt(0);
       compTypeProp.getProperty(propBTest).upValue('valueB-1-mod');
       compTypeProp.selectLayerAt(1);

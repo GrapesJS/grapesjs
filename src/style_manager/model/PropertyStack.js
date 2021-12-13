@@ -1,4 +1,4 @@
-import { keys, isUndefined } from 'underscore';
+import { keys, isUndefined, isArray, isString } from 'underscore';
 import Property from './PropertyComposite';
 import PropertyBase from './Property';
 import Layers from './Layers';
@@ -6,6 +6,13 @@ import { camelCase } from 'utils/mixins';
 
 const VALUES_REG = /,(?![^\(]*\))/;
 const PARTS_REG = /\s(?![^(]*\))/;
+
+const splitStyleName = (style, name, sep) => {
+  return (style[name] || '')
+    .split(sep)
+    .map(value => value.trim())
+    .filter(Boolean);
+};
 
 export default Property.extend({
   defaults: {
@@ -128,6 +135,49 @@ export default Property.extend({
     return fromStyle ? fromStyle(style) : style;
   },
 
+  __getLayersFromStyle(style = {}) {
+    const name = this.getName();
+    const props = this.getProperties();
+    const nameProps = props.map(prop => prop.getName());
+    const allNameProps = [name, ...nameProps];
+    const hasProps = allNameProps.some(prop => !isUndefined(style[prop]));
+
+    if (!hasProps) {
+      return [];
+    } else {
+      const fromStyle = this.get('fromStyle');
+      let result = fromStyle ? fromStyle(style, { property: this }) : [];
+
+      if (!fromStyle) {
+        const sep = this.getLayerSeparator();
+        const sepParts = this.getPartsSeparator();
+        // Get layers from the main property
+        const layers = splitStyleName(style, name, sep)
+          .map(value => value.split(sepParts))
+          .map(parts => {
+            const result = {};
+            props.forEach((prop, i) => {
+              const value = parts[i];
+              result[prop.getId()] = !isUndefined(value) ? value : prop.getDefaultValue();
+            });
+            return result;
+          });
+        // Get layers from the inner properties
+        props.forEach(prop => {
+          const id = prop.getId();
+          splitStyleName(style, prop.getName(), sep)
+            .map(value => ({ [id]: value || prop.getDefaultValue() }))
+            .forEach((inLayer, i) => {
+              layers[i] = layers[i] ? { ...layers[i], ...inLayer } : inLayer;
+            });
+        });
+        result = layers;
+      }
+
+      return isArray(result) ? result : [result];
+    }
+  },
+
   hasValue(opts) {
     return PropertyBase.prototype.hasValue.call(this, opts);
   },
@@ -235,6 +285,24 @@ export default Property.extend({
       .filter(Boolean)
       .map(v => v?.trim())
       .join(this.get('layerSeparator'));
+  },
+
+  /**
+   * Get layer sperator
+   * @return {RegExp}
+   */
+  getLayerSeparator() {
+    const sep = this.get('layerSeparator');
+    return isString(sep) ? new RegExp(`${sep}(?![^\\(]*\\))`) : sep;
+  },
+
+  /**
+   * Get layer parts sperator
+   * @return {RegExp}
+   */
+  getPartsSeparator() {
+    const sep = this.get('partsSeparator') || ' ';
+    return isString(sep) ? new RegExp(`${sep}(?![^\\(]*\\))`) : sep;
   },
 
   getLayers() {
