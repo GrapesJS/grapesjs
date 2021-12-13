@@ -55,6 +55,13 @@ export default Property.extend({
     layer.upValues({ [name]: prop.__getFullValue() });
     const value = this.__getFullValue();
     this.upValue(value, opts);
+    this.__upTargetsStyleProps(opts);
+  },
+
+  __upLayers(m, c, o) {
+    const value = this.__getFullValue();
+    this.upValue(value);
+    this.__upTargetsStyleProps(o || c);
   },
 
   __upTargets(p, opts = {}) {
@@ -66,9 +73,14 @@ export default Property.extend({
     return PropertyBase.prototype.__upTargetsStyle.call(this, style, opts);
   },
 
-  __upLayers(m, c, o) {
-    const value = this.__getFullValue();
-    this.upValue(value);
+  __upTargetsStyleProps(opts = {}) {
+    if (!this.isDetached()) {
+      const style = this.getProperties().reduce((acc, prop) => {
+        acc[prop.getName()] = '';
+        return acc;
+      }, {});
+      this.__upTargetsStyle(style, opts);
+    }
   },
 
   __upSelected({ noEvent } = {}, opts = {}) {

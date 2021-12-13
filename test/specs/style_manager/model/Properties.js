@@ -184,6 +184,9 @@ describe('StyleManager properties logic', () => {
       expect(rule1.getStyle()).toEqual({
         __p: false,
         [propTest]: 'valueA-1 valueB-1-mod valueC-1-ext, valueA-2 valueB-2 valueC-2-mod',
+        [propATest]: '',
+        [propBTest]: '',
+        [propCTest]: '',
       });
     });
 
@@ -191,7 +194,10 @@ describe('StyleManager properties logic', () => {
       compTypeProp.removeLayerAt(1);
       expect(rule1.getStyle()).toEqual({
         __p: false,
-        [propTest]: 'valueA-1 valueB-1 valueC-1',
+        [propTest]: 'valueA-1 valueB-1 valueC-1-ext',
+        [propATest]: '',
+        [propBTest]: '',
+        [propCTest]: '',
       });
     });
   });
