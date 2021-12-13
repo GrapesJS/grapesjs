@@ -200,5 +200,23 @@ describe('StyleManager properties logic', () => {
         [propCTest]: '',
       });
     });
+
+    test('Adding new layer, updates the rule', () => {
+      compTypeProp.addLayer(
+        {
+          [propATest]: 'valueA-new',
+          [propBTest]: 'valueB-new',
+          [propCTest]: 'valueC-new',
+        },
+        { at: 0 }
+      );
+      expect(rule1.getStyle()).toEqual({
+        __p: false,
+        [propTest]: `valueA-new valueB-new valueC-new, valueA-1 valueB-1 valueC-1-ext, valueA-2 valueB-2 valueC-2-ext`,
+        [propATest]: '',
+        [propBTest]: '',
+        [propCTest]: '',
+      });
+    });
   });
 });
