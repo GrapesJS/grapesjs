@@ -153,9 +153,20 @@ export default Property.extend({
   /**
    * Remove layer
    * @param {[Layer]} layer
+   * @returns {[Layer]} Removed layer
    */
   removeLayer(layer) {
-    this.get('layers').remove(layer);
+    return this.get('layers').remove(layer);
+  },
+
+  /**
+   * Remove layer at index
+   * @param {Number} index Index of the layer to remove
+   * @returns {[Layer] | null} Removed layer
+   */
+  removeLayerAt(index = 0) {
+    const layer = this.getLayer(index);
+    return layer ? this.removeLayer(layer) : null;
   },
 
   /**

@@ -156,5 +156,13 @@ describe('StyleManager properties logic', () => {
         [propTest]: 'valueA-1 valueB-1-mod valueC-1, valueA-2 valueB-2 valueC-2-mod',
       });
     });
+
+    test('Removing layer, updates the rule', () => {
+      compTypeProp.removeLayerAt(1);
+      expect(rule1.getStyle()).toEqual({
+        __p: false,
+        [propTest]: 'valueA-1 valueB-1 valueC-1',
+      });
+    });
   });
 });
