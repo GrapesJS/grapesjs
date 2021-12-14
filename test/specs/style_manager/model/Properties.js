@@ -224,6 +224,25 @@ describe('StyleManager properties logic', () => {
       });
     });
 
+    test('Updating the rule reflects in layers', () => {
+      rule1.setStyle({
+        [propTest]: 'valueAa-1 valueBb-1 valueCc-1, valueAa-2 valueBb-2 valueCc-2',
+        [propBTest]: 'valueB-1-ext, valueB-2-ext',
+      });
+      obj.__upSel();
+      expect(compTypeProp.getLayers().length).toBe(2);
+      expect(compTypeProp.getLayer(0).getValues()).toEqual({
+        [propATest]: 'valueAa-1',
+        [propBTest]: 'valueB-1-ext',
+        [propCTest]: 'valueCc-1',
+      });
+      expect(compTypeProp.getLayer(1).getValues()).toEqual({
+        [propATest]: 'valueAa-2',
+        [propBTest]: 'valueB-2-ext',
+        [propCTest]: 'valueCc-2',
+      });
+    });
+
     test('Updating inner property, it reflects on the rule', () => {
       expect(rule1.getStyle()).toEqual({
         [propTest]: propStyleValue,
