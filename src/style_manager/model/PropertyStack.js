@@ -35,6 +35,9 @@ export default Property.extend({
     // Parse single layer value string
     parseLayer: null,
 
+    // Custom layer label function
+    layerLabel: null,
+
     // Current selected layer
     selectedLayer: null,
   },
@@ -241,6 +244,33 @@ export default Property.extend({
   selectLayerAt(index = 0) {
     const layer = this.getLayer(index);
     return layer && this.selectLayer(layer);
+  },
+
+  /**
+   * Get layer label
+   * @param {[Layer]} layer
+   * @returns {String}
+   */
+  getLayerLabel(layer) {
+    let result = '';
+
+    if (layer) {
+      const layerLabel = this.get('layerLabel');
+      const values = layer.getValues();
+      const index = layer.getIndex();
+
+      if (layerLabel) {
+        result = layerLabel(layer, { index, values });
+      } else {
+        const parts = [];
+        this.getProperties().map(prop => {
+          parts.push(values[prop.getId()]);
+        });
+        result = parts.filter(Boolean).join(' ');
+      }
+    }
+
+    return result;
   },
 
   /**
