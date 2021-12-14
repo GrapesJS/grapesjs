@@ -173,14 +173,13 @@ export default Property.extend({
       return [];
     } else {
       const sep = this.getLayerSeparator();
-      const sepParts = this.getPartsSeparator();
       const fromStyle = this.get('fromStyle');
       let result = fromStyle ? fromStyle(style, { property: this, separatorLayers: sep }) : [];
 
       if (!fromStyle) {
         // Get layers from the main property
         const layers = splitStyleName(style, name, sep)
-          .map(value => value.split(sepParts))
+          .map(value => value.split(this.getSplitSeparator()))
           .map(parts => {
             const result = {};
             props.forEach((prop, i) => {
@@ -281,11 +280,12 @@ export default Property.extend({
     const join = this.__getJoin();
     const joinLayers = this.__getJoinLayers();
     const toStyle = this.get('toStyle');
+    const name = this.getName();
     const values = layer.getValues();
     let style;
 
     if (toStyle) {
-      style = toStyle(values, { join, joinLayers });
+      style = toStyle(values, { join, joinLayers, name, property: this });
     } else {
       const result = this.getProperties().map(prop => {
         const name = prop.getName();
@@ -364,15 +364,6 @@ export default Property.extend({
    */
   getLayerSeparator() {
     const sep = this.get('layerSeparator');
-    return isString(sep) ? new RegExp(`${sep}(?![^\\(]*\\))`) : sep;
-  },
-
-  /**
-   * Get layer parts sperator
-   * @return {RegExp}
-   */
-  getPartsSeparator() {
-    const sep = this.get('partsSeparator') || ' ';
     return isString(sep) ? new RegExp(`${sep}(?![^\\(]*\\))`) : sep;
   },
 
