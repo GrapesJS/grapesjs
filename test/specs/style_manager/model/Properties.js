@@ -289,7 +289,7 @@ describe('StyleManager properties logic', () => {
       });
     });
 
-    test.skip('On clear removes all values', () => {
+    test('On clear removes all values', () => {
       compTypeProp.clear();
       expect(compTypeProp.hasValue()).toBe(false);
       expect(compTypeProp.getLayers().length).toBe(0);

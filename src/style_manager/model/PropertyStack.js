@@ -429,6 +429,16 @@ export default Property.extend({
   },
 
   /**
+   * Extended
+   * @private
+   */
+  clear(opts = {}) {
+    this.getLayers().reset();
+    this.__upTargetsStyleProps(opts);
+    return PropertyBase.prototype.clear.call(this);
+  },
+
+  /**
    * This method allows to customize layers returned from the target
    * @param  {Object} target
    * @return {Array} Should return an array of layers
