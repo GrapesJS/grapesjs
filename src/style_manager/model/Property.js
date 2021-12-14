@@ -123,12 +123,12 @@ export default class Property extends Model {
   }
 
   upValue(value, opts) {
-    const parsed = value === null || value === '' ? this.__getClearProps() : this.__parseValue(value);
+    const parsed = value === null || value === '' ? this.__getClearProps() : this.__parseValue(value, opts);
     return this._up(parsed, opts);
   }
 
-  __parseValue(value) {
-    return this.parseValue(value);
+  __parseValue(value, opts) {
+    return this.parseValue(value, opts);
   }
 
   __getClearProps() {

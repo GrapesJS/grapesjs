@@ -19,7 +19,7 @@ export default Property.extend({
     min: '',
 
     // Maximum value
-    max: ''
+    max: '',
   },
 
   /**
@@ -66,14 +66,15 @@ export default Property.extend({
   __getClearProps() {
     return {
       ...Property.prototype.__getClearProps(),
-      unit: ''
+      unit: '',
     };
   },
 
-  parseValue(val) {
+  parseValue(val, opts = {}) {
     const parsed = Property.prototype.parseValue.apply(this, arguments);
     const { value, unit } = this.input.validateInputValue(parsed.value, {
-      deepCheck: 1
+      deepCheck: 1,
+      ...opts,
     });
     parsed.value = value;
     parsed.unit = unit;
@@ -87,5 +88,5 @@ export default Property.extend({
     unit = !isUndefined(unit) && value ? unit : '';
     value = `${value}${unit}`;
     return Property.prototype.getFullValue.apply(this, [value]);
-  }
+  },
 });

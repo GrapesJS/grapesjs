@@ -12,7 +12,7 @@ export default Input.extend({
     'click [data-arrow-up]': 'upArrowClick',
     'click [data-arrow-down]': 'downArrowClick',
     'mousedown [data-arrows]': 'downIncrement',
-    keydown: 'handleKeyDown'
+    keydown: 'handleKeyDown',
   },
 
   template() {
@@ -132,9 +132,7 @@ export default Input.extend({
         });
 
         const temp = document.createElement('div');
-        temp.innerHTML = `<select class="${this.ppfx}input-unit">${options.join(
-          ''
-        )}</select>`;
+        temp.innerHTML = `<select class="${this.ppfx}input-unit">${options.join('')}</select>`;
         this.unitEl = temp.firstChild;
       }
     }
@@ -241,7 +239,7 @@ export default Input.extend({
    * @param {Object} opts Options
    * @return {Object} Validated string
    */
-  validateInputValue(value, opts) {
+  validateInputValue(value, opts = {}) {
     var force = 0;
     var opt = opts || {};
     var model = this.model;
@@ -249,8 +247,8 @@ export default Input.extend({
     var val = !isUndefined(value) ? value : defValue;
     var units = model.get('units') || [];
     var unit = model.get('unit') || (units.length && units[0]) || '';
-    var max = model.get('max');
-    var min = model.get('min');
+    var max = !isUndefined(opts.max) ? opts.max : model.get('max');
+    var min = !isUndefined(opts.min) ? opts.min : model.get('min');
     var limitlessMax = !!model.get('limitlessMax');
     var limitlessMin = !!model.get('limitlessMin');
 
@@ -276,15 +274,13 @@ export default Input.extend({
       }
     }
 
-    if (!limitlessMax && !isUndefined(max) && max !== '')
-      val = val > max ? max : val;
-    if (!limitlessMin && !isUndefined(min) && min !== '')
-      val = val < min ? min : val;
+    if (!limitlessMax && !isUndefined(max) && max !== '') val = val > max ? max : val;
+    if (!limitlessMin && !isUndefined(min) && min !== '') val = val < min ? min : val;
 
     return {
       force,
       value: val,
-      unit
+      unit,
     };
   },
 
@@ -292,11 +288,7 @@ export default Input.extend({
     Input.prototype.render.call(this);
     this.unitEl = null;
     const unit = this.getUnitEl();
-    unit &&
-      this.$el
-        .find(`.${this.ppfx}field-units`)
-        .get(0)
-        .appendChild(unit);
+    unit && this.$el.find(`.${this.ppfx}field-units`).get(0).appendChild(unit);
     return this;
-  }
+  },
 });
