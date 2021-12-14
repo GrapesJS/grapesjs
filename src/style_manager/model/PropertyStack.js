@@ -278,22 +278,30 @@ export default Property.extend({
    * @returns {Object} Style object
    */
   getStyleFromLayer(layer, opts = {}) {
-    const sep = this.get('separator');
+    const join = this.__getJoin();
+    const joinLayers = this.__getJoinLayers();
+    const toStyle = this.get('toStyle');
     const values = layer.getValues();
-    const result = this.getProperties().map(prop => {
-      const name = prop.getName();
-      const val = values[name];
-      const value = isUndefined(val) ? prop.getDefaultValue() : val;
-      return { name, value };
-    });
-    const style = this.get('detached')
-      ? result.reduce((acc, item) => {
-          acc[item.name] = item.value;
-          return acc;
-        }, {})
-      : {
-          [this.getName()]: result.map(r => r.value).join(sep),
-        };
+    let style;
+
+    if (toStyle) {
+      style = toStyle(values, { join, joinLayers });
+    } else {
+      const result = this.getProperties().map(prop => {
+        const name = prop.getName();
+        const val = values[name];
+        const value = isUndefined(val) ? prop.getDefaultValue() : val;
+        return { name, value };
+      });
+      style = this.get('detached')
+        ? result.reduce((acc, item) => {
+            acc[item.name] = item.value;
+            return acc;
+          }, {})
+        : {
+            [this.getName()]: result.map(r => r.value).join(join),
+          };
+    }
 
     return opts.camelCase
       ? Object.keys(style).reduce((res, key) => {

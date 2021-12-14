@@ -197,6 +197,20 @@ describe('StyleManager properties logic', () => {
       });
     });
 
+    test('Custom toStyle', () => {
+      compTypeProp.set('toStyle', values => {
+        return {
+          [propTest]: `rgba(${values[propATest]}, ${values[propBTest]}, ${values[propCTest]})`,
+        };
+      });
+      expect(compTypeProp.getStyleFromLayers()).toEqual({
+        [propTest]: 'rgba(valueA-1, valueB-1, valueC-1-ext), rgba(valueA-2, valueB-2, valueC-2-ext)',
+        [propATest]: '',
+        [propBTest]: '',
+        [propCTest]: '',
+      });
+    });
+
     test('Layers has the right values', () => {
       expect(compTypeProp.getLayer(0).getValues()).toEqual({
         [propATest]: 'valueA-1',
