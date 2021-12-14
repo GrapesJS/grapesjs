@@ -63,7 +63,7 @@ describe('StyleManager properties logic', () => {
       expect(compTypePropInn).toBeTruthy();
     });
 
-    test('Inner property has no value', () => {
+    test('Property has no value', () => {
       expect(compTypeProp.hasValue()).toBe(false);
       expect(compTypePropInn.hasValue()).toBe(false);
     });
@@ -88,7 +88,7 @@ describe('StyleManager properties logic', () => {
     });
   });
 
-  describe('Stack type (not detached)', () => {
+  describe('Stack type', () => {
     const propTest = 'stack-prop';
     const propATest = `${propTest}-a`;
     const propBTest = `${propTest}-b`;
@@ -129,6 +129,10 @@ describe('StyleManager properties logic', () => {
 
     test('Has the right number of layers', () => {
       expect(compTypeProp.getLayers().length).toBe(2);
+    });
+
+    test('Property has no value', () => {
+      expect(compTypeProp.hasValue()).toBe(true);
     });
 
     test('Has no selected layer', () => {
@@ -275,6 +279,19 @@ describe('StyleManager properties logic', () => {
     test('Removing all layers', () => {
       compTypeProp.removeLayerAt(1);
       compTypeProp.removeLayerAt(0);
+      expect(compTypeProp.getLayers().length).toBe(0);
+      expect(rule1.getStyle()).toEqual({
+        __p: false,
+        [propTest]: '',
+        [propATest]: '',
+        [propBTest]: '',
+        [propCTest]: '',
+      });
+    });
+
+    test.skip('On clear removes all values', () => {
+      compTypeProp.clear();
+      expect(compTypeProp.hasValue()).toBe(false);
       expect(compTypeProp.getLayers().length).toBe(0);
       expect(rule1.getStyle()).toEqual({
         __p: false,

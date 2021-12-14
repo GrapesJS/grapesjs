@@ -419,6 +419,16 @@ export default Property.extend({
   },
 
   /**
+   * Extended
+   * @private
+   */
+  hasValue(opts = {}) {
+    const { noParent } = opts;
+    const parentValue = noParent && this.getParentTarget();
+    return this.getLayers().length > 0 && !parentValue;
+  },
+
+  /**
    * This method allows to customize layers returned from the target
    * @param  {Object} target
    * @return {Array} Should return an array of layers
