@@ -5,7 +5,7 @@ export default class PropertyRadio extends Property {
     return {
       ...Property.prototype.defaults,
       options: [], // Array of options, eg. [{ id: '100', label: 'Set 100' }]
-      full: 1
+      full: 1,
     };
   }
 
@@ -17,6 +17,15 @@ export default class PropertyRadio extends Property {
     // support old list property
     const { options, list } = this.attributes;
     return (options && options.length ? options : list) || [];
+  }
+
+  /**
+   * Get current selected option.
+   * @returns {Object | null}
+   */
+  getOption() {
+    const id = this.getValue();
+    return this.getOptions().filter(o => this.getOptionId(o) === id)[0] || null;
   }
 
   /**
@@ -62,9 +71,7 @@ export default class PropertyRadio extends Property {
     const option = options.filter(o => this.getOptionId(o) === id)[0] || {};
     const label = option.label || option.name || id;
     const propId = this.getId();
-    return (
-      (locale && this.em?.t(`styleManager.options.${propId}.${id}`)) || label
-    );
+    return (locale && this.em?.t(`styleManager.options.${propId}.${id}`)) || label;
   }
 
   initialize(...args) {
