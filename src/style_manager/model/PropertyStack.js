@@ -56,8 +56,8 @@ export default Property.extend({
     if (opts.__up || !layer) return;
     const name = prop.getName();
     layer.upValues({ [name]: prop.__getFullValue() });
-    const value = this.__getFullValue();
-    this.upValue(value, opts);
+    // const value = this.__getFullValue();
+    // this.upValue(value, opts);
     this.__upTargetsStyleProps(opts);
   },
 
@@ -329,14 +329,9 @@ export default Property.extend({
 
   __getFullValue() {
     if (this.get('detached')) return '';
-    const name = this.getName();
+    const style = this.getStyleFromLayers();
 
-    return this.getLayers()
-      .map(l => this.getStyleFromLayer(l))
-      .map(s => s[name])
-      .filter(Boolean)
-      .map(v => v?.trim())
-      .join(this.get('layerSeparator'));
+    return style[this.getName()];
   },
 
   /**
