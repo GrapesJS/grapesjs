@@ -24,7 +24,7 @@ export default Property.extend({
     layerSeparator: ', ',
 
     // The separator used to join layer values
-    layerJoin: ', ',
+    layerJoin: '',
 
     // Prepend new layers in the list
     prepend: 0,
@@ -328,6 +328,7 @@ export default Property.extend({
    */
   getStyleFromLayers() {
     let result = {};
+    const name = this.getName();
     const layers = this.getLayers();
     const styles = layers.map(l => this.getStyleFromLayer(l));
     styles.forEach(style => {
@@ -341,12 +342,13 @@ export default Property.extend({
     });
 
     if (this.isDetached()) {
-      result[this.getName()] = '';
+      result[name] = '';
     } else {
       const style = this.getProperties().reduce((acc, prop) => {
         acc[prop.getName()] = '';
         return acc;
       }, {});
+      result[name] = result[name] || '';
       result = { ...result, ...style };
     }
 
@@ -354,7 +356,10 @@ export default Property.extend({
   },
 
   __getJoinLayers() {
-    return this.get('layerJoin');
+    const join = this.get('layerJoin');
+    const sep = this.get('layerSeparator');
+
+    return join || (isString(sep) ? sep : join);
   },
 
   __getFullValue() {

@@ -272,6 +272,19 @@ describe('StyleManager properties logic', () => {
       });
     });
 
+    test('Removing all layers', () => {
+      compTypeProp.removeLayerAt(1);
+      compTypeProp.removeLayerAt(0);
+      expect(compTypeProp.getLayers().length).toBe(0);
+      expect(rule1.getStyle()).toEqual({
+        __p: false,
+        [propTest]: '',
+        [propATest]: '',
+        [propBTest]: '',
+        [propCTest]: '',
+      });
+    });
+
     test('Adding new layer, updates the rule', () => {
       compTypeProp.addLayer(
         {
