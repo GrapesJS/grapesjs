@@ -62,8 +62,6 @@ export default Property.extend({
   },
 
   __upLayers(m, c, o) {
-    const value = this.__getFullValue();
-    this.upValue(value);
     this.__upTargetsStyleProps(o || c);
   },
 
@@ -72,19 +70,12 @@ export default Property.extend({
     return PropertyBase.prototype.__upTargets.call(this, p, opts);
   },
 
-  __upTargetsStyle(style, opts) {
-    return PropertyBase.prototype.__upTargetsStyle.call(this, style, opts);
+  __upTargetsStyleProps(opts = {}) {
+    this.__upTargetsStyle(this.getStyleFromLayers(), opts);
   },
 
-  __upTargetsStyleProps(opts = {}) {
-    // TODO same as getStyleFromLayers
-    if (!this.isDetached()) {
-      const style = this.getProperties().reduce((acc, prop) => {
-        acc[prop.getName()] = '';
-        return acc;
-      }, {});
-      this.__upTargetsStyle(style, opts);
-    }
+  __upTargetsStyle(style, opts) {
+    return PropertyBase.prototype.__upTargetsStyle.call(this, style, opts);
   },
 
   __upSelected({ noEvent } = {}, opts = {}) {
@@ -106,17 +97,7 @@ export default Property.extend({
 
   _up(props, opts = {}) {
     const { __layers = [], ...rest } = props;
-    const layers = this.getLayers();
-    const layersNew = __layers.map(values => ({ values }));
-
-    if (layers.length === layersNew.length) {
-      layersNew.map((layer, n) => {
-        layers.at(n)?.upValues(layer.values);
-      });
-    } else {
-      this.getLayers().reset(layersNew);
-    }
-
+    this.__setLayers(__layers);
     this.__upSelected({ noEvent: true }, opts);
     return Property.prototype._up.call(this, rest, opts);
   },
