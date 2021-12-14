@@ -151,10 +151,10 @@ export default Property.extend({
     const props = this.getProperties();
     const nameProps = props.map(prop => prop.getName());
     const allNameProps = [name, ...nameProps];
-    const hasProps = allNameProps.some(prop => !isUndefined(style[prop]));
+    const hasProps = allNameProps.some(prop => !isUndefined(style[prop]) && style[prop] !== '');
 
     if (!hasProps) {
-      return [];
+      return null;
     } else {
       const sep = this.getLayerSeparator();
       const fromStyle = this.get('fromStyle');

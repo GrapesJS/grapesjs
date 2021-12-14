@@ -163,6 +163,11 @@ describe('StyleManager properties logic', () => {
       ]);
     });
 
+    test('getLayersFromStyle with empty values', () => {
+      expect(compTypeProp.__getLayersFromStyle({ [propTest]: '' })).toBe(null);
+      expect(compTypeProp.__getLayersFromStyle({ color: 'red' })).toBe(null);
+    });
+
     test('Custom fromStyle', () => {
       compTypeProp.set('fromStyle', (style, { separatorLayers }) => {
         const layerValues = style[propTest].split(separatorLayers);
@@ -300,6 +305,22 @@ describe('StyleManager properties logic', () => {
         [propBTest]: '',
         [propCTest]: '',
       });
+    });
+
+    test('Get the values from parent style', () => {
+      const rule2 = cssc.addRules(`
+        @media (max-width: 992px) {
+            .cls { color: red; }
+        }
+      `)[0];
+      dv.select('tablet');
+      obj.__upSel();
+      expect(obj.getLastSelected()).toBe(rule2);
+      expect(obj.getSelectedParents()).toEqual([rule1]);
+
+      expect(compTypeProp.hasValue()).toBe(true);
+      expect(compTypeProp.hasValue({ noParent: true })).toBe(false);
+      expect(compTypeProp.getLayers().length).toBe(2);
     });
 
     test('Adding new layer, updates the rule', () => {

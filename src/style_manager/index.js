@@ -569,17 +569,13 @@ export default () => {
           this.__upProp(prop, style, parentStyles, opts);
           const props = prop.getProperties?.();
 
-          if (props) {
-            if (prop.getType() === 'stack') {
-              prop.__setLayers(prop.__getLayersFromStyle(style));
-            } else {
-              const newStyle = prop.__getFromStyle(style);
-              const newParentStyles = parentStyles.map(p => ({
-                ...p,
-                style: prop.__getFromStyle(p.style),
-              }));
-              props.forEach(prop => this.__upProp(prop, newStyle, newParentStyles, opts));
-            }
+          if (props && prop.getType() !== 'stack') {
+            const newStyle = prop.__getFromStyle(style);
+            const newParentStyles = parentStyles.map(p => ({
+              ...p,
+              style: prop.__getFromStyle(p.style),
+            }));
+            props.forEach(prop => this.__upProp(prop, newStyle, newParentStyles, opts));
           }
         });
       });
@@ -593,10 +589,20 @@ export default () => {
       const name = prop.getName();
       const value = style[name];
       const hasVal = propDef(value);
+      const isStack = prop.getType() === 'stack';
+      let newLayers = isStack ? prop.__getLayersFromStyle(style) : [];
       let newValue = hasVal ? value : null;
       let parentTarget = null;
 
-      if (!hasVal) {
+      if (isStack && newLayers === null) {
+        const parentItem = parentStyles.filter(p => prop.__getLayersFromStyle(p.style) !== null)[0];
+
+        if (parentItem) {
+          newValue = parentItem.style[name];
+          parentTarget = parentItem.target;
+          newLayers = prop.__getLayersFromStyle(parentItem.style);
+        }
+      } else if (!hasVal) {
         newValue = null;
         const parentItem = parentStyles.filter(p => propDef(p.style[name]))[0];
 
@@ -608,6 +614,7 @@ export default () => {
 
       prop.__setParentTarget(parentTarget);
       prop.__getFullValue() !== newValue && prop.upValue(newValue, { ...opts, __up: true });
+      isStack && prop.__setLayers(newLayers || []);
     },
 
     destroy() {
