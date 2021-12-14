@@ -109,7 +109,11 @@ export default () => {
         this.__upProps();
         this.__trgCustom();
       });
-      this.model.listenTo(em, `styleable:change ${evLayerSelect}`, upProps);
+      this.model.listenTo(em, 'styleable:change', upProps);
+
+      // Triggers only custom event
+      const trgCustom = debounce(() => this.__trgCustom());
+      this.model.listenTo(em, evLayerSelect, trgCustom);
 
       return this;
     },

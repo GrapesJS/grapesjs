@@ -32,9 +32,6 @@ export default Property.extend({
     // Layer preview
     preview: 0,
 
-    // Parse single layer value string
-    parseLayer: null,
-
     // Custom layer label function
     layerLabel: null,
 
@@ -59,8 +56,6 @@ export default Property.extend({
     if (opts.__up || !layer) return;
     const name = prop.getName();
     layer.upValues({ [name]: prop.__getFullValue() });
-    // const value = this.__getFullValue();
-    // this.upValue(value, opts);
     this.__upTargetsStyleProps(opts);
   },
 
@@ -90,8 +85,7 @@ export default Property.extend({
     // Update properties by layer value
     values &&
       this.getProperties().forEach(prop => {
-        const name = prop.getName();
-        const value = values[name];
+        const value = values[prop.getId()];
         !isUndefined(value) && prop.upValue(value, { ...opts, __up: true });
       });
 
