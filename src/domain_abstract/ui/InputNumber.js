@@ -245,7 +245,7 @@ export default Input.extend({
     var model = this.model;
     const defValue = ''; //model.get('defaults');
     var val = !isUndefined(value) ? value : defValue;
-    var units = model.get('units') || [];
+    var units = opts.units || model.get('units') || [];
     var unit = model.get('unit') || (units.length && units[0]) || '';
     var max = !isUndefined(opts.max) ? opts.max : model.get('max');
     var min = !isUndefined(opts.min) ? opts.min : model.get('min');
