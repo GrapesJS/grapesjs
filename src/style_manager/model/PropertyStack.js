@@ -254,7 +254,7 @@ export default Property.extend({
       const index = layer.getIndex();
 
       if (layerLabel) {
-        result = layerLabel(layer, { index, values });
+        result = layerLabel(layer, { index, values, property: this });
       } else {
         const parts = [];
         this.getProperties().map(prop => {
