@@ -163,10 +163,6 @@ export default Property.extend({
     return isArray(result) ? result : [result];
   },
 
-  hasValue(opts) {
-    return PropertyBase.prototype.hasValue.call(this, opts);
-  },
-
   /**
    * Add new layer to the stack
    * @param {Object} [props={}] Layer props

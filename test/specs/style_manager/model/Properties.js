@@ -184,6 +184,53 @@ describe('StyleManager properties logic', () => {
       });
     });
 
+    test('On clear removes all values', () => {
+      rule1.setStyle({ padding: '1px 2px 3px 4px' });
+      obj.__upSel();
+      expect(compTypeProp.hasValue()).toBe(true);
+
+      compTypeProp.clear();
+      expect(compTypeProp.hasValue()).toBe(false);
+      expect(rule1.getStyle()).toEqual({
+        __p: false,
+        [propTest]: '',
+        [propATest]: '',
+        [propBTest]: '',
+        [propCTest]: '',
+        [propDTest]: '',
+      });
+    });
+
+    test('Get the values from parent style', () => {
+      rule1.setStyle({
+        padding: '11px 22px',
+        'padding-left': '44px',
+      });
+      const rule2 = cssc.addRules(`
+        @media (max-width: 992px) {
+          .cls { color: red; }
+        }
+      `)[0];
+      dv.select('tablet');
+      obj.__upSel();
+      expect(obj.getLastSelected()).toBe(rule2);
+      expect(obj.getSelectedParents()).toEqual([rule1]);
+
+      expect(compTypeProp.hasValue()).toBe(true);
+      expect(compTypeProp.hasValue({ noParent: true })).toBe(false);
+      [
+        [propATest, '11px'],
+        [propBTest, '22px'],
+        [propCTest, '11px'],
+        [propDTest, '44px'],
+      ].forEach(item => {
+        const prop = compTypeProp.getProperty(item[0]);
+        expect(prop.hasValue()).toBe(true);
+        expect(prop.hasValue({ noParent: true })).toBe(false);
+        expect(prop.getFullValue()).toBe(item[1]);
+      });
+    });
+
     test('getStyleFromProps with custom toStyle', () => {
       rule1.setStyle({ padding: '1px 2px 3px 4px' });
       obj.__upSel();

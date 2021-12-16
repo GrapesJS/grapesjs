@@ -617,7 +617,10 @@ export default () => {
       prop.__setParentTarget(parentTarget);
       prop.__getFullValue() !== newValue && prop.upValue(newValue, { ...opts, __up: true });
       isStack && prop.__setLayers(newLayers || []);
-      isComposite && prop.__setProperties(newProps || {});
+      if (isComposite) {
+        prop.__setProperties(newProps || {});
+        prop.getProperties().map(pr => pr.__setParentTarget(parentTarget));
+      }
     },
 
     destroy() {
