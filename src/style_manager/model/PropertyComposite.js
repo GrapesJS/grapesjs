@@ -93,20 +93,27 @@ export default Property.extend({
       values = this.getValues({ byName: true });
 
       if (this.isDetached()) {
-        style = { [name]: '', ...values };
+        style = values;
       } else {
         const value = this.getProperties()
           .map(p => p.__getFullValue({ withDefault: 1 }))
           .filter(Boolean)
           .join(join);
-        style = {
-          [name]: value,
-          ...Object.keys(values).reduce((acc, prop) => {
-            acc[prop] = '';
-            return acc;
-          }, {}),
-        };
+        style = { [name]: value };
       }
+    }
+
+    if (this.isDetached()) {
+      style[name] = '';
+    } else {
+      style[name] = style[name] || '';
+      style = {
+        ...style,
+        ...this.getProperties().reduce((acc, prop) => {
+          acc[prop.getName()] = '';
+          return acc;
+        }, {}),
+      };
     }
 
     return opts.camelCase

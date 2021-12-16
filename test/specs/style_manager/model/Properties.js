@@ -172,6 +172,24 @@ describe('StyleManager properties logic', () => {
       });
     });
 
+    test('getStyleFromProps with custom toStyle', () => {
+      rule1.setStyle({ padding: '1px 2px 3px 4px' });
+      obj.__upSel();
+      compTypeProp.set('toStyle', values => {
+        return {
+          [propTest]: `rgba(${values[propATest]}, ${values[propBTest]}, ${values[propDTest]})`,
+        };
+      });
+      compTypeProp.set('detached', false);
+      expect(compTypeProp.getStyleFromProps()).toEqual({
+        [propTest]: 'rgba(1px, 2px, 4px)',
+        [propATest]: '',
+        [propBTest]: '',
+        [propCTest]: '',
+        [propDTest]: '',
+      });
+    });
+
     test('Update on properties reflects to the rule correctly', () => {
       compTypeProp.set('detached', false);
       rule1.setStyle({ padding: '1px 2px 3px 4px' });
