@@ -1,4 +1,4 @@
-import { isString } from 'underscore';
+import { isString, isUndefined } from 'underscore';
 import Property from './Property';
 
 export default Property.extend({
@@ -92,17 +92,19 @@ export default Property.extend({
     return isString(join) ? join : this.get('separator');
   },
 
+  // TODO remove
   __getFromStyle(style = {}) {
     let result = {};
     const fromStyle = this.get('fromStyle');
+    const sep = this.getSplitSeparator();
+    const name = this.getName();
 
     if (fromStyle) {
-      result = fromStyle(style);
+      result = fromStyle(style, { property: this, separator: sep });
     } else {
-      const name = this.getName();
       const value = style[name];
       if (value) {
-        const values = value.split(this.getSplitSeparator());
+        const values = value.split(sep);
         this.getProperties().forEach((prop, i) => {
           const len = values.length;
           // Try to get value from a shorthand:
@@ -118,6 +120,59 @@ export default Property.extend({
       } else {
         result = style;
       }
+    }
+
+    return result;
+  },
+
+  __styleHasProps(style = {}) {
+    const name = this.getName();
+    const props = this.getProperties();
+    const nameProps = props.map(prop => prop.getName());
+    const allNameProps = [name, ...nameProps];
+    return allNameProps.some(prop => !isUndefined(style[prop]) && style[prop] !== '');
+  },
+
+  __splitStyleName(style, name, sep) {
+    return (style[name] || '')
+      .split(sep)
+      .map(value => value.trim())
+      .filter(Boolean);
+  },
+
+  __getPropsFromStyle(style = {}) {
+    if (!this.__styleHasProps(style)) return null;
+
+    const props = this.getProperties();
+    const sep = this.getSplitSeparator();
+    const fromStyle = this.get('fromStyle');
+    let result = fromStyle ? fromStyle(style, { property: this, separator: sep }) : {};
+
+    if (!fromStyle) {
+      const props4Nums = props.length === 4 && props.every(prop => prop.getType() === 'integer');
+
+      // Get props from the main property
+      const values = this.__splitStyleName(style, this.getName(), sep);
+      props.forEach((prop, i) => {
+        const value = values[i];
+        let res = !isUndefined(value) ? value : prop.getDefaultValue();
+
+        if (props4Nums) {
+          // Try to get value from a shorthand:
+          // 11px -> 11px 11px 11px 11xp
+          // 11px 22px -> 11px 22px 11px 22xp
+          const len = values.length;
+          res = values[i] || values[(i % len) + (len != 1 && len % 2 ? 1 : 0)] || res;
+        }
+
+        result[prop.getId()] = res || '';
+      });
+
+      // Get props from the inner properties
+      props.forEach(prop => {
+        const value = style[prop.getName()];
+        if (!isUndefined(value) && value !== '') result[prop.getId()] = value;
+      });
     }
 
     return result;

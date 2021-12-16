@@ -34,7 +34,10 @@ describe('StyleManager properties logic', () => {
 
   describe('Composite type', () => {
     const propTest = 'padding';
-    const propInTest = 'padding-top';
+    const propATest = `${propTest}-top`;
+    const propBTest = `${propTest}-right`;
+    const propCTest = `${propTest}-bottom`;
+    const propDTest = `${propTest}-left`;
     let compTypeProp;
     let compTypePropInn;
 
@@ -49,7 +52,7 @@ describe('StyleManager properties logic', () => {
         ],
       });
       compTypeProp = obj.getProperty(sectorTest, propTest);
-      compTypePropInn = compTypeProp.getProperty(propInTest);
+      compTypePropInn = compTypeProp.getProperty(propATest);
       em.setSelected(cmp);
       obj.__upSel();
     });
@@ -72,11 +75,86 @@ describe('StyleManager properties logic', () => {
       expect(obj.getLastSelected()).toBe(rule1);
     });
 
+    test('Properties correctly reflect on rule update', () => {
+      compTypeProp.set('detached', false);
+      rule1.setStyle({ padding: '1px 2px 3px 4px' });
+      obj.__upSel();
+      [
+        [propATest, '1px'],
+        [propBTest, '2px'],
+        [propCTest, '3px'],
+        [propDTest, '4px'],
+      ].forEach(item => {
+        expect(compTypeProp.getProperty(item[0]).getFullValue()).toBe(item[1]);
+      });
+    });
+
+    test('getPropsFromStyle returns correct values', () => {
+      expect(
+        compTypeProp.__getPropsFromStyle({
+          [propTest]: '1px 2px 3px 4px',
+          [propCTest]: '33px',
+          [propBTest]: '22%',
+        })
+      ).toEqual({
+        [propATest]: '1px',
+        [propBTest]: '22%',
+        [propCTest]: '33px',
+        [propDTest]: '4px',
+      });
+
+      // Split correctly props in 4 numeric values
+      expect(
+        compTypeProp.__getPropsFromStyle({
+          [propTest]: '111px',
+          [propCTest]: '33px',
+          [propBTest]: '22%',
+        })
+      ).toEqual({
+        [propATest]: '111px',
+        [propBTest]: '22%',
+        [propCTest]: '33px',
+        [propDTest]: '111px',
+      });
+
+      // Resolves correctly with values from inner properties
+      expect(
+        compTypeProp.__getPropsFromStyle({
+          color: 'red',
+          [propCTest]: '33px',
+        })
+      ).toEqual({
+        [propATest]: '0',
+        [propBTest]: '0',
+        [propCTest]: '33px',
+        [propDTest]: '0',
+      });
+
+      // null if no properties are found
+      expect(compTypeProp.__getPropsFromStyle({ color: 'red' })).toEqual(null);
+    });
+
+    test('Update on properties reflects to the rule correctly', () => {
+      compTypeProp.set('detached', false);
+      rule1.setStyle({ padding: '1px 2px 3px 4px' });
+      obj.__upSel();
+      compTypeProp.getProperty(propCTest).upValue('50%');
+      obj.__upSel();
+      expect(rule1.getStyle()).toEqual({
+        __p: false,
+        padding: '1px 2px 50% 4px',
+        [propATest]: '',
+        [propBTest]: '',
+        [propCTest]: '',
+        [propDTest]: '',
+      });
+    });
+
     test('Updating inner property, it reflects on the rule', () => {
       compTypePropInn.upValue('55%');
       const style = rule1.getStyle();
-      const otherProps = Object.keys(style).filter(p => p.indexOf('padding') >= 0 && p !== propInTest);
-      expect(style[propInTest]).toBe('55%');
+      const otherProps = Object.keys(style).filter(p => p.indexOf('padding') >= 0 && p !== propATest);
+      expect(style[propATest]).toBe('55%');
       expect(compTypeProp.hasValue()).toBe(true);
       expect(compTypePropInn.hasValue()).toBe(true);
       otherProps.forEach(prop => {

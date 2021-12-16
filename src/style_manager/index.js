@@ -594,7 +594,9 @@ export default () => {
       const value = style[name];
       const hasVal = propDef(value);
       const isStack = prop.getType() === 'stack';
+      const isComposite = prop.getType() === 'composite';
       let newLayers = isStack ? prop.__getLayersFromStyle(style) : [];
+      // let newProps = isComposite ? prop.__getPropsFromStyle(style) : {};
       let newValue = hasVal ? value : null;
       let parentTarget = null;
 

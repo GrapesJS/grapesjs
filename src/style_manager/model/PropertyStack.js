@@ -7,13 +7,6 @@ import { camelCase } from 'utils/mixins';
 const VALUES_REG = /,(?![^\(]*\))/;
 const PARTS_REG = /\s(?![^(]*\))/;
 
-const splitStyleName = (style, name, sep) => {
-  return (style[name] || '')
-    .split(sep)
-    .map(value => value.trim())
-    .filter(Boolean);
-};
-
 export default Property.extend({
   defaults: {
     ...Property.prototype.defaults,
@@ -141,45 +134,39 @@ export default Property.extend({
   },
 
   __getLayersFromStyle(style = {}) {
+    if (!this.__styleHasProps(style)) return null;
+
     const name = this.getName();
     const props = this.getProperties();
-    const nameProps = props.map(prop => prop.getName());
-    const allNameProps = [name, ...nameProps];
-    const hasProps = allNameProps.some(prop => !isUndefined(style[prop]) && style[prop] !== '');
+    const sep = this.getLayerSeparator();
+    const fromStyle = this.get('fromStyle');
+    let result = fromStyle ? fromStyle(style, { property: this, separatorLayers: sep }) : [];
 
-    if (!hasProps) {
-      return null;
-    } else {
-      const sep = this.getLayerSeparator();
-      const fromStyle = this.get('fromStyle');
-      let result = fromStyle ? fromStyle(style, { property: this, separatorLayers: sep }) : [];
-
-      if (!fromStyle) {
-        // Get layers from the main property
-        const layers = splitStyleName(style, name, sep)
-          .map(value => value.split(this.getSplitSeparator()))
-          .map(parts => {
-            const result = {};
-            props.forEach((prop, i) => {
-              const value = parts[i];
-              result[prop.getId()] = !isUndefined(value) ? value : prop.getDefaultValue();
-            });
-            return result;
+    if (!fromStyle) {
+      // Get layers from the main property
+      const layers = this.__splitStyleName(style, name, sep)
+        .map(value => value.split(this.getSplitSeparator()))
+        .map(parts => {
+          const result = {};
+          props.forEach((prop, i) => {
+            const value = parts[i];
+            result[prop.getId()] = !isUndefined(value) ? value : prop.getDefaultValue();
           });
-        // Get layers from the inner properties
-        props.forEach(prop => {
-          const id = prop.getId();
-          splitStyleName(style, prop.getName(), sep)
-            .map(value => ({ [id]: value || prop.getDefaultValue() }))
-            .forEach((inLayer, i) => {
-              layers[i] = layers[i] ? { ...layers[i], ...inLayer } : inLayer;
-            });
+          return result;
         });
-        result = layers;
-      }
-
-      return isArray(result) ? result : [result];
+      // Get layers from the inner properties
+      props.forEach(prop => {
+        const id = prop.getId();
+        this.__splitStyleName(style, prop.getName(), sep)
+          .map(value => ({ [id]: value || prop.getDefaultValue() }))
+          .forEach((inLayer, i) => {
+            layers[i] = layers[i] ? { ...layers[i], ...inLayer } : inLayer;
+          });
+      });
+      result = layers;
     }
+
+    return isArray(result) ? result : [result];
   },
 
   hasValue(opts) {
