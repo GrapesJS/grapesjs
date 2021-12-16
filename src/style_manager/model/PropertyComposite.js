@@ -40,47 +40,14 @@ export default Property.extend({
     Property.callInit(this, props, opts);
   },
 
-  __upProperties(prop, opts = {}) {
+  __upProperties(p, opts = {}) {
     if (!this.__hasCustom() || opts.__up || opts.__clearIn) return;
-
-    // if (this.isDetached()) {
-    //   const style = this.getProperties().reduce((acc, prop) => {
-    //     acc[prop.getName()] = prop.hasValue({ noParent: true }) ? prop.__getFullValue() : '';
-    //     return acc;
-    //   }, {});
-    //   this.__upTargetsStyle({ ...style, [prop.getName()]: prop.__getFullValue() }, opts);
-    // } else {
-    //   const { __clear, ...rest } = opts;
-    //   this.upValue(this.__getFullValue(), rest);
-    // }
-
     this.__upTargetsStyleProps(opts);
   },
 
   __upTargetsStyleProps(opts = {}) {
     this.__upTargetsStyle(this.getStyleFromProps(), opts);
   },
-
-  // __upTargetsStyle(style, opts = {}) {
-  //   const toStyle = this.get('toStyle');
-  //   const { __clear } = opts;
-  //   let newStyle = style;
-
-  //   if (toStyle && !__clear) {
-  //     const values = this.getValues();
-  //     newStyle = toStyle(values, { ...opts, style });
-  //   }
-
-  //   if (this.isDetached()) {
-  //     newStyle[this.getName()] = '';
-  //   } else {
-  //     this.getProperties().map(prop => {
-  //       newStyle[prop.getName()] = '';
-  //     });
-  //   }
-
-  //   return Property.prototype.__upTargetsStyle.call(this, newStyle, opts);
-  // },
 
   /**
    * Get style object from current properties
