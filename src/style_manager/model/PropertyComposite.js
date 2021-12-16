@@ -43,38 +43,44 @@ export default Property.extend({
   __upProperties(prop, opts = {}) {
     if (!this.__hasCustom() || opts.__up || opts.__clearIn) return;
 
-    if (this.isDetached()) {
-      const style = this.getProperties().reduce((acc, prop) => {
-        acc[prop.getName()] = prop.hasValue({ noParent: true }) ? prop.__getFullValue() : '';
-        return acc;
-      }, {});
-      this.__upTargetsStyle({ ...style, [prop.getName()]: prop.__getFullValue() }, opts);
-    } else {
-      const { __clear, ...rest } = opts;
-      this.upValue(this.__getFullValue(), rest);
-    }
+    // if (this.isDetached()) {
+    //   const style = this.getProperties().reduce((acc, prop) => {
+    //     acc[prop.getName()] = prop.hasValue({ noParent: true }) ? prop.__getFullValue() : '';
+    //     return acc;
+    //   }, {});
+    //   this.__upTargetsStyle({ ...style, [prop.getName()]: prop.__getFullValue() }, opts);
+    // } else {
+    //   const { __clear, ...rest } = opts;
+    //   this.upValue(this.__getFullValue(), rest);
+    // }
+
+    this.__upTargetsStyleProps(opts);
   },
 
-  __upTargetsStyle(style, opts = {}) {
-    const toStyle = this.get('toStyle');
-    const { __clear } = opts;
-    let newStyle = style;
-
-    if (toStyle && !__clear) {
-      const values = this.getValues();
-      newStyle = toStyle(values, { ...opts, style });
-    }
-
-    if (this.isDetached()) {
-      newStyle[this.getName()] = '';
-    } else {
-      this.getProperties().map(prop => {
-        newStyle[prop.getName()] = '';
-      });
-    }
-
-    return Property.prototype.__upTargetsStyle.call(this, newStyle, opts);
+  __upTargetsStyleProps(opts = {}) {
+    this.__upTargetsStyle(this.getStyleFromProps(), opts);
   },
+
+  // __upTargetsStyle(style, opts = {}) {
+  //   const toStyle = this.get('toStyle');
+  //   const { __clear } = opts;
+  //   let newStyle = style;
+
+  //   if (toStyle && !__clear) {
+  //     const values = this.getValues();
+  //     newStyle = toStyle(values, { ...opts, style });
+  //   }
+
+  //   if (this.isDetached()) {
+  //     newStyle[this.getName()] = '';
+  //   } else {
+  //     this.getProperties().map(prop => {
+  //       newStyle[prop.getName()] = '';
+  //     });
+  //   }
+
+  //   return Property.prototype.__upTargetsStyle.call(this, newStyle, opts);
+  // },
 
   /**
    * Get style object from current properties
@@ -165,7 +171,7 @@ export default Property.extend({
       const values = this.__splitStyleName(style, this.getName(), sep);
       props.forEach((prop, i) => {
         const value = values[i];
-        let res = !isUndefined(value) ? value : prop.getDefaultValue();
+        let res = !isUndefined(value) ? value : ''; // : prop.getDefaultValue();
 
         if (props4Nums) {
           // Try to get value from a shorthand:
@@ -213,7 +219,7 @@ export default Property.extend({
   getValues({ byName } = {}) {
     return this.getProperties().reduce((res, prop) => {
       const key = byName ? prop.getName() : prop.getId();
-      res[key] = `${prop.__getFullValue({ withDefault: 1 })}`;
+      res[key] = `${prop.__getFullValue()}`;
       return res;
     }, {});
   },

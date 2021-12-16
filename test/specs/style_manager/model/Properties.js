@@ -124,10 +124,10 @@ describe('StyleManager properties logic', () => {
           [propCTest]: '33px',
         })
       ).toEqual({
-        [propATest]: '0',
-        [propBTest]: '0',
+        [propATest]: '',
+        [propBTest]: '',
         [propCTest]: '33px',
-        [propDTest]: '0',
+        [propDTest]: '',
       });
 
       // null if no properties are found
@@ -162,11 +162,23 @@ describe('StyleManager properties logic', () => {
         [propCTest]: '3px',
         [propDTest]: '4px',
       });
+
       compTypeProp.set('detached', false);
       expect(compTypeProp.getStyleFromProps()).toEqual({
         [propTest]: '1px 2px 3px 4px',
         [propATest]: '',
         [propBTest]: '',
+        [propCTest]: '',
+        [propDTest]: '',
+      });
+
+      compTypeProp.set('detached', true);
+      rule1.setStyle({ [propATest]: '10px', [propBTest]: '20px' });
+      obj.__upSel();
+      expect(compTypeProp.getStyleFromProps()).toEqual({
+        [propTest]: '',
+        [propATest]: '10px',
+        [propBTest]: '20px',
         [propCTest]: '',
         [propDTest]: '',
       });
