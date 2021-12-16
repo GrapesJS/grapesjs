@@ -76,53 +76,56 @@ export default Property.extend({
     return Property.prototype.__upTargetsStyle.call(this, newStyle, opts);
   },
 
-  __getFullValue(opts = {}) {
-    if (this.isDetached() || opts.__clear) {
-      return '';
+  /**
+   * Get style object from current properties
+   * @returns {Object} Style object
+   */
+  getStyleFromProps(opts = {}) {
+    const name = this.getName();
+    const join = this.__getJoin();
+    const toStyle = this.get('toStyle');
+    let values = this.getValues();
+    let style = {};
+
+    if (toStyle) {
+      style = toStyle(values, { join, name, property: this });
+    } else {
+      values = this.getValues({ byName: true });
+
+      if (this.isDetached()) {
+        style = { [name]: '', ...values };
+      } else {
+        const value = this.getProperties()
+          .map(p => p.__getFullValue({ withDefault: 1 }))
+          .filter(Boolean)
+          .join(join);
+        style = {
+          [name]: value,
+          ...Object.keys(values).reduce((acc, prop) => {
+            acc[prop] = '';
+            return acc;
+          }, {}),
+        };
+      }
     }
 
-    return this.getProperties()
-      .map(p => p.__getFullValue({ withDefault: 1 }))
-      .filter(Boolean)
-      .join(this.__getJoin());
+    return opts.camelCase
+      ? Object.keys(style).reduce((res, key) => {
+          res[camelCase(key)] = style[key];
+          return res;
+        }, {})
+      : style;
+  },
+
+  __getFullValue(opts = {}) {
+    if (this.isDetached() || opts.__clear) return '';
+
+    return this.getStyleFromProps()[this.getName()] || '';
   },
 
   __getJoin() {
     const join = this.get('join');
     return isString(join) ? join : this.get('separator');
-  },
-
-  // TODO remove
-  __getFromStyle(style = {}) {
-    let result = {};
-    const fromStyle = this.get('fromStyle');
-    const sep = this.getSplitSeparator();
-    const name = this.getName();
-
-    if (fromStyle) {
-      result = fromStyle(style, { property: this, separator: sep });
-    } else {
-      const value = style[name];
-      if (value) {
-        const values = value.split(sep);
-        this.getProperties().forEach((prop, i) => {
-          const len = values.length;
-          // Try to get value from a shorthand:
-          // 11px -> 11px 11px 11px 11xp
-          // 11px 22px -> 11px 22px 11px 22xp
-          const value = values[i] || values[(i % len) + (len != 1 && len % 2 ? 1 : 0)];
-          result[prop.getId()] = value || '';
-        });
-        result = {
-          ...result,
-          ...style,
-        };
-      } else {
-        result = style;
-      }
-    }
-
-    return result;
   },
 
   __styleHasProps(style = {}) {
