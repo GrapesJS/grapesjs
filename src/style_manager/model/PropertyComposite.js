@@ -178,6 +178,13 @@ export default Property.extend({
     return result;
   },
 
+  __setProperties(values = {}, opts = {}) {
+    this.getProperties().forEach(prop => {
+      const value = values[prop.getId()];
+      !isUndefined(value) && prop.upValue(value, { ...opts, __up: true });
+    });
+  },
+
   clear() {
     this.getProperties().map(p => p.clear({ __clearIn: !this.isDetached() }));
     return Property.prototype.clear.call(this);

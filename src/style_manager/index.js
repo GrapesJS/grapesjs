@@ -571,16 +571,6 @@ export default () => {
       sectors.map(sector => {
         sector.getProperties().map(prop => {
           this.__upProp(prop, style, parentStyles, opts);
-          const props = prop.getProperties?.();
-
-          if (props && prop.getType() !== 'stack') {
-            const newStyle = prop.__getFromStyle(style);
-            const newParentStyles = parentStyles.map(p => ({
-              ...p,
-              style: prop.__getFromStyle(p.style),
-            }));
-            props.forEach(prop => this.__upProp(prop, newStyle, newParentStyles, opts));
-          }
         });
       });
     },
@@ -596,17 +586,23 @@ export default () => {
       const isStack = prop.getType() === 'stack';
       const isComposite = prop.getType() === 'composite';
       let newLayers = isStack ? prop.__getLayersFromStyle(style) : [];
-      // let newProps = isComposite ? prop.__getPropsFromStyle(style) : {};
+      let newProps = isComposite ? prop.__getPropsFromStyle(style) : {};
       let newValue = hasVal ? value : null;
       let parentTarget = null;
 
-      if (isStack && newLayers === null) {
-        const parentItem = parentStyles.filter(p => prop.__getLayersFromStyle(p.style) !== null)[0];
+      if ((isStack && newLayers === null) || (isComposite && newProps === null)) {
+        const method = isStack ? '__getLayersFromStyle' : '__getPropsFromStyle';
+        const parentItem = parentStyles.filter(p => prop[method](p.style) !== null)[0];
 
         if (parentItem) {
           newValue = parentItem.style[name];
           parentTarget = parentItem.target;
-          newLayers = prop.__getLayersFromStyle(parentItem.style);
+          const val = prop[method](parentItem.style);
+          if (isStack) {
+            newLayers = val;
+          } else {
+            newProps = val;
+          }
         }
       } else if (!hasVal) {
         newValue = null;
@@ -621,6 +617,7 @@ export default () => {
       prop.__setParentTarget(parentTarget);
       prop.__getFullValue() !== newValue && prop.upValue(newValue, { ...opts, __up: true });
       isStack && prop.__setLayers(newLayers || []);
+      isComposite && prop.__setProperties(newProps || {});
     },
 
     destroy() {

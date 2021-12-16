@@ -127,12 +127,6 @@ export default Property.extend({
         }, {});
   },
 
-  __getFromStyle(style = {}) {
-    const fromStyle = this.get('fromStyle');
-
-    return fromStyle ? fromStyle(style) : style;
-  },
-
   __getLayersFromStyle(style = {}) {
     if (!this.__styleHasProps(style)) return null;
 

@@ -134,6 +134,24 @@ describe('StyleManager properties logic', () => {
       expect(compTypeProp.__getPropsFromStyle({ color: 'red' })).toEqual(null);
     });
 
+    test('Custom fromStyle', () => {
+      compTypeProp.set('fromStyle', (style, { separator }) => {
+        const values = style[propTest].split(separator);
+        return {
+          [propATest]: values[0],
+          [propBTest]: values[1],
+        };
+      });
+      expect(
+        compTypeProp.__getPropsFromStyle({
+          [propTest]: 'rgba(valueA 1) rgba(value B)',
+        })
+      ).toEqual({
+        [propATest]: 'rgba(valueA 1)',
+        [propBTest]: 'rgba(value B)',
+      });
+    });
+
     test('Update on properties reflects to the rule correctly', () => {
       compTypeProp.set('detached', false);
       rule1.setStyle({ padding: '1px 2px 3px 4px' });
