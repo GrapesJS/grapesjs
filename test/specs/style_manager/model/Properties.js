@@ -231,6 +231,45 @@ describe('StyleManager properties logic', () => {
       });
     });
 
+    test('Parent styles are ignored if on the lower device', () => {
+      const rule2 = cssc.addRules(`
+        @media (max-width: 992px) {
+          .cls {
+            padding: 11px 22px;
+            padding-left: 44px;
+           }
+        }
+      `)[0];
+      dv.select('tablet');
+      obj.__upSel();
+      expect(obj.getLastSelected()).toBe(rule2);
+      expect(compTypeProp.hasValue({ noParent: true })).toBe(true);
+      [
+        [propATest, '11px'],
+        [propBTest, '22px'],
+        [propCTest, '11px'],
+        [propDTest, '44px'],
+      ].forEach(item => {
+        const prop = compTypeProp.getProperty(item[0]);
+        expect(prop.getFullValue()).toBe(item[1]);
+      });
+
+      dv.select('desktop');
+      obj.__upSel();
+      expect(obj.getLastSelected()).toBe(rule1);
+      expect(obj.getSelectedParents()).toEqual([]);
+      [
+        [propATest, ''],
+        [propBTest, ''],
+        [propCTest, ''],
+        [propDTest, ''],
+      ].forEach(item => {
+        const prop = compTypeProp.getProperty(item[0]);
+        expect(prop.hasValue()).toBe(false);
+        expect(prop.getFullValue()).toBe(item[1]);
+      });
+    });
+
     test('getStyleFromProps with custom toStyle', () => {
       rule1.setStyle({ padding: '1px 2px 3px 4px' });
       obj.__upSel();

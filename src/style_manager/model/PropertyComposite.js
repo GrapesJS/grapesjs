@@ -164,7 +164,7 @@ export default Property.extend({
   __setProperties(values = {}, opts = {}) {
     this.getProperties().forEach(prop => {
       const value = values[prop.getId()];
-      !isUndefined(value) && prop.__getFullValue() !== value && prop.upValue(value, opts);
+      prop.__getFullValue() !== value && prop.upValue(value, opts);
     });
   },
 
