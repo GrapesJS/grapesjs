@@ -585,6 +585,7 @@ export default () => {
       const hasVal = propDef(value);
       const isStack = prop.getType() === 'stack';
       const isComposite = prop.getType() === 'composite';
+      const opt = { ...opts, __up: true };
       let newLayers = isStack ? prop.__getLayersFromStyle(style) : [];
       let newProps = isComposite ? prop.__getPropsFromStyle(style) : {};
       let newValue = hasVal ? value : null;
@@ -615,10 +616,10 @@ export default () => {
       }
 
       prop.__setParentTarget(parentTarget);
-      prop.__getFullValue() !== newValue && prop.upValue(newValue, { ...opts, __up: true });
+      prop.__getFullValue() !== newValue && prop.upValue(newValue, opt);
       isStack && prop.__setLayers(newLayers || []);
       if (isComposite) {
-        prop.__setProperties(newProps || {});
+        prop.__setProperties(newProps || {}, opt);
         prop.getProperties().map(pr => pr.__setParentTarget(parentTarget));
       }
     },
