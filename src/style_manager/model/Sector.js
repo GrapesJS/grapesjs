@@ -20,7 +20,7 @@ export default class Sector extends Model {
       open: true,
       buildProps: '',
       extendBuilded: 1,
-      properties: []
+      properties: [],
     };
   }
 
@@ -89,17 +89,32 @@ export default class Sector extends Model {
 
   /**
    * Get sector properties.
+   * @param {Object} [opts={}] Options
+   * @param {Boolean} [opts.withValue=false] Get only properties with value
+   * @param {Boolean} [opts.withParentValue=false] Get only properties with parent value
    * @returns {Array<[Property]>}
    */
-  getProperties() {
+  getProperties(opts = {}) {
     const props = this.get('properties');
-    return props.models ? [...props.models] : props;
+    const res = props.models ? [...props.models] : props;
+    return res.filter(prop => {
+      let result = true;
+
+      if (opts.withValue) {
+        result = prop.hasValue({ noParent: true });
+      }
+
+      if (opts.withParentValue) {
+        const hasVal = prop.hasValue({ noParent: true });
+        result = !hasVal && prop.hasValue();
+      }
+
+      return result;
+    });
   }
 
   getProperty(id) {
-    return (
-      this.getProperties().filter(prop => prop.get('id') === id)[0] || null
-    );
+    return this.getProperties().filter(prop => prop.get('id') === id)[0] || null;
   }
 
   /**
@@ -126,11 +141,7 @@ export default class Sector extends Model {
           // Check for nested properties
           var mPProps = mProp.properties;
           if (mPProps && mPProps.length) {
-            mProp.properties = this.extendProperties(
-              prop.properties || [],
-              mPProps,
-              1
-            );
+            mProp.properties = this.extendProperties(prop.properties || [], mPProps, 1);
           }
           props[j] = ext ? extend(prop, mProp) : mProp;
           isolated[j] = props[j];
@@ -153,7 +164,7 @@ export default class Sector extends Model {
     if (extend) {
       return {
         ...(this.buildProperties([extend])[0] || {}),
-        ...rest
+        ...rest,
       };
     } else {
       return prop;
