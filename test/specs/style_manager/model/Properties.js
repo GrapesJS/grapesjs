@@ -270,6 +270,52 @@ describe('StyleManager properties logic', () => {
       });
     });
 
+    test("Changing one inner rule (detached property) doesn't affect others", () => {
+      rule1.setStyle({
+        padding: '1px 2px',
+        'padding-left': '4px',
+      });
+      const rule2 = cssc.addRules(`
+        @media (max-width: 992px) {
+          .cls { padding-left: 44px }
+        }
+      `)[0];
+      dv.select('tablet');
+      obj.__upSel();
+      [
+        [propATest, '1px'],
+        [propBTest, '2px'],
+        [propCTest, '1px'],
+      ].forEach(item => {
+        const prop = compTypeProp.getProperty(item[0]);
+        expect(prop.hasValue({ noParent: true })).toBe(false);
+        expect(prop.getFullValue()).toBe(item[1]);
+      });
+
+      const propD = compTypeProp.getProperty(propDTest);
+      expect(propD.hasValue({ noParent: true })).toBe(true);
+      expect(propD.getFullValue()).toBe('44px');
+
+      // By editing the last one, the rule should not take other values
+      propD.upValue('45px');
+      compTypeProp.getProperty(propATest).upValue('11px');
+      obj.__upSel();
+      expect(rule2.getStyle()).toEqual({
+        __p: false,
+        [propATest]: '11px',
+        [propDTest]: '45px',
+      });
+      // Other properties shouldn't change
+      [
+        [propBTest, '2px'],
+        [propCTest, '1px'],
+      ].forEach(item => {
+        const prop = compTypeProp.getProperty(item[0]);
+        expect(prop.hasValue({ noParent: true })).toBe(false);
+        expect(prop.getFullValue()).toBe(item[1]);
+      });
+    });
+
     test('getStyleFromProps with custom toStyle', () => {
       rule1.setStyle({ padding: '1px 2px 3px 4px' });
       obj.__upSel();

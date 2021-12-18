@@ -619,8 +619,20 @@ export default () => {
       prop.__getFullValue() !== newValue && prop.upValue(newValue, opt);
       isStack && prop.__setLayers(newLayers || []);
       if (isComposite) {
-        prop.__setProperties(newProps || {}, opt);
-        prop.getProperties().map(pr => pr.__setParentTarget(parentTarget));
+        const props = prop.getProperties();
+
+        // Detached has to be treathed as separate properties
+        if (prop.isDetached()) {
+          const newStyle = prop.__getPropsFromStyle(style) || {};
+          const newParentStyles = parentStyles.map(p => ({
+            ...p,
+            style: prop.__getPropsFromStyle(p.style) || {},
+          }));
+          props.map(pr => this.__upProp(pr, newStyle, newParentStyles, opts));
+        } else {
+          prop.__setProperties(newProps || {}, opt);
+          prop.getProperties().map(pr => pr.__setParentTarget(parentTarget));
+        }
       }
     },
 

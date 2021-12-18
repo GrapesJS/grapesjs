@@ -42,11 +42,18 @@ export default Property.extend({
 
   __upProperties(p, opts = {}) {
     if (!this.__hasCustom() || opts.__up || opts.__clearIn) return;
-    this.__upTargetsStyleProps(opts);
+    this.__upTargetsStyleProps(p, opts);
   },
 
-  __upTargetsStyleProps(opts = {}) {
-    this.__upTargetsStyle(this.getStyleFromProps(), opts);
+  __upTargetsStyleProps(prop, opts = {}) {
+    let style = this.getStyleFromProps();
+
+    if (this.isDetached()) {
+      const name = prop.getName();
+      style = { [name]: style[name] };
+    }
+
+    this.__upTargetsStyle(style, opts);
   },
 
   /**
