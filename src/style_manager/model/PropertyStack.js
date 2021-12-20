@@ -275,7 +275,7 @@ export default Property.extend({
         const value = isUndefined(val) ? prop.getDefaultValue() : val;
         return { name, value };
       });
-      style = this.get('detached')
+      style = this.isDetached()
         ? result.reduce((acc, item) => {
             acc[item.name] = item.value;
             return acc;
@@ -301,6 +301,7 @@ export default Property.extend({
     let result = {};
     const name = this.getName();
     const layers = this.getLayers();
+    const props = this.getProperties();
     const styles = layers.map(l => this.getStyleFromLayer(l));
     styles.forEach(style => {
       keys(style).map(key => {
@@ -314,8 +315,12 @@ export default Property.extend({
 
     if (this.isDetached()) {
       result[name] = '';
+      !layers.length &&
+        props.map(prop => {
+          result[prop.getName()] = '';
+        });
     } else {
-      const style = this.getProperties().reduce((acc, prop) => {
+      const style = props.reduce((acc, prop) => {
         acc[prop.getName()] = '';
         return acc;
       }, {});

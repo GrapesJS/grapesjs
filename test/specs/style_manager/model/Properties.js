@@ -585,6 +585,20 @@ describe('StyleManager properties logic', () => {
       });
     });
 
+    test('On clear removes all values (detached)', () => {
+      compTypeProp.set('detached', true);
+      compTypeProp.clear();
+      expect(compTypeProp.hasValue()).toBe(false);
+      expect(compTypeProp.getLayers().length).toBe(0);
+      expect(rule1.getStyle()).toEqual({
+        __p: false,
+        [propTest]: '',
+        [propATest]: '',
+        [propBTest]: '',
+        [propCTest]: '',
+      });
+    });
+
     test('Get the values from parent style', () => {
       const rule2 = cssc.addRules(`
         @media (max-width: 992px) {
