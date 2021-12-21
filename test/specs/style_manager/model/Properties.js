@@ -395,6 +395,21 @@ describe('StyleManager properties logic', () => {
       });
     });
 
+    test('Update on the rule reflects to the property correctly', () => {
+      rule1.setStyle({ padding: '1px 2px 3px 4px' });
+      obj.__upSel();
+      compTypeProp.getProperty(propCTest).upValue('50%');
+      [
+        [propATest, '1px'],
+        [propBTest, '2px'],
+        [propCTest, '50%'],
+        [propDTest, '4px'],
+      ].forEach(item => {
+        const prop = compTypeProp.getProperty(item[0]);
+        expect(prop.getFullValue()).toBe(item[1]);
+      });
+    });
+
     test('Update on properties reflects to the rule correctly', () => {
       compTypeProp.set('detached', false);
       rule1.setStyle({ padding: '1px 2px 3px 4px' });
