@@ -57,9 +57,7 @@ export default Property.extend({
   },
 
   _up(props, opts = {}) {
-    if (this.isDetached() && props.value) {
-      this.__setProperties(this.__getSplitValue(props.value), opts);
-    }
+    this.__setProperties(this.__getSplitValue(props.value), opts);
     return Property.prototype._up.call(this, props, opts);
   },
 

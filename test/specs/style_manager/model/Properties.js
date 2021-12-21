@@ -139,6 +139,15 @@ describe('StyleManager properties logic', () => {
         [propCTest]: '11px',
         [propDTest]: '11px',
       });
+      compTypeProp.upValue('');
+      [
+        [propATest, ''],
+        [propBTest, ''],
+        [propCTest, ''],
+        [propDTest, ''],
+      ].forEach(item => {
+        expect(compTypeProp.getProperty(item[0]).getFullValue()).toBe(item[1]);
+      });
     });
 
     test('getPropsFromStyle returns correct values', () => {
