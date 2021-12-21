@@ -624,6 +624,21 @@ describe('StyleManager properties logic', () => {
       });
     });
 
+    test('Updating inner property (detached), it reflects on the rule', () => {
+      compTypeProp.set('detached', true);
+      compTypeProp.selectLayerAt(0);
+      compTypeProp.getProperty(propBTest).upValue('valueB-1-mod');
+      compTypeProp.selectLayerAt(1);
+      compTypeProp.getProperty(propCTest).upValue('valueC-2-mod');
+      expect(rule1.getStyle()).toEqual({
+        __p: false,
+        [propTest]: '',
+        [propATest]: 'valueA-1, valueA-2',
+        [propBTest]: 'valueB-1-mod, valueB-2',
+        [propCTest]: 'valueC-1-ext, valueC-2-mod',
+      });
+    });
+
     test('Removing layer, updates the rule', () => {
       compTypeProp.removeLayerAt(1);
       expect(rule1.getStyle()).toEqual({
