@@ -90,7 +90,7 @@ export default Property.extend({
     // Detached props will update their layers later in sm.__upProp
     !this.isDetached() && this.__setLayers(__layers);
     this.__upSelected({ noEvent: true }, opts);
-    return Property.prototype._up.call(this, rest, opts);
+    return PropertyBase.prototype._up.call(this, rest, opts);
   },
 
   __setLayers(newLayers = []) {

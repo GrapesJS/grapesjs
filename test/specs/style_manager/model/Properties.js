@@ -89,6 +89,58 @@ describe('StyleManager properties logic', () => {
       });
     });
 
+    test('Split value properly', () => {
+      expect(compTypeProp.__getSplitValue('1px 2px 3px 4px')).toEqual({
+        [propATest]: '1px',
+        [propBTest]: '2px',
+        [propCTest]: '3px',
+        [propDTest]: '4px',
+      });
+      expect(compTypeProp.__getSplitValue('1px 2px')).toEqual({
+        [propATest]: '1px',
+        [propBTest]: '2px',
+        [propCTest]: '1px',
+        [propDTest]: '2px',
+      });
+      expect(compTypeProp.__getSplitValue('100%')).toEqual({
+        [propATest]: '100%',
+        [propBTest]: '100%',
+        [propCTest]: '100%',
+        [propDTest]: '100%',
+      });
+    });
+
+    test('Updating the main property, the value is splitted properly', () => {
+      compTypeProp.upValue('1px 2px 3px 4px');
+      [
+        [propATest, '1px'],
+        [propBTest, '2px'],
+        [propCTest, '3px'],
+        [propDTest, '4px'],
+      ].forEach(item => {
+        expect(compTypeProp.getProperty(item[0]).getFullValue()).toBe(item[1]);
+      });
+      compTypeProp.upValue('11px');
+      [
+        [propATest, '11px'],
+        [propBTest, '11px'],
+        [propCTest, '11px'],
+        [propDTest, '11px'],
+      ].forEach(item => {
+        expect(compTypeProp.getProperty(item[0]).getFullValue()).toBe(item[1]);
+      });
+      obj.__upSel();
+      expect(rule1.getStyle()).toEqual({
+        __p: false,
+        color: 'red',
+        [propTest]: '',
+        [propATest]: '11px',
+        [propBTest]: '11px',
+        [propCTest]: '11px',
+        [propDTest]: '11px',
+      });
+    });
+
     test('getPropsFromStyle returns correct values', () => {
       expect(
         compTypeProp.__getPropsFromStyle({
