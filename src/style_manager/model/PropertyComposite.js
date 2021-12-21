@@ -42,13 +42,17 @@ export default Property.extend({
 
   __upProperties(p, opts = {}) {
     if (!this.__hasCustom() || opts.__up || opts.__clearIn) return;
-    this.__upTargetsStyleProps(p, opts);
+
+    const parentProp = this.__getParentProp();
+    if (parentProp) return parentProp.__upProperties(this, opts);
+
+    this.__upTargetsStyleProps(opts, p);
   },
 
-  __upTargetsStyleProps(prop, opts = {}) {
+  __upTargetsStyleProps(opts = {}, prop) {
     let style = this.getStyleFromProps();
 
-    if (this.isDetached()) {
+    if (this.isDetached() && prop) {
       const name = prop.getName();
       style = { [name]: style[name] };
     }
