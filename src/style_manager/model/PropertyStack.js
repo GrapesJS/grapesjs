@@ -254,6 +254,10 @@ export default Property.extend({
     return layer && layer.getIndex() >= 0 ? layer : null;
   },
 
+  getStyle(opts) {
+    return this.getStyleFromLayers(opts);
+  },
+
   /**
    * Get style object from layer
    * @param {[Layer]} layer

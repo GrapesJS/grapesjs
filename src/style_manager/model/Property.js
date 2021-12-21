@@ -122,6 +122,14 @@ export default class Property extends Model {
     this._up(this.__getClearProps(), { ...opts, __clear: true });
   }
 
+  /**
+   * Get CSS style object of the propeprty
+   * @return {Object}
+   */
+  getStyle(opts = {}) {
+    return { [this.getName()]: this.__getFullValue(opts) };
+  }
+
   upValue(value, opts) {
     const parsed = value === null || value === '' ? this.__getClearProps() : this.__parseValue(value, opts);
     return this._up(parsed, opts);

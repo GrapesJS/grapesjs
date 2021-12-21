@@ -61,6 +61,10 @@ export default Property.extend({
     return Property.prototype._up.call(this, props, opts);
   },
 
+  getStyle(opts) {
+    return this.getStyleFromProps(opts);
+  },
+
   /**
    * Get style object from current properties
    * @returns {Object} Style object
