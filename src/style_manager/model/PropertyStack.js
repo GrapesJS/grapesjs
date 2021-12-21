@@ -272,7 +272,7 @@ export default Property.extend({
     let style;
 
     if (toStyle) {
-      style = toStyle(values, { join, joinLayers, name, property: this });
+      style = toStyle(values, { join, joinLayers, name, layer, property: this });
     } else {
       const result = this.getProperties().map(prop => {
         const name = prop.getName();
