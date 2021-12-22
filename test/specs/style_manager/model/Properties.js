@@ -723,5 +723,44 @@ describe('StyleManager properties logic', () => {
         [propCTest]: '',
       });
     });
+
+    test('Adding new layer, updates the rule (detached)', () => {
+      compTypeProp.set('detached', true);
+      compTypeProp.addLayer(
+        {
+          [propATest]: 'valueA-new AA',
+          [propBTest]: 'valueB-new BB',
+          [propCTest]: 'valueC-new CC',
+        },
+        { at: 0 }
+      );
+      obj.__upSel();
+      expect(rule1.getStyle()).toEqual({
+        __p: false,
+        [propTest]: '',
+        [propATest]: 'valueA-new AA, valueA-1, valueA-2',
+        [propBTest]: 'valueB-new BB, valueB-1, valueB-2',
+        [propCTest]: 'valueC-new CC, valueC-1-ext, valueC-2-ext',
+      });
+      // Check also the layers
+      const layers = compTypeProp.getLayers().models;
+      expect(layers.length).toBe(3);
+      const [layer1, layer2, layer3] = layers;
+      expect(layer1.getValues()).toEqual({
+        [propATest]: 'valueA-new AA',
+        [propBTest]: 'valueB-new BB',
+        [propCTest]: 'valueC-new CC',
+      });
+      expect(layer2.getValues()).toEqual({
+        [propATest]: 'valueA-1',
+        [propBTest]: 'valueB-1',
+        [propCTest]: 'valueC-1-ext',
+      });
+      expect(layer3.getValues()).toEqual({
+        [propATest]: 'valueA-2',
+        [propBTest]: 'valueB-2',
+        [propCTest]: 'valueC-2-ext',
+      });
+    });
   });
 });
