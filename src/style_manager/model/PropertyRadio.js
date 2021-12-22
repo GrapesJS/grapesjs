@@ -23,9 +23,9 @@ export default class PropertyRadio extends Property {
    * Get current selected option.
    * @returns {Object | null}
    */
-  getOption() {
-    const id = this.getValue();
-    return this.getOptions().filter(o => this.getOptionId(o) === id)[0] || null;
+  getOption(id) {
+    const idSel = id || this.getValue();
+    return this.getOptions().filter(o => this.getOptionId(o) === idSel)[0] || null;
   }
 
   /**
