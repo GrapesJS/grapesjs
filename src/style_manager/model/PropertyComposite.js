@@ -1,33 +1,35 @@
 import { isString, isUndefined } from 'underscore';
 import Property from './Property';
 
-export default Property.extend({
-  defaults: {
-    ...Property.prototype.defaults,
-    // 'background' is a good example where to make a difference
-    // between detached and not
-    //
-    // - NOT detached (default)
-    // background: url(..) no-repeat center ...;
-    // - Detached
-    // background-image: url();
-    // background-repeat: repeat;
-    // ...
-    detached: 0,
+export default class PropertyComposite extends Property {
+  defaults() {
+    return {
+      ...Property.getDefaults(),
+      // 'background' is a good example where to make a difference
+      // between detached and not
+      //
+      // - NOT detached (default)
+      // background: url(..) no-repeat center ...;
+      // - Detached
+      // background-image: url();
+      // background-repeat: repeat;
+      // ...
+      detached: 0,
 
-    // Array of sub properties
-    properties: [],
+      // Array of sub properties
+      properties: [],
 
-    // Separator to use to split property values (only for not detached properties)
-    separator: ' ',
+      // Separator to use to split property values (only for not detached properties)
+      separator: ' ',
 
-    // Separator to use to join property values (only for not detached properties)
-    join: null,
+      // Separator to use to join property values (only for not detached properties)
+      join: null,
 
-    fromStyle: null,
+      fromStyle: null,
 
-    toStyle: null,
-  },
+      toStyle: null,
+    };
+  }
 
   initialize(props = {}, opts = {}) {
     Property.callParentInit(Property, this, props, opts);
@@ -38,7 +40,7 @@ export default Property.extend({
     this.listenTo(properties, 'change', this.__upProperties);
     this.listenTo(this, 'change:value', this.updateValues);
     Property.callInit(this, props, opts);
-  },
+  }
 
   __upProperties(p, opts = {}) {
     if (!this.__hasCustom() || opts.__up || opts.__clearIn) return;
@@ -47,7 +49,7 @@ export default Property.extend({
     if (parentProp) return parentProp.__upProperties(this, opts);
 
     this.__upTargetsStyleProps(opts, p);
-  },
+  }
 
   __upTargetsStyleProps(opts = {}, prop) {
     let style = this.getStyleFromProps();
@@ -58,16 +60,16 @@ export default Property.extend({
     }
 
     this.__upTargetsStyle(style, opts);
-  },
+  }
 
   _up(props, opts = {}) {
     this.__setProperties(this.__getSplitValue(props.value), opts);
     return Property.prototype._up.call(this, props, opts);
-  },
+  }
 
   getStyle(opts) {
     return this.getStyleFromProps(opts);
-  },
+  }
 
   /**
    * Get style object from current properties
@@ -115,18 +117,18 @@ export default Property.extend({
           return res;
         }, {})
       : style;
-  },
+  }
 
   __getFullValue(opts = {}) {
     if (this.isDetached() || opts.__clear) return '';
 
     return this.getStyleFromProps()[this.getName()] || '';
-  },
+  }
 
   __getJoin() {
     const join = this.get('join');
     return isString(join) ? join : this.get('separator');
-  },
+  }
 
   __styleHasProps(style = {}) {
     const name = this.getName();
@@ -134,18 +136,18 @@ export default Property.extend({
     const nameProps = props.map(prop => prop.getName());
     const allNameProps = [name, ...nameProps];
     return allNameProps.some(prop => !isUndefined(style[prop]) && style[prop] !== '');
-  },
+  }
 
   __splitValue(value, sep) {
     return value
       .split(sep)
       .map(value => value.trim())
       .filter(Boolean);
-  },
+  }
 
   __splitStyleName(style, name, sep) {
     return this.__splitValue(style[name] || '', sep);
-  },
+  }
 
   __getSplitValue(value = '') {
     const props = this.getProperties();
@@ -169,7 +171,7 @@ export default Property.extend({
     });
 
     return result;
-  },
+  }
 
   __getPropsFromStyle(style = {}) {
     if (!this.__styleHasProps(style)) return null;
@@ -191,23 +193,23 @@ export default Property.extend({
     }
 
     return result;
-  },
+  }
 
   __setProperties(values = {}, opts = {}) {
     this.getProperties().forEach(prop => {
       const value = values[prop.getId()];
       prop.__getFullValue() !== value && prop.upValue(value, opts);
     });
-  },
+  }
 
   clear() {
     this.getProperties().map(p => p.clear({ __clearIn: !this.isDetached() }));
     return Property.prototype.clear.call(this);
-  },
+  }
 
   hasValue(opts) {
     return this.getProperties().some(prop => prop.hasValue(opts));
-  },
+  }
 
   /**
    * Get current values of properties
@@ -221,7 +223,7 @@ export default Property.extend({
       res[key] = `${prop.__getFullValue()}`;
       return res;
     }, {});
-  },
+  }
 
   /**
    * Clear the value
@@ -231,7 +233,7 @@ export default Property.extend({
   clearValue(opts = {}) {
     this.get('properties').each(property => property.clearValue());
     return Property.prototype.clearValue.apply(this, arguments);
-  },
+  }
 
   /**
    * Update property values
@@ -248,7 +250,7 @@ export default Property.extend({
       // There some issue with UndoManager
       //property.setValue(value, 0, {fromParent: 1});
     });
-  },
+  }
 
   /**
    * Split by sperator but avoid it inside parenthesis
@@ -256,7 +258,7 @@ export default Property.extend({
    */
   getSplitSeparator() {
     return new RegExp(`${this.get('separator')}(?![^\\(]*\\))`);
-  },
+  }
 
   /**
    * Returns default value
@@ -274,7 +276,7 @@ export default Property.extend({
     const properties = this.get('properties');
     properties.each((prop, index) => (value += `${prop.getDefaultValue()} `));
     return value.trim();
-  },
+  }
 
   getFullValue() {
     if (this.get('detached')) {
@@ -282,7 +284,7 @@ export default Property.extend({
     }
 
     return this.get('properties').getFullValue();
-  },
+  }
 
   /**
    * Get property at some index
@@ -291,17 +293,17 @@ export default Property.extend({
    */
   getPropertyAt(index) {
     return this.get('properties').at(index);
-  },
+  }
 
   isDetached() {
     return !!this.get('detached');
-  },
+  }
 
   getProperties() {
     return [...this.get('properties').models];
-  },
+  }
 
   getProperty(id) {
     return this.get('properties').filter(prop => prop.get('id') === id)[0] || null;
-  },
-});
+  }
+}
