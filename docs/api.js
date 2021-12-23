@@ -27,6 +27,7 @@ async function generateDocs () {
     ['style_manager/model/PropertySelect.js', 'property_select.md'],
     ['style_manager/model/PropertyComposite.js', 'property_composite.md'],
     ['style_manager/model/PropertyStack.js', 'property_stack.md'],
+    ['style_manager/model/Layer.js', 'layer.md'],
     ['storage_manager/index.js', 'storage_manager.md'],
     ['device_manager/index.js', 'device_manager.md'],
     ['device_manager/model/Device.js', 'device.md'],

@@ -8,10 +8,15 @@ const VALUES_REG = /,(?![^\(]*\))/;
 const PARTS_REG = /\s(?![^(]*\))/;
 
 /**
+ *
+ * [Layer]: layer.html
+ *
+ *
  * @typedef PropertyStack
  * @property {String|RegExp} [layerSeparator=', '] The separator used to split layer values.
  * @property {String} [layerJoin=', '] Value used to join layer values.
  * @property {Function} [layerLabel] Custom logic for creating the layer value.
+ *
  */
 export default class PropertyStack extends PropertyComposite {
   defaults() {

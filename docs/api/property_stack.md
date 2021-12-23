@@ -4,6 +4,8 @@
 
 **Extends PropertyComposite**
 
+[Layer]: layer.html
+
 ### Properties
 
 *   `layerSeparator` **([String][1] | [RegExp][2])?** The separator used to split layer values.
@@ -127,7 +129,7 @@ Returns **([Layer] | null)** Removed layer
 
 ### getLayerLabel
 
-Get layer label.
+Get the layer label. The label can be customized with the `layerLabel` property.
 
 #### Parameters
 
