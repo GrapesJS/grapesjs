@@ -49,6 +49,13 @@ Update Sector open state
 
 Get sector properties.
 
+#### Parameters
+
+*   `opts` **[Object][4]** Options (optional, default `{}`)
+
+    *   `opts.withValue` **[Boolean][2]** Get only properties with value (optional, default `false`)
+    *   `opts.withParentValue` **[Boolean][2]** Get only properties with parent value (optional, default `false`)
+
 Returns **[Array][3]<[Property]>** 
 
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String

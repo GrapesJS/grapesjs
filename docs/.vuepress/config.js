@@ -73,6 +73,7 @@ module.exports = {
         ['/api/page', `${subDivider}Page`],
         ['/api/style_manager', 'Style Manager'],
         ['/api/sector', `${subDivider}Sector`],
+        ['/api/property', `${subDivider}Property`],
         ['/api/storage_manager', 'Storage Manager'],
         ['/api/device_manager', 'Device Manager'],
         ['/api/device', `${subDivider}Device`],

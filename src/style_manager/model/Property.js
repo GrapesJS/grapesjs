@@ -2,11 +2,19 @@ import { Model } from 'common';
 import { isUndefined, isString, result, keys } from 'underscore';
 import { capitalize } from 'utils/mixins';
 
+/**
+ * @typedef Property
+ * @property {String} id Property id, eg. `my-property-id`.
+ * @property {String} property Related CSS property name, eg. `text-align`.
+ * @property {String} label Label to use in UI, eg. `Text Align`.
+ * @property {String} default Defaul value of the property.
+ *
+ */
 export default class Property extends Model {
   initialize(props = {}, opts = {}) {
     this.em = opts.em;
     const id = this.get('id') || '';
-    const name = this.get('name') || '';
+    const name = this.get('name') || this.get('label') || '';
     !this.get('property') && this.set('property', (name || id).replace(/ /g, '-'));
     const prop = this.get('property');
     !this.get('id') && this.set('id', prop);
@@ -64,7 +72,9 @@ export default class Property extends Model {
   }
 
   /**
-   * Get property type.
+   * Get the property type.
+   * The type of the property is defined on property creation and based on its value the proper Property class is assigned.
+   * The default type is `base`.
    * @returns {String}
    */
   getType() {
@@ -72,7 +82,7 @@ export default class Property extends Model {
   }
 
   /**
-   * Get property name (usually is the CSS property name).
+   * Get name (the CSS property name).
    * @returns {String}
    */
   getName() {
@@ -88,12 +98,14 @@ export default class Property extends Model {
   getLabel(opts = {}) {
     const { locale = true } = opts;
     const id = this.getId();
-    const name = this.get('name');
+    const name = this.get('name') || this.get('label');
     return (locale && this.em?.t(`styleManager.properties.${id}`)) || name;
   }
 
   /**
    * Get property value.
+   * @param {Object} [opts={}] Options
+   * @param {Boolean} [opts.noDefault=false] Avoid returning the default value
    * @returns {String}
    */
   getValue(opts = {}) {
@@ -103,9 +115,9 @@ export default class Property extends Model {
   }
 
   /**
-   * Check if the property has value
+   * Check if the property has value.
    * @param {Object} [opts={}] Options
-   * @param {Boolean} [opts.noParent=false] Ignore the value if from parent target.
+   * @param {Boolean} [opts.noParent=false] Ignore the value if it comes from the parent target.
    * @returns {Boolean}
    */
   hasValue(opts = {}) {
@@ -116,23 +128,49 @@ export default class Property extends Model {
   }
 
   /**
-   * Clear value
-   */
-  clear(opts = {}) {
-    this._up(this.__getClearProps(), { ...opts, __clear: true });
-  }
-
-  /**
-   * Get CSS style object of the propeprty
+   * Get the CSS style object of the property.
    * @return {Object}
+   * @example
+   * // In case the property is `color` with a value of `red`.
+   * console.log(property.getStyle());
+   * // { color: 'red' };
    */
   getStyle(opts = {}) {
     return { [this.getName()]: this.__getFullValue(opts) };
   }
 
-  upValue(value, opts) {
+  /**
+   * Get the default value.
+   * @return {string}
+   */
+  getDefaultValue() {
+    const def = this.get('default');
+    return `${!isUndefined(def) ? def : this.get('defaults')}`;
+  }
+
+  /**
+   * Update the value.
+   * The change is also propagated to the selected targets (eg. CSS rule).
+   * @param {String} value New value
+   * @param {Object} [opts={}] Options
+   * @param {Boolean} [opts.partial=false] If `true` the update on targets won't be considered complete (not stored in UndoManager)
+   * @param {Boolean} [opts.noTarget=false] If `true` the change won't be propagated to selected targets.
+   */
+  upValue(value, opts = {}) {
+    if (opts.noTarget) opts.__up = true;
     const parsed = value === null || value === '' ? this.__getClearProps() : this.__parseValue(value, opts);
     return this._up(parsed, opts);
+  }
+
+  /**
+   * Clear the value.
+   * The change is also propagated to the selected targets (eg. the css property is cleared).
+   * @param {Object} [opts={}] Options
+   * @param {Boolean} [opts.noTarget=false] If `true` the change won't be propagated to selected targets.
+   */
+  clear(opts = {}) {
+    if (opts.noTarget) opts.__up = true;
+    this._up(this.__getClearProps(), { ...opts, __clear: true });
   }
 
   __parseValue(value, opts) {
@@ -174,6 +212,7 @@ export default class Property extends Model {
    * @param {any} value
    * @param {Boolen} [complete=true] Indicates if it's a final state
    * @param {Object} [opts={}] Options
+   * @private
    */
   setValueFromInput(value, complete, opts = {}) {
     this.setValue(value, complete, { ...opts, fromInput: 1 });
@@ -262,16 +301,6 @@ export default class Property extends Model {
     curr !== '' && res.push(curr);
 
     return res.map(i => i.trim());
-  }
-
-  /**
-   * Get the default value
-   * @return {string}
-   * @private
-   */
-  getDefaultValue() {
-    const def = this.get('default');
-    return `${!isUndefined(def) ? def : this.get('defaults')}`;
   }
 
   __getFullValue({ withDefault } = {}) {

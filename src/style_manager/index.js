@@ -33,6 +33,7 @@
  * [Sector]: sector.html
  * [CssRule]: css_rule.html
  * [Component]: component.html
+ * [Property]: property.html
  *
  * @module StyleManager
  */
