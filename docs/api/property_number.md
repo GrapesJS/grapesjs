@@ -23,6 +23,24 @@ Get property unit value.
 
 Returns **[String][2]** 
 
+### getMin
+
+Get min value.
+
+Returns **[Number][3]** 
+
+### getMax
+
+Get max value.
+
+Returns **[Number][3]** 
+
+### getStep
+
+Get step value.
+
+Returns **[Number][3]** 
+
 ### upUnit
 
 Update property unit value.
