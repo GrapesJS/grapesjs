@@ -8,9 +8,7 @@ import PropertyFactory from './PropertyFactory';
  * @property {String} id Sector id, eg. `typography`
  * @property {String} name Sector name, eg. `Typography`
  * @property {Boolean} [open=true] Indicates the open state.
- * @property {Array<Object>} [properties=[]] Indicate an array of Property defintions
- *
- * [Property]: property.html
+ * @property {Array<Object>} [properties=[]] Indicate an array of Property defintions.
  */
 export default class Sector extends Model {
   defaults() {
@@ -187,3 +185,6 @@ export default class Sector extends Model {
     return this.propFactory.build(buildP);
   }
 }
+/**
+ * [Property]: property.html
+ */

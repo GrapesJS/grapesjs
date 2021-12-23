@@ -9,7 +9,7 @@
 *   `id` **[String][1]** Sector id, eg. `typography`
 *   `name` **[String][1]** Sector name, eg. `Typography`
 *   `open` **[Boolean][2]?** Indicates the open state.
-*   `properties` **[Array][3]<[Object][4]>?** Indicate an array of Property defintions[Property]: property.html
+*   `properties` **[Array][3]<[Object][4]>?** Indicate an array of Property defintions.
 
 ### getId
 
@@ -57,6 +57,10 @@ Get sector properties.
     *   `opts.withParentValue` **[Boolean][2]** Get only properties with parent value (optional, default `false`)
 
 Returns **[Array][3]<[Property]>** 
+
+##
+
+[Property]: property.html
 
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 

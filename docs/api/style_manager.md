@@ -40,6 +40,8 @@ const styleManager = editor.StyleManager;
 
 [Component]: component.html
 
+[Property]: property.html
+
 ## getConfig
 
 Get configuration object
