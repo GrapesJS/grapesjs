@@ -57,7 +57,6 @@ export const evCustom = `${evPfx}custom`;
 const propDef = value => value || value === 0;
 
 export default () => {
-  var c = {};
   let properties;
   var sectors, SectView;
 
@@ -79,22 +78,21 @@ export default () => {
 
     /**
      * Get configuration object
+     * @name getConfig
+     * @function
      * @return {Object}
      */
-    getConfig() {
-      return c;
-    },
 
     /**
      * Initialize module. Automatically called with a new instance of the editor
      * @param {Object} config Configurations
      * @private
      */
-    init(config) {
-      c = { ...defaults, ...config };
-      const ppfx = c.pStylePrefix;
+    init(config = {}) {
+      this.__initConfig(defaults, config);
+      const c = this.config;
       const { em } = c;
-      this.em = em;
+      const ppfx = c.pStylePrefix;
       if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
       properties = new Properties();
       sectors = new Sectors([], c);
@@ -134,7 +132,7 @@ export default () => {
 
     onLoad() {
       // Use silent as sectors' view will be created and rendered on StyleManager.render
-      sectors.add(c.sectors, { silent: true });
+      sectors.add(this.config.sectors, { silent: true });
     },
 
     postRender() {
@@ -311,7 +309,7 @@ export default () => {
      * @return {Model}
      */
     getModelToStyle(model, options = {}) {
-      const em = c.em;
+      const { em } = this;
       const { skipAdd } = options;
       const classes = model.get('classes');
       const id = model.getId();
@@ -357,7 +355,7 @@ export default () => {
     },
 
     getParentRules(target, state) {
-      const { em } = c;
+      const { em } = this;
       let result = [];
 
       if (em && target) {
@@ -462,12 +460,13 @@ export default () => {
      * someContainer.appendChild(propView.el);
      */
     createType(id, { model = {}, view = {} } = {}) {
+      const { config } = this;
       const type = this.getType(id);
 
       if (type) {
         return new type.view({
           model: new type.model(model),
-          config: c,
+          config,
           ...view,
         });
       }
@@ -543,12 +542,13 @@ export default () => {
      * @private
      * */
     render() {
+      const { config, em } = this;
       const el = SectView && SectView.el;
       SectView = new SectorsView({
         el,
         collection: sectors,
-        target: c.em,
-        config: c,
+        target: em,
+        config,
       });
       return SectView.render().el;
     },
@@ -644,8 +644,9 @@ export default () => {
         coll.stopListening();
       });
       SectView && SectView.remove();
-      [c, properties, sectors, SectView].forEach(i => (i = {}));
+      [properties, sectors, SectView].forEach(i => (i = {}));
       this.em = {};
+      this.config = {};
     },
   };
 };
