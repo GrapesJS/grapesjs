@@ -75,6 +75,7 @@ module.exports = {
         ['/api/sector', `${subDivider}Sector`],
         ['/api/property', `${subDivider}Property`],
         ['/api/property_number', `${subDivider}PropertyNumber`],
+        ['/api/property_select', `${subDivider}PropertySelect`],
         ['/api/storage_manager', 'Storage Manager'],
         ['/api/device_manager', 'Device Manager'],
         ['/api/device', `${subDivider}Device`],

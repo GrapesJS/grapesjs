@@ -25,7 +25,7 @@ export default class PropertySelect extends Property {
 
   /**
    * Get current selected option or by id.
-   * @param {String} id Option id.
+   * @param {String} [id] Option id.
    * @returns {Object | null}
    */
   getOption(id) {
