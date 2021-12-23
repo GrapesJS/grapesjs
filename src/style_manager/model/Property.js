@@ -1,6 +1,6 @@
 import { Model } from 'common';
 import { isUndefined, isString, result, keys } from 'underscore';
-import { capitalize } from 'utils/mixins';
+import { capitalize, camelCase } from 'utils/mixins';
 
 /**
  * @typedef Property
@@ -130,6 +130,8 @@ export default class Property extends Model {
 
   /**
    * Get the CSS style object of the property.
+   * @param {Object} [opts={}] Options
+   * @param {Boolean} [opts.camelCase] Return property name in camelCase.
    * @return {Object}
    * @example
    * // In case the property is `color` with a value of `red`.
@@ -137,7 +139,9 @@ export default class Property extends Model {
    * // { color: 'red' };
    */
   getStyle(opts = {}) {
-    return { [this.getName()]: this.__getFullValue(opts) };
+    const name = this.getName();
+    const key = opts.camelCase ? camelCase(name) : name;
+    return { [key]: this.__getFullValue(opts) };
   }
 
   /**

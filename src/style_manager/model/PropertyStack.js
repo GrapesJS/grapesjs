@@ -7,31 +7,206 @@ import { camelCase } from 'utils/mixins';
 const VALUES_REG = /,(?![^\(]*\))/;
 const PARTS_REG = /\s(?![^(]*\))/;
 
+/**
+ * @typedef PropertyStack
+ * @property {String|RegExp} [layerSeparator=', '] The separator used to split layer values.
+ * @property {String} [layerJoin=', '] Value used to join layer values.
+ * @property {Function} [layerLabel] Custom logic for creating the layer value.
+ */
 export default class PropertyStack extends PropertyComposite {
   defaults() {
     return {
       ...PropertyComposite.getDefaults(),
-      // Array of layers (which contain properties)
       layers: [],
-
-      // The separator used to split layer values
       layerSeparator: ', ',
-
-      // The separator used to join layer values
       layerJoin: '',
-
-      // Prepend new layers in the list
       prepend: 0,
-
-      // Layer preview
       preview: 0,
-
-      // Custom layer label function
       layerLabel: null,
-
-      // Current selected layer
       selectedLayer: null,
     };
+  }
+
+  /**
+   * Get all available layers.
+   * @returns {Collection<[Layer]>}
+   */
+  getLayers() {
+    return this.get('layers');
+  }
+
+  /**
+   * Get layer by index.
+   * @param {Number} [index=0] Layer index position.
+   * @returns {[Layer]|null}
+   * @example
+   * // Get the first layer
+   * const layerFirst = property.getLayer(0);
+   * // Get the last layer
+   * const layers = this.getLayers();
+   * const layerLast = property.getLayer(layers.length - 1);
+   */
+  getLayer(index = 0) {
+    return this.getLayers().at(index) || null;
+  }
+
+  /**
+   * Get selected layer.
+   * @returns {[Layer] | null}
+   */
+  getSelectedLayer() {
+    const layer = this.get('selectedLayer');
+    return layer && layer.getIndex() >= 0 ? layer : null;
+  }
+
+  /**
+   * Select layer.
+   * Without a selected layer any update made on inner properties has no effect.
+   * @param {[Layer]} layer Layer to select
+   * @example
+   * const layer = property.getLayer(0);
+   * property.selectLayer(layer);
+   */
+  selectLayer(layer) {
+    return this.set('selectedLayer', layer, { __select: true });
+  }
+
+  /**
+   * Select layer by index.
+   * @param {Number} index Index of the layer to select.
+   * @example
+   * property.selectLayerAt(1);
+   */
+  selectLayerAt(index = 0) {
+    const layer = this.getLayer(index);
+    return layer && this.selectLayer(layer);
+  }
+
+  /**
+   * Add new layer to the stack.
+   * @param {Object} [props={}] Custom property values to use in a new layer.
+   * @param {Object} [opts={}] Options
+   * @param {Number} [opts.at] Position index (by default the layer will be appended at the end).
+   * @returns {[Layer]} Added layer.
+   * @example
+   * // Add new layer at the beginning of the stack with custom values
+   * property.addLayer({ 'sub-prop1': 'value1', 'sub-prop2': 'value2' }, { at: 0 });
+   */
+  addLayer(props = {}, opts = {}) {
+    const values = {};
+    this.getProperties().forEach(prop => {
+      const name = prop.getName();
+      const value = props[name];
+      values[name] = isUndefined(value) ? prop.getDefaultValue() : value;
+    });
+    const layer = this.get('layers').push({ values }, opts);
+
+    return layer;
+  }
+
+  /**
+   * Remove layer.
+   * @param {[Layer]} layer Layer to remove.
+   * @returns {[Layer]} Removed layer
+   * @example
+   * const layer = property.getLayer(0);
+   * property.removeLayer(layer);
+   */
+  removeLayer(layer) {
+    return this.get('layers').remove(layer);
+  }
+
+  /**
+   * Remove layer by index.
+   * @param {Number} index Index of the layer to remove
+   * @returns {[Layer]|null} Removed layer
+   * @example
+   * property.removeLayerAt(0);
+   */
+  removeLayerAt(index = 0) {
+    const layer = this.getLayer(index);
+    return layer ? this.removeLayer(layer) : null;
+  }
+
+  /**
+   * Get layer label.
+   * @param {[Layer]} layer
+   * @returns {String}
+   * @example
+   * const layer = this.getLayer(1);
+   * const label = this.getLayerLabel(layer);
+   */
+  getLayerLabel(layer) {
+    let result = '';
+
+    if (layer) {
+      const layerLabel = this.get('layerLabel');
+      const values = layer.getValues();
+      const index = layer.getIndex();
+
+      if (layerLabel) {
+        result = layerLabel(layer, { index, values, property: this });
+      } else {
+        const parts = [];
+        this.getProperties().map(prop => {
+          parts.push(values[prop.getId()]);
+        });
+        result = parts.filter(Boolean).join(' ');
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * Get style object from the layer.
+   * @param {[Layer]} layer
+   * @param {Object} [opts={}] Options
+   * @param {Boolean} [opts.camelCase] Return property names in camelCase.
+   * @returns {Object} Style object
+   */
+  getStyleFromLayer(layer, opts = {}) {
+    const join = this.__getJoin();
+    const joinLayers = this.__getJoinLayers();
+    const toStyle = this.get('toStyle');
+    const name = this.getName();
+    const values = layer.getValues();
+    let style;
+
+    if (toStyle) {
+      style = toStyle(values, { join, joinLayers, name, layer, property: this });
+    } else {
+      const result = this.getProperties().map(prop => {
+        const name = prop.getName();
+        const val = values[name];
+        const value = isUndefined(val) ? prop.getDefaultValue() : val;
+        return { name, value };
+      });
+      style = this.isDetached()
+        ? result.reduce((acc, item) => {
+            acc[item.name] = item.value;
+            return acc;
+          }, {})
+        : {
+            [this.getName()]: result.map(r => r.value).join(join),
+          };
+    }
+
+    return opts.camelCase
+      ? Object.keys(style).reduce((res, key) => {
+          res[camelCase(key)] = style[key];
+          return res;
+        }, {})
+      : style;
+  }
+
+  /**
+   * Get layer separator.
+   * @return {RegExp}
+   */
+  getLayerSeparator() {
+    const sep = this.get('layerSeparator');
+    return isString(sep) ? new RegExp(`${sep}(?![^\\(]*\\))`) : sep;
   }
 
   initialize(props = {}, opts = {}) {
@@ -166,150 +341,16 @@ export default class PropertyStack extends PropertyComposite {
     return isArray(result) ? result : [result];
   }
 
-  /**
-   * Add new layer to the stack
-   * @param {Object} [props={}] Layer props
-   * @param {Object} [opts={}] Options
-   * @returns {[Layer]}
-   */
-  addLayer(props = {}, opts = {}) {
-    const values = {};
-    this.getProperties().forEach(prop => {
-      const name = prop.getName();
-      const value = props[name];
-      values[name] = isUndefined(value) ? prop.getDefaultValue() : value;
-    });
-    const layer = this.get('layers').push({ values }, opts);
-
-    return layer;
-  }
-
-  /**
-   * Remove layer
-   * @param {[Layer]} layer
-   * @returns {[Layer]} Removed layer
-   */
-  removeLayer(layer) {
-    return this.get('layers').remove(layer);
-  }
-
-  /**
-   * Remove layer at index
-   * @param {Number} index Index of the layer to remove
-   * @returns {[Layer] | null} Removed layer
-   */
-  removeLayerAt(index = 0) {
-    const layer = this.getLayer(index);
-    return layer ? this.removeLayer(layer) : null;
-  }
-
-  /**
-   * Select layer
-   * @param {[Layer]} layer
-   */
-  selectLayer(layer) {
-    return this.set('selectedLayer', layer, { __select: true });
-  }
-
-  /**
-   * Select layer at index
-   * @param {Number} index Index of the layer to select
-   */
-  selectLayerAt(index = 0) {
-    const layer = this.getLayer(index);
-    return layer && this.selectLayer(layer);
-  }
-
-  /**
-   * Get layer label
-   * @param {[Layer]} layer
-   * @returns {String}
-   */
-  getLayerLabel(layer) {
-    let result = '';
-
-    if (layer) {
-      const layerLabel = this.get('layerLabel');
-      const values = layer.getValues();
-      const index = layer.getIndex();
-
-      if (layerLabel) {
-        result = layerLabel(layer, { index, values, property: this });
-      } else {
-        const parts = [];
-        this.getProperties().map(prop => {
-          parts.push(values[prop.getId()]);
-        });
-        result = parts.filter(Boolean).join(' ');
-      }
-    }
-
-    return result;
-  }
-
-  /**
-   * Get selected layer
-   * @returns {[Layer] | null}
-   */
-  getSelectedLayer() {
-    const layer = this.get('selectedLayer');
-    return layer && layer.getIndex() >= 0 ? layer : null;
-  }
-
   getStyle(opts) {
     return this.getStyleFromLayers(opts);
   }
 
-  /**
-   * Get style object from layer
-   * @param {[Layer]} layer
-   * @returns {Object} Style object
-   */
-  getStyleFromLayer(layer, opts = {}) {
-    const join = this.__getJoin();
-    const joinLayers = this.__getJoinLayers();
-    const toStyle = this.get('toStyle');
-    const name = this.getName();
-    const values = layer.getValues();
-    let style;
-
-    if (toStyle) {
-      style = toStyle(values, { join, joinLayers, name, layer, property: this });
-    } else {
-      const result = this.getProperties().map(prop => {
-        const name = prop.getName();
-        const val = values[name];
-        const value = isUndefined(val) ? prop.getDefaultValue() : val;
-        return { name, value };
-      });
-      style = this.isDetached()
-        ? result.reduce((acc, item) => {
-            acc[item.name] = item.value;
-            return acc;
-          }, {})
-        : {
-            [this.getName()]: result.map(r => r.value).join(join),
-          };
-    }
-
-    return opts.camelCase
-      ? Object.keys(style).reduce((res, key) => {
-          res[camelCase(key)] = style[key];
-          return res;
-        }, {})
-      : style;
-  }
-
-  /**
-   * Get style object from current layers
-   * @returns {Object} Style object
-   */
-  getStyleFromLayers() {
+  getStyleFromLayers(opts) {
     let result = {};
     const name = this.getName();
     const layers = this.getLayers();
     const props = this.getProperties();
-    const styles = layers.map(l => this.getStyleFromLayer(l));
+    const styles = layers.map(l => this.getStyleFromLayer(l, opts));
     styles.forEach(style => {
       keys(style).map(key => {
         if (!result[key]) result[key] = [];
@@ -350,27 +391,6 @@ export default class PropertyStack extends PropertyComposite {
     const style = this.getStyleFromLayers();
 
     return style[this.getName()];
-  }
-
-  /**
-   * Get layer sperator
-   * @return {RegExp}
-   */
-  getLayerSeparator() {
-    const sep = this.get('layerSeparator');
-    return isString(sep) ? new RegExp(`${sep}(?![^\\(]*\\))`) : sep;
-  }
-
-  getLayers() {
-    return this.get('layers');
-  }
-
-  getLayer(index = 0) {
-    return this.getLayers().at(index) || null;
-  }
-
-  getCurrentLayer() {
-    return this.getLayers().filter(layer => layer.get('active'))[0];
   }
 
   getFullValue() {
@@ -421,10 +441,15 @@ export default class PropertyStack extends PropertyComposite {
     return PropertyBase.prototype.clear.call(this);
   }
 
+  getCurrentLayer() {
+    return this.getLayers().filter(layer => layer.get('active'))[0];
+  }
+
   /**
    * This method allows to customize layers returned from the target
    * @param  {Object} target
    * @return {Array} Should return an array of layers
+   * @private
    * @example
    * // return example
    * [

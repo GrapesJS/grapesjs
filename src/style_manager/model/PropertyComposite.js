@@ -142,6 +142,8 @@ export default class PropertyComposite extends Property {
 
   /**
    * Get style object from current properties
+   * @param {Object} [opts={}] Options
+   * @param {Boolean} [opts.camelCase] Return property names in camelCase.
    * @returns {Object} Style object
    * @private
    */
