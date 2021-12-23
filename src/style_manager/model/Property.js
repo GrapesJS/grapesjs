@@ -56,6 +56,7 @@ export default class Property extends Model {
   }
 
   _up(props, opts = {}) {
+    if (opts.noTarget) opts.__up = true;
     const { partial, ...rest } = opts;
     props.__p = !!(rest.avoidStore || partial);
     return this.set(props, { ...rest, avoidStore: props.__p });
@@ -157,7 +158,6 @@ export default class Property extends Model {
    * @param {Boolean} [opts.noTarget=false] If `true` the change won't be propagated to selected targets.
    */
   upValue(value, opts = {}) {
-    if (opts.noTarget) opts.__up = true;
     const parsed = value === null || value === '' ? this.__getClearProps() : this.__parseValue(value, opts);
     return this._up(parsed, opts);
   }
@@ -169,7 +169,6 @@ export default class Property extends Model {
    * @param {Boolean} [opts.noTarget=false] If `true` the change won't be propagated to selected targets.
    */
   clear(opts = {}) {
-    if (opts.noTarget) opts.__up = true;
     this._up(this.__getClearProps(), { ...opts, __clear: true });
   }
 
@@ -311,7 +310,7 @@ export default class Property extends Model {
    * Get a complete value of the property.
    * This probably will replace the getValue when all
    * properties models will be splitted
-   * @param {string} val Custom value to replace the one on the model
+   * @param {String} val Custom value to replace the one on the model
    * @return {string}
    * @private
    */

@@ -23,6 +23,7 @@ async function generateDocs () {
     ['style_manager/index.js', 'style_manager.md'],
     ['style_manager/model/Sector.js', 'sector.md'],
     ['style_manager/model/Property.js', 'property.md'],
+    ['style_manager/model/PropertyNumber.js', 'property_number.md'],
     ['storage_manager/index.js', 'storage_manager.md'],
     ['device_manager/index.js', 'device_manager.md'],
     ['device_manager/model/Device.js', 'device.md'],

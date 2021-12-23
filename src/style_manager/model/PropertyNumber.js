@@ -5,7 +5,7 @@ import { hasWin } from 'utils/mixins';
 
 /**
  * @typedef PropertyNumber
- * @property {Array<String>} units Array of units, eg. ['px', '%']
+ * @property {Array<String>} units Array of units, eg. `['px', '%']`
  * @property {Number} min Minimum value.
  * @property {Number} max Maximum value.
  * @property {Number} step Step value.
@@ -40,7 +40,35 @@ export default class PropertyNumber extends Property {
   }
 
   /**
+   * Get min value.
+   * @returns {Number}
+   */
+  getMin() {
+    return this.get('min');
+  }
+
+  /**
+   * Get max value.
+   * @returns {Number}
+   */
+  getMax() {
+    return this.get('max');
+  }
+
+  /**
+   * Get step value.
+   * @returns {Number}
+   */
+  getStep() {
+    return this.get('step');
+  }
+
+  /**
    * Update property unit value.
+   * The change is also propagated to the selected targets.
+   * @param {String} unit New unit value
+   * @param {Object} [opts={}] Options
+   * @param {Boolean} [opts.noTarget=false] If `true` the change won't be propagated to selected targets.
    * @returns {String}
    */
   upUnit(unit, opts) {
