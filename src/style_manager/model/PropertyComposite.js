@@ -1,34 +1,85 @@
 import { isString, isUndefined } from 'underscore';
 import Property from './Property';
 
+/**
+ * @typedef PropertyComposite
+ * @property {Array<Object>} properties Array of sub properties, eg. `[{ type: 'number', property: 'margin-top' }, ...]`
+ * @property {Boolean} [detached=false] Indicate if the final CSS property is splitted (detached: `margin-top: X; margin-right: Y; ...`) or combined (not detached: `margin: X Y ...;`)
+ * @property {String|RegExp} [separator=' '] Separator to use to split property values.
+ * @property {String} [join=' '] Value used to join property values
+ * @property {Function} [fromStyle] Custom logic for getting property values from the target style object, eg.
+ * `
+ *  fromStyle(style) => {
+ *    return {};
+ *  }
+ * `
+ * @property {Function} [toStyle] Custom logic for creating the CSS style object to apply on selected targets.
+ *
+ * [Property]: property.html
+ */
 export default class PropertyComposite extends Property {
   defaults() {
     return {
       ...Property.getDefaults(),
-      // 'background' is a good example where to make a difference
-      // between detached and not
-      //
-      // - NOT detached (default)
-      // background: url(..) no-repeat center ...;
-      // - Detached
-      // background-image: url();
-      // background-repeat: repeat;
-      // ...
-      detached: 0,
-
-      // Array of sub properties
+      detached: false,
       properties: [],
-
-      // Separator to use to split property values (only for not detached properties)
       separator: ' ',
-
-      // Separator to use to join property values (only for not detached properties)
       join: null,
-
       fromStyle: null,
-
       toStyle: null,
     };
+  }
+
+  /**
+   * Get properties.
+   * @returns {Array<[Property]>}
+   */
+  getProperties() {
+    return [...this.get('properties').models];
+  }
+
+  /**
+   * Get property by id.
+   * @param  {String} id Property id.
+   * @returns {[Property]|null>}
+   */
+  getProperty(id) {
+    return this.get('properties').filter(prop => prop.get('id') === id)[0] || null;
+  }
+
+  /**
+   * Get property at index.
+   * @param  {Number} index
+   * @returns {[Property]|null}
+   */
+  getPropertyAt(index) {
+    return this.get('properties').at(index);
+  }
+
+  /**
+   * Check if the property is detached.
+   * @returns {Boolean}
+   */
+  isDetached() {
+    return !!this.get('detached');
+  }
+
+  /**
+   * Get current values of properties
+   * @param {Object} [opts={}] Options
+   * @param {Boolean} [opts.byName=false] Use property name as key instead of ID
+   * @returns {Object}
+   */
+  getValues({ byName } = {}) {
+    return this.getProperties().reduce((res, prop) => {
+      const key = byName ? prop.getName() : prop.getId();
+      res[key] = `${prop.__getFullValue()}`;
+      return res;
+    }, {});
+  }
+
+  getSplitSeparator() {
+    return new RegExp(`${this.get('separator')}(?![^\\(]*\\))`);
   }
 
   initialize(props = {}, opts = {}) {
@@ -74,6 +125,7 @@ export default class PropertyComposite extends Property {
   /**
    * Get style object from current properties
    * @returns {Object} Style object
+   * @private
    */
   getStyleFromProps(opts = {}) {
     const name = this.getName();
@@ -212,22 +264,9 @@ export default class PropertyComposite extends Property {
   }
 
   /**
-   * Get current values of properties
-   * @param {Object} [opts={}] Options
-   * @param {Boolean} [opts.byName=false] Use property name as key instead of ID
-   * @returns {Object}
-   */
-  getValues({ byName } = {}) {
-    return this.getProperties().reduce((res, prop) => {
-      const key = byName ? prop.getName() : prop.getId();
-      res[key] = `${prop.__getFullValue()}`;
-      return res;
-    }, {});
-  }
-
-  /**
    * Clear the value
    * @return {this}
+   * @private
    * @deprecated
    */
   clearValue(opts = {}) {
@@ -237,6 +276,7 @@ export default class PropertyComposite extends Property {
 
   /**
    * Update property values
+   * @private
    * @deprecated
    */
   updateValues() {
@@ -253,17 +293,10 @@ export default class PropertyComposite extends Property {
   }
 
   /**
-   * Split by sperator but avoid it inside parenthesis
-   * @return {RegExp}
-   */
-  getSplitSeparator() {
-    return new RegExp(`${this.get('separator')}(?![^\\(]*\\))`);
-  }
-
-  /**
    * Returns default value
    * @param  {Boolean} defaultProps Force to get defaults from properties
    * @return {string}
+   * @private
    */
   getDefaultValue(defaultProps) {
     let value = this.get('defaults');
@@ -284,26 +317,5 @@ export default class PropertyComposite extends Property {
     }
 
     return this.get('properties').getFullValue();
-  }
-
-  /**
-   * Get property at some index
-   * @param  {Number} index
-   * @return {Object}
-   */
-  getPropertyAt(index) {
-    return this.get('properties').at(index);
-  }
-
-  isDetached() {
-    return !!this.get('detached');
-  }
-
-  getProperties() {
-    return [...this.get('properties').models];
-  }
-
-  getProperty(id) {
-    return this.get('properties').filter(prop => prop.get('id') === id)[0] || null;
   }
 }
