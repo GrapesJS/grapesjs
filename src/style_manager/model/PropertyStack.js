@@ -1,5 +1,5 @@
 import { keys, isUndefined, isArray, isString } from 'underscore';
-import Property from './PropertyComposite';
+import PropertyComposite from './PropertyComposite';
 import PropertyBase from './Property';
 import Layers from './Layers';
 import { camelCase } from 'utils/mixins';
@@ -7,33 +7,35 @@ import { camelCase } from 'utils/mixins';
 const VALUES_REG = /,(?![^\(]*\))/;
 const PARTS_REG = /\s(?![^(]*\))/;
 
-export default Property.extend({
-  defaults: {
-    ...Property.prototype.defaults,
-    // Array of layers (which contain properties)
-    layers: [],
+export default class PropertyStack extends PropertyComposite {
+  defaults() {
+    return {
+      ...PropertyComposite.getDefaults(),
+      // Array of layers (which contain properties)
+      layers: [],
 
-    // The separator used to split layer values
-    layerSeparator: ', ',
+      // The separator used to split layer values
+      layerSeparator: ', ',
 
-    // The separator used to join layer values
-    layerJoin: '',
+      // The separator used to join layer values
+      layerJoin: '',
 
-    // Prepend new layers in the list
-    prepend: 0,
+      // Prepend new layers in the list
+      prepend: 0,
 
-    // Layer preview
-    preview: 0,
+      // Layer preview
+      preview: 0,
 
-    // Custom layer label function
-    layerLabel: null,
+      // Custom layer label function
+      layerLabel: null,
 
-    // Current selected layer
-    selectedLayer: null,
-  },
+      // Current selected layer
+      selectedLayer: null,
+    };
+  }
 
   initialize(props = {}, opts = {}) {
-    Property.callParentInit(Property, this, props, opts);
+    PropertyComposite.callParentInit(PropertyComposite, this, props, opts);
     const layers = this.get('layers');
     const layersColl = new Layers(layers);
     layersColl.property = this;
@@ -41,8 +43,8 @@ export default Property.extend({
     this.set('layers', layersColl, { silent: true });
     this.on('change:selectedLayer', this.__upSelected);
     this.listenTo(layersColl, 'add remove', this.__upLayers);
-    Property.callInit(this, props, opts);
-  },
+    PropertyComposite.callInit(this, props, opts);
+  }
 
   __upProperties(prop, opts = {}) {
     const layer = this.getSelectedLayer();
@@ -50,24 +52,24 @@ export default Property.extend({
     const name = prop.getName();
     layer.upValues({ [name]: prop.__getFullValue() });
     this.__upTargetsStyleProps(opts);
-  },
+  }
 
   __upLayers(m, c, o) {
     this.__upTargetsStyleProps(o || c);
-  },
+  }
 
   __upTargets(p, opts = {}) {
     if (opts.__select) return;
     return PropertyBase.prototype.__upTargets.call(this, p, opts);
-  },
+  }
 
   __upTargetsStyleProps(opts = {}) {
     this.__upTargetsStyle(this.getStyleFromLayers(), opts);
-  },
+  }
 
   __upTargetsStyle(style, opts) {
     return PropertyBase.prototype.__upTargetsStyle.call(this, style, opts);
-  },
+  }
 
   __upSelected({ noEvent } = {}, opts = {}) {
     if (!this.__hasCustom()) return;
@@ -83,7 +85,7 @@ export default Property.extend({
       });
 
     !noEvent && sm.__trgEv(sm.events.layerSelect, { property: this });
-  },
+  }
 
   _up(props, opts = {}) {
     const { __layers = [], ...rest } = props;
@@ -91,7 +93,7 @@ export default Property.extend({
     !this.isDetached() && this.__setLayers(__layers);
     this.__upSelected({ noEvent: true }, opts);
     return PropertyBase.prototype._up.call(this, rest, opts);
-  },
+  }
 
   __setLayers(newLayers = []) {
     const layers = this.getLayers();
@@ -102,7 +104,7 @@ export default Property.extend({
     } else {
       this.getLayers().reset(layersNew);
     }
-  },
+  }
 
   __parseValue(value) {
     const result = this.parseValue(value);
@@ -113,7 +115,7 @@ export default Property.extend({
       .filter(Boolean);
 
     return result;
-  },
+  }
 
   __parseLayer(value) {
     const parseFn = this.get('parseLayer');
@@ -126,7 +128,7 @@ export default Property.extend({
           acc[prop.getId()] = !isUndefined(value) ? value : prop.getDefaultValue();
           return acc;
         }, {});
-  },
+  }
 
   __getLayersFromStyle(style = {}) {
     if (!this.__styleHasProps(style)) return null;
@@ -162,7 +164,7 @@ export default Property.extend({
     }
 
     return isArray(result) ? result : [result];
-  },
+  }
 
   /**
    * Add new layer to the stack
@@ -180,7 +182,7 @@ export default Property.extend({
     const layer = this.get('layers').push({ values }, opts);
 
     return layer;
-  },
+  }
 
   /**
    * Remove layer
@@ -189,7 +191,7 @@ export default Property.extend({
    */
   removeLayer(layer) {
     return this.get('layers').remove(layer);
-  },
+  }
 
   /**
    * Remove layer at index
@@ -199,7 +201,7 @@ export default Property.extend({
   removeLayerAt(index = 0) {
     const layer = this.getLayer(index);
     return layer ? this.removeLayer(layer) : null;
-  },
+  }
 
   /**
    * Select layer
@@ -207,7 +209,7 @@ export default Property.extend({
    */
   selectLayer(layer) {
     return this.set('selectedLayer', layer, { __select: true });
-  },
+  }
 
   /**
    * Select layer at index
@@ -216,7 +218,7 @@ export default Property.extend({
   selectLayerAt(index = 0) {
     const layer = this.getLayer(index);
     return layer && this.selectLayer(layer);
-  },
+  }
 
   /**
    * Get layer label
@@ -243,7 +245,7 @@ export default Property.extend({
     }
 
     return result;
-  },
+  }
 
   /**
    * Get selected layer
@@ -252,11 +254,11 @@ export default Property.extend({
   getSelectedLayer() {
     const layer = this.get('selectedLayer');
     return layer && layer.getIndex() >= 0 ? layer : null;
-  },
+  }
 
   getStyle(opts) {
     return this.getStyleFromLayers(opts);
-  },
+  }
 
   /**
    * Get style object from layer
@@ -296,7 +298,7 @@ export default Property.extend({
           return res;
         }, {})
       : style;
-  },
+  }
 
   /**
    * Get style object from current layers
@@ -334,21 +336,21 @@ export default Property.extend({
     }
 
     return result;
-  },
+  }
 
   __getJoinLayers() {
     const join = this.get('layerJoin');
     const sep = this.get('layerSeparator');
 
     return join || (isString(sep) ? sep : join);
-  },
+  }
 
   __getFullValue() {
     if (this.get('detached')) return '';
     const style = this.getStyleFromLayers();
 
     return style[this.getName()];
-  },
+  }
 
   /**
    * Get layer sperator
@@ -357,33 +359,33 @@ export default Property.extend({
   getLayerSeparator() {
     const sep = this.get('layerSeparator');
     return isString(sep) ? new RegExp(`${sep}(?![^\\(]*\\))`) : sep;
-  },
+  }
 
   getLayers() {
     return this.get('layers');
-  },
+  }
 
   getLayer(index = 0) {
     return this.getLayers().at(index) || null;
-  },
+  }
 
   getCurrentLayer() {
     return this.getLayers().filter(layer => layer.get('active'))[0];
-  },
+  }
 
   getFullValue() {
     return this.get('detached') ? '' : this.get('layers').getFullValue();
-  },
+  }
 
   getValueFromStyle(styles = {}) {
     const layers = this.getLayers().getLayersFromStyle(styles);
     return new Layers(layers).getFullValue();
-  },
+  }
 
   clearValue() {
     this.getLayers().reset();
-    return Property.prototype.clearValue.apply(this, arguments);
-  },
+    return PropertyComposite.prototype.clearValue.apply(this, arguments);
+  }
 
   getValueFromTarget(target) {
     const { detached, property, properties } = this.attributes;
@@ -397,7 +399,7 @@ export default Property.extend({
     });
 
     return !detached ? style[property] : keys(validStyles).length ? validStyles : '';
-  },
+  }
 
   /**
    * Extended
@@ -407,7 +409,7 @@ export default Property.extend({
     const { noParent } = opts;
     const parentValue = noParent && this.getParentTarget();
     return this.getLayers().length > 0 && !parentValue;
-  },
+  }
 
   /**
    * Extended
@@ -417,7 +419,7 @@ export default Property.extend({
     this.getLayers().reset();
     this.__upTargetsStyleProps(opts);
     return PropertyBase.prototype.clear.call(this);
-  },
+  }
 
   /**
    * This method allows to customize layers returned from the target
@@ -436,5 +438,5 @@ export default Property.extend({
    */
   getLayersFromTarget(target) {
     return;
-  },
-});
+  }
+}
