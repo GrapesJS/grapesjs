@@ -1,4 +1,4 @@
-import Property from './PropertyInteger';
+import Property from './PropertyNumber';
 
 export default Property.extend({
   defaults: {

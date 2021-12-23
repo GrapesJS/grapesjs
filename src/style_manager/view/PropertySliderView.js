@@ -1,4 +1,4 @@
-import Property from './PropertyIntegerView';
+import Property from './PropertyNumberView';
 
 export default Property.extend({
   events() {
@@ -6,7 +6,7 @@ export default Property.extend({
       ...Property.prototype.events,
       'change [type=range]': 'inputValueChanged',
       'input [type=range]': 'inputValueChangedSoft',
-      change: ''
+      change: '',
     };
   },
 
@@ -62,5 +62,5 @@ export default Property.extend({
   clearCached() {
     Property.prototype.clearCached.apply(this, arguments);
     this.slider = null;
-  }
+  },
 });

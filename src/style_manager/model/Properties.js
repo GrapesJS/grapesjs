@@ -13,8 +13,8 @@ import PropertyRadio from './PropertyRadio';
 import PropertyRadioView from './../view/PropertyRadioView';
 import PropertySlider from './PropertySlider';
 import PropertySliderView from './../view/PropertySliderView';
-import PropertyInteger from './PropertyInteger';
-import PropertyIntegerView from './../view/PropertyIntegerView';
+import PropertyNumber from './PropertyNumber';
+import PropertyNumberView from './../view/PropertyNumberView';
 import PropertyView from './../view/PropertyView';
 
 export default Backbone.Collection.extend(TypeableCollection).extend({
@@ -29,7 +29,7 @@ export default Backbone.Collection.extend(TypeableCollection).extend({
         if (value && value.type == 'stack') {
           return value;
         }
-      }
+      },
     },
     {
       id: 'composite',
@@ -39,7 +39,7 @@ export default Backbone.Collection.extend(TypeableCollection).extend({
         if (value && value.type == 'composite') {
           return value;
         }
-      }
+      },
     },
     {
       id: 'file',
@@ -49,7 +49,7 @@ export default Backbone.Collection.extend(TypeableCollection).extend({
         if (value && value.type == 'file') {
           return value;
         }
-      }
+      },
     },
     {
       id: 'color',
@@ -59,7 +59,7 @@ export default Backbone.Collection.extend(TypeableCollection).extend({
         if (value && value.type == 'color') {
           return value;
         }
-      }
+      },
     },
     {
       id: 'select',
@@ -69,7 +69,7 @@ export default Backbone.Collection.extend(TypeableCollection).extend({
         if (value && value.type == 'select') {
           return value;
         }
-      }
+      },
     },
     {
       id: 'radio',
@@ -79,7 +79,7 @@ export default Backbone.Collection.extend(TypeableCollection).extend({
         if (value && value.type == 'radio') {
           return value;
         }
-      }
+      },
     },
     {
       id: 'slider',
@@ -89,17 +89,17 @@ export default Backbone.Collection.extend(TypeableCollection).extend({
         if (value && value.type == 'slider') {
           return value;
         }
-      }
+      },
     },
     {
       id: 'integer',
-      model: PropertyInteger,
-      view: PropertyIntegerView,
+      model: PropertyNumber,
+      view: PropertyNumberView,
       isType(value) {
         if (value && value.type == 'integer') {
           return value;
         }
-      }
+      },
     },
     {
       id: 'base',
@@ -108,8 +108,8 @@ export default Backbone.Collection.extend(TypeableCollection).extend({
       isType(value) {
         value.type = 'base';
         return value;
-      }
-    }
+      },
+    },
   ],
 
   deepClone() {
@@ -145,5 +145,5 @@ export default Backbone.Collection.extend(TypeableCollection).extend({
     let result = '';
     this.each(model => (result += `${model.getFullValue()} `));
     return result.trim();
-  }
+  },
 });

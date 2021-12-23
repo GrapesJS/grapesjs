@@ -1,7 +1,7 @@
 import Sector from 'style_manager/model/Sector';
 import Sectors from 'style_manager/model/Sectors';
 import Property from 'style_manager/model/Property';
-import PropertyInteger from 'style_manager/model/PropertyInteger';
+import PropertyNumber from 'style_manager/model/PropertyNumber';
 import Properties from 'style_manager/model/Properties';
 import Layer from 'style_manager/model/Layer';
 import Layers from 'style_manager/model/Layers';
@@ -165,11 +165,11 @@ describe('Property', () => {
   });
 });
 
-describe('PropertyInteger', () => {
+describe('PropertyNumber', () => {
   var obj;
 
   beforeEach(() => {
-    obj = new PropertyInteger({ units: ['px', 'deg'] });
+    obj = new PropertyNumber({ units: ['px', 'deg'] });
   });
 
   afterEach(() => {
@@ -182,7 +182,7 @@ describe('PropertyInteger', () => {
   });
 
   test('parse input value with function', () => {
-    obj = new PropertyInteger({
+    obj = new PropertyNumber({
       units: ['px', 'deg'],
       functionName: 'test',
     });
@@ -191,14 +191,14 @@ describe('PropertyInteger', () => {
   });
 
   test('parse input value with min', () => {
-    obj = new PropertyInteger({ units: ['px'], min: 10 });
+    obj = new PropertyNumber({ units: ['px'], min: 10 });
     const result = { value: 10, unit: 'px' };
     expect(obj.parseValue('1px')).toEqual(result);
     expect(obj.parseValue('15px')).toEqual({ value: 15, unit: 'px' });
   });
 
   test('parse input value with max', () => {
-    obj = new PropertyInteger({ units: ['px'], max: 100 });
+    obj = new PropertyNumber({ units: ['px'], max: 100 });
     const result = { value: 100, unit: 'px' };
     expect(obj.parseValue('200px')).toEqual(result);
     expect(obj.parseValue('95px')).toEqual({ value: 95, unit: 'px' });

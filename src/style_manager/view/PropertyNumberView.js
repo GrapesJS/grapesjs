@@ -42,5 +42,5 @@ export default PropertyView.extend({
     PropertyView.prototype.clearCached.apply(this, arguments);
     this.unit = null;
     this.$unit = null;
-  }
+  },
 });

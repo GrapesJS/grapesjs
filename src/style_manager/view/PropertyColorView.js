@@ -1,14 +1,14 @@
-import PropertyIntegerView from './PropertyIntegerView';
+import PropertyNumberView from './PropertyNumberView';
 import InputColor from 'domain_abstract/ui/InputColor';
 
-export default PropertyIntegerView.extend({
+export default PropertyNumberView.extend({
   setValue(value, opts = {}) {
     opts = { ...opts, silent: 1 };
     this.inputInst.setValue(value, opts);
   },
 
   remove() {
-    PropertyIntegerView.prototype.remove.apply(this, arguments);
+    PropertyNumberView.prototype.remove.apply(this, arguments);
     const inp = this.inputInst;
     inp && inp.remove && inp.remove();
     ['inputInst', '$color'].forEach(i => (this[i] = {}));
@@ -20,7 +20,7 @@ export default PropertyIntegerView.extend({
       const inputColor = new InputColor({
         target: this.target,
         model: this.model,
-        ppfx
+        ppfx,
       });
       const input = inputColor.render();
       this.el.querySelector(`.${ppfx}fields`).appendChild(input.el);
@@ -29,5 +29,5 @@ export default PropertyIntegerView.extend({
       this.input = this.$input.get(0);
       this.inputInst = input;
     }
-  }
+  },
 });

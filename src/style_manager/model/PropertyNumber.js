@@ -3,24 +3,23 @@ import Property from './Property';
 import InputNumber from 'domain_abstract/ui/InputNumber';
 import { hasWin } from 'utils/mixins';
 
+/**
+ * @typedef PropertyNumber
+ * @property {Array<String>} units Array of units, eg. ['px', '%']
+ * @property {Number} min Minimum value.
+ * @property {Number} max Maximum value.
+ * @property {Number} step Step value.
+ *
+ */
 export default class PropertyNumber extends Property {
   defaults() {
     return {
       ...Property.getDefaults(),
-      // Array of units, eg. ['px', '%']
       units: [],
-
-      // Selected unit, eg. 'px'
       unit: '',
-
-      // Integer value steps
-      step: 1,
-
-      // Minimum value
       min: '',
-
-      // Maximum value
       max: '',
+      step: 1,
     };
   }
 

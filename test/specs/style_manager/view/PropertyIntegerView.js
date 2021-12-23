@@ -1,11 +1,11 @@
 import Backbone from 'backbone';
-import PropertyIntegerView from 'style_manager/view/PropertyIntegerView';
-import PropertyInteger from 'style_manager/model/PropertyInteger';
+import PropertyNumberView from 'style_manager/view/PropertyNumberView';
+import PropertyNumber from 'style_manager/model/PropertyNumber';
 import Component from 'dom_components/model/Component';
 import Editor from 'editor/model/Editor';
 import DomComponents from 'dom_components';
 
-describe('PropertyIntegerView', () => {
+describe('PropertyNumberView', () => {
   let em;
   let dcomp;
   let compOpts;
@@ -32,14 +32,14 @@ describe('PropertyIntegerView', () => {
     propTarget = { ...Backbone.Events };
     target = new Component({}, compOpts);
     component = new Component({}, compOpts);
-    model = new PropertyInteger({
+    model = new PropertyNumber({
       units,
-      property: propName
+      property: propName,
     });
     propTarget.model = component;
-    view = new PropertyIntegerView({
+    view = new PropertyNumberView({
       model,
-      propTarget
+      propTarget,
     });
     document.body.innerHTML = '<div id="fixtures"></div>';
     fixtures = document.body.firstChild;
@@ -123,9 +123,9 @@ describe('PropertyIntegerView', () => {
   describe('With target setted', () => {
     beforeEach(() => {
       target.model = component;
-      view = new PropertyIntegerView({
+      view = new PropertyNumberView({
         model,
-        propTarget: target
+        propTarget: target,
       });
       fixtures.innerHTML = '';
       view.render();
@@ -159,16 +159,16 @@ describe('PropertyIntegerView', () => {
   describe('Init property', () => {
     beforeEach(() => {
       component = new Component();
-      model = new PropertyInteger({
+      model = new PropertyNumber({
         units,
         property: propName,
         defaults: intValue,
         min: minValue,
         max: maxValue,
-        unit: units[1]
+        unit: units[1],
       });
-      view = new PropertyIntegerView({
-        model
+      view = new PropertyNumberView({
+        model,
       });
       fixtures.innerHTML = '';
       view.render();
