@@ -77,6 +77,7 @@ module.exports = {
         ['/api/property_number', `${subDivider}PropertyNumber`],
         ['/api/property_select', `${subDivider}PropertySelect`],
         ['/api/property_composite', `${subDivider}PropertyComposite`],
+        ['/api/property_stack', `${subDivider}PropertyStack`],
         ['/api/storage_manager', 'Storage Manager'],
         ['/api/device_manager', 'Device Manager'],
         ['/api/device', `${subDivider}Device`],

@@ -73,7 +73,9 @@ Get the CSS style object of the property.
 
 #### Parameters
 
-*   `opts`   (optional, default `{}`)
+*   `opts` **[Object][2]** Options (optional, default `{}`)
+
+    *   `opts.camelCase` **[Boolean][3]?** Return property name in camelCase.
 
 #### Examples
 
