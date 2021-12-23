@@ -129,7 +129,7 @@ export default class PropertyStack extends PropertyComposite {
   }
 
   /**
-   * Get layer label.
+   * Get the layer label. The label can be customized with the `layerLabel` property.
    * @param {[Layer]} layer
    * @returns {String}
    * @example

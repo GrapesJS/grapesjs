@@ -1,16 +1,44 @@
-import Backbone from 'backbone';
-import Properties from './Properties';
+import { Model } from 'common';
 import { camelCase } from 'utils/mixins';
+import Properties from './Properties';
 
-export default Backbone.Model.extend({
-  defaults: {
-    index: '',
-    value: '',
-    values: {},
-    active: false,
-    preview: false,
-    properties: [],
-  },
+export default class Layer extends Model {
+  defaults() {
+    return {
+      index: '',
+      value: '',
+      values: {},
+      active: false,
+      preview: false,
+      properties: [],
+    };
+  }
+
+  /**
+   * Get layer index.
+   * @returns {Number}
+   */
+  getIndex() {
+    const coll = this.collection;
+    return coll ? coll.indexOf(this) : -1;
+  }
+
+  /**
+   * Get layer values.
+   * @param {Object} [opts={}] Options
+   * @param {Boolean} [opts.camelCase] Return property names in camelCase.
+   * @returns {Object}
+   */
+  getValues(opts = {}) {
+    const values = this.get('values');
+
+    return opts.camelCase
+      ? Object.keys(values).reduce((res, key) => {
+          res[camelCase(key)] = values[key];
+          return res;
+        }, {})
+      : values;
+  }
 
   initialize() {
     const prp = this.get('properties');
@@ -32,44 +60,23 @@ export default Backbone.Model.extend({
 
       this.set('value', val.trim());
     }
-  },
-
-  getValues(opts = {}) {
-    const values = this.get('values');
-
-    return opts.camelCase
-      ? Object.keys(values).reduce((res, key) => {
-          res[camelCase(key)] = values[key];
-          return res;
-        }, {})
-      : values;
-  },
+  }
 
   upValues(props = {}) {
     return this.set('values', {
       ...this.getValues(),
       ...props,
     });
-  },
-
-  getIndex() {
-    const coll = this.collection;
-    return coll ? coll.indexOf(this) : -1;
-  },
+  }
 
   onPropAdd(prop) {
     const coll = this.collection;
     prop.parent = coll && coll.property;
-  },
+  }
 
-  /**
-   * Get property at some index
-   * @param  {Number} index
-   * @return {Object}
-   */
   getPropertyAt(index) {
     return this.get('properties').at(index);
-  },
+  }
 
   getPropertyValue(property) {
     let result = '';
@@ -79,11 +86,11 @@ export default Backbone.Model.extend({
       }
     });
     return result;
-  },
+  }
 
   getFullValue() {
     let result = [];
     this.get('properties').each(prop => result.push(prop.getFullValue()));
     return result.join(' ').trim();
-  },
-});
+  }
+}
