@@ -1,10 +1,14 @@
 import Property from './Property';
 
+/**
+ * @typedef PropertySelect
+ * @property {Array<Object>} options Array of option definitions, eg `[{ id: '100', label: 'Set 100' }]`
+ */
 export default class PropertySelect extends Property {
   defaults() {
     return {
       ...Property.getDefaults(),
-      options: [], // Array of options, eg. [{ id: '100', label: 'Set 100' }]
+      options: [],
       full: 0,
     };
   }
@@ -20,7 +24,8 @@ export default class PropertySelect extends Property {
   }
 
   /**
-   * Get current selected option.
+   * Get current selected option or by id.
+   * @param {String} id Option id.
    * @returns {Object | null}
    */
   getOption(id) {
@@ -30,7 +35,7 @@ export default class PropertySelect extends Property {
 
   /**
    * Update options.
-   * @param {Array<Object>} value Array of options, eg. `[{ id: 'val-1', label: 'Value 1' }]`
+   * @param {Array<Object>} value New array of options, eg. `[{ id: 'val-1', label: 'Value 1' }]`
    */
   setOptions(value = []) {
     this.set('options', value);
