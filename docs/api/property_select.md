@@ -20,7 +20,7 @@ Get current selected option or by id.
 
 #### Parameters
 
-*   `id` **[String][3]** Option id.
+*   `id` **[String][3]?** Option id.
 
 Returns **([Object][2] | null)** 
 

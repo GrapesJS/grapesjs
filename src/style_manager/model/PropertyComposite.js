@@ -14,8 +14,6 @@ import Property from './Property';
  *  }
  * `
  * @property {Function} [toStyle] Custom logic for creating the CSS style object to apply on selected targets.
- *
- * [Property]: property.html
  */
 export default class PropertyComposite extends Property {
   defaults() {
@@ -41,7 +39,7 @@ export default class PropertyComposite extends Property {
   /**
    * Get property by id.
    * @param  {String} id Property id.
-   * @returns {[Property]|null>}
+   * @returns {[Property]|null}
    */
   getProperty(id) {
     return this.get('properties').filter(prop => prop.get('id') === id)[0] || null;
@@ -65,10 +63,14 @@ export default class PropertyComposite extends Property {
   }
 
   /**
-   * Get current values of properties
+   * Get current values of properties.
    * @param {Object} [opts={}] Options
-   * @param {Boolean} [opts.byName=false] Use property name as key instead of ID
+   * @param {Boolean} [opts.byName=false] Use property names as a key instead of the id.
    * @returns {Object}
+   * @example
+   * // In case the property is `margin` with sub properties like `margin-top`, `margin-right`, etc.
+   * console.log(property.getValues());
+   * // { 'margin-top': '10px', 'margin-right': '20px', ... };
    */
   getValues({ byName } = {}) {
     return this.getProperties().reduce((res, prop) => {
@@ -76,6 +78,22 @@ export default class PropertyComposite extends Property {
       res[key] = `${prop.__getFullValue()}`;
       return res;
     }, {});
+  }
+
+  /**
+   * Get property separator.
+   * @returns {RegExp}
+   */
+  getSeparator() {
+    return this.getSplitSeparator();
+  }
+
+  /**
+   * Get the join value.
+   * @returns {String}
+   */
+  getJoin() {
+    return this.__getJoin();
   }
 
   getSplitSeparator() {
@@ -319,3 +337,6 @@ export default class PropertyComposite extends Property {
     return this.get('properties').getFullValue();
   }
 }
+/**
+ * [Property]: property.html
+ */
