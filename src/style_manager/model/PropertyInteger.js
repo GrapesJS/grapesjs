@@ -3,24 +3,26 @@ import Property from './Property';
 import InputNumber from 'domain_abstract/ui/InputNumber';
 import { hasWin } from 'utils/mixins';
 
-export default Property.extend({
-  defaults: {
-    ...Property.prototype.defaults,
-    // Array of units, eg. ['px', '%']
-    units: [],
+export default class PropertyNumber extends Property {
+  defaults() {
+    return {
+      ...Property.getDefaults(),
+      // Array of units, eg. ['px', '%']
+      units: [],
 
-    // Selected unit, eg. 'px'
-    unit: '',
+      // Selected unit, eg. 'px'
+      unit: '',
 
-    // Integer value steps
-    step: 1,
+      // Integer value steps
+      step: 1,
 
-    // Minimum value
-    min: '',
+      // Minimum value
+      min: '',
 
-    // Maximum value
-    max: '',
-  },
+      // Maximum value
+      max: '',
+    };
+  }
 
   /**
    * Get property units.
@@ -28,7 +30,7 @@ export default Property.extend({
    */
   getUnits() {
     return this.get('units') || [];
-  },
+  }
 
   /**
    * Get property unit value.
@@ -36,7 +38,7 @@ export default Property.extend({
    */
   getUnit() {
     return this.get('unit');
-  },
+  }
 
   /**
    * Update property unit value.
@@ -44,7 +46,7 @@ export default Property.extend({
    */
   upUnit(unit, opts) {
     return this._up({ unit }, opts);
-  },
+  }
 
   initialize(props = {}, opts = {}) {
     Property.callParentInit(Property, this, props, opts);
@@ -56,19 +58,19 @@ export default Property.extend({
       this.set('unit', units[0], { silent: 1 });
     }
     Property.callInit(this, props, opts);
-  },
+  }
 
   clearValue(opts = {}) {
     this.set({ value: undefined, unit: undefined }, opts);
     return this;
-  },
+  }
 
   __getClearProps() {
     return {
       ...Property.prototype.__getClearProps(),
       unit: '',
     };
-  },
+  }
 
   parseValue(val, opts = {}) {
     const parsed = Property.prototype.parseValue.apply(this, arguments);
@@ -79,7 +81,7 @@ export default Property.extend({
     parsed.value = value;
     parsed.unit = unit;
     return parsed;
-  },
+  }
 
   getFullValue() {
     let value = this.get('value');
@@ -88,5 +90,5 @@ export default Property.extend({
     unit = !isUndefined(unit) && value ? unit : '';
     value = `${value}${unit}`;
     return Property.prototype.getFullValue.apply(this, [value]);
-  },
-});
+  }
+}
