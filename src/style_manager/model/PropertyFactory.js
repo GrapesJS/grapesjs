@@ -134,7 +134,7 @@ export default class PropertyFactory {
       [
         'font-size',
         {
-          defaults: 'medium',
+          default: 'medium',
           fixedValues: [
             'medium',
             'xx-small',
@@ -155,7 +155,7 @@ export default class PropertyFactory {
       [
         'letter-spacing',
         {
-          defaults: 'normal',
+          default: 'normal',
           fixedValues: ['normal', 'initial', 'inherit'],
         },
         'top',
@@ -193,17 +193,17 @@ export default class PropertyFactory {
       ['border-top-right-radius', {}, 'padding-top'],
       ['border-bottom-left-radius', {}, 'padding-top'],
       ['border-bottom-right-radius', {}, 'padding-top'],
-      ['border-width', { default: '0', units: this.unitsSizeNoPerc }, 'padding-top'],
+      ['border-width', { default: 'medium', units: this.unitsSizeNoPerc }, 'padding-top'],
       ['box-shadow-h', {}, 'text-shadow-h'],
       ['box-shadow-v', {}, 'text-shadow-h'],
       ['box-shadow-blur', { default: '5px' }, 'text-shadow-blur'],
       ['box-shadow-spread', {}, 'text-shadow-h'],
       ['transition-duration', { default: '2', units: this.unitsTime }, 'padding-top'],
       ['perspective', {}, 'padding-top'],
-      ['transform-rotate-x', { functionName: 'rotateX', units: this.unitsAngle }, 'margin-top'],
+      ['transform-rotate-x', { functionName: 'rotateX', units: this.unitsAngle, default: '0', type: this.typeNumber }],
       ['transform-rotate-y', { functionName: 'rotateY' }, 'transform-rotate-x'],
       ['transform-rotate-z', { functionName: 'rotateZ' }, 'transform-rotate-x'],
-      ['transform-scale-x', { default: '1', functionName: 'scaleX', units: [] }, 'transform-rotate-x'],
+      ['transform-scale-x', { default: '1', functionName: 'scaleX', units: undefined }, 'transform-rotate-x'],
       ['transform-scale-y', { functionName: 'scaleY' }, 'transform-scale-x'],
       ['transform-scale-z', { functionName: 'scaleZ' }, 'transform-scale-x'],
       ['order', { type: this.typeNumber, default: '0', requiresParent: requireFlex }],

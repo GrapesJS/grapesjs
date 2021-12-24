@@ -20,8 +20,8 @@ describe('PropertyFactory', () => {
       {
         property: 'float',
         type: 'radio',
-        defaults: 'none',
-        list: [{ value: 'none' }, { value: 'left' }, { value: 'right' }],
+        default: 'none',
+        options: [{ id: 'none' }, { id: 'left' }, { id: 'right' }],
       },
     ]);
   });
@@ -31,14 +31,8 @@ describe('PropertyFactory', () => {
       {
         property: 'display',
         type: 'select',
-        defaults: 'block',
-        list: [
-          { value: 'block' },
-          { value: 'inline' },
-          { value: 'inline-block' },
-          { value: 'flex' },
-          { value: 'none' },
-        ],
+        default: 'block',
+        options: [{ id: 'block' }, { id: 'inline' }, { id: 'inline-block' }, { id: 'flex' }, { id: 'none' }],
       },
     ]);
   });
@@ -48,8 +42,8 @@ describe('PropertyFactory', () => {
       {
         property: 'flex-direction',
         type: 'select',
-        defaults: 'row',
-        list: [{ value: 'row' }, { value: 'row-reverse' }, { value: 'column' }, { value: 'column-reverse' }],
+        default: 'row',
+        options: [{ id: 'row' }, { id: 'row-reverse' }, { id: 'column' }, { id: 'column-reverse' }],
         requires: { display: ['flex'] },
       },
     ]);
@@ -60,8 +54,8 @@ describe('PropertyFactory', () => {
       {
         property: 'flex-wrap',
         type: 'select',
-        defaults: 'nowrap',
-        list: [{ value: 'nowrap' }, { value: 'wrap' }, { value: 'wrap-reverse' }],
+        default: 'nowrap',
+        options: [{ id: 'nowrap' }, { id: 'wrap' }, { id: 'wrap-reverse' }],
         requires: { display: ['flex'] },
       },
     ]);
@@ -72,14 +66,14 @@ describe('PropertyFactory', () => {
       {
         property: 'justify-content',
         type: 'select',
-        defaults: 'flex-start',
-        list: [
-          { value: 'flex-start' },
-          { value: 'flex-end' },
-          { value: 'center' },
-          { value: 'space-between' },
-          { value: 'space-around' },
-          { value: 'space-evenly' },
+        default: 'flex-start',
+        options: [
+          { id: 'flex-start' },
+          { id: 'flex-end' },
+          { id: 'center' },
+          { id: 'space-between' },
+          { id: 'space-around' },
+          { id: 'space-evenly' },
         ],
         requires: { display: ['flex'] },
       },
@@ -91,14 +85,8 @@ describe('PropertyFactory', () => {
       {
         property: 'align-items',
         type: 'select',
-        defaults: 'stretch',
-        list: [
-          { value: 'flex-start' },
-          { value: 'flex-end' },
-          { value: 'center' },
-          { value: 'baseline' },
-          { value: 'stretch' },
-        ],
+        default: 'stretch',
+        options: [{ id: 'flex-start' }, { id: 'flex-end' }, { id: 'center' }, { id: 'baseline' }, { id: 'stretch' }],
         requires: { display: ['flex'] },
       },
     ]);
@@ -109,14 +97,14 @@ describe('PropertyFactory', () => {
       {
         property: 'align-content',
         type: 'select',
-        defaults: 'stretch',
-        list: [
-          { value: 'flex-start' },
-          { value: 'flex-end' },
-          { value: 'center' },
-          { value: 'space-between' },
-          { value: 'space-around' },
-          { value: 'stretch' },
+        default: 'stretch',
+        options: [
+          { id: 'flex-start' },
+          { id: 'flex-end' },
+          { id: 'center' },
+          { id: 'space-between' },
+          { id: 'space-around' },
+          { id: 'stretch' },
         ],
         requires: { display: ['flex'] },
       },
@@ -128,14 +116,14 @@ describe('PropertyFactory', () => {
       {
         property: 'align-self',
         type: 'select',
-        defaults: 'auto',
-        list: [
-          { value: 'auto' },
-          { value: 'flex-start' },
-          { value: 'flex-end' },
-          { value: 'center' },
-          { value: 'baseline' },
-          { value: 'stretch' },
+        default: 'auto',
+        options: [
+          { id: 'auto' },
+          { id: 'flex-start' },
+          { id: 'flex-end' },
+          { id: 'center' },
+          { id: 'baseline' },
+          { id: 'stretch' },
         ],
         requiresParent: { display: ['flex'] },
       },
@@ -147,8 +135,8 @@ describe('PropertyFactory', () => {
       {
         property: 'position',
         type: 'radio',
-        defaults: 'static',
-        list: [{ value: 'static' }, { value: 'relative' }, { value: 'absolute' }, { value: 'fixed' }],
+        default: 'static',
+        options: [{ id: 'static' }, { id: 'relative' }, { id: 'absolute' }, { id: 'fixed' }],
       },
     ]);
   });
@@ -156,8 +144,8 @@ describe('PropertyFactory', () => {
   test('Build left, right', () => {
     var res = {
       type: 'integer',
-      units: ['px', '%', 'vw'],
-      defaults: 'auto',
+      units: obj.unitsSize,
+      default: 'auto',
       fixedValues: ['initial', 'inherit', 'auto'],
     };
     res.property = 'right';
@@ -169,8 +157,8 @@ describe('PropertyFactory', () => {
   test('Build top, bottom', () => {
     var res = {
       type: 'integer',
-      units: ['px', '%', 'vh'],
-      defaults: 'auto',
+      units: obj.unitsSize,
+      default: 'auto',
       fixedValues: ['initial', 'inherit', 'auto'],
     };
     res.property = 'top';
@@ -182,8 +170,8 @@ describe('PropertyFactory', () => {
   test('Build width family', () => {
     var res = {
       type: 'integer',
-      units: ['px', '%', 'vw'],
-      defaults: 'auto',
+      units: obj.unitsSize,
+      default: 'auto',
       fixedValues: ['initial', 'inherit', 'auto'],
       min: 0,
     };
@@ -198,8 +186,8 @@ describe('PropertyFactory', () => {
   test('Build flex-basis', () => {
     var res = {
       type: 'integer',
-      units: ['px', '%', 'vw', 'vh'],
-      defaults: 'auto',
+      units: obj.unitsSize,
+      default: 'auto',
       fixedValues: ['initial', 'inherit', 'auto'],
       requiresParent: { display: ['flex'] },
       min: 0,
@@ -211,8 +199,8 @@ describe('PropertyFactory', () => {
   test('Build height family', () => {
     var res = {
       type: 'integer',
-      units: ['px', '%', 'vh'],
-      defaults: 'auto',
+      units: obj.unitsSize,
+      default: 'auto',
       fixedValues: ['initial', 'inherit', 'auto'],
       min: 0,
     };
@@ -233,29 +221,29 @@ describe('PropertyFactory', () => {
           fixedValues: ['initial', 'inherit', 'auto'],
           property: 'margin-top',
           type: 'integer',
-          units: ['px', '%', 'vh'],
-          defaults: 0,
+          units: obj.unitsSize,
+          default: '0',
         },
         {
           fixedValues: ['initial', 'inherit', 'auto'],
           property: 'margin-right',
           type: 'integer',
-          units: ['px', '%', 'vw'],
-          defaults: 0,
+          units: obj.unitsSize,
+          default: '0',
         },
         {
           fixedValues: ['initial', 'inherit', 'auto'],
           property: 'margin-bottom',
           type: 'integer',
-          units: ['px', '%', 'vh'],
-          defaults: 0,
+          units: obj.unitsSize,
+          default: '0',
         },
         {
           fixedValues: ['initial', 'inherit', 'auto'],
           property: 'margin-left',
           type: 'integer',
-          units: ['px', '%', 'vw'],
-          defaults: 0,
+          units: obj.unitsSize,
+          default: '0',
         },
       ],
     };
@@ -271,32 +259,32 @@ describe('PropertyFactory', () => {
           property: 'padding-top',
           fixedValues: ['initial', 'inherit', 'auto'],
           type: 'integer',
-          units: ['px', '%', 'vh'],
-          defaults: 0,
+          units: obj.unitsSize,
+          default: '0',
           min: 0,
         },
         {
           property: 'padding-right',
           fixedValues: ['initial', 'inherit', 'auto'],
           type: 'integer',
-          units: ['px', '%', 'vw'],
-          defaults: 0,
+          units: obj.unitsSize,
+          default: '0',
           min: 0,
         },
         {
           property: 'padding-bottom',
           fixedValues: ['initial', 'inherit', 'auto'],
           type: 'integer',
-          units: ['px', '%', 'vh'],
-          defaults: 0,
+          units: obj.unitsSize,
+          default: '0',
           min: 0,
         },
         {
           property: 'padding-left',
           fixedValues: ['initial', 'inherit', 'auto'],
           type: 'integer',
-          units: ['px', '%', 'vw'],
-          defaults: 0,
+          units: obj.unitsSize,
+          default: '0',
           min: 0,
         },
       ],
@@ -310,24 +298,24 @@ describe('PropertyFactory', () => {
     var res = {
       property: 'font-family',
       type: 'select',
-      defaults: 'Arial, Helvetica' + ss,
-      list: [
-        { name: 'Arial', value: 'Arial, Helvetica' + ss },
-        { name: 'Arial Black', value: 'Arial Black, Gadget' + ss },
-        { name: 'Brush Script MT', value: 'Brush Script MT' + ss },
-        { name: 'Comic Sans MS', value: 'Comic Sans MS, cursive' + ss },
-        { name: 'Courier New', value: 'Courier New, Courier' + ms },
-        { name: 'Georgia', value: 'Georgia, serif' },
-        { name: 'Helvetica', value: 'Helvetica' + ss },
-        { name: 'Impact', value: 'Impact, Charcoal' + ss },
+      default: 'Arial, Helvetica' + ss,
+      options: [
+        { label: 'Arial', id: 'Arial, Helvetica' + ss },
+        { label: 'Arial Black', id: 'Arial Black, Gadget' + ss },
+        { label: 'Brush Script MT', id: 'Brush Script MT' + ss },
+        { label: 'Comic Sans MS', id: 'Comic Sans MS, cursive' + ss },
+        { label: 'Courier New', id: 'Courier New, Courier' + ms },
+        { label: 'Georgia', id: 'Georgia, serif' },
+        { label: 'Helvetica', id: 'Helvetica' + ss },
+        { label: 'Impact', id: 'Impact, Charcoal' + ss },
         {
-          name: 'Lucida Sans Unicode',
-          value: 'Lucida Sans Unicode, Lucida Grande' + ss,
+          label: 'Lucida Sans Unicode',
+          id: 'Lucida Sans Unicode, Lucida Grande' + ss,
         },
-        { name: 'Tahoma', value: 'Tahoma, Geneva' + ss },
-        { name: 'Times New Roman', value: 'Times New Roman, Times, serif' },
-        { name: 'Trebuchet MS', value: 'Trebuchet MS, Helvetica' + ss },
-        { name: 'Verdana', value: 'Verdana, Geneva' + ss },
+        { label: 'Tahoma', id: 'Tahoma, Geneva' + ss },
+        { label: 'Times New Roman', id: 'Times New Roman, Times, serif' },
+        { label: 'Trebuchet MS', id: 'Trebuchet MS, Helvetica' + ss },
+        { label: 'Verdana', id: 'Verdana, Geneva' + ss },
       ],
     };
     expect(obj.build('font-family')).toEqual([res]);
@@ -336,8 +324,8 @@ describe('PropertyFactory', () => {
   test('Build font-size', () => {
     var res = {
       type: 'integer',
-      units: ['px', 'em', 'rem', '%'],
-      defaults: 'medium',
+      units: obj.unitsSize,
+      default: 'medium',
       min: 0,
       fixedValues: [
         'medium',
@@ -361,8 +349,8 @@ describe('PropertyFactory', () => {
   test('Build letter-spacing', () => {
     var res = {
       type: 'integer',
-      units: ['px', 'em', 'rem', '%'],
-      defaults: 'normal',
+      units: obj.unitsSize,
+      default: 'normal',
       fixedValues: ['normal', 'initial', 'inherit'],
     };
     res.property = 'letter-spacing';
@@ -372,17 +360,17 @@ describe('PropertyFactory', () => {
   test('Build font-weight', () => {
     var res = {
       type: 'select',
-      defaults: '400',
-      list: [
-        { value: '100', name: 'Thin' },
-        { value: '200', name: 'Extra-Light' },
-        { value: '300', name: 'Light' },
-        { value: '400', name: 'Normal' },
-        { value: '500', name: 'Medium' },
-        { value: '600', name: 'Semi-Bold' },
-        { value: '700', name: 'Bold' },
-        { value: '800', name: 'Extra-Bold' },
-        { value: '900', name: 'Ultra-Bold' },
+      default: '400',
+      options: [
+        { id: '100', label: 'Thin' },
+        { id: '200', label: 'Extra-Light' },
+        { id: '300', label: 'Light' },
+        { id: '400', label: 'Normal' },
+        { id: '500', label: 'Medium' },
+        { id: '600', label: 'Semi-Bold' },
+        { id: '700', label: 'Bold' },
+        { id: '800', label: 'Extra-Bold' },
+        { id: '900', label: 'Ultra-Bold' },
       ],
     };
     res.property = 'font-weight';
@@ -393,7 +381,7 @@ describe('PropertyFactory', () => {
     var res = {
       property: 'color',
       type: 'color',
-      defaults: 'black',
+      default: 'black',
     };
     expect(obj.build('color')).toEqual([res]);
   });
@@ -401,8 +389,8 @@ describe('PropertyFactory', () => {
   test('Build line-height', () => {
     var res = {
       type: 'integer',
-      units: ['px', 'em', 'rem', '%'],
-      defaults: 'normal',
+      units: obj.unitsSize,
+      default: 'normal',
       fixedValues: ['normal', 'initial', 'inherit'],
     };
     res.property = 'line-height';
@@ -412,8 +400,8 @@ describe('PropertyFactory', () => {
   test('Build text-align', () => {
     var res = {
       type: 'radio',
-      defaults: 'left',
-      list: [{ value: 'left' }, { value: 'center' }, { value: 'right' }, { value: 'justify' }],
+      default: 'left',
+      options: [{ id: 'left' }, { id: 'center' }, { id: 'right' }, { id: 'justify' }],
     };
     res.property = 'text-align';
     expect(obj.build('text-align')).toEqual([res]);
@@ -423,31 +411,31 @@ describe('PropertyFactory', () => {
     var res = {
       type: 'stack',
       preview: true,
-      defaults: 'none',
+      default: 'none',
       properties: [
         {
           property: 'text-shadow-h',
           type: 'integer',
-          units: ['px', '%'],
-          defaults: 0,
+          units: obj.unitsSizeNoPerc,
+          default: '0',
         },
         {
           property: 'text-shadow-v',
           type: 'integer',
-          units: ['px', '%'],
-          defaults: 0,
+          units: obj.unitsSizeNoPerc,
+          default: '0',
         },
         {
           property: 'text-shadow-blur',
           type: 'integer',
-          units: ['px', '%'],
-          defaults: 0,
+          units: obj.unitsSizeNoPerc,
+          default: '0',
           min: 0,
         },
         {
           property: 'text-shadow-color',
           type: 'color',
-          defaults: 'black',
+          default: 'black',
         },
       ],
     };
@@ -458,8 +446,8 @@ describe('PropertyFactory', () => {
   test('Build border-radius-c', () => {
     var res = {
       type: 'integer',
-      units: ['px', '%'],
-      defaults: 0,
+      units: obj.unitsSize,
+      default: '0',
       min: 0,
     };
     res.property = 'border-radius';
@@ -474,30 +462,30 @@ describe('PropertyFactory', () => {
         {
           property: 'border-top-left-radius',
           type: 'integer',
-          units: ['px', '%'],
-          defaults: '0px',
+          units: obj.unitsSize,
+          default: '0',
           min: 0,
         },
         {
           property: 'border-top-right-radius',
           type: 'integer',
-          units: ['px', '%'],
+          units: obj.unitsSize,
           min: 0,
-          defaults: '0px',
+          default: '0',
         },
         {
           property: 'border-bottom-right-radius',
           type: 'integer',
-          units: ['px', '%'],
+          units: obj.unitsSize,
           min: 0,
-          defaults: '0px',
+          default: '0',
         },
         {
           property: 'border-bottom-left-radius',
           type: 'integer',
-          units: ['px', '%'],
+          units: obj.unitsSize,
           min: 0,
-          defaults: '0px',
+          default: '0',
         },
       ],
     };
@@ -508,7 +496,7 @@ describe('PropertyFactory', () => {
   test('Build background-color', () => {
     var res = {
       type: 'color',
-      defaults: 'none',
+      default: 'none',
     };
     res.property = 'background-color';
     expect(obj.build('background-color')).toEqual([res]);
@@ -522,30 +510,30 @@ describe('PropertyFactory', () => {
         {
           property: 'border-width',
           type: 'integer',
-          units: ['px', 'em'],
-          defaults: 'medium',
+          units: obj.unitsSizeNoPerc,
+          default: 'medium',
           min: 0,
         },
         {
           property: 'border-style',
           type: 'select',
-          defaults: 'solid',
-          list: [
-            { value: 'none' },
-            { value: 'solid' },
-            { value: 'dotted' },
-            { value: 'dashed' },
-            { value: 'double' },
-            { value: 'groove' },
-            { value: 'ridge' },
-            { value: 'inset' },
-            { value: 'outset' },
+          default: 'solid',
+          options: [
+            { id: 'none' },
+            { id: 'solid' },
+            { id: 'dotted' },
+            { id: 'dashed' },
+            { id: 'double' },
+            { id: 'groove' },
+            { id: 'ridge' },
+            { id: 'inset' },
+            { id: 'outset' },
           ],
         },
         {
           property: 'border-color',
           type: 'color',
-          defaults: 'black',
+          default: 'black',
         },
       ],
     };
@@ -561,40 +549,40 @@ describe('PropertyFactory', () => {
         {
           property: 'box-shadow-h',
           type: 'integer',
-          units: ['px', '%'],
-          defaults: 0,
+          units: obj.unitsSizeNoPerc,
+          default: '0',
         },
         {
           property: 'box-shadow-v',
           type: 'integer',
-          units: ['px', '%'],
-          defaults: 0,
+          units: obj.unitsSizeNoPerc,
+          default: '0',
         },
         {
           property: 'box-shadow-blur',
           type: 'integer',
-          units: ['px'],
-          defaults: '5px',
+          units: obj.unitsSizeNoPerc,
+          default: '5px',
           min: 0,
         },
         {
           property: 'box-shadow-spread',
           type: 'integer',
-          units: ['px'],
-          defaults: 0,
+          units: obj.unitsSizeNoPerc,
+          default: '0',
         },
         {
           property: 'box-shadow-color',
           type: 'color',
-          defaults: 'black',
+          default: 'black',
         },
         {
           property: 'box-shadow-type',
           type: 'select',
-          defaults: '',
-          list: [
-            { value: '', name: 'Outside' },
-            { value: 'inset', name: 'Inside' },
+          default: '',
+          options: [
+            { id: '', label: 'Outside' },
+            { id: 'inset', label: 'Inside' },
           ],
         },
       ],
@@ -617,36 +605,36 @@ describe('PropertyFactory', () => {
         {
           property: 'background-repeat',
           type: 'select',
-          defaults: 'repeat',
-          list: [{ value: 'repeat' }, { value: 'repeat-x' }, { value: 'repeat-y' }, { value: 'no-repeat' }],
+          default: 'repeat',
+          options: [{ id: 'repeat' }, { id: 'repeat-x' }, { id: 'repeat-y' }, { id: 'no-repeat' }],
         },
         {
           property: 'background-position',
           type: 'select',
-          defaults: 'left top',
-          list: [
-            { value: 'left top' },
-            { value: 'left center' },
-            { value: 'left bottom' },
-            { value: 'right top' },
-            { value: 'right center' },
-            { value: 'right bottom' },
-            { value: 'center top' },
-            { value: 'center center' },
-            { value: 'center bottom' },
+          default: 'left top',
+          options: [
+            { id: 'left top' },
+            { id: 'left center' },
+            { id: 'left bottom' },
+            { id: 'right top' },
+            { id: 'right center' },
+            { id: 'right bottom' },
+            { id: 'center top' },
+            { id: 'center center' },
+            { id: 'center bottom' },
           ],
         },
         {
           property: 'background-attachment',
           type: 'select',
-          defaults: 'scroll',
-          list: [{ value: 'scroll' }, { value: 'fixed' }, { value: 'local' }],
+          default: 'scroll',
+          options: [{ id: 'scroll' }, { id: 'fixed' }, { id: 'local' }],
         },
         {
           property: 'background-size',
           type: 'select',
-          defaults: 'auto',
-          list: [{ value: 'auto' }, { value: 'cover' }, { value: 'contain' }],
+          default: 'auto',
+          options: [{ id: 'auto' }, { id: 'cover' }, { id: 'contain' }],
         },
       ],
     };
@@ -661,35 +649,29 @@ describe('PropertyFactory', () => {
         {
           property: 'transition-property',
           type: 'select',
-          defaults: 'width',
-          list: [
-            { value: 'all' },
-            { value: 'width' },
-            { value: 'height' },
-            { value: 'background-color' },
-            { value: 'transform' },
-            { value: 'box-shadow' },
-            { value: 'opacity' },
+          default: 'width',
+          options: [
+            { id: 'all' },
+            { id: 'width' },
+            { id: 'height' },
+            { id: 'background-color' },
+            { id: 'transform' },
+            { id: 'box-shadow' },
+            { id: 'opacity' },
           ],
         },
         {
           property: 'transition-duration',
           type: 'integer',
-          units: ['s'],
-          defaults: '2',
+          units: obj.unitsTime,
+          default: '2',
           min: 0,
         },
         {
           property: 'transition-timing-function',
           type: 'select',
-          defaults: 'ease',
-          list: [
-            { value: 'linear' },
-            { value: 'ease' },
-            { value: 'ease-in' },
-            { value: 'ease-out' },
-            { value: 'ease-in-out' },
-          ],
+          default: 'ease',
+          options: [{ id: 'linear' }, { id: 'ease' }, { id: 'ease-in' }, { id: 'ease-out' }, { id: 'ease-in-out' }],
         },
       ],
     };
@@ -700,8 +682,8 @@ describe('PropertyFactory', () => {
     var res = {
       property: 'perspective',
       type: 'integer',
-      units: ['px'],
-      defaults: 0,
+      units: obj.unitsSize,
+      default: '0',
       min: 0,
     };
     expect(obj.build('perspective')).toEqual([res]);
@@ -715,40 +697,40 @@ describe('PropertyFactory', () => {
         {
           property: 'transform-rotate-x',
           type: 'integer',
-          units: ['deg'],
-          defaults: 0,
+          units: obj.unitsAngle,
+          default: '0',
           functionName: 'rotateX',
         },
         {
           property: 'transform-rotate-y',
           type: 'integer',
-          units: ['deg'],
-          defaults: 0,
+          units: obj.unitsAngle,
+          default: '0',
           functionName: 'rotateY',
         },
         {
           property: 'transform-rotate-z',
           type: 'integer',
-          units: ['deg'],
-          defaults: 0,
+          units: obj.unitsAngle,
+          default: '0',
           functionName: 'rotateZ',
         },
         {
           property: 'transform-scale-x',
           type: 'integer',
-          defaults: 1,
+          default: '1',
           functionName: 'scaleX',
         },
         {
           property: 'transform-scale-y',
           type: 'integer',
-          defaults: 1,
+          default: '1',
           functionName: 'scaleY',
         },
         {
           property: 'transform-scale-z',
           type: 'integer',
-          defaults: 1,
+          default: '1',
           functionName: 'scaleZ',
         },
       ],
@@ -760,17 +742,17 @@ describe('PropertyFactory', () => {
     var res = {
       type: 'select',
       property: 'cursor',
-      defaults: 'auto',
-      list: [
-        { value: 'auto' },
-        { value: 'pointer' },
-        { value: 'copy' },
-        { value: 'crosshair' },
-        { value: 'grab' },
-        { value: 'grabbing' },
-        { value: 'help' },
-        { value: 'move' },
-        { value: 'text' },
+      default: 'auto',
+      options: [
+        { id: 'auto' },
+        { id: 'pointer' },
+        { id: 'copy' },
+        { id: 'crosshair' },
+        { id: 'grab' },
+        { id: 'grabbing' },
+        { id: 'help' },
+        { id: 'move' },
+        { id: 'text' },
       ],
     };
     expect(obj.build('cursor')).toEqual([res]);
@@ -780,8 +762,8 @@ describe('PropertyFactory', () => {
     var res = {
       type: 'select',
       property: 'overflow',
-      defaults: 'visible',
-      list: [{ value: 'visible' }, { value: 'hidden' }, { value: 'scroll' }, { value: 'auto' }],
+      default: 'visible',
+      options: [{ id: 'visible' }, { id: 'hidden' }, { id: 'scroll' }, { id: 'auto' }],
     };
     expect(obj.build('overflow')).toEqual([res]);
   });
@@ -790,8 +772,8 @@ describe('PropertyFactory', () => {
     var res = {
       type: 'select',
       property: 'overflow-x',
-      defaults: 'visible',
-      list: [{ value: 'visible' }, { value: 'hidden' }, { value: 'scroll' }, { value: 'auto' }],
+      default: 'visible',
+      options: [{ id: 'visible' }, { id: 'hidden' }, { id: 'scroll' }, { id: 'auto' }],
     };
     expect(obj.build('overflow-x')).toEqual([res]);
   });
@@ -800,8 +782,8 @@ describe('PropertyFactory', () => {
     var res = {
       type: 'select',
       property: 'overflow-y',
-      defaults: 'visible',
-      list: [{ value: 'visible' }, { value: 'hidden' }, { value: 'scroll' }, { value: 'auto' }],
+      default: 'visible',
+      options: [{ id: 'visible' }, { id: 'hidden' }, { id: 'scroll' }, { id: 'auto' }],
     };
     expect(obj.build('overflow-y')).toEqual([res]);
   });
