@@ -188,7 +188,7 @@ export default class PropertyFactory {
       ['text-shadow-h', { default: '0', units: this.unitsSizeNoPerc }, 'top'],
       ['text-shadow-v', {}, 'text-shadow-h'],
       ['text-shadow-blur', { min: 0 }, 'text-shadow-h'],
-      ['border-radius-c', {}, 'padding-top'],
+      ['border-radius-c', { property: 'border-radius' }, 'padding-top'],
       ['border-top-left-radius', {}, 'padding-top'],
       ['border-top-right-radius', {}, 'padding-top'],
       ['border-bottom-left-radius', {}, 'padding-top'],
