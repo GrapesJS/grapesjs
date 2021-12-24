@@ -577,16 +577,37 @@ export default () => {
 
     /**
      * Return built-in property definition
-     * @param {String} prop
-     * @returns {Object} Property definition
+     * @param {String} prop Property name.
+     * @returns {Object|null} Property definition.
      */
-    getBuiltIn(prop = '') {
+    getBuiltIn(prop) {
       return this.builtIn.get(prop);
     },
 
-    getBuiltInAll() {},
+    /**
+     * Get all the available built-in property definitions.
+     * @returns {Object}
+     */
+    getBuiltInAll() {
+      return this.builtIn.props;
+    },
 
-    addBuiltIn(prop, def = {}) {},
+    /**
+     * Add built-in property definition.
+     * If the property exists already, it will extend it.
+     * @param {String} prop Property name.
+     * @param {Object} definition Property definition.
+     * @returns {Object} Added property definition.
+     * @example
+     * const sector = styleManager.addBuiltIn('new-property', {
+     *  type: 'select',
+     *  default: 'value1',
+     *  options: [{ id: 'value1', label: 'Some label' }, ...],
+     * })
+     */
+    addBuiltIn(prop, definition) {
+      return this.builtIn.add(prop, definition);
+    },
 
     __upProp(prop, style, parentStyles, opts) {
       const name = prop.getName();

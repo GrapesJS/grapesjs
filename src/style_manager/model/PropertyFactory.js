@@ -390,6 +390,7 @@ export default class PropertyFactory {
       result.properties = result.properties();
     }
     this.props[property] = result;
+    return result;
   }
 
   get(prop) {
