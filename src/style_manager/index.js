@@ -65,8 +65,6 @@ export default () => {
 
     Sector,
 
-    PropertyFactory: PropertyFactory(),
-
     events: {
       all: evAll,
       propertyUpdate: evPropUp,
@@ -94,6 +92,7 @@ export default () => {
       const { em } = c;
       const ppfx = c.pStylePrefix;
       if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
+      this.builtIn = new PropertyFactory();
       properties = new Properties();
       sectors = new Sectors([], c);
       this.model = new Model({ targets: [] });
@@ -582,7 +581,7 @@ export default () => {
      * @returns {Object} Property definition
      */
     getBuiltIn(prop = '') {
-      return this.PropertyFactory.build(prop)[0] || null;
+      return this.builtIn.get(prop);
     },
 
     getBuiltInAll() {},

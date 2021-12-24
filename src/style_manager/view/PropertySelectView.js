@@ -28,23 +28,25 @@ export default PropertyView.extend({
   },
 
   onRender() {
-    var pfx = this.pfx;
-    const options = this.model.getOptions();
+    const { model, pfx } = this;
+    const options = model.getOptions();
 
     if (!this.input) {
-      let optionsStr = '';
+      const optionsRes = [];
 
       options.forEach(option => {
-        let name = option.name || option.value;
-        let style = option.style ? option.style.replace(/"/g, '&quot;') : '';
-        let styleAttr = style ? `style="${style}"` : '';
-        let value = option.value.replace(/"/g, '&quot;');
-        optionsStr += `<option value="${value}" ${styleAttr}>${name}</option>`;
+        const id = model.getOptionId(option);
+        const name = model.getOptionLabel(id);
+        const style = option.style ? option.style.replace(/"/g, '&quot;') : '';
+        const styleAttr = style ? `style="${style}"` : '';
+        console.log({ option, id });
+        const value = id.replace(/"/g, '&quot;');
+        optionsRes.push(`<option value="${value}" ${styleAttr}>${name}</option>`);
       });
 
       const inputH = this.el.querySelector(`#${pfx}input-holder`);
-      inputH.innerHTML = `<select>${optionsStr}</select>`;
+      inputH.innerHTML = `<select>${optionsRes.join('')}</select>`;
       this.input = inputH.firstChild;
     }
-  }
+  },
 });

@@ -24,6 +24,7 @@ export default class Sector extends Model {
 
   initialize(prp, opts = {}) {
     const { em } = opts;
+    this.em = em;
     const o = prp || {};
     const builded = this.buildProperties(o.buildProps);
     const name = this.get('name') || '';
@@ -180,9 +181,9 @@ export default class Sector extends Model {
 
     if (!buildP.length) return [];
 
-    this.propFactory = this.propFactory || new PropertyFactory();
+    const builtIn = this.em?.get('StyleManager').builtIn;
 
-    return this.propFactory.build(buildP);
+    return builtIn?.build(buildP);
   }
 }
 /**

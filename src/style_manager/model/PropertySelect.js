@@ -1,4 +1,5 @@
 import Property from './Property';
+import { isDef } from 'utils/mixins';
 
 /**
  * @typedef PropertySelect
@@ -60,7 +61,7 @@ export default class PropertySelect extends Property {
    * @returns {String} Option id
    */
   getOptionId(option) {
-    return option.id || option.value;
+    return isDef(option.id) ? option.id : option.value;
   }
 
   /**
