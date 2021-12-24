@@ -576,9 +576,18 @@ export default () => {
       });
     },
 
+    /**
+     * Return built-in property definition
+     * @param {String} prop
+     * @returns {Object} Property definition
+     */
     getBuiltIn(prop = '') {
       return this.PropertyFactory.build(prop)[0] || null;
     },
+
+    getBuiltInAll() {},
+
+    addBuiltIn(prop, def = {}) {},
 
     __upProp(prop, style, parentStyles, opts) {
       const name = prop.getName();
