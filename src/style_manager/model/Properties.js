@@ -113,11 +113,14 @@ export default Backbone.Collection.extend(TypeableCollection).extend({
   ],
 
   deepClone() {
+    const { em } = this;
     const collection = this.clone();
+    collection.em = em;
     collection.reset(
       collection.map(model => {
         const cloned = model.clone();
         cloned.typeView = model.typeView;
+        cloned.em = em;
         return cloned;
       })
     );

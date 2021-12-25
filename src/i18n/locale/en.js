@@ -5,7 +5,7 @@ export default {
     addButton: 'Add image',
     inputPlh: 'http://path/to/the/image.jpg',
     modalTitle: 'Select Image',
-    uploadTitle: 'Drop files here or click to upload'
+    uploadTitle: 'Drop files here or click to upload',
   },
   // Here just as a reference, GrapesJS core doesn't contain any block,
   // so this should be omitted from other local files
@@ -15,7 +15,7 @@ export default {
     },
     categories: {
       // 'category-id': 'Category Label',
-    }
+    },
   },
   domComponents: {
     names: {
@@ -33,8 +33,8 @@ export default {
       thead: 'Table head',
       table: 'Table',
       row: 'Table row',
-      cell: 'Table cell'
-    }
+      cell: 'Table cell',
+    },
   },
   deviceManager: {
     device: 'Device',
@@ -42,8 +42,8 @@ export default {
       desktop: 'Desktop',
       tablet: 'Tablet',
       mobileLandscape: 'Mobile Landscape',
-      mobilePortrait: 'Mobile Portrait'
-    }
+      mobilePortrait: 'Mobile Portrait',
+    },
   },
   panels: {
     buttons: {
@@ -55,9 +55,9 @@ export default {
         'open-sm': 'Open Style Manager',
         'open-tm': 'Settings',
         'open-layers': 'Open Layer Manager',
-        'open-blocks': 'Open Blocks'
-      }
-    }
+        'open-blocks': 'Open Blocks',
+      },
+    },
   },
   selectorManager: {
     label: 'Classes',
@@ -66,8 +66,8 @@ export default {
     states: {
       hover: 'Hover',
       active: 'Click',
-      'nth-of-type(2n)': 'Even/Odd'
-    }
+      'nth-of-type(2n)': 'Even/Odd',
+    },
   },
   styleManager: {
     empty: 'Select an element before using Style Manager',
@@ -80,12 +80,15 @@ export default {
       decorations: 'Decorations',
       extra: 'Extra',
       flex: 'Flex',
-      dimension: 'Dimension'
+      dimension: 'Dimension',
     },
     // The core library generates the name by their `property` name
     properties: {
-      // float: 'Float',
-    }
+      'text-shadow-h': 'X',
+      'text-shadow-v': 'Y',
+      'text-shadow-blur': 'Blur',
+      'text-shadow-color': 'Color',
+    },
     // Translate options in style properties
     // options: {
     //   float: { // Id of the property
@@ -110,15 +113,15 @@ export default {
         id: traitInputAttr,
         alt: traitInputAttr,
         title: traitInputAttr,
-        href: { placeholder: 'eg. https://google.com' }
+        href: { placeholder: 'eg. https://google.com' },
       },
       // In a trait like select, these are used to translate option names
       options: {
         target: {
           false: 'This window',
-          _blank: 'New window'
-        }
-      }
-    }
-  }
+          _blank: 'New window',
+        },
+      },
+    },
+  },
 };
