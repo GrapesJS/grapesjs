@@ -43,7 +43,32 @@ Check the full list of available options here: [Style Manager Config](https://gi
 
 ## Initialization
 
-### Built-in properties
+The Style Manager module is organized in sectors where each sector contains a list of properties to display. The default Style Manager configuration contains already a list of common property styles and you can see them by simply skipping the `styleManagerConfig.sectors` option.
+
+```js
+grapesjs.init({
+  ...
+  styleManager: {
+    // With no defined sectors, the default list will be loaded
+    // sectors: [...],
+    ...
+  },
+});
+```
+
+::: danger
+It makes sense to show the Style Manager UI only when you have at least one component selected, so by default the Style Manager is hidden if there are no selected components.
+:::
+
+### Sector defintions
+
+Define sectors + label i18n
+
+### Property defintions
+
+#### Built-in properties
+
+## Orchestration by Components
 
 ## Programmatic usage
 
