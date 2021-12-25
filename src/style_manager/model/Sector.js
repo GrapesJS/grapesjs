@@ -1,7 +1,6 @@
 import { Model } from 'common';
 import { extend, isString } from 'underscore';
 import Properties from './Properties';
-import PropertyFactory from './PropertyFactory';
 
 /**
  * @typedef Sector
@@ -159,7 +158,7 @@ export default class Sector extends Model {
   }
 
   checkExtend(prop) {
-    const { extend, ...rest } = prop || {};
+    const { extend, ...rest } = (isString(prop) ? { extend: prop } : prop) || {};
     if (extend) {
       return {
         ...(this.buildProperties([extend])[0] || {}),
