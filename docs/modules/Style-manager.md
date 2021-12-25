@@ -4,12 +4,53 @@ title: Style Manager
 
 # Style Manager
 
-Coming soon
+::: danger TODO
+Hero image
+<!-- <p align="center"><img src="http://grapesjs.com/img/sc-grapesjs-blocks-prp.jpg" alt="GrapesJS - Block Manager" height="400" align="center"/></p> -->
+:::
+
+The Style Manager module is responsible to show and update style properties on your [Components]. In this guide, you will see how to setup and take full advantage of the built-in Style Manager UI in GrapesJS.
+The default UI is a lightweight component with built-in properties, but as you'll see next in this guide, it's easy to extend with your own elements or even create the Style Manager UI from scratch by using the [Style Manager API].
+
+::: warning
+To get a better understanding of the content in this guide, we recommend reading [Components] first
+:::
+::: warning
+This guide is referring to GrapesJS v0.17.30 or higher
+:::
 
 [[toc]]
 
+## Configuration
 
-## Built-in properties
+To change the default configurations you have to pass the `styleManager` property with the main configuration object.
+
+```js
+const editor = grapesjs.init({
+  ...
+  styleManager: {
+    sectors: [...],
+    ...
+  }
+});
+```
+
+Check the full list of available options here: [Style Manager Config](https://github.com/artf/grapesjs/blob/master/src/style_manager/config/config.js)
+
+
+
+
+
+## Initialization
+
+### Built-in properties
+
+## Programmatic usage
+
+## Customization
+
+## Events
+
 
 Here you can find all the available built-in properties that you can use inside Style Manager via `buildProps`:
 
@@ -29,3 +70,7 @@ Example usage:
   }
 ...
 ```
+
+
+[Components]: <Components.html>
+[Style Manager API]: </api/style_manager.html>
