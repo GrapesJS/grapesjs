@@ -27,6 +27,9 @@ export default class PropertyFactory {
     this.opstDisplay = getOptions(['block', 'inline', 'inline-block', 'flex', 'none']);
     this.optsTransitFn = getOptions(['linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out']);
     this.optsCursor = getOptions(['auto', 'pointer', 'copy', 'crosshair', 'grab', 'grabbing', 'help', 'move', 'text']);
+    this.optsFloat = getOptions(['none', 'left', 'right']);
+    this.optsPos = getOptions(['static', 'relative', 'absolute', 'fixed']);
+    this.optsTextAlign = getOptions(['left', 'center', 'right', 'justify']);
     this.optsTransitProp = getOptions([
       'all',
       'width',
@@ -87,6 +90,23 @@ export default class PropertyFactory {
       return { id: font, label: font.split(',')[0] };
     });
 
+    // Fixed values
+    this.fixedFontSizes = [
+      'medium',
+      'xx-small',
+      'x-small',
+      'small',
+      'large',
+      'x-large',
+      'xx-large',
+      'smaller',
+      'larger',
+      'length',
+      'initial',
+      'inherit',
+    ];
+    this.fixedLetSpace = ['normal', 'initial', 'inherit'];
+
     this.init();
   }
 
@@ -99,20 +119,14 @@ export default class PropertyFactory {
     const requireFlex = { display: ['flex'] };
     const optsFlex = [{ id: 'flex-start' }, { id: 'flex-end' }, { id: 'center' }];
     const optsFlexAlign = [...optsFlex, { id: 'baseline' }, { id: 'stretch' }];
+    const { fixedValues } = this;
 
     // Build default built-in properties (the order, in the array here below, matters)
     // [propertyName, propertyDefinition, extendFromProperty]
     [
       // Number types
-      [
-        'top',
-        {
-          type: this.typeNumber,
-          default: 'auto',
-          units: this.unitsSize,
-          fixedValues: this.fixedValues,
-        },
-      ],
+      ['text-shadow-h', { type: this.typeNumber, default: '0', units: this.unitsSizeNoPerc }],
+      ['top', { default: 'auto', units: this.unitsSize, fixedValues }, 'text-shadow-h'],
       ['right', {}, 'top'],
       ['bottom', {}, 'top'],
       ['left', {}, 'top'],
@@ -131,68 +145,9 @@ export default class PropertyFactory {
       ['min-height', {}, 'width'],
       ['max-height', {}, 'width'],
       ['flex-basis', { requiresParent: requireFlex }, 'width'],
-      [
-        'font-size',
-        {
-          default: 'medium',
-          fixedValues: [
-            'medium',
-            'xx-small',
-            'x-small',
-            'small',
-            'large',
-            'x-large',
-            'xx-large',
-            'smaller',
-            'larger',
-            'length',
-            'initial',
-            'inherit',
-          ],
-        },
-        'width',
-      ],
-      [
-        'letter-spacing',
-        {
-          default: 'normal',
-          fixedValues: ['normal', 'initial', 'inherit'],
-        },
-        'top',
-      ],
+      ['font-size', { default: 'medium', fixedValues: this.fixedFontSizes }, 'width'],
+      ['letter-spacing', { default: 'normal', fixedValues: this.fixedLetSpace }, 'top'],
       ['line-height', {}, 'letter-spacing'],
-      [
-        'float',
-        {
-          type: this.typeRadio,
-          default: 'none',
-          options: [{ id: 'none' }, { id: 'left' }, { id: 'right' }],
-        },
-      ],
-      [
-        'position',
-        {
-          default: 'static',
-          options: [{ id: 'static' }, { id: 'relative' }, { id: 'absolute' }, { id: 'fixed' }], // TODO sticky
-        },
-        'float',
-      ],
-      [
-        'text-align',
-        {
-          default: 'left',
-          options: [{ id: 'left' }, { id: 'center' }, { id: 'right' }, { id: 'justify' }],
-        },
-        'float',
-      ],
-      [
-        'text-shadow-h',
-        {
-          type: this.typeNumber,
-          default: '0',
-          units: this.unitsSizeNoPerc,
-        },
-      ],
       ['text-shadow-v', {}, 'text-shadow-h'],
       ['text-shadow-blur', { min: 0 }, 'text-shadow-h'],
       ['border-radius-c', { property: 'border-radius', fixedValues: undefined }, 'padding-top'],
@@ -216,6 +171,11 @@ export default class PropertyFactory {
       ['order', { type: this.typeNumber, default: '0', requiresParent: requireFlex }],
       ['flex-grow', {}, 'order'],
       ['flex-shrink', { default: '1' }, 'order'],
+
+      // Radio types
+      ['float', { type: this.typeRadio, default: 'none', options: this.optsFloat }],
+      ['position', { default: 'static', options: this.optsPos }, 'float'],
+      ['text-align', { default: 'left', options: this.optsTextAlign }, 'float'],
 
       // Color types
       ['color', { type: this.typeColor, default: 'black' }],
