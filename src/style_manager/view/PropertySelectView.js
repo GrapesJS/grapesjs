@@ -39,7 +39,6 @@ export default PropertyView.extend({
         const name = model.getOptionLabel(id);
         const style = option.style ? option.style.replace(/"/g, '&quot;') : '';
         const styleAttr = style ? `style="${style}"` : '';
-        console.log({ option, id });
         const value = id.replace(/"/g, '&quot;');
         optionsRes.push(`<option value="${value}" ${styleAttr}>${name}</option>`);
       });
