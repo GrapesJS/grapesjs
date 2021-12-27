@@ -15,7 +15,7 @@ const PARTS_REG = /\s(?![^(]*\))/;
  * @typedef PropertyStack
  * @property {String|RegExp} [layerSeparator=', '] The separator used to split layer values.
  * @property {String} [layerJoin=', '] Value used to join layer values.
- * @property {Function} [layerLabel] Custom logic for creating the layer value.
+ * @property {Function} [layerLabel] Custom logic for creating the layer label.
  *
  */
 export default class PropertyStack extends PropertyComposite {

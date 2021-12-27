@@ -126,11 +126,13 @@ sectors: [
     name: 'First sector',
     properties: [
       {
+        // Default options
         // id: 'padding', // The id of the property, if missing, will be the same as `property` value
         type: 'number',
         label: 'Padding', // Label for the property
         property: 'padding', // CSS property to change
         default: '0', // Default value to display
+        // Additonal `number` options
         units: ['px', '%'], // Units (available only for the 'number' type)
         min: 0, // Min value (available only for the 'number' type)
       }
@@ -172,7 +174,7 @@ Let's see below the list of all available default types with their relative UI a
 
 #### Default types
 
-* `base` - The base type, renders as a simple text input field. Model: [Property](/api/property.html)
+* `base` - The base type, renders as a simple text input field. **Model**: [Property](/api/property.html)
 
   <img :src="$withBase('/sm-base-type.jpg')"/>
 
@@ -186,11 +188,11 @@ Let's see below the list of all available default types with their relative UI a
   },
   ```
 
-* `color` - Same props as `base` but the UI is a color picker. Model: [Property](/api/property.html)
+* `color` - Same props as `base` but the UI is a color picker. **Model**: [Property](/api/property.html)
 
   <img :src="$withBase('/sm-type-color.jpg')"/>
 
-* `number` - Number input field for numeric values. Model: [PropertyNumber](/api/property_number.html)
+* `number` - Number input field for numeric values. **Model**: [PropertyNumber](/api/property_number.html)
 
   <img :src="$withBase('/sm-type-number.jpg')"/>
 
@@ -207,11 +209,11 @@ Let's see below the list of all available default types with their relative UI a
     max: 100,
   },
   ```
-* `slider` - Same props as `number` but the UI is a slider. Model: [PropertyNumber](/api/property_number.html)
+* `slider` - Same props as `number` but the UI is a slider. **Model**: [PropertyNumber](/api/property_number.html)
 
   <img :src="$withBase('/sm-type-slider.jpg')"/>
 
-* `select` - Select input with options. Model: [PropertySelect](/api/property_select.html)
+* `select` - Select input with options. **Model**: [PropertySelect](/api/property_select.html)
 
   <img :src="$withBase('/sm-type-select.jpg')"/>
 
@@ -222,6 +224,7 @@ Let's see below the list of all available default types with their relative UI a
     property: 'display',
     label: 'Select type',
     default: 'block',
+    // Additional props
     options: [
       {id: 'block', label: 'Block'},
       {id: 'inline', label: 'Inline'},
@@ -230,9 +233,48 @@ Let's see below the list of all available default types with their relative UI a
   },
   ```
 
-* `radio` -
-* `composite` -
-* `stack` -
+* `radio` - Same props as `select` but the UI is a radio button. **Model**: [PropertySelect](/api/property_select.html)
+
+  <img :src="$withBase('/sm-type-radio.jpg')"/>
+
+* `composite` - This type is great for CSS shorthand properties, where the final value is a composition of multiple sub properties. **Model**: [PropertyComposite](/api/property_composite.html)
+
+  <img :src="$withBase('/sm-type-composite.jpg')"/>
+
+  ```js
+  // Example
+  {
+    type: 'composite',
+    property: 'margin',
+    label: 'Composite type',
+    // Additional props
+    properties: [
+      { type: 'number', units: ['px'], default: '0', property: 'margin-top' },
+      { type: 'number', units: ['px'], default: '0', property: 'margin-right' },
+      { type: 'number', units: ['px'], default: '0', property: 'margin-bottom' },
+      { type: 'number', units: ['px'], default: '0', property: 'margin-left' },
+    ]
+  },
+  ```
+* `stack` - This type is great for CSS multiple properties like `text-shadow`, `box-shadow`, etc. **Model**: [PropertyStack](/api/property_stack.html)
+
+  <img :src="$withBase('/sm-type-stack.jpg')"/>
+
+  ```js
+  // Example
+  {
+    type: 'stack',
+    property: 'text-shadow',
+    label: 'Stack type',
+    // Additional props
+    properties: [
+      { type: 'number', units: ['px'], default: '0', property: 'x' },
+      { type: 'number', units: ['px'], default: '0', property: 'y' },
+      { type: 'number', units: ['px'], default: '0', property: 'blur' },
+      { type: 'color', default: 'black', property: 'color' },
+    ]
+  },
+  ```
 
 #### Built-in properties
 
