@@ -126,6 +126,7 @@ sectors: [
     name: 'First sector',
     properties: [
       {
+        // id: 'padding', // The id of the property, if missing, will be the same as `property` value
         type: 'number',
         label: 'Padding', // Label for the property
         property: 'padding', // CSS property to change
@@ -185,6 +186,10 @@ Let's see below the list of all available default types with their relative UI a
   },
   ```
 
+* `color` - Same props as `base` but the UI is a color picker. Model: [Property](/api/property.html)
+
+  <img :src="$withBase('/sm-type-color.jpg')"/>
+
 * `number` - Number input field for numeric values. Model: [PropertyNumber](/api/property_number.html)
 
   <img :src="$withBase('/sm-type-number.jpg')"/>
@@ -196,16 +201,36 @@ Let's see below the list of all available default types with their relative UI a
     property: 'width',
     label: 'Number type',
     default: '0%',
+    // Additional props
     units: ['px', '%'],
     min: 0,
     max: 100,
   },
   ```
-* `slider` -
-* `select` -
+* `slider` - Same props as `number` but the UI is a slider. Model: [PropertyNumber](/api/property_number.html)
+
+  <img :src="$withBase('/sm-type-slider.jpg')"/>
+
+* `select` - Select input with options. Model: [PropertySelect](/api/property_select.html)
+
+  <img :src="$withBase('/sm-type-select.jpg')"/>
+
+  ```js
+  // Example
+  {
+    type: 'select',
+    property: 'display',
+    label: 'Select type',
+    default: 'block',
+    options: [
+      {id: 'block', label: 'Block'},
+      {id: 'inline', label: 'Inline'},
+      {id: 'none', label: 'None'},
+    ]
+  },
+  ```
+
 * `radio` -
-* `color` -
-* `file` -
 * `composite` -
 * `stack` -
 
