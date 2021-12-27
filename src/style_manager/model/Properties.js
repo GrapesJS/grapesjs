@@ -102,6 +102,16 @@ export default Backbone.Collection.extend(TypeableCollection).extend({
       },
     },
     {
+      id: 'number',
+      model: PropertyNumber,
+      view: PropertyNumberView,
+      isType(value) {
+        if (value && value.type == 'number') {
+          return value;
+        }
+      },
+    },
+    {
       id: 'base',
       model: Property,
       view: PropertyView,

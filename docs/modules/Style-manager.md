@@ -116,6 +116,69 @@ grapesjs.init({
 
 ### Property defintions
 
+Once you have defined your sector you can start adding property definitions inside `properties`. Each property has a common set of options (`label`, `default`, etc.) and others specific by their `type`.
+
+Let's see below a simple definition for controlling the padding style.
+
+```js
+sectors: [
+  {
+    name: 'First sector',
+    properties: [
+      {
+        type: 'number',
+        label: 'Padding', // Label for the property
+        property: 'padding', // CSS property to change
+        default: '0', // Default value to display
+        units: ['px', '%'], // Units (available only for the 'number' type)
+        min: 0, // Min value (available only for the 'number' type)
+      }
+    ],
+  },
+]
+```
+This will render the number input UI and will change the `padding` CSS property on the selected component.
+
+The flexibility of the definition allows you to create easily different UI inputs for any possible CSS property. You're free to decide what will be the best UI for your users. If you take for example a numeric property like `font-size`, you can follow its CSS specification and define it as a `number`
+
+```js
+{
+  type: 'number',
+  label: 'Font size',
+  property: 'font-size',
+  units: ['px', '%', 'em', 'rem', 'vh', 'vw'],
+  min: 0,
+}
+```
+or you can decide to show it as a `select` and make available only a defined set of values (eg. based on your Design System tokens).
+
+```js
+{
+  type: 'select',
+  label: 'Font size',
+  property: 'font-size',
+  default: '1rem',
+  options: [
+    { id: '0.7rem', label: 'small' },
+    { id: '1rem', label: 'medium' },
+    { id: '1.2rem', label: 'large' },
+  ]
+}
+```
+
+
+### Default types
+
+* `base` - The base type, renders as a simple input field
+* `number` - Property model: PropertyNumber
+* `slider` -
+* `select` -
+* `radio` -
+* `color` -
+* `file` -
+* `composite` -
+* `stack` -
+
 #### Built-in properties
 
 ## Orchestration by Components
