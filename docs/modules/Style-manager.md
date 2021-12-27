@@ -166,11 +166,41 @@ or you can decide to show it as a `select` and make available only a defined set
 }
 ```
 
+Each type defines the specific UI view and a model on how to handle inputs and updates.
+Let's see below the list of all available default types with their relative UI and models.
 
-### Default types
+#### Default types
 
-* `base` - The base type, renders as a simple input field
-* `number` - Property model: PropertyNumber
+* `base` - The base type, renders as a simple text input field. Model: [Property](/api/property.html)
+
+  <img :src="$withBase('/sm-base-type.jpg')"/>
+
+  ```js
+  // Example
+  {
+    // type: 'base', // Omitting the type in definition will fallback to the 'base'
+    property: 'some-css-property',
+    label: 'Base type',
+    default: 'Default value',
+  },
+  ```
+
+* `number` - Number input field for numeric values. Model: [PropertyNumber](/api/property_number.html)
+
+  <img :src="$withBase('/sm-type-number.jpg')"/>
+
+  ```js
+  // Example
+  {
+    type: 'number',
+    property: 'width',
+    label: 'Number type',
+    default: '0%',
+    units: ['px', '%'],
+    min: 0,
+    max: 100,
+  },
+  ```
 * `slider` -
 * `select` -
 * `radio` -
