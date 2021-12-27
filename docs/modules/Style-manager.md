@@ -43,7 +43,7 @@ Check the full list of available options here: [Style Manager Config](https://gi
 
 ## Initialization
 
-The Style Manager module is organized in sectors where each sector contains a list of properties to display. The default Style Manager configuration contains already a list of common property styles and you can see them by simply skipping the `styleManagerConfig.sectors` option.
+The Style Manager module is organized in sectors where each sector contains a list of properties to display. The default Style Manager configuration contains already a list of default common property styles and you can use them by simply skipping the `styleManagerConfig.sectors` option.
 
 ```js
 grapesjs.init({
@@ -62,7 +62,57 @@ It makes sense to show the Style Manager UI only when you have at least one comp
 
 ### Sector defintions
 
-Define sectors + label i18n
+Each sector is identified by its `name` and a list of `properties` to display. You can also specify the `id` in order to access the sector via API (if not indicated it will be generated from the `name`) and the default `open` state.
+
+```js
+grapesjs.init({
+  // ...
+  styleManager: {
+    sectors: [
+      {
+        name: 'First sector',
+        properties: [],
+        // id: 'first-sector', // Id generated from the name
+        // open: true, // The sector is open by default
+      },
+      {
+        open: false, // render it closed by default
+        name: 'Second sector',
+        properties: [],
+      },
+    ],
+  },
+});
+```
+The label of the sector you see in the editor is using directly the `name` but you can also rely on the [I18n] module via sector's `id` in case you plan to have a multi-language editor.
+
+```js
+grapesjs.init({
+  i18n: {
+    // Use `messagesAdd` in order to extend the default set
+    messagesAdd: {
+      en: {
+        styleManager: {
+          sectors: {
+            'first-sector-id': 'First sector EN'
+          }
+        }
+      }
+    }
+  },
+  // ...
+  styleManager: {
+    sectors: [
+      {
+        id: 'first-sector-id',
+        // You can leave the name as a fallback in case the i18n definition is missing
+        name: 'First sector',
+      },
+      // ...
+    ],
+  },
+});
+```
 
 ### Property defintions
 
@@ -98,4 +148,5 @@ Example usage:
 
 
 [Components]: <Components.html>
+[I18n]: <I18n.html>
 [Style Manager API]: </api/style_manager.html>
