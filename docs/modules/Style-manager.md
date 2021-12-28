@@ -315,9 +315,14 @@ editor.StyleManager.getBuiltInAll();
 ```
 :::
 
-## Orchestration by Components
+## Components constraints
+
+* Components constraint props
 
 ## Programmatic usage
+
+* Change target
+* Get current selected target
 
 ## Customization
 
