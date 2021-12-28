@@ -163,7 +163,7 @@ export default class PropertyFactory {
       ['border-top-right-radius', {}, 'border-radius-c'],
       ['border-bottom-left-radius', {}, 'border-radius-c'],
       ['border-bottom-right-radius', {}, 'border-radius-c'],
-      ['border-width', { default: 'medium', units: this.unitsSizeNoPerc }, 'border-radius-c'],
+      ['border-width', { units: this.unitsSizeNoPerc }, 'border-radius-c'],
       ['box-shadow-h', {}, 'text-shadow-h'],
       ['box-shadow-v', {}, 'text-shadow-h'],
       ['box-shadow-blur', { default: '5px' }, 'text-shadow-blur'],

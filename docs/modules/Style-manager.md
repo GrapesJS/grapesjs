@@ -174,6 +174,10 @@ Let's see below the list of all available default types with their relative UI a
 
 #### Default types
 
+::: tip
+Each **Model** describes more in detail available props and their usage.
+:::
+
 * `base` - The base type, renders as a simple text input field. **Model**: [Property](/api/property.html)
 
   <img :src="$withBase('/sm-base-type.jpg')"/>
@@ -256,7 +260,7 @@ Let's see below the list of all available default types with their relative UI a
     ]
   },
   ```
-* `stack` - This type is great for CSS multiple properties like `text-shadow`, `box-shadow`, etc. **Model**: [PropertyStack](/api/property_stack.html)
+* `stack` - This type is great for CSS multiple properties like `text-shadow`, `box-shadow`, `transform`, etc. **Model**: [PropertyStack](/api/property_stack.html)
 
   <img :src="$withBase('/sm-type-stack.jpg')"/>
 
@@ -277,6 +281,39 @@ Let's see below the list of all available default types with their relative UI a
   ```
 
 #### Built-in properties
+
+In order to speed up the Style Manager configuration, GrapesJS is shipped with a set of already defined common CSS properties which you can reuse and extend.
+
+```js
+sectors: [
+  {
+    name: 'First sector',
+    properties: [
+      // Pass the built-in CSS property as a string
+      'width',
+      'min-width',
+      // Extend the built-in property with your props
+      {
+        extend: 'max-width',
+        units: ['px', '%'],
+      },
+      // If the property doesn't exist it will be converted to a base type
+      'unknown-property' // -> { type: 'base', property: 'unknown-property' }
+    ],
+  },
+]
+```
+
+::: tip
+You can check if the property is available by running
+```js
+editor.StyleManager.getBuiltIn('property-name');
+```
+or get the list of all available properties with
+```js
+editor.StyleManager.getBuiltInAll();
+```
+:::
 
 ## Orchestration by Components
 
