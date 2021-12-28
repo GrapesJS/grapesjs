@@ -469,6 +469,7 @@ describe('PropertyFactory', () => {
       properties: [
         {
           property: 'border-top-left-radius',
+          id: 'border-top-left-radius-sub',
           type: 'integer',
           units: obj.unitsSize,
           default: '0',
@@ -476,6 +477,7 @@ describe('PropertyFactory', () => {
         },
         {
           property: 'border-top-right-radius',
+          id: 'border-top-right-radius-sub',
           type: 'integer',
           units: obj.unitsSize,
           min: 0,
@@ -483,6 +485,7 @@ describe('PropertyFactory', () => {
         },
         {
           property: 'border-bottom-right-radius',
+          id: 'border-bottom-right-radius-sub',
           type: 'integer',
           units: obj.unitsSize,
           min: 0,
@@ -490,6 +493,7 @@ describe('PropertyFactory', () => {
         },
         {
           property: 'border-bottom-left-radius',
+          id: 'border-bottom-left-radius-sub',
           type: 'integer',
           units: obj.unitsSize,
           min: 0,
@@ -517,6 +521,7 @@ describe('PropertyFactory', () => {
       properties: [
         {
           property: 'border-width',
+          id: 'border-width-sub',
           type: 'integer',
           units: obj.unitsSizeNoPerc,
           default: '0',
@@ -524,6 +529,7 @@ describe('PropertyFactory', () => {
         },
         {
           property: 'border-style',
+          id: 'border-style-sub',
           type: 'select',
           default: 'solid',
           options: [
@@ -540,6 +546,7 @@ describe('PropertyFactory', () => {
         },
         {
           property: 'border-color',
+          id: 'border-color-sub',
           type: 'color',
           default: 'black',
         },

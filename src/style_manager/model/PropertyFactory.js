@@ -254,7 +254,11 @@ export default class PropertyFactory {
       [
         'border',
         {
-          properties: this.__sub(['border-width', 'border-style', 'border-color']),
+          properties: this.__sub([
+            { extend: 'border-width', id: 'border-width-sub' },
+            { extend: 'border-style', id: 'border-style-sub' },
+            { extend: 'border-color', id: 'border-color-sub' },
+          ]),
         },
         'margin',
       ],
@@ -262,10 +266,10 @@ export default class PropertyFactory {
         'border-radius',
         {
           properties: this.__sub([
-            'border-top-left-radius',
-            'border-top-right-radius',
-            'border-bottom-right-radius',
-            'border-bottom-left-radius',
+            { extend: 'border-top-left-radius', id: 'border-top-left-radius-sub' },
+            { extend: 'border-top-right-radius', id: 'border-top-right-radius-sub' },
+            { extend: 'border-bottom-right-radius', id: 'border-bottom-right-radius-sub' },
+            { extend: 'border-bottom-left-radius', id: 'border-bottom-left-radius-sub' },
           ]),
         },
         'margin',

@@ -84,6 +84,7 @@ export default {
     },
     // The core library generates the name by their `property` name
     properties: {
+      // Default names for sub properties in Composite and Stack types
       'text-shadow-h': 'X',
       'text-shadow-v': 'Y',
       'text-shadow-blur': 'Blur',
@@ -94,8 +95,6 @@ export default {
       'box-shadow-spread': 'Spread',
       'box-shadow-color': 'Color',
       'box-shadow-type': 'Type',
-
-      // Default names for sub properties in Composite and Stack types
       'margin-top-sub': 'Top',
       'margin-right-sub': 'Right',
       'margin-bottom-sub': 'Bottom',
@@ -104,6 +103,19 @@ export default {
       'padding-right-sub': 'Right',
       'padding-bottom-sub': 'Bottom',
       'padding-left-sub': 'Left',
+      'border-width-sub': 'Width',
+      'border-style-sub': 'Style',
+      'border-color-sub': 'Color',
+      'border-top-left-radius-sub': 'Top Left',
+      'border-top-right-radius-sub': 'Top Right',
+      'border-bottom-right-radius-sub': 'Bottom Right',
+      'border-bottom-left-radius-sub': 'Bottom Left',
+      'transform-rotate-x': 'Rotate X',
+      'transform-rotate-y': 'Rotate Y',
+      'transform-rotate-z': 'Rotate Z',
+      'transform-scale-x': 'Scale X',
+      'transform-scale-y': 'Scale Y',
+      'transform-scale-z': 'Scale Z',
     },
     // Translate options in style properties
     // options: {
