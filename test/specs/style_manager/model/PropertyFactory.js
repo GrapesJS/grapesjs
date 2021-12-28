@@ -220,6 +220,7 @@ describe('PropertyFactory', () => {
         {
           fixedValues: ['initial', 'inherit', 'auto'],
           property: 'margin-top',
+          id: 'margin-top-sub',
           type: 'integer',
           units: obj.unitsSize,
           default: '0',
@@ -227,6 +228,7 @@ describe('PropertyFactory', () => {
         {
           fixedValues: ['initial', 'inherit', 'auto'],
           property: 'margin-right',
+          id: 'margin-right-sub',
           type: 'integer',
           units: obj.unitsSize,
           default: '0',
@@ -234,6 +236,7 @@ describe('PropertyFactory', () => {
         {
           fixedValues: ['initial', 'inherit', 'auto'],
           property: 'margin-bottom',
+          id: 'margin-bottom-sub',
           type: 'integer',
           units: obj.unitsSize,
           default: '0',
@@ -241,6 +244,7 @@ describe('PropertyFactory', () => {
         {
           fixedValues: ['initial', 'inherit', 'auto'],
           property: 'margin-left',
+          id: 'margin-left-sub',
           type: 'integer',
           units: obj.unitsSize,
           default: '0',
@@ -257,6 +261,7 @@ describe('PropertyFactory', () => {
       properties: [
         {
           property: 'padding-top',
+          id: 'padding-top-sub',
           fixedValues: ['initial', 'inherit', 'auto'],
           type: 'integer',
           units: obj.unitsSize,
@@ -265,6 +270,7 @@ describe('PropertyFactory', () => {
         },
         {
           property: 'padding-right',
+          id: 'padding-right-sub',
           fixedValues: ['initial', 'inherit', 'auto'],
           type: 'integer',
           units: obj.unitsSize,
@@ -273,6 +279,7 @@ describe('PropertyFactory', () => {
         },
         {
           property: 'padding-bottom',
+          id: 'padding-bottom-sub',
           fixedValues: ['initial', 'inherit', 'auto'],
           type: 'integer',
           units: obj.unitsSize,
@@ -281,6 +288,7 @@ describe('PropertyFactory', () => {
         },
         {
           property: 'padding-left',
+          id: 'padding-left-sub',
           fixedValues: ['initial', 'inherit', 'auto'],
           type: 'integer',
           units: obj.unitsSize,
@@ -511,7 +519,7 @@ describe('PropertyFactory', () => {
           property: 'border-width',
           type: 'integer',
           units: obj.unitsSizeNoPerc,
-          default: 'medium',
+          default: '0',
           min: 0,
         },
         {

@@ -88,6 +88,22 @@ export default {
       'text-shadow-v': 'Y',
       'text-shadow-blur': 'Blur',
       'text-shadow-color': 'Color',
+      'box-shadow-h': 'X',
+      'box-shadow-v': 'Y',
+      'box-shadow-blur': 'Blur',
+      'box-shadow-spread': 'Spread',
+      'box-shadow-color': 'Color',
+      'box-shadow-type': 'Type',
+
+      // Default names for sub properties in Composite and Stack types
+      'margin-top-sub': 'Top',
+      'margin-right-sub': 'Right',
+      'margin-bottom-sub': 'Bottom',
+      'margin-left-sub': 'Left',
+      'padding-top-sub': 'Top',
+      'padding-right-sub': 'Right',
+      'padding-bottom-sub': 'Bottom',
+      'padding-left-sub': 'Left',
     },
     // Translate options in style properties
     // options: {

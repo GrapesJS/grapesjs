@@ -122,7 +122,15 @@ export default class PropertyFactory {
   }
 
   __sub(items) {
-    return () => items.map(p => this.get(p));
+    return () =>
+      items.map(p => {
+        if (isString(p)) return this.get(p);
+        const { extend, ...rest } = p;
+        return {
+          ...this.get(extend),
+          ...rest,
+        };
+      });
   }
 
   init() {
@@ -223,13 +231,23 @@ export default class PropertyFactory {
         'margin',
         {
           type: this.typeComposite,
-          properties: this.__sub(['margin-top', 'margin-right', 'margin-bottom', 'margin-left']),
+          properties: this.__sub([
+            { extend: 'margin-top', id: 'margin-top-sub' },
+            { extend: 'margin-right', id: 'margin-right-sub' },
+            { extend: 'margin-bottom', id: 'margin-bottom-sub' },
+            { extend: 'margin-left', id: 'margin-left-sub' },
+          ]),
         },
       ],
       [
         'padding',
         {
-          properties: this.__sub(['padding-top', 'padding-right', 'padding-bottom', 'padding-left']),
+          properties: this.__sub([
+            { extend: 'padding-top', id: 'padding-top-sub' },
+            { extend: 'padding-right', id: 'padding-right-sub' },
+            { extend: 'padding-bottom', id: 'padding-bottom-sub' },
+            { extend: 'padding-left', id: 'padding-left-sub' },
+          ]),
         },
         'margin',
       ],
