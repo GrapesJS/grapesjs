@@ -16,6 +16,7 @@
  * ```
  * ## Available Events
  * * `style:sector:add` - Sector added. The [Sector] is passed as an argument to the callback.
+ * * `style:target` - Target selection changed. The target (or `null` in case the target is deselected) is passed as an argument to the callback.
  *
  * ## Methods
  * * [getConfig](#getconfig)
@@ -27,7 +28,9 @@
  * * [getProperty](#getproperty)
  * * [getProperties](#getproperties)
  * * [removeProperty](#removeproperty)
- * * [getModelToStyle](#getmodeltostyle)
+ * * [select](#select)
+ * * [getSelected](#getselected)
+ * * [getLastSelected](#getlastselected)
  * * [addType](#addtype)
  * * [getType](#gettype)
  * * [getTypes](#gettypes)
@@ -55,6 +58,7 @@ export const evAll = 'style';
 export const evPfx = `${evAll}:`;
 export const evPropUp = `${evPfx}property:update`;
 export const evLayerSelect = `${evPfx}layer:select`;
+export const evTarget = `${evPfx}target`;
 export const evCustom = `${evPfx}custom`;
 
 const propDef = value => value || value === 0;
@@ -72,6 +76,7 @@ export default () => {
       all: evAll,
       propertyUpdate: evPropUp,
       layerSelect: evLayerSelect,
+      target: evTarget,
       custom: evCustom,
     },
 
@@ -98,23 +103,27 @@ export default () => {
       this.builtIn = new PropertyFactory();
       properties = new Properties();
       sectors = new Sectors([], c);
-      this.model = new Model({ targets: [] });
+      const model = new Model({ targets: [] });
+      this.model = model;
 
       // Triggers for the selection refresh and properties
       const ev = 'component:toggled component:update:classes change:state change:device frame:resized selector:type';
       const upAll = debounce(() => this.__upSel());
-      this.model.listenTo(em, ev, upAll);
+      model.listenTo(em, ev, upAll);
 
       // Triggers only for properties (avoid selection refresh)
       const upProps = debounce(() => {
         this.__upProps();
         this.__trgCustom();
       });
-      this.model.listenTo(em, 'styleable:change', upProps);
+      model.listenTo(em, 'styleable:change', upProps);
 
       // Triggers only custom event
       const trgCustom = debounce(() => this.__trgCustom());
-      this.model.listenTo(em, evLayerSelect, trgCustom);
+      model.listenTo(em, evLayerSelect, trgCustom);
+
+      // Other listeners
+      model.on('change:lastTarget', () => em.trigger(evTarget, this.getLastSelected()));
 
       return this;
     },
@@ -282,12 +291,65 @@ export default () => {
     },
 
     /**
+     * Select new target.
+     * The target could be a Component, CSSRule, or a CSS selector string.
+     * @param {[Component]|[CSSRule]|String} target
+     * @returns {Array<[Component]|[CSSRule]>} Array containing selected Components or CSSRules
+     */
+    select(target, opts = {}) {
+      const { em } = this;
+      const trgs = isArray(target) ? target : [target];
+      const { stylable } = opts;
+      const cssc = em.get('CssComposer');
+      let targets = [];
+
+      trgs.filter(Boolean).forEach(target => {
+        let model = target;
+
+        if (isString(target)) {
+          const rule = cssc.getRule(target) || cssc.setRule(target);
+          !isUndefined(stylable) && rule.set({ stylable });
+          model = rule;
+        }
+
+        targets.push(model);
+      });
+
+      targets = targets.map(t => this.getModelToStyle(t));
+      const lastTarget = targets.slice().reverse()[0];
+      const lastTargetParents = this.getParentRules(lastTarget, em.getState());
+      this.model.set({ targets, lastTarget, lastTargetParents });
+      // lastTarget && this.setTarget(lastTarget); // TODO to refactor
+      this.__upProps(opts);
+
+      return targets;
+    },
+
+    /**
+     * Get the array of selected targets.
+     * @returns {Array<[Component]|[CSSRule]>}
+     */
+    getSelected() {
+      return this.model.get('targets');
+    },
+
+    /**
+     * Get the last selected target.
+     * By default, the Style Manager shows styles of the last selected target.
+     * @returns {[Component]|[CSSRule]|null}
+     */
+    getLastSelected() {
+      return this.model.get('lastTarget') || null;
+    },
+
+    /**
      * Get what to style inside Style Manager. If you select the component
      * without classes the entity is the Component itself and all changes will
      * go inside its 'style' property. Otherwise, if the selected component has
      * one or more classes, the function will return the corresponding CSS Rule
      * @param  {Model} model
      * @return {Model}
+     * @private
      */
     getModelToStyle(model, options = {}) {
       const { em } = this;
@@ -352,10 +414,10 @@ export default () => {
         // Componente related rule
         if (cmp) {
           cmpRules = cssC.getRules(`#${cmp.getId()}`);
-          otherRules = cssC.getRules(sel.getSelectors().getFullName(optsSel));
+          otherRules = sel ? cssC.getRules(sel.getSelectors().getFullName(optsSel)) : [];
           rules = otherRules.concat(cmpRules);
         } else {
-          cmpRules = cssC.getRules(`#${sel.getId()}`);
+          cmpRules = sel ? cssC.getRules(`#${sel.getId()}`) : [];
           otherRules = cssC.getRules(target.getSelectors().getFullName(optsSel));
           rules = cmpRules.concat(otherRules);
         }
@@ -454,7 +516,7 @@ export default () => {
     },
 
     setTarget(target, opts) {
-      return SectView.setTarget(target, opts);
+      return SectView?.setTarget(target, opts);
     },
 
     getTargets() {
@@ -462,51 +524,8 @@ export default () => {
       return (propTarget && propTarget.targets) || [];
     },
 
-    /**
-     * Select different target for the Style Manager.
-     * It could be a Component, CSSRule, or a string of any CSS selector
-     * @param {[Component]|[CSSRule]|String} target
-     * @return {Array<[Component]|[CSSRule]>} Array containing selected Components or CSSRules
-     * @private
-     */
-    select(target, opts = {}) {
-      const { em } = this;
-      const trgs = isArray(target) ? target : [target];
-      const { stylable } = opts;
-      const cssc = em.get('CssComposer');
-      let targets = [];
-
-      trgs.filter(Boolean).forEach(target => {
-        let model = target;
-
-        if (isString(target)) {
-          const rule = cssc.getRule(target) || cssc.setRule(target);
-          !isUndefined(stylable) && rule.set({ stylable });
-          model = rule;
-        }
-
-        targets.push(model);
-      });
-
-      targets = targets.map(t => this.getModelToStyle(t));
-      const lastTarget = targets.slice().reverse()[0];
-      const lastTargetParents = this.getParentRules(lastTarget, em.getState());
-      this.model.set({ targets, lastTarget, lastTargetParents });
-      this.__upProps(opts);
-
-      return targets;
-    },
-
     addStyleTargets(style, opts) {
       this.getSelected().map(t => t.addStyle(style, opts));
-    },
-
-    getSelected() {
-      return this.model.get('targets');
-    },
-
-    getLastSelected() {
-      return this.model.get('lastTarget') || null;
     },
 
     getSelectedParents() {
@@ -529,7 +548,9 @@ export default () => {
         el,
         collection: sectors,
         target: em,
+        em,
         config,
+        module: this,
       });
       return SectView.render().el;
     },

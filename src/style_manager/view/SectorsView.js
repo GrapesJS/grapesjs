@@ -13,6 +13,9 @@ export default Backbone.View.extend({
     this.ppfx = config.pStylePrefix || '';
     this.target = o.target || {};
     this.config = config;
+    const { module, em } = o;
+    this.module = module;
+    this.em = em;
 
     // The target that will emit events for properties
     const target = {};
@@ -24,11 +27,9 @@ export default Backbone.View.extend({
     body.removeChild(dummy);
     this.propTarget = target;
     const coll = this.collection;
-    const events =
-      'component:toggled component:update:classes change:state change:device frame:resized';
     this.listenTo(coll, 'add', this.addTo);
     this.listenTo(coll, 'reset', this.render);
-    this.listenTo(this.target, events, this.targetUpdated);
+    this.listenTo(em, module.events.target, this.targetUpdated);
   },
 
   remove() {
@@ -137,9 +138,7 @@ export default Backbone.View.extend({
         const rules = em.get('CssComposer').getAll();
 
         if (targetIsClass) {
-          rule = rules.filter(
-            rule => rule.get('selectors').getFullString() === target
-          )[0];
+          rule = rules.filter(rule => rule.get('selectors').getFullString() === target)[0];
         }
 
         if (!rule) {
@@ -180,7 +179,7 @@ export default Backbone.View.extend({
       properties: model.get('properties'),
       target,
       propTarget,
-      config
+      config,
     }).render().el;
     appendAtIndex(appendTo, rendered, opts.at);
 
@@ -197,5 +196,5 @@ export default Backbone.View.extend({
     $el.append(frag);
     $el.addClass(`${pfx}sectors ${ppfx}one-bg ${ppfx}two-color`);
     return this;
-  }
+  },
 });

@@ -434,8 +434,25 @@ For a more advanced usage you can rely on the [Style Manager API] to perform dif
   sm.removeSector('sector-id');
   ```
 
-* Change target
-* Get current selected target
+* Managing the selected target,
+  ```js
+  // Select the first button in the current page
+  const btnCmp = editor.Pages.getSelected().getMainComponent().findType('button')[0];
+  btnCmp && sm.select(btnCmp);
+
+  // Add new property to the sector
+  sm.addProperty('sector-id', {
+    type: 'number',
+    property: 'min-width',
+  });
+
+  // Remove sector
+  sm.removeSector('sector-id');
+  ```
+
+
+
+
 
 ## Customization
 
