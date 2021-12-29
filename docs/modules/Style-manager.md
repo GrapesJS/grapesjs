@@ -450,7 +450,28 @@ For a more advanced usage you can rely on the [Style Manager API] to perform dif
   // Update selected targets with a custom style
   sm.addStyleTargets({ color: 'red' });
   ```
-* Adding new built-in property definitions.
+* Adding/extending built-in property definitions.
+  ```js
+  const myPlugin = (editor) => {
+    editor.StyleManager.addBuiltIn('new-prop', {
+      type: 'number',
+      label: 'New prop',
+    })
+  };
+
+  grapesjs.init({
+    // ...
+    plugins: [myPlugin],
+    styleManager: {
+      sectors: [
+        {
+          name: 'My sector',
+          properties: [ 'new-prop', ... ],
+        },
+      ],
+    },
+  })
+  ```
 * Adding new types.
 
 
