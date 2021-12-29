@@ -286,6 +286,10 @@ editor.StyleManager.getBuiltInAll();
 ```
 :::
 
+
+
+
+
 ## I18n
 
 If you're planning to have a multi-language editor you can easily connect sector and property labels to the [I18n] module via their IDs.
@@ -343,6 +347,10 @@ grapesjs.init({
 });
 ```
 
+
+
+
+
 ## Components constraints
 
 When you define custom components you can also indicate, via `stylable` and `unstylable` props,  which CSS properties should be available for styling. In that case, the Style Manager will only show the available properties. If the sector doesn't contain any available property, it won't be shown.
@@ -396,34 +404,48 @@ grapesjs.init({
 });
 ```
 
+
+
+
+
 ## Programmatic usage
+
+For a more advanced usage you can rely on the [Style Manager API] to perform different kind of actions related to the module.
+
+* Managing sectors/properties post-initialization.
+  ```js
+  // Get the module from the editor instance
+  const sm = editor.StyleManager;
+
+  // Add new sector
+  const newSector = sm.addSector('sector-id', {
+    name: 'New sector',
+    open: true,
+    properties: ['width'],
+  });
+
+  // Add new property to the sector
+  sm.addProperty('sector-id', {
+    type: 'number',
+    property: 'min-width',
+  });
+
+  // Remove sector
+  sm.removeSector('sector-id');
+  ```
 
 * Change target
 * Get current selected target
 
 ## Customization
 
+
+
+
+
 ## Events
 
-
-Here you can find all the available built-in properties that you can use inside Style Manager via `buildProps`:
-
-`float`, `position`, `text-align`, `display`, `font-family`, `font-weight`, `border`, `border-style`, `border-color`, `border-width`, `box-shadow`, `background-repeat`, `background-position`, `background-attachment`, `background-size`, `transition`, `transition-duration`, `transition-property`, `transition-timing-function`, `top`, `right`, `bottom`, `left`, `margin`, `margin-top`, `margin-right`, `margin-bottom`, `margin-left`, `padding`, `padding-top`, `padding-right`, `padding-bottom`, `padding-left`, `width`, `height`, `min-width`, `min-height`, `max-width`, `max-height`, `font-size`, `letter-spacing`, `line-height`, `text-shadow`, `border-radius`, `border-top-left-radius`, `border-top-right-radius`, `border-bottom-left-radius`, `border-bottom-right-radius`, `perspective`, `transform`, `transform-rotate-x`, `transform-rotate-y`, `transform-rotate-z`, `transform-scale-x`, `transform-scale-y`, `transform-scale-z`, `color`, `background-color`, `background`, `background-image`, `cursor`, `flex-direction`, `flex-wrap`, `justify-content`, `align-items`, `align-content`, `order`, `flex-basis`, `flex-grow`, `flex-shrink`, `align-self`, `overflow`, `overflow-x`, `overflow-y`
-
-Example usage:
-```js
-...
-  styleManager : {
-    sectors: [{
-      name: 'Dimension',
-      buildProps: ['width', 'min-height']
-    },{
-      name: 'Extra',
-      buildProps: ['background-color', 'box-shadow']
-    }]
-  }
-...
-```
+For a complete list of available events, you can check it [here](/api/style_manager.html#available-events).
 
 
 [Components]: <Components.html>

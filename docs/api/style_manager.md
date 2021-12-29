@@ -50,18 +50,15 @@ Returns **[Object][16]**
 
 ## addSector
 
-Add new sector to the collection. If the sector with the same id already exists,
-that one will be returned.
+Add new sector. If the sector with the same id already exists, that one will be returned.
 
 ### Parameters
 
-*   `id` **[string][17]** Sector id
-*   `sector` **[Object][16]** Object representing sector
-
-    *   `sector.name` **[string][17]** Sector's label (optional, default `''`)
-    *   `sector.open` **[Boolean][18]** Indicates if the sector should be opened (optional, default `true`)
-    *   `sector.properties` **[Array][19]<[Object][16]>** Array of properties (optional, default `[]`)
+*   `id` **[String][17]** Sector id
+*   `sector` **[Object][16]** Sector definition. Check the [available properties][18]
 *   `options` **[Object][16]** Options (optional, default `{}`)
+
+    *   `options.at` **[Number][19]?** Position index (by default, will be appended at the end).
 
 ### Examples
 
@@ -71,18 +68,18 @@ const sector = styleManager.addSector('mySector',{
   open: true,
   properties: [{ name: 'My property'}]
 }, { at: 0 });
-// With `at: 0` we place the new sector at the beginning of the collection
+// With `at: 0` we place the new sector at the beginning of the list
 ```
 
 Returns **[Sector]** Added Sector
 
 ## getSector
 
-Get sector by id
+Get sector by id.
 
 ### Parameters
 
-*   `id` **[string][17]** Sector id
+*   `id` **[String][17]** Sector id
 *   `opts`   (optional, default `{}`)
 
 ### Examples
@@ -95,11 +92,11 @@ Returns **([Sector] | null)**
 
 ## removeSector
 
-Remove a sector by id
+Remove sector by id.
 
 ### Parameters
 
-*   `id` **[string][17]** Sector id
+*   `id` **[String][17]** Sector id
 
 ### Examples
 
@@ -111,7 +108,7 @@ Returns **[Sector]** Removed sector
 
 ## getSectors
 
-Get all sectors
+Get all sectors.
 
 ### Parameters
 
@@ -127,51 +124,33 @@ Returns **Collection<[Sector]>** Collection of sectors
 
 ## addProperty
 
-Add property to the sector identified by id
+Add new property to the sector.
 
 ### Parameters
 
-*   `sectorId` **[string][17]** Sector id
-*   `property` **[Object][16]** Property object
-
-    *   `property.name` **[string][17]** Name of the property (optional, default `''`)
-    *   `property.property` **[string][17]** CSS property, eg. `min-height` (optional, default `''`)
-    *   `property.type` **[string][17]** Type of the property: integer | radio | select | color | file | composite | stack (optional, default `''`)
-    *   `property.units` **[Array][19]<[string][17]>** Unit of measure available, eg. \['px','%','em']. Only for integer type (optional, default `[]`)
-    *   `property.unit` **[string][17]** Default selected unit from `units`. Only for integer type (optional, default `''`)
-    *   `property.min` **[number][20]** Min possible value. Only for integer type (optional, default `null`)
-    *   `property.max` **[number][20]** Max possible value. Only for integer type (optional, default `null`)
-    *   `property.defaults` **[string][17]** Default value (optional, default `''`)
-    *   `property.info` **[string][17]** Some description (optional, default `''`)
-    *   `property.icon` **[string][17]** Class name. If exists no text will be displayed (optional, default `''`)
-    *   `property.preview` **[Boolean][18]** Show layers preview. Only for stack type (optional, default `false`)
-    *   `property.functionName` **[string][17]** Indicates if value need to be wrapped in some function, for istance `transform: rotate(90deg)` (optional, default `''`)
-    *   `property.properties` **[Array][19]<[Object][16]>** Nested properties for composite and stack type (optional, default `[]`)
-    *   `property.layers` **[Array][19]<[Object][16]>** Layers for stack properties (optional, default `[]`)
-    *   `property.list` **[Array][19]<[Object][16]>** List of possible options for radio and select types (optional, default `[]`)
+*   `sectorId` **[String][17]** Sector id.
+*   `property` **[Object][16]** Property definition. Check the [base available properties][20] + others based on the `type` of your property.
 *   `opts`   (optional, default `{}`)
 *   `options` **[Object][16]** Options (optional, default `{}`)
+
+    *   `options.at` **[Number][19]?** Position index (by default, will be appended at the end).
 
 ### Examples
 
 ```javascript
-var property = styleManager.addProperty('mySector',{
-  name: 'Minimum height',
+const property = styleManager.addProperty('mySector', {
+  label: 'Minimum height',
   property: 'min-height',
   type: 'select',
-  defaults: '100px',
-  list: [{
-    value: '100px',
-    name: '100',
-   },{
-     value: '200px',
-     name: '200',
-   }],
+  default: '100px',
+  options: [
+   { id: '100px', label: '100' },
+   { id: '200px', label: '200' },
+  ],
 }, { at: 0 });
-// With `at: 0` we place the new property at the beginning of the collection
 ```
 
-Returns **(Property | null)** Added Property or `null` in case sector doesn't exist
+Returns **([Property] | null)** Added property or `null` in case the sector doesn't exist.
 
 ## getProperty
 
@@ -291,7 +270,7 @@ Returns **[Object][16]** Type definition
 
 Get all types
 
-Returns **[Array][19]** 
+Returns **[Array][21]** 
 
 ## createType
 
@@ -317,6 +296,44 @@ someContainer.appendChild(propView.el);
 ```
 
 Returns **PropertyView** 
+
+## getBuiltIn
+
+Return built-in property definition
+
+### Parameters
+
+*   `prop` **[String][17]** Property name.
+
+Returns **([Object][16] | null)** Property definition.
+
+## getBuiltInAll
+
+Get all the available built-in property definitions.
+
+Returns **[Object][16]** 
+
+## addBuiltIn
+
+Add built-in property definition.
+If the property exists already, it will extend it.
+
+### Parameters
+
+*   `prop` **[String][17]** Property name.
+*   `definition` **[Object][16]** Property definition.
+
+### Examples
+
+```javascript
+const sector = styleManager.addBuiltIn('new-property', {
+ type: 'select',
+ default: 'value1',
+ options: [{ id: 'value1', label: 'Some label' }, ...],
+})
+```
+
+Returns **[Object][16]** Added property definition.
 
 [1]: https://github.com/artf/grapesjs/blob/master/src/style_manager/config/config.js
 
@@ -352,8 +369,10 @@ Returns **PropertyView**
 
 [17]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-[18]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[18]: sector.html#properties
 
-[19]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[19]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
 
-[20]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+[20]: property.html#properties
+
+[21]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array

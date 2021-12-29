@@ -10,7 +10,7 @@
 
 *   `layerSeparator` **([String][1] | [RegExp][2])?** The separator used to split layer values.
 *   `layerJoin` **[String][1]?** Value used to join layer values.
-*   `layerLabel` **[Function][3]?** Custom logic for creating the layer value.
+*   `layerLabel` **[Function][3]?** Custom logic for creating the layer label.
 
 ### getLayers
 

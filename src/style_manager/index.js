@@ -145,22 +145,19 @@ export default () => {
     },
 
     /**
-     * Add new sector to the collection. If the sector with the same id already exists,
-     * that one will be returned.
-     * @param {string} id Sector id
-     * @param  {Object} sector  Object representing sector
-     * @param  {string} [sector.name='']  Sector's label
-     * @param  {Boolean} [sector.open=true] Indicates if the sector should be opened
-     * @param  {Array<Object>} [sector.properties=[]] Array of properties
-     * @param  {Object} [options={}] Options
-     * @return {[Sector]} Added Sector
+     * Add new sector. If the sector with the same id already exists, that one will be returned.
+     * @param {String} id Sector id
+     * @param {Object} sector Sector definition. Check the [available properties](sector.html#properties)
+     * @param {Object} [options={}] Options
+     * @param {Number} [options.at] Position index (by default, will be appended at the end).
+     * @returns {[Sector]} Added Sector
      * @example
      * const sector = styleManager.addSector('mySector',{
      *   name: 'My sector',
      *   open: true,
      *   properties: [{ name: 'My property'}]
      * }, { at: 0 });
-     * // With `at: 0` we place the new sector at the beginning of the collection
+     * // With `at: 0` we place the new sector at the beginning of the list
      * */
     addSector(id, sector, options = {}) {
       let result = this.getSector(id);
@@ -174,9 +171,9 @@ export default () => {
     },
 
     /**
-     * Get sector by id
-     * @param {string} id  Sector id
-     * @return {[Sector]|null}
+     * Get sector by id.
+     * @param {String} id  Sector id
+     * @returns {[Sector]|null}
      * @example
      * const sector = styleManager.getSector('mySector');
      * */
@@ -187,9 +184,9 @@ export default () => {
     },
 
     /**
-     * Remove a sector by id
-     * @param  {string} id Sector id
-     * @return {[Sector]} Removed sector
+     * Remove sector by id.
+     * @param  {String} id Sector id
+     * @returns {[Sector]} Removed sector
      * @example
      * const removed = styleManager.removeSector('mySector');
      */
@@ -198,7 +195,7 @@ export default () => {
     },
 
     /**
-     * Get all sectors
+     * Get all sectors.
      * @returns {Collection<[Sector]>} Collection of sectors
      * @example
      * const sectors = styleManager.getSectors();
@@ -208,41 +205,23 @@ export default () => {
     },
 
     /**
-     * Add property to the sector identified by id
-     * @param {string} sectorId Sector id
-     * @param {Object} property Property object
-     * @param {string} [property.name=''] Name of the property
-     * @param {string} [property.property=''] CSS property, eg. `min-height`
-     * @param {string} [property.type=''] Type of the property: integer | radio | select | color | file | composite | stack
-     * @param {Array<string>} [property.units=[]] Unit of measure available, eg. ['px','%','em']. Only for integer type
-     * @param {string} [property.unit=''] Default selected unit from `units`. Only for integer type
-     * @param {number} [property.min=null] Min possible value. Only for integer type
-     * @param {number} [property.max=null] Max possible value. Only for integer type
-     * @param {string} [property.defaults=''] Default value
-     * @param {string} [property.info=''] Some description
-     * @param {string} [property.icon=''] Class name. If exists no text will be displayed
-     * @param {Boolean} [property.preview=false] Show layers preview. Only for stack type
-     * @param {string} [property.functionName=''] Indicates if value need to be wrapped in some function, for istance `transform: rotate(90deg)`
-     * @param {Array<Object>} [property.properties=[]] Nested properties for composite and stack type
-     * @param {Array<Object>} [property.layers=[]] Layers for stack properties
-     * @param {Array<Object>} [property.list=[]] List of possible options for radio and select types
+     * Add new property to the sector.
+     * @param {String} sectorId Sector id.
+     * @param {Object} property Property definition. Check the [base available properties](property.html#properties) + others based on the `type` of your property.
      * @param  {Object} [options={}] Options
-     * @return {Property|null} Added Property or `null` in case sector doesn't exist
+     * @param {Number} [options.at] Position index (by default, will be appended at the end).
+     * @returns {[Property]|null} Added property or `null` in case the sector doesn't exist.
      * @example
-     * var property = styleManager.addProperty('mySector',{
-     *   name: 'Minimum height',
+     * const property = styleManager.addProperty('mySector', {
+     *   label: 'Minimum height',
      *   property: 'min-height',
      *   type: 'select',
-     *   defaults: '100px',
-     *   list: [{
-     *     value: '100px',
-     *     name: '100',
-     *    },{
-     *      value: '200px',
-     *      name: '200',
-     *    }],
+     *   default: '100px',
+     *   options: [
+     *    { id: '100px', label: '100' },
+     *    { id: '200px', label: '200' },
+     *   ],
      * }, { at: 0 });
-     * // With `at: 0` we place the new property at the beginning of the collection
      */
     addProperty(sectorId, property, opts = {}) {
       const sector = this.getSector(sectorId, { warn: 1 });
