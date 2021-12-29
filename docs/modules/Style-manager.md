@@ -443,7 +443,14 @@ For a more advanced usage you can rely on the [Style Manager API] to perform dif
 
   // Set as a target the CSS selector (the relative CSSRule will be created if doesn't exist yet)
   sm.select('.btn > span');
+  // Get the last selected target
+  const lastTarget = sm.getLastSelected();
+  lastTarget?.toCSS && console.log(lastTarget.toCSS());
+
+  // Update selected targets with a custom style
+  sm.addStyleTargets({ color: 'red' });
   ```
+* Adding new types.
 
 
 

@@ -31,6 +31,8 @@
  * * [select](#select)
  * * [getSelected](#getselected)
  * * [getLastSelected](#getlastselected)
+ * * [getSelectedParents](#getselectedparents)
+ * * [addStyleTargets](#addstyletargets)
  * * [addType](#addtype)
  * * [getType](#gettype)
  * * [getTypes](#gettypes)
@@ -350,6 +352,25 @@ export default () => {
     },
 
     /**
+     * Get parent rules of the last selected target.
+     * @returns {Array<[CSSRule]>}
+     */
+    getSelectedParents() {
+      return this.model.get('lastTargetParents') || [];
+    },
+
+    /**
+     * Update selected targets with a custom style.
+     * @param {Object} style Style object
+     * @param {Object} [opts={}] Options
+     * @example
+     * styleManager.addStyleTargets({ color: 'red' });
+     */
+    addStyleTargets(style, opts) {
+      this.getSelected().map(t => t.addStyle(style, opts));
+    },
+
+    /**
      * Get what to style inside Style Manager. If you select the component
      * without classes the entity is the Component itself and all changes will
      * go inside its 'style' property. Otherwise, if the selected component has
@@ -529,14 +550,6 @@ export default () => {
     getTargets() {
       const { propTarget } = SectView || {};
       return (propTarget && propTarget.targets) || [];
-    },
-
-    addStyleTargets(style, opts) {
-      this.getSelected().map(t => t.addStyle(style, opts));
-    },
-
-    getSelectedParents() {
-      return this.model.get('lastTargetParents') || [];
     },
 
     getEmitter() {
