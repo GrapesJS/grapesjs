@@ -614,17 +614,20 @@ describe('PropertyFactory', () => {
       properties: [
         {
           property: 'background-image',
+          id: 'background-image-sub',
           type: 'file',
           functionName: 'url',
         },
         {
           property: 'background-repeat',
+          id: 'background-repeat-sub',
           type: 'select',
           default: 'repeat',
           options: [{ id: 'repeat' }, { id: 'repeat-x' }, { id: 'repeat-y' }, { id: 'no-repeat' }],
         },
         {
           property: 'background-position',
+          id: 'background-position-sub',
           type: 'select',
           default: 'left top',
           options: [
@@ -641,12 +644,14 @@ describe('PropertyFactory', () => {
         },
         {
           property: 'background-attachment',
+          id: 'background-attachment-sub',
           type: 'select',
           default: 'scroll',
           options: [{ id: 'scroll' }, { id: 'fixed' }, { id: 'local' }],
         },
         {
           property: 'background-size',
+          id: 'background-size-sub',
           type: 'select',
           default: 'auto',
           options: [{ id: 'auto' }, { id: 'cover' }, { id: 'contain' }],
@@ -663,6 +668,7 @@ describe('PropertyFactory', () => {
       properties: [
         {
           property: 'transition-property',
+          id: 'transition-property-sub',
           type: 'select',
           default: 'width',
           options: [
@@ -677,6 +683,7 @@ describe('PropertyFactory', () => {
         },
         {
           property: 'transition-duration',
+          id: 'transition-duration-sub',
           type: 'integer',
           units: obj.unitsTime,
           default: '2',
@@ -684,6 +691,7 @@ describe('PropertyFactory', () => {
         },
         {
           property: 'transition-timing-function',
+          id: 'transition-timing-function-sub',
           type: 'select',
           default: 'ease',
           options: [{ id: 'linear' }, { id: 'ease' }, { id: 'ease-in' }, { id: 'ease-out' }, { id: 'ease-in-out' }],

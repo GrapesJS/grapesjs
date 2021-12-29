@@ -82,9 +82,9 @@ export default {
       flex: 'Flex',
       dimension: 'Dimension',
     },
-    // The core library generates the name by their `property` name
+    // Default names for sub properties in Composite and Stack types.
+    // Other labels are generated directly from their property names (eg. 'font-size' will be 'Font size').
     properties: {
-      // Default names for sub properties in Composite and Stack types
       'text-shadow-h': 'X',
       'text-shadow-v': 'Y',
       'text-shadow-blur': 'Blur',
@@ -116,6 +116,14 @@ export default {
       'transform-scale-x': 'Scale X',
       'transform-scale-y': 'Scale Y',
       'transform-scale-z': 'Scale Z',
+      'transition-property-sub': 'Property',
+      'transition-duration-sub': 'Duration',
+      'transition-timing-function-sub': 'Timing',
+      'background-image-sub': 'Image',
+      'background-repeat-sub': 'Repeat',
+      'background-position-sub': 'Position',
+      'background-attachment-sub': 'Attachment',
+      'background-size-sub': 'Size',
     },
     // Translate options in style properties
     // options: {

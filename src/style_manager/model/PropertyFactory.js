@@ -294,7 +294,11 @@ export default class PropertyFactory {
         'transition',
         {
           type: this.typeStack,
-          properties: this.__sub(['transition-property', 'transition-duration', 'transition-timing-function']),
+          properties: this.__sub([
+            { extend: 'transition-property', id: 'transition-property-sub' },
+            { extend: 'transition-duration', id: 'transition-duration-sub' },
+            { extend: 'transition-timing-function', id: 'transition-timing-function-sub' },
+          ]),
         },
       ],
       [
@@ -325,11 +329,11 @@ export default class PropertyFactory {
         {
           detached: true,
           properties: this.__sub([
-            'background-image',
-            'background-repeat',
-            'background-position',
-            'background-attachment',
-            'background-size',
+            { extend: 'background-image', id: 'background-image-sub' },
+            { extend: 'background-repeat', id: 'background-repeat-sub' },
+            { extend: 'background-position', id: 'background-position-sub' },
+            { extend: 'background-attachment', id: 'background-attachment-sub' },
+            { extend: 'background-size', id: 'background-size-sub' },
           ]),
         },
         'box-shadow',
