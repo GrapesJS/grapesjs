@@ -84,35 +84,6 @@ grapesjs.init({
   },
 });
 ```
-The label of the sector you see in the editor is using directly the `name` but you can also rely on the [I18n] module via sector's `id` in case you plan to have a multi-language editor.
-
-```js
-grapesjs.init({
-  i18n: {
-    // Use `messagesAdd` in order to extend the default set
-    messagesAdd: {
-      en: {
-        styleManager: {
-          sectors: {
-            'first-sector-id': 'First sector EN'
-          }
-        }
-      }
-    }
-  },
-  // ...
-  styleManager: {
-    sectors: [
-      {
-        id: 'first-sector-id',
-        // You can leave the name as a fallback in case the i18n definition is missing
-        name: 'First sector',
-      },
-      // ...
-    ],
-  },
-});
-```
 
 ### Property defintions
 
@@ -314,6 +285,63 @@ or get the list of all available properties with
 editor.StyleManager.getBuiltInAll();
 ```
 :::
+
+## I18n
+
+If you're planning to have a multi-language editor you can easily connect sector and property labels to the [I18n] module via their IDs.
+
+```js
+grapesjs.init({
+  styleManager: {
+    sectors: [
+      {
+        id: 'first-sector-id',
+        // You can leave the name as a fallback in case the i18n definition is missing
+        name: 'First sector',
+        properties: [
+          'width',
+          {
+            id: 'display-prop-id', // By default the id is the same as its property name
+            label: 'Display',
+            type: 'select',
+            property: 'display',
+            default: 'block',
+            options: [
+              {id: 'block', label: 'Block'},
+              {id: 'inline', label: 'Inline'},
+              {id: 'none', label: 'None'},
+            ]
+          },
+        ],
+      },
+      // ...
+    ],
+  },
+  i18n: {
+    // Use `messagesAdd` in order to extend the default set
+    messagesAdd: {
+      en: {
+        styleManager: {
+          sectors: {
+            'first-sector-id': 'First sector EN'
+          },
+          properties: {
+            width: 'Width EN',
+            'display-prop-id': 'Display EN',
+          },
+          options: {
+            'display-prop-id': {
+              block: 'Block EN',
+              inline: 'Inline EN',
+              none: 'None EN',
+            }
+          }
+        }
+      }
+    }
+  },
+});
+```
 
 ## Components constraints
 
