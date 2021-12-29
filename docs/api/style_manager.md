@@ -19,15 +19,21 @@ Once the editor is instantiated you can use its API. Before using these methods 
 const styleManager = editor.StyleManager;
 ```
 
+## Available Events
+
+*   `style:sector:add` - Sector added. The [Sector] is passed as an argument to the callback.
+
+## Methods
+
 *   [getConfig][2]
 *   [addSector][3]
 *   [getSector][4]
-*   [removeSector][5]
-*   [getSectors][6]
+*   [getSectors][5]
+*   [removeSector][6]
 *   [addProperty][7]
 *   [getProperty][8]
-*   [removeProperty][9]
-*   [getProperties][10]
+*   [getProperties][9]
+*   [removeProperty][10]
 *   [getModelToStyle][11]
 *   [addType][12]
 *   [getType][13]
@@ -90,22 +96,6 @@ const sector = styleManager.getSector('mySector');
 
 Returns **([Sector] | null)** 
 
-## removeSector
-
-Remove sector by id.
-
-### Parameters
-
-*   `id` **[String][17]** Sector id
-
-### Examples
-
-```javascript
-const removed = styleManager.removeSector('mySector');
-```
-
-Returns **[Sector]** Removed sector
-
 ## getSectors
 
 Get all sectors.
@@ -122,6 +112,22 @@ const sectors = styleManager.getSectors();
 
 Returns **Collection<[Sector]>** Collection of sectors
 
+## removeSector
+
+Remove sector by id.
+
+### Parameters
+
+*   `id` **[String][17]** Sector id
+
+### Examples
+
+```javascript
+const removed = styleManager.removeSector('mySector');
+```
+
+Returns **[Sector]** Removed sector
+
 ## addProperty
 
 Add new property to the sector.
@@ -130,10 +136,9 @@ Add new property to the sector.
 
 *   `sectorId` **[String][17]** Sector id.
 *   `property` **[Object][16]** Property definition. Check the [base available properties][20] + others based on the `type` of your property.
-*   `opts`   (optional, default `{}`)
-*   `options` **[Object][16]** Options (optional, default `{}`)
+*   `opts` **[Object][16]** Options (optional, default `{}`)
 
-    *   `options.at` **[Number][19]?** Position index (by default, will be appended at the end).
+    *   `opts.at` **[Number][19]?** Position index (by default, will be appended at the end).
 
 ### Examples
 
@@ -154,29 +159,45 @@ Returns **([Property] | null)** Added property or `null` in case the sector does
 
 ## getProperty
 
-Get property by its CSS name and sector id
+Get the property.
 
 ### Parameters
 
-*   `sectorId` **[string][17]** Sector id
-*   `name` **[string][17]** CSS property name (or id), eg. 'min-height'
+*   `sectorId` **[String][17]** Sector id.
+*   `id` **[String][17]** Property id.
 
 ### Examples
 
 ```javascript
-var property = styleManager.getProperty('mySector','min-height');
+const property = styleManager.getProperty('mySector', 'min-height');
 ```
 
-Returns **(Property | null)** 
+Returns **([Property] | null)** 
 
-## removeProperty
+## getProperties
 
-Remove a property from the sector
+Get all properties of the sector.
 
 ### Parameters
 
-*   `sectorId` **[string][17]** Sector id
-*   `name` **[string][17]** CSS property name, eg. 'min-height'
+*   `sectorId` **[String][17]** Sector id.
+
+### Examples
+
+```javascript
+const properties = styleManager.getProperties('mySector');
+```
+
+Returns **(Collection<[Property]> | null)** Collection of properties
+
+## removeProperty
+
+Remove the property.
+
+### Parameters
+
+*   `sectorId` **[String][17]** Sector id.
+*   `id` **[String][17]** Property id.
 
 ### Examples
 
@@ -184,23 +205,7 @@ Remove a property from the sector
 const property = styleManager.removeProperty('mySector', 'min-height');
 ```
 
-Returns **Property** Removed property
-
-## getProperties
-
-Get properties of the sector
-
-### Parameters
-
-*   `sectorId` **[string][17]** Sector id
-
-### Examples
-
-```javascript
-var properties = styleManager.getProperties('mySector');
-```
-
-Returns **Properties** Collection of properties
+Returns **([Property] | null)** Removed property
 
 ## getModelToStyle
 
@@ -343,17 +348,17 @@ Returns **[Object][16]** Added property definition.
 
 [4]: #getsector
 
-[5]: #removesector
+[5]: #getsectors
 
-[6]: #getsectors
+[6]: #removesector
 
 [7]: #addproperty
 
 [8]: #getproperty
 
-[9]: #removeproperty
+[9]: #getproperties
 
-[10]: #getproperties
+[10]: #removeproperty
 
 [11]: #getmodeltostyle
 

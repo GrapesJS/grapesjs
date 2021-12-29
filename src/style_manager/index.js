@@ -14,16 +14,19 @@
  * ```js
  * const styleManager = editor.StyleManager;
  * ```
+ * ## Available Events
+ * * `style:sector:add` - Sector added. The [Sector] is passed as an argument to the callback.
  *
+ * ## Methods
  * * [getConfig](#getconfig)
  * * [addSector](#addsector)
  * * [getSector](#getsector)
- * * [removeSector](#removesector)
  * * [getSectors](#getsectors)
+ * * [removeSector](#removesector)
  * * [addProperty](#addproperty)
  * * [getProperty](#getproperty)
- * * [removeProperty](#removeproperty)
  * * [getProperties](#getproperties)
+ * * [removeProperty](#removeproperty)
  * * [getModelToStyle](#getmodeltostyle)
  * * [addType](#addtype)
  * * [getType](#gettype)
@@ -184,6 +187,16 @@ export default () => {
     },
 
     /**
+     * Get all sectors.
+     * @returns {Collection<[Sector]>} Collection of sectors
+     * @example
+     * const sectors = styleManager.getSectors();
+     * */
+    getSectors(opts = {}) {
+      return sectors && sectors.models ? (opts.array ? [...sectors.models] : sectors) : [];
+    },
+
+    /**
      * Remove sector by id.
      * @param  {String} id Sector id
      * @returns {[Sector]} Removed sector
@@ -195,21 +208,11 @@ export default () => {
     },
 
     /**
-     * Get all sectors.
-     * @returns {Collection<[Sector]>} Collection of sectors
-     * @example
-     * const sectors = styleManager.getSectors();
-     * */
-    getSectors(opts = {}) {
-      return sectors && sectors.models ? (opts.array ? [...sectors.models] : sectors) : [];
-    },
-
-    /**
      * Add new property to the sector.
      * @param {String} sectorId Sector id.
      * @param {Object} property Property definition. Check the [base available properties](property.html#properties) + others based on the `type` of your property.
-     * @param  {Object} [options={}] Options
-     * @param {Number} [options.at] Position index (by default, will be appended at the end).
+     * @param {Object} [opts={}] Options
+     * @param {Number} [opts.at] Position index (by default, will be appended at the end).
      * @returns {[Property]|null} Added property or `null` in case the sector doesn't exist.
      * @example
      * const property = styleManager.addProperty('mySector', {
@@ -232,43 +235,30 @@ export default () => {
     },
 
     /**
-     * Get property by its CSS name and sector id
-     * @param  {string} sectorId Sector id
-     * @param  {string} name CSS property name (or id), eg. 'min-height'
-     * @return {Property|null}
+     * Get the property.
+     * @param {String} sectorId Sector id.
+     * @param {String} id Property id.
+     * @returns {[Property]|null}
      * @example
-     * var property = styleManager.getProperty('mySector','min-height');
+     * const property = styleManager.getProperty('mySector', 'min-height');
      */
-    getProperty(sectorId, name) {
+    getProperty(sectorId, id) {
       const sector = this.getSector(sectorId, { warn: 1 });
       let prop;
 
       if (sector) {
-        prop = sector.get('properties').filter(prop => prop.get('property') === name || prop.get('id') === name)[0];
+        prop = sector.get('properties').filter(prop => prop.get('property') === id || prop.get('id') === id)[0];
       }
 
       return prop || null;
     },
 
     /**
-     * Remove a property from the sector
-     * @param  {string} sectorId Sector id
-     * @param  {string} name CSS property name, eg. 'min-height'
-     * @return {Property} Removed property
+     * Get all properties of the sector.
+     * @param {String} sectorId Sector id.
+     * @returns {Collection<[Property]>|null} Collection of properties
      * @example
-     * const property = styleManager.removeProperty('mySector', 'min-height');
-     */
-    removeProperty(sectorId, name) {
-      const props = this.getProperties(sectorId);
-      return props && props.remove(this.getProperty(sectorId, name));
-    },
-
-    /**
-     * Get properties of the sector
-     * @param  {string} sectorId Sector id
-     * @return {Properties} Collection of properties
-     * @example
-     * var properties = styleManager.getProperties('mySector');
+     * const properties = styleManager.getProperties('mySector');
      */
     getProperties(sectorId) {
       let props = null;
@@ -276,6 +266,19 @@ export default () => {
       if (sector) props = sector.get('properties');
 
       return props;
+    },
+
+    /**
+     * Remove the property.
+     * @param {String} sectorId Sector id.
+     * @param {String} id Property id.
+     * @returns {[Property]|null} Removed property
+     * @example
+     * const property = styleManager.removeProperty('mySector', 'min-height');
+     */
+    removeProperty(sectorId, id) {
+      const props = this.getProperties(sectorId);
+      return props ? props.remove(this.getProperty(sectorId, id)) : null;
     },
 
     /**
