@@ -22,6 +22,7 @@ const styleManager = editor.StyleManager;
 ## Available Events
 
 *   `style:sector:add` - Sector added. The [Sector] is passed as an argument to the callback.
+*   `style:target` - Target selection changed. The target (or `null` in case the target is deselected) is passed as an argument to the callback.
 
 ## Methods
 
@@ -34,11 +35,18 @@ const styleManager = editor.StyleManager;
 *   [getProperty][8]
 *   [getProperties][9]
 *   [removeProperty][10]
-*   [getModelToStyle][11]
-*   [addType][12]
-*   [getType][13]
-*   [getTypes][14]
-*   [createType][15]
+*   [select][11]
+*   [getSelected][12]
+*   [getLastSelected][13]
+*   [getSelectedParents][14]
+*   [addStyleTargets][15]
+*   [getBuiltIn][16]
+*   [getBuiltInAll][17]
+*   [addBuiltIn][18]
+*   [addType][19]
+*   [getType][20]
+*   [getTypes][21]
+*   [createType][22]
 
 [Sector]: sector.html
 
@@ -52,7 +60,7 @@ const styleManager = editor.StyleManager;
 
 Get configuration object
 
-Returns **[Object][16]** 
+Returns **[Object][23]** 
 
 ## addSector
 
@@ -60,11 +68,11 @@ Add new sector. If the sector with the same id already exists, that one will be 
 
 ### Parameters
 
-*   `id` **[String][17]** Sector id
-*   `sector` **[Object][16]** Sector definition. Check the [available properties][18]
-*   `options` **[Object][16]** Options (optional, default `{}`)
+*   `id` **[String][24]** Sector id
+*   `sector` **[Object][23]** Sector definition. Check the [available properties][25]
+*   `options` **[Object][23]** Options (optional, default `{}`)
 
-    *   `options.at` **[Number][19]?** Position index (by default, will be appended at the end).
+    *   `options.at` **[Number][26]?** Position index (by default, will be appended at the end).
 
 ### Examples
 
@@ -85,7 +93,7 @@ Get sector by id.
 
 ### Parameters
 
-*   `id` **[String][17]** Sector id
+*   `id` **[String][24]** Sector id
 *   `opts`   (optional, default `{}`)
 
 ### Examples
@@ -118,7 +126,7 @@ Remove sector by id.
 
 ### Parameters
 
-*   `id` **[String][17]** Sector id
+*   `id` **[String][24]** Sector id
 
 ### Examples
 
@@ -134,11 +142,11 @@ Add new property to the sector.
 
 ### Parameters
 
-*   `sectorId` **[String][17]** Sector id.
-*   `property` **[Object][16]** Property definition. Check the [base available properties][20] + others based on the `type` of your property.
-*   `opts` **[Object][16]** Options (optional, default `{}`)
+*   `sectorId` **[String][24]** Sector id.
+*   `property` **[Object][23]** Property definition. Check the [base available properties][27] + others based on the `type` of your property.
+*   `opts` **[Object][23]** Options (optional, default `{}`)
 
-    *   `opts.at` **[Number][19]?** Position index (by default, will be appended at the end).
+    *   `opts.at` **[Number][26]?** Position index (by default, will be appended at the end).
 
 ### Examples
 
@@ -163,8 +171,8 @@ Get the property.
 
 ### Parameters
 
-*   `sectorId` **[String][17]** Sector id.
-*   `id` **[String][17]** Property id.
+*   `sectorId` **[String][24]** Sector id.
+*   `id` **[String][24]** Property id.
 
 ### Examples
 
@@ -180,7 +188,7 @@ Get all properties of the sector.
 
 ### Parameters
 
-*   `sectorId` **[String][17]** Sector id.
+*   `sectorId` **[String][24]** Sector id.
 
 ### Examples
 
@@ -196,8 +204,8 @@ Remove the property.
 
 ### Parameters
 
-*   `sectorId` **[String][17]** Sector id.
-*   `id` **[String][17]** Property id.
+*   `sectorId` **[String][24]** Sector id.
+*   `id` **[String][24]** Property id.
 
 ### Examples
 
@@ -207,19 +215,107 @@ const property = styleManager.removeProperty('mySector', 'min-height');
 
 Returns **([Property] | null)** Removed property
 
-## getModelToStyle
+## select
 
-Get what to style inside Style Manager. If you select the component
-without classes the entity is the Component itself and all changes will
-go inside its 'style' property. Otherwise, if the selected component has
-one or more classes, the function will return the corresponding CSS Rule
+Select new target.
+The target could be a Component, CSSRule, or a CSS selector string.
 
 ### Parameters
 
-*   `model` **Model** 
-*   `options`   (optional, default `{}`)
+*   `target` **([Component] | [CSSRule] | [String][24])** 
+*   `opts`   (optional, default `{}`)
 
-Returns **Model** 
+### Examples
+
+```javascript
+// Select the first button in the current page
+const wrapperCmp = editor.Pages.getSelected().getMainComponent();
+const btnCmp = wrapperCmp.find('button')[0];
+btnCmp && styleManager.select(btnCmp);
+
+// Set as a target the CSS selector
+styleManager.select('.btn > span');
+```
+
+Returns **[Array][28]<([Component] | [CSSRule])>** Array containing selected Components or CSSRules
+
+## getSelected
+
+Get the array of selected targets.
+
+Returns **[Array][28]<([Component] | [CSSRule])>** 
+
+## getLastSelected
+
+Get the last selected target.
+By default, the Style Manager shows styles of the last selected target.
+
+Returns **([Component] | [CSSRule] | null)** 
+
+## getSelectedParents
+
+Get parent rules of the last selected target.
+
+Returns **[Array][28]<[CSSRule]>** 
+
+## addStyleTargets
+
+Update selected targets with a custom style.
+
+### Parameters
+
+*   `style` **[Object][23]** Style object
+*   `opts` **[Object][23]** Options (optional, default `{}`)
+
+### Examples
+
+```javascript
+styleManager.addStyleTargets({ color: 'red' });
+```
+
+## getBuiltIn
+
+Return built-in property definition
+
+### Parameters
+
+*   `prop` **[String][24]** Property name.
+
+### Examples
+
+```javascript
+const widthPropDefinition = styleManager.getBuiltIn('width');
+```
+
+Returns **([Object][23] | null)** Property definition.
+
+## getBuiltInAll
+
+Get all the available built-in property definitions.
+
+Returns **[Object][23]** 
+
+## addBuiltIn
+
+Add built-in property definition.
+If the property exists already, it will extend it.
+
+### Parameters
+
+*   `prop` **[String][24]** Property name.
+*   `definition` **[Object][23]** Property definition.
+
+### Examples
+
+```javascript
+const sector = styleManager.addBuiltIn('new-property', {
+ type: 'select',
+ default: 'value1',
+ options: [{ id: 'value1', label: 'Some label' }, ...],
+})
+```
+
+Returns **[Object][23]** Added property definition.
 
 ## addType
 
@@ -227,8 +323,8 @@ Add new property type
 
 ### Parameters
 
-*   `id` **[string][17]** Type ID
-*   `definition` **[Object][16]** Definition of the type. Each definition contains
+*   `id` **[string][24]** Type ID
+*   `definition` **[Object][23]** Definition of the type. Each definition contains
     `model` (business logic), `view` (presentation logic)
     and `isType` function which recognize the type of the
     passed entity
@@ -267,15 +363,15 @@ Get type
 
 ### Parameters
 
-*   `id` **[string][17]** Type ID
+*   `id` **[string][24]** Type ID
 
-Returns **[Object][16]** Type definition
+Returns **[Object][23]** Type definition
 
 ## getTypes
 
 Get all types
 
-Returns **[Array][21]** 
+Returns **[Array][28]** 
 
 ## createType
 
@@ -283,11 +379,11 @@ Create new property from type
 
 ### Parameters
 
-*   `id` **[string][17]** Type ID
-*   `options` **[Object][16]** Options (optional, default `{}`)
+*   `id` **[string][24]** Type ID
+*   `options` **[Object][23]** Options (optional, default `{}`)
 
-    *   `options.model` **[Object][16]** Custom model object (optional, default `{}`)
-    *   `options.view` **[Object][16]** Custom view object (optional, default `{}`)
+    *   `options.model` **[Object][23]** Custom model object (optional, default `{}`)
+    *   `options.view` **[Object][23]** Custom view object (optional, default `{}`)
 
 ### Examples
 
@@ -301,44 +397,6 @@ someContainer.appendChild(propView.el);
 ```
 
 Returns **PropertyView** 
-
-## getBuiltIn
-
-Return built-in property definition
-
-### Parameters
-
-*   `prop` **[String][17]** Property name.
-
-Returns **([Object][16] | null)** Property definition.
-
-## getBuiltInAll
-
-Get all the available built-in property definitions.
-
-Returns **[Object][16]** 
-
-## addBuiltIn
-
-Add built-in property definition.
-If the property exists already, it will extend it.
-
-### Parameters
-
-*   `prop` **[String][17]** Property name.
-*   `definition` **[Object][16]** Property definition.
-
-### Examples
-
-```javascript
-const sector = styleManager.addBuiltIn('new-property', {
- type: 'select',
- default: 'value1',
- options: [{ id: 'value1', label: 'Some label' }, ...],
-})
-```
-
-Returns **[Object][16]** Added property definition.
 
 [1]: https://github.com/artf/grapesjs/blob/master/src/style_manager/config/config.js
 
@@ -360,24 +418,38 @@ Returns **[Object][16]** Added property definition.
 
 [10]: #removeproperty
 
-[11]: #getmodeltostyle
+[11]: #select
 
-[12]: #addtype
+[12]: #getselected
 
-[13]: #gettype
+[13]: #getlastselected
 
-[14]: #gettypes
+[14]: #getselectedparents
 
-[15]: #createtype
+[15]: #addstyletargets
 
-[16]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[16]: #getbuiltin
 
-[17]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[17]: #getbuiltinall
 
-[18]: sector.html#properties
+[18]: #addbuiltin
 
-[19]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+[19]: #addtype
 
-[20]: property.html#properties
+[20]: #gettype
 
-[21]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[21]: #gettypes
+
+[22]: #createtype
+
+[23]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+
+[24]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+
+[25]: sector.html#properties
+
+[26]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+
+[27]: property.html#properties
+
+[28]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array

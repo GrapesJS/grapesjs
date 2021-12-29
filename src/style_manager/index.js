@@ -33,6 +33,9 @@
  * * [getLastSelected](#getlastselected)
  * * [getSelectedParents](#getselectedparents)
  * * [addStyleTargets](#addstyletargets)
+ * * [getBuiltIn](#getbuiltin)
+ * * [getBuiltInAll](#getbuiltinall)
+ * * [addBuiltIn](#addbuiltin)
  * * [addType](#addtype)
  * * [getType](#gettype)
  * * [getTypes](#gettypes)
@@ -371,6 +374,42 @@ export default () => {
     },
 
     /**
+     * Return built-in property definition
+     * @param {String} prop Property name.
+     * @returns {Object|null} Property definition.
+     * @example
+     * const widthPropDefinition = styleManager.getBuiltIn('width');
+     */
+    getBuiltIn(prop) {
+      return this.builtIn.get(prop);
+    },
+
+    /**
+     * Get all the available built-in property definitions.
+     * @returns {Object}
+     */
+    getBuiltInAll() {
+      return this.builtIn.props;
+    },
+
+    /**
+     * Add built-in property definition.
+     * If the property exists already, it will extend it.
+     * @param {String} prop Property name.
+     * @param {Object} definition Property definition.
+     * @returns {Object} Added property definition.
+     * @example
+     * const sector = styleManager.addBuiltIn('new-property', {
+     *  type: 'select',
+     *  default: 'value1',
+     *  options: [{ id: 'value1', label: 'Some label' }, ...],
+     * })
+     */
+    addBuiltIn(prop, definition) {
+      return this.builtIn.add(prop, definition);
+    },
+
+    /**
      * Get what to style inside Style Manager. If you select the component
      * without classes the entity is the Component itself and all changes will
      * go inside its 'style' property. Otherwise, if the selected component has
@@ -596,40 +635,6 @@ export default () => {
           this.__upProp(prop, style, parentStyles, opts);
         });
       });
-    },
-
-    /**
-     * Return built-in property definition
-     * @param {String} prop Property name.
-     * @returns {Object|null} Property definition.
-     */
-    getBuiltIn(prop) {
-      return this.builtIn.get(prop);
-    },
-
-    /**
-     * Get all the available built-in property definitions.
-     * @returns {Object}
-     */
-    getBuiltInAll() {
-      return this.builtIn.props;
-    },
-
-    /**
-     * Add built-in property definition.
-     * If the property exists already, it will extend it.
-     * @param {String} prop Property name.
-     * @param {Object} definition Property definition.
-     * @returns {Object} Added property definition.
-     * @example
-     * const sector = styleManager.addBuiltIn('new-property', {
-     *  type: 'select',
-     *  default: 'value1',
-     *  options: [{ id: 'value1', label: 'Some label' }, ...],
-     * })
-     */
-    addBuiltIn(prop, definition) {
-      return this.builtIn.add(prop, definition);
     },
 
     __upProp(prop, style, parentStyles, opts) {

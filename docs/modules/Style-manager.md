@@ -450,6 +450,7 @@ For a more advanced usage you can rely on the [Style Manager API] to perform dif
   // Update selected targets with a custom style
   sm.addStyleTargets({ color: 'red' });
   ```
+* Adding new built-in property definitions.
 * Adding new types.
 
 
