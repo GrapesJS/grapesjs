@@ -295,6 +295,14 @@ export default () => {
      * The target could be a Component, CSSRule, or a CSS selector string.
      * @param {[Component]|[CSSRule]|String} target
      * @returns {Array<[Component]|[CSSRule]>} Array containing selected Components or CSSRules
+     * @example
+     * // Select the first button in the current page
+     * const wrapperCmp = editor.Pages.getSelected().getMainComponent();
+     * const btnCmp = wrapperCmp.find('button')[0];
+     * btnCmp && styleManager.select(btnCmp);
+     *
+     * // Set as a target the CSS selector
+     * styleManager.select('.btn > span');
      */
     select(target, opts = {}) {
       const { em } = this;
@@ -353,16 +361,15 @@ export default () => {
     getModelToStyle(model, options = {}) {
       const { em } = this;
       const { skipAdd } = options;
-      const classes = model.get('classes');
-      const id = model.getId();
 
-      if (em && classes) {
+      if (em && model?.toHTML) {
         const config = em.getConfig();
         const um = em.get('UndoManager');
         const cssC = em.get('CssComposer');
         const sm = em.get('SelectorManager');
         const smConf = sm ? sm.getConfig() : {};
         const state = !config.devicePreviewMode ? em.get('state') : '';
+        const classes = model.get('classes');
         const valid = classes.getStyleable();
         const hasClasses = valid.length;
         const useClasses = !smConf.componentFirst || options.useClasses;
@@ -384,6 +391,7 @@ export default () => {
             rule = cssC.add(valid, state, deviceW, {}, addOpts);
           }
         } else if (config.avoidInlineStyle) {
+          const id = model.getId();
           rule = cssC.getIdRule(id, opts);
           !rule && !skipAdd && (rule = cssC.setIdRule(id, {}, opts));
           if (model.is('wrapper')) rule.set('wrapper', 1, addOpts);
