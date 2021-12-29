@@ -36,9 +36,7 @@ export default {
       if (!smConfig.appendTo) {
         this.$cn2.append(sm.render());
         const pfx = smConfig.stylePrefix;
-        this.$header = $(
-          `<div class="${pfx}header">${em.t('styleManager.empty')}</div>`
-        );
+        this.$header = $(`<div class="${pfx}header">${em.t('styleManager.empty')}</div>`);
         this.$cn.append(this.$header);
       }
 
@@ -50,8 +48,9 @@ export default {
       // Add all containers to the panel
       this.panel.set('appendContent', this.$cn).trigger(trgEvCnt);
 
-      this.target = em.editor;
-      this.listenTo(this.target, 'component:toggled', this.toggleSm);
+      // Toggle Style Manager on target selection
+      this.em = em.getModel();
+      this.listenTo(this.em, sm.events.target, this.toggleSm);
     }
 
     this.toggleSm();
@@ -62,10 +61,10 @@ export default {
    * @private
    */
   toggleSm() {
-    const { target, sender } = this;
-    if (sender && sender.get && !sender.get('active')) return;
-    const { componentFirst } = target.get('SelectorManager').getConfig();
-    const selectedAll = target.getSelectedAll().length;
+    const { em, sender } = this;
+    if ((sender && sender.get && !sender.get('active')) || !em) return;
+    const { componentFirst } = em.get('SelectorManager').getConfig();
+    const selectedAll = em.getSelectedAll().length;
 
     if (selectedAll === 1 || (selectedAll > 1 && componentFirst)) {
       this.$cn2 && this.$cn2.show();
@@ -79,5 +78,5 @@ export default {
   stop() {
     this.$cn2 && this.$cn2.hide();
     this.$header && this.$header.hide();
-  }
+  },
 };

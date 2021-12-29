@@ -319,7 +319,6 @@ export default () => {
       const lastTarget = targets.slice().reverse()[0];
       const lastTargetParents = this.getParentRules(lastTarget, em.getState());
       this.model.set({ targets, lastTarget, lastTargetParents });
-      // lastTarget && this.setTarget(lastTarget); // TODO to refactor
       this.__upProps(opts);
 
       return targets;
