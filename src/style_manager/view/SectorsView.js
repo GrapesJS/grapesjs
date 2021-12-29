@@ -49,7 +49,7 @@ export default Backbone.View.extend({
 
   toggleStateCls(targets = [], enable) {
     targets.forEach(trg => {
-      const el = trg.getEl();
+      const el = trg?.getEl?.();
       el && el.classList && el.classList[enable ? 'add' : 'remove'](helperCls);
     });
   },
@@ -61,22 +61,24 @@ export default Backbone.View.extend({
   targetUpdated(trg) {
     const em = this.target;
     const pt = this.propTarget;
-    const targets = em.getSelectedAll();
-    let model = em.getSelected();
-    const mdToClear = trg && !!trg.toHTML ? trg : model;
+    const sm = this.module;
+    const cmp = em.getSelected();
+    const cmps = em.getSelectedAll();
+    const mdToClear = trg && !!trg.toHTML ? trg : cmp;
+    const target = sm.getLastSelected();
 
     // Clean components
     mdToClear && this.toggleStateCls([mdToClear]);
-    if (!model) return;
+    if (!target) return;
 
     const config = em.get('Config');
     const state = !config.devicePreviewMode ? em.get('state') : '';
     const { componentFirst } = em.get('SelectorManager').getConfig();
-    const el = model.getEl();
     pt.helper = null;
     pt.targets = null;
 
     // Create computed style container
+    const el = cmp?.getEl();
     if (el && isTaggableNode(el)) {
       const stateStr = state ? `:${state}` : null;
       pt.computed = window.getComputedStyle(el, stateStr);
@@ -101,18 +103,15 @@ export default Backbone.View.extend({
       pt.helper = helperRule;
     };
 
-    const sm = em.get('StyleManager');
-    const target = sm.getModelToStyle(model);
-
     if (state) {
       appendStateRule(target.getStyle());
-      this.toggleStateCls(targets, 1);
+      this.toggleStateCls(cmps, 1);
     }
 
     pt.model = target;
     pt.parentRules = sm.getParentRules(target, state);
     if (componentFirst) {
-      pt.targets = targets.map(t => sm.getModelToStyle(t)).filter(Boolean);
+      pt.targets = sm.getSelected();
     }
     pt.trigger('update');
     em.trigger('styleManager:update');
