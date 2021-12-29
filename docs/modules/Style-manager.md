@@ -345,7 +345,56 @@ grapesjs.init({
 
 ## Components constraints
 
-* Components constraint props
+When you define custom components you can also indicate, via `stylable` and `unstylable` props,  which CSS properties should be available for styling. In that case, the Style Manager will only show the available properties. If the sector doesn't contain any available property, it won't be shown.
+
+```js
+const customComponents = (editor) => {
+  // Component A
+  editor.Components.addType('cmp-a', {
+    model: {
+      defaults: {
+        // When this component is selected, the Style Manager will show only the following properties
+        stylable: ['width', 'height']
+      }
+    }
+  });
+  // Component B
+  editor.Components.addType('cmp-b', {
+    model: {
+      defaults: {
+        // When this component is selected, the Style Manager will hide the following properties
+        unstylable: ['color']
+      }
+    }
+  });
+};
+
+grapesjs.init({
+  // ...
+  plugins: [customComponents],
+  components: [
+    { type: 'cmp-a', components: 'Component A' },
+    { type: 'cmp-b', components: 'Component B' },
+  ],
+  styleManager: {
+    sectors: [
+      {
+        name: 'First sector',
+        properties: [
+          'width', 'min-width',
+          'height', 'min-height',
+        ],
+      },
+      {
+        name: 'Second sector',
+        properties: [
+          'color', 'font-size',
+        ],
+      },
+    ],
+  },
+});
+```
 
 ## Programmatic usage
 
