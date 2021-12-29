@@ -2,19 +2,19 @@ import Backbone from 'backbone';
 const $ = Backbone.$;
 
 export default {
-  run(em, sender) {
+  run(editor, sender) {
     this.sender = sender;
 
     if (!this.$cn) {
-      const config = em.getConfig();
-      const panels = em.Panels;
+      const config = editor.getConfig();
+      const panels = editor.Panels;
       const trgEvCnt = 'change:appendContent';
       this.$cn = $('<div></div>');
       this.$cn2 = $('<div></div>');
       this.$cn.append(this.$cn2);
 
       // Device Manager
-      const dvm = em.DeviceManager;
+      const dvm = editor.DeviceManager;
       if (dvm && config.showDevices) {
         const devicePanel = panels.addPanel({ id: 'devices-c' });
         const dvEl = dvm.render();
@@ -22,7 +22,8 @@ export default {
       }
 
       // Selector Manager container
-      const slm = em.SelectorManager;
+      const slm = editor.SelectorManager;
+      this.slm = slm;
       const slmConfig = slm.getConfig();
       if (slmConfig.custom) {
         slm.__trgCustom({ container: this.$cn2.get(0) });
@@ -31,12 +32,13 @@ export default {
       }
 
       // Style Manager
-      const sm = em.StyleManager;
+      const sm = editor.StyleManager;
+      this.sm = sm;
       const smConfig = sm.getConfig();
       if (!smConfig.appendTo) {
         this.$cn2.append(sm.render());
         const pfx = smConfig.stylePrefix;
-        this.$header = $(`<div class="${pfx}header">${em.t('styleManager.empty')}</div>`);
+        this.$header = $(`<div class="${pfx}header">${editor.t('styleManager.empty')}</div>`);
         this.$cn.append(this.$header);
       }
 
@@ -49,7 +51,7 @@ export default {
       this.panel.set('appendContent', this.$cn).trigger(trgEvCnt);
 
       // Toggle Style Manager on target selection
-      this.em = em.getModel();
+      this.em = editor.getModel();
       this.listenTo(this.em, sm.events.target, this.toggleSm);
     }
 
@@ -61,22 +63,20 @@ export default {
    * @private
    */
   toggleSm() {
-    const { em, sender } = this;
-    if ((sender && sender.get && !sender.get('active')) || !em) return;
-    const { componentFirst } = em.get('SelectorManager').getConfig();
-    const selectedAll = em.getSelectedAll().length;
+    const { sender, sm } = this;
+    if ((sender && sender.get && !sender.get('active')) || !sm) return;
 
-    if (selectedAll === 1 || (selectedAll > 1 && componentFirst)) {
-      this.$cn2 && this.$cn2.show();
-      this.$header && this.$header.hide();
+    if (sm.getLastSelected()) {
+      this.$cn2?.show();
+      this.$header?.hide();
     } else {
-      this.$cn2 && this.$cn2.hide();
-      this.$header && this.$header.show();
+      this.$cn2?.hide();
+      this.$header?.show();
     }
   },
 
   stop() {
-    this.$cn2 && this.$cn2.hide();
-    this.$header && this.$header.hide();
+    this.$cn2?.hide();
+    this.$header?.hide();
   },
 };
