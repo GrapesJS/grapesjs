@@ -15,12 +15,24 @@
  * })
  * ```
  *
- * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+ * Once the editor is instantiated you can use its API and listen to its events. Before using these methods, you should get the module from the instance.
  *
  * ```js
+ * // Listen to events
+ * editor.on('keymap:add', () => { ... });
+ *
+ * // Use the API
  * const keymaps = editor.Keymaps;
+ * keymaps.add(...);
  * ```
  *
+ * ## Available Events
+ * * `keymap:add` - New keymap added. The new keyamp object is passed as an argument
+ * * `keymap:remove` - Keymap removed. The removed keyamp object is passed as an argument
+ * * `keymap:emit` - Some keymap emitted, in arguments you get keymapId, shortcutUsed, Event
+ * * `keymap:emit:{keymapId}` - `keymapId` emitted, in arguments you get keymapId, shortcutUsed, Event
+ *
+ * ## Methods
  * * [getConfig](#getconfig)
  * * [add](#add)
  * * [get](#get)
@@ -45,42 +57,42 @@ export default () => {
     defaults: {
       'core:undo': {
         keys: '⌘+z, ctrl+z',
-        handler: 'core:undo'
+        handler: 'core:undo',
       },
       'core:redo': {
         keys: '⌘+shift+z, ctrl+shift+z',
-        handler: 'core:redo'
+        handler: 'core:redo',
       },
       'core:copy': {
         keys: '⌘+c, ctrl+c',
-        handler: 'core:copy'
+        handler: 'core:copy',
       },
       'core:paste': {
         keys: '⌘+v, ctrl+v',
-        handler: 'core:paste'
+        handler: 'core:paste',
       },
       'core:component-next': {
         keys: 's',
-        handler: 'core:component-next'
+        handler: 'core:component-next',
       },
       'core:component-prev': {
         keys: 'w',
-        handler: 'core:component-prev'
+        handler: 'core:component-prev',
       },
       'core:component-enter': {
         keys: 'd',
-        handler: 'core:component-enter'
+        handler: 'core:component-enter',
       },
       'core:component-exit': {
         keys: 'a',
-        handler: 'core:component-exit'
+        handler: 'core:component-exit',
       },
       'core:component-delete': {
         keys: 'backspace, delete',
         handler: 'core:component-delete',
-        opts: { prevent: 1 }
-      }
-    }
+        opts: { prevent: 1 },
+      },
+    },
   };
 
   return {
@@ -154,9 +166,7 @@ export default () => {
         const ableTorun = !em.isEditing() && !editor.Canvas.isInputFocused();
         if (ableTorun || opts.force) {
           opts.prevent && canvas.getCanvasView().preventDefault(e);
-          typeof handler == 'object'
-            ? cmd.runCommand(handler, opt)
-            : handler(editor, 0, opt);
+          typeof handler == 'object' ? cmd.runCommand(handler, opt) : handler(editor, 0, opt);
           const args = [id, h.shortcut, e];
           em.trigger('keymap:emit', ...args);
           em.trigger(`keymap:emit:${id}`, ...args);
@@ -222,6 +232,6 @@ export default () => {
       this.removeAll();
       [em, config, keymaps].forEach(i => (i = {}));
       this.em = {};
-    }
+    },
   };
 };

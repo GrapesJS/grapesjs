@@ -37,10 +37,7 @@
  * * `component:drag` - During component drag. Passed the same object as in `component:drag:start` event, but in this case, `parent` and `index` are updated by the current pointer
  * * `component:drag:end` - Component drag ended. Passed the same object as in `component:drag:start` event, but in this case, `parent` and `index` are updated by the final pointer
  * ### Keymaps
- * * `keymap:add` - New keymap added. The new keyamp object is passed as an argument
- * * `keymap:remove` - Keymap removed. The removed keyamp object is passed as an argument
- * * `keymap:emit` - Some keymap emitted, in arguments you get keymapId, shortcutUsed, Event
- * * `keymap:emit:{keymapId}` - `keymapId` emitted, in arguments you get keymapId, shortcutUsed, Event
+ * Check the [Keymaps](/api/keymaps.html) module.
  * ### Style Manager
  * Check the [Style Manager](/api/style_manager.html) module.
  * ### Storage
