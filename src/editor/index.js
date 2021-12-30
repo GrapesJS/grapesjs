@@ -65,8 +65,7 @@
  * * `canvas:dragdata` - On any dataTransfer parse, `DataTransfer` instance and the `result` are passed as arguments.
  *  By changing `result.content` you're able to customize what is dropped
  * ### RTE
- * * `rte:enable` - RTE enabled. The view, on which RTE is enabled, is passed as an argument
- * * `rte:disable` - RTE disabled. The view, on which RTE is disabled, is passed as an argument
+ * Check the [Rich Text Editor](/api/rich_text_editor.html) module.
  * ### Commands
  * Check the [Commands](/api/commands.html) module.
  * ### Selectors

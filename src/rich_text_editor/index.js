@@ -11,12 +11,22 @@
  * })
  * ```
  *
- * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+ * Once the editor is instantiated you can use its API and listen to its events. Before using these methods, you should get the module from the instance.
  *
  * ```js
+ * // Listen to events
+ * editor.on('rte:enable', () => { ... });
+ *
+ * // Use the API
  * const rte = editor.RichTextEditor;
+ * rte.add(...);
  * ```
  *
+ * ## Available Events
+ * * `rte:enable` - RTE enabled. The view, on which RTE is enabled, is passed as an argument
+ * * `rte:disable` - RTE disabled. The view, on which RTE is disabled, is passed as an argument
+ *
+ * ## Methods
  * * [add](#add)
  * * [get](#get)
  * * [getAll](#getall)
@@ -33,8 +43,7 @@ import defaults from './config/config';
 export default () => {
   let config = {};
   let toolbar, actions, lastEl, lastElPos, globalRte;
-  const eventsUp =
-    'change:canvasOffset frame:scroll component:update';
+  const eventsUp = 'change:canvasOffset frame:scroll component:update';
   const hideToolbar = () => {
     const style = toolbar.style;
     const size = '-1000px';
@@ -65,7 +74,7 @@ export default () => {
     init(opts = {}) {
       config = {
         ...defaults,
-        ...opts
+        ...opts,
       };
       const ppfx = config.pStylePrefix;
 
@@ -91,9 +100,7 @@ export default () => {
       customRte && customRte.destroy && customRte.destroy();
       this.actionbar = 0;
       this.actions = 0;
-      [config, toolbar, actions, lastEl, lastElPos, globalRte].forEach(
-        i => (i = {})
-      );
+      [config, toolbar, actions, lastEl, lastElPos, globalRte].forEach(i => (i = {}));
     },
 
     /**
@@ -124,14 +131,14 @@ export default () => {
         button: `${pfx}action`,
         active: `${pfx}active`,
         inactive: `${pfx}inactive`,
-        disabled: `${pfx}disabled`
+        disabled: `${pfx}disabled`,
       };
       const rte = new RichTextEditor({
         el,
         classes,
         actions,
         actionbar,
-        actionbarContainer
+        actionbarContainer,
       });
       globalRte && globalRte.setEl(el);
 
@@ -278,7 +285,7 @@ export default () => {
       const { style } = toolbar;
       const pos = canvas.getTargetToElementFixed(lastEl, toolbar, {
         event: 'rteToolbarPosUpdate',
-        left: 0
+        left: 0,
       });
       style.top = (pos.top || 0) + un;
       style.left = (pos.left || 0) + un;
@@ -299,9 +306,7 @@ export default () => {
       lastElPos = canvas.getElementPos(lastEl);
 
       toolbar.style.display = '';
-      const rteInst = await (customRte
-        ? customRte.enable(el, rte)
-        : this.initRte(el).enable());
+      const rteInst = await (customRte ? customRte.enable(el, rte) : this.initRte(el).enable());
 
       if (em) {
         setTimeout(this.updatePosition.bind(this), 0);
@@ -335,6 +340,6 @@ export default () => {
         em.off(eventsUp, this.updatePosition, this);
         em.trigger('rte:disable', view, rte);
       }
-    }
+    },
   };
 };
