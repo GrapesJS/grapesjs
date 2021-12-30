@@ -434,7 +434,7 @@ For a more advanced usage you can rely on the [Style Manager API] to perform dif
   sm.removeSector('sector-id');
   ```
 
-* Managing the selected target.
+* Managing selected targets.
   ```js
   // Select the first button in the current page
   const wrapperCmp = editor.Pages.getSelected().getMainComponent();
@@ -472,7 +472,7 @@ For a more advanced usage you can rely on the [Style Manager API] to perform dif
     },
   })
   ```
-* Adding new types.
+* [Adding new types](#adding-new-types).
 
 
 
@@ -480,7 +480,43 @@ For a more advanced usage you can rely on the [Style Manager API] to perform dif
 
 ## Customization
 
+The default types should cover most of the common styling properties but in case you need a more advanced control over styling you can define your own types or even create a completely custom Style Manager UI from scratch.
 
+### Adding new types
+
+In order to add a new type you have to use the `styleManager.addType` API call and indicate all the necessary methods to make it work properly with the editor. Here an example of implementation by using the native `range` input.
+
+```js
+styleManager.addType('my-custom-prop', {
+   // Create UI
+   create({ props, change }) {
+     const el = document.createElement('div');
+     el.innerHTML = '<input type="range" class="my-input" min="10" max="50"/>';
+     const inputEl = el.querySelector('.my-input');
+     inputEl.addEventListener('change', event => change({ event })); // `change` will trigger the emit
+     inputEl.addEventListener('input', event => change({ event, complete: false }));
+     return el;
+   },
+   // Propagate UI changes up to the targets
+   emit({ props, updateStyle }, { event, complete }) {
+     const { value } = event.target;
+     const valueRes = value + 'px';
+     // Pass a string value for the current CSS property or an object containing multiple properties
+     updateStyle(valueRes, { complete });
+     // Update target style with multiple properties
+     // eg. updateStyle({ [props.property]: valueRes, color: 'red' });
+   },
+   // Update UI (eg. when the target is changed)
+   update({ value, el }) {
+     el.querySelector('.my-input').value = parseInt(value, 10);
+   },
+   // Clean the memory from side effects if necessary (eg. event listeners)
+   destroy() {
+   }
+})
+```
+
+### Custom Style Manager
 
 
 
