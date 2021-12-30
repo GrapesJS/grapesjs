@@ -39,7 +39,7 @@ export default Backbone.View.extend({
 
   events: {
     change: 'inputValueChanged',
-    [`click [${clearProp}]`]: 'clear'
+    [`click [${clearProp}]`]: 'clear',
   },
 
   initialize(o = {}) {
@@ -68,36 +68,28 @@ export default Backbone.View.extend({
     }
 
     if (em) {
-      this.listenTo(
-        em,
-        `update:component:style:${this.property}`,
-        this.targetUpdated
-      );
+      this.listenTo(em, `update:component:style:${this.property}`, this.targetUpdated);
       //this.listenTo(em, `styleable:change:${this.property}`, this.targetUpdated);
 
       // Listening to changes of properties in this.requires, so that styleable
       // changes based on other properties are propagated
       const requires = model.get('requires') || {};
       Object.keys(requires).forEach(property => {
-        this.listenTo(
-          em,
-          `component:styleUpdate:${property}`,
-          this.targetUpdated
-        );
+        this.listenTo(em, `component:styleUpdate:${property}`, this.targetUpdated);
       });
     }
 
-    this.listenTo(this.propTarget, 'update', this.targetUpdated);
+    // this.listenTo(this.propTarget, 'update', this.targetUpdated);
     this.listenTo(model, 'destroy remove', this.remove);
-    this.listenTo(model, 'change:value', this.modelValueChanged);
+    // this.listenTo(model, 'change:value', this.modelValueChanged);
     this.listenTo(model, 'targetUpdated', this.targetUpdated);
     this.listenTo(model, 'change:visible', this.updateVisibility);
-    this.listenTo(model, 'change:status', this.updateStatus);
-    this.listenTo(
-      model,
-      'change:name change:className change:full',
-      this.render
-    );
+    // this.listenTo(model, 'change:status', this.updateStatus);
+    this.listenTo(model, 'change:name change:className change:full', this.render);
+
+    // this.listenTo(this.propTarget, 'update', this.onValueChange);
+    this.onValueChange = debounce(this.onValueChange.bind(this));
+    this.listenTo(model, 'change:value', this.onValueChange);
 
     const init = this.init && this.init.bind(this);
     init && init();
@@ -105,9 +97,7 @@ export default Backbone.View.extend({
 
   remove() {
     Backbone.View.prototype.remove.apply(this, arguments);
-    ['em', 'target', 'input', '$input', 'propTarget', 'sector'].forEach(
-      i => (this[i] = {})
-    );
+    ['em', 'target', 'input', '$input', 'propTarget', 'sector'].forEach(i => (this[i] = {}));
     this.__destroyFn(this._getClbOpts());
   },
 
@@ -118,8 +108,8 @@ export default Backbone.View.extend({
    */
   updateStatus() {
     const { model } = this;
-    const status = model.get('status');
-    const parent = model.parent;
+    // const status = model.get('status');
+    // const parent = model.parent;
     const pfx = this.pfx;
     const ppfx = this.ppfx;
     const config = this.config;
@@ -131,18 +121,25 @@ export default Backbone.View.extend({
     labelEl.removeClass(`${updatedCls} ${computedCls}`);
     clearStyle.display = 'none';
 
-    switch (status) {
-      case 'updated':
-        !parent && labelEl.addClass(updatedCls);
-
-        if (config.clearProperties) {
-          clearStyle.display = 'inline';
-        }
-        break;
-      case 'computed':
-        labelEl.addClass(computedCls);
-        break;
+    if (model.hasValue({ noParent: true })) {
+      labelEl.addClass(updatedCls);
+      config.clearProperties && (clearStyle.display = '');
+    } else if (model.hasValue()) {
+      labelEl.addClass(computedCls);
     }
+
+    // switch (status) {
+    //   case 'updated':
+    //     !parent && labelEl.addClass(updatedCls);
+
+    //     if (config.clearProperties) {
+    //       clearStyle.display = 'inline';
+    //     }
+    //     break;
+    //   case 'computed':
+    //     labelEl.addClass(computedCls);
+    //     break;
+    // }
   },
 
   /**
@@ -150,10 +147,11 @@ export default Backbone.View.extend({
    */
   clear(ev) {
     ev && ev.stopPropagation();
-    this.model.clearValue();
-    this.__unset();
-    // Skip one stack with setTimeout to avoid inconsistencies (eg. visible on padding composite clear)
-    setTimeout(() => this.targetUpdated());
+    this.model.clear();
+    // this.model.clearValue();
+    // this.__unset();
+    // // Skip one stack with setTimeout to avoid inconsistencies (eg. visible on padding composite clear)
+    // setTimeout(() => this.targetUpdated());
   },
 
   /**
@@ -207,9 +205,11 @@ export default Backbone.View.extend({
    */
   inputValueChanged(ev) {
     ev && ev.stopPropagation();
+    // Skip the default update in case a custom emit method is defined
     if (this.emit) return;
-    this.model.setValueFromInput(this.getInputValue());
-    this.elementUpdated();
+    this.model.upValue(ev.target.value);
+    // this.model.setValueFromInput(this.getInputValue());
+    // this.elementUpdated();
   },
 
   /**
@@ -225,7 +225,7 @@ export default Backbone.View.extend({
     parent && value == 'updated' && parent.set('status', value);
   },
 
-  emitUpdateTarget: debounce(function() {
+  emitUpdateTarget: debounce(function () {
     const em = this.config.em;
     em && em.trigger('styleManager:update:target', this.getFirstTarget());
   }),
@@ -244,11 +244,7 @@ export default Backbone.View.extend({
       if (config.highlightChanged) {
         status = 'updated';
       }
-    } else if (
-      computedValue &&
-      config.showComputed &&
-      computedValue != defaultValue
-    ) {
+    } else if (computedValue && config.showComputed && computedValue != defaultValue) {
       value = computedValue;
 
       if (config.highlightComputed) {
@@ -264,7 +260,7 @@ export default Backbone.View.extend({
       status,
       targetValue,
       defaultValue,
-      computedValue
+      computedValue,
     };
   },
 
@@ -273,36 +269,30 @@ export default Backbone.View.extend({
    * */
   targetUpdated(mod, val, opts = {}) {
     //  Skip properties rendered in Stack Layers
-    if (this.config.fromLayer) return;
-
-    this.emitUpdateTarget();
-
-    if (!this.checkVisibility()) {
-      return;
-    }
-
-    const config = this.config;
-    const em = config.em;
-    const { model } = this;
-    const property = model.get('property');
-    const { status, value, ...targetData } = this._getTargetData();
-    const data = {
-      status,
-      value,
-      ...targetData
-    };
-
-    this.setStatus(status);
-    model.setValue(value, 0, { fromTarget: 1, ...opts });
-    this.__update(value);
-
-    if (em) {
-      em.trigger('styleManager:change', this, property, value, data);
-      em.trigger(`styleManager:change:${property}`, this, value, data);
-      this._emitUpdate(data);
-    }
-
-    return data;
+    // if (this.config.fromLayer) return;
+    // this.emitUpdateTarget();
+    // if (!this.checkVisibility()) {
+    //   return;
+    // }
+    // const config = this.config;
+    // const em = config.em;
+    // const { model } = this;
+    // const property = model.get('property');
+    // const { status, value, ...targetData } = this._getTargetData();
+    // const data = {
+    //   status,
+    //   value,
+    //   ...targetData
+    // };
+    // this.setStatus(status);
+    // model.setValue(value, 0, { fromTarget: 1, ...opts });
+    // this.__update(value);
+    // if (em) {
+    //   em.trigger('styleManager:change', this, property, value, data);
+    //   em.trigger(`styleManager:change:${property}`, this, value, data);
+    //   this._emitUpdate(data);
+    // }
+    // return data;
   },
 
   _emitUpdate(addData = {}) {
@@ -326,7 +316,7 @@ export default Backbone.View.extend({
       value: model.getFullValue(),
       property: model,
       id: model.get('id'),
-      name: model.get('property')
+      name: model.get('property'),
     };
   },
 
@@ -412,6 +402,13 @@ export default Backbone.View.extend({
     return input ? input.value : '';
   },
 
+  onValueChange(m, val, opt = {}) {
+    const value = this.model.getFullValue();
+    this.setValue(value);
+    this.updateStatus();
+    console.log('onValueChange', this.model.getName(), { value }, opt);
+  },
+
   /**
    * Triggers when the `value` of the model changes, so the target and
    * the input element should be updated
@@ -420,31 +417,28 @@ export default Backbone.View.extend({
    * @param {Object} opt  Options
    * */
   modelValueChanged(e, val, opt = {}) {
-    const { model } = this;
-    const value = model.getFullValue();
-
-    // Avoid element update if the change comes from it
-    if (!opt.fromInput) {
-      this.setValue(value);
-    }
-
-    // Avoid target update if the changes comes from it
-    if (!opt.fromTarget) {
-      this.getTargets().forEach(target => this.__updateTarget(target, opt));
-
-      // Update the editor and selected components about the change
-      const { em } = this.config;
-      if (!em) return;
-      const prop = model.get('property');
-      const updated = { [prop]: value };
-      em.getSelectedAll().forEach(component => {
-        !opt.noEmit && em.trigger('component:update', component, updated, opt);
-        em.trigger(evStyleUp, component, prop, opt);
-        em.trigger(`${evStyleUp}:${prop}`, component, value, opt);
-        component.trigger(`change:style`, component, updated, opt);
-        component.trigger(`change:style:${prop}`, component, value, opt);
-      });
-    }
+    // const { model } = this;
+    // const value = model.getFullValue();
+    // // Avoid element update if the change comes from it
+    // if (!opt.fromInput) {
+    //   this.setValue(value);
+    // }
+    // // Avoid target update if the changes comes from it
+    // if (!opt.fromTarget) {
+    //   this.getTargets().forEach(target => this.__updateTarget(target, opt));
+    //   // Update the editor and selected components about the change
+    //   const { em } = this.config;
+    //   if (!em) return;
+    //   const prop = model.get('property');
+    //   const updated = { [prop]: value };
+    //   em.getSelectedAll().forEach(component => {
+    //     !opt.noEmit && em.trigger('component:update', component, updated, opt);
+    //     em.trigger(evStyleUp, component, prop, opt);
+    //     em.trigger(`${evStyleUp}:${prop}`, component, value, opt);
+    //     component.trigger(`change:style`, component, updated, opt);
+    //     component.trigger(`change:style:${prop}`, component, value, opt);
+    //   });
+    // }
   },
 
   __updateTarget(target, opt = {}) {
@@ -534,10 +528,7 @@ export default Backbone.View.extend({
 
     // Check if the property is available only if requested
     if (toRequire) {
-      stylable =
-        !target ||
-        (stylableReq &&
-          (stylableReq.indexOf(id) >= 0 || stylableReq.indexOf(property) >= 0));
+      stylable = !target || (stylableReq && (stylableReq.indexOf(id) >= 0 || stylableReq.indexOf(property) >= 0));
     }
 
     // Check if the property is available based on other property's values
@@ -560,8 +551,7 @@ export default Backbone.View.extend({
       if (parentEl) {
         const styles = window.getComputedStyle(parentEl);
         each(requiresParent, (values, property) => {
-          stylable =
-            stylable && styles[property] && includes(values, styles[property]);
+          stylable = stylable && styles[property] && includes(values, styles[property]);
         });
       } else {
         stylable = false;
@@ -605,11 +595,11 @@ export default Backbone.View.extend({
    * @param {String} value The value from the model
    * */
   setValue(value) {
-    const model = this.model;
-    let val = isUndefined(value) ? model.getDefaultValue() : value;
-    if (this.update) return this.__update(val);
+    const { model } = this;
+    const result = isUndefined(value) ? model.getDefaultValue() : value;
+    if (this.update) return this.__update(result);
     const input = this.getInputEl();
-    input && (input.value = val);
+    input && (input.value = result);
   },
 
   getInputEl() {
@@ -633,8 +623,8 @@ export default Backbone.View.extend({
   },
 
   /**
-   * Clean input
-   * */
+   * @deprecated
+   */
   cleanValue() {
     this.setValue('');
   },
@@ -655,7 +645,7 @@ export default Backbone.View.extend({
     update &&
       update({
         ...this._getClbOpts(),
-        value
+        value,
       });
   },
 
@@ -664,10 +654,10 @@ export default Backbone.View.extend({
     emit && emit(this._getClbOpts(), ...args);
   },
 
-  __updateStyle(value, { complete, ...opts } = {}) {
+  __updateStyle(value, { complete, partial, ...opts } = {}) {
     const { em, model } = this;
     const prop = model.get('property');
-    const final = complete !== false;
+    const final = complete !== false && partial !== true;
 
     if (isObject(value)) {
       this.getTargets().forEach(target => {
@@ -675,7 +665,7 @@ export default Backbone.View.extend({
         em && em.trigger(evStyleUp, target, prop, opts);
       });
     } else {
-      model.setValueFromInput(value, complete, opts);
+      model.setValueFromInput(value, final, opts);
     }
 
     final && this.elementUpdated();
@@ -698,7 +688,7 @@ export default Backbone.View.extend({
       target: this.getFirstTarget(), // Used to update custom UI
       computed,
       parentRules, // All parent rules
-      parentRule // First parent rule containing the same property
+      parentRule, // First parent rule containing the same property
     };
   },
 
@@ -706,27 +696,26 @@ export default Backbone.View.extend({
     this.clearCached();
     const { pfx, model, el, $el } = this;
     const property = model.get('property');
+    const type = model.get('type');
     const full = model.get('full');
     const cls = model.get('className') || '';
     const className = `${pfx}property`;
+    // Support old integer classname
+    const clsType = type === 'number' ? `${pfx}${type} ${pfx}integer` : `${pfx}${type}`;
 
     this.createdEl && this.__destroyFn(this._getClbOpts());
     $el.empty().append(this.template(model));
     $el.find('[data-sm-label]').append(this.templateLabel(model));
     const create = this.create && this.create.bind(this);
     this.createdEl = create && create(this._getClbOpts());
-    $el
-      .find('[data-sm-fields]')
-      .append(this.createdEl || this.templateInput(model));
+    $el.find('[data-sm-fields]').append(this.createdEl || this.templateInput(model));
 
-    el.className = `${className} ${pfx}${model.get(
-      'type'
-    )} ${className}__${property} ${cls}`.trim();
+    el.className = `${className} ${clsType} ${className}__${property} ${cls}`.trim();
     el.className += full ? ` ${className}--full` : '';
-    this.updateStatus();
+    // this.updateStatus();
 
     const onRender = this.onRender && this.onRender.bind(this);
     onRender && onRender();
-    this.setValue(model.get('value'), { fromTarget: 1 });
-  }
+    // this.setValue(model.get('value'), { fromTarget: 1 });
+  },
 });

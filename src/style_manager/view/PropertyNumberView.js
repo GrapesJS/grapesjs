@@ -10,8 +10,7 @@ export default PropertyView.extend({
 
   init() {
     const model = this.model;
-    this.listenTo(model, 'change:unit', this.modelValueChanged);
-    this.listenTo(model, 'el:change', this.elementUpdated);
+    this.listenTo(model, 'change:unit', this.onValueChange);
     this.listenTo(model, 'change:units', this.render);
   },
 

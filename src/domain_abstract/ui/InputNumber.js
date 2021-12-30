@@ -124,7 +124,7 @@ export default Input.extend({
       const units = model.get('units') || [];
 
       if (units.length) {
-        const options = [];
+        const options = ['<option value="" disabled hidden>-</option>'];
 
         units.forEach(unit => {
           const selected = unit == model.get('unit') ? 'selected' : '';
@@ -254,6 +254,8 @@ export default Input.extend({
 
     if (opt.deepCheck) {
       var fixed = model.get('fixedValues') || [];
+
+      if (val === '') unit = '';
 
       if (val) {
         // If the value is one of the fixed values I leave it as it is

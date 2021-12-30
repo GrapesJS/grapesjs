@@ -32,7 +32,7 @@ export default class Property extends Model {
   }
 
   __upTargets(p, opts = {}) {
-    if (!this.__hasCustom()) return;
+    // if (!this.__hasCustom()) return;
     const { em } = this;
     const sm = em.get('StyleManager');
     const name = this.getName();
