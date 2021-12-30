@@ -8,12 +8,27 @@
  * })
  * ```
  *
- * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+ * Once the editor is instantiated you can use its API and listen to its events. Before using these methods, you should get the module from the instance.
  *
  * ```js
+ * // Listen to events
+ * editor.on('run', () => { ... });
+ *
+ * // Use the API
  * const commands = editor.Commands;
+ * commands.add(...);
  * ```
  *
+ ** ## Available Events
+ * * `run:{commandName}` - Triggered when some command is called to run (eg. editor.runCommand('preview'))
+ * * `stop:{commandName}` - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
+ * * `run:{commandName}:before` - Triggered before the command is called
+ * * `stop:{commandName}:before` - Triggered before the command is called to stop
+ * * `abort:{commandName}` - Triggered when the command execution is aborted (`editor.on(`run:preview:before`, opts => opts.abort = 1);`)
+ * * `run` - Triggered on run of any command. The id and the result are passed as arguments to the callback
+ * * `stop` - Triggered on stop of any command. The id and the result are passed as arguments to the callback
+ *
+ * ## Methods
  * * [add](#add)
  * * [get](#get)
  * * [getAll](#getall)
@@ -56,7 +71,7 @@ const commandsDef = [
   ['component-exit', 'ComponentExit', 'select-parent'],
   ['component-delete', 'ComponentDelete'],
   ['component-style-clear', 'ComponentStyleClear'],
-  ['component-drag', 'ComponentDrag']
+  ['component-drag', 'ComponentDrag'],
 ];
 
 export default () => {
@@ -67,7 +82,7 @@ export default () => {
   const active = {};
 
   // Need it here as it would be used below
-  const add = function(id, obj) {
+  const add = function (id, obj) {
     if (isFunction(obj)) obj = { run: obj };
     if (!obj.stop) obj.noStop = 1;
     delete obj.initialize;
@@ -94,7 +109,7 @@ export default () => {
     init(config = {}) {
       c = {
         ...defaults,
-        ...config
+        ...config,
       };
       em = c.em;
       const ppfx = c.pStylePrefix;
@@ -109,14 +124,14 @@ export default () => {
       defaultCommands['tlb-delete'] = {
         run(ed) {
           return ed.runCommand('core:component-delete');
-        }
+        },
       };
 
       defaultCommands['tlb-clone'] = {
         run(ed) {
           ed.runCommand('core:copy');
           ed.runCommand('core:paste');
-        }
+        },
       };
 
       defaultCommands['tlb-move'] = {
@@ -171,7 +186,7 @@ export default () => {
               onStart,
               onDrag,
               onEnd,
-              event
+              event,
             });
           } else {
             if (nativeDrag) {
@@ -187,7 +202,7 @@ export default () => {
           }
 
           selAll.forEach(sel => sel.set('status', 'freezed-selected'));
-        }
+        },
       };
 
       // Core commands
@@ -202,9 +217,7 @@ export default () => {
           defaultCommands[oldCmd] = cmd;
           // Propogate old commands (can be removed once we stop to call old commands)
           ['run', 'stop'].forEach(name => {
-            em.on(`${name}:${oldCmd}`, (...args) =>
-              em.trigger(`${name}:${cmdName}`, ...args)
-            );
+            em.on(`${name}:${oldCmd}`, (...args) => em.trigger(`${name}:${cmdName}`, ...args));
           });
         }
       });
@@ -274,13 +287,11 @@ export default () => {
       if (command) {
         const cmdObj = {
           ...command.constructor.prototype,
-          ...cmd
+          ...cmd,
         };
         this.add(id, cmdObj);
         // Extend also old name commands if exist
-        const oldCmd = commandsDef.filter(
-          cmd => `core:${cmd[0]}` === id && cmd[2]
-        )[0];
+        const oldCmd = commandsDef.filter(cmd => `core:${cmd[0]}` === id && cmd[2])[0];
         oldCmd && this.add(oldCmd[2], cmdObj);
       }
       return this;
@@ -432,6 +443,6 @@ export default () => {
 
     destroy() {
       [em, c, commands, defaultCommands, active].forEach(i => (i = {}));
-    }
+    },
   };
 };

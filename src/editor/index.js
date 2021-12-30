@@ -68,13 +68,7 @@
  * * `rte:enable` - RTE enabled. The view, on which RTE is enabled, is passed as an argument
  * * `rte:disable` - RTE disabled. The view, on which RTE is disabled, is passed as an argument
  * ### Commands
- * * `run:{commandName}` - Triggered when some command is called to run (eg. editor.runCommand('preview'))
- * * `stop:{commandName}` - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
- * * `run:{commandName}:before` - Triggered before the command is called
- * * `stop:{commandName}:before` - Triggered before the command is called to stop
- * * `abort:{commandName}` - Triggered when the command execution is aborted (`editor.on(`run:preview:before`, opts => opts.abort = 1);`)
- * * `run` - Triggered on run of any command. The id and the result are passed as arguments to the callback
- * * `stop` - Triggered on stop of any command. The id and the result are passed as arguments to the callback
+ * Check the [Commands](/api/commands.html) module.
  * ### Selectors
  * Check the [Selectors](/api/selector_manager.html) module.
  * ### Blocks
@@ -106,7 +100,7 @@ export default (config = {}, opts = {}) => {
   const { $ } = opts;
   const c = {
     ...defaults,
-    ...config
+    ...config,
   };
 
   c.pStylePrefix = c.stylePrefix;
@@ -163,7 +157,7 @@ export default (config = {}, opts = {}) => {
         'StyleManager',
         ['Styles', 'StyleManager'],
         'DeviceManager',
-        ['Devices', 'DeviceManager']
+        ['Devices', 'DeviceManager'],
       ].forEach(prop => {
         if (Array.isArray(prop)) {
           this[prop[0]] = em.get(prop[1]);
@@ -719,7 +713,7 @@ export default (config = {}, opts = {}) => {
       editorView && editorView.remove();
       editorView = new EditorView({
         model: em,
-        config: c
+        config: c,
       });
       return editorView.render().el;
     },
@@ -748,6 +742,6 @@ export default (config = {}, opts = {}) => {
      * // Use `$${var}` to avoid escaping
      * const strHtml = editor.html`Escaped ${unsafeStr}, unescaped $${safeStr}`;
      */
-    html
+    html,
   };
 };
