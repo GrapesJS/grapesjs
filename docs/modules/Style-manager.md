@@ -4,12 +4,9 @@ title: Style Manager
 
 # Style Manager
 
-::: danger TODO
-Hero image
-<!-- <p align="center"><img src="http://grapesjs.com/img/sc-grapesjs-blocks-prp.jpg" alt="GrapesJS - Block Manager" height="400" align="center"/></p> -->
-:::
+<p align="center"><img :src="$withBase('/style-manager.jpg')" alt="GrapesJS - Style Manager"/></p>
 
-The Style Manager module is responsible to show and update style properties on your [Components]. In this guide, you will see how to setup and take full advantage of the built-in Style Manager UI in GrapesJS.
+The Style Manager module is responsible to show and update style properties relative to your [Components]. In this guide, you will see how to setup and take full advantage of the built-in Style Manager UI in GrapesJS.
 The default UI is a lightweight component with built-in properties, but as you'll see next in this guide, it's easy to extend with your own elements or even create the Style Manager UI from scratch by using the [Style Manager API].
 
 ::: warning
