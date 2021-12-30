@@ -58,12 +58,7 @@
  * * `storage:error:store` - Error on store request, passes the error as an argument
  * * `storage:error:load` - Error on load request, passes the error as an argument
  * ### Canvas
- * * `canvas:dragenter` - When something is dragged inside the canvas, `DataTransfer` instance passed as an argument
- * * `canvas:dragover` - When something is dragging on canvas, `DataTransfer` instance passed as an argument
- * * `canvas:drop` - Something is dropped in canvas, `DataTransfer` instance and the dropped model are passed as arguments
- * * `canvas:dragend` - When a drag operation is ended, `DataTransfer` instance passed as an argument
- * * `canvas:dragdata` - On any dataTransfer parse, `DataTransfer` instance and the `result` are passed as arguments.
- *  By changing `result.content` you're able to customize what is dropped
+ * Check the [Canvas](/api/canvas.html) module.
  * ### RTE
  * Check the [Rich Text Editor](/api/rich_text_editor.html) module.
  * ### Commands
