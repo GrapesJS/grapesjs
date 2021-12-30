@@ -29,9 +29,9 @@ export default Backbone.View.extend({
     const coll = this.collection;
     this.listenTo(coll, 'add', this.addTo);
     this.listenTo(coll, 'reset', this.render);
-    this.listenTo(em, module.events.target, this.targetUpdated);
-    // Check local/parent value on input change
-    this.listenTo(em, 'styleable:change', this.emitUpdate);
+    // this.listenTo(em, module.events.target, this.targetUpdated);
+    // // Check local/parent value on input change
+    // this.listenTo(em, 'styleable:change', this.emitUpdate);
   },
 
   emitUpdate: debounce(function () {

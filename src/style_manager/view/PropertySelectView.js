@@ -1,7 +1,4 @@
-import Backbone from 'backbone';
 import PropertyView from './PropertyView';
-
-const $ = Backbone.$;
 
 export default PropertyView.extend({
   templateInput() {
@@ -47,5 +44,13 @@ export default PropertyView.extend({
       inputH.innerHTML = `<select>${optionsRes.join('')}</select>`;
       this.input = inputH.firstChild;
     }
+  },
+
+  __setValueInput(value) {
+    const { model } = this;
+    const input = this.getInputEl();
+    const firstOpt = model.getOptions()[0];
+    const firstId = firstOpt ? model.getOptionId(firstOpt) : '';
+    input && (input.value = value || firstId);
   },
 });

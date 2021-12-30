@@ -87,9 +87,12 @@ export default Backbone.View.extend({
     // this.listenTo(model, 'change:status', this.updateStatus);
     this.listenTo(model, 'change:name change:className change:full', this.render);
 
+    // Put a sligh delay on debounce in order to execute the update
+    // post styleManager.__upProps trigger.
+    this.onValueChange = debounce(this.onValueChange.bind(this), 10);
     // this.listenTo(this.propTarget, 'update', this.onValueChange);
-    this.onValueChange = debounce(this.onValueChange.bind(this));
     this.listenTo(model, 'change:value', this.onValueChange);
+    this.listenTo(em, 'change:device', this.onValueChange);
 
     const init = this.init && this.init.bind(this);
     init && init();
@@ -403,10 +406,18 @@ export default Backbone.View.extend({
   },
 
   onValueChange(m, val, opt = {}) {
-    const value = this.model.getFullValue();
-    this.setValue(value);
+    this.setValue(this.model.getFullValue());
     this.updateStatus();
-    console.log('onValueChange', this.model.getName(), { value }, opt);
+    console.log(
+      'onValueChange',
+      this.model.getName(),
+      {
+        fullValue: this.model.getFullValue(),
+        hasValue: this.model.hasValue(),
+        hasValueLocal: this.model.hasValue({ noParent: true }),
+      },
+      opt
+    );
   },
 
   /**
@@ -598,8 +609,12 @@ export default Backbone.View.extend({
     const { model } = this;
     const result = isUndefined(value) ? model.getDefaultValue() : value;
     if (this.update) return this.__update(result);
+    this.__setValueInput(result);
+  },
+
+  __setValueInput(value) {
     const input = this.getInputEl();
-    input && (input.value = result);
+    input && (input.value = value);
   },
 
   getInputEl() {
