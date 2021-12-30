@@ -25,7 +25,7 @@ export default Backbone.View.extend({
       <span class="${pfx}icon ${icon}" title="${info}">
         ${label}
       </span>
-      ${!parent ? `<b class="${pfx}clear" ${clearProp}>&Cross;</b>` : ''}
+      ${!parent ? `<b class="${pfx}clear" style="display: none" ${clearProp}>&Cross;</b>` : ''}
     `;
   },
 
