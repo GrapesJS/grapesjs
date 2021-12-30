@@ -22,6 +22,9 @@
  * ## Available Events
  * * `style:sector:add` - Sector added. The [Sector] is passed as an argument to the callback.
  * * `style:target` - Target selection changed. The target (or `null` in case the target is deselected) is passed as an argument to the callback.
+ * * `styleManager:update:target` - The target (Component or CSSRule) is changed
+ * * `styleManager:change` - Triggered on style property change from new selected component, the view of the property is passed as an argument to the callback
+ * * `styleManager:change:{propertyName}` - As above but for a specific style property
  *
  * ## Methods
  * * [getConfig](#getconfig)
