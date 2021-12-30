@@ -8,12 +8,38 @@
  * })
  * ```
  *
- * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+ * Once the editor is instantiated you can use its API and listen to its events. Before using these methods, you should get the module from the instance.
  *
  * ```js
- * const domComponents = editor.DomComponents;
+ * // Listen to events
+ * editor.on('component:create', () => { ... });
+ *
+ * // Use the API
+ * const cmp = editor.Components;
+ * cmp.addType(...);
  * ```
  *
+ * ## Available Events
+ * * `component:create` - Component is created (only the model, is not yet mounted in the canvas), called after the init() method
+ * * `component:mount` - Component is mounted to an element and rendered in canvas
+ * * `component:add` - Triggered when a new component is added to the editor, the model is passed as an argument to the callback
+ * * `component:remove` - Triggered when a component is removed, the model is passed as an argument to the callback
+ * * `component:remove:before` - Triggered before the remove of the component, the model, remove function (if aborted via options, with this function you can complete the remove) and options (use options.abort = true to prevent remove), are passed as arguments to the callback
+ * * `component:clone` - Triggered when a component is cloned, the new model is passed as an argument to the callback
+ * * `component:update` - Triggered when a component is updated (moved, styled, etc.), the model is passed as an argument to the callback
+ * * `component:update:{propertyName}` - Listen any property change, the model is passed as an argument to the callback
+ * * `component:styleUpdate` - Triggered when the style of the component is updated, the model is passed as an argument to the callback
+ * * `component:styleUpdate:{propertyName}` - Listen for a specific style property change, the model is passed as an argument to the callback
+ * * `component:selected` - New component selected, the selected model is passed as an argument to the callback
+ * * `component:deselected` - Component deselected, the deselected model is passed as an argument to the callback
+ * * `component:toggled` - Component selection changed, toggled model is passed as an argument to the callback
+ * * `component:type:add` - New component type added, the new type is passed as an argument to the callback
+ * * `component:type:update` - Component type updated, the updated type is passed as an argument to the callback
+ * * `component:drag:start` - Component drag started. Passed an object, to the callback, containing the `target` (component to drag), `parent` (parent of the component) and `index` (component index in the parent)
+ * * `component:drag` - During component drag. Passed the same object as in `component:drag:start` event, but in this case, `parent` and `index` are updated by the current pointer
+ * * `component:drag:end` - Component drag ended. Passed the same object as in `component:drag:start` event, but in this case, `parent` and `index` are updated by the final pointer
+ *
+ * ## Methods
  * * [getWrapper](#getwrapper)
  * * [getComponents](#getcomponents)
  * * [addComponent](#addcomponent)
@@ -25,7 +51,7 @@
  * * [getTypes](#gettypes)
  * * [render](#render)
  *
- * @module DomComponents
+ * @module Components
  */
 import Backbone from 'backbone';
 import { isEmpty, isObject, isArray, result } from 'underscore';
@@ -81,103 +107,103 @@ export default () => {
     {
       id: 'cell',
       model: ComponentTableCell,
-      view: ComponentTableCellView
+      view: ComponentTableCellView,
     },
     {
       id: 'row',
       model: ComponentTableRow,
-      view: ComponentTableRowView
+      view: ComponentTableRowView,
     },
     {
       id: 'table',
       model: ComponentTable,
-      view: ComponentTableView
+      view: ComponentTableView,
     },
     {
       id: 'thead',
       model: ComponentTableHead,
-      view: ComponentTableHeadView
+      view: ComponentTableHeadView,
     },
     {
       id: 'tbody',
       model: ComponentTableBody,
-      view: ComponentTableBodyView
+      view: ComponentTableBodyView,
     },
     {
       id: 'tfoot',
       model: ComponentTableFoot,
-      view: ComponentTableFootView
+      view: ComponentTableFootView,
     },
     {
       id: 'map',
       model: ComponentMap,
-      view: ComponentMapView
+      view: ComponentMapView,
     },
     {
       id: 'link',
       model: ComponentLink,
-      view: ComponentLinkView
+      view: ComponentLinkView,
     },
     {
       id: 'label',
       model: ComponentLabel,
-      view: ComponentLabelView
+      view: ComponentLabelView,
     },
     {
       id: 'video',
       model: ComponentVideo,
-      view: ComponentVideoView
+      view: ComponentVideoView,
     },
     {
       id: 'image',
       model: ComponentImage,
-      view: ComponentImageView
+      view: ComponentImageView,
     },
     {
       id: 'script',
       model: ComponentScript,
-      view: ComponentScriptView
+      view: ComponentScriptView,
     },
     {
       id: 'svg-in',
       model: ComponentSvgIn,
-      view: ComponentSvgView
+      view: ComponentSvgView,
     },
     {
       id: 'svg',
       model: ComponentSvg,
-      view: ComponentSvgView
+      view: ComponentSvgView,
     },
     {
       id: 'iframe',
       model: ComponentFrame,
-      view: ComponentFrameView
+      view: ComponentFrameView,
     },
     {
       id: 'comment',
       model: ComponentComment,
-      view: ComponentCommentView
+      view: ComponentCommentView,
     },
     {
       id: 'textnode',
       model: ComponentTextNode,
-      view: ComponentTextNodeView
+      view: ComponentTextNodeView,
     },
     {
       id: 'text',
       model: ComponentText,
-      view: ComponentTextView
+      view: ComponentTextView,
     },
     {
       id: 'wrapper',
       model: ComponentWrapper,
-      view: ComponentView
+      view: ComponentView,
     },
     {
       id: 'default',
       model: Component,
-      view: ComponentView
-    }
+      view: ComponentView,
+    },
   ];
 
   return {
@@ -250,12 +276,8 @@ export default () => {
         em.on('change:componentHovered', this.componentHovered, this);
 
         const selected = em.get('selected');
-        em.listenTo(selected, 'add', (sel, c, opts) =>
-          this.selectAdd(selected.getComponent(sel), opts)
-        );
-        em.listenTo(selected, 'remove', (sel, c, opts) =>
-          this.selectRemove(selected.getComponent(sel), opts)
-        );
+        em.listenTo(selected, 'add', (sel, c, opts) => this.selectAdd(selected.getComponent(sel), opts));
+        em.listenTo(selected, 'remove', (sel, c, opts) => this.selectRemove(selected.getComponent(sel), opts));
       }
 
       if (em.get('hasPages')) {
@@ -368,7 +390,7 @@ export default () => {
      * @return {Component} Root Component
      * @example
      * // Change background of the wrapper and set some attribute
-     * var wrapper = domComponents.getWrapper();
+     * var wrapper = cmp.getWrapper();
      * wrapper.set('style', {'background-color': 'red'});
      * wrapper.set('attributes', {'title': 'Hello!'});
      */
@@ -383,7 +405,7 @@ export default () => {
      * @return {Components} Collection of components
      * @example
      * // Let's add some component
-     * var wrapperChildren = domComponents.getComponents();
+     * var wrapperChildren = cmp.getComponents();
      * var comp1 = wrapperChildren.add({
      *   style: { 'background-color': 'red'}
      * });
@@ -410,7 +432,7 @@ export default () => {
 
     /**
      * Add new components to the wrapper's children. It's the same
-     * as 'domComponents.getComponents().add(...)'
+     * as 'cmp.getComponents().add(...)'
      * @param {Object|Component|Array<Object>} component Component/s to add
      * @param {string} [component.tagName='div'] Tag name
      * @param {string} [component.type=''] Type of the component. Available: ''(default), 'text', 'image'
@@ -427,7 +449,7 @@ export default () => {
      * @return {Component|Array<Component>} Component/s added
      * @example
      * // Example of a new component with some extra property
-     * var comp1 = domComponents.addComponent({
+     * var comp1 = cmp.addComponent({
      *   tagName: 'div',
      *   removable: true, // Can't remove it
      *   draggable: true, // Can't move it
@@ -483,27 +505,13 @@ export default () => {
      */
     addType(type, methods) {
       const { em } = this;
-      const {
-        model = {},
-        view = {},
-        isComponent,
-        extend,
-        extendView,
-        extendFn = [],
-        extendFnView = []
-      } = methods;
+      const { model = {}, view = {}, isComponent, extend, extendView, extendFn = [], extendFnView = [] } = methods;
       const compType = this.getType(type);
       const extendType = this.getType(extend);
       const extendViewType = this.getType(extendView);
-      const typeToExtend = extendType
-        ? extendType
-        : compType
-        ? compType
-        : this.getType('default');
+      const typeToExtend = extendType ? extendType : compType ? compType : this.getType('default');
       const modelToExt = typeToExtend.model;
-      const viewToExt = extendViewType
-        ? extendViewType.view
-        : typeToExtend.view;
+      const viewToExt = extendViewType ? extendViewType.view : typeToExtend.view;
 
       // Function for extending source object methods
       const getExtendedObj = (fns, target, srcToExt) =>
@@ -511,7 +519,7 @@ export default () => {
           const fn = target[next];
           const parentFn = srcToExt.prototype[next];
           if (fn && parentFn) {
-            res[next] = function(...args) {
+            res[next] = function (...args) {
               parentFn.bind(this)(...args);
               fn.bind(this)(...args);
             };
@@ -527,14 +535,11 @@ export default () => {
             ...getExtendedObj(extendFn, model, modelToExt),
             defaults: {
               ...(result(modelToExt.prototype, 'defaults') || {}),
-              ...(result(model, 'defaults') || {})
-            }
+              ...(result(model, 'defaults') || {}),
+            },
           },
           {
-            isComponent:
-              compType && !extendType && !isComponent
-                ? modelToExt.isComponent
-                : isComponent || (() => 0)
+            isComponent: compType && !extendType && !isComponent ? modelToExt.isComponent : isComponent || (() => 0),
           }
         );
       }
@@ -542,7 +547,7 @@ export default () => {
       if (typeof view === 'object') {
         methods.view = viewToExt.extend({
           ...view,
-          ...getExtendedObj(extendFnView, view, viewToExt)
+          ...getExtendedObj(extendFnView, view, viewToExt),
         });
       }
 
@@ -603,11 +608,9 @@ export default () => {
     selectAdd(component, opts = {}) {
       if (component) {
         component.set({
-          status: 'selected'
+          status: 'selected',
         });
-        ['component:selected', 'component:toggled'].forEach(event =>
-          this.em.trigger(event, component, opts)
-        );
+        ['component:selected', 'component:toggled'].forEach(event => this.em.trigger(event, component, opts));
       }
     },
 
@@ -616,11 +619,9 @@ export default () => {
         const { em } = this;
         component.set({
           status: '',
-          state: ''
+          state: '',
         });
-        ['component:deselected', 'component:toggled'].forEach(event =>
-          this.em.trigger(event, component, opts)
-        );
+        ['component:deselected', 'component:toggled'].forEach(event => this.em.trigger(event, component, opts));
       }
     },
 
@@ -639,7 +640,7 @@ export default () => {
         previous.get('status') == state &&
         previous.set({
           status: '',
-          state: ''
+          state: '',
         });
 
       model && isEmpty(model.get('status')) && model.set('status', state);
@@ -659,6 +660,6 @@ export default () => {
       componentView && componentView.remove();
       [c, em, componentsById, component, componentView].forEach(i => (i = {}));
       this.em = {};
-    }
+    },
   };
 };

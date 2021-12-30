@@ -17,25 +17,13 @@
  * })
  * ```
  *
+ * * `update` - The structure of the template is updated (its HTML/CSS)
+ * * `undo` - Undo executed
+ * * `redo` - Redo executed
+ * * `load` - Editor is loaded
+ *
  * ### Components
- * * `component:create` - Component is created (only the model, is not yet mounted in the canvas), called after the init() method
- * * `component:mount` - Component is mounted to an element and rendered in canvas
- * * `component:add` - Triggered when a new component is added to the editor, the model is passed as an argument to the callback
- * * `component:remove` - Triggered when a component is removed, the model is passed as an argument to the callback
- * * `component:remove:before` - Triggered before the remove of the component, the model, remove function (if aborted via options, with this function you can complete the remove) and options (use options.abort = true to prevent remove), are passed as arguments to the callback
- * * `component:clone` - Triggered when a component is cloned, the new model is passed as an argument to the callback
- * * `component:update` - Triggered when a component is updated (moved, styled, etc.), the model is passed as an argument to the callback
- * * `component:update:{propertyName}` - Listen any property change, the model is passed as an argument to the callback
- * * `component:styleUpdate` - Triggered when the style of the component is updated, the model is passed as an argument to the callback
- * * `component:styleUpdate:{propertyName}` - Listen for a specific style property change, the model is passed as an argument to the callback
- * * `component:selected` - New component selected, the selected model is passed as an argument to the callback
- * * `component:deselected` - Component deselected, the deselected model is passed as an argument to the callback
- * * `component:toggled` - Component selection changed, toggled model is passed as an argument to the callback
- * * `component:type:add` - New component type added, the new type is passed as an argument to the callback
- * * `component:type:update` - Component type updated, the updated type is passed as an argument to the callback
- * * `component:drag:start` - Component drag started. Passed an object, to the callback, containing the `target` (component to drag), `parent` (parent of the component) and `index` (component index in the parent)
- * * `component:drag` - During component drag. Passed the same object as in `component:drag:start` event, but in this case, `parent` and `index` are updated by the current pointer
- * * `component:drag:end` - Component drag ended. Passed the same object as in `component:drag:start` event, but in this case, `parent` and `index` are updated by the final pointer
+ * Check the [Components](/api/components.html) module.
  * ### Keymaps
  * Check the [Keymaps](/api/keymaps.html) module.
  * ### Style Manager
@@ -62,11 +50,6 @@
  * Check the [Parser](/api/parser.html) module.
  * ### Pages
  * Check the [Pages](/api/pages.html) module.
- * ### General
- * * `update` - The structure of the template is updated (its HTML/CSS)
- * * `undo` - Undo executed
- * * `redo` - Redo executed
- * * `load` - Editor is loaded
  *
  * @module Editor
  */
