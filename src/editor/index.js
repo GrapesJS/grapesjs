@@ -51,6 +51,7 @@
  * ### Pages
  * Check the [Pages](/api/pages.html) module.
  *
+ * ## Methods
  * @module Editor
  */
 import defaults from './config/config';

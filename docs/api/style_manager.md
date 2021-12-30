@@ -13,16 +13,24 @@ const editor = grapesjs.init({
 })
 ```
 
-Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+Once the editor is instantiated you can use its API and listen to its events. Before using these methods, you should get the module from the instance.
 
 ```js
+// Listen to events
+editor.on('style:sector:add', (sector) => { ... });
+
+// Use the API
 const styleManager = editor.StyleManager;
+styleManager.addSector(...);
 ```
 
 ## Available Events
 
 *   `style:sector:add` - Sector added. The [Sector] is passed as an argument to the callback.
 *   `style:target` - Target selection changed. The target (or `null` in case the target is deselected) is passed as an argument to the callback.
+*   `styleManager:update:target` - The target (Component or CSSRule) is changed
+*   `styleManager:change` - Triggered on style property change from new selected component, the view of the property is passed as an argument to the callback
+*   `styleManager:change:{propertyName}` - As above but for a specific style property
 
 ## Methods
 

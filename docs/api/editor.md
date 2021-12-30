@@ -21,113 +21,68 @@ editor.on('EVENT-NAME', (some, argument) => {
 })
 ```
 
-### Components
-
-*   `component:create` - Component is created (only the model, is not yet mounted in the canvas), called after the init() method
-*   `component:mount` - Component is mounted to an element and rendered in canvas
-*   `component:add` - Triggered when a new component is added to the editor, the model is passed as an argument to the callback
-*   `component:remove` - Triggered when a component is removed, the model is passed as an argument to the callback
-*   `component:remove:before` - Triggered before the remove of the component, the model, remove function (if aborted via options, with this function you can complete the remove) and options (use options.abort = true to prevent remove), are passed as arguments to the callback
-*   `component:clone` - Triggered when a component is cloned, the new model is passed as an argument to the callback
-*   `component:update` - Triggered when a component is updated (moved, styled, etc.), the model is passed as an argument to the callback
-*   `component:update:{propertyName}` - Listen any property change, the model is passed as an argument to the callback
-*   `component:styleUpdate` - Triggered when the style of the component is updated, the model is passed as an argument to the callback
-*   `component:styleUpdate:{propertyName}` - Listen for a specific style property change, the model is passed as an argument to the callback
-*   `component:selected` - New component selected, the selected model is passed as an argument to the callback
-*   `component:deselected` - Component deselected, the deselected model is passed as an argument to the callback
-*   `component:toggled` - Component selection changed, toggled model is passed as an argument to the callback
-*   `component:type:add` - New component type added, the new type is passed as an argument to the callback
-*   `component:type:update` - Component type updated, the updated type is passed as an argument to the callback
-*   `component:drag:start` - Component drag started. Passed an object, to the callback, containing the `target` (component to drag), `parent` (parent of the component) and `index` (component index in the parent)
-*   `component:drag` - During component drag. Passed the same object as in `component:drag:start` event, but in this case, `parent` and `index` are updated by the current pointer
-*   `component:drag:end` - Component drag ended. Passed the same object as in `component:drag:start` event, but in this case, `parent` and `index` are updated by the final pointer
-
-### Keymaps
-
-*   `keymap:add` - New keymap added. The new keyamp object is passed as an argument
-*   `keymap:remove` - Keymap removed. The removed keyamp object is passed as an argument
-*   `keymap:emit` - Some keymap emitted, in arguments you get keymapId, shortcutUsed, Event
-*   `keymap:emit:{keymapId}` - `keymapId` emitted, in arguments you get keymapId, shortcutUsed, Event
-
-### Style Manager
-
-*   `styleManager:update:target` - The target (Component or CSSRule) is changed
-*   `styleManager:change` - Triggered on style property change from new selected component, the view of the property is passed as an argument to the callback
-*   `styleManager:change:{propertyName}` - As above but for a specific style property
-
-### Storages
-
-*   `storage:start` - Before the storage request is started
-*   `storage:start:store` - Before the store request. The object to store is passed as an argumnet (which you can edit)
-*   `storage:start:load` - Before the load request. Items to load are passed as an argumnet (which you can edit)
-*   `storage:load` - Triggered when something was loaded from the storage, loaded object passed as an argumnet
-*   `storage:store` - Triggered when something is stored to the storage, stored object passed as an argumnet
-*   `storage:end` - After the storage request is ended
-*   `storage:end:store` - After the store request
-*   `storage:end:load` - After the load request
-*   `storage:error` - On any error on storage request, passes the error as an argument
-*   `storage:error:store` - Error on store request, passes the error as an argument
-*   `storage:error:load` - Error on load request, passes the error as an argument
-
-### Canvas
-
-*   `canvas:dragenter` - When something is dragged inside the canvas, `DataTransfer` instance passed as an argument
-*   `canvas:dragover` - When something is dragging on canvas, `DataTransfer` instance passed as an argument
-*   `canvas:drop` - Something is dropped in canvas, `DataTransfer` instance and the dropped model are passed as arguments
-*   `canvas:dragend` - When a drag operation is ended, `DataTransfer` instance passed as an argument
-*   `canvas:dragdata` - On any dataTransfer parse, `DataTransfer` instance and the `result` are passed as arguments.
-
-By changing `result.content` you're able to customize what is dropped
-
-### RTE
-
-*   `rte:enable` - RTE enabled. The view, on which RTE is enabled, is passed as an argument
-*   `rte:disable` - RTE disabled. The view, on which RTE is disabled, is passed as an argument
-
-### Commands
-
-*   `run:{commandName}` - Triggered when some command is called to run (eg. editor.runCommand('preview'))
-*   `stop:{commandName}` - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
-*   `run:{commandName}:before` - Triggered before the command is called
-*   `stop:{commandName}:before` - Triggered before the command is called to stop
-*   `abort:{commandName}` - Triggered when the command execution is aborted (`editor.on(`run:preview:before`, opts => opts.abort = 1);`)
-*   `run` - Triggered on run of any command. The id and the result are passed as arguments to the callback
-*   `stop` - Triggered on stop of any command. The id and the result are passed as arguments to the callback
-
-### Selectors
-
-Check the [Selectors][2] module.
-
-### Blocks
-
-Check the [Blocks][3] module.
-
-### Assets
-
-Check the [Assets][4] module.
-
-### Modal
-
-Check the [Modal][5] module.
-
-### Devices
-
-Check the [Devices][6] module.
-
-### Parser
-
-Check the [Parser][7] module.
-
-### Pages
-
-Check the [Pages][8] module.
-
-### General
-
 *   `update` - The structure of the template is updated (its HTML/CSS)
 *   `undo` - Undo executed
 *   `redo` - Redo executed
 *   `load` - Editor is loaded
+
+### Components
+
+Check the [Components][2] module.
+
+### Keymaps
+
+Check the [Keymaps][3] module.
+
+### Style Manager
+
+Check the [Style Manager][4] module.
+
+### Storage
+
+Check the [Storage][5] module.
+
+### Canvas
+
+Check the [Canvas][6] module.
+
+### RTE
+
+Check the [Rich Text Editor][7] module.
+
+### Commands
+
+Check the [Commands][8] module.
+
+### Selectors
+
+Check the [Selectors][9] module.
+
+### Blocks
+
+Check the [Blocks][10] module.
+
+### Assets
+
+Check the [Assets][11] module.
+
+### Modal
+
+Check the [Modal][12] module.
+
+### Devices
+
+Check the [Devices][13] module.
+
+### Parser
+
+Check the [Parser][14] module.
+
+### Pages
+
+Check the [Pages][15] module.
+
+## Methods
 
 ## getConfig
 
@@ -135,7 +90,7 @@ Returns configuration object
 
 ### Parameters
 
-*   `prop` **[string][9]?** Property name
+*   `prop` **[string][16]?** Property name
 
 Returns **any** Returns the configuration object or
 the value of the specified property
@@ -146,12 +101,12 @@ Returns HTML built inside canvas
 
 ### Parameters
 
-*   `opts` **[Object][10]** Options (optional, default `{}`)
+*   `opts` **[Object][17]** Options (optional, default `{}`)
 
     *   `opts.component` **Component?** Return the HTML of a specific Component
-    *   `opts.cleanId` **[Boolean][11]** Remove unnecessary IDs (eg. those created automatically) (optional, default `false`)
+    *   `opts.cleanId` **[Boolean][18]** Remove unnecessary IDs (eg. those created automatically) (optional, default `false`)
 
-Returns **[string][9]** HTML string
+Returns **[string][16]** HTML string
 
 ## getCss
 
@@ -159,13 +114,13 @@ Returns CSS built inside canvas
 
 ### Parameters
 
-*   `opts` **[Object][10]** Options (optional, default `{}`)
+*   `opts` **[Object][17]** Options (optional, default `{}`)
 
     *   `opts.component` **Component?** Return the CSS of a specific Component
-    *   `opts.json` **[Boolean][11]** Return an array of CssRules instead of the CSS string (optional, default `false`)
-    *   `opts.avoidProtected` **[Boolean][11]** Don't include protected CSS (optional, default `false`)
+    *   `opts.json` **[Boolean][18]** Return an array of CssRules instead of the CSS string (optional, default `false`)
+    *   `opts.avoidProtected` **[Boolean][18]** Don't include protected CSS (optional, default `false`)
 
-Returns **([String][9] | [Array][12]\<CssRule>)** CSS string or array of CssRules
+Returns **([String][16] | [Array][19]\<CssRule>)** CSS string or array of CssRules
 
 ## getJs
 
@@ -173,11 +128,11 @@ Returns JS of all components
 
 ### Parameters
 
-*   `opts` **[Object][10]** Options (optional, default `{}`)
+*   `opts` **[Object][17]** Options (optional, default `{}`)
 
     *   `opts.component` **Component?** Get the JS of a specific component
 
-Returns **[String][9]** JS string
+Returns **[String][16]** JS string
 
 ## getComponents
 
@@ -197,8 +152,8 @@ Set components inside editor's canvas. This method overrides actual components
 
 ### Parameters
 
-*   `components` **([Array][12]<[Object][10]> | [Object][10] | [string][9])** HTML string or components model
-*   `opt` **[Object][10]** the options object to be used by the \[setComponents][em#setComponents][13] method (optional, default `{}`)
+*   `components` **([Array][19]<[Object][17]> | [Object][17] | [string][16])** HTML string or components model
+*   `opt` **[Object][17]** the options object to be used by the \[setComponents][em#setComponents][20] method (optional, default `{}`)
 
 ### Examples
 
@@ -220,10 +175,10 @@ Add components
 
 ### Parameters
 
-*   `components` **([Array][12]<[Object][10]> | [Object][10] | [string][9])** HTML string or components model
-*   `opts` **[Object][10]** Options
+*   `components` **([Array][19]<[Object][17]> | [Object][17] | [string][16])** HTML string or components model
+*   `opts` **[Object][17]** Options
 
-    *   `opts.avoidUpdateStyle` **[Boolean][11]** If the HTML string contains styles,
+    *   `opts.avoidUpdateStyle` **[Boolean][18]** If the HTML string contains styles,
         by default, they will be created and, if already exist, updated. When this option
         is true, styles already created will not be updated. (optional, default `false`)
 
@@ -239,13 +194,13 @@ editor.addComponents({
 });
 ```
 
-Returns **[Array][12]\<Component>** 
+Returns **[Array][19]\<Component>** 
 
 ## getStyle
 
 Returns style in JSON format object
 
-Returns **[Object][10]** 
+Returns **[Object][17]** 
 
 ## setStyle
 
@@ -253,7 +208,7 @@ Set style inside editor's canvas. This method overrides actual style
 
 ### Parameters
 
-*   `style` **([Array][12]<[Object][10]> | [Object][10] | [string][9])** CSS string or style model
+*   `style` **([Array][19]<[Object][17]> | [Object][17] | [string][16])** CSS string or style model
 *   `opt`   (optional, default `{}`)
 
 ### Examples
@@ -275,7 +230,7 @@ Add styles to the editor
 
 ### Parameters
 
-*   `style` **([Array][12]<[Object][10]> | [Object][10] | [string][9])** CSS string or style model
+*   `style` **([Array][19]<[Object][17]> | [Object][17] | [string][16])** CSS string or style model
 *   `opts`   (optional, default `{}`)
 
 ### Examples
@@ -284,7 +239,7 @@ Add styles to the editor
 editor.addStyle('.cls{color: red}');
 ```
 
-Returns **[Array][12]\<CssRule>** Array of created CssRule instances
+Returns **[Array][19]\<CssRule>** Array of created CssRule instances
 
 ## getSelected
 
@@ -296,7 +251,7 @@ Returns **Model**
 
 Returns an array of all selected components
 
-Returns **[Array][12]** 
+Returns **[Array][19]** 
 
 ## getSelectedToStyle
 
@@ -314,10 +269,10 @@ Select a component
 
 ### Parameters
 
-*   `el` **(Component | [HTMLElement][14])** Component to select
-*   `opts` **[Object][10]?** Options
+*   `el` **(Component | [HTMLElement][21])** Component to select
+*   `opts` **[Object][17]?** Options
 
-    *   `opts.scroll` **[Boolean][11]?** Scroll canvas to the selected element
+    *   `opts.scroll` **[Boolean][18]?** Scroll canvas to the selected element
 
 ### Examples
 
@@ -336,7 +291,7 @@ Add component to selection
 
 ### Parameters
 
-*   `el` **(Component | [HTMLElement][14] | [Array][12])** Component to select
+*   `el` **(Component | [HTMLElement][21] | [Array][19])** Component to select
 
 ### Examples
 
@@ -352,7 +307,7 @@ Remove component from selection
 
 ### Parameters
 
-*   `el` **(Component | [HTMLElement][14] | [Array][12])** Component to select
+*   `el` **(Component | [HTMLElement][21] | [Array][19])** Component to select
 
 ### Examples
 
@@ -368,7 +323,7 @@ Toggle component selection
 
 ### Parameters
 
-*   `el` **(Component | [HTMLElement][14] | [Array][12])** Component to select
+*   `el` **(Component | [HTMLElement][21] | [Array][19])** Component to select
 
 ### Examples
 
@@ -400,7 +355,7 @@ change the canvas to the proper width
 
 ### Parameters
 
-*   `name` **[string][9]** Name of the device
+*   `name` **[string][16]** Name of the device
 
 ### Examples
 
@@ -422,7 +377,7 @@ console.log(device);
 // 'Tablet'
 ```
 
-Returns **[string][9]** Device name
+Returns **[string][16]** Device name
 
 ## runCommand
 
@@ -430,8 +385,8 @@ Execute command
 
 ### Parameters
 
-*   `id` **[string][9]** Command ID
-*   `options` **[Object][10]** Custom options (optional, default `{}`)
+*   `id` **[string][16]** Command ID
+*   `options` **[Object][17]** Custom options (optional, default `{}`)
 
 ### Examples
 
@@ -447,8 +402,8 @@ Stop the command if stop method was provided
 
 ### Parameters
 
-*   `id` **[string][9]** Command ID
-*   `options` **[Object][10]** Custom options (optional, default `{}`)
+*   `id` **[string][16]** Command ID
+*   `options` **[Object][17]** Custom options (optional, default `{}`)
 
 ### Examples
 
@@ -464,9 +419,9 @@ Store data to the current storage
 
 ### Parameters
 
-*   `clb` **[Function][15]** Callback function
+*   `clb` **[Function][22]** Callback function
 
-Returns **[Object][10]** Stored data
+Returns **[Object][17]** Stored data
 
 ## storeData
 
@@ -479,7 +434,7 @@ console.log(editor.storeData());
 // { pages: [...], styles: [...], ... }
 ```
 
-Returns **[Object][10]** 
+Returns **[Object][17]** 
 
 ## load
 
@@ -487,9 +442,9 @@ Load data from the current storage
 
 ### Parameters
 
-*   `clb` **[Function][15]** Callback function
+*   `clb` **[Function][22]** Callback function
 
-Returns **[Object][10]** Stored data
+Returns **[Object][17]** Stored data
 
 ## loadData
 
@@ -497,7 +452,7 @@ Load data from the JSON data object
 
 ### Parameters
 
-*   `data` **[Object][10]** Data to load
+*   `data` **[Object][17]** Data to load
 
 ### Examples
 
@@ -505,21 +460,21 @@ Load data from the JSON data object
 editor.loadData({ pages: [...], styles: [...], ... })
 ```
 
-Returns **[Object][10]** Loaded object
+Returns **[Object][17]** Loaded object
 
 ## getContainer
 
 Returns container element. The one which was indicated as 'container'
 on init method
 
-Returns **[HTMLElement][14]** 
+Returns **[HTMLElement][21]** 
 
 ## getDirtyCount
 
 Return the count of changes made to the content and not yet stored.
 This count resets at any `store()`
 
-Returns **[number][16]** 
+Returns **[number][23]** 
 
 ## refresh
 
@@ -532,9 +487,9 @@ refresh you'll get misleading position of tools
 ### Parameters
 
 *   `opts`  
-*   `options` **[Object][10]?** Options
+*   `options` **[Object][17]?** Options
 
-    *   `options.tools` **[Boolean][11]** Update the position of tools (eg. rich text editor, component highlighter, etc.) (optional, default `false`)
+    *   `options.tools` **[Boolean][18]** Update the position of tools (eg. rich text editor, component highlighter, etc.) (optional, default `false`)
 
 ## setCustomRte
 
@@ -542,7 +497,7 @@ Replace the built-in Rich Text Editor with a custom one.
 
 ### Parameters
 
-*   `obj` **[Object][10]** Custom RTE Interface
+*   `obj` **[Object][17]** Custom RTE Interface
 
 ### Examples
 
@@ -582,7 +537,7 @@ custom parser, pass `null` as the argument
 
 ### Parameters
 
-*   `parser` **([Function][15] | null)** Parser function
+*   `parser` **([Function][22] | null)** Parser function
 
 ### Examples
 
@@ -604,11 +559,11 @@ Returns **this**
 ## setDragMode
 
 Change the global drag mode of components.
-To get more about this feature read: [https://github.com/artf/grapesjs/issues/1936][17]
+To get more about this feature read: [https://github.com/artf/grapesjs/issues/1936][24]
 
 ### Parameters
 
-*   `value` **[String][9]** Drag mode, options: 'absolute' | 'translate'
+*   `value` **[String][16]** Drag mode, options: 'absolute' | 'translate'
 
 Returns **this** 
 
@@ -619,10 +574,10 @@ Trigger event log message
 ### Parameters
 
 *   `msg` **any** Message to log
-*   `opts` **[Object][10]** Custom options (optional, default `{}`)
+*   `opts` **[Object][17]** Custom options (optional, default `{}`)
 
-    *   `opts.ns` **[String][9]** Namespace of the log (eg. to use in plugins) (optional, default `''`)
-    *   `opts.level` **[String][9]** Level of the log, `debug`, `info`, `warning`, `error` (optional, default `'debug'`)
+    *   `opts.ns` **[String][16]** Namespace of the log (eg. to use in plugins) (optional, default `''`)
+    *   `opts.level` **[String][16]** Level of the log, `debug`, `info`, `warning`, `error` (optional, default `'debug'`)
 
 ### Examples
 
@@ -644,11 +599,11 @@ Translate label
 ### Parameters
 
 *   `args` **...any** 
-*   `key` **[String][9]** Label to translate
-*   `opts` **[Object][10]?** Options for the translation
+*   `key` **[String][16]** Label to translate
+*   `opts` **[Object][17]?** Options for the translation
 
-    *   `opts.params` **[Object][10]?** Params for the translation
-    *   `opts.noWarn` **[Boolean][11]?** Avoid warnings in case of missing resources
+    *   `opts.params` **[Object][17]?** Params for the translation
+    *   `opts.noWarn` **[Boolean][18]?** Avoid warnings in case of missing resources
 
 ### Examples
 
@@ -660,7 +615,7 @@ editor.t('msg2', { params: { test: 'hello' } });
 editor.t('msg2', { params: { test: 'hello' }, l: 'it' });
 ```
 
-Returns **[String][9]** 
+Returns **[String][16]** 
 
 ## on
 
@@ -668,8 +623,8 @@ Attach event
 
 ### Parameters
 
-*   `event` **[string][9]** Event name
-*   `callback` **[Function][15]** Callback function
+*   `event` **[string][16]** Event name
+*   `callback` **[Function][22]** Callback function
 
 Returns **this** 
 
@@ -679,8 +634,8 @@ Attach event and detach it after the first run
 
 ### Parameters
 
-*   `event` **[string][9]** Event name
-*   `callback` **[Function][15]** Callback function
+*   `event` **[string][16]** Event name
+*   `callback` **[Function][22]** Callback function
 
 Returns **this** 
 
@@ -690,8 +645,8 @@ Detach event
 
 ### Parameters
 
-*   `event` **[string][9]** Event name
-*   `callback` **[Function][15]** Callback function
+*   `event` **[string][16]** Event name
+*   `callback` **[Function][22]** Callback function
 
 Returns **this** 
 
@@ -701,7 +656,7 @@ Trigger event
 
 ### Parameters
 
-*   `event` **[string][9]** Event to trigger
+*   `event` **[string][16]** Event to trigger
 
 Returns **this** 
 
@@ -713,7 +668,7 @@ Destroy the editor
 
 Render editor
 
-Returns **[HTMLElement][14]** 
+Returns **[HTMLElement][21]** 
 
 ## onReady
 
@@ -722,7 +677,7 @@ The callback will be executed immediately if the method is called on the already
 
 ### Parameters
 
-*   `clb` **[Function][15]** Callback to trigger
+*   `clb` **[Function][22]** Callback to trigger
 
 ### Examples
 
@@ -738,8 +693,8 @@ Print safe HTML by using ES6 tagged template strings.
 
 ### Parameters
 
-*   `literals` **[Array][12]<[String][9]>** 
-*   `substs` **[Array][12]<[String][9]>** 
+*   `literals` **[Array][19]<[String][16]>** 
+*   `substs` **[Array][19]<[String][16]>** 
 
 ### Examples
 
@@ -750,38 +705,52 @@ const safeStr = '<b>Hello</b>';
 const strHtml = editor.html`Escaped ${unsafeStr}, unescaped $${safeStr}`;
 ```
 
-Returns **[String][9]** 
+Returns **[String][16]** 
 
 [1]: https://github.com/artf/grapesjs/blob/master/src/editor/config/config.js
 
-[2]: /api/selector_manager.html
+[2]: /api/components.html
 
-[3]: /api/block_manager.html
+[3]: /api/keymaps.html
 
-[4]: /api/assets.html
+[4]: /api/style_manager.html
 
-[5]: /api/modal_dialog.html
+[5]: /api/storage_manager.html
 
-[6]: /api/device_manager.html
+[6]: /api/canvas.html
 
-[7]: /api/parser.html
+[7]: /api/rich_text_editor.html
 
-[8]: /api/pages.html
+[8]: /api/commands.html
 
-[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[9]: /api/selector_manager.html
 
-[10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[10]: /api/block_manager.html
 
-[11]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[11]: /api/assets.html
 
-[12]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[12]: /api/modal_dialog.html
 
-[13]: em#setComponents
+[13]: /api/device_manager.html
 
-[14]: https://developer.mozilla.org/docs/Web/HTML/Element
+[14]: /api/parser.html
 
-[15]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+[15]: /api/pages.html
 
-[16]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+[16]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-[17]: https://github.com/artf/grapesjs/issues/1936
+[17]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+
+[18]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+
+[19]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+
+[20]: em#setComponents
+
+[21]: https://developer.mozilla.org/docs/Web/HTML/Element
+
+[22]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+
+[23]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+
+[24]: https://github.com/artf/grapesjs/issues/1936
