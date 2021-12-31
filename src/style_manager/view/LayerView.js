@@ -11,20 +11,24 @@ export default View.extend({
 
   template() {
     const { pfx, ppfx } = this;
+    const icons = this.em?.getConfig('icons');
+    const iconClose = icons?.close || '&Cross;';
+    const iconMove = icons?.move || '';
 
     return `
-      <div id="${pfx}move" class="${ppfx}no-touch-actions" data-move-layer>
-        <i class="fa fa-arrows"></i>
-      </div>
-      <div id="${pfx}label" data-label></div>
-      <div id="${pfx}preview-box">
-      	<div id="${pfx}preview" style="display: none" data-preview></div>
-      </div>
-      <div id="${pfx}close-layer" class="${pfx}btn-close" data-close-layer>
-        &Cross;
+      <div class="${pfx}label-wrp">
+        <div id="${pfx}move" class="${ppfx}no-touch-actions" data-move-layer>
+          ${iconMove}
+        </div>
+        <div id="${pfx}label" data-label></div>
+        <div id="${pfx}preview-box">
+          <div id="${pfx}preview" style="display: none" data-preview></div>
+        </div>
+        <div id="${pfx}close-layer" class="${pfx}btn-close" data-close-layer>
+          ${iconClose}
+        </div>
       </div>
       <div id="${pfx}inputs" data-properties></div>
-      <div style="clear:both"></div>
     `;
   },
 

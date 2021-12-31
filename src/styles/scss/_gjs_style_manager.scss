@@ -328,16 +328,45 @@
       margin: 2px 0;
       padding: 7px;
       position: relative;
-      cursor: pointer;
 
-      > ##{$sm-prefix}preview-box {
+      &.#{$sm-prefix}active {
+        background-color: rgba(255, 255, 255, 0.12);
+      }
+
+      .#{$sm-prefix}label-wrp {
+        display: flex;
+        align-items: center;
+      }
+
+      ##{$sm-prefix}move {
+        height: 14px;
+        width: 14px;
+        min-width: 14px;
+        cursor: grab;
+      }
+
+      ##{$sm-prefix}label {
+        flex-grow: 1;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        margin: 0 5px;
+      }
+
+      ##{$sm-prefix}preview-box {
         @extend .checker-bg;
 
         height: 15px;
-        position: absolute;
-        right: 27px;
-        top: 6px;
         width: 15px;
+        min-width: 15px;
+        margin-right: 5px;
+      }
+
+      ##{$sm-prefix}preview {
+        background-color: white;
+        height: 100%;
+        width: 100%;
+        background-size: cover !important;
       }
 
       ##{$sm-prefix}preview,
@@ -347,32 +376,16 @@
 
       ##{$sm-prefix}close-layer {
         display: block;
-        font-size: 23px;
-        position: absolute;
         cursor: pointer;
-        right: 5px;
-        top: 0;
+        height: 14px;
+        width: 14px;
+        min-width: 14px;
 
         @include opacity(0.5);
 
         &:hover {
           @include opacity(0.8);
         }
-      }
-
-      > ##{$sm-prefix}preview-box ##{$sm-prefix}preview {
-        background-color: white;
-        height: 100%;
-        width: 100%;
-        background-size: cover !important;
-      }
-
-      &.#{$sm-prefix}active {
-        background-color: rgba(255, 255, 255, 0.12);
-      }
-
-      &.#{$sm-prefix}no-preview ##{$sm-prefix}preview-box {
-        display: none;
       }
     }
   }
