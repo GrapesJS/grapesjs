@@ -175,7 +175,7 @@ export default Input.extend({
   downIncrement(e) {
     e.preventDefault();
     this.moved = 0;
-    var value = this.model.get('value');
+    var value = this.model.get('value') || 0;
     value = this.normalizeValue(value);
     this.current = { y: e.pageY, val: value };
     on(this.doc, 'mousemove', this.moveIncrement);
