@@ -21,8 +21,8 @@ export default View.extend({
           ${iconMove}
         </div>
         <div id="${pfx}label" data-label></div>
-        <div id="${pfx}preview-box">
-          <div id="${pfx}preview" style="display: none" data-preview></div>
+        <div id="${pfx}preview-box" style="display: none" data-preview-box>
+          <div id="${pfx}preview" data-preview></div>
         </div>
         <div id="${pfx}close-layer" class="${pfx}btn-close" data-close-layer>
           ${iconClose}
@@ -125,9 +125,12 @@ export default View.extend({
   },
 
   render() {
-    const { el, pfx } = this;
+    const { el, pfx, pModel } = this;
     el.innerHTML = this.template();
     el.className = `${pfx}layer`;
+    if (pModel.get('preview')) {
+      el.querySelector(`[data-preview-box]`).style.display = '';
+    }
     this.updateLabel();
     this.updateVisibility();
     return this;
