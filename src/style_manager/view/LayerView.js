@@ -112,7 +112,7 @@ export default View.extend({
 
     if (pModel.get('preview')) {
       const prvEl = this.getPreviewEl();
-      const style = pModel.getStyleFromLayer(model, { number: { min: -3, max: 3 } });
+      const style = pModel.getStylePreview(model, { number: { min: -3, max: 3 } });
       const styleStr = keys(style)
         .map(k => `${k}:${style[k]}`)
         .join(';');

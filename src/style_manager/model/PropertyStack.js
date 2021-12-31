@@ -213,6 +213,17 @@ export default class PropertyStack extends PropertyComposite {
       : style;
   }
 
+  getStylePreview(layer, opts = {}) {
+    let result = {};
+    const preview = this.get('preview');
+
+    if (preview) {
+      result = this.getStyleFromLayer(layer, opts);
+    }
+
+    return result;
+  }
+
   /**
    * Get layer separator.
    * @return {RegExp}
