@@ -65,10 +65,6 @@ export default Backbone.View.extend({
     this.__destroyFn = this.destroy ? this.destroy.bind(this) : () => {};
     model.view = this;
 
-    if (!model.get('value')) {
-      model.set('value', model.getDefaultValue());
-    }
-
     if (em) {
       this.listenTo(em, `update:component:style:${this.property}`, this.targetUpdated);
       //this.listenTo(em, `styleable:change:${this.property}`, this.targetUpdated);

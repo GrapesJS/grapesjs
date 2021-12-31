@@ -176,7 +176,7 @@ export default class PropertyFactory {
       ['box-shadow-v', {}, 'text-shadow-h'],
       ['box-shadow-blur', { default: '5px' }, 'text-shadow-blur'],
       ['box-shadow-spread', {}, 'text-shadow-h'],
-      ['transition-duration', { default: '2', units: this.unitsTime }, 'border-radius-c'],
+      ['transition-duration', { default: '2s', units: this.unitsTime }, 'border-radius-c'],
       ['perspective', {}, 'border-radius-c'],
       ['transform-rotate-x', { functionName: 'rotateX', units: this.unitsAngle, default: '0', type: typeNumber }],
       ['transform-rotate-y', { functionName: 'rotateY' }, 'transform-rotate-x'],
