@@ -4,17 +4,20 @@ import PropertiesView from './PropertiesView';
 
 export default class SectorView extends View {
   template({ pfx, label }) {
+    const icons = this.em?.getConfig('icons');
+    const iconCaret = icons?.caret || '';
+
     return html`
       <div class="${pfx}title" data-sector-title>
-        <i id="${pfx}caret" class="fa"></i>
-        ${label}
+        <div class="${pfx}title-caret">$${iconCaret}</div>
+        <div class="${pfx}title-label">${label}</div>
       </div>
     `;
   }
 
   events() {
     return {
-      'click [data-sector-title]': 'toggle'
+      'click [data-sector-title]': 'toggle',
     };
   }
 
@@ -24,8 +27,6 @@ export default class SectorView extends View {
     this.pfx = this.config.stylePrefix || '';
     this.target = o.target || {};
     this.propTarget = o.propTarget || {};
-    this.caretR = 'fa-caret-right';
-    this.caretD = 'fa-caret-down';
     const model = this.model;
     this.listenTo(model, 'change:open', this.updateOpen);
     this.listenTo(model, 'updateVisibility', this.updateVisibility);
@@ -59,7 +60,6 @@ export default class SectorView extends View {
   show() {
     this.$el.addClass(this.pfx + 'open');
     this.getPropertiesEl().style.display = '';
-    this.$caret.removeClass(this.caretR).addClass(this.caretD);
   }
 
   /**
@@ -68,7 +68,6 @@ export default class SectorView extends View {
   hide() {
     this.$el.removeClass(this.pfx + 'open');
     this.getPropertiesEl().style.display = 'none';
-    this.$caret.removeClass(this.caretD).addClass(this.caretR);
   }
 
   getPropertiesEl() {
@@ -89,7 +88,6 @@ export default class SectorView extends View {
     const { id, name } = model.attributes;
     const label = (em && em.t(`styleManager.sectors.${id}`)) || name;
     $el.html(this.template({ pfx, label }));
-    this.$caret = $el.find(`#${pfx}caret`);
     this.renderProperties();
     $el.attr('class', `${pfx}sector ${pfx}sector__${id} no-select`);
     this.updateOpen();
@@ -105,7 +103,7 @@ export default class SectorView extends View {
         collection: objs,
         target,
         propTarget,
-        config
+        config,
       });
       this.$el.append(view.render().el);
     }
