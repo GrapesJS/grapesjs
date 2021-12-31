@@ -11,6 +11,7 @@ export default Backbone.View.extend({
     this.onInputRender = o.onInputRender || {};
     this.customValue = o.customValue || {};
     this.properties = [];
+    this.parent = o.parent;
     const coll = this.collection;
     this.listenTo(coll, 'add', this.addTo);
     this.listenTo(coll, 'reset', this.render);
@@ -21,6 +22,7 @@ export default Backbone.View.extend({
   },
 
   add(model, frag, opts = {}) {
+    const { parent } = this;
     const appendTo = frag || this.el;
     const view = new model.typeView({
       model,
@@ -32,6 +34,7 @@ export default Backbone.View.extend({
       onInputRender: this.onInputRender,
       config: this.config,
     });
+    parent && (view.parent = parent);
 
     if (model.get('type') != 'composite') {
       view.customValue = this.customValue;

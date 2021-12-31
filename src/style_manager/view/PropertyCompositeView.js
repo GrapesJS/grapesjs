@@ -28,9 +28,15 @@ export default PropertyView.extend({
     const props = model.getProperties();
 
     if (props.length && !this.props) {
+      const detached = model.isDetached();
       const propsView = new PropertiesView({
-        config: { ...this.config, highlightComputed: 0 },
+        config: {
+          ...this.config,
+          highlightComputed: detached,
+          highlightChanged: detached,
+        },
         collection: props,
+        parent: this,
       });
       propsView.render();
       this.$el.find(`#${pfx}input-holder`).append(propsView.el);

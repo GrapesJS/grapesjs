@@ -90,6 +90,7 @@ export default Backbone.View.extend({
     // Put a sligh delay on debounce in order to execute the update
     // post styleManager.__upProps trigger.
     this.onValueChange = debounce(this.onValueChange.bind(this), 10);
+    this.updateStatus = debounce(this.updateStatus.bind(this));
     // this.listenTo(this.propTarget, 'update', this.onValueChange);
     this.listenTo(model, 'change:value', this.onValueChange);
     this.listenTo(em, 'change:device', this.onValueChange);
@@ -110,12 +111,7 @@ export default Backbone.View.extend({
    * @private
    */
   updateStatus() {
-    const { model } = this;
-    // const status = model.get('status');
-    // const parent = model.parent;
-    const pfx = this.pfx;
-    const ppfx = this.ppfx;
-    const config = this.config;
+    const { model, pfx, ppfx, config } = this;
     const updatedCls = `${ppfx}four-color`;
     const computedCls = `${ppfx}color-warn`;
     const labelEl = this.$el.children(`.${pfx}label`);
@@ -124,25 +120,14 @@ export default Backbone.View.extend({
     labelEl.removeClass(`${updatedCls} ${computedCls}`);
     clearStyle.display = 'none';
 
-    if (model.hasValue({ noParent: true })) {
+    if (model.hasValue({ noParent: true }) && config.highlightChanged) {
       labelEl.addClass(updatedCls);
       config.clearProperties && (clearStyle.display = '');
-    } else if (model.hasValue()) {
+    } else if (model.hasValue() && config.highlightComputed) {
       labelEl.addClass(computedCls);
     }
 
-    // switch (status) {
-    //   case 'updated':
-    //     !parent && labelEl.addClass(updatedCls);
-
-    //     if (config.clearProperties) {
-    //       clearStyle.display = 'inline';
-    //     }
-    //     break;
-    //   case 'computed':
-    //     labelEl.addClass(computedCls);
-    //     break;
-    // }
+    this.parent?.updateStatus();
   },
 
   /**
