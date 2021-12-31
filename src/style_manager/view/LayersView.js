@@ -5,6 +5,7 @@ export default Backbone.View.extend({
   initialize(o) {
     this.config = o.config || {};
     this.stackModel = o.stackModel;
+    this.propertyView = o.propertyView;
     this.preview = o.preview;
     this.pfx = this.config.stylePrefix || '';
     this.ppfx = this.config.pStylePrefix || '';
@@ -27,7 +28,7 @@ export default Backbone.View.extend({
           ignoreViewChildren: 1,
           containerSel: `.${pfx}layers`,
           itemSel: `.${pfx}layer`,
-          pfx: this.config.pStylePrefix
+          pfx: this.config.pStylePrefix,
         })
       : '';
 
@@ -58,8 +59,8 @@ export default Backbone.View.extend({
    * */
   addToCollection(model, fragmentEl, index) {
     var fragment = fragmentEl || null;
+    const { propertyView, config } = this;
     const stackModel = this.stackModel;
-    const config = this.config;
     const sorter = this.sorter;
     const propsConfig = this.propsConfig;
 
@@ -72,7 +73,8 @@ export default Backbone.View.extend({
       config,
       sorter,
       stackModel,
-      propsConfig
+      propsConfig,
+      propertyView,
     });
     const rendered = view.render().el;
     this.items.push(view);
@@ -91,11 +93,7 @@ export default Backbone.View.extend({
         // In case the added is new in the collection index will be -1
         if (index < 0) {
           this.$el.append(rendered);
-        } else
-          this.$el
-            .children()
-            .eq(index)
-            [method](rendered);
+        } else this.$el.children().eq(index)[method](rendered);
       } else this.$el.append(rendered);
     }
 
@@ -120,7 +118,7 @@ export default Backbone.View.extend({
     var fragment = document.createDocumentFragment();
     this.$el.empty();
 
-    this.collection.each(function(model) {
+    this.collection.each(function (model) {
       this.addToCollection(model, fragment);
     }, this);
 
@@ -140,5 +138,5 @@ export default Backbone.View.extend({
   clearItems(opts) {
     this.items.forEach(item => item.remove(opts));
     this.items = [];
-  }
+  },
 });
