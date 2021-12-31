@@ -23,7 +23,7 @@ export default PropertyCompositeView.extend({
 
   init() {
     const { model } = this;
-    this.listenTo(model.getLayers(), 'change', this.updateStatus);
+    this.listenTo(model.getLayers(), 'change reset', this.updateStatus);
   },
 
   addLayer() {
