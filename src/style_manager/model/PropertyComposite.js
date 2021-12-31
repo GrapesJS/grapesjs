@@ -1,6 +1,8 @@
 import { isString, isUndefined } from 'underscore';
 import Property from './Property';
 
+const isNumberType = type => type === 'integer' || type === 'number';
+
 /**
  * @typedef PropertyComposite
  * @property {Array<Object>} properties Array of sub properties, eg. `[{ type: 'number', property: 'margin-top' }, ...]`
@@ -226,9 +228,9 @@ export default class PropertyComposite extends Property {
     return this.__splitValue(style[name] || '', sep);
   }
 
-  __getSplitValue(value = '') {
+  __getSplitValue(value = '', { byName } = {}) {
     const props = this.getProperties();
-    const props4Nums = props.length === 4 && props.every(prop => prop.getType() === 'integer');
+    const props4Nums = props.length === 4 && props.every(prop => isNumberType(prop.getType()));
     const values = this.__splitValue(value, this.getSplitSeparator());
     const result = {};
 
@@ -244,15 +246,17 @@ export default class PropertyComposite extends Property {
         res = values[i] || values[(i % len) + (len != 1 && len % 2 ? 1 : 0)] || res;
       }
 
-      result[prop.getId()] = res || '';
+      const key = byName ? prop.getName() : prop.getId();
+      result[key] = res || '';
     });
 
     return result;
   }
 
-  __getPropsFromStyle(style = {}) {
+  __getPropsFromStyle(style = {}, opts = {}) {
     if (!this.__styleHasProps(style)) return null;
 
+    const { byName } = opts;
     const props = this.getProperties();
     const sep = this.getSplitSeparator();
     const fromStyle = this.get('fromStyle');
@@ -260,12 +264,13 @@ export default class PropertyComposite extends Property {
 
     if (!fromStyle) {
       // Get props from the main property
-      result = this.__getSplitValue(style[this.getName()] || '');
+      result = this.__getSplitValue(style[this.getName()] || '', { byName });
 
       // Get props from the inner properties
       props.forEach(prop => {
         const value = style[prop.getName()];
-        if (!isUndefined(value) && value !== '') result[prop.getId()] = value;
+        const key = byName ? prop.getName() : prop.getId();
+        if (!isUndefined(value) && value !== '') result[key] = value;
       });
     }
 

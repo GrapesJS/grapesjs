@@ -691,10 +691,10 @@ export default () => {
 
         // Detached has to be treathed as separate properties
         if (prop.isDetached()) {
-          const newStyle = prop.__getPropsFromStyle(style) || {};
+          const newStyle = prop.__getPropsFromStyle(style, { byName: true }) || {};
           const newParentStyles = parentStyles.map(p => ({
             ...p,
-            style: prop.__getPropsFromStyle(p.style) || {},
+            style: prop.__getPropsFromStyle(p.style, { byName: true }) || {},
           }));
           props.map(pr => this.__upProp(pr, newStyle, newParentStyles, opts));
         } else {
