@@ -16,12 +16,8 @@ export default PropertyNumberView.extend({
 
   onRender() {
     if (!this.input) {
-      const ppfx = this.ppfx;
-      const inputColor = new InputColor({
-        target: this.target,
-        model: this.model,
-        ppfx,
-      });
+      const { ppfx, model, em } = this;
+      const inputColor = new InputColor({ target: em, model, ppfx });
       const input = inputColor.render();
       this.el.querySelector(`.${ppfx}fields`).appendChild(input.el);
       this.$input = input.inputEl;
