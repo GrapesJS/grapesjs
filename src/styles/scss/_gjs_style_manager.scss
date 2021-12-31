@@ -411,12 +411,12 @@
     border: none;
     cursor: pointer;
     outline: none;
-    font-size: 22px;
-    line-height: 10px;
     position: absolute;
     right: 0;
     top: -17px;
     opacity: 0.75;
+    width: 18px;
+    height: 18px;
 
     &:hover {
       @include opacity(1);

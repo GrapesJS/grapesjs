@@ -12,10 +12,14 @@ export default PropertyCompositeView.extend({
   },
 
   templateInput() {
-    const { pfx } = this;
+    const { pfx, em } = this;
+    const icons = em?.getConfig('icons');
+    const iconPlus = icons?.plus || '+';
     return `
       <div class="${pfx}field ${pfx}stack">
-        <button type="button" id="${pfx}add" data-add-layer>+</button>
+        <button type="button" id="${pfx}add" data-add-layer>
+          ${iconPlus}
+        </button>
         <div data-layers-wrapper></div>
       </div>
     `;
