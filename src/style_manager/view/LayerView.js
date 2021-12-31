@@ -1,3 +1,4 @@
+import { keys } from 'underscore';
 import { View } from 'backbone';
 
 export default View.extend({
@@ -17,7 +18,7 @@ export default View.extend({
       </div>
       <div id="${pfx}label" data-label></div>
       <div id="${pfx}preview-box">
-      	<div id="${pfx}preview" data-preview></div>
+      	<div id="${pfx}preview" style="display: none" data-preview></div>
       </div>
       <div id="${pfx}close-layer" class="${pfx}btn-close" data-close-layer>
         &Cross;
@@ -105,16 +106,24 @@ export default View.extend({
   },
 
   updateLabel() {
-    const { model, propertyView } = this;
-    const label = propertyView.model.getLayerLabel(model);
+    const { model, pModel } = this;
+    const label = pModel.getLayerLabel(model);
     this.getLabelEl().innerHTML = label;
+
+    if (pModel.get('preview')) {
+      const prvEl = this.getPreviewEl();
+      const style = pModel.getStyleFromLayer(model, { number: { min: -3, max: 3 } });
+      const styleStr = keys(style)
+        .map(k => `${k}:${style[k]}`)
+        .join(';');
+      prvEl.setAttribute('style', styleStr);
+    }
   },
 
   render() {
-    const { model, el, pfx } = this;
-    const preview = model.get('preview');
+    const { el, pfx } = this;
     el.innerHTML = this.template();
-    el.className = `${pfx}layer${!preview ? ` ${pfx}no-preview` : ''}`;
+    el.className = `${pfx}layer`;
     this.updateLabel();
     this.updateVisibility();
     return this;

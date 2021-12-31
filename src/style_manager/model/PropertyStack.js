@@ -1,5 +1,5 @@
 import { keys, isUndefined, isArray, isString } from 'underscore';
-import PropertyComposite from './PropertyComposite';
+import PropertyComposite, { isNumberType } from './PropertyComposite';
 import PropertyBase from './Property';
 import Layers from './Layers';
 import { camelCase } from 'utils/mixins';
@@ -13,6 +13,7 @@ const PARTS_REG = /\s(?![^(]*\))/;
  *
  *
  * @typedef PropertyStack
+ * @property {Boolean} [preview=false] Indicate if the layer should display a preview.
  * @property {String|RegExp} [layerSeparator=', '] The separator used to split layer values.
  * @property {String} [layerJoin=', '] Value used to join layer values.
  * @property {Function} [layerLabel] Custom logic for creating the layer label.
@@ -26,7 +27,7 @@ export default class PropertyStack extends PropertyComposite {
       layerSeparator: ', ',
       layerJoin: '',
       prepend: 0,
-      preview: 0,
+      preview: false,
       layerLabel: null,
       selectedLayer: null,
     };
@@ -184,7 +185,14 @@ export default class PropertyStack extends PropertyComposite {
       const result = this.getProperties().map(prop => {
         const name = prop.getName();
         const val = values[name];
-        const value = isUndefined(val) ? prop.getDefaultValue() : val;
+        let value = isUndefined(val) ? prop.getDefaultValue() : val;
+
+        // Limit number values if necessary (useful for previews)
+        if (opts.number && isNumberType(prop.getType())) {
+          const newVal = prop.parseValue(val, opts.number);
+          value = `${newVal.value}${newVal.unit}`;
+        }
+
         return { name, value };
       });
       style = this.isDetached()

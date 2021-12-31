@@ -1,7 +1,7 @@
 import { isString, isUndefined } from 'underscore';
 import Property from './Property';
 
-const isNumberType = type => type === 'integer' || type === 'number';
+export const isNumberType = type => type === 'integer' || type === 'number';
 
 /**
  * @typedef PropertyComposite
