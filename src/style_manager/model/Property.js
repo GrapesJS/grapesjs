@@ -23,16 +23,15 @@ export default class Property extends Model {
     Property.callInit(this, props, opts);
   }
 
-  __hasCustom() {
-    return !!this.em?.get('StyleManager').getConfig().custom;
-  }
+  // __hasCustom() {
+  //   return !!this.em?.get('StyleManager').getConfig().custom;
+  // }
 
   __getParentProp() {
     return this.collection?.opts?.parentProp;
   }
 
   __upTargets(p, opts = {}) {
-    // if (!this.__hasCustom()) return;
     const { em } = this;
     const sm = em.get('StyleManager');
     const name = this.getName();

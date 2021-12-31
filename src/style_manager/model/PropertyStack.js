@@ -252,7 +252,6 @@ export default class PropertyStack extends PropertyComposite {
   }
 
   __upSelected({ noEvent } = {}, opts = {}) {
-    if (!this.__hasCustom()) return;
     const sm = this.em.get('StyleManager');
     const selected = this.getSelectedLayer();
     const values = selected?.getValues();

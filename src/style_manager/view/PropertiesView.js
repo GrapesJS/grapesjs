@@ -30,7 +30,7 @@ export default Backbone.View.extend({
       propTarget: this.propTarget,
       onChange: this.onChange,
       onInputRender: this.onInputRender,
-      config: this.config
+      config: this.config,
     });
 
     if (model.get('type') != 'composite') {
@@ -49,7 +49,7 @@ export default Backbone.View.extend({
     const { $el } = this;
     this.clearItems();
     const fragment = document.createDocumentFragment();
-    this.collection.each(model => this.add(model, fragment));
+    this.collection.forEach(model => this.add(model, fragment));
     $el.empty();
     $el.append(fragment);
     $el.attr('class', `${this.pfx}properties`);
@@ -64,5 +64,5 @@ export default Backbone.View.extend({
   clearItems() {
     this.properties.forEach(item => item.remove());
     this.properties = [];
-  }
+  },
 });

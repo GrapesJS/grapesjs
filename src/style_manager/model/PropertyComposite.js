@@ -112,7 +112,7 @@ export default class PropertyComposite extends Property {
   }
 
   __upProperties(p, opts = {}) {
-    if (!this.__hasCustom() || opts.__up || opts.__clearIn) return;
+    if (opts.__up || opts.__clearIn) return;
 
     const parentProp = this.__getParentProp();
     if (parentProp) return parentProp.__upProperties(this, opts);
