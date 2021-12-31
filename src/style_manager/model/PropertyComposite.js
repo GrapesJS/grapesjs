@@ -129,6 +129,11 @@ export default class PropertyComposite extends Property {
     }
 
     this.__upTargetsStyle(style, opts);
+
+    // Keep track of the values for the not detached properties,
+    // otherwise clear() will not trigger changes.
+    // TODO: maybe to move this logic in sm.__upProp
+    !this.isDetached() && this.set('value', style[this.getName()], { silent: true });
   }
 
   _up(props, opts = {}) {
