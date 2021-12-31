@@ -16,16 +16,18 @@ export default Backbone.View.extend({
   },
 
   templateLabel(model) {
-    const { pfx } = this;
+    const { pfx, em } = this;
     const { parent } = model;
     const { icon = '', info = '' } = model.attributes;
     const label = model.getLabel();
+    const icons = em?.getConfig('icons');
+    const iconClose = icons?.close || '&Cross;';
 
     return `
       <span class="${pfx}icon ${icon}" title="${info}">
         ${label}
       </span>
-      ${!parent ? `<b class="${pfx}clear" style="display: none" ${clearProp}>&Cross;</b>` : ''}
+      ${!parent ? `<div class="${pfx}clear" style="display: none" ${clearProp}>${iconClose}</div>` : ''}
     `;
   },
 

@@ -1,8 +1,11 @@
 
 .#{$sm-prefix} {
   &clear {
-    line-height: 0;
     cursor: pointer;
+    width: 14px;
+    min-width: 14px;
+    height: 14px;
+    margin-left: 3px;
   }
 
   &header {
@@ -22,6 +25,8 @@
 
   &label {
     margin: 5px 5px 3px 0;
+    display: flex;
+    align-items: center;
   }
 }
 
@@ -415,6 +420,7 @@
     right: 0;
     top: -17px;
     opacity: 0.75;
+    padding: 0;
     width: 18px;
     height: 18px;
 
