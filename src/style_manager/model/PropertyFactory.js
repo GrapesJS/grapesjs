@@ -201,7 +201,7 @@ export default class PropertyFactory {
       ['background-color', { default: 'none' }, 'color'],
 
       // File type
-      ['background-image', { type: this.typeFile, functionName: 'url' }],
+      ['background-image', { type: this.typeFile, functionName: 'url', default: 'none' }],
 
       // Select types
       ['display', { type: this.typeSelect, default: 'block', options: this.opstDisplay }],
@@ -341,6 +341,13 @@ export default class PropertyFactory {
         'background',
         {
           detached: true,
+          layerLabel: (l, { values }) => {
+            const repeat = values['background-repeat-sub'];
+            const pos = values['background-position-sub'];
+            const att = values['background-attachment-sub'];
+            const size = values['background-size-sub'];
+            return `${repeat} ${pos} ${att} ${size}`;
+          },
           properties: this.__sub([
             { extend: 'background-image', id: 'background-image-sub' },
             { extend: 'background-repeat', id: 'background-repeat-sub' },

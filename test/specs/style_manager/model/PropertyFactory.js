@@ -619,6 +619,7 @@ describe('PropertyFactory', () => {
         {
           property: 'background-image',
           id: 'background-image-sub',
+          default: 'none',
           type: 'file',
           functionName: 'url',
         },
