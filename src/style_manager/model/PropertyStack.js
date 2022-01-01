@@ -16,7 +16,14 @@ const PARTS_REG = /\s(?![^(]*\))/;
  * @property {Boolean} [preview=false] Indicate if the layer should display a preview.
  * @property {String|RegExp} [layerSeparator=', '] The separator used to split layer values.
  * @property {String} [layerJoin=', '] Value used to join layer values.
- * @property {Function} [layerLabel] Custom logic for creating the layer label.
+ * @property {Function} [layerLabel] Custom logic for creating layer labels.
+ * \n
+ * ```js
+ *  layerLabel: (layer) => {
+ *    const values = layer.getValues();
+ *    return `A: ${values['prop-a']} B: ${values['prop-b']}`;
+ *  }
+ *  ```
  *
  */
 export default class PropertyStack extends PropertyComposite {

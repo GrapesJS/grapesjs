@@ -8,9 +8,20 @@
 
 ### Properties
 
-*   `layerSeparator` **([String][1] | [RegExp][2])?** The separator used to split layer values.
-*   `layerJoin` **[String][1]?** Value used to join layer values.
-*   `layerLabel` **[Function][3]?** Custom logic for creating the layer label.
+*   `preview` **[Boolean][1]?** Indicate if the layer should display a preview.
+*   `layerSeparator` **([String][2] | [RegExp][3])?** The separator used to split layer values.
+*   `layerJoin` **[String][2]?** Value used to join layer values.
+    ```js
+     layerJoin: (layer, { values }) => {
+       return `A: ${values['prop-a']} B: ${values['prop-b']}`;
+     }
+    ```
+*   `layerLabel` **[Function][4]?** Custom logic for creating layer labels.
+    ```js
+     layerLabel: (layer, { values }) => {
+       return `A: ${values['prop-a']} B: ${values['prop-b']}`;
+     }
+    ```
 
 ### getLayers
 
@@ -24,7 +35,7 @@ Get layer by index.
 
 #### Parameters
 
-*   `index` **[Number][4]** Layer index position. (optional, default `0`)
+*   `index` **[Number][5]** Layer index position. (optional, default `0`)
 
 #### Examples
 
@@ -66,7 +77,7 @@ Select layer by index.
 
 #### Parameters
 
-*   `index` **[Number][4]** Index of the layer to select. (optional, default `0`)
+*   `index` **[Number][5]** Index of the layer to select. (optional, default `0`)
 
 #### Examples
 
@@ -80,10 +91,10 @@ Add new layer to the stack.
 
 #### Parameters
 
-*   `props` **[Object][5]** Custom property values to use in a new layer. (optional, default `{}`)
-*   `opts` **[Object][5]** Options (optional, default `{}`)
+*   `props` **[Object][6]** Custom property values to use in a new layer. (optional, default `{}`)
+*   `opts` **[Object][6]** Options (optional, default `{}`)
 
-    *   `opts.at` **[Number][4]?** Position index (by default the layer will be appended at the end).
+    *   `opts.at` **[Number][5]?** Position index (by default the layer will be appended at the end).
 
 #### Examples
 
@@ -117,7 +128,7 @@ Remove layer by index.
 
 #### Parameters
 
-*   `index` **[Number][4]** Index of the layer to remove (optional, default `0`)
+*   `index` **[Number][5]** Index of the layer to remove (optional, default `0`)
 
 #### Examples
 
@@ -142,7 +153,7 @@ const layer = this.getLayer(1);
 const label = this.getLayerLabel(layer);
 ```
 
-Returns **[String][1]** 
+Returns **[String][2]** 
 
 ### getStyleFromLayer
 
@@ -151,26 +162,26 @@ Get style object from the layer.
 #### Parameters
 
 *   `layer` **[Layer]** 
-*   `opts` **[Object][5]** Options (optional, default `{}`)
+*   `opts` **[Object][6]** Options (optional, default `{}`)
 
-    *   `opts.camelCase` **[Boolean][6]?** Return property names in camelCase.
+    *   `opts.camelCase` **[Boolean][1]?** Return property names in camelCase.
 
-Returns **[Object][5]** Style object
+Returns **[Object][6]** Style object
 
 ### getLayerSeparator
 
 Get layer separator.
 
-Returns **[RegExp][2]** 
+Returns **[RegExp][3]** 
 
-[1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
 
-[2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/RegExp
+[2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-[3]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+[3]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/RegExp
 
-[4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+[4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
 
-[5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
 
-[6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object

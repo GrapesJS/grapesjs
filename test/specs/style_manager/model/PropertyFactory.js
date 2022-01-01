@@ -448,7 +448,9 @@ describe('PropertyFactory', () => {
       ],
     };
     res.property = 'text-shadow';
-    expect(obj.build('text-shadow')).toEqual([res]);
+    const result = obj.build('text-shadow');
+    delete result[0].layerLabel;
+    expect(result).toEqual([res]);
   });
 
   test('Build border-radius-c', () => {
@@ -602,7 +604,9 @@ describe('PropertyFactory', () => {
         },
       ],
     };
-    expect(obj.build('box-shadow')).toEqual([res]);
+    const result = obj.build('box-shadow');
+    delete result[0].layerLabel;
+    expect(result).toEqual([res]);
   });
 
   test('Build background', () => {
@@ -658,7 +662,9 @@ describe('PropertyFactory', () => {
         },
       ],
     };
-    expect(obj.build('background')).toEqual([res]);
+    const result = obj.build('background');
+    delete result[0].layerLabel;
+    expect(result).toEqual([res]);
   });
 
   test('Build transition', () => {
@@ -686,7 +692,7 @@ describe('PropertyFactory', () => {
           id: 'transition-duration-sub',
           type: 'integer',
           units: obj.unitsTime,
-          default: '2',
+          default: '2s',
           min: 0,
         },
         {

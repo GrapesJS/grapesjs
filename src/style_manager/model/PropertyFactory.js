@@ -305,6 +305,13 @@ export default class PropertyFactory {
         'box-shadow',
         {
           preview: true,
+          layerLabel: (l, { values }) => {
+            const x = values['box-shadow-h'];
+            const y = values['box-shadow-v'];
+            const blur = values['box-shadow-blur'];
+            const spread = values['box-shadow-spread'];
+            return `${x} ${y} ${blur} ${spread}`;
+          },
           properties: this.__sub([
             'box-shadow-h',
             'box-shadow-v',
@@ -320,6 +327,12 @@ export default class PropertyFactory {
         'text-shadow',
         {
           default: 'none',
+          layerLabel: (l, { values }) => {
+            const x = values['text-shadow-h'];
+            const y = values['text-shadow-v'];
+            const blur = values['text-shadow-blur'];
+            return `${x} ${y} ${blur}`;
+          },
           properties: this.__sub(['text-shadow-h', 'text-shadow-v', 'text-shadow-blur', 'text-shadow-color']),
         },
         'box-shadow',
