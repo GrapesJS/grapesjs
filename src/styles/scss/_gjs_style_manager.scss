@@ -303,7 +303,7 @@
       width: 100%;
     }
 
-    &.#{$sm-prefix}file ##{$sm-prefix}preview-box {
+    .#{$sm-prefix}preview-file-box {
       background-color: $lightBorder;
       border-radius: 2px;
       margin-top: 5px;
@@ -315,7 +315,7 @@
         padding: 3px 20px;
       }
 
-      ##{$sm-prefix}close {
+      .#{$sm-prefix}preview-file-close {
         @extend .#{$sm-prefix}close-btn;
 
         top: -5px;
@@ -370,25 +370,22 @@
         margin: 0 5px;
       }
 
-      ##{$sm-prefix}preview-box {
+      &-preview {
         @extend .checker-bg;
 
         height: 15px;
         width: 15px;
         min-width: 15px;
         margin-right: 5px;
-      }
-
-      ##{$sm-prefix}preview {
-        background-color: white;
-        height: 100%;
-        width: 100%;
-        background-size: cover !important;
-      }
-
-      ##{$sm-prefix}preview,
-      ##{$sm-prefix}preview-box {
         border-radius: 2px;
+
+        &-cnt {
+          border-radius: 2px;
+          background-color: white;
+          height: 100%;
+          width: 100%;
+          background-size: cover !important;
+        }
       }
 
       ##{$sm-prefix}close-layer {

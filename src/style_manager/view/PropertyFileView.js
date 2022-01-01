@@ -9,20 +9,20 @@ export default PropertyView.extend({
     const { pfx, em } = this;
 
     return `
-    <div class="${pfx}field ${pfx}file">
-      <div id='${pfx}input-holder'>
-        <div class="${pfx}btn-c">
-          <button class="${pfx}btn" id="${pfx}images" type="button">
-            ${em.t('styleManager.fileButton')}
-          </button>
+      <div class="${pfx}field ${pfx}file">
+        <div id='${pfx}input-holder'>
+          <div class="${pfx}btn-c">
+            <button class="${pfx}btn" id="${pfx}images" type="button">
+              ${em.t('styleManager.fileButton')}
+            </button>
+          </div>
+          <div style="clear:both;"></div>
         </div>
-        <div style="clear:both;"></div>
+        <div id="${pfx}preview-box" class="${pfx}preview-file-box">
+          <div id="${pfx}preview-file" class="${pfx}preview-file"></div>
+          <div id="${pfx}close" class="${pfx}preview-file-close">&Cross;</div>
+        </div>
       </div>
-      <div id="${pfx}preview-box">
-        <div id="${pfx}preview-file"></div>
-        <div id="${pfx}close">&Cross;</div>
-      </div>
-    </div>
     `;
   },
 
@@ -133,7 +133,7 @@ export default PropertyView.extend({
         },
         target: this.getTargetModel(),
         types: ['image'],
-        accept: 'image/*'
+        accept: 'image/*',
       });
-  }
+  },
 });

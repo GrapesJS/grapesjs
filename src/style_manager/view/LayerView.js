@@ -21,8 +21,8 @@ export default View.extend({
           ${iconMove}
         </div>
         <div id="${pfx}label" data-label></div>
-        <div id="${pfx}preview-box" style="display: none" data-preview-box>
-          <div id="${pfx}preview" data-preview></div>
+        <div id="${pfx}preview-box" class="${pfx}layer-preview" style="display: none" data-preview-box>
+          <div id="${pfx}preview" class="${pfx}layer-preview-cnt" data-preview></div>
         </div>
         <div id="${pfx}close-layer" class="${pfx}btn-close" data-close-layer>
           ${iconClose}
