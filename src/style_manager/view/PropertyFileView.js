@@ -18,8 +18,8 @@ export default PropertyView.extend({
           </div>
           <div style="clear:both;"></div>
         </div>
-        <div id="${pfx}preview-box" class="${pfx}preview-file-box">
-          <div id="${pfx}preview-file" class="${pfx}preview-file"></div>
+        <div id="${pfx}preview-box" class="${pfx}preview-file">
+          <div id="${pfx}preview-file" class="${pfx}preview-file-cnt"></div>
           <div id="${pfx}close" class="${pfx}preview-file-close">&Cross;</div>
         </div>
       </div>
