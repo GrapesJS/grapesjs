@@ -7,6 +7,8 @@ const $ = Backbone.$;
 export default PropertyView.extend({
   templateInput() {
     const { pfx, em } = this;
+    const icons = this.em?.getConfig('icons');
+    const iconClose = icons?.close;
 
     return `
       <div class="${pfx}field ${pfx}file">
@@ -20,7 +22,7 @@ export default PropertyView.extend({
         </div>
         <div id="${pfx}preview-box" class="${pfx}preview-file">
           <div id="${pfx}preview-file" class="${pfx}preview-file-cnt"></div>
-          <div id="${pfx}close" class="${pfx}preview-file-close">&Cross;</div>
+          <div id="${pfx}close" class="${pfx}preview-file-close">${iconClose}</div>
         </div>
       </div>
     `;

@@ -38,10 +38,10 @@
   right: 5px;
   top: 0;
 
-  @include opacity(0.2);
+  @include opacity(0.7);
 
   &:hover {
-    @include opacity(0.7);
+    @include opacity(0.9);
   }
 }
 
@@ -302,29 +302,30 @@
     float: left;
     width: 100%;
   }
+}
 
-  .#{$sm-prefix}preview-file {
-    background-color: $lightBorder;
-    border-radius: 2px;
-    margin-top: 5px;
-    position: relative;
-    overflow: hidden;
-    border: 1px solid darken($lightBorder, 1%);
-    padding: 3px 20px;
+.#{$sm-prefix}preview-file {
+  background-color: $lightBorder;
+  border-radius: 2px;
+  margin-top: 5px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid darken($lightBorder, 1%);
+  padding: 3px 20px;
 
-    &-cnt {
-      background-size: auto 100%;
-      background-repeat: no-repeat;
-      background-position: center center;
-      height: 50px;
-    }
+  &-cnt {
+    background-size: auto 100%;
+    background-repeat: no-repeat;
+    background-position: center center;
+    height: 50px;
+  }
 
-    &-close {
-      @extend .#{$sm-prefix}close-btn;
+  &-close {
+    @extend .#{$sm-prefix}close-btn;
 
-      top: -5px;
-      display: block;
-    }
+    top: -5px;
+    width: 14px;
+    height: 14px;
   }
 }
 
