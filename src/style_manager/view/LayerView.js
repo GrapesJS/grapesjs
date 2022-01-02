@@ -12,7 +12,7 @@ export default View.extend({
   template() {
     const { pfx, ppfx } = this;
     const icons = this.em?.getConfig('icons');
-    const iconClose = icons?.close || '&Cross;';
+    const iconClose = icons?.close || '';
     const iconMove = icons?.move || '';
 
     return `

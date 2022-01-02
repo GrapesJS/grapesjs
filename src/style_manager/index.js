@@ -653,7 +653,7 @@ export default () => {
       const isStack = prop.getType() === 'stack';
       const isComposite = prop.getType() === 'composite';
       const opt = { ...opts, __up: true };
-      const canUpdate = !isComposite;
+      const canUpdate = !isComposite && !isStack;
       let newLayers = isStack ? prop.__getLayersFromStyle(style) : [];
       let newProps = isComposite ? prop.__getPropsFromStyle(style) : {};
       let newValue = hasVal ? value : null;

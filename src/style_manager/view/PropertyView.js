@@ -21,7 +21,7 @@ export default Backbone.View.extend({
     const { icon = '', info = '' } = model.attributes;
     const label = model.getLabel();
     const icons = em?.getConfig('icons');
-    const iconClose = icons?.close || '&Cross;';
+    const iconClose = icons?.close || '';
 
     return `
       <span class="${pfx}icon ${icon}" title="${info}">
@@ -395,6 +395,9 @@ export default Backbone.View.extend({
     //   'onValueChange',
     //   this.model.getName(),
     //   {
+    //     cid: this.model.cid,
+    //     val,
+    //     value: this.model.get('value'),
     //     fullValue: this.model.getFullValue(),
     //     hasValue: this.model.hasValue(),
     //     hasValueLocal: this.model.hasValue({ noParent: true }),
@@ -579,9 +582,9 @@ export default Backbone.View.extend({
    * @param {string} value
    * @private
    */
-  setRawValue(value) {
-    this.setValue(this.model.parseValue(value));
-  },
+  // setRawValue(value) {
+  //   this.setValue(this.model.parseValue(value));
+  // },
 
   /**
    * Update the element input.
