@@ -13,6 +13,38 @@
     padding: 10px;
   }
 
+  // Sector
+  &sector {
+    clear: both;
+    font-weight: lighter;
+    text-align: left;
+
+    &-title {
+      @extend .#{$app-prefix}category-title;
+      display: flex;
+      align-items: center;
+    }
+
+    &-caret {
+      width: 17px;
+      height: 17px;
+      min-width: 17px;
+      transform: rotate(-90deg);
+    }
+
+    &-label {
+      margin-left: 5px;
+    }
+
+    &.#{$sm-prefix}open {
+      @extend .#{$app-prefix}category-open;
+
+      .#{$sm-prefix}sector-caret {
+        transform: none;
+      }
+    }
+  }
+
   &properties {
     font-size: $fontSizeS;
     padding: 10px 5px;
@@ -22,6 +54,7 @@
     box-sizing: border-box;
     width: 100%;
   }
+  // Sector END
 
   &label {
     margin: 5px 5px 3px 0;
@@ -45,36 +78,6 @@
   }
 }
 
-.#{$sm-prefix}sector {
-  clear: both;
-  font-weight: lighter;
-  text-align: left;
-
-  .#{$sm-prefix}title-caret {
-    width: 17px;
-    height: 17px;
-    min-width: 17px;
-    transform: rotate(-90deg);
-  }
-
-  .#{$sm-prefix}title-label {
-    margin-left: 5px;
-  }
-
-  &.#{$sm-prefix}open {
-    @extend .#{$app-prefix}category-open;
-
-    .#{$sm-prefix}title-caret {
-      transform: none;
-    }
-  }
-
-  .#{$sm-prefix}title {
-    @extend .#{$app-prefix}category-title;
-    display: flex;
-    align-items: center;
-  }
-}
 /* ------------------Field-------------------- */
 
 .#{$sm-prefix}field {

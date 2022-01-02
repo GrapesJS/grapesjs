@@ -6,11 +6,12 @@ export default class SectorView extends View {
   template({ pfx, label }) {
     const icons = this.em?.getConfig('icons');
     const iconCaret = icons?.caret || '';
+    const clsPfx = `${pfx}sector-`;
 
     return html`
-      <div class="${pfx}title" data-sector-title>
-        <div class="${pfx}title-caret">$${iconCaret}</div>
-        <div class="${pfx}title-label">${label}</div>
+      <div class="${clsPfx}title" data-sector-title>
+        <div class="${clsPfx}caret">$${iconCaret}</div>
+        <div class="${clsPfx}label">${label}</div>
       </div>
     `;
   }
