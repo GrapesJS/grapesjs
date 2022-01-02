@@ -717,6 +717,6 @@ export default Backbone.View.extend({
 
     const onRender = this.onRender && this.onRender.bind(this);
     onRender && onRender();
-    // this.setValue(model.get('value'), { fromTarget: 1 });
+    this.setValue(model.getDefaultValue());
   },
 });
