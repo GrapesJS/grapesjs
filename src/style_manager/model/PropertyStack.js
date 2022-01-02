@@ -108,9 +108,9 @@ export default class PropertyStack extends PropertyComposite {
   addLayer(props = {}, opts = {}) {
     const values = {};
     this.getProperties().forEach(prop => {
-      const name = prop.getName();
-      const value = props[name];
-      values[name] = isUndefined(value) ? prop.getDefaultValue() : value;
+      const key = prop.getId();
+      const value = props[key];
+      values[key] = isUndefined(value) ? prop.getDefaultValue() : value;
     });
     const layer = this.get('layers').push({ values }, opts);
 
@@ -191,7 +191,7 @@ export default class PropertyStack extends PropertyComposite {
     } else {
       const result = this.getProperties().map(prop => {
         const name = prop.getName();
-        const val = values[name];
+        const val = values[prop.getId()];
         let value = isUndefined(val) ? prop.getDefaultValue() : val;
 
         // Limit number values if necessary (useful for previews)
@@ -255,8 +255,7 @@ export default class PropertyStack extends PropertyComposite {
   __upProperties(prop, opts = {}) {
     const layer = this.getSelectedLayer();
     if (opts.__up || !layer) return;
-    const name = prop.getName();
-    layer.upValues({ [name]: prop.__getFullValue() });
+    layer.upValues({ [prop.getId()]: prop.__getFullValue() });
     this.__upTargetsStyleProps(opts);
   }
 
