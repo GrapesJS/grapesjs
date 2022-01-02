@@ -309,6 +309,8 @@ export default class PropertyStack extends PropertyComposite {
     } else {
       this.getLayers().reset(layersNew);
     }
+
+    this.__upSelected({ noEvent: true });
   }
 
   __parseValue(value) {
