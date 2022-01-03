@@ -1,5 +1,5 @@
 import { Model } from 'common';
-import { isUndefined, isString, isArray, result, keys, each } from 'underscore';
+import { isUndefined, isString, isArray, result, keys, each, includes } from 'underscore';
 import { capitalize, camelCase } from 'utils/mixins';
 
 /**
