@@ -187,19 +187,6 @@ export default Backbone.View.extend({
   onValueChange(m, val, opt = {}) {
     this.setValue(this.model.getFullValue());
     this.updateStatus();
-    // console.log(
-    //   'onValueChange',
-    //   this.model.getName(),
-    //   {
-    //     cid: this.model.cid,
-    //     val,
-    //     value: this.model.get('value'),
-    //     fullValue: this.model.getFullValue(),
-    //     hasValue: this.model.hasValue(),
-    //     hasValueLocal: this.model.hasValue({ noParent: true }),
-    //   },
-    //   opt
-    // );
   },
 
   /**
