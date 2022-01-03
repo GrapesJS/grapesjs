@@ -433,11 +433,6 @@ export default class PropertyStack extends PropertyComposite {
     return new Layers(layers).getFullValue();
   }
 
-  clearValue() {
-    this.getLayers().reset();
-    return PropertyComposite.prototype.clearValue.apply(this, arguments);
-  }
-
   getValueFromTarget(target) {
     const { detached, property, properties } = this.attributes;
     const style = target.getStyle();

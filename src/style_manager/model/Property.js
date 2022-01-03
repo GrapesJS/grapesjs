@@ -1,5 +1,5 @@
 import { Model } from 'common';
-import { isUndefined, isString, isArray, result, keys } from 'underscore';
+import { isUndefined, isString, isArray, result, keys, each } from 'underscore';
 import { capitalize, camelCase } from 'utils/mixins';
 
 /**
@@ -22,10 +22,6 @@ export default class Property extends Model {
     this.on('change', this.__upTargets);
     Property.callInit(this, props, opts);
   }
-
-  // __hasCustom() {
-  //   return !!this.em?.get('StyleManager').getConfig().custom;
-  // }
 
   __getParentProp() {
     return this.collection?.opts?.parentProp;
@@ -192,16 +188,6 @@ export default class Property extends Model {
   }
 
   /**
-   * Clear the value
-   * @return {this}
-   * @private
-   */
-  clearValue(opts = {}) {
-    this.set({ value: undefined, status: '' }, opts);
-    return this;
-  }
-
-  /**
    * Update value
    * @param {any} value
    * @param {Boolen} [complete=true] Indicates if it's a final state
@@ -286,32 +272,32 @@ export default class Property extends Model {
    * @param {String} [separator] Separator
    * @private
    */
-  splitValues(values, separator = ',') {
-    const res = [];
-    const op = '(';
-    const cl = ')';
-    let curr = '';
-    let acc = 0;
+  // splitValues(values, separator = ',') {
+  //   const res = [];
+  //   const op = '(';
+  //   const cl = ')';
+  //   let curr = '';
+  //   let acc = 0;
 
-    (values || '').split('').forEach(str => {
-      if (str == op) {
-        acc++;
-        curr = curr + op;
-      } else if (str == cl && acc > 0) {
-        acc--;
-        curr = curr + cl;
-      } else if (str === separator && acc == 0) {
-        res.push(curr);
-        curr = '';
-      } else {
-        curr = curr + str;
-      }
-    });
+  //   (values || '').split('').forEach(str => {
+  //     if (str == op) {
+  //       acc++;
+  //       curr = curr + op;
+  //     } else if (str == cl && acc > 0) {
+  //       acc--;
+  //       curr = curr + cl;
+  //     } else if (str === separator && acc == 0) {
+  //       res.push(curr);
+  //       curr = '';
+  //     } else {
+  //       curr = curr + str;
+  //     }
+  //   });
 
-    curr !== '' && res.push(curr);
+  //   curr !== '' && res.push(curr);
 
-    return res.map(i => i.trim());
-  }
+  //   return res.map(i => i.trim());
+  // }
 
   __getFullValue({ withDefault } = {}) {
     return !this.hasValue() && withDefault ? this.getDefaultValue() : this.getFullValue();

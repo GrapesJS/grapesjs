@@ -310,17 +310,6 @@ export default class PropertyComposite extends Property {
   }
 
   /**
-   * Clear the value
-   * @return {this}
-   * @private
-   * @deprecated
-   */
-  clearValue(opts = {}) {
-    this.get('properties').each(property => property.clearValue());
-    return Property.prototype.clearValue.apply(this, arguments);
-  }
-
-  /**
    * Update property values
    * @private
    * @deprecated

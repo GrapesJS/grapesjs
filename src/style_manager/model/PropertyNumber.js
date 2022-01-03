@@ -87,11 +87,6 @@ export default class PropertyNumber extends Property {
     Property.callInit(this, props, opts);
   }
 
-  clearValue(opts = {}) {
-    this.set({ value: undefined, unit: undefined }, opts);
-    return this;
-  }
-
   __getClearProps() {
     return {
       ...Property.prototype.__getClearProps(),
