@@ -132,39 +132,6 @@ export default Backbone.View.extend({
   },
 
   /**
-   * Returns selected target which should have 'style' property
-   * @return {Model|null}
-   */
-  getTarget() {
-    return this.getTargetModel();
-  },
-
-  getTargets() {
-    const { targets } = this.propTarget;
-    return targets || [this.getTarget()];
-  },
-
-  getFirstTarget() {
-    return this.getTargets()[0];
-  },
-
-  /**
-   * Returns Styleable model
-   * @return {Model|null}
-   */
-  getTargetModel() {
-    return this.propTarget && this.propTarget.model;
-  },
-
-  /**
-   * Returns helper Styleable model
-   * @return {Model|null}
-   */
-  getHelperModel() {
-    return this.propTarget && this.propTarget.helper;
-  },
-
-  /**
    * Triggers when the value of element input/s is changed, so have to update
    * the value of the model which will propogate those changes to the target
    */
@@ -255,23 +222,14 @@ export default Backbone.View.extend({
   },
 
   _getClbOpts() {
-    const { model, el, createdEl, propTarget } = this;
-    const prop = model.get('property');
-    const computed = propTarget.computed || {};
-    const parentRules = propTarget.parentRules || [];
-    const parentRule = find(parentRules, rule => !!rule.getStyle()[prop]);
+    const { model, el, createdEl } = this;
     return {
       el,
       createdEl,
+      property: model,
       props: model.attributes,
-      setProps: (...args) => model.set(...args),
       change: this.__change,
       updateStyle: this.__updateStyle,
-      targets: this.getTargets(), // Used to update selected targets
-      target: this.getFirstTarget(), // Used to update custom UI
-      computed,
-      parentRules, // All parent rules
-      parentRule, // First parent rule containing the same property
     };
   },
 
@@ -295,7 +253,6 @@ export default Backbone.View.extend({
 
     el.className = `${className} ${clsType} ${className}__${property} ${cls}`.trim();
     el.className += full ? ` ${className}--full` : '';
-    // this.updateStatus();
 
     const onRender = this.onRender && this.onRender.bind(this);
     onRender && onRender();

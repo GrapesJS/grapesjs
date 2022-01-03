@@ -51,7 +51,6 @@ export default PropertyView.extend({
         this.model.upValue(url, { partial: !complete });
         complete && am.close();
       },
-      target: this.getTargetModel(),
       types: ['image'],
       accept: 'image/*',
     });
