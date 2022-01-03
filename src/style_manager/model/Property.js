@@ -31,15 +31,19 @@ export default class Property extends Model {
     const { em } = this;
     const sm = em.get('StyleManager');
     const name = this.getName();
-    const value = opts.__clear ? '' : this.__getFullValue(opts);
+    const isClear = opts.__clear;
+    const value = isClear ? '' : this.__getFullValue(opts);
     const parentProp = this.__getParentProp();
-    const applyStyle = !opts.__up && !parentProp;
 
     const to = this.changedAttributes();
     const from = keys(to).reduce((a, i) => {
       a[i] = this.previous(i);
       return a;
     }, {});
+
+    const kProps = keys(this.__getClearProps());
+    const toProps = keys(to);
+    const applyStyle = !opts.__up && !parentProp && (isClear || kProps.some(k => toProps.indexOf(k) >= 0));
 
     sm.__trgEv(sm.events.propertyUpdate, { property: this, from, to, value, opts });
     applyStyle && this.__upTargetsStyle({ [name]: value }, opts);
@@ -184,7 +188,7 @@ export default class Property extends Model {
   }
 
   __getClearProps() {
-    return { value: '', status: '' };
+    return { value: '' };
   }
 
   /**
