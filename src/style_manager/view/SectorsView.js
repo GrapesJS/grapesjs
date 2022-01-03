@@ -1,5 +1,5 @@
 import Backbone from 'backbone';
-import { extend, isString, isArray, debounce } from 'underscore';
+import { extend, isString, isArray } from 'underscore';
 import { isTaggableNode } from 'utils/mixins';
 import { appendAtIndex } from 'utils/dom';
 import SectorView from './SectorView';
@@ -30,13 +30,7 @@ export default Backbone.View.extend({
     this.listenTo(coll, 'add', this.addTo);
     this.listenTo(coll, 'reset', this.render);
     // this.listenTo(em, module.events.target, this.targetUpdated);
-    // // Check local/parent value on input change
-    // this.listenTo(em, 'styleable:change', this.emitUpdate);
   },
-
-  emitUpdate: debounce(function () {
-    this.propTarget.trigger('update');
-  }),
 
   remove() {
     Backbone.View.prototype.remove.apply(this, arguments);
