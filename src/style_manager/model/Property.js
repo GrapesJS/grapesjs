@@ -41,10 +41,9 @@ export default class Property extends Model {
       return a;
     }, {});
 
-    const kProps = keys(this.__getClearProps());
+    const kProps = [...keys(this.__getClearProps()), '__p'];
     const toProps = keys(to);
     const applyStyle = !opts.__up && !parentProp && (isClear || kProps.some(k => toProps.indexOf(k) >= 0));
-
     sm.__trgEv(sm.events.propertyUpdate, { property: this, from, to, value, opts });
     applyStyle && this.__upTargetsStyle({ [name]: value }, opts);
   }
