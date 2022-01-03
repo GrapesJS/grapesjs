@@ -44,12 +44,12 @@ export default {
     {
       name: 'Decorations',
       open: false,
-      properties: ['border-radius-c', 'background-color', 'border-radius', 'border', 'box-shadow', 'background'],
+      properties: ['background-color', 'border-radius', 'border', 'box-shadow', 'background'],
     },
     {
       name: 'Extra',
       open: false,
-      properties: ['transition', 'perspective', 'transform'],
+      properties: ['opacity', 'transition'],
     },
   ],
 

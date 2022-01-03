@@ -9,6 +9,7 @@ export default class PropertyFactory {
     this.typeRadio = 'radio';
     this.typeSelect = 'select';
     this.typeFile = 'file';
+    this.typeSlider = 'slider';
     this.typeComposite = 'composite';
     this.typeStack = 'stack';
     this.unitsSize = ['px', '%', 'em', 'rem', 'vh', 'vw'];
@@ -202,6 +203,9 @@ export default class PropertyFactory {
 
       // File type
       ['background-image', { type: this.typeFile, functionName: 'url', default: 'none' }],
+
+      // Slider type
+      ['opacity', { type: this.typeSlider, default: '1', min: 0, max: 1, step: 0.01 }],
 
       // Select types
       ['display', { type: this.typeSelect, default: 'block', options: this.opstDisplay }],
