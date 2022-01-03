@@ -310,7 +310,7 @@ export default Backbone.View.extend({
    * */
   setValue(value) {
     const { model } = this;
-    const result = isUndefined(value) ? model.getDefaultValue() : value;
+    const result = isUndefined(value) || value === '' ? model.getDefaultValue() : value;
     if (this.update) return this.__update(result);
     this.__setValueInput(result);
   },
@@ -366,17 +366,13 @@ export default Backbone.View.extend({
   },
 
   __updateStyle(value, { complete, partial, ...opts } = {}) {
-    const { em, model } = this;
-    const prop = model.get('property');
+    const { model } = this;
     const final = complete !== false && partial !== true;
 
     if (isObject(value)) {
-      this.getTargets().forEach(target => {
-        target.addStyle(value, { avoidStore: !final });
-        em && em.trigger(evStyleUp, target, prop, opts);
-      });
+      model.__upTargetsStyle(value, { avoidStore: !final });
     } else {
-      model.setValueFromInput(value, final, opts);
+      model.upValue(value, { partial: !final });
     }
   },
 
