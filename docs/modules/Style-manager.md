@@ -348,7 +348,7 @@ grapesjs.init({
 
 
 
-## Components constraints
+## Component constraints
 
 When you define custom components you can also indicate, via `stylable` and `unstylable` props,  which CSS properties should be available for styling. In that case, the Style Manager will only show the available properties. If the sector doesn't contain any available property, it won't be shown.
 

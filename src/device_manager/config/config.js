@@ -7,25 +7,25 @@ export default {
     {
       id: 'desktop',
       name: 'Desktop',
-      width: ''
+      width: '',
     },
     {
       id: 'tablet',
       name: 'Tablet',
-      width: '768px',
-      widthMedia: '992px'
+      width: '770px',
+      widthMedia: '992px',
     },
     {
       id: 'mobileLandscape',
       name: 'Mobile landscape',
       width: '568px',
-      widthMedia: '768px'
+      widthMedia: '768px',
     },
     {
       id: 'mobilePortrait',
       name: 'Mobile portrait',
       width: '320px',
-      widthMedia: '480px'
-    }
-  ]
+      widthMedia: '480px',
+    },
+  ],
 };
