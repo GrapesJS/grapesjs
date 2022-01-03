@@ -1,4 +1,4 @@
-import { isString, isUndefined } from 'underscore';
+import { isString, isUndefined, keys } from 'underscore';
 import Property from './Property';
 
 export const isNumberType = type => type === 'integer' || type === 'number';
@@ -147,11 +147,6 @@ export default class PropertyComposite extends Property {
     }
 
     this.__upTargetsStyle(style, opts);
-
-    // Keep track of the values for the not detached properties,
-    // otherwise clear() will not trigger changes.
-    // TODO: maybe to move this logic in sm.__upProp
-    !this.isDetached() && this.set('value', style[this.getName()], { silent: true });
   }
 
   _up(props, opts = {}) {
@@ -298,6 +293,12 @@ export default class PropertyComposite extends Property {
       const value = values[prop.getId()];
       prop.__getFullValue() !== value && prop.upValue(value, opts);
     });
+
+    // Keep track of the values, otherwise clear() will not trigger changes.
+    const valuesStr = keys(values)
+      .map(k => values[k])
+      .join(' ');
+    this.set('value', valuesStr, { silent: true });
   }
 
   clear() {
