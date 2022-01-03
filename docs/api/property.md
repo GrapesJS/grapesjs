@@ -8,8 +8,8 @@
 
 *   `id` **[String][1]** Property id, eg. `my-property-id`.
 *   `property` **[String][1]** Related CSS property name, eg. `text-align`.
-*   `label` **[String][1]** Label to use in UI, eg. `Text Align`.
 *   `default` **[String][1]** Defaul value of the property.
+*   `label` **[String][1]** Label to use in UI, eg. `Text Align`.
 
 ### getId
 

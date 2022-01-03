@@ -3,7 +3,14 @@ import { isDef } from 'utils/mixins';
 
 /**
  * @typedef PropertySelect
- * @property {Array<Object>} options Array of option definitions, eg `[{ id: '100', label: 'Set 100' }]`
+ * @property {Array<Object>} options Array of option definitions.
+ * \n
+ * ```js
+ * options: [
+ *  { id: '100', label: 'Set 100' },
+ *  { id: '200', label: 'Set 200' },
+ * ]
+ * ```
  */
 export default class PropertySelect extends Property {
   defaults() {

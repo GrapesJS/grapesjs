@@ -11,14 +11,10 @@
 *   `preview` **[Boolean][1]?** Indicate if the layer should display a preview.
 *   `layerSeparator` **([String][2] | [RegExp][3])?** The separator used to split layer values.
 *   `layerJoin` **[String][2]?** Value used to join layer values.
-    ```js
-     layerJoin: (layer, { values }) => {
-       return `A: ${values['prop-a']} B: ${values['prop-b']}`;
-     }
-    ```
 *   `layerLabel` **[Function][4]?** Custom logic for creating layer labels.
     ```js
-     layerLabel: (layer, { values }) => {
+     layerLabel: (layer) => {
+       const values = layer.getValues();
        return `A: ${values['prop-a']} B: ${values['prop-b']}`;
      }
     ```

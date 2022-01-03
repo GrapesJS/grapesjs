@@ -6,8 +6,8 @@ import { capitalize, camelCase } from 'utils/mixins';
  * @typedef Property
  * @property {String} id Property id, eg. `my-property-id`.
  * @property {String} property Related CSS property name, eg. `text-align`.
- * @property {String} label Label to use in UI, eg. `Text Align`.
  * @property {String} default Defaul value of the property.
+ * @property {String} label Label to use in UI, eg. `Text Align`.
  *
  */
 export default class Property extends Model {

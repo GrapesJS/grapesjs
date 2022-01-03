@@ -7,15 +7,31 @@ export const isNumberType = type => type === 'integer' || type === 'number';
  * @typedef PropertyComposite
  * @property {Array<Object>} properties Array of sub properties, eg. `[{ type: 'number', property: 'margin-top' }, ...]`
  * @property {Boolean} [detached=false] Indicate if the final CSS property is splitted (detached: `margin-top: X; margin-right: Y; ...`) or combined (not detached: `margin: X Y ...;`)
- * @property {String|RegExp} [separator=' '] Separator to use to split property values.
- * @property {String} [join=' '] Value used to join property values
- * @property {Function} [fromStyle] Custom logic for getting property values from the target style object, eg.
- * `
+ * @property {String|RegExp} [separator=' '] Value used to split property values, default `" "`.
+ * @property {String} [join=' '] Value used to join property values, default `" "`.
+ * @property {Function} [fromStyle] Custom logic for getting property values from the target style object.
+ * \n
+ * ```js
  *  fromStyle(style) => {
- *    return {};
+ *    const margins = parseMarginShorthand(style.margin);
+ *    return {
+ *      'margin-top': margins.top,
+ *      // ...
+ *    };
  *  }
- * `
+ * ```
  * @property {Function} [toStyle] Custom logic for creating the CSS style object to apply on selected targets.
+ * \n
+ * ```js
+ *  toStyle(values) => {
+ *    const top = values['margin-top'] || 0;
+ *    const right = values['margin-right'] || 0;
+ *    // ...
+ *    return {
+ *      margin: `${top} ${right} ...`,
+ *    };
+ *  }
+ * ```
  */
 export default class PropertyComposite extends Property {
   defaults() {

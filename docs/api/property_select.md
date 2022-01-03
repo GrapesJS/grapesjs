@@ -6,7 +6,13 @@
 
 ### Properties
 
-*   `options` **[Array][1]<[Object][2]>** Array of option definitions, eg `[{ id: '100', label: 'Set 100' }]`
+*   `options` **[Array][1]<[Object][2]>** Array of option definitions.
+    ```js
+    options: [
+     { id: '100', label: 'Set 100' },
+     { id: '200', label: 'Set 200' },
+    ]
+    ```
 
 ### getOptions
 

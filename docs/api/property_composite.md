@@ -8,13 +8,29 @@
 
 *   `properties` **[Array][1]<[Object][2]>** Array of sub properties, eg. `[{ type: 'number', property: 'margin-top' }, ...]`
 *   `detached` **[Boolean][3]?** Indicate if the final CSS property is splitted (detached: `margin-top: X; margin-right: Y; ...`) or combined (not detached: `margin: X Y ...;`)
-*   `separator` **([String][4] | [RegExp][5])?** Separator to use to split property values.
-*   `join` **[String][4]?** Value used to join property values
-*   `fromStyle` **[Function][6]?** Custom logic for getting property values from the target style object, eg.
-    `  fromStyle(style) => {
-       return {};
-     } `
+*   `separator` **([String][4] | [RegExp][5])?** Value used to split property values, default `" "`.
+*   `join` **[String][4]?** Value used to join property values, default `" "`.
+*   `fromStyle` **[Function][6]?** Custom logic for getting property values from the target style object.
+    ```js
+     fromStyle(style) => {
+       const margins = parseMarginShorthand(style.margin);
+       return {
+         'margin-top': margins.top,
+         // ...
+       };
+     }
+    ```
 *   `toStyle` **[Function][6]?** Custom logic for creating the CSS style object to apply on selected targets.
+    ```js
+     toStyle(values) => {
+       const top = values['margin-top'] || 0;
+       const right = values['margin-right'] || 0;
+       // ...
+       return {
+         margin: `${top} ${right} ...`,
+       };
+     }
+    ```
 
 ### getProperties
 
