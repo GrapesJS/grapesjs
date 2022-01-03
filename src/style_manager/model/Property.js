@@ -1,5 +1,5 @@
 import { Model } from 'common';
-import { isUndefined, isString, result, keys } from 'underscore';
+import { isUndefined, isString, isArray, result, keys } from 'underscore';
 import { capitalize, camelCase } from 'utils/mixins';
 
 /**
@@ -163,6 +163,14 @@ export default class Property extends Model {
   upValue(value, opts = {}) {
     const parsed = value === null || value === '' ? this.__getClearProps() : this.__parseValue(value, opts);
     return this._up(parsed, opts);
+  }
+
+  /**
+   * Check if the property is visible
+   * @returns {Boolean}
+   */
+  isVisible() {
+    return !!this.get('visible');
   }
 
   /**
@@ -347,18 +355,18 @@ export default class Property extends Model {
     return this.__parentTarget || null;
   }
 
-  isVisible(target) {
-    const trg = target;
+  __checkVisibility({ target, component, sectors }) {
+    const trg = component || target;
+    if (!trg) return false;
+
     const id = this.getId();
     const property = this.getName();
     const toRequire = this.get('toRequire');
     const requires = this.get('requires');
     const requiresParent = this.get('requiresParent');
-    const sectors = this.sector?.collection || null;
-    const selected = this.em?.getSelected() || null;
-    const unstylable = trg?.get('unstylable');
-    const stylableReq = trg?.get('stylable-require');
-    let stylable = trg?.get('stylable');
+    const unstylable = trg.get('unstylable');
+    const stylableReq = trg.get('stylable-require');
+    let stylable = trg.get('stylable');
 
     // Stylable could also be an array indicating with which property
     // the target could be styled
@@ -391,7 +399,7 @@ export default class Property extends Model {
 
     // Check if the property is available based on parent's property values
     if (requiresParent) {
-      const parent = selected && selected.parent();
+      const parent = component && component.parent();
       const parentEl = parent && parent.getEl();
       if (parentEl) {
         const styles = window.getComputedStyle(parentEl);
@@ -403,7 +411,7 @@ export default class Property extends Model {
       }
     }
 
-    return stylable;
+    return !!stylable;
   }
 }
 

@@ -115,7 +115,7 @@ export default () => {
       if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
       this.builtIn = new PropertyFactory();
       properties = new Properties();
-      sectors = new Sectors([], c);
+      sectors = new Sectors([], { ...c, module: this });
       const model = new Model({ targets: [] });
       this.model = model;
 

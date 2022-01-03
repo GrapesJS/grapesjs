@@ -3,8 +3,11 @@ import Sector from './Sector';
 
 export default class Sectors extends Collection {
   initialize(prop, opts = {}) {
-    this.em = opts.em;
+    const { module, em } = opts;
+    this.em = em;
+    this.module = module;
     this.listenTo(this, 'reset', this.onReset);
+    module && this.listenTo(em, module.events.target, this.__targetUpdated);
   }
 
   model(props, opts = {}) {
@@ -18,11 +21,20 @@ export default class Sectors extends Collection {
   }
 
   __targetUpdated() {
-    const sectors = this.collection;
-    // Enable all
-    sectors.forEach(sector => {});
-    // Check for property
     const component = this.em.getSelected();
     const target = this.module.getLastSelected();
+    const params = { target, component, sectors: this };
+
+    this.forEach(sector => {
+      const props = sector.getProperties();
+      props.forEach(prop => {
+        const isVisible = prop.__checkVisibility(params);
+        prop.set('visible', isVisible);
+      });
+      sector.set(
+        'visible',
+        props.some(p => p.isVisible())
+      );
+    });
   }
 }

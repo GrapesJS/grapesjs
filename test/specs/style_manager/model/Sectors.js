@@ -55,15 +55,14 @@ describe('Sectors', () => {
     });
 
     test('All sectors should exist', () => {
-      console.log(sm.getSectors().map(s => s.id));
       [s1, s2].forEach(sector => expect(sector).toBeTruthy());
     });
 
     test('All sectors and properties are visible by default', () => {
       [s1, s2].forEach(sector => {
-        expect(sector.get('visible')).toBe(true);
+        expect(sector.isVisible()).toBe(true);
         sector.getProperties().forEach(prop => {
-          expect(prop.get('visible')).toBe(true);
+          expect(prop.isVisible()).toBe(true);
         });
       });
     });
@@ -72,15 +71,16 @@ describe('Sectors', () => {
       const stylable = ['width', 'height'];
       const cmp = domc.addComponent({ stylable });
       em.setSelected(cmp);
+      sm.__upSel();
 
-      expect(s1.get('visible')).toBe(true);
-      expect(s2.get('visible')).toBe(false);
+      expect(s1.isVisible()).toBe(true);
+      expect(s2.isVisible()).toBe(false);
       s1.getProperties().forEach(prop => {
         const isVisible = stylable.indexOf(prop.getName()) >= 0;
-        expect(prop.get('visible')).toBe(isVisible);
+        expect(prop.isVisible()).toBe(isVisible);
       });
       s2.getProperties().forEach(prop => {
-        expect(prop.get('visible')).toBe(false);
+        expect(prop.isVisible()).toBe(false);
       });
     });
 
@@ -88,15 +88,16 @@ describe('Sectors', () => {
       const unstylable = ['color'];
       const cmp = domc.addComponent({ unstylable });
       em.setSelected(cmp);
+      sm.__upSel();
 
-      expect(s1.get('visible')).toBe(true);
-      expect(s2.get('visible')).toBe(true);
+      expect(s1.isVisible()).toBe(true);
+      expect(s2.isVisible()).toBe(true);
       s1.getProperties().forEach(prop => {
-        expect(prop.get('visible')).toBe(true);
+        expect(prop.isVisible()).toBe(true);
       });
       s2.getProperties().forEach(prop => {
         const isVisible = unstylable.indexOf(prop.getName()) < 0;
-        expect(prop.get('visible')).toBe(!isVisible);
+        expect(prop.isVisible()).toBe(isVisible);
       });
     });
   });

@@ -87,6 +87,14 @@ export default class Sector extends Model {
   }
 
   /**
+   * Check if the sector is visible
+   * @returns {Boolean}
+   */
+  isVisible() {
+    return !!this.get('visible');
+  }
+
+  /**
    * Get sector properties.
    * @param {Object} [opts={}] Options
    * @param {Boolean} [opts.withValue=false] Get only properties with value
