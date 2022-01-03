@@ -332,36 +332,32 @@ Add new property type
 ### Parameters
 
 *   `id` **[string][24]** Type ID
-*   `definition` **[Object][23]** Definition of the type. Each definition contains
-    `model` (business logic), `view` (presentation logic)
-    and `isType` function which recognize the type of the
-    passed entity
+*   `definition` **[Object][23]** Definition of the type.
 
 ### Examples
 
 ```javascript
 styleManager.addType('my-custom-prop', {
+   // Create UI
    create({ props, change }) {
      const el = document.createElement('div');
      el.innerHTML = '<input type="range" class="my-input" min="10" max="50"/>';
      const inputEl = el.querySelector('.my-input');
-     inputEl.addEventListener('change', event => change({ event })); // change will trigger the emit
-     inputEl.addEventListener('input', event => change({ event, complete: false }));
+     inputEl.addEventListener('change', event => change({ event }));
+     inputEl.addEventListener('input', event => change({ event, partial: true }));
      return el;
    },
-   emit({ props, updateStyle }, { event, complete }) {
+   // Propagate UI changes up to the targets
+   emit({ props, updateStyle }, { event, partial }) {
      const { value } = event.target;
-     const valueRes = value + 'px';
-     // Pass a string value for the exact CSS property or an object containing multiple properties
-     // eg. updateStyle({ [props.property]: valueRes, color: 'red' });
-     updateStyle(valueRes, { complete });
+     updateStyle(`${value}px`, { partial });
    },
+   // Update UI (eg. when the target is changed)
    update({ value, el }) {
      el.querySelector('.my-input').value = parseInt(value, 10);
    },
-   destroy() {
-     // In order to prevent memory leaks, use this method to clean, eventually, created instances, global event listeners, etc.
-   }
+   // Clean the memory from side effects if necessary (eg. global event listeners, etc.)
+   destroy() {}
 })
 ```
 

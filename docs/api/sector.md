@@ -45,6 +45,12 @@ Update Sector open state
 
 *   `value` **[Boolean][2]** 
 
+### isVisible
+
+Check if the sector is visible
+
+Returns **[Boolean][2]** 
+
 ### getProperties
 
 Get sector properties.

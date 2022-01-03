@@ -106,6 +106,12 @@ The change is also propagated to the selected targets (eg. CSS rule).
     *   `opts.partial` **[Boolean][3]** If `true` the update on targets won't be considered complete (not stored in UndoManager) (optional, default `false`)
     *   `opts.noTarget` **[Boolean][3]** If `true` the change won't be propagated to selected targets. (optional, default `false`)
 
+### isVisible
+
+Check if the property is visible
+
+Returns **[Boolean][3]** 
+
 ### clear
 
 Clear the value.
