@@ -44,7 +44,7 @@ export default class PropertyComposite extends Property {
    * @returns {[Property]|null}
    */
   getProperty(id) {
-    return this.get('properties').filter(prop => prop.get('id') === id)[0] || null;
+    return this.get('properties').filter(prop => prop.getId() === id || prop.getName() === id)[0] || null;
   }
 
   /**

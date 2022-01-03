@@ -38,6 +38,10 @@ describe('StyleManager properties logic', () => {
     const propBTest = `${propTest}-right`;
     const propCTest = `${propTest}-bottom`;
     const propDTest = `${propTest}-left`;
+    const propATestId = `${propATest}-sub`;
+    const propBTestId = `${propBTest}-sub`;
+    const propCTestId = `${propCTest}-sub`;
+    const propDTestId = `${propDTest}-sub`;
     let compTypeProp;
     let compTypePropInn;
 
@@ -52,7 +56,7 @@ describe('StyleManager properties logic', () => {
         ],
       });
       compTypeProp = obj.getProperty(sectorTest, propTest);
-      compTypePropInn = compTypeProp.getProperty(propATest);
+      compTypePropInn = compTypeProp.getProperty(propATestId);
       em.setSelected(cmp);
       obj.__upSel();
     });
@@ -80,33 +84,39 @@ describe('StyleManager properties logic', () => {
       rule1.setStyle({ padding: '1px 2px 3px 4px' });
       obj.__upSel();
       [
-        [propATest, '1px'],
-        [propBTest, '2px'],
-        [propCTest, '3px'],
-        [propDTest, '4px'],
+        [propATestId, '1px'],
+        [propBTestId, '2px'],
+        [propCTestId, '3px'],
+        [propDTestId, '4px'],
       ].forEach(item => {
         expect(compTypeProp.getProperty(item[0]).getFullValue()).toBe(item[1]);
       });
     });
 
     test('Split value properly', () => {
-      expect(compTypeProp.__getSplitValue('1px 2px 3px 4px')).toEqual({
+      expect(compTypeProp.__getSplitValue('1px 2px 3px 4px', { byName: true })).toEqual({
         [propATest]: '1px',
         [propBTest]: '2px',
         [propCTest]: '3px',
         [propDTest]: '4px',
       });
+      expect(compTypeProp.__getSplitValue('1px 2px 3px 4px')).toEqual({
+        [propATestId]: '1px',
+        [propBTestId]: '2px',
+        [propCTestId]: '3px',
+        [propDTestId]: '4px',
+      });
       expect(compTypeProp.__getSplitValue('1px 2px')).toEqual({
-        [propATest]: '1px',
-        [propBTest]: '2px',
-        [propCTest]: '1px',
-        [propDTest]: '2px',
+        [propATestId]: '1px',
+        [propBTestId]: '2px',
+        [propCTestId]: '1px',
+        [propDTestId]: '2px',
       });
       expect(compTypeProp.__getSplitValue('100%')).toEqual({
-        [propATest]: '100%',
-        [propBTest]: '100%',
-        [propCTest]: '100%',
-        [propDTest]: '100%',
+        [propATestId]: '100%',
+        [propBTestId]: '100%',
+        [propCTestId]: '100%',
+        [propDTestId]: '100%',
       });
     });
 
@@ -152,11 +162,14 @@ describe('StyleManager properties logic', () => {
 
     test('getPropsFromStyle returns correct values', () => {
       expect(
-        compTypeProp.__getPropsFromStyle({
-          [propTest]: '1px 2px 3px 4px',
-          [propCTest]: '33px',
-          [propBTest]: '22%',
-        })
+        compTypeProp.__getPropsFromStyle(
+          {
+            [propTest]: '1px 2px 3px 4px',
+            [propCTest]: '33px',
+            [propBTest]: '22%',
+          },
+          { byName: true }
+        )
       ).toEqual({
         [propATest]: '1px',
         [propBTest]: '22%',
@@ -166,11 +179,14 @@ describe('StyleManager properties logic', () => {
 
       // Split correctly props in 4 numeric values
       expect(
-        compTypeProp.__getPropsFromStyle({
-          [propTest]: '111px',
-          [propCTest]: '33px',
-          [propBTest]: '22%',
-        })
+        compTypeProp.__getPropsFromStyle(
+          {
+            [propTest]: '111px',
+            [propCTest]: '33px',
+            [propBTest]: '22%',
+          },
+          { byName: true }
+        )
       ).toEqual({
         [propATest]: '111px',
         [propBTest]: '22%',
@@ -180,10 +196,13 @@ describe('StyleManager properties logic', () => {
 
       // Resolves correctly with values from inner properties
       expect(
-        compTypeProp.__getPropsFromStyle({
-          color: 'red',
-          [propCTest]: '33px',
-        })
+        compTypeProp.__getPropsFromStyle(
+          {
+            color: 'red',
+            [propCTest]: '33px',
+          },
+          { byName: true }
+        )
       ).toEqual({
         [propATest]: '',
         [propBTest]: '',
@@ -382,7 +401,7 @@ describe('StyleManager properties logic', () => {
       obj.__upSel();
       compTypeProp.set('toStyle', values => {
         return {
-          [propTest]: `rgba(${values[propATest]}, ${values[propBTest]}, ${values[propDTest]})`,
+          [propTest]: `rgba(${values[propATestId]}, ${values[propBTestId]}, ${values[propDTestId]})`,
         };
       });
       compTypeProp.set('detached', false);
