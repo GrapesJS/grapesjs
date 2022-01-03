@@ -175,26 +175,6 @@ export default Backbone.View.extend({
     this.model.upValue(ev.target.value);
   },
 
-  checkVisibility() {
-    var result = 1;
-
-    // Check if need to hide the property
-    if (this.config.hideNotStylable) {
-      if (!this.isTargetStylable() || !this.isComponentStylable()) {
-        this.hide();
-        result = 0;
-      } else {
-        this.show();
-      }
-      // Sector is not passed to Composite and Stack types
-      if (this.sector) {
-        this.sector.trigger('updateVisibility');
-      }
-    }
-
-    return result;
-  },
-
   /**
    * Returns value from input
    * @return {string}
@@ -223,87 +203,6 @@ export default Backbone.View.extend({
   },
 
   /**
-   * Check if target is stylable with this property
-   * The target could be the Component as the CSS Rule
-   * @return {Boolean}
-   */
-  isTargetStylable(target) {
-    const trg = target || this.getFirstTarget();
-    const model = this.model;
-    const id = model.get('id');
-    const property = model.get('property');
-    const toRequire = model.get('toRequire');
-    const unstylable = trg.get('unstylable');
-    const stylableReq = trg.get('stylable-require');
-    const requires = model.get('requires');
-    const requiresParent = model.get('requiresParent');
-    const sectors = this.sector ? this.sector.collection : null;
-    const selected = this.em ? this.em.getSelected() : null;
-    let stylable = trg.get('stylable');
-
-    // Stylable could also be an array indicating with which property
-    // the target could be styled
-    if (isArray(stylable)) {
-      stylable = stylable.indexOf(property) >= 0;
-    }
-
-    // Check if the property was signed as unstylable
-    if (isArray(unstylable)) {
-      stylable = unstylable.indexOf(property) < 0;
-    }
-
-    // Check if the property is available only if requested
-    if (toRequire) {
-      stylable = !target || (stylableReq && (stylableReq.indexOf(id) >= 0 || stylableReq.indexOf(property) >= 0));
-    }
-
-    // Check if the property is available based on other property's values
-    if (sectors && requires) {
-      const properties = Object.keys(requires);
-      sectors.each(sector => {
-        sector.get('properties').each(model => {
-          if (includes(properties, model.id)) {
-            const values = requires[model.id];
-            stylable = stylable && includes(values, model.get('value'));
-          }
-        });
-      });
-    }
-
-    // Check if the property is available based on parent's property values
-    if (requiresParent) {
-      const parent = selected && selected.parent();
-      const parentEl = parent && parent.getEl();
-      if (parentEl) {
-        const styles = window.getComputedStyle(parentEl);
-        each(requiresParent, (values, property) => {
-          stylable = stylable && styles[property] && includes(values, styles[property]);
-        });
-      } else {
-        stylable = false;
-      }
-    }
-
-    return stylable;
-  },
-
-  /**
-   * Check if the selected component is stylable with this property
-   * The target could be the Component as the CSS Rule
-   * @return {Boolean}
-   */
-  isComponentStylable() {
-    const em = this.em;
-    const component = em && em.getSelected();
-
-    if (!component) {
-      return true;
-    }
-
-    return this.isTargetStylable(component);
-  },
-
-  /**
    * Update the element input.
    * Usually the value is a result of `model.getFullValue()`
    * @param {String} value The value from the model
@@ -329,15 +228,7 @@ export default Backbone.View.extend({
   },
 
   updateVisibility() {
-    this.el.style.display = this.model.get('visible') ? '' : 'none';
-  },
-
-  show() {
-    this.model.set('visible', 1);
-  },
-
-  hide() {
-    this.model.set('visible', 0);
+    this.el.style.display = this.model.isVisible() ? '' : 'none';
   },
 
   clearCached() {

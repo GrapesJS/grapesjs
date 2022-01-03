@@ -30,7 +30,7 @@ export default class SectorView extends View {
     this.propTarget = o.propTarget || {};
     const model = this.model;
     this.listenTo(model, 'change:open', this.updateOpen);
-    this.listenTo(model, 'updateVisibility', this.updateVisibility);
+    this.listenTo(model, 'change:visible', this.updateVisibility);
     this.listenTo(model, 'destroy remove', this.remove);
   }
 
@@ -38,13 +38,7 @@ export default class SectorView extends View {
    * If all properties are hidden this will hide the sector
    */
   updateVisibility() {
-    var show;
-    this.model.get('properties').each(prop => {
-      if (prop.get('visible')) {
-        show = 1;
-      }
-    });
-    this.el.style.display = show ? '' : 'none';
+    this.el.style.display = this.model.isVisible() ? '' : 'none';
   }
 
   /**
