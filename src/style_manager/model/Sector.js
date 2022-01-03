@@ -15,6 +15,7 @@ export default class Sector extends Model {
       id: '',
       name: '',
       open: true,
+      visible: true,
       buildProps: '',
       extendBuilded: 1,
       properties: [],

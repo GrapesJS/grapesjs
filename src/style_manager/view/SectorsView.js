@@ -192,11 +192,9 @@ export default Backbone.View.extend({
   },
 
   render() {
-    const frag = document.createDocumentFragment();
-    const $el = this.$el;
-    const pfx = this.pfx;
-    const ppfx = this.ppfx;
+    const { $el, pfx, ppfx } = this;
     $el.empty();
+    const frag = document.createDocumentFragment();
     this.collection.each(model => this.addToCollection(model, frag));
     $el.append(frag);
     $el.addClass(`${pfx}sectors ${ppfx}one-bg ${ppfx}two-color`);

@@ -16,4 +16,13 @@ export default class Sectors extends Collection {
     const prev = opts.previousModels || [];
     prev.forEach(sect => sect.get('properties').reset());
   }
+
+  __targetUpdated() {
+    const sectors = this.collection;
+    // Enable all
+    sectors.forEach(sector => {});
+    // Check for property
+    const component = this.em.getSelected();
+    const target = this.module.getLastSelected();
+  }
 }

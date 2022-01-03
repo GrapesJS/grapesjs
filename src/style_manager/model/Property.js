@@ -346,6 +346,65 @@ export default class Property extends Model {
   getParentTarget() {
     return this.__parentTarget || null;
   }
+
+  isVisible(target) {
+    const trg = target;
+    const id = this.getId();
+    const property = this.getName();
+    const toRequire = this.get('toRequire');
+    const requires = this.get('requires');
+    const requiresParent = this.get('requiresParent');
+    const sectors = this.sector?.collection || null;
+    const selected = this.em?.getSelected() || null;
+    const unstylable = trg?.get('unstylable');
+    const stylableReq = trg?.get('stylable-require');
+    let stylable = trg?.get('stylable');
+
+    // Stylable could also be an array indicating with which property
+    // the target could be styled
+    if (isArray(stylable)) {
+      stylable = stylable.indexOf(property) >= 0;
+    }
+
+    // Check if the property was signed as unstylable
+    if (isArray(unstylable)) {
+      stylable = unstylable.indexOf(property) < 0;
+    }
+
+    // Check if the property is available only if requested
+    if (toRequire) {
+      stylable = !target || (stylableReq && (stylableReq.indexOf(id) >= 0 || stylableReq.indexOf(property) >= 0));
+    }
+
+    // Check if the property is available based on other property's values
+    if (sectors && requires) {
+      const properties = keys(requires);
+      sectors.forEach(sector => {
+        sector.getProperties().forEach(model => {
+          if (includes(properties, model.id)) {
+            const values = requires[model.id];
+            stylable = stylable && includes(values, model.get('value'));
+          }
+        });
+      });
+    }
+
+    // Check if the property is available based on parent's property values
+    if (requiresParent) {
+      const parent = selected && selected.parent();
+      const parentEl = parent && parent.getEl();
+      if (parentEl) {
+        const styles = window.getComputedStyle(parentEl);
+        each(requiresParent, (values, property) => {
+          stylable = stylable && styles[property] && includes(values, styles[property]);
+        });
+      } else {
+        stylable = false;
+      }
+    }
+
+    return stylable;
+  }
 }
 
 Property.callParentInit = function (property, ctx, props, opts = {}) {

@@ -1,5 +1,4 @@
 import Sector from 'style_manager/model/Sector';
-import Sectors from 'style_manager/model/Sectors';
 import Property from 'style_manager/model/Property';
 import PropertyNumber from 'style_manager/model/PropertyNumber';
 import Properties from 'style_manager/model/Properties';
@@ -101,22 +100,6 @@ describe('Sector', () => {
     var propTop = propProps.at(0);
     expect(propTop.get('name')).toEqual('Top');
     expect(propTop.get('type')).toEqual('integer');
-  });
-});
-
-describe('Sectors', () => {
-  var obj;
-
-  beforeEach(() => {
-    obj = new Sectors();
-  });
-
-  afterEach(() => {
-    obj = null;
-  });
-
-  test('Object exists', () => {
-    expect(obj).toBeTruthy();
   });
 });
 
