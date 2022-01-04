@@ -341,6 +341,7 @@ export default () => {
       const lastTargetParents = this.getParentRules(lastTarget, em.getState());
       let stateTarget = this.__getStateTarget();
 
+      // Handle the creation and update of the state rule, if enabled.
       em.skip(() => {
         if (em.getState() && lastTarget?.getState?.()) {
           const style = lastTarget.getStyle();
