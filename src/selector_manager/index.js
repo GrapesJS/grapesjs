@@ -111,7 +111,7 @@ export default () => {
       remove: evRemove,
       removeBefore: evRemoveBefore,
       state: evState,
-      custom: evCustom
+      custom: evCustom,
     },
 
     /**
@@ -138,12 +138,10 @@ export default () => {
       this.model = new Model({ cFirst: config.componentFirst, _undo: true });
       this.__initListen({
         collections: [this.states, this.selected],
-        propagate: [{ entity: this.states, event: this.events.state }]
+        propagate: [{ entity: this.states, event: this.events.state }],
       });
-      em.on('change:state', (m, value) => em.trigger('selector:state', value));
-      this.model.on('change:cFirst', (m, value) =>
-        em.trigger('selector:type', value)
-      );
+      em.on('change:state', (m, value) => em.trigger(evState, value));
+      this.model.on('change:cFirst', (m, value) => em.trigger('selector:type', value));
       const listenTo =
         'component:toggled component:update:classes change:device styleManager:update selector:state selector:type';
       this.model.listenTo(em, listenTo, () => this.__update());
@@ -151,7 +149,7 @@ export default () => {
       return this;
     },
 
-    __update: debounce(function() {
+    __update: debounce(function () {
       this.__trgCustom();
     }),
 
@@ -164,7 +162,7 @@ export default () => {
       return {
         states: this.getStates(),
         selected: this.getSelected(),
-        container
+        container,
       };
     },
 
@@ -188,11 +186,7 @@ export default () => {
       const res = toSelect
         .filter(i => i)
         .map(sel =>
-          isComponent(sel)
-            ? sel
-            : isRule(sel) && !sel.get('selectorsAdd')
-            ? sel
-            : sel.getSelectorsString()
+          isComponent(sel) ? sel : isRule(sel) && !sel.get('selectorsAdd') ? sel : sel.getSelectorsString()
         );
       selTags && selTags.componentChanged({ targets: res });
       return this;
@@ -221,9 +215,7 @@ export default () => {
       const cname = props.name;
       const config = this.getConfig();
       const all = this.getAll();
-      const selector = cname
-        ? this.get(cname, props.type)
-        : all.where(props)[0];
+      const selector = cname ? this.get(cname, props.type) : all.where(props)[0];
 
       if (!selector) {
         return all.add(props, { ...cOpts, config });
@@ -301,12 +293,8 @@ export default () => {
       // Keep support for arrays but avoid it in docs
       if (isArray(name)) {
         const result = [];
-        const selectors = name
-          .map(item => this.getSelector(item))
-          .filter(item => item);
-        selectors.forEach(
-          item => result.indexOf(item) < 0 && result.push(item)
-        );
+        const selectors = name.map(item => this.getSelector(item)).filter(item => item);
+        selectors.forEach(item => result.indexOf(item) < 0 && result.push(item));
         return result;
       } else {
         return this.getSelector(name, type) || null;
@@ -402,9 +390,7 @@ export default () => {
      */
     removeSelected(selector) {
       this.em.getSelectedAll().forEach(trg => {
-        !selector.get('protected') &&
-          trg &&
-          trg.getSelectors().remove(selector);
+        !selector.get('protected') && trg && trg.getSelectors().remove(selector);
       });
     },
 
@@ -471,7 +457,7 @@ export default () => {
         el,
         collection: this.selected,
         module: this,
-        config
+        config,
       });
 
       return this.selectorTags.render().el;
@@ -495,21 +481,16 @@ export default () => {
     },
 
     __getCommonSelectors(components, opts = {}) {
-      const selectors = components
-        .map(cmp => cmp.getSelectors && cmp.getSelectors().getValid(opts))
-        .filter(Boolean);
+      const selectors = components.map(cmp => cmp.getSelectors && cmp.getSelectors().getValid(opts)).filter(Boolean);
       return this.__common(...selectors);
     },
 
     __common(...args) {
       if (!args.length) return [];
       if (args.length === 1) return args[0];
-      if (args.length === 2)
-        return args[0].filter(item => args[1].indexOf(item) >= 0);
+      if (args.length === 2) return args[0].filter(item => args[1].indexOf(item) >= 0);
 
-      return args
-        .slice(1)
-        .reduce((acc, item) => this.__common(acc, item), args[0]);
-    }
+      return args.slice(1).reduce((acc, item) => this.__common(acc, item), args[0]);
+    },
   };
 };

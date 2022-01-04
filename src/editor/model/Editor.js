@@ -1,12 +1,4 @@
-import {
-  isUndefined,
-  isFunction,
-  isArray,
-  contains,
-  toArray,
-  keys,
-  bindAll
-} from 'underscore';
+import { isUndefined, isFunction, isArray, contains, toArray, keys, bindAll } from 'underscore';
 import Backbone from 'backbone';
 import $ from 'utils/cash-dom';
 import Extender from 'utils/extender';
@@ -37,7 +29,7 @@ const deps = [
   require('navigator'),
   require('canvas'),
   require('commands'),
-  require('block_manager')
+  require('block_manager'),
 ];
 
 let timedInterval;
@@ -45,14 +37,14 @@ let updateItr;
 
 Extender({
   Backbone: Backbone,
-  $: Backbone.$
+  $: Backbone.$,
 });
 
 const logs = {
   debug: console.log,
   info: console.info,
   warning: console.warn,
-  error: console.error
+  error: console.error,
 };
 
 export default Backbone.Model.extend({
@@ -69,7 +61,7 @@ export default Backbone.Model.extend({
       modules: [],
       toLoad: [],
       opened: {},
-      device: ''
+      device: '',
     };
   },
 
@@ -103,26 +95,18 @@ export default Backbone.Model.extend({
     toLog.forEach(e => this.listenLog(e));
 
     // Deprecations
-    [{ from: 'change:selectedComponent', to: 'component:toggled' }].forEach(
-      event => {
-        const eventFrom = event.from;
-        const eventTo = event.to;
-        this.listenTo(this, eventFrom, (...args) => {
-          this.trigger(eventTo, ...args);
-          this.logWarning(
-            `The event '${eventFrom}' is deprecated, replace it with '${eventTo}'`
-          );
-        });
-      }
-    );
+    [{ from: 'change:selectedComponent', to: 'component:toggled' }].forEach(event => {
+      const eventFrom = event.from;
+      const eventTo = event.to;
+      this.listenTo(this, eventFrom, (...args) => {
+        this.trigger(eventTo, ...args);
+        this.logWarning(`The event '${eventFrom}' is deprecated, replace it with '${eventTo}'`);
+      });
+    });
   },
 
   _checkReady() {
-    if (
-      this.get('readyLoad') &&
-      this.get('readyCanvas') &&
-      !this.get('ready')
-    ) {
+    if (this.get('readyLoad') && this.get('readyCanvas') && !this.get('ready')) {
       this.set('ready', true);
     }
   },
@@ -206,9 +190,7 @@ export default Backbone.Model.extend({
     const Module = moduleName.default || moduleName;
     const Mod = new Module();
     const name = Mod.name.charAt(0).toLowerCase() + Mod.name.slice(1);
-    const cfgParent = !isUndefined(config[name])
-      ? config[name]
-      : config[Mod.name];
+    const cfgParent = !isUndefined(config[name]) ? config[name] : config[Mod.name];
     const cfg = cfgParent === true ? {} : cfgParent || {};
     const sm = this.get('StorageManager');
     cfg.pStylePrefix = config.pStylePrefix || '';
@@ -262,7 +244,7 @@ export default Backbone.Model.extend({
    * */
   handleUpdates(model, val, opt = {}) {
     // Component has been added temporarily - do not update storage or record changes
-    if (opt.temporary || opt.noCount || opt.avoidStore || !this.get('ready')) {
+    if (this.__skip || opt.temporary || opt.noCount || opt.avoidStore || !this.get('ready')) {
       return;
     }
 
@@ -538,7 +520,7 @@ export default Backbone.Model.extend({
           exportWrapper,
           wrapperIsBody,
           ...optsHtml,
-          ...opts
+          ...opts,
         })
       : '';
     html += js ? `<script>${js}</script>` : '';
@@ -555,9 +537,7 @@ export default Backbone.Model.extend({
     const config = this.config;
     const { optsCss, wrapperIsBody } = config;
     const avoidProt = opts.avoidProtected;
-    const keepUnusedStyles = !isUndefined(opts.keepUnusedStyles)
-      ? opts.keepUnusedStyles
-      : config.keepUnusedStyles;
+    const keepUnusedStyles = !isUndefined(opts.keepUnusedStyles) ? opts.keepUnusedStyles : config.keepUnusedStyles;
     const cssc = this.get('CssComposer');
     const wrp = opts.component || this.get('DomComponents').getComponent();
     const protCss = !avoidProt ? config.protectedCss : '';
@@ -568,7 +548,7 @@ export default Backbone.Model.extend({
         wrapperIsBody,
         keepUnusedStyles,
         ...optsCss,
-        ...opts
+        ...opts,
       });
     return wrp ? (opts.json ? css : protCss + css) : '';
   },
@@ -580,11 +560,7 @@ export default Backbone.Model.extend({
    */
   getJs(opts = {}) {
     var wrp = opts.component || this.get('DomComponents').getWrapper();
-    return wrp
-      ? this.get('CodeManager')
-          .getCode(wrp, 'js')
-          .trim()
-      : '';
+    return wrp ? this.get('CodeManager').getCode(wrp, 'js').trim() : '';
   },
 
   /**
@@ -810,14 +786,9 @@ export default Backbone.Model.extend({
     this.stopListening();
     this.clear({ silent: true });
     this.destroyed = 1;
-    ['config', 'view', '_previousAttributes', '_events', '_listeners'].forEach(
-      i => (this[i] = {})
-    );
+    ['config', 'view', '_previousAttributes', '_events', '_listeners'].forEach(i => (this[i] = {}));
     editors.splice(editors.indexOf(editor), 1);
-    hasWin() &&
-      $(config.el)
-        .empty()
-        .attr(this.attrsOrig);
+    hasWin() && $(config.el).empty().attr(this.attrsOrig);
   },
 
   getEditing() {
@@ -874,8 +845,20 @@ export default Backbone.Model.extend({
       chooseText: 'Ok',
       cancelText: '⨯',
       ...opts,
-      ...colorPicker
+      ...colorPicker,
     });
+  },
+
+  /**
+   * Execute actions without triggering the storage and undo manager.
+   * @param  {Function} clb
+   * @private
+   */
+  skip(clb) {
+    this.__skip = true;
+    const um = this.get('UndoManager');
+    um ? um.skip(clb) : clb();
+    this.__skip = false;
   },
 
   /**
@@ -898,5 +881,5 @@ export default Backbone.Model.extend({
     } else {
       el[varName][name] = value;
     }
-  }
+  },
 });

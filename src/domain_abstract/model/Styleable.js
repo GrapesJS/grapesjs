@@ -44,6 +44,7 @@ export default {
     const diff = shallowDiff(propOrig, propNew);
     keys(diff).forEach(pr => {
       const em = this.em;
+      if (opts.noEvent) return;
       this.trigger(`change:style:${pr}`);
       if (em) {
         em.trigger(`styleable:change`, this, pr, opts);
@@ -65,7 +66,7 @@ export default {
   addStyle(prop, value = '', opts = {}) {
     if (typeof prop == 'string') {
       prop = {
-        prop: value
+        prop: value,
       };
     } else {
       opts = value || {};
@@ -110,9 +111,7 @@ export default {
   },
 
   getSelectorsString(opts) {
-    return this.selectorsToString
-      ? this.selectorsToString(opts)
-      : this.getSelectors().getFullString();
+    return this.selectorsToString ? this.selectorsToString(opts) : this.getSelectors().getFullString();
   },
 
   _validate(attr, opts) {
@@ -133,5 +132,5 @@ export default {
     }
 
     return true;
-  }
+  },
 };

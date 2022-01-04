@@ -225,14 +225,10 @@ export default () => {
       if (isString(selectors)) {
         const sm = em.get('SelectorManager');
         const singleSel = selectors.split(',')[0].trim();
-        const node = em
-          .get('Parser')
-          .parserCss.checkNode({ selectors: singleSel })[0];
+        const node = em.get('Parser').parserCss.checkNode({ selectors: singleSel })[0];
         slc = sm.get(node.selectors);
       }
-      return (
-        rules.find(rule => rule.compare(slc, state, width, ruleProps)) || null
-      );
+      return rules.find(rule => rule.compare(slc, state, width, ruleProps)) || null;
     },
 
     getAll() {
@@ -279,9 +275,7 @@ export default () => {
         isObject(props) && model.set(props, opts);
 
         if (updateStyle) {
-          let styleUpdate = opts.extend
-            ? { ...model.get('style'), ...style }
-            : style;
+          let styleUpdate = opts.extend ? { ...model.get('style'), ...style } : style;
           model.set('style', styleUpdate, opts);
         }
 
@@ -330,14 +324,14 @@ export default () => {
       const { atRuleType, atRuleParams } = opts;
       const node = em.get('Parser').parserCss.checkNode({
         selectors,
-        style
+        style,
       })[0];
       const { state, selectorsAdd } = node;
       const sm = em.get('SelectorManager');
       const selector = sm.add(node.selectors);
       const rule = this.add(selector, state, atRuleParams, {
         selectorsAdd,
-        atRule: atRuleType
+        atRule: atRuleType,
       });
       rule.setStyle(style, opts);
       return rule;
@@ -368,7 +362,7 @@ export default () => {
         selector &&
         this.get(selector, state, atRuleParams, {
           selectorsAdd,
-          atRule: atRuleType
+          atRule: atRuleType,
         })
       );
     },
@@ -388,12 +382,8 @@ export default () => {
     getRules(selector) {
       const rules = this.getAll();
       if (!selector) return [...rules.models];
-      const sels = isString(selector)
-        ? selector.split(',').map(s => s.trim())
-        : selector;
-      const result = rules.filter(
-        r => sels.indexOf(r.getSelectors().getFullString()) >= 0
-      );
+      const sels = isString(selector) ? selector.split(',').map(s => s.trim()) : selector;
+      const result = rules.filter(r => sels.indexOf(r.getSelectors().getFullString()) >= 0);
       return result;
     },
 
@@ -492,9 +482,9 @@ export default () => {
      * // Remove by selector
      * css.remove('.my-cls-2');
      */
-    remove(rule) {
+    remove(rule, opts) {
       const toRemove = isString(rule) ? this.getRules(rule) : rule;
-      const result = this.getAll().remove(toRemove);
+      const result = this.getAll().remove(toRemove, opts);
       return isArray(result) ? result : [result];
     },
 
@@ -531,7 +521,7 @@ export default () => {
       rulesView && rulesView.remove();
       rulesView = new CssRulesView({
         collection: rules,
-        config: c
+        config: c,
       });
       return rulesView.render().el;
     },
@@ -542,6 +532,6 @@ export default () => {
       rulesView && rulesView.remove();
       [em, rules, rulesView].forEach(i => (i = null));
       c = {};
-    }
+    },
   };
 };

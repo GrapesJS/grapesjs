@@ -339,7 +339,23 @@ export default () => {
       targets = targets.map(t => this.getModelToStyle(t));
       const lastTarget = targets.slice().reverse()[0];
       const lastTargetParents = this.getParentRules(lastTarget, em.getState());
-      this.model.set({ targets, lastTarget, lastTargetParents });
+      let stateTarget = this.__getStateTarget();
+
+      em.skip(() => {
+        if (em.getState() && lastTarget?.getState?.()) {
+          const style = lastTarget.getStyle();
+          if (!stateTarget) {
+            stateTarget = cssc.getAll().add({ selectors: 'gjs-selected', style, important: true });
+          } else {
+            stateTarget.setStyle(style);
+          }
+        } else if (stateTarget) {
+          cssc.remove(stateTarget);
+          stateTarget = null;
+        }
+      });
+
+      this.model.set({ targets, lastTarget, lastTargetParents, stateTarget });
       this.__upProps(opts);
 
       return targets;
@@ -370,6 +386,10 @@ export default () => {
       return this.model.get('lastTargetParents') || [];
     },
 
+    __getStateTarget() {
+      return this.model.get('stateTarget') || null;
+    },
+
     /**
      * Update selected targets with a custom style.
      * @param {Object} style Style object
@@ -379,6 +399,11 @@ export default () => {
      */
     addStyleTargets(style, opts) {
       this.getSelectedAll().map(t => t.addStyle(style, opts));
+
+      // Update state rule
+      const target = this.getSelected();
+      const targetState = this.__getStateTarget();
+      target && targetState?.setStyle(target.getStyle(), opts);
     },
 
     /**

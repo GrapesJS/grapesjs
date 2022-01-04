@@ -34,7 +34,7 @@ export default () => {
   let beforeCache;
   const configDef = {
     maximumStackLength: 500,
-    trackSelection: 1
+    trackSelection: 1,
   };
   const hasSkip = opts => opts.avoidStore || opts.noUndo;
   const getChanged = obj => Object.keys(obj.changedAttributes());
@@ -59,13 +59,11 @@ export default () => {
           if (hasUndo) {
             const undoExc = object.get('_undoexc');
             if (isArray(undoExc)) {
-              if (getChanged(object).some(chn => undoExc.indexOf(chn) >= 0))
-                return false;
+              if (getChanged(object).some(chn => undoExc.indexOf(chn) >= 0)) return false;
             }
             if (isBoolean(hasUndo)) return true;
             if (isArray(hasUndo)) {
-              if (getChanged(object).some(chn => hasUndo.indexOf(chn) >= 0))
-                return true;
+              if (getChanged(object).some(chn => hasUndo.indexOf(chn) >= 0)) return true;
             }
           }
           return false;
@@ -84,7 +82,7 @@ export default () => {
             const result = {
               object,
               before: beforeCache,
-              after
+              after,
             };
             beforeCache = null;
             // Skip undo in case of empty changes
@@ -92,7 +90,7 @@ export default () => {
 
             return result;
           }
-        }
+        },
       });
       um.changeUndoType('add', {
         on: (model, collection, options = {}) => {
@@ -101,9 +99,9 @@ export default () => {
             object: collection,
             before: undefined,
             after: model,
-            options: { ...options, fromUndo }
+            options: { ...options, fromUndo },
           };
-        }
+        },
       });
       um.changeUndoType('remove', {
         on: (model, collection, options = {}) => {
@@ -112,9 +110,9 @@ export default () => {
             object: collection,
             before: model,
             after: undefined,
-            options: { ...options, fromUndo }
+            options: { ...options, fromUndo },
           };
-        }
+        },
       });
 
       um.on('undo redo', () => {
@@ -309,6 +307,12 @@ export default () => {
       return result;
     },
 
+    skip(clb) {
+      this.stop();
+      clb();
+      this.start();
+    },
+
     __getStackRead() {
       const result = {};
       const createItem = item => {
@@ -317,7 +321,7 @@ export default () => {
           type,
           after,
           before,
-          object
+          object,
         };
       };
       this.getStack().forEach(item => {
@@ -352,6 +356,6 @@ export default () => {
       this.clear().removeAll();
       [em, um, config, beforeCache].forEach(i => (i = {}));
       this.em = {};
-    }
+    },
   };
 };
