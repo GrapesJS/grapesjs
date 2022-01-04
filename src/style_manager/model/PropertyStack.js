@@ -285,7 +285,7 @@ export default class PropertyStack extends PropertyComposite {
     values &&
       this.getProperties().forEach(prop => {
         const value = values[prop.getId()];
-        !isUndefined(value) && prop.upValue(value, { ...opts, __up: true });
+        prop.__getFullValue() !== value && prop.upValue(value, { ...opts, __up: true });
       });
 
     !noEvent && sm.__trgEv(sm.events.layerSelect, { property: this });

@@ -76,7 +76,7 @@ describe('StyleManager properties logic', () => {
     });
 
     test('Rule selected', () => {
-      expect(obj.getLastSelected()).toBe(rule1);
+      expect(obj.getSelected()).toBe(rule1);
     });
 
     test('Properties correctly reflect on rule update', () => {
@@ -293,7 +293,7 @@ describe('StyleManager properties logic', () => {
       `)[0];
       dv.select('tablet');
       obj.__upSel();
-      expect(obj.getLastSelected()).toBe(rule2);
+      expect(obj.getSelected()).toBe(rule2);
       expect(obj.getSelectedParents()).toEqual([rule1]);
 
       expect(compTypeProp.hasValue()).toBe(true);
@@ -322,7 +322,7 @@ describe('StyleManager properties logic', () => {
       `)[0];
       dv.select('tablet');
       obj.__upSel();
-      expect(obj.getLastSelected()).toBe(rule2);
+      expect(obj.getSelected()).toBe(rule2);
       expect(compTypeProp.hasValue({ noParent: true })).toBe(true);
       [
         [propATest, '11px'],
@@ -336,7 +336,7 @@ describe('StyleManager properties logic', () => {
 
       dv.select('desktop');
       obj.__upSel();
-      expect(obj.getLastSelected()).toBe(rule1);
+      expect(obj.getSelected()).toBe(rule1);
       expect(obj.getSelectedParents()).toEqual([]);
       [
         [propATest, ''],
@@ -718,7 +718,7 @@ describe('StyleManager properties logic', () => {
       `)[0];
       dv.select('tablet');
       obj.__upSel();
-      expect(obj.getLastSelected()).toBe(rule2);
+      expect(obj.getSelected()).toBe(rule2);
       expect(obj.getSelectedParents()).toEqual([rule1]);
 
       expect(compTypeProp.hasValue()).toBe(true);
