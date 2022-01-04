@@ -38,7 +38,7 @@
  * * [removeProperty](#removeproperty)
  * * [select](#select)
  * * [getSelected](#getselected)
- * * [getLastSelected](#getlastselected)
+ * * [getSelectedAll](#getselectedall)
  * * [getSelectedParents](#getselectedparents)
  * * [addStyleTargets](#addstyletargets)
  * * [getBuiltIn](#getbuiltin)
@@ -136,7 +136,7 @@ export default () => {
       model.listenTo(em, evLayerSelect, trgCustom);
 
       // Other listeners
-      model.on('change:lastTarget', () => em.trigger(evTarget, this.getLastSelected()));
+      model.on('change:lastTarget', () => em.trigger(evTarget, this.getSelected()));
 
       return this;
     },
@@ -346,20 +346,20 @@ export default () => {
     },
 
     /**
-     * Get the array of selected targets.
-     * @returns {Array<[Component]|[CSSRule]>}
-     */
-    getSelected() {
-      return this.model.get('targets');
-    },
-
-    /**
      * Get the last selected target.
      * By default, the Style Manager shows styles of the last selected target.
      * @returns {[Component]|[CSSRule]|null}
      */
-    getLastSelected() {
+    getSelected() {
       return this.model.get('lastTarget') || null;
+    },
+
+    /**
+     * Get the array of selected targets.
+     * @returns {Array<[Component]|[CSSRule]>}
+     */
+    getSelectedAll() {
+      return this.model.get('targets');
     },
 
     /**
@@ -378,7 +378,7 @@ export default () => {
      * styleManager.addStyleTargets({ color: 'red' });
      */
     addStyleTargets(style, opts) {
-      this.getSelected().map(t => t.addStyle(style, opts));
+      this.getSelectedAll().map(t => t.addStyle(style, opts));
     },
 
     /**
@@ -624,7 +624,7 @@ export default () => {
     },
 
     __upProps(opts) {
-      const lastTarget = this.getLastSelected();
+      const lastTarget = this.getSelected();
       // if (!lastTarget || !this.getConfig().custom) return;
       if (!lastTarget) return;
 

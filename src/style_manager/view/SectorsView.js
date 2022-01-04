@@ -65,7 +65,7 @@ export default Backbone.View.extend({
     const cmp = em.getSelected();
     const cmps = em.getSelectedAll();
     const mdToClear = trg && !!trg.toHTML ? trg : cmp;
-    const target = sm.getLastSelected();
+    const target = sm.getSelected();
 
     // Clean components
     mdToClear && this.toggleStateCls([mdToClear]);

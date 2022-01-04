@@ -66,7 +66,7 @@ export default {
     const { sender, sm } = this;
     if ((sender && sender.get && !sender.get('active')) || !sm) return;
 
-    if (sm.getLastSelected()) {
+    if (sm.getSelected()) {
       this.$cn2?.show();
       this.$header?.hide();
     } else {

@@ -22,7 +22,7 @@ export default class Sectors extends Collection {
 
   __targetUpdated() {
     const component = this.em.getSelected();
-    const target = this.module.getLastSelected();
+    const target = this.module.getSelected();
     const params = { target, component, sectors: this };
 
     this.forEach(sector => {
