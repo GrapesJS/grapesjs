@@ -210,12 +210,15 @@ export default () => {
 
     /**
      * Get all sectors.
-     * @returns {Collection<[Sector]>} Collection of sectors
+     * @param {Object} [opts={}] Options
+     * @param {Boolean} [opts.visible] Returns only visible sectors
+     * @returns {Array<[Sector]>}
      * @example
      * const sectors = styleManager.getSectors();
      * */
     getSectors(opts = {}) {
-      return sectors && sectors.models ? (opts.array ? [...sectors.models] : sectors) : [];
+      const res = sectors && sectors.models ? (opts.array ? [...sectors.models] : sectors) : [];
+      return opts.visible ? res.filter(s => s.isVisible()) : res;
     },
 
     /**

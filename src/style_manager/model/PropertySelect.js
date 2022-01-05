@@ -1,5 +1,6 @@
 import Property from './Property';
 import { isDef } from 'utils/mixins';
+import { isString } from 'underscore';
 
 /**
  * @typedef PropertySelect
@@ -73,18 +74,18 @@ export default class PropertySelect extends Property {
 
   /**
    * Get option label.
-   * @param {String} id Option id
+   * @param {String|Object} id Option id or the option object
    * @param {Object} [opts={}] Options
    * @param {Boolean} [opts.locale=true] Use the locale string from i18n module
    * @returns {String} Option label
    */
   getOptionLabel(id, opts = {}) {
     const { locale = true } = opts;
-    const options = this.getOptions();
-    const option = options.filter(o => this.getOptionId(o) === id)[0] || {};
-    const label = option.label || option.name || id;
+    const option = (isString(id) ? this.getOption(id) : id) || {};
+    const optId = this.getOptionId(option);
+    const label = option.label || option.name || optId;
     const propId = this.getId();
-    return (locale && this.em?.t(`styleManager.options.${propId}.${id}`)) || label;
+    return (locale && this.em?.t(`styleManager.options.${propId}.${optId}`)) || label;
   }
 
   initialize(...args) {
