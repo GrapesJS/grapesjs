@@ -483,7 +483,9 @@ The default types should cover most of the common styling properties but in case
 
 In order to add a new type you have to use the `styleManager.addType` API call and indicate all the necessary methods to make it work properly with the editor. Here an example of implementation by using the native `range` input.
 
-```js
+<demo-viewer value="y1mxv6p5" height="500" darkcode/>
+
+<!-- ```js
 const customType = (editor) => {
   editor.StyleManager.addType('my-custom-prop', {
     // Create UI
@@ -530,7 +532,7 @@ grapesjs.init({
     ],
   },
 })
-```
+``` -->
 
 ### Custom Style Manager
 
