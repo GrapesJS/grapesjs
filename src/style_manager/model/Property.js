@@ -207,6 +207,14 @@ export default class Property extends Model {
     return this.__getParentProp() || null;
   }
 
+  /**
+   * Indicates if the property is full-width in UI.
+   * @returns {Boolean}
+   */
+  isFull() {
+    return !!this.get('full');
+  }
+
   __parseValue(value, opts) {
     return this.parseValue(value, opts);
   }
