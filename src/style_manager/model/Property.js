@@ -127,6 +127,14 @@ export default class Property extends Model {
   }
 
   /**
+   * Indicates if the current value is coming from a parent target (eg. another CSSRule).
+   * @returns {Boolean}
+   */
+  hasValueParent() {
+    return this.hasValue() && !this.hasValue({ noParent: true });
+  }
+
+  /**
    * Get the CSS style object of the property.
    * @param {Object} [opts={}] Options
    * @param {Boolean} [opts.camelCase] Return property name in camelCase.
@@ -180,6 +188,23 @@ export default class Property extends Model {
    */
   clear(opts = {}) {
     this._up(this.__getClearProps(), { ...opts, __clear: true });
+  }
+
+  /**
+   * Indicates if the current value comes directly from the selected target and so can be cleared.
+   * @returns {Boolean}
+   */
+  canClear() {
+    const parent = this.getParent();
+    return parent ? parent.__canClearProp(this) : this.hasValue({ noParent: true });
+  }
+
+  /**
+   * If the current property is a sub-property, this will return the parent Property.
+   * @returns {[Property]|null}
+   */
+  getParent() {
+    return this.__getParentProp() || null;
   }
 
   __parseValue(value, opts) {

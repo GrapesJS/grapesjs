@@ -4,7 +4,7 @@ export default {
     {
       name: 'General',
       open: false,
-      properties: ['float', 'display', 'position', 'top', 'right', 'left', 'bottom'],
+      properties: ['display', 'float', 'position', 'top', 'right', 'left', 'bottom'],
     },
     {
       name: 'Flex',

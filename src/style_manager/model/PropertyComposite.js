@@ -43,6 +43,7 @@ export default class PropertyComposite extends Property {
       join: null,
       fromStyle: null,
       toStyle: null,
+      full: true,
     };
   }
 
@@ -353,6 +354,10 @@ export default class PropertyComposite extends Property {
     }
 
     return this.get('properties').getFullValue();
+  }
+
+  __canClearProp(prop) {
+    return this.isDetached() && prop.hasValue({ noParent: true });
   }
 }
 /**
