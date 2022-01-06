@@ -27,7 +27,7 @@ export default PropertyCompositeView.extend({
 
   init() {
     const { model } = this;
-    this.listenTo(model.getLayers(), 'change reset', this.updateStatus);
+    this.listenTo(model.__getLayers(), 'change reset', this.updateStatus);
   },
 
   addLayer() {
@@ -68,7 +68,7 @@ export default PropertyCompositeView.extend({
       propsView.render();
 
       const layersView = new LayersView({
-        collection: model.getLayers(),
+        collection: model.__getLayers(),
         config: this.config,
         propertyView: this,
       });

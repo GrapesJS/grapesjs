@@ -40,11 +40,27 @@ export default class PropertyStack extends PropertyComposite {
     };
   }
 
+  initialize(props = {}, opts = {}) {
+    PropertyComposite.callParentInit(PropertyComposite, this, props, opts);
+    const layers = this.get('layers');
+    const layersColl = new Layers(layers, { prop: this });
+    layersColl.property = this;
+    layersColl.properties = this.get('properties');
+    this.set('layers', layersColl, { silent: true });
+    this.on('change:selectedLayer', this.__upSelected);
+    this.listenTo(layersColl, 'add remove', this.__upLayers);
+    PropertyComposite.callInit(this, props, opts);
+  }
+
   /**
    * Get all available layers.
-   * @returns {Collection<[Layer]>}
+   * @returns {Array<[Layer]>}
    */
   getLayers() {
+    return this.__getLayers().models;
+  }
+
+  __getLayers() {
     return this.get('layers');
   }
 
@@ -60,7 +76,7 @@ export default class PropertyStack extends PropertyComposite {
    * const layerLast = property.getLayer(layers.length - 1);
    */
   getLayer(index = 0) {
-    return this.getLayers().at(index) || null;
+    return this.__getLayers().at(index) || null;
   }
 
   /**
@@ -240,18 +256,6 @@ export default class PropertyStack extends PropertyComposite {
     return isString(sep) ? new RegExp(`${sep}(?![^\\(]*\\))`) : sep;
   }
 
-  initialize(props = {}, opts = {}) {
-    PropertyComposite.callParentInit(PropertyComposite, this, props, opts);
-    const layers = this.get('layers');
-    const layersColl = new Layers(layers);
-    layersColl.property = this;
-    layersColl.properties = this.get('properties');
-    this.set('layers', layersColl, { silent: true });
-    this.on('change:selectedLayer', this.__upSelected);
-    this.listenTo(layersColl, 'add remove', this.__upLayers);
-    PropertyComposite.callInit(this, props, opts);
-  }
-
   __upProperties(prop, opts = {}) {
     const layer = this.getSelectedLayer();
     if (opts.__up || !layer) return;
@@ -300,13 +304,13 @@ export default class PropertyStack extends PropertyComposite {
   }
 
   __setLayers(newLayers = []) {
-    const layers = this.getLayers();
+    const layers = this.__getLayers();
     const layersNew = newLayers.map(values => ({ values }));
 
     if (layers.length === layersNew.length) {
       layersNew.map((layer, n) => layers.at(n)?.upValues(layer.values));
     } else {
-      this.getLayers().reset(layersNew);
+      this.__getLayers().reset(layersNew);
     }
 
     this.__upSelected({ noEvent: true });
@@ -429,7 +433,7 @@ export default class PropertyStack extends PropertyComposite {
   }
 
   getValueFromStyle(styles = {}) {
-    const layers = this.getLayers().getLayersFromStyle(styles);
+    const layers = this.__getLayers().getLayersFromStyle(styles);
     return new Layers(layers).getFullValue();
   }
 
@@ -462,7 +466,7 @@ export default class PropertyStack extends PropertyComposite {
    * @private
    */
   clear(opts = {}) {
-    this.getLayers().reset();
+    this.__getLayers().reset();
     this.__upTargetsStyleProps(opts);
     return PropertyBase.prototype.clear.call(this);
   }

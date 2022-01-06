@@ -14,6 +14,29 @@ export default class Layer extends Model {
     };
   }
 
+  initialize() {
+    this.prop = this.collection.prop;
+    // const prp = this.get('properties');
+    // var value = this.get('value');
+    // this.set('properties', prp instanceof Properties ? prp : new Properties(prp));
+    // const props = this.get('properties');
+    // props.forEach(this.onPropAdd, this);
+    // this.listenTo(props, 'add', this.onPropAdd);
+
+    // // If there is no value I'll try to get it from values
+    // // I need value setted to make preview working
+    // if (!value) {
+    //   var val = '';
+    //   var values = this.get('values');
+
+    //   for (var prop in values) {
+    //     val += ' ' + values[prop];
+    //   }
+
+    //   this.set('value', val.trim());
+    // }
+  }
+
   /**
    * Get layer index.
    * @returns {Number}
@@ -40,26 +63,34 @@ export default class Layer extends Model {
       : values;
   }
 
-  initialize() {
-    const prp = this.get('properties');
-    var value = this.get('value');
-    this.set('properties', prp instanceof Properties ? prp : new Properties(prp));
-    const props = this.get('properties');
-    props.forEach(this.onPropAdd, this);
-    this.listenTo(props, 'add', this.onPropAdd);
+  /**
+   * Get layer label.
+   * @returns {String}
+   */
+  getLabel() {
+    return this.prop?.getLayerLabel(this);
+  }
 
-    // If there is no value I'll try to get it from values
-    // I need value setted to make preview working
-    if (!value) {
-      var val = '';
-      var values = this.get('values');
+  /**
+   * Check if the layer is selected.
+   * @returns {Boolean}
+   */
+  isSelected() {
+    return this.prop?.getSelectedLayer() === this;
+  }
 
-      for (var prop in values) {
-        val += ' ' + values[prop];
-      }
+  /**
+   * Select the layer.
+   */
+  select() {
+    return this.prop?.selectLayer(this);
+  }
 
-      this.set('value', val.trim());
-    }
+  /**
+   * Remove the layer.
+   */
+  remove() {
+    return this.prop?.removeLayer(this);
   }
 
   upValues(props = {}) {
