@@ -38,6 +38,14 @@ export default class Layer extends Model {
   }
 
   /**
+   * Get layer id.
+   * @returns {String}
+   */
+  getId() {
+    return this.cid;
+  }
+
+  /**
    * Get layer index.
    * @returns {Number}
    */
