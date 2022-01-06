@@ -93,6 +93,14 @@ export default class Layer extends Model {
     return this.prop?.removeLayer(this);
   }
 
+  /**
+   * Move layer to a new index.
+   * @param {Number} index New index
+   */
+  move(index) {
+    return this.prop?.moveLayer(this, index);
+  }
+
   upValues(props = {}) {
     return this.set('values', {
       ...this.getValues(),

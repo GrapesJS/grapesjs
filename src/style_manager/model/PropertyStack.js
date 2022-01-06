@@ -1,4 +1,4 @@
-import { keys, isUndefined, isArray, isString } from 'underscore';
+import { keys, isUndefined, isArray, isString, isNumber } from 'underscore';
 import PropertyComposite, { isNumberType } from './PropertyComposite';
 import PropertyBase from './Property';
 import Layers from './Layers';
@@ -109,6 +109,23 @@ export default class PropertyStack extends PropertyComposite {
   selectLayerAt(index = 0) {
     const layer = this.getLayer(index);
     return layer && this.selectLayer(layer);
+  }
+
+  /**
+   * Move layer by index.
+   * @param {[Layer]} layer Layer to move.
+   * @param {Number} index New layer index.
+   * @example
+   * const layer = property.getLayer(1);
+   * property.moveLayer(layer, 0);
+   */
+  moveLayer(layer, index = 0) {
+    const currIndex = layer ? layer.getIndex() : -1;
+
+    if (currIndex >= 0 && isNumber(index) && index >= 0 && index < this.getLayers().length && currIndex !== index) {
+      this.removeLayer(layer);
+      this.__getLayers().add(layer, { at: index });
+    }
   }
 
   /**
