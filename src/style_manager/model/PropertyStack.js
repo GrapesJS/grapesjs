@@ -209,6 +209,7 @@ export default class PropertyStack extends PropertyComposite {
    * @param {[Layer]} layer
    * @param {Object} [opts={}] Options
    * @param {Boolean} [opts.camelCase] Return property names in camelCase.
+   * @param {Object} [opts.number] Limit the result of the number types, eg. `number: { min: -3, max: 3 }`
    * @returns {Object} Style object
    */
   getStyleFromLayer(layer, opts = {}) {
@@ -253,6 +254,13 @@ export default class PropertyStack extends PropertyComposite {
       : style;
   }
 
+  /**
+   * Get preview style object from the layer.
+   * If the property has `preview: false` the returned object will be empty.
+   * @param {[Layer]} layer
+   * @param {Object} [opts={}] Options. Same of `getStyleFromLayer`
+   * @returns {Object} Style object
+   */
   getStylePreview(layer, opts = {}) {
     let result = {};
     const preview = this.get('preview');

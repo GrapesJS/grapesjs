@@ -109,6 +109,15 @@ export default class Layer extends Model {
     return this.prop?.moveLayer(this, index);
   }
 
+  /**
+   * Get style object for the preview.
+   * @param {Object} [opts={}] Options. Same of `PropertyStack.getStyleFromLayer`
+   * @returns {Object} Style object
+   */
+  getStylePreview(opts = {}) {
+    return this.prop?.getStylePreview(this, opts);
+  }
+
   upValues(props = {}) {
     return this.set('values', {
       ...this.getValues(),
