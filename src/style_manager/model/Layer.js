@@ -118,6 +118,14 @@ export default class Layer extends Model {
     return this.prop?.getStylePreview(this, opts);
   }
 
+  /**
+   * Check if the property has the preview enabled for this layer.
+   * @returns {Boolean}
+   */
+  hasPreview() {
+    return !!this.prop?.get('preview');
+  }
+
   upValues(props = {}) {
     return this.set('values', {
       ...this.getValues(),

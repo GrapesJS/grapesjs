@@ -3,7 +3,7 @@ import { View } from 'backbone';
 
 export default View.extend({
   events: {
-    click: 'active',
+    click: 'select',
     'click [data-close-layer]': 'removeItem',
     'mousedown [data-move-layer]': 'initSorter',
     'touchstart [data-move-layer]': 'initSorter',
@@ -42,9 +42,9 @@ export default View.extend({
     this.ppfx = this.config.pStylePrefix || '';
     this.sorter = o.sorter || null;
     this.propsConfig = o.propsConfig || {};
-    this.pModel = this.propertyView.model;
+    const pModel = this.propertyView.model;
     this.listenTo(model, 'destroy remove', this.remove);
-    this.listenTo(model, 'change:active', this.updateVisibility);
+    this.listenTo(pModel, 'change:selectedLayer', this.updateVisibility);
     this.listenTo(model, 'change:values', this.updateLabel);
 
     // For the sorter
@@ -53,22 +53,13 @@ export default View.extend({
     this.$el.data('model', model);
   },
 
-  /**
-   * Delegate sorting
-   * @param  {Event} e
-   * */
-  initSorter(e) {
+  initSorter() {
     if (this.sorter) this.sorter.startSort(this.el);
   },
 
   removeItem(ev) {
     ev && ev.stopPropagation();
-    this.remove();
-  },
-
-  remove() {
-    this.pModel.removeLayer(this.model);
-    View.prototype.remove.apply(this, arguments);
+    this.model.remove();
   },
 
   getPropertiesWrapper() {
@@ -92,31 +83,27 @@ export default View.extend({
     return this.labelEl;
   },
 
-  active() {
-    const { model, propertyView } = this;
-    const pm = propertyView.model;
-    if (pm.getSelectedLayer() === model) return;
-    pm.selectLayer(model);
-    model.collection.active(model.getIndex());
+  select() {
+    this.model.select();
   },
 
   updateVisibility() {
     const { pfx, model, propertyView } = this;
     const wrapEl = this.getPropertiesWrapper();
-    const active = model.get('active');
-    wrapEl.style.display = active ? '' : 'none';
-    this.$el[active ? 'addClass' : 'removeClass'](`${pfx}active`);
-    active && wrapEl.appendChild(propertyView.props.el);
+    const isSelected = model.isSelected();
+    wrapEl.style.display = isSelected ? '' : 'none';
+    this.$el[isSelected ? 'addClass' : 'removeClass'](`${pfx}active`);
+    isSelected && wrapEl.appendChild(propertyView.props.el);
   },
 
   updateLabel() {
-    const { model, pModel } = this;
-    const label = pModel.getLayerLabel(model);
+    const { model } = this;
+    const label = model.getLabel();
     this.getLabelEl().innerHTML = label;
 
-    if (pModel.get('preview')) {
+    if (model.hasPreview()) {
       const prvEl = this.getPreviewEl();
-      const style = pModel.getStylePreview(model, { number: { min: -3, max: 3 } });
+      const style = model.getStylePreview({ number: { min: -3, max: 3 } });
       const styleStr = keys(style)
         .map(k => `${k}:${style[k]}`)
         .join(';');
@@ -125,10 +112,10 @@ export default View.extend({
   },
 
   render() {
-    const { el, pfx, pModel } = this;
+    const { el, pfx, model } = this;
     el.innerHTML = this.template();
     el.className = `${pfx}layer`;
-    if (pModel.get('preview')) {
+    if (model.hasPreview()) {
       el.querySelector(`[data-preview-box]`).style.display = '';
     }
     this.updateLabel();
