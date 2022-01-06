@@ -134,9 +134,9 @@ export default () => {
       }
 
       if (isArray(obj)) {
-        obj.length && rules.reset(obj);
+        obj.length && rules.add(obj);
       } else if (obj) {
-        rules.reset(obj);
+        rules.add(obj);
       }
 
       return obj;
