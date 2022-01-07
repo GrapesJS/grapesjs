@@ -52,13 +52,13 @@ export default PropertyCompositeView.extend({
   },
 
   onRender() {
-    const { model, el } = this;
+    const { model, el, config } = this;
     const props = model.getProperties();
 
     if (props.length && !this.props) {
       const propsView = new PropertiesView({
         config: {
-          ...this.config,
+          ...config,
           highlightComputed: false,
           highlightChanged: false,
         },
@@ -69,7 +69,7 @@ export default PropertyCompositeView.extend({
 
       const layersView = new LayersView({
         collection: model.__getLayers(),
-        config: this.config,
+        config,
         propertyView: this,
       });
       layersView.render();

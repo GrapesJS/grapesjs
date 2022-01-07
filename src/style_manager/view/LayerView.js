@@ -1,17 +1,19 @@
-import { keys } from 'underscore';
 import { View } from 'backbone';
+import { keys } from 'underscore';
 
-export default View.extend({
-  events: {
-    click: 'select',
-    'click [data-close-layer]': 'removeItem',
-    'mousedown [data-move-layer]': 'initSorter',
-    'touchstart [data-move-layer]': 'initSorter',
-  },
+export default class LayersView extends View {
+  events() {
+    return {
+      click: 'select',
+      'click [data-close-layer]': 'removeItem',
+      'mousedown [data-move-layer]': 'initSorter',
+      'touchstart [data-move-layer]': 'initSorter',
+    };
+  }
 
   template() {
-    const { pfx, ppfx } = this;
-    const icons = this.em?.getConfig('icons');
+    const { pfx, ppfx, em } = this;
+    const icons = em?.getConfig('icons');
     const iconClose = icons?.close || '';
     const iconMove = icons?.move || '';
 
@@ -30,71 +32,55 @@ export default View.extend({
       </div>
       <div id="${pfx}inputs" data-properties></div>
     `;
-  },
+  }
 
   initialize(o = {}) {
     const { model } = this;
-    this.stackModel = o.stackModel;
+    const config = o.config || {};
+    this.em = config.em;
+    this.config = config;
+    this.sorter = o.sorter;
+    this.pfx = config.stylePrefix || '';
+    this.ppfx = config.pStylePrefix || '';
     this.propertyView = o.propertyView;
-    this.config = o.config || {};
-    this.em = this.config.em;
-    this.pfx = this.config.stylePrefix || '';
-    this.ppfx = this.config.pStylePrefix || '';
-    this.sorter = o.sorter || null;
-    this.propsConfig = o.propsConfig || {};
     const pModel = this.propertyView.model;
     this.listenTo(model, 'destroy remove', this.remove);
-    this.listenTo(pModel, 'change:selectedLayer', this.updateVisibility);
     this.listenTo(model, 'change:values', this.updateLabel);
+    this.listenTo(pModel, 'change:selectedLayer', this.updateVisibility);
 
     // For the sorter
     model.view = this;
     model.set({ droppable: 0, draggable: 1 });
     this.$el.data('model', model);
-  },
+  }
 
   initSorter() {
-    if (this.sorter) this.sorter.startSort(this.el);
-  },
+    this.sorter?.startSort(this.el);
+  }
 
   removeItem(ev) {
     ev && ev.stopPropagation();
     this.model.remove();
-  },
-
-  getPropertiesWrapper() {
-    if (!this.propsWrapEl) {
-      this.propsWrapEl = this.el.querySelector('[data-properties]');
-    }
-    return this.propsWrapEl;
-  },
-
-  getPreviewEl() {
-    if (!this.previewEl) {
-      this.previewEl = this.el.querySelector('[data-preview]');
-    }
-    return this.previewEl;
-  },
-
-  getLabelEl() {
-    if (!this.labelEl) {
-      this.labelEl = this.el.querySelector('[data-label]');
-    }
-    return this.labelEl;
-  },
+  }
 
   select() {
     this.model.select();
-  },
+  }
 
-  updateVisibility() {
-    const { pfx, model, propertyView } = this;
-    const wrapEl = this.getPropertiesWrapper();
-    const isSelected = model.isSelected();
-    wrapEl.style.display = isSelected ? '' : 'none';
-    this.$el[isSelected ? 'addClass' : 'removeClass'](`${pfx}active`);
-    isSelected && wrapEl.appendChild(propertyView.props.el);
-  },
+  getPropertiesWrapper() {
+    if (!this.propsWrapEl) this.propsWrapEl = this.el.querySelector('[data-properties]');
+    return this.propsWrapEl;
+  }
+
+  getPreviewEl() {
+    if (!this.previewEl) this.previewEl = this.el.querySelector('[data-preview]');
+    return this.previewEl;
+  }
+
+  getLabelEl() {
+    if (!this.labelEl) this.labelEl = this.el.querySelector('[data-label]');
+    return this.labelEl;
+  }
 
   updateLabel() {
     const { model } = this;
@@ -109,7 +95,16 @@ export default View.extend({
         .join(';');
       prvEl.setAttribute('style', styleStr);
     }
-  },
+  }
+
+  updateVisibility() {
+    const { pfx, model, propertyView } = this;
+    const wrapEl = this.getPropertiesWrapper();
+    const isSelected = model.isSelected();
+    wrapEl.style.display = isSelected ? '' : 'none';
+    this.$el[isSelected ? 'addClass' : 'removeClass'](`${pfx}active`);
+    isSelected && wrapEl.appendChild(propertyView.props.el);
+  }
 
   render() {
     const { el, pfx, model } = this;
@@ -121,5 +116,5 @@ export default View.extend({
     this.updateLabel();
     this.updateVisibility();
     return this;
-  },
-});
+  }
+}

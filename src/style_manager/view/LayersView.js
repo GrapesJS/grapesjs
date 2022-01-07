@@ -1,81 +1,47 @@
-import Backbone from 'backbone';
+import { View } from 'common';
 import LayerView from './LayerView';
 
-export default Backbone.View.extend({
+export default class LayersView extends View {
   initialize(o) {
-    this.config = o.config || {};
-    this.stackModel = o.stackModel;
+    const coll = this.collection;
+    const config = o.config || {};
+    const em = config.em;
+    const pfx = config.stylePrefix || '';
+    const ppfx = config.pStylePrefix || '';
+    this.config = config;
+    this.pfx = pfx;
+    this.ppfx = ppfx;
     this.propertyView = o.propertyView;
-    this.preview = o.preview;
-    this.pfx = this.config.stylePrefix || '';
-    this.ppfx = this.config.pStylePrefix || '';
-    this.propsConfig = o.propsConfig;
-    let pfx = this.pfx;
-    let ppfx = this.ppfx;
-    let collection = this.collection;
     this.className = `${pfx}layers ${ppfx}field`;
-    this.listenTo(collection, 'add', this.addTo);
-    this.listenTo(collection, 'deselectAll', this.deselectAll);
-    this.listenTo(collection, 'reset', this.reset);
+    this.listenTo(coll, 'add', this.addTo);
+    this.listenTo(coll, 'reset', this.reset);
     this.items = [];
 
-    var em = this.config.em || '';
-    var utils = em ? em.get('Utils') : '';
-
+    // For the Sorter
+    const utils = em ? em.get('Utils') : '';
     this.sorter = utils
       ? new utils.Sorter({
           container: this.el,
           ignoreViewChildren: 1,
           containerSel: `.${pfx}layers`,
           itemSel: `.${pfx}layer`,
-          pfx: this.config.pStylePrefix,
+          pfx: config.pStylePrefix,
         })
       : '';
+    coll.view = this;
+    this.$el.data('model', coll);
+    this.$el.data('collection', coll);
+  }
 
-    // For the Sorter
-    collection.view = this;
-    this.$el.data('model', collection);
-    this.$el.data('collection', collection);
-  },
-
-  /**
-   * Add to collection
-   * @param Object Model
-   *
-   * @return Object
-   * */
   addTo(model) {
-    var i = this.collection.indexOf(model);
+    const i = this.collection.indexOf(model);
     this.addToCollection(model, null, i);
-  },
+  }
 
-  /**
-   * Add new object to collection
-   * @param Object Model
-   * @param Object Fragment collection
-   * @param  {number} index Index of append
-   *
-   * @return Object Object created
-   * */
   addToCollection(model, fragmentEl, index) {
-    var fragment = fragmentEl || null;
-    const { propertyView, config } = this;
-    const stackModel = this.stackModel;
-    const sorter = this.sorter;
-    const propsConfig = this.propsConfig;
-
-    if (typeof this.preview !== 'undefined') {
-      model.set('preview', this.preview);
-    }
-
-    const view = new LayerView({
-      model,
-      config,
-      sorter,
-      stackModel,
-      propsConfig,
-      propertyView,
-    });
+    const fragment = fragmentEl || null;
+    const { propertyView, config, sorter, $el } = this;
+    const view = new LayerView({ model, config, sorter, propertyView });
     const rendered = view.render().el;
     this.items.push(view);
 
@@ -83,60 +49,50 @@ export default Backbone.View.extend({
       fragment.appendChild(rendered);
     } else {
       if (typeof index != 'undefined') {
-        var method = 'before';
-        // If the added model is the last of collection
-        // need to change the logic of append
-        if (this.$el.children().length == index) {
+        let method = 'before';
+
+        if ($el.children().length === index) {
           index--;
           method = 'after';
         }
-        // In case the added is new in the collection index will be -1
+
         if (index < 0) {
-          this.$el.append(rendered);
-        } else this.$el.children().eq(index)[method](rendered);
-      } else this.$el.append(rendered);
+          $el.append(rendered);
+        } else {
+          $el.children().eq(index)[method](rendered);
+        }
+      } else {
+        $el.append(rendered);
+      }
     }
 
     return rendered;
-  },
-
-  /**
-   * Deselect all
-   *
-   * @return void
-   * */
-  deselectAll() {
-    this.$el.find('.' + this.pfx + 'layer').removeClass(this.pfx + 'active');
-  },
+  }
 
   reset(coll, opts) {
     this.clearItems(opts);
     this.render();
-  },
-
-  render() {
-    var fragment = document.createDocumentFragment();
-    this.$el.empty();
-
-    this.collection.each(function (model) {
-      this.addToCollection(model, fragment);
-    }, this);
-
-    this.$el.append(fragment);
-    this.$el.attr('class', this.className);
-
-    if (this.sorter) this.sorter.plh = null;
-
-    return this;
-  },
+  }
 
   remove() {
     this.clearItems();
-    Backbone.View.prototype.remove.apply(this, arguments);
-  },
+    View.prototype.remove.apply(this, arguments);
+  }
 
-  clearItems(opts) {
-    this.items.forEach(item => item.remove(opts));
+  clearItems() {
+    this.items.forEach(item => item.remove());
     this.items = [];
-  },
-});
+  }
+
+  render() {
+    const { $el, sorter } = this;
+    const frag = document.createDocumentFragment();
+    $el.empty();
+    this.collection.forEach(m => this.addToCollection(m, frag));
+    $el.append(frag);
+    $el.attr('class', this.className);
+    if (sorter) sorter.plh = null;
+
+    return this;
+  }
+}
