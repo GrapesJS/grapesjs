@@ -5,11 +5,6 @@ export default Backbone.View.extend({
   initialize(o) {
     this.config = o.config || {};
     this.pfx = this.config.stylePrefix || '';
-    this.target = o.target || {};
-    this.propTarget = o.propTarget || {};
-    this.onChange = o.onChange;
-    this.onInputRender = o.onInputRender || {};
-    this.customValue = o.customValue || {};
     this.properties = [];
     this.parent = o.parent;
     const coll = this.collection;
@@ -22,40 +17,24 @@ export default Backbone.View.extend({
   },
 
   add(model, frag, opts = {}) {
-    const { parent } = this;
+    const { parent, config } = this;
     const appendTo = frag || this.el;
-    const view = new model.typeView({
-      model,
-      name: model.get('name'),
-      id: this.pfx + model.get('property'),
-      target: this.target,
-      propTarget: this.propTarget,
-      onChange: this.onChange,
-      onInputRender: this.onInputRender,
-      config: this.config,
-    });
+    const view = new model.typeView({ model, config });
     parent && (view.parent = parent);
-
-    if (model.get('type') != 'composite') {
-      view.customValue = this.customValue;
-    }
-
     view.render();
     const rendered = view.el;
     this.properties.push(view);
-    view.updateVisibility();
-
     appendAtIndex(appendTo, rendered, opts.at);
   },
 
   render() {
-    const { $el } = this;
+    const { $el, pfx } = this;
     this.clearItems();
     const fragment = document.createDocumentFragment();
     this.collection.forEach(model => this.add(model, fragment));
     $el.empty();
     $el.append(fragment);
-    $el.attr('class', `${this.pfx}properties`);
+    $el.attr('class', `${pfx}properties`);
     return this;
   },
 

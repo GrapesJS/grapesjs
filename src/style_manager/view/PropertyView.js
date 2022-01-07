@@ -1,10 +1,8 @@
 import Backbone from 'backbone';
-import { bindAll, isArray, isUndefined, debounce } from 'underscore';
-import { camelCase, isObject, find } from 'utils/mixins';
-import { includes, each } from 'underscore';
+import { bindAll, isUndefined, debounce } from 'underscore';
+import { isObject } from 'utils/mixins';
 
 const clearProp = 'data-clear-style';
-const evStyleUp = 'component:styleUpdate';
 
 export default Backbone.View.extend({
   template() {
@@ -19,13 +17,12 @@ export default Backbone.View.extend({
     const { pfx, em } = this;
     const { parent } = model;
     const { icon = '', info = '' } = model.attributes;
-    const label = model.getLabel();
     const icons = em?.getConfig('icons');
     const iconClose = icons?.close || '';
 
     return `
       <span class="${pfx}icon ${icon}" title="${info}">
-        ${label}
+        ${model.getLabel()}
       </span>
       ${!parent ? `<div class="${pfx}clear" style="display: none" ${clearProp}>${iconClose}</div>` : ''}
     `;
@@ -46,23 +43,14 @@ export default Backbone.View.extend({
 
   initialize(o = {}) {
     bindAll(this, '__change', '__updateStyle');
-    this.config = o.config || {};
-    const em = this.config.em;
+    const config = o.config || {};
+    const { em } = config;
+    this.config = config;
     this.em = em;
-    this.pfx = this.config.stylePrefix || '';
-    this.ppfx = this.config.pStylePrefix || '';
-    this.target = o.target || {};
-    this.propTarget = o.propTarget || {};
-    this.onChange = o.onChange;
-    this.onInputRender = o.onInputRender || {};
-    this.customValue = o.customValue || {};
-    const model = this.model;
-    this.property = model.get('property');
-    this.input = null;
-    const pfx = this.pfx;
-    this.inputHolderId = '#' + pfx + 'input-holder';
-    this.sector = model.collection && model.collection.sector;
+    this.pfx = config.stylePrefix || '';
+    this.ppfx = config.pStylePrefix || '';
     this.__destroyFn = this.destroy ? this.destroy.bind(this) : () => {};
+    const { model } = this;
     model.view = this;
 
     this.listenTo(model, 'destroy remove', this.remove);
@@ -82,7 +70,7 @@ export default Backbone.View.extend({
 
   remove() {
     Backbone.View.prototype.remove.apply(this, arguments);
-    ['em', 'target', 'input', '$input', 'propTarget', 'sector'].forEach(i => (this[i] = {}));
+    ['em', 'input', '$input', 'view'].forEach(i => (this[i] = {}));
     this.__destroyFn(this._getClbOpts());
   },
 
@@ -140,15 +128,6 @@ export default Backbone.View.extend({
     // Skip the default update in case a custom emit method is defined
     if (this.emit) return;
     this.model.upValue(ev.target.value);
-  },
-
-  /**
-   * Returns value from input
-   * @return {string}
-   */
-  getInputValue() {
-    const input = this.getInputEl();
-    return input ? input.value : '';
   },
 
   onValueChange(m, val, opt = {}) {
@@ -236,9 +215,8 @@ export default Backbone.View.extend({
   render() {
     this.clearCached();
     const { pfx, model, el, $el } = this;
-    const property = model.get('property');
-    const type = model.get('type');
-    const full = model.get('full');
+    const name = model.getName();
+    const type = model.getType();
     const cls = model.get('className') || '';
     const className = `${pfx}property`;
     // Support old integer classname
@@ -251,8 +229,8 @@ export default Backbone.View.extend({
     this.createdEl = create && create(this._getClbOpts());
     $el.find('[data-sm-fields]').append(this.createdEl || this.templateInput(model));
 
-    el.className = `${className} ${clsType} ${className}__${property} ${cls}`.trim();
-    el.className += full ? ` ${className}--full` : '';
+    el.className = `${className} ${clsType} ${className}__${name} ${cls}`.trim();
+    el.className += model.isFull() ? ` ${className}--full` : '';
 
     const onRender = this.onRender && this.onRender.bind(this);
     onRender && onRender();
