@@ -641,7 +641,6 @@ export default () => {
 
     __upProps(opts) {
       const lastTarget = this.getSelected();
-      // if (!lastTarget || !this.getConfig().custom) return;
       if (!lastTarget) return;
 
       const lastTargetParents = this.getSelectedParents();

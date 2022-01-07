@@ -19,23 +19,10 @@ export default class SectorsView extends View {
     ['config', 'module', 'em'].forEach(i => (this[i] = {}));
   }
 
-  /**
-   * Add to collection
-   * @param {Object} model Model
-   * @return {Object}
-   * @private
-   * */
   addTo(model, c, opts = {}) {
     this.addToCollection(model, null, opts);
   }
 
-  /**
-   * Add new object to collection
-   * @param {Object} model Model
-   * @param  {Object} fragmentEl collection
-   * @return {Object} Object created
-   * @private
-   * */
   addToCollection(model, fragmentEl, opts = {}) {
     const { config, el } = this;
     const appendTo = fragmentEl || el;
