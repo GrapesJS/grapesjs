@@ -1,7 +1,7 @@
-import Backbone from 'backbone';
+import { View } from 'common';
 import { appendAtIndex } from 'utils/dom';
 
-export default Backbone.View.extend({
+export default class LayersView extends View {
   initialize(o) {
     this.config = o.config || {};
     this.pfx = this.config.stylePrefix || '';
@@ -10,11 +10,11 @@ export default Backbone.View.extend({
     const coll = this.collection;
     this.listenTo(coll, 'add', this.addTo);
     this.listenTo(coll, 'reset', this.render);
-  },
+  }
 
   addTo(model, coll, opts) {
     this.add(model, null, opts);
-  },
+  }
 
   add(model, frag, opts = {}) {
     const { parent, config } = this;
@@ -25,7 +25,17 @@ export default Backbone.View.extend({
     const rendered = view.el;
     this.properties.push(view);
     appendAtIndex(appendTo, rendered, opts.at);
-  },
+  }
+
+  remove() {
+    View.prototype.remove.apply(this, arguments);
+    this.clearItems();
+  }
+
+  clearItems() {
+    this.properties.forEach(item => item.remove());
+    this.properties = [];
+  }
 
   render() {
     const { $el, pfx } = this;
@@ -36,15 +46,5 @@ export default Backbone.View.extend({
     $el.append(fragment);
     $el.attr('class', `${pfx}properties`);
     return this;
-  },
-
-  remove() {
-    Backbone.View.prototype.remove.apply(this, arguments);
-    this.clearItems();
-  },
-
-  clearItems() {
-    this.properties.forEach(item => item.remove());
-    this.properties = [];
-  },
-});
+  }
+}
