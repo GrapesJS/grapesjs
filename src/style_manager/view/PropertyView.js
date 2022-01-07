@@ -53,14 +53,14 @@ export default Backbone.View.extend({
     const { model } = this;
     model.view = this;
 
-    this.listenTo(model, 'destroy remove', this.remove);
-    this.listenTo(model, 'change:visible', this.updateVisibility);
-    this.listenTo(model, 'change:name change:className change:full', this.render);
-
     // Put a sligh delay on debounce in order to execute the update
     // post styleManager.__upProps trigger.
     this.onValueChange = debounce(this.onValueChange.bind(this), 10);
     this.updateStatus = debounce(this.updateStatus.bind(this));
+
+    this.listenTo(model, 'destroy remove', this.remove);
+    this.listenTo(model, 'change:visible', this.updateVisibility);
+    this.listenTo(model, 'change:name change:className change:full', this.render);
     this.listenTo(model, 'change:value', this.onValueChange);
     this.listenTo(em, 'change:device', this.onValueChange);
 

@@ -1,7 +1,7 @@
 import { View } from 'backbone';
 import { keys } from 'underscore';
 
-export default class LayersView extends View {
+export default class LayerView extends View {
   events() {
     return {
       click: 'select',

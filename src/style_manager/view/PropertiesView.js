@@ -1,7 +1,7 @@
 import { View } from 'common';
 import { appendAtIndex } from 'utils/dom';
 
-export default class LayersView extends View {
+export default class PropertiesView extends View {
   initialize(o) {
     this.config = o.config || {};
     this.pfx = this.config.stylePrefix || '';
