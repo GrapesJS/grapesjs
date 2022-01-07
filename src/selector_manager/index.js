@@ -181,7 +181,7 @@ export default () => {
 
     select(value, opts = {}) {
       const targets = Array.isArray(value) ? value : [value];
-      const toSelect = this.em.get('StyleManager').setTarget(targets, opts);
+      const toSelect = this.em.get('StyleManager').select(targets, opts);
       const selTags = this.selectorTags;
       const res = toSelect
         .filter(i => i)

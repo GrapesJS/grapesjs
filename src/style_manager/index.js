@@ -588,14 +588,15 @@ export default () => {
     },
 
     /**
-     * Create new property from type
+     * Create new UI property from type (Experimental)
      * @param {string} id Type ID
      * @param  {Object} [options={}] Options
      * @param  {Object} [options.model={}] Custom model object
      * @param  {Object} [options.view={}] Custom view object
      * @return {PropertyView}
+     * @private
      * @example
-     * const propView = styleManager.createType('integer', {
+     * const propView = styleManager.createType('number', {
      *  model: {units: ['px', 'rem']}
      * });
      * propView.render();
@@ -615,19 +616,6 @@ export default () => {
       }
     },
 
-    setTarget(target, opts) {
-      return SectView?.setTarget(target, opts);
-    },
-
-    getTargets() {
-      const { propTarget } = SectView || {};
-      return (propTarget && propTarget.targets) || [];
-    },
-
-    getEmitter() {
-      return SectView.propTarget;
-    },
-
     /**
      * Render sectors and properties
      * @return  {HTMLElement}
@@ -638,10 +626,9 @@ export default () => {
       const el = SectView && SectView.el;
       SectView = new SectorsView({
         el,
-        collection: sectors,
-        target: em,
         em,
         config,
+        collection: sectors,
         module: this,
       });
       return SectView.render().el;
