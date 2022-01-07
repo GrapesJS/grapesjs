@@ -1,10 +1,7 @@
 import Backbone from 'backbone';
 import { extend, isString, isArray } from 'underscore';
-import { isTaggableNode } from 'utils/mixins';
 import { appendAtIndex } from 'utils/dom';
 import SectorView from './SectorView';
-
-const helperCls = 'hc-state';
 
 export default Backbone.View.extend({
   initialize(o = {}) {
@@ -29,7 +26,6 @@ export default Backbone.View.extend({
     const coll = this.collection;
     this.listenTo(coll, 'add', this.addTo);
     this.listenTo(coll, 'reset', this.render);
-    // this.listenTo(em, module.events.target, this.targetUpdated);
   },
 
   remove() {
@@ -45,76 +41,6 @@ export default Backbone.View.extend({
    * */
   addTo(model, coll, opts = {}) {
     this.addToCollection(model, null, opts);
-  },
-
-  toggleStateCls(targets = [], enable) {
-    targets.forEach(trg => {
-      const el = trg?.getEl?.();
-      el && el.classList && el.classList[enable ? 'add' : 'remove'](helperCls);
-    });
-  },
-
-  /**
-   * Fired when target is updated
-   * @private
-   */
-  targetUpdated(trg) {
-    const em = this.target;
-    const pt = this.propTarget;
-    const sm = this.module;
-    const cmp = em.getSelected();
-    const cmps = em.getSelectedAll();
-    const mdToClear = trg && !!trg.toHTML ? trg : cmp;
-    const target = sm.getSelected();
-
-    // Clean components
-    mdToClear && this.toggleStateCls([mdToClear]);
-    if (!target) return;
-
-    const config = em.get('Config');
-    const state = !config.devicePreviewMode ? em.get('state') : '';
-    const { componentFirst } = em.get('SelectorManager').getConfig();
-    pt.helper = null;
-    pt.targets = null;
-
-    // Create computed style container
-    const el = cmp?.getEl();
-    if (el && isTaggableNode(el)) {
-      const stateStr = state ? `:${state}` : null;
-      pt.computed = window.getComputedStyle(el, stateStr);
-    }
-
-    // Create a new rule for the state as a helper
-    const appendStateRule = (style = {}) => {
-      const cc = em.get('CssComposer');
-      const rules = cc.getAll();
-      let helperRule = cc.getClassRule(helperCls);
-
-      if (!helperRule) {
-        helperRule = cc.setClassRule(helperCls);
-      } else {
-        // I will make it last again, otherwise it could be overridden
-        rules.remove(helperRule);
-        rules.add(helperRule);
-      }
-
-      helperRule.set('important', 1);
-      helperRule.setStyle(style);
-      pt.helper = helperRule;
-    };
-
-    if (state) {
-      appendStateRule(target.getStyle());
-      this.toggleStateCls(cmps, 1);
-    }
-
-    pt.model = target;
-    pt.parentRules = sm.getParentRules(target, state);
-    if (componentFirst) {
-      pt.targets = sm.getSelected();
-    }
-    pt.trigger('update');
-    em.trigger('styleManager:update');
   },
 
   /**
