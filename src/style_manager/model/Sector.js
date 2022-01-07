@@ -62,7 +62,8 @@ export default class Sector extends Model {
    * @returns {String}
    */
   getName() {
-    return this.get('name');
+    const id = this.getId();
+    return this.em?.t(`styleManager.sectors.${id}`) || this.get('name');
   }
 
   /**

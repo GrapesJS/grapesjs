@@ -1,4 +1,4 @@
-import { View } from 'backbone';
+import { View } from 'common';
 import html from 'utils/html';
 import PropertiesView from './PropertiesView';
 
@@ -23,84 +23,56 @@ export default class SectorView extends View {
   }
 
   initialize(o) {
-    this.config = o.config || {};
-    this.em = this.config.em;
-    this.pfx = this.config.stylePrefix || '';
-    this.target = o.target || {};
-    this.propTarget = o.propTarget || {};
-    const model = this.model;
+    const config = o.config || {};
+    const { model } = this;
+    const { em } = config;
+    this.config = config;
+    this.em = em;
+    this.pfx = config.stylePrefix || '';
+    this.listenTo(model, 'destroy remove', this.remove);
     this.listenTo(model, 'change:open', this.updateOpen);
     this.listenTo(model, 'change:visible', this.updateVisibility);
-    this.listenTo(model, 'destroy remove', this.remove);
   }
 
-  /**
-   * If all properties are hidden this will hide the sector
-   */
+  updateOpen() {
+    const { $el, model, pfx } = this;
+    const isOpen = model.isOpen();
+    $el[isOpen ? 'addClass' : 'removeClass'](`${pfx}open`);
+    this.getPropertiesEl().style.display = isOpen ? '' : 'none';
+  }
+
   updateVisibility() {
     this.el.style.display = this.model.isVisible() ? '' : 'none';
   }
 
-  /**
-   * Update visibility
-   */
-  updateOpen() {
-    if (this.model.get('open')) this.show();
-    else this.hide();
-  }
-
-  /**
-   * Show the content of the sector
-   * */
-  show() {
-    this.$el.addClass(this.pfx + 'open');
-    this.getPropertiesEl().style.display = '';
-  }
-
-  /**
-   * Hide the content of the sector
-   * */
-  hide() {
-    this.$el.removeClass(this.pfx + 'open');
-    this.getPropertiesEl().style.display = 'none';
-  }
-
   getPropertiesEl() {
-    return this.$el.find(`.${this.pfx}properties`).get(0);
+    const { $el, pfx } = this;
+    return $el.find(`.${pfx}properties`).get(0);
   }
 
-  /**
-   * Toggle visibility
-   * */
-  toggle(e) {
+  toggle() {
     const { model } = this;
-    const v = model.get('open') ? 0 : 1;
-    model.set('open', v);
+    model.setOpen(!model.get('open'));
+  }
+
+  renderProperties() {
+    const { model, config } = this;
+    const objs = model.get('properties');
+
+    if (objs) {
+      const view = new PropertiesView({ collection: objs, config });
+      this.$el.append(view.render().el);
+    }
   }
 
   render() {
-    const { pfx, model, em, $el } = this;
-    const { id, name } = model.attributes;
-    const label = (em && em.t(`styleManager.sectors.${id}`)) || name;
+    const { pfx, model, $el } = this;
+    const id = model.getId();
+    const label = model.getName();
     $el.html(this.template({ pfx, label }));
     this.renderProperties();
     $el.attr('class', `${pfx}sector ${pfx}sector__${id} no-select`);
     this.updateOpen();
     return this;
-  }
-
-  renderProperties() {
-    const { model, target, propTarget, config } = this;
-    const objs = model.get('properties');
-
-    if (objs) {
-      const view = new PropertiesView({
-        collection: objs,
-        target,
-        propTarget,
-        config,
-      });
-      this.$el.append(view.render().el);
-    }
   }
 }

@@ -4,13 +4,12 @@ import SectorView from './SectorView';
 
 export default class SectorsView extends View {
   initialize(o = {}) {
-    const { module, em, config } = o;
+    const { module, config } = o;
     const coll = this.collection;
     this.pfx = config.stylePrefix || '';
     this.ppfx = config.pStylePrefix || '';
     this.config = config;
     this.module = module;
-    this.em = em;
     this.listenTo(coll, 'add', this.addTo);
     this.listenTo(coll, 'reset', this.render);
   }
