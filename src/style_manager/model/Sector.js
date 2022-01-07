@@ -3,6 +3,9 @@ import { extend, isString } from 'underscore';
 import Properties from './Properties';
 
 /**
+ *
+ * [Property]: property.html
+ *
  * @typedef Sector
  * @property {String} id Sector id, eg. `typography`
  * @property {String} name Sector name, eg. `Typography`
@@ -194,6 +197,3 @@ export default class Sector extends Model {
     return builtIn?.build(buildP);
   }
 }
-/**
- * [Property]: property.html
- */

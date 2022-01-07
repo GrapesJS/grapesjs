@@ -245,6 +245,7 @@ export default class Property extends Model {
    * @param {Boolen} [complete=true] Indicates if it's a final state
    * @param {Object} [opts={}] Options
    * @private
+   * @deprecated
    */
   setValueFromInput(value, complete, opts = {}) {
     this.setValue(value, complete, { ...opts, fromInput: 1 });

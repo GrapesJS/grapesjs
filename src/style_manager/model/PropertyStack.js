@@ -457,25 +457,6 @@ export default class PropertyStack extends PropertyComposite {
     return this.get('detached') ? '' : this.get('layers').getFullValue();
   }
 
-  getValueFromStyle(styles = {}) {
-    const layers = this.__getLayers().getLayersFromStyle(styles);
-    return new Layers(layers).getFullValue();
-  }
-
-  getValueFromTarget(target) {
-    const { detached, property, properties } = this.attributes;
-    const style = target.getStyle();
-    const validStyles = {};
-
-    properties.forEach(prop => {
-      const name = prop.get('property');
-      const value = style[name];
-      if (value) validStyles[name] = value;
-    });
-
-    return !detached ? style[property] : keys(validStyles).length ? validStyles : '';
-  }
-
   /**
    * Extended
    * @private
@@ -496,27 +477,7 @@ export default class PropertyStack extends PropertyComposite {
     return PropertyBase.prototype.clear.call(this);
   }
 
-  getCurrentLayer() {
-    return this.getLayers().filter(layer => layer.get('active'))[0];
-  }
-
-  /**
-   * This method allows to customize layers returned from the target
-   * @param  {Object} target
-   * @return {Array} Should return an array of layers
-   * @private
-   * @example
-   * // return example
-   * [
-   *  {
-   *    properties: [
-   *      { property: 'width', ... }
-   *      { property: 'height', ... }
-   *    ]
-   *  }
-   * ]
-   */
-  getLayersFromTarget(target) {
-    return;
+  __canClearProp() {
+    return false;
   }
 }

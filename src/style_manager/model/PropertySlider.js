@@ -1,8 +1,10 @@
 import Property from './PropertyNumber';
 
-export default Property.extend({
-  defaults: {
-    ...Property.getDefaults(),
-    showInput: 1,
-  },
-});
+export default class PropertySlider extends Property {
+  defaults() {
+    return {
+      ...Property.getDefaults(),
+      showInput: 1,
+    };
+  }
+}

@@ -121,42 +121,4 @@ export default Backbone.Collection.extend(TypeableCollection).extend({
       },
     },
   ],
-
-  deepClone() {
-    const { em } = this;
-    const collection = this.clone();
-    collection.em = em;
-    collection.reset(
-      collection.map(model => {
-        const cloned = model.clone();
-        cloned.typeView = model.typeView;
-        cloned.em = em;
-        return cloned;
-      })
-    );
-    return collection;
-  },
-
-  /**
-   * Parse a value and return an array splitted by properties
-   * @param  {string} value
-   * @return {Array}
-   * @return
-   */
-  parseValue(value) {
-    const properties = [];
-    const values = value.split(' ');
-    values.forEach((value, i) => {
-      const property = this.at(i);
-      if (!property) return;
-      properties.push({ ...property.attributes, ...{ value } });
-    });
-    return properties;
-  },
-
-  getFullValue() {
-    let result = '';
-    this.each(model => (result += `${model.getFullValue()} `));
-    return result.trim();
-  },
 });

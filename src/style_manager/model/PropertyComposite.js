@@ -4,6 +4,10 @@ import Property from './Property';
 export const isNumberType = type => type === 'integer' || type === 'number';
 
 /**
+ *
+ * [Property]: property.html
+ *
+ *
  * @typedef PropertyComposite
  * @property {Array<Object>} properties Array of sub properties, eg. `[{ type: 'number', property: 'margin-top' }, ...]`
  * @property {Boolean} [detached=false] Indicate if the final CSS property is splitted (detached: `margin-top: X; margin-right: Y; ...`) or combined (not detached: `margin: X Y ...;`)
@@ -45,6 +49,16 @@ export default class PropertyComposite extends Property {
       toStyle: null,
       full: true,
     };
+  }
+
+  initialize(props = {}, opts = {}) {
+    Property.callParentInit(Property, this, props, opts);
+    const { em } = this;
+    const Properties = require('./Properties').default;
+    const properties = new Properties(this.get('properties') || [], { em, parentProp: this });
+    this.set('properties', properties, { silent: 1 });
+    this.listenTo(properties, 'change', this.__upProperties);
+    Property.callInit(this, props, opts);
   }
 
   /**
@@ -115,50 +129,6 @@ export default class PropertyComposite extends Property {
     return this.__getJoin();
   }
 
-  getSplitSeparator() {
-    return new RegExp(`${this.get('separator')}(?![^\\(]*\\))`);
-  }
-
-  initialize(props = {}, opts = {}) {
-    Property.callParentInit(Property, this, props, opts);
-    const { em } = this;
-    const Properties = require('./Properties').default;
-    const properties = new Properties(this.get('properties') || [], { em, parentProp: this });
-    this.set('properties', properties, { silent: 1 });
-    this.listenTo(properties, 'change', this.__upProperties);
-    this.listenTo(this, 'change:value', this.updateValues);
-    Property.callInit(this, props, opts);
-  }
-
-  __upProperties(p, opts = {}) {
-    if (opts.__up || opts.__clearIn) return;
-
-    const parentProp = this.__getParentProp();
-    if (parentProp) return parentProp.__upProperties(this, opts);
-
-    this.__upTargetsStyleProps(opts, p);
-  }
-
-  __upTargetsStyleProps(opts = {}, prop) {
-    let style = this.getStyleFromProps();
-
-    if (this.isDetached() && prop) {
-      const name = prop.getName();
-      style = { [name]: style[name] };
-    }
-
-    this.__upTargetsStyle(style, opts);
-  }
-
-  _up(props, opts = {}) {
-    this.__setProperties(this.__getSplitValue(props.value), opts);
-    return Property.prototype._up.call(this, props, opts);
-  }
-
-  getStyle(opts) {
-    return this.getStyleFromProps(opts);
-  }
-
   /**
    * Get style object from current properties
    * @param {Object} [opts={}] Options
@@ -208,6 +178,39 @@ export default class PropertyComposite extends Property {
           return res;
         }, {})
       : style;
+  }
+
+  getSplitSeparator() {
+    return new RegExp(`${this.get('separator')}(?![^\\(]*\\))`);
+  }
+
+  __upProperties(p, opts = {}) {
+    if (opts.__up || opts.__clearIn) return;
+
+    const parentProp = this.__getParentProp();
+    if (parentProp) return parentProp.__upProperties(this, opts);
+
+    this.__upTargetsStyleProps(opts, p);
+  }
+
+  __upTargetsStyleProps(opts = {}, prop) {
+    let style = this.getStyleFromProps();
+
+    if (this.isDetached() && prop) {
+      const name = prop.getName();
+      style = { [name]: style[name] };
+    }
+
+    this.__upTargetsStyle(style, opts);
+  }
+
+  _up(props, opts = {}) {
+    this.__setProperties(this.__getSplitValue(props.value), opts);
+    return Property.prototype._up.call(this, props, opts);
+  }
+
+  getStyle(opts) {
+    return this.getStyleFromProps(opts);
   }
 
   __getFullValue(opts = {}) {
@@ -311,43 +314,6 @@ export default class PropertyComposite extends Property {
     return this.getProperties().some(prop => prop.hasValue(opts));
   }
 
-  /**
-   * Update property values
-   * @private
-   * @deprecated
-   */
-  updateValues() {
-    const values = this.getFullValue().split(this.getSplitSeparator());
-    this.get('properties').each((property, i) => {
-      const len = values.length;
-      // Try to get value from a shorthand:
-      // 11px -> 11px 11px 11px 11xp
-      // 11px 22px -> 11px 22px 11px 22xp
-      const value = values[i] || values[(i % len) + (len != 1 && len % 2 ? 1 : 0)];
-      // There some issue with UndoManager
-      //property.setValue(value, 0, {fromParent: 1});
-    });
-  }
-
-  /**
-   * Returns default value
-   * @param  {Boolean} defaultProps Force to get defaults from properties
-   * @return {string}
-   * @private
-   */
-  getDefaultValue(defaultProps) {
-    let value = this.get('defaults');
-
-    if (value && !defaultProps) {
-      return value;
-    }
-
-    value = '';
-    const properties = this.get('properties');
-    properties.each((prop, index) => (value += `${prop.getDefaultValue()} `));
-    return value.trim();
-  }
-
   getFullValue() {
     if (this.get('detached')) {
       return '';
@@ -360,6 +326,3 @@ export default class PropertyComposite extends Property {
     return this.isDetached() && prop.hasValue({ noParent: true });
   }
 }
-/**
- * [Property]: property.html
- */
