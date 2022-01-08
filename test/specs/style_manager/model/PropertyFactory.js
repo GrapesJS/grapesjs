@@ -143,7 +143,7 @@ describe('PropertyFactory', () => {
 
   test('Build left, right', () => {
     var res = {
-      type: 'integer',
+      type: 'number',
       units: obj.unitsSize,
       default: 'auto',
       fixedValues: ['initial', 'inherit', 'auto'],
@@ -156,7 +156,7 @@ describe('PropertyFactory', () => {
 
   test('Build top, bottom', () => {
     var res = {
-      type: 'integer',
+      type: 'number',
       units: obj.unitsSize,
       default: 'auto',
       fixedValues: ['initial', 'inherit', 'auto'],
@@ -169,7 +169,7 @@ describe('PropertyFactory', () => {
 
   test('Build width family', () => {
     var res = {
-      type: 'integer',
+      type: 'number',
       units: obj.unitsSize,
       default: 'auto',
       fixedValues: ['initial', 'inherit', 'auto'],
@@ -185,7 +185,7 @@ describe('PropertyFactory', () => {
 
   test('Build flex-basis', () => {
     var res = {
-      type: 'integer',
+      type: 'number',
       units: obj.unitsSize,
       default: 'auto',
       fixedValues: ['initial', 'inherit', 'auto'],
@@ -198,7 +198,7 @@ describe('PropertyFactory', () => {
 
   test('Build height family', () => {
     var res = {
-      type: 'integer',
+      type: 'number',
       units: obj.unitsSize,
       default: 'auto',
       fixedValues: ['initial', 'inherit', 'auto'],
@@ -221,7 +221,7 @@ describe('PropertyFactory', () => {
           fixedValues: ['initial', 'inherit', 'auto'],
           property: 'margin-top',
           id: 'margin-top-sub',
-          type: 'integer',
+          type: 'number',
           units: obj.unitsSize,
           default: '0',
         },
@@ -229,7 +229,7 @@ describe('PropertyFactory', () => {
           fixedValues: ['initial', 'inherit', 'auto'],
           property: 'margin-right',
           id: 'margin-right-sub',
-          type: 'integer',
+          type: 'number',
           units: obj.unitsSize,
           default: '0',
         },
@@ -237,7 +237,7 @@ describe('PropertyFactory', () => {
           fixedValues: ['initial', 'inherit', 'auto'],
           property: 'margin-bottom',
           id: 'margin-bottom-sub',
-          type: 'integer',
+          type: 'number',
           units: obj.unitsSize,
           default: '0',
         },
@@ -245,7 +245,7 @@ describe('PropertyFactory', () => {
           fixedValues: ['initial', 'inherit', 'auto'],
           property: 'margin-left',
           id: 'margin-left-sub',
-          type: 'integer',
+          type: 'number',
           units: obj.unitsSize,
           default: '0',
         },
@@ -263,7 +263,7 @@ describe('PropertyFactory', () => {
           property: 'padding-top',
           id: 'padding-top-sub',
           fixedValues: ['initial', 'inherit', 'auto'],
-          type: 'integer',
+          type: 'number',
           units: obj.unitsSize,
           default: '0',
           min: 0,
@@ -272,7 +272,7 @@ describe('PropertyFactory', () => {
           property: 'padding-right',
           id: 'padding-right-sub',
           fixedValues: ['initial', 'inherit', 'auto'],
-          type: 'integer',
+          type: 'number',
           units: obj.unitsSize,
           default: '0',
           min: 0,
@@ -281,7 +281,7 @@ describe('PropertyFactory', () => {
           property: 'padding-bottom',
           id: 'padding-bottom-sub',
           fixedValues: ['initial', 'inherit', 'auto'],
-          type: 'integer',
+          type: 'number',
           units: obj.unitsSize,
           default: '0',
           min: 0,
@@ -290,7 +290,7 @@ describe('PropertyFactory', () => {
           property: 'padding-left',
           id: 'padding-left-sub',
           fixedValues: ['initial', 'inherit', 'auto'],
-          type: 'integer',
+          type: 'number',
           units: obj.unitsSize,
           default: '0',
           min: 0,
@@ -331,7 +331,7 @@ describe('PropertyFactory', () => {
 
   test('Build font-size', () => {
     var res = {
-      type: 'integer',
+      type: 'number',
       units: obj.unitsSize,
       default: 'medium',
       min: 0,
@@ -356,7 +356,7 @@ describe('PropertyFactory', () => {
 
   test('Build letter-spacing', () => {
     var res = {
-      type: 'integer',
+      type: 'number',
       units: obj.unitsSize,
       default: 'normal',
       fixedValues: ['normal', 'initial', 'inherit'],
@@ -396,7 +396,7 @@ describe('PropertyFactory', () => {
 
   test('Build line-height', () => {
     var res = {
-      type: 'integer',
+      type: 'number',
       units: obj.unitsSize,
       default: 'normal',
       fixedValues: ['normal', 'initial', 'inherit'],
@@ -423,19 +423,19 @@ describe('PropertyFactory', () => {
       properties: [
         {
           property: 'text-shadow-h',
-          type: 'integer',
+          type: 'number',
           units: obj.unitsSizeNoPerc,
           default: '0',
         },
         {
           property: 'text-shadow-v',
-          type: 'integer',
+          type: 'number',
           units: obj.unitsSizeNoPerc,
           default: '0',
         },
         {
           property: 'text-shadow-blur',
-          type: 'integer',
+          type: 'number',
           units: obj.unitsSizeNoPerc,
           default: '0',
           min: 0,
@@ -455,7 +455,7 @@ describe('PropertyFactory', () => {
 
   test('Build border-radius-c', () => {
     var res = {
-      type: 'integer',
+      type: 'number',
       units: obj.unitsSize,
       default: '0',
       min: 0,
@@ -472,7 +472,7 @@ describe('PropertyFactory', () => {
         {
           property: 'border-top-left-radius',
           id: 'border-top-left-radius-sub',
-          type: 'integer',
+          type: 'number',
           units: obj.unitsSize,
           default: '0',
           min: 0,
@@ -480,7 +480,7 @@ describe('PropertyFactory', () => {
         {
           property: 'border-top-right-radius',
           id: 'border-top-right-radius-sub',
-          type: 'integer',
+          type: 'number',
           units: obj.unitsSize,
           min: 0,
           default: '0',
@@ -488,7 +488,7 @@ describe('PropertyFactory', () => {
         {
           property: 'border-bottom-right-radius',
           id: 'border-bottom-right-radius-sub',
-          type: 'integer',
+          type: 'number',
           units: obj.unitsSize,
           min: 0,
           default: '0',
@@ -496,7 +496,7 @@ describe('PropertyFactory', () => {
         {
           property: 'border-bottom-left-radius',
           id: 'border-bottom-left-radius-sub',
-          type: 'integer',
+          type: 'number',
           units: obj.unitsSize,
           min: 0,
           default: '0',
@@ -524,7 +524,7 @@ describe('PropertyFactory', () => {
         {
           property: 'border-width',
           id: 'border-width-sub',
-          type: 'integer',
+          type: 'number',
           units: obj.unitsSizeNoPerc,
           default: '0',
           min: 0,
@@ -565,26 +565,26 @@ describe('PropertyFactory', () => {
       properties: [
         {
           property: 'box-shadow-h',
-          type: 'integer',
+          type: 'number',
           units: obj.unitsSizeNoPerc,
           default: '0',
         },
         {
           property: 'box-shadow-v',
-          type: 'integer',
+          type: 'number',
           units: obj.unitsSizeNoPerc,
           default: '0',
         },
         {
           property: 'box-shadow-blur',
-          type: 'integer',
+          type: 'number',
           units: obj.unitsSizeNoPerc,
           default: '5px',
           min: 0,
         },
         {
           property: 'box-shadow-spread',
-          type: 'integer',
+          type: 'number',
           units: obj.unitsSizeNoPerc,
           default: '0',
         },
@@ -691,7 +691,7 @@ describe('PropertyFactory', () => {
         {
           property: 'transition-duration',
           id: 'transition-duration-sub',
-          type: 'integer',
+          type: 'number',
           units: obj.unitsTime,
           default: '2s',
           min: 0,
@@ -711,7 +711,7 @@ describe('PropertyFactory', () => {
   test('Build perspective', () => {
     var res = {
       property: 'perspective',
-      type: 'integer',
+      type: 'number',
       units: obj.unitsSize,
       default: '0',
       min: 0,
@@ -726,40 +726,40 @@ describe('PropertyFactory', () => {
       properties: [
         {
           property: 'transform-rotate-x',
-          type: 'integer',
+          type: 'number',
           units: obj.unitsAngle,
           default: '0',
           functionName: 'rotateX',
         },
         {
           property: 'transform-rotate-y',
-          type: 'integer',
+          type: 'number',
           units: obj.unitsAngle,
           default: '0',
           functionName: 'rotateY',
         },
         {
           property: 'transform-rotate-z',
-          type: 'integer',
+          type: 'number',
           units: obj.unitsAngle,
           default: '0',
           functionName: 'rotateZ',
         },
         {
           property: 'transform-scale-x',
-          type: 'integer',
+          type: 'number',
           default: '1',
           functionName: 'scaleX',
         },
         {
           property: 'transform-scale-y',
-          type: 'integer',
+          type: 'number',
           default: '1',
           functionName: 'scaleY',
         },
         {
           property: 'transform-scale-z',
-          type: 'integer',
+          type: 'number',
           default: '1',
           functionName: 'scaleZ',
         },

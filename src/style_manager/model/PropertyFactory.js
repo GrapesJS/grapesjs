@@ -4,7 +4,7 @@ const getOptions = items => items.map(item => ({ id: item }));
 
 export default class PropertyFactory {
   constructor() {
-    this.typeNumber = 'integer'; // TODO change
+    this.typeNumber = 'number';
     this.typeColor = 'color';
     this.typeRadio = 'radio';
     this.typeSelect = 'select';
