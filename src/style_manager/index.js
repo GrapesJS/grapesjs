@@ -23,12 +23,15 @@
  * * `style:sector:add` - Sector added. The [Sector] is passed as an argument to the callback.
  * * `style:sector:remove` - Sector removed. The [Sector] is passed as an argument to the callback.
  * * `style:sector:update` - Sector updated. The [Sector] and the object containing changes are passed as arguments to the callback.
- *
- * * `style:sector:add` - Sector added. The [Sector] is passed as an argument to the callback.
+ * * `style:property:add` - Property added. The [Property] is passed as an argument to the callback.
+ * * `style:property:remove` - Property removed. The [Property] is passed as an argument to the callback.
+ * * `style:property:update` - Property updated. The [Property] and the object containing changes are passed as arguments to the callback.
  * * `style:target` - Target selection changed. The target (or `null` in case the target is deselected) is passed as an argument to the callback.
+ * <!--
  * * `styleManager:update:target` - The target (Component or CSSRule) is changed
  * * `styleManager:change` - Triggered on style property change from new selected component, the view of the property is passed as an argument to the callback
  * * `styleManager:change:{propertyName}` - As above but for a specific style property
+ * -->
  *
  * ## Methods
  * * [getConfig](#getconfig)
@@ -77,7 +80,10 @@ export const evSector = `${evPfx}sector`;
 export const evSectorAdd = `${evSector}:add`;
 export const evSectorRemove = `${evSector}:remove`;
 export const evSectorUpdate = `${evSector}:update`;
-export const evPropUp = `${evPfx}property:update`;
+export const evProp = `${evPfx}property`;
+export const evPropAdd = `${evProp}:add`;
+export const evPropRemove = `${evProp}:remove`;
+export const evPropUp = `${evProp}:update`;
 export const evLayerSelect = `${evPfx}layer:select`;
 export const evTarget = `${evPfx}target`;
 export const evCustom = `${evPfx}custom`;
@@ -98,6 +104,8 @@ export default () => {
       sectorAdd: evSectorAdd,
       sectorRemove: evSectorRemove,
       sectorUpdate: evSectorUpdate,
+      propertyAdd: evPropAdd,
+      propertyRemove: evPropRemove,
       propertyUpdate: evPropUp,
       layerSelect: evLayerSelect,
       target: evTarget,
@@ -125,7 +133,7 @@ export default () => {
       const ppfx = c.pStylePrefix;
       if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
       this.builtIn = new PropertyFactory();
-      properties = new Properties();
+      properties = new Properties([], { em, module: this });
       sectors = new Sectors([], { ...c, module: this });
       const model = new Model({ targets: [] });
       this.model = model;
