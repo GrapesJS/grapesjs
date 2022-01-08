@@ -21,6 +21,10 @@
  * ```
  * ## Available Events
  * * `style:sector:add` - Sector added. The [Sector] is passed as an argument to the callback.
+ * * `style:sector:remove` - Sector removed. The [Sector] is passed as an argument to the callback.
+ * * `style:sector:update` - Sector updated. The [Sector] and the object containing changes are passed as arguments to the callback.
+ *
+ * * `style:sector:add` - Sector added. The [Sector] is passed as an argument to the callback.
  * * `style:target` - Target selection changed. The target (or `null` in case the target is deselected) is passed as an argument to the callback.
  * * `styleManager:update:target` - The target (Component or CSSRule) is changed
  * * `styleManager:change` - Triggered on style property change from new selected component, the view of the property is passed as an argument to the callback
@@ -69,6 +73,10 @@ import SectorsView from './view/SectorsView';
 
 export const evAll = 'style';
 export const evPfx = `${evAll}:`;
+export const evSector = `${evPfx}sector`;
+export const evSectorAdd = `${evSector}:add`;
+export const evSectorRemove = `${evSector}:remove`;
+export const evSectorUpdate = `${evSector}:update`;
 export const evPropUp = `${evPfx}property:update`;
 export const evLayerSelect = `${evPfx}layer:select`;
 export const evTarget = `${evPfx}target`;
@@ -87,6 +95,9 @@ export default () => {
 
     events: {
       all: evAll,
+      sectorAdd: evSectorAdd,
+      sectorRemove: evSectorRemove,
+      sectorUpdate: evSectorUpdate,
       propertyUpdate: evPropUp,
       layerSelect: evLayerSelect,
       target: evTarget,
@@ -118,6 +129,9 @@ export default () => {
       sectors = new Sectors([], { ...c, module: this });
       const model = new Model({ targets: [] });
       this.model = model;
+      this.__listenAdd(sectors, evSectorAdd);
+      this.__listenRemove(sectors, evSectorRemove);
+      this.__listenUpdate(sectors, evSectorUpdate);
 
       // Triggers for the selection refresh and properties
       const ev = 'component:toggled component:update:classes change:state change:device frame:resized selector:type';
