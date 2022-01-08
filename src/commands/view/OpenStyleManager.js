@@ -35,7 +35,9 @@ export default {
       const sm = editor.StyleManager;
       this.sm = sm;
       const smConfig = sm.getConfig();
-      if (!smConfig.appendTo) {
+      if (smConfig.custom) {
+        sm.__trgCustom({ container: this.$cn2.get(0) });
+      } else if (!smConfig.appendTo) {
         this.$cn2.append(sm.render());
         const pfx = smConfig.stylePrefix;
         this.$header = $(`<div class="${pfx}header">${editor.t('styleManager.empty')}</div>`);

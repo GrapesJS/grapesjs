@@ -168,8 +168,9 @@ export default () => {
       this.__trgCustom();
     },
 
-    __trgCustom() {
-      this.em.trigger(this.events.custom);
+    __trgCustom(opts = {}) {
+      this.__ctn = this.__ctn || opts.container;
+      this.em.trigger(this.events.custom, { container: this.__ctn });
     },
 
     __trgEv(event, ...data) {

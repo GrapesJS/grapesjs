@@ -202,7 +202,7 @@ export default class PropertyFactory {
       ['background-color', { default: 'none' }, 'color'],
 
       // File type
-      ['background-image', { type: this.typeFile, functionName: 'url', default: 'none' }],
+      ['background-image', { type: this.typeFile, functionName: 'url', default: 'none', full: 1 }],
 
       // Slider type
       ['opacity', { type: this.typeSlider, default: '1', min: 0, max: 1, step: 0.01 }],
