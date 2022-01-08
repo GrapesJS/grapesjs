@@ -2,14 +2,14 @@ import PropertyCompositeView from './PropertyCompositeView';
 import PropertiesView from './PropertiesView';
 import LayersView from './LayersView';
 
-export default PropertyCompositeView.extend({
+export default class PropertyStackView extends PropertyCompositeView {
   events() {
     return {
       ...PropertyCompositeView.prototype.events,
       'click [data-add-layer]': 'addLayer',
       change: '',
     };
-  },
+  }
 
   templateInput() {
     const { pfx, em } = this;
@@ -23,33 +23,33 @@ export default PropertyCompositeView.extend({
         <div data-layers-wrapper></div>
       </div>
     `;
-  },
+  }
 
   init() {
     const { model } = this;
     this.listenTo(model.__getLayers(), 'change reset', this.updateStatus);
-  },
+  }
 
   addLayer() {
     this.model.addLayer({}, { at: 0 });
-  },
+  }
 
   /**
    * There is no need to handle input update by the property itself,
    * this will be done by layers
    * @private
    */
-  setValue() {},
+  setValue() {}
 
   remove() {
     this.layersView?.remove();
     PropertyCompositeView.prototype.remove.apply(this, arguments);
-  },
+  }
 
   clearCached() {
     PropertyCompositeView.prototype.clearCached.apply(this, arguments);
     this.layersView = null;
-  },
+  }
 
   onRender() {
     const { model, el, config } = this;
@@ -79,5 +79,5 @@ export default PropertyCompositeView.extend({
       this.props = propsView;
       this.layersView = layersView;
     }
-  },
-});
+  }
+}

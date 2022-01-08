@@ -1,10 +1,10 @@
 import PropertySelectView from './PropertySelectView';
 
-export default PropertySelectView.extend({
+export default class PropertyRadioView extends PropertySelectView {
   templateInput() {
     const { ppfx } = this;
     return `<div class="${ppfx}field ${ppfx}field-radio"></div>`;
-  },
+  }
 
   onRender() {
     const { pfx, ppfx, model } = this;
@@ -36,12 +36,12 @@ export default PropertySelectView.extend({
       inputHld.innerHTML = `<div class="${ppfx}radio-items">${optionsRes.join('')}</div>`;
       this.input = inputHld.firstChild;
     }
-  },
+  }
 
   __setValueInput(value) {
     const model = this.model;
     const id = value || model.getDefaultValue();
     const inputIn = this.getInputEl()?.querySelector(`[value="${id}"]`);
     inputIn && (inputIn.checked = true);
-  },
-});
+  }
+}

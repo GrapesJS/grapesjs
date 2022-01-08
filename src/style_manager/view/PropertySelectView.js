@@ -1,6 +1,6 @@
 import PropertyView from './PropertyView';
 
-export default PropertyView.extend({
+export default class PropertySelectView extends PropertyView {
   templateInput() {
     const pfx = this.pfx;
     const ppfx = this.ppfx;
@@ -12,17 +12,17 @@ export default PropertyView.extend({
         </div>
       </div>
     `;
-  },
+  }
 
   initialize(...args) {
     PropertyView.prototype.initialize.apply(this, args);
     this.listenTo(this.model, 'change:options', this.updateOptions);
-  },
+  }
 
   updateOptions() {
     this.input = null;
     this.onRender();
-  },
+  }
 
   onRender() {
     const { model, pfx } = this;
@@ -44,7 +44,7 @@ export default PropertyView.extend({
       inputH.innerHTML = `<select>${optionsRes.join('')}</select>`;
       this.input = inputH.firstChild;
     }
-  },
+  }
 
   __setValueInput(value) {
     const { model } = this;
@@ -52,5 +52,5 @@ export default PropertyView.extend({
     const firstOpt = model.getOptions()[0];
     const firstId = firstOpt ? model.getOptionId(firstOpt) : '';
     input && (input.value = value || firstId);
-  },
-});
+  }
+}

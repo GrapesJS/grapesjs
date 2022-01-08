@@ -1,14 +1,14 @@
 import { isString } from 'underscore';
 import PropertyView from './PropertyView';
 
-export default PropertyView.extend({
+export default class PropertyFileView extends PropertyView {
   events() {
     return {
       ...PropertyView.prototype.events,
       'click [data-clear-asset]': 'clear',
       'click [data-open-assets]': 'openAssetManager',
     };
-  },
+  }
 
   templateInput() {
     const { pfx, em } = this;
@@ -31,7 +31,7 @@ export default PropertyView.extend({
         </div>
       </div>
     `;
-  },
+  }
 
   __setValueInput(value) {
     const { model, el } = this;
@@ -40,7 +40,7 @@ export default PropertyView.extend({
     const prvEl = el.querySelector('[data-preview]');
     prvBoxEl.style.display = !value || value === valueDef ? 'none' : '';
     prvEl.style.backgroundImage = value || model.getDefaultValue();
-  },
+  }
 
   openAssetManager() {
     const am = this.em?.get('AssetManager');
@@ -54,5 +54,5 @@ export default PropertyView.extend({
       types: ['image'],
       accept: 'image/*',
     });
-  },
-});
+  }
+}

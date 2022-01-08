@@ -1,7 +1,7 @@
 import PropertyView from './PropertyView';
 import PropertiesView from './PropertiesView';
 
-export default PropertyView.extend({
+export default class PropertyCompositeView extends PropertyView {
   templateInput() {
     const { pfx } = this;
     return `
@@ -9,14 +9,14 @@ export default PropertyView.extend({
         <span id="${pfx}input-holder"></span>
       </div>
     `;
-  },
+  }
 
   remove() {
     this.props?.remove();
     PropertyView.prototype.remove.apply(this, arguments);
-  },
+  }
 
-  onValueChange() {},
+  onValueChange() {}
 
   onRender() {
     const { model, pfx } = this;
@@ -37,10 +37,10 @@ export default PropertyView.extend({
       this.$el.find(`#${pfx}input-holder`).append(propsView.el);
       this.props = propsView;
     }
-  },
+  }
 
   clearCached() {
     PropertyView.prototype.clearCached.apply(this, arguments);
     this.props = null;
-  },
-});
+  }
+}

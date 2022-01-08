@@ -1,17 +1,17 @@
-import Backbone from 'backbone';
+import { View } from 'common';
 import { bindAll, isUndefined, debounce } from 'underscore';
 import { isObject } from 'utils/mixins';
 
 const clearProp = 'data-clear-style';
 
-export default Backbone.View.extend({
+export default class Property extends View {
   template() {
     const { pfx, ppfx } = this;
     return `
       <div class="${pfx}label" data-sm-label></div>
       <div class="${ppfx}fields" data-sm-fields></div>
     `;
-  },
+  }
 
   templateLabel(model) {
     const { pfx, em } = this;
@@ -26,7 +26,7 @@ export default Backbone.View.extend({
       </span>
       ${!parent ? `<div class="${pfx}clear" style="display: none" ${clearProp}>${iconClose}</div>` : ''}
     `;
-  },
+  }
 
   templateInput(model) {
     return `
@@ -34,12 +34,7 @@ export default Backbone.View.extend({
         <input placeholder="${model.getDefaultValue()}"/>
       </div>
     `;
-  },
-
-  events: {
-    change: 'inputValueChanged',
-    [`click [${clearProp}]`]: 'clear',
-  },
+  }
 
   initialize(o = {}) {
     bindAll(this, '__change', '__updateStyle');
@@ -66,13 +61,13 @@ export default Backbone.View.extend({
 
     const init = this.init && this.init.bind(this);
     init && init();
-  },
+  }
 
   remove() {
-    Backbone.View.prototype.remove.apply(this, arguments);
+    View.prototype.remove.apply(this, arguments);
     ['em', 'input', '$input', 'view'].forEach(i => (this[i] = {}));
     this.__destroyFn(this._getClbOpts());
-  },
+  }
 
   /**
    * Triggers when the status changes. The status indicates if the value of
@@ -97,7 +92,7 @@ export default Backbone.View.extend({
     }
 
     this.parent?.updateStatus();
-  },
+  }
 
   /**
    * Clear the property from the target
@@ -105,7 +100,7 @@ export default Backbone.View.extend({
   clear(ev) {
     ev && ev.stopPropagation();
     this.model.clear();
-  },
+  }
 
   /**
    * Get clear element
@@ -117,7 +112,7 @@ export default Backbone.View.extend({
     }
 
     return this.clearEl;
-  },
+  }
 
   /**
    * Triggers when the value of element input/s is changed, so have to update
@@ -128,12 +123,12 @@ export default Backbone.View.extend({
     // Skip the default update in case a custom emit method is defined
     if (this.emit) return;
     this.model.upValue(ev.target.value);
-  },
+  }
 
   onValueChange(m, val, opt = {}) {
     this.setValue(this.model.getFullValue());
     this.updateStatus();
-  },
+  }
 
   /**
    * Update the element input.
@@ -145,12 +140,12 @@ export default Backbone.View.extend({
     const result = isUndefined(value) || value === '' ? model.getDefaultValue() : value;
     if (this.update) return this.__update(result);
     this.__setValueInput(result);
-  },
+  }
 
   __setValueInput(value) {
     const input = this.getInputEl();
     input && (input.value = value);
-  },
+  }
 
   getInputEl() {
     if (!this.input) {
@@ -158,22 +153,22 @@ export default Backbone.View.extend({
     }
 
     return this.input;
-  },
+  }
 
   updateVisibility() {
     this.el.style.display = this.model.isVisible() ? '' : 'none';
-  },
+  }
 
   clearCached() {
     this.clearEl = null;
     this.input = null;
     this.$input = null;
-  },
+  }
 
   __unset() {
     const unset = this.unset && this.unset.bind(this);
     unset && unset(this._getClbOpts());
-  },
+  }
 
   __update(value) {
     const update = this.update && this.update.bind(this);
@@ -182,12 +177,12 @@ export default Backbone.View.extend({
         ...this._getClbOpts(),
         value,
       });
-  },
+  }
 
   __change(...args) {
     const emit = this.emit && this.emit.bind(this);
     emit && emit(this._getClbOpts(), ...args);
-  },
+  }
 
   __updateStyle(value, { complete, partial, ...opts } = {}) {
     const { model } = this;
@@ -198,7 +193,7 @@ export default Backbone.View.extend({
     } else {
       model.upValue(value, { partial: !final });
     }
-  },
+  }
 
   _getClbOpts() {
     const { model, el, createdEl } = this;
@@ -210,7 +205,7 @@ export default Backbone.View.extend({
       change: this.__change,
       updateStyle: this.__updateStyle,
     };
-  },
+  }
 
   render() {
     this.clearCached();
@@ -235,5 +230,10 @@ export default Backbone.View.extend({
     const onRender = this.onRender && this.onRender.bind(this);
     onRender && onRender();
     this.setValue(model.getValue());
-  },
-});
+  }
+}
+
+Property.prototype.events = {
+  change: 'inputValueChanged',
+  [`click [${clearProp}]`]: 'clear',
+};
