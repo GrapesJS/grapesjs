@@ -27,10 +27,18 @@ styleManager.addSector(...);
 ## Available Events
 
 *   `style:sector:add` - Sector added. The [Sector] is passed as an argument to the callback.
+*   `style:sector:remove` - Sector removed. The [Sector] is passed as an argument to the callback.
+*   `style:sector:update` - Sector updated. The [Sector] and the object containing changes are passed as arguments to the callback.
+*   `style:property:add` - Property added. The [Property] is passed as an argument to the callback.
+*   `style:property:remove` - Property removed. The [Property] is passed as an argument to the callback.
+*   `style:property:update` - Property updated. The [Property] and the object containing changes are passed as arguments to the callback.
 *   `style:target` - Target selection changed. The target (or `null` in case the target is deselected) is passed as an argument to the callback.
-*   `styleManager:update:target` - The target (Component or CSSRule) is changed
-*   `styleManager:change` - Triggered on style property change from new selected component, the view of the property is passed as an argument to the callback
-*   `styleManager:change:{propertyName}` - As above but for a specific style property
+
+<!--
+* `styleManager:update:target` - The target (Component or CSSRule) is changed
+* `styleManager:change` - Triggered on style property change from new selected component, the view of the property is passed as an argument to the callback
+* `styleManager:change:{propertyName}` - As above but for a specific style property
+-->
 
 ## Methods
 
@@ -45,7 +53,7 @@ styleManager.addSector(...);
 *   [removeProperty][10]
 *   [select][11]
 *   [getSelected][12]
-*   [getLastSelected][13]
+*   [getSelectedAll][13]
 *   [getSelectedParents][14]
 *   [addStyleTargets][15]
 *   [getBuiltIn][16]
@@ -118,7 +126,9 @@ Get all sectors.
 
 ### Parameters
 
-*   `opts`   (optional, default `{}`)
+*   `opts` **[Object][23]** Options (optional, default `{}`)
+
+    *   `opts.visible` **[Boolean][27]?** Returns only visible sectors
 
 ### Examples
 
@@ -126,7 +136,7 @@ Get all sectors.
 const sectors = styleManager.getSectors();
 ```
 
-Returns **Collection<[Sector]>** Collection of sectors
+Returns **[Array][28]<[Sector]>** 
 
 ## removeSector
 
@@ -151,7 +161,7 @@ Add new property to the sector.
 ### Parameters
 
 *   `sectorId` **[String][24]** Sector id.
-*   `property` **[Object][23]** Property definition. Check the [base available properties][27] + others based on the `type` of your property.
+*   `property` **[Object][23]** Property definition. Check the [base available properties][29] + others based on the `type` of your property.
 *   `opts` **[Object][23]** Options (optional, default `{}`)
 
     *   `opts.at` **[Number][26]?** Position index (by default, will be appended at the end).
@@ -249,16 +259,16 @@ Returns **[Array][28]<([Component] | [CSSRule])>** Array containing selected Com
 
 ## getSelected
 
-Get the array of selected targets.
-
-Returns **[Array][28]<([Component] | [CSSRule])>** 
-
-## getLastSelected
-
 Get the last selected target.
 By default, the Style Manager shows styles of the last selected target.
 
 Returns **([Component] | [CSSRule] | null)** 
+
+## getSelectedAll
+
+Get the array of selected targets.
+
+Returns **[Array][28]<([Component] | [CSSRule])>** 
 
 ## getSelectedParents
 
@@ -377,31 +387,6 @@ Get all types
 
 Returns **[Array][28]** 
 
-## createType
-
-Create new property from type
-
-### Parameters
-
-*   `id` **[string][24]** Type ID
-*   `options` **[Object][23]** Options (optional, default `{}`)
-
-    *   `options.model` **[Object][23]** Custom model object (optional, default `{}`)
-    *   `options.view` **[Object][23]** Custom view object (optional, default `{}`)
-
-### Examples
-
-```javascript
-const propView = styleManager.createType('integer', {
- model: {units: ['px', 'rem']}
-});
-propView.render();
-propView.model.on('change:value', ...);
-someContainer.appendChild(propView.el);
-```
-
-Returns **PropertyView** 
-
 [1]: https://github.com/artf/grapesjs/blob/master/src/style_manager/config/config.js
 
 [2]: #getconfig
@@ -426,7 +411,7 @@ Returns **PropertyView**
 
 [12]: #getselected
 
-[13]: #getlastselected
+[13]: #getselectedall
 
 [14]: #getselectedparents
 
@@ -454,6 +439,8 @@ Returns **PropertyView**
 
 [26]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
 
-[27]: property.html#properties
+[27]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
 
 [28]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+
+[29]: property.html#properties

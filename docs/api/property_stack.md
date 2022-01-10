@@ -23,7 +23,7 @@
 
 Get all available layers.
 
-Returns **Collection<[Layer]>** 
+Returns **[Array][5]<[Layer]>** 
 
 ### getLayer
 
@@ -31,7 +31,7 @@ Get layer by index.
 
 #### Parameters
 
-*   `index` **[Number][5]** Layer index position. (optional, default `0`)
+*   `index` **[Number][6]** Layer index position. (optional, default `0`)
 
 #### Examples
 
@@ -73,12 +73,28 @@ Select layer by index.
 
 #### Parameters
 
-*   `index` **[Number][5]** Index of the layer to select. (optional, default `0`)
+*   `index` **[Number][6]** Index of the layer to select. (optional, default `0`)
 
 #### Examples
 
 ```javascript
 property.selectLayerAt(1);
+```
+
+### moveLayer
+
+Move layer by index.
+
+#### Parameters
+
+*   `layer` **[Layer]** Layer to move.
+*   `index` **[Number][6]** New layer index. (optional, default `0`)
+
+#### Examples
+
+```javascript
+const layer = property.getLayer(1);
+property.moveLayer(layer, 0);
 ```
 
 ### addLayer
@@ -87,10 +103,10 @@ Add new layer to the stack.
 
 #### Parameters
 
-*   `props` **[Object][6]** Custom property values to use in a new layer. (optional, default `{}`)
-*   `opts` **[Object][6]** Options (optional, default `{}`)
+*   `props` **[Object][7]** Custom property values to use in a new layer. (optional, default `{}`)
+*   `opts` **[Object][7]** Options (optional, default `{}`)
 
-    *   `opts.at` **[Number][5]?** Position index (by default the layer will be appended at the end).
+    *   `opts.at` **[Number][6]?** Position index (by default the layer will be appended at the end).
 
 #### Examples
 
@@ -124,7 +140,7 @@ Remove layer by index.
 
 #### Parameters
 
-*   `index` **[Number][5]** Index of the layer to remove (optional, default `0`)
+*   `index` **[Number][6]** Index of the layer to remove (optional, default `0`)
 
 #### Examples
 
@@ -158,11 +174,24 @@ Get style object from the layer.
 #### Parameters
 
 *   `layer` **[Layer]** 
-*   `opts` **[Object][6]** Options (optional, default `{}`)
+*   `opts` **[Object][7]** Options (optional, default `{}`)
 
     *   `opts.camelCase` **[Boolean][1]?** Return property names in camelCase.
+    *   `opts.number` **[Object][7]?** Limit the result of the number types, eg. `number: { min: -3, max: 3 }`
 
-Returns **[Object][6]** Style object
+Returns **[Object][7]** Style object
+
+### getStylePreview
+
+Get preview style object from the layer.
+If the property has `preview: false` the returned object will be empty.
+
+#### Parameters
+
+*   `layer` **[Layer]** 
+*   `opts` **[Object][7]** Options. Same of `getStyleFromLayer` (optional, default `{}`)
+
+Returns **[Object][7]** Style object
 
 ### getLayerSeparator
 
@@ -178,6 +207,8 @@ Returns **[RegExp][3]**
 
 [4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
 
-[5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+[5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
-[6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+
+[7]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object

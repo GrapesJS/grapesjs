@@ -575,11 +575,14 @@ const wrapperCmp = editor.Pages.getSelected().getMainComponent();
 const btnCmp = wrapperCmp.find('button')[0];
 btnCmp && sm.select(btnCmp);
 
-// You can also select as a target some CSS query
+// You can also select CSS query as a target
 sm.select('.btn > span');
 
-// Once the target is selected, you can check its current style object.
+// Once the target is selected, you can check its current style object
+console.log(sm.getSelected()?.getStyle());
 
+// and update all selected target styles when necessary
+sm.addStyleTargets({ color: 'red' });
 ```
 
 <!--

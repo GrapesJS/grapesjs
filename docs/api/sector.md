@@ -4,6 +4,8 @@
 
 
 
+[Property]: property.html
+
 ### Properties
 
 *   `id` **[String][1]** Sector id, eg. `typography`
@@ -63,10 +65,6 @@ Get sector properties.
     *   `opts.withParentValue` **[Boolean][2]** Get only properties with parent value (optional, default `false`)
 
 Returns **[Array][3]<[Property]>** 
-
-##
-
-[Property]: property.html
 
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 

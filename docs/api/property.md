@@ -67,6 +67,12 @@ Check if the property has value.
 
 Returns **[Boolean][3]** 
 
+### hasValueParent
+
+Indicates if the current value is coming from a parent target (eg. another CSSRule).
+
+Returns **[Boolean][3]** 
+
 ### getStyle
 
 Get the CSS style object of the property.
@@ -123,8 +129,28 @@ The change is also propagated to the selected targets (eg. the css property is c
 
     *   `opts.noTarget` **[Boolean][3]** If `true` the change won't be propagated to selected targets. (optional, default `false`)
 
+### canClear
+
+Indicates if the current value comes directly from the selected target and so can be cleared.
+
+Returns **[Boolean][3]** 
+
+### getParent
+
+If the current property is a sub-property, this will return the parent Property.
+
+Returns **([[Property][4]] | null)** 
+
+### isFull
+
+Indicates if the property is full-width in UI.
+
+Returns **[Boolean][3]** 
+
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
 [2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
 [3]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+
+[4]: #property

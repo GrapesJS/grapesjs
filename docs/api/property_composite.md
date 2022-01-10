@@ -4,6 +4,8 @@
 
 **Extends Property**
 
+[Property]: property.html
+
 ### Properties
 
 *   `properties` **[Array][1]<[Object][2]>** Array of sub properties, eg. `[{ type: 'number', property: 'margin-top' }, ...]`
@@ -95,10 +97,6 @@ Returns **[RegExp][5]**
 Get the join value.
 
 Returns **[String][4]** 
-
-##
-
-[Property]: property.html
 
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 

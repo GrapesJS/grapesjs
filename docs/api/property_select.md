@@ -62,7 +62,7 @@ Get option label.
 
 #### Parameters
 
-*   `id` **[String][3]** Option id
+*   `id` **([String][3] | [Object][2])** Option id or the option object
 *   `opts` **[Object][2]** Options (optional, default `{}`)
 
     *   `opts.locale` **[Boolean][4]** Use the locale string from i18n module (optional, default `true`)

@@ -131,6 +131,7 @@ Remove rule, by CssRule or matching selector (eg. the selector will match also a
 ### Parameters
 
 *   `rule` **([String][8] | [CssRule] | [Array][9]<[CssRule]>)** CssRule or matching selector.
+*   `opts`  
 
 ### Examples
 
