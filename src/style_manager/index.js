@@ -54,7 +54,6 @@
  * * [addType](#addtype)
  * * [getType](#gettype)
  * * [getTypes](#gettypes)
- * * [createType](#createtype)
  *
  * [Sector]: sector.html
  * [CssRule]: css_rule.html

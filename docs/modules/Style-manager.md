@@ -562,7 +562,7 @@ Here an example below of a custom Style Manager UI rendered by using Vuetify (Vu
 
 <demo-viewer value="46kf7brn" height="500" darkcode/>
 
-From the example above you can notice how we subscribe to `style:custom` and update `this.sectors = sm.getSectors({ visible: true });` on each trigger, this is enough for the framework to update the rest of the template automatically.
+From the example above you can notice how we subscribe to `style:custom` and update `this.sectors = sm.getSectors({ visible: true });` on each trigger, and this is enough for the framework to update the rest of the template automatically.
 
 In case you need to get/update the selected style targets directly, you can also rely on these APIs.
 
