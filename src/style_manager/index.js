@@ -152,7 +152,7 @@ export default () => {
         this.__upProps();
         this.__trgCustom();
       });
-      model.listenTo(em, 'styleable:change', upProps);
+      model.listenTo(em, 'styleable:change undo redo', upProps);
 
       // Triggers only custom event
       const trgCustom = debounce(() => this.__trgCustom());
