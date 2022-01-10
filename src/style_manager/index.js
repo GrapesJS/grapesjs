@@ -65,6 +65,7 @@
  */
 
 import { isElement, isUndefined, isArray, isString, debounce } from 'underscore';
+import { isComponent } from 'utils/mixins';
 import Module from 'common/module';
 import { Model } from 'common';
 import defaults from './config/config';
@@ -356,14 +357,27 @@ export default () => {
         targets.push(model);
       });
 
+      const component = opts.component || targets.filter(t => isComponent(t)).reverse()[0];
       targets = targets.map(t => this.getModelToStyle(t));
+      const state = em.getState();
       const lastTarget = targets.slice().reverse()[0];
-      const lastTargetParents = this.getParentRules(lastTarget, em.getState());
+      const lastTargetParents = this.getParentRules(lastTarget, { state, component });
       let stateTarget = this.__getStateTarget();
+
+      // Update sectors/properties visibility
+      sectors.forEach(sector => {
+        const props = sector.getProperties();
+        props.forEach(prop => {
+          const isVisible = prop.__checkVisibility({ target: lastTarget, component, sectors });
+          prop.set('visible', isVisible);
+        });
+        const sectorVisible = props.some(p => p.isVisible());
+        sector.set('visible', sectorVisible);
+      });
 
       // Handle the creation and update of the state rule, if enabled.
       em.skip(() => {
-        if (em.getState() && lastTarget?.getState?.()) {
+        if (state && lastTarget?.getState?.()) {
           const style = lastTarget.getStyle();
           if (!stateTarget) {
             stateTarget = cssc.getAll().add({ selectors: 'gjs-selected', style, important: true });
@@ -518,15 +532,15 @@ export default () => {
       return model;
     },
 
-    getParentRules(target, state) {
+    getParentRules(target, { state, component } = {}) {
       const { em } = this;
       let result = [];
 
       if (em && target) {
+        const sel = component;
         const cssC = em.get('CssComposer');
         const cssGen = em.get('CodeManager').getGenerator('css');
         const cmp = target.toHTML ? target : target.getComponent();
-        const sel = em.getSelected();
         const optsSel = { combination: true, array: true };
         let cmpRules = [];
         let otherRules = [];
