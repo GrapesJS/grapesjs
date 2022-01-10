@@ -562,6 +562,26 @@ Here an example below of a custom Style Manager UI rendered by using Vuetify (Vu
 
 <demo-viewer value="46kf7brn" height="500" darkcode/>
 
+From the example above you can notice how we subscribe to `style:custom` and update `this.sectors = sm.getSectors({ visible: true });` on each trigger, this is enough for the framework to update the rest of the template automatically.
+
+In case you need to get/update the selected style targets directly, you can also rely on these APIs.
+
+```js
+// Get the module from the editor instance
+const sm = editor.StyleManager;
+
+// Select the first button in the current page
+const wrapperCmp = editor.Pages.getSelected().getMainComponent();
+const btnCmp = wrapperCmp.find('button')[0];
+btnCmp && sm.select(btnCmp);
+
+// You can also select as a target some CSS query
+sm.select('.btn > span');
+
+// Once the target is selected, you can check its current style object.
+
+```
+
 <!--
 <style>
   .style-manager {
@@ -824,16 +844,10 @@ Here an example below of a custom Style Manager UI rendered by using Vuetify (Vu
     },
     methods: {
       handleCustom(props) {
-        if (props?.container && !this.inserted) {
-          this.inserted = 1;
+        if (props.container && !props.container.contains(this.$el)) {
           props.container.appendChild(this.$el);
         }
         this.sectors = sm.getSectors({ visible: true });
-        console.log('handleCustom styles', {
-          sectors: this.sectors,
-          ins: this.inserted,
-          props,
-        })
       },
     }
   });

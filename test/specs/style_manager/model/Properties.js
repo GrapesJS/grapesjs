@@ -763,7 +763,7 @@ describe('StyleManager properties logic', () => {
         [propCTest]: 'valueC-new CC, valueC-1-ext, valueC-2-ext',
       });
       // Check also the layers
-      const layers = compTypeProp.getLayers().models;
+      const layers = compTypeProp.getLayers();
       expect(layers.length).toBe(3);
       const [layer1, layer2, layer3] = layers;
       expect(layer1.getValues()).toEqual({
