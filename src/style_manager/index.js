@@ -183,13 +183,7 @@ export default () => {
     },
 
     postRender() {
-      const elTo = this.getConfig().appendTo;
-
-      if (elTo) {
-        const el = isElement(elTo) ? elTo : document.querySelector(elTo);
-        if (!el) return this.__logWarn('"appendTo" element not found');
-        el.appendChild(this.render());
-      }
+      this.__appendTo();
     },
 
     /**

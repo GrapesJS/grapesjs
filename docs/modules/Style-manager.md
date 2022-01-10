@@ -536,6 +536,311 @@ grapesjs.init({
 
 ### Custom Style Manager
 
+In case you need a completely custom Style Manager UI (eg. you have to use your UI components), you can create it from scratch by relying on the same sector/propriety architecture or even interfacing directly with selected targets.
+
+All you have to do is to indicate the editor your intent to use a custom UI and then subscribe to the `style:custom` event that will let you know when is the right moment to create/update your UI.
+
+```js
+const editor = grapesjs.init({
+    // ...
+    styleManager: {
+      custom: true,
+      // ...
+    },
+});
+
+editor.on('style:custom', props => {
+    // props.container (HTMLElement)
+    //    The default element where you can append your
+    //    custom UI in order to render it in the default position.
+
+    // Here you would put the logic to render/update your UI by relying on Style Manager API
+});
+```
+
+Here an example below of a custom Style Manager UI rendered by using Vuetify (Vue Material components) and relying on the default sector/propriety state architecture via API.
+
+<demo-viewer value="46kf7brn" height="500" darkcode/>
+
+<!--
+<style>
+  .style-manager {
+    font-size: 12px;
+  }
+  .sm-input-color {
+    width: 16px !important;
+    height: 15px !important;
+    opacity: 0 !important;
+  }
+  .sm-type-cmp {
+    background-color: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.25);
+    border-radius: 3px;
+    position: relative;
+    min-height: 45px;
+  }
+  .sm-add-layer {
+    position: absolute !important;
+    top: -20px;
+    right: 12px;
+  }
+  .sm-layer + .sm-layer {
+    border-top: 1px solid rgba(255,255,255,.25);
+  }
+  .sm-layer-prv,
+  .sm-btn-prv {
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    display: inline-block;
+  }
+
+  .sm-layer-prv--text-shadow::after {
+    color: #000;
+    content: "T";
+    font-weight: 900;
+    font-size: 10px;
+    text-align: center;
+    display: block;
+  }
+
+  .gjs-pn-views-container, .gjs-pn-views {
+    width: 280px;
+  }
+  .gjs-pn-options {
+    right: 280px;
+  }
+  .gjs-cv-canvas {
+    width: calc(100% - 280px);
+  }
+
+  /* Vuetify overrides */
+  .v-application {
+    background: transparent !important;
+  }
+  .v-application--wrap {
+    min-height: auto;
+  }
+  .v-input__slot {
+    font-size: 12px;
+    min-height: 10px !important;
+  }
+  .v-select__selections {
+    flex-wrap: nowrap;
+  }
+  .v-text-field .v-input__slot {
+    padding: 0 10px !important;
+  }
+  .v-input--selection-controls {
+    margin-top: 0;
+  }
+  .v-text-field__details, .v-messages {
+    display: none;
+  }
+</style>
+<div>
+  <div class="style-manager">
+      <v-app>
+        <v-main>
+        <v-expansion-panels  accordion multiple>
+          <v-expansion-panel v-for="sector in sectors" :key="sector.getId()">
+            <v-expansion-panel-header>
+              {{ sector.getName() }}
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <v-row>
+              <property-field v-for="prop in sector.getProperties()" :key="prop.getId() + prop.canClear()" :prop="prop"/>
+              </v-row>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+        </v-expansion-panels>
+        </v-main>
+      </v-app>
+  </div>
+
+  <div id="property-field" style="display: none;">
+    <v-col :class="['py-0 px-1 mb-1', prop.isFull() && 'mb-3']" :cols="prop.get('full') ? '12' : '6'">
+        <v-row :class="labelCls">
+          <v-col cols="auto pr-0">{{ prop.getLabel() }}</v-col>
+          <v-col cols="auto" v-if="prop.canClear()">
+            <v-icon @click="prop.clear()" color="indigo accent-1" small>mdi-close</v-icon>
+          </v-col>
+        </v-row>
+        <div v-if="propType === 'number'">
+          <v-text-field :placeholder="defValue" :value="inputValue" @change="handleChange" outlined dense/>
+        </div>
+        <div v-else-if="propType === 'radio'">
+          <v-radio-group :value="prop.getValue()" @change="handleChange" row dense>
+            <v-radio v-for="opt in prop.getOptions()" :key="prop.getOptionId(opt)" :label="prop.getOptionLabel(opt)" :value="prop.getOptionId(opt)"/>
+          </v-radio-group>
+        </div>
+        <div v-else-if="propType === 'select'">
+          <v-select :items="toOptions" :value="prop.getValue()" @change="handleChange" outlined dense/>
+        </div>
+        <div v-else-if="propType === 'color'">
+          <v-text-field :placeholder="defValue" :value="inputValue" @change="handleChange" outlined dense>
+            <template v-slot:append>
+              <div :style="{ backgroundColor: prop.hasValue() ? prop.getValue() : defValue }">
+                <input class="sm-input-color"
+                  type="color"
+                  :value="prop.hasValue() ? prop.getValue() : defValue"
+                  @change="(ev) => handleChange(ev.target.value)"
+                  @input="(ev) => handleInput(ev.target.value)"
+                />
+              </div>
+          </template>
+          </v-text-field>
+        </div>
+        <div v-else-if="propType === 'slider'">
+          <v-slider
+            track-color="white"
+            :value="prop.getValue()"
+            :min="prop.getMin()"
+            :max="prop.getMax()"
+            :step="prop.getStep()"
+            @change="handleChange"
+            @input="(value) => { console.log('trigger input', value) }"
+            @start="(value) => { console.log('trigger start', value) }"
+          />
+        </div>
+        <div v-else-if="propType === 'file'">
+          <v-btn @click="openAssets(prop)" block>
+            <v-row>
+              <v-col v-if="prop.getValue() && prop.getValue() !== defValue" cols="auto">
+                <div class="sm-btn-prv" :style="{ backgroundImage: `url(${prop.getValue()})` }"></div>
+              </v-col>
+              <v-col>Select image</v-col>
+            </v-row>
+          </v-btn>
+        </div>
+        <div v-else-if="propType === 'composite'">
+          <v-row no-gutters class="sm-type-cmp pa-2">
+            <property-field v-for="p in prop.getProperties()" :key="p.getId() + p.canClear()" :prop="p"/>
+          </v-row>
+        </div>
+        <div v-else-if="propType === 'stack'">
+          <div class="sm-type-cmp pa-3">
+            <v-icon @click="prop.addLayer({}, { at: 0 })" class="sm-add-layer" small>mdi-plus</v-icon>
+            <v-row class="sm-layer" v-for="layer in prop.getLayers()" :key="layer.getId()">
+              <v-col>
+                <v-row>
+                  <v-col cols="auto" class="pr-1">
+                    <v-icon @click="layer.move(layer.getIndex() - 1)" small>mdi-arrow-up</v-icon>
+                  </v-col>
+                  <v-col cols="auto" class="pl-1">
+                    <v-icon @click="layer.move(layer.getIndex() + 1)" small>mdi-arrow-down</v-icon>
+                  </v-col>
+                  <v-col @click="layer.select()">{{ layer.getLabel() }}</v-col>
+                  <v-col cols="auto">
+                      <div :class="['sm-layer-prv white', `sm-layer-prv--${propName}`]" :style="layer.getStylePreview({ number: { min: -3, max: 3 } })"></div>
+                  </v-col>
+                  <v-col cols="auto">
+                    <v-icon @click="layer.remove()" small>mdi-close</v-icon>
+                  </v-col>
+                </v-row>
+                <v-row v-if="layer.isSelected()" no-gutters class="sm-type-cmp pa-2 mt-3">
+                  <property-field v-for="p in prop.getProperties()" :key="p.getId()" :prop="p"/>
+                </v-row>
+              </v-col>
+            </v-row>
+          </div>
+        </div>
+        <div v-else>
+          <v-text-field :placeholder="defValue" :value="inputValue" @change="handleChange" outlined dense/>
+        </div>
+    </v-col>
+  </div>
+</div>
+<script>
+
+  const sm = editor.StyleManager;
+  const Observer = (new Vue()).$data.__ob__.constructor; // obj.__ob__ = new Observer({});
+
+  Vue.mixin({
+    data() {
+      return { editor };
+    }
+  });
+
+  Vue.component('property-field', {
+    props: { prop: Object },
+    template: '#property-field',
+    computed: {
+      labelCls() {
+        const { prop } = this;
+        const parent = prop.getParent();
+        const hasParentValue = prop.hasValueParent() && (parent ? parent.isDetached() : true);
+        return ['flex-nowrap', prop.canClear() && 'indigo--text text--accent-1', hasParentValue && 'orange--text'];
+      },
+      inputValue() {
+        return this.prop.hasValue() ? this.prop.getValue() : '';
+      },
+      propName() {
+        return this.prop.getName();
+      },
+      propType() {
+        return this.prop.getType();
+      },
+      defValue() {
+        return this.prop.getDefaultValue();
+      },
+      toOptions() {
+        const { prop } = this;
+        return prop.getOptions().map(o => ({ value: prop.getOptionId(o), text: prop.getOptionLabel(o) }))
+      },
+    },
+    methods: {
+      handleChange(value) {
+        this.prop.upValue(value);
+      },
+      handleInput(value) {
+        this.prop.upValue(value, { partial: true });
+      },
+      openAssets(prop) {
+        const { Assets } = this.editor;
+        Assets.open({
+          select: (asset, complete) => {
+            prop.upValue(asset.getSrc(), { partial: !complete });
+            complete && Assets.close();
+          },
+          types: ['image'],
+          accept: 'image/*',
+        })
+      }
+    }
+  })
+
+  const app = new Vue({
+    vuetify: new Vuetify({
+      theme: { dark: true },
+    }),
+    el: '.style-manager',
+    data: { sectors: [] },
+    mounted() {
+      editor.on('style:custom', this.handleCustom);
+    },
+    destroyed() {
+      editor.off('style:custom', this.handleCustom);
+    },
+    methods: {
+      handleCustom(props) {
+        if (props?.container && !this.inserted) {
+          this.inserted = 1;
+          props.container.appendChild(this.$el);
+        }
+        this.sectors = sm.getSectors({ visible: true });
+        console.log('handleCustom styles', {
+          sectors: this.sectors,
+          ins: this.inserted,
+          props,
+        })
+      },
+    }
+  });
+</script>
+-->
+
+
 
 
 ## Events
