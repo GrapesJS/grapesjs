@@ -156,7 +156,7 @@ export default () => {
 
       // Triggers only custom event
       const trgCustom = debounce(() => this.__trgCustom());
-      model.listenTo(em, evLayerSelect, trgCustom);
+      model.listenTo(em, `${evLayerSelect} ${evTarget}`, trgCustom);
 
       // Other listeners
       model.on('change:lastTarget', () => em.trigger(evTarget, this.getSelected()));
@@ -166,7 +166,6 @@ export default () => {
 
     __upSel() {
       this.select(this.em.getSelectedAll());
-      this.__trgCustom();
     },
 
     __trgCustom(opts = {}) {
