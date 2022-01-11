@@ -5,7 +5,7 @@ import {
   contains,
   toArray,
   keys,
-  bindAll
+  bindAll,
 } from 'underscore';
 import Backbone from 'backbone';
 import $ from 'utils/cash-dom';
@@ -37,7 +37,7 @@ const deps = [
   require('navigator'),
   require('canvas'),
   require('commands'),
-  require('block_manager')
+  require('block_manager'),
 ];
 
 let timedInterval;
@@ -45,14 +45,14 @@ let updateItr;
 
 Extender({
   Backbone: Backbone,
-  $: Backbone.$
+  $: Backbone.$,
 });
 
 const logs = {
   debug: console.log,
   info: console.info,
   warning: console.warn,
-  error: console.error
+  error: console.error,
 };
 
 export default Backbone.Model.extend({
@@ -69,7 +69,7 @@ export default Backbone.Model.extend({
       modules: [],
       toLoad: [],
       opened: {},
-      device: ''
+      device: '',
     };
   },
 
@@ -96,15 +96,15 @@ export default Backbone.Model.extend({
       : '';
 
     // Load modules
-    deps.forEach(name => this.loadModule(name));
+    deps.forEach((name) => this.loadModule(name));
     this.on('change:componentHovered', this.componentHovered, this);
     this.on('change:changesCount', this.updateChanges, this);
     this.on('change:readyLoad change:readyCanvas', this._checkReady, this);
-    toLog.forEach(e => this.listenLog(e));
+    toLog.forEach((e) => this.listenLog(e));
 
     // Deprecations
     [{ from: 'change:selectedComponent', to: 'component:toggled' }].forEach(
-      event => {
+      (event) => {
         const eventFrom = event.from;
         const eventTo = event.to;
         this.listenTo(this, eventFrom, (...args) => {
@@ -156,14 +156,14 @@ export default Backbone.Model.extend({
 
     // Generally, with `onLoad`, the module will try to load the data from
     // its configurations
-    this.get('toLoad').forEach(module => {
+    this.get('toLoad').forEach((module) => {
       module.onLoad();
     });
 
     // Stuff to do post load
     const postLoad = () => {
       const modules = this.get('modules');
-      modules.forEach(module => module.postLoad && module.postLoad(this));
+      modules.forEach((module) => module.postLoad && module.postLoad(this));
       this.set('readyLoad', 1);
       clb && clb();
     };
@@ -187,7 +187,7 @@ export default Backbone.Model.extend({
     updateItr = setTimeout(() => this.trigger('update'));
 
     if (this.config.noticeOnUnload) {
-      window.onbeforeunload = changes ? e => 1 : null;
+      window.onbeforeunload = changes ? (e) => 1 : null;
     }
 
     if (stm.isAutosave() && changes >= stm.getStepsBeforeSave()) {
@@ -320,16 +320,16 @@ export default Backbone.Model.extend({
     const ctrlKey = event && (event.ctrlKey || event.metaKey);
     const { shiftKey } = event || {};
     const multiple = isArray(el);
-    const els = (multiple ? el : [el]).map(el => getModel(el, $));
+    const els = (multiple ? el : [el]).map((el) => getModel(el, $));
     const selected = this.getSelectedAll();
     const mltSel = this.getConfig('multipleSelection');
     let added;
 
     // If an array is passed remove all selected
     // expect those yet to be selected
-    multiple && this.removeSelected(selected.filter(s => !contains(els, s)));
+    multiple && this.removeSelected(selected.filter((s) => !contains(els, s)));
 
-    els.forEach(el => {
+    els.forEach((el) => {
       const model = getModel(el, $);
       if (model && !model.get('selectable')) return;
 
@@ -343,7 +343,7 @@ export default Backbone.Model.extend({
         let min, max;
 
         // Fin min and max siblings
-        this.getSelectedAll().forEach(sel => {
+        this.getSelectedAll().forEach((sel) => {
           const selColl = sel.collection;
           const selIndex = sel.index();
           if (selColl === coll) {
@@ -374,7 +374,7 @@ export default Backbone.Model.extend({
         return this.addSelected(model);
       }
 
-      !multiple && this.removeSelected(selected.filter(s => s !== model));
+      !multiple && this.removeSelected(selected.filter((s) => s !== model));
       this.addSelected(model, opts);
       added = model;
     });
@@ -390,7 +390,7 @@ export default Backbone.Model.extend({
     const model = getModel(el, $);
     const models = isArray(model) ? model : [model];
 
-    models.forEach(model => {
+    models.forEach((model) => {
       if (model && !model.get('selectable')) return;
       const selected = this.get('selected');
       opts.forceChange && this.removeSelected(model, opts);
@@ -418,7 +418,7 @@ export default Backbone.Model.extend({
     const model = getModel(el, $);
     const models = isArray(model) ? model : [model];
 
-    models.forEach(model => {
+    models.forEach((model) => {
       if (this.get('selected').hasComponent(model)) {
         this.removeSelected(model, opts);
       } else {
@@ -538,7 +538,7 @@ export default Backbone.Model.extend({
           exportWrapper,
           wrapperIsBody,
           ...optsHtml,
-          ...opts
+          ...opts,
         })
       : '';
     html += js ? `<script>${js}</script>` : '';
@@ -568,7 +568,7 @@ export default Backbone.Model.extend({
         wrapperIsBody,
         keepUnusedStyles,
         ...optsCss,
-        ...opts
+        ...opts,
       });
     return wrp ? (opts.json ? css : protCss + css) : '';
   },
@@ -580,11 +580,7 @@ export default Backbone.Model.extend({
    */
   getJs(opts = {}) {
     var wrp = opts.component || this.get('DomComponents').getWrapper();
-    return wrp
-      ? this.get('CodeManager')
-          .getCode(wrp, 'js')
-          .trim()
-      : '';
+    return wrp ? this.get('CodeManager').getCode(wrp, 'js').trim() : '';
   },
 
   /**
@@ -598,7 +594,7 @@ export default Backbone.Model.extend({
     if (!sm) return;
 
     const store = this.storeData();
-    sm.store(store, res => {
+    sm.store(store, (res) => {
       clb && clb(res, store);
       this.set('changesCount', 0);
       this.trigger('storage:store', store);
@@ -613,7 +609,7 @@ export default Backbone.Model.extend({
     const editingCmp = this.getEditing();
     editingCmp && editingCmp.trigger('sync:content', { noCount: true });
 
-    this.get('storables').forEach(m => {
+    this.get('storables').forEach((m) => {
       result = { ...result, ...m.store(1) };
     });
     return result;
@@ -625,7 +621,7 @@ export default Backbone.Model.extend({
    * @private
    */
   load(clb = null) {
-    this.getCacheLoad(1, res => {
+    this.getCacheLoad(1, (res) => {
       this.loadData(res);
       clb && clb(res);
     });
@@ -635,7 +631,7 @@ export default Backbone.Model.extend({
     const sm = this.get('StorageManager');
     const result = sm.__clearKeys(data);
 
-    this.get('storables').forEach(module => {
+    this.get('storables').forEach((module) => {
       module.load(result);
       module.postLoad && module.postLoad(this);
     });
@@ -657,14 +653,14 @@ export default Backbone.Model.extend({
 
     if (!sm) return {};
 
-    this.get('storables').forEach(m => {
+    this.get('storables').forEach((m) => {
       let key = m.storageKey;
       key = isFunction(key) ? key() : key;
       const keys = isArray(key) ? key : [key];
-      keys.forEach(k => load.push(k));
+      keys.forEach((k) => load.push(k));
     });
 
-    sm.load(load, res => {
+    sm.load(load, (res) => {
       this.cacheLoad = res;
       clb && clb(res);
       setTimeout(() => this.trigger('storage:load', res));
@@ -783,7 +779,8 @@ export default Backbone.Model.extend({
   },
 
   t(...args) {
-    return this.get('I18n').t(...args);
+    const i18n = this.get('I18n');
+    return i18n?.t(...args);
   },
 
   /**
@@ -801,23 +798,20 @@ export default Backbone.Model.extend({
     const { config, view } = this;
     const editor = this.getEditor();
     const { editors = [] } = config.grapesjs || {};
+    this.stopListening();
     this.stopDefault();
     this.get('modules')
       .slice()
       .reverse()
-      .forEach(mod => mod.destroy());
+      .forEach((mod) => mod.destroy());
     view && view.remove();
-    this.stopListening();
     this.clear({ silent: true });
     this.destroyed = 1;
     ['config', 'view', '_previousAttributes', '_events', '_listeners'].forEach(
-      i => (this[i] = {})
+      (i) => (this[i] = {})
     );
     editors.splice(editors.indexOf(editor), 1);
-    hasWin() &&
-      $(config.el)
-        .empty()
-        .attr(this.attrsOrig);
+    hasWin() && $(config.el).empty().attr(this.attrsOrig);
   },
 
   getEditing() {
@@ -874,7 +868,7 @@ export default Backbone.Model.extend({
       chooseText: 'Ok',
       cancelText: '⨯',
       ...opts,
-      ...colorPicker
+      ...colorPicker,
     });
   },
 
@@ -898,5 +892,5 @@ export default Backbone.Model.extend({
     } else {
       el[varName][name] = value;
     }
-  }
+  },
 });
