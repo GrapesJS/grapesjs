@@ -12,7 +12,7 @@ describe('StyleManager', () => {
     beforeEach(() => {
       em = new Editor({
         mediaCondition: 'max-width',
-        avoidInlineStyle: true
+        avoidInlineStyle: true,
       });
       domc = em.get('DomComponents');
       cssc = em.get('CssComposer');
@@ -37,7 +37,7 @@ describe('StyleManager', () => {
 
     test('Add sector', () => {
       obj.addSector('test', {
-        name: 'Test name'
+        name: 'Test name',
       });
       var sector = obj.getSectors({ array: true })[0];
       expect(obj.getSectors().length).toEqual(1);
@@ -81,7 +81,7 @@ describe('StyleManager', () => {
     test('Check added property', () => {
       obj.addSector('test', {});
       var prop = obj.addProperty('test', {
-        name: 'test'
+        name: 'test',
       });
       expect(prop.get('name')).toEqual('test');
     });
@@ -111,10 +111,7 @@ describe('StyleManager', () => {
 
     test('Get properties with proper name', () => {
       obj.addSector('test', {});
-      obj.addProperty('test', [
-        { property: 'test-prop' },
-        { property: 'test-prop' }
-      ]);
+      obj.addProperty('test', [{ property: 'test-prop' }, { property: 'test-prop' }]);
       expect(obj.getProperty('test', 'test-prop')).toBeTruthy();
     });
 
@@ -143,7 +140,7 @@ describe('StyleManager', () => {
         dv.select('tablet');
         em.setSelected(cmp);
         setTimeout(() => {
-          expect(obj.getLastSelected()).toBe(rule2);
+          expect(obj.getSelected()).toBe(rule2);
           expect(obj.getSelectedParents()).toEqual([rule1]);
           done();
         });
@@ -161,7 +158,7 @@ describe('StyleManager', () => {
         dv.select('tablet');
         em.setSelected(cmp);
         obj.__upSel();
-        expect(obj.getLastSelected()).toBe(rule2);
+        expect(obj.getSelected()).toBe(rule2);
         expect(obj.getSelectedParents()).toEqual([rule1]);
       });
 
@@ -173,7 +170,7 @@ describe('StyleManager', () => {
         `);
         em.setSelected(cmp);
         obj.__upSel();
-        expect(obj.getLastSelected()).toBe(rule1);
+        expect(obj.getSelected()).toBe(rule1);
         expect(obj.getSelectedParents()).toEqual([rule2]);
       });
 
@@ -186,7 +183,7 @@ describe('StyleManager', () => {
         `);
         em.setSelected(cmp);
         obj.__upSel();
-        expect(obj.getLastSelected()).toBe(rule2);
+        expect(obj.getSelected()).toBe(rule2);
         expect(obj.getSelectedParents()).toEqual([rule1]);
       });
 
@@ -202,7 +199,7 @@ describe('StyleManager', () => {
         dv.select('tablet');
         em.setSelected(cmp);
         obj.__upSel();
-        expect(obj.getLastSelected()).toBe(rule2);
+        expect(obj.getSelected()).toBe(rule2);
         expect(obj.getSelectedParents()).toEqual([rule1]);
       });
 
@@ -217,7 +214,7 @@ describe('StyleManager', () => {
         em.setSelected(cmp);
         obj.__upSel();
         expect(obj.getSelectedParents().length).toBe(1);
-        expect(obj.getLastSelected()).toBe(rule2);
+        expect(obj.getSelected()).toBe(rule2);
         expect(obj.getSelectedParents()).toEqual([rule1]);
       });
     });
@@ -233,13 +230,13 @@ describe('StyleManager', () => {
                 properties: [
                   {
                     name: 'Width',
-                    property: 'width'
+                    property: 'width',
                   },
                   {
                     name: 'Height',
-                    property: 'height'
-                  }
-                ]
+                    property: 'height',
+                  },
+                ],
               },
               {
                 id: 'pos',
@@ -247,12 +244,12 @@ describe('StyleManager', () => {
                 properties: [
                   {
                     name: 'Width',
-                    property: 'width'
-                  }
-                ]
-              }
-            ]
-          }
+                    property: 'width',
+                  },
+                ],
+              },
+            ],
+          },
         });
         obj = em.get('StyleManager');
         obj.onLoad();
