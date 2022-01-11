@@ -4,7 +4,7 @@ import SectorView from './SectorView';
 
 export default class SectorsView extends View {
   initialize(o = {}) {
-    const { module, config } = o;
+    const { module, config = {} } = o;
     const coll = this.collection;
     this.pfx = config.stylePrefix || '';
     this.ppfx = config.pStylePrefix || '';
