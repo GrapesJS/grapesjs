@@ -9,7 +9,8 @@ export default class Layer extends Model {
   }
 
   initialize() {
-    this.prop = this.collection.prop;
+    const cl = this.collection;
+    this.prop = cl?.prop;
   }
 
   /**
