@@ -35,6 +35,19 @@ export default config => {
     },
 
     /**
+     * Remove plugin by id
+     * @param {string} id Plugin ID
+     * @return void
+     * @example
+     * PluginManager.remove('some-plugin');
+     */
+    remove(id) {
+      if (plugins[id]) {
+        delete plugins[id];
+      }
+    },
+
+    /**
      * Returns plugin by ID
      * @param  {string} id Plugin ID
      * @return {Function|undefined} Plugin
@@ -52,6 +65,16 @@ export default config => {
      */
     getAll() {
       return plugins;
+    },
+
+    /**
+     * Remove all plugins
+     * @return void
+     * @example
+     * PluginManager.removeAll();
+     */
+    removeAll() {
+      plugins = {};
     }
   };
 };
