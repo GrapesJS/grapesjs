@@ -1,6 +1,6 @@
 import { Model } from 'common';
 import { isUndefined, isString, isArray, result, keys, each, includes } from 'underscore';
-import { capitalize, camelCase } from 'utils/mixins';
+import { capitalize, camelCase, hasWin } from 'utils/mixins';
 
 /**
  * @typedef Property
@@ -425,7 +425,7 @@ export default class Property extends Model {
       const parent = component && component.parent();
       const parentEl = parent && parent.getEl();
       if (parentEl) {
-        const styles = window.getComputedStyle(parentEl);
+        const styles = hasWin() ? window.getComputedStyle(parentEl) : {};
         each(requiresParent, (values, property) => {
           stylable = stylable && styles[property] && includes(values, styles[property]);
         });

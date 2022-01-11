@@ -622,6 +622,7 @@ describe('PropertyFactory', () => {
           default: 'none',
           type: 'file',
           functionName: 'url',
+          full: true,
         },
         {
           property: 'background-repeat',

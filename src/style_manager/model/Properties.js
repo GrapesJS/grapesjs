@@ -22,9 +22,11 @@ export default Backbone.Collection.extend(TypeableCollection).extend({
 
   init() {
     const { opts, em } = this;
-    const sm = opts.module || em.get('StyleManager');
-    sm.__listenAdd(this, sm.events.propertyAdd);
-    sm.__listenRemove(this, sm.events.propertyRemove);
+    const sm = opts.module || em?.get('StyleManager');
+    if (sm) {
+      sm.__listenAdd(this, sm.events.propertyAdd);
+      sm.__listenRemove(this, sm.events.propertyRemove);
+    }
   },
 
   types: [

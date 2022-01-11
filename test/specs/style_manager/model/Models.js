@@ -4,10 +4,13 @@ import PropertyNumber from 'style_manager/model/PropertyNumber';
 import Properties from 'style_manager/model/Properties';
 import Layer from 'style_manager/model/Layer';
 import Layers from 'style_manager/model/Layers';
+import Editor from 'editor/model/Editor';
 
 describe('Sector', () => {
-  var obj;
-  var confToExt;
+  let em;
+  let sm;
+  let obj;
+  let confToExt;
 
   beforeEach(() => {
     confToExt = {
@@ -23,11 +26,19 @@ describe('Sector', () => {
         },
       ],
     };
-    obj = new Sector();
+    em = new Editor({
+      styleManager: {
+        sectors: [{ id: 'sector-1' }],
+      },
+    });
+    sm = em.get('StyleManager');
+    sm.onLoad();
+    obj = sm.getSector('sector-1');
   });
 
   afterEach(() => {
     obj = null;
+    em.destroy();
   });
 
   test('Has id property', () => {
@@ -51,22 +62,22 @@ describe('Sector', () => {
     expect(res[0]).toEqual({
       property: 'display',
       type: 'select',
-      defaults: 'block',
-      list: [{ value: 'block' }, { value: 'inline' }, { value: 'inline-block' }, { value: 'flex' }, { value: 'none' }],
+      default: 'block',
+      options: [{ id: 'block' }, { id: 'inline' }, { id: 'inline-block' }, { id: 'flex' }, { id: 'none' }],
     });
   });
 
   test('Extend properties', () => {
-    obj = new Sector(confToExt);
+    obj = sm.addSector('test', confToExt);
     expect(obj.get('properties').length).toEqual(3);
     var prop0 = obj.get('properties').at(0);
     expect(prop0.get('type')).toEqual('radio');
-    expect(prop0.get('defaults')).toEqual('block');
+    expect(prop0.get('default')).toEqual('block');
   });
 
   test('Do not extend properties', () => {
     confToExt.extendBuilded = 0;
-    obj = new Sector(confToExt);
+    obj = sm.addSector('test', confToExt);
     expect(obj.get('properties').length).toEqual(3);
     var prop0 = obj.get('properties').at(0);
     expect(prop0.get('type')).toEqual('radio');
@@ -74,7 +85,7 @@ describe('Sector', () => {
   });
 
   test('Extend composed properties', () => {
-    obj = new Sector({
+    obj = sm.addSector('test', {
       buildProps: ['margin', 'float'],
       properties: [
         {
@@ -99,7 +110,7 @@ describe('Sector', () => {
     expect(propProps.length).toEqual(2);
     var propTop = propProps.at(0);
     expect(propTop.get('name')).toEqual('Top');
-    expect(propTop.get('type')).toEqual('integer');
+    expect(propTop.get('type')).toEqual('number');
   });
 });
 
