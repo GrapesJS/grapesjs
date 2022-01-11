@@ -315,11 +315,7 @@ export default class PropertyComposite extends Property {
   }
 
   getFullValue() {
-    if (this.get('detached')) {
-      return '';
-    }
-
-    return this.get('properties').getFullValue();
+    return this.__getFullValue();
   }
 
   __canClearProp(prop) {
