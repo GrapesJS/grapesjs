@@ -90,6 +90,7 @@ export default Backbone.View.extend({
       ['change:layerable', this.updateLayerable],
       ['change:style:display', this.updateVisibility],
       ['rerender:layer', this.render],
+      ['change:name change:custom-name', this.updateName],
     ].forEach((item) => this.listenTo(model, item[0], item[1]));
     this.className = `${pfx}layer ${pfx}layer__t-${type} no-select ${ppfx}two-color`;
     this.inputNameCls = `${ppfx}layer-name`;
@@ -110,6 +111,10 @@ export default Backbone.View.extend({
       render: this.__render,
       listenTo: this.listenTo,
     });
+  },
+
+  updateName() {
+    this.getInputName().innerText = this.model.getName();
   },
 
   getVisibilityEl() {
