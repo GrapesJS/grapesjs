@@ -759,7 +759,8 @@ export default Backbone.Model.extend({
   },
 
   t(...args) {
-    return this.get('I18n').t(...args);
+    const i18n = this.get('I18n');
+    return i18n?.t(...args);
   },
 
   /**
@@ -777,13 +778,13 @@ export default Backbone.Model.extend({
     const { config, view } = this;
     const editor = this.getEditor();
     const { editors = [] } = config.grapesjs || {};
+    this.stopListening();
     this.stopDefault();
     this.get('modules')
       .slice()
       .reverse()
       .forEach(mod => mod.destroy());
     view && view.remove();
-    this.stopListening();
     this.clear({ silent: true });
     this.destroyed = 1;
     ['config', 'view', '_previousAttributes', '_events', '_listeners'].forEach(i => (this[i] = {}));

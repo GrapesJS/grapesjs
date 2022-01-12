@@ -44,9 +44,7 @@ export default Backbone.View.extend({
     return `
       ${
         hidable
-          ? `<i class="${pfx}layer-vis fa fa-eye ${
-              this.isVisible() ? '' : 'fa-eye-slash'
-            }" data-toggle-visible></i>`
+          ? `<i class="${pfx}layer-vis fa fa-eye ${this.isVisible() ? '' : 'fa-eye-slash'}" data-toggle-visible></i>`
           : ''
       }
       <div class="${clsTitleC}">
@@ -90,7 +88,8 @@ export default Backbone.View.extend({
       ['change:layerable', this.updateLayerable],
       ['change:style:display', this.updateVisibility],
       ['rerender:layer', this.render],
-    ].forEach((item) => this.listenTo(model, item[0], item[1]));
+      ['change:name change:custom-name', this.updateName],
+    ].forEach(item => this.listenTo(model, item[0], item[1]));
     this.className = `${pfx}layer ${pfx}layer__t-${type} no-select ${ppfx}two-color`;
     this.inputNameCls = `${ppfx}layer-name`;
     this.clsTitleC = `${pfx}layer-title-c`;
@@ -110,6 +109,10 @@ export default Backbone.View.extend({
       render: this.__render,
       listenTo: this.listenTo,
     });
+  },
+
+  updateName() {
+    this.getInputName().innerText = this.model.getName();
   },
 
   getVisibilityEl() {
@@ -257,7 +260,7 @@ export default Backbone.View.extend({
     if (em) {
       em.setSelected(model, { fromLayers: 1, event: e });
       const scroll = config.scrollCanvas;
-      scroll && model.views.forEach((view) => view.scrollIntoView(scroll));
+      scroll && model.views.forEach(view => view.scrollIntoView(scroll));
     }
   },
 
@@ -287,8 +290,8 @@ export default Backbone.View.extend({
     if (e.button && e.button !== 0) return;
 
     if (sorter) {
-      sorter.onStart = (data) => em.trigger(`${eventDrag}:start`, data);
-      sorter.onMoveClb = (data) => em.trigger(eventDrag, data);
+      sorter.onStart = data => em.trigger(`${eventDrag}:start`, data);
+      sorter.onMoveClb = data => em.trigger(eventDrag, data);
       sorter.startSort(e.target);
     }
   },
@@ -340,9 +343,7 @@ export default Backbone.View.extend({
   checkChildren() {
     const { model, clsNoChild } = this;
     const count = this.countChildren(model);
-    const title = this.$el
-      .children(`.${this.clsTitleC}`)
-      .children(`.${this.clsTitle}`);
+    const title = this.$el.children(`.${this.clsTitleC}`).children(`.${this.clsTitle}`);
     let { cnt } = this;
 
     if (!cnt) {
@@ -375,9 +376,7 @@ export default Backbone.View.extend({
   getCaret() {
     if (!this.caret || !this.caret.length) {
       const pfx = this.pfx;
-      this.caret = this.$el
-        .children(`.${this.clsTitleC}`)
-        .find(`.${this.clsCaret}`);
+      this.caret = this.$el.children(`.${this.clsTitleC}`).find(`.${this.clsCaret}`);
     }
 
     return this.caret;

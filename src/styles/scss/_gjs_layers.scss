@@ -88,6 +88,7 @@ $layerNameSpacing: 5px !default;
       overflow: hidden;
       white-space: nowrap;
       margin: 0 30px 0 $layerNameSpacing;
+      max-width: 170px;
       @extend .#{$app-prefix}no-user-select;
 
       &--no-edit {
