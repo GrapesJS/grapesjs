@@ -8,6 +8,13 @@ import { capitalize, camelCase, hasWin } from 'utils/mixins';
  * @property {String} property Related CSS property name, eg. `text-align`.
  * @property {String} default Defaul value of the property.
  * @property {String} label Label to use in UI, eg. `Text Align`.
+ * @property {Function} [onChange] Change callback.
+ * \n
+ * ```js
+ *  onChange: ({ property, from, to }) => {
+ *    console.log(`Changed property`, property.getName(), { from, to });
+ *  }
+ * ```
  *
  */
 export default class Property extends Model {
@@ -44,7 +51,10 @@ export default class Property extends Model {
     const kProps = [...keys(this.__getClearProps()), '__p'];
     const toProps = keys(to);
     const applyStyle = !opts.__up && !parentProp && (isClear || kProps.some(k => toProps.indexOf(k) >= 0));
-    sm.__trgEv(sm.events.propertyUpdate, { property: this, from, to, value, opts });
+    const onChange = this.get('onChange');
+    const evOpts = { property: this, from, to, value, opts };
+    sm.__trgEv(sm.events.propertyUpdate, evOpts);
+    onChange && onChange(evOpts);
     applyStyle && this.__upTargetsStyle({ [name]: value }, opts);
   }
 
@@ -58,6 +68,10 @@ export default class Property extends Model {
     const { partial, ...rest } = opts;
     props.__p = !!(rest.avoidStore || partial);
     return this.set(props, { ...rest, avoidStore: props.__p });
+  }
+
+  up(props, opts = {}) {
+    this.set(props, { ...opts, __up: true });
   }
 
   init() {}
@@ -378,6 +392,16 @@ export default class Property extends Model {
     return this.__parentTarget || null;
   }
 
+  __parseFn(input = '') {
+    const start = input.indexOf('(') + 1;
+    const end = input.lastIndexOf(')');
+
+    return {
+      name: input.substring(0, start - 1).trim(),
+      value: String.prototype.substring.apply(input, [start, end >= 0 ? end : undefined]).trim(),
+    };
+  }
+
   __checkVisibility({ target, component, sectors }) {
     const trg = component || target;
     if (!trg) return false;
@@ -468,6 +492,7 @@ Property.prototype.defaults = {
   status: '',
   visible: true,
   fixedValues: ['initial', 'inherit'],
+  onChange: null,
 
   // If true, the property will be forced to be full width
   full: 0,

@@ -283,8 +283,9 @@ export default class PropertyStack extends PropertyComposite {
 
   __upProperties(prop, opts = {}) {
     const layer = this.getSelectedLayer();
-    if (opts.__up || !layer) return;
+    if (!layer) return;
     layer.upValues({ [prop.getId()]: prop.__getFullValue() });
+    if (opts.__up) return;
     this.__upTargetsStyleProps(opts);
   }
 
@@ -451,10 +452,6 @@ export default class PropertyStack extends PropertyComposite {
     const style = this.getStyleFromLayers();
 
     return style[this.getName()];
-  }
-
-  getFullValue() {
-    return this.get('detached') ? '' : this.get('layers').getFullValue();
   }
 
   /**

@@ -16,7 +16,7 @@ export const isNumberType = type => type === 'integer' || type === 'number';
  * @property {Function} [fromStyle] Custom logic for getting property values from the target style object.
  * \n
  * ```js
- *  fromStyle(style) => {
+ *  fromStyle: (style) => {
  *    const margins = parseMarginShorthand(style.margin);
  *    return {
  *      'margin-top': margins.top,
@@ -27,7 +27,7 @@ export const isNumberType = type => type === 'integer' || type === 'number';
  * @property {Function} [toStyle] Custom logic for creating the CSS style object to apply on selected targets.
  * \n
  * ```js
- *  toStyle(values) => {
+ *  toStyle: (values) => {
  *    const top = values['margin-top'] || 0;
  *    const right = values['margin-right'] || 0;
  *    // ...
