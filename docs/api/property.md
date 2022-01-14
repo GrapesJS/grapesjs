@@ -10,6 +10,12 @@
 *   `property` **[String][1]** Related CSS property name, eg. `text-align`.
 *   `default` **[String][1]** Defaul value of the property.
 *   `label` **[String][1]** Label to use in UI, eg. `Text Align`.
+*   `onChange` **[Function][2]?** Change callback.
+    ```js
+     onChange: ({ property, from, to }) => {
+       console.log(`Changed property`, property.getName(), { from, to });
+     }
+    ```
 
 ### getId
 
@@ -37,9 +43,9 @@ Get property label.
 
 #### Parameters
 
-*   `opts` **[Object][2]** Options (optional, default `{}`)
+*   `opts` **[Object][3]** Options (optional, default `{}`)
 
-    *   `opts.locale` **[Boolean][3]** Use the locale string from i18n module (optional, default `true`)
+    *   `opts.locale` **[Boolean][4]** Use the locale string from i18n module (optional, default `true`)
 
 Returns **[String][1]** 
 
@@ -49,9 +55,9 @@ Get property value.
 
 #### Parameters
 
-*   `opts` **[Object][2]** Options (optional, default `{}`)
+*   `opts` **[Object][3]** Options (optional, default `{}`)
 
-    *   `opts.noDefault` **[Boolean][3]** Avoid returning the default value (optional, default `false`)
+    *   `opts.noDefault` **[Boolean][4]** Avoid returning the default value (optional, default `false`)
 
 Returns **[String][1]** 
 
@@ -61,17 +67,17 @@ Check if the property has value.
 
 #### Parameters
 
-*   `opts` **[Object][2]** Options (optional, default `{}`)
+*   `opts` **[Object][3]** Options (optional, default `{}`)
 
-    *   `opts.noParent` **[Boolean][3]** Ignore the value if it comes from the parent target. (optional, default `false`)
+    *   `opts.noParent` **[Boolean][4]** Ignore the value if it comes from the parent target. (optional, default `false`)
 
-Returns **[Boolean][3]** 
+Returns **[Boolean][4]** 
 
 ### hasValueParent
 
 Indicates if the current value is coming from a parent target (eg. another CSSRule).
 
-Returns **[Boolean][3]** 
+Returns **[Boolean][4]** 
 
 ### getStyle
 
@@ -79,9 +85,9 @@ Get the CSS style object of the property.
 
 #### Parameters
 
-*   `opts` **[Object][2]** Options (optional, default `{}`)
+*   `opts` **[Object][3]** Options (optional, default `{}`)
 
-    *   `opts.camelCase` **[Boolean][3]?** Return property name in camelCase.
+    *   `opts.camelCase` **[Boolean][4]?** Return property name in camelCase.
 
 #### Examples
 
@@ -91,7 +97,7 @@ console.log(property.getStyle());
 // { color: 'red' };
 ```
 
-Returns **[Object][2]** 
+Returns **[Object][3]** 
 
 ### getDefaultValue
 
@@ -107,16 +113,16 @@ The change is also propagated to the selected targets (eg. CSS rule).
 #### Parameters
 
 *   `value` **[String][1]** New value
-*   `opts` **[Object][2]** Options (optional, default `{}`)
+*   `opts` **[Object][3]** Options (optional, default `{}`)
 
-    *   `opts.partial` **[Boolean][3]** If `true` the update on targets won't be considered complete (not stored in UndoManager) (optional, default `false`)
-    *   `opts.noTarget` **[Boolean][3]** If `true` the change won't be propagated to selected targets. (optional, default `false`)
+    *   `opts.partial` **[Boolean][4]** If `true` the update on targets won't be considered complete (not stored in UndoManager) (optional, default `false`)
+    *   `opts.noTarget` **[Boolean][4]** If `true` the change won't be propagated to selected targets. (optional, default `false`)
 
 ### isVisible
 
 Check if the property is visible
 
-Returns **[Boolean][3]** 
+Returns **[Boolean][4]** 
 
 ### clear
 
@@ -125,32 +131,34 @@ The change is also propagated to the selected targets (eg. the css property is c
 
 #### Parameters
 
-*   `opts` **[Object][2]** Options (optional, default `{}`)
+*   `opts` **[Object][3]** Options (optional, default `{}`)
 
-    *   `opts.noTarget` **[Boolean][3]** If `true` the change won't be propagated to selected targets. (optional, default `false`)
+    *   `opts.noTarget` **[Boolean][4]** If `true` the change won't be propagated to selected targets. (optional, default `false`)
 
 ### canClear
 
 Indicates if the current value comes directly from the selected target and so can be cleared.
 
-Returns **[Boolean][3]** 
+Returns **[Boolean][4]** 
 
 ### getParent
 
 If the current property is a sub-property, this will return the parent Property.
 
-Returns **([[Property][4]] | null)** 
+Returns **([[Property][5]] | null)** 
 
 ### isFull
 
 Indicates if the property is full-width in UI.
 
-Returns **[Boolean][3]** 
+Returns **[Boolean][4]** 
 
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-[2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
 
-[3]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[3]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[4]: #property
+[4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+
+[5]: #property

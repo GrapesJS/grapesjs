@@ -62,7 +62,6 @@ styleManager.addSector(...);
 *   [addType][19]
 *   [getType][20]
 *   [getTypes][21]
-*   [createType][22]
 
 [Sector]: sector.html
 
@@ -76,7 +75,7 @@ styleManager.addSector(...);
 
 Get configuration object
 
-Returns **[Object][23]** 
+Returns **[Object][22]** 
 
 ## addSector
 
@@ -84,11 +83,11 @@ Add new sector. If the sector with the same id already exists, that one will be 
 
 ### Parameters
 
-*   `id` **[String][24]** Sector id
-*   `sector` **[Object][23]** Sector definition. Check the [available properties][25]
-*   `options` **[Object][23]** Options (optional, default `{}`)
+*   `id` **[String][23]** Sector id
+*   `sector` **[Object][22]** Sector definition. Check the [available properties][24]
+*   `options` **[Object][22]** Options (optional, default `{}`)
 
-    *   `options.at` **[Number][26]?** Position index (by default, will be appended at the end).
+    *   `options.at` **[Number][25]?** Position index (by default, will be appended at the end).
 
 ### Examples
 
@@ -109,7 +108,7 @@ Get sector by id.
 
 ### Parameters
 
-*   `id` **[String][24]** Sector id
+*   `id` **[String][23]** Sector id
 *   `opts`   (optional, default `{}`)
 
 ### Examples
@@ -126,9 +125,9 @@ Get all sectors.
 
 ### Parameters
 
-*   `opts` **[Object][23]** Options (optional, default `{}`)
+*   `opts` **[Object][22]** Options (optional, default `{}`)
 
-    *   `opts.visible` **[Boolean][27]?** Returns only visible sectors
+    *   `opts.visible` **[Boolean][26]?** Returns only visible sectors
 
 ### Examples
 
@@ -136,7 +135,7 @@ Get all sectors.
 const sectors = styleManager.getSectors();
 ```
 
-Returns **[Array][28]<[Sector]>** 
+Returns **[Array][27]<[Sector]>** 
 
 ## removeSector
 
@@ -144,7 +143,7 @@ Remove sector by id.
 
 ### Parameters
 
-*   `id` **[String][24]** Sector id
+*   `id` **[String][23]** Sector id
 
 ### Examples
 
@@ -160,11 +159,11 @@ Add new property to the sector.
 
 ### Parameters
 
-*   `sectorId` **[String][24]** Sector id.
-*   `property` **[Object][23]** Property definition. Check the [base available properties][29] + others based on the `type` of your property.
-*   `opts` **[Object][23]** Options (optional, default `{}`)
+*   `sectorId` **[String][23]** Sector id.
+*   `property` **[Object][22]** Property definition. Check the [base available properties][28] + others based on the `type` of your property.
+*   `opts` **[Object][22]** Options (optional, default `{}`)
 
-    *   `opts.at` **[Number][26]?** Position index (by default, will be appended at the end).
+    *   `opts.at` **[Number][25]?** Position index (by default, will be appended at the end).
 
 ### Examples
 
@@ -189,8 +188,8 @@ Get the property.
 
 ### Parameters
 
-*   `sectorId` **[String][24]** Sector id.
-*   `id` **[String][24]** Property id.
+*   `sectorId` **[String][23]** Sector id.
+*   `id` **[String][23]** Property id.
 
 ### Examples
 
@@ -206,7 +205,7 @@ Get all properties of the sector.
 
 ### Parameters
 
-*   `sectorId` **[String][24]** Sector id.
+*   `sectorId` **[String][23]** Sector id.
 
 ### Examples
 
@@ -222,8 +221,8 @@ Remove the property.
 
 ### Parameters
 
-*   `sectorId` **[String][24]** Sector id.
-*   `id` **[String][24]** Property id.
+*   `sectorId` **[String][23]** Sector id.
+*   `id` **[String][23]** Property id.
 
 ### Examples
 
@@ -240,7 +239,7 @@ The target could be a Component, CSSRule, or a CSS selector string.
 
 ### Parameters
 
-*   `target` **([Component] | [CSSRule] | [String][24])** 
+*   `target` **([Component] | [CSSRule] | [String][23])** 
 *   `opts`   (optional, default `{}`)
 
 ### Examples
@@ -255,7 +254,7 @@ btnCmp && styleManager.select(btnCmp);
 styleManager.select('.btn > span');
 ```
 
-Returns **[Array][28]<([Component] | [CSSRule])>** Array containing selected Components or CSSRules
+Returns **[Array][27]<([Component] | [CSSRule])>** Array containing selected Components or CSSRules
 
 ## getSelected
 
@@ -268,13 +267,13 @@ Returns **([Component] | [CSSRule] | null)**
 
 Get the array of selected targets.
 
-Returns **[Array][28]<([Component] | [CSSRule])>** 
+Returns **[Array][27]<([Component] | [CSSRule])>** 
 
 ## getSelectedParents
 
 Get parent rules of the last selected target.
 
-Returns **[Array][28]<[CSSRule]>** 
+Returns **[Array][27]<[CSSRule]>** 
 
 ## addStyleTargets
 
@@ -282,8 +281,8 @@ Update selected targets with a custom style.
 
 ### Parameters
 
-*   `style` **[Object][23]** Style object
-*   `opts` **[Object][23]** Options (optional, default `{}`)
+*   `style` **[Object][22]** Style object
+*   `opts` **[Object][22]** Options (optional, default `{}`)
 
 ### Examples
 
@@ -297,7 +296,7 @@ Return built-in property definition
 
 ### Parameters
 
-*   `prop` **[String][24]** Property name.
+*   `prop` **[String][23]** Property name.
 
 ### Examples
 
@@ -305,13 +304,13 @@ Return built-in property definition
 const widthPropDefinition = styleManager.getBuiltIn('width');
 ```
 
-Returns **([Object][23] | null)** Property definition.
+Returns **([Object][22] | null)** Property definition.
 
 ## getBuiltInAll
 
 Get all the available built-in property definitions.
 
-Returns **[Object][23]** 
+Returns **[Object][22]** 
 
 ## addBuiltIn
 
@@ -320,8 +319,8 @@ If the property exists already, it will extend it.
 
 ### Parameters
 
-*   `prop` **[String][24]** Property name.
-*   `definition` **[Object][23]** Property definition.
+*   `prop` **[String][23]** Property name.
+*   `definition` **[Object][22]** Property definition.
 
 ### Examples
 
@@ -333,7 +332,7 @@ const sector = styleManager.addBuiltIn('new-property', {
 })
 ```
 
-Returns **[Object][23]** Added property definition.
+Returns **[Object][22]** Added property definition.
 
 ## addType
 
@@ -341,8 +340,8 @@ Add new property type
 
 ### Parameters
 
-*   `id` **[string][24]** Type ID
-*   `definition` **[Object][23]** Definition of the type.
+*   `id` **[string][23]** Type ID
+*   `definition` **[Object][22]** Definition of the type.
 
 ### Examples
 
@@ -377,15 +376,15 @@ Get type
 
 ### Parameters
 
-*   `id` **[string][24]** Type ID
+*   `id` **[string][23]** Type ID
 
-Returns **[Object][23]** Type definition
+Returns **[Object][22]** Type definition
 
 ## getTypes
 
 Get all types
 
-Returns **[Array][28]** 
+Returns **[Array][27]** 
 
 [1]: https://github.com/artf/grapesjs/blob/master/src/style_manager/config/config.js
 
@@ -429,18 +428,16 @@ Returns **[Array][28]**
 
 [21]: #gettypes
 
-[22]: #createtype
+[22]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[23]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[23]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-[24]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[24]: sector.html#properties
 
-[25]: sector.html#properties
+[25]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
 
-[26]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+[26]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
 
-[27]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[27]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
-[28]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
-
-[29]: property.html#properties
+[28]: property.html#properties

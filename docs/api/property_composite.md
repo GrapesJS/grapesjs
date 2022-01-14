@@ -14,7 +14,7 @@
 *   `join` **[String][4]?** Value used to join property values, default `" "`.
 *   `fromStyle` **[Function][6]?** Custom logic for getting property values from the target style object.
     ```js
-     fromStyle(style) => {
+     fromStyle: (style) => {
        const margins = parseMarginShorthand(style.margin);
        return {
          'margin-top': margins.top,
@@ -24,7 +24,7 @@
     ```
 *   `toStyle` **[Function][6]?** Custom logic for creating the CSS style object to apply on selected targets.
     ```js
-     toStyle(values) => {
+     toStyle: (values) => {
        const top = values['margin-top'] || 0;
        const right = values['margin-right'] || 0;
        // ...
