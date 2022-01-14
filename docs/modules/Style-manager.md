@@ -13,7 +13,7 @@ The default UI is a lightweight component with built-in properties, but as you'l
 To get a better understanding of the content in this guide, we recommend reading [Components] first
 :::
 ::: warning
-This guide is referring to GrapesJS v0.17.30 or higher
+This guide is referring to GrapesJS v0.18.1 or higher
 :::
 
 [[toc]]
