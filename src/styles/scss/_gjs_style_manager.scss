@@ -305,6 +305,14 @@
     float: left;
     width: 100%;
   }
+
+  &__text-shadow .#{$sm-prefix}layer-preview-cnt::after {
+    color: #000;
+    content: "T";
+    font-weight: 900;
+    line-height: 17px;
+    padding: 0 4px;
+  }
 }
 
 .#{$sm-prefix}preview-file {
@@ -402,14 +410,6 @@
       @include opacity(0.8);
     }
   }
-}
-
-##{$sm-prefix}text-shadow ##{$sm-prefix}preview::after {
-  color: #000;
-  content: "T";
-  font-weight: 900;
-  line-height: 17px;
-  padding: 0 4px;
 }
 
 /* ------------------END Property-------------------- */
