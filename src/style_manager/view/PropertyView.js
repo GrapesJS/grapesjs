@@ -65,7 +65,7 @@ export default class Property extends View {
 
   remove() {
     View.prototype.remove.apply(this, arguments);
-    ['em', 'input', '$input', 'view'].forEach(i => (this[i] = {}));
+    ['em', 'input', '$input', 'view'].forEach(i => (this[i] = null));
     this.__destroyFn(this._getClbOpts());
   }
 

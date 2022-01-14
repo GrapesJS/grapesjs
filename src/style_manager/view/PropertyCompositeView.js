@@ -20,7 +20,7 @@ export default class PropertyCompositeView extends PropertyView {
 
   onRender() {
     const { model, pfx } = this;
-    const props = model.getProperties();
+    const props = model.get('properties');
 
     if (props.length && !this.props) {
       const detached = model.isDetached();

@@ -39,7 +39,7 @@ export default class PropertyRadioView extends PropertySelectView {
   }
 
   __setValueInput(value) {
-    const model = this.model;
+    const { model } = this;
     const id = value || model.getDefaultValue();
     const inputIn = this.getInputEl()?.querySelector(`[value="${id}"]`);
     inputIn && (inputIn.checked = true);

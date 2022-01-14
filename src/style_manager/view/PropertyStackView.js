@@ -53,7 +53,7 @@ export default class PropertyStackView extends PropertyCompositeView {
 
   onRender() {
     const { model, el, config } = this;
-    const props = model.getProperties();
+    const props = model.get('properties');
 
     if (props.length && !this.props) {
       const propsView = new PropertiesView({

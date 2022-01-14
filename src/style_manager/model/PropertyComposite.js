@@ -1,5 +1,6 @@
 import { isString, isUndefined, keys } from 'underscore';
 import Property from './Property';
+import Properties from './Properties';
 
 export const isNumberType = type => type === 'integer' || type === 'number';
 
@@ -54,7 +55,6 @@ export default class PropertyComposite extends Property {
   initialize(props = {}, opts = {}) {
     Property.callParentInit(Property, this, props, opts);
     const { em } = this;
-    const Properties = require('./Properties').default;
     const properties = new Properties(this.get('properties') || [], { em, parentProp: this });
     this.set('properties', properties, { silent: 1 });
     this.listenTo(properties, 'change', this.__upProperties);

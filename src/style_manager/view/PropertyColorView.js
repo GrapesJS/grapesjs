@@ -3,14 +3,14 @@ import InputColor from 'domain_abstract/ui/InputColor';
 
 export default class PropertyColorView extends PropertyNumberView {
   setValue(value) {
-    this.inputInst.setValue(value, { fromTarget: 1, def: this.model.getDefaultValue() });
+    this.inputInst?.setValue(value, { fromTarget: 1, def: this.model.getDefaultValue() });
   }
 
   remove() {
     PropertyNumberView.prototype.remove.apply(this, arguments);
     const inp = this.inputInst;
     inp && inp.remove && inp.remove();
-    ['inputInst', '$color'].forEach(i => (this[i] = {}));
+    ['inputInst', '$color'].forEach(i => (this[i] = null));
   }
 
   __handleChange(value, partial) {
