@@ -1,26 +1,23 @@
-import Property from './PropertyIntegerView';
+import Property from './PropertyNumberView';
 
-export default Property.extend({
+export default class PropertySliderView extends Property {
   events() {
     return {
       ...Property.prototype.events,
       'change [type=range]': 'inputValueChanged',
       'input [type=range]': 'inputValueChangedSoft',
-      change: ''
+      change: '',
     };
-  },
+  }
 
   templateInput(model) {
-    const ppfx = this.ppfx;
+    const { ppfx } = this;
     return `
       <div class="${ppfx}field ${ppfx}field-range">
-        <input type="range"
-          min="${model.get('min')}"
-          max="${model.get('max')}"
-          step="${model.get('step')}"/>
+        <input type="range" min="${model.get('min')}" max="${model.get('max')}" step="${model.get('step')}"/>
       </div>
     `;
-  },
+  }
 
   getSliderEl() {
     if (!this.slider) {
@@ -28,28 +25,22 @@ export default Property.extend({
     }
 
     return this.slider;
-  },
+  }
 
   inputValueChanged() {
-    const model = this.model;
-    const step = model.get('step');
-    this.getInputEl().value = this.getSliderEl().value;
-    const value = this.getInputValue() - step;
-    model.set('value', value, { avoidStore: 1 }).set('value', value + step);
-    this.elementUpdated();
-  },
+    this.model.upValue(this.getSliderEl().value);
+  }
 
   inputValueChangedSoft() {
-    this.getInputEl().value = this.getSliderEl().value;
-    this.model.set('value', this.getInputValue(), { avoidStore: 1 });
-    this.elementUpdated();
-  },
+    this.model.upValue(this.getSliderEl().value, { partial: true });
+  }
 
   setValue(value) {
-    const parsed = this.model.parseValue(value);
-    this.getSliderEl().value = parseFloat(parsed.value);
+    const { model } = this;
+    const parsed = model.parseValue(value);
+    this.getSliderEl().value = value === '' ? model.getDefaultValue() : parseFloat(parsed.value);
     Property.prototype.setValue.apply(this, arguments);
-  },
+  }
 
   onRender() {
     Property.prototype.onRender.apply(this, arguments);
@@ -57,10 +48,10 @@ export default Property.extend({
     if (!this.model.get('showInput')) {
       this.inputInst.el.style.display = 'none';
     }
-  },
+  }
 
   clearCached() {
     Property.prototype.clearCached.apply(this, arguments);
     this.slider = null;
   }
-});
+}

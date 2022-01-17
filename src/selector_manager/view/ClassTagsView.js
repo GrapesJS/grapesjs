@@ -33,7 +33,6 @@ export default Backbone.View.extend({
     <div class="${pfx}sels-info">
       <div class="${pfx}label-sel">${labelInfo}:</div>
       <div class="${pfx}sels" data-selected></div>
-      <div style="clear:both"></div>
     </div>`;
   },
 
@@ -42,7 +41,7 @@ export default Backbone.View.extend({
     'click [data-add]': 'startNewTag',
     'focusout [data-input]': 'endNewTag',
     'keyup [data-input]': 'onInputKeyUp',
-    'click [data-sync-style]': 'syncStyle'
+    'click [data-sync-style]': 'syncStyle',
   },
 
   initialize(o = {}) {
@@ -85,15 +84,13 @@ export default Backbone.View.extend({
     const state = em.get('state');
     const mediaText = em.getCurrentMedia();
     const ruleComponents = [];
-    const rule =
-      cssC.get(selectors, state, mediaText) ||
-      cssC.add(selectors, state, mediaText);
+    const rule = cssC.get(selectors, state, mediaText) || cssC.add(selectors, state, mediaText);
     let style;
 
     this.getTargets().forEach(target => {
       const ruleComponent = cssC.getIdRule(target.getId(), {
         state,
-        mediaText
+        mediaText,
       });
       style = ruleComponent.getStyle();
       ruleComponent.setStyle({});
@@ -108,7 +105,7 @@ export default Backbone.View.extend({
       mediaText,
       rule,
       ruleComponents,
-      state
+      state,
     });
   },
 
@@ -171,7 +168,7 @@ export default Backbone.View.extend({
    * @param  {Object} e
    * @private
    */
-  componentChanged: debounce(function({ targets } = {}) {
+  componentChanged: debounce(function ({ targets } = {}) {
     this.updateSelection(targets);
   }),
 
@@ -200,7 +197,7 @@ export default Backbone.View.extend({
     return this.module.__common(...args);
   },
 
-  checkSync: debounce(function() {
+  checkSync: debounce(function () {
     const { $btnSyncEl, config, collection } = this;
     const target = this.getTarget();
     let hasStyle;
@@ -270,9 +267,7 @@ export default Backbone.View.extend({
         ? `<span class="${pfx}sel-cmp">${target.getName()}</span><span class="${pfx}sel-id">#${target.getId()}</span>`
         : '';
       result = this.collection.getFullString(selectors);
-      result = result
-        ? `<span class="${pfx}sel-rule">${result}</span>`
-        : target.get('selectorsAdd') || idRes;
+      result = result ? `<span class="${pfx}sel-rule">${result}</span>` : target.get('selectorsAdd') || idRes;
       result = componentFirst && idRes ? idRes : result;
       result += state ? `<span class="${pfx}sel-state">:${state}</span>` : '';
       result = selectedName ? selectedName({ result, state, target }) : result;
@@ -319,7 +314,7 @@ export default Backbone.View.extend({
       model,
       config: this.config,
       coll: this.collection,
-      module: this.module
+      module: this.module,
     }).render().el;
 
     fragment ? fragment.appendChild(rendered) : classes.append(rendered);
@@ -377,17 +372,13 @@ export default Backbone.View.extend({
     const options = module
       .getStates()
       .map(state => {
-        const label =
-          em.t(`selectorManager.states.${state.id}`) ||
-          state.getLabel() ||
-          state.id;
+        const label = em.t(`selectorManager.states.${state.id}`) || state.getLabel() || state.id;
         return `<option value="${state.id}">${label}</option>`;
       })
       .join('');
 
     const statesEl = this.getStates();
-    statesEl &&
-      statesEl.html(`<option value="">${labelStates}</option>${options}`);
+    statesEl && statesEl.html(`<option value="">${labelStates}</option>${options}`);
     this.checkStates();
   },
 
@@ -401,7 +392,7 @@ export default Backbone.View.extend({
       labelInfo: em.t('selectorManager.selected'),
       ppfx,
       pfx,
-      el
+      el,
     };
     $el.html(this.template(tmpOpts));
     const renderRes = render && render(tmpOpts);
@@ -415,5 +406,5 @@ export default Backbone.View.extend({
     this.renderClasses();
     $el.attr('class', `${this.className} ${ppfx}one-bg ${ppfx}two-color`);
     return this;
-  }
+  },
 });

@@ -1,188 +1,120 @@
-import { isString, each } from 'underscore';
-import Backbone from 'backbone';
-import PropertiesView from './PropertiesView';
+import { View } from 'backbone';
+import { keys } from 'underscore';
 
-export default Backbone.View.extend({
-  events: {
-    click: 'active',
-    'click [data-close-layer]': 'removeItem',
-    'mousedown [data-move-layer]': 'initSorter',
-    'touchstart [data-move-layer]': 'initSorter'
-  },
+export default class LayerView extends View {
+  events() {
+    return {
+      click: 'select',
+      'click [data-close-layer]': 'removeItem',
+      'mousedown [data-move-layer]': 'initSorter',
+      'touchstart [data-move-layer]': 'initSorter',
+    };
+  }
 
-  template(model) {
+  template() {
     const { pfx, ppfx, em } = this;
-    const label = `${em && em.t('styleManager.layer')} ${model.get('index')}`;
+    const icons = em?.getConfig('icons');
+    const iconClose = icons?.close || '';
+    const iconMove = icons?.move || '';
 
     return `
-      <div id="${pfx}move" class="${ppfx}no-touch-actions" data-move-layer>
-        <i class="fa fa-arrows"></i>
-      </div>
-      <div id="${pfx}label">${label}</div>
-      <div id="${pfx}preview-box">
-      	<div id="${pfx}preview" data-preview></div>
-      </div>
-      <div id="${pfx}close-layer" class="${pfx}btn-close" data-close-layer>
-        &Cross;
+      <div class="${pfx}label-wrp">
+        <div id="${pfx}move" class="${ppfx}no-touch-actions" data-move-layer>
+          ${iconMove}
+        </div>
+        <div id="${pfx}label" data-label></div>
+        <div id="${pfx}preview-box" class="${pfx}layer-preview" style="display: none" data-preview-box>
+          <div id="${pfx}preview" class="${pfx}layer-preview-cnt" data-preview></div>
+        </div>
+        <div id="${pfx}close-layer" class="${pfx}btn-close" data-close-layer>
+          ${iconClose}
+        </div>
       </div>
       <div id="${pfx}inputs" data-properties></div>
-      <div style="clear:both"></div>
     `;
-  },
+  }
 
   initialize(o = {}) {
-    let model = this.model;
-    this.stackModel = o.stackModel;
-    this.config = o.config || {};
-    this.em = this.config.em;
-    this.pfx = this.config.stylePrefix || '';
-    this.ppfx = this.config.pStylePrefix || '';
-    this.sorter = o.sorter || null;
-    this.propsConfig = o.propsConfig || {};
-    this.customPreview = o.onPreview;
+    const { model } = this;
+    const config = o.config || {};
+    this.em = config.em;
+    this.config = config;
+    this.sorter = o.sorter;
+    this.pfx = config.stylePrefix || '';
+    this.ppfx = config.pStylePrefix || '';
+    this.propertyView = o.propertyView;
+    const pModel = this.propertyView.model;
     this.listenTo(model, 'destroy remove', this.remove);
-    this.listenTo(model, 'change:active', this.updateVisibility);
-    this.listenTo(model.get('properties'), 'change', this.updatePreview);
+    this.listenTo(model, 'change:values', this.updateLabel);
+    this.listenTo(pModel, 'change:selectedLayer', this.updateVisibility);
 
     // For the sorter
     model.view = this;
     model.set({ droppable: 0, draggable: 1 });
     this.$el.data('model', model);
-  },
+  }
 
-  /**
-   * Delegate sorting
-   * @param  {Event} e
-   * */
-  initSorter(e) {
-    if (this.sorter) this.sorter.startSort(this.el);
-  },
+  initSorter() {
+    this.sorter?.startSort(this.el);
+  }
 
   removeItem(ev) {
     ev && ev.stopPropagation();
-    this.remove();
-  },
+    this.model.remove();
+  }
 
-  remove(opts = {}) {
-    const { model, props } = this;
-    const coll = model.collection;
-    const stackModel = this.stackModel;
-
-    Backbone.View.prototype.remove.apply(this, arguments);
-    coll && coll.contains(model) && coll.remove(model);
-
-    if (stackModel && stackModel.set) {
-      stackModel.set({ stackIndex: null }, { silent: true });
-      !opts.fromTarget && stackModel.trigger('updateValue');
-    }
-
-    props && props.remove();
-  },
-
-  /**
-   * Default method for changing preview box
-   * @param {Collection} props
-   * @param {Element} $el
-   */
-  onPreview(value) {
-    const { stackModel } = this;
-    const detach = stackModel && stackModel.get('detached');
-    const values = value.split(' ');
-    const lim = 3;
-    const result = [];
-    const resultObj = {};
-
-    this.model.get('properties').each((prop, index) => {
-      const property = prop.get('property');
-      let value = detach ? prop.getFullValue() : values[index] || '';
-
-      if (value) {
-        if (prop.get('type') == 'integer') {
-          let valueInt = parseInt(value, 10);
-          let unit = value.replace(valueInt, '');
-          valueInt = !isNaN(valueInt) ? valueInt : 0;
-          valueInt = valueInt > lim ? lim : valueInt;
-          valueInt = valueInt < -lim ? -lim : valueInt;
-          value = valueInt + unit;
-        }
-      }
-
-      result.push(value);
-      resultObj[property] = value;
-    });
-
-    return detach ? resultObj : result.join(' ');
-  },
-
-  updatePreview() {
-    const stackModel = this.stackModel;
-    const customPreview = this.customPreview;
-    const previewEl = this.getPreviewEl();
-    const value = this.model.getFullValue();
-    const preview = customPreview
-      ? customPreview(value)
-      : this.onPreview(value);
-
-    if (preview && stackModel && previewEl) {
-      const { style } = previewEl;
-      if (isString(preview)) {
-        style[stackModel.get('property')] = preview;
-      } else {
-        let prvStr = [];
-        each(preview, (val, prop) => prvStr.push(`${prop}:${val}`));
-        previewEl.setAttribute('style', prvStr.join(';'));
-      }
-    }
-  },
+  select() {
+    this.model.select();
+  }
 
   getPropertiesWrapper() {
-    if (!this.propsWrapEl) {
-      this.propsWrapEl = this.el.querySelector('[data-properties]');
-    }
+    if (!this.propsWrapEl) this.propsWrapEl = this.el.querySelector('[data-properties]');
     return this.propsWrapEl;
-  },
+  }
 
   getPreviewEl() {
-    if (!this.previewEl) {
-      this.previewEl = this.el.querySelector('[data-preview]');
-    }
+    if (!this.previewEl) this.previewEl = this.el.querySelector('[data-preview]');
     return this.previewEl;
-  },
+  }
 
-  active() {
-    const model = this.model;
-    const collection = model.collection;
-    collection.active(collection.indexOf(model));
-  },
+  getLabelEl() {
+    if (!this.labelEl) this.labelEl = this.el.querySelector('[data-label]');
+    return this.labelEl;
+  }
+
+  updateLabel() {
+    const { model } = this;
+    const label = model.getLabel();
+    this.getLabelEl().innerHTML = label;
+
+    if (model.hasPreview()) {
+      const prvEl = this.getPreviewEl();
+      const style = model.getStylePreview({ number: { min: -3, max: 3 } });
+      const styleStr = keys(style)
+        .map(k => `${k}:${style[k]}`)
+        .join(';');
+      prvEl.setAttribute('style', styleStr);
+    }
+  }
 
   updateVisibility() {
-    const pfx = this.pfx;
+    const { pfx, model, propertyView } = this;
     const wrapEl = this.getPropertiesWrapper();
-    const active = this.model.get('active');
-    wrapEl.style.display = active ? '' : 'none';
-    this.$el[active ? 'addClass' : 'removeClass'](`${pfx}active`);
-  },
+    const isSelected = model.isSelected();
+    wrapEl.style.display = isSelected ? '' : 'none';
+    this.$el[isSelected ? 'addClass' : 'removeClass'](`${pfx}active`);
+    isSelected && wrapEl.appendChild(propertyView.props.el);
+  }
 
   render() {
-    const propsConfig = this.propsConfig;
-    const { model, el, pfx } = this;
-    const preview = model.get('preview');
-    const properties = new PropertiesView({
-      collection: model.get('properties'),
-      config: { ...this.config, fromLayer: 1 },
-      target: propsConfig.target,
-      customValue: propsConfig.customValue,
-      propTarget: propsConfig.propTarget,
-      onChange: propsConfig.onChange
-    });
-    const propsEl = properties.render().el;
-
-    el.innerHTML = this.template(model);
-    el.className = `${pfx}layer${!preview ? ` ${pfx}no-preview` : ''}`;
-    this.props = properties;
-    this.getPropertiesWrapper().appendChild(propsEl);
+    const { el, pfx, model } = this;
+    el.innerHTML = this.template();
+    el.className = `${pfx}layer`;
+    if (model.hasPreview()) {
+      el.querySelector(`[data-preview-box]`).style.display = '';
+    }
+    this.updateLabel();
     this.updateVisibility();
-    this.updatePreview();
     return this;
   }
-});
+}

@@ -57,6 +57,7 @@
 
   &__media {
     margin-bottom: 10px;
+    pointer-events: none;
   }
 }
 
@@ -82,6 +83,7 @@
   font-family: Helvetica, sans-serif;
   overflow: hidden;
   text-overflow: ellipsis;
+  pointer-events: none;
 }
 
 .#{$app-prefix}block.#{$app-prefix}bdrag {

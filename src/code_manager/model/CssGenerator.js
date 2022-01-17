@@ -3,6 +3,11 @@ import { bindAll, isUndefined, each } from 'underscore';
 
 const maxValue = Number.MAX_VALUE;
 
+export const getMediaLength = mediaQuery => {
+  const length = /(-?\d*\.?\d+)\w{0,}/.exec(mediaQuery);
+  return !length ? '' : length[0];
+};
+
 export default Backbone.Model.extend({
   initialize() {
     bindAll(this, 'sortRules');

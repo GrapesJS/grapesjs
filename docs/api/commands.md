@@ -12,11 +12,27 @@ const editor = grapesjs.init({
 })
 ```
 
-Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+Once the editor is instantiated you can use its API and listen to its events. Before using these methods, you should get the module from the instance.
 
 ```js
+// Listen to events
+editor.on('run', () => { ... });
+
+// Use the API
 const commands = editor.Commands;
+commands.add(...);
 ```
+
+*   ## Available Events
+*   `run:{commandName}` - Triggered when some command is called to run (eg. editor.runCommand('preview'))
+*   `stop:{commandName}` - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
+*   `run:{commandName}:before` - Triggered before the command is called
+*   `stop:{commandName}:before` - Triggered before the command is called to stop
+*   `abort:{commandName}` - Triggered when the command execution is aborted (`editor.on(`run:preview:before`, opts => opts.abort = 1);`)
+*   `run` - Triggered on run of any command. The id and the result are passed as arguments to the callback
+*   `stop` - Triggered on stop of any command. The id and the result are passed as arguments to the callback
+
+## Methods
 
 *   [add][2]
 *   [get][3]

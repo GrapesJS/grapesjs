@@ -6,7 +6,7 @@
 // License: MIT
 import { hasWin } from 'utils/mixins';
 
-export default function($, undefined) {
+export default function ($, undefined) {
   'use strict';
   if (!hasWin()) return;
 
@@ -46,26 +46,14 @@ export default function($, undefined) {
       replacerClassName: '',
       showAlpha: false,
       theme: 'sp-light',
-      palette: [
-        [
-          '#ffffff',
-          '#000000',
-          '#ff0000',
-          '#ff8000',
-          '#ffff00',
-          '#008000',
-          '#0000ff',
-          '#4b0082',
-          '#9400d3'
-        ]
-      ],
+      palette: [['#ffffff', '#000000', '#ff0000', '#ff8000', '#ffff00', '#008000', '#0000ff', '#4b0082', '#9400d3']],
       selectionPalette: [],
       disabled: false,
-      offset: null
+      offset: null,
     },
     spectrums = [],
     IE = !!/msie/i.exec(window.navigator.userAgent),
-    rgbaSupport = (function() {
+    rgbaSupport = (function () {
       function contains(str, substr) {
         return !!~('' + str).indexOf(substr);
       }
@@ -73,18 +61,15 @@ export default function($, undefined) {
       var elem = document.createElement('div');
       var style = elem.style;
       style.cssText = 'background-color:rgba(0,0,0,.5)';
-      return (
-        contains(style.backgroundColor, 'rgba') ||
-        contains(style.backgroundColor, 'hsla')
-      );
+      return contains(style.backgroundColor, 'rgba') || contains(style.backgroundColor, 'hsla');
     })(),
     replaceInput = [
       "<div class='sp-replacer'>",
       "<div class='sp-preview'><div class='sp-preview-inner'></div></div>",
       "<div class='sp-dd'>&#9660;</div>",
-      '</div>'
+      '</div>',
     ].join(''),
-    markup = (function() {
+    markup = (function () {
       // IE does not support gradients with multiple stops, so we need to simulate
       //  that for the rainbow slider with 8 divs that each have a single gradient
       var gradientFix = '';
@@ -131,7 +116,7 @@ export default function($, undefined) {
         "<button type='button' class='sp-choose'></button>",
         '</div>',
         '</div>',
-        '</div>'
+        '</div>',
       ].join('');
     })();
 
@@ -141,15 +126,10 @@ export default function($, undefined) {
       var current = p[i];
       if (current) {
         var tiny = tinycolor(current);
-        var c =
-          tiny.toHsl().l < 0.5
-            ? 'sp-thumb-el sp-thumb-dark'
-            : 'sp-thumb-el sp-thumb-light';
+        var c = tiny.toHsl().l < 0.5 ? 'sp-thumb-el sp-thumb-dark' : 'sp-thumb-el sp-thumb-light';
         c += tinycolor.equals(color, current) ? ' sp-thumb-active' : '';
         var formattedString = tiny.toString(opts.preferredFormat || 'rgb');
-        var swatchStyle = rgbaSupport
-          ? 'background-color:' + tiny.toRgbString()
-          : 'filter:' + tiny.toFilter();
+        var swatchStyle = rgbaSupport ? 'background-color:' + tiny.toRgbString() : 'filter:' + tiny.toFilter();
         html.push(
           '<span title="' +
             formattedString +
@@ -166,11 +146,10 @@ export default function($, undefined) {
         html.push(
           $('<div />')
             .append(
-              $(
-                '<span data-color="" style="background-color:transparent;" class="' +
-                  cls +
-                  '"></span>'
-              ).attr('title', opts.noColorSelectedText)
+              $('<span data-color="" style="background-color:transparent;" class="' + cls + '"></span>').attr(
+                'title',
+                opts.noColorSelectedText
+              )
             )
             .html()
         );
@@ -194,7 +173,7 @@ export default function($, undefined) {
       change: bind(opts.change, callbackContext),
       show: bind(opts.show, callbackContext),
       hide: bind(opts.hide, callbackContext),
-      beforeShow: bind(opts.beforeShow, callbackContext)
+      beforeShow: bind(opts.beforeShow, callbackContext),
     };
     return opts;
   }
@@ -251,16 +230,10 @@ export default function($, undefined) {
       chooseButton = container.find('.sp-choose'),
       toggleButton = container.find('.sp-palette-toggle'),
       isInput = boundElement.is('input'),
-      isInputTypeColor =
-        isInput &&
-        boundElement.attr('type') === 'color' &&
-        inputTypeColorSupport(),
+      isInputTypeColor = isInput && boundElement.attr('type') === 'color' && inputTypeColorSupport(),
       shouldReplace = isInput && !flat,
       replacer = shouldReplace
-        ? $(replaceInput)
-            .addClass(theme)
-            .addClass(opts.className)
-            .addClass(opts.replacerClassName)
+        ? $(replaceInput).addClass(theme).addClass(opts.className).addClass(opts.replacerClassName)
         : $([]),
       offsetElement = shouldReplace ? replacer : boundElement,
       previewElement = replacer.find('.sp-preview-inner'),
@@ -276,11 +249,7 @@ export default function($, undefined) {
         opts.showPalette = true;
       }
 
-      toggleButton.text(
-        opts.showPaletteOnly
-          ? opts.togglePaletteMoreText
-          : opts.togglePaletteLessText
-      );
+      toggleButton.text(opts.showPaletteOnly ? opts.togglePaletteMoreText : opts.togglePaletteLessText);
 
       if (opts.palette) {
         palette = opts.palette.slice(0);
@@ -299,10 +268,7 @@ export default function($, undefined) {
       container.toggleClass('sp-alpha-enabled', opts.showAlpha);
       container.toggleClass('sp-clear-enabled', allowEmpty);
       container.toggleClass('sp-buttons-disabled', !opts.showButtons);
-      container.toggleClass(
-        'sp-palette-buttons-disabled',
-        !opts.togglePaletteOnly
-      );
+      container.toggleClass('sp-palette-buttons-disabled', !opts.togglePaletteOnly);
       container.toggleClass('sp-palette-disabled', !opts.showPalette);
       container.toggleClass('sp-palette-only', opts.showPaletteOnly);
       container.toggleClass('sp-initial-disabled', !opts.showInitial);
@@ -329,8 +295,7 @@ export default function($, undefined) {
       if (flat) {
         boundElement.after(container).hide();
       } else {
-        var appendTo =
-          opts.appendTo === 'parent' ? boundElement.parent() : $(opts.appendTo);
+        var appendTo = opts.appendTo === 'parent' ? boundElement.parent() : $(opts.appendTo);
         if (appendTo.length !== 1) {
           appendTo = $('body');
         }
@@ -340,7 +305,7 @@ export default function($, undefined) {
 
       updateSelectionPaletteFromStorage();
 
-      offsetElement.bind('click.spectrum touchstart.spectrum', function(e) {
+      offsetElement.bind('click.spectrum touchstart.spectrum', function (e) {
         if (!disabled) {
           toggle();
         }
@@ -361,17 +326,17 @@ export default function($, undefined) {
 
       // Handle user typed input
       textInput.change(setFromTextInput);
-      textInput.bind('paste', function() {
+      textInput.bind('paste', function () {
         setTimeout(setFromTextInput, 1);
       });
-      textInput.keydown(function(e) {
+      textInput.keydown(function (e) {
         if (e.keyCode == 13) {
           setFromTextInput();
         }
       });
 
       cancelButton.text(opts.cancelText);
-      cancelButton.bind('click.spectrum', function(e) {
+      cancelButton.bind('click.spectrum', function (e) {
         e.stopPropagation();
         e.preventDefault();
         revert();
@@ -379,7 +344,7 @@ export default function($, undefined) {
       });
 
       clearButton.attr('title', opts.clearText);
-      clearButton.bind('click.spectrum', function(e) {
+      clearButton.bind('click.spectrum', function (e) {
         e.stopPropagation();
         e.preventDefault();
         isEmpty = true;
@@ -392,7 +357,7 @@ export default function($, undefined) {
       });
 
       chooseButton.text(opts.chooseText);
-      chooseButton.bind('click.spectrum', function(e) {
+      chooseButton.bind('click.spectrum', function (e) {
         e.stopPropagation();
         e.preventDefault();
 
@@ -406,12 +371,8 @@ export default function($, undefined) {
         }
       });
 
-      toggleButton.text(
-        opts.showPaletteOnly
-          ? opts.togglePaletteMoreText
-          : opts.togglePaletteLessText
-      );
-      toggleButton.bind('click.spectrum', function(e) {
+      toggleButton.text(opts.showPaletteOnly ? opts.togglePaletteMoreText : opts.togglePaletteLessText);
+      toggleButton.bind('click.spectrum', function (e) {
         e.stopPropagation();
         e.preventDefault();
 
@@ -430,7 +391,7 @@ export default function($, undefined) {
 
       draggable(
         alphaSlider,
-        function(dragX, dragY, e) {
+        function (dragX, dragY, e) {
           currentAlpha = dragX / alphaWidth;
           isEmpty = false;
           if (e.shiftKey) {
@@ -445,7 +406,7 @@ export default function($, undefined) {
 
       draggable(
         slider,
-        function(dragX, dragY) {
+        function (dragX, dragY) {
           currentHue = parseFloat(dragY / slideHeight);
           isEmpty = false;
           if (!opts.showAlpha) {
@@ -459,23 +420,20 @@ export default function($, undefined) {
 
       draggable(
         dragger,
-        function(dragX, dragY, e) {
+        function (dragX, dragY, e) {
           // shift+drag should snap the movement to either the x or y axis.
           if (!e.shiftKey) {
             shiftMovementDirection = null;
           } else if (!shiftMovementDirection) {
             var oldDragX = currentSaturation * dragWidth;
             var oldDragY = dragHeight - currentValue * dragHeight;
-            var furtherFromX =
-              Math.abs(dragX - oldDragX) > Math.abs(dragY - oldDragY);
+            var furtherFromX = Math.abs(dragX - oldDragX) > Math.abs(dragY - oldDragY);
 
             shiftMovementDirection = furtherFromX ? 'x' : 'y';
           }
 
-          var setSaturation =
-            !shiftMovementDirection || shiftMovementDirection === 'x';
-          var setValue =
-            !shiftMovementDirection || shiftMovementDirection === 'y';
+          var setSaturation = !shiftMovementDirection || shiftMovementDirection === 'x';
+          var setValue = !shiftMovementDirection || shiftMovementDirection === 'y';
 
           if (setSaturation) {
             currentSaturation = parseFloat(dragX / dragWidth);
@@ -501,8 +459,7 @@ export default function($, undefined) {
         // In case color was black - update the preview UI and set the format
         // since the set function will not run (default color is black).
         updateUI();
-        currentPreferredFormat =
-          opts.preferredFormat || tinycolor(initialColor).getFormat();
+        currentPreferredFormat = opts.preferredFormat || tinycolor(initialColor).getFormat();
 
         addColorToSelectionPalette(initialColor);
       } else {
@@ -515,21 +472,13 @@ export default function($, undefined) {
 
       function paletteElementClick(e) {
         if (e.data && e.data.ignore) {
-          set(
-            $(e.target)
-              .closest('.sp-thumb-el')
-              .data('color')
-          );
+          set($(e.target).closest('.sp-thumb-el').data('color'));
           move();
         } else {
-          set(
-            $(e.target)
-              .closest('.sp-thumb-el')
-              .data('color')
-          );
+          set($(e.target).closest('.sp-thumb-el').data('color'));
           move();
-          updateOriginalInput(true);
           if (opts.hideAfterPaletteSelect) {
+            updateOriginalInput(true);
             hide();
           }
         }
@@ -537,20 +486,9 @@ export default function($, undefined) {
         return false;
       }
 
-      var paletteEvent = IE
-        ? 'mousedown.spectrum'
-        : 'click.spectrum touchstart.spectrum';
-      paletteContainer.delegate(
-        '.sp-thumb-el',
-        paletteEvent,
-        paletteElementClick
-      );
-      initialColorContainer.delegate(
-        '.sp-thumb-el:nth-child(1)',
-        paletteEvent,
-        { ignore: true },
-        paletteElementClick
-      );
+      var paletteEvent = IE ? 'mousedown.spectrum' : 'click.spectrum touchstart.spectrum';
+      paletteContainer.delegate('.sp-thumb-el', paletteEvent, paletteElementClick);
+      initialColorContainer.delegate('.sp-thumb-el:nth-child(1)', paletteEvent, { ignore: true }, paletteElementClick);
     }
 
     function updateSelectionPaletteFromStorage() {
@@ -560,7 +498,7 @@ export default function($, undefined) {
           var oldPalette = window.localStorage[localStorageKey].split(',#');
           if (oldPalette.length > 1) {
             delete window.localStorage[localStorageKey];
-            $.each(oldPalette, function(i, c) {
+            $.each(oldPalette, function (i, c) {
               addColorToSelectionPalette(c);
             });
           }
@@ -608,25 +546,15 @@ export default function($, undefined) {
     function drawPalette() {
       var currentColor = get();
 
-      var html = $.map(paletteArray, function(palette, i) {
-        return paletteTemplate(
-          palette,
-          currentColor,
-          'sp-palette-row sp-palette-row-' + i,
-          opts
-        );
+      var html = $.map(paletteArray, function (palette, i) {
+        return paletteTemplate(palette, currentColor, 'sp-palette-row sp-palette-row-' + i, opts);
       });
 
       updateSelectionPaletteFromStorage();
 
       if (selectionPalette) {
         html.push(
-          paletteTemplate(
-            getUniqueSelectionPalette(),
-            currentColor,
-            'sp-palette-row sp-palette-row-selection',
-            opts
-          )
+          paletteTemplate(getUniqueSelectionPalette(), currentColor, 'sp-palette-row sp-palette-row-selection', opts)
         );
       }
 
@@ -637,14 +565,7 @@ export default function($, undefined) {
       if (opts.showInitial) {
         var initial = colorOnShow;
         var current = get();
-        initialColorContainer.html(
-          paletteTemplate(
-            [initial, current],
-            current,
-            'sp-palette-row-initial',
-            opts
-          )
-        );
+        initialColorContainer.html(paletteTemplate([initial, current], current, 'sp-palette-row-initial', opts));
       }
     }
 
@@ -813,7 +734,7 @@ export default function($, undefined) {
           h: currentHue,
           s: currentSaturation,
           v: currentValue,
-          a: Math.round(currentAlpha * 100) / 100
+          a: Math.round(currentAlpha * 100) / 100,
         },
         { format: opts.format || currentPreferredFormat }
       );
@@ -842,12 +763,7 @@ export default function($, undefined) {
       // Get a format that alpha will be included in (hex and names ignore alpha)
       var format = currentPreferredFormat;
       if (currentAlpha < 1 && !(currentAlpha === 0 && format === 'name')) {
-        if (
-          format === 'hex' ||
-          format === 'hex3' ||
-          format === 'hex6' ||
-          format === 'name'
-        ) {
+        if (format === 'hex' || format === 'hex3' || format === 'hex6' || format === 'name') {
           format = 'rgb';
         }
       }
@@ -878,23 +794,16 @@ export default function($, undefined) {
           var rgb = realColor.toRgb();
           rgb.a = 0;
           var realAlpha = tinycolor(rgb).toRgbString();
-          var gradient =
-            'linear-gradient(left, ' + realAlpha + ', ' + realHex + ')';
+          var gradient = 'linear-gradient(left, ' + realAlpha + ', ' + realHex + ')';
 
           if (IE) {
-            alphaSliderInner.css(
-              'filter',
-              tinycolor(realAlpha).toFilter({ gradientType: 1 }, realHex)
-            );
+            alphaSliderInner.css('filter', tinycolor(realAlpha).toFilter({ gradientType: 1 }, realHex));
           } else {
             alphaSliderInner.css('background', '-webkit-' + gradient);
             alphaSliderInner.css('background', '-moz-' + gradient);
             alphaSliderInner.css('background', '-ms-' + gradient);
             // Use current syntax gradient on unprefixed property.
-            alphaSliderInner.css(
-              'background',
-              'linear-gradient(to right, ' + realAlpha + ', ' + realHex + ')'
-            );
+            alphaSliderInner.css('background', 'linear-gradient(to right, ' + realAlpha + ', ' + realHex + ')');
           }
         }
 
@@ -931,28 +840,22 @@ export default function($, undefined) {
         // Where to show the little circle in that displays your current selected color
         var dragX = s * dragWidth;
         var dragY = dragHeight - v * dragHeight;
-        dragX = Math.max(
-          -dragHelperHeight,
-          Math.min(dragWidth - dragHelperHeight, dragX - dragHelperHeight)
-        );
-        dragY = Math.max(
-          -dragHelperHeight,
-          Math.min(dragHeight - dragHelperHeight, dragY - dragHelperHeight)
-        );
+        dragX = Math.max(-dragHelperHeight, Math.min(dragWidth - dragHelperHeight, dragX - dragHelperHeight));
+        dragY = Math.max(-dragHelperHeight, Math.min(dragHeight - dragHelperHeight, dragY - dragHelperHeight));
         dragHelper.css({
           top: dragY + 'px',
-          left: dragX + 'px'
+          left: dragX + 'px',
         });
 
         var alphaX = currentAlpha * alphaWidth;
         alphaSlideHelper.css({
-          left: alphaX - alphaSlideHelperWidth / 2 + 'px'
+          left: alphaX - alphaSlideHelperWidth / 2 + 'px',
         });
 
         // Where to show the bar that displays your current selected hue
         var slideY = currentHue * slideHeight;
         slideHelper.css({
-          top: slideY - slideHelperHeight + 'px'
+          top: slideY - slideHelperHeight + 'px',
         });
       }
     }
@@ -965,7 +868,7 @@ export default function($, undefined) {
       if (color) {
         displayColor = color.toString(currentPreferredFormat);
         // Update the selection palette with the current color
-        addColorToSelectionPalette(color);
+        !visible && addColorToSelectionPalette(color);
       }
 
       if (isInput) {
@@ -1062,13 +965,13 @@ export default function($, undefined) {
       enable: enable,
       disable: disable,
       offset: setOffset,
-      set: function(c) {
+      set: function (c) {
         set(c);
         updateOriginalInput();
       },
       get: get,
       destroy: destroy,
-      container: container
+      container: container,
     };
 
     spect.id = spectrums.push(spect) - 1;
@@ -1099,16 +1002,12 @@ export default function($, undefined) {
 
     offset.left -= Math.min(
       offset.left,
-      offset.left + dpWidth > viewWidth && viewWidth > dpWidth
-        ? Math.abs(offset.left + dpWidth - viewWidth)
-        : 0
+      offset.left + dpWidth > viewWidth && viewWidth > dpWidth ? Math.abs(offset.left + dpWidth - viewWidth) : 0
     );
 
     offset.top -= Math.min(
       offset.top,
-      offset.top + dpHeight > viewHeight && viewHeight > dpHeight
-        ? Math.abs(dpHeight + inputHeight - extraY)
-        : extraY
+      offset.top + dpHeight > viewHeight && viewHeight > dpHeight ? Math.abs(dpHeight + inputHeight - extraY) : extraY
     );
 
     return offset;
@@ -1133,7 +1032,7 @@ export default function($, undefined) {
   function bind(func, obj) {
     var slice = Array.prototype.slice;
     var args = slice.call(arguments, 2);
-    return function() {
+    return function () {
       return func.apply(obj, args.concat(slice.call(arguments)));
     };
   }
@@ -1143,9 +1042,9 @@ export default function($, undefined) {
    * when dragging, the x is within [0,element.width] and y is within [0,element.height]
    */
   function draggable(element, onmove, onstart, onstop) {
-    onmove = onmove || function() {};
-    onstart = onstart || function() {};
-    onstop = onstop || function() {};
+    onmove = onmove || function () {};
+    onstart = onstart || function () {};
+    onstop = onstop || function () {};
     var doc = document;
     var dragging = false;
     var offset = {};
@@ -1219,7 +1118,7 @@ export default function($, undefined) {
 
         // Wait a tick before notifying observers to allow the click event
         // to fire in Chrome.
-        setTimeout(function() {
+        setTimeout(function () {
           onstop.apply(element, arguments);
         }, 0);
       }
@@ -1231,10 +1130,10 @@ export default function($, undefined) {
 
   function throttle(func, wait, debounce) {
     var timeout;
-    return function() {
+    return function () {
       var context = this,
         args = arguments;
-      var throttler = function() {
+      var throttler = function () {
         timeout = null;
         func.apply(context, args);
       };
@@ -1251,12 +1150,12 @@ export default function($, undefined) {
    * Define a jQuery plugin
    */
   var dataID = 'spectrum.id';
-  $.fn.spectrum = function(opts, extra) {
+  $.fn.spectrum = function (opts, extra) {
     if (typeof opts == 'string') {
       var returnValue = this;
       var args = Array.prototype.slice.call(arguments, 1);
 
-      this.each(function() {
+      this.each(function () {
         var spect = spectrums[$(this).data(dataID)];
         if (spect) {
           var method = spect[opts];
@@ -1283,7 +1182,7 @@ export default function($, undefined) {
     }
 
     // Initializing a new instance of spectrum
-    return this.spectrum('destroy').each(function() {
+    return this.spectrum('destroy').each(function () {
       var options = $.extend({}, opts, $(this).data());
       var spect = spectrum(this, options);
       $(this).data(dataID, spect.id);
@@ -1297,8 +1196,7 @@ export default function($, undefined) {
   $.fn.spectrum.inputTypeColorSupport = function inputTypeColorSupport() {
     if (typeof inputTypeColorSupport._cachedResult === 'undefined') {
       var colorInput = $("<input type='color'/>")[0]; // if color element is supported, value will default to not null
-      inputTypeColorSupport._cachedResult =
-        colorInput.type === 'color' && colorInput.value !== '';
+      inputTypeColorSupport._cachedResult = colorInput.type === 'color' && colorInput.value !== '';
     }
     return inputTypeColorSupport._cachedResult;
   };
@@ -1307,11 +1205,11 @@ export default function($, undefined) {
   $.spectrum.localization = {};
   $.spectrum.palettes = {};
 
-  $.fn.spectrum.processNativeColorInputs = function() {
+  $.fn.spectrum.processNativeColorInputs = function () {
     var colorInputs = $('input[type=color]');
     if (colorInputs.length && !inputTypeColorSupport()) {
       colorInputs.spectrum({
-        preferredFormat: 'hex6'
+        preferredFormat: 'hex6',
       });
     }
   };
@@ -1331,7 +1229,7 @@ export default function($, undefined) {
     mathMax = math.max,
     mathRandom = math.random;
 
-  var tinycolor = function(color, opts) {
+  var tinycolor = function (color, opts) {
     color = color ? color : '';
     opts = opts || {};
 
@@ -1373,38 +1271,38 @@ export default function($, undefined) {
   };
 
   tinycolor.prototype = {
-    isDark: function() {
+    isDark: function () {
       return this.getBrightness() < 128;
     },
-    isLight: function() {
+    isLight: function () {
       return !this.isDark();
     },
-    isValid: function() {
+    isValid: function () {
       return this._ok;
     },
-    getOriginalInput: function() {
+    getOriginalInput: function () {
       return this._originalInput;
     },
-    getFormat: function() {
+    getFormat: function () {
       return this._format;
     },
-    getAlpha: function() {
+    getAlpha: function () {
       return this._a;
     },
-    getBrightness: function() {
+    getBrightness: function () {
       var rgb = this.toRgb();
       return (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
     },
-    setAlpha: function(value) {
+    setAlpha: function (value) {
       this._a = boundAlpha(value);
       this._roundA = mathRound(100 * this._a) / 100;
       return this;
     },
-    toHsv: function() {
+    toHsv: function () {
       var hsv = rgbToHsv(this._r, this._g, this._b);
       return { h: hsv.h * 360, s: hsv.s, v: hsv.v, a: this._a };
     },
-    toHsvString: function() {
+    toHsvString: function () {
       var hsv = rgbToHsv(this._r, this._g, this._b);
       var h = mathRound(hsv.h * 360),
         s = mathRound(hsv.s * 100),
@@ -1413,11 +1311,11 @@ export default function($, undefined) {
         ? 'hsv(' + h + ', ' + s + '%, ' + v + '%)'
         : 'hsva(' + h + ', ' + s + '%, ' + v + '%, ' + this._roundA + ')';
     },
-    toHsl: function() {
+    toHsl: function () {
       var hsl = rgbToHsl(this._r, this._g, this._b);
       return { h: hsl.h * 360, s: hsl.s, l: hsl.l, a: this._a };
     },
-    toHslString: function() {
+    toHslString: function () {
       var hsl = rgbToHsl(this._r, this._g, this._b);
       var h = mathRound(hsl.h * 360),
         s = mathRound(hsl.s * 100),
@@ -1426,35 +1324,29 @@ export default function($, undefined) {
         ? 'hsl(' + h + ', ' + s + '%, ' + l + '%)'
         : 'hsla(' + h + ', ' + s + '%, ' + l + '%, ' + this._roundA + ')';
     },
-    toHex: function(allow3Char) {
+    toHex: function (allow3Char) {
       return rgbToHex(this._r, this._g, this._b, allow3Char);
     },
-    toHexString: function(allow3Char) {
+    toHexString: function (allow3Char) {
       return '#' + this.toHex(allow3Char);
     },
-    toHex8: function() {
+    toHex8: function () {
       return rgbaToHex(this._r, this._g, this._b, this._a);
     },
-    toHex8String: function() {
+    toHex8String: function () {
       return '#' + this.toHex8();
     },
-    toRgb: function() {
+    toRgb: function () {
       return {
         r: mathRound(this._r),
         g: mathRound(this._g),
         b: mathRound(this._b),
-        a: this._a
+        a: this._a,
       };
     },
-    toRgbString: function() {
+    toRgbString: function () {
       return this._a == 1
-        ? 'rgb(' +
-            mathRound(this._r) +
-            ', ' +
-            mathRound(this._g) +
-            ', ' +
-            mathRound(this._b) +
-            ')'
+        ? 'rgb(' + mathRound(this._r) + ', ' + mathRound(this._g) + ', ' + mathRound(this._b) + ')'
         : 'rgba(' +
             mathRound(this._r) +
             ', ' +
@@ -1465,15 +1357,15 @@ export default function($, undefined) {
             this._roundA +
             ')';
     },
-    toPercentageRgb: function() {
+    toPercentageRgb: function () {
       return {
         r: mathRound(bound01(this._r, 255) * 100) + '%',
         g: mathRound(bound01(this._g, 255) * 100) + '%',
         b: mathRound(bound01(this._b, 255) * 100) + '%',
-        a: this._a
+        a: this._a,
       };
     },
-    toPercentageRgbString: function() {
+    toPercentageRgbString: function () {
       return this._a == 1
         ? 'rgb(' +
             mathRound(bound01(this._r, 255) * 100) +
@@ -1492,7 +1384,7 @@ export default function($, undefined) {
             this._roundA +
             ')';
     },
-    toName: function() {
+    toName: function () {
       if (this._a === 0) {
         return 'transparent';
       }
@@ -1503,7 +1395,7 @@ export default function($, undefined) {
 
       return hexNames[rgbToHex(this._r, this._g, this._b, true)] || false;
     },
-    toFilter: function(secondColor) {
+    toFilter: function (secondColor) {
       var hex8String = '#' + rgbaToHex(this._r, this._g, this._b, this._a);
       var secondHex8String = hex8String;
       var gradientType = this._gradientType ? 'GradientType = 1, ' : '';
@@ -1523,19 +1415,14 @@ export default function($, undefined) {
         ')'
       );
     },
-    toString: function(format) {
+    toString: function (format) {
       var formatSet = !!format;
       format = format || this._format;
 
       var formattedString = false;
       var hasAlpha = this._a < 1 && this._a >= 0;
       var needsAlphaFormat =
-        !formatSet &&
-        hasAlpha &&
-        (format === 'hex' ||
-          format === 'hex6' ||
-          format === 'hex3' ||
-          format === 'name');
+        !formatSet && hasAlpha && (format === 'hex' || format === 'hex6' || format === 'hex3' || format === 'name');
 
       if (needsAlphaFormat) {
         // Special case for "transparent", all other non-alpha formats
@@ -1573,7 +1460,7 @@ export default function($, undefined) {
       return formattedString || this.toHexString();
     },
 
-    _applyModification: function(fn, args) {
+    _applyModification: function (fn, args) {
       var color = fn.apply(null, [this].concat([].slice.call(args)));
       this._r = color._r;
       this._g = color._g;
@@ -1581,54 +1468,54 @@ export default function($, undefined) {
       this.setAlpha(color._a);
       return this;
     },
-    lighten: function() {
+    lighten: function () {
       return this._applyModification(lighten, arguments);
     },
-    brighten: function() {
+    brighten: function () {
       return this._applyModification(brighten, arguments);
     },
-    darken: function() {
+    darken: function () {
       return this._applyModification(darken, arguments);
     },
-    desaturate: function() {
+    desaturate: function () {
       return this._applyModification(desaturate, arguments);
     },
-    saturate: function() {
+    saturate: function () {
       return this._applyModification(saturate, arguments);
     },
-    greyscale: function() {
+    greyscale: function () {
       return this._applyModification(greyscale, arguments);
     },
-    spin: function() {
+    spin: function () {
       return this._applyModification(spin, arguments);
     },
 
-    _applyCombination: function(fn, args) {
+    _applyCombination: function (fn, args) {
       return fn.apply(null, [this].concat([].slice.call(args)));
     },
-    analogous: function() {
+    analogous: function () {
       return this._applyCombination(analogous, arguments);
     },
-    complement: function() {
+    complement: function () {
       return this._applyCombination(complement, arguments);
     },
-    monochromatic: function() {
+    monochromatic: function () {
       return this._applyCombination(monochromatic, arguments);
     },
-    splitcomplement: function() {
+    splitcomplement: function () {
       return this._applyCombination(splitcomplement, arguments);
     },
-    triad: function() {
+    triad: function () {
       return this._applyCombination(triad, arguments);
     },
-    tetrad: function() {
+    tetrad: function () {
       return this._applyCombination(tetrad, arguments);
-    }
+    },
   };
 
   // If input is an object, force 1 into "1.0" to handle ratios properly
   // String input requires "1.0" as input, so 1 will be treated as 1
-  tinycolor.fromRatio = function(color, opts) {
+  tinycolor.fromRatio = function (color, opts) {
     if (typeof color == 'object') {
       var newColor = {};
       for (var i in color) {
@@ -1672,29 +1559,17 @@ export default function($, undefined) {
     }
 
     if (typeof color == 'object') {
-      if (
-        color.hasOwnProperty('r') &&
-        color.hasOwnProperty('g') &&
-        color.hasOwnProperty('b')
-      ) {
+      if (color.hasOwnProperty('r') && color.hasOwnProperty('g') && color.hasOwnProperty('b')) {
         rgb = rgbToRgb(color.r, color.g, color.b);
         ok = true;
         format = String(color.r).substr(-1) === '%' ? 'prgb' : 'rgb';
-      } else if (
-        color.hasOwnProperty('h') &&
-        color.hasOwnProperty('s') &&
-        color.hasOwnProperty('v')
-      ) {
+      } else if (color.hasOwnProperty('h') && color.hasOwnProperty('s') && color.hasOwnProperty('v')) {
         color.s = convertToPercentage(color.s);
         color.v = convertToPercentage(color.v);
         rgb = hsvToRgb(color.h, color.s, color.v);
         ok = true;
         format = 'hsv';
-      } else if (
-        color.hasOwnProperty('h') &&
-        color.hasOwnProperty('s') &&
-        color.hasOwnProperty('l')
-      ) {
+      } else if (color.hasOwnProperty('h') && color.hasOwnProperty('s') && color.hasOwnProperty('l')) {
         color.s = convertToPercentage(color.s);
         color.l = convertToPercentage(color.l);
         rgb = hslToRgb(color.h, color.s, color.l);
@@ -1715,7 +1590,7 @@ export default function($, undefined) {
       r: mathMin(255, mathMax(rgb.r, 0)),
       g: mathMin(255, mathMax(rgb.g, 0)),
       b: mathMin(255, mathMax(rgb.b, 0)),
-      a: a
+      a: a,
     };
   }
 
@@ -1734,7 +1609,7 @@ export default function($, undefined) {
     return {
       r: bound01(r, 255) * 255,
       g: bound01(g, 255) * 255,
-      b: bound01(b, 255) * 255
+      b: bound01(b, 255) * 255,
     };
   }
 
@@ -1873,11 +1748,7 @@ export default function($, undefined) {
   // Assumes r, g, and b are contained in the set [0, 255]
   // Returns a 3 or 6 character hex
   function rgbToHex(r, g, b, allow3Char) {
-    var hex = [
-      pad2(mathRound(r).toString(16)),
-      pad2(mathRound(g).toString(16)),
-      pad2(mathRound(b).toString(16))
-    ];
+    var hex = [pad2(mathRound(r).toString(16)), pad2(mathRound(g).toString(16)), pad2(mathRound(b).toString(16))];
 
     // Return a 3 character hex if possible
     if (
@@ -1900,7 +1771,7 @@ export default function($, undefined) {
       pad2(convertDecimalToHex(a)),
       pad2(mathRound(r).toString(16)),
       pad2(mathRound(g).toString(16)),
-      pad2(mathRound(b).toString(16))
+      pad2(mathRound(b).toString(16)),
     ];
 
     return hex.join('');
@@ -1908,17 +1779,17 @@ export default function($, undefined) {
 
   // `equals`
   // Can be called with any tinycolor input
-  tinycolor.equals = function(color1, color2) {
+  tinycolor.equals = function (color1, color2) {
     if (!color1 || !color2) {
       return false;
     }
     return tinycolor(color1).toRgbString() == tinycolor(color2).toRgbString();
   };
-  tinycolor.random = function() {
+  tinycolor.random = function () {
     return tinycolor.fromRatio({
       r: mathRandom(),
       g: mathRandom(),
-      b: mathRandom()
+      b: mathRandom(),
     });
   };
 
@@ -1998,7 +1869,7 @@ export default function($, undefined) {
     return [
       tinycolor(color),
       tinycolor({ h: (h + 120) % 360, s: hsl.s, l: hsl.l }),
-      tinycolor({ h: (h + 240) % 360, s: hsl.s, l: hsl.l })
+      tinycolor({ h: (h + 240) % 360, s: hsl.s, l: hsl.l }),
     ];
   }
 
@@ -2009,7 +1880,7 @@ export default function($, undefined) {
       tinycolor(color),
       tinycolor({ h: (h + 90) % 360, s: hsl.s, l: hsl.l }),
       tinycolor({ h: (h + 180) % 360, s: hsl.s, l: hsl.l }),
-      tinycolor({ h: (h + 270) % 360, s: hsl.s, l: hsl.l })
+      tinycolor({ h: (h + 270) % 360, s: hsl.s, l: hsl.l }),
     ];
   }
 
@@ -2019,7 +1890,7 @@ export default function($, undefined) {
     return [
       tinycolor(color),
       tinycolor({ h: (h + 72) % 360, s: hsl.s, l: hsl.l }),
-      tinycolor({ h: (h + 216) % 360, s: hsl.s, l: hsl.l })
+      tinycolor({ h: (h + 216) % 360, s: hsl.s, l: hsl.l }),
     ];
   }
 
@@ -2058,7 +1929,7 @@ export default function($, undefined) {
   // Utility Functions
   // ---------------------
 
-  tinycolor.mix = function(color1, color2, amount) {
+  tinycolor.mix = function (color1, color2, amount) {
     amount = amount === 0 ? 0 : amount || 50;
 
     var rgb1 = tinycolor(color1).toRgb();
@@ -2084,7 +1955,7 @@ export default function($, undefined) {
       r: rgb2.r * w1 + rgb1.r * w2,
       g: rgb2.g * w1 + rgb1.g * w2,
       b: rgb2.b * w1 + rgb1.b * w2,
-      a: rgb2.a * p + rgb1.a * (1 - p)
+      a: rgb2.a * p + rgb1.a * (1 - p),
     };
 
     return tinycolor(rgba);
@@ -2098,7 +1969,7 @@ export default function($, undefined) {
   // Analyze the 2 colors and returns an object with the following properties:
   //    `brightness`: difference in brightness between the two colors
   //    `color`: difference in color/hue between the two colors
-  tinycolor.readability = function(color1, color2) {
+  tinycolor.readability = function (color1, color2) {
     var c1 = tinycolor(color1);
     var c2 = tinycolor(color2);
     var rgb1 = c1.toRgb();
@@ -2115,7 +1986,7 @@ export default function($, undefined) {
 
     return {
       brightness: Math.abs(brightnessA - brightnessB),
-      color: colorDiff
+      color: colorDiff,
     };
   };
 
@@ -2124,7 +1995,7 @@ export default function($, undefined) {
   // Ensure that foreground and background color combinations provide sufficient contrast.
   // *Example*
   //    tinycolor.isReadable("#000", "#111") => false
-  tinycolor.isReadable = function(color1, color2) {
+  tinycolor.isReadable = function (color1, color2) {
     var readability = tinycolor.readability(color1, color2);
     return readability.brightness > 125 && readability.color > 500;
   };
@@ -2134,7 +2005,7 @@ export default function($, undefined) {
   // colors for that base, returns the most readable color.
   // *Example*
   //    tinycolor.mostReadable("#123", ["#fff", "#000"]) => "#000"
-  tinycolor.mostReadable = function(baseColor, colorList) {
+  tinycolor.mostReadable = function (baseColor, colorList) {
     var bestColor = null;
     var bestScore = 0;
     var bestIsReadable = false;
@@ -2311,7 +2182,7 @@ export default function($, undefined) {
     white: 'fff',
     whitesmoke: 'f5f5f5',
     yellow: 'ff0',
-    yellowgreen: '9acd32'
+    yellowgreen: '9acd32',
   });
 
   // Make it easy to access colors via `hexNames[hex]`
@@ -2409,7 +2280,7 @@ export default function($, undefined) {
     return parseIntFromHex(h) / 255;
   }
 
-  var matchers = (function() {
+  var matchers = (function () {
     // <http://www.w3.org/TR/css3-values/#integers>
     var CSS_INTEGER = '[-\\+]?\\d+%?';
 
@@ -2422,14 +2293,7 @@ export default function($, undefined) {
     // Actual matching.
     // Parentheses and commas are optional, but not required.
     // Whitespace can take the place of commas or opening paren
-    var PERMISSIVE_MATCH3 =
-      '[\\s|\\(]+(' +
-      CSS_UNIT +
-      ')[,|\\s]+(' +
-      CSS_UNIT +
-      ')[,|\\s]+(' +
-      CSS_UNIT +
-      ')\\s*\\)?';
+    var PERMISSIVE_MATCH3 = '[\\s|\\(]+(' + CSS_UNIT + ')[,|\\s]+(' + CSS_UNIT + ')[,|\\s]+(' + CSS_UNIT + ')\\s*\\)?';
     var PERMISSIVE_MATCH4 =
       '[\\s|\\(]+(' +
       CSS_UNIT +
@@ -2450,7 +2314,7 @@ export default function($, undefined) {
       hsva: new RegExp('hsva' + PERMISSIVE_MATCH4),
       hex3: /^([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/,
       hex6: /^([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/,
-      hex8: /^([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/
+      hex8: /^([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/,
     };
   })();
 
@@ -2458,10 +2322,7 @@ export default function($, undefined) {
   // Permissive string parsing.  Take in a number of formats, and output an object
   // based on detected format.  Returns `{ r, g, b }` or `{ h, s, l }` or `{ h, s, v}`
   function stringInputToObject(color) {
-    color = color
-      .replace(trimLeft, '')
-      .replace(trimRight, '')
-      .toLowerCase();
+    color = color.replace(trimLeft, '').replace(trimRight, '').toLowerCase();
     var named = false;
     if (names[color]) {
       color = names[color];
@@ -2499,7 +2360,7 @@ export default function($, undefined) {
         r: parseIntFromHex(match[2]),
         g: parseIntFromHex(match[3]),
         b: parseIntFromHex(match[4]),
-        format: named ? 'name' : 'hex8'
+        format: named ? 'name' : 'hex8',
       };
     }
     if ((match = matchers.hex6.exec(color))) {
@@ -2507,7 +2368,7 @@ export default function($, undefined) {
         r: parseIntFromHex(match[1]),
         g: parseIntFromHex(match[2]),
         b: parseIntFromHex(match[3]),
-        format: named ? 'name' : 'hex'
+        format: named ? 'name' : 'hex',
       };
     }
     if ((match = matchers.hex3.exec(color))) {
@@ -2515,7 +2376,7 @@ export default function($, undefined) {
         r: parseIntFromHex(match[1] + '' + match[1]),
         g: parseIntFromHex(match[2] + '' + match[2]),
         b: parseIntFromHex(match[3] + '' + match[3]),
-        format: named ? 'name' : 'hex'
+        format: named ? 'name' : 'hex',
       };
     }
 
@@ -2525,7 +2386,7 @@ export default function($, undefined) {
   window.tinycolor = tinycolor;
   //})();
 
-  $(function() {
+  $(function () {
     if ($.fn.spectrum.load) {
       $.fn.spectrum.processNativeColorInputs();
     }

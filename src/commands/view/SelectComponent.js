@@ -1,13 +1,6 @@
 import Backbone from 'backbone';
 import { bindAll, isElement, isUndefined, debounce } from 'underscore';
-import {
-  on,
-  off,
-  getUnitFromValue,
-  isTaggableNode,
-  getViewEl,
-  hasWin
-} from 'utils/mixins';
+import { on, off, getUnitFromValue, isTaggableNode, getViewEl, hasWin } from 'utils/mixins';
 import { isVisible, isDoc } from 'utils/dom';
 import ToolbarView from 'dom_components/view/ToolbarView';
 import Toolbar from 'dom_components/model/Toolbar';
@@ -36,15 +29,7 @@ let showOffsets;
  */
 export default {
   init(o) {
-    bindAll(
-      this,
-      'onHover',
-      'onOut',
-      'onClick',
-      'onFrameScroll',
-      'onFrameUpdated',
-      'onContainerChange'
-    );
+    bindAll(this, 'onHover', 'onOut', 'onClick', 'onFrameScroll', 'onFrameUpdated', 'onContainerChange');
   },
 
   enable() {
@@ -92,7 +77,7 @@ export default {
     em[method]('component:toggled component:update', this.onSelect, this);
     em[method]('change:componentHovered', this.onHovered, this);
     em[method](
-      'component:resize component:styleUpdate component:input',
+      'component:resize styleable:change component:input', // component:styleUpdate
       this.updateGlobalPos,
       this
     );
@@ -177,7 +162,7 @@ export default {
    * @param {Object}  el
    * @private
    * */
-  onSelect: debounce(function() {
+  onSelect: debounce(function () {
     const { em } = this;
     const component = em.getSelected();
     const currentFrame = em.get('currentFrame') || {};
@@ -242,7 +227,7 @@ export default {
       view: opts.view,
       force: 1,
       top: 0,
-      left: 0
+      left: 0,
     });
   },
 
@@ -253,7 +238,7 @@ export default {
    */
   hideElementOffset(view) {
     this.editor.stopCommand('show-offset', {
-      view
+      view,
     });
   },
 
@@ -266,7 +251,7 @@ export default {
     this.editor.runCommand('show-offset', {
       el,
       elPos: pos,
-      state: 'Fixed'
+      state: 'Fixed',
     });
   },
 
@@ -325,7 +310,7 @@ export default {
    */
   select(model, event = {}) {
     if (!model) return;
-    this.editor.select(model, { scroll: {}, event });
+    this.editor.select(model, { event });
     this.initResize(model);
   },
 
@@ -347,9 +332,7 @@ export default {
       const ppfx = config.pStylePrefix || '';
       const clsBadge = `${ppfx}badge`;
       const customeLabel = config.customBadgeLabel;
-      const badgeLabel = `${
-        icon ? `<div class="${clsBadge}__icon">${icon}</div>` : ''
-      }
+      const badgeLabel = `${icon ? `<div class="${clsBadge}__icon">${icon}</div>` : ''}
         <div class="${clsBadge}__name">${model.getName()}</div>`;
       badge.innerHTML = customeLabel ? customeLabel(model) : badgeLabel;
     }
@@ -359,7 +342,7 @@ export default {
     bStyle.display = 'block';
 
     const targetToElem = canvas.getTargetToElementFixed(el, badge, {
-      pos: pos
+      pos: pos,
     });
 
     const top = targetToElem.top; //opts.topOff - badgeH < 0 ? -opts.topOff : posTop;
@@ -390,8 +373,7 @@ export default {
     const config = em ? em.get('Config') : '';
     const pfx = config.stylePrefix || '';
     const resizeClass = `${pfx}resizing`;
-    const model =
-      !isElement(elem) && isTaggableNode(elem) ? elem : em.getSelected();
+    const model = !isElement(elem) && isTaggableNode(elem) ? elem : em.getSelected();
     const resizable = model && model.get('resizable');
     let options = {};
     let modelToStyle;
@@ -402,10 +384,7 @@ export default {
         docs.forEach(doc => {
           const body = doc.body;
           const cls = body.className || '';
-          body.className = (method == 'add'
-            ? `${cls} ${resizeClass}`
-            : cls.replace(resizeClass, '')
-          ).trim();
+          body.className = (method == 'add' ? `${cls} ${resizeClass}` : cls.replace(resizeClass, '')).trim();
         });
     };
 
@@ -415,13 +394,7 @@ export default {
         // Here the resizer is updated with the current element height and width
         onStart(e, opts = {}) {
           const { el, config, resizer } = opts;
-          const {
-            keyHeight,
-            keyWidth,
-            currentUnit,
-            keepAutoHeight,
-            keepAutoWidth
-          } = config;
+          const { keyHeight, keyWidth, currentUnit, keepAutoHeight, keepAutoWidth } = config;
           toggleBodyClass('add', e, opts);
           modelToStyle = em.get('StyleManager').getModelToStyle(model);
           canvas.toggleFramesEvents();
@@ -468,14 +441,7 @@ export default {
           }
 
           const { store, selectedHandler, config } = options;
-          const {
-            keyHeight,
-            keyWidth,
-            autoHeight,
-            autoWidth,
-            unitWidth,
-            unitHeight
-          } = config;
+          const { keyHeight, keyWidth, autoHeight, autoWidth, unitWidth, unitHeight } = config;
           const onlyHeight = ['tc', 'bc'].indexOf(selectedHandler) >= 0;
           const onlyWidth = ['cl', 'cr'].indexOf(selectedHandler) >= 0;
           const style = {};
@@ -495,7 +461,7 @@ export default {
           const updateEvent = `update:component:style`;
           const eventToListen = `${updateEvent}:${keyHeight} ${updateEvent}:${keyWidth}`;
           em && em.trigger(eventToListen, null, null, { noEmit: 1 });
-        }
+        },
       };
 
       if (typeof resizable == 'object') {
@@ -529,7 +495,7 @@ export default {
         const toolbarView = new ToolbarView({
           collection: this.toolbar,
           editor: this.editor,
-          em
+          em,
         });
         toolbarEl.appendChild(toolbarView.render().el);
       }
@@ -628,7 +594,7 @@ export default {
       ...badgeOpts,
       view,
       topOff,
-      leftOff
+      leftOff,
     });
 
     style.top = topOff + unit;
@@ -642,18 +608,18 @@ export default {
       top: topOff,
       left: leftOff,
       width: pos.width,
-      height: pos.height
+      height: pos.height,
     });
   },
 
-  _upToolbar: debounce(function() {
+  _upToolbar: debounce(function () {
     this.updateToolsGlobal({ force: 1 });
   }),
 
   _trgToolUp(type, opts = {}) {
     this.em.trigger('canvas:tools:update', {
       type,
-      ...opts
+      ...opts,
     });
   },
 
@@ -677,11 +643,7 @@ export default {
     const unit = 'px';
     const toolsEl = this.toggleToolsEl(1);
     const { style } = toolsEl;
-    const targetToElem = canvas.getTargetToElementFixed(
-      el,
-      canvas.getToolbarEl(),
-      { pos }
-    );
+    const targetToElem = canvas.getTargetToElementFixed(el, canvas.getToolbarEl(), { pos });
     const topOff = targetToElem.canvasOffsetTop;
     const leftOff = targetToElem.canvasOffsetLeft;
     style.top = topOff + unit;
@@ -696,18 +658,18 @@ export default {
       top: topOff,
       left: leftOff,
       width: pos.width,
-      height: pos.height
+      height: pos.height,
     });
   },
 
   /**
    * Update attached elements, eg. component toolbar
    */
-  updateAttached: debounce(function() {
+  updateAttached: debounce(function () {
     this.updateGlobalPos();
   }),
 
-  onContainerChange: debounce(function() {
+  onContainerChange: debounce(function () {
     this.em.refreshCanvas();
   }, 150),
 
@@ -738,7 +700,7 @@ export default {
     model &&
       model.set({
         status: '',
-        state: ''
+        state: '',
       });
   },
 
@@ -764,5 +726,5 @@ export default {
     !opts.preserveSelected && em.setSelected(null);
     this.toggleToolsEl();
     editor && editor.stopCommand('resize');
-  }
+  },
 };

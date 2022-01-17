@@ -1,33 +1,31 @@
-import PropertyIntegerView from './PropertyIntegerView';
+import PropertyNumberView from './PropertyNumberView';
 import InputColor from 'domain_abstract/ui/InputColor';
 
-export default PropertyIntegerView.extend({
-  setValue(value, opts = {}) {
-    opts = { ...opts, silent: 1 };
-    this.inputInst.setValue(value, opts);
-  },
+export default class PropertyColorView extends PropertyNumberView {
+  setValue(value) {
+    this.inputInst?.setValue(value, { fromTarget: 1, def: this.model.getDefaultValue() });
+  }
 
   remove() {
-    PropertyIntegerView.prototype.remove.apply(this, arguments);
+    PropertyNumberView.prototype.remove.apply(this, arguments);
     const inp = this.inputInst;
     inp && inp.remove && inp.remove();
-    ['inputInst', '$color'].forEach(i => (this[i] = {}));
-  },
+    ['inputInst', '$color'].forEach(i => (this[i] = null));
+  }
+
+  __handleChange(value, partial) {
+    this.model.upValue(value, { partial });
+  }
 
   onRender() {
-    if (!this.input) {
-      const ppfx = this.ppfx;
-      const inputColor = new InputColor({
-        target: this.target,
-        model: this.model,
-        ppfx
-      });
+    if (!this.inputInst) {
+      this.__handleChange = this.__handleChange.bind(this);
+      const { ppfx, model, em, el } = this;
+      const inputColor = new InputColor({ target: em, model, ppfx, onChange: this.__handleChange });
       const input = inputColor.render();
-      this.el.querySelector(`.${ppfx}fields`).appendChild(input.el);
-      this.$input = input.inputEl;
-      this.$color = input.colorEl;
-      this.input = this.$input.get(0);
+      el.querySelector(`.${ppfx}fields`).appendChild(input.el);
+      this.input = input.inputEl.get(0);
       this.inputInst = input;
     }
   }
-});
+}

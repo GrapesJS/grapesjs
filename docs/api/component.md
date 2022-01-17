@@ -28,10 +28,10 @@ component.get('tagName');
 *   `attributes` **[Object][2]?** Key-value object of the component's attributes, eg. `{ title: 'Hello' }` Default: `{}`
 *   `name` **[String][1]?** Name of the component. Will be used, for example, in Layers and badges
 *   `removable` **[Boolean][3]?** When `true` the component is removable from the canvas, default: `true`
-*   `draggable` **([Boolean][3] | [String][1])?** Indicates if it's possible to drag the component inside others.
+*   `draggable` **([Boolean][3] | [String][1] | [Function][4])?** Indicates if it's possible to drag the component inside others.
     You can also specify a query string to indentify elements,
     eg. `'.some-class[title=Hello], [data-gjs-type=column]'` means you can drag the component only inside elements
-    containing `some-class` class and `Hello` title, and `column` components. Default: `true`
+    containing `some-class` class and `Hello` title, and `column` components. In the case of a function, target and destination components are passed as arguments, return a Boolean to indicate if the drag is possible. Default: `true`
 *   `droppable` **([Boolean][3] | [String][1] | [Function][4])?** Indicates if it's possible to drop other components inside. You can use
     a query string as with `draggable`. In the case of a function, target and destination components are passed as arguments, return a Boolean to indicate if the drop is possible. Default: `true`
 *   `badgable` **[Boolean][3]?** Set to false if you don't want to see the badge (with the name) over the component. Default: `true`
@@ -485,9 +485,41 @@ component.parent();
 
 Returns **([Component][9] | null)** 
 
+### getTraits
+
+Get traits.
+
+#### Examples
+
+```javascript
+const traits = component.getTraits();
+console.log(traits);
+// [Trait, Trait, Trait, ...]
+```
+
+Returns **[Array][5]\<Trait>** 
+
+### setTraits
+
+Replace current collection of traits with a new one.
+
+#### Parameters
+
+*   `traits` **[Array][5]<[Object][2]>** Array of trait definitions
+
+#### Examples
+
+```javascript
+const traits = component.setTraits([{ type: 'checkbox', name: 'disabled'}, ...]);
+console.log(traits);
+// [Trait, ...]
+```
+
+Returns **[Array][5]\<Trait>** 
+
 ### getTrait
 
-Get the trait by id/name
+Get the trait by id/name.
 
 #### Parameters
 
@@ -500,11 +532,11 @@ const traitTitle = component.getTrait('title');
 traitTitle && traitTitle.set('label', 'New label');
 ```
 
-Returns **Trait** Trait model
+Returns **(Trait | null)** Trait getModelToStyle
 
 ### updateTrait
 
-Update a trait
+Update a trait.
 
 #### Parameters
 
@@ -555,11 +587,11 @@ component.removeTrait('title');
 component.removeTrait(['title', 'id']);
 ```
 
-Returns **[Array][5]** Array of removed traits
+Returns **[Array][5]\<Trait>** Array of removed traits
 
 ### addTrait
 
-Add trait/s by id/s.
+Add new trait/s.
 
 #### Parameters
 
@@ -577,7 +609,7 @@ component.addTrait({
 component.addTrait(['title', {...}, ...]);
 ```
 
-Returns **[Array][5]** Array of added traits
+Returns **[Array][5]\<Trait>** Array of added traits
 
 ### getName
 
@@ -723,29 +755,6 @@ editor.getSelected().move(dest, { at: 0 });
 ```
 
 Returns **this** 
-
-### getList
-
-The list of components is taken from the Components module.
-Initially, the list, was set statically on the Component object but it was
-not ok, as it was shared between multiple editor instances
-
-#### Parameters
-
-*   `model`  
-
-### checkId
-
-This method checks, for each parsed component and style object
-(are not Components/CSSRules yet), for duplicated id and fixes them
-This method is used in Components.js just after the parsing
-
-#### Parameters
-
-*   `components`  
-*   `styles`   (optional, default `[]`)
-*   `list`   (optional, default `{}`)
-*   `opts`   (optional, default `{}`)
 
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 

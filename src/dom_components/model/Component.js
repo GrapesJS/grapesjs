@@ -9,15 +9,9 @@ import {
   forEach,
   result,
   bindAll,
-  keys
+  keys,
 } from 'underscore';
-import {
-  shallowDiff,
-  capitalize,
-  isEmptyObj,
-  isObject,
-  toLowerCase
-} from 'utils/mixins';
+import { shallowDiff, capitalize, isEmptyObj, isObject, toLowerCase } from 'utils/mixins';
 import Styleable from 'domain_abstract/model/Styleable';
 import { Model } from 'backbone';
 import Components from './Components';
@@ -61,10 +55,10 @@ export const keyUpdateInside = `${keyUpdate}-inside`;
  * @property {Object} [attributes={}] Key-value object of the component's attributes, eg. `{ title: 'Hello' }` Default: `{}`
  * @property {String} [name=''] Name of the component. Will be used, for example, in Layers and badges
  * @property {Boolean} [removable=true] When `true` the component is removable from the canvas, default: `true`
- * @property {Boolean|String} [draggable=true] Indicates if it's possible to drag the component inside others.
+ * @property {Boolean|String|Function} [draggable=true] Indicates if it's possible to drag the component inside others.
  *  You can also specify a query string to indentify elements,
  *  eg. `'.some-class[title=Hello], [data-gjs-type=column]'` means you can drag the component only inside elements
- *  containing `some-class` class and `Hello` title, and `column` components. Default: `true`
+ *  containing `some-class` class and `Hello` title, and `column` components. In the case of a function, target and destination components are passed as arguments, return a Boolean to indicate if the drag is possible. Default: `true`
  * @property {Boolean|String|Function} [droppable=true] Indicates if it's possible to drop other components inside. You can use
  * a query string as with `draggable`. In the case of a function, target and destination components are passed as arguments, return a Boolean to indicate if the drop is possible. Default: `true`
  * @property {Boolean} [badgable=true] Set to false if you don't want to see the badge (with the name) over the component. Default: `true`
@@ -133,15 +127,10 @@ export default class Component extends Model.extend(Styleable) {
     }
 
     const propagate = this.get('propagate');
-    propagate &&
-      this.set('propagate', isArray(propagate) ? propagate : [propagate]);
+    propagate && this.set('propagate', isArray(propagate) ? propagate : [propagate]);
 
     // Check void elements
-    if (
-      opt &&
-      opt.config &&
-      opt.config.voidElements.indexOf(this.get('tagName')) >= 0
-    ) {
+    if (opt && opt.config && opt.config.voidElements.indexOf(this.get('tagName')) >= 0) {
       this.set('void', true);
     }
 
@@ -152,7 +141,7 @@ export default class Component extends Model.extend(Styleable) {
     this.config = opt.config || {};
     this.set('attributes', {
       ...(result(this, 'defaults').attributes || {}),
-      ...(this.get('attributes') || {})
+      ...(this.get('attributes') || {}),
     });
     this.ccid = Component.createId(this, opt);
     this.initClasses();
@@ -173,9 +162,7 @@ export default class Component extends Model.extend(Styleable) {
     // Register global updates for collection properties
     ['classes', 'traits', 'components'].forEach(name => {
       const events = `add remove ${name !== 'components' ? 'change' : ''}`;
-      this.listenTo(this.get(name), events.trim(), (...args) =>
-        this.emitUpdate(name, ...args)
-      );
+      this.listenTo(this.get(name), events.trim(), (...args) => this.emitUpdate(name, ...args));
     });
 
     if (!opt.temporary) {
@@ -217,9 +204,7 @@ export default class Component extends Model.extend(Styleable) {
 
   __onChange(m, opts) {
     const changed = this.changedAttributes();
-    ['status', 'open', 'toolbar', 'traits'].forEach(
-      name => delete changed[name]
-    );
+    ['status', 'open', 'toolbar', 'traits'].forEach(name => delete changed[name]);
     // Propagate component prop changes
     if (!isEmptyObj(changed)) {
       this.__changesUp(opts);
@@ -422,9 +407,7 @@ export default class Component extends Model.extend(Styleable) {
 
     const attrPrev = { ...this.previous('attributes') };
     const diff = shallowDiff(attrPrev, this.get('attributes'));
-    keys(diff).forEach(pr =>
-      this.trigger(`change:attributes:${pr}`, this, diff[pr], opts)
-    );
+    keys(diff).forEach(pr => this.trigger(`change:attributes:${pr}`, this, diff[pr], opts));
   }
 
   /**
@@ -452,7 +435,7 @@ export default class Component extends Model.extend(Styleable) {
     return this.setAttributes(
       {
         ...this.getAttributes({ noClass: 1 }),
-        ...attrs
+        ...attrs,
       },
       opts
     );
@@ -508,12 +491,7 @@ export default class Component extends Model.extend(Styleable) {
     const em = this.em;
     const { opt } = this;
 
-    if (
-      em &&
-      em.getConfig('avoidInlineStyle') &&
-      !opt.temporary &&
-      !opts.inline
-    ) {
+    if (em && em.getConfig('avoidInlineStyle') && !opt.temporary && !opts.inline) {
       const style = this.get('style') || {};
       prop = isString(prop) ? this.parseStyle(prop) : prop;
       prop = { ...prop, ...style };
@@ -544,9 +522,7 @@ export default class Component extends Model.extend(Styleable) {
 
     // Add classes
     if (!opts.noClass) {
-      this.get('classes').forEach(cls =>
-        classes.push(isString(cls) ? cls : cls.get('name'))
-      );
+      this.get('classes').forEach(cls => classes.push(isString(cls) ? cls : cls.get('name')));
       classes.length && (attributes.class = classes.join(' '));
     }
 
@@ -674,18 +650,12 @@ export default class Component extends Model.extend(Styleable) {
   __isSymbolTop() {
     const parent = this.parent();
     const symb = this.__isSymbolOrInst();
-    return (
-      symb &&
-      (!parent || (parent && !parent.__isSymbol() && !parent.__getSymbol()))
-    );
+    return symb && (!parent || (parent && !parent.__isSymbol() && !parent.__getSymbol()));
   }
 
   __isSymbolNested() {
     if (!this.__isSymbolOrInst() || this.__isSymbolTop()) return false;
-    const symbTopSelf = (this.__isSymbol()
-      ? this
-      : this.__getSymbol()
-    ).__getSymbTop();
+    const symbTopSelf = (this.__isSymbol() ? this : this.__getSymbol()).__getSymbTop();
     const symbTop = this.__getSymbTop();
     const symbTopMain = symbTop.__isSymbol() ? symbTop : symbTop.__getSymbol();
     return symbTopMain !== symbTopSelf;
@@ -727,9 +697,7 @@ export default class Component extends Model.extend(Styleable) {
     const ovrd = this.get(keySymbolOvrd);
     const [prp] = prop.split(':');
     const props = prop !== prp ? [prop, prp] : [prop];
-    return (
-      ovrd === true || (isArray(ovrd) && props.some(p => ovrd.indexOf(p) >= 0))
-    );
+    return ovrd === true || (isArray(ovrd) && props.some(p => ovrd.indexOf(p) >= 0));
   }
 
   __getSymbToUp(opts = {}) {
@@ -822,7 +790,7 @@ export default class Component extends Model.extend(Styleable) {
     if (!o) {
       const toUp = this.__getSymbToUp({
         ...toUpOpts,
-        changed: 'components:reset'
+        changed: 'components:reset',
       });
       this.__logSymbol('reset', toUp, { components: m.models });
       toUp.forEach(symb => {
@@ -835,12 +803,11 @@ export default class Component extends Model.extend(Styleable) {
       const isMainSymb = !!this.__getSymbols();
       const toUp = this.__getSymbToUp({
         ...toUpOpts,
-        changed: 'components:add'
+        changed: 'components:add',
       });
       if (toUp.length) {
         const addSymb = m.__getSymbol();
-        addedInstances =
-          (addSymb ? addSymb.__getSymbols() : m.__getSymbols()) || [];
+        addedInstances = (addSymb ? addSymb.__getSymbols() : m.__getSymbols()) || [];
         addedInstances = [...addedInstances];
         addedInstances.push(addSymb ? addSymb : m);
       }
@@ -848,9 +815,9 @@ export default class Component extends Model.extend(Styleable) {
         this.__logSymbol('add', toUp, {
           opts: o,
           addedInstances: addedInstances.map(c => c.cid),
-          added: m.cid
+          added: m.cid,
         });
-      // Here, before appending a new symbol, I have to ensure there are no previosly
+      // Here, before appending a new symbol, I have to ensure there are no previously
       // created symbols (eg. used mainly when drag components around)
       toUp.forEach(symb => {
         const symbTop = symb.__getSymbTop();
@@ -858,8 +825,7 @@ export default class Component extends Model.extend(Styleable) {
           const addedTop = addedInst.__getSymbTop({ prev: 1 });
           return symbTop && addedTop && addedTop === symbTop;
         })[0];
-        const toAppend =
-          symbPrev || m.clone({ symbol: 1, symbolInv: isMainSymb });
+        const toAppend = symbPrev || m.clone({ symbol: 1, symbolInv: isMainSymb });
         symb.append(toAppend, { fromInstance: this, ...o });
       });
       // Remove
@@ -885,9 +851,7 @@ export default class Component extends Model.extend(Styleable) {
           symbPrnt && !symbPrnt.__isSymbOvrd(changed) && symb.remove(opts);
         };
         // Check if the parent allows the removing
-        let toUp = !parent.__isSymbOvrd(changed)
-          ? m.__getSymbToUp(toUpOpts)
-          : [];
+        let toUp = !parent.__isSymbOvrd(changed) ? m.__getSymbToUp(toUpOpts) : [];
 
         if (isSymbNested) {
           toUp = parent.__getSymbToUp({ ...toUpOpts, changed });
@@ -901,7 +865,7 @@ export default class Component extends Model.extend(Styleable) {
           this.__logSymbol('remove', toUp, {
             opts: o,
             removed: m.cid,
-            isSymbNested
+            isSymbNested,
           });
         toUp.forEach(toUpFn);
       }
@@ -937,12 +901,7 @@ export default class Component extends Model.extend(Styleable) {
     const components = this.get('components');
     const addChild = !this.opt.avoidChildren;
     this.set('components', comps);
-    addChild &&
-      components &&
-      comps.add(
-        isFunction(components) ? components(this) : components,
-        this.opt
-      );
+    addChild && components && comps.add(isFunction(components) ? components(this) : components, this.opt);
     comps.on('add remove reset', this.__upSymbComps);
     this.listenTo(...toListen);
     return this;
@@ -951,9 +910,8 @@ export default class Component extends Model.extend(Styleable) {
   initTraits(changed) {
     const { em } = this;
     const event = 'change:traits';
-    const toListen = [this, event, this.initTraits];
-    this.stopListening(...toListen);
-    this.loadTraits();
+    this.off(event, this.initTraits);
+    this.__loadTraits();
     const attrs = { ...this.get('attributes') };
     const traits = this.get('traits');
     traits.each(trait => {
@@ -964,7 +922,7 @@ export default class Component extends Model.extend(Styleable) {
       }
     });
     traits.length && this.set('attributes', attrs);
-    this.listenTo(...toListen);
+    this.on(event, this.initTraits);
     changed && em && em.trigger('component:toggled');
     return this;
   }
@@ -1112,75 +1070,100 @@ export default class Component extends Model.extend(Styleable) {
       if (model.collection) {
         tb.push({
           attributes: { class: 'fa fa-arrow-up' },
-          command: ed => ed.runCommand('core:component-exit', { force: 1 })
+          command: ed => ed.runCommand('core:component-exit', { force: 1 }),
         });
       }
       if (model.get('draggable')) {
         tb.push({
           attributes: {
             class: `fa fa-arrows ${ppfx}no-touch-actions`,
-            draggable: true
+            draggable: true,
           },
           //events: hasDnd(this.em) ? { dragstart: 'execCommand' } : '',
-          command: 'tlb-move'
+          command: 'tlb-move',
         });
       }
       if (model.get('copyable')) {
         tb.push({
           attributes: { class: 'fa fa-clone' },
-          command: 'tlb-clone'
+          command: 'tlb-clone',
         });
       }
       if (model.get('removable')) {
         tb.push({
           attributes: { class: 'fa fa-trash-o' },
-          command: 'tlb-delete'
+          command: 'tlb-delete',
         });
       }
       model.set('toolbar', tb);
     }
   }
 
-  /**
-   * Load traits
-   * @param  {Array} traits
-   * @private
-   */
-  loadTraits(traits, opts = {}) {
-    traits = traits || this.get('traits');
-    traits = isFunction(traits) ? traits(this) : traits;
+  __loadTraits(tr, opts = {}) {
+    let traitsI = tr || this.get('traits');
 
-    if (!(traits instanceof Traits)) {
-      const trt = new Traits([], this.opt);
-      trt.setTarget(this);
+    if (!(traitsI instanceof Traits)) {
+      traitsI = isFunction(traitsI) ? traitsI(this) : traitsI;
+      const traits = new Traits([], this.opt);
+      traits.setTarget(this);
 
-      if (traits.length) {
-        traits.forEach(tr => tr.attributes && delete tr.attributes.value);
-        trt.add(traits);
+      if (traitsI.length) {
+        traitsI.forEach(tr => tr.attributes && delete tr.attributes.value);
+        traits.add(traitsI);
       }
 
-      this.set('traits', trt, opts);
+      this.set({ traits }, opts);
     }
 
     return this;
   }
 
   /**
-   * Get the trait by id/name
+   * Get traits.
+   * @returns {Array<Trait>}
+   * @example
+   * const traits = component.getTraits();
+   * console.log(traits);
+   * // [Trait, Trait, Trait, ...]
+   */
+  getTraits() {
+    this.__loadTraits();
+    return [...this.get('traits').models];
+  }
+
+  /**
+   * Replace current collection of traits with a new one.
+   * @param {Array<Object>} traits Array of trait definitions
+   * @returns {Array<Trait>}
+   * @example
+   * const traits = component.setTraits([{ type: 'checkbox', name: 'disabled'}, ...]);
+   * console.log(traits);
+   * // [Trait, ...]
+   */
+  setTraits(traits) {
+    const tr = isArray(traits) ? traits : [traits];
+    this.set({ traits: tr });
+    return this.getTraits();
+  }
+
+  /**
+   * Get the trait by id/name.
    * @param  {String} id The `id` or `name` of the trait
-   * @return {Trait} Trait model
+   * @return {Trait|null} Trait getModelToStyle
    * @example
    * const traitTitle = component.getTrait('title');
    * traitTitle && traitTitle.set('label', 'New label');
    */
   getTrait(id) {
-    return this.get('traits').filter(trait => {
-      return trait.get('id') === id || trait.get('name') === id;
-    })[0];
+    return (
+      this.getTraits().filter(trait => {
+        return trait.get('id') === id || trait.get('name') === id;
+      })[0] || null
+    );
   }
 
   /**
-   * Update a trait
+   * Update a trait.
    * @param  {String} id The `id` or `name` of the trait
    * @param  {Object} props Object with the props to update
    * @return {this}
@@ -1191,10 +1174,9 @@ export default class Component extends Model.extend(Styleable) {
    * });
    */
   updateTrait(id, props) {
-    const { em } = this;
     const trait = this.getTrait(id);
     trait && trait.set(props);
-    em && em.trigger('component:toggled');
+    this.em?.trigger('component:toggled');
     return this;
   }
 
@@ -1215,25 +1197,25 @@ export default class Component extends Model.extend(Styleable) {
   /**
    * Remove trait/s by id/s.
    * @param  {String|Array<String>} id The `id`/`name` of the trait (or an array)
-   * @return {Array} Array of removed traits
+   * @return {Array<Trait>} Array of removed traits
    * @example
    * component.removeTrait('title');
    * component.removeTrait(['title', 'id']);
    */
   removeTrait(id) {
-    const { em } = this;
     const ids = isArray(id) ? id : [id];
     const toRemove = ids.map(id => this.getTrait(id));
-    const removed = this.get('traits').remove(toRemove);
-    em && em.trigger('component:toggled');
-    return removed;
+    const traits = this.get('traits');
+    const removed = toRemove.length ? traits.remove(toRemove) : [];
+    this.em?.trigger('component:toggled');
+    return isArray(removed) ? removed : [removed];
   }
 
   /**
-   * Add trait/s by id/s.
+   * Add new trait/s.
    * @param  {String|Object|Array<String|Object>} trait Trait to add (or an array of traits)
    * @param  {Options} opts Options for the add
-   * @return {Array} Array of added traits
+   * @return {Array<Trait>} Array of added traits
    * @example
    * component.addTrait('title', { at: 1 }); // Add title trait (`at` option is the position index)
    * component.addTrait({
@@ -1243,10 +1225,10 @@ export default class Component extends Model.extend(Styleable) {
    * component.addTrait(['title', {...}, ...]);
    */
   addTrait(trait, opts = {}) {
-    const { em } = this;
+    this.__loadTraits();
     const added = this.get('traits').add(trait, opts);
-    em && em.trigger('component:toggled');
-    return added;
+    this.em?.trigger('component:toggled');
+    return isArray(added) ? added : [added];
   }
 
   /**
@@ -1364,8 +1346,7 @@ export default class Component extends Model.extend(Styleable) {
     const i18nPfx = 'domComponents.names.';
     const i18nName = cName && em && em.t(`${i18nPfx}${cName}`);
     const i18nNameTag = nameTag && em && em.t(`${i18nPfx}${nameTag}`);
-    const i18nDefName =
-      em && (em.t(`${i18nPfx}${type}`) || em.t(`${i18nPfx}${tagName}`));
+    const i18nDefName = em && (em.t(`${i18nPfx}${type}`) || em.t(`${i18nPfx}${tagName}`));
     return (
       this.get('custom-name') || // Used in Layers (when the user changes the name)
       i18nName ||
@@ -1457,9 +1438,7 @@ export default class Component extends Model.extend(Styleable) {
 
   __innerHTML(opts = {}) {
     const cmps = this.components();
-    return !cmps.length
-      ? this.get('content')
-      : cmps.map(c => c.toHTML(opts)).join('');
+    return !cmps.length ? this.get('content') : cmps.map(c => c.toHTML(opts)).join('');
   }
 
   /**
@@ -1492,9 +1471,7 @@ export default class Component extends Model.extend(Styleable) {
       const symbol = obj[keySymbol];
       const symbols = obj[keySymbols];
       if (symbols && isArray(symbols)) {
-        obj[keySymbols] = symbols
-          .filter(i => i)
-          .map(i => (i.getId ? i.getId() : i));
+        obj[keySymbols] = symbols.filter(i => i).map(i => (i.getId ? i.getId() : i));
       }
       if (symbol && !isString(symbol)) {
         obj[keySymbol] = symbol.getId();
@@ -1623,9 +1600,7 @@ export default class Component extends Model.extend(Styleable) {
       // Need to convert script functions to strings
       if (typeof scr == 'function') {
         var scrStr = scr.toString().trim();
-        scrStr = scrStr
-          .replace(/^function[\s\w]*\(\)\s?\{/, '')
-          .replace(/\}$/, '');
+        scrStr = scrStr.replace(/^function[\s\w]*\(\)\s?\{/, '').replace(/\}$/, '');
         scr = scrStr.trim();
       }
 
@@ -1638,9 +1613,7 @@ export default class Component extends Model.extend(Styleable) {
         // better optimization inside JS generator
         this.scriptUpdated();
         const result = this.attributes[v] || '';
-        return isArray(result) || typeof result == 'object'
-          ? JSON.stringify(result)
-          : result;
+        return isArray(result) || typeof result == 'object' ? JSON.stringify(result) : result;
       });
     }
     return scr;
@@ -1650,20 +1623,14 @@ export default class Component extends Model.extend(Styleable) {
     const { em } = this;
     const event = keyUpdate + (property ? `:${property}` : '');
     const item = property && this.get(property);
-    property &&
-      this.updated(
-        property,
-        item,
-        property && this.previous(property),
-        ...args
-      );
+    property && this.updated(property, item, property && this.previous(property), ...args);
     this.trigger(event, ...args);
     em && em.trigger(event, this, ...args);
     ['components', 'classes'].indexOf(property) >= 0 &&
       this.__propSelfToParent({
         component: this,
         changed: { [property]: item },
-        options: args[2] || args[1] || {}
+        options: args[2] || args[1] || {},
       });
   }
 
@@ -1696,9 +1663,7 @@ export default class Component extends Model.extend(Styleable) {
       opts.root && this.components('');
     };
     const rmOpts = { ...opts };
-    [this, em].map(i =>
-      i.trigger('component:remove:before', this, remove, rmOpts)
-    );
+    [this, em].map(i => i.trigger('component:remove:before', this, remove, rmOpts));
     !rmOpts.abort && remove();
     return this;
   }
@@ -1860,6 +1825,7 @@ Component.getIncrementId = (id, list, opts = {}) => {
  * The list of components is taken from the Components module.
  * Initially, the list, was set statically on the Component object but it was
  * not ok, as it was shared between multiple editor instances
+ * @private
  */
 Component.getList = model => {
   const { opt = {} } = model;
@@ -1872,6 +1838,7 @@ Component.getList = model => {
  * This method checks, for each parsed component and style object
  * (are not Components/CSSRules yet), for duplicated id and fixes them
  * This method is used in Components.js just after the parsing
+ * @private
  */
 Component.checkId = (components, styles = [], list = {}, opts = {}) => {
   const comps = isArray(components) ? components : [components];
@@ -1898,7 +1865,7 @@ Component.checkId = (components, styles = [], list = {}, opts = {}) => {
   });
 };
 
-Component.getDefaults = function() {
+Component.getDefaults = function () {
   return result(this.prototype, 'defaults');
 };
 
@@ -1941,5 +1908,5 @@ Component.prototype.defaults = {
   [keySymbols]: 0,
   [keySymbolOvrd]: 0,
   _undo: true,
-  _undoexc: ['status', 'open']
+  _undoexc: ['status', 'open'],
 };

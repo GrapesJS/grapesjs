@@ -34,4 +34,12 @@ export default class Device extends Model {
     const noUnit = (parseFloat(pr) || 0).toString() === pr.toString();
     noUnit && this.set(prop, `${pr}px`);
   }
+
+  getName() {
+    return this.get('name') || this.get('id');
+  }
+
+  getWidthMedia() {
+    return this.get('widthMedia') || '';
+  }
 }

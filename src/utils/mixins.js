@@ -1,15 +1,16 @@
 import { keys, isUndefined, isElement, isArray } from 'underscore';
 
+export const isDef = value => typeof value !== 'undefined';
+
 export const hasWin = () => typeof window !== 'undefined';
+
+export const getGlobal = () =>
+  typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : global;
 
 export const toLowerCase = str => (str || '').toLowerCase();
 
 const elProt = hasWin() ? window.Element.prototype : {};
-const matches =
-  elProt.matches ||
-  elProt.webkitMatchesSelector ||
-  elProt.mozMatchesSelector ||
-  elProt.msMatchesSelector;
+const matches = elProt.matches || elProt.webkitMatchesSelector || elProt.mozMatchesSelector || elProt.msMatchesSelector;
 
 export const getUiClass = (em, defCls) => {
   const { stylePrefix, customUI } = em.getConfig();
@@ -26,10 +27,7 @@ const appendStyles = (styles, opts = {}) => {
   if (stls.length) {
     const href = stls.shift();
 
-    if (
-      href &&
-      (!opts.unique || !document.querySelector(`link[href="${href}"]`))
-    ) {
+    if (href && (!opts.unique || !document.querySelector(`link[href="${href}"]`))) {
       const { head } = document;
       const link = document.createElement('link');
       link.href = href;
@@ -112,8 +110,7 @@ const getUnitFromValue = value => {
 const upFirst = value => value[0].toUpperCase() + value.toLowerCase().slice(1);
 
 const camelCase = value => {
-  const values = value.split('-').filter(String);
-  return values[0].toLowerCase() + values.slice(1).map(upFirst);
+  return value.replace(/-./g, x => x[1].toUpperCase());
 };
 
 const normalizeFloat = (value, step = 1, valueDef = 0) => {
@@ -130,10 +127,7 @@ const normalizeFloat = (value, step = 1, valueDef = 0) => {
 };
 
 const hasDnd = em => {
-  return (
-    'draggable' in document.createElement('i') &&
-    (em ? em.get('Config').nativeDnD : 1)
-  );
+  return 'draggable' in document.createElement('i') && (em ? em.get('Config').nativeDnD : 1);
 };
 
 /**
@@ -202,7 +196,7 @@ const getElRect = el => {
     top: 0,
     left: 0,
     width: 0,
-    height: 0
+    height: 0,
   };
   if (!el) return def;
   let rectText;
@@ -214,9 +208,7 @@ const getElRect = el => {
     range.detach();
   }
 
-  return (
-    rectText || (el.getBoundingClientRect ? el.getBoundingClientRect() : def)
-  );
+  return rectText || (el.getBoundingClientRect ? el.getBoundingClientRect() : def);
 };
 
 /**
@@ -224,8 +216,7 @@ const getElRect = el => {
  * @param  {Event} ev
  * @return {Event}
  */
-const getPointerEvent = ev =>
-  ev.touches && ev.touches[0] ? ev.touches[0] : ev;
+const getPointerEvent = ev => (ev.touches && ev.touches[0] ? ev.touches[0] : ev);
 
 /**
  * Get cross-browser keycode
@@ -236,8 +227,7 @@ const getKeyCode = ev => ev.which || ev.keyCode;
 const getKeyChar = ev => String.fromCharCode(getKeyCode(ev));
 const isEscKey = ev => getKeyCode(ev) === 27;
 const isEnterKey = ev => getKeyCode(ev) === 13;
-const isObject = val =>
-  val !== null && !Array.isArray(val) && typeof val === 'object';
+const isObject = val => val !== null && !Array.isArray(val) && typeof val === 'object';
 const isEmptyObj = val => Object.keys(val).length <= 0;
 
 const capitalize = str => str && str.charAt(0).toUpperCase() + str.substring(1);
@@ -251,8 +241,7 @@ const setViewEl = (el, view) => {
 
 const createId = (length = 16) => {
   let result = '';
-  const chars =
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   const len = chars.length;
   for (let i = 0; i < length; i++) {
     result += chars.charAt(Math.floor(Math.random() * len));
@@ -287,5 +276,5 @@ export {
   isEmptyObj,
   isComponent,
   createId,
-  isRule
+  isRule,
 };

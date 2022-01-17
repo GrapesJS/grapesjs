@@ -1,15 +1,14 @@
-import Editor from './editor';
 import { isElement, isFunction } from 'underscore';
+import $ from 'utils/cash-dom';
+import Editor from './editor';
 import polyfills from 'utils/polyfills';
+import { getGlobal } from 'utils/mixins';
 import PluginManager from './plugin_manager';
-import { hasWin } from 'utils/mixins';
 
 polyfills();
 
 const plugins = new PluginManager();
 const editors = [];
-const cash = hasWin() ? require('cash-dom') : null;
-const $ = (cash && cash.default) || cash;
 const defaultConfig = {
   // If true renders editor on init
   autorender: 1,
@@ -59,13 +58,13 @@ export default {
 
     // Load plugins
     config.plugins.forEach(pluginId => {
-      let plugin = plugins.get(pluginId);
+      let plugin = isFunction(pluginId) ? pluginId : plugins.get(pluginId);
       const plgOptions = config.pluginsOpts[pluginId] || {};
 
       // Try to search in global context
       if (!plugin) {
-        const wplg = window[pluginId];
-        plugin = wplg && wplg.default ? wplg.default : wplg;
+        const wplg = getGlobal()[pluginId];
+        plugin = wplg?.default || wplg;
       }
 
       if (plugin) {

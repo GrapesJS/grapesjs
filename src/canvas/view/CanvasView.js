@@ -70,7 +70,7 @@ export default Backbone.View.extend({
 
     scroll &&
       component.views.forEach(view => {
-        view._getFrame() !== currFrame && view.scrollIntoView(scroll);
+        view._getFrame() === currFrame && view.scrollIntoView(scroll);
       });
   },
 

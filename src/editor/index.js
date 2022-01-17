@@ -17,64 +17,25 @@
  * })
  * ```
  *
+ * * `update` - The structure of the template is updated (its HTML/CSS)
+ * * `undo` - Undo executed
+ * * `redo` - Redo executed
+ * * `load` - Editor is loaded
+ *
  * ### Components
- * * `component:create` - Component is created (only the model, is not yet mounted in the canvas), called after the init() method
- * * `component:mount` - Component is mounted to an element and rendered in canvas
- * * `component:add` - Triggered when a new component is added to the editor, the model is passed as an argument to the callback
- * * `component:remove` - Triggered when a component is removed, the model is passed as an argument to the callback
- * * `component:remove:before` - Triggered before the remove of the component, the model, remove function (if aborted via options, with this function you can complete the remove) and options (use options.abort = true to prevent remove), are passed as arguments to the callback
- * * `component:clone` - Triggered when a component is cloned, the new model is passed as an argument to the callback
- * * `component:update` - Triggered when a component is updated (moved, styled, etc.), the model is passed as an argument to the callback
- * * `component:update:{propertyName}` - Listen any property change, the model is passed as an argument to the callback
- * * `component:styleUpdate` - Triggered when the style of the component is updated, the model is passed as an argument to the callback
- * * `component:styleUpdate:{propertyName}` - Listen for a specific style property change, the model is passed as an argument to the callback
- * * `component:selected` - New component selected, the selected model is passed as an argument to the callback
- * * `component:deselected` - Component deselected, the deselected model is passed as an argument to the callback
- * * `component:toggled` - Component selection changed, toggled model is passed as an argument to the callback
- * * `component:type:add` - New component type added, the new type is passed as an argument to the callback
- * * `component:type:update` - Component type updated, the updated type is passed as an argument to the callback
- * * `component:drag:start` - Component drag started. Passed an object, to the callback, containing the `target` (component to drag), `parent` (parent of the component) and `index` (component index in the parent)
- * * `component:drag` - During component drag. Passed the same object as in `component:drag:start` event, but in this case, `parent` and `index` are updated by the current pointer
- * * `component:drag:end` - Component drag ended. Passed the same object as in `component:drag:start` event, but in this case, `parent` and `index` are updated by the final pointer
+ * Check the [Components](/api/components.html) module.
  * ### Keymaps
- * * `keymap:add` - New keymap added. The new keyamp object is passed as an argument
- * * `keymap:remove` - Keymap removed. The removed keyamp object is passed as an argument
- * * `keymap:emit` - Some keymap emitted, in arguments you get keymapId, shortcutUsed, Event
- * * `keymap:emit:{keymapId}` - `keymapId` emitted, in arguments you get keymapId, shortcutUsed, Event
+ * Check the [Keymaps](/api/keymaps.html) module.
  * ### Style Manager
- * * `styleManager:update:target` - The target (Component or CSSRule) is changed
- * * `styleManager:change` - Triggered on style property change from new selected component, the view of the property is passed as an argument to the callback
- * * `styleManager:change:{propertyName}` - As above but for a specific style property
- * ### Storages
- * * `storage:start` - Before the storage request is started
- * * `storage:start:store` - Before the store request. The object to store is passed as an argumnet (which you can edit)
- * * `storage:start:load` - Before the load request. Items to load are passed as an argumnet (which you can edit)
- * * `storage:load` - Triggered when something was loaded from the storage, loaded object passed as an argumnet
- * * `storage:store` - Triggered when something is stored to the storage, stored object passed as an argumnet
- * * `storage:end` - After the storage request is ended
- * * `storage:end:store` - After the store request
- * * `storage:end:load` - After the load request
- * * `storage:error` - On any error on storage request, passes the error as an argument
- * * `storage:error:store` - Error on store request, passes the error as an argument
- * * `storage:error:load` - Error on load request, passes the error as an argument
+ * Check the [Style Manager](/api/style_manager.html) module.
+ * ### Storage
+ * Check the [Storage](/api/storage_manager.html) module.
  * ### Canvas
- * * `canvas:dragenter` - When something is dragged inside the canvas, `DataTransfer` instance passed as an argument
- * * `canvas:dragover` - When something is dragging on canvas, `DataTransfer` instance passed as an argument
- * * `canvas:drop` - Something is dropped in canvas, `DataTransfer` instance and the dropped model are passed as arguments
- * * `canvas:dragend` - When a drag operation is ended, `DataTransfer` instance passed as an argument
- * * `canvas:dragdata` - On any dataTransfer parse, `DataTransfer` instance and the `result` are passed as arguments.
- *  By changing `result.content` you're able to customize what is dropped
+ * Check the [Canvas](/api/canvas.html) module.
  * ### RTE
- * * `rte:enable` - RTE enabled. The view, on which RTE is enabled, is passed as an argument
- * * `rte:disable` - RTE disabled. The view, on which RTE is disabled, is passed as an argument
+ * Check the [Rich Text Editor](/api/rich_text_editor.html) module.
  * ### Commands
- * * `run:{commandName}` - Triggered when some command is called to run (eg. editor.runCommand('preview'))
- * * `stop:{commandName}` - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
- * * `run:{commandName}:before` - Triggered before the command is called
- * * `stop:{commandName}:before` - Triggered before the command is called to stop
- * * `abort:{commandName}` - Triggered when the command execution is aborted (`editor.on(`run:preview:before`, opts => opts.abort = 1);`)
- * * `run` - Triggered on run of any command. The id and the result are passed as arguments to the callback
- * * `stop` - Triggered on stop of any command. The id and the result are passed as arguments to the callback
+ * Check the [Commands](/api/commands.html) module.
  * ### Selectors
  * Check the [Selectors](/api/selector_manager.html) module.
  * ### Blocks
@@ -89,13 +50,8 @@
  * Check the [Parser](/api/parser.html) module.
  * ### Pages
  * Check the [Pages](/api/pages.html) module.
- * ### General
- * * `canvasScroll` - Canvas is scrolled
- * * `update` - The structure of the template is updated (its HTML/CSS)
- * * `undo` - Undo executed
- * * `redo` - Redo executed
- * * `load` - Editor is loaded
  *
+ * ## Methods
  * @module Editor
  */
 import defaults from './config/config';
@@ -107,7 +63,7 @@ export default (config = {}, opts = {}) => {
   const { $ } = opts;
   const c = {
     ...defaults,
-    ...config
+    ...config,
   };
 
   c.pStylePrefix = c.stylePrefix;
@@ -164,7 +120,7 @@ export default (config = {}, opts = {}) => {
         'StyleManager',
         ['Styles', 'StyleManager'],
         'DeviceManager',
-        ['Devices', 'DeviceManager']
+        ['Devices', 'DeviceManager'],
       ].forEach(prop => {
         if (Array.isArray(prop)) {
           this[prop[0]] = em.get(prop[1]);
@@ -720,7 +676,7 @@ export default (config = {}, opts = {}) => {
       editorView && editorView.remove();
       editorView = new EditorView({
         model: em,
-        config: c
+        config: c,
       });
       return editorView.render().el;
     },
@@ -749,6 +705,6 @@ export default (config = {}, opts = {}) => {
      * // Use `$${var}` to avoid escaping
      * const strHtml = editor.html`Escaped ${unsafeStr}, unescaped $${safeStr}`;
      */
-    html
+    html,
   };
 };

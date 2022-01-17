@@ -4,12 +4,14 @@
 
 
 
+[Property]: property.html
+
 ### Properties
 
 *   `id` **[String][1]** Sector id, eg. `typography`
 *   `name` **[String][1]** Sector name, eg. `Typography`
 *   `open` **[Boolean][2]?** Indicates the open state.
-*   `properties` **[Array][3]<[Object][4]>?** Indicate an array of Property defintions[Property]: property.html
+*   `properties` **[Array][3]<[Object][4]>?** Indicate an array of Property defintions.
 
 ### getId
 
@@ -45,9 +47,22 @@ Update Sector open state
 
 *   `value` **[Boolean][2]** 
 
+### isVisible
+
+Check if the sector is visible
+
+Returns **[Boolean][2]** 
+
 ### getProperties
 
 Get sector properties.
+
+#### Parameters
+
+*   `opts` **[Object][4]** Options (optional, default `{}`)
+
+    *   `opts.withValue` **[Boolean][2]** Get only properties with value (optional, default `false`)
+    *   `opts.withParentValue` **[Boolean][2]** Get only properties with parent value (optional, default `false`)
 
 Returns **[Array][3]<[Property]>** 
 

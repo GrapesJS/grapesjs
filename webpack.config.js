@@ -17,15 +17,13 @@ export default ({ config }) => ({
   },
   module: {
     rules: [
-      // Disable AMD in vendors
-      { test: /\.js$/, parser: { amd: false } },
       ...config.module.rules,
     ],
   },
   resolve: {
     modules: ['src', 'node_modules'],
     alias: {
-      jquery: 'cash-dom',
+      jquery: 'utils/cash-dom',
       backbone: `${rootDir}/node_modules/backbone`,
       underscore: `${rootDir}/node_modules/underscore`,
     }

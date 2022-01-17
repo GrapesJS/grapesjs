@@ -17,11 +17,11 @@ describe('ComponentView', () => {
     dcomp = new DomComponents();
     compOpts = {
       em,
-      componentTypes: dcomp.componentTypes
+      componentTypes: dcomp.componentTypes,
     };
     model = new Component({}, compOpts);
     view = new ComponentView({
-      model
+      model,
     });
     em.get('StyleManager').render(); // Enable to listen em.setState
     document.body.innerHTML = '<div id="fixtures"></div>';
@@ -34,33 +34,19 @@ describe('ComponentView', () => {
   });
 
   test('Component empty', () => {
-    expect(fixtures.innerHTML).toEqual(
-      '<div data-gjs-type="default" data-highlightable="1"></div>'
-    );
-  });
-
-  test('Add helper class on update of state', () => {
-    em.setSelected(model);
-    em.setState('test');
-    expect(fixtures.innerHTML).toEqual(
-      `<div data-gjs-type="default" data-highlightable="1" class="selected ${hClass}"></div>`
-    );
+    expect(fixtures.innerHTML).toEqual('<div data-gjs-type="default" data-highlightable="1"></div>');
   });
 
   test('Clean form helper state', () => {
     em.setSelected(model);
     em.setState('test');
     em.setState();
-    expect(fixtures.innerHTML).toEqual(
-      '<div data-gjs-type="default" data-highlightable="1" class="selected"></div>'
-    );
+    expect(fixtures.innerHTML).toEqual('<div data-gjs-type="default" data-highlightable="1" class="selected"></div>');
   });
 
   test('Add helper class on status update', () => {
     model.set('status', 'selected');
-    expect(fixtures.innerHTML).toEqual(
-      '<div data-gjs-type="default" data-highlightable="1" class="selected"></div>'
-    );
+    expect(fixtures.innerHTML).toEqual('<div data-gjs-type="default" data-highlightable="1" class="selected"></div>');
   });
 
   test('Get string of classes', () => {
@@ -71,7 +57,7 @@ describe('ComponentView', () => {
   test('Update attributes', () => {
     model.set('attributes', {
       title: 'value',
-      'data-test': 'value2'
+      'data-test': 'value2',
     });
     expect(view.el.getAttribute('title')).toEqual('value');
     expect(view.el.getAttribute('data-test')).toEqual('value2');
@@ -80,7 +66,7 @@ describe('ComponentView', () => {
   test('Update style', () => {
     model.set('style', {
       color: 'red',
-      float: 'left'
+      float: 'left',
     });
     expect(view.el.getAttribute('style')).toEqual('color:red;float:left;');
   });
@@ -119,13 +105,13 @@ describe('ComponentView', () => {
   test('Init with nested components', () => {
     model = new Component(
       {
-        components: [{ tagName: 'span' }, { attributes: { title: 'test' } }]
+        components: [{ tagName: 'span' }, { attributes: { title: 'test' } }],
       },
       compOpts
     );
     view = new ComponentView({
       model,
-      componentTypes: dcomp.componentTypes
+      componentTypes: dcomp.componentTypes,
     });
     fixtures.innerHTML = '';
     fixtures.appendChild(view.render().el);

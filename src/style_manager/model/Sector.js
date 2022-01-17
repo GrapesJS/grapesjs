@@ -1,16 +1,16 @@
 import { Model } from 'common';
-import { extend } from 'underscore';
+import { extend, isString } from 'underscore';
 import Properties from './Properties';
-import PropertyFactory from './PropertyFactory';
 
 /**
+ *
+ * [Property]: property.html
+ *
  * @typedef Sector
  * @property {String} id Sector id, eg. `typography`
  * @property {String} name Sector name, eg. `Typography`
  * @property {Boolean} [open=true] Indicates the open state.
- * @property {Array<Object>} [properties=[]] Indicate an array of Property defintions
- *
- * [Property]: property.html
+ * @property {Array<Object>} [properties=[]] Indicate an array of Property defintions.
  */
 export default class Sector extends Model {
   defaults() {
@@ -18,23 +18,33 @@ export default class Sector extends Model {
       id: '',
       name: '',
       open: true,
+      visible: true,
       buildProps: '',
       extendBuilded: 1,
-      properties: []
+      properties: [],
     };
   }
 
-  initialize(opts) {
-    const o = opts || {};
+  initialize(prp, opts = {}) {
+    const { em } = opts;
+    this.em = em;
+    const o = prp || {};
     const builded = this.buildProperties(o.buildProps);
     const name = this.get('name') || '';
     let props = [];
     !this.get('id') && this.set('id', name.replace(/ /g, '_').toLowerCase());
 
-    if (!builded) props = this.get('properties');
-    else props = this.extendProperties(builded);
+    if (!builded) {
+      props = this.get('properties')
+        .map(prop => (isString(prop) ? this.buildProperties(prop)[0] : prop))
+        .filter(Boolean);
+    } else {
+      props = this.extendProperties(builded);
+    }
 
-    const propsModel = new Properties(props);
+    props = props.map(prop => this.checkExtend(prop));
+
+    const propsModel = new Properties(props, { em });
     propsModel.sector = this;
     this.set('properties', propsModel);
   }
@@ -52,7 +62,8 @@ export default class Sector extends Model {
    * @returns {String}
    */
   getName() {
-    return this.get('name');
+    const id = this.getId();
+    return this.em?.t(`styleManager.sectors.${id}`) || this.get('name');
   }
 
   /**
@@ -80,12 +91,41 @@ export default class Sector extends Model {
   }
 
   /**
+   * Check if the sector is visible
+   * @returns {Boolean}
+   */
+  isVisible() {
+    return !!this.get('visible');
+  }
+
+  /**
    * Get sector properties.
+   * @param {Object} [opts={}] Options
+   * @param {Boolean} [opts.withValue=false] Get only properties with value
+   * @param {Boolean} [opts.withParentValue=false] Get only properties with parent value
    * @returns {Array<[Property]>}
    */
-  getProperties() {
+  getProperties(opts = {}) {
     const props = this.get('properties');
-    return props.models ? [...props.models] : props;
+    const res = props.models ? [...props.models] : props;
+    return res.filter(prop => {
+      let result = true;
+
+      if (opts.withValue) {
+        result = prop.hasValue({ noParent: true });
+      }
+
+      if (opts.withParentValue) {
+        const hasVal = prop.hasValue({ noParent: true });
+        result = !hasVal && prop.hasValue();
+      }
+
+      return result;
+    });
+  }
+
+  getProperty(id) {
+    return this.getProperties().filter(prop => prop.get('id') === id)[0] || null;
   }
 
   /**
@@ -112,11 +152,7 @@ export default class Sector extends Model {
           // Check for nested properties
           var mPProps = mProp.properties;
           if (mPProps && mPProps.length) {
-            mProp.properties = this.extendProperties(
-              prop.properties || [],
-              mPProps,
-              1
-            );
+            mProp.properties = this.extendProperties(prop.properties || [], mPProps, 1);
           }
           props[j] = ext ? extend(prop, mProp) : mProp;
           isolated[j] = props[j];
@@ -134,6 +170,18 @@ export default class Sector extends Model {
     return ex ? isolated.filter(i => i) : props;
   }
 
+  checkExtend(prop) {
+    const { extend, ...rest } = (isString(prop) ? { extend: prop } : prop) || {};
+    if (extend) {
+      return {
+        ...(this.buildProperties([extend])[0] || {}),
+        ...rest,
+      };
+    } else {
+      return prop;
+    }
+  }
+
   /**
    * Build properties
    * @param {Array<string>} propr Array of props as sting
@@ -141,15 +189,12 @@ export default class Sector extends Model {
    * @private
    */
   buildProperties(props) {
-    var r;
-    var buildP = props || [];
+    const buildP = props || [];
 
-    if (!buildP.length) return;
+    if (!buildP.length) return [];
 
-    if (!this.propFactory) this.propFactory = new PropertyFactory();
+    const builtIn = this.em?.get('StyleManager').builtIn;
 
-    r = this.propFactory.build(buildP);
-
-    return r;
+    return builtIn?.build(buildP);
   }
 }

@@ -12,7 +12,7 @@ export default Input.extend({
     'click [data-arrow-up]': 'upArrowClick',
     'click [data-arrow-down]': 'downArrowClick',
     'mousedown [data-arrows]': 'downIncrement',
-    keydown: 'handleKeyDown'
+    keydown: 'handleKeyDown',
   },
 
   template() {
@@ -124,7 +124,7 @@ export default Input.extend({
       const units = model.get('units') || [];
 
       if (units.length) {
-        const options = [];
+        const options = ['<option value="" disabled hidden>-</option>'];
 
         units.forEach(unit => {
           const selected = unit == model.get('unit') ? 'selected' : '';
@@ -132,9 +132,7 @@ export default Input.extend({
         });
 
         const temp = document.createElement('div');
-        temp.innerHTML = `<select class="${this.ppfx}input-unit">${options.join(
-          ''
-        )}</select>`;
+        temp.innerHTML = `<select class="${this.ppfx}input-unit">${options.join('')}</select>`;
         this.unitEl = temp.firstChild;
       }
     }
@@ -177,7 +175,7 @@ export default Input.extend({
   downIncrement(e) {
     e.preventDefault();
     this.moved = 0;
-    var value = this.model.get('value');
+    var value = this.model.get('value') || 0;
     value = this.normalizeValue(value);
     this.current = { y: e.pageY, val: value };
     on(this.doc, 'mousemove', this.moveIncrement);
@@ -241,21 +239,23 @@ export default Input.extend({
    * @param {Object} opts Options
    * @return {Object} Validated string
    */
-  validateInputValue(value, opts) {
+  validateInputValue(value, opts = {}) {
     var force = 0;
     var opt = opts || {};
     var model = this.model;
     const defValue = ''; //model.get('defaults');
     var val = !isUndefined(value) ? value : defValue;
-    var units = model.get('units') || [];
+    var units = opts.units || model.get('units') || [];
     var unit = model.get('unit') || (units.length && units[0]) || '';
-    var max = model.get('max');
-    var min = model.get('min');
+    var max = !isUndefined(opts.max) ? opts.max : model.get('max');
+    var min = !isUndefined(opts.min) ? opts.min : model.get('min');
     var limitlessMax = !!model.get('limitlessMax');
     var limitlessMin = !!model.get('limitlessMin');
 
     if (opt.deepCheck) {
       var fixed = model.get('fixedValues') || [];
+
+      if (val === '') unit = '';
 
       if (val) {
         // If the value is one of the fixed values I leave it as it is
@@ -276,15 +276,13 @@ export default Input.extend({
       }
     }
 
-    if (!limitlessMax && !isUndefined(max) && max !== '')
-      val = val > max ? max : val;
-    if (!limitlessMin && !isUndefined(min) && min !== '')
-      val = val < min ? min : val;
+    if (!limitlessMax && !isUndefined(max) && max !== '') val = val > max ? max : val;
+    if (!limitlessMin && !isUndefined(min) && min !== '') val = val < min ? min : val;
 
     return {
       force,
       value: val,
-      unit
+      unit,
     };
   },
 
@@ -292,11 +290,7 @@ export default Input.extend({
     Input.prototype.render.call(this);
     this.unitEl = null;
     const unit = this.getUnitEl();
-    unit &&
-      this.$el
-        .find(`.${this.ppfx}field-units`)
-        .get(0)
-        .appendChild(unit);
+    unit && this.$el.find(`.${this.ppfx}field-units`).get(0).appendChild(unit);
     return this;
-  }
+  },
 });

@@ -1,74 +1,47 @@
-import PropertyView from './PropertyView';
+import PropertySelectView from './PropertySelectView';
 
-export default PropertyView.extend({
+export default class PropertyRadioView extends PropertySelectView {
   templateInput() {
-    const pfx = this.pfx;
-    const ppfx = this.ppfx;
-    return `
-      <div class="${ppfx}field ${ppfx}field-radio">
-      </div>
-    `;
-  },
+    const { ppfx } = this;
+    return `<div class="${ppfx}field ${ppfx}field-radio"></div>`;
+  }
 
   onRender() {
-    const pfx = this.pfx;
-    const ppfx = this.ppfx;
+    const { pfx, ppfx, model } = this;
     const itemCls = `${ppfx}radio-item-label`;
-    const model = this.model;
-    const prop = model.get('property');
-    const options = model.get('list') || model.get('options') || [];
-    const { cid } = model;
+    const prop = model.getName();
+    const options = model.getOptions();
     const clsInput = `${pfx}radio ${pfx}radio-${prop}`;
+    const { cid } = model;
 
     if (!this.input) {
-      if (options && options.length) {
-        let inputStr = '';
+      const optionsRes = [];
 
-        options.forEach(el => {
-          let cl = el.className ? `${el.className} ${pfx}icon ${itemCls}` : '';
-          let id = `${prop}-${el.value}-${cid}`;
-          let labelTxt = el.name || el.value;
-          let titleAttr = el.title ? `title="${el.title}"` : '';
-          inputStr += `
-            <div class="${ppfx}radio-item">
-              <input type="radio" class="${clsInput}" id="${id}" name="${prop}-${cid}" value="${
-            el.value
-          }"/>
-              <label class="${cl || itemCls}" ${titleAttr} for="${id}">${
-            cl ? '' : labelTxt
-          }</label>
-            </div>
-          `;
-        });
+      options.forEach(opt => {
+        const cls = opt.className ? `${opt.className} ${pfx}icon ${itemCls}` : '';
+        const id = model.getOptionId(opt);
+        const elId = `${prop}-${id}-${cid}`;
+        const labelEl = cls ? '' : model.getOptionLabel(id);
+        const titleAttr = opt.title ? `title="${opt.title}"` : '';
+        const checked = model.getValue() === id ? 'checked' : '';
+        optionsRes.push(`
+          <div class="${ppfx}radio-item">
+            <input type="radio" class="${clsInput}" id="${elId}" name="${prop}-${cid}" value="${id}" ${checked}/>
+            <label class="${cls || itemCls}" ${titleAttr} for="${elId}">${labelEl}</label>
+          </div>
+        `);
+      });
 
-        const inputHld = this.el.querySelector(`.${ppfx}field`);
-        inputHld.innerHTML = `<div class="${ppfx}radio-items">${inputStr}</div>`;
-        this.input = inputHld.firstChild;
-      }
-    }
-  },
-
-  getInputValue() {
-    const inputChk = this.getCheckedEl();
-    return inputChk ? inputChk.value : '';
-  },
-
-  getCheckedEl() {
-    const input = this.getInputEl();
-    return input ? input.querySelector('input:checked') : '';
-  },
-
-  setValue(value) {
-    const model = this.model;
-    let val = value || model.get('value') || model.getDefaultValue();
-    const input = this.getInputEl();
-    const inputIn = input ? input.querySelector(`[value="${val}"]`) : '';
-
-    if (inputIn) {
-      inputIn.checked = true;
-    } else {
-      const inputChk = this.getCheckedEl();
-      inputChk && (inputChk.checked = false);
+      const inputHld = this.el.querySelector(`.${ppfx}field`);
+      inputHld.innerHTML = `<div class="${ppfx}radio-items">${optionsRes.join('')}</div>`;
+      this.input = inputHld.firstChild;
     }
   }
-});
+
+  __setValueInput(value) {
+    const { model } = this;
+    const id = value || model.getDefaultValue();
+    const inputIn = this.getInputEl()?.querySelector(`[value="${id}"]`);
+    inputIn && (inputIn.checked = true);
+  }
+}

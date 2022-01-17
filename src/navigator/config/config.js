@@ -26,7 +26,7 @@ export default {
 
   // Scroll to selected component in Canvas when it's selected in Layers
   // true, false or `scrollIntoView`-like options,
-  // `block: 'nearest'` avoids the issue of window scolling
+  // `block: 'nearest'` avoids the issue of window scrolling
   scrollCanvas: { behavior: 'smooth', block: 'nearest' },
 
   // Scroll to selected component in Layers when it's selected in Canvas

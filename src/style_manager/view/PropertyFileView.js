@@ -1,139 +1,58 @@
 import { isString } from 'underscore';
-import Backbone from 'backbone';
 import PropertyView from './PropertyView';
 
-const $ = Backbone.$;
+export default class PropertyFileView extends PropertyView {
+  events() {
+    return {
+      ...PropertyView.prototype.events,
+      'click [data-clear-asset]': 'clear',
+      'click [data-open-assets]': 'openAssetManager',
+    };
+  }
 
-export default PropertyView.extend({
   templateInput() {
     const { pfx, em } = this;
+    const icons = this.em?.getConfig('icons');
+    const iconClose = icons?.close;
 
     return `
-    <div class="${pfx}field ${pfx}file">
-      <div id='${pfx}input-holder'>
-        <div class="${pfx}btn-c">
-          <button class="${pfx}btn" id="${pfx}images" type="button">
-            ${em.t('styleManager.fileButton')}
-          </button>
+      <div class="${pfx}field ${pfx}file">
+        <div id='${pfx}input-holder'>
+          <div class="${pfx}btn-c">
+            <button class="${pfx}btn" id="${pfx}images" type="button" data-open-assets>
+              ${em.t('styleManager.fileButton')}
+            </button>
+          </div>
+          <div style="clear:both;"></div>
         </div>
-        <div style="clear:both;"></div>
+        <div id="${pfx}preview-box" class="${pfx}preview-file" data-preview-box>
+          <div id="${pfx}preview-file" class="${pfx}preview-file-cnt" data-preview></div>
+          <div id="${pfx}close" class="${pfx}preview-file-close" data-clear-asset>${iconClose}</div>
+        </div>
       </div>
-      <div id="${pfx}preview-box">
-        <div id="${pfx}preview-file"></div>
-        <div id="${pfx}close">&Cross;</div>
-      </div>
-    </div>
     `;
-  },
-
-  init() {
-    const em = this.em;
-    this.modal = em.get('Modal');
-    this.am = em.get('AssetManager');
-    this.events['click #' + this.pfx + 'close'] = 'removeFile';
-    this.events['click #' + this.pfx + 'images'] = 'openAssetManager';
-    this.delegateEvents();
-  },
-
-  onRender() {
-    if (!this.$input) {
-      const plh = this.model.getDefaultValue();
-      this.$input = $(`<input placeholder="${plh}">`);
-    }
-
-    if (!this.$preview) {
-      this.$preview = this.$el.find('#' + this.pfx + 'preview-file');
-    }
-
-    if (!this.$previewBox) {
-      this.$previewBox = this.$el.find('#' + this.pfx + 'preview-box');
-    }
-
-    this.setValue(this.componentValue, 0);
-  },
-
-  clearCached() {
-    PropertyView.prototype.clearCached.apply(this, arguments);
-    this.$preview = null;
-    this.$previewBox = null;
-  },
-
-  setValue(value, f) {
-    PropertyView.prototype.setValue.apply(this, arguments);
-    this.setPreviewView(value && value != this.model.getDefaultValue());
-    this.setPreview(value);
-  },
-
-  /**
-   * Change visibility of the preview box
-   * @param bool Visibility
-   *
-   * @return void
-   * */
-  setPreviewView(v) {
-    const pv = this.$previewBox;
-    pv && pv[v ? 'addClass' : 'removeClass'](`${this.pfx}show`);
-    pv && pv.css({ display: v ? 'block' : 'none' });
-  },
-
-  /**
-   * Spread url
-   * @param string Url
-   *
-   * @return void
-   * */
-  spreadUrl(url) {
-    this.model.set('value', url);
-    this.setPreviewView(1);
-  },
-
-  /**
-   * Shows file preview
-   * @param string Value
-   * */
-  setPreview(value) {
-    const preview = this.$preview;
-    value = value && value.indexOf('url(') < 0 ? `url(${value})` : value;
-    preview && preview.css('background-image', value);
-  },
-
-  /** @inheritdoc */
-  cleanValue() {
-    this.setPreviewView(0);
-    this.model.set({ value: '' }, { silent: true });
-  },
-
-  /**
-   * Remove file from input
-   *
-   * @return void
-   * */
-  removeFile(...args) {
-    this.model.set('value', this.model.getDefaultValue());
-    PropertyView.prototype.cleanValue.apply(this, args);
-    this.setPreviewView(0);
-  },
-
-  /**
-   * Open dialog for image selecting
-   * @param  {Object}  e  Event
-   *
-   * @return void
-   * */
-  openAssetManager() {
-    const { em } = this;
-    const am = em && em.get('AssetManager');
-    const handleAsset = a => this.spreadUrl(isString(a) ? a : a.get('src'));
-
-    am &&
-      am.open({
-        select(asset, complete) {
-          handleAsset(asset);
-          complete && am.close();
-        },
-        target: this.getTargetModel(),
-        types: ['image'],
-        accept: 'image/*'
-      });
   }
-});
+
+  __setValueInput(value) {
+    const { model, el } = this;
+    const valueDef = model.getDefaultValue();
+    const prvBoxEl = el.querySelector('[data-preview-box]');
+    const prvEl = el.querySelector('[data-preview]');
+    prvBoxEl.style.display = !value || value === valueDef ? 'none' : '';
+    prvEl.style.backgroundImage = value || model.getDefaultValue();
+  }
+
+  openAssetManager() {
+    const am = this.em?.get('AssetManager');
+
+    am?.open({
+      select: (asset, complete) => {
+        const url = isString(asset) ? asset : asset.get('src');
+        this.model.upValue(url, { partial: !complete });
+        complete && am.close();
+      },
+      types: ['image'],
+      accept: 'image/*',
+    });
+  }
+}

@@ -1,113 +1,78 @@
-import { View } from 'backbone';
+import { View } from 'common';
 import html from 'utils/html';
 import PropertiesView from './PropertiesView';
 
 export default class SectorView extends View {
   template({ pfx, label }) {
+    const icons = this.em?.getConfig('icons');
+    const iconCaret = icons?.caret || '';
+    const clsPfx = `${pfx}sector-`;
+
     return html`
-      <div class="${pfx}title" data-sector-title>
-        <i id="${pfx}caret" class="fa"></i>
-        ${label}
+      <div class="${clsPfx}title" data-sector-title>
+        <div class="${clsPfx}caret">$${iconCaret}</div>
+        <div class="${clsPfx}label">${label}</div>
       </div>
     `;
   }
 
   events() {
     return {
-      'click [data-sector-title]': 'toggle'
+      'click [data-sector-title]': 'toggle',
     };
   }
 
   initialize(o) {
-    this.config = o.config || {};
-    this.em = this.config.em;
-    this.pfx = this.config.stylePrefix || '';
-    this.target = o.target || {};
-    this.propTarget = o.propTarget || {};
-    this.caretR = 'fa-caret-right';
-    this.caretD = 'fa-caret-down';
-    const model = this.model;
-    this.listenTo(model, 'change:open', this.updateOpen);
-    this.listenTo(model, 'updateVisibility', this.updateVisibility);
+    const config = o.config || {};
+    const { model } = this;
+    const { em } = config;
+    this.config = config;
+    this.em = em;
+    this.pfx = config.stylePrefix || '';
     this.listenTo(model, 'destroy remove', this.remove);
+    this.listenTo(model, 'change:open', this.updateOpen);
+    this.listenTo(model, 'change:visible', this.updateVisibility);
   }
 
-  /**
-   * If all properties are hidden this will hide the sector
-   */
-  updateVisibility() {
-    var show;
-    this.model.get('properties').each(prop => {
-      if (prop.get('visible')) {
-        show = 1;
-      }
-    });
-    this.el.style.display = show ? '' : 'none';
-  }
-
-  /**
-   * Update visibility
-   */
   updateOpen() {
-    if (this.model.get('open')) this.show();
-    else this.hide();
+    const { $el, model, pfx } = this;
+    const isOpen = model.isOpen();
+    $el[isOpen ? 'addClass' : 'removeClass'](`${pfx}open`);
+    this.getPropertiesEl().style.display = isOpen ? '' : 'none';
   }
 
-  /**
-   * Show the content of the sector
-   * */
-  show() {
-    this.$el.addClass(this.pfx + 'open');
-    this.getPropertiesEl().style.display = '';
-    this.$caret.removeClass(this.caretR).addClass(this.caretD);
-  }
-
-  /**
-   * Hide the content of the sector
-   * */
-  hide() {
-    this.$el.removeClass(this.pfx + 'open');
-    this.getPropertiesEl().style.display = 'none';
-    this.$caret.removeClass(this.caretD).addClass(this.caretR);
+  updateVisibility() {
+    this.el.style.display = this.model.isVisible() ? '' : 'none';
   }
 
   getPropertiesEl() {
-    return this.$el.find(`.${this.pfx}properties`).get(0);
+    const { $el, pfx } = this;
+    return $el.find(`.${pfx}properties`).get(0);
   }
 
-  /**
-   * Toggle visibility
-   * */
-  toggle(e) {
+  toggle() {
     const { model } = this;
-    const v = model.get('open') ? 0 : 1;
-    model.set('open', v);
+    model.setOpen(!model.get('open'));
+  }
+
+  renderProperties() {
+    const { model, config } = this;
+    const objs = model.get('properties');
+
+    if (objs) {
+      const view = new PropertiesView({ collection: objs, config });
+      this.$el.append(view.render().el);
+    }
   }
 
   render() {
-    const { pfx, model, em, $el } = this;
-    const { id, name } = model.attributes;
-    const label = (em && em.t(`styleManager.sectors.${id}`)) || name;
+    const { pfx, model, $el } = this;
+    const id = model.getId();
+    const label = model.getName();
     $el.html(this.template({ pfx, label }));
-    this.$caret = $el.find(`#${pfx}caret`);
     this.renderProperties();
     $el.attr('class', `${pfx}sector ${pfx}sector__${id} no-select`);
     this.updateOpen();
     return this;
-  }
-
-  renderProperties() {
-    const { model, target, propTarget, config } = this;
-    const objs = model.get('properties');
-
-    if (objs) {
-      const view = new PropertiesView({
-        collection: objs,
-        target,
-        propTarget,
-        config
-      });
-      this.$el.append(view.render().el);
-    }
   }
 }

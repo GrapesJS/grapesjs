@@ -60,6 +60,7 @@
 
   &sels-info {
     margin: 7px 0;
+    text-align: left;
   }
 
   &sel-id {
@@ -74,8 +75,6 @@
 }
 
 .#{$clm-prefix}tags {
-  @extend .#{$sm-prefix}sector;
-
   font-size: $fontSizeS;
   padding: 10px 5px;
 

@@ -39,7 +39,16 @@ export default Input.extend({
     this.colorEl.spectrum('destroy');
   },
 
+  handleChange(e) {
+    e.stopPropagation();
+    const { value } = e.target;
+    if (isUndefined(value)) return;
+    this.__onInputChange(value);
+  },
+
   __onInputChange(val) {
+    const { model, opts } = this;
+    const { onChange } = opts;
     let value = val;
     const colorEl = this.getColorEl();
 
@@ -51,7 +60,7 @@ export default Input.extend({
       color && (value = color);
     }
 
-    this.model.set({ value }, { fromInput: 1 });
+    onChange ? onChange(value) : model.set({ value }, { fromInput: 1 });
   },
 
   /**
@@ -60,8 +69,8 @@ export default Input.extend({
    * @param {Object} opts
    */
   setValue(val, opts = {}) {
-    const model = this.model;
-    const def = model.get('defaults');
+    const { model } = this;
+    const def = !isUndefined(opts.def) ? opts.def : model.get('defaults');
     const value = !isUndefined(val) ? val : !isUndefined(def) ? def : '';
     const inputEl = this.getInputEl();
     const colorEl = this.getColorEl();
@@ -82,16 +91,15 @@ export default Input.extend({
    */
   getColorEl() {
     if (!this.colorEl) {
-      const { em } = this;
+      const { em, model, opts } = this;
       const self = this;
       const ppfx = this.ppfx;
-      var model = this.model;
+      const { onChange } = opts;
 
       var colorEl = $(`<div class="${this.ppfx}field-color-picker"></div>`);
       var cpStyle = colorEl.get(0).style;
       var elToAppend = em && em.config ? em.config.el : '';
-      var colorPickerConfig =
-        (em && em.getConfig && em.getConfig('colorPicker')) || {};
+      var colorPickerConfig = (em && em.getConfig && em.getConfig('colorPicker')) || {};
 
       let changed = 0;
       let previousColor;
@@ -114,30 +122,34 @@ export default Input.extend({
         move(color) {
           const cl = getColor(color);
           cpStyle.backgroundColor = cl;
-          model.setValueFromInput(cl, 0);
+          onChange ? onChange(cl, true) : model.setValueFromInput(cl, 0);
         },
         change(color) {
           changed = 1;
           const cl = getColor(color);
           cpStyle.backgroundColor = cl;
-          model.setValueFromInput(0, 0); // for UndoManager
-          model.setValueFromInput(cl);
+          if (onChange) {
+            onChange(cl);
+          } else {
+            model.setValueFromInput(0, 0); // for UndoManager
+            model.setValueFromInput(cl);
+          }
           self.noneColor = 0;
         },
         show(color) {
           changed = 0;
-          previousColor = getColor(color);
+          previousColor = onChange ? model.getValue({ noDefault: true }) : getColor(color);
         },
         hide(color) {
-          if (!changed && previousColor) {
+          if (!changed && (previousColor || onChange)) {
             if (self.noneColor) {
               previousColor = '';
             }
             cpStyle.backgroundColor = previousColor;
             colorEl.spectrum('set', previousColor);
-            model.setValueFromInput(previousColor, 0);
+            onChange ? onChange(previousColor, true) : model.setValueFromInput(previousColor, 0);
           }
-        }
+        },
       });
 
       if (em && em.on) {
@@ -157,5 +169,5 @@ export default Input.extend({
     // This will make the color input available on render
     this.getColorEl();
     return this;
-  }
+  },
 });

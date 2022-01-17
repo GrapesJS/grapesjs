@@ -25,7 +25,7 @@ export default {
   __initConfig(def = {}, conf = {}) {
     this.config = {
       ...def,
-      ...conf
+      ...conf,
     };
     this.em = this.config.em;
   },
@@ -37,9 +37,7 @@ export default {
       all
         .on('add', (m, c, o) => em.trigger(events.add, m, o))
         .on('remove', (m, c, o) => em.trigger(events.remove, m, o))
-        .on('change', (p, c) =>
-          em.trigger(events.update, p, p.changedAttributes(), c)
-        )
+        .on('change', (p, c) => em.trigger(events.update, p, p.changedAttributes(), c))
         .on('all', this.__catchAllEvent, this);
     // Register collections
     this.cls = [all].concat(opts.collections || []);
@@ -100,11 +98,23 @@ export default {
     return id;
   },
 
+  __listenAdd(model, event) {
+    model.on('add', (m, c, o) => this.em.trigger(event, m, o));
+  },
+
+  __listenRemove(model, event) {
+    model.on('remove', (m, c, o) => this.em.trigger(event, m, o));
+  },
+
+  __listenUpdate(model, event) {
+    model.on('change', (p, c) => this.em.trigger(event, p, p.changedAttributes(), c));
+  },
+
   __destroy() {
     this.cls.forEach(coll => {
       coll.stopListening();
       coll.reset();
     });
     this.em = 0;
-  }
+  },
 };

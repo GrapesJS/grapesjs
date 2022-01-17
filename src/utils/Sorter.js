@@ -619,16 +619,24 @@ export default Backbone.View.extend({
       return result;
     }
 
-    // check if the source is draggable in target
+    // Check if the source is draggable in target
     let draggable = srcModel.get('draggable');
-    draggable = draggable instanceof Array ? draggable.join(', ') : draggable;
-    result.dragInfo = draggable;
-    draggable = isString(draggable) ? this.matches(trg, draggable) : draggable;
-    result.draggable = draggable;
+    if (isFunction(draggable)) {
+      const res = draggable(srcModel, trgModel);
+      result.dragInfo = res;
+      result.draggable = res;
+      draggable = res;
+    } else {
+      draggable = draggable instanceof Array ? draggable.join(', ') : draggable;
+      result.dragInfo = draggable;
+      draggable = isString(draggable)
+        ? this.matches(trg, draggable)
+        : draggable;
+      result.draggable = draggable;
+    }
 
     // Check if the target could accept the source
     let droppable = trgModel.get('droppable');
-
     if (isFunction(droppable)) {
       const res = droppable(srcModel, trgModel);
       result.droppable = res;
@@ -854,7 +862,7 @@ export default Backbone.View.extend({
   /**
    * Get children dimensions
    * @param {HTMLELement} el Element root
-   * @retun {Array}
+   * @return {Array}
    * */
   getChildrenDim(trg) {
     const dims = [];
@@ -920,7 +928,7 @@ export default Backbone.View.extend({
    * @param {Array<Array>} dims Dimensions of nodes to parse
    * @param {number} posX X coordindate
    * @param {number} posY Y coordindate
-   * @retun {Object}
+   * @return {Object}
    * */
   findPosition(dims, posX, posY) {
     var result = { index: 0, indexEl: 0, method: 'before' };

@@ -4,7 +4,7 @@ const $ = Backbone.$;
 
 export default Backbone.View.extend({
   events: {
-    change: 'handleChange'
+    change: 'handleChange',
   },
 
   template() {
@@ -24,7 +24,7 @@ export default Backbone.View.extend({
     this.opts = opts;
     this.ppfx = ppfx;
     this.em = opts.target || {};
-    this.listenTo(this.model, 'change:value', this.handleModelChange);
+    !opts.onChange && this.listenTo(this.model, 'change:value', this.handleModelChange);
   },
 
   /**
@@ -74,11 +74,7 @@ export default Backbone.View.extend({
     if (!this.inputEl) {
       const { model, opts } = this;
       const type = opts.type || 'text';
-      const plh =
-        model.get('placeholder') ||
-        model.get('defaults') ||
-        model.get('default') ||
-        '';
+      const plh = model.get('placeholder') || model.get('defaults') || model.get('default') || '';
       this.inputEl = $(`<input type="${type}" placeholder="${plh}">`);
     }
 
@@ -92,5 +88,5 @@ export default Backbone.View.extend({
     el.html(this.template());
     el.find(`.${this.holderClass()}`).append(this.getInputEl());
     return this;
-  }
+  },
 });

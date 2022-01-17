@@ -8,12 +8,25 @@
  * })
  * ```
  *
- * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+ * Once the editor is instantiated you can use its API and listen to its events. Before using these methods, you should get the module from the instance.
  *
  * ```js
- * const canvas = editor.Canvas;
- * ```
+ * // Listen to events
+ * editor.on('canvas:drop', () => { ... });
  *
+ * // Use the API
+ * const canvas = editor.Canvas;
+ * canvas.setCoords(...);
+ * ```
+ * ## Available Events
+ * * `canvas:dragenter` - When something is dragged inside the canvas, `DataTransfer` instance passed as an argument
+ * * `canvas:dragover` - When something is dragging on canvas, `DataTransfer` instance passed as an argument
+ * * `canvas:drop` - Something is dropped in canvas, `DataTransfer` instance and the dropped model are passed as arguments
+ * * `canvas:dragend` - When a drag operation is ended, `DataTransfer` instance passed as an argument
+ * * `canvas:dragdata` - On any dataTransfer parse, `DataTransfer` instance and the `result` are passed as arguments.
+ *  By changing `result.content` you're able to customize what is dropped
+ *
+ * ## Methods
  * * [getConfig](#getconfig)
  * * [getElement](#getelement)
  * * [getFrameEl](#getframeel)
@@ -65,7 +78,7 @@ export default () => {
       c = {
         ...defaults,
         ...config,
-        module: this
+        module: this,
       };
 
       this.em = c.em;
@@ -238,11 +251,7 @@ export default () => {
      * @private
      */
     getOffsetViewerEl(compView) {
-      return this._getLocalEl(
-        CanvasView.offsetEl,
-        compView,
-        'getOffsetViewerEl'
-      );
+      return this._getLocalEl(CanvasView.offsetEl, compView, 'getOffsetViewerEl');
     },
 
     /**
@@ -258,7 +267,7 @@ export default () => {
       CanvasView && CanvasView.remove();
       CanvasView = new canvasView({
         model: canvas,
-        config: c
+        config: c,
       });
       return CanvasView.render().el;
     },
@@ -273,7 +282,7 @@ export default () => {
       var canvasOff = this.offset(this.getElement());
       return {
         top: frameOff.top - canvasOff.top,
-        left: frameOff.left - canvasOff.left
+        left: frameOff.left - canvasOff.left,
       };
     },
 
@@ -328,7 +337,7 @@ export default () => {
       return {
         ...CanvasView.getCanvasOffset(),
         topScroll: top,
-        leftScroll: left
+        leftScroll: left,
       };
     },
 
@@ -379,7 +388,7 @@ export default () => {
         canvasTop: canvasPos.top,
         canvasLeft: canvasPos.left,
         canvasWidth: canvasPos.width,
-        canvasHeight: canvasPos.height
+        canvasHeight: canvasPos.height,
       };
 
       // In this way I can catch data and also change the position strategy
@@ -400,9 +409,7 @@ export default () => {
         const zoom = this.em.getZoomDecimal();
         const side = top ? 'top' : 'left';
         const doc = el.ownerDocument;
-        const { offsetTop = 0, offsetLeft = 0 } = opts.offset
-          ? getFrameElFromDoc(doc)
-          : {};
+        const { offsetTop = 0, offsetLeft = 0 } = opts.offset ? getFrameElFromDoc(doc) : {};
         const { scrollTop = 0, scrollLeft = 0 } = doc.body || {};
         const scroll = top ? scrollTop : scrollLeft;
         const offset = top ? offsetTop : offsetLeft;
@@ -416,7 +423,7 @@ export default () => {
 
       return {
         top: rectOff(el, 1, pos),
-        left: rectOff(el, 0, pos)
+        left: rectOff(el, 0, pos),
       };
     },
 
@@ -453,7 +460,7 @@ export default () => {
         top,
         left,
         canvasOffsetTop: cvOff.top,
-        canvasOffsetLeft: cvOff.left
+        canvasOffsetLeft: cvOff.left,
       };
 
       // In this way I can catch data and also change the position strategy
@@ -490,7 +497,7 @@ export default () => {
 
       return {
         y: e.clientY + addTop - yOffset,
-        x: e.clientX + addLeft - xOffset
+        x: e.clientX + addLeft - xOffset,
       };
     },
 
@@ -506,7 +513,7 @@ export default () => {
 
       return {
         y: ev.clientY * zoom + top,
-        x: ev.clientX * zoom + left
+        x: ev.clientX * zoom + left,
       };
     },
 
@@ -528,9 +535,7 @@ export default () => {
       const frame = this.getFrameEl();
       const toIgnore = ['body', ...this.getConfig().notTextable];
       const docActive = frame && document.activeElement === frame;
-      const focused = docActive
-        ? doc && doc.activeElement
-        : document.activeElement;
+      const focused = docActive ? doc && doc.activeElement : document.activeElement;
 
       return focused && !toIgnore.some(item => focused.matches(item));
     },
@@ -666,11 +671,11 @@ export default () => {
     addFrame(props = {}, opts = {}) {
       return canvas.get('frames').add(
         {
-          ...props
+          ...props,
         },
         {
           ...opts,
-          em: this.em
+          em: this.em,
         }
       );
     },
@@ -680,6 +685,6 @@ export default () => {
       CanvasView && CanvasView.remove();
       [c, canvas, CanvasView].forEach(i => (i = {}));
       ['em', 'model', 'droppable'].forEach(i => (this[i] = {}));
-    }
+    },
   };
 };

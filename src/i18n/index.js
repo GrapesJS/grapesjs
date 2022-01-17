@@ -70,9 +70,11 @@ export default () => {
         ...opts,
         messages: {
           ...config.messages,
-          ...(opts.messages || {})
-        }
+          ...(opts.messages || {}),
+        },
       };
+      const add = this.config.messagesAdd;
+      add && this.addMessages(add);
 
       if (this.config.detectLocale) {
         this.config.locale = this._localLang();
@@ -127,9 +129,7 @@ export default () => {
      */
     getMessages(lang, opts = {}) {
       const { messages } = this.config;
-      lang &&
-        !messages[lang] &&
-        this._debug(`'${lang}' i18n lang not found`, opts);
+      lang && !messages[lang] && this._debug(`'${lang}' i18n lang not found`, opts);
       return lang ? messages[lang] : messages;
     },
 
@@ -202,10 +202,8 @@ export default () => {
       // Try with fallback
       if (!result) result = this._getMsg(key, localeFlb, opts);
 
-      !result &&
-        this._debug(`'${key}' i18n key not found in '${locale}' lang`, opts);
-      result =
-        result && isString(result) ? this._addParams(result, param) : result;
+      !result && this._debug(`'${key}' i18n key not found in '${locale}' lang`, opts);
+      result = result && isString(result) ? this._addParams(result, param) : result;
 
       return result;
     },
@@ -248,6 +246,6 @@ export default () => {
     destroy() {
       this.config = config;
       this.em = {};
-    }
+    },
   };
 };

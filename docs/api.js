@@ -22,6 +22,12 @@ async function generateDocs () {
     ['panels/index.js', 'panels.md'],
     ['style_manager/index.js', 'style_manager.md'],
     ['style_manager/model/Sector.js', 'sector.md'],
+    ['style_manager/model/Property.js', 'property.md'],
+    ['style_manager/model/PropertyNumber.js', 'property_number.md'],
+    ['style_manager/model/PropertySelect.js', 'property_select.md'],
+    ['style_manager/model/PropertyComposite.js', 'property_composite.md'],
+    ['style_manager/model/PropertyStack.js', 'property_stack.md'],
+    ['style_manager/model/Layer.js', 'layer.md'],
     ['storage_manager/index.js', 'storage_manager.md'],
     ['device_manager/index.js', 'device_manager.md'],
     ['device_manager/model/Device.js', 'device.md'],
@@ -50,6 +56,7 @@ async function generateDocs () {
           .replace(/<\\\[/g, '<[')
           .replace(/<\(\\\[/g, '<([')
           .replace(/\| \\\[/g, '| [')
+          .replace(/\\n```js/g, "```js")
           .replace('**Extends Model**', '');
         fs.writeFileSync(`${docRoot}/api/${file[1]}`, res);
         log('Created', file[1]);
