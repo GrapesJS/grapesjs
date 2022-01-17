@@ -511,24 +511,24 @@
         }
         .card-header{
           height: 155px;
-          background-image:url("https://placehold.it/350x250/78c5d6/fff/image1.jpg");
+          background-image:url("https://via.placeholder.com/350x250/78c5d6/fff/image1.jpg");
           background-size:cover;
           background-position:center center;
         }
         .card-header.ch2{
-          background-image:url("https://placehold.it/350x250/459ba8/fff/image2.jpg");
+          background-image:url("https://via.placeholder.com/350x250/459ba8/fff/image2.jpg");
         }
         .card-header.ch3{
-          background-image:url("https://placehold.it/350x250/79c267/fff/image3.jpg");
+          background-image:url("https://via.placeholder.com/350x250/79c267/fff/image3.jpg");
         }
         .card-header.ch4{
-          background-image:url("https://placehold.it/350x250/c5d647/fff/image4.jpg");
+          background-image:url("https://via.placeholder.com/350x250/c5d647/fff/image4.jpg");
         }
         .card-header.ch5{
-          background-image:url("https://placehold.it/350x250/f28c33/fff/image5.jpg");
+          background-image:url("https://via.placeholder.com/350x250/f28c33/fff/image5.jpg");
         }
         .card-header.ch6{
-          background-image:url("https://placehold.it/350x250/e868a2/fff/image6.jpg");
+          background-image:url("https://via.placeholder.com/350x250/e868a2/fff/image6.jpg");
         }
         .card-body{
           padding: 15px 15px 5px 15px;
@@ -976,7 +976,7 @@
 
     <script type="text/javascript">
       var lp = './img/';
-      var plp = '//placehold.it/350x250/';
+      var plp = 'https://via.placeholder.com/350x250/';
       var images = [
         lp+'team1.jpg', lp+'team2.jpg', lp+'team3.jpg', plp+'78c5d6/fff/image1.jpg', plp+'459ba8/fff/image2.jpg', plp+'79c267/fff/image3.jpg',
         plp+'c5d647/fff/image4.jpg', plp+'f28c33/fff/image5.jpg', plp+'e868a2/fff/image6.jpg', plp+'cc4360/fff/image7.jpg',
@@ -994,7 +994,7 @@
           assets: images
         },
         selectorManager: { componentFirst: true },
-        styleManager: { clearProperties: 1 },
+        styleManager: { sectors: [] },
         plugins: [
           'grapesjs-lory-slider',
           'grapesjs-tabs',
@@ -1008,6 +1008,18 @@
           'gjs-preset-webpage',
         ],
         pluginsOpts: {
+          'grapesjs-tui-image-editor': {
+            script: [
+              // 'https://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.6.7/fabric.min.js',
+              'https://uicdn.toast.com/tui.code-snippet/v1.5.2/tui-code-snippet.min.js',
+              'https://uicdn.toast.com/tui-color-picker/v2.2.7/tui-color-picker.min.js',
+              'https://uicdn.toast.com/tui-image-editor/v3.15.2/tui-image-editor.min.js'
+            ],
+            style: [
+              'https://uicdn.toast.com/tui-color-picker/v2.2.7/tui-color-picker.min.css',
+              'https://uicdn.toast.com/tui-image-editor/v3.15.2/tui-image-editor.min.css',
+            ],
+          },
           'grapesjs-lory-slider': {
             sliderBlock: {
               category: 'Extra'
@@ -1043,140 +1055,92 @@
             blocksBasicOpts: { flexGrid: 1 },
             customStyleManager: [{
               name: 'General',
-              buildProps: ['float', 'display', 'position', 'top', 'right', 'left', 'bottom'],
-              properties:[{
-                  name: 'Alignment',
-                  property: 'float',
+              properties:[
+                {
+                  extend: 'float',
                   type: 'radio',
-                  defaults: 'none',
-                  list: [
+                  default: 'none',
+                  options: [
                     { value: 'none', className: 'fa fa-times'},
                     { value: 'left', className: 'fa fa-align-left'},
                     { value: 'right', className: 'fa fa-align-right'}
                   ],
                 },
-                { property: 'position', type: 'select'}
+                'display',
+                { extend: 'position', type: 'select' },
+                'top',
+                'right',
+                'left',
+                'bottom',
               ],
-            },{
+            }, {
                 name: 'Dimension',
                 open: false,
-                buildProps: ['width', 'flex-width', 'height', 'max-width', 'min-height', 'margin', 'padding'],
-                properties: [{
-                  id: 'flex-width',
-                  type: 'integer',
-                  name: 'Width',
-                  units: ['px', '%'],
-                  property: 'flex-basis',
-                  toRequire: 1,
-                },{
-                  property: 'margin',
-                  properties:[
-                    { name: 'Top', property: 'margin-top'},
-                    { name: 'Right', property: 'margin-right'},
-                    { name: 'Bottom', property: 'margin-bottom'},
-                    { name: 'Left', property: 'margin-left'}
-                  ],
-                },{
-                  property  : 'padding',
-                  properties:[
-                    { name: 'Top', property: 'padding-top'},
-                    { name: 'Right', property: 'padding-right'},
-                    { name: 'Bottom', property: 'padding-bottom'},
-                    { name: 'Left', property: 'padding-left'}
-                  ],
-                }],
+                properties: [
+                  'width',
+                  {
+                    id: 'flex-width',
+                    type: 'integer',
+                    name: 'Width',
+                    units: ['px', '%'],
+                    property: 'flex-basis',
+                    toRequire: 1,
+                  },
+                  'height',
+                  'max-width',
+                  'min-height',
+                  'margin',
+                  'padding'
+                ],
               },{
                 name: 'Typography',
                 open: false,
-                buildProps: ['font-family', 'font-size', 'font-weight', 'letter-spacing', 'color', 'line-height', 'text-align', 'text-decoration', 'text-shadow'],
-                properties:[
-                  { name: 'Font', property: 'font-family'},
-                  { name: 'Weight', property: 'font-weight'},
-                  { name:  'Font color', property: 'color'},
-                  {
-                    property: 'text-align',
-                    type: 'radio',
-                    defaults: 'left',
-                    list: [
-                      { value : 'left',  name : 'Left',    className: 'fa fa-align-left'},
-                      { value : 'center',  name : 'Center',  className: 'fa fa-align-center' },
-                      { value : 'right',   name : 'Right',   className: 'fa fa-align-right'},
-                      { value : 'justify', name : 'Justify',   className: 'fa fa-align-justify'}
-                    ],
-                  },{
-                    property: 'text-decoration',
-                    type: 'radio',
-                    defaults: 'none',
-                    list: [
-                      { value: 'none', name: 'None', className: 'fa fa-times'},
-                      { value: 'underline', name: 'underline', className: 'fa fa-underline' },
-                      { value: 'line-through', name: 'Line-through', className: 'fa fa-strikethrough'}
-                    ],
-                  },{
-                    property: 'text-shadow',
-                    properties: [
-                      { name: 'X position', property: 'text-shadow-h'},
-                      { name: 'Y position', property: 'text-shadow-v'},
-                      { name: 'Blur', property: 'text-shadow-blur'},
-                      { name: 'Color', property: 'text-shadow-color'}
-                    ],
-                }],
+                properties: [
+                    'font-family',
+                    'font-size',
+                    'font-weight',
+                    'letter-spacing',
+                    'color',
+                    'line-height',
+                    {
+                      extend: 'text-align',
+                      options: [
+                        { id : 'left',  label : 'Left',    className: 'fa fa-align-left'},
+                        { id : 'center',  label : 'Center',  className: 'fa fa-align-center' },
+                        { id : 'right',   label : 'Right',   className: 'fa fa-align-right'},
+                        { id : 'justify', label : 'Justify',   className: 'fa fa-align-justify'}
+                      ],
+                    },
+                    {
+                      property: 'text-decoration',
+                      type: 'radio',
+                      default: 'none',
+                      options: [
+                        { id: 'none', label: 'None', className: 'fa fa-times'},
+                        { id: 'underline', label: 'underline', className: 'fa fa-underline' },
+                        { id: 'line-through', label: 'Line-through', className: 'fa fa-strikethrough'}
+                      ],
+                    },
+                    'text-shadow'
+                ],
               },{
                 name: 'Decorations',
                 open: false,
-                buildProps: ['opacity', 'border-radius', 'border', 'box-shadow', 'background-bg'],
-                properties: [{
-                  type: 'slider',
-                  property: 'opacity',
-                  defaults: 1,
-                  step: 0.01,
-                  max: 1,
-                  min:0,
-                },{
-                  property: 'border-radius',
-                  properties  : [
-                    { name: 'Top', property: 'border-top-left-radius'},
-                    { name: 'Right', property: 'border-top-right-radius'},
-                    { name: 'Bottom', property: 'border-bottom-left-radius'},
-                    { name: 'Left', property: 'border-bottom-right-radius'}
-                  ],
-                },{
-                  property: 'box-shadow',
-                  properties: [
-                    { name: 'X position', property: 'box-shadow-h'},
-                    { name: 'Y position', property: 'box-shadow-v'},
-                    { name: 'Blur', property: 'box-shadow-blur'},
-                    { name: 'Spread', property: 'box-shadow-spread'},
-                    { name: 'Color', property: 'box-shadow-color'},
-                    { name: 'Shadow type', property: 'box-shadow-type'}
-                  ],
-                },{
-                  id: 'background-bg',
-                  property: 'background',
-                  type: 'bg',
-                },],
+                properties: [
+                  'opacity',
+                  'border-radius',
+                  'border',
+                  'box-shadow',
+                  'background', // { id: 'background-bg', property: 'background', type: 'bg' }
+                ],
               },{
                 name: 'Extra',
                 open: false,
-                buildProps: ['transition', 'perspective', 'transform'],
-                properties: [{
-                  property: 'transition',
-                  properties:[
-                    { name: 'Property', property: 'transition-property'},
-                    { name: 'Duration', property: 'transition-duration'},
-                    { name: 'Easing', property: 'transition-timing-function'}
-                  ],
-                },{
-                  property: 'transform',
-                  properties:[
-                    { name: 'Rotate X', property: 'transform-rotate-x'},
-                    { name: 'Rotate Y', property: 'transform-rotate-y'},
-                    { name: 'Rotate Z', property: 'transform-rotate-z'},
-                    { name: 'Scale X', property: 'transform-scale-x'},
-                    { name: 'Scale Y', property: 'transform-scale-y'},
-                    { name: 'Scale Z', property: 'transform-scale-z'}
-                  ],
-                }]
+                buildProps: [
+                  'transition',
+                  'perspective',
+                  'transform'
+                ],
               },{
                 name: 'Flex',
                 open: false,
@@ -1194,138 +1158,138 @@
                   property: 'label-parent-flex',
                   type: 'integer',
                 },{
-                  name      : 'Direction',
-                  property  : 'flex-direction',
-                  type    : 'radio',
-                  defaults  : 'row',
-                  list    : [{
-                            value   : 'row',
-                            name    : 'Row',
-                            className : 'icons-flex icon-dir-row',
-                            title   : 'Row',
-                          },{
-                            value   : 'row-reverse',
-                            name    : 'Row reverse',
-                            className : 'icons-flex icon-dir-row-rev',
-                            title   : 'Row reverse',
-                          },{
-                            value   : 'column',
-                            name    : 'Column',
-                            title   : 'Column',
-                            className : 'icons-flex icon-dir-col',
-                          },{
-                            value   : 'column-reverse',
-                            name    : 'Column reverse',
-                            title   : 'Column reverse',
-                            className : 'icons-flex icon-dir-col-rev',
-                          }],
+                  name: 'Direction',
+                  property: 'flex-direction',
+                  type: 'radio',
+                  defaults: 'row',
+                  list: [{
+                    value: 'row',
+                    name: 'Row',
+                    className: 'icons-flex icon-dir-row',
+                    title: 'Row',
+                  },{
+                    value: 'row-reverse',
+                    name: 'Row reverse',
+                    className: 'icons-flex icon-dir-row-rev',
+                    title: 'Row reverse',
+                  },{
+                    value: 'column',
+                    name: 'Column',
+                    title: 'Column',
+                    className: 'icons-flex icon-dir-col',
+                  },{
+                    value: 'column-reverse',
+                    name: 'Column reverse',
+                    title: 'Column reverse',
+                    className: 'icons-flex icon-dir-col-rev',
+                  }],
                 },{
-                  name      : 'Justify',
-                  property  : 'justify-content',
-                  type    : 'radio',
-                  defaults  : 'flex-start',
-                  list    : [{
-                            value   : 'flex-start',
-                            className : 'icons-flex icon-just-start',
-                            title   : 'Start',
-                          },{
-                            value   : 'flex-end',
-                            title    : 'End',
-                            className : 'icons-flex icon-just-end',
-                          },{
-                            value   : 'space-between',
-                            title    : 'Space between',
-                            className : 'icons-flex icon-just-sp-bet',
-                          },{
-                            value   : 'space-around',
-                            title    : 'Space around',
-                            className : 'icons-flex icon-just-sp-ar',
-                          },{
-                            value   : 'center',
-                            title    : 'Center',
-                            className : 'icons-flex icon-just-sp-cent',
-                          }],
+                  name: 'Justify',
+                  property: 'justify-content',
+                  type: 'radio',
+                  defaults: 'flex-start',
+                  list: [{
+                    value: 'flex-start',
+                    className: 'icons-flex icon-just-start',
+                    title: 'Start',
+                  },{
+                    value: 'flex-end',
+                    title: 'End',
+                    className: 'icons-flex icon-just-end',
+                  },{
+                    value: 'space-between',
+                    title: 'Space between',
+                    className: 'icons-flex icon-just-sp-bet',
+                  },{
+                    value: 'space-around',
+                    title: 'Space around',
+                    className: 'icons-flex icon-just-sp-ar',
+                  },{
+                    value: 'center',
+                    title: 'Center',
+                    className: 'icons-flex icon-just-sp-cent',
+                  }],
                 },{
-                  name      : 'Align',
-                  property  : 'align-items',
-                  type    : 'radio',
-                  defaults  : 'center',
-                  list    : [{
-                            value   : 'flex-start',
-                            title    : 'Start',
-                            className : 'icons-flex icon-al-start',
-                          },{
-                            value   : 'flex-end',
-                            title    : 'End',
-                            className : 'icons-flex icon-al-end',
-                          },{
-                            value   : 'stretch',
-                            title    : 'Stretch',
-                            className : 'icons-flex icon-al-str',
-                          },{
-                            value   : 'center',
-                            title    : 'Center',
-                            className : 'icons-flex icon-al-center',
-                          }],
+                  name: 'Align',
+                  property: 'align-items',
+                  type: 'radio',
+                  defaults: 'center',
+                  list: [{
+                    value: 'flex-start',
+                    title: 'Start',
+                    className: 'icons-flex icon-al-start',
+                  },{
+                    value: 'flex-end',
+                    title: 'End',
+                    className: 'icons-flex icon-al-end',
+                  },{
+                    value: 'stretch',
+                    title: 'Stretch',
+                    className: 'icons-flex icon-al-str',
+                  },{
+                    value: 'center',
+                    title: 'Center',
+                    className: 'icons-flex icon-al-center',
+                  }],
                 },{
                   name: 'Flex Children',
                   property: 'label-parent-flex',
                   type: 'integer',
                 },{
-                  name:     'Order',
-                  property:   'order',
-                  type:     'integer',
-                  defaults :  0,
+                  name: 'Order',
+                  property: 'order',
+                  type: 'integer',
+                  defaults: 0,
                   min: 0
                 },{
-                  name    : 'Flex',
-                  property  : 'flex',
-                  type    : 'composite',
+                  name: 'Flex',
+                  property: 'flex',
+                  type: 'composite',
                   properties  : [{
-                          name:     'Grow',
-                          property:   'flex-grow',
-                          type:     'integer',
-                          defaults :  0,
-                          min: 0
-                        },{
-                          name:     'Shrink',
-                          property:   'flex-shrink',
-                          type:     'integer',
-                          defaults :  0,
-                          min: 0
-                        },{
-                          name:     'Basis',
-                          property:   'flex-basis',
-                          type:     'integer',
-                          units:    ['px','%',''],
-                          unit: '',
-                          defaults :  'auto',
-                        }],
+                    name: 'Grow',
+                    property: 'flex-grow',
+                    type: 'integer',
+                    defaults: 0,
+                    min: 0
+                  },{
+                    name: 'Shrink',
+                    property: 'flex-shrink',
+                    type: 'integer',
+                    defaults: 0,
+                    min: 0
+                  },{
+                    name: 'Basis',
+                    property: 'flex-basis',
+                    type: 'integer',
+                    units: ['px','%',''],
+                    unit: '',
+                    defaults: 'auto',
+                  }],
                 },{
-                  name      : 'Align',
-                  property  : 'align-self',
-                  type      : 'radio',
-                  defaults  : 'auto',
-                  list    : [{
-                            value   : 'auto',
-                            name    : 'Auto',
-                          },{
-                            value   : 'flex-start',
-                            title    : 'Start',
-                            className : 'icons-flex icon-al-start',
-                          },{
-                            value   : 'flex-end',
-                            title    : 'End',
-                            className : 'icons-flex icon-al-end',
-                          },{
-                            value   : 'stretch',
-                            title    : 'Stretch',
-                            className : 'icons-flex icon-al-str',
-                          },{
-                            value   : 'center',
-                            title    : 'Center',
-                            className : 'icons-flex icon-al-center',
-                          }],
+                  name: 'Align',
+                  property: 'align-self',
+                  type: 'radio',
+                  defaults: 'auto',
+                  list: [{
+                    value: 'auto',
+                    name: 'Auto',
+                  },{
+                    value: 'flex-start',
+                    title: 'Start',
+                    className: 'icons-flex icon-al-start',
+                  },{
+                    value   : 'flex-end',
+                    title: 'End',
+                    className: 'icons-flex icon-al-end',
+                  },{
+                    value   : 'stretch',
+                    title: 'Stretch',
+                    className: 'icons-flex icon-al-str',
+                  },{
+                    value   : 'center',
+                    title: 'Center',
+                    className: 'icons-flex icon-al-center',
+                  }],
                 }]
               }
             ],
@@ -1462,12 +1426,12 @@
 
         // Add Settings Sector
         var traitsSector = $('<div class="gjs-sm-sector no-select">'+
-          '<div class="gjs-sm-title"><span class="icon-settings fa fa-cog"></span> Settings</div>' +
+          '<div class="gjs-sm-sector-title"><span class="icon-settings fa fa-cog"></span> <span class="gjs-sm-sector-label">Settings</span></div>' +
           '<div class="gjs-sm-properties" style="display: none;"></div></div>');
         var traitsProps = traitsSector.find('.gjs-sm-properties');
         traitsProps.append($('.gjs-trt-traits'));
         $('.gjs-sm-sectors').before(traitsSector);
-        traitsSector.find('.gjs-sm-title').on('click', function(){
+        traitsSector.find('.gjs-sm-sector-title').on('click', function(){
           var traitStyle = traitsProps.get(0).style;
           var hidden = traitStyle.display == 'none';
           if (hidden) {
