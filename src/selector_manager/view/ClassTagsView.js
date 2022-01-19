@@ -265,8 +265,8 @@ export default Backbone.View.extend({
       const selectors = sel.getStyleable();
       const state = em.get('state');
       const idRes = target.getId
-        ? html`<span class="${pfx}sel-cmp">${target.getName()}</span
-            ><span class="${pfx}sel-id">#${target.getId()}</span>`
+        ? html`<span class="${pfx}sel-cmp">${target.getName()}</span>
+            <span class="${pfx}sel-id">#${target.getId()}</span>`
         : '';
       result = this.collection.getFullString(selectors);
       result = result ? html`<span class="${pfx}sel-rule">${result}</span>` : target.get('selectorsAdd') || idRes;
