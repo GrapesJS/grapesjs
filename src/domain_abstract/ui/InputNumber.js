@@ -144,12 +144,10 @@ export default Input.extend({
    * Invoked when the up arrow is clicked
    * */
   upArrowClick() {
-    const model = this.model;
+    const { model } = this;
     const step = model.get('step');
     let value = parseFloat(model.get('value'));
-    value = this.normalizeValue(value + step);
-    var valid = this.validateInputValue(value);
-    model.set('value', valid.value);
+    this.setValue(this.normalizeValue(value + step));
     this.elementUpdated();
   },
 
@@ -157,12 +155,10 @@ export default Input.extend({
    * Invoked when the down arrow is clicked
    * */
   downArrowClick() {
-    const model = this.model;
+    const { model } = this;
     const step = model.get('step');
     const value = parseFloat(model.get('value'));
-    const val = this.normalizeValue(value - step);
-    var valid = this.validateInputValue(val);
-    model.set('value', valid.value);
+    this.setValue(this.normalizeValue(value - step));
     this.elementUpdated();
   },
 
@@ -193,8 +189,9 @@ export default Input.extend({
     const step = model.get('step');
     const data = this.current;
     var pos = this.normalizeValue(data.val + (data.y - ev.pageY) * step);
-    this.prValue = this.validateInputValue(pos).value;
-    model.set('value', this.prValue, { avoidStore: 1 });
+    const { value, unit } = this.validateInputValue(pos);
+    this.prValue = value;
+    model.set({ value, unit }, { avoidStore: 1 });
     return false;
   },
 

@@ -11,10 +11,8 @@ export default class PropertyNumberView extends PropertyView {
     this.listenTo(model, 'change:units', this.render);
   }
 
-  setValue(value) {
-    const parsed = this.model.parseValue(value);
-    value = `${parsed.value}${parsed.unit}`;
-    this.inputInst?.setValue(value, { silent: 1 });
+  setValue() {
+    // handled by this.inputInst
   }
 
   onRender() {
