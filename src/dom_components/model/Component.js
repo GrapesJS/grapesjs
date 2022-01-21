@@ -1371,7 +1371,9 @@ export default class Component extends Model.extend(Styleable) {
    * Return HTML string of the component
    * @param {Object} [opts={}] Options
    * @param {String} [opts.tag] Custom tagName
-   * @param {Object|Function} [opts.attributes=null] You can pass an object of custom attributes to replace
+   * @param {Object|Function} [opts.attributes=null] You can pass an object of custom attributes to replace.
+   * @param {Boolean} [opts.withProps] Include component properties as `data-gjs-*` attributes. This allows you to have re-importable HTML.
+   * @param {Boolean} [opts.beautifyAttr] In case the attribute value contains a `"` char, instead of escaping it (`attr="value &quot;"`), the attribute will be quoted using single quotes (`attr='value "'`).
    * with the current one or you can even pass a function to generate attributes dynamically
    * @return {String} HTML string
    * @example
@@ -1415,15 +1417,33 @@ export default class Component extends Model.extend(Styleable) {
       }
     }
 
+    if (opts.withProps) {
+      const props = this.toJSON();
+
+      forEach(props, (value, key) => {
+        const skipProps = ['classes', 'attributes', 'components'];
+        if (key[0] !== '_' && skipProps.indexOf(key) < 0) {
+          attributes[`data-gjs-${key}`] = isArray(value) || isObject(value) ? JSON.stringify(value) : value;
+        }
+      });
+    }
+
     for (let attr in attributes) {
       const val = attributes[attr];
-      const value = isString(val) ? val.replace(/"/g, '&quot;') : val;
 
-      if (!isUndefined(value)) {
-        if (isBoolean(value)) {
-          value && attrs.push(attr);
+      if (!isUndefined(val) && val !== null) {
+        if (isBoolean(val)) {
+          val && attrs.push(attr);
         } else {
-          attrs.push(`${attr}="${value}"`);
+          let valueRes = '';
+          if (opts.beautifyAttr && isString(val) && val.indexOf('"') >= 0) {
+            valueRes = `'${val.replace(/'/g, '&apos;')}'`;
+          } else {
+            const value = isString(val) ? val.replace(/"/g, '&quot;') : val;
+            valueRes = `"${value}"`;
+          }
+
+          attrs.push(`${attr}=${valueRes}`);
         }
       }
     }
@@ -1434,6 +1454,15 @@ export default class Component extends Model.extend(Styleable) {
     !sTag && (code += `</${tag}>`);
 
     return code;
+  }
+
+  /**
+   * Get inner HTML of the component
+   * @param {Object} [opts={}] Same options of `toHTML`
+   * @returns {String} HTML string
+   */
+  getInnerHTML(opts) {
+    return this.__innerHTML(opts);
   }
 
   __innerHTML(opts = {}) {
