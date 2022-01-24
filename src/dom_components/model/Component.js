@@ -1371,10 +1371,9 @@ export default class Component extends Model.extend(Styleable) {
    * Return HTML string of the component
    * @param {Object} [opts={}] Options
    * @param {String} [opts.tag] Custom tagName
-   * @param {Object|Function} [opts.attributes=null] You can pass an object of custom attributes to replace.
+   * @param {Object|Function} [opts.attributes=null] You can pass an object of custom attributes to replace with the current ones or you can even pass a function to generate attributes dynamically.
    * @param {Boolean} [opts.withProps] Include component properties as `data-gjs-*` attributes. This allows you to have re-importable HTML.
-   * @param {Boolean} [opts.beautifyAttr] In case the attribute value contains a `"` char, instead of escaping it (`attr="value &quot;"`), the attribute will be quoted using single quotes (`attr='value "'`).
-   * with the current one or you can even pass a function to generate attributes dynamically
+   * @param {Boolean} [opts.altQuoteAttr] In case the attribute value contains a `"` char, instead of escaping it (`attr="value &quot;"`), the attribute will be quoted using single quotes (`attr='value "'`).
    * @return {String} HTML string
    * @example
    * // Simple HTML return
@@ -1436,7 +1435,7 @@ export default class Component extends Model.extend(Styleable) {
           val && attrs.push(attr);
         } else {
           let valueRes = '';
-          if (opts.beautifyAttr && isString(val) && val.indexOf('"') >= 0) {
+          if (opts.altQuoteAttr && isString(val) && val.indexOf('"') >= 0) {
             valueRes = `'${val.replace(/'/g, '&apos;')}'`;
           } else {
             const value = isString(val) ? val.replace(/"/g, '&quot;') : val;

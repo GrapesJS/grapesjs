@@ -167,7 +167,7 @@ describe('Component', () => {
     resArr = '[1,"string",true]';
     resObj = '{"a":1,"b":"string","c":true}';
     res = `<div data-gjs-bool data-gjs-string='${resStr}' data-gjs-array='${resArr}' data-gjs-object='${resObj}' data-gjs-empty="" data-gjs-zero="0"></div>`;
-    expect(obj.toHTML({ withProps: true, beautifyAttr: true })).toEqual(res);
+    expect(obj.toHTML({ withProps: true, altQuoteAttr: true })).toEqual(res);
   });
 
   test('Manage correctly boolean attributes', () => {
