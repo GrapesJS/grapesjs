@@ -1,15 +1,16 @@
 export default {
   run(editor, sender, opts) {
-    var opt = opts || {};
-    var el = opt.el || '';
-    var canvas = editor.Canvas;
-    var canvasResizer = this.canvasResizer;
-    var options = opt.options || {};
-    var canvasView = canvas.getCanvasView();
-    options.appendTo = canvas.getResizerEl();
-    options.prefix = editor.getConfig().stylePrefix;
-    options.posFetcher = canvasView.getElementPos.bind(canvasView);
-    options.mousePosFetcher = canvas.getMouseRelativePos;
+    const opt = opts || {};
+    const canvas = editor.Canvas;
+    const canvasView = canvas.getCanvasView();
+    const options = {
+      appendTo: canvas.getResizerEl(),
+      prefix: editor.getConfig().stylePrefix,
+      posFetcher: canvasView.getElementPos.bind(canvasView),
+      mousePosFetcher: canvas.getMouseRelativePos,
+      ...(opt.options || {}),
+    };
+    let { canvasResizer } = this;
 
     // Create the resizer for the canvas if not yet created
     if (!canvasResizer || opt.forceNew) {
@@ -19,12 +20,11 @@ export default {
 
     canvasResizer.setOptions(options);
     canvasResizer.blur();
-    canvasResizer.focus(el);
+    canvasResizer.focus(opt.el);
     return canvasResizer;
   },
 
   stop() {
-    const resizer = this.canvasResizer;
-    resizer && resizer.blur();
-  }
+    this.canvasResizer?.blur();
+  },
 };
