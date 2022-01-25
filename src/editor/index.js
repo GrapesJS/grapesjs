@@ -168,6 +168,7 @@ export default (config = {}, opts = {}) => {
      * @param {Component} [opts.component] Return the CSS of a specific Component
      * @param {Boolean} [opts.json=false] Return an array of CssRules instead of the CSS string
      * @param {Boolean} [opts.avoidProtected=false] Don't include protected CSS
+     * @param {Boolean} [opts.onlyMatched=false] Return only rules matched by the passed component.
      * @returns {String|Array<CssRule>} CSS string or array of CssRules
      */
     getCss(opts) {
