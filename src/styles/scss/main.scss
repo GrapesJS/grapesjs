@@ -1,10 +1,9 @@
 /* stylelint-disable */
 @use 'sass:math';
-@import "spectrum-colorpicker/spectrum";
 @import "codemirror/lib/codemirror";
 @import "codemirror/theme/hopscotch";
 
-
+@import "spectrum.scss";
 @import "gjs_variables.scss";
 
 
