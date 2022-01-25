@@ -62,7 +62,7 @@ export default Backbone.Model.extend({
       const atRules = {};
       const dump = [];
 
-      if (opts.matchedOnly && model && hasWin()) {
+      if (opts.onlyMatched && model && hasWin()) {
         rules = this.matchedRules(model, rules);
       }
 
