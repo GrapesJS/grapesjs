@@ -116,18 +116,16 @@ export default class Component extends Model.extend(Styleable) {
     // Propagate properties from parent if indicated
     const parent = this.parent();
     const parentAttr = parent && parent.attributes;
+    const propagate = this.get('propagate');
+    propagate && this.set('propagate', isArray(propagate) ? propagate : [propagate]);
 
-    if (parentAttr && parentAttr.propagate) {
-      let newAttr = {};
+    if (parentAttr && parentAttr.propagate && !propagate) {
+      const newAttr = {};
       const toPropagate = parentAttr.propagate;
       toPropagate.forEach(prop => (newAttr[prop] = parent.get(prop)));
       newAttr.propagate = toPropagate;
-      newAttr = { ...newAttr, ...props };
-      this.set(newAttr);
+      this.set({ ...newAttr, ...props });
     }
-
-    const propagate = this.get('propagate');
-    propagate && this.set('propagate', isArray(propagate) ? propagate : [propagate]);
 
     // Check void elements
     if (opt && opt.config && opt.config.voidElements.indexOf(this.get('tagName')) >= 0) {
