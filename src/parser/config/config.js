@@ -14,8 +14,17 @@ export default {
   // Here the result will be XMLDocument, which extends Node
   parserHtml: null,
 
-  // DOMParser mime type (default 'text/html')
-  // @see https://developer.mozilla.org/en-US/docs/Web/API/DOMParser/parseFromString
-  // If you use the `text/html` parser, it will fix the invalid syntax automatically
-  htmlType: null
+  // Default HTML parser options (used in `parserModule.parseHtml('<div...', options)`)
+  optionsHtml: {
+    // DOMParser mime type (default 'text/html')
+    // @see https://developer.mozilla.org/en-US/docs/Web/API/DOMParser/parseFromString
+    // If you use the `text/html` parser, it will fix the invalid syntax automatically
+    htmlType: null,
+
+    // Allow <script> tags
+    allowScripts: false,
+
+    // Allow unsafe HTML attributes (eg. `on*` inline event handlers)
+    allowUnsafeAttr: false,
+  },
 };

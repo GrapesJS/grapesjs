@@ -83,7 +83,8 @@ export default {
   showToolbar: 1,
 
   // Allow script tag importing
-  allowScripts: 0,
+  // @deprecated in favor of `config.parser.optionsHtml.allowScripts`
+  // allowScripts: 0,
 
   // If true render a select of available devices
   showDevices: 1,
