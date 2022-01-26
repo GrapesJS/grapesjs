@@ -360,14 +360,8 @@ export default () => {
       const toRender = assts || this.getAll().models;
 
       if (!am) {
-        const obj = {
-          collection: assetsVis, // Collection visible in asset manager
-          globalCollection: assets,
-          config: c,
-          module: this,
-        };
-        fu = new FileUpload(obj);
-        obj.fu = fu;
+        const obj = this.__viewParams();
+        obj.fu = this.FileUploader();
         const el = am && am.el;
         am = new AssetsView({
           el,
@@ -378,6 +372,15 @@ export default () => {
 
       assetsVis.reset(toRender);
       return this.getContainer();
+    },
+
+    __viewParams() {
+      return {
+        collection: assetsVis, // Collection visible in asset manager
+        globalCollection: assets,
+        config: c,
+        module: this,
+      };
     },
 
     /**
@@ -425,6 +428,9 @@ export default () => {
     },
 
     FileUploader() {
+      if (!fu) {
+        fu = new FileUpload(this.__viewParams());
+      }
       return fu;
     },
 

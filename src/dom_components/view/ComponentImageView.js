@@ -9,7 +9,7 @@ export default ComponentView.extend({
     click: 'initResize',
     error: 'onError',
     load: 'onLoad',
-    dragstart: 'noDrag'
+    dragstart: 'noDrag',
   },
 
   initialize(o) {
@@ -24,21 +24,16 @@ export default ComponentView.extend({
    */
   fetchFile() {
     if (this.modelOpt.temporary) return;
-    const model = this.model;
+    const { model, em } = this;
     const file = model.get('file');
 
-    if (file) {
-      const fu = this.em.get('AssetManager').FileUploader();
-      fu.uploadFile(
-        {
-          dataTransfer: { files: [file] }
-        },
-        res => {
-          const obj = res && res.data && res.data[0];
-          const src = obj && (isString(obj) ? obj : obj.src);
-          src && model.set({ src });
-        }
-      );
+    if (file && em) {
+      const fu = em.get('AssetManager').FileUploader();
+      fu?.uploadFile({ dataTransfer: { files: [file] } }, res => {
+        const obj = res && res.data && res.data[0];
+        const src = obj && (isString(obj) ? obj : obj.src);
+        src && model.set({ src });
+      });
       model.set('file', '');
     }
   },
@@ -73,7 +68,7 @@ export default ComponentView.extend({
         },
         target: model,
         types: ['image'],
-        accept: 'image/*'
+        accept: 'image/*',
       });
     }
   },
@@ -103,5 +98,5 @@ export default ComponentView.extend({
     this.postRender();
 
     return this;
-  }
+  },
 });
