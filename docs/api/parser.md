@@ -51,6 +51,8 @@ Parse HTML string and return the object containing the Component Definition
 *   `options` **[Object][5]?** Options (optional, default `{}`)
 
     *   `options.htmlType` **[String][6]?** [HTML mime type][7] to parse
+    *   `options.allowScripts` **[Boolean][8]** Allow `<script>` tags (optional, default `false`)
+    *   `options.allowUnsafeAttr` **[Boolean][8]** Allow unsafe HTML attributes (eg. `on*` inline event handlers) (optional, default `false`)
 
 ### Examples
 
@@ -83,7 +85,7 @@ const res = Parser.parseCss('.cls { color: red }');
 // [{ ... }]
 ```
 
-Returns **[Array][8]<[Object][5]>** Array containing the result
+Returns **[Array][9]<[Object][5]>** Array containing the result
 
 [1]: https://github.com/artf/grapesjs/blob/master/src/parser/config/config.js
 
@@ -99,4 +101,6 @@ Returns **[Array][8]<[Object][5]>** Array containing the result
 
 [7]: https://developer.mozilla.org/en-US/docs/Web/API/DOMParser/parseFromString#Argument02
 
-[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+
+[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array

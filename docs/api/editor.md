@@ -119,6 +119,7 @@ Returns CSS built inside canvas
     *   `opts.component` **Component?** Return the CSS of a specific Component
     *   `opts.json` **[Boolean][18]** Return an array of CssRules instead of the CSS string (optional, default `false`)
     *   `opts.avoidProtected` **[Boolean][18]** Don't include protected CSS (optional, default `false`)
+    *   `opts.onlyMatched` **[Boolean][18]** Return only rules matched by the passed component. (optional, default `false`)
 
 Returns **([String][16] | [Array][19]\<CssRule>)** CSS string or array of CssRules
 

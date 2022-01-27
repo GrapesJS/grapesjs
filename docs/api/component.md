@@ -48,6 +48,7 @@ component.get('tagName');
 *   `selectable` **[Boolean][3]?** Allow component to be selected when clicked. Default: `true`
 *   `hoverable` **[Boolean][3]?** Shows a highlight outline when hovering on the element if `true`. Default: `true`
 *   `void` **[Boolean][3]?** This property is used by the HTML exporter as void elements don't have closing tags, eg. `<br/>`, `<hr/>`, etc. Default: `false`
+*   `style` **[Object][2]?** Component default style, eg. `{ width: '100px', height: '100px', 'background-color': 'red' }`
 *   `styles` **[String][1]?** Component related styles, eg. `.my-component-class { color: red }`
 *   `content` **[String][1]?** Content of the component (not escaped) which will be appended before children rendering. Default: `''`
 *   `icon` **[String][1]?** Component's icon, this string will be inserted before the name (in Layers and badge), eg. it can be an HTML string '<i class="fa fa-square-o"></i>'. Default: `''`
@@ -632,8 +633,9 @@ Return HTML string of the component
 *   `opts` **[Object][2]** Options (optional, default `{}`)
 
     *   `opts.tag` **[String][1]?** Custom tagName
-    *   `opts.attributes` **([Object][2] | [Function][4])** You can pass an object of custom attributes to replace
-        with the current one or you can even pass a function to generate attributes dynamically (optional, default `null`)
+    *   `opts.attributes` **([Object][2] | [Function][4])** You can pass an object of custom attributes to replace with the current ones or you can even pass a function to generate attributes dynamically. (optional, default `null`)
+    *   `opts.withProps` **[Boolean][3]?** Include component properties as `data-gjs-*` attributes. This allows you to have re-importable HTML.
+    *   `opts.altQuoteAttr` **[Boolean][3]?** In case the attribute value contains a `"` char, instead of escaping it (`attr="value &quot;"`), the attribute will be quoted using single quotes (`attr='value "'`).
 
 #### Examples
 
@@ -659,6 +661,16 @@ component.toHTML({
 });
 // -> <span title="Custom attribute"></span>
 ```
+
+Returns **[String][1]** HTML string
+
+### getInnerHTML
+
+Get inner HTML of the component
+
+#### Parameters
+
+*   `opts` **[Object][2]** Same options of `toHTML` (optional, default `{}`)
 
 Returns **[String][1]** HTML string
 
