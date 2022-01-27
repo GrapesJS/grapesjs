@@ -1,4 +1,4 @@
-import { each, isString, isFunction } from 'underscore';
+import { each, isString, isFunction, isUndefined } from 'underscore';
 import BrowserParserHtml from './BrowserParserHtml';
 
 export default config => {
@@ -35,8 +35,7 @@ export default config => {
           // so put it under try/catch and let fail silently
           try {
             value =
-              (firstChar == '{' && lastChar == '}') ||
-              (firstChar == '[' && lastChar == ']')
+              (firstChar == '{' && lastChar == '}') || (firstChar == '[' && lastChar == ']')
                 ? JSON.parse(value)
                 : value;
           } catch (e) {}
@@ -49,7 +48,7 @@ export default config => {
 
       return {
         props,
-        attrs
+        attrs,
       };
     },
 
@@ -69,10 +68,7 @@ export default config => {
         var decl = decls[i].trim();
         if (!decl) continue;
         var prop = decl.split(':');
-        result[prop[0].trim()] = prop
-          .slice(1)
-          .join(':')
-          .trim();
+        result[prop[0].trim()] = prop.slice(1).join(':').trim();
       }
       return result;
     },
@@ -118,8 +114,7 @@ export default config => {
         // Start with understanding what kind of component it is
         if (ct) {
           let obj = '';
-          let type =
-            node.getAttribute && node.getAttribute(`${modelAttrStart}type`);
+          let type = node.getAttribute && node.getAttribute(`${modelAttrStart}type`);
 
           // If the type is already defined, use it
           if (type) {
@@ -177,8 +172,7 @@ export default config => {
             // so put it under try/catch and let fail silently
             try {
               nodeValue =
-                (firstChar == '{' && lastChar == '}') ||
-                (firstChar == '[' && lastChar == ']')
+                (firstChar == '{' && lastChar == '}') || (firstChar == '[' && lastChar == ']')
                   ? JSON.parse(nodeValue)
                   : nodeValue;
             } catch (e) {}
@@ -205,12 +199,12 @@ export default config => {
             !model.type && (model.type = 'text');
             model.components = {
               type: 'textnode',
-              content: firstChild.nodeValue
+              content: firstChild.nodeValue,
             };
           } else {
             model.components = this.parseNode(node, {
               ...opts,
-              inSvg: opts.inSvg || model.type === 'svg'
+              inSvg: opts.inSvg || model.type === 'svg',
             });
           }
         }
@@ -247,10 +241,7 @@ export default config => {
             const comp = comps[ci];
             const cType = comp.type;
 
-            if (
-              ['text', 'textnode'].indexOf(cType) < 0 &&
-              c.textTags.indexOf(comp.tagName) < 0
-            ) {
+            if (['text', 'textnode'].indexOf(cType) < 0 && c.textTags.indexOf(comp.tagName) < 0) {
               allTxt = 0;
               break;
             }
@@ -287,15 +278,27 @@ export default config => {
       const conf = (em && em.get('Config')) || {};
       const res = { html: null, css: null };
       const cf = { ...config, ...opts };
-      const el = isFunction(cf.parserHtml)
-        ? cf.parserHtml(str, cf)
-        : BrowserParserHtml(str, cf);
+      const options = {
+        ...config.optionsHtml,
+        // Support previous `configParser.htmlType` option
+        htmlType: config.optionsHtml?.htmlType || config.htmlType,
+        ...opts,
+      };
+      const el = isFunction(cf.parserHtml) ? cf.parserHtml(str, options) : BrowserParserHtml(str, options);
       const scripts = el.querySelectorAll('script');
       let i = scripts.length;
 
-      // Remove all scripts
-      if (!conf.allowScripts) {
+      // Support previous `configMain.allowScripts` option
+      const allowScripts = !isUndefined(conf.allowScripts) ? conf.allowScripts : options.allowScripts;
+
+      // Remove script tags
+      if (!allowScripts) {
         while (i--) scripts[i].parentNode.removeChild(scripts[i]);
+      }
+
+      // Remove unsafe attributes
+      if (!options.allowUnsafeAttr) {
+        this.__clearUnsafeAttr(el);
       }
 
       // Detach style tags and parse them
@@ -315,12 +318,23 @@ export default config => {
       em && em.trigger(`${event}:root`, { input: str, root: el });
       const result = this.parseNode(el);
       // I have to keep it otherwise it breaks the DomComponents.addComponent (returns always array)
-      const resHtml =
-        result.length === 1 && !c.returnArray ? result[0] : result;
+      const resHtml = result.length === 1 && !c.returnArray ? result[0] : result;
       res.html = resHtml;
       em && em.trigger(event, { input: str, output: res });
 
       return res;
-    }
+    },
+
+    __clearUnsafeAttr(node) {
+      const attrs = node.attributes || [];
+      const nodes = node.childNodes || [];
+      const toRemove = [];
+      each(attrs, attr => {
+        const name = attr.nodeName || '';
+        name.indexOf('on') === 0 && toRemove.push(name);
+      });
+      toRemove.map(name => node.removeAttribute(name));
+      each(nodes, node => this.__clearUnsafeAttr(node));
+    },
   };
 };

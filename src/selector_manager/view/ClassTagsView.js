@@ -1,6 +1,7 @@
 import { isEmpty, isArray, isString, debounce } from 'underscore';
 import Backbone from 'backbone';
 import ClassTagView from './ClassTagView';
+import html from 'utils/html';
 
 export default Backbone.View.extend({
   template({ labelInfo, labelHead, iconSync, iconAdd, pfx, ppfx }) {
@@ -257,19 +258,20 @@ export default Backbone.View.extend({
     let result;
 
     if (isString(target)) {
-      result = `<span class="${pfx}sel-gen">${target}</span>`;
+      result = html`<span class="${pfx}sel-gen">${target}</span>`;
     } else {
       const sel = target && target.get && target.getSelectors();
       if (!sel) return;
       const selectors = sel.getStyleable();
       const state = em.get('state');
       const idRes = target.getId
-        ? `<span class="${pfx}sel-cmp">${target.getName()}</span><span class="${pfx}sel-id">#${target.getId()}</span>`
+        ? html`<span class="${pfx}sel-cmp">${target.getName()}</span>
+            <span class="${pfx}sel-id">#${target.getId()}</span>`
         : '';
       result = this.collection.getFullString(selectors);
-      result = result ? `<span class="${pfx}sel-rule">${result}</span>` : target.get('selectorsAdd') || idRes;
+      result = result ? html`<span class="${pfx}sel-rule">${result}</span>` : target.get('selectorsAdd') || idRes;
       result = componentFirst && idRes ? idRes : result;
-      result += state ? `<span class="${pfx}sel-state">:${state}</span>` : '';
+      result += state ? html`<span class="${pfx}sel-state">:${state}</span>` : '';
       result = selectedName ? selectedName({ result, state, target }) : result;
     }
 

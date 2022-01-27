@@ -67,6 +67,8 @@ export default () => {
      * @param  {String} input HTML string to parse
      * @param  {Object} [options] Options
      * @param  {String} [options.htmlType] [HTML mime type](https://developer.mozilla.org/en-US/docs/Web/API/DOMParser/parseFromString#Argument02) to parse
+     * @param  {Boolean} [options.allowScripts=false] Allow `<script>` tags
+     * @param  {Boolean} [options.allowUnsafeAttr=false] Allow unsafe HTML attributes (eg. `on*` inline event handlers)
      * @returns {Object} Object containing the result `{ html: ..., css: ... }`
      * @example
      * const resHtml = Parser.parseHtml(`<table><div>Hi</div></table>`, {
@@ -100,6 +102,6 @@ export default () => {
     destroy() {
       [conf, pHtml, pCss].forEach(i => (i = {}));
       ['em', 'parserCss', 'parserHtml'].forEach(i => (this[i] = {}));
-    }
+    },
   };
 };

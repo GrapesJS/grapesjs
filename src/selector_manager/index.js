@@ -402,7 +402,7 @@ export default () => {
      * console.log(targetsToStyle.map(target => target.getSelectorsString()))
      */
     getSelectedTargets() {
-      return this.em.get('StyleManager').getSelected();
+      return this.em.get('StyleManager').getSelectedAll();
     },
 
     /**

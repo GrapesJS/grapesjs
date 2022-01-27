@@ -1,16 +1,8 @@
 import Backbone from 'backbone';
 import { bindAll, isString, debounce, isUndefined } from 'underscore';
 import CssRulesView from 'css_composer/view/CssRulesView';
-import ComponentView from 'dom_components/view/ComponentView';
 import Droppable from 'utils/Droppable';
-import {
-  appendVNodes,
-  empty,
-  append,
-  createEl,
-  createCustomEvent,
-  motionsEv
-} from 'utils/dom';
+import { appendVNodes, append, createEl, createCustomEvent, motionsEv } from 'utils/dom';
 import { on, off, setViewEl, hasDnd, getPointerEvent } from 'utils/mixins';
 
 export default Backbone.View.extend({
@@ -18,22 +10,16 @@ export default Backbone.View.extend({
 
   attributes: {
     allowfullscreen: 'allowfullscreen',
-    'data-frame-el': true
+    'data-frame-el': true,
   },
 
   initialize(o) {
-    bindAll(
-      this,
-      'updateClientY',
-      'stopAutoscroll',
-      'autoscroll',
-      '_emitUpdate'
-    );
+    bindAll(this, 'updateClientY', 'stopAutoscroll', 'autoscroll', '_emitUpdate');
     const { model, el } = this;
     this.tools = {};
     this.config = {
       ...(o.config || {}),
-      frameView: this
+      frameView: this,
     };
     this.ppfx = this.config.pStylePrefix || '';
     this.em = this.config.em;
@@ -62,9 +48,7 @@ export default Backbone.View.extend({
     const find = (items, stack, res) => {
       items.forEach(item => {
         const { tag, attributes } = item;
-        const has = stack.some(
-          s => s.tag === tag && attrStr(s.attributes) === attrStr(attributes)
-        );
+        const has = stack.some(s => s.tag === tag && attrStr(s.attributes) === attrStr(attributes));
         !has && res.push(item);
       });
     };
@@ -159,7 +143,7 @@ export default Backbone.View.extend({
       scrollTop,
       scrollLeft,
       scrollBottom: scrollTop + height,
-      scrollRight: scrollLeft + width
+      scrollRight: scrollLeft + width,
     };
   },
 
@@ -234,7 +218,7 @@ export default Backbone.View.extend({
     this.lastClientY = getPointerEvent(ev).clientY * this.em.getZoomDecimal();
   },
 
-  showGlobalTools: debounce(function() {
+  showGlobalTools: debounce(function () {
     this.getGlobalToolsEl().style.opacity = '';
   }, 50),
 
@@ -268,7 +252,7 @@ export default Backbone.View.extend({
         const src = scripts.shift();
         const scriptEl = createEl('script', {
           type: 'text/javascript',
-          ...(isString(src) ? { src } : src)
+          ...(isString(src) ? { src } : src),
         });
         scriptEl.onerror = scriptEl.onload = appendScript.bind(null, scripts);
         el.contentDocument.head.appendChild(scriptEl);
@@ -292,8 +276,8 @@ export default Backbone.View.extend({
         tag: 'link',
         attributes: {
           rel: 'stylesheet',
-          ...(isString(href) ? { href } : href)
-        }
+          ...(isString(href) ? { href } : href),
+        },
       }));
     const prevStyles = normalize(opts.prev || canvas.previous('styles'));
     const styles = normalize(canvas.get('styles'));
@@ -399,12 +383,13 @@ export default Backbone.View.extend({
     </style>`
     );
     const component = model.getComponent();
-    this.wrapper = new ComponentView({
+    const { view } = em.get('DomComponents').getType('wrapper');
+    this.wrapper = new view({
       model: component,
       config: {
         ...component.config,
-        frameView: this
-      }
+        frameView: this,
+      },
     }).render();
     append(body, this.wrapper.el);
     append(
@@ -413,8 +398,8 @@ export default Backbone.View.extend({
         collection: model.getStyles(),
         config: {
           ...em.get('CssComposer').getConfig(),
-          frameView: this
-        }
+          frameView: this,
+        },
       }).render().el
     );
     append(body, this.getJsContainer());
@@ -422,11 +407,7 @@ export default Backbone.View.extend({
     //this.updateOffset(); // TOFIX (check if I need it)
 
     // Avoid some default behaviours
-    on(
-      body,
-      'click',
-      ev => ev && ev.target.tagName == 'A' && ev.preventDefault()
-    );
+    on(body, 'click', ev => ev && ev.target.tagName == 'A' && ev.preventDefault());
     on(body, 'submit', ev => ev && ev.preventDefault());
 
     // When the iframe is focused the event dispatcher is not the same so
@@ -435,12 +416,10 @@ export default Backbone.View.extend({
       { event: 'keydown keyup keypress', class: 'KeyboardEvent' },
       { event: 'mousedown mousemove mouseup', class: 'MouseEvent' },
       { event: 'pointerdown pointermove pointerup', class: 'PointerEvent' },
-      { event: 'wheel', class: 'WheelEvent' }
+      { event: 'wheel', class: 'WheelEvent' },
     ].forEach(obj =>
       obj.event.split(' ').forEach(event => {
-        doc.addEventListener(event, ev =>
-          this.el.dispatchEvent(createCustomEvent(ev, obj.class))
-        );
+        doc.addEventListener(event, ev => this.el.dispatchEvent(createCustomEvent(ev, obj.class)));
       })
     );
 
@@ -457,5 +436,5 @@ export default Backbone.View.extend({
 
   _emitUpdate() {
     this.model._emitUpdated();
-  }
+  },
 });

@@ -75,6 +75,7 @@ export const keyUpdateInside = `${keyUpdate}-inside`;
  * @property {Boolean} [selectable=true] Allow component to be selected when clicked. Default: `true`
  * @property {Boolean} [hoverable=true] Shows a highlight outline when hovering on the element if `true`. Default: `true`
  * @property {Boolean} [void=false] This property is used by the HTML exporter as void elements don't have closing tags, eg. `<br/>`, `<hr/>`, etc. Default: `false`
+ * @property {Object} [style={}] Component default style, eg. `{ width: '100px', height: '100px', 'background-color': 'red' }`
  * @property {String} [styles=''] Component related styles, eg. `.my-component-class { color: red }`
  * @property {String} [content=''] Content of the component (not escaped) which will be appended before children rendering. Default: `''`
  * @property {String} [icon=''] Component's icon, this string will be inserted before the name (in Layers and badge), eg. it can be an HTML string '<i class="fa fa-square-o"></i>'. Default: `''`
@@ -116,18 +117,16 @@ export default class Component extends Model.extend(Styleable) {
     // Propagate properties from parent if indicated
     const parent = this.parent();
     const parentAttr = parent && parent.attributes;
+    const propagate = this.get('propagate');
+    propagate && this.set('propagate', isArray(propagate) ? propagate : [propagate]);
 
-    if (parentAttr && parentAttr.propagate) {
-      let newAttr = {};
+    if (parentAttr && parentAttr.propagate && !propagate) {
+      const newAttr = {};
       const toPropagate = parentAttr.propagate;
       toPropagate.forEach(prop => (newAttr[prop] = parent.get(prop)));
       newAttr.propagate = toPropagate;
-      newAttr = { ...newAttr, ...props };
-      this.set(newAttr);
+      this.set({ ...newAttr, ...props });
     }
-
-    const propagate = this.get('propagate');
-    propagate && this.set('propagate', isArray(propagate) ? propagate : [propagate]);
 
     // Check void elements
     if (opt && opt.config && opt.config.voidElements.indexOf(this.get('tagName')) >= 0) {
@@ -1371,8 +1370,9 @@ export default class Component extends Model.extend(Styleable) {
    * Return HTML string of the component
    * @param {Object} [opts={}] Options
    * @param {String} [opts.tag] Custom tagName
-   * @param {Object|Function} [opts.attributes=null] You can pass an object of custom attributes to replace
-   * with the current one or you can even pass a function to generate attributes dynamically
+   * @param {Object|Function} [opts.attributes=null] You can pass an object of custom attributes to replace with the current ones or you can even pass a function to generate attributes dynamically.
+   * @param {Boolean} [opts.withProps] Include component properties as `data-gjs-*` attributes. This allows you to have re-importable HTML.
+   * @param {Boolean} [opts.altQuoteAttr] In case the attribute value contains a `"` char, instead of escaping it (`attr="value &quot;"`), the attribute will be quoted using single quotes (`attr='value "'`).
    * @return {String} HTML string
    * @example
    * // Simple HTML return
@@ -1415,15 +1415,33 @@ export default class Component extends Model.extend(Styleable) {
       }
     }
 
+    if (opts.withProps) {
+      const props = this.toJSON();
+
+      forEach(props, (value, key) => {
+        const skipProps = ['classes', 'attributes', 'components'];
+        if (key[0] !== '_' && skipProps.indexOf(key) < 0) {
+          attributes[`data-gjs-${key}`] = isArray(value) || isObject(value) ? JSON.stringify(value) : value;
+        }
+      });
+    }
+
     for (let attr in attributes) {
       const val = attributes[attr];
-      const value = isString(val) ? val.replace(/"/g, '&quot;') : val;
 
-      if (!isUndefined(value)) {
-        if (isBoolean(value)) {
-          value && attrs.push(attr);
+      if (!isUndefined(val) && val !== null) {
+        if (isBoolean(val)) {
+          val && attrs.push(attr);
         } else {
-          attrs.push(`${attr}="${value}"`);
+          let valueRes = '';
+          if (opts.altQuoteAttr && isString(val) && val.indexOf('"') >= 0) {
+            valueRes = `'${val.replace(/'/g, '&apos;')}'`;
+          } else {
+            const value = isString(val) ? val.replace(/"/g, '&quot;') : val;
+            valueRes = `"${value}"`;
+          }
+
+          attrs.push(`${attr}=${valueRes}`);
         }
       }
     }
@@ -1434,6 +1452,15 @@ export default class Component extends Model.extend(Styleable) {
     !sTag && (code += `</${tag}>`);
 
     return code;
+  }
+
+  /**
+   * Get inner HTML of the component
+   * @param {Object} [opts={}] Same options of `toHTML`
+   * @returns {String} HTML string
+   */
+  getInnerHTML(opts) {
+    return this.__innerHTML(opts);
   }
 
   __innerHTML(opts = {}) {

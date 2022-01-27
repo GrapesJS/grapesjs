@@ -86,7 +86,7 @@ describe('PropertyNumberView', () => {
   });
 
   test('Update model on setValue', () => {
-    view.setValue(intValue + unitValue);
+    view.inputInst.setValue(intValue + unitValue);
     expect(view.model.get('value')).toEqual(parseFloat(intValue));
     expect(view.model.get('unit')).toEqual(unitValue);
     expect(view.getInputEl().value).toEqual(intValue);
@@ -131,12 +131,13 @@ describe('PropertyNumberView', () => {
     });
 
     test('Value as default', () => {
-      expect(view.model.get('value')).toEqual(parseInt(intValue));
-      expect(view.model.get('unit')).toEqual(units[1]);
+      expect(view.model.getValue()).toEqual(intValue);
+      expect(view.model.getUnit()).toEqual(units[1]);
     });
 
     test('Input value is as default', () => {
-      expect(view.getInputEl().value).toEqual(intValue);
+      expect(view.getInputEl().value).toEqual('');
+      expect(view.getInputEl().placeholder).toEqual(intValue);
       expect(view.inputInst.unitEl.value).toEqual(units[1]);
     });
 
