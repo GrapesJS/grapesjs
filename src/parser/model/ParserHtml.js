@@ -1,4 +1,4 @@
-import { each, isString, isFunction, isUndefined, forEach } from 'underscore';
+import { each, isString, isFunction, isUndefined } from 'underscore';
 import BrowserParserHtml from './BrowserParserHtml';
 
 export default config => {
@@ -328,11 +328,13 @@ export default config => {
     __clearUnsafeAttr(node) {
       const attrs = node.attributes || [];
       const nodes = node.childNodes || [];
-      forEach(attrs, attr => {
+      const toRemove = [];
+      each(attrs, attr => {
         const name = attr.nodeName || '';
-        name.indexOf('on') === 0 && node.removeAttribute(name);
+        name.indexOf('on') === 0 && toRemove.push(name);
       });
-      forEach(nodes, node => this.__clearUnsafeAttr(node));
+      toRemove.map(name => node.removeAttribute(name));
+      each(nodes, node => this.__clearUnsafeAttr(node));
     },
   };
 };
