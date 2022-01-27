@@ -281,7 +281,7 @@ export default config => {
       const options = {
         ...config.optionsHtml,
         // Support previous `configParser.htmlType` option
-        htmlType: config.optionsHtml.htmlType || config.htmlType,
+        htmlType: config.optionsHtml?.htmlType || config.htmlType,
         ...opts,
       };
       const el = isFunction(cf.parserHtml) ? cf.parserHtml(str, options) : BrowserParserHtml(str, options);
