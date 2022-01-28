@@ -30,7 +30,7 @@ var loadScript = function(src, clb) {
 function BSANativeCallback (a) {
   var total = a.ads.length;
   if (!total) {
-    var script = loadScript('//cdn.carbonads.com/carbon.js?zoneid=1673&serve=C6AILKT&placement=grapesjscom');
+    var script = loadScript('//cdn.carbonads.com/carbon.js?serve=CEADC5QL&placement=grapesjscom');
     script.setAttribute('id', '_carbonads_js');
     var adCont = document.getElementById('native-carbon');
     adCont && adCont.appendChild(script);
