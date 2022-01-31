@@ -54,7 +54,7 @@
  * @module Components
  */
 import Backbone from 'backbone';
-import { isEmpty, isObject, isArray, result } from 'underscore';
+import { isEmpty, isObject, isArray, isFunction, isString, result } from 'underscore';
 import defaults from './config/config';
 import Component from './model/Component';
 import Components from './model/Components';
@@ -644,6 +644,58 @@ export default () => {
         });
 
       model && isEmpty(model.get('status')) && model.set('status', state);
+    },
+
+    /**
+     * Check if the component can be moved inside another.
+     * @param {[Component]} target The target Component is the one that is supposed to receive the source one.
+     * @param {[Component]|String} source The source can be another Component or an HTML string.
+     * @param {Number} [index] Index position. If not specified, the check will perform against appending the source to target.
+     * @returns {Object}  `0` - Invalid source, `1` - Target doesn't accept source, `2` - Source doesn't accept target as destination
+     * @private
+     */
+    canMove(target, source, index) {
+      const at = index || index === 0 ? index : null;
+      const result = {
+        result: false,
+        reason: 0,
+        target,
+        source: null,
+      };
+
+      if (!source) return result;
+
+      const srcModel = null;
+
+      if (!srcModel) return result;
+
+      // Check if the target accepts the source
+      let droppable = target.get('droppable');
+
+      if (isFunction(droppable)) {
+        droppable = !!droppable(srcModel, target, at);
+      } else if (isString(droppable) || isArray(droppable)) {
+        const droppableStr = isArray(droppable) ? droppable.join(',') : droppable;
+        const srcEl = srcModel.getEl();
+        droppable = srcEl?.matches(droppableStr);
+      }
+
+      if (!droppable) return { ...result, reason: 1 };
+
+      // Check if the source is draggable in the target
+      let draggable = srcModel.get('draggable');
+
+      if (isFunction(draggable)) {
+        draggable = !!draggable(srcModel, target, at);
+      } else if (isString(draggable) || isArray(draggable)) {
+        const draggableStr = isArray(draggable) ? draggable.join(',') : draggable;
+        const targetEl = target.getEl();
+        draggable = targetEl?.matches(draggableStr);
+      }
+
+      if (!draggable) return { ...result, reason: 2 };
+
+      return { ...result, result: true };
     },
 
     allById() {
