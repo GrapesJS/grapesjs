@@ -650,7 +650,10 @@ export default () => {
 
       if (!shallow && em) {
         const shallowEm = em.get('shallow');
-        shallow = shallowEm?.get('DomComponents').getWrapper();
+        if (!shallowEm) return;
+        const domc = shallowEm.get('DomComponents');
+        domc.componentTypes = this.componentTypes;
+        shallow = domc.getWrapper();
         if (shallow) {
           const events = [keyUpdate, keyUpdateInside].join(' ');
           shallow.on(
@@ -669,7 +672,10 @@ export default () => {
      * @param {[Component]} target The target Component is the one that is supposed to receive the source one.
      * @param {[Component]|String} source The source can be another Component or an HTML string.
      * @param {Number} [index] Index position. If not specified, the check will perform against appending the source to target.
-     * @returns {Object}  `0` - Invalid source, `1` - Target doesn't accept source, `2` - Source doesn't accept target as destination
+     * @returns {Object} Object containing the `result` (Boolean), `source`, `target` (as Components), and a `reason` (Number) with these meanings:
+     * * `0` - Invalid source. This is a default value and should be ignored in case the `result` is true.
+     * * `1` - Source doesn't accept target as destination.
+     * * `2` - Target doesn't accept source.
      * @private
      */
     canMove(target, source, index) {
@@ -683,35 +689,46 @@ export default () => {
 
       if (!source) return result;
 
-      const srcModel = null;
+      let srcModel = source?.toHTML ? source : null;
 
-      if (!srcModel) return result;
-
-      // Check if the target accepts the source
-      let droppable = target.get('droppable');
-
-      if (isFunction(droppable)) {
-        droppable = !!droppable(srcModel, target, at);
-      } else if (isString(droppable) || isArray(droppable)) {
-        const droppableStr = isArray(droppable) ? droppable.join(',') : droppable;
-        const srcEl = srcModel.getEl();
-        droppable = srcEl?.matches(droppableStr);
+      if (!srcModel) {
+        const wrapper = this.getShallowWrapper();
+        srcModel = wrapper?.append(source)[0];
       }
 
-      if (!droppable) return { ...result, reason: 1 };
+      result.source = srcModel;
+
+      if (!srcModel) return result;
 
       // Check if the source is draggable in the target
       let draggable = srcModel.get('draggable');
 
       if (isFunction(draggable)) {
         draggable = !!draggable(srcModel, target, at);
-      } else if (isString(draggable) || isArray(draggable)) {
-        const draggableStr = isArray(draggable) ? draggable.join(',') : draggable;
-        const targetEl = target.getEl();
-        draggable = targetEl?.matches(draggableStr);
+      } else {
+        const el = target.getEl();
+        draggable = isArray(draggable) ? draggable.join(',') : draggable;
+        draggable = isString(draggable) ? el?.matches(draggable) : draggable;
       }
 
-      if (!draggable) return { ...result, reason: 2 };
+      if (!draggable) return { ...result, reason: 1 };
+
+      // Check if the target accepts the source
+      let droppable = target.get('droppable');
+
+      if (isFunction(droppable)) {
+        droppable = !!droppable(srcModel, target, at);
+      } else {
+        if (droppable === false && target.get('__text') && srcModel.get('textable')) {
+          droppable = true;
+        } else {
+          const el = srcModel.getEl();
+          droppable = isArray(droppable) ? droppable.join(',') : droppable;
+          droppable = isString(droppable) ? el?.matches(droppable) : droppable;
+        }
+      }
+
+      if (!droppable) return { ...result, reason: 2 };
 
       return { ...result, result: true };
     },

@@ -5,10 +5,11 @@ export default Component.extend({
     ...Component.prototype.defaults,
     type: 'text',
     droppable: false,
-    editable: true
+    editable: true,
+    __text: true,
   },
 
   toHTML() {
     return Component.prototype.toHTML.apply(this, arguments);
-  }
+  },
 });
