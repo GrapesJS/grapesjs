@@ -51,6 +51,9 @@ export default () => {
       config = { ...configDef, ...opts };
       em = config.em;
       this.em = em;
+      if (config._disable) {
+        config = { ...config, maximumStackLength: 0 };
+      }
       const fromUndo = true;
       um = new UndoManager({ track: true, register: [], ...config });
       um.changeUndoType('change', {

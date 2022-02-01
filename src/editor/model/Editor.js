@@ -132,23 +132,20 @@ export default class EditorModel extends Model {
   }
 
   /**
-   * Should be called after all modules and plugins are loaded
+   * Should be called once all modules and plugins are loaded
    * @param {Function} clb
    * @private
    */
   loadOnStart(clb = null) {
     const sm = this.get('StorageManager');
 
-    // Generally, with `onLoad`, the module will try to load the data from
-    // its configurations
-    this.get('toLoad').forEach(module => {
-      module.onLoad();
-    });
+    // In `onLoad`, the module will try to load the data from its configurations.
+    this.get('toLoad').forEach(mdl => mdl.onLoad());
 
     // Stuff to do post load
     const postLoad = () => {
       const modules = this.get('modules');
-      modules.forEach(module => module.postLoad && module.postLoad(this));
+      modules.forEach(mdl => mdl.postLoad && mdl.postLoad(this));
       this.set('readyLoad', 1);
       clb && clb();
     };
@@ -158,6 +155,17 @@ export default class EditorModel extends Model {
     } else {
       setTimeout(postLoad);
     }
+
+    // Create shallow editor.
+    // Here we can create components/styles without altering/triggering the main EditorModel
+    const shallow = new EditorModel({
+      noticeOnUnload: false,
+      storageManager: false,
+      undoManager: false,
+    });
+    // We only need to load a few modules
+    ['PageManager', 'Canvas'].forEach(key => shallow.get(key).onLoad());
+    this.set('shallow', shallow);
   }
 
   /**
@@ -779,6 +787,8 @@ export default class EditorModel extends Model {
     const { config, view } = this;
     const editor = this.getEditor();
     const { editors = [] } = config.grapesjs || {};
+    const shallow = this.get('shallow');
+    shallow?.destroyAll();
     this.stopListening();
     this.stopDefault();
     this.get('modules')

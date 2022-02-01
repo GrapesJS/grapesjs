@@ -53,10 +53,9 @@
  *
  * @module Components
  */
-import Backbone from 'backbone';
-import { isEmpty, isObject, isArray, isFunction, isString, result } from 'underscore';
+import { isEmpty, isObject, isArray, isFunction, isString, result, debounce } from 'underscore';
 import defaults from './config/config';
-import Component from './model/Component';
+import Component, { keyUpdate, keyUpdateInside } from './model/Component';
 import Components from './model/Components';
 import ComponentView from './view/ComponentView';
 import ComponentsView from './view/ComponentsView';
@@ -644,6 +643,25 @@ export default () => {
         });
 
       model && isEmpty(model.get('status')) && model.set('status', state);
+    },
+
+    getShallowWrapper() {
+      let { shallow, em } = this;
+
+      if (!shallow && em) {
+        const shallowEm = em.get('shallow');
+        shallow = shallowEm?.get('DomComponents').getWrapper();
+        if (shallow) {
+          const events = [keyUpdate, keyUpdateInside].join(' ');
+          shallow.on(
+            events,
+            debounce(() => shallow.components(''), 100)
+          );
+        }
+        this.shallow = shallow;
+      }
+
+      return shallow;
     },
 
     /**
