@@ -21,7 +21,7 @@ export default Backbone.View.extend({
   },
 
   render() {
-    const { model, $el, conf } = this;
+    const { $el, conf, model } = this;
     const pfx = conf.stylePrefix;
     const contEl = $(conf.el || `body ${conf.container}`);
     appendStyles(conf.cssIcons, { unique: 1, prepand: 1 });
@@ -32,12 +32,10 @@ export default Backbone.View.extend({
 
     $el.append(this.cv.render());
     $el.append(this.pn.render());
+
     $el.attr('class', `${pfx}editor ${pfx}one-bg ${pfx}two-color`);
-    contEl
-      .addClass(`${pfx}editor-cont`)
-      .empty()
-      .append($el);
+    contEl.addClass(`${pfx}editor-cont`).empty().append($el);
 
     return this;
-  }
+  },
 });
