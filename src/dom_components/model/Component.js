@@ -1447,7 +1447,7 @@ export default class Component extends Model.extend(Styleable) {
     }
 
     const attrString = attrs.length ? ` ${attrs.join(' ')}` : '';
-    const inner = model.__innerHTML(opts);
+    const inner = model.getInnerHTML(opts);
     let code = `<${tag}${attrString}${sTag ? '/' : ''}>${inner}`;
     !sTag && (code += `</${tag}>`);
 

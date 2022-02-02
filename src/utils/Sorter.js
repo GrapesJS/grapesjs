@@ -1,35 +1,12 @@
 import Backbone from 'backbone';
-import {
-  isString,
-  isFunction,
-  isArray,
-  result,
-  each,
-  bindAll
-} from 'underscore';
-import {
-  on,
-  off,
-  matches,
-  getElement,
-  getPointerEvent,
-  isTextNode,
-  getModel
-} from 'utils/mixins';
+import { isString, isFunction, isArray, result, each, bindAll } from 'underscore';
+import { on, off, matches, getElement, getPointerEvent, isTextNode, getModel } from 'utils/mixins';
 const $ = Backbone.$;
 
 export default Backbone.View.extend({
   initialize(opt) {
     this.opt = opt || {};
-    bindAll(
-      this,
-      'startSort',
-      'onMove',
-      'endMove',
-      'rollback',
-      'updateOffset',
-      'moveDragHelper'
-    );
+    bindAll(this, 'startSort', 'onMove', 'endMove', 'rollback', 'updateOffset', 'moveDragHelper');
     var o = opt || {};
     this.elT = 0;
     this.elL = 0;
@@ -93,9 +70,7 @@ export default Backbone.View.extend({
 
   getDocuments(el) {
     const em = this.em;
-    const elDoc = el
-      ? el.ownerDocument
-      : em && em.get('Canvas').getBody().ownerDocument;
+    const elDoc = el ? el.ownerDocument : em && em.get('Canvas').getBody().ownerDocument;
     const docs = [document];
     elDoc && docs.push(elDoc);
     return docs;
@@ -138,6 +113,7 @@ export default Backbone.View.extend({
     Canvas.getFrameEl().focus();
     sel.removeAllRanges();
     range && sel.addRange(range);
+    this.setContentEditable(this.activeTextModel, true);
   },
 
   setContentEditable(model, mode) {
@@ -191,9 +167,7 @@ export default Backbone.View.extend({
         .off('mousemove', this.moveDragHelper)
         .on('mousemove', this.moveDragHelper);
     }
-    $(document)
-      .off('mousemove', this.moveDragHelper)
-      .on('mousemove', this.moveDragHelper);
+    $(document).off('mousemove', this.moveDragHelper).on('mousemove', this.moveDragHelper);
   },
 
   /**
@@ -267,7 +241,7 @@ export default Backbone.View.extend({
     var rect = el.getBoundingClientRect();
     return {
       top: rect.top + document.body.scrollTop,
-      left: rect.left + document.body.scrollLeft
+      left: rect.left + document.body.scrollLeft,
     };
   },
 
@@ -334,7 +308,7 @@ export default Backbone.View.extend({
         sorter: this,
         target: srcModel,
         parent: srcModel && srcModel.parent(),
-        index: srcModel && srcModel.index()
+        index: srcModel && srcModel.index(),
       });
 
     // Avoid strange effects on dragging
@@ -361,12 +335,7 @@ export default Backbone.View.extend({
     const { em, eV } = this;
     const src = source || eV;
     let { dropModel, dropContent } = this;
-    const isTextable = src =>
-      src &&
-      target &&
-      src.opt &&
-      src.opt.avoidChildren &&
-      this.isTextableActive(src, target);
+    const isTextable = src => src && target && src.opt && src.opt.avoidChildren && this.isTextableActive(src, target);
 
     if (dropContent && em) {
       if (isTextable(dropModel)) {
@@ -378,7 +347,7 @@ export default Backbone.View.extend({
         const opts = {
           avoidChildren,
           avoidStore: 1,
-          avoidUpdateStyle: 1
+          avoidUpdateStyle: 1,
         };
         const tempModel = comps.add(dropContent, { ...opts, temporary: 1 });
         dropModel = comps.remove(tempModel, opts);
@@ -444,9 +413,7 @@ export default Backbone.View.extend({
     var rX = e.pageX - this.elL + this.el.scrollLeft;
 
     if (this.canvasRelative && em) {
-      const mousePos = em
-        .get('Canvas')
-        .getMouseRelativeCanvas(e, { noScroll: 1 });
+      const mousePos = em.get('Canvas').getMouseRelativeCanvas(e, { noScroll: 1 });
       rX = mousePos.x;
       rY = mousePos.y;
     }
@@ -457,9 +424,7 @@ export default Backbone.View.extend({
 
     //var targetNew = this.getTargetFromEl(e.target);
     const sourceModel = this.getSourceModel();
-    const targetEl = customTarget
-      ? customTarget({ sorter: this, event: e })
-      : e.target;
+    const targetEl = customTarget ? customTarget({ sorter: this, event: e }) : e.target;
     const dims = this.dimsFromTarget(targetEl, rX, rY);
     const target = this.target;
     const targetModel = target && this.getTargetModel(target);
@@ -471,8 +436,6 @@ export default Backbone.View.extend({
 
     if (this.isTextableActive(sourceModel, targetModel)) {
       this.activeTextModel = targetModel;
-      this.setContentEditable(targetModel, true);
-
       plh.style.display = 'none';
       this.lastPos = pos;
       this.updateTextViewCursorPosition(ev);
@@ -481,11 +444,7 @@ export default Backbone.View.extend({
       this.activeTextModel = null;
 
       // If there is a significant changes with the pointer
-      if (
-        !this.lastPos ||
-        this.lastPos.index != pos.index ||
-        this.lastPos.method != pos.method
-      ) {
+      if (!this.lastPos || this.lastPos.index != pos.index || this.lastPos.method != pos.method) {
         this.movePlaceholder(this.plh, dims, pos, this.prevTargetDim);
         if (!this.$plh) this.$plh = $(this.plh);
 
@@ -505,7 +464,7 @@ export default Backbone.View.extend({
         event: e,
         target: sourceModel,
         parent: targetModel,
-        index: pos.index + (pos.method == 'after' ? 1 : 0)
+        index: pos.index + (pos.method == 'after' ? 1 : 0),
       });
 
     em &&
@@ -516,7 +475,7 @@ export default Backbone.View.extend({
         dims,
         pos,
         x: rX,
-        y: rY
+        y: rY,
       });
   },
 
@@ -527,6 +486,7 @@ export default Backbone.View.extend({
   disableTextable() {
     const { activeTextModel } = this;
     activeTextModel && activeTextModel.getView().disableEditing();
+    this.setContentEditable(activeTextModel, false);
   },
 
   /**
@@ -565,12 +525,7 @@ export default Backbone.View.extend({
     if (style.overflow && style.overflow !== 'visible') return;
     const propFloat = $el.css('float');
     if (propFloat && propFloat !== 'none') return;
-    if (
-      $parent &&
-      $parent.css('display') == 'flex' &&
-      $parent.css('flex-direction') !== 'column'
-    )
-      return;
+    if ($parent && $parent.css('display') == 'flex' && $parent.css('flex-direction') !== 'column') return;
     switch (style.position) {
       case 'static':
       case 'relative':
@@ -611,7 +566,7 @@ export default Backbone.View.extend({
       src,
       srcModel,
       trg,
-      trgModel
+      trgModel,
     };
 
     if (!src || !trg) {
@@ -629,9 +584,7 @@ export default Backbone.View.extend({
     } else {
       draggable = draggable instanceof Array ? draggable.join(', ') : draggable;
       result.dragInfo = draggable;
-      draggable = isString(draggable)
-        ? this.matches(trg, draggable)
-        : draggable;
+      draggable = isString(draggable) ? this.matches(trg, draggable) : draggable;
       result.draggable = draggable;
     }
 
@@ -646,11 +599,8 @@ export default Backbone.View.extend({
       droppable = droppable instanceof Backbone.Collection ? 1 : droppable;
       droppable = droppable instanceof Array ? droppable.join(', ') : droppable;
       result.dropInfo = droppable;
-      droppable = isString(droppable)
-        ? this.matches(src, droppable)
-        : droppable;
-      droppable =
-        draggable && this.isTextableActive(srcModel, trgModel) ? 1 : droppable;
+      droppable = isString(droppable) ? this.matches(src, droppable) : droppable;
+      droppable = draggable && this.isTextableActive(srcModel, trgModel) ? 1 : droppable;
       result.droppable = droppable;
     }
 
@@ -721,10 +671,7 @@ export default Backbone.View.extend({
 
     // Generally, on any new target the poiner enters inside its area and
     // triggers nearBorders(), so have to take care of this
-    if (
-      this.nearBorders(this.prevTargetDim, rX, rY) ||
-      (!this.nested && !this.cacheDims.length)
-    ) {
+    if (this.nearBorders(this.prevTargetDim, rX, rY) || (!this.nested && !this.cacheDims.length)) {
       const targetParent = this.targetP;
 
       if (targetParent && this.validTarget(targetParent).valid) {
@@ -846,12 +793,8 @@ export default Backbone.View.extend({
       width = pos.width; // + offsets.marginLeft + offsets.marginRight;
     } else {
       var o = this.offset(el);
-      top = this.relative
-        ? el.offsetTop
-        : o.top - (this.wmargin ? -1 : 1) * this.elT;
-      left = this.relative
-        ? el.offsetLeft
-        : o.left - (this.wmargin ? -1 : 1) * this.elL;
+      top = this.relative ? el.offsetTop : o.top - (this.wmargin ? -1 : 1) * this.elT;
+      left = this.relative ? el.offsetLeft : o.left - (this.wmargin ? -1 : 1) * this.elL;
       height = el.offsetHeight;
       width = el.offsetWidth;
     }
@@ -871,9 +814,7 @@ export default Backbone.View.extend({
     // Get children based on getChildrenContainer
     const trgModel = this.getTargetModel(trg);
     if (trgModel && trgModel.view && !this.ignoreViewChildren) {
-      const view = trgModel.getCurrentView
-        ? trgModel.getCurrentView()
-        : trgModel.view;
+      const view = trgModel.getCurrentView ? trgModel.getCurrentView() : trgModel.view;
       trg = view.getChildrenContainer();
     }
 
@@ -917,8 +858,7 @@ export default Backbone.View.extend({
     var l = dim.left;
     var h = dim.height;
     var w = dim.width;
-    if (t + off > y || y > t + h - off || l + off > x || x > l + w - off)
-      result = 1;
+    if (t + off > y || y > t + h - off || l + off > x || x > l + w - off) result = 1;
 
     return !!result;
   },
@@ -1100,11 +1040,9 @@ export default Backbone.View.extend({
       const data = {
         target: srcModel,
         parent: srcModel && srcModel.parent(),
-        index: srcModel && srcModel.index()
+        index: srcModel && srcModel.index(),
       };
-      moved.length
-        ? moved.forEach(m => onEndMove(m, this, data))
-        : onEndMove(null, this, { ...data, cancelled: 1 });
+      moved.length ? moved.forEach(m => onEndMove(m, this, data)) : onEndMove(null, this, { ...data, cancelled: 1 });
     }
 
     isFunction(onEnd) && onEnd({ sorter: this });
@@ -1128,8 +1066,7 @@ export default Backbone.View.extend({
     const model = validResult.srcModel;
     let { droppable } = validResult;
     const { trgModel, draggable } = validResult;
-    const dropInfo =
-      validResult.dropInfo || (trgModel && trgModel.get('droppable'));
+    const dropInfo = validResult.dropInfo || (trgModel && trgModel.get('droppable'));
     const dragInfo = validResult.dragInfo || (model && model.get('draggable'));
     droppable = trgModel instanceof Backbone.Collection ? 1 : droppable;
     const isTextableActive = this.isTextableActive(model, trgModel);
@@ -1155,13 +1092,17 @@ export default Backbone.View.extend({
       if (isTextableActive) {
         const viewActive = activeTextModel.getView();
         activeTextModel.trigger('active');
-        const { activeRte } = viewActive;
         const modelEl = model.getEl();
         delete model.opt.temporary;
         model.getView().render();
         modelEl.setAttribute('data-gjs-textable', 'true');
         const { outerHTML } = modelEl;
-        activeRte.insertHTML && activeRte.insertHTML(outerHTML);
+        activeTextModel.once('rte:enable', () => {
+          const rte = viewActive.activeRte;
+          rte.insertHTML && rte.insertHTML(outerHTML);
+          activeTextModel.trigger('disable');
+        });
+        created = model;
       } else {
         created = targetCollection.add(modelToDrop, opts);
       }
@@ -1176,17 +1117,13 @@ export default Backbone.View.extend({
       this.prevTarget = null;
     } else if (em) {
       !targetCollection && warns.push('Target collection not found');
-      !droppable &&
-        dropInfo &&
-        warns.push(`Target is not droppable, accepts [${dropInfo}]`);
-      !draggable &&
-        dragInfo &&
-        warns.push(`Component not draggable, acceptable by [${dragInfo}]`);
+      !droppable && dropInfo && warns.push(`Target is not droppable, accepts [${dropInfo}]`);
+      !draggable && dragInfo && warns.push(`Component not draggable, acceptable by [${dragInfo}]`);
       em.logWarning('Invalid target position', {
         errors: warns,
         model,
         context: 'sorter',
-        target: trgModel
+        target: trgModel,
       });
     }
 
@@ -1198,7 +1135,7 @@ export default Backbone.View.extend({
         warns,
         validResult,
         dst,
-        srcEl
+        srcEl,
       });
     }
 
@@ -1218,5 +1155,5 @@ export default Backbone.View.extend({
       this.moved = 0;
       this.endMove();
     }
-  }
+  },
 });
