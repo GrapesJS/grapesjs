@@ -1051,31 +1051,25 @@ export default Backbone.View.extend({
   move(dst, src, pos) {
     const { em, activeTextModel, dropContent } = this;
     const srcEl = getElement(src);
-    em && em.trigger('component:dragEnd:before', dst, srcEl, pos); // @depricated
-    let index = pos.indexEl;
-    let modelToDrop, modelTemp, created;
     const warns = [];
+    const index = pos.method === 'after' ? pos.indexEl + 1 : pos.indexEl;
     const validResult = this.validTarget(dst, srcEl);
     const targetCollection = $(dst).data('collection');
-    const model = validResult.srcModel;
-    let { droppable } = validResult;
-    const { trgModel, draggable } = validResult;
-    const dropInfo = validResult.dropInfo || (trgModel && trgModel.get('droppable'));
-    const dragInfo = validResult.dragInfo || (model && model.get('draggable'));
-    droppable = trgModel instanceof Backbone.Collection ? 1 : droppable;
-    const isTextableActive = this.isTextableActive(model, trgModel);
+    const { trgModel, srcModel, draggable } = validResult;
+    const droppable = trgModel instanceof Backbone.Collection ? 1 : validResult.droppable;
+    const isTextableActive = this.isTextableActive(srcModel, trgModel);
+    let modelToDrop, modelTemp, created;
 
     if (targetCollection && droppable && draggable) {
-      index = pos.method === 'after' ? index + 1 : index;
-      var opts = { at: index, noIncrement: 1 };
+      const opts = { at: index, noIncrement: 1 };
 
       if (!dropContent) {
         // Putting `avoidStore` here will make the UndoManager behave wrong
         opts.temporary = 1;
         modelTemp = targetCollection.add({}, { ...opts });
 
-        if (model.collection) {
-          modelToDrop = model.collection.remove(model, { temporary: 1 });
+        if (srcModel.collection) {
+          modelToDrop = srcModel.collection.remove(srcModel, { temporary: 1 });
         }
       } else {
         modelToDrop = isFunction(dropContent) ? dropContent() : dropContent;
@@ -1086,9 +1080,9 @@ export default Backbone.View.extend({
       if (isTextableActive) {
         const viewActive = activeTextModel.getView();
         activeTextModel.trigger('active');
-        const modelEl = model.getEl();
-        delete model.opt.temporary;
-        model.getView().render();
+        const modelEl = srcModel.getEl();
+        delete srcModel.opt.temporary;
+        srcModel.getView().render();
         modelEl.setAttribute('data-gjs-textable', 'true');
         const { outerHTML } = modelEl;
         activeTextModel.once('rte:enable', () => {
@@ -1096,7 +1090,7 @@ export default Backbone.View.extend({
           rte.insertHTML && rte.insertHTML(outerHTML);
           activeTextModel.trigger('disable');
         });
-        created = model;
+        created = srcModel;
       } else {
         created = targetCollection.add(modelToDrop, opts);
       }
@@ -1110,28 +1104,28 @@ export default Backbone.View.extend({
       // This will cause to recalculate children dimensions
       this.prevTarget = null;
     } else if (em) {
+      const dropInfo = validResult.dropInfo || trgModel?.get('droppable');
+      const dragInfo = validResult.dragInfo || srcModel?.get('draggable');
+
       !targetCollection && warns.push('Target collection not found');
       !droppable && dropInfo && warns.push(`Target is not droppable, accepts [${dropInfo}]`);
       !draggable && dragInfo && warns.push(`Component not draggable, acceptable by [${dragInfo}]`);
       em.logWarning('Invalid target position', {
         errors: warns,
-        model,
+        model: srcModel,
         context: 'sorter',
         target: trgModel,
       });
     }
 
-    if (em) {
-      em.trigger('component:dragEnd', targetCollection, modelToDrop, warns); // @deprecated
-      em.trigger('sorter:drag:end', {
-        targetCollection,
-        modelToDrop,
-        warns,
-        validResult,
-        dst,
-        srcEl,
-      });
-    }
+    em?.trigger('sorter:drag:end', {
+      targetCollection,
+      modelToDrop,
+      warns,
+      validResult,
+      dst,
+      srcEl,
+    });
 
     return created;
   },
