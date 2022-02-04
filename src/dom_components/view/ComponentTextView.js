@@ -1,5 +1,6 @@
 import { on, off } from 'utils/mixins';
 import ComponentView from './ComponentView';
+import { bindAll } from 'underscore';
 
 const compProt = ComponentView.prototype;
 
@@ -11,7 +12,7 @@ export default ComponentView.extend({
 
   initialize(o) {
     compProt.initialize.apply(this, arguments);
-    this.disableEditing = this.disableEditing.bind(this);
+    bindAll(this, 'disableEditing', 'onDisable');
     const model = this.model;
     const em = this.em;
     this.listenTo(model, 'focus', this.onActive);
@@ -59,7 +60,7 @@ export default ComponentView.extend({
    * Disable element content editing
    * @private
    * */
-  async disableEditing() {
+  async disableEditing(opts = {}) {
     const { model, rte, activeRte, em } = this;
     // There are rare cases when disableEditing is called when the view is already removed
     // so, we have to check for the model, this will avoid breaking stuff.
@@ -73,7 +74,7 @@ export default ComponentView.extend({
       }
 
       if (editable && this.getContent() !== this.lastContent) {
-        this.syncContent();
+        this.syncContent(opts);
         this.lastContent = '';
       }
     }
@@ -170,11 +171,11 @@ export default ComponentView.extend({
 
     // The ownerDocument is from the frame
     var elDocs = [this.el.ownerDocument, document];
-    mixins.off(elDocs, 'mousedown', this.disableEditing);
-    mixins[method](elDocs, 'mousedown', this.disableEditing);
-    em[method]('toolbar:run:before', this.disableEditing);
+    mixins.off(elDocs, 'mousedown', this.onDisable);
+    mixins[method](elDocs, 'mousedown', this.onDisable);
+    em[method]('toolbar:run:before', this.onDisable);
     if (model) {
-      model[method]('removed', this.disableEditing);
+      model[method]('removed', this.onDisable);
       model.trigger(`rte:${enable ? 'enable' : 'disable'}`);
     }
 

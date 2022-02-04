@@ -1,6 +1,8 @@
 import Backbone from 'backbone';
 import { isString, isFunction, isArray, result, each, bindAll } from 'underscore';
 import { on, off, matches, getElement, getPointerEvent, isTextNode, getModel } from 'utils/mixins';
+import { getComponentIds } from '../dom_components/model/Components';
+
 const $ = Backbone.$;
 
 const noop = () => {};
@@ -1088,7 +1090,7 @@ export default Backbone.View.extend({
         activeTextModel.once('rte:enable', () => {
           const rte = viewActive.activeRte;
           rte.insertHTML && rte.insertHTML(outerHTML);
-          activeTextModel.trigger('disable');
+          viewActive.disableEditing({ keepIds: getComponentIds(srcModel) });
         });
         created = srcModel;
       } else {

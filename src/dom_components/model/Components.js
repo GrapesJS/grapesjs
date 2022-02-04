@@ -1,20 +1,13 @@
 import Backbone from 'backbone';
-import { isEmpty, isArray, isString, each, includes, extend, flatten, debounce } from 'underscore';
+import { isEmpty, isArray, isString, isFunction, each, includes, extend, flatten, debounce } from 'underscore';
 import Component, { keySymbol, keySymbols } from './Component';
 
-const getIdsToKeep = (prev, res = []) => {
-  const pr = prev || [];
-  pr.forEach(comp => {
-    res.push(comp.getId());
-    getIdsToKeep(comp.components(), res);
-  });
-  return res;
-};
-
-const getNewIds = (items, res = []) => {
-  items.map(item => {
-    res.push(item.getId());
-    getNewIds(item.components(), res);
+export const getComponentIds = (cmp, res = []) => {
+  if (!cmp) return [];
+  const cmps = isArray(cmp) || isFunction(cmp.map) ? cmp : [cmp];
+  cmps.map(cmp => {
+    res.push(cmp.getId());
+    getComponentIds(cmp.components().models, res);
   });
   return res;
 };
@@ -50,26 +43,18 @@ export default Backbone.Collection.extend({
     const coll = this;
     const prev = opts.previousModels || [];
     const toRemove = prev.filter(prev => !models.get(prev.cid));
-    const newIds = getNewIds(models);
-    opts.keepIds = getIdsToKeep(prev).filter(pr => newIds.indexOf(pr) >= 0);
+    const newIds = getComponentIds(models);
+    opts.keepIds = getComponentIds(prev).filter(pr => newIds.indexOf(pr) >= 0);
     toRemove.forEach(md => this.removeChildren(md, coll, opts));
     models.each(model => this.onAdd(model));
   },
 
   resetFromString(input = '', opts = {}) {
-    opts.keepIds = getIdsToKeep(this);
+    opts.keepIds = getComponentIds(this);
     const { domc } = this;
     const allByID = domc ? domc.allById() : {};
     const parsed = this.parseString(input, opts);
     const cmps = isArray(parsed) ? parsed : [parsed];
-    console.log({
-      len: this.length,
-      input,
-      cmps,
-      allByID,
-      newCmp: getComponentsFromDefs(cmps, allByID),
-      keepIds: opts.keepIds,
-    });
     this.reset(cmps, opts);
   },
 
@@ -177,8 +162,7 @@ export default Backbone.Collection.extend({
   },
 
   add(models, opt = {}) {
-    const { parent } = this;
-    opt.keepIds = getIdsToKeep(opt.previousModels);
+    opt.keepIds = [...(opt.keepIds || []), ...getComponentIds(opt.previousModels)];
 
     if (isString(models)) {
       models = this.parseString(models, opt);
