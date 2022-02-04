@@ -6,7 +6,7 @@ const compProt = ComponentView.prototype;
 export default ComponentView.extend({
   events: {
     dblclick: 'onActive',
-    input: 'onInput'
+    input: 'onInput',
   },
 
   initialize(o) {
@@ -33,15 +33,12 @@ export default ComponentView.extend({
 
     // We place this before stopPropagation in case of nested
     // text components will not block the editing (#1394)
-    if (
-      this.rteEnabled ||
-      !this.model.get('editable') ||
-      (em && em.isEditing())
-    ) {
+    if (this.rteEnabled || !this.model.get('editable') || (em && em.isEditing())) {
       return;
     }
 
     e && e.stopPropagation && e.stopPropagation();
+    this.lastContent = this.getContent();
 
     if (rte) {
       try {
@@ -75,7 +72,10 @@ export default ComponentView.extend({
         em.logError(err);
       }
 
-      editable && this.syncContent();
+      if (editable && this.getContent() !== this.lastContent) {
+        this.syncContent();
+        this.lastContent = '';
+      }
     }
 
     this.toggleEvents();
@@ -87,12 +87,9 @@ export default ComponentView.extend({
    */
   getContent() {
     const { activeRte } = this;
-    const canGetRteContent =
-      activeRte && typeof activeRte.getContent === 'function';
+    const canGetRteContent = activeRte && typeof activeRte.getContent === 'function';
 
-    return canGetRteContent
-      ? activeRte.getContent()
-      : this.getChildrenContainer().innerHTML;
+    return canGetRteContent ? activeRte.getContent() : this.getChildrenContainer().innerHTML;
   },
 
   /**
@@ -114,8 +111,7 @@ export default ComponentView.extend({
     } else {
       const clean = model => {
         const textable = !!model.get('textable');
-        const selectable =
-          !['text', 'default', ''].some(type => model.is(type)) || textable;
+        const selectable = !['text', 'default', ''].some(type => model.is(type)) || textable;
         model.set(
           {
             _innertext: !selectable,
@@ -126,7 +122,7 @@ export default ComponentView.extend({
             draggable: textable,
             highlightable: 0,
             copyable: textable,
-            ...(!textable && { toolbar: '' })
+            ...(!textable && { toolbar: '' }),
           },
           opts
         );
@@ -198,5 +194,5 @@ export default ComponentView.extend({
         el && el.tagName == 'BODY' && (el = 0);
       }
     }
-  }
+  },
 });
