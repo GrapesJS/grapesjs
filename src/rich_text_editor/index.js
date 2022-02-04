@@ -42,7 +42,7 @@ import defaults from './config/config';
 
 export default () => {
   let config = {};
-  let toolbar, actions, lastEl, lastElPos, globalRte;
+  let toolbar, actions, lastEl, globalRte;
   const eventsUp = 'change:canvasOffset frame:scroll component:update';
   const hideToolbar = () => {
     const style = toolbar.style;
@@ -100,7 +100,7 @@ export default () => {
       customRte && customRte.destroy && customRte.destroy();
       this.actionbar = 0;
       this.actions = 0;
-      [config, toolbar, actions, lastEl, lastElPos, globalRte].forEach(i => (i = {}));
+      [config, toolbar, actions, lastEl, globalRte].forEach(i => (i = {}));
     },
 
     /**
@@ -300,10 +300,8 @@ export default () => {
     async enable(view, rte) {
       lastEl = view.el;
       const { customRte } = this;
-      const canvas = config.em.get('Canvas');
       const em = config.em;
       const el = view.getChildrenContainer();
-      lastElPos = canvas.getElementPos(lastEl);
 
       toolbar.style.display = '';
       const rteInst = await (customRte ? customRte.enable(el, rte) : this.initRte(el).enable());
