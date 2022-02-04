@@ -1079,17 +1079,7 @@ export default Backbone.View.extend({
       }
 
       if (this.isTextableActive(srcModel, trgModel)) {
-        trgModel.trigger('active');
-        const modelEl = srcModel.getEl();
-        delete srcModel.opt.temporary;
-        srcModel.getView().render();
-        modelEl.setAttribute('data-gjs-textable', 'true');
-        trgModel.once('rte:enable', () => {
-          const trgView = trgModel.getView();
-          trgView.activeRte?.insertHTML(modelEl);
-          trgView.disableEditing({ keepIds: getComponentIds(srcModel) });
-        });
-        created = srcModel;
+        created = trgModel.getView().insertAtCursor(modelToDrop);
       } else {
         created = targetCollection.add(modelToDrop, opts);
       }

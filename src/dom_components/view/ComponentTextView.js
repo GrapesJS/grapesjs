@@ -1,4 +1,4 @@
-import { on, off } from 'utils/mixins';
+import { on, off, getModel } from 'utils/mixins';
 import ComponentView from './ComponentView';
 import { bindAll } from 'underscore';
 
@@ -134,6 +134,41 @@ export default ComponentView.extend({
       comps.each(model => clean(model));
       comps.trigger('resetNavigator');
     }
+  },
+
+  insertAtCursor(content) {
+    const { model, el } = this;
+    const doc = el.ownerDocument;
+    const selection = doc.getSelection();
+
+    if (selection?.rangeCount) {
+      const range = selection.getRangeAt(0);
+      const textNode = range.startContainer;
+      const offset = range.startOffset;
+      const textModel = getModel(textNode);
+      const cmps = model.components();
+      const newCmps = [];
+
+      model.components().forEach(cmp => {
+        if (cmp === textModel) {
+          const cnt = cmp.get('content');
+          newCmps.push(cnt.slice(0, offset));
+          newCmps.push(content);
+          newCmps.push(cnt.slice(offset));
+        } else {
+          newCmps.push(cmp);
+        }
+      });
+
+      const result = newCmps.filter(Boolean);
+      const index = result.indexOf(content);
+      console.log({ newCmps, index, content });
+      cmps.reset(result);
+
+      return cmps.at(index);
+    }
+
+    return null;
   },
 
   /**
