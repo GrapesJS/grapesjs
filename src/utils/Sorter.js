@@ -3,6 +3,8 @@ import { isString, isFunction, isArray, result, each, bindAll } from 'underscore
 import { on, off, matches, getElement, getPointerEvent, isTextNode, getModel } from 'utils/mixins';
 const $ = Backbone.$;
 
+const noop = () => {};
+
 export default Backbone.View.extend({
   initialize(opt) {
     this.opt = opt || {};
@@ -23,7 +25,7 @@ export default Backbone.View.extend({
     this.pfx = o.pfx || '';
     this.ppfx = o.ppfx || '';
     this.freezeClass = o.freezeClass || this.pfx + 'freezed';
-    this.onStart = o.onStart || '';
+    this.onStart = o.onStart || noop;
     this.onEndMove = o.onEndMove || '';
     this.customTarget = o.customTarget;
     this.onEnd = o.onEnd;
@@ -266,32 +268,26 @@ export default Backbone.View.extend({
    * @param {HTMLElement} src
    * */
   startSort(src, opts = {}) {
-    const em = this.em;
-    const itemSel = this.itemSel;
-    const contSel = this.containerSel;
+    const { em, itemSel, containerSel, plh } = this;
     const container = this.getContainerEl(opts.container);
     const docs = this.getDocuments(src);
-    const onStart = this.onStart;
     let srcModel;
-    let plh = this.plh;
     this.dropModel = null;
     this.target = null;
     this.prevTarget = null;
     this.moved = 0;
 
-    // Check if the start element is a valid one, if not get the
-    // closest valid one
-    if (src && !this.matches(src, `${itemSel}, ${contSel}`)) {
+    // Check if the start element is a valid one, if not, try the closest valid one
+    if (src && !this.matches(src, `${itemSel}, ${containerSel}`)) {
       src = this.closest(src, itemSel);
     }
 
-    this.eV = src;
+    this.sourceEl = src;
 
-    // Create placeholder if not yet exists
+    // Create placeholder if doesn't exist yet
     if (!plh) {
-      plh = this.createPlaceholder();
-      container.appendChild(plh);
-      this.plh = plh;
+      this.plh = this.createPlaceholder();
+      container.appendChild(this.plh);
     }
 
     if (src) {
@@ -303,19 +299,17 @@ export default Backbone.View.extend({
     on(container, 'mousemove dragover', this.onMove);
     on(docs, 'mouseup dragend touchend', this.endMove);
     on(docs, 'keydown', this.rollback);
-    onStart &&
-      onStart({
-        sorter: this,
-        target: srcModel,
-        parent: srcModel && srcModel.parent(),
-        index: srcModel && srcModel.index(),
-      });
+    this.onStart({
+      sorter: this,
+      target: srcModel,
+      parent: srcModel && srcModel.parent(),
+      index: srcModel && srcModel.index(),
+    });
 
     // Avoid strange effects on dragging
-    em && em.clearSelection();
+    em?.clearSelection();
     this.toggleSortCursor(1);
-
-    em && em.trigger('sorter:drag:start', src, srcModel);
+    em?.trigger('sorter:drag:start', src, srcModel);
   },
 
   /**
@@ -332,8 +326,8 @@ export default Backbone.View.extend({
    * @return {Model}
    */
   getSourceModel(source, { target, avoidChildren = 1 } = {}) {
-    const { em, eV } = this;
-    const src = source || eV;
+    const { em, sourceEl } = this;
+    const src = source || sourceEl;
     let { dropModel, dropContent } = this;
     const isTextable = src => src && target && src.opt && src.opt.avoidChildren && this.isTextableActive(src, target);
 
@@ -991,7 +985,7 @@ export default Backbone.View.extend({
    * @return void
    * */
   endMove(e) {
-    const src = this.eV;
+    const src = this.sourceEl;
     const moved = [];
     const docs = this.getDocuments();
     const container = this.getContainerEl();
