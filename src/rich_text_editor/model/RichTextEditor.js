@@ -1,6 +1,7 @@
 // The initial version of this RTE was borrowed from https://github.com/jaredreich/pell
 // and adapted to the GrapesJS's need
 
+import { isString } from 'underscore';
 import { on, off } from 'utils/mixins';
 
 const RTE_KEY = '_rte';
@@ -8,48 +9,45 @@ const RTE_KEY = '_rte';
 const btnState = {
   ACTIVE: 1,
   INACTIVE: 0,
-  DISABLED: -1
+  DISABLED: -1,
 };
 const isValidAnchor = rte => {
   const anchor = rte.selection().anchorNode;
   const parentNode = anchor && anchor.parentNode;
   const nextSibling = anchor && anchor.nextSibling;
-  return (
-    (parentNode && parentNode.nodeName == 'A') ||
-    (nextSibling && nextSibling.nodeName == 'A')
-  );
+  return (parentNode && parentNode.nodeName == 'A') || (nextSibling && nextSibling.nodeName == 'A');
 };
 const defActions = {
   bold: {
     name: 'bold',
     icon: '<b>B</b>',
     attributes: { title: 'Bold' },
-    result: rte => rte.exec('bold')
+    result: rte => rte.exec('bold'),
   },
   italic: {
     name: 'italic',
     icon: '<i>I</i>',
     attributes: { title: 'Italic' },
-    result: rte => rte.exec('italic')
+    result: rte => rte.exec('italic'),
   },
   underline: {
     name: 'underline',
     icon: '<u>U</u>',
     attributes: { title: 'Underline' },
-    result: rte => rte.exec('underline')
+    result: rte => rte.exec('underline'),
   },
   strikethrough: {
     name: 'strikethrough',
     icon: '<s>S</s>',
     attributes: { title: 'Strike-through' },
-    result: rte => rte.exec('strikeThrough')
+    result: rte => rte.exec('strikeThrough'),
   },
   link: {
     icon: `<span style="transform:rotate(45deg)">&supdsub;</span>`,
     name: 'link',
     attributes: {
       style: 'font-size:1.4rem;padding:0 4px 2px;',
-      title: 'Link'
+      title: 'Link',
     },
     state: (rte, doc) => {
       if (rte && rte.selection()) {
@@ -64,8 +62,8 @@ const defActions = {
       } else {
         rte.insertHTML(`<a class="link" href="">${rte.selection()}</a>`);
       }
-    }
-  }
+    },
+  },
 };
 
 export default class RichTextEditor {
@@ -89,9 +87,7 @@ export default class RichTextEditor {
       }
       return result;
     });
-    const actions = acts.length
-      ? acts
-      : Object.keys(defActions).map(a => defActions[a]);
+    const actions = acts.length ? acts : Object.keys(defActions).map(a => defActions[a]);
 
     settings.classes = {
       ...{
@@ -99,9 +95,9 @@ export default class RichTextEditor {
         button: 'action',
         active: 'active',
         disabled: 'disabled',
-        inactive: 'inactive'
+        inactive: 'inactive',
       },
-      ...settings.classes
+      ...settings.classes,
     };
 
     const classes = settings.classes;
@@ -205,10 +201,7 @@ export default class RichTextEditor {
   syncActions() {
     this.getActions().forEach(action => {
       if (this.settings.actionbar) {
-        if (
-          !action.state ||
-          (action.state && action.state(this, this.doc) >= 0)
-        ) {
+        if (!action.state || (action.state && action.state(this, this.doc) >= 0)) {
           const event = action.event || 'click';
           action.btn[`on${event}`] = e => {
             action.result(this, action);
@@ -289,7 +282,6 @@ export default class RichTextEditor {
    * @param  {string} value HTML string
    */
   insertHTML(value) {
-    let lastNode;
     const doc = this.doc;
     const sel = doc.getSelection();
 
@@ -297,10 +289,13 @@ export default class RichTextEditor {
       const node = doc.createElement('div');
       const range = sel.getRangeAt(0);
       range.deleteContents();
-      node.innerHTML = value;
+      if (isString(value)) {
+        node.innerHTML = value;
+      } else if (value) {
+        node.appendChild(value);
+      }
       Array.prototype.slice.call(node.childNodes).forEach(nd => {
         range.insertNode(nd);
-        lastNode = nd;
       });
 
       sel.removeAllRanges();

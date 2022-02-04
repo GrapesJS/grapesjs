@@ -1051,7 +1051,7 @@ export default Backbone.View.extend({
    * @param {Object} pos Object with position coordinates
    * */
   move(dst, src, pos) {
-    const { em, activeTextModel, dropContent } = this;
+    const { em, dropContent } = this;
     const srcEl = getElement(src);
     const warns = [];
     const index = pos.method === 'after' ? pos.indexEl + 1 : pos.indexEl;
@@ -1059,7 +1059,6 @@ export default Backbone.View.extend({
     const targetCollection = $(dst).data('collection');
     const { trgModel, srcModel, draggable } = validResult;
     const droppable = trgModel instanceof Backbone.Collection ? 1 : validResult.droppable;
-    const isTextableActive = this.isTextableActive(srcModel, trgModel);
     let modelToDrop, modelTemp, created;
 
     if (targetCollection && droppable && draggable) {
@@ -1079,18 +1078,16 @@ export default Backbone.View.extend({
         opts.avoidUpdateStyle = 1;
       }
 
-      if (isTextableActive) {
-        const viewActive = activeTextModel.getView();
-        activeTextModel.trigger('active');
+      if (this.isTextableActive(srcModel, trgModel)) {
+        trgModel.trigger('active');
         const modelEl = srcModel.getEl();
         delete srcModel.opt.temporary;
         srcModel.getView().render();
         modelEl.setAttribute('data-gjs-textable', 'true');
-        const { outerHTML } = modelEl;
-        activeTextModel.once('rte:enable', () => {
-          const rte = viewActive.activeRte;
-          rte.insertHTML && rte.insertHTML(outerHTML);
-          viewActive.disableEditing({ keepIds: getComponentIds(srcModel) });
+        trgModel.once('rte:enable', () => {
+          const trgView = trgModel.getView();
+          trgView.activeRte?.insertHTML(modelEl);
+          trgView.disableEditing({ keepIds: getComponentIds(srcModel) });
         });
         created = srcModel;
       } else {
