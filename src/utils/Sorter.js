@@ -84,7 +84,7 @@ export default Backbone.View.extend({
    * Triggered when the offset of the editro is changed
    */
   updateOffset() {
-    const offset = this.em.get('canvasOffset') || {};
+    const offset = this.em?.get('canvasOffset') || {};
     this.offTop = offset.top;
     this.offLeft = offset.left;
   },
@@ -99,7 +99,9 @@ export default Backbone.View.extend({
   },
 
   updateTextViewCursorPosition(e) {
-    const Canvas = this.em.get('Canvas');
+    const { em } = this;
+    if (!em) return;
+    const Canvas = em.get('Canvas');
     const targetDoc = Canvas.getDocument();
     let range = null;
 
@@ -304,8 +306,8 @@ export default Backbone.View.extend({
     this.onStart({
       sorter: this,
       target: srcModel,
-      parent: srcModel && srcModel.parent(),
-      index: srcModel && srcModel.index(),
+      parent: srcModel && srcModel.parent?.(),
+      index: srcModel && srcModel.index?.(),
     });
 
     // Avoid strange effects on dragging

@@ -149,26 +149,28 @@ export default ComponentView.extend({
       const cmps = model.components();
       const newCmps = [];
 
-      model.components().forEach(cmp => {
-        if (cmp === textModel) {
-          const type = 'textnode';
-          const cnt = cmp.get('content');
-          newCmps.push({ type, content: cnt.slice(0, offset) });
-          newCmps.push(content);
-          newCmps.push({ type, content: cnt.slice(offset) });
-        } else {
-          newCmps.push(cmp);
-        }
-      });
+      if (textModel && textModel.is?.('textnode')) {
+        model.components().forEach(cmp => {
+          if (cmp === textModel) {
+            const type = 'textnode';
+            const cnt = cmp.get('content');
+            newCmps.push({ type, content: cnt.slice(0, offset) });
+            newCmps.push(content);
+            newCmps.push({ type, content: cnt.slice(offset) });
+          } else {
+            newCmps.push(cmp);
+          }
+        });
 
-      const result = newCmps.filter(Boolean);
-      const index = result.indexOf(content);
-      cmps.reset(result);
+        const result = newCmps.filter(Boolean);
+        const index = result.indexOf(content);
+        cmps.reset(result);
 
-      return cmps.at(index);
+        return cmps.at(index);
+      }
     }
 
-    return null;
+    return model.append(content);
   },
 
   /**
