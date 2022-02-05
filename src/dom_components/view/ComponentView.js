@@ -230,17 +230,11 @@ export default Backbone.View.extend({
    * @private
    * */
   updateStyle(m, v, opts = {}) {
-    const { model, em, el } = this;
+    const { model, em } = this;
 
     if (em && em.getConfig('avoidInlineStyle') && !opts.inline) {
       const style = model.getStyle();
-      const empty = isEmpty(style);
-      !empty && model.setStyle(style);
-      if (model.get('_innertext') && empty) {
-        el.removeAttribute('id');
-      } else {
-        el.id = model.getId();
-      }
+      !isEmpty(style) && model.setStyle(style);
     } else {
       this.setAttribute('style', model.styleToString(opts));
     }
@@ -290,6 +284,7 @@ export default Backbone.View.extend({
     const { textable, type } = model.attributes;
 
     const defaultAttr = {
+      id: model.getId(),
       'data-gjs-type': type || 'default',
       ...(this.__isDraggable() && { draggable: true }),
       ...(textable && { contenteditable: 'false', 'data-gjs-textable': 'true' }),
