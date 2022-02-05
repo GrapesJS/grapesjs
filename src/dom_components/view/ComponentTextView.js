@@ -136,7 +136,7 @@ export default ComponentView.extend({
     }
   },
 
-  insertAtCursor(content) {
+  insertComponent(content) {
     const { model, el } = this;
     const doc = el.ownerDocument;
     const selection = doc.getSelection();
@@ -151,10 +151,11 @@ export default ComponentView.extend({
 
       model.components().forEach(cmp => {
         if (cmp === textModel) {
+          const type = 'textnode';
           const cnt = cmp.get('content');
-          newCmps.push(cnt.slice(0, offset));
+          newCmps.push({ type, content: cnt.slice(0, offset) });
           newCmps.push(content);
-          newCmps.push(cnt.slice(offset));
+          newCmps.push({ type, content: cnt.slice(offset) });
         } else {
           newCmps.push(cmp);
         }
@@ -162,7 +163,6 @@ export default ComponentView.extend({
 
       const result = newCmps.filter(Boolean);
       const index = result.indexOf(content);
-      console.log({ newCmps, index, content });
       cmps.reset(result);
 
       return cmps.at(index);

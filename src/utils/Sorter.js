@@ -1079,7 +1079,7 @@ export default Backbone.View.extend({
       }
 
       if (this.isTextableActive(srcModel, trgModel)) {
-        created = trgModel.getView().insertAtCursor(modelToDrop);
+        created = trgModel.getView().insertComponent(modelToDrop);
       } else {
         created = targetCollection.add(modelToDrop, opts);
       }
