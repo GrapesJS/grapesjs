@@ -44,7 +44,7 @@ export default Backbone.View.extend({
     this.document = o.document || document;
     this.$document = $(this.document);
     this.dropContent = null;
-    this.em = o.em || '';
+    this.em = o.em || null;
     this.dragHelper = null;
     this.canvasRelative = o.canvasRelative || 0;
     this.selectOnEnd = !o.avoidSelectOnEnd;

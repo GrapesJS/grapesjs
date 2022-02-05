@@ -46,7 +46,7 @@ export default Backbone.View.extend({
     this.initComponents({ avoidRender: 1 });
     this.events = {
       ...this.events,
-      ...(this.__isDraggable() && { dragstart: 'handleDragStart' }),
+      dragstart: 'handleDragStart',
     };
     this.delegateEvents();
     !modelOpt.temporary && this.init(this._clbObj());
@@ -107,8 +107,9 @@ export default Backbone.View.extend({
   },
 
   handleDragStart(event) {
-    event.preventDefault();
+    if (!this.__isDraggable()) return false;
     event.stopPropagation();
+    event.preventDefault();
     this.em.get('Commands').run('tlb-move', {
       target: this.model,
       event,
@@ -290,7 +291,7 @@ export default Backbone.View.extend({
 
     const defaultAttr = {
       'data-gjs-type': type || 'default',
-      ...(this.__isDraggable() ? { draggable: true } : {}),
+      ...(this.__isDraggable() && { draggable: true }),
       ...(highlightable ? { 'data-highlightable': 1 } : {}),
       ...(textable
         ? {
