@@ -86,8 +86,7 @@ export default Backbone.Collection.extend({
     }
 
     const { domc, em } = this;
-    const allByID = domc ? domc.allById() : {};
-    const isTemp = opts.temporary;
+    const isTemp = opts.temporary || opts.fromUndo;
     removed.prevColl = this; // This one is required for symbols
 
     if (!isTemp) {
@@ -96,6 +95,7 @@ export default Backbone.Collection.extend({
       const sels = em.get('SelectorManager').getAll();
       const rules = em.get('CssComposer').getAll();
       const canRemoveStyle = (opts.keepIds || []).indexOf(id) < 0;
+      const allByID = domc ? domc.allById() : {};
       delete allByID[id];
 
       // Remove all component related styles
@@ -120,7 +120,6 @@ export default Backbone.Collection.extend({
 
       const inner = removed.components();
       inner.forEach(it => this.removeChildren(it, coll, opts));
-      // removed.empty(opts);
     }
 
     // Remove stuff registered in DomComponents.handleChanges

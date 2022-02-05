@@ -136,7 +136,7 @@ export default ComponentView.extend({
     }
   },
 
-  insertComponent(content) {
+  insertComponent(content, opts = {}) {
     const { model, el } = this;
     const doc = el.ownerDocument;
     const selection = doc.getSelection();
@@ -164,13 +164,13 @@ export default ComponentView.extend({
 
         const result = newCmps.filter(Boolean);
         const index = result.indexOf(content);
-        cmps.reset(result);
+        cmps.reset(result, opts);
 
         return cmps.at(index);
       }
     }
 
-    return model.append(content);
+    return model.append(content, opts);
   },
 
   /**

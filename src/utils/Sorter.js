@@ -1061,39 +1061,36 @@ export default Backbone.View.extend({
     const targetCollection = $(dst).data('collection');
     const { trgModel, srcModel, draggable } = validResult;
     const droppable = trgModel instanceof Backbone.Collection ? 1 : validResult.droppable;
-    let modelToDrop, modelTemp, created;
+    let modelToDrop, created;
 
     if (targetCollection && droppable && draggable) {
-      const opts = { at: index, noIncrement: 1 };
+      const opts = { at: index, undoContext: 'move-component' };
 
       if (!dropContent) {
-        // Putting `avoidStore` here will make the UndoManager behave wrong
-        opts.temporary = 1;
-        modelTemp = targetCollection.add({}, { ...opts });
+        const srcIndex = srcModel.index();
+        const sameCollection = targetCollection === srcModel.collection;
+        const sameIndex = srcIndex === index || srcIndex === index - 1;
 
-        if (srcModel.collection) {
-          modelToDrop = srcModel.collection.remove(srcModel, { temporary: 1 });
+        if ((!sameCollection || !sameIndex) && srcModel.collection) {
+          modelToDrop = srcModel.collection.remove(srcModel, { temporary: true });
         }
       } else {
         modelToDrop = isFunction(dropContent) ? dropContent() : dropContent;
-        opts.silent = false;
-        opts.avoidUpdateStyle = 1;
+        opts.avoidUpdateStyle = true;
+        opts.undoContext = 'add-component';
       }
 
-      if (this.isTextableActive(srcModel, trgModel)) {
-        created = trgModel.getView().insertComponent(modelToDrop);
-      } else {
-        created = targetCollection.add(modelToDrop, opts);
+      if (modelToDrop) {
+        if (this.isTextableActive(srcModel, trgModel)) {
+          delete opts.at;
+          created = trgModel.getView().insertComponent(modelToDrop, opts);
+        } else {
+          created = targetCollection.add(modelToDrop, opts);
+        }
       }
 
-      if (!dropContent) {
-        targetCollection.remove(modelTemp);
-      } else {
-        this.dropContent = null;
-      }
-
-      // This will cause to recalculate children dimensions
-      this.prevTarget = null;
+      this.dropContent = null;
+      this.prevTarget = null; // This will recalculate children dimensions
     } else if (em) {
       const dropInfo = validResult.dropInfo || trgModel?.get('droppable');
       const dragInfo = validResult.dragInfo || srcModel?.get('draggable');
