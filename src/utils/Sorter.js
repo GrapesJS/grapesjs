@@ -1064,7 +1064,7 @@ export default Backbone.View.extend({
     let modelToDrop, created;
 
     if (targetCollection && droppable && draggable) {
-      const opts = { at: index, undoContext: 'move-component' };
+      const opts = { at: index, action: 'move-component' };
 
       if (!dropContent) {
         const srcIndex = srcModel.index();
@@ -1077,7 +1077,7 @@ export default Backbone.View.extend({
       } else {
         modelToDrop = isFunction(dropContent) ? dropContent() : dropContent;
         opts.avoidUpdateStyle = true;
-        opts.undoContext = 'add-component';
+        opts.action = 'add-component';
       }
 
       if (modelToDrop) {
