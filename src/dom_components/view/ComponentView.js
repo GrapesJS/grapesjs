@@ -21,7 +21,6 @@ export default Backbone.View.extend({
     const em = config.em;
     const modelOpt = model.opt || {};
     const { $el, el } = this;
-    const { draggableComponents } = config;
     this.opts = opt;
     this.modelOpt = modelOpt;
     this.config = config;
@@ -31,11 +30,7 @@ export default Backbone.View.extend({
     this.attr = model.get('attributes');
     this.classe = this.attr.class || [];
     this.listenTo(model, 'change:style', this.updateStyle);
-    this.listenTo(
-      model,
-      'change:attributes change:_innertext',
-      this.renderAttributes
-    );
+    this.listenTo(model, 'change:attributes change:_innertext', this.renderAttributes);
     this.listenTo(model, 'change:highlightable', this.updateHighlight);
     this.listenTo(model, 'change:status', this.updateStatus);
     this.listenTo(model, 'change:script rerender', this.reset);
@@ -51,7 +46,7 @@ export default Backbone.View.extend({
     this.initComponents({ avoidRender: 1 });
     this.events = {
       ...this.events,
-      ...(this.__isDraggable() && { dragstart: 'handleDragStart' })
+      ...(this.__isDraggable() && { dragstart: 'handleDragStart' }),
     };
     this.delegateEvents();
     !modelOpt.temporary && this.init(this._clbObj());
@@ -68,7 +63,7 @@ export default Backbone.View.extend({
     return {
       editor: em && em.getEditor(),
       model,
-      el
+      el,
     };
   },
 
@@ -116,7 +111,7 @@ export default Backbone.View.extend({
     event.stopPropagation();
     this.em.get('Commands').run('tlb-move', {
       target: this.model,
-      event
+      event,
     });
   },
 
@@ -255,10 +250,7 @@ export default Backbone.View.extend({
    * @private
    * */
   updateClasses() {
-    const str = this.model
-      .get('classes')
-      .pluck('name')
-      .join(' ');
+    const str = this.model.get('classes').pluck('name').join(' ');
     this.setAttribute('class', str);
 
     // Regenerate status class
@@ -303,9 +295,9 @@ export default Backbone.View.extend({
       ...(textable
         ? {
             contenteditable: 'false',
-            'data-gjs-textable': 'true'
+            'data-gjs-textable': 'true',
           }
-        : {})
+        : {}),
     };
 
     // Remove all current attributes
@@ -314,7 +306,7 @@ export default Backbone.View.extend({
     this.updateStyle();
     const attr = {
       ...defaultAttr,
-      ...model.getAttributes()
+      ...model.getAttributes(),
     };
 
     // Remove all `false` attributes
@@ -349,11 +341,7 @@ export default Backbone.View.extend({
   updateScript() {
     const { model, em } = this;
     if (!model.get('script')) return;
-    em &&
-      em
-        .get('Canvas')
-        .getCanvasView()
-        .updateScript(this);
+    em && em.get('Canvas').getCanvasView().updateScript(this);
   },
 
   /**
@@ -452,7 +440,7 @@ export default Backbone.View.extend({
         el.scrollIntoView({
           behavior: 'smooth',
           block: 'nearest',
-          ...opts
+          ...opts,
         });
       }
     }
@@ -493,7 +481,7 @@ export default Backbone.View.extend({
       new ComponentsView({
         collection: this.model.get('components'),
         config: this.config,
-        componentTypes: this.opts.componentTypes
+        componentTypes: this.opts.componentTypes,
       });
 
     view.render(container);
@@ -532,5 +520,5 @@ export default Backbone.View.extend({
     }
   },
 
-  onRender() {}
+  onRender() {},
 });

@@ -12,15 +12,28 @@ export const getComponentIds = (cmp, res = []) => {
   return res;
 };
 
-const getComponentsFromDefs = (items, all = {}) => {
-  return items.map(item => {
-    const id = item.attributes?.id;
+const getComponentsFromDefs = (items, all = {}, opts = {}) => {
+  const itms = isArray(items) ? items : [items];
+
+  return itms.map(item => {
+    const { attributes = {}, components } = item;
+    const { id } = attributes;
     let result = item;
 
     if (id && all[id]) {
       result = all[id];
-    } else if (isArray(result.components)) {
-      result.components = getComponentsFromDefs(result.components, all);
+    }
+
+    if (components) {
+      const newComponents = getComponentsFromDefs(components, all);
+
+      if (isFunction(result.components)) {
+        if (result.components().length > 0) {
+          result.components(newComponents);
+        }
+      } else {
+        result.components = newComponents;
+      }
     }
 
     return result;
@@ -52,10 +65,17 @@ export default Backbone.Collection.extend({
   resetFromString(input = '', opts = {}) {
     opts.keepIds = getComponentIds(this);
     const { domc } = this;
-    const allByID = domc ? domc.allById() : {};
+    const allByID = domc?.allById() || {};
     const parsed = this.parseString(input, opts);
     const cmps = isArray(parsed) ? parsed : [parsed];
-    this.reset(cmps, opts);
+    const newCmps = getComponentsFromDefs(cmps, allByID);
+    console.log({
+      input,
+      newCmps,
+      parsed,
+      keepIds: opts.keepIds,
+    });
+    this.reset(newCmps, opts);
   },
 
   removeChildren(removed, coll, opts = {}) {

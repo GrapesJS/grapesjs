@@ -130,7 +130,7 @@ export default ComponentView.extend({
         model.get('components').each(model => clean(model));
       };
 
-      comps.reset(content, opts);
+      comps.resetFromString(content, opts);
       comps.each(model => clean(model));
       comps.trigger('resetNavigator');
     }
