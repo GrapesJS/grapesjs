@@ -222,7 +222,7 @@ export default Backbone.View.extend({
    * */
   updateHighlight() {
     const hl = this.model.get('highlightable');
-    this.setAttribute('data-highlightable', hl ? 1 : '');
+    this.setAttribute('data-gjs-highlightable', hl ? true : '');
   },
 
   /**
@@ -287,24 +287,19 @@ export default Backbone.View.extend({
   updateAttributes() {
     const attrs = [];
     const { model, $el, el } = this;
-    const { highlightable, textable, type } = model.attributes;
+    const { textable, type } = model.attributes;
 
     const defaultAttr = {
       'data-gjs-type': type || 'default',
       ...(this.__isDraggable() && { draggable: true }),
-      ...(highlightable ? { 'data-highlightable': 1 } : {}),
-      ...(textable
-        ? {
-            contenteditable: 'false',
-            'data-gjs-textable': 'true',
-          }
-        : {}),
+      ...(textable && { contenteditable: 'false', 'data-gjs-textable': 'true' }),
     };
 
     // Remove all current attributes
     each(el.attributes, attr => attrs.push(attr.nodeName));
     attrs.forEach(attr => $el.removeAttr(attr));
     this.updateStyle();
+    this.updateHighlight();
     const attr = {
       ...defaultAttr,
       ...model.getAttributes(),

@@ -324,7 +324,7 @@ export default Backbone.View.extend({
       `<style>
       ${conf.baseCss || ''}
 
-      .${ppfx}dashed *[data-highlightable] {
+      .${ppfx}dashed *[data-gjs-highlightable] {
         outline: 1px dashed rgba(170,170,170,0.7);
         outline-offset: -2px;
       }
