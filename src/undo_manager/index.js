@@ -350,7 +350,7 @@ export default () => {
       });
     },
 
-    goToPointer(group) {
+    goToGroup(group) {
       if (!group) return;
       const current = this.getPointer();
       const goTo = group.index - current;
