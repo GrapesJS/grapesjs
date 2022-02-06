@@ -117,6 +117,23 @@ export default () => {
           };
         },
       });
+      um.changeUndoType('reset', {
+        undo: (collection, before) => {
+          collection.reset(before, { fromUndo });
+        },
+        redo: (collection, b, after) => {
+          collection.reset(after, { fromUndo });
+        },
+        on: (collection, options = {}) => {
+          if (hasSkip(options) || !this.isRegistered(collection)) return;
+          return {
+            object: collection,
+            before: options.previousModels,
+            after: [...collection.models],
+            options: { ...options, fromUndo },
+          };
+        },
+      });
 
       um.on('undo redo', () => {
         em.trigger('change:canvasOffset');

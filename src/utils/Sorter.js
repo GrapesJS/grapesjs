@@ -1065,13 +1065,15 @@ export default Backbone.View.extend({
 
     if (targetCollection && droppable && draggable) {
       const opts = { at: index, action: 'move-component' };
+      const isTextable = this.isTextableActive(srcModel, trgModel);
 
       if (!dropContent) {
         const srcIndex = srcModel.index();
         const sameCollection = targetCollection === srcModel.collection;
         const sameIndex = srcIndex === index || srcIndex === index - 1;
+        const canRemove = !sameCollection || !sameIndex || isTextable;
 
-        if ((!sameCollection || !sameIndex) && srcModel.collection) {
+        if (canRemove && srcModel.collection) {
           modelToDrop = srcModel.collection.remove(srcModel, { temporary: true });
         }
       } else {
@@ -1081,7 +1083,7 @@ export default Backbone.View.extend({
       }
 
       if (modelToDrop) {
-        if (this.isTextableActive(srcModel, trgModel)) {
+        if (isTextable) {
           delete opts.at;
           created = trgModel.getView().insertComponent(modelToDrop, opts);
         } else {

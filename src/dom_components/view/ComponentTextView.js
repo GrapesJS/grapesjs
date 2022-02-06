@@ -146,11 +146,11 @@ export default ComponentView.extend({
       const textNode = range.startContainer;
       const offset = range.startOffset;
       const textModel = getModel(textNode);
-      const cmps = model.components();
       const newCmps = [];
 
       if (textModel && textModel.is?.('textnode')) {
-        model.components().forEach(cmp => {
+        const cmps = textModel.collection;
+        cmps.forEach(cmp => {
           if (cmp === textModel) {
             const type = 'textnode';
             const cnt = cmp.get('content');
