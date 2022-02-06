@@ -130,7 +130,7 @@ export default () => {
       defaultCommands['tlb-clone'] = {
         run(ed) {
           ed.runCommand('core:copy');
-          ed.runCommand('core:paste');
+          ed.runCommand('core:paste', { action: 'clone-component' });
         },
       };
 

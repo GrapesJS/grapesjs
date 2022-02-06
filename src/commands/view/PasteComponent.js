@@ -1,7 +1,7 @@
 import { isArray, contains } from 'underscore';
 
 export default {
-  run(ed) {
+  run(ed, s, opts = {}) {
     const em = ed.getModel();
     const clp = em.get('clipboard');
     const selected = ed.getSelected();
@@ -14,15 +14,16 @@ export default {
         if (!coll) return;
 
         const at = coll.indexOf(comp) + 1;
+        const addOpts = { at, action: opts.action || 'paste-component' };
         const copyable = clp.filter(cop => cop.get('copyable'));
         let added;
 
         if (contains(clp, comp) && comp.get('copyable')) {
-          added = coll.add(comp.clone(), { at });
+          added = coll.add(comp.clone(), addOpts);
         } else {
           added = coll.add(
             copyable.map(cop => cop.clone()),
-            { at }
+            addOpts
           );
         }
 
@@ -32,5 +33,5 @@ export default {
 
       selected.emitUpdate();
     }
-  }
+  },
 };

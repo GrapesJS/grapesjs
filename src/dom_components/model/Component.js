@@ -1686,7 +1686,7 @@ export default class Component extends Model.extend(Styleable) {
     const { em } = this;
     const coll = this.collection;
     const remove = () => {
-      coll && coll.remove(this, opts);
+      coll && coll.remove(this, { ...opts, action: 'remove-component' });
       opts.root && this.components('');
     };
     const rmOpts = { ...opts };
