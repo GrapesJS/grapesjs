@@ -25,7 +25,7 @@
  */
 
 import UndoManager from 'backbone-undo';
-import { isArray, isBoolean, isEmpty, unique } from 'underscore';
+import { isArray, isBoolean, isEmpty, unique, times } from 'underscore';
 
 export default () => {
   let em;
@@ -319,13 +319,13 @@ export default () => {
     getGroupedStack() {
       const result = {};
       const stack = this.getStack();
-      const createItem = item => {
+      const createItem = (item, index) => {
         const { type, after, before, object, options = {} } = item.attributes;
-        return { type, after, before, object, options };
+        return { index, type, after, before, object, options };
       };
-      stack.forEach(item => {
+      stack.forEach((item, i) => {
         const index = item.get('magicFusionIndex');
-        const value = createItem(item);
+        const value = createItem(item, i);
 
         if (!result[index]) {
           result[index] = [value];
@@ -337,8 +337,7 @@ export default () => {
       return Object.keys(result).map(index => {
         const actions = result[index];
         return {
-          // index: stack.models.indexOf(actions[0]),
-          index,
+          index: actions[actions.length - 1].index,
           actions,
           labels: unique(
             actions.reduce((res, item) => {
@@ -348,6 +347,15 @@ export default () => {
             }, [])
           ),
         };
+      });
+    },
+
+    goToPointer(group) {
+      if (!group) return;
+      const current = this.getPointer();
+      const goTo = group.index - current;
+      times(Math.abs(goTo), () => {
+        this[goTo < 0 ? 'undo' : 'redo'](false);
       });
     },
 
