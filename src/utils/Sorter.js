@@ -1068,12 +1068,12 @@ export default Backbone.View.extend({
       const isTextable = this.isTextableActive(srcModel, trgModel);
 
       if (!dropContent) {
-        const srcIndex = srcModel.index();
+        const srcIndex = srcModel.collection.indexOf(srcModel);
         const sameCollection = targetCollection === srcModel.collection;
         const sameIndex = srcIndex === index || srcIndex === index - 1;
         const canRemove = !sameCollection || !sameIndex || isTextable;
 
-        if (canRemove && srcModel.collection) {
+        if (canRemove) {
           modelToDrop = srcModel.collection.remove(srcModel, { temporary: true });
         }
       } else {
