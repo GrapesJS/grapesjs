@@ -330,8 +330,8 @@ export default Backbone.View.extend({
       }
 
       .${ppfx}selected {
-        outline: 3px solid #3b97e3 !important;
-        outline-offset: -3px;
+        outline: 2px solid #3b97e3 !important;
+        outline-offset: -2px;
       }
 
       .${ppfx}selected-parent {
