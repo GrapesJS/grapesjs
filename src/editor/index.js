@@ -61,7 +61,7 @@ import html from 'utils/html';
 
 export default (config = {}, opts = {}) => {
   const { $ } = opts;
-  const c = {
+  let c = {
     ...defaults,
     ...config,
   };
@@ -87,7 +87,7 @@ export default (config = {}, opts = {}) => {
     init(opts = {}) {
       em.init(this, { ...c, ...opts });
 
-      [
+      this.modules = [
         'I18n',
         'Utils',
         'Config',
@@ -121,7 +121,9 @@ export default (config = {}, opts = {}) => {
         ['Styles', 'StyleManager'],
         'DeviceManager',
         ['Devices', 'DeviceManager'],
-      ].forEach(prop => {
+      ];
+
+      this.modules.forEach(prop => {
         if (Array.isArray(prop)) {
           this[prop[0]] = em.get(prop[1]);
         } else {
@@ -649,7 +651,19 @@ export default (config = {}, opts = {}) => {
      * Destroy the editor
      */
     destroy() {
-      return em.destroyAll();
+      if (!em) return;
+      em.destroyAll();
+      this.modules.forEach(prop => {
+        if (Array.isArray(prop)) {
+          this[prop[0]] = 0;
+        } else {
+          this[prop] = 0;
+        }
+      });
+      this.modules = 0;
+      editorView = 0;
+      em = 0;
+      c = 0;
     },
 
     /**
