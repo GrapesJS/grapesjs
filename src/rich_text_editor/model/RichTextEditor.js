@@ -17,6 +17,9 @@ const isValidAnchor = rte => {
   const nextSibling = anchor && anchor.nextSibling;
   return (parentNode && parentNode.nodeName == 'A') || (nextSibling && nextSibling.nodeName == 'A');
 };
+
+const customElAttr = 'data-selectme';
+
 const defActions = {
   bold: {
     name: 'bold',
@@ -58,7 +61,7 @@ const defActions = {
       if (isValidAnchor(rte)) {
         rte.exec('unlink');
       } else {
-        rte.insertHTML(`<a class="link" href="">${rte.selection()}</a>`);
+        rte.insertHTML(`<a href="" ${customElAttr}>${rte.selection()}</a>`, { select: true });
       }
     },
   },
@@ -68,15 +71,7 @@ const defActions = {
         </svg>`,
     attributes: { title: 'Wrap for style' },
     result: rte => {
-      rte.insertHTML(`<span data-selectme>${rte.selection()}</span>`);
-      const sel = editor.getSelected();
-      sel.once('rte:disable', () => {
-        const toSel = sel.find('[data-selectme]')[0];
-        toSel.removeAttributes('data-selectme');
-        toSel.set('selectable', true);
-        editor.select(toSel);
-      });
-      sel.trigger('disable');
+      rte.insertHTML(`<span ${customElAttr}>${rte.selection()}</span>`, { select: true });
     },
   },
 };
@@ -84,6 +79,7 @@ const defActions = {
 export default class RichTextEditor {
   constructor(settings = {}) {
     const el = settings.el;
+    this.em = settings.em;
 
     if (el[RTE_KEY]) {
       return el[RTE_KEY];
@@ -308,8 +304,8 @@ export default class RichTextEditor {
    * doesn't work in the same way on all browsers
    * @param  {string} value HTML string
    */
-  insertHTML(value) {
-    const doc = this.doc;
+  insertHTML(value, { select } = {}) {
+    const { em, doc } = this;
     const sel = doc.getSelection();
 
     if (sel && sel.rangeCount) {
@@ -328,6 +324,18 @@ export default class RichTextEditor {
       sel.removeAllRanges();
       sel.addRange(range);
       this.el.focus();
+
+      if (select) {
+        const cmp = em.getSelected();
+        cmp.once('rte:disable', () => {
+          const toSel = cmp.find(`[${customElAttr}]`)[0];
+          if (!toSel) return;
+          toSel.removeAttributes(customElAttr);
+          toSel.set('selectable', true);
+          editor.select(toSel);
+        });
+        cmp.trigger('disable');
+      }
     }
   }
 }

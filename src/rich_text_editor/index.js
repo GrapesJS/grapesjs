@@ -83,6 +83,7 @@ export default () => {
       }
 
       this.pfx = config.stylePrefix;
+      this.em = config.em;
       actions = config.actions || [];
       if (!hasWin()) return this;
       toolbar = document.createElement('div');
@@ -100,6 +101,7 @@ export default () => {
       customRte && customRte.destroy && customRte.destroy();
       this.actionbar = 0;
       this.actions = 0;
+      this.em = 0;
       [config, toolbar, actions, lastEl, globalRte].forEach(i => (i = {}));
     },
 
@@ -122,9 +124,8 @@ export default () => {
      * @private
      */
     initRte(el) {
-      const pfx = this.pfx;
+      const { em, pfx, actionbar } = this;
       const actionbarContainer = toolbar;
-      const actionbar = this.actionbar;
       const actions = this.actions || [...config.actions];
       const classes = {
         actionbar: `${pfx}actionbar`,
@@ -134,6 +135,7 @@ export default () => {
         disabled: `${pfx}disabled`,
       };
       const rte = new RichTextEditor({
+        em,
         el,
         classes,
         actions,
