@@ -499,8 +499,9 @@ export default () => {
       assetsVis.reset();
       fu && fu.remove();
       am && am.remove();
-      [assets, am, fu].forEach(i => (i = null));
+      [assets, assetsVis, am, fu].forEach(i => (i = null));
       this._bhv = {};
+      this.all = {};
       c = {};
     },
   };

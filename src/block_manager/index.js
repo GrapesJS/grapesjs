@@ -91,7 +91,7 @@ export default () => {
       drag: evDrag,
       dragStart: evDragStart,
       dragEnd: evDragStop,
-      custom: evCustom
+      custom: evCustom,
     },
 
     init(config = {}) {
@@ -126,7 +126,7 @@ export default () => {
         container: bhv.container,
         dragStart: (block, ev) => this.startDrag(block, ev),
         drag: ev => this.__drag(ev),
-        dragStop: cancel => this.endDrag(cancel)
+        dragStop: cancel => this.endDrag(cancel),
       };
     },
 
@@ -185,7 +185,7 @@ export default () => {
     __behaviour(opts = {}) {
       return (this._bhv = {
         ...(this._bhv || {}),
-        ...opts
+        ...opts,
       });
     },
 
@@ -343,10 +343,7 @@ export default () => {
 
       if (opts.external) {
         const collection = new Blocks(toRender);
-        return new BlocksView(
-          { collection, categories },
-          { ...c, ...opts }
-        ).render().el;
+        return new BlocksView({ collection, categories }, { ...c, ...opts }).render().el;
       }
 
       if (blocksView) {
@@ -368,6 +365,11 @@ export default () => {
       colls.map(c => c.reset());
       blocksView && blocksView.remove();
       c = {};
-    }
+      blocks = {};
+      blocksVisible = {};
+      blocksView = {};
+      categories = [];
+      this.all = {};
+    },
   };
 };

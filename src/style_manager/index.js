@@ -753,6 +753,8 @@ export default () => {
       [properties, sectors, SectView].forEach(i => (i = {}));
       this.em = {};
       this.config = {};
+      this.builtIn = {};
+      this.model = {};
     },
   };
 };

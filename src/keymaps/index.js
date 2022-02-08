@@ -222,6 +222,7 @@ export default () => {
      */
     removeAll() {
       Object.keys(this.keymaps).forEach(keymap => this.remove(keymap));
+      keymaster.handlers = {};
       return this;
     },
 
