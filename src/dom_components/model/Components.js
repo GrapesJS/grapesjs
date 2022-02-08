@@ -28,9 +28,8 @@ const getComponentsFromDefs = (items, all = {}, opts = {}) => {
       const newComponents = getComponentsFromDefs(components, all);
 
       if (isFunction(result.components)) {
-        if (result.components().length > 0) {
-          result.components(newComponents);
-        }
+        const cmps = result.components();
+        cmps.length > 0 && cmps.reset(newComponents);
       } else {
         result.components = newComponents;
       }
