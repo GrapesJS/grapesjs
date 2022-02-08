@@ -77,6 +77,7 @@ export default class RichTextEditor {
     el[RTE_KEY] = this;
     this.setEl(el);
     this.updateActiveActions = this.updateActiveActions.bind(this);
+    this.__onKeydown = this.__onKeydown.bind(this);
 
     const acts = (settings.actions || []).map(action => {
       let result = action;
@@ -173,26 +174,37 @@ export default class RichTextEditor {
   }
 
   enable() {
-    if (this.enabled) {
-      return this;
-    }
-
-    this.actionbarEl().style.display = '';
-    this.el.contentEditable = true;
-    on(this.el, 'mouseup keyup', this.updateActiveActions);
-    this.syncActions();
-    this.updateActiveActions();
-    this.el.focus();
-    this.enabled = 1;
-    return this;
+    if (this.enabled) return this;
+    return this.__toggleEffects(true);
   }
 
   disable() {
-    this.actionbarEl().style.display = 'none';
-    this.el.contentEditable = false;
-    off(this.el, 'mouseup keyup', this.updateActiveActions);
-    this.enabled = 0;
+    return this.__toggleEffects(false);
+  }
+
+  __toggleEffects(enable = false) {
+    const method = enable ? on : off;
+    const { el, doc } = this;
+    this.actionbarEl().style.display = enable ? '' : 'none';
+    el.contentEditable = !!enable;
+    method(el, 'mouseup keyup', this.updateActiveActions);
+    method(doc, 'keydown', this.__onKeydown);
+    this.enabled = enable;
+
+    if (enable) {
+      this.syncActions();
+      this.updateActiveActions();
+      el.focus();
+    }
+
     return this;
+  }
+
+  __onKeydown(event) {
+    if (event.key === 'Enter') {
+      this.doc.execCommand('insertLineBreak');
+      event.preventDefault();
+    }
   }
 
   /**
