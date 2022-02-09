@@ -221,7 +221,9 @@ export default Backbone.View.extend({
    * @private
    * */
   updateHighlight() {
-    const hl = this.model.get('highlightable');
+    const { model } = this;
+    const isTextable = model.get('textable');
+    const hl = model.get('highlightable') && (isTextable || !model.isChildOf('text'));
     this.setAttribute('data-gjs-highlightable', hl ? true : '');
   },
 
@@ -287,7 +289,7 @@ export default Backbone.View.extend({
       id: model.getId(),
       'data-gjs-type': type || 'default',
       ...(this.__isDraggable() && { draggable: true }),
-      ...(textable && { contenteditable: 'false', 'data-gjs-textable': 'true' }),
+      ...(textable && { contenteditable: 'false' }),
     };
 
     // Remove all current attributes

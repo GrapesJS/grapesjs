@@ -25,26 +25,45 @@ export default ComponentView.extend({
     !opts.fromDisable && this.disableEditing();
   },
 
+  canActivate() {
+    const { model, rteEnabled, em } = this;
+    const modelInEdit = em?.getEditing();
+    const sameInEdit = modelInEdit === model;
+    let result = true;
+    let isInnerText = false;
+    let delegate;
+
+    if (rteEnabled || !model.get('editable') || sameInEdit || (isInnerText = model.isChildOf('text'))) {
+      result = false;
+      // If the current is inner text, select the closest text
+      if (isInnerText && !model.get('textable')) {
+        let parent = model.parent();
+
+        while (parent && !parent.isInstanceOf('text')) {
+          parent = parent.parent();
+        }
+
+        delegate = parent;
+      }
+    }
+
+    return { result, delegate };
+  },
+
   /**
    * Enable element content editing
    * @private
    * */
   async onActive(e) {
-    const { rte, em, model } = this;
+    const { rte, em } = this;
+    const { result, delegate } = this.canActivate();
 
     // We place this before stopPropagation in case of nested
     // text components will not block the editing (#1394)
-    if (this.rteEnabled || !model.get('editable') || model.get('_innertext') || em?.isEditing()) {
-      // If the current is inner text, select the closest text
-      if (model.get('_innertext')) {
-        let parent = model.parent();
-        while (parent && !parent.get('__text')) {
-          parent = parent.parent();
-        }
-        if (parent) {
-          em.setSelected(parent);
-          parent.trigger('active');
-        }
+    if (!result) {
+      if (delegate) {
+        em.setSelected(delegate);
+        delegate.trigger('active', e);
       }
       return;
     }
