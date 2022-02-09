@@ -30,7 +30,7 @@ export default Backbone.View.extend({
     this.attr = model.get('attributes');
     this.classe = this.attr.class || [];
     this.listenTo(model, 'change:style', this.updateStyle);
-    this.listenTo(model, 'change:attributes change:_innertext', this.renderAttributes);
+    this.listenTo(model, 'change:attributes', this.renderAttributes);
     this.listenTo(model, 'change:highlightable', this.updateHighlight);
     this.listenTo(model, 'change:status', this.updateStatus);
     this.listenTo(model, 'change:script rerender', this.reset);
@@ -54,8 +54,8 @@ export default Backbone.View.extend({
 
   __isDraggable() {
     const { model, config } = this;
-    const { _innertext, draggable } = model.attributes;
-    return config.draggableComponents && draggable && !_innertext;
+    const { draggable } = model.attributes;
+    return config.draggableComponents && draggable;
   },
 
   _clbObj() {

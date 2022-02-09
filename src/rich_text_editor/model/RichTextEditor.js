@@ -333,7 +333,6 @@ export default class RichTextEditor {
           const toSel = cmp.find(`[${customElAttr}]`)[0];
           if (!toSel) return;
           toSel.removeAttributes(customElAttr);
-          toSel.set({ _innertext: true });
           editor.select(toSel);
         });
         cmp.trigger('disable');

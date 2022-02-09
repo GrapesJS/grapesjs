@@ -9,17 +9,8 @@ export default class ComponentText extends Component {
 
     cmps.forEach(model => {
       const textable = !!model.get('textable');
-      const isBaseType = ['text', 'default', ''].some(type => model.is(type));
-      const selectable = !isBaseType || textable;
       model.set(
         {
-          _innertext: model.get('_innertext') ? true : !selectable,
-          // editable: selectable && model.get('editable'),
-          // selectable: selectable,
-          // hoverable: selectable,
-          // draggable: textable,
-          // highlightable: 0,
-          // copyable: textable,
           ...(!textable && { toolbar: '' }),
         },
         opts
