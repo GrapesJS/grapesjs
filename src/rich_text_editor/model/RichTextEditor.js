@@ -312,11 +312,13 @@ export default class RichTextEditor {
       const node = doc.createElement('div');
       const range = sel.getRangeAt(0);
       range.deleteContents();
+
       if (isString(value)) {
         node.innerHTML = value;
       } else if (value) {
         node.appendChild(value);
       }
+
       Array.prototype.slice.call(node.childNodes).forEach(nd => {
         range.insertNode(nd);
       });
@@ -331,7 +333,7 @@ export default class RichTextEditor {
           const toSel = cmp.find(`[${customElAttr}]`)[0];
           if (!toSel) return;
           toSel.removeAttributes(customElAttr);
-          toSel.set('selectable', true);
+          toSel.set({ _innertext: true });
           editor.select(toSel);
         });
         cmp.trigger('disable');

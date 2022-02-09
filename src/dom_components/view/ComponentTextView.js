@@ -30,11 +30,22 @@ export default ComponentView.extend({
    * @private
    * */
   async onActive(e) {
-    const { rte, em } = this;
+    const { rte, em, model } = this;
 
     // We place this before stopPropagation in case of nested
     // text components will not block the editing (#1394)
-    if (this.rteEnabled || !this.model.get('editable') || (em && em.isEditing())) {
+    if (this.rteEnabled || !model.get('editable') || model.get('_innertext') || em?.isEditing()) {
+      // If the current is inner text, select the closest text
+      if (model.get('_innertext')) {
+        let parent = model.parent();
+        while (parent && !parent.get('__text')) {
+          parent = parent.parent();
+        }
+        if (parent) {
+          em.setSelected(parent);
+          parent.trigger('active');
+        }
+      }
       return;
     }
 
@@ -110,28 +121,8 @@ export default ComponentView.extend({
       comps.length && comps.reset(null, opts);
       model.set('content', content, contentOpt);
     } else {
-      const clean = model => {
-        const textable = !!model.get('textable');
-        const selectable = !['text', 'default', ''].some(type => model.is(type)) || textable;
-        model.set(
-          {
-            _innertext: !selectable,
-            editable: selectable && model.get('editable'),
-            selectable: selectable,
-            hoverable: selectable,
-            removable: textable,
-            draggable: textable,
-            highlightable: 0,
-            copyable: textable,
-            ...(!textable && { toolbar: '' }),
-          },
-          opts
-        );
-        model.get('components').each(model => clean(model));
-      };
-
       comps.resetFromString(content, opts);
-      comps.each(model => clean(model));
+      model.onContentReset(comps, opts);
       comps.trigger('resetNavigator');
     }
   },

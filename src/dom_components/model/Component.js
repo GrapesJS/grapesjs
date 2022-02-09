@@ -1712,6 +1712,61 @@ export default class Component extends Model.extend(Styleable) {
   }
 
   /**
+   * Check if the component is an instance of some component type.
+   * @param {String} type Component type
+   * @returns {Boolean}
+   * @example
+   * // Add a new component type by extending an existing one
+   * editor.Components.addType('text-ext', { extend: 'text' });
+   * // Append a new component somewhere
+   * const newTextExt = editor.getSelected().append({ type: 'text-ext' })[0];
+   * newTextExt.isInstanceOf('text-ext'); // true
+   * newTextExt.isInstanceOf('text'); // true
+   */
+  isInstanceOf(type) {
+    const cmp = this.em?.get('DomComponents').getType(type)?.model;
+
+    if (!cmp) return false;
+
+    return this instanceof cmp;
+  }
+
+  /**
+   * Check if the component is a child of some other component (or component type)
+   * @param {[Component]|String} component Component parent to check. In case a string is passed,
+   *  the check will be performed on the component type.
+   * @returns {Boolean}
+   * @example
+   * const newTextComponent = editor.getSelected().append({
+   *  type: 'text',
+   *  components: 'My text <b>here</b>',
+   * })[0];
+   * const innerComponent = newTextComponent.find('b')[0];
+   * innerComponent.isChildOf(newTextComponent); // true
+   * innerComponent.isChildOf('text'); // true
+   */
+  isChildOf(component) {
+    const byType = isString(component);
+    let parent = this.parent();
+
+    while (parent) {
+      if (byType) {
+        if (parent.isInstanceOf(component)) {
+          return true;
+        }
+      } else {
+        if (parent === component) {
+          return true;
+        }
+      }
+
+      parent = parent.parent();
+    }
+
+    return false;
+  }
+
+  /**
    * Reset id of the component and any of its style rule
    * @param {Object} [opts={}] Options
    * @return {this}

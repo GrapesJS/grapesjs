@@ -293,12 +293,23 @@ export default {
     }
 
     if (model) {
+      let toSelect;
+
       if (model.get('selectable')) {
-        this.select(model, ev);
+        toSelect = model;
       } else {
         let parent = model.parent();
         while (parent && !parent.get('selectable')) parent = parent.parent();
-        this.select(parent, ev);
+        toSelect = parent;
+      }
+
+      if (toSelect) {
+        // Avoid selection of inner text components during editing
+        if (em.isEditing() && !model.get('textable') && model.isChildOf('text')) {
+          return;
+        }
+
+        this.select(toSelect, ev);
       }
     }
   },
