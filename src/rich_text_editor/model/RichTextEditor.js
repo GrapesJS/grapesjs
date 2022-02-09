@@ -2,7 +2,7 @@
 // and adapted to the GrapesJS's need
 
 import { isString } from 'underscore';
-import { on, off } from 'utils/mixins';
+import { on, off, getPointerEvent } from 'utils/mixins';
 
 const RTE_KEY = '_rte';
 
@@ -184,16 +184,16 @@ export default class RichTextEditor {
     });
   }
 
-  enable() {
+  enable(opts) {
     if (this.enabled) return this;
-    return this.__toggleEffects(true);
+    return this.__toggleEffects(true, opts);
   }
 
   disable() {
     return this.__toggleEffects(false);
   }
 
-  __toggleEffects(enable = false) {
+  __toggleEffects(enable = false, opts = {}) {
     const method = enable ? on : off;
     const { el, doc } = this;
     this.actionbarEl().style.display = enable ? '' : 'none';
@@ -203,8 +203,26 @@ export default class RichTextEditor {
     this.enabled = enable;
 
     if (enable) {
+      const { event } = opts;
       this.syncActions();
       this.updateActiveActions();
+
+      if (event) {
+        let range = null;
+
+        if (doc.caretRangeFromPoint) {
+          const poiner = getPointerEvent(event);
+          range = doc.caretRangeFromPoint(poiner.clientX, poiner.clientY);
+        } else if (event.rangeParent) {
+          range = doc.createRange();
+          range.setStart(event.rangeParent, event.rangeOffset);
+        }
+
+        const sel = doc.getSelection();
+        sel.removeAllRanges();
+        range && sel.addRange(range);
+      }
+
       el.focus();
     }
 

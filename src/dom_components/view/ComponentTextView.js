@@ -54,7 +54,7 @@ export default ComponentView.extend({
    * Enable element content editing
    * @private
    * */
-  async onActive(e) {
+  async onActive(ev) {
     const { rte, em } = this;
     const { result, delegate } = this.canActivate();
 
@@ -63,17 +63,17 @@ export default ComponentView.extend({
     if (!result) {
       if (delegate) {
         em.setSelected(delegate);
-        delegate.trigger('active', e);
+        delegate.trigger('active', ev);
       }
       return;
     }
 
-    e && e.stopPropagation && e.stopPropagation();
+    ev?.stopPropagation?.();
     this.lastContent = this.getContent();
 
     if (rte) {
       try {
-        this.activeRte = await rte.enable(this, this.activeRte);
+        this.activeRte = await rte.enable(this, this.activeRte, { event: ev });
       } catch (err) {
         em.logError(err);
       }

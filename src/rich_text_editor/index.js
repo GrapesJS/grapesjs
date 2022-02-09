@@ -299,14 +299,14 @@ export default () => {
      * @param {Object} rte The instance of already defined RTE
      * @private
      * */
-    async enable(view, rte) {
+    async enable(view, rte, opts) {
       lastEl = view.el;
       const { customRte } = this;
       const em = config.em;
       const el = view.getChildrenContainer();
 
       toolbar.style.display = '';
-      const rteInst = await (customRte ? customRte.enable(el, rte) : this.initRte(el).enable());
+      const rteInst = await (customRte ? customRte.enable(el, rte) : this.initRte(el).enable(opts));
 
       if (em) {
         setTimeout(this.updatePosition.bind(this), 0);
