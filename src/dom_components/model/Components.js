@@ -22,7 +22,7 @@ const getComponentsFromDefs = (items, all = {}, opts = {}) => {
 
     if (id && all[id]) {
       result = all[id];
-      tagName && result.set({ tagName }, { silent: true });
+      tagName && result.set({ tagName }, { ...opts, silent: true });
     }
 
     if (components) {
@@ -30,7 +30,7 @@ const getComponentsFromDefs = (items, all = {}, opts = {}) => {
 
       if (isFunction(result.components)) {
         const cmps = result.components();
-        cmps.length > 0 && cmps.reset(newComponents);
+        cmps.length > 0 && cmps.reset(newComponents, opts);
       } else {
         result.components = newComponents;
       }
