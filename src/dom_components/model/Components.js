@@ -16,12 +16,13 @@ const getComponentsFromDefs = (items, all = {}, opts = {}) => {
   const itms = isArray(items) ? items : [items];
 
   return itms.map(item => {
-    const { attributes = {}, components } = item;
+    const { attributes = {}, components, tagName } = item;
     const { id } = attributes;
     let result = item;
 
     if (id && all[id]) {
       result = all[id];
+      tagName && result.set({ tagName }, { silent: true });
     }
 
     if (components) {
