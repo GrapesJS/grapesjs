@@ -9,6 +9,7 @@ body:
         In order to understand and fix the issue, we ask you to fill correctly all the statements/questions.
         **If you don't indicate a reproducible demo with relative steps to reproduce the bug, the issue might be CLOSED.**
         Note: before creating a bug issue, search in GitHub Issues to check if a similar bug was already reported.
+        Optional: You can incentivize the resolution of the issue by funding it on [IssueHunt](https://issuehunt.io/r/artf/grapesjs).
   - type: checkboxes
     attributes:
       label: GrapesJS version
