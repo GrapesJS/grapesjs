@@ -102,6 +102,11 @@ As you see, this is what we get for asking only 7 properties, who adds more or l
 
 So it's clear that we can't rely on CSSOM objects, that's why we added the possibility to set custom CSS parser via `editor.setCustomParserCss` method or `config.Parser.parserCss` option to use on initialization. Let's see in detail how it's expected to work
 
+## CSSOM results can be nonintuitive
+
+As per current [csswg specification](https://drafts.csswg.org/css-variables-1/#variables-in-shorthands) variables in shorthand properties can serialize to the empty string.
+This means that while `background-color: var(--my-var)` will serialize fine `background: var(--my-var)` will not.
+
 ## Set CSS parser
 
 The custom parser you have to use it's just a function receiving 2 arguments: `css`, as the CSS string to parse, and `editor`, the instance of the current editor. As the result, you should return an array containing valid rule objects, the syntax of those objects are explained below. This is how you can set the custom parser
