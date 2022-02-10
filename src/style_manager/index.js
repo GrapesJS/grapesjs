@@ -362,17 +362,6 @@ export default () => {
       const lastTargetParents = this.getParentRules(lastTarget, { state, component });
       let stateTarget = this.__getStateTarget();
 
-      // Update sectors/properties visibility
-      sectors.forEach(sector => {
-        const props = sector.getProperties();
-        props.forEach(prop => {
-          const isVisible = prop.__checkVisibility({ target: lastTarget, component, sectors });
-          prop.set('visible', isVisible);
-        });
-        const sectorVisible = props.some(p => p.isVisible());
-        sector.set('visible', sectorVisible);
-      });
-
       // Handle the creation and update of the state rule, if enabled.
       em.skip(() => {
         if (state && lastTarget?.getState?.()) {
@@ -388,7 +377,7 @@ export default () => {
         }
       });
 
-      this.model.set({ targets, lastTarget, lastTargetParents, stateTarget });
+      this.model.set({ targets, lastTarget, lastTargetParents, stateTarget, component });
       this.__upProps(opts);
 
       return targets;
@@ -672,6 +661,7 @@ export default () => {
       const lastTarget = this.getSelected();
       if (!lastTarget) return;
 
+      const component = this.model.get('component');
       const lastTargetParents = this.getSelectedParents();
       const style = lastTarget.getStyle();
       const parentStyles = lastTargetParents.map(p => ({
@@ -683,6 +673,17 @@ export default () => {
         sector.getProperties().map(prop => {
           this.__upProp(prop, style, parentStyles, opts);
         });
+      });
+
+      // Update sectors/properties visibility
+      sectors.forEach(sector => {
+        const props = sector.getProperties();
+        props.forEach(prop => {
+          const isVisible = prop.__checkVisibility({ target: lastTarget, component, sectors });
+          prop.set('visible', isVisible);
+        });
+        const sectorVisible = props.some(p => p.isVisible());
+        sector.set('visible', sectorVisible);
       });
     },
 
