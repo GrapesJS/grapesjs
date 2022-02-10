@@ -1336,24 +1336,21 @@ export default class Component extends Model.extend(Styleable) {
    * */
   getName() {
     const { em } = this;
-    const { type, tagName } = this.attributes;
-    const cName = this.get('name');
-    const isDiv = tagName == 'div';
-    const tag = isDiv ? 'box' : tagName;
-    const defName = type || tag;
-    const nameTag = !type && tagName && !isDiv && tagName;
+    const { type, tagName, name } = this.attributes;
+    const defName = type || tagName;
+    const nameTag = !type && tagName;
     const i18nPfx = 'domComponents.names.';
-    const i18nName = cName && em && em.t(`${i18nPfx}${cName}`);
-    const i18nNameTag = nameTag && em && em.t(`${i18nPfx}${nameTag}`);
+    const i18nName = name && em?.t(`${i18nPfx}${name}`);
+    const i18nNameTag = nameTag && em?.t(`${i18nPfx}${nameTag}`);
     const i18nDefName = em && (em.t(`${i18nPfx}${type}`) || em.t(`${i18nPfx}${tagName}`));
     return (
       this.get('custom-name') || // Used in Layers (when the user changes the name)
-      i18nName ||
-      cName || // Component name (check if there is a i18n string for it)
-      i18nNameTag ||
-      capitalize(nameTag) || // Try name by tag if there is no valid type
-      i18nDefName ||
-      capitalize(defName) // Use the default name
+      i18nName || // Use local component `name` key (eg. `domComponents.names.myComponentName`)
+      name || // Use component `name` key
+      i18nNameTag || // Use local component `tagName` key (eg. `domComponents.names.div`)
+      capitalize(nameTag) || // Use component `tagName` key
+      i18nDefName || // Use local component `type` key (eg. `domComponents.names.image`)
+      capitalize(defName) // Use component `type` key
     );
   }
 
