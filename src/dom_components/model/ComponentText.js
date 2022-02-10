@@ -25,5 +25,4 @@ ComponentText.prototype.defaults = {
   type: 'text',
   droppable: false,
   editable: true,
-  __text: true,
 };

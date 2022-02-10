@@ -719,7 +719,8 @@ export default () => {
       if (isFunction(droppable)) {
         droppable = !!droppable(srcModel, target, at);
       } else {
-        if (droppable === false && target.get('__text') && srcModel.get('textable')) {
+        if (droppable === false && target.isInstanceOf('text') && srcModel.get('textable')) {
+          console.log('textable');
           droppable = true;
         } else {
           const el = srcModel.getEl();
