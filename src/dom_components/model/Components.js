@@ -69,6 +69,7 @@ export default Backbone.Collection.extend({
     const cmps = isArray(parsed) ? parsed : [parsed];
     const newCmps = getComponentsFromDefs(cmps, allByID);
     this.reset(newCmps, opts);
+    this.em?.trigger('component:content', this.parent, opts, input);
   },
 
   removeChildren(removed, coll, opts = {}) {

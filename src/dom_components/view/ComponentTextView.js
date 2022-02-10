@@ -141,8 +141,6 @@ export default ComponentView.extend({
       model.set('content', content, contentOpt);
     } else {
       comps.resetFromString(content, opts);
-      model.onContentReset(comps, opts);
-      comps.trigger('resetNavigator');
     }
   },
 
