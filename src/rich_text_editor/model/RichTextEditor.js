@@ -78,8 +78,8 @@ const defActions = {
 
 export default class RichTextEditor {
   constructor(settings = {}) {
-    const el = settings.el;
-    this.em = settings.em;
+    const { el, em } = settings;
+    this.em = em;
 
     if (el[RTE_KEY]) {
       return el[RTE_KEY];
@@ -241,7 +241,7 @@ export default class RichTextEditor {
    */
   syncActions() {
     this.getActions().forEach(action => {
-      if (this.settings.actionbar) {
+      if (this.actionbar) {
         if (!action.state || (action.state && action.state(this, this.doc) >= 0)) {
           const event = action.event || 'click';
           action.btn[`on${event}`] = e => {
@@ -323,7 +323,7 @@ export default class RichTextEditor {
    * @param  {string} value HTML string
    */
   insertHTML(value, { select } = {}) {
-    const { em, doc } = this;
+    const { em, doc, el } = this;
     const sel = doc.getSelection();
 
     if (sel && sel.rangeCount) {
@@ -343,7 +343,7 @@ export default class RichTextEditor {
 
       sel.removeAllRanges();
       sel.addRange(range);
-      this.el.focus();
+      el.focus();
 
       if (select) {
         const cmp = em.getSelected();
@@ -351,7 +351,7 @@ export default class RichTextEditor {
           const toSel = cmp.find(`[${customElAttr}]`)[0];
           if (!toSel) return;
           toSel.removeAttributes(customElAttr);
-          editor.select(toSel);
+          em.setSelected(toSel);
         });
         cmp.trigger('disable');
       }

@@ -72,10 +72,7 @@ export default () => {
      * @private
      */
     init(opts = {}) {
-      config = {
-        ...defaults,
-        ...opts,
-      };
+      config = { ...defaults, ...opts };
       const ppfx = config.pStylePrefix;
 
       if (ppfx) {
@@ -88,7 +85,6 @@ export default () => {
       if (!hasWin()) return this;
       toolbar = document.createElement('div');
       toolbar.className = `${ppfx}rte-toolbar ${ppfx}one-bg`;
-      globalRte = this.initRte(document.createElement('div'));
 
       //Avoid closing on toolbar clicking
       on(toolbar, 'mousedown', e => e.stopPropagation());
@@ -97,7 +93,7 @@ export default () => {
 
     destroy() {
       const { customRte } = this;
-      globalRte && globalRte.destroy();
+      globalRte?.destroy();
       customRte && customRte.destroy && customRte.destroy();
       this.actionbar = 0;
       this.actions = 0;
@@ -134,25 +130,30 @@ export default () => {
         inactive: `${pfx}inactive`,
         disabled: `${pfx}disabled`,
       };
-      const rte = new RichTextEditor({
-        em,
-        el,
-        classes,
-        actions,
-        actionbar,
-        actionbarContainer,
-      });
-      globalRte && globalRte.setEl(el);
 
-      if (rte.actionbar) {
-        this.actionbar = rte.actionbar;
+      if (!globalRte) {
+        globalRte = new RichTextEditor({
+          em,
+          el,
+          classes,
+          actions,
+          actionbar,
+          actionbarContainer,
+        });
+      } else {
+        globalRte.em = em;
+        globalRte.setEl(el);
       }
 
-      if (rte.actions) {
-        this.actions = rte.actions;
+      if (globalRte.actionbar) {
+        this.actionbar = globalRte.actionbar;
       }
 
-      return rte;
+      if (globalRte.actions) {
+        this.actions = globalRte.actions;
+      }
+
+      return globalRte;
     },
 
     /**
