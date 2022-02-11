@@ -88,22 +88,20 @@ export default Backbone.View.extend({
   onDisable() {},
 
   remove() {
-    const view = this;
-    Backbone.View.prototype.remove.apply(view, arguments);
-    const { model } = view;
-    const frame = view._getFrame() || {};
-    const frameM = frame.model;
-    model.components().forEach(comp => {
-      const view = comp.getView(frameM);
-      view && view.remove();
-    });
-    const cv = view.childrenView;
-    cv && cv.remove();
+    Backbone.View.prototype.remove.apply(this, arguments);
+    const { model, $el } = this;
     const { views } = model;
-    views.splice(views.indexOf(view), 1);
-    view.removed(view._clbObj());
-    view.$el.data({ model: '', collection: '', view: '' });
-    return view;
+    const frame = this._getFrame() || {};
+    model.components().forEach(comp => {
+      const view = comp.getView(frame.model);
+      view?.remove();
+    });
+    this.childrenView?.remove();
+    views.splice(views.indexOf(this), 1);
+    this.removed(this._clbObj());
+    $el.data({ model: '', collection: '', view: '' });
+    // delete model.view; // Sorter relies on this property
+    return this;
   },
 
   handleDragStart(event) {
