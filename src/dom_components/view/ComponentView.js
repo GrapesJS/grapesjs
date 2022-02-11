@@ -503,11 +503,8 @@ export default Backbone.View.extend({
   },
 
   postRender() {
-    const { em, model, modelOpt } = this;
-
-    if (!modelOpt.temporary) {
+    if (!this.modelOpt.temporary) {
       this.onRender(this._clbObj());
-      em && em.trigger('component:mount', model);
     }
   },
 

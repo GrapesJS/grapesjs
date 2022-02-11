@@ -61,8 +61,7 @@ export default Backbone.View.extend({
     const fragment = fragmentEl || null;
     const { frameView = {} } = config;
     const sameFrameView = frameView.model && model.getView(frameView.model);
-    const dt =
-      opts.componentTypes || (em && em.get('DomComponents').getTypes());
+    const dt = opts.componentTypes || (em && em.get('DomComponents').getTypes());
     const type = model.get('type') || 'default';
     let viewObject = this.compView;
 
@@ -77,7 +76,7 @@ export default Backbone.View.extend({
       new viewObject({
         model,
         config,
-        componentTypes: dt
+        componentTypes: dt,
       });
     let rendered;
 
@@ -115,6 +114,10 @@ export default Backbone.View.extend({
       }
     }
 
+    if (!model.opt.temporary) {
+      em?.trigger('component:mount', model);
+    }
+
     return rendered;
   },
 
@@ -132,5 +135,5 @@ export default Backbone.View.extend({
     el.innerHTML = '';
     el.appendChild(frag);
     return this;
-  }
+  },
 });
