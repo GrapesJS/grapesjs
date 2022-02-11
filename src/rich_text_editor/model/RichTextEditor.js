@@ -11,11 +11,11 @@ const btnState = {
   INACTIVE: 0,
   DISABLED: -1,
 };
-const isValidAnchor = rte => {
-  const anchor = rte.selection().anchorNode;
-  const parentNode = anchor && anchor.parentNode;
-  const nextSibling = anchor && anchor.nextSibling;
-  return (parentNode && parentNode.nodeName == 'A') || (nextSibling && nextSibling.nodeName == 'A');
+const isValidTag = (rte, tagName = 'A') => {
+  const { anchorNode, focusNode } = rte.selection();
+  const parentAnchor = anchorNode?.parentNode;
+  const parentFocus = focusNode?.parentNode;
+  return parentAnchor?.nodeName == tagName || parentFocus?.nodeName == tagName;
 };
 
 const customElAttr = 'data-selectme';
@@ -55,10 +55,10 @@ const defActions = {
       title: 'Link',
     },
     state: rte => {
-      return rte && rte.selection() && isValidAnchor(rte) ? btnState.ACTIVE : btnState.INACTIVE;
+      return rte && rte.selection() && isValidTag(rte) ? btnState.ACTIVE : btnState.INACTIVE;
     },
     result: rte => {
-      if (isValidAnchor(rte)) {
+      if (isValidTag(rte)) {
         rte.exec('unlink');
       } else {
         rte.insertHTML(`<a href="" ${customElAttr}>${rte.selection()}</a>`, { select: true });
@@ -70,8 +70,11 @@ const defActions = {
             <path fill="currentColor" d="M20.71,4.63L19.37,3.29C19,2.9 18.35,2.9 17.96,3.29L9,12.25L11.75,15L20.71,6.04C21.1,5.65 21.1,5 20.71,4.63M7,14A3,3 0 0,0 4,17C4,18.31 2.84,19 2,19C2.92,20.22 4.5,21 6,21A4,4 0 0,0 10,17A3,3 0 0,0 7,14Z" />
         </svg>`,
     attributes: { title: 'Wrap for style' },
+    state: rte => {
+      return rte?.selection() && isValidTag(rte, 'SPAN') ? btnState.DISABLED : btnState.INACTIVE;
+    },
     result: rte => {
-      rte.insertHTML(`<span ${customElAttr}>${rte.selection()}</span>`, { select: true });
+      !isValidTag(rte, 'SPAN') && rte.insertHTML(`<span ${customElAttr}>${rte.selection()}</span>`, { select: true });
     },
   },
 };
