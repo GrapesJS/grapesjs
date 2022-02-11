@@ -272,14 +272,15 @@ export default class PropertyComposite extends Property {
     if (!this.__styleHasProps(style)) return null;
 
     const { byName } = opts;
+    const name = this.getName();
     const props = this.getProperties();
     const sep = this.getSplitSeparator();
     const fromStyle = this.get('fromStyle');
-    let result = fromStyle ? fromStyle(style, { property: this, separator: sep }) : {};
+    let result = fromStyle ? fromStyle(style, { property: this, name, separator: sep }) : {};
 
     if (!fromStyle) {
       // Get props from the main property
-      result = this.__getSplitValue(style[this.getName()] || '', { byName });
+      result = this.__getSplitValue(style[name] || '', { byName });
 
       // Get props from the inner properties
       props.forEach(prop => {
