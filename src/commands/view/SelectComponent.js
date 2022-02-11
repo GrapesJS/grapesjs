@@ -100,6 +100,7 @@ export default {
    */
   onHover(e) {
     e.stopPropagation();
+    const { em } = this;
     const trg = e.target;
     const view = getViewEl(trg);
     const frameView = view && view._getFrame();
@@ -122,9 +123,11 @@ export default {
       model = parent;
     }
 
+    const opts = {};
     this.currentDoc = trg.ownerDocument;
-    this.em.setHovered(model);
-    frameView && this.em.set('currentFrame', frameView);
+    em.trigger('component:hover:before', model, opts);
+    !opts.abort && em.setHovered(model);
+    frameView && em.set('currentFrame', frameView);
   },
 
   onFrameUpdated() {
@@ -308,8 +311,9 @@ export default {
         if (em.isEditing() && !model.get('textable') && model.isChildOf('text')) {
           return;
         }
-
-        this.select(toSelect, ev);
+        const opts = {};
+        em.trigger('component:select:before', toSelect, opts);
+        !opts.abort && this.select(toSelect, ev);
       }
     }
   },
