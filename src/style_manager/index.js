@@ -270,7 +270,7 @@ export default () => {
     addProperty(sectorId, property, opts = {}) {
       const sector = this.getSector(sectorId, { warn: 1 });
       let prop = null;
-      if (sector) prop = sector.get('properties').add(property, opts);
+      if (sector) prop = sector.addProperty(property, opts);
 
       return prop;
     },

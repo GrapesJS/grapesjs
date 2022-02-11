@@ -1,5 +1,5 @@
 import { Model } from 'common';
-import { extend, isString } from 'underscore';
+import { extend, isString, isArray } from 'underscore';
 import Properties from './Properties';
 
 /**
@@ -126,6 +126,10 @@ export default class Sector extends Model {
 
   getProperty(id) {
     return this.getProperties().filter(prop => prop.get('id') === id)[0] || null;
+  }
+
+  addProperty(property, opts) {
+    return this.get('properties').add(this.checkExtend(property), opts);
   }
 
   /**
