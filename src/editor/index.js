@@ -79,6 +79,8 @@ export default (config = {}, opts = {}) => {
      */
     editor: em,
 
+    modules: [],
+
     /**
      * Initialize editor model
      * @return {this}

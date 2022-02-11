@@ -4,13 +4,13 @@ import DomComponents from 'dom_components';
 import Editor from 'editor/model/Editor';
 
 describe('ComponentView', () => {
-  var fixtures;
-  var model;
-  var view;
-  var hClass = 'hc-state';
-  var dcomp;
-  var compOpts;
+  let fixtures;
+  let model;
+  let view;
+  let dcomp;
+  let compOpts;
   let em;
+  let el;
 
   beforeEach(() => {
     em = new Editor({});
@@ -26,7 +26,8 @@ describe('ComponentView', () => {
     em.get('StyleManager').render(); // Enable to listen em.setState
     document.body.innerHTML = '<div id="fixtures"></div>';
     fixtures = document.body.querySelector('#fixtures');
-    fixtures.appendChild(view.render().el);
+    el = view.render().el;
+    fixtures.appendChild(el);
   });
 
   afterEach(() => {
@@ -34,19 +35,25 @@ describe('ComponentView', () => {
   });
 
   test('Component empty', () => {
-    expect(fixtures.innerHTML).toEqual('<div data-gjs-type="default" data-highlightable="1"></div>');
+    expect(fixtures.innerHTML).toEqual(
+      `<div data-gjs-highlightable="true" id="${el.id}" data-gjs-type="default"></div>`
+    );
   });
 
   test('Clean form helper state', () => {
     em.setSelected(model);
     em.setState('test');
     em.setState();
-    expect(fixtures.innerHTML).toEqual('<div data-gjs-type="default" data-highlightable="1" class="selected"></div>');
+    expect(fixtures.innerHTML).toEqual(
+      `<div data-gjs-highlightable="true" id="${el.id}" data-gjs-type="default" class="selected"></div>`
+    );
   });
 
   test('Add helper class on status update', () => {
     model.set('status', 'selected');
-    expect(fixtures.innerHTML).toEqual('<div data-gjs-type="default" data-highlightable="1" class="selected"></div>');
+    expect(fixtures.innerHTML).toEqual(
+      `<div data-gjs-highlightable="true" id="${el.id}" data-gjs-type="default" class="selected"></div>`
+    );
   });
 
   test('Get string of classes', () => {
@@ -114,9 +121,12 @@ describe('ComponentView', () => {
       componentTypes: dcomp.componentTypes,
     });
     fixtures.innerHTML = '';
-    fixtures.appendChild(view.render().el);
+    el = view.render().el;
+    fixtures.appendChild(el);
+    const firstId = el.children[0].id;
+    const secondId = el.children[1].id;
     expect(view.$el.html()).toEqual(
-      '<span data-gjs-type="default" data-highlightable="1"></span><div data-gjs-type="default" data-highlightable="1" title="test"></div>'
+      `<span data-gjs-highlightable="true" id="${firstId}" data-gjs-type="default"></span><div data-gjs-highlightable="true" id="${secondId}" data-gjs-type="default" title="test"></div>`
     );
   });
 

@@ -1,5 +1,4 @@
 import StorageManager from 'storage_manager';
-import Models from './model/Models';
 
 describe('Storage Manager', () => {
   describe('Main', () => {
@@ -69,13 +68,13 @@ describe('Storage Manager', () => {
         },
         load(keys) {
           return storeValue;
-        }
+        },
       };
 
       beforeEach(() => {
         storeValue = [];
         obj = new StorageManager().init({
-          type: storageId
+          type: storageId,
         });
         obj.add(storageId, storage);
       });
@@ -87,7 +86,7 @@ describe('Storage Manager', () => {
       test('Store and load data', () => {
         var data = {
           item: 'testData',
-          item2: 'testData2'
+          item2: 'testData2',
         };
         var data2 = {};
         var id = obj.getConfig().id;

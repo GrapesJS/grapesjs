@@ -132,8 +132,6 @@ export default class RichTextEditor {
     }
 
     settings.styleWithCSS && this.exec('styleWithCSS');
-    this.syncActions();
-
     return this;
   }
 
