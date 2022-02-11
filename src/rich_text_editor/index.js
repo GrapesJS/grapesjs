@@ -40,10 +40,11 @@ import RichTextEditor from './model/RichTextEditor';
 import { on, hasWin } from 'utils/mixins';
 import defaults from './config/config';
 
+const eventsUp = 'change:canvasOffset frame:scroll component:update';
+
 export default () => {
-  let config = {};
-  let toolbar, actions, lastEl, globalRte;
-  const eventsUp = 'change:canvasOffset frame:scroll component:update';
+  let toolbar;
+
   const hideToolbar = () => {
     const style = toolbar.style;
     const size = '-1000px';
@@ -63,7 +64,7 @@ export default () => {
     name: 'RichTextEditor',
 
     getConfig() {
-      return config;
+      return this.config;
     },
 
     /**
@@ -72,16 +73,17 @@ export default () => {
      * @private
      */
     init(opts = {}) {
-      config = { ...defaults, ...opts };
+      const config = { ...defaults, ...opts };
       const ppfx = config.pStylePrefix;
 
       if (ppfx) {
         config.stylePrefix = ppfx + config.stylePrefix;
       }
 
+      this.config = config;
       this.pfx = config.stylePrefix;
       this.em = config.em;
-      actions = config.actions || [];
+      this.actions = config.actions || [];
       if (!hasWin()) return this;
       toolbar = document.createElement('div');
       toolbar.className = `${ppfx}rte-toolbar ${ppfx}one-bg`;
@@ -92,13 +94,12 @@ export default () => {
     },
 
     destroy() {
-      const { customRte } = this;
-      globalRte?.destroy();
-      customRte && customRte.destroy && customRte.destroy();
-      this.actionbar = 0;
-      this.actions = 0;
-      this.em = 0;
-      [config, toolbar, actions, lastEl, globalRte].forEach(i => (i = {}));
+      this.globalRte?.destroy();
+      this.customRte?.destroy?.();
+      toolbar = 0;
+      ['actionbar', 'actions', 'em', 'config', 'globalRte', 'lastEl'].map(i => {
+        delete this[i];
+      });
     },
 
     /**
@@ -120,7 +121,8 @@ export default () => {
      * @private
      */
     initRte(el) {
-      const { em, pfx, actionbar } = this;
+      let { globalRte } = this;
+      const { em, pfx, actionbar, config } = this;
       const actionbarContainer = toolbar;
       const actions = this.actions || [...config.actions];
       const classes = {
@@ -140,6 +142,7 @@ export default () => {
           actionbar,
           actionbarContainer,
         });
+        this.globalRte = globalRte;
       } else {
         globalRte.em = em;
         globalRte.setEl(el);
@@ -219,7 +222,7 @@ export default () => {
      */
     add(name, action = {}) {
       action.name = name;
-      globalRte.addAction(action, { sync: 1 });
+      this.globalRte?.addAction(action, { sync: 1 });
     },
 
     /**
@@ -232,7 +235,7 @@ export default () => {
      */
     get(name) {
       let result;
-      globalRte.getActions().forEach(action => {
+      this.globalRte?.getActions().forEach(action => {
         if (action.name == name) {
           result = action;
         }
@@ -245,7 +248,7 @@ export default () => {
      * @return {Array}
      */
     getAll() {
-      return globalRte.getActions();
+      return this.globalRte?.getActions();
     },
 
     /**
@@ -283,10 +286,11 @@ export default () => {
      * @private
      */
     updatePosition() {
+      const { em } = this;
       const un = 'px';
-      const canvas = config.em.get('Canvas');
+      const canvas = em.get('Canvas');
       const { style } = toolbar;
-      const pos = canvas.getTargetToElementFixed(lastEl, toolbar, {
+      const pos = canvas.getTargetToElementFixed(this.lastEl, toolbar, {
         event: 'rteToolbarPosUpdate',
         left: 0,
       });
@@ -301,9 +305,8 @@ export default () => {
      * @private
      * */
     async enable(view, rte, opts) {
-      lastEl = view.el;
-      const { customRte } = this;
-      const em = config.em;
+      this.lastEl = view.el;
+      const { customRte, em } = this;
       const el = view.getChildrenContainer();
 
       toolbar.style.display = '';
@@ -326,7 +329,7 @@ export default () => {
      * @private
      * */
     disable(view, rte) {
-      const em = config.em;
+      const { em } = this;
       const customRte = this.customRte;
       var el = view.getChildrenContainer();
 
