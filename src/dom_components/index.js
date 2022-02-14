@@ -720,7 +720,6 @@ export default () => {
         droppable = !!droppable(srcModel, target, at);
       } else {
         if (droppable === false && target.isInstanceOf('text') && srcModel.get('textable')) {
-          console.log('textable');
           droppable = true;
         } else {
           const el = srcModel.getEl();

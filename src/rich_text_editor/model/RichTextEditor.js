@@ -2,7 +2,7 @@
 // and adapted to the GrapesJS's need
 
 import { isString } from 'underscore';
-import { on, off, getPointerEvent } from 'utils/mixins';
+import { on, off, getPointerEvent, getModel } from 'utils/mixins';
 
 const RTE_KEY = '_rte';
 
@@ -328,6 +328,7 @@ export default class RichTextEditor {
     const sel = doc.getSelection();
 
     if (sel && sel.rangeCount) {
+      const model = getModel(el);
       const node = doc.createElement('div');
       const range = sel.getRangeAt(0);
       range.deleteContents();
@@ -346,15 +347,14 @@ export default class RichTextEditor {
       sel.addRange(range);
       el.focus();
 
-      if (select) {
-        const cmp = em.getSelected();
-        cmp.once('rte:disable', () => {
-          const toSel = cmp.find(`[${customElAttr}]`)[0];
+      if (select && model) {
+        model.once('rte:disable', () => {
+          const toSel = model.find(`[${customElAttr}]`)[0];
           if (!toSel) return;
-          toSel.removeAttributes(customElAttr);
           em.setSelected(toSel);
+          toSel.removeAttributes(customElAttr);
         });
-        cmp.trigger('disable');
+        model.trigger('disable');
       }
     }
   }
