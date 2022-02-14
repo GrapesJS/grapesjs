@@ -126,7 +126,10 @@ export default {
     const opts = {};
     this.currentDoc = trg.ownerDocument;
     em.trigger('component:hover:before', model, opts);
-    !opts.abort && em.setHovered(model);
+    if (!opts.abort) {
+      em.setHovered(model);
+      em.trigger('component:hover', model);
+    }
     frameView && em.set('currentFrame', frameView);
   },
 
@@ -313,7 +316,10 @@ export default {
         }
         const opts = {};
         em.trigger('component:select:before', toSelect, opts);
-        !opts.abort && this.select(toSelect, ev);
+        if (!opts.abort) {
+          this.select(toSelect, ev);
+          em.trigger('component:select', toSelect);
+        }
       }
     }
   },
