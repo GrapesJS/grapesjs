@@ -116,20 +116,8 @@ export default {
       }
     }
 
-    // Get first valid hoverable model
-    if (model && !model.get('hoverable')) {
-      let parent = model && model.parent();
-      while (parent && !parent.get('hoverable')) parent = parent.parent();
-      model = parent;
-    }
-
-    const opts = {};
     this.currentDoc = trg.ownerDocument;
-    em.trigger('component:hover:before', model, opts);
-    if (!opts.abort) {
-      em.setHovered(model);
-      em.trigger('component:hover', model);
-    }
+    em.setHovered(model, { useValid: true });
     frameView && em.set('currentFrame', frameView);
   },
 
@@ -299,28 +287,11 @@ export default {
     }
 
     if (model) {
-      let toSelect;
-
-      if (model.get('selectable')) {
-        toSelect = model;
-      } else {
-        let parent = model.parent();
-        while (parent && !parent.get('selectable')) parent = parent.parent();
-        toSelect = parent;
+      // Avoid selection of inner text components during editing
+      if (em.isEditing() && !model.get('textable') && model.isChildOf('text')) {
+        return;
       }
-
-      if (toSelect) {
-        // Avoid selection of inner text components during editing
-        if (em.isEditing() && !model.get('textable') && model.isChildOf('text')) {
-          return;
-        }
-        const opts = {};
-        em.trigger('component:select:before', toSelect, opts);
-        if (!opts.abort) {
-          this.select(toSelect, ev);
-          em.trigger('component:select', toSelect);
-        }
-      }
+      this.select(model, ev);
     }
   },
 
@@ -331,7 +302,7 @@ export default {
    */
   select(model, event = {}) {
     if (!model) return;
-    this.editor.select(model, { event });
+    this.editor.select(model, { event, useValid: true });
     this.initResize(model);
   },
 

@@ -321,8 +321,22 @@ export default class EditorModel extends Model {
     multiple && this.removeSelected(selected.filter(s => !contains(els, s)));
 
     els.forEach(el => {
-      const model = getModel(el, $);
-      if (model && !model.get('selectable')) return;
+      let model = getModel(el);
+
+      if (model) {
+        this.trigger('component:select:before', model, opts);
+
+        // Check for valid selectable
+        if (!model.get('selectable') || opts.abort) {
+          if (opts.useValid) {
+            let parent = model.parent();
+            while (parent && !parent.get('selectable')) parent = parent.parent();
+            model = parent;
+          } else {
+            return;
+          }
+        }
+      }
 
       // Hanlde multiple selection
       if (ctrlKey && mltSel) {
@@ -386,6 +400,7 @@ export default class EditorModel extends Model {
       const selected = this.get('selected');
       opts.forceChange && this.removeSelected(model, opts);
       selected.addComponent(model, opts);
+      model && this.trigger('component:select', model, opts);
     });
   }
 
@@ -425,10 +440,31 @@ export default class EditorModel extends Model {
    * @private
    */
   setHovered(el, opts = {}) {
-    const model = getModel(el, $);
-    if (model && !model.get('hoverable')) return;
+    if (!el) return this.set('componentHovered', '');
+
+    const ev = 'component:hover';
+    let model = getModel(el);
+
+    if (!model) return;
+
     opts.forceChange && this.set('componentHovered', '');
-    this.set('componentHovered', model, opts);
+    this.trigger(`${ev}:before`, model, opts);
+
+    // Check for valid hoverable
+    if (!model.get('hoverable')) {
+      if (opts.useValid && !opts.abort) {
+        let parent = model && model.parent();
+        while (parent && !parent.get('hoverable')) parent = parent.parent();
+        model = parent;
+      } else {
+        return;
+      }
+    }
+
+    if (!opts.abort) {
+      this.set('componentHovered', model, opts);
+      this.trigger(ev, model, opts);
+    }
   }
 
   getHovered() {
