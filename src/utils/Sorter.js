@@ -1075,6 +1075,9 @@ export default Backbone.View.extend({
 
         if (canRemove) {
           modelToDrop = srcModel.collection.remove(srcModel, { temporary: true });
+          if (sameCollection && index > srcIndex) {
+            opts.at = index - 1;
+          }
         }
       } else {
         modelToDrop = isFunction(dropContent) ? dropContent() : dropContent;
