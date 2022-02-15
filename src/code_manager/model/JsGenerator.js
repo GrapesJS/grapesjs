@@ -1,6 +1,11 @@
 import { extend } from 'underscore';
 import Backbone from 'backbone';
 
+function isFunctionEmpty(fn) {
+  const content = fn.toString().match(/\{([\s\S]*)\}/m)[1]; // content between first and last { }
+  return content.replace(/^\s*\/\/.*$/gm, '').trim().length === 0; // remove comments
+}
+
 export default Backbone.Model.extend({
   mapModel(model) {
     var code = '';
@@ -59,11 +64,6 @@ export default Backbone.Model.extend({
       }
 
       if (mapType.props) {
-        function isFunctionEmpty(fn) {
-          const content = fn.toString().match(/\{([\s\S]*)\}/m)[1]; // content between first and last { }
-          return content.replace(/^\s*\/\/.*$/gm, '').trim().length === 0; // remove comments
-        }
-
         if (isFunctionEmpty(mapType.code)) {
           continue;
         }
