@@ -39,7 +39,7 @@ export default Backbone.Model.extend({
       }
     }
 
-    comps.each(function(model) {
+    comps.each(function (model) {
       code += this.mapModel(model);
     }, this);
 
@@ -54,7 +54,20 @@ export default Backbone.Model.extend({
     for (let type in this.mapJs) {
       const mapType = this.mapJs[type];
 
+      if (!mapType.code) {
+        continue;
+      }
+
       if (mapType.props) {
+        function isFunctionEmpty(fn) {
+          const content = fn.toString().match(/\{([\s\S]*)\}/m)[1]; // content between first and last { }
+          return content.replace(/^\s*\/\/.*$/gm, '').trim().length === 0; // remove comments
+        }
+
+        if (isFunctionEmpty(mapType.code)) {
+          continue;
+        }
+
         code += `
           var props = ${JSON.stringify(mapType.props)};
           var ids = Object.keys(props).map(function(id) { return '#'+id }).join(',');
@@ -75,5 +88,5 @@ export default Backbone.Model.extend({
     }
 
     return code;
-  }
+  },
 });
