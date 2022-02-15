@@ -1,10 +1,4 @@
 import Panels from 'panels';
-import e2e from './e2e/PanelsE2e';
-import Models from './model/PanelModels';
-import PanelView from './view/PanelView';
-import PanelsView from './view/PanelsView';
-import ButtonView from './view/ButtonView';
-import ButtonsView from './view/ButtonsView';
 
 describe('Panels', () => {
   describe('Main', () => {
@@ -60,12 +54,7 @@ describe('Panels', () => {
       var panel = obj.addPanel({ id: 'test' });
       var btn = obj.addButton('test', { id: 'btn' });
       expect(panel.get('buttons').length).toEqual(1);
-      expect(
-        panel
-          .get('buttons')
-          .at(0)
-          .get('id')
-      ).toEqual('btn');
+      expect(panel.get('buttons').at(0).get('id')).toEqual('btn');
     });
 
     test('getButton returns null in case there is no requested panel', () => {
@@ -114,12 +103,7 @@ describe('Panels', () => {
         var panel = obj.addPanel({ id: 'test' });
         var btn = obj.addButton('test', { id: 'btn' });
         expect(panel.get('buttons').length).toEqual(1);
-        expect(
-          panel
-            .get('buttons')
-            .at(0)
-            .get('id')
-        ).toEqual('btn');
+        expect(panel.get('buttons').at(0).get('id')).toEqual('btn');
         expect(obj.removeButton('test', { id: 'btn' })).toEqual(btn);
         expect(panel.get('buttons').length).toEqual(0);
       });
@@ -128,12 +112,7 @@ describe('Panels', () => {
         var panel = obj.addPanel({ id: 'test' });
         var btn = obj.addButton('test', { id: 'btn' });
         expect(panel.get('buttons').length).toEqual(1);
-        expect(
-          panel
-            .get('buttons')
-            .at(0)
-            .get('id')
-        ).toEqual('btn');
+        expect(panel.get('buttons').at(0).get('id')).toEqual('btn');
         expect(obj.removeButton('test', 'btn')).toEqual(btn);
         expect(panel.get('buttons').length).toEqual(0);
       });

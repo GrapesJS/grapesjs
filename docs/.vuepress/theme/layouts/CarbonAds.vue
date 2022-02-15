@@ -9,7 +9,7 @@ export default {
 
       if (!total) {
         const src = document.createElement('script');
-        src.src = `//cdn.carbonads.com/carbon.js?zoneid=1673&serve=C6AILKT&placement=grapesjscom`;
+        src.src = `//cdn.carbonads.com/carbon.js?serve=CEADC5QL&placement=grapesjscom`;
         src.setAttribute('id', '_carbonads_js');
         const adCont = document.getElementById('native-carbon');
         adCont && adCont.appendChild(src);
@@ -40,7 +40,7 @@ export default {
     load () {
       const s = document.createElement('script');
       // s.id = '_carbonads_js';
-      // s.src = `//cdn.carbonads.com/carbon.js?serve=CKYI5KJU&placement=grapesjscom`;
+      // s.src = `//cdn.carbonads.com/carbon.js?serve=CEADC5QL&placement=grapesjscom`;
       s.src = `//m.servedby-buysellads.com/monetization.js`;
       s.onload = () => this.initCarbon();
       this.$el.appendChild(s);

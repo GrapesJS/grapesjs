@@ -75,7 +75,7 @@ describe('Component', () => {
   });
 
   test('Has expected name', () => {
-    expect(obj.getName()).toEqual('Box');
+    expect(obj.getName()).toEqual('Div');
   });
 
   test('Has expected name 2', () => {

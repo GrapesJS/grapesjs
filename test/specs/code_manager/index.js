@@ -1,5 +1,4 @@
 import CodeManager from 'code_manager';
-import Models from './model/CodeModels';
 
 describe('Code Manager', () => {
   describe('Main', () => {

@@ -74,7 +74,7 @@ export default {
     };
     methods[method](window, 'resize', this.onFrameUpdated);
     methods[method](listenToEl, 'scroll', this.onContainerChange);
-    em[method]('component:toggled component:update', this.onSelect, this);
+    em[method]('component:toggled component:update undo redo', this.onSelect, this);
     em[method]('change:componentHovered', this.onHovered, this);
     em[method](
       'component:resize styleable:change component:input', // component:styleUpdate
@@ -100,6 +100,7 @@ export default {
    */
   onHover(e) {
     e.stopPropagation();
+    const { em } = this;
     const trg = e.target;
     const view = getViewEl(trg);
     const frameView = view && view._getFrame();
@@ -115,16 +116,9 @@ export default {
       }
     }
 
-    // Get first valid hoverable model
-    if (model && !model.get('hoverable')) {
-      let parent = model && model.parent();
-      while (parent && !parent.get('hoverable')) parent = parent.parent();
-      model = parent;
-    }
-
     this.currentDoc = trg.ownerDocument;
-    this.em.setHovered(model);
-    frameView && this.em.set('currentFrame', frameView);
+    em.setHovered(model, { useValid: true });
+    frameView && em.set('currentFrame', frameView);
   },
 
   onFrameUpdated() {
@@ -293,13 +287,11 @@ export default {
     }
 
     if (model) {
-      if (model.get('selectable')) {
-        this.select(model, ev);
-      } else {
-        let parent = model.parent();
-        while (parent && !parent.get('selectable')) parent = parent.parent();
-        this.select(parent, ev);
+      // Avoid selection of inner text components during editing
+      if (em.isEditing() && !model.get('textable') && model.isChildOf('text')) {
+        return;
       }
+      this.select(model, ev);
     }
   },
 
@@ -310,7 +302,7 @@ export default {
    */
   select(model, event = {}) {
     if (!model) return;
-    this.editor.select(model, { event });
+    this.editor.select(model, { event, useValid: true });
     this.initResize(model);
   },
 

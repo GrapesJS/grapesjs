@@ -324,14 +324,14 @@ export default Backbone.View.extend({
       `<style>
       ${conf.baseCss || ''}
 
-      .${ppfx}dashed *[data-highlightable] {
+      .${ppfx}dashed *[data-gjs-highlightable] {
         outline: 1px dashed rgba(170,170,170,0.7);
         outline-offset: -2px;
       }
 
       .${ppfx}selected {
-        outline: 3px solid #3b97e3 !important;
-        outline-offset: -3px;
+        outline: 2px solid #3b97e3 !important;
+        outline-offset: -2px;
       }
 
       .${ppfx}selected-parent {

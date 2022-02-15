@@ -61,7 +61,7 @@ import html from 'utils/html';
 
 export default (config = {}, opts = {}) => {
   const { $ } = opts;
-  const c = {
+  let c = {
     ...defaults,
     ...config,
   };
@@ -79,6 +79,8 @@ export default (config = {}, opts = {}) => {
      */
     editor: em,
 
+    modules: [],
+
     /**
      * Initialize editor model
      * @return {this}
@@ -87,7 +89,7 @@ export default (config = {}, opts = {}) => {
     init(opts = {}) {
       em.init(this, { ...c, ...opts });
 
-      [
+      this.modules = [
         'I18n',
         'Utils',
         'Config',
@@ -121,7 +123,9 @@ export default (config = {}, opts = {}) => {
         ['Styles', 'StyleManager'],
         'DeviceManager',
         ['Devices', 'DeviceManager'],
-      ].forEach(prop => {
+      ];
+
+      this.modules.forEach(prop => {
         if (Array.isArray(prop)) {
           this[prop[0]] = em.get(prop[1]);
         } else {
@@ -169,6 +173,7 @@ export default (config = {}, opts = {}) => {
      * @param {Boolean} [opts.json=false] Return an array of CssRules instead of the CSS string
      * @param {Boolean} [opts.avoidProtected=false] Don't include protected CSS
      * @param {Boolean} [opts.onlyMatched=false] Return only rules matched by the passed component.
+     * @param {Boolean} [opts.keepUnusedStyles=false] Force keep all defined rules. Toggle on in case output looks different inside/outside of the editor.
      * @returns {String|Array<CssRule>} CSS string or array of CssRules
      */
     getCss(opts) {
@@ -648,7 +653,19 @@ export default (config = {}, opts = {}) => {
      * Destroy the editor
      */
     destroy() {
-      return em.destroyAll();
+      if (!em) return;
+      em.destroyAll();
+      this.modules.forEach(prop => {
+        if (Array.isArray(prop)) {
+          this[prop[0]] = 0;
+        } else {
+          this[prop] = 0;
+        }
+      });
+      this.modules = 0;
+      editorView = 0;
+      em = 0;
+      c = 0;
     },
 
     /**

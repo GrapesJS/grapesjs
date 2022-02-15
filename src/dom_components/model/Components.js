@@ -1,31 +1,43 @@
 import Backbone from 'backbone';
-import {
-  isEmpty,
-  isArray,
-  isString,
-  each,
-  includes,
-  extend,
-  flatten,
-  debounce
-} from 'underscore';
+import { isEmpty, isArray, isString, isFunction, each, includes, extend, flatten, debounce } from 'underscore';
 import Component, { keySymbol, keySymbols } from './Component';
 
-const getIdsToKeep = (prev, res = []) => {
-  const pr = prev || [];
-  pr.forEach(comp => {
-    res.push(comp.getId());
-    getIdsToKeep(comp.components(), res);
+export const getComponentIds = (cmp, res = []) => {
+  if (!cmp) return [];
+  const cmps = isArray(cmp) || isFunction(cmp.map) ? cmp : [cmp];
+  cmps.map(cmp => {
+    res.push(cmp.getId());
+    getComponentIds(cmp.components().models, res);
   });
   return res;
 };
 
-const getNewIds = (items, res = []) => {
-  items.map(item => {
-    res.push(item.getId());
-    getNewIds(item.components(), res);
+const getComponentsFromDefs = (items, all = {}, opts = {}) => {
+  const itms = isArray(items) ? items : [items];
+
+  return itms.map(item => {
+    const { attributes = {}, components, tagName } = item;
+    const { id } = attributes;
+    let result = item;
+
+    if (id && all[id]) {
+      result = all[id];
+      tagName && result.set({ tagName }, { ...opts, silent: true });
+    }
+
+    if (components) {
+      const newComponents = getComponentsFromDefs(components, all);
+
+      if (isFunction(result.components)) {
+        const cmps = result.components();
+        cmps.length > 0 && cmps.reset(newComponents, opts);
+      } else {
+        result.components = newComponents;
+      }
+    }
+
+    return result;
   });
-  return res;
 };
 
 export default Backbone.Collection.extend({
@@ -44,10 +56,21 @@ export default Backbone.Collection.extend({
     const coll = this;
     const prev = opts.previousModels || [];
     const toRemove = prev.filter(prev => !models.get(prev.cid));
-    const newIds = getNewIds(models);
-    opts.keepIds = getIdsToKeep(prev).filter(pr => newIds.indexOf(pr) >= 0);
+    const newIds = getComponentIds(models);
+    opts.keepIds = getComponentIds(prev).filter(pr => newIds.indexOf(pr) >= 0);
     toRemove.forEach(md => this.removeChildren(md, coll, opts));
     models.each(model => this.onAdd(model));
+  },
+
+  resetFromString(input = '', opts = {}) {
+    opts.keepIds = getComponentIds(this);
+    const { domc } = this;
+    const allByID = domc?.allById() || {};
+    const parsed = this.parseString(input, opts);
+    const cmps = isArray(parsed) ? parsed : [parsed];
+    const newCmps = getComponentsFromDefs(cmps, allByID, opts);
+    this.reset(newCmps, opts);
+    this.em?.trigger('component:content', this.parent, opts, input);
   },
 
   removeChildren(removed, coll, opts = {}) {
@@ -58,8 +81,7 @@ export default Backbone.Collection.extend({
     }
 
     const { domc, em } = this;
-    const allByID = domc ? domc.allById() : {};
-    const isTemp = opts.temporary;
+    const isTemp = opts.temporary || opts.fromUndo;
     removed.prevColl = this; // This one is required for symbols
 
     if (!isTemp) {
@@ -68,6 +90,7 @@ export default Backbone.Collection.extend({
       const sels = em.get('SelectorManager').getAll();
       const rules = em.get('CssComposer').getAll();
       const canRemoveStyle = (opts.keepIds || []).indexOf(id) < 0;
+      const allByID = domc ? domc.allById() : {};
       delete allByID[id];
 
       // Remove all component related styles
@@ -83,7 +106,7 @@ export default Backbone.Collection.extend({
 
       if (!removed.opt.temporary) {
         em.get('Commands').run('core:component-style-clear', {
-          target: removed
+          target: removed,
         });
         removed.removed();
         removed.trigger('removed');
@@ -92,7 +115,6 @@ export default Backbone.Collection.extend({
 
       const inner = removed.components();
       inner.forEach(it => this.removeChildren(it, coll, opts));
-      // removed.empty(opts);
     }
 
     // Remove stuff registered in DomComponents.handleChanges
@@ -128,7 +150,7 @@ export default Backbone.Collection.extend({
         attrs.type &&
         em.logWarning(`Component type '${attrs.type}' not found`, {
           attrs,
-          options
+          options,
         });
     }
 
@@ -146,7 +168,7 @@ export default Backbone.Collection.extend({
       const { at, ...optsToPass } = opt;
       cssc.addCollection(parsed.css, {
         ...optsToPass,
-        extend: 1
+        extend: 1,
       });
     }
 
@@ -154,8 +176,7 @@ export default Backbone.Collection.extend({
   },
 
   add(models, opt = {}) {
-    const { parent } = this;
-    opt.keepIds = getIdsToKeep(opt.previousModels);
+    opt.keepIds = [...(opt.keepIds || []), ...getComponentIds(opt.previousModels)];
 
     if (isString(models)) {
       models = this.parseString(models, opt);
@@ -170,9 +191,7 @@ export default Backbone.Collection.extend({
     }
 
     const isMult = isArray(models);
-    models = (isMult ? models : [models])
-      .filter(i => i)
-      .map(model => this.processDef(model));
+    models = (isMult ? models : [models]).filter(i => i).map(model => this.processDef(model));
     models = isMult ? flatten(models, 1) : models[0];
 
     const result = Backbone.Collection.prototype.add.apply(this, [models, opt]);
@@ -239,14 +258,7 @@ export default Backbone.Collection.extend({
     const avoidInline = em && em.getConfig('avoidInlineStyle');
     domc && domc.Component.ensureInList(model);
 
-    if (
-      !isEmpty(style) &&
-      !avoidInline &&
-      em &&
-      em.get &&
-      em.getConfig('forceClass') &&
-      !opts.temporary
-    ) {
+    if (!isEmpty(style) && !avoidInline && em && em.get && em.getConfig('forceClass') && !opts.temporary) {
       const name = model.cid;
       const rule = em.get('CssComposer').setClassRule(name, style);
       model.setStyle({});
@@ -257,7 +269,7 @@ export default Backbone.Collection.extend({
     this.__onAddEnd();
   },
 
-  __onAddEnd: debounce(function() {
+  __onAddEnd: debounce(function () {
     // TODO to check symbols on load, probably this might be removed as symbols
     // are always recovered from the model
     // const { domc } = this;
@@ -283,5 +295,5 @@ export default Backbone.Collection.extend({
     //   });
     // };
     // onAll(toCheck);
-  })
+  }),
 });

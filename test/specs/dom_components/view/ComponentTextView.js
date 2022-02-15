@@ -2,18 +2,20 @@ import ComponentTextView from 'dom_components/view/ComponentTextView';
 import Component from 'dom_components/model/Component';
 
 describe('ComponentTextView', () => {
-  var fixtures;
-  var model;
-  var view;
+  let fixtures;
+  let model;
+  let view;
+  let el;
 
   beforeEach(() => {
     model = new Component();
     view = new ComponentTextView({
-      model
+      model,
     });
     document.body.innerHTML = '<div id="fixtures"></div>';
     fixtures = document.body.querySelector('#fixtures');
-    fixtures.appendChild(view.render().el);
+    el = view.render().el;
+    fixtures.appendChild(el);
   });
 
   afterEach(() => {
@@ -22,7 +24,7 @@ describe('ComponentTextView', () => {
 
   test('Component empty', () => {
     expect(fixtures.innerHTML).toEqual(
-      '<div data-gjs-type="default" data-highlightable="1"></div>'
+      `<div data-gjs-highlightable="true" id="${el.id}" data-gjs-type="default"></div>`
     );
   });
 
@@ -47,11 +49,11 @@ describe('ComponentTextView', () => {
       fakeRteContent = 'fakeRteContent';
 
       fakeRte = {
-        getContent: jest.fn(() => fakeRteContent)
+        getContent: jest.fn(() => fakeRteContent),
       };
 
       fakeChildContainer = {
-        innerHTML: 'fakeChildInnerHTML'
+        innerHTML: 'fakeChildInnerHTML',
       };
 
       spyOn(view, 'getChildrenContainer').and.returnValue(fakeChildContainer);

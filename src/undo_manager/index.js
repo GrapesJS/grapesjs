@@ -25,7 +25,7 @@
  */
 
 import UndoManager from 'backbone-undo';
-import { isArray, isBoolean, isEmpty } from 'underscore';
+import { isArray, isBoolean, isEmpty, unique, times } from 'underscore';
 
 export default () => {
   let em;
@@ -51,6 +51,9 @@ export default () => {
       config = { ...configDef, ...opts };
       em = config.em;
       this.em = em;
+      if (config._disable) {
+        config = { ...config, maximumStackLength: 0 };
+      }
       const fromUndo = true;
       um = new UndoManager({ track: true, register: [], ...config });
       um.changeUndoType('change', {
@@ -110,6 +113,23 @@ export default () => {
             object: collection,
             before: model,
             after: undefined,
+            options: { ...options, fromUndo },
+          };
+        },
+      });
+      um.changeUndoType('reset', {
+        undo: (collection, before) => {
+          collection.reset(before, { fromUndo });
+        },
+        redo: (collection, b, after) => {
+          collection.reset(after, { fromUndo });
+        },
+        on: (collection, options = {}) => {
+          if (hasSkip(options) || !this.isRegistered(collection)) return;
+          return {
+            object: collection,
+            before: options.previousModels,
+            after: [...collection.models],
             options: { ...options, fromUndo },
           };
         },
@@ -313,24 +333,47 @@ export default () => {
       this.start();
     },
 
-    __getStackRead() {
+    getGroupedStack() {
       const result = {};
-      const createItem = item => {
-        const { type, after, before, object } = item.attributes;
-        return {
-          type,
-          after,
-          before,
-          object,
-        };
+      const stack = this.getStack();
+      const createItem = (item, index) => {
+        const { type, after, before, object, options = {} } = item.attributes;
+        return { index, type, after, before, object, options };
       };
-      this.getStack().forEach(item => {
+      stack.forEach((item, i) => {
         const index = item.get('magicFusionIndex');
-        const value = createItem(item);
-        if (!result[index]) result[index] = [value];
-        else result[index].push(value);
+        const value = createItem(item, i);
+
+        if (!result[index]) {
+          result[index] = [value];
+        } else {
+          result[index].push(value);
+        }
       });
-      return Object.keys(result).map(i => result[i]);
+
+      return Object.keys(result).map(index => {
+        const actions = result[index];
+        return {
+          index: actions[actions.length - 1].index,
+          actions,
+          labels: unique(
+            actions.reduce((res, item) => {
+              const label = item.options?.action;
+              label && res.push(label);
+              return res;
+            }, [])
+          ),
+        };
+      });
+    },
+
+    goToGroup(group) {
+      if (!group) return;
+      const current = this.getPointer();
+      const goTo = group.index - current;
+      times(Math.abs(goTo), () => {
+        this[goTo < 0 ? 'undo' : 'redo'](false);
+      });
     },
 
     getPointer() {

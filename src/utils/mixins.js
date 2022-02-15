@@ -187,7 +187,11 @@ export const escape = (str = '') => {
  */
 const getModel = (el, $) => {
   let model = el;
-  isElement(el) && (model = $(el).data('model'));
+  if (!$ && el && el.__cashData) {
+    model = el.__cashData.model;
+  } else if (isElement(el)) {
+    model = $(el).data('model');
+  }
   return model;
 };
 

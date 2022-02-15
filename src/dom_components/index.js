@@ -53,10 +53,9 @@
  *
  * @module Components
  */
-import Backbone from 'backbone';
-import { isEmpty, isObject, isArray, result } from 'underscore';
+import { isEmpty, isObject, isArray, isFunction, isString, result, debounce } from 'underscore';
 import defaults from './config/config';
-import Component from './model/Component';
+import Component, { keyUpdate, keyUpdateInside } from './model/Component';
 import Components from './model/Components';
 import ComponentView from './view/ComponentView';
 import ComponentsView from './view/ComponentsView';
@@ -644,6 +643,94 @@ export default () => {
         });
 
       model && isEmpty(model.get('status')) && model.set('status', state);
+    },
+
+    getShallowWrapper() {
+      let { shallow, em } = this;
+
+      if (!shallow && em) {
+        const shallowEm = em.get('shallow');
+        if (!shallowEm) return;
+        const domc = shallowEm.get('DomComponents');
+        domc.componentTypes = this.componentTypes;
+        shallow = domc.getWrapper();
+        if (shallow) {
+          const events = [keyUpdate, keyUpdateInside].join(' ');
+          shallow.on(
+            events,
+            debounce(() => shallow.components(''), 100)
+          );
+        }
+        this.shallow = shallow;
+      }
+
+      return shallow;
+    },
+
+    /**
+     * Check if the component can be moved inside another.
+     * @param {[Component]} target The target Component is the one that is supposed to receive the source one.
+     * @param {[Component]|String} source The source can be another Component or an HTML string.
+     * @param {Number} [index] Index position. If not specified, the check will perform against appending the source to target.
+     * @returns {Object} Object containing the `result` (Boolean), `source`, `target` (as Components), and a `reason` (Number) with these meanings:
+     * * `0` - Invalid source. This is a default value and should be ignored in case the `result` is true.
+     * * `1` - Source doesn't accept target as destination.
+     * * `2` - Target doesn't accept source.
+     * @private
+     */
+    canMove(target, source, index) {
+      const at = index || index === 0 ? index : null;
+      const result = {
+        result: false,
+        reason: 0,
+        target,
+        source: null,
+      };
+
+      if (!source) return result;
+
+      let srcModel = source?.toHTML ? source : null;
+
+      if (!srcModel) {
+        const wrapper = this.getShallowWrapper();
+        srcModel = wrapper?.append(source)[0];
+      }
+
+      result.source = srcModel;
+
+      if (!srcModel) return result;
+
+      // Check if the source is draggable in the target
+      let draggable = srcModel.get('draggable');
+
+      if (isFunction(draggable)) {
+        draggable = !!draggable(srcModel, target, at);
+      } else {
+        const el = target.getEl();
+        draggable = isArray(draggable) ? draggable.join(',') : draggable;
+        draggable = isString(draggable) ? el?.matches(draggable) : draggable;
+      }
+
+      if (!draggable) return { ...result, reason: 1 };
+
+      // Check if the target accepts the source
+      let droppable = target.get('droppable');
+
+      if (isFunction(droppable)) {
+        droppable = !!droppable(srcModel, target, at);
+      } else {
+        if (droppable === false && target.isInstanceOf('text') && srcModel.get('textable')) {
+          droppable = true;
+        } else {
+          const el = srcModel.getEl();
+          droppable = isArray(droppable) ? droppable.join(',') : droppable;
+          droppable = isString(droppable) ? el?.matches(droppable) : droppable;
+        }
+      }
+
+      if (!droppable) return { ...result, reason: 2 };
+
+      return { ...result, result: true };
     },
 
     allById() {

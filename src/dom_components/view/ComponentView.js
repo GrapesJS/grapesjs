@@ -21,7 +21,6 @@ export default Backbone.View.extend({
     const em = config.em;
     const modelOpt = model.opt || {};
     const { $el, el } = this;
-    const { draggableComponents } = config;
     this.opts = opt;
     this.modelOpt = modelOpt;
     this.config = config;
@@ -31,11 +30,7 @@ export default Backbone.View.extend({
     this.attr = model.get('attributes');
     this.classe = this.attr.class || [];
     this.listenTo(model, 'change:style', this.updateStyle);
-    this.listenTo(
-      model,
-      'change:attributes change:_innertext',
-      this.renderAttributes
-    );
+    this.listenTo(model, 'change:attributes', this.renderAttributes);
     this.listenTo(model, 'change:highlightable', this.updateHighlight);
     this.listenTo(model, 'change:status', this.updateStatus);
     this.listenTo(model, 'change:script rerender', this.reset);
@@ -51,7 +46,7 @@ export default Backbone.View.extend({
     this.initComponents({ avoidRender: 1 });
     this.events = {
       ...this.events,
-      ...(this.__isDraggable() && { dragstart: 'handleDragStart' })
+      dragstart: 'handleDragStart',
     };
     this.delegateEvents();
     !modelOpt.temporary && this.init(this._clbObj());
@@ -59,8 +54,8 @@ export default Backbone.View.extend({
 
   __isDraggable() {
     const { model, config } = this;
-    const { _innertext, draggable } = model.attributes;
-    return config.draggableComponents && draggable && !_innertext;
+    const { draggable } = model.attributes;
+    return config.draggableComponents && draggable;
   },
 
   _clbObj() {
@@ -68,7 +63,7 @@ export default Backbone.View.extend({
     return {
       editor: em && em.getEditor(),
       model,
-      el
+      el,
     };
   },
 
@@ -93,30 +88,29 @@ export default Backbone.View.extend({
   onDisable() {},
 
   remove() {
-    const view = this;
-    Backbone.View.prototype.remove.apply(view, arguments);
-    const { model } = view;
-    const frame = view._getFrame() || {};
-    const frameM = frame.model;
-    model.components().forEach(comp => {
-      const view = comp.getView(frameM);
-      view && view.remove();
-    });
-    const cv = view.childrenView;
-    cv && cv.remove();
+    Backbone.View.prototype.remove.apply(this, arguments);
+    const { model, $el } = this;
     const { views } = model;
-    views.splice(views.indexOf(view), 1);
-    view.removed(view._clbObj());
-    view.$el.data({ model: '', collection: '', view: '' });
-    return view;
+    const frame = this._getFrame() || {};
+    model.components().forEach(comp => {
+      const view = comp.getView(frame.model);
+      view?.remove();
+    });
+    this.childrenView?.remove();
+    views.splice(views.indexOf(this), 1);
+    this.removed(this._clbObj());
+    $el.data({ model: '', collection: '', view: '' });
+    // delete model.view; // Sorter relies on this property
+    return this;
   },
 
   handleDragStart(event) {
-    event.preventDefault();
+    if (!this.__isDraggable()) return false;
     event.stopPropagation();
+    event.preventDefault();
     this.em.get('Commands').run('tlb-move', {
       target: this.model,
-      event
+      event,
     });
   },
 
@@ -225,8 +219,10 @@ export default Backbone.View.extend({
    * @private
    * */
   updateHighlight() {
-    const hl = this.model.get('highlightable');
-    this.setAttribute('data-highlightable', hl ? 1 : '');
+    const { model } = this;
+    const isTextable = model.get('textable');
+    const hl = model.get('highlightable') && (isTextable || !model.isChildOf('text'));
+    this.setAttribute('data-gjs-highlightable', hl ? true : '');
   },
 
   /**
@@ -234,17 +230,11 @@ export default Backbone.View.extend({
    * @private
    * */
   updateStyle(m, v, opts = {}) {
-    const { model, em, el } = this;
+    const { model, em } = this;
 
     if (em && em.getConfig('avoidInlineStyle') && !opts.inline) {
       const style = model.getStyle();
-      const empty = isEmpty(style);
-      !empty && model.setStyle(style);
-      if (model.get('_innertext') && empty) {
-        el.removeAttribute('id');
-      } else {
-        el.id = model.getId();
-      }
+      !isEmpty(style) && model.setStyle(style);
     } else {
       this.setAttribute('style', model.styleToString(opts));
     }
@@ -255,10 +245,7 @@ export default Backbone.View.extend({
    * @private
    * */
   updateClasses() {
-    const str = this.model
-      .get('classes')
-      .pluck('name')
-      .join(' ');
+    const str = this.model.get('classes').pluck('name').join(' ');
     this.setAttribute('class', str);
 
     // Regenerate status class
@@ -294,27 +281,23 @@ export default Backbone.View.extend({
   updateAttributes() {
     const attrs = [];
     const { model, $el, el } = this;
-    const { highlightable, textable, type } = model.attributes;
+    const { textable, type } = model.attributes;
 
     const defaultAttr = {
+      id: model.getId(),
       'data-gjs-type': type || 'default',
-      ...(this.__isDraggable() ? { draggable: true } : {}),
-      ...(highlightable ? { 'data-highlightable': 1 } : {}),
-      ...(textable
-        ? {
-            contenteditable: 'false',
-            'data-gjs-textable': 'true'
-          }
-        : {})
+      ...(this.__isDraggable() && { draggable: true }),
+      ...(textable && { contenteditable: 'false' }),
     };
 
     // Remove all current attributes
     each(el.attributes, attr => attrs.push(attr.nodeName));
     attrs.forEach(attr => $el.removeAttr(attr));
     this.updateStyle();
+    this.updateHighlight();
     const attr = {
       ...defaultAttr,
-      ...model.getAttributes()
+      ...model.getAttributes(),
     };
 
     // Remove all `false` attributes
@@ -349,11 +332,7 @@ export default Backbone.View.extend({
   updateScript() {
     const { model, em } = this;
     if (!model.get('script')) return;
-    em &&
-      em
-        .get('Canvas')
-        .getCanvasView()
-        .updateScript(this);
+    em && em.get('Canvas').getCanvasView().updateScript(this);
   },
 
   /**
@@ -452,7 +431,7 @@ export default Backbone.View.extend({
         el.scrollIntoView({
           behavior: 'smooth',
           block: 'nearest',
-          ...opts
+          ...opts,
         });
       }
     }
@@ -493,7 +472,7 @@ export default Backbone.View.extend({
       new ComponentsView({
         collection: this.model.get('components'),
         config: this.config,
-        componentTypes: this.opts.componentTypes
+        componentTypes: this.opts.componentTypes,
       });
 
     view.render(container);
@@ -524,13 +503,10 @@ export default Backbone.View.extend({
   },
 
   postRender() {
-    const { em, model, modelOpt } = this;
-
-    if (!modelOpt.temporary) {
+    if (!this.modelOpt.temporary) {
       this.onRender(this._clbObj());
-      em && em.trigger('component:mount', model);
     }
   },
 
-  onRender() {}
+  onRender() {},
 });

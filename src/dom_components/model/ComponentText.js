@@ -1,14 +1,10 @@
 import Component from './Component';
 
-export default Component.extend({
-  defaults: {
-    ...Component.prototype.defaults,
-    type: 'text',
-    droppable: false,
-    editable: true
-  },
+export default class ComponentText extends Component {}
 
-  toHTML() {
-    return Component.prototype.toHTML.apply(this, arguments);
-  }
-});
+ComponentText.prototype.defaults = {
+  ...Component.getDefaults(),
+  type: 'text',
+  droppable: false,
+  editable: true,
+};

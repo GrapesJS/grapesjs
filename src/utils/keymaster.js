@@ -7,7 +7,7 @@ var k,
     16: false,
     18: false,
     17: false,
-    91: false
+    91: false,
   },
   _scope = 'all',
   // modifier keys
@@ -21,7 +21,7 @@ var k,
     ctrl: 17,
     control: 17,
     '⌘': 91,
-    command: 91
+    command: 91,
   },
   // special keys
   _MAP = {
@@ -53,9 +53,9 @@ var k,
     "'": 222,
     '[': 219,
     ']': 221,
-    '\\': 220
+    '\\': 220,
   },
-  code = function(x) {
+  code = function (x) {
     return _MAP[x] || x.toUpperCase().charCodeAt(0);
   },
   _downKeys = [];
@@ -82,7 +82,7 @@ var modifierMap = {
   16: 'shiftKey',
   18: 'altKey',
   17: 'ctrlKey',
-  91: 'metaKey'
+  91: 'metaKey',
 };
 
 function updateModifierKey(event) {
@@ -126,20 +126,10 @@ function dispatch(event) {
       // check if modifiers match if any
       modifiersMatch = handler.mods.length > 0;
       for (k in _mods)
-        if (
-          (!_mods[k] && index(handler.mods, +k) > -1) ||
-          (_mods[k] && index(handler.mods, +k) == -1)
-        )
+        if ((!_mods[k] && index(handler.mods, +k) > -1) || (_mods[k] && index(handler.mods, +k) == -1))
           modifiersMatch = false;
       // call the handler and stop the event if neccessary
-      if (
-        (handler.mods.length == 0 &&
-          !_mods[16] &&
-          !_mods[18] &&
-          !_mods[17] &&
-          !_mods[91]) ||
-        modifiersMatch
-      ) {
+      if ((handler.mods.length == 0 && !_mods[16] && !_mods[18] && !_mods[17] && !_mods[91]) || modifiersMatch) {
         if (handler.method(event, handler) === false) {
           if (event.preventDefault) event.preventDefault();
           else event.returnValue = false;
@@ -202,7 +192,7 @@ function assignKey(key, scope, method) {
       scope: scope,
       method: method,
       key: keys[i],
-      mods: mods
+      mods: mods,
     });
   }
 }
@@ -310,7 +300,7 @@ function getMods(key) {
 function addEvent(object, event, method) {
   if (object.addEventListener) object.addEventListener(event, method, false);
   else if (object.attachEvent)
-    object.attachEvent('on' + event, function() {
+    object.attachEvent('on' + event, function () {
       method(window.event);
     });
 }
@@ -323,10 +313,11 @@ assignKey.filter = filter;
 assignKey.isPressed = isPressed;
 assignKey.getPressedKeyCodes = getPressedKeyCodes;
 assignKey.unbind = unbindKey;
+assignKey.handlers = _handlers;
 assignKey.init = win => {
   // set the handlers globally on document
   // Passing _scope to a callback to ensure it remains the same by execution. Fixes #48
-  addEvent(win.document, 'keydown', function(event) {
+  addEvent(win.document, 'keydown', function (event) {
     dispatch(event);
   });
   addEvent(win.document, 'keyup', clearModifier);

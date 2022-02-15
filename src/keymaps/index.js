@@ -50,9 +50,6 @@ import keymaster from 'utils/keymaster';
 hasWin() && keymaster.init(window);
 
 export default () => {
-  let em;
-  let config;
-  const keymaps = {};
   const configDef = {
     defaults: {
       'core:undo': {
@@ -105,7 +102,7 @@ export default () => {
      * @return {Object} Configuration object
      */
     getConfig() {
-      return config;
+      return this.config;
     },
 
     /**
@@ -114,14 +111,14 @@ export default () => {
      * @private
      */
     init(opts = {}) {
-      config = { ...configDef, ...opts };
-      em = config.em;
-      this.em = em;
+      this.config = { ...configDef, ...opts };
+      this.em = this.config.em;
+      this.keymaps = {};
       return this;
     },
 
     onLoad() {
-      const defKeys = config.defaults;
+      const defKeys = this.config.defaults;
 
       for (let id in defKeys) {
         const value = defKeys[id];
@@ -156,9 +153,9 @@ export default () => {
       const editor = em.getEditor();
       const canvas = em.get('Canvas');
       const keymap = { id, keys, handler };
-      const pk = keymaps[id];
+      const pk = this.keymaps[id];
       pk && this.remove(id);
-      keymaps[id] = keymap;
+      this.keymaps[id] = keymap;
       keymaster(keys, (e, h) => {
         // It's safer putting handlers resolution inside the callback
         const opt = { event: e, h };
@@ -185,7 +182,7 @@ export default () => {
      * // -> {keys, handler};
      */
     get(id) {
-      return keymaps[id];
+      return this.keymaps[id];
     },
 
     /**
@@ -196,7 +193,7 @@ export default () => {
      * // -> {id1: {}, id2: {}};
      */
     getAll() {
-      return keymaps;
+      return this.keymaps;
     },
 
     /**
@@ -212,7 +209,7 @@ export default () => {
       const keymap = this.get(id);
 
       if (keymap) {
-        delete keymaps[id];
+        delete this.keymaps[id];
         keymap.keys.split(', ').forEach(k => keymaster.unbind(k.trim()));
         em && em.trigger('keymap:remove', keymap);
         return keymap;
@@ -224,13 +221,14 @@ export default () => {
      * @return {this}
      */
     removeAll() {
-      Object.keys(keymaps).forEach(keymap => this.remove(keymap));
+      Object.keys(this.keymaps).forEach(keymap => this.remove(keymap));
+      keymaster.handlers = {};
       return this;
     },
 
     destroy() {
       this.removeAll();
-      [em, config, keymaps].forEach(i => (i = {}));
+      this.keymaps = {};
       this.em = {};
     },
   };

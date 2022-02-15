@@ -40,10 +40,11 @@ import RichTextEditor from './model/RichTextEditor';
 import { on, hasWin } from 'utils/mixins';
 import defaults from './config/config';
 
+const eventsUp = 'change:canvasOffset frame:scroll component:update';
+
 export default () => {
-  let config = {};
-  let toolbar, actions, lastEl, lastElPos, globalRte;
-  const eventsUp = 'change:canvasOffset frame:scroll component:update';
+  let toolbar;
+
   const hideToolbar = () => {
     const style = toolbar.style;
     const size = '-1000px';
@@ -63,7 +64,7 @@ export default () => {
     name: 'RichTextEditor',
 
     getConfig() {
-      return config;
+      return this.config;
     },
 
     /**
@@ -72,22 +73,21 @@ export default () => {
      * @private
      */
     init(opts = {}) {
-      config = {
-        ...defaults,
-        ...opts,
-      };
+      const config = { ...defaults, ...opts };
       const ppfx = config.pStylePrefix;
 
       if (ppfx) {
         config.stylePrefix = ppfx + config.stylePrefix;
       }
 
+      this.config = config;
       this.pfx = config.stylePrefix;
-      actions = config.actions || [];
+      this.em = config.em;
+      this.actions = config.actions || [];
       if (!hasWin()) return this;
       toolbar = document.createElement('div');
       toolbar.className = `${ppfx}rte-toolbar ${ppfx}one-bg`;
-      globalRte = this.initRte(document.createElement('div'));
+      this.initRte(document.createElement('div'));
 
       //Avoid closing on toolbar clicking
       on(toolbar, 'mousedown', e => e.stopPropagation());
@@ -95,12 +95,12 @@ export default () => {
     },
 
     destroy() {
-      const { customRte } = this;
-      globalRte && globalRte.destroy();
-      customRte && customRte.destroy && customRte.destroy();
-      this.actionbar = 0;
-      this.actions = 0;
-      [config, toolbar, actions, lastEl, lastElPos, globalRte].forEach(i => (i = {}));
+      this.globalRte?.destroy();
+      this.customRte?.destroy?.();
+      toolbar = 0;
+      ['actionbar', 'actions', 'em', 'config', 'globalRte', 'lastEl'].map(i => {
+        delete this[i];
+      });
     },
 
     /**
@@ -122,9 +122,9 @@ export default () => {
      * @private
      */
     initRte(el) {
-      const pfx = this.pfx;
+      let { globalRte } = this;
+      const { em, pfx, actionbar, config } = this;
       const actionbarContainer = toolbar;
-      const actionbar = this.actionbar;
       const actions = this.actions || [...config.actions];
       const classes = {
         actionbar: `${pfx}actionbar`,
@@ -133,24 +133,31 @@ export default () => {
         inactive: `${pfx}inactive`,
         disabled: `${pfx}disabled`,
       };
-      const rte = new RichTextEditor({
-        el,
-        classes,
-        actions,
-        actionbar,
-        actionbarContainer,
-      });
-      globalRte && globalRte.setEl(el);
 
-      if (rte.actionbar) {
-        this.actionbar = rte.actionbar;
+      if (!globalRte) {
+        globalRte = new RichTextEditor({
+          em,
+          el,
+          classes,
+          actions,
+          actionbar,
+          actionbarContainer,
+        });
+        this.globalRte = globalRte;
+      } else {
+        globalRte.em = em;
+        globalRte.setEl(el);
       }
 
-      if (rte.actions) {
-        this.actions = rte.actions;
+      if (globalRte.actionbar) {
+        this.actionbar = globalRte.actionbar;
       }
 
-      return rte;
+      if (globalRte.actions) {
+        this.actions = globalRte.actions;
+      }
+
+      return globalRte;
     },
 
     /**
@@ -216,7 +223,7 @@ export default () => {
      */
     add(name, action = {}) {
       action.name = name;
-      globalRte.addAction(action, { sync: 1 });
+      this.globalRte?.addAction(action, { sync: 1 });
     },
 
     /**
@@ -229,7 +236,7 @@ export default () => {
      */
     get(name) {
       let result;
-      globalRte.getActions().forEach(action => {
+      this.globalRte?.getActions().forEach(action => {
         if (action.name == name) {
           result = action;
         }
@@ -242,7 +249,7 @@ export default () => {
      * @return {Array}
      */
     getAll() {
-      return globalRte.getActions();
+      return this.globalRte?.getActions();
     },
 
     /**
@@ -280,10 +287,11 @@ export default () => {
      * @private
      */
     updatePosition() {
+      const { em } = this;
       const un = 'px';
-      const canvas = config.em.get('Canvas');
+      const canvas = em.get('Canvas');
       const { style } = toolbar;
-      const pos = canvas.getTargetToElementFixed(lastEl, toolbar, {
+      const pos = canvas.getTargetToElementFixed(this.lastEl, toolbar, {
         event: 'rteToolbarPosUpdate',
         left: 0,
       });
@@ -297,16 +305,13 @@ export default () => {
      * @param {Object} rte The instance of already defined RTE
      * @private
      * */
-    async enable(view, rte) {
-      lastEl = view.el;
-      const { customRte } = this;
-      const canvas = config.em.get('Canvas');
-      const em = config.em;
+    async enable(view, rte, opts) {
+      this.lastEl = view.el;
+      const { customRte, em } = this;
       const el = view.getChildrenContainer();
-      lastElPos = canvas.getElementPos(lastEl);
 
       toolbar.style.display = '';
-      const rteInst = await (customRte ? customRte.enable(el, rte) : this.initRte(el).enable());
+      const rteInst = await (customRte ? customRte.enable(el, rte) : this.initRte(el).enable(opts));
 
       if (em) {
         setTimeout(this.updatePosition.bind(this), 0);
@@ -325,7 +330,7 @@ export default () => {
      * @private
      * */
     disable(view, rte) {
-      const em = config.em;
+      const { em } = this;
       const customRte = this.customRte;
       var el = view.getChildrenContainer();
 

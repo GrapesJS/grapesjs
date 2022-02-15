@@ -373,7 +373,7 @@ export default class PropertyStack extends PropertyComposite {
     const props = this.getProperties();
     const sep = this.getLayerSeparator();
     const fromStyle = this.get('fromStyle');
-    let result = fromStyle ? fromStyle(style, { property: this, separatorLayers: sep }) : [];
+    let result = fromStyle ? fromStyle(style, { property: this, name, separatorLayers: sep }) : [];
 
     if (!fromStyle) {
       // Get layers from the main property

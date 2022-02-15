@@ -277,6 +277,15 @@ describe('StyleManager', () => {
         var prop1 = obj.getProperty('dim', 'width');
         expect(prop1.get('name')).toEqual('Width');
       });
+
+      test('Add built-in', () => {
+        obj.addBuiltIn('test', { type: 'number' });
+        obj.addBuiltIn('test2', { type: 'stack' });
+        const added = obj.addProperty('dim', { extend: 'test' });
+        expect(added.getType()).toEqual('number');
+        const added2 = obj.addProperty('dim', 'test2');
+        expect(added2.getType()).toEqual('stack');
+      });
     });
   });
 });
