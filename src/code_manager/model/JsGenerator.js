@@ -54,9 +54,21 @@ export default Backbone.Model.extend({
     for (let type in this.mapJs) {
       const mapType = this.mapJs[type];
 
+      if (!mapType.code) {
+        continue;
+      }
+
       if (mapType.props) {
-        if (mapType.code && mapType.code.trim()) {
-          code += `
+        function isFunctionEmpty(fn) {
+          const content = fn.toString().match(/\{([\s\S]*)\}/m)[1]; // content between first and last { }
+          return content.replace(/^\s*\/\/.*$/gm, '').trim().length === 0; // remove comments
+        }
+
+        if (isFunctionEmpty(mapType.code)) {
+          continue;
+        }
+
+        code += `
           var props = ${JSON.stringify(mapType.props)};
           var ids = Object.keys(props).map(function(id) { return '#'+id }).join(',');
           var els = document.querySelectorAll(ids);
@@ -64,17 +76,14 @@ export default Backbone.Model.extend({
             var el = els[i];
             (${mapType.code}.bind(el))(props[el.id]);
           }`;
-        }
       } else {
         // Deprecated
-        if (mapType.code && mapType.code.trim()) {
-          const ids = '#' + mapType.ids.join(', #');
-          code += `
+        const ids = '#' + mapType.ids.join(', #');
+        code += `
           var items = document.querySelectorAll('${ids}');
           for (var i = 0, len = items.length; i < len; i++) {
             (function(){\n${mapType.code}\n}.bind(items[i]))();
           }`;
-        }
       }
     }
 
