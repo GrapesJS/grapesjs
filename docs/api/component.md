@@ -61,7 +61,7 @@ component.get('tagName');
     and append some new component inside, the new added component will get the exact same properties indicated in the `propagate` array (and the `propagate` property itself). Default: `[]`
 *   `toolbar` **[Array][5]<[Object][2]>?** Set an array of items to show up inside the toolbar when the component is selected (move, clone, delete).
     Eg. `toolbar: [ { attributes: {class: 'fa fa-arrows'}, command: 'tlb-move' }, ... ]`.
-    By default, when `toolbar` property is falsy the editor will add automatically commands like `move`, `delete`, etc. based on its properties.
+    By default, when `toolbar` property is falsy the editor will add automatically commands `core:component-exit` (select parent component, added if there is one), `tlb-move` (added if `draggable`) , `tlb-clone` (added if `copyable`), `tlb-delete` (added if `removable`).
 *   `components` **Collection<[Component][9]>?** Children components. Default: `null`
 
 ### init
@@ -767,6 +767,50 @@ editor.getSelected().move(dest, { at: 0 });
 ```
 
 Returns **this** 
+
+### isInstanceOf
+
+Check if the component is an instance of some component type.
+
+#### Parameters
+
+*   `type` **[String][1]** Component type
+
+#### Examples
+
+```javascript
+// Add a new component type by extending an existing one
+editor.Components.addType('text-ext', { extend: 'text' });
+// Append a new component somewhere
+const newTextExt = editor.getSelected().append({ type: 'text-ext' })[0];
+newTextExt.isInstanceOf('text-ext'); // true
+newTextExt.isInstanceOf('text'); // true
+```
+
+Returns **[Boolean][3]** 
+
+### isChildOf
+
+Check if the component is a child of some other component (or component type)
+
+#### Parameters
+
+*   `component` **([[Component][9]] | [String][1])** Component parent to check. In case a string is passed,
+    the check will be performed on the component type.
+
+#### Examples
+
+```javascript
+const newTextComponent = editor.getSelected().append({
+ type: 'text',
+ components: 'My text <b>here</b>',
+})[0];
+const innerComponent = newTextComponent.find('b')[0];
+innerComponent.isChildOf(newTextComponent); // true
+innerComponent.isChildOf('text'); // true
+```
+
+Returns **[Boolean][3]** 
 
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
