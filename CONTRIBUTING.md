@@ -47,6 +47,4 @@ If you have any questions, create an [issue](https://github.com/artf/grapesjs/is
 
 Thank you to all the people who have already contributed to GrapesJS!
 <a href="/artf/grapesjs/graphs/contributors"><img src="https://opencollective.com/grapesjs/contributors.svg?width=890" /></a>
-
-
-[Open Collective]: <https://opencollective.com/grapesjs>
+Open Collective]: <https://opencollective.com/grapesjs>
