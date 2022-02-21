@@ -1,53 +1,41 @@
-import Component from './ComponentText';
+import { forEach } from 'underscore';
 import { toLowerCase } from 'utils/mixins';
+import ComponentText from './ComponentText';
 
-export default Component.extend(
-  {
-    defaults: {
-      ...Component.prototype.defaults,
-      type: 'link',
-      tagName: 'a',
-      traits: ['title', 'href', 'target']
-    },
+const type = 'link';
 
-    /**
-     * Returns object of attributes for HTML
-     * @return {Object}
-     * @private
-     */
-    getAttrToHTML(...args) {
-      const attr = Component.prototype.getAttrToHTML.apply(this, args);
-      delete attr.onmousedown;
-      return attr;
-    }
-  },
-  {
-    isComponent(el) {
-      let result;
+export default class ComponentLink extends ComponentText {}
 
-      if (toLowerCase(el.tagName) === 'a') {
-        result = {
-          type: 'link',
-          editable: 0
-        };
+ComponentLink.prototype.defaults = {
+  ...ComponentText.getDefaults(),
+  type,
+  tagName: 'a',
+  traits: ['title', 'href', 'target'],
+};
 
-        // The link is editable only if, at least, one of its
-        // children is a text node (not empty one)
-        const children = el.childNodes;
-        const len = children.length;
-        if (!len) delete result.editable;
+ComponentLink.isComponent = (el, opts = {}) => {
+  let result;
 
-        for (let i = 0; i < len; i++) {
-          const child = children[i];
+  if (toLowerCase(el.tagName) === 'a') {
+    const textTags = opts.textTags || [];
+    result = { type, editable: false };
 
-          if (child.nodeType == 3 && child.textContent.trim() != '') {
-            delete result.editable;
-            break;
-          }
-        }
+    // The link is editable only if, at least, one of its
+    // children is a text node (not empty one)
+    const children = el.childNodes;
+    const len = children.length;
+    if (!len) delete result.editable;
+
+    forEach(children, child => {
+      const { tagName } = child;
+      if (
+        (child.nodeType == 3 && child.textContent.trim() !== '') ||
+        (tagName && textTags.indexOf(toLowerCase(tagName)) >= 0)
+      ) {
+        delete result.editable;
       }
-
-      return result;
-    }
+    });
   }
-);
+
+  return result;
+};

@@ -316,7 +316,7 @@ export default config => {
       }
 
       em && em.trigger(`${event}:root`, { input: str, root: el });
-      const result = this.parseNode(el);
+      const result = this.parseNode(el, cf);
       // I have to keep it otherwise it breaks the DomComponents.addComponent (returns always array)
       const resHtml = result.length === 1 && !c.returnArray ? result[0] : result;
       res.html = resHtml;

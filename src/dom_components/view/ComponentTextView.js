@@ -43,7 +43,11 @@ export default ComponentView.extend({
           parent = parent.parent();
         }
 
-        delegate = parent;
+        if (parent && parent.get('editable')) {
+          delegate = parent;
+        } else {
+          result = true;
+        }
       }
     }
 
@@ -62,6 +66,7 @@ export default ComponentView.extend({
     // text components will not block the editing (#1394)
     if (!result) {
       if (delegate) {
+        ev?.stopPropagation?.();
         em.setSelected(delegate);
         delegate.trigger('active', ev);
       }
