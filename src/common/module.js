@@ -28,6 +28,7 @@ export default {
       ...conf,
     };
     this.em = this.config.em;
+    this.cls = [];
   },
 
   __initListen(opts = {}) {
@@ -116,5 +117,8 @@ export default {
       coll.reset();
     });
     this.em = 0;
+    this.config = 0;
+    this.view?.remove();
+    this.view = 0;
   },
 };
