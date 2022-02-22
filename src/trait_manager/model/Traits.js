@@ -17,6 +17,7 @@ export default Backbone.Collection.extend({
   },
 
   handleAdd(model) {
+    model.em = this.em;
     const target = this.target;
 
     if (target) {
@@ -50,5 +51,5 @@ export default Backbone.Collection.extend({
     }
 
     return Backbone.Collection.prototype.add.apply(this, [models, opt]);
-  }
+  },
 });

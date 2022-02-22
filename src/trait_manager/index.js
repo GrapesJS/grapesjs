@@ -1,3 +1,4 @@
+import { debounce } from 'underscore';
 import defaults from './config/config';
 import TraitsView from './view/TraitsView';
 import TraitView from './view/TraitView';
@@ -6,7 +7,7 @@ import TraitCheckboxView from './view/TraitCheckboxView';
 import TraitNumberView from './view/TraitNumberView';
 import TraitColorView from './view/TraitColorView';
 import TraitButtonView from './view/TraitButtonView';
-import Module from 'common/module';
+import { Model, Module } from 'common';
 
 export const evAll = 'trait';
 export const evPfx = `${evAll}:`;
@@ -54,10 +55,47 @@ export default () => {
     init(config = {}) {
       this.__initConfig(defaults, config);
       const c = this.config;
+      const model = new Model();
+      this.model = model;
+      const { em } = this;
       const ppfx = c.pStylePrefix;
       this.types = { ...typesDef };
       ppfx && (c.stylePrefix = `${ppfx}${c.stylePrefix}`);
+
+      const upAll = debounce(() => this.__upSel());
+      model.listenTo(em, 'component:toggled', upAll);
+
+      const update = debounce(() => this.__onUp());
+      model.listenTo(em, 'trait:update', update);
+
       return this;
+    },
+
+    __upSel() {
+      this.select(this.em.getSelected());
+    },
+
+    __onUp() {
+      this.select(this.getSelected());
+    },
+
+    select(component) {
+      const traits = component ? component.getTraits() : [];
+      this.model.set({ component, traits });
+      this.__trgCustom();
+    },
+
+    getSelected() {
+      return this.model.get('component') || null;
+    },
+
+    getCurrent() {
+      return this.model.get('traits') || [];
+    },
+
+    __trgCustom(opts = {}) {
+      this.__ctn = this.__ctn || opts.container;
+      this.em.trigger(this.events.custom, { container: this.__ctn });
     },
 
     postRender() {
