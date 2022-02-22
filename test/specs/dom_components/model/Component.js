@@ -547,13 +547,13 @@ describe('Link Component', () => {
     <div>text</div>
     <div>here </div>`;
     obj = ComponentLink.isComponent(aEl);
-    expect(obj).toEqual({ type: 'link', editable: 0 });
+    expect(obj).toEqual({ type: 'link', editable: false });
   });
 
   test('Link element with only an image inside is not editable', () => {
     aEl.innerHTML = '<img src="##"/>';
     obj = ComponentLink.isComponent(aEl);
-    expect(obj).toEqual({ type: 'link', editable: 0 });
+    expect(obj).toEqual({ type: 'link', editable: false });
   });
 });
 

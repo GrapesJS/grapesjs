@@ -7,7 +7,7 @@ export default Backbone.Collection.extend({
   model: Trait,
 
   initialize(coll, options = {}) {
-    this.em = options.em || '';
+    this.em = options.em;
     this.listenTo(this, 'add', this.handleAdd);
     this.listenTo(this, 'reset', this.handleReset);
   },
