@@ -53,10 +53,17 @@ export default class Trait extends Model {
 
   setValue(value, opts = {}) {
     const valueOpts = {};
+
     if (opts.partial) {
       valueOpts.avoidStore = true;
     }
+
     this.setTargetValue(value, valueOpts);
+
+    if (opts.partial === false) {
+      this.setTargetValue('');
+      this.setTargetValue(value);
+    }
   }
 
   props() {
