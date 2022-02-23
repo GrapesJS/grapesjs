@@ -2,7 +2,6 @@ import { Model } from 'backbone';
 
 export default class HTMLGenerator extends Model {
   build(model, opts = {}) {
-    const models = model.components();
     const htmlOpts = {};
     const { em } = opts;
 
@@ -33,19 +32,6 @@ export default class HTMLGenerator extends Model {
       };
     }
 
-    if (opts.exportWrapper) {
-      return model.toHTML({
-        ...htmlOpts,
-        ...(opts.wrapperIsBody && model.is('wrapper') && { tag: 'body' })
-      });
-    }
-
-    return this.buildModels(models, htmlOpts);
-  }
-
-  buildModels(models, opts = {}) {
-    let code = '';
-    models.forEach(mod => (code += mod.toHTML(opts)));
-    return code;
+    return model.toHTML(htmlOpts);
   }
 }

@@ -27,17 +27,13 @@ export default Backbone.Model.extend({
     const avoidInline = em && em.getConfig('avoidInlineStyle');
     const style = model.styleToString();
     const classes = model.get('classes');
-    const wrapperIsBody = opts.wrapperIsBody;
-    const isWrapper = model.get('wrapper');
     this.ids.push(`#${model.getId()}`);
 
     // Let's know what classes I've found
     classes.each(model => this.compCls.push(model.getFullName()));
 
     if (!avoidInline && style) {
-      let selector = `#${model.getId()}`;
-      selector = wrapperIsBody && isWrapper ? 'body' : selector;
-      code = `${selector}{${style}}`;
+      code = `#${model.getId()}{${style}}`;
     }
 
     const components = model.components();

@@ -114,12 +114,6 @@ export default {
   // Enable multiple selection
   multipleSelection: 1,
 
-  // Show the wrapper component in the final code, eg. in editor.getHtml()
-  exportWrapper: 0,
-
-  // The wrapper, if visible, will be shown as a `<body>`
-  wrapperIsBody: 1,
-
   // Pass default available options wherever `editor.getHtml()` is called
   optsHtml: {},
 

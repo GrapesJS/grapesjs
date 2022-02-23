@@ -58,6 +58,7 @@ import defaults from './config/config';
 import Component, { keyUpdate, keyUpdateInside } from './model/Component';
 import Components from './model/Components';
 import ComponentView from './view/ComponentView';
+import ComponentWrapperView from './view/ComponentWrapperView';
 import ComponentsView from './view/ComponentsView';
 import ComponentTableCell from './model/ComponentTableCell';
 import ComponentTableCellView from './view/ComponentTableCellView';
@@ -196,7 +197,7 @@ export default () => {
     {
       id: 'wrapper',
       model: ComponentWrapper,
-      view: ComponentView,
+      view: ComponentWrapperView,
     },
     {
       id: 'default',
