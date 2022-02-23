@@ -1,6 +1,15 @@
 import { Model } from 'common';
 import { isUndefined } from 'underscore';
 
+/**
+ * @typedef Trait
+ * @property {String} id Trait id, eg. `my-trait-id`.
+ * @property {String} type Trait type, defines how the trait should rendered. Possible values: `text` (default), `number`, `select`, `checkbox`, `color`, `button`
+ * @property {String} label The trait label to show for the rendered trait.
+ * @property {String} name The name of the trait used as a key for the attribute/property. By default, the name is used as attribute name or property in case `changeProp` in enabled.
+ * @property {Boolean} changeProp If `true` the trait value is applied on component
+ *
+ */
 export default class Trait extends Model {
   initialize() {
     const { target, name, changeProp } = this.attributes;
@@ -15,7 +24,7 @@ export default class Trait extends Model {
   }
 
   /**
-   * Get trait id.
+   * Get the trait id.
    * @returns {String}
    */
   getId() {
@@ -31,7 +40,7 @@ export default class Trait extends Model {
   }
 
   /**
-   * Get trait name.
+   * Get the trait name.
    * @returns {String}
    */
   getName() {
@@ -39,9 +48,9 @@ export default class Trait extends Model {
   }
 
   /**
-   * Get trait label.
-   * @param {Object} [opts={}] Options
-   * @param {Boolean} [opts.locale=true] Use the locale string from i18n module
+   * Get the trait label.
+   * @param {Object} [opts={}] Options.
+   * @param {Boolean} [opts.locale=true] Use the locale string from i18n module.
    * @returns {String}
    */
   getLabel(opts = {}) {
@@ -51,6 +60,22 @@ export default class Trait extends Model {
     return (locale && this.em?.t(`traitManager.traits.labels.${id}`)) || name;
   }
 
+  /**
+   * Get the trait value.
+   * The value is taken from component attributes by default or from properties if the trait has the `changeProp` enabled.
+   * @returns {any}
+   */
+  getValue() {
+    return this.getTargetValue();
+  }
+
+  /**
+   * Update the trait value.
+   * The value is applied on component attributes by default or on properties if the trait has the `changeProp` enabled.
+   * @param {any} value Value of the trait.
+   * @param {Object} [opts={}] Options.
+   * @param {Boolean} [opts.partial] If `true` the update won't be considered complete (not stored in UndoManager).
+   */
   setValue(value, opts = {}) {
     const valueOpts = {};
 
@@ -77,10 +102,6 @@ export default class Trait extends Model {
       trait: this,
       component: this.target,
     });
-  }
-
-  getValue() {
-    return this.getTargetValue();
   }
 
   getTargetValue() {
@@ -144,7 +165,7 @@ export default class Trait extends Model {
 }
 
 Trait.prototype.defaults = {
-  type: 'text', // text, number, range, select
+  type: 'text',
   label: '',
   name: '',
   min: '',
