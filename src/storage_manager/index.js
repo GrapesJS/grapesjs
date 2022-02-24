@@ -38,7 +38,6 @@
  * * [setAutosave](#setautosave)
  * * [getStepsBeforeSave](#getstepsbeforesave)
  * * [setStepsBeforeSave](#setstepsbeforesave)
- * * [setStepsBeforeSave](#setstepsbeforesave)
  * * [getStorages](#getstorages)
  * * [getCurrent](#getcurrent)
  * * [getCurrentStorage](#getcurrentstorage)
