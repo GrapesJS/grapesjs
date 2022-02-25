@@ -217,7 +217,6 @@ export default () => {
      * @param {Object} data Data in key-value format, eg. `{ item1: value1, item2: value2 }`
      * @param {Function} resolve Resolve callback function. The result is passed as an argument.
      * @param {Function} reject Reject callback function. The error is passed as an argument.
-     * @return {Object|null}
      * @example
      * storageManager.store({item1: value1, item2: value2});
      * */
@@ -243,14 +242,11 @@ export default () => {
 
     /**
      * Load resource from the current storage by keys
-     * @param  {string|Array<string>} keys Keys to load
-     * @param {Function} clb Callback function
+     * @param {Function} resolve Resolve callback function. The result is passed as an argument.
+     * @param {Function} reject Reject callback function. The error is passed as an argument.
      * @example
-     * storageManager.load(['item1', 'item2'], res => {
+     * storageManager.load(res => {
      *  // res -> {item1: value1, item2: value2}
-     * });
-     * storageManager.load('item1', res => {
-     * // res -> {item1: value1}
      * });
      * */
     async load(resolve, reject, options = {}) {
