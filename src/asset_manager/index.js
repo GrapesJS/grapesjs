@@ -280,47 +280,12 @@ export default () => {
       return this.__remove(asset, opts);
     },
 
-    /**
-     * Store assets data to the selected storage
-     * @param {Boolean} noStore If true, won't store
-     * @returns {Object} Data to store
-     * @example
-     * var assets = assetManager.store();
-     */
-    store(noStore) {
-      const obj = {};
-      const assets = JSON.stringify(this.getAll().toJSON());
-      obj[this.storageKey] = assets;
-      if (!noStore && c.stm) c.stm.store(obj);
-      return obj;
+    store() {
+      return this.getProjectData();
     },
 
-    /**
-     * Load data from the passed object.
-     * The fetched data will be added to the collection.
-     * @param {Object} data Object of data to load
-     * @returns {Object} Loaded assets
-     * @example
-     * var assets = assetManager.load({
-     * 	assets: [...]
-     * })
-     *
-     */
-    load(data = {}) {
-      const name = this.storageKey;
-      let assets = data[name] || [];
-
-      if (typeof assets == 'string') {
-        try {
-          assets = JSON.parse(data[name]);
-        } catch (err) {}
-      }
-
-      if (assets && assets.length) {
-        this.getAll().reset(assets);
-      }
-
-      return assets;
+    load(data) {
+      return this.loadProjectData(data);
     },
 
     /**

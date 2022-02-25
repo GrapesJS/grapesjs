@@ -6,6 +6,36 @@ export default {
     return this.__getConfig(name);
   },
 
+  getProjectData(data) {
+    const obj = {};
+    const key = this.storageKey;
+    if (key) {
+      obj[key] = data || this.getAll();
+    }
+    return obj;
+  },
+
+  loadProjectData(data = {}, { all, def = [], onResult } = {}) {
+    const key = this.storageKey;
+    let result = data[key] || def;
+
+    if (typeof result == 'string') {
+      try {
+        result = JSON.parse(result);
+      } catch (err) {
+        this.__logWarn('Data parsing failed', { input: result });
+      }
+    }
+
+    if (onResult) {
+      onResult(result);
+    } else if (result && result.length) {
+      (all || this.getAll()).reset(result);
+    }
+
+    return result;
+  },
+
   __getConfig(name) {
     const res = this.config || {};
     return name ? res[name] : res;
@@ -82,8 +112,8 @@ export default {
 
   __onAllEvent() {},
 
-  __logWarn(str) {
-    this.em.logWarning(`[${this.name}]: ${str}`);
+  __logWarn(str, opts) {
+    this.em.logWarning(`[${this.name}]: ${str}`, opts);
   },
 
   _createId(len = 16) {

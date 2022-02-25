@@ -96,6 +96,7 @@ import ComponentTextView from './view/ComponentTextView';
 import ComponentWrapper from './model/ComponentWrapper';
 import ComponentFrame from './model/ComponentFrame';
 import ComponentFrameView from './view/ComponentFrameView';
+import Module from 'common/module';
 
 export default () => {
   var c = {};
@@ -207,6 +208,8 @@ export default () => {
   ];
 
   return {
+    ...Module,
+
     Component,
 
     Components,
@@ -224,6 +227,8 @@ export default () => {
      */
     name: 'DomComponents',
 
+    storageKey: 'components',
+
     /**
      * Returns config
      * @return {Object} Config object
@@ -231,19 +236,6 @@ export default () => {
      */
     getConfig() {
       return c;
-    },
-
-    /**
-     * Mandatory for the storage manager
-     * @type {String}
-     * @private
-     */
-    storageKey() {
-      var keys = [];
-      var smc = (c.stm && c.stm.getConfig()) || {};
-      if (smc.storeHtml) keys.push('html');
-      if (smc.storeComponents) keys.push('components');
-      return keys;
     },
 
     /**
@@ -295,82 +287,21 @@ export default () => {
       c.components && this.setComponents(c.components, { silent: 1 });
     },
 
-    /**
-     * Load components from the passed object, if the object is empty will try to fetch them
-     * autonomously from the selected storage
-     * The fetched data will be added to the collection
-     * @param {Object} data Object of data to load
-     * @return {Object} Loaded data
-     */
-    load(data = '') {
-      const { em } = this;
-      let result = '';
-
-      if (!data && c.stm) {
-        data = c.em.getCacheLoad();
-      }
-
-      const { components, html } = data;
-
-      if (components) {
-        if (isObject(components) || isArray(components)) {
-          result = components;
-        } else {
-          try {
-            result = JSON.parse(components);
-          } catch (err) {
-            em && em.logError(err);
+    load(data) {
+      return this.loadProjectData(data, {
+        onResult: result => {
+          if (isArray(result)) {
+            result.length && this.getComponents().reset(result);
+          } else {
+            this.getWrapper().set(result);
           }
-        }
-      } else if (html) {
-        result = html;
-      }
-
-      const isObj = result && result.constructor === Object;
-
-      if ((result && result.length) || isObj) {
-        this.clear();
-
-        // If the result is an object I consider it the wrapper
-        if (isObj) {
-          this.getWrapper().set(result);
-        } else {
-          this.getComponents().add(result);
-        }
-      }
-
-      return result;
+        },
+      });
     },
 
-    /**
-     * Store components on the selected storage
-     * @param {Boolean} noStore If true, won't store
-     * @return {Object} Data to store
-     */
-    store(noStore) {
-      if (!c.stm || this.em.get('hasPages')) {
-        return {};
-      }
-
-      var obj = {};
-      var keys = this.storageKey();
-
-      if (keys.indexOf('html') >= 0) {
-        obj.html = c.em.getHtml();
-      }
-
-      if (keys.indexOf('components') >= 0) {
-        // const storeWrap = (em && !em.getConfig('avoidInlineStyle')) || c.storeWrapper;
-        const storeWrap = c.storeWrapper;
-        const toStore = storeWrap ? this.getWrapper() : this.getComponents();
-        obj.components = JSON.stringify(toStore);
-      }
-
-      if (!noStore) {
-        c.stm.store(obj);
-      }
-
-      return obj;
+    store() {
+      if (this.em.get('hasPages')) return {};
+      return this.getProjectData(this.getWrapper());
     },
 
     /**

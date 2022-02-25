@@ -213,35 +213,32 @@ export default () => {
     },
 
     /**
-     * Store key-value resources in the current storage
-     * @param  {Object} data Data in key-value format, eg. {item1: value1, item2: value2}
-     * @param {Function} clb Callback function
+     * Store data in the current storage.
+     * @param {Object} data Data in key-value format, eg. `{ item1: value1, item2: value2 }`
+     * @param {Function} resolve Resolve callback function. The result is passed as an argument.
+     * @param {Function} reject Reject callback function. The error is passed as an argument.
      * @return {Object|null}
      * @example
      * storageManager.store({item1: value1, item2: value2});
      * */
-    store(data, clb) {
-      const st = this.get(this.getCurrent());
+    store(data, resolve, reject, options = {}) {
+      const st = this.getCurrentStorage();
       const toStore = {};
+      const opts = { ...this.getCurrentOptons(), ...options };
       this.onStart('store', data);
 
-      for (let key in data) {
-        toStore[c.id + key] = data[key];
-      }
+      const onResult = res => {
+        this.onAfter('store', res);
+        resolve?.(res);
+        this.onEnd('store', res);
+      };
 
-      return st
-        ? st.store(
-            toStore,
-            res => {
-              this.onAfter('store', res);
-              clb && clb(res);
-              this.onEnd('store', res);
-            },
-            err => {
-              this.onError('store', err);
-            }
-          )
-        : null;
+      const onError = err => {
+        reject?.(err);
+        this.onError('store', err);
+      };
+
+      return st ? st.store(toStore, onResult, onError, opts) : null;
     },
 
     /**
@@ -257,7 +254,7 @@ export default () => {
      * });
      * */
     load(keys, clb) {
-      const st = this.get(this.getCurrent());
+      const st = this.getCurrentStorage();
       const keysF = [];
       let result = {};
 
@@ -321,6 +318,12 @@ export default () => {
      * */
     getCurrentStorage() {
       return this.get(this.getCurrent());
+    },
+
+    getCurrentOptons() {
+      const config = this.getConfig();
+      const current = this.getCurrent();
+      return config.options[current] || {};
     },
 
     /**

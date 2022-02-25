@@ -611,10 +611,11 @@ export default class EditorModel extends Model {
    * @return {Object} Stored data
    * @private
    */
-  store(clb) {
+  store(opts) {
     const sm = this.get('StorageManager');
     if (!sm) return;
 
+    const isCallback = isFunction(opts);
     const store = this.storeData();
     sm.store(store, res => {
       clb && clb(res, store);
@@ -634,7 +635,7 @@ export default class EditorModel extends Model {
     this.get('storables').forEach(m => {
       result = { ...result, ...m.store(1) };
     });
-    return result;
+    return JSON.parse(JSON.stringify(result));
   }
 
   /**
