@@ -616,14 +616,14 @@ export default class EditorModel extends Model {
     if (!sm) return;
 
     const isCallback = isFunction(opts);
-    const store = this.storeData();
-    sm.store(store, res => {
-      clb && clb(res, store);
+    const toStore = this.storeData();
+    sm.store(toStore, res => {
+      isCallback && opts(res, toStore);
       this.set('changesCount', 0);
-      this.trigger('storage:store', store);
+      this.trigger('storage:store', toStore);
     });
 
-    return store;
+    return toStore;
   }
 
   storeData() {
@@ -683,7 +683,7 @@ export default class EditorModel extends Model {
       keys.forEach(k => load.push(k));
     });
 
-    sm.load(load, res => {
+    sm.load(res => {
       this.cacheLoad = res;
       clb && clb(res);
       setTimeout(() => this.trigger('storage:load', res));

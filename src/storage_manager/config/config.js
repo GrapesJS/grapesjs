@@ -34,7 +34,10 @@ export default {
   // Default storage options
   options: {
     local: {
-      key: 'gjs-project',
+      key: 'gjsProject',
+
+      // If enabled, checks if browser supports LocalStorage
+      checkLocal: true,
     },
     remote: {
       // Custom parameters to pass with the remote request, eg. csrf token

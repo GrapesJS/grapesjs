@@ -221,24 +221,24 @@ export default () => {
      * @example
      * storageManager.store({item1: value1, item2: value2});
      * */
-    store(data, resolve, reject, options = {}) {
+    async store(data, resolve, reject, options = {}) {
+      const ev = 'store';
       const st = this.getCurrentStorage();
-      const toStore = {};
       const opts = { ...this.getCurrentOptons(), ...options };
-      this.onStart('store', data);
+      this.onStart(ev, data);
 
       const onResult = res => {
-        this.onAfter('store', res);
+        this.onAfter(ev, res);
         resolve?.(res);
-        this.onEnd('store', res);
+        this.onEnd(ev, res);
       };
 
       const onError = err => {
         reject?.(err);
-        this.onError('store', err);
+        this.onError(ev, err);
       };
 
-      return st ? st.store(toStore, onResult, onError, opts) : null;
+      return st ? st.store(data, onResult, onError, opts) : null;
     },
 
     /**
@@ -253,35 +253,26 @@ export default () => {
      * // res -> {item1: value1}
      * });
      * */
-    load(keys, clb) {
+    async load(resolve, reject, options = {}) {
+      const ev = 'load';
       const st = this.getCurrentStorage();
-      const keysF = [];
+      const opts = { ...this.getCurrentOptons(), ...options };
       let result = {};
+      this.onStart(ev);
 
-      if (typeof keys === 'string') keys = [keys];
-      this.onStart('load', keys);
+      const onResult = res => {
+        result = this.__clearKeys(res);
+        this.onAfter(ev, result);
+        resolve?.(result);
+        this.onEnd(ev, result);
+      };
 
-      for (var i = 0, len = keys.length; i < len; i++) {
-        keysF.push(c.id + keys[i]);
-      }
+      const onError = err => {
+        reject?.(err);
+        this.onError(ev, err);
+      };
 
-      if (st) {
-        st.load(
-          keysF,
-          res => {
-            result = this.__clearKeys(res);
-            this.onAfter('load', result);
-            clb && clb(result);
-            this.onEnd('load', result);
-          },
-          err => {
-            clb && clb(result);
-            this.onError('load', err);
-          }
-        );
-      } else {
-        clb && clb(result);
-      }
+      return st ? st.load(onResult, onError, opts) : resolve(result);
     },
 
     /**

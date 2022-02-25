@@ -1,36 +1,45 @@
 import { Model } from 'backbone';
 import { hasWin } from 'utils/mixins';
 
+const noLocalStorage = 'localStorage not available';
+
 export default Model.extend({
   defaults: {
-    checkLocal: true
+    checkLocal: true,
   },
 
   /**
    * @private
    */
-  store(data, clb = () => {}) {
-    if (this.hasLocal()) {
-      for (let key in data) localStorage.setItem(key, data[key]);
-    }
-
-    clb && clb();
-  },
-
-  /**
-   * @private
-   */
-  load(keys, clb = () => {}) {
-    const result = {};
-
-    if (this.hasLocal()) {
-      for (let i = 0, len = keys.length; i < len; i++) {
-        const value = localStorage.getItem(keys[i]);
-        if (value) result[keys[i]] = value;
+  async store(data, resolve, reject, opts) {
+    try {
+      if (this.hasLocal()) {
+        localStorage.setItem(opts.key, JSON.stringify(data));
+        return resolve();
+      } else {
+        reject(noLocalStorage);
       }
+    } catch (error) {
+      reject(error);
     }
+  },
 
-    clb && clb(result);
+  /**
+   * @private
+   */
+  async load(resolve, reject, opts) {
+    let result = {};
+
+    try {
+      if (this.hasLocal()) {
+        result = JSON.parse(localStorage.getItem(opts.key) || '{}');
+        resolve(result);
+      } else {
+        reject(noLocalStorage);
+      }
+    } catch (error) {
+      reject(error);
+    }
 
     return result;
   },
@@ -41,8 +50,7 @@ export default Model.extend({
   remove(keys) {
     if (!this.hasLocal()) return;
 
-    for (let i = 0, len = keys.length; i < len; i++)
-      localStorage.removeItem(keys[i]);
+    for (let i = 0, len = keys.length; i < len; i++) localStorage.removeItem(keys[i]);
   },
 
   /**
@@ -50,13 +58,10 @@ export default Model.extend({
    * @private
    * */
   hasLocal() {
-    const win = hasWin();
-
-    if (this.get('checkLocal') && (!win || !localStorage)) {
-      win && console.warn("Your browser doesn't support localStorage");
+    if (this.get('checkLocal') && (!hasWin() || !localStorage)) {
       return false;
     }
 
     return true;
-  }
+  },
 });
