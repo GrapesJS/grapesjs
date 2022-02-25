@@ -439,12 +439,16 @@ export default (config = {}, opts = {}) => {
     },
 
     /**
-     * Get the JSON data object, which could be stored and loaded back with `editor.loadData(json)`
+     * Get the JSON project data, which could be stored and loaded back with `editor.loadProject(json)`
      * @returns {Object}
      * @example
-     * console.log(editor.storeData());
+     * console.log(editor.getProject());
      * // { pages: [...], styles: [...], ... }
      */
+    getProject() {
+      return em.storeData();
+    },
+
     storeData() {
       return em.storeData();
     },
@@ -459,12 +463,15 @@ export default (config = {}, opts = {}) => {
     },
 
     /**
-     * Load data from the JSON data object
-     * @param {Object} data Data to load
-     * @return {Object} Loaded object
+     * Load data from the JSON project
+     * @param {Object} data Project to load
      * @example
-     * editor.loadData({ pages: [...], styles: [...], ... })
+     * editor.loadProject({ pages: [...], styles: [...], ... })
      */
+    loadProject(data) {
+      return em.loadData(data);
+    },
+
     loadData(data) {
       return em.loadData(data);
     },
