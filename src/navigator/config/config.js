@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-anonymous-default-export
 export default {
   stylePrefix: '',
 
@@ -9,7 +10,7 @@ export default {
   sortable: 1,
 
   // Enable/Disable globally the possibility to hide layers
-  hidable: 1,
+  hidable: 0,
 
   // Hide textnodes
   hideTextnode: 1,
@@ -58,5 +59,5 @@ export default {
    *  }
    * }
    */
-  onRender: () => {}
-};
+  onRender: () => {},
+}
