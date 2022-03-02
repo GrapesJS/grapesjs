@@ -133,10 +133,9 @@ export default class EditorModel extends Model {
 
   /**
    * Should be called once all modules and plugins are loaded
-   * @param {Function} clb
    * @private
    */
-  loadOnStart(clb = null) {
+  loadOnStart() {
     const sm = this.get('StorageManager');
 
     // In `onLoad`, the module will try to load the data from its configurations.
@@ -147,14 +146,16 @@ export default class EditorModel extends Model {
       const modules = this.get('modules');
       modules.forEach(mdl => mdl.postLoad && mdl.postLoad(this));
       this.set('readyLoad', 1);
-      clb && clb();
     };
 
-    if (sm && sm.canAutoload()) {
-      this.load(postLoad);
-    } else {
-      setTimeout(postLoad);
-    }
+    // Defer for storage load events.
+    setTimeout(() => {
+      if (sm && sm.canAutoload()) {
+        this.load(postLoad, error => this.logError(error));
+      } else {
+        postLoad();
+      }
+    });
 
     // Create shallow editor.
     // Here we can create components/styles without altering/triggering the main EditorModel
@@ -607,23 +608,24 @@ export default class EditorModel extends Model {
 
   /**
    * Store data to the current storage
-   * @param {Function} clb Callback function
-   * @return {Object} Stored data
+   * @param {Function} [resolve] Resolve callback function. The result is passed as an argument.
+   * @param {Function} [reject] Reject callback function. The error is passed as an argument.
+   * @param {Object} [options] Storage options.
    * @private
    */
-  store(opts) {
+  store(resolve, reject, options) {
     const sm = this.get('StorageManager');
     if (!sm) return;
 
-    const isCallback = isFunction(opts);
-    const toStore = this.storeData();
-    sm.store(toStore, res => {
-      isCallback && opts(res, toStore);
-      this.set('changesCount', 0);
-      this.trigger('storage:store', toStore);
-    });
-
-    return toStore;
+    return sm.store(
+      this.storeData(),
+      res => {
+        resolve?.(res);
+        this.set('changesCount', 0);
+      },
+      reject,
+      options
+    );
   }
 
   storeData() {
@@ -640,54 +642,28 @@ export default class EditorModel extends Model {
 
   /**
    * Load data from the current storage
-   * @param {Function} clb Callback function
+   * @param {Function} [resolve] Resolve callback function. The result is passed as an argument.
+   * @param {Function} [reject] Reject callback function. The error is passed as an argument.
+   * @param {Object} [options] Storage options.
    * @private
    */
-  load(clb = null) {
-    this.getCacheLoad(1, res => {
-      this.loadData(res);
-      clb && clb(res);
-    });
+  load(resolve, reject, options) {
+    const sm = this.get('StorageManager');
+    if (!sm) return;
+
+    return sm.load(
+      res => {
+        this.loadData(res);
+        resolve?.(res);
+      },
+      reject,
+      options
+    );
   }
 
   loadData(data = {}) {
-    const sm = this.get('StorageManager');
-    const result = sm.__clearKeys(data);
-
-    this.get('storables').forEach(module => {
-      module.load(result);
-      module.postLoad && module.postLoad(this);
-    });
-
-    return result;
-  }
-
-  /**
-   * Returns cached load
-   * @param {Boolean} force Force to reload
-   * @param {Function} clb Callback function
-   * @return {Object}
-   * @private
-   */
-  getCacheLoad(force, clb) {
-    if (this.cacheLoad && !force) return this.cacheLoad;
-    const sm = this.get('StorageManager');
-    const load = [];
-
-    if (!sm) return {};
-
-    this.get('storables').forEach(m => {
-      let key = m.storageKey;
-      key = isFunction(key) ? key() : key;
-      const keys = isArray(key) ? key : [key];
-      keys.forEach(k => load.push(k));
-    });
-
-    sm.load(res => {
-      this.cacheLoad = res;
-      clb && clb(res);
-      setTimeout(() => this.trigger('storage:load', res));
-    });
+    this.get('storables').forEach(module => module.load(data));
+    return data;
   }
 
   /**

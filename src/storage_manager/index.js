@@ -215,8 +215,9 @@ export default () => {
     /**
      * Store data in the current storage.
      * @param {Object} data Data in key-value format, eg. `{ item1: value1, item2: value2 }`
-     * @param {Function} resolve Resolve callback function. The result is passed as an argument.
-     * @param {Function} reject Reject callback function. The error is passed as an argument.
+     * @param {Function} [resolve] Resolve callback function.
+     * @param {Function} [reject] Reject callback function. The error is passed as an argument.
+     * @param {Object} [options] Storage options.
      * @example
      * storageManager.store({item1: value1, item2: value2});
      * */
@@ -225,6 +226,8 @@ export default () => {
       const st = this.getCurrentStorage();
       const opts = { ...this.getCurrentOptons(), ...options };
       this.onStart(ev, data);
+
+      if (!st) return null;
 
       const onResult = res => {
         this.onAfter(ev, res);
@@ -237,13 +240,14 @@ export default () => {
         this.onError(ev, err);
       };
 
-      return st ? st.store(data, onResult, onError, opts) : null;
+      return await st.store(data, onResult, onError, opts);
     },
 
     /**
      * Load resource from the current storage by keys
-     * @param {Function} resolve Resolve callback function. The result is passed as an argument.
-     * @param {Function} reject Reject callback function. The error is passed as an argument.
+     * @param {Function} [resolve] Resolve callback function. The result is passed as an argument.
+     * @param {Function} [reject] Reject callback function. The error is passed as an argument.
+     * @param {Object} [options] Storage options.
      * @example
      * storageManager.load(res => {
      *  // res -> {item1: value1, item2: value2}
@@ -255,6 +259,8 @@ export default () => {
       const opts = { ...this.getCurrentOptons(), ...options };
       let result = {};
       this.onStart(ev);
+
+      if (!st) return resolve(result);
 
       const onResult = res => {
         result = this.__clearKeys(res);
@@ -268,7 +274,7 @@ export default () => {
         this.onError(ev, err);
       };
 
-      return st ? st.load(onResult, onError, opts) : resolve(result);
+      return await st.load(onResult, onError, opts);
     },
 
     /**
@@ -331,7 +337,8 @@ export default () => {
     onAfter(ctx, data) {
       if (em) {
         em.trigger(eventAfter);
-        ctx && em.trigger(`${eventAfter}:${ctx}`, data);
+        em.trigger(`${eventAfter}:${ctx}`, data);
+        em.trigger(`storage:${ctx}`, data);
       }
     },
 

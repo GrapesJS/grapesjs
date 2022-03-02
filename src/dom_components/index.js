@@ -290,10 +290,13 @@ export default () => {
     load(data) {
       return this.loadProjectData(data, {
         onResult: result => {
+          const wrapper = this.getWrapper();
           if (isArray(result)) {
-            result.length && this.getComponents().reset(result);
+            result.length && wrapper.components(result);
           } else {
-            this.getWrapper().set(result);
+            const { components = [], ...rest } = result;
+            wrapper.set(rest);
+            wrapper.components(components);
           }
         },
       });

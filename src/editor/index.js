@@ -430,22 +430,28 @@ export default (config = {}, opts = {}) => {
     },
 
     /**
-     * Store data to the current storage
-     * @param {Function} clb Callback function
-     * @return {Object} Stored data
+     * Store data to the current storage.
+     * @param {Function} [resolve] Resolve callback function.
+     * @param {Function} [reject] Reject callback function. The error is passed as an argument.
+     * @param {Object} [options] Storage options.
+     * @example
+     * editor.store(
+     *  () => console.log('Project stored'),
+     *  (err) => console.error('Store error', err),
+     * );
      */
-    store(clb) {
-      return em.store(clb);
+    store(resolve, reject, options) {
+      return em.store(resolve, reject, options);
     },
 
     /**
-     * Get the JSON project data, which could be stored and loaded back with `editor.loadProject(json)`
+     * Get the JSON project data, which could be stored and loaded back with `editor.loadProjectData(json)`
      * @returns {Object}
      * @example
-     * console.log(editor.getProject());
+     * console.log(editor.getProjectData());
      * // { pages: [...], styles: [...], ... }
      */
-    getProject() {
+    getProjectData() {
       return em.storeData();
     },
 
@@ -454,21 +460,27 @@ export default (config = {}, opts = {}) => {
     },
 
     /**
-     * Load data from the current storage
-     * @param {Function} clb Callback function
-     * @return {Object} Stored data
+     * Load data from the current storage.
+     * @param {Function} [resolve] Resolve callback function.
+     * @param {Function} [reject] Reject callback function. The error is passed as an argument.
+     * @param {Object} [options] Storage options.
+     * @example
+     * editor.load(
+     *  () => console.log('Project loaded'),
+     *  (err) => console.error('Load error', err),
+     * );
      */
-    load(clb) {
-      return em.load(clb);
+    load(resolve, reject, options) {
+      return em.load(resolve, reject, options);
     },
 
     /**
      * Load data from the JSON project
      * @param {Object} data Project to load
      * @example
-     * editor.loadProject({ pages: [...], styles: [...], ... })
+     * editor.loadProjectData({ pages: [...], styles: [...], ... })
      */
-    loadProject(data) {
+    loadProjectData(data) {
       return em.loadData(data);
     },
 

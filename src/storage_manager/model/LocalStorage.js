@@ -15,7 +15,7 @@ export default Model.extend({
     try {
       if (this.hasLocal()) {
         localStorage.setItem(opts.key, JSON.stringify(data));
-        return resolve();
+        return resolve(data);
       } else {
         reject(noLocalStorage);
       }
