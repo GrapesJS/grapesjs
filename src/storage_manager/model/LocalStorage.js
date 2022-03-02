@@ -1,37 +1,29 @@
-import { Model } from 'backbone';
+import { Model } from 'common';
 import { hasWin } from 'utils/mixins';
 
 const noLocalStorage = 'localStorage not available';
 
-export default Model.extend({
-  defaults: {
-    checkLocal: true,
-  },
-
-  /**
-   * @private
-   */
+export default class LocalStorage extends Model {
   async store(data, resolve, reject, opts) {
     try {
-      if (this.hasLocal()) {
+      if (this.hasLocal(opts)) {
         localStorage.setItem(opts.key, JSON.stringify(data));
-        return resolve(data);
+        resolve(data);
       } else {
         reject(noLocalStorage);
       }
     } catch (error) {
       reject(error);
     }
-  },
 
-  /**
-   * @private
-   */
+    return data;
+  }
+
   async load(resolve, reject, opts) {
     let result = {};
 
     try {
-      if (this.hasLocal()) {
+      if (this.hasLocal(opts)) {
         result = JSON.parse(localStorage.getItem(opts.key) || '{}');
         resolve(result);
       } else {
@@ -42,26 +34,17 @@ export default Model.extend({
     }
 
     return result;
-  },
-
-  /**
-   * @private
-   */
-  remove(keys) {
-    if (!this.hasLocal()) return;
-
-    for (let i = 0, len = keys.length; i < len; i++) localStorage.removeItem(keys[i]);
-  },
+  }
 
   /**
    * Check storage environment
    * @private
    * */
-  hasLocal() {
-    if (this.get('checkLocal') && (!hasWin() || !localStorage)) {
+  hasLocal(opts = {}) {
+    if (opts.checkLocal && (!hasWin() || !localStorage)) {
       return false;
     }
 
     return true;
-  },
-});
+  }
+}
