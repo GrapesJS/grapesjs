@@ -1,6 +1,5 @@
-$layerIconSize: 12px !default;
-$layerCaretSize: 12px !default;
-$layerNameSpacing: 4px !default;
+$layerIconSize: 15px !default;
+$layerNameSpacing: 5px !default;
 
 .#{$nv-prefix} {
   &selected-parent {
@@ -41,13 +40,12 @@ $layerNameSpacing: 4px !default;
 
     &-caret {
       font-size: 0.5rem;
-      width: $layerCaretSize;
-      height: $layerCaretSize;
+      width: 8px;
       padding: 2px;
       cursor: pointer;
       position: absolute;
-      left: -$layerCaretSize;
-      top: 7px;
+      left: -9px;
+      top: 6px;
       @include opacity(0.7);
 
       &:hover {
@@ -55,16 +53,10 @@ $layerNameSpacing: 4px !default;
       }
     }
 
-    &-wrapper {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-    }
-
     &-title {
       @extend .#{$app-prefix}category-title;
 
-      padding: 2px 10px 2px 30px;
+      padding: 3px 10px 5px 30px;
       display: flex;
       align-items: center;
 
@@ -81,7 +73,7 @@ $layerNameSpacing: 4px !default;
       width: 100%;
       max-width: $layerIconSize;
       max-height: $layerIconSize;
-      padding-left: 4px;
+      padding-left: 5px;
 
       svg {
         fill: currentColor;
@@ -124,17 +116,11 @@ $layerNameSpacing: 4px !default;
     }
 
     &.#{$nv-prefix}hovered .#{$nv-prefix}layer-title {
-      background-color: #616161;
+      background-color: rgba(255, 255, 255, 0.015);
     }
 
     &.#{$nv-prefix}selected .#{$nv-prefix}layer-title {
-      background-color: #644EFF;
-    }
-
-    &.#{$nv-prefix}freezed {
-      .#{$nv-prefix}layer-title-c {
-        background: #644EFF;
-      }
+      background-color: rgba(255, 255, 255, 0.1);
     }
   }
 }
