@@ -756,6 +756,11 @@ export default class EditorModel extends Model {
     return (this.getCurrentFrame() || {}).model;
   }
 
+  getIcon(icon) {
+    const icons = this.getConfig('icons') || {};
+    return icons[icon] || '';
+  }
+
   /**
    * Return the count of changes made to the content and not yet stored.
    * This count resets at any `store()`

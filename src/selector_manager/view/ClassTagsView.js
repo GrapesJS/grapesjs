@@ -154,8 +154,12 @@ export default Backbone.View.extend({
    * @private
    */
   onInputKeyUp(e) {
-    if (e.keyCode === 13) this.addNewTag(this.$input.val());
-    else if (e.keyCode === 27) this.endNewTag();
+    if (e.keyCode === 13) {
+      e.preventDefault();
+      this.addNewTag(this.$input.val());
+    } else if (e.keyCode === 27) {
+      this.endNewTag();
+    }
   },
 
   checkStates() {

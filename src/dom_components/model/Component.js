@@ -1064,36 +1064,29 @@ export default class Component extends Model.extend(Styleable) {
     const model = this;
     const ppfx = (em && em.getConfig('stylePrefix')) || '';
 
-    if (!model.get('toolbar')) {
-      var tb = [];
-      if (model.collection) {
+    if (!model.get('toolbar') && em) {
+      const tb = [];
+      model.collection &&
         tb.push({
-          attributes: { class: 'fa fa-arrow-up' },
+          label: em.getIcon('arrowUp'),
           command: ed => ed.runCommand('core:component-exit', { force: 1 }),
         });
-      }
-      if (model.get('draggable')) {
+      model.get('draggable') &&
         tb.push({
-          attributes: {
-            class: `fa fa-arrows ${ppfx}no-touch-actions`,
-            draggable: true,
-          },
-          //events: hasDnd(this.em) ? { dragstart: 'execCommand' } : '',
+          attributes: { class: `${ppfx}no-touch-actions`, draggable: true },
+          label: em.getIcon('move'),
           command: 'tlb-move',
         });
-      }
-      if (model.get('copyable')) {
+      model.get('copyable') &&
         tb.push({
-          attributes: { class: 'fa fa-clone' },
+          label: em.getIcon('copy'),
           command: 'tlb-clone',
         });
-      }
-      if (model.get('removable')) {
+      model.get('removable') &&
         tb.push({
-          attributes: { class: 'fa fa-trash-o' },
+          label: em.getIcon('delete'),
           command: 'tlb-delete',
         });
-      }
       model.set('toolbar', tb);
     }
   }

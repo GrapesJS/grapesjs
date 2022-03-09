@@ -18,7 +18,7 @@ Working on your first Pull Request? You can learn how from this **free** series,
 
 ## Submitting code
 
-Any code change should be submitted as a pull request. Before start working on something make always a search in opened issues and pull requests, this might help you to avoid waisting time.
+Any code change should be submitted as a pull request. Before start working on something make always a search in opened issues and pull requests, this might help you to avoid wasting time.
 
 A pull request could be a bug fix, new feature and much more, but in all cases, **open a new issue** and talk about what you want to do. Often happens to work on something already fixed (ready to release) or in progress.
 
