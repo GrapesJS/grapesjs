@@ -215,32 +215,29 @@ export default () => {
     /**
      * Store data in the current storage.
      * @param {Object} data Data in key-value format, eg. `{ item1: value1, item2: value2 }`
-     * @param {Function} [resolve] Resolve callback function.
-     * @param {Function} [reject] Reject callback function. The error is passed as an argument.
      * @param {Object} [options] Storage options.
+     * @returns {Object} Stored data.
      * @example
-     * storageManager.store({item1: value1, item2: value2});
+     * await storageManager.store({item1: value1, item2: value2});
      * */
-    async store(data, resolve, reject, options = {}) {
+    async store(data, options = {}) {
       const ev = 'store';
       const st = this.getCurrentStorage();
       const opts = { ...this.getCurrentOptons(), ...options };
       this.onStart(ev, data);
 
-      if (!st) return null;
+      if (!st) return data;
 
-      const onResult = res => {
-        this.onAfter(ev, res);
-        resolve?.(res);
-        this.onEnd(ev, res);
-      };
+      try {
+        await st.store(data, opts);
+        this.onAfter(ev, data);
+        this.onEnd(ev, data);
+      } catch (error) {
+        this.onError(ev, error);
+        throw error;
+      }
 
-      const onError = err => {
-        reject?.(err);
-        this.onError(ev, err);
-      };
-
-      return await st.store(data, onResult, onError, opts);
+      return data;
     },
 
     /**
@@ -253,28 +250,26 @@ export default () => {
      *  // res -> {item1: value1, item2: value2}
      * });
      * */
-    async load(resolve, reject, options = {}) {
+    async load(options = {}) {
       const ev = 'load';
       const st = this.getCurrentStorage();
       const opts = { ...this.getCurrentOptons(), ...options };
       let result = {};
       this.onStart(ev);
 
-      if (!st) return resolve(result);
+      if (!st) return result;
 
-      const onResult = res => {
+      try {
+        const res = await st.load(opts);
         result = this.__clearKeys(res);
         this.onAfter(ev, result);
-        resolve?.(result);
         this.onEnd(ev, result);
-      };
+      } catch (error) {
+        this.onError(ev, error);
+        throw error;
+      }
 
-      const onError = err => {
-        reject?.(err);
-        this.onError(ev, err);
-      };
-
-      return await st.load(onResult, onError, opts);
+      return result;
     },
 
     /**

@@ -143,8 +143,6 @@ export default class EditorModel extends Model {
    * @private
    */
   loadOnStart() {
-    const sm = this.get('StorageManager');
-
     // In `onLoad`, the module will try to load the data from its configurations.
     this.get('toLoad').forEach(mdl => mdl.onLoad());
 
@@ -156,12 +154,15 @@ export default class EditorModel extends Model {
     };
 
     // Defer for storage load events.
-    setTimeout(() => {
-      if (sm && sm.canAutoload()) {
-        this.load(postLoad, error => this.logError(error));
-      } else {
-        postLoad();
+    setTimeout(async () => {
+      if (this.get('StorageManager').canAutoload()) {
+        try {
+          await this.load();
+        } catch (error) {
+          this.logError(error);
+        }
       }
+      postLoad();
     });
 
     // Create shallow editor.
@@ -612,25 +613,24 @@ export default class EditorModel extends Model {
   }
 
   /**
-   * Store data to the current storage
-   * @param {Function} [resolve] Resolve callback function. The result is passed as an argument.
-   * @param {Function} [reject] Reject callback function. The error is passed as an argument.
-   * @param {Object} [options] Storage options.
+   * Store data to the current storage.
    * @private
    */
-  store(resolve, reject, options) {
-    const sm = this.get('StorageManager');
-    if (!sm) return;
+  async store(options) {
+    const data = this.storeData();
+    await this.get('StorageManager').store(data, options);
+    this.set('changesCount', 0);
+    return data;
+  }
 
-    return sm.store(
-      this.storeData(),
-      res => {
-        resolve?.(res);
-        this.set('changesCount', 0);
-      },
-      reject,
-      options
-    );
+  /**
+   * Load data from the current storage.
+   * @private
+   */
+  async load(options) {
+    const result = await this.get('StorageManager').load(options);
+    this.loadData(result);
+    return result;
   }
 
   storeData() {
@@ -643,27 +643,6 @@ export default class EditorModel extends Model {
       result = { ...result, ...m.store(1) };
     });
     return JSON.parse(JSON.stringify(result));
-  }
-
-  /**
-   * Load data from the current storage
-   * @param {Function} [resolve] Resolve callback function. The result is passed as an argument.
-   * @param {Function} [reject] Reject callback function. The error is passed as an argument.
-   * @param {Object} [options] Storage options.
-   * @private
-   */
-  load(resolve, reject, options) {
-    const sm = this.get('StorageManager');
-    if (!sm) return;
-
-    return sm.load(
-      res => {
-        this.loadData(res);
-        resolve?.(res);
-      },
-      reject,
-      options
-    );
   }
 
   loadData(data = {}) {

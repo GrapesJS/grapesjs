@@ -431,17 +431,24 @@ export default (config = {}, opts = {}) => {
 
     /**
      * Store data to the current storage.
-     * @param {Function} [resolve] Resolve callback function.
-     * @param {Function} [reject] Reject callback function. The error is passed as an argument.
      * @param {Object} [options] Storage options.
+     * @returns {Object} Stored data.
      * @example
-     * editor.store(
-     *  () => console.log('Project stored'),
-     *  (err) => console.error('Store error', err),
-     * );
+     * const storedData = await editor.store();
      */
-    store(resolve, reject, options) {
-      return em.store(resolve, reject, options);
+    async store(options) {
+      return await em.store(options);
+    },
+
+    /**
+     * Load data from the current storage.
+     * @param {Object} [options] Storage options.
+     * @returns {Object} Loaded data.
+     * @example
+     * const data = await editor.load();
+     */
+    async load(options) {
+      return await em.load(options);
     },
 
     /**
@@ -455,25 +462,6 @@ export default (config = {}, opts = {}) => {
       return em.storeData();
     },
 
-    storeData() {
-      return em.storeData();
-    },
-
-    /**
-     * Load data from the current storage.
-     * @param {Function} [resolve] Resolve callback function.
-     * @param {Function} [reject] Reject callback function. The error is passed as an argument.
-     * @param {Object} [options] Storage options.
-     * @example
-     * editor.load(
-     *  () => console.log('Project loaded'),
-     *  (err) => console.error('Load error', err),
-     * );
-     */
-    load(resolve, reject, options) {
-      return em.load(resolve, reject, options);
-    },
-
     /**
      * Load data from the JSON project
      * @param {Object} data Project to load
@@ -482,6 +470,10 @@ export default (config = {}, opts = {}) => {
      */
     loadProjectData(data) {
       return em.loadData(data);
+    },
+
+    storeData() {
+      return em.storeData();
     },
 
     loadData(data) {
