@@ -1,4 +1,4 @@
-import { isUndefined, isFunction, isArray, contains, toArray, keys, bindAll } from 'underscore';
+import { isUndefined, isArray, contains, toArray, keys, bindAll } from 'underscore';
 import Backbone from 'backbone';
 import $ from 'utils/cash-dom';
 import Extender from 'utils/extender';
@@ -66,27 +66,34 @@ export default class EditorModel extends Model {
     };
   }
 
-  initialize(c = {}) {
-    this.config = c;
-    this.set('Config', c);
+  initialize(conf = {}) {
+    this.config = conf;
+    const { config } = this;
+    this.set('Config', config);
     this.set('modules', []);
     this.set('toLoad', []);
     this.set('storables', []);
     this.set('selected', new Selected());
-    this.set('dmode', c.dragMode);
-    this.set('hasPages', !!c.pageManager);
-    const el = c.el;
-    const log = c.log;
+    this.set('dmode', config.dragMode);
+    const { el, log } = config;
     const toLog = log === true ? keys(logs) : isArray(log) ? log : [];
     bindAll(this, 'initBaseColorPicker');
 
-    if (el && c.fromElement) this.config.components = el.innerHTML;
+    if (el && config.fromElement) {
+      config.components = el.innerHTML;
+    }
+
     this.attrsOrig = el
       ? toArray(el.attributes).reduce((res, next) => {
           res[next.nodeName] = next.nodeValue;
           return res;
         }, {})
       : '';
+
+    // Move components to pages
+    if (config.components && !config.pageManager) {
+      config.pageManager = { pages: [{ component: config.components }] };
+    }
 
     // Load modules
     deps.forEach(name => this.loadModule(name));
@@ -202,15 +209,13 @@ export default class EditorModel extends Model {
     const name = Mod.name.charAt(0).toLowerCase() + Mod.name.slice(1);
     const cfgParent = !isUndefined(config[name]) ? config[name] : config[Mod.name];
     const cfg = cfgParent === true ? {} : cfgParent || {};
-    const sm = this.get('StorageManager');
     cfg.pStylePrefix = config.pStylePrefix || '';
 
     if (!isUndefined(cfgParent) && !cfgParent) {
       cfg._disable = 1;
     }
 
-    if (Mod.storageKey && Mod.store && Mod.load && sm) {
-      cfg.stm = sm;
+    if (Mod.storageKey && Mod.store && Mod.load) {
       // DomComponents should be load before CSS Composer
       const mth = name == 'domComponents' ? 'unshift' : 'push';
       this.get('storables')[mth](Mod);

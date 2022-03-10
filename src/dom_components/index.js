@@ -272,19 +272,7 @@ export default () => {
         em.listenTo(selected, 'remove', (sel, c, opts) => this.selectRemove(selected.getComponent(sel), opts));
       }
 
-      if (em.get('hasPages')) {
-        c.components = '';
-      }
-
       return this;
-    },
-
-    /**
-     * On load callback
-     * @private
-     */
-    onLoad() {
-      c.components && this.setComponents(c.components, { silent: 1 });
     },
 
     load(data) {
@@ -303,8 +291,7 @@ export default () => {
     },
 
     store() {
-      if (this.em.get('hasPages')) return {};
-      return this.getProjectData(this.getWrapper());
+      return {};
     },
 
     /**

@@ -28,7 +28,7 @@ export default {
     }
 
     if (onResult) {
-      onResult(result);
+      result && onResult(result);
     } else if (result && result.length) {
       (all || this.getAll()).reset(result);
     }

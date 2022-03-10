@@ -275,7 +275,6 @@ export default () => {
     },
 
     store() {
-      if (!this.em.get('hasPages')) return {};
       return this.getProjectData();
     },
 
