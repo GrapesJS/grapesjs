@@ -25,9 +25,6 @@ export default {
       checkLocal: true,
     },
     remote: {
-      // Custom parameters to pass with the remote request, eg. csrf token
-      params: {},
-
       // Custom headers
       headers: {},
 
@@ -36,12 +33,6 @@ export default {
 
       // Endpoint URL where to load data project
       urlLoad: '',
-
-      //Callback before request
-      beforeSend(jqXHR, settings) {},
-
-      //Callback after request
-      onComplete(jqXHR, status) {},
 
       // set contentType paramater of $.ajax
       // true: application/json; charset=utf-8'
