@@ -214,11 +214,12 @@ export default () => {
 
     /**
      * Store data in the current storage.
-     * @param {Object} data Data in key-value format, eg. `{ item1: value1, item2: value2 }`
+     * @param {Object} data Project data.
      * @param {Object} [options] Storage options.
      * @returns {Object} Stored data.
      * @example
-     * await storageManager.store({item1: value1, item2: value2});
+     * const data = editor.getProjectData();
+     * await storageManager.store(data);
      * */
     async store(data, options = {}) {
       const ev = 'store';
@@ -246,6 +247,7 @@ export default () => {
      * @returns {Object} Loaded data.
      * @example
      * const data = await storageManager.load();
+     * editor.loadProjectData(data);
      * */
     async load(options = {}) {
       const ev = 'load';
