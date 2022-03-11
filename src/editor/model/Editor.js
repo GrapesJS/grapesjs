@@ -193,7 +193,7 @@ export default class EditorModel extends Model {
     }
 
     if (stm.isAutosave() && changes >= stm.getStepsBeforeSave()) {
-      this.store();
+      this.store().catch(err => this.logError(err));
     }
   }
 
