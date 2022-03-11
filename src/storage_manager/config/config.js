@@ -12,6 +12,15 @@ export default {
   // Enable/Disable autoload of data on editor init
   autoload: true,
 
+  /**
+   * (TODO) In case the remote storage is selected, and this options is enabled, the project
+   * will be also stored on the local one.
+   * The local data are cleared on every sucessful remote save. In case the remote storage
+   * fails (eg. network issue), on project reload, a dialog with the possibility to recovery
+   * previous data will be shown.
+   */
+  recovery: false,
+
   // If autosave enabled, indicates how many steps (general changes to structure)
   // need to be done before save. Useful with remoteStorage to reduce remote calls
   stepsBeforeSave: 1,
@@ -48,14 +57,6 @@ export default {
       fetchOptions: '',
 
       credentials: 'include',
-
-      /**
-       * (TODO) This will enable the store of the project also on the local storage.
-       * The local data are cleared on every sucessful remote save. In case the remote storage
-       * fails (eg. network issue), on project reload, a dialog with the possibility to recovery
-       * previous data will be shown.
-       */
-      recovery: true,
     },
   },
 };
