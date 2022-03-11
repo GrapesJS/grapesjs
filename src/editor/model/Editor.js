@@ -217,8 +217,8 @@ export default class EditorModel extends Model {
     }
 
     if (Mod.storageKey && Mod.store && Mod.load) {
-      // DomComponents should be load before CSS Composer
-      const mth = name == 'domComponents' ? 'unshift' : 'push';
+      // Components should be loaded before CSS due to reset
+      const mth = ['domComponents', 'pageManager'].indexOf(name) >= 0 ? 'unshift' : 'push';
       this.get('storables')[mth](Mod);
     }
 
@@ -629,7 +629,7 @@ export default class EditorModel extends Model {
    */
   async load(options) {
     const result = await this.get('StorageManager').load(options);
-    this.loadData(result);
+    this.skip(() => this.loadData(result));
     return result;
   }
 

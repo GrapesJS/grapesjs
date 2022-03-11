@@ -15,8 +15,10 @@ export default {
     return obj;
   },
 
-  loadProjectData(data = {}, { all, def = [], onResult } = {}) {
+  loadProjectData(data = {}, { all, def = [], onResult, reset } = {}) {
     const key = this.storageKey;
+    const opts = { action: 'load' };
+    const coll = all || this.getAll();
     let result = data[key] || def;
 
     if (typeof result == 'string') {
@@ -27,13 +29,21 @@ export default {
       }
     }
 
+    reset && result && coll.reset(null, opts);
+
     if (onResult) {
-      result && onResult(result);
+      result && onResult(result, opts);
     } else if (result && result.length) {
-      (all || this.getAll()).reset(result);
+      coll.reset(result, opts);
     }
 
     return result;
+  },
+
+  clear(opts = {}) {
+    const { all } = this;
+    all && all.reset(null, opts);
+    return this;
   },
 
   __getConfig(name) {

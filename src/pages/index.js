@@ -98,6 +98,7 @@ export default () => {
       this.em = em;
       const pages = new Pages([], cnf);
       this.pages = pages;
+      this.all = pages;
       const model = new Model({ _undo: true });
       this.model = model;
       pages.on('add', (p, c, o) => em.trigger(evPageAdd, p, o));
@@ -279,7 +280,7 @@ export default () => {
     },
 
     load(data) {
-      return this.loadProjectData(data, { all: this.pages });
+      return this.loadProjectData(data, { all: this.pages, reset: true, def: null });
     },
 
     _createId() {
