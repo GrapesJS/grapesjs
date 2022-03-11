@@ -242,13 +242,10 @@ export default () => {
 
     /**
      * Load resource from the current storage by keys
-     * @param {Function} [resolve] Resolve callback function. The result is passed as an argument.
-     * @param {Function} [reject] Reject callback function. The error is passed as an argument.
      * @param {Object} [options] Storage options.
+     * @returns {Object} Loaded data.
      * @example
-     * storageManager.load(res => {
-     *  // res -> {item1: value1, item2: value2}
-     * });
+     * const data = await storageManager.load();
      * */
     async load(options = {}) {
       const ev = 'load';
