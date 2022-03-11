@@ -222,23 +222,10 @@ export default () => {
      * await storageManager.store(data);
      * */
     async store(data, options = {}) {
-      const ev = 'store';
       const st = this.getCurrentStorage();
       const opts = { ...this.getCurrentOptons(), ...options };
-      this.onStart(ev, data);
 
-      if (!st) return data;
-
-      try {
-        await st.store(data, opts);
-        this.onAfter(ev, data);
-        this.onEnd(ev, data);
-      } catch (error) {
-        this.onError(ev, error);
-        throw error;
-      }
-
-      return data;
+      return await this.__exec(st, opts, data);
     },
 
     /**
@@ -250,17 +237,30 @@ export default () => {
      * editor.loadProjectData(data);
      * */
     async load(options = {}) {
-      const ev = 'load';
       const st = this.getCurrentStorage();
       const opts = { ...this.getCurrentOptons(), ...options };
-      let result = {};
-      this.onStart(ev);
 
-      if (!st) return result;
+      return await this.__exec(st, opts);
+    },
+
+    async __exec(storage, opts, data) {
+      const ev = data ? 'store' : 'load';
+      let result;
+
+      this.onStart(ev, data);
+
+      if (!storage) {
+        return data || {};
+      }
 
       try {
-        const res = await st.load(opts);
-        result = this.__clearKeys(res);
+        if (data) {
+          await storage.store(data, opts);
+          result = data;
+        } else {
+          result = await storage.load(opts);
+          result = this.__clearKeys(result);
+        }
         this.onAfter(ev, result);
         this.onEnd(ev, result);
       } catch (error) {
