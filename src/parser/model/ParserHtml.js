@@ -140,7 +140,9 @@ export default config => {
 
         // Set tag name if not yet done
         if (!model.tagName) {
-          model.tagName = node.tagName ? node.tagName.toLowerCase() : '';
+          const tag = node.tagName || '';
+          const ns = node.namespaceURI || '';
+          model.tagName = tag && ns === 'http://www.w3.org/1999/xhtml' ? tag.toLowerCase() : tag;
         }
 
         if (attrsLen) {
