@@ -35,6 +35,7 @@ export default Backbone.View.extend({
     const clsInput = `${this.inputNameCls} ${clsNoEdit} ${ppfx}no-app`;
     const level = this.level + 1;
     const gut = `${-8 + level * 16}px`;
+    const moveWidth = `${-8 + level * 16 + 16}px`;
     const name = model.getName();
     let icon = model.getIcon();
     if (!icon) {
@@ -44,10 +45,6 @@ export default Backbone.View.extend({
       }
     }
     const clsBase = `${pfx}layer`;
-    console.log('ItemView', {
-      item: this,
-      model
-    });
 
     return `
         ${
@@ -57,7 +54,7 @@ export default Backbone.View.extend({
               }" data-toggle-visible></i>`
             : ''
         }
-        <div class="${clsTitleC}" data-toggle-move>
+        <div class="${clsTitleC}">
           <div class="${clsTitle}" style="padding-left: ${gut}" data-toggle-select>
             <div class="${pfx}layer-title-inn" title="${name}">
               <div class="${clsCaret}" data-toggle-open>
@@ -67,7 +64,9 @@ export default Backbone.View.extend({
               <span class="${clsInput}" data-name>${name}</span>
             </div>
           </div>
-          <div class="${this.clsCount}" data-count>${count || ''}</div>
+          <div class="${
+            this.clsMove
+          }" style="width: calc(100% - ${moveWidth})" data-toggle-move></div>
         </div>
         <div class="${this.clsChildren}"></div>`;
   },
@@ -103,7 +102,7 @@ export default Backbone.View.extend({
     this.clsTitleC = `${pfx}layer-title-c`;
     this.clsTitle = `${pfx}layer-title`;
     this.clsCaret = `${pfx}layer-caret`;
-    this.clsCount = `${pfx}layer-count`;
+    // this.clsCount = `${pfx}layer-count`;
     this.clsMove = `${pfx}layer-move`;
     this.clsChildren = `${pfx}layer-children`;
     this.clsNoChild = `${pfx}layer-no-chld`;
@@ -235,7 +234,6 @@ export default Backbone.View.extend({
     const chvDown = 'fa-caret-down';
     const chvRight = 'fa-caret-right';
     const $caret = this.getCaretIcon();
-    debugger;
 
     if (model.get('open')) {
       this.$el.addClass('open');
@@ -261,7 +259,6 @@ export default Backbone.View.extend({
     e.preventDefault();
     e.stopPropagation();
     e.stopImmediatePropagation();
-    console.log('opening', e);
 
     if (!model.get('components').length) return;
 
@@ -303,10 +300,20 @@ export default Backbone.View.extend({
    * @param	Event
    * */
   startSort(e) {
-    debugger;
+    e.preventDefault();
+    e.stopImmediatePropagation();
     const { em, sorter } = this;
     // Right or middel click
     if (e.button && e.button !== 0) return;
+
+    if (!this.model.get('draggable') || !this.config.sortable) {
+      em.trigger(`move:error`, {
+        code: 'dragNotSupported',
+        model: this.model,
+        config: this.config
+      });
+      return;
+    }
 
     // prevent sorting if target is a link or button
     if (e?.target) {
@@ -328,8 +335,36 @@ export default Backbone.View.extend({
     }
 
     if (sorter) {
+      // type sorter = {
+      //   dragHelper: HTMLElement,
+      //   dropContent: HTMLElement,
+      //   dropModel: Model,
+      //   eV: HTMLElement, // element to be dragged
+      //   el: HTMLElement, // parent
+      //   endMove: Function(e: Event),
+      //   moveDragHelper: Function,
+      //   onMove,
+      //   onEndMove,
+      //   onMoveClb,
+      //   onStart,
+      //   rollback: Function,
+      //   startSort: Function(target: HTMLElement),
+      // }
+
       sorter.onStart = data => em.trigger(`${eventDrag}:start`, data);
       sorter.onMoveClb = data => em.trigger(eventDrag, data);
+      const endMove = sorter.onEndMove;
+      sorter.onEndMove = (created, sorter, data) => {
+        console.warn('endMove', { created, sorter, data });
+        if (!created && data.cancelled != 1) {
+          em.trigger(`move:error`, {
+            code: 'wrongDropPosition',
+            model: this.model,
+            data
+          });
+        }
+        endMove(created, sorter, data);
+      };
       sorter.startSort(e.target);
     }
   },
@@ -497,7 +532,9 @@ export default Backbone.View.extend({
     }
 
     if (!model.get('draggable') || !this.config.sortable) {
-      el.children(`.${this.clsMove}`).remove();
+      el.children(`.${this.clsTitleC}`)
+        .children(`.${this.clsMove}`)
+        .remove();
     }
 
     !vis && (this.className += ` ${pfx}hide`);

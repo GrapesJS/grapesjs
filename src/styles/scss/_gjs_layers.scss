@@ -128,12 +128,17 @@ $layerNameSpacing: 4px !default;
     }
 
     &-move {
-      padding: 7px 10px 7px 5px;
+      // padding: 7px 10px 7px 5px;
+      // font-size: 12px;
+      width: calc(100% - 40px);
+      height: 100%;
       position: absolute;
-      font-size: 12px;
       cursor: move;
       right: 0;
       top: 0;
+      &:active {
+        cursor: move;
+      }
     }
 
     &.#{$nv-prefix}hovered > .gjs-layer-title-c > .#{$nv-prefix}layer-title {
