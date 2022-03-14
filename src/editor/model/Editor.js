@@ -629,7 +629,7 @@ export default class EditorModel extends Model {
    */
   async load(options) {
     const result = await this.get('StorageManager').load(options);
-    this.skip(() => this.loadData(result));
+    this.loadData(result);
     return result;
   }
 

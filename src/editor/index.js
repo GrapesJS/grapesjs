@@ -431,6 +431,7 @@ export default (config = {}, opts = {}) => {
 
     /**
      * Store data to the current storage.
+     * This will reset the counter of changes (`editor.getDirtyCount()`).
      * @param {Object} [options] Storage options.
      * @returns {Object} Stored data.
      * @example
