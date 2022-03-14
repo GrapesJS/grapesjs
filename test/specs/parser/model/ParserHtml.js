@@ -10,7 +10,7 @@ describe('ParserHtml', () => {
     obj = new ParserHtml({
       textTags: ['br', 'b', 'i', 'u'],
       pStylePrefix: 'gjs-',
-      returnArray: 1
+      returnArray: 1,
     });
     obj.compTypes = dom.componentTypes;
   });
@@ -32,8 +32,7 @@ describe('ParserHtml', () => {
   });
 
   test('Node with attributes', () => {
-    var str =
-      '<div id="test1" class="test2 test3" data-one="test4" strange="test5"></div>';
+    var str = '<div id="test1" class="test2 test3" data-one="test4" strange="test5"></div>';
     var result = [
       {
         tagName: 'div',
@@ -41,9 +40,9 @@ describe('ParserHtml', () => {
         attributes: {
           'data-one': 'test4',
           id: 'test1',
-          strange: 'test5'
-        }
-      }
+          strange: 'test5',
+        },
+      },
     ];
     expect(obj.parse(str).html).toEqual(result);
   });
@@ -53,7 +52,7 @@ describe('ParserHtml', () => {
     var result = {
       color: 'black',
       width: '100px',
-      test: 'value'
+      test: 'value',
     };
     expect(obj.parseStyle(str)).toEqual(result);
   });
@@ -62,7 +61,7 @@ describe('ParserHtml', () => {
     var str = 'background-image:url("https://some-website.ex"); test:value;';
     var result = {
       'background-image': 'url("https://some-website.ex")',
-      test: 'value'
+      test: 'value',
     };
     expect(obj.parseStyle(str)).toEqual(result);
   });
@@ -80,8 +79,7 @@ describe('ParserHtml', () => {
   });
 
   test('Style attribute is isolated', () => {
-    var str =
-      '<div id="test1" style="color:black; width:100px; test:value;"></div>';
+    var str = '<div id="test1" style="color:black; width:100px; test:value;"></div>';
     var result = [
       {
         tagName: 'div',
@@ -89,9 +87,9 @@ describe('ParserHtml', () => {
         style: {
           color: 'black',
           width: '100px',
-          test: 'value'
-        }
-      }
+          test: 'value',
+        },
+      },
     ];
     expect(obj.parse(str).html).toEqual(result);
   });
@@ -102,8 +100,8 @@ describe('ParserHtml', () => {
       {
         tagName: 'div',
         attributes: { id: 'test1' },
-        classes: ['test2', 'test3', 'test4']
-      }
+        classes: ['test2', 'test3', 'test4'],
+      },
     ];
     expect(obj.parse(str).html).toEqual(result);
   });
@@ -116,9 +114,9 @@ describe('ParserHtml', () => {
         type: 'image',
         attributes: {
           id: 'test1',
-          src: './index.html'
-        }
-      }
+          src: './index.html',
+        },
+      },
     ];
     expect(obj.parse(str).html).toEqual(result);
   });
@@ -130,15 +128,14 @@ describe('ParserHtml', () => {
         tagName: 'div',
         attributes: { id: 'test1' },
         type: 'text',
-        components: { type: 'textnode', content: 'test2 ' }
-      }
+        components: { type: 'textnode', content: 'test2 ' },
+      },
     ];
     expect(obj.parse(str).html).toEqual(result);
   });
 
   test('Parse text with few text tags', () => {
-    var str =
-      '<div id="test1"><br/> test2 <br/> a b <b>b</b> <i>i</i> <u>u</u> test </div>';
+    var str = '<div id="test1"><br/> test2 <br/> a b <b>b</b> <i>i</i> <u>u</u> test </div>';
     var result = [
       {
         tagName: 'div',
@@ -149,53 +146,52 @@ describe('ParserHtml', () => {
           {
             content: ' test2 ',
             type: 'textnode',
-            tagName: ''
+            tagName: '',
           },
           { tagName: 'br' },
           {
             content: ' a b ',
             type: 'textnode',
-            tagName: ''
+            tagName: '',
           },
           {
             components: { type: 'textnode', content: 'b' },
             type: 'text',
-            tagName: 'b'
+            tagName: 'b',
           },
           {
             content: ' ',
             type: 'textnode',
-            tagName: ''
+            tagName: '',
           },
           {
             components: { type: 'textnode', content: 'i' },
             tagName: 'i',
-            type: 'text'
+            type: 'text',
           },
           {
             content: ' ',
             type: 'textnode',
-            tagName: ''
+            tagName: '',
           },
           {
             components: { type: 'textnode', content: 'u' },
             tagName: 'u',
-            type: 'text'
+            type: 'text',
           },
           {
             content: ' test ',
             type: 'textnode',
-            tagName: ''
-          }
-        ]
-      }
+            tagName: '',
+          },
+        ],
+      },
     ];
     expect(obj.parse(str).html).toEqual(result);
   });
 
   test('Parse text with few text tags and nested node', () => {
-    var str =
-      '<div id="test1">a b <b>b</b> <i>i</i>c <div>ABC</div> <i>i</i> <u>u</u> test </div>';
+    var str = '<div id="test1">a b <b>b</b> <i>i</i>c <div>ABC</div> <i>i</i> <u>u</u> test </div>';
     var result = [
       {
         tagName: 'div',
@@ -205,60 +201,60 @@ describe('ParserHtml', () => {
           {
             content: 'a b ',
             type: 'textnode',
-            tagName: ''
+            tagName: '',
           },
           {
             components: { type: 'textnode', content: 'b' },
             tagName: 'b',
-            type: 'text'
+            type: 'text',
           },
           {
             content: ' ',
             type: 'textnode',
-            tagName: ''
+            tagName: '',
           },
           {
             components: { type: 'textnode', content: 'i' },
             tagName: 'i',
-            type: 'text'
+            type: 'text',
           },
           {
             content: 'c ',
             type: 'textnode',
-            tagName: ''
+            tagName: '',
           },
           {
             tagName: 'div',
             type: 'text',
-            components: { type: 'textnode', content: 'ABC' }
+            components: { type: 'textnode', content: 'ABC' },
           },
           {
             content: ' ',
             type: 'textnode',
-            tagName: ''
+            tagName: '',
           },
           {
             components: { type: 'textnode', content: 'i' },
             tagName: 'i',
-            type: 'text'
+            type: 'text',
           },
           {
             content: ' ',
             type: 'textnode',
-            tagName: ''
+            tagName: '',
           },
           {
             components: { type: 'textnode', content: 'u' },
             tagName: 'u',
-            type: 'text'
+            type: 'text',
           },
           {
             content: ' test ',
             type: 'textnode',
-            tagName: ''
-          }
-        ]
-      }
+            tagName: '',
+          },
+        ],
+      },
     ];
     expect(obj.parse(str).html).toEqual(result);
   });
@@ -272,28 +268,28 @@ describe('ParserHtml', () => {
         attributes: { id: 'test1' },
         components: [
           {
-            tagName: 'div'
+            tagName: 'div',
           },
           {
             content: ' ',
             type: 'textnode',
-            tagName: ''
+            tagName: '',
           },
           {
             tagName: 'footer',
-            attributes: { id: 'test2' }
+            attributes: { id: 'test2' },
           },
           {
             tagName: '',
             type: 'textnode',
-            content: '  Text mid '
+            content: '  Text mid ',
           },
           {
             tagName: 'div',
-            attributes: { id: 'last' }
-          }
-        ]
-      }
+            attributes: { id: 'last' },
+          },
+        ],
+      },
     ];
     expect(obj.parse(str).html).toEqual(result);
   });
@@ -308,20 +304,20 @@ describe('ParserHtml', () => {
           {
             tagName: '',
             type: 'textnode',
-            content: 'content1 '
+            content: 'content1 ',
           },
           {
             tagName: 'div',
             type: 'text',
-            components: { type: 'textnode', content: 'nested' }
+            components: { type: 'textnode', content: 'nested' },
           },
           {
             tagName: '',
             type: 'textnode',
-            content: ' content2'
-          }
-        ]
-      }
+            content: ' content2',
+          },
+        ],
+      },
     ];
     expect(obj.parse(str).html).toEqual(result);
   });
@@ -335,7 +331,7 @@ describe('ParserHtml', () => {
           {
             tagName: '',
             type: 'textnode',
-            content: 'content1 '
+            content: 'content1 ',
           },
           {
             tagName: 'div',
@@ -343,17 +339,17 @@ describe('ParserHtml', () => {
               {
                 tagName: 'span',
                 type: 'text',
-                components: { type: 'textnode', content: 'nested' }
-              }
-            ]
+                components: { type: 'textnode', content: 'nested' },
+              },
+            ],
           },
           {
             tagName: '',
             type: 'textnode',
-            content: ' content2'
-          }
-        ]
-      }
+            content: ' content2',
+          },
+        ],
+      },
     ];
     expect(obj.parse(str).html).toEqual(result);
   });
@@ -365,25 +361,23 @@ describe('ParserHtml', () => {
   });
 
   test('Remove script tags', () => {
-    var str =
-      '<div><script>var test;</script></div><div></div><script>var test2;</script>';
+    var str = '<div><script>var test;</script></div><div></div><script>var test2;</script>';
     var result = [{ tagName: 'div' }, { tagName: 'div' }];
     expect(obj.parse(str).html).toEqual(result);
   });
 
   test('Isolate styles', () => {
-    var str =
-      '<div><style>.a{color: red}</style></div><div></div><style>.b{color: blue}</style>';
+    var str = '<div><style>.a{color: red}</style></div><div></div><style>.b{color: blue}</style>';
     var resHtml = [{ tagName: 'div' }, { tagName: 'div' }];
     var resCss = [
       {
         selectors: ['a'],
-        style: { color: 'red' }
+        style: { color: 'red' },
       },
       {
         selectors: ['b'],
-        style: { color: 'blue' }
-      }
+        style: { color: 'blue' },
+      },
     ];
     var res = obj.parse(str, new ParserCss());
     expect(res.html).toEqual(resHtml);
@@ -411,23 +405,21 @@ describe('ParserHtml', () => {
         selectorsAdd: '',
         style: {
           'font-family': '"Open Sans"',
-          src:
-            'url(https://fonts.gstatic.com/s/droidsans/v8/SlGVmQWMvZQIdix7AFxXkHNSbRYXags.woff2)'
+          src: 'url(https://fonts.gstatic.com/s/droidsans/v8/SlGVmQWMvZQIdix7AFxXkHNSbRYXags.woff2)',
         },
         singleAtRule: 1,
-        atRuleType: 'font-face'
+        atRuleType: 'font-face',
       },
       {
         selectors: [],
         selectorsAdd: '',
         style: {
           'font-family': "'Glyphicons Halflings'",
-          src:
-            'url(https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot)'
+          src: 'url(https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot)',
         },
         singleAtRule: 1,
-        atRuleType: 'font-face'
-      }
+        atRuleType: 'font-face',
+      },
     ];
 
     const res = obj.parse(str, new ParserCss());
@@ -444,20 +436,20 @@ describe('ParserHtml', () => {
           {
             tagName: '',
             type: 'textnode',
-            content: ' '
+            content: ' ',
           },
           {
             tagName: 'p',
             components: { type: 'textnode', content: 'TestText' },
-            type: 'text'
+            type: 'text',
           },
           {
             tagName: '',
             type: 'textnode',
-            content: ' '
-          }
-        ]
-      }
+            content: ' ',
+          },
+        ],
+      },
     ];
     expect(obj.parse(str).html).toEqual(result);
   });
@@ -472,18 +464,17 @@ describe('ParserHtml', () => {
         stuff: 'test',
         attributes: {
           id: 'test1',
-          'data-test': 'test-value'
+          'data-test': 'test-value',
         },
         type: 'text',
-        components: { type: 'textnode', content: 'test2 ' }
-      }
+        components: { type: 'textnode', content: 'test2 ' },
+      },
     ];
     expect(obj.parse(str).html).toEqual(result);
   });
 
   test('Parse model attributes with true and false', () => {
-    var str =
-      '<div id="test1" data-test="test-value" data-gjs-draggable="true" data-gjs-stuff="false">test2 </div>';
+    var str = '<div id="test1" data-test="test-value" data-gjs-draggable="true" data-gjs-stuff="false">test2 </div>';
     var result = [
       {
         tagName: 'div',
@@ -491,11 +482,11 @@ describe('ParserHtml', () => {
         stuff: false,
         attributes: {
           id: 'test1',
-          'data-test': 'test-value'
+          'data-test': 'test-value',
         },
         type: 'text',
-        components: { type: 'textnode', content: 'test2 ' }
-      }
+        components: { type: 'textnode', content: 'test2 ' },
+      },
     ];
     expect(obj.parse(str).html).toEqual(result);
   });
@@ -510,10 +501,10 @@ describe('ParserHtml', () => {
         test: {
           prop1: 'value1',
           prop2: 10,
-          prop3: true
+          prop3: true,
         },
-        components: { type: 'textnode', content: 'test2 ' }
-      }
+        components: { type: 'textnode', content: 'test2 ' },
+      },
     ];
     expect(obj.parse(str).html).toEqual(result);
   });
@@ -526,8 +517,8 @@ describe('ParserHtml', () => {
         attributes: {},
         type: 'text',
         test: ['value1', 'value2'],
-        components: { type: 'textnode', content: 'test2 ' }
-      }
+        components: { type: 'textnode', content: 'test2 ' },
+      },
     ];
     expect(obj.parse(str).html).toEqual(result);
   });
@@ -535,6 +526,7 @@ describe('ParserHtml', () => {
   test('SVG is properly parsed', () => {
     const str = `<div>
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <linearGradient x1="0%" y1="0%"/>
         <path d="M13 12h7v1.5h-7m0-4h7V11h-7m0 3.5h7V16h-7m8-12H3c-1.1 0-2 .9-2 2v13c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2m0 15h-9V6h9"></path>
       </svg>
     </div>`;
@@ -547,21 +539,25 @@ describe('ParserHtml', () => {
             tagName: 'svg',
             attributes: {
               xmlns: 'http://www.w3.org/2000/svg',
-              viewBox: '0 0 24 24'
+              viewBox: '0 0 24 24',
             },
             components: [
               {
+                tagName: 'linearGradient',
+                attributes: { x1: '0%', y1: '0%' },
+                type: 'svg-in',
+              },
+              {
                 tagName: 'path',
                 attributes: {
-                  d:
-                    'M13 12h7v1.5h-7m0-4h7V11h-7m0 3.5h7V16h-7m8-12H3c-1.1 0-2 .9-2 2v13c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2m0 15h-9V6h9'
+                  d: 'M13 12h7v1.5h-7m0-4h7V11h-7m0 3.5h7V16h-7m8-12H3c-1.1 0-2 .9-2 2v13c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2m0 15h-9V6h9',
                 },
-                type: 'svg-in'
-              }
-            ]
-          }
-        ]
-      }
+                type: 'svg-in',
+              },
+            ],
+          },
+        ],
+      },
     ];
     expect(obj.parse(str).html).toEqual(result);
   });
