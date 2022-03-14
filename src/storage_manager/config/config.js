@@ -57,6 +57,16 @@ export default {
       fetchOptions: '',
 
       credentials: 'include',
+
+      /**
+       * Edit project data before sending them to the storage.
+       */
+      onStore: data => data,
+
+      /**
+       * Edit project data before loading them from the storage.
+       */
+      onLoad: result => result,
     },
   },
 };

@@ -53,6 +53,7 @@
 import defaults from './config/config';
 import LocalStorage from './model/LocalStorage';
 import RemoteStorage from './model/RemoteStorage';
+import { deepMerge } from 'utils/mixins';
 
 const eventStart = 'storage:start';
 const eventAfter = 'storage:after';
@@ -66,33 +67,10 @@ export default () => {
   var defaultStorages = {};
 
   return {
-    /**
-     * Name of the module
-     * @type {String}
-     * @private
-     */
     name: 'StorageManager',
 
-    /**
-     * Initialize module. Automatically called with a new instance of the editor
-     * @param {Object} config Configurations
-     * @param {string} [config.id='gjs-'] The prefix for the fields, useful to differentiate storing/loading
-     * with multiple editors on the same page. For example, in local storage, the item of HTML will be saved like 'gjs-html'
-     * @param {Boolean} [config.autosave=true] Indicates if autosave mode is enabled, works in conjunction with stepsBeforeSave
-     * @param {number} [config.stepsBeforeSave=1] If autosave enabled, indicates how many steps/changes are necessary
-     * before autosave is triggered
-     * @param {string} [config.type='local'] Default storage type. Available: 'local' | 'remote' | ''(do not store)
-     * @private
-     * @example
-     * ...
-     * {
-     *    autosave: false,
-     *    type: 'remote',
-     * }
-     * ...
-     */
     init(config = {}) {
-      c = { ...defaults, ...config };
+      c = deepMerge(defaults, config);
       em = c.em;
       if (c._disable) c.type = 0;
       defaultStorages.remote = new RemoteStorage(c);
@@ -239,8 +217,9 @@ export default () => {
     async load(options = {}) {
       const st = this.getCurrentStorage();
       const opts = { ...this.getCurrentOptons(), ...options };
-
-      return await this.__exec(st, opts);
+      const result = await this.__exec(st, opts);
+      console.log('onLOAD', { opts, result });
+      return result;
     },
 
     async __exec(storage, opts, data) {
@@ -255,11 +234,13 @@ export default () => {
 
       try {
         if (data) {
-          await storage.store(data, opts);
+          const toStore = (opts.onStore && (await opts.onStore(data))) || data;
+          await storage.store(toStore, opts);
           result = data;
         } else {
           result = await storage.load(opts);
           result = this.__clearKeys(result);
+          result = (opts.onLoad && (await opts.onLoad(result))) || result;
         }
         this.onAfter(ev, result);
         this.onEnd(ev, result);
