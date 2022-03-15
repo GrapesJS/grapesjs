@@ -1,5 +1,5 @@
 import { isString, isElement } from 'underscore';
-import { createId } from 'utils/mixins';
+import { createId, isDef } from 'utils/mixins';
 
 export default {
   getConfig(name) {
@@ -33,7 +33,7 @@ export default {
 
     if (onResult) {
       result && onResult(result, opts);
-    } else if (result && result.length) {
+    } else if (result && isDef(result.length)) {
       coll.reset(result, opts);
     }
 

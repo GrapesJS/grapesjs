@@ -52,7 +52,7 @@ export default {
       // You can pass a simple object: { someOption: 'someValue' }
       // or a function which returns and object to add:
       // currentOpts => {
-      //  return currentOpts.method === 'post' ?  { method: 'patch' } : {};
+      //  return currentOpts.method === 'POST' ?  { method: 'PATCH' } : {};
       // }
       fetchOptions: '',
 

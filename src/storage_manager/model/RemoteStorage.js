@@ -53,7 +53,7 @@ export default class RemoteStorage extends Model {
     }
 
     const result = {
-      method: body ? 'post' : 'get',
+      method: body ? 'POST' : 'GET',
       credentials: opts.credentials,
       headers,
       body,

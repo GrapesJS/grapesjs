@@ -218,7 +218,7 @@ export default () => {
       const st = this.getCurrentStorage();
       const opts = { ...this.getCurrentOptons(), ...options };
       const result = await this.__exec(st, opts);
-      console.log('onLOAD', { opts, result });
+
       return result;
     },
 
