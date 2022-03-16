@@ -54,7 +54,6 @@ import defaults from './config/config';
 import LocalStorage from './model/LocalStorage';
 import RemoteStorage from './model/RemoteStorage';
 import Module from 'common/module';
-import { deepMerge } from 'utils/mixins';
 import { isEmpty, isFunction } from 'underscore';
 
 const eventStart = 'storage:start';
