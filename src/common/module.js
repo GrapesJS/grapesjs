@@ -1,5 +1,5 @@
 import { isString, isElement } from 'underscore';
-import { createId, isDef } from 'utils/mixins';
+import { createId, deepMerge, isDef } from 'utils/mixins';
 
 export default {
   getConfig(name) {
@@ -63,10 +63,7 @@ export default {
   },
 
   __initConfig(def = {}, conf = {}) {
-    this.config = {
-      ...def,
-      ...conf,
-    };
+    this.config = deepMerge(def, conf);
     this.em = this.config.em;
     this.cls = [];
   },

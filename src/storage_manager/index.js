@@ -53,6 +53,7 @@
 import defaults from './config/config';
 import LocalStorage from './model/LocalStorage';
 import RemoteStorage from './model/RemoteStorage';
+import Module from 'common/module';
 import { deepMerge } from 'utils/mixins';
 import { isEmpty, isFunction } from 'underscore';
 
@@ -65,133 +66,125 @@ const STORAGE_LOCAL = 'local';
 const STORAGE_REMOTE = 'remote';
 
 export default () => {
-  var c = {};
-  let em;
-  var storages = {};
-  var defaultStorages = {};
-
   return {
-    name: 'StorageManager',
+    ...Module,
 
-    init(config = {}) {
-      c = deepMerge(defaults, config);
-      em = c.em;
-      if (c._disable) c.type = 0;
-      defaultStorages[STORAGE_REMOTE] = new RemoteStorage(c);
-      defaultStorages[STORAGE_LOCAL] = new LocalStorage(c);
-      c.currentStorage = c.type;
-      this.loadDefaultProviders().setCurrent(c.type);
-      return this;
-    },
+    name: 'StorageManager',
 
     /**
      * Get configuration object
+     * @name getConfig
+     * @function
      * @return {Object}
-     * */
-    getConfig() {
-      return c;
+     */
+
+    /**
+     * Initialize module. Automatically called with a new instance of the editor
+     * @param {Object} config Configurations
+     * @private
+     */
+    init(config = {}) {
+      this.__initConfig(defaults, config);
+      const c = this.getConfig();
+      if (c._disable) c.type = 0;
+      this.storages = {};
+      this.add(STORAGE_LOCAL, new LocalStorage(c));
+      this.add(STORAGE_REMOTE, new RemoteStorage(c));
+      this.setCurrent(c.type);
+      return this;
     },
 
     /**
-     * Checks if autosave is enabled
-     * @return {Boolean}
+     * Check if autosave is enabled.
+     * @returns {Boolean}
      * */
     isAutosave() {
-      return !!c.autosave;
+      return !!this.getConfig().autosave;
     },
 
     /**
-     * Set autosave value
-     * @param  {Boolean}  v
-     * @return {this}
+     * Set autosave value.
+     * @param  {Boolean} value
      * */
-    setAutosave(v) {
-      c.autosave = !!v;
+    setAutosave(value) {
+      this.getConfig().autosave = !!value;
       return this;
     },
 
     /**
-     * Returns number of steps required before trigger autosave
-     * @return {number}
+     * Returns number of steps required before trigger autosave.
+     * @returns {Number}
      * */
     getStepsBeforeSave() {
-      return c.stepsBeforeSave;
+      return this.getConfig().stepsBeforeSave;
     },
 
     /**
-     * Set steps required before trigger autosave
-     * @param  {number} v
-     * @return {this}
+     * Set steps required before trigger autosave.
+     * @param {Number} value
      * */
-    setStepsBeforeSave(v) {
-      c.stepsBeforeSave = v;
+    setStepsBeforeSave(value) {
+      this.getConfig().stepsBeforeSave = value;
       return this;
     },
 
     /**
-     * Add new storage
-     * @param {string} id Storage ID
-     * @param  {Object} storage Storage wrapper
-     * @param  {Function} storage.load Load method
+     * Add new storage.
+     * @param {String} type Storage type
+     * @param {Object} storage Storage definition
+     * @param {Function} storage.load Load method
      * @param  {Function} storage.store Store method
-     * @return {this}
      * @example
      * storageManager.add('local2', {
-     *   load: function(keys, clb, clbErr) {
-     *     var res = {};
-     *     for (var i = 0, len = keys.length; i < len; i++){
-     *       var v = localStorage.getItem(keys[i]);
-     *       if(v) res[keys[i]] = v;
-     *     }
-     *     clb(res); // might be called inside some async method
-     *     // In case of errors...
-     *     // clbErr('Went something wrong');
+     *   async load(storageOptions) {
+     *     // ...
      *   },
-     *   store: function(data, clb, clbErr) {
-     *     for(var key in data)
-     *       localStorage.setItem(key, data[key]);
-     *     clb(); // might be called inside some async method
-     *   }
+     *   async store(data, storageOptions) {
+     *     // ...
+     *   },
      * });
      * */
-    add(id, storage) {
-      storages[id] = storage;
+    add(type, storage) {
+      this.storages[type] = storage;
       return this;
     },
 
     /**
-     * Returns storage by id
-     * @param {string} id Storage ID
-     * @return {Object|null}
+     * Return storage by type.
+     * @param {String} type Storage type
+     * @returns {Object|null}
      * */
-    get(id) {
-      return storages[id] || null;
+    get(type) {
+      return this.storages[type] || null;
     },
 
     /**
-     * Returns all storages
-     * @return   {Array}
+     * Get all storages.
+     * @returns {Object}
      * */
     getStorages() {
-      return storages;
+      return this.storages;
     },
 
     /**
-     * Returns current storage type
-     * @return {string}
+     * Get current storage type.
+     * @returns {String}
      * */
     getCurrent() {
-      return c.currentStorage;
+      return this.getConfig().currentStorage;
     },
 
     /**
-     * Set current storage type
-     * @param {string} id Storage ID
-     * @return {this}
+     * Set current storage type.
+     * @param {String} type Storage type
      * */
-    setCurrent(id) {
-      c.currentStorage = id;
+    setCurrent(type) {
+      this.getConfig().currentStorage = type;
       return this;
+    },
+
+    getCurrentStorage() {
+      return this.get(this.getCurrent());
     },
 
     /**
@@ -255,6 +248,7 @@ export default () => {
     },
 
     __askRecovery() {
+      const { em } = this;
       const recovery = this.getRecovery();
 
       return new Promise((res, rej) => {
@@ -305,15 +299,10 @@ export default () => {
       return result;
     },
 
-    /**
-     * Restore key names
-     * @param {Object} data
-     * @returns {Object}
-     * @private
-     */
     __clearKeys(data = {}) {
+      const config = this.getConfig();
+      const reg = new RegExp(`^${config.id}`);
       const result = {};
-      const reg = new RegExp('^' + c.id + '');
 
       for (let itemKey in data) {
         const itemKeyR = itemKey.replace(reg, '');
@@ -321,24 +310,6 @@ export default () => {
       }
 
       return result;
-    },
-
-    /**
-     * Load default storages
-     * @return {this}
-     * @private
-     * */
-    loadDefaultProviders() {
-      for (var id in defaultStorages) this.add(id, defaultStorages[id]);
-      return this;
-    },
-
-    /**
-     * Get current storage
-     * @return {Storage}
-     * */
-    getCurrentStorage() {
-      return this.get(this.getCurrent());
     },
 
     getCurrentOptons(type) {
@@ -352,6 +323,7 @@ export default () => {
      * @private
      */
     onStart(ctx, data) {
+      const { em } = this;
       if (em) {
         em.trigger(eventStart);
         ctx && em.trigger(`${eventStart}:${ctx}`, data);
@@ -363,6 +335,7 @@ export default () => {
      * @private
      */
     onAfter(ctx, data) {
+      const { em } = this;
       if (em) {
         em.trigger(eventAfter);
         em.trigger(`${eventAfter}:${ctx}`, data);
@@ -375,6 +348,7 @@ export default () => {
      * @private
      */
     onEnd(ctx, data) {
+      const { em } = this;
       if (em) {
         em.trigger(eventEnd);
         ctx && em.trigger(`${eventEnd}:${ctx}`, data);
@@ -386,6 +360,7 @@ export default () => {
      * @private
      */
     onError(ctx, data) {
+      const { em } = this;
       if (em) {
         em.trigger(eventError, data);
         ctx && em.trigger(`${eventError}:${ctx}`, data);
@@ -404,7 +379,8 @@ export default () => {
     },
 
     destroy() {
-      [c, em, storages, defaultStorages].forEach(i => (i = {}));
+      this.__destroy();
+      this.storages = {};
     },
   };
 };
