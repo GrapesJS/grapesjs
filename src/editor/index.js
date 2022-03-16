@@ -133,15 +133,6 @@ export default (config = {}, opts = {}) => {
         }
       });
 
-      // Do post render stuff after the iframe is loaded otherwise it'll
-      // be empty during tests
-      em.once('change:ready', () => {
-        this.UndoManager.clear();
-        em.get('modules').forEach(module => {
-          module.postRender && module.postRender(editorView);
-        });
-      });
-
       return this;
     },
 

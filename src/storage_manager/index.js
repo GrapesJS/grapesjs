@@ -54,11 +54,15 @@ import defaults from './config/config';
 import LocalStorage from './model/LocalStorage';
 import RemoteStorage from './model/RemoteStorage';
 import { deepMerge } from 'utils/mixins';
+import { isEmpty, isFunction } from 'underscore';
 
 const eventStart = 'storage:start';
 const eventAfter = 'storage:after';
 const eventEnd = 'storage:end';
 const eventError = 'storage:error';
+
+const STORAGE_LOCAL = 'local';
+const STORAGE_REMOTE = 'remote';
 
 export default () => {
   var c = {};
@@ -73,8 +77,8 @@ export default () => {
       c = deepMerge(defaults, config);
       em = c.em;
       if (c._disable) c.type = 0;
-      defaultStorages.remote = new RemoteStorage(c);
-      defaultStorages.local = new LocalStorage(c);
+      defaultStorages[STORAGE_REMOTE] = new RemoteStorage(c);
+      defaultStorages[STORAGE_LOCAL] = new LocalStorage(c);
       c.currentStorage = c.type;
       this.loadDefaultProviders().setCurrent(c.type);
       return this;
@@ -202,8 +206,21 @@ export default () => {
     async store(data, options = {}) {
       const st = this.getCurrentStorage();
       const opts = { ...this.getCurrentOptons(), ...options };
+      const recovery = this.getRecoveryStorage();
+      const recoveryOpts = this.getCurrentOptons(STORAGE_LOCAL);
 
-      return await this.__exec(st, opts, data);
+      try {
+        await this.__exec(st, opts, data);
+        recovery && (await this.__exec(recovery, recoveryOpts, {}));
+      } catch (error) {
+        if (recovery) {
+          await this.__exec(recovery, recoveryOpts, data);
+        } else {
+          throw error;
+        }
+      }
+
+      return data;
     },
 
     /**
@@ -217,9 +234,45 @@ export default () => {
     async load(options = {}) {
       const st = this.getCurrentStorage();
       const opts = { ...this.getCurrentOptons(), ...options };
-      const result = await this.__exec(st, opts);
+      const recoveryStorage = this.getRecoveryStorage();
+      let result;
 
-      return result;
+      if (recoveryStorage) {
+        const recoveryData = await this.__exec(recoveryStorage, this.getCurrentOptons(STORAGE_LOCAL));
+        if (!isEmpty(recoveryData)) {
+          try {
+            await this.__askRecovery();
+            result = recoveryData;
+          } catch (error) {}
+        }
+      }
+
+      if (!result) {
+        result = await this.__exec(st, opts);
+      }
+
+      return result || {};
+    },
+
+    __askRecovery() {
+      const recovery = this.getRecovery();
+
+      return new Promise((res, rej) => {
+        if (isFunction(recovery)) {
+          recovery(res, rej, em?.getEditor());
+        } else {
+          confirm(em?.t('storageManager.recover')) ? res() : rej();
+        }
+      });
+    },
+
+    getRecovery() {
+      return this.getConfig().recovery;
+    },
+
+    getRecoveryStorage() {
+      const recovery = this.getRecovery();
+      return recovery && this.getCurrent() === STORAGE_REMOTE && this.get(STORAGE_LOCAL);
     },
 
     async __exec(storage, opts, data) {
@@ -288,9 +341,9 @@ export default () => {
       return this.get(this.getCurrent());
     },
 
-    getCurrentOptons() {
+    getCurrentOptons(type) {
       const config = this.getConfig();
-      const current = this.getCurrent();
+      const current = type || this.getCurrent();
       return config.options[current] || {};
     },
 
