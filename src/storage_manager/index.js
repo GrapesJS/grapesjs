@@ -270,6 +270,7 @@ export default () => {
 
     async __exec(storage, opts, data) {
       const ev = data ? 'store' : 'load';
+      const { onStore, onLoad } = this.getConfig();
       let result;
 
       this.onStart(ev, data);
@@ -280,13 +281,15 @@ export default () => {
 
       try {
         if (data) {
-          const toStore = (opts.onStore && (await opts.onStore(data))) || data;
+          let toStore = (onStore && (await onStore(data))) || data;
+          toStore = (opts.onStore && (await opts.onStore(toStore))) || toStore;
           await storage.store(toStore, opts);
           result = data;
         } else {
           result = await storage.load(opts);
           result = this.__clearKeys(result);
           result = (opts.onLoad && (await opts.onLoad(result))) || result;
+          result = (onLoad && (await onLoad(result))) || result;
         }
         this.onAfter(ev, result);
         this.onEnd(ev, result);

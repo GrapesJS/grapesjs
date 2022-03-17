@@ -32,6 +32,17 @@ export default {
   // need to be done before save. Useful with remoteStorage to reduce remote calls
   stepsBeforeSave: 1,
 
+  /**
+   * Callback triggered before the store call (can be asynchronous).
+   * This can be used to enrich the project data to store.
+   */
+  onStore: data => data,
+
+  /**
+   * Callback triggered after the load call (can be asynchronous).
+   */
+  onLoad: data => data,
+
   // Default storage options
   options: {
     local: {
