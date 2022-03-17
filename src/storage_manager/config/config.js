@@ -66,12 +66,15 @@ export default {
       credentials: 'include',
 
       /**
-       * Edit project data before sending them to the storage.
+       * The remote storage sends the project data as a body of the request.
+       * You can use this method to update the body before the store call in order to align
+       * with your API requirements.
        */
       onStore: data => data,
 
       /**
-       * Edit project data before loading them from the storage.
+       * The remote storage loads the project data directly from the request response.
+       * You can use this method to properly extract the project data from the response.
        */
       onLoad: result => result,
     },
