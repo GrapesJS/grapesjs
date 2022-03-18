@@ -42,6 +42,7 @@
  * * [getCurrent](#getcurrent)
  * * [getCurrentStorage](#getcurrentstorage)
  * * [setCurrent](#setcurrent)
+ * * [getStorageOptions](#getstorageoptions)
  * * [add](#add)
  * * [get](#get)
  * * [store](#store)
@@ -184,6 +185,15 @@ export default () => {
 
     getCurrentStorage() {
       return this.get(this.getCurrent());
+    },
+
+    /**
+     * Get storage options by type.
+     * @param {String} type Storage type
+     * @returns {Object}
+     * */
+    getStorageOptions(type) {
+      return this.getCurrentOptons(type);
     },
 
     /**

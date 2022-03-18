@@ -121,7 +121,7 @@ const editor = grapesjs.init({
 
 Most commonly the data of the project might be saved remotely on your server (DB, file, etc.) therefore you need to setup your server-side API calls in order to store/load project data.
 
-For the sake of simplicity we can setup a fake REST API server by relying on [json-server].
+For a sake of simplicity we can setup a fake REST API server by relying on [json-server].
 
 ```sh
 mkdir my-server
@@ -164,7 +164,7 @@ const editor = grapesjs.init({
 ```
 
 ::: danger
-Be sure to configure properly [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) on your server API. The [json-server] is not intended to be used in production and therefore enables all of them automatically for the sake of simplicity.
+Be sure to configure properly [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) on your server API. The [json-server] is not intended to be used in production and therefore enables all of them automatically.
 :::
 
 <div id="setup-the-server"></div>
@@ -225,32 +225,30 @@ The Storage Manager module has also its own [set of APIs](https://github.com/art
 
 ### Define new storage
 
-One of the most useful methods of API is the possibility to add new storages.
-You might think, we have the `local` and `remote` storages, what else do we need, right? Well, let's take as an example the `local` one. As you already know, it relies on [localStorage API] which is really cool and easy to use but one of his specs might be a big limit, by default it has a limited amount of MB to use per site (something around 5MB-10MB, depends on the browser implementation). As an alternative, we can make use of [IndexedDB] which is also quite [well supported](https://caniuse.com/#search=indexedDB) and allows more space usage (each browser implements its own rules, for a better understanding on how browser storage limits work, check [here](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Browser_storage_limits_and_eviction_criteria)).
-[IndexedDB configuration](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB) might be too much verbose for this guide so we decided to create the [grapesjs-indexeddb] plugin, so you can check its source and see how it's implemented. For this guide we are going to see something much simpler but with the same flow, it'll be just a simple javascript object which stores key-value data, not persistent at all but the concept is the same.
+Defining a new storage is a matter of passing of two asyncronous methods to the `editor.Storage.add` API. For a sake of simplicity, the example below illustrates the API usage for defining the `session` storage by using [sessionStorage API](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage).
 
 ```js
-const addMemoryStorage = (editor) => {
-  const MemoryStorage = {};
-
-  editor.Storage.add('memory', {
+const sessionStoragePlugin = (editor) => {
+  // As sessionStorage is not an asynchronous API,
+  // the `async` keyword could be skipped
+  editor.Storage.add('session', {
     async load(options = {}) {
-      return MemoryStorage[options.key];
+      return JSON.parse(sessionStorage.getItem(options.key));
     },
 
     async store(data, options = {}) {
-      MemoryStorage[options.key] = data;
+      sessionStorage.setItem(options.key, JSON.stringify(data));
     }
   });
 };
 
 const editor = grapesjs.init({
   ...
-  plugins: [addMemoryStorage],
+  plugins: [sessionStoragePlugin],
   storageManager: {
-    type: 'memory',
+    type: 'session',
     options: {
-      memory: { key: 'myKey' }
+      session: { key: 'myKey' }
     }
   },
 });
@@ -260,37 +258,45 @@ const editor = grapesjs.init({
 
 ### Extend storage
 
-Among other needs, you might need to use existing storages to create more complex uses. For example, let's say we would like to mix the local and remote storages inside another one. This is how it would look like:
-```js
-const sm = editor.StorageManager;
+Among other needs, you might need to use existing storages to combine them in a more complex use case.
+For example, let's say we would like to mix the local and remote storages inside another one. This is how it would look like:
 
-sm.add('local-remote', {
-  store(data, clb, clbErr) {
-    const remote = sm.get('remote');
-    const local = sm.get('local');
-    // ...
-    remote.store(data, clb, err => {
-      // eg. some error on remote side, store it locally
-      local.store(data, clb, clbError);
-    });
+```js
+const { Storage } = editor;
+
+Storage.add('remote-local', {
+  async store(data) {
+    const remoteStorage = Storage.get('remote');
+
+    try {
+      await remoteStorage.store(data, Storage.getStorageOptions('remote'));
+    } catch (err) {
+      // On remote error, store data locally
+      const localStorage = Storage.get('local');
+      await localStorage.store(data, Storage.getStorageOptions('local'));
+    }
   },
 
-  load(keys, clb, clbErr) {
+  async load() {
     // ...
   },
 });
 ```
 
-If you need to completely replace the storage, just use the same id in `add` method
+### Replace storage
+
+You can also replace already defined storages with other implementations by passing the same storage type in the `Storage.add` method. You can switch, for example, the default `local`, which relies on [localStorage API], with something more scalable like [IndexedDB  API].
+
+It might also be possible that you're already using some HTTP client library (eg. [axios](https://github.com/axios/axios)) which handles for you all the necessary HTTP headers in your application (CSRF token, session data, etc.), so you can simply replace the default `remote` storage wiht your implemenation of choice without caring about the default configurations.
+
 ```js
-editor.StorageManager.add('local', {
-  // New logic for the local storage
-  load() {
-    // ...
+editor.Storage.add('remote', {
+  async load() {
+    return await axios.get(`projects/${projectId}`);
   },
 
-  store() {
-    // ...
+  async store(data) {
+    return await axios.patch(`projects/${projectId}`, { data });
   },
 });
 ```
@@ -346,5 +352,5 @@ editor.on('storage:end:load', (resultObject) => {
 [grapesjs-indexeddb]: <https://github.com/artf/grapesjs-indexeddb>
 [grapesjs-firestore]: <https://github.com/artf/grapesjs-firestore>
 [localStorage API]: <https://developer.mozilla.org/it/docs/Web/API/Window/localStorage>
-[IndexedDB]: <https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API>
+[IndexedDB  API]: <https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API>
 [json-server]: <https://github.com/typicode/json-server>
