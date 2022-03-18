@@ -316,35 +316,7 @@ Here you can find some of the plugins extending the Storage Manager
 
 ## Events
 
-Another way to extend storage capabilities is to make use of GrapesJS's event hooks, you can check [here](/api/storage_manager.html#available-events) the list of all available events for the Storage module. Let's see some of the cases where you might want to use them:
-
-* Loading animation on storage requests
-```js
-editor.on('storage:start', startLoading);
-editor.on('storage:end', endLoading);
-```
-* Error handling
-```js
-editor.on('storage:error', (err) => {
-    alert(`Error: ${err}`);
-});
-```
-* Extend parameters to store
-```js
-editor.on('storage:start:store', (objectToStore) => {
-    if (needToAddExtraParam) {
-      objectToStore.customHtml = `<div>...${editor.getHtml()}...</div>`;
-    }
-});
-```
-* Do stuff post load
-```js
-editor.on('storage:end:load', (resultObject) => {
-    if (resultObject.hasSomeKey) {
-      // do stuff
-    }
-});
-```
+For a complete list of available events, you can check it [here](/api/storage_manager.html#available-events).
 
 
 
