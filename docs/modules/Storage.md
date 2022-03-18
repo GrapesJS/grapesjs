@@ -4,7 +4,7 @@ title: Storage Manager
 
 # Storage Manager
 
-The Storage Manager is a built-in module that allows the persistence of your project data. The aim of this guide is to show how to setup correctly your storage configuration for common usages of the editor and explain also some additional advanced settings.
+The Storage Manager is a built-in module that allows the persistence of your project data.
 
 ::: warning
 This guide requires GrapesJS v0.19.* or higher
@@ -49,15 +49,21 @@ Check the full list of available options here: [Storage Manager Config](https://
 
 
 
-## Project data
+## Project Data
 
-The project data is a JSON object containing all the necessary information (styles, pages, etc.) about your project in the editor. You can get the current state of the data in this way:
+The project data is a JSON object containing all the necessary information (styles, pages, etc.) about your project in the editor and is the one used in the storage manager methods in order to store and load your project (locally or remotely in your DB/file).
+
+::: tip
+You can get the current state of the data and load it manually in this way:
 
 ```js
+// Get current project data
 const projectData = editor.getProjectData();
+// ...
+// Load project data
+editor.loadProjectData(projectData);
 ```
-
-That object is used in the storage manager methods in order to store and load your project data (locally or remotely in your DB/file).
+:::
 
 ::: danger
 You should only rely on the JSON project data in order to load your project properly in the editor.
@@ -67,6 +73,24 @@ The editor is able to parse and use HTML/CSS code, you can use it as part of you
 
 <!-- If necessary, the JSON can be also enriched with your data of choice, but as the data schema might differ in time we highly recommend to store them in your domain specific keys-->
 
+
+
+
+## Storage strategy
+
+Project data are automatically stored every time the amount of changes (`editor.getDirtyCount()`) reaches the number of steps before save (`editor.Storage.getStepsBeforeSave()`). On any successful store of the data, the counter of changes is reset (`editor.clearDirtyCount()`).
+
+::: tip
+When necessary, you can always trigger store/load manually.
+
+```js
+// Store data
+const storedProjectData = await editor.store();
+
+// Load data
+const loadedProjectData = await editor.load();
+```
+:::
 
 
 
@@ -143,6 +167,15 @@ const editor = grapesjs.init({
 Be sure to configure properly [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) on your server API. The [json-server] is not intended to be used in production and therefore enables all of them automatically for the sake of simplicity.
 :::
 
+<div id="setup-the-server"></div>
+
+### Server setup
+
+Server configuration might differ case to case so usually, it's up to you to know how to configure it properly.
+The default remote storage follows a simple REST API approach with project data exchanged as a JSON (`Content-Type: application/json`).
+* On **load** (`GET` method), the JSON project data are expected to be returned directly in the response. As from example above, you can use `options.remote.onLoad` to extract the project data if the response contains other metadata.
+* On **store** (`POST` method), the editor doesn't expect any particular result but only a valid response from the server (status code `200`).
+
 
 
 
@@ -200,32 +233,7 @@ const editor = grapesjs.init({
 editor.store(res => console.log('Store callback'));
 ```
 
-If you need to check changes which yet need to be stored you can use `editor.getDirtyCount()`. At any, successful, store of the editor, it resets the count.
 
-
-
-
-
-## Setup the server
-
-Server configuration might differ for any use case so generally, it's something up to you on how to make it work, but usually, the flow is pretty straightforward. Create two endpoints, one for storing (eg. `mydomain.com/store-page/123`) and the other one for loading (eg. `mydomain.com/load-page/123`), you can also create just one and distinguish them via HTTP methods (eg. `mydomain.com/page/123`, via GET you load the template, with POST you store it).
-When you **store**, the editor doesn't expect any particular result but only a valid response from the server (status code 200).
-When you **load** the template, return a JSON object with the data you have (don't forget to include the `id` prefix if it's used)
-```js
-{
-  // `gjs-` is the id prefix
-  'gjs-components': [{ tagName: 'div', ... }, {...}, ...],
-  'gjs-styles': [{...}, {...}, ...],
-}
-```
-Be sure to have a correct `Content-Type` response header, eg. in PHP you would do something like this:
-```php
-header('Content-Type: application/json');
-echo json_encode([
-  'gjs-components': [...],
-  'gjs-styles': [...],
-]);
-```
 
 
 

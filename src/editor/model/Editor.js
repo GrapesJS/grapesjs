@@ -755,7 +755,7 @@ export default class EditorModel extends Model {
   }
 
   clearDirtyCount() {
-    this.set('changesCount', 0);
+    return this.set('changesCount', 0);
   }
 
   getZoomDecimal() {

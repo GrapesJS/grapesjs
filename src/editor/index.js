@@ -491,6 +491,13 @@ export default (config = {}, opts = {}) => {
     },
 
     /**
+     * Reset the counter of changes.
+     */
+    clearDirtyCount() {
+      return em.clearDirtyCount();
+    },
+
+    /**
      * Update editor dimension offsets
      *
      * This method could be useful when you update, for example, some position
