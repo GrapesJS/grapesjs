@@ -277,7 +277,6 @@ export default () => {
 
     load(data) {
       return this.loadProjectData(data, {
-        def: null,
         onResult: result => {
           const wrapper = this.getWrapper();
           if (isArray(result)) {

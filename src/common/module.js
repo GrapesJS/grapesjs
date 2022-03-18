@@ -15,11 +15,11 @@ export default {
     return obj;
   },
 
-  loadProjectData(data = {}, { all, def = [], onResult, reset } = {}) {
+  loadProjectData(data = {}, { all, onResult, reset } = {}) {
     const key = this.storageKey;
     const opts = { action: 'load' };
     const coll = all || this.getAll();
-    let result = data[key] || def;
+    let result = data[key];
 
     if (typeof result == 'string') {
       try {

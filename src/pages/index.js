@@ -280,7 +280,7 @@ export default () => {
     },
 
     load(data) {
-      return this.loadProjectData(data, { all: this.pages, reset: true, def: null });
+      return this.loadProjectData(data, { all: this.pages, reset: true });
     },
 
     _createId() {

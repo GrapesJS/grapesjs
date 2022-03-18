@@ -49,7 +49,7 @@ Check the full list of available options here: [Storage Manager Config](https://
 
 
 
-## Project Data
+## Project data
 
 The project data is a JSON object containing all the necessary information (styles, pages, etc.) about your project in the editor and is the one used in the storage manager methods in order to store and load your project (locally or remotely in your DB/file).
 
@@ -180,7 +180,7 @@ The default remote storage follows a simple REST API approach with project data 
 
 
 
-## Store and load templates
+<!-- ## Store and load templates
 
 Even without a fully working endpoint, you can see what is sent from the editor by triggering the store and looking in the network panel of the inspector. GrapesJS sends mainly 4 types of parameters and it prefixes them with the `gjs-` key (you can disable it via `storageManager.id`). From the parameters, you will get the final result in 'gjs-html' and 'gjs-css' and this is what actually your end-users will gonna see on the final template/page. The other two, 'gjs-components' and 'gjs-styles', are a JSON representation of your template and therefore those should be used for the template editing. **So be careful**, GrapesJS is able to start from any HTML/CSS but use this approach only for importing already existent HTML templates, once the user starts editing, rely always on JSON objects because the HTML doesn't contain information about your components. You can achieve it in a pretty straightforward way and if you load your page by server-side you don't even need to load asynchronously your data (so you can turn off the `autoload`).
 
@@ -210,28 +210,7 @@ const editor = grapesjs.init({
     autoload: false,
   },
 });
-```
-
-If for any reason you need to get the data from the remote storage you can trigger the load, at any time, manually
-
-```js
-editor.load(res => console.log('Load callback'));
-```
-
-Similarly, you have the same control over the storing. By default, the `autosave` is enabled and is triggered by how many changes are made to the template (change it via `stepsBeforeSave` option). As before, you can disable this behavior and trigger it manually when you need it
-
-```js
-...
-const editor = grapesjs.init({
-  ...
-  storageManager: {
-    ...
-    autosave: false,
-  },
-});
-// Call load somewhere
-editor.store(res => console.log('Store callback'));
-```
+``` -->
 
 
 
@@ -240,58 +219,40 @@ editor.store(res => console.log('Store callback'));
 
 ## Storage API
 
-The Storage module has also its own [set of API](https://github.com/artf/grapesjs/wiki/API-Storage-Manager) that allows you to extend and add new functionalities.
+The Storage Manager module has also its own [set of APIs](https://github.com/artf/grapesjs/wiki/API-Storage-Manager) that allows you to extend and add new functionalities.
 
 
 
 ### Define new storage
 
-One of the most useful methods of API is the possibility to add new storages. You might think, we have the `local` and `remote` storages, what else do we need, right? Well, let's take as an example the `local` one. As you already know, it relies on [localStorage API] which is really cool and easy to use but one of his specs might be a big limit, by default it has a limited amount of MB to use per site (something around 5MB-10MB, depends on the browser implementation). As an alternative, we can make use of [IndexedDB] which is also quite [well supported](https://caniuse.com/#search=indexedDB) and allows more space usage (each browser implements its own rules, for a better understanding on how browser storage limits work, check [here](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Browser_storage_limits_and_eviction_criteria)).
+One of the most useful methods of API is the possibility to add new storages.
+You might think, we have the `local` and `remote` storages, what else do we need, right? Well, let's take as an example the `local` one. As you already know, it relies on [localStorage API] which is really cool and easy to use but one of his specs might be a big limit, by default it has a limited amount of MB to use per site (something around 5MB-10MB, depends on the browser implementation). As an alternative, we can make use of [IndexedDB] which is also quite [well supported](https://caniuse.com/#search=indexedDB) and allows more space usage (each browser implements its own rules, for a better understanding on how browser storage limits work, check [here](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Browser_storage_limits_and_eviction_criteria)).
 [IndexedDB configuration](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB) might be too much verbose for this guide so we decided to create the [grapesjs-indexeddb] plugin, so you can check its source and see how it's implemented. For this guide we are going to see something much simpler but with the same flow, it'll be just a simple javascript object which stores key-value data, not persistent at all but the concept is the same.
 
 ```js
+const addMemoryStorage = (editor) => {
+  const MemoryStorage = {};
+
+  editor.Storage.add('memory', {
+    async load(options = {}) {
+      return MemoryStorage[options.key];
+    },
+
+    async store(data, options = {}) {
+      MemoryStorage[options.key] = data;
+    }
+  });
+};
+
 const editor = grapesjs.init({
   ...
-  storageManager: { type: 'simple-storage' },
-});
-
-// Here our `simple-storage` implementation
-const SimpleStorage = {};
-
-editor.StorageManager.add('simple-storage', {
-  /**
-   * Load the data
-   * @param  {Array} keys Array containing values to load, eg, ['gjs-components', 'gjs-styles', ...]
-   * @param  {Function} clb Callback function to call when the load is ended
-   * @param  {Function} clbErr Callback function to call in case of errors
-   */
-  load(keys, clb, clbErr) {
-    const result = {};
-
-    keys.forEach(key => {
-      const value = SimpleStorage[key];
-      if (value) {
-        result[key] = value;
-      }
-    });
-
-    // Might be called inside some async method
-    clb(result);
-  },
-
-  /**
-   * Store the data
-   * @param  {Object} data Data object to store
-   * @param  {Function} clb Callback function to call when the load is ended
-   * @param  {Function} clbErr Callback function to call in case of errors
-   */
-  store(data, clb, clbErr) {
-    for (let key in data) {
-      SimpleStorage[key] = data[key];
+  plugins: [addMemoryStorage],
+  storageManager: {
+    type: 'memory',
+    options: {
+      memory: { key: 'myKey' }
     }
-    // Might be called inside some async method
-    clb();
-  }
+  },
 });
 ```
 
