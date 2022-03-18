@@ -184,7 +184,7 @@ export default class EditorModel extends Model {
    */
   updateChanges() {
     const stm = this.get('StorageManager');
-    const changes = this.get('changesCount');
+    const changes = this.getDirtyCount();
     updateItr && clearTimeout(updateItr);
     updateItr = setTimeout(() => this.trigger('update'));
 
@@ -266,7 +266,7 @@ export default class EditorModel extends Model {
 
     timedInterval && clearTimeout(timedInterval);
     timedInterval = setTimeout(() => {
-      const curr = this.get('changesCount') || 0;
+      const curr = this.getDirtyCount() || 0;
       const { unset, ...opts } = opt;
       this.set('changesCount', curr + 1, opts);
     }, 0);
@@ -619,7 +619,7 @@ export default class EditorModel extends Model {
   async store(options) {
     const data = this.storeData();
     await this.get('StorageManager').store(data, options);
-    this.set('changesCount', 0);
+    this.clearDirtyCount();
     return data;
   }
 
