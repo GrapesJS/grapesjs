@@ -219,7 +219,7 @@ const editor = grapesjs.init({
 
 ## Storage API
 
-The Storage Manager module has also its own [set of APIs](https://github.com/artf/grapesjs/wiki/API-Storage-Manager) that allows you to extend and add new functionalities.
+The Storage Manager module has also its own [set of APIs](/api/storage_manager.html) that allows you to extend and add new functionalities.
 
 
 
@@ -316,7 +316,7 @@ Here you can find some of the plugins extending the Storage Manager
 
 ## Events
 
-Another way to extend storage capabilities is to make use of GrapesJS's event hooks, you can check [here](https://github.com/artf/grapesjs/wiki/API-Editor#storages) the list of all available events for the Storage module. Let's see some of the cases where you might want to use them:
+Another way to extend storage capabilities is to make use of GrapesJS's event hooks, you can check [here](/api/storage_manager.html#available-events) the list of all available events for the Storage module. Let's see some of the cases where you might want to use them:
 
 * Loading animation on storage requests
 ```js
