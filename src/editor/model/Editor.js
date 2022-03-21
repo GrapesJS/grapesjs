@@ -155,7 +155,11 @@ export default class EditorModel extends Model {
 
     // Defer for storage load events.
     setTimeout(async () => {
-      if (this.get('StorageManager').canAutoload()) {
+      const projectData = this.getConfig('projectData');
+
+      if (projectData) {
+        this.loadData(projectData);
+      } else if (this.get('StorageManager').canAutoload()) {
         try {
           await this.load();
         } catch (error) {

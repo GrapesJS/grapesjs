@@ -313,6 +313,44 @@ Here you can find some of the plugins extending the Storage Manager
 
 
 
+## Common use cases
+
+### Init without first load
+
+In case you're using a `remote` storage, you might probably want to skip the initial remote call by loading the project instantly. In that case, you can specify the `projectData` on initialization.
+
+```js
+// Get the data before initializing the editor (eg. printed on server-side).
+const projectData = {...};
+// ...
+grapesjs.init({
+  // ...
+  // If projectData is not defined we might want to load some initial data for the project.
+  projectData: projectData || {
+    pages: [
+        {
+          component: `
+            <div class="test">Initial content</div>
+            <style>.test { color: red }</style>
+          `
+        }
+    ]
+  },
+  storageManager: {
+    type: 'remote',
+    // ...
+  },
+})
+```
+In case `projectData` is defined, the initial storage load will be automatically skipped.
+
+
+### HTML code in project data
+
+### Inline data
+
+
+
 
 ## Events
 
