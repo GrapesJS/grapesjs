@@ -345,9 +345,39 @@ grapesjs.init({
 In case `projectData` is defined, the initial storage load will be automatically skipped.
 
 
-### HTML code in project data
+### HTML code with project data
 
-### Inline data
+The project data doesn't contain HTML/CSS of your pages as its main purpose is to collect only the strictly necessary information.
+In case you have a strict requirement to execute also other logic connected to the store of your project data (eg. deploy HTML/CSS result to the stage environment) you can enrich your remote calls by using the `onStore` option in your remote storage.
+
+```js
+const getPagesHtml = async (editor) => {
+  const pages = editor.Pages.getAll();
+  return await Promise.all(pages.map(async (page) => {
+      return {
+        id: page.getId(),
+        html: await editor.getCode('html', { component: page.getMainComponent() }),
+      };
+  }));
+};
+
+grapesjs.init({
+  // ...
+  storageManager: {
+    type: 'remote',
+    // Enrich the store call
+    options: {
+      remote: {
+        onStore: (data, editor) => {
+          return { id: projectID, data };
+        },
+      }
+    },
+  },
+})
+```
+
+### Inline project data
 
 
 

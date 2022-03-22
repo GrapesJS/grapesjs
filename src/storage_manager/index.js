@@ -290,16 +290,18 @@ export default () => {
       }
 
       try {
+        const editor = this.em?.getEditor();
+
         if (data) {
-          let toStore = (onStore && (await onStore(data))) || data;
-          toStore = (opts.onStore && (await opts.onStore(toStore))) || toStore;
+          let toStore = (onStore && (await onStore(data, editor))) || data;
+          toStore = (opts.onStore && (await opts.onStore(toStore, editor))) || toStore;
           await storage.store(toStore, opts);
           result = data;
         } else {
           result = await storage.load(opts);
           result = this.__clearKeys(result);
-          result = (opts.onLoad && (await opts.onLoad(result))) || result;
-          result = (onLoad && (await onLoad(result))) || result;
+          result = (opts.onLoad && (await opts.onLoad(result, editor))) || result;
+          result = (onLoad && (await onLoad(result, editor))) || result;
         }
         this.onAfter(ev, result);
         this.onEnd(ev, result);
