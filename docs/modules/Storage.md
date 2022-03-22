@@ -303,21 +303,22 @@ editor.Storage.add('remote', {
 
 
 
-### Examples
+<!-- ### Examples
 
 Here you can find some of the plugins extending the Storage Manager
 
 * [grapesjs-indexeddb] - Storage wrapper for IndexedDB
-* [grapesjs-firestore] - Storage wrapper for [Cloud Firestore](https://firebase.google.com/docs/firestore)
+* [grapesjs-firestore] - Storage wrapper for [Cloud Firestore](https://firebase.google.com/docs/firestore) -->
+
 
 
 
 
 ## Common use cases
 
-### Init without first load
+### Skip initial load
 
-In case you're using a `remote` storage, you might probably want to skip the initial remote call by loading the project instantly. In that case, you can specify the `projectData` on initialization.
+In case you're using the `remote` storage, you might probably want to skip the initial remote call by loading the project instantly. In that case, you can specify the `projectData` on initialization.
 
 ```js
 // Get the data before initializing the editor (eg. printed on server-side).
@@ -348,28 +349,25 @@ In case `projectData` is defined, the initial storage load will be automatically
 ### HTML code with project data
 
 The project data doesn't contain HTML/CSS of your pages as its main purpose is to collect only the strictly necessary information.
-In case you have a strict requirement to execute also other logic connected to the store of your project data (eg. deploy HTML/CSS result to the stage environment) you can enrich your remote calls by using the `onStore` option in your remote storage.
+In case you have a strict requirement to execute also other logic connected to the store of your project data (eg. deploy HTML/CSS result to the stage environment) you can enrich your remote calls by using the `onStore` option in the remote configuration.
 
 ```js
-const getPagesHtml = async (editor) => {
-  const pages = editor.Pages.getAll();
-  return await Promise.all(pages.map(async (page) => {
-      return {
-        id: page.getId(),
-        html: await editor.getCode('html', { component: page.getMainComponent() }),
-      };
-  }));
-};
-
 grapesjs.init({
   // ...
   storageManager: {
     type: 'remote',
-    // Enrich the store call
     options: {
       remote: {
+        // Enrich the store call
         onStore: (data, editor) => {
-          return { id: projectID, data };
+          const pagesHtml = editor.Pages.getAll().map(page => {
+            const component = page.getMainComponent();
+            return {
+              html: editor.getHtml({ component }),
+              css: editor.getCss({ component })
+            }
+          });
+          return { id: projectID, data, pagesHtml };
         },
       }
     },
@@ -378,6 +376,60 @@ grapesjs.init({
 ```
 
 ### Inline project data
+
+In might be a case where the editor is not connected to any storage but simply read/write the data in inputs placed in a form. For such a case you can create an inline storage.
+
+```html
+<form id="my-form">
+  <input id="project-html" type="hidden"/>
+  <input id="project-data" type="hidden" value='{"pages": [{"component": "<div>Initial content</div>"}]}'/>
+  <div id="gjs"></div>
+  <button type="submit">Submit</button>
+</form>
+
+<script>
+  // Show data on submit
+  document.getElementById('my-form').addEventListener('submit', event => {
+    event.preventDefault();
+    const projectDataEl = document.getElementById('project-data');
+    const projectHtmlEl = document.getElementById('project-html');
+    alert(`HTML: ${projectHtmlEl.value}\n------\nDATA: ${projectDataEl.value}`)
+  });
+
+  // Inline storage
+  const inlineStorage = (editor) => {
+    const projectDataEl = document.getElementById('project-data');
+    const projectHtmlEl = document.getElementById('project-html');
+
+    editor.Storage.add('inline', {
+      load() {
+        return JSON.parse(projectDataEl.value || '{}');
+      },
+      store(data) {
+        const component = editor.Pages.getSelected().getMainComponent();
+        projectDataEl.value = JSON.stringify(data);
+        projectHtmlEl.value = `<html>
+          <head>
+            <style>${editor.getCss({ component })}</style>
+          </head>
+          ${editor.getHtml({ component })}
+        <html>`;
+      }
+    });
+  };
+
+  // Init editor
+  grapesjs.init({
+    container: '#gjs',
+    height: '500px',
+    plugins: [inlineStorage],
+    storageManager: { type: 'inline' },
+  });
+</script>
+```
+
+In the example above we're relying on two hidden inputs, one for containing the project data and the another one for the HTML/CSS.
+
 
 
 
