@@ -1,7 +1,6 @@
-import { Model } from 'common';
 import { hasWin } from 'utils/mixins';
 
-export default class LocalStorage extends Model {
+export default class LocalStorage {
   async store(data, opts = {}) {
     if (this.hasLocal(opts, true)) {
       localStorage.setItem(opts.key, JSON.stringify(data));

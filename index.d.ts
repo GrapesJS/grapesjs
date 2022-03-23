@@ -3568,40 +3568,28 @@ declare namespace Backbone {
        * Add new storage
        * @example
        * storageManager.add('local2', {
-       *   load: function(keys, clb, clbErr) {
-       *     var res = {};
-       *     for (var i = 0, len = keys.length; i < len; i++){
-       *       var v = localStorage.getItem(keys[i]);
-       *       if(v) res[keys[i]] = v;
-       *     }
-       *     clb(res); // might be called inside some async method
-       *     // In case of errors...
-       *     // clbErr('Went something wrong');
+       *   async load(storageOptions) {
+       *     // ...
        *   },
-       *   store: function(data, clb, clbErr) {
-       *     for(var key in data)
-       *       localStorage.setItem(key, data[key]);
-       *     clb(); // might be called inside some async method
-       *   }
+       *   async store(data, storageOptions) {
+       *     // ...
+       *   },
        * });
        * @param id - Storage ID
        * @param storage - Storage wrapper
        * @param storage.load - Load method
        * @param storage.store - Store method
        */
-      add(id: string, storage: {
-          load: (...params: any[]) => any;
-          store: (...params: any[]) => any;
-      }): this;
+      add(id: string, storage: IStorage): this;
       /**
        * Returns storage by id
        * @param id - Storage ID
        */
-      get(id: string): any | null;
+      get(id: string): IStorage | null;
       /**
        * Returns all storages
        */
-      getStorages(): any[];
+      getStorages(): Record<string, IStorage>;
       /**
        * Returns current storage type
        */
@@ -3612,30 +3600,41 @@ declare namespace Backbone {
        */
       setCurrent(id: string): this;
       /**
-       * Store key-value resources in the current storage
+       * Store data in the current storage.
+       * @param data Project data.
+       * @param options Storage options.
+       * @returns Stored data.
        * @example
-       * storageManager.store({item1: value1, item2: value2});
-       * @param data - Data in key-value format, eg. {item1: value1, item2: value2}
-       * @param clb - Callback function
+       * const data = editor.getProjectData();
+       * await storageManager.store(data);
        */
-      store(data: any, clb: (...params: any[]) => any): any | null;
+      store(data: ProjectData, options: StorageOptions): Promise<ProjectData>;
       /**
        * Load resource from the current storage by keys
+       * @param options Storage options.
+       * @returns Loaded data.
        * @example
-       * storageManager.load(['item1', 'item2'], res => {
-       *  // res -> {item1: value1, item2: value2}
-       * });
-       * storageManager.load('item1', res => {
-       * // res -> {item1: value1}
-       * });
-       * @param keys - Keys to load
-       * @param clb - Callback function
-       */
-      load(keys: string | string[], clb: (...params: any[]) => any): void;
+       * const data = await storageManager.load();
+       * editor.loadProjectData(data);
+       * */
+      load(options: StorageOptions): Promise<ProjectData>;
       /**
        * Get current storage
        */
-      getCurrentStorage(): Storage;
+      getCurrentStorage(): IStorage;
+    }
+
+    interface ProjectData {
+
+    }
+
+    interface StorageOptions {
+
+    }
+
+    interface IStorage {
+      load: (options: StorageOptions) => Promise<ProjectData>;
+      store: (data: ProjectData, options: StorageOptions) => Promise<ProjectData>;
     }
 
     /**

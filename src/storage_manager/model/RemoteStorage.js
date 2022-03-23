@@ -1,8 +1,7 @@
 import fetch from 'utils/fetch';
-import { Model } from 'common';
 import { isUndefined, isFunction, isString } from 'underscore';
 
-export default class RemoteStorage extends Model {
+export default class RemoteStorage {
   async store(data, opts = {}) {
     await this.request(opts.urlStore, this.__props(opts, data), opts);
   }
