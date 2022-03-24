@@ -89,7 +89,8 @@ export default {
       .getFrames()
       .forEach(frame => {
         const { view } = frame;
-        view && trigger(view.getWindow(), view.getBody());
+        const win = view?.getWindow();
+        win && trigger(win, view.getBody());
       });
   },
 
