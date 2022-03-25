@@ -1,32 +1,31 @@
-import Backbone from 'backbone';
+import { Collection } from 'common';
 import { isString, isArray } from 'underscore';
 import Trait from './Trait';
 import TraitFactory from './TraitFactory';
 
-export default Backbone.Collection.extend({
-  model: Trait,
-
+export default class Traits extends Collection {
   initialize(coll, options = {}) {
-    this.em = options.em || '';
+    this.em = options.em;
     this.listenTo(this, 'add', this.handleAdd);
     this.listenTo(this, 'reset', this.handleReset);
-  },
+  }
 
   handleReset(coll, { previousModels = [] } = {}) {
     previousModels.forEach(model => model.trigger('remove'));
-  },
+  }
 
   handleAdd(model) {
+    model.em = this.em;
     const target = this.target;
 
     if (target) {
       model.target = target;
     }
-  },
+  }
 
   setTarget(target) {
     this.target = target;
-  },
+  }
 
   add(models, opt) {
     const em = this.em;
@@ -49,6 +48,8 @@ export default Backbone.Collection.extend({
       }
     }
 
-    return Backbone.Collection.prototype.add.apply(this, [models, opt]);
+    return Collection.prototype.add.apply(this, [models, opt]);
   }
-});
+}
+
+Traits.prototype.model = Trait;

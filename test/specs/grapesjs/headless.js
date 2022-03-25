@@ -13,12 +13,13 @@ describe('GrapesJS Headless', () => {
     let editor;
     const cmpObj = {
       attributes: { class: 'cls', test: 'value' },
-      components: { type: 'textnode', content: 'Test' }
+      components: { type: 'textnode', content: 'Test' },
     };
     const cmpStr = '<div class="cls" test="value">Test</div>';
+    const fullHtml = `<body>${cmpStr}</body>`;
     const styleObj = {
       selectors: [{ name: 'cls' }],
-      style: { color: 'red' }
+      style: { color: 'red' },
     };
     const styleStr = '.cls{color:red;}';
 
@@ -37,7 +38,7 @@ describe('GrapesJS Headless', () => {
       expect(comp.toHTML()).toBe(cmpStr);
       expect(editor.Selectors.getAll().length).toBe(1); // 1 selector is created
       expect(editor.Css.getAll().length).toBe(0); // No CSS
-      expect(editor.getHtml()).toBe(cmpStr);
+      expect(editor.getHtml()).toBe(fullHtml);
       expect(editor.getCss()).toBe(''); // same as default
     });
 
@@ -55,10 +56,10 @@ describe('GrapesJS Headless', () => {
               copyable: false,
               selectable: true,
               content: 'Hello!',
-              _innertext: false
-            }
-          ]
-        }
+              _innertext: false,
+            },
+          ],
+        },
       ]);
       expect(res.length).toBe(1);
       const resHtml = '<h1>Hello!</h1>';
@@ -66,7 +67,7 @@ describe('GrapesJS Headless', () => {
       expect(comp.toHTML()).toBe(resHtml);
       expect(editor.Selectors.getAll().length).toBe(0);
       expect(editor.Css.getAll().length).toBe(0);
-      expect(editor.getHtml()).toBe(resHtml);
+      expect(editor.getHtml()).toBe(`<body>${resHtml}</body>`);
       expect(editor.getCss()).toBe('');
     });
 
@@ -81,10 +82,10 @@ describe('GrapesJS Headless', () => {
     test('Load data', () => {
       editor.loadData({
         components: [cmpObj],
-        styles: [styleObj]
+        styles: [styleObj],
       });
       expect(editor.Selectors.getAll().length).toBe(1);
-      expect(editor.getHtml()).toBe(cmpStr);
+      expect(editor.getHtml()).toBe(fullHtml);
       expect(editor.getCss()).toBe(styleStr);
     });
   });

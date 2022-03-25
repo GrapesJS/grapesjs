@@ -36,7 +36,9 @@ export default class CssRule extends Model.extend(Styleable) {
       singleAtRule: false,
       important: false,
       group: '',
-      _undo: true
+      // If true, won't be stored in JSON or showed in CSS
+      shallow: false,
+      _undo: true,
     };
   }
 
@@ -115,15 +117,11 @@ export default class CssRule extends Model.extend(Styleable) {
   selectorsToString(opts = {}) {
     const result = [];
     const state = this.get('state');
-    const wrapper = this.get('wrapper');
     const addSelector = this.get('selectorsAdd');
-    const isBody = wrapper && opts.body;
     const selOpts = {
-      escape: str => (CSS && CSS.escape ? CSS.escape(str) : str)
+      escape: str => (CSS && CSS.escape ? CSS.escape(str) : str),
     };
-    const selectors = isBody
-      ? 'body'
-      : this.get('selectors').getFullString(0, selOpts);
+    const selectors = this.get('selectors').getFullString(0, selOpts);
     const stateStr = state && !opts.skipState ? `:${state}` : '';
     selectors && result.push(`${selectors}${stateStr}`);
     addSelector && !opts.skipAdd && result.push(addSelector);
@@ -169,10 +167,7 @@ export default class CssRule extends Model.extend(Styleable) {
     if (atRuleType !== 'media' || !mediaText) {
       return deviceDefault || null;
     }
-    return (
-      devices.filter(d => d.getWidthMedia() === getMediaLength(mediaText))[0] ||
-      null
-    );
+    return devices.filter(d => d.getWidthMedia() === getMediaLength(mediaText))[0] || null;
   }
 
   /**
@@ -262,10 +257,7 @@ export default class CssRule extends Model.extend(Styleable) {
     const wd = width || '';
     const selAdd = ruleProps.selectorsAdd || '';
     let atRule = ruleProps.atRuleType || '';
-    const sel =
-      !isArray(selectors) && !selectors.models
-        ? [selectors]
-        : selectors.models || selectors;
+    const sel = !isArray(selectors) && !selectors.models ? [selectors] : selectors.models || selectors;
 
     // Fix atRuleType in case is not specified with width
     if (wd && !atRule) atRule = 'media';

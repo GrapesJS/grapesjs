@@ -439,6 +439,18 @@ export default (config = {}, opts = {}) => {
     },
 
     /**
+     * Get the JSON project data, which could be stored and loaded back with `editor.loadProject(json)`
+     * @returns {Object}
+     * @example
+     * @private
+     * console.log(editor.getProject());
+     * // { pages: [...], styles: [...], ... }
+     */
+    getProject() {
+      return em.storeData();
+    },
+
+    /**
      * Get the JSON data object, which could be stored and loaded back with `editor.loadData(json)`
      * @returns {Object}
      * @example
@@ -456,6 +468,17 @@ export default (config = {}, opts = {}) => {
      */
     load(clb) {
       return em.load(clb);
+    },
+
+    /**
+     * Load data from the JSON project
+     * @param {Object} data Project to load
+     * @example
+     * @private
+     * editor.loadProject({ pages: [...], styles: [...], ... })
+     */
+    loadProject(data) {
+      return em.loadData(data);
     },
 
     /**

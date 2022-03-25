@@ -304,11 +304,9 @@ $guide_pad: 5px !default;
 }
 
 .#{$app-prefix}toolbar-item {
-  padding: 5px 7px;
-  font-size: 0.8rem;
-  cursor: pointer;
   width: 26px;
-  vertical-align: middle;
+  padding: 5px;
+  cursor: pointer;
   display: inline-block;
 
   svg {

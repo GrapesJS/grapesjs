@@ -140,7 +140,9 @@ export default config => {
 
         // Set tag name if not yet done
         if (!model.tagName) {
-          model.tagName = node.tagName ? node.tagName.toLowerCase() : '';
+          const tag = node.tagName || '';
+          const ns = node.namespaceURI || '';
+          model.tagName = tag && ns === 'http://www.w3.org/1999/xhtml' ? tag.toLowerCase() : tag;
         }
 
         if (attrsLen) {
@@ -316,7 +318,7 @@ export default config => {
       }
 
       em && em.trigger(`${event}:root`, { input: str, root: el });
-      const result = this.parseNode(el);
+      const result = this.parseNode(el, cf);
       // I have to keep it otherwise it breaks the DomComponents.addComponent (returns always array)
       const resHtml = result.length === 1 && !c.returnArray ? result[0] : result;
       res.html = resHtml;

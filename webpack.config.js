@@ -1,6 +1,7 @@
 import path from 'path';
 import webpack from 'webpack';
 import pkg from './package.json';
+import TerserPlugin from 'grapesjs-cli/node_modules/terser-webpack-plugin';
 
 const rootDir = path.resolve(__dirname);
 
@@ -11,18 +12,32 @@ export default ({ config }) => ({
     filename: 'grapes.min.js',
     libraryExport: 'default',
   },
-  devServer: {
-    headers: { 'Access-Control-Allow-Origin': '*' },
-    disableHostCheck: true,
+  optimization: {
+    minimizer: [new TerserPlugin({
+      extractComments: false,
+      terserOptions: {
+        output: {
+          comments: false,
+          quote_style: 3, // Preserve original quotes
+          preamble: `/*! grapesjs - ${pkg.version} */`,
+        }
+      }
+    })],
   },
-  module: {
-    rules: [
-      ...config.module.rules,
-    ],
+  devServer: {
+    ...config.devServer,
+    static: [rootDir],
+    headers: { 'Access-Control-Allow-Origin': '*' },
+    allowedHosts: 'all',
   },
   resolve: {
-    modules: ['src', 'node_modules'],
+    ...config.resolve,
+    modules: [
+      ...(config.resolve && config.resolve.modules),
+      'src'
+    ],
     alias: {
+      ...(config.resolve && config.resolve.alias),
       jquery: 'utils/cash-dom',
       backbone: `${rootDir}/node_modules/backbone`,
       underscore: `${rootDir}/node_modules/underscore`,
