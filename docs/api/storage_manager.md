@@ -44,7 +44,6 @@ storageManager.add(...);
 *   [setAutosave][4]
 *   [getStepsBeforeSave][5]
 *   [setStepsBeforeSave][6]
-*   [setStepsBeforeSave][6]
 *   [getStorages][7]
 *   [getCurrent][8]
 *   [getCurrentStorage][9]
