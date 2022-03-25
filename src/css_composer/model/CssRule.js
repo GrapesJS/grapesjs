@@ -36,6 +36,8 @@ export default class CssRule extends Model.extend(Styleable) {
       singleAtRule: false,
       important: false,
       group: '',
+      // If true, won't be stored in JSON or showed in CSS
+      shallow: false,
       _undo: true,
     };
   }

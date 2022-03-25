@@ -19,7 +19,7 @@ export default Collection.extend({
 
   toJSON(opts) {
     const result = Collection.prototype.toJSON.call(this, opts);
-    return result.filter(i => i.style);
+    return result.filter(rule => rule.style && !rule.shallow);
   },
 
   onAdd(model, c, o) {
@@ -38,5 +38,5 @@ export default Collection.extend({
     }
     opt.em = this.editor;
     return Collection.prototype.add.apply(this, [models, opt]);
-  }
+  },
 });

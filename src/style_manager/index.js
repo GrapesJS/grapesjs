@@ -63,7 +63,7 @@
  * @module StyleManager
  */
 
-import { isElement, isUndefined, isArray, isString, debounce } from 'underscore';
+import { isUndefined, isArray, isString, debounce, bindAll } from 'underscore';
 import { isComponent } from 'utils/mixins';
 import Module from 'common/module';
 import { Model } from 'common';
@@ -127,6 +127,7 @@ export default () => {
      * @private
      */
     init(config = {}) {
+      bindAll(this, '__clearStateTarget');
       this.__initConfig(defaults, config);
       const c = this.config;
       const { em } = c;
@@ -145,6 +146,8 @@ export default () => {
       const ev = 'component:toggled component:update:classes change:state change:device frame:resized selector:type';
       const upAll = debounce(() => this.__upSel());
       model.listenTo(em, ev, upAll);
+      // Clear state target on any component selection change, without debounce (#4208)
+      model.listenTo(em, 'component:toggled', this.__clearStateTarget);
 
       // Triggers only for properties (avoid selection refresh)
       const upProps = debounce(() => {
@@ -174,6 +177,16 @@ export default () => {
 
     __trgEv(event, ...data) {
       this.em.trigger(event, ...data);
+    },
+
+    __clearStateTarget() {
+      const { em } = this;
+      const stateTarget = this.__getStateTarget();
+      stateTarget &&
+        em?.skip(() => {
+          em.get('CssComposer').remove(stateTarget);
+          this.model.set({ stateTarget: null });
+        });
     },
 
     onLoad() {
@@ -367,7 +380,7 @@ export default () => {
         if (state && lastTarget?.getState?.()) {
           const style = lastTarget.getStyle();
           if (!stateTarget) {
-            stateTarget = cssc.getAll().add({ selectors: 'gjs-selected', style, important: true });
+            stateTarget = cssc.getAll().add({ selectors: 'gjs-selected', style, shallow: true, important: true });
           } else {
             stateTarget.setStyle(style);
           }
