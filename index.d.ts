@@ -37,7 +37,7 @@ declare module grapesjs {
     autorender?: boolean;
 
     /** Array of plugins to execute on start */
-    plugins?: [];
+    plugins?: any[];
 
     /** Custom options for plugins */
     pluginsOpts?: Record<string, any>;
