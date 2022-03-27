@@ -5334,3 +5334,5 @@ declare module grapesjs {
     parseCss(input: string): object[];
   }
 }
+
+export default grapesjs;
