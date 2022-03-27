@@ -9,7 +9,7 @@ declare namespace Backbone {
     get<K extends keyof T>(prop: K): T[K];
     set<K extends keyof T>(prop: K, val: T[K]): void;
     defaults(): T;
-    on(eventName: string, callback: (...args: any[]) => void);
+    on(eventName: string, callback: (...args: any[]) => void): this;
     toJSON(options?: any): any;
   }
 
