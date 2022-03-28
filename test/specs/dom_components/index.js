@@ -152,12 +152,12 @@ describe('DOM Components', () => {
       obj = em.get('DomComponents');
       const cc = em.get('CssComposer');
       const id = 'idtest';
-      const comp = obj.addComponent(`
+      const component = obj.addComponent(`
       <div id="${id}" style="color:red; padding: 50px 100px">Text</div>
       <style>
         #${id} { background-color: red }
       </style>`);
-      expect(em.getHtml()).toEqual(`<div id="${id}">Text</div>`);
+      expect(em.getHtml({ component })).toEqual(`<div id="${id}">Text</div>`);
       expect(obj.getComponents().length).toEqual(1);
       obj.getComponents().first().addStyle({ margin: '10px' });
       expect(cc.getAll().length).toEqual(1);

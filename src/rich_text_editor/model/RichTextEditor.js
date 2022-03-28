@@ -92,6 +92,7 @@ export default class RichTextEditor {
     this.setEl(el);
     this.updateActiveActions = this.updateActiveActions.bind(this);
     this.__onKeydown = this.__onKeydown.bind(this);
+    this.__onPaste = this.__onPaste.bind(this);
 
     const acts = (settings.actions || []).map(action => {
       let result = action;
@@ -201,6 +202,7 @@ export default class RichTextEditor {
     el.contentEditable = !!enable;
     method(el, 'mouseup keyup', this.updateActiveActions);
     method(doc, 'keydown', this.__onKeydown);
+    method(doc, 'paste', this.__onPaste);
     this.enabled = enable;
 
     if (enable) {
@@ -234,6 +236,18 @@ export default class RichTextEditor {
     if (event.key === 'Enter') {
       this.doc.execCommand('insertLineBreak');
       event.preventDefault();
+    }
+  }
+
+  __onPaste(ev) {
+    const clipboardData = ev.clipboardData || window.clipboardData;
+    const text = clipboardData.getData('text');
+    const textHtml = clipboardData.getData('text/html');
+    // Replace \n with <br> in case of plain text
+    if (text && !textHtml) {
+      ev.preventDefault();
+      const html = text.replace(/(?:\r\n|\r|\n)/g, '<br/>');
+      this.doc.execCommand('insertHTML', false, html);
     }
   }
 
