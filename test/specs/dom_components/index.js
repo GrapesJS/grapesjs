@@ -65,35 +65,6 @@ describe('DOM Components', () => {
       expect(DomComponents).toBeTruthy();
     });
 
-    test('storageKey returns array', () => {
-      expect(obj.storageKey() instanceof Array).toEqual(true);
-    });
-
-    test('storageKey returns correct composition', () => {
-      config.stm = {
-        getConfig() {
-          return {
-            storeHtml: 1,
-            storeComponents: 1,
-          };
-        },
-      };
-      expect(obj.storageKey()).toEqual(['html', 'components']);
-    });
-
-    test('Store data', () => {
-      setSmConfig();
-      (em.getHtml = () => {
-        return 'testHtml';
-      }),
-        (obj = em.get('DomComponents').init(config));
-      var expected = {
-        html: 'testHtml',
-        components: JSON.stringify(obj.getWrapper()),
-      };
-      expect(obj.store(1)).toEqual(expected);
-    });
-
     test.skip('Store and load data', () => {
       setSmConfig();
       setEm();

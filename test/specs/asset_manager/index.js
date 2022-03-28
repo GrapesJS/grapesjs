@@ -1,21 +1,9 @@
-import StorageManager from 'storage_manager';
 import AssetManager from 'asset_manager';
 
 describe('Asset Manager', () => {
   describe('Main', () => {
-    var obj;
-    var imgObj;
-
-    var storage;
-    var storageId = 'testStorage';
-    var storageMock = {
-      store(data) {
-        storage = data;
-      },
-      load(keys) {
-        return storage;
-      }
-    };
+    let obj;
+    let imgObj;
 
     beforeEach(() => {
       document.body.innerHTML = '<div id="asset-c"></div>';
@@ -23,7 +11,7 @@ describe('Asset Manager', () => {
         type: 'image',
         src: 'path/to/image',
         width: 101,
-        height: 102
+        height: 102,
       };
       obj = new AssetManager();
       obj.init();
@@ -80,38 +68,6 @@ describe('Asset Manager', () => {
     test('Render assets', () => {
       obj.add(imgObj);
       expect(obj.render()).toBeTruthy();
-    });
-
-    describe('With storage', () => {
-      var storageManager;
-
-      beforeEach(() => {
-        document.body.innerHTML = '<div id="asset-c"></div>';
-        storageManager = new StorageManager().init({
-          autoload: 0,
-          type: storageId
-        });
-        obj = new AssetManager().init({
-          stm: storageManager
-        });
-        storageManager.add(storageId, storageMock);
-        document.body.querySelector('#asset-c').appendChild(obj.render());
-      });
-
-      afterEach(() => {
-        storageManager = null;
-      });
-
-      test('Store and load data', () => {
-        obj.add(imgObj);
-        obj.store();
-        obj.remove(imgObj.src);
-        obj.load({ assets: storage['gjs-assets'] });
-        var asset = obj.get(imgObj.src);
-        expect(asset.get('width')).toEqual(imgObj.width);
-        expect(asset.get('height')).toEqual(imgObj.height);
-        expect(asset.get('type')).toEqual('image');
-      });
     });
   });
 });

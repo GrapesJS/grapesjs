@@ -12,12 +12,11 @@ describe('GrapesJS', () => {
     var storage;
     var storageId = 'testStorage';
     var storageMock = {
-      store(data, clb) {
+      store(data) {
         storage = data;
-        clb();
       },
-      load(keys, clb) {
-        return clb(storage);
+      load() {
+        return storage;
       },
     };
 
