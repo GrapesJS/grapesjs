@@ -48,12 +48,13 @@ describe('Storage Manager', () => {
       expect(obj.getCurrent()).toEqual('remote');
     });
 
-    test('Store do not execute if empty', () => {
-      expect(obj.store({ item: 'test' })).toBeUndefined();
+    test('Store is executed', async () => {
+      const spy = jest.spyOn(obj, '__exec');
+      await obj.store({ item: 'test' });
+      expect(spy).toBeCalledTimes(1);
     });
 
     test('Load default storages ', () => {
-      obj.loadDefaultProviders();
       expect(obj.get('local')).toBeTruthy();
       expect(obj.get('remote')).toBeTruthy();
       expect(obj.get('test')).toBeFalsy();
