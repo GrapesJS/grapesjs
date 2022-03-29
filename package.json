@@ -1,7 +1,7 @@
 {
   "name": "grapesjs",
   "description": "Free and Open Source Web Builder Framework",
-  "version": "0.18.4",
+  "version": "0.19.0",
   "author": "Artur Arseniev",
   "license": "BSD-3-Clause",
   "homepage": "http://grapesjs.com",
@@ -29,6 +29,7 @@
     "documentation": "^13.2.5",
     "eslint": "^7.32.0",
     "grapesjs-cli": "^3.0.0",
+    "html-entities": "^1.4.0",
     "husky": "^2.7.0",
     "jest": "^24.9.0",
     "lint-staged": "^8.2.1",

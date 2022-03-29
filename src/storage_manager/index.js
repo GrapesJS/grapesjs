@@ -42,6 +42,7 @@
  * * [getCurrent](#getcurrent)
  * * [getCurrentStorage](#getcurrentstorage)
  * * [setCurrent](#setcurrent)
+ * * [getStorageOptions](#getstorageoptions)
  * * [add](#add)
  * * [get](#get)
  * * [store](#store)
@@ -53,249 +54,269 @@
 import defaults from './config/config';
 import LocalStorage from './model/LocalStorage';
 import RemoteStorage from './model/RemoteStorage';
+import Module from 'common/module';
+import { isEmpty, isFunction } from 'underscore';
 
 const eventStart = 'storage:start';
 const eventAfter = 'storage:after';
 const eventEnd = 'storage:end';
 const eventError = 'storage:error';
 
-export default () => {
-  var c = {};
-  let em;
-  var storages = {};
-  var defaultStorages = {};
+const STORAGE_LOCAL = 'local';
+const STORAGE_REMOTE = 'remote';
 
+export default () => {
   return {
-    /**
-     * Name of the module
-     * @type {String}
-     * @private
-     */
+    ...Module,
+
     name: 'StorageManager',
+
+    /**
+     * Get configuration object
+     * @name getConfig
+     * @function
+     * @return {Object}
+     */
 
     /**
      * Initialize module. Automatically called with a new instance of the editor
      * @param {Object} config Configurations
-     * @param {string} [config.id='gjs-'] The prefix for the fields, useful to differentiate storing/loading
-     * with multiple editors on the same page. For example, in local storage, the item of HTML will be saved like 'gjs-html'
-     * @param {Boolean} [config.autosave=true] Indicates if autosave mode is enabled, works in conjunction with stepsBeforeSave
-     * @param {number} [config.stepsBeforeSave=1] If autosave enabled, indicates how many steps/changes are necessary
-     * before autosave is triggered
-     * @param {string} [config.type='local'] Default storage type. Available: 'local' | 'remote' | ''(do not store)
      * @private
-     * @example
-     * ...
-     * {
-     *    autosave: false,
-     *    type: 'remote',
-     * }
-     * ...
      */
     init(config = {}) {
-      c = { ...defaults, ...config };
-      em = c.em;
+      this.__initConfig(defaults, config);
+      const c = this.getConfig();
       if (c._disable) c.type = 0;
-      defaultStorages.remote = new RemoteStorage(c);
-      defaultStorages.local = new LocalStorage(c);
-      c.currentStorage = c.type;
-      this.loadDefaultProviders().setCurrent(c.type);
+      this.storages = {};
+      this.add(STORAGE_LOCAL, new LocalStorage(c));
+      this.add(STORAGE_REMOTE, new RemoteStorage(c));
+      this.setCurrent(c.type);
       return this;
     },
 
     /**
-     * Get configuration object
-     * @return {Object}
-     * */
-    getConfig() {
-      return c;
-    },
-
-    /**
-     * Checks if autosave is enabled
-     * @return {Boolean}
+     * Check if autosave is enabled.
+     * @returns {Boolean}
      * */
     isAutosave() {
-      return !!c.autosave;
+      return !!this.getConfig().autosave;
     },
 
     /**
-     * Set autosave value
-     * @param  {Boolean}  v
-     * @return {this}
+     * Set autosave value.
+     * @param  {Boolean} value
      * */
-    setAutosave(v) {
-      c.autosave = !!v;
+    setAutosave(value) {
+      this.getConfig().autosave = !!value;
       return this;
     },
 
     /**
-     * Returns number of steps required before trigger autosave
-     * @return {number}
+     * Returns number of steps required before trigger autosave.
+     * @returns {Number}
      * */
     getStepsBeforeSave() {
-      return c.stepsBeforeSave;
+      return this.getConfig().stepsBeforeSave;
     },
 
     /**
-     * Set steps required before trigger autosave
-     * @param  {number} v
-     * @return {this}
+     * Set steps required before trigger autosave.
+     * @param {Number} value
      * */
-    setStepsBeforeSave(v) {
-      c.stepsBeforeSave = v;
+    setStepsBeforeSave(value) {
+      this.getConfig().stepsBeforeSave = value;
       return this;
     },
 
     /**
-     * Add new storage
-     * @param {string} id Storage ID
-     * @param  {Object} storage Storage wrapper
-     * @param  {Function} storage.load Load method
+     * Add new storage.
+     * @param {String} type Storage type
+     * @param {Object} storage Storage definition
+     * @param {Function} storage.load Load method
      * @param  {Function} storage.store Store method
-     * @return {this}
      * @example
      * storageManager.add('local2', {
-     *   load: function(keys, clb, clbErr) {
-     *     var res = {};
-     *     for (var i = 0, len = keys.length; i < len; i++){
-     *       var v = localStorage.getItem(keys[i]);
-     *       if(v) res[keys[i]] = v;
-     *     }
-     *     clb(res); // might be called inside some async method
-     *     // In case of errors...
-     *     // clbErr('Went something wrong');
+     *   async load(storageOptions) {
+     *     // ...
      *   },
-     *   store: function(data, clb, clbErr) {
-     *     for(var key in data)
-     *       localStorage.setItem(key, data[key]);
-     *     clb(); // might be called inside some async method
-     *   }
+     *   async store(data, storageOptions) {
+     *     // ...
+     *   },
      * });
      * */
-    add(id, storage) {
-      storages[id] = storage;
+    add(type, storage) {
+      this.storages[type] = storage;
       return this;
     },
 
     /**
-     * Returns storage by id
-     * @param {string} id Storage ID
-     * @return {Object|null}
+     * Return storage by type.
+     * @param {String} type Storage type
+     * @returns {Object|null}
      * */
-    get(id) {
-      return storages[id] || null;
+    get(type) {
+      return this.storages[type] || null;
     },
 
     /**
-     * Returns all storages
-     * @return   {Array}
+     * Get all storages.
+     * @returns {Object}
      * */
     getStorages() {
-      return storages;
+      return this.storages;
     },
 
     /**
-     * Returns current storage type
-     * @return {string}
+     * Get current storage type.
+     * @returns {String}
      * */
     getCurrent() {
-      return c.currentStorage;
+      return this.getConfig().currentStorage;
     },
 
     /**
-     * Set current storage type
-     * @param {string} id Storage ID
-     * @return {this}
+     * Set current storage type.
+     * @param {String} type Storage type
      * */
-    setCurrent(id) {
-      c.currentStorage = id;
+    setCurrent(type) {
+      this.getConfig().currentStorage = type;
       return this;
     },
 
-    /**
-     * Store key-value resources in the current storage
-     * @param  {Object} data Data in key-value format, eg. {item1: value1, item2: value2}
-     * @param {Function} clb Callback function
-     * @return {Object|null}
-     * @example
-     * storageManager.store({item1: value1, item2: value2});
-     * */
-    store(data, clb) {
-      const st = this.get(this.getCurrent());
-      const toStore = {};
-      this.onStart('store', data);
+    getCurrentStorage() {
+      return this.get(this.getCurrent());
+    },
 
-      for (let key in data) {
-        toStore[c.id + key] = data[key];
+    /**
+     * Get storage options by type.
+     * @param {String} type Storage type
+     * @returns {Object}
+     * */
+    getStorageOptions(type) {
+      return this.getCurrentOptons(type);
+    },
+
+    /**
+     * Store data in the current storage.
+     * @param {Object} data Project data.
+     * @param {Object} [options] Storage options.
+     * @returns {Object} Stored data.
+     * @example
+     * const data = editor.getProjectData();
+     * await storageManager.store(data);
+     * */
+    async store(data, options = {}) {
+      const st = this.getCurrentStorage();
+      const opts = { ...this.getCurrentOptons(), ...options };
+      const recovery = this.getRecoveryStorage();
+      const recoveryOpts = this.getCurrentOptons(STORAGE_LOCAL);
+
+      try {
+        await this.__exec(st, opts, data);
+        recovery && (await this.__exec(recovery, recoveryOpts, {}));
+      } catch (error) {
+        if (recovery) {
+          await this.__exec(recovery, recoveryOpts, data);
+        } else {
+          throw error;
+        }
       }
 
-      return st
-        ? st.store(
-            toStore,
-            res => {
-              this.onAfter('store', res);
-              clb && clb(res);
-              this.onEnd('store', res);
-            },
-            err => {
-              this.onError('store', err);
-            }
-          )
-        : null;
+      return data;
     },
 
     /**
      * Load resource from the current storage by keys
-     * @param  {string|Array<string>} keys Keys to load
-     * @param {Function} clb Callback function
+     * @param {Object} [options] Storage options.
+     * @returns {Object} Loaded data.
      * @example
-     * storageManager.load(['item1', 'item2'], res => {
-     *  // res -> {item1: value1, item2: value2}
-     * });
-     * storageManager.load('item1', res => {
-     * // res -> {item1: value1}
-     * });
+     * const data = await storageManager.load();
+     * editor.loadProjectData(data);
      * */
-    load(keys, clb) {
-      const st = this.get(this.getCurrent());
-      const keysF = [];
-      let result = {};
+    async load(options = {}) {
+      const st = this.getCurrentStorage();
+      const opts = { ...this.getCurrentOptons(), ...options };
+      const recoveryStorage = this.getRecoveryStorage();
+      let result;
 
-      if (typeof keys === 'string') keys = [keys];
-      this.onStart('load', keys);
-
-      for (var i = 0, len = keys.length; i < len; i++) {
-        keysF.push(c.id + keys[i]);
+      if (recoveryStorage) {
+        const recoveryData = await this.__exec(recoveryStorage, this.getCurrentOptons(STORAGE_LOCAL));
+        if (!isEmpty(recoveryData)) {
+          try {
+            await this.__askRecovery();
+            result = recoveryData;
+          } catch (error) {}
+        }
       }
 
-      if (st) {
-        st.load(
-          keysF,
-          res => {
-            result = this.__clearKeys(res);
-            this.onAfter('load', result);
-            clb && clb(result);
-            this.onEnd('load', result);
-          },
-          err => {
-            clb && clb(result);
-            this.onError('load', err);
-          }
-        );
-      } else {
-        clb && clb(result);
+      if (!result) {
+        result = await this.__exec(st, opts);
       }
+
+      return result || {};
     },
 
-    /**
-     * Restore key names
-     * @param {Object} data
-     * @returns {Object}
-     * @private
-     */
+    __askRecovery() {
+      const { em } = this;
+      const recovery = this.getRecovery();
+
+      return new Promise((res, rej) => {
+        if (isFunction(recovery)) {
+          recovery(res, rej, em?.getEditor());
+        } else {
+          confirm(em?.t('storageManager.recover')) ? res() : rej();
+        }
+      });
+    },
+
+    getRecovery() {
+      return this.getConfig().recovery;
+    },
+
+    getRecoveryStorage() {
+      const recovery = this.getRecovery();
+      return recovery && this.getCurrent() === STORAGE_REMOTE && this.get(STORAGE_LOCAL);
+    },
+
+    async __exec(storage, opts, data) {
+      const ev = data ? 'store' : 'load';
+      const { onStore, onLoad } = this.getConfig();
+      let result;
+
+      this.onStart(ev, data);
+
+      if (!storage) {
+        return data || {};
+      }
+
+      try {
+        const editor = this.em?.getEditor();
+
+        if (data) {
+          let toStore = (onStore && (await onStore(data, editor))) || data;
+          toStore = (opts.onStore && (await opts.onStore(toStore, editor))) || toStore;
+          await storage.store(toStore, opts);
+          result = data;
+        } else {
+          result = await storage.load(opts);
+          result = this.__clearKeys(result);
+          result = (opts.onLoad && (await opts.onLoad(result, editor))) || result;
+          result = (onLoad && (await onLoad(result, editor))) || result;
+        }
+        this.onAfter(ev, result);
+        this.onEnd(ev, result);
+      } catch (error) {
+        this.onError(ev, error);
+        throw error;
+      }
+
+      return result;
+    },
+
     __clearKeys(data = {}) {
+      const config = this.getConfig();
+      const reg = new RegExp(`^${config.id}`);
       const result = {};
-      const reg = new RegExp('^' + c.id + '');
 
       for (let itemKey in data) {
         const itemKeyR = itemKey.replace(reg, '');
@@ -305,22 +326,10 @@ export default () => {
       return result;
     },
 
-    /**
-     * Load default storages
-     * @return {this}
-     * @private
-     * */
-    loadDefaultProviders() {
-      for (var id in defaultStorages) this.add(id, defaultStorages[id]);
-      return this;
-    },
-
-    /**
-     * Get current storage
-     * @return {Storage}
-     * */
-    getCurrentStorage() {
-      return this.get(this.getCurrent());
+    getCurrentOptons(type) {
+      const config = this.getConfig();
+      const current = type || this.getCurrent();
+      return config.options[current] || {};
     },
 
     /**
@@ -328,6 +337,7 @@ export default () => {
      * @private
      */
     onStart(ctx, data) {
+      const { em } = this;
       if (em) {
         em.trigger(eventStart);
         ctx && em.trigger(`${eventStart}:${ctx}`, data);
@@ -339,9 +349,11 @@ export default () => {
      * @private
      */
     onAfter(ctx, data) {
+      const { em } = this;
       if (em) {
         em.trigger(eventAfter);
-        ctx && em.trigger(`${eventAfter}:${ctx}`, data);
+        em.trigger(`${eventAfter}:${ctx}`, data);
+        em.trigger(`storage:${ctx}`, data);
       }
     },
 
@@ -350,6 +362,7 @@ export default () => {
      * @private
      */
     onEnd(ctx, data) {
+      const { em } = this;
       if (em) {
         em.trigger(eventEnd);
         ctx && em.trigger(`${eventEnd}:${ctx}`, data);
@@ -361,6 +374,7 @@ export default () => {
      * @private
      */
     onError(ctx, data) {
+      const { em } = this;
       if (em) {
         em.trigger(eventError, data);
         ctx && em.trigger(`${eventError}:${ctx}`, data);
@@ -379,7 +393,8 @@ export default () => {
     },
 
     destroy() {
-      [c, em, storages, defaultStorages].forEach(i => (i = {}));
+      this.__destroy();
+      this.storages = {};
     },
   };
 };

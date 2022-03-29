@@ -2,14 +2,28 @@ export default {
   // Style prefix
   stylePrefix: 'gjs-',
 
-  // HTML string or object of components
+  /**
+   * HTML string or object of components
+   * @deprecated Rely on `projectData` option
+   */
   components: '',
 
-  // CSS string or object of rules
+  /**
+   * CSS string or object of rules
+   * @deprecated Rely on `projectData` option
+   */
   style: '',
 
-  // If true, will fetch HTML and CSS from selected container
+  /**
+   * If true, will fetch HTML and CSS from selected container
+   * @deprecated
+   */
   fromElement: 0,
+
+  /**
+   * Initial project data
+   */
+  projectData: null,
 
   // Show an alert before unload the page with unsaved changes
   noticeOnUnload: true,

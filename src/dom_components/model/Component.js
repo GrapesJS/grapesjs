@@ -1677,7 +1677,11 @@ export default class Component extends Model.extend(Styleable) {
     const coll = this.collection;
     const remove = () => {
       coll && coll.remove(this, { ...opts, action: 'remove-component' });
-      opts.root && this.components('');
+      // Component without parent
+      if (!coll) {
+        this.components('', opts);
+        this.components().removeChildren(this, null, opts);
+      }
     };
     const rmOpts = { ...opts };
     [this, em].map(i => i.trigger('component:remove:before', this, remove, rmOpts));

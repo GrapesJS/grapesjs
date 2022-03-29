@@ -133,15 +133,6 @@ export default (config = {}, opts = {}) => {
         }
       });
 
-      // Do post render stuff after the iframe is loaded otherwise it'll
-      // be empty during tests
-      em.once('change:ready', () => {
-        this.UndoManager.clear();
-        em.get('modules').forEach(module => {
-          module.postRender && module.postRender(editorView);
-        });
-      });
-
       return this;
     },
 
@@ -430,64 +421,53 @@ export default (config = {}, opts = {}) => {
     },
 
     /**
-     * Store data to the current storage
-     * @param {Function} clb Callback function
-     * @return {Object} Stored data
+     * Store data to the current storage.
+     * This will reset the counter of changes (`editor.getDirtyCount()`).
+     * @param {Object} [options] Storage options.
+     * @returns {Object} Stored data.
+     * @example
+     * const storedData = await editor.store();
      */
-    store(clb) {
-      return em.store(clb);
+    async store(options) {
+      return await em.store(options);
     },
 
     /**
-     * Get the JSON project data, which could be stored and loaded back with `editor.loadProject(json)`
+     * Load data from the current storage.
+     * @param {Object} [options] Storage options.
+     * @returns {Object} Loaded data.
+     * @example
+     * const data = await editor.load();
+     */
+    async load(options) {
+      return await em.load(options);
+    },
+
+    /**
+     * Get the JSON project data, which could be stored and loaded back with `editor.loadProjectData(json)`
      * @returns {Object}
      * @example
-     * @private
-     * console.log(editor.getProject());
+     * console.log(editor.getProjectData());
      * // { pages: [...], styles: [...], ... }
      */
-    getProject() {
+    getProjectData() {
       return em.storeData();
-    },
-
-    /**
-     * Get the JSON data object, which could be stored and loaded back with `editor.loadData(json)`
-     * @returns {Object}
-     * @example
-     * console.log(editor.storeData());
-     * // { pages: [...], styles: [...], ... }
-     */
-    storeData() {
-      return em.storeData();
-    },
-
-    /**
-     * Load data from the current storage
-     * @param {Function} clb Callback function
-     * @return {Object} Stored data
-     */
-    load(clb) {
-      return em.load(clb);
     },
 
     /**
      * Load data from the JSON project
      * @param {Object} data Project to load
      * @example
-     * @private
-     * editor.loadProject({ pages: [...], styles: [...], ... })
+     * editor.loadProjectData({ pages: [...], styles: [...], ... })
      */
-    loadProject(data) {
+    loadProjectData(data) {
       return em.loadData(data);
     },
 
-    /**
-     * Load data from the JSON data object
-     * @param {Object} data Data to load
-     * @return {Object} Loaded object
-     * @example
-     * editor.loadData({ pages: [...], styles: [...], ... })
-     */
+    storeData() {
+      return em.storeData();
+    },
+
     loadData(data) {
       return em.loadData(data);
     },
@@ -508,6 +488,13 @@ export default (config = {}, opts = {}) => {
      */
     getDirtyCount() {
       return em.getDirtyCount();
+    },
+
+    /**
+     * Reset the counter of changes.
+     */
+    clearDirtyCount() {
+      return em.clearDirtyCount();
     },
 
     /**

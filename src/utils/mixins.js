@@ -180,6 +180,27 @@ export const escape = (str = '') => {
     .replace(/`/g, '&#96;');
 };
 
+export const deepMerge = (...args) => {
+  const target = { ...args[0] };
+
+  for (let i = 1; i < args.length; i++) {
+    const source = { ...args[i] };
+
+    for (let key in source) {
+      const targValue = target[key];
+      const srcValue = source[key];
+
+      if (isObject(targValue) && isObject(srcValue)) {
+        target[key] = deepMerge(targValue, srcValue);
+      } else {
+        target[key] = srcValue;
+      }
+    }
+  }
+
+  return target;
+};
+
 /**
  * Ensure to fetch the model from the input argument
  * @param  {HTMLElement|Component} el Component or HTML element

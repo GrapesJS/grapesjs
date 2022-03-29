@@ -35,6 +35,7 @@ import CssRules from './model/CssRules';
 import CssRulesView from './view/CssRulesView';
 import Selectors from 'selector_manager/model/Selectors';
 import Selector from 'selector_manager/model/Selector';
+import Module from 'common/module';
 
 export default () => {
   let em;
@@ -42,6 +43,8 @@ export default () => {
   var rules, rulesView;
 
   return {
+    ...Module,
+
     Selectors,
 
     /**
@@ -51,21 +54,10 @@ export default () => {
      */
     name: 'CssComposer',
 
+    storageKey: 'styles',
+
     getConfig() {
       return c;
-    },
-
-    /**
-     * Mandatory for the storage manager
-     * @type {String}
-     * @private
-     */
-    storageKey() {
-      var keys = [];
-      var smc = (c.stm && c.stm.getConfig()) || {};
-      if (smc.storeCss) keys.push('css');
-      if (smc.storeStyles) keys.push('styles');
-      return keys;
     },
 
     /**
@@ -108,55 +100,12 @@ export default () => {
       um && um.add(this.getAll());
     },
 
-    /**
-     * Load data from the passed object, if the object is empty will try to fetch them
-     * autonomously from the storage manager.
-     * The fetched data will be added to the collection
-     * @param {Object} data Object of data to load
-     * @return {Object} Loaded rules
-     * @private
-     */
-    load(data) {
-      var d = data || '';
-
-      if (!d && c.stm) {
-        d = c.em.getCacheLoad();
-      }
-
-      var obj = d.styles || '';
-
-      if (d.styles) {
-        try {
-          obj = JSON.parse(d.styles);
-        } catch (err) {}
-      } else if (d.css) {
-        obj = c.em.get('Parser').parseCss(d.css);
-      }
-
-      if (isArray(obj)) {
-        obj.length && rules.reset(obj);
-      } else if (obj) {
-        rules.reset(obj);
-      }
-
-      return obj;
+    store() {
+      return this.getProjectData();
     },
 
-    /**
-     * Store data to the selected storage
-     * @param {Boolean} noStore If true, won't store
-     * @return {Object} Data to store
-     * @private
-     */
-    store(noStore) {
-      if (!c.stm) return;
-      const obj = {};
-      const keys = this.storageKey();
-      const hasPages = em && em.get('hasPages');
-      if (keys.indexOf('css') >= 0 && !hasPages) obj.css = c.em.getCss();
-      if (keys.indexOf('styles') >= 0) obj.styles = JSON.stringify(rules);
-      if (!noStore) c.stm.store(obj);
-      return obj;
+    load(data) {
+      return this.loadProjectData(data);
     },
 
     /**

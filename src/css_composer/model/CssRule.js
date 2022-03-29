@@ -236,6 +236,9 @@ export default class CssRule extends Model.extend(Styleable) {
         }
       });
 
+      // Delete the property used for partial updates
+      delete obj.style.__p;
+
       if (isEmpty(obj.selectors)) delete obj.selectors;
       if (isEmpty(obj.style)) delete obj.style;
     }

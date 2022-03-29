@@ -1,9 +1,49 @@
 import { isString, isElement } from 'underscore';
-import { createId } from 'utils/mixins';
+import { createId, deepMerge, isDef } from 'utils/mixins';
 
 export default {
   getConfig(name) {
     return this.__getConfig(name);
+  },
+
+  getProjectData(data) {
+    const obj = {};
+    const key = this.storageKey;
+    if (key) {
+      obj[key] = data || this.getAll();
+    }
+    return obj;
+  },
+
+  loadProjectData(data = {}, { all, onResult, reset } = {}) {
+    const key = this.storageKey;
+    const opts = { action: 'load' };
+    const coll = all || this.getAll();
+    let result = data[key];
+
+    if (typeof result == 'string') {
+      try {
+        result = JSON.parse(result);
+      } catch (err) {
+        this.__logWarn('Data parsing failed', { input: result });
+      }
+    }
+
+    reset && result && coll.reset(null, opts);
+
+    if (onResult) {
+      result && onResult(result, opts);
+    } else if (result && isDef(result.length)) {
+      coll.reset(result, opts);
+    }
+
+    return result;
+  },
+
+  clear(opts = {}) {
+    const { all } = this;
+    all && all.reset(null, opts);
+    return this;
   },
 
   __getConfig(name) {
@@ -23,10 +63,7 @@ export default {
   },
 
   __initConfig(def = {}, conf = {}) {
-    this.config = {
-      ...def,
-      ...conf,
-    };
+    this.config = deepMerge(def, conf);
     this.em = this.config.em;
     this.cls = [];
   },
@@ -82,8 +119,8 @@ export default {
 
   __onAllEvent() {},
 
-  __logWarn(str) {
-    this.em.logWarning(`[${this.name}]: ${str}`);
+  __logWarn(str, opts) {
+    this.em.logWarning(`[${this.name}]: ${str}`, opts);
   },
 
   _createId(len = 16) {

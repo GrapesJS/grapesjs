@@ -46,7 +46,7 @@
 
 import { isString, bindAll, unique, flatten } from 'underscore';
 import { createId } from 'utils/mixins';
-import { Model } from 'backbone';
+import { Model, Module } from 'common';
 import Pages from './model/Pages';
 import Page from './model/Page';
 
@@ -64,6 +64,8 @@ const typeMain = 'main';
 
 export default () => {
   return {
+    ...Module,
+
     name: 'PageManager',
 
     storageKey: 'pages',
@@ -80,7 +82,7 @@ export default () => {
       add: evPageAdd,
       addBefore: evPageAddBefore,
       remove: evPageRemove,
-      removeBefore: evPageRemoveBefore
+      removeBefore: evPageRemoveBefore,
     },
 
     /**
@@ -96,6 +98,7 @@ export default () => {
       this.em = em;
       const pages = new Pages([], cnf);
       this.pages = pages;
+      this.all = pages;
       const model = new Model({ _undo: true });
       this.model = model;
       pages.on('add', (p, c, o) => em.trigger(evPageAdd, p, o));
@@ -119,9 +122,7 @@ export default () => {
       const { pages } = this;
       const opt = { silent: true };
       pages.add(this.config.pages || [], opt);
-      const mainPage = !pages.length
-        ? this.add({ type: typeMain }, opt)
-        : this.getMain();
+      const mainPage = !pages.length ? this.add({ type: typeMain }, opt) : this.getMain();
       this.select(mainPage, opt);
     },
 
@@ -228,13 +229,7 @@ export default () => {
      */
     getAllWrappers() {
       const pages = this.getAll();
-      return unique(
-        flatten(
-          pages.map(page =>
-            page.getAllFrames().map(frame => frame.getComponent())
-          )
-        )
-      );
+      return unique(flatten(pages.map(page => page.getAllFrames().map(frame => frame.getComponent()))));
     },
 
     getAllMap() {
@@ -280,28 +275,12 @@ export default () => {
       ['selected', 'config', 'em', 'pages', 'model'].map(i => (this[i] = 0));
     },
 
-    store(noStore) {
-      if (!this.em.get('hasPages')) return {};
-      const obj = {};
-      const cnf = this.config;
-      obj[this.storageKey] = JSON.stringify(this.getAll());
-      if (!noStore && cnf.stm) cnf.stm.store(obj);
-      return obj;
+    store() {
+      return this.getProjectData();
     },
 
-    load(data = {}) {
-      const key = this.storageKey;
-      let res = data[key] || [];
-
-      if (typeof res == 'string') {
-        try {
-          res = JSON.parse(data[key]);
-        } catch (err) {}
-      }
-
-      res && res.length && this.pages.reset(res);
-
-      return res;
+    load(data) {
+      return this.loadProjectData(data, { all: this.pages, reset: true });
     },
 
     _createId() {
@@ -315,6 +294,6 @@ export default () => {
       } while (pagesMap[id]);
 
       return id;
-    }
+    },
   };
 };

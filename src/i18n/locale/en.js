@@ -160,4 +160,7 @@ export default {
       },
     },
   },
+  storageManager: {
+    recover: 'Do you want to recover unsaved changes?',
+  },
 };

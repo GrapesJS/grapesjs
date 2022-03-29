@@ -1,4 +1,4 @@
-import { isUndefined, isFunction, isArray, contains, toArray, keys, bindAll } from 'underscore';
+import { isUndefined, isArray, contains, toArray, keys, bindAll } from 'underscore';
 import Backbone from 'backbone';
 import $ from 'utils/cash-dom';
 import Extender from 'utils/extender';
@@ -66,27 +66,34 @@ export default class EditorModel extends Model {
     };
   }
 
-  initialize(c = {}) {
-    this.config = c;
-    this.set('Config', c);
+  initialize(conf = {}) {
+    this.config = conf;
+    const { config } = this;
+    this.set('Config', config);
     this.set('modules', []);
     this.set('toLoad', []);
     this.set('storables', []);
     this.set('selected', new Selected());
-    this.set('dmode', c.dragMode);
-    this.set('hasPages', !!c.pageManager);
-    const el = c.el;
-    const log = c.log;
+    this.set('dmode', config.dragMode);
+    const { el, log } = config;
     const toLog = log === true ? keys(logs) : isArray(log) ? log : [];
     bindAll(this, 'initBaseColorPicker');
 
-    if (el && c.fromElement) this.config.components = el.innerHTML;
+    if (el && config.fromElement) {
+      config.components = el.innerHTML;
+    }
+
     this.attrsOrig = el
       ? toArray(el.attributes).reduce((res, next) => {
           res[next.nodeName] = next.nodeValue;
           return res;
         }, {})
       : '';
+
+    // Move components to pages
+    if (config.components && !config.pageManager) {
+      config.pageManager = { pages: [{ component: config.components }] };
+    }
 
     // Load modules
     deps.forEach(name => this.loadModule(name));
@@ -133,12 +140,9 @@ export default class EditorModel extends Model {
 
   /**
    * Should be called once all modules and plugins are loaded
-   * @param {Function} clb
    * @private
    */
-  loadOnStart(clb = null) {
-    const sm = this.get('StorageManager');
-
+  loadOnStart() {
     // In `onLoad`, the module will try to load the data from its configurations.
     this.get('toLoad').forEach(mdl => mdl.onLoad());
 
@@ -147,14 +151,23 @@ export default class EditorModel extends Model {
       const modules = this.get('modules');
       modules.forEach(mdl => mdl.postLoad && mdl.postLoad(this));
       this.set('readyLoad', 1);
-      clb && clb();
     };
 
-    if (sm && sm.canAutoload()) {
-      this.load(postLoad);
-    } else {
-      setTimeout(postLoad);
-    }
+    // Defer for storage load events.
+    setTimeout(async () => {
+      const projectData = this.getConfig('projectData');
+
+      if (projectData) {
+        this.loadData(projectData);
+      } else if (this.get('StorageManager').canAutoload()) {
+        try {
+          await this.load();
+        } catch (error) {
+          this.logError(error);
+        }
+      }
+      postLoad();
+    });
 
     // Create shallow editor.
     // Here we can create components/styles without altering/triggering the main EditorModel
@@ -175,7 +188,7 @@ export default class EditorModel extends Model {
    */
   updateChanges() {
     const stm = this.get('StorageManager');
-    const changes = this.get('changesCount');
+    const changes = this.getDirtyCount();
     updateItr && clearTimeout(updateItr);
     updateItr = setTimeout(() => this.trigger('update'));
 
@@ -184,7 +197,7 @@ export default class EditorModel extends Model {
     }
 
     if (stm.isAutosave() && changes >= stm.getStepsBeforeSave()) {
-      this.store();
+      this.store().catch(err => this.logError(err));
     }
   }
 
@@ -201,17 +214,15 @@ export default class EditorModel extends Model {
     const name = Mod.name.charAt(0).toLowerCase() + Mod.name.slice(1);
     const cfgParent = !isUndefined(config[name]) ? config[name] : config[Mod.name];
     const cfg = cfgParent === true ? {} : cfgParent || {};
-    const sm = this.get('StorageManager');
     cfg.pStylePrefix = config.pStylePrefix || '';
 
     if (!isUndefined(cfgParent) && !cfgParent) {
       cfg._disable = 1;
     }
 
-    if (Mod.storageKey && Mod.store && Mod.load && sm) {
-      cfg.stm = sm;
-      // DomComponents should be load before CSS Composer
-      const mth = name == 'domComponents' ? 'unshift' : 'push';
+    if (Mod.storageKey && Mod.store && Mod.load) {
+      // Components should be loaded before CSS due to reset
+      const mth = ['domComponents', 'pageManager'].indexOf(name) >= 0 ? 'unshift' : 'push';
       this.get('storables')[mth](Mod);
     }
 
@@ -259,7 +270,7 @@ export default class EditorModel extends Model {
 
     timedInterval && clearTimeout(timedInterval);
     timedInterval = setTimeout(() => {
-      const curr = this.get('changesCount') || 0;
+      const curr = this.getDirtyCount() || 0;
       const { unset, ...opts } = opt;
       this.set('changesCount', curr + 1, opts);
     }, 0);
@@ -606,23 +617,24 @@ export default class EditorModel extends Model {
   }
 
   /**
-   * Store data to the current storage
-   * @param {Function} clb Callback function
-   * @return {Object} Stored data
+   * Store data to the current storage.
    * @private
    */
-  store(clb) {
-    const sm = this.get('StorageManager');
-    if (!sm) return;
+  async store(options) {
+    const data = this.storeData();
+    await this.get('StorageManager').store(data, options);
+    this.clearDirtyCount();
+    return data;
+  }
 
-    const store = this.storeData();
-    sm.store(store, res => {
-      clb && clb(res, store);
-      this.set('changesCount', 0);
-      this.trigger('storage:store', store);
-    });
-
-    return store;
+  /**
+   * Load data from the current storage.
+   * @private
+   */
+  async load(options) {
+    const result = await this.get('StorageManager').load(options);
+    this.loadData(result);
+    return result;
   }
 
   storeData() {
@@ -634,59 +646,12 @@ export default class EditorModel extends Model {
     this.get('storables').forEach(m => {
       result = { ...result, ...m.store(1) };
     });
-    return result;
-  }
-
-  /**
-   * Load data from the current storage
-   * @param {Function} clb Callback function
-   * @private
-   */
-  load(clb = null) {
-    this.getCacheLoad(1, res => {
-      this.loadData(res);
-      clb && clb(res);
-    });
+    return JSON.parse(JSON.stringify(result));
   }
 
   loadData(data = {}) {
-    const sm = this.get('StorageManager');
-    const result = sm.__clearKeys(data);
-
-    this.get('storables').forEach(module => {
-      module.load(result);
-      module.postLoad && module.postLoad(this);
-    });
-
-    return result;
-  }
-
-  /**
-   * Returns cached load
-   * @param {Boolean} force Force to reload
-   * @param {Function} clb Callback function
-   * @return {Object}
-   * @private
-   */
-  getCacheLoad(force, clb) {
-    if (this.cacheLoad && !force) return this.cacheLoad;
-    const sm = this.get('StorageManager');
-    const load = [];
-
-    if (!sm) return {};
-
-    this.get('storables').forEach(m => {
-      let key = m.storageKey;
-      key = isFunction(key) ? key() : key;
-      const keys = isArray(key) ? key : [key];
-      keys.forEach(k => load.push(k));
-    });
-
-    sm.load(load, res => {
-      this.cacheLoad = res;
-      clb && clb(res);
-      setTimeout(() => this.trigger('storage:load', res));
-    });
+    this.get('storables').forEach(module => module.load(data));
+    return data;
   }
 
   /**
@@ -791,6 +756,10 @@ export default class EditorModel extends Model {
    */
   getDirtyCount() {
     return this.get('changesCount');
+  }
+
+  clearDirtyCount() {
+    return this.set('changesCount', 0);
   }
 
   getZoomDecimal() {
