@@ -1,5 +1,5 @@
 import { result } from 'underscore';
-import { Model } from 'common';
+import { Model } from '../../common';
 
 /**
  * @property {String} type Asset type, eg. 'image'.
@@ -9,7 +9,7 @@ export default class Asset extends Model {
   defaults() {
     return {
       type: '',
-      src: ''
+      src: '',
     };
   }
 
@@ -45,11 +45,7 @@ export default class Asset extends Model {
    * asset.getFilename(); // -> 'image'
    * */
   getFilename() {
-    return this.get('src')
-      .split('/')
-      .pop()
-      .split('?')
-      .shift();
+    return this.get('src').split('/').pop().split('?').shift();
   }
 
   /**
@@ -62,14 +58,12 @@ export default class Asset extends Model {
    * asset.getExtension(); // -> ''
    * */
   getExtension() {
-    return this.getFilename()
-      .split('.')
-      .pop();
+    return this.getFilename().split('.').pop();
   }
 }
 
 Asset.prototype.idAttribute = 'src';
 
-Asset.getDefaults = function() {
+Asset.getDefaults = function () {
   return result(this.prototype, 'defaults');
 };

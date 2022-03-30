@@ -46,7 +46,7 @@
  */
 
 import { debounce, isFunction } from 'underscore';
-import Module from 'common/module';
+import { Module } from '../common';
 import defaults from './config/config';
 import Asset from './model/Assets';
 import Assets from './model/Assets';
