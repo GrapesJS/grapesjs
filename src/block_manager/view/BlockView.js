@@ -52,7 +52,7 @@ export default Backbone.View.extend({
         valid = sorter.validTarget(parent.getEl(), content);
         if (valid.valid) {
           target = parent;
-          insertAt = parent.components().indexOf(selected);
+          insertAt = parent.components().indexOf(selected) + 1;
         }
       }
     }
