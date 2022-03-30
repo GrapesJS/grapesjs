@@ -38,7 +38,7 @@ export default Backbone.View.extend({
     const content = model.get('content');
     const selected = em.getSelected();
     sorter.setDropContent(content);
-    let target, valid;
+    let target, valid, insertAt;
 
     // If there is a selected component, try first to append
     // the block inside, otherwise, try to place it as a next sibling
@@ -50,7 +50,10 @@ export default Backbone.View.extend({
       } else {
         const parent = selected.parent();
         valid = sorter.validTarget(parent.getEl(), content);
-        if (valid.valid) target = parent;
+        if (valid.valid) {
+          target = parent;
+          insertAt = parent.components().indexOf(selected);
+        }
       }
     }
 
@@ -61,7 +64,7 @@ export default Backbone.View.extend({
       if (valid.valid) target = wrapper;
     }
 
-    const result = target && target.append(content)[0];
+    const result = target && target.append(content, {at: insertAt})[0];
     result && em.setSelected(result, { scroll: 1 });
   },
 
