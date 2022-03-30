@@ -12,7 +12,7 @@ const getColor = color => {
   return name || cl.replace(/ /g, '');
 };
 
-export default Input.extend({
+export default class InputColor extends Input {
   template() {
     const ppfx = this.ppfx;
     return `
@@ -23,28 +23,28 @@ export default Input.extend({
         </div>
       </div>
     `;
-  },
+  }
 
   inputClass() {
     const ppfx = this.ppfx;
     return `${ppfx}field ${ppfx}field-color`;
-  },
+  }
 
   holderClass() {
     return `${this.ppfx}input-holder`;
-  },
+  }
 
   remove() {
     Input.prototype.remove.apply(this, arguments);
     this.colorEl.spectrum('destroy');
-  },
+  }
 
   handleChange(e) {
     e.stopPropagation();
     const { value } = e.target;
     if (isUndefined(value)) return;
     this.__onInputChange(value);
-  },
+  }
 
   __onInputChange(val) {
     const { model, opts } = this;
@@ -61,7 +61,7 @@ export default Input.extend({
     }
 
     onChange ? onChange(value) : model.set({ value }, { fromInput: 1 });
-  },
+  }
 
   /**
    * Set value to the model
@@ -83,7 +83,7 @@ export default Input.extend({
       colorEl.spectrum('set', valueClr);
       this.noneColor = value == 'none';
     }
-  },
+  }
 
   /**
    * Get the color input element
@@ -162,12 +162,12 @@ export default Input.extend({
       this.colorEl = colorEl;
     }
     return this.colorEl;
-  },
+  }
 
   render() {
     Input.prototype.render.call(this);
     // This will make the color input available on render
     this.getColorEl();
     return this;
-  },
-});
+  }
+}

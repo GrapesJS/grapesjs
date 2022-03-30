@@ -142,14 +142,15 @@ export default () => {
       let { view } = this;
       const config = this.getConfig();
       const el = view && view.el;
-      view = new TraitsView({
-        el,
-        collection: [],
-        editor: config.em,
-        config,
-      });
-      view.itemsView = this.getTypes();
-      view.updatedCollection();
+      view = new TraitsView(
+        {
+          el,
+          collection: [],
+          editor: config.em,
+          config,
+        },
+        this.getTypes()
+      );
       this.view = view;
       return view.el;
     },

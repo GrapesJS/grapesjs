@@ -1,12 +1,12 @@
 import DomainViews from 'domain_abstract/view/DomainViews';
 import TraitView from './TraitView';
 
-export default DomainViews.extend({
-  ns: 'Traits',
-  itemView: TraitView,
-  reuseView: 1,
+export default class TraitsView extends DomainViews {
+  reuseView = true;
 
-  initialize(o = {}) {
+  constructor(o = {}, itemsView) {
+    super(o);
+    this.itemView = itemsView;
     const config = o.config || {};
     const pfx = config.stylePrefix || '';
     const em = o.editor;
@@ -16,7 +16,8 @@ export default DomainViews.extend({
     this.ppfx = config.pStylePrefix || '';
     this.className = `${pfx}traits`;
     this.listenTo(em, 'component:toggled', this.updatedCollection);
-  },
+    this.updatedCollection();
+  }
 
   /**
    * Update view collection
@@ -29,4 +30,6 @@ export default DomainViews.extend({
     this.collection = comp ? comp.get('traits') : [];
     this.render();
   }
-});
+}
+
+TraitView.prototype.itemView = TraitView;
