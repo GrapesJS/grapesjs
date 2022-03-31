@@ -6,7 +6,7 @@ export default class TraitsView extends DomainViews {
 
   constructor(o = {}, itemsView) {
     super(o);
-    this.itemView = itemsView;
+    this.itemsView = itemsView;
     const config = o.config || {};
     const pfx = config.stylePrefix || '';
     const em = o.editor;
