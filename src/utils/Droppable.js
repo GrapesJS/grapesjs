@@ -17,13 +17,7 @@ export default class Droppable {
     const els = Array.isArray(el) ? el : [el];
     this.el = el;
     this.counter = 0;
-    bindAll(
-      this,
-      'handleDragEnter',
-      'handleDragOver',
-      'handleDrop',
-      'handleDragLeave'
-    );
+    bindAll(this, 'handleDragEnter', 'handleDragOver', 'handleDrop', 'handleDragLeave');
     els.forEach(el => this.toggleEffects(el, 1));
 
     return this;
@@ -52,7 +46,7 @@ export default class Droppable {
           },
           customTarget({ event }) {
             return doc.elementFromPoint(event.clientX, event.clientY);
-          }
+          },
         }
       : null;
     method(frameEl, 'pointerenter', this.handleDragEnter);
@@ -60,7 +54,7 @@ export default class Droppable {
     method(document, 'pointerup', this.handleDrop);
     method(frameEl, 'pointerout', this.handleDragLeave);
 
-    // Test with touche devices (seems like frameEl is not capturing pointer events).
+    // Test with touch devices (seems like frameEl is not capturing pointer events).
     // on/off(document, 'pointermove', sorter.onMove); // for the sorter
     // enable && this.handleDragEnter({}); // no way to use pointerenter/pointerout
   }
@@ -123,7 +117,7 @@ export default class Droppable {
           }
           this.handleDragEnd(comp, dt);
           target.remove();
-        }
+        },
       });
       dragStop = cancel => dragger.stop(ev, { cancel });
       dragContent = cnt => (content = cnt);
@@ -141,7 +135,7 @@ export default class Droppable {
         pfx: 'gjs-',
         onEndMove: model => this.handleDragEnd(model, dt),
         document: this.el.ownerDocument,
-        ...(this.sortOpts || {})
+        ...(this.sortOpts || {}),
       });
       sorter.setDropContent(content);
       sorter.startSort();
@@ -208,7 +202,7 @@ export default class Droppable {
           content.push({
             type,
             file,
-            attributes: { alt: file.name }
+            attributes: { alt: file.name },
           });
         }
       }
@@ -220,7 +214,7 @@ export default class Droppable {
       content = {
         type: 'link',
         attributes: { href: content },
-        content: content
+        content: content,
       };
     } else if (indexOf(types, 'text/json') >= 0) {
       const json = dt && dt.getData('text/json');
