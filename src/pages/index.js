@@ -45,8 +45,8 @@
  */
 
 import { isString, bindAll, unique, flatten } from 'underscore';
-import { createId } from 'utils/mixins';
-import { Model, Module } from 'common';
+import { createId } from '../utils/mixins';
+import { Model, Module } from '../common';
 import Pages from './model/Pages';
 import Page from './model/Page';
 

@@ -1,6 +1,6 @@
+import { isElement } from 'underscore';
 import defaults from './config/config';
 import View from './view/ItemView';
-import { isElement } from 'underscore';
 
 export default () => {
   let em;
@@ -95,7 +95,7 @@ export default () => {
         level: 0,
         config,
         opened: config.opened || {},
-        model: em.get('DomComponents').getWrapper()
+        model: em.get('DomComponents').getWrapper(),
       });
       return layers.render().el;
     },
@@ -103,6 +103,6 @@ export default () => {
     destroy() {
       layers && layers.remove();
       [em, layers, config].forEach(i => (i = {}));
-    }
+    },
   };
 };

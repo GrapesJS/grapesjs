@@ -1,16 +1,16 @@
-import Backbone from 'backbone';
 import { isString, isObject, isFunction } from 'underscore';
+import { View } from '../../common';
 
-const $ = Backbone.$;
-
-export default Backbone.View.extend({
+export default class ButtonView extends View {
   tagName() {
     return this.model.get('tagName');
-  },
+  }
 
-  events: {
-    click: 'clicked'
-  },
+  events() {
+    return {
+      click: 'clicked',
+    };
+  }
 
   initialize(o) {
     const { model } = this;
@@ -39,16 +39,12 @@ export default Backbone.View.extend({
 
     if (em && isString(command) && listen) {
       const chnOpt = { fromListen: 1 };
-      this.listenTo(em, `run:${command}`, () =>
-        model.set('active', true, chnOpt)
-      );
-      this.listenTo(em, `stop:${command}`, () =>
-        model.set('active', false, chnOpt)
-      );
+      this.listenTo(em, `run:${command}`, () => model.set('active', true, chnOpt));
+      this.listenTo(em, `stop:${command}`, () => model.set('active', false, chnOpt));
     }
 
     if (em && em.get) this.commands = em.get('Commands');
-  },
+  }
 
   /**
    * Updates class name of the button
@@ -61,7 +57,7 @@ export default Backbone.View.extend({
     const attrCls = model.get('attributes').class;
     const classStr = `${attrCls ? attrCls : ''} ${pfx}btn ${cls ? cls : ''}`;
     this.$el.attr('class', classStr.trim());
-  },
+  }
 
   /**
    * Updates attributes of the button
@@ -76,7 +72,7 @@ export default Backbone.View.extend({
     title && $el.attr({ title });
 
     this.updateClassName();
-  },
+  }
 
   /**
    * Updates visibility of children buttons
@@ -88,7 +84,7 @@ export default Backbone.View.extend({
 
     if (this.model.get('bntsVis')) this.$buttons.addClass(this.btnsVisCls);
     else this.$buttons.removeClass(this.btnsVisCls);
-  },
+  }
 
   /**
    * Update active status of the button
@@ -116,23 +112,21 @@ export default Backbone.View.extend({
     if (model.get('active')) {
       !fromCollection && model.collection.deactivateAll(context, model);
       model.set('active', true, { silent: true }).trigger('checkActive');
-      !fromListen &&
-        commands.runCommand(command, { ...options, sender: model });
+      !fromListen && commands.runCommand(command, { ...options, sender: model });
 
       // Disable button if the command has no stop method
       command.noStop && model.set('active', false);
     } else {
       $el.removeClass(activeCls);
-      !fromListen &&
-        commands.stopCommand(command, { ...options, sender: model, force: 1 });
+      !fromListen && commands.stopCommand(command, { ...options, sender: model, force: 1 });
     }
-  },
+  }
 
   updateDisable() {
     const { disableCls, model } = this;
     const disable = model.get('disable');
     this.$el[disable ? 'addClass' : 'removeClass'](disableCls);
-  },
+  }
 
   /**
    * Update active style status
@@ -142,7 +136,7 @@ export default Backbone.View.extend({
   checkActive() {
     const { model, $el, activeCls } = this;
     model.get('active') ? $el.addClass(activeCls) : $el.removeClass(activeCls);
-  },
+  }
 
   /**
    * Triggered when button is clicked
@@ -153,11 +147,10 @@ export default Backbone.View.extend({
   clicked(e) {
     const { model } = this;
 
-    if (model.get('bntsVis') || model.get('disable') || !model.get('command'))
-      return;
+    if (model.get('bntsVis') || model.get('disable') || !model.get('command')) return;
 
     this.toggleActive();
-  },
+  }
 
   toggleActive() {
     const { model, em } = this;
@@ -173,7 +166,7 @@ export default Backbone.View.extend({
     } else {
       if (model.get('stopDefaultCommand')) em.stopDefault();
     }
-  },
+  }
 
   render() {
     const { model } = this;
@@ -187,4 +180,4 @@ export default Backbone.View.extend({
 
     return this;
   }
-});
+}

@@ -1,6 +1,6 @@
-import Backbone from 'backbone';
+import { Collection } from '../../common';
 import Panel from './Panel';
 
-export default Backbone.Collection.extend({
-  model: Panel
-});
+export default class Panels extends Collection {}
+
+Panels.prototype.model = Panel;

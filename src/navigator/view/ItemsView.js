@@ -1,7 +1,7 @@
-import { View } from 'backbone';
-import { eventDrag } from 'dom_components/model/Component';
+import { View } from '../../common';
+import { eventDrag } from '../../dom_components/model/Component';
 
-export default View.extend({
+export default class ItemsView extends View {
   initialize(o = {}) {
     this.items = [];
     this.opt = o;
@@ -38,7 +38,7 @@ export default View.extend({
         avoidSelectOnEnd: 1,
         nested: 1,
         ppfx,
-        pfx
+        pfx,
       });
     }
 
@@ -47,14 +47,14 @@ export default View.extend({
     // For the sorter
     this.$el.data('collection', coll);
     parent && this.$el.data('model', parent);
-  },
+  }
 
   removeChildren(removed) {
     const view = removed.viewLayer;
     if (!view) return;
     view.remove();
     removed.viewLayer = 0;
-  },
+  }
 
   /**
    * Add to collection
@@ -65,7 +65,7 @@ export default View.extend({
   addTo(model) {
     var i = this.collection.indexOf(model);
     this.addToCollection(model, null, i);
-  },
+  }
 
   /**
    * Add new object to collection
@@ -87,7 +87,7 @@ export default View.extend({
       config: this.config,
       sorter: this.sorter,
       isCountable: this.isCountable,
-      opened: this.opt.opened
+      opened: this.opt.opened,
     });
     const rendered = item.render().el;
 
@@ -105,21 +105,17 @@ export default View.extend({
         // In case the added is new in the collection index will be -1
         if (index < 0) {
           this.$el.append(rendered);
-        } else
-          this.$el
-            .children()
-            .eq(index)
-            [method](rendered);
+        } else this.$el.children().eq(index)[method](rendered);
       } else this.$el.append(rendered);
     }
     this.items.push(item);
     return rendered;
-  },
+  }
 
   remove() {
     View.prototype.remove.apply(this, arguments);
     this.items.map(i => i.remove());
-  },
+  }
 
   /**
    * Check if the model could be count by the navigator
@@ -130,14 +126,11 @@ export default View.extend({
   isCountable(model, hide) {
     var type = model.get('type');
     var tag = model.get('tagName');
-    if (
-      ((type == 'textnode' || tag == 'br') && hide) ||
-      !model.get('layerable')
-    ) {
+    if (((type == 'textnode' || tag == 'br') && hide) || !model.get('layerable')) {
       return false;
     }
     return true;
-  },
+  }
 
   render() {
     const frag = document.createDocumentFragment();
@@ -148,4 +141,4 @@ export default View.extend({
     el.className = this.className;
     return this;
   }
-});
+}

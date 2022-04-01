@@ -1,6 +1,6 @@
 import { isString, isArray, keys, isUndefined } from 'underscore';
-import { shallowDiff } from 'utils/mixins';
-import ParserHtml from 'parser/model/ParserHtml';
+import { shallowDiff } from '../../utils/mixins';
+import ParserHtml from '../../parser/model/ParserHtml';
 
 const parseStyle = ParserHtml().parseStyle;
 

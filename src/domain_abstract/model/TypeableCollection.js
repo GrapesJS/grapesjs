@@ -1,8 +1,5 @@
 import { isFunction } from 'underscore';
-import Backbone from 'backbone';
-
-const Model = Backbone.Model;
-const View = Backbone.View;
+import { View, Model } from '../../common';
 
 export default {
   types: [],

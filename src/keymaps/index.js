@@ -44,8 +44,8 @@
  */
 
 import { isString } from 'underscore';
-import { hasWin } from 'utils/mixins';
-import keymaster from 'utils/keymaster';
+import { hasWin } from '../utils/mixins';
+import keymaster from '../utils/keymaster';
 
 hasWin() && keymaster.init(window);
 

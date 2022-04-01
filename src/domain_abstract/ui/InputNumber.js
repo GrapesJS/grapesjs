@@ -1,6 +1,6 @@
 import Backbone from 'backbone';
 import { bindAll, isUndefined, indexOf } from 'underscore';
-import { on, off } from 'utils/mixins';
+import { on, off } from '../../utils/mixins';
 import Input from './Input';
 
 const $ = Backbone.$;

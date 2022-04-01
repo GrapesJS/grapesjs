@@ -1,30 +1,31 @@
 import { isUndefined, isString, bindAll } from 'underscore';
-import { getModel, isEscKey, isEnterKey } from 'utils/mixins';
-import Backbone from 'backbone';
-import ComponentView from 'dom_components/view/ComponentView';
-import { eventDrag } from 'dom_components/model/Component';
+import { View } from '../../common';
+import { getModel, isEscKey, isEnterKey } from '../../utils/mixins';
+import ComponentView from '../../dom_components/view/ComponentView';
+import { eventDrag } from '../../dom_components/model/Component';
 
 const inputProp = 'contentEditable';
 const styleOpts = { mediaText: '' };
-const $ = Backbone.$;
 const isStyleHidden = (style = {}) => {
   return (style.display || '').trim().indexOf('none') === 0;
 };
 let ItemsView;
 
-export default Backbone.View.extend({
-  events: {
-    'mousedown [data-toggle-move]': 'startSort',
-    'touchstart [data-toggle-move]': 'startSort',
-    'click [data-toggle-visible]': 'toggleVisibility',
-    'click [data-toggle-open]': 'toggleOpening',
-    'click [data-toggle-select]': 'handleSelect',
-    'mouseover [data-toggle-select]': 'handleHover',
-    'mouseout [data-toggle-select]': 'handleHoverOut',
-    'dblclick [data-name]': 'handleEdit',
-    'keydown [data-name]': 'handleEditKey',
-    'focusout [data-name]': 'handleEditEnd',
-  },
+export default class ItemView extends View {
+  events() {
+    return {
+      'mousedown [data-toggle-move]': 'startSort',
+      'touchstart [data-toggle-move]': 'startSort',
+      'click [data-toggle-visible]': 'toggleVisibility',
+      'click [data-toggle-open]': 'toggleOpening',
+      'click [data-toggle-select]': 'handleSelect',
+      'mouseover [data-toggle-select]': 'handleHover',
+      'mouseout [data-toggle-select]': 'handleHoverOut',
+      'dblclick [data-name]': 'handleEdit',
+      'keydown [data-name]': 'handleEditKey',
+      'focusout [data-name]': 'handleEditEnd',
+    };
+  }
 
   template(model) {
     const { pfx, ppfx, config, clsNoEdit } = this;
@@ -61,7 +62,7 @@ export default Backbone.View.extend({
         <i class="fa fa-arrows"></i>
       </div>
       <div class="${this.clsChildren}"></div>`;
-  },
+  }
 
   initialize(o = {}) {
     bindAll(this, '__render');
@@ -109,11 +110,11 @@ export default Backbone.View.extend({
       render: this.__render,
       listenTo: this.listenTo,
     });
-  },
+  }
 
   updateName() {
     this.getInputName().innerText = this.model.getName();
-  },
+  }
 
   getVisibilityEl() {
     if (!this.eyeEl) {
@@ -121,7 +122,7 @@ export default Backbone.View.extend({
     }
 
     return this.eyeEl;
-  },
+  }
 
   updateVisibility() {
     const pfx = this.pfx;
@@ -132,7 +133,7 @@ export default Backbone.View.extend({
     const method = hidden ? 'addClass' : 'removeClass';
     this.$el[method](hClass);
     this.getVisibilityEl()[method](hideIcon);
-  },
+  }
 
   /**
    * Toggle visibility
@@ -163,7 +164,7 @@ export default Backbone.View.extend({
 
     model.setStyle(style, styleOpts);
     em && em.trigger('component:toggled'); // Updates Style Manager #2938
-  },
+  }
 
   /**
    * Handle the edit of the component name
@@ -177,12 +178,12 @@ export default Backbone.View.extend({
     document.execCommand('selectAll', false, null);
     em && em.setEditing(1);
     $el.find(`.${this.inputNameCls}`).removeClass(clsNoEdit).addClass(clsEdit);
-  },
+  }
 
   handleEditKey(ev) {
     ev.stopPropagation();
     (isEscKey(ev) || isEnterKey(ev)) && this.handleEditEnd(ev);
-  },
+  }
 
   /**
    * Handle with the end of editing of the component name
@@ -197,11 +198,11 @@ export default Backbone.View.extend({
     this.setName(name, { component: this.model, propName: 'custom-name' });
     em && em.setEditing(0);
     $el.find(`.${this.inputNameCls}`).addClass(clsNoEdit).removeClass(clsEdit);
-  },
+  }
 
   setName(name, { propName }) {
     this.model.set(propName, name);
-  },
+  }
 
   /**
    * Get the input containing the name of the component
@@ -212,7 +213,7 @@ export default Backbone.View.extend({
       this.inputName = this.el.querySelector(`.${this.inputNameCls}`);
     }
     return this.inputName;
-  },
+  }
 
   /**
    * Update item opening
@@ -233,7 +234,7 @@ export default Backbone.View.extend({
       this.getCaret().removeClass(chvDown);
       delete opened[model.cid];
     }
-  },
+  }
 
   /**
    * Toggle item opening
@@ -248,7 +249,7 @@ export default Backbone.View.extend({
     if (!model.get('components').length) return;
 
     model.set('open', !model.get('open'));
-  },
+  }
 
   /**
    * Handle component selection
@@ -262,7 +263,7 @@ export default Backbone.View.extend({
       const scroll = config.scrollCanvas;
       scroll && model.views.forEach(view => view.scrollIntoView(scroll));
     }
-  },
+  }
 
   /**
    * Handle component selection
@@ -271,13 +272,13 @@ export default Backbone.View.extend({
     e.stopPropagation();
     const { em, config, model } = this;
     em && config.showHover && em.setHovered(model, { fromLayers: 1 });
-  },
+  }
 
   handleHoverOut(ev) {
     ev.stopPropagation();
     const { em, config } = this;
     em && config.showHover && em.setHovered(0, { fromLayers: 1 });
-  },
+  }
 
   /**
    * Delegate to sorter
@@ -294,7 +295,7 @@ export default Backbone.View.extend({
       sorter.onMoveClb = data => em.trigger(eventDrag, data);
       sorter.startSort(e.target);
     }
-  },
+  }
 
   /**
    * Freeze item
@@ -303,7 +304,7 @@ export default Backbone.View.extend({
   freeze() {
     this.$el.addClass(this.pfx + 'opac50');
     this.model.set('open', 0);
-  },
+  }
 
   /**
    * Unfreeze item
@@ -311,7 +312,7 @@ export default Backbone.View.extend({
    * */
   unfreeze() {
     this.$el.removeClass(this.pfx + 'opac50');
-  },
+  }
 
   /**
    * Update item on status change
@@ -324,7 +325,7 @@ export default Backbone.View.extend({
         noExtHl: 1,
       },
     ]);
-  },
+  }
 
   /**
    * Check if component is visible
@@ -333,7 +334,7 @@ export default Backbone.View.extend({
    * */
   isVisible() {
     return !isStyleHidden(this.model.getStyle());
-  },
+  }
 
   /**
    * Update item aspect after children changes
@@ -354,7 +355,7 @@ export default Backbone.View.extend({
     title[count ? 'removeClass' : 'addClass'](clsNoChild);
     if (cnt) cnt.innerHTML = count || '';
     !count && model.set('open', 0);
-  },
+  }
 
   /**
    * Count children inside model
@@ -371,7 +372,7 @@ export default Backbone.View.extend({
       count++;
     }, this);
     return count;
-  },
+  }
 
   getCaret() {
     if (!this.caret || !this.caret.length) {
@@ -380,33 +381,33 @@ export default Backbone.View.extend({
     }
 
     return this.caret;
-  },
+  }
 
   setRoot(el) {
     el = isString(el) ? this.em.getWrapper().find(el)[0] : el;
-    const model = getModel(el, $);
+    const model = getModel(el);
     if (!model) return;
     this.stopListening();
     this.model = model;
     this.initialize(this.opt);
     this._rendered && this.render();
-  },
+  }
 
   updateLayerable() {
     const { parentView } = this;
     const toRerender = parentView || this;
     toRerender.render();
-  },
+  }
 
   __clearItems() {
     const { items } = this;
     items && items.remove();
-  },
+  }
 
   remove() {
-    Backbone.View.prototype.remove.apply(this, arguments);
+    View.prototype.remove.apply(this, arguments);
     this.__clearItems();
-  },
+  }
 
   render() {
     const { model, config, pfx, ppfx, opt } = this;
@@ -454,7 +455,7 @@ export default Backbone.View.extend({
     this.__render();
     this._rendered = 1;
     return this;
-  },
+  }
 
   __render() {
     const { model, config, el } = this;
@@ -462,5 +463,5 @@ export default Backbone.View.extend({
     const opt = { component: model, el };
     onRender.bind(this)(opt);
     this.em.trigger('layer:render', opt);
-  },
-});
+  }
+}

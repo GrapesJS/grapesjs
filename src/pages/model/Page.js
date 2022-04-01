@@ -1,12 +1,12 @@
-import { Model } from 'common';
 import { result, forEach } from 'underscore';
-import Frames from 'canvas/model/Frames';
+import { Model } from '../../common';
+import Frames from '../../canvas/model/Frames';
 
 export default class Page extends Model {
   defaults() {
     return {
       frames: [],
-      _undo: true
+      _undo: true,
     };
   }
 

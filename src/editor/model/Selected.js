@@ -1,5 +1,5 @@
-import { Collection, Model } from 'backbone';
 import { isArray } from 'underscore';
+import { Collection, Model } from '../../common';
 
 export class Selectable extends Model {}
 
@@ -34,9 +34,7 @@ export default class Selected extends Collection {
   }
 
   removeComponent(component, opts) {
-    const toRemove = (isArray(component) ? component : [component]).map(c =>
-      this.getByComponent(c)
-    );
+    const toRemove = (isArray(component) ? component : [component]).map(c => this.getByComponent(c));
     return this.remove(toRemove, opts);
   }
 }

@@ -1,8 +1,8 @@
-import Backbone from 'backbone';
-import ButtonView from './ButtonView';
 import { result } from 'underscore';
+import { View } from '../../common';
+import ButtonView from './ButtonView';
 
-export default Backbone.View.extend({
+export default class ButtonsView extends View {
   initialize(o) {
     this.opt = o || {};
     this.config = this.opt.config || {};
@@ -11,7 +11,7 @@ export default Backbone.View.extend({
     this.listenTo(this.collection, 'add', this.addTo);
     this.listenTo(this.collection, 'reset remove', this.render);
     this.className = this.pfx + 'buttons';
-  },
+  }
 
   /**
    * Add to collection
@@ -21,7 +21,7 @@ export default Backbone.View.extend({
    * */
   addTo(model) {
     this.addToCollection(model);
-  },
+  }
 
   /**
    * Add new object to collection
@@ -38,7 +38,7 @@ export default Backbone.View.extend({
       el,
       model,
       config: this.config,
-      parentM: this.parentM
+      parentM: this.parentM,
     });
     const rendered = view.render().el;
 
@@ -49,13 +49,13 @@ export default Backbone.View.extend({
     }
 
     return rendered;
-  },
+  }
 
   render() {
     var fragment = document.createDocumentFragment();
     this.$el.empty();
 
-    this.collection.each(function(model) {
+    this.collection.each(function (model) {
       this.addToCollection(model, fragment);
     }, this);
 
@@ -63,4 +63,4 @@ export default Backbone.View.extend({
     this.$el.attr('class', result(this, 'className'));
     return this;
   }
-});
+}

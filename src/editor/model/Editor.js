@@ -1,9 +1,9 @@
 import { isUndefined, isArray, contains, toArray, keys, bindAll } from 'underscore';
 import Backbone from 'backbone';
-import $ from 'utils/cash-dom';
-import Extender from 'utils/extender';
-import { getModel, hasWin } from 'utils/mixins';
-import { Model } from 'common';
+import $ from '../../utils/cash-dom';
+import Extender from '../../utils/extender';
+import { getModel, hasWin } from '../../utils/mixins';
+import { Model } from '../../common';
 import Selected from './Selected';
 
 Backbone.$ = $;

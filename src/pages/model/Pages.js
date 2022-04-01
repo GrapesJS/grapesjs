@@ -1,4 +1,4 @@
-import { Collection } from 'backbone';
+import { Collection } from '../../common';
 import Page from './Page';
 
 export default class Pages extends Collection {

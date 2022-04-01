@@ -1,7 +1,7 @@
-import Backbone from 'backbone';
+import { View } from '../../common';
 import PanelView from './PanelView';
 
-export default Backbone.View.extend({
+export default class PanelsView extends View {
   initialize(o) {
     this.opt = o || {};
     this.config = this.opt.config || {};
@@ -11,12 +11,12 @@ export default Backbone.View.extend({
     this.listenTo(items, 'reset', this.render);
     this.listenTo(items, 'remove', this.onRemove);
     this.className = this.pfx + 'panels';
-  },
+  }
 
   onRemove(model) {
     const view = model.view;
     view && view.remove();
-  },
+  }
 
   /**
    * Add to collection
@@ -27,7 +27,7 @@ export default Backbone.View.extend({
    * */
   addTo(model) {
     this.addToCollection(model);
-  },
+  }
 
   /**
    * Add new object to collection
@@ -45,7 +45,7 @@ export default Backbone.View.extend({
     const view = new PanelView({
       el,
       model,
-      config
+      config,
     });
     const rendered = view.render().el;
     const appendTo = model.get('appendTo');
@@ -65,7 +65,7 @@ export default Backbone.View.extend({
 
     view.initResize();
     return rendered;
-  },
+  }
 
   render() {
     const $el = this.$el;
@@ -76,4 +76,4 @@ export default Backbone.View.extend({
     $el.attr('class', this.className);
     return this;
   }
-});
+}

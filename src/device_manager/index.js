@@ -33,7 +33,7 @@
  * @module Devices
  */
 import { isString } from 'underscore';
-import Module from 'common/module';
+import Module from '../common/module';
 import defaults from './config/config';
 import Device from './model/Device';
 import Devices from './model/Devices';
@@ -72,7 +72,7 @@ export default () => {
       add: evAdd,
       // addBefore: evAddBefore,
       remove: evRemove,
-      removeBefore: evRemoveBefore
+      removeBefore: evRemoveBefore,
     },
 
     init(config = {}) {
@@ -130,7 +130,7 @@ export default () => {
           ...opts,
           id: props,
           name: opts.name || props,
-          width
+          width,
         };
       } else {
         result = props;
@@ -217,7 +217,7 @@ export default () => {
       view && view.remove();
       view = new DevicesView({
         collection: devices,
-        config: c
+        config: c,
       });
       return view.render().el;
     },
@@ -228,6 +228,6 @@ export default () => {
       view && view.remove();
       [devices, view].forEach(i => (i = null));
       c = {};
-    }
+    },
   };
 };
