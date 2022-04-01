@@ -1,17 +1,21 @@
-import Backbone from 'backbone';
 import { bindAll, isString, debounce, isUndefined } from 'underscore';
-import CssRulesView from 'css_composer/view/CssRulesView';
-import Droppable from 'utils/Droppable';
-import { appendVNodes, append, createEl, createCustomEvent, motionsEv } from 'utils/dom';
-import { on, off, setViewEl, hasDnd, getPointerEvent } from 'utils/mixins';
+import { appendVNodes, append, createEl, createCustomEvent, motionsEv } from '../../utils/dom';
+import { on, off, setViewEl, hasDnd, getPointerEvent } from '../../utils/mixins';
+import { View } from '../../common';
+import CssRulesView from '../../css_composer/view/CssRulesView';
+import Droppable from '../../utils/Droppable';
 
-export default Backbone.View.extend({
-  tagName: 'iframe',
+export default class FrameView extends View {
+  tagName() {
+    return 'iframe';
+  }
 
-  attributes: {
-    allowfullscreen: 'allowfullscreen',
-    'data-frame-el': true,
-  },
+  attributes() {
+    return {
+      allowfullscreen: 'allowfullscreen',
+      'data-frame-el': true,
+    };
+  }
 
   initialize(o) {
     bindAll(this, 'updateClientY', 'stopAutoscroll', 'autoscroll', '_emitUpdate');
@@ -23,12 +27,13 @@ export default Backbone.View.extend({
     };
     this.ppfx = this.config.pStylePrefix || '';
     this.em = this.config.em;
+    this.showGlobalTools = debounce(this.showGlobalTools.bind(this), 50);
     const cvModel = this.getCanvasModel();
     this.listenTo(model, 'change:head', this.updateHead);
     this.listenTo(cvModel, 'change:styles', this.renderStyles);
     model.view = this;
     setViewEl(el, this);
-  },
+  }
 
   /**
    * Update `<head>` content of the frame
@@ -59,35 +64,35 @@ export default Backbone.View.extend({
       el && el.parentNode.removeChild(el);
     });
     appendVNodes(headEl, toAdd);
-  },
+  }
 
   getEl() {
     return this.el;
-  },
+  }
 
   getCanvasModel() {
     return this.em.get('Canvas').getModel();
-  },
+  }
 
   getWindow() {
     return this.getEl().contentWindow;
-  },
+  }
 
   getDoc() {
     return this.getEl().contentDocument;
-  },
+  }
 
   getHead() {
     return this.getDoc().querySelector('head');
-  },
+  }
 
   getBody() {
     return this.getDoc().querySelector('body');
-  },
+  }
 
   getWrapper() {
     return this.getBody().querySelector('[data-gjs-type=wrapper]');
-  },
+  }
 
   getJsContainer() {
     if (!this.jsContainer) {
@@ -95,28 +100,28 @@ export default Backbone.View.extend({
     }
 
     return this.jsContainer;
-  },
+  }
 
   getToolsEl() {
     const { frameWrapView } = this.config;
     return frameWrapView && frameWrapView.elTools;
-  },
+  }
 
   getGlobalToolsEl() {
     return this.em.get('Canvas').getGlobalToolsEl();
-  },
+  }
 
   getHighlighter() {
     return this._getTool('[data-hl]');
-  },
+  }
 
   getBadgeEl() {
     return this._getTool('[data-badge]');
-  },
+  }
 
   getOffsetViewerEl() {
     return this._getTool('[data-offset]');
-  },
+  }
 
   getRect() {
     if (!this.rect) {
@@ -124,7 +129,7 @@ export default Backbone.View.extend({
     }
 
     return this.rect;
-  },
+  }
 
   /**
    * Get rect data, not affected by the canvas zoom
@@ -145,7 +150,7 @@ export default Backbone.View.extend({
       scrollBottom: scrollTop + height,
       scrollRight: scrollLeft + width,
     };
-  },
+  }
 
   _getTool(name) {
     const { tools } = this;
@@ -156,15 +161,15 @@ export default Backbone.View.extend({
     }
 
     return tools[name];
-  },
+  }
 
   remove() {
     const wrp = this.wrapper;
     this._toggleEffects();
     this.tools = {};
     wrp && wrp.remove();
-    Backbone.View.prototype.remove.apply(this, arguments);
-  },
+    View.prototype.remove.apply(this, arguments);
+  }
 
   startAutoscroll() {
     this.lastMaxHeight = this.getWrapper().offsetHeight - this.el.offsetHeight;
@@ -175,7 +180,7 @@ export default Backbone.View.extend({
       this._toggleAutoscrollFx(1);
       requestAnimationFrame(this.autoscroll);
     }, 0);
-  },
+  }
 
   autoscroll() {
     if (this.dragging) {
@@ -211,20 +216,20 @@ export default Backbone.View.extend({
 
       requestAnimationFrame(this.autoscroll);
     }
-  },
+  }
 
   updateClientY(ev) {
     ev.preventDefault();
     this.lastClientY = getPointerEvent(ev).clientY * this.em.getZoomDecimal();
-  },
+  }
 
-  showGlobalTools: debounce(function () {
+  showGlobalTools() {
     this.getGlobalToolsEl().style.opacity = '';
-  }, 50),
+  }
 
   stopAutoscroll() {
     this.dragging && this._toggleAutoscrollFx();
-  },
+  }
 
   _toggleAutoscrollFx(enable) {
     this.dragging = enable;
@@ -233,14 +238,14 @@ export default Backbone.View.extend({
     const mt = { on, off };
     mt[method](win, 'mousemove dragover', this.updateClientY);
     mt[method](win, 'mouseup', this.stopAutoscroll);
-  },
+  }
 
   render() {
     const { $el, ppfx } = this;
     $el.attr({ class: `${ppfx}frame` });
     this.renderScripts();
     return this;
-  },
+  }
 
   renderScripts() {
     const { el, model, em } = this;
@@ -266,7 +271,7 @@ export default Backbone.View.extend({
       em && em.trigger(`${evLoad}:before`, evOpts);
       appendScript([...canvas.get('scripts')]);
     };
-  },
+  }
 
   renderStyles(opts = {}) {
     const head = this.getHead();
@@ -297,7 +302,7 @@ export default Backbone.View.extend({
       el && el.parentNode.removeChild(el);
     });
     appendVNodes(head, toAdd);
-  },
+  }
 
   renderBody() {
     const { config, model, ppfx } = this;
@@ -426,15 +431,15 @@ export default Backbone.View.extend({
     this._toggleEffects(1);
     this.droppable = hasDnd(em) && new Droppable(em, this.wrapper.el);
     model.trigger('loaded');
-  },
+  }
 
   _toggleEffects(enable) {
     const method = enable ? on : off;
     const win = this.getWindow();
     win && method(win, `${motionsEv} resize`, this._emitUpdate);
-  },
+  }
 
   _emitUpdate() {
     this.model._emitUpdated();
-  },
-});
+  }
+}

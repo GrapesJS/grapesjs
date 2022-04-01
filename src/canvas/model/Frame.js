@@ -1,6 +1,6 @@
-import { Model } from 'common';
 import { result, forEach, isEmpty, isString } from 'underscore';
-import { isComponent, isObject } from 'utils/mixins';
+import { Model } from '../../common';
+import { isComponent, isObject } from '../../utils/mixins';
 
 const keyAutoW = '__aw';
 const keyAutoH = '__ah';

@@ -1,5 +1,6 @@
 import Backbone from 'backbone';
 import { isUndefined } from 'underscore';
+import { removeEl } from '../../utils/dom';
 
 export default Backbone.View.extend({
   initialize(o) {
@@ -17,7 +18,7 @@ export default Backbone.View.extend({
       if (!view) return;
       const { childrenView, scriptContainer } = view;
       childrenView && childrenView.stopListening();
-      scriptContainer && scriptContainer.remove();
+      removeEl(scriptContainer);
       view.remove.apply(view);
     });
 

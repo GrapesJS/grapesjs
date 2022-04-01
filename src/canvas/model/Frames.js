@@ -1,6 +1,6 @@
 import { bindAll } from 'underscore';
-import { Collection } from 'common';
-import model from './Frame';
+import { Collection } from '../../common';
+import Frame from './Frame';
 
 export default class Frames extends Collection {
   initialize(models, config = {}) {
@@ -44,4 +44,4 @@ export default class Frames extends Collection {
   }
 }
 
-Frames.prototype.model = model;
+Frames.prototype.model = Frame;

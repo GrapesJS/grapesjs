@@ -48,7 +48,7 @@
  */
 
 import { isUndefined } from 'underscore';
-import { getElement, getViewEl } from 'utils/mixins';
+import { getElement, getViewEl } from '../utils/mixins';
 import defaults from './config/config';
 import Canvas from './model/Canvas';
 import canvasView from './view/CanvasView';

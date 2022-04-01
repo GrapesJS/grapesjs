@@ -1,4 +1,4 @@
-import DomainViews from 'domain_abstract/view/DomainViews';
+import DomainViews from '../../domain_abstract/view/DomainViews';
 import FrameWrapView from './FrameWrapView';
 
 export default class FramesView extends DomainViews {

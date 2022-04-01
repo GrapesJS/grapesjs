@@ -1,5 +1,5 @@
-import { Model } from 'common';
-import { evPageSelect } from 'pages';
+import { Model } from '../../common';
+import { evPageSelect } from '../../pages';
 import Frames from './Frames';
 
 export default class Canvas extends Model {
