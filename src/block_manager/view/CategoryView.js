@@ -1,5 +1,5 @@
-import { View } from 'backbone';
-import html from 'utils/html';
+import { View } from '../../common';
+import html from '../../utils/html';
 
 export default class CategoryView extends View {
   template({ pfx, label }) {
@@ -77,8 +77,7 @@ export default class CategoryView extends View {
 
   render() {
     const { em, el, $el, model, pfx } = this;
-    const label =
-      em.t(`blockManager.categories.${model.id}`) || model.get('label');
+    const label = em.t(`blockManager.categories.${model.id}`) || model.get('label');
     el.innerHTML = this.template({ pfx, label });
     $el.addClass(this.className);
     $el.css({ order: model.get('order') });

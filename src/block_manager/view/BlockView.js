@@ -1,15 +1,17 @@
-import Backbone from 'backbone';
 import { isFunction } from 'underscore';
-import { on, off, hasDnd } from 'utils/mixins';
+import { View } from '../../common';
+import { on, off, hasDnd } from '../../utils/mixins';
 
-export default Backbone.View.extend({
-  events: {
-    click: 'handleClick',
-    mousedown: 'startDrag',
-    dragstart: 'handleDragStart',
-    drag: 'handleDrag',
-    dragend: 'handleDragEnd'
-  },
+export default class BlockView extends View {
+  events() {
+    return {
+      click: 'handleClick',
+      mousedown: 'startDrag',
+      dragstart: 'handleDragStart',
+      drag: 'handleDrag',
+      dragend: 'handleDragEnd',
+    };
+  }
 
   initialize(o, config = {}) {
     const { model } = this;
@@ -19,11 +21,11 @@ export default Backbone.View.extend({
     this.ppfx = config.pStylePrefix || '';
     this.listenTo(model, 'destroy remove', this.remove);
     this.listenTo(model, 'change', this.render);
-  },
+  }
 
   __getModule() {
     return this.em.get('BlockManager');
-  },
+  }
 
   handleClick(ev) {
     const { config, model, em } = this;
@@ -64,9 +66,9 @@ export default Backbone.View.extend({
       if (valid.valid) target = wrapper;
     }
 
-    const result = target && target.append(content, {at: insertAt})[0];
+    const result = target && target.append(content, { at: insertAt })[0];
     result && em.setSelected(result, { scroll: 1 });
-  },
+  }
 
   /**
    * Start block dragging
@@ -76,27 +78,26 @@ export default Backbone.View.extend({
     const { config, em, model } = this;
     const disable = model.get('disable');
     //Right or middel click
-    if (e.button !== 0 || !config.getSorter || this.el.draggable || disable)
-      return;
+    if (e.button !== 0 || !config.getSorter || this.el.draggable || disable) return;
     em.refreshCanvas();
     const sorter = config.getSorter();
     sorter.setDragHelper(this.el, e);
     sorter.setDropContent(this.model.get('content'));
     sorter.startSort(this.el);
     on(document, 'mouseup', this.endDrag);
-  },
+  }
 
   handleDragStart(ev) {
     this.__getModule().__startDrag(this.model, ev);
-  },
+  }
 
   handleDrag(ev) {
     this.__getModule().__drag(ev);
-  },
+  }
 
   handleDragEnd() {
     this.__getModule().__endDrag();
-  },
+  }
 
   /**
    * Drop block
@@ -112,7 +113,7 @@ export default Backbone.View.extend({
     // the block helper I use the trick of 'moved = 0' to void those errors.
     sorter.moved = 0;
     sorter.endMove();
-  },
+  }
 
   render() {
     const { em, el, $el, ppfx, model } = this;
@@ -120,8 +121,7 @@ export default Backbone.View.extend({
     const attr = model.get('attributes') || {};
     const cls = attr.class || '';
     const className = `${ppfx}block`;
-    const label =
-      (em && em.t(`blockManager.labels.${model.id}`)) || model.get('label');
+    const label = (em && em.t(`blockManager.labels.${model.id}`)) || model.get('label');
     const render = model.get('render');
     const media = model.get('media');
     const clsAdd = disable ? `${className}--disable` : `${ppfx}four-color-h`;
@@ -137,4 +137,4 @@ export default Backbone.View.extend({
     if (result) el.innerHTML = result;
     return this;
   }
-});
+}

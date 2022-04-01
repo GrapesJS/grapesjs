@@ -45,7 +45,7 @@
  * @module BlockManager
  */
 import { isElement, isArray } from 'underscore';
-import Module from 'common/module';
+import Module from '../common/module';
 import defaults from './config/config';
 import Block from './model/Block';
 import Blocks from './model/Blocks';

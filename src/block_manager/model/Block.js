@@ -1,4 +1,4 @@
-import { Model } from 'common';
+import { Model } from '../../common';
 import { isFunction } from 'underscore';
 
 /**
@@ -25,7 +25,7 @@ export default class Block extends Model {
       resetId: false,
       disable: false,
       onClick: null,
-      attributes: {}
+      attributes: {},
     };
   }
 
