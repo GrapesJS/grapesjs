@@ -603,23 +603,35 @@ declare module grapesjs {
    * ## Methods
    */
   interface Editor {
+    Components: Components;
     DomComponents: Components;
+    Layers: LayerManager;
     LayerManager: LayerManager;
+    Css: CssComposer;
     CssComposer: CssComposer;
+    Storage: StorageManager;
     StorageManager: StorageManager;
+    Assets: AssetManager;
     AssetManager: AssetManager;
+    Blocks: BlockManager;
     BlockManager: BlockManager;
+    Traits: TraitManager;
     TraitManager: TraitManager;
+    Selectors: SelectorManager;
     SelectorManager: SelectorManager;
+    Pages: Pages;
+    PageManager: Pages;
     CodeManager: object;
     Commands: Commands;
     Keymaps: Keymaps;
     Modal: Modal;
     Panels: Panels;
+    Styles: StyleManager;
     StyleManager: StyleManager;
     Canvas: Canvas;
     UndoManager: UndoManager;
-    DeviceManager: object;
+    Devices: Devices;
+    DeviceManager: Devices;
     RichTextEditor: RichTextEditor;
     Parser: Parser;
     Utils: object;
@@ -830,10 +842,12 @@ declare module grapesjs {
     stopCommand(id: string, options: any): any;
     /**
      * Store data to the current storage
-     * @param clb - Callback function
+     * @param options - Storage options
      * @returns Stored data
+     * @example
+     * const storedData = await editor.store();
      */
-    store(clb: (...params: any[]) => any): any;
+    store(options: StorageOptions): Promise<any>;
     /**
      * Get the JSON data object, which could be stored and loaded back with `editor.loadData(json)`
      * @example
@@ -843,10 +857,12 @@ declare module grapesjs {
     storeData(): any;
     /**
      * Load data from the current storage
-     * @param clb - Callback function
-     * @returns Stored data
+     * @param options - Storage options
+     * @returns Loaded data
+     * @example
+     * const data = await editor.load();
      */
-    load(clb: (...params: any[]) => any): any;
+    load(options: StorageOptions): Promise<any>;
     /**
      * Load data from the JSON data object
      * @example
