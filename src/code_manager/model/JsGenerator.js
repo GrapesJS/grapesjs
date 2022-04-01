@@ -1,12 +1,12 @@
 import { extend } from 'underscore';
-import Backbone from 'backbone';
+import { Model } from '../../common';
 
 function isFunctionEmpty(fn) {
   const content = fn.toString().match(/\{([\s\S]*)\}/m)[1]; // content between first and last { }
   return content.replace(/^\s*\/\/.*$/gm, '').trim().length === 0; // remove comments
 }
 
-export default Backbone.Model.extend({
+export default class JsGenerator extends Model {
   mapModel(model) {
     var code = '';
     var script = model.get('script-export') || model.get('script');
@@ -49,7 +49,7 @@ export default Backbone.Model.extend({
     }, this);
 
     return code;
-  },
+  }
 
   build(model) {
     this.mapJs = {};
@@ -88,5 +88,5 @@ export default Backbone.Model.extend({
     }
 
     return code;
-  },
-});
+  }
+}

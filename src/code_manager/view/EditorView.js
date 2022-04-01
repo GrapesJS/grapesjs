@@ -1,5 +1,5 @@
-import html from 'utils/html';
-import { View } from 'backbone';
+import { View } from '../../common';
+import html from '../../utils/html';
 
 export default class EditorView extends View {
   template({ pfx, codeName, label }) {
