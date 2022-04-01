@@ -45,7 +45,7 @@
 import { isFunction, includes } from 'underscore';
 import CommandAbstract from './view/CommandAbstract';
 import defaults from './config/config';
-import { eventDrag } from 'dom_components/model/Component';
+import { eventDrag } from '../dom_components/model/Component';
 
 const commandsDef = [
   ['preview', 'Preview', 'preview'],

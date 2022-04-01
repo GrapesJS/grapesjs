@@ -1,6 +1,6 @@
 import Backbone from 'backbone';
 import { isUndefined } from 'underscore';
-import { isTextNode } from 'utils/mixins';
+import { isTextNode } from '../../utils/mixins';
 const $ = Backbone.$;
 
 export default {
@@ -16,11 +16,7 @@ export default {
     const zoom = this.em.getZoomDecimal();
     const el = opt.el || '';
 
-    if (
-      !config.showOffsets ||
-      isTextNode(el) ||
-      (!config.showOffsetsSelected && state == 'Fixed')
-    ) {
+    if (!config.showOffsets || isTextNode(el) || (!config.showOffsetsSelected && state == 'Fixed')) {
       editor.stopCommand(this.id, opts);
       return;
     }
@@ -106,8 +102,7 @@ export default {
     var marginLeftSt = parseFloat(style.marginLeft.replace(unit, '')) * zoom;
     var marginRightSt = parseFloat(style.marginRight.replace(unit, '')) * zoom;
     var marginTopSt = parseFloat(style.marginTop.replace(unit, '')) * zoom;
-    var marginBottomSt =
-      parseFloat(style.marginBottom.replace(unit, '')) * zoom;
+    var marginBottomSt = parseFloat(style.marginBottom.replace(unit, '')) * zoom;
     var mtStyle = marginT.style;
     var mbStyle = marginB.style;
     var mlStyle = marginL.style;
@@ -178,5 +173,5 @@ export default {
     var canvas = editor.Canvas;
     var offsetViewer = canvas[method](opts.view);
     offsetViewer.style.opacity = 0;
-  }
+  },
 };

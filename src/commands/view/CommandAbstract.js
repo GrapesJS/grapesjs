@@ -1,6 +1,6 @@
-import { Model } from 'backbone';
+import { Model } from '../../common';
 
-export default Model.extend({
+export default class CommandAbstract extends Model {
   /**
    * Initialize method that can't be removed
    * @param  {Object}  o Options
@@ -18,14 +18,14 @@ export default Model.extend({
 
     this.canvas = this.em.get && this.em.get('Canvas');
     this.init(this.config);
-  },
+  }
 
   /**
    * On frame scroll callback
    * @param  {[type]} e [description]
    * @return {[type]}   [description]
    */
-  onFrameScroll(e) {},
+  onFrameScroll(e) {}
 
   /**
    * Returns canval element
@@ -33,7 +33,7 @@ export default Model.extend({
    */
   getCanvas() {
     return this.canvas.getElement();
-  },
+  }
 
   /**
    * Get canvas body element
@@ -41,7 +41,7 @@ export default Model.extend({
    */
   getCanvasBody() {
     return this.canvas.getBody();
-  },
+  }
 
   /**
    * Get canvas wrapper element
@@ -49,7 +49,7 @@ export default Model.extend({
    */
   getCanvasTools() {
     return this.canvas.getToolsEl();
-  },
+  }
 
   /**
    * Get the offset of the element
@@ -60,16 +60,16 @@ export default Model.extend({
     var rect = el.getBoundingClientRect();
     return {
       top: rect.top + el.ownerDocument.body.scrollTop,
-      left: rect.left + el.ownerDocument.body.scrollLeft
+      left: rect.left + el.ownerDocument.body.scrollLeft,
     };
-  },
+  }
 
   /**
    * Callback triggered after initialize
    * @param  {Object}  o   Options
    * @private
    * */
-  init(o) {},
+  init(o) {}
 
   /**
    * Method that run command
@@ -91,7 +91,7 @@ export default Model.extend({
     editor.trigger(`run:${id}`, result, options);
     editor.trigger('run', id, result, options);
     return result;
-  },
+  }
 
   /**
    * Method that run command
@@ -107,14 +107,14 @@ export default Model.extend({
     editor.trigger(`stop:${id}`, result, options);
     editor.trigger('stop', id, result, options);
     return result;
-  },
+  }
 
   /**
    * Stop current command
    */
   stopCommand() {
     this.em.get('Commands').stop(this.id);
-  },
+  }
 
   /**
    * Method that run command
@@ -122,7 +122,7 @@ export default Model.extend({
    * @param  {Object}  sender  Button sender
    * @private
    * */
-  run(em, sender) {},
+  run(em, sender) {}
 
   /**
    * Method that stop command
@@ -131,4 +131,4 @@ export default Model.extend({
    * @private
    * */
   stop(em, sender) {}
-});
+}

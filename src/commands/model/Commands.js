@@ -1,6 +1,6 @@
-import Backbone from 'backbone';
+import { Collection } from '../../common';
 import Command from './Command';
 
-export default Backbone.Collection.extend({
-  model: Command
-});
+export default class Commands extends Collection {}
+
+Commands.prototype.model = Command;

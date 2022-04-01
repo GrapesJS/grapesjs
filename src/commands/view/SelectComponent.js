@@ -1,9 +1,9 @@
 import Backbone from 'backbone';
-import { bindAll, isElement, isUndefined, debounce } from 'underscore';
-import { on, off, getUnitFromValue, isTaggableNode, getViewEl, hasWin } from 'utils/mixins';
-import { isVisible, isDoc } from 'utils/dom';
-import ToolbarView from 'dom_components/view/ToolbarView';
-import Toolbar from 'dom_components/model/Toolbar';
+import { bindAll, isElement, debounce } from 'underscore';
+import { on, off, getUnitFromValue, isTaggableNode, getViewEl, hasWin } from '../../utils/mixins';
+import { isVisible, isDoc } from '../../utils/dom';
+import ToolbarView from '../../dom_components/view/ToolbarView';
+import Toolbar from '../../dom_components/model/Toolbar';
 
 const $ = Backbone.$;
 let showOffsets;

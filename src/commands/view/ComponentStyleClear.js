@@ -1,4 +1,4 @@
-import { isArray, flatten } from 'underscore';
+import { flatten } from 'underscore';
 
 export default {
   run(ed, s, opts = {}) {
@@ -21,5 +21,5 @@ export default {
     }
 
     return toRemove;
-  }
+  },
 };
