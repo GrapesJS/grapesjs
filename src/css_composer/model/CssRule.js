@@ -1,9 +1,9 @@
-import { Model } from 'backbone';
-import Styleable from 'domain_abstract/model/Styleable';
 import { isEmpty, forEach, isString, isArray } from 'underscore';
-import Selectors from 'selector_manager/model/Selectors';
-import { getMediaLength } from 'code_manager/model/CssGenerator';
-import { isEmptyObj, hasWin } from 'utils/mixins';
+import { Model } from '../../common';
+import Styleable from '../../domain_abstract/model/Styleable';
+import Selectors from '../../selector_manager/model/Selectors';
+import { getMediaLength } from '../../code_manager/model/CssGenerator';
+import { isEmptyObj, hasWin } from '../../utils/mixins';
 
 const { CSS } = hasWin() ? window : {};
 

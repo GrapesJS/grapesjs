@@ -27,15 +27,15 @@
  * @module CssComposer
  */
 
-import { isArray, isString, isUndefined, each } from 'underscore';
-import { isObject } from 'utils/mixins';
+import { isArray, isString, isUndefined } from 'underscore';
+import { isObject } from '../utils/mixins';
+import Module from '../common/module';
+import Selectors from '../selector_manager/model/Selectors';
+import Selector from '../selector_manager/model/Selector';
 import defaults from './config/config';
 import CssRule from './model/CssRule';
 import CssRules from './model/CssRules';
 import CssRulesView from './view/CssRulesView';
-import Selectors from 'selector_manager/model/Selectors';
-import Selector from 'selector_manager/model/Selector';
-import Module from 'common/module';
 
 export default () => {
   let em;
