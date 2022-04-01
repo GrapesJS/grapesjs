@@ -1,5 +1,5 @@
 declare namespace Backbone {
-  interface ModelProperties {}
+  interface ModelProperties { }
 
   class Model<T extends ModelProperties> {
     constructor(attr?: T, opt?: any);
@@ -25,7 +25,7 @@ declare namespace Backbone {
     reset(models?: Array<{} | TModel>): TModel[];
   }
 
-  interface GenericModel extends Model<{}> {}
+  interface GenericModel extends Model<{}> { }
 }
 
 declare module grapesjs {
@@ -319,22 +319,33 @@ declare module grapesjs {
     id?: string;
     autosave?: boolean;
     autoload?: boolean;
-    type?: "local" | "remote";
+    type?: string;
     stepsBeforeSave?: number;
-    storeComponents?: boolean;
-    storeStyles?: boolean;
-    storeHtml?: boolean;
-    storeCss?: boolean;
+    recovery?: boolean | Function;
+    onStore?: (data: any) => any;
+    onLoad?: (data: any) => any;
+    options: {
+      local: LocalStorageConfig;
+      remote: RemoteStorageConfig;
+      [key: string]: any;
+    };
+  }
+
+  interface LocalStorageConfig {
+    key?: string;
     checkLocal?: boolean;
+  }
+
+  interface RemoteStorageConfig {
     params?: object;
     headers?: object;
     urlStore?: string;
     urlLoad?: string;
     contentTypeJson?: boolean;
     credentials?: RequestCredentials;
-
-    beforeSend(jqXHR: any, settings: object): void;
-    onComplete(jqXHR: any, status: any): void;
+    fetchOptions: string | ((opts: object) => object);
+    onStore?: (data: any) => any;
+    onLoad?: (data: any) => any;
   }
 
   interface DomComponentsConfig {
@@ -454,9 +465,9 @@ declare module grapesjs {
     buttons: Button[];
   }
 
-  interface Panel extends Backbone.Model<PanelOptions> {}
+  interface Panel extends Backbone.Model<PanelOptions> { }
 
-  interface Button extends Backbone.Model<ButtonOptions> {}
+  interface Button extends Backbone.Model<ButtonOptions> { }
 
   interface ButtonOptions {
     id: string;
@@ -486,7 +497,7 @@ declare module grapesjs {
     }): void;
   }
 
-  interface View {}
+  interface View { }
 
   interface LayerManager {
     /**
@@ -3642,6 +3653,12 @@ declare module grapesjs {
      * Get current storage
      */
     getCurrentStorage(): IStorage;
+    /**
+     * Get storage options by type.
+     * @param type Storage type
+     * @returns Storage Options
+     * */
+    getStorageOptions(type: string): StorageOptions;
   }
 
   interface ProjectData {
@@ -4993,7 +5010,7 @@ declare module grapesjs {
     y?: number;
   }
 
-  interface Frame extends Backbone.Model<FrameOptions> {}
+  interface Frame extends Backbone.Model<FrameOptions> { }
 
   /**
    * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/i18n/config.js)
