@@ -1,7 +1,7 @@
 import { isUndefined } from 'underscore';
 import Property from './Property';
-import InputNumber from 'domain_abstract/ui/InputNumber';
-import { hasWin } from 'utils/mixins';
+import InputNumber from '../../domain_abstract/ui/InputNumber';
+import { hasWin } from '../../utils/mixins';
 
 /**
  * @typedef PropertyNumber

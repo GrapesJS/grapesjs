@@ -1,5 +1,5 @@
 import { filter } from 'underscore';
-import { Collection } from 'common';
+import { Collection } from '../../common';
 import Selector from './Selector';
 
 const combine = (tail, curr) => {
@@ -17,16 +17,11 @@ export default class Selectors extends Collection {
   }
 
   getStyleable() {
-    return filter(
-      this.models,
-      item => item.get('active') && !item.get('private')
-    );
+    return filter(this.models, item => item.get('active') && !item.get('private'));
   }
 
   getValid({ noDisabled } = {}) {
-    return filter(this.models, item => !item.get('private')).filter(item =>
-      noDisabled ? item.get('active') : 1
-    );
+    return filter(this.models, item => !item.get('private')).filter(item => (noDisabled ? item.get('active') : 1));
   }
 
   getFullString(collection, opts = {}) {

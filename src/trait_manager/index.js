@@ -1,4 +1,5 @@
 import { debounce } from 'underscore';
+import { Model, Module } from '../common';
 import defaults from './config/config';
 import TraitsView from './view/TraitsView';
 import TraitView from './view/TraitView';
@@ -7,7 +8,6 @@ import TraitCheckboxView from './view/TraitCheckboxView';
 import TraitNumberView from './view/TraitNumberView';
 import TraitColorView from './view/TraitColorView';
 import TraitButtonView from './view/TraitButtonView';
-import { Model, Module } from 'common';
 
 export const evAll = 'trait';
 export const evPfx = `${evAll}:`;

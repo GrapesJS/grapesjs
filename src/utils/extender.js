@@ -1,4 +1,4 @@
-import { isObject, isString, each, isUndefined } from 'underscore';
+import { isObject } from 'underscore';
 
 export default ({ $ }) => {
   if ($ && $.prototype && $.prototype.constructor.name !== 'jQuery') {
@@ -6,15 +6,15 @@ export default ({ $ }) => {
 
     // Additional helpers
 
-    fn.hide = function() {
+    fn.hide = function () {
       return this.css('display', 'none');
     };
 
-    fn.show = function() {
+    fn.show = function () {
       return this.css('display', 'block');
     };
 
-    fn.focus = function() {
+    fn.focus = function () {
       const el = this.get(0);
       el && el.focus();
       return this;
@@ -53,11 +53,11 @@ export default ({ $ }) => {
 
     // For spectrum compatibility
 
-    fn.bind = function(ev, h) {
+    fn.bind = function (ev, h) {
       return this.on(ev, h);
     };
 
-    fn.unbind = function(ev, h) {
+    fn.unbind = function (ev, h) {
       if (isObject(ev)) {
         for (let name in ev) {
           ev.hasOwnProperty(name) && this.off(name, ev[name]);
@@ -69,37 +69,37 @@ export default ({ $ }) => {
       }
     };
 
-    fn.click = function(h) {
+    fn.click = function (h) {
       return h ? this.on('click', h) : this.trigger('click');
     };
 
-    fn.change = function(h) {
+    fn.change = function (h) {
       return h ? this.on('change', h) : this.trigger('change');
     };
 
-    fn.keydown = function(h) {
+    fn.keydown = function (h) {
       return h ? this.on('keydown', h) : this.trigger('keydown');
     };
 
-    fn.delegate = function(selector, events, data, handler) {
+    fn.delegate = function (selector, events, data, handler) {
       if (!handler) {
         handler = data;
       }
 
-      return this.on(events, selector, function(e) {
+      return this.on(events, selector, function (e) {
         e.data = data;
         handler(e);
       });
     };
 
-    fn.scrollLeft = function() {
+    fn.scrollLeft = function () {
       let el = this.get(0);
       el = el.nodeType == 9 ? el.defaultView : el;
       let win = el instanceof Window ? el : null;
       return win ? win.pageXOffset : el.scrollLeft || 0;
     };
 
-    fn.scrollTop = function() {
+    fn.scrollTop = function () {
       let el = this.get(0);
       el = el.nodeType == 9 ? el.defaultView : el;
       let win = el instanceof Window ? el : null;
@@ -107,7 +107,7 @@ export default ({ $ }) => {
     };
 
     const offset = $.prototype.offset;
-    fn.offset = function(coords) {
+    fn.offset = function (coords) {
       let top, left;
 
       if (coords) {
@@ -125,7 +125,7 @@ export default ({ $ }) => {
       return offset.call(this);
     };
 
-    $.map = function(items, clb) {
+    $.map = function (items, clb) {
       const ar = [];
 
       for (var i = 0; i < items.length; i++) {
@@ -137,11 +137,11 @@ export default ({ $ }) => {
 
     const indexOf = Array.prototype.indexOf;
 
-    $.inArray = function(val, arr, i) {
+    $.inArray = function (val, arr, i) {
       return arr == null ? -1 : indexOf.call(arr, val, i);
     };
 
-    $.Event = function(src, props) {
+    $.Event = function (src, props) {
       if (!(this instanceof $.Event)) {
         return new $.Event(src, props);
       }

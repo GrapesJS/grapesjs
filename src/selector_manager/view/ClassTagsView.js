@@ -1,9 +1,9 @@
 import { isEmpty, isArray, isString, debounce } from 'underscore';
-import Backbone from 'backbone';
+import { View } from '../../common';
 import ClassTagView from './ClassTagView';
 import html from 'utils/html';
 
-export default Backbone.View.extend({
+export default class ClassTagsView extends View {
   template({ labelInfo, labelHead, iconSync, iconAdd, pfx, ppfx }) {
     return `
     <div id="${pfx}up" class="${pfx}header">
@@ -35,15 +35,17 @@ export default Backbone.View.extend({
       <div class="${pfx}label-sel">${labelInfo}:</div>
       <div class="${pfx}sels" data-selected></div>
     </div>`;
-  },
+  }
 
-  events: {
-    'change [data-states]': 'stateChanged',
-    'click [data-add]': 'startNewTag',
-    'focusout [data-input]': 'endNewTag',
-    'keyup [data-input]': 'onInputKeyUp',
-    'click [data-sync-style]': 'syncStyle',
-  },
+  events() {
+    return {
+      'change [data-states]': 'stateChanged',
+      'click [data-add]': 'startNewTag',
+      'focusout [data-input]': 'endNewTag',
+      'keyup [data-input]': 'onInputKeyUp',
+      'click [data-sync-style]': 'syncStyle',
+    };
+  }
 
   initialize(o = {}) {
     this.config = o.config || {};
@@ -59,6 +61,8 @@ export default Backbone.View.extend({
     const md = o.module;
     this.module = md;
     this.em = em;
+    this.componentChanged = debounce(this.componentChanged.bind(this));
+    this.checkSync = debounce(this.checkSync.bind(this));
     const toList = 'component:toggled component:update:classes';
     const toListCls = 'component:update:classes change:state';
     this.listenTo(em, toList, this.componentChanged);
@@ -74,7 +78,7 @@ export default Backbone.View.extend({
       debounce(() => this.renderStates())
     );
     this.delegateEvents();
-  },
+  }
 
   syncStyle() {
     const { em } = this;
@@ -108,7 +112,7 @@ export default Backbone.View.extend({
       ruleComponents,
       state,
     });
-  },
+  }
 
   /**
    * Triggered when a tag is removed from collection
@@ -117,7 +121,7 @@ export default Backbone.View.extend({
    */
   tagRemoved(model) {
     this.updateStateVis();
-  },
+  }
 
   /**
    * Add new model
@@ -126,7 +130,7 @@ export default Backbone.View.extend({
    */
   addNew(model) {
     this.addToClasses(model);
-  },
+  }
 
   /**
    * Start tag creation
@@ -136,7 +140,7 @@ export default Backbone.View.extend({
   startNewTag() {
     this.$addBtn.css({ display: 'none' });
     this.$input.show().focus();
-  },
+  }
 
   /**
    * End tag creation
@@ -146,7 +150,7 @@ export default Backbone.View.extend({
   endNewTag() {
     this.$addBtn.css({ display: '' });
     this.$input.hide().val('');
-  },
+  }
 
   /**
    * Checks what to do on keyup event
@@ -160,22 +164,22 @@ export default Backbone.View.extend({
     } else if (e.keyCode === 27) {
       this.endNewTag();
     }
-  },
+  }
 
   checkStates() {
     const state = this.em.getState();
     const statesEl = this.getStates();
     statesEl && statesEl.val(state);
-  },
+  }
 
   /**
    * Triggered when component is changed
    * @param  {Object} e
    * @private
    */
-  componentChanged: debounce(function ({ targets } = {}) {
+  componentChanged({ targets } = {}) {
     this.updateSelection(targets);
-  }),
+  }
 
   updateSelection(targets) {
     let trgs = targets || this.getTargets();
@@ -191,18 +195,18 @@ export default Backbone.View.extend({
     this.updateStateVis(trgs);
     this.module.__trgCustom();
     return selectors;
-  },
+  }
 
   getCommonSelectors({ targets, opts = {} } = {}) {
     const trgs = targets || this.getTargets();
     return this.module.__getCommonSelectors(trgs, opts);
-  },
+  }
 
   _commonSelectors(...args) {
     return this.module.__common(...args);
-  },
+  }
 
-  checkSync: debounce(function () {
+  checkSync() {
     const { $btnSyncEl, config, collection } = this;
     const target = this.getTarget();
     let hasStyle;
@@ -213,15 +217,15 @@ export default Backbone.View.extend({
     }
 
     $btnSyncEl && $btnSyncEl[hasStyle ? 'show' : 'hide']();
-  }),
+  }
 
   getTarget() {
     return this.target.getSelected();
-  },
+  }
 
   getTargets() {
     return this.target.getSelectedAll();
-  },
+  }
 
   /**
    * Update states visibility. Hides states in case there is no tags
@@ -234,11 +238,11 @@ export default Backbone.View.extend({
     const display = this.collection.length || avoidInline ? '' : 'none';
     this.getStatesC().css('display', display);
     this.updateSelector(target);
-  },
+  }
 
   __handleStateChange() {
     this.updateSelector(this.getTargets());
-  },
+  }
 
   /**
    * Update selector helper
@@ -254,7 +258,7 @@ export default Backbone.View.extend({
     trgs.forEach(target => result.push(this.__getName(target)));
     elSel && (elSel.innerHTML = result.join(', '));
     this.checkStates();
-  },
+  }
 
   __getName(target) {
     const { pfx, config, em } = this;
@@ -280,7 +284,7 @@ export default Backbone.View.extend({
     }
 
     return result && `<span class="${pfx}sel">${result}</span>`;
-  },
+  }
 
   /**
    * Triggered when the select with states is changed
@@ -291,7 +295,7 @@ export default Backbone.View.extend({
     const { em } = this;
     const { value } = ev.target;
     em.set('state', value);
-  },
+  }
 
   /**
    * Add new tag to collection, if possible, and to the component
@@ -304,7 +308,7 @@ export default Backbone.View.extend({
     this.module.addSelected({ label });
     this.endNewTag();
     // this.updateStateVis(); // Check if required
-  },
+  }
 
   /**
    * Add new object to collection
@@ -326,7 +330,7 @@ export default Backbone.View.extend({
     fragment ? fragment.appendChild(rendered) : classes.append(rendered);
 
     return rendered;
-  },
+  }
 
   /**
    * Render the collection of classes
@@ -338,7 +342,7 @@ export default Backbone.View.extend({
     classes.empty();
     this.collection.each(model => this.addToClasses(model, frag));
     classes.append(frag);
-  },
+  }
 
   /**
    * Return classes element
@@ -347,7 +351,7 @@ export default Backbone.View.extend({
    */
   getClasses() {
     return this.$el.find('[data-selectors]');
-  },
+  }
 
   /**
    * Return states element
@@ -360,7 +364,7 @@ export default Backbone.View.extend({
       this.$states = el[0] && el;
     }
     return this.$states;
-  },
+  }
 
   /**
    * Return states container element
@@ -370,7 +374,7 @@ export default Backbone.View.extend({
   getStatesC() {
     if (!this.$statesC) this.$statesC = this.$el.find('#' + this.stateInputC);
     return this.$statesC;
-  },
+  }
 
   renderStates() {
     const { module, em } = this;
@@ -386,7 +390,7 @@ export default Backbone.View.extend({
     const statesEl = this.getStates();
     statesEl && statesEl.html(`<option value="">${labelStates}</option>${options}`);
     this.checkStates();
-  },
+  }
 
   render() {
     const { em, pfx, ppfx, config, $el, el } = this;
@@ -412,5 +416,5 @@ export default Backbone.View.extend({
     this.renderClasses();
     $el.attr('class', `${this.className} ${ppfx}one-bg ${ppfx}two-color`);
     return this;
-  },
-});
+  }
+}

@@ -1,5 +1,5 @@
-import { Collection } from 'common';
 import { isString, isArray } from 'underscore';
+import { Collection } from '../../common';
 import Trait from './Trait';
 import TraitFactory from './TraitFactory';
 

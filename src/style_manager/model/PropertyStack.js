@@ -1,8 +1,8 @@
 import { keys, isUndefined, isArray, isString, isNumber } from 'underscore';
+import { camelCase } from '../../utils/mixins';
 import PropertyComposite, { isNumberType } from './PropertyComposite';
 import PropertyBase from './Property';
 import Layers from './Layers';
-import { camelCase } from 'utils/mixins';
 
 const VALUES_REG = /,(?![^\(]*\))/;
 const PARTS_REG = /\s(?![^(]*\))/;

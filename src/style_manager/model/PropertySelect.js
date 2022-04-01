@@ -1,6 +1,6 @@
-import Property from './Property';
-import { isDef } from 'utils/mixins';
 import { isString } from 'underscore';
+import { isDef } from '../../utils/mixins';
+import Property from './Property';
 
 /**
  * @typedef PropertySelect

@@ -1,6 +1,6 @@
-import { Model } from 'common';
 import { isUndefined, isString, isArray, result, keys, each, includes } from 'underscore';
-import { capitalize, camelCase, hasWin } from 'utils/mixins';
+import { Model } from '../../common';
+import { capitalize, camelCase, hasWin } from '../../utils/mixins';
 
 /**
  * @typedef Property

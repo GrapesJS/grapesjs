@@ -73,9 +73,8 @@
  */
 
 import { isString, debounce, isObject, isArray } from 'underscore';
-import { isComponent, isRule } from 'utils/mixins';
-import { Model, Collection } from 'common';
-import Module from 'common/module';
+import { isComponent, isRule } from '../utils/mixins';
+import { Model, Collection, Module } from '../common';
 import defaults from './config/config';
 import Selector from './model/Selector';
 import Selectors from './model/Selectors';

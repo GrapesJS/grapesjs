@@ -1,6 +1,6 @@
-import { View } from 'common';
 import { bindAll, isUndefined, debounce } from 'underscore';
-import { isObject } from 'utils/mixins';
+import { View } from '../../common';
+import { isObject } from '../../utils/mixins';
 
 const clearProp = 'data-clear-style';
 

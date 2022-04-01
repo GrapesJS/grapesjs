@@ -1,4 +1,4 @@
-import { View } from 'backbone';
+import { View } from '../../common';
 import { keys } from 'underscore';
 
 export default class LayerView extends View {

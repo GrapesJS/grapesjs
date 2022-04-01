@@ -1,5 +1,5 @@
-import { Model } from 'common';
 import { result, forEach, keys } from 'underscore';
+import { Model } from '../../common';
 
 const TYPE_CLASS = 1;
 const TYPE_ID = 2;
@@ -22,7 +22,7 @@ export default class Selector extends Model {
       active: true,
       private: false,
       protected: false,
-      _undo: true
+      _undo: true,
     };
   }
 
@@ -39,9 +39,7 @@ export default class Selector extends Model {
 
     const namePreEsc = this.get('name');
     const { escapeName } = config;
-    const nameEsc = escapeName
-      ? escapeName(namePreEsc)
-      : Selector.escapeName(namePreEsc);
+    const nameEsc = escapeName ? escapeName(namePreEsc) : Selector.escapeName(namePreEsc);
     this.set('name', nameEsc);
     this.em = config.em;
   }

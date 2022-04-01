@@ -1,4 +1,4 @@
-import DomainViews from 'domain_abstract/view/DomainViews';
+import DomainViews from '../../domain_abstract/view/DomainViews';
 import TraitView from './TraitView';
 
 export default class TraitsView extends DomainViews {

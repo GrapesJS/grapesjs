@@ -1,5 +1,5 @@
-import { View } from 'common';
-import html from 'utils/html';
+import { View } from '../../common';
+import html from '../../utils/html';
 import PropertiesView from './PropertiesView';
 
 export default class SectorView extends View {

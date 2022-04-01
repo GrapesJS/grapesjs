@@ -1,4 +1,4 @@
-import { Model } from 'common';
+import { Model } from '../../common';
 
 /**
  * @typedef State
@@ -9,7 +9,7 @@ export default class State extends Model {
   defaults() {
     return {
       name: '',
-      label: ''
+      label: '',
     };
   }
 

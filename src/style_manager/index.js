@@ -64,9 +64,8 @@
  */
 
 import { isUndefined, isArray, isString, debounce, bindAll } from 'underscore';
-import { isComponent } from 'utils/mixins';
-import Module from 'common/module';
-import { Model } from 'common';
+import { isComponent } from '../utils/mixins';
+import { Model, Module } from '../common';
 import defaults from './config/config';
 import Sector from './model/Sector';
 import Sectors from './model/Sectors';

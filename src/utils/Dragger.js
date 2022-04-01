@@ -1,5 +1,5 @@
 import { bindAll, isFunction, result, isUndefined } from 'underscore';
-import { on, off, isEscKey, getPointerEvent } from 'utils/mixins';
+import { on, off, isEscKey, getPointerEvent } from './mixins';
 
 const resetPos = () => ({ x: 0, y: 0 });
 
@@ -61,7 +61,7 @@ export default class Dragger {
       doc: 0,
 
       // Scale result points, can also be a function
-      scale: 1
+      scale: 1,
     };
     bindAll(this, 'drag', 'stop', 'keyHandle', 'handleScroll');
     this.setOptions(opts);
@@ -76,7 +76,7 @@ export default class Dragger {
   setOptions(opts = {}) {
     this.opts = {
       ...this.opts,
-      ...opts
+      ...opts,
     };
   }
 
@@ -97,7 +97,7 @@ export default class Dragger {
     const actualScroll = this.getScrollInfo();
     const scrollDiff = {
       x: actualScroll.x - lastScroll.x,
-      y: actualScroll.y - lastScroll.y
+      y: actualScroll.y - lastScroll.y,
     };
     this.move(delta.x + scrollDiff.x, delta.y + scrollDiff.y);
     this.lastScrollDiff = scrollDiff;
@@ -132,12 +132,12 @@ export default class Dragger {
     const currentPos = this.getPointerPos(ev);
     const glDiff = {
       x: globScrollDiff.x + lastScrollDiff.x,
-      y: globScrollDiff.y + lastScrollDiff.y
+      y: globScrollDiff.y + lastScrollDiff.y,
     };
     this.globScrollDiff = glDiff;
     const delta = {
       x: currentPos.x - startPointer.x + glDiff.x,
-      y: currentPos.y - startPointer.y + glDiff.y
+      y: currentPos.y - startPointer.y + glDiff.y,
     };
     this.lastScrollDiff = resetPos();
     let { lockedAxis } = this;
@@ -226,15 +226,13 @@ export default class Dragger {
     return {
       newDelta,
       trgX: this.trgX,
-      trgY: this.trgY
+      trgY: this.trgY,
     };
   }
 
   isPointIn(src, trg, { offset } = {}) {
     const ofst = offset || this.opts.snapOffset;
-    return (
-      (src >= trg && src <= trg + ofst) || (src <= trg && src >= trg - ofst)
-    );
+    return (src >= trg && src <= trg + ofst) || (src <= trg && src >= trg - ofst);
   }
 
   setGuideLock(guide, value) {
@@ -290,7 +288,7 @@ export default class Dragger {
     this.position = {
       x: xPos,
       y: yPos,
-      end
+      end,
     };
 
     isFunction(setPosition) && setPosition(this.position);
@@ -344,7 +342,7 @@ export default class Dragger {
       ? getPos(ev)
       : {
           x: pEv.clientX,
-          y: pEv.clientY
+          y: pEv.clientY,
         };
   }
 
@@ -358,7 +356,7 @@ export default class Dragger {
     } else if (el) {
       result = {
         x: parseFloat(el.style.left),
-        y: parseFloat(el.style.top)
+        y: parseFloat(el.style.top),
       };
     }
 
@@ -371,7 +369,7 @@ export default class Dragger {
 
     return {
       y: body ? body.scrollTop : 0,
-      x: body ? body.scrollLeft : 0
+      x: body ? body.scrollLeft : 0,
     };
   }
 

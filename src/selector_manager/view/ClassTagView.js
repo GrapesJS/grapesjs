@@ -1,8 +1,8 @@
-import Backbone from 'backbone';
+import { View } from '../../common';
 
 const inputProp = 'contentEditable';
 
-export default Backbone.View.extend({
+export default class ClassTagView extends View {
   template() {
     const { pfx, model, config } = this;
     const label = model.get('label') || '';
@@ -14,14 +14,16 @@ export default Backbone.View.extend({
         ${config.iconTagRemove}
       </span>
     `;
-  },
+  }
 
-  events: {
-    'click [data-tag-remove]': 'removeTag',
-    'click [data-tag-status]': 'changeStatus',
-    'dblclick [data-tag-name]': 'startEditTag',
-    'focusout [data-tag-name]': 'endEditTag'
-  },
+  events() {
+    return {
+      'click [data-tag-remove]': 'removeTag',
+      'click [data-tag-status]': 'changeStatus',
+      'dblclick [data-tag-name]': 'startEditTag',
+      'focusout [data-tag-name]': 'endEditTag',
+    };
+  }
 
   initialize(o = {}) {
     const config = o.config || {};
@@ -32,7 +34,7 @@ export default Backbone.View.extend({
     this.ppfx = config.pStylePrefix || '';
     this.em = config.em;
     this.listenTo(this.model, 'change:active', this.updateStatus);
-  },
+  }
 
   /**
    * Returns the element which containes the anme of the tag
@@ -44,7 +46,7 @@ export default Backbone.View.extend({
     }
 
     return this.inputEl;
-  },
+  }
 
   /**
    * Start editing tag
@@ -56,7 +58,7 @@ export default Backbone.View.extend({
     inputEl[inputProp] = true;
     inputEl.focus();
     em && em.setEditing(1);
-  },
+  }
 
   /**
    * End editing tag. If the class typed already exists the
@@ -81,7 +83,7 @@ export default Backbone.View.extend({
         model.set({ name, label });
       }
     }
-  },
+  }
 
   /**
    * Update status of the tag
@@ -90,7 +92,7 @@ export default Backbone.View.extend({
   changeStatus() {
     const { model } = this;
     model.set('active', !model.get('active'));
-  },
+  }
 
   /**
    * Remove tag from the selected component
@@ -99,7 +101,7 @@ export default Backbone.View.extend({
    */
   removeTag() {
     this.module.removeSelected(this.model);
-  },
+  }
 
   /**
    * Update status of the checkbox
@@ -117,7 +119,7 @@ export default Backbone.View.extend({
       $chk.html(iconTagOff);
       $el.addClass('opac50');
     }
-  },
+  }
 
   render() {
     const pfx = this.pfx;
@@ -127,4 +129,4 @@ export default Backbone.View.extend({
     this.updateStatus();
     return this;
   }
-});
+}

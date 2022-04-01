@@ -1,5 +1,5 @@
-import fetch from 'utils/fetch';
 import { isUndefined, isFunction, isString } from 'underscore';
+import fetch from '../../utils/fetch';
 
 export default class RemoteStorage {
   async store(data, opts = {}) {

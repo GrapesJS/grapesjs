@@ -1,5 +1,5 @@
-import { View } from 'common';
-import { appendAtIndex } from 'utils/dom';
+import { View } from '../../common';
+import { appendAtIndex } from '../../utils/dom';
 import SectorView from './SectorView';
 
 export default class SectorsView extends View {

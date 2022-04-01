@@ -1,4 +1,4 @@
-import { hasWin } from 'utils/mixins';
+import { hasWin } from '../../utils/mixins';
 
 export default class LocalStorage {
   async store(data, opts = {}) {

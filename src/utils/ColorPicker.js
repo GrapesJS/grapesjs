@@ -4,7 +4,7 @@
 // https://github.com/bgrins/spectrum
 // Author: Brian Grinstead
 // License: MIT
-import { hasWin } from 'utils/mixins';
+import { hasWin } from './mixins';
 
 export default function ($, undefined) {
   'use strict';

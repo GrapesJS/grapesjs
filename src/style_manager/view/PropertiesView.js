@@ -1,5 +1,5 @@
-import { View } from 'common';
-import { appendAtIndex } from 'utils/dom';
+import { View } from '../../common';
+import { appendAtIndex } from '../../utils/dom';
 
 export default class PropertiesView extends View {
   initialize(o) {

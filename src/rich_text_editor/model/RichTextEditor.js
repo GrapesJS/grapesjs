@@ -2,7 +2,7 @@
 // and adapted to the GrapesJS's need
 
 import { isString } from 'underscore';
-import { on, off, getPointerEvent, getModel } from 'utils/mixins';
+import { on, off, getPointerEvent, getModel } from '../../utils/mixins';
 
 const RTE_KEY = '_rte';
 
