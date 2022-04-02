@@ -324,9 +324,9 @@ declare module grapesjs {
     recovery?: boolean | Function;
     onStore?: (data: any) => any;
     onLoad?: (data: any) => any;
-    options: {
-      local: LocalStorageConfig;
-      remote: RemoteStorageConfig;
+    options?: {
+      local?: LocalStorageConfig;
+      remote?: RemoteStorageConfig;
       [key: string]: any;
     };
   }
@@ -343,7 +343,7 @@ declare module grapesjs {
     urlLoad?: string;
     contentTypeJson?: boolean;
     credentials?: RequestCredentials;
-    fetchOptions: string | ((opts: object) => object);
+    fetchOptions?: string | ((opts: object) => object);
     onStore?: (data: any) => any;
     onLoad?: (data: any) => any;
   }
