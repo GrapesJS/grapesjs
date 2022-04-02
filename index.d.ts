@@ -337,7 +337,6 @@ declare module grapesjs {
   }
 
   interface RemoteStorageConfig {
-    params?: object;
     headers?: object;
     urlStore?: string;
     urlLoad?: string;
