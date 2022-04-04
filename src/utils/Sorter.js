@@ -983,6 +983,35 @@ export default Backbone.View.extend({
   },
 
   /**
+   * Build an array of all the parents, including the component itself
+   * @return {Model|null}
+   */
+  parents(model) {
+    return model ? [model].concat(this.parents(model.parent())) : [];
+  },
+
+  /**
+   * Sort according to the position in the dom
+   * @param {Object} obj1 contains {model, parents}
+   * @param {Object} obj2 contains {model, parents}
+   */
+  sort(obj1, obj2) {
+    // common ancesters
+    const ancesters = obj1.parents.filter(p => obj2.parents.includes(p));
+    const ancester = ancesters[0];
+    if (!ancester) {
+      // this is never supposed to happen
+      return obj2.model.index() - obj1.model.index();
+    }
+    // find siblings in the common ancester
+    // the sibling is the element inside the ancester
+    const s1 = obj1.parents[obj1.parents.indexOf(ancester) - 1];
+    const s2 = obj2.parents[obj2.parents.indexOf(ancester) - 1];
+    // order according to the position in the DOM
+    return s2.index() - s1.index();
+  },
+
+  /**
    * Leave item
    * @param event
    *
@@ -1013,9 +1042,43 @@ export default Backbone.View.extend({
     if (this.moved && target) {
       const toMove = this.toMove;
       const toMoveArr = isArray(toMove) ? toMove : toMove ? [toMove] : [src];
-      toMoveArr.forEach(model => {
-        moved.push(this.move(target, model, lastPos));
-      });
+      let domPositionOffset = 0;
+      if (toMoveArr.length === 1) {
+        // do not sort the array in this case
+        // there are cases for the sorter where toMoveArr is [undefined]
+        // which allows the drop from blocks, native D&D and sort of layers in Style Manager
+        this.move(target, toMoveArr[0], lastPos);
+      } else {
+        toMoveArr
+          // add the model's parents
+          .map(model => ({
+            model,
+            parents: this.parents(model),
+          }))
+          // sort based on elements positions in the dom
+          .sort(this.sort)
+          // move each component to the new parent and position
+          .forEach(({ model }) => {
+            // store state before move
+            const index = model.index();
+            const parent = model.parent().getEl();
+            // move the component to the desired position
+            moved.push(
+              this.move(target, model, {
+                ...lastPos,
+                indexEl: lastPos.indexEl - domPositionOffset,
+                index: lastPos.index - domPositionOffset,
+              })
+            );
+            // when the element is dragged to the same parent and after its position
+            //  it will be removed from the children list
+            //  in that case we need to adjust the following elements target position
+            if (parent === target && index <= lastPos.index) {
+              // the next elements will be inserted 1 element before this one
+              domPositionOffset++;
+            }
+          });
+      }
     }
 
     if (this.plh) this.plh.style.display = 'none';
