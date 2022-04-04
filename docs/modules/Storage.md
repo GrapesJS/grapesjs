@@ -269,11 +269,11 @@ Storage.add('remote-local', {
     const remoteStorage = Storage.get('remote');
 
     try {
-      await remoteStorage.store(data, Storage.getConfig().options.remote);
+      await remoteStorage.store(data);
     } catch (err) {
       // On remote error, store data locally
       const localStorage = Storage.get('local');
-      await localStorage.store(data, Storage.getConfig().options.local);
+      await localStorage.store(data);
     }
   },
 
