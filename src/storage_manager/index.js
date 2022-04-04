@@ -193,7 +193,7 @@ export default () => {
      * @returns {Object}
      * */
     getStorageOptions(type) {
-      return this.getCurrentOptons(type);
+      return this.getCurrentOptions(type);
     },
 
     /**
@@ -207,9 +207,9 @@ export default () => {
      * */
     async store(data, options = {}) {
       const st = this.getCurrentStorage();
-      const opts = { ...this.getCurrentOptons(), ...options };
+      const opts = { ...this.getCurrentOptions(), ...options };
       const recovery = this.getRecoveryStorage();
-      const recoveryOpts = this.getCurrentOptons(STORAGE_LOCAL);
+      const recoveryOpts = this.getCurrentOptions(STORAGE_LOCAL);
 
       try {
         await this.__exec(st, opts, data);
@@ -235,12 +235,12 @@ export default () => {
      * */
     async load(options = {}) {
       const st = this.getCurrentStorage();
-      const opts = { ...this.getCurrentOptons(), ...options };
+      const opts = { ...this.getCurrentOptions(), ...options };
       const recoveryStorage = this.getRecoveryStorage();
       let result;
 
       if (recoveryStorage) {
-        const recoveryData = await this.__exec(recoveryStorage, this.getCurrentOptons(STORAGE_LOCAL));
+        const recoveryData = await this.__exec(recoveryStorage, this.getCurrentOptions(STORAGE_LOCAL));
         if (!isEmpty(recoveryData)) {
           try {
             await this.__askRecovery();
@@ -326,7 +326,7 @@ export default () => {
       return result;
     },
 
-    getCurrentOptons(type) {
+    getCurrentOptions(type) {
       const config = this.getConfig();
       const current = type || this.getCurrent();
       return config.options[current] || {};
@@ -395,6 +395,6 @@ export default () => {
     destroy() {
       this.__destroy();
       this.storages = {};
-    },
+    }
   };
 };
