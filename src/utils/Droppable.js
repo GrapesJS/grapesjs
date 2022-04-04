@@ -54,7 +54,7 @@ export default class Droppable {
     method(document, 'pointerup', this.handleDrop);
     method(frameEl, 'pointerout', this.handleDragLeave);
 
-    // Test with touche devices (seems like frameEl is not capturing pointer events).
+    // Test with touch devices (seems like frameEl is not capturing pointer events).
     // on/off(document, 'pointermove', sorter.onMove); // for the sorter
     // enable && this.handleDragEnter({}); // no way to use pointerenter/pointerout
   }

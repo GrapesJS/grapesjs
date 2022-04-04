@@ -171,7 +171,7 @@ blockManager.render();
 
 // Render new set of blocks
 const blocks = blockManager.getAll();
-const filtered = blocks.filter(block => block.get('category') == 'sections')
+const filtered = blocks.filter(block => block.get('category').id == 'Sections')
 
 blockManager.render(filtered);
 // Or a new set from an array
