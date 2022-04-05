@@ -42,6 +42,8 @@ export default {
     const propNew = { ...prop };
     this.set('style', propNew, opts);
     const diff = shallowDiff(propOrig, propNew);
+    // Delete the property used for partial updates
+    delete diff.__p;
     keys(diff).forEach(pr => {
       const em = this.em;
       if (opts.noEvent) return;
