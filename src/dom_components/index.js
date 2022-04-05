@@ -96,7 +96,7 @@ import ComponentTextView from './view/ComponentTextView';
 import ComponentWrapper from './model/ComponentWrapper';
 import ComponentFrame from './model/ComponentFrame';
 import ComponentFrameView from './view/ComponentFrameView';
-import Module from 'common/module';
+import Module from 'abstract/moduleLegacy';
 
 export default () => {
   var c = {};

@@ -29,7 +29,7 @@
 
 import { isArray, isString, isUndefined } from 'underscore';
 import { isObject } from '../utils/mixins';
-import Module from '../common/module';
+import Module from '../abstract/moduleLegacy';
 import Selectors from '../selector_manager/model/Selectors';
 import Selector from '../selector_manager/model/Selector';
 import defaults from './config/config';
