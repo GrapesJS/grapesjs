@@ -384,12 +384,12 @@ export default class Property extends Model {
     return value || '';
   }
 
-  __setParentTarget(value) {
-    this.__parentTarget = value;
+  __setParentTarget(parentTarget) {
+    this.up({ parentTarget });
   }
 
   getParentTarget() {
-    return this.__parentTarget || null;
+    return this.get('parentTarget') || null;
   }
 
   __parseFn(input = '') {
@@ -518,4 +518,6 @@ Property.prototype.defaults = {
   // Specifies dependency on properties of the parent of the selected object.
   // Property is shown only when all conditions are matched.
   requiresParent: null,
+
+  parentTarget: null,
 };

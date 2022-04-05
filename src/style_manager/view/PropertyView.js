@@ -57,6 +57,7 @@ export default class Property extends View {
     this.listenTo(model, 'change:visible', this.updateVisibility);
     this.listenTo(model, 'change:name change:className change:full', this.render);
     this.listenTo(model, 'change:value', this.onValueChange);
+    this.listenTo(model, 'change:parentTarget', this.updateStatus);
     this.listenTo(em, 'change:device', this.onValueChange);
 
     const init = this.init && this.init.bind(this);
