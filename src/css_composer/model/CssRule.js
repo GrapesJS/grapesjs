@@ -141,8 +141,9 @@ export default class CssRule extends Model.extend(Styleable) {
    */
   getDeclaration(opts = {}) {
     let result = '';
+    const { important } = this.attributes;
     const selectors = this.selectorsToString(opts);
-    const style = this.styleToString(opts);
+    const style = this.styleToString({ important, ...opts });
     const singleAtRule = this.get('singleAtRule');
 
     if ((selectors || singleAtRule) && (style || opts.allowEmpty)) {
