@@ -127,6 +127,10 @@ export default class EditorModel extends Model {
     this.listenTo(this, `log:${event}`, logs[event]);
   }
 
+  get config() {
+    return this.config;
+  }
+
   /**
    * Get configurations
    * @param  {string} [prop] Property name

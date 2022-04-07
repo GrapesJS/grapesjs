@@ -1,5 +1,4 @@
 import EditorModel from "../editor/model/Editor";
-import { ModuleConfig } from "./ModuleConfig";
 
 export interface IModule {
   init(cfg: any): void;
@@ -9,6 +8,11 @@ export interface IModule {
   onLoad?(): void;
   name: string;
   postRender?(view: any): void;
+}
+
+interface ModuleConfig{
+  name: string;
+  stylePrefix?: string;
 }
 
 export default abstract class Module<T extends ModuleConfig = ModuleConfig>
@@ -22,10 +26,10 @@ export default abstract class Module<T extends ModuleConfig = ModuleConfig>
 
   constructor(
     em: EditorModel,
-    confClass: { new (em: EditorModel, module: Module<T>): T }
+    config: T
   ) {
     this._em = em;
-    this._config = new confClass(em, this);
+    this._config = config;
   }
 
   public get em() {

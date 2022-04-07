@@ -6,11 +6,11 @@ export default class View<
   TElement extends Element = HTMLElement
 > extends Backbone.View<TModel, TElement> {
   protected get pfx() {
-    return this.model.module.config.pfx;
+    return this.model.module.em.config.stylePrefix || "";
   }
 
   protected get ppfx() {
-    return this.model.module.config.ppfx;
+    return this.pfx + this.model.module.config.stylePrefix || "";
   }
 
   protected get em() {
