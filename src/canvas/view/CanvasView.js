@@ -209,20 +209,20 @@ export default class CanvasView extends View {
    */
   getElementPos(el, opts) {
     const zoom = this.getZoom();
-    var opt = opts || {};
-    var frmOff = this.getFrameOffset(el);
-    var cvsOff = this.getCanvasOffset();
-    var eo = this.offset(el, opts);
+    const opt = opts || {};
+    const frameOffset = this.getFrameOffset(el);
+    const canvasEl = this.el;
+    const canvasOffset = this.getCanvasOffset();
+    const elRect = this.offset(el, opts);
+    const frameTop = opt.avoidFrameOffset ? 0 : frameOffset.top;
+    const frameLeft = opt.avoidFrameOffset ? 0 : frameOffset.left;
 
-    var frmTop = opt.avoidFrameOffset ? 0 : frmOff.top;
-    var frmLeft = opt.avoidFrameOffset ? 0 : frmOff.left;
+    const top = elRect.top * zoom + frameTop - canvasOffset.top + canvasEl.scrollTop;
+    const left = elRect.left * zoom + frameLeft - canvasOffset.left + canvasEl.scrollLeft;
+    const height = elRect.height * zoom;
+    const width = elRect.width * zoom;
 
-    const top = eo.top * zoom + frmTop - cvsOff.top;
-    const left = eo.left * zoom + frmLeft - cvsOff.left;
-    const height = eo.height * zoom;
-    const width = eo.width * zoom;
-
-    return { top, left, height, width, zoom, rect: eo };
+    return { top, left, height, width, zoom, rect: elRect };
   }
 
   /**
