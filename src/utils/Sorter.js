@@ -1047,7 +1047,7 @@ export default Backbone.View.extend({
         // do not sort the array in this case
         // there are cases for the sorter where toMoveArr is [undefined]
         // which allows the drop from blocks, native D&D and sort of layers in Style Manager
-        this.move(target, toMoveArr[0], lastPos);
+        moved.push(this.move(target, toMoveArr[0], lastPos));
       } else {
         toMoveArr
           // add the model's parents
