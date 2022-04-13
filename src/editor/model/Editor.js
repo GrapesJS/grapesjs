@@ -67,7 +67,7 @@ export default class EditorModel extends Model {
   }
 
   initialize(conf = {}) {
-    this.config = conf;
+    this._config = conf;
     const { config } = this;
     this.set('Config', config);
     this.set('modules', []);
@@ -128,7 +128,7 @@ export default class EditorModel extends Model {
   }
 
   get config() {
-    return this.config;
+    return this._config;
   }
 
   /**
