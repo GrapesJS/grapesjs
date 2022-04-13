@@ -400,9 +400,8 @@ export default () => {
      * @return {this}
      */
     clear(opts = {}) {
-      this.getComponents()
-        .map(i => i)
-        .forEach(i => i.remove(opts));
+      const components = this.getComponents();
+      components?.filter(Boolean).forEach(i => i.remove(opts));
       return this;
     },
 

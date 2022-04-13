@@ -225,9 +225,7 @@ export default class EditorModel extends Model {
     }
 
     if (Mod.storageKey && Mod.store && Mod.load) {
-      // Components should be loaded before CSS due to reset
-      const mth = ['domComponents', 'pageManager'].indexOf(name) >= 0 ? 'unshift' : 'push';
-      this.get('storables')[mth](Mod);
+      this.get('storables').push(Mod);
     }
 
     cfg.em = this;
@@ -654,7 +652,9 @@ export default class EditorModel extends Model {
   }
 
   loadData(data = {}) {
-    this.get('storables').forEach(module => module.load(data));
+    const storableModules = this.get('storables');
+    storableModules.forEach(module => module.clear());
+    storableModules.forEach(module => module.load(data));
     return data;
   }
 
