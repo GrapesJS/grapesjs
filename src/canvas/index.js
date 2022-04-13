@@ -267,7 +267,6 @@ export default class CanvasModule {
       model: this.canvas,
       config: this.c,
     });
-    console.log(this.canvas);
     return this.canvasView.render().el;
   }
 
