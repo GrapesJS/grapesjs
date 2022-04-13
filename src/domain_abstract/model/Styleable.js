@@ -40,7 +40,14 @@ export default {
 
     const propOrig = this.getStyle(opts);
     const propNew = { ...prop };
-    this.set('style', propNew, opts);
+    const newStyle = { ...propNew };
+    // Remove empty style properties
+    keys(newStyle).forEach(prop => {
+      if (newStyle[prop] === '') {
+        delete newStyle[prop];
+      }
+    });
+    this.set('style', newStyle, opts);
     const diff = shallowDiff(propOrig, propNew);
     // Delete the property used for partial updates
     delete diff.__p;
