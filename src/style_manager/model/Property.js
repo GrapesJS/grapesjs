@@ -364,7 +364,8 @@ export default class Property extends Model {
    */
   getFullValue(val) {
     const fn = this.get('functionName');
-    const def = this.getDefaultValue();
+    const fnOnDef = this.get('applyFunctionOnDefault');
+    const def = fn && fnOnDef ? `${fn}(${this.getDefaultValue()})` : this.getDefaultValue();
     let value = isUndefined(val) ? this.get('value') : val;
     const hasValue = !isUndefined(value) && value !== '';
 
@@ -489,6 +490,9 @@ Property.prototype.defaults = {
   value: '',
   icon: '',
   functionName: '',
+
+  // If true, the function (if specified) will be applied also for default value
+  applyFunctionOnDefault: false,
   status: '',
   visible: true,
   fixedValues: ['initial', 'inherit'],

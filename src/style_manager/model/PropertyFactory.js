@@ -179,7 +179,16 @@ export default class PropertyFactory {
       ['box-shadow-spread', {}, 'text-shadow-h'],
       ['transition-duration', { default: '2s', units: this.unitsTime }, 'border-radius-c'],
       ['perspective', {}, 'border-radius-c'],
-      ['transform-rotate-x', { functionName: 'rotateX', units: this.unitsAngle, default: '0', type: typeNumber }],
+      [
+        'transform-rotate-x',
+        {
+          functionName: 'rotateX',
+          units: this.unitsAngle,
+          default: '0',
+          type: typeNumber,
+          applyFunctionOnDefault: true,
+        },
+      ],
       ['transform-rotate-y', { functionName: 'rotateY' }, 'transform-rotate-x'],
       ['transform-rotate-z', { functionName: 'rotateZ' }, 'transform-rotate-x'],
       ['transform-scale-x', { default: '1', functionName: 'scaleX', units: undefined }, 'transform-rotate-x'],
