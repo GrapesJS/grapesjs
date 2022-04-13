@@ -809,7 +809,7 @@ export default class EditorModel extends Model {
     view && view.remove();
     this.clear({ silent: true });
     this.destroyed = 1;
-    ['config', 'view', '_previousAttributes', '_events', '_listeners'].forEach(i => (this[i] = {}));
+    ['_config', 'view', '_previousAttributes', '_events', '_listeners'].forEach(i => (this[i] = {}));
     editors.splice(editors.indexOf(editor), 1);
     hasWin() && $(config.el).empty().attr(this.attrsOrig);
   }
