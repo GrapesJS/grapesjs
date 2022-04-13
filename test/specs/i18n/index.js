@@ -4,7 +4,7 @@ import Editor from 'editor';
 describe('I18n', () => {
   describe('Main', () => {
     let obj;
-    let editor = new Editor().init();
+    let editor = new Editor();
     let em = editor.getModel();
 
     beforeEach(() => {

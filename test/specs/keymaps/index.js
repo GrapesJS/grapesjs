@@ -7,7 +7,7 @@ describe('Keymaps', () => {
     let editor;
 
     beforeEach(() => {
-      editor = new Editor({ keymaps: { defaults: [] } }).init();
+      editor = new Editor({ keymaps: { defaults: [] } });
       em = editor.getModel();
       em.loadOnStart();
       obj = editor.Keymaps;

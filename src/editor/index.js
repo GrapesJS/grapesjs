@@ -62,31 +62,11 @@ import EditorView from './view/EditorView';
 export default class EditorModule {
   constructor(config = {}, opts = {}) {
     this.$ = opts.$;
-    this.c = {
-      ...defaults,
-      ...config,
-    };
+    this.c = { ...defaults, ...config };
     this.c.pStylePrefix = this.c.stylePrefix;
     this.em = new EditorModel(this.c);
+    this.em.init(this);
     this.editor = this.em;
-  }
-  editorView;
-
-  /**
-   * @property {EditorModel}
-   * @private
-   */
-  //editor = em
-
-  modules = [];
-
-  /**
-   * Initialize editor model
-   * @return {this}
-   * @private
-   */
-  init(opts = {}) {
-    this.em.init(this, { ...this.c, ...opts });
 
     this.modules = [
       'I18n',
@@ -131,9 +111,16 @@ export default class EditorModule {
         this[prop] = this.em.get(prop);
       }
     });
-
-    return this;
   }
+  editorView;
+
+  /**
+   * @property {EditorModel}
+   * @private
+   */
+  //editor = em
+
+  modules = [];
 
   /**
    * Returns configuration object
