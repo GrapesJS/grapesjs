@@ -33,7 +33,7 @@
  * @module Devices
  */
 import { isString } from 'underscore';
-import Module from '../common/module';
+import Module from '../abstract/moduleLegacy';
 import defaults from './config/config';
 import Device from './model/Device';
 import Devices from './model/Devices';
