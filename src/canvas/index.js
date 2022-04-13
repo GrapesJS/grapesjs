@@ -59,7 +59,7 @@ export default class CanvasModule {
    * @private
    */
   getCanvasView() {
-    return canvasView;
+    return this.canvasView;
   }
 
   name = 'Canvas';
@@ -249,7 +249,7 @@ export default class CanvasModule {
    * @private
    */
   getOffsetViewerEl(compView) {
-    return this._getLocalEl(canvasView.offsetEl, compView, 'getOffsetViewerEl');
+    return this._getLocalEl(this.canvasView.offsetEl, compView, 'getOffsetViewerEl');
   }
 
   /**
