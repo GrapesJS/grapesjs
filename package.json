@@ -1,7 +1,7 @@
 {
   "name": "grapesjs",
   "description": "Free and Open Source Web Builder Framework",
-  "version": "0.19.0",
+  "version": "0.19.1",
   "author": "Artur Arseniev",
   "license": "BSD-3-Clause",
   "homepage": "http://grapesjs.com",
@@ -25,6 +25,8 @@
   },
   "devDependencies": {
     "@babel/cli": "^7.15.7",
+    "@babel/preset-typescript": "^7.16.7",
+    "@types/backbone": "^1.4.15",
     "@vuepress/plugin-google-analytics": "^1.8.2",
     "documentation": "^13.2.5",
     "eslint": "^8.12.0",
@@ -60,7 +62,8 @@
     "env": {
       "test": {
         "presets": [
-          "@babel/preset-env"
+          "@babel/preset-env",
+          "@babel/preset-typescript"
         ]
       }
     }

@@ -51,7 +51,7 @@
  * @module StorageManager
  */
 
-import Module from '../common/module';
+import Module from '../abstract/moduleLegacy';
 import defaults from './config/config';
 import LocalStorage from './model/LocalStorage';
 import RemoteStorage from './model/RemoteStorage';
@@ -395,6 +395,6 @@ export default () => {
     destroy() {
       this.__destroy();
       this.storages = {};
-    }
+    },
   };
 };
