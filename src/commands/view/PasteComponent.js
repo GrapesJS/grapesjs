@@ -5,7 +5,6 @@ export default {
     const em = ed.getModel();
     const clp = em.get('clipboard');
     const selected = ed.getSelected();
-    const sorter = ed.BlockManager.getConfig().getSorter();
 
     if (clp && selected) {
       ed.getSelectedAll().forEach(comp => {
@@ -18,10 +17,7 @@ export default {
         const at = coll.indexOf(comp) + 1;
         const addOpts = { at, action: opts.action || 'paste-component' };
         const copyable = clp.filter(cop => cop.get('copyable'));
-        const pasteable = copyable.filter(cop => {
-              return sorter.validTarget(cop.getEl(), selected.getEl()).valid
-                  || sorter.validTarget(cop.parent()?.getEl(), selected.getEl()).valid;
-          });
+        const pasteable = copyable.filter(cop => editor.Components.canMove(comp.parent(), cop).result);
 
         if (contains(clp, comp) && comp.get('copyable')) {
           added = coll.add(comp.clone(), addOpts);
