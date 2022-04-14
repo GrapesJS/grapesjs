@@ -52,7 +52,7 @@ export default {
     if (!els && !headless) throw new Error("'container' is required");
     config = { ...defaultConfig, ...config, grapesjs: this };
     config.el = !headless && (isElement(els) ? els : document.querySelector(els));
-    const editor = new Editor(config, { $ }).init();
+    const editor = new Editor(config, { $ });
     const em = editor.getModel();
 
     // Load plugins

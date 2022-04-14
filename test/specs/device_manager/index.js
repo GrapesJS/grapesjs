@@ -13,9 +13,9 @@ describe('DeviceManager', () => {
       testWidthDevice = '100px';
       editor = new Editor({
         deviceManager: {
-          devices: []
-        }
-      }).init();
+          devices: [],
+        },
+      });
       em = editor.getModel();
       obj = editor.Devices;
     });
@@ -64,7 +64,7 @@ describe('DeviceManager', () => {
     test('Add device with props', () => {
       const model = obj.add({
         name: testNameDevice,
-        width: testWidthDevice
+        width: testWidthDevice,
       });
       expect(model.get('id')).toEqual(testNameDevice);
       expect(model.get('name')).toEqual(testNameDevice);
@@ -73,7 +73,7 @@ describe('DeviceManager', () => {
 
     test('Add device without id and name', () => {
       const model = obj.add({
-        width: testWidthDevice
+        width: testWidthDevice,
       });
       expect(model.get('name')).toEqual('');
       expect(model.get('width')).toEqual(testWidthDevice);
@@ -97,7 +97,7 @@ describe('DeviceManager', () => {
     test('Get device by name with different id', () => {
       const model = obj.add({
         id: 'device',
-        name: testNameDevice
+        name: testNameDevice,
       });
       const model2 = obj.get(testNameDevice);
       expect(model).toBe(model2);
