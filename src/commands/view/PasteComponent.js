@@ -17,7 +17,7 @@ export default {
         const at = coll.indexOf(comp) + 1;
         const addOpts = { at, action: opts.action || 'paste-component' };
         const copyable = clp.filter(cop => cop.get('copyable'));
-        const pasteable = copyable.filter(cop => editor.Components.canMove(comp.parent(), cop).result);
+        const pasteable = copyable.filter(cop => ed.Components.canMove(comp.parent(), cop).result);
 
         if (contains(clp, comp) && comp.get('copyable')) {
           added = coll.add(comp.clone(), addOpts);
