@@ -55,27 +55,23 @@
  * @module Editor
  */
 import { EventHandler } from 'backbone';
+import Module from '../abstract/Module';
 import cash from '../utils/cash-dom';
 import html from '../utils/html';
 import defaults from './config/config';
 import EditorModel from './model/Editor';
 import EditorView from './view/EditorView';
 
-export default class EditorModule {
+export default class EditorModule extends Module<typeof defaults> {
   constructor(config = {}, opts: any = {}) {
+    var c = { ...defaults, ...config, pStylePrefix: defaults.stylePrefix };
+    super(new EditorModel(c), c)
     this.$ = opts.$;
-    this.c = { ...defaults, ...config };
-    this.c.pStylePrefix = this.c.stylePrefix;
-    this.em = new EditorModel(this.c);
     this.em.init(this);
     this.editor = this.em;
-
-  
   }
   editorView?: EditorView;
-  em: EditorModel;
   editor: EditorModel;
-  c: any;
   $: cash;
 
   /**
@@ -216,16 +212,6 @@ export default class EditorModule {
   //@ts-ignore
   get DeviceManager(): DeviceManagerModule {
     return this.em.get("DeviceManager");
-  }
-
-  /**
-   * Returns configuration object
-   * @param  {string} [prop] Property name
-   * @returns {any} Returns the configuration object or
-   *  the value of the specified property
-   */
-  getConfig(prop: string) {
-    return this.em.getConfig(prop);
   }
 
   /**
@@ -560,7 +546,7 @@ export default class EditorModule {
    * @return {HTMLElement}
    */
   getContainer() {
-    return this.c.el;
+    return this.config.el;
   }
 
   /**
@@ -777,7 +763,7 @@ export default class EditorModule {
     this.editorView = new EditorView({
       model: this.em,
       //@ts-ignore
-      config: this.c,
+      config: this.config,
     });
     return this.editorView.render().el;
   }
