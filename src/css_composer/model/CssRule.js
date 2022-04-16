@@ -228,7 +228,7 @@ export default class CssRule extends Model.extend(Styleable) {
   toJSON(...args) {
     const obj = Model.prototype.toJSON.apply(this, args);
 
-    if (this.em.getConfig('avoidDefaults')) {
+    if (this.em.getConfig().avoidDefaults) {
       const defaults = this.defaults();
 
       forEach(defaults, (value, key) => {

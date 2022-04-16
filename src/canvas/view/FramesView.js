@@ -14,7 +14,7 @@ export default class FramesView extends DomainViews {
   onRender() {
     const { config, $el } = this;
     const { em } = config;
-    em && $el.attr({ class: `${em.getConfig('stylePrefix')}frames` });
+    em && $el.attr({ class: `${em.getConfig().stylePrefix}frames` });
   }
 }
 

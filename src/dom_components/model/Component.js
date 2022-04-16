@@ -23,7 +23,7 @@ const escapeRegExp = str => {
   return str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
 };
 
-const avoidInline = em => em && em.getConfig('avoidInlineStyle');
+const avoidInline = em => em && em.getConfig().avoidInlineStyle;
 
 export const eventDrag = 'component:drag';
 export const keySymbols = '__symbols';
@@ -465,7 +465,7 @@ export default class Component extends Model.extend(Styleable) {
     const prop = isString(options) ? options : '';
     const opts = prop ? optsAdd : options;
 
-    if (em && em.getConfig('avoidInlineStyle') && !opts.inline) {
+    if (em && em.getConfig().avoidInlineStyle && !opts.inline) {
       const state = em.get('state');
       const cc = em.get('CssComposer');
       const rule = cc.getIdRule(this.getId(), { state, ...opts });
@@ -490,7 +490,7 @@ export default class Component extends Model.extend(Styleable) {
     const em = this.em;
     const { opt } = this;
 
-    if (em && em.getConfig('avoidInlineStyle') && !opt.temporary && !opts.inline) {
+    if (em && em.getConfig().avoidInlineStyle && !opt.temporary && !opts.inline) {
       const style = this.get('style') || {};
       prop = isString(prop) ? this.parseStyle(prop) : prop;
       prop = { ...prop, ...style };
@@ -1062,7 +1062,7 @@ export default class Component extends Model.extend(Styleable) {
   initToolbar() {
     const { em } = this;
     const model = this;
-    const ppfx = (em && em.getConfig('stylePrefix')) || '';
+    const ppfx = (em && em.getConfig().stylePrefix) || '';
 
     if (!model.get('toolbar') && em) {
       const tb = [];
@@ -1495,7 +1495,7 @@ export default class Component extends Model.extend(Styleable) {
       }
     }
 
-    if (this.em.getConfig('avoidDefaults')) {
+    if (this.em.getConfig().avoidDefaults) {
       this.getChangedProps(obj);
     }
 

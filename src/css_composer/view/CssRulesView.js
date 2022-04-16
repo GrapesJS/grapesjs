@@ -101,7 +101,7 @@ export default class CssRulesView extends View {
   }
 
   getMediaWidth(mediaText) {
-    return mediaText && mediaText.replace(`(${this.em.getConfig('mediaCondition')}: `, '').replace(')', '');
+    return mediaText && mediaText.replace(`(${this.em.getConfig().mediaCondition}: `, '').replace(')', '');
   }
 
   render() {

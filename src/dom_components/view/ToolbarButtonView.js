@@ -4,7 +4,7 @@ export default Backbone.View.extend({
   events() {
     return (
       this.model.get('events') || {
-        mousedown: 'handleClick'
+        mousedown: 'handleClick',
       }
     );
   },
@@ -43,7 +43,7 @@ export default Backbone.View.extend({
     const calibrated = {
       ...event,
       clientX: event.clientX - left,
-      clientY: event.clientY - top
+      clientY: event.clientY - top,
     };
 
     em.trigger('toolbar:run:before');
@@ -68,10 +68,10 @@ export default Backbone.View.extend({
     const { editor, $el, model } = this;
     const id = model.get('id');
     const label = model.get('label');
-    const pfx = editor.getConfig('stylePrefix');
+    const pfx = editor.getConfig().stylePrefix;
     $el.addClass(`${pfx}toolbar-item`);
     id && $el.addClass(`${pfx}toolbar-item__${id}`);
     label && $el.append(label);
     return this;
-  }
+  },
 });

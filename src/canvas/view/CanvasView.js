@@ -108,7 +108,7 @@ export default class CanvasView extends View {
   }
 
   onWheel(ev) {
-    if ((ev.ctrlKey || ev.metaKey) && this.em.getConfig('multiFrames')) {
+    if ((ev.ctrlKey || ev.metaKey) && this.em.getConfig().multiFrames) {
       this.preventDefault(ev);
       const { model } = this;
       const delta = Math.max(-1, Math.min(1, ev.wheelDelta || -ev.detail));

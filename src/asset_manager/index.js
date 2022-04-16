@@ -136,7 +136,7 @@ export default () => {
 
     __trgCustom() {
       const bhv = this.__getBehaviour();
-      if (!bhv.container && !this.getConfig('custom').open) {
+      if (!bhv.container && !this.getConfig().custom.open) {
         return;
       }
       this.em.trigger(this.events.custom, this.__customData());
@@ -321,7 +321,7 @@ export default () => {
      * ));
      */
     render(assts) {
-      if (this.getConfig('custom')) return;
+      if (this.getConfig().custom) return;
       const toRender = assts || this.getAll().models;
 
       if (!am) {

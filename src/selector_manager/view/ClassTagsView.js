@@ -234,7 +234,7 @@ export default class ClassTagsView extends View {
    */
   updateStateVis(target) {
     const em = this.em;
-    const avoidInline = em && em.getConfig('avoidInlineStyle');
+    const avoidInline = em && em.getConfig().avoidInlineStyle;
     const display = this.collection.length || avoidInline ? '' : 'none';
     this.getStatesC().css('display', display);
     this.updateSelector(target);

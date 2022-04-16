@@ -24,7 +24,7 @@ export default class CssGenerator extends Model {
   buildFromModel(model, opts = {}) {
     let code = '';
     const em = this.em;
-    const avoidInline = em && em.getConfig('avoidInlineStyle');
+    const avoidInline = em && em.getConfig().avoidInlineStyle;
     const style = model.styleToString();
     const classes = model.get('classes');
     this.ids.push(`#${model.getId()}`);
@@ -51,7 +51,7 @@ export default class CssGenerator extends Model {
     this.model = model;
     const codeJson = [];
     let code = model ? this.buildFromModel(model, opts) : '';
-    const clearStyles = isUndefined(opts.clearStyles) && em ? em.getConfig('clearStyles') : opts.clearStyles;
+    const clearStyles = isUndefined(opts.clearStyles) && em ? em.getConfig().clearStyles : opts.clearStyles;
 
     if (cssc) {
       let rules = opts.rules || cssc.getAll();

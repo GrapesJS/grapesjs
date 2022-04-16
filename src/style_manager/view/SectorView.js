@@ -4,7 +4,7 @@ import PropertiesView from './PropertiesView';
 
 export default class SectorView extends View {
   template({ pfx, label }) {
-    const icons = this.em?.getConfig('icons');
+    const icons = this.em?.getConfig().icons;
     const iconCaret = icons?.caret || '';
     const clsPfx = `${pfx}sector-`;
 

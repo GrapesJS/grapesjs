@@ -255,10 +255,10 @@ export default Backbone.Collection.extend({
   onAdd(model, c, opts = {}) {
     const { domc, em } = this;
     const style = model.getStyle();
-    const avoidInline = em && em.getConfig('avoidInlineStyle');
+    const avoidInline = em && em.getConfig().avoidInlineStyle;
     domc && domc.Component.ensureInList(model);
 
-    if (!isEmpty(style) && !avoidInline && em && em.get && em.getConfig('forceClass') && !opts.temporary) {
+    if (!isEmpty(style) && !avoidInline && em && em.get && em.getConfig().forceClass && !opts.temporary) {
       const name = model.cid;
       const rule = em.get('CssComposer').setClassRule(name, style);
       model.setStyle({});

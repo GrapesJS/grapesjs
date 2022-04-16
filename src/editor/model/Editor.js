@@ -326,7 +326,7 @@ export default class EditorModel extends Model {
     const multiple = isArray(el);
     const els = (multiple ? el : [el]).map(el => getModel(el, $));
     const selected = this.getSelectedAll();
-    const mltSel = this.getConfig('multipleSelection');
+    const mltSel = this.getConfig().multipleSelection;
     let added;
 
     // If an array is passed remove all selected
@@ -749,7 +749,7 @@ export default class EditorModel extends Model {
   }
 
   getIcon(icon) {
-    const icons = this.getConfig('icons') || {};
+    const icons = this.getConfig().icons || {};
     return icons[icon] || '';
   }
 
