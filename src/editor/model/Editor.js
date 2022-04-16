@@ -69,7 +69,7 @@ export default class EditorModel extends Model {
   initialize(conf = {}) {
     this._config = conf;
     const { config } = this;
-    this.set('Config', config);
+    this.set('Config', conf);
     this.set('modules', []);
     this.set('toLoad', []);
     this.set('storables', []);
@@ -159,7 +159,7 @@ export default class EditorModel extends Model {
 
     // Defer for storage load events.
     setTimeout(async () => {
-      const projectData = this.getConfig('projectData');
+      const projectData = this.getConfig().projectData;
 
       if (projectData) {
         this.loadData(projectData);
@@ -242,7 +242,7 @@ export default class EditorModel extends Model {
    * Initialize editor model and set editor instance
    * @param {Editor} editor Editor instance
    * @return {this}
-   * @private
+   * @public
    */
   init(editor, opts = {}) {
     if (this.destroyed) {
@@ -298,7 +298,7 @@ export default class EditorModel extends Model {
   /**
    * Returns model of the selected component
    * @return {Component|null}
-   * @private
+   * @public
    */
   getSelected() {
     return this.get('selected').lastComponent();
@@ -307,7 +307,7 @@ export default class EditorModel extends Model {
   /**
    * Returns an array of all selected components
    * @return {Array}
-   * @private
+   * @public
    */
   getSelectedAll() {
     return this.get('selected').allComponents();
@@ -317,7 +317,7 @@ export default class EditorModel extends Model {
    * Select a component
    * @param  {Component|HTMLElement} el Component to select
    * @param  {Object} [opts={}] Options, optional
-   * @private
+   * @public
    */
   setSelected(el, opts = {}) {
     const { event } = opts;
@@ -402,7 +402,7 @@ export default class EditorModel extends Model {
    * Add component to selection
    * @param  {Component|HTMLElement} el Component to select
    * @param  {Object} [opts={}] Options, optional
-   * @private
+   * @public
    */
   addSelected(el, opts = {}) {
     const model = getModel(el, $);
@@ -421,7 +421,7 @@ export default class EditorModel extends Model {
    * Remove component from selection
    * @param  {Component|HTMLElement} el Component to select
    * @param  {Object} [opts={}] Options, optional
-   * @private
+   * @public
    */
   removeSelected(el, opts = {}) {
     this.get('selected').removeComponent(getModel(el, $), opts);
@@ -431,7 +431,7 @@ export default class EditorModel extends Model {
    * Toggle component selection
    * @param  {Component|HTMLElement} el Component to select
    * @param  {Object} [opts={}] Options, optional
-   * @private
+   * @public
    */
   toggleSelected(el, opts = {}) {
     const model = getModel(el, $);
@@ -489,7 +489,7 @@ export default class EditorModel extends Model {
    * @param {Object|string} components HTML string or components model
    * @param {Object} opt the options object to be used by the [setComponents]{@link setComponents} method
    * @return {this}
-   * @private
+   * @public
    */
   setComponents(components, opt = {}) {
     return this.get('DomComponents').setComponents(components, opt);
@@ -515,7 +515,7 @@ export default class EditorModel extends Model {
    * @param {Object|string} style CSS string or style model
    * @param {Object} opt the options object to be used by the `CssRules.add` method
    * @return {this}
-   * @private
+   * @public
    */
   setStyle(style, opt = {}) {
     const cssc = this.get('CssComposer');
@@ -528,7 +528,7 @@ export default class EditorModel extends Model {
    * Add styles to the editor
    * @param {Array<Object>|Object|string} style CSS string or style model
    * @returns {Array<CssRule>}
-   * @private
+   * @public
    */
   addStyle(style, opts = {}) {
     const res = this.getStyle().add(style, opts);
@@ -566,7 +566,7 @@ export default class EditorModel extends Model {
    * Returns HTML built inside canvas
    * @param {Object} [opts={}] Options
    * @returns {string} HTML string
-   * @private
+   * @public
    */
   getHtml(opts = {}) {
     const { config } = this;
@@ -587,7 +587,7 @@ export default class EditorModel extends Model {
    * Returns CSS built inside canvas
    * @param {Object} [opts={}] Options
    * @returns {string} CSS string
-   * @private
+   * @public
    */
   getCss(opts = {}) {
     const config = this.config;
@@ -611,7 +611,7 @@ export default class EditorModel extends Model {
   /**
    * Returns JS of all components
    * @return {string} JS string
-   * @private
+   * @public
    */
   getJs(opts = {}) {
     var wrp = opts.component || this.get('DomComponents').getWrapper();
@@ -620,7 +620,7 @@ export default class EditorModel extends Model {
 
   /**
    * Store data to the current storage.
-   * @private
+   * @public
    */
   async store(options) {
     const data = this.storeData();
@@ -631,7 +631,7 @@ export default class EditorModel extends Model {
 
   /**
    * Load data from the current storage.
-   * @private
+   * @public
    */
   async load(options) {
     const result = await this.get('StorageManager').load(options);
@@ -696,7 +696,7 @@ export default class EditorModel extends Model {
 
   /**
    * Update canvas dimensions and refresh data useful for tools positioning
-   * @private
+   * @public
    */
   refreshCanvas(opts = {}) {
     this.set('canvasOffset', null);
