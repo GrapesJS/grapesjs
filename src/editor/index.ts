@@ -55,17 +55,18 @@
  * @module Editor
  */
 import { EventHandler } from 'backbone';
-import Module from '../abstract/Module';
+import { IBaseModule } from '../abstract/Module';
 import cash from '../utils/cash-dom';
 import html from '../utils/html';
 import defaults from './config/config';
 import EditorModel from './model/Editor';
 import EditorView from './view/EditorView';
 
-export default class EditorModule extends Module<typeof defaults> {
+export default class EditorModule implements IBaseModule<typeof defaults> {
   constructor(config = {}, opts: any = {}) {
-    var c = { ...defaults, ...config, pStylePrefix: defaults.stylePrefix };
-    super(new EditorModel(c), c)
+    //@ts-ignore
+    this.config = { ...defaults, ...config, pStylePrefix: defaults.stylePrefix };
+    this.em = new EditorModel(this.config);
     this.$ = opts.$;
     this.em.init(this);
     this.editor = this.em;
@@ -73,12 +74,8 @@ export default class EditorModule extends Module<typeof defaults> {
   editorView?: EditorView;
   editor: EditorModel;
   $: cash;
-
-  /**
-   * @property {EditorModel}
-   * @private
-   */
-  //editor = em
+  em: EditorModel;
+  config: typeof defaults;
 
   modules = [];
 
@@ -212,6 +209,10 @@ export default class EditorModule extends Module<typeof defaults> {
   //@ts-ignore
   get DeviceManager(): DeviceManagerModule {
     return this.em.get("DeviceManager");
+  }
+
+  getConfig(){
+    return this.config
   }
 
   /**

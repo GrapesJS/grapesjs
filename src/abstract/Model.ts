@@ -1,8 +1,8 @@
 import Backbone from "backbone";
-import Module from "./Module";
+import Module, { IBaseModule } from "./Module";
 
 export default class Model<
-  TModule extends Module = Module,
+  TModule extends IBaseModule<any> = Module,
   T extends Backbone.ObjectHash = any,
   S = Backbone.ModelSetOptions,
   E = any
@@ -20,5 +20,9 @@ export default class Model<
 
   public get module() {
     return this._module;
+  }
+
+  public get config(): TModule extends IBaseModule<infer C>? C: unknown{
+    return this._module.config
   }
 }

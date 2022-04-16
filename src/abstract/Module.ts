@@ -1,6 +1,6 @@
 import EditorModel from "../editor/model/Editor";
 
-export interface IModule {
+export interface IModule<TConfig extends any> extends IBaseModule<TConfig> {
   init(cfg: any): void;
   destroy(): void;
   postLoad(key: any): any;
@@ -10,13 +10,18 @@ export interface IModule {
   postRender?(view: any): void;
 }
 
+export interface IBaseModule<TConfig extends any> {
+  em: EditorModel;
+  config: TConfig;
+}
+
 interface ModuleConfig{
   name: string;
   stylePrefix?: string;
 }
 
 export default abstract class Module<T extends ModuleConfig = ModuleConfig>
-  implements IModule
+  implements IModule<T>
 {
   //conf: CollectionCollectionModuleConfig;
   private _em: EditorModel;
