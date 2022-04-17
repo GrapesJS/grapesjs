@@ -703,7 +703,7 @@ export default class Component extends Model.extend(Styleable) {
     let result = [];
     const { em } = this;
     const { changed } = opts;
-    const symbEnabled = em && em.get('symbols');
+    const symbEnabled = em && em.config.symbols;
 
     if (
       opts.fromInstance ||
