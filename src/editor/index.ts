@@ -761,11 +761,7 @@ export default class EditorModule implements IBaseModule<typeof defaults> {
    */
   render() {
     this.editorView?.remove();
-    this.editorView = new EditorView({
-      model: this.em,
-      //@ts-ignore
-      config: this.config,
-    });
+    this.editorView = new EditorView(this.em);
     return this.editorView.render().el;
   }
 
