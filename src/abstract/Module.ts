@@ -1,6 +1,6 @@
 import EditorModel from "../editor/model/Editor";
 
-export interface IModule<TConfig extends any> extends IBaseModule<TConfig> {
+export interface IModule<TConfig extends any = any> extends IBaseModule<TConfig> {
   init(cfg: any): void;
   destroy(): void;
   postLoad(key: any): any;
