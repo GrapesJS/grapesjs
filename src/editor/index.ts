@@ -211,6 +211,7 @@ export default class EditorModule implements IBaseModule<typeof defaults> {
     return this.em.get("DeviceManager");
   }
 
+  //@deprecated
   getConfig(){
     return this.config
   }

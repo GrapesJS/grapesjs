@@ -77,8 +77,8 @@ export default class EditorModel extends Model {
   destroyed = false;
   _config: any;
   attrsOrig: any;
-  timedInterval?: NodeJS.Timeout;
-  updateItr?: NodeJS.Timeout;
+timedInterval?: number;
+  updateItr?: number;
   view?: EditorView
 
 
@@ -224,6 +224,7 @@ export default class EditorModel extends Model {
     const stm = this.get('StorageManager');
     const changes = this.getDirtyCount();
     this.updateItr && clearTimeout(this.updateItr);
+    //@ts-ignore
     this.updateItr = setTimeout(() => this.trigger('update'));
 
     if (this.config.noticeOnUnload) {
@@ -321,6 +322,7 @@ export default class EditorModel extends Model {
     }
 
     this.timedInterval && clearTimeout(this.timedInterval);
+    //@ts-ignore
     this.timedInterval = setTimeout(() => {
       const curr = this.getDirtyCount() || 0;
       const { unset, ...opts } = opt;
