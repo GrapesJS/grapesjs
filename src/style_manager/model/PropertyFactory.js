@@ -179,12 +179,6 @@ export default class PropertyFactory {
       ['box-shadow-spread', {}, 'text-shadow-h'],
       ['transition-duration', { default: '2s', units: this.unitsTime }, 'border-radius-c'],
       ['perspective', {}, 'border-radius-c'],
-      ['transform-rotate-x', { functionName: 'rotateX', units: this.unitsAngle, default: '0', type: typeNumber }],
-      ['transform-rotate-y', { functionName: 'rotateY' }, 'transform-rotate-x'],
-      ['transform-rotate-z', { functionName: 'rotateZ' }, 'transform-rotate-x'],
-      ['transform-scale-x', { default: '1', functionName: 'scaleX', units: undefined }, 'transform-rotate-x'],
-      ['transform-scale-y', { functionName: 'scaleY' }, 'transform-scale-x'],
-      ['transform-scale-z', { functionName: 'scaleZ' }, 'transform-scale-x'],
       ['order', { type: typeNumber, default: '0', requiresParent: requireFlex }],
       ['flex-grow', {}, 'order'],
       ['flex-shrink', { default: '1' }, 'order'],
@@ -278,20 +272,6 @@ export default class PropertyFactory {
         },
         'margin',
       ],
-      [
-        'transform',
-        {
-          properties: this.__sub([
-            'transform-rotate-x',
-            'transform-rotate-y',
-            'transform-rotate-z',
-            'transform-scale-x',
-            'transform-scale-y',
-            'transform-scale-z',
-          ]),
-        },
-        'margin',
-      ],
 
       // Stack types
       [
@@ -361,6 +341,63 @@ export default class PropertyFactory {
           ]),
         },
         'box-shadow',
+      ],
+      [
+        'transform',
+        {
+          type: 'stack',
+          layerSeparator: ' ',
+          fromStyle(style, { property, name }) {
+            const filter = style[name] || '';
+            const sep = property.getLayerSeparator();
+            return filter
+              ? filter.split(sep).map(input => {
+                  const { name, value } = property.__parseFn(input);
+                  return { name, value };
+                })
+              : [];
+          },
+          toStyle(values, { name }) {
+            return { [name]: `${values.name}(${values.value})` };
+          },
+          properties: [
+            {
+              property: 'name',
+              name: 'Type',
+              type: this.typeSelect,
+              default: 'rotateZ',
+              full: true,
+              options: [
+                { id: 'scaleX', propValue: { units: [''], step: 0.01 } },
+                { id: 'scaleY', propValue: { units: [''], step: 0.01 } },
+                { id: 'scaleZ', propValue: { units: [''], step: 0.01 } },
+                { id: 'rotateX', propValue: { units: this.unitsAngle, step: 1 } },
+                { id: 'rotateY', propValue: { units: this.unitsAngle, step: 1 } },
+                { id: 'rotateZ', propValue: { units: this.unitsAngle, step: 1 } },
+                { id: 'translateX', propValue: { units: this.unitsSize, step: 1 } },
+                { id: 'translateY', propValue: { units: this.unitsSize, step: 1 } },
+              ],
+              onChange({ property, to }) {
+                if (to.value) {
+                  const option = property.getOption();
+                  const props = { ...(option.propValue || {}) };
+                  const propToUp = property.getParent().getProperty('value');
+                  const unit = propToUp.getUnit();
+                  if (!unit || props?.units.indexOf(unit) < 0) {
+                    props.unit = props?.units[0] || '';
+                  }
+                  propToUp.up(props);
+                }
+              },
+            },
+            {
+              property: 'value',
+              type: this.typeNumber,
+              default: '0',
+              full: true,
+            },
+          ],
+        },
       ],
     ].forEach(([prop, def, from]) => {
       this.add(prop, def || {}, { from });
