@@ -27,31 +27,8 @@
  * @module I18n
  */
 import { isUndefined, isString } from 'underscore';
-import { hasWin } from '../utils/mixins';
+import { hasWin, deepMerge } from '../utils/mixins';
 import defaults from './config';
-
-const isObj = el => !Array.isArray(el) && el !== null && typeof el === 'object';
-
-const deepAssign = (...args) => {
-  const target = { ...args[0] };
-
-  for (let i = 1; i < args.length; i++) {
-    const source = { ...args[i] };
-
-    for (let key in source) {
-      const targValue = target[key];
-      const srcValue = source[key];
-
-      if (isObj(targValue) && isObj(srcValue)) {
-        target[key] = deepAssign(targValue, srcValue);
-      } else {
-        target[key] = srcValue;
-      }
-    }
-  }
-
-  return target;
-};
 
 export default class I18nModule {
   name = 'I18n';
@@ -167,7 +144,7 @@ export default class I18nModule {
     const { em } = this;
     const { messages } = this.config;
     em && em.trigger('i18n:add', msg);
-    this.setMessages(deepAssign(messages, msg));
+    this.setMessages(deepMerge(messages, msg));
 
     return this;
   }
