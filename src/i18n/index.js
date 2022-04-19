@@ -27,7 +27,7 @@
  * @module I18n
  */
 import { isUndefined, isString } from 'underscore';
-import { hasWin } from 'utils/mixins';
+import { hasWin } from '../utils/mixins';
 import defaults from './config';
 
 const isObj = el => !Array.isArray(el) && el !== null && typeof el === 'object';
