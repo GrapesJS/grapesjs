@@ -8,7 +8,7 @@ describe('I18n', () => {
     let em = editor.getModel();
 
     beforeEach(() => {
-      obj = I18n();
+      obj = new I18n();
       obj.init({ em });
     });
 
