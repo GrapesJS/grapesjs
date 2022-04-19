@@ -29,6 +29,10 @@ declare namespace Backbone {
 }
 
 declare module grapesjs {
+  type PluginOptions = Record<string, any>;
+
+  type Plugin<T extends PluginOptions = {}> = (editor: Editor, config: T) => void;
+
   interface EditorConfig {
     /** Selector which indicates where render the editor */
     container?: string | HTMLElement;
@@ -37,7 +41,7 @@ declare module grapesjs {
     autorender?: boolean;
 
     /** Array of plugins to execute on start */
-    plugins?: any[];
+    plugins?: (string | Plugin)[];
 
     /** Custom options for plugins */
     pluginsOpts?: Record<string, any>;
@@ -3626,7 +3630,7 @@ declare module grapesjs {
      * @param storage.load - Load method
      * @param storage.store - Store method
      */
-    add(id: string, storage: IStorage): this;
+     add<T extends StorageOptions>(id: string, storage: IStorage<T>): this;
     /**
      * Returns storage by id
      * @param id - Storage ID
@@ -3684,9 +3688,9 @@ declare module grapesjs {
 
   }
 
-  interface IStorage {
-    load: (options: StorageOptions) => Promise<ProjectData>;
-    store: (data: ProjectData, options: StorageOptions) => Promise<ProjectData>;
+  interface IStorage<T extends StorageOptions = {}> {
+    load: (options: T) => Promise<ProjectData>;
+    store: (data: ProjectData, options: T) => Promise<any>;
   }
 
   /**
