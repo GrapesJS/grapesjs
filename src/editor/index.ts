@@ -55,6 +55,7 @@
  * @module Editor
  */
 import { EventHandler } from 'backbone';
+import { isUndefined } from 'underscore';
 import { IBaseModule } from '../abstract/Module';
 import cash from '../utils/cash-dom';
 import html from '../utils/html';
@@ -212,8 +213,10 @@ export default class EditorModule implements IBaseModule<typeof defaults> {
   }
 
   //@deprecated
-  getConfig(){
-    return this.config
+  getConfig(prop?: string) {
+    const config = this.config;
+    //@ts-ignore
+    return isUndefined(prop) ? config : config[prop];
   }
 
   /**

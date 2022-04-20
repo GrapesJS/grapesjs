@@ -1,5 +1,5 @@
 export default {
-  name: 'Editor',
+  
   // Style prefix
   stylePrefix: 'gjs-',
 
