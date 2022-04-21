@@ -99,7 +99,7 @@ export default class InputColor extends Input {
       var colorEl = $(`<div class="${this.ppfx}field-color-picker"></div>`);
       var cpStyle = colorEl.get(0).style;
       var elToAppend = em && em.config ? em.config.el : '';
-      var colorPickerConfig = (em && em.getConfig && em.getConfig('colorPicker')) || {};
+      var colorPickerConfig = (em && em.getConfig && em.getConfig().colorPicker) || {};
 
       let changed = 0;
       let previousColor;

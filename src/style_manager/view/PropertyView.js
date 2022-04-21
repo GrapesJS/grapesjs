@@ -17,7 +17,7 @@ export default class Property extends View {
     const { pfx, em } = this;
     const { parent } = model;
     const { icon = '', info = '' } = model.attributes;
-    const icons = em?.getConfig('icons');
+    const icons = em?.getConfig().icons;
     const iconClose = icons?.close || '';
 
     return `

@@ -6,7 +6,7 @@ export default class View<
   TElement extends Element = HTMLElement
 > extends Backbone.View<TModel, TElement> {
   protected get pfx() {
-    return this.model.module.em.config.stylePrefix || "";
+    return (this.model.module.em.config as any).stylePrefix || "";
   }
 
   protected get ppfx() {

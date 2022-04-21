@@ -13,7 +13,7 @@ export default class PropertyStackView extends PropertyCompositeView {
 
   templateInput() {
     const { pfx, em } = this;
-    const icons = em?.getConfig('icons');
+    const icons = em?.getConfig().icons;
     const iconPlus = icons?.plus || '+';
     return `
       <div class="${pfx}field ${pfx}stack">

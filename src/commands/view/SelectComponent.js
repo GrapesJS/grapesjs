@@ -61,7 +61,7 @@ export default {
    * */
   toggleSelectComponent(enable) {
     const { em } = this;
-    const listenToEl = em.getConfig('listenToEl');
+    const listenToEl = em.getConfig().listenToEl;
     const { parentNode } = em.getContainer();
     const method = enable ? 'on' : 'off';
     const methods = { on, off };

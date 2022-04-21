@@ -232,7 +232,7 @@ export default Backbone.View.extend({
   updateStyle(m, v, opts = {}) {
     const { model, em } = this;
 
-    if (em && em.getConfig('avoidInlineStyle') && !opts.inline) {
+    if (em && em.getConfig().avoidInlineStyle && !opts.inline) {
       const style = model.getStyle();
       !isEmpty(style) && model.setStyle(style);
     } else {

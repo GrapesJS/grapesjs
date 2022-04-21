@@ -1,4 +1,5 @@
 export default {
+  
   // Style prefix
   stylePrefix: 'gjs-',
 
@@ -18,7 +19,7 @@ export default {
    * If true, will fetch HTML and CSS from selected container
    * @deprecated
    */
-  fromElement: 0,
+  fromElement: false,
 
   /**
    * Initial project data
@@ -94,17 +95,17 @@ export default {
   defaultCommand: 'select-comp',
 
   // Show a toolbar when the component is selected
-  showToolbar: 1,
+  showToolbar: true,
 
   // Allow script tag importing
   // @deprecated in favor of `config.parser.optionsHtml.allowScripts`
   // allowScripts: 0,
 
   // If true render a select of available devices
-  showDevices: 1,
+  showDevices: true,
 
   // When enabled, on device change media rules won't be created
-  devicePreviewMode: 0,
+  devicePreviewMode: false,
 
   // THe condition to use for media queries, eg. 'max-width'
   // Comes handy for mobile-first cases
@@ -117,16 +118,16 @@ export default {
   tagVarEnd: ' ]}',
 
   // When false, removes empty text nodes when parsed, unless they contain a space
-  keepEmptyTextNodes: 0,
+  keepEmptyTextNodes: false,
 
   // Return JS of components inside HTML from 'editor.getHtml()'
   jsInHtml: true,
 
   // Enable native HTML5 drag and drop
-  nativeDnD: 1,
+  nativeDnD: true,
 
   // Enable multiple selection
-  multipleSelection: 1,
+  multipleSelection: true,
 
   // Pass default available options wherever `editor.getHtml()` is called
   optsHtml: {},
@@ -139,12 +140,12 @@ export default {
   // use of media queries (@media) or even pseudo selectors (eg. :hover).
   // When `avoidInlineStyle` is true all styles are inserted inside the css rule
   // @deprecated Don't use this option, we don't support inline styling anymore
-  avoidInlineStyle: 1,
+  avoidInlineStyle: true,
 
   // Avoid default properties from storable JSON data, like `components` and `styles`.
   // With this option enabled your data will be smaller (usefull if need to
   // save some storage space)
-  avoidDefaults: 1,
+  avoidDefaults: true,
 
   // (experimental)
   // The structure of components is always on the screen but it's not the same
@@ -154,7 +155,7 @@ export default {
   // any case where `CssGenerator.build` is used) will be removed automatically.
   // But be careful, not always leaving the style not used mean you wouldn't
   // use it later, but this option comes really handy when deal with big templates.
-  clearStyles: 0,
+  clearStyles: false,
 
   // Specify the global drag mode of components. By default, components are moved
   // following the HTML flow. Two other options are available:
@@ -249,10 +250,10 @@ export default {
   textViewCode: 'Code',
 
   // Keep unused styles within the editor
-  keepUnusedStyles: 0,
+  keepUnusedStyles: false,
 
   // TODO
-  multiFrames: 0,
+  multiFrames: false,
 
   // Experimental: don't use.
   // Avoid default UI styles

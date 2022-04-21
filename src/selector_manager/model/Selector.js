@@ -127,7 +127,7 @@ export default class Selector extends Model {
     let obj = Model.prototype.toJSON.call(this, [opts]);
     const defaults = result(this, 'defaults');
 
-    if (em && em.getConfig('avoidDefaults')) {
+    if (em && em.getConfig().avoidDefaults) {
       forEach(defaults, (value, key) => {
         if (obj[key] === value) {
           delete obj[key];

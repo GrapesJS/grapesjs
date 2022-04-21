@@ -5,7 +5,12 @@ import Extender from '../../utils/extender';
 import { getModel, hasWin } from '../../utils/mixins';
 import { Model } from '../../common';
 import Selected from './Selected';
+import FrameView from '../../canvas/view/FrameView';
+import EditorModule from '..';
+import EditorView from '../view/EditorView';
+import { IModule } from '../../abstract/Module';
 
+//@ts-ignore
 Backbone.$ = $;
 
 const deps = [
@@ -33,10 +38,11 @@ const deps = [
   require('block_manager'),
 ];
 
-let timedInterval;
-let updateItr;
+const ts_deps: any[] = [
+];
 
 Extender({
+  //@ts-ignore
   Backbone: Backbone,
   $: Backbone.$,
 });
@@ -66,10 +72,33 @@ export default class EditorModel extends Model {
     };
   }
 
-  initialize(conf = {}) {
+  __skip = false;
+  defaultRunning = false;
+  destroyed = false;
+  _config: any;
+  attrsOrig: any;
+timedInterval?: number;
+  updateItr?: number;
+  view?: EditorView
+
+
+  get storables(): any[]{
+    return this.get("storables")
+  }
+
+  get modules(): IModule[]{
+    return this.get("modules")
+  }
+
+  get toLoad(): any[]{
+    return this.get("toLoad")
+  }
+
+  constructor(conf = {}) {
+    super()
     this._config = conf;
     const { config } = this;
-    this.set('Config', config);
+    this.set('Config', conf);
     this.set('modules', []);
     this.set('toLoad', []);
     this.set('storables', []);
@@ -97,6 +126,7 @@ export default class EditorModel extends Model {
 
     // Load modules
     deps.forEach(name => this.loadModule(name));
+    ts_deps.forEach(name => this.tsLoadModule(name));
     this.on('change:componentHovered', this.componentHovered, this);
     this.on('change:changesCount', this.updateChanges, this);
     this.on('change:readyLoad change:readyCanvas', this._checkReady, this);
@@ -123,7 +153,8 @@ export default class EditorModel extends Model {
     return this.config.el;
   }
 
-  listenLog(event) {
+  listenLog(event: string) {
+    //@ts-ignore
     this.listenTo(this, `log:${event}`, logs[event]);
   }
 
@@ -137,7 +168,7 @@ export default class EditorModel extends Model {
    * @return {any} Returns the configuration object or
    *  the value of the specified property
    */
-  getConfig(prop) {
+  getConfig(prop?: string) {
     const config = this.config;
     return isUndefined(prop) ? config : config[prop];
   }
@@ -148,18 +179,17 @@ export default class EditorModel extends Model {
    */
   loadOnStart() {
     // In `onLoad`, the module will try to load the data from its configurations.
-    this.get('toLoad').forEach(mdl => mdl.onLoad());
+    this.toLoad.forEach(mdl => mdl.onLoad());
 
     // Stuff to do post load
     const postLoad = () => {
-      const modules = this.get('modules');
-      modules.forEach(mdl => mdl.postLoad && mdl.postLoad(this));
+      this.modules.forEach(mdl => mdl.postLoad && mdl.postLoad(this));
       this.set('readyLoad', 1);
     };
 
     // Defer for storage load events.
     setTimeout(async () => {
-      const projectData = this.getConfig('projectData');
+      const projectData = this.getConfig().projectData;
 
       if (projectData) {
         this.loadData(projectData);
@@ -167,7 +197,7 @@ export default class EditorModel extends Model {
         try {
           await this.load();
         } catch (error) {
-          this.logError(error);
+          this.logError(error as string);
         }
       }
       postLoad();
@@ -193,8 +223,9 @@ export default class EditorModel extends Model {
   updateChanges() {
     const stm = this.get('StorageManager');
     const changes = this.getDirtyCount();
-    updateItr && clearTimeout(updateItr);
-    updateItr = setTimeout(() => this.trigger('update'));
+    this.updateItr && clearTimeout(this.updateItr);
+    //@ts-ignore
+    this.updateItr = setTimeout(() => this.trigger('update'));
 
     if (this.config.noticeOnUnload) {
       window.onbeforeunload = changes ? e => 1 : null;
@@ -211,7 +242,7 @@ export default class EditorModel extends Model {
    * @return {this}
    * @private
    */
-  loadModule(moduleName) {
+  loadModule(moduleName: any) {
     const { config } = this;
     const Module = moduleName.default || moduleName;
     const Mod = new Module();
@@ -225,7 +256,7 @@ export default class EditorModel extends Model {
     }
 
     if (Mod.storageKey && Mod.store && Mod.load) {
-      this.get('storables').push(Mod);
+      this.storables.push(Mod);
     }
 
     cfg.em = this;
@@ -233,21 +264,41 @@ export default class EditorModel extends Model {
 
     // Bind the module to the editor model if public
     !Mod.private && this.set(Mod.name, Mod);
-    Mod.onLoad && this.get('toLoad').push(Mod);
-    this.get('modules').push(Mod);
+    Mod.onLoad && this.toLoad.push(Mod);
+    this.modules.push(Mod);
     return this;
   }
 
   /**
-   * Initialize editor model and set editor instance
-   * @param {Editor} editor Editor instance
+   * Load generic module
+   * @param {String} moduleName Module name
    * @return {this}
    * @private
    */
-  init(editor, opts = {}) {
+   tsLoadModule(moduleName: any) {
+    const Module = moduleName.default || moduleName;
+    const Mod = new Module(this);
+
+    if (Mod.storageKey && Mod.store && Mod.load) {
+      this.storables.push(Mod);
+    }
+
+    // Bind the module to the editor model if public
+    !Mod.private && this.set(Mod.name, Mod);
+    Mod.onLoad && this.toLoad.push(Mod);
+    this.modules.push(Mod);
+    return this;
+  }
+  /**
+   * Initialize editor model and set editor instance
+   * @param {Editor} editor Editor instance
+   * @return {this}
+   * @public
+   */
+  init(editor: EditorModule, opts = {}) {
     if (this.destroyed) {
       this.initialize(opts);
-      this.destroyed = 0;
+      this.destroyed = false;
     }
     this.set('Editor', editor);
   }
@@ -264,21 +315,22 @@ export default class EditorModel extends Model {
    * @param  {Object} opt  Options
    * @private
    * */
-  handleUpdates(model, val, opt = {}) {
+  handleUpdates(model: any, val: any, opt: any = {}) {
     // Component has been added temporarily - do not update storage or record changes
     if (this.__skip || opt.temporary || opt.noCount || opt.avoidStore || !this.get('ready')) {
       return;
     }
 
-    timedInterval && clearTimeout(timedInterval);
-    timedInterval = setTimeout(() => {
+    this.timedInterval && clearTimeout(this.timedInterval);
+    //@ts-ignore
+    this.timedInterval = setTimeout(() => {
       const curr = this.getDirtyCount() || 0;
       const { unset, ...opts } = opt;
       this.set('changesCount', curr + 1, opts);
     }, 0);
   }
 
-  changesUp(opts) {
+  changesUp(opts: any) {
     this.handleUpdates(0, 0, opts);
   }
 
@@ -289,7 +341,7 @@ export default class EditorModel extends Model {
    * @param   {Object}   Options
    * @private
    * */
-  componentHovered(editor, component, options) {
+  componentHovered(editor: any, component: any, options: any) {
     const prev = this.previous('componentHovered');
     prev && this.trigger('component:unhovered', prev, options);
     component && this.trigger('component:hovered', component, options);
@@ -298,7 +350,7 @@ export default class EditorModel extends Model {
   /**
    * Returns model of the selected component
    * @return {Component|null}
-   * @private
+   * @public
    */
   getSelected() {
     return this.get('selected').lastComponent();
@@ -307,9 +359,9 @@ export default class EditorModel extends Model {
   /**
    * Returns an array of all selected components
    * @return {Array}
-   * @private
+   * @public
    */
-  getSelectedAll() {
+  getSelectedAll(): any[] {
     return this.get('selected').allComponents();
   }
 
@@ -317,16 +369,16 @@ export default class EditorModel extends Model {
    * Select a component
    * @param  {Component|HTMLElement} el Component to select
    * @param  {Object} [opts={}] Options, optional
-   * @private
+   * @public
    */
-  setSelected(el, opts = {}) {
+  setSelected(el: any, opts: any = {}) {
     const { event } = opts;
     const ctrlKey = event && (event.ctrlKey || event.metaKey);
     const { shiftKey } = event || {};
     const multiple = isArray(el);
     const els = (multiple ? el : [el]).map(el => getModel(el, $));
     const selected = this.getSelectedAll();
-    const mltSel = this.getConfig('multipleSelection');
+    const mltSel = this.getConfig().multipleSelection;
     let added;
 
     // If an array is passed remove all selected
@@ -334,7 +386,7 @@ export default class EditorModel extends Model {
     multiple && this.removeSelected(selected.filter(s => !contains(els, s)));
 
     els.forEach(el => {
-      let model = getModel(el);
+      let model = getModel(el, undefined);
 
       if (model) {
         this.trigger('component:select:before', model, opts);
@@ -358,7 +410,7 @@ export default class EditorModel extends Model {
         this.clearSelection(this.get('Canvas').getWindow());
         const coll = model.collection;
         const index = model.index();
-        let min, max;
+        let min: number|undefined, max: number|undefined;
 
         // Fin min and max siblings
         this.getSelectedAll().forEach(sel => {
@@ -402,9 +454,9 @@ export default class EditorModel extends Model {
    * Add component to selection
    * @param  {Component|HTMLElement} el Component to select
    * @param  {Object} [opts={}] Options, optional
-   * @private
+   * @public
    */
-  addSelected(el, opts = {}) {
+  addSelected(el: any, opts: any = {}) {
     const model = getModel(el, $);
     const models = isArray(model) ? model : [model];
 
@@ -421,9 +473,9 @@ export default class EditorModel extends Model {
    * Remove component from selection
    * @param  {Component|HTMLElement} el Component to select
    * @param  {Object} [opts={}] Options, optional
-   * @private
+   * @public
    */
-  removeSelected(el, opts = {}) {
+  removeSelected(el: any, opts = {}) {
     this.get('selected').removeComponent(getModel(el, $), opts);
   }
 
@@ -431,9 +483,9 @@ export default class EditorModel extends Model {
    * Toggle component selection
    * @param  {Component|HTMLElement} el Component to select
    * @param  {Object} [opts={}] Options, optional
-   * @private
+   * @public
    */
-  toggleSelected(el, opts = {}) {
+  toggleSelected(el: any, opts = {}) {
     const model = getModel(el, $);
     const models = isArray(model) ? model : [model];
 
@@ -452,11 +504,11 @@ export default class EditorModel extends Model {
    * @param  {Object} [opts={}] Options, optional
    * @private
    */
-  setHovered(el, opts = {}) {
+  setHovered(el: any, opts: any = {}) {
     if (!el) return this.set('componentHovered', '');
 
     const ev = 'component:hover';
-    let model = getModel(el);
+    let model = getModel(el, undefined);
 
     if (!model) return;
 
@@ -489,9 +541,9 @@ export default class EditorModel extends Model {
    * @param {Object|string} components HTML string or components model
    * @param {Object} opt the options object to be used by the [setComponents]{@link setComponents} method
    * @return {this}
-   * @private
+   * @public
    */
-  setComponents(components, opt = {}) {
+  setComponents(components: any, opt = {}) {
     return this.get('DomComponents').setComponents(components, opt);
   }
 
@@ -515,9 +567,9 @@ export default class EditorModel extends Model {
    * @param {Object|string} style CSS string or style model
    * @param {Object} opt the options object to be used by the `CssRules.add` method
    * @return {this}
-   * @private
+   * @public
    */
-  setStyle(style, opt = {}) {
+  setStyle(style: any, opt = {}) {
     const cssc = this.get('CssComposer');
     cssc.clear(opt);
     cssc.getAll().add(style, opt);
@@ -528,9 +580,9 @@ export default class EditorModel extends Model {
    * Add styles to the editor
    * @param {Array<Object>|Object|string} style CSS string or style model
    * @returns {Array<CssRule>}
-   * @private
+   * @public
    */
-  addStyle(style, opts = {}) {
+  addStyle(style: any, opts = {}) {
     const res = this.getStyle().add(style, opts);
     return isArray(res) ? res : [res];
   }
@@ -549,7 +601,7 @@ export default class EditorModel extends Model {
    * @param {String} value State value
    * @returns {this}
    */
-  setState(value) {
+  setState(value: string) {
     this.set('state', value);
     return this;
   }
@@ -566,9 +618,9 @@ export default class EditorModel extends Model {
    * Returns HTML built inside canvas
    * @param {Object} [opts={}] Options
    * @returns {string} HTML string
-   * @private
+   * @public
    */
-  getHtml(opts = {}) {
+  getHtml(opts: any = {}) {
     const { config } = this;
     const { optsHtml } = config;
     const js = config.jsInHtml ? this.getJs(opts) : '';
@@ -587,9 +639,9 @@ export default class EditorModel extends Model {
    * Returns CSS built inside canvas
    * @param {Object} [opts={}] Options
    * @returns {string} CSS string
-   * @private
+   * @public
    */
-  getCss(opts = {}) {
+  getCss(opts: any = {}) {
     const config = this.config;
     const { optsCss } = config;
     const avoidProt = opts.avoidProtected;
@@ -611,18 +663,18 @@ export default class EditorModel extends Model {
   /**
    * Returns JS of all components
    * @return {string} JS string
-   * @private
+   * @public
    */
-  getJs(opts = {}) {
+  getJs(opts: any = {}) {
     var wrp = opts.component || this.get('DomComponents').getWrapper();
     return wrp ? this.get('CodeManager').getCode(wrp, 'js').trim() : '';
   }
 
   /**
    * Store data to the current storage.
-   * @private
+   * @public
    */
-  async store(options) {
+  async store(options?: any) {
     const data = this.storeData();
     await this.get('StorageManager').store(data, options);
     this.clearDirtyCount();
@@ -631,9 +683,9 @@ export default class EditorModel extends Model {
 
   /**
    * Load data from the current storage.
-   * @private
+   * @public
    */
-  async load(options) {
+  async load(options?: any) {
     const result = await this.get('StorageManager').load(options);
     this.loadData(result);
     return result;
@@ -645,16 +697,15 @@ export default class EditorModel extends Model {
     const editingCmp = this.getEditing();
     editingCmp && editingCmp.trigger('sync:content', { noCount: true });
 
-    this.get('storables').forEach(m => {
+    this.storables.forEach(m => {
       result = { ...result, ...m.store(1) };
     });
     return JSON.parse(JSON.stringify(result));
   }
 
   loadData(data = {}) {
-    const storableModules = this.get('storables');
-    storableModules.forEach(module => module.clear());
-    storableModules.forEach(module => module.load(data));
+    this.storables.forEach(module => module.clear());
+    this.storables.forEach(module => module.load(data));
     return data;
   }
 
@@ -678,7 +729,7 @@ export default class EditorModel extends Model {
     if (!command || this.defaultRunning) return;
     command.stop(this, this, opts);
     command.run(this, this, opts);
-    this.defaultRunning = 1;
+    this.defaultRunning = true;
   }
 
   /**
@@ -691,14 +742,14 @@ export default class EditorModel extends Model {
     const command = commands.get(this.config.defaultCommand);
     if (!command || !this.defaultRunning) return;
     command.stop(this, this, opts);
-    this.defaultRunning = 0;
+    this.defaultRunning = false;
   }
 
   /**
    * Update canvas dimensions and refresh data useful for tools positioning
-   * @private
+   * @public
    */
-  refreshCanvas(opts = {}) {
+  refreshCanvas(opts: any = {}) {
     this.set('canvasOffset', null);
     this.set('canvasOffset', this.get('Canvas').getOffset());
     opts.tools && this.trigger('canvas:updateTools');
@@ -710,9 +761,9 @@ export default class EditorModel extends Model {
    * @param {Window} win If not passed the current one will be used
    * @private
    */
-  clearSelection(win) {
+  clearSelection(win?: Window) {
     var w = win || window;
-    w.getSelection().removeAllRanges();
+    w.getSelection()?.removeAllRanges();
   }
 
   /**
@@ -736,11 +787,11 @@ export default class EditorModel extends Model {
     return this.get('DomComponents').getWrapper();
   }
 
-  setCurrentFrame(frameView) {
+  setCurrentFrame(frameView: FrameView) {
     return this.set('currentFrame', frameView);
   }
 
-  getCurrentFrame() {
+  getCurrentFrame(): FrameView {
     return this.get('currentFrame');
   }
 
@@ -748,8 +799,8 @@ export default class EditorModel extends Model {
     return (this.getCurrentFrame() || {}).model;
   }
 
-  getIcon(icon) {
-    const icons = this.getConfig('icons') || {};
+  getIcon(icon: string) {
+    const icons = this.config.icons || {};
     return icons[icon] || '';
   }
 
@@ -774,11 +825,11 @@ export default class EditorModel extends Model {
     return this.get('Canvas').getZoomMultiplier();
   }
 
-  setDragMode(value) {
+  setDragMode(value: string) {
     return this.set('dmode', value);
   }
 
-  t(...args) {
+  t(...args: any[]) {
     const i18n = this.get('I18n');
     return i18n?.t(...args);
   }
@@ -802,15 +853,17 @@ export default class EditorModel extends Model {
     shallow?.destroyAll();
     this.stopListening();
     this.stopDefault();
-    this.get('modules')
+    this.modules
       .slice()
       .reverse()
       .forEach(mod => mod.destroy());
     view && view.remove();
     this.clear({ silent: true });
-    this.destroyed = 1;
+    this.destroyed = true;
+    //@ts-ignore
     ['_config', 'view', '_previousAttributes', '_events', '_listeners'].forEach(i => (this[i] = {}));
     editors.splice(editors.indexOf(editor), 1);
+    //@ts-ignore
     hasWin() && $(config.el).empty().attr(this.attrsOrig);
   }
 
@@ -819,7 +872,7 @@ export default class EditorModel extends Model {
     return (res && res.model) || null;
   }
 
-  setEditing(value) {
+  setEditing(value: boolean) {
     this.set('editing', value);
     return this;
   }
@@ -828,7 +881,7 @@ export default class EditorModel extends Model {
     return !!this.get('editing');
   }
 
-  log(msg, opts = {}) {
+  log(msg: string, opts: any = {}) {
     const { ns, level = 'debug' } = opts;
     this.trigger('log', msg, opts);
     level && this.trigger(`log:${level}`, msg, opts);
@@ -840,24 +893,25 @@ export default class EditorModel extends Model {
     }
   }
 
-  logInfo(msg, opts) {
+  logInfo(msg: string, opts?: any) {
     this.log(msg, { ...opts, level: 'info' });
   }
 
-  logWarning(msg, opts) {
+  logWarning(msg:string, opts?: any) {
     this.log(msg, { ...opts, level: 'warning' });
   }
 
-  logError(msg, opts) {
+  logError(msg: string, opts?: any) {
     this.log(msg, { ...opts, level: 'error' });
   }
 
-  initBaseColorPicker(el, opts = {}) {
-    const config = this.getConfig();
+  initBaseColorPicker(el: any, opts = {}) {
+    const { config } = this;
     const { colorPicker = {} } = config;
     const elToAppend = config.el;
     const ppfx = config.stylePrefix;
 
+    //@ts-ignore
     return $(el).spectrum({
       containerClassName: `${ppfx}one-bg ${ppfx}two-color`,
       appendTo: elToAppend || 'body',
@@ -877,7 +931,7 @@ export default class EditorModel extends Model {
    * @param  {Function} clb
    * @private
    */
-  skip(clb) {
+  skip(clb: Function) {
     this.__skip = true;
     const um = this.get('UndoManager');
     um ? um.skip(clb) : clb();
@@ -892,7 +946,7 @@ export default class EditorModel extends Model {
    * @return {any}
    * @private
    */
-  data(el, name, value) {
+  data(el: any, name: string, value: any) {
     const varName = '_gjs-data';
 
     if (!el[varName]) {

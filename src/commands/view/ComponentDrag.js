@@ -80,7 +80,7 @@ export default {
 
     if (!guidesEl) {
       const { editor, em, opts } = this;
-      const pfx = editor.getConfig('stylePrefix');
+      const pfx = editor.getConfig().stylePrefix;
       const elInfoX = document.createElement('div');
       const elInfoY = document.createElement('div');
       const guideContent = `<div class="${pfx}guide-info__line ${pfx}danger-bg">

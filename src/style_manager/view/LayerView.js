@@ -13,7 +13,7 @@ export default class LayerView extends View {
 
   template() {
     const { pfx, ppfx, em } = this;
-    const icons = em?.getConfig('icons');
+    const icons = em?.getConfig().icons;
     const iconClose = icons?.close || '';
     const iconMove = icons?.move || '';
 

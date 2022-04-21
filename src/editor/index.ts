@@ -54,82 +54,169 @@
  * ## Methods
  * @module Editor
  */
+import { EventHandler } from 'backbone';
+import { isUndefined } from 'underscore';
+import { IBaseModule } from '../abstract/Module';
+import cash from '../utils/cash-dom';
 import html from '../utils/html';
 import defaults from './config/config';
 import EditorModel from './model/Editor';
 import EditorView from './view/EditorView';
 
-export default class EditorModule {
-  constructor(config = {}, opts = {}) {
+export default class EditorModule implements IBaseModule<typeof defaults> {
+  constructor(config = {}, opts: any = {}) {
+    //@ts-ignore
+    this.config = { ...defaults, ...config, pStylePrefix: defaults.stylePrefix };
+    this.em = new EditorModel(this.config);
     this.$ = opts.$;
-    this.c = { ...defaults, ...config };
-    this.c.pStylePrefix = this.c.stylePrefix;
-    this.em = new EditorModel(this.c);
     this.em.init(this);
     this.editor = this.em;
-
-    this.modules = [
-      'I18n',
-      'Utils',
-      'Config',
-      'Commands',
-      'Keymaps',
-      'Modal',
-      'Panels',
-      'Canvas',
-      'Parser',
-      'CodeManager',
-      'UndoManager',
-      'RichTextEditor',
-      ['Pages', 'PageManager'],
-      'DomComponents',
-      ['Components', 'DomComponents'],
-      'LayerManager',
-      ['Layers', 'LayerManager'],
-      'CssComposer',
-      ['Css', 'CssComposer'],
-      'StorageManager',
-      ['Storage', 'StorageManager'],
-      'AssetManager',
-      ['Assets', 'AssetManager'],
-      'BlockManager',
-      ['Blocks', 'BlockManager'],
-      'TraitManager',
-      ['Traits', 'TraitManager'],
-      'SelectorManager',
-      ['Selectors', 'SelectorManager'],
-      'StyleManager',
-      ['Styles', 'StyleManager'],
-      'DeviceManager',
-      ['Devices', 'DeviceManager'],
-    ];
-
-    this.modules.forEach(prop => {
-      if (Array.isArray(prop)) {
-        this[prop[0]] = this.em.get(prop[1]);
-      } else {
-        this[prop] = this.em.get(prop);
-      }
-    });
   }
-  editorView;
-
-  /**
-   * @property {EditorModel}
-   * @private
-   */
-  //editor = em
+  editorView?: EditorView;
+  editor: EditorModel;
+  $: cash;
+  em: EditorModel;
+  config: typeof defaults;
 
   modules = [];
 
-  /**
-   * Returns configuration object
-   * @param  {string} [prop] Property name
-   * @returns {any} Returns the configuration object or
-   *  the value of the specified property
-   */
-  getConfig(prop) {
-    return this.em.getConfig(prop);
+  //@ts-ignore
+  get I18n(): I18nModule {
+    return this.em.get("I18n");
+  }
+  //@ts-ignore
+  get Utils(): UtilsModule {
+    return this.em.get("Utils");
+  }
+  get Config(): any {
+    return this.em.config;
+  }
+  //@ts-ignore
+  get Commands(): CommandsModule {
+    return this.em.get("Commands");
+  }
+  //@ts-ignore
+  get Keymaps(): KeymapsModule {
+    return this.em.get("Keymaps");
+  }
+  //@ts-ignore
+  get Modal(): ModalModule {
+    return this.em.get("Modal");
+  }
+  //@ts-ignore
+  get Panels(): PanelsModule {
+    return this.em.get("Panels");
+  }
+  //@ts-ignore
+  get Canvas(): CanvasModule {
+    return this.em.get("Canvas");
+  }
+  //@ts-ignore
+  get Parser(): ParserModule {
+    return this.em.get("Parser");
+  }
+  //@ts-ignore
+  get CodeManager(): CodeManagerModule {
+    return this.em.get("CodeManager");
+  }
+  //@ts-ignore
+  get UndoManager(): UndoManagerModule {
+    return this.em.get("UndoManager");
+  }
+  //@ts-ignore
+  get RichTextEditor(): RichTextEditorModule {
+    return this.em.get("RichTextEditor");
+  }
+  //@ts-ignore
+  get Pages(): PageManagerModule {
+    return this.em.get("PageManager");
+  }
+  //@ts-ignore
+  get Components(): DomComponentsModule {
+    return this.em.get("DomComponents");
+  }
+  //@ts-ignore
+  get DomComponents(): DomComponentsModule {
+    return this.em.get("DomComponents");
+  }
+  //@ts-ignore
+  get Layers(): LayerManagerModule {
+    return this.em.get("LayerManager");
+  }
+  //@ts-ignore
+  get LayerManager(): LayerManagerModule {
+    return this.em.get("LayerManager");
+  }
+  //@ts-ignore
+  get Css(): CssComposerModule {
+    return this.em.get("CssComposer");
+  }
+  //@ts-ignore
+  get CssComposer(): CssComposerModule {
+    return this.em.get("CssComposer");
+  }
+  //@ts-ignore
+  get Storage(): StorageManagerModule {
+    return this.em.get("StorageManager");
+  }
+  //@ts-ignore
+  get StorageManager(): StorageManagerModule {
+    return this.em.get("StorageManager");
+  }
+  //@ts-ignore
+  get Assets(): AssetManagerModule {
+    return this.em.get("AssetManager");
+  }
+  //@ts-ignore
+  get AssetManager(): AssetManagerModule {
+    return this.em.get("AssetManager");
+  }
+  //@ts-ignore
+  get Blocks(): BlockManagerModule {
+    return this.em.get("BlockManager");
+  }
+  //@ts-ignore
+  get BlockManager(): BlockManagerModule {
+    return this.em.get("BlockManager");
+  }
+  //@ts-ignore
+  get Traits(): TraitManagerModule {
+    return this.em.get("TraitManager");
+  }
+  //@ts-ignore
+  get TraitManager(): TraitManagerModule {
+    return this.em.get("TraitManager");
+  }
+  //@ts-ignore
+  get Selectors(): SelectorManagerCollectionModule {
+    return this.em.get("SelectorManager");
+  }
+  //@ts-ignore
+  get SelectorManager(): SelectorManagerCollectionModule {
+    return this.em.get("SelectorManager");
+  }
+  //@ts-ignore
+  get Styles(): StyleManagerModule {
+    return this.em.get("StyleManager");
+  }
+  //@ts-ignore
+  get StyleManager(): StyleManagerModule {
+    return this.em.get("StyleManager");
+  }
+  //@ts-ignore
+  get Devices(): DeviceManagerModule {
+    return this.em.get("DeviceManager");
+  } 
+  //@ts-ignore
+  get DeviceManager(): DeviceManagerModule {
+    return this.em.get("DeviceManager");
+  }
+
+  //@deprecated
+  getConfig(prop?: string) {
+    const config = this.config;
+    //@ts-ignore
+    return isUndefined(prop) ? config : config[prop];
   }
 
   /**
@@ -139,7 +226,7 @@ export default class EditorModule {
    * @param {Boolean} [opts.cleanId=false] Remove unnecessary IDs (eg. those created automatically)
    * @returns {string} HTML string
    */
-  getHtml(opts) {
+  getHtml(opts: any) {
     return this.em.getHtml(opts);
   }
 
@@ -153,7 +240,7 @@ export default class EditorModule {
    * @param {Boolean} [opts.keepUnusedStyles=false] Force keep all defined rules. Toggle on in case output looks different inside/outside of the editor.
    * @returns {String|Array<CssRule>} CSS string or array of CssRules
    */
-  getCss(opts) {
+  getCss(opts: any) {
     return this.em.getCss(opts);
   }
 
@@ -163,7 +250,7 @@ export default class EditorModule {
    * @param {Component} [opts.component] Get the JS of a specific component
    * @returns {String} JS string
    */
-  getJs(opts) {
+  getJs(opts: any) {
     return this.em.getJs(opts);
   }
 
@@ -197,7 +284,7 @@ export default class EditorModule {
    *   content: 'New component'
    * });
    */
-  setComponents(components, opt = {}) {
+  setComponents(components: any, opt = {}) {
     this.em.setComponents(components, opt);
     return this;
   }
@@ -219,7 +306,7 @@ export default class EditorModule {
    *   content: 'New component'
    * });
    */
-  addComponents(components, opts) {
+  addComponents(components: any, opts: any) {
     return this.getWrapper().append(components, opts);
   }
 
@@ -243,7 +330,7 @@ export default class EditorModule {
    *   style: { color: 'red' }
    * });
    */
-  setStyle(style, opt = {}) {
+  setStyle(style: any, opt = {}) {
     this.em.setStyle(style, opt);
     return this;
   }
@@ -255,7 +342,7 @@ export default class EditorModule {
    * @example
    * editor.addStyle('.cls{color: red}');
    */
-  addStyle(style, opts = {}) {
+  addStyle(style: any, opts = {}) {
     return this.em.addStyle(style, opts);
   }
 
@@ -303,7 +390,7 @@ export default class EditorModule {
    *  editor.select(model);
    * });
    */
-  select(el, opts) {
+  select(el: any, opts: any) {
     this.em.setSelected(el, opts);
     return this;
   }
@@ -315,7 +402,7 @@ export default class EditorModule {
    * @example
    * editor.selectAdd(model);
    */
-  selectAdd(el) {
+  selectAdd(el: any) {
     this.em.addSelected(el);
     return this;
   }
@@ -327,7 +414,7 @@ export default class EditorModule {
    * @example
    * editor.selectRemove(model);
    */
-  selectRemove(el) {
+  selectRemove(el: any) {
     this.em.removeSelected(el);
     return this;
   }
@@ -339,7 +426,7 @@ export default class EditorModule {
    * @example
    * editor.selectToggle(model);
    */
-  selectToggle(el) {
+  selectToggle(el: any) {
     this.em.toggleSelected(el);
     return this;
   }
@@ -365,7 +452,7 @@ export default class EditorModule {
    * @example
    * editor.setDevice('Tablet');
    */
-  setDevice(name) {
+  setDevice(name: string) {
     this.em.set('device', name);
     return this;
   }
@@ -390,7 +477,7 @@ export default class EditorModule {
    * @example
    * editor.runCommand('myCommand', {someValue: 1});
    */
-  runCommand(id, options = {}) {
+  runCommand(id: string, options = {}) {
     return this.em.get('Commands').run(id, options);
   }
 
@@ -402,7 +489,7 @@ export default class EditorModule {
    * @example
    * editor.stopCommand('myCommand', {someValue: 1});
    */
-  stopCommand(id, options = {}) {
+  stopCommand(id: string, options = {}) {
     return this.em.get('Commands').stop(id, options);
   }
 
@@ -414,7 +501,7 @@ export default class EditorModule {
    * @example
    * const storedData = await editor.store();
    */
-  async store(options) {
+  async store(options: any) {
     return await this.em.store(options);
   }
 
@@ -425,7 +512,7 @@ export default class EditorModule {
    * @example
    * const data = await editor.load();
    */
-  async load(options) {
+  async load(options: any) {
     return await this.em.load(options);
   }
 
@@ -446,7 +533,7 @@ export default class EditorModule {
    * @example
    * editor.loadProjectData({ pages: [...], styles: [...], ... })
    */
-  loadProjectData(data) {
+  loadProjectData(data: any) {
     return this.em.loadData(data);
   }
 
@@ -454,7 +541,7 @@ export default class EditorModule {
     return this.em.storeData();
   }
 
-  loadData(data) {
+  loadData(data: any) {
     return this.em.loadData(data);
   }
 
@@ -464,7 +551,7 @@ export default class EditorModule {
    * @return {HTMLElement}
    */
   getContainer() {
-    return this.c.el;
+    return this.config.el;
   }
 
   /**
@@ -492,7 +579,7 @@ export default class EditorModule {
    * @param {Object} [options] Options
    * @param {Boolean} [options.tools=false] Update the position of tools (eg. rich text editor, component highlighter, etc.)
    */
-  refresh(opts) {
+  refresh(opts?: any) {
     this.em.refreshCanvas(opts);
   }
 
@@ -525,7 +612,7 @@ export default class EditorModule {
    *  }
    * });
    */
-  setCustomRte(obj) {
+  setCustomRte(obj: any) {
     this.RichTextEditor.customRte = obj;
   }
 
@@ -548,7 +635,7 @@ export default class EditorModule {
    *  return result;
    * });
    */
-  setCustomParserCss(parser) {
+  setCustomParserCss(parser: any) {
     this.Parser.getConfig().parserCss = parser;
     return this;
   }
@@ -559,7 +646,7 @@ export default class EditorModule {
    * @param {String} value Drag mode, options: 'absolute' | 'translate'
    * @returns {this}
    */
-  setDragMode(value) {
+  setDragMode(value: string) {
     this.em.setDragMode(value);
     return this;
   }
@@ -579,7 +666,7 @@ export default class EditorModule {
    * // options, as arguments, eg:
    * // editor.on('log:info', (msg, opts) => console.info(msg, opts))
    */
-  log(msg, opts = {}) {
+  log(msg: string, opts = {}) {
     this.em.log(msg, opts);
     return this;
   }
@@ -598,7 +685,7 @@ export default class EditorModule {
    * // custom local
    * editor.t('msg2', { params: { test: 'hello' } l: 'it' });
    */
-  t(...args) {
+  t(...args: any[]) {
     return this.em.t(...args);
   }
 
@@ -608,7 +695,7 @@ export default class EditorModule {
    * @param  {Function} callback Callback function
    * @return {this}
    */
-  on(event, callback) {
+  on(event: string, callback: EventHandler) {
     this.em.on(event, callback);
     return this;
   }
@@ -619,7 +706,7 @@ export default class EditorModule {
    * @param  {Function} callback Callback function
    * @return {this}
    */
-  once(event, callback) {
+  once(event: string, callback: EventHandler) {
     this.em.once(event, callback);
     return this;
   }
@@ -630,7 +717,7 @@ export default class EditorModule {
    * @param  {Function} callback Callback function
    * @return {this}
    */
-  off(event, callback) {
+  off(event: string, callback: EventHandler) {
     this.em.off(event, callback);
     return this;
   }
@@ -640,8 +727,8 @@ export default class EditorModule {
    * @param  {string} event Event to trigger
    * @return {this}
    */
-  trigger(event) {
-    this.em.trigger.apply(this.em, arguments);
+  trigger(eventName: string, ...args: any[]) {
+    this.em.trigger.apply(this.em, [eventName, ...args]);
     return this;
   }
 
@@ -651,17 +738,7 @@ export default class EditorModule {
   destroy() {
     if (!this.em) return;
     this.em.destroyAll();
-    this.modules.forEach(prop => {
-      if (Array.isArray(prop)) {
-        this[prop[0]] = 0;
-      } else {
-        this[prop] = 0;
-      }
-    });
-    this.modules = 0;
-    this.editorView = 0;
-    this.em = 0;
-    this.c = 0;
+    this.editorView = undefined;
   }
 
   /**
@@ -688,10 +765,7 @@ export default class EditorModule {
    */
   render() {
     this.editorView?.remove();
-    this.editorView = new EditorView({
-      model: this.em,
-      config: this.c,
-    });
+    this.editorView = new EditorView(this.em);
     return this.editorView.render().el;
   }
 
@@ -704,7 +778,7 @@ export default class EditorModule {
    *   // perform actions
    * });
    */
-  onReady(clb) {
+  onReady(clb: EventHandler) {
     this.em.get('ready') ? clb(this) : this.em.on('load', clb);
   }
 
