@@ -2,7 +2,7 @@ import { isUndefined, isArray, contains, toArray, keys, bindAll } from 'undersco
 import Backbone from 'backbone';
 import $ from '../../utils/cash-dom';
 import Extender from '../../utils/extender';
-import { getModel, hasWin } from '../../utils/mixins';
+import { getModel, hasWin, isEmptyObj } from '../../utils/mixins';
 import { Model } from '../../common';
 import Selected from './Selected';
 import FrameView from '../../canvas/view/FrameView';
@@ -704,8 +704,10 @@ timedInterval?: number;
   }
 
   loadData(data = {}) {
-    this.storables.forEach(module => module.clear());
-    this.storables.forEach(module => module.load(data));
+    if (!isEmptyObj(data)) {
+      this.storables.forEach(module => module.clear());
+      this.storables.forEach(module => module.load(data));
+    }
     return data;
   }
 
