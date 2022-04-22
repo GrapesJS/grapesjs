@@ -268,6 +268,13 @@ export default class FrameView extends View {
     };
 
     el.onload = () => {
+      const { frameContent } = this.config;
+      if (frameContent) {
+        const doc = this.getDoc();
+        doc.open();
+        doc.write(frameContent);
+        doc.close();
+      }
       em && em.trigger(`${evLoad}:before`, evOpts);
       appendScript([...canvas.get('scripts')]);
     };
@@ -316,18 +323,15 @@ export default class FrameView extends View {
 
     const colorWarn = '#ffca6f';
 
-    // I need all this styles to make the editor work properly
-    // Remove `html { height: 100%;}` from the baseCss as it gives jumpings
-    // effects (on ENTER) with RTE like CKEditor (maybe some bug there?!?)
-    // With `body {height: auto;}` jumps in CKEditor are removed but in
-    // Firefox is impossible to drag stuff in empty canvas, so bring back
-    // `body {height: 100%;}`.
-    // For the moment I give the priority to Firefox as it might be
-    // CKEditor's issue
     append(
       body,
       `<style>
-      ${conf.baseCss || ''}
+      ${conf.baseCss || config.frameStyle || ''}
+
+      [data-gjs-type="wrapper"] {
+        min-height: 100vh;
+        padding-top: 0.01em;
+      }
 
       .${ppfx}dashed *[data-gjs-highlightable] {
         outline: 1px dashed rgba(170,170,170,0.7);

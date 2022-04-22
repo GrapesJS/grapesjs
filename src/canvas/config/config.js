@@ -39,9 +39,25 @@ export default {
   extHl: 0,
 
   /**
+   * Initial content to load in all frames.
+   * The default value enables the standard mode for the iframe.
+   */
+  frameContent: '<!DOCTYPE html>',
+
+  /**
+   * Initial style to load in all frames.
+   */
+  frameStyle: `
+    body { background-color: #fff }
+    * ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.1) }
+    * ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2) }
+    * ::-webkit-scrollbar { width: 10px }
+  `,
+
+  /**
    * When some textable component is selected and focused (eg. input or text component) the editor
    * stops some commands (eg. disables the copy/paste of components with CTRL+C/V to allow the copy/paste of the text).
    * This option allows to customize, by a selector, which element should not be considered textable
    */
-  notTextable: ['button', 'a', 'input[type=checkbox]', 'input[type=radio]']
+  notTextable: ['button', 'a', 'input[type=checkbox]', 'input[type=radio]'],
 };
