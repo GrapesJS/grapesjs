@@ -330,7 +330,7 @@ export default class FrameView extends View {
 
       [data-gjs-type="wrapper"] {
         min-height: 100vh;
-        padding-top: 0.01em;
+        padding-top: 0.001em;
       }
 
       .${ppfx}dashed *[data-gjs-highlightable] {
