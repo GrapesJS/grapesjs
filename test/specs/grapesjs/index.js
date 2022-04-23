@@ -99,10 +99,10 @@ describe('GrapesJS', () => {
     test('Editor canvas baseCSS defaults to sensible values if not defined', () => {
       config.components = htmlString;
       config.protectedCss = '';
-
-      var editor = obj.init(config);
-
-      expect(window.frames[0].document.documentElement.outerHTML.replace(/\s+/g, ` `)).toContain(`body { margin: 0;`);
+      obj.init(config);
+      expect(window.frames[0].document.documentElement.outerHTML.replace(/\s+/g, ` `)).toContain(
+        `body { background-color: #fff`
+      );
     });
 
     test('Init editor with html', () => {
