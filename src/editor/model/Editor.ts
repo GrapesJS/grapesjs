@@ -83,15 +83,15 @@ timedInterval?: number;
 
 
   get storables(): any[]{
-    return this.get("storables")
+    return this.get('storables')
   }
 
   get modules(): IModule[]{
-    return this.get("modules")
+    return this.get('modules')
   }
 
   get toLoad(): any[]{
-    return this.get("toLoad")
+    return this.get('toLoad')
   }
 
   constructor(conf = {}) {
@@ -178,6 +178,9 @@ timedInterval?: number;
    * @private
    */
   loadOnStart() {
+    const { projectData, headless } = this.config;
+    const sm = this.get('StorageManager');
+
     // In `onLoad`, the module will try to load the data from its configurations.
     this.toLoad.forEach(mdl => mdl.onLoad());
 
@@ -187,21 +190,24 @@ timedInterval?: number;
       this.set('readyLoad', 1);
     };
 
-    // Defer for storage load events.
-    setTimeout(async () => {
-      const projectData = this.getConfig().projectData;
-
-      if (projectData) {
-        this.loadData(projectData);
-      } else if (this.get('StorageManager').canAutoload()) {
-        try {
-          await this.load();
-        } catch (error) {
-          this.logError(error as string);
-        }
-      }
+    if (headless) {
+      projectData && this.loadData(projectData);
       postLoad();
-    });
+    } else {
+      // Defer for storage load events.
+      setTimeout(async () => {
+        if (projectData) {
+          this.loadData(projectData);
+        } else if (sm?.canAutoload()) {
+          try {
+            await this.load();
+          } catch (error) {
+            this.logError(error as string);
+          }
+        }
+        postLoad();
+      });
+    }
 
     // Create shallow editor.
     // Here we can create components/styles without altering/triggering the main EditorModel

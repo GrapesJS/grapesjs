@@ -278,7 +278,13 @@ export default () => {
     load(data) {
       return this.loadProjectData(data, {
         onResult: result => {
-          const wrapper = this.getWrapper();
+          let wrapper = this.getWrapper();
+
+          if (!wrapper) {
+            this.em.get('PageManager').add({}, { select: true });
+            wrapper = this.getWrapper();
+          }
+
           if (isArray(result)) {
             result.length && wrapper.components(result);
           } else {
