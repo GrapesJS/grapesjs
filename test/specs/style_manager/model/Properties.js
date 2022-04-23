@@ -143,7 +143,6 @@ describe('StyleManager properties logic', () => {
       expect(rule1.getStyle()).toEqual({
         __p: false,
         color: 'red',
-        [propTest]: '',
         [propATest]: '11px',
         [propBTest]: '11px',
         [propCTest]: '11px',
@@ -273,11 +272,6 @@ describe('StyleManager properties logic', () => {
       expect(compTypeProp.hasValue()).toBe(false);
       expect(rule1.getStyle()).toEqual({
         __p: false,
-        [propTest]: '',
-        [propATest]: '',
-        [propBTest]: '',
-        [propCTest]: '',
-        [propDTest]: '',
       });
     });
 
@@ -438,10 +432,6 @@ describe('StyleManager properties logic', () => {
       expect(rule1.getStyle()).toEqual({
         __p: false,
         padding: '1px 2px 50% 4px',
-        [propATest]: '',
-        [propBTest]: '',
-        [propCTest]: '',
-        [propDTest]: '',
       });
     });
 
@@ -637,9 +627,6 @@ describe('StyleManager properties logic', () => {
       expect(rule1.getStyle()).toEqual({
         __p: false,
         [propTest]: 'valueA-1 valueB-1-mod valueC-1-ext, valueA-2 valueB-2 valueC-2-mod',
-        [propATest]: '',
-        [propBTest]: '',
-        [propCTest]: '',
       });
     });
 
@@ -651,7 +638,6 @@ describe('StyleManager properties logic', () => {
       compTypeProp.getProperty(propCTest).upValue('valueC-2-mod');
       expect(rule1.getStyle()).toEqual({
         __p: false,
-        [propTest]: '',
         [propATest]: 'valueA-1, valueA-2',
         [propBTest]: 'valueB-1-mod, valueB-2',
         [propCTest]: 'valueC-1-ext, valueC-2-mod',
@@ -663,9 +649,6 @@ describe('StyleManager properties logic', () => {
       expect(rule1.getStyle()).toEqual({
         __p: false,
         [propTest]: 'valueA-1 valueB-1 valueC-1-ext',
-        [propATest]: '',
-        [propBTest]: '',
-        [propCTest]: '',
       });
     });
 
@@ -675,10 +658,6 @@ describe('StyleManager properties logic', () => {
       expect(compTypeProp.getLayers().length).toBe(0);
       expect(rule1.getStyle()).toEqual({
         __p: false,
-        [propTest]: '',
-        [propATest]: '',
-        [propBTest]: '',
-        [propCTest]: '',
       });
     });
 
@@ -689,10 +668,6 @@ describe('StyleManager properties logic', () => {
       expect(compTypeProp.getLayers().length).toBe(0);
       expect(rule1.getStyle()).toEqual({
         __p: false,
-        [propTest]: '',
-        [propATest]: '',
-        [propBTest]: '',
-        [propCTest]: '',
       });
     });
 
@@ -703,10 +678,6 @@ describe('StyleManager properties logic', () => {
       expect(compTypeProp.getLayers().length).toBe(0);
       expect(rule1.getStyle()).toEqual({
         __p: false,
-        [propTest]: '',
-        [propATest]: '',
-        [propBTest]: '',
-        [propCTest]: '',
       });
     });
 
@@ -738,9 +709,6 @@ describe('StyleManager properties logic', () => {
       expect(rule1.getStyle()).toEqual({
         __p: false,
         [propTest]: `valueA-new valueB-new valueC-new, valueA-1 valueB-1 valueC-1-ext, valueA-2 valueB-2 valueC-2-ext`,
-        [propATest]: '',
-        [propBTest]: '',
-        [propCTest]: '',
       });
     });
 
@@ -757,7 +725,6 @@ describe('StyleManager properties logic', () => {
       obj.__upSel();
       expect(rule1.getStyle()).toEqual({
         __p: false,
-        [propTest]: '',
         [propATest]: 'valueA-new AA, valueA-1, valueA-2',
         [propBTest]: 'valueB-new BB, valueB-1, valueB-2',
         [propCTest]: 'valueC-new CC, valueC-1-ext, valueC-2-ext',
