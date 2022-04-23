@@ -13,7 +13,6 @@ export default class FrameView extends View {
   attributes() {
     return {
       allowfullscreen: 'allowfullscreen',
-      'data-frame-el': true,
     };
   }
 
