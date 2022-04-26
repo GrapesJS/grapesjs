@@ -28,7 +28,7 @@ declare namespace Backbone {
   interface GenericModel extends Model<{}> { }
 }
 
-declare module grapesjs {
+declare namespace grapesjs {
   type PluginOptions = Record<string, any>;
 
   type Plugin<T extends PluginOptions = {}> = (editor: Editor, config: T) => void;
@@ -5369,3 +5369,4 @@ declare module grapesjs {
 }
 
 export default grapesjs;
+export as namespace grapesjs;
