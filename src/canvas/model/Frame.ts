@@ -1,9 +1,12 @@
-import { result, forEach, isEmpty, isString } from 'underscore';
-import { Model } from '../../common';
-import { isComponent, isObject } from '../../utils/mixins';
+import { result, forEach, isEmpty, isString } from "underscore";
+import { Model } from "../../common";
+import EditorModel from "../../editor/model/Editor";
+import { isComponent, isObject } from "../../utils/mixins";
+import FrameView from "../view/FrameView";
+import Frames from "./Frames";
 
-const keyAutoW = '__aw';
-const keyAutoH = '__ah';
+const keyAutoW = "__aw";
+const keyAutoH = "__ah";
 
 /**
  * @property {Object|String} component Wrapper component definition. You can also pass an HTML string as components of the default wrapper component.
@@ -23,45 +26,47 @@ export default class Frame extends Model {
       width: null,
       height: null,
       head: [],
-      component: '',
-      styles: '',
+      component: "",
+      styles: "",
       _undo: true,
-      _undoexc: ['changesCount'],
+      _undoexc: ["changesCount"],
     };
   }
+  em: EditorModel;
+  view?: FrameView;
 
-  initialize(props, opts = {}) {
-    const { config } = opts;
-    const { em } = config;
+  constructor(props: any, opts: any) {
+    super(props);
+    const { em } = opts;
     const { styles, component } = this.attributes;
-    const domc = em.get('DomComponents');
+    const domc = em.get("DomComponents");
     const conf = domc.getConfig();
-    const allRules = em.get('CssComposer').getAll();
-    const idMap = {};
+    const allRules = em.get("CssComposer").getAll();
+    const idMap: any = {};
     this.em = em;
     const modOpts = { em, config: conf, frame: this, idMap };
 
     if (!isComponent(component)) {
       const wrp = isObject(component) ? component : { components: component };
-      !wrp.type && (wrp.type = 'wrapper');
-      const Wrapper = domc.getType('wrapper').model;
-      this.set('component', new Wrapper(wrp, modOpts));
+      !wrp.type && (wrp.type = "wrapper");
+      const Wrapper = domc.getType("wrapper").model;
+      this.set("component", new Wrapper(wrp, modOpts));
     }
 
     if (!styles) {
-      this.set('styles', allRules);
+      this.set("styles", allRules);
     } else if (!isObject(styles)) {
       // Avoid losing styles on remapped components
       const idMapKeys = Object.keys(idMap);
       if (idMapKeys.length && Array.isArray(styles)) {
-        styles.forEach(style => {
+        styles.forEach((style) => {
           const sel = style.selectors;
           if (sel && sel.length == 1) {
             const sSel = sel[0];
             const idSel = sSel.name && sSel.type === 2 && sSel;
             if (idSel && idMap[idSel.name]) {
               idSel.name = idMap[idSel.name];
-            } else if (isString(sSel) && sSel[0] === '#') {
+            } else if (isString(sSel) && sSel[0] === "#") {
               const prevId = sSel.substring(1);
               if (prevId && idMap[prevId]) {
                 sel[0] = `#${idMap[prevId]}`;
@@ -72,7 +77,7 @@ export default class Frame extends Model {
       }
 
       allRules.add(styles);
-      this.set('styles', allRules);
+      this.set("styles", allRules);
     }
 
     !props.width && this.set(keyAutoW, 1);
@@ -83,52 +88,57 @@ export default class Frame extends Model {
     this.getComponent().remove({ root: 1 });
   }
 
-  changesUp(opt = {}) {
+  changesUp(opt: any = {}) {
     if (opt.temporary || opt.noCount || opt.avoidStore) {
       return;
     }
-    this.set('changesCount', this.get('changesCount') + 1);
+    this.set("changesCount", this.get("changesCount") + 1);
   }
 
   getComponent() {
-    return this.get('component');
+    return this.get("component");
   }
 
   getStyles() {
-    return this.get('styles');
+    return this.get("styles");
   }
 
   disable() {
-    this.trigger('disable');
+    this.trigger("disable");
   }
 
   remove() {
-    this.view = 0;
+    this.view = undefined;
     const coll = this.collection;
     return coll && coll.remove(this);
   }
 
   getHead() {
-    const head = this.get('head') || [];
+    const head = this.get("head") || [];
     return [...head];
   }
 
-  setHead(value) {
-    return this.set('head', [...value]);
+  setHead(value: any) {
+    return this.set("head", [...value]);
   }
 
-  addHeadItem(item) {
+  addHeadItem(item: any) {
     const head = this.getHead();
     head.push(item);
     this.setHead(head);
   }
 
-  getHeadByAttr(attr, value, tag) {
+  getHeadByAttr(attr: string, value: any, tag: string) {
     const head = this.getHead();
-    return head.filter(item => item.attributes && item.attributes[attr] == value && (!tag || tag === item.tag))[0];
+    return head.filter(
+      (item) =>
+        item.attributes &&
+        item.attributes[attr] == value &&
+        (!tag || tag === item.tag)
+    )[0];
   }
 
-  removeHeadByAttr(attr, value, tag) {
+  removeHeadByAttr(attr: string, value: any, tag: string) {
     const head = this.getHead();
     const item = this.getHeadByAttr(attr, value, tag);
     const index = head.indexOf(item);
@@ -139,47 +149,46 @@ export default class Frame extends Model {
     }
   }
 
-  addLink(href) {
-    const tag = 'link';
-    !this.getHeadByAttr('href', href, tag) &&
+  addLink(href: string) {
+    const tag = "link";
+    !this.getHeadByAttr("href", href, tag) &&
       this.addHeadItem({
         tag,
         attributes: {
           href,
-          rel: 'stylesheet',
+          rel: "stylesheet",
         },
       });
   }
 
-  removeLink(href) {
-    this.removeHeadByAttr('href', href, 'link');
+  removeLink(href: string) {
+    this.removeHeadByAttr("href", href, "link");
   }
 
-  addScript(src) {
-    const tag = 'script';
-    !this.getHeadByAttr('src', src, tag) &&
+  addScript(src: string) {
+    const tag = "script";
+    !this.getHeadByAttr("src", src, tag) &&
       this.addHeadItem({
         tag,
         attributes: { src },
       });
   }
 
-  removeScript(src) {
-    this.removeHeadByAttr('src', src, 'script');
+  removeScript(src: string) {
+    this.removeHeadByAttr("src", src, "script");
   }
 
   getPage() {
-    const coll = this.collection;
-    return coll && coll.page;
+    return (this.collection as unknown as Frames)?.page;
   }
 
   _emitUpdated(data = {}) {
-    this.em.trigger('frame:updated', { frame: this, ...data });
+    this.em.trigger("frame:updated", { frame: this, ...data });
   }
 
-  toJSON(opts = {}) {
+  toJSON(opts: any = {}) {
     const obj = Model.prototype.toJSON.call(this, opts);
-    const defaults = result(this, 'defaults');
+    const defaults = result(this, "defaults");
 
     if (opts.fromUndo) delete obj.component;
     delete obj.styles;
@@ -189,14 +198,14 @@ export default class Frame extends Model {
 
     // Remove private keys
     forEach(obj, (value, key) => {
-      key.indexOf('_') === 0 && delete obj[key];
+      key.indexOf("_") === 0 && delete obj[key];
     });
 
     forEach(defaults, (value, key) => {
       if (obj[key] === value) delete obj[key];
     });
 
-    forEach(['attributes', 'head'], prop => {
+    forEach(["attributes", "head"], (prop) => {
       if (isEmpty(obj[prop])) delete obj[prop];
     });
 

@@ -1,3 +1,4 @@
+import { expectation } from 'sinon';
 import { bindAll } from 'underscore';
 import { Collection } from '../../common';
 import Frame from './Frame';
@@ -38,10 +39,10 @@ export default class Frames extends Collection {
     this.forEach(item => item[on ? 'on' : 'off']('loaded', this.itemLoaded));
   }
 
-  add(m, o = {}) {
+  /*add(m, o = {}) {
     const { config } = this;
     return Collection.prototype.add.call(this, m, { ...o, config });
-  }
+  }*/
 }
 
 Frames.prototype.model = Frame;
