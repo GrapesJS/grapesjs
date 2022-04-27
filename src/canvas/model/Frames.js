@@ -10,6 +10,7 @@ export default class Frames extends Collection {
     this.on('reset', this.onReset);
     this.on('remove', this.onRemove);
   }
+  page;
 
   onReset(m, opts = {}) {
     const prev = opts.previousModels || [];

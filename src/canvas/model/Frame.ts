@@ -1,5 +1,7 @@
 import { result, forEach, isEmpty, isString } from "underscore";
 import { Model } from "../../common";
+import { Component } from "../../dom_components/model/Component";
+import Components from "../../dom_components/model/Components";
 import EditorModel from "../../editor/model/Editor";
 import { isComponent, isObject } from "../../utils/mixins";
 import FrameView from "../view/FrameView";
@@ -95,7 +97,7 @@ export default class Frame extends Model {
     this.set("changesCount", this.get("changesCount") + 1);
   }
 
-  getComponent() {
+  getComponent(): typeof Components {
     return this.get("component");
   }
 

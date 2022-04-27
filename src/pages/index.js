@@ -96,7 +96,7 @@ export default () => {
       const cnf = { ...opts };
       this.config = cnf;
       this.em = em;
-      const pages = new Pages([], cnf);
+      const pages = new Pages([]);
       this.pages = pages;
       this.all = pages;
       const model = new Model({ _undo: true });
@@ -121,7 +121,7 @@ export default () => {
     onLoad() {
       const { pages } = this;
       const opt = { silent: true };
-      pages.add(this.config.pages || [], opt);
+      pages.add(this.config.pages?.map(page => new Page(page, { em: this.em, config: this.config })) || [], opt);
       const mainPage = !pages.length ? this.add({ type: typeMain }, opt) : this.getMain();
       this.select(mainPage, opt);
     },
@@ -158,7 +158,7 @@ export default () => {
       const { em } = this;
       props.id = props.id || this._createId();
       const add = () => {
-        const page = this.pages.add(props, opts);
+        const page = this.pages.add(new Page(props, { em: this.em, config: this.config }), opts);
         opts.select && this.select(page);
         return page;
       };
