@@ -24,8 +24,9 @@ export default class Page extends Model {
     const frames = new Frames(frms, config);
     frames.page = this;
     this.set('frames', frames);
-    const um = em && em.get('UndoManager');
-    um && um.add(frames);
+    !this.getId() && this.set('id', em?.get('PageManager')._createId());
+    const um = em?.get('UndoManager');
+    um?.add(frames);
   }
 
   onRemove() {
