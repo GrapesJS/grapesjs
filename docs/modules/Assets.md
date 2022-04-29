@@ -376,7 +376,7 @@ const editor = grapesjs.init({
     },
 });
 ```
-It's important to declare also the `close` function, the editor should be able to close the Asset Manager via `am.close()`.
+It's important to declare also the `close` function, the editor should be able to close the Asset Manager via `am.close()`. To set the src of the selected Asset, use `editor.getSelected().set('attributes', {'src': 'https://.../new-img.jpg'});`.
 
 
 <!--
