@@ -44,15 +44,15 @@
  * @module Pages
  */
 
-import { isString, bindAll, unique, flatten } from 'underscore';
-import { createId } from '../utils/mixins';
-import { Model, Module } from '../abstract';
-import { ItemManagerModule } from '../abstract/Module';
-import Pages from './model/Pages';
-import Page from './model/Page';
-import EditorModel from '../editor/model/Editor';
+import { isString, bindAll, unique, flatten } from "underscore";
+import { createId } from "../utils/mixins";
+import { Model, Module } from "../abstract";
+import { ItemManagerModule, ModuleConfig } from "../abstract/Module";
+import Pages from "./model/Pages";
+import Page from "./model/Page";
+import EditorModel from "../editor/model/Editor";
 
-export const evAll = 'page';
+export const evAll = "page";
 export const evPfx = `${evAll}:`;
 export const evPageSelect = `${evPfx}select`;
 export const evPageSelectBefore = `${evPageSelect}:before`;
@@ -61,8 +61,8 @@ export const evPageAdd = `${evPfx}add`;
 export const evPageAddBefore = `${evPageAdd}:before`;
 export const evPageRemove = `${evPfx}remove`;
 export const evPageRemoveBefore = `${evPageRemove}:before`;
-const chnSel = 'change:selected';
-const typeMain = 'main';
+const chnSel = "change:selected";
+const typeMain = "main";
 const events = {
   all: evAll,
   select: evPageSelect,
@@ -73,37 +73,37 @@ const events = {
   remove: evPageRemove,
   removeBefore: evPageRemoveBefore,
 };
-export default class PageManager extends ItemManagerModule {
-  name = 'PageManager';
 
-  storageKey = 'pages';
-
-  Page;
-
-  Pages;
+interface Config extends ModuleConfig {
+  pages?: string[];
+}
+export default class PageManager extends ItemManagerModule<Config, Pages> {
+  storageKey = "pages";
 
   get pages() {
     return this.all;
   }
+
+  model: Model;
   /**
    * Initialize module
    * @param {Object} config Configurations
    * @private
    */
-  constructor(em) {
-    const pages = new Pages([]);
-    super(em, 'PageManager', pages, events);
-    bindAll(this, '_onPageChange');
-    const model = new Model({ _undo: true });
+  constructor(em: EditorModel) {
+    super(em, "PageManager", new Pages([]), events);
+    bindAll(this, "_onPageChange");
+    this.getAll;
+    const model = new Model({ _undo: true } as any);
     this.model = model;
-    pages.on('reset', coll => coll.at(0) && this.select(coll.at(0)));
-    pages.on('all', this.__onChange, this);
+    this.pages.on("reset", (coll) => coll.at(0) && this.select(coll.at(0)));
+    this.pages.on("all", this.__onChange, this);
     model.on(chnSel, this._onPageChange);
 
     return this;
   }
 
-  __onChange(event, page, coll, opts) {
+  __onChange(event: string, page: Page, coll: Pages, opts?: any) {
     const options = opts || coll;
     this.em.trigger(evAll, { event, page, options });
   }
@@ -111,23 +111,30 @@ export default class PageManager extends ItemManagerModule {
   onLoad() {
     const { pages } = this;
     const opt = { silent: true };
-    pages.add(this.config.pages?.map(page => new Page(page, { em: this.em, config: this.config })) || [], opt);
-    const mainPage = !pages.length ? this.add({ type: typeMain }, opt) : this.getMain();
-    this.select(mainPage, opt);
+    pages.add(
+      this.config.pages?.map(
+        (page) => new Page(page, { em: this.em, config: this.config })
+      ) || [],
+      opt
+    );
+    const mainPage = !pages.length
+      ? this.add({ type: typeMain }, opt)
+      : this.getMain();
+    mainPage && this.select(mainPage, opt);
   }
 
-  _onPageChange(m, page, opts) {
+  _onPageChange(m: any, page: Page, opts: any) {
     const { em } = this;
-    const lm = em.get('LayerManager');
+    const lm = em.get("LayerManager");
     const mainComp = page.getMainComponent();
     lm && mainComp && lm.setRoot(mainComp);
-    em.trigger(evPageSelect, page, m.previous('selected'));
+    em.trigger(evPageSelect, page, m.previous("selected"));
     this.__onChange(chnSel, page, opts);
   }
 
   postLoad() {
     const { em, model } = this;
-    const um = em.get('UndoManager');
+    const um = em.get("UndoManager");
     um && um.add(model);
     um && um.add(this.pages);
   }
@@ -144,11 +151,17 @@ export default class PageManager extends ItemManagerModule {
    *  component: '<div class="my-class">My element</div>', // or a JSON of components
    * });
    */
-  add(props, opts = {}) {
+  add(
+    props: any, //{ id?: string; styles: string; component: string },
+    opts: any = {}
+  ) {
     const { em } = this;
     props.id = props.id || this._createId();
     const add = () => {
-      const page = this.pages.add(new Page(props, { em: this.em, config: this.config }), opts);
+      const page = this.pages.add(
+        new Page(props, { em: this.em, config: this.config }),
+        opts
+      );
       opts.select && this.select(page);
       return page;
     };
@@ -166,7 +179,7 @@ export default class PageManager extends ItemManagerModule {
    * const somePage = pageManager.get('page-id');
    * pageManager.remove(somePage);
    */
-  remove(page, opts = {}) {
+  remove(page: string | Page, opts: any = {}) {
     const { em } = this;
     const pg = isString(page) ? this.get(page) : page;
     const rm = () => {
@@ -184,8 +197,8 @@ export default class PageManager extends ItemManagerModule {
    * @example
    * const somePage = pageManager.get('page-id');
    */
-  get(id) {
-    return this.pages.filter(p => p.get('id') === id)[0];
+  get(id: string) {
+    return this.pages.filter((p) => p.get(p.idAttribute) === id)[0];
   }
 
   /**
@@ -196,17 +209,7 @@ export default class PageManager extends ItemManagerModule {
    */
   getMain() {
     const { pages } = this;
-    return pages.filter(p => p.get('type') === typeMain)[0] || pages.at(0);
-  }
-
-  /**
-   * Get all pages
-   * @returns {Array<[Page]>}
-   * @example
-   * const arrayOfPages = pageManager.getAll();
-   */
-  getAll() {
-    return [...this.pages.models];
+    return pages.filter((p) => p.get("type") === typeMain)[0] || pages.at(0);
   }
 
   /**
@@ -219,14 +222,13 @@ export default class PageManager extends ItemManagerModule {
    */
   getAllWrappers() {
     const pages = this.getAll();
-    return unique(flatten(pages.map(page => page.getAllFrames().map(frame => frame.getComponent()))));
-  }
-
-  getAllMap() {
-    return this.getAll().reduce((acc, i) => {
-      acc[i.get('id')] = i;
-      return acc;
-    }, {});
+    return unique(
+      flatten(
+        pages.map((page) =>
+          page.getAllFrames().map((frame) => frame.getComponent())
+        )
+      )
+    );
   }
 
   /**
@@ -239,11 +241,11 @@ export default class PageManager extends ItemManagerModule {
    * const somePage = pageManager.get('page-id');
    * pageManager.select(somePage);
    */
-  select(page, opts = {}) {
+  select(page: string | Page, opts = {}) {
     const pg = isString(page) ? this.get(page) : page;
     if (pg) {
       this.em.trigger(evPageSelectBefore, pg, opts);
-      this.model.set('selected', pg, opts);
+      this.model.set("selected", pg, opts);
     }
     return this;
   }
@@ -255,21 +257,22 @@ export default class PageManager extends ItemManagerModule {
    * const selectedPage = pageManager.getSelected();
    */
   getSelected() {
-    return this.model.get('selected');
+    return this.model.get("selected");
   }
 
   destroy() {
     this.pages.off().reset();
     this.model.stopListening();
     this.model.clear({ silent: true });
-    ['selected', 'model'].map(i => (this[i] = 0));
+    //@ts-ignore
+    ["selected", "model"].map((i) => (this[i] = 0));
   }
 
   store() {
     return this.getProjectData();
   }
 
-  load(data) {
+  load(data: any) {
     return this.loadProjectData(data, { all: this.pages, reset: true });
   }
 

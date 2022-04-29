@@ -2,6 +2,7 @@ import { result, forEach, isEmpty, isString } from "underscore";
 import { Model } from "../../common";
 import { Component } from "../../dom_components/model/Component";
 import Components from "../../dom_components/model/Components";
+import ComponentWrapper from "../../dom_components/model/ComponentWrapper";
 import EditorModel from "../../editor/model/Editor";
 import { isComponent, isObject } from "../../utils/mixins";
 import FrameView from "../view/FrameView";
@@ -97,7 +98,7 @@ export default class Frame extends Model {
     this.set("changesCount", this.get("changesCount") + 1);
   }
 
-  getComponent(): typeof Components {
+  getComponent(): ComponentWrapper {
     return this.get("component");
   }
 

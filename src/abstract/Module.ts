@@ -19,7 +19,7 @@ export interface IBaseModule<TConfig extends any> {
   config: TConfig;
 }
 
-interface ModuleConfig {
+export interface ModuleConfig {
   name: string;
   stylePrefix?: string;
 }
@@ -86,10 +86,10 @@ export default abstract class Module<T extends ModuleConfig = ModuleConfig>
 
 export abstract class ItemManagerModule<
   TConf extends ModuleConfig = any,
-  TModel extends Collection = any
+  TCollection extends Collection = Collection
 > extends Module<TConf> {
   cls: any[] = [];
-  protected all: TModel;
+  protected all: TCollection;
 
   constructor(em: EditorModel, moduleName: string, all: any, events: any) {
     super(em, moduleName);
@@ -101,13 +101,11 @@ export abstract class ItemManagerModule<
   private: boolean = false;
 
   abstract storageKey: string;
-  abstract init(cfg: any): void;
   abstract destroy(): void;
   postLoad(key: any): void {}
-  abstract postRender(view: any): void;
-  abstract render(): any;
+  render() {}
 
-  getProjectData(data: any) {
+  getProjectData(data?: any) {
     const obj: any = {};
     const key = this.storageKey;
     if (key) {
@@ -118,12 +116,12 @@ export abstract class ItemManagerModule<
 
   loadProjectData(
     data: any = {},
-    param: { all?: TModel; onResult?: Function; reset?: boolean } = {}
+    param: { all?: TCollection; onResult?: Function; reset?: boolean } = {}
   ) {
     const { all, onResult, reset } = param;
     const key = this.storageKey;
     const opts: any = { action: "load" };
-    const coll = all || this.getAll();
+    const coll = all || this.all;
     let result = data[key];
 
     if (typeof result == "string") {
@@ -151,15 +149,17 @@ export abstract class ItemManagerModule<
     return this;
   }
 
-  getAll() {
-    return this.all;
+  getAll(): TCollection extends Collection<infer C> ? C[] : unknown[] {
+    return [...this.all.models] as any;
   }
 
-  getAllMap() {
-    return this.getAll().reduce((acc: { [id: string]: TModel }, i: any) => {
+  getAllMap(): {
+    [key: string]: TCollection extends Collection<infer C> ? C : unknown;
+  } {
+    return this.getAll().reduce((acc, i) => {
       acc[i.get(i.idAttribute)] = i;
       return acc;
-    }, {});
+    }, {} as any);
   }
 
   __initListen(opts: any = {}) {
@@ -232,15 +232,15 @@ export abstract class ItemManagerModule<
     return id;
   }
 
-  __listenAdd(model: TModel, event: string) {
+  __listenAdd(model: TCollection, event: string) {
     model.on("add", (m, c, o) => this.em.trigger(event, m, o));
   }
 
-  __listenRemove(model: TModel, event: string) {
+  __listenRemove(model: TCollection, event: string) {
     model.on("remove", (m, c, o) => this.em.trigger(event, m, o));
   }
 
-  __listenUpdate(model: TModel, event: string) {
+  __listenUpdate(model: TCollection, event: string) {
     model.on("change", (p, c) =>
       this.em.trigger(event, p, p.changedAttributes(), c)
     );
