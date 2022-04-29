@@ -1,3 +1,4 @@
+import { isElement } from 'underscore';
 import EditorModel from "../editor/model/Editor";
 
 export interface IModule<TConfig extends any = any> extends IBaseModule<TConfig> {
@@ -15,9 +16,10 @@ export interface IBaseModule<TConfig extends any> {
   config: TConfig;
 }
 
-interface ModuleConfig{
-  name: string;
+export interface ModuleConfig {
+  name?: string;
   stylePrefix?: string;
+  appendTo?: string;
 }
 
 export default abstract class Module<T extends ModuleConfig = ModuleConfig>
@@ -28,6 +30,8 @@ export default abstract class Module<T extends ModuleConfig = ModuleConfig>
   private _config: T;
   cls: any[] = [];
   events: any;
+  model?: any;
+  view?: any;
 
   constructor(
     em: EditorModel,
@@ -35,6 +39,16 @@ export default abstract class Module<T extends ModuleConfig = ModuleConfig>
   ) {
     this._em = em;
     this._config = config;
+  }
+
+  // Temporary alternative to constructor
+  __init(em: EditorModel, config: T) {
+    this._em = em;
+    this._config = config;
+    this.init(config);
+  }
+  __initDefaults(defaults: T) {
+    this._config = { ...defaults, ...this._config };
   }
 
   public get em() {
@@ -46,12 +60,13 @@ export default abstract class Module<T extends ModuleConfig = ModuleConfig>
   //abstract name: string;
   isPrivate: boolean = false;
   onLoad?(): void;
-  init(cfg: any) {}
+  init(cfg: T) {}
   abstract destroy(): void;
+  abstract render(): HTMLElement;
   postLoad(key: any): void {}
 
   get name(): string {
-    return this.config.name;
+    return this.config.name || '';
   }
 
   getConfig() {
@@ -63,4 +78,18 @@ export default abstract class Module<T extends ModuleConfig = ModuleConfig>
   }
 
   postRender?(view: any): void;
+
+  /**
+   * Move the main DOM element of the module.
+   * To execute only post editor render (in postRender)
+   */
+   __appendTo() {
+    const elTo = this.getConfig().appendTo;
+
+    if (elTo) {
+      const el = isElement(elTo) ? elTo : document.querySelector(elTo);
+      if (!el) return this.__logWarn('"appendTo" element not found');
+      el.appendChild(this.render());
+    }
+  }
 }

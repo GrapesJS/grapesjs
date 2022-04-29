@@ -266,7 +266,8 @@ timedInterval?: number;
     }
 
     cfg.em = this;
-    Mod.init({ ...cfg });
+    // Temporary alternative to constructor
+    Mod.__init ? Mod.__init(this, { ...cfg }) : Mod.init({ ...cfg });
 
     // Bind the module to the editor model if public
     !Mod.private && this.set(Mod.name, Mod);
