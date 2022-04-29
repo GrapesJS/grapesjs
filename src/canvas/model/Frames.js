@@ -4,7 +4,8 @@ import { Collection } from '../../common';
 import Frame from './Frame';
 
 export default class Frames extends Collection {
-  initialize(models, config = {}) {
+  constructor(models, config = {}) {
+    super(models);
     bindAll(this, 'itemLoaded');
     this.config = config;
     this.on('reset', this.onReset);

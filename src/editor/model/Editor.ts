@@ -45,7 +45,9 @@ const deps = [
   require("block_manager"),
 ];
 
-const ts_deps: any[] = [];
+const ts_deps: any[] = [
+  //require("pages")
+];
 
 Extender({
   //@ts-ignore
@@ -264,7 +266,7 @@ export default class EditorModel extends Model {
   loadModule(moduleName: any) {
     const { config } = this;
     const Module = moduleName.default || moduleName;
-    const Mod = new Module();
+    const Mod = new Module(this);
     const name = Mod.name.charAt(0).toLowerCase() + Mod.name.slice(1);
     const cfgParent = !isUndefined(config[name])
       ? config[name]

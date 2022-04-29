@@ -24,8 +24,11 @@ export default class Page extends Model {
       defFrame.styles = props.styles;
       ["component", "styles"].map((i) => this.unset(i));
     }
-    const frms = props.frames || [defFrame];
-    const frames = new Frames(frms, config);
+    const frms: any[] = props.frames || [defFrame];
+    const frames = new Frames(
+      frms?.map((model) => new Frame(model, opts)),
+      opts
+    );
     frames.page = this;
     this.set("frames", frames);
     const um = em && em.get("UndoManager");
