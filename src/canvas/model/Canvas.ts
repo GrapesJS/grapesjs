@@ -9,7 +9,7 @@ export default class Canvas extends Backbone.Model {
   defaults() {
     return {
       frame: "",
-      frames: "",
+      frames: new Frames(),
       rulers: false,
       zoom: 100,
       x: 0,
@@ -28,7 +28,6 @@ export default class Canvas extends Backbone.Model {
     const { em } = config;
     this.config = config;
     this.em = em;
-    this.set("frames", new Frames(undefined, { em }));
     this.listenTo(this, "change:zoom", this.onZoomChange);
     this.listenTo(em, "change:device", this.updateDevice);
     this.listenTo(em, evPageSelect, this._pageUpdated);
