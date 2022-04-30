@@ -5,8 +5,7 @@ const KEY_TAG = 'tag';
 const KEY_ATTR = 'attributes';
 const KEY_CHILD = 'children';
 
-export const motionsEv =
-  'transitionend oTransitionEnd transitionend webkitTransitionEnd';
+export const motionsEv = 'transitionend oTransitionEnd transitionend webkitTransitionEnd';
 
 export const isDoc = el => el && el.nodeType === 9;
 
@@ -18,14 +17,10 @@ export const removeEl = el => {
 export const find = (el, query) => el.querySelectorAll(query);
 
 export const attrUp = (el, attrs = {}) =>
-  el &&
-  el.setAttribute &&
-  each(attrs, (value, key) => el.setAttribute(key, value));
+  el && el.setAttribute && each(attrs, (value, key) => el.setAttribute(key, value));
 
 export const isVisible = el => {
-  return (
-    el && !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length)
-  );
+  return el && !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length);
 };
 
 export const empty = node => {
@@ -56,7 +51,7 @@ export const appendAtIndex = (parent, child, index) => {
 
 export const append = (parent, child) => appendAtIndex(parent, child);
 
-export const createEl = (tag, attrs = '', child) => {
+export const createEl = (tag, attrs = {}, child) => {
   const el = document.createElement(tag);
   attrs && each(attrs, (value, key) => el.setAttribute(key, value));
 
@@ -90,7 +85,7 @@ export const createCustomEvent = (e, cls) => {
       Object.defineProperty(oEvent, prop, {
         get() {
           return this.keyCodeVal;
-        }
+        },
       });
     });
   }

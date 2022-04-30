@@ -822,8 +822,8 @@ export default class EditorModel extends Model {
     return this.get('DomComponents').getWrapper();
   }
 
-  setCurrentFrame(frameView: FrameView) {
-    return this.set('currentFrame', frameView);
+  setCurrentFrame(frameView?: FrameView) {
+    return this.set("currentFrame", frameView);
   }
 
   getCurrentFrame(): FrameView {
