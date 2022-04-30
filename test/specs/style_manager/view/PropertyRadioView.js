@@ -101,7 +101,7 @@ describe('PropertyRadioView', () => {
     setTimeout(() => {
       expect(getCheckedEl(view).value).toEqual(propValue);
       done();
-    }, 11);
+    }, 15);
   });
 
   describe('Init property', () => {
