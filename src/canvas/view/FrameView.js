@@ -25,7 +25,7 @@ export default class FrameView extends View {
       frameView: this,
     };
     this.ppfx = this.config.pStylePrefix || '';
-    this.em = this.config.em;
+    this.em = this.model.em;
     this.showGlobalTools = debounce(this.showGlobalTools.bind(this), 50);
     const cvModel = this.getCanvasModel();
     this.listenTo(model, 'change:head', this.updateHead);
@@ -311,12 +311,11 @@ export default class FrameView extends View {
   }
 
   renderBody() {
-    const { config, model, ppfx } = this;
-    const { em } = config;
+    const { config, em, model, ppfx } = this;
     const doc = this.getDoc();
     const body = this.getBody();
     const win = this.getWindow();
-    const conf = em.get('Config');
+    const conf = em.config;
     win._isEditor = true;
     this.renderStyles({ prev: [] });
 

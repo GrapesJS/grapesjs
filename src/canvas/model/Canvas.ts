@@ -23,9 +23,9 @@ export default class Canvas extends Backbone.Model {
   em: EditorModel;
   config: any;
 
-  constructor(props: any, config: any = {}) {
-    super(props);
-    const { em } = config;
+  constructor(em: EditorModel, config: any = {}) {
+    const { scripts, styles } = config;
+    super({scripts, styles});
     this.config = config;
     this.em = em;
     this.listenTo(this, 'change:zoom', this.onZoomChange);

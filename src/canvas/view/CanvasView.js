@@ -21,11 +21,12 @@ export default class CanvasView extends View {
     `;
   }
 
-  initialize(o) {
+  constructor(o) {
+    super(o);
     bindAll(this, 'clearOff', 'onKeyPress', 'onCanvasMove');
     const { model } = this;
     this.config = o.config || {};
-    this.em = this.config.em || {};
+    this.em = this.model.em || {};
     this.pfx = this.config.stylePrefix || '';
     this.ppfx = this.config.pStylePrefix || '';
     this.className = this.config.stylePrefix + 'canvas';
@@ -152,7 +153,7 @@ export default class CanvasView extends View {
   /**
    * Get the offset of the element
    * @param  {HTMLElement} el
-   * @return {Object}
+   * @return { {top: number, left: number, width: number, height: number} }
    */
   offset(el, opts = {}) {
     const rect = getElRect(el);
@@ -178,8 +179,8 @@ export default class CanvasView extends View {
 
   /**
    * Return frame offset
-   * @return {Object}
-   * @private
+   * @return { {top: number, left: number, width: number, height: number} }
+   * @public
    */
   getFrameOffset(el) {
     if (!this.frmOff || el) {
@@ -193,8 +194,8 @@ export default class CanvasView extends View {
 
   /**
    * Return canvas offset
-   * @return {Object}
-   * @private
+   * @return { {top: number, left: number, width: number, height: number} }
+   * @public
    */
   getCanvasOffset() {
     if (!this.cvsOff) this.cvsOff = this.offset(this.el);
@@ -204,10 +205,10 @@ export default class CanvasView extends View {
   /**
    * Returns element's rect info
    * @param {HTMLElement} el
-   * @return {Object}
-   * @private
+   * @return { {top: number, left: number, width: number, height: number, zoom: number, rect: any} }
+   * @public
    */
-  getElementPos(el, opts) {
+  getElementPos(el, opts = {}) {
     const zoom = this.getZoom();
     const opt = opts || {};
     const frameOffset = this.getFrameOffset(el);
@@ -228,8 +229,15 @@ export default class CanvasView extends View {
   /**
    * Returns element's offsets like margins and paddings
    * @param {HTMLElement} el
-   * @return {Object}
-   * @private
+   * @return {{ marginTop: number,
+   * marginRight: number,
+   * marginBottom: number,
+   * marginLeft: number,
+   * paddingTop: number,
+   * paddingRight: number,
+   * paddingBottom: number,
+   * paddingLeft: number,}}
+   * @public
    */
   getElementOffsets(el) {
     if (!el || isTextNode(el)) return {};
@@ -253,8 +261,8 @@ export default class CanvasView extends View {
 
   /**
    * Returns position data of the canvas element
-   * @return {Object} obj Position object
-   * @private
+   * @return { {top: number, left: number, width: number, height: number} } obj Position object
+   * @public
    */
   getPosition(opts = {}) {
     const doc = this.frame.el.contentDocument;

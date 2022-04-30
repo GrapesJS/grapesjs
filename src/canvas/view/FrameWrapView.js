@@ -19,11 +19,11 @@ export default class FrameWrapView extends View {
       ...(opts.config || conf),
       frameWrapView: this,
     };
-    const { canvasView, em } = config;
+    const { canvasView } = config;
     this.cv = canvasView;
     this.config = config;
-    this.em = em;
-    this.canvas = em && em.get('Canvas');
+    this.em = this.model.em;
+    this.canvas = this.em?.get('Canvas');
     this.ppfx = config.pStylePrefix || '';
     this.frame = new FrameView({ model, config });
     this.classAnim = `${this.ppfx}frame-wrapper--anim`;
