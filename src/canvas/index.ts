@@ -90,7 +90,7 @@ export default class CanvasModule extends Module<typeof defaults> {
       ...this.config,
       module: this,
     };
-    this.canvas = new Canvas(this.em, this.config);
+    this.canvas = new Canvas(this);
     this.model = this.canvas;
     this.startAutoscroll = this.startAutoscroll.bind(this);
     this.stopAutoscroll = this.stopAutoscroll.bind(this);

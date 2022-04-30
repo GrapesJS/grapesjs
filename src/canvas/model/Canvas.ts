@@ -1,11 +1,10 @@
-import { Model } from '../../common';
-import Backbone from 'backbone';
-import { evPageSelect } from '../../pages';
-import Frames from './Frames';
-import EditorModel from '../../editor/model/Editor';
-import Page from '../../pages/model/Page';
+import { Model } from "../../abstract";
+import { evPageSelect } from "../../pages";
+import Frames from "./Frames";
+import Page from "../../pages/model/Page";
+import CanvasModule from "..";
 
-export default class Canvas extends Backbone.Model {
+export default class Canvas extends Model<CanvasModule> {
   defaults() {
     return {
       frame: '',
@@ -20,18 +19,16 @@ export default class Canvas extends Backbone.Model {
       styles: [],
     };
   }
-  em: EditorModel;
-  config: any;
 
-  constructor(em: EditorModel, config: any = {}) {
+  constructor(module: CanvasModule) {
+    const { em, config } = module;
     const { scripts, styles } = config;
-    super({scripts, styles});
-    this.config = config;
-    this.em = em;
-    this.listenTo(this, 'change:zoom', this.onZoomChange);
-    this.listenTo(em, 'change:device', this.updateDevice);
+    super(module, {scripts, styles});
+    this.listenTo(this, "change:zoom", this.onZoomChange);
+    this.listenTo(em, "change:device", this.updateDevice);
     this.listenTo(em, evPageSelect, this._pageUpdated);
   }
+
   get frames(): Frames {
     return this.get('frames');
   }

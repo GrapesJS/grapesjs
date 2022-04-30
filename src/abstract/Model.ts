@@ -29,4 +29,8 @@ export default class Model<
   protected get em() {
     return this._module.em;
   }
+
+  public get em() {
+    return this._module.em;
+  }
 }
