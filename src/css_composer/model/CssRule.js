@@ -1,6 +1,6 @@
 import { isEmpty, forEach, isString, isArray } from 'underscore';
 import { Model } from '../../common';
-import Styleable from '../../domain_abstract/model/Styleable';
+import StyleableModel from '../../domain_abstract/model/StyleableModel';
 import Selectors from '../../selector_manager/model/Selectors';
 import { getMediaLength } from '../../code_manager/model/CssGenerator';
 import { isEmptyObj, hasWin } from '../../utils/mixins';
@@ -23,7 +23,7 @@ const { CSS } = hasWin() ? window : {};
  * [State]: state.html
  * [Component]: component.html
  */
-export default class CssRule extends Model.extend(Styleable) {
+export default class CssRule extends StyleableModel {
   defaults() {
     return {
       selectors: [],
