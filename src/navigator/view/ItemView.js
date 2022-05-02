@@ -296,23 +296,6 @@ export default class ItemView extends View {
   }
 
   /**
-   * Freeze item
-   * @return	void
-   * */
-  freeze() {
-    this.$el.addClass(this.pfx + 'opac50');
-    this.model.set('open', 0);
-  }
-
-  /**
-   * Unfreeze item
-   * @return	void
-   * */
-  unfreeze() {
-    this.$el.removeClass(this.pfx + 'opac50');
-  }
-
-  /**
    * Update item on status change
    * @param	Event
    * */
@@ -374,7 +357,6 @@ export default class ItemView extends View {
 
   getCaret() {
     if (!this.caret || !this.caret.length) {
-      const pfx = this.pfx;
       this.caret = this.$el.children(`.${this.clsTitleC}`).find(`.${this.clsCaret}`);
     }
 
