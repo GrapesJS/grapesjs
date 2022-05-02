@@ -81,7 +81,6 @@ export default class ItemView extends View {
     const model = this.model;
     const components = model.get('components');
     const type = model.get('type') || 'default';
-    model.set('open', false);
     this.listenTo(components, 'remove add reset', this.checkChildren);
     [
       ['change:status', this.updateStatus],
@@ -221,17 +220,18 @@ export default class ItemView extends View {
    * @return void
    * */
   updateOpening() {
-    var opened = this.opt.opened || {};
-    var model = this.model;
+    const { $el, model, opt } = this;
+    const opened = opt.opened || {};
     const chvDown = 'fa-chevron-down';
+    const caret = this.getCaret();
 
     if (model.get('open')) {
-      this.$el.addClass('open');
-      this.getCaret().addClass(chvDown);
+      $el.addClass('open');
+      caret.addClass(chvDown);
       opened[model.cid] = model;
     } else {
-      this.$el.removeClass('open');
-      this.getCaret().removeClass(chvDown);
+      $el.removeClass('open');
+      caret.removeClass(chvDown);
       delete opened[model.cid];
     }
   }
@@ -410,9 +410,9 @@ export default class ItemView extends View {
   }
 
   render() {
-    const { model, config, pfx, ppfx, opt } = this;
+    const { model, config, pfx, ppfx, opt, sorter } = this;
     this.__clearItems();
-    const { isCountable } = opt;
+    const { isCountable, opened } = opt;
     const hidden = isCountable && !isCountable(model, config.hideTextnode);
     const vis = this.isVisible();
     const el = this.$el.empty();
@@ -426,9 +426,9 @@ export default class ItemView extends View {
     this.items = new ItemsView({
       ItemView: opt.ItemView,
       collection: model.get('components'),
-      config: this.config,
-      sorter: this.sorter,
-      opened: this.opt.opened,
+      config,
+      sorter,
+      opened,
       parentView: this,
       parent: model,
       level,
@@ -449,8 +449,8 @@ export default class ItemView extends View {
     !vis && (this.className += ` ${pfx}hide`);
     hidden && (this.className += ` ${ppfx}hidden`);
     el.attr('class', this.className);
-    this.updateOpening();
     this.updateStatus();
+    this.updateOpening();
     this.updateVisibility();
     this.__render();
     this._rendered = 1;
