@@ -2,19 +2,19 @@
 
 ## CssRule
 
-**Extends Model.extend(Styleable)**
+**Extends StyleableModel**
 
 ### Properties
 
-*   `selectors` **[Array][1]\<Selector>** Array of selectors
-*   `style` **[Object][2]** Object containing style definitions
-*   `selectorsAdd` **[String][3]?** Additional string css selectors
-*   `atRuleType` **[String][3]?** Type of at-rule, eg. `media`, 'font-face'
-*   `mediaText` **[String][3]?** At-rule value, eg. `(max-width: 1000px)`
-*   `singleAtRule` **[Boolean][4]?** This property is used only on at-rules, like 'page' or 'font-face', where the block containes only style declarations
-*   `state` **[String][3]?** State of the rule, eg: `hover`, `focused`
-*   `important` **([Boolean][4] | [Array][1]<[String][3]>)?** If true, sets `!important` on all properties. You can also pass an array to specify properties on which use important
-*   `stylable` **[Boolean][4]?** Indicates if the rule is stylable from the editor[Device]: device.html[State]: state.html[Component]: component.html
+- `selectors` **[Array][1]\<Selector>** Array of selectors
+- `style` **[Object][2]** Object containing style definitions
+- `selectorsAdd` **[String][3]?** Additional string css selectors
+- `atRuleType` **[String][3]?** Type of at-rule, eg. `media`, 'font-face'
+- `mediaText` **[String][3]?** At-rule value, eg. `(max-width: 1000px)`
+- `singleAtRule` **[Boolean][4]?** This property is used only on at-rules, like 'page' or 'font-face', where the block containes only style declarations
+- `state` **[String][3]?** State of the rule, eg: `hover`, `focused`
+- `important` **([Boolean][4] | [Array][1]<[String][3]>)?** If true, sets `!important` on all properties. You can also pass an array to specify properties on which use important
+- `stylable` **[Boolean][4]?** Indicates if the rule is stylable from the editor[Device]: device.html[State]: state.html[Component]: component.html
 
 ### getAtRule
 
@@ -23,14 +23,18 @@ Returns the at-rule statement when exists, eg. `@media (...)`, `@keyframes`
 #### Examples
 
 ```javascript
-const cssRule = editor.Css.setRule('.class1', { color: 'red' }, {
- atRuleType: 'media',
- atRuleParams: '(min-width: 500px)'
-});
+const cssRule = editor.Css.setRule(
+  ".class1",
+  { color: "red" },
+  {
+    atRuleType: "media",
+    atRuleParams: "(min-width: 500px)",
+  }
+);
 cssRule.getAtRule(); // "@media (min-width: 500px)"
 ```
 
-Returns **[String][3]** 
+Returns **[String][3]**
 
 ### selectorsToString
 
@@ -38,19 +42,19 @@ Return selectors of the rule as a string
 
 #### Parameters
 
-*   `opts` **[Object][2]?** Options (optional, default `{}`)
+- `opts` **[Object][2]?** Options (optional, default `{}`)
 
-    *   `opts.skipState` **[Boolean][4]?** Skip state from the result
+  - `opts.skipState` **[Boolean][4]?** Skip state from the result
 
 #### Examples
 
 ```javascript
-const cssRule = editor.Css.setRule('.class1:hover', { color: 'red' });
+const cssRule = editor.Css.setRule(".class1:hover", { color: "red" });
 cssRule.selectorsToString(); // ".class1:hover"
 cssRule.selectorsToString({ skipState: true }); // ".class1"
 ```
 
-Returns **[String][3]** 
+Returns **[String][3]**
 
 ### getDeclaration
 
@@ -58,19 +62,23 @@ Get declaration block (without the at-rule statement)
 
 #### Parameters
 
-*   `opts` **[Object][2]** Options (same as in `selectorsToString`) (optional, default `{}`)
+- `opts` **[Object][2]** Options (same as in `selectorsToString`) (optional, default `{}`)
 
 #### Examples
 
 ```javascript
-const cssRule = editor.Css.setRule('.class1', { color: 'red' }, {
- atRuleType: 'media',
- atRuleParams: '(min-width: 500px)'
-});
-cssRule.getDeclaration() // ".class1{color:red;}"
+const cssRule = editor.Css.setRule(
+  ".class1",
+  { color: "red" },
+  {
+    atRuleType: "media",
+    atRuleParams: "(min-width: 500px)",
+  }
+);
+cssRule.getDeclaration(); // ".class1{color:red;}"
 ```
 
-Returns **[String][3]** 
+Returns **[String][3]**
 
 ### getDevice
 
@@ -83,7 +91,7 @@ const device = rule.getDevice();
 console.log(device?.getName());
 ```
 
-Returns **([Device] | null)** 
+Returns **([Device] | null)**
 
 ### getState
 
@@ -96,7 +104,7 @@ const state = rule.getState();
 console.log(state?.getLabel());
 ```
 
-Returns **([State] | null)** 
+Returns **([State] | null)**
 
 ### getComponent
 
@@ -109,7 +117,7 @@ const cmp = rule.getComponent();
 console.log(cmp?.toHTML());
 ```
 
-Returns **([Component] | null)** 
+Returns **([Component] | null)**
 
 ### toCSS
 
@@ -117,24 +125,25 @@ Return the CSS string of the rule
 
 #### Parameters
 
-*   `opts` **[Object][2]** Options (same as in `getDeclaration`) (optional, default `{}`)
+- `opts` **[Object][2]** Options (same as in `getDeclaration`) (optional, default `{}`)
 
 #### Examples
 
 ```javascript
-const cssRule = editor.Css.setRule('.class1', { color: 'red' }, {
- atRuleType: 'media',
- atRuleParams: '(min-width: 500px)'
-});
-cssRule.toCSS() // "@media (min-width: 500px){.class1{color:red;}}"
+const cssRule = editor.Css.setRule(
+  ".class1",
+  { color: "red" },
+  {
+    atRuleType: "media",
+    atRuleParams: "(min-width: 500px)",
+  }
+);
+cssRule.toCSS(); // "@media (min-width: 500px){.class1{color:red;}}"
 ```
 
 Returns **[String][3]** CSS string
 
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
-
 [2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
-
 [3]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
-
 [4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean

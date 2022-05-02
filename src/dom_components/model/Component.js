@@ -12,7 +12,7 @@ import {
   keys,
 } from 'underscore';
 import { shallowDiff, capitalize, isEmptyObj, isObject, toLowerCase } from 'utils/mixins';
-import Styleable from 'domain_abstract/model/Styleable';
+import StyleableModel from 'domain_abstract/model/StyleableModel';
 import { Model } from 'backbone';
 import Components from './Components';
 import Selector from 'selector_manager/model/Selector';
@@ -91,7 +91,7 @@ export const keyUpdateInside = `${keyUpdate}-inside`;
  * By default, when `toolbar` property is falsy the editor will add automatically commands `core:component-exit` (select parent component, added if there is one), `tlb-move` (added if `draggable`) , `tlb-clone` (added if `copyable`), `tlb-delete` (added if `removable`).
  * @property {Collection<Component>} [components=null] Children components. Default: `null`
  */
-export default class Component extends Model.extend(Styleable) {
+export default class Component extends StyleableModel {
   /**
    * Hook method, called once the model is created
    */
@@ -476,7 +476,7 @@ export default class Component extends Model.extend(Styleable) {
       }
     }
 
-    return Styleable.getStyle.call(this, prop);
+    return super.getStyle.call(this, prop);
   }
 
   /**
@@ -502,7 +502,7 @@ export default class Component extends Model.extend(Styleable) {
       this.set('style', '', { silent: 1 });
       keys(diff).forEach(pr => this.trigger(`change:style:${pr}`));
     } else {
-      prop = Styleable.setStyle.apply(this, arguments);
+      prop = super.setStyle.apply(this, arguments);
     }
 
     return prop;

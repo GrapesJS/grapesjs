@@ -1,11 +1,12 @@
 import { isString, isArray, keys, isUndefined } from 'underscore';
 import { shallowDiff } from '../../utils/mixins';
 import ParserHtml from '../../parser/model/ParserHtml';
+import { Model } from 'common';
 
 const parseStyle = ParserHtml().parseStyle;
 
-export default {
-  parseStyle,
+export default class StyleableModel extends Model {
+  parseStyle;
 
   /**
    * To trigger the style change event on models I have to
@@ -15,7 +16,7 @@ export default {
    */
   extendStyle(prop) {
     return { ...this.getStyle(), ...prop };
-  },
+  }
 
   /**
    * Get style object
@@ -25,7 +26,7 @@ export default {
     const style = this.get('style') || {};
     const result = { ...style };
     return prop && isString(prop) ? result[prop] : result;
-  },
+  }
 
   /**
    * Set new style object
@@ -62,7 +63,7 @@ export default {
     });
 
     return propNew;
-  },
+  }
 
   /**
    * Add style property
@@ -83,7 +84,7 @@ export default {
 
     prop = this.extendStyle(prop);
     this.setStyle(prop, opts);
-  },
+  }
 
   /**
    * Remove style property
@@ -93,7 +94,7 @@ export default {
     let style = this.getStyle();
     delete style[prop];
     this.setStyle(style);
-  },
+  }
 
   /**
    * Returns string of style properties
@@ -113,15 +114,15 @@ export default {
     }
 
     return result.join('');
-  },
+  }
 
   getSelectors() {
     return this.get('selectors') || this.get('classes');
-  },
+  }
 
   getSelectorsString(opts) {
     return this.selectorsToString ? this.selectorsToString(opts) : this.getSelectors().getFullString();
-  },
+  }
 
   _validate(attr, opts) {
     const { style } = attr;
@@ -141,5 +142,5 @@ export default {
     }
 
     return true;
-  },
-};
+  }
+}
