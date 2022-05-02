@@ -414,7 +414,6 @@ export default class ItemView extends View {
     this.__clearItems();
     const { isCountable, opened } = opt;
     const hidden = isCountable && !isCountable(model, config.hideTextnode);
-    const vis = this.isVisible();
     const el = this.$el.empty();
     const level = this.level + 1;
     this.inputName = 0;
@@ -435,18 +434,18 @@ export default class ItemView extends View {
     });
     const children = this.items.render().$el;
 
-    if (!this.config.showWrapper && level === 1) {
+    if (!config.showWrapper && level === 1) {
       el.append(children);
     } else {
       el.html(this.template(model));
       el.find(`.${this.clsChildren}`).append(children);
     }
 
-    if (!model.get('draggable') || !this.config.sortable) {
+    if (!model.get('draggable') || !config.sortable) {
       el.children(`.${this.clsMove}`).remove();
     }
 
-    !vis && (this.className += ` ${pfx}hide`);
+    !this.isVisible() && (this.className += ` ${pfx}hide`);
     hidden && (this.className += ` ${ppfx}hidden`);
     el.attr('class', this.className);
     this.updateStatus();

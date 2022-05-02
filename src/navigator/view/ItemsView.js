@@ -76,18 +76,18 @@ export default class ItemsView extends View {
    * @return Object Object created
    * */
   addToCollection(model, fragmentEl, index) {
-    const { level, parentView, opt } = this;
-    const { ItemView } = opt;
+    const { level, parentView, opt, config, sorter } = this;
+    const { ItemView, opened } = opt;
     const fragment = fragmentEl || null;
     const item = new ItemView({
       ItemView,
       level,
       model,
       parentView,
-      config: this.config,
-      sorter: this.sorter,
+      config,
+      sorter,
+      opened,
       isCountable: this.isCountable,
-      opened: this.opt.opened,
     });
     const rendered = item.render().el;
 
@@ -124,11 +124,13 @@ export default class ItemsView extends View {
    * @private
    */
   isCountable(model, hide) {
-    var type = model.get('type');
-    var tag = model.get('tagName');
+    const type = model.get('type');
+    const tag = model.get('tagName');
+
     if (((type == 'textnode' || tag == 'br') && hide) || !model.get('layerable')) {
       return false;
     }
+
     return true;
   }
 
