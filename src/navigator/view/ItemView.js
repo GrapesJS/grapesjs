@@ -1,15 +1,15 @@
-import { isUndefined, isString, bindAll } from 'underscore';
+import { isString, bindAll } from 'underscore';
 import { View } from '../../common';
 import { getModel, isEscKey, isEnterKey } from '../../utils/mixins';
 import ComponentView from '../../dom_components/view/ComponentView';
 import { eventDrag } from '../../dom_components/model/Component';
+import ItemsView from './ItemsView';
 
 const inputProp = 'contentEditable';
 const styleOpts = { mediaText: '' };
 const isStyleHidden = (style = {}) => {
   return (style.display || '').trim().indexOf('none') === 0;
 };
-let ItemsView;
 
 export default class ItemView extends View {
   events() {
@@ -397,11 +397,6 @@ export default class ItemView extends View {
     const el = this.$el.empty();
     const level = this.level + 1;
     this.inputName = 0;
-
-    if (isUndefined(ItemsView)) {
-      ItemsView = require('./ItemsView').default;
-    }
-
     this.items = new ItemsView({
       ItemView: opt.ItemView,
       collection: model.get('components'),
