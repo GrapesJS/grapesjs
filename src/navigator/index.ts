@@ -19,7 +19,7 @@ export default class LayerManager extends Module<typeof defaults> {
       this.__initDefaults(defaults);
       this.componentChanged = this.componentChanged.bind(this);
       this.__onRootChange = this.__onRootChange.bind(this);
-      this.model = new Model(this);
+      this.model = new Model(this, { opened: {} });
       // @ts-ignore
       this.config.stylePrefix = this.config.pStylePrefix;
       return this;
@@ -27,9 +27,9 @@ export default class LayerManager extends Module<typeof defaults> {
 
     onLoad() {
       const { em, config, model } = this;
-      model?.listenTo(em, 'component:selected', this.componentChanged);
-      model?.listenToOnce(em, 'load', () => this.setRoot(config.root));
-      model?.on('change:root', this.__onRootChange);
+      model!.listenTo(em, 'component:selected', this.componentChanged);
+      model!.listenToOnce(em, 'load', () => this.setRoot(config.root));
+      model!.on('change:root', this.__onRootChange);
       this.componentChanged();
     }
 
@@ -50,7 +50,7 @@ export default class LayerManager extends Module<typeof defaults> {
         root = wrapper.find(component)[0] || wrapper;
       }
 
-      this.model?.set('root', root);
+      this.model!.set('root', root);
 
       return root;
     }
@@ -60,7 +60,7 @@ export default class LayerManager extends Module<typeof defaults> {
      * @return {Component}
      */
     getRoot() {
-      return this.model?.get('root');
+      return this.model!.get('root');
     }
 
     /**
@@ -80,16 +80,17 @@ export default class LayerManager extends Module<typeof defaults> {
       if (opts.fromLayers) return;
       const { em, config } = this;
       const { scrollLayers } = config;
-      const opened = em.get('opened');
+      const opened = this.model!.get('opened');
       const selected = em.getSelected();
       let parent = selected?.parent();
 
       for (let cid in opened) {
-        opened[cid].set('open', 0);
+        opened[cid].set('open', false);
+        delete opened[cid];
       }
 
       while (parent) {
-        parent.set('open', 1);
+        parent.set('open', true);
         opened[parent.cid] = parent;
         parent = parent.parent();
       }
@@ -101,14 +102,14 @@ export default class LayerManager extends Module<typeof defaults> {
     }
 
     render() {
-      const { em, config } = this;
+      const { config, model } = this;
       const ItemView = View.extend(config.extend);
       this.view = new ItemView({
         el: this.view?.el,
         ItemView,
         level: 0,
         config,
-        opened: em.get('opened') || {},
+        opened: model!.get('opened'),
         model: this.getRoot(),
       });
       return this.view?.render().el as HTMLElement;

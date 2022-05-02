@@ -220,19 +220,17 @@ export default class ItemView extends View {
    * @return void
    * */
   updateOpening() {
-    const { $el, model, opt } = this;
-    const opened = opt.opened || {};
-    const chvDown = 'fa-chevron-down';
+    const { $el, model } = this;
+    const clsOpen = 'open';
+    const clsChvDown = 'fa-chevron-down';
     const caret = this.getCaret();
 
     if (model.get('open')) {
-      $el.addClass('open');
-      caret.addClass(chvDown);
-      opened[model.cid] = model;
+      $el.addClass(clsOpen);
+      caret.addClass(clsChvDown);
     } else {
-      $el.removeClass('open');
-      caret.removeClass(chvDown);
-      delete opened[model.cid];
+      $el.removeClass(clsOpen);
+      caret.removeClass(clsChvDown);
     }
   }
 
