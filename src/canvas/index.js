@@ -668,7 +668,6 @@ export default class CanvasModule {
    * });
    */
   addFrame(props = {}, opts = {}) {
-    console.log(opts);
     return this.canvas.frames.add(new Frame({ ...props }, { em: this.em }), opts);
   }
 

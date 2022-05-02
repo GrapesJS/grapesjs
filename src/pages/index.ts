@@ -93,7 +93,6 @@ export default class PageManager extends ItemManagerModule<Config, Pages> {
   constructor(em: EditorModel) {
     super(em, "PageManager", new Pages([]), events);
     bindAll(this, "_onPageChange");
-    this.getAll;
     const model = new Model({ _undo: true } as any);
     this.model = model;
     this.pages.on("reset", (coll) => coll.at(0) && this.select(coll.at(0)));
