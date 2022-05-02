@@ -133,7 +133,10 @@ export default () => {
       // Global selectors container
       this.all = new Selectors(config.selectors);
       this.selected = new Selectors([], { em, config });
-      this.states = new Collection(config.states, { model: State });
+      this.states = new Collection(
+        config.states.map(state => new State(state)),
+        { model: State }
+      );
       this.model = new Model({ cFirst: config.componentFirst, _undo: true });
       this.__initListen({
         collections: [this.states, this.selected],
@@ -352,7 +355,10 @@ export default () => {
      * ]);
      */
     setStates(states, opts) {
-      return this.states.reset(states, opts);
+      return this.states.reset(
+        states.map(state => new State(state)),
+        opts
+      );
     },
 
     /**
