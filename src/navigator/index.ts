@@ -2,14 +2,33 @@ import { isString } from 'underscore';
 import { Model } from '../abstract';
 import Module from '../abstract/Module';
 import Component from '../dom_components/model/Component';
-import { hasWin, isComponent } from '../utils/mixins';
+import { hasWin, isComponent, isDef } from '../utils/mixins';
 import defaults from './config/config';
 import View from './view/ItemView';
+
+interface LayerData {
+  open: boolean,
+  selected: boolean,
+  hovered: boolean,
+}
+
+export const evAll = 'layer';
+export const evPfx = `${evAll}:`;
+export const evRoot = `${evPfx}root`;
+export const evComponent = `${evPfx}component`;
+
+const events = {
+  all: evAll,
+  root: evRoot,
+  component: evComponent,
+};
 
 export default class LayerManager extends Module<typeof defaults> {
     model?: Model;
 
     view?: View;
+
+    events = events;
 
     get name(): string {
       return 'LayerManager';
@@ -19,6 +38,7 @@ export default class LayerManager extends Module<typeof defaults> {
       this.__initDefaults(defaults);
       this.componentChanged = this.componentChanged.bind(this);
       this.__onRootChange = this.__onRootChange.bind(this);
+      this.__onComponent = this.__onComponent.bind(this);
       this.model = new Model(this, { opened: {} });
       // @ts-ignore
       this.config.stylePrefix = this.config.pStylePrefix;
@@ -30,6 +50,7 @@ export default class LayerManager extends Module<typeof defaults> {
       model!.listenTo(em, 'component:selected', this.componentChanged);
       model!.listenToOnce(em, 'load', () => this.setRoot(config.root));
       model!.on('change:root', this.__onRootChange);
+      model!.listenTo(em, 'component:update:open component:update:status', this.__onComponent);
       this.componentChanged();
     }
 
@@ -63,9 +84,35 @@ export default class LayerManager extends Module<typeof defaults> {
       return this.model!.get('root');
     }
 
+    getLayerData(component: any): LayerData {
+      const status = component.get('status');
+
+      return {
+        open: !!component.get('open'),
+        selected: status === 'selected',
+        hovered: status === 'hovered', // || this.em.getHovered() === component,
+      }
+    }
+
+    setLayerData(component: any, data: Partial<LayerData>) {
+      const { em } = this;
+      const { open, selected, hovered } = data;
+
+      if (isDef(open)) {
+        component.set('open', open);
+      }
+      if (isDef(selected)) {
+        selected ? em.setSelected(component) : em.removeSelected(component);
+      }
+      if (isDef(hovered)) {
+        hovered ? em.setHovered(component) : em.setHovered(null);
+      }
+    }
+
     /**
      * Return the view of layers
      * @return {View}
+     * @private
      */
     getAll() {
       return this.view;
@@ -120,6 +167,16 @@ export default class LayerManager extends Module<typeof defaults> {
     }
 
     __onRootChange() {
-      this.view?.setRoot(this.getRoot());
+      const root = this.getRoot();
+      this.view?.setRoot(root);
+      this.em.trigger(evRoot, root);
+    }
+
+    __onComponent(component: any) {
+      this.updateLayer(component);
+    }
+
+    updateLayer(component: any, opts?: any) {
+      this.em.trigger(evComponent, component, opts);
     }
 };

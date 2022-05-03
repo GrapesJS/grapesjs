@@ -203,6 +203,7 @@ export default class Component extends StyleableModel {
 
   __onChange(m, opts) {
     const changed = this.changedAttributes();
+    keys(changed).forEach(prop => this.emitUpdate(prop));
     ['status', 'open', 'toolbar', 'traits'].forEach(name => delete changed[name]);
     // Propagate component prop changes
     if (!isEmptyObj(changed)) {
