@@ -175,7 +175,7 @@ export default class ClassTagsView extends View {
   /**
    * Triggered when component is changed
    * @param  {Object} e
-   * @private
+   * @public
    */
   componentChanged({ targets } = {}) {
     this.updateSelection(targets);

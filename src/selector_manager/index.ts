@@ -72,20 +72,21 @@
  * @module SelectorManager
  */
 
-import { isString, debounce, isObject, isArray } from 'underscore';
-import { isComponent, isRule } from '../utils/mixins';
-import Module from '../abstract/moduleLegacy';
-import { Model, Collection } from '../common';
-import defaults from './config/config';
-import Selector from './model/Selector';
-import Selectors from './model/Selectors';
-import State from './model/State';
-import ClassTagsView from './view/ClassTagsView';
+import { isString, debounce, isObject, isArray } from "underscore";
+import { isComponent, isRule } from "../utils/mixins";
+import Module from "../abstract/moduleLegacy";
+import { Model, Collection } from "../common";
+import defaults from "./config/config";
+import Selector from "./model/Selector";
+import Selectors from "./model/Selectors";
+import State from "./model/State";
+import ClassTagsView from "./view/ClassTagsView";
+import EditorModel from "../editor/model/Editor";
 
-const isId = str => isString(str) && str[0] == '#';
-const isClass = str => isString(str) && str[0] == '.';
+const isId = (str: string) => isString(str) && str[0] == "#";
+const isClass = (str: string) => isString(str) && str[0] == ".";
 
-export const evAll = 'selector';
+export const evAll = "selector";
 export const evPfx = `${evAll}:`;
 export const evAdd = `${evPfx}add`;
 export const evUpdate = `${evPfx}update`;
@@ -95,11 +96,17 @@ export const evCustom = `${evPfx}custom`;
 export const evState = `${evPfx}state`;
 
 export default class SelectorManager extends Module {
-  name = 'SelectorManager';
+  name = "SelectorManager";
 
   Selector = Selector;
 
   Selectors = Selectors;
+
+  model!: Model;
+  states!: Collection;
+  selectorTags?: ClassTagsView;
+  selected!: Selectors;
+  em!: EditorModel;
 
   events = {
     all: evAll,
@@ -119,9 +126,10 @@ export default class SelectorManager extends Module {
    */
 
   init(conf = {}) {
+    //super();
     this.__initConfig(defaults, conf);
     const config = this.getConfig();
-    const em = config.em;
+    const em = this.em;
     const ppfx = config.pStylePrefix;
 
     if (ppfx) {
@@ -132,7 +140,7 @@ export default class SelectorManager extends Module {
     this.all = new Selectors(config.selectors);
     this.selected = new Selectors([], { em, config });
     this.states = new Collection(
-      config.states.map(state => new State(state)),
+      config.states.map((state) => new State(state)),
       { model: State }
     );
     this.model = new Model({ cFirst: config.componentFirst, _undo: true });
@@ -140,10 +148,12 @@ export default class SelectorManager extends Module {
       collections: [this.states, this.selected],
       propagate: [{ entity: this.states, event: this.events.state }],
     });
-    em.on('change:state', (m, value) => em.trigger(evState, value));
-    this.model.on('change:cFirst', (m, value) => em.trigger('selector:type', value));
+    em.on("change:state", (m, value) => em.trigger(evState, value));
+    this.model.on("change:cFirst", (m, value) =>
+      em.trigger("selector:type", value)
+    );
     const listenTo =
-      'component:toggled component:update:classes change:device styleManager:update selector:state selector:type';
+      "component:toggled component:update:classes change:device styleManager:update selector:state selector:type";
     this.model.listenTo(em, listenTo, () => this.__update());
 
     return this;
@@ -151,13 +161,13 @@ export default class SelectorManager extends Module {
 
   __update = debounce(() => {
     this.__trgCustom();
-  });
+  }, 0);
 
-  __trgCustom(opts) {
+  __trgCustom(opts?: any) {
     this.em.trigger(this.events.custom, this.__customData(opts));
   }
 
-  __customData(opts = {}) {
+  __customData(opts: any = {}) {
     const { container } = opts;
     return {
       states: this.getStates(),
@@ -179,19 +189,29 @@ export default class SelectorManager extends Module {
     this.__trgCustom();
   }
 
-  select(value, opts = {}) {
+  select(value: any, opts = {}) {
     const targets = Array.isArray(value) ? value : [value];
-    const toSelect = this.em.get('StyleManager').select(targets, opts);
+    const toSelect: any[] = this.em.get("StyleManager").select(targets, opts);
     const selTags = this.selectorTags;
     const res = toSelect
-      .filter(i => i)
-      .map(sel => (isComponent(sel) ? sel : isRule(sel) && !sel.get('selectorsAdd') ? sel : sel.getSelectorsString()));
+      .filter((i) => i)
+      .map((sel) =>
+        isComponent(sel)
+          ? sel
+          : isRule(sel) && !sel.get("selectorsAdd")
+          ? sel
+          : sel.getSelectorsString()
+      );
     selTags && selTags.componentChanged({ targets: res });
     return this;
   }
 
-  addSelector(name, opts = {}, cOpts = {}) {
-    let props = { ...opts };
+  addSelector(
+    name: string | { name: string; label?: string },
+    opts = {},
+    cOpts = {}
+  ) {
+    let props: any = { ...opts };
 
     if (isObject(name)) {
       props = name;
@@ -222,7 +242,7 @@ export default class SelectorManager extends Module {
     return selector;
   }
 
-  getSelector(name, type = Selector.TYPE_CLASS) {
+  getSelector(name: string, type = Selector.TYPE_CLASS) {
     if (isId(name)) {
       name = name.substr(1);
       type = Selector.TYPE_ID;
@@ -246,11 +266,11 @@ export default class SelectorManager extends Module {
    * const selector = selectorManager.add('.my-class');
    * console.log(selector.toString()) // `.my-class`
    * */
-  add(props, opts = {}) {
+  add(props: string | { name: string; label?: string }, opts = {}) {
     const cOpts = isString(props) ? {} : opts;
     // Keep support for arrays but avoid it in docs
     if (isArray(props)) {
-      return props.map(item => this.addSelector(item, opts, cOpts));
+      return props.map((item) => this.addSelector(item, opts, cOpts));
     } else {
       return this.addSelector(props, opts, cOpts);
     }
@@ -267,14 +287,14 @@ export default class SelectorManager extends Module {
    * sm.addClass(['class1', 'class2']);
    * // -> [SelectorObject, ...]
    */
-  addClass(classes) {
-    const added = [];
+  addClass(classes: string | string[]) {
+    const added: any = [];
 
     if (isString(classes)) {
-      classes = classes.trim().split(' ');
+      classes = classes.trim().split(" ");
     }
 
-    classes.forEach(name => added.push(this.addSelector(name)));
+    classes.forEach((name) => added.push(this.addSelector(name)));
     return added;
   }
 
@@ -287,12 +307,16 @@ export default class SelectorManager extends Module {
    * // Get Id
    * const selectorId = selectorManager.get('#my-id');
    * */
-  get(name, type) {
+  get(name: string | string[], type?: number) {
     // Keep support for arrays but avoid it in docs
     if (isArray(name)) {
-      const result = [];
-      const selectors = name.map(item => this.getSelector(item)).filter(item => item);
-      selectors.forEach(item => result.indexOf(item) < 0 && result.push(item));
+      const result: Selector[] = [];
+      const selectors = name
+        .map((item) => this.getSelector(item))
+        .filter((item) => item);
+      selectors.forEach(
+        (item) => result.indexOf(item) < 0 && result.push(item)
+      );
       return result;
     } else {
       return this.getSelector(name, type) || null;
@@ -308,7 +332,7 @@ export default class SelectorManager extends Module {
    * // or by passing the Selector
    * selectorManager.remove(selectorManager.get('.myclass'));
    */
-  remove(selector, opts) {
+  remove(selector: string | Selector, opts?: any) {
     return this.__remove(selector, opts);
   }
 
@@ -319,7 +343,7 @@ export default class SelectorManager extends Module {
    * @example
    * selectorManager.setState('hover');
    */
-  setState(value) {
+  setState(value: string) {
     this.em.setState(value);
     return this;
   }
@@ -350,9 +374,9 @@ export default class SelectorManager extends Module {
    *   { name: 'nth-of-type(2n)', label: 'Even/Odd' }
    * ]);
    */
-  setStates(states, opts) {
+  setStates(states: State[], opts?: any) {
     return this.states.reset(
-      states.map(state => new State(state)),
+      states.map((state) => new State(state)),
       opts
     );
   }
@@ -374,10 +398,10 @@ export default class SelectorManager extends Module {
    * @example
    * selectorManager.addSelected('.new-class');
    */
-  addSelected(props) {
+  addSelected(props: string) {
     const added = this.add(props);
     // TODO: target should be the one from StyleManager
-    this.em.getSelectedAll().forEach(target => {
+    this.em.getSelectedAll().forEach((target) => {
       target.getSelectors().add(added);
     });
     // TODO: update selected collection
@@ -389,9 +413,9 @@ export default class SelectorManager extends Module {
    * @example
    * selectorManager.removeSelected('.myclass');
    */
-  removeSelected(selector) {
-    this.em.getSelectedAll().forEach(trg => {
-      !selector.get('protected') && trg && trg.getSelectors().remove(selector);
+  removeSelected(selector: any) {
+    this.em.getSelectedAll().forEach((trg) => {
+      !selector.get("protected") && trg && trg.getSelectors().remove(selector);
     });
   }
 
@@ -403,7 +427,7 @@ export default class SelectorManager extends Module {
    * console.log(targetsToStyle.map(target => target.getSelectorsString()))
    */
   getSelectedTargets() {
-    return this.em.get('StyleManager').getSelectedAll();
+    return this.em.get("StyleManager").getSelectedAll();
   }
 
   /**
@@ -412,7 +436,7 @@ export default class SelectorManager extends Module {
    * of selectors (which would change styles on all components with those classes).
    * @param {Boolean} value
    */
-  setComponentFirst(value) {
+  setComponentFirst(value: boolean) {
     this.getConfig().componentFirst = value;
     this.model.set({ cFirst: value });
   }
@@ -438,7 +462,7 @@ export default class SelectorManager extends Module {
    * @returns {String} Escaped name
    * @private
    */
-  escapeName(name) {
+  escapeName(name: string) {
     const { escapeName } = this.getConfig();
     return escapeName ? escapeName(name) : Selector.escapeName(name);
   }
@@ -449,7 +473,7 @@ export default class SelectorManager extends Module {
    * @return {HTMLElement}
    * @private
    */
-  render(selectors) {
+  render(selectors: any[]) {
     const { em, selectorTags } = this;
     const config = this.getConfig();
     const el = selectorTags && selectorTags.el;
@@ -457,6 +481,7 @@ export default class SelectorManager extends Module {
     this.selectorTags = new ClassTagsView({
       el,
       collection: this.selected,
+      //@ts-ignore
       module: this,
       config,
     });
@@ -468,8 +493,8 @@ export default class SelectorManager extends Module {
     const { selectorTags, model } = this;
     model.stopListening();
     this.__destroy();
-    selectorTags && selectorTags.remove();
-    this.selectorTags = {};
+    selectorTags?.remove();
+    this.selectorTags = undefined;
   }
 
   /**
@@ -481,16 +506,24 @@ export default class SelectorManager extends Module {
     return this.__getCommonSelectors(this.em.getSelectedAll());
   }
 
-  __getCommonSelectors(components, opts = {}) {
-    const selectors = components.map(cmp => cmp.getSelectors && cmp.getSelectors().getValid(opts)).filter(Boolean);
+  __getCommonSelectors(components: any[], opts = {}) {
+    const selectors = components
+      .map((cmp) => cmp.getSelectors && cmp.getSelectors().getValid(opts))
+      .filter(Boolean);
     return this.__common(...selectors);
   }
 
-  __common(...args) {
+  __common(...args: any) {
     if (!args.length) return [];
     if (args.length === 1) return args[0];
-    if (args.length === 2) return args[0].filter(item => args[1].indexOf(item) >= 0);
+    if (args.length === 2)
+      return args[0].filter((item: any) => args[1].indexOf(item) >= 0);
 
-    return args.slice(1).reduce((acc, item) => this.__common(acc, item), args[0]);
+    return (
+      args
+        .slice(1)
+        //@ts-ignore
+        .reduce((acc, item) => this.__common(acc, item), args[0])
+    );
   }
 }
