@@ -10,6 +10,7 @@ interface LayerData {
   open: boolean,
   selected: boolean,
   hovered: boolean,
+  visible: boolean,
   components: Component[],
 }
 
@@ -22,6 +23,12 @@ const events = {
   all: evAll,
   root: evRoot,
   component: evComponent,
+};
+
+const styleOpts = { mediaText: '' };
+
+const isStyleHidden = (style: any = {}) => {
+  return (style.display || '').trim().indexOf('none') === 0;
 };
 
 export default class LayerManager extends Module<typeof defaults> {
@@ -92,13 +99,14 @@ export default class LayerManager extends Module<typeof defaults> {
         open: !!component.get('open'),
         selected: status === 'selected',
         hovered: status === 'hovered', // || this.em.getHovered() === component,
+        visible: this.isVisible(component),
         components: this.getComponents(component),
       }
     }
 
     setLayerData(component: any, data: Partial<Omit<LayerData, 'components'>>, opts = {}) {
       const { em } = this;
-      const { open, selected, hovered } = data;
+      const { open, selected, hovered, visible } = data;
 
       if (isDef(open)) {
         component.set('open', open);
@@ -108,6 +116,9 @@ export default class LayerManager extends Module<typeof defaults> {
       }
       if (isDef(hovered)) {
         hovered ? em.setHovered(component) : em.setHovered(null);
+      }
+      if (isDef(visible)) {
+        visible !== this.isVisible(component) && this.setVisible(component, visible!);
       }
     }
 
@@ -119,6 +130,39 @@ export default class LayerManager extends Module<typeof defaults> {
 
         return isValid && cmp.get('layerable');
       });
+    }
+
+    /**
+     * Update component visibility
+     * */
+    setVisible(component: any, value: boolean) {
+      const prevDspKey = '__prev-display';
+      const style = component.getStyle(styleOpts);
+      const { display } = style;
+
+      if (value) {
+        const prevDisplay = component.get(prevDspKey);
+        delete style.display;
+
+        if (prevDisplay) {
+          style.display = prevDisplay;
+          component.unset(prevDspKey);
+        }
+      } else {
+        display && component.set(prevDspKey, display);
+        style.display = 'none';
+      }
+
+      component.setStyle(style, styleOpts);
+      this.updateLayer(component);
+      this.em.trigger('component:toggled'); // Updates Style Manager #2938
+    }
+
+    /**
+     * Check if the component is visible
+     * */
+    isVisible(component: any): boolean {
+      return !isStyleHidden(component.getStyle(styleOpts));
     }
 
     /**
