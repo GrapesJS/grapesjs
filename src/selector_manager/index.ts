@@ -210,7 +210,7 @@ export default class SelectorManager extends Module {
     name: string | { name: string; label?: string },
     opts = {},
     cOpts = {}
-  ) {
+  ): Selector {
     let props: any = { ...opts };
 
     if (isObject(name)) {
@@ -233,10 +233,11 @@ export default class SelectorManager extends Module {
     const cname = props.name;
     const config = this.getConfig();
     const all = this.getAll();
+    const em = this.em;
     const selector = cname ? this.get(cname, props.type) : all.where(props)[0];
 
     if (!selector) {
-      return all.add(props, { ...cOpts, config });
+      return all.add(new Selector(props, { ...cOpts, config, em }));
     }
 
     return selector;

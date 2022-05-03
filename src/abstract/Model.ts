@@ -22,7 +22,11 @@ export default class Model<
     return this._module;
   }
 
-  public get config(): TModule extends IBaseModule<infer C>? C: unknown{
-    return this._module.config
+  public get config(): TModule extends IBaseModule<infer C> ? C : unknown {
+    return this._module.config;
+  }
+
+  protected get em() {
+    return this._module.em;
   }
 }
