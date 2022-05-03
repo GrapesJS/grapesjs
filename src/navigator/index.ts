@@ -10,6 +10,7 @@ interface LayerData {
   open: boolean,
   selected: boolean,
   hovered: boolean,
+  components: Component[],
 }
 
 export const evAll = 'layer';
@@ -91,10 +92,11 @@ export default class LayerManager extends Module<typeof defaults> {
         open: !!component.get('open'),
         selected: status === 'selected',
         hovered: status === 'hovered', // || this.em.getHovered() === component,
+        components: this.getComponents(component),
       }
     }
 
-    setLayerData(component: any, data: Partial<LayerData>) {
+    setLayerData(component: any, data: Partial<Omit<LayerData, 'components'>>, opts = {}) {
       const { em } = this;
       const { open, selected, hovered } = data;
 
@@ -102,11 +104,21 @@ export default class LayerManager extends Module<typeof defaults> {
         component.set('open', open);
       }
       if (isDef(selected)) {
-        selected ? em.setSelected(component) : em.removeSelected(component);
+        selected ? em.setSelected(component, opts) : em.removeSelected(component);
       }
       if (isDef(hovered)) {
         hovered ? em.setHovered(component) : em.setHovered(null);
       }
+    }
+
+    getComponents(component: any): Component[] {
+      return component.components().filter((cmp: any) => {
+        const tag = cmp.get('tagName');
+        const hideText = this.config.hideTextnode;
+        const isValid = !hideText || (!cmp.is('textnode') && tag !== 'br');
+
+        return isValid && cmp.get('layerable');
+      });
     }
 
     /**
