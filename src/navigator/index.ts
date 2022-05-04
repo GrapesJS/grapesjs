@@ -1,4 +1,4 @@
-import { isString } from 'underscore';
+import { isString, bindAll } from 'underscore';
 import { Model } from '../abstract';
 import Module from '../abstract/Module';
 import Component from '../dom_components/model/Component';
@@ -11,6 +11,7 @@ interface LayerData {
   selected: boolean,
   hovered: boolean,
   visible: boolean,
+  locked: boolean,
   components: Component[],
 }
 
@@ -44,9 +45,7 @@ export default class LayerManager extends Module<typeof defaults> {
 
     init() {
       this.__initDefaults(defaults);
-      this.componentChanged = this.componentChanged.bind(this);
-      this.__onRootChange = this.__onRootChange.bind(this);
-      this.__onComponent = this.__onComponent.bind(this);
+      bindAll(this, 'componentChanged', '__onRootChange', '__onComponent');
       this.model = new Model(this, { opened: {} });
       // @ts-ignore
       this.config.stylePrefix = this.config.pStylePrefix;
@@ -55,10 +54,11 @@ export default class LayerManager extends Module<typeof defaults> {
 
     onLoad() {
       const { em, config, model } = this;
+      const propsToListen = ['open', 'status', 'locked'].map(p => `component:update:${p}`).join(' ');
       model!.listenTo(em, 'component:selected', this.componentChanged);
       model!.listenToOnce(em, 'load', () => this.setRoot(config.root));
       model!.on('change:root', this.__onRootChange);
-      model!.listenTo(em, 'component:update:open component:update:status', this.__onComponent);
+      model!.listenTo(em, propsToListen, this.__onComponent);
       this.componentChanged();
     }
 
@@ -100,13 +100,14 @@ export default class LayerManager extends Module<typeof defaults> {
         selected: status === 'selected',
         hovered: status === 'hovered', // || this.em.getHovered() === component,
         visible: this.isVisible(component),
+        locked: this.isLocked(component),
         components: this.getComponents(component),
       }
     }
 
     setLayerData(component: any, data: Partial<Omit<LayerData, 'components'>>, opts = {}) {
       const { em } = this;
-      const { open, selected, hovered, visible } = data;
+      const { open, selected, hovered, visible, locked } = data;
 
       if (isDef(open)) {
         component.set('open', open);
@@ -119,6 +120,9 @@ export default class LayerManager extends Module<typeof defaults> {
       }
       if (isDef(visible)) {
         visible !== this.isVisible(component) && this.setVisible(component, visible!);
+      }
+      if (isDef(locked)) {
+        this.setLocked(component, locked!);
       }
     }
 
@@ -163,6 +167,20 @@ export default class LayerManager extends Module<typeof defaults> {
      * */
     isVisible(component: any): boolean {
       return !isStyleHidden(component.getStyle(styleOpts));
+    }
+
+    /**
+     * Update component locked value
+     * */
+    setLocked(component: any, value: boolean) {
+      component.set('locked', value);
+    }
+
+    /**
+     * Check if the component is locked
+     * */
+    isLocked(component: any): boolean {
+      return component.get('locked');
     }
 
     /**
