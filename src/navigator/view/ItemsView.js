@@ -77,7 +77,7 @@ export default class ItemsView extends View {
    * */
   addToCollection(model, fragmentEl, index) {
     const { level, parentView, opt, config, sorter } = this;
-    const { ItemView, opened } = opt;
+    const { ItemView, opened, module } = opt;
     const fragment = fragmentEl || null;
     const item = new ItemView({
       ItemView,
@@ -87,7 +87,7 @@ export default class ItemsView extends View {
       config,
       sorter,
       opened,
-      isCountable: this.isCountable,
+      module,
     });
     const rendered = item.render().el;
 
@@ -115,23 +115,6 @@ export default class ItemsView extends View {
   remove() {
     View.prototype.remove.apply(this, arguments);
     this.items.map(i => i.remove());
-  }
-
-  /**
-   * Check if the model could be count by the navigator
-   * @param  {Object}  model
-   * @return {Boolean}
-   * @private
-   */
-  isCountable(model, hide) {
-    const type = model.get('type');
-    const tag = model.get('tagName');
-
-    if (((type == 'textnode' || tag == 'br') && hide) || !model.get('layerable')) {
-      return false;
-    }
-
-    return true;
   }
 
   render() {

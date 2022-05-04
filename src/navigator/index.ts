@@ -140,13 +140,7 @@ export default class LayerManager extends Module<typeof defaults> {
     }
 
     getComponents(component: any): Component[] {
-      return component.components().filter((cmp: any) => {
-        const tag = cmp.get('tagName');
-        const hideText = this.config.hideTextnode;
-        const isValid = !hideText || (!cmp.is('textnode') && tag !== 'br');
-
-        return isValid && cmp.get('layerable');
-      });
+      return component.components().filter((cmp: any) => this.__isLayerable(cmp));
     }
 
     /**
@@ -252,6 +246,7 @@ export default class LayerManager extends Module<typeof defaults> {
         config,
         opened: model!.get('opened'),
         model: this.getRoot(),
+        module: this,
       });
       return this.view?.render().el as HTMLElement;
     }
@@ -268,6 +263,14 @@ export default class LayerManager extends Module<typeof defaults> {
 
     __onComponent(component: any) {
       this.updateLayer(component);
+    }
+
+    __isLayerable(cmp: any): boolean {
+      const tag = cmp.get('tagName');
+      const hideText = this.config.hideTextnode;
+      const isValid = !hideText || (!cmp.is('textnode') && tag !== 'br');
+
+      return isValid && cmp.get('layerable');
     }
 
     updateLayer(component: any, opts?: any) {

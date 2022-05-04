@@ -30,7 +30,7 @@ export default class ItemView extends View {
   template(model) {
     const { pfx, ppfx, config, clsNoEdit } = this;
     const { hidable } = config;
-    const count = this.countChildren(model);
+    const count = this._module.getComponents(model).length;
     const addClass = !count ? this.clsNoChild : '';
     const clsTitle = `${this.clsTitle} ${addClass}`;
     const clsTitleC = `${this.clsTitleC} ${ppfx}one-bg`;
@@ -68,6 +68,7 @@ export default class ItemView extends View {
     bindAll(this, '__render');
     this.opt = o;
     this.level = o.level;
+    this._module = o.module;
     const config = o.config || {};
     const { onInit } = config;
     this.config = config;
@@ -324,7 +325,7 @@ export default class ItemView extends View {
    * */
   checkChildren() {
     const { model, clsNoChild } = this;
-    const count = this.countChildren(model);
+    const count = this._module.getComponents(model).length;
     const title = this.$el.children(`.${this.clsTitleC}`).children(`.${this.clsTitle}`);
     let { cnt } = this;
 
@@ -336,23 +337,6 @@ export default class ItemView extends View {
     title[count ? 'removeClass' : 'addClass'](clsNoChild);
     if (cnt) cnt.innerHTML = count || '';
     !count && model.set('open', 0);
-  }
-
-  /**
-   * Count children inside model
-   * @param  {Object} model
-   * @return {number}
-   * @private
-   */
-  countChildren(model) {
-    var count = 0;
-    model.get('components').each(function (m) {
-      var isCountable = this.opt.isCountable;
-      var hide = this.config.hideTextnode;
-      if (isCountable && !isCountable(m, hide)) return;
-      count++;
-    }, this);
-    return count;
   }
 
   getCaret() {
@@ -392,8 +376,8 @@ export default class ItemView extends View {
   render() {
     const { model, config, pfx, ppfx, opt, sorter } = this;
     this.__clearItems();
-    const { isCountable, opened } = opt;
-    const hidden = isCountable && !isCountable(model, config.hideTextnode);
+    const { opened, module } = opt;
+    const hidden = !module.__isLayerable(model);
     const el = this.$el.empty();
     const level = this.level + 1;
     this.inputName = 0;
@@ -406,6 +390,7 @@ export default class ItemView extends View {
       parentView: this,
       parent: model,
       level,
+      module,
     });
     const children = this.items.render().$el;
 
