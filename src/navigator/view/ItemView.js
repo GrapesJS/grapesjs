@@ -230,15 +230,10 @@ export default class ItemView extends View {
   /**
    * Handle component selection
    */
-  handleSelect(e) {
-    e.stopPropagation();
-    const { em, config, model } = this;
-
-    if (em) {
-      em.setSelected(model, { fromLayers: 1, event: e });
-      const scroll = config.scrollCanvas;
-      scroll && model.views.forEach(view => view.scrollIntoView(scroll));
-    }
+  handleSelect(event) {
+    event?.stopPropagation();
+    const { module, model } = this;
+    module.setLayerData(model, { selected: true }, { event });
   }
 
   /**

@@ -118,7 +118,7 @@ export default class LayerManager extends Module<typeof defaults> {
       }
       if (isDef(selected)) {
         if (selected) {
-          em.setSelected(component, opts);
+          em.setSelected(component, { fromLayers: true, ...opts });
           const scroll = config.scrollCanvas;
           scroll && component.views.forEach((view: any) => view.scrollIntoView(scroll));
         } else {
