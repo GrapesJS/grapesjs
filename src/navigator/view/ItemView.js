@@ -6,10 +6,6 @@ import { eventDrag } from '../../dom_components/model/Component';
 import ItemsView from './ItemsView';
 
 const inputProp = 'contentEditable';
-const styleOpts = { mediaText: '' };
-const isStyleHidden = (style = {}) => {
-  return (style.display || '').trim().indexOf('none') === 0;
-};
 
 export default class ItemView extends View {
   events() {
@@ -28,9 +24,9 @@ export default class ItemView extends View {
   }
 
   template(model) {
-    const { pfx, ppfx, config, clsNoEdit } = this;
+    const { pfx, ppfx, config, clsNoEdit, module } = this;
     const { hidable } = config;
-    const count = this._module.getComponents(model).length;
+    const count = module.getComponents(model).length;
     const addClass = !count ? this.clsNoChild : '';
     const clsTitle = `${this.clsTitle} ${addClass}`;
     const clsTitleC = `${this.clsTitleC} ${ppfx}one-bg`;
@@ -45,7 +41,9 @@ export default class ItemView extends View {
     return `
       ${
         hidable
-          ? `<i class="${pfx}layer-vis fa fa-eye ${this.isVisible() ? '' : 'fa-eye-slash'}" data-toggle-visible></i>`
+          ? `<i class="${pfx}layer-vis fa fa-eye ${
+              module.isVisible(model) ? '' : 'fa-eye-slash'
+            }" data-toggle-visible></i>`
           : ''
       }
       <div class="${clsTitleC}">
@@ -68,7 +66,7 @@ export default class ItemView extends View {
     bindAll(this, '__render');
     this.opt = o;
     this.level = o.level;
-    this._module = o.module;
+    this.module = o.module;
     const config = o.config || {};
     const { onInit } = config;
     this.config = config;
@@ -125,14 +123,12 @@ export default class ItemView extends View {
   }
 
   updateVisibility() {
-    const pfx = this.pfx;
-    const model = this.model;
+    const { pfx, model, module } = this;
     const hClass = `${pfx}layer-hidden`;
-    const hideIcon = 'fa-eye-slash';
-    const hidden = isStyleHidden(model.getStyle(styleOpts));
+    const hidden = !module.isVisible(model);
     const method = hidden ? 'addClass' : 'removeClass';
     this.$el[method](hClass);
-    this.getVisibilityEl()[method](hideIcon);
+    this.getVisibilityEl()[method]('fa-eye-slash');
   }
 
   /**
@@ -141,29 +137,10 @@ export default class ItemView extends View {
    *
    * @return 	void
    * */
-  toggleVisibility(e) {
-    e && e.stopPropagation();
-    const { model, em } = this;
-    const prevDspKey = '__prev-display';
-    const prevDisplay = model.get(prevDspKey);
-    const style = model.getStyle(styleOpts);
-    const { display } = style;
-    const hidden = isStyleHidden(style);
-
-    if (hidden) {
-      delete style.display;
-
-      if (prevDisplay) {
-        style.display = prevDisplay;
-        model.unset(prevDspKey);
-      }
-    } else {
-      display && model.set(prevDspKey, display);
-      style.display = 'none';
-    }
-
-    model.setStyle(style, styleOpts);
-    em && em.trigger('component:toggled'); // Updates Style Manager #2938
+  toggleVisibility(ev) {
+    ev?.stopPropagation();
+    const { module, model } = this;
+    module.setVisible(model, !module.isVisible(model));
   }
 
   /**
@@ -310,27 +287,18 @@ export default class ItemView extends View {
   }
 
   /**
-   * Check if component is visible
-   *
-   * @return boolean
-   * */
-  isVisible() {
-    return !isStyleHidden(this.model.getStyle());
-  }
-
-  /**
    * Update item aspect after children changes
    *
    * @return void
    * */
   checkChildren() {
-    const { model, clsNoChild } = this;
-    const count = this._module.getComponents(model).length;
-    const title = this.$el.children(`.${this.clsTitleC}`).children(`.${this.clsTitle}`);
+    const { model, clsNoChild, $el, module } = this;
+    const count = module.getComponents(model).length;
+    const title = $el.children(`.${this.clsTitleC}`).children(`.${this.clsTitle}`);
     let { cnt } = this;
 
     if (!cnt) {
-      cnt = this.$el.children('[data-count]').get(0);
+      cnt = $el.children('[data-count]').get(0);
       this.cnt = cnt;
     }
 
@@ -405,7 +373,7 @@ export default class ItemView extends View {
       el.children(`.${this.clsMove}`).remove();
     }
 
-    !this.isVisible() && (this.className += ` ${pfx}hide`);
+    !module.isVisible(model) && (this.className += ` ${pfx}hide`);
     hidden && (this.className += ` ${ppfx}hidden`);
     el.attr('class', this.className);
     this.updateStatus();
