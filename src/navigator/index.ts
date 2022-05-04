@@ -7,6 +7,7 @@ import defaults from './config/config';
 import View from './view/ItemView';
 
 interface LayerData {
+  name: string,
   open: boolean,
   selected: boolean,
   hovered: boolean,
@@ -27,6 +28,9 @@ const events = {
 };
 
 const styleOpts = { mediaText: '' };
+
+const propsToListen = ['open', 'status', 'locked', 'custom-name']
+  .map(p => `component:update:${p}`).join(' ');
 
 const isStyleHidden = (style: any = {}) => {
   return (style.display || '').trim().indexOf('none') === 0;
@@ -54,7 +58,6 @@ export default class LayerManager extends Module<typeof defaults> {
 
     onLoad() {
       const { em, config, model } = this;
-      const propsToListen = ['open', 'status', 'locked'].map(p => `component:update:${p}`).join(' ');
       model!.listenTo(em, 'component:selected', this.componentChanged);
       model!.listenToOnce(em, 'load', () => this.setRoot(config.root));
       model!.on('change:root', this.__onRootChange);
@@ -96,6 +99,7 @@ export default class LayerManager extends Module<typeof defaults> {
       const status = component.get('status');
 
       return {
+        name: component.getName(),
         open: !!component.get('open'),
         selected: status === 'selected',
         hovered: status === 'hovered', // || this.em.getHovered() === component,
@@ -107,7 +111,7 @@ export default class LayerManager extends Module<typeof defaults> {
 
     setLayerData(component: any, data: Partial<Omit<LayerData, 'components'>>, opts = {}) {
       const { em } = this;
-      const { open, selected, hovered, visible, locked } = data;
+      const { open, selected, hovered, visible, locked, name } = data;
 
       if (isDef(open)) {
         component.set('open', open);
@@ -123,6 +127,9 @@ export default class LayerManager extends Module<typeof defaults> {
       }
       if (isDef(locked)) {
         this.setLocked(component, locked!);
+      }
+      if (isDef(name)) {
+        this.setName(component, name!);
       }
     }
 
@@ -181,6 +188,13 @@ export default class LayerManager extends Module<typeof defaults> {
      * */
     isLocked(component: any): boolean {
       return component.get('locked');
+    }
+
+    /**
+     * Update component name
+     * */
+    setName(component: any, value: string) {
+      component.set('custom-name', value);
     }
 
     /**
