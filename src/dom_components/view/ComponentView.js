@@ -32,7 +32,7 @@ export default Backbone.View.extend({
     this.listenTo(model, 'change:style', this.updateStyle);
     this.listenTo(model, 'change:attributes', this.renderAttributes);
     this.listenTo(model, 'change:highlightable', this.updateHighlight);
-    this.listenTo(model, 'change:status', this.updateStatus);
+    this.listenTo(model, 'change:status change:locked', this.updateStatus);
     this.listenTo(model, 'change:script rerender', this.reset);
     this.listenTo(model, 'change:content', this.updateContent);
     this.listenTo(model, 'change', this.handleChange);
@@ -177,41 +177,42 @@ export default Backbone.View.extend({
    * @private
    * */
   updateStatus(opts = {}) {
-    const { em } = this;
+    const { em, el, ppfx, model } = this;
     const { extHl } = em ? em.get('Canvas').getConfig() : {};
-    const el = this.el;
-    const status = this.model.get('status');
-    const ppfx = this.ppfx;
+    const status = model.get('status');
     const selectedCls = `${ppfx}selected`;
     const selectedParentCls = `${selectedCls}-parent`;
     const freezedCls = `${ppfx}freezed`;
     const hoveredCls = `${ppfx}hovered`;
-    const toRemove = [selectedCls, selectedParentCls, freezedCls, hoveredCls];
+    const noPointerCls = `${ppfx}no-pointer`;
+    const toRemove = [selectedCls, selectedParentCls, freezedCls, hoveredCls, noPointerCls];
     const selCls = extHl && !opts.noExtHl ? '' : selectedCls;
     this.$el.removeClass(toRemove.join(' '));
-    var actualCls = el.getAttribute('class') || '';
-    var cls = '';
+    const actualCls = el.getAttribute('class') || '';
+    const cls = [actualCls];
 
     switch (status) {
       case 'selected':
-        cls = `${actualCls} ${selCls}`;
+        cls.push(selCls);
         break;
       case 'selected-parent':
-        cls = `${actualCls} ${selectedParentCls}`;
+        cls.push(selectedParentCls);
         break;
       case 'freezed':
-        cls = `${actualCls} ${freezedCls}`;
+        cls.push(freezedCls);
         break;
       case 'freezed-selected':
-        cls = `${actualCls} ${freezedCls} ${selCls}`;
+        cls.push(freezedCls, selCls);
         break;
       case 'hovered':
-        cls = !opts.avoidHover ? `${actualCls} ${hoveredCls}` : '';
+        !opts.avoidHover && cls.push(hoveredCls);
         break;
     }
 
-    cls = cls.trim();
-    cls && el.setAttribute('class', cls);
+    model.get('locked') && cls.push(noPointerCls);
+
+    const clsStr = cls.filter(Boolean).join(' ');
+    clsStr && el.setAttribute('class', clsStr);
   },
 
   /**
