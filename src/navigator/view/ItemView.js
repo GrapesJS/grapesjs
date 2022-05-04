@@ -203,7 +203,7 @@ export default class ItemView extends View {
     const clsChvDown = 'fa-chevron-down';
     const caret = this.getCaret();
 
-    if (model.get('open')) {
+    if (this.module.isOpen(model)) {
       $el.addClass(clsOpen);
       caret.addClass(clsChvDown);
     } else {
@@ -218,13 +218,13 @@ export default class ItemView extends View {
    *
    * @return void
    * */
-  toggleOpening(e) {
-    const { model } = this;
-    e.stopImmediatePropagation();
+  toggleOpening(ev) {
+    const { model, module } = this;
+    ev?.stopImmediatePropagation();
 
     if (!model.get('components').length) return;
 
-    model.set('open', !model.get('open'));
+    module.setOpen(model, !module.isOpen(model));
   }
 
   /**
@@ -304,7 +304,7 @@ export default class ItemView extends View {
 
     title[count ? 'removeClass' : 'addClass'](clsNoChild);
     if (cnt) cnt.innerHTML = count || '';
-    !count && model.set('open', 0);
+    !count && module.setOpen(model, false);
   }
 
   getCaret() {

@@ -100,7 +100,7 @@ export default class LayerManager extends Module<typeof defaults> {
 
       return {
         name: component.getName(),
-        open: !!component.get('open'),
+        open: this.isOpen(component),
         selected: status === 'selected',
         hovered: status === 'hovered', // || this.em.getHovered() === component,
         visible: this.isVisible(component),
@@ -114,7 +114,7 @@ export default class LayerManager extends Module<typeof defaults> {
       const { open, selected, hovered, visible, locked, name } = data;
 
       if (isDef(open)) {
-        component.set('open', open);
+        this.setOpen(component, open!);
       }
       if (isDef(selected)) {
         if (selected) {
@@ -141,6 +141,14 @@ export default class LayerManager extends Module<typeof defaults> {
 
     getComponents(component: any): Component[] {
       return component.components().filter((cmp: any) => this.__isLayerable(cmp));
+    }
+
+    setOpen(component: any, value: boolean) {
+      component.set('open', value);
+    }
+
+    isOpen(component: any): boolean {
+      return !!component.get('open');
     }
 
     /**
