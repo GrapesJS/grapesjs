@@ -112,21 +112,22 @@ export default class LayerManager extends Module<typeof defaults> {
     setLayerData(component: any, data: Partial<Omit<LayerData, 'components'>>, opts = {}) {
       const { em, config } = this;
       const { open, selected, hovered, visible, locked, name } = data;
+      const cmpOpts = { fromLayers: true, ...opts };
 
       if (isDef(open)) {
         this.setOpen(component, open!);
       }
       if (isDef(selected)) {
         if (selected) {
-          em.setSelected(component, { fromLayers: true, ...opts });
+          em.setSelected(component, cmpOpts);
           const scroll = config.scrollCanvas;
           scroll && component.views.forEach((view: any) => view.scrollIntoView(scroll));
         } else {
-          em.removeSelected(component);
+          em.removeSelected(component, cmpOpts);
         }
       }
-      if (isDef(hovered)) {
-        hovered ? em.setHovered(component) : em.setHovered(null);
+      if (isDef(hovered) && config.showHover) {
+        hovered ? em.setHovered(component, cmpOpts) : em.setHovered(null, cmpOpts);
       }
       if (isDef(visible)) {
         visible !== this.isVisible(component) && this.setVisible(component, visible!);

@@ -239,16 +239,16 @@ export default class ItemView extends View {
   /**
    * Handle component selection
    */
-  handleHover(e) {
-    e.stopPropagation();
-    const { em, config, model } = this;
-    em && config.showHover && em.setHovered(model, { fromLayers: 1 });
+  handleHover(ev) {
+    ev?.stopPropagation();
+    const { module, model } = this;
+    module.setLayerData(model, { hovered: true });
   }
 
   handleHoverOut(ev) {
-    ev.stopPropagation();
-    const { em, config } = this;
-    em && config.showHover && em.setHovered(0, { fromLayers: 1 });
+    ev?.stopPropagation();
+    const { module, model } = this;
+    module.setLayerData(model, { hovered: false });
   }
 
   /**
