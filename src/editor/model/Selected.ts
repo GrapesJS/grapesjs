@@ -1,6 +1,6 @@
 import { isArray } from 'underscore';
 import { Collection, Model } from '../../common';
-import { Component } from '../../dom_components/model/Component';
+import Component from '../../dom_components/model/Component';
 
 export class Selectable extends Model {}
 
@@ -16,7 +16,7 @@ export default class Selected extends Collection<Selectable> {
     return this.push(toAdd, opts);
   }
 
-  getComponent(model: Selectable) {
+  getComponent(model: Selectable): Component {
     return model.get('component');
   }
 
@@ -34,7 +34,7 @@ export default class Selected extends Collection<Selectable> {
     return this.map(s => this.getComponent(s)).filter(i => i);
   }
 
-  removeComponent(component: Component, opts: any) {
+  removeComponent(component: Component | Component[], opts: any) {
     const toRemove = (isArray(component) ? component : [component]).map(c => this.getByComponent(c));
     return this.remove(toRemove, opts);
   }

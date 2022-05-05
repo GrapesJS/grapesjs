@@ -2,9 +2,15 @@ import { isEmpty, isArray, isString, debounce } from 'underscore';
 import { View } from '../../common';
 import ClassTagView from './ClassTagView';
 import html from 'utils/html';
+import EditorModel from '../../editor/model/Editor';
+import SelectorManager from '..';
+import State from '../model/State';
+import Component from '../../dom_components/model/Component';
+import Selector from '../model/Selector';
+import Selectors from '../model/Selectors';
 
-export default class ClassTagsView extends View {
-  template({ labelInfo, labelHead, iconSync, iconAdd, pfx, ppfx }) {
+export default class ClassTagsView extends View<Selector> {
+  template({ labelInfo, labelHead, iconSync, iconAdd, pfx, ppfx }: any) {
     return `
     <div id="${pfx}up" class="${pfx}header">
       <div id="${pfx}label" class="${pfx}header-label">${labelHead}</div>
@@ -47,7 +53,25 @@ export default class ClassTagsView extends View {
     };
   }
 
-  initialize(o = {}) {
+  $input?: JQuery<HTMLElement>;
+  $addBtn?: JQuery<HTMLElement>;
+  $classes?: JQuery<HTMLElement>;
+  $btnSyncEl?: JQuery<HTMLElement>;
+  $states?: JQuery<HTMLElement>;
+  $statesC?: JQuery<HTMLElement>;
+  em: EditorModel;
+  target: EditorModel;
+  module: SelectorManager;
+
+  pfx: string;
+  ppfx: string;
+  stateInputId: string;
+  stateInputC: string;
+  config: any;
+  states: State[];
+
+  constructor(o: any = {}) {
+    super(o);
     this.config = o.config || {};
     this.pfx = this.config.stylePrefix || '';
     this.ppfx = this.config.pStylePrefix || '';
@@ -57,12 +81,12 @@ export default class ClassTagsView extends View {
     this.states = this.config.states || [];
     const { em } = this.config;
     const coll = this.collection;
-    this.target = this.config.em;
-    const md = o.module;
+    this.target = em;
+    const md = em.get('SelectorManager');
     this.module = md;
     this.em = em;
-    this.componentChanged = debounce(this.componentChanged.bind(this));
-    this.checkSync = debounce(this.checkSync.bind(this));
+    this.componentChanged = debounce(this.componentChanged.bind(this), 0);
+    this.checkSync = debounce(this.checkSync.bind(this), 0);
     const toList = 'component:toggled component:update:classes';
     const toListCls = 'component:update:classes change:state';
     this.listenTo(em, toList, this.componentChanged);
@@ -75,7 +99,7 @@ export default class ClassTagsView extends View {
     this.listenTo(
       md.getAll(),
       md.events.state,
-      debounce(() => this.renderStates())
+      debounce(() => this.renderStates(), 0)
     );
     this.delegateEvents();
   }
@@ -88,7 +112,7 @@ export default class ClassTagsView extends View {
     const selectors = this.getCommonSelectors({ opts });
     const state = em.get('state');
     const mediaText = em.getCurrentMedia();
-    const ruleComponents = [];
+    const ruleComponents: CSSRule[] = [];
     const rule = cssC.get(selectors, state, mediaText) || cssC.add(selectors, state, mediaText);
     let style;
 
@@ -119,7 +143,7 @@ export default class ClassTagsView extends View {
    * @param {Object} model Removed model
    * @private
    */
-  tagRemoved(model) {
+  tagRemoved(model?: State) {
     this.updateStateVis();
   }
 
@@ -128,7 +152,7 @@ export default class ClassTagsView extends View {
    * @param {Object} model
    * @private
    */
-  addNew(model) {
+  addNew(model: State) {
     this.addToClasses(model);
   }
 
@@ -138,8 +162,8 @@ export default class ClassTagsView extends View {
    * @private
    */
   startNewTag() {
-    this.$addBtn.css({ display: 'none' });
-    this.$input.show().focus();
+    this.$addBtn?.css({ display: 'none' });
+    this.$input?.show().focus();
   }
 
   /**
@@ -148,8 +172,8 @@ export default class ClassTagsView extends View {
    * @private
    */
   endNewTag() {
-    this.$addBtn.css({ display: '' });
-    this.$input.hide().val('');
+    this.$addBtn?.css({ display: '' });
+    this.$input?.hide().val('');
   }
 
   /**
@@ -157,10 +181,10 @@ export default class ClassTagsView extends View {
    * @param  {Object} e
    * @private
    */
-  onInputKeyUp(e) {
+  onInputKeyUp(e: KeyboardEvent) {
     if (e.keyCode === 13) {
       e.preventDefault();
-      this.addNewTag(this.$input.val());
+      this.addNewTag(this.$input?.val());
     } else if (e.keyCode === 27) {
       this.endNewTag();
     }
@@ -175,19 +199,20 @@ export default class ClassTagsView extends View {
   /**
    * Triggered when component is changed
    * @param  {Object} e
-   * @private
+   * @public
    */
-  componentChanged({ targets } = {}) {
+  componentChanged({ targets }: any = {}) {
     this.updateSelection(targets);
   }
 
-  updateSelection(targets) {
+  updateSelection(targets: Component | Component[]) {
     let trgs = targets || this.getTargets();
     trgs = isArray(trgs) ? trgs : [trgs];
-    let selectors = [];
+    let selectors: Selector[] = [];
 
     if (trgs && trgs.length) {
       selectors = this.getCommonSelectors({ targets: trgs });
+      //@ts-ignore TODO This parameters are not in use why do we have them?
       this.checkSync({ validSelectors: selectors });
     }
 
@@ -197,12 +222,12 @@ export default class ClassTagsView extends View {
     return selectors;
   }
 
-  getCommonSelectors({ targets, opts = {} } = {}) {
+  getCommonSelectors({ targets, opts = {} }: any = {}) {
     const trgs = targets || this.getTargets();
     return this.module.__getCommonSelectors(trgs, opts);
   }
 
-  _commonSelectors(...args) {
+  _commonSelectors(...args: any) {
     return this.module.__common(...args);
   }
 
@@ -232,12 +257,12 @@ export default class ClassTagsView extends View {
    * inside collection
    * @private
    */
-  updateStateVis(target) {
+  updateStateVis(targets?: Component[] | Component) {
     const em = this.em;
     const avoidInline = em && em.getConfig().avoidInlineStyle;
     const display = this.collection.length || avoidInline ? '' : 'none';
     this.getStatesC().css('display', display);
-    this.updateSelector(target);
+    this.updateSelector(targets);
   }
 
   __handleStateChange() {
@@ -249,9 +274,9 @@ export default class ClassTagsView extends View {
    * @return {this}
    * @private
    */
-  updateSelector(targets) {
+  updateSelector(targets?: Component[] | Component) {
     const elSel = this.el.querySelector('[data-selected]');
-    const result = [];
+    const result: string[] = [];
     let trgs = targets || this.getTargets();
     trgs = isArray(trgs) ? trgs : [trgs];
 
@@ -260,7 +285,7 @@ export default class ClassTagsView extends View {
     this.checkStates();
   }
 
-  __getName(target) {
+  __getName(target: Component): string {
     const { pfx, config, em } = this;
     const { selectedName, componentFirst } = config;
     let result;
@@ -268,15 +293,15 @@ export default class ClassTagsView extends View {
     if (isString(target)) {
       result = html`<span class="${pfx}sel-gen">${target}</span>`;
     } else {
-      const sel = target && target.get && target.getSelectors();
-      if (!sel) return;
+      const sel = target?.getSelectors();
+      if (!sel) return '';
       const selectors = sel.getStyleable();
       const state = em.get('state');
       const idRes = target.getId
         ? html`<span class="${pfx}sel-cmp">${target.getName()}</span>
             <span class="${pfx}sel-id">#${target.getId()}</span>`
         : '';
-      result = this.collection.getFullString(selectors);
+      result = (this.collection as Selectors).getFullString(selectors);
       result = result ? html`<span class="${pfx}sel-rule">${result}</span>` : target.get('selectorsAdd') || idRes;
       result = componentFirst && idRes ? idRes : result;
       result += state ? html`<span class="${pfx}sel-state">:${state}</span>` : '';
@@ -291,7 +316,7 @@ export default class ClassTagsView extends View {
    * @param  {Object} e
    * @private
    */
-  stateChanged(ev) {
+  stateChanged(ev: any) {
     const { em } = this;
     const { value } = ev.target;
     em.set('state', value);
@@ -302,7 +327,7 @@ export default class ClassTagsView extends View {
    * @param  {Object} e
    * @private
    */
-  addNewTag(value) {
+  addNewTag(value: any) {
     const label = value.trim();
     if (!label) return;
     this.module.addSelected({ label });
@@ -317,7 +342,7 @@ export default class ClassTagsView extends View {
    * @return {Object} Object created
    * @private
    * */
-  addToClasses(model, fragmentEl = null) {
+  addToClasses(model: State, fragmentEl?: DocumentFragment) {
     const fragment = fragmentEl;
     const classes = this.getClasses();
     const rendered = new ClassTagView({
