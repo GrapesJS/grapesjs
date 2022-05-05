@@ -15,12 +15,12 @@ describe('ClassTagView', () => {
     em = new EditorModel();
     var model = coll.add({
       name: 'test',
-      label: testLabel
+      label: testLabel,
     });
     obj = new ClassTagView({
       config: { em },
       model,
-      coll
+      coll,
     });
     //obj.target = { get() {} };
     //_.extend(obj.target, Backbone.Events);
@@ -82,12 +82,12 @@ describe('ClassTagView', () => {
 
   test('On double click label input is enable', () => {
     obj.$el.find('#tag-label').trigger('dblclick');
-    expect(obj.getInputEl().contentEditable).toEqual(true);
+    expect(obj.getInputEl().contentEditable).toEqual('true');
   });
 
   test('On blur label input turns back disabled', () => {
     obj.$el.find('#tag-label').trigger('dblclick');
     obj.endEditTag();
-    expect(obj.getInputEl().contentEditable).toEqual(false);
+    expect(obj.getInputEl().contentEditable).toEqual('false');
   });
 });

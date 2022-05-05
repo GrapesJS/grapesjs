@@ -50,184 +50,176 @@ export const evRemove = `${evPfx}remove`;
 export const evRemoveBefore = `${evRemove}:before`;
 const chnSel = 'change:device';
 
-export default () => {
-  let c = {};
-  let devices;
-  let view;
+export default class DeviceManager extends Module {
+  name = 'DeviceManager';
 
-  return {
-    ...Module,
+  Device = Device;
 
-    name: 'DeviceManager',
+  Devices = Devices;
 
-    Device,
-
-    Devices,
-
-    events: {
-      all: evAll,
-      select: evSelect,
-      // selectBefore: evSelectBefore,
-      update: evUpdate,
-      add: evAdd,
-      // addBefore: evAddBefore,
-      remove: evRemove,
-      removeBefore: evRemoveBefore,
-    },
-
-    init(config = {}) {
-      c = { ...defaults, ...config };
-      const { em } = c;
-
-      devices = new Devices();
-      c.devices.forEach(dv => this.add(dv));
-      this.em = em;
-      this.all = devices;
-      this.select(c.default || devices.at(0));
-      this.__initListen();
-      em.on(chnSel, this._onSelect, this);
-
-      return this;
-    },
-
-    _onSelect(m, deviceId, opts) {
-      const { em, events } = this;
-      const prevId = m.previous('device');
-      const newDevice = this.get(deviceId);
-      const ev = events.select;
-      em.trigger(ev, newDevice, this.get(prevId));
-      this.__catchAllEvent(ev, newDevice, opts);
-    },
-
-    /**
-     * Add new device
-     * @param {Object} props Device properties
-     * @returns {[Device]} Added device
-     * @example
-     * const device1 = deviceManager.add({
-     *  // Without an explicit ID, the `name` will be taken. In case of missing `name`, a random ID will be created.
-     *  id: 'tablet',
-     *  name: 'Tablet',
-     *  width: '900px', // This width will be applied on the canvas frame and for the CSS media
-     * });
-     * const device2 = deviceManager.add({
-     *  id: 'tablet2',
-     *  name: 'Tablet 2',
-     *  width: '800px', // This width will be applied on the canvas frame
-     *  widthMedia: '810px', // This width that will be used for the CSS media
-     *  height: '600px', // Height will be applied on the canvas frame
-     * });
-     */
-    add(props, options = {}) {
-      let result;
-      let opts = options;
-
-      // Support old API
-      if (isString(props)) {
-        const width = options;
-        opts = arguments[2] || {};
-        result = {
-          ...opts,
-          id: props,
-          name: opts.name || props,
-          width,
-        };
-      } else {
-        result = props;
-      }
-
-      if (!result.id) {
-        result.id = result.name || this._createId();
-      }
-
-      return devices.add(result, opts);
-    },
-
-    /**
-     * Return device by ID
-     * @param  {String} id ID of the device
-     * @returns {[Device]|null}
-     * @example
-     * const device = deviceManager.get('Tablet');
-     * console.log(JSON.stringify(device));
-     * // {name: 'Tablet', width: '900px'}
-     */
-    get(id) {
-      // Support old API
-      const byName = this.getAll().filter(d => d.get('name') === id)[0];
-      return byName || devices.get(id) || null;
-    },
-
-    /**
-     * Remove device
-     * @param {String|[Device]} device Device or device id
-     * @returns {[Device]} Removed device
-     * @example
-     * const removed = deviceManager.remove('device-id');
-     * // or by passing the Device
-     * const device = deviceManager.get('device-id');
-     * deviceManager.remove(device);
-     */
-    remove(device, opts = {}) {
-      return this.__remove(device, opts);
-    },
-
-    /**
-     * Return all devices
-     * @returns {Array<[Device]>}
-     * @example
-     * const devices = deviceManager.getDevices();
-     * console.log(JSON.stringify(devices));
-     * // [{name: 'Desktop', width: ''}, ...]
-     */
-    getDevices() {
-      return devices.models;
-    },
-
-    /**
-     * Change the selected device. This will update the frame in the canvas
-     * @param {String|[Device]} device Device or device id
-     * @example
-     * deviceManager.select('some-id');
-     * // or by passing the page
-     * const device = deviceManager.get('some-id');
-     * deviceManager.select(device);
-     */
-    select(device, opts = {}) {
-      const md = isString(device) ? this.get(device) : device;
-      md && this.em.set('device', md.get('id'), opts);
-      return this;
-    },
-
-    /**
-     * Get the selected device
-     * @returns {[Device]}
-     * @example
-     * const selected = deviceManager.getSelected();
-     */
-    getSelected() {
-      return this.get(this.em.get('device'));
-    },
-
-    getAll() {
-      return devices;
-    },
-
-    render() {
-      view && view.remove();
-      view = new DevicesView({
-        collection: devices,
-        config: c,
-      });
-      return view.render().el;
-    },
-
-    destroy() {
-      devices.stopListening();
-      devices.reset();
-      view && view.remove();
-      [devices, view].forEach(i => (i = null));
-      c = {};
-    },
+  events = {
+    all: evAll,
+    select: evSelect,
+    // selectBefore: evSelectBefore,
+    update: evUpdate,
+    add: evAdd,
+    // addBefore: evAddBefore,
+    remove: evRemove,
+    removeBefore: evRemoveBefore,
   };
-};
+
+  init(config = {}) {
+    this.c = { ...defaults, ...config };
+    const { em } = this.c;
+
+    this.devices = new Devices();
+    this.c.devices.forEach(dv => this.add(dv));
+    this.em = em;
+    this.all = this.devices;
+    this.select(this.c.default || this.devices.at(0));
+    this.__initListen();
+    em.on(chnSel, this._onSelect, this);
+
+    return this;
+  }
+
+  _onSelect(m, deviceId, opts) {
+    const { em, events } = this;
+    const prevId = m.previous('device');
+    const newDevice = this.get(deviceId);
+    const ev = events.select;
+    em.trigger(ev, newDevice, this.get(prevId));
+    this.__catchAllEvent(ev, newDevice, opts);
+  }
+
+  /**
+   * Add new device
+   * @param {Object} props Device properties
+   * @returns {[Device]} Added device
+   * @example
+   * const device1 = deviceManager.add({
+   *  // Without an explicit ID, the `name` will be taken. In case of missing `name`, a random ID will be created.
+   *  id: 'tablet',
+   *  name: 'Tablet',
+   *  width: '900px', // This width will be applied on the canvas frame and for the CSS media
+   * });
+   * const device2 = deviceManager.add({
+   *  id: 'tablet2',
+   *  name: 'Tablet 2',
+   *  width: '800px', // This width will be applied on the canvas frame
+   *  widthMedia: '810px', // This width that will be used for the CSS media
+   *  height: '600px', // Height will be applied on the canvas frame
+   * });
+   */
+  add(props, options = {}) {
+    let result;
+    let opts = options;
+
+    // Support old API
+    if (isString(props)) {
+      const width = options;
+      opts = arguments[2] || {};
+      result = {
+        ...opts,
+        id: props,
+        name: opts.name || props,
+        width,
+      };
+    } else {
+      result = props;
+    }
+
+    if (!result.id) {
+      result.id = result.name || this._createId();
+    }
+
+    return this.devices.add(result, opts);
+  }
+
+  /**
+   * Return device by ID
+   * @param  {String} id ID of the device
+   * @returns {[Device]|null}
+   * @example
+   * const device = deviceManager.get('Tablet');
+   * console.log(JSON.stringify(device));
+   * // {name: 'Tablet', width: '900px'}
+   */
+  get(id) {
+    // Support old API
+    const byName = this.getAll().filter(d => d.get('name') === id)[0];
+    return byName || this.devices.get(id) || null;
+  }
+
+  /**
+   * Remove device
+   * @param {String|[Device]} device Device or device id
+   * @returns {[Device]} Removed device
+   * @example
+   * const removed = deviceManager.remove('device-id');
+   * // or by passing the Device
+   * const device = deviceManager.get('device-id');
+   * deviceManager.remove(device);
+   */
+  remove(device, opts = {}) {
+    return this.__remove(device, opts);
+  }
+
+  /**
+   * Return all devices
+   * @returns {Array<[Device]>}
+   * @example
+   * const devices = deviceManager.getDevices();
+   * console.log(JSON.stringify(devices));
+   * // [{name: 'Desktop', width: ''}, ...]
+   */
+  getDevices() {
+    return this.devices.models;
+  }
+
+  /**
+   * Change the selected device. This will update the frame in the canvas
+   * @param {String|[Device]} device Device or device id
+   * @example
+   * deviceManager.select('some-id');
+   * // or by passing the page
+   * const device = deviceManager.get('some-id');
+   * deviceManager.select(device);
+   */
+  select(device, opts = {}) {
+    const md = isString(device) ? this.get(device) : device;
+    md && this.em.set('device', md.get('id'), opts);
+    return this;
+  }
+
+  /**
+   * Get the selected device
+   * @returns {[Device]}
+   * @example
+   * const selected = deviceManager.getSelected();
+   */
+  getSelected() {
+    return this.get(this.em.get('device'));
+  }
+
+  getAll() {
+    return this.devices;
+  }
+
+  render() {
+    this.view?.remove();
+    this.view = new DevicesView({
+      collection: this.devices,
+      config: this.c,
+    });
+    return this.view.render().el;
+  }
+
+  destroy() {
+    this.devices.stopListening();
+    this.devices.reset();
+    this.view?.remove();
+    [this.devices, this.view].forEach(i => (i = null));
+    this.c = {};
+  }
+}

@@ -1,12 +1,10 @@
 import { isString, isArray, keys, isUndefined } from 'underscore';
 import { shallowDiff } from '../../utils/mixins';
 import ParserHtml from '../../parser/model/ParserHtml';
-import { Model } from 'common';
-
-const parseStyle = ParserHtml().parseStyle;
+import { Model } from '../../common';
 
 export default class StyleableModel extends Model {
-  parseStyle;
+  parseStyle = ParserHtml().parseStyle;
 
   /**
    * To trigger the style change event on models I have to
@@ -36,7 +34,7 @@ export default class StyleableModel extends Model {
    */
   setStyle(prop = {}, opts = {}) {
     if (isString(prop)) {
-      prop = parseStyle(prop);
+      prop = this.parseStyle(prop);
     }
 
     const propOrig = this.getStyle(opts);

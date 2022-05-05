@@ -12,7 +12,7 @@ import {
   keys,
 } from 'underscore';
 import { shallowDiff, capitalize, isEmptyObj, isObject, toLowerCase } from 'utils/mixins';
-import StyleableModel from 'domain_abstract/model/StyleableModel';
+import StyleableModel from '../../domain_abstract/model/StyleableModel';
 import { Model } from 'backbone';
 import Components from './Components';
 import Selector from 'selector_manager/model/Selector';
@@ -49,7 +49,6 @@ export const keyUpdateInside = `${keyUpdate}-inside`;
  *
  * [Component]: component.html
  *
- * @typedef Component
  * @property {String} [type=''] Component type, eg. `text`, `image`, `video`, etc.
  * @property {String} [tagName='div'] HTML tag of the component, eg. `span`. Default: `div`
  * @property {Object} [attributes={}] Key-value object of the component's attributes, eg. `{ title: 'Hello' }` Default: `{}`

@@ -23,8 +23,7 @@ export default {
   selectedName: 0,
 
   // Icon used to add new selector
-  iconAdd:
-    '<svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path></svg>',
+  iconAdd: '<svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path></svg>',
 
   // Icon used to sync styles
   iconSync:
@@ -98,8 +97,8 @@ export default {
   // With this option enabled, also in the second case, the Component will be passed.
   // This method allows to avoid styling classes directly and make, for example, some
   // unintended changes below the visible canvas area (when components share same classes)
-  componentFirst: 0,
+  componentFirst: false,
 
   // Avoid rendering the default Selector Manager UI.
-  custom: false
+  custom: false,
 };

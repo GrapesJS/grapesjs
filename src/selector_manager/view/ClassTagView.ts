@@ -1,11 +1,12 @@
-import { View } from '../../common';
+import { View } from "../../common";
+import State from "../model/State";
 
-const inputProp = 'contentEditable';
+const inputProp = "contentEditable";
 
-export default class ClassTagView extends View {
+export default class ClassTagView extends View<State> {
   template() {
     const { pfx, model, config } = this;
-    const label = model.get('label') || '';
+    const label = model.get("label") || "";
 
     return `
       <span id="${pfx}checkbox" class="${pfx}tag-status" data-tag-status></span>
@@ -18,22 +19,30 @@ export default class ClassTagView extends View {
 
   events() {
     return {
-      'click [data-tag-remove]': 'removeTag',
-      'click [data-tag-status]': 'changeStatus',
-      'dblclick [data-tag-name]': 'startEditTag',
-      'focusout [data-tag-name]': 'endEditTag',
+      "click [data-tag-remove]": "removeTag",
+      "click [data-tag-status]": "changeStatus",
+      "dblclick [data-tag-name]": "startEditTag",
+      "focusout [data-tag-name]": "endEditTag",
     };
   }
+  config: any;
+  module: any;
+  coll: any;
+  pfx: any;
+  ppfx: any;
+  em: any;
+  inputEl?: HTMLElement;
 
-  initialize(o = {}) {
+  constructor(o: any = {}) {
+    super(o);
     const config = o.config || {};
     this.config = config;
     this.module = o.module;
     this.coll = o.coll || null;
-    this.pfx = config.stylePrefix || '';
-    this.ppfx = config.pStylePrefix || '';
+    this.pfx = config.stylePrefix || "";
+    this.ppfx = config.pStylePrefix || "";
     this.em = config.em;
-    this.listenTo(this.model, 'change:active', this.updateStatus);
+    this.listenTo(this.model, "change:active", this.updateStatus);
   }
 
   /**
@@ -42,7 +51,7 @@ export default class ClassTagView extends View {
    */
   getInputEl() {
     if (!this.inputEl) {
-      this.inputEl = this.el.querySelector('[data-tag-name]');
+      this.inputEl = this.el.querySelector("[data-tag-name]") as HTMLElement;
     }
 
     return this.inputEl;
@@ -55,7 +64,8 @@ export default class ClassTagView extends View {
   startEditTag() {
     const { em } = this;
     const inputEl = this.getInputEl();
-    inputEl[inputProp] = true;
+    inputEl;
+    inputEl[inputProp] = "true";
     inputEl.focus();
     em && em.setEditing(1);
   }
@@ -70,15 +80,15 @@ export default class ClassTagView extends View {
     const inputEl = this.getInputEl();
     const label = inputEl.textContent;
     const em = this.em;
-    const sm = em && em.get('SelectorManager');
-    inputEl[inputProp] = false;
+    const sm = em && em.get("SelectorManager");
+    inputEl[inputProp] = "false";
     em && em.setEditing(0);
 
     if (sm) {
       const name = sm.escapeName(label);
 
       if (sm.get(name)) {
-        inputEl.innerText = model.get('label');
+        inputEl.innerText = model.get("label");
       } else {
         model.set({ name, label });
       }
@@ -91,7 +101,7 @@ export default class ClassTagView extends View {
    */
   changeStatus() {
     const { model } = this;
-    model.set('active', !model.get('active'));
+    model.set("active", !model.get("active"));
   }
 
   /**
@@ -110,14 +120,14 @@ export default class ClassTagView extends View {
   updateStatus() {
     const { model, $el, config } = this;
     const { iconTagOn, iconTagOff } = config;
-    const $chk = $el.find('[data-tag-status]');
+    const $chk = $el.find("[data-tag-status]");
 
-    if (model.get('active')) {
+    if (model.get("active")) {
       $chk.html(iconTagOn);
-      $el.removeClass('opac50');
+      $el.removeClass("opac50");
     } else {
       $chk.html(iconTagOff);
-      $el.addClass('opac50');
+      $el.addClass("opac50");
     }
   }
 
@@ -125,7 +135,7 @@ export default class ClassTagView extends View {
     const pfx = this.pfx;
     const ppfx = this.ppfx;
     this.$el.html(this.template());
-    this.$el.attr('class', `${pfx}tag ${ppfx}three-bg`);
+    this.$el.attr("class", `${pfx}tag ${ppfx}three-bg`);
     this.updateStatus();
     return this;
   }

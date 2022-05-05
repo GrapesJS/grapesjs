@@ -38,8 +38,7 @@ const deps = [
   require('block_manager'),
 ];
 
-const ts_deps: any[] = [
-];
+const ts_deps: any[] = [];
 
 Extender({
   //@ts-ignore
@@ -77,25 +76,27 @@ export default class EditorModel extends Model {
   destroyed = false;
   _config: any;
   attrsOrig: any;
-timedInterval?: number;
+  timedInterval?: number;
   updateItr?: number;
-  view?: EditorView
+  view?: EditorView;
 
-
-  get storables(): any[]{
-    return this.get('storables')
+  get storables(): any[] {
+    return this.get('storables');
   }
 
-  get modules(): IModule[]{
-    return this.get('modules')
+  get modules(): IModule[] {
+    return this.get('modules');
   }
 
-  get toLoad(): any[]{
-    return this.get('toLoad')
+  get toLoad(): any[] {
+    return this.get('toLoad');
+  }
+  get selected(): Selected {
+    return this.get('selected');
   }
 
   constructor(conf = {}) {
-    super()
+    super();
     this._config = conf;
     const { config } = this;
     this.set('Config', conf);
@@ -234,7 +235,7 @@ timedInterval?: number;
     this.updateItr = setTimeout(() => this.trigger('update'));
 
     if (this.config.noticeOnUnload) {
-      window.onbeforeunload = changes ? e => 1 : null;
+      window.onbeforeunload = changes ? () => true : null;
     }
 
     if (stm.isAutosave() && changes >= stm.getStepsBeforeSave()) {
@@ -281,7 +282,7 @@ timedInterval?: number;
    * @return {this}
    * @private
    */
-   tsLoadModule(moduleName: any) {
+  tsLoadModule(moduleName: any) {
     const Module = moduleName.default || moduleName;
     const Mod = new Module(this);
 
@@ -359,7 +360,7 @@ timedInterval?: number;
    * @public
    */
   getSelected() {
-    return this.get('selected').lastComponent();
+    return this.selected.lastComponent();
   }
 
   /**
@@ -367,8 +368,8 @@ timedInterval?: number;
    * @return {Array}
    * @public
    */
-  getSelectedAll(): any[] {
-    return this.get('selected').allComponents();
+  getSelectedAll() {
+    return this.selected.allComponents();
   }
 
   /**
@@ -377,18 +378,18 @@ timedInterval?: number;
    * @param  {Object} [opts={}] Options, optional
    * @public
    */
-  setSelected(el: any, opts: any = {}) {
+  setSelected(el: any | any[], opts: any = {}) {
     const { event } = opts;
     const ctrlKey = event && (event.ctrlKey || event.metaKey);
     const { shiftKey } = event || {};
-    const multiple = isArray(el);
-    const els = (multiple ? el : [el]).map(el => getModel(el, $));
+    const els = (isArray(el) ? el : [el]).map(el => getModel(el, $));
     const selected = this.getSelectedAll();
     const mltSel = this.getConfig().multipleSelection;
     let added;
 
     // If an array is passed remove all selected
     // expect those yet to be selected
+    const multiple = isArray(el);
     multiple && this.removeSelected(selected.filter(s => !contains(els, s)));
 
     els.forEach(el => {
@@ -416,7 +417,7 @@ timedInterval?: number;
         this.clearSelection(this.get('Canvas').getWindow());
         const coll = model.collection;
         const index = model.index();
-        let min: number|undefined, max: number|undefined;
+        let min: number | undefined, max: number | undefined;
 
         // Fin min and max siblings
         this.getSelectedAll().forEach(sel => {
@@ -468,7 +469,7 @@ timedInterval?: number;
 
     models.forEach(model => {
       if (model && !model.get('selectable')) return;
-      const selected = this.get('selected');
+      const { selected } = this;
       opts.forceChange && this.removeSelected(model, opts);
       selected.addComponent(model, opts);
       model && this.trigger('component:select', model, opts);
@@ -482,7 +483,7 @@ timedInterval?: number;
    * @public
    */
   removeSelected(el: any, opts = {}) {
-    this.get('selected').removeComponent(getModel(el, $), opts);
+    this.selected.removeComponent(getModel(el, $), opts);
   }
 
   /**
@@ -496,7 +497,7 @@ timedInterval?: number;
     const models = isArray(model) ? model : [model];
 
     models.forEach(model => {
-      if (this.get('selected').hasComponent(model)) {
+      if (this.selected.hasComponent(model)) {
         this.removeSelected(model, opts);
       } else {
         this.addSelected(model, opts);
@@ -817,7 +818,7 @@ timedInterval?: number;
    * This count resets at any `store()`
    * @return {number}
    */
-  getDirtyCount() {
+  getDirtyCount(): number {
     return this.get('changesCount');
   }
 
@@ -868,8 +869,10 @@ timedInterval?: number;
     view && view.remove();
     this.clear({ silent: true });
     this.destroyed = true;
-    //@ts-ignore
-    ['_config', 'view', '_previousAttributes', '_events', '_listeners'].forEach(i => (this[i] = {}));
+    ['_config', 'view', '_previousAttributes', '_events', '_listeners'].forEach(
+      //@ts-ignore
+      i => (this[i] = {})
+    );
     editors.splice(editors.indexOf(editor), 1);
     //@ts-ignore
     hasWin() && $(config.el).empty().attr(this.attrsOrig);
@@ -905,7 +908,7 @@ timedInterval?: number;
     this.log(msg, { ...opts, level: 'info' });
   }
 
-  logWarning(msg:string, opts?: any) {
+  logWarning(msg: string, opts?: any) {
     this.log(msg, { ...opts, level: 'warning' });
   }
 
