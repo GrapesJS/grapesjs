@@ -9,9 +9,13 @@
   },
   "rules": {
     "strict": 0,
-    "quotes": [0, "single"],
-    "eol-last": [0],
+    "quotes": ["error", "single"],
+    "eol-last": ["error", "always"],
     "no-mixed-requires": [0],
     "no-underscore-dangle": [0]
-  }
+  },
+  "overrides": [{
+    "files": ["*.ts"],
+    "parser": "@typescript-eslint/parser"
+  }]
 }
