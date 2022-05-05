@@ -16,7 +16,7 @@ describe('Preview command', () => {
 
       getModel: jest.fn().mockReturnValue({
         runDefault: jest.fn(),
-        stopDefault: jest.fn()
+        stopDefault: jest.fn(),
       }),
 
       Config: {},
@@ -24,8 +24,8 @@ describe('Preview command', () => {
       Canvas: {
         getElement: jest.fn().mockReturnValue({
           style: {},
-          setAttribute: jest.fn()
-        })
+          setAttribute: jest.fn(),
+        }),
       },
 
       select: jest.fn(),
@@ -33,12 +33,12 @@ describe('Preview command', () => {
       getSelectedAll: jest.fn().mockReturnValue([]),
 
       Commands: {
-        isActive: jest.fn(() => fakeIsActive)
+        isActive: jest.fn(() => fakeIsActive),
       },
 
       Panels: {
-        getPanels: jest.fn(() => fakePanels)
-      }
+        getPanels: jest.fn(() => fakePanels),
+      },
     };
 
     Preview.panels = undefined;

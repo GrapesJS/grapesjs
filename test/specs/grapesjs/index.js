@@ -93,15 +93,15 @@ describe('GrapesJS', () => {
       const body = editor.Canvas.getBody();
 
       expect(body.outerHTML).toContain(config.baseCss);
-      expect(body.outerHTML.replace(/\s+/g, ` `)).not.toContain(`body { margin: 0;`);
+      expect(body.outerHTML.replace(/\s+/g, ' ')).not.toContain('body { margin: 0;');
     });
 
     test('Editor canvas baseCSS defaults to sensible values if not defined', () => {
       config.components = htmlString;
       config.protectedCss = '';
       obj.init(config);
-      expect(window.frames[0].document.documentElement.outerHTML.replace(/\s+/g, ` `)).toContain(
-        `body { background-color: #fff`
+      expect(window.frames[0].document.documentElement.outerHTML.replace(/\s+/g, ' ')).toContain(
+        'body { background-color: #fff'
       );
     });
 

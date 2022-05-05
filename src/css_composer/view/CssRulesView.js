@@ -57,7 +57,7 @@ export default class CssRulesView extends View {
         atRuleEl = document.createTextNode('');
         styleEl.appendChild(document.createTextNode(`${atRule}{`));
         styleEl.appendChild(atRuleEl);
-        styleEl.appendChild(document.createTextNode(`}`));
+        styleEl.appendChild(document.createTextNode('}'));
         this.atRules[atRule] = atRuleEl;
         rendered = styleEl;
       }

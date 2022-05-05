@@ -193,7 +193,7 @@ describe('DOM Components', () => {
         },
       });
       expect(obj.getTypes().length).toBe(initialTypes);
-      obj.addComponent(`<img src="##"/>`);
+      obj.addComponent('<img src="##"/>');
       const comp = obj.getComponents().at(0);
       expect(comp.get('type')).toBe(id);
       expect(comp.get('testProp')).toBe(testProp);
@@ -212,7 +212,7 @@ describe('DOM Components', () => {
           },
         },
       });
-      obj.addComponent(`<img src="##"/>`);
+      obj.addComponent('<img src="##"/>');
       expect(obj.getTypes()[0].id).toEqual(id);
       const comp = obj.getComponents().at(0);
       // I'm not specifying the isComponent

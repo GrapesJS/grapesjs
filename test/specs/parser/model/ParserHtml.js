@@ -492,7 +492,7 @@ describe('ParserHtml', () => {
   });
 
   test('Parse attributes with object inside', () => {
-    var str = `<div data-gjs-test='{ "prop1": "value1", "prop2": 10, "prop3": true}'>test2 </div>`;
+    var str = '<div data-gjs-test=\'{ "prop1": "value1", "prop2": 10, "prop3": true}\'>test2 </div>';
     var result = [
       {
         tagName: 'div',
@@ -510,7 +510,7 @@ describe('ParserHtml', () => {
   });
 
   test('Parse attributes with arrays inside', () => {
-    var str = `<div data-gjs-test='["value1", "value2"]'>test2 </div>`;
+    var str = '<div data-gjs-test=\'["value1", "value2"]\'>test2 </div>';
     var result = [
       {
         tagName: 'div',

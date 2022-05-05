@@ -1,4 +1,4 @@
-import { Model } from "../../common";
+import { Model } from '../../common';
 
 /**
  * @typedef State
@@ -8,8 +8,8 @@ import { Model } from "../../common";
 export default class State extends Model {
   defaults() {
     return {
-      name: "",
-      label: "",
+      name: '',
+      label: '',
     };
   }
 
@@ -18,7 +18,7 @@ export default class State extends Model {
    * @returns {String}
    */
   getName(): string {
-    return this.get("name");
+    return this.get('name');
   }
 
   /**
@@ -26,7 +26,7 @@ export default class State extends Model {
    * @returns {String}
    */
   getLabel(): string {
-    return this.get("label") || this.getName();
+    return this.get('label') || this.getName();
   }
 }
-State.prototype.idAttribute = "name";
+State.prototype.idAttribute = 'name';

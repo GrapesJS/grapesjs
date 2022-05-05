@@ -10,7 +10,7 @@ describe('ItemView', () => {
     fakeModel = {
       get: jest.fn(),
       set: jest.fn(),
-      getStyle: jest.fn(() => fakeModelStyle)
+      getStyle: jest.fn(() => fakeModelStyle),
     };
 
     itemView = new ItemView({
@@ -18,9 +18,9 @@ describe('ItemView', () => {
       config: {
         ...config,
         em: {
-          get: jest.fn(() => ({ stylePrefix: '' }))
-        }
-      }
+          get: jest.fn(() => ({ stylePrefix: '' })),
+        },
+      },
     });
   });
 

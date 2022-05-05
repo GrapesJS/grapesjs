@@ -1,6 +1,6 @@
-import { result, forEach, keys } from "underscore";
-import { Model } from "../../common";
-import EditorModel from "../../editor/model/Editor";
+import { result, forEach, keys } from 'underscore';
+import { Model } from '../../common';
+import EditorModel from '../../editor/model/Editor';
 
 const TYPE_CLASS = 1;
 const TYPE_ID = 2;
@@ -17,8 +17,8 @@ const TYPE_ID = 2;
 export default class Selector extends Model {
   defaults() {
     return {
-      name: "",
-      label: "",
+      name: '',
+      label: '',
       type: TYPE_CLASS,
       active: true,
       private: false,
@@ -36,43 +36,43 @@ export default class Selector extends Model {
   constructor(props: any, opts: any = {}) {
     super(props, opts);
     const { config = {} } = opts;
-    const name = this.get("name");
-    const label = this.get("label");
+    const name = this.get('name');
+    const label = this.get('label');
 
     if (!name) {
-      this.set("name", label);
+      this.set('name', label);
     } else if (!label) {
-      this.set("label", name);
+      this.set('label', name);
     }
 
-    const namePreEsc = this.get("name");
+    const namePreEsc = this.get('name');
     const { escapeName } = config;
     const nameEsc = escapeName
       ? escapeName(namePreEsc)
       : Selector.escapeName(namePreEsc);
-    this.set("name", nameEsc);
+    this.set('name', nameEsc);
     this.em = opts.em;
   }
 
   isId() {
-    return this.get("type") === TYPE_ID;
+    return this.get('type') === TYPE_ID;
   }
 
   isClass() {
-    return this.get("type") === TYPE_CLASS;
+    return this.get('type') === TYPE_CLASS;
   }
 
   getFullName(opts: any = {}) {
     const { escape } = opts;
-    const name = this.get("name");
-    let pfx = "";
+    const name = this.get('name');
+    let pfx = '';
 
-    switch (this.get("type")) {
+    switch (this.get('type')) {
       case TYPE_CLASS:
-        pfx = ".";
+        pfx = '.';
         break;
       case TYPE_ID:
-        pfx = "#";
+        pfx = '#';
         break;
     }
 
@@ -100,7 +100,7 @@ export default class Selector extends Model {
    * // -> `My selector`
    */
   getLabel() {
-    return this.get("label");
+    return this.get('label');
   }
 
   /**
@@ -113,7 +113,7 @@ export default class Selector extends Model {
    * // -> `New Label`
    */
   setLabel(label: string) {
-    return this.set("label", label);
+    return this.set('label', label);
   }
 
   /**
@@ -121,7 +121,7 @@ export default class Selector extends Model {
    * @returns {Boolean}
    */
   getActive(): boolean {
-    return this.get("active");
+    return this.get('active');
   }
 
   /**
@@ -129,13 +129,13 @@ export default class Selector extends Model {
    * @param {Boolean} value New active state
    */
   setActive(value: boolean) {
-    return this.set("active", value);
+    return this.set('active', value);
   }
 
   toJSON(opts = {}) {
     const { em } = this;
     let obj = Model.prototype.toJSON.call(this, [opts]);
-    const defaults = result(this, "defaults");
+    const defaults = result(this, 'defaults');
 
     if (em && em.getConfig().avoidDefaults) {
       forEach(defaults, (value, key) => {
@@ -169,8 +169,8 @@ export default class Selector extends Model {
    * @public
    */
   static escapeName(name: string) {
-    return `${name}`.trim().replace(/([^a-z0-9\w-\:]+)/gi, "-");
+    return `${name}`.trim().replace(/([^a-z0-9\w-\:]+)/gi, '-');
   }
 }
 
-Selector.prototype.idAttribute = "name";
+Selector.prototype.idAttribute = 'name';

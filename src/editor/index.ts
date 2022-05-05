@@ -66,7 +66,12 @@ import EditorView from './view/EditorView';
 export default class EditorModule implements IBaseModule<typeof defaults> {
   constructor(config = {}, opts: any = {}) {
     //@ts-ignore
-    this.config = { ...defaults, ...config, pStylePrefix: defaults.stylePrefix };
+    this.config = {
+      ...defaults,
+      ...config,
+      //@ts-ignore
+      pStylePrefix: defaults.stylePrefix,
+    };
     this.em = new EditorModel(this.config);
     this.$ = opts.$;
     this.em.init(this);
@@ -82,134 +87,134 @@ export default class EditorModule implements IBaseModule<typeof defaults> {
 
   //@ts-ignore
   get I18n(): I18nModule {
-    return this.em.get("I18n");
+    return this.em.get('I18n');
   }
   //@ts-ignore
   get Utils(): UtilsModule {
-    return this.em.get("Utils");
+    return this.em.get('Utils');
   }
   get Config(): any {
     return this.em.config;
   }
   //@ts-ignore
   get Commands(): CommandsModule {
-    return this.em.get("Commands");
+    return this.em.get('Commands');
   }
   //@ts-ignore
   get Keymaps(): KeymapsModule {
-    return this.em.get("Keymaps");
+    return this.em.get('Keymaps');
   }
   //@ts-ignore
   get Modal(): ModalModule {
-    return this.em.get("Modal");
+    return this.em.get('Modal');
   }
   //@ts-ignore
   get Panels(): PanelsModule {
-    return this.em.get("Panels");
+    return this.em.get('Panels');
   }
   //@ts-ignore
   get Canvas(): CanvasModule {
-    return this.em.get("Canvas");
+    return this.em.get('Canvas');
   }
   //@ts-ignore
   get Parser(): ParserModule {
-    return this.em.get("Parser");
+    return this.em.get('Parser');
   }
   //@ts-ignore
   get CodeManager(): CodeManagerModule {
-    return this.em.get("CodeManager");
+    return this.em.get('CodeManager');
   }
   //@ts-ignore
   get UndoManager(): UndoManagerModule {
-    return this.em.get("UndoManager");
+    return this.em.get('UndoManager');
   }
   //@ts-ignore
   get RichTextEditor(): RichTextEditorModule {
-    return this.em.get("RichTextEditor");
+    return this.em.get('RichTextEditor');
   }
   //@ts-ignore
   get Pages(): PageManagerModule {
-    return this.em.get("PageManager");
+    return this.em.get('PageManager');
   }
   //@ts-ignore
   get Components(): DomComponentsModule {
-    return this.em.get("DomComponents");
+    return this.em.get('DomComponents');
   }
   //@ts-ignore
   get DomComponents(): DomComponentsModule {
-    return this.em.get("DomComponents");
+    return this.em.get('DomComponents');
   }
   //@ts-ignore
   get Layers(): LayerManagerModule {
-    return this.em.get("LayerManager");
+    return this.em.get('LayerManager');
   }
   //@ts-ignore
   get LayerManager(): LayerManagerModule {
-    return this.em.get("LayerManager");
+    return this.em.get('LayerManager');
   }
   //@ts-ignore
   get Css(): CssComposerModule {
-    return this.em.get("CssComposer");
+    return this.em.get('CssComposer');
   }
   //@ts-ignore
   get CssComposer(): CssComposerModule {
-    return this.em.get("CssComposer");
+    return this.em.get('CssComposer');
   }
   //@ts-ignore
   get Storage(): StorageManagerModule {
-    return this.em.get("StorageManager");
+    return this.em.get('StorageManager');
   }
   //@ts-ignore
   get StorageManager(): StorageManagerModule {
-    return this.em.get("StorageManager");
+    return this.em.get('StorageManager');
   }
   //@ts-ignore
   get Assets(): AssetManagerModule {
-    return this.em.get("AssetManager");
+    return this.em.get('AssetManager');
   }
   //@ts-ignore
   get AssetManager(): AssetManagerModule {
-    return this.em.get("AssetManager");
+    return this.em.get('AssetManager');
   }
   //@ts-ignore
   get Blocks(): BlockManagerModule {
-    return this.em.get("BlockManager");
+    return this.em.get('BlockManager');
   }
   //@ts-ignore
   get BlockManager(): BlockManagerModule {
-    return this.em.get("BlockManager");
+    return this.em.get('BlockManager');
   }
   //@ts-ignore
   get Traits(): TraitManagerModule {
-    return this.em.get("TraitManager");
+    return this.em.get('TraitManager');
   }
   //@ts-ignore
   get TraitManager(): TraitManagerModule {
-    return this.em.get("TraitManager");
+    return this.em.get('TraitManager');
   }
   //@ts-ignore
   get Selectors(): SelectorManagerCollectionModule {
-    return this.em.get("SelectorManager");
+    return this.em.get('SelectorManager');
   }
   //@ts-ignore
   get SelectorManager(): SelectorManagerCollectionModule {
-    return this.em.get("SelectorManager");
+    return this.em.get('SelectorManager');
   }
   //@ts-ignore
   get Styles(): StyleManagerModule {
-    return this.em.get("StyleManager");
+    return this.em.get('StyleManager');
   }
   //@ts-ignore
   get StyleManager(): StyleManagerModule {
-    return this.em.get("StyleManager");
+    return this.em.get('StyleManager');
   }
   //@ts-ignore
   get Devices(): DeviceManagerModule {
-    return this.em.get("DeviceManager");
-  } 
+    return this.em.get('DeviceManager');
+  }
   //@ts-ignore
   get DeviceManager(): DeviceManagerModule {
-    return this.em.get("DeviceManager");
+    return this.em.get('DeviceManager');
   }
 
   //@deprecated

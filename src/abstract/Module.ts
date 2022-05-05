@@ -1,7 +1,10 @@
-import { isElement } from 'underscore';
-import EditorModel from "../editor/model/Editor";
+import { isElement, isUndefined } from 'underscore';
+import { Collection } from '../common';
+import EditorModel from '../editor/model/Editor';
+import { createId, isDef } from '../utils/mixins';
 
-export interface IModule<TConfig extends any = any> extends IBaseModule<TConfig> {
+export interface IModule<TConfig extends any = any>
+  extends IBaseModule<TConfig> {
   init(cfg: any): void;
   destroy(): void;
   postLoad(key: any): any;
@@ -22,23 +25,38 @@ export interface ModuleConfig {
   appendTo?: string;
 }
 
+export interface IStorableModule extends IModule {
+  storageKey: string[] | string;
+  store(result: any): any;
+  load(keys: string[]): void;
+  postLoad(key: any): any;
+}
+
 export default abstract class Module<T extends ModuleConfig = ModuleConfig>
   implements IModule<T>
 {
-  //conf: CollectionCollectionModuleConfig;
   private _em: EditorModel;
   private _config: T;
+  private _name: string;
   cls: any[] = [];
   events: any;
   model?: any;
   view?: any;
 
-  constructor(
-    em: EditorModel,
-    config: T
-  ) {
+  constructor(em: EditorModel, moduleName: string) {
     this._em = em;
-    this._config = config;
+    this._name = moduleName;
+    const name = this.name.charAt(0).toLowerCase() + this.name.slice(1);
+    const cfgParent = !isUndefined(em.config[name])
+      ? em.config[name]
+      : em.config[this.name];
+    const cfg = cfgParent === true ? {} : cfgParent || {};
+    cfg.pStylePrefix = em.config.pStylePrefix || '';
+
+    if (!isUndefined(cfgParent) && !cfgParent) {
+      cfg._disable = 1;
+    }
+    this._config = cfg;
   }
 
   // Temporary alternative to constructor
@@ -66,15 +84,15 @@ export default abstract class Module<T extends ModuleConfig = ModuleConfig>
   postLoad(key: any): void {}
 
   get name(): string {
-    return this.config.name || '';
+    return this._name;
   }
 
   getConfig() {
     return this.config;
   }
 
-  __logWarn(str: string) {
-    this.em.logWarning(`[${this.name}]: ${str}`);
+  __logWarn(str: string, opts = {}) {
+    this.em.logWarning(`[${this.name}]: ${str}`, opts);
   }
 
   postRender?(view: any): void;
@@ -91,5 +109,175 @@ export default abstract class Module<T extends ModuleConfig = ModuleConfig>
       if (!el) return this.__logWarn('"appendTo" element not found');
       el.appendChild(this.render());
     }
+  }
+}
+
+export abstract class ItemManagerModule<
+  TConf extends ModuleConfig = any,
+  TCollection extends Collection = Collection
+> extends Module<TConf> {
+  cls: any[] = [];
+  protected all: TCollection;
+
+  constructor(em: EditorModel, moduleName: string, all: any, events: any) {
+    super(em, moduleName);
+    this.all = all;
+    this.events = events;
+    this.__initListen();
+  }
+
+  private: boolean = false;
+
+  abstract storageKey: string;
+  abstract destroy(): void;
+  postLoad(key: any): void {}
+  render() {}
+
+  getProjectData(data?: any) {
+    const obj: any = {};
+    const key = this.storageKey;
+    if (key) {
+      obj[key] = data || this.getAll();
+    }
+    return obj;
+  }
+
+  loadProjectData(
+    data: any = {},
+    param: { all?: TCollection; onResult?: Function; reset?: boolean } = {}
+  ) {
+    const { all, onResult, reset } = param;
+    const key = this.storageKey;
+    const opts: any = { action: 'load' };
+    const coll = all || this.all;
+    let result = data[key];
+
+    if (typeof result == 'string') {
+      try {
+        result = JSON.parse(result);
+      } catch (err) {
+        this.__logWarn('Data parsing failed', { input: result });
+      }
+    }
+
+    reset && result && coll.reset(undefined, opts);
+
+    if (onResult) {
+      result && onResult(result, opts);
+    } else if (result && isDef(result.length)) {
+      coll.reset(result, opts);
+    }
+
+    return result;
+  }
+
+  clear(opts = {}) {
+    const { all } = this;
+    all && all.reset(undefined, opts);
+    return this;
+  }
+
+  getAll(): TCollection extends Collection<infer C> ? C[] : unknown[] {
+    return [...this.all.models] as any;
+  }
+
+  getAllMap(): {
+    [key: string]: TCollection extends Collection<infer C> ? C : unknown;
+  } {
+    return this.getAll().reduce((acc, i) => {
+      acc[i.get(i.idAttribute)] = i;
+      return acc;
+    }, {} as any);
+  }
+
+  __initListen(opts: any = {}) {
+    const { all, em, events } = this;
+    all &&
+      em &&
+      all
+        .on('add', (m: any, c: any, o: any) => em.trigger(events.add, m, o))
+        .on('remove', (m: any, c: any, o: any) =>
+          em.trigger(events.remove, m, o)
+        )
+        .on('change', (p: any, c: any) =>
+          em.trigger(events.update, p, p.changedAttributes(), c)
+        )
+        .on('all', this.__catchAllEvent, this);
+    // Register collections
+    this.cls = [all].concat(opts.collections || []);
+    // Propagate events
+    ((opts.propagate as any[]) || []).forEach(({ entity, event }) => {
+      entity.on('all', (ev: any, model: any, coll: any, opts: any) => {
+        const options = opts || coll;
+        const opt = { event: ev, ...options };
+        [em, all].map((md) => md.trigger(event, model, opt));
+      });
+    });
+  }
+
+  __remove(model: any, opts: any = {}) {
+    const { em } = this;
+    //@ts-ignore
+    const md = isString(model) ? this.get(model) : model;
+    const rm = () => {
+      md && this.all.remove(md, opts);
+      return md;
+    };
+    !opts.silent && em?.trigger(this.events.removeBefore, md, rm, opts);
+    return !opts.abort && rm();
+  }
+
+  __catchAllEvent(event: any, model: any, coll: any, opts: any) {
+    const { em, events } = this;
+    const options = opts || coll;
+    em && events.all && em.trigger(events.all, { event, model, options });
+    this.__onAllEvent();
+  }
+
+  __appendTo() {
+    //@ts-ignore
+    const elTo = this.config.appendTo;
+
+    if (elTo) {
+      const el = isElement(elTo) ? elTo : document.querySelector(elTo);
+      if (!el) return this.__logWarn('"appendTo" element not found');
+      el.appendChild(this.render());
+    }
+  }
+
+  __onAllEvent() {}
+
+  _createId(len = 16) {
+    const all = this.getAll();
+    const ln = all.length + len;
+    const allMap = this.getAllMap();
+    let id;
+
+    do {
+      id = createId(ln);
+    } while (allMap[id]);
+
+    return id;
+  }
+
+  __listenAdd(model: TCollection, event: string) {
+    model.on('add', (m, c, o) => this.em.trigger(event, m, o));
+  }
+
+  __listenRemove(model: TCollection, event: string) {
+    model.on('remove', (m, c, o) => this.em.trigger(event, m, o));
+  }
+
+  __listenUpdate(model: TCollection, event: string) {
+    model.on('change', (p, c) =>
+      this.em.trigger(event, p, p.changedAttributes(), c)
+    );
+  }
+
+  __destroy() {
+    this.cls.forEach((coll) => {
+      coll.stopListening();
+      coll.reset();
+    });
   }
 }
