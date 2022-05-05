@@ -37,7 +37,7 @@ const isStyleHidden = (style: any = {}) => {
 };
 
 export default class LayerManager extends Module<typeof defaults> {
-    model?: Model;
+    model!: Model;
 
     view?: View;
 
@@ -58,10 +58,10 @@ export default class LayerManager extends Module<typeof defaults> {
 
     onLoad() {
       const { em, config, model } = this;
-      model!.listenTo(em, 'component:selected', this.componentChanged);
-      model!.listenToOnce(em, 'load', () => this.setRoot(config.root));
-      model!.on('change:root', this.__onRootChange);
-      model!.listenTo(em, propsToListen, this.__onComponent);
+      model.listenTo(em, 'component:selected', this.componentChanged);
+      model.listenToOnce(em, 'load', () => this.setRoot(config.root));
+      model.on('change:root', this.__onRootChange);
+      model.listenTo(em, propsToListen, this.__onComponent);
       this.componentChanged();
     }
 
@@ -82,7 +82,7 @@ export default class LayerManager extends Module<typeof defaults> {
         root = wrapper.find(component)[0] || wrapper;
       }
 
-      this.model!.set('root', root);
+      this.model.set('root', root);
 
       return root;
     }
@@ -92,7 +92,7 @@ export default class LayerManager extends Module<typeof defaults> {
      * @return {Component}
      */
     getRoot() {
-      return this.model!.get('root');
+      return this.model.get('root');
     }
 
     getLayerData(component: any): LayerData {
@@ -224,7 +224,7 @@ export default class LayerManager extends Module<typeof defaults> {
       if (opts.fromLayers) return;
       const { em, config } = this;
       const { scrollLayers } = config;
-      const opened = this.model!.get('opened');
+      const opened = this.model.get('opened');
       const selected = em.getSelected();
       let parent = selected?.parent();
 
@@ -254,7 +254,7 @@ export default class LayerManager extends Module<typeof defaults> {
         ItemView,
         level: 0,
         config,
-        opened: model!.get('opened'),
+        opened: model.get('opened'),
         model: this.getRoot(),
         module: this,
       });
