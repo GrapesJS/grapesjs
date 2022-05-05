@@ -1,10 +1,10 @@
 import { isString, isElement } from 'underscore';
 import { createId, deepMerge, isDef } from 'utils/mixins';
 
-export default {
+export default class ModuleLegacy {
   getConfig(name) {
     return this.__getConfig(name);
-  },
+  }
 
   getProjectData(data) {
     const obj = {};
@@ -13,7 +13,7 @@ export default {
       obj[key] = data || this.getAll();
     }
     return obj;
-  },
+  }
 
   loadProjectData(data = {}, { all, onResult, reset } = {}) {
     const key = this.storageKey;
@@ -38,35 +38,35 @@ export default {
     }
 
     return result;
-  },
+  }
 
   clear(opts = {}) {
     const { all } = this;
     all && all.reset(null, opts);
     return this;
-  },
+  }
 
   __getConfig(name) {
     const res = this.config || {};
     return name ? res[name] : res;
-  },
+  }
 
   getAll(opts = {}) {
     return this.all ? (opts.array ? [...this.all.models] : this.all) : [];
-  },
+  }
 
   getAllMap() {
     return this.getAll().reduce((acc, i) => {
       acc[i.get(i.idAttribute)] = i;
       return acc;
     }, {});
-  },
+  }
 
   __initConfig(def = {}, conf = {}) {
     this.config = deepMerge(def, conf);
     this.em = this.config.em;
     this.cls = [];
-  },
+  }
 
   __initListen(opts = {}) {
     const { all, em, events } = this;
@@ -87,7 +87,7 @@ export default {
         [em, all].map(md => md.trigger(event, model, opt));
       });
     });
-  },
+  }
 
   __remove(model, opts = {}) {
     const { em } = this;
@@ -98,14 +98,14 @@ export default {
     };
     !opts.silent && em && em.trigger(this.events.removeBefore, md, rm, opts);
     return !opts.abort && rm();
-  },
+  }
 
   __catchAllEvent(event, model, coll, opts) {
     const { em, events } = this;
     const options = opts || coll;
     em && events.all && em.trigger(events.all, { event, model, options });
     this.__onAllEvent();
-  },
+  }
 
   __appendTo() {
     const elTo = this.getConfig().appendTo;
@@ -115,13 +115,13 @@ export default {
       if (!el) return this.__logWarn('"appendTo" element not found');
       el.appendChild(this.render());
     }
-  },
+  }
 
-  __onAllEvent() {},
+  __onAllEvent() {}
 
   __logWarn(str, opts) {
     this.em.logWarning(`[${this.name}]: ${str}`, opts);
-  },
+  }
 
   _createId(len = 16) {
     const all = this.getAll();
@@ -134,19 +134,19 @@ export default {
     } while (allMap[id]);
 
     return id;
-  },
+  }
 
   __listenAdd(model, event) {
     model.on('add', (m, c, o) => this.em.trigger(event, m, o));
-  },
+  }
 
   __listenRemove(model, event) {
     model.on('remove', (m, c, o) => this.em.trigger(event, m, o));
-  },
+  }
 
   __listenUpdate(model, event) {
     model.on('change', (p, c) => this.em.trigger(event, p, p.changedAttributes(), c));
-  },
+  }
 
   __destroy() {
     this.cls.forEach(coll => {
@@ -157,5 +157,5 @@ export default {
     this.config = 0;
     this.view?.remove();
     this.view = 0;
-  },
-};
+  }
+}

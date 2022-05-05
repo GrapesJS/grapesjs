@@ -98,13 +98,8 @@ import ComponentFrame from './model/ComponentFrame';
 import ComponentFrameView from './view/ComponentFrameView';
 import Module from 'abstract/moduleLegacy';
 
-export default () => {
-  var c = {};
-  let em;
-  const componentsById = {};
-
-  var component, componentView;
-  var componentTypes = [
+export default class ComponentManager extends Module {
+  componentTypes = [
     {
       id: 'cell',
       model: ComponentTableCell,
@@ -207,473 +202,466 @@ export default () => {
     },
   ];
 
-  return {
-    ...Module,
+  componentsById = {};
 
-    Component,
+  Component = Component;
 
-    Components,
+  Components = Components;
 
-    ComponentsView,
+  ComponentsView = ComponentsView;
 
-    componentTypes,
+  /**
+   * Name of the module
+   * @type {String}
+   * @private
+   */
+  name = 'DomComponents';
 
-    componentsById,
+  storageKey = 'components';
 
-    /**
-     * Name of the module
-     * @type {String}
-     * @private
-     */
-    name: 'DomComponents',
+  /**
+   * Returns config
+   * @return {Object} Config object
+   * @private
+   */
+  getConfig() {
+    return this.c;
+  }
 
-    storageKey: 'components',
+  /**
+   * Initialize module. Called on a new instance of the editor with configurations passed
+   * inside 'domComponents' field
+   * @param {Object} config Configurations
+   * @private
+   */
+  init(config) {
+    this.c = config || {};
+    const em = this.c.em;
+    this.em = em;
 
-    /**
-     * Returns config
-     * @return {Object} Config object
-     * @private
-     */
-    getConfig() {
-      return c;
-    },
+    if (em) {
+      this.c.components = em.config.components || this.c.components;
+    }
 
-    /**
-     * Initialize module. Called on a new instance of the editor with configurations passed
-     * inside 'domComponents' field
-     * @param {Object} config Configurations
-     * @private
-     */
-    init(config) {
-      c = config || {};
-      em = c.em;
-      this.em = em;
+    for (var name in defaults) {
+      if (!(name in this.c)) this.c[name] = defaults[name];
+    }
 
-      if (em) {
-        c.components = em.config.components || c.components;
-      }
+    var ppfx = this.c.pStylePrefix;
+    if (ppfx) this.c.stylePrefix = ppfx + this.c.stylePrefix;
 
-      for (var name in defaults) {
-        if (!(name in c)) c[name] = defaults[name];
-      }
+    // Load dependencies
+    if (em) {
+      this.c.modal = em.get('Modal') || '';
+      this.c.am = em.get('AssetManager') || '';
+      em.get('Parser').compTypes = this.componentTypes;
+      em.on('change:componentHovered', this.componentHovered, this);
 
-      var ppfx = c.pStylePrefix;
-      if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
+      const selected = em.get('selected');
+      em.listenTo(selected, 'add', (sel, c, opts) => this.selectAdd(selected.getComponent(sel), opts));
+      em.listenTo(selected, 'remove', (sel, c, opts) => this.selectRemove(selected.getComponent(sel), opts));
+    }
 
-      // Load dependencies
-      if (em) {
-        c.modal = em.get('Modal') || '';
-        c.am = em.get('AssetManager') || '';
-        em.get('Parser').compTypes = componentTypes;
-        em.on('change:componentHovered', this.componentHovered, this);
+    return this;
+  }
 
-        const selected = em.get('selected');
-        em.listenTo(selected, 'add', (sel, c, opts) => this.selectAdd(selected.getComponent(sel), opts));
-        em.listenTo(selected, 'remove', (sel, c, opts) => this.selectRemove(selected.getComponent(sel), opts));
-      }
+  load(data) {
+    return this.loadProjectData(data, {
+      onResult: result => {
+        let wrapper = this.getWrapper();
 
-      return this;
-    },
+        if (!wrapper) {
+          this.em.get('PageManager').add({}, { select: true });
+          wrapper = this.getWrapper();
+        }
 
-    load(data) {
-      return this.loadProjectData(data, {
-        onResult: result => {
-          let wrapper = this.getWrapper();
+        if (isArray(result)) {
+          result.length && wrapper.components(result);
+        } else {
+          const { components = [], ...rest } = result;
+          wrapper.set(rest);
+          wrapper.components(components);
+        }
+      },
+    });
+  }
 
-          if (!wrapper) {
-            this.em.get('PageManager').add({}, { select: true });
-            wrapper = this.getWrapper();
-          }
+  store() {
+    return {};
+  }
 
-          if (isArray(result)) {
-            result.length && wrapper.components(result);
-          } else {
-            const { components = [], ...rest } = result;
-            wrapper.set(rest);
-            wrapper.components(components);
-          }
-        },
-      });
-    },
+  /**
+   * Returns privately the main wrapper
+   * @return {Object}
+   * @private
+   */
+  getComponent() {
+    const sel = this.em.get('PageManager').getSelected();
+    const frame = sel && sel.getMainFrame();
+    return frame && frame.getComponent();
+  }
 
-    store() {
-      return {};
-    },
+  /**
+   * Returns root component inside the canvas. Something like `<body>` inside HTML page
+   * The wrapper doesn't differ from the original Component Model
+   * @return {Component} Root Component
+   * @example
+   * // Change background of the wrapper and set some attribute
+   * var wrapper = cmp.getWrapper();
+   * wrapper.set('style', {'background-color': 'red'});
+   * wrapper.set('attributes', {'title': 'Hello!'});
+   */
+  getWrapper() {
+    return this.getComponent();
+  }
 
-    /**
-     * Returns privately the main wrapper
-     * @return {Object}
-     * @private
-     */
-    getComponent() {
-      const sel = this.em.get('PageManager').getSelected();
-      const frame = sel && sel.getMainFrame();
-      return frame && frame.getComponent();
-    },
+  /**
+   * Returns wrapper's children collection. Once you have the collection you can
+   * add other Components(Models) inside. Each component can have several nested
+   * components inside and you can nest them as more as you wish.
+   * @return {Components} Collection of components
+   * @example
+   * // Let's add some component
+   * var wrapperChildren = cmp.getComponents();
+   * var comp1 = wrapperChildren.add({
+   *   style: { 'background-color': 'red'}
+   * });
+   * var comp2 = wrapperChildren.add({
+   *   tagName: 'span',
+   *   attributes: { title: 'Hello!'}
+   * });
+   * // Now let's add an other one inside first component
+   * // First we have to get the collection inside. Each
+   * // component has 'components' property
+   * var comp1Children = comp1.get('components');
+   * // Procede as before. You could also add multiple objects
+   * comp1Children.add([
+   *   { style: { 'background-color': 'blue'}},
+   *   { style: { height: '100px', width: '100px'}}
+   * ]);
+   * // Remove comp2
+   * wrapperChildren.remove(comp2);
+   */
+  getComponents() {
+    const wrp = this.getWrapper();
+    return wrp && wrp.get('components');
+  }
 
-    /**
-     * Returns root component inside the canvas. Something like `<body>` inside HTML page
-     * The wrapper doesn't differ from the original Component Model
-     * @return {Component} Root Component
-     * @example
-     * // Change background of the wrapper and set some attribute
-     * var wrapper = cmp.getWrapper();
-     * wrapper.set('style', {'background-color': 'red'});
-     * wrapper.set('attributes', {'title': 'Hello!'});
-     */
-    getWrapper() {
-      return this.getComponent();
-    },
+  /**
+   * Add new components to the wrapper's children. It's the same
+   * as 'cmp.getComponents().add(...)'
+   * @param {Object|Component|Array<Object>} component Component/s to add
+   * @param {string} [component.tagName='div'] Tag name
+   * @param {string} [component.type=''] Type of the component. Available: ''(default), 'text', 'image'
+   * @param {boolean} [component.removable=true] If component is removable
+   * @param {boolean} [component.draggable=true] If is possible to move the component around the structure
+   * @param {boolean} [component.droppable=true] If is possible to drop inside other components
+   * @param {boolean} [component.badgable=true] If the badge is visible when the component is selected
+   * @param {boolean} [component.stylable=true] If is possible to style component
+   * @param {boolean} [component.copyable=true] If is possible to copy&paste the component
+   * @param {string} [component.content=''] String inside component
+   * @param {Object} [component.style={}] Style object
+   * @param {Object} [component.attributes={}] Attribute object
+   * @param {Object} opt the options object to be used by the [Components.add]{@link getComponents} method
+   * @return {Component|Array<Component>} Component/s added
+   * @example
+   * // Example of a new component with some extra property
+   * var comp1 = cmp.addComponent({
+   *   tagName: 'div',
+   *   removable: true, // Can't remove it
+   *   draggable: true, // Can't move it
+   *   copyable: true, // Disable copy/past
+   *   content: 'Content text', // Text inside component
+   *   style: { color: 'red'},
+   *   attributes: { title: 'here' }
+   * });
+   */
+  addComponent(component, opt = {}) {
+    return this.getComponents().add(component, opt);
+  }
 
-    /**
-     * Returns wrapper's children collection. Once you have the collection you can
-     * add other Components(Models) inside. Each component can have several nested
-     * components inside and you can nest them as more as you wish.
-     * @return {Components} Collection of components
-     * @example
-     * // Let's add some component
-     * var wrapperChildren = cmp.getComponents();
-     * var comp1 = wrapperChildren.add({
-     *   style: { 'background-color': 'red'}
-     * });
-     * var comp2 = wrapperChildren.add({
-     *   tagName: 'span',
-     *   attributes: { title: 'Hello!'}
-     * });
-     * // Now let's add an other one inside first component
-     * // First we have to get the collection inside. Each
-     * // component has 'components' property
-     * var comp1Children = comp1.get('components');
-     * // Procede as before. You could also add multiple objects
-     * comp1Children.add([
-     *   { style: { 'background-color': 'blue'}},
-     *   { style: { height: '100px', width: '100px'}}
-     * ]);
-     * // Remove comp2
-     * wrapperChildren.remove(comp2);
-     */
-    getComponents() {
-      const wrp = this.getWrapper();
-      return wrp && wrp.get('components');
-    },
+  /**
+   * Render and returns wrapper element with all components inside.
+   * Once the wrapper is rendered, and it's what happens when you init the editor,
+   * the all new components will be added automatically and property changes are all
+   * updated immediately
+   * @return {HTMLElement}
+   */
+  render() {
+    return this.componentView.render().el;
+  }
 
-    /**
-     * Add new components to the wrapper's children. It's the same
-     * as 'cmp.getComponents().add(...)'
-     * @param {Object|Component|Array<Object>} component Component/s to add
-     * @param {string} [component.tagName='div'] Tag name
-     * @param {string} [component.type=''] Type of the component. Available: ''(default), 'text', 'image'
-     * @param {boolean} [component.removable=true] If component is removable
-     * @param {boolean} [component.draggable=true] If is possible to move the component around the structure
-     * @param {boolean} [component.droppable=true] If is possible to drop inside other components
-     * @param {boolean} [component.badgable=true] If the badge is visible when the component is selected
-     * @param {boolean} [component.stylable=true] If is possible to style component
-     * @param {boolean} [component.copyable=true] If is possible to copy&paste the component
-     * @param {string} [component.content=''] String inside component
-     * @param {Object} [component.style={}] Style object
-     * @param {Object} [component.attributes={}] Attribute object
-     * @param {Object} opt the options object to be used by the [Components.add]{@link getComponents} method
-     * @return {Component|Array<Component>} Component/s added
-     * @example
-     * // Example of a new component with some extra property
-     * var comp1 = cmp.addComponent({
-     *   tagName: 'div',
-     *   removable: true, // Can't remove it
-     *   draggable: true, // Can't move it
-     *   copyable: true, // Disable copy/past
-     *   content: 'Content text', // Text inside component
-     *   style: { color: 'red'},
-     *   attributes: { title: 'here' }
-     * });
-     */
-    addComponent(component, opt = {}) {
-      return this.getComponents().add(component, opt);
-    },
+  /**
+   * Remove all components
+   * @return {this}
+   */
+  clear(opts = {}) {
+    const components = this.getComponents();
+    components?.filter(Boolean).forEach(i => i.remove(opts));
+    return this;
+  }
 
-    /**
-     * Render and returns wrapper element with all components inside.
-     * Once the wrapper is rendered, and it's what happens when you init the editor,
-     * the all new components will be added automatically and property changes are all
-     * updated immediately
-     * @return {HTMLElement}
-     */
-    render() {
-      return componentView.render().el;
-    },
+  /**
+   * Set components
+   * @param {Object|string} components HTML string or components model
+   * @param {Object} opt the options object to be used by the {@link addComponent} method
+   * @return {this}
+   * @private
+   */
+  setComponents(components, opt = {}) {
+    this.clear(opt).addComponent(components, opt);
+  }
 
-    /**
-     * Remove all components
-     * @return {this}
-     */
-    clear(opts = {}) {
-      const components = this.getComponents();
-      components?.filter(Boolean).forEach(i => i.remove(opts));
-      return this;
-    },
+  /**
+   * Add new component type.
+   * Read more about this in [Define New Component](https://grapesjs.com/docs/modules/Components.html#define-new-component)
+   * @param {string} type Component ID
+   * @param {Object} methods Component methods
+   * @return {this}
+   */
+  addType(type, methods) {
+    const { em } = this;
+    const { model = {}, view = {}, isComponent, extend, extendView, extendFn = [], extendFnView = [] } = methods;
+    const compType = this.getType(type);
+    const extendType = this.getType(extend);
+    const extendViewType = this.getType(extendView);
+    const typeToExtend = extendType ? extendType : compType ? compType : this.getType('default');
+    const modelToExt = typeToExtend.model;
+    const viewToExt = extendViewType ? extendViewType.view : typeToExtend.view;
 
-    /**
-     * Set components
-     * @param {Object|string} components HTML string or components model
-     * @param {Object} opt the options object to be used by the {@link addComponent} method
-     * @return {this}
-     * @private
-     */
-    setComponents(components, opt = {}) {
-      this.clear(opt).addComponent(components, opt);
-    },
+    // Function for extending source object methods
+    const getExtendedObj = (fns, target, srcToExt) =>
+      fns.reduce((res, next) => {
+        const fn = target[next];
+        const parentFn = srcToExt.prototype[next];
+        if (fn && parentFn) {
+          res[next] = function (...args) {
+            parentFn.bind(this)(...args);
+            fn.bind(this)(...args);
+          };
+        }
+        return res;
+      }, {});
 
-    /**
-     * Add new component type.
-     * Read more about this in [Define New Component](https://grapesjs.com/docs/modules/Components.html#define-new-component)
-     * @param {string} type Component ID
-     * @param {Object} methods Component methods
-     * @return {this}
-     */
-    addType(type, methods) {
-      const { em } = this;
-      const { model = {}, view = {}, isComponent, extend, extendView, extendFn = [], extendFnView = [] } = methods;
-      const compType = this.getType(type);
-      const extendType = this.getType(extend);
-      const extendViewType = this.getType(extendView);
-      const typeToExtend = extendType ? extendType : compType ? compType : this.getType('default');
-      const modelToExt = typeToExtend.model;
-      const viewToExt = extendViewType ? extendViewType.view : typeToExtend.view;
-
-      // Function for extending source object methods
-      const getExtendedObj = (fns, target, srcToExt) =>
-        fns.reduce((res, next) => {
-          const fn = target[next];
-          const parentFn = srcToExt.prototype[next];
-          if (fn && parentFn) {
-            res[next] = function (...args) {
-              parentFn.bind(this)(...args);
-              fn.bind(this)(...args);
-            };
-          }
-          return res;
-        }, {});
-
-      // If the model/view is a simple object I need to extend it
-      if (typeof model === 'object') {
-        methods.model = modelToExt.extend(
-          {
-            ...model,
-            ...getExtendedObj(extendFn, model, modelToExt),
-            defaults: {
-              ...(result(modelToExt.prototype, 'defaults') || {}),
-              ...(result(model, 'defaults') || {}),
-            },
+    // If the model/view is a simple object I need to extend it
+    if (typeof model === 'object') {
+      methods.model = modelToExt.extend(
+        {
+          ...model,
+          ...getExtendedObj(extendFn, model, modelToExt),
+          defaults: {
+            ...(result(modelToExt.prototype, 'defaults') || {}),
+            ...(result(model, 'defaults') || {}),
           },
-          {
-            isComponent: compType && !extendType && !isComponent ? modelToExt.isComponent : isComponent || (() => 0),
-          }
+        },
+        {
+          isComponent: compType && !extendType && !isComponent ? modelToExt.isComponent : isComponent || (() => 0),
+        }
+      );
+    }
+
+    if (typeof view === 'object') {
+      methods.view = viewToExt.extend({
+        ...view,
+        ...getExtendedObj(extendFnView, view, viewToExt),
+      });
+    }
+
+    if (compType) {
+      compType.model = methods.model;
+      compType.view = methods.view;
+    } else {
+      methods.id = type;
+      this.componentTypes.unshift(methods);
+    }
+
+    const event = `component:type:${compType ? 'update' : 'add'}`;
+    em?.trigger(event, compType || methods);
+
+    return this;
+  }
+
+  /**
+   * Get component type.
+   * Read more about this in [Define New Component](https://grapesjs.com/docs/modules/Components.html#define-new-component)
+   * @param {string} type Component ID
+   * @return {Object} Component type definition, eg. `{ model: ..., view: ... }`
+   */
+  getType(type) {
+    var df = this.componentTypes;
+
+    for (var it = 0; it < df.length; it++) {
+      var dfId = df[it].id;
+      if (dfId == type) {
+        return df[it];
+      }
+    }
+    return;
+  }
+
+  /**
+   * Remove component type
+   * @param {string} type Component ID
+   * @returns {Object|undefined} Removed component type, undefined otherwise
+   */
+  removeType(id) {
+    const df = this.componentTypes;
+    const type = this.getType(id);
+    if (!type) return;
+    const index = df.indexOf(type);
+    df.splice(index, 1);
+    return type;
+  }
+
+  /**
+   * Return the array of all types
+   * @return {Array}
+   */
+  getTypes() {
+    return this.componentTypes;
+  }
+
+  selectAdd(component, opts = {}) {
+    if (component) {
+      component.set({
+        status: 'selected',
+      });
+      ['component:selected', 'component:toggled'].forEach(event => this.em.trigger(event, component, opts));
+    }
+  }
+
+  selectRemove(component, opts = {}) {
+    if (component) {
+      const { em } = this;
+      component.set({
+        status: '',
+        state: '',
+      });
+      ['component:deselected', 'component:toggled'].forEach(event => this.em.trigger(event, component, opts));
+    }
+  }
+
+  /**
+   * Triggered when the component is hovered
+   * @private
+   */
+  componentHovered() {
+    const { em } = this;
+    const model = em.get('componentHovered');
+    const previous = em.previous('componentHovered');
+    const state = 'hovered';
+
+    // Deselect the previous component
+    previous &&
+      previous.get('status') == state &&
+      previous.set({
+        status: '',
+        state: '',
+      });
+
+    model && isEmpty(model.get('status')) && model.set('status', state);
+  }
+
+  getShallowWrapper() {
+    let { shallow, em } = this;
+
+    if (!shallow && em) {
+      const shallowEm = em.get('shallow');
+      if (!shallowEm) return;
+      const domc = shallowEm.get('DomComponents');
+      domc.componentTypes = this.componentTypes;
+      shallow = domc.getWrapper();
+      if (shallow) {
+        const events = [keyUpdate, keyUpdateInside].join(' ');
+        shallow.on(
+          events,
+          debounce(() => shallow.components(''), 100)
         );
       }
+      this.shallow = shallow;
+    }
 
-      if (typeof view === 'object') {
-        methods.view = viewToExt.extend({
-          ...view,
-          ...getExtendedObj(extendFnView, view, viewToExt),
-        });
-      }
+    return shallow;
+  }
 
-      if (compType) {
-        compType.model = methods.model;
-        compType.view = methods.view;
+  /**
+   * Check if the component can be moved inside another.
+   * @param {[Component]} target The target Component is the one that is supposed to receive the source one.
+   * @param {[Component]|String} source The source can be another Component or an HTML string.
+   * @param {Number} [index] Index position. If not specified, the check will perform against appending the source to target.
+   * @returns {Object} Object containing the `result` (Boolean), `source`, `target` (as Components), and a `reason` (Number) with these meanings:
+   * * `0` - Invalid source. This is a default value and should be ignored in case the `result` is true.
+   * * `1` - Source doesn't accept target as destination.
+   * * `2` - Target doesn't accept source.
+   * @private
+   */
+  canMove(target, source, index) {
+    const at = index || index === 0 ? index : null;
+    const result = {
+      result: false,
+      reason: 0,
+      target,
+      source: null,
+    };
+
+    if (!source) return result;
+
+    let srcModel = source?.toHTML ? source : null;
+
+    if (!srcModel) {
+      const wrapper = this.getShallowWrapper();
+      srcModel = wrapper?.append(source)[0];
+    }
+
+    result.source = srcModel;
+
+    if (!srcModel) return result;
+
+    // Check if the source is draggable in the target
+    let draggable = srcModel.get('draggable');
+
+    if (isFunction(draggable)) {
+      draggable = !!draggable(srcModel, target, at);
+    } else {
+      const el = target.getEl();
+      draggable = isArray(draggable) ? draggable.join(',') : draggable;
+      draggable = isString(draggable) ? el?.matches(draggable) : draggable;
+    }
+
+    if (!draggable) return { ...result, reason: 1 };
+
+    // Check if the target accepts the source
+    let droppable = target.get('droppable');
+
+    if (isFunction(droppable)) {
+      droppable = !!droppable(srcModel, target, at);
+    } else {
+      if (droppable === false && target.isInstanceOf('text') && srcModel.get('textable')) {
+        droppable = true;
       } else {
-        methods.id = type;
-        componentTypes.unshift(methods);
+        const el = srcModel.getEl();
+        droppable = isArray(droppable) ? droppable.join(',') : droppable;
+        droppable = isString(droppable) ? el?.matches(droppable) : droppable;
       }
+    }
 
-      const event = `component:type:${compType ? 'update' : 'add'}`;
-      em && em.trigger(event, compType || methods);
+    if (!droppable) return { ...result, reason: 2 };
 
-      return this;
-    },
+    return { ...result, result: true };
+  }
 
-    /**
-     * Get component type.
-     * Read more about this in [Define New Component](https://grapesjs.com/docs/modules/Components.html#define-new-component)
-     * @param {string} type Component ID
-     * @return {Object} Component type definition, eg. `{ model: ..., view: ... }`
-     */
-    getType(type) {
-      var df = componentTypes;
+  allById() {
+    return this.componentsById;
+  }
 
-      for (var it = 0; it < df.length; it++) {
-        var dfId = df[it].id;
-        if (dfId == type) {
-          return df[it];
-        }
-      }
-      return;
-    },
+  getById(id) {
+    return this.componentsById[id] || null;
+  }
 
-    /**
-     * Remove component type
-     * @param {string} type Component ID
-     * @returns {Object|undefined} Removed component type, undefined otherwise
-     */
-    removeType(id) {
-      const df = componentTypes;
-      const type = this.getType(id);
-      if (!type) return;
-      const index = df.indexOf(type);
-      df.splice(index, 1);
-      return type;
-    },
-
-    /**
-     * Return the array of all types
-     * @return {Array}
-     */
-    getTypes() {
-      return componentTypes;
-    },
-
-    selectAdd(component, opts = {}) {
-      if (component) {
-        component.set({
-          status: 'selected',
-        });
-        ['component:selected', 'component:toggled'].forEach(event => this.em.trigger(event, component, opts));
-      }
-    },
-
-    selectRemove(component, opts = {}) {
-      if (component) {
-        const { em } = this;
-        component.set({
-          status: '',
-          state: '',
-        });
-        ['component:deselected', 'component:toggled'].forEach(event => this.em.trigger(event, component, opts));
-      }
-    },
-
-    /**
-     * Triggered when the component is hovered
-     * @private
-     */
-    componentHovered() {
-      const em = c.em;
-      const model = em.get('componentHovered');
-      const previous = em.previous('componentHovered');
-      const state = 'hovered';
-
-      // Deselect the previous component
-      previous &&
-        previous.get('status') == state &&
-        previous.set({
-          status: '',
-          state: '',
-        });
-
-      model && isEmpty(model.get('status')) && model.set('status', state);
-    },
-
-    getShallowWrapper() {
-      let { shallow, em } = this;
-
-      if (!shallow && em) {
-        const shallowEm = em.get('shallow');
-        if (!shallowEm) return;
-        const domc = shallowEm.get('DomComponents');
-        domc.componentTypes = this.componentTypes;
-        shallow = domc.getWrapper();
-        if (shallow) {
-          const events = [keyUpdate, keyUpdateInside].join(' ');
-          shallow.on(
-            events,
-            debounce(() => shallow.components(''), 100)
-          );
-        }
-        this.shallow = shallow;
-      }
-
-      return shallow;
-    },
-
-    /**
-     * Check if the component can be moved inside another.
-     * @param {[Component]} target The target Component is the one that is supposed to receive the source one.
-     * @param {[Component]|String} source The source can be another Component or an HTML string.
-     * @param {Number} [index] Index position. If not specified, the check will perform against appending the source to target.
-     * @returns {Object} Object containing the `result` (Boolean), `source`, `target` (as Components), and a `reason` (Number) with these meanings:
-     * * `0` - Invalid source. This is a default value and should be ignored in case the `result` is true.
-     * * `1` - Source doesn't accept target as destination.
-     * * `2` - Target doesn't accept source.
-     * @private
-     */
-    canMove(target, source, index) {
-      const at = index || index === 0 ? index : null;
-      const result = {
-        result: false,
-        reason: 0,
-        target,
-        source: null,
-      };
-
-      if (!source) return result;
-
-      let srcModel = source?.toHTML ? source : null;
-
-      if (!srcModel) {
-        const wrapper = this.getShallowWrapper();
-        srcModel = wrapper?.append(source)[0];
-      }
-
-      result.source = srcModel;
-
-      if (!srcModel) return result;
-
-      // Check if the source is draggable in the target
-      let draggable = srcModel.get('draggable');
-
-      if (isFunction(draggable)) {
-        draggable = !!draggable(srcModel, target, at);
-      } else {
-        const el = target.getEl();
-        draggable = isArray(draggable) ? draggable.join(',') : draggable;
-        draggable = isString(draggable) ? el?.matches(draggable) : draggable;
-      }
-
-      if (!draggable) return { ...result, reason: 1 };
-
-      // Check if the target accepts the source
-      let droppable = target.get('droppable');
-
-      if (isFunction(droppable)) {
-        droppable = !!droppable(srcModel, target, at);
-      } else {
-        if (droppable === false && target.isInstanceOf('text') && srcModel.get('textable')) {
-          droppable = true;
-        } else {
-          const el = srcModel.getEl();
-          droppable = isArray(droppable) ? droppable.join(',') : droppable;
-          droppable = isString(droppable) ? el?.matches(droppable) : droppable;
-        }
-      }
-
-      if (!droppable) return { ...result, reason: 2 };
-
-      return { ...result, result: true };
-    },
-
-    allById() {
-      return componentsById;
-    },
-
-    getById(id) {
-      return componentsById[id] || null;
-    },
-
-    destroy() {
-      const all = this.allById();
-      Object.keys(all).forEach(id => all[id] && all[id].remove());
-      componentView && componentView.remove();
-      [c, em, componentsById, component, componentView].forEach(i => (i = {}));
-      this.em = {};
-    },
-  };
-};
+  destroy() {
+    const all = this.allById();
+    Object.keys(all).forEach(id => all[id] && all[id].remove());
+    this.componentView?.remove();
+    [this.c, this.em, this.componentsById, this.component, this.componentView].forEach(i => (i = {}));
+  }
+}
