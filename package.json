@@ -98,7 +98,7 @@
     "docs:build-vp": "vuepress build docs",
     "docs:build": "npm run docs:api && npm run docs:build-vp",
     "docs:deploy": "docs/deploy.sh",
-    "lint": "eslint src",
+    "lint": "eslint . --ext .ts,.js",
     "check": "npm run lint && npm run test",
     "build": "npm run check && run-s build:*",
     "build:js": "grapesjs-cli build --targets=\"> 1%, ie 11, safari 8, not dead\" --statsOutput=\"stats.json\" --localePath=\"src/i18n/locale\"",
