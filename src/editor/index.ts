@@ -54,19 +54,24 @@
  * ## Methods
  * @module Editor
  */
-import { EventHandler } from 'backbone';
-import { isUndefined } from 'underscore';
-import { IBaseModule } from '../abstract/Module';
-import cash from '../utils/cash-dom';
-import html from '../utils/html';
-import defaults from './config/config';
-import EditorModel from './model/Editor';
-import EditorView from './view/EditorView';
+import { EventHandler } from "backbone";
+import { isUndefined } from "underscore";
+import { IBaseModule } from "../abstract/Module";
+import cash from "../utils/cash-dom";
+import html from "../utils/html";
+import defaults from "./config/config";
+import EditorModel from "./model/Editor";
+import EditorView from "./view/EditorView";
 
 export default class EditorModule implements IBaseModule<typeof defaults> {
   constructor(config = {}, opts: any = {}) {
     //@ts-ignore
-    this.config = { ...defaults, ...config, pStylePrefix: defaults.stylePrefix };
+    this.config = {
+      ...defaults,
+      ...config,
+      //@ts-ignore
+      pStylePrefix: defaults.stylePrefix,
+    };
     this.em = new EditorModel(this.config);
     this.$ = opts.$;
     this.em.init(this);
@@ -206,7 +211,7 @@ export default class EditorModule implements IBaseModule<typeof defaults> {
   //@ts-ignore
   get Devices(): DeviceManagerModule {
     return this.em.get('DeviceManager');
-  } 
+  }
   //@ts-ignore
   get DeviceManager(): DeviceManagerModule {
     return this.em.get('DeviceManager');
@@ -259,7 +264,7 @@ export default class EditorModule implements IBaseModule<typeof defaults> {
    * @return {Components}
    */
   getComponents() {
-    return this.em.get('DomComponents').getComponents();
+    return this.em.get("DomComponents").getComponents();
   }
 
   /**
@@ -267,7 +272,7 @@ export default class EditorModule implements IBaseModule<typeof defaults> {
    * @return {Component}
    */
   getWrapper() {
-    return this.em.get('DomComponents').getWrapper();
+    return this.em.get("DomComponents").getWrapper();
   }
 
   /**
@@ -315,7 +320,7 @@ export default class EditorModule implements IBaseModule<typeof defaults> {
    * @return {Object}
    */
   getStyle() {
-    return this.em.get('CssComposer').getAll();
+    return this.em.get("CssComposer").getAll();
   }
 
   /**
@@ -453,7 +458,7 @@ export default class EditorModule implements IBaseModule<typeof defaults> {
    * editor.setDevice('Tablet');
    */
   setDevice(name: string) {
-    this.em.set('device', name);
+    this.em.set("device", name);
     return this;
   }
 
@@ -466,7 +471,7 @@ export default class EditorModule implements IBaseModule<typeof defaults> {
    * // 'Tablet'
    */
   getDevice() {
-    return this.em.get('device');
+    return this.em.get("device");
   }
 
   /**
@@ -478,7 +483,7 @@ export default class EditorModule implements IBaseModule<typeof defaults> {
    * editor.runCommand('myCommand', {someValue: 1});
    */
   runCommand(id: string, options = {}) {
-    return this.em.get('Commands').run(id, options);
+    return this.em.get("Commands").run(id, options);
   }
 
   /**
@@ -490,7 +495,7 @@ export default class EditorModule implements IBaseModule<typeof defaults> {
    * editor.stopCommand('myCommand', {someValue: 1});
    */
   stopCommand(id: string, options = {}) {
-    return this.em.get('Commands').stop(id, options);
+    return this.em.get("Commands").stop(id, options);
   }
 
   /**
@@ -779,7 +784,7 @@ export default class EditorModule implements IBaseModule<typeof defaults> {
    * });
    */
   onReady(clb: EventHandler) {
-    this.em.get('ready') ? clb(this) : this.em.on('load', clb);
+    this.em.get("ready") ? clb(this) : this.em.on("load", clb);
   }
 
   /**

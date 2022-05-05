@@ -51,6 +51,7 @@ import { isUndefined } from 'underscore';
 import { getElement, getViewEl } from '../utils/mixins';
 import defaults from './config/config';
 import Canvas from './model/Canvas';
+import Frame from './model/Frame';
 import CanvasView from './view/CanvasView';
 
 export default class CanvasModule {
@@ -667,15 +668,7 @@ export default class CanvasModule {
    * });
    */
   addFrame(props = {}, opts = {}) {
-    return this.canvas.get('frames').add(
-      {
-        ...props,
-      },
-      {
-        ...opts,
-        em: this.em,
-      }
-    );
+    return this.canvas.frames.add(new Frame({ ...props }, { em: this.em }), opts);
   }
 
   destroy() {

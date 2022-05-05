@@ -1,6 +1,8 @@
-import { result, forEach } from 'underscore';
-import { Model } from '../../common';
-import Frames from '../../canvas/model/Frames';
+import { result, forEach } from "underscore";
+import { Model } from "../../common";
+import Frames from "../../canvas/model/Frames";
+import Frame from "../../canvas/model/Frame";
+import EditorModel from "../../editor/model/Editor";
 
 export default class Page extends Model {
   defaults() {
@@ -9,19 +11,24 @@ export default class Page extends Model {
       _undo: true,
     };
   }
+  em: EditorModel;
 
-  initialize(props, opts = {}) {
+  constructor(props: any, opts: any = {}) {
+    super(props, opts);
     const { config = {} } = opts;
-    const { em } = config;
-    const defFrame = {};
+    const { em } = opts;
+    const defFrame: any = {};
     this.em = em;
     if (!props.frames) {
       defFrame.component = props.component;
       defFrame.styles = props.styles;
-      ['component', 'styles'].map(i => this.unset(i));
+      ["component", "styles"].map((i) => this.unset(i));
     }
-    const frms = props.frames || [defFrame];
-    const frames = new Frames(frms, config);
+    const frms: any[] = props.frames || [defFrame];
+    const frames = new Frames(
+      frms?.map((model) => new Frame(model, opts)),
+      opts
+    );
     frames.page = this;
     this.set('frames', frames);
     !this.getId() && this.set('id', em?.get('PageManager')._createId());
@@ -30,11 +37,11 @@ export default class Page extends Model {
   }
 
   onRemove() {
-    this.get('frames').reset();
+    this.get("frames").reset();
   }
 
-  getFrames() {
-    return this.get('frames');
+  getFrames(): Frames {
+    return this.get("frames");
   }
 
   /**
@@ -49,8 +56,8 @@ export default class Page extends Model {
    * Get page name
    * @returns {String}
    */
-  getName() {
-    return this.get('name');
+  getName(): string {
+    return this.get("name");
   }
 
   /**
@@ -59,8 +66,8 @@ export default class Page extends Model {
    * @example
    * page.setName('New name');
    */
-  setName(name) {
-    return this.get({ name });
+  setName(name: string) {
+    return this.set({ name });
   }
 
   /**
@@ -69,7 +76,8 @@ export default class Page extends Model {
    * @example
    * const arrayOfFrames = page.getAllFrames();
    */
-  getAllFrames() {
+  getAllFrames(): Frame[] {
+    //@ts-ignore
     return this.getFrames().models || [];
   }
 
@@ -79,7 +87,8 @@ export default class Page extends Model {
    * @example
    * const mainFrame = page.getMainFrame();
    */
-  getMainFrame() {
+  getMainFrame(): Frame {
+    //@ts-ignore
     return this.getFrames().at(0);
   }
 
@@ -92,16 +101,16 @@ export default class Page extends Model {
    */
   getMainComponent() {
     const frame = this.getMainFrame();
-    return frame && frame.getComponent();
+    return frame?.getComponent();
   }
 
   toJSON(opts = {}) {
     const obj = Model.prototype.toJSON.call(this, opts);
-    const defaults = result(this, 'defaults');
+    const defaults = result(this, "defaults");
 
     // Remove private keys
     forEach(obj, (value, key) => {
-      key.indexOf('_') === 0 && delete obj[key];
+      key.indexOf("_") === 0 && delete obj[key];
     });
 
     forEach(defaults, (value, key) => {
