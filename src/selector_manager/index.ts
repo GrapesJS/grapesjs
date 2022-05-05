@@ -107,6 +107,7 @@ export default class SelectorManager extends Module {
   states!: Collection<State>;
   selectorTags?: ClassTagsView;
   selected!: Selectors;
+  all!: Selectors;
   em!: EditorModel;
 
   events = {
@@ -141,7 +142,7 @@ export default class SelectorManager extends Module {
     this.all = new Selectors(config.selectors);
     this.selected = new Selectors([], { em, config });
     this.states = new Collection<State>(
-      config.states.map(state => new State(state)),
+      config.states.map((state: any) => new State(state)),
       { model: State }
     );
     this.model = new Model({ cFirst: config.componentFirst, _undo: true });
