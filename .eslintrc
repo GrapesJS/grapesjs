@@ -9,7 +9,7 @@
   },
   "rules": {
     "strict": 0,
-    "quotes": ["warn", "single"],
+    "quotes": ["warn", "single", { "avoidEscape": true }],
     "eol-last": ["warn", "always"],
     "no-mixed-requires": [0],
     "no-underscore-dangle": [0]
