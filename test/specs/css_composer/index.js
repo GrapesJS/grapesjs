@@ -161,9 +161,9 @@ describe('Css Composer', () => {
       expect(obj.getAll().length).toEqual(1);
       const rule = obj.getIdRule(name);
       expect(rule.selectorsToString()).toEqual(`#${name}`);
-      expect(rule.styleToString()).toEqual(`color:red;`);
-      expect(rule.styleToString({ important: 1 })).toEqual(`color:red !important;`);
-      expect(rule.styleToString({ important: ['color'] })).toEqual(`color:red !important;`);
+      expect(rule.styleToString()).toEqual('color:red;');
+      expect(rule.styleToString({ important: 1 })).toEqual('color:red !important;');
+      expect(rule.styleToString({ important: ['color'] })).toEqual('color:red !important;');
     });
 
     test('Create a rule with id selector and state by using setIdRule()', () => {
@@ -181,7 +181,7 @@ describe('Css Composer', () => {
       expect(obj.getAll().length).toEqual(1);
       const rule = obj.getClassRule(name);
       expect(rule.selectorsToString()).toEqual(`.${name}`);
-      expect(rule.styleToString()).toEqual(`color:red;`);
+      expect(rule.styleToString()).toEqual('color:red;');
     });
 
     test('Create a rule with class selector and state by using setClassRule()', () => {
@@ -199,7 +199,7 @@ describe('Css Composer', () => {
       expect(obj.getAll().length).toEqual(1);
       const rule = obj.getRule(selector);
       expect(rule.selectorsToString()).toEqual(selector);
-      expect(rule.styleToString()).toEqual(`color:red;`);
+      expect(rule.styleToString()).toEqual('color:red;');
     });
 
     test('Avoid creating multiple rules with the same selector', () => {
@@ -209,7 +209,7 @@ describe('Css Composer', () => {
       expect(obj.getAll().length).toEqual(1);
       const rule = obj.getRule(selector);
       expect(rule.selectorsToString()).toEqual(selector);
-      expect(rule.styleToString()).toEqual(`color:blue;`);
+      expect(rule.styleToString()).toEqual('color:blue;');
     });
 
     test('Create a class-based rule with setRule', () => {
@@ -218,7 +218,7 @@ describe('Css Composer', () => {
       expect(obj.getAll().length).toEqual(1);
       const rule = obj.getRule(selector);
       expect(rule.selectorsToString()).toEqual(selector);
-      expect(rule.styleToString()).toEqual(`color:red;`);
+      expect(rule.styleToString()).toEqual('color:red;');
     });
 
     test('Create a class-based rule with a state, by using setRule', () => {
@@ -227,7 +227,7 @@ describe('Css Composer', () => {
       expect(obj.getAll().length).toEqual(1);
       const rule = obj.getRule(selector);
       expect(rule.selectorsToString()).toEqual(selector);
-      expect(rule.styleToString()).toEqual(`color:red;`);
+      expect(rule.styleToString()).toEqual('color:red;');
     });
 
     test('Create a rule with class-based and mixed selectors', () => {
@@ -236,7 +236,7 @@ describe('Css Composer', () => {
       expect(obj.getAll().length).toEqual(1);
       const rule = obj.getRule(selector);
       expect(rule.selectorsToString()).toEqual(selector);
-      expect(rule.styleToString()).toEqual(`color:red;`);
+      expect(rule.styleToString()).toEqual('color:red;');
     });
 
     test('Create a rule with only mixed selectors', () => {
@@ -246,7 +246,7 @@ describe('Css Composer', () => {
       const rule = obj.getRule(selector);
       expect(rule.get('selectors').length).toEqual(0);
       expect(rule.selectorsToString()).toEqual(selector);
-      expect(rule.styleToString()).toEqual(`color:red;`);
+      expect(rule.styleToString()).toEqual('color:red;');
     });
 
     test('Create a rule with atRule', () => {
@@ -309,7 +309,7 @@ describe('Css Composer', () => {
       const name = 'rule-test';
       const selClass = `.${name}`;
       const selId = `#${name}`;
-      const decl = `{colore:red;}`;
+      const decl = '{colore:red;}';
       all.add(`${selClass}${decl} ${selId}${decl}`);
       expect(all.length).toBe(2);
       const ruleClass = all.at(0);
@@ -326,17 +326,17 @@ describe('Css Composer', () => {
 
     describe('Collections', () => {
       test('Add a single rule as CSS string', () => {
-        const cssRule = `.test-rule{color:red;}`;
+        const cssRule = '.test-rule{color:red;}';
         obj.addCollection(cssRule);
         expect(obj.getAll().length).toEqual(1);
         expect(getCSS(obj)).toEqual(cssRule);
       });
       test('Add multiple rules as CSS string', () => {
         const cssRules = [
-          `.test-rule{color:red;}`,
-          `.test-rule:hover{color:blue;}`,
-          `@media (max-width: 992px){.test-rule{color:darkred;}}`,
-          `@media (max-width: 992px){.test-rule:hover{color:darkblue;}}`,
+          '.test-rule{color:red;}',
+          '.test-rule:hover{color:blue;}',
+          '@media (max-width: 992px){.test-rule{color:darkred;}}',
+          '@media (max-width: 992px){.test-rule:hover{color:darkblue;}}',
         ];
         const cssString = cssRules.join('');
         obj.addCollection(cssString);

@@ -24,7 +24,7 @@ describe('StyleManager properties logic', () => {
     sm = em.get('SelectorManager');
     obj = em.get('StyleManager');
     em.get('PageManager').onLoad();
-    cmp = domc.addComponent(`<div class="cls"></div>`);
+    cmp = domc.addComponent('<div class="cls"></div>');
   });
 
   afterEach(() => {
@@ -46,7 +46,7 @@ describe('StyleManager properties logic', () => {
     let compTypePropInn;
 
     beforeEach(() => {
-      rule1 = cssc.addRules(`.cls { color: red; }`)[0];
+      rule1 = cssc.addRules('.cls { color: red; }')[0];
       obj.addSector(sectorTest, {
         properties: [
           {
@@ -708,7 +708,7 @@ describe('StyleManager properties logic', () => {
       );
       expect(rule1.getStyle()).toEqual({
         __p: false,
-        [propTest]: `valueA-new valueB-new valueC-new, valueA-1 valueB-1 valueC-1-ext, valueA-2 valueB-2 valueC-2-ext`,
+        [propTest]: 'valueA-new valueB-new valueC-new, valueA-1 valueB-1 valueC-1-ext, valueA-2 valueB-2 valueC-2-ext',
       });
     });
 

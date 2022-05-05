@@ -1,4 +1,4 @@
-import EditorModel from "../editor/model/Editor";
+import EditorModel from '../editor/model/Editor';
 
 export interface IModule<TConfig extends any = any> extends IBaseModule<TConfig> {
   init(cfg: any): void;

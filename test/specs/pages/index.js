@@ -43,19 +43,13 @@ describe('Pages', () => {
   });
 
   test('The default frame has the wrapper component', () => {
-    const frame = pm
-      .getMain()
-      .getFrames()
-      .at(0);
+    const frame = pm.getMain().getFrames().at(0);
     const frameCmp = frame.getComponent();
     expect(frameCmp.is('wrapper')).toBe(true);
   });
 
   test('The default wrapper has no content', () => {
-    const frame = pm
-      .getMain()
-      .getFrames()
-      .at(0);
+    const frame = pm.getMain().getFrames().at(0);
     const frameCmp = frame.getComponent();
     expect(frameCmp.components().length).toBe(0);
     expect(frame.getStyles().length).toBe(0);
@@ -80,9 +74,9 @@ describe('Pages', () => {
       attributes: {
         id,
         class: id,
-        customattr: id
+        customattr: id,
       },
-      components: `Component ${id}`
+      components: `Component ${id}`,
     });
     beforeAll(() => {
       idPage1 = 'page-1';
@@ -94,31 +88,31 @@ describe('Pages', () => {
         {
           id: idPage1,
           component: [comp1],
-          styles: `#${idComp1} { color: red }`
+          styles: `#${idComp1} { color: red }`,
         },
         {
           id: 'page-2',
           frames: [
             {
               component: [comp2],
-              styles: `#${idComp2} { color: blue }`
-            }
-          ]
+              styles: `#${idComp2} { color: blue }`,
+            },
+          ],
         },
         {
           id: 'page-3',
           frames: [
             {
               component: '<div id="comp3">Component 3</div>',
-              styles: `#comp3 { color: green }`
-            }
-          ]
-        }
+              styles: '#comp3 { color: green }',
+            },
+          ],
+        },
       ];
       editor = new Editor({
         pageManager: {
-          pages: initPages
-        }
+          pages: initPages,
+        },
       });
       em = editor.getModel();
       domc = em.get('DomComponents');
@@ -142,12 +136,7 @@ describe('Pages', () => {
         // All pages should have an ID
         expect(page.get('id')).toBeTruthy();
         // The main component is always a wrapper
-        expect(
-          page
-            .getMainFrame()
-            .getComponent()
-            .is('wrapper')
-        ).toBe(true);
+        expect(page.getMainFrame().getComponent().is('wrapper')).toBe(true);
       });
       // Components container should contain the same amount of wrappers as pages
       const wrappers = Object.keys(allbyId)

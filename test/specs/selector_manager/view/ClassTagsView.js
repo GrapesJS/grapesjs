@@ -39,13 +39,13 @@ describe('ClassTagsView', () => {
     view = new ClassTagsView({
       config: { em },
       collection: coll,
-      module: em.get('SelectorManager')
+      module: em.get('SelectorManager'),
     });
 
     testContext.targetStub = {
       add(v) {
         return { name: v };
-      }
+      },
     };
 
     compTest = new Component();
@@ -94,22 +94,22 @@ describe('ClassTagsView', () => {
     expect(testContext.input.val()).toBeFalsy();
   });
 
-  test.skip('Check keyup of ESC on input', function() {
+  test.skip('Check keyup of ESC on input', function () {
     this.btnAdd.click();
     sinon.stub(view, 'addNewTag');
     this.input.trigger({
       type: 'keyup',
-      keyCode: 13
+      keyCode: 13,
     });
     expect(view.addNewTag.calledOnce).toEqual(true);
   });
 
-  test.skip('Check keyup on ENTER on input', function() {
+  test.skip('Check keyup on ENTER on input', function () {
     this.btnAdd.click();
     sinon.stub(view, 'endNewTag');
     this.input.trigger({
       type: 'keyup',
-      keyCode: 27
+      keyCode: 27,
     });
     expect(view.endNewTag.calledOnce).toEqual(true);
   });
@@ -147,13 +147,7 @@ describe('ClassTagsView', () => {
 
   test('New tag correctly added', () => {
     coll.add({ label: 'test' });
-    expect(
-      testContext.$tags
-        .children()
-        .first()
-        .find('[data-tag-name]')
-        .text()
-    ).toEqual('test');
+    expect(testContext.$tags.children().first().find('[data-tag-name]').text()).toEqual('test');
   });
 
   test('States are hidden in case no tags', () => {
@@ -189,12 +183,9 @@ describe('ClassTagsView', () => {
   });
 
   test('Output correctly state options', done => {
-    target
-      .get('SelectorManager')
-      .setStates([{ name: 'testName', label: 'testLabel' }]);
+    target.get('SelectorManager').setStates([{ name: 'testName', label: 'testLabel' }]);
     setTimeout(() => {
-      const res =
-        '<option value="">- State -</option><option value="testName">testLabel</option>';
+      const res = '<option value="">- State -</option><option value="testName">testLabel</option>';
       expect(view.getStates()[0].innerHTML).toEqual(res);
       done();
     });

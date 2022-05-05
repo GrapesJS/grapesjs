@@ -1,6 +1,6 @@
-import { filter } from "underscore";
-import { Collection } from "../../common";
-import Selector from "./Selector";
+import { filter } from 'underscore';
+import { Collection } from '../../common';
+import Selector from './Selector';
 
 const combine = (tail: string[], curr: string): string[] => {
   return tail.reduce(
@@ -19,13 +19,13 @@ export default class Selectors extends Collection<Selector> {
   getStyleable() {
     return filter(
       this.models,
-      (item) => item.get("active") && !item.get("private")
+      (item) => item.get('active') && !item.get('private')
     );
   }
 
   getValid({ noDisabled }: any = {}) {
-    return filter(this.models, (item) => !item.get("private")).filter((item) =>
-      noDisabled ? item.get("active") : 1
+    return filter(this.models, (item) => !item.get('private')).filter((item) =>
+      noDisabled ? item.get('active') : 1
     );
   }
 
@@ -33,7 +33,7 @@ export default class Selectors extends Collection<Selector> {
     const result: string[] = [];
     const coll = collection || this;
     coll.forEach((selector) => result.push(selector.getFullName(opts)));
-    return result.join("").trim();
+    return result.join('').trim();
   }
 
   getFullName(opts: any = {}) {
@@ -49,7 +49,7 @@ export default class Selectors extends Collection<Selector> {
       result = sels;
     }
 
-    return array ? result : combination ? result.join(",") : result.join("");
+    return array ? result : combination ? result.join(',') : result.join('');
   }
 }
 

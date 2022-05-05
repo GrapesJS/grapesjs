@@ -111,7 +111,7 @@ export default class LayerView extends View {
     el.innerHTML = this.template();
     el.className = `${pfx}layer`;
     if (model.hasPreview()) {
-      el.querySelector(`[data-preview-box]`).style.display = '';
+      el.querySelector('[data-preview-box]').style.display = '';
     }
     this.updateLabel();
     this.updateVisibility();

@@ -10,8 +10,8 @@ describe('ParserCss', () => {
     config = {
       em: {
         getCustomParserCss: () => customParser,
-        trigger: () => {}
-      }
+        trigger: () => {},
+      },
     };
     obj = new ParserCss(config);
   });
@@ -50,8 +50,8 @@ describe('ParserCss', () => {
       selectors: ['test1'],
       style: {
         color: 'red',
-        width: '50px'
-      }
+        width: '50px',
+      },
     };
     expect(obj.parse(str)).toEqual([result]);
   });
@@ -60,7 +60,7 @@ describe('ParserCss', () => {
     var str = ' .test1.test2 {color:red; test: value}';
     var result = {
       selectors: ['test1', 'test2'],
-      style: { color: 'red', test: 'value' }
+      style: { color: 'red', test: 'value' },
     };
     expect(obj.parse(str)).toEqual([result]);
   });
@@ -70,36 +70,35 @@ describe('ParserCss', () => {
     var result = [
       {
         selectors: ['test1', 'test2'],
-        style: { color: 'red' }
+        style: { color: 'red' },
       },
       {
         selectors: ['test3'],
-        style: { color: 'red' }
-      }
+        style: { color: 'red' },
+      },
     ];
     expect(obj.parse(str)).toEqual(result);
   });
 
   test('Parse more rules', () => {
-    var str =
-      ' .test1.test2, .test3{ color:red } .test4, .test5.test6{ width:10px }';
+    var str = ' .test1.test2, .test3{ color:red } .test4, .test5.test6{ width:10px }';
     var result = [
       {
         selectors: ['test1', 'test2'],
-        style: { color: 'red' }
+        style: { color: 'red' },
       },
       {
         selectors: ['test3'],
-        style: { color: 'red' }
+        style: { color: 'red' },
       },
       {
         selectors: ['test4'],
-        style: { width: '10px' }
+        style: { width: '10px' },
       },
       {
         selectors: ['test5', 'test6'],
-        style: { width: '10px' }
-      }
+        style: { width: '10px' },
+      },
     ];
     expect(obj.parse(str)).toEqual(result);
   });
@@ -109,7 +108,7 @@ describe('ParserCss', () => {
     var result = {
       selectors: ['test1', 'test2'],
       style: { color: 'red' },
-      state: 'hover'
+      state: 'hover',
     };
     expect(obj.parse(str)).toEqual([result]);
   });
@@ -119,7 +118,7 @@ describe('ParserCss', () => {
     var result = {
       selectors: ['test1', 'test2'],
       style: { color: 'red' },
-      state: ':after'
+      state: ':after',
     };
     expect(obj.parse(str)).toEqual([result]);
   });
@@ -129,21 +128,20 @@ describe('ParserCss', () => {
     var result = {
       selectors: ['test1', 'test2'],
       style: { color: 'red' },
-      state: 'nth-of-type(2n)'
+      state: 'nth-of-type(2n)',
     };
     expect(obj.parse(str)).toEqual([result]);
   });
 
   // Phantom don't find 'node.conditionText' so will skip it
   test('Parse rule inside media query', () => {
-    var str =
-      '@media only screen and (max-width: 992px){ .test1.test2:hover{ color:red }}';
+    var str = '@media only screen and (max-width: 992px){ .test1.test2:hover{ color:red }}';
     var result = {
       atRuleType: 'media',
       selectors: ['test1', 'test2'],
       style: { color: 'red' },
       state: 'hover',
-      mediaText: 'only screen and (max-width: 992px)'
+      mediaText: 'only screen and (max-width: 992px)',
     };
     expect(obj.parse(str)).toEqual([result]);
   });
@@ -156,7 +154,7 @@ describe('ParserCss', () => {
       selectors: ['test1', 'test2'],
       style: { color: 'red' },
       state: 'hover',
-      mediaText: '(max-width: 992px)'
+      mediaText: '(max-width: 992px)',
     };
     expect(obj.parse(str)).toEqual([result]);
   });
@@ -169,21 +167,21 @@ describe('ParserCss', () => {
       {
         selectors: ['test1'],
         style: { color: 'white' },
-        state: 'hover'
+        state: 'hover',
       },
       {
         selectors: ['test1', 'test2'],
         style: { color: 'red' },
         state: 'hover',
         atRuleType: 'media',
-        mediaText: '(max-width: 992px)'
+        mediaText: '(max-width: 992px)',
       },
       {
         selectors: ['test2'],
         style: { color: 'blue' },
         atRuleType: 'media',
-        mediaText: '(max-width: 992px)'
-      }
+        mediaText: '(max-width: 992px)',
+      },
     ];
     expect(obj.parse(str)).toEqual(result);
   });
@@ -193,38 +191,36 @@ describe('ParserCss', () => {
     var result = {
       selectors: [],
       selectorsAdd: '.class1 .class2, div > .class3',
-      style: { color: 'red' }
+      style: { color: 'red' },
     };
     expect(obj.parse(str)).toEqual([result]);
   });
 
   test('Parse rule with mixed selectors', () => {
-    var str =
-      ' .class1 .class2, .class3, div > .class4, .class5.class6 { color:red }';
+    var str = ' .class1 .class2, .class3, div > .class4, .class5.class6 { color:red }';
     var result = [
       {
         selectors: ['class3'],
-        style: { color: 'red' }
+        style: { color: 'red' },
       },
       {
         selectors: ['class5', 'class6'],
         selectorsAdd: '.class1 .class2, div > .class4',
-        style: { color: 'red' }
-      }
+        style: { color: 'red' },
+      },
     ];
     expect(obj.parse(str)).toEqual(result);
   });
 
   test('Parse rule with important styles', () => {
-    var str =
-      ' .test1 {color:red !important; width: 100px; height: 10px !important}';
+    var str = ' .test1 {color:red !important; width: 100px; height: 10px !important}';
     var result = {
       selectors: ['test1'],
       style: {
         color: 'red !important',
         height: '10px !important',
-        width: '100px'
-      }
+        width: '100px',
+      },
     };
     expect(obj.parse(str)).toEqual([result]);
   });
@@ -239,8 +235,8 @@ describe('ParserCss', () => {
       selectorsAdd: ':root',
       style: {
         '--some-color': 'red',
-        '--some-width': '55px'
-      }
+        '--some-width': '55px',
+      },
     };
     expect(obj.parse(str)).toEqual([result]);
   });
@@ -256,14 +252,14 @@ describe('ParserCss', () => {
         selectors: [],
         atRuleType: 'keyframes',
         selectorsAdd: 'from',
-        style: { opacity: '0' }
+        style: { opacity: '0' },
       },
       {
         selectors: [],
         atRuleType: 'keyframes',
         selectorsAdd: 'to',
-        style: { opacity: '1' }
-      }
+        style: { opacity: '1' },
+      },
     ];
     expect(obj.parse(str)).toEqual(result);
   });
@@ -277,7 +273,7 @@ describe('ParserCss', () => {
       selectorsAdd: '',
       atRuleType: 'font-face',
       singleAtRule: 1,
-      style: { 'font-family': '"Open Sans"' }
+      style: { 'font-family': '"Open Sans"' },
     };
     expect(obj.parse(str)).toEqual([result]);
   });
@@ -297,49 +293,48 @@ describe('ParserCss', () => {
         selectorsAdd: '',
         style: { 'font-family': '"Open Sans"' },
         singleAtRule: 1,
-        atRuleType: 'font-face'
+        atRuleType: 'font-face',
       },
       {
         selectors: [],
         selectorsAdd: '',
         style: {
           'font-family': "'Glyphicons Halflings'",
-          src:
-            'url(https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot)'
+          src: 'url(https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot)',
         },
         singleAtRule: 1,
-        atRuleType: 'font-face'
-      }
+        atRuleType: 'font-face',
+      },
     ];
     const parsed = obj.parse(str);
     expect(parsed).toEqual(result);
   });
 
   test('Parse ID rule', () => {
-    var str = `#test { color: red }`;
+    var str = '#test { color: red }';
     var result = {
       selectors: ['#test'],
-      style: { color: 'red' }
+      style: { color: 'red' },
     };
     expect(obj.parse(str)).toEqual([result]);
   });
 
   test('Parse ID rule with state', () => {
-    var str = `#test:hover { color: red }`;
+    var str = '#test:hover { color: red }';
     var result = {
       selectors: ['#test'],
       state: 'hover',
-      style: { color: 'red' }
+      style: { color: 'red' },
     };
     expect(obj.parse(str)).toEqual([result]);
   });
 
   test('Avoid composed selectors with ID', () => {
-    var str = `#test.class, #test.class:hover, .class  { color: red }`;
+    var str = '#test.class, #test.class:hover, .class  { color: red }';
     var result = {
       selectors: ['class'],
       selectorsAdd: '#test.class, #test.class:hover',
-      style: { color: 'red' }
+      style: { color: 'red' },
     };
     expect(obj.parse(str)).toEqual([result]);
   });
@@ -348,10 +343,10 @@ describe('ParserCss', () => {
     var str = '.test1 { color:red }';
     var result = {
       selectors: ['test1'],
-      style: { color: 'blue' }
+      style: { color: 'blue' },
     };
     obj = new ParserCss({
-      parserCss: () => [result]
+      parserCss: () => [result],
     });
     expect(obj.parse(str)).toEqual([result]);
   });
@@ -372,22 +367,21 @@ describe('ParserCss', () => {
   test('Check node with font-face rule', () => {
     const style = {
       'font-family': '"Glyphicons Halflings"',
-      src:
-        'url("https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot")'
+      src: 'url("https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot")',
     };
     expect(
       obj.checkNode({
         atRule: 'font-face',
         selectors: '',
-        style: style
+        style: style,
       })
     ).toEqual([
       {
         style: style,
         atRuleType: 'font-face',
         singleAtRule: 1,
-        selectors: []
-      }
+        selectors: [],
+      },
     ]);
   });
 
@@ -398,7 +392,7 @@ describe('ParserCss', () => {
         atRule: 'keyframes',
         params: 'name',
         selectors: 'from',
-        style: style
+        style: style,
       })
     ).toEqual([
       {
@@ -406,8 +400,8 @@ describe('ParserCss', () => {
         atRuleType: 'keyframes',
         selectorsAdd: 'from',
         style: style,
-        mediaText: 'name'
-      }
+        mediaText: 'name',
+      },
     ]);
   });
 
@@ -418,7 +412,7 @@ describe('ParserCss', () => {
         atRule: 'media',
         params: 'screen and (min-width: 480px)',
         selectors: '.class-test.class2:hover, div > span ',
-        style
+        style,
       })
     ).toEqual([
       {
@@ -427,8 +421,8 @@ describe('ParserCss', () => {
         selectorsAdd: 'div > span',
         style: style,
         state: 'hover',
-        mediaText: 'screen and (min-width: 480px)'
-      }
+        mediaText: 'screen and (min-width: 480px)',
+      },
     ]);
   });
 
@@ -437,58 +431,57 @@ describe('ParserCss', () => {
     expect(
       obj.checkNode({
         selectors: '#main:hover',
-        style
+        style,
       })
     ).toEqual([
       {
         selectors: ['#main'],
         state: 'hover',
-        style: style
-      }
+        style: style,
+      },
     ]);
   });
 
   test('Check node with multiple class selectors', () => {
     const style = {
       border: '1px solid black !important',
-      'background-repeat': 'repeat-y, no-repeat'
+      'background-repeat': 'repeat-y, no-repeat',
     };
     expect(
       obj.checkNode({
-        selectors:
-          '.class1, .class1.class2:hover, div > .test:hover, span.test2',
-        style
+        selectors: '.class1, .class1.class2:hover, div > .test:hover, span.test2',
+        style,
       })
     ).toEqual([
       {
         selectors: ['class1'],
-        style: style
+        style: style,
       },
       {
         selectors: ['class1', 'class2'],
         state: 'hover',
         selectorsAdd: 'div > .test:hover, span.test2',
-        style: style
-      }
+        style: style,
+      },
     ]);
   });
 
   test('Check node with a rule containing CSS variables', () => {
     const style = {
       '--some-color': 'red',
-      '--some-width': '55px'
+      '--some-width': '55px',
     };
     expect(
       obj.checkNode({
         selectors: ':root',
-        style
+        style,
       })
     ).toEqual([
       {
         selectors: [],
         selectorsAdd: ':root',
-        style: style
-      }
+        style: style,
+      },
     ]);
   });
 });

@@ -5,7 +5,7 @@ export default {
     addButton: 'Lägg till bild',
     inputPlh: 'http://adress/till/bilden.jpg',
     modalTitle: 'Välj bild',
-    uploadTitle: 'Dra och släpp filer här eller klicka för att ladda upp'
+    uploadTitle: 'Dra och släpp filer här eller klicka för att ladda upp',
   },
   // Here just as a reference, GrapesJS core doesn't contain any block,
   // so this should be omitted from other local files
@@ -15,7 +15,7 @@ export default {
     },
     categories: {
       // 'category-id': 'Category Label',
-    }
+    },
   },
   domComponents: {
     names: {
@@ -33,8 +33,8 @@ export default {
       thead: 'Tabellhuvud',
       table: 'Tabell',
       row: 'Tabellrad',
-      cell: 'Tabellcell'
-    }
+      cell: 'Tabellcell',
+    },
   },
   deviceManager: {
     device: 'Enhet',
@@ -42,8 +42,8 @@ export default {
       desktop: 'Dator',
       tablet: 'Surfplatta',
       mobileLandscape: 'Mobil liggande',
-      mobilePortrait: 'Mobil stående'
-    }
+      mobilePortrait: 'Mobil stående',
+    },
   },
   panels: {
     buttons: {
@@ -55,9 +55,9 @@ export default {
         'open-sm': 'Öppna stilhanterare',
         'open-tm': 'Inställningar',
         'open-layers': 'Öppna lagerhanterare',
-        'open-blocks': 'Öppna block'
-      }
-    }
+        'open-blocks': 'Öppna block',
+      },
+    },
   },
   selectorManager: {
     label: 'Klasser',
@@ -66,8 +66,8 @@ export default {
     states: {
       hover: 'Mus över',
       active: 'Klick',
-      'nth-of-type(2n)': 'Jämn/udda'
-    }
+      'nth-of-type(2n)': 'Jämn/udda',
+    },
   },
   styleManager: {
     empty: 'Markera ett element innan du använder stilhanteraren',
@@ -80,7 +80,7 @@ export default {
       decorations: 'Dekoration',
       extra: 'Extra',
       flex: 'Flex',
-      dimension: 'Dimension'
+      dimension: 'Dimension',
     },
     // The core library generates the name by their `property` name
     properties: {
@@ -138,9 +138,9 @@ export default {
       'box-shadow-h': 'Horisontell skugga',
       'box-shadow-v': 'Vertikal skugga',
       'box-shadow-blur': 'Skuggans luddighet',
-      'box-shadow-spread': "Skuggans spridning",
-      'box-shadow-color': "Skuggans färg",
-      'box-shadow-type': "Typ av skugga",
+      'box-shadow-spread': 'Skuggans spridning',
+      'box-shadow-color': 'Skuggans färg',
+      'box-shadow-type': 'Typ av skugga',
       background: 'Bakgrund',
       'background-image': 'Bakgrundsbild',
       'background-repeat': 'Upprepa bakgrund',
@@ -169,8 +169,8 @@ export default {
       'flex-basis': 'Flexbas',
       'flex-grow': 'Flex väx',
       'flex-shrink': 'Flex krymp',
-      'align-self': 'Självjustering'
-    }
+      'align-self': 'Självjustering',
+    },
   },
   traitManager: {
     empty: 'Markera ett element innan du använder egenskapshanteraren',
@@ -196,15 +196,15 @@ export default {
         id: traitInputAttr,
         alt: traitInputAttr,
         title: traitInputAttr,
-        href: { placeholder: 't.ex. https://google.com' }
+        href: { placeholder: 't.ex. https://google.com' },
       },
       // In a trait like select, these are used to translate option names
       options: {
         target: {
           false: 'Detta fönster',
-          _blank: 'Nytt fönster'
-        }
-      }
-    }
-  }
+          _blank: 'Nytt fönster',
+        },
+      },
+    },
+  },
 };

@@ -191,7 +191,7 @@ export default class I18nModule {
   }
 
   _addParams(str, params) {
-    const reg = new RegExp(`\{([\\w\\d-]*)\}`, 'g');
+    const reg = new RegExp('{([\\w\\d-]*)}', 'g');
     return str.replace(reg, (m, val) => params[val] || '').trim();
   }
 

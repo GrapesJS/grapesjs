@@ -451,7 +451,7 @@ export default {
           }
 
           modelToStyle.addStyle({ ...style, en }, { avoidStore: !store });
-          const updateEvent = `update:component:style`;
+          const updateEvent = 'update:component:style';
           const eventToListen = `${updateEvent}:${keyHeight} ${updateEvent}:${keyWidth}`;
           em && em.trigger(eventToListen, null, null, { noEmit: 1 });
         },

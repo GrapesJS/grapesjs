@@ -19,6 +19,7 @@
     "parser": "@typescript-eslint/parser"
   }],
   "ignorePatterns": [
-    "dist/*"
+    "dist/*",
+    "private/*",
   ]
 }

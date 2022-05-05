@@ -1,5 +1,5 @@
-import Backbone from "backbone";
-import Module, { IBaseModule } from "./Module";
+import Backbone from 'backbone';
+import Module, { IBaseModule } from './Module';
 
 export default class Model<
   TModule extends IBaseModule<any> = Module,

@@ -5,7 +5,7 @@ export default {
     addButton: 'Bild hinzufügen',
     inputPlh: 'http://chemin/vers/image.jpg',
     modalTitle: 'Bild auswählen',
-    uploadTitle: 'Ziehen Sie eine Datei hierher oder klicken Sie auf Upload'
+    uploadTitle: 'Ziehen Sie eine Datei hierher oder klicken Sie auf Upload',
   },
   // Here just as a reference, GrapesJS core doesn't contain any block,
   // so this should be omitted from other local files
@@ -15,7 +15,7 @@ export default {
     },
     categories: {
       // 'category-id': 'Kategorie Label',
-    }
+    },
   },
   domComponents: {
     names: {
@@ -33,8 +33,8 @@ export default {
       thead: 'Tabellen Kopf',
       table: 'Tabelle',
       row: 'Zeile',
-      cell: 'Zelle'
-    }
+      cell: 'Zelle',
+    },
   },
   deviceManager: {
     device: 'Gerät',
@@ -42,8 +42,8 @@ export default {
       desktop: 'Desktop',
       tablet: 'Tablet',
       mobileLandscape: 'Mobile Landscape',
-      mobilePortrait: 'Mobile Portrait'
-    }
+      mobilePortrait: 'Mobile Portrait',
+    },
   },
   panels: {
     buttons: {
@@ -55,9 +55,9 @@ export default {
         'open-sm': 'Stil Manager öffnen',
         'open-tm': 'Parameter',
         'open-layers': 'Layer Manager öffnen',
-        'open-blocks': 'Block öffnen'
-      }
-    }
+        'open-blocks': 'Block öffnen',
+      },
+    },
   },
   selectorManager: {
     label: 'Klassen',
@@ -66,12 +66,11 @@ export default {
     states: {
       hover: 'Hover',
       active: 'Klick',
-      'nth-of-type(2n)': 'Gerade/Ungerade'
-    }
+      'nth-of-type(2n)': 'Gerade/Ungerade',
+    },
   },
   styleManager: {
-    empty:
-      "Wählen Sie ein Element aus bevor Sie den Stil Manager nutzen",
+    empty: 'Wählen Sie ein Element aus bevor Sie den Stil Manager nutzen',
     layer: 'Ebene',
     fileButton: 'Bilder',
     sectors: {
@@ -81,7 +80,7 @@ export default {
       decorations: 'Dekorationen',
       extra: 'Extra',
       flex: 'Flex',
-      dimension: 'Dimension'
+      dimension: 'Dimension',
     },
     // The core library generates the name by their `property` name
     properties: {
@@ -135,9 +134,9 @@ export default {
       'box-shadow-h': 'Boxschatten: horizontal',
       'box-shadow-v': 'Boxschatten: vertikal',
       'box-shadow-blur': 'Boxschatten: Unschärfe',
-      'box-shadow-spread': "Boxschatten: Streuung",
-      'box-shadow-color': "Boxschatten: Farbe",
-      'box-shadow-type': "Boxschatten: Typ",
+      'box-shadow-spread': 'Boxschatten: Streuung',
+      'box-shadow-color': 'Boxschatten: Farbe',
+      'box-shadow-type': 'Boxschatten: Typ',
       background: 'Hintergrund',
       'background-image': 'Hintergrundbild',
       'background-repeat': 'Hintergrund wiederholen',
@@ -166,12 +165,11 @@ export default {
       'flex-basis': 'Flex Basis',
       'flex-grow': 'Flex Wachsen',
       'flex-shrink': 'Flex Schrumpfen',
-      'align-self': 'Eigene Ausrichtung'
-    }
+      'align-self': 'Eigene Ausrichtung',
+    },
   },
   traitManager: {
-    empty:
-      "Wählen Sie ein Element aus bevor Sie den Komponenten Manager nutzen",
+    empty: 'Wählen Sie ein Element aus bevor Sie den Komponenten Manager nutzen',
     label: 'Komponenteneinstellungen',
     traits: {
       // The core library generates the name by their `name` property
@@ -179,22 +177,22 @@ export default {
         id: 'ID',
         alt: 'Alternativtext',
         title: 'Titel',
-        href: 'Link'
+        href: 'Link',
       },
       // In a simple trait, like text input, these are used on input attributes
       attributes: {
         id: traitInputAttr,
         alt: traitInputAttr,
         title: traitInputAttr,
-        href: { placeholder: 'z.B. https://google.com' }
+        href: { placeholder: 'z.B. https://google.com' },
       },
       // In a trait like select, these are used to translate option names
       options: {
         target: {
           false: 'Dieses Fenster',
-          _blank: 'Neues Fenster'
-        }
-      }
-    }
-  }
+          _blank: 'Neues Fenster',
+        },
+      },
+    },
+  },
 };

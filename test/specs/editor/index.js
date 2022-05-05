@@ -77,7 +77,7 @@ describe('Editor', () => {
     const umStack = um.getStack();
     const wrapper = editor.getWrapper();
     expect(umStack.length).toBe(0);
-    const comp = wrapper.append(`<div>Component 1</div>`)[0];
+    const comp = wrapper.append('<div>Component 1</div>')[0];
     expect(umStack.length).toBe(1);
     wrapper.empty();
     expect(umStack.length).toBe(2);

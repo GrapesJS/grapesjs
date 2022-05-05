@@ -83,7 +83,7 @@ declare namespace grapesjs {
     /** Type of logs to print with the logger (by default is used the devtool console).
      * Available by default: debug, info, warning, error
      * You can use `false` to disable all of them or `true` to print all of them */
-    log?: ("debug" | "info" | "warning" | "error")[];
+    log?: ('debug' | 'info' | 'warning' | 'error')[];
 
     /** By default Grapes injects base CSS into the canvas. For example, it sets body margin to 0
      * and sets a default background color of white. This CSS is desired in most cases.
@@ -442,7 +442,7 @@ declare namespace grapesjs {
     getInitValue(): string;
   }
 
-  type TraitType = "text" | "number" | "checkbox" | "select" | string;
+  type TraitType = 'text' | 'number' | 'checkbox' | 'select' | string;
 
   interface TraitOptions {
     type: TraitType;
@@ -475,7 +475,7 @@ declare namespace grapesjs {
   interface ButtonOptions {
     id: string;
     label: string;
-    tagName: "span";
+    tagName: 'span';
     className: string;
     command: string | ((editor: Editor, opts?: any) => void);
     context: string;
@@ -1057,83 +1057,83 @@ declare namespace grapesjs {
     | GeneralEvent;
 
   type ComponentEvent =
-    | "component:create"
-    | "component:mount"
-    | "component:add"
-    | "component:remove"
-    | "component:remove:before"
-    | "component:clone"
-    | "component:update"
-    | "component:styleUpdate"
-    | "component:selected"
-    | "component:deselected"
-    | "component:toggled"
-    | "component:type:add"
-    | "component:type:update"
-    | "component:drag:start"
-    | "component:drag"
-    | "component:drag:end";
+    | 'component:create'
+    | 'component:mount'
+    | 'component:add'
+    | 'component:remove'
+    | 'component:remove:before'
+    | 'component:clone'
+    | 'component:update'
+    | 'component:styleUpdate'
+    | 'component:selected'
+    | 'component:deselected'
+    | 'component:toggled'
+    | 'component:type:add'
+    | 'component:type:update'
+    | 'component:drag:start'
+    | 'component:drag'
+    | 'component:drag:end';
 
   type BlockEvent =
-    | "block:add"
-    | "block:remove"
-    | "block:drag:start"
-    | "block:drag"
-    | "block:drag:stop";
+    | 'block:add'
+    | 'block:remove'
+    | 'block:drag:start'
+    | 'block:drag'
+    | 'block:drag:stop';
 
   type AssetEvent =
-    | "asset:add"
-    | "asset:remove"
-    | "asset:upload:start"
-    | "asset:upload:end"
-    | "asset:upload:error"
-    | "asset:upload:response";
+    | 'asset:add'
+    | 'asset:remove'
+    | 'asset:upload:start'
+    | 'asset:upload:end'
+    | 'asset:upload:error'
+    | 'asset:upload:response';
 
   type KeymapEvent =
-    | "keymap:add"
-    | "keymap:remove"
-    | "keymap:emit"
-    | "keymap:emit:{keymapId}";
+    | 'keymap:add'
+    | 'keymap:remove'
+    | 'keymap:emit'
+    | 'keymap:emit:{keymapId}';
 
   type StyleManagerEvent =
-    | "styleManager:update:target"
-    | "styleManager:change"
-    | "styleManager:change:{propertyName}";
+    | 'styleManager:update:target'
+    | 'styleManager:change'
+    | 'styleManager:change:{propertyName}';
 
   type StorageEvent =
-    | "storage:start"
-    | "storage:start:store"
-    | "storage:start:load"
-    | "storage:load"
-    | "storage:store"
-    | "storage:end"
-    | "storage:end:store"
-    | "storage:end:load"
-    | "storage:error"
-    | "storage:error:store"
-    | "storage:error:load";
+    | 'storage:start'
+    | 'storage:start:store'
+    | 'storage:start:load'
+    | 'storage:load'
+    | 'storage:store'
+    | 'storage:end'
+    | 'storage:end:store'
+    | 'storage:end:load'
+    | 'storage:error'
+    | 'storage:error:store'
+    | 'storage:error:load';
 
   type CanvasEvent =
-    | "canvas:dragenter"
-    | "canvas:dragover"
-    | "canvas:drop"
-    | "canvas:dragend"
-    | "canvas:dragdata";
+    | 'canvas:dragenter'
+    | 'canvas:dragover'
+    | 'canvas:drop'
+    | 'canvas:dragend'
+    | 'canvas:dragdata';
 
-  type SelectorEvent = "selector:add";
+  type SelectorEvent = 'selector:add';
 
-  type RichTextEditorEvent = "rte:enable" | "rte:disable";
+  type RichTextEditorEvent = 'rte:enable' | 'rte:disable';
 
-  type ModalEvent = "modal:open" | "modal:close";
+  type ModalEvent = 'modal:open' | 'modal:close';
 
   type CommandEvent =
-    | "run:{commandName}"
-    | "stop:{commandName}"
-    | "run:{commandName}:before"
-    | "stop:{commandName}:before"
-    | "abort:{commandName}";
+    | 'run:{commandName}'
+    | 'stop:{commandName}'
+    | 'run:{commandName}:before'
+    | 'stop:{commandName}:before'
+    | 'abort:{commandName}';
 
-  type GeneralEvent = "canvasScroll" | "undo" | "redo" | "load";
+  type GeneralEvent = 'canvasScroll' | 'undo' | 'redo' | 'load';
 
   /**
    * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/asset_manager/config/config.js)

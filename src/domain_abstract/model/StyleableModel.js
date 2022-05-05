@@ -55,7 +55,7 @@ export default class StyleableModel extends Model {
       if (opts.noEvent) return;
       this.trigger(`change:style:${pr}`);
       if (em) {
-        em.trigger(`styleable:change`, this, pr, opts);
+        em.trigger('styleable:change', this, pr, opts);
         em.trigger(`styleable:change:${pr}`, this, pr, opts);
       }
     });

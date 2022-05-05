@@ -103,7 +103,7 @@ export default class InputColor extends Input {
 
       let changed = 0;
       let previousColor;
-      this.$el.find(`[data-colorp-c]`).append(colorEl);
+      this.$el.find('[data-colorp-c]').append(colorEl);
       colorEl.spectrum({
         color: model.getValue() || false,
         containerClassName: `${ppfx}one-bg ${ppfx}two-color`,
