@@ -44,15 +44,15 @@
  * @module Pages
  */
 
-import { isString, bindAll, unique, flatten } from "underscore";
-import { createId } from "../utils/mixins";
-import { Model, Module } from "../abstract";
-import { ItemManagerModule, ModuleConfig } from "../abstract/Module";
-import Pages from "./model/Pages";
-import Page from "./model/Page";
-import EditorModel from "../editor/model/Editor";
+import { isString, bindAll, unique, flatten } from 'underscore';
+import { createId } from '../utils/mixins';
+import { Model, Module } from '../abstract';
+import { ItemManagerModule, ModuleConfig } from '../abstract/Module';
+import Pages from './model/Pages';
+import Page from './model/Page';
+import EditorModel from '../editor/model/Editor';
 
-export const evAll = "page";
+export const evAll = 'page';
 export const evPfx = `${evAll}:`;
 export const evPageSelect = `${evPfx}select`;
 export const evPageSelectBefore = `${evPageSelect}:before`;
@@ -61,8 +61,8 @@ export const evPageAdd = `${evPfx}add`;
 export const evPageAddBefore = `${evPageAdd}:before`;
 export const evPageRemove = `${evPfx}remove`;
 export const evPageRemoveBefore = `${evPageRemove}:before`;
-const chnSel = "change:selected";
-const typeMain = "main";
+const chnSel = 'change:selected';
+const typeMain = 'main';
 const events = {
   all: evAll,
   select: evPageSelect,
@@ -78,7 +78,7 @@ interface Config extends ModuleConfig {
   pages?: string[];
 }
 export default class PageManager extends ItemManagerModule<Config, Pages> {
-  storageKey = "pages";
+  storageKey = 'pages';
 
   get pages() {
     return this.all;
@@ -91,12 +91,12 @@ export default class PageManager extends ItemManagerModule<Config, Pages> {
    * @private
    */
   constructor(em: EditorModel) {
-    super(em, "PageManager", new Pages([]), events);
-    bindAll(this, "_onPageChange");
+    super(em, 'PageManager', new Pages([]), events);
+    bindAll(this, '_onPageChange');
     const model = new Model({ _undo: true } as any);
     this.model = model;
-    this.pages.on("reset", (coll) => coll.at(0) && this.select(coll.at(0)));
-    this.pages.on("all", this.__onChange, this);
+    this.pages.on('reset', (coll) => coll.at(0) && this.select(coll.at(0)));
+    this.pages.on('all', this.__onChange, this);
     model.on(chnSel, this._onPageChange);
 
     return this;
@@ -124,16 +124,16 @@ export default class PageManager extends ItemManagerModule<Config, Pages> {
 
   _onPageChange(m: any, page: Page, opts: any) {
     const { em } = this;
-    const lm = em.get("LayerManager");
+    const lm = em.get('LayerManager');
     const mainComp = page.getMainComponent();
     lm && mainComp && lm.setRoot(mainComp);
-    em.trigger(evPageSelect, page, m.previous("selected"));
+    em.trigger(evPageSelect, page, m.previous('selected'));
     this.__onChange(chnSel, page, opts);
   }
 
   postLoad() {
     const { em, model } = this;
-    const um = em.get("UndoManager");
+    const um = em.get('UndoManager');
     um && um.add(model);
     um && um.add(this.pages);
   }
@@ -208,7 +208,7 @@ export default class PageManager extends ItemManagerModule<Config, Pages> {
    */
   getMain() {
     const { pages } = this;
-    return pages.filter((p) => p.get("type") === typeMain)[0] || pages.at(0);
+    return pages.filter((p) => p.get('type') === typeMain)[0] || pages.at(0);
   }
 
   /**
@@ -244,7 +244,7 @@ export default class PageManager extends ItemManagerModule<Config, Pages> {
     const pg = isString(page) ? this.get(page) : page;
     if (pg) {
       this.em.trigger(evPageSelectBefore, pg, opts);
-      this.model.set("selected", pg, opts);
+      this.model.set('selected', pg, opts);
     }
     return this;
   }
@@ -256,7 +256,7 @@ export default class PageManager extends ItemManagerModule<Config, Pages> {
    * const selectedPage = pageManager.getSelected();
    */
   getSelected() {
-    return this.model.get("selected");
+    return this.model.get('selected');
   }
 
   destroy() {
@@ -264,7 +264,7 @@ export default class PageManager extends ItemManagerModule<Config, Pages> {
     this.model.stopListening();
     this.model.clear({ silent: true });
     //@ts-ignore
-    ["selected", "model"].map((i) => (this[i] = 0));
+    ['selected', 'model'].map((i) => (this[i] = 0));
   }
 
   store() {

@@ -1,14 +1,14 @@
-import { Model } from "../../common";
-import Backbone from "backbone";
-import { evPageSelect } from "../../pages";
-import Frames from "./Frames";
-import EditorModel from "../../editor/model/Editor";
-import Page from "../../pages/model/Page";
+import { Model } from '../../common';
+import Backbone from 'backbone';
+import { evPageSelect } from '../../pages';
+import Frames from './Frames';
+import EditorModel from '../../editor/model/Editor';
+import Page from '../../pages/model/Page';
 
 export default class Canvas extends Backbone.Model {
   defaults() {
     return {
-      frame: "",
+      frame: '',
       frames: new Frames(),
       rulers: false,
       zoom: 100,
@@ -28,29 +28,29 @@ export default class Canvas extends Backbone.Model {
     const { em } = config;
     this.config = config;
     this.em = em;
-    this.listenTo(this, "change:zoom", this.onZoomChange);
-    this.listenTo(em, "change:device", this.updateDevice);
+    this.listenTo(this, 'change:zoom', this.onZoomChange);
+    this.listenTo(em, 'change:device', this.updateDevice);
     this.listenTo(em, evPageSelect, this._pageUpdated);
   }
   get frames(): Frames {
-    return this.get("frames");
+    return this.get('frames');
   }
 
   init() {
     const { em } = this;
-    const mainPage = em.get("PageManager").getMain();
+    const mainPage = em.get('PageManager').getMain();
     const frame = mainPage.getMainFrame();
-    this.set("frames", mainPage.getFrames());
+    this.set('frames', mainPage.getFrames());
     this.updateDevice({ frame });
   }
 
   _pageUpdated(page: Page, prev?: Page) {
     const { em } = this;
     em.setSelected();
-    em.get("readyCanvas") && em.stopDefault(); // We have to stop before changing current frames
+    em.get('readyCanvas') && em.stopDefault(); // We have to stop before changing current frames
     //@ts-ignore
     prev?.getFrames().map((frame) => frame.disable());
-    this.set("frames", page.getFrames());
+    this.set('frames', page.getFrames());
   }
 
   updateDevice(opts: any = {}) {
@@ -65,7 +65,7 @@ export default class Canvas extends Backbone.Model {
   }
 
   onZoomChange() {
-    const zoom = this.get("zoom");
-    zoom < 1 && this.set("zoom", 1);
+    const zoom = this.get('zoom');
+    zoom < 1 && this.set('zoom', 1);
   }
 }

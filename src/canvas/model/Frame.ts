@@ -1,15 +1,15 @@
-import { result, forEach, isEmpty, isString } from "underscore";
-import { Model } from "../../common";
-import { Component } from "../../dom_components/model/Component";
-import Components from "../../dom_components/model/Components";
-import ComponentWrapper from "../../dom_components/model/ComponentWrapper";
-import EditorModel from "../../editor/model/Editor";
-import { isComponent, isObject } from "../../utils/mixins";
-import FrameView from "../view/FrameView";
-import Frames from "./Frames";
+import { result, forEach, isEmpty, isString } from 'underscore';
+import { Model } from '../../common';
+import { Component } from '../../dom_components/model/Component';
+import Components from '../../dom_components/model/Components';
+import ComponentWrapper from '../../dom_components/model/ComponentWrapper';
+import EditorModel from '../../editor/model/Editor';
+import { isComponent, isObject } from '../../utils/mixins';
+import FrameView from '../view/FrameView';
+import Frames from './Frames';
 
-const keyAutoW = "__aw";
-const keyAutoH = "__ah";
+const keyAutoW = '__aw';
+const keyAutoH = '__ah';
 
 /**
  * @property {Object|String} component Wrapper component definition. You can also pass an HTML string as components of the default wrapper component.
@@ -29,10 +29,10 @@ export default class Frame extends Model {
       width: null,
       height: null,
       head: [],
-      component: "",
-      styles: "",
+      component: '',
+      styles: '',
       _undo: true,
-      _undoexc: ["changesCount"],
+      _undoexc: ['changesCount'],
     };
   }
   em: EditorModel;
@@ -42,22 +42,22 @@ export default class Frame extends Model {
     super(props);
     const { em } = opts;
     const { styles, component } = this.attributes;
-    const domc = em.get("DomComponents");
+    const domc = em.get('DomComponents');
     const conf = domc.getConfig();
-    const allRules = em.get("CssComposer").getAll();
+    const allRules = em.get('CssComposer').getAll();
     const idMap: any = {};
     this.em = em;
     const modOpts = { em, config: conf, frame: this, idMap };
 
     if (!isComponent(component)) {
       const wrp = isObject(component) ? component : { components: component };
-      !wrp.type && (wrp.type = "wrapper");
-      const Wrapper = domc.getType("wrapper").model;
-      this.set("component", new Wrapper(wrp, modOpts));
+      !wrp.type && (wrp.type = 'wrapper');
+      const Wrapper = domc.getType('wrapper').model;
+      this.set('component', new Wrapper(wrp, modOpts));
     }
 
     if (!styles) {
-      this.set("styles", allRules);
+      this.set('styles', allRules);
     } else if (!isObject(styles)) {
       // Avoid losing styles on remapped components
       const idMapKeys = Object.keys(idMap);
@@ -69,7 +69,7 @@ export default class Frame extends Model {
             const idSel = sSel.name && sSel.type === 2 && sSel;
             if (idSel && idMap[idSel.name]) {
               idSel.name = idMap[idSel.name];
-            } else if (isString(sSel) && sSel[0] === "#") {
+            } else if (isString(sSel) && sSel[0] === '#') {
               const prevId = sSel.substring(1);
               if (prevId && idMap[prevId]) {
                 sel[0] = `#${idMap[prevId]}`;
@@ -80,7 +80,7 @@ export default class Frame extends Model {
       }
 
       allRules.add(styles);
-      this.set("styles", allRules);
+      this.set('styles', allRules);
     }
 
     !props.width && this.set(keyAutoW, 1);
@@ -95,19 +95,19 @@ export default class Frame extends Model {
     if (opt.temporary || opt.noCount || opt.avoidStore) {
       return;
     }
-    this.set("changesCount", this.get("changesCount") + 1);
+    this.set('changesCount', this.get('changesCount') + 1);
   }
 
   getComponent(): ComponentWrapper {
-    return this.get("component");
+    return this.get('component');
   }
 
   getStyles() {
-    return this.get("styles");
+    return this.get('styles');
   }
 
   disable() {
-    this.trigger("disable");
+    this.trigger('disable');
   }
 
   remove() {
@@ -117,12 +117,12 @@ export default class Frame extends Model {
   }
 
   getHead() {
-    const head = this.get("head") || [];
+    const head = this.get('head') || [];
     return [...head];
   }
 
   setHead(value: any) {
-    return this.set("head", [...value]);
+    return this.set('head', [...value]);
   }
 
   addHeadItem(item: any) {
@@ -153,24 +153,24 @@ export default class Frame extends Model {
   }
 
   addLink(href: string) {
-    const tag = "link";
-    !this.getHeadByAttr("href", href, tag) &&
+    const tag = 'link';
+    !this.getHeadByAttr('href', href, tag) &&
       this.addHeadItem({
         tag,
         attributes: {
           href,
-          rel: "stylesheet",
+          rel: 'stylesheet',
         },
       });
   }
 
   removeLink(href: string) {
-    this.removeHeadByAttr("href", href, "link");
+    this.removeHeadByAttr('href', href, 'link');
   }
 
   addScript(src: string) {
-    const tag = "script";
-    !this.getHeadByAttr("src", src, tag) &&
+    const tag = 'script';
+    !this.getHeadByAttr('src', src, tag) &&
       this.addHeadItem({
         tag,
         attributes: { src },
@@ -178,7 +178,7 @@ export default class Frame extends Model {
   }
 
   removeScript(src: string) {
-    this.removeHeadByAttr("src", src, "script");
+    this.removeHeadByAttr('src', src, 'script');
   }
 
   getPage() {
@@ -186,12 +186,12 @@ export default class Frame extends Model {
   }
 
   _emitUpdated(data = {}) {
-    this.em.trigger("frame:updated", { frame: this, ...data });
+    this.em.trigger('frame:updated', { frame: this, ...data });
   }
 
   toJSON(opts: any = {}) {
     const obj = Model.prototype.toJSON.call(this, opts);
-    const defaults = result(this, "defaults");
+    const defaults = result(this, 'defaults');
 
     if (opts.fromUndo) delete obj.component;
     delete obj.styles;
@@ -201,14 +201,14 @@ export default class Frame extends Model {
 
     // Remove private keys
     forEach(obj, (value, key) => {
-      key.indexOf("_") === 0 && delete obj[key];
+      key.indexOf('_') === 0 && delete obj[key];
     });
 
     forEach(defaults, (value, key) => {
       if (obj[key] === value) delete obj[key];
     });
 
-    forEach(["attributes", "head"], (prop) => {
+    forEach(['attributes', 'head'], (prop) => {
       if (isEmpty(obj[prop])) delete obj[prop];
     });
 

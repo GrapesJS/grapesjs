@@ -1,8 +1,8 @@
-import { result, forEach } from "underscore";
-import { Model } from "../../common";
-import Frames from "../../canvas/model/Frames";
-import Frame from "../../canvas/model/Frame";
-import EditorModel from "../../editor/model/Editor";
+import { result, forEach } from 'underscore';
+import { Model } from '../../common';
+import Frames from '../../canvas/model/Frames';
+import Frame from '../../canvas/model/Frame';
+import EditorModel from '../../editor/model/Editor';
 
 export default class Page extends Model {
   defaults() {
@@ -22,7 +22,7 @@ export default class Page extends Model {
     if (!props.frames) {
       defFrame.component = props.component;
       defFrame.styles = props.styles;
-      ["component", "styles"].map((i) => this.unset(i));
+      ['component', 'styles'].map((i) => this.unset(i));
     }
     const frms: any[] = props.frames || [defFrame];
     const frames = new Frames(
@@ -37,11 +37,11 @@ export default class Page extends Model {
   }
 
   onRemove() {
-    this.get("frames").reset();
+    this.get('frames').reset();
   }
 
   getFrames(): Frames {
-    return this.get("frames");
+    return this.get('frames');
   }
 
   /**
@@ -57,7 +57,7 @@ export default class Page extends Model {
    * @returns {String}
    */
   getName(): string {
-    return this.get("name");
+    return this.get('name');
   }
 
   /**
@@ -106,11 +106,11 @@ export default class Page extends Model {
 
   toJSON(opts = {}) {
     const obj = Model.prototype.toJSON.call(this, opts);
-    const defaults = result(this, "defaults");
+    const defaults = result(this, 'defaults');
 
     // Remove private keys
     forEach(obj, (value, key) => {
-      key.indexOf("_") === 0 && delete obj[key];
+      key.indexOf('_') === 0 && delete obj[key];
     });
 
     forEach(defaults, (value, key) => {
