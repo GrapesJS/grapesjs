@@ -1,6 +1,12 @@
 import { result, forEach, isEmpty, isString } from 'underscore';
 import { Model } from '../../common';
+import { Component } from '../../dom_components/model/Component';
+import Components from '../../dom_components/model/Components';
+import ComponentWrapper from '../../dom_components/model/ComponentWrapper';
+import EditorModel from '../../editor/model/Editor';
 import { isComponent, isObject } from '../../utils/mixins';
+import FrameView from '../view/FrameView';
+import Frames from './Frames';
 
 const keyAutoW = '__aw';
 const keyAutoH = '__ah';
@@ -29,15 +35,17 @@ export default class Frame extends Model {
       _undoexc: ['changesCount'],
     };
   }
+  em: EditorModel;
+  view?: FrameView;
 
-  initialize(props, opts = {}) {
-    const { config } = opts;
-    const { em } = config;
+  constructor(props: any, opts: any) {
+    super(props);
+    const { em } = opts;
     const { styles, component } = this.attributes;
     const domc = em.get('DomComponents');
     const conf = domc.getConfig();
     const allRules = em.get('CssComposer').getAll();
-    const idMap = {};
+    const idMap: any = {};
     this.em = em;
     const modOpts = { em, config: conf, frame: this, idMap };
 
@@ -54,7 +62,7 @@ export default class Frame extends Model {
       // Avoid losing styles on remapped components
       const idMapKeys = Object.keys(idMap);
       if (idMapKeys.length && Array.isArray(styles)) {
-        styles.forEach(style => {
+        styles.forEach((style) => {
           const sel = style.selectors;
           if (sel && sel.length == 1) {
             const sSel = sel[0];
@@ -83,14 +91,14 @@ export default class Frame extends Model {
     this.getComponent().remove({ root: 1 });
   }
 
-  changesUp(opt = {}) {
+  changesUp(opt: any = {}) {
     if (opt.temporary || opt.noCount || opt.avoidStore) {
       return;
     }
     this.set('changesCount', this.get('changesCount') + 1);
   }
 
-  getComponent() {
+  getComponent(): ComponentWrapper {
     return this.get('component');
   }
 
@@ -103,7 +111,7 @@ export default class Frame extends Model {
   }
 
   remove() {
-    this.view = 0;
+    this.view = undefined;
     const coll = this.collection;
     return coll && coll.remove(this);
   }
@@ -113,22 +121,27 @@ export default class Frame extends Model {
     return [...head];
   }
 
-  setHead(value) {
+  setHead(value: any) {
     return this.set('head', [...value]);
   }
 
-  addHeadItem(item) {
+  addHeadItem(item: any) {
     const head = this.getHead();
     head.push(item);
     this.setHead(head);
   }
 
-  getHeadByAttr(attr, value, tag) {
+  getHeadByAttr(attr: string, value: any, tag: string) {
     const head = this.getHead();
-    return head.filter(item => item.attributes && item.attributes[attr] == value && (!tag || tag === item.tag))[0];
+    return head.filter(
+      (item) =>
+        item.attributes &&
+        item.attributes[attr] == value &&
+        (!tag || tag === item.tag)
+    )[0];
   }
 
-  removeHeadByAttr(attr, value, tag) {
+  removeHeadByAttr(attr: string, value: any, tag: string) {
     const head = this.getHead();
     const item = this.getHeadByAttr(attr, value, tag);
     const index = head.indexOf(item);
@@ -139,7 +152,7 @@ export default class Frame extends Model {
     }
   }
 
-  addLink(href) {
+  addLink(href: string) {
     const tag = 'link';
     !this.getHeadByAttr('href', href, tag) &&
       this.addHeadItem({
@@ -151,11 +164,11 @@ export default class Frame extends Model {
       });
   }
 
-  removeLink(href) {
+  removeLink(href: string) {
     this.removeHeadByAttr('href', href, 'link');
   }
 
-  addScript(src) {
+  addScript(src: string) {
     const tag = 'script';
     !this.getHeadByAttr('src', src, tag) &&
       this.addHeadItem({
@@ -164,20 +177,19 @@ export default class Frame extends Model {
       });
   }
 
-  removeScript(src) {
+  removeScript(src: string) {
     this.removeHeadByAttr('src', src, 'script');
   }
 
   getPage() {
-    const coll = this.collection;
-    return coll && coll.page;
+    return (this.collection as unknown as Frames)?.page;
   }
 
   _emitUpdated(data = {}) {
     this.em.trigger('frame:updated', { frame: this, ...data });
   }
 
-  toJSON(opts = {}) {
+  toJSON(opts: any = {}) {
     const obj = Model.prototype.toJSON.call(this, opts);
     const defaults = result(this, 'defaults');
 
@@ -196,7 +208,7 @@ export default class Frame extends Model {
       if (obj[key] === value) delete obj[key];
     });
 
-    forEach(['attributes', 'head'], prop => {
+    forEach(['attributes', 'head'], (prop) => {
       if (isEmpty(obj[prop])) delete obj[prop];
     });
 

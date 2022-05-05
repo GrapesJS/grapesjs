@@ -1,4 +1,11 @@
-import { isUndefined, isArray, contains, toArray, keys, bindAll } from 'underscore';
+import {
+  isUndefined,
+  isArray,
+  contains,
+  toArray,
+  keys,
+  bindAll,
+} from 'underscore';
 import Backbone from 'backbone';
 import $ from '../../utils/cash-dom';
 import Extender from '../../utils/extender';
@@ -126,26 +133,34 @@ export default class EditorModel extends Model {
     }
 
     // Load modules
-    deps.forEach(name => this.loadModule(name));
-    ts_deps.forEach(name => this.tsLoadModule(name));
+    deps.forEach((name) => this.loadModule(name));
+    ts_deps.forEach((name) => this.tsLoadModule(name));
     this.on('change:componentHovered', this.componentHovered, this);
     this.on('change:changesCount', this.updateChanges, this);
     this.on('change:readyLoad change:readyCanvas', this._checkReady, this);
-    toLog.forEach(e => this.listenLog(e));
+    toLog.forEach((e) => this.listenLog(e));
 
     // Deprecations
-    [{ from: 'change:selectedComponent', to: 'component:toggled' }].forEach(event => {
-      const eventFrom = event.from;
-      const eventTo = event.to;
-      this.listenTo(this, eventFrom, (...args) => {
-        this.trigger(eventTo, ...args);
-        this.logWarning(`The event '${eventFrom}' is deprecated, replace it with '${eventTo}'`);
-      });
-    });
+    [{ from: 'change:selectedComponent', to: 'component:toggled' }].forEach(
+      (event) => {
+        const eventFrom = event.from;
+        const eventTo = event.to;
+        this.listenTo(this, eventFrom, (...args) => {
+          this.trigger(eventTo, ...args);
+          this.logWarning(
+            `The event '${eventFrom}' is deprecated, replace it with '${eventTo}'`
+          );
+        });
+      }
+    );
   }
 
   _checkReady() {
-    if (this.get('readyLoad') && this.get('readyCanvas') && !this.get('ready')) {
+    if (
+      this.get('readyLoad') &&
+      this.get('readyCanvas') &&
+      !this.get('ready')
+    ) {
       this.set('ready', true);
     }
   }
@@ -183,11 +198,11 @@ export default class EditorModel extends Model {
     const sm = this.get('StorageManager');
 
     // In `onLoad`, the module will try to load the data from its configurations.
-    this.toLoad.forEach(mdl => mdl.onLoad());
+    this.toLoad.forEach((mdl) => mdl.onLoad());
 
     // Stuff to do post load
     const postLoad = () => {
-      this.modules.forEach(mdl => mdl.postLoad && mdl.postLoad(this));
+      this.modules.forEach((mdl) => mdl.postLoad && mdl.postLoad(this));
       this.set('readyLoad', 1);
     };
 
@@ -218,7 +233,7 @@ export default class EditorModel extends Model {
       undoManager: false,
     });
     // We only need to load a few modules
-    ['PageManager', 'Canvas'].forEach(key => shallow.get(key).onLoad());
+    ['PageManager', 'Canvas'].forEach((key) => shallow.get(key).onLoad());
     this.set('shallow', shallow);
   }
 
@@ -239,7 +254,7 @@ export default class EditorModel extends Model {
     }
 
     if (stm.isAutosave() && changes >= stm.getStepsBeforeSave()) {
-      this.store().catch(err => this.logError(err));
+      this.store().catch((err) => this.logError(err));
     }
   }
 
@@ -252,9 +267,11 @@ export default class EditorModel extends Model {
   loadModule(moduleName: any) {
     const { config } = this;
     const Module = moduleName.default || moduleName;
-    const Mod = new Module();
+    const Mod = new Module(this);
     const name = Mod.name.charAt(0).toLowerCase() + Mod.name.slice(1);
-    const cfgParent = !isUndefined(config[name]) ? config[name] : config[Mod.name];
+    const cfgParent = !isUndefined(config[name])
+      ? config[name]
+      : config[Mod.name];
     const cfg = cfgParent === true ? {} : cfgParent || {};
     cfg.pStylePrefix = config.pStylePrefix || '';
 
@@ -324,7 +341,13 @@ export default class EditorModel extends Model {
    * */
   handleUpdates(model: any, val: any, opt: any = {}) {
     // Component has been added temporarily - do not update storage or record changes
-    if (this.__skip || opt.temporary || opt.noCount || opt.avoidStore || !this.get('ready')) {
+    if (
+      this.__skip ||
+      opt.temporary ||
+      opt.noCount ||
+      opt.avoidStore ||
+      !this.get('ready')
+    ) {
       return;
     }
 
@@ -392,7 +415,7 @@ export default class EditorModel extends Model {
     const multiple = isArray(el);
     multiple && this.removeSelected(selected.filter(s => !contains(els, s)));
 
-    els.forEach(el => {
+    els.forEach((el) => {
       let model = getModel(el, undefined);
 
       if (model) {
@@ -402,7 +425,8 @@ export default class EditorModel extends Model {
         if (!model.get('selectable') || opts.abort) {
           if (opts.useValid) {
             let parent = model.parent();
-            while (parent && !parent.get('selectable')) parent = parent.parent();
+            while (parent && !parent.get('selectable'))
+              parent = parent.parent();
             model = parent;
           } else {
             return;
@@ -420,7 +444,7 @@ export default class EditorModel extends Model {
         let min: number | undefined, max: number | undefined;
 
         // Fin min and max siblings
-        this.getSelectedAll().forEach(sel => {
+        this.getSelectedAll().forEach((sel) => {
           const selColl = sel.collection;
           const selIndex = sel.index();
           if (selColl === coll) {
@@ -451,7 +475,7 @@ export default class EditorModel extends Model {
         return this.addSelected(model);
       }
 
-      !multiple && this.removeSelected(selected.filter(s => s !== model));
+      !multiple && this.removeSelected(selected.filter((s) => s !== model));
       this.addSelected(model, opts);
       added = model;
     });
@@ -652,7 +676,9 @@ export default class EditorModel extends Model {
     const config = this.config;
     const { optsCss } = config;
     const avoidProt = opts.avoidProtected;
-    const keepUnusedStyles = !isUndefined(opts.keepUnusedStyles) ? opts.keepUnusedStyles : config.keepUnusedStyles;
+    const keepUnusedStyles = !isUndefined(opts.keepUnusedStyles)
+      ? opts.keepUnusedStyles
+      : config.keepUnusedStyles;
     const cssc = this.get('CssComposer');
     const wrp = opts.component || this.get('DomComponents').getComponent();
     const protCss = !avoidProt ? config.protectedCss : '';
@@ -704,7 +730,7 @@ export default class EditorModel extends Model {
     const editingCmp = this.getEditing();
     editingCmp && editingCmp.trigger('sync:content', { noCount: true });
 
-    this.storables.forEach(m => {
+    this.storables.forEach((m) => {
       result = { ...result, ...m.store(1) };
     });
     return JSON.parse(JSON.stringify(result));
@@ -712,8 +738,8 @@ export default class EditorModel extends Model {
 
   loadData(data = {}) {
     if (!isEmptyObj(data)) {
-      this.storables.forEach(module => module.clear());
-      this.storables.forEach(module => module.load(data));
+      this.storables.forEach((module) => module.clear());
+      this.storables.forEach((module) => module.load(data));
     }
     return data;
   }
@@ -865,7 +891,7 @@ export default class EditorModel extends Model {
     this.modules
       .slice()
       .reverse()
-      .forEach(mod => mod.destroy());
+      .forEach((mod) => mod.destroy());
     view && view.remove();
     this.clear({ silent: true });
     this.destroyed = true;

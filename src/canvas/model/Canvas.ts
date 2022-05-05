@@ -1,12 +1,15 @@
 import { Model } from '../../common';
+import Backbone from 'backbone';
 import { evPageSelect } from '../../pages';
 import Frames from './Frames';
+import EditorModel from '../../editor/model/Editor';
+import Page from '../../pages/model/Page';
 
-export default class Canvas extends Model {
+export default class Canvas extends Backbone.Model {
   defaults() {
     return {
       frame: '',
-      frames: '',
+      frames: new Frames(),
       rulers: false,
       zoom: 100,
       x: 0,
@@ -17,15 +20,20 @@ export default class Canvas extends Model {
       styles: [],
     };
   }
+  em: EditorModel;
+  config: any;
 
-  initialize(props, config = {}) {
+  constructor(props: any, config: any = {}) {
+    super(props);
     const { em } = config;
     this.config = config;
     this.em = em;
-    this.set('frames', new Frames());
     this.listenTo(this, 'change:zoom', this.onZoomChange);
     this.listenTo(em, 'change:device', this.updateDevice);
     this.listenTo(em, evPageSelect, this._pageUpdated);
+  }
+  get frames(): Frames {
+    return this.get('frames');
   }
 
   init() {
@@ -36,15 +44,16 @@ export default class Canvas extends Model {
     this.updateDevice({ frame });
   }
 
-  _pageUpdated(page, prev) {
+  _pageUpdated(page: Page, prev?: Page) {
     const { em } = this;
     em.setSelected();
     em.get('readyCanvas') && em.stopDefault(); // We have to stop before changing current frames
-    prev && prev.getFrames().map(frame => frame.disable());
+    //@ts-ignore
+    prev?.getFrames().map((frame) => frame.disable());
     this.set('frames', page.getFrames());
   }
 
-  updateDevice(opts = {}) {
+  updateDevice(opts: any = {}) {
     const { em } = this;
     const device = em.getDeviceModel();
     const model = opts.frame || em.getCurrentFrameModel();

@@ -66,7 +66,12 @@ import EditorView from './view/EditorView';
 export default class EditorModule implements IBaseModule<typeof defaults> {
   constructor(config = {}, opts: any = {}) {
     //@ts-ignore
-    this.config = { ...defaults, ...config, pStylePrefix: defaults.stylePrefix };
+    this.config = {
+      ...defaults,
+      ...config,
+      //@ts-ignore
+      pStylePrefix: defaults.stylePrefix,
+    };
     this.em = new EditorModel(this.config);
     this.$ = opts.$;
     this.em.init(this);
@@ -206,7 +211,7 @@ export default class EditorModule implements IBaseModule<typeof defaults> {
   //@ts-ignore
   get Devices(): DeviceManagerModule {
     return this.em.get('DeviceManager');
-  } 
+  }
   //@ts-ignore
   get DeviceManager(): DeviceManagerModule {
     return this.em.get('DeviceManager');
