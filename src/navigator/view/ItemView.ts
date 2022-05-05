@@ -5,6 +5,18 @@ import ComponentView from '../../dom_components/view/ComponentView';
 import Component, { eventDrag } from '../../dom_components/model/Component';
 import ItemsView from './ItemsView';
 import EditorModel from '../../editor/model/Editor';
+import LayerManager from '../index';
+
+export type ItemViewProps = Backbone.ViewOptions & {
+  ItemView: ItemView,
+  level: number,
+  config: any,
+  opened: {},
+  model: Component,
+  module: LayerManager,
+  sorter: any,
+  parentView: ItemView,
+};
 
 const inputProp = 'contentEditable';
 
@@ -101,7 +113,7 @@ export default class ItemView extends View {
   inputName?: HTMLElement;
   cnt?: HTMLElement;
 
-  constructor(opt: any = {}) {
+  constructor(opt: ItemViewProps) {
     super(opt);
     bindAll(this, '__render');
     this.opt = opt;

@@ -91,7 +91,7 @@ export default class LayerManager extends Module<typeof defaults> {
      * Get the root of layers
      * @return {Component}
      */
-    getRoot() {
+    getRoot(): Component {
       return this.model.get('root');
     }
 
@@ -140,24 +140,24 @@ export default class LayerManager extends Module<typeof defaults> {
       }
     }
 
-    getComponents(component: any): Component[] {
+    getComponents(component: Component): Component[] {
       return component.components().filter((cmp: any) => this.__isLayerable(cmp));
     }
 
-    setOpen(component: any, value: boolean) {
+    setOpen(component: Component, value: boolean) {
       component.set('open', value);
     }
 
-    isOpen(component: any): boolean {
+    isOpen(component: Component): boolean {
       return !!component.get('open');
     }
 
     /**
      * Update component visibility
      * */
-    setVisible(component: any, value: boolean) {
+    setVisible(component: Component, value: boolean) {
       const prevDspKey = '__prev-display';
-      const style = component.getStyle(styleOpts);
+      const style: any = component.getStyle(styleOpts);
       const { display } = style;
 
       if (value) {
@@ -181,28 +181,28 @@ export default class LayerManager extends Module<typeof defaults> {
     /**
      * Check if the component is visible
      * */
-    isVisible(component: any): boolean {
+    isVisible(component: Component): boolean {
       return !isStyleHidden(component.getStyle(styleOpts));
     }
 
     /**
      * Update component locked value
      * */
-    setLocked(component: any, value: boolean) {
+    setLocked(component: Component, value: boolean) {
       component.set('locked', value);
     }
 
     /**
      * Check if the component is locked
      * */
-    isLocked(component: any): boolean {
+    isLocked(component: Component): boolean {
       return component.get('locked');
     }
 
     /**
      * Update component name
      * */
-    setName(component: any, value: string) {
+    setName(component: Component, value: string) {
       component.set('custom-name', value);
     }
 
@@ -271,11 +271,11 @@ export default class LayerManager extends Module<typeof defaults> {
       this.em.trigger(evRoot, root);
     }
 
-    __onComponent(component: any) {
+    __onComponent(component: Component) {
       this.updateLayer(component);
     }
 
-    __isLayerable(cmp: any): boolean {
+    __isLayerable(cmp: Component): boolean {
       const tag = cmp.get('tagName');
       const hideText = this.config.hideTextnode;
       const isValid = !hideText || (!cmp.is('textnode') && tag !== 'br');
@@ -283,7 +283,7 @@ export default class LayerManager extends Module<typeof defaults> {
       return isValid && cmp.get('layerable');
     }
 
-    updateLayer(component: any, opts?: any) {
+    updateLayer(component: Component, opts?: any) {
       this.em.trigger(evComponent, component, opts);
     }
 };
