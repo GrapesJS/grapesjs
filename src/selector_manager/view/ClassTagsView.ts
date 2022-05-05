@@ -1,7 +1,7 @@
 import { isEmpty, isArray, isString, debounce } from 'underscore';
 import { View } from '../../common';
 import ClassTagView from './ClassTagView';
-import html from 'utils/html';
+import html from '../../utils/html';
 import EditorModel from '../../editor/model/Editor';
 import SelectorManager from '..';
 import State from '../model/State';

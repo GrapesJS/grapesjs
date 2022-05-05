@@ -9,7 +9,7 @@ import { escape } from './mixins';
  * const str = '<b>Hello</b>';
  * const strHtml = html`Escaped ${str}, unescaped $${str}`;
  */
-export default function html(literals, ...substs) {
+export default function html(literals: TemplateStringsArray, ...substs: string[]) {
   const { raw } = literals;
 
   return raw.reduce((acc, lit, i) => {
