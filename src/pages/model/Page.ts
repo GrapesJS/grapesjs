@@ -25,10 +25,7 @@ export default class Page extends Model {
       ['component', 'styles'].map((i) => this.unset(i));
     }
     const frms: any[] = props.frames || [defFrame];
-    const frames = new Frames(
-      frms?.map((model) => new Frame(model, opts)),
-      opts
-    );
+    const frames = new Frames(frms?.map((model) => new Frame(model, opts)));
     frames.page = this;
     this.set('frames', frames);
     !this.getId() && this.set('id', em?.get('PageManager')._createId());
