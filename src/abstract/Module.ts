@@ -1,14 +1,14 @@
-import { isElement, isUndefined } from 'underscore';
-import { Collection } from '../common';
-import EditorModel from '../editor/model/Editor';
-import { createId, isDef } from '../utils/mixins';
+import { isElement, isUndefined } from "underscore";
+import { Collection, View } from "../common";
+import EditorModel from "../editor/model/Editor";
+import { createId, isDef } from "../utils/mixins";
 
 export interface IModule<TConfig extends any = any>
   extends IBaseModule<TConfig> {
   init(cfg: any): void;
   destroy(): void;
   postLoad(key: any): any;
-  getConfig(): ModuleConfig;
+  config: TConfig;
   onLoad?(): void;
   name: string;
   postRender?(view: any): void;
@@ -48,7 +48,7 @@ export default abstract class Module<T extends ModuleConfig = ModuleConfig>
       ? em.config[name]
       : em.config[this.name];
     const cfg = cfgParent === true ? {} : cfgParent || {};
-    cfg.pStylePrefix = em.config.pStylePrefix || '';
+    cfg.pStylePrefix = em.config.pStylePrefix || "";
 
     if (!isUndefined(cfgParent) && !cfgParent) {
       cfg._disable = 1;
@@ -73,8 +73,8 @@ export default abstract class Module<T extends ModuleConfig = ModuleConfig>
     return this._name;
   }
 
-  getConfig() {
-    return this.config;
+  getConfig(name?: string) {
+    return name ? this.config.name : this.config;
   }
 
   __logWarn(str: string, opts = {}) {
@@ -90,8 +90,9 @@ export abstract class ItemManagerModule<
 > extends Module<TConf> {
   cls: any[] = [];
   protected all: TCollection;
+  view?: View;
 
-  constructor(em: EditorModel, moduleName: string, all: any, events: any) {
+  constructor(em: EditorModel, moduleName: string, all: any, events?: any) {
     super(em, moduleName);
     this.all = all;
     this.events = events;
@@ -120,15 +121,15 @@ export abstract class ItemManagerModule<
   ) {
     const { all, onResult, reset } = param;
     const key = this.storageKey;
-    const opts: any = { action: 'load' };
+    const opts: any = { action: "load" };
     const coll = all || this.all;
     let result = data[key];
 
-    if (typeof result == 'string') {
+    if (typeof result == "string") {
       try {
         result = JSON.parse(result);
       } catch (err) {
-        this.__logWarn('Data parsing failed', { input: result });
+        this.__logWarn("Data parsing failed", { input: result });
       }
     }
 
@@ -167,19 +168,19 @@ export abstract class ItemManagerModule<
     all &&
       em &&
       all
-        .on('add', (m: any, c: any, o: any) => em.trigger(events.add, m, o))
-        .on('remove', (m: any, c: any, o: any) =>
+        .on("add", (m: any, c: any, o: any) => em.trigger(events.add, m, o))
+        .on("remove", (m: any, c: any, o: any) =>
           em.trigger(events.remove, m, o)
         )
-        .on('change', (p: any, c: any) =>
+        .on("change", (p: any, c: any) =>
           em.trigger(events.update, p, p.changedAttributes(), c)
         )
-        .on('all', this.__catchAllEvent, this);
+        .on("all", this.__catchAllEvent, this);
     // Register collections
     this.cls = [all].concat(opts.collections || []);
     // Propagate events
     ((opts.propagate as any[]) || []).forEach(({ entity, event }) => {
-      entity.on('all', (ev: any, model: any, coll: any, opts: any) => {
+      entity.on("all", (ev: any, model: any, coll: any, opts: any) => {
         const options = opts || coll;
         const opt = { event: ev, ...options };
         [em, all].map((md) => md.trigger(event, model, opt));
@@ -233,15 +234,15 @@ export abstract class ItemManagerModule<
   }
 
   __listenAdd(model: TCollection, event: string) {
-    model.on('add', (m, c, o) => this.em.trigger(event, m, o));
+    model.on("add", (m, c, o) => this.em.trigger(event, m, o));
   }
 
   __listenRemove(model: TCollection, event: string) {
-    model.on('remove', (m, c, o) => this.em.trigger(event, m, o));
+    model.on("remove", (m, c, o) => this.em.trigger(event, m, o));
   }
 
   __listenUpdate(model: TCollection, event: string) {
-    model.on('change', (p, c) =>
+    model.on("change", (p, c) =>
       this.em.trigger(event, p, p.changedAttributes(), c)
     );
   }
@@ -251,5 +252,7 @@ export abstract class ItemManagerModule<
       coll.stopListening();
       coll.reset();
     });
+    this.view?.remove();
+    this.view = undefined;
   }
 }

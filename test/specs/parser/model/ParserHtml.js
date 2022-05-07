@@ -1,12 +1,14 @@
 import ParserHtml from 'parser/model/ParserHtml';
 import ParserCss from 'parser/model/ParserCss';
 import DomComponents from 'dom_components';
+import Editor from 'editor/model/Editor';
 
 describe('ParserHtml', () => {
   var obj;
 
   beforeEach(() => {
-    var dom = new DomComponents();
+    const em = new Editor({});
+    var dom = new DomComponents(em);
     obj = new ParserHtml({
       textTags: ['br', 'b', 'i', 'u'],
       pStylePrefix: 'gjs-',

@@ -28,7 +28,7 @@ describe('PropertyRadioView', () => {
 
   beforeEach(() => {
     em = new Editor({});
-    dcomp = new DomComponents();
+    dcomp = new DomComponents(em);
     compOpts = { em, componentTypes: dcomp.componentTypes };
     target = new Component({}, compOpts);
     component = new Component({}, compOpts);

@@ -53,156 +53,167 @@
  *
  * @module Components
  */
-import { isEmpty, isObject, isArray, isFunction, isString, result, debounce } from 'underscore';
-import defaults from './config/config';
-import Component, { keyUpdate, keyUpdateInside } from './model/Component';
-import Components from './model/Components';
-import ComponentView from './view/ComponentView';
-import ComponentWrapperView from './view/ComponentWrapperView';
-import ComponentsView from './view/ComponentsView';
-import ComponentTableCell from './model/ComponentTableCell';
-import ComponentTableCellView from './view/ComponentTableCellView';
-import ComponentTableRow from './model/ComponentTableRow';
-import ComponentTableRowView from './view/ComponentTableRowView';
-import ComponentTable from './model/ComponentTable';
-import ComponentTableView from './view/ComponentTableView';
-import ComponentTableHead from './model/ComponentTableHead';
-import ComponentTableHeadView from './view/ComponentTableHeadView';
-import ComponentTableBody from './model/ComponentTableBody';
-import ComponentTableBodyView from './view/ComponentTableBodyView';
-import ComponentTableFoot from './model/ComponentTableFoot';
-import ComponentTableFootView from './view/ComponentTableFootView';
-import ComponentMap from './model/ComponentMap';
-import ComponentMapView from './view/ComponentMapView';
-import ComponentLink from './model/ComponentLink';
-import ComponentLinkView from './view/ComponentLinkView';
-import ComponentLabel from './model/ComponentLabel';
-import ComponentLabelView from './view/ComponentLabelView';
-import ComponentVideo from './model/ComponentVideo';
-import ComponentVideoView from './view/ComponentVideoView';
-import ComponentImage from './model/ComponentImage';
-import ComponentImageView from './view/ComponentImageView';
-import ComponentScript from './model/ComponentScript';
-import ComponentScriptView from './view/ComponentScriptView';
-import ComponentSvg from './model/ComponentSvg';
-import ComponentSvgIn from './model/ComponentSvgIn';
-import ComponentSvgView from './view/ComponentSvgView';
-import ComponentComment from './model/ComponentComment';
-import ComponentCommentView from './view/ComponentCommentView';
-import ComponentTextNode from './model/ComponentTextNode';
-import ComponentTextNodeView from './view/ComponentTextNodeView';
-import ComponentText from './model/ComponentText';
-import ComponentTextView from './view/ComponentTextView';
-import ComponentWrapper from './model/ComponentWrapper';
-import ComponentFrame from './model/ComponentFrame';
-import ComponentFrameView from './view/ComponentFrameView';
-import Module from 'abstract/moduleLegacy';
+import {
+  isEmpty,
+  isObject,
+  isArray,
+  isFunction,
+  isString,
+  result,
+  debounce,
+} from "underscore";
+import defaults from "./config/config";
+import Component, { keyUpdate, keyUpdateInside } from "./model/Component";
+import Components from "./model/Components";
+import ComponentView from "./view/ComponentView";
+import ComponentWrapperView from "./view/ComponentWrapperView";
+import ComponentsView from "./view/ComponentsView";
+import ComponentTableCell from "./model/ComponentTableCell";
+import ComponentTableCellView from "./view/ComponentTableCellView";
+import ComponentTableRow from "./model/ComponentTableRow";
+import ComponentTableRowView from "./view/ComponentTableRowView";
+import ComponentTable from "./model/ComponentTable";
+import ComponentTableView from "./view/ComponentTableView";
+import ComponentTableHead from "./model/ComponentTableHead";
+import ComponentTableHeadView from "./view/ComponentTableHeadView";
+import ComponentTableBody from "./model/ComponentTableBody";
+import ComponentTableBodyView from "./view/ComponentTableBodyView";
+import ComponentTableFoot from "./model/ComponentTableFoot";
+import ComponentTableFootView from "./view/ComponentTableFootView";
+import ComponentMap from "./model/ComponentMap";
+import ComponentMapView from "./view/ComponentMapView";
+import ComponentLink from "./model/ComponentLink";
+import ComponentLinkView from "./view/ComponentLinkView";
+import ComponentLabel from "./model/ComponentLabel";
+import ComponentLabelView from "./view/ComponentLabelView";
+import ComponentVideo from "./model/ComponentVideo";
+import ComponentVideoView from "./view/ComponentVideoView";
+import ComponentImage from "./model/ComponentImage";
+import ComponentImageView from "./view/ComponentImageView";
+import ComponentScript from "./model/ComponentScript";
+import ComponentScriptView from "./view/ComponentScriptView";
+import ComponentSvg from "./model/ComponentSvg";
+import ComponentSvgIn from "./model/ComponentSvgIn";
+import ComponentSvgView from "./view/ComponentSvgView";
+import ComponentComment from "./model/ComponentComment";
+import ComponentCommentView from "./view/ComponentCommentView";
+import ComponentTextNode from "./model/ComponentTextNode";
+import ComponentTextNodeView from "./view/ComponentTextNodeView";
+import ComponentText from "./model/ComponentText";
+import ComponentTextView from "./view/ComponentTextView";
+import ComponentWrapper from "./model/ComponentWrapper";
+import ComponentFrame from "./model/ComponentFrame";
+import ComponentFrameView from "./view/ComponentFrameView";
+import { ItemManagerModule } from "../abstract/Module";
+import EditorModel from "../editor/model/Editor";
+import { Model } from "backbone";
 
-export default class ComponentManager extends Module {
+export default class ComponentManager extends ItemManagerModule {
   componentTypes = [
     {
-      id: 'cell',
+      id: "cell",
       model: ComponentTableCell,
       view: ComponentTableCellView,
     },
     {
-      id: 'row',
+      id: "row",
       model: ComponentTableRow,
       view: ComponentTableRowView,
     },
     {
-      id: 'table',
+      id: "table",
       model: ComponentTable,
       view: ComponentTableView,
     },
     {
-      id: 'thead',
+      id: "thead",
       model: ComponentTableHead,
       view: ComponentTableHeadView,
     },
     {
-      id: 'tbody',
+      id: "tbody",
       model: ComponentTableBody,
       view: ComponentTableBodyView,
     },
     {
-      id: 'tfoot',
+      id: "tfoot",
       model: ComponentTableFoot,
       view: ComponentTableFootView,
     },
     {
-      id: 'map',
+      id: "map",
       model: ComponentMap,
       view: ComponentMapView,
     },
     {
-      id: 'link',
+      id: "link",
       model: ComponentLink,
       view: ComponentLinkView,
     },
     {
-      id: 'label',
+      id: "label",
       model: ComponentLabel,
       view: ComponentLabelView,
     },
     {
-      id: 'video',
+      id: "video",
       model: ComponentVideo,
       view: ComponentVideoView,
     },
     {
-      id: 'image',
+      id: "image",
       model: ComponentImage,
       view: ComponentImageView,
     },
     {
-      id: 'script',
+      id: "script",
       model: ComponentScript,
       view: ComponentScriptView,
     },
     {
-      id: 'svg-in',
+      id: "svg-in",
       model: ComponentSvgIn,
       view: ComponentSvgView,
     },
     {
-      id: 'svg',
+      id: "svg",
       model: ComponentSvg,
       view: ComponentSvgView,
     },
     {
-      id: 'iframe',
+      id: "iframe",
       model: ComponentFrame,
       view: ComponentFrameView,
     },
     {
-      id: 'comment',
+      id: "comment",
       model: ComponentComment,
       view: ComponentCommentView,
     },
     {
-      id: 'textnode',
+      id: "textnode",
       model: ComponentTextNode,
       view: ComponentTextNodeView,
     },
     {
-      id: 'text',
+      id: "text",
       model: ComponentText,
       view: ComponentTextView,
     },
     {
-      id: 'wrapper',
+      id: "wrapper",
       model: ComponentWrapper,
       view: ComponentWrapperView,
     },
     {
-      id: 'default',
+      id: "default",
       model: Component,
       view: ComponentView,
     },
   ];
 
-  componentsById = {};
+  componentsById: { [id: string]: Component } = {};
+  componentView?: ComponentWrapperView;
 
   Component = Component;
 
@@ -215,18 +226,11 @@ export default class ComponentManager extends Module {
    * @type {String}
    * @private
    */
-  name = 'DomComponents';
+  //name = "DomComponents";
 
-  storageKey = 'components';
+  storageKey = "components";
 
-  /**
-   * Returns config
-   * @return {Object} Config object
-   * @private
-   */
-  getConfig() {
-    return this.c;
-  }
+  shallow?: Component;
 
   /**
    * Initialize module. Called on a new instance of the editor with configurations passed
@@ -234,44 +238,47 @@ export default class ComponentManager extends Module {
    * @param {Object} config Configurations
    * @private
    */
-  init(config) {
-    this.c = config || {};
-    const em = this.c.em;
-    this.em = em;
+  constructor(em: EditorModel) {
+    super(em, "DomComponents", new Components(undefined, { em }));
 
     if (em) {
-      this.c.components = em.config.components || this.c.components;
+      this.config.components = em.config.components || this.config.components;
     }
 
     for (var name in defaults) {
-      if (!(name in this.c)) this.c[name] = defaults[name];
+      //@ts-ignore
+      if (!(name in this.config)) this.config[name] = defaults[name];
     }
 
-    var ppfx = this.c.pStylePrefix;
-    if (ppfx) this.c.stylePrefix = ppfx + this.c.stylePrefix;
+    var ppfx = this.config.pStylePrefix;
+    if (ppfx) this.config.stylePrefix = ppfx + this.config.stylePrefix;
 
     // Load dependencies
     if (em) {
-      this.c.modal = em.get('Modal') || '';
-      this.c.am = em.get('AssetManager') || '';
-      em.get('Parser').compTypes = this.componentTypes;
-      em.on('change:componentHovered', this.componentHovered, this);
+      this.config.modal = em.get("Modal") || "";
+      this.config.am = em.get("AssetManager") || "";
+      em.get("Parser").compTypes = this.componentTypes;
+      em.on("change:componentHovered", this.componentHovered, this);
 
-      const selected = em.get('selected');
-      em.listenTo(selected, 'add', (sel, c, opts) => this.selectAdd(selected.getComponent(sel), opts));
-      em.listenTo(selected, 'remove', (sel, c, opts) => this.selectRemove(selected.getComponent(sel), opts));
+      const selected = em.get("selected");
+      em.listenTo(selected, "add", (sel, c, opts) =>
+        this.selectAdd(selected.getComponent(sel), opts)
+      );
+      em.listenTo(selected, "remove", (sel, c, opts) =>
+        this.selectRemove(selected.getComponent(sel), opts)
+      );
     }
 
     return this;
   }
 
-  load(data) {
+  load(data: any) {
     return this.loadProjectData(data, {
-      onResult: result => {
+      onResult: (result: Component) => {
         let wrapper = this.getWrapper();
 
         if (!wrapper) {
-          this.em.get('PageManager').add({}, { select: true });
+          this.em.get("PageManager").add({}, { select: true });
           wrapper = this.getWrapper();
         }
 
@@ -280,6 +287,7 @@ export default class ComponentManager extends Module {
         } else {
           const { components = [], ...rest } = result;
           wrapper.set(rest);
+          //@ts-ignore
           wrapper.components(components);
         }
       },
@@ -295,8 +303,8 @@ export default class ComponentManager extends Module {
    * @return {Object}
    * @private
    */
-  getComponent() {
-    const sel = this.em.get('PageManager').getSelected();
+  getComponent(): Component {
+    const sel = this.em.get("PageManager").getSelected();
     const frame = sel && sel.getMainFrame();
     return frame && frame.getComponent();
   }
@@ -342,9 +350,9 @@ export default class ComponentManager extends Module {
    * // Remove comp2
    * wrapperChildren.remove(comp2);
    */
-  getComponents() {
+  getComponents(): Components {
     const wrp = this.getWrapper();
-    return wrp && wrp.get('components');
+    return wrp && wrp.get("components");
   }
 
   /**
@@ -376,7 +384,7 @@ export default class ComponentManager extends Module {
    *   attributes: { title: 'here' }
    * });
    */
-  addComponent(component, opt = {}) {
+  addComponent(component: Component, opt = {}) {
     return this.getComponents().add(component, opt);
   }
 
@@ -388,7 +396,7 @@ export default class ComponentManager extends Module {
    * @return {HTMLElement}
    */
   render() {
-    return this.componentView.render().el;
+    return this.componentView?.render().el;
   }
 
   /**
@@ -397,7 +405,8 @@ export default class ComponentManager extends Module {
    */
   clear(opts = {}) {
     const components = this.getComponents();
-    components?.filter(Boolean).forEach(i => i.remove(opts));
+    //@ts-ignore
+    components?.filter(Boolean).forEach((i) => i.remove(opts));
     return this;
   }
 
@@ -408,7 +417,7 @@ export default class ComponentManager extends Module {
    * @return {this}
    * @private
    */
-  setComponents(components, opt = {}) {
+  setComponents(components: Component, opt = {}) {
     this.clear(opt).addComponent(components, opt);
   }
 
@@ -419,23 +428,35 @@ export default class ComponentManager extends Module {
    * @param {Object} methods Component methods
    * @return {this}
    */
-  addType(type, methods) {
+  addType(type: string, methods: any) {
     const { em } = this;
-    const { model = {}, view = {}, isComponent, extend, extendView, extendFn = [], extendFnView = [] } = methods;
+    const {
+      model = {},
+      view = {},
+      isComponent,
+      extend,
+      extendView,
+      extendFn = [],
+      extendFnView = [],
+    } = methods;
     const compType = this.getType(type);
     const extendType = this.getType(extend);
     const extendViewType = this.getType(extendView);
-    const typeToExtend = extendType ? extendType : compType ? compType : this.getType('default');
+    const typeToExtend = extendType
+      ? extendType
+      : compType
+      ? compType
+      : this.getType("default");
     const modelToExt = typeToExtend.model;
     const viewToExt = extendViewType ? extendViewType.view : typeToExtend.view;
 
     // Function for extending source object methods
-    const getExtendedObj = (fns, target, srcToExt) =>
+    const getExtendedObj = (fns: any[], target: any, srcToExt: any) =>
       fns.reduce((res, next) => {
         const fn = target[next];
         const parentFn = srcToExt.prototype[next];
         if (fn && parentFn) {
-          res[next] = function (...args) {
+          res[next] = (...args: any[]) => {
             parentFn.bind(this)(...args);
             fn.bind(this)(...args);
           };
@@ -444,23 +465,26 @@ export default class ComponentManager extends Module {
       }, {});
 
     // If the model/view is a simple object I need to extend it
-    if (typeof model === 'object') {
+    if (typeof model === "object") {
       methods.model = modelToExt.extend(
         {
           ...model,
           ...getExtendedObj(extendFn, model, modelToExt),
           defaults: {
-            ...(result(modelToExt.prototype, 'defaults') || {}),
-            ...(result(model, 'defaults') || {}),
+            ...(result(modelToExt.prototype, "defaults") || {}),
+            ...(result(model, "defaults") || {}),
           },
         },
         {
-          isComponent: compType && !extendType && !isComponent ? modelToExt.isComponent : isComponent || (() => 0),
+          isComponent:
+            compType && !extendType && !isComponent
+              ? modelToExt.isComponent
+              : isComponent || (() => 0),
         }
       );
     }
 
-    if (typeof view === 'object') {
+    if (typeof view === "object") {
       methods.view = viewToExt.extend({
         ...view,
         ...getExtendedObj(extendFnView, view, viewToExt),
@@ -475,7 +499,7 @@ export default class ComponentManager extends Module {
       this.componentTypes.unshift(methods);
     }
 
-    const event = `component:type:${compType ? 'update' : 'add'}`;
+    const event = `component:type:${compType ? "update" : "add"}`;
     em?.trigger(event, compType || methods);
 
     return this;
@@ -487,7 +511,9 @@ export default class ComponentManager extends Module {
    * @param {string} type Component ID
    * @return {Object} Component type definition, eg. `{ model: ..., view: ... }`
    */
-  getType(type) {
+  getType(type: "default"): { id: string; model: any; view: any };
+  getType(type: string): { id: string; model: any; view: any } | undefined;
+  getType(type: string) {
     var df = this.componentTypes;
 
     for (var it = 0; it < df.length; it++) {
@@ -504,7 +530,7 @@ export default class ComponentManager extends Module {
    * @param {string} type Component ID
    * @returns {Object|undefined} Removed component type, undefined otherwise
    */
-  removeType(id) {
+  removeType(id: string) {
     const df = this.componentTypes;
     const type = this.getType(id);
     if (!type) return;
@@ -521,23 +547,27 @@ export default class ComponentManager extends Module {
     return this.componentTypes;
   }
 
-  selectAdd(component, opts = {}) {
+  selectAdd(component: Component, opts = {}) {
     if (component) {
       component.set({
-        status: 'selected',
+        status: "selected",
       });
-      ['component:selected', 'component:toggled'].forEach(event => this.em.trigger(event, component, opts));
+      ["component:selected", "component:toggled"].forEach((event) =>
+        this.em.trigger(event, component, opts)
+      );
     }
   }
 
-  selectRemove(component, opts = {}) {
+  selectRemove(component: Component, opts = {}) {
     if (component) {
       const { em } = this;
       component.set({
-        status: '',
-        state: '',
+        status: "",
+        state: "",
       });
-      ['component:deselected', 'component:toggled'].forEach(event => this.em.trigger(event, component, opts));
+      ["component:deselected", "component:toggled"].forEach((event) =>
+        this.em.trigger(event, component, opts)
+      );
     }
   }
 
@@ -547,35 +577,35 @@ export default class ComponentManager extends Module {
    */
   componentHovered() {
     const { em } = this;
-    const model = em.get('componentHovered');
-    const previous = em.previous('componentHovered');
-    const state = 'hovered';
+    const model = em.get("componentHovered");
+    const previous = em.previous("componentHovered");
+    const state = "hovered";
 
     // Deselect the previous component
     previous &&
-      previous.get('status') == state &&
+      previous.get("status") == state &&
       previous.set({
-        status: '',
-        state: '',
+        status: "",
+        state: "",
       });
 
-    model && isEmpty(model.get('status')) && model.set('status', state);
+    model && isEmpty(model.get("status")) && model.set("status", state);
   }
 
   getShallowWrapper() {
     let { shallow, em } = this;
 
     if (!shallow && em) {
-      const shallowEm = em.get('shallow');
+      const shallowEm = em.shallow;
       if (!shallowEm) return;
-      const domc = shallowEm.get('DomComponents');
+      const domc = shallowEm.get("DomComponents");
       domc.componentTypes = this.componentTypes;
       shallow = domc.getWrapper();
       if (shallow) {
-        const events = [keyUpdate, keyUpdateInside].join(' ');
+        const events = [keyUpdate, keyUpdateInside].join(" ");
         shallow.on(
           events,
-          debounce(() => shallow.components(''), 100)
+          debounce(() => shallow?.components(""), 100)
         );
       }
       this.shallow = shallow;
@@ -595,7 +625,7 @@ export default class ComponentManager extends Module {
    * * `2` - Target doesn't accept source.
    * @private
    */
-  canMove(target, source, index) {
+  canMove(target: Component, source?: Component, index?: number) {
     const at = index || index === 0 ? index : null;
     const result = {
       result: false,
@@ -606,41 +636,47 @@ export default class ComponentManager extends Module {
 
     if (!source) return result;
 
-    let srcModel = source?.toHTML ? source : null;
+    //@ts-ignore
+    let srcModel = source.toHTML ? source : null;
 
     if (!srcModel) {
       const wrapper = this.getShallowWrapper();
       srcModel = wrapper?.append(source)[0];
     }
 
+    //@ts-ignore
     result.source = srcModel;
 
     if (!srcModel) return result;
 
     // Check if the source is draggable in the target
-    let draggable = srcModel.get('draggable');
+    let draggable = srcModel.get("draggable");
 
     if (isFunction(draggable)) {
       draggable = !!draggable(srcModel, target, at);
     } else {
       const el = target.getEl();
-      draggable = isArray(draggable) ? draggable.join(',') : draggable;
+      draggable = isArray(draggable) ? draggable.join(",") : draggable;
       draggable = isString(draggable) ? el?.matches(draggable) : draggable;
     }
 
     if (!draggable) return { ...result, reason: 1 };
 
     // Check if the target accepts the source
-    let droppable = target.get('droppable');
+    let droppable = target.get("droppable");
 
     if (isFunction(droppable)) {
       droppable = !!droppable(srcModel, target, at);
     } else {
-      if (droppable === false && target.isInstanceOf('text') && srcModel.get('textable')) {
+      if (
+        droppable === false &&
+        target.isInstanceOf("text") &&
+        srcModel.get("textable")
+      ) {
         droppable = true;
       } else {
         const el = srcModel.getEl();
-        droppable = isArray(droppable) ? droppable.join(',') : droppable;
+        droppable = isArray(droppable) ? droppable.join(",") : droppable;
         droppable = isString(droppable) ? el?.matches(droppable) : droppable;
       }
     }
@@ -654,14 +690,14 @@ export default class ComponentManager extends Module {
     return this.componentsById;
   }
 
-  getById(id) {
+  getById(id: string) {
     return this.componentsById[id] || null;
   }
 
   destroy() {
     const all = this.allById();
-    Object.keys(all).forEach(id => all[id] && all[id].remove());
+    Object.keys(all).forEach((id) => all[id] && all[id].remove());
     this.componentView?.remove();
-    [this.c, this.em, this.componentsById, this.component, this.componentView].forEach(i => (i = {}));
+    [this.em, this.componentsById, this.componentView].forEach((i) => (i = {}));
   }
 }

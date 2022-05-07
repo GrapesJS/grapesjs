@@ -5,44 +5,44 @@ import {
   toArray,
   keys,
   bindAll,
-} from 'underscore';
-import Backbone from 'backbone';
-import $ from '../../utils/cash-dom';
-import Extender from '../../utils/extender';
-import { getModel, hasWin, isEmptyObj } from '../../utils/mixins';
-import { Model } from '../../common';
-import Selected from './Selected';
-import FrameView from '../../canvas/view/FrameView';
-import EditorModule from '..';
-import EditorView from '../view/EditorView';
-import { IModule } from '../../abstract/Module';
+} from "underscore";
+import Backbone from "backbone";
+import $ from "../../utils/cash-dom";
+import Extender from "../../utils/extender";
+import { getModel, hasWin, isEmptyObj } from "../../utils/mixins";
+import { Model } from "../../common";
+import Selected from "./Selected";
+import FrameView from "../../canvas/view/FrameView";
+import EditorModule from "..";
+import EditorView from "../view/EditorView";
+import { IModule } from "../../abstract/Module";
 
 //@ts-ignore
 Backbone.$ = $;
 
 const deps = [
-  require('utils'),
-  require('i18n'),
-  require('keymaps'),
-  require('undo_manager'),
-  require('storage_manager'),
-  require('device_manager'),
-  require('parser'),
-  require('style_manager'),
-  require('selector_manager'),
-  require('modal_dialog'),
-  require('code_manager'),
-  require('panels'),
-  require('rich_text_editor'),
-  require('asset_manager'),
-  require('css_composer'),
-  require('pages'),
-  require('trait_manager'),
-  require('dom_components'),
-  require('navigator'),
-  require('canvas'),
-  require('commands'),
-  require('block_manager'),
+  require("utils"),
+  require("i18n"),
+  require("keymaps"),
+  require("undo_manager"),
+  require("storage_manager"),
+  require("device_manager"),
+  require("parser"),
+  require("style_manager"),
+  require("selector_manager"),
+  require("modal_dialog"),
+  require("code_manager"),
+  require("panels"),
+  require("rich_text_editor"),
+  require("asset_manager"),
+  require("css_composer"),
+  require("pages"),
+  require("trait_manager"),
+  require("dom_components"),
+  require("navigator"),
+  require("canvas"),
+  require("commands"),
+  require("block_manager"),
 ];
 
 const ts_deps: any[] = [];
@@ -74,7 +74,7 @@ export default class EditorModel extends Model {
       modules: [],
       toLoad: [],
       opened: {},
-      device: '',
+      device: "",
     };
   }
 
@@ -88,33 +88,38 @@ export default class EditorModel extends Model {
   view?: EditorView;
 
   get storables(): any[] {
-    return this.get('storables');
+    return this.get("storables");
   }
 
   get modules(): IModule[] {
-    return this.get('modules');
+    return this.get("modules");
   }
 
   get toLoad(): any[] {
-    return this.get('toLoad');
+    return this.get("toLoad");
   }
+
   get selected(): Selected {
-    return this.get('selected');
+    return this.get("selected");
+  }
+
+  get shallow(): EditorModel {
+    return this.get("shallow");
   }
 
   constructor(conf = {}) {
     super();
     this._config = conf;
     const { config } = this;
-    this.set('Config', conf);
-    this.set('modules', []);
-    this.set('toLoad', []);
-    this.set('storables', []);
-    this.set('selected', new Selected());
-    this.set('dmode', config.dragMode);
+    this.set("Config", conf);
+    this.set("modules", []);
+    this.set("toLoad", []);
+    this.set("storables", []);
+    this.set("selected", new Selected());
+    this.set("dmode", config.dragMode);
     const { el, log } = config;
     const toLog = log === true ? keys(logs) : isArray(log) ? log : [];
-    bindAll(this, 'initBaseColorPicker');
+    bindAll(this, "initBaseColorPicker");
 
     if (el && config.fromElement) {
       config.components = el.innerHTML;
@@ -125,7 +130,7 @@ export default class EditorModel extends Model {
           res[next.nodeName] = next.nodeValue;
           return res;
         }, {})
-      : '';
+      : "";
 
     // Move components to pages
     if (config.components && !config.pageManager) {
@@ -135,13 +140,13 @@ export default class EditorModel extends Model {
     // Load modules
     deps.forEach((name) => this.loadModule(name));
     ts_deps.forEach((name) => this.tsLoadModule(name));
-    this.on('change:componentHovered', this.componentHovered, this);
-    this.on('change:changesCount', this.updateChanges, this);
-    this.on('change:readyLoad change:readyCanvas', this._checkReady, this);
+    this.on("change:componentHovered", this.componentHovered, this);
+    this.on("change:changesCount", this.updateChanges, this);
+    this.on("change:readyLoad change:readyCanvas", this._checkReady, this);
     toLog.forEach((e) => this.listenLog(e));
 
     // Deprecations
-    [{ from: 'change:selectedComponent', to: 'component:toggled' }].forEach(
+    [{ from: "change:selectedComponent", to: "component:toggled" }].forEach(
       (event) => {
         const eventFrom = event.from;
         const eventTo = event.to;
@@ -157,11 +162,11 @@ export default class EditorModel extends Model {
 
   _checkReady() {
     if (
-      this.get('readyLoad') &&
-      this.get('readyCanvas') &&
-      !this.get('ready')
+      this.get("readyLoad") &&
+      this.get("readyCanvas") &&
+      !this.get("ready")
     ) {
-      this.set('ready', true);
+      this.set("ready", true);
     }
   }
 
@@ -195,7 +200,7 @@ export default class EditorModel extends Model {
    */
   loadOnStart() {
     const { projectData, headless } = this.config;
-    const sm = this.get('StorageManager');
+    const sm = this.get("StorageManager");
 
     // In `onLoad`, the module will try to load the data from its configurations.
     this.toLoad.forEach((mdl) => mdl.onLoad());
@@ -203,7 +208,7 @@ export default class EditorModel extends Model {
     // Stuff to do post load
     const postLoad = () => {
       this.modules.forEach((mdl) => mdl.postLoad && mdl.postLoad(this));
-      this.set('readyLoad', 1);
+      this.set("readyLoad", 1);
     };
 
     if (headless) {
@@ -233,8 +238,8 @@ export default class EditorModel extends Model {
       undoManager: false,
     });
     // We only need to load a few modules
-    ['PageManager', 'Canvas'].forEach((key) => shallow.get(key).onLoad());
-    this.set('shallow', shallow);
+    ["PageManager", "Canvas"].forEach((key) => shallow.get(key).onLoad());
+    this.set("shallow", shallow);
   }
 
   /**
@@ -243,11 +248,11 @@ export default class EditorModel extends Model {
    * @private
    */
   updateChanges() {
-    const stm = this.get('StorageManager');
+    const stm = this.get("StorageManager");
     const changes = this.getDirtyCount();
     this.updateItr && clearTimeout(this.updateItr);
     //@ts-ignore
-    this.updateItr = setTimeout(() => this.trigger('update'));
+    this.updateItr = setTimeout(() => this.trigger("update"));
 
     if (this.config.noticeOnUnload) {
       window.onbeforeunload = changes ? () => true : null;
@@ -273,7 +278,7 @@ export default class EditorModel extends Model {
       ? config[name]
       : config[Mod.name];
     const cfg = cfgParent === true ? {} : cfgParent || {};
-    cfg.pStylePrefix = config.pStylePrefix || '';
+    cfg.pStylePrefix = config.pStylePrefix || "";
 
     if (!isUndefined(cfgParent) && !cfgParent) {
       cfg._disable = 1;
@@ -324,11 +329,11 @@ export default class EditorModel extends Model {
       this.initialize(opts);
       this.destroyed = false;
     }
-    this.set('Editor', editor);
+    this.set("Editor", editor);
   }
 
   getEditor() {
-    return this.get('Editor');
+    return this.get("Editor");
   }
 
   /**
@@ -346,7 +351,7 @@ export default class EditorModel extends Model {
       opt.temporary ||
       opt.noCount ||
       opt.avoidStore ||
-      !this.get('ready')
+      !this.get("ready")
     ) {
       return;
     }
@@ -356,7 +361,7 @@ export default class EditorModel extends Model {
     this.timedInterval = setTimeout(() => {
       const curr = this.getDirtyCount() || 0;
       const { unset, ...opts } = opt;
-      this.set('changesCount', curr + 1, opts);
+      this.set("changesCount", curr + 1, opts);
     }, 0);
   }
 
@@ -372,9 +377,9 @@ export default class EditorModel extends Model {
    * @private
    * */
   componentHovered(editor: any, component: any, options: any) {
-    const prev = this.previous('componentHovered');
-    prev && this.trigger('component:unhovered', prev, options);
-    component && this.trigger('component:hovered', component, options);
+    const prev = this.previous("componentHovered");
+    prev && this.trigger("component:unhovered", prev, options);
+    component && this.trigger("component:hovered", component, options);
   }
 
   /**
@@ -405,7 +410,7 @@ export default class EditorModel extends Model {
     const { event } = opts;
     const ctrlKey = event && (event.ctrlKey || event.metaKey);
     const { shiftKey } = event || {};
-    const els = (isArray(el) ? el : [el]).map(el => getModel(el, $));
+    const els = (isArray(el) ? el : [el]).map((el) => getModel(el, $));
     const selected = this.getSelectedAll();
     const mltSel = this.getConfig().multipleSelection;
     let added;
@@ -413,19 +418,19 @@ export default class EditorModel extends Model {
     // If an array is passed remove all selected
     // expect those yet to be selected
     const multiple = isArray(el);
-    multiple && this.removeSelected(selected.filter(s => !contains(els, s)));
+    multiple && this.removeSelected(selected.filter((s) => !contains(els, s)));
 
     els.forEach((el) => {
       let model = getModel(el, undefined);
 
       if (model) {
-        this.trigger('component:select:before', model, opts);
+        this.trigger("component:select:before", model, opts);
 
         // Check for valid selectable
-        if (!model.get('selectable') || opts.abort) {
+        if (!model.get("selectable") || opts.abort) {
           if (opts.useValid) {
             let parent = model.parent();
-            while (parent && !parent.get('selectable'))
+            while (parent && !parent.get("selectable"))
               parent = parent.parent();
             model = parent;
           } else {
@@ -438,7 +443,7 @@ export default class EditorModel extends Model {
       if (ctrlKey && mltSel) {
         return this.toggleSelected(model);
       } else if (shiftKey && mltSel) {
-        this.clearSelection(this.get('Canvas').getWindow());
+        this.clearSelection(this.get("Canvas").getWindow());
         const coll = model.collection;
         const index = model.index();
         let min: number | undefined, max: number | undefined;
@@ -491,12 +496,12 @@ export default class EditorModel extends Model {
     const model = getModel(el, $);
     const models = isArray(model) ? model : [model];
 
-    models.forEach(model => {
-      if (model && !model.get('selectable')) return;
+    models.forEach((model) => {
+      if (model && !model.get("selectable")) return;
       const { selected } = this;
       opts.forceChange && this.removeSelected(model, opts);
       selected.addComponent(model, opts);
-      model && this.trigger('component:select', model, opts);
+      model && this.trigger("component:select", model, opts);
     });
   }
 
@@ -520,7 +525,7 @@ export default class EditorModel extends Model {
     const model = getModel(el, $);
     const models = isArray(model) ? model : [model];
 
-    models.forEach(model => {
+    models.forEach((model) => {
       if (this.selected.hasComponent(model)) {
         this.removeSelected(model, opts);
       } else {
@@ -536,21 +541,21 @@ export default class EditorModel extends Model {
    * @private
    */
   setHovered(el: any, opts: any = {}) {
-    if (!el) return this.set('componentHovered', '');
+    if (!el) return this.set("componentHovered", "");
 
-    const ev = 'component:hover';
+    const ev = "component:hover";
     let model = getModel(el, undefined);
 
     if (!model) return;
 
-    opts.forceChange && this.set('componentHovered', '');
+    opts.forceChange && this.set("componentHovered", "");
     this.trigger(`${ev}:before`, model, opts);
 
     // Check for valid hoverable
-    if (!model.get('hoverable')) {
+    if (!model.get("hoverable")) {
       if (opts.useValid && !opts.abort) {
         let parent = model && model.parent();
-        while (parent && !parent.get('hoverable')) parent = parent.parent();
+        while (parent && !parent.get("hoverable")) parent = parent.parent();
         model = parent;
       } else {
         return;
@@ -558,13 +563,13 @@ export default class EditorModel extends Model {
     }
 
     if (!opts.abort) {
-      this.set('componentHovered', model, opts);
+      this.set("componentHovered", model, opts);
       this.trigger(ev, model, opts);
     }
   }
 
   getHovered() {
-    return this.get('componentHovered');
+    return this.get("componentHovered");
   }
 
   /**
@@ -575,7 +580,7 @@ export default class EditorModel extends Model {
    * @public
    */
   setComponents(components: any, opt = {}) {
-    return this.get('DomComponents').setComponents(components, opt);
+    return this.get("DomComponents").setComponents(components, opt);
   }
 
   /**
@@ -584,13 +589,13 @@ export default class EditorModel extends Model {
    * @private
    */
   getComponents() {
-    var cmp = this.get('DomComponents');
-    var cm = this.get('CodeManager');
+    var cmp = this.get("DomComponents");
+    var cm = this.get("CodeManager");
 
     if (!cmp || !cm) return;
 
     var wrp = cmp.getComponents();
-    return cm.getCode(wrp, 'json');
+    return cm.getCode(wrp, "json");
   }
 
   /**
@@ -601,7 +606,7 @@ export default class EditorModel extends Model {
    * @public
    */
   setStyle(style: any, opt = {}) {
-    const cssc = this.get('CssComposer');
+    const cssc = this.get("CssComposer");
     cssc.clear(opt);
     cssc.getAll().add(style, opt);
     return this;
@@ -624,7 +629,7 @@ export default class EditorModel extends Model {
    * @private
    */
   getStyle() {
-    return this.get('CssComposer').getAll();
+    return this.get("CssComposer").getAll();
   }
 
   /**
@@ -633,7 +638,7 @@ export default class EditorModel extends Model {
    * @returns {this}
    */
   setState(value: string) {
-    this.set('state', value);
+    this.set("state", value);
     return this;
   }
 
@@ -642,7 +647,7 @@ export default class EditorModel extends Model {
    * @returns {String}
    */
   getState() {
-    return this.get('state') || '';
+    return this.get("state") || "";
   }
 
   /**
@@ -654,15 +659,15 @@ export default class EditorModel extends Model {
   getHtml(opts: any = {}) {
     const { config } = this;
     const { optsHtml } = config;
-    const js = config.jsInHtml ? this.getJs(opts) : '';
-    const cmp = opts.component || this.get('DomComponents').getComponent();
+    const js = config.jsInHtml ? this.getJs(opts) : "";
+    const cmp = opts.component || this.get("DomComponents").getComponent();
     let html = cmp
-      ? this.get('CodeManager').getCode(cmp, 'html', {
+      ? this.get("CodeManager").getCode(cmp, "html", {
           ...optsHtml,
           ...opts,
         })
-      : '';
-    html += js ? `<script>${js}</script>` : '';
+      : "";
+    html += js ? `<script>${js}</script>` : "";
     return html;
   }
 
@@ -679,18 +684,18 @@ export default class EditorModel extends Model {
     const keepUnusedStyles = !isUndefined(opts.keepUnusedStyles)
       ? opts.keepUnusedStyles
       : config.keepUnusedStyles;
-    const cssc = this.get('CssComposer');
-    const wrp = opts.component || this.get('DomComponents').getComponent();
-    const protCss = !avoidProt ? config.protectedCss : '';
+    const cssc = this.get("CssComposer");
+    const wrp = opts.component || this.get("DomComponents").getComponent();
+    const protCss = !avoidProt ? config.protectedCss : "";
     const css =
       wrp &&
-      this.get('CodeManager').getCode(wrp, 'css', {
+      this.get("CodeManager").getCode(wrp, "css", {
         cssc,
         keepUnusedStyles,
         ...optsCss,
         ...opts,
       });
-    return wrp ? (opts.json ? css : protCss + css) : '';
+    return wrp ? (opts.json ? css : protCss + css) : "";
   }
 
   /**
@@ -699,8 +704,8 @@ export default class EditorModel extends Model {
    * @public
    */
   getJs(opts: any = {}) {
-    var wrp = opts.component || this.get('DomComponents').getWrapper();
-    return wrp ? this.get('CodeManager').getCode(wrp, 'js').trim() : '';
+    var wrp = opts.component || this.get("DomComponents").getWrapper();
+    return wrp ? this.get("CodeManager").getCode(wrp, "js").trim() : "";
   }
 
   /**
@@ -709,7 +714,7 @@ export default class EditorModel extends Model {
    */
   async store(options?: any) {
     const data = this.storeData();
-    await this.get('StorageManager').store(data, options);
+    await this.get("StorageManager").store(data, options);
     this.clearDirtyCount();
     return data;
   }
@@ -719,7 +724,7 @@ export default class EditorModel extends Model {
    * @public
    */
   async load(options?: any) {
-    const result = await this.get('StorageManager').load(options);
+    const result = await this.get("StorageManager").load(options);
     this.loadData(result);
     return result;
   }
@@ -728,7 +733,7 @@ export default class EditorModel extends Model {
     let result = {};
     // Sync content if there is an active RTE
     const editingCmp = this.getEditing();
-    editingCmp && editingCmp.trigger('sync:content', { noCount: true });
+    editingCmp && editingCmp.trigger("sync:content", { noCount: true });
 
     this.storables.forEach((m) => {
       result = { ...result, ...m.store(1) };
@@ -750,8 +755,8 @@ export default class EditorModel extends Model {
    * @private
    */
   getDeviceModel() {
-    var name = this.get('device');
-    return this.get('DeviceManager').get(name);
+    var name = this.get("device");
+    return this.get("DeviceManager").get(name);
   }
 
   /**
@@ -760,7 +765,7 @@ export default class EditorModel extends Model {
    * @private
    */
   runDefault(opts = {}) {
-    var command = this.get('Commands').get(this.config.defaultCommand);
+    var command = this.get("Commands").get(this.config.defaultCommand);
     if (!command || this.defaultRunning) return;
     command.stop(this, this, opts);
     command.run(this, this, opts);
@@ -773,7 +778,7 @@ export default class EditorModel extends Model {
    * @private
    */
   stopDefault(opts = {}) {
-    const commands = this.get('Commands');
+    const commands = this.get("Commands");
     const command = commands.get(this.config.defaultCommand);
     if (!command || !this.defaultRunning) return;
     command.stop(this, this, opts);
@@ -785,9 +790,9 @@ export default class EditorModel extends Model {
    * @public
    */
   refreshCanvas(opts: any = {}) {
-    this.set('canvasOffset', null);
-    this.set('canvasOffset', this.get('Canvas').getOffset());
-    opts.tools && this.trigger('canvas:updateTools');
+    this.set("canvasOffset", null);
+    this.set("canvasOffset", this.get("Canvas").getOffset());
+    opts.tools && this.trigger("canvas:updateTools");
   }
 
   /**
@@ -810,8 +815,8 @@ export default class EditorModel extends Model {
     const device = this.getDeviceModel();
     const condition = config.mediaCondition;
     const preview = config.devicePreviewMode;
-    const width = device && device.get('widthMedia');
-    return device && width && !preview ? `(${condition}: ${width})` : '';
+    const width = device && device.get("widthMedia");
+    return device && width && !preview ? `(${condition}: ${width})` : "";
   }
 
   /**
@@ -819,15 +824,15 @@ export default class EditorModel extends Model {
    * @return {Component}
    */
   getWrapper() {
-    return this.get('DomComponents').getWrapper();
+    return this.get("DomComponents").getWrapper();
   }
 
   setCurrentFrame(frameView: FrameView) {
-    return this.set('currentFrame', frameView);
+    return this.set("currentFrame", frameView);
   }
 
   getCurrentFrame(): FrameView {
-    return this.get('currentFrame');
+    return this.get("currentFrame");
   }
 
   getCurrentFrameModel() {
@@ -836,7 +841,7 @@ export default class EditorModel extends Model {
 
   getIcon(icon: string) {
     const icons = this.config.icons || {};
-    return icons[icon] || '';
+    return icons[icon] || "";
   }
 
   /**
@@ -845,27 +850,27 @@ export default class EditorModel extends Model {
    * @return {number}
    */
   getDirtyCount(): number {
-    return this.get('changesCount');
+    return this.get("changesCount");
   }
 
   clearDirtyCount() {
-    return this.set('changesCount', 0);
+    return this.set("changesCount", 0);
   }
 
   getZoomDecimal() {
-    return this.get('Canvas').getZoomDecimal();
+    return this.get("Canvas").getZoomDecimal();
   }
 
   getZoomMultiplier() {
-    return this.get('Canvas').getZoomMultiplier();
+    return this.get("Canvas").getZoomMultiplier();
   }
 
   setDragMode(value: string) {
-    return this.set('dmode', value);
+    return this.set("dmode", value);
   }
 
   t(...args: any[]) {
-    const i18n = this.get('I18n');
+    const i18n = this.get("I18n");
     return i18n?.t(...args);
   }
 
@@ -874,7 +879,7 @@ export default class EditorModel extends Model {
    * @returns {Boolean}
    */
   inAbsoluteMode() {
-    return this.get('dmode') === 'absolute';
+    return this.get("dmode") === "absolute";
   }
 
   /**
@@ -884,7 +889,7 @@ export default class EditorModel extends Model {
     const { config, view } = this;
     const editor = this.getEditor();
     const { editors = [] } = config.grapesjs || {};
-    const shallow = this.get('shallow');
+    const shallow = this.get("shallow");
     shallow?.destroyAll();
     this.stopListening();
     this.stopDefault();
@@ -895,9 +900,9 @@ export default class EditorModel extends Model {
     view && view.remove();
     this.clear({ silent: true });
     this.destroyed = true;
-    ['_config', 'view', '_previousAttributes', '_events', '_listeners'].forEach(
+    ["_config", "view", "_previousAttributes", "_events", "_listeners"].forEach(
       //@ts-ignore
-      i => (this[i] = {})
+      (i) => (this[i] = {})
     );
     editors.splice(editors.indexOf(editor), 1);
     //@ts-ignore
@@ -905,22 +910,22 @@ export default class EditorModel extends Model {
   }
 
   getEditing() {
-    const res = this.get('editing');
+    const res = this.get("editing");
     return (res && res.model) || null;
   }
 
   setEditing(value: boolean) {
-    this.set('editing', value);
+    this.set("editing", value);
     return this;
   }
 
   isEditing() {
-    return !!this.get('editing');
+    return !!this.get("editing");
   }
 
   log(msg: string, opts: any = {}) {
-    const { ns, level = 'debug' } = opts;
-    this.trigger('log', msg, opts);
+    const { ns, level = "debug" } = opts;
+    this.trigger("log", msg, opts);
     level && this.trigger(`log:${level}`, msg, opts);
 
     if (ns) {
@@ -931,15 +936,15 @@ export default class EditorModel extends Model {
   }
 
   logInfo(msg: string, opts?: any) {
-    this.log(msg, { ...opts, level: 'info' });
+    this.log(msg, { ...opts, level: "info" });
   }
 
   logWarning(msg: string, opts?: any) {
-    this.log(msg, { ...opts, level: 'warning' });
+    this.log(msg, { ...opts, level: "warning" });
   }
 
   logError(msg: string, opts?: any) {
-    this.log(msg, { ...opts, level: 'error' });
+    this.log(msg, { ...opts, level: "error" });
   }
 
   initBaseColorPicker(el: any, opts = {}) {
@@ -951,13 +956,13 @@ export default class EditorModel extends Model {
     //@ts-ignore
     return $(el).spectrum({
       containerClassName: `${ppfx}one-bg ${ppfx}two-color`,
-      appendTo: elToAppend || 'body',
+      appendTo: elToAppend || "body",
       maxSelectionSize: 8,
       showPalette: true,
       palette: [],
       showAlpha: true,
-      chooseText: 'Ok',
-      cancelText: '⨯',
+      chooseText: "Ok",
+      cancelText: "⨯",
       ...opts,
       ...colorPicker,
     });
@@ -970,7 +975,7 @@ export default class EditorModel extends Model {
    */
   skip(clb: Function) {
     this.__skip = true;
-    const um = this.get('UndoManager');
+    const um = this.get("UndoManager");
     um ? um.skip(clb) : clb();
     this.__skip = false;
   }
@@ -984,7 +989,7 @@ export default class EditorModel extends Model {
    * @private
    */
   data(el: any, name: string, value: any) {
-    const varName = '_gjs-data';
+    const varName = "_gjs-data";
 
     if (!el[varName]) {
       el[varName] = {};

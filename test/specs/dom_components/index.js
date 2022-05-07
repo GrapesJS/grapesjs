@@ -54,7 +54,7 @@ describe('DOM Components', () => {
         storeWrapper: 1,
       };
       obj = em.get('DomComponents');
-      // obj = new DomComponents().init(config);
+      // obj = new DomComponents(em).init(config);
     });
 
     afterEach(() => {
