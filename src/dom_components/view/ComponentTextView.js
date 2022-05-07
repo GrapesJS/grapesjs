@@ -4,11 +4,11 @@ import { bindAll } from 'underscore';
 
 const compProt = ComponentView.prototype;
 
-export default ComponentView.extend({
-  events: {
+export default class ComponentTextView extends ComponentView {
+  events = {
     dblclick: 'onActive',
     input: 'onInput',
-  },
+  };
 
   initialize(o) {
     compProt.initialize.apply(this, arguments);
@@ -19,11 +19,11 @@ export default ComponentView.extend({
     this.listenTo(model, 'change:content', this.updateContentText);
     this.listenTo(model, 'sync:content', this.syncContent);
     this.rte = em && em.get('RichTextEditor');
-  },
+  }
 
   updateContentText(m, v, opts = {}) {
     !opts.fromDisable && this.disableEditing();
-  },
+  }
 
   canActivate() {
     const { model, rteEnabled, em } = this;
@@ -52,7 +52,7 @@ export default ComponentView.extend({
     }
 
     return { result, delegate };
-  },
+  }
 
   /**
    * Enable element content editing
@@ -85,11 +85,11 @@ export default ComponentView.extend({
     }
 
     this.toggleEvents(1);
-  },
+  }
 
   onDisable() {
     this.disableEditing();
-  },
+  }
 
   /**
    * Disable element content editing
@@ -115,7 +115,7 @@ export default ComponentView.extend({
     }
 
     this.toggleEvents();
-  },
+  }
 
   /**
    * get content from RTE
@@ -126,7 +126,7 @@ export default ComponentView.extend({
     const canGetRteContent = activeRte && typeof activeRte.getContent === 'function';
 
     return canGetRteContent ? activeRte.getContent() : this.getChildrenContainer().innerHTML;
-  },
+  }
 
   /**
    * Merge content from the DOM to the model
@@ -147,7 +147,7 @@ export default ComponentView.extend({
     } else {
       comps.resetFromString(content, opts);
     }
-  },
+  }
 
   insertComponent(content, opts = {}) {
     const { model, el } = this;
@@ -184,7 +184,7 @@ export default ComponentView.extend({
     }
 
     return model.append(content, opts);
-  },
+  }
 
   /**
    * Callback on input event
@@ -197,7 +197,7 @@ export default ComponentView.extend({
 
     // Update toolbars
     em && em.trigger(ev, this.model);
-  },
+  }
 
   /**
    * Isolate disable propagation method
@@ -206,7 +206,7 @@ export default ComponentView.extend({
    * */
   disablePropagation(e) {
     e.stopPropagation();
-  },
+  }
 
   /**
    * Enable/Disable events
@@ -245,5 +245,5 @@ export default ComponentView.extend({
         el && el.tagName == 'BODY' && (el = 0);
       }
     }
-  },
-});
+  }
+}
