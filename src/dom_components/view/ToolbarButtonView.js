@@ -4,7 +4,7 @@ export default Backbone.View.extend({
   events() {
     return (
       this.model.get('events') || {
-        mousedown: 'handleClick',
+        click: 'handleClick',
       }
     );
   },
