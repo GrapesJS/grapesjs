@@ -1,17 +1,17 @@
-import Backbone from "backbone";
-import Model from "./Model";
-import Module, { IBaseModule } from "./Module";
+import Backbone from 'backbone';
+import Model from './Model';
+import Module, { IBaseModule } from './Module';
 
 export default class View<
   TModel extends Model = Model,
   TElement extends Element = HTMLElement
 > extends Backbone.View<TModel, TElement> {
   protected get pfx() {
-    return (this.em.config as any).stylePrefix || "";
+    return (this.em.config as any).stylePrefix || '';
   }
 
   protected get ppfx() {
-    return this.pfx + this.config.stylePrefix || "";
+    return this.pfx + this.config.stylePrefix || '';
   }
 
   protected get module(): TModel extends Model<infer M>? M: unknown {
