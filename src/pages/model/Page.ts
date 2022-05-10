@@ -25,9 +25,8 @@ export default class Page extends Model {
       ['component', 'styles'].map((i) => this.unset(i));
     }
     const frms: any[] = props.frames || [defFrame];
-    const frames = new Frames(
-      frms?.map((model) => new Frame(model, opts)),
-      opts
+    const frames = new Frames(em.get("Canvas"),
+      frms?.map((model) => new Frame(em.get("Canvas"), model))
     );
     frames.page = this;
     this.set('frames', frames);
@@ -37,7 +36,7 @@ export default class Page extends Model {
   }
 
   onRemove() {
-    this.get('frames').reset();
+    this.getFrames().reset();
   }
 
   getFrames(): Frames {
@@ -88,7 +87,6 @@ export default class Page extends Model {
    * const mainFrame = page.getMainFrame();
    */
   getMainFrame(): Frame {
-    //@ts-ignore
     return this.getFrames().at(0);
   }
 

@@ -8,7 +8,7 @@ export default class Canvas extends Model<CanvasModule> {
   defaults() {
     return {
       frame: '',
-      frames: new Frames(),
+      frames: [],
       rulers: false,
       zoom: 100,
       x: 0,
@@ -24,6 +24,7 @@ export default class Canvas extends Model<CanvasModule> {
     const { em, config } = module;
     const { scripts, styles } = config;
     super(module, {scripts, styles});
+    this.set("frames", new Frames(module))
     this.listenTo(this, "change:zoom", this.onZoomChange);
     this.listenTo(em, "change:device", this.updateDevice);
     this.listenTo(em, evPageSelect, this._pageUpdated);

@@ -85,7 +85,13 @@ const shallowDiff = (objOrig, objNew) => {
   return result;
 };
 
-const on = (el, ev, fn, opts) => {
+/**
+ * @param  {Object} el
+ * @param  {string} ev
+ * @param  {(ev: Event) => any} fn
+ * @param  {Objec} opts
+ */
+const on = (el, ev, fn, opts = {}) => {
   ev = ev.split(/\s+/);
   el = el instanceof Array ? el : [el];
 
@@ -216,6 +222,11 @@ const getModel = (el, $) => {
   return model;
 };
 
+/**
+ * Get DomRect for the el
+ * @param  {any} el Component or HTML element
+ * @return {DOMRect}
+ */
 const getElRect = el => {
   const def = {
     top: 0,
@@ -239,7 +250,7 @@ const getElRect = el => {
 /**
  * Get cross-device pointer event
  * @param  {Event} ev
- * @return {Event}
+ * @return {PointerEvent}
  */
 const getPointerEvent = ev => (ev.touches && ev.touches[0] ? ev.touches[0] : ev);
 

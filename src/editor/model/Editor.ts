@@ -101,7 +101,6 @@ export default class EditorModel extends Model {
   get selected(): Selected {
     return this.get('selected');
   }
-
   constructor(conf = {}) {
     super();
     this._config = conf;
@@ -401,7 +400,7 @@ export default class EditorModel extends Model {
    * @param  {Object} [opts={}] Options, optional
    * @public
    */
-  setSelected(el: any | any[], opts: any = {}) {
+  setSelected(el?: any|any[], opts: any = {}) {
     const { event } = opts;
     const ctrlKey = event && (event.ctrlKey || event.metaKey);
     const { shiftKey } = event || {};

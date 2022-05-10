@@ -4,9 +4,7 @@ import { on, off, getElement, getKeyChar, isTextNode, getElRect, getUiClass } fr
 import { createEl } from '../../utils/dom';
 import FramesView from './FramesView';
 import Canvas from '../model/Canvas';
-import Frame from '../model/Frame';
 import FrameView from './FrameView';
-import Components from '../../dom_components/model/Components';
 import ComponentView from '../../dom_components/view/ComponentView';
 import Component from '../../dom_components/model/Component';
 
@@ -79,13 +77,13 @@ export default class CanvasView extends View<Canvas> {
 
   _initFrames() {
     const { frames, model, config, em } = this;
-    const collection = model.get('frames');
+    const collection = model.frames;
     em.set('readyCanvas', 0);
     collection.once('loaded:all', () => em.set('readyCanvas', 1));
     frames?.remove();
-    this.frames = new FramesView({
-      collection,
-      config: {
+    this.frames = new FramesView(
+      {collection},
+      {config: {
         ...config,
         canvasView: this,
       },
@@ -296,7 +294,7 @@ export default class CanvasView extends View<Canvas> {
    * @public
    */
   getPosition(opts: any = {}) {
-    
+
     const doc = this.frame?.el.contentDocument;
     if (!doc) return;
     const bEl = doc.body;

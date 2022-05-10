@@ -69,16 +69,10 @@ export default class CanvasModule extends Module<typeof defaults> {
   }
 
   //name = 'Canvas';
-
-  c: any;
-  //em: EditorModel;
   canvas: Canvas;
   model: Canvas;
-  private _canvasView?: CanvasView;
+  private canvasView?: CanvasView;
 
-  get canvasView(): CanvasView{
-    return this._canvasView as any
-  }
   /**
    * Initialize module. Automatically called with a new instance of the editor
    * @param {Object} config Configurations
@@ -86,10 +80,7 @@ export default class CanvasModule extends Module<typeof defaults> {
    */
   constructor(em: EditorModel) {
     super(em, "Canvas", defaults)
-    this.c = {
-      ...this.config,
-      module: this,
-    };
+
     this.canvas = new Canvas(this);
     this.model = this.canvas;
     this.startAutoscroll = this.startAutoscroll.bind(this);
@@ -109,21 +100,11 @@ export default class CanvasModule extends Module<typeof defaults> {
   }
 
   /**
-   * Get the configuration object
-   * @returns {Object} Configuration object
-   * @example
-   * console.log(canvas.getConfig())
-   */
-  getConfig() {
-    return this.c;
-  }
-
-  /**
    * Get the canvas element
    * @returns {HTMLElement}
    */
   getElement() {
-    return this.canvasView.el;
+    return this.getCanvasView().el;
   }
 
   getFrame(index?: number) {
@@ -134,9 +115,9 @@ export default class CanvasModule extends Module<typeof defaults> {
    * Get the main frame element of the canvas
    * @returns {HTMLIFrameElement}
    */
-  getFrameEl(): HTMLIFrameElement {
+  getFrameEl() {
     const { frame } = this.canvasView || {};
-    return frame && frame.el;
+    return frame?.el as HTMLIFrameElement;
   }
 
   getFramesEl() {
@@ -148,7 +129,8 @@ export default class CanvasModule extends Module<typeof defaults> {
    * @returns {Window}
    */
   getWindow() {
-    return this.getFrameEl().contentWindow;
+    const { frame } = this.canvasView || {};
+    return frame?.getWindow() as Window;
   }
 
   /**
@@ -157,7 +139,7 @@ export default class CanvasModule extends Module<typeof defaults> {
    */
   getDocument() {
     const frame = this.getFrameEl();
-    return frame && frame.contentDocument as Document;
+    return frame?.contentDocument as Document;
   }
 
   /**
@@ -166,7 +148,7 @@ export default class CanvasModule extends Module<typeof defaults> {
    */
   getBody() {
     const doc = this.getDocument();
-    return doc && doc.body;
+    return doc?.body as HTMLBodyElement;
   }
 
   _getLocalEl(globalEl: any, compView: any, method: keyof FrameView) {
@@ -192,7 +174,7 @@ export default class CanvasModule extends Module<typeof defaults> {
    * @private
    */
   getToolsEl(compView: any) {
-    return this._getLocalEl(this.canvasView.toolsEl, compView, 'getToolsEl');
+    return this._getLocalEl(this.getCanvasView().toolsEl, compView, 'getToolsEl');
   }
 
   /**
@@ -201,7 +183,7 @@ export default class CanvasModule extends Module<typeof defaults> {
    * @private
    */
   getHighlighter(compView: any) {
-    return this._getLocalEl(this.canvasView.hlEl, compView, 'getHighlighter');
+    return this._getLocalEl(this.getCanvasView().hlEl, compView, 'getHighlighter');
   }
 
   /**
@@ -210,7 +192,7 @@ export default class CanvasModule extends Module<typeof defaults> {
    * @private
    */
   getBadgeEl(compView: any) {
-    return this._getLocalEl(this.canvasView.badgeEl, compView, 'getBadgeEl');
+    return this._getLocalEl(this.getCanvasView().badgeEl, compView, 'getBadgeEl');
   }
 
   /**
@@ -219,7 +201,7 @@ export default class CanvasModule extends Module<typeof defaults> {
    * @private
    */
   getPlacerEl() {
-    return this.canvasView.placerEl;
+    return this.getCanvasView().placerEl;
   }
 
   /**
@@ -228,7 +210,7 @@ export default class CanvasModule extends Module<typeof defaults> {
    * @private
    */
   getGhostEl() {
-    return this.canvasView.ghostEl;
+    return this.getCanvasView().ghostEl;
   }
 
   /**
@@ -237,7 +219,7 @@ export default class CanvasModule extends Module<typeof defaults> {
    * @private
    */
   getToolbarEl() {
-    return this.canvasView.toolbarEl;
+    return this.getCanvasView().toolbarEl;
   }
 
   /**
@@ -246,7 +228,7 @@ export default class CanvasModule extends Module<typeof defaults> {
    * @private
    */
   getResizerEl() {
-    return this.canvasView.resizerEl;
+    return this.getCanvasView().resizerEl;
   }
 
   /**
@@ -255,7 +237,7 @@ export default class CanvasModule extends Module<typeof defaults> {
    * @private
    */
   getOffsetViewerEl(compView: any) {
-    return this._getLocalEl(this.canvasView.offsetEl, compView, 'getOffsetViewerEl');
+    return this._getLocalEl(this.getCanvasView().offsetEl, compView, 'getOffsetViewerEl');
   }
 
   /**
@@ -264,12 +246,12 @@ export default class CanvasModule extends Module<typeof defaults> {
    * @private
    */
   getFixedOffsetViewerEl() {
-    return this.canvasView.fixedOffsetEl;
+    return this.getCanvasView().fixedOffsetEl;
   }
 
   render() {
     this.canvasView?.remove();
-    this._canvasView = new CanvasView({model: this.canvas, config: this.c});
+    this.canvasView = new CanvasView(this.canvas);
     return this.canvasView.render().el;
   }
 
@@ -294,7 +276,7 @@ export default class CanvasModule extends Module<typeof defaults> {
    * @private
    */
   offset(el: HTMLElement) {
-    return this.canvasView?.offset(el);
+    return this.getCanvasView().offset(el);
   }
 
   /**
@@ -306,7 +288,8 @@ export default class CanvasModule extends Module<typeof defaults> {
    * });
    */
   setCustomBadgeLabel(f: Function) {
-    this.c.customBadgeLabel = f;
+    //@ts-ignore
+    this.config.customBadgeLabel = f;
   }
 
   /**
@@ -316,7 +299,7 @@ export default class CanvasModule extends Module<typeof defaults> {
    * @private
    */
   getElementPos(el: HTMLElement, opts?: any) {
-    return this.canvasView.getElementPos(el, opts);
+    return this.getCanvasView().getElementPos(el, opts);
   }
 
   /**
@@ -326,7 +309,7 @@ export default class CanvasModule extends Module<typeof defaults> {
    * @private
    */
   getElementOffsets(el: HTMLElement) {
-    return this.canvasView.getElementOffsets(el);
+    return this.getCanvasView().getElementOffsets(el);
   }
 
   /**
@@ -334,9 +317,9 @@ export default class CanvasModule extends Module<typeof defaults> {
    * @returns {Object}
    */
   getRect() {
-    const { top, left } = this.canvasView.getPosition();
+    const { top = 0, left = 0 } = this.getCanvasView().getPosition() ?? {};
     return {
-      ...this.canvasView.getCanvasOffset(),
+      ...this.getCanvasView().getCanvasOffset(),
       topScroll: top,
       leftScroll: left,
     };
@@ -360,9 +343,9 @@ export default class CanvasModule extends Module<typeof defaults> {
    */
   getTargetToElementDim(target: HTMLElement, element: HTMLElement, options: any = {}) {
     var opts = options || {};
-    var canvasPos = this.canvasView.getPosition();
+    var canvasPos = this.getCanvasView().getPosition();
     if (!canvasPos) return;
-    var pos = opts.elPos || this.canvasView.getElementPos(element);
+    var pos = opts.elPos || this.getCanvasView().getElementPos(element);
     var toRight = options.toRight || 0;
     var targetHeight = opts.targetHeight || target.offsetHeight;
     var targetWidth = opts.targetWidth || target.offsetWidth;
@@ -442,7 +425,8 @@ export default class CanvasModule extends Module<typeof defaults> {
     let top = -toolbarH;
     let left = !isUndefined(opts.left) ? opts.left : pos.width - toolbarW;
     left = pos.left < -left ? -pos.left : left;
-    left = elRight > frCvOff.width ? left - (elRight - frCvOff.width) : left;
+    const frCvWidth = frCvOff?.width ?? 0;
+    left = elRight > frCvWidth ? left - (elRight - frCvWidth) : left;
 
     // Scroll with the window if the top edge is reached and the
     // element is bigger than the canvas
@@ -509,7 +493,7 @@ export default class CanvasModule extends Module<typeof defaults> {
    */
   getMouseRelativeCanvas(ev: MouseEvent, opts: any) {
     const zoom = this.getZoomDecimal();
-    const { top, left } = this.getCanvasView().getPosition(opts);
+    const { top = 0, left = 0 } = this.getCanvasView().getPosition(opts) ?? {};
 
     return {
       y: ev.clientY * zoom + top,
@@ -670,13 +654,13 @@ export default class CanvasModule extends Module<typeof defaults> {
    * });
    */
   addFrame(props = {}, opts = {}) {
-    return this.canvas.frames.add(new Frame({ ...props }, { em: this.em }), opts);
+    return this.canvas.frames.add(new Frame(this, { ...props }), opts);
   }
 
   destroy() {
     this.canvas.stopListening();
     this.canvasView?.remove();
-    [this.c, this.canvas, this.canvasView].forEach(i => (i = {}));
+    //[this.canvas, this.canvasView].forEach(i => (i = {}));
     //@ts-ignore
     ['model', 'droppable'].forEach(i => (this[i] = {}));
   }
