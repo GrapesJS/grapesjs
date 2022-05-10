@@ -101,7 +101,6 @@ export default class EditorModel extends Model {
   get selected(): Selected {
     return this.get('selected');
   }
-
   constructor(conf = {}) {
     super();
     this._config = conf;
@@ -822,8 +821,8 @@ export default class EditorModel extends Model {
     return this.get('DomComponents').getWrapper();
   }
 
-  setCurrentFrame(frameView: FrameView) {
-    return this.set('currentFrame', frameView);
+  setCurrentFrame(frameView?: FrameView) {
+    return this.set("currentFrame", frameView);
   }
 
   getCurrentFrame(): FrameView {

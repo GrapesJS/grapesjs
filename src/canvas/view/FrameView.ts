@@ -1,31 +1,47 @@
 import { bindAll, isString, debounce, isUndefined } from 'underscore';
 import { appendVNodes, append, createEl, createCustomEvent, motionsEv } from '../../utils/dom';
 import { on, off, setViewEl, hasDnd, getPointerEvent } from '../../utils/mixins';
-import { View } from '../../common';
+import { View } from '../../abstract';
 import CssRulesView from '../../css_composer/view/CssRulesView';
 import Droppable from '../../utils/Droppable';
+import Frame from '../model/Frame';
+import Canvas from '../model/Canvas';
+import ComponentWrapper from '../../dom_components/model/ComponentWrapper';
+import FrameWrapView from './FrameWrapView';
 
-export default class FrameView extends View {
-  tagName() {
-    return 'iframe';
-  }
+export default class FrameView extends View<Frame, HTMLIFrameElement> {
 
-  attributes() {
-    return {
-      allowfullscreen: 'allowfullscreen',
-    };
-  }
+  //@ts-ignore
+  get tagName(){return 'iframe'};
+  //@ts-ignore
+  get attributes() {return { allowfullscreen: 'allowfullscreen' }};
 
-  initialize(o) {
+  dragging = false;
+  droppable?: Droppable;
+  rect?: DOMRect;
+
+  lastClientY?: number;
+  lastMaxHeight = 0;
+  private jsContainer?: HTMLElement;
+  private tools: {[key: string]: HTMLElement} = {};
+  private wrapper?: any;
+  private frameWrapView?: FrameWrapView;
+
+
+  constructor(model: Frame, view?: FrameWrapView) {
+    super({model});
     bindAll(this, 'updateClientY', 'stopAutoscroll', 'autoscroll', '_emitUpdate');
-    const { model, el } = this;
-    this.tools = {};
-    this.config = {
-      ...(o.config || {}),
+    const { el, em } = this;
+    //el = em.config.el
+    //@ts-ignore
+    this.module._config = {
+      ...(this.config || {}),
+      //@ts-ignore
       frameView: this,
+      //canvasView: view?.cv
     };
-    this.ppfx = this.config.pStylePrefix || '';
-    this.em = this.config.em;
+    //console.log(this.config)
+    this.frameWrapView = view;
     this.showGlobalTools = debounce(this.showGlobalTools.bind(this), 50);
     const cvModel = this.getCanvasModel();
     this.listenTo(model, 'change:head', this.updateHead);
@@ -40,16 +56,16 @@ export default class FrameView extends View {
   updateHead() {
     const { model } = this;
     const headEl = this.getHead();
-    const toRemove = [];
-    const toAdd = [];
-    const current = model.get('head');
+    const toRemove: any[] = [];
+    const toAdd: any[] = [];
+    const current = model.head;
     const prev = model.previous('head');
-    const attrStr = (attr = {}) =>
+    const attrStr = (attr: any = {}) =>
       Object.keys(attr)
         .sort()
         .map(i => `[${i}="${attr[i]}"]`)
         .join('');
-    const find = (items, stack, res) => {
+    const find = (items: any[], stack: any[], res: any[]) => {
       items.forEach(item => {
         const { tag, attributes } = item;
         const has = stack.some(s => s.tag === tag && attrStr(s.attributes) === attrStr(attributes));
@@ -60,7 +76,7 @@ export default class FrameView extends View {
     find(prev, current, toRemove);
     toRemove.forEach(stl => {
       const el = headEl.querySelector(`${stl.tag}${attrStr(stl.attributes)}`);
-      el && el.parentNode.removeChild(el);
+      el?.parentNode?.removeChild(el);
     });
     appendVNodes(headEl, toAdd);
   }
@@ -69,28 +85,28 @@ export default class FrameView extends View {
     return this.el;
   }
 
-  getCanvasModel() {
+  getCanvasModel(): Canvas {
     return this.em.get('Canvas').getModel();
   }
 
   getWindow() {
-    return this.getEl().contentWindow;
+    return this.getEl().contentWindow as Window;
   }
 
   getDoc() {
-    return this.getEl().contentDocument;
+    return this.getEl().contentDocument as Document;
   }
 
   getHead() {
-    return this.getDoc().querySelector('head');
+    return this.getDoc().querySelector('head') as HTMLHeadElement;
   }
 
   getBody() {
-    return this.getDoc().querySelector('body');
+    return this.getDoc().querySelector('body') as HTMLBodyElement;
   }
 
   getWrapper() {
-    return this.getBody().querySelector('[data-gjs-type=wrapper]');
+    return this.getBody().querySelector('[data-gjs-type=wrapper]') as HTMLElement;
   }
 
   getJsContainer() {
@@ -102,8 +118,7 @@ export default class FrameView extends View {
   }
 
   getToolsEl() {
-    const { frameWrapView } = this.config;
-    return frameWrapView && frameWrapView.elTools;
+    return this.frameWrapView?.elTools as HTMLElement;
   }
 
   getGlobalToolsEl() {
@@ -151,23 +166,24 @@ export default class FrameView extends View {
     };
   }
 
-  _getTool(name) {
+  _getTool(name: string) {
     const { tools } = this;
     const toolsEl = this.getToolsEl();
 
     if (!tools[name]) {
-      tools[name] = toolsEl.querySelector(name);
+      tools[name] = toolsEl.querySelector(name) as HTMLElement;
     }
 
     return tools[name];
   }
 
-  remove() {
+  remove(...args: any) {
     const wrp = this.wrapper;
-    this._toggleEffects();
+    this._toggleEffects(false);
     this.tools = {};
     wrp && wrp.remove();
-    View.prototype.remove.apply(this, arguments);
+    View.prototype.remove.apply(this, args);
+    return this;
   }
 
   startAutoscroll() {
@@ -176,7 +192,7 @@ export default class FrameView extends View {
     // By detaching those from the stack avoid browsers lags
     // Noticeable with "fast" drag of blocks
     setTimeout(() => {
-      this._toggleAutoscrollFx(1);
+      this._toggleAutoscrollFx(true);
       requestAnimationFrame(this.autoscroll);
     }, 0);
   }
@@ -217,7 +233,7 @@ export default class FrameView extends View {
     }
   }
 
-  updateClientY(ev) {
+  updateClientY(ev: Event) {
     ev.preventDefault();
     this.lastClientY = getPointerEvent(ev).clientY * this.em.getZoomDecimal();
   }
@@ -227,10 +243,10 @@ export default class FrameView extends View {
   }
 
   stopAutoscroll() {
-    this.dragging && this._toggleAutoscrollFx();
+    this.dragging && this._toggleAutoscrollFx(false);
   }
 
-  _toggleAutoscrollFx(enable) {
+  _toggleAutoscrollFx(enable: boolean) {
     this.dragging = enable;
     const win = this.getWindow();
     const method = enable ? 'on' : 'off';
@@ -251,7 +267,7 @@ export default class FrameView extends View {
     const evLoad = 'frame:load';
     const evOpts = { el, model, view: this };
     const canvas = this.getCanvasModel();
-    const appendScript = scripts => {
+    const appendScript = (scripts: any[]) => {
       if (scripts.length > 0) {
         const src = scripts.shift();
         const scriptEl = createEl('script', {
@@ -259,7 +275,7 @@ export default class FrameView extends View {
           ...(isString(src) ? { src } : src),
         });
         scriptEl.onerror = scriptEl.onload = appendScript.bind(null, scripts);
-        el.contentDocument.head.appendChild(scriptEl);
+        el.contentDocument?.head.appendChild(scriptEl);
       } else {
         this.renderBody();
         em && em.trigger(evLoad, evOpts);
@@ -279,10 +295,10 @@ export default class FrameView extends View {
     };
   }
 
-  renderStyles(opts = {}) {
+  renderStyles(opts: any = {}) {
     const head = this.getHead();
     const canvas = this.getCanvasModel();
-    const normalize = stls =>
+    const normalize = (stls: any[]) =>
       stls.map(href => ({
         tag: 'link',
         attributes: {
@@ -292,9 +308,9 @@ export default class FrameView extends View {
       }));
     const prevStyles = normalize(opts.prev || canvas.previous('styles'));
     const styles = normalize(canvas.get('styles'));
-    const toRemove = [];
-    const toAdd = [];
-    const find = (items, stack, res) => {
+    const toRemove: any[] = [];
+    const toAdd: any[] = [];
+    const find = (items: any[], stack: any[], res: any[]) => {
       items.forEach(item => {
         const { href } = item.attributes;
         const has = stack.some(s => s.attributes.href === href);
@@ -305,18 +321,18 @@ export default class FrameView extends View {
     find(prevStyles, styles, toRemove);
     toRemove.forEach(stl => {
       const el = head.querySelector(`link[href="${stl.attributes.href}"]`);
-      el && el.parentNode.removeChild(el);
+      el?.parentNode?.removeChild(el);
     });
     appendVNodes(head, toAdd);
   }
 
   renderBody() {
-    const { config, model, ppfx } = this;
-    const { em } = config;
+    const { config, em, model, ppfx } = this;
     const doc = this.getDoc();
     const body = this.getBody();
     const win = this.getWindow();
-    const conf = em.get('Config');
+    const conf = em.config;
+    //@ts-ignore TODO I don't understand why this needed nowhere else is used
     win._isEditor = true;
     this.renderStyles({ prev: [] });
 
@@ -399,11 +415,12 @@ export default class FrameView extends View {
         frameView: this,
       },
     }).render();
-    append(body, this.wrapper.el);
+    append(body, this.wrapper?.el);
     append(
       body,
       new CssRulesView({
         collection: model.getStyles(),
+        //@ts-ignore
         config: {
           ...em.get('CssComposer').getConfig(),
           frameView: this,
@@ -415,7 +432,8 @@ export default class FrameView extends View {
     //this.updateOffset(); // TOFIX (check if I need it)
 
     // Avoid some default behaviours
-    on(body, 'click', ev => ev && ev.target.tagName == 'A' && ev.preventDefault());
+    //@ts-ignore
+    on(body, 'click', ev => ev && ev.target?.tagName == 'A' && ev.preventDefault());
     on(body, 'submit', ev => ev && ev.preventDefault());
 
     // When the iframe is focused the event dispatcher is not the same so
@@ -431,12 +449,12 @@ export default class FrameView extends View {
       })
     );
 
-    this._toggleEffects(1);
-    this.droppable = hasDnd(em) && new Droppable(em, this.wrapper.el);
+    this._toggleEffects(true);
+    this.droppable = hasDnd(em) && new Droppable(em, this.wrapper?.el);
     model.trigger('loaded');
   }
 
-  _toggleEffects(enable) {
+  _toggleEffects(enable: boolean) {
     const method = enable ? on : off;
     const win = this.getWindow();
     win && method(win, `${motionsEv} resize`, this._emitUpdate);
