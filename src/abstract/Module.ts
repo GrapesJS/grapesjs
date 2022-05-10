@@ -20,7 +20,7 @@ export interface IBaseModule<TConfig extends any> {
 }
 
 export interface ModuleConfig {
-  //name: string;
+  name: string;
   stylePrefix?: string;
 }
 
@@ -40,18 +40,20 @@ export default abstract class Module<T extends ModuleConfig = ModuleConfig>
   cls: any[] = [];
   events: any;
 
-  constructor(em: EditorModel, moduleName: string, defaults?: T) {
+  constructor(em: EditorModel, moduleName: string) {
     this._em = em;
     this._name = moduleName;
     const name = this.name.charAt(0).toLowerCase() + this.name.slice(1);
-    const cfgParent = !isUndefined(em.config[name]) ? em.config[name] : em.config[this.name];
+    const cfgParent = !isUndefined(em.config[name])
+      ? em.config[name]
+      : em.config[this.name];
     const cfg = cfgParent === true ? {} : cfgParent || {};
     cfg.pStylePrefix = em.config.pStylePrefix || '';
 
     if (!isUndefined(cfgParent) && !cfgParent) {
       cfg._disable = 1;
     }
-    this._config = {...defaults, ...cfg};
+    this._config = cfg;
   }
 
   public get em() {

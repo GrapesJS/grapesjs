@@ -40,7 +40,7 @@ const getComponentsFromDefs = (items, all = {}, opts = {}) => {
   });
 };
 
-export default class Components extends Backbone.Collection {
+export default Backbone.Collection.extend({
   initialize(models, opt = {}) {
     this.opt = opt;
     this.listenTo(this, 'add', this.onAdd);
@@ -50,7 +50,7 @@ export default class Components extends Backbone.Collection {
     this.config = config;
     this.em = em;
     this.domc = opt.domc || (em && em.get('DomComponents'));
-  }
+  },
 
   resetChildren(models, opts = {}) {
     const coll = this;
@@ -60,7 +60,7 @@ export default class Components extends Backbone.Collection {
     opts.keepIds = getComponentIds(prev).filter(pr => newIds.indexOf(pr) >= 0);
     toRemove.forEach(md => this.removeChildren(md, coll, opts));
     models.each(model => this.onAdd(model));
-  }
+  },
 
   resetFromString(input = '', opts = {}) {
     opts.keepIds = getComponentIds(this);
@@ -71,7 +71,7 @@ export default class Components extends Backbone.Collection {
     const newCmps = getComponentsFromDefs(cmps, allByID, opts);
     this.reset(newCmps, opts);
     this.em?.trigger('component:content', this.parent, opts, input);
-  }
+  },
 
   removeChildren(removed, coll, opts = {}) {
     // Removing a parent component can cause this function
@@ -123,7 +123,7 @@ export default class Components extends Backbone.Collection {
     em.stopListening(removed);
     em.stopListening(removed.get('classes'));
     removed.__postRemove();
-  }
+  },
 
   model(attrs, options) {
     const { opt } = options.collection;
@@ -155,7 +155,7 @@ export default class Components extends Backbone.Collection {
     }
 
     return new model(attrs, options);
-  }
+  },
 
   parseString(value, opt = {}) {
     const { em, domc } = this;
@@ -173,7 +173,7 @@ export default class Components extends Backbone.Collection {
     }
 
     return parsed.html;
-  }
+  },
 
   add(models, opt = {}) {
     opt.keepIds = [...(opt.keepIds || []), ...getComponentIds(opt.previousModels)];
@@ -197,7 +197,7 @@ export default class Components extends Backbone.Collection {
     const result = Backbone.Collection.prototype.add.apply(this, [models, opt]);
     this.__firstAdd = result;
     return result;
-  }
+  },
 
   /**
    * Process component definition.
@@ -250,7 +250,7 @@ export default class Components extends Backbone.Collection {
     }
 
     return model;
-  }
+  },
 
   onAdd(model, c, opts = {}) {
     const { domc, em } = this;
@@ -267,9 +267,9 @@ export default class Components extends Backbone.Collection {
 
     model.__postAdd({ recursive: 1 });
     this.__onAddEnd();
-  }
+  },
 
-  __onAddEnd = debounce(function () {
+  __onAddEnd: debounce(function () {
     // TODO to check symbols on load, probably this might be removed as symbols
     // are always recovered from the model
     // const { domc } = this;
@@ -295,5 +295,5 @@ export default class Components extends Backbone.Collection {
     //   });
     // };
     // onAll(toCheck);
-  });
-}
+  }),
+});

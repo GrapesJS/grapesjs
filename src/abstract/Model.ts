@@ -26,7 +26,7 @@ export default class Model<
     return this._module.config;
   }
 
-  public get em() {
+  protected get em() {
     return this._module.em;
   }
 }

@@ -1,14 +1,15 @@
-import { Model } from "../../abstract";
-import { evPageSelect } from "../../pages";
-import Frames from "./Frames";
-import Page from "../../pages/model/Page";
-import CanvasModule from "..";
+import { Model } from '../../common';
+import Backbone from 'backbone';
+import { evPageSelect } from '../../pages';
+import Frames from './Frames';
+import EditorModel from '../../editor/model/Editor';
+import Page from '../../pages/model/Page';
 
-export default class Canvas extends Model<CanvasModule> {
+export default class Canvas extends Backbone.Model {
   defaults() {
     return {
       frame: '',
-      frames: [],
+      frames: new Frames(),
       rulers: false,
       zoom: 100,
       x: 0,
@@ -19,17 +20,18 @@ export default class Canvas extends Model<CanvasModule> {
       styles: [],
     };
   }
+  em: EditorModel;
+  config: any;
 
-  constructor(module: CanvasModule) {
-    const { em, config } = module;
-    const { scripts, styles } = config;
-    super(module, {scripts, styles});
-    this.set("frames", new Frames(module))
-    this.listenTo(this, "change:zoom", this.onZoomChange);
-    this.listenTo(em, "change:device", this.updateDevice);
+  constructor(props: any, config: any = {}) {
+    super(props);
+    const { em } = config;
+    this.config = config;
+    this.em = em;
+    this.listenTo(this, 'change:zoom', this.onZoomChange);
+    this.listenTo(em, 'change:device', this.updateDevice);
     this.listenTo(em, evPageSelect, this._pageUpdated);
   }
-
   get frames(): Frames {
     return this.get('frames');
   }
