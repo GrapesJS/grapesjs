@@ -324,6 +324,23 @@ describe('Css Composer', () => {
       expect(obj.get(ruleId.getSelectors())).toBe(ruleId);
     });
 
+    describe('getRules', () => {
+      test('Get rule by class selectors', () => {
+        obj.addCollection(`
+          .aaa.bbb {
+            display:flex;
+            padding: 10px 0;
+            background:green;
+          }
+        `);
+        const [result] = obj.getRules('.aaa.bbb');
+        expect(result.selectorsToString()).toBe('.aaa.bbb');
+        // TODO The order of classes should not matter
+        // const [result2] = obj.getRules('.bbb.aaa');
+        // expect(result2.selectorsToString()).toBe('.aaa.bbb');
+      });
+    });
+
     describe('Collections', () => {
       test('Add a single rule as CSS string', () => {
         const cssRule = '.test-rule{color:red;}';

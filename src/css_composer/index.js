@@ -324,8 +324,9 @@ export default class CssComposer extends Module {
   getRules(selector) {
     const rules = this.getAll();
     if (!selector) return [...rules.models];
+    const optRuleSel = { sort: true };
     const sels = isString(selector) ? selector.split(',').map(s => s.trim()) : selector;
-    const result = rules.filter(r => sels.indexOf(r.getSelectors().getFullString()) >= 0);
+    const result = rules.filter(r => sels.indexOf(r.getSelectors().getFullString(null, optRuleSel)) >= 0);
     return result;
   }
 

@@ -1,16 +1,13 @@
-import { result, forEach, isEmpty, isString } from "underscore";
-import CanvasModule from "..";
+import { result, forEach, isEmpty, isString } from 'underscore';
 import { Model } from "../../abstract";
-import Component from "../../dom_components/model/Component";
-import Components from "../../dom_components/model/Components";
-import ComponentWrapper from "../../dom_components/model/ComponentWrapper";
-import EditorModel from "../../editor/model/Editor";
-import { isComponent, isObject } from "../../utils/mixins";
-import FrameView from "../view/FrameView";
-import Frames from "./Frames";
+import CanvasModule from "..";
+import ComponentWrapper from '../../dom_components/model/ComponentWrapper';
+import { isComponent, isObject } from '../../utils/mixins';
+import FrameView from '../view/FrameView';
+import Frames from './Frames';
 
-const keyAutoW = "__aw";
-const keyAutoH = "__ah";
+const keyAutoW = '__aw';
+const keyAutoH = '__ah';
 
 /**
  * @property {Object|String} component Wrapper component definition. You can also pass an HTML string as components of the default wrapper component.
