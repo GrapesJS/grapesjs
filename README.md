@@ -210,4 +210,4 @@ BSD 3-clause
 
 [Documentation]: <https://grapesjs.com/docs/>
 [API-Reference]: <https://grapesjs.com/docs/api/>
-[CMS]: <https://it.wikipedia.org/wiki/Content_management_system>
+[CMS]: <https://en.wikipedia.org/wiki/Content_management_system>
