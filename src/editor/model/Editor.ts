@@ -822,7 +822,7 @@ export default class EditorModel extends Model {
   }
 
   setCurrentFrame(frameView?: FrameView) {
-    return this.set('currentFrame', frameView);
+    return this.set("currentFrame", frameView);
   }
 
   getCurrentFrame(): FrameView {

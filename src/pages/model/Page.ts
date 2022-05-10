@@ -25,8 +25,8 @@ export default class Page extends Model {
       ['component', 'styles'].map((i) => this.unset(i));
     }
     const frms: any[] = props.frames || [defFrame];
-    const frames = new Frames(em.get('Canvas'),
-      frms?.map((model) => new Frame(em.get('Canvas'), model))
+    const frames = new Frames(em.get("Canvas"),
+      frms?.map((model) => new Frame(em.get("Canvas"), model))
     );
     frames.page = this;
     this.set('frames', frames);

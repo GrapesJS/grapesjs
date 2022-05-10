@@ -1,6 +1,6 @@
 import { result, forEach, isEmpty, isString } from 'underscore';
-import { Model } from '../../abstract';
-import CanvasModule from '..';
+import { Model } from "../../abstract";
+import CanvasModule from "..";
 import ComponentWrapper from '../../dom_components/model/ComponentWrapper';
 import { isComponent, isObject } from '../../utils/mixins';
 import FrameView from '../view/FrameView';
@@ -84,7 +84,7 @@ export default class Frame extends Model<CanvasModule> {
   }
 
   get head(): {tag: string, attributes: any}[]{
-    return this.get('head');
+    return this.get("head");
   }
 
   onRemove() {
@@ -121,7 +121,7 @@ export default class Frame extends Model<CanvasModule> {
   }
 
   setHead(value: {tag: string, attributes: any}[]) {
-    return this.set('head', [...value]);
+    return this.set("head", [...value]);
   }
 
   addHeadItem(item: {tag: string, attributes: any}) {

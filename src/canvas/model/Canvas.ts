@@ -1,8 +1,8 @@
-import { Model } from '../../abstract';
-import { evPageSelect } from '../../pages';
-import Frames from './Frames';
-import Page from '../../pages/model/Page';
-import CanvasModule from '..';
+import { Model } from "../../abstract";
+import { evPageSelect } from "../../pages";
+import Frames from "./Frames";
+import Page from "../../pages/model/Page";
+import CanvasModule from "..";
 
 export default class Canvas extends Model<CanvasModule> {
   defaults() {
@@ -24,9 +24,9 @@ export default class Canvas extends Model<CanvasModule> {
     const { em, config } = module;
     const { scripts, styles } = config;
     super(module, {scripts, styles});
-    this.set('frames', new Frames(module))
-    this.listenTo(this, 'change:zoom', this.onZoomChange);
-    this.listenTo(em, 'change:device', this.updateDevice);
+    this.set("frames", new Frames(module))
+    this.listenTo(this, "change:zoom", this.onZoomChange);
+    this.listenTo(em, "change:device", this.updateDevice);
     this.listenTo(em, evPageSelect, this._pageUpdated);
   }
 

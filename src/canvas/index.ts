@@ -79,7 +79,7 @@ export default class CanvasModule extends Module<typeof defaults> {
    * @private
    */
   constructor(em: EditorModel) {
-    super(em, 'Canvas', defaults)
+    super(em, "Canvas", defaults)
 
     this.canvas = new Canvas(this);
     this.model = this.canvas;
