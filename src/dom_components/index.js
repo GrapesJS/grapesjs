@@ -44,8 +44,6 @@
  * * [getComponents](#getcomponents)
  * * [addComponent](#addcomponent)
  * * [clear](#clear)
- * * [load](#load)
- * * [store](#store)
  * * [addType](#addtype)
  * * [getType](#gettype)
  * * [getTypes](#gettypes)

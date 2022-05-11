@@ -36,8 +36,6 @@
  * * [getAll](#getall)
  * * [getAllVisible](#getallvisible)
  * * [remove](#remove)
- * * [store](#store)
- * * [load](#load)
  * * [getContainer](#getcontainer)
  *
  * [Asset]: asset.html
