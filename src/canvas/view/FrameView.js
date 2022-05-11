@@ -186,8 +186,7 @@ export default class FrameView extends View {
       const { lastClientY } = this;
       const canvas = this.em.get('Canvas');
       const win = this.getWindow();
-      const body = this.getBody();
-      const actualTop = body.scrollTop;
+      const actualTop = win.pageYOffset;
       const clientY = lastClientY || 0;
       const limitTop = canvas.getConfig().autoscrollLimit;
       const limitBottom = this.getRect().height - limitTop;
