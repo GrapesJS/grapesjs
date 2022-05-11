@@ -1,5 +1,6 @@
 import { isUndefined } from 'underscore';
 import { Model } from '../../common';
+import EditorModel from '../../editor/model/Editor';
 
 /**
  * @typedef Trait
@@ -11,7 +12,28 @@ import { Model } from '../../common';
  *
  */
 export default class Trait extends Model {
-  initialize() {
+
+  //@ts-ignore
+  get defaults(): any {return{
+    type: 'text',
+    label: '',
+    name: '',
+    min: '',
+    max: '',
+    unit: '',
+    step: 1,
+    value: '',
+    target: '',
+    default: '',
+    placeholder: '',
+    changeProp: 0,
+    options: [],
+  }};
+  target?: any;
+  em?: EditorModel;
+  
+  constructor(prop = {}) {
+    super(prop);
     const { target, name, changeProp } = this.attributes;
     !this.get('id') && this.set('id', name);
 
@@ -53,7 +75,7 @@ export default class Trait extends Model {
    * @param {Boolean} [opts.locale=true] Use the locale string from i18n module.
    * @returns {String}
    */
-  getLabel(opts = {}) {
+  getLabel(opts: any = {}) {
     const { locale = true } = opts;
     const id = this.getId();
     const name = this.get('label') || this.getName();
@@ -76,16 +98,16 @@ export default class Trait extends Model {
    * @param {Object} [opts={}] Options.
    * @param {Boolean} [opts.partial] If `true` the update won't be considered complete (not stored in UndoManager).
    */
-  setValue(value, opts = {}) {
-    const valueOpts = {};
+  setValue(value: any, opts?: {partial?: boolean}) {
+    const valueOpts: {avoidStore?: boolean} = {};
 
-    if (opts.partial) {
+    if (opts?.partial) {
       valueOpts.avoidStore = true;
     }
 
     this.setTargetValue(value, valueOpts);
 
-    if (opts.partial === false) {
+    if (opts?.partial === false) {
       this.setTargetValue('');
       this.setTargetValue(value);
     }
@@ -118,7 +140,7 @@ export default class Trait extends Model {
     return !isUndefined(value) ? value : '';
   }
 
-  setTargetValue(value, opts = {}) {
+  setTargetValue(value: any, opts = {}) {
     const target = this.target;
     const name = this.get('name');
     if (isUndefined(value)) return;
@@ -139,7 +161,7 @@ export default class Trait extends Model {
     }
   }
 
-  setValueFromInput(value, final = 1, opts = {}) {
+  setValueFromInput(value: any, final = 1, opts = {}) {
     const toSet = { value };
     this.set(toSet, { ...opts, avoidStore: 1 });
 
@@ -162,20 +184,4 @@ export default class Trait extends Model {
 
     return value || this.get('value') || this.get('default');
   }
-}
-
-Trait.prototype.defaults = {
-  type: 'text',
-  label: '',
-  name: '',
-  min: '',
-  max: '',
-  unit: '',
-  step: 1,
-  value: '',
-  target: '',
-  default: '',
-  placeholder: '',
-  changeProp: 0,
-  options: [],
 };
