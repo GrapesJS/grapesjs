@@ -509,7 +509,7 @@ export default class Component extends StyleableModel {
 
   /**
    * Return all component's attributes
-   * @return {Object}
+   * @return {any}
    */
   getAttributes(opts = {}) {
     const { em } = this;

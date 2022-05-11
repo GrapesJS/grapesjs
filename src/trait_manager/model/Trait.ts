@@ -1,5 +1,6 @@
 import { isUndefined } from 'underscore';
 import { Model } from '../../common';
+import Component from '../../dom_components/model/Component';
 import EditorModel from '../../editor/model/Editor';
 
 /**
@@ -29,7 +30,7 @@ export default class Trait extends Model {
     changeProp: 0,
     options: [],
   }};
-  target?: any;
+  target!: Component;
   em?: EditorModel;
   
   constructor(prop = {}) {

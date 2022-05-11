@@ -1,6 +1,7 @@
 import { AddOptions } from 'backbone';
 import { isString, isArray } from 'underscore';
 import { Collection } from '../../common';
+import Component from '../../dom_components/model/Component';
 import EditorModel from '../../editor/model/Editor';
 import Trait from './Trait';
 import TraitFactory from './TraitFactory';
@@ -8,7 +9,7 @@ import TraitFactory from './TraitFactory';
 export default class Traits extends Collection<Trait> {
 
   em: EditorModel;
-  target?: any;
+  target!: Component;
   constructor(coll: any, options:any = {}) {
     super(coll);
     this.em = options.em;
@@ -29,7 +30,7 @@ export default class Traits extends Collection<Trait> {
     }
   }
 
-  setTarget(target: any) {
+  setTarget(target: Component) {
     this.target = target;
   }
 
