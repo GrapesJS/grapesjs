@@ -75,7 +75,7 @@ export default class TraitView extends Backbone.View {
 
   /**
    * Fires when the input is changed
-   * @private
+   * @protected
    */
   onChange(event) {
     const el = this.getInputElem();
@@ -113,7 +113,7 @@ export default class TraitView extends Backbone.View {
 
   /**
    * Render label
-   * @private
+   * @protected
    */
   renderLabel() {
     const { $el, target } = this;
@@ -153,7 +153,7 @@ export default class TraitView extends Backbone.View {
   /**
    * Returns input element
    * @return {HTMLElement}
-   * @private
+   * @protected
    */
   getInputEl() {
     if (!this.$input) {

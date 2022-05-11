@@ -20,7 +20,7 @@ export interface IBaseModule<TConfig extends any> {
 }
 
 export interface ModuleConfig {
-  name: string;
+  name?: string;
   stylePrefix?: string;
 }
 
@@ -81,6 +81,18 @@ export default abstract class Module<T extends ModuleConfig = ModuleConfig>
     this.em.logWarning(`[${this.name}]: ${str}`, opts);
   }
 
+  __appendTo() {
+    //@ts-ignore
+    const elTo = this.config.appendTo;
+
+    if (elTo) {
+      const el = isElement(elTo) ? elTo : document.querySelector(elTo);
+      if (!el) return this.__logWarn('"appendTo" element not found');
+      el.appendChild(this.render());
+    }
+  }
+  render() {}
+
   postRender?(view: any): void;
 }
 
@@ -103,7 +115,6 @@ export abstract class ItemManagerModule<
   abstract storageKey: string;
   abstract destroy(): void;
   postLoad(key: any): void {}
-  render() {}
 
   getProjectData(data?: any) {
     const obj: any = {};
@@ -204,17 +215,6 @@ export abstract class ItemManagerModule<
     const options = opts || coll;
     em && events.all && em.trigger(events.all, { event, model, options });
     this.__onAllEvent();
-  }
-
-  __appendTo() {
-    //@ts-ignore
-    const elTo = this.config.appendTo;
-
-    if (elTo) {
-      const el = isElement(elTo) ? elTo : document.querySelector(elTo);
-      if (!el) return this.__logWarn('"appendTo" element not found');
-      el.appendChild(this.render());
-    }
   }
 
   __onAllEvent() {}

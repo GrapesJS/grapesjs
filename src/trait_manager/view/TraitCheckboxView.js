@@ -13,7 +13,7 @@ export default class TraitCheckboxView extends TraitView {
 
   /**
    * Fires when the input is changed
-   * @private
+   * @protected
    */
   onChange() {
     const value = this.getInputElem().checked;
@@ -38,7 +38,7 @@ export default class TraitCheckboxView extends TraitView {
   /**
    * Returns input element
    * @return {HTMLElement}
-   * @private
+   * @protected
    */
   getInputEl(...args) {
     const toInit = !this.$input;

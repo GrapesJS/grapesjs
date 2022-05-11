@@ -12,7 +12,7 @@ export default class TraitNumberView extends TraitView {
   /**
    * Returns input element
    * @return {HTMLElement}
-   * @private
+   * @protected
    */
   getInputEl() {
     if (!this.input) {

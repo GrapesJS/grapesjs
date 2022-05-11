@@ -4,7 +4,9 @@ import TraitView from './TraitView';
 export default class TraitButtonView extends TraitView {
   eventCapture = ['click button'];
 
-  templateInput = '';
+  templateInput() {
+    return '';
+  }
 
   onChange() {
     this.handleClick();
@@ -29,14 +31,22 @@ export default class TraitButtonView extends TraitView {
     }
   }
 
+  /**
+   * Returns input element
+   * @return {HTMLElement}
+   * @protected
+   */
   getInputEl() {
     const { model, ppfx } = this;
-    const { labelButton, text, full } = model.props();
-    const label = labelButton || text;
-    const className = `${ppfx}btn`;
-    const input = `<button type="button" class="${className}-prim${
-      full ? ` ${className}--full` : ''
-    }">${label}</button>`;
-    return input;
+    if (!this.$input) {
+      const { labelButton, text, full } = model.props();
+      const label = labelButton || text;
+      const className = `${ppfx}btn`;
+      const input = $(
+        `<button type="button" class="${className}-prim${full ? ` ${className}--full` : ''}">${label}</button>`
+      );
+      this.$input = input;
+    }
+    return this.$input.get(0);
   }
 }

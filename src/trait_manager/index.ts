@@ -1,5 +1,5 @@
 import { debounce } from 'underscore';
-import { Model } from '../abstract';
+import { Model } from '../common';
 import defaults from './config/config';
 import TraitsView from './view/TraitsView';
 import TraitView from './view/TraitView';
@@ -8,12 +8,14 @@ import TraitCheckboxView from './view/TraitCheckboxView';
 import TraitNumberView from './view/TraitNumberView';
 import TraitColorView from './view/TraitColorView';
 import TraitButtonView from './view/TraitButtonView';
-import Module from '../abstract/moduleLegacy';
+import Module from '../abstract/Module';
+import Component from '../dom_components/model/Component';
+import EditorModel from '../editor/model/Editor';
 
 export const evAll = 'trait';
 export const evPfx = `${evAll}:`;
 export const evCustom = `${evPfx}custom`;
-const typesDef = {
+const typesDef: {[id: string]: {new (o: any): TraitView}} = {
   text: TraitView,
   number: TraitNumberView,
   select: TraitSelectView,
@@ -22,9 +24,10 @@ const typesDef = {
   button: TraitButtonView,
 };
 
-export default class TraitsModule extends Module {
+export default class TraitsModule extends Module<typeof defaults> {
   TraitsView = TraitsView;
 
+  //@ts-ignore
   get events() {
     return {
       all: evAll,
@@ -32,32 +35,26 @@ export default class TraitsModule extends Module {
     };
   }
 
-  /**
-   * Name of the module
-   * @type {String}
-   * @private
-   */
-  name = 'TraitManager';
+  view?: TraitsView;
+  types: {[id: string]: {new (o: any): TraitView}}
+  model: Model;
+  __ctn?: any;
 
   /**
    * Initialize module. Automatically called with a new instance of the editor
    * @param {Object} config Configurations
    * @private
    */
-  init(config = {}) {
-    this.__initConfig(defaults, config);
-    const c = this.config;
+  constructor(em: EditorModel) {
+    super(em, 'TraitManager');
     const model = new Model();
     this.model = model;
-    const { em } = this;
-    const ppfx = c.pStylePrefix;
-    this.types = { ...typesDef };
-    ppfx && (c.stylePrefix = `${ppfx}${c.stylePrefix}`);
+    this.types = typesDef;
 
-    const upAll = debounce(() => this.__upSel());
+    const upAll = debounce(() => this.__upSel(), 0);
     model.listenTo(em, 'component:toggled', upAll);
 
-    const update = debounce(() => this.__onUp());
+    const update = debounce(() => this.__onUp(), 0);
     model.listenTo(em, 'trait:update', update);
 
     return this;
@@ -71,7 +68,7 @@ export default class TraitsModule extends Module {
     this.select(this.getSelected());
   }
 
-  select(component) {
+  select(component?: Component) {
     const traits = component ? component.getTraits() : [];
     this.model.set({ component, traits });
     this.__trgCustom();
@@ -85,7 +82,7 @@ export default class TraitsModule extends Module {
     return this.model.get('traits') || [];
   }
 
-  __trgCustom(opts = {}) {
+  __trgCustom(opts:any = {}) {
     this.__ctn = this.__ctn || opts.container;
     this.em.trigger(this.events.custom, { container: this.__ctn });
   }
@@ -108,8 +105,9 @@ export default class TraitsModule extends Module {
    * @param {string} name Type name
    * @param {Object} methods Object representing the trait
    */
-  addType(name, trait) {
+  addType(name: string, trait: any) {
     const baseView = this.getType('text');
+    //@ts-ignore
     this.types[name] = baseView.extend(trait);
   }
 
@@ -118,7 +116,7 @@ export default class TraitsModule extends Module {
    * @param {string} name Type name
    * @return {Object}
    */
-  getType(name) {
+  getType(name: string) {
     return this.getTypes()[name];
   }
 
@@ -138,7 +136,7 @@ export default class TraitsModule extends Module {
       {
         el,
         collection: [],
-        editor: config.em,
+        editor: this.em,
         config,
       },
       this.getTypes()
@@ -148,6 +146,6 @@ export default class TraitsModule extends Module {
   }
 
   destroy() {
-    this.__destroy();
+    //this.__destroy();
   }
 }

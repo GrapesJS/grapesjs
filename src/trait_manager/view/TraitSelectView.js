@@ -23,7 +23,7 @@ export default class TraitSelectView extends TraitView {
   /**
    * Returns input element
    * @return {HTMLElement}
-   * @private
+   * @protected
    */
   getInputEl() {
     if (!this.$input) {

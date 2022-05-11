@@ -2,12 +2,14 @@ import TraitView from './TraitView';
 import InputColor from '../../domain_abstract/ui/InputColor';
 
 export default class TraitColorView extends TraitView {
-  templateInput = '';
+  templateInput() {
+    return '';
+  }
 
   /**
    * Returns input element
    * @return {HTMLElement}
-   * @private
+   * @protected
    */
   getInputEl() {
     if (!this.input) {
