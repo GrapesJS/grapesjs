@@ -42,7 +42,7 @@ export default class Traits extends Collection<Trait> {
     if (isString(models) || isArray(models)) {
       const tm = em && em.get && em.get('TraitManager');
       const tmOpts = tm && tm.getConfig();
-      const tf = TraitFactory(tmOpts);
+      const tf = new TraitFactory(tmOpts);
 
       if (isString(models)) {
         models = [models] as any[];

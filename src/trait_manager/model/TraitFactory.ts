@@ -1,16 +1,20 @@
-export default (config = {}) => ({
+import Trait from "./Trait";
+
+export default class TraitFactory {
+  config: any
+  constructor(config = {}){
+    this.config = config;
+  }
   /**
    * Build props object by their name
-   * @param  {Array<string>|string} props Array of properties name
-   * @return {Array<Object>}
    */
-  build(props) {
+  build(props: string| string[]) {
     const objs = [];
 
     if (typeof props === 'string') props = [props];
 
     for (let i = 0; i < props.length; i++) {
-      const obj = {};
+      const obj: any = {};
       const prop = props[i];
       obj.name = prop;
 
@@ -18,13 +22,13 @@ export default (config = {}) => ({
         case 'target':
           obj.type = 'select';
           obj.default = false;
-          obj.options = config.optionsTarget;
+          obj.options = this.config.optionsTarget;
           break;
       }
 
-      objs.push(obj);
+      objs.push(new Trait(obj));
     }
 
     return objs;
   }
-});
+};
