@@ -9,12 +9,7 @@ export default class TraitNumberView extends TraitView {
     return !isUndefined(value) && value !== '' ? value + unit : model.get('default');
   }
 
-  /**
-   * Returns input element
-   * @return {HTMLElement}
-   * @protected
-   */
-  getInputEl() {
+  protected getInputEl() {
     if (!this.input) {
       const { ppfx, model } = this;
       const value = this.getModelValue();
@@ -24,12 +19,13 @@ export default class TraitNumberView extends TraitView {
         model: model,
         ppfx,
       });
-      this.input = inputNumber.render();
-      this.$input = this.input.inputEl;
-      this.$unit = this.input.unitEl;
-      model.set('value', value, { fromTarget: 1 });
+      inputNumber.render();
+      this.$input = inputNumber.inputEl as JQuery<HTMLInputElement>;
+      //this.$unit = inputNumber.unitEl;
+      //@ts-ignore
+      model.set('value', value, { fromTarget: true });
       this.$input.val(value);
-      this.input = inputNumber.el;
+      this.input = inputNumber.el as HTMLInputElement;
     }
     return this.input;
   }

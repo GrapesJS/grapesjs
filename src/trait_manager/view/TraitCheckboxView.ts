@@ -4,23 +4,19 @@ import TraitView from './TraitView';
 export default class TraitCheckboxView extends TraitView {
   appendInput = false;
 
-  templateInput() {
+  protected get templateInput() {
     const { ppfx, clsField } = this;
     return `<label class="${clsField}" data-input>
     <i class="${ppfx}chk-icon"></i>
   </label>`;
   }
 
-  /**
-   * Fires when the input is changed
-   * @protected
-   */
-  onChange() {
+  protected onChange() {
     const value = this.getInputElem().checked;
     this.model.set('value', this.getCheckedValue(value));
   }
 
-  getCheckedValue(checked) {
+  private getCheckedValue(checked: boolean) {
     let result = checked;
     const { valueTrue, valueFalse } = this.model.attributes;
 
@@ -35,14 +31,9 @@ export default class TraitCheckboxView extends TraitView {
     return result;
   }
 
-  /**
-   * Returns input element
-   * @return {HTMLElement}
-   * @protected
-   */
-  getInputEl(...args) {
+  protected getInputEl() {
     const toInit = !this.$input;
-    const el = TraitView.prototype.getInputEl.apply(this, args);
+    const el = super.getInputEl();
 
     if (toInit) {
       let checked, targetValue;

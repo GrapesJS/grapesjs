@@ -1,54 +1,70 @@
-import Backbone from 'backbone';
+import Backbone, { EventHandler } from 'backbone';
 import { isUndefined, isString, isFunction } from 'underscore';
-import { capitalize } from 'utils/mixins';
+import { capitalize } from '../../utils/mixins';
+import Component from '../../dom_components/model/Component';
+import EditorModel from '../../editor/model/Editor';
+import Trait from '../model/Trait';
 
 const $ = Backbone.$;
 
-export default class TraitView extends Backbone.View {
-  events = {};
-  // protected eventCapture = ['change'];
+export default class TraitView extends Backbone.View<Trait> {
+  events: any = {}
+  get eventCapture(){return ['change']};
 
   appendInput = true;
+  noLabel = false;
 
-  attributes() {
+  pfx: string;
+  ppfx: string;
+  config: any;
+  clsField: string;
+  elInput!: HTMLInputElement;
+  input?: HTMLInputElement;
+  $input?: JQuery<HTMLInputElement>;
+
+  em: EditorModel;
+  get target() {
+    return this.model.target;
+  }
+
+  //@ts-ignore
+  get attributes() {
     return this.model.get('attributes');
   }
 
-  templateLabel() {
+  protected get templateLabel() {
     const { ppfx } = this;
     const label = this.getLabel();
     return `<div class="${ppfx}label" title="${label}">${label}</div>`;
   }
 
-  templateInput() {
+  protected get templateInput() {
     const { clsField } = this;
     return `<div class="${clsField}" data-input></div>`;
   }
 
-  constructor(o = {}) {
+  constructor(o: any = {}) {
     super(o);
     const { config = {} } = o;
     const { model, eventCapture } = this;
-    const { target } = model;
     const { type } = model.attributes;
     this.config = config;
     this.em = config.em;
     this.pfx = config.stylePrefix || '';
     this.ppfx = config.pStylePrefix || '';
-    this.target = target;
     const { ppfx } = this;
     this.clsField = `${ppfx}field ${ppfx}field-${type}`;
-    [
-      ['change:value', this.onValueChange],
-      ['remove', this.removeView],
-    ].forEach(([event, clb]) => {
+    const signupEvents: {[id: string]: EventHandler} = {};
+    signupEvents['change:value'] = this.onValueChange;
+    signupEvents['remove'] = this.removeView;
+    Object.entries(signupEvents).forEach(([event, clb]) => {
       model.off(event, clb);
       this.listenTo(model, event, clb);
     });
+    //@ts-ignore
     model.view = this;
     this.listenTo(model, 'change:label', this.render);
     this.listenTo(model, 'change:placeholder', this.rerender);
-    this.events = {};
     eventCapture.forEach(event => (this.events[event] = 'onChange'));
     this.delegateEvents();
     this.init();
@@ -69,15 +85,19 @@ export default class TraitView extends Backbone.View {
 
   init() {}
   removed() {}
-  onRender() {}
-  onUpdate() {}
-  onEvent() {}
+  onRender(event: {component: Component, trait: Trait, elInput: HTMLElement}) {}
+  onUpdate(event: {component: Component, trait: Trait, elInput: HTMLElement}) {}
+  onEvent(event: {
+    component: Component,
+    trait: Trait,
+    elInput: HTMLElement,
+    event: Event
+  }) {}
 
   /**
    * Fires when the input is changed
-   * @protected
    */
-  onChange(event) {
+  protected onChange(event: Event) {
     const el = this.getInputElem();
     if (el && !isUndefined(el.value)) {
       this.model.set('value', el.value);
@@ -92,42 +112,27 @@ export default class TraitView extends Backbone.View {
     return this.model.get('value');
   }
 
-  setInputValue(value) {
-    const el = this.getInputElem();
-    el && (el.value = value);
-  }
-
   /**
    * On change callback
    * @private
    */
-  onValueChange(model, value, opts = {}) {
+  onValueChange(model: Trait, value: any, opts: any = {}) {
     if (opts.fromTarget) {
-      this.setInputValue(model.get('value'));
+      const el = this.getInputElem();
+      el && (el.value = value);
       this.postUpdate();
     } else {
-      const val = this.getValueForTarget();
-      model.setTargetValue(val, opts);
+      model.setTargetValue(value, opts);
     }
   }
 
   /**
    * Render label
-   * @protected
+   * @private
    */
-  renderLabel() {
-    const { $el, target } = this;
-    const label = this.getLabel();
-    let tpl = this.templateLabel(target);
-
-    if (this.createLabel) {
-      tpl =
-        this.createLabel({
-          label,
-          component: target,
-          trait: this,
-        }) || '';
-    }
+  private renderLabel() {
+    const { $el } = this;
+    let tpl = this.templateLabel;
 
     $el.find('[data-label]').append(tpl);
   }
@@ -137,7 +142,7 @@ export default class TraitView extends Backbone.View {
    * @return {string}
    * @private
    */
-  getLabel() {
+  getLabel(): string {
     const { em } = this;
     const { label, name } = this.model.attributes;
     return em.t(`traitManager.traits.labels.${name}`) || capitalize(label || name).replace(/-/g, ' ');
@@ -150,12 +155,7 @@ export default class TraitView extends Backbone.View {
     return this.target;
   }
 
-  /**
-   * Returns input element
-   * @return {HTMLElement}
-   * @protected
-   */
-  getInputEl() {
+  protected getInputEl() {
     if (!this.$input) {
       const { em, model } = this;
       const md = model;
@@ -165,7 +165,7 @@ export default class TraitView extends Backbone.View {
       const min = md.get('min');
       const max = md.get('max');
       const value = this.getModelValue();
-      const input = $(`<input type="${type}" placeholder="${plh}">`);
+      const input = $(`<input type="${type}" placeholder="${plh}">`) as JQuery<HTMLInputElement>;
       const i18nAttr = em.t(`traitManager.traits.attributes.${name}`) || {};
       input.attr(i18nAttr);
 
@@ -184,7 +184,7 @@ export default class TraitView extends Backbone.View {
 
       this.$input = input;
     }
-    return this.$input.get(0);
+    return this.$input.get(0) as HTMLInputElement;
   }
 
   getInputElem() {
@@ -220,20 +220,24 @@ export default class TraitView extends Backbone.View {
     const { $el, appendInput, model } = this;
     const inputs = $el.find('[data-input]');
     const el = inputs[inputs.length - 1];
+    //@ts-ignore
     let tpl = model.el;
 
     if (!tpl) {
+      //@ts-ignore
       tpl = this.createInput ? this.createInput(this.getClbOpts()) : this.getInputEl();
     }
 
     if (isString(tpl)) {
       el.innerHTML = tpl;
+      //@ts-ignore
       this.elInput = el.firstChild;
     } else {
       appendInput ? el.appendChild(tpl) : el.insertBefore(tpl, el.firstChild);
       this.elInput = tpl;
     }
 
+    //@ts-ignore
     model.el = this.elInput;
   }
 
@@ -243,6 +247,7 @@ export default class TraitView extends Backbone.View {
   }
 
   rerender() {
+    //@ts-ignore
     this.model.el = null;
     this.render();
   }
@@ -256,17 +261,11 @@ export default class TraitView extends Backbone.View {
     const { type, id } = model.attributes;
     const hasLabel = this.hasLabel && this.hasLabel();
     const cls = `${pfx}trait`;
-    this.$input = null;
+    this.$input = undefined;
     let tmpl = `<div class="${cls} ${cls}--${type}">
       ${hasLabel ? `<div class="${ppfx}label-wrp" data-label></div>` : ''}
       <div class="${ppfx}field-wrp ${ppfx}field-wrp--${type}" data-input>
-        ${
-          this.templateInput
-            ? isFunction(this.templateInput)
-              ? this.templateInput(this.getClbOpts())
-              : this.templateInput
-            : ''
-        }
+        ${this.templateInput}
       </div>
     </div>`;
     $el.empty().append(tmpl);
@@ -278,4 +277,3 @@ export default class TraitView extends Backbone.View {
     return this;
   }
 }
-TraitView.prototype.eventCapture = ['change'];

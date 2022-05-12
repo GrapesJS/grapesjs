@@ -10,7 +10,7 @@ export default class TraitSelectView extends TraitView {
     this.listenTo(this.model, 'change:options', this.rerender);
   }
 
-  templateInput() {
+  protected get templateInput() {
     const { ppfx, clsField } = this;
     return `<div class="${clsField}">
       <div data-input></div>
@@ -20,17 +20,12 @@ export default class TraitSelectView extends TraitView {
     </div>`;
   }
 
-  /**
-   * Returns input element
-   * @return {HTMLElement}
-   * @protected
-   */
-  getInputEl() {
+  protected getInputEl() {
     if (!this.$input) {
       const { model, em } = this;
       const propName = model.get('name');
-      const opts = model.get('options') || [];
-      const values = [];
+      const opts = model.get('options') as any[] || [];
+      const values: string[] = [];
       let input = '<select>';
 
       opts.forEach(el => {
@@ -58,6 +53,6 @@ export default class TraitSelectView extends TraitView {
       !isUndefined(valResult) && this.$input.val(valResult);
     }
 
-    return this.$input.get(0);
+    return this.$input.get(0) as HTMLInputElement;
   }
 }

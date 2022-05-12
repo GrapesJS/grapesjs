@@ -516,7 +516,7 @@ declare namespace grapesjs {
 
   interface TraitView {
     noLabel?: boolean;
-    templateInput?: string | ((options: { trait: Trait }) => string);
+    templateInput?: string;
     eventCapture?: string[];
 
     onEvent?: (options: {
@@ -529,7 +529,6 @@ declare namespace grapesjs {
       component: Component;
     }) => void;
     createInput?: (options: { trait: Trait }) => HTMLElement;
-    createLabel?: (options: { label: string }) => string;
   }
 
   interface TraitManager {

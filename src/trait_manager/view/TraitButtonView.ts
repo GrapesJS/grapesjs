@@ -2,17 +2,17 @@ import { isString } from 'underscore';
 import TraitView from './TraitView';
 
 export default class TraitButtonView extends TraitView {
-  eventCapture = ['click button'];
+  get eventCapture(){return ['click button']};
 
-  templateInput() {
+  protected get templateInput() {
     return '';
   }
 
-  onChange() {
+  protected onChange() {
     this.handleClick();
   }
 
-  handleClick() {
+  private handleClick() {
     const { model, em } = this;
     const command = model.get('command');
 
@@ -25,28 +25,17 @@ export default class TraitButtonView extends TraitView {
     }
   }
 
-  renderLabel() {
-    if (this.model.get('label')) {
-      TraitView.prototype.renderLabel.apply(this, arguments);
-    }
-  }
-
-  /**
-   * Returns input element
-   * @return {HTMLElement}
-   * @protected
-   */
-  getInputEl() {
+  protected getInputEl() {
     const { model, ppfx } = this;
     if (!this.$input) {
       const { labelButton, text, full } = model.props();
       const label = labelButton || text;
       const className = `${ppfx}btn`;
-      const input = $(
+      const input = $<HTMLInputElement>(
         `<button type="button" class="${className}-prim${full ? ` ${className}--full` : ''}">${label}</button>`
       );
       this.$input = input;
     }
-    return this.$input.get(0);
+    return this.$input.get(0) as HTMLInputElement;
   }
 }
