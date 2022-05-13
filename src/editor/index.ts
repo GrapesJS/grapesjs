@@ -217,7 +217,10 @@ export default class EditorModule implements IBaseModule<typeof defaults> {
     return this.em.get('DeviceManager');
   }
 
-  //@deprecated
+  /**
+   * Returns configuration object
+   * @returns {any} Returns the configuration object or the value of the specified property
+   */
   getConfig(prop?: string) {
     const config = this.config;
     //@ts-ignore

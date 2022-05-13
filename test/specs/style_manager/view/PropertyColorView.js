@@ -89,7 +89,7 @@ describe('PropertyColorView', () => {
     setTimeout(() => {
       expect(view.getInputEl().value).toEqual(propValue);
       done();
-    }, 11);
+    }, 15);
   });
 
   describe('Init property', () => {

@@ -48,7 +48,7 @@ describe('DOM Components', () => {
       em = new Editor({
         avoidInlineStyle: 1,
       });
-      em.get('PageManager').onLoad();
+      em.loadOnStart();
       config = {
         em,
         storeWrapper: 1,
@@ -234,6 +234,39 @@ describe('DOM Components', () => {
       const comp = obj.getComponents().at(0);
       expect(comp.get('type')).toBe(id);
       expect(comp.get('editable')).toBe(1);
+    });
+
+    test('Remove and undo component with styles', done => {
+      const id = 'idtest2';
+      const um = em.get('UndoManager');
+      const cc = em.get('CssComposer');
+      const component = obj.addComponent(`
+      <div id="${id}" style="color:red; padding: 50px 100px">Text</div>
+      <style>
+        #${id} { background-color: red }
+      </style>`);
+      obj.getComponents().first().addStyle({ margin: '10px' });
+      const rule = cc.getAll().at(0);
+      const css = `#${id}{background-color:red;margin:10px;color:red;padding:50px 100px;}`;
+      expect(rule.toCSS()).toEqual(css);
+
+      setTimeout(() => {
+        // Undo is committed now
+        component.remove();
+        expect(obj.getComponents().length).toBe(0);
+        expect(cc.getAll().length).toBe(0);
+        um.undo();
+
+        expect(obj.getComponents().length).toBe(1);
+        expect(cc.getAll().length).toBe(1);
+        expect(obj.getComponents().at(0)).toBe(component);
+        expect(cc.getAll().at(0)).toBe(rule);
+
+        expect(em.getHtml({ component })).toEqual(`<div id="${id}">Text</div>`);
+        expect(rule.toCSS()).toEqual(css);
+
+        done();
+      });
     });
   });
 });

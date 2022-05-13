@@ -36,6 +36,9 @@ export default class Frame extends Model {
   em: EditorModel;
   view?: FrameView;
 
+  /**
+   * @hideconstructor
+   */
   constructor(props: any, opts: any) {
     super(props);
     const { em } = opts;
