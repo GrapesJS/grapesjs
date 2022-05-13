@@ -74,7 +74,8 @@ export default abstract class Module<T extends ModuleConfig = ModuleConfig>
   }
 
   getConfig(name?: string) {
-    return name ? this.config.name : this.config;
+    // @ts-ignore
+    return name ? this.config[name] : this.config;
   }
 
   __logWarn(str: string, opts = {}) {

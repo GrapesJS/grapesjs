@@ -454,7 +454,7 @@ export default class ComponentManager extends ItemManagerModule {
         const fn = target[next];
         const parentFn = srcToExt.prototype[next];
         if (fn && parentFn) {
-          res[next] = (...args: any[]) => {
+          res[next] = function (...args: any[]) {
             parentFn.bind(this)(...args);
             fn.bind(this)(...args);
           };

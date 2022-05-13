@@ -1,5 +1,5 @@
 import Backbone from 'backbone';
-import { isEmpty, each, keys } from 'underscore';
+import { isEmpty, each, keys, result } from 'underscore';
 import Components from '../model/Components';
 import ComponentsView from './ComponentsView';
 import Selectors from 'selector_manager/model/Selectors';
@@ -7,6 +7,10 @@ import { replaceWith } from 'utils/dom';
 import { setViewEl } from 'utils/mixins';
 
 export default class ComponentView extends Backbone.View {
+  static getEvents() {
+    return result(this.prototype, 'events');
+  }
+
   className() {
     return this.getClasses();
   }
@@ -45,7 +49,7 @@ export default class ComponentView extends Backbone.View {
     this.initClasses();
     this.initComponents({ avoidRender: 1 });
     this.events = {
-      ...this.events,
+      ...this.constructor.getEvents(),
       dragstart: 'handleDragStart',
     };
     this.delegateEvents();
