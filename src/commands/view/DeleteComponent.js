@@ -13,11 +13,7 @@ export default extend({}, SelectComponent, {
 
   enable() {
     var that = this;
-    this.$el
-      .find('*')
-      .mouseover(this.startDelete)
-      .mouseout(this.stopDelete)
-      .click(this.onDelete);
+    this.$el.find('*').mouseover(this.startDelete).mouseout(this.stopDelete).click(this.onDelete);
   },
 
   /**
@@ -74,5 +70,5 @@ export default extend({}, SelectComponent, {
    * */
   updateBadgeLabel(model) {
     this.badge.html('Remove ' + model.getName());
-  }
+  },
 });

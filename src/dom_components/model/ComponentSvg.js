@@ -10,7 +10,7 @@ export default Component.extend(
       type,
       tagName: type,
       highlightable: 0,
-      resizable: { ratioDefault: 1 }
+      resizable: { ratioDefault: 1 },
     },
 
     getName() {
@@ -18,9 +18,9 @@ export default Component.extend(
       let customName = this.get('custom-name');
       name = name.charAt(0).toUpperCase() + name.slice(1);
       return customName || name;
-    }
+    },
   },
   {
-    isComponent: el => toLowerCase(el.tagName) === type
+    isComponent: el => toLowerCase(el.tagName) === type,
   }
 );

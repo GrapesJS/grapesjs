@@ -59,152 +59,152 @@ import {
   isString,
   result,
   debounce,
-} from "underscore";
-import defaults from "./config/config";
-import Component, { keyUpdate, keyUpdateInside } from "./model/Component";
-import Components from "./model/Components";
-import ComponentView from "./view/ComponentView";
-import ComponentWrapperView from "./view/ComponentWrapperView";
-import ComponentsView from "./view/ComponentsView";
-import ComponentTableCell from "./model/ComponentTableCell";
-import ComponentTableCellView from "./view/ComponentTableCellView";
-import ComponentTableRow from "./model/ComponentTableRow";
-import ComponentTableRowView from "./view/ComponentTableRowView";
-import ComponentTable from "./model/ComponentTable";
-import ComponentTableView from "./view/ComponentTableView";
-import ComponentTableHead from "./model/ComponentTableHead";
-import ComponentTableHeadView from "./view/ComponentTableHeadView";
-import ComponentTableBody from "./model/ComponentTableBody";
-import ComponentTableBodyView from "./view/ComponentTableBodyView";
-import ComponentTableFoot from "./model/ComponentTableFoot";
-import ComponentTableFootView from "./view/ComponentTableFootView";
-import ComponentMap from "./model/ComponentMap";
-import ComponentMapView from "./view/ComponentMapView";
-import ComponentLink from "./model/ComponentLink";
-import ComponentLinkView from "./view/ComponentLinkView";
-import ComponentLabel from "./model/ComponentLabel";
-import ComponentLabelView from "./view/ComponentLabelView";
-import ComponentVideo from "./model/ComponentVideo";
-import ComponentVideoView from "./view/ComponentVideoView";
-import ComponentImage from "./model/ComponentImage";
-import ComponentImageView from "./view/ComponentImageView";
-import ComponentScript from "./model/ComponentScript";
-import ComponentScriptView from "./view/ComponentScriptView";
-import ComponentSvg from "./model/ComponentSvg";
-import ComponentSvgIn from "./model/ComponentSvgIn";
-import ComponentSvgView from "./view/ComponentSvgView";
-import ComponentComment from "./model/ComponentComment";
-import ComponentCommentView from "./view/ComponentCommentView";
-import ComponentTextNode from "./model/ComponentTextNode";
-import ComponentTextNodeView from "./view/ComponentTextNodeView";
-import ComponentText from "./model/ComponentText";
-import ComponentTextView from "./view/ComponentTextView";
-import ComponentWrapper from "./model/ComponentWrapper";
-import ComponentFrame from "./model/ComponentFrame";
-import ComponentFrameView from "./view/ComponentFrameView";
-import { ItemManagerModule } from "../abstract/Module";
-import EditorModel from "../editor/model/Editor";
-import { Model } from "backbone";
+} from 'underscore';
+import defaults from './config/config';
+import Component, { keyUpdate, keyUpdateInside } from './model/Component';
+import Components from './model/Components';
+import ComponentView from './view/ComponentView';
+import ComponentWrapperView from './view/ComponentWrapperView';
+import ComponentsView from './view/ComponentsView';
+import ComponentTableCell from './model/ComponentTableCell';
+import ComponentTableCellView from './view/ComponentTableCellView';
+import ComponentTableRow from './model/ComponentTableRow';
+import ComponentTableRowView from './view/ComponentTableRowView';
+import ComponentTable from './model/ComponentTable';
+import ComponentTableView from './view/ComponentTableView';
+import ComponentTableHead from './model/ComponentTableHead';
+import ComponentTableHeadView from './view/ComponentTableHeadView';
+import ComponentTableBody from './model/ComponentTableBody';
+import ComponentTableBodyView from './view/ComponentTableBodyView';
+import ComponentTableFoot from './model/ComponentTableFoot';
+import ComponentTableFootView from './view/ComponentTableFootView';
+import ComponentMap from './model/ComponentMap';
+import ComponentMapView from './view/ComponentMapView';
+import ComponentLink from './model/ComponentLink';
+import ComponentLinkView from './view/ComponentLinkView';
+import ComponentLabel from './model/ComponentLabel';
+import ComponentLabelView from './view/ComponentLabelView';
+import ComponentVideo from './model/ComponentVideo';
+import ComponentVideoView from './view/ComponentVideoView';
+import ComponentImage from './model/ComponentImage';
+import ComponentImageView from './view/ComponentImageView';
+import ComponentScript from './model/ComponentScript';
+import ComponentScriptView from './view/ComponentScriptView';
+import ComponentSvg from './model/ComponentSvg';
+import ComponentSvgIn from './model/ComponentSvgIn';
+import ComponentSvgView from './view/ComponentSvgView';
+import ComponentComment from './model/ComponentComment';
+import ComponentCommentView from './view/ComponentCommentView';
+import ComponentTextNode from './model/ComponentTextNode';
+import ComponentTextNodeView from './view/ComponentTextNodeView';
+import ComponentText from './model/ComponentText';
+import ComponentTextView from './view/ComponentTextView';
+import ComponentWrapper from './model/ComponentWrapper';
+import ComponentFrame from './model/ComponentFrame';
+import ComponentFrameView from './view/ComponentFrameView';
+import { ItemManagerModule } from '../abstract/Module';
+import EditorModel from '../editor/model/Editor';
+import { Model } from 'backbone';
 
 export default class ComponentManager extends ItemManagerModule {
   componentTypes = [
     {
-      id: "cell",
+      id: 'cell',
       model: ComponentTableCell,
       view: ComponentTableCellView,
     },
     {
-      id: "row",
+      id: 'row',
       model: ComponentTableRow,
       view: ComponentTableRowView,
     },
     {
-      id: "table",
+      id: 'table',
       model: ComponentTable,
       view: ComponentTableView,
     },
     {
-      id: "thead",
+      id: 'thead',
       model: ComponentTableHead,
       view: ComponentTableHeadView,
     },
     {
-      id: "tbody",
+      id: 'tbody',
       model: ComponentTableBody,
       view: ComponentTableBodyView,
     },
     {
-      id: "tfoot",
+      id: 'tfoot',
       model: ComponentTableFoot,
       view: ComponentTableFootView,
     },
     {
-      id: "map",
+      id: 'map',
       model: ComponentMap,
       view: ComponentMapView,
     },
     {
-      id: "link",
+      id: 'link',
       model: ComponentLink,
       view: ComponentLinkView,
     },
     {
-      id: "label",
+      id: 'label',
       model: ComponentLabel,
       view: ComponentLabelView,
     },
     {
-      id: "video",
+      id: 'video',
       model: ComponentVideo,
       view: ComponentVideoView,
     },
     {
-      id: "image",
+      id: 'image',
       model: ComponentImage,
       view: ComponentImageView,
     },
     {
-      id: "script",
+      id: 'script',
       model: ComponentScript,
       view: ComponentScriptView,
     },
     {
-      id: "svg-in",
+      id: 'svg-in',
       model: ComponentSvgIn,
       view: ComponentSvgView,
     },
     {
-      id: "svg",
+      id: 'svg',
       model: ComponentSvg,
       view: ComponentSvgView,
     },
     {
-      id: "iframe",
+      id: 'iframe',
       model: ComponentFrame,
       view: ComponentFrameView,
     },
     {
-      id: "comment",
+      id: 'comment',
       model: ComponentComment,
       view: ComponentCommentView,
     },
     {
-      id: "textnode",
+      id: 'textnode',
       model: ComponentTextNode,
       view: ComponentTextNodeView,
     },
     {
-      id: "text",
+      id: 'text',
       model: ComponentText,
       view: ComponentTextView,
     },
     {
-      id: "wrapper",
+      id: 'wrapper',
       model: ComponentWrapper,
       view: ComponentWrapperView,
     },
     {
-      id: "default",
+      id: 'default',
       model: Component,
       view: ComponentView,
     },
@@ -226,7 +226,7 @@ export default class ComponentManager extends ItemManagerModule {
    */
   //name = "DomComponents";
 
-  storageKey = "components";
+  storageKey = 'components';
 
   shallow?: Component;
 
@@ -237,7 +237,7 @@ export default class ComponentManager extends ItemManagerModule {
    * @private
    */
   constructor(em: EditorModel) {
-    super(em, "DomComponents", new Components(undefined, { em }));
+    super(em, 'DomComponents', new Components(undefined, { em }));
 
     if (em) {
       this.config.components = em.config.components || this.config.components;
@@ -253,16 +253,16 @@ export default class ComponentManager extends ItemManagerModule {
 
     // Load dependencies
     if (em) {
-      this.config.modal = em.get("Modal") || "";
-      this.config.am = em.get("AssetManager") || "";
-      em.get("Parser").compTypes = this.componentTypes;
-      em.on("change:componentHovered", this.componentHovered, this);
+      this.config.modal = em.get('Modal') || '';
+      this.config.am = em.get('AssetManager') || '';
+      em.get('Parser').compTypes = this.componentTypes;
+      em.on('change:componentHovered', this.componentHovered, this);
 
-      const selected = em.get("selected");
-      em.listenTo(selected, "add", (sel, c, opts) =>
+      const selected = em.get('selected');
+      em.listenTo(selected, 'add', (sel, c, opts) =>
         this.selectAdd(selected.getComponent(sel), opts)
       );
-      em.listenTo(selected, "remove", (sel, c, opts) =>
+      em.listenTo(selected, 'remove', (sel, c, opts) =>
         this.selectRemove(selected.getComponent(sel), opts)
       );
     }
@@ -276,7 +276,7 @@ export default class ComponentManager extends ItemManagerModule {
         let wrapper = this.getWrapper();
 
         if (!wrapper) {
-          this.em.get("PageManager").add({}, { select: true });
+          this.em.get('PageManager').add({}, { select: true });
           wrapper = this.getWrapper();
         }
 
@@ -302,7 +302,7 @@ export default class ComponentManager extends ItemManagerModule {
    * @private
    */
   getComponent(): Component {
-    const sel = this.em.get("PageManager").getSelected();
+    const sel = this.em.get('PageManager').getSelected();
     const frame = sel && sel.getMainFrame();
     return frame && frame.getComponent();
   }
@@ -350,7 +350,7 @@ export default class ComponentManager extends ItemManagerModule {
    */
   getComponents(): Components {
     const wrp = this.getWrapper();
-    return wrp && wrp.get("components");
+    return wrp && wrp.get('components');
   }
 
   /**
@@ -444,7 +444,7 @@ export default class ComponentManager extends ItemManagerModule {
       ? extendType
       : compType
       ? compType
-      : this.getType("default");
+      : this.getType('default');
     const modelToExt = typeToExtend.model;
     const viewToExt = extendViewType ? extendViewType.view : typeToExtend.view;
 
@@ -463,14 +463,14 @@ export default class ComponentManager extends ItemManagerModule {
       }, {});
 
     // If the model/view is a simple object I need to extend it
-    if (typeof model === "object") {
+    if (typeof model === 'object') {
       methods.model = modelToExt.extend(
         {
           ...model,
           ...getExtendedObj(extendFn, model, modelToExt),
           defaults: {
-            ...(result(modelToExt.prototype, "defaults") || {}),
-            ...(result(model, "defaults") || {}),
+            ...(result(modelToExt.prototype, 'defaults') || {}),
+            ...(result(model, 'defaults') || {}),
           },
         },
         {
@@ -482,7 +482,7 @@ export default class ComponentManager extends ItemManagerModule {
       );
     }
 
-    if (typeof view === "object") {
+    if (typeof view === 'object') {
       methods.view = viewToExt.extend({
         ...view,
         ...getExtendedObj(extendFnView, view, viewToExt),
@@ -497,7 +497,7 @@ export default class ComponentManager extends ItemManagerModule {
       this.componentTypes.unshift(methods);
     }
 
-    const event = `component:type:${compType ? "update" : "add"}`;
+    const event = `component:type:${compType ? 'update' : 'add'}`;
     em?.trigger(event, compType || methods);
 
     return this;
@@ -509,7 +509,7 @@ export default class ComponentManager extends ItemManagerModule {
    * @param {string} type Component ID
    * @return {Object} Component type definition, eg. `{ model: ..., view: ... }`
    */
-  getType(type: "default"): { id: string; model: any; view: any };
+  getType(type: 'default'): { id: string; model: any; view: any };
   getType(type: string): { id: string; model: any; view: any } | undefined;
   getType(type: string) {
     var df = this.componentTypes;
@@ -548,9 +548,9 @@ export default class ComponentManager extends ItemManagerModule {
   selectAdd(component: Component, opts = {}) {
     if (component) {
       component.set({
-        status: "selected",
+        status: 'selected',
       });
-      ["component:selected", "component:toggled"].forEach((event) =>
+      ['component:selected', 'component:toggled'].forEach((event) =>
         this.em.trigger(event, component, opts)
       );
     }
@@ -560,10 +560,10 @@ export default class ComponentManager extends ItemManagerModule {
     if (component) {
       const { em } = this;
       component.set({
-        status: "",
-        state: "",
+        status: '',
+        state: '',
       });
-      ["component:deselected", "component:toggled"].forEach((event) =>
+      ['component:deselected', 'component:toggled'].forEach((event) =>
         this.em.trigger(event, component, opts)
       );
     }
@@ -575,19 +575,19 @@ export default class ComponentManager extends ItemManagerModule {
    */
   componentHovered() {
     const { em } = this;
-    const model = em.get("componentHovered");
-    const previous = em.previous("componentHovered");
-    const state = "hovered";
+    const model = em.get('componentHovered');
+    const previous = em.previous('componentHovered');
+    const state = 'hovered';
 
     // Deselect the previous component
     previous &&
-      previous.get("status") == state &&
+      previous.get('status') == state &&
       previous.set({
-        status: "",
-        state: "",
+        status: '',
+        state: '',
       });
 
-    model && isEmpty(model.get("status")) && model.set("status", state);
+    model && isEmpty(model.get('status')) && model.set('status', state);
   }
 
   getShallowWrapper() {
@@ -596,14 +596,14 @@ export default class ComponentManager extends ItemManagerModule {
     if (!shallow && em) {
       const shallowEm = em.shallow;
       if (!shallowEm) return;
-      const domc = shallowEm.get("DomComponents");
+      const domc = shallowEm.get('DomComponents');
       domc.componentTypes = this.componentTypes;
       shallow = domc.getWrapper();
       if (shallow) {
-        const events = [keyUpdate, keyUpdateInside].join(" ");
+        const events = [keyUpdate, keyUpdateInside].join(' ');
         shallow.on(
           events,
-          debounce(() => shallow?.components(""), 100)
+          debounce(() => shallow?.components(''), 100)
         );
       }
       this.shallow = shallow;
@@ -648,33 +648,33 @@ export default class ComponentManager extends ItemManagerModule {
     if (!srcModel) return result;
 
     // Check if the source is draggable in the target
-    let draggable = srcModel.get("draggable");
+    let draggable = srcModel.get('draggable');
 
     if (isFunction(draggable)) {
       draggable = !!draggable(srcModel, target, at);
     } else {
       const el = target.getEl();
-      draggable = isArray(draggable) ? draggable.join(",") : draggable;
+      draggable = isArray(draggable) ? draggable.join(',') : draggable;
       draggable = isString(draggable) ? el?.matches(draggable) : draggable;
     }
 
     if (!draggable) return { ...result, reason: 1 };
 
     // Check if the target accepts the source
-    let droppable = target.get("droppable");
+    let droppable = target.get('droppable');
 
     if (isFunction(droppable)) {
       droppable = !!droppable(srcModel, target, at);
     } else {
       if (
         droppable === false &&
-        target.isInstanceOf("text") &&
-        srcModel.get("textable")
+        target.isInstanceOf('text') &&
+        srcModel.get('textable')
       ) {
         droppable = true;
       } else {
         const el = srcModel.getEl();
-        droppable = isArray(droppable) ? droppable.join(",") : droppable;
+        droppable = isArray(droppable) ? droppable.join(',') : droppable;
         droppable = isString(droppable) ? el?.matches(droppable) : droppable;
       }
     }

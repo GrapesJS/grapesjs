@@ -92,7 +92,10 @@ describe('PropertyRadioView', () => {
 
   test('Update model on input change', () => {
     view.setValue(propValue);
-    view.inputValueChanged({ target: { value: propValue }, stopPropagation() {} });
+    view.inputValueChanged({
+      target: { value: propValue },
+      stopPropagation() {},
+    });
     expect(view.model.get('value')).toEqual(propValue);
   });
 

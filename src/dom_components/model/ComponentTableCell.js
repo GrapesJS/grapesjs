@@ -7,10 +7,10 @@ export default Component.extend(
       ...Component.prototype.defaults,
       type: 'cell',
       tagName: 'td',
-      draggable: ['tr']
-    }
+      draggable: ['tr'],
+    },
   },
   {
-    isComponent: el => ['td', 'th'].indexOf(toLowerCase(el.tagName)) >= 0
+    isComponent: el => ['td', 'th'].indexOf(toLowerCase(el.tagName)) >= 0,
   }
 );

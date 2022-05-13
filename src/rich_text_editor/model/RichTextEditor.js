@@ -61,7 +61,9 @@ const defActions = {
       if (isValidTag(rte)) {
         rte.exec('unlink');
       } else {
-        rte.insertHTML(`<a href="" ${customElAttr}>${rte.selection()}</a>`, { select: true });
+        rte.insertHTML(`<a href="" ${customElAttr}>${rte.selection()}</a>`, {
+          select: true,
+        });
       }
     },
   },
@@ -74,7 +76,10 @@ const defActions = {
       return rte?.selection() && isValidTag(rte, 'SPAN') ? btnState.DISABLED : btnState.INACTIVE;
     },
     result: rte => {
-      !isValidTag(rte, 'SPAN') && rte.insertHTML(`<span ${customElAttr}>${rte.selection()}</span>`, { select: true });
+      !isValidTag(rte, 'SPAN') &&
+        rte.insertHTML(`<span ${customElAttr}>${rte.selection()}</span>`, {
+          select: true,
+        });
     },
   },
 };

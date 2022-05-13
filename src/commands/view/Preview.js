@@ -93,5 +93,5 @@ export default {
 
     editor.refresh();
     this.tglEffects();
-  }
+  },
 };

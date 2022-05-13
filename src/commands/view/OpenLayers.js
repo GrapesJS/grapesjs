@@ -20,5 +20,5 @@ export default {
   stop() {
     const { layers } = this;
     layers && (layers.style.display = 'none');
-  }
+  },
 };

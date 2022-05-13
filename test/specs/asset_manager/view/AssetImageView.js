@@ -10,7 +10,7 @@ describe('AssetImageView', () => {
     obj = new AssetImageView({
       collection: new Assets(),
       config: {},
-      model
+      model,
     });
     document.body.innerHTML = '<div id="fixtures"></div>';
     document.body.querySelector('#fixtures').appendChild(obj.render().el);

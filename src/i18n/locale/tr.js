@@ -2,7 +2,7 @@ export default {
   assetManager: {
     addButton: 'Görsel Ekle',
     modalTitle: 'Görsel Seçin',
-    uploadTitle: 'Dosya yüklemek için buraya sürükleyin veya tıklayın'
+    uploadTitle: 'Dosya yüklemek için buraya sürükleyin veya tıklayın',
   },
   deviceManager: {
     device: 'Cihaz',
@@ -10,8 +10,8 @@ export default {
       desktop: 'Masaüstü',
       tablet: 'Tablet',
       mobileLandscape: 'Mobil Yatay',
-      mobilePortrait: 'Mobil Dikey'
-    }
+      mobilePortrait: 'Mobil Dikey',
+    },
   },
   panels: {
     buttons: {
@@ -23,14 +23,14 @@ export default {
         'open-sm': 'Stil Düzenleyiciyi Aç',
         'open-tm': 'Ayarlar',
         'open-layers': 'Katmanlar',
-        'open-blocks': 'Bloklar'
-      }
-    }
+        'open-blocks': 'Bloklar',
+      },
+    },
   },
   selectorManager: {
     selected: 'Seçili',
     emptyState: '- DURUM -',
-    label: 'Sınıflar'
+    label: 'Sınıflar',
   },
   styleManager: {
     empty: 'Stilini düzenlemek istediğiniz öğeyi seçiniz',
@@ -42,7 +42,7 @@ export default {
       decorations: 'Dekorasyon',
       extra: 'Ekstra',
       flex: 'Flex',
-      dimension: 'Boyut'
+      dimension: 'Boyut',
     },
     properties: {
       float: 'Kaydır',
@@ -126,8 +126,8 @@ export default {
       'flex-grow': 'Flex Büyüme',
       'flex-shrink': 'Flex Küçülme',
       'align-self': 'Kendini Hizala',
-      'background-color': 'Arkaplan Rengi'
-    }
+      'background-color': 'Arkaplan Rengi',
+    },
   },
   traitManager: {
     empty: 'Özelliklerini düzenlemek istediğiniz öğeyi seçiniz',
@@ -135,7 +135,7 @@ export default {
     traits: {
       labels: {},
       attributes: {},
-      options: {}
-    }
-  }
+      options: {},
+    },
+  },
 };

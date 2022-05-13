@@ -5,7 +5,7 @@ export default {
     addButton: 'Dodaj obrazek',
     inputPlh: 'http://path/to/the/image.jpg',
     modalTitle: 'Wybierz obrazek',
-    uploadTitle: 'Wybierz lub przeciągnij plik z dysku'
+    uploadTitle: 'Wybierz lub przeciągnij plik z dysku',
   },
   // Here just as a reference, GrapesJS core doesn't contain any block,
   // so this should be omitted from other local files
@@ -15,7 +15,7 @@ export default {
     },
     categories: {
       // 'category-id': 'Category Label',
-    }
+    },
   },
   domComponents: {
     names: {
@@ -33,8 +33,8 @@ export default {
       thead: 'Nagłówek tabeli',
       table: 'Tabela',
       row: 'Wiersz',
-      cell: 'Komórka'
-    }
+      cell: 'Komórka',
+    },
   },
   deviceManager: {
     device: 'Urządzenie',
@@ -42,8 +42,8 @@ export default {
       desktop: 'Desktop',
       tablet: 'Tablet',
       mobileLandscape: 'Telefon Poziomo',
-      mobilePortrait: 'Telefon Pionowo'
-    }
+      mobilePortrait: 'Telefon Pionowo',
+    },
   },
   panels: {
     buttons: {
@@ -55,9 +55,9 @@ export default {
         'open-sm': 'Edytuj style i atrybuty CSS',
         'open-tm': 'Ustawienia elementu',
         'open-layers': 'Warstwy szablonu',
-        'open-blocks': 'Komponenty'
-      }
-    }
+        'open-blocks': 'Komponenty',
+      },
+    },
   },
   selectorManager: {
     label: 'Klasy CSS',
@@ -66,8 +66,8 @@ export default {
     states: {
       hover: 'Hover',
       active: 'Click',
-      'nth-of-type(2n)': 'Tylko parzyste'
-    }
+      'nth-of-type(2n)': 'Tylko parzyste',
+    },
   },
   styleManager: {
     empty: 'Wybierz element aby edytować jego atrybuty',
@@ -80,7 +80,7 @@ export default {
       decorations: 'Dekoracje',
       extra: 'Dodatki',
       flex: 'Flex',
-      dimension: 'Wymiary'
+      dimension: 'Wymiary',
     },
     // The core library generates the name by their `property` name
     properties: {
@@ -153,8 +153,8 @@ export default {
       'transform-rotate-z': 'Obrót osi Z',
       'transform-scale-x': 'Skala osi X',
       'transform-scale-y': 'Skala osi Y',
-      'transform-scale-z': 'Skala osi Z'
-    }
+      'transform-scale-z': 'Skala osi Z',
+    },
   },
   traitManager: {
     empty: 'Wybierz element aby edytować jego ustawienia',
@@ -166,22 +166,22 @@ export default {
         alt: 'Tekst alternatywny',
         title: 'Tytuł',
         href: 'Adres odnośnika',
-        target: 'Cel'
+        target: 'Cel',
       },
       // In a simple trait, like text input, these are used on input attributes
       attributes: {
         id: traitInputAttr,
         alt: traitInputAttr,
         title: traitInputAttr,
-        href: { placeholder: 'np. https://google.com' }
+        href: { placeholder: 'np. https://google.com' },
       },
       // In a trait like select, these are used to translate option names
       options: {
         target: {
           false: 'Te okno',
-          _blank: 'Nowe okno'
-        }
-      }
-    }
-  }
+          _blank: 'Nowe okno',
+        },
+      },
+    },
+  },
 };

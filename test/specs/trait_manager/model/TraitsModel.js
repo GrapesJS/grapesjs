@@ -10,7 +10,7 @@ describe('TraitModels', () => {
     target = new Component();
     obj = new Trait({
       name: modelName,
-      target
+      target,
     });
   });
 

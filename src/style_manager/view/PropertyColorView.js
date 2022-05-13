@@ -3,7 +3,10 @@ import InputColor from '../../domain_abstract/ui/InputColor';
 
 export default class PropertyColorView extends PropertyNumberView {
   setValue(value) {
-    this.inputInst?.setValue(value, { fromTarget: 1, def: this.model.getDefaultValue() });
+    this.inputInst?.setValue(value, {
+      fromTarget: 1,
+      def: this.model.getDefaultValue(),
+    });
   }
 
   remove() {
@@ -21,7 +24,12 @@ export default class PropertyColorView extends PropertyNumberView {
     if (!this.inputInst) {
       this.__handleChange = this.__handleChange.bind(this);
       const { ppfx, model, em, el } = this;
-      const inputColor = new InputColor({ target: em, model, ppfx, onChange: this.__handleChange });
+      const inputColor = new InputColor({
+        target: em,
+        model,
+        ppfx,
+        onChange: this.__handleChange,
+      });
       const input = inputColor.render();
       el.querySelector(`.${ppfx}fields`).appendChild(input.el);
       this.input = input.inputEl.get(0);

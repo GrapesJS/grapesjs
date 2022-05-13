@@ -11,7 +11,7 @@ const atRules = {
   12: 'supports',
   13: 'document',
   14: 'font-feature-values',
-  15: 'viewport'
+  15: 'viewport',
 };
 const atRuleKeys = keys(atRules);
 const singleAtRules = ['5', '6', '11', '15'];
@@ -44,10 +44,7 @@ export const parseSelector = (str = '') => {
     // class might be with state (eg. :hover), nothing else.
     // Can also accept SINGLE ID selectors, eg. `#myid`, `#myid:hover`
     // Composed are not valid: `#myid.some-class`, `#myid.some-class:hover`
-    if (
-      /^(\.{1}[\w\-]+)+(:{1,2}[\w\-()]+)?$/gi.test(sel) ||
-      /^(#{1}[\w\-]+){1}(:{1,2}[\w\-()]+)?$/gi.test(sel)
-    ) {
+    if (/^(\.{1}[\w\-]+)+(:{1,2}[\w\-()]+)?$/gi.test(sel) || /^(#{1}[\w\-]+){1}(:{1,2}[\w\-()]+)?$/gi.test(sel)) {
       var cls = sel.split('.').filter(Boolean);
       result.push(cls);
     } else {
@@ -57,7 +54,7 @@ export const parseSelector = (str = '') => {
 
   return {
     result,
-    add
+    add,
   };
 };
 
@@ -86,12 +83,7 @@ export const parseStyle = node => {
  * @return {string}
  */
 export const parseCondition = node => {
-  const condition =
-    node.conditionText ||
-    (node.media && node.media.mediaText) ||
-    node.name ||
-    node.selectorText ||
-    '';
+  const condition = node.conditionText || (node.media && node.media.mediaText) || node.name || node.selectorText || '';
   return condition.trim();
 };
 
@@ -173,7 +165,7 @@ export const parseNode = el => {
     // For each group of selectors
     for (var k = 0, len3 = sels.length; k < len3; k++) {
       const model = createNode(sels[k], style, {
-        atRule: atRules[type]
+        atRule: atRules[type],
       });
       result.push(model);
       lastRule = model;
@@ -189,7 +181,7 @@ export const parseNode = el => {
         const model = {
           selectors: [],
           selectorsAdd: selsAddStr,
-          style
+          style,
         };
         singleAtRule && (model.singleAtRule = singleAtRule);
         atRuleType && (model.atRuleType = atRuleType);

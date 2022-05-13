@@ -3,12 +3,12 @@ import Component from './ComponentTextNode';
 export default Component.extend(
   {
     defaults: {
-      ...Component.prototype.defaults
+      ...Component.prototype.defaults,
     },
 
     toHTML() {
       return `<!--${this.get('content')}-->`;
-    }
+    },
   },
   {
     isComponent(el) {
@@ -16,9 +16,9 @@ export default Component.extend(
         return {
           tagName: 'NULL',
           type: 'comment',
-          content: el.textContent
+          content: el.textContent,
         };
       }
-    }
+    },
   }
 );

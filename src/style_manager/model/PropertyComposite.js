@@ -55,7 +55,10 @@ export default class PropertyComposite extends Property {
   initialize(props = {}, opts = {}) {
     Property.callParentInit(Property, this, props, opts);
     const { em } = this;
-    const properties = new Properties(this.get('properties') || [], { em, parentProp: this });
+    const properties = new Properties(this.get('properties') || [], {
+      em,
+      parentProp: this,
+    });
     this.set('properties', properties, { silent: 1 });
     this.listenTo(properties, 'change', this.__upProperties);
     Property.callInit(this, props, opts);

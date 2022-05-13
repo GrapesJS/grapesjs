@@ -29,5 +29,5 @@ export default {
   _upFrame(frame, active) {
     const method = active ? 'add' : 'remove';
     frame.view.getBody().classList[method](`${this.ppfx}dashed`);
-  }
+  },
 };

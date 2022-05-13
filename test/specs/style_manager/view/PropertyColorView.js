@@ -80,7 +80,10 @@ describe('PropertyColorView', () => {
 
   test('Update model on input change', () => {
     view.getInputEl().value = propValue;
-    view.inputValueChanged({ target: { value: propValue }, stopPropagation() {} });
+    view.inputValueChanged({
+      target: { value: propValue },
+      stopPropagation() {},
+    });
     expect(view.model.get('value')).toEqual(propValue);
   });
 

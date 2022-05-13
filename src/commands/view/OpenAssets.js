@@ -37,7 +37,7 @@ export default {
     am.__behaviour({
       select,
       types,
-      options: opts
+      options: opts,
     });
 
     if (config.custom) {
@@ -58,9 +58,7 @@ export default {
       }
 
       if (accept) {
-        const uploadEl = this.rendered.querySelector(
-          `input#${config.stylePrefix}uploadFile`
-        );
+        const uploadEl = this.rendered.querySelector(`input#${config.stylePrefix}uploadFile`);
         uploadEl && uploadEl.setAttribute('accept', accept);
       }
     }
@@ -72,5 +70,5 @@ export default {
   stop(editor) {
     this.editor = editor;
     this.close(this.rendered);
-  }
+  },
 };

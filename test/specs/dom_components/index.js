@@ -56,7 +56,6 @@ describe('DOM Components', () => {
       obj = em.get('DomComponents');
       // obj = new DomComponents(em).init(config);
     });
-
     afterEach(() => {
       obj = null;
     });
