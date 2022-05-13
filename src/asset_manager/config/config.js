@@ -106,5 +106,5 @@ export default {
   openAssetsOnDrop: 1,
 
   // Any dropzone content to append inside dropzone element
-  dropzoneContent: ''
+  dropzoneContent: '',
 };

@@ -10,7 +10,7 @@ describe('ButtonView', () => {
   beforeEach(() => {
     model = new Button({ command: 'fake-command' });
     view = new ButtonView({
-      model: model
+      model: model,
     });
     document.body.innerHTML = '<div id="fixtures"></div>';
     fixtures = document.body.querySelector('#fixtures');
@@ -22,9 +22,7 @@ describe('ButtonView', () => {
   });
 
   test('Button empty', () => {
-    expect(fixtures.innerHTML).toEqual(
-      '<span class="' + btnClass + '"></span>'
-    );
+    expect(fixtures.innerHTML).toEqual('<span class="' + btnClass + '"></span>');
   });
 
   test('Update class', () => {
@@ -34,7 +32,7 @@ describe('ButtonView', () => {
 
   test('Update attributes', () => {
     model.set('attributes', {
-      'data-test': 'test-value'
+      'data-test': 'test-value',
     });
     expect(view.el.getAttribute('data-test')).toEqual('test-value');
   });

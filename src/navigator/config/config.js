@@ -70,5 +70,5 @@ export default {
    *   },
    * },
    */
-  extend: {}
+  extend: {},
 };

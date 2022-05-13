@@ -7,12 +7,7 @@ export default {
    */
   isEnabled() {
     var d = document;
-    if (
-      d.fullscreenElement ||
-      d.webkitFullscreenElement ||
-      d.mozFullScreenElement
-    )
-      return 1;
+    if (d.fullscreenElement || d.webkitFullscreenElement || d.mozFullScreenElement) return 1;
     else return 0;
   },
 
@@ -66,9 +61,7 @@ export default {
   run(editor, sender, opts = {}) {
     this.sender = sender;
     const { target } = opts;
-    const targetEl = isElement(target)
-      ? target
-      : document.querySelector(target);
+    const targetEl = isElement(target) ? target : document.querySelector(target);
     const pfx = this.enable(targetEl || editor.getContainer());
     this.fsChanged = this.fsChanged.bind(this, pfx);
     document.addEventListener(pfx + 'fullscreenchange', this.fsChanged);
@@ -79,5 +72,5 @@ export default {
     if (sender && sender.set) sender.set('active', false);
     this.disable();
     if (editor) editor.trigger('change:canvasOffset');
-  }
+  },
 };

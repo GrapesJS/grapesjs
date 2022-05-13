@@ -7,7 +7,7 @@ export default class AssetImage extends Asset {
       type: 'image',
       unitDim: 'px',
       height: 0,
-      width: 0
+      width: 0,
     };
   }
 }

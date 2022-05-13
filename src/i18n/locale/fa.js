@@ -5,7 +5,7 @@ export default {
     addButton: 'افزودن تصویر',
     inputPlh: 'http://path/to/the/image.jpg',
     modalTitle: 'انتخاب تصویر',
-    uploadTitle: 'فایل را انتخاب کنید یا در این مکان رها کنید'
+    uploadTitle: 'فایل را انتخاب کنید یا در این مکان رها کنید',
   },
   // Here just as a reference, GrapesJS core doesn't contain any block,
   // so this should be omitted from other local files
@@ -15,7 +15,7 @@ export default {
     },
     categories: {
       // 'category-id': 'Category Label',
-    }
+    },
   },
   domComponents: {
     names: {
@@ -33,8 +33,8 @@ export default {
       thead: 'سر جدول',
       table: 'جدول',
       row: 'ردیف جدول',
-      cell: 'سلول جدول'
-    }
+      cell: 'سلول جدول',
+    },
   },
   deviceManager: {
     device: 'دستگاه',
@@ -42,8 +42,8 @@ export default {
       desktop: 'دسک تاپ',
       tablet: 'تبلت',
       mobileLandscape: 'موبایل خوابیده',
-      mobilePortrait: 'موبایل ایستاده'
-    }
+      mobilePortrait: 'موبایل ایستاده',
+    },
   },
   panels: {
     buttons: {
@@ -55,9 +55,9 @@ export default {
         'open-sm': 'باز کردن مدیریت استایل',
         'open-tm': 'تنظیمات',
         'open-layers': 'باز کردن مدیریت لایه‌ها',
-        'open-blocks': 'باز کردن مدیریت بلوک‌ها'
-      }
-    }
+        'open-blocks': 'باز کردن مدیریت بلوک‌ها',
+      },
+    },
   },
   selectorManager: {
     label: 'کلاس‌ها',
@@ -66,8 +66,8 @@ export default {
     states: {
       hover: 'هاور',
       active: 'کلیک',
-      'nth-of-type(2n)': 'زوج/فرد'
-    }
+      'nth-of-type(2n)': 'زوج/فرد',
+    },
   },
   styleManager: {
     empty: 'قبل از استفاده از مدیریت استایل یک عنصر را انتخاب کنید',
@@ -80,7 +80,7 @@ export default {
       decorations: 'تزئینات',
       extra: 'اضافی',
       flex: 'فلکس',
-      dimension: 'ابعاد'
+      dimension: 'ابعاد',
     },
     // The core library generates the name by their `property` name
     properties: {
@@ -102,16 +102,16 @@ export default {
           id: traitInputAttr,
           alt: traitInputAttr,
           title: traitInputAttr,
-          href: { placeholder: 'مثال: https://google.com' }
+          href: { placeholder: 'مثال: https://google.com' },
         },
         // In a trait like select, these are used to translate option names
         options: {
           target: {
             false: 'پنجره فعلی',
-            _blank: 'پنجره جدید'
-          }
-        }
-      }
-    }
-  }
+            _blank: 'پنجره جدید',
+          },
+        },
+      },
+    },
+  },
 };

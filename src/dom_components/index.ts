@@ -51,7 +51,15 @@
  *
  * @module Components
  */
-import { isEmpty, isObject, isArray, isFunction, isString, result, debounce } from 'underscore';
+import {
+  isEmpty,
+  isObject,
+  isArray,
+  isFunction,
+  isString,
+  result,
+  debounce,
+} from 'underscore';
 import defaults from './config/config';
 import Component, { keyUpdate, keyUpdateInside } from './model/Component';
 import Components from './model/Components';
@@ -94,9 +102,11 @@ import ComponentTextView from './view/ComponentTextView';
 import ComponentWrapper from './model/ComponentWrapper';
 import ComponentFrame from './model/ComponentFrame';
 import ComponentFrameView from './view/ComponentFrameView';
-import Module from 'abstract/moduleLegacy';
+import { ItemManagerModule } from '../abstract/Module';
+import EditorModel from '../editor/model/Editor';
+import { Model } from 'backbone';
 
-export default class ComponentManager extends Module {
+export default class ComponentManager extends ItemManagerModule {
   componentTypes = [
     {
       id: 'cell',
@@ -200,7 +210,8 @@ export default class ComponentManager extends Module {
     },
   ];
 
-  componentsById = {};
+  componentsById: { [id: string]: Component } = {};
+  componentView?: ComponentWrapperView;
 
   Component = Component;
 
@@ -213,18 +224,11 @@ export default class ComponentManager extends Module {
    * @type {String}
    * @private
    */
-  name = 'DomComponents';
+  //name = "DomComponents";
 
   storageKey = 'components';
 
-  /**
-   * Returns config
-   * @return {Object} Config object
-   * @private
-   */
-  getConfig() {
-    return this.c;
-  }
+  shallow?: Component;
 
   /**
    * Initialize module. Called on a new instance of the editor with configurations passed
@@ -232,40 +236,43 @@ export default class ComponentManager extends Module {
    * @param {Object} config Configurations
    * @private
    */
-  init(config) {
-    this.c = config || {};
-    const em = this.c.em;
-    this.em = em;
+  constructor(em: EditorModel) {
+    super(em, 'DomComponents', new Components(undefined, { em }));
 
     if (em) {
-      this.c.components = em.config.components || this.c.components;
+      this.config.components = em.config.components || this.config.components;
     }
 
     for (var name in defaults) {
-      if (!(name in this.c)) this.c[name] = defaults[name];
+      //@ts-ignore
+      if (!(name in this.config)) this.config[name] = defaults[name];
     }
 
-    var ppfx = this.c.pStylePrefix;
-    if (ppfx) this.c.stylePrefix = ppfx + this.c.stylePrefix;
+    var ppfx = this.config.pStylePrefix;
+    if (ppfx) this.config.stylePrefix = ppfx + this.config.stylePrefix;
 
     // Load dependencies
     if (em) {
-      this.c.modal = em.get('Modal') || '';
-      this.c.am = em.get('AssetManager') || '';
+      this.config.modal = em.get('Modal') || '';
+      this.config.am = em.get('AssetManager') || '';
       em.get('Parser').compTypes = this.componentTypes;
       em.on('change:componentHovered', this.componentHovered, this);
 
       const selected = em.get('selected');
-      em.listenTo(selected, 'add', (sel, c, opts) => this.selectAdd(selected.getComponent(sel), opts));
-      em.listenTo(selected, 'remove', (sel, c, opts) => this.selectRemove(selected.getComponent(sel), opts));
+      em.listenTo(selected, 'add', (sel, c, opts) =>
+        this.selectAdd(selected.getComponent(sel), opts)
+      );
+      em.listenTo(selected, 'remove', (sel, c, opts) =>
+        this.selectRemove(selected.getComponent(sel), opts)
+      );
     }
 
     return this;
   }
 
-  load(data) {
+  load(data: any) {
     return this.loadProjectData(data, {
-      onResult: result => {
+      onResult: (result: Component) => {
         let wrapper = this.getWrapper();
 
         if (!wrapper) {
@@ -278,6 +285,7 @@ export default class ComponentManager extends Module {
         } else {
           const { components = [], ...rest } = result;
           wrapper.set(rest);
+          //@ts-ignore
           wrapper.components(components);
         }
       },
@@ -293,7 +301,7 @@ export default class ComponentManager extends Module {
    * @return {Object}
    * @private
    */
-  getComponent() {
+  getComponent(): Component {
     const sel = this.em.get('PageManager').getSelected();
     const frame = sel && sel.getMainFrame();
     return frame && frame.getComponent();
@@ -340,7 +348,7 @@ export default class ComponentManager extends Module {
    * // Remove comp2
    * wrapperChildren.remove(comp2);
    */
-  getComponents() {
+  getComponents(): Components {
     const wrp = this.getWrapper();
     return wrp && wrp.get('components');
   }
@@ -374,7 +382,7 @@ export default class ComponentManager extends Module {
    *   attributes: { title: 'here' }
    * });
    */
-  addComponent(component, opt = {}) {
+  addComponent(component: Component, opt = {}) {
     return this.getComponents().add(component, opt);
   }
 
@@ -386,7 +394,7 @@ export default class ComponentManager extends Module {
    * @return {HTMLElement}
    */
   render() {
-    return this.componentView.render().el;
+    return this.componentView?.render().el;
   }
 
   /**
@@ -395,7 +403,8 @@ export default class ComponentManager extends Module {
    */
   clear(opts = {}) {
     const components = this.getComponents();
-    components?.filter(Boolean).forEach(i => i.remove(opts));
+    //@ts-ignore
+    components?.filter(Boolean).forEach((i) => i.remove(opts));
     return this;
   }
 
@@ -406,7 +415,7 @@ export default class ComponentManager extends Module {
    * @return {this}
    * @private
    */
-  setComponents(components, opt = {}) {
+  setComponents(components: Component, opt = {}) {
     this.clear(opt).addComponent(components, opt);
   }
 
@@ -417,23 +426,35 @@ export default class ComponentManager extends Module {
    * @param {Object} methods Component methods
    * @return {this}
    */
-  addType(type, methods) {
+  addType(type: string, methods: any) {
     const { em } = this;
-    const { model = {}, view = {}, isComponent, extend, extendView, extendFn = [], extendFnView = [] } = methods;
+    const {
+      model = {},
+      view = {},
+      isComponent,
+      extend,
+      extendView,
+      extendFn = [],
+      extendFnView = [],
+    } = methods;
     const compType = this.getType(type);
     const extendType = this.getType(extend);
     const extendViewType = this.getType(extendView);
-    const typeToExtend = extendType ? extendType : compType ? compType : this.getType('default');
+    const typeToExtend = extendType
+      ? extendType
+      : compType
+      ? compType
+      : this.getType('default');
     const modelToExt = typeToExtend.model;
     const viewToExt = extendViewType ? extendViewType.view : typeToExtend.view;
 
     // Function for extending source object methods
-    const getExtendedObj = (fns, target, srcToExt) =>
+    const getExtendedObj = (fns: any[], target: any, srcToExt: any) =>
       fns.reduce((res, next) => {
         const fn = target[next];
         const parentFn = srcToExt.prototype[next];
         if (fn && parentFn) {
-          res[next] = function (...args) {
+          res[next] = (...args: any[]) => {
             parentFn.bind(this)(...args);
             fn.bind(this)(...args);
           };
@@ -453,7 +474,10 @@ export default class ComponentManager extends Module {
           },
         },
         {
-          isComponent: compType && !extendType && !isComponent ? modelToExt.isComponent : isComponent || (() => 0),
+          isComponent:
+            compType && !extendType && !isComponent
+              ? modelToExt.isComponent
+              : isComponent || (() => 0),
         }
       );
     }
@@ -485,7 +509,9 @@ export default class ComponentManager extends Module {
    * @param {string} type Component ID
    * @return {Object} Component type definition, eg. `{ model: ..., view: ... }`
    */
-  getType(type) {
+  getType(type: 'default'): { id: string; model: any; view: any };
+  getType(type: string): { id: string; model: any; view: any } | undefined;
+  getType(type: string) {
     var df = this.componentTypes;
 
     for (var it = 0; it < df.length; it++) {
@@ -502,7 +528,7 @@ export default class ComponentManager extends Module {
    * @param {string} type Component ID
    * @returns {Object|undefined} Removed component type, undefined otherwise
    */
-  removeType(id) {
+  removeType(id: string) {
     const df = this.componentTypes;
     const type = this.getType(id);
     if (!type) return;
@@ -519,23 +545,27 @@ export default class ComponentManager extends Module {
     return this.componentTypes;
   }
 
-  selectAdd(component, opts = {}) {
+  selectAdd(component: Component, opts = {}) {
     if (component) {
       component.set({
         status: 'selected',
       });
-      ['component:selected', 'component:toggled'].forEach(event => this.em.trigger(event, component, opts));
+      ['component:selected', 'component:toggled'].forEach((event) =>
+        this.em.trigger(event, component, opts)
+      );
     }
   }
 
-  selectRemove(component, opts = {}) {
+  selectRemove(component: Component, opts = {}) {
     if (component) {
       const { em } = this;
       component.set({
         status: '',
         state: '',
       });
-      ['component:deselected', 'component:toggled'].forEach(event => this.em.trigger(event, component, opts));
+      ['component:deselected', 'component:toggled'].forEach((event) =>
+        this.em.trigger(event, component, opts)
+      );
     }
   }
 
@@ -564,7 +594,7 @@ export default class ComponentManager extends Module {
     let { shallow, em } = this;
 
     if (!shallow && em) {
-      const shallowEm = em.get('shallow');
+      const shallowEm = em.shallow;
       if (!shallowEm) return;
       const domc = shallowEm.get('DomComponents');
       domc.componentTypes = this.componentTypes;
@@ -573,7 +603,7 @@ export default class ComponentManager extends Module {
         const events = [keyUpdate, keyUpdateInside].join(' ');
         shallow.on(
           events,
-          debounce(() => shallow.components(''), 100)
+          debounce(() => shallow?.components(''), 100)
         );
       }
       this.shallow = shallow;
@@ -593,7 +623,7 @@ export default class ComponentManager extends Module {
    * * `2` - Target doesn't accept source.
    * @private
    */
-  canMove(target, source, index) {
+  canMove(target: Component, source?: Component, index?: number) {
     const at = index || index === 0 ? index : null;
     const result = {
       result: false,
@@ -604,13 +634,15 @@ export default class ComponentManager extends Module {
 
     if (!source) return result;
 
-    let srcModel = source?.toHTML ? source : null;
+    //@ts-ignore
+    let srcModel = source.toHTML ? source : null;
 
     if (!srcModel) {
       const wrapper = this.getShallowWrapper();
       srcModel = wrapper?.append(source)[0];
     }
 
+    //@ts-ignore
     result.source = srcModel;
 
     if (!srcModel) return result;
@@ -634,7 +666,11 @@ export default class ComponentManager extends Module {
     if (isFunction(droppable)) {
       droppable = !!droppable(srcModel, target, at);
     } else {
-      if (droppable === false && target.isInstanceOf('text') && srcModel.get('textable')) {
+      if (
+        droppable === false &&
+        target.isInstanceOf('text') &&
+        srcModel.get('textable')
+      ) {
         droppable = true;
       } else {
         const el = srcModel.getEl();
@@ -652,14 +688,14 @@ export default class ComponentManager extends Module {
     return this.componentsById;
   }
 
-  getById(id) {
+  getById(id: string) {
     return this.componentsById[id] || null;
   }
 
   destroy() {
     const all = this.allById();
-    Object.keys(all).forEach(id => all[id] && all[id].remove());
+    Object.keys(all).forEach((id) => all[id] && all[id].remove());
     this.componentView?.remove();
-    [this.c, this.em, this.componentsById, this.component, this.componentView].forEach(i => (i = {}));
+    [this.em, this.componentsById, this.componentView].forEach((i) => (i = {}));
   }
 }

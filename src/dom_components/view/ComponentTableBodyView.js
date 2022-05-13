@@ -1,3 +1,3 @@
 import ComponentView from './ComponentView';
 
-export default ComponentView.extend({});
+export default class ComponentTableBodyView extends ComponentView {}

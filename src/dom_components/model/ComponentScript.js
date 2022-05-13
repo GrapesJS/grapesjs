@@ -11,8 +11,8 @@ export default Component.extend(
       tagName: type,
       droppable: false,
       draggable: false,
-      layerable: false
-    }
+      layerable: false,
+    },
   },
   {
     isComponent(el) {
@@ -26,6 +26,6 @@ export default Component.extend(
 
         return result;
       }
-    }
+    },
   }
 );

@@ -1,23 +1,26 @@
 import { isString } from 'underscore';
 import ComponentView from './ComponentView';
 
-export default ComponentView.extend({
-  tagName: 'img',
-
-  events: {
-    dblclick: 'onActive',
-    click: 'initResize',
-    error: 'onError',
-    load: 'onLoad',
-    dragstart: 'noDrag',
-  },
+export default class ComponentImageView extends ComponentView {
+  tagName() {
+    return 'img';
+  }
+  events() {
+    return {
+      dblclick: 'onActive',
+      click: 'initResize',
+      error: 'onError',
+      load: 'onLoad',
+      dragstart: 'noDrag',
+    };
+  }
 
   initialize(o) {
     ComponentView.prototype.initialize.apply(this, arguments);
     this.listenTo(this.model, 'change:src', this.updateSrc);
     this.classEmpty = `${this.ppfx}plh-image`;
     this.fetchFile();
-  },
+  }
 
   /**
    * Fetch file if exists
@@ -36,7 +39,7 @@ export default ComponentView.extend({
       });
       model.set('file', '');
     }
-  },
+  }
 
   /**
    * Update src attribute
@@ -48,7 +51,7 @@ export default ComponentView.extend({
     const srcExists = src && !model.isDefaultSrc();
     model.addAttributes({ src });
     $el[srcExists ? 'removeClass' : 'addClass'](classEmpty);
-  },
+  }
 
   /**
    * Open dialog for image changing
@@ -71,22 +74,22 @@ export default ComponentView.extend({
         accept: 'image/*',
       });
     }
-  },
+  }
 
   onError() {
     const fallback = this.model.getSrcResult({ fallback: 1 });
     if (fallback) this.el.src = fallback;
-  },
+  }
 
   onLoad() {
     // Used to update component tools box (eg. toolbar, resizer) once the image is loaded
     this.em.trigger('change:canvasOffset');
-  },
+  }
 
   noDrag(ev) {
     ev.preventDefault();
     return false;
-  },
+  }
 
   render() {
     this.renderAttributes();
@@ -98,5 +101,5 @@ export default ComponentView.extend({
     this.postRender();
 
     return this;
-  },
-});
+  }
+}

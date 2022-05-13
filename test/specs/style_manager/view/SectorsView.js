@@ -9,7 +9,7 @@ describe('SectorsView', () => {
   beforeEach(() => {
     model = new Sectors([]);
     view = new SectorsView({
-      collection: model
+      collection: model,
     });
     document.body.innerHTML = '<div id="fixtures"></div>';
     fixtures = document.body.firstChild;

@@ -1,8 +1,5 @@
 import { isString } from 'underscore';
-import BrowserCssParser, {
-  parseSelector,
-  createNode
-} from './BrowserParserCss';
+import BrowserCssParser, { parseSelector, createNode } from './BrowserParserCss';
 
 export default (config = {}) => ({
   /**
@@ -36,7 +33,7 @@ export default (config = {}) => ({
       const selectorsAdd = selsParsed.add.join(', ');
       const opts = {
         atRule: node.atRule,
-        mediaText: node.params
+        mediaText: node.params,
       };
 
       if (classSets.length) {
@@ -56,5 +53,5 @@ export default (config = {}) => ({
     }
 
     return node;
-  }
+  },
 });

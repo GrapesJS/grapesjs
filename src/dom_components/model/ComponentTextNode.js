@@ -9,14 +9,14 @@ export default Component.extend(
       droppable: false,
       layerable: false,
       selectable: false,
-      editable: true
+      editable: true,
     },
 
     toHTML() {
       const parent = this.parent();
       const cnt = this.get('content');
       return parent && parent.is('script') ? cnt : escape(cnt);
-    }
+    },
   },
   {
     isComponent(el) {
@@ -24,10 +24,10 @@ export default Component.extend(
       if (el.nodeType === 3) {
         result = {
           type: 'textnode',
-          content: el.textContent
+          content: el.textContent,
         };
       }
       return result;
-    }
+    },
   }
 );

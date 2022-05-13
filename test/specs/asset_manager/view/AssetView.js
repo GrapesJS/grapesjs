@@ -13,12 +13,10 @@ describe('AssetView', () => {
     var model = coll.add({ src: 'test' });
     testContext.view = new AssetView({
       config: {},
-      model
+      model,
     });
     document.body.innerHTML = '<div id="fixtures"></div>';
-    document.body
-      .querySelector('#fixtures')
-      .appendChild(testContext.view.render().el);
+    document.body.querySelector('#fixtures').appendChild(testContext.view.render().el);
   });
 
   afterEach(() => {

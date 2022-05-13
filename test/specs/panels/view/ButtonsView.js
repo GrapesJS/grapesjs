@@ -9,7 +9,7 @@ describe('ButtonsView', () => {
   beforeEach(() => {
     model = new Buttons([]);
     view = new ButtonsView({
-      collection: model
+      collection: model,
     });
     document.body.innerHTML = '<div id="fixtures"></div>';
     fixtures = document.body.querySelector('#fixtures');

@@ -98,8 +98,13 @@ export default class EditorModel extends Model {
   get toLoad(): any[] {
     return this.get('toLoad');
   }
+
   get selected(): Selected {
     return this.get('selected');
+  }
+
+  get shallow(): EditorModel {
+    return this.get('shallow');
   }
 
   constructor(conf = {}) {
@@ -405,7 +410,7 @@ export default class EditorModel extends Model {
     const { event } = opts;
     const ctrlKey = event && (event.ctrlKey || event.metaKey);
     const { shiftKey } = event || {};
-    const els = (isArray(el) ? el : [el]).map(el => getModel(el, $));
+    const els = (isArray(el) ? el : [el]).map((el) => getModel(el, $));
     const selected = this.getSelectedAll();
     const mltSel = this.getConfig().multipleSelection;
     let added;
@@ -413,7 +418,7 @@ export default class EditorModel extends Model {
     // If an array is passed remove all selected
     // expect those yet to be selected
     const multiple = isArray(el);
-    multiple && this.removeSelected(selected.filter(s => !contains(els, s)));
+    multiple && this.removeSelected(selected.filter((s) => !contains(els, s)));
 
     els.forEach((el) => {
       let model = getModel(el, undefined);
@@ -491,7 +496,7 @@ export default class EditorModel extends Model {
     const model = getModel(el, $);
     const models = isArray(model) ? model : [model];
 
-    models.forEach(model => {
+    models.forEach((model) => {
       if (model && !model.get('selectable')) return;
       const { selected } = this;
       opts.forceChange && this.removeSelected(model, opts);
@@ -520,7 +525,7 @@ export default class EditorModel extends Model {
     const model = getModel(el, $);
     const models = isArray(model) ? model : [model];
 
-    models.forEach(model => {
+    models.forEach((model) => {
       if (this.selected.hasComponent(model)) {
         this.removeSelected(model, opts);
       } else {
@@ -897,7 +902,7 @@ export default class EditorModel extends Model {
     this.destroyed = true;
     ['_config', 'view', '_previousAttributes', '_events', '_listeners'].forEach(
       //@ts-ignore
-      i => (this[i] = {})
+      (i) => (this[i] = {})
     );
     editors.splice(editors.indexOf(editor), 1);
     //@ts-ignore

@@ -12,10 +12,10 @@ describe('TraitView', () => {
     target = new Component();
     model = new Trait({
       name: modelName,
-      target
+      target,
     });
     obj = new TraitView({
-      model
+      model,
     });
   });
 
@@ -45,11 +45,11 @@ describe('TraitView', () => {
     var target2 = new Component();
     var model1 = new Trait({
       name: modelName,
-      target: target1
+      target: target1,
     });
     var model2 = new Trait({
       name: modelName,
-      target: target2
+      target: target2,
     });
     var obj1 = new TraitView({ model: model1 });
     var obj2 = new TraitView({ model: model2 });

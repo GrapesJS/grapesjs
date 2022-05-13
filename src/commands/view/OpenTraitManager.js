@@ -19,25 +19,16 @@ export default {
       this.$cn = $('<div></div>');
       this.$cn2 = $('<div></div>');
       this.$cn.append(this.$cn2);
-      this.$header = $('<div>').append(
-        `<div class="${confTm.stylePrefix}header">${em.t(
-          'traitManager.empty'
-        )}</div>`
-      );
+      this.$header = $('<div>').append(`<div class="${confTm.stylePrefix}header">${em.t('traitManager.empty')}</div>`);
       this.$cn.append(this.$header);
-      this.$cn2.append(
-        `<div class="${pfx}traits-label">${em.t('traitManager.label')}</div>`
-      );
+      this.$cn2.append(`<div class="${pfx}traits-label">${em.t('traitManager.label')}</div>`);
       this.$cn2.append(tm.render());
       var panels = editor.Panels;
 
-      if (!panels.getPanel('views-container'))
-        panelC = panels.addPanel({ id: 'views-container' });
+      if (!panels.getPanel('views-container')) panelC = panels.addPanel({ id: 'views-container' });
       else panelC = panels.getPanel('views-container');
 
-      panelC
-        .set('appendContent', this.$cn.get(0))
-        .trigger('change:appendContent');
+      panelC.set('appendContent', this.$cn.get(0)).trigger('change:appendContent');
 
       this.target = editor.getModel();
       this.listenTo(this.target, 'component:toggled', this.toggleTm);
@@ -66,5 +57,5 @@ export default {
   stop() {
     this.$cn2 && this.$cn2.hide();
     this.$header && this.$header.hide();
-  }
+  },
 };

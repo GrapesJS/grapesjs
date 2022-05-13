@@ -1,5 +1,5 @@
 import { isElement, isUndefined } from 'underscore';
-import { Collection } from '../common';
+import { Collection, View } from '../common';
 import EditorModel from '../editor/model/Editor';
 import { createId, isDef } from '../utils/mixins';
 
@@ -8,7 +8,7 @@ export interface IModule<TConfig extends any = any>
   init(cfg: any): void;
   destroy(): void;
   postLoad(key: any): any;
-  getConfig(): ModuleConfig;
+  config: TConfig;
   onLoad?(): void;
   name: string;
   postRender?(view: any): void;
@@ -73,8 +73,8 @@ export default abstract class Module<T extends ModuleConfig = ModuleConfig>
     return this._name;
   }
 
-  getConfig() {
-    return this.config;
+  getConfig(name?: string) {
+    return name ? this.config.name : this.config;
   }
 
   __logWarn(str: string, opts = {}) {
@@ -90,8 +90,9 @@ export abstract class ItemManagerModule<
 > extends Module<TConf> {
   cls: any[] = [];
   protected all: TCollection;
+  view?: View;
 
-  constructor(em: EditorModel, moduleName: string, all: any, events: any) {
+  constructor(em: EditorModel, moduleName: string, all: any, events?: any) {
     super(em, moduleName);
     this.all = all;
     this.events = events;
@@ -251,5 +252,7 @@ export abstract class ItemManagerModule<
       coll.stopListening();
       coll.reset();
     });
+    this.view?.remove();
+    this.view = undefined;
   }
 }

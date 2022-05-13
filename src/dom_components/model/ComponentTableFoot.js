@@ -8,10 +8,10 @@ export default ComponentTableBody.extend(
     defaults: {
       ...ComponentTableBody.prototype.defaults,
       type,
-      tagName: type
-    }
+      tagName: type,
+    },
   },
   {
-    isComponent: el => toLowerCase(el.tagName) === type
+    isComponent: el => toLowerCase(el.tagName) === type,
   }
 );

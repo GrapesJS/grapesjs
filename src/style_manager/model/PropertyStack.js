@@ -221,7 +221,13 @@ export default class PropertyStack extends PropertyComposite {
     let style;
 
     if (toStyle) {
-      style = toStyle(values, { join, joinLayers, name, layer, property: this });
+      style = toStyle(values, {
+        join,
+        joinLayers,
+        name,
+        layer,
+        property: this,
+      });
     } else {
       const result = this.getProperties().map(prop => {
         const name = prop.getName();

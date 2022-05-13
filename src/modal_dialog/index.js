@@ -67,7 +67,7 @@ export default () => {
     init(config = {}) {
       c = {
         ...defaults,
-        ...config
+        ...config,
       };
 
       const em = c.em;
@@ -99,7 +99,7 @@ export default () => {
         attributes,
         title: isString(titl) ? createText(titl) : titl,
         content: isString(cnt) ? createText(cnt) : cnt.get ? cnt.get(0) : cnt,
-        close: () => this.close()
+        close: () => this.close(),
       };
     },
 
@@ -269,7 +269,7 @@ export default () => {
       modal = new View({
         el,
         model,
-        config: c
+        config: c,
       });
       return modal.render().$el;
     },
@@ -278,6 +278,6 @@ export default () => {
       modal && modal.remove();
       [c, model, modal].forEach(i => (i = {}));
       this.em = {};
-    }
+    },
   };
 };

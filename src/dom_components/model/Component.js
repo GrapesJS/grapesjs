@@ -978,7 +978,7 @@ export default class Component extends StyleableModel {
   /**
    * Set new collection if `components` are provided, otherwise the
    * current collection is returned
-   * @param  {Component|String} [components] Component Definitions or HTML string
+   * @param  {Component|Component[]|String} [components] Component Definitions or HTML string
    * @param {Object} [opts={}] Options, same as in `Component.append()`
    * @returns {Collection|Array<[Component]>}
    * @example
@@ -1560,7 +1560,7 @@ export default class Component extends StyleableModel {
    * @param {Frame} frame Specific frame from which taking the element
    * @return {HTMLElement}
    */
-  getEl(frame) {
+  getEl(frame = undefined) {
     const view = this.getView(frame);
     return view && view.el;
   }

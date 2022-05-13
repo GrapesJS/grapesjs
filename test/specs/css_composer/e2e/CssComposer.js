@@ -21,7 +21,7 @@ describe('E2E tests', () => {
       stylePrefix: '',
       storageManager: { autoload: 0, type: 'none' },
       assetManager: { storageType: 'none' },
-      container: 'csscomposer-fixture'
+      container: 'csscomposer-fixture',
     });
     cssc = gjs.CssComposer;
     clsm = gjs.SelectorManager;
@@ -30,15 +30,15 @@ describe('E2E tests', () => {
     rulesSet = [
       { selectors: [{ name: 'test1' }, { name: 'test2' }] },
       { selectors: [{ name: 'test2' }, { name: 'test3' }] },
-      { selectors: [{ name: 'test3' }] }
+      { selectors: [{ name: 'test3' }] },
     ];
     rulesSet2 = [
       {
         selectors: [{ name: 'test1' }, { name: 'test2' }],
-        state: ':active'
+        state: ':active',
       },
       { selectors: [{ name: 'test2' }, { name: 'test3' }] },
-      { selectors: [{ name: 'test3' }], mediaText: '(max-width: 900px)' }
+      { selectors: [{ name: 'test3' }], mediaText: '(max-width: 900px)' },
     ];
     done();
   });
@@ -58,7 +58,7 @@ describe('E2E tests', () => {
       stylePrefix: '',
       storageManager: { autoload: 0, type: 'none' },
       cssComposer: { rules: rulesSet },
-      container: 'csscomposer-fixture'
+      container: 'csscomposer-fixture',
     });
     var cssc = gj.editor.get('CssComposer');
     expect(cssc.getAll().length).toEqual(rulesSet.length);
@@ -89,9 +89,7 @@ describe('E2E tests', () => {
   test('Add rules from the new component added as a string with style tag', () => {
     var comps = domc.getComponents();
     var rules = cssc.getAll();
-    comps.add(
-      '<div>Test</div><style>.test{color: red} .test2{color: blue}</style>'
-    );
+    comps.add('<div>Test</div><style>.test{color: red} .test2{color: blue}</style>');
     expect(comps.length).toEqual(1);
     expect(rules.length).toEqual(2);
   });
@@ -116,11 +114,11 @@ describe('E2E tests', () => {
     var style2 = { height: '20px', width: '20px' };
     var rule1 = {
       selectors: ['test1'],
-      style: style1
+      style: style1,
     };
     var rule2 = {
       selectors: ['test1'],
-      style: style2
+      style: style2,
     };
     var ruleOut = cssc.addCollection(rule1)[0];
     // ruleOut is a Model
@@ -129,8 +127,8 @@ describe('E2E tests', () => {
       selectors: ['test1'],
       style: {
         color: 'red',
-        width: '10px'
-      }
+        width: '10px',
+      },
     };
     expect(ruleOut).toEqual(ruleResult);
     var ruleOut = cssc.addCollection(rule2, { extend: 1 })[0];
@@ -138,7 +136,7 @@ describe('E2E tests', () => {
     ruleResult.style = {
       color: 'red',
       height: '20px',
-      width: '20px'
+      width: '20px',
     };
     expect(ruleOut).toEqual(ruleResult);
   });
@@ -149,12 +147,12 @@ describe('E2E tests', () => {
     var rule1 = {
       selectors: [],
       selectorsAdd: '*',
-      style: style1
+      style: style1,
     };
     var rule2 = {
       selectors: [],
       selectorsAdd: 'p',
-      style: style2
+      style: style2,
     };
     var rule1Out = cssc.addCollection(rule1, { extend: 1 })[0];
     var rule2Out = cssc.addCollection(rule2, { extend: 1 })[0];
@@ -165,16 +163,16 @@ describe('E2E tests', () => {
       selectorsAdd: '*',
       style: {
         color: 'red',
-        width: '10px'
-      }
+        width: '10px',
+      },
     };
     var rule2Result = {
       selectors: [],
       selectorsAdd: 'p',
       style: {
         height: '20px',
-        width: '20px'
-      }
+        width: '20px',
+      },
     };
     expect(rule1Out).toEqual(rule1Result);
     expect(rule2Out).toEqual(rule2Result);

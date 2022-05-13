@@ -26,5 +26,5 @@ export default (config = {}) => ({
     }
 
     return objs;
-  }
+  },
 });
