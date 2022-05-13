@@ -5,10 +5,12 @@ import { bindAll } from 'underscore';
 const compProt = ComponentView.prototype;
 
 export default class ComponentTextView extends ComponentView {
-  events = {
-    dblclick: 'onActive',
-    input: 'onInput',
-  };
+  events() {
+    return {
+      dblclick: 'onActive',
+      input: 'onInput',
+    };
+  }
 
   initialize(o) {
     compProt.initialize.apply(this, arguments);

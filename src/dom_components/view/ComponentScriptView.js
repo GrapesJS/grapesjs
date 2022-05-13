@@ -1,9 +1,13 @@
 import ComponentView from './ComponentImageView';
 
 export default class ComponentScriptView extends ComponentView {
-  tagName = 'script';
+  tagName() {
+    return 'script';
+  }
 
-  events = {};
+  events() {
+    return {};
+  }
 
   render() {
     const { model, em } = this;

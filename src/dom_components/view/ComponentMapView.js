@@ -1,9 +1,13 @@
 import ComponentView from './ComponentImageView';
 
 export default class ComponentMapView extends ComponentView {
-  tagName = 'div';
+  tagName() {
+    return 'div';
+  }
 
-  events = {};
+  events() {
+    return {};
+  }
 
   initialize(o) {
     ComponentView.prototype.initialize.apply(this, arguments);

@@ -2,9 +2,13 @@ import ComponentView from './ComponentImageView';
 import OComponentView from './ComponentView';
 
 export default class ComponentVideoView extends ComponentView {
-  tagName = 'div';
+  tagName() {
+    return 'div';
+  }
 
-  events = {};
+  events() {
+    return {};
+  }
 
   initialize(o) {
     OComponentView.prototype.initialize.apply(this, arguments);

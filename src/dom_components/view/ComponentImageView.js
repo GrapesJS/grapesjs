@@ -2,15 +2,18 @@ import { isString } from 'underscore';
 import ComponentView from './ComponentView';
 
 export default class ComponentImageView extends ComponentView {
-  tagName = 'img';
-
-  events = {
-    dblclick: 'onActive',
-    click: 'initResize',
-    error: 'onError',
-    load: 'onLoad',
-    dragstart: 'noDrag',
-  };
+  tagName() {
+    return 'img';
+  }
+  events() {
+    return {
+      dblclick: 'onActive',
+      click: 'initResize',
+      error: 'onError',
+      load: 'onLoad',
+      dragstart: 'noDrag',
+    };
+  }
 
   initialize(o) {
     ComponentView.prototype.initialize.apply(this, arguments);
