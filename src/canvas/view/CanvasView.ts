@@ -26,10 +26,10 @@ export default class CanvasView extends View<Canvas> {
   }
 
   template() {
-    const { pfx } = this;
+    const { ppfx } = this;
     return `
-      <div class="${pfx}canvas__frames" data-frames></div>
-      <div id="${pfx}tools" class="${pfx}canvas__tools" data-tools></div>
+      <div class="${ppfx}canvas__frames" data-frames></div>
+      <div id="${ppfx}tools" class="${ppfx}canvas__tools" data-tools></div>
     `;
   }
   /*get className(){
@@ -60,7 +60,7 @@ export default class CanvasView extends View<Canvas> {
   constructor(model: Canvas) {
     super({model});
     bindAll(this, 'clearOff', 'onKeyPress', 'onCanvasMove');
-    this.className = this.pfx + 'canvas';
+    this.className = this.ppfx + 'canvas';
     const { em } = this;
     this._initFrames();
     this.listenTo(em, 'change:canvasOffset', this.clearOff);
@@ -76,7 +76,7 @@ export default class CanvasView extends View<Canvas> {
   }
 
   _initFrames() {
-    const { frames, model, config, em } = this;
+    const { frames, model, module, em } = this;
     const collection = model.frames;
     em.set('readyCanvas', 0);
     collection.once('loaded:all', () => em.set('readyCanvas', 1));
@@ -84,7 +84,7 @@ export default class CanvasView extends View<Canvas> {
     this.frames = new FramesView(
       {collection},
       {config: {
-        ...config,
+        module,
         canvasView: this,
       },
     });
@@ -375,7 +375,7 @@ export default class CanvasView extends View<Canvas> {
   }
 
   render() {
-    const { el, $el, ppfx, config, em } = this;
+    const { el, $el, pfx, config, em } = this;
     $el.html(this.template());
     const $frames = $el.find('[data-frames]');
     this.framesArea = $frames.get(0);
@@ -383,32 +383,32 @@ export default class CanvasView extends View<Canvas> {
     const toolsWrp = $el.find('[data-tools]');
     this.toolsWrapper = toolsWrp.get(0);
     toolsWrp.append(`
-      <div class="${ppfx}tools ${ppfx}tools-gl" style="pointer-events:none">
-        <div class="${ppfx}placeholder">
-          <div class="${ppfx}placeholder-int"></div>
+      <div class="${pfx}tools ${pfx}tools-gl" style="pointer-events:none">
+        <div class="${pfx}placeholder">
+          <div class="${pfx}placeholder-int"></div>
         </div>
       </div>
-      <div id="${ppfx}tools" style="pointer-events:none">
-        ${config.extHl ? `<div class="${ppfx}highlighter-sel"></div>` : ''}
-        <div class="${ppfx}badge"></div>
-        <div class="${ppfx}ghost"></div>
-        <div class="${ppfx}toolbar" style="pointer-events:all"></div>
-        <div class="${ppfx}resizer"></div>
-        <div class="${ppfx}offset-v"></div>
-        <div class="${ppfx}offset-fixed-v"></div>
+      <div id="${pfx}tools" style="pointer-events:none">
+        ${config.extHl ? `<div class="${pfx}highlighter-sel"></div>` : ''}
+        <div class="${pfx}badge"></div>
+        <div class="${pfx}ghost"></div>
+        <div class="${pfx}toolbar" style="pointer-events:all"></div>
+        <div class="${pfx}resizer"></div>
+        <div class="${pfx}offset-v"></div>
+        <div class="${pfx}offset-fixed-v"></div>
       </div>
     `);
-    const toolsEl = el.querySelector(`#${ppfx}tools`);
-    this.hlEl = el.querySelector(`.${ppfx}highlighter`) as HTMLElement;
-    this.badgeEl = el.querySelector(`.${ppfx}badge`) as HTMLElement;
-    this.placerEl = el.querySelector(`.${ppfx}placeholder`) as HTMLElement;
-    this.ghostEl = el.querySelector(`.${ppfx}ghost`) as HTMLElement;
-    this.toolbarEl = el.querySelector(`.${ppfx}toolbar`) as HTMLElement;
-    this.resizerEl = el.querySelector(`.${ppfx}resizer`) as HTMLElement;
-    this.offsetEl = el.querySelector(`.${ppfx}offset-v`) as HTMLElement;
-    this.fixedOffsetEl = el.querySelector(`.${ppfx}offset-fixed-v`) as HTMLElement;
-    this.toolsGlobEl = el.querySelector(`.${ppfx}tools-gl`) as HTMLElement;
-    this.toolsEl = toolsEl as HTMLElement;
+    const toolsEl = el.querySelector<HTMLElement>(`#${pfx}tools`) ?? undefined;
+    this.hlEl = el.querySelector<HTMLElement>(`.${pfx}highlighter`) ?? undefined;
+    this.badgeEl = el.querySelector<HTMLElement>(`.${pfx}badge`) ?? undefined;
+    this.placerEl = el.querySelector<HTMLElement>(`.${pfx}placeholder`) ?? undefined;
+    this.ghostEl = el.querySelector<HTMLElement>(`.${pfx}ghost`) ?? undefined;
+    this.toolbarEl = el.querySelector<HTMLElement>(`.${pfx}toolbar`) ?? undefined;
+    this.resizerEl = el.querySelector<HTMLElement>(`.${pfx}resizer`) ?? undefined;
+    this.offsetEl = el.querySelector<HTMLElement>(`.${pfx}offset-v`) ?? undefined;
+    this.fixedOffsetEl = el.querySelector<HTMLElement>(`.${pfx}offset-fixed-v`) ?? undefined;
+    this.toolsGlobEl = el.querySelector<HTMLElement>(`.${pfx}tools-gl`) ?? undefined;
+    this.toolsEl = toolsEl;
     this.el.className = getUiClass(em, this.className);
     this.ready = true;
     this._renderFrames();

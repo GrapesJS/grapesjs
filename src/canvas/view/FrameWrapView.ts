@@ -29,7 +29,7 @@ export default class FrameWrapView extends View<Frame> {
     };
     this.cv = canvasView;
     this.frame = new FrameView(model, this);
-    this.classAnim = `${this.ppfx}frame-wrapper--anim`;
+    this.classAnim = `${this.pfx}frame-wrapper--anim`;
     this.updateOffset = debounce(this.updateOffset.bind(this), 0);
     this.updateSize = debounce(this.updateSize.bind(this), 0);
     this.listenTo(model, 'loaded', this.frameLoaded);
@@ -164,48 +164,48 @@ export default class FrameWrapView extends View<Frame> {
   }
 
   render() {
-    const { frame, $el, ppfx, cv, model, el } = this;
+    const { frame, $el, pfx, cv, model, el } = this;
     const { onRender } = model.attributes;
     this.__clear();
     this.__handleSize();
     frame.render();
     $el
       .empty()
-      .attr({ class: `${ppfx}frame-wrapper` })
+      .attr({ class: `${pfx}frame-wrapper` })
       .append(
         `
-      <div class="${ppfx}frame-wrapper__top gjs-two-color" data-frame-top>
-        <div class="${ppfx}frame-wrapper__name" data-action-move>
+      <div class="${pfx}frame-wrapper__top gjs-two-color" data-frame-top>
+        <div class="${pfx}frame-wrapper__name" data-action-move>
           ${model.get('name') || ''}
         </div>
-        <div class="${ppfx}frame-wrapper__top-r">
-          <div class="${ppfx}frame-wrapper__icon" data-action-remove style="display: none">
+        <div class="${pfx}frame-wrapper__top-r">
+          <div class="${pfx}frame-wrapper__icon" data-action-remove style="display: none">
             <svg viewBox="0 0 24 24"><path d="M19 4h-3.5l-1-1h-5l-1 1H5v2h14M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"></path></svg>
           </div>
         </div>
       </div>
-      <div class="${ppfx}frame-wrapper__right" data-frame-right></div>
-      <div class="${ppfx}frame-wrapper__left" data-frame-left></div>
-      <div class="${ppfx}frame-wrapper__bottom" data-frame-bottom></div>
+      <div class="${pfx}frame-wrapper__right" data-frame-right></div>
+      <div class="${pfx}frame-wrapper__left" data-frame-left></div>
+      <div class="${pfx}frame-wrapper__bottom" data-frame-bottom></div>
       `
       )
       .append(frame.el);
     const elTools = createEl(
       'div',
       {
-        class: `${ppfx}tools`,
+        class: `${pfx}tools`,
         style: 'pointer-events:none; display: none',
       },
       `
-      <div class="${ppfx}highlighter" data-hl></div>
-      <div class="${ppfx}badge" data-badge></div>
-      <div class="${ppfx}placeholder">
-        <div class="${ppfx}placeholder-int"></div>
+      <div class="${pfx}highlighter" data-hl></div>
+      <div class="${pfx}badge" data-badge></div>
+      <div class="${pfx}placeholder">
+        <div class="${pfx}placeholder-int"></div>
       </div>
-      <div class="${ppfx}ghost"></div>
-      <div class="${ppfx}toolbar" style="pointer-events:all"></div>
-      <div class="${ppfx}resizer"></div>
-      <div class="${ppfx}offset-v" data-offset>
+      <div class="${pfx}ghost"></div>
+      <div class="${pfx}toolbar" style="pointer-events:all"></div>
+      <div class="${pfx}resizer"></div>
+      <div class="${pfx}offset-v" data-offset>
         <div class="gjs-marginName" data-offset-m>
           <div class="gjs-margin-v-el gjs-margin-v-top" data-offset-m-t></div>
           <div class="gjs-margin-v-el gjs-margin-v-bottom" data-offset-m-b></div>
@@ -219,7 +219,7 @@ export default class FrameWrapView extends View<Frame> {
           <div class="gjs-padding-v-el gjs-padding-v-right" data-offset-p-r></div>
         </div>
       </div>
-      <div class="${ppfx}offset-fixed-v"></div>
+      <div class="${pfx}offset-fixed-v"></div>
     `
     );
     this.elTools = elTools;

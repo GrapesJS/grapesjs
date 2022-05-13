@@ -80,7 +80,6 @@ export default class CanvasModule extends Module<typeof defaults> {
    */
   constructor(em: EditorModel) {
     super(em, "Canvas", defaults)
-
     this.canvas = new Canvas(this);
     this.model = this.canvas;
     this.startAutoscroll = this.startAutoscroll.bind(this);

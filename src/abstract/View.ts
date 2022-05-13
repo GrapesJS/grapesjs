@@ -7,7 +7,7 @@ export default class View<
   TElement extends Element = HTMLElement
 > extends Backbone.View<TModel, TElement> {
   protected get pfx() {
-    return (this.em.config as any).stylePrefix || "";
+    return this.em.config.stylePrefix || "";
   }
 
   protected get ppfx() {
@@ -15,7 +15,6 @@ export default class View<
   }
 
   protected get module(): TModel extends Model<infer M>? M: unknown {
-    //console.log((this.collection.first as any).module)
     return this.model?.module ?? (this.collection as any).module;
   }
 

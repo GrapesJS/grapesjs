@@ -32,7 +32,6 @@ export default class FrameView extends View<Frame, HTMLIFrameElement> {
     super({model});
     bindAll(this, 'updateClientY', 'stopAutoscroll', 'autoscroll', '_emitUpdate');
     const { el, em } = this;
-    //el = em.config.el
     //@ts-ignore
     this.module._config = {
       ...(this.config || {}),
@@ -40,7 +39,6 @@ export default class FrameView extends View<Frame, HTMLIFrameElement> {
       frameView: this,
       //canvasView: view?.cv
     };
-    //console.log(this.config)
     this.frameWrapView = view;
     this.showGlobalTools = debounce(this.showGlobalTools.bind(this), 50);
     const cvModel = this.getCanvasModel();
@@ -111,7 +109,7 @@ export default class FrameView extends View<Frame, HTMLIFrameElement> {
 
   getJsContainer() {
     if (!this.jsContainer) {
-      this.jsContainer = createEl('div', { class: `${this.ppfx}js-cont` });
+      this.jsContainer = createEl('div', { class: `${this.pfx}js-cont` });
     }
 
     return this.jsContainer;
@@ -255,8 +253,8 @@ export default class FrameView extends View<Frame, HTMLIFrameElement> {
   }
 
   render() {
-    const { $el, ppfx } = this;
-    $el.attr({ class: `${ppfx}frame` });
+    const { $el, pfx } = this;
+    $el.attr({ class: `${pfx}frame` });
     this.renderScripts();
     return this;
   }
@@ -326,7 +324,7 @@ export default class FrameView extends View<Frame, HTMLIFrameElement> {
   }
 
   renderBody() {
-    const { config, em, model, ppfx } = this;
+    const { config, em, model, pfx } = this;
     const doc = this.getDoc();
     const body = this.getBody();
     const win = this.getWindow();
@@ -347,36 +345,36 @@ export default class FrameView extends View<Frame, HTMLIFrameElement> {
         padding-top: 0.001em;
       }
 
-      .${ppfx}dashed *[data-gjs-highlightable] {
+      .${pfx}dashed *[data-gjs-highlightable] {
         outline: 1px dashed rgba(170,170,170,0.7);
         outline-offset: -2px;
       }
 
-      .${ppfx}selected {
+      .${pfx}selected {
         outline: 2px solid #3b97e3 !important;
         outline-offset: -2px;
       }
 
-      .${ppfx}selected-parent {
+      .${pfx}selected-parent {
         outline: 2px solid ${colorWarn} !important
       }
 
-      .${ppfx}no-select {
+      .${pfx}no-select {
         user-select: none;
         -webkit-user-select:none;
         -moz-user-select: none;
       }
 
-      .${ppfx}freezed {
+      .${pfx}freezed {
         opacity: 0.5;
         pointer-events: none;
       }
 
-      .${ppfx}no-pointer {
+      .${pfx}no-pointer {
         pointer-events: none;
       }
 
-      .${ppfx}plh-image {
+      .${pfx}plh-image {
         background: #f5f5f5;
         border: none;
         height: 100px;
@@ -387,17 +385,17 @@ export default class FrameView extends View<Frame, HTMLIFrameElement> {
         outline-offset: -2px
       }
 
-      .${ppfx}grabbing {
+      .${pfx}grabbing {
         cursor: grabbing;
         cursor: -webkit-grabbing;
       }
 
-      .${ppfx}is__grabbing {
+      .${pfx}is__grabbing {
         overflow-x: hidden;
       }
 
-      .${ppfx}is__grabbing,
-      .${ppfx}is__grabbing * {
+      .${pfx}is__grabbing,
+      .${pfx}is__grabbing * {
         cursor: grabbing !important;
       }
 
@@ -411,6 +409,7 @@ export default class FrameView extends View<Frame, HTMLIFrameElement> {
       model: component,
       config: {
         ...component.config,
+        em,
         frameView: this,
       },
     }).render();
