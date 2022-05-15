@@ -51,29 +51,26 @@
  * @module StorageManager
  */
 
-import Module from '../abstract/moduleLegacy';
-import defaults from './config/config';
-import LocalStorage from './model/LocalStorage';
-import RemoteStorage from './model/RemoteStorage';
-import { isEmpty, isFunction } from 'underscore';
+import Module from "../abstract/moduleLegacy";
+import defaults from "./config/config";
+import LocalStorage from "./model/LocalStorage";
+import RemoteStorage from "./model/RemoteStorage";
+import { isEmpty, isFunction } from "underscore";
+import { ItemManagerModule } from "../abstract/Module";
+import IStorage from "./model/IStorage";
 
-const eventStart = 'storage:start';
-const eventAfter = 'storage:after';
-const eventEnd = 'storage:end';
-const eventError = 'storage:error';
+const eventStart = "storage:start";
+const eventAfter = "storage:after";
+const eventEnd = "storage:end";
+const eventError = "storage:error";
 
-const STORAGE_LOCAL = 'local';
-const STORAGE_REMOTE = 'remote';
+const STORAGE_LOCAL = "local";
+const STORAGE_REMOTE = "remote";
 
 export default class StorageManager extends Module {
-  name = 'StorageManager';
+  name = "StorageManager";
 
-  /**
-   * Get configuration object
-   * @name getConfig
-   * @function
-   * @return {Object}
-   */
+  storages: { [key: string]: IStorage } = {};
 
   /**
    * Initialize module. Automatically called with a new instance of the editor
@@ -84,9 +81,8 @@ export default class StorageManager extends Module {
     this.__initConfig(defaults, config);
     const c = this.getConfig();
     if (c._disable) c.type = 0;
-    this.storages = {};
-    this.add(STORAGE_LOCAL, new LocalStorage(c));
-    this.add(STORAGE_REMOTE, new RemoteStorage(c));
+    this.add(STORAGE_LOCAL, new LocalStorage(c.options.local));
+    this.add(STORAGE_REMOTE, new RemoteStorage(c.options.remote));
     this.setCurrent(c.type);
     return this;
   }
@@ -103,7 +99,7 @@ export default class StorageManager extends Module {
    * Set autosave value.
    * @param  {Boolean} value
    * */
-  setAutosave(value) {
+  setAutosave(value: boolean) {
     this.getConfig().autosave = !!value;
     return this;
   }
@@ -120,7 +116,7 @@ export default class StorageManager extends Module {
    * Set steps required before trigger autosave.
    * @param {Number} value
    * */
-  setStepsBeforeSave(value) {
+  setStepsBeforeSave(value: number) {
     this.getConfig().stepsBeforeSave = value;
     return this;
   }
@@ -141,7 +137,7 @@ export default class StorageManager extends Module {
    *   },
    * });
    * */
-  add(type, storage) {
+  add(type: string, storage: IStorage) {
     this.storages[type] = storage;
     return this;
   }
@@ -151,7 +147,7 @@ export default class StorageManager extends Module {
    * @param {String} type Storage type
    * @returns {Object|null}
    * */
-  get(type) {
+  get(type: string) {
     return this.storages[type] || null;
   }
 
@@ -175,7 +171,7 @@ export default class StorageManager extends Module {
    * Set current storage type.
    * @param {String} type Storage type
    * */
-  setCurrent(type) {
+  setCurrent(type: string) {
     this.getConfig().currentStorage = type;
     return this;
   }
@@ -189,7 +185,7 @@ export default class StorageManager extends Module {
    * @param {String} type Storage type
    * @returns {Object}
    * */
-  getStorageOptions(type) {
+  getStorageOptions(type: string) {
     return this.getCurrentOptions(type);
   }
 
@@ -202,7 +198,7 @@ export default class StorageManager extends Module {
    * const data = editor.getProjectData();
    * await storageManager.store(data);
    * */
-  async store(data, options = {}) {
+  async store(data: any, options = {}) {
     const st = this.getCurrentStorage();
     const opts = { ...this.getCurrentOptions(), ...options };
     const recovery = this.getRecoveryStorage();
@@ -237,7 +233,10 @@ export default class StorageManager extends Module {
     let result;
 
     if (recoveryStorage) {
-      const recoveryData = await this.__exec(recoveryStorage, this.getCurrentOptions(STORAGE_LOCAL));
+      const recoveryData = await this.__exec(
+        recoveryStorage,
+        this.getCurrentOptions(STORAGE_LOCAL)
+      );
       if (!isEmpty(recoveryData)) {
         try {
           await this.__askRecovery();
@@ -261,7 +260,7 @@ export default class StorageManager extends Module {
       if (isFunction(recovery)) {
         recovery(res, rej, em?.getEditor());
       } else {
-        confirm(em?.t('storageManager.recover')) ? res() : rej();
+        confirm(em?.t("storageManager.recover")) ? res(null) : rej();
       }
     });
   }
@@ -272,11 +271,15 @@ export default class StorageManager extends Module {
 
   getRecoveryStorage() {
     const recovery = this.getRecovery();
-    return recovery && this.getCurrent() === STORAGE_REMOTE && this.get(STORAGE_LOCAL);
+    return (
+      recovery &&
+      this.getCurrent() === STORAGE_REMOTE &&
+      this.get(STORAGE_LOCAL)
+    );
   }
 
-  async __exec(storage, opts, data) {
-    const ev = data ? 'store' : 'load';
+  async __exec(storage: IStorage, opts: any, data?: any) {
+    const ev = data ? "store" : "load";
     const { onStore, onLoad } = this.getConfig();
     let result;
 
@@ -291,11 +294,12 @@ export default class StorageManager extends Module {
 
       if (data) {
         let toStore = (onStore && (await onStore(data, editor))) || data;
-        toStore = (opts.onStore && (await opts.onStore(toStore, editor))) || toStore;
-        await storage.store(toStore, opts);
+        toStore =
+          (opts.onStore && (await opts.onStore(toStore, editor))) || toStore;
+        await storage.store(toStore);
         result = data;
       } else {
-        result = await storage.load(opts);
+        result = await storage.load();
         result = this.__clearKeys(result);
         result = (opts.onLoad && (await opts.onLoad(result, editor))) || result;
         result = (onLoad && (await onLoad(result, editor))) || result;
@@ -310,20 +314,20 @@ export default class StorageManager extends Module {
     return result;
   }
 
-  __clearKeys(data = {}) {
+  __clearKeys(data?: { [key: string]: any }) {
     const config = this.getConfig();
     const reg = new RegExp(`^${config.id}`);
-    const result = {};
+    const result: { [key: string]: any } = {};
 
     for (let itemKey in data) {
-      const itemKeyR = itemKey.replace(reg, '');
+      const itemKeyR = itemKey.replace(reg, "");
       result[itemKeyR] = data[itemKey];
     }
 
     return result;
   }
 
-  getCurrentOptions(type) {
+  getCurrentOptions(type?: string) {
     const config = this.getConfig();
     const current = type || this.getCurrent();
     return config.options[current] || {};
@@ -333,7 +337,7 @@ export default class StorageManager extends Module {
    * On start callback
    * @private
    */
-  onStart(ctx, data) {
+  onStart(ctx: "store" | "load", data: any) {
     const { em } = this;
     if (em) {
       em.trigger(eventStart);
@@ -345,7 +349,7 @@ export default class StorageManager extends Module {
    * On after callback (before passing data to the callback)
    * @private
    */
-  onAfter(ctx, data) {
+  onAfter(ctx: "store" | "load", data: any) {
     const { em } = this;
     if (em) {
       em.trigger(eventAfter);
@@ -358,7 +362,7 @@ export default class StorageManager extends Module {
    * On end callback
    * @private
    */
-  onEnd(ctx, data) {
+  onEnd(ctx: "store" | "load", data: any) {
     const { em } = this;
     if (em) {
       em.trigger(eventEnd);
@@ -370,7 +374,7 @@ export default class StorageManager extends Module {
    * On error callback
    * @private
    */
-  onError(ctx, data) {
+  onError(ctx: "store" | "load", data: any) {
     const { em } = this;
     if (em) {
       em.trigger(eventError, data);

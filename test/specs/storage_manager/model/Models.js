@@ -9,7 +9,7 @@ describe('LocalStorage', () => {
   };
 
   beforeEach(() => {
-    obj = new LocalStorage();
+    obj = new LocalStorage({ key: 'key' });
   });
 
   afterEach(() => {
@@ -44,7 +44,7 @@ describe('RemoteStorage', () => {
       item1: 'value1',
       item2: 'value2',
     };
-    obj = new RemoteStorage();
+    obj = new RemoteStorage(defaultOpts);
     obj.request = jest.fn(() => Promise.resolve(mockResponse({ data: 1 })));
   });
 
@@ -54,7 +54,7 @@ describe('RemoteStorage', () => {
   });
 
   test('Store data', async () => {
-    await obj.store(data, defaultOpts);
+    await obj.store(data);
     const { calls } = obj.request.mock;
     expect(calls.length).toBe(1);
     expect(calls[0][0]).toBe(defaultOpts.urlStore);
@@ -68,7 +68,7 @@ describe('RemoteStorage', () => {
   });
 
   test('Load data', async () => {
-    await obj.load(defaultOpts);
+    await obj.load();
     const { calls } = obj.request.mock;
     expect(obj.request).toBeCalledTimes(1);
     expect(calls[0][0]).toBe(defaultOpts.urlLoad);
@@ -82,10 +82,12 @@ describe('RemoteStorage', () => {
 
   test('Load data with custom fetch options', async () => {
     const customOpts = { customOpt: 'customValue' };
-    await obj.load({
+    obj = new RemoteStorage({
       ...defaultOpts,
       fetchOptions: () => customOpts,
     });
+    obj.request = jest.fn(() => Promise.resolve(mockResponse({ data: 1 })));
+    await obj.load();
 
     expect(obj.request).toBeCalledTimes(1);
     expect(obj.request.mock.calls[0][1]).toEqual({

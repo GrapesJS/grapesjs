@@ -27,6 +27,7 @@
     "@babel/cli": "^7.15.7",
     "@babel/preset-typescript": "^7.16.7",
     "@types/backbone": "^1.4.15",
+    "@types/promise-polyfill": "^6.0.4",
     "@typescript-eslint/parser": "^5.22.0",
     "@vuepress/plugin-google-analytics": "^1.8.2",
     "documentation": "^13.2.5",
