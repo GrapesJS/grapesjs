@@ -4,7 +4,8 @@ export default {
   title: '',
 
   content: '',
-
+  
+  // Close modal on interact with backdrop 
   backdrop: true,
 
   // Avoid rendering the default modal.
