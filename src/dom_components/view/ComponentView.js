@@ -7,10 +7,6 @@ import { replaceWith } from 'utils/dom';
 import { setViewEl } from 'utils/mixins';
 
 export default class ComponentView extends Backbone.View {
-  static getEvents() {
-    return result(this.prototype, 'events');
-  }
-
   className() {
     return this.getClasses();
   }
@@ -514,3 +510,8 @@ export default class ComponentView extends Backbone.View {
 
   onRender() {}
 }
+
+// Due to the Backbone extend mechanism, static methods are not properly extended
+ComponentView.getEvents = function () {
+  return result(this.prototype, 'events');
+};
