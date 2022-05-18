@@ -2,6 +2,7 @@ import { isString, bindAll } from 'underscore';
 import { Model } from '../abstract';
 import Module from '../abstract/Module';
 import Component from '../dom_components/model/Component';
+import EditorModel from '../editor/model/Editor';
 import { hasWin, isComponent, isDef } from '../utils/mixins';
 import defaults from './config/config';
 import View from './view/ItemView';
@@ -43,12 +44,8 @@ export default class LayerManager extends Module<typeof defaults> {
 
     events = events;
 
-    get name(): string {
-      return 'LayerManager';
-    }
-
-    init() {
-      this.__initDefaults(defaults);
+    constructor(em: EditorModel) {
+      super(em, 'LayerManager', defaults);
       bindAll(this, 'componentChanged', '__onRootChange', '__onComponent');
       this.model = new Model(this, { opened: {} });
       // @ts-ignore

@@ -1,7 +1,7 @@
 import { isElement, isUndefined } from 'underscore';
 import { Collection, View } from '../common';
 import EditorModel from '../editor/model/Editor';
-import { createId, isDef } from '../utils/mixins';
+import { createId, isDef, deepMerge } from '../utils/mixins';
 
 export interface IModule<TConfig extends any = any>
   extends IBaseModule<TConfig> {
@@ -43,7 +43,7 @@ export default abstract class Module<T extends ModuleConfig = ModuleConfig>
   model?: any;
   view?: any;
 
-  constructor(em: EditorModel, moduleName: string) {
+  constructor(em: EditorModel, moduleName: string, defaults?: T) {
     this._em = em;
     this._name = moduleName;
     const name = this.name.charAt(0).toLowerCase() + this.name.slice(1);
@@ -56,17 +56,9 @@ export default abstract class Module<T extends ModuleConfig = ModuleConfig>
     if (!isUndefined(cfgParent) && !cfgParent) {
       cfg._disable = 1;
     }
-    this._config = cfg;
-  }
 
-  // Temporary alternative to constructor
-  __init(em: EditorModel, config: T) {
-    this._em = em;
-    this._config = config;
-    this.init(config);
-  }
-  __initDefaults(defaults: T) {
-    this._config = { ...defaults, ...this._config };
+    cfg.em = em;
+    this._config = deepMerge(defaults || {}, cfg) as T;
   }
 
   public get em() {
@@ -133,6 +125,7 @@ export abstract class ItemManagerModule<
   abstract storageKey: string;
   abstract destroy(): void;
   postLoad(key: any): void {}
+  // @ts-ignore
   render() {}
 
   getProjectData(data?: any) {
@@ -243,6 +236,7 @@ export abstract class ItemManagerModule<
     if (elTo) {
       const el = isElement(elTo) ? elTo : document.querySelector(elTo);
       if (!el) return this.__logWarn('"appendTo" element not found');
+      // @ts-ignore
       el.appendChild(this.render());
     }
   }

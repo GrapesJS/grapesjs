@@ -208,7 +208,7 @@ export default class ItemView extends View {
     $el.find(`.${this.inputNameCls}`).removeClass(clsNoEdit).addClass(clsEdit);
   }
 
-  handleEditKey(ev: MouseEvent) {
+  handleEditKey(ev: KeyboardEvent) {
     ev.stopPropagation();
     (isEscKey(ev) || isEnterKey(ev)) && this.handleEditEnd(ev);
   }
@@ -216,7 +216,7 @@ export default class ItemView extends View {
   /**
    * Handle with the end of editing of the component name
    */
-  handleEditEnd(ev?: MouseEvent) {
+  handleEditEnd(ev?: KeyboardEvent) {
     ev?.stopPropagation();
     const { em, $el, clsNoEdit, clsEdit } = this;
     const inputEl = this.getInputName();
@@ -324,6 +324,7 @@ export default class ItemView extends View {
    * @param	Event
    * */
   updateStatus() {
+    // @ts-ignore
     ComponentView.prototype.updateStatus.apply(this, [
       {
         avoidHover: !this.config.highlightHover,
