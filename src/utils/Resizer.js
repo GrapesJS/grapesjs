@@ -287,11 +287,12 @@ class Resizer {
     };
 
     // Listen events
-    var doc = this.getDocumentEl();
-    on(doc, 'mousemove', this.move);
-    on(doc, 'keydown', this.handleKeyDown);
-    on(doc, 'mouseup', this.stop);
-    isFunction(this.onStart) && this.onStart(e, { docs: doc, config, el, resizer });
+    const docs = this.getDocumentEl();
+    this.docs = docs;
+    on(docs, 'mousemove', this.move);
+    on(docs, 'keydown', this.handleKeyDown);
+    on(docs, 'mouseup', this.stop);
+    isFunction(this.onStart) && this.onStart(e, { docs, config, el, resizer });
     this.toggleFrames(1);
     this.move(e);
   }
@@ -339,13 +340,14 @@ class Resizer {
    */
   stop(e) {
     const config = this.opts;
-    var doc = this.getDocumentEl();
-    off(doc, 'mousemove', this.move);
-    off(doc, 'keydown', this.handleKeyDown);
-    off(doc, 'mouseup', this.stop);
+    const docs = this.docs || this.getDocumentEl();
+    off(docs, 'mousemove', this.move);
+    off(docs, 'keydown', this.handleKeyDown);
+    off(docs, 'mouseup', this.stop);
     this.updateRect(1);
     this.toggleFrames();
-    isFunction(this.onEnd) && this.onEnd(e, { docs: doc, config });
+    isFunction(this.onEnd) && this.onEnd(e, { docs, config });
+    delete this.docs;
   }
 
   /**
