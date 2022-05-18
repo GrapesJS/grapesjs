@@ -28,7 +28,7 @@ export default class EditorView extends View<EditorModel> {
     const { config, modules } = model;
     const pfx = config.stylePrefix;
     const contEl = $(config.el || `body ${config.container}`);
-    appendStyles(config.cssIcons, { unique: 1, prepand: 1 });
+    appendStyles(config.cssIcons, { unique: true, prepand: true });
     $el.empty();
 
     if (config.width) contEl.css('width', config.width);
