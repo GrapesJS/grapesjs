@@ -9,7 +9,7 @@ describe('ModalView', () => {
   beforeEach(() => {
     model = new Modal();
     view = new ModalView({
-      model
+      model,
     });
     document.body.innerHTML = '<div id="fixtures"></div>';
     document.body.querySelector('#fixtures').appendChild(view.render().el);

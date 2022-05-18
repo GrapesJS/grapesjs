@@ -29,10 +29,11 @@ export default class Selectors extends Collection<Selector> {
     );
   }
 
-  getFullString(collection: Selector[], opts = {}) {
+  getFullString(collection?: Selector[] | null, opts: { sort?: boolean } = {}) {
     const result: string[] = [];
     const coll = collection || this;
     coll.forEach((selector) => result.push(selector.getFullName(opts)));
+    opts.sort && result.sort();
     return result.join('').trim();
   }
 

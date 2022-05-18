@@ -200,7 +200,7 @@ export default class SelectorManager extends Module {
     return this;
   }
 
-  addSelector(name: string | { name?: string; label?: string }, opts = {}, cOpts = {}): Selector {
+  addSelector(name: string | { name?: string; label?: string } | Selector, opts = {}, cOpts = {}): Selector {
     let props: any = { ...opts };
 
     if (isObject(name)) {
@@ -227,7 +227,8 @@ export default class SelectorManager extends Module {
     const selector = cname ? this.get(cname, props.type) : all.where(props)[0];
 
     if (!selector) {
-      return all.add(new Selector(props, { ...cOpts, config, em }));
+      const selModel = props instanceof Selector ? props : new Selector(props, { ...cOpts, config, em });
+      return all.add(selModel, cOpts);
     }
 
     return selector;

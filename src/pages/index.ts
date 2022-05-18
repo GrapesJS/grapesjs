@@ -85,6 +85,16 @@ export default class PageManager extends ItemManagerModule<Config, Pages> {
   }
 
   model: Model;
+
+  /**
+   * Get all pages
+   * @name getAll
+   * @function
+   * @returns {Array<[Page]>}
+   * @example
+   * const arrayOfPages = pageManager.getAll();
+   */
+
   /**
    * Initialize module
    * @param {Object} config Configurations

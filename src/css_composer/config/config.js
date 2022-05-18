@@ -18,5 +18,5 @@ export default {
    *    return style;
    * }
    */
-  onBeforeStyle: null
+  onBeforeStyle: null,
 };

@@ -5,7 +5,7 @@ export default {
     addButton: 'Añadir imagen',
     inputPlh: 'http://camino/a/la/imagen.jpg',
     modalTitle: 'Seleccionar imagen',
-    uploadTitle: 'Arrastre los archivos aquí o haga clic para cargar'
+    uploadTitle: 'Arrastre los archivos aquí o haga clic para cargar',
   },
   // Here just as a reference, GrapesJS core doesn't contain any block,
   // so this should be omitted from other local files
@@ -15,7 +15,7 @@ export default {
     },
     categories: {
       // 'category-id': 'Category Label',
-    }
+    },
   },
   domComponents: {
     names: {
@@ -33,8 +33,8 @@ export default {
       thead: 'Encabezado de lista',
       table: 'Lista',
       row: 'Fila de lista',
-      cell: 'Celda de lista'
-    }
+      cell: 'Celda de lista',
+    },
   },
   deviceManager: {
     device: 'Dispositivos',
@@ -42,8 +42,8 @@ export default {
       desktop: 'Escritorio',
       tablet: 'Tableta',
       mobileLandscape: 'Mobile Landscape',
-      mobilePortrait: 'Mobile Portrait'
-    }
+      mobilePortrait: 'Mobile Portrait',
+    },
   },
   panels: {
     buttons: {
@@ -55,9 +55,9 @@ export default {
         'open-sm': 'Abrir Administrador de estilos',
         'open-tm': 'Ajustes',
         'open-layers': 'Abrir Aministrador de capas',
-        'open-blocks': 'Abrir Bloques'
-      }
-    }
+        'open-blocks': 'Abrir Bloques',
+      },
+    },
   },
   selectorManager: {
     label: 'Clases',
@@ -66,8 +66,8 @@ export default {
     states: {
       hover: 'Hover',
       active: 'Click',
-      'nth-of-type(2n)': 'Par/Impar'
-    }
+      'nth-of-type(2n)': 'Par/Impar',
+    },
   },
   styleManager: {
     empty: 'Seleccione un elemento antes de usar el Administrador de estilos',
@@ -80,7 +80,7 @@ export default {
       decorations: 'Decoraciones',
       extra: 'Extras',
       flex: 'Flex',
-      dimension: 'Dimensión'
+      dimension: 'Dimensión',
     },
     // The core library generates the name by their `property` name
     properties: {
@@ -165,8 +165,8 @@ export default {
       'flex-grow': 'Crecimiento Flex',
       'flex-shrink': 'Contracción Flex',
       'align-self': 'Alinearse',
-      'background-color': 'Color de fondo'
-    }
+      'background-color': 'Color de fondo',
+    },
   },
   traitManager: {
     empty: 'Seleccione un elemento antes de usar el Administrador de rasgos',
@@ -177,22 +177,22 @@ export default {
         id: 'Identificador',
         alt: 'Título alterno',
         title: 'Título',
-        href: 'Vínculo'
+        href: 'Vínculo',
       },
       // In a simple trait, like text input, these are used on input attributes
       attributes: {
         id: traitInputAttr,
         alt: traitInputAttr,
         title: traitInputAttr,
-        href: { placeholder: 'ej. https://google.com' }
+        href: { placeholder: 'ej. https://google.com' },
       },
       // In a trait like select, these are used to translate option names
       options: {
         target: {
           false: 'Esta ventana',
-          _blank: 'Nueva ventana'
-        }
-      }
-    }
-  }
+          _blank: 'Nueva ventana',
+        },
+      },
+    },
+  },
 };

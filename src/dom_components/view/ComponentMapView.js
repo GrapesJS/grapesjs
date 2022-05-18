@@ -1,15 +1,18 @@
-import Backbone from 'backbone';
 import ComponentView from './ComponentImageView';
 
-export default ComponentView.extend({
-  tagName: 'div',
+export default class ComponentMapView extends ComponentView {
+  tagName() {
+    return 'div';
+  }
 
-  events: {},
+  events() {
+    return {};
+  }
 
   initialize(o) {
     ComponentView.prototype.initialize.apply(this, arguments);
     this.classEmpty = this.ppfx + 'plh-map';
-  },
+  }
 
   /**
    * Update the map on the canvas
@@ -17,7 +20,7 @@ export default ComponentView.extend({
    */
   updateSrc() {
     this.getIframe().src = this.model.get('src');
-  },
+  }
 
   getIframe() {
     if (!this.iframe) {
@@ -30,7 +33,7 @@ export default ComponentView.extend({
       this.iframe = ifrm;
     }
     return this.iframe;
-  },
+  }
 
   render(...args) {
     ComponentView.prototype.render.apply(this, args);
@@ -38,4 +41,4 @@ export default ComponentView.extend({
     this.el.appendChild(this.getIframe());
     return this;
   }
-});
+}

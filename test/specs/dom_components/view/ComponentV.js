@@ -14,7 +14,7 @@ describe('ComponentView', () => {
 
   beforeEach(() => {
     em = new Editor({});
-    dcomp = new DomComponents();
+    dcomp = new DomComponents(em);
     compOpts = {
       em,
       componentTypes: dcomp.componentTypes,

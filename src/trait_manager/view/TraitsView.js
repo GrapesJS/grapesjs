@@ -32,4 +32,4 @@ export default class TraitsView extends DomainViews {
   }
 }
 
-TraitView.prototype.itemView = TraitView;
+TraitsView.prototype.itemView = TraitView;

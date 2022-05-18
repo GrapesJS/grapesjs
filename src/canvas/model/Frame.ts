@@ -1,7 +1,5 @@
 import { result, forEach, isEmpty, isString } from 'underscore';
 import { Model } from '../../common';
-import { Component } from '../../dom_components/model/Component';
-import Components from '../../dom_components/model/Components';
 import ComponentWrapper from '../../dom_components/model/ComponentWrapper';
 import EditorModel from '../../editor/model/Editor';
 import { isComponent, isObject } from '../../utils/mixins';
@@ -38,6 +36,9 @@ export default class Frame extends Model {
   em: EditorModel;
   view?: FrameView;
 
+  /**
+   * @hideconstructor
+   */
   constructor(props: any, opts: any) {
     super(props);
     const { em } = opts;

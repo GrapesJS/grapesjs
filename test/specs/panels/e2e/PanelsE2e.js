@@ -13,7 +13,7 @@ describe('E2E tests', () => {
     obj = grapesjs;
     config = {
       container: '#' + editorName,
-      storageManager: { autoload: 0, type: 'none' }
+      storageManager: { autoload: 0, type: 'none' },
     };
     fixture = $('<div id="' + editorName + '"></div>');
     fixture.empty().appendTo(fixtures);
@@ -38,9 +38,9 @@ describe('E2E tests', () => {
           run(ed, caller) {
             ed.testValue = 'testValue';
             caller.set('active', false);
-          }
-        }
-      ]
+          },
+        },
+      ],
     };
     config.panels = {
       defaults: [
@@ -50,11 +50,11 @@ describe('E2E tests', () => {
             {
               id: 'button-test',
               className: 'fa fa-smile-o',
-              command: commandId
-            }
-          ]
-        }
-      ]
+              command: commandId,
+            },
+          ],
+        },
+      ],
     };
     var editor = obj.init(config);
     editor.testValue = '';

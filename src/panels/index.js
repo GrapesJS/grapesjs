@@ -204,7 +204,7 @@ export default () => {
       PanelsViewObj && PanelsViewObj.remove();
       PanelsViewObj = new PanelsView({
         collection: panels,
-        config: c
+        config: c,
       });
       return PanelsViewObj.render().el;
     },
@@ -240,6 +240,6 @@ export default () => {
       [c, panels, PanelsViewObj].forEach(i => (i = {}));
     },
 
-    Panel
+    Panel,
   };
 };

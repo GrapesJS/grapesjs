@@ -9,7 +9,7 @@ describe('PanelView', () => {
   beforeEach(() => {
     model = new Panel();
     view = new PanelView({
-      model
+      model,
     });
     document.body.innerHTML = '<div id="fixtures"></div>';
     fixtures = document.body.querySelector('#fixtures');
@@ -53,10 +53,10 @@ describe('PanelView', () => {
   describe('Init with options', () => {
     beforeEach(() => {
       model = new Panel({
-        buttons: [{}]
+        buttons: [{}],
       });
       view = new PanelView({
-        model
+        model,
       });
       document.body.innerHTML = '<div id="fixtures"></div>';
       fixtures = document.body.querySelector('#fixtures');

@@ -22,5 +22,5 @@ export default {
     });
 
     toSelect.length && ed.select(toSelect);
-  }
+  },
 };

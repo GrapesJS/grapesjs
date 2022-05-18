@@ -1,23 +1,23 @@
 import Backbone from 'backbone';
 
-export default Backbone.View.extend({
+export default class ToolbarButtonView extends Backbone.View {
   events() {
     return (
       this.model.get('events') || {
         mousedown: 'handleClick',
       }
     );
-  },
+  }
 
   attributes() {
     return this.model.get('attributes');
-  },
+  }
 
   initialize(opts = {}) {
     const { config = {} } = opts;
     this.em = config.em;
     this.editor = config.editor;
-  },
+  }
 
   handleClick(event) {
     event.preventDefault();
@@ -48,7 +48,7 @@ export default Backbone.View.extend({
 
     em.trigger('toolbar:run:before');
     this.execCommand(calibrated);
-  },
+  }
 
   execCommand(event) {
     const opts = { event };
@@ -62,7 +62,7 @@ export default Backbone.View.extend({
     if (typeof command === 'string') {
       editor.runCommand(command, opts);
     }
-  },
+  }
 
   render() {
     const { editor, $el, model } = this;
@@ -73,5 +73,5 @@ export default Backbone.View.extend({
     id && $el.addClass(`${pfx}toolbar-item__${id}`);
     label && $el.append(label);
     return this;
-  },
-});
+  }
+}

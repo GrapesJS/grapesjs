@@ -21,7 +21,7 @@ describe('Commands', () => {
               getWrapperEl: () => ({}),
               getFrameEl: () => ({}),
               getToolsEl: () => ({}),
-              getBody: () => ({})
+              getBody: () => ({}),
             };
           case 'Editor':
             return { ...Backbone.Events };
@@ -29,16 +29,16 @@ describe('Commands', () => {
         }
         return null;
       },
-      logWarning() {}
+      logWarning() {},
     };
 
     beforeEach(() => {
       commSimple = {
         run: () => commResultRun,
-        stop: () => commResultStop
+        stop: () => commResultStop,
       };
       commRunOnly = {
-        run: () => commResultRun
+        run: () => commResultRun,
       };
       commFunc = () => commResultRun;
       obj = new Commands().init({ em: mockEditor });

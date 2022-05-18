@@ -9,10 +9,10 @@ export default Component.extend(
       ...Component.prototype.defaults,
       tagName,
       draggable: ['thead', 'tbody', 'tfoot'],
-      droppable: ['th', 'td']
-    }
+      droppable: ['th', 'td'],
+    },
   },
   {
-    isComponent: el => toLowerCase(el.tagName) === tagName
+    isComponent: el => toLowerCase(el.tagName) === tagName,
   }
 );

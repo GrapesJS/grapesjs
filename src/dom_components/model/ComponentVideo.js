@@ -28,7 +28,7 @@ export default Component.extend(
       rel: 1, // YT related videos
       modestbranding: 0, // YT modest branding
       sources: [],
-      attributes: { allowfullscreen: 'allowfullscreen' }
+      attributes: { allowfullscreen: 'allowfullscreen' },
     },
 
     initialize(o, opt) {
@@ -153,8 +153,8 @@ export default Component.extend(
           { value: 'so', name: 'HTML5 Source' },
           { value: yt, name: 'Youtube' },
           { value: ytnc, name: 'Youtube (no cookie)' },
-          { value: vi, name: 'Vimeo' }
-        ]
+          { value: vi, name: 'Vimeo' },
+        ],
       };
     },
 
@@ -170,17 +170,17 @@ export default Component.extend(
           label: 'Source',
           name: 'src',
           placeholder: 'eg. ./media/video.mp4',
-          changeProp: 1
+          changeProp: 1,
         },
         {
           label: 'Poster',
           name: 'poster',
-          placeholder: 'eg. ./media/image.jpg'
+          placeholder: 'eg. ./media/image.jpg',
           // changeProp: 1
         },
         this.getAutoplayTrait(),
         this.getLoopTrait(),
-        this.getControlsTrait()
+        this.getControlsTrait(),
       ];
     },
     /**
@@ -195,7 +195,7 @@ export default Component.extend(
           label: 'Video ID',
           name: 'videoId',
           placeholder: 'eg. jNQXAC9IVRw',
-          changeProp: 1
+          changeProp: 1,
         },
         this.getAutoplayTrait(),
         this.getLoopTrait(),
@@ -204,14 +204,14 @@ export default Component.extend(
           type: 'checkbox',
           label: 'Related',
           name: 'rel',
-          changeProp: 1
+          changeProp: 1,
         },
         {
           type: 'checkbox',
           label: 'Modest',
           name: 'modestbranding',
-          changeProp: 1
-        }
+          changeProp: 1,
+        },
       ];
     },
 
@@ -227,16 +227,16 @@ export default Component.extend(
           label: 'Video ID',
           name: 'videoId',
           placeholder: 'eg. 123456789',
-          changeProp: 1
+          changeProp: 1,
         },
         {
           label: 'Color',
           name: 'color',
           placeholder: 'eg. FF0000',
-          changeProp: 1
+          changeProp: 1,
         },
         this.getAutoplayTrait(),
-        this.getLoopTrait()
+        this.getLoopTrait(),
       ];
     },
 
@@ -250,7 +250,7 @@ export default Component.extend(
         type: 'checkbox',
         label: 'Autoplay',
         name: 'autoplay',
-        changeProp: 1
+        changeProp: 1,
       };
     },
 
@@ -264,7 +264,7 @@ export default Component.extend(
         type: 'checkbox',
         label: 'Loop',
         name: 'loop',
-        changeProp: 1
+        changeProp: 1,
       };
     },
 
@@ -278,7 +278,7 @@ export default Component.extend(
         type: 'checkbox',
         label: 'Controls',
         name: 'controls',
-        changeProp: 1
+        changeProp: 1,
       };
     },
 
@@ -327,7 +327,7 @@ export default Component.extend(
       url += !this.get('controls') ? '&title=0&portrait=0&badge=0' : '';
       url += this.get('color') ? '&color=' + this.get('color') : '';
       return url;
-    }
+    },
   },
   {
     /**
@@ -345,10 +345,7 @@ export default Component.extend(
       const isYtncProv = /youtube-nocookie\.com\/embed/.test(src);
       const isViProv = /player\.vimeo\.com\/video/.test(src);
       const isExtProv = isYtProv || isYtncProv || isViProv;
-      if (
-        toLowerCase(tagName) == type ||
-        (toLowerCase(tagName) == 'iframe' && isExtProv)
-      ) {
+      if (toLowerCase(tagName) == type || (toLowerCase(tagName) == 'iframe' && isExtProv)) {
         result = { type: 'video' };
         if (src) result.src = src;
         if (isExtProv) {
@@ -358,6 +355,6 @@ export default Component.extend(
         }
       }
       return result;
-    }
+    },
   }
 );

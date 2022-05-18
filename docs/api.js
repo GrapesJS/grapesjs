@@ -11,7 +11,7 @@ async function generateDocs () {
   log('Start API Reference generation...');
 
   await Promise.all([
-    ['editor/index.js', 'editor.md'],
+    ['editor/index.ts', 'editor.md'],
     ['asset_manager/index.js', 'assets.md'],
     ['asset_manager/model/Asset.js', 'asset.md'],
     ['block_manager/index.js', 'block_manager.md'],
@@ -31,9 +31,9 @@ async function generateDocs () {
     ['storage_manager/index.js', 'storage_manager.md'],
     ['device_manager/index.js', 'device_manager.md'],
     ['device_manager/model/Device.js', 'device.md'],
-    ['selector_manager/index.js', 'selector_manager.md'],
-    ['selector_manager/model/Selector.js', 'selector.md'],
-    ['selector_manager/model/State.js', 'state.md'],
+    ['selector_manager/index.ts', 'selector_manager.md'],
+    ['selector_manager/model/Selector.ts', 'selector.md'],
+    ['selector_manager/model/State.ts', 'state.md'],
     ['css_composer/index.js', 'css_composer.md'],
     ['css_composer/model/CssRule.js', 'css_rule.md'],
     ['modal_dialog/index.js', 'modal_dialog.md'],
@@ -41,10 +41,10 @@ async function generateDocs () {
     ['keymaps/index.js', 'keymaps.md'],
     ['undo_manager/index.js', 'undo_manager.md'],
     ['canvas/index.js', 'canvas.md'],
-    ['canvas/model/Frame.js', 'frame.md'],
+    ['canvas/model/Frame.ts', 'frame.md'],
     ['i18n/index.js', 'i18n.md'],
-    ['pages/index.js', 'pages.md'],
-    ['pages/model/Page.js', 'page.md'],
+    ['pages/index.ts', 'pages.md'],
+    ['pages/model/Page.ts', 'page.md'],
     ['parser/index.js', 'parser.md'],
   ].map(async (file) =>
     documentation.build([`${srcRoot}/${file[0]}`], { shallow: true })

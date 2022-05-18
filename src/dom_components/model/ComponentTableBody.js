@@ -12,7 +12,7 @@ export default Component.extend(
       draggable: ['table'],
       droppable: ['tr'],
       columns: 1,
-      rows: 1
+      rows: 1,
     },
 
     initialize(o, opt) {
@@ -32,22 +32,22 @@ export default Component.extend(
           while (clm--) {
             columnsToAdd.push({
               type: 'cell',
-              classes: ['cell']
+              classes: ['cell'],
             });
           }
 
           rowsToAdd.push({
             type: 'row',
             classes: ['row'],
-            components: columnsToAdd
+            components: columnsToAdd,
           });
         }
 
         components.add(rowsToAdd);
       }
-    }
+    },
   },
   {
-    isComponent: el => toLowerCase(el.tagName) === type
+    isComponent: el => toLowerCase(el.tagName) === type,
   }
 );

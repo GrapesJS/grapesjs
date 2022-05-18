@@ -41,7 +41,7 @@ export default {
     this.bm = bm;
     const { container } = this;
     bm.__behaviour({
-      container
+      container,
     });
 
     if (this.config.custom) {
@@ -53,5 +53,5 @@ export default {
 
   stop() {
     this.close();
-  }
+  },
 };

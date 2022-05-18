@@ -33,6 +33,9 @@ export default class Selector extends Model {
 
   em: EditorModel;
 
+  /**
+   * @hideconstructor
+   */
   constructor(props: any, opts: any = {}) {
     super(props, opts);
     const { config = {} } = opts;
@@ -166,7 +169,7 @@ export default class Selector extends Model {
    * Escape string
    * @param {string} name
    * @return {string}
-   * @public
+   * @private
    */
   static escapeName(name: string) {
     return `${name}`.trim().replace(/([^a-z0-9\w-\:]+)/gi, '-');

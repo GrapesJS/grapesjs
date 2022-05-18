@@ -222,9 +222,7 @@ export default () => {
     },
 
     destroy() {
-      [c, generators, defGenerators, viewers, defViewers].forEach(
-        i => (i = {})
-      );
-    }
+      [c, generators, defGenerators, viewers, defViewers].forEach(i => (i = {}));
+    },
   };
 };
