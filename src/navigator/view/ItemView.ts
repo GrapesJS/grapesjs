@@ -75,10 +75,8 @@ export default class ItemView extends View {
       <div class="${this.clsChildren}"></div>`;
   }
 
-  private _em: EditorModel;
-
   public get em(): EditorModel {
-    return this._em;
+    return this.module.em;
   }
 
   public get ppfx(): string {
@@ -121,7 +119,6 @@ export default class ItemView extends View {
     const config = opt.config || {};
     const { onInit } = config;
     this.config = config;
-    this._em = opt.config.em;
     this.sorter = opt.sorter || '';
     this.parentView = opt.parentView;
     const pfx = this.pfx;
