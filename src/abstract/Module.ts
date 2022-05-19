@@ -1,7 +1,7 @@
 import { isElement, isUndefined } from 'underscore';
 import { Collection, View } from '../common';
 import EditorModel from '../editor/model/Editor';
-import { createId, isDef } from '../utils/mixins';
+import { createId, isDef, deepMerge } from '../utils/mixins';
 
 export interface IModule<TConfig extends any = any>
   extends IBaseModule<TConfig> {
@@ -20,8 +20,9 @@ export interface IBaseModule<TConfig extends any> {
 }
 
 export interface ModuleConfig {
-  name: string;
+  name?: string;
   stylePrefix?: string;
+  appendTo?: string;
 }
 
 export interface IStorableModule extends IModule {
@@ -39,8 +40,10 @@ export default abstract class Module<T extends ModuleConfig = ModuleConfig>
   private _name: string;
   cls: any[] = [];
   events: any;
+  model?: any;
+  view?: any;
 
-  constructor(em: EditorModel, moduleName: string) {
+  constructor(em: EditorModel, moduleName: string, defaults?: T) {
     this._em = em;
     this._name = moduleName;
     const name = this.name.charAt(0).toLowerCase() + this.name.slice(1);
@@ -53,7 +56,9 @@ export default abstract class Module<T extends ModuleConfig = ModuleConfig>
     if (!isUndefined(cfgParent) && !cfgParent) {
       cfg._disable = 1;
     }
-    this._config = cfg;
+
+    cfg.em = em;
+    this._config = deepMerge(defaults || {}, cfg) as T;
   }
 
   public get em() {
@@ -65,8 +70,9 @@ export default abstract class Module<T extends ModuleConfig = ModuleConfig>
   //abstract name: string;
   isPrivate: boolean = false;
   onLoad?(): void;
-  init(cfg: any) {}
+  init(cfg: T) {}
   abstract destroy(): void;
+  abstract render(): HTMLElement;
   postLoad(key: any): void {}
 
   get name(): string {
@@ -83,6 +89,20 @@ export default abstract class Module<T extends ModuleConfig = ModuleConfig>
   }
 
   postRender?(view: any): void;
+
+  /**
+   * Move the main DOM element of the module.
+   * To execute only post editor render (in postRender)
+   */
+   __appendTo() {
+    const elTo = this.getConfig().appendTo;
+
+    if (elTo) {
+      const el = isElement(elTo) ? elTo : document.querySelector(elTo);
+      if (!el) return this.__logWarn('"appendTo" element not found');
+      el.appendChild(this.render());
+    }
+  }
 }
 
 export abstract class ItemManagerModule<
@@ -105,6 +125,7 @@ export abstract class ItemManagerModule<
   abstract storageKey: string;
   abstract destroy(): void;
   postLoad(key: any): void {}
+  // @ts-ignore
   render() {}
 
   getProjectData(data?: any) {
@@ -215,6 +236,7 @@ export abstract class ItemManagerModule<
     if (elTo) {
       const el = isElement(elTo) ? elTo : document.querySelector(elTo);
       if (!el) return this.__logWarn('"appendTo" element not found');
+      // @ts-ignore
       el.appendChild(this.render());
     }
   }
