@@ -71,8 +71,9 @@ export default class Input extends Backbone.View {
     if (!this.inputEl) {
       const { model, opts } = this;
       const type = opts.type || 'text';
+      const readonly = opts.readonly ? 'readonly' : '';
       const plh = model.get('placeholder') || model.get('defaults') || model.get('default') || '';
-      this.inputEl = $(`<input type="${type}" placeholder="${plh}">`);
+      this.inputEl = $(`<input type="${type}" placeholder="${plh}" ${readonly}>`);
     }
 
     return this.inputEl.get(0);
