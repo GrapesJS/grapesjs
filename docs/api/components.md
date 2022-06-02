@@ -50,34 +50,9 @@ cmp.addType(...);
 *   [getComponents][3]
 *   [addComponent][4]
 *   [clear][5]
-*   [load][6]
-*   [store][7]
-*   [addType][8]
-*   [getType][9]
-*   [getTypes][10]
-*   [render][11]
-
-## load
-
-Load components from the passed object, if the object is empty will try to fetch them
-autonomously from the selected storage
-The fetched data will be added to the collection
-
-### Parameters
-
-*   `data` **[Object][12]** Object of data to load (optional, default `''`)
-
-Returns **[Object][12]** Loaded data
-
-## store
-
-Store components on the selected storage
-
-### Parameters
-
-*   `noStore` **[Boolean][13]** If true, won't store
-
-Returns **[Object][12]** Data to store
+*   [addType][6]
+*   [getType][7]
+*   [getTypes][8]
 
 ## getWrapper
 
@@ -126,7 +101,7 @@ comp1Children.add([
 wrapperChildren.remove(comp2);
 ```
 
-Returns **[Components][14]** Collection of components
+Returns **[Components][9]** Collection of components
 
 ## addComponent
 
@@ -135,20 +110,20 @@ as 'cmp.getComponents().add(...)'
 
 ### Parameters
 
-*   `component` **([Object][12] | Component | [Array][15]<[Object][12]>)** Component/s to add
+*   `component` **([Object][10] | Component | [Array][11]<[Object][10]>)** Component/s to add
 
-    *   `component.tagName` **[string][16]** Tag name (optional, default `'div'`)
-    *   `component.type` **[string][16]** Type of the component. Available: ''(default), 'text', 'image' (optional, default `''`)
+    *   `component.tagName` **[string][12]** Tag name (optional, default `'div'`)
+    *   `component.type` **[string][12]** Type of the component. Available: ''(default), 'text', 'image' (optional, default `''`)
     *   `component.removable` **[boolean][13]** If component is removable (optional, default `true`)
     *   `component.draggable` **[boolean][13]** If is possible to move the component around the structure (optional, default `true`)
     *   `component.droppable` **[boolean][13]** If is possible to drop inside other components (optional, default `true`)
     *   `component.badgable` **[boolean][13]** If the badge is visible when the component is selected (optional, default `true`)
     *   `component.stylable` **[boolean][13]** If is possible to style component (optional, default `true`)
     *   `component.copyable` **[boolean][13]** If is possible to copy\&paste the component (optional, default `true`)
-    *   `component.content` **[string][16]** String inside component (optional, default `''`)
-    *   `component.style` **[Object][12]** Style object (optional, default `{}`)
-    *   `component.attributes` **[Object][12]** Attribute object (optional, default `{}`)
-*   `opt` **[Object][12]** the options object to be used by the \[Components.add][getComponents][3] method (optional, default `{}`)
+    *   `component.content` **[string][12]** String inside component (optional, default `''`)
+    *   `component.style` **[Object][10]** Style object (optional, default `{}`)
+    *   `component.attributes` **[Object][10]** Attribute object (optional, default `{}`)
+*   `opt` **[Object][10]** the options object to be used by the \[Components.add][getComponents][14] method (optional, default `{}`)
 
 ### Examples
 
@@ -165,16 +140,7 @@ var comp1 = cmp.addComponent({
 });
 ```
 
-Returns **(Component | [Array][15]\<Component>)** Component/s added
-
-## render
-
-Render and returns wrapper element with all components inside.
-Once the wrapper is rendered, and it's what happens when you init the editor,
-the all new components will be added automatically and property changes are all
-updated immediately
-
-Returns **[HTMLElement][17]** 
+Returns **(Component | [Array][11]\<Component>)** Component/s added
 
 ## clear
 
@@ -189,25 +155,25 @@ Returns **this**
 ## addType
 
 Add new component type.
-Read more about this in [Define New Component][18]
+Read more about this in [Define New Component][15]
 
 ### Parameters
 
-*   `type` **[string][16]** Component ID
-*   `methods` **[Object][12]** Component methods
+*   `type` **[string][12]** Component ID
+*   `methods` **[Object][10]** Component methods
 
 Returns **this** 
 
 ## getType
 
 Get component type.
-Read more about this in [Define New Component][18]
+Read more about this in [Define New Component][15]
 
 ### Parameters
 
-*   `type` **[string][16]** Component ID
+*   `type` **[string][12]** Component ID
 
-Returns **[Object][12]** Component type definition, eg. `{ model: ..., view: ... }`
+Returns **[Object][10]** Component type definition, eg. `{ model: ..., view: ... }`
 
 ## removeType
 
@@ -215,16 +181,16 @@ Remove component type
 
 ### Parameters
 
-*   `id`  
-*   `type` **[string][16]** Component ID
+*   `id` **[string][12]** 
+*   `type` **[string][12]** Component ID
 
-Returns **([Object][12] | [undefined][19])** Removed component type, undefined otherwise
+Returns **([Object][10] | [undefined][16])** Removed component type, undefined otherwise
 
 ## getTypes
 
 Return the array of all types
 
-Returns **[Array][15]** 
+Returns **[Array][11]** 
 
 [1]: https://github.com/artf/grapesjs/blob/master/src/dom_components/config/config.js
 
@@ -236,30 +202,24 @@ Returns **[Array][15]**
 
 [5]: #clear
 
-[6]: #load
+[6]: #addtype
 
-[7]: #store
+[7]: #gettype
 
-[8]: #addtype
+[8]: #gettypes
 
-[9]: #gettype
+[9]: #components
 
-[10]: #gettypes
+[10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[11]: #render
+[11]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
-[12]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[12]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
 [13]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
 
-[14]: #components
+[14]: getComponents
 
-[15]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[15]: https://grapesjs.com/docs/modules/Components.html#define-new-component
 
-[16]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
-
-[17]: https://developer.mozilla.org/docs/Web/HTML/Element
-
-[18]: https://grapesjs.com/docs/modules/Components.html#define-new-component
-
-[19]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined
+[16]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined

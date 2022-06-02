@@ -24,7 +24,7 @@
  *
  * [CssRule]: css_rule.html
  *
- * @module CssComposer
+ * @module Css
  */
 
 import { isArray, isString, isUndefined } from 'underscore';

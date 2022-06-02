@@ -15,7 +15,7 @@
  * editor.on('storage:start', () => { ... });
  *
  * // Use the API
- * const storageManager = editor.StorageManager;
+ * const storageManager = editor.Storage;
  * storageManager.add(...);
  * ```
  *
@@ -48,7 +48,7 @@
  * * [store](#store)
  * * [load](#load)
  *
- * @module StorageManager
+ * @module Storage
  */
 
 import Module from '../abstract/moduleLegacy';

@@ -47,7 +47,6 @@
  * * [addType](#addtype)
  * * [getType](#gettype)
  * * [getTypes](#gettypes)
- * * [render](#render)
  *
  * @module Components
  */
@@ -392,6 +391,7 @@ export default class ComponentManager extends ItemManagerModule {
    * the all new components will be added automatically and property changes are all
    * updated immediately
    * @return {HTMLElement}
+   * @private
    */
   render() {
     return this.componentView?.render().el;

@@ -17,7 +17,7 @@ async function generateDocs () {
     ['block_manager/index.js', 'block_manager.md'],
     ['block_manager/model/Block.js', 'block.md'],
     ['commands/index.js', 'commands.md'],
-    ['dom_components/index.js', 'components.md'],
+    ['dom_components/index.ts', 'components.md'],
     ['dom_components/model/Component.js', 'component.md'],
     ['panels/index.js', 'panels.md'],
     ['style_manager/index.js', 'style_manager.md'],
@@ -46,8 +46,14 @@ async function generateDocs () {
     ['pages/index.ts', 'pages.md'],
     ['pages/model/Page.ts', 'page.md'],
     ['parser/index.js', 'parser.md'],
-  ].map(async (file) =>
-    documentation.build([`${srcRoot}/${file[0]}`], { shallow: true })
+  ].map(async (file) => {
+    const filePath = `${srcRoot}/${file[0]}`;
+
+    if (!fs.existsSync(filePath)) {
+      throw `File not found '${filePath}'`;
+    }
+
+    return documentation.build([filePath], { shallow: true })
       .then(cm => documentation.formats.md(cm, /*{ markdownToc: true }*/))
       .then(output => {
         const res = output
@@ -60,8 +66,8 @@ async function generateDocs () {
           .replace('**Extends Model**', '');
         fs.writeFileSync(`${docRoot}/api/${file[1]}`, res);
         log('Created', file[1]);
-      })
-  ));
+      });
+  }));
 
   log('API Reference generation done!');
 };

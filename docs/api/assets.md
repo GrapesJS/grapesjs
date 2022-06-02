@@ -42,9 +42,7 @@ const assetManager = editor.AssetManager;
 *   [getAll][7]
 *   [getAllVisible][8]
 *   [remove][9]
-*   [store][10]
-*   [load][11]
-*   [getContainer][12]
+*   [getContainer][10]
 
 [Asset]: asset.html
 
@@ -54,10 +52,10 @@ Open the asset manager.
 
 ### Parameters
 
-*   `options` **[Object][13]?** Options for the asset manager. (optional, default `{}`)
+*   `options` **[Object][11]?** Options for the asset manager. (optional, default `{}`)
 
-    *   `options.types` **[Array][14]<[String][15]>** Types of assets to show. (optional, default `['image']`)
-    *   `options.select` **[Function][16]?** Type of operation to perform on asset selection. If not specified, nothing will happen.
+    *   `options.types` **[Array][12]<[String][13]>** Types of assets to show. (optional, default `['image']`)
+    *   `options.select` **[Function][14]?** Type of operation to perform on asset selection. If not specified, nothing will happen.
 
 ### Examples
 
@@ -97,7 +95,7 @@ Checks if the asset manager is open
 assetManager.isOpen(); // true | false
 ```
 
-Returns **[Boolean][17]** 
+Returns **[Boolean][15]** 
 
 ## add
 
@@ -105,8 +103,8 @@ Add new asset/s to the collection. URLs are supposed to be unique
 
 ### Parameters
 
-*   `asset` **([String][15] | [Object][13] | [Array][14]<[String][15]> | [Array][14]<[Object][13]>)** URL strings or an objects representing the resource.
-*   `opts` **[Object][13]?** Options (optional, default `{}`)
+*   `asset` **([String][13] | [Object][11] | [Array][12]<[String][13]> | [Array][12]<[Object][11]>)** URL strings or an objects representing the resource.
+*   `opts` **[Object][11]?** Options (optional, default `{}`)
 
 ### Examples
 
@@ -133,7 +131,7 @@ Return asset by URL
 
 ### Parameters
 
-*   `src` **[String][15]** URL of the asset
+*   `src` **[String][13]** URL of the asset
 
 ### Examples
 
@@ -161,7 +159,7 @@ Remove asset
 
 ### Parameters
 
-*   `asset` **([String][15] | [Asset])** Asset or asset URL
+*   `asset` **([String][13] | [Asset])** Asset or asset URL
 *   `opts`  
 
 ### Examples
@@ -175,46 +173,11 @@ assetManager.remove(asset);
 
 Returns **[Asset]** Removed asset
 
-## store
-
-Store assets data to the selected storage
-
-### Parameters
-
-*   `noStore` **[Boolean][17]** If true, won't store
-
-### Examples
-
-```javascript
-var assets = assetManager.store();
-```
-
-Returns **[Object][13]** Data to store
-
-## load
-
-Load data from the passed object.
-The fetched data will be added to the collection.
-
-### Parameters
-
-*   `data` **[Object][13]** Object of data to load (optional, default `{}`)
-
-### Examples
-
-```javascript
-var assets = assetManager.load({
-	assets: [...]
-})
-```
-
-Returns **[Object][13]** Loaded assets
-
 ## getContainer
 
 Return the Asset Manager Container
 
-Returns **[HTMLElement][18]** 
+Returns **[HTMLElement][16]** 
 
 ## render
 
@@ -223,7 +186,7 @@ Render assets
 ### Parameters
 
 *   `assts`  
-*   `assets` **[array][14]** Assets to render, without the argument will render all global assets
+*   `assets` **[array][12]** Assets to render, without the argument will render all global assets
 
 ### Examples
 
@@ -238,7 +201,7 @@ assetManager.render(assets.filter(
 ));
 ```
 
-Returns **[HTMLElement][18]** 
+Returns **[HTMLElement][16]** 
 
 [1]: https://github.com/artf/grapesjs/blob/master/src/asset_manager/config/config.js
 
@@ -258,20 +221,16 @@ Returns **[HTMLElement][18]**
 
 [9]: #remove
 
-[10]: #store
+[10]: #getcontainer
 
-[11]: #load
+[11]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[12]: #getcontainer
+[12]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
-[13]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[13]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-[14]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[14]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
 
-[15]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[15]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
 
-[16]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
-
-[17]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
-
-[18]: https://developer.mozilla.org/docs/Web/HTML/Element
+[16]: https://developer.mozilla.org/docs/Web/HTML/Element

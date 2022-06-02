@@ -69,7 +69,7 @@
  * [Component]: component.html
  * [CssRule]: css_rule.html
  *
- * @module SelectorManager
+ * @module Selectors
  */
 
 import { isString, debounce, isObject, isArray } from 'underscore';
