@@ -2,8 +2,10 @@ import { result } from 'underscore';
 import { Model } from '../../common';
 
 /**
- * @property {String} type Asset type, eg. 'image'.
- * @property {String} src Asset URL, eg. 'https://.../image.png'.
+ * @property {String} type Asset type, eg. `'image'`.
+ * @property {String} src Asset URL, eg. `'https://.../image.png'`.
+ *
+ * @module docsjs.Asset
  */
 export default class Asset extends Model {
   defaults() {

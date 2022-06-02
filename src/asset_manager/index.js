@@ -308,6 +308,7 @@ export default () => {
      * Render assets
      * @param  {array} assets Assets to render, without the argument will render all global assets
      * @returns {HTMLElement}
+     * @private
      * @example
      * // Render all assets
      * assetManager.render();

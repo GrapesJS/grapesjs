@@ -179,30 +179,6 @@ Return the Asset Manager Container
 
 Returns **[HTMLElement][16]** 
 
-## render
-
-Render assets
-
-### Parameters
-
-*   `assts`  
-*   `assets` **[array][12]** Assets to render, without the argument will render all global assets
-
-### Examples
-
-```javascript
-// Render all assets
-assetManager.render();
-
-// Render some of the assets
-const assets = assetManager.getAll();
-assetManager.render(assets.filter(
- asset => asset.get('category') == 'cats'
-));
-```
-
-Returns **[HTMLElement][16]** 
-
 [1]: https://github.com/artf/grapesjs/blob/master/src/asset_manager/config/config.js
 
 [2]: #open
