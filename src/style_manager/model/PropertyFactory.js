@@ -357,11 +357,11 @@ export default class PropertyFactory {
         {
           detached: true,
           layerLabel: (l, { values }) => {
-            const repeat = values['background-repeat-sub'];
-            const pos = values['background-position-sub'];
-            const att = values['background-attachment-sub'];
-            const size = values['background-size-sub'];
-            return `${repeat} ${pos} ${att} ${size}`;
+            const repeat = values['background-repeat-sub'] || '';
+            const pos = values['background-position-sub'] || '';
+            const att = values['background-attachment-sub'] || '';
+            const size = values['background-size-sub'] || '';
+            return [repeat, pos, att, size].join(' ');
           },
           properties: this.__sub([
             { extend: 'background-image', id: 'background-image-sub' },
