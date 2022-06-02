@@ -47,12 +47,20 @@ cmp.addType(...);
 ## Methods
 
 *   [getWrapper][2]
+
 *   [getComponents][3]
+
 *   [addComponent][4]
+
 *   [clear][5]
+
 *   [addType][6]
+
 *   [getType][7]
+
 *   [getTypes][8]
+
+*   [Component]: component.html
 
 ## getWrapper
 
@@ -68,7 +76,7 @@ wrapper.set('style', {'background-color': 'red'});
 wrapper.set('attributes', {'title': 'Hello!'});
 ```
 
-Returns **Component** Root Component
+Returns **[Component]** Root Component
 
 ## getComponents
 
@@ -110,7 +118,7 @@ as 'cmp.getComponents().add(...)'
 
 ### Parameters
 
-*   `component` **([Object][10] | Component | [Array][11]<[Object][10]>)** Component/s to add
+*   `component` **([Object][10] | [Component] | [Array][11]<[Object][10]>)** Component/s to add
 
     *   `component.tagName` **[string][12]** Tag name (optional, default `'div'`)
     *   `component.type` **[string][12]** Type of the component. Available: ''(default), 'text', 'image' (optional, default `''`)
@@ -140,7 +148,7 @@ var comp1 = cmp.addComponent({
 });
 ```
 
-Returns **(Component | [Array][11]\<Component>)** Component/s added
+Returns **([Component] | [Array][11]<[Component]>)** Component/s added
 
 ## clear
 

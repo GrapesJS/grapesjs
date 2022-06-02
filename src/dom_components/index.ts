@@ -48,6 +48,8 @@
  * * [getType](#gettype)
  * * [getTypes](#gettypes)
  *
+ * * [Component]: component.html
+ *
  * @module Components
  */
 import {
@@ -309,7 +311,7 @@ export default class ComponentManager extends ItemManagerModule {
   /**
    * Returns root component inside the canvas. Something like `<body>` inside HTML page
    * The wrapper doesn't differ from the original Component Model
-   * @return {Component} Root Component
+   * @return {[Component]} Root Component
    * @example
    * // Change background of the wrapper and set some attribute
    * var wrapper = cmp.getWrapper();
@@ -355,7 +357,7 @@ export default class ComponentManager extends ItemManagerModule {
   /**
    * Add new components to the wrapper's children. It's the same
    * as 'cmp.getComponents().add(...)'
-   * @param {Object|Component|Array<Object>} component Component/s to add
+   * @param {Object|[Component]|Array<Object>} component Component/s to add
    * @param {string} [component.tagName='div'] Tag name
    * @param {string} [component.type=''] Type of the component. Available: ''(default), 'text', 'image'
    * @param {boolean} [component.removable=true] If component is removable
@@ -368,7 +370,7 @@ export default class ComponentManager extends ItemManagerModule {
    * @param {Object} [component.style={}] Style object
    * @param {Object} [component.attributes={}] Attribute object
    * @param {Object} opt the options object to be used by the [Components.add]{@link getComponents} method
-   * @return {Component|Array<Component>} Component/s added
+   * @return {[Component]|Array<[Component]>} Component/s added
    * @example
    * // Example of a new component with some extra property
    * var comp1 = cmp.addComponent({
