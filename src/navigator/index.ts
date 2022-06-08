@@ -56,14 +56,13 @@ export default class LayerManager extends Module<typeof defaults> {
     onLoad() {
       const { em, config, model } = this;
       model.listenTo(em, 'component:selected', this.componentChanged);
-      model.listenToOnce(em, 'load', () => this.setRoot(config.root));
       model.on('change:root', this.__onRootChange);
       model.listenTo(em, propsToListen, this.__onComponent);
       this.componentChanged();
-    }
-
-    postRender() {
-      this.__appendTo();
+      model.listenToOnce(em, 'load', () => {
+        this.setRoot(config.root);
+        this.__appendTo();
+      });
     }
 
     /**
@@ -89,7 +88,7 @@ export default class LayerManager extends Module<typeof defaults> {
      * @return {Component}
      */
     getRoot(): Component {
-      return this.model.get('root');
+      return this.model.get('root');// || this.em.getWrapper();
     }
 
     getLayerData(component: any): LayerData {
