@@ -5,7 +5,7 @@
     <title>GrapesJS Demo - Free Open Source Website Page Builder</title>
     <meta content="Best Free Open Source Responsive Websites Builder" name="description">
     <link rel="stylesheet" href="stylesheets/toastr.min.css">
-    <link rel="stylesheet" href="stylesheets/grapes.min.css?v0.18.4">
+    <link rel="stylesheet" href="stylesheets/grapes.min.css?v0.19.3">
     <link rel="stylesheet" href="stylesheets/grapesjs-preset-webpage.min.css">
     <link rel="stylesheet" href="stylesheets/tooltip.css">
     <link rel="stylesheet" href="stylesheets/grapesjs-plugin-filestack.css">
@@ -17,7 +17,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="js/toastr.min.js"></script>
 
-    <script src="js/grapes.min.js?v0.18.4"></script>
+    <script src="js/grapes.min.js?v0.19.3"></script>
     <script src="js/grapesjs-preset-webpage.min.js?v0.1.11"></script>
     <script src="js/grapesjs-lory-slider.min.js?0.1.5"></script>
     <script src="js/grapesjs-tabs.min.js?0.1.1"></script>
@@ -1314,7 +1314,7 @@
       var modal = editor.Modal;
       var cmdm = editor.Commands;
       cmdm.add('canvas-clear', function() {
-        if(confirm('Areeee you sure to clean the canvas?')) {
+        if(confirm('Are you sure to clean the canvas?')) {
           var comps = editor.DomComponents.clear();
           setTimeout(function(){ localStorage.clear()}, 0)
         }
@@ -1398,9 +1398,6 @@
         el.setAttribute('title', '');
       }
 
-      // Show borders by default
-      pn.getButton('options', 'sw-visibility').set('active', 1);
-
 
       // Store and load events
       editor.on('storage:load', function(e) { console.log('Loaded ', e) });
@@ -1410,6 +1407,9 @@
       // Do stuff on load
       editor.on('load', function() {
         var $ = grapesjs.$;
+
+        // Show borders by default
+        pn.getButton('options', 'sw-visibility').set('active', 1);
 
         // Show logo with the version
         var logoCont = document.querySelector('.gjs-logo-cont');
