@@ -320,7 +320,7 @@ export default class PropertyStack extends PropertyComposite {
     // Update properties by layer value
     values &&
       this.getProperties().forEach(prop => {
-        const value = values[prop.getId()];
+        const value = values[prop.getId()] ?? '';
         prop.__getFullValue() !== value && prop.upValue(value, { ...opts, __up: true });
       });
 

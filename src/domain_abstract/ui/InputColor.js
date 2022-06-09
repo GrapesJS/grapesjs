@@ -101,9 +101,20 @@ export default class InputColor extends Input {
       var elToAppend = em && em.config ? em.config.el : '';
       var colorPickerConfig = (em && em.getConfig && em.getConfig().colorPicker) || {};
 
-      let changed = 0;
+      let changed = false;
+      let movedColor = '';
       let previousColor;
       this.$el.find('[data-colorp-c]').append(colorEl);
+
+      const handleChange = (value, complete = true) => {
+        if (onChange) {
+          onChange(value, !complete);
+        } else {
+          complete && model.setValueFromInput(0, false); // for UndoManager
+          model.setValueFromInput(value, complete);
+        }
+      };
+
       colorEl.spectrum({
         color: model.getValue() || false,
         containerClassName: `${ppfx}one-bg ${ppfx}two-color`,
@@ -121,40 +132,39 @@ export default class InputColor extends Input {
 
         move(color) {
           const cl = getColor(color);
+          movedColor = cl;
           cpStyle.backgroundColor = cl;
-          onChange ? onChange(cl, true) : model.setValueFromInput(cl, 0);
+          handleChange(cl, false);
         },
         change(color) {
-          changed = 1;
+          changed = true;
           const cl = getColor(color);
           cpStyle.backgroundColor = cl;
-          if (onChange) {
-            onChange(cl);
-          } else {
-            model.setValueFromInput(0, 0); // for UndoManager
-            model.setValueFromInput(cl);
-          }
+          handleChange(cl);
           self.noneColor = 0;
         },
         show(color) {
-          changed = 0;
+          changed = false;
+          movedColor = '';
           previousColor = onChange ? model.getValue({ noDefault: true }) : getColor(color);
         },
-        hide(color) {
+        hide() {
           if (!changed && (previousColor || onChange)) {
             if (self.noneColor) {
               previousColor = '';
             }
             cpStyle.backgroundColor = previousColor;
             colorEl.spectrum('set', previousColor);
-            onChange ? onChange(previousColor, true) : model.setValueFromInput(previousColor, 0);
+            handleChange(previousColor, false);
           }
         },
       });
 
       if (em && em.on) {
         this.listenTo(em, 'component:selected', () => {
-          changed = 1;
+          movedColor && handleChange(movedColor);
+          changed = true;
+          movedColor = '';
           colorEl.spectrum('hide');
         });
       }

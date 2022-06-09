@@ -1,21 +1,22 @@
 import { View } from '../../common';
-import { eventDrag } from '../../dom_components/model/Component';
+import Component, { eventDrag } from '../../dom_components/model/Component';
+import ItemView from './ItemView';
 
 export default class ItemsView extends View {
-  initialize(o = {}) {
+  items: ItemView[];
+  opt: any;
+  config: any;
+  parentView: ItemView;
+
+  constructor(opt: any = {}) {
+    super(opt);
     this.items = [];
-    this.opt = o;
-    const config = o.config || {};
-    this.level = o.level;
+    this.opt = opt;
+    const config = opt.config || {};
     this.config = config;
-    this.preview = o.preview;
-    this.ppfx = config.pStylePrefix || '';
-    this.pfx = config.stylePrefix || '';
-    this.parent = o.parent;
-    this.parentView = o.parentView;
-    const pfx = this.pfx;
-    const ppfx = this.ppfx;
-    const parent = this.parent;
+    this.parentView = opt.parentView;
+    const pfx = config.stylePrefix || '';
+    const ppfx = config.pStylePrefix || '';
     const coll = this.collection;
     this.listenTo(coll, 'add', this.addTo);
     this.listenTo(coll, 'reset resetNavigator', this.render);
@@ -30,7 +31,7 @@ export default class ItemsView extends View {
         containerSel: `.${this.className}`,
         itemSel: `.${pfx}layer`,
         ignoreViewChildren: 1,
-        onEndMove(created, sorter, data) {
+        onEndMove(created: any, sorter: any, data: any) {
           const srcModel = sorter.getSourceModel();
           em.setSelected(srcModel, { forceChange: 1 });
           em.trigger(`${eventDrag}:end`, data);
@@ -42,18 +43,18 @@ export default class ItemsView extends View {
       });
     }
 
-    this.sorter = this.opt.sorter || '';
-
     // For the sorter
     this.$el.data('collection', coll);
-    parent && this.$el.data('model', parent);
+    opt.parent && this.$el.data('model', opt.parent);
   }
 
-  removeChildren(removed) {
+  removeChildren(removed: Component) {
+    // @ts-ignore
     const view = removed.viewLayer;
     if (!view) return;
     view.remove();
-    removed.viewLayer = 0;
+    // @ts-ignore
+    delete removed.viewLayer;
   }
 
   /**
@@ -62,7 +63,7 @@ export default class ItemsView extends View {
    *
    * @return Object
    * */
-  addTo(model) {
+  addTo(model: Component) {
     var i = this.collection.indexOf(model);
     this.addToCollection(model, null, i);
   }
@@ -75,26 +76,26 @@ export default class ItemsView extends View {
    *
    * @return Object Object created
    * */
-  addToCollection(model, fragmentEl, index) {
-    const { level, parentView, opt } = this;
-    const { ItemView } = opt;
+  addToCollection(model: Component, fragmentEl: DocumentFragment | null, index?: number) {
+    const { parentView, opt, config } = this;
+    const { ItemView, opened, module, level, sorter } = opt;
     const fragment = fragmentEl || null;
     const item = new ItemView({
       ItemView,
       level,
       model,
       parentView,
-      config: this.config,
-      sorter: this.sorter,
-      isCountable: this.isCountable,
-      opened: this.opt.opened,
+      config,
+      sorter,
+      opened,
+      module,
     });
     const rendered = item.render().el;
 
     if (fragment) {
       fragment.appendChild(rendered);
     } else {
-      if (typeof index != 'undefined') {
+      if (typeof index !== 'undefined') {
         var method = 'before';
         // If the added model is the last of collection
         // need to change the logic of append
@@ -105,31 +106,20 @@ export default class ItemsView extends View {
         // In case the added is new in the collection index will be -1
         if (index < 0) {
           this.$el.append(rendered);
-        } else this.$el.children().eq(index)[method](rendered);
+        } else {
+          // @ts-ignore
+          this.$el.children().eq(index)[method](rendered);
+        }
       } else this.$el.append(rendered);
     }
     this.items.push(item);
     return rendered;
   }
 
-  remove() {
-    View.prototype.remove.apply(this, arguments);
+  remove(...args: []) {
+    View.prototype.remove.apply(this, args);
     this.items.map(i => i.remove());
-  }
-
-  /**
-   * Check if the model could be count by the navigator
-   * @param  {Object}  model
-   * @return {Boolean}
-   * @private
-   */
-  isCountable(model, hide) {
-    var type = model.get('type');
-    var tag = model.get('tagName');
-    if (((type == 'textnode' || tag == 'br') && hide) || !model.get('layerable')) {
-      return false;
-    }
-    return true;
+    return this;
   }
 
   render() {
@@ -138,7 +128,7 @@ export default class ItemsView extends View {
     el.innerHTML = '';
     this.collection.each(model => this.addToCollection(model, frag));
     el.appendChild(frag);
-    el.className = this.className;
+    el.className = this.className!;
     return this;
   }
 }

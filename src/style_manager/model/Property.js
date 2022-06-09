@@ -373,7 +373,7 @@ export default class Property extends Model {
     }
 
     if (fn && hasValue) {
-      const fnParameter = fn === 'url' ? `'${value.replace(/'/g, '')}'` : value;
+      const fnParameter = fn === 'url' ? `'${value.replace(/'|"/g, '')}'` : value;
       value = `${fn}(${fnParameter})`;
     }
 

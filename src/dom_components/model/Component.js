@@ -73,6 +73,7 @@ export const keyUpdateInside = `${keyUpdate}-inside`;
  * @property {Boolean} [layerable=true] Set to `false` if you need to hide the component inside Layers. Default: `true`
  * @property {Boolean} [selectable=true] Allow component to be selected when clicked. Default: `true`
  * @property {Boolean} [hoverable=true] Shows a highlight outline when hovering on the element if `true`. Default: `true`
+ * @property {Boolean} [locked=false] Disable the selection of the component and its children in the canvas. Default: `false`
  * @property {Boolean} [void=false] This property is used by the HTML exporter as void elements don't have closing tags, eg. `<br/>`, `<hr/>`, etc. Default: `false`
  * @property {Object} [style={}] Component default style, eg. `{ width: '100px', height: '100px', 'background-color': 'red' }`
  * @property {String} [styles=''] Component related styles, eg. `.my-component-class { color: red }`
@@ -89,6 +90,8 @@ export const keyUpdateInside = `${keyUpdate}-inside`;
  * Eg. `toolbar: [ { attributes: {class: 'fa fa-arrows'}, command: 'tlb-move' }, ... ]`.
  * By default, when `toolbar` property is falsy the editor will add automatically commands `core:component-exit` (select parent component, added if there is one), `tlb-move` (added if `draggable`) , `tlb-clone` (added if `copyable`), `tlb-delete` (added if `removable`).
  * @property {Collection<Component>} [components=null] Children components. Default: `null`
+ *
+ * @module docsjs.Component
  */
 export default class Component extends StyleableModel {
   /**
@@ -202,6 +205,7 @@ export default class Component extends StyleableModel {
 
   __onChange(m, opts) {
     const changed = this.changedAttributes();
+    keys(changed).forEach(prop => this.emitUpdate(prop));
     ['status', 'open', 'toolbar', 'traits'].forEach(name => delete changed[name]);
     // Propagate component prop changes
     if (!isEmptyObj(changed)) {
@@ -1963,6 +1967,7 @@ Component.prototype.defaults = {
   layerable: true,
   selectable: true,
   hoverable: true,
+  locked: false,
   void: false,
   state: '', // Indicates if the component is in some CSS state like ':hover', ':active', etc.
   status: '', // State, eg. 'selected'

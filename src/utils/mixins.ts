@@ -1,17 +1,19 @@
 import { keys, isUndefined, isElement, isArray } from 'underscore';
 
-export const isDef = value => typeof value !== 'undefined';
+export const isDef = (value: any) => typeof value !== 'undefined';
 
 export const hasWin = () => typeof window !== 'undefined';
 
 export const getGlobal = () =>
   typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : global;
 
-export const toLowerCase = str => (str || '').toLowerCase();
+export const toLowerCase = (str: string) => (str || '').toLowerCase();
 
 const elProt = hasWin() ? window.Element.prototype : {};
+// @ts-ignore
 const matches = elProt.matches || elProt.webkitMatchesSelector || elProt.mozMatchesSelector || elProt.msMatchesSelector;
 
+// @ts-ignore
 export const getUiClass = (em, defCls) => {
   const { stylePrefix, customUI } = em.getConfig();
   return [customUI && `${stylePrefix}cui`, defCls].filter(i => i).join(' ');
@@ -21,7 +23,7 @@ export const getUiClass = (em, defCls) => {
  * Import styles asynchronously
  * @param {String|Array<String>} styles
  */
-const appendStyles = (styles, opts = {}) => {
+const appendStyles = (styles: {}, opts: { unique?: boolean, prepand?: boolean } = {}) => {
   const stls = isArray(styles) ? [...styles] : [styles];
 
   if (stls.length) {
@@ -55,8 +57,8 @@ const appendStyles = (styles, opts = {}) => {
  * shallowDiff(a, b);
  * // -> {baz: 2, faz: null, bar: ''};
  */
-const shallowDiff = (objOrig, objNew) => {
-  const result = {};
+const shallowDiff = (objOrig: Record<string, any>, objNew: Record<string, any>) => {
+  const result: Record<string, any> = {};
   const keysNew = keys(objNew);
 
   for (let prop in objOrig) {
@@ -85,41 +87,35 @@ const shallowDiff = (objOrig, objNew) => {
   return result;
 };
 
-/**
- * @param  {Object} el
- * @param  {string} ev
- * @param  {(ev: Event) => any} fn
- * @param  {Objec} opts
- */
-const on = (el, ev, fn, opts = {}) => {
-  ev = ev.split(/\s+/);
+const on = (el: HTMLElement|Window|Document | (Window|HTMLElement|Document)[], ev: string, fn: (ev: Event) => void, opts?: AddEventListenerOptions) => {
+  const evs = ev.split(/\s+/);
   el = el instanceof Array ? el : [el];
 
-  for (let i = 0; i < ev.length; ++i) {
-    el.forEach(elem => elem && elem.addEventListener(ev[i], fn, opts));
+  for (let i = 0; i < evs.length; ++i) {
+    el.forEach(elem => elem && elem.addEventListener(evs[i], fn, opts));
   }
 };
 
-const off = (el, ev, fn, opts) => {
-  ev = ev.split(/\s+/);
+const off = (el: HTMLElement|Window|Document | (Window|HTMLElement|Document)[], ev: string, fn: (ev: Event) => void, opts?: AddEventListenerOptions) => {
+  const evs = ev.split(/\s+/);
   el = el instanceof Array ? el : [el];
 
-  for (let i = 0; i < ev.length; ++i) {
-    el.forEach(elem => elem && elem.removeEventListener(ev[i], fn, opts));
+  for (let i = 0; i < evs.length; ++i) {
+    el.forEach(elem => elem && elem.removeEventListener(evs[i], fn, opts));
   }
 };
 
-const getUnitFromValue = value => {
+const getUnitFromValue = (value: any) => {
   return value.replace(parseFloat(value), '');
 };
 
-const upFirst = value => value[0].toUpperCase() + value.toLowerCase().slice(1);
+const upFirst = (value: string) => value[0].toUpperCase() + value.toLowerCase().slice(1);
 
-const camelCase = value => {
+const camelCase = (value: string) => {
   return value.replace(/-./g, x => x[1].toUpperCase());
 };
 
-const normalizeFloat = (value, step = 1, valueDef = 0) => {
+const normalizeFloat = (value: any, step = 1, valueDef = 0) => {
   let stepDecimals = 0;
   if (isNaN(value)) return valueDef;
   value = parseFloat(value);
@@ -132,7 +128,7 @@ const normalizeFloat = (value, step = 1, valueDef = 0) => {
   return stepDecimals ? parseFloat(value.toFixed(stepDecimals)) : value;
 };
 
-const hasDnd = em => {
+const hasDnd = (em: any) => {
   return 'draggable' in document.createElement('i') && (em ? em.get('Config').nativeDnD : 1);
 };
 
@@ -141,10 +137,12 @@ const hasDnd = em => {
  * @param  {HTMLElement|Component} el Component or HTML element
  * @return {HTMLElement}
  */
-const getElement = el => {
+const getElement = (el: HTMLElement) => {
   if (isElement(el) || isTextNode(el)) {
     return el;
+  // @ts-ignore
   } else if (el && el.getEl) {
+    // @ts-ignore
     return el.getEl();
   }
 };
@@ -154,23 +152,23 @@ const getElement = el => {
  * @param  {HTMLElement} el
  * @return {Boolean}
  */
-const isTextNode = el => el && el.nodeType === 3;
+const isTextNode = (el: HTMLElement) => el && el.nodeType === 3;
 
 /**
  * Check if element is a comment node
  * @param  {HTMLElement} el
  * @return {Boolean}
  */
-export const isCommentNode = el => el && el.nodeType === 8;
+export const isCommentNode = (el: HTMLElement) => el && el.nodeType === 8;
 
 /**
  * Check if element is a comment node
  * @param  {HTMLElement} el
  * @return {Boolean}
  */
-export const isTaggableNode = el => el && !isTextNode(el) && !isCommentNode(el);
+export const isTaggableNode = (el: HTMLElement) => el && !isTextNode(el) && !isCommentNode(el);
 
-export const find = (arr, test) => {
+export const find = (arr: any[], test: (item: any, i: number, arr: any[]) => boolean) => {
   let result = null;
   arr.some((el, i) => (test(el, i, arr) ? ((result = el), 1) : 0));
   return result;
@@ -186,7 +184,7 @@ export const escape = (str = '') => {
     .replace(/`/g, '&#96;');
 };
 
-export const deepMerge = (...args) => {
+export const deepMerge = (...args: Record<string, any>[]) => {
   const target = { ...args[0] };
 
   for (let i = 1; i < args.length; i++) {
@@ -212,7 +210,7 @@ export const deepMerge = (...args) => {
  * @param  {HTMLElement|Component} el Component or HTML element
  * @return {Component}
  */
-const getModel = (el, $) => {
+const getModel = (el: any, $?: any) => {
   let model = el;
   if (!$ && el && el.__cashData) {
     model = el.__cashData.model;
@@ -222,12 +220,7 @@ const getModel = (el, $) => {
   return model;
 };
 
-/**
- * Get DomRect for the el
- * @param  {any} el Component or HTML element
- * @return {DOMRect}
- */
-const getElRect = el => {
+const getElRect = (el?: HTMLElement) => {
   const def = {
     top: 0,
     left: 0,
@@ -252,26 +245,28 @@ const getElRect = el => {
  * @param  {Event} ev
  * @return {PointerEvent}
  */
-const getPointerEvent = ev => (ev.touches && ev.touches[0] ? ev.touches[0] : ev);
+const getPointerEvent = (ev: Event) =>
+  // @ts-ignore
+  (ev.touches && ev.touches[0] ? ev.touches[0] : ev);
 
 /**
  * Get cross-browser keycode
  * @param  {Event} ev
  * @return {Number}
  */
-const getKeyCode = ev => ev.which || ev.keyCode;
-const getKeyChar = ev => String.fromCharCode(getKeyCode(ev));
-const isEscKey = ev => getKeyCode(ev) === 27;
-const isEnterKey = ev => getKeyCode(ev) === 13;
-const isObject = val => val !== null && !Array.isArray(val) && typeof val === 'object';
-const isEmptyObj = val => Object.keys(val).length <= 0;
+const getKeyCode = (ev: KeyboardEvent) => ev.which || ev.keyCode;
+const getKeyChar = (ev: KeyboardEvent) => String.fromCharCode(getKeyCode(ev));
+const isEscKey = (ev: KeyboardEvent) => getKeyCode(ev) === 27;
+const isEnterKey = (ev: KeyboardEvent) => getKeyCode(ev) === 13;
+const isObject = (val: any) => val !== null && !Array.isArray(val) && typeof val === 'object';
+const isEmptyObj = (val: Record<string, any>) => Object.keys(val).length <= 0;
 
-const capitalize = str => str && str.charAt(0).toUpperCase() + str.substring(1);
-const isComponent = obj => obj && obj.toHTML;
-const isRule = obj => obj && obj.toCSS;
+const capitalize = (str: string) => str && str.charAt(0).toUpperCase() + str.substring(1);
+const isComponent = (obj: any) => obj && obj.toHTML;
+const isRule = (obj: any) => obj && obj.toCSS;
 
-const getViewEl = el => el.__gjsv;
-const setViewEl = (el, view) => {
+const getViewEl = (el: any) => el.__gjsv;
+const setViewEl = (el: any, view: any) => {
   el.__gjsv = view;
 };
 

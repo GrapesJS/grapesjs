@@ -15,7 +15,7 @@
  * editor.on('block:add', (block) => { ... });
  *
  * // Use the API
- * const blockManager = editor.BlockManager;
+ * const blockManager = editor.Blocks;
  * blockManager.add(...);
  * ```
  *
@@ -42,7 +42,7 @@
  * [Block]: block.html
  * [Component]: component.html
  *
- * @module BlockManager
+ * @module Blocks
  */
 import { isElement, isArray } from 'underscore';
 import Module from '../abstract/moduleLegacy';

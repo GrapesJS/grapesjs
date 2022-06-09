@@ -15,7 +15,6 @@ export default class Page extends Model {
 
   constructor(props: any, opts: any = {}) {
     super(props, opts);
-    const { config = {} } = opts;
     const { em } = opts;
     const defFrame: any = {};
     this.em = em;

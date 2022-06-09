@@ -12,6 +12,8 @@ import { isFunction } from 'underscore';
  * @property {Boolean} [disable=false] Disable the block from being interacted
  * @property {Function} [onClick] Custom behavior on click, eg. `(block, editor) => editor.getWrapper().append(block.get('content'))`
  * @property {Object} [attributes={}] Block attributes to apply in the view element
+ *
+ * @module docsjs.Block
  */
 export default class Block extends Model {
   defaults() {
@@ -55,7 +57,7 @@ export default class Block extends Model {
 
   /**
    * Get block content
-   * @returns {Object|String|Array<Object|String>} Component definition | HTML string
+   * @returns {Object|String|Array<Object|String>}
    */
   getContent() {
     return this.get('content');

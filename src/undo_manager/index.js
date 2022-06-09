@@ -306,11 +306,12 @@ export default () => {
      * Get grouped undo manager stack.
      * The difference between `getStack` is when you do multiple operations at a time,
      * like appending multiple components:
-     * `editor.getWrapper().append(`<div>C1</div><div>C2</div>`);`
+     * `editor.getWrapper().append('<div>C1</div><div>C2</div>');`
      * `getStack` will return a collection length of 2.
      *  `getStackGroup` instead will group them as a single operation (the first
      * inserted component will be returned in the list) by returning an array length of 1.
      * @return {Array}
+     * @private
      */
     getStackGroup() {
       const result = [];

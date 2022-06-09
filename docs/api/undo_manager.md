@@ -211,18 +211,6 @@ stack.each(item => ...);
 
 Returns **Collection** 
 
-## getStackGroup
-
-Get grouped undo manager stack.
-The difference between `getStack` is when you do multiple operations at a time,
-like appending multiple components:
-`editor.getWrapper().append(`<div>C1</div><div>C2</div>`);`
-`getStack` will return a collection length of 2.
-`getStackGroup` instead will group them as a single operation (the first
-inserted component will be returned in the list) by returning an array length of 1.
-
-Returns **[Array][17]** 
-
 ## clear
 
 Clear the stack
@@ -266,5 +254,3 @@ Returns **this**
 [15]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
 [16]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
-
-[17]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
