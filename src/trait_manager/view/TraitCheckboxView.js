@@ -1,15 +1,15 @@
 import { isUndefined } from 'underscore';
 import TraitView from './TraitView';
 
-export default TraitView.extend({
-  appendInput: 0,
+export default class TraitCheckboxView extends TraitView {
+  appendInput = false;
 
   templateInput() {
     const { ppfx, clsField } = this;
     return `<label class="${clsField}" data-input>
     <i class="${ppfx}chk-icon"></i>
   </label>`;
-  },
+  }
 
   /**
    * Fires when the input is changed
@@ -18,7 +18,7 @@ export default TraitView.extend({
   onChange() {
     const value = this.getInputElem().checked;
     this.model.set('value', this.getCheckedValue(value));
-  },
+  }
 
   getCheckedValue(checked) {
     let result = checked;
@@ -33,7 +33,7 @@ export default TraitView.extend({
     }
 
     return result;
-  },
+  }
 
   /**
    * Returns input element
@@ -67,4 +67,4 @@ export default TraitView.extend({
 
     return el;
   }
-});
+}

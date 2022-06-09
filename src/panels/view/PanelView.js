@@ -1,7 +1,7 @@
-import Backbone from 'backbone';
+import { View } from '../../common';
 import ButtonsView from './ButtonsView';
 
-export default Backbone.View.extend({
+export default class PanelView extends View {
   initialize(o) {
     const config = o.config || {};
     const model = this.model;
@@ -15,21 +15,21 @@ export default Backbone.View.extend({
     this.listenTo(model, 'change:content', this.updateContent);
     this.listenTo(model, 'change:visible', this.toggleVisible);
     model.view = this;
-  },
+  }
 
   /**
    * Append content of the panel
    * */
   appendContent() {
     this.$el.append(this.model.get('appendContent'));
-  },
+  }
 
   /**
    * Update content
    * */
   updateContent() {
     this.$el.html(this.model.get('content'));
-  },
+  }
 
   toggleVisible() {
     if (!this.model.get('visible')) {
@@ -37,11 +37,11 @@ export default Backbone.View.extend({
       return;
     }
     this.$el.removeClass(`${this.ppfx}hidden`);
-  },
+  }
 
   attributes() {
     return this.model.get('attributes');
-  },
+  }
 
   initResize() {
     const em = this.config.em;
@@ -94,25 +94,21 @@ export default Backbone.View.extend({
           const forContainer = target == 'container';
           const styleWidth = style[keyWidth];
           const styleHeight = style[keyHeight];
-          const width =
-            styleWidth && !forContainer ? parseFloat(styleWidth) : rect.width;
-          const height =
-            styleHeight && !forContainer
-              ? parseFloat(styleHeight)
-              : rect.height;
+          const width = styleWidth && !forContainer ? parseFloat(styleWidth) : rect.width;
+          const height = styleHeight && !forContainer ? parseFloat(styleHeight) : rect.height;
           return {
             left: 0,
             top: 0,
             width,
-            height
+            height,
           };
         },
-        ...resizable
+        ...resizable,
       });
       resizer.blur = () => {};
       resizer.focus(this.el);
     }
-  },
+  }
 
   render() {
     const $el = this.$el;
@@ -125,7 +121,7 @@ export default Backbone.View.extend({
     if (this.buttons.length) {
       var buttons = new ButtonsView({
         collection: this.buttons,
-        config: this.config
+        config: this.config,
       });
       $el.append(buttons.render().el);
     }
@@ -133,4 +129,4 @@ export default Backbone.View.extend({
     $el.append(this.model.get('content'));
     return this;
   }
-});
+}

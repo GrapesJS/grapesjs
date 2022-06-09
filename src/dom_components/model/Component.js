@@ -12,7 +12,7 @@ import {
   keys,
 } from 'underscore';
 import { shallowDiff, capitalize, isEmptyObj, isObject, toLowerCase } from 'utils/mixins';
-import Styleable from 'domain_abstract/model/Styleable';
+import StyleableModel from '../../domain_abstract/model/StyleableModel';
 import { Model } from 'backbone';
 import Components from './Components';
 import Selector from 'selector_manager/model/Selector';
@@ -23,7 +23,7 @@ const escapeRegExp = str => {
   return str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
 };
 
-const avoidInline = em => em && em.getConfig('avoidInlineStyle');
+const avoidInline = em => em && em.getConfig().avoidInlineStyle;
 
 export const eventDrag = 'component:drag';
 export const keySymbols = '__symbols';
@@ -49,7 +49,6 @@ export const keyUpdateInside = `${keyUpdate}-inside`;
  *
  * [Component]: component.html
  *
- * @typedef Component
  * @property {String} [type=''] Component type, eg. `text`, `image`, `video`, etc.
  * @property {String} [tagName='div'] HTML tag of the component, eg. `span`. Default: `div`
  * @property {Object} [attributes={}] Key-value object of the component's attributes, eg. `{ title: 'Hello' }` Default: `{}`
@@ -74,6 +73,7 @@ export const keyUpdateInside = `${keyUpdate}-inside`;
  * @property {Boolean} [layerable=true] Set to `false` if you need to hide the component inside Layers. Default: `true`
  * @property {Boolean} [selectable=true] Allow component to be selected when clicked. Default: `true`
  * @property {Boolean} [hoverable=true] Shows a highlight outline when hovering on the element if `true`. Default: `true`
+ * @property {Boolean} [locked=false] Disable the selection of the component and its children in the canvas. Default: `false`
  * @property {Boolean} [void=false] This property is used by the HTML exporter as void elements don't have closing tags, eg. `<br/>`, `<hr/>`, etc. Default: `false`
  * @property {Object} [style={}] Component default style, eg. `{ width: '100px', height: '100px', 'background-color': 'red' }`
  * @property {String} [styles=''] Component related styles, eg. `.my-component-class { color: red }`
@@ -90,8 +90,10 @@ export const keyUpdateInside = `${keyUpdate}-inside`;
  * Eg. `toolbar: [ { attributes: {class: 'fa fa-arrows'}, command: 'tlb-move' }, ... ]`.
  * By default, when `toolbar` property is falsy the editor will add automatically commands `core:component-exit` (select parent component, added if there is one), `tlb-move` (added if `draggable`) , `tlb-clone` (added if `copyable`), `tlb-delete` (added if `removable`).
  * @property {Collection<Component>} [components=null] Children components. Default: `null`
+ *
+ * @module docsjs.Component
  */
-export default class Component extends Model.extend(Styleable) {
+export default class Component extends StyleableModel {
   /**
    * Hook method, called once the model is created
    */
@@ -203,6 +205,7 @@ export default class Component extends Model.extend(Styleable) {
 
   __onChange(m, opts) {
     const changed = this.changedAttributes();
+    keys(changed).forEach(prop => this.emitUpdate(prop));
     ['status', 'open', 'toolbar', 'traits'].forEach(name => delete changed[name]);
     // Propagate component prop changes
     if (!isEmptyObj(changed)) {
@@ -465,7 +468,7 @@ export default class Component extends Model.extend(Styleable) {
     const prop = isString(options) ? options : '';
     const opts = prop ? optsAdd : options;
 
-    if (em && em.getConfig('avoidInlineStyle') && !opts.inline) {
+    if (em && em.getConfig().avoidInlineStyle && !opts.inline) {
       const state = em.get('state');
       const cc = em.get('CssComposer');
       const rule = cc.getIdRule(this.getId(), { state, ...opts });
@@ -476,7 +479,7 @@ export default class Component extends Model.extend(Styleable) {
       }
     }
 
-    return Styleable.getStyle.call(this, prop);
+    return super.getStyle.call(this, prop);
   }
 
   /**
@@ -490,7 +493,7 @@ export default class Component extends Model.extend(Styleable) {
     const em = this.em;
     const { opt } = this;
 
-    if (em && em.getConfig('avoidInlineStyle') && !opt.temporary && !opts.inline) {
+    if (em && em.getConfig().avoidInlineStyle && !opt.temporary && !opts.inline) {
       const style = this.get('style') || {};
       prop = isString(prop) ? this.parseStyle(prop) : prop;
       prop = { ...prop, ...style };
@@ -502,7 +505,7 @@ export default class Component extends Model.extend(Styleable) {
       this.set('style', '', { silent: 1 });
       keys(diff).forEach(pr => this.trigger(`change:style:${pr}`));
     } else {
-      prop = Styleable.setStyle.apply(this, arguments);
+      prop = super.setStyle.apply(this, arguments);
     }
 
     return prop;
@@ -703,7 +706,7 @@ export default class Component extends Model.extend(Styleable) {
     let result = [];
     const { em } = this;
     const { changed } = opts;
-    const symbEnabled = em && em.get('symbols');
+    const symbEnabled = em && em.config.symbols;
 
     if (
       opts.fromInstance ||
@@ -979,7 +982,7 @@ export default class Component extends Model.extend(Styleable) {
   /**
    * Set new collection if `components` are provided, otherwise the
    * current collection is returned
-   * @param  {Component|String} [components] Component Definitions or HTML string
+   * @param  {Component|Component[]|String} [components] Component Definitions or HTML string
    * @param {Object} [opts={}] Options, same as in `Component.append()`
    * @returns {Collection|Array<[Component]>}
    * @example
@@ -1062,7 +1065,7 @@ export default class Component extends Model.extend(Styleable) {
   initToolbar() {
     const { em } = this;
     const model = this;
-    const ppfx = (em && em.getConfig('stylePrefix')) || '';
+    const ppfx = (em && em.getConfig().stylePrefix) || '';
 
     if (!model.get('toolbar') && em) {
       const tb = [];
@@ -1495,7 +1498,7 @@ export default class Component extends Model.extend(Styleable) {
       }
     }
 
-    if (this.em.getConfig('avoidDefaults')) {
+    if (this.em.getConfig().avoidDefaults) {
       this.getChangedProps(obj);
     }
 
@@ -1561,7 +1564,7 @@ export default class Component extends Model.extend(Styleable) {
    * @param {Frame} frame Specific frame from which taking the element
    * @return {HTMLElement}
    */
-  getEl(frame) {
+  getEl(frame = undefined) {
     const view = this.getView(frame);
     return view && view.el;
   }
@@ -1677,7 +1680,11 @@ export default class Component extends Model.extend(Styleable) {
     const coll = this.collection;
     const remove = () => {
       coll && coll.remove(this, { ...opts, action: 'remove-component' });
-      opts.root && this.components('');
+      // Component without parent
+      if (!coll) {
+        this.components('', opts);
+        this.components().removeChildren(this, null, opts);
+      }
     };
     const rmOpts = { ...opts };
     [this, em].map(i => i.trigger('component:remove:before', this, remove, rmOpts));
@@ -1960,6 +1967,7 @@ Component.prototype.defaults = {
   layerable: true,
   selectable: true,
   hoverable: true,
+  locked: false,
   void: false,
   state: '', // Indicates if the component is in some CSS state like ':hover', ':active', etc.
   status: '', // State, eg. 'selected'

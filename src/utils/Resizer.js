@@ -1,5 +1,5 @@
 import { bindAll, defaults, isFunction, each } from 'underscore';
-import { on, off, normalizeFloat } from 'utils/mixins';
+import { on, off, normalizeFloat } from './mixins';
 
 var defaultOpts = {
   // Function which returns custom X and Y coordinates of the mouse
@@ -66,7 +66,7 @@ var defaultOpts = {
   cr: 1, // Center right
   bl: 1, // Bottom left
   bc: 1, // Bottom center
-  br: 1 // Bottom right
+  br: 1, // Bottom right
 };
 
 var createHandler = (name, opts) => {
@@ -84,7 +84,7 @@ var getBoundingRect = (el, win) => {
     left: rect.left + w.pageXOffset,
     top: rect.top + w.pageYOffset,
     width: rect.width,
-    height: rect.height
+    height: rect.height,
   };
 };
 
@@ -267,32 +267,32 @@ class Resizer {
       t: rect.top,
       l: rect.left,
       w: rect.width,
-      h: rect.height
+      h: rect.height,
     };
     this.rectDim = {
       t: rect.top,
       l: rect.left,
       w: rect.width,
-      h: rect.height
+      h: rect.height,
     };
     this.startPos = {
       x: e.clientX,
-      y: e.clientY
+      y: e.clientY,
     };
     this.parentDim = {
       t: parentRect.top,
       l: parentRect.left,
       w: parentRect.width,
-      h: parentRect.height
+      h: parentRect.height,
     };
 
     // Listen events
-    var doc = this.getDocumentEl();
-    on(doc, 'mousemove', this.move);
-    on(doc, 'keydown', this.handleKeyDown);
-    on(doc, 'mouseup', this.stop);
-    isFunction(this.onStart) &&
-      this.onStart(e, { docs: doc, config, el, resizer });
+    const docs = this.getDocumentEl();
+    this.docs = docs;
+    on(docs, 'mousemove', this.move);
+    on(docs, 'keydown', this.handleKeyDown);
+    on(docs, 'mouseup', this.stop);
+    isFunction(this.onStart) && this.onStart(e, { docs, config, el, resizer });
     this.toggleFrames(1);
     this.move(e);
   }
@@ -308,18 +308,18 @@ class Resizer {
       ? mouseFetch(e)
       : {
           x: e.clientX,
-          y: e.clientY
+          y: e.clientY,
         };
 
     this.currentPos = currentPos;
     this.delta = {
       x: currentPos.x - this.startPos.x,
-      y: currentPos.y - this.startPos.y
+      y: currentPos.y - this.startPos.y,
     };
     this.keys = {
       shift: e.shiftKey,
       ctrl: e.ctrlKey,
-      alt: e.altKey
+      alt: e.altKey,
     };
 
     this.rectDim = this.calc(this);
@@ -340,13 +340,14 @@ class Resizer {
    */
   stop(e) {
     const config = this.opts;
-    var doc = this.getDocumentEl();
-    off(doc, 'mousemove', this.move);
-    off(doc, 'keydown', this.handleKeyDown);
-    off(doc, 'mouseup', this.stop);
+    const docs = this.docs || this.getDocumentEl();
+    off(docs, 'mousemove', this.move);
+    off(docs, 'keydown', this.handleKeyDown);
+    off(docs, 'mouseup', this.stop);
     this.updateRect(1);
     this.toggleFrames();
-    isFunction(this.onEnd) && this.onEnd(e, { docs: doc, config });
+    isFunction(this.onEnd) && this.onEnd(e, { docs, config });
+    delete this.docs;
   }
 
   /**
@@ -367,7 +368,7 @@ class Resizer {
         store,
         selectedHandler,
         resizer,
-        config
+        config,
       });
     } else {
       const elStyle = el.style;
@@ -396,8 +397,8 @@ class Resizer {
       resizer: this,
       opts: {
         ...opts,
-        ...opt
-      }
+        ...opt,
+      },
     });
   }
 
@@ -461,15 +462,13 @@ class Resizer {
     const parentH = this.parentDim.h;
     const unitWidth = this.opts.unitWidth;
     const unitHeight = this.opts.unitHeight;
-    const startW =
-      unitWidth === '%' ? (startDim.w / 100) * parentW : startDim.w;
-    const startH =
-      unitHeight === '%' ? (startDim.h / 100) * parentH : startDim.h;
+    const startW = unitWidth === '%' ? (startDim.w / 100) * parentW : startDim.w;
+    const startH = unitHeight === '%' ? (startDim.h / 100) * parentH : startDim.h;
     var box = {
       t: 0,
       l: 0,
       w: startW,
-      h: startH
+      h: startH,
     };
 
     if (!data) return;
@@ -537,5 +536,5 @@ class Resizer {
 export default {
   init(opts) {
     return new Resizer(opts);
-  }
+  },
 };

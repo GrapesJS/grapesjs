@@ -1,14 +1,14 @@
 import I18n from 'i18n';
-import Editor from 'editor/index';
+import Editor from 'editor';
 
 describe('I18n', () => {
   describe('Main', () => {
     let obj;
-    let editor = Editor().init();
+    let editor = new Editor();
     let em = editor.getModel();
 
     beforeEach(() => {
-      obj = I18n();
+      obj = new I18n();
       obj.init({ em });
     });
 
@@ -34,8 +34,8 @@ describe('I18n', () => {
         localeFallback,
         detectLocale: 0,
         messages: {
-          en: { msg }
-        }
+          en: { msg },
+        },
       });
       expect(obj.getLocale()).toBe(locale);
       expect(obj.getConfig().localeFallback).toBe(localeFallback);
@@ -44,7 +44,7 @@ describe('I18n', () => {
 
     test('English always imported', () => {
       obj.init({
-        messages: { it: {} }
+        messages: { it: {} },
       });
       expect(Object.keys(obj.getMessages())).toEqual(['en', 'it']);
     });
@@ -74,12 +74,12 @@ describe('I18n', () => {
       obj.setMessages(set1);
       const set2 = {
         en: { msg2: 'Msg 2 up', msg3: 'Msg 3' },
-        it: { msg1: 'Msg 1' }
+        it: { msg1: 'Msg 1' },
       };
       obj.addMessages(set2);
       expect(obj.getMessages()).toEqual({
         en: { msg1: 'Msg 1', msg2: 'Msg 2 up', msg3: 'Msg 3' },
-        it: { msg1: 'Msg 1' }
+        it: { msg1: 'Msg 1' },
       });
     });
 
@@ -90,19 +90,19 @@ describe('I18n', () => {
           msg2: 'Msg 2',
           msg3: {
             msg31: 'Msg 31',
-            msg32: { msg321: 'Msg 321' }
-          }
-        }
+            msg32: { msg321: 'Msg 321' },
+          },
+        },
       });
       obj.addMessages({
         en: {
           msg2: { msg21: 'Msg 21' },
           msg3: {
             msg32: { msg322: 'Msg 322' },
-            msg33: 'Msg 33'
+            msg33: 'Msg 33',
           },
-          msg4: 'Msg 4'
-        }
+          msg4: 'Msg 4',
+        },
       });
       expect(obj.getMessages()).toEqual({
         en: {
@@ -112,12 +112,12 @@ describe('I18n', () => {
             msg31: 'Msg 31',
             msg32: {
               msg321: 'Msg 321',
-              msg322: 'Msg 322'
+              msg322: 'Msg 322',
             },
-            msg33: 'Msg 33'
+            msg33: 'Msg 33',
           },
-          msg4: 'Msg 4'
-        }
+          msg4: 'Msg 4',
+        },
       });
     });
 
@@ -126,7 +126,7 @@ describe('I18n', () => {
       obj.setLocale('en');
       obj.setMessages({
         en: { msg1 },
-        it: { msg1: `${msg1} it` }
+        it: { msg1: `${msg1} it` },
       });
       expect(obj.t('msg2')).toBe(undefined);
       expect(obj.t('msg1')).toBe(msg1);
@@ -141,10 +141,10 @@ describe('I18n', () => {
           key1: {
             msg1,
             key2: {
-              msg2
-            }
-          }
-        }
+              msg2,
+            },
+          },
+        },
       });
       expect(obj.t('key1.msg1')).toBe(msg1);
       expect(obj.t('key1.key2.msg2')).toBe(msg2);
@@ -158,7 +158,7 @@ describe('I18n', () => {
       obj.setLocale('en');
       obj.setMessages({
         en: { msg1 },
-        it: { msg1: msg1Alt }
+        it: { msg1: msg1Alt },
       });
       expect(obj.t('msg1', { l: 'it' })).toBe(msg1Alt);
     });
@@ -168,7 +168,7 @@ describe('I18n', () => {
       obj.setLocale('it');
       obj.setMessages({
         en: { msg1 },
-        it: {}
+        it: {},
       });
       expect(obj.t('msg1')).toBe(msg1);
     });
@@ -179,12 +179,10 @@ describe('I18n', () => {
       obj.setLocale('en');
       obj.setMessages({
         en: { msg1 },
-        it: { msg1: msg1Alt }
+        it: { msg1: msg1Alt },
       });
       expect(obj.t('msg1', { params: { test: 'Hello' } })).toBe('Msg 1 Hello');
-      expect(obj.t('msg1', { l: 'it', params: { test: 'Hello' } })).toBe(
-        'Msg 1 Hello it'
-      );
+      expect(obj.t('msg1', { l: 'it', params: { test: 'Hello' } })).toBe('Msg 1 Hello it');
     });
 
     test('i18n events', () => {

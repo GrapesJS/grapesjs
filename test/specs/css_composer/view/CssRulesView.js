@@ -9,18 +9,18 @@ describe('CssRulesView', () => {
     {
       name: 'Mobile portrait',
       width: '320px',
-      widthMedia: '480px'
+      widthMedia: '480px',
     },
     {
       name: 'Tablet',
       width: '768px',
-      widthMedia: '992px'
+      widthMedia: '992px',
     },
     {
       name: 'Desktop',
       width: '',
-      widthMedia: ''
-    }
+      widthMedia: '',
+    },
   ];
 
   beforeEach(() => {
@@ -30,10 +30,10 @@ describe('CssRulesView', () => {
       config: {
         em: new Editor({
           deviceManager: {
-            devices
-          }
-        })
-      }
+            devices,
+          },
+        }),
+      },
     });
     document.body.innerHTML = '<div id="fixtures"></div>';
     document.body.querySelector('#fixtures').appendChild(obj.render().el);
@@ -78,20 +78,20 @@ describe('CssRulesView', () => {
     const foundStylesContainers = obj.$el.find('div');
     const rules = [
       {
-        selectorsAdd: '#testid'
+        selectorsAdd: '#testid',
       },
       {
         selectorsAdd: '#testid2',
-        mediaText: '(max-width: 1000px)'
+        mediaText: '(max-width: 1000px)',
       },
       {
         selectorsAdd: '#testid3',
-        mediaText: '(min-width: 900px)'
+        mediaText: '(min-width: 900px)',
       },
       {
         selectorsAdd: '#testid4',
-        mediaText: 'screen and (max-width: 900px) and (min-width: 600px)'
-      }
+        mediaText: 'screen and (max-width: 900px) and (min-width: 600px)',
+      },
     ];
     obj.collection.add(rules);
     const stylesCont = obj.el.querySelector(`#${obj.className}`);

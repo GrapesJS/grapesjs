@@ -28,7 +28,7 @@ describe('SelectorManager', () => {
     test('Able to add default selectors', () => {
       var cm = new SelectorManager().init({
         em,
-        selectors: ['test1', 'test2', 'test3']
+        selectors: ['test1', 'test2', 'test3'],
       });
       expect(cm.getAll().length).toEqual(3);
     });
@@ -81,16 +81,7 @@ describe('SelectorManager', () => {
     });
 
     test('Add multiple selectors', () => {
-      const cls = [
-        '.test1',
-        'test1',
-        '.test2',
-        '.test2',
-        '#test3',
-        'test3',
-        'test3',
-        '#test3'
-      ];
+      const cls = ['.test1', 'test1', '.test2', '.test2', '#test3', 'test3', 'test3', '#test3'];
       const result = obj.add(cls);
       expect(Array.isArray(result)).toEqual(true);
       const concat = obj
@@ -99,30 +90,10 @@ describe('SelectorManager', () => {
         .join('');
       expect(concat).toEqual('.test1.test2#test3.test3');
       expect(obj.getAll().length).toEqual(4);
-      expect(
-        obj
-          .getAll()
-          .at(0)
-          .getFullName()
-      ).toEqual('.test1');
-      expect(
-        obj
-          .getAll()
-          .at(1)
-          .getFullName()
-      ).toEqual('.test2');
-      expect(
-        obj
-          .getAll()
-          .at(2)
-          .getFullName()
-      ).toEqual('#test3');
-      expect(
-        obj
-          .getAll()
-          .at(3)
-          .getFullName()
-      ).toEqual('.test3');
+      expect(obj.getAll().at(0).getFullName()).toEqual('.test1');
+      expect(obj.getAll().at(1).getFullName()).toEqual('.test2');
+      expect(obj.getAll().at(2).getFullName()).toEqual('#test3');
+      expect(obj.getAll().at(3).getFullName()).toEqual('.test3');
 
       expect(obj.get(cls).length).toEqual(4);
       expect(

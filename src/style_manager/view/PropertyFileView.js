@@ -12,7 +12,7 @@ export default class PropertyFileView extends PropertyView {
 
   templateInput() {
     const { pfx, em } = this;
-    const icons = this.em?.getConfig('icons');
+    const icons = this.em?.getConfig().icons;
     const iconClose = icons?.close;
 
     return `

@@ -1,4 +1,4 @@
-import { Collection } from 'backbone';
+import { Collection } from '../../common';
 import Device from './Device';
 
 export default class Devices extends Collection {

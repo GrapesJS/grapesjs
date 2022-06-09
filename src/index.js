@@ -1,8 +1,8 @@
 import { isElement, isFunction } from 'underscore';
-import $ from 'utils/cash-dom';
+import $ from './utils/cash-dom';
 import Editor from './editor';
-import polyfills from 'utils/polyfills';
-import { getGlobal } from 'utils/mixins';
+import polyfills from './utils/polyfills';
+import { getGlobal } from './utils/mixins';
 import PluginManager from './plugin_manager';
 
 polyfills();
@@ -17,7 +17,7 @@ const defaultConfig = {
   plugins: [],
 
   // Custom options for plugins
-  pluginsOpts: {}
+  pluginsOpts: {},
 };
 
 export default {
@@ -51,9 +51,8 @@ export default {
     const els = config.container;
     if (!els && !headless) throw new Error("'container' is required");
     config = { ...defaultConfig, ...config, grapesjs: this };
-    config.el =
-      !headless && (isElement(els) ? els : document.querySelector(els));
-    const editor = new Editor(config, { $ }).init();
+    config.el = !headless && (isElement(els) ? els : document.querySelector(els));
+    const editor = new Editor(config, { $ });
     const em = editor.getModel();
 
     // Load plugins
@@ -74,7 +73,7 @@ export default {
       } else {
         em.logWarning(`Plugin ${pluginId} not found`, {
           context: 'plugins',
-          plugin: pluginId
+          plugin: pluginId,
         });
       }
     });
@@ -87,5 +86,5 @@ export default {
     editors.push(editor);
 
     return editor;
-  }
+  },
 };

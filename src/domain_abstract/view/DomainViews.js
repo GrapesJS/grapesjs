@@ -1,25 +1,20 @@
 import { includes } from 'underscore';
 import Backbone from 'backbone';
 
-export default Backbone.View.extend({
-  // Default view
-  itemView: '',
-
+export default class DomainViews extends Backbone.View {
   // Defines the View per type
-  itemsView: '',
+  itemsView = '';
 
-  itemType: 'type',
+  itemType = 'type';
 
-  autoAdd: 0,
+  reuseView = false;
 
-  initialize(opts = {}, config) {
+  constructor(opts = {}, config, autoAdd = false) {
+    super(opts);
     this.config = config || opts.config || {};
-    this.autoAdd && this.listenTo(this.collection, 'add', this.addTo);
+    autoAdd && this.listenTo(this.collection, 'add', this.addTo);
     this.items = [];
-    this.init();
-  },
-
-  init() {},
+  }
 
   /**
    * Add new model to the collection
@@ -28,14 +23,14 @@ export default Backbone.View.extend({
    * */
   addTo(model) {
     this.add(model);
-  },
+  }
 
   itemViewNotFound(type) {
     const { config, ns } = this;
     const { em } = config;
     const warn = `${ns ? `[${ns}]: ` : ''}'${type}' type not found`;
     em && em.logWarning(warn);
-  },
+  }
 
   /**
    * Render new model inside the view
@@ -67,7 +62,7 @@ export default Backbone.View.extend({
       'text',
       'time',
       'url',
-      'week'
+      'week',
     ];
     var frag = fragment || null;
     var itemView = this.itemView;
@@ -76,11 +71,7 @@ export default Backbone.View.extend({
 
     if (itemsView[typeField]) {
       itemView = itemsView[typeField];
-    } else if (
-      typeField &&
-      !itemsView[typeField] &&
-      !includes(inputTypes, typeField)
-    ) {
+    } else if (typeField && !itemsView[typeField] && !includes(inputTypes, typeField)) {
       this.itemViewNotFound(typeField);
     }
 
@@ -95,7 +86,7 @@ export default Backbone.View.extend({
 
     if (frag) frag.appendChild(rendered);
     else this.$el.append(rendered);
-  },
+  }
 
   render() {
     var frag = document.createDocumentFragment();
@@ -103,19 +94,19 @@ export default Backbone.View.extend({
     this.$el.empty();
 
     if (this.collection.length)
-      this.collection.each(function(model) {
+      this.collection.each(function (model) {
         this.add(model, frag);
       }, this);
 
     this.$el.append(frag);
     this.onRender();
     return this;
-  },
+  }
 
-  onRender() {},
+  onRender() {}
 
-  onRemoveBefore() {},
-  onRemove() {},
+  onRemoveBefore() {}
+  onRemove() {}
 
   remove(opts = {}) {
     const { items } = this;
@@ -123,7 +114,7 @@ export default Backbone.View.extend({
     this.clearItems();
     Backbone.View.prototype.remove.apply(this, arguments);
     this.onRemove(items, opts);
-  },
+  }
 
   clearItems() {
     const items = this.items || [];
@@ -131,4 +122,7 @@ export default Backbone.View.extend({
     // items.forEach(item => item.remove());
     // this.items = [];
   }
-});
+}
+
+// Default view
+DomainViews.prototype.itemView = '';

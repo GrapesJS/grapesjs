@@ -14,10 +14,7 @@ describe('Component Types', () => {
 
   beforeAll(() => {
     editor = new Editor({ allowScripts: 1 });
-    editor
-      .getModel()
-      .get('PageManager')
-      .onLoad();
+    editor.getModel().get('PageManager').onLoad();
     wrapper = editor.getWrapper();
   });
 
@@ -55,7 +52,7 @@ describe('Component Types', () => {
 
   test('<tr> is correctly recognized', () => {
     expectedType('<table><tbody><tr> </tr></tbody></table>', 'row', {
-      getType: 1
+      getType: 1,
     });
   });
 
@@ -65,11 +62,11 @@ describe('Component Types', () => {
 
   test('<td> & <th> are correctly recognized', () => {
     expectedType('<table><tbody><tr><td></td></tr></tbody></table>', 'cell', {
-      getType: 1
+      getType: 1,
     });
     expectedType('<table><tbody><tr><th></th></tr></tbody></table>', 'cell', {
       total: 2,
-      getType: 1
+      getType: 1,
     });
   });
 
@@ -79,15 +76,12 @@ describe('Component Types', () => {
 
   test('<script> is correctly recognized', () => {
     // const scr = 'console.log("Inline script");'; // issues with jsdom parser
-    const scr = ``;
+    const scr = '';
     expectedType(`<script attr-test="value">${scr}</script>`, 'script');
   });
 
   test('<iframe> is correctly recognized', () => {
-    expectedType(
-      `<iframe frameborder="0" src="/somewhere" attr-test="value"></iframe>`,
-      'iframe'
-    );
+    expectedType('<iframe frameborder="0" src="/somewhere" attr-test="value"></iframe>', 'iframe');
   });
 
   test('<svg> is correctly recognized', () => {
@@ -96,11 +90,6 @@ describe('Component Types', () => {
         `)[0];
     expect(wrapper.components().length).toBe(1);
     expect(cmp.is('svg')).toBe(true);
-    expect(
-      cmp
-        .components()
-        .at(0)
-        .is('svg-in')
-    ).toBe(true);
+    expect(cmp.components().at(0).is('svg-in')).toBe(true);
   });
 });

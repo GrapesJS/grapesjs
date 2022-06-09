@@ -1,6 +1,6 @@
 import { extend, bindAll } from 'underscore';
 import Backbone from 'backbone';
-import { on, off } from 'utils/mixins';
+import { on, off } from '../../utils/mixins';
 import SelectComponent from './SelectComponent';
 import SelectPosition from './SelectPosition';
 
@@ -164,8 +164,6 @@ export default extend({}, SelectPosition, SelectComponent, {
     this.getBadgeEl().removeClass(this.badgeClass);
     this.getHighlighterEl().removeClass(this.hoverClass);
     var wp = this.$wrapper;
-    wp.css('cursor', '')
-      .unbind()
-      .removeClass(this.noSelClass);
-  }
+    wp.css('cursor', '').unbind().removeClass(this.noSelClass);
+  },
 });

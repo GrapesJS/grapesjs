@@ -1,6 +1,6 @@
-import { View } from 'common';
 import { bindAll, isUndefined, debounce } from 'underscore';
-import { isObject } from 'utils/mixins';
+import { View } from '../../common';
+import { isObject } from '../../utils/mixins';
 
 const clearProp = 'data-clear-style';
 
@@ -17,7 +17,7 @@ export default class Property extends View {
     const { pfx, em } = this;
     const { parent } = model;
     const { icon = '', info = '' } = model.attributes;
-    const icons = em?.getConfig('icons');
+    const icons = em?.getConfig().icons;
     const iconClose = icons?.close || '';
 
     return `
@@ -57,6 +57,7 @@ export default class Property extends View {
     this.listenTo(model, 'change:visible', this.updateVisibility);
     this.listenTo(model, 'change:name change:className change:full', this.render);
     this.listenTo(model, 'change:value', this.onValueChange);
+    this.listenTo(model, 'change:parentTarget', this.updateStatus);
     this.listenTo(em, 'change:device', this.onValueChange);
 
     const init = this.init && this.init.bind(this);

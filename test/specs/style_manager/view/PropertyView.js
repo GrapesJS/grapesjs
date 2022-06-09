@@ -19,7 +19,7 @@ describe('PropertyView', () => {
 
   beforeEach(() => {
     em = new Editor({});
-    dcomp = new DomComponents();
+    dcomp = new DomComponents(em);
     compOpts = { em, componentTypes: dcomp.componentTypes };
     target = new Component({}, compOpts);
     component = new Component({}, compOpts);
@@ -65,7 +65,10 @@ describe('PropertyView', () => {
 
   test('Update model on input change', () => {
     view.getInputEl().value = propValue;
-    view.inputValueChanged({ target: { value: propValue }, stopPropagation() {} });
+    view.inputValueChanged({
+      target: { value: propValue },
+      stopPropagation() {},
+    });
     expect(view.model.get('value')).toEqual(propValue);
   });
 
@@ -74,7 +77,7 @@ describe('PropertyView', () => {
     setTimeout(() => {
       expect(view.getInputEl().value).toEqual(propValue);
       done();
-    }, 11);
+    }, 15);
   });
 
   describe('Init property', () => {

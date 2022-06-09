@@ -1,8 +1,8 @@
 import TraitView from './TraitView';
-import InputColor from 'domain_abstract/ui/InputColor';
+import InputColor from '../../domain_abstract/ui/InputColor';
 
-export default TraitView.extend({
-  templateInput: '',
+export default class TraitColorView extends TraitView {
+  templateInput = '';
 
   /**
    * Returns input element
@@ -17,7 +17,7 @@ export default TraitView.extend({
         model,
         target: this.config.em,
         contClass: this.ppfx + 'field-color',
-        ppfx: this.ppfx
+        ppfx: this.ppfx,
       });
       const input = inputColor.render();
       input.setValue(value, { fromTarget: 1 });
@@ -26,4 +26,4 @@ export default TraitView.extend({
 
     return this.input;
   }
-});
+}

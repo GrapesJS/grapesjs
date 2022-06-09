@@ -1,5 +1,5 @@
-import { Model } from 'common';
 import { isUndefined } from 'underscore';
+import { Model } from '../../common';
 
 /**
  * @typedef Trait

@@ -10,7 +10,7 @@ describe('PanelsView', () => {
   beforeEach(() => {
     model = new Panels([]);
     view = new PanelsView({
-      collection: model
+      collection: model,
     });
     document.body.innerHTML = '<div id="fixtures"></div>';
     fixtures = document.body.querySelector('#fixtures');

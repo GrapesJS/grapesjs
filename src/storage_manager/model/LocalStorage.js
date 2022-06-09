@@ -1,62 +1,28 @@
-import { Model } from 'backbone';
-import { hasWin } from 'utils/mixins';
+import { hasWin } from '../../utils/mixins';
 
-export default Model.extend({
-  defaults: {
-    checkLocal: true
-  },
-
-  /**
-   * @private
-   */
-  store(data, clb = () => {}) {
-    if (this.hasLocal()) {
-      for (let key in data) localStorage.setItem(key, data[key]);
+export default class LocalStorage {
+  async store(data, opts = {}) {
+    if (this.hasLocal(opts, true)) {
+      localStorage.setItem(opts.key, JSON.stringify(data));
     }
+  }
 
-    clb && clb();
-  },
+  async load(opts = {}) {
+    let result = {};
 
-  /**
-   * @private
-   */
-  load(keys, clb = () => {}) {
-    const result = {};
-
-    if (this.hasLocal()) {
-      for (let i = 0, len = keys.length; i < len; i++) {
-        const value = localStorage.getItem(keys[i]);
-        if (value) result[keys[i]] = value;
-      }
+    if (this.hasLocal(opts, true)) {
+      result = JSON.parse(localStorage.getItem(opts.key) || '{}');
     }
-
-    clb && clb(result);
 
     return result;
-  },
+  }
 
-  /**
-   * @private
-   */
-  remove(keys) {
-    if (!this.hasLocal()) return;
-
-    for (let i = 0, len = keys.length; i < len; i++)
-      localStorage.removeItem(keys[i]);
-  },
-
-  /**
-   * Check storage environment
-   * @private
-   * */
-  hasLocal() {
-    const win = hasWin();
-
-    if (this.get('checkLocal') && (!win || !localStorage)) {
-      win && console.warn("Your browser doesn't support localStorage");
+  hasLocal(opts = {}, thr) {
+    if (opts.checkLocal && (!hasWin() || !localStorage)) {
+      if (thr) throw new Error('localStorage not available');
       return false;
     }
 
     return true;
   }
-});
+}

@@ -1,14 +1,8 @@
 import { isFunction } from 'underscore';
 import AssetView from './AssetView';
-import html from 'utils/html';
+import html from '../../utils/html';
 
-export default AssetView.extend({
-  events: {
-    'click [data-toggle=asset-remove]': 'onRemove',
-    click: 'onClick',
-    dblclick: 'onDblClick'
-  },
-
+export default class AssetImageView extends AssetView {
   getPreview() {
     const { pfx, ppfx, model } = this;
     const src = model.get('src');
@@ -16,7 +10,7 @@ export default AssetView.extend({
       <div class="${pfx}preview" style="background-image: url('${src}');"></div>
       <div class="${pfx}preview-bg ${ppfx}checker-bg"></div>
     `;
-  },
+  }
 
   getInfo() {
     const { pfx, model } = this;
@@ -30,12 +24,12 @@ export default AssetView.extend({
       <div class="${pfx}name">${name}</div>
       <div class="${pfx}dimensions">${dim}</div>
     `;
-  },
+  }
 
   init(o) {
     const pfx = this.pfx;
     this.className += ` ${pfx}asset-image`;
-  },
+  }
 
   /**
    * Triggered when the asset is clicked
@@ -56,7 +50,7 @@ export default AssetView.extend({
     } else {
       this.updateTarget(coll.target);
     }
-  },
+  }
 
   /**
    * Triggered when the asset is double clicked
@@ -77,7 +71,7 @@ export default AssetView.extend({
       em && em.get('Modal').close();
     }
     isFunction(onSelect) && onSelect(model);
-  },
+  }
 
   /**
    * Remove asset from collection
@@ -87,4 +81,10 @@ export default AssetView.extend({
     e.stopImmediatePropagation();
     this.model.collection.remove(this.model);
   }
-});
+}
+
+AssetImageView.prototype.events = {
+  'click [data-toggle=asset-remove]': 'onRemove',
+  click: 'onClick',
+  dblclick: 'onDblClick',
+};

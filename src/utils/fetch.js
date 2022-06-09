@@ -1,5 +1,5 @@
 import Promise from 'promise-polyfill';
-import { hasWin } from 'utils/mixins';
+import { hasWin } from './mixins';
 
 if (hasWin()) {
   window.Promise = window.Promise || Promise;
@@ -21,7 +21,7 @@ export default typeof fetch == 'function'
           res({
             status: req.status,
             statusText: req.statusText,
-            text: () => Promise.resolve(req.responseText)
+            text: () => Promise.resolve(req.responseText),
           });
         req.onerror = rej;
 

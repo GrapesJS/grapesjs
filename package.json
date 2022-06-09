@@ -1,7 +1,7 @@
 {
   "name": "grapesjs",
   "description": "Free and Open Source Web Builder Framework",
-  "version": "0.18.4",
+  "version": "0.19.4",
   "author": "Artur Arseniev",
   "license": "BSD-3-Clause",
   "homepage": "http://grapesjs.com",
@@ -25,10 +25,14 @@
   },
   "devDependencies": {
     "@babel/cli": "^7.15.7",
+    "@babel/preset-typescript": "^7.16.7",
+    "@types/backbone": "^1.4.15",
+    "@typescript-eslint/parser": "^5.22.0",
     "@vuepress/plugin-google-analytics": "^1.8.2",
     "documentation": "^13.2.5",
-    "eslint": "^7.32.0",
+    "eslint": "^8.12.0",
     "grapesjs-cli": "^3.0.0",
+    "html-entities": "^1.4.0",
     "husky": "^2.7.0",
     "jest": "^24.9.0",
     "lint-staged": "^8.2.1",
@@ -36,6 +40,7 @@
     "prettier": "^2.4.1",
     "sass": "^1.42.1",
     "sinon": "^7.5.0",
+    "terser-webpack-plugin": "^5.3.1",
     "vuepress": "^1.8.2",
     "whatwg-fetch": "^3.6.2"
   },
@@ -58,7 +63,8 @@
     "env": {
       "test": {
         "presets": [
-          "@babel/preset-env"
+          "@babel/preset-env",
+          "@babel/preset-typescript"
         ]
       }
     }
@@ -92,7 +98,7 @@
     "docs:build-vp": "vuepress build docs",
     "docs:build": "npm run docs:api && npm run docs:build-vp",
     "docs:deploy": "docs/deploy.sh",
-    "lint": "eslint src",
+    "lint": "eslint . --ext .ts,.js",
     "check": "npm run lint && npm run test",
     "build": "npm run check && run-s build:*",
     "build:js": "grapesjs-cli build --targets=\"> 1%, ie 11, safari 8, not dead\" --statsOutput=\"stats.json\" --localePath=\"src/i18n/locale\"",

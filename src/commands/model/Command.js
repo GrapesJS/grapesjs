@@ -1,7 +1,9 @@
-import Backbone from 'backbone';
+import { Model } from '../../common';
 
-export default Backbone.Model.extend({
-  defaults: {
-    id: ''
+export default class Command extends Model {
+  defaults() {
+    return {
+      id: '',
+    };
   }
-});
+}

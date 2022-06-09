@@ -1,6 +1,6 @@
-import Backbone from 'backbone';
 import { bindAll, isUndefined, each } from 'underscore';
-import { hasWin } from 'utils/mixins';
+import { Model } from '../../common';
+import { hasWin } from '../../utils/mixins';
 
 const maxValue = Number.MAX_VALUE;
 
@@ -9,12 +9,12 @@ export const getMediaLength = mediaQuery => {
   return !length ? '' : length[0];
 };
 
-export default Backbone.Model.extend({
+export default class CssGenerator extends Model {
   initialize() {
     bindAll(this, 'sortRules');
     this.compCls = [];
     this.ids = [];
-  },
+  }
 
   /**
    * Get CSS from a component
@@ -24,7 +24,7 @@ export default Backbone.Model.extend({
   buildFromModel(model, opts = {}) {
     let code = '';
     const em = this.em;
-    const avoidInline = em && em.getConfig('avoidInlineStyle');
+    const avoidInline = em && em.getConfig().avoidInlineStyle;
     const style = model.styleToString();
     const classes = model.get('classes');
     this.ids.push(`#${model.getId()}`);
@@ -39,7 +39,7 @@ export default Backbone.Model.extend({
     const components = model.components();
     components.each(model => (code += this.buildFromModel(model, opts)));
     return code;
-  },
+  }
 
   build(model, opts = {}) {
     const { json } = opts;
@@ -51,7 +51,7 @@ export default Backbone.Model.extend({
     this.model = model;
     const codeJson = [];
     let code = model ? this.buildFromModel(model, opts) : '';
-    const clearStyles = isUndefined(opts.clearStyles) && em ? em.getConfig('clearStyles') : opts.clearStyles;
+    const clearStyles = isUndefined(opts.clearStyles) && em ? em.getConfig().clearStyles : opts.clearStyles;
 
     if (cssc) {
       let rules = opts.rules || cssc.getAll();
@@ -110,7 +110,7 @@ export default Backbone.Model.extend({
     }
 
     return json ? codeJson.filter(r => r) : code;
-  },
+  }
 
   /**
    * Get CSS from the rule model
@@ -141,7 +141,7 @@ export default Backbone.Model.extend({
     }
 
     return result;
-  },
+  }
 
   /**
    * Get matched rules of a component
@@ -174,7 +174,7 @@ export default Backbone.Model.extend({
     result = result.filter((rule, i) => result.indexOf(rule) === i);
 
     return result;
-  },
+  }
 
   /**
    * Get the numeric length of the media query string
@@ -186,7 +186,7 @@ export default Backbone.Model.extend({
     if (!length) return maxValue;
 
     return parseFloat(length[1]);
-  },
+  }
 
   /**
    * Return a sorted array from media query object
@@ -202,7 +202,7 @@ export default Backbone.Model.extend({
       const right = isMobFirst ? b.key : a.key;
       return this.getQueryLength(left) - this.getQueryLength(right);
     });
-  },
+  }
 
   sortRules(a, b) {
     const getKey = rule => rule.get('mediaText');
@@ -210,7 +210,7 @@ export default Backbone.Model.extend({
     const left = isMobFirst ? getKey(a) : getKey(b);
     const right = isMobFirst ? getKey(b) : getKey(a);
     return this.getQueryLength(left) - this.getQueryLength(right);
-  },
+  }
 
   /**
    * Return passed selector without states
@@ -223,5 +223,5 @@ export default Backbone.Model.extend({
       .split(' ')
       .map(item => item.split(':')[0])
       .join(' ');
-  },
-});
+  }
+}

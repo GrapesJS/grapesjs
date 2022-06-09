@@ -13,11 +13,11 @@ export default Component.extend(
         droppable: false,
         resizable: true,
         traits: ['id', 'title', 'src'],
-        attributes: { frameborder: '0' }
+        attributes: { frameborder: '0' },
       };
-    }
+    },
   },
   {
-    isComponent: el => toLowerCase(el.tagName) === type
+    isComponent: el => toLowerCase(el.tagName) === type,
   }
 );

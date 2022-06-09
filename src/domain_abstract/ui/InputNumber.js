@@ -1,20 +1,11 @@
 import Backbone from 'backbone';
 import { bindAll, isUndefined, indexOf } from 'underscore';
-import { on, off } from 'utils/mixins';
+import { on, off } from '../../utils/mixins';
 import Input from './Input';
 
 const $ = Backbone.$;
 
-export default Input.extend({
-  events: {
-    'change input': 'handleChange',
-    'change select': 'handleUnitChange',
-    'click [data-arrow-up]': 'upArrowClick',
-    'click [data-arrow-down]': 'downArrowClick',
-    'mousedown [data-arrows]': 'downIncrement',
-    keydown: 'handleKeyDown',
-  },
-
+export default class InputNumber extends Input {
   template() {
     const ppfx = this.ppfx;
     return `
@@ -25,19 +16,19 @@ export default Input.extend({
         <div class="${ppfx}field-arrow-d" data-arrow-down></div>
       </div>
     `;
-  },
+  }
 
   inputClass() {
     const ppfx = this.ppfx;
     return this.opts.contClass || `${ppfx}field ${ppfx}field-integer`;
-  },
+  }
 
-  initialize(opts = {}) {
-    Input.prototype.initialize.apply(this, arguments);
+  constructor(opts = {}) {
+    super(opts);
     bindAll(this, 'moveIncrement', 'upIncrement');
     this.doc = document;
     this.listenTo(this.model, 'change:unit', this.handleModelChange);
-  },
+  }
 
   /**
    * Set value to the model
@@ -61,7 +52,7 @@ export default Input.extend({
     if (opt.silent) {
       this.handleModelChange();
     }
-  },
+  }
 
   /**
    * Handled when the view is changed
@@ -70,7 +61,7 @@ export default Input.extend({
     e.stopPropagation();
     this.setValue(this.getInputEl().value);
     this.elementUpdated();
-  },
+  }
 
   /**
    * Handled when the view is changed
@@ -80,7 +71,7 @@ export default Input.extend({
     var value = this.getUnitEl().value;
     this.model.set('unit', value);
     this.elementUpdated();
-  },
+  }
 
   /**
    * Handled when user uses keyboard
@@ -95,14 +86,14 @@ export default Input.extend({
       e.preventDefault();
       this.downArrowClick();
     }
-  },
+  }
 
   /**
    * Fired when the element of the property is updated
    */
   elementUpdated() {
     this.model.trigger('el:change');
-  },
+  }
 
   /**
    * Updates the view when the model is changed
@@ -112,7 +103,7 @@ export default Input.extend({
     this.getInputEl().value = model.get('value');
     const unitEl = this.getUnitEl();
     unitEl && (unitEl.value = model.get('unit') || '');
-  },
+  }
 
   /**
    * Get the unit element
@@ -138,7 +129,7 @@ export default Input.extend({
     }
 
     return this.unitEl;
-  },
+  }
 
   /**
    * Invoked when the up arrow is clicked
@@ -149,7 +140,7 @@ export default Input.extend({
     let value = parseFloat(model.get('value'));
     this.setValue(this.normalizeValue(value + step));
     this.elementUpdated();
-  },
+  }
 
   /**
    * Invoked when the down arrow is clicked
@@ -160,7 +151,7 @@ export default Input.extend({
     const value = parseFloat(model.get('value'));
     this.setValue(this.normalizeValue(value - step));
     this.elementUpdated();
-  },
+  }
 
   /**
    * Change easily integer input value with click&drag method
@@ -176,7 +167,7 @@ export default Input.extend({
     this.current = { y: e.pageY, val: value };
     on(this.doc, 'mousemove', this.moveIncrement);
     on(this.doc, 'mouseup', this.upIncrement);
-  },
+  }
 
   /** While the increment is clicked, moving the mouse will update input value
    * @param Object
@@ -193,7 +184,7 @@ export default Input.extend({
     this.prValue = value;
     model.set({ value, unit }, { avoidStore: 1 });
     return false;
-  },
+  }
 
   /**
    * Stop moveIncrement method
@@ -209,7 +200,7 @@ export default Input.extend({
       model.set('value', value, { avoidStore: 1 }).set('value', value + step);
       this.elementUpdated();
     }
-  },
+  }
 
   normalizeValue(value, defValue = 0) {
     const model = this.model;
@@ -228,7 +219,7 @@ export default Input.extend({
     }
 
     return stepDecimals ? parseFloat(value.toFixed(stepDecimals)) : value;
-  },
+  }
 
   /**
    * Validate input value
@@ -281,7 +272,7 @@ export default Input.extend({
       value: val,
       unit,
     };
-  },
+  }
 
   render() {
     Input.prototype.render.call(this);
@@ -289,5 +280,14 @@ export default Input.extend({
     const unit = this.getUnitEl();
     unit && this.$el.find(`.${this.ppfx}field-units`).get(0).appendChild(unit);
     return this;
-  },
-});
+  }
+}
+
+InputNumber.prototype.events = {
+  'change input': 'handleChange',
+  'change select': 'handleUnitChange',
+  'click [data-arrow-up]': 'upArrowClick',
+  'click [data-arrow-down]': 'downArrowClick',
+  'mousedown [data-arrows]': 'downIncrement',
+  keydown: 'handleKeyDown',
+};

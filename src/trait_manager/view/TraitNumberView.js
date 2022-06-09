@@ -1,15 +1,13 @@
-import TraitView from './TraitView';
 import { isUndefined } from 'underscore';
-import InputNumber from 'domain_abstract/ui/InputNumber';
+import InputNumber from '../../domain_abstract/ui/InputNumber';
+import TraitView from './TraitView';
 
-export default TraitView.extend({
+export default class TraitNumberView extends TraitView {
   getValueForTarget() {
     const { model } = this;
     const { value, unit } = model.attributes;
-    return !isUndefined(value) && value !== ''
-      ? value + unit
-      : model.get('default');
-  },
+    return !isUndefined(value) && value !== '' ? value + unit : model.get('default');
+  }
 
   /**
    * Returns input element
@@ -24,7 +22,7 @@ export default TraitView.extend({
         contClass: `${ppfx}field-int`,
         type: 'number',
         model: model,
-        ppfx
+        ppfx,
       });
       this.input = inputNumber.render();
       this.$input = this.input.inputEl;
@@ -35,4 +33,4 @@ export default TraitView.extend({
     }
     return this.input;
   }
-});
+}

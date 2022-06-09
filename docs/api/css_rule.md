@@ -2,7 +2,7 @@
 
 ## CssRule
 
-**Extends Model.extend(Styleable)**
+**Extends StyleableModel**
 
 ### Properties
 

@@ -5,7 +5,7 @@ export default {
     addButton: 'Aggiungi immagine',
     inputPlh: 'http://percorso/immagine.jpg',
     modalTitle: 'Seleziona immagine',
-    uploadTitle: 'Trascina qui i tuoi file o clicca per caricarli'
+    uploadTitle: 'Trascina qui i tuoi file o clicca per caricarli',
   },
   domComponents: {
     names: {
@@ -23,8 +23,8 @@ export default {
       thead: 'Tabella testa',
       table: 'Tabella',
       row: 'Tabella riga',
-      cell: 'Tabella colonna'
-    }
+      cell: 'Tabella colonna',
+    },
   },
   deviceManager: {
     device: 'Dispositivo',
@@ -32,8 +32,8 @@ export default {
       desktop: 'Desktop',
       tablet: 'Tablet',
       mobileLandscape: 'Mobile panoramica',
-      mobilePortrait: 'Mobile'
-    }
+      mobilePortrait: 'Mobile',
+    },
   },
   panels: {
     buttons: {
@@ -45,9 +45,9 @@ export default {
         'open-sm': 'Mostra Style Manager',
         'open-tm': 'Configurazioni',
         'open-layers': 'Mostra Livelli',
-        'open-blocks': 'Mostra Blocchi'
-      }
-    }
+        'open-blocks': 'Mostra Blocchi',
+      },
+    },
   },
   selectorManager: {
     label: 'Classi',
@@ -56,8 +56,8 @@ export default {
     states: {
       hover: 'Hover',
       active: 'Click',
-      'nth-of-type(2n)': 'Pari/Dispari'
-    }
+      'nth-of-type(2n)': 'Pari/Dispari',
+    },
   },
   styleManager: {
     empty: 'Seleziona un elemento prima di usare il Style Manager',
@@ -70,12 +70,12 @@ export default {
       decorations: 'Decorazioni',
       extra: 'Extra',
       flex: 'Flex',
-      dimension: 'Dimensioni'
+      dimension: 'Dimensioni',
     },
     // The core library generates the name by their `property` name
     properties: {
       // float: 'Float',
-    }
+    },
   },
   traitManager: {
     empty: 'Seleziona un elemento prima di usare il Trait Manager',
@@ -84,20 +84,20 @@ export default {
       labels: {
         id: 'Id',
         alt: 'Alt',
-        title: 'Titolo'
+        title: 'Titolo',
       },
       attributes: {
         id: traitInputAttr,
         alt: traitInputAttr,
         title: traitInputAttr,
-        href: { placeholder: 'es. https://google.com' }
+        href: { placeholder: 'es. https://google.com' },
       },
       options: {
         target: {
           false: 'Questa finestra',
-          _blank: 'Nuova finestra'
-        }
-      }
-    }
-  }
+          _blank: 'Nuova finestra',
+        },
+      },
+    },
+  },
 };

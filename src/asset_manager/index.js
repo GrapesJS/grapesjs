@@ -36,8 +36,6 @@
  * * [getAll](#getall)
  * * [getAllVisible](#getallvisible)
  * * [remove](#remove)
- * * [store](#store)
- * * [load](#load)
  * * [getContainer](#getcontainer)
  *
  * [Asset]: asset.html
@@ -46,7 +44,7 @@
  */
 
 import { debounce, isFunction } from 'underscore';
-import Module from 'common/module';
+import { Module } from '../common';
 import defaults from './config/config';
 import Asset from './model/Assets';
 import Assets from './model/Assets';
@@ -136,7 +134,7 @@ export default () => {
 
     __trgCustom() {
       const bhv = this.__getBehaviour();
-      if (!bhv.container && !this.getConfig('custom').open) {
+      if (!bhv.container && !this.getConfig().custom.open) {
         return;
       }
       this.em.trigger(this.events.custom, this.__customData());
@@ -280,47 +278,12 @@ export default () => {
       return this.__remove(asset, opts);
     },
 
-    /**
-     * Store assets data to the selected storage
-     * @param {Boolean} noStore If true, won't store
-     * @returns {Object} Data to store
-     * @example
-     * var assets = assetManager.store();
-     */
-    store(noStore) {
-      const obj = {};
-      const assets = JSON.stringify(this.getAll().toJSON());
-      obj[this.storageKey] = assets;
-      if (!noStore && c.stm) c.stm.store(obj);
-      return obj;
+    store() {
+      return this.getProjectData();
     },
 
-    /**
-     * Load data from the passed object.
-     * The fetched data will be added to the collection.
-     * @param {Object} data Object of data to load
-     * @returns {Object} Loaded assets
-     * @example
-     * var assets = assetManager.load({
-     * 	assets: [...]
-     * })
-     *
-     */
-    load(data = {}) {
-      const name = this.storageKey;
-      let assets = data[name] || [];
-
-      if (typeof assets == 'string') {
-        try {
-          assets = JSON.parse(data[name]);
-        } catch (err) {}
-      }
-
-      if (assets && assets.length) {
-        this.getAll().reset(assets);
-      }
-
-      return assets;
+    load(data) {
+      return this.loadProjectData(data);
     },
 
     /**
@@ -345,6 +308,7 @@ export default () => {
      * Render assets
      * @param  {array} assets Assets to render, without the argument will render all global assets
      * @returns {HTMLElement}
+     * @private
      * @example
      * // Render all assets
      * assetManager.render();
@@ -356,7 +320,7 @@ export default () => {
      * ));
      */
     render(assts) {
-      if (this.getConfig('custom')) return;
+      if (this.getConfig().custom) return;
       const toRender = assts || this.getAll().models;
 
       if (!am) {

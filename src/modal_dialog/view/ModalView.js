@@ -1,4 +1,4 @@
-import { View } from 'backbone';
+import { View } from '../../common';
 
 export default class ModalView extends View {
   template({ pfx, ppfx, content, title }) {
@@ -18,7 +18,7 @@ export default class ModalView extends View {
   events() {
     return {
       click: 'onClick',
-      'click [data-close-modal]': 'hide'
+      'click [data-close-modal]': 'hide',
     };
   }
 
@@ -45,8 +45,7 @@ export default class ModalView extends View {
    * @private
    */
   getCollector() {
-    if (!this.$collector)
-      this.$collector = this.$el.find('.' + this.pfx + 'collector');
+    if (!this.$collector) this.$collector = this.$el.find('.' + this.pfx + 'collector');
     return this.$collector;
   }
 
@@ -127,7 +126,7 @@ export default class ModalView extends View {
     $el.removeAttr(currAttr.join(' '));
     $el.attr({
       ...(attr || {}),
-      class: `${pfx}container ${(attr && attr.class) || ''}`.trim()
+      class: `${pfx}container ${(attr && attr.class) || ''}`.trim(),
     });
   }
 

@@ -36,8 +36,8 @@
  * @module RichTextEditor
  */
 
+import { on, hasWin } from '../utils/mixins';
 import RichTextEditor from './model/RichTextEditor';
-import { on, hasWin } from 'utils/mixins';
 import defaults from './config/config';
 
 const eventsUp = 'change:canvasOffset frame:scroll component:update';

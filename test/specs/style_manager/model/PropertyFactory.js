@@ -721,52 +721,7 @@ describe('PropertyFactory', () => {
   });
 
   test('Build transform', () => {
-    var res = {
-      property: 'transform',
-      type: 'composite',
-      properties: [
-        {
-          property: 'transform-rotate-x',
-          type: 'number',
-          units: obj.unitsAngle,
-          default: '0',
-          functionName: 'rotateX',
-        },
-        {
-          property: 'transform-rotate-y',
-          type: 'number',
-          units: obj.unitsAngle,
-          default: '0',
-          functionName: 'rotateY',
-        },
-        {
-          property: 'transform-rotate-z',
-          type: 'number',
-          units: obj.unitsAngle,
-          default: '0',
-          functionName: 'rotateZ',
-        },
-        {
-          property: 'transform-scale-x',
-          type: 'number',
-          default: '1',
-          functionName: 'scaleX',
-        },
-        {
-          property: 'transform-scale-y',
-          type: 'number',
-          default: '1',
-          functionName: 'scaleY',
-        },
-        {
-          property: 'transform-scale-z',
-          type: 'number',
-          default: '1',
-          functionName: 'scaleZ',
-        },
-      ],
-    };
-    expect(obj.build('transform')).toEqual([res]);
+    expect(obj.build('transform')[0].type).toEqual('stack');
   });
 
   test('Build cursor', () => {

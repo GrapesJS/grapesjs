@@ -1,9 +1,9 @@
-import Backbone from 'backbone';
 import { isString, isObject, bindAll } from 'underscore';
+import { View } from '../../common';
 import BlockView from './BlockView';
 import CategoryView from './CategoryView';
 
-export default Backbone.View.extend({
+export default class BlocksView extends View {
   initialize(opts, config) {
     bindAll(this, 'getSorter', 'onDrag', 'onDrop', 'onMove');
     this.config = config || {};
@@ -25,14 +25,14 @@ export default Backbone.View.extend({
       this.config.getSorter = this.getSorter;
       this.canvas = this.em.get('Canvas');
     }
-  },
+  }
 
   updateConfig(opts = {}) {
     this.config = {
       ...this.config,
-      ...opts
+      ...opts,
     };
-  },
+  }
 
   /**
    * Get sorter
@@ -57,11 +57,11 @@ export default Backbone.View.extend({
         wmargin: 1,
         nested: 1,
         em: this.em,
-        canvasRelative: 1
+        canvasRelative: 1,
       });
     }
     return this.sorter;
-  },
+  }
 
   /**
    * Callback when block is on drag
@@ -70,11 +70,11 @@ export default Backbone.View.extend({
   onDrag(e) {
     this.em.stopDefault();
     this.em.trigger('block:drag:start', e);
-  },
+  }
 
   onMove(e) {
     this.em.trigger('block:drag:move', e);
-  },
+  }
 
   /**
    * Callback when block is dropped
@@ -94,7 +94,7 @@ export default Backbone.View.extend({
 
       em.trigger('block:drag:stop', model);
     }
-  },
+  }
 
   /**
    * Add new model to the collection
@@ -103,7 +103,7 @@ export default Backbone.View.extend({
    * */
   addTo(model) {
     this.add(model);
-  },
+  }
 
   /**
    * Render new model inside the view
@@ -117,7 +117,7 @@ export default Backbone.View.extend({
     var view = new BlockView(
       {
         model,
-        attributes: model.get('attributes')
+        attributes: model.get('attributes'),
       },
       config
     );
@@ -129,7 +129,7 @@ export default Backbone.View.extend({
       if (isString(category)) {
         category = {
           id: category,
-          label: category
+          label: category,
         };
       } else if (isObject(category) && !category.id) {
         category.id = category.label;
@@ -144,7 +144,7 @@ export default Backbone.View.extend({
       if (!catView && categories) {
         catView = new CategoryView(
           {
-            model: catModel
+            model: catModel,
           },
           this.config
         ).render();
@@ -158,7 +158,7 @@ export default Backbone.View.extend({
 
     if (frag) frag.appendChild(rendered);
     else this.append(rendered);
-  },
+  }
 
   getCategoriesEl() {
     if (!this.catsEl) {
@@ -166,22 +166,20 @@ export default Backbone.View.extend({
     }
 
     return this.catsEl;
-  },
+  }
 
   getBlocksEl() {
     if (!this.blocksEl) {
-      this.blocksEl = this.el.querySelector(
-        `.${this.noCatClass} .${this.blockContClass}`
-      );
+      this.blocksEl = this.el.querySelector(`.${this.noCatClass} .${this.blockContClass}`);
     }
 
     return this.blocksEl;
-  },
+  }
 
   append(el) {
     let blocks = this.getBlocksEl();
     blocks && blocks.appendChild(el);
-  },
+  }
 
   render() {
     const ppfx = this.ppfx;
@@ -203,4 +201,4 @@ export default Backbone.View.extend({
     this.rendered = true;
     return this;
   }
-});
+}

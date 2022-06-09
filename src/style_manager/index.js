@@ -64,9 +64,8 @@
  */
 
 import { isUndefined, isArray, isString, debounce, bindAll } from 'underscore';
-import { isComponent } from 'utils/mixins';
-import Module from 'common/module';
-import { Model } from 'common';
+import { isComponent } from '../utils/mixins';
+import { Model, Module } from '../common';
 import defaults from './config/config';
 import Sector from './model/Sector';
 import Sectors from './model/Sectors';
@@ -372,7 +371,10 @@ export default () => {
       targets = targets.map(t => this.getModelToStyle(t));
       const state = em.getState();
       const lastTarget = targets.slice().reverse()[0];
-      const lastTargetParents = this.getParentRules(lastTarget, { state, component });
+      const lastTargetParents = this.getParentRules(lastTarget, {
+        state,
+        component,
+      });
       let stateTarget = this.__getStateTarget();
 
       // Handle the creation and update of the state rule, if enabled.
@@ -380,7 +382,12 @@ export default () => {
         if (state && lastTarget?.getState?.()) {
           const style = lastTarget.getStyle();
           if (!stateTarget) {
-            stateTarget = cssc.getAll().add({ selectors: 'gjs-selected', style, shallow: true, important: true });
+            stateTarget = cssc.getAll().add({
+              selectors: 'gjs-selected',
+              style,
+              shallow: true,
+              important: true,
+            });
           } else {
             stateTarget.setStyle(style);
           }
@@ -390,7 +397,13 @@ export default () => {
         }
       });
 
-      this.model.set({ targets, lastTarget, lastTargetParents, stateTarget, component });
+      this.model.set({
+        targets,
+        lastTarget,
+        lastTargetParents,
+        stateTarget,
+        component,
+      });
       this.__upProps(opts);
 
       return targets;
@@ -692,7 +705,11 @@ export default () => {
       sectors.forEach(sector => {
         const props = sector.getProperties();
         props.forEach(prop => {
-          const isVisible = prop.__checkVisibility({ target: lastTarget, component, sectors });
+          const isVisible = prop.__checkVisibility({
+            target: lastTarget,
+            component,
+            sectors,
+          });
           prop.set('visible', isVisible);
         });
         const sectorVisible = props.some(p => p.isVisible());

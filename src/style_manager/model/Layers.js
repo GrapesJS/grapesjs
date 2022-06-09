@@ -1,4 +1,4 @@
-import { Collection } from 'common';
+import { Collection } from '../../common';
 import Layer from './Layer';
 
 export default class Layers extends Collection {

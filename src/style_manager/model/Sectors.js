@@ -1,4 +1,4 @@
-import { Collection } from 'common';
+import { Collection } from '../../common';
 import Sector from './Sector';
 
 export default class Sectors extends Collection {

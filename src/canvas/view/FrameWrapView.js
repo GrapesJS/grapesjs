@@ -1,28 +1,23 @@
-import Backbone from 'backbone';
-import FrameView from './FrameView';
 import { bindAll, isNumber, isNull, debounce } from 'underscore';
-import { createEl, removeEl } from 'utils/dom';
-import Dragger from 'utils/Dragger';
+import { View } from '../../common';
+import FrameView from './FrameView';
+import { createEl, removeEl } from '../../utils/dom';
+import Dragger from '../../utils/Dragger';
 
-export default Backbone.View.extend({
-  events: {
-    'click [data-action-remove]': 'remove',
-    'mousedown [data-action-move]': 'startDrag'
-  },
+export default class FrameWrapView extends View {
+  events() {
+    return {
+      'click [data-action-remove]': 'remove',
+      'mousedown [data-action-move]': 'startDrag',
+    };
+  }
 
   initialize(opts = {}, conf = {}) {
-    bindAll(
-      this,
-      'onScroll',
-      'frameLoaded',
-      'updateOffset',
-      'remove',
-      'startDrag'
-    );
+    bindAll(this, 'onScroll', 'frameLoaded', 'updateOffset', 'remove', 'startDrag');
     const { model } = this;
     const config = {
       ...(opts.config || conf),
-      frameWrapView: this
+      frameWrapView: this,
     };
     const { canvasView, em } = config;
     this.cv = canvasView;
@@ -40,7 +35,7 @@ export default Backbone.View.extend({
     this.listenTo(model, 'destroy remove', this.remove);
     this.updatePos();
     this.setupDragger();
-  },
+  }
 
   setupDragger() {
     const { canvas, model } = this;
@@ -61,30 +56,28 @@ export default Backbone.View.extend({
       setPosition: posOpts => {
         model.set({
           x: dragX + posOpts.x * zoom,
-          y: dragY + posOpts.y * zoom
+          y: dragY + posOpts.y * zoom,
         });
-      }
+      },
     });
-  },
+  }
 
   startDrag(ev) {
     ev && this.dragger.start(ev);
-  },
+  }
 
   __clear(opts) {
     const { frame } = this;
     frame && frame.remove(opts);
     removeEl(this.elTools);
-  },
+  }
 
   remove(opts) {
     this.__clear(opts);
-    Backbone.View.prototype.remove.apply(this, arguments);
-    ['frame', 'dragger', 'cv', 'em', 'canvas', 'elTools'].forEach(
-      i => (this[i] = 0)
-    );
+    View.prototype.remove.apply(this, arguments);
+    ['frame', 'dragger', 'cv', 'em', 'canvas', 'elTools'].forEach(i => (this[i] = 0));
     return this;
-  },
+  }
 
   updateOffset() {
     const { em, $el, frame } = this;
@@ -92,7 +85,7 @@ export default Backbone.View.extend({
     em.runDefault({ preserveSelected: 1 });
     $el.removeClass(this.classAnim);
     frame.model._emitUpdated();
-  },
+  }
 
   updatePos(md) {
     const { model, el } = this;
@@ -102,11 +95,11 @@ export default Backbone.View.extend({
     style.left = isNaN(x) ? x : `${x}px`;
     style.top = isNaN(y) ? y : `${y}px`;
     md && this.updateOffset();
-  },
+  }
 
   updateSize() {
     this.updateDim();
-  },
+  }
 
   /**
    * Update dimensions of the frame
@@ -124,7 +117,7 @@ export default Backbone.View.extend({
       model.set(
         {
           ...(!width ? { width: el.offsetWidth } : {}),
-          ...(!height ? { height: el.offsetHeight } : {})
+          ...(!height ? { height: el.offsetHeight } : {}),
         },
         { silent: 1 }
       );
@@ -134,22 +127,22 @@ export default Backbone.View.extend({
     // component hover during the animation
     em.stopDefault({ preserveSelected: 1 });
     noChanges ? this.updateOffset() : setTimeout(this.updateOffset, 350);
-  },
+  }
 
   onScroll() {
     const { frame, em } = this;
     em.trigger('frame:scroll', {
       frame,
       body: frame.getBody(),
-      target: frame.getWindow()
+      target: frame.getWindow(),
     });
-  },
+  }
 
   frameLoaded() {
     const { frame } = this;
     frame.getWindow().onscroll = this.onScroll;
     this.updateDim();
-  },
+  }
 
   __handleSize() {
     const un = 'px';
@@ -164,7 +157,7 @@ export default Backbone.View.extend({
     style.width = isNumber(newW) ? `${newW}${un}` : newW;
     style.height = isNumber(newH) ? `${newH}${un}` : newH;
     return { noChanges, width, height, newW, newH };
-  },
+  }
 
   render() {
     const { frame, $el, ppfx, cv, model, el } = this;
@@ -197,7 +190,7 @@ export default Backbone.View.extend({
       'div',
       {
         class: `${ppfx}tools`,
-        style: 'pointer-events:none; display: none'
+        style: 'pointer-events:none; display: none',
       },
       `
       <div class="${ppfx}highlighter" data-hl></div>
@@ -238,8 +231,8 @@ export default Backbone.View.extend({
         frame: model,
         frameWrapperView: this,
         remove: this.remove,
-        startDrag: this.startDrag
+        startDrag: this.startDrag,
       });
     return this;
   }
-});
+}

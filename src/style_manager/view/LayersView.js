@@ -1,4 +1,4 @@
-import { View } from 'common';
+import { View } from '../../common';
 import LayerView from './LayerView';
 
 export default class LayersView extends View {

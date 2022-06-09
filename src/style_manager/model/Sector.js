@@ -1,5 +1,5 @@
-import { Model } from 'common';
-import { extend, isString, isArray } from 'underscore';
+import { extend, isString } from 'underscore';
+import { Model } from '../../common';
 import Properties from './Properties';
 
 /**

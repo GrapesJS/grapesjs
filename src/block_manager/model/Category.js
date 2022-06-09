@@ -1,4 +1,4 @@
-import { Model } from 'common';
+import { Model } from '../../common';
 
 export default class Category extends Model {
   defaults() {
@@ -6,7 +6,7 @@ export default class Category extends Model {
       id: '',
       label: '',
       open: true,
-      attributes: {}
+      attributes: {},
     };
   }
 }

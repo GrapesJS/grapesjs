@@ -21,7 +21,7 @@ describe('Component', () => {
     em = new Editor({ avoidDefaults: true });
     dcomp = em.get('DomComponents');
     em.get('PageManager').onLoad();
-    // dcomp = new DomComponents();
+    // dcomp = new DomComponents(em);
     compOpts = {
       em,
       componentTypes: dcomp.componentTypes,
@@ -149,7 +149,7 @@ describe('Component', () => {
     obj.set({
       bool: true,
       boolf: false,
-      string: `st'ri"ng`,
+      string: 'st\'ri"ng',
       array: [1, 'string', true],
       object: { a: 1, b: 'string', c: true },
       null: null,
@@ -158,12 +158,12 @@ describe('Component', () => {
       zero: 0,
       _private: 'value',
     });
-    let resStr = `st'ri&quot;ng`;
+    let resStr = "st'ri&quot;ng";
     let resArr = '[1,&quot;string&quot;,true]';
     let resObj = '{&quot;a&quot;:1,&quot;b&quot;:&quot;string&quot;,&quot;c&quot;:true}';
     let res = `<div data-gjs-bool data-gjs-string="${resStr}" data-gjs-array="${resArr}" data-gjs-object="${resObj}" data-gjs-empty="" data-gjs-zero="0"></div>`;
     expect(obj.toHTML({ withProps: true })).toEqual(res);
-    resStr = `st&apos;ri"ng`;
+    resStr = 'st&apos;ri"ng';
     resArr = '[1,"string",true]';
     resObj = '{"a":1,"b":"string","c":true}';
     res = `<div data-gjs-bool data-gjs-string='${resStr}' data-gjs-array='${resArr}' data-gjs-object='${resObj}' data-gjs-empty="" data-gjs-zero="0"></div>`;
@@ -516,7 +516,7 @@ describe('Text Node Component', () => {
   test('Component toHTML with attributes', () => {
     obj = new ComponentTextNode({
       attributes: { 'data-test': 'value' },
-      content: `test content &<>"'`,
+      content: 'test content &<>"\'',
     });
     expect(obj.toHTML()).toEqual('test content &amp;&lt;&gt;&quot;&#039;');
   });

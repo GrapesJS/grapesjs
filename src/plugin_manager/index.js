@@ -52,6 +52,6 @@ export default config => {
      */
     getAll() {
       return plugins;
-    }
+    },
   };
 };

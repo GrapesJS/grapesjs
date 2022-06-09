@@ -49,7 +49,7 @@ export default {
     {
       name: 'Extra',
       open: false,
-      properties: ['opacity', 'transition'],
+      properties: ['opacity', 'transition', 'transform'],
     },
   ],
 

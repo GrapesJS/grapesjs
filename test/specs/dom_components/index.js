@@ -48,50 +48,20 @@ describe('DOM Components', () => {
       em = new Editor({
         avoidInlineStyle: 1,
       });
-      em.get('PageManager').onLoad();
+      em.loadOnStart();
       config = {
         em,
         storeWrapper: 1,
       };
       obj = em.get('DomComponents');
-      // obj = new DomComponents().init(config);
+      // obj = new DomComponents(em).init(config);
     });
-
     afterEach(() => {
       obj = null;
     });
 
     test('Object exists', () => {
       expect(DomComponents).toBeTruthy();
-    });
-
-    test('storageKey returns array', () => {
-      expect(obj.storageKey() instanceof Array).toEqual(true);
-    });
-
-    test('storageKey returns correct composition', () => {
-      config.stm = {
-        getConfig() {
-          return {
-            storeHtml: 1,
-            storeComponents: 1,
-          };
-        },
-      };
-      expect(obj.storageKey()).toEqual(['html', 'components']);
-    });
-
-    test('Store data', () => {
-      setSmConfig();
-      (em.getHtml = () => {
-        return 'testHtml';
-      }),
-        (obj = em.get('DomComponents').init(config));
-      var expected = {
-        html: 'testHtml',
-        components: JSON.stringify(obj.getWrapper()),
-      };
-      expect(obj.store(1)).toEqual(expected);
     });
 
     test.skip('Store and load data', () => {
@@ -222,7 +192,7 @@ describe('DOM Components', () => {
         },
       });
       expect(obj.getTypes().length).toBe(initialTypes);
-      obj.addComponent(`<img src="##"/>`);
+      obj.addComponent('<img src="##"/>');
       const comp = obj.getComponents().at(0);
       expect(comp.get('type')).toBe(id);
       expect(comp.get('testProp')).toBe(testProp);
@@ -241,7 +211,7 @@ describe('DOM Components', () => {
           },
         },
       });
-      obj.addComponent(`<img src="##"/>`);
+      obj.addComponent('<img src="##"/>');
       expect(obj.getTypes()[0].id).toEqual(id);
       const comp = obj.getComponents().at(0);
       // I'm not specifying the isComponent
@@ -263,6 +233,39 @@ describe('DOM Components', () => {
       const comp = obj.getComponents().at(0);
       expect(comp.get('type')).toBe(id);
       expect(comp.get('editable')).toBe(1);
+    });
+
+    test('Remove and undo component with styles', done => {
+      const id = 'idtest2';
+      const um = em.get('UndoManager');
+      const cc = em.get('CssComposer');
+      const component = obj.addComponent(`
+      <div id="${id}" style="color:red; padding: 50px 100px">Text</div>
+      <style>
+        #${id} { background-color: red }
+      </style>`);
+      obj.getComponents().first().addStyle({ margin: '10px' });
+      const rule = cc.getAll().at(0);
+      const css = `#${id}{background-color:red;margin:10px;color:red;padding:50px 100px;}`;
+      expect(rule.toCSS()).toEqual(css);
+
+      setTimeout(() => {
+        // Undo is committed now
+        component.remove();
+        expect(obj.getComponents().length).toBe(0);
+        expect(cc.getAll().length).toBe(0);
+        um.undo();
+
+        expect(obj.getComponents().length).toBe(1);
+        expect(cc.getAll().length).toBe(1);
+        expect(obj.getComponents().at(0)).toBe(component);
+        expect(cc.getAll().at(0)).toBe(rule);
+
+        expect(em.getHtml({ component })).toEqual(`<div id="${id}">Text</div>`);
+        expect(rule.toCSS()).toEqual(css);
+
+        done();
+      });
     });
   });
 });

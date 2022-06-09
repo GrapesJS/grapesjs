@@ -8,7 +8,7 @@ describe('ComponentImageView', () => {
   beforeEach(() => {
     model = new Component();
     view = new ComponentImageView({
-      model
+      model,
     });
     document.body.innerHTML = '<div id="fixtures"></div>';
     document.body.querySelector('#fixtures').appendChild(view.render().el);

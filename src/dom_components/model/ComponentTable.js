@@ -9,16 +9,16 @@ export default Component.extend(
       ...Component.prototype.defaults,
       type,
       tagName: type,
-      droppable: ['tbody', 'thead', 'tfoot']
+      droppable: ['tbody', 'thead', 'tfoot'],
     },
 
     initialize(o, opt) {
       Component.prototype.initialize.apply(this, arguments);
       const components = this.get('components');
       !components.length && components.add({ type: 'tbody' });
-    }
+    },
   },
   {
-    isComponent: el => toLowerCase(el.tagName) === type
+    isComponent: el => toLowerCase(el.tagName) === type,
   }
 );

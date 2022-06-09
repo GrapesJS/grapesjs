@@ -9,10 +9,10 @@ export default Component.extend(
       ...Component.prototype.defaults,
       selectable: false,
       hoverable: false,
-      layerable: false
-    }
+      layerable: false,
+    },
   },
   {
-    isComponent: (el, opts = {}) => !!opts.inSvg
+    isComponent: (el, opts = {}) => !!opts.inSvg,
   }
 );

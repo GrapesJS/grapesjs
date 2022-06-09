@@ -130,7 +130,7 @@ describe('StyleManager', () => {
       });
 
       test('Single class, multiple devices', done => {
-        const cmp = domc.addComponent(`<div class="cls"></div>`);
+        const cmp = domc.addComponent('<div class="cls"></div>');
         const [rule1, rule2] = cssc.addRules(`
           .cls { color: red; }
           @media (max-width: 992px) {
@@ -148,7 +148,7 @@ describe('StyleManager', () => {
 
       test('With ID, multiple devices', () => {
         sm.setComponentFirst(true);
-        const cmp = domc.addComponent(`<div class="cls" id="id-test"></div>`);
+        const cmp = domc.addComponent('<div class="cls" id="id-test"></div>');
         const [rule1, rule2] = cssc.addRules(`
           #id-test { color: red; }
           @media (max-width: 992px) {
@@ -163,7 +163,7 @@ describe('StyleManager', () => {
       });
 
       test('With ID + class, class first', () => {
-        const cmp = domc.addComponent(`<div class="cls" id="id-test"></div>`);
+        const cmp = domc.addComponent('<div class="cls" id="id-test"></div>');
         const [rule1, rule2] = cssc.addRules(`
           .cls { color: red; }
           #id-test { color: blue; }
@@ -176,7 +176,7 @@ describe('StyleManager', () => {
 
       test('With ID + class, component first', () => {
         sm.setComponentFirst(true);
-        const cmp = domc.addComponent(`<div class="cls" id="id-test"></div>`);
+        const cmp = domc.addComponent('<div class="cls" id="id-test"></div>');
         const [rule1, rule2] = cssc.addRules(`
           .cls { color: red; }
           #id-test { color: blue; }
@@ -189,7 +189,7 @@ describe('StyleManager', () => {
 
       test('With ID + class, multiple devices', () => {
         sm.setComponentFirst(true);
-        const cmp = domc.addComponent(`<div class="cls" id="id-test"></div>`);
+        const cmp = domc.addComponent('<div class="cls" id="id-test"></div>');
         const [rule1, rule2] = cssc.addRules(`
           .cls { color: red; }
           @media (max-width: 992px) {
@@ -204,7 +204,7 @@ describe('StyleManager', () => {
       });
 
       test('Mixed classes', () => {
-        const cmp = domc.addComponent(`<div class="cls1 cls2"></div>`);
+        const cmp = domc.addComponent('<div class="cls1 cls2"></div>');
         const [rule1, rule2] = cssc.addRules(`
           .cls1 { color: red; }
           .cls1.cls2 { color: blue; }

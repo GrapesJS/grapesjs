@@ -1,4 +1,4 @@
-import { Model } from 'backbone';
+import { Model } from '../../common';
 
 /**
  * @typedef Device
@@ -15,16 +15,14 @@ export default class Device extends Model {
       width: null,
       height: '',
       widthMedia: null,
-      priority: null
+      priority: null,
     };
   }
 
   initialize() {
-    this.get('widthMedia') === null &&
-      this.set('widthMedia', this.get('width'));
+    this.get('widthMedia') === null && this.set('widthMedia', this.get('width'));
     this.get('width') === null && this.set('width', this.get('widthMedia'));
-    !this.get('priority') &&
-      this.set('priority', parseFloat(this.get('widthMedia')) || 0);
+    !this.get('priority') && this.set('priority', parseFloat(this.get('widthMedia')) || 0);
     const toCheck = ['width', 'height', 'widthMedia'];
     toCheck.forEach(prop => this.checkUnit(prop));
   }

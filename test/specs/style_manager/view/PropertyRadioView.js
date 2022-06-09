@@ -28,7 +28,7 @@ describe('PropertyRadioView', () => {
 
   beforeEach(() => {
     em = new Editor({});
-    dcomp = new DomComponents();
+    dcomp = new DomComponents(em);
     compOpts = { em, componentTypes: dcomp.componentTypes };
     target = new Component({}, compOpts);
     component = new Component({}, compOpts);
@@ -92,7 +92,10 @@ describe('PropertyRadioView', () => {
 
   test('Update model on input change', () => {
     view.setValue(propValue);
-    view.inputValueChanged({ target: { value: propValue }, stopPropagation() {} });
+    view.inputValueChanged({
+      target: { value: propValue },
+      stopPropagation() {},
+    });
     expect(view.model.get('value')).toEqual(propValue);
   });
 
@@ -101,7 +104,7 @@ describe('PropertyRadioView', () => {
     setTimeout(() => {
       expect(getCheckedEl(view).value).toEqual(propValue);
       done();
-    }, 11);
+    }, 15);
   });
 
   describe('Init property', () => {

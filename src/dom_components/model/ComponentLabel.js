@@ -9,10 +9,10 @@ export default Component.extend(
       ...Component.prototype.defaults,
       type,
       tagName: type,
-      traits: ['id', 'title', 'for']
-    }
+      traits: ['id', 'title', 'for'],
+    },
   },
   {
-    isComponent: el => toLowerCase(el.tagName) === type
+    isComponent: el => toLowerCase(el.tagName) === type,
   }
 );

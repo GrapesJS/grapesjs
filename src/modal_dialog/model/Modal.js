@@ -1,4 +1,4 @@
-import { Model } from 'backbone';
+import { Model } from '../../common';
 
 export default class Modal extends Model {
   defaults() {
@@ -6,7 +6,7 @@ export default class Modal extends Model {
       title: '',
       content: '',
       attributes: {},
-      open: false
+      open: false,
     };
   }
 

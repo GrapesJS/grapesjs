@@ -1,9 +1,9 @@
-import { Model } from 'backbone';
-import Styleable from 'domain_abstract/model/Styleable';
 import { isEmpty, forEach, isString, isArray } from 'underscore';
-import Selectors from 'selector_manager/model/Selectors';
-import { getMediaLength } from 'code_manager/model/CssGenerator';
-import { isEmptyObj, hasWin } from 'utils/mixins';
+import { Model } from '../../common';
+import StyleableModel from '../../domain_abstract/model/StyleableModel';
+import Selectors from '../../selector_manager/model/Selectors';
+import { getMediaLength } from '../../code_manager/model/CssGenerator';
+import { isEmptyObj, hasWin } from '../../utils/mixins';
 
 const { CSS } = hasWin() ? window : {};
 
@@ -23,7 +23,7 @@ const { CSS } = hasWin() ? window : {};
  * [State]: state.html
  * [Component]: component.html
  */
-export default class CssRule extends Model.extend(Styleable) {
+export default class CssRule extends StyleableModel {
   defaults() {
     return {
       selectors: [],
@@ -141,8 +141,9 @@ export default class CssRule extends Model.extend(Styleable) {
    */
   getDeclaration(opts = {}) {
     let result = '';
+    const { important } = this.attributes;
     const selectors = this.selectorsToString(opts);
-    const style = this.styleToString(opts);
+    const style = this.styleToString({ important, ...opts });
     const singleAtRule = this.get('singleAtRule');
 
     if ((selectors || singleAtRule) && (style || opts.allowEmpty)) {
@@ -227,7 +228,7 @@ export default class CssRule extends Model.extend(Styleable) {
   toJSON(...args) {
     const obj = Model.prototype.toJSON.apply(this, args);
 
-    if (this.em.getConfig('avoidDefaults')) {
+    if (this.em.getConfig().avoidDefaults) {
       const defaults = this.defaults();
 
       forEach(defaults, (value, key) => {
@@ -235,6 +236,9 @@ export default class CssRule extends Model.extend(Styleable) {
           delete obj[key];
         }
       });
+
+      // Delete the property used for partial updates
+      delete obj.style.__p;
 
       if (isEmpty(obj.selectors)) delete obj.selectors;
       if (isEmpty(obj.style)) delete obj.style;

@@ -1,9 +1,9 @@
 import Backbone from 'backbone';
-import { bindAll, isElement, isUndefined, debounce } from 'underscore';
-import { on, off, getUnitFromValue, isTaggableNode, getViewEl, hasWin } from 'utils/mixins';
-import { isVisible, isDoc } from 'utils/dom';
-import ToolbarView from 'dom_components/view/ToolbarView';
-import Toolbar from 'dom_components/model/Toolbar';
+import { bindAll, isElement, debounce } from 'underscore';
+import { on, off, getUnitFromValue, isTaggableNode, getViewEl, hasWin } from '../../utils/mixins';
+import { isVisible, isDoc } from '../../utils/dom';
+import ToolbarView from '../../dom_components/view/ToolbarView';
+import Toolbar from '../../dom_components/model/Toolbar';
 
 const $ = Backbone.$;
 let showOffsets;
@@ -61,7 +61,7 @@ export default {
    * */
   toggleSelectComponent(enable) {
     const { em } = this;
-    const listenToEl = em.getConfig('listenToEl');
+    const listenToEl = em.getConfig().listenToEl;
     const { parentNode } = em.getContainer();
     const method = enable ? 'on' : 'off';
     const methods = { on, off };
@@ -451,7 +451,7 @@ export default {
           }
 
           modelToStyle.addStyle({ ...style, en }, { avoidStore: !store });
-          const updateEvent = `update:component:style`;
+          const updateEvent = 'update:component:style';
           const eventToListen = `${updateEvent}:${keyHeight} ${updateEvent}:${keyWidth}`;
           em && em.trigger(eventToListen, null, null, { noEmit: 1 });
         },

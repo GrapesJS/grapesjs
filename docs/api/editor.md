@@ -90,10 +90,9 @@ Returns configuration object
 
 ### Parameters
 
-*   `prop` **[string][16]?** Property name
+*   `prop` **[string][16]?** 
 
-Returns **any** Returns the configuration object or
-the value of the specified property
+Returns **any** Returns the configuration object or the value of the specified property
 
 ## getHtml
 
@@ -417,52 +416,63 @@ Returns **any** The return is defined by the command
 
 ## store
 
-Store data to the current storage
+Store data to the current storage.
+This will reset the counter of changes (`editor.getDirtyCount()`).
 
 ### Parameters
 
-*   `clb` **[Function][22]** Callback function
-
-Returns **[Object][17]** Stored data
-
-## storeData
-
-Get the JSON data object, which could be stored and loaded back with `editor.loadData(json)`
+*   `options` **[Object][17]?** Storage options.
 
 ### Examples
 
 ```javascript
-console.log(editor.storeData());
+const storedData = await editor.store();
+```
+
+Returns **[Object][17]** Stored data.
+
+## load
+
+Load data from the current storage.
+
+### Parameters
+
+*   `options` **[Object][17]?** Storage options.
+
+### Examples
+
+```javascript
+const data = await editor.load();
+```
+
+Returns **[Object][17]** Loaded data.
+
+## getProjectData
+
+Get the JSON project data, which could be stored and loaded back with `editor.loadProjectData(json)`
+
+### Examples
+
+```javascript
+console.log(editor.getProjectData());
 // { pages: [...], styles: [...], ... }
 ```
 
 Returns **[Object][17]** 
 
-## load
+## loadProjectData
 
-Load data from the current storage
-
-### Parameters
-
-*   `clb` **[Function][22]** Callback function
-
-Returns **[Object][17]** Stored data
-
-## loadData
-
-Load data from the JSON data object
+Load data from the JSON project
 
 ### Parameters
 
-*   `data` **[Object][17]** Data to load
+*   `data` **[Object][17]** Project to load
 
 ### Examples
 
 ```javascript
-editor.loadData({ pages: [...], styles: [...], ... })
+editor.loadProjectData({ pages: [...], styles: [...], ... })
 ```
-
-Returns **[Object][17]** Loaded object
 
 ## getContainer
 
@@ -476,7 +486,11 @@ Returns **[HTMLElement][21]**
 Return the count of changes made to the content and not yet stored.
 This count resets at any `store()`
 
-Returns **[number][23]** 
+Returns **[number][22]** 
+
+## clearDirtyCount
+
+Reset the counter of changes.
 
 ## refresh
 
@@ -488,7 +502,7 @@ refresh you'll get misleading position of tools
 
 ### Parameters
 
-*   `opts`  
+*   `opts` **any?** 
 *   `options` **[Object][17]?** Options
 
     *   `options.tools` **[Boolean][18]** Update the position of tools (eg. rich text editor, component highlighter, etc.) (optional, default `false`)
@@ -514,7 +528,7 @@ editor.setCustomRte({
     rte = new MyCustomRte(el, {}); // this depends on the Custom RTE API
     ...
     return rte; // return the RTE instance
-  },
+  }
 
   // Disable the editor, called for example when you unfocus the Text Component
  disable: function(el, rte) {
@@ -539,7 +553,7 @@ custom parser, pass `null` as the argument
 
 ### Parameters
 
-*   `parser` **([Function][22] | null)** Parser function
+*   `parser` **([Function][23] | null)** Parser function
 
 ### Examples
 
@@ -600,7 +614,7 @@ Translate label
 
 ### Parameters
 
-*   `args` **...any** 
+*   `args` **...[Array][19]\<any>** 
 *   `key` **[String][16]** Label to translate
 *   `opts` **[Object][17]?** Options for the translation
 
@@ -614,7 +628,7 @@ editor.t('msg');
 // use params
 editor.t('msg2', { params: { test: 'hello' } });
 // custom local
-editor.t('msg2', { params: { test: 'hello' }, l: 'it' });
+editor.t('msg2', { params: { test: 'hello' } l: 'it' });
 ```
 
 Returns **[String][16]** 
@@ -626,7 +640,7 @@ Attach event
 ### Parameters
 
 *   `event` **[string][16]** Event name
-*   `callback` **[Function][22]** Callback function
+*   `callback` **[Function][23]** Callback function
 
 Returns **this** 
 
@@ -637,7 +651,7 @@ Attach event and detach it after the first run
 ### Parameters
 
 *   `event` **[string][16]** Event name
-*   `callback` **[Function][22]** Callback function
+*   `callback` **[Function][23]** Callback function
 
 Returns **this** 
 
@@ -648,7 +662,7 @@ Detach event
 ### Parameters
 
 *   `event` **[string][16]** Event name
-*   `callback` **[Function][22]** Callback function
+*   `callback` **[Function][23]** Callback function
 
 Returns **this** 
 
@@ -658,6 +672,8 @@ Trigger event
 
 ### Parameters
 
+*   `eventName` **[string][16]** 
+*   `args` **...[Array][19]\<any>** 
 *   `event` **[string][16]** Event to trigger
 
 Returns **this** 
@@ -679,7 +695,7 @@ The callback will be executed immediately if the method is called on the already
 
 ### Parameters
 
-*   `clb` **[Function][22]** Callback to trigger
+*   `clb` **[Function][23]** Callback to trigger
 
 ### Examples
 
@@ -704,7 +720,7 @@ Print safe HTML by using ES6 tagged template strings.
 const unsafeStr = '<script>....</script>';
 const safeStr = '<b>Hello</b>';
 // Use `$${var}` to avoid escaping
-const strHtml = editor.html`Escaped ${unsafeStr}, unescaped $${safeStr}`;
+const strHtml = editor.html`Escaped ${unsafeStr} unescaped $${safeStr}`;
 ```
 
 Returns **[String][16]** 
@@ -751,8 +767,8 @@ Returns **[String][16]**
 
 [21]: https://developer.mozilla.org/docs/Web/HTML/Element
 
-[22]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+[22]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
 
-[23]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+[23]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
 
 [24]: https://github.com/artf/grapesjs/issues/1936

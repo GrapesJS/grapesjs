@@ -1,6 +1,6 @@
-import { Model } from 'common';
 import { isUndefined, isString, isArray, result, keys, each, includes } from 'underscore';
-import { capitalize, camelCase, hasWin } from 'utils/mixins';
+import { Model } from '../../common';
+import { capitalize, camelCase, hasWin } from '../../utils/mixins';
 
 /**
  * @typedef Property
@@ -373,7 +373,7 @@ export default class Property extends Model {
     }
 
     if (fn && hasValue) {
-      const fnParameter = fn === 'url' ? `'${value.replace(/'/g, '')}'` : value;
+      const fnParameter = fn === 'url' ? `'${value.replace(/'|"/g, '')}'` : value;
       value = `${fn}(${fnParameter})`;
     }
 
@@ -384,12 +384,12 @@ export default class Property extends Model {
     return value || '';
   }
 
-  __setParentTarget(value) {
-    this.__parentTarget = value;
+  __setParentTarget(parentTarget) {
+    this.up({ parentTarget });
   }
 
   getParentTarget() {
-    return this.__parentTarget || null;
+    return this.get('parentTarget') || null;
   }
 
   __parseFn(input = '') {
@@ -518,4 +518,6 @@ Property.prototype.defaults = {
   // Specifies dependency on properties of the parent of the selected object.
   // Property is shown only when all conditions are matched.
   requiresParent: null,
+
+  parentTarget: null,
 };

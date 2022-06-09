@@ -20,5 +20,5 @@ export default {
   blocks: [],
 
   // Avoid rendering the default block manager.
-  custom: false
+  custom: false,
 };

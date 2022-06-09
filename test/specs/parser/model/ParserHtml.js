@@ -1,12 +1,14 @@
 import ParserHtml from 'parser/model/ParserHtml';
 import ParserCss from 'parser/model/ParserCss';
 import DomComponents from 'dom_components';
+import Editor from 'editor/model/Editor';
 
 describe('ParserHtml', () => {
   var obj;
 
   beforeEach(() => {
-    var dom = new DomComponents();
+    const em = new Editor({});
+    var dom = new DomComponents(em);
     obj = new ParserHtml({
       textTags: ['br', 'b', 'i', 'u'],
       pStylePrefix: 'gjs-',
@@ -492,7 +494,7 @@ describe('ParserHtml', () => {
   });
 
   test('Parse attributes with object inside', () => {
-    var str = `<div data-gjs-test='{ "prop1": "value1", "prop2": 10, "prop3": true}'>test2 </div>`;
+    var str = '<div data-gjs-test=\'{ "prop1": "value1", "prop2": 10, "prop3": true}\'>test2 </div>';
     var result = [
       {
         tagName: 'div',
@@ -510,7 +512,7 @@ describe('ParserHtml', () => {
   });
 
   test('Parse attributes with arrays inside', () => {
-    var str = `<div data-gjs-test='["value1", "value2"]'>test2 </div>`;
+    var str = '<div data-gjs-test=\'["value1", "value2"]\'>test2 </div>';
     var result = [
       {
         tagName: 'div',

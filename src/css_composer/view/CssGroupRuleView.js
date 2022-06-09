@@ -1,9 +1,9 @@
 import CssRuleView from './CssRuleView';
 
-export default CssRuleView.extend({
-  _createElement: function(tagName) {
+export default class CssGroupRuleView extends CssRuleView {
+  _createElement() {
     return document.createTextNode('');
-  },
+  }
 
   render() {
     const model = this.model;
@@ -11,4 +11,4 @@ export default CssRuleView.extend({
     this.el.textContent = model.getDeclaration({ important });
     return this;
   }
-});
+}

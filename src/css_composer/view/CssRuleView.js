@@ -1,7 +1,9 @@
-import Backbone from 'backbone';
+import { View } from '../../common';
 
-export default Backbone.View.extend({
-  tagName: 'style',
+export default class CssRuleView extends View {
+  tagName() {
+    return 'style';
+  }
 
   initialize(o = {}) {
     this.config = o.config || {};
@@ -9,7 +11,7 @@ export default Backbone.View.extend({
     this.listenTo(model, 'change', this.render);
     this.listenTo(model, 'destroy remove', this.remove);
     this.listenTo(model.get('selectors'), 'change', this.render);
-  },
+  }
 
   render() {
     const { model, el } = this;
@@ -17,4 +19,4 @@ export default Backbone.View.extend({
     el.innerHTML = model.toCSS({ important });
     return this;
   }
-});
+}

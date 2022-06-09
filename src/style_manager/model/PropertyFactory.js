@@ -179,12 +179,6 @@ export default class PropertyFactory {
       ['box-shadow-spread', {}, 'text-shadow-h'],
       ['transition-duration', { default: '2s', units: this.unitsTime }, 'border-radius-c'],
       ['perspective', {}, 'border-radius-c'],
-      ['transform-rotate-x', { functionName: 'rotateX', units: this.unitsAngle, default: '0', type: typeNumber }],
-      ['transform-rotate-y', { functionName: 'rotateY' }, 'transform-rotate-x'],
-      ['transform-rotate-z', { functionName: 'rotateZ' }, 'transform-rotate-x'],
-      ['transform-scale-x', { default: '1', functionName: 'scaleX', units: undefined }, 'transform-rotate-x'],
-      ['transform-scale-y', { functionName: 'scaleY' }, 'transform-scale-x'],
-      ['transform-scale-z', { functionName: 'scaleZ' }, 'transform-scale-x'],
       ['order', { type: typeNumber, default: '0', requiresParent: requireFlex }],
       ['flex-grow', {}, 'order'],
       ['flex-shrink', { default: '1' }, 'order'],
@@ -202,7 +196,15 @@ export default class PropertyFactory {
       ['background-color', { default: 'none' }, 'color'],
 
       // File type
-      ['background-image', { type: this.typeFile, functionName: 'url', default: 'none', full: true }],
+      [
+        'background-image',
+        {
+          type: this.typeFile,
+          functionName: 'url',
+          default: 'none',
+          full: true,
+        },
+      ],
 
       // Slider type
       ['opacity', { type: this.typeSlider, default: '1', min: 0, max: 1, step: 0.01 }],
@@ -214,7 +216,15 @@ export default class PropertyFactory {
       ['justify-content', { default: 'flex-start', options: this.optsJustCont }, 'flex-wrap'],
       ['align-items', { default: 'stretch', options: this.optsFlexAlign }, 'flex-wrap'],
       ['align-content', { options: this.optsAlignCont }, 'align-items'],
-      ['align-self', { default: 'auto', options: this.optsAlignSelf, requiresParent: requireFlex }, 'display'],
+      [
+        'align-self',
+        {
+          default: 'auto',
+          options: this.optsAlignSelf,
+          requiresParent: requireFlex,
+        },
+        'display',
+      ],
       ['font-family', { default: 'Arial, Helvetica, sans-serif', options: this.optsFonts }, 'display'],
       ['font-weight', { default: '400', options: this.optsWeight }, 'display'],
       ['border-style', { default: 'solid', options: this.optsBorderStyle }, 'display'],
@@ -270,24 +280,22 @@ export default class PropertyFactory {
         'border-radius',
         {
           properties: this.__sub([
-            { extend: 'border-top-left-radius', id: 'border-top-left-radius-sub' },
-            { extend: 'border-top-right-radius', id: 'border-top-right-radius-sub' },
-            { extend: 'border-bottom-right-radius', id: 'border-bottom-right-radius-sub' },
-            { extend: 'border-bottom-left-radius', id: 'border-bottom-left-radius-sub' },
-          ]),
-        },
-        'margin',
-      ],
-      [
-        'transform',
-        {
-          properties: this.__sub([
-            'transform-rotate-x',
-            'transform-rotate-y',
-            'transform-rotate-z',
-            'transform-scale-x',
-            'transform-scale-y',
-            'transform-scale-z',
+            {
+              extend: 'border-top-left-radius',
+              id: 'border-top-left-radius-sub',
+            },
+            {
+              extend: 'border-top-right-radius',
+              id: 'border-top-right-radius-sub',
+            },
+            {
+              extend: 'border-bottom-right-radius',
+              id: 'border-bottom-right-radius-sub',
+            },
+            {
+              extend: 'border-bottom-left-radius',
+              id: 'border-bottom-left-radius-sub',
+            },
           ]),
         },
         'margin',
@@ -301,7 +309,10 @@ export default class PropertyFactory {
           properties: this.__sub([
             { extend: 'transition-property', id: 'transition-property-sub' },
             { extend: 'transition-duration', id: 'transition-duration-sub' },
-            { extend: 'transition-timing-function', id: 'transition-timing-function-sub' },
+            {
+              extend: 'transition-timing-function',
+              id: 'transition-timing-function-sub',
+            },
           ]),
         },
       ],
@@ -346,21 +357,96 @@ export default class PropertyFactory {
         {
           detached: true,
           layerLabel: (l, { values }) => {
-            const repeat = values['background-repeat-sub'];
-            const pos = values['background-position-sub'];
-            const att = values['background-attachment-sub'];
-            const size = values['background-size-sub'];
-            return `${repeat} ${pos} ${att} ${size}`;
+            const repeat = values['background-repeat-sub'] || '';
+            const pos = values['background-position-sub'] || '';
+            const att = values['background-attachment-sub'] || '';
+            const size = values['background-size-sub'] || '';
+            return [repeat, pos, att, size].join(' ');
           },
           properties: this.__sub([
             { extend: 'background-image', id: 'background-image-sub' },
             { extend: 'background-repeat', id: 'background-repeat-sub' },
             { extend: 'background-position', id: 'background-position-sub' },
-            { extend: 'background-attachment', id: 'background-attachment-sub' },
+            {
+              extend: 'background-attachment',
+              id: 'background-attachment-sub',
+            },
             { extend: 'background-size', id: 'background-size-sub' },
           ]),
         },
         'box-shadow',
+      ],
+      [
+        'transform',
+        {
+          type: 'stack',
+          layerSeparator: ' ',
+          fromStyle(style, { property, name }) {
+            const filter = style[name] || '';
+            const sep = property.getLayerSeparator();
+            return filter
+              ? filter.split(sep).map(input => {
+                  const { name, value } = property.__parseFn(input);
+                  return { name, value };
+                })
+              : [];
+          },
+          toStyle(values, { name }) {
+            return { [name]: `${values.name}(${values.value})` };
+          },
+          properties: [
+            {
+              property: 'name',
+              name: 'Type',
+              type: this.typeSelect,
+              default: 'rotateZ',
+              full: true,
+              options: [
+                { id: 'scaleX', propValue: { units: [''], step: 0.01 } },
+                { id: 'scaleY', propValue: { units: [''], step: 0.01 } },
+                { id: 'scaleZ', propValue: { units: [''], step: 0.01 } },
+                {
+                  id: 'rotateX',
+                  propValue: { units: this.unitsAngle, step: 1 },
+                },
+                {
+                  id: 'rotateY',
+                  propValue: { units: this.unitsAngle, step: 1 },
+                },
+                {
+                  id: 'rotateZ',
+                  propValue: { units: this.unitsAngle, step: 1 },
+                },
+                {
+                  id: 'translateX',
+                  propValue: { units: this.unitsSize, step: 1 },
+                },
+                {
+                  id: 'translateY',
+                  propValue: { units: this.unitsSize, step: 1 },
+                },
+              ],
+              onChange({ property, to }) {
+                if (to.value) {
+                  const option = property.getOption();
+                  const props = { ...(option.propValue || {}) };
+                  const propToUp = property.getParent().getProperty('value');
+                  const unit = propToUp.getUnit();
+                  if (!unit || props?.units.indexOf(unit) < 0) {
+                    props.unit = props?.units[0] || '';
+                  }
+                  propToUp.up(props);
+                }
+              },
+            },
+            {
+              property: 'value',
+              type: this.typeNumber,
+              default: '0',
+              full: true,
+            },
+          ],
+        },
       ],
     ].forEach(([prop, def, from]) => {
       this.add(prop, def || {}, { from });

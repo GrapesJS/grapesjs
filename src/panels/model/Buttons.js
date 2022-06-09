@@ -1,9 +1,7 @@
-import Backbone from 'backbone';
+import { Collection } from '../../common';
 import Button from './Button';
 
-export default Backbone.Collection.extend({
-  model: Button,
-
+export default class Buttons extends Collection {
   /**
    * Deactivate all buttons, except one passed
    * @param  {Object}  except  Model to ignore
@@ -15,11 +13,10 @@ export default Backbone.Collection.extend({
     this.forEach((model, index) => {
       if (model !== except) {
         model.set('active', false);
-        if (r && model.get('buttons').length)
-          model.get('buttons').deactivateAllExceptOne(except, r);
+        if (r && model.get('buttons').length) model.get('buttons').deactivateAllExceptOne(except, r);
       }
     });
-  },
+  }
 
   /**
    * Deactivate all buttons
@@ -34,7 +31,7 @@ export default Backbone.Collection.extend({
         model.set('active', false, { fromCollection: 1 });
       }
     });
-  },
+  }
 
   /**
    * Disables all buttons
@@ -49,7 +46,7 @@ export default Backbone.Collection.extend({
         model.set('disable', true);
       }
     });
-  },
+  }
 
   /**
    * Disables all buttons, except one passed
@@ -62,9 +59,10 @@ export default Backbone.Collection.extend({
     this.forEach((model, index) => {
       if (model !== except) {
         model.set('disable', true);
-        if (r && model.get('buttons').length)
-          model.get('buttons').disableAllButtonsExceptOne(except, r);
+        if (r && model.get('buttons').length) model.get('buttons').disableAllButtonsExceptOne(except, r);
       }
     });
   }
-});
+}
+
+Buttons.prototype.model = Button;

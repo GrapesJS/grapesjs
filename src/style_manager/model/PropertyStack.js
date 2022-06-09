@@ -1,8 +1,8 @@
 import { keys, isUndefined, isArray, isString, isNumber } from 'underscore';
+import { camelCase } from '../../utils/mixins';
 import PropertyComposite, { isNumberType } from './PropertyComposite';
 import PropertyBase from './Property';
 import Layers from './Layers';
-import { camelCase } from 'utils/mixins';
 
 const VALUES_REG = /,(?![^\(]*\))/;
 const PARTS_REG = /\s(?![^(]*\))/;
@@ -221,7 +221,13 @@ export default class PropertyStack extends PropertyComposite {
     let style;
 
     if (toStyle) {
-      style = toStyle(values, { join, joinLayers, name, layer, property: this });
+      style = toStyle(values, {
+        join,
+        joinLayers,
+        name,
+        layer,
+        property: this,
+      });
     } else {
       const result = this.getProperties().map(prop => {
         const name = prop.getName();
@@ -314,7 +320,7 @@ export default class PropertyStack extends PropertyComposite {
     // Update properties by layer value
     values &&
       this.getProperties().forEach(prop => {
-        const value = values[prop.getId()];
+        const value = values[prop.getId()] ?? '';
         prop.__getFullValue() !== value && prop.upValue(value, { ...opts, __up: true });
       });
 

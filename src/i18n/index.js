@@ -27,225 +27,200 @@
  * @module I18n
  */
 import { isUndefined, isString } from 'underscore';
-import { hasWin } from 'utils/mixins';
-import config from './config';
+import { hasWin, deepMerge } from '../utils/mixins';
+import defaults from './config';
 
-const isObj = el => !Array.isArray(el) && el !== null && typeof el === 'object';
+export default class I18nModule {
+  name = 'I18n';
 
-const deepAssign = (...args) => {
-  const target = { ...args[0] };
+  //config;
 
-  for (let i = 1; i < args.length; i++) {
-    const source = { ...args[i] };
+  /**
+   * Initialize module
+   * @param {Object} config Configurations
+   * @private
+   */
+  init(opts = {}) {
+    this.config = {
+      ...defaults,
+      ...opts,
+      messages: {
+        ...defaults.messages,
+        ...(opts.messages || {}),
+      },
+    };
+    const add = this.config.messagesAdd;
+    add && this.addMessages(add);
 
-    for (let key in source) {
-      const targValue = target[key];
-      const srcValue = source[key];
-
-      if (isObj(targValue) && isObj(srcValue)) {
-        target[key] = deepAssign(targValue, srcValue);
-      } else {
-        target[key] = srcValue;
-      }
+    if (this.config.detectLocale) {
+      this.config.locale = this._localLang();
     }
+
+    this.em = opts.em;
+    return this;
   }
 
-  return target;
-};
+  /**
+   * Get module configurations
+   * @returns {Object} Configuration object
+   */
+  getConfig() {
+    return this.config;
+  }
 
-export default () => {
-  return {
-    name: 'I18n',
+  /**
+   * Update current locale
+   * @param {String} locale Locale value
+   * @returns {this}
+   * @example
+   * i18n.setLocale('it');
+   */
+  setLocale(locale) {
+    const { em, config } = this;
+    const evObj = { value: locale, valuePrev: config.locale };
+    em && em.trigger('i18n:locale', evObj);
+    config.locale = locale;
+    return this;
+  }
 
-    config,
+  /**
+   * Get current locale
+   * @returns {String} Current locale value
+   */
+  getLocale() {
+    return this.config.locale;
+  }
 
-    /**
-     * Initialize module
-     * @param {Object} config Configurations
-     * @private
-     */
-    init(opts = {}) {
-      this.config = {
-        ...config,
-        ...opts,
-        messages: {
-          ...config.messages,
-          ...(opts.messages || {}),
-        },
-      };
-      const add = this.config.messagesAdd;
-      add && this.addMessages(add);
+  /**
+   * Get all messages
+   * @param {String} [lang] Specify the language of messages to return
+   * @param {Object} [opts] Options
+   * @param {Boolean} [opts.debug] Show warnings in case of missing language
+   * @returns {Object}
+   * @example
+   * i18n.getMessages();
+   * // -> { en: { hello: '...' }, ... }
+   * i18n.getMessages('en');
+   * // -> { hello: '...' }
+   */
+  getMessages(lang, opts = {}) {
+    const { messages } = this.config;
+    lang && !messages[lang] && this._debug(`'${lang}' i18n lang not found`, opts);
+    return lang ? messages[lang] : messages;
+  }
 
-      if (this.config.detectLocale) {
-        this.config.locale = this._localLang();
-      }
+  /**
+   * Set new set of messages
+   * @param {Object} msg Set of messages
+   * @returns {this}
+   * @example
+   * i18n.getMessages();
+   * // -> { en: { msg1: 'Msg 1', msg2: 'Msg 2', } }
+   * i18n.setMessages({ en: { msg2: 'Msg 2 up', msg3: 'Msg 3', } });
+   * // Set replaced
+   * i18n.getMessages();
+   * // -> { en: { msg2: 'Msg 2 up', msg3: 'Msg 3', } }
+   */
+  setMessages(msg) {
+    const { em, config } = this;
+    config.messages = msg;
+    em && em.trigger('i18n:update', msg);
+    return this;
+  }
 
-      this.em = opts.em;
-      return this;
-    },
+  /**
+   * Update messages
+   * @param {Object} msg Set of messages to add
+   * @returns {this}
+   * @example
+   * i18n.getMessages();
+   * // -> { en: { msg1: 'Msg 1', msg2: 'Msg 2', } }
+   * i18n.addMessages({ en: { msg2: 'Msg 2 up', msg3: 'Msg 3', } });
+   * // Set updated
+   * i18n.getMessages();
+   * // -> { en: { msg1: 'Msg 1', msg2: 'Msg 2 up', msg3: 'Msg 3', } }
+   */
+  addMessages(msg) {
+    const { em } = this;
+    const { messages } = this.config;
+    em && em.trigger('i18n:add', msg);
+    this.setMessages(deepMerge(messages, msg));
 
-    /**
-     * Get module configurations
-     * @returns {Object} Configuration object
-     */
-    getConfig() {
-      return this.config;
-    },
+    return this;
+  }
 
-    /**
-     * Update current locale
-     * @param {String} locale Locale value
-     * @returns {this}
-     * @example
-     * i18n.setLocale('it');
-     */
-    setLocale(locale) {
-      const { em, config } = this;
-      const evObj = { value: locale, valuePrev: config.locale };
-      em && em.trigger('i18n:locale', evObj);
-      config.locale = locale;
-      return this;
-    },
+  /**
+   * Translate the locale message
+   * @param {String} key Label to translate
+   * @param {Object} [opts] Options for the translation
+   * @param {Object} [opts.params] Params for the translation
+   * @param {Boolean} [opts.debug] Show warnings in case of missing resources
+   * @returns {String}
+   * @example
+   * obj.setMessages({
+   *  en: { msg: 'Msg', msg2: 'Msg {test}'},
+   *  it: { msg2: 'Msg {test} it'},
+   * });
+   * obj.t('msg');
+   * // -> outputs `Msg`
+   * obj.t('msg2', { params: { test: 'hello' } });  // use params
+   * // -> outputs `Msg hello`
+   * obj.t('msg2', { l: 'it', params: { test: 'hello' } });  // custom local
+   * // -> outputs `Msg hello it`
+   */
+  t(key, opts = {}) {
+    const { config } = this;
+    const param = opts.params || {};
+    const locale = opts.l || this.getLocale();
+    const localeFlb = opts.lFlb || config.localeFallback;
+    let result = this._getMsg(key, locale, opts);
 
-    /**
-     * Get current locale
-     * @returns {String} Current locale value
-     */
-    getLocale() {
-      return this.config.locale;
-    },
+    // Try with fallback
+    if (!result) result = this._getMsg(key, localeFlb, opts);
 
-    /**
-     * Get all messages
-     * @param {String} [lang] Specify the language of messages to return
-     * @param {Object} [opts] Options
-     * @param {Boolean} [opts.debug] Show warnings in case of missing language
-     * @returns {Object}
-     * @example
-     * i18n.getMessages();
-     * // -> { en: { hello: '...' }, ... }
-     * i18n.getMessages('en');
-     * // -> { hello: '...' }
-     */
-    getMessages(lang, opts = {}) {
-      const { messages } = this.config;
-      lang && !messages[lang] && this._debug(`'${lang}' i18n lang not found`, opts);
-      return lang ? messages[lang] : messages;
-    },
+    !result && this._debug(`'${key}' i18n key not found in '${locale}' lang`, opts);
+    result = result && isString(result) ? this._addParams(result, param) : result;
 
-    /**
-     * Set new set of messages
-     * @param {Object} msg Set of messages
-     * @returns {this}
-     * @example
-     * i18n.getMessages();
-     * // -> { en: { msg1: 'Msg 1', msg2: 'Msg 2', } }
-     * i18n.setMessages({ en: { msg2: 'Msg 2 up', msg3: 'Msg 3', } });
-     * // Set replaced
-     * i18n.getMessages();
-     * // -> { en: { msg2: 'Msg 2 up', msg3: 'Msg 3', } }
-     */
-    setMessages(msg) {
-      const { em, config } = this;
-      config.messages = msg;
-      em && em.trigger('i18n:update', msg);
-      return this;
-    },
+    return result;
+  }
 
-    /**
-     * Update messages
-     * @param {Object} msg Set of messages to add
-     * @returns {this}
-     * @example
-     * i18n.getMessages();
-     * // -> { en: { msg1: 'Msg 1', msg2: 'Msg 2', } }
-     * i18n.addMessages({ en: { msg2: 'Msg 2 up', msg3: 'Msg 3', } });
-     * // Set updated
-     * i18n.getMessages();
-     * // -> { en: { msg1: 'Msg 1', msg2: 'Msg 2 up', msg3: 'Msg 3', } }
-     */
-    addMessages(msg) {
-      const { em } = this;
-      const { messages } = this.config;
-      em && em.trigger('i18n:add', msg);
-      this.setMessages(deepAssign(messages, msg));
+  _localLang() {
+    const nav = (hasWin() && window.navigator) || {};
+    const lang = nav.language || nav.userLanguage;
+    return lang ? lang.split('-')[0] : 'en';
+  }
 
-      return this;
-    },
+  _addParams(str, params) {
+    const reg = new RegExp('{([\\w\\d-]*)}', 'g');
+    return str.replace(reg, (m, val) => params[val] || '').trim();
+  }
 
-    /**
-     * Translate the locale message
-     * @param {String} key Label to translate
-     * @param {Object} [opts] Options for the translation
-     * @param {Object} [opts.params] Params for the translation
-     * @param {Boolean} [opts.debug] Show warnings in case of missing resources
-     * @returns {String}
-     * @example
-     * obj.setMessages({
-     *  en: { msg: 'Msg', msg2: 'Msg {test}'},
-     *  it: { msg2: 'Msg {test} it'},
-     * });
-     * obj.t('msg');
-     * // -> outputs `Msg`
-     * obj.t('msg2', { params: { test: 'hello' } });  // use params
-     * // -> outputs `Msg hello`
-     * obj.t('msg2', { l: 'it', params: { test: 'hello' } });  // custom local
-     * // -> outputs `Msg hello it`
-     */
-    t(key, opts = {}) {
-      const { config } = this;
-      const param = opts.params || {};
-      const locale = opts.l || this.getLocale();
-      const localeFlb = opts.lFlb || config.localeFallback;
-      let result = this._getMsg(key, locale, opts);
+  _getMsg(key, locale, opts = {}) {
+    const msgSet = this.getMessages(locale, opts);
 
-      // Try with fallback
-      if (!result) result = this._getMsg(key, localeFlb, opts);
+    // Lang set is missing
+    if (!msgSet) return;
 
-      !result && this._debug(`'${key}' i18n key not found in '${locale}' lang`, opts);
-      result = result && isString(result) ? this._addParams(result, param) : result;
+    let result = msgSet[key];
 
-      return result;
-    },
+    // Check for nested getter
+    if (!result && key.indexOf('.') > 0) {
+      result = key.split('.').reduce((lang, key) => {
+        if (isUndefined(lang)) return;
+        return lang[key];
+      }, msgSet);
+    }
 
-    _localLang() {
-      const nav = (hasWin() && window.navigator) || {};
-      const lang = nav.language || nav.userLanguage;
-      return lang ? lang.split('-')[0] : 'en';
-    },
+    return result;
+  }
 
-    _addParams(str, params) {
-      const reg = new RegExp(`\{([\\w\\d-]*)\}`, 'g');
-      return str.replace(reg, (m, val) => params[val] || '').trim();
-    },
+  _debug(str, opts = {}) {
+    const { em, config } = this;
+    (opts.debug || config.debug) && em && em.logWarning(str);
+  }
 
-    _getMsg(key, locale, opts = {}) {
-      const msgSet = this.getMessages(locale, opts);
-
-      // Lang set is missing
-      if (!msgSet) return;
-
-      let result = msgSet[key];
-
-      // Check for nested getter
-      if (!result && key.indexOf('.') > 0) {
-        result = key.split('.').reduce((lang, key) => {
-          if (isUndefined(lang)) return;
-          return lang[key];
-        }, msgSet);
-      }
-
-      return result;
-    },
-
-    _debug(str, opts = {}) {
-      const { em, config } = this;
-      (opts.debug || config.debug) && em && em.logWarning(str);
-    },
-
-    destroy() {
-      this.config = config;
-      this.em = {};
-    },
-  };
-};
+  destroy() {
+    this.config = {};
+    this.em = {};
+  }
+}

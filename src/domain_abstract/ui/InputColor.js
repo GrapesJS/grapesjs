@@ -1,6 +1,6 @@
 import Backbone from 'backbone';
 import { isUndefined } from 'underscore';
-import ColorPicker from 'utils/ColorPicker';
+import ColorPicker from '../../utils/ColorPicker';
 import Input from './Input';
 
 const { $ } = Backbone;
@@ -12,7 +12,7 @@ const getColor = color => {
   return name || cl.replace(/ /g, '');
 };
 
-export default Input.extend({
+export default class InputColor extends Input {
   template() {
     const ppfx = this.ppfx;
     return `
@@ -23,28 +23,28 @@ export default Input.extend({
         </div>
       </div>
     `;
-  },
+  }
 
   inputClass() {
     const ppfx = this.ppfx;
     return `${ppfx}field ${ppfx}field-color`;
-  },
+  }
 
   holderClass() {
     return `${this.ppfx}input-holder`;
-  },
+  }
 
   remove() {
     Input.prototype.remove.apply(this, arguments);
     this.colorEl.spectrum('destroy');
-  },
+  }
 
   handleChange(e) {
     e.stopPropagation();
     const { value } = e.target;
     if (isUndefined(value)) return;
     this.__onInputChange(value);
-  },
+  }
 
   __onInputChange(val) {
     const { model, opts } = this;
@@ -61,7 +61,7 @@ export default Input.extend({
     }
 
     onChange ? onChange(value) : model.set({ value }, { fromInput: 1 });
-  },
+  }
 
   /**
    * Set value to the model
@@ -83,7 +83,7 @@ export default Input.extend({
       colorEl.spectrum('set', valueClr);
       this.noneColor = value == 'none';
     }
-  },
+  }
 
   /**
    * Get the color input element
@@ -99,11 +99,22 @@ export default Input.extend({
       var colorEl = $(`<div class="${this.ppfx}field-color-picker"></div>`);
       var cpStyle = colorEl.get(0).style;
       var elToAppend = em && em.config ? em.config.el : '';
-      var colorPickerConfig = (em && em.getConfig && em.getConfig('colorPicker')) || {};
+      var colorPickerConfig = (em && em.getConfig && em.getConfig().colorPicker) || {};
 
-      let changed = 0;
+      let changed = false;
+      let movedColor = '';
       let previousColor;
-      this.$el.find(`[data-colorp-c]`).append(colorEl);
+      this.$el.find('[data-colorp-c]').append(colorEl);
+
+      const handleChange = (value, complete = true) => {
+        if (onChange) {
+          onChange(value, !complete);
+        } else {
+          complete && model.setValueFromInput(0, false); // for UndoManager
+          model.setValueFromInput(value, complete);
+        }
+      };
+
       colorEl.spectrum({
         color: model.getValue() || false,
         containerClassName: `${ppfx}one-bg ${ppfx}two-color`,
@@ -121,40 +132,39 @@ export default Input.extend({
 
         move(color) {
           const cl = getColor(color);
+          movedColor = cl;
           cpStyle.backgroundColor = cl;
-          onChange ? onChange(cl, true) : model.setValueFromInput(cl, 0);
+          handleChange(cl, false);
         },
         change(color) {
-          changed = 1;
+          changed = true;
           const cl = getColor(color);
           cpStyle.backgroundColor = cl;
-          if (onChange) {
-            onChange(cl);
-          } else {
-            model.setValueFromInput(0, 0); // for UndoManager
-            model.setValueFromInput(cl);
-          }
+          handleChange(cl);
           self.noneColor = 0;
         },
         show(color) {
-          changed = 0;
+          changed = false;
+          movedColor = '';
           previousColor = onChange ? model.getValue({ noDefault: true }) : getColor(color);
         },
-        hide(color) {
+        hide() {
           if (!changed && (previousColor || onChange)) {
             if (self.noneColor) {
               previousColor = '';
             }
             cpStyle.backgroundColor = previousColor;
             colorEl.spectrum('set', previousColor);
-            onChange ? onChange(previousColor, true) : model.setValueFromInput(previousColor, 0);
+            handleChange(previousColor, false);
           }
         },
       });
 
       if (em && em.on) {
         this.listenTo(em, 'component:selected', () => {
-          changed = 1;
+          movedColor && handleChange(movedColor);
+          changed = true;
+          movedColor = '';
           colorEl.spectrum('hide');
         });
       }
@@ -162,12 +172,12 @@ export default Input.extend({
       this.colorEl = colorEl;
     }
     return this.colorEl;
-  },
+  }
 
   render() {
     Input.prototype.render.call(this);
     // This will make the color input available on render
     this.getColorEl();
     return this;
-  },
-});
+  }
+}

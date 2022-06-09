@@ -1,4 +1,5 @@
 import { debounce } from 'underscore';
+import { Model, Module } from '../common';
 import defaults from './config/config';
 import TraitsView from './view/TraitsView';
 import TraitView from './view/TraitView';
@@ -7,7 +8,6 @@ import TraitCheckboxView from './view/TraitCheckboxView';
 import TraitNumberView from './view/TraitNumberView';
 import TraitColorView from './view/TraitColorView';
 import TraitButtonView from './view/TraitButtonView';
-import { Model, Module } from 'common';
 
 export const evAll = 'trait';
 export const evPfx = `${evAll}:`;
@@ -142,14 +142,15 @@ export default () => {
       let { view } = this;
       const config = this.getConfig();
       const el = view && view.el;
-      view = new TraitsView({
-        el,
-        collection: [],
-        editor: config.em,
-        config,
-      });
-      view.itemsView = this.getTypes();
-      view.updatedCollection();
+      view = new TraitsView(
+        {
+          el,
+          collection: [],
+          editor: config.em,
+          config,
+        },
+        this.getTypes()
+      );
       this.view = view;
       return view.el;
     },

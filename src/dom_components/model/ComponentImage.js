@@ -29,7 +29,7 @@ export default Component.extend(
       </svg>`,
 
       // File to load asynchronously once the model is rendered
-      file: ''
+      file: '',
     },
 
     initialize(o, opt) {
@@ -61,7 +61,7 @@ export default Component.extend(
           if (!hasButtonBool) {
             tb.push({
               attributes: { class: 'fa fa-pencil' },
-              command: cmdName
+              command: cmdName,
             });
             this.set('toolbar', tb);
           }
@@ -134,11 +134,11 @@ export default Component.extend(
         search: el.search,
         hash: el.hash,
         port: el.port,
-        query
+        query,
       };
-    }
+    },
   },
   {
-    isComponent: el => toLowerCase(el.tagName) === 'img'
+    isComponent: el => toLowerCase(el.tagName) === 'img',
   }
 );

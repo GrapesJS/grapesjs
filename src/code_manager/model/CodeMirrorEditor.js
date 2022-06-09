@@ -1,6 +1,6 @@
 import { bindAll } from 'underscore';
-import Backbone from 'backbone';
-import { hasWin } from 'utils/mixins';
+import { Model } from '../../common';
+import { hasWin } from '../../utils/mixins';
 
 let CodeMirror;
 
@@ -11,40 +11,39 @@ if (hasWin()) {
   require('codemirror-formatting');
 }
 
-export default Backbone.Model.extend({
-  CodeMirror,
+export default class CodeMirrorEditor extends Model {
+  defaults() {
+    return {
+      input: '',
+      label: '',
+      codeName: '',
+      theme: 'hopscotch',
+      readOnly: true,
+      lineNumbers: true,
+    };
+  }
 
-  defaults: {
-    input: '',
-    label: '',
-    codeName: '',
-    theme: 'hopscotch',
-    readOnly: true,
-    lineNumbers: true
-  },
-
-  /** @inheritdoc */
   init(el) {
     bindAll(this, 'onChange');
     this.editor = CodeMirror.fromTextArea(el, {
       dragDrop: false,
       lineWrapping: true,
       mode: this.get('codeName'),
-      ...this.attributes
+      ...this.attributes,
     });
     this.element = el;
     this.editor.on('change', this.onChange);
 
     return this;
-  },
+  }
 
   onChange() {
     this.trigger('update', this);
-  },
+  }
 
   getEditor() {
     return this.editor;
-  },
+  }
 
   /**
    * The element where the viewer is attached
@@ -52,7 +51,7 @@ export default Backbone.Model.extend({
    */
   getElement() {
     return this.element;
-  },
+  }
 
   /**
    * Set the element which contains the viewer attached.
@@ -64,7 +63,7 @@ export default Backbone.Model.extend({
   setElement(el) {
     this.element = el;
     return this;
-  },
+  }
 
   /**
    * Refresh the viewer
@@ -73,7 +72,7 @@ export default Backbone.Model.extend({
   refresh() {
     this.getEditor().refresh();
     return this;
-  },
+  }
 
   /**
    * Focus the viewer
@@ -82,12 +81,12 @@ export default Backbone.Model.extend({
   focus() {
     this.getEditor().focus();
     return this;
-  },
+  }
 
   getContent() {
     const ed = this.getEditor();
     return ed && ed.getValue();
-  },
+  }
 
   /** @inheritdoc */
   setContent(v, opts = {}) {
@@ -103,4 +102,6 @@ export default Backbone.Model.extend({
 
     !opts.noRefresh && setTimeout(() => this.refresh());
   }
-});
+}
+
+CodeMirrorEditor.prototype.CodeMirror = CodeMirror;

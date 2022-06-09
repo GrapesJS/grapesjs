@@ -1,7 +1,7 @@
 import path from 'path';
 import webpack from 'webpack';
 import pkg from './package.json';
-import TerserPlugin from 'grapesjs-cli/node_modules/terser-webpack-plugin';
+import TerserPlugin from 'terser-webpack-plugin';
 
 const rootDir = path.resolve(__dirname);
 

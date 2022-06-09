@@ -1,11 +1,7 @@
-import Backbone from 'backbone';
+import { View } from '../../common';
 
-export default Backbone.View.extend({
-  events: {
-    submit: 'handleSubmit'
-  },
-
-  template({ pfx, ppfx, em, ...view }) {
+export default class AssetsView extends View {
+  template({ pfx, ppfx, em }) {
     let form = '';
     if (this.config.showUrlInput) {
       form = `
@@ -13,8 +9,7 @@ export default Backbone.View.extend({
             <div class="${ppfx}field ${pfx}add-field">
               <input placeholder="${em && em.t('assetManager.inputPlh')}"/>
             </div>
-            <button class="${ppfx}btn-prim">${em &&
-        em.t('assetManager.addButton')}</button>
+            <button class="${ppfx}btn-prim">${em && em.t('assetManager.addButton')}</button>
             <div style="clear:both"></div>
           </form>
       `;
@@ -29,7 +24,7 @@ export default Backbone.View.extend({
       <div style="clear:both"></div>
     </div>
     `;
-  },
+  }
 
   initialize(o) {
     this.options = o;
@@ -42,7 +37,7 @@ export default Backbone.View.extend({
     this.listenTo(coll, 'add', this.addToAsset);
     this.listenTo(coll, 'remove', this.removedAsset);
     this.listenTo(coll, 'deselectAll', this.deselectAll);
-  },
+  }
 
   /**
    * Add new asset to the collection via string
@@ -68,7 +63,7 @@ export default Backbone.View.extend({
     } else {
       this.options.globalCollection.add(url, { at: 0 });
     }
-  },
+  }
 
   /**
    * Returns assets element
@@ -78,7 +73,7 @@ export default Backbone.View.extend({
   getAssetsEl() {
     //if(!this.assets) // Not able to cache as after the rerender it losses the ref
     return this.el.querySelector(`.${this.pfx}assets`);
-  },
+  }
 
   /**
    * Returns input url element
@@ -86,10 +81,9 @@ export default Backbone.View.extend({
    * @private
    */
   getAddInput() {
-    if (!this.inputUrl || !this.inputUrl.value)
-      this.inputUrl = this.el.querySelector(`.${this.pfx}add-asset input`);
+    if (!this.inputUrl || !this.inputUrl.value) this.inputUrl = this.el.querySelector(`.${this.pfx}add-asset input`);
     return this.inputUrl;
-  },
+  }
 
   /**
    * Triggered when an asset is removed
@@ -100,7 +94,7 @@ export default Backbone.View.extend({
     if (!this.collection.length) {
       this.toggleNoAssets();
     }
-  },
+  }
 
   /**
    * Add asset to collection
@@ -111,7 +105,7 @@ export default Backbone.View.extend({
       this.toggleNoAssets(1);
     }
     this.addAsset(model);
-  },
+  }
 
   /**
    * Add new asset to collection
@@ -127,7 +121,7 @@ export default Backbone.View.extend({
     const rendered = new model.typeView({
       model,
       collection,
-      config
+      config,
     }).render().el;
 
     if (fragment) {
@@ -140,7 +134,7 @@ export default Backbone.View.extend({
     }
 
     return rendered;
-  },
+  }
 
   /**
    * Checks if to show noAssets
@@ -156,7 +150,7 @@ export default Backbone.View.extend({
       const noAssets = this.config.noAssets;
       noAssets && assetsEl.append(noAssets);
     }
-  },
+  }
 
   /**
    * Deselect all assets
@@ -165,7 +159,7 @@ export default Backbone.View.extend({
   deselectAll() {
     const pfx = this.pfx;
     this.$el.find(`.${pfx}highlight`).removeClass(`${pfx}highlight`);
-  },
+  }
 
   renderAssets() {
     const fragment = document.createDocumentFragment();
@@ -174,7 +168,7 @@ export default Backbone.View.extend({
     this.toggleNoAssets(this.collection.length);
     this.collection.each(model => this.addAsset(model, fragment));
     assets.append(fragment);
-  },
+  }
 
   render() {
     const fuRendered = this.options.fu.render().el;
@@ -184,4 +178,8 @@ export default Backbone.View.extend({
     this.renderAssets();
     return this;
   }
-});
+}
+
+AssetsView.prototype.events = {
+  submit: 'handleSubmit',
+};

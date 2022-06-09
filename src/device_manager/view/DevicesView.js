@@ -1,5 +1,5 @@
-import { View } from 'backbone';
-import html from 'utils/html';
+import { View } from '../../common';
+import html from '../../utils/html';
 
 export default class DevicesView extends View {
   template({ ppfx, label }) {
@@ -19,7 +19,7 @@ export default class DevicesView extends View {
 
   events() {
     return {
-      change: 'updateDevice'
+      change: 'updateDevice',
     };
   }
 

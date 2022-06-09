@@ -2,8 +2,6 @@
 
 ## Block
 
-
-
 ### Properties
 
 *   `label` **[String][1]** Block label, eg. `My block`
@@ -17,31 +15,31 @@
 *   `onClick` **[Function][5]?** Custom behavior on click, eg. `(block, editor) => editor.getWrapper().append(block.get('content'))`
 *   `attributes` **[Object][2]?** Block attributes to apply in the view element
 
-### getId
+## getId
 
 Get block id
 
 Returns **[String][1]** 
 
-### getLabel
+## getLabel
 
 Get block label
 
 Returns **[String][1]** 
 
-### getMedia
+## getMedia
 
 Get block media
 
 Returns **[String][1]** 
 
-### getContent
+## getContent
 
 Get block content
 
-Returns **([Object][2] | [String][1] | [Array][6]<([Object][2] | [String][1])>)** Component definition | HTML string
+Returns **([Object][2] | [String][1] | [Array][6]<([Object][2] | [String][1])>)** 
 
-### getCategoryLabel
+## getCategoryLabel
 
 Get block category label
 

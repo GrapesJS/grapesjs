@@ -1,4 +1,4 @@
-import { Model } from 'backbone';
+import { Model } from '../../common';
 
 export default class HTMLGenerator extends Model {
   build(model, opts = {}) {

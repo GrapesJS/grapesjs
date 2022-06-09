@@ -1,5 +1,5 @@
-import { Model } from 'common';
-import { camelCase } from 'utils/mixins';
+import { Model } from '../../common';
+import { camelCase } from '../../utils/mixins';
 
 export default class Layer extends Model {
   defaults() {

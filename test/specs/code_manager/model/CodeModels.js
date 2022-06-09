@@ -15,7 +15,7 @@ describe('HtmlGenerator', () => {
   beforeEach(() => {
     em = new Editor();
     obj = new HtmlGenerator();
-    dcomp = new DomComponents();
+    dcomp = new DomComponents(em);
     comp = new Component(
       {},
       {
@@ -73,7 +73,7 @@ describe('CssGenerator', () => {
 
     cc = em.get('CssComposer');
     obj = new CssGenerator();
-    dcomp = new DomComponents();
+    dcomp = new DomComponents(em);
     comp = new Component(
       {},
       {

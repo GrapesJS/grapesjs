@@ -1,3 +1,4 @@
+import 'regenerator-runtime/runtime';
 import 'whatwg-fetch';
 import _ from 'underscore';
 import sinon from 'sinon';
@@ -11,7 +12,7 @@ const localStorage = {
   },
   removeItem(key, value) {
     delete this[key];
-  }
+  },
 };
 
 global._ = _;

@@ -1,4 +1,4 @@
-import { View } from 'backbone';
+import { View } from '../../common';
 import { keys } from 'underscore';
 
 export default class LayerView extends View {
@@ -13,7 +13,7 @@ export default class LayerView extends View {
 
   template() {
     const { pfx, ppfx, em } = this;
-    const icons = em?.getConfig('icons');
+    const icons = em?.getConfig().icons;
     const iconClose = icons?.close || '';
     const iconMove = icons?.move || '';
 
@@ -111,7 +111,7 @@ export default class LayerView extends View {
     el.innerHTML = this.template();
     el.className = `${pfx}layer`;
     if (model.hasPreview()) {
-      el.querySelector(`[data-preview-box]`).style.display = '';
+      el.querySelector('[data-preview-box]').style.display = '';
     }
     this.updateLabel();
     this.updateVisibility();
