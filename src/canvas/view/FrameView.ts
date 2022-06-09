@@ -411,6 +411,7 @@ export default class FrameView extends View<Frame, HTMLIFrameElement> {
       model: component,
       config: {
         ...component.config,
+        em,
         frameView: this,
       },
     }).render();

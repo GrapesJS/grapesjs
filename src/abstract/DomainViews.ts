@@ -44,7 +44,7 @@ export default abstract class DomainViews<TCollection extends Backbone.Collectio
    * @private
    * */
   private add(model: TModel<TCollection>, fragment?: DocumentFragment) {
-    const { config, reuseView, viewCollection, itemsView = {} } = this;
+    const { reuseView, viewCollection, itemsView = {} } = this;
     var frag = fragment || null;
     var typeField = model.get(this.itemType);
     let view;
