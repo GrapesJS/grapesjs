@@ -35,7 +35,7 @@ export default Component.extend(
     initialize(o, opt) {
       Component.prototype.initialize.apply(this, arguments);
       const { src } = this.get('attributes');
-      if (src && !buildBase64UrlFromSvg(this.defaults.src) === src) {
+      if (src && buildBase64UrlFromSvg(this.defaults.src) !== src) {
         this.set('src', src, { silent: 1 });
       }
     },

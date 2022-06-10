@@ -2,6 +2,7 @@ import Component from 'dom_components/model/Component';
 import ComponentImage from 'dom_components/model/ComponentImage';
 import Editor from 'editor/model/Editor';
 import Backbone from 'backbone';
+import { buildBase64UrlFromSvg } from 'utils/mixins';
 
 const $ = Backbone.$;
 describe('ComponentImage', () => {
@@ -24,12 +25,17 @@ describe('ComponentImage', () => {
 
   describe('.initialize', () => {
     test('when a base 64 default image is provided, it uses the default image', () => {
-      let C = ComponentImage;
-      let E = Editor;
-      let e = em;
-      let c = componentImage;
-      let srcResult = componentImage.getSrcResult();
-      expect('a').toEqual('b');
+      let imageUrl = buildBase64UrlFromSvg(ComponentImage.getDefaults().src);
+      let componentImage = new ComponentImage({ attributes: { src: imageUrl } }, { ...compOpts });
+      expect(componentImage.get('src')).toEqual(ComponentImage.getDefaults().src);
+      expect(componentImage.isDefaultSrc()).toBeTruthy();
+    });
+
+    test('when a image url is provided, it uses the image url', () => {
+      let imageUrl = 'https://mock.com/image.png';
+      let componentImage = new ComponentImage({ attributes: { src: imageUrl } }, { ...compOpts });
+      expect(componentImage.get('src')).toEqual(imageUrl);
+      expect(componentImage.isDefaultSrc()).toBeFalsy();
     });
   });
 
