@@ -1,12 +1,12 @@
 import { buildBase64UrlFromSvg } from 'utils/mixins';
 
 describe('.buildBase64UrlFromSvg', () => {
-  test("return original when a none svg is provided", () => {
+  it("returns original when a none svg is provided", () => {
     const input = "something else";
     expect(buildBase64UrlFromSvg(input)).toEqual(input)
   })
 
-  test("return base64 image when an svg is provided", () => {
+  it("returns base64 image when an svg is provided", () => {
     const input = `<svg
       xmlns="http://www.w3.org/2000/svg"
       width="24"
