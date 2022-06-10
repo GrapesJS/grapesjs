@@ -1,11 +1,36 @@
 import Component from 'dom_components/model/Component';
 import ComponentImage from 'dom_components/model/ComponentImage';
+import Editor from 'editor/model/Editor';
+import Backbone from 'backbone';
 
+const $ = Backbone.$;
 describe('ComponentImage', () => {
   let componentImage;
+  let dcomp;
+  let compOpts;
+  let em;
 
   beforeEach(() => {
-    componentImage = new ComponentImage();
+    em = new Editor({ avoidDefaults: true });
+    dcomp = em.get('DomComponents');
+    em.get('PageManager').onLoad();
+    compOpts = {
+      em,
+      componentTypes: dcomp.componentTypes,
+      domc: dcomp,
+    };
+    componentImage = new ComponentImage({}, compOpts);
+  });
+
+  describe('.initialize', () => {
+    test('when a base 64 default image is provided, it uses the default image', () => {
+      let C = ComponentImage;
+      let E = Editor;
+      let e = em;
+      let c = componentImage;
+      let srcResult = componentImage.getSrcResult();
+      expect('a').toEqual('b');
+    });
   });
 
   test('`src` property is defined after initializing', () => {
@@ -17,9 +42,7 @@ describe('ComponentImage', () => {
     const fakeAttributes = {};
 
     beforeEach(() => {
-      spyOn(Component.prototype, 'getAttrToHTML').and.returnValue(
-        fakeAttributes
-      );
+      spyOn(Component.prototype, 'getAttrToHTML').and.returnValue(fakeAttributes);
       getSrcResultSpy = spyOn(componentImage, 'getSrcResult');
     });
 
