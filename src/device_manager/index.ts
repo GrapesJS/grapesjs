@@ -83,7 +83,7 @@ export default class DeviceManager extends Module {
     return this;
   }
 
-  _onSelect(m, deviceId, opts) {
+  _onSelect(m: any, deviceId: string, opts: any) {
     const { em, events } = this;
     const prevId = m.previous('device');
     const newDevice = this.get(deviceId);
@@ -111,7 +111,7 @@ export default class DeviceManager extends Module {
    *  height: '600px', // Height will be applied on the canvas frame
    * });
    */
-  add(props, options = {}) {
+  add(props: any, options = {}) {
     let result;
     let opts = options;
 
@@ -133,7 +133,7 @@ export default class DeviceManager extends Module {
       result.id = result.name || this._createId();
     }
 
-    return this.devices.add(result, opts);
+    return this.devices.add(new Device(result, opts));
   }
 
   /**
@@ -145,7 +145,7 @@ export default class DeviceManager extends Module {
    * console.log(JSON.stringify(device));
    * // {name: 'Tablet', width: '900px'}
    */
-  get(id) {
+  get(id: string) {
     // Support old API
     const byName = this.getAll().filter(d => d.get('name') === id)[0];
     return byName || this.devices.get(id) || null;
@@ -161,7 +161,7 @@ export default class DeviceManager extends Module {
    * const device = deviceManager.get('device-id');
    * deviceManager.remove(device);
    */
-  remove(device, opts = {}) {
+  remove(device: string | Device, opts = {}) {
     return this.__remove(device, opts);
   }
 

@@ -19,7 +19,8 @@ export default class Device extends Model {
     };
   }
 
-  initialize() {
+  constructor(props: any, opts: any) {
+    super(props, opts)
     this.get('widthMedia') === null && this.set('widthMedia', this.get('width'));
     this.get('width') === null && this.set('width', this.get('widthMedia'));
     !this.get('priority') && this.set('priority', parseFloat(this.get('widthMedia')) || 0);
@@ -27,17 +28,17 @@ export default class Device extends Model {
     toCheck.forEach(prop => this.checkUnit(prop));
   }
 
-  checkUnit(prop) {
+  private checkUnit(prop: string) {
     const pr = this.get(prop) || '';
     const noUnit = (parseFloat(pr) || 0).toString() === pr.toString();
     noUnit && this.set(prop, `${pr}px`);
   }
 
-  getName() {
+  getName(): string {
     return this.get('name') || this.get('id');
   }
 
-  getWidthMedia() {
+  getWidthMedia(): string {
     return this.get('widthMedia') || '';
   }
 }
