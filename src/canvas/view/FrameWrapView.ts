@@ -16,15 +16,15 @@ export default class FrameWrapView extends View<Frame> {
   elTools?: HTMLElement;
   frame: FrameView;
   dragger?: Dragger;
-  cv: CanvasView
-  classAnim: string
+  cv: CanvasView;
+  classAnim: string;
 
   constructor(model: Frame, canvasView: CanvasView) {
-    super({model});
+    super({ model });
     bindAll(this, 'onScroll', 'frameLoaded', 'updateOffset', 'remove', 'startDrag');
     //console.log(model.module)
     const config = {
-      ...(model.config),
+      ...model.config,
       frameWrapView: this,
     };
     this.cv = canvasView;
@@ -88,7 +88,7 @@ export default class FrameWrapView extends View<Frame> {
     if (!em) return;
     em.runDefault({ preserveSelected: 1 });
     $el.removeClass(this.classAnim);
-    frame.model._emitUpdated();
+    frame?.model?._emitUpdated();
   }
 
   updatePos(md?: boolean) {
