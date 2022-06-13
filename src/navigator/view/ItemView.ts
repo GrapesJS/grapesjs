@@ -1,5 +1,5 @@
 import { isString, bindAll } from 'underscore';
-import { View } from '../../abstract';
+import { View } from '../../common';
 import { getModel, isEscKey, isEnterKey } from '../../utils/mixins';
 import ComponentView from '../../dom_components/view/ComponentView';
 import Component, { eventDrag } from '../../dom_components/model/Component';

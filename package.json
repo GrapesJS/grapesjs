@@ -27,6 +27,7 @@
     "@babel/cli": "^7.15.7",
     "@babel/preset-typescript": "^7.16.7",
     "@types/backbone": "^1.4.15",
+    "@types/jest": "^28.1.1",
     "@typescript-eslint/parser": "^5.22.0",
     "@vuepress/plugin-google-analytics": "^1.8.2",
     "documentation": "^13.2.5",
@@ -70,18 +71,23 @@
     }
   },
   "lint-staged": {
-    "{src,test}/**/*.js": [
+    "{src,test}/**/*.(t|j)s": [
       "prettier --single-quote --print-width 120 --arrow-parens avoid --write",
       "git add"
     ]
   },
   "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "ts"
+    ],
+    "verbose": true,
     "testURL": "http://localhost/",
     "modulePaths": [
-      "./src"
+      "<rootDir>/src"
     ],
     "testMatch": [
-      "<rootDir>/test/specs/**/*.js"
+      "<rootDir>/test/specs/**/*.(t|j)s"
     ],
     "setupFiles": [
       "<rootDir>/test/setup.js"

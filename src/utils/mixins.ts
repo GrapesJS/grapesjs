@@ -87,7 +87,7 @@ const shallowDiff = (objOrig: Record<string, any>, objNew: Record<string, any>) 
   return result;
 };
 
-const on = (el: HTMLElement | HTMLElement[], ev: string, fn: () => void, opts?: AddEventListenerOptions) => {
+const on = (el: HTMLElement|Window|Document | (Window|HTMLElement|Document)[], ev: string, fn: (ev: Event) => void, opts?: AddEventListenerOptions) => {
   const evs = ev.split(/\s+/);
   el = el instanceof Array ? el : [el];
 
@@ -96,7 +96,7 @@ const on = (el: HTMLElement | HTMLElement[], ev: string, fn: () => void, opts?: 
   }
 };
 
-const off = (el: HTMLElement | HTMLElement[], ev: string, fn: () => void, opts?: AddEventListenerOptions) => {
+const off = (el: HTMLElement|Window|Document | (Window|HTMLElement|Document)[], ev: string, fn: (ev: Event) => void, opts?: AddEventListenerOptions) => {
   const evs = ev.split(/\s+/);
   el = el instanceof Array ? el : [el];
 
@@ -220,7 +220,7 @@ const getModel = (el: any, $?: any) => {
   return model;
 };
 
-const getElRect = (el: HTMLElement) => {
+const getElRect = (el?: HTMLElement) => {
   const def = {
     top: 0,
     left: 0,
@@ -243,7 +243,7 @@ const getElRect = (el: HTMLElement) => {
 /**
  * Get cross-device pointer event
  * @param  {Event} ev
- * @return {Event}
+ * @return {PointerEvent}
  */
 const getPointerEvent = (ev: Event) =>
   // @ts-ignore
@@ -278,6 +278,13 @@ const createId = (length = 16) => {
     result += chars.charAt(Math.floor(Math.random() * len));
   }
   return result;
+};
+
+export const buildBase64UrlFromSvg = (svg: string) => {
+  if (svg && svg.substr(0, 4) === '<svg') {
+    return `data:image/svg+xml;base64,${window.btoa(svg)}`;
+  }
+  return svg
 };
 
 export {

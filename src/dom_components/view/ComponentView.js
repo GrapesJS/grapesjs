@@ -458,7 +458,7 @@ export default class ComponentView extends Backbone.View {
   }
 
   _getFrame() {
-    return this.config.frameView;
+    return this.config.em?.get('Canvas').config.frameView;
   }
 
   /**
