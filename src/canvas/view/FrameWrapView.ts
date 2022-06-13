@@ -1,34 +1,37 @@
 import { bindAll, isNumber, isNull, debounce } from 'underscore';
-import { View } from '../../common';
+import { View } from '../../abstract';
 import FrameView from './FrameView';
 import { createEl, removeEl } from '../../utils/dom';
 import Dragger from '../../utils/Dragger';
+import CanvasView from './CanvasView';
+import Frame from '../model/Frame';
 
-export default class FrameWrapView extends View {
+export default class FrameWrapView extends View<Frame> {
   events() {
     return {
       'click [data-action-remove]': 'remove',
       'mousedown [data-action-move]': 'startDrag',
     };
   }
+  elTools?: HTMLElement;
+  frame: FrameView;
+  dragger?: Dragger;
+  cv: CanvasView
+  classAnim: string
 
-  initialize(opts = {}, conf = {}) {
+  constructor(model: Frame, canvasView: CanvasView) {
+    super({model});
     bindAll(this, 'onScroll', 'frameLoaded', 'updateOffset', 'remove', 'startDrag');
-    const { model } = this;
+    //console.log(model.module)
     const config = {
-      ...(opts.config || conf),
+      ...(model.config),
       frameWrapView: this,
     };
-    const { canvasView, em } = config;
     this.cv = canvasView;
-    this.config = config;
-    this.em = em;
-    this.canvas = em && em.get('Canvas');
-    this.ppfx = config.pStylePrefix || '';
-    this.frame = new FrameView({ model, config });
+    this.frame = new FrameView(model, this);
     this.classAnim = `${this.ppfx}frame-wrapper--anim`;
-    this.updateOffset = debounce(this.updateOffset.bind(this));
-    this.updateSize = debounce(this.updateSize.bind(this));
+    this.updateOffset = debounce(this.updateOffset.bind(this), 0);
+    this.updateSize = debounce(this.updateSize.bind(this), 0);
     this.listenTo(model, 'loaded', this.frameLoaded);
     this.listenTo(model, 'change:x change:y', this.updatePos);
     this.listenTo(model, 'change:width change:height', this.updateSize);
@@ -38,10 +41,10 @@ export default class FrameWrapView extends View {
   }
 
   setupDragger() {
-    const { canvas, model } = this;
-    let dragX, dragY, zoom;
-    const toggleEffects = on => {
-      canvas.toggleFramesEvents(on);
+    const { module, model } = this;
+    let dragX: number, dragY: number, zoom: number;
+    const toggleEffects = (on: boolean) => {
+      module.toggleFramesEvents(on);
     };
 
     this.dragger = new Dragger({
@@ -50,10 +53,10 @@ export default class FrameWrapView extends View {
         zoom = this.em.getZoomMultiplier();
         dragX = x;
         dragY = y;
-        toggleEffects();
+        toggleEffects(false);
       },
-      onEnd: () => toggleEffects(1),
-      setPosition: posOpts => {
+      onEnd: () => toggleEffects(true),
+      setPosition: (posOpts: any) => {
         model.set({
           x: dragX + posOpts.x * zoom,
           y: dragY + posOpts.y * zoom,
@@ -62,20 +65,21 @@ export default class FrameWrapView extends View {
     });
   }
 
-  startDrag(ev) {
-    ev && this.dragger.start(ev);
+  startDrag(ev?: Event) {
+    ev && this.dragger?.start(ev);
   }
 
-  __clear(opts) {
+  __clear(opts?: any) {
     const { frame } = this;
     frame && frame.remove(opts);
     removeEl(this.elTools);
   }
 
-  remove(opts) {
+  remove(opts?: any) {
     this.__clear(opts);
-    View.prototype.remove.apply(this, arguments);
-    ['frame', 'dragger', 'cv', 'em', 'canvas', 'elTools'].forEach(i => (this[i] = 0));
+    View.prototype.remove.apply(this, opts);
+    //@ts-ignore
+    ['frame', 'dragger', 'cv', 'elTools'].forEach(i => (this[i] = 0));
     return this;
   }
 
@@ -87,11 +91,11 @@ export default class FrameWrapView extends View {
     frame.model._emitUpdated();
   }
 
-  updatePos(md) {
+  updatePos(md?: boolean) {
     const { model, el } = this;
     const { x, y } = model.attributes;
     const { style } = el;
-    this.frame.rect = 0;
+    this.frame.rect = undefined;
     style.left = isNaN(x) ? x : `${x}px`;
     style.top = isNaN(y) ? y : `${y}px`;
     md && this.updateOffset();
@@ -108,7 +112,7 @@ export default class FrameWrapView extends View {
   updateDim() {
     const { em, el, $el, model, classAnim, frame } = this;
     if (!frame) return;
-    frame.rect = 0;
+    frame.rect = undefined;
     $el.addClass(classAnim);
     const { noChanges, width, height } = this.__handleSize();
 
@@ -219,7 +223,7 @@ export default class FrameWrapView extends View {
     `
     );
     this.elTools = elTools;
-    const twrp = cv.toolsWrapper;
+    const twrp = cv?.toolsWrapper;
     twrp && twrp.appendChild(elTools); // TODO remove on frame remove
     onRender &&
       onRender({

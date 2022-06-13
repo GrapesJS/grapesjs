@@ -47,9 +47,7 @@ export default abstract class Module<T extends ModuleConfig = ModuleConfig>
     this._em = em;
     this._name = moduleName;
     const name = this.name.charAt(0).toLowerCase() + this.name.slice(1);
-    const cfgParent = !isUndefined(em.config[name])
-      ? em.config[name]
-      : em.config[this.name];
+    const cfgParent = !isUndefined(em.config[name]) ? em.config[name] : em.config[this.name];
     const cfg = cfgParent === true ? {} : cfgParent || {};
     cfg.pStylePrefix = em.config.pStylePrefix || '';
 
