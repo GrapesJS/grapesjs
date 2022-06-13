@@ -1,6 +1,6 @@
 import ItemView from 'navigator/view/ItemView';
 import config from 'navigator/config/config';
-import EditorModel from '../../../../src/editor/model/Editor';
+import EditorModel from 'editor/model/Editor';
 
 describe('ItemView', () => {
   let itemView, fakeModel, fakeModelStyle;

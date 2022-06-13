@@ -280,6 +280,13 @@ const createId = (length = 16) => {
   return result;
 };
 
+export const buildBase64UrlFromSvg = (svg: string) => {
+  if (svg && svg.substr(0, 4) === '<svg') {
+    return `data:image/svg+xml;base64,${window.btoa(svg)}`;
+  }
+  return svg
+};
+
 export {
   on,
   off,
