@@ -70,7 +70,7 @@
     }
   },
   "lint-staged": {
-    "{src,test}/**/*.js": [
+    "{src,test}/**/*.(t|j)s": [
       "prettier --single-quote --print-width 120 --arrow-parens avoid --write",
       "git add"
     ]
