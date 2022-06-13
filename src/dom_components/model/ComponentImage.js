@@ -35,7 +35,7 @@ export default Component.extend(
     initialize(o, opt) {
       Component.prototype.initialize.apply(this, arguments);
       const { src } = this.get('attributes');
-      if (src && buildBase64UrlFromSvg(this.defaults.src) !== src) {
+      if (src && buildBase64UrlFromSvg(result(this, 'defaults').src) !== src) {
         this.set('src', src, { silent: 1 });
       }
     },
@@ -95,10 +95,9 @@ export default Component.extend(
     },
 
     isDefaultSrc() {
-      return (
-        this.get('src') === result(this, 'defaults').src ||
-        this.get('src') === buildBase64UrlFromSvg(result(this, 'defaults').src)
-      );
+      const src = this.get('src');
+      const srcDef = result(this, 'defaults').src;
+      return src === srcDef || src === buildBase64UrlFromSvg(srcDef);
     },
 
     /**
