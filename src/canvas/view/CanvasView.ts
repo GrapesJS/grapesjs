@@ -44,9 +44,9 @@ export default class CanvasView extends View<Canvas> {
   offsetEl?: HTMLElement;
   fixedOffsetEl?: HTMLElement;
   toolsGlobEl?: HTMLElement;
-  toolsEl?: HTMLElement; 
-  framesArea?: HTMLElement; 
-  toolsWrapper?: HTMLElement; 
+  toolsEl?: HTMLElement;
+  framesArea?: HTMLElement;
+  toolsWrapper?: HTMLElement;
   ready = false;
 
   frames!: FramesView;
@@ -56,7 +56,7 @@ export default class CanvasView extends View<Canvas> {
 
   private frmOff?: {top: number, left: number, width: number, height: number}
   private cvsOff?: {top: number, left: number, width: number, height: number}
-  
+
   constructor(model: Canvas) {
     super({model});
     bindAll(this, 'clearOff', 'onKeyPress', 'onCanvasMove');
@@ -83,11 +83,11 @@ export default class CanvasView extends View<Canvas> {
     frames?.remove();
     this.frames = new FramesView(
       {collection},
-      {config: {
+      {
         ...config,
         canvasView: this,
       },
-    });
+    );
   }
 
   checkSelected(component: Component, opts: any = {}) {
@@ -126,12 +126,13 @@ export default class CanvasView extends View<Canvas> {
   toggleListeners(enable: boolean) {
     const { el } = this;
     const fn = enable ? on : off;
+    // @ts-ignore
     fn(document, 'keypress', this.onKeyPress);
     fn(window, 'scroll resize', this.clearOff);
     // fn(el, 'mousemove dragover', this.onCanvasMove);
   }
 
-  onKeyPress(ev: Event) {
+  onKeyPress(ev: KeyboardEvent) {
     const { em } = this;
     const key = getKeyChar(ev);
 
