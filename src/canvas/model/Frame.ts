@@ -1,6 +1,6 @@
 import { result, forEach, isEmpty, isString } from 'underscore';
-import { Model } from "../../abstract";
-import CanvasModule from "..";
+import { Model } from '../../abstract';
+import CanvasModule from '..';
 import ComponentWrapper from '../../dom_components/model/ComponentWrapper';
 import { isComponent, isObject } from '../../utils/mixins';
 import FrameView from '../view/FrameView';
@@ -35,6 +35,9 @@ export default class Frame extends Model<CanvasModule> {
   }
   view?: FrameView;
 
+  /**
+   * @hideconstructor
+   */
   constructor(module: CanvasModule, props: any) {
     super(module, props);
     const { em } = this;
@@ -58,7 +61,7 @@ export default class Frame extends Model<CanvasModule> {
       // Avoid losing styles on remapped components
       const idMapKeys = Object.keys(idMap);
       if (idMapKeys.length && Array.isArray(styles)) {
-        styles.forEach((style) => {
+        styles.forEach(style => {
           const sel = style.selectors;
           if (sel && sel.length == 1) {
             const sSel = sel[0];
@@ -83,8 +86,8 @@ export default class Frame extends Model<CanvasModule> {
     !props.height && this.set(keyAutoH, 1);
   }
 
-  get head(): {tag: string, attributes: any}[]{
-    return this.get("head");
+  get head(): { tag: string; attributes: any }[] {
+    return this.get('head');
   }
 
   onRemove() {
@@ -120,21 +123,16 @@ export default class Frame extends Model<CanvasModule> {
     return [...this.head];
   }
 
-  setHead(value: {tag: string, attributes: any}[]) {
-    return this.set("head", [...value]);
+  setHead(value: { tag: string; attributes: any }[]) {
+    return this.set('head', [...value]);
   }
 
-  addHeadItem(item: {tag: string, attributes: any}) {
+  addHeadItem(item: { tag: string; attributes: any }) {
     this.head.push(item);
   }
 
   getHeadByAttr(attr: string, value: any, tag: string) {
-    return this.head.filter(
-      (item) =>
-        item.attributes &&
-        item.attributes[attr] == value &&
-        (!tag || tag === item.tag)
-    )[0];
+    return this.head.filter(item => item.attributes && item.attributes[attr] == value && (!tag || tag === item.tag))[0];
   }
 
   removeHeadByAttr(attr: string, value: any, tag: string) {
@@ -202,7 +200,7 @@ export default class Frame extends Model<CanvasModule> {
       if (obj[key] === value) delete obj[key];
     });
 
-    forEach(['attributes', 'head'], (prop) => {
+    forEach(['attributes', 'head'], prop => {
       if (isEmpty(obj[prop])) delete obj[prop];
     });
 
