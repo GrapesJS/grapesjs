@@ -79,7 +79,7 @@ export default class CanvasModule extends Module<typeof defaults> {
    * @private
    */
   constructor(em: EditorModel) {
-    super(em, "Canvas", defaults)
+    super(em, 'Canvas', defaults);
 
     this.canvas = new Canvas(this);
     this.model = this.canvas;
@@ -87,9 +87,7 @@ export default class CanvasModule extends Module<typeof defaults> {
     this.stopAutoscroll = this.stopAutoscroll.bind(this);
     return this;
   }
-  init(){
-    
-  }
+  init() {}
 
   onLoad() {
     this.model.init();
@@ -383,13 +381,13 @@ export default class CanvasModule extends Module<typeof defaults> {
     return result;
   }
 
-  canvasRectOffset(el: HTMLElement, pos: {top: number, left: number}, opts: any = {}) {
+  canvasRectOffset(el: HTMLElement, pos: { top: number; left: number }, opts: any = {}) {
     const getFrameElFromDoc = (doc: Document) => {
       const { defaultView } = doc;
       return defaultView?.frameElement as HTMLElement;
     };
 
-    const rectOff = (el: HTMLElement, top = 1, pos: {top: number, left: number}) => {
+    const rectOff = (el: HTMLElement, top = 1, pos: { top: number; left: number }) => {
       const zoom = this.em.getZoomDecimal();
       const side = top ? 'top' : 'left';
       const doc = el.ownerDocument;
@@ -608,7 +606,7 @@ export default class CanvasModule extends Module<typeof defaults> {
    * const coords = canvas.getCoords();
    * // { x: 100, y: 100 }
    */
-  getCoords(): {x: number, y: number} {
+  getCoords(): { x: number; y: number } {
     const { x, y } = this.canvas.attributes;
     return { x, y };
   }

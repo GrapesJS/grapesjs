@@ -10,11 +10,14 @@ import ComponentWrapper from '../../dom_components/model/ComponentWrapper';
 import FrameWrapView from './FrameWrapView';
 
 export default class FrameView extends View<Frame, HTMLIFrameElement> {
-
   //@ts-ignore
-  get tagName(){return 'iframe'};
+  get tagName() {
+    return 'iframe';
+  }
   //@ts-ignore
-  get attributes() {return { allowfullscreen: 'allowfullscreen' }};
+  get attributes() {
+    return { allowfullscreen: 'allowfullscreen' };
+  }
 
   dragging = false;
   droppable?: Droppable;
@@ -23,13 +26,12 @@ export default class FrameView extends View<Frame, HTMLIFrameElement> {
   lastClientY?: number;
   lastMaxHeight = 0;
   private jsContainer?: HTMLElement;
-  private tools: {[key: string]: HTMLElement} = {};
+  private tools: { [key: string]: HTMLElement } = {};
   private wrapper?: any;
   private frameWrapView?: FrameWrapView;
 
-
   constructor(model: Frame, view?: FrameWrapView) {
-    super({model});
+    super({ model });
     bindAll(this, 'updateClientY', 'stopAutoscroll', 'autoscroll', '_emitUpdate');
     const { el, em } = this;
     //el = em.config.el
@@ -331,7 +333,8 @@ export default class FrameView extends View<Frame, HTMLIFrameElement> {
     const body = this.getBody();
     const win = this.getWindow();
     const conf = em.config;
-    //@ts-ignore TODO I don't understand why this needed nowhere else is used
+    //@ts-ignore This could be used inside component-related scripts to check if the
+    // script is executed inside the editor.
     win._isEditor = true;
     this.renderStyles({ prev: [] });
 

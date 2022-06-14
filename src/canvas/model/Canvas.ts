@@ -1,8 +1,8 @@
-import { Model } from "../../abstract";
-import { evPageSelect } from "../../pages";
-import Frames from "./Frames";
-import Page from "../../pages/model/Page";
-import CanvasModule from "..";
+import { Model } from '../../abstract';
+import { evPageSelect } from '../../pages';
+import Frames from './Frames';
+import Page from '../../pages/model/Page';
+import CanvasModule from '..';
 
 export default class Canvas extends Model<CanvasModule> {
   defaults() {
@@ -23,10 +23,10 @@ export default class Canvas extends Model<CanvasModule> {
   constructor(module: CanvasModule) {
     const { em, config } = module;
     const { scripts, styles } = config;
-    super(module, {scripts, styles});
-    this.set("frames", new Frames(module))
-    this.listenTo(this, "change:zoom", this.onZoomChange);
-    this.listenTo(em, "change:device", this.updateDevice);
+    super(module, { scripts, styles });
+    this.set('frames', new Frames(module));
+    this.listenTo(this, 'change:zoom', this.onZoomChange);
+    this.listenTo(em, 'change:device', this.updateDevice);
     this.listenTo(em, evPageSelect, this._pageUpdated);
   }
 
@@ -47,7 +47,7 @@ export default class Canvas extends Model<CanvasModule> {
     em.setSelected();
     em.get('readyCanvas') && em.stopDefault(); // We have to stop before changing current frames
     //@ts-ignore
-    prev?.getFrames().map((frame) => frame.disable());
+    prev?.getFrames().map(frame => frame.disable());
     this.set('frames', page.getFrames());
   }
 
