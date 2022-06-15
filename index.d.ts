@@ -250,6 +250,8 @@ declare namespace grapesjs {
 
     /** Keep unused styles within the editor **/
     keepUnusedStyles?: 0;
+
+    layerManager?: LayerManagerConfig;
   }
 
   interface AssetManagerConfig {
@@ -422,6 +424,11 @@ declare namespace grapesjs {
   interface DeviceManagerConfig {
     devices?: Array<object>;
     deviceLabel?: string;
+  }
+
+  interface LayerManagerConfig {
+    appendTo: string;
+    scrollLayers?: number
   }
 
   function init(config: EditorConfig): Editor;
