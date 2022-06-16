@@ -8,14 +8,14 @@ import EditorModel from '../../editor/model/Editor';
 import LayerManager from '../index';
 
 export type ItemViewProps = Backbone.ViewOptions & {
-  ItemView: ItemView,
-  level: number,
-  config: any,
-  opened: {},
-  model: Component,
-  module: LayerManager,
-  sorter: any,
-  parentView: ItemView,
+  ItemView: ItemView;
+  level: number;
+  config: any;
+  opened: {};
+  model: Component;
+  module: LayerManager;
+  sorter: any;
+  parentView: ItemView;
 };
 
 const inputProp = 'contentEditable';
@@ -116,26 +116,11 @@ export default class ItemView extends View {
     bindAll(this, '__render');
     this.opt = opt;
     this.module = opt.module;
-    const config = opt.config || {};
-    const { onInit } = config;
-    this.config = config;
+    this.config = opt.config || {};
     this.sorter = opt.sorter || '';
     this.parentView = opt.parentView;
-    const pfx = this.pfx;
-    const ppfx = this.ppfx;
-    const model = this.model;
-    const components = model.get('components');
+    const { model, pfx, ppfx } = this;
     const type = model.get('type') || 'default';
-    this.listenTo(components, 'remove add reset', this.checkChildren);
-    [
-      ['change:status', this.updateStatus],
-      ['change:open', this.updateOpening],
-      ['change:layerable', this.updateLayerable],
-      ['change:style:display', this.updateVisibility],
-      ['rerender:layer', this.render],
-      ['change:name change:custom-name', this.updateName],
-    // @ts-ignore
-    ].forEach((item) => this.listenTo(model, item[0], item[1]));
     this.className = `${pfx}layer ${pfx}layer__t-${type} no-select ${ppfx}two-color`;
     this.inputNameCls = `${ppfx}layer-name`;
     this.clsTitleC = `${pfx}layer-title-c`;
@@ -147,6 +132,23 @@ export default class ItemView extends View {
     this.clsNoChild = `${pfx}layer-no-chld`;
     this.clsEdit = `${this.inputNameCls}--edit`;
     this.clsNoEdit = `${this.inputNameCls}--no-edit`;
+    this.initComponent();
+  }
+
+  initComponent() {
+    const { model, config } = this;
+    const { onInit } = config;
+    const components = model.components();
+    this.listenTo(components, 'remove add reset', this.checkChildren);
+    [
+      ['change:status', this.updateStatus],
+      ['change:open', this.updateOpening],
+      ['change:layerable', this.updateLayerable],
+      ['change:style:display', this.updateVisibility],
+      ['rerender:layer', this.render],
+      ['change:name change:custom-name', this.updateName],
+      // @ts-ignore
+    ].forEach(item => this.listenTo(model, item[0], item[1]));
     this.$el.data('model', model);
     this.$el.data('collection', components);
     // @ts-ignore
@@ -225,7 +227,7 @@ export default class ItemView extends View {
     $el.find(`.${this.inputNameCls}`).addClass(clsNoEdit).removeClass(clsEdit);
   }
 
-  setName(name: string, { propName }: { propName: string, component?: Component }) {
+  setName(name: string, { propName }: { propName: string; component?: Component }) {
     this.model.set(propName, name);
   }
 
@@ -365,7 +367,7 @@ export default class ItemView extends View {
     if (!model) return;
     this.stopListening();
     this.model = model;
-    this.initialize(this.opt);
+    this.initComponent();
     this._rendered && this.render();
   }
 
