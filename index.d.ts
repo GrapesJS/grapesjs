@@ -852,13 +852,6 @@ declare namespace grapesjs {
      */
     store(options: StorageOptions): Promise<any>;
     /**
-     * Get the JSON data object, which could be stored and loaded back with `editor.loadData(json)`
-     * @example
-     * console.log(editor.storeData());
-     * // { pages: [...], styles: [...], ... }
-     */
-    storeData(): any;
-    /**
      * Load data from the current storage
      * @param options - Storage options
      * @returns Loaded data
@@ -867,13 +860,20 @@ declare namespace grapesjs {
      */
     load(options: StorageOptions): Promise<any>;
     /**
-     * Load data from the JSON data object
+     * Get the JSON project data, which could be stored and loaded back with `editor.loadProjectData(json)`
+     * @returns {Object}
      * @example
-     * editor.loadData({ pages: [...], styles: [...], ... })
-     * @param data - Data to load
-     * @returns Loaded object
+     * console.log(editor.getProjectData());
+     * // { pages: [...], styles: [...], ... }
      */
-    loadData(data: any): any;
+    getProjectData(): any;
+    /**
+     * Load data from the JSON project
+     * @param {Object} data Project to load
+     * @example
+     * editor.loadProjectData({ pages: [...], styles: [...], ... })
+     */
+    loadProjectData(data: any): any;
     /**
      * Returns container element. The one which was indicated as 'container'
      * on init method
