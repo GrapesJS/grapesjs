@@ -369,6 +369,8 @@ grapesjs.init({
           });
           return { id: projectID, data, pagesHtml };
         },
+        // If on load, you're returning the same JSON from above...
+        onLoad: result => result.data,
       }
     },
   },
