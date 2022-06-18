@@ -447,34 +447,34 @@ declare namespace grapesjs {
 
     /** Style prefix */
     stylePrefix?: string;
-  
+
     /** Enable/Disable globally the possibility to sort layers */
     sortable?: boolean;
-  
+
     /** Enable/Disable globally the possibility to hide layers */
     hidable?: boolean;
-  
+
     /** Hide textnodes */
     hideTextnode?: boolean;
-  
+
     /** Indicate a query string of the element to be selected as the root of layers.
     * By default the root is the wrapper */
     root?: string;
-  
+
     /** Indicates if the wrapper is visible in layers */
     showWrapper?: boolean;
-  
+
     /** Show hovered components in canvas */
     showHover?: boolean;
-  
+
     /** Scroll to selected component in Canvas when it's selected in Layers
     * true, false or `scrollIntoView`-like options,
     * `block: 'nearest'` avoids the issue of window scrolling */
     scrollCanvas?: boolean | LayerManagerScrollCanvasConfig;
-  
+
     /** Highlight when a layer component is hovered */
     highlightHover?: boolean;
-  
+
     /**
      * WARNING: Experimental option
      * A callback triggered once the component layer is initialized.
@@ -485,7 +485,7 @@ declare namespace grapesjs {
      * };
      */
     onInit?: () => any;
-  
+
     /**
      * WARNING: Experimental option
      * A callback triggered once the component layer is rendered.
@@ -498,7 +498,7 @@ declare namespace grapesjs {
      * }
      */
     onRender?: () => any;
-  
+
     /**
      * Extend Layer view object (view/ItemView.js)
      * @example
@@ -1701,9 +1701,9 @@ declare namespace grapesjs {
      */
     add(
       id: string,
-      command: (editor: Editor) => void | {
-        run: (editor: Editor, sender?: any) => void;
-        stop: (editor: Editor, sender?: any) => void;
+      command: (editor: Editor, sender?: any, opts?: Record<string, any>) => any | {
+        run: (editor: Editor, sender?: any) => any;
+        stop: (editor: Editor, sender?: any) => any;
       }
     ): void;
     /**
@@ -1779,13 +1779,13 @@ declare namespace grapesjs {
   }
 
   interface AddComponentOptions {
-    isComponent?: (el: HTMLElement) => boolean | ComponentProperties;
+    isComponent?: (el: HTMLElement) => boolean | ComponentDefinition;
     model?: ComponentModelDefinition;
     view?: ComponentViewDefinition;
   }
 
   interface ComponentModelDefinition {
-    defaults?: ComponentProperties;
+    defaults?: ComponentDefinition;
     init?: (this: Component) => void;
     handlePropChange?: (this: Component) => void;
     handleAttrChange?: (this: Component) => void;
@@ -2141,6 +2141,17 @@ declare namespace grapesjs {
     // * Children components. Default: `null`
     // */
     components?: Backbone.Collection<Component>;
+  }
+
+  interface ComponentDefinition extends Omit<ComponentProperties, 'components'> {
+    /**
+     * Children components.
+     */
+    components?: string | ComponentDefinition | (string | ComponentDefinition)[];
+    [key: string]: unknown;
+  }
+
+  interface ComponentModelProperties extends ComponentProperties {
     [key: string]: any;
   }
 
@@ -2161,7 +2172,7 @@ declare namespace grapesjs {
    *
    * [Component]: component.html
    */
-  interface Component extends Backbone.Model<ComponentProperties> {
+  interface Component extends Backbone.Model<ComponentModelProperties> {
     view?: ComponentView;
 
     /**
