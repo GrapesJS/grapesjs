@@ -1701,9 +1701,9 @@ declare namespace grapesjs {
      */
     add(
       id: string,
-      command: (editor: Editor) => void | {
-        run: (editor: Editor, sender?: any) => void;
-        stop: (editor: Editor, sender?: any) => void;
+      command: (editor: Editor, sender?: any, opts?: Record<string, any>) => any | {
+        run: (editor: Editor, sender?: any) => any;
+        stop: (editor: Editor, sender?: any) => any;
       }
     ): void;
     /**
