@@ -1051,6 +1051,15 @@ export default class Component extends StyleableModel {
   }
 
   /**
+   * Return all parents of the component.
+   * @returns {Array<[Component]>}
+   */
+  parents() {
+    const parent = this.parent();
+    return parent ? [parent].concat(parent.parents()) : [];
+  }
+
+  /**
    * Script updated
    * @private
    */
