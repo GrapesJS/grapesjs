@@ -72,7 +72,7 @@
   },
   "lint-staged": {
     "{src,test}/**/*.(t|j)s": [
-      "npm run lint -- --fix",
+      "eslint --ext .ts,.js --fix",
       "prettier --single-quote --print-width 120 --arrow-parens avoid --write",
       "git add"
     ]
