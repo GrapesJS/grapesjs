@@ -646,7 +646,10 @@ export default class ComponentManager extends ItemManagerModule {
       }
     }
 
-    if (!droppable) return { ...result, reason: 2 };
+    // Ensure the target is not inside the source
+    const isTargetInside = [target].concat(target.parents()).indexOf(srcModel) > -1;
+
+    if (!droppable || isTargetInside) return { ...result, reason: 2 };
 
     return { ...result, result: true };
   }

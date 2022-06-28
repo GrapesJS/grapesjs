@@ -1052,7 +1052,7 @@ export default class Component extends StyleableModel {
 
   /**
    * Return all parents of the component.
-   * @returns {Array<[Component]>}
+   * @returns {Array<Component>}
    */
   parents() {
     const parent = this.parent();
