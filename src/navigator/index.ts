@@ -1,3 +1,35 @@
+/**
+ * You can customize the initial state of the module from the editor initialization
+ * ```js
+ * const editor = grapesjs.init({
+ *  // ...
+ *  layerManager: {
+ *    // ...
+ *  },
+ * })
+ * ```
+ *
+ * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+ *
+ * ```js
+ * const layers = editor.Layers;
+ * ```
+ *
+ * ## Available Events
+ * * `layer:root` - Root layer changed. The new root component is passed as an argument to the callback.
+ * * `layer:component` - Component layer is updated. The updated component is passed as an argument to the callback.
+ *
+ * ## Methods
+ * * [setRoot](#setroot)
+ * * [getRoot](#getroot)
+ * * [getLayerData](#getlayerdata)
+ *
+ * [Page]: page.html
+ * [Component]: component.html
+ *
+ * @module Layers
+ */
+
 import { isString, bindAll } from 'underscore';
 import { Model } from '../abstract';
 import Module from '../abstract/Module';
@@ -8,13 +40,13 @@ import defaults from './config/config';
 import View from './view/ItemView';
 
 interface LayerData {
-  name: string,
-  open: boolean,
-  selected: boolean,
-  hovered: boolean,
-  visible: boolean,
-  locked: boolean,
-  components: Component[],
+  name: string;
+  open: boolean;
+  selected: boolean;
+  hovered: boolean;
+  visible: boolean;
+  locked: boolean;
+  components: Component[];
 }
 
 export const evAll = 'layer';
@@ -31,255 +63,270 @@ const events = {
 const styleOpts = { mediaText: '' };
 
 const propsToListen = ['open', 'status', 'locked', 'custom-name', 'components', 'classes']
-  .map(p => `component:update:${p}`).join(' ');
+  .map(p => `component:update:${p}`)
+  .join(' ');
 
 const isStyleHidden = (style: any = {}) => {
   return (style.display || '').trim().indexOf('none') === 0;
 };
 
 export default class LayerManager extends Module<typeof defaults> {
-    model!: Model;
+  model!: Model;
 
-    view?: View;
+  view?: View;
 
-    events = events;
+  events = events;
 
-    constructor(em: EditorModel) {
-      super(em, 'LayerManager', defaults);
-      bindAll(this, 'componentChanged', '__onRootChange', '__onComponent');
-      this.model = new Model(this, { opened: {} });
-      // @ts-ignore
-      this.config.stylePrefix = this.config.pStylePrefix;
-      return this;
+  constructor(em: EditorModel) {
+    super(em, 'LayerManager', defaults);
+    bindAll(this, 'componentChanged', '__onRootChange', '__onComponent');
+    this.model = new Model(this, { opened: {} });
+    // @ts-ignore
+    this.config.stylePrefix = this.config.pStylePrefix;
+    return this;
+  }
+
+  onLoad() {
+    const { em, config, model } = this;
+    model.listenTo(em, 'component:selected', this.componentChanged);
+    model.on('change:root', this.__onRootChange);
+    model.listenTo(em, propsToListen, this.__onComponent);
+    this.componentChanged();
+    model.listenToOnce(em, 'load', () => {
+      this.setRoot(config.root);
+      this.__appendTo();
+    });
+  }
+
+  /**
+   * Update root layer with another component.
+   * @param {[Component]|String} component Component to be set as root
+   * @return {[Component]}
+   * @example
+   * const component = editor.getSelected();
+   * layers.setRoot(component);
+   */
+  setRoot(component: Component | string): Component {
+    const wrapper: Component = this.em.getWrapper();
+    let root = isComponent(component) ? (component as Component) : wrapper;
+
+    if (component && isString(component) && hasWin()) {
+      root = wrapper.find(component)[0] || wrapper;
     }
 
-    onLoad() {
-      const { em, config, model } = this;
-      model.listenTo(em, 'component:selected', this.componentChanged);
-      model.on('change:root', this.__onRootChange);
-      model.listenTo(em, propsToListen, this.__onComponent);
-      this.componentChanged();
-      model.listenToOnce(em, 'load', () => {
-        this.setRoot(config.root);
-        this.__appendTo();
-      });
+    this.model.set('root', root);
+
+    return root;
+  }
+
+  /**
+   * Get the current root layer.
+   * @return {[Component]}
+   * @example
+   * const layerRoot = layers.getRoot();
+   */
+  getRoot(): Component {
+    return this.model.get('root'); // || this.em.getWrapper();
+  }
+
+  /**
+   * Get layer data from a component.
+   * @param {[Component]} component Component from which you want to read layer data.
+   * @returns {LayerData} Object containing layer data
+   * @example
+   * const component = editor.getSelected();
+   * const layerData = layers.getLayerData(component);
+   * console.log(layerData);
+   */
+  getLayerData(component: Component): LayerData {
+    const status = component.get('status');
+
+    return {
+      name: component.getName(),
+      open: this.isOpen(component),
+      selected: status === 'selected',
+      hovered: status === 'hovered', // || this.em.getHovered() === component,
+      visible: this.isVisible(component),
+      locked: this.isLocked(component),
+      components: this.getComponents(component),
+    };
+  }
+
+  setLayerData(component: any, data: Partial<Omit<LayerData, 'components'>>, opts = {}) {
+    const { em, config } = this;
+    const { open, selected, hovered, visible, locked, name } = data;
+    const cmpOpts = { fromLayers: true, ...opts };
+
+    if (isDef(open)) {
+      this.setOpen(component, open!);
     }
-
-    /**
-     * Set new root for layers
-     * @param {Component|string} component Component to be set as the root
-     * @return {Component}
-     */
-    setRoot(component: Component | string): Component {
-      const wrapper: Component = this.em.getWrapper();
-      let root = isComponent(component) ? component as Component : wrapper;
-
-      if (component && isString(component) && hasWin()) {
-        root = wrapper.find(component)[0] || wrapper;
-      }
-
-      this.model.set('root', root);
-
-      return root;
-    }
-
-    /**
-     * Get the root of layers
-     * @return {Component}
-     */
-    getRoot(): Component {
-      return this.model.get('root');// || this.em.getWrapper();
-    }
-
-    getLayerData(component: any): LayerData {
-      const status = component.get('status');
-
-      return {
-        name: component.getName(),
-        open: this.isOpen(component),
-        selected: status === 'selected',
-        hovered: status === 'hovered', // || this.em.getHovered() === component,
-        visible: this.isVisible(component),
-        locked: this.isLocked(component),
-        components: this.getComponents(component),
-      }
-    }
-
-    setLayerData(component: any, data: Partial<Omit<LayerData, 'components'>>, opts = {}) {
-      const { em, config } = this;
-      const { open, selected, hovered, visible, locked, name } = data;
-      const cmpOpts = { fromLayers: true, ...opts };
-
-      if (isDef(open)) {
-        this.setOpen(component, open!);
-      }
-      if (isDef(selected)) {
-        if (selected) {
-          em.setSelected(component, cmpOpts);
-          const scroll = config.scrollCanvas;
-          scroll && component.views.forEach((view: any) => view.scrollIntoView(scroll));
-        } else {
-          em.removeSelected(component, cmpOpts);
-        }
-      }
-      if (isDef(hovered) && config.showHover) {
-        hovered ? em.setHovered(component, cmpOpts) : em.setHovered(null, cmpOpts);
-      }
-      if (isDef(visible)) {
-        visible !== this.isVisible(component) && this.setVisible(component, visible!);
-      }
-      if (isDef(locked)) {
-        this.setLocked(component, locked!);
-      }
-      if (isDef(name)) {
-        this.setName(component, name!);
-      }
-    }
-
-    getComponents(component: Component): Component[] {
-      return component.components().filter((cmp: any) => this.__isLayerable(cmp));
-    }
-
-    setOpen(component: Component, value: boolean) {
-      component.set('open', value);
-    }
-
-    isOpen(component: Component): boolean {
-      return !!component.get('open');
-    }
-
-    /**
-     * Update component visibility
-     * */
-    setVisible(component: Component, value: boolean) {
-      const prevDspKey = '__prev-display';
-      const style: any = component.getStyle(styleOpts);
-      const { display } = style;
-
-      if (value) {
-        const prevDisplay = component.get(prevDspKey);
-        delete style.display;
-
-        if (prevDisplay) {
-          style.display = prevDisplay;
-          component.unset(prevDspKey);
-        }
+    if (isDef(selected)) {
+      if (selected) {
+        em.setSelected(component, cmpOpts);
+        const scroll = config.scrollCanvas;
+        scroll && component.views.forEach((view: any) => view.scrollIntoView(scroll));
       } else {
-        display && component.set(prevDspKey, display);
-        style.display = 'none';
+        em.removeSelected(component, cmpOpts);
       }
+    }
+    if (isDef(hovered) && config.showHover) {
+      hovered ? em.setHovered(component, cmpOpts) : em.setHovered(null, cmpOpts);
+    }
+    if (isDef(visible)) {
+      visible !== this.isVisible(component) && this.setVisible(component, visible!);
+    }
+    if (isDef(locked)) {
+      this.setLocked(component, locked!);
+    }
+    if (isDef(name)) {
+      this.setName(component, name!);
+    }
+  }
 
-      component.setStyle(style, styleOpts);
-      this.updateLayer(component);
-      this.em.trigger('component:toggled'); // Updates Style Manager #2938
+  getComponents(component: Component): Component[] {
+    return component.components().filter((cmp: any) => this.__isLayerable(cmp));
+  }
+
+  setOpen(component: Component, value: boolean) {
+    component.set('open', value);
+  }
+
+  isOpen(component: Component): boolean {
+    return !!component.get('open');
+  }
+
+  /**
+   * Update component visibility
+   * */
+  setVisible(component: Component, value: boolean) {
+    const prevDspKey = '__prev-display';
+    const style: any = component.getStyle(styleOpts);
+    const { display } = style;
+
+    if (value) {
+      const prevDisplay = component.get(prevDspKey);
+      delete style.display;
+
+      if (prevDisplay) {
+        style.display = prevDisplay;
+        component.unset(prevDspKey);
+      }
+    } else {
+      display && component.set(prevDspKey, display);
+      style.display = 'none';
     }
 
-    /**
-     * Check if the component is visible
-     * */
-    isVisible(component: Component): boolean {
-      return !isStyleHidden(component.getStyle(styleOpts));
+    component.setStyle(style, styleOpts);
+    this.updateLayer(component);
+    this.em.trigger('component:toggled'); // Updates Style Manager #2938
+  }
+
+  /**
+   * Check if the component is visible
+   * */
+  isVisible(component: Component): boolean {
+    return !isStyleHidden(component.getStyle(styleOpts));
+  }
+
+  /**
+   * Update component locked value
+   * */
+  setLocked(component: Component, value: boolean) {
+    component.set('locked', value);
+  }
+
+  /**
+   * Check if the component is locked
+   * */
+  isLocked(component: Component): boolean {
+    return component.get('locked');
+  }
+
+  /**
+   * Update component name
+   * */
+  setName(component: Component, value: string) {
+    component.set('custom-name', value);
+  }
+
+  /**
+   * Return the view of layers
+   * @return {View}
+   * @private
+   */
+  getAll() {
+    return this.view;
+  }
+
+  /**
+   * Triggered when the selected component is changed
+   * @private
+   */
+  componentChanged(sel?: Component, opts = {}) {
+    // @ts-ignore
+    if (opts.fromLayers) return;
+    const { em, config } = this;
+    const { scrollLayers } = config;
+    const opened = this.model.get('opened');
+    const selected = em.getSelected();
+    let parent = selected?.parent();
+
+    for (let cid in opened) {
+      opened[cid].set('open', false);
+      delete opened[cid];
     }
 
-    /**
-     * Update component locked value
-     * */
-    setLocked(component: Component, value: boolean) {
-      component.set('locked', value);
+    while (parent) {
+      parent.set('open', true);
+      opened[parent.cid] = parent;
+      parent = parent.parent();
     }
 
-    /**
-     * Check if the component is locked
-     * */
-    isLocked(component: Component): boolean {
-      return component.get('locked');
-    }
-
-    /**
-     * Update component name
-     * */
-    setName(component: Component, value: string) {
-      component.set('custom-name', value);
-    }
-
-    /**
-     * Return the view of layers
-     * @return {View}
-     * @private
-     */
-    getAll() {
-      return this.view;
-    }
-
-    /**
-     * Triggered when the selected component is changed
-     * @private
-     */
-    componentChanged(sel?: Component, opts = {}) {
+    if (selected && scrollLayers) {
       // @ts-ignore
-      if (opts.fromLayers) return;
-      const { em, config } = this;
-      const { scrollLayers } = config;
-      const opened = this.model.get('opened');
-      const selected = em.getSelected();
-      let parent = selected?.parent();
-
-      for (let cid in opened) {
-        opened[cid].set('open', false);
-        delete opened[cid];
-      }
-
-      while (parent) {
-        parent.set('open', true);
-        opened[parent.cid] = parent;
-        parent = parent.parent();
-      }
-
-      if (selected && scrollLayers) {
-        // @ts-ignore
-        const el = selected.viewLayer?.el;
-        el?.scrollIntoView(scrollLayers);
-      }
+      const el = selected.viewLayer?.el;
+      el?.scrollIntoView(scrollLayers);
     }
+  }
 
-    render() {
-      const { config, model } = this;
-      const ItemView = View.extend(config.extend);
-      this.view = new ItemView({
-        el: this.view?.el,
-        ItemView,
-        level: 0,
-        config,
-        opened: model.get('opened'),
-        model: this.getRoot(),
-        module: this,
-      });
-      return this.view?.render().el as HTMLElement;
-    }
+  render() {
+    const { config, model } = this;
+    const ItemView = View.extend(config.extend);
+    this.view = new ItemView({
+      el: this.view?.el,
+      ItemView,
+      level: 0,
+      config,
+      opened: model.get('opened'),
+      model: this.getRoot(),
+      module: this,
+    });
+    return this.view?.render().el as HTMLElement;
+  }
 
-    destroy() {
-      this.view?.remove();
-    }
+  destroy() {
+    this.view?.remove();
+  }
 
-    __onRootChange() {
-      const root = this.getRoot();
-      this.view?.setRoot(root);
-      this.em.trigger(evRoot, root);
-    }
+  __onRootChange() {
+    const root = this.getRoot();
+    this.view?.setRoot(root);
+    this.em.trigger(evRoot, root);
+  }
 
-    __onComponent(component: Component) {
-      this.updateLayer(component);
-    }
+  __onComponent(component: Component) {
+    this.updateLayer(component);
+  }
 
-    __isLayerable(cmp: Component): boolean {
-      const tag = cmp.get('tagName');
-      const hideText = this.config.hideTextnode;
-      const isValid = !hideText || (!cmp.is('textnode') && tag !== 'br');
+  __isLayerable(cmp: Component): boolean {
+    const tag = cmp.get('tagName');
+    const hideText = this.config.hideTextnode;
+    const isValid = !hideText || (!cmp.is('textnode') && tag !== 'br');
 
-      return isValid && cmp.get('layerable');
-    }
+    return isValid && cmp.get('layerable');
+  }
 
-    updateLayer(component: Component, opts?: any) {
-      this.em.trigger(evComponent, component, opts);
-    }
-};
+  updateLayer(component: Component, opts?: any) {
+    this.em.trigger(evComponent, component, opts);
+  }
+}
