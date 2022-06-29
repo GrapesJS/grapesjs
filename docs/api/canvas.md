@@ -55,15 +55,9 @@ By changing `result.content` you're able to customize what is dropped
 
 ## getConfig
 
-Get the configuration object
+Get configuration object
 
-### Examples
-
-```javascript
-console.log(canvas.getConfig())
-```
-
-Returns **[Object][15]** Configuration object
+Returns **[Object][15]** 
 
 ## getElement
 
