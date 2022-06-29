@@ -230,7 +230,7 @@ class Resizer {
 
     this.el = el;
     this.updateContainer({ forceShow: 1 });
-    on(this.getDocumentEl(), 'mousedown', this.handleMouseDown);
+    on(this.getDocumentEl(), 'pointerdown', this.handleMouseDown);
   }
 
   /**
@@ -240,7 +240,7 @@ class Resizer {
     this.container.style.display = 'none';
 
     if (this.el) {
-      off(this.getDocumentEl(), 'mousedown', this.handleMouseDown);
+      off(this.getDocumentEl(), 'pointerdown', this.handleMouseDown);
       this.el = null;
     }
   }
@@ -289,9 +289,9 @@ class Resizer {
     // Listen events
     const docs = this.getDocumentEl();
     this.docs = docs;
-    on(docs, 'mousemove', this.move);
+    on(docs, 'pointermove', this.move);
     on(docs, 'keydown', this.handleKeyDown);
-    on(docs, 'mouseup', this.stop);
+    on(docs, 'pointerup', this.stop);
     isFunction(this.onStart) && this.onStart(e, { docs, config, el, resizer });
     this.toggleFrames(1);
     this.move(e);
@@ -310,7 +310,6 @@ class Resizer {
           x: e.clientX,
           y: e.clientY,
         };
-
     this.currentPos = currentPos;
     this.delta = {
       x: currentPos.x - this.startPos.x,
@@ -327,11 +326,6 @@ class Resizer {
 
     // Move callback
     onMove && onMove(e);
-
-    // In case the mouse button was released outside of the window
-    if (e.which === 0) {
-      this.stop(e);
-    }
   }
 
   /**
@@ -341,9 +335,9 @@ class Resizer {
   stop(e) {
     const config = this.opts;
     const docs = this.docs || this.getDocumentEl();
-    off(docs, 'mousemove', this.move);
+    off(docs, 'pointermove', this.move);
     off(docs, 'keydown', this.handleKeyDown);
-    off(docs, 'mouseup', this.stop);
+    off(docs, 'pointerup', this.stop);
     this.updateRect(1);
     this.toggleFrames();
     isFunction(this.onEnd) && this.onEnd(e, { docs, config });
