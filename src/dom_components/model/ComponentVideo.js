@@ -6,6 +6,8 @@ const yt = 'yt';
 const vi = 'vi';
 const ytnc = 'ytnc';
 
+const hasParam = value => value && value !== '0';
+
 export default Component.extend(
   {
     defaults: {
@@ -71,22 +73,21 @@ export default Component.extend(
      * Set attributes by src string
      */
     parseFromSrc() {
-      var prov = this.get('provider');
-      var uri = this.parseUri(this.get('src'));
-      var qr = uri.query;
+      const prov = this.get('provider');
+      const uri = this.parseUri(this.get('src'));
+      const qr = uri.query;
       switch (prov) {
         case yt:
         case ytnc:
         case vi:
-          var videoId = uri.pathname.split('/').pop();
-          this.set('videoId', videoId);
+          this.set('videoId', uri.pathname.split('/').pop());
           qr.list && this.set('list', qr.list);
-          if (qr.autoplay) this.set('autoplay', 1);
-          if (qr.loop) this.set('loop', 1);
-          if (parseInt(qr.controls) === 0) this.set('controls', 0);
-          if (qr.color) this.set('color', qr.color);
-          if (qr.rel === '0') this.set('rel', 0);
-          if (qr.modestbranding === '1') this.set('modestbranding', 1);
+          hasParam(qr.autoplay) && this.set('autoplay', 1);
+          hasParam(qr.loop) && this.set('loop', 1);
+          parseInt(qr.controls) === 0 && this.set('controls', 0);
+          hasParam(qr.color) && this.set('color', qr.color);
+          qr.rel === '0' && this.set('rel', 0);
+          qr.modestbranding === '1' && this.set('modestbranding', 1);
           break;
         default:
       }
