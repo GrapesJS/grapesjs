@@ -23,6 +23,14 @@
  * * [setRoot](#setroot)
  * * [getRoot](#getroot)
  * * [getLayerData](#getlayerdata)
+ * * [getComponents](#getcomponents)
+ * * [setOpen](#setopen)
+ * * [isOpen](#isopen)
+ * * [setVisible](#setvisible)
+ * * [isVisible](#isvisible)
+ * * [setlocked](#setlocked)
+ * * [isLocked](#islocked)
+ * * [setName](#setname)
  *
  * [Page]: page.html
  * [Component]: component.html
@@ -183,21 +191,42 @@ export default class LayerManager extends Module<typeof defaults> {
     }
   }
 
+  /**
+   * Get valid layer child components (eg. excludes non layerable components).
+   * @param {[Component]} component Component from which you want to get child components
+   * @returns {Array<[Component]>}
+   * @example
+   * const component = editor.getSelected();
+   * const components = layers.getComponents(component);
+   * console.log(components);
+   */
   getComponents(component: Component): Component[] {
     return component.components().filter((cmp: any) => this.__isLayerable(cmp));
   }
 
+  /**
+   * Update the layer open state of the component.
+   * @param {[Component]} component Component to update
+   * @param {Boolean} value
+   */
   setOpen(component: Component, value: boolean) {
     component.set('open', value);
   }
 
+  /**
+   * Check the layer open state of the component.
+   * @param {[Component]} component
+   * @returns {Boolean}
+   */
   isOpen(component: Component): boolean {
     return !!component.get('open');
   }
 
   /**
-   * Update component visibility
-   * */
+   * Update the layer visibility state of the component.
+   * @param {[Component]} component Component to update
+   * @param {Boolean} value
+   */
   setVisible(component: Component, value: boolean) {
     const prevDspKey = '__prev-display';
     const style: any = component.getStyle(styleOpts);
@@ -222,40 +251,39 @@ export default class LayerManager extends Module<typeof defaults> {
   }
 
   /**
-   * Check if the component is visible
-   * */
+   * Check the layer visibility state of the component.
+   * @param {[Component]} component
+   * @returns {Boolean}
+   */
   isVisible(component: Component): boolean {
     return !isStyleHidden(component.getStyle(styleOpts));
   }
 
   /**
-   * Update component locked value
-   * */
+   * Update the layer locked state of the component.
+   * @param {[Component]} component Component to update
+   * @param {Boolean} value
+   */
   setLocked(component: Component, value: boolean) {
     component.set('locked', value);
   }
 
   /**
-   * Check if the component is locked
-   * */
+   * Check the layer locked state of the component.
+   * @param {[Component]} component
+   * @returns {Boolean}
+   */
   isLocked(component: Component): boolean {
     return component.get('locked');
   }
 
   /**
-   * Update component name
-   * */
+   * Update the layer name state of the component.
+   * @param {[Component]} component Component to update
+   * @param {String} value New name
+   */
   setName(component: Component, value: string) {
     component.set('custom-name', value);
-  }
-
-  /**
-   * Return the view of layers
-   * @return {View}
-   * @private
-   */
-  getAll() {
-    return this.view;
   }
 
   /**
@@ -287,6 +315,10 @@ export default class LayerManager extends Module<typeof defaults> {
       const el = selected.viewLayer?.el;
       el?.scrollIntoView(scrollLayers);
     }
+  }
+
+  getAll() {
+    return this.view;
   }
 
   render() {
