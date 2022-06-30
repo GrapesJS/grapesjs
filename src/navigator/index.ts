@@ -107,7 +107,7 @@ export default class LayerManager extends Module<typeof defaults> {
   }
 
   /**
-   * Update root layer with another component.
+   * Update the root layer with another component.
    * @param {[Component]|String} component Component to be set as root
    * @return {[Component]}
    * @example

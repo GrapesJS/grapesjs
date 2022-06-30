@@ -72,6 +72,7 @@ module.exports = {
         ['/api/panels', 'Panels'],
         ['/api/pages', 'Pages'],
         ['/api/page', `${subDivider}Page`],
+        ['/api/layer_manager', 'Layers'],
         ['/api/style_manager', 'Style Manager'],
         ['/api/sector', `${subDivider}Sector`],
         ['/api/property', `${subDivider}Property`],

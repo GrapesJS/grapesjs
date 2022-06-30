@@ -28,7 +28,15 @@ const layers = editor.Layers;
 
 *   [setRoot][1]
 *   [getRoot][2]
-*   [getLayerData][3]
+*   [getComponents][3]
+*   [setOpen][4]
+*   [isOpen][5]
+*   [setVisible][6]
+*   [isVisible][7]
+*   [setlocked][8]
+*   [isLocked][9]
+*   [setName][10]
+*   [getLayerData][11]
 
 [Page]: page.html
 
@@ -40,7 +48,7 @@ Update root layer with another component.
 
 ### Parameters
 
-*   `component` **([Component] | [String][4])** Component to be set as root
+*   `component` **([Component] | [String][12])** Component to be set as root
 
 ### Examples
 
@@ -63,6 +71,90 @@ const layerRoot = layers.getRoot();
 
 Returns **[Component]** 
 
+## getComponents
+
+Get valid layer child components (eg. excludes non layerable components).
+
+### Parameters
+
+*   `component` **[Component]** Component from which you want to get child components
+
+### Examples
+
+```javascript
+const component = editor.getSelected();
+const components = layers.getComponents(component);
+console.log(components);
+```
+
+Returns **[Array][13]<[Component]>** 
+
+## setOpen
+
+Update the layer open state of the component.
+
+### Parameters
+
+*   `component` **[Component]** Component to update
+*   `value` **[Boolean][14]** 
+
+## isOpen
+
+Check the layer open state of the component.
+
+### Parameters
+
+*   `component` **[Component]** 
+
+Returns **[Boolean][14]** 
+
+## setVisible
+
+Update the layer visibility state of the component.
+
+### Parameters
+
+*   `component` **[Component]** Component to update
+*   `value` **[Boolean][14]** 
+
+## isVisible
+
+Check the layer visibility state of the component.
+
+### Parameters
+
+*   `component` **[Component]** 
+
+Returns **[Boolean][14]** 
+
+## setLocked
+
+Update the layer locked state of the component.
+
+### Parameters
+
+*   `component` **[Component]** Component to update
+*   `value` **[Boolean][14]** 
+
+## isLocked
+
+Check the layer locked state of the component.
+
+### Parameters
+
+*   `component` **[Component]** 
+
+Returns **[Boolean][14]** 
+
+## setName
+
+Update the layer name state of the component.
+
+### Parameters
+
+*   `component` **[Component]** Component to update
+*   `value` **[String][12]** New name
+
 ## getLayerData
 
 Get layer data from a component.
@@ -81,59 +173,30 @@ console.log(layerData);
 
 Returns **LayerData** Object containing layer data
 
-## setVisible
-
-Update component visibility
-
-### Parameters
-
-*   `component` **Component** 
-*   `value` **[boolean][5]** 
-
-## isVisible
-
-Check if the component is visible
-
-### Parameters
-
-*   `component` **Component** 
-
-Returns **[boolean][5]** 
-
-## setLocked
-
-Update component locked value
-
-### Parameters
-
-*   `component` **Component** 
-*   `value` **[boolean][5]** 
-
-## isLocked
-
-Check if the component is locked
-
-### Parameters
-
-*   `component` **Component** 
-
-Returns **[boolean][5]** 
-
-## setName
-
-Update component name
-
-### Parameters
-
-*   `component` **Component** 
-*   `value` **[string][4]** 
-
 [1]: #setroot
 
 [2]: #getroot
 
-[3]: #getlayerdata
+[3]: #getcomponents
 
-[4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[4]: #setopen
 
-[5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[5]: #isopen
+
+[6]: #setvisible
+
+[7]: #isvisible
+
+[8]: #setlocked
+
+[9]: #islocked
+
+[10]: #setname
+
+[11]: #getlayerdata
+
+[12]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+
+[13]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+
+[14]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
