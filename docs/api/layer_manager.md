@@ -44,7 +44,7 @@ const layers = editor.Layers;
 
 ## setRoot
 
-Update root layer with another component.
+Update the root layer with another component.
 
 ### Parameters
 
@@ -171,7 +171,7 @@ const layerData = layers.getLayerData(component);
 console.log(layerData);
 ```
 
-Returns **LayerData** Object containing layer data
+Returns **[Object][15]** Object containing the layer data.
 
 [1]: #setroot
 
@@ -200,3 +200,5 @@ Returns **LayerData** Object containing layer data
 [13]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
 [14]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+
+[15]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object

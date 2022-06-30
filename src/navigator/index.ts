@@ -235,7 +235,7 @@ export default class LayerManager extends Module<typeof defaults> {
   /**
    * Get layer data from a component.
    * @param {[Component]} component Component from which you want to read layer data.
-   * @returns {LayerData} Object containing layer data
+   * @returns {Object} Object containing the layer data.
    * @example
    * const component = editor.getSelected();
    * const layerData = layers.getLayerData(component);
