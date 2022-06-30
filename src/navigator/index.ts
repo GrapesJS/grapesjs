@@ -22,7 +22,6 @@
  * ## Methods
  * * [setRoot](#setroot)
  * * [getRoot](#getroot)
- * * [getLayerData](#getlayerdata)
  * * [getComponents](#getcomponents)
  * * [setOpen](#setopen)
  * * [isOpen](#isopen)
@@ -31,6 +30,7 @@
  * * [setlocked](#setlocked)
  * * [isLocked](#islocked)
  * * [setName](#setname)
+ * * [getLayerData](#getlayerdata)
  *
  * [Page]: page.html
  * [Component]: component.html
@@ -138,60 +138,6 @@ export default class LayerManager extends Module<typeof defaults> {
   }
 
   /**
-   * Get layer data from a component.
-   * @param {[Component]} component Component from which you want to read layer data.
-   * @returns {LayerData} Object containing layer data
-   * @example
-   * const component = editor.getSelected();
-   * const layerData = layers.getLayerData(component);
-   * console.log(layerData);
-   */
-  getLayerData(component: Component): LayerData {
-    const status = component.get('status');
-
-    return {
-      name: component.getName(),
-      open: this.isOpen(component),
-      selected: status === 'selected',
-      hovered: status === 'hovered', // || this.em.getHovered() === component,
-      visible: this.isVisible(component),
-      locked: this.isLocked(component),
-      components: this.getComponents(component),
-    };
-  }
-
-  setLayerData(component: any, data: Partial<Omit<LayerData, 'components'>>, opts = {}) {
-    const { em, config } = this;
-    const { open, selected, hovered, visible, locked, name } = data;
-    const cmpOpts = { fromLayers: true, ...opts };
-
-    if (isDef(open)) {
-      this.setOpen(component, open!);
-    }
-    if (isDef(selected)) {
-      if (selected) {
-        em.setSelected(component, cmpOpts);
-        const scroll = config.scrollCanvas;
-        scroll && component.views.forEach((view: any) => view.scrollIntoView(scroll));
-      } else {
-        em.removeSelected(component, cmpOpts);
-      }
-    }
-    if (isDef(hovered) && config.showHover) {
-      hovered ? em.setHovered(component, cmpOpts) : em.setHovered(null, cmpOpts);
-    }
-    if (isDef(visible)) {
-      visible !== this.isVisible(component) && this.setVisible(component, visible!);
-    }
-    if (isDef(locked)) {
-      this.setLocked(component, locked!);
-    }
-    if (isDef(name)) {
-      this.setName(component, name!);
-    }
-  }
-
-  /**
    * Get valid layer child components (eg. excludes non layerable components).
    * @param {[Component]} component Component from which you want to get child components
    * @returns {Array<[Component]>}
@@ -284,6 +230,60 @@ export default class LayerManager extends Module<typeof defaults> {
    */
   setName(component: Component, value: string) {
     component.set('custom-name', value);
+  }
+
+  /**
+   * Get layer data from a component.
+   * @param {[Component]} component Component from which you want to read layer data.
+   * @returns {LayerData} Object containing layer data
+   * @example
+   * const component = editor.getSelected();
+   * const layerData = layers.getLayerData(component);
+   * console.log(layerData);
+   */
+  getLayerData(component: Component): LayerData {
+    const status = component.get('status');
+
+    return {
+      name: component.getName(),
+      open: this.isOpen(component),
+      selected: status === 'selected',
+      hovered: status === 'hovered', // || this.em.getHovered() === component,
+      visible: this.isVisible(component),
+      locked: this.isLocked(component),
+      components: this.getComponents(component),
+    };
+  }
+
+  setLayerData(component: any, data: Partial<Omit<LayerData, 'components'>>, opts = {}) {
+    const { em, config } = this;
+    const { open, selected, hovered, visible, locked, name } = data;
+    const cmpOpts = { fromLayers: true, ...opts };
+
+    if (isDef(open)) {
+      this.setOpen(component, open!);
+    }
+    if (isDef(selected)) {
+      if (selected) {
+        em.setSelected(component, cmpOpts);
+        const scroll = config.scrollCanvas;
+        scroll && component.views.forEach((view: any) => view.scrollIntoView(scroll));
+      } else {
+        em.removeSelected(component, cmpOpts);
+      }
+    }
+    if (isDef(hovered) && config.showHover) {
+      hovered ? em.setHovered(component, cmpOpts) : em.setHovered(null, cmpOpts);
+    }
+    if (isDef(visible)) {
+      visible !== this.isVisible(component) && this.setVisible(component, visible!);
+    }
+    if (isDef(locked)) {
+      this.setLocked(component, locked!);
+    }
+    if (isDef(name)) {
+      this.setName(component, name!);
+    }
   }
 
   /**
