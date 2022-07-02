@@ -30,6 +30,7 @@
  * * [setlocked](#setlocked)
  * * [isLocked](#islocked)
  * * [setName](#setname)
+ * * [getName](#getname)
  * * [getLayerData](#getlayerdata)
  *
  * [Page]: page.html
@@ -224,12 +225,21 @@ export default class LayerManager extends Module<typeof defaults> {
   }
 
   /**
-   * Update the layer name state of the component.
+   * Update the layer name of the component.
    * @param {[Component]} component Component to update
    * @param {String} value New name
    */
   setName(component: Component, value: string) {
     component.set('custom-name', value);
+  }
+
+  /**
+   * Get the layer name of the component.
+   * @param {[Component]} component
+   * @returns {String} Component layer name
+   */
+  getName(component: Component) {
+    return component.getName();
   }
 
   /**
