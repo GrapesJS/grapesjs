@@ -196,7 +196,15 @@ export default class PropertyFactory {
       ['background-color', { default: 'none' }, 'color'],
 
       // File type
-      ['background-image', { type: this.typeFile, functionName: 'url', default: 'none', full: true }],
+      [
+        'background-image',
+        {
+          type: this.typeFile,
+          functionName: 'url',
+          default: 'none',
+          full: true,
+        },
+      ],
 
       // Slider type
       ['opacity', { type: this.typeSlider, default: '1', min: 0, max: 1, step: 0.01 }],
@@ -208,7 +216,15 @@ export default class PropertyFactory {
       ['justify-content', { default: 'flex-start', options: this.optsJustCont }, 'flex-wrap'],
       ['align-items', { default: 'stretch', options: this.optsFlexAlign }, 'flex-wrap'],
       ['align-content', { options: this.optsAlignCont }, 'align-items'],
-      ['align-self', { default: 'auto', options: this.optsAlignSelf, requiresParent: requireFlex }, 'display'],
+      [
+        'align-self',
+        {
+          default: 'auto',
+          options: this.optsAlignSelf,
+          requiresParent: requireFlex,
+        },
+        'display',
+      ],
       ['font-family', { default: 'Arial, Helvetica, sans-serif', options: this.optsFonts }, 'display'],
       ['font-weight', { default: '400', options: this.optsWeight }, 'display'],
       ['border-style', { default: 'solid', options: this.optsBorderStyle }, 'display'],
@@ -264,10 +280,22 @@ export default class PropertyFactory {
         'border-radius',
         {
           properties: this.__sub([
-            { extend: 'border-top-left-radius', id: 'border-top-left-radius-sub' },
-            { extend: 'border-top-right-radius', id: 'border-top-right-radius-sub' },
-            { extend: 'border-bottom-right-radius', id: 'border-bottom-right-radius-sub' },
-            { extend: 'border-bottom-left-radius', id: 'border-bottom-left-radius-sub' },
+            {
+              extend: 'border-top-left-radius',
+              id: 'border-top-left-radius-sub',
+            },
+            {
+              extend: 'border-top-right-radius',
+              id: 'border-top-right-radius-sub',
+            },
+            {
+              extend: 'border-bottom-right-radius',
+              id: 'border-bottom-right-radius-sub',
+            },
+            {
+              extend: 'border-bottom-left-radius',
+              id: 'border-bottom-left-radius-sub',
+            },
           ]),
         },
         'margin',
@@ -281,7 +309,10 @@ export default class PropertyFactory {
           properties: this.__sub([
             { extend: 'transition-property', id: 'transition-property-sub' },
             { extend: 'transition-duration', id: 'transition-duration-sub' },
-            { extend: 'transition-timing-function', id: 'transition-timing-function-sub' },
+            {
+              extend: 'transition-timing-function',
+              id: 'transition-timing-function-sub',
+            },
           ]),
         },
       ],
@@ -326,17 +357,20 @@ export default class PropertyFactory {
         {
           detached: true,
           layerLabel: (l, { values }) => {
-            const repeat = values['background-repeat-sub'];
-            const pos = values['background-position-sub'];
-            const att = values['background-attachment-sub'];
-            const size = values['background-size-sub'];
-            return `${repeat} ${pos} ${att} ${size}`;
+            const repeat = values['background-repeat-sub'] || '';
+            const pos = values['background-position-sub'] || '';
+            const att = values['background-attachment-sub'] || '';
+            const size = values['background-size-sub'] || '';
+            return [repeat, pos, att, size].join(' ');
           },
           properties: this.__sub([
             { extend: 'background-image', id: 'background-image-sub' },
             { extend: 'background-repeat', id: 'background-repeat-sub' },
             { extend: 'background-position', id: 'background-position-sub' },
-            { extend: 'background-attachment', id: 'background-attachment-sub' },
+            {
+              extend: 'background-attachment',
+              id: 'background-attachment-sub',
+            },
             { extend: 'background-size', id: 'background-size-sub' },
           ]),
         },
@@ -371,11 +405,26 @@ export default class PropertyFactory {
                 { id: 'scaleX', propValue: { units: [''], step: 0.01 } },
                 { id: 'scaleY', propValue: { units: [''], step: 0.01 } },
                 { id: 'scaleZ', propValue: { units: [''], step: 0.01 } },
-                { id: 'rotateX', propValue: { units: this.unitsAngle, step: 1 } },
-                { id: 'rotateY', propValue: { units: this.unitsAngle, step: 1 } },
-                { id: 'rotateZ', propValue: { units: this.unitsAngle, step: 1 } },
-                { id: 'translateX', propValue: { units: this.unitsSize, step: 1 } },
-                { id: 'translateY', propValue: { units: this.unitsSize, step: 1 } },
+                {
+                  id: 'rotateX',
+                  propValue: { units: this.unitsAngle, step: 1 },
+                },
+                {
+                  id: 'rotateY',
+                  propValue: { units: this.unitsAngle, step: 1 },
+                },
+                {
+                  id: 'rotateZ',
+                  propValue: { units: this.unitsAngle, step: 1 },
+                },
+                {
+                  id: 'translateX',
+                  propValue: { units: this.unitsSize, step: 1 },
+                },
+                {
+                  id: 'translateY',
+                  propValue: { units: this.unitsSize, step: 1 },
+                },
               ],
               onChange({ property, to }) {
                 if (to.value) {

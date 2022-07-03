@@ -21,7 +21,7 @@ export default Component.extend(
           label: 'Address',
           name: 'address',
           placeholder: 'eg. London, UK',
-          changeProp: 1
+          changeProp: 1,
         },
         {
           type: 'select',
@@ -30,8 +30,8 @@ export default Component.extend(
           changeProp: 1,
           options: [
             { value: 'q', name: 'Roadmap' },
-            { value: 'w', name: 'Satellite' }
-          ]
+            { value: 'w', name: 'Satellite' },
+          ],
         },
         {
           label: 'Zoom',
@@ -39,20 +39,16 @@ export default Component.extend(
           type: 'range',
           min: '1',
           max: '20',
-          changeProp: 1
-        }
-      ]
+          changeProp: 1,
+        },
+      ],
     },
 
     initialize(o, opt) {
       if (this.get('src')) this.parseFromSrc();
       else this.updateSrc();
       Component.prototype.initialize.apply(this, arguments);
-      this.listenTo(
-        this,
-        'change:address change:zoom change:mapType',
-        this.updateSrc
-      );
+      this.listenTo(this, 'change:address change:zoom change:mapType', this.updateSrc);
     },
 
     updateSrc() {
@@ -88,7 +84,7 @@ export default Component.extend(
       if (qr.q) this.set('address', qr.q);
       if (qr.z) this.set('zoom', qr.z);
       if (qr.t) this.set('mapType', qr.t);
-    }
+    },
   },
   {
     /**
@@ -101,13 +97,10 @@ export default Component.extend(
      */
     isComponent(el) {
       var result = '';
-      if (
-        toLowerCase(el.tagName) == 'iframe' &&
-        /maps\.google\.com/.test(el.src)
-      ) {
+      if (toLowerCase(el.tagName) == 'iframe' && /maps\.google\.com/.test(el.src)) {
         result = { type: 'map', src: el.src };
       }
       return result;
-    }
+    },
   }
 );

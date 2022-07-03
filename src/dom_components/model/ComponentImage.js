@@ -1,6 +1,6 @@
 import { result } from 'underscore';
 import Component from './Component';
-import { toLowerCase } from 'utils/mixins';
+import { toLowerCase, buildBase64UrlFromSvg } from 'utils/mixins';
 
 const svgAttrs =
   'xmlns="http://www.w3.org/2000/svg" width="100" viewBox="0 0 24 24" style="fill: rgba(0,0,0,0.15); transform: scale(0.75)"';
@@ -29,13 +29,15 @@ export default Component.extend(
       </svg>`,
 
       // File to load asynchronously once the model is rendered
-      file: ''
+      file: '',
     },
 
     initialize(o, opt) {
       Component.prototype.initialize.apply(this, arguments);
       const { src } = this.get('attributes');
-      if (src) this.set('src', src, { silent: 1 });
+      if (src && buildBase64UrlFromSvg(result(this, 'defaults').src) !== src) {
+        this.set('src', src, { silent: 1 });
+      }
     },
 
     initToolbar(...args) {
@@ -61,7 +63,7 @@ export default Component.extend(
           if (!hasButtonBool) {
             tb.push({
               attributes: { class: 'fa fa-pencil' },
-              command: cmdName
+              command: cmdName,
             });
             this.set('toolbar', tb);
           }
@@ -86,14 +88,16 @@ export default Component.extend(
       let result = src;
 
       if (src && src.substr(0, 4) === '<svg') {
-        result = `data:image/svg+xml;base64,${window.btoa(src)}`;
+        result = buildBase64UrlFromSvg(src);
       }
 
       return result;
     },
 
     isDefaultSrc() {
-      return this.get('src') === result(this, 'defaults').src;
+      const src = this.get('src');
+      const srcDef = result(this, 'defaults').src;
+      return src === srcDef || src === buildBase64UrlFromSvg(srcDef);
     },
 
     /**
@@ -134,11 +138,11 @@ export default Component.extend(
         search: el.search,
         hash: el.hash,
         port: el.port,
-        query
+        query,
       };
-    }
+    },
   },
   {
-    isComponent: el => toLowerCase(el.tagName) === 'img'
+    isComponent: el => toLowerCase(el.tagName) === 'img',
   }
 );

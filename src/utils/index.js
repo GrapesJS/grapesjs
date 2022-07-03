@@ -24,6 +24,6 @@ export default () => {
     Sorter,
     Resizer,
     Dragger,
-    helpers: { ...mixins }
+    helpers: { ...mixins },
   };
 };

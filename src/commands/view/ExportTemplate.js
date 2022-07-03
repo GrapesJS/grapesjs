@@ -22,7 +22,7 @@ export default {
     modal
       .open({
         title: config.textViewCode,
-        content: this.$editors
+        content: this.$editors,
       })
       .getModel()
       .once('change:open', () => editor.stopCommand(this.id));
@@ -43,16 +43,16 @@ export default {
       label,
       codeName,
       theme,
-      input
+      input,
     });
 
     const $el = new this.cm.EditorView({
       model: el,
-      config: this.cm.getConfig()
+      config: this.cm.getConfig(),
     }).render().$el;
 
     el.init(input);
 
     return { el, $el };
-  }
+  },
 };

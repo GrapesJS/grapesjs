@@ -6,6 +6,8 @@ const yt = 'yt';
 const vi = 'vi';
 const ytnc = 'ytnc';
 
+const hasParam = value => value && value !== '0';
+
 export default Component.extend(
   {
     defaults: {
@@ -28,7 +30,7 @@ export default Component.extend(
       rel: 1, // YT related videos
       modestbranding: 0, // YT modest branding
       sources: [],
-      attributes: { allowfullscreen: 'allowfullscreen' }
+      attributes: { allowfullscreen: 'allowfullscreen' },
     },
 
     initialize(o, opt) {
@@ -71,22 +73,21 @@ export default Component.extend(
      * Set attributes by src string
      */
     parseFromSrc() {
-      var prov = this.get('provider');
-      var uri = this.parseUri(this.get('src'));
-      var qr = uri.query;
+      const prov = this.get('provider');
+      const uri = this.parseUri(this.get('src'));
+      const qr = uri.query;
       switch (prov) {
         case yt:
         case ytnc:
         case vi:
-          var videoId = uri.pathname.split('/').pop();
-          this.set('videoId', videoId);
+          this.set('videoId', uri.pathname.split('/').pop());
           qr.list && this.set('list', qr.list);
-          if (qr.autoplay) this.set('autoplay', 1);
-          if (qr.loop) this.set('loop', 1);
-          if (parseInt(qr.controls) === 0) this.set('controls', 0);
-          if (qr.color) this.set('color', qr.color);
-          if (qr.rel === '0') this.set('rel', 0);
-          if (qr.modestbranding === '1') this.set('modestbranding', 1);
+          hasParam(qr.autoplay) && this.set('autoplay', 1);
+          hasParam(qr.loop) && this.set('loop', 1);
+          parseInt(qr.controls) === 0 && this.set('controls', 0);
+          hasParam(qr.color) && this.set('color', qr.color);
+          qr.rel === '0' && this.set('rel', 0);
+          qr.modestbranding === '1' && this.set('modestbranding', 1);
           break;
         default:
       }
@@ -153,8 +154,8 @@ export default Component.extend(
           { value: 'so', name: 'HTML5 Source' },
           { value: yt, name: 'Youtube' },
           { value: ytnc, name: 'Youtube (no cookie)' },
-          { value: vi, name: 'Vimeo' }
-        ]
+          { value: vi, name: 'Vimeo' },
+        ],
       };
     },
 
@@ -170,17 +171,17 @@ export default Component.extend(
           label: 'Source',
           name: 'src',
           placeholder: 'eg. ./media/video.mp4',
-          changeProp: 1
+          changeProp: 1,
         },
         {
           label: 'Poster',
           name: 'poster',
-          placeholder: 'eg. ./media/image.jpg'
+          placeholder: 'eg. ./media/image.jpg',
           // changeProp: 1
         },
         this.getAutoplayTrait(),
         this.getLoopTrait(),
-        this.getControlsTrait()
+        this.getControlsTrait(),
       ];
     },
     /**
@@ -195,7 +196,7 @@ export default Component.extend(
           label: 'Video ID',
           name: 'videoId',
           placeholder: 'eg. jNQXAC9IVRw',
-          changeProp: 1
+          changeProp: 1,
         },
         this.getAutoplayTrait(),
         this.getLoopTrait(),
@@ -204,14 +205,14 @@ export default Component.extend(
           type: 'checkbox',
           label: 'Related',
           name: 'rel',
-          changeProp: 1
+          changeProp: 1,
         },
         {
           type: 'checkbox',
           label: 'Modest',
           name: 'modestbranding',
-          changeProp: 1
-        }
+          changeProp: 1,
+        },
       ];
     },
 
@@ -227,16 +228,16 @@ export default Component.extend(
           label: 'Video ID',
           name: 'videoId',
           placeholder: 'eg. 123456789',
-          changeProp: 1
+          changeProp: 1,
         },
         {
           label: 'Color',
           name: 'color',
           placeholder: 'eg. FF0000',
-          changeProp: 1
+          changeProp: 1,
         },
         this.getAutoplayTrait(),
-        this.getLoopTrait()
+        this.getLoopTrait(),
       ];
     },
 
@@ -250,7 +251,7 @@ export default Component.extend(
         type: 'checkbox',
         label: 'Autoplay',
         name: 'autoplay',
-        changeProp: 1
+        changeProp: 1,
       };
     },
 
@@ -264,7 +265,7 @@ export default Component.extend(
         type: 'checkbox',
         label: 'Loop',
         name: 'loop',
-        changeProp: 1
+        changeProp: 1,
       };
     },
 
@@ -278,7 +279,7 @@ export default Component.extend(
         type: 'checkbox',
         label: 'Controls',
         name: 'controls',
-        changeProp: 1
+        changeProp: 1,
       };
     },
 
@@ -327,7 +328,7 @@ export default Component.extend(
       url += !this.get('controls') ? '&title=0&portrait=0&badge=0' : '';
       url += this.get('color') ? '&color=' + this.get('color') : '';
       return url;
-    }
+    },
   },
   {
     /**
@@ -345,10 +346,7 @@ export default Component.extend(
       const isYtncProv = /youtube-nocookie\.com\/embed/.test(src);
       const isViProv = /player\.vimeo\.com\/video/.test(src);
       const isExtProv = isYtProv || isYtncProv || isViProv;
-      if (
-        toLowerCase(tagName) == type ||
-        (toLowerCase(tagName) == 'iframe' && isExtProv)
-      ) {
+      if (toLowerCase(tagName) == type || (toLowerCase(tagName) == 'iframe' && isExtProv)) {
         result = { type: 'video' };
         if (src) result.src = src;
         if (isExtProv) {
@@ -358,6 +356,6 @@ export default Component.extend(
         }
       }
       return result;
-    }
+    },
   }
 );

@@ -101,11 +101,11 @@ export default class PageManager extends ItemManagerModule<Config, Pages> {
    * @private
    */
   constructor(em: EditorModel) {
-    super(em, 'PageManager', new Pages([]), events);
+    super(em, 'PageManager', new Pages([], em), events);
     bindAll(this, '_onPageChange');
     const model = new Model({ _undo: true } as any);
     this.model = model;
-    this.pages.on('reset', (coll) => coll.at(0) && this.select(coll.at(0)));
+    this.pages.on('reset', coll => coll.at(0) && this.select(coll.at(0)));
     this.pages.on('all', this.__onChange, this);
     model.on(chnSel, this._onPageChange);
 
@@ -120,15 +120,8 @@ export default class PageManager extends ItemManagerModule<Config, Pages> {
   onLoad() {
     const { pages } = this;
     const opt = { silent: true };
-    pages.add(
-      this.config.pages?.map(
-        (page) => new Page(page, { em: this.em, config: this.config })
-      ) || [],
-      opt
-    );
-    const mainPage = !pages.length
-      ? this.add({ type: typeMain }, opt)
-      : this.getMain();
+    pages.add(this.config.pages?.map(page => new Page(page, { em: this.em, config: this.config })) || [], opt);
+    const mainPage = !pages.length ? this.add({ type: typeMain }, opt) : this.getMain();
     mainPage && this.select(mainPage, opt);
   }
 
@@ -167,10 +160,7 @@ export default class PageManager extends ItemManagerModule<Config, Pages> {
     const { em } = this;
     props.id = props.id || this._createId();
     const add = () => {
-      const page = this.pages.add(
-        new Page(props, { em: this.em, config: this.config }),
-        opts
-      );
+      const page = this.pages.add(new Page(props, { em: this.em, config: this.config }), opts);
       opts.select && this.select(page);
       return page;
     };
@@ -207,7 +197,7 @@ export default class PageManager extends ItemManagerModule<Config, Pages> {
    * const somePage = pageManager.get('page-id');
    */
   get(id: string) {
-    return this.pages.filter((p) => p.get(p.idAttribute) === id)[0];
+    return this.pages.filter(p => p.get(p.idAttribute) === id)[0];
   }
 
   /**
@@ -218,7 +208,7 @@ export default class PageManager extends ItemManagerModule<Config, Pages> {
    */
   getMain() {
     const { pages } = this;
-    return pages.filter((p) => p.get('type') === typeMain)[0] || pages.at(0);
+    return pages.filter(p => p.get('type') === typeMain)[0] || pages.at(0);
   }
 
   /**
@@ -231,13 +221,7 @@ export default class PageManager extends ItemManagerModule<Config, Pages> {
    */
   getAllWrappers() {
     const pages = this.getAll();
-    return unique(
-      flatten(
-        pages.map((page) =>
-          page.getAllFrames().map((frame) => frame.getComponent())
-        )
-      )
-    );
+    return unique(flatten(pages.map(page => page.getAllFrames().map(frame => frame.getComponent()))));
   }
 
   /**
@@ -274,7 +258,7 @@ export default class PageManager extends ItemManagerModule<Config, Pages> {
     this.model.stopListening();
     this.model.clear({ silent: true });
     //@ts-ignore
-    ['selected', 'model'].map((i) => (this[i] = 0));
+    ['selected', 'model'].map(i => (this[i] = 0));
   }
 
   store() {

@@ -3,5 +3,5 @@ export default {
     const em = ed.getModel();
     const models = [...ed.getSelectedAll()];
     models.length && em.set('clipboard', models);
-  }
+  },
 };

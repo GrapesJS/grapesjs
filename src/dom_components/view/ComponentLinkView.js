@@ -1,6 +1,6 @@
 import ComponentView from './ComponentTextView';
 
-export default ComponentView.extend({
+export default class ComponentLinkView extends ComponentView {
   render(...args) {
     ComponentView.prototype.render.apply(this, args);
 
@@ -10,4 +10,4 @@ export default ComponentView.extend({
 
     return this;
   }
-});
+}

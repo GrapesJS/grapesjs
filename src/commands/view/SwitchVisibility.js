@@ -23,11 +23,11 @@ export default {
   },
 
   _onFramesChange(m, frames) {
-    frames.forEach(frame => this._upFrame(frame, 1));
+    frames.forEach(frame => frame.once('loaded', () => this._upFrame(frame, true)));
   },
 
   _upFrame(frame, active) {
     const method = active ? 'add' : 'remove';
     frame.view.getBody().classList[method](`${this.ppfx}dashed`);
-  }
+  },
 };

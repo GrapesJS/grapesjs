@@ -5,6 +5,7 @@ export default {
 
   content: '',
 
+  // Close modal on interact with backdrop
   backdrop: true,
 
   // Avoid rendering the default modal.
@@ -19,5 +20,5 @@ export default {
    *   },
    * },
    */
-  extend: {}
+  extend: {},
 };

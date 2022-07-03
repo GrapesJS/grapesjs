@@ -1,5 +1,6 @@
 import { View } from '../../common';
 import State from '../model/State';
+import html from '../../utils/html';
 
 const inputProp = 'contentEditable';
 
@@ -8,12 +9,10 @@ export default class ClassTagView extends View<State> {
     const { pfx, model, config } = this;
     const label = model.get('label') || '';
 
-    return `
+    return html`
       <span id="${pfx}checkbox" class="${pfx}tag-status" data-tag-status></span>
       <span id="${pfx}tag-label" data-tag-name>${label}</span>
-      <span id="${pfx}close" class="${pfx}tag-close" data-tag-remove>
-        ${config.iconTagRemove}
-      </span>
+      <span id="${pfx}close" class="${pfx}tag-close" data-tag-remove> $${config.iconTagRemove} </span>
     `;
   }
 

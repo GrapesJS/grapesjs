@@ -24,7 +24,7 @@ describe('PropertySelectView', () => {
 
   beforeEach(() => {
     em = new Editor({});
-    dcomp = new DomComponents();
+    dcomp = new DomComponents(em);
     compOpts = { em, componentTypes: dcomp.componentTypes };
     target = new Component({}, compOpts);
     component = new Component({}, compOpts);
@@ -89,7 +89,10 @@ describe('PropertySelectView', () => {
 
   test('Update model on input change', () => {
     view.getInputEl().value = propValue;
-    view.inputValueChanged({ target: { value: propValue }, stopPropagation() {} });
+    view.inputValueChanged({
+      target: { value: propValue },
+      stopPropagation() {},
+    });
     expect(view.model.get('value')).toEqual(propValue);
   });
 

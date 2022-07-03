@@ -14,7 +14,7 @@ export default {
   defaults: [
     {
       id: 'commands',
-      buttons: [{}]
+      buttons: [{}],
     },
     {
       id: 'options',
@@ -25,29 +25,29 @@ export default {
           className: 'fa fa-square-o',
           command: swv,
           context: swv,
-          attributes: { title: 'View components' }
+          attributes: { title: 'View components' },
         },
         {
           id: prv,
           className: 'fa fa-eye',
           command: prv,
           context: prv,
-          attributes: { title: 'Preview' }
+          attributes: { title: 'Preview' },
         },
         {
           id: ful,
           className: 'fa fa-arrows-alt',
           command: ful,
           context: ful,
-          attributes: { title: 'Fullscreen' }
+          attributes: { title: 'Fullscreen' },
         },
         {
           id: expt,
           className: 'fa fa-code',
           command: expt,
-          attributes: { title: 'View code' }
-        }
-      ]
+          attributes: { title: 'View code' },
+        },
+      ],
     },
     {
       id: 'views',
@@ -58,36 +58,36 @@ export default {
           command: osm,
           active: true,
           togglable: 0,
-          attributes: { title: 'Open Style Manager' }
+          attributes: { title: 'Open Style Manager' },
         },
         {
           id: otm,
           className: 'fa fa-cog',
           command: otm,
           togglable: 0,
-          attributes: { title: 'Settings' }
+          attributes: { title: 'Settings' },
         },
         {
           id: ola,
           className: 'fa fa-bars',
           command: ola,
           togglable: 0,
-          attributes: { title: 'Open Layer Manager' }
+          attributes: { title: 'Open Layer Manager' },
         },
         {
           id: obl,
           className: 'fa fa-th-large',
           command: obl,
           togglable: 0,
-          attributes: { title: 'Open Blocks' }
-        }
-      ]
-    }
+          attributes: { title: 'Open Blocks' },
+        },
+      ],
+    },
   ],
 
   // Editor model
   em: null,
 
   // Delay before show children buttons (in milliseconds)
-  delayBtnsShow: 300
+  delayBtnsShow: 300,
 };

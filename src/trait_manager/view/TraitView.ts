@@ -8,8 +8,10 @@ import Trait from '../model/Trait';
 const $ = Backbone.$;
 
 export default class TraitView extends Backbone.View<Trait> {
-  events: any = {}
-  get eventCapture(){return ['change']};
+  events: any = {};
+  get eventCapture() {
+    return ['change'];
+  }
 
   appendInput = true;
   noLabel = false;
@@ -54,7 +56,7 @@ export default class TraitView extends Backbone.View<Trait> {
     this.ppfx = config.pStylePrefix || '';
     const { ppfx } = this;
     this.clsField = `${ppfx}field ${ppfx}field-${type}`;
-    const signupEvents: {[id: string]: EventHandler} = {};
+    const signupEvents: { [id: string]: EventHandler } = {};
     signupEvents['change:value'] = this.onValueChange;
     signupEvents['remove'] = this.removeView;
     Object.entries(signupEvents).forEach(([event, clb]) => {
@@ -85,14 +87,9 @@ export default class TraitView extends Backbone.View<Trait> {
 
   init() {}
   removed() {}
-  onRender(event: {component: Component, trait: Trait, elInput: HTMLElement}) {}
-  onUpdate(event: {component: Component, trait: Trait, elInput: HTMLElement}) {}
-  onEvent(event: {
-    component: Component,
-    trait: Trait,
-    elInput: HTMLElement,
-    event: Event
-  }) {}
+  onRender(event: { component: Component; trait: Trait; elInput: HTMLElement }) {}
+  onUpdate(event: { component: Component; trait: Trait; elInput: HTMLElement }) {}
+  onEvent(event: { component: Component; trait: Trait; elInput: HTMLElement; event: Event }) {}
 
   /**
    * Fires when the input is changed

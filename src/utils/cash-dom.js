@@ -64,45 +64,49 @@ function cash(selector, context) {
 }
 /* PROTOTYPE */
 
-var fn = (cash.fn = cash.prototype = Cash.prototype = {
-  constructor: cash,
-  __cash: true,
-  length: 0,
-  splice: splice // Ensures a cash collection gets printed as array-like in Chrome
-}); // @require core/cash.js
+var fn =
+  (cash.fn =
+  cash.prototype =
+  Cash.prototype =
+    {
+      constructor: cash,
+      __cash: true,
+      length: 0,
+      splice: splice, // Ensures a cash collection gets printed as array-like in Chrome
+    }); // @require core/cash.js
 // @require core/variables.js
 
-fn.get = function(index) {
+fn.get = function (index) {
   if (index === undefined) return slice.call(this);
   return this[index < 0 ? index + this.length : index];
 }; // @require core/cash.js
 // @require ./get.js
 
-fn.eq = function(index) {
+fn.eq = function (index) {
   return cash(this.get(index));
 }; // @require core/cash.js
 // @require ./eq.js
 
-fn.first = function() {
+fn.first = function () {
   return this.eq(0);
 }; // @require core/cash.js
 // @require ./eq.js
 
-fn.last = function() {
+fn.last = function () {
   return this.eq(-1);
 }; // @require core/cash.js
 // @require core/variables.js
 
-fn.map = function(callback) {
+fn.map = function (callback) {
   return cash(
-    map.call(this, function(ele, i) {
+    map.call(this, function (ele, i) {
       return callback.call(ele, i, ele);
     })
   );
 }; // @require core/cash.js
 // @require core/variables.js
 
-fn.slice = function() {
+fn.slice = function () {
   return cash(slice.apply(this, arguments));
 }; // @require ./cash.js
 
@@ -111,7 +115,7 @@ var camelCaseRe = /(?:^\w|[A-Z]|\b\w)/g,
 
 function camelCase(str) {
   return str
-    .replace(camelCaseRe, function(letter, index) {
+    .replace(camelCaseRe, function (letter, index) {
       return letter[!index ? 'toLowerCase' : 'toUpperCase']();
     })
     .replace(camelCaseWhitespaceRe, '');
@@ -128,16 +132,16 @@ function each(arr, callback) {
 cash.each = each; // @require core/cash.js
 // @require core/each.js
 
-fn.each = function(callback) {
-  each(this, function(ele, i) {
+fn.each = function (callback) {
+  each(this, function (ele, i) {
     return callback.call(ele, i, ele);
   });
   return this;
 }; // @require core/cash.js
 // @require collection/each.js
 
-fn.removeProp = function(prop) {
-  return this.each(function(i, ele) {
+fn.removeProp = function (prop) {
+  return this.each(function (i, ele) {
     delete ele[prop];
   });
 }; // @require ./cash.js
@@ -199,12 +203,12 @@ cash.isArray = isArray; // @require core/cash.js
 // @require core/type_checking.js
 // @require collection/each.js
 
-fn.prop = function(prop, value) {
+fn.prop = function (prop, value) {
   if (!prop) return;
 
   if (isString(prop)) {
     if (arguments.length < 2) return this[0] && this[0][prop];
-    return this.each(function(i, ele) {
+    return this.each(function (i, ele) {
       ele[prop] = value;
     });
   }
@@ -219,14 +223,14 @@ fn.prop = function(prop, value) {
 
 function getCompareFunction(selector) {
   return isString(selector)
-    ? function(i, ele) {
+    ? function (i, ele) {
         return matches(ele, selector);
       }
     : selector.__cash
-    ? function(i, ele) {
+    ? function (i, ele) {
         return selector.is(ele);
       }
-    : function(i, ele, selector) {
+    : function (i, ele, selector) {
         return ele === selector;
       };
 } // @require core/cash.js
@@ -235,13 +239,11 @@ function getCompareFunction(selector) {
 // @require core/variables.js
 // @require collection/get.js
 
-fn.filter = function(selector) {
+fn.filter = function (selector) {
   if (!selector) return cash();
-  var comparator = isFunction(selector)
-    ? selector
-    : getCompareFunction(selector);
+  var comparator = isFunction(selector) ? selector : getCompareFunction(selector);
   return cash(
-    filter.call(this, function(ele, i) {
+    filter.call(this, function (ele, i) {
       return comparator.call(ele, i, ele, selector);
     })
   );
@@ -255,12 +257,12 @@ function getSplitValues(str) {
 // @require core/get_split_values.js
 // @require collection/each.js
 
-fn.hasClass = function(cls) {
+fn.hasClass = function (cls) {
   var classes = getSplitValues(cls);
   var check = false;
 
   if (classes.length) {
-    this.each(function(i, ele) {
+    this.each(function (i, ele) {
       check = ele.classList.contains(classes[0]);
       return !check;
     });
@@ -271,11 +273,11 @@ fn.hasClass = function(cls) {
 // @require core/get_split_values.js
 // @require collection/each.js
 
-fn.removeAttr = function(attr) {
+fn.removeAttr = function (attr) {
   var attrs = getSplitValues(attr);
   if (!attrs.length) return this;
-  return this.each(function(i, ele) {
-    each(attrs, function(a) {
+  return this.each(function (i, ele) {
+    each(attrs, function (a) {
       ele.removeAttribute(a);
     });
   });
@@ -284,7 +286,7 @@ fn.removeAttr = function(attr) {
 // @require collection/each.js
 // @require ./remove_attr.js
 
-fn.attr = function(attr, value) {
+fn.attr = function (attr, value) {
   if (!attr) return;
 
   if (isString(attr)) {
@@ -297,7 +299,7 @@ fn.attr = function(attr, value) {
     }
 
     if (value === null) return this.removeAttr(attr);
-    return this.each(function(i, ele) {
+    return this.each(function (i, ele) {
       ele.setAttribute(attr, value);
     });
   }
@@ -312,12 +314,12 @@ fn.attr = function(attr, value) {
 // @require core/get_split_values.js
 // @require collection/each.js
 
-fn.toggleClass = function(cls, force) {
+fn.toggleClass = function (cls, force) {
   var classes = getSplitValues(cls),
     isForce = force !== undefined;
   if (!classes.length) return this;
-  return this.each(function(i, ele) {
-    each(classes, function(c) {
+  return this.each(function (i, ele) {
+    each(classes, function (c) {
       if (isForce) {
         force ? ele.classList.add(c) : ele.classList.remove(c);
       } else {
@@ -328,16 +330,14 @@ fn.toggleClass = function(cls, force) {
 }; // @require core/cash.js
 // @require ./toggle_class.js
 
-fn.addClass = function(cls) {
+fn.addClass = function (cls) {
   return this.toggleClass(cls, true);
 }; // @require core/cash.js
 // @require ./attr.js
 // @require ./toggle_class.js
 
-fn.removeClass = function(cls) {
-  return !arguments.length
-    ? this.attr('class', '')
-    : this.toggleClass(cls, false);
+fn.removeClass = function (cls) {
+  return !arguments.length ? this.attr('class', '') : this.toggleClass(cls, false);
 }; // @optional ./add_class.js
 // @optional ./attr.js
 // @optional ./has_class.js
@@ -349,7 +349,7 @@ fn.removeClass = function(cls) {
 // @require ./cash.js
 
 function unique(arr) {
-  return arr.filter(function(item, index, self) {
+  return arr.filter(function (item, index, self) {
     return self.indexOf(item) === index;
   });
 }
@@ -358,18 +358,14 @@ cash.unique = unique; // @require core/cash.js
 // @require core/unique.js
 // @require ./get.js
 
-fn.add = function(selector, context) {
+fn.add = function (selector, context) {
   return cash(unique(this.get().concat(cash(selector, context).get())));
 }; // @require core/variables.js
 
 function computeStyle(ele, prop, isVariable) {
   if (ele.nodeType !== 1) return;
   var style = win.getComputedStyle(ele, null);
-  return prop
-    ? isVariable
-      ? style.getPropertyValue(prop)
-      : style[prop]
-    : style;
+  return prop ? (isVariable ? style.getPropertyValue(prop) : style[prop]) : style;
 } // @require ./compute_style.js
 
 function computeStyleInt(ele, prop) {
@@ -401,13 +397,8 @@ function getPrefixedProp(prop, isVariable) {
   if (!prefixedProps[prop]) {
     var propCC = camelCase(prop),
       propUC = '' + propCC.charAt(0).toUpperCase() + propCC.slice(1),
-      props = (
-        propCC +
-        ' ' +
-        vendorsPrefixes.join(propUC + ' ') +
-        propUC
-      ).split(' ');
-    each(props, function(p) {
+      props = (propCC + ' ' + vendorsPrefixes.join(propUC + ' ') + propUC).split(' ');
+    each(props, function (p) {
       if (p in style) {
         prefixedProps[prop] = p;
         return false;
@@ -432,7 +423,7 @@ var numericProps = {
   order: true,
   orphans: true,
   widows: true,
-  zIndex: true
+  zIndex: true,
 };
 
 function getSuffixedValue(prop, value, isVariable) {
@@ -440,9 +431,7 @@ function getSuffixedValue(prop, value, isVariable) {
     isVariable = isCSSVariable(prop);
   }
 
-  return !isVariable && !numericProps[prop] && isNumeric(value)
-    ? value + 'px'
-    : value;
+  return !isVariable && !numericProps[prop] && isNumeric(value) ? value + 'px' : value;
 } // @require core/cash.js
 // @require core/type_checking.js
 // @require collection/each.js
@@ -451,15 +440,14 @@ function getSuffixedValue(prop, value, isVariable) {
 // @require ./helpers/get_suffixed_value.js
 // @require ./helpers/is_css_variable.js
 
-fn.css = function(prop, value) {
+fn.css = function (prop, value) {
   if (isString(prop)) {
     var isVariable = isCSSVariable(prop);
     prop = getPrefixedProp(prop, isVariable);
-    if (arguments.length < 2)
-      return this[0] && computeStyle(this[0], prop, isVariable);
+    if (arguments.length < 2) return this[0] && computeStyle(this[0], prop, isVariable);
     if (!prop) return this;
     value = getSuffixedValue(prop, value, isVariable);
-    return this.each(function(i, ele) {
+    return this.each(function (i, ele) {
       if (ele.nodeType !== 1) return;
 
       if (isVariable) {
@@ -481,7 +469,7 @@ var dataNamespace = '__cashData',
   dataAttributeRe = /^data-(.*)/; // @require core/cash.js
 // @require ./helpers/variables.js
 
-cash.hasData = function(ele) {
+cash.hasData = function (ele) {
   return dataNamespace in ele;
 }; // @require ./variables.js
 
@@ -495,9 +483,7 @@ function getData(ele, key) {
 
   if (key) {
     if (!(key in cache)) {
-      var value = ele.dataset
-        ? ele.dataset[key] || ele.dataset[camelCase(key)]
-        : cash(ele).attr('data-' + key);
+      var value = ele.dataset ? ele.dataset[key] || ele.dataset[camelCase(key)] : cash(ele).attr('data-' + key);
 
       if (value !== undefined) {
         try {
@@ -532,12 +518,12 @@ function setData(ele, key, value) {
 // @require ./helpers/set_data.js
 // @require ./helpers/variables.js
 
-fn.data = function(name, value) {
+fn.data = function (name, value) {
   var _this = this;
 
   if (!name) {
     if (!this[0]) return;
-    each(this[0].attributes, function(attr) {
+    each(this[0].attributes, function (attr) {
       var match = attr.name.match(dataAttributeRe);
       if (!match) return;
 
@@ -548,7 +534,7 @@ fn.data = function(name, value) {
 
   if (isString(name)) {
     if (value === undefined) return this[0] && getData(this[0], name);
-    return this.each(function(i, ele) {
+    return this.each(function (i, ele) {
       return setData(ele, name, value);
     });
   }
@@ -562,8 +548,8 @@ fn.data = function(name, value) {
 // @require collection/each.js
 // @require ./helpers/remove_data.js
 
-fn.removeData = function(key) {
-  return this.each(function(i, ele) {
+fn.removeData = function (key) {
+  return this.each(function (i, ele) {
     return removeData(ele, key);
   });
 }; // @optional ./data.js
@@ -581,8 +567,8 @@ function getExtraSpace(ele, xAxis) {
 // @require core/each.js
 // @require core/variables.js
 
-each(['Width', 'Height'], function(prop) {
-  fn['inner' + prop] = function() {
+each(['Width', 'Height'], function (prop) {
+  fn['inner' + prop] = function () {
     if (!this[0]) return;
     if (this[0] === win) return win['inner' + prop];
     return this[0]['client' + prop];
@@ -595,25 +581,20 @@ each(['Width', 'Height'], function(prop) {
 // @require css/helpers/get_suffixed_value.js
 // @require ./helpers/get_extra_space.js
 
-each(['width', 'height'], function(prop, index) {
-  fn[prop] = function(value) {
+each(['width', 'height'], function (prop, index) {
+  fn[prop] = function (value) {
     if (!this[0]) return value === undefined ? undefined : this;
 
     if (!arguments.length) {
       if (this[0] === win) return this[0][camelCase('outer-' + prop)];
-      return (
-        this[0].getBoundingClientRect()[prop] - getExtraSpace(this[0], !index)
-      );
+      return this[0].getBoundingClientRect()[prop] - getExtraSpace(this[0], !index);
     }
 
     value = parseInt(value, 10);
-    return this.each(function(i, ele) {
+    return this.each(function (i, ele) {
       if (ele.nodeType !== 1) return;
       var boxSizing = computeStyle(ele, 'boxSizing');
-      ele.style[prop] = getSuffixedValue(
-        prop,
-        value + (boxSizing === 'border-box' ? getExtraSpace(ele, !index) : 0)
-      );
+      ele.style[prop] = getSuffixedValue(prop, value + (boxSizing === 'border-box' ? getExtraSpace(ele, !index) : 0));
     });
   };
 }); // @require core/cash.js
@@ -621,8 +602,8 @@ each(['width', 'height'], function(prop, index) {
 // @require core/variables.js
 // @require css/helpers/compute_style_int.js
 
-each(['Width', 'Height'], function(prop, index) {
-  fn['outer' + prop] = function(includeMargins) {
+each(['Width', 'Height'], function (prop, index) {
+  fn['outer' + prop] = function (includeMargins) {
     if (!this[0]) return;
     if (this[0] === win) return win['outer' + prop];
     return (
@@ -646,7 +627,7 @@ function hasNamespaces(ns1, ns2) {
 } // @require core/each.js
 
 function removeEventListeners(cache, ele, name) {
-  each(cache[name], function(_ref) {
+  each(cache[name], function (_ref) {
     var namespaces = _ref[0],
       callback = _ref[1];
     ele.removeEventListener(name, callback);
@@ -696,14 +677,10 @@ function removeEvent(ele, name, namespaces, callback) {
     var eventCache = cache[name];
     if (!eventCache) return;
     if (callback) callback.guid = callback.guid || guid++;
-    cache[name] = eventCache.filter(function(_ref2) {
+    cache[name] = eventCache.filter(function (_ref2) {
       var ns = _ref2[0],
         cb = _ref2[1];
-      if (
-        (callback && cb.guid !== callback.guid) ||
-        !hasNamespaces(ns, namespaces)
-      )
-        return true;
+      if ((callback && cb.guid !== callback.guid) || !hasNamespaces(ns, namespaces)) return true;
       ele.removeEventListener(name, cb);
     });
   }
@@ -713,20 +690,20 @@ function removeEvent(ele, name, namespaces, callback) {
 // @require ./helpers/parse_event_name.js
 // @require ./helpers/remove_event.js
 
-fn.off = function(eventFullName, callback) {
+fn.off = function (eventFullName, callback) {
   var _this2 = this;
 
   if (eventFullName === undefined) {
-    this.each(function(i, ele) {
+    this.each(function (i, ele) {
       return removeEvent(ele);
     });
   } else {
-    each(getSplitValues(eventFullName), function(eventFullName) {
+    each(getSplitValues(eventFullName), function (eventFullName) {
       var _parseEventName = parseEventName(eventFullName),
         name = _parseEventName[0],
         namespaces = _parseEventName[1];
 
-      _this2.each(function(i, ele) {
+      _this2.each(function (i, ele) {
         return removeEvent(ele, name, namespaces, callback);
       });
     });
@@ -745,7 +722,7 @@ fn.off = function(eventFullName, callback) {
 // @require ./helpers/parse_event_name.js
 // @require ./helpers/remove_event.js
 
-fn.on = function(eventFullName, selector, callback, _one) {
+fn.on = function (eventFullName, selector, callback, _one) {
   var _this3 = this;
 
   if (!isString(eventFullName)) {
@@ -761,21 +738,14 @@ fn.on = function(eventFullName, selector, callback, _one) {
     selector = false;
   }
 
-  each(getSplitValues(eventFullName), function(eventFullName) {
+  each(getSplitValues(eventFullName), function (eventFullName) {
     var _parseEventName2 = parseEventName(eventFullName),
       name = _parseEventName2[0],
       namespaces = _parseEventName2[1];
 
-    _this3.each(function(i, ele) {
+    _this3.each(function (i, ele) {
       var finalCallback = function finalCallback(event) {
-        if (
-          event.namespace &&
-          !hasNamespaces(
-            namespaces,
-            event.namespace.split(eventsNamespacesSeparator)
-          )
-        )
-          return;
+        if (event.namespace && !hasNamespaces(namespaces, event.namespace.split(eventsNamespacesSeparator))) return;
         var thisArg = ele;
 
         if (selector) {
@@ -811,12 +781,12 @@ fn.on = function(eventFullName, selector, callback, _one) {
 }; // @require core/cash.js
 // @require ./on.js
 
-fn.one = function(eventFullName, delegate, callback) {
+fn.one = function (eventFullName, delegate, callback) {
   return this.on(eventFullName, delegate, callback, true);
 }; // @require core/cash.js
 // @require core/variables.js
 
-fn.ready = function(callback) {
+fn.ready = function (callback) {
   var finalCallback = function finalCallback() {
     return callback(cash);
   };
@@ -835,7 +805,7 @@ fn.ready = function(callback) {
 // @require ./helpers/parse_event_name.js
 // @require ./helpers/variables.js
 
-fn.trigger = function(eventFullName, data) {
+fn.trigger = function (eventFullName, data) {
   var evt = eventFullName;
 
   if (isString(eventFullName)) {
@@ -849,7 +819,7 @@ fn.trigger = function(eventFullName, data) {
   }
 
   evt.data = data;
-  return this.each(function(i, ele) {
+  return this.each(function (i, ele) {
     ele.dispatchEvent(evt);
   });
 }; // @optional ./off.js
@@ -861,7 +831,7 @@ fn.trigger = function(eventFullName, data) {
 
 function getValueSelectMultiple(ele) {
   var values = [];
-  each(ele.options, function(option) {
+  each(ele.options, function (option) {
     if (option.selected && !option.disabled && !option.parentNode.disabled) {
       values.push(option.value);
     }
@@ -887,12 +857,7 @@ function getValue(ele) {
 var queryEncodeSpaceRe = /%20/g;
 
 function queryEncode(prop, value) {
-  return (
-    '&' +
-    encodeURIComponent(prop) +
-    '=' +
-    encodeURIComponent(value).replace(queryEncodeSpaceRe, '+')
-  );
+  return '&' + encodeURIComponent(prop) + '=' + encodeURIComponent(value).replace(queryEncodeSpaceRe, '+');
 } // @require core/cash.js
 // @require core/each.js
 // @require core/type_checking.js
@@ -902,17 +867,17 @@ function queryEncode(prop, value) {
 var skippableRe = /file|reset|submit|button|image/i,
   checkableRe = /radio|checkbox/i;
 
-fn.serialize = function() {
+fn.serialize = function () {
   var query = '';
-  this.each(function(i, ele) {
-    each(ele.elements || [ele], function(ele) {
+  this.each(function (i, ele) {
+    each(ele.elements || [ele], function (ele) {
       if (ele.disabled || !ele.name || ele.tagName === 'FIELDSET') return;
       if (skippableRe.test(ele.type)) return;
       if (checkableRe.test(ele.type) && !ele.checked) return;
       var value = getValue(ele);
       if (value === undefined) return;
       var values = isArray(value) ? value : [value];
-      each(values, function(value) {
+      each(values, function (value) {
         query += queryEncode(ele.name, value);
       });
     });
@@ -924,14 +889,14 @@ fn.serialize = function() {
 // @require collection/each.js
 // @require ./helpers/get_value.js
 
-fn.val = function(value) {
+fn.val = function (value) {
   if (value === undefined) return this[0] && getValue(this[0]);
-  return this.each(function(i, ele) {
+  return this.each(function (i, ele) {
     var isMultiple = selectMultipleRe.test(ele.type),
       eleValue = value === null ? (isMultiple ? [] : '') : value;
 
     if (isMultiple && isArray(eleValue)) {
-      each(ele.options, function(option) {
+      each(ele.options, function (option) {
         option.selected = eleValue.indexOf(option.value) >= 0;
       });
     } else {
@@ -943,15 +908,15 @@ fn.val = function(value) {
 // @require core/cash.js
 // @require collection/map.js
 
-fn.clone = function() {
-  return this.map(function(i, ele) {
+fn.clone = function () {
+  return this.map(function (i, ele) {
     return ele.cloneNode(true);
   });
 }; // @require core/cash.js
 // @require collection/each.js
 
-fn.detach = function() {
-  return this.each(function(i, ele) {
+fn.detach = function () {
+  return this.each(function (i, ele) {
     if (ele.parentNode) {
       ele.parentNode.removeChild(ele);
     }
@@ -977,7 +942,7 @@ function initContainers() {
     th: tr,
     thead: table,
     tbody: table,
-    tfoot: table
+    tfoot: table,
   };
 }
 
@@ -988,9 +953,7 @@ function parseHTML(html) {
   var fragment = fragmentRe.test(html) && RegExp.$1,
     container = containers[fragment] || containers['*'];
   container.innerHTML = html;
-  return cash(container.childNodes)
-    .detach()
-    .get();
+  return cash(container.childNodes).detach().get();
 }
 
 cash.parseHTML = parseHTML; // @optional ./camel_case.js
@@ -1009,7 +972,7 @@ cash.parseHTML = parseHTML; // @optional ./camel_case.js
 // @require ./type_checking.js
 // @require core/cash.js
 
-fn.empty = function() {
+fn.empty = function () {
   var ele = this[0];
 
   if (ele) {
@@ -1036,22 +999,18 @@ function insertContent(parent, child, prepend) {
   var isStr = isString(child);
 
   if (!isStr && child.length) {
-    each(child, function(ele) {
+    each(child, function (ele) {
       return insertContent(parent, ele, prepend);
     });
   } else {
     each(
       parent,
       isStr
-        ? function(ele) {
+        ? function (ele) {
             ele.insertAdjacentHTML(prepend ? 'afterbegin' : 'beforeend', child);
           }
-        : function(ele, index) {
-            return insertElement(
-              ele,
-              !index ? child : child.cloneNode(true),
-              prepend
-            );
+        : function (ele, index) {
+            return insertElement(ele, !index ? child : child.cloneNode(true), prepend);
           }
     );
   }
@@ -1059,38 +1018,38 @@ function insertContent(parent, child, prepend) {
 // @require core/each.js
 // @require ./helpers/insert_content.js
 
-fn.append = function() {
+fn.append = function () {
   var _this4 = this;
 
-  each(arguments, function(content) {
+  each(arguments, function (content) {
     insertContent(_this4, content);
   });
   return this;
 }; // @require core/cash.js
 // @require ./helpers/insert_content.js
 
-fn.appendTo = function(parent) {
+fn.appendTo = function (parent) {
   insertContent(cash(parent), this);
   return this;
 }; // @require core/cash.js
 // @require collection/each.js
 
-fn.html = function(content) {
+fn.html = function (content) {
   if (content === undefined) return this[0] && this[0].innerHTML;
   var source = content.nodeType ? content[0].outerHTML : content;
-  return this.each(function(i, ele) {
+  return this.each(function (i, ele) {
     ele.innerHTML = source;
   });
 }; // @require core/cash.js
 // @require collection/each.js
 
-fn.insertAfter = function(content) {
+fn.insertAfter = function (content) {
   var _this5 = this;
 
-  cash(content).each(function(index, ele) {
+  cash(content).each(function (index, ele) {
     var parent = ele.parentNode;
 
-    _this5.each(function(i, e) {
+    _this5.each(function (i, e) {
       parent.insertBefore(!index ? e : e.cloneNode(true), ele.nextSibling);
     });
   });
@@ -1101,23 +1060,23 @@ fn.insertAfter = function(content) {
 // @require collection/slice.js
 // @require ./insert_after.js
 
-fn.after = function() {
+fn.after = function () {
   var _this6 = this;
 
-  each(reverse.apply(arguments), function(content) {
+  each(reverse.apply(arguments), function (content) {
     reverse.apply(cash(content).slice()).insertAfter(_this6);
   });
   return this;
 }; // @require core/cash.js
 // @require collection/each.js
 
-fn.insertBefore = function(selector) {
+fn.insertBefore = function (selector) {
   var _this7 = this;
 
-  cash(selector).each(function(index, ele) {
+  cash(selector).each(function (index, ele) {
     var parent = ele.parentNode;
 
-    _this7.each(function(i, e) {
+    _this7.each(function (i, e) {
       parent.insertBefore(!index ? e : e.cloneNode(true), ele);
     });
   });
@@ -1126,10 +1085,10 @@ fn.insertBefore = function(selector) {
 // @require core/each.js
 // @require ./insert_before.js
 
-fn.before = function() {
+fn.before = function () {
   var _this8 = this;
 
-  each(arguments, function(content) {
+  each(arguments, function (content) {
     cash(content).insertBefore(_this8);
   });
   return this;
@@ -1137,10 +1096,10 @@ fn.before = function() {
 // @require core/each.js
 // @require ./helpers/insert_content.js
 
-fn.prepend = function() {
+fn.prepend = function () {
   var _this9 = this;
 
-  each(arguments, function(content) {
+  each(arguments, function (content) {
     insertContent(_this9, content, true);
   });
   return this;
@@ -1149,14 +1108,14 @@ fn.prepend = function() {
 // @require collection/slice.js
 // @require ./helpers/insert_content.js
 
-fn.prependTo = function(parent) {
+fn.prependTo = function (parent) {
   insertContent(cash(parent), reverse.apply(this.slice()), true);
   return this;
 }; // @require core/cash.js
 // @require events/off.js
 // @require ./detach.js
 
-fn.remove = function() {
+fn.remove = function () {
   return this.detach().off();
 }; // @require core/cash.js
 // @require collection/each.js
@@ -1164,10 +1123,10 @@ fn.remove = function() {
 // @require ./after.js
 // @require ./remove.js
 
-fn.replaceWith = function(content) {
+fn.replaceWith = function (content) {
   var _this10 = this;
 
-  return this.each(function(i, ele) {
+  return this.each(function (i, ele) {
     var parent = ele.parentNode;
     if (!parent) return;
     var $eles = i ? cash(content).clone() : cash(content);
@@ -1184,15 +1143,15 @@ fn.replaceWith = function(content) {
 }; // @require core/cash.js
 // @require ./replace_with.js
 
-fn.replaceAll = function(content) {
+fn.replaceAll = function (content) {
   cash(content).replaceWith(this);
   return this;
 }; // @require core/cash.js
 // @require collection/each.js
 
-fn.text = function(content) {
+fn.text = function (content) {
   if (content === undefined) return this[0] ? this[0].textContent : '';
-  return this.each(function(i, ele) {
+  return this.each(function (i, ele) {
     ele.textContent = content;
   });
 }; // @optional ./after.js
@@ -1216,26 +1175,26 @@ fn.text = function(content) {
 
 var docEle = doc && doc.documentElement;
 
-fn.offset = function() {
+fn.offset = function () {
   var ele = this[0];
   if (!ele) return;
   var rect = ele.getBoundingClientRect();
   return {
     top: rect.top + win.pageYOffset - docEle.clientTop,
-    left: rect.left + win.pageXOffset - docEle.clientLeft
+    left: rect.left + win.pageXOffset - docEle.clientLeft,
   };
 }; // @require core/cash.js
 
-fn.offsetParent = function() {
+fn.offsetParent = function () {
   return cash(this[0] && this[0].offsetParent);
 }; // @require core/cash.js
 
-fn.position = function() {
+fn.position = function () {
   var ele = this[0];
   if (!ele) return;
   return {
     left: ele.offsetLeft,
-    top: ele.offsetTop
+    top: ele.offsetTop,
   };
 }; // @optional ./offset.js
 // @optional ./offset_parent.js
@@ -1246,27 +1205,24 @@ fn.position = function() {
 // @require collection/each.js
 // @require collection/filter.js
 
-fn.children = function(selector) {
+fn.children = function (selector) {
   var result = [];
-  this.each(function(i, ele) {
+  this.each(function (i, ele) {
     push.apply(result, ele.children);
   });
   result = cash(unique(result));
   if (!selector) return result;
-  return result.filter(function(i, ele) {
+  return result.filter(function (i, ele) {
     return matches(ele, selector);
   });
 }; // @require core/cash.js
 // @require core/unique.js
 // @require collection/each.js
 
-fn.contents = function() {
+fn.contents = function () {
   var result = [];
-  this.each(function(i, ele) {
-    push.apply(
-      result,
-      ele.tagName === 'IFRAME' ? [ele.contentDocument] : ele.childNodes
-    );
+  this.each(function (i, ele) {
+    push.apply(result, ele.tagName === 'IFRAME' ? [ele.contentDocument] : ele.childNodes);
   });
   return cash(result.length && unique(result));
 }; // @require core/cash.js
@@ -1274,7 +1230,7 @@ fn.contents = function() {
 // @require core/find.js
 // @require core/variables.js
 
-fn.find = function(selector) {
+fn.find = function (selector) {
   var result = [];
 
   for (var i = 0, l = this.length; i < l; i++) {
@@ -1291,12 +1247,12 @@ fn.find = function(selector) {
 // @require core/type_checking.js
 // @require collection/filter.js
 
-fn.has = function(selector) {
+fn.has = function (selector) {
   var comparator = isString(selector)
-    ? function(i, ele) {
+    ? function (i, ele) {
         return !!find(selector, ele).length;
       }
-    : function(i, ele) {
+    : function (i, ele) {
         return ele.contains(selector);
       };
   return this.filter(comparator);
@@ -1304,36 +1260,36 @@ fn.has = function(selector) {
 // @require core/get_compare_function.js
 // @require collection/each.js
 
-fn.is = function(selector) {
+fn.is = function (selector) {
   if (!selector || !this[0]) return false;
   var comparator = getCompareFunction(selector);
   var check = false;
-  this.each(function(i, ele) {
+  this.each(function (i, ele) {
     check = comparator(i, ele, selector);
     return !check;
   });
   return check;
 }; // @require core/cash.js
 
-fn.next = function() {
+fn.next = function () {
   return cash(this[0] && this[0].nextElementSibling);
 }; // @require core/cash.js
 // @require core/get_compare_function.js
 // @require collection/filter.js
 
-fn.not = function(selector) {
+fn.not = function (selector) {
   if (!selector || !this[0]) return this;
   var comparator = getCompareFunction(selector);
-  return this.filter(function(i, ele) {
+  return this.filter(function (i, ele) {
     return !comparator(i, ele, selector);
   });
 }; // @require core/cash.js
 // @require core/unique.js
 // @require collection/each.js
 
-fn.parent = function() {
+fn.parent = function () {
   var result = [];
-  this.each(function(i, ele) {
+  this.each(function (i, ele) {
     if (ele && ele.parentNode) {
       result.push(ele.parentNode);
     }
@@ -1346,13 +1302,9 @@ fn.parent = function() {
 // @require ./get.js
 //FIXME Ugly file name, is there a better option?
 
-fn.index = function(ele) {
+fn.index = function (ele) {
   var child = ele ? cash(ele)[0] : this[0],
-    collection = ele
-      ? this
-      : cash(child)
-          .parent()
-          .children();
+    collection = ele ? this : cash(child).parent().children();
   return indexOf.call(collection, child);
 }; // @optional ./add.js
 // @optional ./each.js
@@ -1369,7 +1321,7 @@ fn.index = function(ele) {
 // @require ./is.js
 // @require ./parent.js
 
-fn.closest = function(selector) {
+fn.closest = function (selector) {
   if (!selector || !this[0]) return cash();
   if (this.is(selector)) return this.filter(selector);
   return this.parent().closest(selector);
@@ -1379,10 +1331,10 @@ fn.closest = function(selector) {
 // @require core/variables.js
 // @require collection/each.js
 
-fn.parents = function(selector) {
+fn.parents = function (selector) {
   var result = [];
   var last;
-  this.each(function(i, ele) {
+  this.each(function (i, ele) {
     last = ele;
 
     while (last && last.parentNode && last !== doc.body.parentNode) {
@@ -1396,18 +1348,18 @@ fn.parents = function(selector) {
   return cash(unique(result));
 }; // @require core/cash.js
 
-fn.prev = function() {
+fn.prev = function () {
   return cash(this[0] && this[0].previousElementSibling);
 }; // @require core/cash.js
 // @require collection/filter.js
 // @require ./children.js
 // @require ./parent.js
 
-fn.siblings = function() {
+fn.siblings = function () {
   var ele = this[0];
   return this.parent()
     .children()
-    .filter(function(i, child) {
+    .filter(function (i, child) {
       return child !== ele;
     });
 }; // @optional ./children.js

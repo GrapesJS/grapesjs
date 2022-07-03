@@ -57,6 +57,7 @@
 import { EventHandler } from 'backbone';
 import { isUndefined } from 'underscore';
 import { IBaseModule } from '../abstract/Module';
+import CanvasModule from '../canvas';
 import cash from '../utils/cash-dom';
 import html from '../utils/html';
 import defaults from './config/config';
@@ -112,7 +113,7 @@ export default class EditorModule implements IBaseModule<typeof defaults> {
   get Panels(): PanelsModule {
     return this.em.get('Panels');
   }
-  //@ts-ignore
+
   get Canvas(): CanvasModule {
     return this.em.get('Canvas');
   }

@@ -1,14 +1,14 @@
-import Trait from "./Trait";
+import Trait from './Trait';
 
 export default class TraitFactory {
-  config: any
-  constructor(config = {}){
+  config: any;
+  constructor(config = {}) {
     this.config = config;
   }
   /**
    * Build props object by their name
    */
-  build(props: string| string[]) {
+  build(props: string | string[]) {
     const objs = [];
 
     if (typeof props === 'string') props = [props];
@@ -31,4 +31,4 @@ export default class TraitFactory {
 
     return objs;
   }
-};
+}

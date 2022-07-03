@@ -1,19 +1,19 @@
 import Backbone from 'backbone';
-import { isEmpty, each, keys } from 'underscore';
+import { isEmpty, each, keys, result } from 'underscore';
 import Components from '../model/Components';
 import ComponentsView from './ComponentsView';
 import Selectors from 'selector_manager/model/Selectors';
 import { replaceWith } from 'utils/dom';
 import { setViewEl } from 'utils/mixins';
 
-export default Backbone.View.extend({
+export default class ComponentView extends Backbone.View {
   className() {
     return this.getClasses();
-  },
+  }
 
   tagName() {
     return this.model.get('tagName');
-  },
+  }
 
   initialize(opt = {}) {
     const model = this.model;
@@ -32,7 +32,7 @@ export default Backbone.View.extend({
     this.listenTo(model, 'change:style', this.updateStyle);
     this.listenTo(model, 'change:attributes', this.renderAttributes);
     this.listenTo(model, 'change:highlightable', this.updateHighlight);
-    this.listenTo(model, 'change:status', this.updateStatus);
+    this.listenTo(model, 'change:status change:locked', this.updateStatus);
     this.listenTo(model, 'change:script rerender', this.reset);
     this.listenTo(model, 'change:content', this.updateContent);
     this.listenTo(model, 'change', this.handleChange);
@@ -45,18 +45,18 @@ export default Backbone.View.extend({
     this.initClasses();
     this.initComponents({ avoidRender: 1 });
     this.events = {
-      ...this.events,
+      ...this.constructor.getEvents(),
       dragstart: 'handleDragStart',
     };
     this.delegateEvents();
     !modelOpt.temporary && this.init(this._clbObj());
-  },
+  }
 
   __isDraggable() {
     const { model, config } = this;
     const { draggable } = model.attributes;
     return config.draggableComponents && draggable;
-  },
+  }
 
   _clbObj() {
     const { em, model, el } = this;
@@ -65,27 +65,27 @@ export default Backbone.View.extend({
       model,
       el,
     };
-  },
+  }
 
   /**
    * Initialize callback
    */
-  init() {},
+  init() {}
 
   /**
    * Remove callback
    */
-  removed() {},
+  removed() {}
 
   /**
    * Callback executed when the `active` event is triggered on component
    */
-  onActive() {},
+  onActive() {}
 
   /**
    * Callback executed when the `disable` event is triggered on component
    */
-  onDisable() {},
+  onDisable() {}
 
   remove() {
     Backbone.View.prototype.remove.apply(this, arguments);
@@ -102,7 +102,7 @@ export default Backbone.View.extend({
     $el.data({ model: '', collection: '', view: '' });
     // delete model.view; // Sorter relies on this property
     return this;
-  },
+  }
 
   handleDragStart(event) {
     if (!this.__isDraggable()) return false;
@@ -112,7 +112,7 @@ export default Backbone.View.extend({
       target: this.model,
       event,
     });
-  },
+  }
 
   initClasses() {
     const { model } = this;
@@ -125,7 +125,7 @@ export default Backbone.View.extend({
       this.listenTo(classes, 'add remove change', this.updateClasses);
       classes.length && this.importClasses();
     }
-  },
+  }
 
   initComponents(opts = {}) {
     const { model, $el, childrenView } = this;
@@ -140,7 +140,7 @@ export default Backbone.View.extend({
       !opts.avoidRender && this.renderChildren();
       this.listenTo(...toListen);
     }
-  },
+  }
 
   /**
    * Handle any property change
@@ -155,7 +155,7 @@ export default Backbone.View.extend({
     for (let prop in model.changed) {
       model.emitUpdate(prop);
     }
-  },
+  }
 
   /**
    * Import, if possible, classes inside main container
@@ -169,7 +169,7 @@ export default Backbone.View.extend({
         clm.add(m.get('name'));
       });
     }
-  },
+  }
 
   /**
    * Update item on status change
@@ -177,42 +177,43 @@ export default Backbone.View.extend({
    * @private
    * */
   updateStatus(opts = {}) {
-    const { em } = this;
+    const { em, el, ppfx, model } = this;
     const { extHl } = em ? em.get('Canvas').getConfig() : {};
-    const el = this.el;
-    const status = this.model.get('status');
-    const ppfx = this.ppfx;
+    const status = model.get('status');
     const selectedCls = `${ppfx}selected`;
     const selectedParentCls = `${selectedCls}-parent`;
     const freezedCls = `${ppfx}freezed`;
     const hoveredCls = `${ppfx}hovered`;
-    const toRemove = [selectedCls, selectedParentCls, freezedCls, hoveredCls];
+    const noPointerCls = `${ppfx}no-pointer`;
+    const toRemove = [selectedCls, selectedParentCls, freezedCls, hoveredCls, noPointerCls];
     const selCls = extHl && !opts.noExtHl ? '' : selectedCls;
     this.$el.removeClass(toRemove.join(' '));
-    var actualCls = el.getAttribute('class') || '';
-    var cls = '';
+    const actualCls = el.getAttribute('class') || '';
+    const cls = [actualCls];
 
     switch (status) {
       case 'selected':
-        cls = `${actualCls} ${selCls}`;
+        cls.push(selCls);
         break;
       case 'selected-parent':
-        cls = `${actualCls} ${selectedParentCls}`;
+        cls.push(selectedParentCls);
         break;
       case 'freezed':
-        cls = `${actualCls} ${freezedCls}`;
+        cls.push(freezedCls);
         break;
       case 'freezed-selected':
-        cls = `${actualCls} ${freezedCls} ${selCls}`;
+        cls.push(freezedCls, selCls);
         break;
       case 'hovered':
-        cls = !opts.avoidHover ? `${actualCls} ${hoveredCls}` : '';
+        !opts.avoidHover && cls.push(hoveredCls);
         break;
     }
 
-    cls = cls.trim();
-    cls && el.setAttribute('class', cls);
-  },
+    model.get('locked') && cls.push(noPointerCls);
+
+    const clsStr = cls.filter(Boolean).join(' ');
+    clsStr && el.setAttribute('class', clsStr);
+  }
 
   /**
    * Update highlight attribute
@@ -223,7 +224,7 @@ export default Backbone.View.extend({
     const isTextable = model.get('textable');
     const hl = model.get('highlightable') && (isTextable || !model.isChildOf('text'));
     this.setAttribute('data-gjs-highlightable', hl ? true : '');
-  },
+  }
 
   /**
    * Update style attribute
@@ -238,7 +239,7 @@ export default Backbone.View.extend({
     } else {
       this.setAttribute('style', model.styleToString(opts));
     }
-  },
+  }
 
   /**
    * Update classe attribute
@@ -251,7 +252,7 @@ export default Backbone.View.extend({
     // Regenerate status class
     this.updateStatus();
     this.onAttrUpdate();
-  },
+  }
 
   /**
    * Update single attribute
@@ -261,7 +262,7 @@ export default Backbone.View.extend({
   setAttribute(name, value) {
     const el = this.$el;
     value ? el.attr(name, value) : el.removeAttr(name);
-  },
+  }
 
   /**
    * Get classes from attributes.
@@ -272,7 +273,7 @@ export default Backbone.View.extend({
    * */
   getClasses() {
     return this.model.getClasses().join(' ');
-  },
+  }
 
   /**
    * Update attributes
@@ -304,7 +305,7 @@ export default Backbone.View.extend({
     keys(attr).forEach(key => attr[key] === false && delete attr[key]);
 
     $el.attr(attr);
-  },
+  }
 
   /**
    * Update component content
@@ -314,7 +315,7 @@ export default Backbone.View.extend({
     const content = this.model.get('content');
     const hasComps = this.model.components().length;
     this.getChildrenContainer().innerHTML = hasComps ? '' : content;
-  },
+  }
 
   /**
    * Prevent default helper
@@ -323,7 +324,7 @@ export default Backbone.View.extend({
    */
   prevDef(e) {
     e.preventDefault();
-  },
+  }
 
   /**
    * Render component's script
@@ -333,7 +334,7 @@ export default Backbone.View.extend({
     const { model, em } = this;
     if (!model.get('script')) return;
     em && em.get('Canvas').getCanvasView().updateScript(this);
-  },
+  }
 
   /**
    * Return children container
@@ -369,7 +370,7 @@ export default Backbone.View.extend({
     }
 
     return container;
-  },
+  }
 
   /**
    * This returns rect informations not affected by the canvas zoom.
@@ -399,7 +400,7 @@ export default Backbone.View.extend({
     assignRect(target);
 
     return rect;
-  },
+  }
 
   isInViewport({ rect } = {}) {
     const { el } = this;
@@ -415,7 +416,7 @@ export default Backbone.View.extend({
       top <= frame.scrollBottom &&
       left <= frameElement.offsetWidth + body.scrollLeft
     );
-  },
+  }
 
   scrollIntoView(opts = {}) {
     const rect = this.getOffsetRect();
@@ -435,7 +436,7 @@ export default Backbone.View.extend({
         });
       }
     }
-  },
+  }
 
   /**
    * Recreate the element of the view
@@ -447,18 +448,18 @@ export default Backbone.View.extend({
     this._setData();
     replaceWith(el, this.el);
     this.render();
-  },
+  }
 
   _setData() {
     const { model } = this;
     const collection = model.components();
     const view = this;
     this.$el.data({ model, collection, view });
-  },
+  }
 
   _getFrame() {
-    return this.config.frameView;
-  },
+    return this.config.em?.get('Canvas').config.frameView;
+  }
 
   /**
    * Render children components
@@ -482,14 +483,14 @@ export default Backbone.View.extend({
     for (var i = 0, len = childNodes.length; i < len; i++) {
       container.appendChild(childNodes.shift());
     }
-  },
+  }
 
   renderAttributes() {
     this.updateAttributes();
     this.updateClasses();
-  },
+  }
 
-  onAttrUpdate() {},
+  onAttrUpdate() {}
 
   render() {
     this.renderAttributes();
@@ -500,13 +501,18 @@ export default Backbone.View.extend({
     this.postRender();
 
     return this;
-  },
+  }
 
   postRender() {
     if (!this.modelOpt.temporary) {
       this.onRender(this._clbObj());
     }
-  },
+  }
 
-  onRender() {},
-});
+  onRender() {}
+}
+
+// Due to the Backbone extend mechanism, static methods are not properly extended
+ComponentView.getEvents = function () {
+  return result(this.prototype, 'events');
+};

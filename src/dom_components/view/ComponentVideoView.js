@@ -1,28 +1,24 @@
 import ComponentView from './ComponentImageView';
 import OComponentView from './ComponentView';
 
-export default ComponentView.extend({
-  tagName: 'div',
+export default class ComponentVideoView extends ComponentView {
+  tagName() {
+    return 'div';
+  }
 
-  events: {},
+  events() {
+    return {};
+  }
 
   initialize(o) {
     OComponentView.prototype.initialize.apply(this, arguments);
     const { model } = this;
-    const props = [
-      'loop',
-      'autoplay',
-      'controls',
-      'color',
-      'rel',
-      'modestbranding',
-      'poster'
-    ];
+    const props = ['loop', 'autoplay', 'controls', 'color', 'rel', 'modestbranding', 'poster'];
     const events = props.map(p => `change:${p}`).join(' ');
     this.listenTo(model, 'change:provider', this.updateProvider);
     this.listenTo(model, 'change:src', this.updateSrc);
     this.listenTo(model, events, this.updateVideo);
-  },
+  }
 
   /**
    * Rerender on update of the provider
@@ -32,7 +28,7 @@ export default ComponentView.extend({
     var prov = this.model.get('provider');
     this.el.innerHTML = '';
     this.el.appendChild(this.renderByProvider(prov));
-  },
+  }
 
   /**
    * Update the source of the video
@@ -57,7 +53,7 @@ export default ComponentView.extend({
     }
 
     videoEl.src = src;
-  },
+  }
 
   /**
    * Update video parameters
@@ -79,7 +75,7 @@ export default ComponentView.extend({
         videoEl.controls = md.get('controls');
         videoEl.poster = md.get('poster');
     }
-  },
+  }
 
   renderByProvider(prov) {
     var videoEl;
@@ -98,14 +94,14 @@ export default ComponentView.extend({
     }
     this.videoEl = videoEl;
     return videoEl;
-  },
+  }
 
   renderSource() {
     var el = document.createElement('video');
     el.src = this.model.get('src');
     this.initVideoEl(el);
     return el;
-  },
+  }
 
   renderYoutube() {
     var el = document.createElement('iframe');
@@ -114,7 +110,7 @@ export default ComponentView.extend({
     el.setAttribute('allowfullscreen', true);
     this.initVideoEl(el);
     return el;
-  },
+  }
 
   renderYoutubeNoCookie() {
     var el = document.createElement('iframe');
@@ -123,7 +119,7 @@ export default ComponentView.extend({
     el.setAttribute('allowfullscreen', true);
     this.initVideoEl(el);
     return el;
-  },
+  }
 
   renderVimeo() {
     var el = document.createElement('iframe');
@@ -132,13 +128,13 @@ export default ComponentView.extend({
     el.setAttribute('allowfullscreen', true);
     this.initVideoEl(el);
     return el;
-  },
+  }
 
   initVideoEl(el) {
     el.className = this.ppfx + 'no-pointer';
     el.style.height = '100%';
     el.style.width = '100%';
-  },
+  }
 
   render(...args) {
     ComponentView.prototype.render.apply(this, args);
@@ -148,4 +144,4 @@ export default ComponentView.extend({
     this.updateVideo();
     return this;
   }
-});
+}

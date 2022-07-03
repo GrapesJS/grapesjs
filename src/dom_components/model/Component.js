@@ -73,6 +73,7 @@ export const keyUpdateInside = `${keyUpdate}-inside`;
  * @property {Boolean} [layerable=true] Set to `false` if you need to hide the component inside Layers. Default: `true`
  * @property {Boolean} [selectable=true] Allow component to be selected when clicked. Default: `true`
  * @property {Boolean} [hoverable=true] Shows a highlight outline when hovering on the element if `true`. Default: `true`
+ * @property {Boolean} [locked=false] Disable the selection of the component and its children in the canvas. Default: `false`
  * @property {Boolean} [void=false] This property is used by the HTML exporter as void elements don't have closing tags, eg. `<br/>`, `<hr/>`, etc. Default: `false`
  * @property {Object} [style={}] Component default style, eg. `{ width: '100px', height: '100px', 'background-color': 'red' }`
  * @property {String} [styles=''] Component related styles, eg. `.my-component-class { color: red }`
@@ -89,6 +90,8 @@ export const keyUpdateInside = `${keyUpdate}-inside`;
  * Eg. `toolbar: [ { attributes: {class: 'fa fa-arrows'}, command: 'tlb-move' }, ... ]`.
  * By default, when `toolbar` property is falsy the editor will add automatically commands `core:component-exit` (select parent component, added if there is one), `tlb-move` (added if `draggable`) , `tlb-clone` (added if `copyable`), `tlb-delete` (added if `removable`).
  * @property {Collection<Component>} [components=null] Children components. Default: `null`
+ *
+ * @module docsjs.Component
  */
 export default class Component extends StyleableModel {
   /**
@@ -202,6 +205,7 @@ export default class Component extends StyleableModel {
 
   __onChange(m, opts) {
     const changed = this.changedAttributes();
+    keys(changed).forEach(prop => this.emitUpdate(prop));
     ['status', 'open', 'toolbar', 'traits'].forEach(name => delete changed[name]);
     // Propagate component prop changes
     if (!isEmptyObj(changed)) {
@@ -978,7 +982,7 @@ export default class Component extends StyleableModel {
   /**
    * Set new collection if `components` are provided, otherwise the
    * current collection is returned
-   * @param  {Component|String} [components] Component Definitions or HTML string
+   * @param  {Component|Component[]|String} [components] Component Definitions or HTML string
    * @param {Object} [opts={}] Options, same as in `Component.append()`
    * @returns {Collection|Array<[Component]>}
    * @example
@@ -1044,6 +1048,15 @@ export default class Component extends StyleableModel {
   parent(opts = {}) {
     const coll = this.collection || (opts.prev && this.prevColl);
     return coll ? coll.parent : null;
+  }
+
+  /**
+   * Return all parents of the component.
+   * @returns {Array<Component>}
+   */
+  parents() {
+    const parent = this.parent();
+    return parent ? [parent].concat(parent.parents()) : [];
   }
 
   /**
@@ -1560,7 +1573,7 @@ export default class Component extends StyleableModel {
    * @param {Frame} frame Specific frame from which taking the element
    * @return {HTMLElement}
    */
-  getEl(frame) {
+  getEl(frame = undefined) {
     const view = this.getView(frame);
     return view && view.el;
   }
@@ -1699,8 +1712,20 @@ export default class Component extends StyleableModel {
    * editor.getSelected().move(dest, { at: 0 });
    */
   move(component, opts = {}) {
-    this.remove({ temporary: 1 });
-    component && component.append(this, opts);
+    if (component) {
+      const { at } = opts;
+      const index = this.index();
+      const sameParent = component === this.parent();
+      const sameIndex = index === at || index === at - 1;
+
+      if (!sameParent || !sameIndex) {
+        if (sameParent && at && at > index) {
+          opts.at = at - 1;
+        }
+        this.remove({ temporary: 1 });
+        component.append(this, opts);
+      }
+    }
     return this;
   }
 
@@ -1963,6 +1988,7 @@ Component.prototype.defaults = {
   layerable: true,
   selectable: true,
   hoverable: true,
+  locked: false,
   void: false,
   state: '', // Indicates if the component is in some CSS state like ':hover', ':active', etc.
   status: '', // State, eg. 'selected'
