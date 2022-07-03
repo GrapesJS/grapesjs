@@ -17,6 +17,7 @@ export default Backbone.View.extend({
     'click [data-toggle-open]': 'toggleOpening',
     'click [data-toggle-visible]': 'toggleVisibility',
     'click [data-toggle-select]': 'handleSelect',
+    'contextmenu [data-toggle-select]': 'emitOpenContextMenu',
     'mouseover [data-toggle-select]': 'handleHover',
     'mouseout [data-toggle-select]': 'handleHoverOut',
     'dblclick [data-name]': 'handleEdit',
@@ -135,6 +136,13 @@ export default Backbone.View.extend({
     const method = hidden ? 'addClass' : 'removeClass';
     this.$el[method](hClass);
     this.getVisibilityEl()[method](hideIcon);
+  },
+
+  emitOpenContextMenu(e) {
+    const { em } = this;
+    em && em.trigger('component:contextmenu:open', e, this);
+
+    return false;
   },
 
   /**
@@ -355,7 +363,7 @@ export default Backbone.View.extend({
       sorter.onMoveClb = data => em.trigger(eventDrag, data);
       const endMove = sorter.onEndMove;
       sorter.onEndMove = (created, sorter, data) => {
-        console.warn('endMove', { created, sorter, data });
+        // console.warn('endMove', { created, sorter, data });
         if (!created && data.cancelled != 1) {
           em.trigger(`move:error`, {
             code: 'wrongDropPosition',

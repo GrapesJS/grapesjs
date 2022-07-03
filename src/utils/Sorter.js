@@ -75,6 +75,7 @@ export default Backbone.View.extend({
   },
 
   getScale() {
+    const scale = this.scale;
     return result(this, scale) || 1;
   },
 

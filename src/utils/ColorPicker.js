@@ -1345,13 +1345,13 @@ export default function($, undefined) {
     }
 
     var rgb = inputToRGB(color);
-    (this._originalInput = color),
-      (this._r = rgb.r),
-      (this._g = rgb.g),
-      (this._b = rgb.b),
-      (this._a = rgb.a),
-      (this._roundA = mathRound(100 * this._a) / 100),
-      (this._format = opts.format || rgb.format);
+    this._originalInput = color;
+    this._r = rgb.r;
+    this._g = rgb.g;
+    this._b = rgb.b;
+    this._a = rgb.a;
+    this._roundA = mathRound(100 * this._a) / 100;
+    this._format = opts.format || rgb.format;
     this._gradientType = opts.gradientType;
 
     // Don't let the range of [0,255] come back in [0,1].

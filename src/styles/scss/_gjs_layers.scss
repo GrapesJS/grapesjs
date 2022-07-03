@@ -63,7 +63,11 @@ $layerNameSpacing: 4px !default;
     }
 
     &-title {
-      @extend .#{$app-prefix}category-title;
+      font-weight: lighter;
+      letter-spacing: 1px;
+      text-align: left;
+      position: relative;
+      cursor: pointer;
 
       padding: 3px 10px 3px 30px;
       display: flex;
