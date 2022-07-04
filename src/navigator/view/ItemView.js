@@ -17,9 +17,9 @@ export default Backbone.View.extend({
     'click [data-toggle-open]': 'toggleOpening',
     'click [data-toggle-visible]': 'toggleVisibility',
     'click [data-toggle-select]': 'handleSelect',
-    'contextmenu [data-toggle-select]': 'emitOpenContextMenu',
-    'mouseover [data-toggle-select]': 'handleHover',
-    'mouseout [data-toggle-select]': 'handleHoverOut',
+    'contextmenu [data-contextmenu]': 'emitOpenContextMenu',
+    'mouseover [data-contextmenu]': 'handleHover',
+    'mouseout [data-contextmenu]': 'handleHoverOut',
     'dblclick [data-name]': 'handleEdit',
     'keydown [data-name]': 'handleEditKey',
     'focusout [data-name]': 'handleEditEnd'
@@ -55,7 +55,7 @@ export default Backbone.View.extend({
               }" data-toggle-visible></i>`
             : ''
         }
-        <div class="${clsTitleC}">
+        <div class="${clsTitleC}" data-contextmenu>
           <div class="${clsTitle}" style="padding-left: ${gut}" data-toggle-select>
             <div class="${pfx}layer-title-inn" title="${name}">
               <div class="${clsCaret}" data-toggle-open>
@@ -109,6 +109,7 @@ export default Backbone.View.extend({
     this.clsNoChild = `${pfx}layer-no-chld`;
     this.clsEdit = `${this.inputNameCls}--edit`;
     this.clsNoEdit = `${this.inputNameCls}--no-edit`;
+    this.clsNoMove = `${this.clsMove}--no-move`;
     this.$el.data('model', model);
     this.$el.data('collection', components);
     model.viewLayer = this;
@@ -181,7 +182,7 @@ export default Backbone.View.extend({
    */
   handleEdit(e) {
     e && e.stopPropagation();
-    const { em, $el, clsNoEdit, clsEdit } = this;
+    const { em, $el, clsNoEdit, clsEdit, clsNoMove } = this;
     const inputEl = this.getInputName();
     inputEl[inputProp] = true;
     inputEl.focus();
@@ -191,6 +192,7 @@ export default Backbone.View.extend({
       .find(`.${this.inputNameCls}`)
       .removeClass(clsNoEdit)
       .addClass(clsEdit);
+    $el.find(`.${this.clsMove}`).addClass(clsNoMove);
   },
 
   handleEditKey(ev) {
@@ -203,7 +205,7 @@ export default Backbone.View.extend({
    */
   handleEditEnd(e) {
     e && e.stopPropagation();
-    const { em, $el, clsNoEdit, clsEdit } = this;
+    const { em, $el, clsNoEdit, clsEdit, clsNoMove } = this;
     const inputEl = this.getInputName();
     const name = inputEl.textContent;
     inputEl.scrollLeft = 0;
@@ -214,6 +216,8 @@ export default Backbone.View.extend({
       .find(`.${this.inputNameCls}`)
       .addClass(clsNoEdit)
       .removeClass(clsEdit);
+
+    $el.find(`.${this.clsMove}`).removeClass(clsNoMove);
   },
 
   setName(name, { propName }) {

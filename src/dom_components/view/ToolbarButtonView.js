@@ -61,6 +61,8 @@ export default Backbone.View.extend({
     }
 
     if (typeof command === 'string') {
+      debugger;
+      console.log('event', event);
       editor.runCommand(command, opts);
     }
   },
