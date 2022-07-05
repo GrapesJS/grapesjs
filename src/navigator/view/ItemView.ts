@@ -37,41 +37,41 @@ export default class ItemView extends View {
   }
 
   template(model: Component) {
-    const { pfx, ppfx, config, clsNoEdit, module, opt } = this;
+    const { pfx, ppfx, config, clsNoEdit, module, opt, em } = this;
     const { hidable } = config;
     const count = module.getComponents(model).length;
     const addClass = !count ? this.clsNoChild : '';
     const clsTitle = `${this.clsTitle} ${addClass}`;
     const clsTitleC = `${this.clsTitleC} ${ppfx}one-bg`;
-    const clsCaret = `${this.clsCaret} fa fa-chevron-right`;
     const clsInput = `${this.inputNameCls} ${clsNoEdit} ${ppfx}no-app`;
     const level = opt.level + 1;
     const gut = `${30 + level * 10}px`;
     const name = model.getName();
     const icon = model.getIcon();
     const clsBase = `${pfx}layer`;
+    const { icons } = em?.getConfig();
+    const { move, eye, eyeOff, chevron } = icons;
 
     return `
       ${
         hidable
-          ? `<i class="${pfx}layer-vis fa fa-eye ${
-              module.isVisible(model) ? '' : 'fa-eye-slash'
-            }" data-toggle-visible></i>`
+          ? `<i class="${pfx}layer-vis" data-toggle-visible>
+            <i class="${pfx}layer-vis-on">${eye}</i>
+            <i class="${pfx}layer-vis-off">${eyeOff}</i>
+          </i>`
           : ''
       }
       <div class="${clsTitleC}">
         <div class="${clsTitle}" style="padding-left: ${gut}" data-toggle-select>
           <div class="${pfx}layer-title-inn" title="${name}">
-            <i class="${clsCaret}" data-toggle-open></i>
+            <i class="${this.clsCaret}" data-toggle-open>${chevron}</i>
             ${icon ? `<span class="${clsBase}__icon">${icon}</span>` : ''}
             <span class="${clsInput}" data-name>${name}</span>
           </div>
         </div>
       </div>
       <div class="${this.clsCount}" data-count>${count || ''}</div>
-      <div class="${this.clsMove}" data-toggle-move>
-        <i class="fa fa-arrows"></i>
-      </div>
+      <div class="${this.clsMove}" data-toggle-move>${move || ''}</div>
       <div class="${this.clsChildren}"></div>`;
   }
 
@@ -178,7 +178,7 @@ export default class ItemView extends View {
     const hidden = !module.isVisible(model);
     const method = hidden ? 'addClass' : 'removeClass';
     this.$el[method](hClass);
-    this.getVisibilityEl()[method]('fa-eye-slash');
+    this.getVisibilityEl()[method](`${pfx}layer-off`);
   }
 
   /**
@@ -248,17 +248,17 @@ export default class ItemView extends View {
    * @return void
    * */
   updateOpening() {
-    const { $el, model } = this;
+    const { $el, model, pfx } = this;
     const clsOpen = 'open';
-    const clsChvDown = 'fa-chevron-down';
+    const clsChvOpen = `${pfx}layer-open`;
     const caret = this.getCaret();
 
     if (this.module.isOpen(model)) {
       $el.addClass(clsOpen);
-      caret.addClass(clsChvDown);
+      caret.addClass(clsChvOpen);
     } else {
       $el.removeClass(clsOpen);
-      caret.removeClass(clsChvDown);
+      caret.removeClass(clsChvOpen);
     }
   }
 

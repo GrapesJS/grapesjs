@@ -30,7 +30,7 @@ const editor = grapesjs.init({
 
 Layers are a direct representation of your components, therefore they will only be available once your components are loaded in the editor (eg. you might load your project data from a remote endpoint).
 
-In your configuration, you're able to change the global behavior of layers (eg. make all layers not sortable) and also decide which component layer should be used as a root.
+In your configuration, you're able to change the global behavior of layers (eg. make all the layers not sortable) and also decide which component layer should be used as a root.
 
 ```js
 const editor = grapesjs.init({
@@ -45,14 +45,15 @@ const editor = grapesjs.init({
 });
 ```
 
-The configurations are mainly targeting the default UI provided by GrapesJS core, in case you need more control over the tree of your layers, you can read more in the Customization section below.
+The configurations are mainly targeting the default UI provided by GrapesJS core, in case you need more control over the tree of your layers, you can read more in the [Customization](#customization) section below.
 
 You can check here the full list of available configuration options: [Layer Manager Config](https://github.com/artf/grapesjs/blob/master/src/navigator/config/config.ts)
 
 
 
 ## Programmatic usage
-If you need to manage your selectors programmatically you can use its [APIs][Selector API].
+
+If you need to manage layers programmatically you can use its [APIs][Layers API].
 
 
 
@@ -97,4 +98,4 @@ For a complete list of available events, you can check it [here](/api/layer_mana
 [Style Manager]: <Style-manager.html>
 [Components]: <Components.html>
 [Getting Started]: </getting-started.html>
-[Selector API]: </api/selector_manager.html>
+[Layers API]: </api/layer_manager.html>
