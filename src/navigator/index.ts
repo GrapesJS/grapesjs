@@ -62,11 +62,13 @@ export const evAll = 'layer';
 export const evPfx = `${evAll}:`;
 export const evRoot = `${evPfx}root`;
 export const evComponent = `${evPfx}component`;
+export const evCustom = `${evPfx}custom`;
 
 const events = {
   all: evAll,
   root: evRoot,
   component: evComponent,
+  custom: evCustom,
 };
 
 const styleOpts = { mediaText: '' };
@@ -366,6 +368,13 @@ export default class LayerManager extends Module<typeof defaults> {
     const isValid = !hideText || (!cmp.is('textnode') && tag !== 'br');
 
     return isValid && cmp.get('layerable');
+  }
+
+  __trgCustom(opts?: any) {
+    this.em.trigger(this.events.custom, {
+      container: opts.container,
+      root: this.getRoot(),
+    });
   }
 
   updateLayer(component: Component, opts?: any) {
