@@ -10,6 +10,8 @@ type Module<TItem extends Model | Collection> = TItem extends Collection<infer M
   ? M
   : unknown;
 
+type TCollection<TItem extends Model | Collection> = TItem extends Collection ? TItem : unknown;
+
 export default class View<
   TModel extends Model | Collection = Model,
   TElement extends Element = HTMLElement
@@ -22,7 +24,7 @@ export default class View<
     return this.em.config.stylePrefix || '';
   }
 
-  collection!: TModel extends Collection ? TModel : Collection<Model>;
+  collection!: TModel extends Model ? Collection<Model> : TModel;
 
   protected get module(): Module<TModel> {
     return (this.model as any)?.module ?? this.collection.module;
