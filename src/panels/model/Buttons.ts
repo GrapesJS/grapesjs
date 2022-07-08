@@ -1,7 +1,7 @@
 import { Collection } from '../../common';
 import Button from './Button';
 
-export default class Buttons extends Collection {
+export default class Buttons extends Collection<Button> {
   /**
    * Deactivate all buttons, except one passed
    * @param  {Object}  except  Model to ignore
@@ -9,7 +9,7 @@ export default class Buttons extends Collection {
    *
    * @return  void
    * */
-  deactivateAllExceptOne(except, r) {
+  deactivateAllExceptOne(except: Button, r: boolean) {
     this.forEach((model, index) => {
       if (model !== except) {
         model.set('active', false);
@@ -24,11 +24,12 @@ export default class Buttons extends Collection {
    *
    * @return  void
    * */
-  deactivateAll(ctx, sender) {
+  deactivateAll(ctx?: string, sender?: any) {
     const context = ctx || '';
     this.forEach(model => {
       if (model.get('context') == context && model !== sender) {
-        model.set('active', false, { fromCollection: 1 });
+        //@ts-ignore
+        model.set('active', false, { fromCollection: true });
       }
     });
   }
@@ -39,7 +40,7 @@ export default class Buttons extends Collection {
    *
    * @return  void
    * */
-  disableAllButtons(ctx) {
+  disableAllButtons(ctx?: string) {
     var context = ctx || '';
     this.forEach((model, index) => {
       if (model.get('context') == context) {
@@ -55,7 +56,7 @@ export default class Buttons extends Collection {
    *
    * @return  void
    * */
-  disableAllButtonsExceptOne(except, r) {
+  disableAllButtonsExceptOne(except: Button, r: boolean) {
     this.forEach((model, index) => {
       if (model !== except) {
         model.set('disable', true);

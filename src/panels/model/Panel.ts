@@ -12,9 +12,18 @@ export default class Panel extends Model {
     };
   }
 
-  initialize(options) {
-    this.btn = this.get('buttons') || [];
-    this.buttons = new Buttons(this.btn);
+  get buttons() {
+    return this.get('buttons');
+  }
+
+  private set buttons(buttons: Buttons) {
+    this.set('buttons', buttons);
+  }
+
+  constructor(options: any) {
+    super(options);
+    var btn = this.get('buttons') || [];
+    this.buttons = new Buttons(btn);
     this.set('buttons', this.buttons);
   }
 }

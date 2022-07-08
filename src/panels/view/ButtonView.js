@@ -110,7 +110,7 @@ export default class ButtonView extends View {
     }
 
     if (model.get('active')) {
-      !fromCollection && model.collection.deactivateAll(context, model);
+      !fromCollection && model.collection?.deactivateAll(context, model);
       model.set('active', true, { silent: true }).trigger('checkActive');
       !fromListen && commands.runCommand(command, { ...options, sender: model });
 

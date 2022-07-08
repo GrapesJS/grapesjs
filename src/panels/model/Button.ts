@@ -1,4 +1,5 @@
 import { Model } from '../../common';
+import Buttons from './Buttons';
 
 export default class Button extends Model {
   defaults() {
@@ -21,9 +22,9 @@ export default class Button extends Model {
     };
   }
 
-  initialize(options) {
+  constructor(options: any) {
+    super(options);
     if (this.get('buttons').length) {
-      var Buttons = require('./Buttons').default;
       this.set('buttons', new Buttons(this.get('buttons')));
     }
   }

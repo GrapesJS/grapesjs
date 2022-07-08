@@ -1,12 +1,15 @@
 import Panels from 'panels';
 import Panel from 'panels/model/Panel';
+import Editor from 'editor/model/Editor';
 
 describe('Panels', () => {
   describe('Main', () => {
+    var em;
     var obj;
 
     beforeEach(() => {
-      obj = new Panels().init();
+      em = new Editor({});
+      obj = new Panels(em);
     });
 
     afterEach(() => {
