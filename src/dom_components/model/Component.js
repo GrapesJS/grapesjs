@@ -1724,6 +1724,7 @@ export default class Component extends StyleableModel {
         }
         this.remove({ temporary: 1 });
         component.append(this, opts);
+        this.emitUpdate();
       }
     }
     return this;
