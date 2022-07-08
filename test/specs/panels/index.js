@@ -35,7 +35,7 @@ describe('Panels', () => {
     });
 
     test('Adds new panel correctly via Panel instance', () => {
-      var oPanel = new Panel({ id: 'test' });
+      var oPanel = new Panel(obj, { id: 'test' });
       var panel = obj.addPanel(oPanel);
       expect(panel).toEqual(oPanel);
       expect(panel.get('id')).toEqual('test');
@@ -131,7 +131,7 @@ describe('Panels', () => {
       });
 
       test('Removes panel correctly via Panel instance', () => {
-        var oPanel = new Panel({ id: 'test' });
+        var oPanel = new Panel(obj, { id: 'test' });
         var panel = obj.addPanel(oPanel);
         expect(panel).toEqual(oPanel);
         expect(panel.get('id')).toEqual('test');
@@ -140,7 +140,7 @@ describe('Panels', () => {
       });
 
       test('Removes panel correctly via id', () => {
-        var oPanel = new Panel({ id: 'test' });
+        var oPanel = new Panel(obj, { id: 'test' });
         var panel = obj.addPanel(oPanel);
         expect(panel).toEqual(oPanel);
         expect(panel.get('id')).toEqual('test');

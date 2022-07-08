@@ -16,7 +16,7 @@
     "url": "https://github.com/artf/grapesjs.git"
   },
   "dependencies": {
-    "backbone": "1.3.3",
+    "backbone": "1.4.1",
     "backbone-undo": "^0.2.5",
     "codemirror": "^5.63.0",
     "codemirror-formatting": "^1.0.0",

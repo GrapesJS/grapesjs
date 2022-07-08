@@ -22,7 +22,7 @@ describe('Button', () => {
   });
 
   test('Init with other buttons inside correctly', () => {
-    obj = new Button({
+    obj = new Button(null, {
       buttons: [{}],
     });
     expect(obj.get('buttons') instanceof Buttons).toEqual(true);
@@ -109,7 +109,7 @@ describe('Panel', () => {
   });
 
   test('Init with buttons inside correctly', () => {
-    obj = new Panel({
+    obj = new Panel(null, {
       buttons: [{}],
     });
     expect(obj.get('buttons') instanceof Buttons).toEqual(true);

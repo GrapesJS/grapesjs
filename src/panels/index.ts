@@ -28,11 +28,12 @@
 import { Module } from '../abstract';
 import EditorModel from '../editor/model/Editor';
 import defaults from './config/config';
+import Button from './model/Button';
 import Panel from './model/Panel';
 import Panels from './model/Panels';
 import PanelsView from './view/PanelsView';
 
-export default class PanelsManager extends Module<typeof defaults> {
+export default class PanelManager extends Module<typeof defaults> {
   //config = {};
   panels: Panels;
   PanelsViewObj?: PanelsView;
@@ -44,7 +45,7 @@ export default class PanelsManager extends Module<typeof defaults> {
    */
   constructor(em: EditorModel) {
     super(em, 'Panels', defaults);
-    this.panels = new Panels(this.config.defaults);
+    this.panels = new Panels(this, this.config.defaults);
     for (var name in defaults) {
       //@ts-ignore
       if (!(name in this.config)) this.config[name] = defaults[name];
@@ -79,7 +80,7 @@ export default class PanelsManager extends Module<typeof defaults> {
    *  buttons  : [...],
    * });
    */
-  addPanel(panel: Panel) {
+  addPanel(panel: Panel | Array<Record<string, any>>) {
     return this.panels.add(panel);
   }
 

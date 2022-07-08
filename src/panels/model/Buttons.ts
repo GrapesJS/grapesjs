@@ -1,7 +1,11 @@
-import { Collection } from '../../common';
+import PanelManager from '..';
+import { Collection } from '../../abstract';
 import Button from './Button';
 
 export default class Buttons extends Collection<Button> {
+  constructor(module: PanelManager, models: Button[]) {
+    super(module, models, Button);
+  }
   /**
    * Deactivate all buttons, except one passed
    * @param  {Object}  except  Model to ignore

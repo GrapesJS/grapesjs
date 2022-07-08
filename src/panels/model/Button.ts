@@ -1,7 +1,9 @@
-import { Model } from '../../common';
+import PanelManager from '..';
+import { Model } from '../../abstract';
+import EditorModel from '../../editor/model/Editor';
 import Buttons from './Buttons';
 
-export default class Button extends Model {
+export default class Button extends Model<PanelManager> {
   defaults() {
     return {
       id: '',
@@ -22,10 +24,10 @@ export default class Button extends Model {
     };
   }
 
-  constructor(options: any) {
-    super(options);
+  constructor(module: PanelManager, options: any) {
+    super(module, options);
     if (this.get('buttons').length) {
-      this.set('buttons', new Buttons(this.get('buttons')));
+      this.set('buttons', new Buttons(this.module, this.get('buttons')));
     }
   }
 }

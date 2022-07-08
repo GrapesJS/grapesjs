@@ -1,7 +1,8 @@
-import { Model } from '../../common';
+import PanelManager from '..';
+import { Model } from '../../abstract';
 import Buttons from './Buttons';
 
-export default class Panel extends Model {
+export default class Panel extends Model<PanelManager> {
   defaults() {
     return {
       id: '',
@@ -20,10 +21,9 @@ export default class Panel extends Model {
     this.set('buttons', buttons);
   }
 
-  constructor(options: any) {
-    super(options);
+  constructor(module: PanelManager, options: any) {
+    super(module, options);
     var btn = this.get('buttons') || [];
-    this.buttons = new Buttons(btn);
-    this.set('buttons', this.buttons);
+    this.buttons = new Buttons(module, btn);
   }
 }
