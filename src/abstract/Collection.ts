@@ -7,7 +7,7 @@ type ModelConstructor<TModel extends Model> = { new (mod: Module<TModel>, attr: 
 
 export default class Collection<TModel extends Model = Model> extends Backbone.Collection<TModel> {
   module!: Module<TModel>;
-  private newModel!: { new (mod: Module<TModel>, attr: any): TModel };
+  private newModel!: ModelConstructor<TModel>;
 
   //modelConstructor = {new (mod: Module<TModel>, attr: any): TModel}
   add(model: Array<Record<string, any>> | TModel, options?: AddOptions): TModel;

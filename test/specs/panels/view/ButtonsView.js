@@ -11,9 +11,7 @@ describe('ButtonsView', () => {
   beforeEach(() => {
     em = new Editor({});
     model = new Buttons(em.Panels, []);
-    view = new ButtonsView({
-      collection: model,
-    });
+    view = new ButtonsView(model);
     document.body.innerHTML = '<div id="fixtures"></div>';
     fixtures = document.body.querySelector('#fixtures');
     fixtures.appendChild(view.render().el);

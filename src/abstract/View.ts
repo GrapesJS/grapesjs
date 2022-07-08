@@ -1,29 +1,44 @@
 import Backbone from 'backbone';
+import Collection from './Collection';
 import Model from './Model';
-import Module, { IBaseModule } from './Module';
+import { IBaseModule } from './Module';
 
-export default class View<TModel extends Model = Model, TElement extends Element = HTMLElement> extends Backbone.View<
-  TModel,
-  TElement
-> {
+type ModuleFromModel<TModel extends Model> = TModel extends Model<infer M> ? M : unknown;
+type Module<TItem extends Model | Collection> = TItem extends Collection<infer M>
+  ? ModuleFromModel<M>
+  : TItem extends Model<infer M>
+  ? M
+  : unknown;
+
+export default class View<
+  TModel extends Model | Collection = Model,
+  TElement extends Element = HTMLElement
+> extends Backbone.View<TModel extends Model ? TModel : undefined, TElement> {
   protected get pfx() {
-    return this.ppfx + this.config.stylePrefix || '';
+    return this.ppfx + (this.config as any).stylePrefix || '';
   }
 
   protected get ppfx() {
-    return (this.em.config as any).stylePrefix || '';
+    return this.em.config.stylePrefix || '';
   }
 
-  protected get module(): TModel extends Model<infer M> ? M : unknown {
-    //console.log((this.collection.first as any).module)
-    return this.model?.module ?? (this.collection as any).module;
+  collection!: TModel extends Collection ? TModel : Collection<Model>;
+
+  protected get module(): Module<TModel> {
+    return (this.model as any)?.module ?? this.collection.module;
   }
 
   protected get em() {
     return this.module.em;
   }
 
-  protected get config(): TModel extends Model<infer M> ? (M extends IBaseModule<infer C> ? C : unknown) : unknown {
+  protected get config(): Module<TModel> extends IBaseModule<infer C> ? C : unknown {
     return this.module.config as any;
+  }
+
+  public className!: string;
+
+  preinitialize(options?: any) {
+    this.className = '';
   }
 }

@@ -21,6 +21,8 @@ export default class Panel extends Model<PanelManager> {
     this.set('buttons', buttons);
   }
 
+  view?: any;
+
   constructor(module: PanelManager, options: any) {
     super(module, options);
     var btn = this.get('buttons') || [];

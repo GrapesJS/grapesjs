@@ -191,15 +191,10 @@ export default class PanelManager extends Module<typeof defaults> {
   /**
    * Render panels and buttons
    * @return {HTMLElement}
-   * @private
    */
   render() {
     this.PanelsViewObj && this.PanelsViewObj.remove();
-    this.PanelsViewObj = new PanelsView({
-      collection: this.panels,
-      //@ts-ignore
-      config: this.config,
-    });
+    this.PanelsViewObj = new PanelsView(this.panels);
     return this.PanelsViewObj.render().el;
   }
 

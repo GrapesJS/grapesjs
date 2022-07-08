@@ -24,6 +24,35 @@ export default class Button extends Model<PanelManager> {
     };
   }
 
+  get className(): string {
+    return this.get('className');
+  }
+
+  get command(): string {
+    return this.get('command');
+  }
+
+  get active(): boolean {
+    return this.get('active');
+  }
+  set active(isActive: boolean) {
+    this.set('active', isActive);
+  }
+
+  get togglable(): boolean {
+    return this.get('togglable');
+  }
+
+  get runDefaultCommand(): boolean {
+    return this.get('runDefaultCommand');
+  }
+  get stopDefaultCommand(): boolean {
+    return this.get('stopDefaultCommand');
+  }
+  get disable(): boolean {
+    return this.get('disable');
+  }
+
   constructor(module: PanelManager, options: any) {
     super(module, options);
     if (this.get('buttons').length) {
