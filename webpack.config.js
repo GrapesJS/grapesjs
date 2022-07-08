@@ -1,7 +1,6 @@
 import path from 'path';
 import webpack from 'webpack';
 import pkg from './package.json';
-import TerserPlugin from 'terser-webpack-plugin';
 
 const rootDir = path.resolve(__dirname);
 
@@ -11,18 +10,6 @@ export default ({ config }) => ({
     ...config.output,
     filename: 'grapes.min.js',
     libraryExport: 'default',
-  },
-  optimization: {
-    minimizer: [new TerserPlugin({
-      extractComments: false,
-      terserOptions: {
-        output: {
-          comments: false,
-          quote_style: 3, // Preserve original quotes
-          preamble: `/*! grapesjs - ${pkg.version} */`,
-        }
-      }
-    })],
   },
   devServer: {
     ...config.devServer,
