@@ -30,216 +30,211 @@ import Panel from './model/Panel';
 import Panels from './model/Panels';
 import PanelsView from './view/PanelsView';
 
-export default () => {
-  var c = {};
-  var panels, PanelsViewObj;
+export default class PanelsManager {
+  /**
+   * Name of the module
+   * @type {String}
+   * @private
+   */
+  name = 'Panels';
 
-  return {
-    /**
-     * Name of the module
-     * @type {String}
-     * @private
-     */
-    name: 'Panels',
+  config = {};
 
-    /**
-     * Initialize module. Automatically called with a new instance of the editor
-     * @param {Object} config Configurations
-     * @private
-     */
-    init(config) {
-      c = config || {};
-      for (var name in defaults) {
-        if (!(name in c)) c[name] = defaults[name];
-      }
+  /**
+   * Initialize module. Automatically called with a new instance of the editor
+   * @param {Object} config Configurations
+   * @private
+   */
+  init(config) {
+    this.config = config || {};
+    for (var name in defaults) {
+      if (!(name in this.config)) this.config[name] = defaults[name];
+    }
 
-      var ppfx = c.pStylePrefix;
-      if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
+    var ppfx = this.config.pStylePrefix;
+    if (ppfx) this.config.stylePrefix = ppfx + this.config.stylePrefix;
 
-      panels = new Panels(c.defaults);
-      return this;
-    },
+    this.panels = new Panels(this.config.defaults);
+    return this;
+  }
 
-    /**
-     * Returns the collection of panels
-     * @return {Collection} Collection of panel
-     */
-    getPanels() {
-      return panels;
-    },
+  /**
+   * Returns the collection of panels
+   * @return {Collection} Collection of panel
+   */
+  getPanels() {
+    return this.panels;
+  }
 
-    /**
-     * Returns panels element
-     * @return {HTMLElement}
-     */
-    getPanelsEl() {
-      return PanelsViewObj && PanelsViewObj.el;
-    },
+  /**
+   * Returns panels element
+   * @return {HTMLElement}
+   */
+  getPanelsEl() {
+    return this.PanelsViewObj && this.PanelsViewObj.el;
+  }
 
-    /**
-     * Add new panel to the collection
-     * @param {Object|Panel} panel Object with right properties or an instance of Panel
-     * @return {Panel} Added panel. Useful in case passed argument was an Object
-     * @example
-     * var newPanel = panelManager.addPanel({
-     *   id: 'myNewPanel',
-     *  visible  : true,
-     *  buttons  : [...],
-     * });
-     */
-    addPanel(panel) {
-      return panels.add(panel);
-    },
+  /**
+   * Add new panel to the collection
+   * @param {Object|Panel} panel Object with right properties or an instance of Panel
+   * @return {Panel} Added panel. Useful in case passed argument was an Object
+   * @example
+   * var newPanel = panelManager.addPanel({
+   *   id: 'myNewPanel',
+   *  visible  : true,
+   *  buttons  : [...],
+   * });
+   */
+  addPanel(panel) {
+    return this.panels.add(panel);
+  }
 
-    /**
-     * Remove a panel from the collection
-     * @param {Object|Panel|String} panel Object with right properties or an instance of Panel or Painel id
-     * @return {Panel} Removed panel. Useful in case passed argument was an Object
-     * @example
-     * const newPanel = panelManager.removePanel({
-     *   id: 'myNewPanel',
-     *  visible  : true,
-     *  buttons  : [...],
-     * });
-     *
-     * const newPanel = panelManager.removePanel('myNewPanel');
-     *
-     */
-    removePanel(panel) {
-      return panels.remove(panel);
-    },
+  /**
+   * Remove a panel from the collection
+   * @param {Object|Panel|String} panel Object with right properties or an instance of Panel or Painel id
+   * @return {Panel} Removed panel. Useful in case passed argument was an Object
+   * @example
+   * const newPanel = panelManager.removePanel({
+   *   id: 'myNewPanel',
+   *  visible  : true,
+   *  buttons  : [...],
+   * });
+   *
+   * const newPanel = panelManager.removePanel('myNewPanel');
+   *
+   */
+  removePanel(panel) {
+    return this.panels.remove(panel);
+  }
 
-    /**
-     * Get panel by ID
-     * @param  {string} id Id string
-     * @return {Panel|null}
-     * @example
-     * var myPanel = panelManager.getPanel('myNewPanel');
-     */
-    getPanel(id) {
-      var res = panels.where({ id });
+  /**
+   * Get panel by ID
+   * @param  {string} id Id string
+   * @return {Panel|null}
+   * @example
+   * var myPanel = panelManager.getPanel('myNewPanel');
+   */
+  getPanel(id) {
+    var res = this.panels.where({ id });
+    return res.length ? res[0] : null;
+  }
+
+  /**
+   * Add button to the panel
+   * @param {string} panelId Panel's ID
+   * @param {Object|Button} button Button object or instance of Button
+   * @return {Button|null} Added button. Useful in case passed button was an Object
+   * @example
+   * var newButton = panelManager.addButton('myNewPanel',{
+   *   id: 'myNewButton',
+   *   className: 'someClass',
+   *   command: 'someCommand',
+   *   attributes: { title: 'Some title'},
+   *   active: false,
+   * });
+   * // It's also possible to pass the command as an object
+   * // with .run and .stop methods
+   * ...
+   * command: {
+   *   run: function(editor) {
+   *     ...
+   *   },
+   *   stop: function(editor) {
+   *     ...
+   *   }
+   * },
+   * // Or simply like a function which will be evaluated as a single .run command
+   * ...
+   * command: function(editor) {
+   *   ...
+   * }
+   */
+  addButton(panelId, button) {
+    var pn = this.getPanel(panelId);
+    return pn ? pn.get('buttons').add(button) : null;
+  }
+
+  /**
+   * Remove button from the panel
+   * @param {String} panelId Panel's ID
+   * @param {String} buttonId Button's ID
+   * @return {Button|null} Removed button.
+   * @example
+   * const removedButton = panelManager.addButton('myNewPanel',{
+   *   id: 'myNewButton',
+   *   className: 'someClass',
+   *   command: 'someCommand',
+   *   attributes: { title: 'Some title'},
+   *   active: false,
+   * });
+   *
+   * const removedButton = panelManager.removeButton('myNewPanel', 'myNewButton');
+   *
+   */
+  removeButton(panelId, button) {
+    var pn = this.getPanel(panelId);
+    return pn && pn.get('buttons').remove(button);
+  }
+
+  /**
+   * Get button from the panel
+   * @param {string} panelId Panel's ID
+   * @param {string} id Button's ID
+   * @return {Button|null}
+   * @example
+   * var button = panelManager.getButton('myPanel','myButton');
+   */
+  getButton(panelId, id) {
+    var pn = this.getPanel(panelId);
+    if (pn) {
+      var res = pn.get('buttons').where({ id });
       return res.length ? res[0] : null;
-    },
+    }
+    return null;
+  }
 
-    /**
-     * Add button to the panel
-     * @param {string} panelId Panel's ID
-     * @param {Object|Button} button Button object or instance of Button
-     * @return {Button|null} Added button. Useful in case passed button was an Object
-     * @example
-     * var newButton = panelManager.addButton('myNewPanel',{
-     *   id: 'myNewButton',
-     *   className: 'someClass',
-     *   command: 'someCommand',
-     *   attributes: { title: 'Some title'},
-     *   active: false,
-     * });
-     * // It's also possible to pass the command as an object
-     * // with .run and .stop methods
-     * ...
-     * command: {
-     *   run: function(editor) {
-     *     ...
-     *   },
-     *   stop: function(editor) {
-     *     ...
-     *   }
-     * },
-     * // Or simply like a function which will be evaluated as a single .run command
-     * ...
-     * command: function(editor) {
-     *   ...
-     * }
-     */
-    addButton(panelId, button) {
-      var pn = this.getPanel(panelId);
-      return pn ? pn.get('buttons').add(button) : null;
-    },
+  /**
+   * Render panels and buttons
+   * @return {HTMLElement}
+   * @private
+   */
+  render() {
+    this.PanelsViewObj && this.PanelsViewObj.remove();
+    this.PanelsViewObj = new PanelsView({
+      collection: this.panels,
+      config: this.config,
+    });
+    return this.PanelsViewObj.render().el;
+  }
 
-    /**
-     * Remove button from the panel
-     * @param {String} panelId Panel's ID
-     * @param {String} buttonId Button's ID
-     * @return {Button|null} Removed button.
-     * @example
-     * const removedButton = panelManager.addButton('myNewPanel',{
-     *   id: 'myNewButton',
-     *   className: 'someClass',
-     *   command: 'someCommand',
-     *   attributes: { title: 'Some title'},
-     *   active: false,
-     * });
-     *
-     * const removedButton = panelManager.removeButton('myNewPanel', 'myNewButton');
-     *
-     */
-    removeButton(panelId, button) {
-      var pn = this.getPanel(panelId);
-      return pn && pn.get('buttons').remove(button);
-    },
-
-    /**
-     * Get button from the panel
-     * @param {string} panelId Panel's ID
-     * @param {string} id Button's ID
-     * @return {Button|null}
-     * @example
-     * var button = panelManager.getButton('myPanel','myButton');
-     */
-    getButton(panelId, id) {
-      var pn = this.getPanel(panelId);
-      if (pn) {
-        var res = pn.get('buttons').where({ id });
-        return res.length ? res[0] : null;
-      }
-      return null;
-    },
-
-    /**
-     * Render panels and buttons
-     * @return {HTMLElement}
-     * @private
-     */
-    render() {
-      PanelsViewObj && PanelsViewObj.remove();
-      PanelsViewObj = new PanelsView({
-        collection: panels,
-        config: c,
+  /**
+   * Active activable buttons
+   * @private
+   */
+  active() {
+    this.getPanels().each(p => {
+      p.get('buttons').each(btn => {
+        btn.get('active') && btn.trigger('updateActive');
       });
-      return PanelsViewObj.render().el;
-    },
+    });
+  }
 
-    /**
-     * Active activable buttons
-     * @private
-     */
-    active() {
-      this.getPanels().each(p => {
-        p.get('buttons').each(btn => {
-          btn.get('active') && btn.trigger('updateActive');
-        });
+  /**
+   * Disable buttons flagged as disabled
+   * @private
+   */
+  disableButtons() {
+    this.getPanels().each(p => {
+      p.get('buttons').each(btn => {
+        if (btn.get('disable')) btn.trigger('change:disable');
       });
-    },
+    });
+  }
 
-    /**
-     * Disable buttons flagged as disabled
-     * @private
-     */
-    disableButtons() {
-      this.getPanels().each(p => {
-        p.get('buttons').each(btn => {
-          if (btn.get('disable')) btn.trigger('change:disable');
-        });
-      });
-    },
-
-    destroy() {
-      panels.reset();
-      panels.stopListening();
-      PanelsViewObj && PanelsViewObj.remove();
-      [c, panels, PanelsViewObj].forEach(i => (i = {}));
-    },
-
-    Panel,
-  };
-};
+  destroy() {
+    this.panels.reset();
+    this.panels.stopListening();
+    this.PanelsViewObj && this.PanelsViewObj.remove();
+    [this.config, this.panels, this.PanelsViewObj].forEach(i => (i = {}));
+  }
+}
