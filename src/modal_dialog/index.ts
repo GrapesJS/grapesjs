@@ -45,10 +45,6 @@ import ModalView from './view/ModalView';
 export default class ModalManager extends Module<typeof defaults> {
   modal?: ModalView;
 
-  getConfig() {
-    return this.config;
-  }
-
   /**
    * Initialize module. Automatically called with a new instance of the editor
    * @param {Object} config Configurations
@@ -57,7 +53,7 @@ export default class ModalManager extends Module<typeof defaults> {
   constructor(em: EditorModel) {
     super(em, 'Modal', defaults);
 
-    this.model = new ModalM(this.config);
+    this.model = new ModalM(this);
     this.model.on('change:open', (enable: boolean) => {
       em.trigger(`modal:${enable ? 'open' : 'close'}`);
     });
@@ -65,7 +61,7 @@ export default class ModalManager extends Module<typeof defaults> {
       'change',
       debounce(() => {
         const data = this._evData();
-        const { custom } = this.getConfig();
+        const { custom } = this.config;
         //@ts-ignore
         isFunction(custom) && custom(data);
         em.trigger('modal', data);
@@ -90,7 +86,8 @@ export default class ModalManager extends Module<typeof defaults> {
   }
 
   postRender(view: ModalView) {
-    const el = view.model.getConfig().el || view.el;
+    //@ts-ignore
+    const el = view.model.config.el || view.el;
     const res = this.render();
     res && res.appendTo(el);
   }
@@ -249,9 +246,8 @@ export default class ModalManager extends Module<typeof defaults> {
    * @return {HTMLElement}
    * @private
    */
-  //@ts-ignore
   render() {
-    if (this.getConfig().custom) return;
+    if (this.config.custom) return;
     const View = ModalView.extend(this.config.extend);
     const el = this.modal && this.modal.el;
     this.modal = new View({
