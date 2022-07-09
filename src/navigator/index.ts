@@ -1,3 +1,44 @@
+/**
+ * You can customize the initial state of the module from the editor initialization
+ * ```js
+ * const editor = grapesjs.init({
+ *  // ...
+ *  layerManager: {
+ *    // ...
+ *  },
+ * })
+ * ```
+ *
+ * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+ *
+ * ```js
+ * const layers = editor.Layers;
+ * ```
+ *
+ * ## Available Events
+ * * `layer:root` - Root layer changed. The new root component is passed as an argument to the callback.
+ * * `layer:component` - Component layer is updated. The updated component is passed as an argument to the callback.
+ *
+ * ## Methods
+ * * [setRoot](#setroot)
+ * * [getRoot](#getroot)
+ * * [getComponents](#getcomponents)
+ * * [setOpen](#setopen)
+ * * [isOpen](#isopen)
+ * * [setVisible](#setvisible)
+ * * [isVisible](#isvisible)
+ * * [setlocked](#setlocked)
+ * * [isLocked](#islocked)
+ * * [setName](#setname)
+ * * [getName](#getname)
+ * * [getLayerData](#getlayerdata)
+ *
+ * [Page]: page.html
+ * [Component]: component.html
+ *
+ * @module Layers
+ */
+
 import { isString, bindAll } from 'underscore';
 import { Model } from '../abstract';
 import Module from '../abstract/Module';
@@ -21,11 +62,13 @@ export const evAll = 'layer';
 export const evPfx = `${evAll}:`;
 export const evRoot = `${evPfx}root`;
 export const evComponent = `${evPfx}component`;
+export const evCustom = `${evPfx}custom`;
 
 const events = {
   all: evAll,
   root: evRoot,
   component: evComponent,
+  custom: evCustom,
 };
 
 const styleOpts = { mediaText: '' };
@@ -67,9 +110,12 @@ export default class LayerManager extends Module<typeof defaults> {
   }
 
   /**
-   * Set new root for layers
-   * @param {Component|string} component Component to be set as the root
-   * @return {Component}
+   * Update the root layer with another component.
+   * @param {[Component]|String} component Component to be set as root
+   * @return {[Component]}
+   * @example
+   * const component = editor.getSelected();
+   * layers.setRoot(component);
    */
   setRoot(component: Component | string): Component {
     const wrapper: Component = this.em.getWrapper();
@@ -85,14 +131,129 @@ export default class LayerManager extends Module<typeof defaults> {
   }
 
   /**
-   * Get the root of layers
-   * @return {Component}
+   * Get the current root layer.
+   * @return {[Component]}
+   * @example
+   * const layerRoot = layers.getRoot();
    */
   getRoot(): Component {
     return this.model.get('root'); // || this.em.getWrapper();
   }
 
-  getLayerData(component: any): LayerData {
+  /**
+   * Get valid layer child components (eg. excludes non layerable components).
+   * @param {[Component]} component Component from which you want to get child components
+   * @returns {Array<[Component]>}
+   * @example
+   * const component = editor.getSelected();
+   * const components = layers.getComponents(component);
+   * console.log(components);
+   */
+  getComponents(component: Component): Component[] {
+    return component.components().filter((cmp: any) => this.__isLayerable(cmp));
+  }
+
+  /**
+   * Update the layer open state of the component.
+   * @param {[Component]} component Component to update
+   * @param {Boolean} value
+   */
+  setOpen(component: Component, value: boolean) {
+    component.set('open', value);
+  }
+
+  /**
+   * Check the layer open state of the component.
+   * @param {[Component]} component
+   * @returns {Boolean}
+   */
+  isOpen(component: Component): boolean {
+    return !!component.get('open');
+  }
+
+  /**
+   * Update the layer visibility state of the component.
+   * @param {[Component]} component Component to update
+   * @param {Boolean} value
+   */
+  setVisible(component: Component, value: boolean) {
+    const prevDspKey = '__prev-display';
+    const style: any = component.getStyle(styleOpts);
+    const { display } = style;
+
+    if (value) {
+      const prevDisplay = component.get(prevDspKey);
+      delete style.display;
+
+      if (prevDisplay) {
+        style.display = prevDisplay;
+        component.unset(prevDspKey);
+      }
+    } else {
+      display && component.set(prevDspKey, display);
+      style.display = 'none';
+    }
+
+    component.setStyle(style, styleOpts);
+    this.updateLayer(component);
+    this.em.trigger('component:toggled'); // Updates Style Manager #2938
+  }
+
+  /**
+   * Check the layer visibility state of the component.
+   * @param {[Component]} component
+   * @returns {Boolean}
+   */
+  isVisible(component: Component): boolean {
+    return !isStyleHidden(component.getStyle(styleOpts));
+  }
+
+  /**
+   * Update the layer locked state of the component.
+   * @param {[Component]} component Component to update
+   * @param {Boolean} value
+   */
+  setLocked(component: Component, value: boolean) {
+    component.set('locked', value);
+  }
+
+  /**
+   * Check the layer locked state of the component.
+   * @param {[Component]} component
+   * @returns {Boolean}
+   */
+  isLocked(component: Component): boolean {
+    return component.get('locked');
+  }
+
+  /**
+   * Update the layer name of the component.
+   * @param {[Component]} component Component to update
+   * @param {String} value New name
+   */
+  setName(component: Component, value: string) {
+    component.set('custom-name', value);
+  }
+
+  /**
+   * Get the layer name of the component.
+   * @param {[Component]} component
+   * @returns {String} Component layer name
+   */
+  getName(component: Component) {
+    return component.getName();
+  }
+
+  /**
+   * Get layer data from a component.
+   * @param {[Component]} component Component from which you want to read layer data.
+   * @returns {Object} Object containing the layer data.
+   * @example
+   * const component = editor.getSelected();
+   * const layerData = layers.getLayerData(component);
+   * console.log(layerData);
+   */
+  getLayerData(component: Component): LayerData {
     const status = component.get('status');
 
     return {
@@ -137,81 +298,6 @@ export default class LayerManager extends Module<typeof defaults> {
     }
   }
 
-  getComponents(component: Component): Component[] {
-    return component.components().filter((cmp: any) => this.__isLayerable(cmp));
-  }
-
-  setOpen(component: Component, value: boolean) {
-    component.set('open', value);
-  }
-
-  isOpen(component: Component): boolean {
-    return !!component.get('open');
-  }
-
-  /**
-   * Update component visibility
-   * */
-  setVisible(component: Component, value: boolean) {
-    const prevDspKey = '__prev-display';
-    const style: any = component.getStyle(styleOpts);
-    const { display } = style;
-
-    if (value) {
-      const prevDisplay = component.get(prevDspKey);
-      delete style.display;
-
-      if (prevDisplay) {
-        style.display = prevDisplay;
-        component.unset(prevDspKey);
-      }
-    } else {
-      display && component.set(prevDspKey, display);
-      style.display = 'none';
-    }
-
-    component.setStyle(style, styleOpts);
-    this.updateLayer(component);
-    this.em.trigger('component:toggled'); // Updates Style Manager #2938
-  }
-
-  /**
-   * Check if the component is visible
-   * */
-  isVisible(component: Component): boolean {
-    return !isStyleHidden(component.getStyle(styleOpts));
-  }
-
-  /**
-   * Update component locked value
-   * */
-  setLocked(component: Component, value: boolean) {
-    component.set('locked', value);
-  }
-
-  /**
-   * Check if the component is locked
-   * */
-  isLocked(component: Component): boolean {
-    return component.get('locked');
-  }
-
-  /**
-   * Update component name
-   * */
-  setName(component: Component, value: string) {
-    component.set('custom-name', value);
-  }
-
-  /**
-   * Return the view of layers
-   * @return {View}
-   * @private
-   */
-  getAll() {
-    return this.view;
-  }
-
   /**
    * Triggered when the selected component is changed
    * @private
@@ -235,12 +321,15 @@ export default class LayerManager extends Module<typeof defaults> {
       opened[parent.cid] = parent;
       parent = parent.parent();
     }
-
     if (selected && scrollLayers) {
       // @ts-ignore
       const el = selected.viewLayer?.el;
       el?.scrollIntoView(scrollLayers);
     }
+  }
+
+  getAll() {
+    return this.view;
   }
 
   render() {
@@ -278,6 +367,13 @@ export default class LayerManager extends Module<typeof defaults> {
     const isValid = !hideText || (!cmp.is('textnode') && tag !== 'br');
 
     return isValid && cmp.get('layerable');
+  }
+
+  __trgCustom(opts?: any) {
+    this.em.trigger(this.events.custom, {
+      container: opts.container,
+      root: this.getRoot(),
+    });
   }
 
   updateLayer(component: Component, opts?: any) {

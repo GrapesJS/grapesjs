@@ -36,6 +36,9 @@ export default {
   // Highlight when a layer component is hovered
   highlightHover: true,
 
+  // Avoid rendering the default layer manager.
+  custom: false,
+
   /**
    * WARNING: Experimental option
    * A callback triggered once the component layer is initialized.

@@ -485,6 +485,12 @@ component.parent();
 
 Returns **(Component | null)** 
 
+## parents
+
+Return all parents of the component.
+
+Returns **[Array][5]\<Component>** 
+
 ## getTraits
 
 Get traits.

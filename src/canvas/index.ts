@@ -61,6 +61,13 @@ import FrameView from './view/FrameView';
 
 export default class CanvasModule extends Module<typeof defaults> {
   /**
+   * Get configuration object
+   * @name getConfig
+   * @function
+   * @return {Object}
+   */
+
+  /**
    * Used inside RTE
    * @private
    */
