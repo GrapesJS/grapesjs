@@ -33,24 +33,17 @@
  * @module Modal
  */
 
+import { EventHandler } from 'backbone';
 import { debounce, isFunction, isString } from 'underscore';
 import { Module } from '../abstract';
+import EditorModel from '../editor/model/Editor';
 import { createText } from '../utils/dom';
 import defaults from './config/config';
 import ModalM from './model/Modal';
 import ModalView from './view/ModalView';
 
-const triggerEvent = (enable, em) => {
-  em && em.trigger(`modal:${enable ? 'open' : 'close'}`);
-};
-
-export default class ModalManager extends Module {
-  /**
-   * Name of the module
-   * @type {String}
-   * @private
-   */
-  name = 'Modal';
+export default class ModalManager extends Module<typeof defaults> {
+  modal?: ModalView;
 
   getConfig() {
     return this.config;
@@ -61,27 +54,22 @@ export default class ModalManager extends Module {
    * @param {Object} config Configurations
    * @private
    */
-  init(config = {}) {
-    this.config = {
-      ...defaults,
-      ...config,
-    };
-
-    const em = this.config.em;
-    this.em = em;
-    var ppfx = this.config.pStylePrefix;
-    if (ppfx) this.config.stylePrefix = ppfx + this.config.stylePrefix;
+  constructor(em: EditorModel) {
+    super(em, 'Modal', defaults);
 
     this.model = new ModalM(this.config);
-    this.model.on('change:open', (m, enb) => triggerEvent(enb, em));
+    this.model.on('change:open', (enable: boolean) => {
+      em.trigger(`modal:${enable ? 'open' : 'close'}`);
+    });
     this.model.on(
       'change',
       debounce(() => {
         const data = this._evData();
         const { custom } = this.getConfig();
+        //@ts-ignore
         isFunction(custom) && custom(data);
         em.trigger('modal', data);
-      })
+      }, 0)
     );
 
     return this;
@@ -95,12 +83,13 @@ export default class ModalManager extends Module {
       open,
       attributes,
       title: isString(titl) ? createText(titl) : titl,
+      //@ts-ignore
       content: isString(cnt) ? createText(cnt) : cnt.get ? cnt.get(0) : cnt,
       close: () => this.close(),
     };
   }
 
-  postRender(view) {
+  postRender(view: ModalView) {
     const el = view.model.getConfig().el || view.el;
     const res = this.render();
     res && res.appendTo(el);
@@ -120,7 +109,7 @@ export default class ModalManager extends Module {
    *   attributes: { class: 'my-class' },
    * });
    */
-  open(opts = {}) {
+  open(opts: any = {}) {
     const attr = opts.attributes || {};
     opts.title && this.setTitle(opts.title);
     opts.content && this.setContent(opts.content);
@@ -151,7 +140,7 @@ export default class ModalManager extends Module {
    *  console.log('The modal is closed');
    * });
    */
-  onceClose(clb) {
+  onceClose(clb: EventHandler) {
     this.em.once('modal:close', clb);
     return this;
   }
@@ -166,7 +155,7 @@ export default class ModalManager extends Module {
    *  console.log('The modal is opened');
    * });
    */
-  onceOpen(clb) {
+  onceOpen(clb: EventHandler) {
     this.em.once('modal:open', clb);
     return this;
   }
@@ -193,7 +182,7 @@ export default class ModalManager extends Module {
    * el.innerText =  'New title';
    * modal.setTitle(el);
    */
-  setTitle(title) {
+  setTitle(title: string) {
     this.model.set('title', title);
     return this;
   }
@@ -220,7 +209,7 @@ export default class ModalManager extends Module {
    * el.innerText =  'New content';
    * modal.setContent(el);
    */
-  setContent(content) {
+  setContent(content: string | HTMLElement) {
     this.model.set('content', ' ');
     this.model.set('content', content);
     return this;
@@ -232,7 +221,7 @@ export default class ModalManager extends Module {
    * @example
    * modal.getContent();
    */
-  getContent() {
+  getContent(): string | HTMLElement {
     return this.model.get('content');
   }
 
@@ -242,7 +231,8 @@ export default class ModalManager extends Module {
    * @private
    */
   getContentEl() {
-    return this.modal.getContent().get(0);
+    //@ts-ignore
+    return this.modal?.getContent().get(0);
   }
 
   /**
@@ -259,6 +249,7 @@ export default class ModalManager extends Module {
    * @return {HTMLElement}
    * @private
    */
+  //@ts-ignore
   render() {
     if (this.getConfig().custom) return;
     const View = ModalView.extend(this.config.extend);
@@ -268,12 +259,10 @@ export default class ModalManager extends Module {
       model: this.model,
       config: this.config,
     });
-    return this.modal.render().$el;
+    return this.modal?.render().$el;
   }
 
   destroy() {
-    this.modal && this.modal.remove();
-    [this.config, this.model, this.modal].forEach(i => (i = {}));
-    this.em = {};
+    this.modal?.remove();
   }
 }

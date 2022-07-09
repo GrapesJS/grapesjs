@@ -52,7 +52,6 @@ export default class ModalView extends View {
   /**
    * Returns content element
    * @return {HTMLElement}
-   * @private
    */
   getContent() {
     const pfx = this.pfx;
