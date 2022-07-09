@@ -1,5 +1,5 @@
 declare namespace Backbone {
-  interface ModelProperties { }
+  interface ModelProperties {}
 
   class Model<T extends ModelProperties> {
     constructor(attr?: T, opt?: any);
@@ -25,13 +25,16 @@ declare namespace Backbone {
     reset(models?: Array<{} | TModel>): TModel[];
   }
 
-  interface GenericModel extends Model<{}> { }
+  interface GenericModel extends Model<{}> {}
 }
 
 declare namespace grapesjs {
   type PluginOptions = Record<string, any>;
 
-  type Plugin<T extends PluginOptions = {}> = (editor: Editor, config: T) => void;
+  type Plugin<T extends PluginOptions = {}> = (
+    editor: Editor,
+    config: T
+  ) => void;
 
   interface EditorConfig {
     /** Selector which indicates where render the editor */
@@ -83,7 +86,7 @@ declare namespace grapesjs {
     /** Type of logs to print with the logger (by default is used the devtool console).
      * Available by default: debug, info, warning, error
      * You can use `false` to disable all of them or `true` to print all of them */
-    log?: ('debug' | 'info' | 'warning' | 'error')[];
+    log?: ("debug" | "info" | "warning" | "error")[];
 
     /** By default Grapes injects base CSS into the canvas. For example, it sets body margin to 0
      * and sets a default background color of white. This CSS is desired in most cases.
@@ -438,11 +441,11 @@ declare namespace grapesjs {
 
   interface LayerManagerConfig {
     /** Specify the element to use as a container, string (query) or HTMLElement
-    * With the empty value, nothing will be rendered */
+     * With the empty value, nothing will be rendered */
     appendTo?: HTMLElement | string;
 
     /** Scroll to selected component in Layers when it's selected in Canvas
-    * true, false or `scrollIntoView`-like options */
+     * true, false or `scrollIntoView`-like options */
     scrollLayers?: number | boolean | LayerManagerScrollLayersConfig;
 
     /** Style prefix */
@@ -458,7 +461,7 @@ declare namespace grapesjs {
     hideTextnode?: boolean;
 
     /** Indicate a query string of the element to be selected as the root of layers.
-    * By default the root is the wrapper */
+     * By default the root is the wrapper */
     root?: string;
 
     /** Indicates if the wrapper is visible in layers */
@@ -468,8 +471,8 @@ declare namespace grapesjs {
     showHover?: boolean;
 
     /** Scroll to selected component in Canvas when it's selected in Layers
-    * true, false or `scrollIntoView`-like options,
-    * `block: 'nearest'` avoids the issue of window scrolling */
+     * true, false or `scrollIntoView`-like options,
+     * `block: 'nearest'` avoids the issue of window scrolling */
     scrollCanvas?: boolean | LayerManagerScrollCanvasConfig;
 
     /** Highlight when a layer component is hovered */
@@ -530,7 +533,7 @@ declare namespace grapesjs {
     getInitValue(): string;
   }
 
-  type TraitType = 'text' | 'number' | 'checkbox' | 'select' | string;
+  type TraitType = "text" | "number" | "checkbox" | "select" | string;
 
   interface TraitOptions {
     type: TraitType;
@@ -556,14 +559,14 @@ declare namespace grapesjs {
     buttons: Button[];
   }
 
-  interface Panel extends Backbone.Model<PanelOptions> { }
+  interface Panel extends Backbone.Model<PanelOptions> {}
 
-  interface Button extends Backbone.Model<ButtonOptions> { }
+  interface Button extends Backbone.Model<ButtonOptions> {}
 
   interface ButtonOptions {
     id: string;
     label: string;
-    tagName: 'span';
+    tagName: "span";
     className: string;
     command: string | ((editor: Editor, opts?: any) => void);
     context: string;
@@ -588,7 +591,7 @@ declare namespace grapesjs {
     }): void;
   }
 
-  interface View { }
+  interface View {}
 
   interface LayerManager {
     /**
@@ -604,7 +607,7 @@ declare namespace grapesjs {
 
   interface TraitView {
     noLabel?: boolean;
-    templateInput?: string;
+    templateInput?: string | ((options: { trait: Trait }) => string);
     eventCapture?: string[];
 
     onEvent?: (options: {
@@ -1144,83 +1147,83 @@ declare namespace grapesjs {
     | GeneralEvent;
 
   type ComponentEvent =
-    | 'component:create'
-    | 'component:mount'
-    | 'component:add'
-    | 'component:remove'
-    | 'component:remove:before'
-    | 'component:clone'
-    | 'component:update'
-    | 'component:styleUpdate'
-    | 'component:selected'
-    | 'component:deselected'
-    | 'component:toggled'
-    | 'component:type:add'
-    | 'component:type:update'
-    | 'component:drag:start'
-    | 'component:drag'
-    | 'component:drag:end';
+    | "component:create"
+    | "component:mount"
+    | "component:add"
+    | "component:remove"
+    | "component:remove:before"
+    | "component:clone"
+    | "component:update"
+    | "component:styleUpdate"
+    | "component:selected"
+    | "component:deselected"
+    | "component:toggled"
+    | "component:type:add"
+    | "component:type:update"
+    | "component:drag:start"
+    | "component:drag"
+    | "component:drag:end";
 
   type BlockEvent =
-    | 'block:add'
-    | 'block:remove'
-    | 'block:drag:start'
-    | 'block:drag'
-    | 'block:drag:stop';
+    | "block:add"
+    | "block:remove"
+    | "block:drag:start"
+    | "block:drag"
+    | "block:drag:stop";
 
   type AssetEvent =
-    | 'asset:add'
-    | 'asset:remove'
-    | 'asset:upload:start'
-    | 'asset:upload:end'
-    | 'asset:upload:error'
-    | 'asset:upload:response';
+    | "asset:add"
+    | "asset:remove"
+    | "asset:upload:start"
+    | "asset:upload:end"
+    | "asset:upload:error"
+    | "asset:upload:response";
 
   type KeymapEvent =
-    | 'keymap:add'
-    | 'keymap:remove'
-    | 'keymap:emit'
-    | 'keymap:emit:{keymapId}';
+    | "keymap:add"
+    | "keymap:remove"
+    | "keymap:emit"
+    | "keymap:emit:{keymapId}";
 
   type StyleManagerEvent =
-    | 'styleManager:update:target'
-    | 'styleManager:change'
-    | 'styleManager:change:{propertyName}';
+    | "styleManager:update:target"
+    | "styleManager:change"
+    | "styleManager:change:{propertyName}";
 
   type StorageEvent =
-    | 'storage:start'
-    | 'storage:start:store'
-    | 'storage:start:load'
-    | 'storage:load'
-    | 'storage:store'
-    | 'storage:end'
-    | 'storage:end:store'
-    | 'storage:end:load'
-    | 'storage:error'
-    | 'storage:error:store'
-    | 'storage:error:load';
+    | "storage:start"
+    | "storage:start:store"
+    | "storage:start:load"
+    | "storage:load"
+    | "storage:store"
+    | "storage:end"
+    | "storage:end:store"
+    | "storage:end:load"
+    | "storage:error"
+    | "storage:error:store"
+    | "storage:error:load";
 
   type CanvasEvent =
-    | 'canvas:dragenter'
-    | 'canvas:dragover'
-    | 'canvas:drop'
-    | 'canvas:dragend'
-    | 'canvas:dragdata';
+    | "canvas:dragenter"
+    | "canvas:dragover"
+    | "canvas:drop"
+    | "canvas:dragend"
+    | "canvas:dragdata";
 
-  type SelectorEvent = 'selector:add';
+  type SelectorEvent = "selector:add";
 
-  type RichTextEditorEvent = 'rte:enable' | 'rte:disable';
+  type RichTextEditorEvent = "rte:enable" | "rte:disable";
 
-  type ModalEvent = 'modal:open' | 'modal:close';
+  type ModalEvent = "modal:open" | "modal:close";
 
   type CommandEvent =
-    | 'run:{commandName}'
-    | 'stop:{commandName}'
-    | 'run:{commandName}:before'
-    | 'stop:{commandName}:before'
-    | 'abort:{commandName}';
+    | "run:{commandName}"
+    | "stop:{commandName}"
+    | "run:{commandName}:before"
+    | "stop:{commandName}:before"
+    | "abort:{commandName}";
 
-  type GeneralEvent = 'canvasScroll' | 'undo' | 'redo' | 'load';
+  type GeneralEvent = "canvasScroll" | "undo" | "redo" | "load";
 
   /**
    * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/asset_manager/config/config.js)
@@ -1700,10 +1703,16 @@ declare namespace grapesjs {
      */
     add(
       id: string,
-      command: (editor: Editor, sender?: any, opts?: Record<string, any>) => any | {
-        run: (editor: Editor, sender?: any) => any;
-        stop: (editor: Editor, sender?: any) => any;
-      }
+      command: (
+        editor: Editor,
+        sender?: any,
+        opts?: Record<string, any>
+      ) =>
+        | any
+        | {
+            run: (editor: Editor, sender?: any) => any;
+            stop: (editor: Editor, sender?: any) => any;
+          }
     ): void;
     /**
      * Get command by ID
@@ -2142,11 +2151,15 @@ declare namespace grapesjs {
     components?: Backbone.Collection<Component>;
   }
 
-  interface ComponentDefinition extends Omit<ComponentProperties, 'components'> {
+  interface ComponentDefinition
+    extends Omit<ComponentProperties, "components"> {
     /**
      * Children components.
      */
-    components?: string | ComponentDefinition | (string | ComponentDefinition)[];
+    components?:
+      | string
+      | ComponentDefinition
+      | (string | ComponentDefinition)[];
     [key: string]: unknown;
   }
 
@@ -3728,7 +3741,7 @@ declare namespace grapesjs {
      * @param storage.load - Load method
      * @param storage.store - Store method
      */
-     add<T extends StorageOptions>(id: string, storage: IStorage<T>): this;
+    add<T extends StorageOptions>(id: string, storage: IStorage<T>): this;
     /**
      * Returns storage by id
      * @param id - Storage ID
@@ -3778,18 +3791,14 @@ declare namespace grapesjs {
     getStorageOptions(type: string): StorageOptions;
   }
 
-  interface ProjectData {
+  interface ProjectData {}
 
-  }
-
-  interface StorageOptions {
-
-  }
+  interface StorageOptions {}
 
   interface IStorage<T extends StorageOptions = {}> {
     load: (options: T) => Promise<ProjectData>;
     store: (data: ProjectData, options: T) => Promise<any>;
-    [key: string]: any,
+    [key: string]: any;
   }
 
   /**
@@ -5128,7 +5137,7 @@ declare namespace grapesjs {
     y?: number;
   }
 
-  interface Frame extends Backbone.Model<FrameOptions> { }
+  interface Frame extends Backbone.Model<FrameOptions> {}
 
   /**
    * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/i18n/config.js)

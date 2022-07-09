@@ -66,7 +66,7 @@ export default abstract class Module<T extends ModuleConfig = ModuleConfig> impl
   isPrivate: boolean = false;
   onLoad?(): void;
   init(cfg: T) {}
-  abstract destroy(): void;
+  destroy() {}
 
   postLoad(key: any): void {}
 

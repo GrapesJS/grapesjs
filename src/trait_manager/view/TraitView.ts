@@ -123,13 +123,27 @@ export default class TraitView extends Backbone.View<Trait> {
     }
   }
 
+  //TODO this 2 should not exist the public API
+  createLabel?(attr: any): any;
+
+  createInput?(attr: any): any;
   /**
    * Render label
    * @private
    */
   private renderLabel() {
-    const { $el } = this;
+    const { $el, target } = this;
+    const label = this.getLabel();
     let tpl = this.templateLabel;
+
+    if (this.createLabel) {
+      tpl =
+        this.createLabel({
+          label,
+          component: target,
+          trait: this,
+        }) || '';
+    }
 
     $el.find('[data-label]').append(tpl);
   }
@@ -221,7 +235,6 @@ export default class TraitView extends Backbone.View<Trait> {
     let tpl = model.el;
 
     if (!tpl) {
-      //@ts-ignore
       tpl = this.createInput ? this.createInput(this.getClbOpts()) : this.getInputEl();
     }
 
@@ -262,7 +275,13 @@ export default class TraitView extends Backbone.View<Trait> {
     let tmpl = `<div class="${cls} ${cls}--${type}">
       ${hasLabel ? `<div class="${ppfx}label-wrp" data-label></div>` : ''}
       <div class="${ppfx}field-wrp ${ppfx}field-wrp--${type}" data-input>
-        ${this.templateInput}
+        ${
+          this.templateInput
+            ? isFunction(this.templateInput)
+              ? this.templateInput(this.getClbOpts())
+              : this.templateInput
+            : ''
+        }
       </div>
     </div>`;
     $el.empty().append(tmpl);

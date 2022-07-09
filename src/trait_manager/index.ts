@@ -15,7 +15,7 @@ import EditorModel from '../editor/model/Editor';
 export const evAll = 'trait';
 export const evPfx = `${evAll}:`;
 export const evCustom = `${evPfx}custom`;
-const typesDef: {[id: string]: {new (o: any): TraitView}} = {
+const typesDef: { [id: string]: { new (o: any): TraitView } } = {
   text: TraitView,
   number: TraitNumberView,
   select: TraitSelectView,
@@ -36,7 +36,7 @@ export default class TraitsModule extends Module<typeof defaults> {
   }
 
   view?: TraitsView;
-  types: {[id: string]: {new (o: any): TraitView}}
+  types: { [id: string]: { new (o: any): TraitView } };
   model: Model;
   __ctn?: any;
 
@@ -60,11 +60,11 @@ export default class TraitsModule extends Module<typeof defaults> {
     return this;
   }
 
-  __upSel() {
+  private __upSel() {
     this.select(this.em.getSelected());
   }
 
-  __onUp() {
+  private __onUp() {
     this.select(this.getSelected());
   }
 
@@ -82,7 +82,7 @@ export default class TraitsModule extends Module<typeof defaults> {
     return this.model.get('traits') || [];
   }
 
-  __trgCustom(opts:any = {}) {
+  __trgCustom(opts: any = {}) {
     this.__ctn = this.__ctn || opts.container;
     this.em.trigger(this.events.custom, { container: this.__ctn });
   }
@@ -143,9 +143,5 @@ export default class TraitsModule extends Module<typeof defaults> {
     );
     this.view = view;
     return view.el;
-  }
-
-  destroy() {
-    //this.__destroy();
   }
 }
