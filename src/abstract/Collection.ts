@@ -1,5 +1,5 @@
 import Backbone, { AddOptions } from 'backbone';
-import { isArray, isObject } from 'underscore';
+import { isArray, isObject, isUndefined } from 'underscore';
 import Model from './Model';
 
 type Module<TModel extends Model> = TModel extends Model<infer M> ? M : unknown;
@@ -9,12 +9,14 @@ export default class Collection<TModel extends Model = Model> extends Backbone.C
   module!: Module<TModel>;
   private newModel!: ModelConstructor<TModel>;
 
-  //modelConstructor = {new (mod: Module<TModel>, attr: any): TModel}
   add(model: Array<Record<string, any>> | TModel, options?: AddOptions): TModel;
   add(models: Array<Array<Record<string, any>> | TModel>, options?: AddOptions): TModel[];
-  add(model: unknown, options?: AddOptions): any {
-    var models = isArray(model) ? model : [model];
-    models = models.map(m => (m instanceof this.newModel ? m : new this.newModel(this.module, m)));
+  add(model?: unknown, options?: AddOptions): any {
+    //Note: the undefined case needed because backbonejs not handle the reset() correctly
+    var models = isArray(model) ? model : !isUndefined(model) ? [model] : undefined;
+
+    models = models?.map(m => (m instanceof this.newModel ? m : new this.newModel(this.module, m))) ?? [undefined];
+
     return super.add(isArray(model) ? models : models[0], options);
   }
 

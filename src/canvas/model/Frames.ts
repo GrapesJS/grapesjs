@@ -8,11 +8,9 @@ export default class Frames extends Collection<Frame> {
   loadedItems = 0;
   itemsToLoad = 0;
   page?: Page;
-  module: CanvasModule;
 
-  constructor(module: CanvasModule, models: Frame[] = []) {
+  constructor(module: CanvasModule, models: Frame[] | Array<Record<string, any>> = []) {
     super(module, models, Frame);
-    this.module = module;
     bindAll(this, 'itemLoaded');
     this.on('reset', this.onReset);
     this.on('remove', this.onRemove);
