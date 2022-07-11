@@ -3,16 +3,15 @@ import { toLowerCase } from 'utils/mixins';
 
 const tagName = 'tr';
 
-export default Component.extend(
-  {
-    defaults: {
-      ...Component.prototype.defaults,
+export default class ComponentTableRow extends Component {
+  get defaults() {
+    return {
+      ...super.defaults,
       tagName,
       draggable: ['thead', 'tbody', 'tfoot'],
       droppable: ['th', 'td'],
-    },
-  },
-  {
-    isComponent: el => toLowerCase(el.tagName) === tagName,
+    };
   }
-);
+}
+
+ComponentTableRow.isComponent = el => toLowerCase(el.tagName) === tagName;

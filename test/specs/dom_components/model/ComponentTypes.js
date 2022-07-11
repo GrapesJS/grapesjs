@@ -24,6 +24,9 @@ describe('Component Types', () => {
 
   afterEach(() => {
     wrapper.components().reset();
+    editor = new Editor({ allowScripts: 1 });
+    editor.getModel().get('PageManager').onLoad();
+    wrapper = editor.getWrapper();
   });
 
   test('<img> is correctly recognized', () => {

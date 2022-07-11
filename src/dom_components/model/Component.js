@@ -94,6 +94,51 @@ export const keyUpdateInside = `${keyUpdate}-inside`;
  * @module docsjs.Component
  */
 export default class Component extends StyleableModel {
+  get defaults() {
+    return {
+      tagName: 'div',
+      type: '',
+      name: '',
+      removable: true,
+      draggable: true,
+      droppable: true,
+      badgable: true,
+      stylable: true,
+      'stylable-require': '',
+      'style-signature': '',
+      unstylable: '',
+      highlightable: true,
+      copyable: true,
+      resizable: false,
+      editable: false,
+      layerable: true,
+      selectable: true,
+      hoverable: true,
+      locked: false,
+      void: false,
+      state: '', // Indicates if the component is in some CSS state like ':hover', ':active', etc.
+      status: '', // State, eg. 'selected'
+      content: '',
+      icon: '',
+      style: '',
+      styles: '', // Component related styles
+      classes: '', // Array of classes
+      script: '',
+      'script-props': '',
+      'script-export': '',
+      attributes: '',
+      traits: ['id', 'title'],
+      propagate: '',
+      dmode: '',
+      toolbar: null,
+      [keySymbol]: 0,
+      [keySymbols]: 0,
+      [keySymbolOvrd]: 0,
+      _undo: true,
+      _undoexc: ['status', 'open'],
+    };
+  }
+
   /**
    * Hook method, called once the model is created
    */
@@ -1961,51 +2006,4 @@ Component.checkId = (components, styles = [], list = {}, opts = {}) => {
 
     components && Component.checkId(components, styles, list, opts);
   });
-};
-
-Component.getDefaults = function () {
-  return result(this.prototype, 'defaults');
-};
-
-Component.prototype.defaults = {
-  tagName: 'div',
-  type: '',
-  name: '',
-  removable: true,
-  draggable: true,
-  droppable: true,
-  badgable: true,
-  stylable: true,
-  'stylable-require': '',
-  'style-signature': '',
-  unstylable: '',
-  highlightable: true,
-  copyable: true,
-  resizable: false,
-  editable: false,
-  layerable: true,
-  selectable: true,
-  hoverable: true,
-  locked: false,
-  void: false,
-  state: '', // Indicates if the component is in some CSS state like ':hover', ':active', etc.
-  status: '', // State, eg. 'selected'
-  content: '',
-  icon: '',
-  style: '',
-  styles: '', // Component related styles
-  classes: '', // Array of classes
-  script: '',
-  'script-props': '',
-  'script-export': '',
-  attributes: '',
-  traits: ['id', 'title'],
-  propagate: '',
-  dmode: '',
-  toolbar: null,
-  [keySymbol]: 0,
-  [keySymbols]: 0,
-  [keySymbolOvrd]: 0,
-  _undo: true,
-  _undoexc: ['status', 'open'],
 };

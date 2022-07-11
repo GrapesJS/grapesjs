@@ -25,9 +25,9 @@ describe('ComponentImage', () => {
 
   describe('.initialize', () => {
     test('when a base 64 default image is provided, it uses the default image', () => {
-      let imageUrl = buildBase64UrlFromSvg(ComponentImage.getDefaults().src);
+      let imageUrl = buildBase64UrlFromSvg(ComponentImage.prototype.defaults.src);
       let componentImage = new ComponentImage({ attributes: { src: imageUrl } }, { ...compOpts });
-      expect(componentImage.get('src')).toEqual(ComponentImage.getDefaults().src);
+      expect(componentImage.get('src')).toEqual(ComponentImage.prototype.defaults.src);
       expect(componentImage.isDefaultSrc()).toBeTruthy();
     });
 

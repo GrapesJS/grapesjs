@@ -440,21 +440,24 @@ export default class ComponentManager extends ItemManagerModule {
         return res;
       }, {});
 
+    var tempModel = new modelToExt();
     // If the model/view is a simple object I need to extend it
     if (typeof model === 'object') {
       methods.model = modelToExt.extend(
         {
           ...model,
           ...getExtendedObj(extendFn, model, modelToExt),
-          defaults: {
-            ...(result(modelToExt.prototype, 'defaults') || {}),
-            ...(result(model, 'defaults') || {}),
-          },
         },
         {
           isComponent: compType && !extendType && !isComponent ? modelToExt.isComponent : isComponent || (() => 0),
         }
       );
+      Object.defineProperty(methods.model.prototype, 'defaults', {
+        value: {
+          ...(result(modelToExt.prototype, 'defaults') || {}),
+          ...(result(model, 'defaults') || {}),
+        },
+      });
     }
 
     if (typeof view === 'object') {
