@@ -1253,7 +1253,6 @@ export default class Component extends StyleableModel {
 
   /**
    * Override original clone method
-   * @private
    */
   clone(opt = {}) {
     const em = this.em;
@@ -1485,7 +1484,6 @@ export default class Component extends StyleableModel {
    * Return a shallow copy of the model's attributes for JSON
    * stringification.
    * @return {Object}
-   * @private
    */
   toJSON(opts = {}) {
     const obj = Model.prototype.toJSON.call(this, opts);
