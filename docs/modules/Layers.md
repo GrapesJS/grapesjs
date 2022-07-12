@@ -4,7 +4,7 @@ title: Layer Manager
 
 # Layer Manager
 
-<!-- <p align="center"><img :src="$withBase('/selector-manager.jpg')" alt="GrapesJS - Selector Manager"/></p> -->
+<p align="center"><img :src="$withBase('/layer-manager.png')" alt="GrapesJS - Layer Manager"/></p>
 
 The Layer Manager module is responsible to manage and display your [Components] as a tree.
 
