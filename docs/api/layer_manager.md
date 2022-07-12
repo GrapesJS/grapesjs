@@ -36,7 +36,8 @@ const layers = editor.Layers;
 *   [setlocked][8]
 *   [isLocked][9]
 *   [setName][10]
-*   [getLayerData][11]
+*   [getName][11]
+*   [getLayerData][12]
 
 [Page]: page.html
 
@@ -48,7 +49,7 @@ Update the root layer with another component.
 
 ### Parameters
 
-*   `component` **([Component] | [String][12])** Component to be set as root
+*   `component` **([Component] | [String][13])** Component to be set as root
 
 ### Examples
 
@@ -87,7 +88,7 @@ const components = layers.getComponents(component);
 console.log(components);
 ```
 
-Returns **[Array][13]<[Component]>** 
+Returns **[Array][14]<[Component]>** 
 
 ## setOpen
 
@@ -96,7 +97,7 @@ Update the layer open state of the component.
 ### Parameters
 
 *   `component` **[Component]** Component to update
-*   `value` **[Boolean][14]** 
+*   `value` **[Boolean][15]** 
 
 ## isOpen
 
@@ -106,7 +107,7 @@ Check the layer open state of the component.
 
 *   `component` **[Component]** 
 
-Returns **[Boolean][14]** 
+Returns **[Boolean][15]** 
 
 ## setVisible
 
@@ -115,7 +116,7 @@ Update the layer visibility state of the component.
 ### Parameters
 
 *   `component` **[Component]** Component to update
-*   `value` **[Boolean][14]** 
+*   `value` **[Boolean][15]** 
 
 ## isVisible
 
@@ -125,7 +126,7 @@ Check the layer visibility state of the component.
 
 *   `component` **[Component]** 
 
-Returns **[Boolean][14]** 
+Returns **[Boolean][15]** 
 
 ## setLocked
 
@@ -134,7 +135,7 @@ Update the layer locked state of the component.
 ### Parameters
 
 *   `component` **[Component]** Component to update
-*   `value` **[Boolean][14]** 
+*   `value` **[Boolean][15]** 
 
 ## isLocked
 
@@ -144,16 +145,26 @@ Check the layer locked state of the component.
 
 *   `component` **[Component]** 
 
-Returns **[Boolean][14]** 
+Returns **[Boolean][15]** 
 
 ## setName
 
-Update the layer name state of the component.
+Update the layer name of the component.
 
 ### Parameters
 
 *   `component` **[Component]** Component to update
-*   `value` **[String][12]** New name
+*   `value` **[String][13]** New name
+
+## getName
+
+Get the layer name of the component.
+
+### Parameters
+
+*   `component` **[Component]** 
+
+Returns **[String][13]** Component layer name
 
 ## getLayerData
 
@@ -171,7 +182,7 @@ const layerData = layers.getLayerData(component);
 console.log(layerData);
 ```
 
-Returns **[Object][15]** Object containing the layer data.
+Returns **[Object][16]** Object containing the layer data.
 
 [1]: #setroot
 
@@ -193,12 +204,14 @@ Returns **[Object][15]** Object containing the layer data.
 
 [10]: #setname
 
-[11]: #getlayerdata
+[11]: #getname
 
-[12]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[12]: #getlayerdata
 
-[13]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[13]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-[14]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[14]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
-[15]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[15]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+
+[16]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
