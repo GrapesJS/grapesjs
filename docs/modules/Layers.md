@@ -9,7 +9,7 @@ title: Layer Manager
 The Layer Manager module is responsible to manage and display your [Components] as a tree.
 
 ::: warning
-This guide is referring to GrapesJS v0.19.4 or higher
+This guide is referring to GrapesJS v0.19.5 or higher
 :::
 
 [[toc]]
