@@ -36,7 +36,7 @@ async function generateDocs () {
     ['selector_manager/model/State.ts', 'state.md'],
     ['css_composer/index.js', 'css_composer.md'],
     ['css_composer/model/CssRule.js', 'css_rule.md'],
-    ['modal_dialog/index.js', 'modal_dialog.md'],
+    ['modal_dialog/index.ts', 'modal_dialog.md'],
     ['rich_text_editor/index.js', 'rich_text_editor.md'],
     ['keymaps/index.js', 'keymaps.md'],
     ['undo_manager/index.js', 'undo_manager.md'],
