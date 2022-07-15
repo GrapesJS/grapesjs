@@ -3,8 +3,7 @@ import { Collection, View } from '../common';
 import EditorModel from '../editor/model/Editor';
 import { createId, isDef, deepMerge } from '../utils/mixins';
 
-export interface IModule<TConfig extends any = any>
-  extends IBaseModule<TConfig> {
+export interface IModule<TConfig extends any = any> extends IBaseModule<TConfig> {
   init(cfg: any): void;
   destroy(): void;
   postLoad(key: any): any;
@@ -32,9 +31,7 @@ export interface IStorableModule extends IModule {
   postLoad(key: any): any;
 }
 
-export default abstract class Module<T extends ModuleConfig = ModuleConfig>
-  implements IModule<T>
-{
+export default abstract class Module<T extends ModuleConfig = ModuleConfig> implements IModule<T> {
   private _em: EditorModel;
   private _config: T;
   private _name: string;
@@ -70,7 +67,7 @@ export default abstract class Module<T extends ModuleConfig = ModuleConfig>
   onLoad?(): void;
   init(cfg: T) {}
   abstract destroy(): void;
-  abstract render(): HTMLElement;
+  abstract render(): HTMLElement | JQuery<HTMLElement> | undefined;
   postLoad(key: any): void {}
 
   get name(): string {
@@ -92,7 +89,7 @@ export default abstract class Module<T extends ModuleConfig = ModuleConfig>
    * Move the main DOM element of the module.
    * To execute only post editor render (in postRender)
    */
-   __appendTo() {
+  __appendTo() {
     const elTo = this.getConfig().appendTo;
 
     if (elTo) {
@@ -135,10 +132,7 @@ export abstract class ItemManagerModule<
     return obj;
   }
 
-  loadProjectData(
-    data: any = {},
-    param: { all?: TCollection; onResult?: Function; reset?: boolean } = {}
-  ) {
+  loadProjectData(data: any = {}, param: { all?: TCollection; onResult?: Function; reset?: boolean } = {}) {
     const { all, onResult, reset } = param;
     const key = this.storageKey;
     const opts: any = { action: 'load' };
@@ -189,12 +183,8 @@ export abstract class ItemManagerModule<
       em &&
       all
         .on('add', (m: any, c: any, o: any) => em.trigger(events.add, m, o))
-        .on('remove', (m: any, c: any, o: any) =>
-          em.trigger(events.remove, m, o)
-        )
-        .on('change', (p: any, c: any) =>
-          em.trigger(events.update, p, p.changedAttributes(), c)
-        )
+        .on('remove', (m: any, c: any, o: any) => em.trigger(events.remove, m, o))
+        .on('change', (p: any, c: any) => em.trigger(events.update, p, p.changedAttributes(), c))
         .on('all', this.__catchAllEvent, this);
     // Register collections
     this.cls = [all].concat(opts.collections || []);
@@ -203,7 +193,7 @@ export abstract class ItemManagerModule<
       entity.on('all', (ev: any, model: any, coll: any, opts: any) => {
         const options = opts || coll;
         const opt = { event: ev, ...options };
-        [em, all].map((md) => md.trigger(event, model, opt));
+        [em, all].map(md => md.trigger(event, model, opt));
       });
     });
   }
@@ -263,13 +253,11 @@ export abstract class ItemManagerModule<
   }
 
   __listenUpdate(model: TCollection, event: string) {
-    model.on('change', (p, c) =>
-      this.em.trigger(event, p, p.changedAttributes(), c)
-    );
+    model.on('change', (p, c) => this.em.trigger(event, p, p.changedAttributes(), c));
   }
 
   __destroy() {
-    this.cls.forEach((coll) => {
+    this.cls.forEach(coll => {
       coll.stopListening();
       coll.reset();
     });
