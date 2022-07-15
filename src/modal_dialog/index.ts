@@ -54,7 +54,7 @@ export default class ModalManager extends Module<typeof defaults> {
     super(em, 'Modal', defaults);
 
     this.model = new ModalM(this);
-    this.model.on('change:open', (enable: boolean) => {
+    this.model.on('change:open', (m: ModalM, enable: boolean) => {
       em.trigger(`modal:${enable ? 'open' : 'close'}`);
     });
     this.model.on(
