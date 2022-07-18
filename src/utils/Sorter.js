@@ -478,7 +478,7 @@ export default Backbone.View.extend({
   },
 
   isTextableActive(src, trg) {
-    return src && src.get && src.get('textable') && trg && trg.is('text');
+    return src?.get?.('textable') && trg?.isInstanceOf('text');
   },
 
   disableTextable() {
