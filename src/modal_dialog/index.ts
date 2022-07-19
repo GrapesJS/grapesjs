@@ -36,6 +36,7 @@
 import { EventHandler } from 'backbone';
 import { debounce, isFunction, isString } from 'underscore';
 import { Module } from '../abstract';
+import EditorView from '../editor/view/EditorView';
 import EditorModel from '../editor/model/Editor';
 import { createText } from '../utils/dom';
 import defaults from './config/config';
@@ -85,11 +86,10 @@ export default class ModalManager extends Module<typeof defaults> {
     };
   }
 
-  postRender(view: ModalView) {
-    //@ts-ignore
+  postRender(view: EditorView) {
     const el = view.model.config.el || view.el;
     const res = this.render();
-    res && res.appendTo(el);
+    res && el?.appendChild(res);
   }
 
   /**
@@ -246,7 +246,7 @@ export default class ModalManager extends Module<typeof defaults> {
    * @return {HTMLElement}
    * @private
    */
-  render() {
+  render(): HTMLElement | undefined {
     if (this.config.custom) return;
     const View = ModalView.extend(this.config.extend);
     const el = this.modal && this.modal.el;
@@ -255,7 +255,7 @@ export default class ModalManager extends Module<typeof defaults> {
       model: this.model,
       config: this.config,
     });
-    return this.modal?.render().$el;
+    return this.modal?.render().el;
   }
 
   destroy() {
