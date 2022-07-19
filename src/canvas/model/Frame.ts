@@ -38,8 +38,8 @@ export default class Frame extends Model<CanvasModule> {
   /**
    * @hideconstructor
    */
-  constructor(module: CanvasModule, props: any) {
-    super(module, props);
+  constructor(module: CanvasModule, attr: any) {
+    super(module, attr);
     const { em } = this;
     const { styles, component } = this.attributes;
     const domc = em.get('DomComponents');
@@ -82,8 +82,8 @@ export default class Frame extends Model<CanvasModule> {
       this.set('styles', allRules);
     }
 
-    !props.width && this.set(keyAutoW, 1);
-    !props.height && this.set(keyAutoH, 1);
+    !attr.width && this.set(keyAutoW, 1);
+    !attr.height && this.set(keyAutoH, 1);
   }
 
   get head(): { tag: string; attributes: any }[] {

@@ -1,7 +1,10 @@
 import { isString, isObject, isFunction } from 'underscore';
-import { View } from '../../common';
+import { View } from '../../abstract';
+import Button from '../model/Button';
+import Buttons from '../model/Buttons';
 
-export default class ButtonView extends View {
+export default class ButtonView extends View<Button> {
+  //@ts-ignore
   tagName() {
     return this.model.get('tagName');
   }
@@ -12,18 +15,20 @@ export default class ButtonView extends View {
     };
   }
 
-  initialize(o) {
-    const { model } = this;
-    const cls = model.get('className');
+  commands: any;
+  activeCls: string;
+  disableCls: string;
+  btnsVisCls: string;
+
+  //Note: I don't think this is working
+  $buttons?: any;
+
+  constructor(o: any) {
+    super(o);
+    const { model, em, pfx, ppfx } = this;
+    const cls = model.className;
     const { command, listen } = model.attributes;
-    const config = o.config || {};
-    const { em } = config;
-    this.config = config;
-    this.em = em;
-    const pfx = this.config.stylePrefix || '';
-    const ppfx = this.config.pStylePrefix || '';
-    this.pfx = pfx;
-    this.ppfx = this.config.pStylePrefix || '';
+
     this.id = pfx + model.get('id');
     this.activeCls = `${pfx}active ${ppfx}four-color`;
     this.disableCls = `${ppfx}disabled`;
@@ -38,7 +43,7 @@ export default class ButtonView extends View {
     this.listenTo(model, 'change:disable', this.updateDisable);
 
     if (em && isString(command) && listen) {
-      const chnOpt = { fromListen: 1 };
+      const chnOpt: any = { fromListen: true };
       this.listenTo(em, `run:${command}`, () => model.set('active', true, chnOpt));
       this.listenTo(em, `stop:${command}`, () => model.set('active', false, chnOpt));
     }
@@ -51,9 +56,9 @@ export default class ButtonView extends View {
    *
    * @return   void
    * */
-  updateClassName() {
+  private updateClassName() {
     const { model, pfx } = this;
-    const cls = model.get('className');
+    const cls = model.className;
     const attrCls = model.get('attributes').class;
     const classStr = `${attrCls ? attrCls : ''} ${pfx}btn ${cls ? cls : ''}`;
     this.$el.attr('class', classStr.trim());
@@ -64,7 +69,7 @@ export default class ButtonView extends View {
    *
    * @return   void
    * */
-  updateAttributes() {
+  private updateAttributes() {
     const { em, model, $el } = this;
     const attr = model.get('attributes') || {};
     const title = em && em.t && em.t(`panels.buttons.titles.${model.id}`);
@@ -79,7 +84,7 @@ export default class ButtonView extends View {
    *
    * @return  void
    * */
-  updateBtnsVis() {
+  private updateBtnsVis() {
     if (!this.$buttons) return;
 
     if (this.model.get('bntsVis')) this.$buttons.addClass(this.btnsVisCls);
@@ -91,12 +96,12 @@ export default class ButtonView extends View {
    *
    * @return   void
    * */
-  updateActive(m, v, opts = {}) {
+  private updateActive(m: any, v: any, opts: any = {}) {
     const { model, commands, $el, activeCls } = this;
     const { fromCollection, fromListen } = opts;
     const context = model.get('context');
     const options = model.get('options');
-    const commandName = model.get('command');
+    const commandName = model.command;
     let command = {};
 
     if (!commandName) return;
@@ -109,12 +114,13 @@ export default class ButtonView extends View {
       command = commands.create(commandName);
     }
 
-    if (model.get('active')) {
-      !fromCollection && model.collection.deactivateAll(context, model);
+    if (model.active) {
+      !fromCollection && (model.collection as Buttons)?.deactivateAll(context, model);
       model.set('active', true, { silent: true }).trigger('checkActive');
       !fromListen && commands.runCommand(command, { ...options, sender: model });
 
       // Disable button if the command has no stop method
+      //@ts-ignore
       command.noStop && model.set('active', false);
     } else {
       $el.removeClass(activeCls);
@@ -124,7 +130,7 @@ export default class ButtonView extends View {
 
   updateDisable() {
     const { disableCls, model } = this;
-    const disable = model.get('disable');
+    const disable = model.disable;
     this.$el[disable ? 'addClass' : 'removeClass'](disableCls);
   }
 
@@ -135,7 +141,7 @@ export default class ButtonView extends View {
    * */
   checkActive() {
     const { model, $el, activeCls } = this;
-    model.get('active') ? $el.addClass(activeCls) : $el.removeClass(activeCls);
+    model.active ? $el.addClass(activeCls) : $el.removeClass(activeCls);
   }
 
   /**
@@ -144,31 +150,31 @@ export default class ButtonView extends View {
    *
    * @return   void
    * */
-  clicked(e) {
+  clicked(e: Event) {
     const { model } = this;
 
-    if (model.get('bntsVis') || model.get('disable') || !model.get('command')) return;
+    if (model.get('bntsVis') || model.disable || !model.command) return;
 
     this.toggleActive();
   }
 
-  toggleActive() {
+  private toggleActive() {
     const { model, em } = this;
-    const { active, togglable } = model.attributes;
+    const { active, togglable } = model;
 
     if (active && !togglable) return;
 
-    model.set('active', !active);
+    model.active = !active;
 
     // If the stop is requested
     if (active) {
-      if (model.get('runDefaultCommand')) em.runDefault();
+      if (model.runDefaultCommand) em.runDefault();
     } else {
-      if (model.get('stopDefaultCommand')) em.stopDefault();
+      if (model.stopDefaultCommand) em.stopDefault();
     }
   }
 
-  render() {
+  public render() {
     const { model } = this;
     const label = model.get('label');
     const { $el } = this;

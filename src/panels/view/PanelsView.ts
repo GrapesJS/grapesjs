@@ -1,19 +1,18 @@
-import { View } from '../../common';
+import { View } from '../../abstract';
+import Panel from '../model/Panel';
+import Panels from '../model/Panels';
 import PanelView from './PanelView';
 
-export default class PanelsView extends View {
-  initialize(o) {
-    this.opt = o || {};
-    this.config = this.opt.config || {};
-    this.pfx = this.config.stylePrefix || '';
-    const items = this.collection;
-    this.listenTo(items, 'add', this.addTo);
-    this.listenTo(items, 'reset', this.render);
-    this.listenTo(items, 'remove', this.onRemove);
+export default class PanelsView extends View<Panels> {
+  constructor(target: Panels) {
+    super({ collection: target });
+    this.listenTo(target, 'add', this.addTo);
+    this.listenTo(target, 'reset', this.render);
+    this.listenTo(target, 'remove', this.onRemove);
     this.className = this.pfx + 'panels';
   }
 
-  onRemove(model) {
+  private onRemove(model: Panel) {
     const view = model.view;
     view && view.remove();
   }
@@ -25,7 +24,7 @@ export default class PanelsView extends View {
    * @return Object
    * @private
    * */
-  addTo(model) {
+  private addTo(model: Panel) {
     this.addToCollection(model);
   }
 
@@ -38,15 +37,11 @@ export default class PanelsView extends View {
    * @return Object Object created
    * @private
    * */
-  addToCollection(model, fragmentEl) {
+  private addToCollection(model: Panel, fragmentEl?: DocumentFragment) {
     const fragment = fragmentEl || null;
     const config = this.config;
     const el = model.get('el');
-    const view = new PanelView({
-      el,
-      model,
-      config,
-    });
+    const view = new PanelView(model);
     const rendered = view.render().el;
     const appendTo = model.get('appendTo');
 
@@ -67,7 +62,7 @@ export default class PanelsView extends View {
     return rendered;
   }
 
-  render() {
+  public render() {
     const $el = this.$el;
     const frag = document.createDocumentFragment();
     $el.empty();
