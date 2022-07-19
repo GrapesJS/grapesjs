@@ -1,13 +1,12 @@
 import { result } from 'underscore';
-import { View } from '../../common';
+import { View } from '../../abstract';
+import Button from '../model/Button';
+import Buttons from '../model/Buttons';
 import ButtonView from './ButtonView';
 
-export default class ButtonsView extends View {
-  initialize(o) {
-    this.opt = o || {};
-    this.config = this.opt.config || {};
-    this.pfx = this.config.stylePrefix || '';
-    this.parentM = this.opt.parentM || null;
+export default class ButtonsView extends View<Buttons> {
+  constructor(collection: Buttons) {
+    super({ collection });
     this.listenTo(this.collection, 'add', this.addTo);
     this.listenTo(this.collection, 'reset remove', this.render);
     this.className = this.pfx + 'buttons';
@@ -19,7 +18,7 @@ export default class ButtonsView extends View {
    *
    * @return Object
    * */
-  addTo(model) {
+  private addTo(model: Button) {
     this.addToCollection(model);
   }
 
@@ -30,15 +29,12 @@ export default class ButtonsView extends View {
    *
    * @return Object Object created
    * */
-  addToCollection(model, fragmentEl) {
+  private addToCollection(model: Button, fragmentEl?: DocumentFragment) {
     const fragment = fragmentEl || null;
-    const viewObject = ButtonView;
     const el = model.get('el');
-    const view = new viewObject({
+    const view = new ButtonView({
       el,
       model,
-      config: this.config,
-      parentM: this.parentM,
     });
     const rendered = view.render().el;
 
@@ -51,13 +47,11 @@ export default class ButtonsView extends View {
     return rendered;
   }
 
-  render() {
+  public render() {
     var fragment = document.createDocumentFragment();
     this.$el.empty();
 
-    this.collection.each(function (model) {
-      this.addToCollection(model, fragment);
-    }, this);
+    this.collection.each(model => this.addToCollection(model, fragment));
 
     this.$el.append(fragment);
     this.$el.attr('class', result(this, 'className'));

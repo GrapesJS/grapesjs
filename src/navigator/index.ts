@@ -267,7 +267,7 @@ export default class LayerManager extends Module<typeof defaults> {
     };
   }
 
-  setLayerData(component: any, data: Partial<Omit<LayerData, 'components'>>, opts = {}) {
+  setLayerData(component: Component, data: Partial<Omit<LayerData, 'components'>>, opts = {}) {
     const { em, config } = this;
     const { open, selected, hovered, visible, locked, name } = data;
     const cmpOpts = { fromLayers: true, ...opts };
@@ -279,7 +279,7 @@ export default class LayerManager extends Module<typeof defaults> {
       if (selected) {
         em.setSelected(component, cmpOpts);
         const scroll = config.scrollCanvas;
-        scroll && component.views.forEach((view: any) => view.scrollIntoView(scroll));
+        scroll && component.views?.forEach((view: any) => view.scrollIntoView(scroll));
       } else {
         em.removeSelected(component, cmpOpts);
       }
