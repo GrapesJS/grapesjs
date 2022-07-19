@@ -1,14 +1,10 @@
-import { View } from '../../common';
+import { View } from '../../abstract';
+import Panel from '../model/Panel';
 import ButtonsView from './ButtonsView';
 
-export default class PanelView extends View {
-  initialize(o) {
-    const config = o.config || {};
-    const model = this.model;
-    this.config = config;
-    this.pfx = config.stylePrefix || '';
-    this.ppfx = config.pStylePrefix || '';
-    this.buttons = model.get('buttons');
+export default class PanelView extends View<Panel> {
+  constructor(model: Panel) {
+    super({ model, el: model.get('el') });
     this.className = this.pfx + 'panel';
     this.id = this.pfx + model.get('id');
     this.listenTo(model, 'change:appendContent', this.appendContent);
@@ -39,12 +35,13 @@ export default class PanelView extends View {
     this.$el.removeClass(`${this.ppfx}hidden`);
   }
 
+  //@ts-ignore
   attributes() {
     return this.model.get('attributes');
   }
 
   initResize() {
-    const em = this.config.em;
+    const em = this.em;
     const editor = em ? em.get('Editor') : '';
     const resizable = this.model.get('resizable');
 
@@ -85,7 +82,7 @@ export default class PanelView extends View {
         onEnd() {
           em && em.trigger('change:canvasOffset');
         },
-        posFetcher: (el, { target }) => {
+        posFetcher: (el: HTMLElement, { target }: any) => {
           const style = el.style;
           const config = resizer.getConfig();
           const keyWidth = config.keyWidth;
@@ -111,6 +108,7 @@ export default class PanelView extends View {
   }
 
   render() {
+    const { buttons } = this.model;
     const $el = this.$el;
     const ppfx = this.ppfx;
     const cls = `${this.className} ${this.id} ${ppfx}one-bg ${ppfx}two-color`;
@@ -118,12 +116,9 @@ export default class PanelView extends View {
 
     this.toggleVisible();
 
-    if (this.buttons.length) {
-      var buttons = new ButtonsView({
-        collection: this.buttons,
-        config: this.config,
-      });
-      $el.append(buttons.render().el);
+    if (buttons.length) {
+      var buttonsView = new ButtonsView(buttons);
+      $el.append(buttonsView.render().el);
     }
 
     $el.append(this.model.get('content'));
