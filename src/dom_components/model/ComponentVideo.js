@@ -47,6 +47,7 @@ export default Component.extend(
      * @private
      */
     updateTraits() {
+      const { em } = this;
       const prov = this.get('provider');
       let tagName = 'iframe';
       let traits;
@@ -66,7 +67,7 @@ export default Component.extend(
 
       this.set({ tagName }, { silent: 1 }); // avoid break in view
       this.set({ traits });
-      this.em.trigger('component:toggled');
+      em.get('ready') && em.trigger('component:toggled');
     },
 
     /**

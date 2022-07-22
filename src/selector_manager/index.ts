@@ -480,6 +480,7 @@ export default class SelectorManager extends Module {
   destroy() {
     const { selectorTags, model } = this;
     model.stopListening();
+    this.__update.cancel();
     this.__destroy();
     selectorTags?.remove();
     this.selectorTags = undefined;

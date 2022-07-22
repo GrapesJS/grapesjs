@@ -1,6 +1,6 @@
 import { result } from 'underscore';
 import Component from './Component';
-import { toLowerCase, buildBase64UrlFromSvg } from 'utils/mixins';
+import { toLowerCase, buildBase64UrlFromSvg, hasWin } from '../../utils/mixins';
 
 const svgAttrs =
   'xmlns="http://www.w3.org/2000/svg" width="100" viewBox="0 0 24 24" style="fill: rgba(0,0,0,0.15); transform: scale(0.75)"';
@@ -122,23 +122,38 @@ export default Component.extend(
      * @private
      */
     parseUri(uri) {
-      var el = document.createElement('a');
-      el.href = uri;
-      var query = {};
-      var qrs = el.search.substring(1).split('&');
-      for (var i = 0; i < qrs.length; i++) {
-        var pair = qrs[i].split('=');
-        var name = decodeURIComponent(pair[0]);
-        if (name) query[name] = decodeURIComponent(pair[1]);
+      let result = {};
+
+      const getQueryObject = (search = '') => {
+        const query = {};
+        const qrs = search.substring(1).split('&');
+
+        for (let i = 0; i < qrs.length; i++) {
+          const pair = qrs[i].split('=');
+          const name = decodeURIComponent(pair[0]);
+          if (name) query[name] = decodeURIComponent(pair[1] || '');
+        }
+
+        return query;
+      };
+
+      if (hasWin()) {
+        result = document.createElement('a');
+        result.href = uri;
+      } else if (typeof URL !== 'undefined') {
+        try {
+          result = new URL(uri);
+        } catch (e) {}
       }
+
       return {
-        hostname: el.hostname,
-        pathname: el.pathname,
-        protocol: el.protocol,
-        search: el.search,
-        hash: el.hash,
-        port: el.port,
-        query,
+        hostname: result.hostname || '',
+        pathname: result.pathname || '',
+        protocol: result.protocol || '',
+        search: result.search || '',
+        hash: result.hash || '',
+        port: result.port || '',
+        query: getQueryObject(result.search),
       };
     },
   },
