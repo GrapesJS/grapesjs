@@ -123,22 +123,6 @@ export default class StyleableModel extends Model {
   }
 
   _validate(attr, opts) {
-    const { style } = attr;
-    const em = this.em || opts.em;
-    const onBeforeStyle = em?.get('CssComposer')?.getConfig().onBeforeStyle;
-
-    if (style && onBeforeStyle) {
-      const newStyle = onBeforeStyle({ ...style });
-      newStyle &&
-        keys(style).map(prop => {
-          if (isUndefined(newStyle[prop])) delete attr.style[prop];
-        });
-      newStyle &&
-        keys(newStyle).map(prop => {
-          attr.style[prop] = newStyle[prop];
-        });
-    }
-
     return true;
   }
 }

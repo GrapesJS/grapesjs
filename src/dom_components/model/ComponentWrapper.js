@@ -3,7 +3,7 @@ import Component from './Component';
 export default class ComponentWrapper extends Component {
   defaults() {
     return {
-      ...Component.getDefaults(),
+      ...super.defaults,
       tagName: 'body',
       removable: false,
       copyable: false,
