@@ -443,6 +443,8 @@ export default class ComponentManager extends ItemManagerModule {
     var tempModel = new modelToExt();
     // If the model/view is a simple object I need to extend it
     if (typeof model === 'object') {
+      const defaults = result(model, 'defaults');
+      delete model.defaults;
       methods.model = modelToExt.extend(
         {
           ...model,
@@ -455,7 +457,7 @@ export default class ComponentManager extends ItemManagerModule {
       Object.defineProperty(methods.model.prototype, 'defaults', {
         value: {
           ...(result(modelToExt.prototype, 'defaults') || {}),
-          ...(result(model, 'defaults') || {}),
+          ...(defaults || {}),
         },
       });
     }
