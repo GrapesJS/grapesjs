@@ -124,7 +124,7 @@ export default class ComponentVideo extends ComponentImage {
    * @private
    */
   getAttrToHTML(...args) {
-    var attr = Component.prototype.getAttrToHTML.apply(this, args);
+    var attr = ComponentImage.prototype.getAttrToHTML.apply(this, args);
     var prov = this.get('provider');
     switch (prov) {
       case yt:
