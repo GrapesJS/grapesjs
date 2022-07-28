@@ -254,7 +254,7 @@ export default class CanvasModule extends Module<typeof defaults> {
     return this.getCanvasView().fixedOffsetEl;
   }
 
-  render() {
+  render(): HTMLElement {
     this.canvasView?.remove();
     this.canvasView = new CanvasView(this.canvas);
     return this.canvasView.render().el;

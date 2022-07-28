@@ -1,7 +1,7 @@
 import ComponentView from './ComponentView';
 import { createEl, find, attrUp } from 'utils/dom';
 
-export default class ComponentFrameView extends ComponentView.extend {
+export default class ComponentFrameView extends ComponentView {
   tagName() {
     return 'div';
   }
