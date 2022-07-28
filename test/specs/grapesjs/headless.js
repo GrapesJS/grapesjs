@@ -112,6 +112,10 @@ describe('GrapesJS Headless', () => {
                       type: 'video',
                       attributes: { id: 'video-id' },
                     },
+                    {
+                      type: 'map',
+                      attributes: { id: 'map-id' },
+                    },
                   ],
                 },
               },

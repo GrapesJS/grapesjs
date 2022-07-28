@@ -47,7 +47,7 @@ export default class ComponentMap extends ComponentImage {
   initialize(o, opt) {
     if (this.get('src')) this.parseFromSrc();
     else this.updateSrc();
-    Component.prototype.initialize.apply(this, arguments);
+    ComponentImage.prototype.initialize.apply(this, arguments);
     this.listenTo(this, 'change:address change:zoom change:mapType', this.updateSrc);
   }
 
