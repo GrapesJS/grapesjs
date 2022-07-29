@@ -1,5 +1,6 @@
 import { Model } from '../../abstract';
 import { evPageSelect } from '../../pages';
+import { evUpdate as evDeviceUpdate } from '../../device_manager';
 import Frames from './Frames';
 import Page from '../../pages/model/Page';
 import CanvasModule from '..';
@@ -26,7 +27,7 @@ export default class Canvas extends Model<CanvasModule> {
     super(module, { scripts, styles });
     this.set('frames', new Frames(module));
     this.listenTo(this, 'change:zoom', this.onZoomChange);
-    this.listenTo(em, 'change:device', this.updateDevice);
+    this.listenTo(em, `change:device ${evDeviceUpdate}`, this.updateDevice);
     this.listenTo(em, evPageSelect, this._pageUpdated);
   }
 
