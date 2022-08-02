@@ -238,8 +238,11 @@ export default class RichTextEditor {
   }
 
   __onKeydown(event) {
-    if (event.key === 'Enter') {
-      this.doc.execCommand('insertLineBreak');
+    const { doc } = this;
+    const cmdList = ['insertOrderedList', 'insertUnorderedList'];
+
+    if (event.key === 'Enter' && !cmdList.some(cmd => doc.queryCommandState(cmd))) {
+      doc.execCommand('insertLineBreak');
       event.preventDefault();
     }
   }
