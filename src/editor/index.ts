@@ -64,6 +64,13 @@ import defaults from './config/config';
 import EditorModel from './model/Editor';
 import EditorView from './view/EditorView';
 
+export type ParsedRule = {
+  selectors: string;
+  style: Record<string, string>;
+  atRule?: string;
+  params?: string;
+};
+
 export default class EditorModule implements IBaseModule<typeof defaults> {
   constructor(config = {}, opts: any = {}) {
     //@ts-ignore
@@ -644,7 +651,7 @@ export default class EditorModule implements IBaseModule<typeof defaults> {
    *  return result;
    * });
    */
-  setCustomParserCss(parser: any) {
+  setCustomParserCss(parser: (css: string, editor: EditorModule) => ParsedRule[]) {
     this.Parser.getConfig().parserCss = parser;
     return this;
   }
