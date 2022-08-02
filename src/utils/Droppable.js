@@ -112,7 +112,7 @@ export default class Droppable {
           let comp;
           if (!cancelled) {
             comp = wrapper.append(content)[0];
-            const canvasOffset = editor.Canvas.getOffset();
+            const canvasOffset = canvas.getOffset();
             const { top, left, position } = target.getStyle();
             comp.addStyle({
               left: parseFloat(left) - canvasOffset.left + 'px',
