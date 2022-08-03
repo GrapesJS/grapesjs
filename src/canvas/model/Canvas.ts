@@ -39,6 +39,7 @@ export default class Canvas extends Model<CanvasModule> {
     const { em } = this;
     const mainPage = em.get('PageManager').getMain();
     this.set('frames', mainPage.getFrames());
+    this.updateDevice({ frame: mainPage.getMainFrame() });
   }
 
   _pageUpdated(page: Page, prev?: Page) {
