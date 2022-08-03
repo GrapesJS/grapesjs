@@ -7,7 +7,7 @@ const $ = Backbone.$;
 
 export default class EditorView extends View<EditorModel> {
   constructor(model: EditorModel) {
-    super({model})
+    super({ model });
     //const { model } = this;
     const { Panels, UndoManager } = model.attributes;
     model.view = this;
@@ -40,6 +40,7 @@ export default class EditorView extends View<EditorModel> {
     // Load shallow editor
     const shallow = model.get('shallow');
     const shallowCanvasEl = shallow.get('Canvas').render();
+    shallow.set('readyLoad', true); // Trigger the render of frames
     shallowCanvasEl.style.display = 'none';
     $el.append(shallowCanvasEl);
 
