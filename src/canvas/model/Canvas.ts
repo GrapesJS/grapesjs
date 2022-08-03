@@ -38,18 +38,16 @@ export default class Canvas extends Model<CanvasModule> {
   init() {
     const { em } = this;
     const mainPage = em.get('PageManager').getMain();
-    const frame = mainPage.getMainFrame();
     this.set('frames', mainPage.getFrames());
-    this.updateDevice({ frame });
   }
 
   _pageUpdated(page: Page, prev?: Page) {
     const { em } = this;
     em.setSelected();
     em.get('readyCanvas') && em.stopDefault(); // We have to stop before changing current frames
-    //@ts-ignore
     prev?.getFrames().map(frame => frame.disable());
     this.set('frames', page.getFrames());
+    this.updateDevice({ frame: page.getMainFrame() });
   }
 
   updateDevice(opts: any = {}) {
