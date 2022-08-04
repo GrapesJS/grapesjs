@@ -493,7 +493,7 @@ export default class EditorModule implements IBaseModule<typeof defaults> {
    * @example
    * editor.runCommand('myCommand', {someValue: 1});
    */
-  runCommand(id: string, options = {}) {
+  runCommand(id: string, options: Record<string, unknown> = {}) {
     return this.em.get('Commands').run(id, options);
   }
 
@@ -505,7 +505,7 @@ export default class EditorModule implements IBaseModule<typeof defaults> {
    * @example
    * editor.stopCommand('myCommand', {someValue: 1});
    */
-  stopCommand(id: string, options = {}) {
+  stopCommand(id: string, options: Record<string, unknown> = {}) {
     return this.em.get('Commands').stop(id, options);
   }
 

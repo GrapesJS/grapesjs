@@ -921,7 +921,7 @@ declare namespace grapesjs {
      * @param options - Custom options
      * @returns The return is defined by the command
      */
-    runCommand(id: string, options: any): any;
+    runCommand(id: string, options?: Record<string, unknown>): any;
     /**
      * Stop the command if stop method was provided
      * @example
@@ -930,7 +930,7 @@ declare namespace grapesjs {
      * @param options - Custom options
      * @returns The return is defined by the command
      */
-    stopCommand(id: string, options: any): any;
+    stopCommand(id: string, options?: Record<string, unknown>): any;
     /**
      * Store data to the current storage
      * @param options - Storage options
