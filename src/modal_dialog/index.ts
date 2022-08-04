@@ -227,8 +227,7 @@ export default class ModalManager extends Module<typeof defaults> {
    * @return {HTMLElement}
    * @private
    */
-  getContentEl() {
-    //@ts-ignore
+  getContentEl(): HTMLElement | undefined {
     return this.modal?.getContent().get(0);
   }
 

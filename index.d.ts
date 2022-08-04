@@ -4569,6 +4569,10 @@ declare namespace grapesjs {
      * modal.getContent();
      */
     getContent(): string | HTMLElement;
+    /**
+     * Returns content element
+     */
+    getContentEl(): HTMLElement | undefined;
   }
 
   /**
