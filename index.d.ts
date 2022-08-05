@@ -1793,8 +1793,8 @@ declare namespace grapesjs {
   }
 
   interface ComponentViewDefinition {
-    tagName: string;
-    events: Record<string, string>;
+    tagName?: string;
+    events?: Record<string, string>;
     init?: (options: { model: Component }) => void;
     removed?: () => void;
     onRender?: (options: { el: HTMLElement; model: Component }) => void;
