@@ -175,7 +175,7 @@ declare namespace grapesjs {
      * 'absolute' - Move components absolutely (design tools way)
      * 'translate' - Use translate CSS from transform property
      * To get more about this feature read: https://github.com/artf/grapesjs/issues/1936 */
-    dragMode?: boolean;
+    dragMode?: 'translate' | 'absolute';
 
     /** When the editor is placed in a scrollable container (eg. modals) this might
      * cause elements inside the canvas (eg. floating toolbars) to be misaligned.
