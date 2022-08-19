@@ -4,7 +4,14 @@ import ParserHtml from '../../parser/model/ParserHtml';
 import { Model } from '../../common';
 
 export default class StyleableModel extends Model {
-  parseStyle = ParserHtml().parseStyle;
+  /**
+   * Forward style string to `parseStyle` to be parse to an object
+   * @param  {string} str
+   * @returns
+   */
+  parseStyle(str) {
+    return ParserHtml().parseStyle(str);
+  }
 
   /**
    * To trigger the style change event on models I have to

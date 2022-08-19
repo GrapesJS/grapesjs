@@ -417,6 +417,29 @@ describe('Component', () => {
     };
     newObj.components().each(model => inhereted(model));
   });
+
+  test('setStyle parses styles correctly', () => {
+    const styles = 'padding: 12px;height:auto;';
+    const expectedObj = {
+      padding: '12px',
+      height: 'auto',
+    };
+
+    const c = new Component();
+
+    expect(c.setStyle(styles)).toEqual(expectedObj);
+  });
+
+  test('setStyle should be called successfully when invoked internally', () => {
+    const ExtendedComponent = Component.extend({
+      init() {
+        const styles = 'padding: 12px;height:auto;';
+        this.setStyle(styles);
+      },
+    });
+
+    expect(() => new ExtendedComponent()).not.toThrowError();
+  });
 });
 
 describe('Image Component', () => {
