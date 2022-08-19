@@ -3,6 +3,8 @@ import { shallowDiff } from '../../utils/mixins';
 import ParserHtml from '../../parser/model/ParserHtml';
 import { Model } from '../../common';
 
+const parserHtml = ParserHtml();
+
 export default class StyleableModel extends Model {
   /**
    * Forward style string to `parseStyle` to be parse to an object
@@ -10,7 +12,7 @@ export default class StyleableModel extends Model {
    * @returns
    */
   parseStyle(str) {
-    return ParserHtml().parseStyle(str);
+    return parserHtml.parseStyle(str);
   }
 
   /**
