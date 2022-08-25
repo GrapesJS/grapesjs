@@ -546,6 +546,7 @@ declare namespace grapesjs {
     placeholder?: string;
     changeProp?: number;
     options?: SelectOption[];
+    command?: (editor: Editor) => void;
     [key: string]: any;
   }
 
@@ -2921,7 +2922,7 @@ declare namespace grapesjs {
      * // Set as a target the CSS selector
      * styleManager.select('.btn > span');
      */
-    select(): any;
+    select(toSelect: any): any;
     /**
      * Get the last selected target.
      * By default, the Style Manager shows styles of the last selected target.
@@ -4263,7 +4264,7 @@ declare namespace grapesjs {
         atRuleType?: string;
         atRuleParams?: string;
       }
-    ): any;
+    ): CssRule | undefined;
     /**
      * Get all rules or filtered by a matching selector.
      * @example
@@ -4275,7 +4276,7 @@ declare namespace grapesjs {
      * console.log(css.getRules())
      * @param [selector = ''] - Selector, eg. `.myclass`
      */
-    getRules(selector?: string): any;
+    getRules(selector?: string): CssRule[];
     /**
      * Remove rule, by CssRule or matching selector (eg. the selector will match also at-rules like `@media`)
      * @example
@@ -4375,7 +4376,7 @@ declare namespace grapesjs {
       [Component]: component.html
        * @defaultValue true
        */
-    stylable?: boolean;
+    stylable?: boolean | string[];
   }
   interface CssRule extends Backbone.Model<CssRuleOptions>, Styleable {
     /**
