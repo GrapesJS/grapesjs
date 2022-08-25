@@ -1781,8 +1781,8 @@ declare namespace grapesjs {
 
   interface AddComponentOptions {
     isComponent?: (el: HTMLElement) => boolean | ComponentDefinition;
-    model?: ComponentModelDefinition;
-    view?: ComponentViewDefinition;
+    model?: ThisType<ComponentModelDefinition & Component>;
+    view?: ThisType<ComponentViewDefinition & ComponentView>;
   }
 
   interface ComponentModelDefinition {
@@ -1791,6 +1791,7 @@ declare namespace grapesjs {
     handlePropChange?: (this: Component) => void;
     handleAttrChange?: (this: Component) => void;
     handleTitleChange?: (this: Component) => void;
+    [key: string]: any;
   }
 
   interface ComponentViewDefinition {
@@ -1799,6 +1800,7 @@ declare namespace grapesjs {
     init?: (options: { model: Component }) => void;
     removed?: () => void;
     onRender?: (options: { el: HTMLElement; model: Component }) => void;
+    [key: string]: any;
   }
 
   /**
@@ -2288,7 +2290,7 @@ declare namespace grapesjs {
      * @param attrs - Key value attributes
      * @param options - Options for the model update
      */
-    setAttributes(attrs: any, options: any): this;
+    setAttributes(attrs: any, options?: any): this;
 
     /**
      * Add attributes to the component
@@ -2297,7 +2299,7 @@ declare namespace grapesjs {
      * @param attrs - Key value attributes
      * @param options - Options for the model update
      */
-    addAttributes(attrs: any, options: any): this;
+    addAttributes(attrs: any, options?: any): this;
 
     /**
      * Remove attributes from the component
@@ -2307,7 +2309,7 @@ declare namespace grapesjs {
      * @param attrs - Array of attributes to remove
      * @param options - Options for the model update
      */
-    removeAttributes(attrs: string | String[], options: any): this;
+    removeAttributes(attrs: string | String[], options?: any): this;
 
     /**
      * Get the style of the component
