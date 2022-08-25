@@ -2123,14 +2123,14 @@ declare namespace grapesjs {
      * Component's traits. More about it [here](/modules/Traits.html). Default: `['id', 'title']`
      * @defaultValue ''
      */
-    traits?: TraitOptions[] | String[] | Backbone.Collection<Trait>;
+    traits?: Partial<TraitOptions>[] | string[] | Backbone.Collection<Trait>;
     /**
        * Indicates an array of properties which will be inhereted by all NEW appended children.
        For example if you create a component likes this: `{ removable: false, draggable: false, propagate: ['removable', 'draggable'] }`
        and append some new component inside, the new added component will get the exact same properties indicated in the `propagate` array (and the `propagate` property itself). Default: `[]`
        * @defaultValue []
        */
-    propagate?: String[];
+    propagate?: string[];
     /**
        * Set an array of items to show up inside the toolbar when the component is selected (move, clone, delete).
       Eg. `toolbar: [ { attributes: {class: 'fa fa-arrows'}, command: 'tlb-move' }, ... ]`.
