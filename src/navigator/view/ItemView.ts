@@ -225,6 +225,8 @@ export default class ItemView extends View {
     this.setName(name, { component: this.model, propName: 'custom-name' });
     em.setEditing(false);
     $el.find(`.${this.inputNameCls}`).addClass(clsNoEdit).removeClass(clsEdit);
+    // Ensure to always update the layer name #4544
+    this.updateName();
   }
 
   setName(name: string, { propName }: { propName: string; component?: Component }) {
