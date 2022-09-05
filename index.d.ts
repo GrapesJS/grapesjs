@@ -2126,7 +2126,7 @@ declare namespace grapesjs {
      * Component's traits. More about it [here](/modules/Traits.html). Default: `['id', 'title']`
      * @defaultValue ''
      */
-    traits?: Partial<TraitOptions>[] | string[] | Backbone.Collection<Trait>;
+    traits?: (Partial<TraitOptions> | string)[] | Backbone.Collection<Trait>;
     /**
        * Indicates an array of properties which will be inhereted by all NEW appended children.
        For example if you create a component likes this: `{ removable: false, draggable: false, propagate: ['removable', 'draggable'] }`
