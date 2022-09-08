@@ -1,3 +1,5 @@
+import { bindAll } from 'underscore';
+
 import { View } from '../../common';
 import { createEl } from '../../utils/dom';
 import CssRuleView from './CssRuleView';
@@ -6,6 +8,12 @@ import CssGroupRuleView from './CssGroupRuleView';
 const getBlockId = (pfx, order) => `${pfx}${order ? `-${parseFloat(order)}` : ''}`;
 
 export default class CssRulesView extends View {
+  constructor(options) {
+    super(options);
+
+    bindAll(this, 'sortRules');
+  }
+
   initialize(o) {
     const config = o.config || {};
     this.atRules = {};
@@ -104,6 +112,18 @@ export default class CssRulesView extends View {
     return mediaText && mediaText.replace(`(${this.em.getConfig().mediaCondition}: `, '').replace(')', '');
   }
 
+  sortRules(a, b) {
+    const { em } = this;
+    const isMobFirst = (em.getConfig().mediaCondition || '').indexOf('min-width') !== -1;
+
+    if (!isMobFirst) return 0;
+
+    const left = isMobFirst ? a : b;
+    const right = isMobFirst ? b : a;
+
+    return left - right;
+  }
+
   render() {
     this.renderStarted = 1;
     this.atRules = {};
@@ -112,7 +132,7 @@ export default class CssRulesView extends View {
     $el.empty();
 
     // Create devices related DOM structure, ensure also to have a default container
-    const prs = em.get('DeviceManager').getAll().pluck('priority');
+    const prs = em.get('DeviceManager').getAll().pluck('priority').sort(this.sortRules);
     prs.every(pr => pr) && prs.unshift(0);
     prs.forEach(pr => frag.appendChild(createEl('div', { id: getBlockId(className, pr) })));
 
