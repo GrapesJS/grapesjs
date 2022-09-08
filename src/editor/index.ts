@@ -1,6 +1,6 @@
 /**
  * Editor contains the top level API which you'll probably use to customize the editor or extend it with plugins.
- * You get the Editor instance on init method and you can pass options via its [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/editor/config/config.js)
+ * You get the Editor instance on init method and you can pass options via its [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/editor/config/config.ts)
  *
  * ```js
  * const editor = grapesjs.init({
