@@ -221,6 +221,9 @@ export default {
   // Configurations for Trait Manager
   traitManager: {},
 
+  // Configurations for Page Manager
+  pageManager: {},
+
   // Texts
   textViewCode: 'Code',
 

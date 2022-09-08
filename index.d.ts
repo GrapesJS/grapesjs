@@ -245,6 +245,9 @@ declare namespace grapesjs {
     /** Configurations for Trait Manager */
     traitManager?: TraitManagerConfig | boolean;
 
+    /** Configurations for Page Manager */
+    pageManager?: PageManagerConfig;
+
     /** Texts **/
     textViewCode?: string;
 
@@ -319,6 +322,10 @@ declare namespace grapesjs {
     labelPlhRef?: string;
     optionsTarget?: Array<object>;
     textNoElement?: string;
+  }
+
+  interface PageManagerConfig {
+    pages?: any;
   }
 
   interface StorageManagerConfig {
