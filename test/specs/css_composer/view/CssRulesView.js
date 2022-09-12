@@ -7,9 +7,9 @@ describe('CssRulesView', () => {
   const prefix = 'rules';
   const devices = [
     {
-      name: 'Mobile portrait',
-      width: '320px',
-      widthMedia: '480px',
+      name: 'Desktop',
+      width: '',
+      widthMedia: '',
     },
     {
       name: 'Tablet',
@@ -17,9 +17,9 @@ describe('CssRulesView', () => {
       widthMedia: '992px',
     },
     {
-      name: 'Desktop',
-      width: '',
-      widthMedia: '',
+      name: 'Mobile portrait',
+      width: '320px',
+      widthMedia: '480px',
     },
   ];
   const mobileFirstDevices = [
