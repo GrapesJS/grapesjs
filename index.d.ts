@@ -1580,6 +1580,13 @@ declare namespace grapesjs {
     ): HTMLElement;
   }
 
+  interface BlockCategoryOptions {
+    id: string,
+    label: string,
+    open?: boolean,
+    attributes?: Record<string, any>,
+  }
+
   interface BlockOptions {
     /**
      * Block label, eg. `My block`
@@ -1598,7 +1605,7 @@ declare namespace grapesjs {
      * Block category, eg. `Basic blocks`
      * @defaultValue ''
      */
-    category?: string;
+    category?: string | BlockCategoryOptions;
     /**
      * If true, triggers the `active` event on the dropped component.
      */
