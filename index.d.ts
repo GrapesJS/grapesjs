@@ -1790,6 +1790,10 @@ declare namespace grapesjs {
     isComponent?: (el: HTMLElement) => boolean | ComponentDefinition;
     model?: ThisType<ComponentModelDefinition & Component>;
     view?: ThisType<ComponentViewDefinition & ComponentView>;
+    extend?: string,
+    extendView?: string,
+    extendFn?: string[],
+    extendFnView?: string[],
   }
 
   interface ComponentModelDefinition {
