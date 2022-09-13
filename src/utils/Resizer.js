@@ -258,9 +258,10 @@ class Resizer {
     const parentEl = this.getParentEl();
     const resizer = this;
     const config = this.opts || {};
-    var attrName = 'data-' + config.prefix + 'handler';
-    var rect = this.getElementPos(el, { target: 'el' });
-    var parentRect = this.getElementPos(parentEl);
+    const mouseFetch = this.mousePosFetcher;
+    const attrName = 'data-' + config.prefix + 'handler';
+    const rect = this.getElementPos(el, { target: 'el' });
+    const parentRect = this.getElementPos(parentEl);
     this.handlerAttr = e.target.getAttribute(attrName);
     this.clickedHandler = e.target;
     this.startDim = {
@@ -275,10 +276,12 @@ class Resizer {
       w: rect.width,
       h: rect.height,
     };
-    this.startPos = {
-      x: e.clientX,
-      y: e.clientY,
-    };
+    this.startPos = mouseFetch
+      ? mouseFetch(e)
+      : {
+          x: e.clientX,
+          y: e.clientY,
+        };
     this.parentDim = {
       t: parentRect.top,
       l: parentRect.left,
@@ -303,8 +306,8 @@ class Resizer {
    */
   move(e) {
     const onMove = this.onMove;
-    var mouseFetch = this.mousePosFetcher;
-    var currentPos = mouseFetch
+    const mouseFetch = this.mousePosFetcher;
+    const currentPos = mouseFetch
       ? mouseFetch(e)
       : {
           x: e.clientX,
