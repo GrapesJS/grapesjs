@@ -333,6 +333,7 @@ class Resizer {
    * @param  {Event} e
    */
   stop(e) {
+    const { el } = this;
     const config = this.opts;
     const docs = this.docs || this.getDocumentEl();
     off(docs, 'pointermove', this.move);
@@ -340,7 +341,7 @@ class Resizer {
     off(docs, 'pointerup', this.stop);
     this.updateRect(1);
     this.toggleFrames();
-    isFunction(this.onEnd) && this.onEnd(e, { docs, config });
+    isFunction(this.onEnd) && this.onEnd(e, { docs, config, el, resizer: this });
     delete this.docs;
   }
 
