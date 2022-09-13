@@ -798,7 +798,7 @@ declare namespace grapesjs {
      * @param components - HTML string or components model
      * @param opt - the options object to be used by the [setComponents]{@link em#setComponents} method
      */
-    setComponents(components: object[] | any | string, opt: any): any;
+    setComponents(components: object[] | any | string, opt?: any): any;
     /**
      * Add components
      * @example
@@ -817,7 +817,7 @@ declare namespace grapesjs {
      */
     addComponents(
       components: object[] | any | string,
-      opts: {
+      opts?: {
         avoidUpdateStyle?: boolean;
       }
     ): Component[];
@@ -1630,6 +1630,10 @@ declare namespace grapesjs {
      * Custom behavior on click, eg. `(block, editor) => editor.getWrapper().append(block.get('content'))`
      */
     onClick?: (...params: any[]) => any;
+    /**
+     * Block attributes
+     */
+    attributes?: Record<string, any>;
   }
   interface Block extends Backbone.Model<BlockOptions> {
     /**
