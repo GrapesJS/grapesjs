@@ -279,6 +279,10 @@ declare namespace grapesjs {
     dropzoneContent?: string;
     modalTitle?: string;
     inputPlaceholder?: string;
+    custom?: boolean | {
+      open?: (props: any) => void,
+      close?: (props: any) => void,
+    };
   }
 
   interface CanvasConfig {
