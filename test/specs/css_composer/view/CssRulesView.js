@@ -103,8 +103,6 @@ describe('CssRulesView', () => {
     const foundStylesContainers = obj.$el.find('div');
     expect(foundStylesContainers.length).toEqual(mobileFirstDevices.length);
 
-    foundStylesContainers.each((idx, e) => console.log(e.id));
-
     const sortedDevicesWidthMedia = mobileFirstDevices
       .map(dvc => dvc.widthMedia)
       .sort((left, right) => {
