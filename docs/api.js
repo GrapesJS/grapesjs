@@ -19,7 +19,7 @@ async function generateDocs () {
     ['commands/index.js', 'commands.md'],
     ['dom_components/index.ts', 'components.md'],
     ['dom_components/model/Component.js', 'component.md'],
-    ['panels/index.js', 'panels.md'],
+    ['panels/index.ts', 'panels.md'],
     ['style_manager/index.js', 'style_manager.md'],
     ['style_manager/model/Sector.js', 'sector.md'],
     ['style_manager/model/Property.js', 'property.md'],

@@ -725,7 +725,7 @@ const strHtml = editor.html`Escaped ${unsafeStr} unescaped $${safeStr}`;
 
 Returns **[String][16]** 
 
-[1]: https://github.com/artf/grapesjs/blob/master/src/editor/config/config.js
+[1]: https://github.com/artf/grapesjs/blob/master/src/editor/config/config.ts
 
 [2]: /api/components.html
 

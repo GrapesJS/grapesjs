@@ -191,6 +191,7 @@ export default class PanelManager extends Module<typeof defaults> {
   /**
    * Render panels and buttons
    * @return {HTMLElement}
+   * @private
    */
   render() {
     this.PanelsViewObj && this.PanelsViewObj.remove();
