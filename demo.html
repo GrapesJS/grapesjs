@@ -5,48 +5,30 @@
     <title>GrapesJS Demo - Free Open Source Website Page Builder</title>
     <meta content="Best Free Open Source Responsive Websites Builder" name="description">
     <link rel="stylesheet" href="stylesheets/toastr.min.css">
-    <link rel="stylesheet" href="stylesheets/grapes.min.css?v0.19.5">
+    <link rel="stylesheet" href="stylesheets/grapes.min.css?v0.20.1">
     <link rel="stylesheet" href="stylesheets/grapesjs-preset-webpage.min.css">
     <link rel="stylesheet" href="stylesheets/tooltip.css">
-    <link rel="stylesheet" href="stylesheets/grapesjs-plugin-filestack.css">
     <link rel="stylesheet" href="stylesheets/demos.css?v3">
     <link href="https://unpkg.com/grapick/dist/grapick.min.css" rel="stylesheet">
 
-    <!-- <script src="//static.filestackapi.com/v3/filestack.js"></script> -->
-    <!-- <script src="js/aviary.js"></script> old //feather.aviary.com/imaging/v3/editor.js -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="js/toastr.min.js"></script>
-
-    <script src="js/grapes.min.js?v0.19.5"></script>
-    <script src="js/grapesjs-preset-webpage.min.js?v0.1.11"></script>
-    <script src="js/grapesjs-lory-slider.min.js?0.1.5"></script>
-    <script src="js/grapesjs-tabs.min.js?0.1.1"></script>
-    <script src="js/grapesjs-custom-code.min.js?0.1.2"></script>
-    <script src="js/grapesjs-touch.min.js?0.1.1"></script>
-    <script src="js/grapesjs-parser-postcss.min.js?0.1.1"></script>
-    <script src="js/grapesjs-tooltip.min.js?0.1.1"></script>
-    <script src="js/grapesjs-tui-image-editor.min.js?0.1.2"></script>
-    <script src="js/grapesjs-typed.min.js?1.0.5"></script>
-    <script src="js/grapesjs-style-bg.min.js?1.0.1"></script>
+    <script src="js/grapes.min.js?v0.20.1"></script>
+    <script src="https://unpkg.com/grapesjs-preset-webpage@1.0.1"></script>
+    <script src="https://unpkg.com/grapesjs-blocks-basic@1.0.1"></script>
+    <script src="https://unpkg.com/grapesjs-plugin-forms@2.0.5"></script>
+    <script src="https://unpkg.com/grapesjs-component-countdown@1.0.1"></script>
+    <script src="https://unpkg.com/grapesjs-plugin-export@1.0.11"></script>
+    <script src="https://unpkg.com/grapesjs-tabs@1.0.6"></script>
+    <script src="https://unpkg.com/grapesjs-custom-code@1.0.1"></script>
+    <script src="https://unpkg.com/grapesjs-touch@0.1.1"></script>
+    <script src="https://unpkg.com/grapesjs-parser-postcss@1.0.1"></script>
+    <script src="https://unpkg.com/grapesjs-tooltip@0.1.7"></script>
+    <script src="https://unpkg.com/grapesjs-tui-image-editor@0.1.3"></script>
+    <script src="https://unpkg.com/grapesjs-typed@1.0.5"></script>
+    <script src="https://unpkg.com/grapesjs-style-bg@1.0.5"></script>
 
     <style type="text/css">
-        .icon-add-comp::before, .icon-comp100::before,.icon-comp50::before,.icon-comp30::before,.icon-rm::before{ content: '';}
-        .icon-add-comp {
-          background: url("./img/icon-sq-a.png") no-repeat center;
-        }
-        .icon-comp100 {
-          background: url("./img/icon-sq-1.png") no-repeat center;
-        }
-        .icon-comp50 {
-          background: url("./img/icon-sq-2.png") no-repeat center;
-        }
-        .icon-comp30 {
-          background: url("./img/icon-sq-3.png") no-repeat center;
-        }
-        .icon-rm {
-          background: url("./img/icon-sq-r.png") no-repeat center;
-        }
-
         .icons-flex {
           background-size: 70% 65% !important;
           height: 15px;
@@ -101,35 +83,16 @@
            min-height: 40px;
          }
 
-         #gjs-sm-float,
-         .gjs-pn-views .fa-cog {
+         #gjs-sm-float {
             display: none;
-         }
-
-         .gjs-am-preview-cont {
-           height: 100px;
-           width: 100%;
          }
 
          .gjs-logo-version {
            background-color: #756467;
          }
 
-        .gjs-pn-panel.gjs-pn-views {
-          padding: 0;
-          border-bottom: none;
-        }
-
         .gjs-pn-btn.gjs-pn-active {
           box-shadow: none;
-        }
-
-        .gjs-pn-views .gjs-pn-btn {
-            margin: 0;
-            height: 40px;
-            padding: 10px;
-            width: 33.3333%;
-            border-bottom: 2px solid rgba(0, 0, 0, 0.3);
         }
 
         .CodeMirror {
@@ -984,76 +947,17 @@
       ];
 
       var editor  = grapesjs.init({
-        avoidInlineStyle: 1,
         height: '100%',
         container : '#gjs',
-        fromElement: 1,
-        showOffsets: 1,
+        fromElement: true,
+        showOffsets: true,
         assetManager: {
-          embedAsBase64: 1,
+          embedAsBase64: true,
           assets: images
         },
         selectorManager: { componentFirst: true },
-        styleManager: { sectors: [] },
-        plugins: [
-          'grapesjs-lory-slider',
-          'grapesjs-tabs',
-          'grapesjs-custom-code',
-          'grapesjs-touch',
-          'grapesjs-parser-postcss',
-          'grapesjs-tooltip',
-          'grapesjs-tui-image-editor',
-          'grapesjs-typed',
-          'grapesjs-style-bg',
-          'gjs-preset-webpage',
-        ],
-        pluginsOpts: {
-          'grapesjs-tui-image-editor': {
-            script: [
-              // 'https://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.6.7/fabric.min.js',
-              'https://uicdn.toast.com/tui.code-snippet/v1.5.2/tui-code-snippet.min.js',
-              'https://uicdn.toast.com/tui-color-picker/v2.2.7/tui-color-picker.min.js',
-              'https://uicdn.toast.com/tui-image-editor/v3.15.2/tui-image-editor.min.js'
-            ],
-            style: [
-              'https://uicdn.toast.com/tui-color-picker/v2.2.7/tui-color-picker.min.css',
-              'https://uicdn.toast.com/tui-image-editor/v3.15.2/tui-image-editor.min.css',
-            ],
-          },
-          'grapesjs-lory-slider': {
-            sliderBlock: {
-              category: 'Extra'
-            }
-          },
-          'grapesjs-tabs': {
-            tabsBlock: {
-              category: 'Extra'
-            }
-          },
-          'grapesjs-typed': {
-            block: {
-              category: 'Extra',
-              content: {
-                type: 'typed',
-                'type-speed': 40,
-                strings: [
-                  'Text row one',
-                  'Text row two',
-                  'Text row three',
-                ],
-              }
-            }
-          },
-          'gjs-preset-webpage': {
-            modalImportTitle: 'Import Template',
-            modalImportLabel: '<div style="margin-bottom: 10px; font-size: 13px;">Paste here your HTML/CSS and click Import</div>',
-            modalImportContent: function(editor) {
-              return editor.getHtml() + '<style>'+editor.getCss()+'</style>'
-            },
-            filestackOpts: null, //{ key: 'AYmqZc2e8RLGLE7TGkX3Hz' },
-            aviaryOpts: false,
-            blocksBasicOpts: { flexGrid: 1 },
-            customStyleManager: [{
+        styleManager: {
+          sectors: [{
               name: 'General',
               properties:[
                 {
@@ -1293,6 +1197,59 @@
                 }]
               }
             ],
+        },
+        plugins: [
+          'gjs-blocks-basic',
+          'grapesjs-plugin-forms',
+          'grapesjs-component-countdown',
+          'grapesjs-plugin-export',
+          'grapesjs-tabs',
+          'grapesjs-custom-code',
+          'grapesjs-touch',
+          'grapesjs-parser-postcss',
+          'grapesjs-tooltip',
+          'grapesjs-tui-image-editor',
+          'grapesjs-typed',
+          'grapesjs-style-bg',
+          'grapesjs-preset-webpage',
+        ],
+        pluginsOpts: {
+          'gjs-blocks-basic': { flexGrid: true },
+          'grapesjs-tui-image-editor': {
+            script: [
+              // 'https://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.6.7/fabric.min.js',
+              'https://uicdn.toast.com/tui.code-snippet/v1.5.2/tui-code-snippet.min.js',
+              'https://uicdn.toast.com/tui-color-picker/v2.2.7/tui-color-picker.min.js',
+              'https://uicdn.toast.com/tui-image-editor/v3.15.2/tui-image-editor.min.js'
+            ],
+            style: [
+              'https://uicdn.toast.com/tui-color-picker/v2.2.7/tui-color-picker.min.css',
+              'https://uicdn.toast.com/tui-image-editor/v3.15.2/tui-image-editor.min.css',
+            ],
+          },
+          'grapesjs-tabs': {
+            tabsBlock: { category: 'Extra' }
+          },
+          'grapesjs-typed': {
+            block: {
+              category: 'Extra',
+              content: {
+                type: 'typed',
+                'type-speed': 40,
+                strings: [
+                  'Text row one',
+                  'Text row two',
+                  'Text row three',
+                ],
+              }
+            }
+          },
+          'grapesjs-preset-webpage': {
+            modalImportTitle: 'Import Template',
+            modalImportLabel: '<div style="margin-bottom: 10px; font-size: 13px;">Paste here your HTML/CSS and click Import</div>',
+            modalImportContent: function(editor) {
+              return editor.getHtml() + '<style>'+editor.getCss()+'</style>'
+            },
           },
         },
       });
@@ -1313,30 +1270,19 @@
       var pn = editor.Panels;
       var modal = editor.Modal;
       var cmdm = editor.Commands;
+
+      // Update canvas-clear command
       cmdm.add('canvas-clear', function() {
         if(confirm('Are you sure to clean the canvas?')) {
-          var comps = editor.DomComponents.clear();
+          editor.runCommand('core:canvas-clear')
           setTimeout(function(){ localStorage.clear()}, 0)
         }
       });
-      cmdm.add('set-device-desktop', {
-        run: function(ed) { ed.setDevice('Desktop') },
-        stop: function() {},
-      });
-      cmdm.add('set-device-tablet', {
-        run: function(ed) { ed.setDevice('Tablet') },
-        stop: function() {},
-      });
-      cmdm.add('set-device-mobile', {
-        run: function(ed) { ed.setDevice('Mobile portrait') },
-        stop: function() {},
-      });
-
-
 
       // Add info command
       var mdlClass = 'gjs-mdl-dialog-sm';
       var infoContainer = document.getElementById('info-panel');
+
       cmdm.add('open-info', function() {
         var mdlDialog = document.querySelector('.gjs-mdl-dialog');
         mdlDialog.className += ' ' + mdlClass;
@@ -1348,6 +1294,7 @@
           mdlDialog.className = mdlDialog.className.replace(mdlClass, '');
         })
       });
+
       pn.addButton('options', {
         id: 'open-info',
         className: 'fa fa-question-circle',
@@ -1423,6 +1370,9 @@
         openTmBtn && openTmBtn.set('active', 1);
         var openSm = pn.getButton('views', 'open-sm');
         openSm && openSm.set('active', 1);
+
+        // Remove trait view
+        pn.removeButton('views', 'open-tm');
 
         // Add Settings Sector
         var traitsSector = $('<div class="gjs-sm-sector no-select">'+
