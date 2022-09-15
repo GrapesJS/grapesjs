@@ -1,7 +1,7 @@
 import { result, forEach, isEmpty, isString } from 'underscore';
-import { Model } from '../../common';
+import { Model } from '../../abstract';
+import CanvasModule from '..';
 import ComponentWrapper from '../../dom_components/model/ComponentWrapper';
-import EditorModel from '../../editor/model/Editor';
 import { isComponent, isObject } from '../../utils/mixins';
 import FrameView from '../view/FrameView';
 import Frames from './Frames';
@@ -17,7 +17,7 @@ const keyAutoH = '__ah';
  * @property {Number} [y=0] Vertical position of the frame in the canvas.
  *
  */
-export default class Frame extends Model {
+export default class Frame extends Model<CanvasModule> {
   defaults() {
     return {
       x: 0,
@@ -33,21 +33,19 @@ export default class Frame extends Model {
       _undoexc: ['changesCount'],
     };
   }
-  em: EditorModel;
   view?: FrameView;
 
   /**
    * @hideconstructor
    */
-  constructor(props: any, opts: any) {
-    super(props);
-    const { em } = opts;
+  constructor(module: CanvasModule, attr: any) {
+    super(module, attr);
+    const { em } = this;
     const { styles, component } = this.attributes;
     const domc = em.get('DomComponents');
     const conf = domc.getConfig();
     const allRules = em.get('CssComposer').getAll();
     const idMap: any = {};
-    this.em = em;
     const modOpts = { em, config: conf, frame: this, idMap };
 
     if (!isComponent(component)) {
@@ -63,7 +61,7 @@ export default class Frame extends Model {
       // Avoid losing styles on remapped components
       const idMapKeys = Object.keys(idMap);
       if (idMapKeys.length && Array.isArray(styles)) {
-        styles.forEach((style) => {
+        styles.forEach(style => {
           const sel = style.selectors;
           if (sel && sel.length == 1) {
             const sSel = sel[0];
@@ -84,8 +82,12 @@ export default class Frame extends Model {
       this.set('styles', allRules);
     }
 
-    !props.width && this.set(keyAutoW, 1);
-    !props.height && this.set(keyAutoH, 1);
+    !attr.width && this.set(keyAutoW, 1);
+    !attr.height && this.set(keyAutoH, 1);
+  }
+
+  get head(): { tag: string; attributes: any }[] {
+    return this.get('head');
   }
 
   onRemove() {
@@ -118,38 +120,27 @@ export default class Frame extends Model {
   }
 
   getHead() {
-    const head = this.get('head') || [];
-    return [...head];
+    return [...this.head];
   }
 
-  setHead(value: any) {
+  setHead(value: { tag: string; attributes: any }[]) {
     return this.set('head', [...value]);
   }
 
-  addHeadItem(item: any) {
-    const head = this.getHead();
-    head.push(item);
-    this.setHead(head);
+  addHeadItem(item: { tag: string; attributes: any }) {
+    this.head.push(item);
   }
 
   getHeadByAttr(attr: string, value: any, tag: string) {
-    const head = this.getHead();
-    return head.filter(
-      (item) =>
-        item.attributes &&
-        item.attributes[attr] == value &&
-        (!tag || tag === item.tag)
-    )[0];
+    return this.head.filter(item => item.attributes && item.attributes[attr] == value && (!tag || tag === item.tag))[0];
   }
 
   removeHeadByAttr(attr: string, value: any, tag: string) {
-    const head = this.getHead();
     const item = this.getHeadByAttr(attr, value, tag);
-    const index = head.indexOf(item);
+    const index = this.head.indexOf(item);
 
     if (index >= 0) {
-      head.splice(index, 1);
-      this.setHead(head);
+      this.head.splice(index, 1);
     }
   }
 
@@ -209,7 +200,7 @@ export default class Frame extends Model {
       if (obj[key] === value) delete obj[key];
     });
 
-    forEach(['attributes', 'head'], (prop) => {
+    forEach(['attributes', 'head'], prop => {
       if (isEmpty(obj[prop])) delete obj[prop];
     });
 

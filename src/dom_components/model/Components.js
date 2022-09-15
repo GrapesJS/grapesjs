@@ -1,5 +1,5 @@
 import Backbone from 'backbone';
-import { isEmpty, isArray, isString, isFunction, each, includes, extend, flatten, debounce } from 'underscore';
+import { isEmpty, isArray, isString, isFunction, each, includes, extend, flatten, debounce, keys } from 'underscore';
 import Component, { keySymbol, keySymbols } from './Component';
 
 export const getComponentIds = (cmp, res = []) => {
@@ -13,16 +13,32 @@ export const getComponentIds = (cmp, res = []) => {
 };
 
 const getComponentsFromDefs = (items, all = {}, opts = {}) => {
+  opts.visitedCmps = opts.visitedCmps || {};
+  const { visitedCmps } = opts;
   const itms = isArray(items) ? items : [items];
 
   return itms.map(item => {
     const { attributes = {}, components, tagName } = item;
-    const { id } = attributes;
+    let { id, draggable, ...restAttr } = attributes;
     let result = item;
 
-    if (id && all[id]) {
-      result = all[id];
-      tagName && result.set({ tagName }, { ...opts, silent: true });
+    if (id) {
+      // Detect components with the same ID
+      if (!visitedCmps[id]) {
+        visitedCmps[id] = [];
+
+        // Update the component if exists already
+        if (all[id]) {
+          result = all[id];
+          tagName && result.set({ tagName }, { ...opts, silent: true });
+          keys(restAttr).length && result.addAttributes(restAttr, { ...opts });
+        }
+      } else {
+        // Found another component with the same ID, treat it as a new component
+        visitedCmps[id].push(result);
+        id = Component.getNewId(all);
+        result.attributes.id = id;
+      }
     }
 
     if (components) {
@@ -64,13 +80,34 @@ export default class Components extends Backbone.Collection {
 
   resetFromString(input = '', opts = {}) {
     opts.keepIds = getComponentIds(this);
-    const { domc } = this;
+    const { domc, em, parent } = this;
+    const cssc = em?.get('CssComposer');
     const allByID = domc?.allById() || {};
     const parsed = this.parseString(input, opts);
-    const cmps = isArray(parsed) ? parsed : [parsed];
-    const newCmps = getComponentsFromDefs(cmps, allByID, opts);
+    const newCmps = getComponentsFromDefs(parsed, allByID, opts);
+    const { visitedCmps = {} } = opts;
+
+    // Clone styles for duplicated components
+    Object.keys(visitedCmps).forEach(id => {
+      const cmps = visitedCmps[id];
+      if (cmps.length) {
+        // Get all available rules of the component
+        const rulesToClone = cssc?.getRules(`#${id}`) || [];
+
+        if (rulesToClone.length) {
+          cmps.forEach(cmp => {
+            rulesToClone.forEach(rule => {
+              const newRule = rule.clone();
+              newRule.set('selectors', [`#${cmp.attributes.id}`]);
+              cssc.getAll().add(newRule);
+            });
+          });
+        }
+      }
+    });
+
     this.reset(newCmps, opts);
-    this.em?.trigger('component:content', this.parent, opts, input);
+    em?.trigger('component:content', parent, opts, input);
   }
 
   removeChildren(removed, coll, opts = {}) {

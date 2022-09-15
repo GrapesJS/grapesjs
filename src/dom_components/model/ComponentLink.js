@@ -4,14 +4,16 @@ import ComponentText from './ComponentText';
 
 const type = 'link';
 
-export default class ComponentLink extends ComponentText {}
-
-ComponentLink.prototype.defaults = {
-  ...ComponentText.getDefaults(),
-  type,
-  tagName: 'a',
-  traits: ['title', 'href', 'target'],
-};
+export default class ComponentLink extends ComponentText {
+  get defaults() {
+    return {
+      ...super.defaults,
+      type,
+      tagName: 'a',
+      traits: ['title', 'href', 'target'],
+    };
+  }
+}
 
 ComponentLink.isComponent = (el, opts = {}) => {
   let result;

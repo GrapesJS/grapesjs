@@ -2,8 +2,6 @@ import { isString } from 'underscore';
 import TraitView from './TraitView';
 
 export default class TraitButtonView extends TraitView {
-  eventCapture = ['click button'];
-
   templateInput = '';
 
   onChange() {
@@ -40,3 +38,6 @@ export default class TraitButtonView extends TraitView {
     return input;
   }
 }
+
+// Fix #4388
+TraitButtonView.prototype.eventCapture = ['click button'];

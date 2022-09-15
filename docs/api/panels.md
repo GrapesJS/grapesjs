@@ -143,7 +143,7 @@ Remove button from the panel
 ### Parameters
 
 *   `panelId` **[String][12]** Panel's ID
-*   `button`  
+*   `button` **any** 
 *   `buttonId` **[String][12]** Button's ID
 
 ### Examples

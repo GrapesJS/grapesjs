@@ -7,9 +7,26 @@ describe('CssRulesView', () => {
   const prefix = 'rules';
   const devices = [
     {
+      name: 'Desktop',
+      width: '',
+      widthMedia: '',
+    },
+    {
+      name: 'Tablet',
+      width: '768px',
+      widthMedia: '992px',
+    },
+    {
       name: 'Mobile portrait',
       width: '320px',
       widthMedia: '480px',
+    },
+  ];
+  const mobileFirstDevices = [
+    {
+      name: 'Mobile portrait',
+      width: '',
+      widthMedia: '',
     },
     {
       name: 'Tablet',
@@ -18,25 +35,31 @@ describe('CssRulesView', () => {
     },
     {
       name: 'Desktop',
-      width: '',
-      widthMedia: '',
+      width: '1024px',
+      widthMedia: '1280px',
     },
   ];
 
-  beforeEach(() => {
+  function buildEditor(editorOptions) {
     const col = new CssRules([]);
-    obj = new CssRulesView({
+    const obj = new CssRulesView({
       collection: col,
       config: {
-        em: new Editor({
-          deviceManager: {
-            devices,
-          },
-        }),
+        em: new Editor(editorOptions),
       },
     });
     document.body.innerHTML = '<div id="fixtures"></div>';
     document.body.querySelector('#fixtures').appendChild(obj.render().el);
+
+    return obj;
+  }
+
+  beforeEach(() => {
+    obj = buildEditor({
+      deviceManager: {
+        devices,
+      },
+    });
   });
 
   afterEach(() => {
@@ -59,6 +82,33 @@ describe('CssRulesView', () => {
           ((right && right.replace('px', '')) || Number.MAX_VALUE) -
           ((left && left.replace('px', '')) || Number.MAX_VALUE)
         );
+      })
+      .map(widthMedia => parseFloat(widthMedia));
+
+    foundStylesContainers.each((idx, $styleC) => {
+      const width = sortedDevicesWidthMedia[idx];
+      expect($styleC.id).toEqual(`${prefix}${width ? `-${width}` : ''}`);
+    });
+  });
+
+  test('Collection is empty. Styles structure with mobile first bootstraped', () => {
+    obj = buildEditor({
+      mediaCondition: 'min-width',
+      deviceManager: {
+        devices: mobileFirstDevices,
+      },
+    });
+
+    expect(obj.$el.html()).toBeTruthy();
+    const foundStylesContainers = obj.$el.find('div');
+    expect(foundStylesContainers.length).toEqual(mobileFirstDevices.length);
+
+    const sortedDevicesWidthMedia = mobileFirstDevices
+      .map(dvc => dvc.widthMedia)
+      .sort((left, right) => {
+        const a = (left && left.replace('px', '')) || Number.MIN_VALUE;
+        const b = (right && right.replace('px', '')) || Number.MIN_VALUE;
+        return a - b;
       })
       .map(widthMedia => parseFloat(widthMedia));
 

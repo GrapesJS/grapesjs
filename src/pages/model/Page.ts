@@ -21,10 +21,10 @@ export default class Page extends Model {
     if (!props.frames) {
       defFrame.component = props.component;
       defFrame.styles = props.styles;
-      ['component', 'styles'].map((i) => this.unset(i));
+      ['component', 'styles'].map(i => this.unset(i));
     }
     const frms: any[] = props.frames || [defFrame];
-    const frames = new Frames(frms?.map((model) => new Frame(model, opts)));
+    const frames = new Frames(em.get('Canvas'), frms);
     frames.page = this;
     this.set('frames', frames);
     !this.getId() && this.set('id', em?.get('PageManager')._createId());
@@ -33,7 +33,7 @@ export default class Page extends Model {
   }
 
   onRemove() {
-    this.get('frames').reset();
+    this.getFrames().reset();
   }
 
   getFrames(): Frames {
@@ -84,7 +84,6 @@ export default class Page extends Model {
    * const mainFrame = page.getMainFrame();
    */
   getMainFrame(): Frame {
-    //@ts-ignore
     return this.getFrames().at(0);
   }
 

@@ -1,5 +1,5 @@
 import Backbone from 'backbone';
-import Sorter from '../../../src/utils/Sorter.js';
+import Sorter from 'utils/Sorter';
 import ComponentTextView from 'dom_components/view/ComponentTextView';
 import Component from 'dom_components/model/Component';
 const $ = Backbone.$;

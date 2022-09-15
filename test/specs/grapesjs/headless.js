@@ -88,5 +88,45 @@ describe('GrapesJS Headless', () => {
       expect(editor.getHtml()).toBe(fullHtml);
       expect(editor.getCss()).toBe(styleStr);
     });
+
+    test('loadProjectData with different components', () => {
+      editor.loadProjectData({
+        pages: [
+          {
+            frames: [
+              {
+                component: {
+                  type: 'wrapper',
+                  attributes: { id: 'wrapper-id' },
+                  components: [
+                    {
+                      type: 'text',
+                      attributes: { id: 'text-id' },
+                      components: [{ type: 'textnode', content: 'Hello world!' }],
+                    },
+                    {
+                      type: 'image',
+                      attributes: { id: 'image-id' },
+                    },
+                    {
+                      type: 'video',
+                      attributes: { id: 'video-id' },
+                    },
+                    {
+                      type: 'map',
+                      attributes: { id: 'map-id' },
+                    },
+                  ],
+                },
+              },
+            ],
+            id: 'page-id',
+          },
+        ],
+      });
+
+      expect(editor.getHtml()).toBeDefined();
+      expect(editor.getCss()).toBeDefined();
+    });
   });
 });

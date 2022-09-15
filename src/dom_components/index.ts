@@ -52,15 +52,7 @@
  *
  * @module Components
  */
-import {
-  isEmpty,
-  isObject,
-  isArray,
-  isFunction,
-  isString,
-  result,
-  debounce,
-} from 'underscore';
+import { isEmpty, isObject, isArray, isFunction, isString, result, debounce } from 'underscore';
 import defaults from './config/config';
 import Component, { keyUpdate, keyUpdateInside } from './model/Component';
 import Components from './model/Components';
@@ -260,12 +252,8 @@ export default class ComponentManager extends ItemManagerModule {
       em.on('change:componentHovered', this.componentHovered, this);
 
       const selected = em.get('selected');
-      em.listenTo(selected, 'add', (sel, c, opts) =>
-        this.selectAdd(selected.getComponent(sel), opts)
-      );
-      em.listenTo(selected, 'remove', (sel, c, opts) =>
-        this.selectRemove(selected.getComponent(sel), opts)
-      );
+      em.listenTo(selected, 'add', (sel, c, opts) => this.selectAdd(selected.getComponent(sel), opts));
+      em.listenTo(selected, 'remove', (sel, c, opts) => this.selectRemove(selected.getComponent(sel), opts));
     }
 
     return this;
@@ -406,7 +394,7 @@ export default class ComponentManager extends ItemManagerModule {
   clear(opts = {}) {
     const components = this.getComponents();
     //@ts-ignore
-    components?.filter(Boolean).forEach((i) => i.remove(opts));
+    components?.filter(Boolean).forEach(i => i.remove(opts));
     return this;
   }
 
@@ -430,23 +418,11 @@ export default class ComponentManager extends ItemManagerModule {
    */
   addType(type: string, methods: any) {
     const { em } = this;
-    const {
-      model = {},
-      view = {},
-      isComponent,
-      extend,
-      extendView,
-      extendFn = [],
-      extendFnView = [],
-    } = methods;
+    const { model = {}, view = {}, isComponent, extend, extendView, extendFn = [], extendFnView = [] } = methods;
     const compType = this.getType(type);
     const extendType = this.getType(extend);
     const extendViewType = this.getType(extendView);
-    const typeToExtend = extendType
-      ? extendType
-      : compType
-      ? compType
-      : this.getType('default');
+    const typeToExtend = extendType ? extendType : compType ? compType : this.getType('default');
     const modelToExt = typeToExtend.model;
     const viewToExt = extendViewType ? extendViewType.view : typeToExtend.view;
 
@@ -466,22 +442,23 @@ export default class ComponentManager extends ItemManagerModule {
 
     // If the model/view is a simple object I need to extend it
     if (typeof model === 'object') {
+      const defaults = result(model, 'defaults');
+      delete model.defaults;
       methods.model = modelToExt.extend(
         {
           ...model,
           ...getExtendedObj(extendFn, model, modelToExt),
-          defaults: {
-            ...(result(modelToExt.prototype, 'defaults') || {}),
-            ...(result(model, 'defaults') || {}),
-          },
         },
         {
-          isComponent:
-            compType && !extendType && !isComponent
-              ? modelToExt.isComponent
-              : isComponent || (() => 0),
+          isComponent: compType && !extendType && !isComponent ? modelToExt.isComponent : isComponent || (() => 0),
         }
       );
+      Object.defineProperty(methods.model.prototype, 'defaults', {
+        value: {
+          ...(result(modelToExt.prototype, 'defaults') || {}),
+          ...(defaults || {}),
+        },
+      });
     }
 
     if (typeof view === 'object') {
@@ -552,9 +529,7 @@ export default class ComponentManager extends ItemManagerModule {
       component.set({
         status: 'selected',
       });
-      ['component:selected', 'component:toggled'].forEach((event) =>
-        this.em.trigger(event, component, opts)
-      );
+      ['component:selected', 'component:toggled'].forEach(event => this.em.trigger(event, component, opts));
     }
   }
 
@@ -565,9 +540,7 @@ export default class ComponentManager extends ItemManagerModule {
         status: '',
         state: '',
       });
-      ['component:deselected', 'component:toggled'].forEach((event) =>
-        this.em.trigger(event, component, opts)
-      );
+      ['component:deselected', 'component:toggled'].forEach(event => this.em.trigger(event, component, opts));
     }
   }
 
@@ -634,7 +607,7 @@ export default class ComponentManager extends ItemManagerModule {
       source: null,
     };
 
-    if (!source) return result;
+    if (!source || !target) return result;
 
     //@ts-ignore
     let srcModel = source.toHTML ? source : null;
@@ -668,11 +641,7 @@ export default class ComponentManager extends ItemManagerModule {
     if (isFunction(droppable)) {
       droppable = !!droppable(srcModel, target, at);
     } else {
-      if (
-        droppable === false &&
-        target.isInstanceOf('text') &&
-        srcModel.get('textable')
-      ) {
+      if (droppable === false && target.isInstanceOf('text') && srcModel.get('textable')) {
         droppable = true;
       } else {
         const el = srcModel.getEl();
@@ -681,7 +650,10 @@ export default class ComponentManager extends ItemManagerModule {
       }
     }
 
-    if (!droppable) return { ...result, reason: 2 };
+    // Ensure the target is not inside the source
+    const isTargetInside = [target].concat(target.parents()).indexOf(srcModel) > -1;
+
+    if (!droppable || isTargetInside) return { ...result, reason: 2 };
 
     return { ...result, result: true };
   }
@@ -696,8 +668,8 @@ export default class ComponentManager extends ItemManagerModule {
 
   destroy() {
     const all = this.allById();
-    Object.keys(all).forEach((id) => all[id] && all[id].remove());
+    Object.keys(all).forEach(id => all[id] && all[id].remove());
     this.componentView?.remove();
-    [this.em, this.componentsById, this.componentView].forEach((i) => (i = {}));
+    [this.em, this.componentsById, this.componentView].forEach(i => (i = {}));
   }
 }

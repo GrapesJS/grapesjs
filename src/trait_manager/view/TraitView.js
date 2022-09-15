@@ -6,7 +6,6 @@ const $ = Backbone.$;
 
 export default class TraitView extends Backbone.View {
   events = {};
-  // protected eventCapture = ['change'];
 
   appendInput = true;
 

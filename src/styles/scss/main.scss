@@ -1,5 +1,4 @@
 /* stylelint-disable */
-@use 'sass:math';
 @import "codemirror/lib/codemirror";
 @import "codemirror/theme/hopscotch";
 
@@ -262,19 +261,6 @@ $colorsAll: (one, $primaryColor),
  	@extend .no-select;
 }
 
-.#{$cv-prefix}canvas .#{$comp-prefix}selected{//TODO
-	outline: 3px solid $colorBlue !important;
-}
-
-*.#{$com-prefix}hover, div.#{$com-prefix}hover { outline: 1px solid $colorBlue; }
-
-*.#{$com-prefix}hover-delete, div.#{$com-prefix}hover-delete{
-	outline: 2px solid $colorRed;
-  	@include opacity(0.50);
-}
-*.#{$com-prefix}hover-move, div.#{$com-prefix}hover-move{
-	outline: 3px solid $colorYell;
-}
 .#{$com-prefix}badge, .#{$app-prefix}badge{
 	pointer-events: none;
 	background-color: $colorBlue;
@@ -284,10 +270,6 @@ $colorsAll: (one, $primaryColor),
 	font-size: 12px;
   outline: none;
   display: none;
-}
-.#{$com-prefix}badge-red{
-	@extend .#{$com-prefix}badge;
-	background-color: $colorRed;
 }
 .#{$app-prefix}badge-warning{
 	background-color: $colorYell;
@@ -340,25 +322,6 @@ $colorsAll: (one, $primaryColor),
 @import 'gjs_panels';
 
 /***********  Components *************/
-
-.#{$comp-prefix}image-placeholder {
-	display:	block;
-	background-color: #f5f5f5;
-	color: 	$fontColorDk;
-  height: $imageCompDim;
-  width: $imageCompDim;
-	line-height: $imageCompDim;
-	outline: 3px solid $colorYell;
-	outline-offset: -3px;
-	text-align: center;
-	font-size: math.div($imageCompDim, 3);
-	cursor: pointer;
-
-  	&.fa-picture-o::after{
-		content:  "\f03e";
-	}
-}
-
 
 @import "gjs_inputs";
 

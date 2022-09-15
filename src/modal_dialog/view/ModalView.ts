@@ -1,7 +1,8 @@
-import { View } from '../../common';
+import { View } from '../../abstract';
+import Modal from '../model/Modal';
 
-export default class ModalView extends View {
-  template({ pfx, ppfx, content, title }) {
+export default class ModalView extends View<Modal> {
+  template({ pfx, ppfx, content, title }: any) {
     return `<div class="${pfx}dialog ${ppfx}one-bg ${ppfx}two-color">
       <div class="${pfx}header">
         <div class="${pfx}title">${title}</div>
@@ -22,19 +23,19 @@ export default class ModalView extends View {
     };
   }
 
-  initialize(o) {
+  $title?: JQuery<HTMLElement>;
+  $content?: JQuery<HTMLElement>;
+  $collector?: JQuery<HTMLElement>;
+
+  constructor(o: any) {
+    super(o);
     const model = this.model;
-    const config = o.config || {};
-    const pfx = config.stylePrefix || '';
-    this.config = config;
-    this.pfx = pfx;
-    this.ppfx = config.pStylePrefix || '';
     this.listenTo(model, 'change:open', this.updateOpen);
     this.listenTo(model, 'change:title', this.updateTitle);
     this.listenTo(model, 'change:content', this.updateContent);
   }
 
-  onClick(e) {
+  onClick(e: Event) {
     const bkd = this.config.backdrop;
     bkd && e.target === this.el && this.hide();
   }
@@ -52,7 +53,6 @@ export default class ModalView extends View {
   /**
    * Returns content element
    * @return {HTMLElement}
-   * @private
    */
   getContent() {
     const pfx = this.pfx;
@@ -69,7 +69,7 @@ export default class ModalView extends View {
    * @return {HTMLElement}
    * @private
    */
-  getTitle(opts = {}) {
+  getTitle(opts: any = {}) {
     if (!this.$title) this.$title = this.$el.find('.' + this.pfx + 'title');
     return opts.$ ? this.$title : this.$title.get(0);
   }
@@ -93,6 +93,7 @@ export default class ModalView extends View {
    * */
   updateTitle() {
     const title = this.getTitle({ $: true });
+    //@ts-ignore
     title && title.empty().append(this.model.get('title'));
   }
 
@@ -120,8 +121,9 @@ export default class ModalView extends View {
     this.model.open();
   }
 
-  updateAttr(attr) {
+  updateAttr(attr?: any) {
     const { pfx, $el, el } = this;
+    //@ts-ignore
     const currAttr = [].slice.call(el.attributes).map(i => i.name);
     $el.removeAttr(currAttr.join(' '));
     $el.attr({

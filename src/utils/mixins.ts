@@ -23,7 +23,7 @@ export const getUiClass = (em, defCls) => {
  * Import styles asynchronously
  * @param {String|Array<String>} styles
  */
-const appendStyles = (styles: {}, opts: { unique?: boolean, prepand?: boolean } = {}) => {
+const appendStyles = (styles: {}, opts: { unique?: boolean; prepand?: boolean } = {}) => {
   const stls = isArray(styles) ? [...styles] : [styles];
 
   if (stls.length) {
@@ -87,7 +87,12 @@ const shallowDiff = (objOrig: Record<string, any>, objNew: Record<string, any>) 
   return result;
 };
 
-const on = (el: HTMLElement | HTMLElement[], ev: string, fn: () => void, opts?: AddEventListenerOptions) => {
+const on = (
+  el: HTMLElement | Window | Document | (Window | HTMLElement | Document)[],
+  ev: string,
+  fn: (ev: Event) => void,
+  opts?: AddEventListenerOptions
+) => {
   const evs = ev.split(/\s+/);
   el = el instanceof Array ? el : [el];
 
@@ -96,7 +101,12 @@ const on = (el: HTMLElement | HTMLElement[], ev: string, fn: () => void, opts?: 
   }
 };
 
-const off = (el: HTMLElement | HTMLElement[], ev: string, fn: () => void, opts?: AddEventListenerOptions) => {
+const off = (
+  el: HTMLElement | Window | Document | (Window | HTMLElement | Document)[],
+  ev: string,
+  fn: (ev: Event) => void,
+  opts?: AddEventListenerOptions
+) => {
   const evs = ev.split(/\s+/);
   el = el instanceof Array ? el : [el];
 
@@ -140,7 +150,7 @@ const hasDnd = (em: any) => {
 const getElement = (el: HTMLElement) => {
   if (isElement(el) || isTextNode(el)) {
     return el;
-  // @ts-ignore
+    // @ts-ignore
   } else if (el && el.getEl) {
     // @ts-ignore
     return el.getEl();
@@ -220,7 +230,7 @@ const getModel = (el: any, $?: any) => {
   return model;
 };
 
-const getElRect = (el: HTMLElement) => {
+const getElRect = (el?: HTMLElement) => {
   const def = {
     top: 0,
     left: 0,
@@ -243,11 +253,11 @@ const getElRect = (el: HTMLElement) => {
 /**
  * Get cross-device pointer event
  * @param  {Event} ev
- * @return {Event}
+ * @return {PointerEvent}
  */
 const getPointerEvent = (ev: Event) =>
   // @ts-ignore
-  (ev.touches && ev.touches[0] ? ev.touches[0] : ev);
+  ev.touches && ev.touches[0] ? ev.touches[0] : ev;
 
 /**
  * Get cross-browser keycode
@@ -278,6 +288,22 @@ const createId = (length = 16) => {
     result += chars.charAt(Math.floor(Math.random() * len));
   }
   return result;
+};
+
+export const buildBase64UrlFromSvg = (svg: string) => {
+  if (svg && svg.substr(0, 4) === '<svg') {
+    let base64Str = '';
+
+    if (hasWin()) {
+      base64Str = window.btoa(svg);
+    } else if (typeof Buffer !== 'undefined') {
+      base64Str = Buffer.from(svg, 'utf8').toString('base64');
+    }
+
+    return base64Str ? `data:image/svg+xml;base64,${base64Str}` : svg;
+  }
+
+  return svg;
 };
 
 export {

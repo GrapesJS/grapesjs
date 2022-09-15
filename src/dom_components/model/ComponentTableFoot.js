@@ -3,15 +3,14 @@ import { toLowerCase } from 'utils/mixins';
 
 const type = 'tfoot';
 
-export default ComponentTableBody.extend(
-  {
-    defaults: {
-      ...ComponentTableBody.prototype.defaults,
+export default class ComponentTableFoot extends ComponentTableBody {
+  get defaults() {
+    return {
+      ...super.defaults,
       type,
       tagName: type,
-    },
-  },
-  {
-    isComponent: el => toLowerCase(el.tagName) === type,
+    };
   }
-);
+}
+
+ComponentTableFoot.isComponent = el => toLowerCase(el.tagName) === type;

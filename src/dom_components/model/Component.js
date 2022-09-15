@@ -94,6 +94,51 @@ export const keyUpdateInside = `${keyUpdate}-inside`;
  * @module docsjs.Component
  */
 export default class Component extends StyleableModel {
+  get defaults() {
+    return {
+      tagName: 'div',
+      type: '',
+      name: '',
+      removable: true,
+      draggable: true,
+      droppable: true,
+      badgable: true,
+      stylable: true,
+      'stylable-require': '',
+      'style-signature': '',
+      unstylable: '',
+      highlightable: true,
+      copyable: true,
+      resizable: false,
+      editable: false,
+      layerable: true,
+      selectable: true,
+      hoverable: true,
+      locked: false,
+      void: false,
+      state: '', // Indicates if the component is in some CSS state like ':hover', ':active', etc.
+      status: '', // State, eg. 'selected'
+      content: '',
+      icon: '',
+      style: '',
+      styles: '', // Component related styles
+      classes: '', // Array of classes
+      script: '',
+      'script-props': '',
+      'script-export': '',
+      attributes: '',
+      traits: ['id', 'title'],
+      propagate: '',
+      dmode: '',
+      toolbar: null,
+      [keySymbol]: 0,
+      [keySymbols]: 0,
+      [keySymbolOvrd]: 0,
+      _undo: true,
+      _undoexc: ['status', 'open'],
+    };
+  }
+
   /**
    * Hook method, called once the model is created
    */
@@ -1051,6 +1096,15 @@ export default class Component extends StyleableModel {
   }
 
   /**
+   * Return all parents of the component.
+   * @returns {Array<Component>}
+   */
+  parents() {
+    const parent = this.parent();
+    return parent ? [parent].concat(parent.parents()) : [];
+  }
+
+  /**
    * Script updated
    * @private
    */
@@ -1703,8 +1757,21 @@ export default class Component extends StyleableModel {
    * editor.getSelected().move(dest, { at: 0 });
    */
   move(component, opts = {}) {
-    this.remove({ temporary: 1 });
-    component && component.append(this, opts);
+    if (component) {
+      const { at } = opts;
+      const index = this.index();
+      const sameParent = component === this.parent();
+      const sameIndex = index === at || index === at - 1;
+
+      if (!sameParent || !sameIndex) {
+        if (sameParent && at && at > index) {
+          opts.at = at - 1;
+        }
+        this.remove({ temporary: 1 });
+        component.append(this, opts);
+        this.emitUpdate();
+      }
+    }
     return this;
   }
 
@@ -1815,6 +1882,10 @@ export default class Component extends StyleableModel {
     selector && selector.set({ name: id, label: id });
   }
 }
+
+Component.getDefaults = function () {
+  return result(this.prototype, 'defaults');
+};
 
 /**
  * Detect if the passed element is a valid component.
@@ -1942,51 +2013,4 @@ Component.checkId = (components, styles = [], list = {}, opts = {}) => {
 
     components && Component.checkId(components, styles, list, opts);
   });
-};
-
-Component.getDefaults = function () {
-  return result(this.prototype, 'defaults');
-};
-
-Component.prototype.defaults = {
-  tagName: 'div',
-  type: '',
-  name: '',
-  removable: true,
-  draggable: true,
-  droppable: true,
-  badgable: true,
-  stylable: true,
-  'stylable-require': '',
-  'style-signature': '',
-  unstylable: '',
-  highlightable: true,
-  copyable: true,
-  resizable: false,
-  editable: false,
-  layerable: true,
-  selectable: true,
-  hoverable: true,
-  locked: false,
-  void: false,
-  state: '', // Indicates if the component is in some CSS state like ':hover', ':active', etc.
-  status: '', // State, eg. 'selected'
-  content: '',
-  icon: '',
-  style: '',
-  styles: '', // Component related styles
-  classes: '', // Array of classes
-  script: '',
-  'script-props': '',
-  'script-export': '',
-  attributes: '',
-  traits: ['id', 'title'],
-  propagate: '',
-  dmode: '',
-  toolbar: null,
-  [keySymbol]: 0,
-  [keySymbols]: 0,
-  [keySymbolOvrd]: 0,
-  _undo: true,
-  _undoexc: ['status', 'open'],
 };

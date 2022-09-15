@@ -11,36 +11,31 @@ import Selectors from '../model/Selectors';
 
 export default class ClassTagsView extends View<Selector> {
   template({ labelInfo, labelHead, iconSync, iconAdd, pfx, ppfx }: any) {
-    return `
-    <div id="${pfx}up" class="${pfx}header">
-      <div id="${pfx}label" class="${pfx}header-label">${labelHead}</div>
-      <div id="${pfx}status-c" class="${pfx}header-status">
-        <span id="${pfx}input-c" data-states-c>
-          <div class="${ppfx}field ${ppfx}select">
-            <span id="${ppfx}input-holder">
-              <select id="${pfx}states" data-states></select>
-            </span>
-            <div class="${ppfx}sel-arrow">
-              <div class="${ppfx}d-s-arrow"></div>
+    return html` <div id="${pfx}up" class="${pfx}header">
+        <div id="${pfx}label" class="${pfx}header-label">${labelHead}</div>
+        <div id="${pfx}status-c" class="${pfx}header-status">
+          <span id="${pfx}input-c" data-states-c>
+            <div class="${ppfx}field ${ppfx}select">
+              <span id="${ppfx}input-holder">
+                <select id="${pfx}states" data-states></select>
+              </span>
+              <div class="${ppfx}sel-arrow">
+                <div class="${ppfx}d-s-arrow"></div>
+              </div>
             </div>
-          </div>
-        </span>
+          </span>
+        </div>
       </div>
-    </div>
-    <div id="${pfx}tags-field" class="${ppfx}field">
-      <div id="${pfx}tags-c" data-selectors></div>
-      <input id="${pfx}new" data-input/>
-      <span id="${pfx}add-tag" class="${pfx}tags-btn ${pfx}tags-btn__add" data-add>
-        ${iconAdd}
-      </span>
-      <span class="${pfx}tags-btn ${pfx}tags-btn__sync" style="display: none" data-sync-style>
-        ${iconSync}
-      </span>
-    </div>
-    <div class="${pfx}sels-info">
-      <div class="${pfx}label-sel">${labelInfo}:</div>
-      <div class="${pfx}sels" data-selected></div>
-    </div>`;
+      <div id="${pfx}tags-field" class="${ppfx}field">
+        <div id="${pfx}tags-c" data-selectors></div>
+        <input id="${pfx}new" data-input />
+        <span id="${pfx}add-tag" class="${pfx}tags-btn ${pfx}tags-btn__add" data-add> $${iconAdd} </span>
+        <span class="${pfx}tags-btn ${pfx}tags-btn__sync" style="display: none" data-sync-style> $${iconSync} </span>
+      </div>
+      <div class="${pfx}sels-info">
+        <div class="${pfx}label-sel">${labelInfo}:</div>
+        <div class="${pfx}sels" data-selected></div>
+      </div>`;
   }
 
   events() {

@@ -1,4 +1,4 @@
-import { View } from '../../abstract';
+import { View } from '../../common';
 import Component, { eventDrag } from '../../dom_components/model/Component';
 import ItemView from './ItemView';
 

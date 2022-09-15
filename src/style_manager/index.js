@@ -143,8 +143,8 @@ export default () => {
 
       // Triggers for the selection refresh and properties
       const ev = 'component:toggled component:update:classes change:state change:device frame:resized selector:type';
-      const upAll = debounce(() => this.__upSel());
-      model.listenTo(em, ev, upAll);
+      this.upAll = debounce(() => this.__upSel());
+      model.listenTo(em, ev, this.upAll);
       // Clear state target on any component selection change, without debounce (#4208)
       model.listenTo(em, 'component:toggled', this.__clearStateTarget);
 
@@ -781,7 +781,8 @@ export default () => {
         coll.stopListening();
       });
       SectView && SectView.remove();
-      [properties, sectors, SectView].forEach(i => (i = {}));
+      this.model.stopListening();
+      this.upAll.cancel();
       this.em = {};
       this.config = {};
       this.builtIn = {};

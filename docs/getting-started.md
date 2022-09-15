@@ -609,38 +609,40 @@ Let's see how the default options work:
 grapesjs.init({
     // ...
     storageManager: {
-      id: 'gjs-',             // Prefix identifier that will be used inside storing and loading
-      type: 'local',          // Type of the storage
-      autosave: true,         // Store data automatically
-      autoload: true,         // Autoload stored data on init
-      stepsBeforeSave: 1,     // If autosave enabled, indicates how many changes are necessary before store method is triggered
-      storeComponents: true,  // Enable/Disable storing of components in JSON format
-      storeStyles: true,      // Enable/Disable storing of rules in JSON format
-      storeHtml: true,        // Enable/Disable storing of components as HTML string
-      storeCss: true,         // Enable/Disable storing of rules as CSS string
+      type: 'local', // Type of the storage, available: 'local' | 'remote'
+      autosave: true, // Store data automatically
+      autoload: true, // Autoload stored data on init
+      stepsBeforeSave: 1, // If autosave enabled, indicates how many changes are necessary before store method is triggered
+      options: {
+        local: { // Options for the `local` type
+          key: 'gjsProject', // The key for the local storage
+        },
+      }
     }
 });
 ```
 
-It is worth noting that the default `id` parameter adds a prefix for all keys to store. If you check the `localStorage` inside the devtool panel you'll see something like `{ 'gjs-components': '....' ...}` this way it lessens the risk of collisions.
-
-Let's look at the configuration required to setup the remote storage:
+Let's take a look at the configuration required to setup the remote storage:
 
 ```js
 grapesjs.init({
     // ...
     storageManager: {
       type: 'remote',
+      // ...
       stepsBeforeSave: 10,
-      urlStore: 'http://store/endpoint',
-      urlLoad: 'http://load/endpoint',
-      params: {}, // Custom parameters to pass with the remote storage request, eg. CSRF token
-      headers: {}, // Custom headers for the remote storage request
+      options: {
+        remote: {
+          headers: {}, // Custom headers for the remote storage request
+          urlStore: 'https://your-server/endpoint/store', // Endpoint URL where to store data project
+          urlLoad: 'https://your-server/endpoint/load', // Endpoint URL where to load data project
+        }
+      },
     }
 });
 ```
-As you might noticed, we've left some default options unchanged: Increased changes necessary for autosave triggering and passed remote endpoints.
-If you prefer you could also disable the autosaving and you can do so using a custom command:
+As you might noticed, we've left some default options unchanged, increased changes necessary for autosave triggering and passed remote endpoints.
+If you prefer you could also disable the autosaving and use a custom command to trigger the store:
 
 ```js
 // ...
