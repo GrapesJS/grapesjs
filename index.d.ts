@@ -1665,6 +1665,12 @@ declare namespace grapesjs {
     self(): Block;
   }
 
+  interface Command {
+    run: (editor: Editor, sender?: any, opts?: Record<string, any>) => any;
+    stop?: (editor: Editor, sender?: any, opts?: Record<string, any>) => any;
+    [key: string]: unknown;
+  }
+
   /**
    * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/commands/config/config.js)
    * ```js
@@ -1720,14 +1726,9 @@ declare namespace grapesjs {
      * // As a function
      * commands.add('myCommand2', editor => { ... });
      */
-    add(
+     add<F, S>(
       id: string,
-      command: ((editor: Editor, sender?: any, opts?: Record<string, any>) => any) |
-        {
-          run?: (editor: Editor, sender?: any, opts?: Record<string, any>) => any;
-          stop?: (editor: Editor, sender?: any, opts?: Record<string, any>) => any;
-          [key: string]: unknown;
-        }
+      command: Command['run'] | (Command & S & ThisType<Command & S>),
     ): void;
     /**
      * Get command by ID
