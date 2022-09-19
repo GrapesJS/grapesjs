@@ -108,8 +108,8 @@ export abstract class ItemManagerModule<
   protected all: TCollection;
   view?: View;
 
-  constructor(em: EditorModel, moduleName: string, all: any, events?: any) {
-    super(em, moduleName);
+  constructor(em: EditorModel, moduleName: string, all: any, events?: any, defaults?: TConf) {
+    super(em, moduleName, defaults);
     this.all = all;
     this.events = events;
     this.__initListen();
