@@ -257,7 +257,7 @@ declare namespace grapesjs {
     layerManager?: LayerManagerConfig;
   }
 
-  export interface AssetManagerConfig {
+  interface AssetManagerConfig {
     /**
      * Default assets.
      * @example
