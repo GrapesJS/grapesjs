@@ -1,15 +1,25 @@
 import { View } from '../../common';
+import EditorModel from '../../editor/model/Editor';
+import { AssetManagerConfig } from '../config/config';
+import Asset from '../model/Asset';
 
 export default class AssetsView extends View {
-  template({ pfx, ppfx, em }) {
+  options: any;
+  config: AssetManagerConfig;
+  pfx: string;
+  ppfx: string;
+  em: EditorModel;
+  inputUrl?: HTMLInputElement | null;
+
+  template({ pfx, ppfx, em }: AssetsView) {
     let form = '';
     if (this.config.showUrlInput) {
       form = `
           <form class="${pfx}add-asset">
             <div class="${ppfx}field ${pfx}add-field">
-              <input placeholder="${em && em.t('assetManager.inputPlh')}"/>
+              <input placeholder="${em?.t('assetManager.inputPlh')}"/>
             </div>
-            <button class="${ppfx}btn-prim">${em && em.t('assetManager.addButton')}</button>
+            <button class="${ppfx}btn-prim">${em?.t('assetManager.addButton')}</button>
             <div style="clear:both"></div>
           </form>
       `;
@@ -26,11 +36,14 @@ export default class AssetsView extends View {
     `;
   }
 
-  initialize(o) {
+  constructor(o: any = {}) {
+    super(o);
     this.options = o;
     this.config = o.config;
     this.pfx = this.config.stylePrefix || '';
+    // @ts-ignore
     this.ppfx = this.config.pStylePrefix || '';
+    // @ts-ignore
     this.em = this.config.em;
     const coll = this.collection;
     this.listenTo(coll, 'reset', this.renderAssets);
@@ -45,8 +58,8 @@ export default class AssetsView extends View {
    * @return {this}
    * @private
    */
-  handleSubmit(e) {
-    e.preventDefault();
+  handleSubmit(ev: Event) {
+    ev.preventDefault();
     const input = this.getAddInput();
     const url = input && input.value.trim();
     const handleAdd = this.config.handleAdd;
@@ -56,7 +69,11 @@ export default class AssetsView extends View {
     }
 
     input.value = '';
-    this.getAssetsEl().scrollTop = 0;
+    const assetsEl = this.getAssetsEl();
+
+    if (assetsEl) {
+      assetsEl.scrollTop = 0;
+    }
 
     if (handleAdd) {
       handleAdd.bind(this)(url);
@@ -81,7 +98,9 @@ export default class AssetsView extends View {
    * @private
    */
   getAddInput() {
-    if (!this.inputUrl || !this.inputUrl.value) this.inputUrl = this.el.querySelector(`.${this.pfx}add-asset input`);
+    if (!this.inputUrl || !this.inputUrl.value) {
+      this.inputUrl = this.el.querySelector(`.${this.pfx}add-asset input`);
+    }
     return this.inputUrl;
   }
 
@@ -90,7 +109,7 @@ export default class AssetsView extends View {
    * @param {Asset} model Removed asset
    * @private
    */
-  removedAsset(model) {
+  removedAsset(model: Asset) {
     if (!this.collection.length) {
       this.toggleNoAssets();
     }
@@ -100,9 +119,9 @@ export default class AssetsView extends View {
    * Add asset to collection
    * @private
    * */
-  addToAsset(model) {
+  addToAsset(model: Asset) {
     if (this.collection.length == 1) {
-      this.toggleNoAssets(1);
+      this.toggleNoAssets(true);
     }
     this.addAsset(model);
   }
@@ -114,10 +133,11 @@ export default class AssetsView extends View {
    * @return Object Object created
    * @private
    * */
-  addAsset(model, fragmentEl = null) {
+  addAsset(model: Asset, fragmentEl: DocumentFragment | null = null) {
     const fragment = fragmentEl;
     const collection = this.collection;
     const config = this.config;
+    // @ts-ignore
     const rendered = new model.typeView({
       model,
       collection,
@@ -141,7 +161,7 @@ export default class AssetsView extends View {
    * @param {Boolean} hide
    * @private
    */
-  toggleNoAssets(hide) {
+  toggleNoAssets(hide: boolean = false) {
     const assetsEl = this.$el.find(`.${this.pfx}assets`);
 
     if (hide) {
@@ -165,7 +185,7 @@ export default class AssetsView extends View {
     const fragment = document.createDocumentFragment();
     const assets = this.$el.find(`.${this.pfx}assets`);
     assets.empty();
-    this.toggleNoAssets(this.collection.length);
+    this.toggleNoAssets(!!this.collection.length);
     this.collection.each(model => this.addAsset(model, fragment));
     assets.append(fragment);
   }
@@ -181,5 +201,6 @@ export default class AssetsView extends View {
 }
 
 AssetsView.prototype.events = {
+  // @ts-ignore
   submit: 'handleSubmit',
 };
