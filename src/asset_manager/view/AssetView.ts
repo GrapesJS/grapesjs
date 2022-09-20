@@ -10,7 +10,7 @@ export type AssetViewProps = Backbone.ViewOptions<Asset> & {
   config: AssetManagerConfig;
 };
 
-export default class AssetView extends View<Asset> {
+export default class AssetView<TModel extends Asset = Asset> extends View<TModel> {
   pfx: string;
   ppfx: string;
   options: AssetViewProps;
@@ -19,7 +19,7 @@ export default class AssetView extends View<Asset> {
   init?: (opt: AssetViewProps) => void;
 
   constructor(opt: AssetViewProps) {
-    super(opt);
+    super(opt as any);
     this.options = opt;
     this.collection = opt.collection;
     const config = opt.config || {};
