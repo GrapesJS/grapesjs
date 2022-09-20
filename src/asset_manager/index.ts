@@ -45,7 +45,6 @@
 
 import { debounce, isFunction } from 'underscore';
 import { ItemManagerModule } from '../abstract/Module';
-import { Module } from '../common';
 import EditorModel from '../editor/model/Editor';
 import defaults, { AssetManagerConfig } from './config/config';
 import Asset from './model/Asset';
@@ -88,7 +87,6 @@ const events = {
 // TODO
 type AssetProps = Record<string, any>;
 
-// @ts-ignore TODO fix assets
 export default class AssetManager extends ItemManagerModule<AssetManagerConfig, Assets> {
   storageKey = 'assets';
   Asset = Asset;
@@ -106,19 +104,14 @@ export default class AssetManager extends ItemManagerModule<AssetManagerConfig, 
   constructor(em: EditorModel) {
     // @ts-ignore TODO fix assets
     super(em, 'AssetManager', new Assets([], em), events, defaults);
-    const { all } = this;
+    const { all, config } = this;
     // @ts-ignore TODO fix assets
     this.assetsVis = new Assets([]);
-
-    // TODO check
-    // const ppfx = c.pStylePrefix;
-    // const { em } = c;
-    // this.config = c;
-    // this.em = em;
-
-    // if (ppfx) {
-    //   c.stylePrefix = ppfx + c.stylePrefix;
-    // }
+    // @ts-ignore
+    const ppfx = config.pStylePrefix;
+    if (ppfx) {
+      config.stylePrefix = `${ppfx}${config.stylePrefix}`;
+    }
 
     // Setup the sync between the global and public collections
     all.on('add', (model: Asset) => this.getAllVisible().add(model));
@@ -328,7 +321,6 @@ export default class AssetManager extends ItemManagerModule<AssetManagerConfig, 
     if (!this.am) {
       const obj = this.__viewParams();
       obj.fu = this.FileUploader();
-      // @ts-ignore TODO check
       this.am = new AssetsView({ ...obj });
       this.am.render();
     }
@@ -393,7 +385,6 @@ export default class AssetManager extends ItemManagerModule<AssetManagerConfig, 
 
   FileUploader() {
     if (!this.fu) {
-      // @ts-ignore TODO check
       this.fu = new FileUpload(this.__viewParams());
     }
     return this.fu;
