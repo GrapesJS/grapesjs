@@ -65,8 +65,7 @@ export default class FileUploaderView extends View {
     if (uploadFile) {
       this.uploadFile = uploadFile.bind(this);
     } else if (!c.upload && c.embedAsBase64) {
-      // @ts-ignore
-      this.uploadFile = this.constructor.embedAsBase64;
+      this.uploadFile = FileUploaderView.embedAsBase64;
     }
 
     this.delegateEvents();
@@ -290,116 +289,122 @@ export default class FileUploaderView extends View {
     $el.attr('class', pfx + 'file-uploader');
     return this;
   }
-}
 
-// @ts-ignore
-FileUploaderView.embedAsBase64 = function (e, clb) {
-  // List files dropped
-  const files = e.dataTransfer ? e.dataTransfer.files : e.target.files;
-  const response: Record<string, any> = { data: [] };
-
-  // Unlikely, widely supported now
-  if (!FileReader) {
+  static embedAsBase64(e: DragEvent, clb?: () => void) {
+    // List files dropped
     // @ts-ignore
-    this.onUploadError(new Error('Unsupported platform, FileReader is not defined'));
-    return;
-  }
+    const files = e.dataTransfer ? e.dataTransfer.files : e.target.files;
+    const response: Record<string, any> = { data: [] };
 
-  const promises = [];
-  const mimeTypeMatcher = /^(.+)\/(.+)$/;
-
-  for (const file of files) {
-    // For each file a reader (to read the base64 URL)
-    // and a promise (to track and merge results and errors)
-    const promise = new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.addEventListener('load', event => {
-        let type;
-        const name = file.name;
-
-        // Try to find the MIME type of the file.
-        const match = mimeTypeMatcher.exec(file.type);
-        if (match) {
-          type = match[1]; // The first part in the MIME, "image" in image/png
-        } else {
-          type = file.type;
-        }
-
-        /*
-      // Show local video files, http://jsfiddle.net/dsbonev/cCCZ2/embedded/result,js,html,css/
-      var URL = window.URL || window.webkitURL
-      var file = this.files[0]
-      var type = file.type
-      var videoNode = document.createElement('video');
-      var canPlay = videoNode.canPlayType(type) // can use also for 'audio' types
-      if (canPlay === '') canPlay = 'no'
-      var message = 'Can play type "' + type + '": ' + canPlay
-      var isError = canPlay === 'no'
-      displayMessage(message, isError)
-
-      if (isError) {
-        return
-      }
-
-      var fileURL = URL.createObjectURL(file)
-      videoNode.src = fileURL
-       */
-
-        // If it's an image, try to find its size
-        if (type === 'image') {
-          const data = {
-            src: reader.result,
-            name,
-            type,
-            height: 0,
-            width: 0,
-          };
-
-          const image = new Image();
-          image.addEventListener('error', error => {
-            reject(error);
-          });
-          image.addEventListener('load', () => {
-            data.height = image.height;
-            data.width = image.width;
-            resolve(data);
-          });
-          // @ts-ignore
-          image.src = data.src;
-        } else if (type) {
-          // Not an image, but has a type
-          resolve({
-            src: reader.result,
-            name,
-            type,
-          });
-        } else {
-          // No type found, resolve with the URL only
-          resolve(reader.result);
-        }
-      });
-      reader.addEventListener('error', error => {
-        reject(error);
-      });
-      reader.addEventListener('abort', error => {
-        reject('Aborted');
-      });
-
-      reader.readAsDataURL(file);
+    console.log('has this', {
+      self: this,
+      // @ts-ignore
+      onUploadError: this.onUploadError,
     });
 
-    promises.push(promise);
-  }
-
-  Promise.all(promises).then(
-    data => {
-      response.data = data;
+    // Unlikely, widely supported now
+    if (!FileReader) {
       // @ts-ignore
-      this.onUploadResponse(response, clb);
-    },
-    error => {
-      // @ts-ignore
-      this.onUploadError(error);
+      this.onUploadError(new Error('Unsupported platform, FileReader is not defined'));
+      return;
     }
-  );
-};
+
+    const promises = [];
+    const mimeTypeMatcher = /^(.+)\/(.+)$/;
+
+    for (const file of files) {
+      // For each file a reader (to read the base64 URL)
+      // and a promise (to track and merge results and errors)
+      const promise = new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.addEventListener('load', event => {
+          let type;
+          const name = file.name;
+
+          // Try to find the MIME type of the file.
+          const match = mimeTypeMatcher.exec(file.type);
+          if (match) {
+            type = match[1]; // The first part in the MIME, "image" in image/png
+          } else {
+            type = file.type;
+          }
+
+          /*
+        // Show local video files, http://jsfiddle.net/dsbonev/cCCZ2/embedded/result,js,html,css/
+        var URL = window.URL || window.webkitURL
+        var file = this.files[0]
+        var type = file.type
+        var videoNode = document.createElement('video');
+        var canPlay = videoNode.canPlayType(type) // can use also for 'audio' types
+        if (canPlay === '') canPlay = 'no'
+        var message = 'Can play type "' + type + '": ' + canPlay
+        var isError = canPlay === 'no'
+        displayMessage(message, isError)
+
+        if (isError) {
+          return
+        }
+
+        var fileURL = URL.createObjectURL(file)
+        videoNode.src = fileURL
+         */
+
+          // If it's an image, try to find its size
+          if (type === 'image') {
+            const data = {
+              src: reader.result,
+              name,
+              type,
+              height: 0,
+              width: 0,
+            };
+
+            const image = new Image();
+            image.addEventListener('error', error => {
+              reject(error);
+            });
+            image.addEventListener('load', () => {
+              data.height = image.height;
+              data.width = image.width;
+              resolve(data);
+            });
+            // @ts-ignore
+            image.src = data.src;
+          } else if (type) {
+            // Not an image, but has a type
+            resolve({
+              src: reader.result,
+              name,
+              type,
+            });
+          } else {
+            // No type found, resolve with the URL only
+            resolve(reader.result);
+          }
+        });
+        reader.addEventListener('error', error => {
+          reject(error);
+        });
+        reader.addEventListener('abort', error => {
+          reject('Aborted');
+        });
+
+        reader.readAsDataURL(file);
+      });
+
+      promises.push(promise);
+    }
+
+    Promise.all(promises).then(
+      data => {
+        response.data = data;
+        // @ts-ignore
+        this.onUploadResponse(response, clb);
+      },
+      error => {
+        // @ts-ignore
+        this.onUploadError(error);
+      }
+    );
+  }
+}
