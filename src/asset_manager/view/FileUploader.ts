@@ -1,9 +1,31 @@
 import { View } from '../../common';
+import EditorModel from '../../editor/model/Editor';
 import fetch from '../../utils/fetch';
 import html from '../../utils/html';
+import { AssetManagerConfig } from '../config/config';
+
+type FileUploaderTemplateProps = {
+  pfx: string;
+  title: string;
+  uploadId: string;
+  disabled: boolean;
+  multiUpload: boolean;
+};
 
 export default class FileUploaderView extends View {
-  template({ pfx, title, uploadId, disabled, multiUpload }) {
+  options: any;
+  config: AssetManagerConfig;
+  pfx: string;
+  ppfx: string;
+  em: EditorModel;
+  module: any;
+  target: any;
+  uploadId: string;
+  disabled: boolean;
+  multiUpload: boolean;
+  uploadForm?: HTMLFormElement | null;
+
+  template({ pfx, title, uploadId, disabled, multiUpload }: FileUploaderTemplateProps) {
     return html`
       <form>
         <div id="${pfx}title">${title}</div>
@@ -20,11 +42,13 @@ export default class FileUploaderView extends View {
     `;
   }
 
-  initialize(opts = {}) {
+  constructor(opts: any = {}) {
+    super(opts);
     this.options = opts;
     const c = opts.config || {};
     this.module = opts.module;
     this.config = c;
+    // @ts-ignore
     this.em = this.config.em;
     this.pfx = c.stylePrefix || '';
     this.ppfx = c.pStylePrefix || '';
@@ -32,6 +56,7 @@ export default class FileUploaderView extends View {
     this.uploadId = this.pfx + 'uploadFile';
     this.disabled = c.disableUpload !== undefined ? c.disableUpload : !c.upload && !c.embedAsBase64;
     this.multiUpload = c.multiUpload !== undefined ? c.multiUpload : true;
+    // @ts-ignore TODO check if necessary the dynamic id
     this.events = {
       [`change #${this.uploadId}`]: 'uploadFile',
     };
@@ -40,6 +65,7 @@ export default class FileUploaderView extends View {
     if (uploadFile) {
       this.uploadFile = uploadFile.bind(this);
     } else if (!c.upload && c.embedAsBase64) {
+      // @ts-ignore
       this.uploadFile = this.constructor.embedAsBase64;
     }
 
@@ -60,7 +86,7 @@ export default class FileUploaderView extends View {
    * @param  {Object|string} res End result
    * @private
    */
-  onUploadEnd(res) {
+  onUploadEnd(res: any) {
     const { $el, module } = this;
     module && module.__propEv('asset:upload:end', res);
     const input = $el.find('input');
@@ -72,7 +98,7 @@ export default class FileUploaderView extends View {
    * @param  {Object} err Error
    * @private
    */
-  onUploadError(err) {
+  onUploadError(err: Error) {
     const { module } = this;
     console.error(err);
     this.onUploadEnd(err);
@@ -84,7 +110,7 @@ export default class FileUploaderView extends View {
    * @param  {string} text Response text
    * @private
    */
-  onUploadResponse(text, clb) {
+  onUploadResponse(text: string, clb?: (json: any) => void) {
     const { module, config, target } = this;
     let json;
     try {
@@ -100,7 +126,7 @@ export default class FileUploaderView extends View {
     }
 
     this.onUploadEnd(text);
-    clb && clb(json);
+    clb?.(json);
   }
 
   /**
@@ -109,7 +135,8 @@ export default class FileUploaderView extends View {
    * @return {Promise}
    * @private
    * */
-  uploadFile(e, clb) {
+  uploadFile(e: DragEvent, clb?: () => void) {
+    // @ts-ignore
     const files = e.dataTransfer ? e.dataTransfer.files : e.target.files;
     const { config } = this;
     const { beforeUpload } = config;
@@ -129,12 +156,12 @@ export default class FileUploaderView extends View {
         body.append(`${config.uploadName}[]`, files[i]);
       }
     } else if (files.length) {
-      body.append(config.uploadName, files[0]);
+      body.append(config.uploadName!, files[0]);
     }
 
     var target = this.target;
     const url = config.upload;
-    const headers = config.headers;
+    const headers = config.headers!;
     const reqHead = 'X-Requested-With';
 
     if (typeof headers[reqHead] == 'undefined') {
@@ -151,10 +178,12 @@ export default class FileUploaderView extends View {
       };
       const fetchResult = customFetch
         ? customFetch(url, fetchOpts)
-        : fetch(url, fetchOpts).then(res =>
-            ((res.status / 200) | 0) == 1 ? res.text() : res.text().then(text => Promise.reject(text))
+        : fetch(url, fetchOpts).then((res: any) =>
+            ((res.status / 200) | 0) == 1 ? res.text() : res.text().then((text: string) => Promise.reject(text))
           );
-      return fetchResult.then(text => this.onUploadResponse(text, clb)).catch(err => this.onUploadError(err));
+      return fetchResult
+        .then((text: string) => this.onUploadResponse(text, clb))
+        .catch((err: Error) => this.onUploadError(err));
     }
   }
 
@@ -164,29 +193,31 @@ export default class FileUploaderView extends View {
    * */
   initDrop() {
     var that = this;
+
     if (!this.uploadForm) {
-      this.uploadForm = this.$el.find('form').get(0);
-      if ('draggable' in this.uploadForm) {
-        var uploadFile = this.uploadFile;
+      this.uploadForm = this.$el.find('form').get(0)!;
+      const formEl = this.uploadForm;
+
+      if ('draggable' in formEl) {
         this.uploadForm.ondragover = function () {
-          this.className = that.pfx + 'hover';
+          formEl.className = that.pfx + 'hover';
           return false;
         };
         this.uploadForm.ondragleave = function () {
-          this.className = '';
+          formEl.className = '';
           return false;
         };
-        this.uploadForm.ondrop = function (e) {
-          this.className = '';
-          e.preventDefault();
-          that.uploadFile(e);
+        this.uploadForm.ondrop = function (ev) {
+          formEl.className = '';
+          ev.preventDefault();
+          that.uploadFile(ev);
           return;
         };
       }
     }
   }
 
-  initDropzone(ev) {
+  initDropzone(ev: any) {
     let addedCls = 0;
     const c = this.config;
     const em = ev.model;
@@ -212,7 +243,7 @@ export default class FileUploaderView extends View {
       cleanEditorElCls();
       return false;
     };
-    const onDrop = e => {
+    const onDrop = (e: DragEvent) => {
       cleanEditorElCls();
       e.preventDefault();
       e.stopPropagation();
@@ -261,13 +292,15 @@ export default class FileUploaderView extends View {
   }
 }
 
+// @ts-ignore
 FileUploaderView.embedAsBase64 = function (e, clb) {
   // List files dropped
   const files = e.dataTransfer ? e.dataTransfer.files : e.target.files;
-  const response = { data: [] };
+  const response: Record<string, any> = { data: [] };
 
   // Unlikely, widely supported now
   if (!FileReader) {
+    // @ts-ignore
     this.onUploadError(new Error('Unsupported platform, FileReader is not defined'));
     return;
   }
@@ -331,6 +364,7 @@ FileUploaderView.embedAsBase64 = function (e, clb) {
             data.width = image.width;
             resolve(data);
           });
+          // @ts-ignore
           image.src = data.src;
         } else if (type) {
           // Not an image, but has a type
@@ -360,9 +394,11 @@ FileUploaderView.embedAsBase64 = function (e, clb) {
   Promise.all(promises).then(
     data => {
       response.data = data;
+      // @ts-ignore
       this.onUploadResponse(response, clb);
     },
     error => {
+      // @ts-ignore
       this.onUploadError(error);
     }
   );
