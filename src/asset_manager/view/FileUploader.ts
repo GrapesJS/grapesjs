@@ -30,6 +30,7 @@ export default class FileUploaderView extends View {
       <form>
         <div id="${pfx}title">${title}</div>
         <input
+          data-input
           type="file"
           id="${uploadId}"
           name="file"
@@ -40,6 +41,12 @@ export default class FileUploaderView extends View {
         <div style="clear:both;"></div>
       </form>
     `;
+  }
+
+  events() {
+    return {
+      'change [data-input]': 'uploadFile',
+    };
   }
 
   constructor(opts: any = {}) {
@@ -56,11 +63,7 @@ export default class FileUploaderView extends View {
     this.uploadId = this.pfx + 'uploadFile';
     this.disabled = c.disableUpload !== undefined ? c.disableUpload : !c.upload && !c.embedAsBase64;
     this.multiUpload = c.multiUpload !== undefined ? c.multiUpload : true;
-    // @ts-ignore TODO check if necessary the dynamic id
-    this.events = {
-      [`change #${this.uploadId}`]: 'uploadFile',
-    };
-    let uploadFile = c.uploadFile;
+    const uploadFile = c.uploadFile;
 
     if (uploadFile) {
       this.uploadFile = uploadFile.bind(this);
@@ -295,12 +298,6 @@ export default class FileUploaderView extends View {
     // @ts-ignore
     const files = e.dataTransfer ? e.dataTransfer.files : e.target.files;
     const response: Record<string, any> = { data: [] };
-
-    console.log('has this', {
-      self: this,
-      // @ts-ignore
-      onUploadError: this.onUploadError,
-    });
 
     // Unlikely, widely supported now
     if (!FileReader) {
