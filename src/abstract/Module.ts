@@ -1,4 +1,4 @@
-import { isElement, isUndefined } from 'underscore';
+import { isElement, isUndefined, isString } from 'underscore';
 import { Collection, View } from '../common';
 import EditorModel from '../editor/model/Editor';
 import { createId, isDef, deepMerge } from '../utils/mixins';
