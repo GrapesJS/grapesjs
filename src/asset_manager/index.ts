@@ -40,7 +40,7 @@
  *
  * [Asset]: asset.html
  *
- * @module AssetManager
+ * @module Assets
  */
 
 import { debounce, isFunction } from 'underscore';
@@ -195,12 +195,13 @@ export default class AssetManager extends ItemManagerModule<AssetManagerConfig, 
 
   /**
    * Checks if the asset manager is open
+   * @returns {Boolean}
    * @example
    * assetManager.isOpen(); // true | false
    */
   isOpen() {
     const cmd = this.em.get('Commands');
-    return !!(cmd && cmd.isActive(assetCmd));
+    return !!cmd?.isActive(assetCmd);
   }
 
   /**
@@ -234,12 +235,12 @@ export default class AssetManager extends ItemManagerModule<AssetManagerConfig, 
   /**
    * Return asset by URL
    * @param  {String} src URL of the asset
-   * @returns {[Asset]|undefined}
+   * @returns {[Asset]|null}
    * @example
    * const asset = assetManager.get('http://img.jpg');
    */
-  get(src: string): Asset | undefined {
-    return this.all.where({ src })[0];
+  get(src: string): Asset | null {
+    return this.all.where({ src })[0] || null;
   }
 
   /**
