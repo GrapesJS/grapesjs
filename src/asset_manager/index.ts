@@ -102,10 +102,10 @@ export default class AssetManager extends ItemManagerModule<AssetManagerConfig, 
    * @private
    */
   constructor(em: EditorModel) {
-    // @ts-ignore TODO fix assets
+    // @ts-ignore
     super(em, 'AssetManager', new Assets([], em), events, defaults);
     const { all, config } = this;
-    // @ts-ignore TODO fix assets
+    // @ts-ignore
     this.assetsVis = new Assets([]);
     // @ts-ignore
     const ppfx = config.pStylePrefix;
