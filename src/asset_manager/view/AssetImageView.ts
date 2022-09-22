@@ -1,8 +1,9 @@
 import { isFunction } from 'underscore';
 import AssetView from './AssetView';
+import AssetImage from '../model/AssetImage';
 import html from '../../utils/html';
 
-export default class AssetImageView extends AssetView {
+export default class AssetImageView extends AssetView<AssetImage> {
   getPreview() {
     const { pfx, ppfx, model } = this;
     const src = model.get('src');
@@ -26,6 +27,7 @@ export default class AssetImageView extends AssetView {
     `;
   }
 
+  // @ts-ignore
   init(o) {
     const pfx = this.pfx;
     this.className += ` ${pfx}asset-image`;
@@ -38,6 +40,7 @@ export default class AssetImageView extends AssetView {
   onClick() {
     const { model, pfx } = this;
     const { select } = this.__getBhv();
+    // @ts-ignore
     const { onClick } = this.config;
     const coll = this.collection;
     coll.trigger('deselectAll');
@@ -48,6 +51,7 @@ export default class AssetImageView extends AssetView {
     } else if (isFunction(onClick)) {
       onClick(model);
     } else {
+      // @ts-ignore
       this.updateTarget(coll.target);
     }
   }
@@ -59,7 +63,9 @@ export default class AssetImageView extends AssetView {
   onDblClick() {
     const { em, model } = this;
     const { select } = this.__getBhv();
+    // @ts-ignore
     const { onDblClick } = this.config;
+    // @ts-ignore
     const { target, onSelect } = this.collection;
 
     if (isFunction(select)) {
@@ -77,13 +83,14 @@ export default class AssetImageView extends AssetView {
    * Remove asset from collection
    * @private
    * */
-  onRemove(e) {
+  onRemove(e: Event) {
     e.stopImmediatePropagation();
     this.model.collection.remove(this.model);
   }
 }
 
 AssetImageView.prototype.events = {
+  // @ts-ignore
   'click [data-toggle=asset-remove]': 'onRemove',
   click: 'onClick',
   dblclick: 'onDblClick',

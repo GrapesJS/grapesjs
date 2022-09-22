@@ -8,6 +8,10 @@ import { Model } from '../../common';
  * @module docsjs.Asset
  */
 export default class Asset extends Model {
+  static getDefaults() {
+    return result(this.prototype, 'defaults');
+  }
+
   defaults() {
     return {
       type: '',
@@ -65,7 +69,3 @@ export default class Asset extends Model {
 }
 
 Asset.prototype.idAttribute = 'src';
-
-Asset.getDefaults = function () {
-  return result(this.prototype, 'defaults');
-};

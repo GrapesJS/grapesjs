@@ -1,4 +1,4 @@
-import { isElement, isUndefined } from 'underscore';
+import { isElement, isUndefined, isString } from 'underscore';
 import { Collection, View } from '../common';
 import EditorModel from '../editor/model/Editor';
 import { createId, isDef, deepMerge } from '../utils/mixins';
@@ -108,8 +108,8 @@ export abstract class ItemManagerModule<
   protected all: TCollection;
   view?: View;
 
-  constructor(em: EditorModel, moduleName: string, all: any, events?: any) {
-    super(em, moduleName);
+  constructor(em: EditorModel, moduleName: string, all: any, events?: any, defaults?: TConf) {
+    super(em, moduleName, defaults);
     this.all = all;
     this.events = events;
     this.__initListen();

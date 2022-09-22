@@ -1,13 +1,36 @@
 import { View } from '../../common';
+import EditorModel from '../../editor/model/Editor';
 import fetch from '../../utils/fetch';
 import html from '../../utils/html';
+import { AssetManagerConfig } from '../config/config';
+
+type FileUploaderTemplateProps = {
+  pfx: string;
+  title: string;
+  uploadId: string;
+  disabled: boolean;
+  multiUpload: boolean;
+};
 
 export default class FileUploaderView extends View {
-  template({ pfx, title, uploadId, disabled, multiUpload }) {
+  options: any;
+  config: AssetManagerConfig;
+  pfx: string;
+  ppfx: string;
+  em: EditorModel;
+  module: any;
+  target: any;
+  uploadId: string;
+  disabled: boolean;
+  multiUpload: boolean;
+  uploadForm?: HTMLFormElement | null;
+
+  template({ pfx, title, uploadId, disabled, multiUpload }: FileUploaderTemplateProps) {
     return html`
       <form>
         <div id="${pfx}title">${title}</div>
         <input
+          data-input
           type="file"
           id="${uploadId}"
           name="file"
@@ -20,11 +43,19 @@ export default class FileUploaderView extends View {
     `;
   }
 
-  initialize(opts = {}) {
+  events() {
+    return {
+      'change [data-input]': 'uploadFile',
+    };
+  }
+
+  constructor(opts: any = {}) {
+    super(opts);
     this.options = opts;
     const c = opts.config || {};
     this.module = opts.module;
     this.config = c;
+    // @ts-ignore
     this.em = this.config.em;
     this.pfx = c.stylePrefix || '';
     this.ppfx = c.pStylePrefix || '';
@@ -32,15 +63,12 @@ export default class FileUploaderView extends View {
     this.uploadId = this.pfx + 'uploadFile';
     this.disabled = c.disableUpload !== undefined ? c.disableUpload : !c.upload && !c.embedAsBase64;
     this.multiUpload = c.multiUpload !== undefined ? c.multiUpload : true;
-    this.events = {
-      [`change #${this.uploadId}`]: 'uploadFile',
-    };
-    let uploadFile = c.uploadFile;
+    const uploadFile = c.uploadFile;
 
     if (uploadFile) {
       this.uploadFile = uploadFile.bind(this);
     } else if (!c.upload && c.embedAsBase64) {
-      this.uploadFile = this.constructor.embedAsBase64;
+      this.uploadFile = FileUploaderView.embedAsBase64;
     }
 
     this.delegateEvents();
@@ -60,7 +88,7 @@ export default class FileUploaderView extends View {
    * @param  {Object|string} res End result
    * @private
    */
-  onUploadEnd(res) {
+  onUploadEnd(res: any) {
     const { $el, module } = this;
     module && module.__propEv('asset:upload:end', res);
     const input = $el.find('input');
@@ -72,7 +100,7 @@ export default class FileUploaderView extends View {
    * @param  {Object} err Error
    * @private
    */
-  onUploadError(err) {
+  onUploadError(err: Error) {
     const { module } = this;
     console.error(err);
     this.onUploadEnd(err);
@@ -84,7 +112,7 @@ export default class FileUploaderView extends View {
    * @param  {string} text Response text
    * @private
    */
-  onUploadResponse(text, clb) {
+  onUploadResponse(text: string, clb?: (json: any) => void) {
     const { module, config, target } = this;
     let json;
     try {
@@ -100,7 +128,7 @@ export default class FileUploaderView extends View {
     }
 
     this.onUploadEnd(text);
-    clb && clb(json);
+    clb?.(json);
   }
 
   /**
@@ -109,7 +137,8 @@ export default class FileUploaderView extends View {
    * @return {Promise}
    * @private
    * */
-  uploadFile(e, clb) {
+  uploadFile(e: DragEvent, clb?: () => void) {
+    // @ts-ignore
     const files = e.dataTransfer ? e.dataTransfer.files : e.target.files;
     const { config } = this;
     const { beforeUpload } = config;
@@ -129,12 +158,12 @@ export default class FileUploaderView extends View {
         body.append(`${config.uploadName}[]`, files[i]);
       }
     } else if (files.length) {
-      body.append(config.uploadName, files[0]);
+      body.append(config.uploadName!, files[0]);
     }
 
     var target = this.target;
     const url = config.upload;
-    const headers = config.headers;
+    const headers = config.headers!;
     const reqHead = 'X-Requested-With';
 
     if (typeof headers[reqHead] == 'undefined') {
@@ -151,10 +180,12 @@ export default class FileUploaderView extends View {
       };
       const fetchResult = customFetch
         ? customFetch(url, fetchOpts)
-        : fetch(url, fetchOpts).then(res =>
-            ((res.status / 200) | 0) == 1 ? res.text() : res.text().then(text => Promise.reject(text))
+        : fetch(url, fetchOpts).then((res: any) =>
+            ((res.status / 200) | 0) == 1 ? res.text() : res.text().then((text: string) => Promise.reject(text))
           );
-      return fetchResult.then(text => this.onUploadResponse(text, clb)).catch(err => this.onUploadError(err));
+      return fetchResult
+        .then((text: string) => this.onUploadResponse(text, clb))
+        .catch((err: Error) => this.onUploadError(err));
     }
   }
 
@@ -164,29 +195,31 @@ export default class FileUploaderView extends View {
    * */
   initDrop() {
     var that = this;
+
     if (!this.uploadForm) {
-      this.uploadForm = this.$el.find('form').get(0);
-      if ('draggable' in this.uploadForm) {
-        var uploadFile = this.uploadFile;
+      this.uploadForm = this.$el.find('form').get(0)!;
+      const formEl = this.uploadForm;
+
+      if ('draggable' in formEl) {
         this.uploadForm.ondragover = function () {
-          this.className = that.pfx + 'hover';
+          formEl.className = that.pfx + 'hover';
           return false;
         };
         this.uploadForm.ondragleave = function () {
-          this.className = '';
+          formEl.className = '';
           return false;
         };
-        this.uploadForm.ondrop = function (e) {
-          this.className = '';
-          e.preventDefault();
-          that.uploadFile(e);
+        this.uploadForm.ondrop = function (ev) {
+          formEl.className = '';
+          ev.preventDefault();
+          that.uploadFile(ev);
           return;
         };
       }
     }
   }
 
-  initDropzone(ev) {
+  initDropzone(ev: any) {
     let addedCls = 0;
     const c = this.config;
     const em = ev.model;
@@ -212,7 +245,7 @@ export default class FileUploaderView extends View {
       cleanEditorElCls();
       return false;
     };
-    const onDrop = e => {
+    const onDrop = (e: DragEvent) => {
       cleanEditorElCls();
       e.preventDefault();
       e.stopPropagation();
@@ -259,111 +292,116 @@ export default class FileUploaderView extends View {
     $el.attr('class', pfx + 'file-uploader');
     return this;
   }
-}
 
-FileUploaderView.embedAsBase64 = function (e, clb) {
-  // List files dropped
-  const files = e.dataTransfer ? e.dataTransfer.files : e.target.files;
-  const response = { data: [] };
+  static embedAsBase64(e: DragEvent, clb?: () => void) {
+    // List files dropped
+    // @ts-ignore
+    const files = e.dataTransfer ? e.dataTransfer.files : e.target.files;
+    const response: Record<string, any> = { data: [] };
 
-  // Unlikely, widely supported now
-  if (!FileReader) {
-    this.onUploadError(new Error('Unsupported platform, FileReader is not defined'));
-    return;
-  }
-
-  const promises = [];
-  const mimeTypeMatcher = /^(.+)\/(.+)$/;
-
-  for (const file of files) {
-    // For each file a reader (to read the base64 URL)
-    // and a promise (to track and merge results and errors)
-    const promise = new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.addEventListener('load', event => {
-        let type;
-        const name = file.name;
-
-        // Try to find the MIME type of the file.
-        const match = mimeTypeMatcher.exec(file.type);
-        if (match) {
-          type = match[1]; // The first part in the MIME, "image" in image/png
-        } else {
-          type = file.type;
-        }
-
-        /*
-      // Show local video files, http://jsfiddle.net/dsbonev/cCCZ2/embedded/result,js,html,css/
-      var URL = window.URL || window.webkitURL
-      var file = this.files[0]
-      var type = file.type
-      var videoNode = document.createElement('video');
-      var canPlay = videoNode.canPlayType(type) // can use also for 'audio' types
-      if (canPlay === '') canPlay = 'no'
-      var message = 'Can play type "' + type + '": ' + canPlay
-      var isError = canPlay === 'no'
-      displayMessage(message, isError)
-
-      if (isError) {
-        return
-      }
-
-      var fileURL = URL.createObjectURL(file)
-      videoNode.src = fileURL
-       */
-
-        // If it's an image, try to find its size
-        if (type === 'image') {
-          const data = {
-            src: reader.result,
-            name,
-            type,
-            height: 0,
-            width: 0,
-          };
-
-          const image = new Image();
-          image.addEventListener('error', error => {
-            reject(error);
-          });
-          image.addEventListener('load', () => {
-            data.height = image.height;
-            data.width = image.width;
-            resolve(data);
-          });
-          image.src = data.src;
-        } else if (type) {
-          // Not an image, but has a type
-          resolve({
-            src: reader.result,
-            name,
-            type,
-          });
-        } else {
-          // No type found, resolve with the URL only
-          resolve(reader.result);
-        }
-      });
-      reader.addEventListener('error', error => {
-        reject(error);
-      });
-      reader.addEventListener('abort', error => {
-        reject('Aborted');
-      });
-
-      reader.readAsDataURL(file);
-    });
-
-    promises.push(promise);
-  }
-
-  Promise.all(promises).then(
-    data => {
-      response.data = data;
-      this.onUploadResponse(response, clb);
-    },
-    error => {
-      this.onUploadError(error);
+    // Unlikely, widely supported now
+    if (!FileReader) {
+      // @ts-ignore
+      this.onUploadError(new Error('Unsupported platform, FileReader is not defined'));
+      return;
     }
-  );
-};
+
+    const promises = [];
+    const mimeTypeMatcher = /^(.+)\/(.+)$/;
+
+    for (const file of files) {
+      // For each file a reader (to read the base64 URL)
+      // and a promise (to track and merge results and errors)
+      const promise = new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.addEventListener('load', event => {
+          let type;
+          const name = file.name;
+
+          // Try to find the MIME type of the file.
+          const match = mimeTypeMatcher.exec(file.type);
+          if (match) {
+            type = match[1]; // The first part in the MIME, "image" in image/png
+          } else {
+            type = file.type;
+          }
+
+          /*
+        // Show local video files, http://jsfiddle.net/dsbonev/cCCZ2/embedded/result,js,html,css/
+        var URL = window.URL || window.webkitURL
+        var file = this.files[0]
+        var type = file.type
+        var videoNode = document.createElement('video');
+        var canPlay = videoNode.canPlayType(type) // can use also for 'audio' types
+        if (canPlay === '') canPlay = 'no'
+        var message = 'Can play type "' + type + '": ' + canPlay
+        var isError = canPlay === 'no'
+        displayMessage(message, isError)
+
+        if (isError) {
+          return
+        }
+
+        var fileURL = URL.createObjectURL(file)
+        videoNode.src = fileURL
+         */
+
+          // If it's an image, try to find its size
+          if (type === 'image') {
+            const data = {
+              src: reader.result,
+              name,
+              type,
+              height: 0,
+              width: 0,
+            };
+
+            const image = new Image();
+            image.addEventListener('error', error => {
+              reject(error);
+            });
+            image.addEventListener('load', () => {
+              data.height = image.height;
+              data.width = image.width;
+              resolve(data);
+            });
+            // @ts-ignore
+            image.src = data.src;
+          } else if (type) {
+            // Not an image, but has a type
+            resolve({
+              src: reader.result,
+              name,
+              type,
+            });
+          } else {
+            // No type found, resolve with the URL only
+            resolve(reader.result);
+          }
+        });
+        reader.addEventListener('error', error => {
+          reject(error);
+        });
+        reader.addEventListener('abort', error => {
+          reject('Aborted');
+        });
+
+        reader.readAsDataURL(file);
+      });
+
+      promises.push(promise);
+    }
+
+    Promise.all(promises).then(
+      data => {
+        response.data = data;
+        // @ts-ignore
+        this.onUploadResponse(response, clb);
+      },
+      error => {
+        // @ts-ignore
+        this.onUploadError(error);
+      }
+    );
+  }
+}
