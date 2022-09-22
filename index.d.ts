@@ -443,7 +443,7 @@ declare namespace grapesjs {
     type?: string;
     stepsBeforeSave?: number;
     recovery?: boolean | Function;
-    onStore?: (data: any, editor?: Editor) => any;
+    onStore?: (data: any, editor: Editor) => any;
     onLoad?: (data: any) => any;
     options?: {
       local?: LocalStorageConfig;
