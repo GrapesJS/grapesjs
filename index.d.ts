@@ -464,7 +464,7 @@ declare namespace grapesjs {
     contentTypeJson?: boolean;
     credentials?: RequestCredentials;
     fetchOptions?: string | ((opts: object) => object);
-    onStore?: (data: any) => any;
+    onStore?: (data: any, editor: Editor) => any;
     onLoad?: (data: any) => any;
   }
 
