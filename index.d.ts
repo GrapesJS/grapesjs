@@ -675,23 +675,23 @@ declare namespace grapesjs {
   interface Panel extends Backbone.Model<PanelOptions> { }
 
   interface Button extends Backbone.Model<ButtonOptions> { }
-
+  
   interface ButtonOptions {
     id: string;
-    label: string;
-    tagName: 'span';
-    className: string;
-    command: string | ((editor: Editor, opts?: any) => void);
-    context: string;
-    buttons: any[];
-    attributes: object;
-    options: object;
-    active: boolean;
-    dragDrop: boolean;
-    togglable: boolean;
-    runDefaultCommand: boolean;
-    stopDefaultCommand: boolean;
-    disable: boolean;
+    label?: string;
+    tagName?: 'span';
+    className?: string;
+    command?: string | ((editor: Editor, opts?: any) => void);
+    context?: string;
+    buttons?: any[];
+    attributes?: { [key:string]: string};
+    options?: object;
+    active?: boolean;
+    dragDrop?: boolean;
+    togglable?: boolean;
+    runDefaultCommand?: boolean;
+    stopDefaultCommand?: boolean;
+    disable?: boolean;
   }
 
   interface ComponentView {
