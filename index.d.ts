@@ -23,6 +23,9 @@ declare namespace Backbone {
     remove(model: {} | TModel): TModel;
     remove(models: Array<{} | TModel>): TModel[];
     reset(models?: Array<{} | TModel>): TModel[];
+    forEach(iterator: (item: TModel) => void, context?: any): TModel[];
+    filter(iterator: (item: TModel) => boolean, context?: any): TModel[];
+    map(iterator: (item: TModel) => any, context?: any): any[];
   }
 
   interface GenericModel extends Model<{}> { }
@@ -675,7 +678,7 @@ declare namespace grapesjs {
   interface Panel extends Backbone.Model<PanelOptions> { }
 
   interface Button extends Backbone.Model<ButtonOptions> { }
-  
+
   interface ButtonOptions {
     id: string;
     label?: string;
@@ -840,6 +843,7 @@ declare namespace grapesjs {
     Devices: Devices;
     DeviceManager: Devices;
     RichTextEditor: RichTextEditor;
+    I18n: I18n;
     Parser: Parser;
     Utils: object;
     Config: EditorConfig | object;
@@ -850,7 +854,7 @@ declare namespace grapesjs {
      * @returns Returns the configuration object or
      *  the value of the specified property
      */
-    getConfig(prop?: string): EditorConfig | object;
+    getConfig(prop?: string): EditorConfig;
     /**
      * Returns HTML built inside canvas
      * @param [opts = {}] - Options
