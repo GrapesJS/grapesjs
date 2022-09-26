@@ -159,14 +159,17 @@ export default class TraitView extends Backbone.View {
       const { em, model } = this;
       const md = model;
       const { name } = model.attributes;
-      const plh = md.get('placeholder') || md.get('default') || '';
+      const placeholder = md.get('placeholder') || md.get('default') || '';
       const type = md.get('type') || 'text';
       const min = md.get('min');
       const max = md.get('max');
       const value = this.getModelValue();
-      const input = $(`<input type="${type}" placeholder="${plh}">`);
+      const input = $(`<input type="${type}">`);
       const i18nAttr = em.t(`traitManager.traits.attributes.${name}`) || {};
-      input.attr(i18nAttr);
+      input.attr({
+        placeholder,
+        ...i18nAttr,
+      });
 
       if (!isUndefined(value)) {
         md.set({ value }, { silent: true });
