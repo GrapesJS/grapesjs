@@ -443,8 +443,8 @@ declare namespace grapesjs {
     type?: string;
     stepsBeforeSave?: number;
     recovery?: boolean | Function;
-    onStore?: (data: any) => any;
-    onLoad?: (data: any) => any;
+    onStore?: (data: any, editor: Editor) => any;
+    onLoad?: (data: any, editor: Editor) => any;
     options?: {
       local?: LocalStorageConfig;
       remote?: RemoteStorageConfig;
@@ -464,8 +464,8 @@ declare namespace grapesjs {
     contentTypeJson?: boolean;
     credentials?: RequestCredentials;
     fetchOptions?: string | ((opts: object) => object);
-    onStore?: (data: any) => any;
-    onLoad?: (data: any) => any;
+    onStore?: (data: any, editor: Editor) => any;
+    onLoad?: (data: any, editor: Editor) => any;
   }
 
   interface DomComponentsConfig {
