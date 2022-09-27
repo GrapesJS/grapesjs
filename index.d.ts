@@ -5481,7 +5481,7 @@ declare namespace grapesjs {
      * const somePage = pageManager.get('page-id');
      * pageManager.select(somePage);
      */
-    select(): this;
+    select(page: string | Page): this;
     /**
      * Get the selected page
      * @example
