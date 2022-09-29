@@ -5445,7 +5445,7 @@ declare namespace grapesjs {
      * const somePage = pageManager.get('page-id');
      * pageManager.remove(somePage);
      */
-    remove(): any;
+    remove(page: string | Page): any;
     /**
      * Get page by id
      * @example
