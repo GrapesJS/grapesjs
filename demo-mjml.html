@@ -20,8 +20,7 @@
 
     <!-- Plugins -->
     <script src="./js/grapesjs-plugin-ckeditor.min.js"></script>
-    <script src="./js/grapesjs-mjml.min.js?v0.1.10"></script>
-    <script src="./js/grapesjs-aviary.min.js"></script>
+    <script src="https://unpkg.com/grapesjs-mjml@1.0.2"></script>
 
   </head>
   <style>
@@ -153,7 +152,7 @@
       CKEDITOR.dtd.$editable.a = 1;
 
       var lp = './img/';
-      var plp = '//placehold.it/350x250/';
+      var plp = 'https://via.placeholder.com/350x250/';
       var images = [
         plp+'78c5d6/fff/image1.jpg', plp+'459ba8/fff/image2.jpg', plp+'79c267/fff/image3.jpg',
         plp+'c5d647/fff/image4.jpg', plp+'f28c33/fff/image5.jpg', plp+'e868a2/fff/image6.jpg', plp+'cc4360/fff/image7.jpg',
@@ -255,12 +254,12 @@
         if(!title)
           break;
         el.setAttribute('data-tooltip', title);
+        el.setAttribute('data-tooltip-pos', 'bottom');
         el.setAttribute('title', '');
       }
 
-
       // Do stuff on load
-      editor.on('load', function() {
+      editor.onReady(function() {
         var $ = grapesjs.$;
 
         // Show logo with the version
