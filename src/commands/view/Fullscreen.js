@@ -6,9 +6,11 @@ export default {
    * @return {Boolean}
    */
   isEnabled() {
-    var d = document;
-    if (d.fullscreenElement || d.webkitFullscreenElement || d.mozFullScreenElement) return 1;
-    else return 0;
+    const d = document;
+    if (d.fullscreenElement || d.webkitFullscreenElement || d.mozFullScreenElement) {
+      return true;
+    }
+    return false;
   },
 
   /**
@@ -17,16 +19,20 @@ export default {
    * @return {string}
    */
   enable(el) {
-    var pfx = '';
-    if (el.requestFullscreen) el.requestFullscreen();
-    else if (el.webkitRequestFullscreen) {
+    let pfx = '';
+
+    if (el.requestFullscreen) {
+      el.requestFullscreen();
+    } else if (el.webkitRequestFullscreen) {
       pfx = 'webkit';
       el.webkitRequestFullscreen();
     } else if (el.mozRequestFullScreen) {
       pfx = 'moz';
       el.mozRequestFullScreen();
-    } else if (el.msRequestFullscreen) el.msRequestFullscreen();
-    else console.warn('Fullscreen not supported');
+    } else if (el.msRequestFullscreen) {
+      el.msRequestFullscreen();
+    }
+
     return pfx;
   },
 
@@ -35,6 +41,7 @@ export default {
    */
   disable() {
     const d = document;
+
     if (this.isEnabled()) {
       if (d.exitFullscreen) d.exitFullscreen();
       else if (d.webkitExitFullscreen) d.webkitExitFullscreen();
@@ -49,12 +56,10 @@ export default {
    * @param  {strinf} pfx Browser prefix
    * @param  {Event} e
    */
-  fsChanged(pfx, e) {
-    var d = document;
-    var ev = (pfx || '') + 'fullscreenchange';
+  fsChanged(pfx) {
     if (!this.isEnabled()) {
-      this.stop(null, this.sender);
-      document.removeEventListener(ev, this.fsChanged);
+      this.stopCommand({ sender: this.sender });
+      document.removeEventListener(`${pfx || ''}fullscreenchange`, this.fsChanged);
     }
   },
 
