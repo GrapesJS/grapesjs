@@ -23,7 +23,7 @@ export default {
           active: true,
           id: swv,
           className: 'fa fa-square-o',
-          command: swv,
+          command: 'core:component-outline',
           context: swv,
           attributes: { title: 'View components' },
         },

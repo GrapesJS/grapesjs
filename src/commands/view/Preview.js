@@ -1,6 +1,6 @@
 import { each } from 'underscore';
 
-const cmdVis = 'sw-visibility';
+const cmdOutline = 'core:component-outline';
 
 export default {
   getPanels(editor) {
@@ -35,10 +35,10 @@ export default {
     editor.select();
 
     if (!this.shouldRunSwVisibility) {
-      this.shouldRunSwVisibility = editor.Commands.isActive(cmdVis);
+      this.shouldRunSwVisibility = editor.Commands.isActive(cmdOutline);
     }
 
-    this.shouldRunSwVisibility && editor.stopCommand(cmdVis);
+    this.shouldRunSwVisibility && editor.stopCommand(cmdOutline);
     editor.getModel().stopDefault();
 
     const panels = this.getPanels(editor);
@@ -75,7 +75,7 @@ export default {
     const panels = this.getPanels(editor);
 
     if (this.shouldRunSwVisibility) {
-      editor.runCommand(cmdVis);
+      editor.runCommand(cmdOutline);
       this.shouldRunSwVisibility = false;
     }
 
