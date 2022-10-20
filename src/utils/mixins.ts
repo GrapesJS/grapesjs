@@ -194,6 +194,10 @@ export const escape = (str = '') => {
     .replace(/`/g, '&#96;');
 };
 
+export const escapeNodeContent = (str = '') => {
+  return `${str}`.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+};
+
 export const deepMerge = (...args: Record<string, any>[]) => {
   const target = { ...args[0] };
 

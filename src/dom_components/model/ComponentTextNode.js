@@ -1,5 +1,5 @@
 import Component from './Component';
-import { escape } from 'utils/mixins';
+import { escapeNodeContent } from 'utils/mixins';
 
 export default class ComponentTextNode extends Component {
   get defaults() {
@@ -15,8 +15,12 @@ export default class ComponentTextNode extends Component {
 
   toHTML() {
     const parent = this.parent();
-    const cnt = this.get('content');
-    return parent && parent.is('script') ? cnt : escape(cnt);
+    const content = this.get('content');
+    return parent?.is('script') ? content : this.__escapeContent(content);
+  }
+
+  __escapeContent(content) {
+    return escapeNodeContent(content);
   }
 }
 
