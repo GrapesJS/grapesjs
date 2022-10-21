@@ -1,5 +1,6 @@
 import { Model } from '../../common';
 import { isFunction } from 'underscore';
+import EditorModule from '../../editor';
 
 // TODO move
 export interface BlockCategoryProperties {
@@ -65,7 +66,7 @@ export interface BlockProperties {
    * @example
    * onClick: (block, editor) => editor.getWrapper().append(block.get('content'))
    */
-  onClick?: (...params: any[]) => any; // TODO
+  onClick?: (block: Block, editor: EditorModule) => void;
   /**
    * Block attributes
    */
