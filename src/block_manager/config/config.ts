@@ -29,7 +29,7 @@ export interface BlockManagerConfig {
    *    editor.getWrapper().append(block.get('content'))
    * }
    */
-  appendOnClick?: boolean | ((block: Block, editor: EditorModule) => void);
+  appendOnClick?: boolean | ((block: Block, editor: EditorModule, opts: { event: Event }) => void);
   /**
    * Avoid rendering the default block manager UI.
    * More about it here: https://grapesjs.com/docs/modules/Blocks.html#customization
