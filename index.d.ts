@@ -26,6 +26,7 @@ declare namespace Backbone {
     forEach(iterator: (item: TModel) => void, context?: any): TModel[];
     filter(iterator: (item: TModel) => boolean, context?: any): TModel[];
     map(iterator: (item: TModel) => any, context?: any): any[];
+    each(callback: (item: TModel) => void);
   }
 
   interface GenericModel extends Model<{}> { }
@@ -91,7 +92,9 @@ declare namespace grapesjs {
     /** By default Grapes injects base CSS into the canvas. For example, it sets body margin to 0
      * and sets a default background color of white. This CSS is desired in most cases.
      * use this property if you wish to overwrite the base CSS to your own CSS. This is most
-     * useful if for example your template is not based off a document with 0 as body margin. */
+     * useful if for example your template is not based off a document with 0 as body margin.
+     * @deprecated in favor of `config.canvas.frameStyle`
+     */
     baseCss?: string;
 
     /** CSS that could only be seen (for instance, inside the code viewer) */
@@ -258,6 +261,8 @@ declare namespace grapesjs {
     keepUnusedStyles?: 0;
 
     layerManager?: LayerManagerConfig;
+
+    parser?: ParserConfig;
   }
 
   interface AssetManagerConfig {
@@ -399,6 +404,7 @@ declare namespace grapesjs {
     customBadgeLabel?: Function;
     autoscrollLimit?: number;
     notTextable?: Array<string>;
+    frameStyle?: string;
   }
 
   interface StyleManagerConfig {
@@ -537,6 +543,7 @@ declare namespace grapesjs {
     statesLabel?: string;
     selectedLabel?: string;
     states?: Array<object>;
+    componentFirst?: boolean;
   }
 
   interface DeviceManagerConfig {
@@ -628,6 +635,10 @@ declare namespace grapesjs {
      * },
      */
     extend?: any;
+  }
+
+  interface ParserConfig {
+    optionsHtml?: object;
   }
 
   function init(config: EditorConfig): Editor;
@@ -922,11 +933,13 @@ declare namespace grapesjs {
      * @param [opts.avoidUpdateStyle = false] - If the HTML string contains styles,
      * by default, they will be created and, if already exist, updated. When this option
      * is true, styles already created will not be updated.
+     * @param [opts.at] - If provided, an index to insert these components at.
      */
     addComponents(
       components: object[] | any | string,
       opts?: {
         avoidUpdateStyle?: boolean;
+        at?: number;
       }
     ): Component[];
     /**
@@ -1248,6 +1261,8 @@ declare namespace grapesjs {
      * const strHtml = editor.html`Escaped ${unsafeStr}, unescaped $${safeStr}`;
      */
     html(literals: string[], substs: string[]): string;
+
+    getModel(): Backbone.Model<any>;
   }
 
   type GrapesEvent =
@@ -1339,7 +1354,7 @@ declare namespace grapesjs {
     | `stop:${string}`
     | `abort:${string}`;
 
-  type GeneralEvent = 'canvasScroll' | 'undo' | 'redo' | 'load';
+  type GeneralEvent = 'canvasScroll' | 'undo' | 'redo' | 'load' | 'update';
 
   /**
    * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/asset_manager/config/config.js)
@@ -1645,12 +1660,12 @@ declare namespace grapesjs {
      * const block = blockManager.get('BLOCK_ID');
      * blockManager.remove(block);
      */
-    remove(): any;
+    remove(block: object | string): any;
     /**
      * Get all available categories.
      * It's possible to add categories only within blocks via 'add()' method
      */
-    getCategories(): any[] | Backbone.Collection<Backbone.Model<{}>>;
+    getCategories(): Backbone.Collection<Backbone.Model<any>>;
     /**
      * Return the Blocks container element
      */
@@ -2310,7 +2325,7 @@ declare namespace grapesjs {
    *
    * [Component]: component.html
    */
-  interface Component extends Backbone.Model<ComponentModelProperties> {
+  interface Component extends Backbone.Model<ComponentModelProperties>, Styleable {
     view?: ComponentView;
 
     /**
@@ -4017,7 +4032,7 @@ declare namespace grapesjs {
      * const device = deviceManager.get('some-id');
      * deviceManager.select(device);
      */
-    select(): void;
+    select(device: string | any): void;
     /**
      * Get the selected device
      * @example
@@ -4423,7 +4438,7 @@ declare namespace grapesjs {
      * // Remove by selector
      * css.remove('.my-cls-2');
      */
-    remove(): any;
+    remove(toRemove: object | string): any;
     /**
      * Remove all rules
      */
