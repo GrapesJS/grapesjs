@@ -1,26 +1,7 @@
 import { Model } from '../../common';
 import { isFunction } from 'underscore';
 import EditorModule from '../../editor';
-
-// TODO move
-export interface BlockCategoryProperties {
-  /**
-   * Category id.
-   */
-  id: string;
-  /**
-   * Category label.
-   */
-  label: string;
-  /**
-   * Category open state.
-   */
-  open?: boolean;
-  /**
-   * Category attributes.
-   */
-  attributes?: Record<string, any>;
-}
+import { BlockCategoryProperties } from './Category';
 
 export interface BlockProperties {
   /**
