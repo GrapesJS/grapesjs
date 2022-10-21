@@ -2,7 +2,7 @@ import { Model } from '../../common';
 import { isFunction } from 'underscore';
 
 // TODO move
-interface BlockCategoryProperties {
+export interface BlockCategoryProperties {
   /**
    * Category id.
    */
@@ -21,7 +21,7 @@ interface BlockCategoryProperties {
   attributes?: Record<string, any>;
 }
 
-interface BlockProperties {
+export interface BlockProperties {
   /**
    * Block label, eg. `My block`
    */

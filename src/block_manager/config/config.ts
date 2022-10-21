@@ -1,3 +1,6 @@
+import EditorModule from '../../editor';
+import Block, { BlockProperties } from '../model/Block';
+
 export interface BlockManagerConfig {
   /**
    * Specify the element to use as a container, string (query) or HTMLElement.
@@ -9,7 +12,7 @@ export interface BlockManagerConfig {
    * Default blocks.
    * @default []
    */
-  blocks?: Array<object>; // TODO
+  blocks?: BlockProperties[];
   /**
    * Append blocks to canvas on click.
    * With the `true` value, it will try to append the block to the selected component
@@ -26,7 +29,7 @@ export interface BlockManagerConfig {
    *    editor.getWrapper().append(block.get('content'))
    * }
    */
-  appendOnClick?: boolean | ((block: any, editor: any) => void); // TODO
+  appendOnClick?: boolean | ((block: Block, editor: EditorModule) => void);
   /**
    * Avoid rendering the default block manager UI.
    * More about it here: https://grapesjs.com/docs/modules/Blocks.html#customization
