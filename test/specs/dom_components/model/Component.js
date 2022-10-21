@@ -541,7 +541,7 @@ describe('Text Node Component', () => {
       attributes: { 'data-test': 'value' },
       content: 'test content &<>"\'',
     });
-    expect(obj.toHTML()).toEqual('test content &amp;&lt;&gt;&quot;&#039;');
+    expect(obj.toHTML()).toEqual('test content &amp;&lt;&gt;"\'');
   });
 });
 
