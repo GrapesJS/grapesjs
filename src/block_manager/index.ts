@@ -96,7 +96,7 @@ export default class BlockManager extends ItemManagerModule<BlockManagerConfig, 
   storageKey = '';
 
   constructor(em: EditorModel) {
-    super(em, 'BlockManager', new Blocks(em.config.blockManager?.blocks || [], em), events, defaults);
+    super(em, 'BlockManager', new Blocks(em.config.blockManager?.blocks || []), events, defaults);
 
     // Global blocks collection
     this.blocks = this.all;
