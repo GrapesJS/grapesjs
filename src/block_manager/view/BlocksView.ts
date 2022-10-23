@@ -22,7 +22,6 @@ export default class BlocksView extends View {
   noCatClass: string;
   blockContClass: string;
   catsClass: string;
-  grabbingCls: string;
   catsEl?: HTMLElement;
   blocksEl?: HTMLElement;
   rendered?: boolean;
@@ -43,7 +42,6 @@ export default class BlocksView extends View {
     this.listenTo(coll, 'add', this.addTo);
     this.listenTo(coll, 'reset', this.render);
     this.em = this.config.em;
-    this.grabbingCls = `${ppfx}grabbing`;
 
     if (this.em) {
       this.config.getSorter = this.getSorter;
