@@ -52,6 +52,11 @@ export interface BlockProperties {
    * Block attributes
    */
   attributes?: Record<string, any>;
+
+  /**
+   * @deprecated
+   */
+  activeOnRender?: boolean;
 }
 
 /**
