@@ -44,14 +44,15 @@
  *
  * @module Blocks
  */
-import { isElement, isArray } from 'underscore';
-import Module from '../abstract/moduleLegacy';
-import defaults from './config/config';
-import Block from './model/Block';
+import { isArray } from 'underscore';
+import defaults, { BlockManagerConfig } from './config/config';
+import Block, { BlockProperties } from './model/Block';
 import Blocks from './model/Blocks';
 import Category from './model/Category';
 import Categories from './model/Categories';
 import BlocksView from './view/BlocksView';
+import { ItemManagerModule } from '../abstract/Module';
+import EditorModel from '../editor/model/Editor';
 
 export const evAll = 'block';
 export const evPfx = `${evAll}:`;
@@ -64,8 +65,25 @@ export const evDragStart = `${evDrag}:start`;
 export const evDragStop = `${evDrag}:stop`;
 export const evCustom = `${evPfx}custom`;
 
-export default class BlockManager extends Module {
-  name = 'BlockManager';
+const events = {
+  all: evAll,
+  update: evUpdate,
+  add: evAdd,
+  remove: evRemove,
+  removeBefore: evRemoveBefore,
+  drag: evDrag,
+  dragStart: evDragStart,
+  dragEnd: evDragStop,
+  custom: evCustom,
+};
+
+export default class BlockManager extends ItemManagerModule<BlockManagerConfig, Blocks> {
+  blocks: Blocks;
+  blocksVisible: Blocks;
+  categories: Categories;
+  blocksView?: BlocksView;
+  _dragBlock?: Block;
+  _bhv?: Record<string, any>;
 
   Block = Block;
 
@@ -75,29 +93,20 @@ export default class BlockManager extends Module {
 
   Categories = Categories;
 
-  events = {
-    all: evAll,
-    update: evUpdate,
-    add: evAdd,
-    remove: evRemove,
-    removeBefore: evRemoveBefore,
-    drag: evDrag,
-    dragStart: evDragStart,
-    dragEnd: evDragStop,
-    custom: evCustom,
-  };
+  storageKey = '';
 
-  init(config = {}) {
-    this.c = { ...defaults, ...config };
-    const { em } = this.c;
-    this.em = em;
+  constructor(em: EditorModel) {
+    super(em, 'BlockManager', new Blocks(em.config.blockManager?.blocks || [], em), events, defaults);
+    // this.c = { ...defaults, ...config };
+    // const { em } = this.c;
+    // this.em = em;
 
     // Global blocks collection
-    this.blocks = new Blocks(this.c.blocks);
+    this.blocks = this.all;
     this.blocksVisible = new Blocks(this.blocks.models);
     this.categories = new Categories();
-    this.all = this.blocks;
-    this.__initListen();
+    // this.all = this.blocks;
+    // this.__initListen();
 
     // Setup the sync between the global and public collections
     this.blocks.on('add', model => this.blocksVisible.add(model));
@@ -117,13 +126,13 @@ export default class BlockManager extends Module {
       bm: this,
       blocks: this.getAll().models,
       container: bhv.container,
-      dragStart: (block, ev) => this.startDrag(block, ev),
-      drag: ev => this.__drag(ev),
-      dragStop: cancel => this.endDrag(cancel),
+      dragStart: (block: Block, ev: Event) => this.startDrag(block, ev),
+      drag: (ev: Event) => this.__drag(ev),
+      dragStop: (cancel: boolean) => this.endDrag(cancel),
     };
   }
 
-  __startDrag(block, ev) {
+  __startDrag(block: Block, ev: Event) {
     const { em, events, blocks } = this;
     const content = block.getContent ? block.getContent() : block;
     this._dragBlock = block;
@@ -131,7 +140,7 @@ export default class BlockManager extends Module {
     [em, blocks].map(i => i.trigger(events.dragStart, block, ev));
   }
 
-  __drag(ev) {
+  __drag(ev: Event) {
     const { em, events, blocks } = this;
     const block = this._dragBlock;
     [em, blocks].map(i => i.trigger(events.drag, block, ev));
@@ -141,9 +150,9 @@ export default class BlockManager extends Module {
     const { em, events, blocks } = this;
     const block = this._dragBlock;
     const cmp = em.get('dragResult');
-    this._dragBlock = null;
+    delete this._dragBlock;
 
-    if (cmp) {
+    if (cmp && block) {
       const oldKey = 'activeOnRender';
       const oldActive = cmp.get && cmp.get(oldKey);
       const toActive = block.get('activate') || oldActive;
@@ -160,7 +169,7 @@ export default class BlockManager extends Module {
       }
 
       if (block.get('resetId')) {
-        first.onAll(block => block.resetId());
+        first.onAll((cmp: any) => cmp.resetId());
       }
     }
 
@@ -172,7 +181,7 @@ export default class BlockManager extends Module {
     return this.em
       .get('Canvas')
       .getFrames()
-      .map(frame => frame.view);
+      .map((frame: any) => frame.view);
   }
 
   __behaviour(opts = {}) {
@@ -186,13 +195,13 @@ export default class BlockManager extends Module {
     return this._bhv || {};
   }
 
-  startDrag(block, ev) {
+  startDrag(block: Block, ev: Event) {
     this.__startDrag(block, ev);
-    this.__getFrameViews().forEach(fv => fv.droppable.startCustom());
+    this.__getFrameViews().forEach((fv: any) => fv.droppable.startCustom());
   }
 
-  endDrag(cancel) {
-    this.__getFrameViews().forEach(fv => fv.droppable.endCustom(cancel));
+  endDrag(cancel: boolean) {
+    this.__getFrameViews().forEach((fv: any) => fv.droppable.endCustom(cancel));
     this.__endDrag();
   }
 
@@ -201,21 +210,14 @@ export default class BlockManager extends Module {
    * @return {Object}
    */
   getConfig() {
-    return this.c;
+    return this.config;
   }
 
   postRender() {
-    const { categories } = this;
+    const { categories, config, em } = this;
     const collection = this.blocksVisible;
-    this.blocksView = new BlocksView({ collection, categories }, this.c);
-    const elTo = this.getConfig().appendTo;
-
-    if (elTo) {
-      const el = isElement(elTo) ? elTo : document.querySelector(elTo);
-      if (!el) return this.__logWarn('"appendTo" element not found');
-      el.appendChild(this.render(this.blocksVisible.models));
-    }
-
+    this.blocksView = new BlocksView({ collection, categories }, { ...config, em });
+    this.__appendTo(collection.models);
     this.__trgCustom();
   }
 
@@ -234,7 +236,7 @@ export default class BlockManager extends Module {
    *   }
    * });
    */
-  add(id, props, opts = {}) {
+  add(id: string, props: BlockProperties, opts = {}) {
     const prp = props || {};
     prp.id = id;
     return this.blocks.add(prp, opts);
@@ -249,7 +251,7 @@ export default class BlockManager extends Module {
    * console.log(JSON.stringify(block));
    * // {label: 'Heading', content: '<h1>Put your ...', ...}
    */
-  get(id) {
+  get(id: string) {
     return this.blocks.get(id);
   }
 
@@ -261,6 +263,7 @@ export default class BlockManager extends Module {
    * console.log(JSON.stringify(blocks));
    * // [{label: 'Heading', content: '<h1>Put your ...'}, ...]
    */
+  // @ts-ignore
   getAll() {
     return this.blocks;
   }
@@ -283,7 +286,7 @@ export default class BlockManager extends Module {
    * const block = blockManager.get('BLOCK_ID');
    * blockManager.remove(block);
    */
-  remove(block, opts = {}) {
+  remove(block: string | Block, opts = {}) {
     return this.__remove(block, opts);
   }
 
@@ -301,7 +304,7 @@ export default class BlockManager extends Module {
    * @return {HTMLElement}
    */
   getContainer() {
-    return this.blocksView.el;
+    return this.blocksView?.el;
   }
 
   /**
@@ -332,13 +335,14 @@ export default class BlockManager extends Module {
    * const newBlocksEl = blockManager.render(filtered, { external: true });
    * document.getElementById('some-id').appendChild(newBlocksEl);
    */
-  render(blocks, opts = {}) {
-    const { categories } = this.categories;
+  // @ts-ignore
+  render(blocks: Block[], opts: { external?: boolean } = {}) {
+    const { categories, config, em } = this;
     const toRender = blocks || this.getAll().models;
 
     if (opts.external) {
       const collection = new Blocks(toRender);
-      return new BlocksView({ collection, categories }, { ...this.c, ...opts }).render().el;
+      return new BlocksView({ collection, categories }, { em, ...config, ...opts }).render().el;
     }
 
     if (this.blocksView) {
@@ -347,7 +351,7 @@ export default class BlockManager extends Module {
 
       if (!this.blocksView.rendered) {
         this.blocksView.render();
-        this.blocksView.rendered = 1;
+        this.blocksView.rendered = true;
       }
     }
 
@@ -359,11 +363,5 @@ export default class BlockManager extends Module {
     colls.map(c => c.stopListening());
     colls.map(c => c.reset());
     this.blocksView?.remove();
-    this.c = {};
-    this.blocks = {};
-    this.blocksVisible = {};
-    this.blocksView = {};
-    this.categories = [];
-    this.all = {};
   }
 }

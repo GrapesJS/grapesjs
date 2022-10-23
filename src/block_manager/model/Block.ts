@@ -53,6 +53,8 @@ export interface BlockProperties {
    */
   attributes?: Record<string, any>;
 
+  id?: string;
+
   /**
    * @deprecated
    */
