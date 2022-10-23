@@ -1,4 +1,5 @@
 import { Model } from '../../common';
+import CategoryView from '../view/CategoryView';
 
 export interface BlockCategoryProperties {
   /**
@@ -15,6 +16,10 @@ export interface BlockCategoryProperties {
    */
   open?: boolean;
   /**
+   * Category order.
+   */
+  order?: string | number;
+  /**
    * Category attributes.
    * @default {}
    */
@@ -22,6 +27,8 @@ export interface BlockCategoryProperties {
 }
 
 export default class Category extends Model<BlockCategoryProperties> {
+  view?: CategoryView;
+
   defaults() {
     return {
       id: '',
