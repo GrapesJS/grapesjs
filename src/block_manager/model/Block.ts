@@ -3,6 +3,7 @@ import { isFunction } from 'underscore';
 import EditorModule from '../../editor';
 import { BlockCategoryProperties } from './Category';
 
+/** @private */
 export interface BlockProperties {
   /**
    * Block label, eg. `My block`
