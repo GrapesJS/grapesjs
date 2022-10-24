@@ -21,7 +21,7 @@ export interface IBaseModule<TConfig extends any> {
 export interface ModuleConfig {
   name?: string;
   stylePrefix?: string;
-  appendTo?: string;
+  appendTo?: string | HTMLElement;
 }
 
 export interface IStorableModule extends IModule {
@@ -217,7 +217,7 @@ export abstract class ItemManagerModule<
     this.__onAllEvent();
   }
 
-  __appendTo() {
+  __appendTo(renderProps?: any) {
     //@ts-ignore
     const elTo = this.config.appendTo;
 
@@ -225,7 +225,7 @@ export abstract class ItemManagerModule<
       const el = isElement(elTo) ? elTo : document.querySelector(elTo);
       if (!el) return this.__logWarn('"appendTo" element not found');
       // @ts-ignore
-      el.appendChild(this.render());
+      el.appendChild(this.render(renderProps));
     }
   }
 

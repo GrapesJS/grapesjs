@@ -1,8 +1,22 @@
 import { isFunction } from 'underscore';
 import { View } from '../../common';
+import EditorModel from '../../editor/model/Editor';
 import { on, off, hasDnd } from '../../utils/mixins';
+import { BlockManagerConfig } from '../config/config';
+import Block from '../model/Block';
 
-export default class BlockView extends View {
+export interface BlockViewConfig {
+  em?: EditorModel;
+  pStylePrefix?: string;
+  appendOnClick?: BlockManagerConfig['appendOnClick'];
+  getSorter?: any;
+}
+
+export default class BlockView extends View<Block> {
+  em: EditorModel;
+  config: BlockViewConfig;
+  ppfx: string;
+
   events() {
     return {
       click: 'handleClick',
@@ -13,9 +27,10 @@ export default class BlockView extends View {
     };
   }
 
-  initialize(o, config = {}) {
+  constructor(o: any, config: BlockViewConfig = {}) {
+    super(o);
     const { model } = this;
-    this.em = config.em;
+    this.em = config.em!;
     this.config = config;
     this.endDrag = this.endDrag.bind(this);
     this.ppfx = config.pStylePrefix || '';
@@ -27,14 +42,14 @@ export default class BlockView extends View {
     return this.em.get('BlockManager');
   }
 
-  handleClick(ev) {
+  handleClick(ev: Event) {
     const { config, model, em } = this;
     const onClick = model.get('onClick') || config.appendOnClick;
     em.trigger('block:click', model, ev);
     if (!onClick) {
       return;
     } else if (isFunction(onClick)) {
-      return onClick(model, em.getEditor(), { event: ev });
+      return onClick(model, em?.getEditor(), { event: ev });
     }
     const sorter = config.getSorter();
     const content = model.get('content');
@@ -51,10 +66,12 @@ export default class BlockView extends View {
         target = selected;
       } else {
         const parent = selected.parent();
-        valid = sorter.validTarget(parent.getEl(), content);
-        if (valid.valid) {
-          target = parent;
-          insertAt = parent.components().indexOf(selected) + 1;
+        if (parent) {
+          valid = sorter.validTarget(parent.getEl(), content);
+          if (valid.valid) {
+            target = parent;
+            insertAt = parent.components().indexOf(selected) + 1;
+          }
         }
       }
     }
@@ -74,7 +91,7 @@ export default class BlockView extends View {
    * Start block dragging
    * @private
    */
-  startDrag(e) {
+  startDrag(e: MouseEvent) {
     const { config, em, model } = this;
     const disable = model.get('disable');
     //Right or middel click
@@ -87,11 +104,11 @@ export default class BlockView extends View {
     on(document, 'mouseup', this.endDrag);
   }
 
-  handleDragStart(ev) {
+  handleDragStart(ev: DragEvent) {
     this.__getModule().__startDrag(this.model, ev);
   }
 
-  handleDrag(ev) {
+  handleDrag(ev: DragEvent) {
     this.__getModule().__drag(ev);
   }
 
@@ -103,7 +120,7 @@ export default class BlockView extends View {
    * Drop block
    * @private
    */
-  endDrag(e) {
+  endDrag() {
     off(document, 'mouseup', this.endDrag);
     const sorter = this.config.getSorter();
 
@@ -122,6 +139,7 @@ export default class BlockView extends View {
     const cls = attr.class || '';
     const className = `${ppfx}block`;
     const label = (em && em.t(`blockManager.labels.${model.id}`)) || model.get('label');
+    // @ts-ignore deprecated
     const render = model.get('render');
     const media = model.get('media');
     const clsAdd = disable ? `${className}--disable` : `${ppfx}four-color-h`;
@@ -131,8 +149,8 @@ export default class BlockView extends View {
       ${media ? `<div class="${className}__media">${media}</div>` : ''}
       <div class="${className}-label">${label}</div>
     `;
-    el.title = attr.title || el.textContent.trim();
-    el.setAttribute('draggable', hasDnd(em) && !disable ? true : false);
+    el.title = attr.title || el.textContent?.trim();
+    el.setAttribute('draggable', `${hasDnd(em) && !disable ? true : false}`);
     const result = render && render({ el, model, className, prefix: ppfx });
     if (result) el.innerHTML = result;
     return this;

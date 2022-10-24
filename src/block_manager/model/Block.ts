@@ -1,5 +1,66 @@
 import { Model } from '../../common';
 import { isFunction } from 'underscore';
+import EditorModule from '../../editor';
+import { BlockCategoryProperties } from './Category';
+
+/** @private */
+export interface BlockProperties {
+  /**
+   * Block label, eg. `My block`
+   */
+  label: string;
+  /**
+   * The content of the block. Might be an HTML string or a [Component Defintion](/modules/Components.html#component-definition)
+   */
+  content: string | any;
+  /**
+   * HTML string for the media/icon of the block, eg. `<svg ...`, `<img ...`, etc.
+   * @default ''
+   */
+  media?: string;
+  /**
+   * Block category, eg. `Basic blocks`
+   * @default ''
+   */
+  category?: string | BlockCategoryProperties;
+  /**
+   * If true, triggers the `active` event on the dropped component.
+   * @default false
+   */
+  activate?: boolean;
+  /**
+   * If true, the dropped component will be selected.
+   * @default false
+   */
+  select?: boolean;
+  /**
+   * If true, all IDs of dropped components and their styles will be changed.
+   * @default false
+   */
+  resetId?: boolean;
+  /**
+   * Disable the block from being interacted.
+   * @default false
+   */
+  disable?: boolean;
+  /**
+   * Custom behavior on click.
+   * @example
+   * onClick: (block, editor) => editor.getWrapper().append(block.get('content'))
+   */
+  onClick?: (block: Block, editor: EditorModule) => void;
+  /**
+   * Block attributes
+   */
+  attributes?: Record<string, any>;
+
+  id?: string;
+
+  /**
+   * @deprecated
+   */
+  activeOnRender?: boolean;
+}
 
 /**
  * @property {String} label Block label, eg. `My block`
@@ -15,7 +76,7 @@ import { isFunction } from 'underscore';
  *
  * @module docsjs.Block
  */
-export default class Block extends Model {
+export default class Block extends Model<BlockProperties> {
   defaults() {
     return {
       label: '',
@@ -23,10 +84,10 @@ export default class Block extends Model {
       media: '',
       category: '',
       activate: false,
-      select: null,
+      select: undefined,
       resetId: false,
       disable: false,
-      onClick: null,
+      onClick: undefined,
       attributes: {},
     };
   }
@@ -36,7 +97,7 @@ export default class Block extends Model {
    * @returns {String}
    */
   getId() {
-    return this.id;
+    return this.id as string;
   }
 
   /**
@@ -44,7 +105,7 @@ export default class Block extends Model {
    * @returns {String}
    */
   getLabel() {
-    return this.get('label');
+    return this.get('label')!;
   }
 
   /**
@@ -67,8 +128,9 @@ export default class Block extends Model {
    * Get block category label
    * @returns {String}
    */
-  getCategoryLabel() {
+  getCategoryLabel(): string {
     const ctg = this.get('category');
-    return isFunction(ctg.get) ? ctg.get('label') : ctg.label ? ctg.label : ctg;
+    // @ts-ignore
+    return isFunction(ctg?.get) ? ctg.get('label') : ctg?.label ? ctg?.label : ctg;
   }
 }
