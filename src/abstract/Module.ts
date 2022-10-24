@@ -210,7 +210,7 @@ export abstract class ItemManagerModule<
     return !opts.abort && rm();
   }
 
-  __catchAllEvent(event: any, model: any, coll: any, opts: any) {
+  __catchAllEvent(event: any, model: any, coll: any, opts?: any) {
     const { em, events } = this;
     const options = opts || coll;
     em && events.all && em.trigger(events.all, { event, model, options });

@@ -33,9 +33,10 @@
  * @module Devices
  */
 import { isString } from 'underscore';
-import Module from '../abstract/moduleLegacy';
-import defaults from './config/config';
-import Device from './model/Device';
+import { ItemManagerModule } from '../abstract/Module';
+import EditorModel from '../editor/model/Editor';
+import defaults, { DeviceManagerConfig } from './config/config';
+import Device, { DeviceProperties } from './model/Device';
 import Devices from './model/Devices';
 import DevicesView from './view/DevicesView';
 
@@ -50,40 +51,45 @@ export const evRemove = `${evPfx}remove`;
 export const evRemoveBefore = `${evRemove}:before`;
 const chnSel = 'change:device';
 
-export default class DeviceManager extends Module {
-  name = 'DeviceManager';
+const events = {
+  all: evAll,
+  select: evSelect,
+  update: evUpdate,
+  add: evAdd,
+  remove: evRemove,
+  removeBefore: evRemoveBefore,
+};
+
+export default class DeviceManager extends ItemManagerModule<
+  DeviceManagerConfig & { appendTo?: HTMLElement | string },
+  Devices
+> {
+  devices: Devices;
+
+  view?: DevicesView;
 
   Device = Device;
 
   Devices = Devices;
 
-  events = {
-    all: evAll,
-    select: evSelect,
-    // selectBefore: evSelectBefore,
-    update: evUpdate,
-    add: evAdd,
-    // addBefore: evAddBefore,
-    remove: evRemove,
-    removeBefore: evRemoveBefore,
-  };
+  storageKey = '';
 
-  init(config = {}) {
-    this.c = { ...defaults, ...config };
-    const { em } = this.c;
+  constructor(em: EditorModel) {
+    super(em, 'DeviceManager', new Devices(em.config.deviceManager?.devices || []), events, defaults);
+    // this.c = { ...defaults, ...config };
+    // const { em } = this.c;
 
-    this.devices = new Devices();
-    this.c.devices.forEach(dv => this.add(dv));
-    this.em = em;
-    this.all = this.devices;
-    this.select(this.c.default || this.devices.at(0));
-    this.__initListen();
+    this.devices = this.all;
+    // this.c.devices.forEach(dv => this.add(dv));
+    // this.em = em;
+    // this.all = this.devices;
+    this.select(this.config.default || this.devices.at(0));
+    // this.__initListen();
     em.on(chnSel, this._onSelect, this);
-
     return this;
   }
 
-  _onSelect(m, deviceId, opts) {
+  _onSelect(m: EditorModel, deviceId: string, opts: Record<string, any>) {
     const { em, events } = this;
     const prevId = m.previous('device');
     const newDevice = this.get(deviceId);
@@ -111,7 +117,7 @@ export default class DeviceManager extends Module {
    *  height: '600px', // Height will be applied on the canvas frame
    * });
    */
-  add(props, options = {}) {
+  add(props: DeviceProperties, options: Record<string, any> = {}) {
     let result;
     let opts = options;
 
@@ -145,7 +151,7 @@ export default class DeviceManager extends Module {
    * console.log(JSON.stringify(device));
    * // {name: 'Tablet', width: '900px'}
    */
-  get(id) {
+  get(id: string) {
     // Support old API
     const byName = this.getAll().filter(d => d.get('name') === id)[0];
     return byName || this.devices.get(id) || null;
@@ -161,7 +167,7 @@ export default class DeviceManager extends Module {
    * const device = deviceManager.get('device-id');
    * deviceManager.remove(device);
    */
-  remove(device, opts = {}) {
+  remove(device: string | Device, opts = {}) {
     return this.__remove(device, opts);
   }
 
@@ -186,7 +192,7 @@ export default class DeviceManager extends Module {
    * const device = deviceManager.get('some-id');
    * deviceManager.select(device);
    */
-  select(device, opts = {}) {
+  select(device: string | Device, opts = {}) {
     const md = isString(device) ? this.get(device) : device;
     md && this.em.set('device', md.get('id'), opts);
     return this;
@@ -202,24 +208,22 @@ export default class DeviceManager extends Module {
     return this.get(this.em.get('device'));
   }
 
+  // @ts-ignore
   getAll() {
     return this.devices;
   }
 
   render() {
+    const { em } = this;
     this.view?.remove();
     this.view = new DevicesView({
       collection: this.devices,
-      config: this.c,
+      config: { em, ...this.config },
     });
     return this.view.render().el;
   }
 
   destroy() {
-    this.devices.stopListening();
-    this.devices.reset();
-    this.view?.remove();
-    [this.devices, this.view].forEach(i => (i = null));
-    this.c = {};
+    this.__destroy();
   }
 }

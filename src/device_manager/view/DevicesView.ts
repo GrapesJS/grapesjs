@@ -1,6 +1,7 @@
 import { View } from '../../common';
 import EditorModel from '../../editor/model/Editor';
 import html from '../../utils/html';
+import Devices from '../model/Devices';
 
 export interface DevicesViewConfig {
   em: EditorModel;
@@ -35,8 +36,7 @@ export default class DevicesView extends View {
     };
   }
 
-  constructor(o: { config: DevicesViewConfig }) {
-    // @ts-ignore
+  constructor(o: { config: DevicesViewConfig; collection: Devices }) {
     super(o);
     this.config = o.config || {};
     this.em = this.config.em;
