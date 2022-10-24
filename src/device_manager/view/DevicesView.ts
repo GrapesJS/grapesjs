@@ -1,8 +1,19 @@
 import { View } from '../../common';
+import EditorModel from '../../editor/model/Editor';
 import html from '../../utils/html';
 
+export interface DevicesViewConfig {
+  em: EditorModel;
+  pStylePrefix?: string;
+}
+
 export default class DevicesView extends View {
-  template({ ppfx, label }) {
+  em: EditorModel;
+  config: DevicesViewConfig;
+  ppfx: string;
+  devicesEl?: JQuery<HTMLElement>;
+
+  template({ ppfx, label }: { ppfx: string; label: string }) {
     return html`
       <div class="${ppfx}device-label">${label}</div>
       <div class="${ppfx}field ${ppfx}select">
@@ -13,23 +24,24 @@ export default class DevicesView extends View {
           <div class="${ppfx}d-s-arrow"></div>
         </div>
       </div>
-      <button style="display:none" class="${ppfx}add-trasp">+</button>
+      <button style="display:none" class="${ppfx}add-trasp" data-add-trasp>+</button>
     `;
   }
 
   events() {
     return {
       change: 'updateDevice',
+      'click [data-add-trasp]': 'startAdd',
     };
   }
 
-  initialize(o) {
+  constructor(o: { config: DevicesViewConfig }) {
+    // @ts-ignore
+    super(o);
     this.config = o.config || {};
     this.em = this.config.em;
     this.ppfx = this.config.pStylePrefix || '';
-    this.events['click .' + this.ppfx + 'add-trasp'] = this.startAdd;
     this.listenTo(this.em, 'change:device', this.updateSelect);
-    this.delegateEvents();
   }
 
   /**
@@ -44,11 +56,11 @@ export default class DevicesView extends View {
    * @private
    */
   updateDevice() {
-    var em = this.em;
+    const { em } = this;
+
     if (em) {
-      var devEl = this.devicesEl;
-      var val = devEl ? devEl.val() : '';
-      em.set('device', val);
+      const devEl = this.devicesEl;
+      em.set('device', devEl ? devEl.val() : '');
     }
   }
 
@@ -57,12 +69,11 @@ export default class DevicesView extends View {
    * @private
    */
   updateSelect() {
-    var em = this.em;
-    var devEl = this.devicesEl;
-    if (em && em.getDeviceModel && devEl) {
-      var device = em.getDeviceModel();
-      var name = device ? device.get('id') : '';
-      devEl.val(name);
+    const { em, devicesEl } = this;
+
+    if (em && em.getDeviceModel && devicesEl) {
+      const device = em.getDeviceModel();
+      devicesEl.val(device ? device.get('id') : '');
     }
   }
 
