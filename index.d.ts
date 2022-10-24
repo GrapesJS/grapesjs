@@ -1630,7 +1630,7 @@ declare namespace grapesjs {
      * });
      * @param id - Block ID
      */
-    add(id: string, block: BlockOptions): any;
+    add(id: string, block: BlockProperties): any;
     /**
      * Get the block by id.
      * @example
@@ -1707,14 +1707,32 @@ declare namespace grapesjs {
     ): HTMLElement;
   }
 
-  interface BlockCategoryOptions {
-    id: string,
-    label: string,
-    open?: boolean,
-    attributes?: Record<string, any>,
+  interface BlockCategoryProperties {
+    /**
+     * Category id.
+     */
+    id: string;
+    /**
+     * Category label.
+     */
+    label: string;
+    /**
+     * Category open state.
+     * @default true
+     */
+    open?: boolean;
+    /**
+     * Category order.
+     */
+    order?: string | number;
+    /**
+     * Category attributes.
+     * @default {}
+     */
+    attributes?: Record<string, any>;
   }
 
-  interface BlockOptions {
+  interface BlockProperties {
     /**
      * Block label, eg. `My block`
      */
@@ -1725,40 +1743,54 @@ declare namespace grapesjs {
     content: string | any;
     /**
      * HTML string for the media/icon of the block, eg. `<svg ...`, `<img ...`, etc.
-     * @defaultValue ''
+     * @default ''
      */
     media?: string;
     /**
      * Block category, eg. `Basic blocks`
-     * @defaultValue ''
+     * @default ''
      */
-    category?: string | BlockCategoryOptions;
+    category?: string | BlockCategoryProperties;
     /**
      * If true, triggers the `active` event on the dropped component.
+     * @default false
      */
     activate?: boolean;
     /**
      * If true, the dropped component will be selected.
+     * @default false
      */
     select?: boolean;
     /**
      * If true, all IDs of dropped components and their styles will be changed.
+     * @default false
      */
     resetId?: boolean;
     /**
-     * Disable the block from being interacted
+     * Disable the block from being interacted.
+     * @default false
      */
     disable?: boolean;
     /**
-     * Custom behavior on click, eg. `(block, editor) => editor.getWrapper().append(block.get('content'))`
+     * Custom behavior on click.
+     * @example
+     * onClick: (block, editor) => editor.getWrapper().append(block.get('content'))
      */
-    onClick?: (...params: any[]) => any;
+    onClick?: (block: Block, editor: Editor) => void;
     /**
      * Block attributes
      */
     attributes?: Record<string, any>;
+
+    id?: string;
+
+    /**
+     * @deprecated
+     */
+    activeOnRender?: boolean;
   }
-  interface Block extends Backbone.Model<BlockOptions> {
+
+  interface Block extends Backbone.Model<BlockProperties> {
     /**
      * Get block id
      */
