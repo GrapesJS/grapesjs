@@ -42,7 +42,7 @@ async function generateDocs () {
     ['undo_manager/index.js', 'undo_manager.md'],
     ['canvas/index.ts', 'canvas.md'],
     ['canvas/model/Frame.ts', 'frame.md'],
-    ['i18n/index.js', 'i18n.md'],
+    ['i18n/index.ts', 'i18n.md'],
     ['navigator/index.ts', 'layer_manager.md'],
     ['pages/index.ts', 'pages.md'],
     ['pages/model/Page.ts', 'page.md'],
