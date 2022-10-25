@@ -4,17 +4,22 @@ import { View } from '../../common';
 import { createEl } from '../../utils/dom';
 import CssRuleView from './CssRuleView';
 import CssGroupRuleView from './CssGroupRuleView';
+import EditorModel from '../../editor/model/Editor';
+import CssRule from '../model/CssRule';
 
-const getBlockId = (pfx, order) => `${pfx}${order ? `-${parseFloat(order)}` : ''}`;
+const getBlockId = (pfx: string, order?: string | number) => `${pfx}${order ? `-${parseFloat(order as string)}` : ''}`;
 
 export default class CssRulesView extends View {
-  constructor(options) {
-    super(options);
+  atRules: Record<string, any>;
+  config: Record<string, any>;
+  em: EditorModel;
+  pfx: string;
+  renderStarted?: boolean;
 
+  constructor(o: any) {
+    super(o);
     bindAll(this, 'sortRules');
-  }
 
-  initialize(o) {
     const config = o.config || {};
     this.atRules = {};
     this.config = config;
@@ -31,7 +36,7 @@ export default class CssRulesView extends View {
    * @param {Object} model
    * @private
    * */
-  addTo(model) {
+  addTo(model: CssRule) {
     this.addToCollection(model);
   }
 
@@ -42,7 +47,7 @@ export default class CssRulesView extends View {
    * @return {Object}
    * @private
    * */
-  addToCollection(model, fragmentEl) {
+  addToCollection(model: CssRule, fragmentEl?: DocumentFragment) {
     // If the render is not yet started
     if (!this.renderStarted) {
       return;
@@ -77,7 +82,7 @@ export default class CssRulesView extends View {
       rendered = view.render().el;
     }
 
-    const clsName = this.className;
+    const clsName = this.className!;
     const mediaText = model.get('mediaText');
     const defaultBlockId = getBlockId(clsName);
     let blockId = defaultBlockId;
@@ -102,17 +107,17 @@ export default class CssRulesView extends View {
         contRules = container.querySelector(`#${defaultBlockId}`);
       }
 
-      contRules.appendChild(rendered);
+      contRules?.appendChild(rendered);
     }
 
     return rendered;
   }
 
-  getMediaWidth(mediaText) {
+  getMediaWidth(mediaText: string) {
     return mediaText && mediaText.replace(`(${this.em.getConfig().mediaCondition}: `, '').replace(')', '');
   }
 
-  sortRules(a, b) {
+  sortRules(a: number, b: number) {
     const { em } = this;
     const isMobFirst = (em.getConfig().mediaCondition || '').indexOf('min-width') !== -1;
 
@@ -125,20 +130,21 @@ export default class CssRulesView extends View {
   }
 
   render() {
-    this.renderStarted = 1;
+    this.renderStarted = true;
     this.atRules = {};
-    const { em, $el, className, collection } = this;
+    const { em, $el, collection } = this;
+    const cls = this.className!;
     const frag = document.createDocumentFragment();
     $el.empty();
 
     // Create devices related DOM structure, ensure also to have a default container
-    const prs = em.get('DeviceManager').getAll().pluck('priority').sort(this.sortRules);
+    const prs = em.get('DeviceManager').getAll().pluck('priority').sort(this.sortRules) as number[];
     prs.every(pr => pr) && prs.unshift(0);
-    prs.forEach(pr => frag.appendChild(createEl('div', { id: getBlockId(className, pr) })));
+    prs.forEach(pr => frag.appendChild(createEl('div', { id: getBlockId(cls, pr) })));
 
     collection.each(model => this.addToCollection(model, frag));
     $el.append(frag);
-    $el.attr('class', className);
+    $el.attr('class', cls);
     return this;
   }
 }
