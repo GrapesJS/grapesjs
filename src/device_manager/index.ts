@@ -75,7 +75,7 @@ export default class DeviceManager extends ItemManagerModule<
   storageKey = '';
 
   constructor(em: EditorModel) {
-    super(em, 'DeviceManager', new Devices(em.config.deviceManager?.devices || []), events, defaults);
+    super(em, 'DeviceManager', new Devices(), events, defaults);
     this.devices = this.all;
     this.config.devices?.forEach(device => this.add(device, { silent: true }));
     this.select(this.config.default || this.devices.at(0));
