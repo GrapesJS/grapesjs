@@ -4,11 +4,6 @@ import CssRule from '../model/CssRule';
 export default class CssRuleView extends View<CssRule> {
   config: any;
 
-  // @ts-ignore
-  tagName() {
-    return 'style';
-  }
-
   constructor(o: any = {}) {
     super(o);
     this.config = o.config || {};
@@ -16,6 +11,11 @@ export default class CssRuleView extends View<CssRule> {
     this.listenTo(model, 'change', this.render);
     this.listenTo(model, 'destroy remove', this.remove);
     this.listenTo(model.get('selectors'), 'change', this.render);
+  }
+
+  // @ts-ignore
+  tagName() {
+    return 'style';
   }
 
   render() {
