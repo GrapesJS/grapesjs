@@ -51,13 +51,13 @@ import { isUndefined } from 'underscore';
 import { Module } from '../abstract';
 import EditorModel from '../editor/model/Editor';
 import { getElement, getViewEl } from '../utils/mixins';
-import defaults from './config/config';
+import defaults, { CanvasConfig } from './config/config';
 import Canvas from './model/Canvas';
 import Frame from './model/Frame';
 import CanvasView from './view/CanvasView';
 import FrameView from './view/FrameView';
 
-export default class CanvasModule extends Module<typeof defaults> {
+export default class CanvasModule extends Module<CanvasConfig> {
   /**
    * Get configuration object
    * @name getConfig
@@ -520,8 +520,7 @@ export default class CanvasModule extends Module<typeof defaults> {
   isInputFocused() {
     const doc = this.getDocument();
     const frame = this.getFrameEl();
-    //console.log(this.config)
-    const toIgnore = ['body', ...this.config.notTextable];
+    const toIgnore = ['body', ...this.config.notTextable!];
     const docActive = frame && document.activeElement === frame;
     const focused = docActive ? doc && doc.activeElement : document.activeElement;
 
