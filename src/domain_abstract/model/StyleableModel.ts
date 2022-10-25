@@ -1,17 +1,20 @@
-import { isString, isArray, keys, isUndefined } from 'underscore';
+import { isString, isArray, keys } from 'underscore';
 import { shallowDiff } from '../../utils/mixins';
 import ParserHtml from '../../parser/model/ParserHtml';
 import { Model } from '../../common';
+import { ObjectHash } from 'backbone';
+
+type AnyObject = Record<string, any>;
 
 const parserHtml = ParserHtml();
 
-export default class StyleableModel extends Model {
+export default class StyleableModel<T extends ObjectHash = any> extends Model<T> {
   /**
    * Forward style string to `parseStyle` to be parse to an object
    * @param  {string} str
    * @returns
    */
-  parseStyle(str) {
+  parseStyle(str: string) {
     return parserHtml.parseStyle(str);
   }
 
@@ -21,7 +24,7 @@ export default class StyleableModel extends Model {
    * @param {Object} prop
    * @return {Object}
    */
-  extendStyle(prop) {
+  extendStyle(prop: AnyObject): AnyObject {
     return { ...this.getStyle(), ...prop };
   }
 
@@ -29,9 +32,9 @@ export default class StyleableModel extends Model {
    * Get style object
    * @return {Object}
    */
-  getStyle(prop) {
+  getStyle(prop?: string | AnyObject) {
     const style = this.get('style') || {};
-    const result = { ...style };
+    const result: AnyObject = { ...style };
     return prop && isString(prop) ? result[prop] : result;
   }
 
@@ -41,7 +44,7 @@ export default class StyleableModel extends Model {
    * @param {Object} opts
    * @return {Object} Applied properties
    */
-  setStyle(prop = {}, opts = {}) {
+  setStyle(prop: string | AnyObject = {}, opts: AnyObject = {}) {
     if (isString(prop)) {
       prop = this.parseStyle(prop);
     }
@@ -60,7 +63,8 @@ export default class StyleableModel extends Model {
     // Delete the property used for partial updates
     delete diff.__p;
     keys(diff).forEach(pr => {
-      const em = this.em;
+      // @ts-ignore
+      const { em } = this;
       if (opts.noEvent) return;
       this.trigger(`change:style:${pr}`);
       if (em) {
@@ -80,7 +84,7 @@ export default class StyleableModel extends Model {
    * this.addStyle({color: 'red'});
    * this.addStyle('color', 'blue');
    */
-  addStyle(prop, value = '', opts = {}) {
+  addStyle(prop: string | AnyObject, value = '', opts = {}) {
     if (typeof prop == 'string') {
       prop = {
         prop: value,
@@ -97,7 +101,7 @@ export default class StyleableModel extends Model {
    * Remove style property
    * @param {string} prop
    */
-  removeStyle(prop) {
+  removeStyle(prop: string) {
     let style = this.getStyle();
     delete style[prop];
     this.setStyle(style);
@@ -108,7 +112,7 @@ export default class StyleableModel extends Model {
    * @param {Object} [opts={}] Options
    * @return {String}
    */
-  styleToString(opts = {}) {
+  styleToString(opts: AnyObject = {}) {
     const result = [];
     const style = this.getStyle(opts);
 
@@ -127,11 +131,13 @@ export default class StyleableModel extends Model {
     return this.get('selectors') || this.get('classes');
   }
 
-  getSelectorsString(opts) {
+  getSelectorsString(opts?: AnyObject) {
+    // @ts-ignore
     return this.selectorsToString ? this.selectorsToString(opts) : this.getSelectors().getFullString();
   }
 
-  _validate(attr, opts) {
-    return true;
-  }
+  // @ts-ignore
+  // _validate(attr, opts) {
+  //   return true;
+  // }
 }

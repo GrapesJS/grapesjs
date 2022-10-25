@@ -4,7 +4,70 @@ import StyleableModel from '../../domain_abstract/model/StyleableModel';
 import Selectors from '../../selector_manager/model/Selectors';
 import { getMediaLength } from '../../code_manager/model/CssGenerator';
 import { isEmptyObj, hasWin } from '../../utils/mixins';
+import Selector from '../../selector_manager/model/Selector';
+import EditorModel from '../../editor/model/Editor';
 
+/** @private */
+export interface CssRuleProperties {
+  /**
+   * Array of selectors
+   */
+  selectors: Selector[];
+  /**
+   * Object containing style definitions
+   * @default {}
+   */
+  style?: Record<string, any>;
+  /**
+   * Additional string css selectors
+   * @default ''
+   */
+  selectorsAdd?: string;
+  /**
+   * Type of at-rule, eg. `media`, 'font-face'
+   * @default ''
+   */
+  atRuleType?: string;
+  /**
+   * At-rule value, eg. `(max-width: 1000px)`
+   * @default ''
+   */
+  mediaText?: string;
+  /**
+   * This property is used only on at-rules, like 'page' or 'font-face', where the block containes only style declarations.
+   * @default false
+   */
+  singleAtRule?: boolean;
+  /**
+   * State of the rule, eg: `hover`, `focused`
+   * @default ''
+   */
+  state?: string;
+  /**
+   * If true, sets `!important` on all properties. You can also pass an array to specify properties on which to use important.
+   * @default false
+   */
+  important?: boolean | string[];
+  /**
+   * Indicates if the rule is stylable from the editor.
+   * @default true
+   */
+  stylable?: boolean | string[];
+  /**
+   * Group for rules.
+   * @default ''
+   */
+  group?: string;
+  /**
+   * If true, the rule won't be stored in JSON or showed in CSS export.
+   * @default false
+   */
+  shallow?: boolean;
+}
+
+type AnyObject = Record<string, any>;
+
+// @ts-ignore
 const { CSS } = hasWin() ? window : {};
 
 /**
@@ -23,7 +86,11 @@ const { CSS } = hasWin() ? window : {};
  * [State]: state.html
  * [Component]: component.html
  */
-export default class CssRule extends StyleableModel {
+export default class CssRule extends StyleableModel<CssRuleProperties> {
+  config: CssRuleProperties;
+  em?: EditorModel;
+  opt: any;
+
   defaults() {
     return {
       selectors: [],
@@ -36,38 +103,39 @@ export default class CssRule extends StyleableModel {
       singleAtRule: false,
       important: false,
       group: '',
-      // If true, won't be stored in JSON or showed in CSS
       shallow: false,
       _undo: true,
     };
   }
 
-  initialize(c, opt = {}) {
-    this.config = c || {};
+  constructor(props: CssRuleProperties, opt: any = {}) {
+    super(props);
+    this.config = props || {};
     this.opt = opt;
     this.em = opt.em;
-    this.ensureSelectors();
+    this.ensureSelectors(null, null, {});
     this.on('change', this.__onChange);
   }
 
-  __onChange(m, opts) {
+  __onChange(m: CssRule, opts: any) {
     const { em } = this;
     const changed = this.changedAttributes();
-    !isEmptyObj(changed) && em && em.changesUp(opts);
+    changed && !isEmptyObj(changed) && em?.changesUp(opts);
   }
 
-  clone() {
+  clone(): CssRule {
     const opts = { ...this.opt };
     const attr = { ...this.attributes };
-    attr.selectors = this.get('selectors').map(s => s.clone());
+    attr.selectors = this.get('selectors')!.map(s => s.clone()) as Selector[];
+    // @ts-ignore
     return new this.constructor(attr, opts);
   }
 
-  ensureSelectors(m, c, opts) {
+  ensureSelectors(m: any, c: any, opts: any) {
     const { em } = this;
-    const sm = em && em.get('SelectorManager');
+    const sm = em?.get('SelectorManager');
     const toListen = [this, 'change:selectors', this.ensureSelectors];
-    let sels = this.getSelectors();
+    let sels = this.getSelectors() as any;
     this.stopListening(...toListen);
 
     if (sels.models) {
@@ -82,6 +150,7 @@ export default class CssRule extends StyleableModel {
     }
 
     this.set('selectors', sels, opts);
+    // @ts-ignore
     this.listenTo(...toListen);
   }
 
@@ -114,13 +183,14 @@ export default class CssRule extends StyleableModel {
    * cssRule.selectorsToString(); // ".class1:hover"
    * cssRule.selectorsToString({ skipState: true }); // ".class1"
    */
-  selectorsToString(opts = {}) {
+  selectorsToString(opts: AnyObject = {}) {
     const result = [];
     const state = this.get('state');
     const addSelector = this.get('selectorsAdd');
     const selOpts = {
-      escape: str => (CSS && CSS.escape ? CSS.escape(str) : str),
+      escape: (str: string) => (CSS && CSS.escape ? CSS.escape(str) : str),
     };
+    // @ts-ignore
     const selectors = this.get('selectors').getFullString(0, selOpts);
     const stateStr = state && !opts.skipState ? `:${state}` : '';
     selectors && result.push(`${selectors}${stateStr}`);
@@ -139,7 +209,7 @@ export default class CssRule extends StyleableModel {
    * });
    * cssRule.getDeclaration() // ".class1{color:red;}"
    */
-  getDeclaration(opts = {}) {
+  getDeclaration(opts: AnyObject = {}) {
     let result = '';
     const { important } = this.attributes;
     const selectors = this.selectorsToString(opts);
@@ -164,11 +234,11 @@ export default class CssRule extends StyleableModel {
     const { em } = this;
     const { atRuleType, mediaText } = this.attributes;
     const devices = em?.get('DeviceManager').getDevices() || [];
-    const deviceDefault = devices.filter(d => d.getWidthMedia() === '')[0];
+    const deviceDefault = devices.filter((d: any) => d.getWidthMedia() === '')[0];
     if (atRuleType !== 'media' || !mediaText) {
       return deviceDefault || null;
     }
-    return devices.filter(d => d.getWidthMedia() === getMediaLength(mediaText))[0] || null;
+    return devices.filter((d: any) => d.getWidthMedia() === getMediaLength(mediaText))[0] || null;
   }
 
   /**
@@ -181,8 +251,8 @@ export default class CssRule extends StyleableModel {
   getState() {
     const { em } = this;
     const stateValue = this.get('state');
-    const states = em.get('SelectorManager').getStates() || [];
-    return states.filter(s => s.getName() === stateValue)[0] || null;
+    const states = em?.get('SelectorManager').getStates() || [];
+    return states.filter((s: any) => s.getName() === stateValue)[0] || null;
   }
 
   /**
@@ -193,7 +263,7 @@ export default class CssRule extends StyleableModel {
    * console.log(cmp?.toHTML());
    */
   getComponent() {
-    const sel = this.getSelectors();
+    const sel = this.getSelectors() as any;
     const sngl = sel.length == 1 && sel.at(0);
     const cmpId = sngl && sngl.isId() && sngl.get('name');
     return (cmpId && this.em?.get('DomComponents').getById(cmpId)) || null;
@@ -210,7 +280,7 @@ export default class CssRule extends StyleableModel {
    * });
    * cssRule.toCSS() // "@media (min-width: 500px){.class1{color:red;}}"
    */
-  toCSS(opts = {}) {
+  toCSS(opts: AnyObject = {}) {
     let result = '';
     const atRule = this.getAtRule();
     const block = this.getDeclaration(opts);
@@ -225,10 +295,10 @@ export default class CssRule extends StyleableModel {
     return result;
   }
 
-  toJSON(...args) {
+  toJSON(...args: any) {
     const obj = Model.prototype.toJSON.apply(this, args);
 
-    if (this.em.getConfig().avoidDefaults) {
+    if (this.em?.getConfig().avoidDefaults) {
       const defaults = this.defaults();
 
       forEach(defaults, (value, key) => {
@@ -256,7 +326,7 @@ export default class CssRule extends StyleableModel {
    * @returns  {Boolean}
    * @private
    */
-  compare(selectors, state, width, ruleProps = {}) {
+  compare(selectors: any, state: string, width: string, ruleProps: Partial<CssRuleProperties> = {}) {
     const st = state || '';
     const wd = width || '';
     const selAdd = ruleProps.selectorsAdd || '';
@@ -266,8 +336,8 @@ export default class CssRule extends StyleableModel {
     // Fix atRuleType in case is not specified with width
     if (wd && !atRule) atRule = 'media';
 
-    const a1 = sel.map(model => model.getFullName());
-    const a2 = this.get('selectors').map(model => model.getFullName());
+    const a1: string[] = sel.map((model: any) => model.getFullName());
+    const a2: string[] = this.get('selectors')?.map(model => model.getFullName())!;
 
     // Check selectors
     const a1S = a1.slice().sort();
