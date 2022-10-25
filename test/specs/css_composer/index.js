@@ -37,7 +37,7 @@ describe('Css Composer', () => {
     beforeEach(() => {
       em = new Editor({});
       config = { em };
-      obj = new CssComposer().init(config);
+      obj = new CssComposer(em);
     });
 
     afterEach(() => {

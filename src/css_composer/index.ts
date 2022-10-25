@@ -95,7 +95,10 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
   }
 
   load(data: any) {
-    return this.loadProjectData(data);
+    return this.loadProjectData(data, {
+      // @ts-ignore Fix add() first in CssRules
+      all: this.rules,
+    });
   }
 
   /**

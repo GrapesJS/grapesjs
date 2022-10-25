@@ -69,7 +69,7 @@ describe('CssGenerator', () => {
 
   beforeEach(() => {
     em = new Editor({});
-    newCssComp = () => new CssComposer().init({ em });
+    newCssComp = () => new CssComposer(em);
 
     cc = em.get('CssComposer');
     obj = new CssGenerator();
