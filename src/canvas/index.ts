@@ -47,10 +47,8 @@
  * @module Canvas
  */
 
-import { AddOptions } from 'backbone';
 import { isUndefined } from 'underscore';
 import { Module } from '../abstract';
-import ComponentView from '../dom_components/view/ComponentView';
 import EditorModel from '../editor/model/Editor';
 import { getElement, getViewEl } from '../utils/mixins';
 import defaults from './config/config';
