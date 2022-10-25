@@ -3,6 +3,7 @@ import { shallowDiff } from '../../utils/mixins';
 import ParserHtml from '../../parser/model/ParserHtml';
 import { Model } from '../../common';
 import { ObjectHash } from 'backbone';
+import Selectors from '../../selector_manager/model/Selectors';
 
 type AnyObject = Record<string, any>;
 
@@ -128,7 +129,7 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
   }
 
   getSelectors() {
-    return this.get('selectors') || this.get('classes');
+    return (this.get('selectors') || this.get('classes')) as Selectors;
   }
 
   getSelectorsString(opts?: AnyObject) {

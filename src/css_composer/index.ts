@@ -1,6 +1,6 @@
 /**
  * This module manages CSS rules in the canvas.
- * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/css_composer/config/config.js)
+ * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/css_composer/config/config.ts)
  * ```js
  * const editor = grapesjs.init({
  *  cssComposer: {
@@ -29,50 +29,47 @@
 
 import { isArray, isString, isUndefined } from 'underscore';
 import { isObject } from '../utils/mixins';
-import Module from '../abstract/moduleLegacy';
 import Selectors from '../selector_manager/model/Selectors';
 import Selector from '../selector_manager/model/Selector';
-import defaults from './config/config';
-import CssRule from './model/CssRule';
+import defaults, { CssComposerConfig } from './config/config';
+import CssRule, { CssRuleProperties } from './model/CssRule';
 import CssRules from './model/CssRules';
 import CssRulesView from './view/CssRulesView';
+import { ItemManagerModule } from '../abstract/Module';
+import EditorModel from '../editor/model/Editor';
+import Component from '../dom_components/model/Component';
 
-export default class CssComposer extends Module {
+type RuleOptions = {
+  atRuleType?: string;
+  atRuleParams?: string;
+};
+
+type CssRuleStyle = Required<CssRuleProperties>['style'];
+type AnyObject = Record<string, any>;
+
+export default class CssComposer extends ItemManagerModule<CssComposerConfig & { pStylePrefix?: string }> {
+  rules: CssRules;
+  rulesView?: CssRulesView;
+
   Selectors = Selectors;
 
-  /**
-   * Name of the module
-   * @type {String}
-   * @private
-   */
-  name = 'CssComposer';
-
   storageKey = 'styles';
-
-  getConfig() {
-    return this.c;
-  }
 
   /**
    * Initializes module. Automatically called with a new instance of the editor
    * @param {Object} config Configurations
    * @private
    */
-  init(config) {
-    this.c = config || {};
-    for (var name in defaults) {
-      if (!(name in this.c)) this.c[name] = defaults[name];
-    }
+  constructor(em: EditorModel) {
+    super(em, 'CssComposer', null, {}, defaults);
+    const { config } = this;
 
-    var ppfx = this.c.pStylePrefix;
-    if (ppfx) this.c.stylePrefix = ppfx + this.c.stylePrefix;
+    const ppfx = config.pStylePrefix;
+    if (ppfx) config.stylePrefix = ppfx + config.stylePrefix;
 
-    var elStyle = (this.c.em && this.c.em.config.style) || '';
-    this.c.rules = elStyle || this.c.rules;
+    config.rules = this.em.config.style || config.rules || '';
 
-    this.em = this.c.em;
-    this.rules = new CssRules([], this.c);
-    return this;
+    this.rules = new CssRules([], config);
   }
 
   /**
@@ -80,7 +77,7 @@ export default class CssComposer extends Module {
    * @private
    */
   onLoad() {
-    this.rules.add(this.c.rules, { silent: 1 });
+    this.rules.add(this.config.rules, { silent: true });
   }
 
   /**
@@ -97,7 +94,7 @@ export default class CssComposer extends Module {
     return this.getProjectData();
   }
 
-  load(data) {
+  load(data: any) {
     return this.loadProjectData(data);
   }
 
@@ -120,11 +117,11 @@ export default class CssComposer extends Module {
    *   color: '#fff',
    * });
    * */
-  add(selectors, state, width, opts = {}, addOpts = {}) {
-    var s = state || '';
-    var w = width || '';
-    var opt = { ...opts };
-    var rule = this.get(selectors, s, w, opt);
+  add(selectors: any, state?: string, width?: string, opts = {}, addOpts = {}) {
+    const s = state || '';
+    const w = width || '';
+    const opt = { ...opts } as CssRuleProperties;
+    let rule = this.get(selectors, s, w, opt);
 
     // do not create rules that were found before
     // unless this is a single at-rule, for which multiple declarations
@@ -136,7 +133,8 @@ export default class CssComposer extends Module {
       opt.mediaText = w;
       opt.selectors = [];
       w && (opt.atRuleType = 'media');
-      rule = new CssRule(opt, this.c);
+      rule = new CssRule(opt, this.config);
+      // @ts-ignore
       rule.get('selectors').add(selectors, addOpts);
       this.rules.add(rule, addOpts);
       return rule;
@@ -162,7 +160,7 @@ export default class CssComposer extends Module {
    *   color: '#000',
    * });
    * */
-  get(selectors, state, width, ruleProps) {
+  get(selectors: any, state?: string, width?: string, ruleProps?: Omit<CssRuleProperties, 'selectors'>) {
     let slc = selectors;
     if (isString(selectors)) {
       const sm = this.em.get('SelectorManager');
@@ -173,6 +171,7 @@ export default class CssComposer extends Module {
     return this.rules.find(rule => rule.compare(slc, state, width, ruleProps)) || null;
   }
 
+  // @ts-ignore
   getAll() {
     return this.rules;
   }
@@ -186,8 +185,8 @@ export default class CssComposer extends Module {
    * @return {Array<Model>}
    * @private
    */
-  addCollection(data, opts = {}, props = {}) {
-    const result = [];
+  addCollection(data: string | CssRuleProperties[], opts: Record<string, any> = {}, props = {}) {
+    const result: CssRule[] = [];
 
     if (isString(data)) {
       data = this.em.get('Parser').parseCss(data);
@@ -196,28 +195,29 @@ export default class CssComposer extends Module {
     const d = data instanceof Array ? data : [data];
 
     for (var i = 0, l = d.length; i < l; i++) {
-      var rule = d[i] || {};
+      const rule = (d[i] || {}) as CssRuleProperties;
       if (!rule.selectors) continue;
-      var sm = this.em?.get('SelectorManager');
-      if (!sm) console.warn('Selector Manager not found');
-      var sl = rule.selectors;
-      var sels = sl instanceof Array ? sl : [sl];
-      var newSels = [];
 
-      for (var j = 0, le = sels.length; j < le; j++) {
-        var selec = sm.add(sels[j]);
+      const sm = this.em?.get('SelectorManager');
+      if (!sm) console.warn('Selector Manager not found');
+      const sl = rule.selectors;
+      const sels = sl instanceof Array ? sl : [sl];
+      const newSels = [];
+
+      for (let j = 0, le = sels.length; j < le; j++) {
+        const selec = sm.add(sels[j]);
         newSels.push(selec);
       }
 
-      var modelExists = this.get(newSels, rule.state, rule.mediaText, rule);
-      var model = this.add(newSels, rule.state, rule.mediaText, rule, opts);
-      var updateStyle = !modelExists || !opts.avoidUpdateStyle;
+      const modelExists = this.get(newSels, rule.state, rule.mediaText, rule);
+      const model = this.add(newSels, rule.state, rule.mediaText, rule, opts);
+      const updateStyle = !modelExists || !opts.avoidUpdateStyle;
       const style = rule.style || {};
 
       isObject(props) && model.set(props, opts);
 
       if (updateStyle) {
-        let styleUpdate = opts.extend ? { ...model.get('style'), ...style } : style;
+        const styleUpdate = opts.extend ? { ...model.get('style'), ...style } : style;
         model.set('style', styleUpdate, opts);
       }
 
@@ -236,7 +236,7 @@ export default class CssComposer extends Module {
    * // Check rules
    * console.log(addedRules.map(rule => rule.toCSS()));
    */
-  addRules(css) {
+  addRules(css: string) {
     return this.addCollection(css);
   }
 
@@ -262,7 +262,7 @@ export default class CssComposer extends Module {
    * });
    * // output: @media (min-width: 500px) { .class1:hover { color: red } }
    */
-  setRule(selectors, style, opts = {}) {
+  setRule(selectors: any, style: CssRuleProperties['style'], opts: RuleOptions = {}) {
     const { atRuleType, atRuleParams } = opts;
     const node = this.em.get('Parser').parserCss.checkNode({
       selectors,
@@ -294,7 +294,7 @@ export default class CssComposer extends Module {
    *  atRuleParams: '(min-width: 500px)',
    * });
    */
-  getRule(selectors, opts = {}) {
+  getRule(selectors: any, opts: RuleOptions = {}) {
     const sm = this.em.get('SelectorManager');
     const node = this.em.get('Parser').parserCss.checkNode({ selectors })[0];
     const selector = sm.get(node.selectors);
@@ -304,7 +304,7 @@ export default class CssComposer extends Module {
       selector &&
       this.get(selector, state, atRuleParams, {
         selectorsAdd,
-        atRule: atRuleType,
+        atRuleType,
       })
     );
   }
@@ -321,7 +321,7 @@ export default class CssComposer extends Module {
    * // All rules in the project
    * console.log(css.getRules())
    */
-  getRules(selector) {
+  getRules(selector: string) {
     const rules = this.getAll();
     if (!selector) return [...rules.models];
     const optRuleSel = { sort: true };
@@ -344,7 +344,7 @@ export default class CssComposer extends Module {
    * // #myid { color: red }
    * // #myid:hover { color: blue }
    */
-  setIdRule(name, style = {}, opts = {}) {
+  setIdRule(name: string, style: CssRuleStyle = {}, opts: AnyObject = {}) {
     const { addOpts = {}, mediaText } = opts;
     const state = opts.state || '';
     const media = !isUndefined(mediaText) ? mediaText : this.em.getCurrentMedia();
@@ -365,7 +365,7 @@ export default class CssComposer extends Module {
    * const rule = css.getIdRule('myid');
    * const ruleHover = css.setIdRule('myid', { state: 'hover' });
    */
-  getIdRule(name, opts = {}) {
+  getIdRule(name: string, opts: AnyObject = {}) {
     const { mediaText } = opts;
     const state = opts.state || '';
     const media = !isUndefined(mediaText) ? mediaText : this.em.getCurrentMedia();
@@ -387,7 +387,7 @@ export default class CssComposer extends Module {
    * // .myclass { color: red }
    * // .myclass:hover { color: blue }
    */
-  setClassRule(name, style = {}, opts = {}) {
+  setClassRule(name: string, style: CssRuleStyle = {}, opts: AnyObject = {}) {
     const state = opts.state || '';
     const media = opts.mediaText || this.em.getCurrentMedia();
     const sm = this.em.get('SelectorManager');
@@ -407,7 +407,7 @@ export default class CssComposer extends Module {
    * const rule = css.getClassRule('myclass');
    * const ruleHover = css.getClassRule('myclass', { state: 'hover' });
    */
-  getClassRule(name, opts = {}) {
+  getClassRule(name: string, opts: AnyObject = {}) {
     const state = opts.state || '';
     const media = opts.mediaText || this.em.getCurrentMedia();
     const selector = this.em.get('SelectorManager').get(name, Selector.TYPE_CLASS);
@@ -425,7 +425,7 @@ export default class CssComposer extends Module {
    * // Remove by selector
    * css.remove('.my-cls-2');
    */
-  remove(rule, opts) {
+  remove(rule: string | CSSRule, opts?: any) {
     const toRemove = isString(rule) ? this.getRules(rule) : rule;
     const result = this.getAll().remove(toRemove, opts);
     return isArray(result) ? result : [result];
@@ -436,11 +436,11 @@ export default class CssComposer extends Module {
    * @return {this}
    */
   clear(opts = {}) {
-    this.getAll().reset(null, opts);
+    this.getAll().reset([], opts);
     return this;
   }
 
-  getComponentRules(cmp, opts = {}) {
+  getComponentRules(cmp: Component, opts: AnyObject = {}) {
     let { state, mediaText, current } = opts;
     if (current) {
       state = this.em.get('state') || '';
@@ -448,8 +448,8 @@ export default class CssComposer extends Module {
     }
     const id = cmp.getId();
     const rules = this.getAll().filter(r => {
-      if (!isUndefined(state) && r.get('state') !== state) return;
-      if (!isUndefined(mediaText) && r.get('mediaText') !== mediaText) return;
+      if (!isUndefined(state) && r.get('state') !== state) return false;
+      if (!isUndefined(mediaText) && r.get('mediaText') !== mediaText) return false;
       return r.getSelectorsString() === `#${id}`;
     });
     return rules;
@@ -464,7 +464,7 @@ export default class CssComposer extends Module {
     this.rulesView?.remove();
     this.rulesView = new CssRulesView({
       collection: this.rules,
-      config: this.c,
+      config: this.config,
     });
     return this.rulesView.render().el;
   }
@@ -473,7 +473,5 @@ export default class CssComposer extends Module {
     this.rules.reset();
     this.rules.stopListening();
     this.rulesView?.remove();
-    [this.em, this.rules, this.rulesView].forEach(i => (i = null));
-    this.c = {};
   }
 }

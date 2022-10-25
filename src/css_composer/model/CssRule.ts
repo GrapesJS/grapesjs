@@ -326,7 +326,7 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
    * @returns  {Boolean}
    * @private
    */
-  compare(selectors: any, state: string, width: string, ruleProps: Partial<CssRuleProperties> = {}) {
+  compare(selectors: any, state?: string, width?: string, ruleProps: Partial<CssRuleProperties> = {}) {
     const st = state || '';
     const wd = width || '';
     const selAdd = ruleProps.selectorsAdd || '';
