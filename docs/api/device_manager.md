@@ -44,7 +44,7 @@ Add new device
 ### Parameters
 
 *   `props` **[Object][8]** Device properties
-*   `options`   (optional, default `{}`)
+*   `options` **Record<[string][9], any>**  (optional, default `{}`)
 
 ### Examples
 
