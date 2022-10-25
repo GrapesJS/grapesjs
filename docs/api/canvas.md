@@ -233,7 +233,7 @@ canvas.addFrame({
 
 Returns **[Frame]** 
 
-[1]: https://github.com/artf/grapesjs/blob/master/src/canvas/config/config.js
+[1]: https://github.com/artf/grapesjs/blob/master/src/canvas/config/config.ts
 
 [2]: #getconfig
 

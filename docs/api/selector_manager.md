@@ -270,7 +270,7 @@ Get all selectors
 
 Returns **Collection<[Selector]>** 
 
-[1]: https://github.com/artf/grapesjs/blob/master/src/selector_manager/config/config.js
+[1]: https://github.com/artf/grapesjs/blob/master/src/selector_manager/config/config.ts
 
 [2]: #getconfig
 

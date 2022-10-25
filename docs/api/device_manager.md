@@ -148,7 +148,7 @@ const selected = deviceManager.getSelected();
 
 Returns **[Device]** 
 
-[1]: https://github.com/artf/grapesjs/blob/master/src/device_manager/config/config.js
+[1]: https://github.com/artf/grapesjs/blob/master/src/device_manager/config/config.ts
 
 [2]: #add
 

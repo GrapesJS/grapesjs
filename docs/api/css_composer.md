@@ -131,7 +131,7 @@ Remove rule, by CssRule or matching selector (eg. the selector will match also a
 ### Parameters
 
 *   `rule` **([String][8] | [CssRule] | [Array][9]<[CssRule]>)** CssRule or matching selector.
-*   `opts`  
+*   `opts` **any?** 
 
 ### Examples
 
@@ -155,7 +155,7 @@ Remove all rules
 
 Returns **this** 
 
-[1]: https://github.com/artf/grapesjs/blob/master/src/css_composer/config/config.js
+[1]: https://github.com/artf/grapesjs/blob/master/src/css_composer/config/config.ts
 
 [2]: #addrules
 

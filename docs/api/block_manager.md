@@ -189,7 +189,7 @@ document.getElementById('some-id').appendChild(newBlocksEl);
 
 Returns **[HTMLElement][14]** Rendered element
 
-[1]: https://github.com/artf/grapesjs/blob/master/src/block_manager/config/config.js
+[1]: https://github.com/artf/grapesjs/blob/master/src/block_manager/config/config.ts
 
 [2]: #add
 

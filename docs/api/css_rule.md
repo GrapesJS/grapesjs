@@ -4,6 +4,11 @@
 
 **Extends StyleableModel**
 
+### Parameters
+
+*   `props` **CssRuleProperties** 
+*   `opt` **any**  (optional, default `{}`)
+
 ### Properties
 
 *   `selectors` **[Array][1]\<Selector>** Array of selectors
