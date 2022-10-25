@@ -1,11 +1,16 @@
 import { View } from '../../common';
+import CssRule from '../model/CssRule';
 
-export default class CssRuleView extends View {
+export default class CssRuleView extends View<CssRule> {
+  config: any;
+
+  // @ts-ignore
   tagName() {
     return 'style';
   }
 
-  initialize(o = {}) {
+  constructor(o: any = {}) {
+    super(o);
     this.config = o.config || {};
     const { model } = this;
     this.listenTo(model, 'change', this.render);
