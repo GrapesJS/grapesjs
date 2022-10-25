@@ -27,37 +27,27 @@
  * @module I18n
  */
 import { isUndefined, isString } from 'underscore';
+import { Module } from '../abstract';
+import EditorModel from '../editor/model/Editor';
 import { hasWin, deepMerge } from '../utils/mixins';
-import defaults from './config';
+import defaults, { I18nConfig } from './config';
 
-export default class I18nModule {
-  name = 'I18n';
+type Messages = Required<I18nConfig>['messages'];
 
-  //config;
-
+export default class I18nModule extends Module<I18nConfig & { stylePrefix?: string }> {
   /**
    * Initialize module
    * @param {Object} config Configurations
    * @private
    */
-  init(opts = {}) {
-    this.config = {
-      ...defaults,
-      ...opts,
-      messages: {
-        ...defaults.messages,
-        ...(opts.messages || {}),
-      },
-    };
+  constructor(em: EditorModel) {
+    super(em, 'I18n', defaults);
     const add = this.config.messagesAdd;
     add && this.addMessages(add);
 
     if (this.config.detectLocale) {
       this.config.locale = this._localLang();
     }
-
-    this.em = opts.em;
-    return this;
   }
 
   /**
@@ -75,7 +65,7 @@ export default class I18nModule {
    * @example
    * i18n.setLocale('it');
    */
-  setLocale(locale) {
+  setLocale(locale: string) {
     const { em, config } = this;
     const evObj = { value: locale, valuePrev: config.locale };
     em && em.trigger('i18n:locale', evObj);
@@ -103,8 +93,8 @@ export default class I18nModule {
    * i18n.getMessages('en');
    * // -> { hello: '...' }
    */
-  getMessages(lang, opts = {}) {
-    const { messages } = this.config;
+  getMessages(lang: string, opts = {}) {
+    const messages = this.config.messages!;
     lang && !messages[lang] && this._debug(`'${lang}' i18n lang not found`, opts);
     return lang ? messages[lang] : messages;
   }
@@ -121,7 +111,7 @@ export default class I18nModule {
    * i18n.getMessages();
    * // -> { en: { msg2: 'Msg 2 up', msg3: 'Msg 3', } }
    */
-  setMessages(msg) {
+  setMessages(msg: Messages) {
     const { em, config } = this;
     config.messages = msg;
     em && em.trigger('i18n:update', msg);
@@ -140,11 +130,11 @@ export default class I18nModule {
    * i18n.getMessages();
    * // -> { en: { msg1: 'Msg 1', msg2: 'Msg 2 up', msg3: 'Msg 3', } }
    */
-  addMessages(msg) {
+  addMessages(msg: Messages) {
     const { em } = this;
     const { messages } = this.config;
     em && em.trigger('i18n:add', msg);
-    this.setMessages(deepMerge(messages, msg));
+    this.setMessages(deepMerge(messages!, msg));
 
     return this;
   }
@@ -168,7 +158,7 @@ export default class I18nModule {
    * obj.t('msg2', { l: 'it', params: { test: 'hello' } });  // custom local
    * // -> outputs `Msg hello it`
    */
-  t(key, opts = {}) {
+  t(key: string, opts: Record<string, any> = {}) {
     const { config } = this;
     const param = opts.params || {};
     const locale = opts.l || this.getLocale();
@@ -186,16 +176,17 @@ export default class I18nModule {
 
   _localLang() {
     const nav = (hasWin() && window.navigator) || {};
+    // @ts-ignore
     const lang = nav.language || nav.userLanguage;
     return lang ? lang.split('-')[0] : 'en';
   }
 
-  _addParams(str, params) {
+  _addParams(str: string, params: Record<string, any>) {
     const reg = new RegExp('{([\\w\\d-]*)}', 'g');
     return str.replace(reg, (m, val) => params[val] || '').trim();
   }
 
-  _getMsg(key, locale, opts = {}) {
+  _getMsg(key: string, locale: string, opts = {}) {
     const msgSet = this.getMessages(locale, opts);
 
     // Lang set is missing
@@ -214,13 +205,10 @@ export default class I18nModule {
     return result;
   }
 
-  _debug(str, opts = {}) {
+  _debug(str: string, opts: { debug?: boolean } = {}) {
     const { em, config } = this;
     (opts.debug || config.debug) && em && em.logWarning(str);
   }
 
-  destroy() {
-    this.config = {};
-    this.em = {};
-  }
+  destroy() {}
 }
