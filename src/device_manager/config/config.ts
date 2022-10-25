@@ -1,3 +1,5 @@
+import { DeviceProperties } from '../model/Device';
+
 export interface DeviceManagerConfig {
   /**
    * The device `id` to select on start, if not indicated, the first available from `devices` will be used.
@@ -20,7 +22,7 @@ export interface DeviceManagerConfig {
    * ...
    * ]
    */
-  devices?: Array<object>; // TODO
+  devices?: DeviceProperties[];
 }
 
 const config: DeviceManagerConfig = {

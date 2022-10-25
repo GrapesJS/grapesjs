@@ -76,15 +76,9 @@ export default class DeviceManager extends ItemManagerModule<
 
   constructor(em: EditorModel) {
     super(em, 'DeviceManager', new Devices(em.config.deviceManager?.devices || []), events, defaults);
-    // this.c = { ...defaults, ...config };
-    // const { em } = this.c;
-
     this.devices = this.all;
-    // this.c.devices.forEach(dv => this.add(dv));
-    // this.em = em;
-    // this.all = this.devices;
+    this.config.devices?.forEach(device => this.add(device, { silent: true }));
     this.select(this.config.default || this.devices.at(0));
-    // this.__initListen();
     em.on(chnSel, this._onSelect, this);
     return this;
   }

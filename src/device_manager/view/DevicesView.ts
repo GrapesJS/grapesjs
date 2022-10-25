@@ -86,7 +86,7 @@ export default class DevicesView extends View {
     const { collection, em } = this;
     let result = '';
 
-    collection.each(device => {
+    collection.forEach(device => {
       const { name, id } = device.attributes;
       const label = (em && em.t && em.t(`deviceManager.devices.${id}`)) || name;
       result += `<option value="${id || name}">${label}</option>`;
