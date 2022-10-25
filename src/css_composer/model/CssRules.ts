@@ -1,10 +1,14 @@
 import { Collection } from '../../common';
-import CssRule from './CssRule';
+import EditorModel from '../../editor/model/Editor';
+import CssRule, { CssRuleProperties } from './CssRule';
 
-export default class CssRules extends Collection {
-  initialize(models, opt) {
+export default class CssRules extends Collection<CssRule> {
+  editor: EditorModel;
+
+  constructor(props: any, opt: any) {
+    super(props);
     // Inject editor
-    if (opt && opt.em) this.editor = opt.em;
+    this.editor = opt?.em;
 
     // This will put the listener post CssComposer.postLoad
     setTimeout(() => {
@@ -13,22 +17,23 @@ export default class CssRules extends Collection {
     });
   }
 
-  toJSON(opts) {
+  toJSON(opts: any) {
     const result = Collection.prototype.toJSON.call(this, opts);
-    return result.filter(rule => rule.style && !rule.shallow);
+    return result.filter((rule: CssRuleProperties) => rule.style && !rule.shallow);
   }
 
-  onAdd(model, c, o) {
+  onAdd(model: CssRule, c: CssRules, o: any) {
     model.ensureSelectors(model, c, o); // required for undo
   }
 
-  onRemove(removed) {
+  onRemove(removed: CssRule) {
     const em = this.editor;
     em.stopListening(removed);
     em.get('UndoManager').remove(removed);
   }
 
-  add(models, opt = {}) {
+  // @ts-ignore
+  add(models: any, opt: any = {}) {
     if (typeof models === 'string') {
       models = this.editor.get('Parser').parseCss(models);
     }
