@@ -7,9 +7,14 @@ describe('I18n', () => {
     let editor = new Editor();
     let em = editor.getModel();
 
+    const newModuleWithConfig = i18n => {
+      const editor = new Editor({ i18n });
+      const em = editor.getModel();
+      return new I18n(em);
+    };
+
     beforeEach(() => {
-      obj = new I18n();
-      obj.init({ em });
+      obj = new I18n(em);
     });
 
     test('Object exists', () => {
@@ -28,8 +33,7 @@ describe('I18n', () => {
       const locale = 'it';
       const localeFallback = 'it';
       const msg = 'Hello!!!';
-      obj.init({
-        em,
+      obj = newModuleWithConfig({
         locale,
         localeFallback,
         detectLocale: 0,
@@ -43,7 +47,7 @@ describe('I18n', () => {
     });
 
     test('English always imported', () => {
-      obj.init({
+      obj = newModuleWithConfig({
         messages: { it: {} },
       });
       expect(Object.keys(obj.getMessages())).toEqual(['en', 'it']);
