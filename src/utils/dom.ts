@@ -1,5 +1,14 @@
-// DOM helpers
 import { each, isUndefined, isString } from 'underscore';
+
+type AnyObject = Record<string, any>;
+
+type vNode = {
+  tag?: string;
+  attributes?: AnyObject;
+  children?: vNode[];
+};
+
+type ChildHTML = HTMLElement | string;
 
 const KEY_TAG = 'tag';
 const KEY_ATTR = 'attributes';
@@ -7,38 +16,39 @@ const KEY_CHILD = 'children';
 
 export const motionsEv = 'transitionend oTransitionEnd transitionend webkitTransitionEnd';
 
-export const isDoc = el => el && el.nodeType === 9;
+export const isDoc = (el?: HTMLElement) => el && el.nodeType === 9;
 
-export const removeEl = el => {
+export const removeEl = (el?: HTMLElement) => {
   const parent = el && el.parentNode;
   parent && parent.removeChild(el);
 };
 
-export const find = (el, query) => el.querySelectorAll(query);
+export const find = (el: HTMLElement, query: string) => el.querySelectorAll(query);
 
-export const attrUp = (el, attrs = {}) =>
+export const attrUp = (el?: HTMLElement, attrs: AnyObject = {}) =>
   el && el.setAttribute && each(attrs, (value, key) => el.setAttribute(key, value));
 
-export const isVisible = el => {
+export const isVisible = (el?: HTMLElement) => {
   return el && !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length);
 };
 
-export const empty = node => {
+export const empty = (node: HTMLElement) => {
   while (node.firstChild) node.removeChild(node.firstChild);
 };
 
-export const replaceWith = (oldEl, newEl) => {
-  oldEl.parentNode.replaceChild(newEl, oldEl);
+export const replaceWith = (oldEl: HTMLElement, newEl: HTMLElement) => {
+  oldEl.parentNode?.replaceChild(newEl, oldEl);
 };
 
-export const appendAtIndex = (parent, child, index) => {
+export const appendAtIndex = (parent: HTMLElement, child: ChildHTML, index?: number) => {
   const { childNodes } = parent;
   const total = childNodes.length;
   const at = isUndefined(index) ? total : index;
 
   if (isString(child)) {
+    // @ts-ignore
     parent.insertAdjacentHTML('beforeEnd', child);
-    child = parent.lastChild;
+    child = parent.lastChild as HTMLElement;
     parent.removeChild(child);
   }
 
@@ -49,9 +59,9 @@ export const appendAtIndex = (parent, child, index) => {
   }
 };
 
-export const append = (parent, child) => appendAtIndex(parent, child);
+export const append = (parent: HTMLElement, child: ChildHTML) => appendAtIndex(parent, child);
 
-export const createEl = (tag, attrs = {}, child) => {
+export const createEl = (tag: string, attrs: AnyObject = {}, child?: ChildHTML) => {
   const el = document.createElement(tag);
   attrs && each(attrs, (value, key) => el.setAttribute(key, value));
 
@@ -63,16 +73,17 @@ export const createEl = (tag, attrs = {}, child) => {
   return el;
 };
 
-export const createText = str => document.createTextNode(str);
+export const createText = (str: string) => document.createTextNode(str);
 
 // Unfortunately just creating `KeyboardEvent(e.type, e)` is not enough,
 // the keyCode/which will be always `0`. Even if it's an old/deprecated
 // property keymaster (and many others) still use it... using `defineProperty`
 // hack seems the only way
-export const createCustomEvent = (e, cls) => {
-  let oEvent;
+export const createCustomEvent = (e: any, cls: any) => {
+  let oEvent: any;
   const { type } = e;
   try {
+    // @ts-ignore
     oEvent = new window[cls](type, e);
   } catch (err) {
     oEvent = document.createEvent(cls);
@@ -97,7 +108,7 @@ export const createCustomEvent = (e, cls) => {
  * @param {HTMLElement} node HTML element
  * @param {Array} vNodes Array of node objects
  */
-export const appendVNodes = (node, vNodes = []) => {
+export const appendVNodes = (node: HTMLElement, vNodes: vNode | vNode[] = []) => {
   const vNodesArr = Array.isArray(vNodes) ? vNodes : [vNodes];
   vNodesArr.forEach(vnode => {
     const tag = vnode[KEY_TAG] || 'div';
