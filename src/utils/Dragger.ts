@@ -1,71 +1,146 @@
 import { bindAll, isFunction, result, isUndefined } from 'underscore';
 import { on, off, isEscKey, getPointerEvent } from './mixins';
 
+type Position = {
+  x: number;
+  y: number;
+  end?: boolean;
+};
+
+type PositionXY = keyof Omit<Position, 'end'>;
+
+type Guide = {
+  x: number;
+  y: number;
+  lock?: number;
+  active?: boolean;
+};
+
+interface DraggerOptions {
+  /**
+   * Element on which the drag will be executed. By default, the document will be used
+   */
+  container?: HTMLElement;
+
+  /**
+   * Callback on drag start.
+   * @example
+   * onStart(ev, dragger) {
+   *  console.log('pointer start', dragger.startPointer, 'position start', dragger.startPosition);
+   * }
+   */
+  onStart?: (ev: Event, dragger: Dragger) => void;
+
+  /**
+   * Callback on drag.
+   * @example
+   * onDrag(ev, dragger) {
+   *  console.log('pointer', dragger.currentPointer, 'position', dragger.position, 'delta', dragger.delta);
+   * }
+   */
+  onDrag?: (ev: Event, dragger: Dragger) => void;
+
+  /**
+   * Callback on drag end.
+   * @example
+   * onEnd(ev, dragger) {
+   *   console.log('pointer', dragger.currentPointer, 'position', dragger.position, 'delta', dragger.delta);
+   * }
+   */
+  onEnd?: (ev: Event, dragger: Dragger, opts: { cancelled: boolean }) => void;
+
+  /**
+   * Indicate a callback where to pass an object with new coordinates
+   */
+  setPosition?: (position: Position) => void;
+
+  /**
+   * Indicate a callback where to get initial coordinates.
+   * @example
+   * getPosition: () => {
+   *   // ...
+   *   return { x: 10, y: 100 }
+   * }
+   */
+  getPosition?: () => Position;
+
+  /**
+   * Indicate a callback where to get pointer coordinates.
+   */
+  getPointerPosition?: (ev: Event) => Position;
+
+  /**
+   * Static guides to be snapped.
+   */
+  guidesStatic?: () => Guide[];
+
+  /**
+   * Target guides that will snap to static one.
+   */
+  guidesTarget?: () => Guide[];
+
+  /**
+   * Offset before snap to guides.
+   * @default 5
+   */
+  snapOffset?: number;
+
+  /**
+   * Document on which listen to pointer events.
+   */
+  doc?: Document;
+
+  /**
+   * Scale result points, can also be a function.
+   * @default 1
+   */
+  scale?: number;
+}
+
 const resetPos = () => ({ x: 0, y: 0 });
 
+const xyArr: PositionXY[] = ['x', 'y'];
+
 export default class Dragger {
+  opts: DraggerOptions;
+  startPointer: Position;
+  delta: Position;
+  lastScroll: Position;
+  lastScrollDiff: Position;
+  startPosition: Position;
+  globScrollDiff: Position;
+  currentPointer: Position;
+  position: Position;
+  el?: HTMLElement;
+  guidesStatic: Guide[];
+  guidesTarget: Guide[];
+  lockedAxis?: any;
+  docs: Document[];
+  trgX?: Guide;
+  trgY?: Guide;
+
   /**
    * Init the dragger
    * @param  {Object} opts
    */
-  constructor(opts = {}) {
+  constructor(opts: DraggerOptions = {}) {
     this.opts = {
-      /**
-       * Element on which the drag will be executed. By default, the document will be used
-       */
-      container: null,
-      /**
-       * Callback on start
-       * onStart(ev, dragger) {
-       *  console.log('pointer start', dragger.startPointer, 'position start', dragger.startPosition);
-       * },
-       */
-      onStart: null,
-      /**
-       * Callback on drag
-       * onDrag(ev, dragger) {
-       *  console.log('pointer', dragger.currentPointer, 'position', dragger.position, 'delta', dragger.delta);
-       * },
-       */
-      onDrag: null,
-      /**
-       * Callback on drag
-       * onEnd(ev, dragger) {
-       *  console.log('pointer', dragger.currentPointer, 'position', dragger.position, 'delta', dragger.delta);
-       * },
-       */
-      onEnd: null,
-      /**
-       * Indicate a callback where to pass an object with new coordinates
-       */
-      setPosition: null,
-      /**
-       * Indicate a callback where to get initial coordinates.
-       * getPosition: () => {
-       *  ...
-       *  return { x: 10, y: 100 }
-       * }
-       */
-      getPosition: null,
-
-      // Static guides to be snapped
-      guidesStatic: null,
-
-      // Target guides that will snap to static one
-      guidesTarget: null,
-
-      // Offset before snap to guides
       snapOffset: 5,
-
-      // Document on which listen to pointer events
-      doc: 0,
-
-      // Scale result points, can also be a function
       scale: 1,
     };
     bindAll(this, 'drag', 'stop', 'keyHandle', 'handleScroll');
     this.setOptions(opts);
     this.delta = resetPos();
+    this.lastScroll = resetPos();
+    this.lastScrollDiff = resetPos();
+    this.startPointer = resetPos();
+    this.startPosition = resetPos();
+    this.globScrollDiff = resetPos();
+    this.currentPointer = resetPos();
+    this.position = resetPos();
+    this.guidesStatic = [];
+    this.guidesTarget = [];
+    this.docs = [];
     return this;
   }
 
@@ -73,14 +148,14 @@ export default class Dragger {
    * Update options
    * @param {Object} options
    */
-  setOptions(opts = {}) {
+  setOptions(opts: Partial<DraggerOptions> = {}) {
     this.opts = {
       ...this.opts,
       ...opts,
     };
   }
 
-  toggleDrag(enable) {
+  toggleDrag(enable?: boolean) {
     const docs = this.getDocumentEl();
     const container = this.getContainerEl();
     const win = this.getWindowEl();
@@ -96,8 +171,8 @@ export default class Dragger {
     const { lastScroll, delta } = this;
     const actualScroll = this.getScrollInfo();
     const scrollDiff = {
-      x: actualScroll.x - lastScroll.x,
-      y: actualScroll.y - lastScroll.y,
+      x: actualScroll.x - lastScroll!.x,
+      y: actualScroll.y - lastScroll!.y,
     };
     this.move(delta.x + scrollDiff.x, delta.y + scrollDiff.y);
     this.lastScrollDiff = scrollDiff;
@@ -107,10 +182,10 @@ export default class Dragger {
    * Start dragging
    * @param  {Event} e
    */
-  start(ev) {
+  start(ev: Event) {
     const { opts } = this;
     const { onStart } = opts;
-    this.toggleDrag(1);
+    this.toggleDrag(true);
     this.startPointer = this.getPointerPos(ev);
     this.guidesStatic = result(opts, 'guidesStatic') || [];
     this.guidesTarget = result(opts, 'guidesTarget') || [];
@@ -125,7 +200,7 @@ export default class Dragger {
    * Drag event
    * @param  {Event} event
    */
-  drag(ev) {
+  drag(ev: Event) {
     const { opts, lastScrollDiff, globScrollDiff } = this;
     const { onDrag } = opts;
     const { startPointer } = this;
@@ -142,7 +217,7 @@ export default class Dragger {
     this.lastScrollDiff = resetPos();
     let { lockedAxis } = this;
 
-    // Lock one axis
+    // @ts-ignore Lock one axis
     if (ev.shiftKey) {
       lockedAxis = !lockedAxis && this.detectAxisLock(delta.x, delta.y);
     } else {
@@ -155,8 +230,8 @@ export default class Dragger {
       delta.y = startPointer.y;
     }
 
-    const moveDelta = delta => {
-      ['x', 'y'].forEach(co => (delta[co] = delta[co] * result(opts, 'scale')));
+    const moveDelta = (delta: Position) => {
+      xyArr.forEach(co => (delta[co] = delta[co] * result(opts, 'scale')));
       this.delta = delta;
       this.move(delta.x, delta.y);
       isFunction(onDrag) && onDrag(ev, this);
@@ -172,21 +247,21 @@ export default class Dragger {
       (trgX || trgY) && moveDelta(newDelta);
     }
 
-    // In case the mouse button was released outside of the window
+    // @ts-ignore In case the mouse button was released outside of the window
     ev.which === 0 && this.stop(ev);
   }
 
   /**
    * Check if the delta hits some guide
    */
-  snapGuides(delta) {
+  snapGuides(delta: Position) {
     const newDelta = delta;
     let { trgX, trgY } = this;
 
     this.guidesTarget.forEach(trg => {
       // Skip the guide if its locked axis already exists
       if ((trg.x && this.trgX) || (trg.y && this.trgY)) return;
-      trg.active = 0;
+      trg.active = false;
 
       this.guidesStatic.forEach(stat => {
         if ((trg.y && stat.x) || (trg.x && stat.y)) return;
@@ -209,8 +284,9 @@ export default class Dragger {
     trgX = this.trgX;
     trgY = this.trgY;
 
-    ['x', 'y'].forEach(co => {
+    xyArr.forEach(co => {
       const axis = co.toUpperCase();
+      // @ts-ignore
       let trg = this[`trg${axis}`];
 
       if (trg && !this.isPointIn(delta[co], trg.lock)) {
@@ -230,22 +306,24 @@ export default class Dragger {
     };
   }
 
-  isPointIn(src, trg, { offset } = {}) {
-    const ofst = offset || this.opts.snapOffset;
+  isPointIn(src: number, trg: number, { offset }: { offset?: number } = {}) {
+    const ofst = offset || this.opts.snapOffset || 0;
     return (src >= trg && src <= trg + ofst) || (src <= trg && src >= trg - ofst);
   }
 
-  setGuideLock(guide, value) {
+  setGuideLock(guide: Guide, value: any) {
     const axis = !isUndefined(guide.x) ? 'X' : 'Y';
     const trgName = `trg${axis}`;
 
     if (value !== null) {
-      guide.active = 1;
+      guide.active = true;
       guide.lock = value;
+      // @ts-ignore
       this[trgName] = guide;
     } else {
       delete guide.active;
       delete guide.lock;
+      // @ts-ignore
       delete this[trgName];
     }
 
@@ -255,21 +333,21 @@ export default class Dragger {
   /**
    * Stop dragging
    */
-  stop(ev, opts = {}) {
+  stop(ev: Event, opts: { cancel?: boolean } = {}) {
     const { delta } = this;
-    const cancelled = opts.cancel;
+    const cancelled = !!opts.cancel;
     const x = cancelled ? 0 : delta.x;
     const y = cancelled ? 0 : delta.y;
     this.toggleDrag();
     this.lockedAxis = null;
-    this.move(x, y, 1);
+    this.move(x, y, true);
     const { onEnd } = this.opts;
     isFunction(onEnd) && onEnd(ev, this, { cancelled });
   }
 
-  keyHandle(ev) {
-    if (isEscKey(ev)) {
-      this.stop(ev, { cancel: 1 });
+  keyHandle(ev: Event) {
+    if (isEscKey(ev as KeyboardEvent)) {
+      this.stop(ev, { cancel: true });
     }
   }
 
@@ -278,7 +356,7 @@ export default class Dragger {
    * @param  {integer} x
    * @param  {integer} y
    */
-  move(x, y, end) {
+  move(x: number, y: number, end?: boolean) {
     const { el, opts } = this;
     const pos = this.startPosition;
     if (!pos) return;
@@ -308,6 +386,7 @@ export default class Dragger {
     const cont = this.getContainerEl();
     return cont.map(item => {
       const doc = item.ownerDocument || item;
+      // @ts-ignore
       return doc.defaultView || doc.parentWindow;
     });
   }
@@ -315,7 +394,7 @@ export default class Dragger {
   /**
    * Returns documents
    */
-  getDocumentEl(el) {
+  getDocumentEl(el?: HTMLElement): Document[] {
     const { doc } = this.opts;
     el = el || this.el;
 
@@ -334,7 +413,7 @@ export default class Dragger {
    * @param  {Event} event
    * @return {Object}
    */
-  getPointerPos(ev) {
+  getPointerPos(ev: Event) {
     const getPos = this.opts.getPointerPosition;
     const pEv = getPointerEvent(ev);
 
@@ -373,7 +452,7 @@ export default class Dragger {
     };
   }
 
-  detectAxisLock(x, y) {
+  detectAxisLock(x: number, y: number) {
     const relX = x;
     const relY = y;
     const absX = Math.abs(relX);
