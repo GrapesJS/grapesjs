@@ -82,6 +82,7 @@ export default class InputColor extends Input {
     if (opts.fromTarget || (opts.fromInput && !opts.avoidStore)) {
       colorEl.spectrum('set', valueClr);
       this.noneColor = value == 'none';
+      this.movedColor = valueClr;
     }
   }
 
@@ -92,7 +93,6 @@ export default class InputColor extends Input {
   getColorEl() {
     if (!this.colorEl) {
       const { em, model, opts } = this;
-      const self = this;
       const ppfx = this.ppfx;
       const { onChange } = opts;
 
@@ -101,8 +101,8 @@ export default class InputColor extends Input {
       var elToAppend = em && em.config ? em.config.el : '';
       var colorPickerConfig = (em && em.getConfig && em.getConfig().colorPicker) || {};
 
+      this.movedColor = '';
       let changed = false;
-      let movedColor = '';
       let previousColor;
       this.$el.find('[data-colorp-c]').append(colorEl);
 
@@ -130,27 +130,27 @@ export default class InputColor extends Input {
         ...colorPickerConfig,
         ...(model.get('colorPicker') || {}),
 
-        move(color) {
+        move: color => {
           const cl = getColor(color);
-          movedColor = cl;
+          this.movedColor = cl;
           cpStyle.backgroundColor = cl;
           handleChange(cl, false);
         },
-        change(color) {
+        change: color => {
           changed = true;
           const cl = getColor(color);
           cpStyle.backgroundColor = cl;
           handleChange(cl);
-          self.noneColor = 0;
+          this.noneColor = 0;
         },
-        show(color) {
+        show: color => {
           changed = false;
-          movedColor = '';
+          this.movedColor = '';
           previousColor = onChange ? model.getValue({ noDefault: true }) : getColor(color);
         },
-        hide() {
+        hide: () => {
           if (!changed && (previousColor || onChange)) {
-            if (self.noneColor) {
+            if (this.noneColor) {
               previousColor = '';
             }
             cpStyle.backgroundColor = previousColor;
@@ -162,9 +162,9 @@ export default class InputColor extends Input {
 
       if (em && em.on) {
         this.listenTo(em, 'component:selected', () => {
-          movedColor && handleChange(movedColor);
+          this.movedColor && handleChange(this.movedColor);
           changed = true;
-          movedColor = '';
+          this.movedColor = '';
           colorEl.spectrum('hide');
         });
       }
