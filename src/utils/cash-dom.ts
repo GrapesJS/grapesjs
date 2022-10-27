@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* Adapted for headless */
 /* MIT https://github.com/kenwheeler/cash */
 'use strict';

@@ -87,7 +87,7 @@ export default class EditorModule implements IBaseModule<typeof defaults> {
   }
   editorView?: EditorView;
   editor: EditorModel;
-  $: cash;
+  $: typeof cash;
   em: EditorModel;
   config: typeof defaults;
 
