@@ -1,6 +1,6 @@
 import { isObject } from 'underscore';
 
-export default ({ $ }) => {
+export default ({ $ }: { $: any }) => {
   if ($ && $.prototype && $.prototype.constructor.name !== 'jQuery') {
     const fn = $.fn;
 
@@ -53,11 +53,11 @@ export default ({ $ }) => {
 
     // For spectrum compatibility
 
-    fn.bind = function (ev, h) {
+    fn.bind = function (ev: any, h: any) {
       return this.on(ev, h);
     };
 
-    fn.unbind = function (ev, h) {
+    fn.unbind = function (ev: any, h: any) {
       if (isObject(ev)) {
         for (let name in ev) {
           ev.hasOwnProperty(name) && this.off(name, ev[name]);
@@ -69,24 +69,24 @@ export default ({ $ }) => {
       }
     };
 
-    fn.click = function (h) {
+    fn.click = function (h: any) {
       return h ? this.on('click', h) : this.trigger('click');
     };
 
-    fn.change = function (h) {
+    fn.change = function (h: any) {
       return h ? this.on('change', h) : this.trigger('change');
     };
 
-    fn.keydown = function (h) {
+    fn.keydown = function (h: any) {
       return h ? this.on('keydown', h) : this.trigger('keydown');
     };
 
-    fn.delegate = function (selector, events, data, handler) {
+    fn.delegate = function (selector: any, events: any, data: any, handler: any) {
       if (!handler) {
         handler = data;
       }
 
-      return this.on(events, selector, function (e) {
+      return this.on(events, selector, function (e: any) {
         e.data = data;
         handler(e);
       });
@@ -107,7 +107,7 @@ export default ({ $ }) => {
     };
 
     const offset = $.prototype.offset;
-    fn.offset = function (coords) {
+    fn.offset = function (coords: any) {
       let top, left;
 
       if (coords) {
@@ -125,7 +125,7 @@ export default ({ $ }) => {
       return offset.call(this);
     };
 
-    $.map = function (items, clb) {
+    $.map = function (items: any, clb: any) {
       const ar = [];
 
       for (var i = 0; i < items.length; i++) {
@@ -137,11 +137,11 @@ export default ({ $ }) => {
 
     const indexOf = Array.prototype.indexOf;
 
-    $.inArray = function (val, arr, i) {
+    $.inArray = function (val: any, arr: any, i: any) {
       return arr == null ? -1 : indexOf.call(arr, val, i);
     };
 
-    $.Event = function (src, props) {
+    $.Event = function (src: any, props: any) {
       if (!(this instanceof $.Event)) {
         return new $.Event(src, props);
       }
