@@ -100,13 +100,12 @@ export default class Droppable {
   }
 
   handleDragEnter(ev: DragEvent | Event) {
-    const { em } = this;
+    const { em, canvas } = this;
     const dt = (ev as DragEvent).dataTransfer;
     this.updateCounter(1, ev);
     if (this.over) return;
     this.over = true;
     const utils = em.get('Utils');
-    const canvas = em.get('Canvas');
     // For security reason I can't read the drag data on dragenter, but
     // as I need it for the Sorter context I will use `dragContent` or just
     // any not empty element
