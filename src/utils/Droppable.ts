@@ -1,29 +1,44 @@
-/*
-  This class makes the canvas droppable
- */
-
 import { bindAll, indexOf } from 'underscore';
+import CanvasModule from '../canvas';
+import EditorModel from '../editor/model/Editor';
 import { on, off } from './mixins';
 
+// TODO move in sorter
+type SorterOptions = {
+  sorter: any;
+  event: any;
+};
+
+type DragStop = (cancel?: boolean) => void;
+
+type DragContent = (content: any) => void;
+
+/**
+ * This class makes the canvas droppable
+ */
 export default class Droppable {
-  constructor(em, rootEl) {
+  em: EditorModel;
+  canvas: CanvasModule;
+  el: HTMLElement;
+  counter: number;
+  sortOpts?: Record<string, any> | null;
+  over?: boolean;
+  dragStop?: DragStop;
+  dragContent?: DragContent;
+  sorter?: any;
+
+  constructor(em: EditorModel, rootEl?: HTMLElement) {
     this.em = em;
-    const el =
-      rootEl ||
-      em
-        .get('Canvas')
-        .getFrames()
-        .map(frame => frame.getComponent().getEl());
+    this.canvas = em.get('Canvas');
+    const el = rootEl || this.canvas.getFrames().map(frame => frame.getComponent().getEl());
     const els = Array.isArray(el) ? el : [el];
-    this.el = el;
+    this.el = els[0];
     this.counter = 0;
     bindAll(this, 'handleDragEnter', 'handleDragOver', 'handleDrop', 'handleDragLeave');
-    els.forEach(el => this.toggleEffects(el, 1));
-
-    return this;
+    els.forEach(el => this.toggleEffects(el, true));
   }
 
-  toggleEffects(el, enable) {
+  toggleEffects(el: HTMLElement, enable: boolean) {
     const methods = { on, off };
     const method = enable ? 'on' : 'off';
     methods[method](el, 'dragenter', this.handleDragEnter);
@@ -32,19 +47,19 @@ export default class Droppable {
     methods[method](el, 'dragleave', this.handleDragLeave);
   }
 
-  __customTglEff(enable) {
+  __customTglEff(enable: boolean) {
     const method = enable ? on : off;
     const doc = this.el.ownerDocument;
-    const frameEl = doc.defaultView.frameElement;
+    const frameEl = doc.defaultView?.frameElement as HTMLIFrameElement;
     this.sortOpts = enable
       ? {
-          onStart({ sorter }) {
+          onStart({ sorter }: SorterOptions) {
             on(frameEl, 'pointermove', sorter.onMove);
           },
-          onEnd({ sorter }) {
+          onEnd({ sorter }: SorterOptions) {
             off(frameEl, 'pointermove', sorter.onMove);
           },
-          customTarget({ event }) {
+          customTarget({ event }: SorterOptions) {
             return doc.elementFromPoint(event.clientX, event.clientY);
           },
         }
@@ -63,11 +78,11 @@ export default class Droppable {
     this.__customTglEff(true);
   }
 
-  endCustom(cancel) {
+  endCustom(cancel?: boolean) {
     this.over ? this.endDrop(cancel) : this.__customTglEff(false);
   }
 
-  endDrop(cancel, ev) {
+  endDrop(cancel?: boolean, ev?: Event) {
     const { em, dragStop } = this;
     this.counter = 0;
     dragStop && dragStop(cancel);
@@ -75,28 +90,29 @@ export default class Droppable {
     em.trigger('canvas:dragend', ev);
   }
 
-  handleDragLeave(ev) {
+  handleDragLeave(ev: Event) {
     this.updateCounter(-1, ev);
   }
 
-  updateCounter(value, ev) {
+  updateCounter(value: number, ev: Event) {
     this.counter += value;
-    this.counter === 0 && this.endDrop(1, ev);
+    this.counter === 0 && this.endDrop(true, ev);
   }
 
-  handleDragEnter(ev) {
+  handleDragEnter(ev: DragEvent | Event) {
     const { em } = this;
-    const dt = ev.dataTransfer;
+    const dt = (ev as DragEvent).dataTransfer;
     this.updateCounter(1, ev);
     if (this.over) return;
-    this.over = 1;
+    this.over = true;
     const utils = em.get('Utils');
     const canvas = em.get('Canvas');
     // For security reason I can't read the drag data on dragenter, but
     // as I need it for the Sorter context I will use `dragContent` or just
     // any not empty element
     let content = em.get('dragContent') || '<br>';
-    let dragStop, dragContent;
+    let dragStop: DragStop;
+    let dragContent;
     em.stopDefault();
 
     // Select the right drag provider
@@ -108,7 +124,7 @@ export default class Droppable {
         guidesInfo: 1,
         center: 1,
         target,
-        onEnd: (ev, dragger, { cancelled }) => {
+        onEnd: (ev: any, dragger: any, { cancelled }: any) => {
           let comp;
           if (!cancelled) {
             comp = wrapper.append(content)[0];
@@ -124,8 +140,8 @@ export default class Droppable {
           target.remove();
         },
       });
-      dragStop = cancel => dragger.stop(ev, { cancel });
-      dragContent = cnt => (content = cnt);
+      dragStop = (cancel?: boolean) => dragger.stop(ev, { cancel });
+      dragContent = (cnt: any) => (content = cnt);
     } else {
       const sorter = new utils.Sorter({
         em,
@@ -138,18 +154,18 @@ export default class Droppable {
         containerSel: '*',
         itemSel: '*',
         pfx: 'gjs-',
-        onEndMove: model => this.handleDragEnd(model, dt),
+        onEndMove: (model: any) => this.handleDragEnd(model, dt),
         document: this.el.ownerDocument,
         ...(this.sortOpts || {}),
       });
       sorter.setDropContent(content);
       sorter.startSort();
       this.sorter = sorter;
-      dragStop = cancel => {
+      dragStop = (cancel?: boolean) => {
         cancel && (sorter.moved = 0);
         sorter.endMove();
       };
-      dragContent = content => sorter.setDropContent(content);
+      dragContent = (content: any) => sorter.setDropContent(content);
     }
 
     this.dragStop = dragStop;
@@ -157,9 +173,9 @@ export default class Droppable {
     em.trigger('canvas:dragenter', dt, content);
   }
 
-  handleDragEnd(model, dt) {
+  handleDragEnd(model: any, dt: any) {
     const { em } = this;
-    this.over = 0;
+    this.over = false;
     if (model) {
       em.set('dragResult', model);
       em.trigger('canvas:drop', dt, model);
@@ -171,7 +187,7 @@ export default class Droppable {
    * Always need to have this handler active for enabling the drop
    * @param {Event} ev
    */
-  handleDragOver(ev) {
+  handleDragOver(ev: Event) {
     ev.preventDefault();
     this.em.trigger('canvas:dragover', ev);
   }
@@ -180,17 +196,17 @@ export default class Droppable {
    * WARNING: This function might fail to run on drop, for example, when the
    * drop, accidentally, happens on some external element (DOM not inside the iframe)
    */
-  handleDrop(ev) {
+  handleDrop(ev: Event | DragEvent) {
     ev.preventDefault();
     const { dragContent } = this;
-    const dt = ev.dataTransfer;
+    const dt = (ev as DragEvent).dataTransfer;
     const content = this.getContentByData(dt).content;
-    ev.target.style.border = '';
+    (ev.target as HTMLElement).style.border = '';
     content && dragContent && dragContent(content);
     this.endDrop(!content, ev);
   }
 
-  getContentByData(dt) {
+  getContentByData(dt: any) {
     const em = this.em;
     const types = dt && dt.types;
     const files = (dt && dt.files) || [];
