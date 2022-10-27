@@ -12,7 +12,7 @@ export default () => {
   const isIE = () => {
     let match;
     const agent = window.navigator.userAgent;
-    const rules = [
+    const rules: [string, RegExp][] = [
       ['edge', /Edge\/([0-9\._]+)/],
       ['ie', /MSIE\s(7\.0)/],
       ['ie', /MSIE\s([0-9\.]+);.*Trident\/[4-7].0/],
