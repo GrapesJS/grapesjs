@@ -94,7 +94,7 @@ interface DraggerOptions {
    * Scale result points, can also be a function.
    * @default 1
    */
-  scale?: number;
+  scale?: number | (() => number);
 }
 
 const resetPos = () => ({ x: 0, y: 0 });
