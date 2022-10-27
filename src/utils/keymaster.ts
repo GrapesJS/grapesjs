@@ -1,3 +1,4 @@
+// @ts-nocheck
 // The initial version of this library was borrowed from https://github.com/madrobby/keymaster
 // and adapted to the GrapesJS's need
 
