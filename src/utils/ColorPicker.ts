@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Without jquery I have to update few stuff
 //
 // Spectrum Colorpicker v1.8.0
