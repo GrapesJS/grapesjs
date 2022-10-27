@@ -1,4 +1,3 @@
-// @ts-ignore
 import Promise from 'promise-polyfill';
 import { hasWin } from './mixins';
 
@@ -10,7 +9,7 @@ export default typeof fetch == 'function'
   ? // @ts-ignore
     fetch.bind()
   : (url: string, options: Record<string, any>) => {
-      return new Promise((res: any, rej: any) => {
+      return new Promise((res, rej) => {
         const req = new XMLHttpRequest();
         req.open(options.method || 'get', url);
         req.withCredentials = options.credentials == 'include';

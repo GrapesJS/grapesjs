@@ -392,7 +392,7 @@ export default class FileUploaderView extends View {
       promises.push(promise);
     }
 
-    Promise.all(promises).then(
+    return Promise.all(promises).then(
       data => {
         response.data = data;
         // @ts-ignore
