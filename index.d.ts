@@ -2196,6 +2196,10 @@ declare namespace grapesjs {
      */
     name?: string;
     /**
+     * A randomized unique id associated with the component prefixed with `i`
+     */
+    ccid?: string
+    /**
      * When `true` the component is removable from the canvas, default: `true`
      * @defaultValue true
      */
