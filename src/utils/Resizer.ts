@@ -1,75 +1,221 @@
 import { bindAll, defaults, isFunction, each } from 'underscore';
 import { on, off, normalizeFloat } from './mixins';
 
-var defaultOpts = {
-  // Function which returns custom X and Y coordinates of the mouse
-  mousePosFetcher: null,
-  // Indicates custom target updating strategy
-  updateTarget: null,
-  // Function which gets HTMLElement as an arg and returns it relative position
-  ratioDefault: 0,
-  posFetcher: null,
-  onStart: null,
-  onMove: null,
-  onEnd: null,
-  onUpdateContainer: () => {},
-
-  // Resize unit step
-  step: 1,
-
-  // Minimum dimension
-  minDim: 10,
-
-  // Maximum dimension
-  maxDim: '',
-
-  // Unit used for height resizing
-  unitHeight: 'px',
-
-  // Unit used for width resizing
-  unitWidth: 'px',
-
-  // The key used for height resizing
-  keyHeight: 'height',
-
-  // The key used for width resizing
-  keyWidth: 'width',
-
-  // If true, will override unitHeight and unitWidth, on start, with units
-  // from the current focused element (currently used only in SelectComponent)
-  currentUnit: 1,
-
-  // With this option active the mousemove event won't be altered when
-  // the pointer comes over iframes
-  silentFrames: 0,
-
-  // If true the container of handlers won't be updated
-  avoidContainerUpdate: 0,
-
-  // If height is 'auto', this setting will preserve it and only update  width
-  keepAutoHeight: false,
-
-  // If width is 'auto', this setting will preserve it and only update height
-  keepAutoWidth: false,
-
-  // When keepAutoHeight is true and the height has the value 'auto', this is set to true and height isn't updated
-  autoHeight: false,
-
-  // When keepAutoWidth is true and the width has the value 'auto', this is set to true and width isn't updated
-  autoWidth: false,
-
-  // Handlers
-  tl: 1, // Top left
-  tc: 1, // Top center
-  tr: 1, // Top right
-  cl: 1, // Center left
-  cr: 1, // Center right
-  bl: 1, // Bottom left
-  bc: 1, // Bottom center
-  br: 1, // Bottom right
+type Position = {
+  x: number;
+  y: number;
 };
 
-var createHandler = (name, opts) => {
+type RectDim = {
+  t: number;
+  l: number;
+  w: number;
+  h: number;
+};
+
+type BoundingRect = {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+};
+
+type CallbackOptions = {
+  docs: any;
+  config: any;
+  el: HTMLElement;
+  resizer: Resizer;
+};
+
+interface ResizerOptions {
+  /**
+   * Function which returns custom X and Y coordinates of the mouse.
+   */
+  mousePosFetcher?: (ev: Event) => Position;
+
+  /**
+   * Indicates custom target updating strategy.
+   */
+  updateTarget?: (el: HTMLElement, rect: RectDim, opts: any) => void;
+
+  /**
+   * Function which gets HTMLElement as an arg and returns it relative position
+   */
+  posFetcher?: (el: HTMLElement, opts: any) => BoundingRect;
+
+  /**
+   * Indicate if the resizer should keep the default ratio.
+   * @default false
+   */
+  ratioDefault?: boolean;
+
+  /**
+   * On resize start callback.
+   */
+  onStart?: (ev: Event, opts: CallbackOptions) => void;
+
+  /**
+   * On resize move callback.
+   */
+  onMove?: (ev: Event) => void;
+
+  /**
+   * On resize end callback.
+   */
+  onEnd?: (ev: Event, opts: CallbackOptions) => void;
+
+  /**
+   * On container update callback.
+   */
+  onUpdateContainer?: (opts: any) => void;
+
+  /**
+   * Resize unit step.
+   * @default 1
+   */
+  step?: number;
+
+  /**
+   * Minimum dimension.
+   * @default 10
+   */
+  minDim?: number;
+
+  /**
+   * Maximum dimension.
+   * @default Infinity
+   */
+  maxDim?: number;
+
+  /**
+   * Unit used for height resizing.
+   * @default 'px'
+   */
+  unitHeight?: string;
+
+  /**
+   * Unit used for width resizing.
+   * @default 'px'
+   */
+  unitWidth?: string;
+
+  /**
+   * The key used for height resizing.
+   * @default 'height'
+   */
+  keyHeight?: string;
+
+  /**
+   * The key used for width resizing.
+   * @default 'width'
+   */
+  keyWidth?: string;
+
+  /**
+   * If true, will override unitHeight and unitWidth, on start, with units
+   * from the current focused element (currently used only in SelectComponent).
+   * @default true
+   */
+  currentUnit?: boolean;
+
+  /**
+   * With this option enabled the mousemove event won't be altered when the pointer comes over iframes.
+   * @default false
+   */
+  silentFrames?: boolean;
+
+  /**
+   * If true the container of handlers won't be updated.
+   * @default false
+   */
+  avoidContainerUpdate?: boolean;
+
+  /**
+   * If height is 'auto', this setting will preserve it and only update the width.
+   * @default false
+   */
+  keepAutoHeight?: boolean;
+
+  /**
+   * If width is 'auto', this setting will preserve it and only update the height.
+   * @default false
+   */
+  keepAutoWidth?: boolean;
+
+  /**
+   * When keepAutoHeight is true and the height has the value 'auto', this is set to true and height isn't updated.
+   * @default false
+   */
+  autoHeight?: boolean;
+
+  /**
+   * When keepAutoWidth is true and the width has the value 'auto', this is set to true and width isn't updated.
+   * @default false
+   */
+  autoWidth?: boolean;
+
+  /**
+   * Enable top left handler.
+   * @default true
+   */
+  tl?: boolean;
+
+  /**
+   * Enable top center handler.
+   * @default true
+   */
+  tc?: boolean;
+
+  /**
+   * Enable top right handler.
+   * @default true
+   */
+  tr?: boolean;
+
+  /**
+   * Enable center left handler.
+   * @default true
+   */
+  cl?: boolean;
+
+  /**
+   * Enable center right handler.
+   * @default true
+   */
+  cr?: boolean;
+
+  /**
+   * Enable bottom left handler.
+   * @default true
+   */
+  bl?: boolean;
+
+  /**
+   * Enable bottom center handler.
+   * @default true
+   */
+  bc?: boolean;
+
+  /**
+   * Enable bottom right handler.
+   * @default true
+   */
+  br?: boolean;
+
+  /**
+   * Class prefix.
+   */
+  prefix?: string;
+
+  /**
+   * Where to append resize container (default body element).
+   */
+  appendTo?: HTMLElement;
+}
+
+type Handlers = Record<string, HTMLElement | null>;
+
+const createHandler = (name: string, opts: { prefix?: string } = {}) => {
   var pfx = opts.prefix || '';
   var el = document.createElement('i');
   el.className = pfx + 'resizer-h ' + pfx + 'resizer-h-' + name;
@@ -77,7 +223,7 @@ var createHandler = (name, opts) => {
   return el;
 };
 
-var getBoundingRect = (el, win) => {
+const getBoundingRect = (el: HTMLElement, win?: Window): BoundingRect => {
   var w = win || window;
   var rect = el.getBoundingClientRect();
   return {
@@ -88,15 +234,63 @@ var getBoundingRect = (el, win) => {
   };
 };
 
-class Resizer {
+export default class Resizer {
+  opts: ResizerOptions;
+  container?: HTMLElement;
+  handlers?: Handlers;
+  el?: HTMLElement;
+  clickedHandler?: HTMLElement;
+  selectedHandler?: HTMLElement;
+  handlerAttr?: string;
+  startDim?: RectDim;
+  rectDim?: RectDim;
+  parentDim?: RectDim;
+  startPos?: Position;
+  delta?: Position;
+  currentPos?: Position;
+  docs?: Document[];
+  keys?: { shift: boolean; ctrl: boolean; alt: boolean };
+  mousePosFetcher?: ResizerOptions['mousePosFetcher'];
+  updateTarget?: ResizerOptions['updateTarget'];
+  posFetcher?: ResizerOptions['posFetcher'];
+  onStart?: ResizerOptions['onStart'];
+  onMove?: ResizerOptions['onMove'];
+  onEnd?: ResizerOptions['onEnd'];
+  onUpdateContainer?: ResizerOptions['onUpdateContainer'];
+
   /**
    * Init the Resizer with options
    * @param  {Object} options
    */
   constructor(opts = {}) {
+    this.opts = {
+      ratioDefault: false,
+      onUpdateContainer: () => {},
+      step: 1,
+      minDim: 10,
+      maxDim: Infinity,
+      unitHeight: 'px',
+      unitWidth: 'px',
+      keyHeight: 'height',
+      keyWidth: 'width',
+      currentUnit: true,
+      silentFrames: false,
+      avoidContainerUpdate: false,
+      keepAutoHeight: false,
+      keepAutoWidth: false,
+      autoHeight: false,
+      autoWidth: false,
+      tl: true,
+      tc: true,
+      tr: true,
+      cl: true,
+      cr: true,
+      bl: true,
+      bc: true,
+      br: true,
+    };
     this.setOptions(opts);
     bindAll(this, 'handleKeyDown', 'handleMouseDown', 'move', 'stop');
-    return this;
   }
 
   /**
@@ -111,8 +305,11 @@ class Resizer {
    * Setup options
    * @param {Object} options
    */
-  setOptions(options = {}) {
-    this.opts = defaults(options, defaultOpts);
+  setOptions(options: Partial<ResizerOptions> = {}) {
+    this.opts = {
+      ...this.opts,
+      ...options,
+    };
     this.setup();
   }
 
@@ -138,9 +335,10 @@ class Resizer {
     }
 
     // Create handlers
-    const handlers = {};
+    const handlers: Handlers = {};
     ['tl', 'tc', 'tr', 'cl', 'cr', 'bl', 'bc', 'br'].forEach(
-      hdl => (handlers[hdl] = opts[hdl] ? createHandler(hdl, opts) : '')
+      // @ts-ignore
+      hdl => (handlers[hdl] = opts[hdl] ? createHandler(hdl, opts) : null)
     );
 
     for (let n in handlers) {
@@ -162,7 +360,7 @@ class Resizer {
    * Toggle iframes pointer event
    * @param {Boolean} silent If true, iframes will be silented
    */
-  toggleFrames(silent) {
+  toggleFrames(silent?: boolean) {
     if (this.opts.silentFrames) {
       const frames = document.querySelectorAll('iframe');
       each(frames, frame => (frame.style.pointerEvents = silent ? 'none' : ''));
@@ -174,8 +372,8 @@ class Resizer {
    * @param  {HTMLElement} el
    * @return {Boolean}
    */
-  isHandler(el) {
-    var handlers = this.handlers;
+  isHandler(el: HTMLElement) {
+    const { handlers } = this;
 
     for (var n in handlers) {
       if (handlers[n] === el) return true;
@@ -197,14 +395,14 @@ class Resizer {
    * @return {HTMLElement}
    */
   getParentEl() {
-    return this.el.parentElement;
+    return this.el?.parentElement;
   }
 
   /**
    * Returns documents
    */
   getDocumentEl() {
-    return [this.el.ownerDocument, document];
+    return [this.el!.ownerDocument, document];
   }
 
   /**
@@ -213,8 +411,8 @@ class Resizer {
    * @param  {Object} opts Custom options
    * @return {Object}
    */
-  getElementPos(el, opts = {}) {
-    var posFetcher = this.posFetcher || '';
+  getElementPos(el: HTMLElement, opts = {}) {
+    const { posFetcher } = this;
     return posFetcher ? posFetcher(el, opts) : getBoundingRect(el);
   }
 
@@ -222,14 +420,14 @@ class Resizer {
    * Focus resizer on the element, attaches handlers to it
    * @param {HTMLElement} el
    */
-  focus(el) {
+  focus(el: HTMLElement) {
     // Avoid focusing on already focused element
     if (el && el === this.el) {
       return;
     }
 
     this.el = el;
-    this.updateContainer({ forceShow: 1 });
+    this.updateContainer({ forceShow: true });
     on(this.getDocumentEl(), 'pointerdown', this.handleMouseDown);
   }
 
@@ -237,11 +435,11 @@ class Resizer {
    * Blur from element
    */
   blur() {
-    this.container.style.display = 'none';
+    this.container!.style.display = 'none';
 
     if (this.el) {
       off(this.getDocumentEl(), 'pointerdown', this.handleMouseDown);
-      this.el = null;
+      delete this.el;
     }
   }
 
@@ -249,21 +447,23 @@ class Resizer {
    * Start resizing
    * @param  {Event} e
    */
-  start(e) {
-    //Right or middel click
+  start(ev: Event) {
+    const e = ev as PointerEvent;
+    // @ts-ignore Right or middel click
     if (e.button !== 0) return;
     e.preventDefault();
     e.stopPropagation();
-    const el = this.el;
+    const el = this.el!;
     const parentEl = this.getParentEl();
     const resizer = this;
     const config = this.opts || {};
     const mouseFetch = this.mousePosFetcher;
     const attrName = 'data-' + config.prefix + 'handler';
-    const rect = this.getElementPos(el, { target: 'el' });
-    const parentRect = this.getElementPos(parentEl);
-    this.handlerAttr = e.target.getAttribute(attrName);
-    this.clickedHandler = e.target;
+    const rect = this.getElementPos(el!, { target: 'el' });
+    const parentRect = this.getElementPos(parentEl!);
+    const target = e.target as HTMLElement;
+    this.handlerAttr = target.getAttribute(attrName)!;
+    this.clickedHandler = target;
     this.startDim = {
       t: rect.top,
       l: rect.left,
@@ -296,7 +496,7 @@ class Resizer {
     on(docs, 'keydown', this.handleKeyDown);
     on(docs, 'pointerup', this.stop);
     isFunction(this.onStart) && this.onStart(e, { docs, config, el, resizer });
-    this.toggleFrames(1);
+    this.toggleFrames(true);
     this.move(e);
   }
 
@@ -304,7 +504,8 @@ class Resizer {
    * While resizing
    * @param  {Event} e
    */
-  move(e) {
+  move(ev: PointerEvent | Event) {
+    const e = ev as PointerEvent;
     const onMove = this.onMove;
     const mouseFetch = this.mousePosFetcher;
     const currentPos = mouseFetch
@@ -315,8 +516,8 @@ class Resizer {
         };
     this.currentPos = currentPos;
     this.delta = {
-      x: currentPos.x - this.startPos.x,
-      y: currentPos.y - this.startPos.y,
+      x: currentPos.x - this.startPos!.x,
+      y: currentPos.y - this.startPos!.y,
     };
     this.keys = {
       shift: e.shiftKey,
@@ -325,7 +526,7 @@ class Resizer {
     };
 
     this.rectDim = this.calc(this);
-    this.updateRect(0);
+    this.updateRect(false);
 
     // Move callback
     onMove && onMove(e);
@@ -335,14 +536,14 @@ class Resizer {
    * Stop resizing
    * @param  {Event} e
    */
-  stop(e) {
-    const { el } = this;
+  stop(e: Event) {
+    const el = this.el!;
     const config = this.opts;
     const docs = this.docs || this.getDocumentEl();
     off(docs, 'pointermove', this.move);
     off(docs, 'keydown', this.handleKeyDown);
     off(docs, 'pointerup', this.stop);
-    this.updateRect(1);
+    this.updateRect(true);
     this.toggleFrames();
     isFunction(this.onEnd) && this.onEnd(e, { docs, config, el, resizer: this });
     delete this.docs;
@@ -351,11 +552,11 @@ class Resizer {
   /**
    * Update rect
    */
-  updateRect(store) {
-    const el = this.el;
+  updateRect(store: boolean) {
+    const el = this.el!;
     const resizer = this;
     const config = this.opts;
-    const rect = this.rectDim;
+    const rect = this.rectDim!;
     const updateTarget = this.updateTarget;
     const selectedHandler = this.getSelectedHandler();
     const { unitHeight, unitWidth, keyWidth, keyHeight } = config;
@@ -369,17 +570,17 @@ class Resizer {
         config,
       });
     } else {
-      const elStyle = el.style;
-      elStyle[keyWidth] = rect.w + unitWidth;
-      elStyle[keyHeight] = rect.h + unitHeight;
+      const elStyle = el.style as Record<string, any>;
+      elStyle[keyWidth!] = rect.w + unitWidth!;
+      elStyle[keyHeight!] = rect.h + unitHeight!;
     }
 
     this.updateContainer();
   }
 
-  updateContainer(opt = {}) {
+  updateContainer(opt: { forceShow?: boolean } = {}) {
     const { opts, container, el } = this;
-    const { style } = container;
+    const { style } = container!;
 
     if (!opts.avoidContainerUpdate && el) {
       // On component resize container fits the tool,
@@ -390,8 +591,8 @@ class Resizer {
       if (opt.forceShow) style.display = 'block';
     }
 
-    this.onUpdateContainer({
-      el: container,
+    this.onUpdateContainer?.({
+      el: container!,
       resizer: this,
       opts: {
         ...opts,
@@ -420,7 +621,8 @@ class Resizer {
    * Handle ESC key
    * @param  {Event} e
    */
-  handleKeyDown(e) {
+  handleKeyDown(e: Event) {
+    // @ts-ignore
     if (e.keyCode === 27) {
       // Rollback to initial dimensions
       this.rectDim = this.startDim;
@@ -432,13 +634,14 @@ class Resizer {
    * Handle mousedown to check if it's possible to start resizing
    * @param  {Event} e
    */
-  handleMouseDown(e) {
-    var el = e.target;
+  handleMouseDown(e: Event) {
+    const el = e.target as HTMLElement;
+
     if (this.isHandler(el)) {
       this.selectedHandler = el;
       this.start(e);
     } else if (el !== this.el) {
-      this.selectedHandler = '';
+      delete this.selectedHandler;
       this.blur();
     }
   }
@@ -447,17 +650,17 @@ class Resizer {
    * All positioning logic
    * @return {Object}
    */
-  calc(data) {
+  calc(data: Resizer) {
     let value;
     const opts = this.opts || {};
-    const step = opts.step;
-    const startDim = this.startDim;
-    const minDim = opts.minDim;
+    const step = opts.step!;
+    const startDim = this.startDim!;
+    const minDim = opts.minDim!;
     const maxDim = opts.maxDim;
-    const deltaX = data.delta.x;
-    const deltaY = data.delta.y;
-    const parentW = this.parentDim.w;
-    const parentH = this.parentDim.h;
+    const deltaX = data.delta!.x;
+    const deltaY = data.delta!.y;
+    const parentW = this.parentDim!.w;
+    const parentH = this.parentDim!.h;
     const unitWidth = this.opts.unitWidth;
     const unitHeight = this.opts.unitHeight;
     const startW = unitWidth === '%' ? (startDim.w / 100) * parentW : startDim.w;
@@ -471,7 +674,7 @@ class Resizer {
 
     if (!data) return;
 
-    var attr = data.handlerAttr;
+    var attr = data.handlerAttr!;
     if (~attr.indexOf('r')) {
       value =
         unitWidth === '%'
@@ -510,7 +713,7 @@ class Resizer {
     }
 
     // Enforce aspect ratio (unless shift key is being held)
-    var ratioActive = opts.ratioDefault ? !data.keys.shift : data.keys.shift;
+    var ratioActive = opts.ratioDefault ? !data.keys!.shift : data.keys!.shift;
     if (attr.indexOf('c') < 0 && ratioActive) {
       var ratio = startDim.w / startDim.h;
       if (box.w / box.h > ratio) {
@@ -530,9 +733,3 @@ class Resizer {
     return box;
   }
 }
-
-export default {
-  init(opts) {
-    return new Resizer(opts);
-  },
-};
