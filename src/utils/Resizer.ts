@@ -1,4 +1,4 @@
-import { bindAll, defaults, isFunction, each } from 'underscore';
+import { bindAll, isFunction, each } from 'underscore';
 import { on, off, normalizeFloat } from './mixins';
 
 type Position = {
