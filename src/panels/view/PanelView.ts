@@ -1,4 +1,5 @@
 import { View } from '../../abstract';
+import EditorModule from '../../editor';
 import Panel from '../model/Panel';
 import ButtonsView from './ButtonsView';
 
@@ -41,8 +42,8 @@ export default class PanelView extends View<Panel> {
   }
 
   initResize() {
-    const em = this.em;
-    const editor = em ? em.get('Editor') : '';
+    const { em } = this;
+    const editor = em?.get('Editor') as EditorModule;
     const resizable = this.model.get('resizable');
 
     if (editor && resizable) {
@@ -66,7 +67,7 @@ export default class PanelView extends View<Panel> {
         cl = resz[3];
       }
 
-      var resizer = editor.Utils.Resizer.init({
+      var resizer = new editor.Utils.Resizer({
         tc,
         cr,
         bc,
