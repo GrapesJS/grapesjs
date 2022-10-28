@@ -58,6 +58,7 @@ import { EventHandler } from 'backbone';
 import { isUndefined } from 'underscore';
 import { IBaseModule } from '../abstract/Module';
 import CanvasModule from '../canvas';
+import UtilsModule from '../utils';
 import cash from '../utils/cash-dom';
 import html from '../utils/html';
 import defaults from './config/config';
@@ -97,7 +98,6 @@ export default class EditorModule implements IBaseModule<typeof defaults> {
   get I18n(): I18nModule {
     return this.em.get('I18n');
   }
-  //@ts-ignore
   get Utils(): UtilsModule {
     return this.em.get('Utils');
   }

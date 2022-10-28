@@ -1,5 +1,6 @@
 import { View } from '../../abstract';
 import EditorModule from '../../editor';
+import Resizer from '../../utils/Resizer';
 import Panel from '../model/Panel';
 import ButtonsView from './ButtonsView';
 
@@ -67,7 +68,7 @@ export default class PanelView extends View<Panel> {
         cl = resz[3];
       }
 
-      var resizer = new editor.Utils.Resizer({
+      const resizer: Resizer = new editor.Utils.Resizer({
         tc,
         cr,
         bc,
@@ -84,10 +85,10 @@ export default class PanelView extends View<Panel> {
           em && em.trigger('change:canvasOffset');
         },
         posFetcher: (el: HTMLElement, { target }: any) => {
-          const style = el.style;
+          const style = el.style as any;
           const config = resizer.getConfig();
-          const keyWidth = config.keyWidth;
-          const keyHeight = config.keyHeight;
+          const keyWidth = config.keyWidth!;
+          const keyHeight = config.keyHeight!;
           const rect = el.getBoundingClientRect();
           const forContainer = target == 'container';
           const styleWidth = style[keyWidth];

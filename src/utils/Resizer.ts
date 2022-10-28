@@ -262,7 +262,7 @@ export default class Resizer {
    * Init the Resizer with options
    * @param  {Object} options
    */
-  constructor(opts = {}) {
+  constructor(opts: ResizerOptions = {}) {
     this.opts = {
       ratioDefault: false,
       onUpdateContainer: () => {},
