@@ -2361,6 +2361,11 @@ declare namespace grapesjs {
     view?: ComponentView;
 
     /**
+     * A randomized unique id associated with the component prefixed with `i`
+     */
+    ccid?: string
+
+    /**
      * Hook method, called once the model is created
      */
     init(): void;
