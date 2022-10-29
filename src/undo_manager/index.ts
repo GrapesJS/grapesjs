@@ -28,22 +28,13 @@ import UndoManager from 'backbone-undo';
 import { isArray, isBoolean, isEmpty, unique, times } from 'underscore';
 import { Module } from '../abstract';
 import EditorModel from '../editor/model/Editor';
-
-export interface UndoManagerConfig {
-  maximumStackLength?: number;
-  trackSelection?: boolean;
-}
+import defaults, { UndoManagerConfig } from './config';
 
 export interface UndoGroup {
   index: number;
   actions: any[];
   labels: string[];
 }
-
-const defaults: UndoManagerConfig = {
-  maximumStackLength: 500,
-  trackSelection: true,
-};
 
 const hasSkip = (opts: any) => opts.avoidStore || opts.noUndo;
 
