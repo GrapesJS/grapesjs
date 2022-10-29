@@ -14,7 +14,7 @@ export default {
 
     // Create the resizer for the canvas if not yet created
     if (!canvasResizer || opt.forceNew) {
-      this.canvasResizer = editor.Utils.Resizer.init(options);
+      this.canvasResizer = new editor.Utils.Resizer(options);
       canvasResizer = this.canvasResizer;
     }
 

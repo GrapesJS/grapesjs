@@ -2,28 +2,18 @@ import Dragger from './Dragger';
 import Sorter from './Sorter';
 import Resizer from './Resizer';
 import * as mixins from './mixins';
+import { Module } from '../abstract';
+import EditorModel from '../editor/model/Editor';
 
-export default () => {
-  return {
-    /**
-     * Name of the module
-     * @type {String}
-     * @private
-     */
-    name: 'Utils',
+export default class UtilsModule extends Module {
+  Sorter = Sorter;
+  Resizer = Resizer;
+  Dragger = Dragger;
+  helpers = { ...mixins };
 
-    /**
-     * Initialize module
-     */
-    init() {
-      return this;
-    },
+  constructor(em: EditorModel) {
+    super(em, 'Utils');
+  }
 
-    destroy() {},
-
-    Sorter,
-    Resizer,
-    Dragger,
-    helpers: { ...mixins },
-  };
-};
+  destroy() {}
+}
