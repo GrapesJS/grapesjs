@@ -71,6 +71,7 @@ import PageManager from '../pages';
 import PanelManager from '../panels';
 import SelectorManager from '../selector_manager';
 import StorageManager from '../storage_manager';
+import UndoManagerModule from '../undo_manager';
 import UtilsModule from '../utils';
 import cash from '../utils/cash-dom';
 import html from '../utils/html';
@@ -140,7 +141,6 @@ export default class EditorModule implements IBaseModule<typeof defaults> {
   get CodeManager(): CodeManagerModule {
     return this.em.get('CodeManager');
   }
-  //@ts-ignore
   get UndoManager(): UndoManagerModule {
     return this.em.get('UndoManager');
   }
