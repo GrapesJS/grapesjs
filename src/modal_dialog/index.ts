@@ -43,7 +43,7 @@ import defaults from './config/config';
 import ModalM from './model/Modal';
 import ModalView from './view/ModalView';
 
-export default class ModalManager extends Module<typeof defaults> {
+export default class ModalModule extends Module<typeof defaults> {
   modal?: ModalView;
 
   /**

@@ -57,7 +57,20 @@
 import { EventHandler } from 'backbone';
 import { isUndefined } from 'underscore';
 import { IBaseModule } from '../abstract/Module';
+import AssetManager from '../asset_manager';
+import BlockManager from '../block_manager';
 import CanvasModule from '../canvas';
+import CssComposer from '../css_composer';
+import DeviceManager from '../device_manager';
+import ComponentManager from '../dom_components';
+import I18nModule from '../i18n';
+import KeymapsModule from '../keymaps';
+import ModalModule from '../modal_dialog';
+import LayerManager from '../navigator';
+import PageManager from '../pages';
+import PanelManager from '../panels';
+import SelectorManager from '../selector_manager';
+import StorageManager from '../storage_manager';
 import UtilsModule from '../utils';
 import cash from '../utils/cash-dom';
 import html from '../utils/html';
@@ -94,7 +107,6 @@ export default class EditorModule implements IBaseModule<typeof defaults> {
 
   modules = [];
 
-  //@ts-ignore
   get I18n(): I18nModule {
     return this.em.get('I18n');
   }
@@ -108,19 +120,15 @@ export default class EditorModule implements IBaseModule<typeof defaults> {
   get Commands(): CommandsModule {
     return this.em.get('Commands');
   }
-  //@ts-ignore
   get Keymaps(): KeymapsModule {
     return this.em.get('Keymaps');
   }
-  //@ts-ignore
   get Modal(): ModalModule {
     return this.em.get('Modal');
   }
-  //@ts-ignore
-  get Panels(): PanelsModule {
+  get Panels(): PanelManager {
     return this.em.get('Panels');
   }
-
   get Canvas(): CanvasModule {
     return this.em.get('Canvas');
   }
@@ -140,56 +148,43 @@ export default class EditorModule implements IBaseModule<typeof defaults> {
   get RichTextEditor(): RichTextEditorModule {
     return this.em.get('RichTextEditor');
   }
-  //@ts-ignore
-  get Pages(): PageManagerModule {
+  get Pages(): PageManager {
     return this.em.get('PageManager');
   }
-  //@ts-ignore
-  get Components(): DomComponentsModule {
+  get Components(): ComponentManager {
     return this.em.get('DomComponents');
   }
-  //@ts-ignore
-  get DomComponents(): DomComponentsModule {
+  get DomComponents(): ComponentManager {
     return this.em.get('DomComponents');
   }
-  //@ts-ignore
-  get Layers(): LayerManagerModule {
+  get Layers(): LayerManager {
     return this.em.get('LayerManager');
   }
-  //@ts-ignore
-  get LayerManager(): LayerManagerModule {
+  get LayerManager(): LayerManager {
     return this.em.get('LayerManager');
   }
-  //@ts-ignore
-  get Css(): CssComposerModule {
+  get Css(): CssComposer {
     return this.em.get('CssComposer');
   }
-  //@ts-ignore
-  get CssComposer(): CssComposerModule {
+  get CssComposer(): CssComposer {
     return this.em.get('CssComposer');
   }
-  //@ts-ignore
-  get Storage(): StorageManagerModule {
+  get Storage(): StorageManager {
     return this.em.get('StorageManager');
   }
-  //@ts-ignore
-  get StorageManager(): StorageManagerModule {
+  get StorageManager(): StorageManager {
     return this.em.get('StorageManager');
   }
-  //@ts-ignore
-  get Assets(): AssetManagerModule {
+  get Assets(): AssetManager {
     return this.em.get('AssetManager');
   }
-  //@ts-ignore
-  get AssetManager(): AssetManagerModule {
+  get AssetManager(): AssetManager {
     return this.em.get('AssetManager');
   }
-  //@ts-ignore
-  get Blocks(): BlockManagerModule {
+  get Blocks(): BlockManager {
     return this.em.get('BlockManager');
   }
-  //@ts-ignore
-  get BlockManager(): BlockManagerModule {
+  get BlockManager(): BlockManager {
     return this.em.get('BlockManager');
   }
   //@ts-ignore
@@ -200,12 +195,10 @@ export default class EditorModule implements IBaseModule<typeof defaults> {
   get TraitManager(): TraitManagerModule {
     return this.em.get('TraitManager');
   }
-  //@ts-ignore
-  get Selectors(): SelectorManagerCollectionModule {
+  get Selectors(): SelectorManager {
     return this.em.get('SelectorManager');
   }
-  //@ts-ignore
-  get SelectorManager(): SelectorManagerCollectionModule {
+  get SelectorManager(): SelectorManager {
     return this.em.get('SelectorManager');
   }
   //@ts-ignore
@@ -216,12 +209,10 @@ export default class EditorModule implements IBaseModule<typeof defaults> {
   get StyleManager(): StyleManagerModule {
     return this.em.get('StyleManager');
   }
-  //@ts-ignore
-  get Devices(): DeviceManagerModule {
+  get Devices(): DeviceManager {
     return this.em.get('DeviceManager');
   }
-  //@ts-ignore
-  get DeviceManager(): DeviceManagerModule {
+  get DeviceManager(): DeviceManager {
     return this.em.get('DeviceManager');
   }
 
