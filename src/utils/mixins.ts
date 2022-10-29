@@ -272,7 +272,7 @@ const getKeyCode = (ev: KeyboardEvent) => ev.which || ev.keyCode;
 const getKeyChar = (ev: KeyboardEvent) => String.fromCharCode(getKeyCode(ev));
 const isEscKey = (ev: KeyboardEvent) => getKeyCode(ev) === 27;
 const isEnterKey = (ev: KeyboardEvent) => getKeyCode(ev) === 13;
-const isObject = (val: any) => val !== null && !Array.isArray(val) && typeof val === 'object';
+const isObject = (val: any): val is Object => val !== null && !Array.isArray(val) && typeof val === 'object';
 const isEmptyObj = (val: Record<string, any>) => Object.keys(val).length <= 0;
 
 const capitalize = (str: string) => str && str.charAt(0).toUpperCase() + str.substring(1);

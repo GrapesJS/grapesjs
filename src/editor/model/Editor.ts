@@ -9,6 +9,7 @@ import FrameView from '../../canvas/view/FrameView';
 import EditorModule from '..';
 import EditorView from '../view/EditorView';
 import { IModule } from '../../abstract/Module';
+import CanvasModule from '../../canvas';
 
 //@ts-ignore
 Backbone.$ = $;
@@ -98,6 +99,10 @@ export default class EditorModel extends Model {
 
   get shallow(): EditorModel {
     return this.get('shallow');
+  }
+
+  get Canvas(): CanvasModule {
+    return this.get('Canvas');
   }
 
   constructor(conf = {}) {
@@ -315,7 +320,7 @@ export default class EditorModel extends Model {
     this.set('Editor', editor);
   }
 
-  getEditor() {
+  getEditor(): EditorModule {
     return this.get('Editor');
   }
 
