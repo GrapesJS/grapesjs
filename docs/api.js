@@ -39,7 +39,7 @@ async function generateDocs () {
     ['modal_dialog/index.ts', 'modal_dialog.md'],
     ['rich_text_editor/index.js', 'rich_text_editor.md'],
     ['keymaps/index.ts', 'keymaps.md'],
-    ['undo_manager/index.js', 'undo_manager.md'],
+    ['undo_manager/index.ts', 'undo_manager.md'],
     ['canvas/index.ts', 'canvas.md'],
     ['canvas/model/Frame.ts', 'frame.md'],
     ['i18n/index.ts', 'i18n.md'],

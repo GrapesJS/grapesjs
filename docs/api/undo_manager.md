@@ -193,7 +193,7 @@ Note: New Components and CSSRules will be added automatically
 
 ### Parameters
 
-*   `obj`  
+*   `obj` **any** 
 *   `entity` **(Model | Collection)** Entity to track
 
 Returns **[Boolean][16]** 
