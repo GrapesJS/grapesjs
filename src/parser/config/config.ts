@@ -1,3 +1,6 @@
+import { CssRuleProperties } from '../../css_composer/model/CssRule';
+import EditorModule from '../../editor';
+
 export interface HTMLParserOptions {
   /**
    * DOMParser mime type.
@@ -18,6 +21,12 @@ export interface HTMLParserOptions {
    * @default false
    */
   allowUnsafeAttr?: boolean;
+
+  /**
+   * When false, removes empty text nodes when parsed, unless they contain a space.
+   * @default false
+   */
+  keepEmptyTextNodes?: boolean;
 }
 
 export interface ParserConfig {
@@ -31,7 +40,7 @@ export interface ParserConfig {
    * Custom CSS parser.
    * @see https://grapesjs.com/docs/guides/Custom-CSS-parser.html
    */
-  parserCss?: any; // TODO
+  parserCss?: (str: string, editor: EditorModule) => CssRuleProperties[];
 
   /**
    * Custom HTML parser.
@@ -52,12 +61,13 @@ export interface ParserConfig {
 
 const config: ParserConfig = {
   textTags: ['br', 'b', 'i', 'u', 'a', 'ul', 'ol'],
-  parserCss: null,
+  parserCss: undefined,
   parserHtml: null,
   optionsHtml: {
     htmlType: 'text/html',
     allowScripts: false,
     allowUnsafeAttr: false,
+    keepEmptyTextNodes: false,
   },
 };
 

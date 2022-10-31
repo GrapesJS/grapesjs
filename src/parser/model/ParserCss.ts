@@ -1,9 +1,10 @@
 import { isString } from 'underscore';
 import { CssRuleProperties } from '../../css_composer/model/CssRule';
 import EditorModel from '../../editor/model/Editor';
+import { ParserConfig } from '../config/config';
 import BrowserCssParser, { parseSelector, createNode } from './BrowserParserCss';
 
-export default (config: { parserCss?: any; em?: EditorModel } = {}) => ({
+export default (em?: EditorModel, config: ParserConfig = {}) => ({
   /**
    * Parse CSS string to a desired model object
    * @param  {String} str CSS string
@@ -11,9 +12,9 @@ export default (config: { parserCss?: any; em?: EditorModel } = {}) => ({
    */
   parse(str: string) {
     let result: CssRuleProperties[] = [];
-    const { parserCss, em } = config;
+    const { parserCss } = config;
     const editor = em?.Editor;
-    const nodes: CssRuleProperties[] = parserCss ? parserCss(str, editor) : BrowserCssParser(str);
+    const nodes: CssRuleProperties[] = parserCss ? parserCss(str, editor!) : BrowserCssParser(str);
     nodes.forEach(node => (result = result.concat(this.checkNode(node))));
     em?.trigger('parse:css', { input: str, output: result });
 

@@ -1,5 +1,7 @@
 import { each, isString, isFunction, isUndefined } from 'underscore';
 import { CssRuleProperties } from '../../css_composer/model/CssRule';
+import EditorModel from '../../editor/model/Editor';
+import { HTMLParserOptions, ParserConfig } from '../config/config';
 import BrowserParserHtml from './BrowserParserHtml';
 
 type AnyObject = Record<string, any>;
@@ -11,11 +13,10 @@ type HTMLParseResult = {
   css: null | CssRuleProperties[];
 };
 
-export default (config: AnyObject = {}) => {
-  let c = config;
-  const modelAttrStart = 'data-gjs-';
-  const event = 'parse:html';
+const modelAttrStart = 'data-gjs-';
+const event = 'parse:html';
 
+export default (em?: EditorModel, config: ParserConfig = {}) => {
   return {
     compTypes: '',
 
@@ -235,7 +236,7 @@ export default (config: AnyObject = {}) => {
           }
 
           // Throw away empty nodes (keep spaces)
-          if (!config.keepEmptyTextNodes) {
+          if (!opts.keepEmptyTextNodes) {
             const content = node.nodeValue;
             if (content != ' ' && !content!.trim()) {
               continue;
@@ -259,7 +260,7 @@ export default (config: AnyObject = {}) => {
             const comp = comps[ci];
             const cType = comp.type;
 
-            if (['text', 'textnode'].indexOf(cType) < 0 && c.textTags.indexOf(comp.tagName) < 0) {
+            if (['text', 'textnode'].indexOf(cType) < 0 && config.textTags!.indexOf(comp.tagName) < 0) {
               allTxt = 0;
               break;
             }
@@ -291,14 +292,13 @@ export default (config: AnyObject = {}) => {
      * @param  {ParserCss} parserCss In case there is style tags inside HTML
      * @return {Object}
      */
-    parse(str: string, parserCss: any, opts = {}) {
-      const { em } = c;
-      const conf = (em && em.get('Config')) || {};
+    parse(str: string, parserCss: any, opts: HTMLParserOptions = {}) {
+      const conf = em?.get('Config') || {};
       const res: HTMLParseResult = { html: null, css: null };
       const cf: AnyObject = { ...config, ...opts };
       const options = {
         ...config.optionsHtml,
-        // Support previous `configParser.htmlType` option
+        // @ts-ignore Support previous `configParser.htmlType` option
         htmlType: config.optionsHtml?.htmlType || config.htmlType,
         ...opts,
       };
@@ -336,7 +336,7 @@ export default (config: AnyObject = {}) => {
       em && em.trigger(`${event}:root`, { input: str, root: el });
       const result = this.parseNode(el, cf);
       // I have to keep it otherwise it breaks the DomComponents.addComponent (returns always array)
-      const resHtml = result.length === 1 && !c.returnArray ? result[0] : result;
+      const resHtml = result.length === 1 && !cf.returnArray ? result[0] : result;
       res.html = resHtml;
       em && em.trigger(event, { input: str, output: res });
 

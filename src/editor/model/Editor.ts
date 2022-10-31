@@ -10,6 +10,7 @@ import EditorModule from '..';
 import EditorView from '../view/EditorView';
 import { IModule } from '../../abstract/Module';
 import CanvasModule from '../../canvas';
+import ComponentManager from '../../dom_components';
 
 //@ts-ignore
 Backbone.$ = $;
@@ -107,6 +108,10 @@ export default class EditorModel extends Model {
 
   get Editor(): EditorModule {
     return this.get('Editor');
+  }
+
+  get Components(): ComponentManager {
+    return this.get('DomComponents');
   }
 
   constructor(conf = {}) {
