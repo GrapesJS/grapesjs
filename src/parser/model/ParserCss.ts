@@ -1,7 +1,7 @@
 import { isString } from 'underscore';
 import { CssRuleProperties } from '../../css_composer/model/CssRule';
 import EditorModel from '../../editor/model/Editor';
-import { ParserConfig } from '../config/config';
+import { ParsedCssRule, ParserConfig } from '../config/config';
 import BrowserCssParser, { parseSelector, createNode } from './BrowserParserCss';
 
 export default (em?: EditorModel, config: ParserConfig = {}) => ({
@@ -14,7 +14,7 @@ export default (em?: EditorModel, config: ParserConfig = {}) => ({
     let result: CssRuleProperties[] = [];
     const { parserCss } = config;
     const editor = em?.Editor;
-    const nodes: CssRuleProperties[] = parserCss ? parserCss(str, editor!) : BrowserCssParser(str);
+    const nodes = parserCss ? parserCss(str, editor!) : BrowserCssParser(str);
     nodes.forEach(node => (result = result.concat(this.checkNode(node))));
     em?.trigger('parse:css', { input: str, output: result });
 
@@ -26,17 +26,17 @@ export default (em?: EditorModel, config: ParserConfig = {}) => ({
    * a valid object for the CSS composer
    * @return {[type]}
    */
-  checkNode(node: CssRuleProperties): CssRuleProperties[] {
+  checkNode(node: CssRuleProperties | ParsedCssRule): CssRuleProperties[] {
     const { selectors, style } = node;
-    let result = [node];
+    let result = [node] as CssRuleProperties[];
 
     if (isString(selectors)) {
-      const nodes = [];
+      const nodes: CssRuleProperties[] = [];
+      const parsedNode = node as ParsedCssRule;
       const selsParsed = parseSelector(selectors);
       const classSets = selsParsed.result;
       const selectorsAdd = selsParsed.add.join(', ');
-      // @ts-ignore
-      const opts = { atRule: node.atRule, mediaText: node.params };
+      const opts = { atRule: parsedNode.atRule, mediaText: parsedNode.params };
 
       if (classSets.length) {
         classSets.forEach(classSet => {

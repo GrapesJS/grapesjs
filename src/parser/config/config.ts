@@ -1,5 +1,15 @@
-import { CssRuleProperties } from '../../css_composer/model/CssRule';
 import EditorModule from '../../editor';
+
+export interface ParsedCssRule {
+  selectors: string;
+  style: Record<string, string>;
+  atRule?: string;
+  params?: string;
+}
+
+export type CustomParserCss = (input: string, editor: EditorModule) => ParsedCssRule[];
+
+export type CustomParserHtml = (input: string, options: HTMLParserOptions) => HTMLElement;
 
 export interface HTMLParserOptions {
   /**
@@ -40,7 +50,7 @@ export interface ParserConfig {
    * Custom CSS parser.
    * @see https://grapesjs.com/docs/guides/Custom-CSS-parser.html
    */
-  parserCss?: (input: string, editor: EditorModule) => CssRuleProperties[];
+  parserCss?: CustomParserCss;
 
   /**
    * Custom HTML parser.
@@ -51,7 +61,7 @@ export interface ParserConfig {
    * // Here the result will be XMLDocument, which extends Node.
    * parserHtml: (input, opts = {}) => (new DOMParser()).parseFromString(input, 'text/xml')
    */
-  parserHtml?: (input: string, options: HTMLParserOptions) => HTMLElement;
+  parserHtml?: CustomParserHtml;
 
   /**
    * Default HTML parser options (used in `parserModule.parseHtml('<div...', options)`).

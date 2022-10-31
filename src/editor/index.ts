@@ -69,6 +69,8 @@ import ModalModule from '../modal_dialog';
 import LayerManager from '../navigator';
 import PageManager from '../pages';
 import PanelManager from '../panels';
+import ParserModule from '../parser';
+import { CustomParserCss } from '../parser/config/config';
 import SelectorManager from '../selector_manager';
 import StorageManager from '../storage_manager';
 import UndoManagerModule from '../undo_manager';
@@ -133,7 +135,6 @@ export default class EditorModule implements IBaseModule<typeof defaults> {
   get Canvas(): CanvasModule {
     return this.em.get('Canvas');
   }
-  //@ts-ignore
   get Parser(): ParserModule {
     return this.em.get('Parser');
   }
@@ -642,7 +643,7 @@ export default class EditorModule implements IBaseModule<typeof defaults> {
    *  return result;
    * });
    */
-  setCustomParserCss(parser: (css: string, editor: EditorModule) => ParsedRule[]) {
+  setCustomParserCss(parser: CustomParserCss) {
     this.Parser.getConfig().parserCss = parser;
     return this;
   }
