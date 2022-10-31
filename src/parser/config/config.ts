@@ -1,11 +1,11 @@
-interface HTMLParserOptions {
+export interface HTMLParserOptions {
   /**
    * DOMParser mime type.
    * If you use the `text/html` parser, it will fix the invalid syntax automatically.
    * @see https://developer.mozilla.org/en-US/docs/Web/API/DOMParser/parseFromString
    * @default 'text/html'
    */
-  htmlType?: string;
+  htmlType?: DOMParserSupportedType;
 
   /**
    * Allow <script> tags.
