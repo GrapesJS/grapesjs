@@ -26,7 +26,7 @@
  */
 import { Module } from '../abstract';
 import EditorModel from '../editor/model/Editor';
-import defaults, { ParserConfig } from './config/config';
+import defaults, { HTMLParserOptions, ParserConfig } from './config/config';
 import parserCss from './model/ParserCss';
 import parserHtml from './model/ParserHtml';
 
@@ -70,7 +70,7 @@ export default class ParserModule extends Module<ParserConfig & { name?: string 
    * });
    * // This will preserve the original format as, from the XML point of view, is a valid format
    */
-  parseHtml(input: string, options = {}) {
+  parseHtml(input: string, options: HTMLParserOptions = {}) {
     const { em, parserHtml } = this;
     parserHtml.compTypes = (em.Components.getTypes() || {}) as any;
     return parserHtml.parse(input, this.parserCss, options);
