@@ -40,7 +40,7 @@ export interface ParserConfig {
    * Custom CSS parser.
    * @see https://grapesjs.com/docs/guides/Custom-CSS-parser.html
    */
-  parserCss?: (str: string, editor: EditorModule) => CssRuleProperties[];
+  parserCss?: (input: string, editor: EditorModule) => CssRuleProperties[];
 
   /**
    * Custom HTML parser.
@@ -51,7 +51,7 @@ export interface ParserConfig {
    * // Here the result will be XMLDocument, which extends Node.
    * parserHtml: (input, opts = {}) => (new DOMParser()).parseFromString(input, 'text/xml')
    */
-  parserHtml?: any; // TODO
+  parserHtml?: (input: string, options: HTMLParserOptions) => HTMLElement;
 
   /**
    * Default HTML parser options (used in `parserModule.parseHtml('<div...', options)`).
@@ -62,7 +62,7 @@ export interface ParserConfig {
 const config: ParserConfig = {
   textTags: ['br', 'b', 'i', 'u', 'a', 'ul', 'ol'],
   parserCss: undefined,
-  parserHtml: null,
+  parserHtml: undefined,
   optionsHtml: {
     htmlType: 'text/html',
     allowScripts: false,
