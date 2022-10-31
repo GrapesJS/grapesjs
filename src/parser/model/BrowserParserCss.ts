@@ -1,8 +1,9 @@
 import { keys } from 'underscore';
+import { CssRuleProperties } from '../../css_composer/model/CssRule';
 
 // At-rules
 // https://developer.mozilla.org/it/docs/Web/API/CSSRule#Type_constants
-const atRules = {
+const atRules: Record<string, string> = {
   4: 'media',
   5: 'font-face',
   6: 'page',
@@ -27,14 +28,11 @@ const singleAtRulesNames = ['font-face', 'page', 'counter-style', 'viewport'];
  * @example
  * var res = parseSelector('.test1, .test1.test2, .test2 .test3');
  * console.log(res);
- * // {
- * //result: [['test1'], ['test1', 'test2']],
- * //add: ['.test2 .test3']
- * //}
+ * // { result: [['test1'], ['test1', 'test2']], add: ['.test2 .test3'] }
  */
 export const parseSelector = (str = '') => {
-  const add = [];
-  const result = [];
+  const add: string[] = [];
+  const result: string[][] = [];
   const sels = str.split(',');
 
   for (var i = 0, len = sels.length; i < len; i++) {
@@ -59,13 +57,14 @@ export const parseSelector = (str = '') => {
 };
 
 /**
- * Parse style declarations of the node
+ * Parse style declarations of the node.
  * @param {CSSRule} node
  * @return {Object}
  */
-export const parseStyle = node => {
+export const parseStyle = (node: CSSRule) => {
+  // @ts-ignore
   const stl = node.style;
-  const style = {};
+  const style: Record<string, string> = {};
 
   for (var i = 0, len = stl.length; i < len; i++) {
     const propName = stl[i];
@@ -82,7 +81,8 @@ export const parseStyle = node => {
  * @param  {CSSRule} node
  * @return {string}
  */
-export const parseCondition = node => {
+export const parseCondition = (node: CSSRule): string => {
+  // @ts-ignore
   const condition = node.conditionText || (node.media && node.media.mediaText) || node.name || node.selectorText || '';
   return condition.trim();
 };
@@ -93,15 +93,16 @@ export const parseCondition = node => {
  * @param {Object} style Key-value object of style declarations
  * @return {Object}
  */
-export const createNode = (selectors, style = {}, opts = {}) => {
-  const node = {};
+export const createNode = (selectors: string[], style = {}, opts = {}): CssRuleProperties => {
+  const node: Partial<CssRuleProperties> = {};
   const selLen = selectors.length;
   const lastClass = selectors[selLen - 1];
   const stateArr = lastClass ? lastClass.split(/:(.+)/) : [];
   const state = stateArr[1];
+  // @ts-ignore
   const { atRule, selectorsAdd, mediaText } = opts;
   const singleAtRule = singleAtRulesNames.indexOf(atRule) >= 0;
-  singleAtRule && (node.singleAtRule = 1);
+  singleAtRule && (node.singleAtRule = true);
   atRule && (node.atRuleType = atRule);
   selectorsAdd && (node.selectorsAdd = selectorsAdd);
   mediaText && (node.mediaText = mediaText);
@@ -113,10 +114,11 @@ export const createNode = (selectors, style = {}, opts = {}) => {
     stateArr.splice(stateArr.length - 1, 1);
   }
 
+  // @ts-ignore
   node.selectors = selectors;
   node.style = style;
 
-  return node;
+  return node as CssRuleProperties;
 };
 
 /**
@@ -124,31 +126,31 @@ export const createNode = (selectors, style = {}, opts = {}) => {
  * @param  {StyleSheet|CSSRule} el
  * @return {Array<Object>}
  */
-export const parseNode = el => {
-  var result = [];
-  var nodes = el.cssRules || [];
+export const parseNode = (el: CSSStyleSheet | CSSRule) => {
+  let result: CssRuleProperties[] = [];
+  const nodes = (el as CSSStyleSheet).cssRules || [];
 
-  for (var i = 0, len = nodes.length; i < len; i++) {
-    const node = nodes[i];
+  for (let i = 0, len = nodes.length; i < len; i++) {
+    const node: CSSRule = nodes[i];
     const type = node.type.toString();
-    let singleAtRule = 0;
+    let singleAtRule = false;
     let atRuleType = '';
     let condition = '';
-    // keyText is for CSSKeyframeRule
-    let sels = node.selectorText || node.keyText;
+    // @ts-ignore keyText is for CSSKeyframeRule
+    let sels: string = node.selectorText || node.keyText;
     const isSingleAtRule = singleAtRules.indexOf(type) >= 0;
 
     // Check if the node is an at-rule
     if (isSingleAtRule) {
-      singleAtRule = 1;
+      singleAtRule = true;
       atRuleType = atRules[type];
       condition = parseCondition(node);
     } else if (atRuleKeys.indexOf(type) >= 0) {
-      var subRules = parseNode(node);
+      const subRules = parseNode(node);
       condition = parseCondition(node);
 
-      for (var s = 0, lens = subRules.length; s < lens; s++) {
-        var subRule = subRules[s];
+      for (let s = 0, lens = subRules.length; s < lens; s++) {
+        const subRule = subRules[s];
         condition && (subRule.mediaText = condition);
         subRule.atRuleType = atRules[type];
       }
@@ -156,15 +158,16 @@ export const parseNode = el => {
     }
 
     if (!sels && !isSingleAtRule) continue;
+
     const style = parseStyle(node);
     const selsParsed = parseSelector(sels);
     const selsAdd = selsParsed.add;
-    sels = selsParsed.result;
+    const selsArr: string[][] = selsParsed.result;
 
     let lastRule;
     // For each group of selectors
-    for (var k = 0, len3 = sels.length; k < len3; k++) {
-      const model = createNode(sels[k], style, {
+    for (let k = 0, len3 = selsArr.length; k < len3; k++) {
+      const model = createNode(selsArr[k], style, {
         atRule: atRules[type],
       });
       result.push(model);
@@ -178,7 +181,7 @@ export const parseNode = el => {
       if (lastRule) {
         lastRule.selectorsAdd = selsAddStr;
       } else {
-        const model = {
+        const model: CssRuleProperties = {
           selectors: [],
           selectorsAdd: selsAddStr,
           style,
@@ -199,13 +202,13 @@ export const parseNode = el => {
  * @param  {String} str CSS string
  * @return {Array<Object>} Array of objects for the definition of CSSRules
  */
-export default str => {
+export default (str: string) => {
   const el = document.createElement('style');
   el.innerHTML = str;
 
   // There is no .sheet before adding it to the <head>
   document.head.appendChild(el);
-  const sheet = el.sheet;
+  const sheet = el.sheet!;
   document.head.removeChild(el);
 
   return parseNode(sheet);
