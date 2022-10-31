@@ -105,6 +105,10 @@ export default class EditorModel extends Model {
     return this.get('Canvas');
   }
 
+  get Editor(): EditorModule {
+    return this.get('Editor');
+  }
+
   constructor(conf = {}) {
     super();
     this._config = conf;

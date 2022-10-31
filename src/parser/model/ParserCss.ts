@@ -1,19 +1,21 @@
 import { isString } from 'underscore';
+import { CssRuleProperties } from '../../css_composer/model/CssRule';
+import EditorModel from '../../editor/model/Editor';
 import BrowserCssParser, { parseSelector, createNode } from './BrowserParserCss';
 
-export default (config = {}) => ({
+export default (config: { parserCss?: any; em?: EditorModel } = {}) => ({
   /**
    * Parse CSS string to a desired model object
    * @param  {String} str CSS string
    * @return {Array<Object>}
    */
-  parse(str) {
-    let result = [];
+  parse(str: string) {
+    let result: CssRuleProperties[] = [];
     const { parserCss, em } = config;
-    const editor = em && em.get && em.get('Editor');
-    const nodes = parserCss ? parserCss(str, editor) : BrowserCssParser(str);
+    const editor = em?.Editor;
+    const nodes: CssRuleProperties[] = parserCss ? parserCss(str, editor) : BrowserCssParser(str);
     nodes.forEach(node => (result = result.concat(this.checkNode(node))));
-    em && em.trigger('parse:css', { input: str, output: result });
+    em?.trigger('parse:css', { input: str, output: result });
 
     return result;
   },
@@ -23,18 +25,17 @@ export default (config = {}) => ({
    * a valid object for the CSS composer
    * @return {[type]}
    */
-  checkNode(node) {
+  checkNode(node: CssRuleProperties): CssRuleProperties[] {
     const { selectors, style } = node;
+    let result = [node];
 
     if (isString(selectors)) {
       const nodes = [];
       const selsParsed = parseSelector(selectors);
       const classSets = selsParsed.result;
       const selectorsAdd = selsParsed.add.join(', ');
-      const opts = {
-        atRule: node.atRule,
-        mediaText: node.params,
-      };
+      // @ts-ignore
+      const opts = { atRule: node.atRule, mediaText: node.params };
 
       if (classSets.length) {
         classSets.forEach(classSet => {
@@ -49,9 +50,9 @@ export default (config = {}) => ({
         lastNode.selectorsAdd = selectorsAdd;
       }
 
-      node = nodes;
+      result = nodes;
     }
 
-    return node;
+    return result;
   },
 });
