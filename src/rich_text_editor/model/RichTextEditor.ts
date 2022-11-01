@@ -5,7 +5,7 @@ import { isString } from 'underscore';
 import EditorModel from '../../editor/model/Editor';
 import { on, off, getPointerEvent, getModel } from '../../utils/mixins';
 
-interface RichTextEditorAction {
+export interface RichTextEditorAction {
   name: string;
   icon: string;
   event?: string;
@@ -15,6 +15,18 @@ interface RichTextEditorAction {
   state?: (rte: RichTextEditor, doc: Document) => number;
   btn?: HTMLElement;
 }
+
+export interface RichTextEditorOptions {
+  actions?: (RichTextEditorAction | string)[];
+  classes?: Record<string, string>;
+  actionbar?: HTMLElement;
+  actionbarContainer?: HTMLElement;
+  styleWithCSS?: boolean;
+}
+
+type EffectOptions = {
+  event?: Event;
+};
 
 const RTE_KEY = '_rte';
 
@@ -97,18 +109,6 @@ const defActions: Record<string, RichTextEditorAction> = {
   },
 };
 
-export interface RichTextEditorOptions {
-  actions?: (RichTextEditorAction | string)[];
-  classes?: Record<string, string>;
-  actionbar?: HTMLElement;
-  actionbarContainer?: HTMLElement;
-  styleWithCSS?: boolean;
-}
-
-type EffectOptions = {
-  event?: Event;
-};
-
 export default class RichTextEditor {
   em: EditorModel;
   settings: RichTextEditorOptions;
@@ -119,12 +119,12 @@ export default class RichTextEditor {
   doc!: Document;
   enabled?: boolean;
 
-  constructor(em: EditorModel, el: HTMLElement & { _rte: RichTextEditor }, settings: RichTextEditorOptions = {}) {
+  constructor(em: EditorModel, el: HTMLElement & { _rte?: RichTextEditor }, settings: RichTextEditorOptions = {}) {
     this.em = em;
     this.settings = settings;
 
     if (el[RTE_KEY]) {
-      return el[RTE_KEY];
+      return el[RTE_KEY]!;
     }
 
     el[RTE_KEY] = this;
