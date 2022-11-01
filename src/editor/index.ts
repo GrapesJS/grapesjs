@@ -71,6 +71,7 @@ import PageManager from '../pages';
 import PanelManager from '../panels';
 import ParserModule from '../parser';
 import { CustomParserCss } from '../parser/config/config';
+import RichTextEditorModule from '../rich_text_editor';
 import SelectorManager from '../selector_manager';
 import StorageManager from '../storage_manager';
 import UndoManagerModule from '../undo_manager';
@@ -145,7 +146,6 @@ export default class EditorModule implements IBaseModule<typeof defaults> {
   get UndoManager(): UndoManagerModule {
     return this.em.get('UndoManager');
   }
-  //@ts-ignore
   get RichTextEditor(): RichTextEditorModule {
     return this.em.get('RichTextEditor');
   }
