@@ -2,7 +2,19 @@
 // and adapted to the GrapesJS's need
 
 import { isString } from 'underscore';
+import EditorModel from '../../editor/model/Editor';
 import { on, off, getPointerEvent, getModel } from '../../utils/mixins';
+
+interface RichTextEditorAction {
+  name: string;
+  icon: string;
+  event?: string;
+  attributes?: Record<string, any>;
+  result: (rte: RichTextEditor, action: RichTextEditorAction) => void;
+  update?: (rte: RichTextEditor, action: RichTextEditorAction) => number;
+  state?: (rte: RichTextEditor, doc: Document) => number;
+  btn?: HTMLElement;
+}
 
 const RTE_KEY = '_rte';
 
@@ -11,8 +23,8 @@ const btnState = {
   INACTIVE: 0,
   DISABLED: -1,
 };
-const isValidTag = (rte, tagName = 'A') => {
-  const { anchorNode, focusNode } = rte.selection();
+const isValidTag = (rte: RichTextEditor, tagName = 'A') => {
+  const { anchorNode, focusNode } = rte.selection() || {};
   const parentAnchor = anchorNode?.parentNode;
   const parentFocus = focusNode?.parentNode;
   return parentAnchor?.nodeName == tagName || parentFocus?.nodeName == tagName;
@@ -20,7 +32,7 @@ const isValidTag = (rte, tagName = 'A') => {
 
 const customElAttr = 'data-selectme';
 
-const defActions = {
+const defActions: Record<string, RichTextEditorAction> = {
   bold: {
     name: 'bold',
     icon: '<b>B</b>',
@@ -85,10 +97,31 @@ const defActions = {
   },
 };
 
+export interface RichTextEditorOptions {
+  actions?: (RichTextEditorAction | string)[];
+  classes?: Record<string, string>;
+  actionbar?: HTMLElement;
+  actionbarContainer?: HTMLElement;
+  styleWithCSS?: boolean;
+}
+
+type EffectOptions = {
+  event?: Event;
+};
+
 export default class RichTextEditor {
-  constructor(settings = {}) {
-    const { el, em } = settings;
+  em: EditorModel;
+  settings: RichTextEditorOptions;
+  classes!: Record<string, string>;
+  actionbar!: HTMLElement;
+  actions!: RichTextEditorAction[];
+  el!: HTMLElement;
+  doc!: Document;
+  enabled?: boolean;
+
+  constructor(em: EditorModel, el: HTMLElement & { _rte: RichTextEditor }, settings: RichTextEditorOptions = {}) {
     this.em = em;
+    this.settings = settings;
 
     if (el[RTE_KEY]) {
       return el[RTE_KEY];
@@ -102,30 +135,27 @@ export default class RichTextEditor {
 
     const acts = (settings.actions || []).map(action => {
       let result = action;
-      if (typeof action === 'string') {
+      if (isString(action)) {
         result = { ...defActions[action] };
       } else if (defActions[action.name]) {
         result = { ...defActions[action.name], ...action };
       }
-      return result;
+      return result as RichTextEditorAction;
     });
     const actions = acts.length ? acts : Object.keys(defActions).map(a => defActions[a]);
 
     settings.classes = {
-      ...{
-        actionbar: 'actionbar',
-        button: 'action',
-        active: 'active',
-        disabled: 'disabled',
-        inactive: 'inactive',
-      },
+      actionbar: 'actionbar',
+      button: 'action',
+      active: 'active',
+      disabled: 'disabled',
+      inactive: 'inactive',
       ...settings.classes,
     };
 
     const classes = settings.classes;
     let actionbar = settings.actionbar;
-    this.actionbar = actionbar;
-    this.settings = settings;
+    this.actionbar = actionbar!;
     this.classes = classes;
     this.actions = actions;
 
@@ -133,7 +163,7 @@ export default class RichTextEditor {
       const actionbarCont = settings.actionbarContainer;
       actionbar = document.createElement('div');
       actionbar.className = classes.actionbar;
-      actionbarCont.appendChild(actionbar);
+      actionbarCont?.appendChild(actionbar);
       this.actionbar = actionbar;
       actions.forEach(action => this.addAction(action));
     }
@@ -143,24 +173,24 @@ export default class RichTextEditor {
   }
 
   destroy() {
-    this.el = 0;
-    this.doc = 0;
-    this.actionbar = 0;
-    this.settings = {};
-    this.classes = {};
-    this.actions = [];
+    // this.el = 0;
+    // this.doc = 0;
+    // this.actionbar = 0;
+    // this.settings = {};
+    // this.classes = {};
+    // this.actions = [];
   }
 
-  setEl(el) {
+  setEl(el: HTMLElement) {
     this.el = el;
     this.doc = el.ownerDocument;
   }
 
   updateActiveActions() {
     this.getActions().forEach(action => {
-      const btn = action.btn;
-      const update = action.update;
-      const { active, inactive, disabled } = { ...this.classes };
+      const { update } = action;
+      const btn = action.btn!;
+      const { active, inactive, disabled } = this.classes;
       const state = action.state;
       const name = action.name;
       const doc = this.doc;
@@ -188,11 +218,12 @@ export default class RichTextEditor {
           btn.className += ` ${active}`;
         }
       }
-      update && update(this, action);
+
+      update?.(this, action);
     });
   }
 
-  enable(opts) {
+  enable(opts: EffectOptions) {
     if (this.enabled) return this;
     return this.__toggleEffects(true, opts);
   }
@@ -201,11 +232,11 @@ export default class RichTextEditor {
     return this.__toggleEffects(false);
   }
 
-  __toggleEffects(enable = false, opts = {}) {
+  __toggleEffects(enable = false, opts: EffectOptions = {}) {
     const method = enable ? on : off;
     const { el, doc } = this;
     this.actionbarEl().style.display = enable ? '' : 'none';
-    el.contentEditable = !!enable;
+    el.contentEditable = `${!!enable}`;
     method(el, 'mouseup keyup', this.updateActiveActions);
     method(doc, 'keydown', this.__onKeydown);
     method(doc, 'paste', this.__onPaste);
@@ -222,14 +253,16 @@ export default class RichTextEditor {
         if (doc.caretRangeFromPoint) {
           const poiner = getPointerEvent(event);
           range = doc.caretRangeFromPoint(poiner.clientX, poiner.clientY);
+          // @ts-ignore
         } else if (event.rangeParent) {
           range = doc.createRange();
+          // @ts-ignore
           range.setStart(event.rangeParent, event.rangeOffset);
         }
 
         const sel = doc.getSelection();
-        sel.removeAllRanges();
-        range && sel.addRange(range);
+        sel?.removeAllRanges();
+        range && sel?.addRange(range);
       }
 
       el.focus();
@@ -238,17 +271,19 @@ export default class RichTextEditor {
     return this;
   }
 
-  __onKeydown(event) {
+  __onKeydown(event: Event) {
+    const ev = event as KeyboardEvent;
     const { doc } = this;
     const cmdList = ['insertOrderedList', 'insertUnorderedList'];
 
-    if (event.key === 'Enter' && !cmdList.some(cmd => doc.queryCommandState(cmd))) {
+    if (ev.key === 'Enter' && !cmdList.some(cmd => doc.queryCommandState(cmd))) {
       doc.execCommand('insertLineBreak');
-      event.preventDefault();
+      ev.preventDefault();
     }
   }
 
-  __onPaste(ev) {
+  __onPaste(ev: Event) {
+    // @ts-ignore
     const clipboardData = ev.clipboardData || window.clipboardData;
     const text = clipboardData.getData('text');
     const textHtml = clipboardData.getData('text/html');
@@ -268,7 +303,8 @@ export default class RichTextEditor {
       if (this.actionbar) {
         if (!action.state || (action.state && action.state(this, this.doc) >= 0)) {
           const event = action.event || 'click';
-          action.btn[`on${event}`] = e => {
+          // @ts-ignore
+          action.btn[`on${event}`] = () => {
             action.result(this, action);
             this.updateActiveActions();
           };
@@ -282,8 +318,8 @@ export default class RichTextEditor {
    * @param {Object} action
    * @param {Object} [opts={}]
    */
-  addAction(action, opts = {}) {
-    const sync = opts.sync;
+  addAction(action: RichTextEditorAction, opts: { sync?: boolean } = {}) {
+    const { sync } = opts;
     const btn = document.createElement('span');
     const icon = action.icon;
     const attr = action.attributes || {};
@@ -329,7 +365,7 @@ export default class RichTextEditor {
    * @param  {string} command Command name
    * @param  {any} [value=null Command's arguments
    */
-  exec(command, value = null) {
+  exec(command: string, value?: string) {
     this.doc.execCommand(command, false, value);
   }
 
@@ -346,7 +382,7 @@ export default class RichTextEditor {
    * doesn't work in the same way on all browsers
    * @param  {string} value HTML string
    */
-  insertHTML(value, { select } = {}) {
+  insertHTML(value: string | HTMLElement, { select }: { select?: boolean } = {}) {
     const { em, doc, el } = this;
     const sel = doc.getSelection();
 
