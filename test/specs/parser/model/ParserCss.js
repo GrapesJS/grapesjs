@@ -5,15 +5,14 @@ describe('ParserCss', () => {
   let obj;
   let config;
   let customParser;
+  let em = {
+    getCustomParserCss: () => customParser,
+    trigger: () => {},
+  };
 
   beforeEach(() => {
-    config = {
-      em: {
-        getCustomParserCss: () => customParser,
-        trigger: () => {},
-      },
-    };
-    obj = new ParserCss(config);
+    config = {};
+    obj = new ParserCss(em, config);
   });
 
   afterEach(() => {
@@ -272,7 +271,7 @@ describe('ParserCss', () => {
       selectors: [],
       selectorsAdd: '',
       atRuleType: 'font-face',
-      singleAtRule: 1,
+      singleAtRule: true,
       style: { 'font-family': '"Open Sans"' },
     };
     expect(obj.parse(str)).toEqual([result]);
@@ -292,7 +291,7 @@ describe('ParserCss', () => {
         selectors: [],
         selectorsAdd: '',
         style: { 'font-family': '"Open Sans"' },
-        singleAtRule: 1,
+        singleAtRule: true,
         atRuleType: 'font-face',
       },
       {
@@ -302,7 +301,7 @@ describe('ParserCss', () => {
           'font-family': "'Glyphicons Halflings'",
           src: 'url(https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot)',
         },
-        singleAtRule: 1,
+        singleAtRule: true,
         atRuleType: 'font-face',
       },
     ];
@@ -345,7 +344,7 @@ describe('ParserCss', () => {
       selectors: ['test1'],
       style: { color: 'blue' },
     };
-    obj = new ParserCss({
+    obj = new ParserCss(em, {
       parserCss: () => [result],
     });
     expect(obj.parse(str)).toEqual([result]);
@@ -379,7 +378,7 @@ describe('ParserCss', () => {
       {
         style: style,
         atRuleType: 'font-face',
-        singleAtRule: 1,
+        singleAtRule: true,
         selectors: [],
       },
     ]);

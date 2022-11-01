@@ -9,7 +9,7 @@ describe('ParserHtml', () => {
   beforeEach(() => {
     const em = new Editor({});
     var dom = new DomComponents(em);
-    obj = new ParserHtml({
+    obj = new ParserHtml(em, {
       textTags: ['br', 'b', 'i', 'u'],
       pStylePrefix: 'gjs-',
       returnArray: 1,
@@ -409,7 +409,7 @@ describe('ParserHtml', () => {
           'font-family': '"Open Sans"',
           src: 'url(https://fonts.gstatic.com/s/droidsans/v8/SlGVmQWMvZQIdix7AFxXkHNSbRYXags.woff2)',
         },
-        singleAtRule: 1,
+        singleAtRule: true,
         atRuleType: 'font-face',
       },
       {
@@ -419,7 +419,7 @@ describe('ParserHtml', () => {
           'font-family': "'Glyphicons Halflings'",
           src: 'url(https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot)',
         },
-        singleAtRule: 1,
+        singleAtRule: true,
         atRuleType: 'font-face',
       },
     ];
