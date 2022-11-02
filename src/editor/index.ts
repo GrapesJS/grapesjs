@@ -60,6 +60,7 @@ import { IBaseModule } from '../abstract/Module';
 import AssetManager from '../asset_manager';
 import BlockManager from '../block_manager';
 import CanvasModule from '../canvas';
+import CodeManagerModule from '../code_manager';
 import CssComposer from '../css_composer';
 import DeviceManager from '../device_manager';
 import ComponentManager from '../dom_components';
@@ -139,7 +140,6 @@ export default class EditorModule implements IBaseModule<typeof defaults> {
   get Parser(): ParserModule {
     return this.em.get('Parser');
   }
-  //@ts-ignore
   get CodeManager(): CodeManagerModule {
     return this.em.get('CodeManager');
   }
