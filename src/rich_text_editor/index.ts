@@ -69,9 +69,10 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
     super(em, 'RichTextEditor', defaults);
     const { config } = this;
     const ppfx = config.pStylePrefix;
-    // if (ppfx) {
-    //   config.stylePrefix = ppfx + config.stylePrefix;
-    // }
+
+    if (ppfx) {
+      config.stylePrefix = ppfx + config.stylePrefix;
+    }
 
     this.pfx = config.stylePrefix!;
     this.actions = config.actions || [];
@@ -264,7 +265,7 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
    * @return {HTMLElement}
    */
   getToolbarEl() {
-    return toolbar;
+    return this.toolbar;
   }
 
   /**
@@ -272,10 +273,10 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
    * @private
    */
   updatePosition() {
-    const { em } = this;
+    const { em, toolbar } = this;
     const un = 'px';
     const canvas = em.get('Canvas');
-    const { style } = this.toolbar;
+    const { style } = toolbar;
     const pos = canvas.getTargetToElementFixed(this.lastEl, toolbar, {
       event: 'rteToolbarPosUpdate',
       left: 0,

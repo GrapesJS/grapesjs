@@ -172,14 +172,7 @@ export default class RichTextEditor {
     return this;
   }
 
-  destroy() {
-    // this.el = 0;
-    // this.doc = 0;
-    // this.actionbar = 0;
-    // this.settings = {};
-    // this.classes = {};
-    // this.actions = [];
-  }
+  destroy() {}
 
   setEl(el: HTMLElement) {
     this.el = el;
