@@ -37,7 +37,7 @@ async function generateDocs () {
     ['css_composer/index.ts', 'css_composer.md'],
     ['css_composer/model/CssRule.ts', 'css_rule.md'],
     ['modal_dialog/index.ts', 'modal_dialog.md'],
-    ['rich_text_editor/index.js', 'rich_text_editor.md'],
+    ['rich_text_editor/index.ts', 'rich_text_editor.md'],
     ['keymaps/index.ts', 'keymaps.md'],
     ['undo_manager/index.ts', 'undo_manager.md'],
     ['canvas/index.ts', 'canvas.md'],
@@ -46,7 +46,7 @@ async function generateDocs () {
     ['navigator/index.ts', 'layer_manager.md'],
     ['pages/index.ts', 'pages.md'],
     ['pages/model/Page.ts', 'page.md'],
-    ['parser/index.js', 'parser.md'],
+    ['parser/index.ts', 'parser.md'],
   ].map(async (file) => {
     const filePath = `${srcRoot}/${file[0]}`;
 

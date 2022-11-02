@@ -87,7 +87,7 @@ const res = Parser.parseCss('.cls { color: red }');
 
 Returns **[Array][9]<[Object][5]>** Array containing the result
 
-[1]: https://github.com/artf/grapesjs/blob/master/src/parser/config/config.js
+[1]: https://github.com/artf/grapesjs/blob/master/src/parser/config/config.ts
 
 [2]: #getconfig
 

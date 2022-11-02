@@ -156,7 +156,7 @@ Returns **[HTMLElement][11]**
 
 [1]: https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand
 
-[2]: https://github.com/artf/grapesjs/blob/master/src/rich_text_editor/config/config.js
+[2]: https://github.com/artf/grapesjs/blob/master/src/rich_text_editor/config/config.ts
 
 [3]: #add
 
