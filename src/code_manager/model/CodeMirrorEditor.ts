@@ -2,7 +2,7 @@ import { bindAll } from 'underscore';
 import { Model } from '../../common';
 import { hasWin } from '../../utils/mixins';
 
-let CodeMirror;
+let CodeMirror: any;
 
 if (hasWin()) {
   CodeMirror = require('codemirror/lib/codemirror');
@@ -12,6 +12,9 @@ if (hasWin()) {
 }
 
 export default class CodeMirrorEditor extends Model {
+  editor?: any;
+  element?: HTMLElement;
+
   defaults() {
     return {
       input: '',
@@ -23,7 +26,7 @@ export default class CodeMirrorEditor extends Model {
     };
   }
 
-  init(el) {
+  init(el: HTMLElement) {
     bindAll(this, 'onChange');
     this.editor = CodeMirror.fromTextArea(el, {
       dragDrop: false,
@@ -60,7 +63,7 @@ export default class CodeMirrorEditor extends Model {
    * @param {HTMLElement} el
    * @return {self}
    */
-  setElement(el) {
+  setElement(el: HTMLElement) {
     this.element = el;
     return this;
   }
@@ -89,10 +92,10 @@ export default class CodeMirrorEditor extends Model {
   }
 
   /** @inheritdoc */
-  setContent(v, opts = {}) {
+  setContent(value: string, opts: any = {}) {
     const { editor } = this;
     if (!editor) return;
-    editor.setValue(v);
+    editor.setValue(value);
 
     if (editor.autoFormatRange) {
       CodeMirror.commands.selectAll(editor);
@@ -104,4 +107,5 @@ export default class CodeMirrorEditor extends Model {
   }
 }
 
+// @ts-ignore
 CodeMirrorEditor.prototype.CodeMirror = CodeMirror;
