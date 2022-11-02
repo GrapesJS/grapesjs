@@ -1,25 +1,35 @@
 import { extend } from 'underscore';
 import { Model } from '../../common';
+import Component from '../../dom_components/model/Component';
 
-function isFunctionEmpty(fn) {
-  const content = fn.toString().match(/\{([\s\S]*)\}/m)[1]; // content between first and last { }
+function isFunctionEmpty(fn: string) {
+  const content = fn.toString().match(/\{([\s\S]*)\}/m)?.[1] || ''; // content between first and last { }
   return content.replace(/^\s*\/\/.*$/gm, '').trim().length === 0; // remove comments
 }
 
+type MapJsItem = {
+  ids: string[];
+  code: string;
+  props?: Record<string, any>;
+};
+
 export default class JsGenerator extends Model {
-  mapModel(model) {
-    var code = '';
-    var script = model.get('script-export') || model.get('script');
-    var type = model.get('type');
-    var comps = model.get('components');
-    var id = model.getId();
+  mapJs!: Record<string, MapJsItem>;
+
+  mapModel(model: Component) {
+    let code = '';
+    const script = model.get('script-export') || model.get('script');
+    const type = model.get('type');
+    const comps = model.get('components');
+    const id = model.getId();
 
     if (script) {
       // If the component has scripts we need to expose his ID
-      var attr = model.get('attributes');
+      let attr = model.get('attributes');
       attr = extend({}, attr, { id });
-      model.set('attributes', attr, { silent: 1 });
-      var scrStr = model.getScriptString(script);
+      model.set('attributes', attr, { silent: true });
+      // @ts-ignore
+      const scrStr = model.getScriptString(script);
       const scrProps = model.get('script-props');
 
       // If the script was updated, I'll put its code in a separate container
@@ -35,23 +45,23 @@ export default class JsGenerator extends Model {
 
         if (mapType) {
           mapType.ids.push(id);
-          if (props) mapType.props[id] = props;
+          if (props) mapType.props![id] = props;
         } else {
-          const res = { ids: [id], code: scrStr };
+          const res: MapJsItem = { ids: [id], code: scrStr };
           if (props) res.props = { [id]: props };
           this.mapJs[type] = res;
         }
       }
     }
 
-    comps.each(function (model) {
+    comps.forEach((model: Component) => {
       code += this.mapModel(model);
-    }, this);
+    });
 
     return code;
   }
 
-  build(model) {
+  build(model: Component) {
     this.mapJs = {};
     this.mapModel(model);
     let code = '';
