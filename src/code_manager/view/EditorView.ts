@@ -2,7 +2,10 @@ import { View } from '../../common';
 import html from '../../utils/html';
 
 export default class EditorView extends View {
-  template({ pfx, codeName, label }) {
+  pfx?: string;
+  config!: Record<string, any>;
+
+  template({ pfx, codeName, label }: { pfx: string; codeName: string; label: string }) {
     return html`
       <div class="${pfx}editor" id="${pfx}${codeName}">
         <div id="${pfx}title">${label}</div>
@@ -11,7 +14,7 @@ export default class EditorView extends View {
     `;
   }
 
-  initialize(o) {
+  initialize(o: any) {
     this.config = o.config || {};
     this.pfx = this.config.stylePrefix;
   }
