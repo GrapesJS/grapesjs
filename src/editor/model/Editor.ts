@@ -11,6 +11,7 @@ import EditorView from '../view/EditorView';
 import { IModule } from '../../abstract/Module';
 import CanvasModule from '../../canvas';
 import ComponentManager from '../../dom_components';
+import CssComposer from '../../css_composer';
 
 //@ts-ignore
 Backbone.$ = $;
@@ -112,6 +113,10 @@ export default class EditorModel extends Model {
 
   get Components(): ComponentManager {
     return this.get('DomComponents');
+  }
+
+  get Css(): CssComposer {
+    return this.get('CssComposer');
   }
 
   constructor(conf = {}) {

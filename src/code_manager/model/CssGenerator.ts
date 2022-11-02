@@ -1,16 +1,39 @@
 import { bindAll, isUndefined, each } from 'underscore';
 import { Model } from '../../common';
+import CssComposer from '../../css_composer';
+import CssRule from '../../css_composer/model/CssRule';
+import CssRules from '../../css_composer/model/CssRules';
+import Component from '../../dom_components/model/Component';
+import EditorModel from '../../editor/model/Editor';
 import { hasWin } from '../../utils/mixins';
 
 const maxValue = Number.MAX_VALUE;
 
-export const getMediaLength = mediaQuery => {
+export const getMediaLength = (mediaQuery: string) => {
   const length = /(-?\d*\.?\d+)\w{0,}/.exec(mediaQuery);
   return !length ? '' : length[0];
 };
 
+type CssGeneratorBuildOptions = {
+  json?: boolean;
+  em?: EditorModel;
+  cssc?: CssComposer;
+  clearStyles?: boolean;
+  onlyMatched?: boolean;
+  keepUnusedStyles?: boolean;
+  rules?: CssRules;
+};
+
+type AtRules = Record<string, CssRule[]>;
+
 export default class CssGenerator extends Model {
-  initialize() {
+  compCls: string[];
+  ids: string[];
+  model?: Component;
+  em?: EditorModel;
+
+  constructor() {
+    super();
     bindAll(this, 'sortRules');
     this.compCls = [];
     this.ids = [];
@@ -21,7 +44,7 @@ export default class CssGenerator extends Model {
    * @param {Model} model
    * @return {String}
    */
-  buildFromModel(model, opts = {}) {
+  buildFromModel(model: Component, opts: CssGeneratorBuildOptions = {}) {
     let code = '';
     const em = this.em;
     const avoidInline = em && em.getConfig().avoidInlineStyle;
@@ -30,33 +53,33 @@ export default class CssGenerator extends Model {
     this.ids.push(`#${model.getId()}`);
 
     // Let's know what classes I've found
-    classes.each(model => this.compCls.push(model.getFullName()));
+    classes.forEach((model: any) => this.compCls.push(model.getFullName()));
 
     if (!avoidInline && style) {
       code = `#${model.getId()}{${style}}`;
     }
 
     const components = model.components();
-    components.each(model => (code += this.buildFromModel(model, opts)));
+    components.forEach((model: Component) => (code += this.buildFromModel(model, opts)));
     return code;
   }
 
-  build(model, opts = {}) {
+  build(model: Component, opts: CssGeneratorBuildOptions = {}) {
     const { json } = opts;
-    const em = opts.em || '';
-    const cssc = opts.cssc || (em && em.get('CssComposer'));
+    const em = opts.em;
+    const cssc = opts.cssc || em?.Css;
     this.em = em;
     this.compCls = [];
     this.ids = [];
     this.model = model;
-    const codeJson = [];
+    const codeJson: CssRule[] = [];
     let code = model ? this.buildFromModel(model, opts) : '';
     const clearStyles = isUndefined(opts.clearStyles) && em ? em.getConfig().clearStyles : opts.clearStyles;
 
     if (cssc) {
-      let rules = opts.rules || cssc.getAll();
-      const atRules = {};
-      const dump = [];
+      let rules: CssRules | CssRule[] = opts.rules || cssc.getAll();
+      const atRules: AtRules = {};
+      const dump: CssRule[] = [];
 
       if (opts.onlyMatched && model && hasWin()) {
         rules = this.matchedRules(model, rules);
@@ -78,7 +101,7 @@ export default class CssGenerator extends Model {
         const res = this.buildFromRule(rule, dump, opts);
 
         if (json) {
-          codeJson.push(res);
+          codeJson.push(res as CssRule);
         } else {
           code += res;
         }
@@ -98,7 +121,7 @@ export default class CssGenerator extends Model {
             rulesStr += ruleStr;
           }
 
-          json && codeJson.push(ruleStr);
+          json && codeJson.push(ruleStr as CssRule);
         });
 
         if (rulesStr) {
@@ -106,6 +129,7 @@ export default class CssGenerator extends Model {
         }
       });
 
+      // @ts-ignore
       em && clearStyles && rules.remove && rules.remove(dump);
     }
 
@@ -117,8 +141,8 @@ export default class CssGenerator extends Model {
    * @param {Model} rule
    * @return {string} CSS string
    */
-  buildFromRule(rule, dump, opts = {}) {
-    let result = '';
+  buildFromRule(rule: CssRule, dump: CssRule[], opts: CssGeneratorBuildOptions = {}) {
+    let result: CssRule | string = '';
     const { model } = this;
     const selectorStrNoAdd = rule.selectorsToString({ skipAdd: 1 });
     const selectorsAdd = rule.get('selectorsAdd');
@@ -126,7 +150,7 @@ export default class CssGenerator extends Model {
     let found;
 
     // This will not render a rule if there is no its component
-    rule.get('selectors').each(selector => {
+    rule.get('selectors')?.forEach(selector => {
       const name = selector.getFullName();
       if (this.compCls.indexOf(name) >= 0 || this.ids.indexOf(name) >= 0 || opts.keepUnusedStyles) {
         found = 1;
@@ -149,9 +173,9 @@ export default class CssGenerator extends Model {
    * @param {Array<CSSRule>} rules
    * @returns {Array<CSSRule>}
    */
-  matchedRules(component, rules) {
+  matchedRules(component: Component, rules: CssRules) {
     const el = component.getEl();
-    let result = [];
+    let result: CssRule[] = [];
 
     rules.forEach(rule => {
       try {
@@ -166,7 +190,7 @@ export default class CssGenerator extends Model {
       } catch (err) {}
     });
 
-    component.components().forEach(component => {
+    component.components().forEach((component: Component) => {
       result = result.concat(this.matchedRules(component, rules));
     });
 
@@ -181,7 +205,7 @@ export default class CssGenerator extends Model {
    * @param  {String} mediaQuery Media query string
    * @return {Number}
    */
-  getQueryLength(mediaQuery) {
+  getQueryLength(mediaQuery: string) {
     const length = /(-?\d*\.?\d+)\w{0,}/.exec(mediaQuery);
     if (!length) return maxValue;
 
@@ -193,8 +217,8 @@ export default class CssGenerator extends Model {
    * @param  {Object} items
    * @return {Array}
    */
-  sortMediaObject(items = {}) {
-    const itemsArr = [];
+  sortMediaObject(items: AtRules = {}) {
+    const itemsArr: { key: string; value: CssRule[] }[] = [];
     each(items, (value, key) => itemsArr.push({ key, value }));
     return itemsArr.sort((a, b) => {
       const isMobFirst = [a.key, b.key].every(mquery => mquery.indexOf('min-width') !== -1);
@@ -204,8 +228,8 @@ export default class CssGenerator extends Model {
     });
   }
 
-  sortRules(a, b) {
-    const getKey = rule => rule.get('mediaText');
+  sortRules(a: CssRule, b: CssRule) {
+    const getKey = (rule: CssRule) => rule.get('mediaText') || '';
     const isMobFirst = [getKey(a), getKey(b)].every(q => q.indexOf('min-width') !== -1);
     const left = isMobFirst ? getKey(a) : getKey(b);
     const right = isMobFirst ? getKey(b) : getKey(a);
@@ -218,7 +242,7 @@ export default class CssGenerator extends Model {
    * @returns {String}
    * @private
    */
-  __cleanSelector(selector) {
+  __cleanSelector(selector: string) {
     return selector
       .split(' ')
       .map(item => item.split(':')[0])
