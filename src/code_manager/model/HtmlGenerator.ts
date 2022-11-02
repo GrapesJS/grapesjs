@@ -1,21 +1,29 @@
 import { Model } from '../../common';
+import Component from '../../dom_components/model/Component';
+import EditorModel from '../../editor/model/Editor';
+
+type HTMLGeneratorBuildOptions = {
+  em?: EditorModel;
+  cleanId?: boolean;
+  attributes?: Record<string, any> | ((component: Component, attr: Record<string, any>) => Record<string, any>);
+};
 
 export default class HTMLGenerator extends Model {
-  build(model, opts = {}) {
+  build(model: Component, opts: HTMLGeneratorBuildOptions = {}) {
     const { em, ...restOpts } = opts;
     const htmlOpts = restOpts;
 
     // Remove unnecessary IDs
     if (opts.cleanId && em) {
-      const rules = em.get('CssComposer').getAll();
+      const rules = em.Css.getAll();
       const idRules = rules
         .toJSON()
-        .map(rule => {
+        .map((rule: any) => {
           const sels = rule.selectors;
           const sel = sels && sels.length === 1 && sels.models[0];
           return sel && sel.isId() && sel.get('name');
         })
-        .filter(i => i);
+        .filter(Boolean);
 
       if (!htmlOpts.attributes) {
         htmlOpts.attributes = (mod, attrs) => {

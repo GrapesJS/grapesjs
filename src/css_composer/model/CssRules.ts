@@ -17,7 +17,7 @@ export default class CssRules extends Collection<CssRule> {
     });
   }
 
-  toJSON(opts: any) {
+  toJSON(opts?: any) {
     const result = Collection.prototype.toJSON.call(this, opts);
     return result.filter((rule: CssRuleProperties) => rule.style && !rule.shallow);
   }
