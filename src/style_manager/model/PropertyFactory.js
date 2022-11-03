@@ -387,16 +387,19 @@ export default class PropertyFactory {
             return filter
               ? filter.split(sep).map(input => {
                   const { name, value } = property.__parseFn(input);
-                  return { name, value };
+                  return {
+                    'transform-type': name,
+                    'transform-value': value,
+                  };
                 })
               : [];
           },
           toStyle(values, { name }) {
-            return { [name]: `${values.name}(${values.value})` };
+            return { [name]: `${values['transform-type']}(${values['transform-value']})` };
           },
           properties: [
             {
-              property: 'name',
+              property: 'transform-type',
               name: 'Type',
               type: this.typeSelect,
               default: 'rotateZ',
@@ -430,7 +433,7 @@ export default class PropertyFactory {
                 if (to.value) {
                   const option = property.getOption();
                   const props = { ...(option.propValue || {}) };
-                  const propToUp = property.getParent().getProperty('value');
+                  const propToUp = property.getParent().getProperty('transform-value');
                   const unit = propToUp.getUnit();
                   if (!unit || props?.units.indexOf(unit) < 0) {
                     props.unit = props?.units[0] || '';
@@ -440,7 +443,7 @@ export default class PropertyFactory {
               },
             },
             {
-              property: 'value',
+              property: 'transform-value',
               type: this.typeNumber,
               default: '0',
               full: true,
