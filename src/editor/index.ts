@@ -79,7 +79,7 @@ import UndoManagerModule from '../undo_manager';
 import UtilsModule from '../utils';
 import cash from '../utils/cash-dom';
 import html from '../utils/html';
-import defaults, { EditorConfig } from './config/config';
+import defaults, { EditorConfig, EditorConfigKeys } from './config/config';
 import EditorModel from './model/Editor';
 import EditorView from './view/EditorView';
 
@@ -222,10 +222,11 @@ export default class EditorModule implements IBaseModule<EditorConfig> {
    * Returns configuration object
    * @returns {any} Returns the configuration object or the value of the specified property
    */
-  getConfig(prop?: string) {
-    const config = this.config;
-    //@ts-ignore
-    return isUndefined(prop) ? config : config[prop];
+  getConfig<
+    P extends EditorConfigKeys | undefined = undefined,
+    R = P extends EditorConfigKeys ? EditorConfig[P] : EditorConfig
+  >(prop?: P): R {
+    return this.em.getConfig(prop);
   }
 
   /**
