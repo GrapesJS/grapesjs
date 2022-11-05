@@ -8,16 +8,16 @@ import FrameView from './FrameView';
 import ComponentView from '../../dom_components/view/ComponentView';
 import Component from '../../dom_components/model/Component';
 
-interface MarginPaddingOffsets{
-   marginTop?: number,
-   marginRight?: number,
-   marginBottom?: number,
-   marginLeft?: number,
-   paddingTop?: number,
-   paddingRight?: number,
-   paddingBottom?: number,
-   paddingLeft?: number,
-  }
+interface MarginPaddingOffsets {
+  marginTop?: number;
+  marginRight?: number;
+  marginBottom?: number;
+  marginLeft?: number;
+  paddingTop?: number;
+  paddingRight?: number;
+  paddingBottom?: number;
+  paddingLeft?: number;
+}
 export default class CanvasView extends View<Canvas> {
   events() {
     return {
@@ -52,13 +52,13 @@ export default class CanvasView extends View<Canvas> {
   frames!: FramesView;
   frame?: FrameView;
 
-  private timerZoom?: number
+  private timerZoom?: number;
 
-  private frmOff?: {top: number, left: number, width: number, height: number}
-  private cvsOff?: {top: number, left: number, width: number, height: number}
+  private frmOff?: { top: number; left: number; width: number; height: number };
+  private cvsOff?: { top: number; left: number; width: number; height: number };
 
   constructor(model: Canvas) {
-    super({model});
+    super({ model });
     bindAll(this, 'clearOff', 'onKeyPress', 'onCanvasMove');
     this.className = this.pfx + 'canvas';
     const { em } = this;
@@ -82,11 +82,11 @@ export default class CanvasView extends View<Canvas> {
     collection.once('loaded:all', () => em.set('readyCanvas', 1));
     frames?.remove();
     this.frames = new FramesView(
-      {collection},
+      { collection },
       {
         ...config,
         canvasView: this,
-      },
+      }
     );
   }
 
@@ -94,7 +94,8 @@ export default class CanvasView extends View<Canvas> {
     const { scroll } = opts;
     const currFrame = this.em.get('currentFrame');
 
-    scroll && component.views?.forEach(view => {
+    scroll &&
+      component.views?.forEach(view => {
         view._getFrame() === currFrame && view.scrollIntoView(scroll);
       });
   }
@@ -105,7 +106,7 @@ export default class CanvasView extends View<Canvas> {
     this.frames = undefined;
     View.prototype.remove.apply(this, args);
     this.toggleListeners(false);
-    return this
+    return this;
   }
 
   preventDefault(ev: Event) {
@@ -222,7 +223,7 @@ export default class CanvasView extends View<Canvas> {
     if (!this.frmOff || el) {
       const frame = this.frame?.el;
       const winEl = el?.ownerDocument.defaultView;
-      const frEl = winEl ? winEl.frameElement as HTMLElement : frame;
+      const frEl = winEl ? (winEl.frameElement as HTMLElement) : frame;
       this.frmOff = this.offset(frEl || frame);
     }
     return this.frmOff;
@@ -270,9 +271,9 @@ export default class CanvasView extends View<Canvas> {
    */
   getElementOffsets(el: HTMLElement) {
     if (!el || isTextNode(el)) return {};
-    const result: MarginPaddingOffsets = {} ;
+    const result: MarginPaddingOffsets = {};
     const styles = window.getComputedStyle(el);
-    const marginPaddingOffsets: (keyof MarginPaddingOffsets)[] =[
+    const marginPaddingOffsets: (keyof MarginPaddingOffsets)[] = [
       'marginTop',
       'marginRight',
       'marginBottom',
@@ -281,7 +282,7 @@ export default class CanvasView extends View<Canvas> {
       'paddingRight',
       'paddingBottom',
       'paddingLeft',
-    ]
+    ];
     marginPaddingOffsets.forEach(offset => {
       result[offset] = parseFloat(styles[offset]) * this.getZoom();
     });
@@ -295,7 +296,6 @@ export default class CanvasView extends View<Canvas> {
    * @public
    */
   getPosition(opts: any = {}) {
-
     const doc = this.frame?.el.contentDocument;
     if (!doc) return;
     const bEl = doc.body;
@@ -399,17 +399,16 @@ export default class CanvasView extends View<Canvas> {
         <div class="${ppfx}offset-fixed-v"></div>
       </div>
     `);
-    const toolsEl = el.querySelector(`#${ppfx}tools`);
-    this.hlEl = el.querySelector(`.${ppfx}highlighter`) as HTMLElement;
-    this.badgeEl = el.querySelector(`.${ppfx}badge`) as HTMLElement;
-    this.placerEl = el.querySelector(`.${ppfx}placeholder`) as HTMLElement;
-    this.ghostEl = el.querySelector(`.${ppfx}ghost`) as HTMLElement;
-    this.toolbarEl = el.querySelector(`.${ppfx}toolbar`) as HTMLElement;
-    this.resizerEl = el.querySelector(`.${ppfx}resizer`) as HTMLElement;
-    this.offsetEl = el.querySelector(`.${ppfx}offset-v`) as HTMLElement;
-    this.fixedOffsetEl = el.querySelector(`.${ppfx}offset-fixed-v`) as HTMLElement;
-    this.toolsGlobEl = el.querySelector(`.${ppfx}tools-gl`) as HTMLElement;
-    this.toolsEl = toolsEl as HTMLElement;
+    this.toolsEl = el.querySelector(`#${ppfx}tools`)!;
+    this.hlEl = el.querySelector(`.${ppfx}highlighter`)!;
+    this.badgeEl = el.querySelector(`.${ppfx}badge`)!;
+    this.placerEl = el.querySelector(`.${ppfx}placeholder`)!;
+    this.ghostEl = el.querySelector(`.${ppfx}ghost`)!;
+    this.toolbarEl = el.querySelector(`.${ppfx}toolbar`)!;
+    this.resizerEl = el.querySelector(`.${ppfx}resizer`)!;
+    this.offsetEl = el.querySelector(`.${ppfx}offset-v`)!;
+    this.fixedOffsetEl = el.querySelector(`.${ppfx}offset-fixed-v`)!;
+    this.toolsGlobEl = el.querySelector(`.${ppfx}tools-gl`)!;
     this.el.className = getUiClass(em, this.className);
     this.ready = true;
     this._renderFrames();
