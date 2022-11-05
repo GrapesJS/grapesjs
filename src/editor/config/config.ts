@@ -116,7 +116,7 @@ export interface EditorConfig {
    * You can use `false` to disable all of them or `true` to print all of them.
    * @default ['warning', 'error']
    */
-  log?: ('debug' | 'info' | 'warning' | 'error')[];
+  log?: ('debug' | 'info' | 'warning' | 'error')[] | boolean;
 
   /**
    * By default Grapes injects base CSS into the canvas. For example, it sets body margin to 0
@@ -380,7 +380,7 @@ export interface EditorConfig {
   /**
    * Configurations for Block Manager.
    */
-  blockManager?: BlockManagerConfig | boolean;
+  blockManager?: BlockManagerConfig;
 
   // TODO
   /**
@@ -421,7 +421,14 @@ export interface EditorConfig {
   customUI?: boolean;
   el?: HTMLElement;
   multiFrames?: boolean;
+  /**
+   * Color picker options.
+   */
+  colorPicker?: AnyObject;
+  pStylePrefix?: string;
 }
+
+export type EditorConfigKeys = keyof EditorConfig;
 
 const config: EditorConfig = {
   stylePrefix: 'gjs-',

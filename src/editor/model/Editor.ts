@@ -12,6 +12,7 @@ import { IModule } from '../../abstract/Module';
 import CanvasModule from '../../canvas';
 import ComponentManager from '../../dom_components';
 import CssComposer from '../../css_composer';
+import { EditorConfig, EditorConfigKeys } from '../config/config';
 
 //@ts-ignore
 Backbone.$ = $;
@@ -77,7 +78,7 @@ export default class EditorModel extends Model {
   __skip = false;
   defaultRunning = false;
   destroyed = false;
-  _config: any;
+  _config: EditorConfig;
   attrsOrig: any;
   timedInterval?: number;
   updateItr?: number;
@@ -119,7 +120,7 @@ export default class EditorModel extends Model {
     return this.get('CssComposer');
   }
 
-  constructor(conf = {}) {
+  constructor(conf: EditorConfig = {}) {
     super();
     this._config = conf;
     const { config } = this;
@@ -141,7 +142,7 @@ export default class EditorModel extends Model {
       ? toArray(el.attributes).reduce((res, next) => {
           res[next.nodeName] = next.nodeValue;
           return res;
-        }, {})
+        }, {} as Record<string, any>)
       : '';
 
     // Move components to pages
@@ -193,8 +194,12 @@ export default class EditorModel extends Model {
    * @return {any} Returns the configuration object or
    *  the value of the specified property
    */
-  getConfig(prop?: string) {
-    const config = this.config;
+  getConfig<
+    P extends EditorConfigKeys | undefined = undefined,
+    R = P extends EditorConfigKeys ? EditorConfig[P] : EditorConfig
+  >(prop?: P): R {
+    const { config } = this;
+    // @ts-ignore
     return isUndefined(prop) ? config : config[prop];
   }
 
@@ -277,9 +282,9 @@ export default class EditorModel extends Model {
     const { config } = this;
     const Module = moduleName.default || moduleName;
     const Mod = new Module(this);
-    const name = Mod.name.charAt(0).toLowerCase() + Mod.name.slice(1);
-    const cfgParent = !isUndefined(config[name]) ? config[name] : config[Mod.name];
-    const cfg = cfgParent === true ? {} : cfgParent || {};
+    const name = (Mod.name.charAt(0).toLowerCase() + Mod.name.slice(1)) as EditorConfigKeys;
+    const cfgParent = !isUndefined(config[name]) ? config[name] : config[Mod.name as EditorConfigKeys];
+    const cfg = (cfgParent === true ? {} : cfgParent || {}) as Record<string, any>;
     cfg.pStylePrefix = config.pStylePrefix || '';
 
     if (!isUndefined(cfgParent) && !cfgParent) {
@@ -881,6 +886,7 @@ export default class EditorModel extends Model {
   destroyAll() {
     const { config, view } = this;
     const editor = this.getEditor();
+    // @ts-ignore
     const { editors = [] } = config.grapesjs || {};
     const shallow = this.get('shallow');
     shallow?.destroyAll();

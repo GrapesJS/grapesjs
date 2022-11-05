@@ -7,7 +7,7 @@ const $ = Backbone.$;
 
 export default class EditorView extends View<EditorModel> {
   constructor(model: EditorModel) {
-    super({model})
+    super({ model });
     //const { model } = this;
     const { Panels, UndoManager } = model.attributes;
     model.view = this;
@@ -27,11 +27,14 @@ export default class EditorView extends View<EditorModel> {
     const { Panels, Canvas } = model.attributes;
     const { config, modules } = model;
     const pfx = config.stylePrefix;
+    // @ts-ignore
     const contEl = $(config.el || `body ${config.container}`);
-    appendStyles(config.cssIcons, { unique: true, prepand: true });
+    config.cssIcons && appendStyles(config.cssIcons, { unique: true, prepand: true });
     $el.empty();
 
+    // @ts-ignore
     if (config.width) contEl.css('width', config.width);
+    // @ts-ignore
     if (config.height) contEl.css('height', config.height);
 
     $el.append(Canvas.render());
@@ -44,6 +47,7 @@ export default class EditorView extends View<EditorModel> {
     $el.append(shallowCanvasEl);
 
     $el.attr('class', `${pfx}editor ${pfx}one-bg ${pfx}two-color`);
+    // @ts-ignore
     contEl.addClass(`${pfx}editor-cont`).empty().append($el);
     modules.forEach(md => md.postRender && md.postRender(this));
 

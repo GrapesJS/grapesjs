@@ -113,14 +113,14 @@ export default class EditorModule implements IBaseModule<EditorConfig> {
     this.editor = this.em;
   }
 
+  get Config() {
+    return this.em.config;
+  }
   get I18n(): I18nModule {
     return this.em.get('I18n');
   }
   get Utils(): UtilsModule {
     return this.em.get('Utils');
-  }
-  get Config(): any {
-    return this.em.config;
   }
   //@ts-ignore
   get Commands(): CommandsModule {

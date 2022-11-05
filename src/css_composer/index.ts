@@ -67,6 +67,7 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
     const ppfx = config.pStylePrefix;
     if (ppfx) config.stylePrefix = ppfx + config.stylePrefix;
 
+    // @ts-ignore
     config.rules = this.em.config.style || config.rules || '';
 
     this.rules = new CssRules([], config);

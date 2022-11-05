@@ -1,5 +1,6 @@
 import { isElement, isUndefined, isString } from 'underscore';
 import { Collection, View } from '../common';
+import { EditorConfigKeys } from '../editor/config/config';
 import EditorModel from '../editor/model/Editor';
 import { createId, isDef, deepMerge } from '../utils/mixins';
 
@@ -43,9 +44,9 @@ export default abstract class Module<T extends ModuleConfig = ModuleConfig> impl
   constructor(em: EditorModel, moduleName: string, defaults?: T) {
     this._em = em;
     this._name = moduleName;
-    const name = this.name.charAt(0).toLowerCase() + this.name.slice(1);
-    const cfgParent = !isUndefined(em.config[name]) ? em.config[name] : em.config[this.name];
-    const cfg = cfgParent === true ? {} : cfgParent || {};
+    const name = (this.name.charAt(0).toLowerCase() + this.name.slice(1)) as EditorConfigKeys;
+    const cfgParent = !isUndefined(em.config[name]) ? em.config[name] : em.config[this.name as EditorConfigKeys];
+    const cfg = (cfgParent === true ? {} : cfgParent || {}) as Record<string, any>;
     cfg.pStylePrefix = em.config.pStylePrefix || '';
 
     if (!isUndefined(cfgParent) && !cfgParent) {
