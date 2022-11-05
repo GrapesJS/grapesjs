@@ -7,6 +7,7 @@ import { DeviceManagerConfig } from '../../device_manager/config/config';
 import { I18nConfig } from '../../i18n/config';
 import { ModalConfig } from '../../modal_dialog/config/config';
 import { LayerManagerConfig } from '../../navigator/config/config';
+import { PanelsConfig } from '../../panels/config/config';
 import { ParserConfig } from '../../parser/config/config';
 import { RichTextEditorConfig } from '../../rich_text_editor/config/config';
 import { UndoManagerConfig } from '../../undo_manager/config';
@@ -342,11 +343,10 @@ export interface EditorConfig {
    */
   codeManager?: CodeManagerConfig;
 
-  // TODO
   /**
    * Configurations for Panels.
    */
-  panels?: AnyObject;
+  panels?: PanelsConfig;
 
   // TODO
   /**
