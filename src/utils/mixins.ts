@@ -1,4 +1,5 @@
 import { keys, isUndefined, isElement, isArray } from 'underscore';
+import EditorModel from '../editor/model/Editor';
 
 export const isDef = (value: any) => typeof value !== 'undefined';
 
@@ -13,8 +14,7 @@ const elProt = hasWin() ? window.Element.prototype : {};
 // @ts-ignore
 const matches = elProt.matches || elProt.webkitMatchesSelector || elProt.mozMatchesSelector || elProt.msMatchesSelector;
 
-// @ts-ignore
-export const getUiClass = (em, defCls) => {
+export const getUiClass = (em: EditorModel, defCls: string) => {
   const { stylePrefix, customUI } = em.getConfig();
   return [customUI && `${stylePrefix}cui`, defCls].filter(i => i).join(' ');
 };
