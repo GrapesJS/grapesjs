@@ -39,11 +39,11 @@ import { Module } from '../abstract';
 import EditorView from '../editor/view/EditorView';
 import EditorModel from '../editor/model/Editor';
 import { createText } from '../utils/dom';
-import defaults from './config/config';
+import defaults, { ModalConfig } from './config/config';
 import ModalM from './model/Modal';
 import ModalView from './view/ModalView';
 
-export default class ModalModule extends Module<typeof defaults> {
+export default class ModalModule extends Module<ModalConfig> {
   modal?: ModalView;
 
   /**
