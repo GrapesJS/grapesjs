@@ -75,7 +75,7 @@ const events = {
 };
 
 export interface PageManagerConfig extends ModuleConfig {
-  pages?: string[];
+  pages?: any[];
 }
 
 export default class PageManager extends ItemManagerModule<PageManagerConfig, Pages> {
