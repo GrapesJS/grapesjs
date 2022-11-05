@@ -311,11 +311,6 @@ export interface EditorConfig {
    */
   canvas?: CanvasConfig;
 
-  /**
-   * Configurations for Layers.
-   */
-  layers?: LayerManagerConfig;
-
   // TODO
   /**
    * Configurations for Storage Manager.
@@ -394,11 +389,10 @@ export interface EditorConfig {
    */
   pageManager?: AnyObject;
 
-  // TODO
   /**
    * Configurations for Layer Manager.
    */
-  layerManager?: AnyObject;
+  layerManager?: LayerManagerConfig;
 
   /**
    * Configurations for Parser module.
@@ -485,7 +479,7 @@ const config: EditorConfig = {
   undoManager: {},
   assetManager: {},
   canvas: {},
-  layers: {},
+  layerManager: {},
   storageManager: {},
   richTextEditor: {},
   domComponents: {},
