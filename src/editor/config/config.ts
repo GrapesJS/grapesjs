@@ -5,6 +5,7 @@ import { CodeManagerConfig } from '../../code_manager/config/config';
 import { CssComposerConfig } from '../../css_composer/config/config';
 import { DeviceManagerConfig } from '../../device_manager/config/config';
 import { I18nConfig } from '../../i18n/config';
+import { ModalConfig } from '../../modal_dialog/config/config';
 import { LayerManagerConfig } from '../../navigator/config/config';
 import { ParserConfig } from '../../parser/config/config';
 import { RichTextEditorConfig } from '../../rich_text_editor/config/config';
@@ -331,11 +332,10 @@ export interface EditorConfig {
    */
   domComponents?: AnyObject;
 
-  // TODO
   /**
    * Configurations for Modal Dialog.
    */
-  modal?: AnyObject;
+  modal?: ModalConfig;
 
   /**
    * Configurations for Code Manager.
