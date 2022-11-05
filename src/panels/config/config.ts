@@ -7,10 +7,32 @@ const obl = 'open-blocks';
 const ful = 'fullscreen';
 const prv = 'preview';
 
-export default {
-  stylePrefix: 'pn-',
+interface ButtonProps {
+  id?: string;
+  active?: boolean;
+  togglable?: boolean;
+  className?: string;
+  command?: string | (() => any);
+  context?: string;
+  attributes?: Record<string, any>;
+}
 
-  // Default panels fa-sliders for features
+interface PanelProps {
+  id?: string;
+  buttons?: ButtonProps[];
+}
+
+export interface PanelsConfig {
+  stylePrefix?: string;
+
+  /**
+   * Default panels.
+   */
+  defaults?: PanelProps[];
+}
+
+const config: PanelsConfig = {
+  stylePrefix: 'pn-',
   defaults: [
     {
       id: 'commands',
@@ -57,37 +79,33 @@ export default {
           className: 'fa fa-paint-brush',
           command: osm,
           active: true,
-          togglable: 0,
+          togglable: false,
           attributes: { title: 'Open Style Manager' },
         },
         {
           id: otm,
           className: 'fa fa-cog',
           command: otm,
-          togglable: 0,
+          togglable: false,
           attributes: { title: 'Settings' },
         },
         {
           id: ola,
           className: 'fa fa-bars',
           command: ola,
-          togglable: 0,
+          togglable: false,
           attributes: { title: 'Open Layer Manager' },
         },
         {
           id: obl,
           className: 'fa fa-th-large',
           command: obl,
-          togglable: 0,
+          togglable: false,
           attributes: { title: 'Open Blocks' },
         },
       ],
     },
   ],
-
-  // Editor model
-  em: null,
-
-  // Delay before show children buttons (in milliseconds)
-  delayBtnsShow: 300,
 };
+
+export default config;

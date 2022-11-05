@@ -1,5 +1,5 @@
 /**
- * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/panels/config/config.js)
+ * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/panels/config/config.ts)
  * ```js
  * const editor = grapesjs.init({
  *  panels: {
@@ -27,13 +27,12 @@
  */
 import { Module } from '../abstract';
 import EditorModel from '../editor/model/Editor';
-import defaults from './config/config';
-import Button from './model/Button';
+import defaults, { PanelsConfig } from './config/config';
 import Panel from './model/Panel';
 import Panels from './model/Panels';
 import PanelsView from './view/PanelsView';
 
-export default class PanelManager extends Module<typeof defaults> {
+export default class PanelManager extends Module<PanelsConfig> {
   //config = {};
   panels: Panels;
   PanelsViewObj?: PanelsView;
@@ -45,7 +44,7 @@ export default class PanelManager extends Module<typeof defaults> {
    */
   constructor(em: EditorModel) {
     super(em, 'Panels', defaults);
-    this.panels = new Panels(this, this.config.defaults);
+    this.panels = new Panels(this, this.config.defaults!);
     for (var name in defaults) {
       //@ts-ignore
       if (!(name in this.config)) this.config[name] = defaults[name];
