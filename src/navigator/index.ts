@@ -45,7 +45,7 @@ import Module from '../abstract/Module';
 import Component from '../dom_components/model/Component';
 import EditorModel from '../editor/model/Editor';
 import { hasWin, isComponent, isDef } from '../utils/mixins';
-import defaults from './config/config';
+import defaults, { LayerManagerConfig } from './config/config';
 import View from './view/ItemView';
 
 interface LayerData {
@@ -81,7 +81,7 @@ const isStyleHidden = (style: any = {}) => {
   return (style.display || '').trim().indexOf('none') === 0;
 };
 
-export default class LayerManager extends Module<typeof defaults> {
+export default class LayerManager extends Module<LayerManagerConfig> {
   model!: Model;
 
   view?: View;
@@ -104,7 +104,7 @@ export default class LayerManager extends Module<typeof defaults> {
     model.listenTo(em, propsToListen, this.__onComponent);
     this.componentChanged();
     model.listenToOnce(em, 'load', () => {
-      this.setRoot(config.root);
+      this.setRoot(config.root!);
       this.__appendTo();
     });
   }
