@@ -7,6 +7,7 @@ import { DeviceManagerConfig } from '../../device_manager/config/config';
 import { I18nConfig } from '../../i18n/config';
 import { ModalConfig } from '../../modal_dialog/config/config';
 import { LayerManagerConfig } from '../../navigator/config/config';
+import { PageManagerConfig } from '../../pages';
 import { PanelsConfig } from '../../panels/config/config';
 import { ParserConfig } from '../../parser/config/config';
 import { RichTextEditorConfig } from '../../rich_text_editor/config/config';
@@ -371,7 +372,6 @@ export interface EditorConfig {
    */
   styleManager?: AnyObject;
 
-  // TODO
   /**
    * Configurations for Block Manager.
    */
@@ -383,11 +383,10 @@ export interface EditorConfig {
    */
   traitManager?: AnyObject;
 
-  // TODO
   /**
    * Configurations for Page Manager.
    */
-  pageManager?: AnyObject;
+  pageManager?: PageManagerConfig;
 
   /**
    * Configurations for Layer Manager.
