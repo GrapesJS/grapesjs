@@ -1010,7 +1010,7 @@ export default class Component extends StyleableModel {
    * someComponent.append(otherComponent, { at: 0 });
    */
   append(components, opts = {}) {
-    const compArr = isArray(components) ? components : [components];
+    const compArr = isArray(components) ? [...components] : [components];
     const toAppend = compArr.map(comp => {
       if (isString(comp)) {
         return comp;
