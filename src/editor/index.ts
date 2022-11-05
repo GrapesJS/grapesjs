@@ -79,7 +79,7 @@ import UndoManagerModule from '../undo_manager';
 import UtilsModule from '../utils';
 import cash from '../utils/cash-dom';
 import html from '../utils/html';
-import defaults from './config/config';
+import defaults, { EditorConfig } from './config/config';
 import EditorModel from './model/Editor';
 import EditorView from './view/EditorView';
 
@@ -90,13 +90,21 @@ export type ParsedRule = {
   params?: string;
 };
 
-export default class EditorModule implements IBaseModule<typeof defaults> {
-  constructor(config = {}, opts: any = {}) {
-    //@ts-ignore
+type EditorConfigType = EditorConfig & { pStylePrefix?: string };
+
+export default class EditorModule implements IBaseModule<EditorConfig> {
+  editorView?: EditorView;
+  editor: EditorModel;
+  $: typeof cash;
+  em: EditorModel;
+  config: EditorConfigType;
+
+  modules = [];
+
+  constructor(config: EditorConfig = {}, opts: any = {}) {
     this.config = {
       ...defaults,
       ...config,
-      //@ts-ignore
       pStylePrefix: defaults.stylePrefix,
     };
     this.em = new EditorModel(this.config);
@@ -104,13 +112,6 @@ export default class EditorModule implements IBaseModule<typeof defaults> {
     this.em.init(this);
     this.editor = this.em;
   }
-  editorView?: EditorView;
-  editor: EditorModel;
-  $: typeof cash;
-  em: EditorModel;
-  config: typeof defaults;
-
-  modules = [];
 
   get I18n(): I18nModule {
     return this.em.get('I18n');
