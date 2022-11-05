@@ -5,6 +5,7 @@ import { CodeManagerConfig } from '../../code_manager/config/config';
 import { CssComposerConfig } from '../../css_composer/config/config';
 import { DeviceManagerConfig } from '../../device_manager/config/config';
 import { I18nConfig } from '../../i18n/config';
+import { LayerManagerConfig } from '../../navigator/config/config';
 import { ParserConfig } from '../../parser/config/config';
 import { RichTextEditorConfig } from '../../rich_text_editor/config/config';
 import { UndoManagerConfig } from '../../undo_manager/config';
@@ -308,11 +309,10 @@ export interface EditorConfig {
    */
   canvas?: CanvasConfig;
 
-  // TODO
   /**
    * Configurations for Layers.
    */
-  layers?: AnyObject;
+  layers?: LayerManagerConfig;
 
   // TODO
   /**
