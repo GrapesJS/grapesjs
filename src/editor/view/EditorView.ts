@@ -27,6 +27,9 @@ export default class EditorView extends View<EditorModel> {
     const { Panels, Canvas } = model.attributes;
     const { config, modules } = model;
     const pfx = config.stylePrefix;
+    const classNames = [`${pfx}editor`];
+    !config.customUI && classNames.push(`${pfx}one-bg ${pfx}two-color`);
+
     // @ts-ignore
     const contEl = $(config.el || `body ${config.container}`);
     config.cssIcons && appendStyles(config.cssIcons, { unique: true, prepand: true });
@@ -46,7 +49,7 @@ export default class EditorView extends View<EditorModel> {
     shallowCanvasEl.style.display = 'none';
     $el.append(shallowCanvasEl);
 
-    $el.attr('class', `${pfx}editor ${pfx}one-bg ${pfx}two-color`);
+    $el.attr('class', classNames.join(' '));
     // @ts-ignore
     contEl.addClass(`${pfx}editor-cont`).empty().append($el);
     modules.forEach(md => md.postRender && md.postRender(this));
