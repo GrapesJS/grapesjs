@@ -16,13 +16,13 @@ export interface SelectorManagerConfig {
    * Default selectors.
    * @default []
    */
-  selectors: any[];
+  selectors?: any[];
 
   /**
    * Default states.
    * @default [{ name: 'hover' }, { name: 'active' }, { name: 'nth-of-type(2n)' }]
    */
-  states: any[];
+  states?: any[];
 
   /**
    * Custom selector name escaping strategy.

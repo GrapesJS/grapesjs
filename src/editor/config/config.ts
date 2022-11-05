@@ -11,6 +11,7 @@ import { PageManagerConfig } from '../../pages';
 import { PanelsConfig } from '../../panels/config/config';
 import { ParserConfig } from '../../parser/config/config';
 import { RichTextEditorConfig } from '../../rich_text_editor/config/config';
+import { SelectorManagerConfig } from '../../selector_manager/config/config';
 import { UndoManagerConfig } from '../../undo_manager/config';
 
 type AnyObject = Record<string, any>;
@@ -355,11 +356,10 @@ export interface EditorConfig {
    */
   cssComposer?: CssComposerConfig;
 
-  // TODO
   /**
    * Configurations for Selector Manager.
    */
-  selectorManager?: AnyObject;
+  selectorManager?: SelectorManagerConfig;
 
   /**
    * Configurations for Device Manager.
