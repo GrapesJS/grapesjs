@@ -301,18 +301,18 @@ export interface EditorConfig {
   /**
    * Configurations for Asset Manager.
    */
-  assetManager?: AssetManagerConfig | boolean;
+  assetManager?: AssetManagerConfig;
 
   /**
    * Configurations for Canvas.
    */
-  canvas?: CanvasConfig | boolean;
+  canvas?: CanvasConfig;
 
   // TODO
   /**
    * Configurations for Layers.
    */
-  layers?: AnyObject | boolean;
+  layers?: AnyObject;
 
   // TODO
   /**
@@ -335,7 +335,7 @@ export interface EditorConfig {
   /**
    * Configurations for Modal Dialog.
    */
-  modal?: AnyObject | boolean;
+  modal?: AnyObject;
 
   /**
    * Configurations for Code Manager.
