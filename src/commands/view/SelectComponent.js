@@ -485,11 +485,7 @@ export default {
       if (!this.toolbar) {
         toolbarEl.innerHTML = '';
         this.toolbar = new Toolbar(toolbar);
-        const toolbarView = new ToolbarView({
-          collection: this.toolbar,
-          editor: this.editor,
-          em,
-        });
+        const toolbarView = new ToolbarView({ collection: this.toolbar, em });
         toolbarEl.appendChild(toolbarView.render().el);
       }
 
