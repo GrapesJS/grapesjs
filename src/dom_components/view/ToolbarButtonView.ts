@@ -3,6 +3,8 @@ import { View } from '../../common';
 import EditorModel from '../../editor/model/Editor';
 import ToolbarButton from '../model/ToolbarButton';
 
+export type ToolbarViewProps = { em: EditorModel };
+
 export default class ToolbarButtonView extends View<ToolbarButton> {
   em: EditorModel;
 
@@ -19,7 +21,7 @@ export default class ToolbarButtonView extends View<ToolbarButton> {
     return this.model.get('attributes');
   }
 
-  constructor(props: { config: { em: EditorModel }; model: ToolbarButton }) {
+  constructor(props: { config: ToolbarViewProps; model: ToolbarButton }) {
     super(props);
     this.em = props.config.em;
   }

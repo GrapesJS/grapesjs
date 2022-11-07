@@ -1,12 +1,13 @@
 import DomainViews from '../../domain_abstract/view/DomainViews';
-import ToolbarButtonView from './ToolbarButtonView';
+import ToolbarButtonView, { ToolbarViewProps } from './ToolbarButtonView';
 
 export default class ToolbarView extends DomainViews {
-  constructor(opts = {}, config) {
-    super(opts, config);
-    this.config = { editor: opts.editor || '', em: opts.em };
+  constructor(opts: ToolbarViewProps) {
+    super(opts);
+    this.config = { em: opts.em };
     this.listenTo(this.collection, 'reset', this.render);
   }
 }
 
+// @ts-ignore
 ToolbarView.prototype.itemView = ToolbarButtonView;
