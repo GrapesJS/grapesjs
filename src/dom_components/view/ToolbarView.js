@@ -1,4 +1,4 @@
-import DomainViews from 'domain_abstract/view/DomainViews';
+import DomainViews from '../../domain_abstract/view/DomainViews';
 import ToolbarButtonView from './ToolbarButtonView';
 
 export default class ToolbarView extends DomainViews {

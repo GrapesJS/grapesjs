@@ -1,6 +1,11 @@
-import Backbone from 'backbone';
+import { isFunction, isString } from 'underscore';
+import { View } from '../../common';
+import EditorModel from '../../editor/model/Editor';
+import ToolbarButton from '../model/ToolbarButton';
 
-export default class ToolbarButtonView extends Backbone.View {
+export default class ToolbarButtonView extends View<ToolbarButton> {
+  em: EditorModel;
+
   events() {
     return (
       this.model.get('events') || {
@@ -9,17 +14,17 @@ export default class ToolbarButtonView extends Backbone.View {
     );
   }
 
+  // @ts-ignore
   attributes() {
     return this.model.get('attributes');
   }
 
-  initialize(opts = {}) {
-    const { config = {} } = opts;
-    this.em = config.em;
-    this.editor = config.editor;
+  constructor(props: { config: { em: EditorModel }; model: ToolbarButton }) {
+    super(props);
+    this.em = props.config.em;
   }
 
-  handleClick(event) {
+  handleClick(event: MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
 
@@ -37,38 +42,38 @@ export default class ToolbarButtonView extends Backbone.View {
      * https://github.com/artf/grapesjs/issues/2207
      */
 
-    const { editor, em } = this;
-    const { left, top } = editor.Canvas.getFrameEl().getBoundingClientRect();
-
-    const calibrated = {
+    const { em } = this;
+    const { left, top } = em.Canvas.getFrameEl().getBoundingClientRect();
+    const ev = {
       ...event,
       clientX: event.clientX - left,
       clientY: event.clientY - top,
     };
 
-    em.trigger('toolbar:run:before');
-    this.execCommand(calibrated);
+    em.trigger('toolbar:run:before', { event: ev });
+    this.execCommand(ev);
   }
 
-  execCommand(event) {
+  execCommand(event: MouseEvent) {
+    const { em, model } = this;
     const opts = { event };
-    const command = this.model.get('command');
-    const editor = this.editor;
+    const command = model.get('command');
+    const editor = em.Editor;
 
-    if (typeof command === 'function') {
+    if (isFunction(command)) {
       command(editor, null, opts);
     }
 
-    if (typeof command === 'string') {
+    if (isString(command)) {
       editor.runCommand(command, opts);
     }
   }
 
   render() {
-    const { editor, $el, model } = this;
+    const { em, $el, model } = this;
     const id = model.get('id');
     const label = model.get('label');
-    const pfx = editor.getConfig().stylePrefix;
+    const pfx = em.getConfig().stylePrefix;
     $el.addClass(`${pfx}toolbar-item`);
     id && $el.addClass(`${pfx}toolbar-item__${id}`);
     label && $el.append(label);
