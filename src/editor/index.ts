@@ -64,6 +64,7 @@ import CodeManagerModule from '../code_manager';
 import CssComposer from '../css_composer';
 import DeviceManager from '../device_manager';
 import ComponentManager from '../dom_components';
+import Component from '../dom_components/model/Component';
 import I18nModule from '../i18n';
 import KeymapsModule from '../keymaps';
 import ModalModule from '../modal_dialog';
@@ -400,7 +401,7 @@ export default class EditorModule implements IBaseModule<EditorConfig> {
    *  editor.select(model);
    * });
    */
-  select(el: any, opts: any) {
+  select(el?: Component | Component[], opts?: any) {
     this.em.setSelected(el, opts);
     return this;
   }

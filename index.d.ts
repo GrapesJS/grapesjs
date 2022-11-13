@@ -994,7 +994,7 @@ declare namespace grapesjs {
      * @param [opts.scroll] - Scroll canvas to the selected element
      */
     select(
-      el: Component | HTMLElement,
+      el?: Component | HTMLElement,
       opts?: {
         scroll?: boolean;
       }

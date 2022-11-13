@@ -13,6 +13,7 @@ import CanvasModule from '../../canvas';
 import ComponentManager from '../../dom_components';
 import CssComposer from '../../css_composer';
 import { EditorConfig, EditorConfigKeys } from '../config/config';
+import Component from '../../dom_components/model/Component';
 
 //@ts-ignore
 Backbone.$ = $;
@@ -407,7 +408,7 @@ export default class EditorModel extends Model {
    * @param  {Object} [opts={}] Options, optional
    * @public
    */
-  setSelected(el?: any | any[], opts: any = {}) {
+  setSelected(el?: Component | Component[], opts: any = {}) {
     const { event } = opts;
     const ctrlKey = event && (event.ctrlKey || event.metaKey);
     const { shiftKey } = event || {};
