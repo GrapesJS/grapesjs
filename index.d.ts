@@ -4073,6 +4073,7 @@ declare namespace grapesjs {
   }
 
   interface Device extends Backbone.Model<DeviceOptions> {
+    id?: string,
     getName(): string;
     getWidthMedia(): string;
   }
