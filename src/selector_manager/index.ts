@@ -72,7 +72,7 @@
  * @module Selectors
  */
 
-import { isString, debounce, isObject, isArray } from 'underscore';
+import { isString, debounce, isObject, isArray, bindAll } from 'underscore';
 import { isComponent, isRule } from '../utils/mixins';
 import Module from '../abstract/moduleLegacy';
 import { Model, Collection } from '../common';
@@ -130,6 +130,7 @@ export default class SelectorManager extends Module {
   init(conf = {}) {
     //super();
     this.__initConfig(defaults, conf);
+    bindAll(this, '__updateSelectedByComponents');
     const config = this.getConfig();
     const em = this.em;
     const ppfx = config.pStylePrefix;
@@ -152,8 +153,9 @@ export default class SelectorManager extends Module {
     });
     em.on('change:state', (m, value) => em.trigger(evState, value));
     this.model.on('change:cFirst', (m, value) => em.trigger('selector:type', value));
+    em.on('component:toggled component:update:classes', this.__updateSelectedByComponents);
     const listenTo =
-      'component:toggled component:update:classes change:device styleManager:update selector:state selector:type';
+      'component:toggled component:update:classes change:device styleManager:update selector:state selector:type style:target';
     this.model.listenTo(em, listenTo, () => this.__update());
 
     return this;
@@ -192,6 +194,7 @@ export default class SelectorManager extends Module {
   select(value: any, opts = {}) {
     const targets = Array.isArray(value) ? value : [value];
     const toSelect: any[] = this.em.get('StyleManager').select(targets, opts);
+    this.selected.reset(this.__getCommonSelectors(toSelect));
     const selTags = this.selectorTags;
     const res = toSelect
       .filter(i => i)
@@ -381,6 +384,17 @@ export default class SelectorManager extends Module {
   }
 
   /**
+   * Get selected selectors.
+   * @returns {Array<[Selector]>}
+   * @example
+   * const selected = selectorManager.getSelectedAll();
+   * console.log(selected.map(s => s.toString()))
+   */
+  getSelectedAll() {
+    return [...this.selected.models];
+  }
+
+  /**
    * Add new selector to all selected components.
    * @param {Object|String} props Selector properties or string identifiers, eg. `{ name: 'my-class', label: 'My class' }`, `.my-cls`
    * @example
@@ -462,9 +476,9 @@ export default class SelectorManager extends Module {
    * @private
    */
   render(selectors: any[]) {
-    const { em, selectorTags } = this;
+    const { selectorTags } = this;
     const config = this.getConfig();
-    const el = selectorTags && selectorTags.el;
+    const el = selectorTags?.el;
     this.selected.reset(selectors);
     this.selectorTags = new ClassTagsView({
       el,
@@ -511,5 +525,9 @@ export default class SelectorManager extends Module {
         //@ts-ignore
         .reduce((acc, item) => this.__common(acc, item), args[0])
     );
+  }
+
+  __updateSelectedByComponents() {
+    this.selected.reset(this.__getCommon());
   }
 }
