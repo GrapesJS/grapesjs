@@ -4249,6 +4249,10 @@ declare namespace grapesjs {
      * Get all selectors
      */
     getAll(): any;
+
+    select(value: any): any;
+
+    getSelectedAll(): Selector[];
   }
 
   interface SelectorOptions {
