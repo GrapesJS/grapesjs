@@ -1479,7 +1479,7 @@ declare namespace grapesjs {
      * const asset = assetManager.get('http://img.jpg');
      * assetManager.remove(asset);
      */
-    remove(): any;
+    remove(asset: any, opts?: Record<string, any>): any;
     /**
      * Store assets data to the selected storage
      * @example
