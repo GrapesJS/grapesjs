@@ -348,6 +348,7 @@ describe('Css Composer', () => {
         expect(obj.getAll().length).toEqual(1);
         expect(getCSS(obj)).toEqual(cssRule);
       });
+
       test('Add multiple rules as CSS string', () => {
         const cssRules = [
           '.test-rule{color:red;}',
@@ -360,6 +361,7 @@ describe('Css Composer', () => {
         expect(obj.getAll().length).toEqual(cssRules.length);
         expect(getCSS(obj)).toEqual(cssString);
       });
+
       test('Able to return the rule inserted as string', () => {
         const cssRule = `
         .test-rule1 {color:red;}
@@ -386,6 +388,44 @@ describe('Css Composer', () => {
         expect(rule3.get('mediaText')).toBe('(max-width: 992px)');
         expect(obj.get('.test-rule3', null, '(max-width: 992px)')).toBe(rule3);
         expect(obj.get('.test-rule4', 'hover', '(max-width: 992px)')).toBe(rule4);
+      });
+
+      test('Add rules with @font-face', () => {
+        const cssRules = ['@font-face{font-family:"Font1";}', '@font-face{font-family:"Font2";}'];
+        const cssRule = cssRules.join('');
+        const result = obj.addCollection(cssRule);
+        expect(result.length).toEqual(2);
+        expect(obj.getAll().length).toEqual(2);
+
+        result.forEach(rule => {
+          expect(rule.get('selectors').length).toBe(0);
+          expect(rule.get('selectorsAdd')).toBeFalsy();
+          expect(rule.get('mediaText')).toBeFalsy();
+          expect(rule.get('atRuleType')).toBe('font-face');
+          expect(rule.get('singleAtRule')).toBe(true);
+        });
+
+        expect(getCSS(obj)).toEqual(cssRule.trim());
+      });
+
+      // TODO update jest to be able to test keyframes
+      test.skip('Add rules with @keyframes at rule', () => {
+        const cssRule = `
+        @keyframes keyname {
+          from { width: 0% }
+          40%, 50% { width: 50% }
+          to { width: 100% }
+        }
+        `;
+        const result = obj.addCollection(cssRule);
+        console.log({ result });
+        const [rule1, rule2, rule3] = result;
+        expect(result.length).toEqual(3);
+        expect(obj.getAll().length).toEqual(3);
+
+        expect(rule1.get('mediaText')).toBe('keyname');
+        expect(rule1.get('atRuleType')).toBe('keyframes');
+        // TODO to complete
       });
     });
   });

@@ -136,7 +136,10 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
       opt.state = s;
       opt.mediaText = w;
       opt.selectors = [];
-      w && (opt.atRuleType = 'media');
+      // #4727: Prevent updating atRuleType if already defined
+      if (w && !opt.atRuleType) {
+        opt.atRuleType = 'media';
+      }
       rule = new CssRule(opt, this.config);
       // @ts-ignore
       rule.get('selectors').add(selectors, addOpts);
