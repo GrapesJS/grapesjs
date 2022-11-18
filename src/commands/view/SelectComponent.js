@@ -69,7 +69,7 @@ export default {
     const trigger = (win, body) => {
       methods[method](body, 'mouseover', this.onHover);
       methods[method](body, 'mouseleave', this.onOut);
-      methods[method](body, 'click touchend', this.onClick);
+      methods[method](body, 'click', this.onClick);
       methods[method](win, 'scroll', this.onFrameScroll, true);
     };
     methods[method](window, 'resize', this.onFrameUpdated);
