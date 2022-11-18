@@ -493,14 +493,25 @@ export default class EditorModel extends Model {
    * @param  {Object} [opts={}] Options, optional
    * @public
    */
-  addSelected(el: any, opts: any = {}) {
+  addSelected(el: Component, opts: any = {}) {
     const model = getModel(el, $);
     const models = isArray(model) ? model : [model];
 
     models.forEach(model => {
-      if (model && !model.get('selectable')) return;
       const { selected } = this;
+      if (
+        !model ||
+        !model.get('selectable') ||
+        // Avoid selecting children of selected components
+        model.parents().some((parent: Component) => selected.hasComponent(parent))
+      ) {
+        return;
+      }
       opts.forceChange && this.removeSelected(model, opts);
+      // Remove from selection, children of the component to select
+      const toDeselect = selected.allComponents().filter(cmp => contains(cmp.parents(), model));
+      toDeselect.forEach(cmp => this.removeSelected(cmp, opts));
+
       selected.addComponent(model, opts);
       model && this.trigger('component:select', model, opts);
     });
