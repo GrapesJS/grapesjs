@@ -362,7 +362,7 @@ export default class Property extends Model {
    * @return {string}
    * @private
    */
-  getFullValue(val) {
+  getFullValue(val, opts = {}) {
     const fn = this.get('functionName');
     const def = this.getDefaultValue();
     let value = isUndefined(val) ? this.get('value') : val;
@@ -377,7 +377,7 @@ export default class Property extends Model {
       value = `${fn}(${fnParameter})`;
     }
 
-    if (hasValue && this.get('important')) {
+    if (hasValue && this.get('important') && !opts.skipImportant) {
       value = `${value} !important`;
     }
 

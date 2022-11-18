@@ -127,7 +127,7 @@ export default class Property extends View {
   }
 
   onValueChange(m, val, opt = {}) {
-    this.setValue(this.model.getFullValue());
+    this.setValue(this.model.getFullValue(undefined, { skipImportant: true }));
     this.updateStatus();
   }
 
