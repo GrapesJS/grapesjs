@@ -106,7 +106,7 @@ export default class EditorModule implements IBaseModule<EditorConfig> {
     this.config = {
       ...defaults,
       ...config,
-      pStylePrefix: defaults.stylePrefix,
+      pStylePrefix: config.stylePrefix ?? defaults.stylePrefix,
     };
     this.em = new EditorModel(this.config);
     this.$ = opts.$;
