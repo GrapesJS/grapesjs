@@ -1542,6 +1542,7 @@ export default class Component extends StyleableModel {
     delete obj.traits;
     delete obj.status;
     delete obj.open; // used in Layers
+    delete obj._undoexc;
 
     if (!opts.fromUndo) {
       const symbol = obj[keySymbol];
