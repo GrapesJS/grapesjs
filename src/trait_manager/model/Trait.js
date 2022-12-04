@@ -133,9 +133,7 @@ export default class Trait extends Model {
     if (this.get('changeProp')) {
       target.set(name, valueToSet, opts);
     } else {
-      const attrs = { ...target.get('attributes') };
-      attrs[name] = valueToSet;
-      target.set('attributes', attrs, opts);
+      target.addAttributes({ [name]: valueToSet }, opts);
     }
   }
 

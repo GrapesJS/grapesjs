@@ -481,7 +481,7 @@ export default class Component extends StyleableModel {
   addAttributes(attrs, opts = {}) {
     return this.setAttributes(
       {
-        ...this.getAttributes({ noClass: 1 }),
+        ...this.getAttributes({ noClass: true }),
         ...attrs,
       },
       opts
@@ -568,7 +568,9 @@ export default class Component extends StyleableModel {
     const id = this.getId();
 
     // Add classes
-    if (!opts.noClass) {
+    if (opts.noClass) {
+      delete attributes.class;
+    } else {
       this.get('classes').forEach(cls => classes.push(isString(cls) ? cls : cls.get('name')));
       classes.length && (attributes.class = classes.join(' '));
     }
