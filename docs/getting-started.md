@@ -438,7 +438,7 @@ Each component can also indicate what to style and what not.
 -->
 
 ## Traits
-Most of the time you would style your components and place them somewhere in the structure, but sometimes your components might need custom attributes or even custom behaviors and for this need you can make use of traits. Traits are commonly used to update HTML element attributes (eg. `placeholder` for inputs or `alt` for images), but you can also define your own custom traits. Access the selected Component model and do whatever you want. For this guide, we going to show you how to render available traits, for more details on how to extend them we suggest you read the [Trait Manager Module page](modules/Traits.html).
+Most of the time you would style your components and place them somewhere in the structure, but sometimes your components might need custom attributes or even custom behaviors and for this need you can make use of traits. Traits are commonly used to update HTML element attributes (eg. `placeholder` for inputs or `alt` for images), but you can also define your own custom traits. Access the selected Component model and do whatever you want. For this guide, we are going to show you how to render available traits, for more details on how to extend them we suggest you read the [Trait Manager Module page](modules/Traits.html).
 
 Let's create a new container for traits. Tell the editor where to render it and update the sidebar switcher:
 
