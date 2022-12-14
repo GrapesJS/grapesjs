@@ -22,36 +22,40 @@ export default (em?: EditorModel, config: ParserConfig = {}) => {
 
     modelAttrStart,
 
+    getPropAttribute(attrName: string, attrValue?: string) {
+      const name = attrName.replace(this.modelAttrStart, '');
+      const valueLen = attrValue?.length || 0;
+      const firstChar = attrValue?.substring(0, 1);
+      const lastChar = attrValue?.substring(valueLen - 1);
+      let value: any = attrValue === 'true' ? true : attrValue === 'false' ? false : attrValue;
+
+      // Try to parse JSON where it's possible
+      // I can get false positive here (eg. a selector '[data-attr]')
+      // so put it under try/catch and let fail silently
+      try {
+        value =
+          (firstChar == '{' && lastChar == '}') || (firstChar == '[' && lastChar == ']') ? JSON.parse(value) : value;
+      } catch (e) {}
+
+      return {
+        name,
+        value,
+      };
+    },
+
     /**
      * Extract component props from an attribute object
      * @param {Object} attr
      * @returns {Object} An object containing props and attributes without them
      */
     splitPropsFromAttr(attr: AnyObject = {}) {
-      const props: StringObject = {};
+      const props: AnyObject = {};
       const attrs: StringObject = {};
 
       each(attr, (value, key) => {
         if (key.indexOf(this.modelAttrStart) === 0) {
-          const modelAttr = key.replace(modelAttrStart, '');
-          const valueLen = value.length;
-          const valStr = value && isString(value);
-          const firstChar = valStr && value.substr(0, 1);
-          const lastChar = valStr && value.substr(valueLen - 1);
-          value = value === 'true' ? true : value;
-          value = value === 'false' ? false : value;
-
-          // Try to parse JSON where it's possible
-          // I can get false positive here (eg. a selector '[data-attr]')
-          // so put it under try/catch and let fail silently
-          try {
-            value =
-              (firstChar == '{' && lastChar == '}') || (firstChar == '[' && lastChar == ']')
-                ? JSON.parse(value)
-                : value;
-          } catch (e) {}
-
-          props[modelAttr] = value;
+          const propsResult = this.getPropAttribute(key, value);
+          props[propsResult.name] = propsResult.value;
         } else {
           attrs[key] = value;
         }
@@ -129,7 +133,7 @@ export default (em?: EditorModel, config: ParserConfig = {}) => {
         // Start with understanding what kind of component it is
         if (ct) {
           let obj: any = '';
-          let type = node.getAttribute && node.getAttribute(`${modelAttrStart}type`);
+          let type = node.getAttribute && node.getAttribute(`${this.modelAttrStart}type`);
 
           // If the type is already defined, use it
           if (type) {
@@ -178,25 +182,9 @@ export default (em?: EditorModel, config: ParserConfig = {}) => {
             model.classes = this.parseClass(nodeValue);
           } else if (nodeName == 'contenteditable') {
             continue;
-          } else if (nodeName.indexOf(modelAttrStart) === 0) {
-            const modelAttr = nodeName.replace(modelAttrStart, '');
-            const valueLen = nodeValue.length;
-            const firstChar = nodeValue && nodeValue.substr(0, 1);
-            const lastChar = nodeValue && nodeValue.substr(valueLen - 1);
-            nodeValue = nodeValue === 'true' ? true : nodeValue;
-            nodeValue = nodeValue === 'false' ? false : nodeValue;
-
-            // Try to parse JSON where it's possible
-            // I can get false positive here (eg. a selector '[data-attr]')
-            // so put it under try/catch and let fail silently
-            try {
-              nodeValue =
-                (firstChar == '{' && lastChar == '}') || (firstChar == '[' && lastChar == ']')
-                  ? JSON.parse(nodeValue as string)
-                  : nodeValue;
-            } catch (e) {}
-
-            model[modelAttr] = nodeValue;
+          } else if (nodeName.indexOf(this.modelAttrStart) === 0) {
+            const propsResult = this.getPropAttribute(nodeName, nodeValue);
+            model[propsResult.name] = propsResult.value;
           } else {
             // @ts-ignore Check for attributes from props (eg. required, disabled)
             if (nodeValue === '' && node[nodeName] === true) {
