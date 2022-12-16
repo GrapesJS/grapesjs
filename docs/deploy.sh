@@ -23,6 +23,6 @@ mv ./docs-new ./docs
 # stage all and commit
 git add -A
 git commit -m 'deploy docs'
-git push https://github.com/artf/grapesjs.git gh-pages
+git push https://artf@github.com/artf/grapesjs.git gh-pages
 # surge --domain grapesjs.surge.sh
 cd -
