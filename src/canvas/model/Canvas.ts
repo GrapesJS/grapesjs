@@ -20,6 +20,8 @@ export default class Canvas extends Model<CanvasModule> {
       styles: [],
     };
   }
+  em: EditorModel;
+  config: any;
 
   constructor(module: CanvasModule) {
     const { em, config } = module;
@@ -29,6 +31,9 @@ export default class Canvas extends Model<CanvasModule> {
     this.listenTo(this, 'change:zoom', this.onZoomChange);
     this.listenTo(em, `change:device ${evDeviceUpdate}`, this.updateDevice);
     this.listenTo(em, evPageSelect, this._pageUpdated);
+  }
+  get frames(): Frames {
+    return this.get('frames');
   }
 
   get frames(): Frames {

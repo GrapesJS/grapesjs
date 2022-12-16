@@ -1,5 +1,5 @@
 import { isString, bindAll } from 'underscore';
-import { View } from '../../common';
+import { View } from '../../abstract';
 import { getModel, isEscKey, isEnterKey } from '../../utils/mixins';
 import ComponentView from '../../dom_components/view/ComponentView';
 import Component, { eventDrag } from '../../dom_components/model/Component';
@@ -8,14 +8,14 @@ import EditorModel from '../../editor/model/Editor';
 import LayerManager from '../index';
 
 export type ItemViewProps = Backbone.ViewOptions & {
-  ItemView: ItemView;
-  level: number;
-  config: any;
-  opened: {};
-  model: Component;
-  module: LayerManager;
-  sorter: any;
-  parentView: ItemView;
+  ItemView: ItemView,
+  level: number,
+  config: any,
+  opened: {},
+  model: Component,
+  module: LayerManager,
+  sorter: any,
+  parentView: ItemView,
 };
 
 const inputProp = 'contentEditable';
@@ -37,12 +37,13 @@ export default class ItemView extends View {
   }
 
   template(model: Component) {
-    const { pfx, ppfx, config, clsNoEdit, module, opt, em } = this;
+    const { pfx, ppfx, config, clsNoEdit, module, opt } = this;
     const { hidable } = config;
     const count = module.getComponents(model).length;
     const addClass = !count ? this.clsNoChild : '';
     const clsTitle = `${this.clsTitle} ${addClass}`;
     const clsTitleC = `${this.clsTitleC} ${ppfx}one-bg`;
+    const clsCaret = `${this.clsCaret} fa fa-chevron-right`;
     const clsInput = `${this.inputNameCls} ${clsNoEdit} ${ppfx}no-app`;
     const level = opt.level + 1;
     const gut = `${30 + level * 10}px`;
@@ -55,23 +56,24 @@ export default class ItemView extends View {
     return `
       ${
         hidable
-          ? `<i class="${pfx}layer-vis" data-toggle-visible>
-            <i class="${pfx}layer-vis-on">${eye}</i>
-            <i class="${pfx}layer-vis-off">${eyeOff}</i>
-          </i>`
+          ? `<i class="${pfx}layer-vis fa fa-eye ${
+              module.isVisible(model) ? '' : 'fa-eye-slash'
+            }" data-toggle-visible></i>`
           : ''
       }
       <div class="${clsTitleC}">
         <div class="${clsTitle}" style="padding-left: ${gut}" data-toggle-select>
           <div class="${pfx}layer-title-inn" title="${name}">
-            <i class="${this.clsCaret}" data-toggle-open>${chevron}</i>
+            <i class="${clsCaret}" data-toggle-open></i>
             ${icon ? `<span class="${clsBase}__icon">${icon}</span>` : ''}
             <span class="${clsInput}" data-name>${name}</span>
           </div>
         </div>
       </div>
       <div class="${this.clsCount}" data-count>${count || ''}</div>
-      <div class="${this.clsMove}" data-toggle-move>${move || ''}</div>
+      <div class="${this.clsMove}" data-toggle-move>
+        <i class="fa fa-arrows"></i>
+      </div>
       <div class="${this.clsChildren}"></div>`;
   }
 
@@ -116,11 +118,26 @@ export default class ItemView extends View {
     bindAll(this, '__render');
     this.opt = opt;
     this.module = opt.module;
-    this.config = opt.config || {};
+    const config = opt.config || {};
+    const { onInit } = config;
+    this.config = config;
     this.sorter = opt.sorter || '';
     this.parentView = opt.parentView;
-    const { model, pfx, ppfx } = this;
+    const pfx = this.pfx;
+    const ppfx = this.ppfx;
+    const model = this.model;
+    const components = model.get('components');
     const type = model.get('type') || 'default';
+    this.listenTo(components, 'remove add reset', this.checkChildren);
+    [
+      ['change:status', this.updateStatus],
+      ['change:open', this.updateOpening],
+      ['change:layerable', this.updateLayerable],
+      ['change:style:display', this.updateVisibility],
+      ['rerender:layer', this.render],
+      ['change:name change:custom-name', this.updateName],
+    // @ts-ignore
+    ].forEach((item) => this.listenTo(model, item[0], item[1]));
     this.className = `${pfx}layer ${pfx}layer__t-${type} no-select ${ppfx}two-color`;
     this.inputNameCls = `${ppfx}layer-name`;
     this.clsTitleC = `${pfx}layer-title-c`;
@@ -132,23 +149,6 @@ export default class ItemView extends View {
     this.clsNoChild = `${pfx}layer-no-chld`;
     this.clsEdit = `${this.inputNameCls}--edit`;
     this.clsNoEdit = `${this.inputNameCls}--no-edit`;
-    this.initComponent();
-  }
-
-  initComponent() {
-    const { model, config } = this;
-    const { onInit } = config;
-    const components = model.components();
-    this.listenTo(components, 'remove add reset', this.checkChildren);
-    [
-      ['change:status', this.updateStatus],
-      ['change:open', this.updateOpening],
-      ['change:layerable', this.updateLayerable],
-      ['change:style:display', this.updateVisibility],
-      ['rerender:layer', this.render],
-      ['change:name change:custom-name', this.updateName],
-      // @ts-ignore
-    ].forEach(item => this.listenTo(model, item[0], item[1]));
     this.$el.data('model', model);
     this.$el.data('collection', components);
     // @ts-ignore
@@ -178,7 +178,7 @@ export default class ItemView extends View {
     const hidden = !module.isVisible(model);
     const method = hidden ? 'addClass' : 'removeClass';
     this.$el[method](hClass);
-    this.getVisibilityEl()[method](`${pfx}layer-off`);
+    this.getVisibilityEl()[method]('fa-eye-slash');
   }
 
   /**
@@ -225,11 +225,9 @@ export default class ItemView extends View {
     this.setName(name, { component: this.model, propName: 'custom-name' });
     em.setEditing(false);
     $el.find(`.${this.inputNameCls}`).addClass(clsNoEdit).removeClass(clsEdit);
-    // Ensure to always update the layer name #4544
-    this.updateName();
   }
 
-  setName(name: string, { propName }: { propName: string; component?: Component }) {
+  setName(name: string, { propName }: { propName: string, component?: Component }) {
     this.model.set(propName, name);
   }
 
@@ -250,17 +248,17 @@ export default class ItemView extends View {
    * @return void
    * */
   updateOpening() {
-    const { $el, model, pfx } = this;
+    const { $el, model } = this;
     const clsOpen = 'open';
-    const clsChvOpen = `${pfx}layer-open`;
+    const clsChvDown = 'fa-chevron-down';
     const caret = this.getCaret();
 
     if (this.module.isOpen(model)) {
       $el.addClass(clsOpen);
-      caret.addClass(clsChvOpen);
+      caret.addClass(clsChvDown);
     } else {
       $el.removeClass(clsOpen);
-      caret.removeClass(clsChvOpen);
+      caret.removeClass(clsChvDown);
     }
   }
 
@@ -369,7 +367,7 @@ export default class ItemView extends View {
     if (!model) return;
     this.stopListening();
     this.model = model;
-    this.initComponent();
+    this.initialize(this.opt);
     this._rendered && this.render();
   }
 

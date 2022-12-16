@@ -41,6 +41,7 @@
     "prettier": "^2.4.1",
     "sass": "^1.42.1",
     "sinon": "^7.5.0",
+    "terser-webpack-plugin": "^5.3.1",
     "vuepress": "^1.8.2",
     "whatwg-fetch": "^3.6.2"
   },
