@@ -90,7 +90,7 @@ Returns configuration object
 
 ### Parameters
 
-*   `prop` **[string][16]?** 
+*   `prop` **P?** 
 
 Returns **any** Returns the configuration object or the value of the specified property
 
@@ -100,12 +100,12 @@ Returns HTML built inside canvas
 
 ### Parameters
 
-*   `opts` **[Object][17]** Options (optional, default `{}`)
+*   `opts` **[Object][16]** Options (optional, default `{}`)
 
     *   `opts.component` **Component?** Return the HTML of a specific Component
-    *   `opts.cleanId` **[Boolean][18]** Remove unnecessary IDs (eg. those created automatically) (optional, default `false`)
+    *   `opts.cleanId` **[Boolean][17]** Remove unnecessary IDs (eg. those created automatically) (optional, default `false`)
 
-Returns **[string][16]** HTML string
+Returns **[string][18]** HTML string
 
 ## getCss
 
@@ -113,15 +113,15 @@ Returns CSS built inside canvas
 
 ### Parameters
 
-*   `opts` **[Object][17]** Options (optional, default `{}`)
+*   `opts` **[Object][16]** Options (optional, default `{}`)
 
     *   `opts.component` **Component?** Return the CSS of a specific Component
-    *   `opts.json` **[Boolean][18]** Return an array of CssRules instead of the CSS string (optional, default `false`)
-    *   `opts.avoidProtected` **[Boolean][18]** Don't include protected CSS (optional, default `false`)
-    *   `opts.onlyMatched` **[Boolean][18]** Return only rules matched by the passed component. (optional, default `false`)
-    *   `opts.keepUnusedStyles` **[Boolean][18]** Force keep all defined rules. Toggle on in case output looks different inside/outside of the editor. (optional, default `false`)
+    *   `opts.json` **[Boolean][17]** Return an array of CssRules instead of the CSS string (optional, default `false`)
+    *   `opts.avoidProtected` **[Boolean][17]** Don't include protected CSS (optional, default `false`)
+    *   `opts.onlyMatched` **[Boolean][17]** Return only rules matched by the passed component. (optional, default `false`)
+    *   `opts.keepUnusedStyles` **[Boolean][17]** Force keep all defined rules. Toggle on in case output looks different inside/outside of the editor. (optional, default `false`)
 
-Returns **([String][16] | [Array][19]\<CssRule>)** CSS string or array of CssRules
+Returns **([String][18] | [Array][19]\<CssRule>)** CSS string or array of CssRules
 
 ## getJs
 
@@ -129,11 +129,11 @@ Returns JS of all components
 
 ### Parameters
 
-*   `opts` **[Object][17]** Options (optional, default `{}`)
+*   `opts` **[Object][16]** Options (optional, default `{}`)
 
     *   `opts.component` **Component?** Get the JS of a specific component
 
-Returns **[String][16]** JS string
+Returns **[String][18]** JS string
 
 ## getComponents
 
@@ -153,8 +153,8 @@ Set components inside editor's canvas. This method overrides actual components
 
 ### Parameters
 
-*   `components` **([Array][19]<[Object][17]> | [Object][17] | [string][16])** HTML string or components model
-*   `opt` **[Object][17]** the options object to be used by the \[setComponents][em#setComponents][20] method (optional, default `{}`)
+*   `components` **([Array][19]<[Object][16]> | [Object][16] | [string][18])** HTML string or components model
+*   `opt` **[Object][16]** the options object to be used by the \[setComponents][em#setComponents][20] method (optional, default `{}`)
 
 ### Examples
 
@@ -176,10 +176,10 @@ Add components
 
 ### Parameters
 
-*   `components` **([Array][19]<[Object][17]> | [Object][17] | [string][16])** HTML string or components model
-*   `opts` **[Object][17]** Options
+*   `components` **([Array][19]<[Object][16]> | [Object][16] | [string][18])** HTML string or components model
+*   `opts` **[Object][16]** Options
 
-    *   `opts.avoidUpdateStyle` **[Boolean][18]** If the HTML string contains styles,
+    *   `opts.avoidUpdateStyle` **[Boolean][17]** If the HTML string contains styles,
         by default, they will be created and, if already exist, updated. When this option
         is true, styles already created will not be updated. (optional, default `false`)
 
@@ -201,7 +201,7 @@ Returns **[Array][19]\<Component>**
 
 Returns style in JSON format object
 
-Returns **[Object][17]** 
+Returns **[Object][16]** 
 
 ## setStyle
 
@@ -209,7 +209,7 @@ Set style inside editor's canvas. This method overrides actual style
 
 ### Parameters
 
-*   `style` **([Array][19]<[Object][17]> | [Object][17] | [string][16])** CSS string or style model
+*   `style` **([Array][19]<[Object][16]> | [Object][16] | [string][18])** CSS string or style model
 *   `opt`   (optional, default `{}`)
 
 ### Examples
@@ -231,7 +231,7 @@ Add styles to the editor
 
 ### Parameters
 
-*   `style` **([Array][19]<[Object][17]> | [Object][17] | [string][16])** CSS string or style model
+*   `style` **([Array][19]<[Object][16]> | [Object][16] | [string][18])** CSS string or style model
 *   `opts`   (optional, default `{}`)
 
 ### Examples
@@ -271,9 +271,9 @@ Select a component
 ### Parameters
 
 *   `el` **(Component | [HTMLElement][21])** Component to select
-*   `opts` **[Object][17]?** Options
+*   `opts` **[Object][16]?** Options
 
-    *   `opts.scroll` **[Boolean][18]?** Scroll canvas to the selected element
+    *   `opts.scroll` **[Boolean][17]?** Scroll canvas to the selected element
 
 ### Examples
 
@@ -356,7 +356,7 @@ change the canvas to the proper width
 
 ### Parameters
 
-*   `name` **[string][16]** Name of the device
+*   `name` **[string][18]** Name of the device
 
 ### Examples
 
@@ -378,7 +378,7 @@ console.log(device);
 // 'Tablet'
 ```
 
-Returns **[string][16]** Device name
+Returns **[string][18]** Device name
 
 ## runCommand
 
@@ -386,8 +386,8 @@ Execute command
 
 ### Parameters
 
-*   `id` **[string][16]** Command ID
-*   `options` **[Object][17]** Custom options (optional, default `{}`)
+*   `id` **[string][18]** Command ID
+*   `options` **[Object][16]** Custom options (optional, default `{}`)
 
 ### Examples
 
@@ -403,8 +403,8 @@ Stop the command if stop method was provided
 
 ### Parameters
 
-*   `id` **[string][16]** Command ID
-*   `options` **[Object][17]** Custom options (optional, default `{}`)
+*   `id` **[string][18]** Command ID
+*   `options` **[Object][16]** Custom options (optional, default `{}`)
 
 ### Examples
 
@@ -421,7 +421,7 @@ This will reset the counter of changes (`editor.getDirtyCount()`).
 
 ### Parameters
 
-*   `options` **[Object][17]?** Storage options.
+*   `options` **[Object][16]?** Storage options.
 
 ### Examples
 
@@ -429,7 +429,7 @@ This will reset the counter of changes (`editor.getDirtyCount()`).
 const storedData = await editor.store();
 ```
 
-Returns **[Object][17]** Stored data.
+Returns **[Object][16]** Stored data.
 
 ## load
 
@@ -437,7 +437,7 @@ Load data from the current storage.
 
 ### Parameters
 
-*   `options` **[Object][17]?** Storage options.
+*   `options` **[Object][16]?** Storage options.
 
 ### Examples
 
@@ -445,7 +445,7 @@ Load data from the current storage.
 const data = await editor.load();
 ```
 
-Returns **[Object][17]** Loaded data.
+Returns **[Object][16]** Loaded data.
 
 ## getProjectData
 
@@ -458,7 +458,7 @@ console.log(editor.getProjectData());
 // { pages: [...], styles: [...], ... }
 ```
 
-Returns **[Object][17]** 
+Returns **[Object][16]** 
 
 ## loadProjectData
 
@@ -466,7 +466,7 @@ Load data from the JSON project
 
 ### Parameters
 
-*   `data` **[Object][17]** Project to load
+*   `data` **[Object][16]** Project to load
 
 ### Examples
 
@@ -503,9 +503,9 @@ refresh you'll get misleading position of tools
 ### Parameters
 
 *   `opts` **any?** 
-*   `options` **[Object][17]?** Options
+*   `options` **[Object][16]?** Options
 
-    *   `options.tools` **[Boolean][18]** Update the position of tools (eg. rich text editor, component highlighter, etc.) (optional, default `false`)
+    *   `options.tools` **[Boolean][17]** Update the position of tools (eg. rich text editor, component highlighter, etc.) (optional, default `false`)
 
 ## setCustomRte
 
@@ -513,7 +513,7 @@ Replace the built-in Rich Text Editor with a custom one.
 
 ### Parameters
 
-*   `obj` **[Object][17]** Custom RTE Interface
+*   `obj` **[Object][16]** Custom RTE Interface
 
 ### Examples
 
@@ -579,7 +579,7 @@ To get more about this feature read: [https://github.com/artf/grapesjs/issues/19
 
 ### Parameters
 
-*   `value` **[String][16]** Drag mode, options: 'absolute' | 'translate'
+*   `value` **[String][18]** Drag mode, options: 'absolute' | 'translate'
 
 Returns **this** 
 
@@ -590,10 +590,10 @@ Trigger event log message
 ### Parameters
 
 *   `msg` **any** Message to log
-*   `opts` **[Object][17]** Custom options (optional, default `{}`)
+*   `opts` **[Object][16]** Custom options (optional, default `{}`)
 
-    *   `opts.ns` **[String][16]** Namespace of the log (eg. to use in plugins) (optional, default `''`)
-    *   `opts.level` **[String][16]** Level of the log, `debug`, `info`, `warning`, `error` (optional, default `'debug'`)
+    *   `opts.ns` **[String][18]** Namespace of the log (eg. to use in plugins) (optional, default `''`)
+    *   `opts.level` **[String][18]** Level of the log, `debug`, `info`, `warning`, `error` (optional, default `'debug'`)
 
 ### Examples
 
@@ -615,11 +615,11 @@ Translate label
 ### Parameters
 
 *   `args` **...[Array][19]\<any>** 
-*   `key` **[String][16]** Label to translate
-*   `opts` **[Object][17]?** Options for the translation
+*   `key` **[String][18]** Label to translate
+*   `opts` **[Object][16]?** Options for the translation
 
-    *   `opts.params` **[Object][17]?** Params for the translation
-    *   `opts.noWarn` **[Boolean][18]?** Avoid warnings in case of missing resources
+    *   `opts.params` **[Object][16]?** Params for the translation
+    *   `opts.noWarn` **[Boolean][17]?** Avoid warnings in case of missing resources
 
 ### Examples
 
@@ -631,7 +631,7 @@ editor.t('msg2', { params: { test: 'hello' } });
 editor.t('msg2', { params: { test: 'hello' } l: 'it' });
 ```
 
-Returns **[String][16]** 
+Returns **[String][18]** 
 
 ## on
 
@@ -639,7 +639,7 @@ Attach event
 
 ### Parameters
 
-*   `event` **[string][16]** Event name
+*   `event` **[string][18]** Event name
 *   `callback` **[Function][23]** Callback function
 
 Returns **this** 
@@ -650,7 +650,7 @@ Attach event and detach it after the first run
 
 ### Parameters
 
-*   `event` **[string][16]** Event name
+*   `event` **[string][18]** Event name
 *   `callback` **[Function][23]** Callback function
 
 Returns **this** 
@@ -661,7 +661,7 @@ Detach event
 
 ### Parameters
 
-*   `event` **[string][16]** Event name
+*   `event` **[string][18]** Event name
 *   `callback` **[Function][23]** Callback function
 
 Returns **this** 
@@ -672,9 +672,9 @@ Trigger event
 
 ### Parameters
 
-*   `eventName` **[string][16]** 
+*   `eventName` **[string][18]** 
 *   `args` **...[Array][19]\<any>** 
-*   `event` **[string][16]** Event to trigger
+*   `event` **[string][18]** Event to trigger
 
 Returns **this** 
 
@@ -711,8 +711,8 @@ Print safe HTML by using ES6 tagged template strings.
 
 ### Parameters
 
-*   `literals` **[Array][19]<[String][16]>** 
-*   `substs` **[Array][19]<[String][16]>** 
+*   `literals` **[Array][19]<[String][18]>** 
+*   `substs` **[Array][19]<[String][18]>** 
 
 ### Examples
 
@@ -723,7 +723,7 @@ const safeStr = '<b>Hello</b>';
 const strHtml = editor.html`Escaped ${unsafeStr} unescaped $${safeStr}`;
 ```
 
-Returns **[String][16]** 
+Returns **[String][18]** 
 
 [1]: https://github.com/artf/grapesjs/blob/master/src/editor/config/config.ts
 
@@ -755,11 +755,11 @@ Returns **[String][16]**
 
 [15]: /api/pages.html
 
-[16]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[16]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[17]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[17]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
 
-[18]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[18]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
 [19]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 

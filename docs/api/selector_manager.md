@@ -207,6 +207,19 @@ console.log(selected.map(s => s.toString()))
 
 Returns **[Array][20]<[Selector]>** 
 
+## getSelectedAll
+
+Get selected selectors.
+
+### Examples
+
+```javascript
+const selected = selectorManager.getSelectedAll();
+console.log(selected.map(s => s.toString()))
+```
+
+Returns **[Array][20]<[Selector]>** 
+
 ## addSelected
 
 Add new selector to all selected components.
