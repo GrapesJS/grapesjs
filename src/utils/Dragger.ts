@@ -398,7 +398,7 @@ export default class Dragger {
     const { doc } = this.opts;
     el = el || this.el;
 
-    if (!this.docs) {
+    if (!this.docs.length) {
       const docs = [document];
       el && docs.push(el.ownerDocument);
       doc && docs.push(doc);
