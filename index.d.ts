@@ -1630,7 +1630,7 @@ declare namespace grapesjs {
      * });
      * @param id - Block ID
      */
-    add(id: string, block: BlockOptions): any;
+    add(id: string, block: BlockOptions, opts?: Record<string, any>): any;
     /**
      * Get the block by id.
      * @example
@@ -1660,7 +1660,7 @@ declare namespace grapesjs {
      * const block = blockManager.get('BLOCK_ID');
      * blockManager.remove(block);
      */
-    remove(block: object | string): any;
+    remove(block: object | string, opts?: Record<string, any>): any;
     /**
      * Get all available categories.
      * It's possible to add categories only within blocks via 'add()' method
