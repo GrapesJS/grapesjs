@@ -235,6 +235,7 @@ const getBoundingRect = (el: HTMLElement, win?: Window): BoundingRect => {
 };
 
 export default class Resizer {
+  defOpts: ResizerOptions;
   opts: ResizerOptions;
   container?: HTMLElement;
   handlers?: Handlers;
@@ -263,7 +264,7 @@ export default class Resizer {
    * @param  {Object} options
    */
   constructor(opts: ResizerOptions = {}) {
-    this.opts = {
+    this.defOpts = {
       ratioDefault: false,
       onUpdateContainer: () => {},
       step: 1,
@@ -289,6 +290,7 @@ export default class Resizer {
       bc: true,
       br: true,
     };
+    this.opts = { ...this.defOpts };
     this.setOptions(opts);
     bindAll(this, 'handleKeyDown', 'handleMouseDown', 'move', 'stop');
   }
@@ -305,9 +307,9 @@ export default class Resizer {
    * Setup options
    * @param {Object} options
    */
-  setOptions(options: Partial<ResizerOptions> = {}) {
+  setOptions(options: Partial<ResizerOptions> = {}, reset?: boolean) {
     this.opts = {
-      ...this.opts,
+      ...(reset ? this.defOpts : this.opts),
       ...options,
     };
     this.setup();

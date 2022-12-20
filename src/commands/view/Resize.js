@@ -18,7 +18,7 @@ export default {
       canvasResizer = this.canvasResizer;
     }
 
-    canvasResizer.setOptions(options);
+    canvasResizer.setOptions(options, true);
     canvasResizer.blur();
     canvasResizer.focus(opt.el);
     return canvasResizer;
