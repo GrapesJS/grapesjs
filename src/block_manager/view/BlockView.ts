@@ -39,7 +39,7 @@ export default class BlockView extends View<Block> {
   }
 
   __getModule() {
-    return this.em.get('BlockManager');
+    return this.em.Blocks;
   }
 
   handleClick(ev: Event) {
@@ -98,6 +98,7 @@ export default class BlockView extends View<Block> {
     if (e.button !== 0 || !config.getSorter || this.el.draggable || disable) return;
     em.refreshCanvas();
     const sorter = config.getSorter();
+    sorter.__currentBlock = model;
     sorter.setDragHelper(this.el, e);
     sorter.setDropContent(this.model.get('content'));
     sorter.startSort(this.el);

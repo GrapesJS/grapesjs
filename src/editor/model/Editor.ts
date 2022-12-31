@@ -14,6 +14,7 @@ import ComponentManager from '../../dom_components';
 import CssComposer from '../../css_composer';
 import { EditorConfig, EditorConfigKeys } from '../config/config';
 import Component from '../../dom_components/model/Component';
+import BlockManager from '../../block_manager';
 
 //@ts-ignore
 Backbone.$ = $;
@@ -119,6 +120,10 @@ export default class EditorModel extends Model {
 
   get Css(): CssComposer {
     return this.get('CssComposer');
+  }
+
+  get Blocks(): BlockManager {
+    return this.get('BlockManager');
   }
 
   constructor(conf: EditorConfig = {}) {

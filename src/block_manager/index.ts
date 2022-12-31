@@ -53,6 +53,7 @@ import Categories from './model/Categories';
 import BlocksView from './view/BlocksView';
 import { ItemManagerModule } from '../abstract/Module';
 import EditorModel from '../editor/model/Editor';
+import Component from '../dom_components/model/Component';
 
 export const evAll = 'block';
 export const evPfx = `${evAll}:`;
@@ -141,10 +142,10 @@ export default class BlockManager extends ItemManagerModule<BlockManagerConfig, 
     [em, blocks].map(i => i.trigger(events.drag, block, ev));
   }
 
-  __endDrag() {
+  __endDrag(opts: { component?: Component } = {}) {
     const { em, events, blocks } = this;
     const block = this._dragBlock;
-    const cmp = em.get('dragResult');
+    const cmp = opts.component || em.get('dragResult');
     delete this._dragBlock;
 
     if (cmp && block) {
@@ -169,7 +170,10 @@ export default class BlockManager extends ItemManagerModule<BlockManagerConfig, 
     }
 
     em.set({ dragResult: null, dragContent: null });
-    [em, blocks].map(i => i.trigger(events.dragEnd, cmp, block));
+
+    if (block) {
+      [em, blocks].map(i => i.trigger(events.dragEnd, cmp, block));
+    }
   }
 
   __getFrameViews() {

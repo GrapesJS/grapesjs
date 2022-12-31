@@ -1,5 +1,6 @@
 import { isString, isObject, bindAll } from 'underscore';
 import { View } from '../../common';
+import Component from '../../dom_components/model/Component';
 import EditorModel from '../../editor/model/Editor';
 import Block from '../model/Block';
 import Categories from '../model/Categories';
@@ -48,6 +49,10 @@ export default class BlocksView extends View {
     }
   }
 
+  __getModule() {
+    return this.em.Blocks;
+  }
+
   updateConfig(opts = {}) {
     this.config = {
       ...this.config,
@@ -88,37 +93,20 @@ export default class BlocksView extends View {
     return this.sorter;
   }
 
-  /**
-   * Callback when block is on drag
-   * @private
-   */
-  onDrag(e: Event) {
+  onDrag(ev: Event) {
     this.em.stopDefault();
-    this.em.trigger('block:drag:start', e);
+    this.__getModule().__startDrag(this.sorter.__currentBlock, ev);
   }
 
-  onMove(e: Event) {
-    this.em.trigger('block:drag:move', e);
+  onMove(ev: Event) {
+    this.__getModule().__drag(ev);
+    this.em.trigger('block:drag:move', ev); // old event
   }
 
-  /**
-   * Callback when block is dropped
-   * @private
-   */
-  onDrop(model: Block) {
-    const { em } = this;
-    em.runDefault();
-
-    if (model && model.get) {
-      const oldActive = 'activeOnRender';
-
-      if (model.get(oldActive)) {
-        model.trigger('active');
-        model.unset(oldActive);
-      }
-
-      em.trigger('block:drag:stop', model);
-    }
+  onDrop(component?: Component) {
+    this.em.runDefault();
+    this.__getModule().__endDrag({ component });
+    delete this.sorter.__currentBlock;
   }
 
   /**
