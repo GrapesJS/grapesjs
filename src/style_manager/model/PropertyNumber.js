@@ -106,11 +106,11 @@ export default class PropertyNumber extends Property {
   }
 
   getFullValue() {
-    let value = this.get('value');
-    let unit = this.get('unit');
-    value = !isUndefined(value) ? value : '';
-    unit = !isUndefined(unit) && value ? unit : '';
-    value = `${value}${unit}`;
-    return Property.prototype.getFullValue.apply(this, [value]);
+    const valueProp = this.get('value');
+    const unitProp = this.get('unit');
+    const value = !isUndefined(valueProp) ? `${valueProp}` : '';
+    const unit = !isUndefined(unitProp) && value ? unitProp : '';
+    const result = `${value}${unit}`;
+    return Property.prototype.getFullValue.apply(this, [result]);
   }
 }
