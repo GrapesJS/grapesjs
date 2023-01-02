@@ -99,6 +99,9 @@ import { ItemManagerModule } from '../abstract/Module';
 import EditorModel from '../editor/model/Editor';
 import { Model } from 'backbone';
 
+// TODO update once components are migrated to TS
+type ComponentDefinition = Record<string, any>;
+
 export default class ComponentManager extends ItemManagerModule {
   componentTypes = [
     {
@@ -371,7 +374,7 @@ export default class ComponentManager extends ItemManagerModule {
    *   attributes: { title: 'here' }
    * });
    */
-  addComponent(component: Component, opt = {}) {
+  addComponent(component: Component | string | ComponentDefinition, opt = {}) {
     return this.getComponents().add(component, opt);
   }
 

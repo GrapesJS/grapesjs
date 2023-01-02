@@ -1,12 +1,13 @@
 import DomComponents from '../../../src/dom_components';
 import Components from '../../../src/dom_components/model/Components';
+import EditorModel from '../../../src/editor/model/Editor';
 import Editor from '../../../src/editor/model/Editor';
 import utils from './../../test_utils.js';
 
 describe('DOM Components', () => {
   describe('Main', () => {
-    var em;
-    var obj;
+    var em: EditorModel;
+    var obj: DomComponents;
     var config;
     var storagMock = utils.storageMock();
     var editorModel = {
@@ -56,8 +57,9 @@ describe('DOM Components', () => {
       obj = em.get('DomComponents');
       // obj = new DomComponents(em).init(config);
     });
+
     afterEach(() => {
-      obj = null;
+      em.destroy();
     });
 
     test('Object exists', () => {
@@ -71,7 +73,7 @@ describe('DOM Components', () => {
       const comps = new Components({}, {});
       obj.getWrapper().set('components', comps);
       obj.store();
-      expect(obj.load()).toEqual([{ test: 1 }]);
+      expect(obj.load({})).toEqual([{ test: 1 }]);
     });
 
     test('Load data with components as a string', () => {
@@ -130,6 +132,7 @@ describe('DOM Components', () => {
       </style>`);
       expect(em.getHtml({ component })).toEqual(`<div id="${id}">Text</div>`);
       expect(obj.getComponents().length).toEqual(1);
+      // @ts-ignore
       obj.getComponents().first().addStyle({ margin: '10px' });
       expect(cc.getAll().length).toEqual(1);
       expect(cc.getIdRule(id).getStyle()).toEqual({
@@ -172,6 +175,7 @@ describe('DOM Components', () => {
       obj.addComponent(`<div test-prop="${testProp}"></div>`);
       const comp = obj.getComponents().at(0);
       expect(comp.get('type')).toEqual(id);
+      // @ts-ignore
       expect(comp.getAttributes()['test-prop']).toEqual(testProp);
     });
 
@@ -245,6 +249,7 @@ describe('DOM Components', () => {
       <style>
         #${id} { background-color: red }
       </style>`);
+      // @ts-ignore
       obj.getComponents().first().addStyle({ margin: '10px' });
       const rule = cc.getAll().at(0);
       const css = `#${id}{background-color:red;margin:10px;color:red;padding:50px 100px;}`;
@@ -266,6 +271,12 @@ describe('DOM Components', () => {
         expect(rule.toCSS()).toEqual(css);
 
         done();
+      });
+    });
+
+    describe('Custom components with styles', () => {
+      beforeEach(() => {
+        em.Components;
       });
     });
   });
