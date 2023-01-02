@@ -258,7 +258,7 @@ declare namespace grapesjs {
     textViewCode?: string;
 
     /** Keep unused styles within the editor **/
-    keepUnusedStyles?: 0;
+    keepUnusedStyles?: boolean;
 
     layerManager?: LayerManagerConfig;
 
