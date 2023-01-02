@@ -274,7 +274,7 @@ describe('DOM Components', () => {
       });
     });
 
-    describe.only('Custom components with styles', () => {
+    describe('Custom components with styles', () => {
       const cmpId = 'cmp-with-style';
 
       beforeEach(() => {

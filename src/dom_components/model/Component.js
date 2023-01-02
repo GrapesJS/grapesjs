@@ -213,10 +213,10 @@ export default class Component extends StyleableModel {
 
     if (!opt.temporary) {
       // Add component styles
-      const cssc = em && em.get('CssComposer');
+      const cssc = em && em.Css;
       const { styles, type } = this.attributes;
       if (styles && cssc) {
-        cssc.addCollection(styles, {}, { group: `cmp:${type}` });
+        cssc.addCollection(styles, { avoidUpdateStyle: true }, { group: `cmp:${type}` });
       }
 
       this.__postAdd();

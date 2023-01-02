@@ -193,10 +193,11 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
    * @private
    */
   addCollection(data: string | CssRuleProperties[], opts: Record<string, any> = {}, props = {}) {
+    const { em } = this;
     const result: CssRule[] = [];
 
     if (isString(data)) {
-      data = this.em.get('Parser').parseCss(data);
+      data = em.Parser.parseCss(data);
     }
 
     const d = data instanceof Array ? data : [data];
@@ -205,13 +206,14 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
       const rule = (d[i] || {}) as CssRuleProperties;
       if (!rule.selectors) continue;
 
-      const sm = this.em?.get('SelectorManager');
+      const sm = em?.Selectors;
       if (!sm) console.warn('Selector Manager not found');
       const sl = rule.selectors;
       const sels = sl instanceof Array ? sl : [sl];
       const newSels = [];
 
       for (let j = 0, le = sels.length; j < le; j++) {
+        // @ts-ignore
         const selec = sm.add(sels[j]);
         newSels.push(selec);
       }
