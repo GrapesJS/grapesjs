@@ -1,6 +1,6 @@
-import DomComponents from 'dom_components';
-import Components from 'dom_components/model/Components';
-import Editor from 'editor/model/Editor';
+import DomComponents from '../../../src/dom_components';
+import Components from '../../../src/dom_components/model/Components';
+import Editor from '../../../src/editor/model/Editor';
 import utils from './../../test_utils.js';
 
 describe('DOM Components', () => {
@@ -46,7 +46,7 @@ describe('DOM Components', () => {
 
     beforeEach(() => {
       em = new Editor({
-        avoidInlineStyle: 1,
+        avoidInlineStyle: true,
       });
       em.loadOnStart();
       config = {
@@ -67,6 +67,7 @@ describe('DOM Components', () => {
     test.skip('Store and load data', () => {
       setSmConfig();
       setEm();
+      // @ts-ignore
       const comps = new Components({}, {});
       obj.getWrapper().set('components', comps);
       obj.store();
