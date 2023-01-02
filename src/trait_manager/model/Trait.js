@@ -12,7 +12,7 @@ import { Model } from '../../common';
  */
 export default class Trait extends Model {
   initialize() {
-    const { target, name, changeProp } = this.attributes;
+    const { target, name, changeProp, value: initValue } = this.attributes;
     !this.get('id') && this.set('id', name);
 
     if (target) {
@@ -20,6 +20,8 @@ export default class Trait extends Model {
       this.unset('target');
       const targetEvent = changeProp ? `change:${name}` : `change:attributes:${name}`;
       this.listenTo(target, targetEvent, this.targetUpdated);
+      const value = initValue || this.getValue();
+      !isUndefined(value) && this.set({ value }, { silent: true });
     }
   }
 
