@@ -307,13 +307,12 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
     const selector = sm.get(node.selectors);
     const { state, selectorsAdd } = node;
     const { atRuleType, atRuleParams } = opts;
-    return (
-      selector &&
-      this.get(selector, state, atRuleParams, {
-        selectorsAdd,
-        atRuleType,
-      })
-    );
+    return selector
+      ? this.get(selector, state, atRuleParams, {
+          selectorsAdd,
+          atRuleType,
+        })
+      : undefined;
   }
 
   /**

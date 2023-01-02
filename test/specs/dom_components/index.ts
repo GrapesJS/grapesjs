@@ -1,7 +1,7 @@
 import DomComponents from '../../../src/dom_components';
 import Components from '../../../src/dom_components/model/Components';
 import EditorModel from '../../../src/editor/model/Editor';
-import Editor from '../../../src/editor/model/Editor';
+import Editor from '../../../src/editor';
 import utils from './../../test_utils.js';
 
 describe('DOM Components', () => {
@@ -46,16 +46,16 @@ describe('DOM Components', () => {
     };
 
     beforeEach(() => {
-      em = new Editor({
+      const editor = new Editor({
         avoidInlineStyle: true,
       });
+      em = editor.getModel();
       em.loadOnStart();
       config = {
         em,
         storeWrapper: 1,
       };
-      obj = em.get('DomComponents');
-      // obj = new DomComponents(em).init(config);
+      obj = em.Components;
     });
 
     afterEach(() => {
@@ -274,9 +274,50 @@ describe('DOM Components', () => {
       });
     });
 
-    describe('Custom components with styles', () => {
+    describe.only('Custom components with styles', () => {
+      const cmpId = 'cmp-with-style';
+
       beforeEach(() => {
-        em.Components;
+        obj.addType(cmpId, {
+          model: {
+            defaults: {
+              attributes: { class: cmpId },
+              styles: `
+                .${cmpId} {
+                  color: red;
+                }
+              `,
+            },
+          },
+        });
+      });
+
+      test('Custom style properly added', () => {
+        const cmp = obj.addComponent({ type: cmpId });
+        expect(cmp.is(cmpId)).toBe(true);
+        const rule = em.Css.getRule(`.${cmpId}`);
+        expect(rule?.getStyle()).toEqual({ color: 'red' });
+      });
+
+      test('Clean custom style when the related component is removed', () => {
+        const cmp = obj.addComponent({ type: cmpId });
+        expect(obj.getComponents().length).toBe(1);
+        expect(em.Css.getAll().length).toBe(1);
+        cmp.remove();
+        expect(obj.getComponents().length).toBe(0);
+        expect(em.Css.getAll().length).toBe(0);
+      });
+
+      test('Custom style is not updated if already exists', () => {
+        obj.addComponent({ type: cmpId });
+        const rule = em.Css.getRule(`.${cmpId}`)!;
+        const newStyle = { color: 'blue', 'font-size': '20px' };
+        rule.addStyle(newStyle);
+        expect(rule.getStyle()).toEqual(newStyle);
+        obj.addComponent({ type: cmpId });
+        expect(obj.getComponents().length).toBe(2);
+        expect(em.Css.getAll().length).toBe(1);
+        expect(rule.getStyle()).toEqual(newStyle);
       });
     });
   });
