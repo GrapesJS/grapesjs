@@ -302,8 +302,10 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
    * });
    */
   getRule(selectors: any, opts: RuleOptions = {}) {
-    const sm = this.em.get('SelectorManager');
-    const node = this.em.get('Parser').parserCss.checkNode({ selectors })[0];
+    const { em } = this;
+    const sm = em.Selectors;
+    const node = em.Parser.parserCss.checkNode({ selectors })[0];
+    // @ts-ignore
     const selector = sm.get(node.selectors);
     const { state, selectorsAdd } = node;
     const { atRuleType, atRuleParams } = opts;
