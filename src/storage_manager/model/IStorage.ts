@@ -1,6 +1,10 @@
-export interface StorageOptions {}
+export interface StorageOptions {
+  [key: string]: any;
+}
 
-export interface ProjectData {}
+export interface ProjectData {
+  [key: string]: any;
+}
 
 export default interface IStorage<T extends StorageOptions = {}> {
   load: (options?: T) => Promise<ProjectData>;

@@ -1,63 +1,6 @@
 import Editor from '../../editor';
 import { LocalStorageConfig } from '../model/LocalStorage';
-
-type AnyObject = Record<string, any>;
-
-export interface RemoteStorageConfig {
-  /**
-   * Custom headers.
-   * @default {}
-   */
-  headers?: AnyObject;
-
-  /**
-   * Endpoint URL where to store data project.
-   */
-  urlStore?: string;
-
-  /**
-   * Endpoint URL where to load data project.
-   */
-  urlLoad?: string;
-
-  /**
-   * Use JSON contentType.
-   * @default true
-   */
-  contentTypeJson?: boolean;
-
-  /**
-   * Credentials option for the fetch API.
-   * @default 'include'
-   */
-  credentials?: RequestCredentials;
-
-  /**
-   * Pass custom options to fetch API (remote storage)
-   * You can pass a simple object: { someOption: 'someValue' }
-   * or a function which returns and object to add:
-   * @example
-   * fetchOptions: currentOpts => {
-   *  return currentOpts.method === 'POST' ?  { method: 'PATCH' } : {};
-   * },
-   */
-  fetchOptions?: string | ((opts: AnyObject) => object);
-
-  /**
-   * The remote storage sends the project data as a body of the request.
-   * You can use this method to update the body before the store call in order to align
-   * with your API requirements.
-   * @default data => data
-   */
-  onStore?: (data: AnyObject, editor: Editor) => AnyObject;
-
-  /**
-   * The remote storage loads the project data directly from the request response.
-   * You can use this method to properly extract the project data from the response.
-   * @default data => data
-   */
-  onLoad?: (data: AnyObject, editor: Editor) => AnyObject;
-}
+import { RemoteStorageConfig } from '../model/RemoteStorage';
 
 export interface StorageManagerConfig {
   /**
