@@ -70,7 +70,7 @@ const STORAGE_REMOTE = 'remote';
 export default class StorageManager extends Module<
   StorageManagerConfig & { name?: string; _disable?: boolean; currentStorage?: string }
 > {
-  storages: { [key: string]: IStorage } = {};
+  storages: Record<string, IStorage> = {};
 
   constructor(em: EditorModel) {
     super(em, 'StorageManager', defaults);
