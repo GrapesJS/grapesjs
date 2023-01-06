@@ -1,20 +1,7 @@
 import Editor from '../../editor';
+import { LocalStorageConfig } from '../model/LocalStorage';
 
 type AnyObject = Record<string, any>;
-
-export interface LocalStorageConfig {
-  /**
-   * Local key identifier of the project.
-   * @default 'gjsProject'
-   */
-  key?: string;
-
-  /**
-   * If enabled, checks if browser supports LocalStorage.
-   * @default true
-   */
-  checkLocal?: boolean;
-}
 
 export interface RemoteStorageConfig {
   /**
