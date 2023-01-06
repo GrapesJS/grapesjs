@@ -1,4 +1,5 @@
 import Editor from '../../editor';
+import { ProjectData } from '../model/IStorage';
 import { LocalStorageConfig } from '../model/LocalStorage';
 import { RemoteStorageConfig } from '../model/RemoteStorage';
 
@@ -58,13 +59,13 @@ export interface StorageManagerConfig {
    * This can be used to enrich the project data to store.
    * @default data => data
    */
-  onStore?: (data: any, editor: Editor) => any;
+  onStore?: (data: ProjectData, editor: Editor) => ProjectData;
 
   /**
    * Callback triggered after the load call (can be asynchronous).
    * @default data => data
    */
-  onLoad?: (data: any, editor: Editor) => any;
+  onLoad?: (data: ProjectData, editor: Editor) => ProjectData;
 
   /**
    * Default storage options.

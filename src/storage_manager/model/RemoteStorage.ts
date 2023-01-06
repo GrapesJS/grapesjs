@@ -2,7 +2,6 @@ import Editor from '../../editor';
 import { isUndefined, isFunction, isString } from 'underscore';
 import fetch from '../../utils/fetch';
 import IStorage, { ProjectData } from './IStorage';
-import { ModelFetchOptions } from 'backbone';
 
 type AnyObject = Record<string, any>;
 
@@ -44,7 +43,7 @@ export interface RemoteStorageConfig {
    *  return currentOpts.method === 'POST' ?  { method: 'PATCH' } : {};
    * },
    */
-  fetchOptions?: string | ((opts: AnyObject) => object);
+  fetchOptions?: string | ((opts: RequestInit) => RequestInit);
 
   /**
    * The remote storage sends the project data as a body of the request.
@@ -52,14 +51,14 @@ export interface RemoteStorageConfig {
    * with your API requirements.
    * @default data => data
    */
-  onStore?: (data: AnyObject, editor: Editor) => AnyObject;
+  onStore?: (data: ProjectData, editor: Editor) => ProjectData;
 
   /**
    * The remote storage loads the project data directly from the request response.
    * You can use this method to properly extract the project data from the response.
    * @default data => data
    */
-  onLoad?: (data: AnyObject, editor: Editor) => AnyObject;
+  onLoad?: (data: ProjectData, editor: Editor) => ProjectData;
 }
 
 export default class RemoteStorage implements IStorage<RemoteStorageConfig> {
@@ -112,7 +111,7 @@ export default class RemoteStorage implements IStorage<RemoteStorageConfig> {
       }
     }
 
-    const result = {
+    const result: RequestInit = {
       method: body ? 'POST' : 'GET',
       credentials: opts.credentials,
       headers,
