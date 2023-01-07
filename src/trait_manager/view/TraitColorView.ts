@@ -2,7 +2,9 @@ import TraitView from './TraitView';
 import InputColor from '../../domain_abstract/ui/InputColor';
 
 export default class TraitColorView extends TraitView {
-  templateInput = '';
+  templateInput() {
+    return '';
+  }
 
   /**
    * Returns input element
@@ -21,7 +23,7 @@ export default class TraitColorView extends TraitView {
       });
       const input = inputColor.render();
       input.setValue(value, { fromTarget: 1 });
-      this.input = input.el;
+      this.input = input.el as HTMLInputElement;
     }
 
     return this.input;
