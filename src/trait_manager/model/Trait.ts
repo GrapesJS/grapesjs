@@ -35,6 +35,8 @@ export interface TraitProperties {
   changeProp?: boolean;
 
   attributes?: Record<string, any>;
+  valueTrue?: string;
+  valueFalse?: string;
   min?: number;
   max?: number;
   unit?: string;
