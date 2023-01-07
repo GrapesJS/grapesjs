@@ -1,5 +1,48 @@
 import { isUndefined } from 'underscore';
-import { Model } from '../../common';
+import { Model, SetOptions } from '../../common';
+import Component from '../../dom_components/model/Component';
+import EditorModel from '../../editor/model/Editor';
+
+/** @private */
+export interface TraitProperties {
+  /**
+   * Trait type, defines how the trait should rendered.
+   * Possible values: `text` (default), `number`, `select`, `checkbox`, `color`, `button`
+   */
+  type: string;
+
+  /**
+   * The name of the trait used as a key for the attribute/property.
+   * By default, the name is used as attribute name or property in case `changeProp` in enabled.
+   */
+  name: string;
+
+  /**
+   * Trait id, eg. `my-trait-id`.
+   * If not specified, the `name` will be used as id.
+   */
+  id?: string;
+
+  /**
+   * The trait label to show for the rendered trait.
+   */
+  label?: string;
+
+  /**
+   * If `true` the trait value is applied on component
+   */
+  changeProp?: boolean;
+
+  min?: number;
+  max?: number;
+  unit?: string;
+  step?: number;
+  value?: any;
+  target?: Component;
+  default?: any;
+  placeholder?: string;
+  options?: Record<string, any>[];
+}
 
 /**
  * @typedef Trait
@@ -10,8 +53,27 @@ import { Model } from '../../common';
  * @property {Boolean} changeProp If `true` the trait value is applied on component
  *
  */
-export default class Trait extends Model {
-  initialize() {
+export default class Trait extends Model<TraitProperties> {
+  target!: Component;
+  em?: EditorModel;
+
+  defaults() {
+    return {
+      type: 'text',
+      label: '',
+      name: '',
+      unit: '',
+      step: 1,
+      value: '',
+      default: '',
+      placeholder: '',
+      changeProp: false,
+      options: [],
+    };
+  }
+
+  constructor(prop: TraitProperties) {
+    super(prop);
     const { target, name, changeProp, value: initValue } = this.attributes;
     !this.get('id') && this.set('id', name);
 
@@ -30,7 +92,7 @@ export default class Trait extends Model {
    * @returns {String}
    */
   getId() {
-    return this.get('id');
+    return this.get('id')!;
   }
 
   /**
@@ -38,7 +100,7 @@ export default class Trait extends Model {
    * @returns {String}
    */
   getType() {
-    return this.get('type');
+    return this.get('type')!;
   }
 
   /**
@@ -46,7 +108,7 @@ export default class Trait extends Model {
    * @returns {String}
    */
   getName() {
-    return this.get('name');
+    return this.get('name')!;
   }
 
   /**
@@ -55,7 +117,7 @@ export default class Trait extends Model {
    * @param {Boolean} [opts.locale=true] Use the locale string from i18n module.
    * @returns {String}
    */
-  getLabel(opts = {}) {
+  getLabel(opts: { locale?: boolean } = {}) {
     const { locale = true } = opts;
     const id = this.getId();
     const name = this.get('label') || this.getName();
@@ -78,8 +140,8 @@ export default class Trait extends Model {
    * @param {Object} [opts={}] Options.
    * @param {Boolean} [opts.partial] If `true` the update won't be considered complete (not stored in UndoManager).
    */
-  setValue(value, opts = {}) {
-    const valueOpts = {};
+  setValue(value: any, opts: { partial?: boolean } = {}) {
+    const valueOpts: { avoidStore?: boolean } = {};
 
     if (opts.partial) {
       valueOpts.avoidStore = true;
@@ -107,22 +169,23 @@ export default class Trait extends Model {
   }
 
   getTargetValue() {
-    const name = this.get('name');
+    const name = this.getName();
     const target = this.target;
     let value;
 
     if (this.get('changeProp')) {
       value = target.get(name);
     } else {
+      // @ts-ignore TODO update post component update
       value = target.getAttributes()[name];
     }
 
     return !isUndefined(value) ? value : '';
   }
 
-  setTargetValue(value, opts = {}) {
+  setTargetValue(value: any, opts: SetOptions = {}) {
     const target = this.target;
-    const name = this.get('name');
+    const name = this.getName();
     if (isUndefined(value)) return;
     let valueToSet = value;
 
@@ -139,7 +202,7 @@ export default class Trait extends Model {
     }
   }
 
-  setValueFromInput(value, final = 1, opts = {}) {
+  setValueFromInput(value: any, final = true, opts: SetOptions = {}) {
     const toSet = { value };
     this.set(toSet, { ...opts, avoidStore: 1 });
 
@@ -152,7 +215,7 @@ export default class Trait extends Model {
 
   getInitValue() {
     const target = this.target;
-    const name = this.get('name');
+    const name = this.getName();
     let value;
 
     if (target) {
@@ -163,19 +226,3 @@ export default class Trait extends Model {
     return value || this.get('value') || this.get('default');
   }
 }
-
-Trait.prototype.defaults = {
-  type: 'text',
-  label: '',
-  name: '',
-  min: '',
-  max: '',
-  unit: '',
-  step: 1,
-  value: '',
-  target: '',
-  default: '',
-  placeholder: '',
-  changeProp: 0,
-  options: [],
-};
