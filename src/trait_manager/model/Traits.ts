@@ -1,20 +1,26 @@
 import { isString, isArray } from 'underscore';
-import { Collection } from '../../common';
-import Trait from './Trait';
+import { AddOptions, Collection } from '../../common';
+import Component from '../../dom_components/model/Component';
+import EditorModel from '../../editor/model/Editor';
+import Trait, { TraitProperties } from './Trait';
 import TraitFactory from './TraitFactory';
 
-export default class Traits extends Collection {
-  initialize(coll, options = {}) {
+export default class Traits extends Collection<Trait> {
+  em: EditorModel;
+  target!: Component;
+
+  constructor(coll: TraitProperties[], options: { em: EditorModel }) {
+    super(coll);
     this.em = options.em;
     this.listenTo(this, 'add', this.handleAdd);
     this.listenTo(this, 'reset', this.handleReset);
   }
 
-  handleReset(coll, { previousModels = [] } = {}) {
+  handleReset(coll: TraitProperties[], { previousModels = [] }: { previousModels?: Trait[] } = {}) {
     previousModels.forEach(model => model.trigger('remove'));
   }
 
-  handleAdd(model) {
+  handleAdd(model: Trait) {
     model.em = this.em;
     const target = this.target;
 
@@ -23,11 +29,12 @@ export default class Traits extends Collection {
     }
   }
 
-  setTarget(target) {
+  setTarget(target: Component) {
     this.target = target;
   }
 
-  add(models, opt) {
+  // @ts-ignore
+  add(models: string | Trait | (string | Trait)[], opt: AddOptions) {
     const em = this.em;
 
     // Use TraitFactory if necessary
@@ -44,11 +51,11 @@ export default class Traits extends Collection {
         const str = models[i];
         const model = isString(str) ? tf.build(str)[0] : str;
         model.target = this.target;
-        models[i] = model;
+        models[i] = model as Trait;
       }
     }
 
-    return Collection.prototype.add.apply(this, [models, opt]);
+    return Collection.prototype.add.apply(this, [models as Trait[], opt]);
   }
 }
 
