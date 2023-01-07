@@ -12,7 +12,9 @@ import { PanelsConfig } from '../../panels/config/config';
 import { ParserConfig } from '../../parser/config/config';
 import { RichTextEditorConfig } from '../../rich_text_editor/config/config';
 import { SelectorManagerConfig } from '../../selector_manager/config/config';
+import { StorageManagerConfig } from '../../storage_manager/config/config';
 import { UndoManagerConfig } from '../../undo_manager/config';
+import { Plugin } from '../../plugin_manager';
 
 type AnyObject = Record<string, any>;
 
@@ -313,11 +315,10 @@ export interface EditorConfig {
    */
   canvas?: CanvasConfig;
 
-  // TODO
   /**
    * Configurations for Storage Manager.
    */
-  storageManager?: AnyObject | boolean;
+  storageManager?: StorageManagerConfig | boolean;
 
   /**
    * Configurations for Rich Text Editor.

@@ -1,15 +1,18 @@
-import StorageManager from 'storage_manager';
+import EditorModel from '../../../src/editor/model/Editor';
+import StorageManager from '../../../src/storage_manager';
 
 describe('Storage Manager', () => {
   describe('Main', () => {
-    var obj;
+    let obj: StorageManager;
+    let em: EditorModel;
 
     beforeEach(() => {
-      obj = new StorageManager().init();
+      em = new EditorModel();
+      obj = em.StorageManager;
     });
 
     afterEach(() => {
-      obj = null;
+      em.destroy();
     });
 
     test('Object exists', () => {
@@ -21,7 +24,7 @@ describe('Storage Manager', () => {
     });
 
     test('Change autosave', () => {
-      obj.setAutosave(0);
+      obj.setAutosave(false);
       expect(obj.isAutosave()).toEqual(false);
     });
 
@@ -35,8 +38,14 @@ describe('Storage Manager', () => {
     });
 
     test('Add and get new storage', () => {
-      obj.add('test', 'gen');
-      expect(obj.get('test')).toEqual('gen');
+      expect(obj.get('test')).toBe(undefined);
+      obj.add('test', {
+        async load() {
+          return {};
+        },
+        async store() {},
+      });
+      expect(obj.get('test')).toBeDefined();
     });
 
     test('LocalStorage is set as default', () => {
@@ -61,44 +70,46 @@ describe('Storage Manager', () => {
     });
 
     describe('With custom storage', () => {
-      var storeValue;
-      var storageId = 'testStorage';
-      var storage = {
-        store(data) {
-          storeValue = data;
-        },
-        load(keys) {
-          return storeValue;
-        },
-      };
+      let storeValue = {};
+      const storageId = 'testStorage';
 
       beforeEach(() => {
         storeValue = [];
-        obj = new StorageManager().init({
-          type: storageId,
+        em = new EditorModel({
+          storageManager: {
+            type: storageId,
+          },
         });
-        obj.add(storageId, storage);
+        obj = em.StorageManager;
+        obj.add(storageId, {
+          async store(data) {
+            storeValue = data;
+          },
+          async load() {
+            return storeValue;
+          },
+        });
       });
 
       afterEach(() => {
-        obj = null;
+        em.destroy();
       });
 
-      test('Store and load data', () => {
-        var data = {
+      test('Check custom storage is enabled', () => {
+        expect(obj.getCurrent()).toEqual(storageId);
+        expect(obj.getCurrentStorage()).toBeDefined();
+      });
+
+      test('Store and load data', async () => {
+        const data = {
           item: 'testData',
           item2: 'testData2',
         };
-        var data2 = {};
-        var id = obj.getConfig().id;
-        data2[id + 'item'] = 'testData';
-        data2[id + 'item2'] = 'testData2';
 
-        obj.store(data);
-        obj.load(['item', 'item2'], res => {
-          expect(storeValue).toEqual(data2);
-          expect(res).toEqual(data);
-        });
+        await obj.store(data);
+        expect(storeValue).toEqual(data);
+        const res = await obj.load();
+        expect(res).toEqual(data);
       });
     });
   });

@@ -233,7 +233,7 @@ export default class StorageManager extends Module<
     const st = this.getCurrentStorage();
     const opts = { ...this.getCurrentOptions(), ...options };
     const recoveryStorage = this.getRecoveryStorage();
-    let result: ProjectData = {};
+    let result: ProjectData | undefined;
 
     if (recoveryStorage) {
       const recoveryData = await this.__exec(recoveryStorage, this.getCurrentOptions(STORAGE_LOCAL));

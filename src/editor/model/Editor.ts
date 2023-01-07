@@ -17,6 +17,7 @@ import Component from '../../dom_components/model/Component';
 import BlockManager from '../../block_manager';
 import SelectorManager from '../../selector_manager';
 import ParserModule from '../../parser';
+import StorageManager from '../../storage_manager';
 
 //@ts-ignore
 Backbone.$ = $;
@@ -130,6 +131,10 @@ export default class EditorModel extends Model {
 
   get Selectors(): SelectorManager {
     return this.get('SelectorManager');
+  }
+
+  get StorageManager(): StorageManager {
+    return this.get('StorageManager');
   }
 
   get Parser(): ParserModule {
