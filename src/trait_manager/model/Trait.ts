@@ -1,6 +1,7 @@
 import { isUndefined } from 'underscore';
 import { Model, SetOptions } from '../../common';
 import Component from '../../dom_components/model/Component';
+import EditorModule from '../../editor';
 import EditorModel from '../../editor/model/Editor';
 import TraitView from '../view/TraitView';
 
@@ -45,7 +46,11 @@ export interface TraitProperties {
   target?: Component;
   default?: any;
   placeholder?: string;
+  command?: string | ((editor: EditorModule, trait: Trait) => any);
   options?: Record<string, any>[];
+  labelButton?: string;
+  text?: string;
+  full?: boolean;
 }
 
 /**

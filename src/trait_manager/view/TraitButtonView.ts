@@ -2,7 +2,9 @@ import { isString } from 'underscore';
 import TraitView from './TraitView';
 
 export default class TraitButtonView extends TraitView {
-  templateInput = '';
+  templateInput() {
+    return '';
+  }
 
   onChange() {
     this.handleClick();
@@ -23,7 +25,7 @@ export default class TraitButtonView extends TraitView {
 
   renderLabel() {
     if (this.model.get('label')) {
-      TraitView.prototype.renderLabel.apply(this, arguments);
+      TraitView.prototype.renderLabel.apply(this);
     }
   }
 
@@ -32,7 +34,7 @@ export default class TraitButtonView extends TraitView {
     const { labelButton, text, full } = model.props();
     const label = labelButton || text;
     const className = `${ppfx}btn`;
-    const input = `<button type="button" class="${className}-prim${
+    const input: any = `<button type="button" class="${className}-prim${
       full ? ` ${className}--full` : ''
     }">${label}</button>`;
     return input;
