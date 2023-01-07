@@ -1,10 +1,14 @@
 import DomainViews from '../../domain_abstract/view/DomainViews';
+import EditorModel from '../../editor/model/Editor';
 import TraitView from './TraitView';
 
 export default class TraitsView extends DomainViews {
   reuseView = true;
+  em: EditorModel;
+  pfx: string;
+  ppfx: string;
 
-  constructor(o = {}, itemsView) {
+  constructor(o: any = {}, itemsView: any) {
     super(o);
     this.itemsView = itemsView;
     const config = o.config || {};
@@ -32,4 +36,5 @@ export default class TraitsView extends DomainViews {
   }
 }
 
+// @ts-ignore
 TraitsView.prototype.itemView = TraitView;
