@@ -2,6 +2,7 @@ import { isUndefined } from 'underscore';
 import { Model, SetOptions } from '../../common';
 import Component from '../../dom_components/model/Component';
 import EditorModel from '../../editor/model/Editor';
+import TraitView from '../view/TraitView';
 
 /** @private */
 export interface TraitProperties {
@@ -26,13 +27,14 @@ export interface TraitProperties {
   /**
    * The trait label to show for the rendered trait.
    */
-  label?: string;
+  label?: string | false;
 
   /**
    * If `true` the trait value is applied on component
    */
   changeProp?: boolean;
 
+  attributes?: Record<string, any>;
   min?: number;
   max?: number;
   unit?: string;
@@ -56,6 +58,8 @@ export interface TraitProperties {
 export default class Trait extends Model<TraitProperties> {
   target!: Component;
   em?: EditorModel;
+  view?: TraitView;
+  el?: HTMLElement;
 
   defaults() {
     return {

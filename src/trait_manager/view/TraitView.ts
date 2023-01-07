@@ -1,30 +1,49 @@
 import Backbone from 'backbone';
 import { isUndefined, isString, isFunction } from 'underscore';
-import { capitalize } from 'utils/mixins';
+import { SetOptions, View } from '../../common';
+import { capitalize } from '../../utils/mixins';
+import Trait from '../model/Trait';
+import EditorModel from '../../editor/model/Editor';
+import Component from '../../dom_components/model/Component';
 
 const $ = Backbone.$;
 
-export default class TraitView extends Backbone.View {
-  events = {};
+export default class TraitView extends View<Trait> {
+  pfx: string;
+  ppfx: string;
+  config: any;
+  clsField: string;
+  elInput!: HTMLInputElement;
+  input?: HTMLInputElement;
+  $input?: JQuery<HTMLInputElement>;
+  eventCapture!: string[];
+  noLabel?: boolean;
+  em: EditorModel;
+  target: Component;
+  createLabel?: (data: { label: string; component: Component; trait: TraitView }) => string | HTMLElement;
+  createInput?: (data: ReturnType<TraitView['getClbOpts']>) => string | HTMLElement;
+
+  events: any = {};
 
   appendInput = true;
 
+  // @ts-ignore
   attributes() {
-    return this.model.get('attributes');
+    return this.model.get('attributes') || {};
   }
 
-  templateLabel() {
+  templateLabel(cmp?: Component) {
     const { ppfx } = this;
     const label = this.getLabel();
     return `<div class="${ppfx}label" title="${label}">${label}</div>`;
   }
 
-  templateInput() {
+  templateInput(data: ReturnType<TraitView['getClbOpts']>) {
     const { clsField } = this;
     return `<div class="${clsField}" data-input></div>`;
   }
 
-  constructor(o = {}) {
+  constructor(o: any = {}) {
     super(o);
     const { config = {} } = o;
     const { model, eventCapture } = this;
@@ -37,10 +56,11 @@ export default class TraitView extends Backbone.View {
     this.target = target;
     const { ppfx } = this;
     this.clsField = `${ppfx}field ${ppfx}field-${type}`;
-    [
+    const evToListen: [string, any][] = [
       ['change:value', this.onValueChange],
       ['remove', this.removeView],
-    ].forEach(([event, clb]) => {
+    ];
+    evToListen.forEach(([event, clb]) => {
       model.off(event, clb);
       this.listenTo(model, event, clb);
     });
@@ -68,15 +88,15 @@ export default class TraitView extends Backbone.View {
 
   init() {}
   removed() {}
-  onRender() {}
-  onUpdate() {}
-  onEvent() {}
+  onRender(props: ReturnType<TraitView['getClbOpts']>) {}
+  onUpdate(props: ReturnType<TraitView['getClbOpts']>) {}
+  onEvent(props: ReturnType<TraitView['getClbOpts']> & { event: Event }) {}
 
   /**
    * Fires when the input is changed
    * @private
    */
-  onChange(event) {
+  onChange(event: Event) {
     const el = this.getInputElem();
     if (el && !isUndefined(el.value)) {
       this.model.set('value', el.value);
@@ -91,7 +111,7 @@ export default class TraitView extends Backbone.View {
     return this.model.get('value');
   }
 
-  setInputValue(value) {
+  setInputValue(value: string) {
     const el = this.getInputElem();
     el && (el.value = value);
   }
@@ -100,7 +120,7 @@ export default class TraitView extends Backbone.View {
    * On change callback
    * @private
    */
-  onValueChange(model, value, opts = {}) {
+  onValueChange(model: Trait, value: string, opts: SetOptions & { fromTarget?: boolean } = {}) {
     if (opts.fromTarget) {
       this.setInputValue(model.get('value'));
       this.postUpdate();
@@ -117,7 +137,7 @@ export default class TraitView extends Backbone.View {
   renderLabel() {
     const { $el, target } = this;
     const label = this.getLabel();
-    let tpl = this.templateLabel(target);
+    let tpl: string | HTMLElement = this.templateLabel(target);
 
     if (this.createLabel) {
       tpl =
@@ -164,7 +184,7 @@ export default class TraitView extends Backbone.View {
       const min = md.get('min');
       const max = md.get('max');
       const value = this.getModelValue();
-      const input = $(`<input type="${type}">`);
+      const input: JQuery<HTMLInputElement> = $(`<input type="${type}">`);
       const i18nAttr = em.t(`traitManager.traits.attributes.${name}`) || {};
       input.attr({
         placeholder,
@@ -198,7 +218,7 @@ export default class TraitView extends Backbone.View {
     let value;
     const model = this.model;
     const target = this.target;
-    const name = model.get('name');
+    const name = model.getName();
 
     if (model.get('changeProp')) {
       value = target.get(name);
@@ -222,7 +242,7 @@ export default class TraitView extends Backbone.View {
     const { $el, appendInput, model } = this;
     const inputs = $el.find('[data-input]');
     const el = inputs[inputs.length - 1];
-    let tpl = model.el;
+    let tpl: HTMLElement | string | undefined = model.el;
 
     if (!tpl) {
       tpl = this.createInput ? this.createInput(this.getClbOpts()) : this.getInputEl();
@@ -230,10 +250,10 @@ export default class TraitView extends Backbone.View {
 
     if (isString(tpl)) {
       el.innerHTML = tpl;
-      this.elInput = el.firstChild;
+      this.elInput = el.firstChild as HTMLInputElement;
     } else {
-      appendInput ? el.appendChild(tpl) : el.insertBefore(tpl, el.firstChild);
-      this.elInput = tpl;
+      appendInput ? el.appendChild(tpl!) : el.insertBefore(tpl!, el.firstChild);
+      this.elInput = tpl as HTMLInputElement;
     }
 
     model.el = this.elInput;
@@ -245,7 +265,7 @@ export default class TraitView extends Backbone.View {
   }
 
   rerender() {
-    this.model.el = null;
+    delete this.model.el;
     this.render();
   }
 
@@ -258,7 +278,7 @@ export default class TraitView extends Backbone.View {
     const { type, id } = model.attributes;
     const hasLabel = this.hasLabel && this.hasLabel();
     const cls = `${pfx}trait`;
-    this.$input = null;
+    delete this.$input;
     let tmpl = `<div class="${cls} ${cls}--${type}">
       ${hasLabel ? `<div class="${ppfx}label-wrp" data-label></div>` : ''}
       <div class="${ppfx}field-wrp ${ppfx}field-wrp--${type}" data-input>
