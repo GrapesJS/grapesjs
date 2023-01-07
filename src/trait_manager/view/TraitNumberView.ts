@@ -3,6 +3,7 @@ import InputNumber from '../../domain_abstract/ui/InputNumber';
 import TraitView from './TraitView';
 
 export default class TraitNumberView extends TraitView {
+  $unit?: HTMLElement;
   getValueForTarget() {
     const { model } = this;
     const { value, unit } = model.attributes;
@@ -24,12 +25,13 @@ export default class TraitNumberView extends TraitView {
         model: model,
         ppfx,
       });
-      this.input = inputNumber.render();
-      this.$input = this.input.inputEl;
-      this.$unit = this.input.unitEl;
-      model.set('value', value, { fromTarget: 1 });
+      inputNumber.render();
+      this.$input = inputNumber.inputEl as JQuery<HTMLInputElement>;
+      this.$unit = inputNumber.unitEl as HTMLElement;
+      // @ts-ignore
+      model.set('value', value, { fromTarget: true });
       this.$input.val(value);
-      this.input = inputNumber.el;
+      this.input = inputNumber.el as HTMLInputElement;
     }
     return this.input;
   }
