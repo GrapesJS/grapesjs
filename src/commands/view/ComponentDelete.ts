@@ -1,8 +1,10 @@
 import { isArray } from 'underscore';
+import Component from '../../dom_components/model/Component';
+import { CustomCommand } from './CommandAbstract';
 
-export default {
+const command: CustomCommand<{ component?: Component }> = {
   run(ed, s, opts = {}) {
-    const toSelect = [];
+    const toSelect: Component[] = [];
     let components = opts.component || ed.getSelectedAll();
     components = isArray(components) ? [...components] : [components];
 
@@ -21,3 +23,5 @@ export default {
     return components;
   },
 };
+
+export default command;

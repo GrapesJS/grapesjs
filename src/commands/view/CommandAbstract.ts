@@ -3,7 +3,18 @@ import { Model } from '../../common';
 import Editor from '../../editor';
 import EditorModel from '../../editor/model/Editor';
 
-export default class CommandAbstract extends Model {
+interface ICommand<O extends AnyObject = any> {
+  run?: CommandAbstract<O>['run'];
+  stop?: CommandAbstract<O>['stop'];
+}
+
+type AnyObject = Record<string, any>;
+
+export type CustomCommand<O extends AnyObject = any, T extends AnyObject = {}> = ICommand<O> &
+  T &
+  ThisType<T & CommandAbstract<O>>;
+
+export default class CommandAbstract<O extends AnyObject = any> extends Model {
   config: any;
   em: EditorModel;
   pfx: string;
@@ -131,7 +142,7 @@ export default class CommandAbstract extends Model {
    * @param  {Object}  sender  Button sender
    * @private
    * */
-  run(em: Editor, sender: any, options: any) {}
+  run(em: Editor, sender: any, options: O) {}
 
   /**
    * Method that stop command
@@ -139,5 +150,5 @@ export default class CommandAbstract extends Model {
    * @param  {Object}  sender  Button sender
    * @private
    * */
-  stop(em: Editor, sender: any, options: any) {}
+  stop(em: Editor, sender: any, options: O) {}
 }
