@@ -6,6 +6,7 @@ import EditorModel from '../../editor/model/Editor';
 interface ICommand<O extends AnyObject = any> {
   run?: CommandAbstract<O>['run'];
   stop?: CommandAbstract<O>['stop'];
+  [key: string]: unknown;
 }
 
 type AnyObject = Record<string, any>;
@@ -13,6 +14,10 @@ type AnyObject = Record<string, any>;
 export type CustomCommand<O extends AnyObject = any, T extends AnyObject = {}> = ICommand<O> &
   T &
   ThisType<T & CommandAbstract<O>>;
+
+export function defineCommand<O extends AnyObject = any, T extends AnyObject = {}>(def: CustomCommand<O, T>) {
+  return def;
+}
 
 export default class CommandAbstract<O extends AnyObject = any> extends Model {
   config: any;
