@@ -1,8 +1,10 @@
 import { isFunction } from 'underscore';
+import Asset from '../../asset_manager/model/Asset';
 import { createEl } from '../../utils/dom';
+import { CustomCommand } from './CommandAbstract';
 
 export default {
-  open(content) {
+  open(content: string) {
     const { editor, title, config, am } = this;
     const { custom } = config;
     if (isFunction(custom.open)) {
@@ -47,7 +49,7 @@ export default {
       am.__trgCustom();
     } else {
       if (!this.rendered || types) {
-        let assets = am.getAll().filter(i => i);
+        let assets: Asset[] = am.getAll().filter((i: Asset) => i);
 
         if (types && types.length) {
           assets = assets.filter(a => types.indexOf(a.get('type')) !== -1);
@@ -71,4 +73,4 @@ export default {
     this.editor = editor;
     this.close(this.rendered);
   },
-};
+} as CustomCommand<any, { [k: string]: any }>;
