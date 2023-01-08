@@ -1,4 +1,7 @@
 import { bindAll } from 'underscore';
+import Frame from '../../canvas/model/Frame';
+import Editor from '../../editor';
+import { CustomCommand } from './CommandAbstract';
 
 export default {
   init() {
@@ -13,7 +16,7 @@ export default {
     this.toggleVis(ed, 0);
   },
 
-  toggleVis(ed, active = 1) {
+  toggleVis(ed: Editor, active = 1) {
     if (!ed.Commands.isActive('preview')) {
       const cv = ed.Canvas;
       const mth = active ? 'on' : 'off';
@@ -22,12 +25,17 @@ export default {
     }
   },
 
-  _onFramesChange(m, frames) {
+  _onFramesChange(m: any, frames: Frame[]) {
     frames.forEach(frame => frame.once('loaded', () => this._upFrame(frame, true)));
   },
 
-  _upFrame(frame, active) {
+  _upFrame(frame: Frame, active: boolean) {
     const method = active ? 'add' : 'remove';
-    frame.view.getBody().classList[method](`${this.ppfx}dashed`);
+    frame.view?.getBody().classList[method](`${this.ppfx}dashed`);
   },
-};
+} as CustomCommand<
+  {},
+  {
+    [key: string]: any;
+  }
+>;
