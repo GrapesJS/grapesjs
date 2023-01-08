@@ -1,7 +1,10 @@
+import Component from '../../dom_components/model/Component';
+import { CustomCommand } from './CommandAbstract';
+
 export default {
   run(ed) {
     if (!ed.Canvas.hasFocus()) return;
-    const toSelect = [];
+    const toSelect: Component[] = [];
 
     ed.getSelectedAll().forEach(cmp => {
       const parent = cmp.parent();
@@ -10,7 +13,7 @@ export default {
       const len = parent.components().length;
       let incr = 0;
       let at = 0;
-      let next;
+      let next: any;
 
       // Get the next selectable component
       do {
@@ -24,4 +27,4 @@ export default {
 
     toSelect.length && ed.select(toSelect);
   },
-};
+} as CustomCommand;
