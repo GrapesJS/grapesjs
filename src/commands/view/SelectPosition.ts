@@ -1,4 +1,5 @@
 import Backbone from 'backbone';
+import { CustomCommand } from './CommandAbstract';
 const $ = Backbone.$;
 
 export default {
@@ -7,7 +8,7 @@ export default {
    * @param {HTMLElement} trg
    * @private
    * */
-  startSelectPosition(trg, doc, opts = {}) {
+  startSelectPosition(trg: HTMLElement, doc: Document, opts: any = {}) {
     this.isPointed = false;
     var utils = this.em.get('Utils');
     const container = trg.ownerDocument.body;
@@ -85,7 +86,7 @@ export default {
    * @return {Boolean}
    * @private
    * */
-  nearFloat(index, method, dims) {
+  nearFloat(index: number, method: string, dims: any[]) {
     var i = index || 0;
     var m = method || 'before';
     var len = dims.length;
@@ -104,4 +105,4 @@ export default {
     this.$wrapper.css('cursor', '');
     this.$wrapper.unbind();
   },
-};
+} as CustomCommand<{}, { [k: string]: any }>;
