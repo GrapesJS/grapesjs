@@ -1,8 +1,9 @@
 import Backbone from 'backbone';
+import { CustomCommand } from './CommandAbstract';
 const $ = Backbone.$;
 
 export default {
-  run(editor, sender, opts = {}) {
+  run(editor, sender) {
     sender && sender.set && sender.set('active', 0);
     const config = editor.getConfig();
     const modal = editor.Modal;
@@ -25,7 +26,7 @@ export default {
         content: this.$editors,
       })
       .getModel()
-      .once('change:open', () => editor.stopCommand(this.id));
+      .once('change:open', () => editor.stopCommand(`${this.id}`));
     this.htmlEditor.setContent(editor.getHtml());
     this.cssEditor.setContent(editor.getCss());
   },
@@ -35,7 +36,7 @@ export default {
     modal && modal.close();
   },
 
-  buildEditor(codeName, theme, label) {
+  buildEditor(codeName: string, theme: string, label: string) {
     const input = document.createElement('textarea');
     !this.codeMirror && (this.codeMirror = this.cm.getViewer('CodeMirror'));
 
@@ -55,4 +56,4 @@ export default {
 
     return { el, $el };
   },
-};
+} as CustomCommand<{}, { [k: string]: any }>;

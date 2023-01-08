@@ -215,7 +215,7 @@ export default class EditorModule implements IBaseModule<EditorConfig> {
    * @param {Boolean} [opts.cleanId=false] Remove unnecessary IDs (eg. those created automatically)
    * @returns {string} HTML string
    */
-  getHtml(opts: any) {
+  getHtml(opts?: any) {
     return this.em.getHtml(opts);
   }
 
@@ -229,7 +229,7 @@ export default class EditorModule implements IBaseModule<EditorConfig> {
    * @param {Boolean} [opts.keepUnusedStyles=false] Force keep all defined rules. Toggle on in case output looks different inside/outside of the editor.
    * @returns {String|Array<CssRule>} CSS string or array of CssRules
    */
-  getCss(opts: any) {
+  getCss(opts?: any) {
     return this.em.getCss(opts);
   }
 
