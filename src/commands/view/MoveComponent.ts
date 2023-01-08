@@ -3,11 +3,13 @@ import Backbone from 'backbone';
 import { on, off } from '../../utils/mixins';
 import SelectComponent from './SelectComponent';
 import SelectPosition from './SelectPosition';
+import { CustomCommand } from './CommandAbstract';
+import Component from '../../dom_components/model/Component';
 
 const $ = Backbone.$;
 
 export default extend({}, SelectPosition, SelectComponent, {
-  init(o) {
+  init(o: any) {
     SelectComponent.init.apply(this, arguments);
     bindAll(this, 'initSorter', 'rollback', 'onEndMove');
     this.opt = o;
@@ -16,7 +18,7 @@ export default extend({}, SelectPosition, SelectComponent, {
     this.noSelClass = this.ppfx + 'no-select';
   },
 
-  enable(...args) {
+  enable(...args: any) {
     SelectComponent.enable.apply(this, args);
     this.getBadgeEl().addClass(this.badgeClass);
     this.getHighlighterEl().addClass(this.hoverClass);
@@ -39,7 +41,7 @@ export default extend({}, SelectPosition, SelectComponent, {
    * @param  {Event} e
    * @private
    * */
-  initSorter(e) {
+  initSorter(e: any) {
     var el = $(e.target).data('model');
     var drag = el.get('draggable');
     if (!drag) return;
@@ -59,11 +61,12 @@ export default extend({}, SelectPosition, SelectComponent, {
    * @param  {Object} model
    * @private
    */
-  initSorterFromModel(model) {
+  initSorterFromModel(model: Component) {
     var drag = model.get('draggable');
     if (!drag) return;
     // Avoid badge showing on move
     this.cacheEl = null;
+    // @ts-ignore
     var el = model.view.el;
     this.startSelectPosition(el, this.frameEl.contentDocument);
     this.sorter.draggable = drag;
@@ -86,7 +89,7 @@ export default extend({}, SelectPosition, SelectComponent, {
    * @param  {Object} model
    * @private
    */
-  initSorterFromModels(models) {
+  initSorterFromModels(models: Component[]) {
     // TODO: if one only check for `draggable`
     // Avoid badge showing on move
     this.cacheEl = null;
@@ -122,7 +125,7 @@ export default extend({}, SelectPosition, SelectComponent, {
    * @param {Object} Selected element
    * @private
    * */
-  onSelect(e, el) {},
+  onSelect(e: any, el: any) {},
 
   /**
    * Used to bring the previous situation before start moving the component
@@ -130,7 +133,7 @@ export default extend({}, SelectPosition, SelectComponent, {
    * @param {Boolean} Indicates if rollback in anycase
    * @private
    * */
-  rollback(e, force) {
+  rollback(e: any, force: boolean) {
     var key = e.which || e.keyCode;
     if (key == 27 || force) {
       this.sorter.moved = false;
@@ -160,10 +163,11 @@ export default extend({}, SelectPosition, SelectComponent, {
   },
 
   stop(...args) {
+    // @ts-ignore
     SelectComponent.stop.apply(this, args);
     this.getBadgeEl().removeClass(this.badgeClass);
     this.getHighlighterEl().removeClass(this.hoverClass);
     var wp = this.$wrapper;
     wp.css('cursor', '').unbind().removeClass(this.noSelClass);
   },
-});
+} as CustomCommand<{}, { [k: string]: any }>);

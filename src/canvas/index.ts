@@ -185,7 +185,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
    * @returns {HTMLElement}
    * @private
    */
-  getHighlighter(compView: any) {
+  getHighlighter(compView?: any) {
     return this._getLocalEl(this.getCanvasView().hlEl, compView, 'getHighlighter');
   }
 
