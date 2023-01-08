@@ -12,7 +12,7 @@ export interface TraitManagerConfig {
    */
   appendTo?: string | HTMLElement;
 
-  optionsTarget: Record<string, any>[];
+  optionsTarget?: Record<string, any>[];
 }
 
 const config: TraitManagerConfig = {

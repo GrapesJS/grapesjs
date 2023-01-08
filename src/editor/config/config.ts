@@ -15,6 +15,7 @@ import { SelectorManagerConfig } from '../../selector_manager/config/config';
 import { StorageManagerConfig } from '../../storage_manager/config/config';
 import { UndoManagerConfig } from '../../undo_manager/config';
 import { Plugin } from '../../plugin_manager';
+import { TraitManagerConfig } from '../../trait_manager/config/config';
 
 type AnyObject = Record<string, any>;
 
@@ -378,11 +379,10 @@ export interface EditorConfig {
    */
   blockManager?: BlockManagerConfig;
 
-  // TODO
   /**
    * Configurations for Trait Manager.
    */
-  traitManager?: AnyObject;
+  traitManager?: TraitManagerConfig;
 
   /**
    * Configurations for Page Manager.
