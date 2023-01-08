@@ -1,4 +1,5 @@
 import Backbone from 'backbone';
+import { CustomCommand } from './CommandAbstract';
 
 const $ = Backbone.$;
 
@@ -25,10 +26,14 @@ export default {
       this.$cn2.append(tm.render());
       var panels = editor.Panels;
 
-      if (!panels.getPanel('views-container')) panelC = panels.addPanel({ id: 'views-container' });
-      else panelC = panels.getPanel('views-container');
+      if (!panels.getPanel('views-container')) {
+        // @ts-ignore
+        panelC = panels.addPanel({ id: 'views-container' });
+      } else {
+        panelC = panels.getPanel('views-container');
+      }
 
-      panelC.set('appendContent', this.$cn.get(0)).trigger('change:appendContent');
+      panelC?.set('appendContent', this.$cn.get(0)).trigger('change:appendContent');
 
       this.target = editor.getModel();
       this.listenTo(this.target, 'component:toggled', this.toggleTm);
@@ -58,4 +63,4 @@ export default {
     this.$cn2 && this.$cn2.hide();
     this.$header && this.$header.hide();
   },
-};
+} as CustomCommand<{}, { [k: string]: any }>;
