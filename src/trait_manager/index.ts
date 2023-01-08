@@ -57,8 +57,7 @@ export default class TraitManager extends Module<TraitManagerConfig & { pStylePr
    */
 
   /**
-   * Initialize module. Automatically called with a new instance of the editor
-   * @param {Object} config Configurations
+   * Initialize module
    * @private
    */
   constructor(em: EditorModel) {

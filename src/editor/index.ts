@@ -55,29 +55,9 @@
  * @module Editor
  */
 import { EventHandler } from 'backbone';
-import { isUndefined } from 'underscore';
 import { IBaseModule } from '../abstract/Module';
-import AssetManager from '../asset_manager';
-import BlockManager from '../block_manager';
-import CanvasModule from '../canvas';
-import CodeManagerModule from '../code_manager';
-import CssComposer from '../css_composer';
-import DeviceManager from '../device_manager';
-import ComponentManager from '../dom_components';
 import Component from '../dom_components/model/Component';
-import I18nModule from '../i18n';
-import KeymapsModule from '../keymaps';
-import ModalModule from '../modal_dialog';
-import LayerManager from '../navigator';
-import PageManager from '../pages';
-import PanelManager from '../panels';
-import ParserModule from '../parser';
 import { CustomParserCss } from '../parser/config/config';
-import RichTextEditorModule from '../rich_text_editor';
-import SelectorManager from '../selector_manager';
-import StorageManager from '../storage_manager';
-import UndoManagerModule from '../undo_manager';
-import UtilsModule from '../utils';
 import cash from '../utils/cash-dom';
 import html from '../utils/html';
 import defaults, { EditorConfig, EditorConfigKeys } from './config/config';
@@ -117,92 +97,90 @@ export default class EditorModule implements IBaseModule<EditorConfig> {
   get Config() {
     return this.em.config;
   }
-  get I18n(): I18nModule {
-    return this.em.get('I18n');
+  get I18n() {
+    return this.em.I18n;
   }
-  get Utils(): UtilsModule {
-    return this.em.get('Utils');
+  get Utils() {
+    return this.em.Utils;
   }
   //@ts-ignore
   get Commands(): CommandsModule {
     return this.em.get('Commands');
   }
-  get Keymaps(): KeymapsModule {
-    return this.em.get('Keymaps');
+  get Keymaps() {
+    return this.em.Keymaps;
   }
-  get Modal(): ModalModule {
-    return this.em.get('Modal');
+  get Modal() {
+    return this.em.Modal;
   }
-  get Panels(): PanelManager {
-    return this.em.get('Panels');
+  get Panels() {
+    return this.em.Panels;
   }
-  get Canvas(): CanvasModule {
-    return this.em.get('Canvas');
+  get Canvas() {
+    return this.em.Canvas;
   }
-  get Parser(): ParserModule {
-    return this.em.get('Parser');
+  get Parser() {
+    return this.em.Parser;
   }
-  get CodeManager(): CodeManagerModule {
-    return this.em.get('CodeManager');
+  get CodeManager() {
+    return this.em.CodeManager;
   }
-  get UndoManager(): UndoManagerModule {
-    return this.em.get('UndoManager');
+  get UndoManager() {
+    return this.em.UndoManager;
   }
-  get RichTextEditor(): RichTextEditorModule {
-    return this.em.get('RichTextEditor');
+  get RichTextEditor() {
+    return this.em.RichTextEditor;
   }
-  get Pages(): PageManager {
-    return this.em.get('PageManager');
+  get Pages() {
+    return this.em.Pages;
   }
-  get Components(): ComponentManager {
-    return this.em.get('DomComponents');
+  get Components() {
+    return this.em.Components;
   }
-  get DomComponents(): ComponentManager {
-    return this.em.get('DomComponents');
+  get DomComponents() {
+    return this.em.Components;
   }
-  get Layers(): LayerManager {
-    return this.em.get('LayerManager');
+  get Layers() {
+    return this.em.Layers;
   }
-  get LayerManager(): LayerManager {
-    return this.em.get('LayerManager');
+  get LayerManager() {
+    return this.em.Layers;
   }
-  get Css(): CssComposer {
-    return this.em.get('CssComposer');
+  get Css() {
+    return this.em.Css;
   }
-  get CssComposer(): CssComposer {
-    return this.em.get('CssComposer');
+  get CssComposer() {
+    return this.em.Css;
   }
-  get Storage(): StorageManager {
-    return this.em.get('StorageManager');
+  get Storage() {
+    return this.em.Storage;
   }
-  get StorageManager(): StorageManager {
-    return this.em.get('StorageManager');
+  get StorageManager() {
+    return this.em.Storage;
   }
-  get Assets(): AssetManager {
-    return this.em.get('AssetManager');
+  get Assets() {
+    return this.em.Assets;
   }
-  get AssetManager(): AssetManager {
-    return this.em.get('AssetManager');
+  get AssetManager() {
+    return this.em.Assets;
   }
-  get Blocks(): BlockManager {
-    return this.em.get('BlockManager');
+  get Blocks() {
+    return this.em.Blocks;
   }
-  get BlockManager(): BlockManager {
-    return this.em.get('BlockManager');
+  get BlockManager() {
+    return this.em.Blocks;
   }
-  //@ts-ignore
-  get Traits(): TraitManagerModule {
-    return this.em.get('TraitManager');
+  get Traits() {
+    return this.em.Traits;
   }
-  //@ts-ignore
-  get TraitManager(): TraitManagerModule {
-    return this.em.get('TraitManager');
+  get TraitManager() {
+    return this.em.Traits;
   }
-  get Selectors(): SelectorManager {
-    return this.em.get('SelectorManager');
+  get Selectors() {
+    return this.em.Selectors;
   }
-  get SelectorManager(): SelectorManager {
-    return this.em.get('SelectorManager');
+  get SelectorManager() {
+    return this.em.Selectors;
   }
   //@ts-ignore
   get Styles(): StyleManagerModule {
@@ -212,11 +190,11 @@ export default class EditorModule implements IBaseModule<EditorConfig> {
   get StyleManager(): StyleManagerModule {
     return this.em.get('StyleManager');
   }
-  get Devices(): DeviceManager {
-    return this.em.get('DeviceManager');
+  get Devices() {
+    return this.em.Devices;
   }
-  get DeviceManager(): DeviceManager {
-    return this.em.get('DeviceManager');
+  get DeviceManager() {
+    return this.em.Devices;
   }
 
   /**
