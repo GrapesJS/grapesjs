@@ -1,9 +1,11 @@
 import { flatten } from 'underscore';
+import CssRule from '../../css_composer/model/CssRule';
+import { CustomCommand } from './CommandAbstract';
 
 export default {
   run(ed, s, opts = {}) {
     const { target } = opts;
-    let toRemove = [];
+    let toRemove: CssRule[] = [];
 
     if (!target.get('styles')) return toRemove;
 
@@ -22,4 +24,4 @@ export default {
 
     return toRemove;
   },
-};
+} as CustomCommand;
