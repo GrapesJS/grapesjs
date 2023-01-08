@@ -1,3 +1,6 @@
+import Resizer from '../../utils/Resizer';
+import { CustomCommand } from './CommandAbstract';
+
 export default {
   run(editor, sender, opts) {
     const opt = opts || {};
@@ -27,4 +30,4 @@ export default {
   stop() {
     this.canvasResizer?.blur();
   },
-};
+} as CustomCommand<{ options?: {}; forceNew?: boolean; el: HTMLElement }, { canvasResizer?: Resizer }>;
