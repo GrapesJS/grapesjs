@@ -1,4 +1,5 @@
 import { isElement } from 'underscore';
+import { CustomCommand } from './CommandAbstract';
 
 export default {
   /**
@@ -7,6 +8,7 @@ export default {
    */
   isEnabled() {
     const d = document;
+    // @ts-ignore
     if (d.fullscreenElement || d.webkitFullscreenElement || d.mozFullScreenElement) {
       return true;
     }
@@ -18,7 +20,7 @@ export default {
    * @param  {HTMLElement} el
    * @return {string}
    */
-  enable(el) {
+  enable(el: any) {
     let pfx = '';
 
     if (el.requestFullscreen) {
@@ -40,7 +42,7 @@ export default {
    * Disable fullscreen mode
    */
   disable() {
-    const d = document;
+    const d: any = document;
 
     if (this.isEnabled()) {
       if (d.exitFullscreen) d.exitFullscreen();
@@ -56,7 +58,7 @@ export default {
    * @param  {strinf} pfx Browser prefix
    * @param  {Event} e
    */
-  fsChanged(pfx) {
+  fsChanged(pfx: string) {
     if (!this.isEnabled()) {
       this.stopCommand({ sender: this.sender });
       document.removeEventListener(`${pfx || ''}fullscreenchange`, this.fsChanged);
@@ -66,7 +68,7 @@ export default {
   run(editor, sender, opts = {}) {
     this.sender = sender;
     const { target } = opts;
-    const targetEl = isElement(target) ? target : document.querySelector(target);
+    const targetEl = isElement(target) ? target : document.querySelector(target!);
     const pfx = this.enable(targetEl || editor.getContainer());
     this.fsChanged = this.fsChanged.bind(this, pfx);
     document.addEventListener(pfx + 'fullscreenchange', this.fsChanged);
@@ -78,4 +80,4 @@ export default {
     this.disable();
     if (editor) editor.trigger('change:canvasOffset');
   },
-};
+} as CustomCommand<{ target?: HTMLElement | string }, { [k: string]: any }>;
