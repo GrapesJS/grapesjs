@@ -1,5 +1,6 @@
 import { isFunction } from 'underscore';
 import { createEl } from '../../utils/dom';
+import { CustomCommand } from './CommandAbstract';
 
 export default {
   open() {
@@ -54,4 +55,4 @@ export default {
   stop() {
     this.close();
   },
-};
+} as CustomCommand<{}, { [k: string]: any }>;
