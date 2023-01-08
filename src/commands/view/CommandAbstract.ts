@@ -1,22 +1,31 @@
+import CanvasModule from '../../canvas';
 import { Model } from '../../common';
+import Editor from '../../editor';
+import EditorModel from '../../editor/model/Editor';
 
 export default class CommandAbstract extends Model {
-  /**
-   * Initialize method that can't be removed
-   * @param  {Object}  o Options
-   * @private
-   * */
-  initialize(o) {
-    this.config = o || {};
-    this.editorModel = this.em = this.config.em || {};
-    this.pfx = this.config.stylePrefix;
-    this.ppfx = this.config.pStylePrefix;
-    this.hoverClass = this.pfx + 'hover';
-    this.badgeClass = this.pfx + 'badge';
-    this.plhClass = this.pfx + 'placeholder';
-    this.freezClass = this.ppfx + 'freezed';
+  config: any;
+  em: EditorModel;
+  pfx: string;
+  ppfx: string;
+  hoverClass: string;
+  badgeClass: string;
+  plhClass: string;
+  freezClass: string;
+  canvas: CanvasModule;
 
-    this.canvas = this.em.get && this.em.get('Canvas');
+  constructor(o: any) {
+    super(0);
+    this.config = o || {};
+    this.em = this.config.em || {};
+    const pfx = this.config.stylePrefix;
+    this.pfx = pfx;
+    this.ppfx = this.config.pStylePrefix;
+    this.hoverClass = `${pfx}hover`;
+    this.badgeClass = `${pfx}badge`;
+    this.plhClass = `${pfx}placeholder`;
+    this.freezClass = `${this.ppfx}freezed`;
+    this.canvas = this.em.Canvas;
     this.init(this.config);
   }
 
@@ -25,7 +34,7 @@ export default class CommandAbstract extends Model {
    * @param  {[type]} e [description]
    * @return {[type]}   [description]
    */
-  onFrameScroll(e) {}
+  onFrameScroll(e: any) {}
 
   /**
    * Returns canval element
@@ -56,7 +65,7 @@ export default class CommandAbstract extends Model {
    * @param  {HTMLElement} el
    * @return {Object}
    */
-  offset(el) {
+  offset(el: HTMLElement) {
     var rect = el.getBoundingClientRect();
     return {
       top: rect.top + el.ownerDocument.body.scrollTop,
@@ -69,7 +78,7 @@ export default class CommandAbstract extends Model {
    * @param  {Object}  o   Options
    * @private
    * */
-  init(o) {}
+  init(o: any) {}
 
   /**
    * Method that run command
@@ -77,7 +86,7 @@ export default class CommandAbstract extends Model {
    * @param  {Object}  [options={}] Options
    * @private
    * */
-  callRun(editor, options = {}) {
+  callRun(editor: Editor, options: any = {}) {
     const id = this.id;
     editor.trigger(`run:${id}:before`, options);
 
@@ -99,7 +108,7 @@ export default class CommandAbstract extends Model {
    * @param  {Object}  [options={}] Options
    * @private
    * */
-  callStop(editor, options = {}) {
+  callStop(editor: Editor, options: any = {}) {
     const id = this.id;
     const sender = options.sender || editor;
     editor.trigger(`stop:${id}:before`, options);
@@ -112,7 +121,7 @@ export default class CommandAbstract extends Model {
   /**
    * Stop current command
    */
-  stopCommand(opts) {
+  stopCommand(opts: any) {
     this.em.get('Commands').stop(this.id, opts);
   }
 
@@ -122,7 +131,7 @@ export default class CommandAbstract extends Model {
    * @param  {Object}  sender  Button sender
    * @private
    * */
-  run(em, sender) {}
+  run(em: Editor, sender: any, options: any) {}
 
   /**
    * Method that stop command
@@ -130,5 +139,5 @@ export default class CommandAbstract extends Model {
    * @param  {Object}  sender  Button sender
    * @private
    * */
-  stop(em, sender) {}
+  stop(em: Editor, sender: any, options: any) {}
 }

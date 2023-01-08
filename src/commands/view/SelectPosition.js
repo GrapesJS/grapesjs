@@ -9,7 +9,7 @@ export default {
    * */
   startSelectPosition(trg, doc, opts = {}) {
     this.isPointed = false;
-    var utils = this.editorModel.get('Utils');
+    var utils = this.em.get('Utils');
     const container = trg.ownerDocument.body;
 
     if (utils && !this.sorter)
@@ -23,7 +23,7 @@ export default {
         document: doc,
         wmargin: 1,
         nested: 1,
-        em: this.editorModel,
+        em: this.em,
         canvasRelative: 1,
         scale: () => this.em.getZoomDecimal(),
       });

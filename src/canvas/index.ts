@@ -176,7 +176,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
    * @returns {HTMLElement}
    * @private
    */
-  getToolsEl(compView: any) {
+  getToolsEl(compView?: any) {
     return this._getLocalEl(this.getCanvasView().toolsEl, compView, 'getToolsEl');
   }
 
