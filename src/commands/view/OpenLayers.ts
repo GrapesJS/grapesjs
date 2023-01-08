@@ -1,3 +1,5 @@
+import { CustomCommand } from './CommandAbstract';
+
 export default {
   run(editor) {
     const lm = editor.LayerManager;
@@ -9,6 +11,7 @@ export default {
     if (!this.layers) {
       const id = 'views-container';
       const layers = document.createElement('div');
+      // @ts-ignore
       const panels = pn.getPanel(id) || pn.addPanel({ id });
 
       if (lmConfig.custom) {
@@ -28,4 +31,4 @@ export default {
     const { layers } = this;
     layers && (layers.style.display = 'none');
   },
-};
+} as CustomCommand<{}, { [k: string]: any }>;
