@@ -1,5 +1,18 @@
 import { keys, bindAll, each, isUndefined, debounce } from 'underscore';
 import Dragger from '../../utils/Dragger';
+import { CustomCommand } from './CommandAbstract';
+
+type Rect = { left: number; width: number; top: number; height: number };
+type OrigRect = { left: number; width: number; top: number; height: number; rect: Rect };
+
+type Guide = {
+  type: string;
+  y: number;
+  x: number;
+  origin: HTMLElement;
+  originRect: OrigRect;
+  guide: HTMLElement;
+};
 
 const evName = 'dmode';
 
@@ -68,7 +81,7 @@ export default {
   },
 
   setupGuides() {
-    (this.guides || []).forEach(item => {
+    (this.guides || []).forEach((item: any) => {
       const { guide } = item;
       guide && guide.parentNode.removeChild(guide);
     });
@@ -105,7 +118,7 @@ export default {
         'canvas:update frame:scroll',
         debounce(() => {
           this.updateGuides();
-          opts.debug && this.guides.forEach(item => this.renderGuide(item));
+          opts.debug && this.guides?.forEach((item: any) => this.renderGuide(item));
         }, 200)
       );
     }
@@ -114,7 +127,7 @@ export default {
   },
 
   getGuidesStatic() {
-    let result = [];
+    let result: any = [];
     const el = this.target.getEl();
     const { parentNode = {} } = el;
     each(parentNode.children, item => (result = result.concat(el !== item ? this.getElementGuides(item) : [])));
@@ -126,9 +139,10 @@ export default {
     return this.getElementGuides(this.target.getEl());
   },
 
-  updateGuides(guides) {
-    let lastEl, lastPos;
-    (guides || this.guides).forEach(item => {
+  updateGuides(guides: any) {
+    let lastEl: any;
+    let lastPos: any;
+    (guides || this.guides).forEach((item: any) => {
       const { origin } = item;
       const pos = lastEl === origin ? lastPos : this.getElementPos(origin);
       lastEl = origin;
@@ -138,8 +152,8 @@ export default {
     });
   },
 
-  getGuidePosUpdate(item, rect) {
-    const result = {};
+  getGuidePosUpdate(item: any, rect: any) {
+    const result: { x?: number; y?: number } = {};
     const { top, height, left, width } = rect;
 
     switch (item.type) {
@@ -166,7 +180,7 @@ export default {
     return result;
   },
 
-  renderGuide(item = {}) {
+  renderGuide(item: any = {}) {
     const el = item.guide || document.createElement('div');
     const un = 'px';
     const guideSize = item.active ? 2 : 1;
@@ -195,15 +209,16 @@ export default {
     return el;
   },
 
-  getElementPos(el) {
+  getElementPos(el: HTMLElement) {
     return this.editor.Canvas.getElementPos(el, { noScroll: 1 });
   },
 
-  getElementGuides(el) {
+  getElementGuides(el: HTMLElement) {
     const { opts } = this;
     const originRect = this.getElementPos(el);
     const { top, height, left, width } = originRect;
-    const guides = [
+    // @ts-ignore
+    const guides: Guide[] = [
       { type: 't', y: top }, // Top
       { type: 'b', y: top + height }, // Bottom
       { type: 'l', x: left }, // Left
@@ -216,12 +231,12 @@ export default {
       originRect,
       guide: opts.debug && this.renderGuide(item),
     }));
-    guides.forEach(item => this.guides.push(item));
+    guides.forEach(item => this.guides?.push(item));
 
     return guides;
   },
 
-  getTranslate(transform, axis = 'x') {
+  getTranslate(transform: string, axis = 'x') {
     let result = 0;
     (transform || '').split(' ').forEach(item => {
       const itemStr = item.trim();
@@ -231,7 +246,7 @@ export default {
     return result;
   },
 
-  setTranslate(transform, axis, value) {
+  setTranslate(transform: string, axis: string, value: string) {
     const fn = `translate${axis.toUpperCase()}(`;
     const val = `${fn}${value})`;
     let result = (transform || '')
@@ -264,7 +279,7 @@ export default {
     return { x, y };
   },
 
-  setPosition({ x, y, end, position, width, height }) {
+  setPosition({ x, y, end, position, width, height }: any) {
     const { target, isTran, em } = this;
     const unit = 'px';
     const en = !end ? 1 : ''; // this will trigger the final change
@@ -279,8 +294,8 @@ export default {
       styleUp = { transform, en };
       target.addStyle(styleUp, { avoidStore: !end });
     } else {
-      const adds = { position, width, height };
-      const style = { left, top, en };
+      const adds: any = { position, width, height };
+      const style: any = { left, top, en };
       keys(adds).forEach(add => {
         const prop = adds[add];
         if (prop) style[add] = prop;
@@ -302,7 +317,7 @@ export default {
     };
   },
 
-  onStart(event) {
+  onStart(event: Event) {
     const { target, editor, isTran, opts } = this;
     const { center, onStart } = opts;
     const { Canvas } = editor;
@@ -345,16 +360,16 @@ export default {
     }
   },
 
-  onDrag(...args) {
+  onDrag(...args: any) {
     const { guidesTarget, opts } = this;
     const { onDrag } = opts;
     this.updateGuides(guidesTarget);
-    opts.debug && guidesTarget.forEach(item => this.renderGuide(item));
-    opts.guidesInfo && this.renderGuideInfo(guidesTarget.filter(item => item.active));
+    opts.debug && guidesTarget.forEach((item: any) => this.renderGuide(item));
+    opts.guidesInfo && this.renderGuideInfo(guidesTarget.filter((item: any) => item.active));
     onDrag && onDrag(this._getDragData());
   },
 
-  onEnd(ev, dragger, opt = {}) {
+  onEnd(ev: Event, dragger: any, opt = {}) {
     const { editor, opts, id } = this;
     const { onEnd } = opts;
     onEnd && onEnd(ev, opt, { event: ev, ...opt, ...this._getDragData() });
@@ -373,7 +388,7 @@ export default {
   /**
    * Render guides with spacing information
    */
-  renderGuideInfo(guides = []) {
+  renderGuideInfo(guides: Guide[] = []) {
     const { guidesStatic } = this;
     this.hideGuidesInfo();
     guides.forEach(item => {
@@ -391,7 +406,7 @@ export default {
 
       // Find the nearest element
       const res = guidesStatic
-        .filter(stat => stat.type === item.type)
+        ?.filter(stat => stat.type === item.type)
         .map(stat => {
           const { left, width, top, height } = stat.originRect;
           const statEdge1 = isY ? left : top;
@@ -438,7 +453,7 @@ export default {
     });
   },
 
-  toggleDrag(enable) {
+  toggleDrag(enable: boolean) {
     const { ppfx, editor } = this;
     const methodCls = enable ? 'add' : 'remove';
     const classes = [`${ppfx}is__grabbing`];
@@ -447,4 +462,11 @@ export default {
     classes.forEach(cls => body.classList[methodCls](cls));
     Canvas[enable ? 'startAutoscroll' : 'stopAutoscroll']();
   },
-};
+} as CustomCommand<
+  any,
+  {
+    guidesStatic?: Guide[];
+    guides?: Guide[];
+    [k: string]: any;
+  }
+>;
