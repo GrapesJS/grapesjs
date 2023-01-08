@@ -1,11 +1,13 @@
 import { extend, bindAll } from 'underscore';
 import Backbone from 'backbone';
 import SelectComponent from './SelectComponent';
+import { CustomCommand } from './CommandAbstract';
+import Component from '../../dom_components/model/Component';
 
 const $ = Backbone.$;
 
 export default extend({}, SelectComponent, {
-  init(o) {
+  init() {
     bindAll(this, 'startDelete', 'stopDelete', 'onDelete');
     this.hoverClass = this.pfx + 'hover-delete';
     this.badgeClass = this.pfx + 'badge-red';
@@ -21,7 +23,7 @@ export default extend({}, SelectComponent, {
    * @param {Object}  e
    * @private
    */
-  startDelete(e) {
+  startDelete(e: any) {
     e.stopPropagation();
     var $this = $(e.target);
 
@@ -37,7 +39,7 @@ export default extend({}, SelectComponent, {
    * @param {Object}  e
    * @private
    */
-  stopDelete(e) {
+  stopDelete(e: any) {
     e.stopPropagation();
     var $this = $(e.target);
     $this.removeClass(this.hoverClass);
@@ -51,7 +53,7 @@ export default extend({}, SelectComponent, {
    * @param {Object}  e
    * @private
    */
-  onDelete(e) {
+  onDelete(e: any) {
     e.stopPropagation();
     var $this = $(e.target);
 
@@ -68,7 +70,7 @@ export default extend({}, SelectComponent, {
    * @param   {Object}  model
    * @private
    * */
-  updateBadgeLabel(model) {
+  updateBadgeLabel(model: Component) {
     this.badge.html('Remove ' + model.getName());
   },
-});
+} as CustomCommand<{}, { [k: string]: any }>);
