@@ -1,9 +1,11 @@
 import { each } from 'underscore';
+import Editor from '../../editor';
+import { CustomCommand } from './CommandAbstract';
 
 const cmdOutline = 'core:component-outline';
 
 export default {
-  getPanels(editor) {
+  getPanels(editor: Editor) {
     if (!this.panels) {
       this.panels = editor.Panels.getPanels();
     }
@@ -11,11 +13,11 @@ export default {
     return this.panels;
   },
 
-  preventDrag(opts) {
+  preventDrag(opts: any) {
     opts.abort = 1;
   },
 
-  tglEffects(on) {
+  tglEffects(on: boolean) {
     const { em } = this;
     const mthEv = on ? 'on' : 'off';
     if (em) {
@@ -43,7 +45,7 @@ export default {
 
     const panels = this.getPanels(editor);
     const canvas = editor.Canvas.getElement();
-    const editorEl = editor.getEl();
+    const editorEl = editor.getEl()!;
     const pfx = editor.Config.stylePrefix;
 
     if (!this.helper) {
@@ -56,7 +58,7 @@ export default {
 
     this.helper.style.display = 'inline-block';
 
-    panels.forEach(panel => panel.set('visible', false));
+    panels.forEach((panel: any) => panel.set('visible', false));
 
     const canvasS = canvas.style;
     canvasS.width = '100%';
@@ -80,7 +82,7 @@ export default {
     }
 
     editor.getModel().runDefault();
-    panels.forEach(panel => panel.set('visible', true));
+    panels.forEach((panel: any) => panel.set('visible', true));
 
     const canvas = editor.Canvas.getElement();
     canvas.setAttribute('style', '');
@@ -94,4 +96,4 @@ export default {
     editor.refresh();
     this.tglEffects();
   },
-};
+} as CustomCommand<{}, { [k: string]: any }>;
