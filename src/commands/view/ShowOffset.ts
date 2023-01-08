@@ -1,10 +1,11 @@
 import Backbone from 'backbone';
 import { isUndefined } from 'underscore';
 import { isTextNode } from '../../utils/mixins';
+import { CustomCommand } from './CommandAbstract';
 const $ = Backbone.$;
 
 export default {
-  getOffsetMethod(state) {
+  getOffsetMethod(state: string) {
     var method = state || '';
     return 'get' + method + 'OffsetViewerEl';
   },
@@ -17,7 +18,7 @@ export default {
     const el = opt.el || '';
 
     if (!config.showOffsets || isTextNode(el) || (!config.showOffsetsSelected && state == 'Fixed')) {
-      editor.stopCommand(this.id, opts);
+      editor.stopCommand(`${this.id}`, opts);
       return;
     }
 
@@ -35,6 +36,7 @@ export default {
     var ppfx = this.ppfx;
     var stateVar = state + 'State';
     var method = this.getOffsetMethod(state);
+    // @ts-ignore
     var offsetViewer = canvas[method](opts.view);
     offsetViewer.style.opacity = '';
 
@@ -63,8 +65,8 @@ export default {
       var stateLow = state.toLowerCase();
       var marginName = stateLow + 'margin-v';
       var paddingName = stateLow + 'padding-v';
-      var marginV = $(`<div class="${ppfx}marginName">`).get(0);
-      var paddingV = $(`<div class="${ppfx}paddingName">`).get(0);
+      var marginV = $(`<div class="${ppfx}marginName">`).get(0) as HTMLElement;
+      var paddingV = $(`<div class="${ppfx}paddingName">`).get(0) as HTMLElement;
       var marginEls = ppfx + marginName + '-el';
       var paddingEls = ppfx + paddingName + '-el';
       const fullMargName = `${marginEls} ${ppfx + marginName}`;
@@ -171,7 +173,8 @@ export default {
     var state = opt.state || '';
     var method = this.getOffsetMethod(state);
     var canvas = editor.Canvas;
+    // @ts-ignore
     var offsetViewer = canvas[method](opts.view);
     offsetViewer.style.opacity = 0;
   },
-};
+} as CustomCommand<any, { [k: string]: any }>;
