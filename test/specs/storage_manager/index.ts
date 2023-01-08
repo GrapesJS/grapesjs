@@ -8,7 +8,7 @@ describe('Storage Manager', () => {
 
     beforeEach(() => {
       em = new EditorModel();
-      obj = em.StorageManager;
+      obj = em.Storage;
     });
 
     afterEach(() => {
@@ -80,7 +80,7 @@ describe('Storage Manager', () => {
             type: storageId,
           },
         });
-        obj = em.StorageManager;
+        obj = em.Storage;
         obj.add(storageId, {
           async store(data) {
             storeValue = data;
