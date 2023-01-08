@@ -1,6 +1,7 @@
 import { bindAll } from 'underscore';
 import { on, off, getKeyChar } from '../../utils/mixins';
 import Dragger from '../../utils/Dragger';
+import { CustomCommand } from './CommandAbstract';
 
 export default {
   run(ed) {
@@ -14,21 +15,21 @@ export default {
     this.disableDragger();
   },
 
-  onKeyUp(ev) {
+  onKeyUp(ev: KeyboardEvent) {
     if (getKeyChar(ev) === ' ') {
       this.editor.stopCommand(this.id);
     }
   },
 
-  enableDragger(ev) {
+  enableDragger(ev: Event) {
     this.toggleDragger(1, ev);
   },
 
-  disableDragger(ev) {
+  disableDragger(ev: Event) {
     this.toggleDragger(0, ev);
   },
 
-  toggleDragger(enable, ev) {
+  toggleDragger(enable: boolean, ev: Event) {
     const { canvasModel, em } = this;
     let { dragger } = this;
     const methodCls = enable ? 'add' : 'remove';
@@ -61,7 +62,7 @@ export default {
     enable ? dragger.start(ev) : dragger.stop();
   },
 
-  toggleMove(enable) {
+  toggleMove(enable: boolean) {
     const { ppfx } = this;
     const methodCls = enable ? 'add' : 'remove';
     const methodEv = enable ? 'on' : 'off';
@@ -74,4 +75,9 @@ export default {
     methodsEv[methodEv](canvas, 'mousedown', this.enableDragger);
     methodsEv[methodEv](document, 'mouseup', this.disableDragger);
   },
-};
+} as CustomCommand<
+  any,
+  {
+    [key: string]: any;
+  }
+>;
