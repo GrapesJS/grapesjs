@@ -1,4 +1,5 @@
 import Backbone from 'backbone';
+import { CustomCommand } from './CommandAbstract';
 const $ = Backbone.$;
 
 export default {
@@ -16,6 +17,7 @@ export default {
       // Device Manager
       const dvm = editor.DeviceManager;
       if (dvm && config.showDevices) {
+        // @ts-ignore
         const devicePanel = panels.addPanel({ id: 'devices-c' });
         const dvEl = dvm.render();
         devicePanel.set('appendContent', dvEl).trigger(trgEvCnt);
@@ -48,6 +50,7 @@ export default {
       // Create panel if not exists
       const pnCnt = 'views-container';
       this.panel = panels.getPanel(pnCnt);
+      // @ts-ignore
       if (!this.panel) this.panel = panels.addPanel({ id: pnCnt });
 
       // Add all containers to the panel
@@ -82,4 +85,4 @@ export default {
     this.$cn2?.hide();
     this.$header?.hide();
   },
-};
+} as CustomCommand<{}, { [k: string]: any }>;
