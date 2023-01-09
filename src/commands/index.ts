@@ -76,7 +76,7 @@ const commandsDef = [
   ['component-drag', 'ComponentDrag'],
 ];
 
-export default class Commands extends Module<CommandsConfig & { pStylePrefix?: string }> {
+export default class CommandsModule extends Module<CommandsConfig & { pStylePrefix?: string }> {
   CommandAbstract = CommandAbstract;
   defaultCommands: Record<string, Command> = {};
   commands: Record<string, CustomCommand> = {};
@@ -174,10 +174,11 @@ export default class Commands extends Module<CommandsConfig & { pStylePrefix?: s
             //sel.set('status', 'freezed');
           }
 
-          const cmdMove = ed.Commands.get('move-comp');
+          const cmdMove = ed.Commands.get('move-comp')!;
           cmdMove.onStart = onStart;
           cmdMove.onDrag = onDrag;
           cmdMove.onEndMoveFromModel = onEnd;
+          // @ts-ignore
           cmdMove.initSorterFromModels(selAll);
         }
 

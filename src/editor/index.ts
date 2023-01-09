@@ -103,9 +103,8 @@ export default class EditorModule implements IBaseModule<EditorConfig> {
   get Utils() {
     return this.em.Utils;
   }
-  //@ts-ignore
-  get Commands(): CommandsModule {
-    return this.em.get('Commands');
+  get Commands() {
+    return this.em.Commands;
   }
   get Keymaps() {
     return this.em.Keymaps;

@@ -31,6 +31,7 @@ import PanelManager from '../../panels';
 import CodeManagerModule from '../../code_manager';
 import UndoManagerModule from '../../undo_manager';
 import RichTextEditorModule from '../../rich_text_editor';
+import CommandsModule from '../../commands';
 
 //@ts-ignore
 Backbone.$ = $;
@@ -128,6 +129,10 @@ export default class EditorModel extends Model {
 
   get Utils(): UtilsModule {
     return this.get('Utils');
+  }
+
+  get Commands(): CommandsModule {
+    return this.get('Commands');
   }
 
   get Keymaps(): KeymapsModule {
