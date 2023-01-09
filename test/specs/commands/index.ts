@@ -1,36 +1,17 @@
 import Backbone from 'backbone';
-import Commands from 'commands';
+import Commands from '../../../src/commands';
+import EditorModel from '../../../src/editor/model/Editor';
 
 describe('Commands', () => {
   describe('Main', () => {
-    let obj,
-      commSimple,
-      commRunOnly,
-      commFunc,
-      commName = 'commandTest',
-      commResultRun = 'Run executed',
-      commResultStop = 'Stop executed';
-
-    const mockEditor = {
-      ...Backbone.Events,
-      get(id) {
-        switch (id) {
-          case 'Canvas':
-            return {
-              getElement: () => ({}),
-              getWrapperEl: () => ({}),
-              getFrameEl: () => ({}),
-              getToolsEl: () => ({}),
-              getBody: () => ({}),
-            };
-          case 'Editor':
-            return { ...Backbone.Events };
-          default:
-        }
-        return null;
-      },
-      logWarning() {},
-    };
+    let em: EditorModel;
+    let obj: Commands;
+    let commSimple;
+    let commRunOnly;
+    let commFunc;
+    let commName = 'commandTest';
+    let commResultRun = 'Run executed';
+    let commResultStop = 'Stop executed';
 
     beforeEach(() => {
       commSimple = {
@@ -41,11 +22,13 @@ describe('Commands', () => {
         run: () => commResultRun,
       };
       commFunc = () => commResultRun;
-      obj = new Commands().init({ em: mockEditor });
+      em = new EditorModel();
+      em.set('Editor', { ...Backbone.Events });
+      obj = em.Commands;
     });
 
     afterEach(() => {
-      obj = null;
+      em.destroy();
     });
 
     test('No commands inside', () => {
@@ -58,15 +41,15 @@ describe('Commands', () => {
       obj.add('test', comm);
       expect(obj.has('test')).toBe(true);
       expect(Object.keys(obj.getAll()).length).toBe(len + 1);
-      expect(obj.get('test').test).toEqual('test');
+      expect(obj.get('test')!.test).toEqual('test');
     });
 
     test('Default commands after loadDefaultCommands', () => {
-      obj.loadDefaultCommands();
       expect(obj.get('select-comp')).not.toBeUndefined();
     });
 
     test('Commands module should not have toLoad property', () => {
+      // @ts-ignore
       expect(obj.toLoad).toBeUndefined();
     });
 
