@@ -1,6 +1,19 @@
 import { isString } from 'underscore';
 import { isDef } from '../../utils/mixins';
-import Property from './Property';
+import Property, { PropertyProps } from './Property';
+
+type SelectOption = {
+  id: string;
+  value?: string;
+  label?: string;
+  name?: string;
+};
+
+/** @private */
+export interface PropertySelectProps extends PropertyProps {
+  options?: SelectOption[];
+  list?: SelectOption[];
+}
 
 /**
  * @typedef PropertySelect
@@ -13,7 +26,7 @@ import Property from './Property';
  * ]
  * ```
  */
-export default class PropertySelect extends Property {
+export default class PropertySelect extends Property<PropertySelectProps> {
   defaults() {
     return {
       ...Property.getDefaults(),
@@ -37,7 +50,7 @@ export default class PropertySelect extends Property {
    * @param {String} [id] Option id.
    * @returns {Object | null}
    */
-  getOption(id) {
+  getOption(id: string): SelectOption {
     const idSel = isDef(id) ? id : this.getValue();
     return this.getOptions().filter(o => this.getOptionId(o) === idSel)[0] || null;
   }
@@ -46,7 +59,7 @@ export default class PropertySelect extends Property {
    * Update options.
    * @param {Array<Object>} value New array of options, eg. `[{ id: 'val-1', label: 'Value 1' }]`
    */
-  setOptions(value = []) {
+  setOptions(value: SelectOption[] = []) {
     this.set('options', value);
     return this;
   }
@@ -55,7 +68,7 @@ export default class PropertySelect extends Property {
    * Add new option.
    * @param {Object} value Option object, eg. `{ id: 'val-1', label: 'Value 1' }`
    */
-  addOption(value) {
+  addOption(value: SelectOption) {
     if (value) {
       const opts = this.getOptions();
       this.setOptions([...opts, value]);
@@ -68,8 +81,8 @@ export default class PropertySelect extends Property {
    * @param {Object} option Option object
    * @returns {String} Option id
    */
-  getOptionId(option) {
-    return isDef(option.id) ? option.id : option.value;
+  getOptionId(option: SelectOption) {
+    return isDef(option.id) ? option.id : (option.value as string);
   }
 
   /**
@@ -79,7 +92,7 @@ export default class PropertySelect extends Property {
    * @param {Boolean} [opts.locale=true] Use the locale string from i18n module
    * @returns {String} Option label
    */
-  getOptionLabel(id, opts = {}) {
+  getOptionLabel(id: string, opts: { locale?: boolean; property?: string } = {}): string {
     const { locale = true } = opts;
     const option = (isString(id) ? this.getOption(id) : id) || {};
     const optId = this.getOptionId(option);
@@ -88,7 +101,7 @@ export default class PropertySelect extends Property {
     return (locale && this.em?.t(`styleManager.options.${propId}.${optId}`)) || label;
   }
 
-  initialize(...args) {
+  initialize(...args: any) {
     Property.prototype.initialize.apply(this, args);
     this.listenTo(this, 'change:options', this.__onOptionChange);
   }

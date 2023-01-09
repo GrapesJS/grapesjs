@@ -85,9 +85,14 @@ type PartialPropertyProps = Partial<PropertyProps>;
  * ```
  *
  */
-export default class Property extends Model<PropertyProps> {
+export default class Property<T extends Record<string, any> = PropertyProps> extends Model<T> {
   em!: EditorModel;
 
+  static getDefaults() {
+    return result(this.prototype, 'defaults');
+  }
+
+  // @ts-ignore
   defaults() {
     return {
       name: '',
@@ -112,11 +117,13 @@ export default class Property extends Model<PropertyProps> {
 
   initialize(props = {}, opts: any = {}) {
     this.em = opts.em;
-    const id = this.get('id') || '';
-    const name = this.get('name') || this.get('label') || '';
+    const id = this.getId() || '';
+    const name: string = this.get('name') || this.get('label') || '';
+    // @ts-ignore
     !this.get('property') && this.set('property', (name || id).replace(/ /g, '-'));
     const prop = this.get('property');
     !this.get('id') && this.set('id', prop);
+    // @ts-ignore
     !name && this.set('name', capitalize(prop).replace(/-/g, ' '));
     this.on('change', this.__upTargets);
     // @ts-ignore
@@ -161,10 +168,12 @@ export default class Property extends Model<PropertyProps> {
     if (opts.noTarget) opts.__up = true;
     const { partial, ...rest } = opts;
     props.__p = !!(rest.avoidStore || partial);
+    // @ts-ignore
     return this.set(props, { ...rest, avoidStore: props.__p });
   }
 
   up(props: PartialPropertyProps, opts = {}) {
+    // @ts-ignore
     this.set(props, { ...opts, __up: true });
   }
 
@@ -174,7 +183,7 @@ export default class Property extends Model<PropertyProps> {
    * Get property id.
    * @returns {String}
    */
-  getId() {
+  getId(): string {
     return this.get('id')!;
   }
 
@@ -184,7 +193,7 @@ export default class Property extends Model<PropertyProps> {
    * The default type is `base`.
    * @returns {String}
    */
-  getType() {
+  getType(): string {
     return this.get('type')!;
   }
 
@@ -192,7 +201,7 @@ export default class Property extends Model<PropertyProps> {
    * Get name (the CSS property name).
    * @returns {String}
    */
-  getName() {
+  getName(): string {
     return this.get('property')!;
   }
 
@@ -342,7 +351,9 @@ export default class Property extends Model<PropertyProps> {
   setValue(value: string, complete = true, opts = {}) {
     const parsed = this.parseValue(value);
     const avoidStore = !complete;
+    // @ts-ignore
     !avoidStore && this.set({ value: undefined }, { avoidStore, silent: true });
+    // @ts-ignore
     this.set(parsed, { avoidStore, ...opts });
   }
 
@@ -469,6 +480,7 @@ export default class Property extends Model<PropertyProps> {
     }
 
     if (fn && hasValue) {
+      // @ts-ignore
       const fnParameter = fn === 'url' ? `'${value.replace(/'|"/g, '')}'` : value;
       value = `${fn}(${fnParameter})`;
     }
@@ -575,6 +587,6 @@ Property.callInit = function (context, props, opts: any = {}) {
 };
 
 // @ts-ignore
-Property.getDefaults = function () {
-  return result(this.prototype, 'defaults');
-};
+// Property.getDefaults = function () {
+//   return result(this.prototype, 'defaults');
+// };
