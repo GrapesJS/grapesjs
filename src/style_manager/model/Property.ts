@@ -1,7 +1,9 @@
 import { isUndefined, isString, isArray, result, keys, each, includes } from 'underscore';
 import { Model } from '../../common';
+import Component from '../../dom_components/model/Component';
 import EditorModel from '../../editor/model/Editor';
 import { capitalize, camelCase, hasWin } from '../../utils/mixins';
+import Sector from './Sector';
 
 /** @private */
 export interface PropertyProps {
@@ -496,7 +498,7 @@ export default class Property extends Model<PropertyProps> {
     };
   }
 
-  __checkVisibility({ target, component, sectors }: any) {
+  __checkVisibility({ target, component, sectors }: { target: any; component?: Component; sectors: Sector[] }) {
     const trg = component || target;
     if (!trg) return false;
 
@@ -528,8 +530,8 @@ export default class Property extends Model<PropertyProps> {
     // Check if the property is available based on other property's values
     if (sectors && requires) {
       const properties = keys(requires);
-      sectors.forEach((sector: any) => {
-        sector.getProperties().forEach((model: any) => {
+      sectors.forEach(sector => {
+        sector.getProperties().forEach(model => {
           if (includes(properties, model.id)) {
             const values = requires[model.id];
             stylable = stylable && includes(values, model.get('value'));
