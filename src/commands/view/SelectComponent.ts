@@ -4,7 +4,7 @@ import { on, off, getUnitFromValue, isTaggableNode, getViewEl, hasWin } from '..
 import { isVisible, isDoc } from '../../utils/dom';
 import ToolbarView from '../../dom_components/view/ToolbarView';
 import Toolbar from '../../dom_components/model/Toolbar';
-import { CustomCommand } from './CommandAbstract';
+import { CommandObject } from './CommandAbstract';
 import Component from '../../dom_components/model/Component';
 
 const $ = Backbone.$;
@@ -727,4 +727,4 @@ export default {
     this.toggleToolsEl();
     editor && editor.stopCommand('resize');
   },
-} as CustomCommand<any, { [k: string]: any }>;
+} as CommandObject<any, { [k: string]: any }>;

@@ -43,7 +43,7 @@
  */
 
 import { isFunction, includes } from 'underscore';
-import CommandAbstract, { Command, CommandOptions, CustomCommand } from './view/CommandAbstract';
+import CommandAbstract, { Command, CommandOptions, CommandObject } from './view/CommandAbstract';
 import defaults, { CommandsConfig } from './config/config';
 import { Module } from '../abstract';
 import { eventDrag } from '../dom_components/model/Component';
@@ -79,7 +79,7 @@ const commandsDef = [
 export default class CommandsModule extends Module<CommandsConfig & { pStylePrefix?: string }> {
   CommandAbstract = CommandAbstract;
   defaultCommands: Record<string, Command> = {};
-  commands: Record<string, CustomCommand> = {};
+  commands: Record<string, CommandObject> = {};
   active: Record<string, any> = {};
 
   /**
@@ -232,7 +232,7 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
    * commands.add('myCommand2', editor => { ... });
    * */
   add(id: string, command: Command) {
-    let result: CustomCommand = isFunction(command) ? { run: command } : command;
+    let result: CommandObject = isFunction(command) ? { run: command } : command;
 
     if (!result.stop) {
       result.noStop = true;
@@ -254,7 +254,7 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
    * var myCommand = commands.get('myCommand');
    * myCommand.run();
    * */
-  get(id: string): CustomCommand | undefined {
+  get(id: string): CommandObject | undefined {
     let command: any = this.commands[id];
 
     if (isFunction(command)) {
@@ -279,7 +279,7 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
    *  }
    * });
    * */
-  extend(id: string, cmd: CustomCommand = {}) {
+  extend(id: string, cmd: CommandObject = {}) {
     const command = this.get(id);
 
     if (command) {
@@ -374,7 +374,7 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
    * @return {*} Result of the command
    * @private
    */
-  runCommand(command?: CustomCommand, options: CommandOptions = {}) {
+  runCommand(command?: CommandObject, options: CommandOptions = {}) {
     let result;
 
     if (command && command.run) {
@@ -402,7 +402,7 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
    * @return {*} Result of the command
    * @private
    */
-  stopCommand(command?: CustomCommand, options: CommandOptions = {}) {
+  stopCommand(command?: CommandObject, options: CommandOptions = {}) {
     let result;
 
     if (command && command.run) {
@@ -426,7 +426,7 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
    * @return {Command}
    * @private
    * */
-  create(command: CustomCommand) {
+  create(command: CommandObject) {
     if (!command.stop) command.noStop = true;
     const cmd = CommandAbstract.extend(command);
     return new cmd(this.config);

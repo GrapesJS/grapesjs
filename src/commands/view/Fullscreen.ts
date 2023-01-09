@@ -1,5 +1,5 @@
 import { isElement } from 'underscore';
-import { CustomCommand } from './CommandAbstract';
+import { CommandObject } from './CommandAbstract';
 
 export default {
   /**
@@ -80,4 +80,4 @@ export default {
     this.disable();
     if (editor) editor.trigger('change:canvasOffset');
   },
-} as CustomCommand<{ target?: HTMLElement | string }, { [k: string]: any }>;
+} as CommandObject<{ target?: HTMLElement | string }, { [k: string]: any }>;

@@ -1,6 +1,6 @@
 import { keys, bindAll, each, isUndefined, debounce } from 'underscore';
 import Dragger from '../../utils/Dragger';
-import { CustomCommand } from './CommandAbstract';
+import { CommandObject } from './CommandAbstract';
 
 type Rect = { left: number; width: number; top: number; height: number };
 type OrigRect = { left: number; width: number; top: number; height: number; rect: Rect };
@@ -462,7 +462,7 @@ export default {
     classes.forEach(cls => body.classList[methodCls](cls));
     Canvas[enable ? 'startAutoscroll' : 'stopAutoscroll']();
   },
-} as CustomCommand<
+} as CommandObject<
   any,
   {
     guidesStatic?: Guide[];

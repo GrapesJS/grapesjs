@@ -1,4 +1,4 @@
-import { CustomCommand } from './CommandAbstract';
+import { CommandObject } from './CommandAbstract';
 
 export default {
   run(editor) {
@@ -31,4 +31,4 @@ export default {
     const { layers } = this;
     layers && (layers.style.display = 'none');
   },
-} as CustomCommand<{}, { [k: string]: any }>;
+} as CommandObject<{}, { [k: string]: any }>;

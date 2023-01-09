@@ -1,6 +1,6 @@
 import { flatten } from 'underscore';
 import CssRule from '../../css_composer/model/CssRule';
-import { CustomCommand } from './CommandAbstract';
+import { CommandObject } from './CommandAbstract';
 
 export default {
   run(ed, s, opts = {}) {
@@ -24,4 +24,4 @@ export default {
 
     return toRemove;
   },
-} as CustomCommand;
+} as CommandObject;

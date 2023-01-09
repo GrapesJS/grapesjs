@@ -1,7 +1,7 @@
 import { bindAll } from 'underscore';
 import { on, off, getKeyChar } from '../../utils/mixins';
 import Dragger from '../../utils/Dragger';
-import { CustomCommand } from './CommandAbstract';
+import { CommandObject } from './CommandAbstract';
 
 export default {
   run(ed) {
@@ -75,7 +75,7 @@ export default {
     methodsEv[methodEv](canvas, 'mousedown', this.enableDragger);
     methodsEv[methodEv](document, 'mouseup', this.disableDragger);
   },
-} as CustomCommand<
+} as CommandObject<
   any,
   {
     [key: string]: any;

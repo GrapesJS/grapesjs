@@ -1,5 +1,5 @@
 import Backbone from 'backbone';
-import { CustomCommand } from './CommandAbstract';
+import { CommandObject } from './CommandAbstract';
 
 const $ = Backbone.$;
 
@@ -63,4 +63,4 @@ export default {
     this.$cn2 && this.$cn2.hide();
     this.$header && this.$header.hide();
   },
-} as CustomCommand<{}, { [k: string]: any }>;
+} as CommandObject<{}, { [k: string]: any }>;

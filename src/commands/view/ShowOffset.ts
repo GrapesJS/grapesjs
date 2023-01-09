@@ -1,7 +1,7 @@
 import Backbone from 'backbone';
 import { isUndefined } from 'underscore';
 import { isTextNode } from '../../utils/mixins';
-import { CustomCommand } from './CommandAbstract';
+import { CommandObject } from './CommandAbstract';
 const $ = Backbone.$;
 
 export default {
@@ -177,4 +177,4 @@ export default {
     var offsetViewer = canvas[method](opts.view);
     offsetViewer.style.opacity = 0;
   },
-} as CustomCommand<any, { [k: string]: any }>;
+} as CommandObject<any, { [k: string]: any }>;

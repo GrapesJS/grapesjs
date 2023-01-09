@@ -12,17 +12,17 @@ interface ICommand<O extends AnyObject = any> {
 
 export type CommandFunction<O extends AnyObject = any> = CommandAbstract<O>['run'];
 
-export type Command = CustomCommand | CommandFunction;
+export type Command = CommandObject | CommandFunction;
 
 export type CommandOptions = Record<string, any>;
 
 type AnyObject = Record<string, any>;
 
-export type CustomCommand<O extends AnyObject = any, T extends AnyObject = {}> = ICommand<O> &
+export type CommandObject<O extends AnyObject = any, T extends AnyObject = {}> = ICommand<O> &
   T &
   ThisType<T & CommandAbstract<O>>;
 
-export function defineCommand<O extends AnyObject = any, T extends AnyObject = {}>(def: CustomCommand<O, T>) {
+export function defineCommand<O extends AnyObject = any, T extends AnyObject = {}>(def: CommandObject<O, T>) {
   return def;
 }
 

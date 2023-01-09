@@ -1,7 +1,7 @@
 import { isFunction } from 'underscore';
 import Asset from '../../asset_manager/model/Asset';
 import { createEl } from '../../utils/dom';
-import { CustomCommand } from './CommandAbstract';
+import { CommandObject } from './CommandAbstract';
 
 export default {
   open(content: string) {
@@ -73,4 +73,4 @@ export default {
     this.editor = editor;
     this.close(this.rendered);
   },
-} as CustomCommand<any, { [k: string]: any }>;
+} as CommandObject<any, { [k: string]: any }>;

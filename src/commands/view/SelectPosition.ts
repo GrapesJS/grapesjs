@@ -1,5 +1,5 @@
 import Backbone from 'backbone';
-import { CustomCommand } from './CommandAbstract';
+import { CommandObject } from './CommandAbstract';
 const $ = Backbone.$;
 
 export default {
@@ -105,4 +105,4 @@ export default {
     this.$wrapper.css('cursor', '');
     this.$wrapper.unbind();
   },
-} as CustomCommand<{}, { [k: string]: any }>;
+} as CommandObject<{}, { [k: string]: any }>;

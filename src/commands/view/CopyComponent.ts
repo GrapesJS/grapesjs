@@ -1,4 +1,4 @@
-import { CustomCommand } from './CommandAbstract';
+import { CommandObject } from './CommandAbstract';
 
 export default {
   run(ed) {
@@ -6,4 +6,4 @@ export default {
     const models = [...ed.getSelectedAll()];
     models.length && em.set('clipboard', models);
   },
-} as CustomCommand;
+} as CommandObject;

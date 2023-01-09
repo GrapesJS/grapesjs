@@ -1,7 +1,7 @@
 import { bindAll } from 'underscore';
 import Frame from '../../canvas/model/Frame';
 import Editor from '../../editor';
-import { CustomCommand } from './CommandAbstract';
+import { CommandObject } from './CommandAbstract';
 
 export default {
   init() {
@@ -33,7 +33,7 @@ export default {
     const method = active ? 'add' : 'remove';
     frame.view?.getBody().classList[method](`${this.ppfx}dashed`);
   },
-} as CustomCommand<
+} as CommandObject<
   {},
   {
     [key: string]: any;

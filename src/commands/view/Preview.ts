@@ -1,6 +1,6 @@
 import { each } from 'underscore';
 import Editor from '../../editor';
-import { CustomCommand } from './CommandAbstract';
+import { CommandObject } from './CommandAbstract';
 
 const cmdOutline = 'core:component-outline';
 
@@ -96,4 +96,4 @@ export default {
     editor.refresh();
     this.tglEffects();
   },
-} as CustomCommand<{}, { [k: string]: any }>;
+} as CommandObject<{}, { [k: string]: any }>;

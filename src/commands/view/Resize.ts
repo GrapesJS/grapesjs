@@ -1,5 +1,5 @@
 import Resizer from '../../utils/Resizer';
-import { CustomCommand } from './CommandAbstract';
+import { CommandObject } from './CommandAbstract';
 
 export default {
   run(editor, sender, opts) {
@@ -30,4 +30,4 @@ export default {
   stop() {
     this.canvasResizer?.blur();
   },
-} as CustomCommand<{ options?: {}; forceNew?: boolean; el: HTMLElement }, { canvasResizer?: Resizer }>;
+} as CommandObject<{ options?: {}; forceNew?: boolean; el: HTMLElement }, { canvasResizer?: Resizer }>;

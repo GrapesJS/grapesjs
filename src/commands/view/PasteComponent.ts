@@ -1,6 +1,6 @@
 import { isArray, contains } from 'underscore';
 import Component from '../../dom_components/model/Component';
-import { CustomCommand } from './CommandAbstract';
+import { CommandObject } from './CommandAbstract';
 
 export default {
   run(ed, s, opts = {}) {
@@ -37,4 +37,4 @@ export default {
       lastSelected.emitUpdate();
     }
   },
-} as CustomCommand;
+} as CommandObject;

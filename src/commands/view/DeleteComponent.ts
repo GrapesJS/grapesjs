@@ -1,7 +1,7 @@
 import { extend, bindAll } from 'underscore';
 import Backbone from 'backbone';
 import SelectComponent from './SelectComponent';
-import { CustomCommand } from './CommandAbstract';
+import { CommandObject } from './CommandAbstract';
 import Component from '../../dom_components/model/Component';
 
 const $ = Backbone.$;
@@ -73,4 +73,4 @@ export default extend({}, SelectComponent, {
   updateBadgeLabel(model: Component) {
     this.badge.html('Remove ' + model.getName());
   },
-} as CustomCommand<{}, { [k: string]: any }>);
+} as CommandObject<{}, { [k: string]: any }>);

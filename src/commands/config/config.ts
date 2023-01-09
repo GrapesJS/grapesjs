@@ -1,4 +1,4 @@
-import { CustomCommand } from '../view/CommandAbstract';
+import { CommandObject } from '../view/CommandAbstract';
 
 export interface CommandsConfig {
   /**
@@ -11,7 +11,7 @@ export interface CommandsConfig {
    * Default commands
    * @default {}
    */
-  defaults: Record<string, CustomCommand>;
+  defaults: Record<string, CommandObject>;
 
   /**
    * If true, stateful commands (with `run` and `stop` methods) can't be executed multiple times.

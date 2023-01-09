@@ -1,5 +1,5 @@
 import Component from '../../dom_components/model/Component';
-import { CustomCommand } from './CommandAbstract';
+import { CommandObject } from './CommandAbstract';
 
 export default {
   run(ed, snd, opts = {}) {
@@ -19,4 +19,4 @@ export default {
 
     toSelect.length && ed.select(toSelect);
   },
-} as CustomCommand;
+} as CommandObject;

@@ -3,7 +3,7 @@ import Backbone from 'backbone';
 import { on, off } from '../../utils/mixins';
 import SelectComponent from './SelectComponent';
 import SelectPosition from './SelectPosition';
-import { CustomCommand } from './CommandAbstract';
+import { CommandObject } from './CommandAbstract';
 import Component from '../../dom_components/model/Component';
 
 const $ = Backbone.$;
@@ -170,4 +170,4 @@ export default extend({}, SelectPosition, SelectComponent, {
     var wp = this.$wrapper;
     wp.css('cursor', '').unbind().removeClass(this.noSelClass);
   },
-} as CustomCommand<{}, { [k: string]: any }>);
+} as CommandObject<{}, { [k: string]: any }>);
