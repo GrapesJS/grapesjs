@@ -16,7 +16,7 @@ export type Command = CommandObject | CommandFunction;
 
 export type CommandOptions = Record<string, any>;
 
-type AnyObject = Record<string, any>;
+export type AnyObject = Record<string, any>;
 
 export type CommandObject<O extends AnyObject = any, T extends AnyObject = {}> = ICommand<O> &
   T &
