@@ -1,7 +1,32 @@
 import { isUndefined } from 'underscore';
-import Property from './Property';
+import Property, { PropertyProps } from './Property';
 import InputNumber from '../../domain_abstract/ui/InputNumber';
 import { hasWin } from '../../utils/mixins';
+
+/** @private */
+export interface PropertyNumberProps extends PropertyProps {
+  /**
+   * Array of units, eg. `['px', '%']`
+   */
+  units?: string[];
+  /**
+   * Unit defualt value.
+   */
+  unit?: string;
+  /**
+   * Minimum value.
+   */
+  min?: number;
+  /**
+   * Maximum value.
+   */
+  max?: number;
+  /**
+   * Step value.
+   * @default 1
+   */
+  step?: number;
+}
 
 /**
  * @typedef PropertyNumber
@@ -11,7 +36,9 @@ import { hasWin } from '../../utils/mixins';
  * @property {Number} step Step value.
  *
  */
-export default class PropertyNumber extends Property {
+export default class PropertyNumber extends Property<PropertyNumberProps> {
+  input?: InputNumber;
+
   defaults() {
     return {
       ...Property.getDefaults(),
@@ -36,7 +63,7 @@ export default class PropertyNumber extends Property {
    * @returns {String}
    */
   getUnit() {
-    return this.get('unit');
+    return this.get('unit')!;
   }
 
   /**
@@ -44,7 +71,7 @@ export default class PropertyNumber extends Property {
    * @returns {Number}
    */
   getMin() {
-    return this.get('min');
+    return this.get('min')!;
   }
 
   /**
@@ -52,7 +79,7 @@ export default class PropertyNumber extends Property {
    * @returns {Number}
    */
   getMax() {
-    return this.get('max');
+    return this.get('max')!;
   }
 
   /**
@@ -60,7 +87,7 @@ export default class PropertyNumber extends Property {
    * @returns {Number}
    */
   getStep() {
-    return this.get('step');
+    return this.get('step')!;
   }
 
   /**
@@ -71,19 +98,21 @@ export default class PropertyNumber extends Property {
    * @param {Boolean} [opts.noTarget=false] If `true` the change won't be propagated to selected targets.
    * @returns {String}
    */
-  upUnit(unit, opts) {
+  upUnit(unit: string, opts: { noTarget?: boolean } = {}) {
     return this._up({ unit }, opts);
   }
 
   initialize(props = {}, opts = {}) {
+    // @ts-ignore
     Property.callParentInit(Property, this, props, opts);
     const unit = this.get('unit');
-    const units = this.get('units');
-    this.input = hasWin() && new InputNumber({ model: this });
+    const units = this.getUnits();
+    this.input = hasWin() ? new InputNumber({ model: this }) : undefined;
 
     if (units.length && !unit) {
-      this.set('unit', units[0], { silent: 1 });
+      this.set('unit', units[0], { silent: true });
     }
+    // @ts-ignore
     Property.callInit(this, props, opts);
   }
 
@@ -94,12 +123,12 @@ export default class PropertyNumber extends Property {
     };
   }
 
-  parseValue(val, opts = {}) {
-    const parsed = Property.prototype.parseValue.apply(this, arguments);
-    const { value, unit } = this.input.validateInputValue(parsed.value, {
+  parseValue(val: any, opts = {}) {
+    const parsed = Property.prototype.parseValue.apply(this, arguments as any);
+    const { value, unit } = this.input!.validateInputValue(parsed.value, {
       deepCheck: 1,
       ...opts,
-    });
+    }) as any;
     parsed.value = value;
     parsed.unit = unit;
     return parsed;

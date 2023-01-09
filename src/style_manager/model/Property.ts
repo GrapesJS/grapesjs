@@ -1,4 +1,4 @@
-import { isUndefined, isString, isArray, result, keys, each, includes } from 'underscore';
+import { isUndefined, isString, isArray, result, keys, each, includes, any } from 'underscore';
 import { Model } from '../../common';
 import Component from '../../dom_components/model/Component';
 import EditorModel from '../../editor/model/Editor';
@@ -164,9 +164,10 @@ export default class Property<T extends Record<string, any> = PropertyProps> ext
     sm?.addStyleTargets({ ...style, __p: !!opts.avoidStore }, opts);
   }
 
-  _up(props: PartialPropertyProps, opts: any = {}) {
+  _up(props: Partial<T>, opts: any = {}) {
     if (opts.noTarget) opts.__up = true;
     const { partial, ...rest } = opts;
+    // @ts-ignore
     props.__p = !!(rest.avoidStore || partial);
     // @ts-ignore
     return this.set(props, { ...rest, avoidStore: props.__p });
@@ -286,7 +287,7 @@ export default class Property<T extends Record<string, any> = PropertyProps> ext
    */
   upValue(value: string, opts = {}) {
     const parsed = value === null || value === '' ? this.__getClearProps() : this.__parseValue(value, opts);
-    return this._up(parsed, opts);
+    return this._up(parsed as Partial<T>, opts);
   }
 
   /**
@@ -338,7 +339,7 @@ export default class Property<T extends Record<string, any> = PropertyProps> ext
   }
 
   __getClearProps() {
-    return { value: '' };
+    return { value: '' } as unknown as Partial<T>;
   }
 
   /**
@@ -382,8 +383,8 @@ export default class Property<T extends Record<string, any> = PropertyProps> ext
    * // -> { value: 10, unit: 'deg', functionName: 'translateX' }
    *
    */
-  parseValue(value: string, opts: { complete?: boolean; numeric?: boolean } = {}) {
-    const result: PartialPropertyProps = { value };
+  parseValue(value: string, opts: { complete?: boolean; numeric?: boolean } = {}): Partial<T> {
+    const result = { value } as any;
     const imp = '!important';
 
     if (isString(value) && value.indexOf(imp) !== -1) {
