@@ -1,7 +1,11 @@
 import { Model } from '../../common';
 import { camelCase } from '../../utils/mixins';
 
-export default class Layer extends Model {
+type LayerValues = Record<string, any>;
+
+export default class Layer extends Model<{ values: LayerValues }> {
+  prop: any;
+
   defaults() {
     return {
       values: {},
@@ -10,6 +14,7 @@ export default class Layer extends Model {
 
   initialize() {
     const cl = this.collection;
+    // @ts-ignore
     this.prop = cl?.prop;
   }
 
@@ -36,14 +41,14 @@ export default class Layer extends Model {
    * @param {Boolean} [opts.camelCase] Return property names in camelCase.
    * @returns {Object}
    */
-  getValues(opts = {}) {
-    const values = this.get('values');
+  getValues(opts: { camelCase?: boolean } = {}) {
+    const values = this.get('values')!;
 
     return opts.camelCase
       ? Object.keys(values).reduce((res, key) => {
           res[camelCase(key)] = values[key];
           return res;
-        }, {})
+        }, {} as LayerValues)
       : values;
   }
 
@@ -51,7 +56,7 @@ export default class Layer extends Model {
    * Get layer label.
    * @returns {String}
    */
-  getLabel() {
+  getLabel(): string {
     return this.prop?.getLayerLabel(this);
   }
 
@@ -81,7 +86,7 @@ export default class Layer extends Model {
    * Move layer to a new index.
    * @param {Number} index New index
    */
-  move(index) {
+  move(index: number) {
     return this.prop?.moveLayer(this, index);
   }
 
@@ -90,7 +95,7 @@ export default class Layer extends Model {
    * @param {Object} [opts={}] Options. Same of `PropertyStack.getStyleFromLayer`
    * @returns {Object} Style object
    */
-  getStylePreview(opts = {}) {
+  getStylePreview(opts = {}): Record<string, any> {
     return this.prop?.getStylePreview(this, opts);
   }
 
@@ -102,7 +107,7 @@ export default class Layer extends Model {
     return !!this.prop?.get('preview');
   }
 
-  upValues(props = {}) {
+  upValues(props: LayerValues = {}) {
     return this.set('values', {
       ...this.getValues(),
       ...props,
