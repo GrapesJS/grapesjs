@@ -1,9 +1,9 @@
-import Property from './PropertySelect';
+import PropertySelect from './PropertySelect';
 
-export default class PropertyRadio extends Property {
+export default class PropertyRadio extends PropertySelect {
   defaults() {
     return {
-      ...Property.getDefaults(),
+      ...PropertySelect.getDefaults(),
       full: 1,
     };
   }
