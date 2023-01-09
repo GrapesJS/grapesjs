@@ -1,6 +1,72 @@
 import { isUndefined, isString, isArray, result, keys, each, includes } from 'underscore';
 import { Model } from '../../common';
+import EditorModel from '../../editor/model/Editor';
 import { capitalize, camelCase, hasWin } from '../../utils/mixins';
+
+/** @private */
+export interface PropertyProps {
+  name?: string;
+  label?: string;
+  id?: string;
+  property: string;
+  type?: string;
+  defaults?: string;
+  default?: string;
+  info?: string;
+  value?: any;
+  icon?: string;
+  functionName?: string;
+  status?: string;
+  visible?: boolean;
+  fixedValues?: string[];
+  onChange?: (data: {
+    property: Property;
+    from: PartialPropertyProps;
+    to: PartialPropertyProps;
+    value: any;
+    opts: any;
+  }) => any;
+
+  /**
+   * If true, the property will be forced to be full width
+   */
+  full?: boolean;
+
+  /**
+   * If true to the value will be added '!important'
+   */
+  important?: boolean;
+
+  /**
+   * If true, will be hidden by default and will show up only for targets
+   * which require this property (via `stylable-require`)
+   * Use case:
+   * you can add all SVG CSS properties with toRequire as true
+   * and then require them on SVG Components
+   */
+  toRequire?: boolean;
+
+  /**
+   * Specifies dependency on other properties of the selected object.
+   * Property is shown only when all conditions are matched.
+   *
+   * example: { display: ['flex', 'block'], position: ['absolute'] };
+   * in this case the property is only shown when display is
+   * of value 'flex' or 'block' AND position is 'absolute'
+   */
+  requires?: Record<string, any>;
+
+  /**
+   * Specifies dependency on properties of the parent of the selected object.
+   * Property is shown only when all conditions are matched.
+   */
+  requiresParent?: any;
+
+  parentTarget?: any;
+  __p?: any;
+}
+
+type PartialPropertyProps = Partial<PropertyProps>;
 
 /**
  * @typedef Property
@@ -17,8 +83,32 @@ import { capitalize, camelCase, hasWin } from '../../utils/mixins';
  * ```
  *
  */
-export default class Property extends Model {
-  initialize(props = {}, opts = {}) {
+export default class Property extends Model<PropertyProps> {
+  em!: EditorModel;
+
+  defaults() {
+    return {
+      name: '',
+      property: '',
+      type: '',
+      defaults: '',
+      info: '',
+      value: '',
+      icon: '',
+      functionName: '',
+      status: '',
+      visible: true,
+      fixedValues: ['initial', 'inherit'],
+      full: false,
+      important: false,
+      toRequire: false,
+      requires: undefined,
+      requiresParent: null,
+      parentTarget: null,
+    };
+  }
+
+  initialize(props = {}, opts: any = {}) {
     this.em = opts.em;
     const id = this.get('id') || '';
     const name = this.get('name') || this.get('label') || '';
@@ -27,14 +117,16 @@ export default class Property extends Model {
     !this.get('id') && this.set('id', prop);
     !name && this.set('name', capitalize(prop).replace(/-/g, ' '));
     this.on('change', this.__upTargets);
+    // @ts-ignore
     Property.callInit(this, props, opts);
   }
 
   __getParentProp() {
+    // @ts-ignore
     return this.collection?.opts?.parentProp;
   }
 
-  __upTargets(p, opts = {}) {
+  __upTargets(p: any, opts: any = {}) {
     const { em } = this;
     const sm = em.get('StyleManager');
     const name = this.getName();
@@ -42,11 +134,11 @@ export default class Property extends Model {
     const value = isClear ? '' : this.__getFullValue(opts);
     const parentProp = this.__getParentProp();
 
-    const to = this.changedAttributes();
+    const to = this.changedAttributes() as PartialPropertyProps;
     const from = keys(to).reduce((a, i) => {
-      a[i] = this.previous(i);
+      a[i] = this.previous(i as any);
       return a;
-    }, {});
+    }, {} as any);
 
     const kProps = [...keys(this.__getClearProps()), '__p'];
     const toProps = keys(to);
@@ -58,19 +150,19 @@ export default class Property extends Model {
     applyStyle && this.__upTargetsStyle({ [name]: value }, opts);
   }
 
-  __upTargetsStyle(style, opts) {
+  __upTargetsStyle(style: Record<string, string>, opts: any) {
     const sm = this.em?.get('StyleManager');
     sm?.addStyleTargets({ ...style, __p: !!opts.avoidStore }, opts);
   }
 
-  _up(props, opts = {}) {
+  _up(props: PartialPropertyProps, opts: any = {}) {
     if (opts.noTarget) opts.__up = true;
     const { partial, ...rest } = opts;
     props.__p = !!(rest.avoidStore || partial);
     return this.set(props, { ...rest, avoidStore: props.__p });
   }
 
-  up(props, opts = {}) {
+  up(props: PartialPropertyProps, opts = {}) {
     this.set(props, { ...opts, __up: true });
   }
 
@@ -81,7 +173,7 @@ export default class Property extends Model {
    * @returns {String}
    */
   getId() {
-    return this.get('id');
+    return this.get('id')!;
   }
 
   /**
@@ -91,7 +183,7 @@ export default class Property extends Model {
    * @returns {String}
    */
   getType() {
-    return this.get('type');
+    return this.get('type')!;
   }
 
   /**
@@ -99,7 +191,7 @@ export default class Property extends Model {
    * @returns {String}
    */
   getName() {
-    return this.get('property');
+    return this.get('property')!;
   }
 
   /**
@@ -108,7 +200,7 @@ export default class Property extends Model {
    * @param {Boolean} [opts.locale=true] Use the locale string from i18n module
    * @returns {String}
    */
-  getLabel(opts = {}) {
+  getLabel(opts: { locale?: boolean } = {}) {
     const { locale = true } = opts;
     const id = this.getId();
     const name = this.get('name') || this.get('label');
@@ -121,7 +213,7 @@ export default class Property extends Model {
    * @param {Boolean} [opts.noDefault=false] Avoid returning the default value
    * @returns {String}
    */
-  getValue(opts = {}) {
+  getValue(opts: { noDefault?: boolean } = {}) {
     const { noDefault } = opts;
     const val = this.get('value');
     return !this.hasValue() && !noDefault ? this.getDefaultValue() : val;
@@ -133,7 +225,7 @@ export default class Property extends Model {
    * @param {Boolean} [opts.noParent=false] Ignore the value if it comes from the parent target.
    * @returns {Boolean}
    */
-  hasValue(opts = {}) {
+  hasValue(opts: { noParent?: boolean } = {}) {
     const { noParent } = opts;
     const parentValue = noParent && this.getParentTarget();
     const val = this.get('value');
@@ -158,7 +250,7 @@ export default class Property extends Model {
    * console.log(property.getStyle());
    * // { color: 'red' };
    */
-  getStyle(opts = {}) {
+  getStyle(opts: { camelCase?: boolean } = {}) {
     const name = this.getName();
     const key = opts.camelCase ? camelCase(name) : name;
     return { [key]: this.__getFullValue(opts) };
@@ -181,7 +273,7 @@ export default class Property extends Model {
    * @param {Boolean} [opts.partial=false] If `true` the update on targets won't be considered complete (not stored in UndoManager)
    * @param {Boolean} [opts.noTarget=false] If `true` the change won't be propagated to selected targets.
    */
-  upValue(value, opts = {}) {
+  upValue(value: string, opts = {}) {
     const parsed = value === null || value === '' ? this.__getClearProps() : this.__parseValue(value, opts);
     return this._up(parsed, opts);
   }
@@ -200,6 +292,7 @@ export default class Property extends Model {
    * @param {Object} [opts={}] Options
    * @param {Boolean} [opts.noTarget=false] If `true` the change won't be propagated to selected targets.
    */
+  // @ts-ignore
   clear(opts = {}) {
     this._up(this.__getClearProps(), { ...opts, __clear: true });
   }
@@ -229,7 +322,7 @@ export default class Property extends Model {
     return !!this.get('full');
   }
 
-  __parseValue(value, opts) {
+  __parseValue(value: string, opts: any) {
     return this.parseValue(value, opts);
   }
 
@@ -244,7 +337,7 @@ export default class Property extends Model {
    * @param {Object} [opts={}] Options
    * @private
    */
-  setValue(value, complete = 1, opts = {}) {
+  setValue(value: string, complete = true, opts = {}) {
     const parsed = this.parseValue(value);
     const avoidStore = !complete;
     !avoidStore && this.set({ value: undefined }, { avoidStore, silent: true });
@@ -261,7 +354,7 @@ export default class Property extends Model {
    * @private
    * @deprecated
    */
-  setValueFromInput(value, complete, opts = {}) {
+  setValueFromInput(value: string, complete: boolean, opts = {}) {
     this.setValue(value, complete, { ...opts, fromInput: 1 });
   }
 
@@ -276,13 +369,13 @@ export default class Property extends Model {
    * // -> { value: 10, unit: 'deg', functionName: 'translateX' }
    *
    */
-  parseValue(value, opts = {}) {
-    const result = { value };
+  parseValue(value: string, opts: { complete?: boolean; numeric?: boolean } = {}) {
+    const result: PartialPropertyProps = { value };
     const imp = '!important';
 
     if (isString(value) && value.indexOf(imp) !== -1) {
       result.value = value.replace(imp, '').trim();
-      result.important = 1;
+      result.important = true;
     }
 
     if (!this.get('functionName') && !opts.complete) {
@@ -302,10 +395,11 @@ export default class Property extends Model {
       args.push(end);
     }
 
-    result.value = String.prototype.substring.apply(valueStr, args);
+    result.value = String.prototype.substring.apply(valueStr, args as any);
 
     if (opts.numeric) {
       const num = parseFloat(result.value);
+      // @ts-ignore
       result.unit = result.value.replace(num, '');
       result.value = num;
     }
@@ -350,7 +444,7 @@ export default class Property extends Model {
   //   return res.map(i => i.trim());
   // }
 
-  __getFullValue({ withDefault } = {}) {
+  __getFullValue({ withDefault }: any = {}) {
     return !this.hasValue() && withDefault ? this.getDefaultValue() : this.getFullValue();
   }
 
@@ -362,7 +456,7 @@ export default class Property extends Model {
    * @return {string}
    * @private
    */
-  getFullValue(val, opts = {}) {
+  getFullValue(val?: string, opts: any = {}) {
     const fn = this.get('functionName');
     const def = this.getDefaultValue();
     let value = isUndefined(val) ? this.get('value') : val;
@@ -384,7 +478,7 @@ export default class Property extends Model {
     return value || '';
   }
 
-  __setParentTarget(parentTarget) {
+  __setParentTarget(parentTarget: any) {
     this.up({ parentTarget });
   }
 
@@ -402,7 +496,7 @@ export default class Property extends Model {
     };
   }
 
-  __checkVisibility({ target, component, sectors }) {
+  __checkVisibility({ target, component, sectors }: any) {
     const trg = component || target;
     if (!trg) return false;
 
@@ -434,8 +528,8 @@ export default class Property extends Model {
     // Check if the property is available based on other property's values
     if (sectors && requires) {
       const properties = keys(requires);
-      sectors.forEach(sector => {
-        sector.getProperties().forEach(model => {
+      sectors.forEach((sector: any) => {
+        sector.getProperties().forEach((model: any) => {
           if (includes(properties, model.id)) {
             const values = requires[model.id];
             stylable = stylable && includes(values, model.get('value'));
@@ -449,7 +543,7 @@ export default class Property extends Model {
       const parent = component && component.parent();
       const parentEl = parent && parent.getEl();
       if (parentEl) {
-        const styles = hasWin() ? window.getComputedStyle(parentEl) : {};
+        const styles: Record<string, any> = hasWin() ? window.getComputedStyle(parentEl) : {};
         each(requiresParent, (values, property) => {
           stylable = stylable && styles[property] && includes(values, styles[property]);
         });
@@ -462,6 +556,7 @@ export default class Property extends Model {
   }
 }
 
+// @ts-ignore
 Property.callParentInit = function (property, ctx, props, opts = {}) {
   property.prototype.initialize.apply(ctx, [
     props,
@@ -472,52 +567,12 @@ Property.callParentInit = function (property, ctx, props, opts = {}) {
   ]);
 };
 
-Property.callInit = function (context, props, opts = {}) {
+// @ts-ignore
+Property.callInit = function (context, props, opts: any = {}) {
   !opts.skipInit && context.init(props, opts);
 };
 
+// @ts-ignore
 Property.getDefaults = function () {
   return result(this.prototype, 'defaults');
-};
-
-Property.prototype.defaults = {
-  name: '',
-  property: '',
-  type: '',
-  defaults: '',
-  info: '',
-  value: '',
-  icon: '',
-  functionName: '',
-  status: '',
-  visible: true,
-  fixedValues: ['initial', 'inherit'],
-  onChange: null,
-
-  // If true, the property will be forced to be full width
-  full: 0,
-
-  // If true to the value will be added '!important'
-  important: 0,
-
-  // If true, will be hidden by default and will show up only for targets
-  // which require this property (via `stylable-require`)
-  // Use case:
-  // you can add all SVG CSS properties with toRequire as true
-  // and then require them on SVG Components
-  toRequire: 0,
-
-  // Specifies dependency on other properties of the selected object.
-  // Property is shown only when all conditions are matched.
-  //
-  // example: { display: ['flex', 'block'], position: ['absolute'] };
-  //          in this case the property is only shown when display is
-  //          of value 'flex' or 'block' AND position is 'absolute'
-  requires: null,
-
-  // Specifies dependency on properties of the parent of the selected object.
-  // Property is shown only when all conditions are matched.
-  requiresParent: null,
-
-  parentTarget: null,
 };
