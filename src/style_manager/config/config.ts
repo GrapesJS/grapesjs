@@ -1,5 +1,67 @@
+export interface StyleManagerConfig {
+  /**
+   * Default sectors and properties
+   */
+  sectors?: {}[]; // TODO
+
+  /**
+   * Specify the element to use as a container, string (query) or HTMLElement.
+   * With the empty value, nothing will be rendered.
+   */
+  appendTo?: string | HTMLElement;
+
+  /**
+   * Style prefix.
+   * @default 'sm-'
+   */
+  stylePrefix?: string;
+
+  /**
+   * Avoid rendering the default style manager.
+   * @default false
+   */
+  custom?: boolean;
+
+  /**
+   * Hide the property in case it's not stylable for the
+   * selected component (each component has 'stylable' property).
+   * @deprecated
+   */
+  hideNotStylable?: boolean;
+
+  /**
+   * Highlight changed properties of the selected component.
+   * @deprecated
+   */
+  highlightChanged?: boolean;
+
+  /**
+   * Highlight computed properties of the selected component.
+   * @deprecated
+   */
+  highlightComputed?: boolean;
+
+  /**
+   * Show computed properties of the selected component, if this value
+   * is set to false, highlightComputed will not take effect.
+   * @deprecated
+   */
+  showComputed?: boolean;
+
+  /**
+   * Adds the possibility to clear property value from the target style.
+   * @deprecated
+   */
+  clearProperties?: boolean;
+
+  /**
+   * Properties not to take in account for computed styles.
+   * @deprecated
+   */
+  avoidComputed?: string[];
+}
+
 export default {
-  // Default sectors and properties
   sectors: [
     {
       name: 'General',
@@ -52,40 +114,13 @@ export default {
       properties: ['opacity', 'transition', 'transform'],
     },
   ],
-
-  // Specify the element to use as a container, string (query) or HTMLElement
-  // With the empty value, nothing will be rendered
   appendTo: '',
-
-  // Style prefix
   stylePrefix: 'sm-',
-
-  // Avoid rendering the default style manager.
   custom: false,
-
-  // Hide the property in case it's not stylable for the
-  // selected component (each component has 'stylable' property)
-  // @deprecated
   hideNotStylable: true,
-
-  // Highlight changed properties of the selected component
-  // @deprecated
   highlightChanged: true,
-
-  // Highlight computed properties of the selected component
-  // @deprecated
   highlightComputed: true,
-
-  // Show computed properties of the selected component, if this value
-  // is set to false, highlightComputed will not take effect
-  // @deprecated
   showComputed: true,
-
-  // Adds the possibility to clear property value from the target style
-  // @deprecated
   clearProperties: true,
-
-  // Properties not to take in account for computed styles
-  // @deprecated
   avoidComputed: ['width', 'height'],
-};
+} as StyleManagerConfig;
