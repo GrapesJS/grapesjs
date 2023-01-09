@@ -6,8 +6,15 @@ import EditorModel from '../../editor/model/Editor';
 interface ICommand<O extends AnyObject = any> {
   run?: CommandAbstract<O>['run'];
   stop?: CommandAbstract<O>['stop'];
+  id?: string;
   [key: string]: unknown;
 }
+
+export type CommandFunction<O extends AnyObject = any> = CommandAbstract<O>['run'];
+
+export type Command = CustomCommand | CommandFunction;
+
+export type CommandOptions = Record<string, any>;
 
 type AnyObject = Record<string, any>;
 

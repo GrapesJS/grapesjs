@@ -1,3 +1,5 @@
+import { CustomCommand } from '../view/CommandAbstract';
+
 export interface CommandsConfig {
   /**
    * Style prefix
@@ -6,10 +8,10 @@ export interface CommandsConfig {
   stylePrefix?: string;
 
   /**
-   * Default array of commands
-   * @default []
+   * Default commands
+   * @default {}
    */
-  defaults: any[];
+  defaults: Record<string, CustomCommand>;
 
   /**
    * If true, stateful commands (with `run` and `stop` methods) can't be executed multiple times.
@@ -21,7 +23,7 @@ export interface CommandsConfig {
 
 const config: CommandsConfig = {
   stylePrefix: 'com-',
-  defaults: [],
+  defaults: {},
   strict: true,
 };
 
