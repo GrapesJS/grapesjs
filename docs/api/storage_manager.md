@@ -188,7 +188,7 @@ editor.loadProjectData(data);
 
 Returns **[Object][16]** Loaded data.
 
-[1]: https://github.com/artf/grapesjs/blob/master/src/storage_manager/config/config.js
+[1]: https://github.com/artf/grapesjs/blob/master/src/storage_manager/config/config.ts
 
 [2]: #getconfig
 

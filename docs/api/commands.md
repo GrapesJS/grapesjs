@@ -95,7 +95,7 @@ Extend the command. The command to extend should be defined as an object
 ### Parameters
 
 *   `id` **[string][11]** Command's ID
-*   `cmd`   (optional, default `{}`)
+*   `cmd` **CustomCommand**  (optional, default `{}`)
 *   `Object` **[Object][12]** with the new command functions
 
 ### Examples
@@ -197,7 +197,7 @@ console.log(commands.getActive());
 
 Returns **[Object][12]** 
 
-[1]: https://github.com/artf/grapesjs/blob/master/src/commands/config/config.js
+[1]: https://github.com/artf/grapesjs/blob/master/src/commands/config/config.ts
 
 [2]: #add
 
