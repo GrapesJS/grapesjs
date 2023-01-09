@@ -498,7 +498,7 @@ export default class Property extends Model<PropertyProps> {
     };
   }
 
-  __checkVisibility({ target, component, sectors }: { target: any; component?: Component; sectors: Sector[] }) {
+  __checkVisibility({ target, component, sectors }: { target: any; component?: Component; sectors?: Sector[] }) {
     const trg = component || target;
     if (!trg) return false;
 
