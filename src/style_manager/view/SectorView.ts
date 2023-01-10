@@ -1,9 +1,20 @@
 import { View } from '../../common';
+import EditorModel from '../../editor/model/Editor';
 import html from '../../utils/html';
+import Sector from '../model/Sector';
 import PropertiesView from './PropertiesView';
 
-export default class SectorView extends View {
-  template({ pfx, label }) {
+type Config = {
+  em: EditorModel;
+  stylePrefix?: string;
+};
+
+export default class SectorView extends View<Sector> {
+  em: EditorModel;
+  config: Config;
+  pfx: string;
+
+  template({ pfx, label }: { pfx?: string; label: string }) {
     const icons = this.em?.getConfig().icons;
     const iconCaret = icons?.caret || '';
     const clsPfx = `${pfx}sector-`;
@@ -22,7 +33,9 @@ export default class SectorView extends View {
     };
   }
 
-  initialize(o) {
+  constructor(o: { config: Config }) {
+    // @ts-ignore
+    super(o);
     const config = o.config || {};
     const { model } = this;
     const { em } = config;
@@ -47,7 +60,7 @@ export default class SectorView extends View {
 
   getPropertiesEl() {
     const { $el, pfx } = this;
-    return $el.find(`.${pfx}properties`).get(0);
+    return $el.find(`.${pfx}properties`).get(0)!;
   }
 
   toggle() {
@@ -60,6 +73,7 @@ export default class SectorView extends View {
     const objs = model.get('properties');
 
     if (objs) {
+      // @ts-ignore
       const view = new PropertiesView({ collection: objs, config });
       this.$el.append(view.render().el);
     }
