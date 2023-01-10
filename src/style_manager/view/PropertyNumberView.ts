@@ -3,7 +3,7 @@ import PropertyView from './PropertyView';
 export default class PropertyNumberView extends PropertyView {
   inputInst?: any;
 
-  templateInput() {
+  templateInput(m: any) {
     return '';
   }
 
