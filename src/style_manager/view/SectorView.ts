@@ -14,6 +14,20 @@ export default class SectorView extends View<Sector> {
   config: Config;
   pfx: string;
 
+  constructor(o: { config: Config }) {
+    // @ts-ignore
+    super(o);
+    const config = o.config || {};
+    const { model } = this;
+    const { em } = config;
+    this.config = config;
+    this.em = em;
+    this.pfx = config.stylePrefix || '';
+    this.listenTo(model, 'destroy remove', this.remove);
+    this.listenTo(model, 'change:open', this.updateOpen);
+    this.listenTo(model, 'change:visible', this.updateVisibility);
+  }
+
   template({ pfx, label }: { pfx?: string; label: string }) {
     const icons = this.em?.getConfig().icons;
     const iconCaret = icons?.caret || '';
@@ -31,20 +45,6 @@ export default class SectorView extends View<Sector> {
     return {
       'click [data-sector-title]': 'toggle',
     };
-  }
-
-  constructor(o: { config: Config }) {
-    // @ts-ignore
-    super(o);
-    const config = o.config || {};
-    const { model } = this;
-    const { em } = config;
-    this.config = config;
-    this.em = em;
-    this.pfx = config.stylePrefix || '';
-    this.listenTo(model, 'destroy remove', this.remove);
-    this.listenTo(model, 'change:open', this.updateOpen);
-    this.listenTo(model, 'change:visible', this.updateVisibility);
   }
 
   updateOpen() {
