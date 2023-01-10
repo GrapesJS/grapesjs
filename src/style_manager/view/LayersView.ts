@@ -1,8 +1,18 @@
 import { View } from '../../common';
+import Layer from '../model/Layer';
 import LayerView from './LayerView';
+import PropertyStackView from './PropertyStackView';
 
-export default class LayersView extends View {
-  initialize(o) {
+export default class LayersView extends View<Layer> {
+  pfx: string;
+  ppfx: string;
+  config: any;
+  propertyView: PropertyStackView;
+  items: LayerView[];
+  sorter: any;
+
+  constructor(o: any) {
+    super(o);
     const coll = this.collection;
     const config = o.config || {};
     const em = config.em;
@@ -28,20 +38,27 @@ export default class LayersView extends View {
           pfx: config.pStylePrefix,
         })
       : '';
+    // @ts-ignore
     coll.view = this;
     this.$el.data('model', coll);
     this.$el.data('collection', coll);
   }
 
-  addTo(model) {
+  addTo(model: Layer) {
     const i = this.collection.indexOf(model);
     this.addToCollection(model, null, i);
   }
 
-  addToCollection(model, fragmentEl, index) {
+  addToCollection(model: Layer, fragmentEl: DocumentFragment | null, index?: number) {
     const fragment = fragmentEl || null;
     const { propertyView, config, sorter, $el } = this;
-    const view = new LayerView({ model, config, sorter, propertyView });
+    const view = new LayerView({
+      model,
+      // @ts-ignore
+      config,
+      sorter,
+      propertyView,
+    });
     const rendered = view.render().el;
     this.items.push(view);
 
@@ -59,6 +76,7 @@ export default class LayersView extends View {
         if (index < 0) {
           $el.append(rendered);
         } else {
+          // @ts-ignore
           $el.children().eq(index)[method](rendered);
         }
       } else {
@@ -69,14 +87,15 @@ export default class LayersView extends View {
     return rendered;
   }
 
-  reset(coll, opts) {
-    this.clearItems(opts);
+  reset(coll: any, opts: any) {
+    this.clearItems();
     this.render();
   }
 
   remove() {
     this.clearItems();
-    View.prototype.remove.apply(this, arguments);
+    View.prototype.remove.apply(this, arguments as any);
+    return this;
   }
 
   clearItems() {
@@ -90,7 +109,7 @@ export default class LayersView extends View {
     $el.empty();
     this.collection.forEach(m => this.addToCollection(m, frag));
     $el.append(frag);
-    $el.attr('class', this.className);
+    $el.attr('class', this.className!);
     if (sorter) sorter.plh = null;
 
     return this;
