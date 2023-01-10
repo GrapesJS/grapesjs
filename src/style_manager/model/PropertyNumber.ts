@@ -123,7 +123,7 @@ export default class PropertyNumber extends Property<PropertyNumberProps> {
     };
   }
 
-  parseValue(val: any, opts = {}) {
+  parseValue(val: any, opts = {}): Partial<PropertyNumberProps> {
     const parsed = Property.prototype.parseValue.apply(this, arguments as any);
     const { value, unit } = this.input!.validateInputValue(parsed.value, {
       deepCheck: 1,

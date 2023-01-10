@@ -1,9 +1,13 @@
 import { Model } from '../../common';
 import { camelCase } from '../../utils/mixins';
 
-type LayerValues = Record<string, any>;
+export type LayerValues = Record<string, any>;
 
-export default class Layer extends Model<{ values: LayerValues }> {
+export interface LayerProps {
+  values: LayerValues;
+}
+
+export default class Layer extends Model<LayerProps> {
   prop: any;
 
   defaults() {

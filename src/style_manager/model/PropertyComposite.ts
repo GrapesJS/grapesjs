@@ -1,13 +1,23 @@
 import { isString, isUndefined, keys } from 'underscore';
-import Property, { OptionsUpdate, PropertyProps } from './Property';
+import Property, { OptionsStyle, OptionsUpdate, PropertyProps } from './Property';
 import Properties from './Properties';
 import { camelCase } from '../../utils/mixins';
 
 export const isNumberType = (type: string) => type === 'integer' || type === 'number';
 
-type StyleProps = Record<string, string>;
+export type StyleProps = Record<string, string>;
 
-type OptionByName = { byName?: boolean };
+export type PropValues = Record<string, any>;
+
+export type OptionByName = { byName?: boolean };
+
+export type FromStyle = (style: StyleProps, data: FromStyleData) => PropValues;
+
+export type FromStyleData = { property: Property; name: string; separator: RegExp };
+
+export type ToStyle = (values: PropValues, data: ToStyleData) => StyleProps;
+
+export type ToStyleData = { join: string; name: string; property: Property };
 
 /** @private */
 export interface PropertyCompositeProps extends PropertyProps {
@@ -30,12 +40,12 @@ export interface PropertyCompositeProps extends PropertyProps {
   /**
    * Custom logic for getting property values from the target style object.
    */
-  fromStyle?: (style: StyleProps, data: { property: Property; name: string; separator: RegExp }) => Record<string, any>;
+  fromStyle?: FromStyle;
 
   /**
    * Custom logic for creating the CSS style object to apply on selected targets.
    */
-  toStyle?: (values: Record<string, any>, data: { join: string; name: string; property: Property }) => StyleProps;
+  toStyle?: ToStyle;
 }
 
 /**
@@ -72,7 +82,7 @@ export interface PropertyCompositeProps extends PropertyProps {
  *  }
  * ```
  */
-export default class PropertyComposite extends Property<PropertyCompositeProps> {
+export default class PropertyComposite<T extends Record<string, any> = PropertyCompositeProps> extends Property<T> {
   defaults() {
     return {
       ...Property.getDefaults(),
@@ -182,7 +192,7 @@ export default class PropertyComposite extends Property<PropertyCompositeProps> 
    * @returns {Object} Style object
    * @private
    */
-  getStyleFromProps(opts: { camelCase?: boolean } = {}) {
+  getStyleFromProps(opts: OptionsStyle = {}) {
     const name = this.getName();
     const join = this.__getJoin();
     const toStyle = this.get('toStyle');
@@ -230,7 +240,7 @@ export default class PropertyComposite extends Property<PropertyCompositeProps> 
     return new RegExp(`${this.get('separator')}(?![^\\(]*\\))`);
   }
 
-  __upProperties(p: this, opts: any = {}) {
+  __upProperties(p: PropertyComposite, opts: any = {}) {
     if (opts.__up || opts.__clearIn) return;
 
     const parentProp = this.__getParentProp();
@@ -252,7 +262,8 @@ export default class PropertyComposite extends Property<PropertyCompositeProps> 
 
   _up(props: Partial<PropertyCompositeProps>, opts: OptionsUpdate = {}) {
     this.__setProperties(this.__getSplitValue(props.value), opts);
-    return Property.prototype._up.call(this, props, opts) as this;
+    Property.prototype._up.call(this, props, opts);
+    return this;
   }
 
   getStyle(opts?: { camelCase?: boolean }) {
@@ -349,7 +360,7 @@ export default class PropertyComposite extends Property<PropertyCompositeProps> 
     const valuesStr = keys(values)
       .map(k => values[k])
       .join(' ');
-    this.set('value', valuesStr, { silent: true });
+    this.set('value', valuesStr as any, { silent: true });
   }
 
   clear() {

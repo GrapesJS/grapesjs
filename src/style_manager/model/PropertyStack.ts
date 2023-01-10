@@ -1,11 +1,63 @@
 import { keys, isUndefined, isArray, isString, isNumber } from 'underscore';
 import { camelCase } from '../../utils/mixins';
-import PropertyComposite, { isNumberType } from './PropertyComposite';
-import PropertyBase from './Property';
+import PropertyComposite, {
+  FromStyle,
+  FromStyleData,
+  isNumberType,
+  PropertyCompositeProps,
+  PropValues,
+  StyleProps,
+  ToStyle,
+  ToStyleData,
+} from './PropertyComposite';
+import PropertyBase, { OptionsStyle, OptionsUpdate } from './Property';
 import Layers from './Layers';
+import Layer, { LayerProps, LayerValues } from './Layer';
+import PropertyNumber from './PropertyNumber';
+import Property from './Property';
 
 const VALUES_REG = /,(?![^\(]*\))/;
 const PARTS_REG = /\s(?![^(]*\))/;
+
+type ToStyleDataStack = Omit<ToStyleData, 'property'> & { joinLayers: string; layer: Layer; property: PropertyStack };
+
+type FromStyleDataStack = Omit<FromStyleData, 'property' | 'separator'> & {
+  property: PropertyStack;
+  separatorLayers: RegExp;
+};
+
+type OptionStyleStack = OptionsStyle & { number?: { min?: number; max?: number } };
+
+/** @private */
+export interface PropertyStackProps extends Omit<PropertyCompositeProps, 'toStyle' | 'fromStyle'> {
+  layers?: LayerProps[];
+
+  /**
+   * The separator used to split layer values.
+   */
+  layerSeparator?: string | RegExp;
+
+  /**
+   * Value used to join layer values.
+   */
+  layerJoin?: string;
+
+  /**
+   * Indicate if the layer should display a preview.
+   */
+  preview?: boolean;
+
+  /**
+   * Custom logic for creating layer labels.
+   */
+  layerLabel?: (layer: Layer, data: { index: number; values: LayerValues; property: PropertyStack }) => string;
+  toStyle?: (values: PropValues, data: ToStyleDataStack) => ReturnType<ToStyle>;
+  fromStyle?: (style: StyleProps, data: FromStyleDataStack) => ReturnType<FromStyle>;
+  parseLayer?: (data: { value: string; values: PropValues }) => PropValues;
+  selectedLayer?: Layer;
+  prepend?: boolean;
+  __layers?: PropValues[];
+}
 
 /**
  *
@@ -26,7 +78,7 @@ const PARTS_REG = /\s(?![^(]*\))/;
  *  ```
  *
  */
-export default class PropertyStack extends PropertyComposite {
+export default class PropertyStack extends PropertyComposite<PropertyStackProps> {
   defaults() {
     return {
       ...PropertyComposite.getDefaults(),
@@ -41,14 +93,18 @@ export default class PropertyStack extends PropertyComposite {
   }
 
   initialize(props = {}, opts = {}) {
+    // @ts-ignore
     PropertyComposite.callParentInit(PropertyComposite, this, props, opts);
     const layers = this.get('layers');
     const layersColl = new Layers(layers, { prop: this });
+    // @ts-ignore
     layersColl.property = this;
+    // @ts-ignore
     layersColl.properties = this.get('properties');
-    this.set('layers', layersColl, { silent: true });
+    this.set('layers', layersColl as any, { silent: true });
     this.on('change:selectedLayer', this.__upSelected);
     this.listenTo(layersColl, 'add remove', this.__upLayers);
+    // @ts-ignore
     PropertyComposite.callInit(this, props, opts);
   }
 
@@ -61,7 +117,7 @@ export default class PropertyStack extends PropertyComposite {
   }
 
   __getLayers() {
-    return this.get('layers');
+    return this.get('layers') as unknown as Layers;
   }
 
   /**
@@ -75,17 +131,17 @@ export default class PropertyStack extends PropertyComposite {
    * const layers = this.getLayers();
    * const layerLast = property.getLayer(layers.length - 1);
    */
-  getLayer(index = 0) {
-    return this.__getLayers().at(index) || null;
+  getLayer(index = 0): Layer | undefined {
+    return this.__getLayers().at(index) || undefined;
   }
 
   /**
    * Get selected layer.
-   * @returns {[Layer] | null}
+   * @returns {[Layer] | undefined}
    */
   getSelectedLayer() {
     const layer = this.get('selectedLayer');
-    return layer && layer.getIndex() >= 0 ? layer : null;
+    return layer && layer.getIndex() >= 0 ? layer : undefined;
   }
 
   /**
@@ -96,8 +152,8 @@ export default class PropertyStack extends PropertyComposite {
    * const layer = property.getLayer(0);
    * property.selectLayer(layer);
    */
-  selectLayer(layer) {
-    return this.set('selectedLayer', layer, { __select: true });
+  selectLayer(layer: Layer) {
+    return this.set('selectedLayer', layer, { __select: true } as any);
   }
 
   /**
@@ -119,7 +175,7 @@ export default class PropertyStack extends PropertyComposite {
    * const layer = property.getLayer(1);
    * property.moveLayer(layer, 0);
    */
-  moveLayer(layer, index = 0) {
+  moveLayer(layer: Layer, index = 0) {
     const currIndex = layer ? layer.getIndex() : -1;
 
     if (currIndex >= 0 && isNumber(index) && index >= 0 && index < this.getLayers().length && currIndex !== index) {
@@ -138,14 +194,14 @@ export default class PropertyStack extends PropertyComposite {
    * // Add new layer at the beginning of the stack with custom values
    * property.addLayer({ 'sub-prop1': 'value1', 'sub-prop2': 'value2' }, { at: 0 });
    */
-  addLayer(props = {}, opts = {}) {
-    const values = {};
+  addLayer(props: LayerValues = {}, opts = {}) {
+    const values: LayerValues = {};
     this.getProperties().forEach(prop => {
       const key = prop.getId();
       const value = props[key];
       values[key] = isUndefined(value) ? prop.getDefaultValue() : value;
     });
-    const layer = this.get('layers').push({ values }, opts);
+    const layer = this.__getLayers().push({ values } as any, opts);
 
     return layer;
   }
@@ -158,8 +214,8 @@ export default class PropertyStack extends PropertyComposite {
    * const layer = property.getLayer(0);
    * property.removeLayer(layer);
    */
-  removeLayer(layer) {
-    return this.get('layers').remove(layer);
+  removeLayer(layer: Layer) {
+    return this.__getLayers().remove(layer);
   }
 
   /**
@@ -182,7 +238,7 @@ export default class PropertyStack extends PropertyComposite {
    * const layer = this.getLayer(1);
    * const label = this.getLayerLabel(layer);
    */
-  getLayerLabel(layer) {
+  getLayerLabel(layer: Layer) {
     let result = '';
 
     if (layer) {
@@ -193,7 +249,7 @@ export default class PropertyStack extends PropertyComposite {
       if (layerLabel) {
         result = layerLabel(layer, { index, values, property: this });
       } else {
-        const parts = [];
+        const parts: string[] = [];
         this.getProperties().map(prop => {
           parts.push(values[prop.getId()]);
         });
@@ -212,13 +268,13 @@ export default class PropertyStack extends PropertyComposite {
    * @param {Object} [opts.number] Limit the result of the number types, eg. `number: { min: -3, max: 3 }`
    * @returns {Object} Style object
    */
-  getStyleFromLayer(layer, opts = {}) {
+  getStyleFromLayer(layer: Layer, opts: OptionStyleStack = {}) {
     const join = this.__getJoin();
     const joinLayers = this.__getJoinLayers();
     const toStyle = this.get('toStyle');
     const name = this.getName();
     const values = layer.getValues();
-    let style;
+    let style: StyleProps;
 
     if (toStyle) {
       style = toStyle(values, {
@@ -236,7 +292,7 @@ export default class PropertyStack extends PropertyComposite {
 
         // Limit number values if necessary (useful for previews)
         if (opts.number && isNumberType(prop.getType())) {
-          const newVal = prop.parseValue(val, opts.number);
+          const newVal = (prop as PropertyNumber).parseValue(val, opts.number);
           value = `${newVal.value}${newVal.unit}`;
         }
 
@@ -246,7 +302,7 @@ export default class PropertyStack extends PropertyComposite {
         ? result.reduce((acc, item) => {
             acc[item.name] = item.value;
             return acc;
-          }, {})
+          }, {} as StyleProps)
         : {
             [this.getName()]: result.map(r => r.value).join(join),
           };
@@ -256,7 +312,7 @@ export default class PropertyStack extends PropertyComposite {
       ? Object.keys(style).reduce((res, key) => {
           res[camelCase(key)] = style[key];
           return res;
-        }, {})
+        }, {} as StyleProps)
       : style;
   }
 
@@ -267,7 +323,7 @@ export default class PropertyStack extends PropertyComposite {
    * @param {Object} [opts={}] Options. Same of `getStyleFromLayer`
    * @returns {Object} Style object
    */
-  getStylePreview(layer, opts = {}) {
+  getStylePreview(layer: Layer, opts = {}) {
     let result = {};
     const preview = this.get('preview');
 
@@ -283,11 +339,11 @@ export default class PropertyStack extends PropertyComposite {
    * @return {RegExp}
    */
   getLayerSeparator() {
-    const sep = this.get('layerSeparator');
+    const sep = this.get('layerSeparator')!;
     return isString(sep) ? new RegExp(`${sep}(?![^\\(]*\\))`) : sep;
   }
 
-  __upProperties(prop, opts = {}) {
+  __upProperties(prop: Property, opts: any = {}) {
     const layer = this.getSelectedLayer();
     if (!layer) return;
     layer.upValues({ [prop.getId()]: prop.__getFullValue() });
@@ -295,11 +351,11 @@ export default class PropertyStack extends PropertyComposite {
     this.__upTargetsStyleProps(opts);
   }
 
-  __upLayers(m, c, o) {
+  __upLayers(m: any, c: any, o: any) {
     this.__upTargetsStyleProps(o || c);
   }
 
-  __upTargets(p, opts = {}) {
+  __upTargets(p: this, opts: any = {}) {
     if (opts.__select) return;
     return PropertyBase.prototype.__upTargets.call(this, p, opts);
   }
@@ -308,11 +364,11 @@ export default class PropertyStack extends PropertyComposite {
     this.__upTargetsStyle(this.getStyleFromLayers(), opts);
   }
 
-  __upTargetsStyle(style, opts) {
+  __upTargetsStyle(style: StyleProps, opts: any) {
     return PropertyBase.prototype.__upTargetsStyle.call(this, style, opts);
   }
 
-  __upSelected({ noEvent } = {}, opts = {}) {
+  __upSelected({ noEvent }: { noEvent?: boolean } = {}, opts: OptionsUpdate = {}) {
     const sm = this.em.get('StyleManager');
     const selected = this.getSelectedLayer();
     const values = selected?.getValues();
@@ -327,15 +383,17 @@ export default class PropertyStack extends PropertyComposite {
     !noEvent && sm.__trgEv(sm.events.layerSelect, { property: this });
   }
 
-  _up(props, opts = {}) {
+  // @ts-ignore
+  _up(props: Partial<PropertyStackProps>, opts: OptionsUpdate = {}) {
     const { __layers = [], ...rest } = props;
     // Detached props will update their layers later in sm.__upProp
     !this.isDetached() && this.__setLayers(__layers);
     this.__upSelected({ noEvent: true }, opts);
-    return PropertyBase.prototype._up.call(this, rest, opts);
+    PropertyBase.prototype._up.call(this, rest, opts);
+    return this;
   }
 
-  __setLayers(newLayers = []) {
+  __setLayers(newLayers: PropValues[] = []) {
     const layers = this.__getLayers();
     const layersNew = newLayers.map(values => ({ values }));
 
@@ -348,7 +406,7 @@ export default class PropertyStack extends PropertyComposite {
     this.__upSelected({ noEvent: true });
   }
 
-  __parseValue(value) {
+  __parseValue(value: string) {
     const result = this.parseValue(value);
     result.__layers = value
       .split(VALUES_REG)
@@ -359,7 +417,7 @@ export default class PropertyStack extends PropertyComposite {
     return result;
   }
 
-  __parseLayer(value) {
+  __parseLayer(value: string) {
     const parseFn = this.get('parseLayer');
     const values = value.split(PARTS_REG);
     const properties = this.getProperties();
@@ -369,10 +427,10 @@ export default class PropertyStack extends PropertyComposite {
           const value = values[i];
           acc[prop.getId()] = !isUndefined(value) ? value : prop.getDefaultValue();
           return acc;
-        }, {});
+        }, {} as PropValues);
   }
 
-  __getLayersFromStyle(style = {}) {
+  __getLayersFromStyle(style: StyleProps = {}) {
     if (!this.__styleHasProps(style)) return null;
 
     const name = this.getName();
@@ -386,7 +444,7 @@ export default class PropertyStack extends PropertyComposite {
       const layers = this.__splitStyleName(style, name, sep)
         .map(value => value.split(this.getSplitSeparator()))
         .map(parts => {
-          const result = {};
+          const result: PropValues = {};
           props.forEach((prop, i) => {
             const value = parts[i];
             result[prop.getId()] = !isUndefined(value) ? value : prop.getDefaultValue();
@@ -408,23 +466,28 @@ export default class PropertyStack extends PropertyComposite {
     return isArray(result) ? result : [result];
   }
 
-  getStyle(opts) {
+  getStyle(opts: OptionStyleStack = {}) {
     return this.getStyleFromLayers(opts);
   }
 
-  getStyleFromLayers(opts) {
-    let result = {};
+  getStyleFromLayers(opts: OptionStyleStack = {}) {
+    let result: StyleProps = {};
     const name = this.getName();
     const layers = this.getLayers();
     const props = this.getProperties();
     const styles = layers.map(l => this.getStyleFromLayer(l, opts));
     styles.forEach(style => {
       keys(style).map(key => {
-        if (!result[key]) result[key] = [];
+        if (!result[key]) {
+          // @ts-ignore
+          result[key] = [];
+        }
+        // @ts-ignore
         result[key].push(style[key]);
       });
     });
     keys(result).map(key => {
+      // @ts-ignore
       result[key] = result[key].join(this.__getJoinLayers());
     });
 
@@ -438,7 +501,7 @@ export default class PropertyStack extends PropertyComposite {
       const style = props.reduce((acc, prop) => {
         acc[prop.getName()] = '';
         return acc;
-      }, {});
+      }, {} as StyleProps);
       result[name] = result[name] || '';
       result = { ...result, ...style };
     }
@@ -447,7 +510,7 @@ export default class PropertyStack extends PropertyComposite {
   }
 
   __getJoinLayers() {
-    const join = this.get('layerJoin');
+    const join = this.get('layerJoin')!;
     const sep = this.get('layerSeparator');
 
     return join || (isString(sep) ? sep : join);
@@ -464,7 +527,7 @@ export default class PropertyStack extends PropertyComposite {
    * Extended
    * @private
    */
-  hasValue(opts = {}) {
+  hasValue(opts: { noParent?: boolean } = {}) {
     const { noParent } = opts;
     const parentValue = noParent && this.getParentTarget();
     return this.getLayers().length > 0 && !parentValue;

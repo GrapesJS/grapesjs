@@ -75,6 +75,8 @@ export type OptionsUpdate = {
   __clear?: boolean;
 };
 
+export type OptionsStyle = { camelCase?: boolean };
+
 type PartialPropertyProps = Partial<PropertyProps>;
 
 /**
@@ -142,7 +144,7 @@ export default class Property<T extends Record<string, any> = PropertyProps> ext
     return this.collection?.opts?.parentProp;
   }
 
-  __upTargets(p: any, opts: any = {}) {
+  __upTargets(p: this, opts: any = {}) {
     const { em } = this;
     const sm = em.get('StyleManager');
     const name = this.getName();
@@ -171,7 +173,7 @@ export default class Property<T extends Record<string, any> = PropertyProps> ext
     sm?.addStyleTargets({ ...style, __p: !!opts.avoidStore }, opts);
   }
 
-  _up(props: Partial<T>, opts: OptionsUpdate = {}) {
+  _up(props: Partial<T>, opts: OptionsUpdate = {}): this {
     if (opts.noTarget) opts.__up = true;
     const { partial, ...rest } = opts;
     // @ts-ignore
@@ -269,7 +271,7 @@ export default class Property<T extends Record<string, any> = PropertyProps> ext
    * console.log(property.getStyle());
    * // { color: 'red' };
    */
-  getStyle(opts: { camelCase?: boolean } = {}) {
+  getStyle(opts: OptionsStyle = {}) {
     const name = this.getName();
     const key = opts.camelCase ? camelCase(name) : name;
     return { [key]: this.__getFullValue(opts) };
