@@ -87,6 +87,12 @@ const events = {
 // TODO
 type AssetProps = Record<string, any>;
 
+type OpenOptions = {
+  select?: (asset: Asset, complete: boolean) => void;
+  types?: string[];
+  accept?: string;
+};
+
 export default class AssetManager extends ItemManagerModule<AssetManagerConfig, Assets> {
   storageKey = 'assets';
   Asset = Asset;
@@ -174,7 +180,7 @@ export default class AssetManager extends ItemManagerModule<AssetManagerConfig, 
    * // with your custom types (you should have assets with those types declared)
    * assetManager.open({ types: ['doc'], ... });
    */
-  open(options = {}) {
+  open(options: OpenOptions = {}) {
     const cmd = this.em.get('Commands');
     cmd.run(assetCmd, {
       types: ['image'],

@@ -33,17 +33,17 @@ export default class PropertyFileView extends PropertyView {
     `;
   }
 
-  __setValueInput(value) {
+  __setValueInput(value: string) {
     const { model, el } = this;
     const valueDef = model.getDefaultValue();
-    const prvBoxEl = el.querySelector('[data-preview-box]');
-    const prvEl = el.querySelector('[data-preview]');
+    const prvBoxEl = el.querySelector('[data-preview-box]') as HTMLElement;
+    const prvEl = el.querySelector('[data-preview]') as HTMLElement;
     prvBoxEl.style.display = !value || value === valueDef ? 'none' : '';
     prvEl.style.backgroundImage = value || model.getDefaultValue();
   }
 
   openAssetManager() {
-    const am = this.em?.get('AssetManager');
+    const am = this.em?.Assets;
 
     am?.open({
       select: (asset, complete) => {
