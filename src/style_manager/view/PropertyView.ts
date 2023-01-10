@@ -17,7 +17,6 @@ export default class PropertyView extends View<Property> {
   create?: Function;
   destroy?: Function;
   update?: Function;
-  onRender?: Function;
   emit?: Function;
   unset?: Function;
   clearEl?: HTMLElement;
@@ -266,4 +265,6 @@ export default class PropertyView extends View<Property> {
     this.setValue(model.getValue());
     return this;
   }
+
+  onRender() {}
 }

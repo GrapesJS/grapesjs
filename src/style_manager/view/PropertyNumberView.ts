@@ -1,6 +1,8 @@
 import PropertyView from './PropertyView';
 
 export default class PropertyNumberView extends PropertyView {
+  inputInst?: any;
+
   templateInput() {
     return '';
   }
@@ -19,10 +21,10 @@ export default class PropertyNumberView extends PropertyView {
     const { ppfx, model, el } = this;
 
     if (!this.inputInst) {
-      const { input } = model;
+      const { input } = model as any;
       input.ppfx = ppfx;
       input.render();
-      const fields = el.querySelector(`.${ppfx}fields`);
+      const fields = el.querySelector(`.${ppfx}fields`)!;
       fields.appendChild(input.el);
       this.input = input.inputEl.get(0);
       this.inputInst = input;
@@ -30,7 +32,7 @@ export default class PropertyNumberView extends PropertyView {
   }
 
   clearCached() {
-    PropertyView.prototype.clearCached.apply(this, arguments);
+    PropertyView.prototype.clearCached.apply(this, arguments as any);
     this.inputInst = null;
   }
 }
