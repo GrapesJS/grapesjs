@@ -68,6 +68,13 @@ export interface PropertyProps {
   __p?: any;
 }
 
+export type OptionsUpdate = {
+  partial?: boolean;
+  noTarget?: boolean;
+  __up?: boolean;
+  __clear?: boolean;
+};
+
 type PartialPropertyProps = Partial<PropertyProps>;
 
 /**
@@ -164,7 +171,7 @@ export default class Property<T extends Record<string, any> = PropertyProps> ext
     sm?.addStyleTargets({ ...style, __p: !!opts.avoidStore }, opts);
   }
 
-  _up(props: Partial<T>, opts: any = {}) {
+  _up(props: Partial<T>, opts: OptionsUpdate = {}) {
     if (opts.noTarget) opts.__up = true;
     const { partial, ...rest } = opts;
     // @ts-ignore
@@ -285,7 +292,7 @@ export default class Property<T extends Record<string, any> = PropertyProps> ext
    * @param {Boolean} [opts.partial=false] If `true` the update on targets won't be considered complete (not stored in UndoManager)
    * @param {Boolean} [opts.noTarget=false] If `true` the change won't be propagated to selected targets.
    */
-  upValue(value: string, opts = {}) {
+  upValue(value: string, opts: OptionsUpdate = {}) {
     const parsed = value === null || value === '' ? this.__getClearProps() : this.__parseValue(value, opts);
     return this._up(parsed as Partial<T>, opts);
   }

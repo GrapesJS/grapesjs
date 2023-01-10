@@ -1,8 +1,55 @@
 import { isFunction, isString } from 'underscore';
 
-const getOptions = items => items.map(item => ({ id: item }));
+type Option = {
+  id: string;
+  label?: string;
+};
+
+type Property = Record<string, any>;
+
+const getOptions = (items: string[]): Option[] => items.map(item => ({ id: item }));
 
 export default class PropertyFactory {
+  props: Record<string, Property | undefined> = {};
+  typeNumber: string;
+  typeColor: string;
+  typeRadio: string;
+  typeSelect: string;
+  typeFile: string;
+  typeSlider: string;
+  typeComposite: string;
+  typeStack: string;
+  unitsSize: string[];
+  unitsSizeNoPerc: string[];
+  unitsTime: string[];
+  unitsAngle: string[];
+  fixedValues: string[];
+  optsBgSize: Option[];
+  optsBgAttach: Option[];
+  optsBgRepeat: Option[];
+  optsWrap: Option[];
+  optsOverflow: Option[];
+  optsDir: Option[];
+  opstDisplay: Option[];
+  optsTransitFn: Option[];
+  optsCursor: Option[];
+  optsFloat: Option[];
+  optsPos: Option[];
+  optsTextAlign: Option[];
+  optsFlexAlign: Option[];
+  optsJustCont: Option[];
+  optsAlignCont: Option[];
+  optsAlignSelf: Option[];
+  optsTransitProp: Option[];
+  optsBorderStyle: Option[];
+  optsBgPos: Option[];
+  optsWeight: Option[];
+  optsShadowType: Option[];
+  optsFonts: Option[];
+  fixedFontSizes: string[];
+  fixedLetSpace: string[];
+  requireFlex: Record<string, any>;
+
   constructor() {
     this.typeNumber = 'number';
     this.typeColor = 'color';
@@ -122,10 +169,10 @@ export default class PropertyFactory {
     this.init();
   }
 
-  __sub(items) {
+  __sub(items: (string | Property)[]) {
     return () =>
       items.map(p => {
-        if (isString(p)) return this.get(p);
+        if (isString(p)) return this.get(p)!;
         const { extend, ...rest } = p;
         return {
           ...this.get(extend),
@@ -451,17 +498,18 @@ export default class PropertyFactory {
           ],
         },
       ],
-    ].forEach(([prop, def, from]) => {
+    ].forEach(arr => {
+      const [prop, def, from] = arr as [string, Property, string];
       this.add(prop, def || {}, { from });
     });
 
     return this;
   }
 
-  add(property, def = {}, opts = {}) {
+  add(property: string, def = {}, opts: { from?: string } = {}) {
     const from = opts.from || '';
     const fromRes = this.props[from || property] || {};
-    const result = { ...fromRes, property, ...def };
+    const result: Property = { ...fromRes, property, ...def };
     if (result.properties && isFunction(result.properties)) {
       result.properties = result.properties();
     }
@@ -469,8 +517,8 @@ export default class PropertyFactory {
     return result;
   }
 
-  get(prop) {
-    return this.props[prop] || null;
+  get(prop: string) {
+    return this.props[prop];
   }
 
   /**
@@ -478,8 +526,8 @@ export default class PropertyFactory {
    * @param  {Array<string>|string} props Array of properties name
    * @return {Array<Object>}
    */
-  build(props) {
-    const result = [];
+  build(props: string | string[]) {
+    const result: Property[] = [];
     const propsArr = isString(props) ? [props] : props;
 
     propsArr.forEach(prop => {

@@ -1,8 +1,42 @@
 import { isString, isUndefined, keys } from 'underscore';
-import Property from './Property';
+import Property, { OptionsUpdate, PropertyProps } from './Property';
 import Properties from './Properties';
+import { camelCase } from '../../utils/mixins';
 
-export const isNumberType = type => type === 'integer' || type === 'number';
+export const isNumberType = (type: string) => type === 'integer' || type === 'number';
+
+type StyleProps = Record<string, string>;
+
+type OptionByName = { byName?: boolean };
+
+/** @private */
+export interface PropertyCompositeProps extends PropertyProps {
+  detached?: boolean;
+  /**
+   * Array of sub properties, eg. `[{ type: 'number', property: 'margin-top' }, ...]`
+   */
+  properties: PropertyProps[];
+
+  /**
+   * Value used to split property values, default `" "`.
+   */
+  separator: string;
+
+  /**
+   * Value used to join property values, default `" "`.
+   */
+  join?: string;
+
+  /**
+   * Custom logic for getting property values from the target style object.
+   */
+  fromStyle?: (style: StyleProps, data: { property: Property; name: string; separator: RegExp }) => Record<string, any>;
+
+  /**
+   * Custom logic for creating the CSS style object to apply on selected targets.
+   */
+  toStyle?: (values: Record<string, any>, data: { join: string; name: string; property: Property }) => StyleProps;
+}
 
 /**
  *
@@ -38,7 +72,7 @@ export const isNumberType = type => type === 'integer' || type === 'number';
  *  }
  * ```
  */
-export default class PropertyComposite extends Property {
+export default class PropertyComposite extends Property<PropertyCompositeProps> {
   defaults() {
     return {
       ...Property.getDefaults(),
@@ -53,22 +87,30 @@ export default class PropertyComposite extends Property {
   }
 
   initialize(props = {}, opts = {}) {
+    // @ts-ignore
     Property.callParentInit(Property, this, props, opts);
     const { em } = this;
     const properties = new Properties(this.get('properties') || [], {
       em,
       parentProp: this,
     });
-    this.set('properties', properties, { silent: 1 });
+    this.set('properties', properties, { silent: true });
     this.listenTo(properties, 'change', this.__upProperties);
+    // @ts-ignore
     Property.callInit(this, props, opts);
+  }
+
+  get properties(): Property[] {
+    // @ts-ignore
+    return this.get('properties')! || [];
   }
 
   /**
    * Get properties.
    * @returns {Array<[Property]>}
    */
-  getProperties() {
+  getProperties(): Property[] {
+    // @ts-ignore
     return [...this.get('properties').models];
   }
 
@@ -77,8 +119,8 @@ export default class PropertyComposite extends Property {
    * @param  {String} id Property id.
    * @returns {[Property]|null}
    */
-  getProperty(id) {
-    return this.get('properties').filter(prop => prop.getId() === id || prop.getName() === id)[0] || null;
+  getProperty(id: string): Property | undefined {
+    return this.properties.filter(prop => prop.getId() === id || prop.getName() === id)[0];
   }
 
   /**
@@ -86,7 +128,8 @@ export default class PropertyComposite extends Property {
    * @param  {Number} index
    * @returns {[Property]|null}
    */
-  getPropertyAt(index) {
+  getPropertyAt(index: number) {
+    // @ts-ignore
     return this.get('properties').at(index);
   }
 
@@ -108,12 +151,12 @@ export default class PropertyComposite extends Property {
    * console.log(property.getValues());
    * // { 'margin-top': '10px', 'margin-right': '20px', ... };
    */
-  getValues({ byName } = {}) {
+  getValues({ byName }: { byName?: boolean } = {}) {
     return this.getProperties().reduce((res, prop) => {
       const key = byName ? prop.getName() : prop.getId();
       res[key] = `${prop.__getFullValue()}`;
       return res;
-    }, {});
+    }, {} as Record<string, any>);
   }
 
   /**
@@ -139,12 +182,12 @@ export default class PropertyComposite extends Property {
    * @returns {Object} Style object
    * @private
    */
-  getStyleFromProps(opts = {}) {
+  getStyleFromProps(opts: { camelCase?: boolean } = {}) {
     const name = this.getName();
     const join = this.__getJoin();
     const toStyle = this.get('toStyle');
     let values = this.getValues();
-    let style = {};
+    let style: StyleProps = {};
 
     if (toStyle) {
       style = toStyle(values, { join, name, property: this });
@@ -171,7 +214,7 @@ export default class PropertyComposite extends Property {
         ...this.getProperties().reduce((acc, prop) => {
           acc[prop.getName()] = '';
           return acc;
-        }, {}),
+        }, {} as StyleProps),
       };
     }
 
@@ -179,7 +222,7 @@ export default class PropertyComposite extends Property {
       ? Object.keys(style).reduce((res, key) => {
           res[camelCase(key)] = style[key];
           return res;
-        }, {})
+        }, {} as StyleProps)
       : style;
   }
 
@@ -187,7 +230,7 @@ export default class PropertyComposite extends Property {
     return new RegExp(`${this.get('separator')}(?![^\\(]*\\))`);
   }
 
-  __upProperties(p, opts = {}) {
+  __upProperties(p: this, opts: any = {}) {
     if (opts.__up || opts.__clearIn) return;
 
     const parentProp = this.__getParentProp();
@@ -196,7 +239,7 @@ export default class PropertyComposite extends Property {
     this.__upTargetsStyleProps(opts, p);
   }
 
-  __upTargetsStyleProps(opts = {}, prop) {
+  __upTargetsStyleProps(opts = {}, prop?: Property) {
     let style = this.getStyleFromProps();
 
     if (this.isDetached() && prop) {
@@ -207,27 +250,27 @@ export default class PropertyComposite extends Property {
     this.__upTargetsStyle(style, opts);
   }
 
-  _up(props, opts = {}) {
+  _up(props: Partial<PropertyCompositeProps>, opts: OptionsUpdate = {}) {
     this.__setProperties(this.__getSplitValue(props.value), opts);
-    return Property.prototype._up.call(this, props, opts);
+    return Property.prototype._up.call(this, props, opts) as this;
   }
 
-  getStyle(opts) {
+  getStyle(opts?: { camelCase?: boolean }) {
     return this.getStyleFromProps(opts);
   }
 
-  __getFullValue(opts = {}) {
+  __getFullValue(opts: any = {}) {
     if (this.isDetached() || opts.__clear) return '';
 
     return this.getStyleFromProps()[this.getName()] || '';
   }
 
   __getJoin() {
-    const join = this.get('join');
-    return isString(join) ? join : this.get('separator');
+    const join = this.get('join')!;
+    return isString(join) ? join : this.get('separator')!;
   }
 
-  __styleHasProps(style = {}) {
+  __styleHasProps(style: StyleProps = {}) {
     const name = this.getName();
     const props = this.getProperties();
     const nameProps = props.map(prop => prop.getName());
@@ -235,22 +278,22 @@ export default class PropertyComposite extends Property {
     return allNameProps.some(prop => !isUndefined(style[prop]) && style[prop] !== '');
   }
 
-  __splitValue(value, sep) {
+  __splitValue(value: string, sep: string | RegExp) {
     return value
       .split(sep)
       .map(value => value.trim())
       .filter(Boolean);
   }
 
-  __splitStyleName(style, name, sep) {
+  __splitStyleName(style: StyleProps, name: string, sep: string | RegExp) {
     return this.__splitValue(style[name] || '', sep);
   }
 
-  __getSplitValue(value = '', { byName } = {}) {
+  __getSplitValue(value = '', { byName }: OptionByName = {}) {
     const props = this.getProperties();
     const props4Nums = props.length === 4 && props.every(prop => isNumberType(prop.getType()));
     const values = this.__splitValue(value, this.getSplitSeparator());
-    const result = {};
+    const result: StyleProps = {};
 
     props.forEach((prop, i) => {
       const value = values[i];
@@ -271,7 +314,7 @@ export default class PropertyComposite extends Property {
     return result;
   }
 
-  __getPropsFromStyle(style = {}, opts = {}) {
+  __getPropsFromStyle(style: StyleProps = {}, opts: OptionByName = {}) {
     if (!this.__styleHasProps(style)) return null;
 
     const { byName } = opts;
@@ -296,7 +339,7 @@ export default class PropertyComposite extends Property {
     return result;
   }
 
-  __setProperties(values = {}, opts = {}) {
+  __setProperties(values: Record<string, any> = {}, opts: OptionsUpdate = {}) {
     this.getProperties().forEach(prop => {
       const value = values[prop.getId()];
       prop.__getFullValue() !== value && prop.upValue(value, opts);
@@ -314,7 +357,7 @@ export default class PropertyComposite extends Property {
     return Property.prototype.clear.call(this);
   }
 
-  hasValue(opts) {
+  hasValue(opts: Parameters<Property['hasValue']>[0]) {
     return this.getProperties().some(prop => prop.hasValue(opts));
   }
 
@@ -322,7 +365,7 @@ export default class PropertyComposite extends Property {
     return this.__getFullValue();
   }
 
-  __canClearProp(prop) {
+  __canClearProp(prop: Property) {
     return this.isDetached() && prop.hasValue({ noParent: true });
   }
 }
