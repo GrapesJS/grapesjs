@@ -1,7 +1,10 @@
 import PropertyView from './PropertyView';
 import PropertiesView from './PropertiesView';
+import PropertyComposite from '../model/PropertyComposite';
 
 export default class PropertyCompositeView extends PropertyView {
+  props?: PropertiesView;
+
   templateInput() {
     const { pfx } = this;
     return `
@@ -13,14 +16,16 @@ export default class PropertyCompositeView extends PropertyView {
 
   remove() {
     this.props?.remove();
-    PropertyView.prototype.remove.apply(this, arguments);
+    PropertyView.prototype.remove.apply(this, arguments as any);
+    return this;
   }
 
   onValueChange() {}
 
   onRender() {
-    const { model, pfx } = this;
-    const props = model.get('properties');
+    const { pfx } = this;
+    const model = this.model as PropertyComposite;
+    const props = model.get('properties')!;
 
     if (props.length && !this.props) {
       const detached = model.isDetached();
@@ -30,6 +35,7 @@ export default class PropertyCompositeView extends PropertyView {
           highlightComputed: detached,
           highlightChanged: detached,
         },
+        // @ts-ignore
         collection: props,
         parent: this,
       });
@@ -40,7 +46,7 @@ export default class PropertyCompositeView extends PropertyView {
   }
 
   clearCached() {
-    PropertyView.prototype.clearCached.apply(this, arguments);
-    this.props = null;
+    PropertyView.prototype.clearCached.apply(this, arguments as any);
+    delete this.props;
   }
 }
