@@ -1,5 +1,5 @@
-import Backbone from 'backbone';
-import TypeableCollection from 'domain_abstract/model/TypeableCollection';
+import { Collection } from '../../common';
+import TypeableCollection from '../../domain_abstract/model/TypeableCollection';
 import Property from './Property';
 import PropertyStack from './PropertyStack';
 import PropertyStackView from './../view/PropertyStackView';
@@ -17,7 +17,9 @@ import PropertyNumber from './PropertyNumber';
 import PropertyNumberView from './../view/PropertyNumberView';
 import PropertyView from './../view/PropertyView';
 
-export default Backbone.Collection.extend(TypeableCollection).extend({
+const TypeableCollectionExt = Collection.extend(TypeableCollection);
+
+export default TypeableCollectionExt.extend({
   extendViewApi: 1,
 
   init() {
@@ -34,7 +36,7 @@ export default Backbone.Collection.extend(TypeableCollection).extend({
       id: 'stack',
       model: PropertyStack,
       view: PropertyStackView,
-      isType(value) {
+      isType(value: any) {
         if (value && value.type == 'stack') {
           return value;
         }
@@ -44,7 +46,7 @@ export default Backbone.Collection.extend(TypeableCollection).extend({
       id: 'composite',
       model: PropertyComposite,
       view: PropertyCompositeView,
-      isType(value) {
+      isType(value: any) {
         if (value && value.type == 'composite') {
           return value;
         }
@@ -54,7 +56,7 @@ export default Backbone.Collection.extend(TypeableCollection).extend({
       id: 'file',
       model: Property,
       view: PropertyFileView,
-      isType(value) {
+      isType(value: any) {
         if (value && value.type == 'file') {
           return value;
         }
@@ -64,7 +66,7 @@ export default Backbone.Collection.extend(TypeableCollection).extend({
       id: 'color',
       model: Property,
       view: PropertyColorView,
-      isType(value) {
+      isType(value: any) {
         if (value && value.type == 'color') {
           return value;
         }
@@ -74,7 +76,7 @@ export default Backbone.Collection.extend(TypeableCollection).extend({
       id: 'select',
       model: PropertySelect,
       view: PropertySelectView,
-      isType(value) {
+      isType(value: any) {
         if (value && value.type == 'select') {
           return value;
         }
@@ -84,7 +86,7 @@ export default Backbone.Collection.extend(TypeableCollection).extend({
       id: 'radio',
       model: PropertyRadio,
       view: PropertyRadioView,
-      isType(value) {
+      isType(value: any) {
         if (value && value.type == 'radio') {
           return value;
         }
@@ -94,7 +96,7 @@ export default Backbone.Collection.extend(TypeableCollection).extend({
       id: 'slider',
       model: PropertySlider,
       view: PropertySliderView,
-      isType(value) {
+      isType(value: any) {
         if (value && value.type == 'slider') {
           return value;
         }
@@ -104,7 +106,7 @@ export default Backbone.Collection.extend(TypeableCollection).extend({
       id: 'integer',
       model: PropertyNumber,
       view: PropertyNumberView,
-      isType(value) {
+      isType(value: any) {
         if (value && value.type == 'integer') {
           return value;
         }
@@ -114,7 +116,7 @@ export default Backbone.Collection.extend(TypeableCollection).extend({
       id: 'number',
       model: PropertyNumber,
       view: PropertyNumberView,
-      isType(value) {
+      isType(value: any) {
         if (value && value.type == 'number') {
           return value;
         }
@@ -124,7 +126,7 @@ export default Backbone.Collection.extend(TypeableCollection).extend({
       id: 'base',
       model: Property,
       view: PropertyView,
-      isType(value) {
+      isType(value: any) {
         value.type = 'base';
         return value;
       },
