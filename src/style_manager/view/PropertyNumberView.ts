@@ -13,7 +13,7 @@ export default class PropertyNumberView extends PropertyView {
     this.listenTo(model, 'change:units', this.render);
   }
 
-  setValue() {
+  setValue(v: string) {
     // handled by this.inputInst
   }
 
