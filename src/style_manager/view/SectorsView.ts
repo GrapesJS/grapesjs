@@ -1,29 +1,42 @@
 import { View } from '../../common';
 import { appendAtIndex } from '../../utils/dom';
-import SectorView from './SectorView';
+import Sector from '../model/Sector';
+import SectorView, { SectorViewConfig } from './SectorView';
 
 export default class SectorsView extends View {
-  initialize(o = {}) {
-    const { module, config = {} } = o;
+  pfx: string;
+  ppfx: string;
+  config: SectorViewConfig;
+  module: any;
+
+  constructor(o: { module?: any; config?: SectorViewConfig } = {}) {
+    // @ts-ignore
+    super(o);
+    const { module, config } = o;
     const coll = this.collection;
-    this.pfx = config.stylePrefix || '';
-    this.ppfx = config.pStylePrefix || '';
-    this.config = config;
-    this.module = module;
+    this.pfx = config?.stylePrefix || '';
+    this.ppfx = config?.pStylePrefix || '';
+    this.config = config!;
+    this.module = module!;
     this.listenTo(coll, 'add', this.addTo);
     this.listenTo(coll, 'reset', this.render);
   }
 
   remove() {
-    View.prototype.remove.apply(this, arguments);
-    ['config', 'module', 'em'].forEach(i => (this[i] = {}));
+    View.prototype.remove.apply(this, arguments as any);
+    ['config', 'module', 'em'].forEach(
+      i =>
+        // @ts-ignore
+        (this[i] = {})
+    );
+    return this;
   }
 
-  addTo(model, c, opts = {}) {
+  addTo(model: Sector, c: any, opts = {}) {
     this.addToCollection(model, null, opts);
   }
 
-  addToCollection(model, fragmentEl, opts = {}) {
+  addToCollection(model: Sector, fragmentEl: DocumentFragment | null, opts: { at?: number } = {}) {
     const { config, el } = this;
     const appendTo = fragmentEl || el;
     const rendered = new SectorView({ model, config }).render().el;

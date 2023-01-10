@@ -4,18 +4,18 @@ import html from '../../utils/html';
 import Sector from '../model/Sector';
 import PropertiesView from './PropertiesView';
 
-type Config = {
+export type SectorViewConfig = {
   em: EditorModel;
   stylePrefix?: string;
+  pStylePrefix?: string;
 };
 
 export default class SectorView extends View<Sector> {
   em: EditorModel;
-  config: Config;
+  config: SectorViewConfig;
   pfx: string;
 
-  constructor(o: { config: Config }) {
-    // @ts-ignore
+  constructor(o: { config: SectorViewConfig; model?: Sector }) {
     super(o);
     const config = o.config || {};
     const { model } = this;

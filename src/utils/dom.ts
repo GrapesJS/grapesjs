@@ -40,7 +40,7 @@ export const replaceWith = (oldEl: HTMLElement, newEl: HTMLElement) => {
   oldEl.parentNode?.replaceChild(newEl, oldEl);
 };
 
-export const appendAtIndex = (parent: HTMLElement, child: ChildHTML, index?: number) => {
+export const appendAtIndex = (parent: HTMLElement | DocumentFragment, child: ChildHTML, index?: number) => {
   const { childNodes } = parent;
   const total = childNodes.length;
   const at = isUndefined(index) ? total : index;
