@@ -1,5 +1,6 @@
 import { Model } from '../../common';
 import { camelCase } from '../../utils/mixins';
+import LayerView from '../view/LayerView';
 
 export type LayerValues = Record<string, any>;
 
@@ -9,6 +10,7 @@ export interface LayerProps {
 
 export default class Layer extends Model<LayerProps> {
   prop: any;
+  view?: LayerView;
 
   defaults() {
     return {

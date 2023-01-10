@@ -1,7 +1,20 @@
 import { View } from '../../common';
 import { keys } from 'underscore';
+import Layer from '../model/Layer';
+import EditorModel from '../../editor/model/Editor';
+import PropertyStackView from './PropertyStackView';
 
-export default class LayerView extends View {
+export default class LayerView extends View<Layer> {
+  pfx!: string;
+  ppfx!: string;
+  em!: EditorModel;
+  propertyView!: PropertyStackView;
+  propsWrapEl?: HTMLElement;
+  previewEl?: HTMLElement;
+  labelEl?: HTMLElement;
+  sorter!: any;
+  config!: any;
+
   events() {
     return {
       click: 'select',
@@ -34,7 +47,7 @@ export default class LayerView extends View {
     `;
   }
 
-  initialize(o = {}) {
+  initialize(o: any = {}) {
     const { model } = this;
     const config = o.config || {};
     this.em = config.em;
@@ -50,6 +63,7 @@ export default class LayerView extends View {
 
     // For the sorter
     model.view = this;
+    // @ts-ignore
     model.set({ droppable: 0, draggable: 1 });
     this.$el.data('model', model);
   }
@@ -58,7 +72,7 @@ export default class LayerView extends View {
     this.sorter?.startSort(this.el);
   }
 
-  removeItem(ev) {
+  removeItem(ev: Event) {
     ev && ev.stopPropagation();
     this.model.remove();
   }
@@ -68,17 +82,17 @@ export default class LayerView extends View {
   }
 
   getPropertiesWrapper() {
-    if (!this.propsWrapEl) this.propsWrapEl = this.el.querySelector('[data-properties]');
+    if (!this.propsWrapEl) this.propsWrapEl = this.el.querySelector('[data-properties]')!;
     return this.propsWrapEl;
   }
 
   getPreviewEl() {
-    if (!this.previewEl) this.previewEl = this.el.querySelector('[data-preview]');
+    if (!this.previewEl) this.previewEl = this.el.querySelector('[data-preview]')!;
     return this.previewEl;
   }
 
   getLabelEl() {
-    if (!this.labelEl) this.labelEl = this.el.querySelector('[data-label]');
+    if (!this.labelEl) this.labelEl = this.el.querySelector('[data-label]')!;
     return this.labelEl;
   }
 
@@ -103,7 +117,7 @@ export default class LayerView extends View {
     const isSelected = model.isSelected();
     wrapEl.style.display = isSelected ? '' : 'none';
     this.$el[isSelected ? 'addClass' : 'removeClass'](`${pfx}active`);
-    isSelected && wrapEl.appendChild(propertyView.props.el);
+    isSelected && wrapEl.appendChild(propertyView.props?.el!);
   }
 
   render() {
@@ -111,7 +125,7 @@ export default class LayerView extends View {
     el.innerHTML = this.template();
     el.className = `${pfx}layer`;
     if (model.hasPreview()) {
-      el.querySelector('[data-preview-box]').style.display = '';
+      (el.querySelector('[data-preview-box]') as HTMLElement).style.display = '';
     }
     this.updateLabel();
     this.updateVisibility();
