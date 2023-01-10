@@ -1,8 +1,15 @@
 import { View } from '../../common';
 import { appendAtIndex } from '../../utils/dom';
+import PropertyView from './PropertyView';
 
 export default class PropertiesView extends View {
-  initialize(o) {
+  config?: any;
+  pfx: string;
+  properties: PropertyView[];
+  parent?: PropertyView;
+
+  constructor(o: any) {
+    super(o);
     this.config = o.config || {};
     this.pfx = this.config.stylePrefix || '';
     this.properties = [];
@@ -12,11 +19,11 @@ export default class PropertiesView extends View {
     this.listenTo(coll, 'reset', this.render);
   }
 
-  addTo(model, coll, opts) {
+  addTo(model: any, coll: any, opts: any) {
     this.add(model, null, opts);
   }
 
-  add(model, frag, opts = {}) {
+  add(model: any, frag: DocumentFragment | null, opts: any = {}) {
     const { parent, config } = this;
     const appendTo = frag || this.el;
     const view = new model.typeView({ model, config });
@@ -28,8 +35,9 @@ export default class PropertiesView extends View {
   }
 
   remove() {
-    View.prototype.remove.apply(this, arguments);
+    View.prototype.remove.apply(this, arguments as any);
     this.clearItems();
+    return this;
   }
 
   clearItems() {
