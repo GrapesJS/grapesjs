@@ -5,7 +5,7 @@ import LayersView from './LayersView';
 export default class PropertyStackView extends PropertyCompositeView {
   events() {
     return {
-      ...PropertyCompositeView.prototype.events,
+      ...PropertyCompositeView.prototype.events(),
       'click [data-add-layer]': 'addLayer',
       change: '',
     };

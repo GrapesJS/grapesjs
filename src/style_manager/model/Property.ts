@@ -21,6 +21,7 @@ export interface PropertyProps {
   status?: string;
   visible?: boolean;
   fixedValues?: string[];
+  className?: string;
   onChange?: (data: {
     property: Property;
     from: PartialPropertyProps;
@@ -68,6 +69,8 @@ export interface PropertyProps {
   __p?: any;
 }
 
+export type StyleProps = Record<string, string>;
+
 export type OptionsUpdate = {
   partial?: boolean;
   noTarget?: boolean;
@@ -96,6 +99,7 @@ type PartialPropertyProps = Partial<PropertyProps>;
  */
 export default class Property<T extends Record<string, any> = PropertyProps> extends Model<T> {
   em!: EditorModel;
+  parent?: Property;
 
   static getDefaults() {
     return result(this.prototype, 'defaults');
@@ -168,7 +172,7 @@ export default class Property<T extends Record<string, any> = PropertyProps> ext
     applyStyle && this.__upTargetsStyle({ [name]: value }, opts);
   }
 
-  __upTargetsStyle(style: Record<string, string>, opts: any) {
+  __upTargetsStyle(style: StyleProps, opts: any) {
     const sm = this.em?.get('StyleManager');
     sm?.addStyleTargets({ ...style, __p: !!opts.avoidStore }, opts);
   }
@@ -313,9 +317,9 @@ export default class Property<T extends Record<string, any> = PropertyProps> ext
    * @param {Object} [opts={}] Options
    * @param {Boolean} [opts.noTarget=false] If `true` the change won't be propagated to selected targets.
    */
-  // @ts-ignore
   clear(opts = {}) {
     this._up(this.__getClearProps(), { ...opts, __clear: true });
+    return this;
   }
 
   /**

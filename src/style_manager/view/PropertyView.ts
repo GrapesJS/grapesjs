@@ -1,11 +1,70 @@
 import { bindAll, isUndefined, debounce } from 'underscore';
 import { View } from '../../common';
+import EditorModel from '../../editor/model/Editor';
 import { isObject } from '../../utils/mixins';
+import Property from '../model/Property';
+import { StyleProps } from '../model/PropertyComposite';
 
 const clearProp = 'data-clear-style';
 
-export default class Property extends View {
-  template() {
+export default class PropertyView extends View<Property> {
+  em: EditorModel;
+  pfx: string;
+  ppfx: string;
+  config: any;
+  parent?: PropertyView;
+  __destroyFn!: Function;
+  create?: Function;
+  destroy?: Function;
+  update?: Function;
+  onRender?: Function;
+  emit?: Function;
+  unset?: Function;
+  clearEl?: HTMLElement;
+  createdEl?: HTMLElement;
+  input?: HTMLInputElement;
+  $input?: any;
+
+  constructor(o = {}) {
+    super(o);
+    bindAll(this, '__change', '__updateStyle');
+    // @ts-ignore
+    const config = o.config || {};
+    const { em } = config;
+    this.config = config;
+    this.em = em;
+    this.pfx = config.stylePrefix || '';
+    this.ppfx = config.pStylePrefix || '';
+    this.__destroyFn = this.destroy ? this.destroy.bind(this) : () => {};
+    const { model } = this;
+    // @ts-ignore
+    model.view = this;
+
+    // Put a sligh delay on debounce in order to execute the update
+    // post styleManager.__upProps trigger.
+    this.onValueChange = debounce(this.onValueChange.bind(this), 10);
+    this.updateStatus = debounce(this.updateStatus.bind(this), 0);
+
+    this.listenTo(model, 'destroy remove', this.remove);
+    this.listenTo(model, 'change:visible', this.updateVisibility);
+    this.listenTo(model, 'change:name change:className change:full', this.render);
+    this.listenTo(model, 'change:value', this.onValueChange);
+    this.listenTo(model, 'change:parentTarget', this.updateStatus);
+    this.listenTo(em, 'change:device', this.onValueChange);
+
+    // @ts-ignore
+    const init = this.init && this.init.bind(this);
+    init && init();
+  }
+
+  events() {
+    return {
+      change: 'inputValueChanged',
+      [`click [${clearProp}]`]: 'clear',
+    };
+  }
+
+  template(model: any) {
     const { pfx, ppfx } = this;
     return `
       <div class="${pfx}label" data-sm-label></div>
@@ -13,7 +72,7 @@ export default class Property extends View {
     `;
   }
 
-  templateLabel(model) {
+  templateLabel(model: Property) {
     const { pfx, em } = this;
     const { parent } = model;
     const { icon = '', info = '' } = model.attributes;
@@ -28,7 +87,7 @@ export default class Property extends View {
     `;
   }
 
-  templateInput(model) {
+  templateInput(model: Property) {
     return `
       <div class="${this.ppfx}field">
         <input placeholder="${model.getDefaultValue()}"/>
@@ -36,38 +95,12 @@ export default class Property extends View {
     `;
   }
 
-  initialize(o = {}) {
-    bindAll(this, '__change', '__updateStyle');
-    const config = o.config || {};
-    const { em } = config;
-    this.config = config;
-    this.em = em;
-    this.pfx = config.stylePrefix || '';
-    this.ppfx = config.pStylePrefix || '';
-    this.__destroyFn = this.destroy ? this.destroy.bind(this) : () => {};
-    const { model } = this;
-    model.view = this;
-
-    // Put a sligh delay on debounce in order to execute the update
-    // post styleManager.__upProps trigger.
-    this.onValueChange = debounce(this.onValueChange.bind(this), 10);
-    this.updateStatus = debounce(this.updateStatus.bind(this));
-
-    this.listenTo(model, 'destroy remove', this.remove);
-    this.listenTo(model, 'change:visible', this.updateVisibility);
-    this.listenTo(model, 'change:name change:className change:full', this.render);
-    this.listenTo(model, 'change:value', this.onValueChange);
-    this.listenTo(model, 'change:parentTarget', this.updateStatus);
-    this.listenTo(em, 'change:device', this.onValueChange);
-
-    const init = this.init && this.init.bind(this);
-    init && init();
-  }
-
   remove() {
-    View.prototype.remove.apply(this, arguments);
+    View.prototype.remove.apply(this, arguments as any);
+    // @ts-ignore
     ['em', 'input', '$input', 'view'].forEach(i => (this[i] = null));
     this.__destroyFn(this._getClbOpts());
+    return this;
   }
 
   /**
@@ -81,7 +114,7 @@ export default class Property extends View {
     const computedCls = `${ppfx}color-warn`;
     const labelEl = this.$el.children(`.${pfx}label`);
     const clearStyleEl = this.getClearEl();
-    const clearStyle = clearStyleEl ? clearStyleEl.style : {};
+    const clearStyle = clearStyleEl ? clearStyleEl.style : ({} as CSSStyleDeclaration);
     labelEl.removeClass(`${updatedCls} ${computedCls}`);
     clearStyle.display = 'none';
 
@@ -98,7 +131,7 @@ export default class Property extends View {
   /**
    * Clear the property from the target
    */
-  clear(ev) {
+  clear(ev: Event) {
     ev && ev.stopPropagation();
     this.model.clear();
   }
@@ -109,7 +142,7 @@ export default class Property extends View {
    */
   getClearEl() {
     if (!this.clearEl) {
-      this.clearEl = this.el.querySelector(`[${clearProp}]`);
+      this.clearEl = this.el.querySelector(`[${clearProp}]`)!;
     }
 
     return this.clearEl;
@@ -119,14 +152,14 @@ export default class Property extends View {
    * Triggers when the value of element input/s is changed, so have to update
    * the value of the model which will propogate those changes to the target
    */
-  inputValueChanged(ev) {
+  inputValueChanged(ev: any) {
     ev && ev.stopPropagation();
     // Skip the default update in case a custom emit method is defined
     if (this.emit) return;
     this.model.upValue(ev.target.value);
   }
 
-  onValueChange(m, val, opt = {}) {
+  onValueChange(m: any, val: any, opt: any = {}) {
     this.setValue(this.model.getFullValue(undefined, { skipImportant: true }));
     this.updateStatus();
   }
@@ -136,21 +169,21 @@ export default class Property extends View {
    * Usually the value is a result of `model.getFullValue()`
    * @param {String} value The value from the model
    * */
-  setValue(value) {
+  setValue(value: string) {
     const { model } = this;
     const result = isUndefined(value) || value === '' ? model.getDefaultValue() : value;
     if (this.update) return this.__update(result);
     this.__setValueInput(result);
   }
 
-  __setValueInput(value) {
+  __setValueInput(value: string) {
     const input = this.getInputEl();
     input && (input.value = value);
   }
 
   getInputEl() {
     if (!this.input) {
-      this.input = this.el.querySelector('input');
+      this.input = this.el.querySelector('input')!;
     }
 
     return this.input;
@@ -161,9 +194,9 @@ export default class Property extends View {
   }
 
   clearCached() {
-    this.clearEl = null;
-    this.input = null;
-    this.$input = null;
+    delete this.clearEl;
+    delete this.input;
+    delete this.$input;
   }
 
   __unset() {
@@ -171,7 +204,7 @@ export default class Property extends View {
     unset && unset(this._getClbOpts());
   }
 
-  __update(value) {
+  __update(value: string) {
     const update = this.update && this.update.bind(this);
     update &&
       update({
@@ -180,17 +213,17 @@ export default class Property extends View {
       });
   }
 
-  __change(...args) {
+  __change(...args: any) {
     const emit = this.emit && this.emit.bind(this);
     emit && emit(this._getClbOpts(), ...args);
   }
 
-  __updateStyle(value, { complete, partial, ...opts } = {}) {
+  __updateStyle(value: string | StyleProps, { complete, partial, ...opts }: any = {}) {
     const { model } = this;
     const final = complete !== false && partial !== true;
 
     if (isObject(value)) {
-      model.__upTargetsStyle(value, { avoidStore: !final });
+      model.__upTargetsStyle(value as StyleProps, { avoidStore: !final });
     } else {
       model.upValue(value, { partial: !final });
     }
@@ -231,10 +264,6 @@ export default class Property extends View {
     const onRender = this.onRender && this.onRender.bind(this);
     onRender && onRender();
     this.setValue(model.getValue());
+    return this;
   }
 }
-
-Property.prototype.events = {
-  change: 'inputValueChanged',
-  [`click [${clearProp}]`]: 'clear',
-};

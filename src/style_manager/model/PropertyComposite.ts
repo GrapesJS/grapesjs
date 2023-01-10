@@ -365,7 +365,8 @@ export default class PropertyComposite<T extends Record<string, any> = PropertyC
 
   clear() {
     this.getProperties().map(p => p.clear({ __clearIn: !this.isDetached() }));
-    return Property.prototype.clear.call(this);
+    Property.prototype.clear.call(this);
+    return this;
   }
 
   hasValue(opts: Parameters<Property['hasValue']>[0]) {

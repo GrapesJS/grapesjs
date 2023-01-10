@@ -3,7 +3,7 @@ import Property from './PropertyNumberView';
 export default class PropertySliderView extends Property {
   events() {
     return {
-      ...Property.prototype.events,
+      ...Property.prototype.events(),
       'change [type=range]': 'inputValueChanged',
       'input [type=range]': 'inputValueChangedSoft',
       change: '',

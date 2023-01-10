@@ -4,7 +4,7 @@ import PropertyView from './PropertyView';
 export default class PropertyFileView extends PropertyView {
   events() {
     return {
-      ...PropertyView.prototype.events,
+      ...PropertyView.prototype.events(),
       'click [data-clear-asset]': 'clear',
       'click [data-open-assets]': 'openAssetManager',
     };

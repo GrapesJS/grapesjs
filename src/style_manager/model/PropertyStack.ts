@@ -540,7 +540,8 @@ export default class PropertyStack extends PropertyComposite<PropertyStackProps>
   clear(opts = {}) {
     this.__getLayers().reset();
     this.__upTargetsStyleProps(opts);
-    return PropertyBase.prototype.clear.call(this);
+    PropertyBase.prototype.clear.call(this);
+    return this;
   }
 
   __canClearProp() {
