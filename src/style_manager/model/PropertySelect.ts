@@ -9,6 +9,7 @@ type SelectOption = {
   name?: string;
   className?: string;
   title?: string;
+  style?: string;
 };
 
 /** @private */

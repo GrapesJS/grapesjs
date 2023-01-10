@@ -1,9 +1,9 @@
+import PropertySelect from '../model/PropertySelect';
 import PropertyView from './PropertyView';
 
 export default class PropertySelectView extends PropertyView {
   templateInput() {
-    const pfx = this.pfx;
-    const ppfx = this.ppfx;
+    const { pfx, ppfx } = this;
     return `
       <div class="${ppfx}field ${ppfx}select">
         <span id="${pfx}input-holder"></span>
@@ -14,22 +14,23 @@ export default class PropertySelectView extends PropertyView {
     `;
   }
 
-  initialize(...args) {
-    PropertyView.prototype.initialize.apply(this, args);
+  constructor(o: any) {
+    super(o);
     this.listenTo(this.model, 'change:options', this.updateOptions);
   }
 
   updateOptions() {
-    this.input = null;
+    delete this.input;
     this.onRender();
   }
 
   onRender() {
-    const { model, pfx } = this;
+    const { pfx } = this;
+    const model = this.model as PropertySelect;
     const options = model.getOptions();
 
     if (!this.input) {
-      const optionsRes = [];
+      const optionsRes: string[] = [];
 
       options.forEach(option => {
         const id = model.getOptionId(option);
@@ -40,14 +41,14 @@ export default class PropertySelectView extends PropertyView {
         optionsRes.push(`<option value="${value}" ${styleAttr}>${name}</option>`);
       });
 
-      const inputH = this.el.querySelector(`#${pfx}input-holder`);
+      const inputH = this.el.querySelector(`#${pfx}input-holder`)!;
       inputH.innerHTML = `<select>${optionsRes.join('')}</select>`;
-      this.input = inputH.firstChild;
+      this.input = inputH.firstChild as HTMLInputElement;
     }
   }
 
-  __setValueInput(value) {
-    const { model } = this;
+  __setValueInput(value: string) {
+    const model = this.model as PropertySelect;
     const input = this.getInputEl();
     const firstOpt = model.getOptions()[0];
     const firstId = firstOpt ? model.getOptionId(firstOpt) : '';
