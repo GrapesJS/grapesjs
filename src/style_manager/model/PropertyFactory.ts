@@ -1,4 +1,5 @@
 import { isFunction, isString } from 'underscore';
+import { PropertyCompositeProps } from './PropertyComposite';
 
 type Option = {
   id: string;
@@ -6,6 +7,8 @@ type Option = {
 };
 
 type Property = Record<string, any>;
+
+type PartialProps = Partial<Property | PropertyCompositeProps>;
 
 const getOptions = (items: string[]): Option[] => items.map(item => ({ id: item }));
 
@@ -187,7 +190,7 @@ export default class PropertyFactory {
 
     // Build default built-in properties (the order, in the array here below, matters)
     // [propertyName, propertyDefinition, extendFromProperty]
-    [
+    const propsToCreate: ([string, PartialProps, string] | [string, PartialProps])[] = [
       // Number types
       ['text-shadow-h', { type: typeNumber, default: '0', units: this.unitsSizeNoPerc }],
       ['top', { default: 'auto', units: this.unitsSize, fixedValues }, 'text-shadow-h'],
@@ -367,6 +370,7 @@ export default class PropertyFactory {
         'box-shadow',
         {
           preview: true,
+          // @ts-ignore
           layerLabel: (l, { values }) => {
             const x = values['box-shadow-h'];
             const y = values['box-shadow-v'];
@@ -389,6 +393,7 @@ export default class PropertyFactory {
         'text-shadow',
         {
           default: 'none',
+          // @ts-ignore
           layerLabel: (l, { values }) => {
             const x = values['text-shadow-h'];
             const y = values['text-shadow-v'];
@@ -403,6 +408,7 @@ export default class PropertyFactory {
         'background',
         {
           detached: true,
+          // @ts-ignore
           layerLabel: (l, { values }) => {
             const repeat = values['background-repeat-sub'] || '';
             const pos = values['background-position-sub'] || '';
@@ -430,6 +436,7 @@ export default class PropertyFactory {
           layerSeparator: ' ',
           fromStyle(style, { property, name }) {
             const filter = style[name] || '';
+            // @ts-ignore
             const sep = property.getLayerSeparator();
             return filter
               ? filter.split(sep).map(input => {
@@ -478,6 +485,7 @@ export default class PropertyFactory {
               ],
               onChange({ property, to }) {
                 if (to.value) {
+                  // @ts-ignore
                   const option = property.getOption();
                   const props = { ...(option.propValue || {}) };
                   const propToUp = property.getParent().getProperty('transform-value');
@@ -498,8 +506,9 @@ export default class PropertyFactory {
           ],
         },
       ],
-    ].forEach(arr => {
-      const [prop, def, from] = arr as [string, Property, string];
+    ];
+
+    propsToCreate.forEach(([prop, def, from]) => {
       this.add(prop, def || {}, { from });
     });
 
