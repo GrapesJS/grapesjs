@@ -7,6 +7,8 @@ type SelectOption = {
   value?: string;
   label?: string;
   name?: string;
+  className?: string;
+  title?: string;
 };
 
 /** @private */

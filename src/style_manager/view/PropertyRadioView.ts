@@ -1,4 +1,5 @@
 import PropertySelectView from './PropertySelectView';
+import PropertyRadio from '../model/PropertyRadio';
 
 export default class PropertyRadioView extends PropertySelectView {
   templateInput() {
@@ -7,7 +8,8 @@ export default class PropertyRadioView extends PropertySelectView {
   }
 
   onRender() {
-    const { pfx, ppfx, model } = this;
+    const { pfx, ppfx } = this;
+    const model = this.model as PropertyRadio;
     const itemCls = `${ppfx}radio-item-label`;
     const prop = model.getName();
     const options = model.getOptions();
@@ -15,7 +17,7 @@ export default class PropertyRadioView extends PropertySelectView {
     const { cid } = model;
 
     if (!this.input) {
-      const optionsRes = [];
+      const optionsRes: string[] = [];
 
       options.forEach(opt => {
         const cls = opt.className ? `${opt.className} ${pfx}icon ${itemCls}` : '';
@@ -32,16 +34,16 @@ export default class PropertyRadioView extends PropertySelectView {
         `);
       });
 
-      const inputHld = this.el.querySelector(`.${ppfx}field`);
+      const inputHld = this.el.querySelector(`.${ppfx}field`)!;
       inputHld.innerHTML = `<div class="${ppfx}radio-items">${optionsRes.join('')}</div>`;
-      this.input = inputHld.firstChild;
+      this.input = inputHld.firstChild as HTMLInputElement;
     }
   }
 
-  __setValueInput(value) {
+  __setValueInput(value: string) {
     const { model } = this;
     const id = value || model.getDefaultValue();
-    const inputIn = this.getInputEl()?.querySelector(`[value="${id}"]`);
+    const inputIn = this.getInputEl()?.querySelector(`[value="${id}"]`) as HTMLInputElement;
     inputIn && (inputIn.checked = true);
   }
 }
