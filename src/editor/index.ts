@@ -181,13 +181,11 @@ export default class EditorModule implements IBaseModule<EditorConfig> {
   get SelectorManager() {
     return this.em.Selectors;
   }
-  //@ts-ignore
-  get Styles(): StyleManagerModule {
-    return this.em.get('StyleManager');
+  get Styles() {
+    return this.em.Styles;
   }
-  //@ts-ignore
-  get StyleManager(): StyleManagerModule {
-    return this.em.get('StyleManager');
+  get StyleManager() {
+    return this.em.Styles;
   }
   get Devices() {
     return this.em.Devices;

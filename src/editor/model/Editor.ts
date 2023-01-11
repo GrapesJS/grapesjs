@@ -32,6 +32,7 @@ import CodeManagerModule from '../../code_manager';
 import UndoManagerModule from '../../undo_manager';
 import RichTextEditorModule from '../../rich_text_editor';
 import CommandsModule from '../../commands';
+import StyleManager from '../../style_manager';
 
 //@ts-ignore
 Backbone.$ = $;
@@ -209,6 +210,10 @@ export default class EditorModel extends Model {
 
   get Pages(): PageManager {
     return this.get('PageManager');
+  }
+
+  get Styles(): StyleManager {
+    return this.get('StyleManager');
   }
 
   constructor(conf: EditorConfig = {}) {
