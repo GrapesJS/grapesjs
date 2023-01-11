@@ -60,7 +60,7 @@
  * [Component]: component.html
  * [Property]: property.html
  *
- * @module StyleManager
+ * @module docsjs.StyleManager
  */
 
 import { isUndefined, isArray, isString, debounce, bindAll } from 'underscore';
