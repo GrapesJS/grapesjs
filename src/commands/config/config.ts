@@ -11,14 +11,14 @@ export interface CommandsConfig {
    * Default commands
    * @default {}
    */
-  defaults: Record<string, CommandObject>;
+  defaults?: Record<string, CommandObject>;
 
   /**
    * If true, stateful commands (with `run` and `stop` methods) can't be executed multiple times.
    * If the command is already active, running it again will not execute the `run` method.
    * @default true
    */
-  strict: boolean;
+  strict?: boolean;
 }
 
 const config: CommandsConfig = {

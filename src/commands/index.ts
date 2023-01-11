@@ -102,8 +102,8 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
     }
 
     // Load commands passed via configuration
-    Object.keys(config.defaults).forEach(k => {
-      const obj = config.defaults[k];
+    Object.keys(config.defaults!).forEach(k => {
+      const obj = config.defaults![k];
       if (obj.id) this.add(obj.id, obj);
     });
 

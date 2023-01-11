@@ -16,6 +16,8 @@ import { StorageManagerConfig } from '../../storage_manager/config/config';
 import { UndoManagerConfig } from '../../undo_manager/config';
 import { Plugin } from '../../plugin_manager';
 import { TraitManagerConfig } from '../../trait_manager/config/config';
+import { CommandsConfig } from '../../commands/config/config';
+import { StyleManagerConfig } from '../../style_manager/config/config';
 
 type AnyObject = Record<string, any>;
 
@@ -347,11 +349,10 @@ export interface EditorConfig {
    */
   panels?: PanelsConfig;
 
-  // TODO
   /**
    * Configurations for Commands.
    */
-  commands?: AnyObject;
+  commands?: CommandsConfig;
 
   /**
    * Configurations for Css Composer.
@@ -368,11 +369,10 @@ export interface EditorConfig {
    */
   deviceManager?: DeviceManagerConfig;
 
-  // TODO
   /**
    * Configurations for Style Manager.
    */
-  styleManager?: AnyObject;
+  styleManager?: StyleManagerConfig;
 
   /**
    * Configurations for Block Manager.
