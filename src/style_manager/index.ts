@@ -370,7 +370,7 @@ export default class StyleManager extends ItemManagerModule<
     const { em } = this;
     const trgs = isArray(target) ? target : [target];
     const { stylable } = opts;
-    const cssc = em.get('CssComposer');
+    const cssc = em.Css;
     let targets: StyleTarget[] = [];
 
     trgs.filter(Boolean).forEach(target => {
@@ -407,7 +407,7 @@ export default class StyleManager extends ItemManagerModule<
             style,
             shallow: true,
             important: true,
-          });
+          }) as unknown as CssRule;
         } else {
           stateTarget.setStyle(style);
         }

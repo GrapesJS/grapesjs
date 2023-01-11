@@ -271,7 +271,7 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
    * });
    * // output: @media (min-width: 500px) { .class1:hover { color: red } }
    */
-  setRule(selectors: any, style: CssRuleProperties['style'], opts: RuleOptions = {}) {
+  setRule(selectors: any, style: CssRuleProperties['style'] = {}, opts: RuleOptions = {}) {
     const { atRuleType, atRuleParams } = opts;
     const node = this.em.get('Parser').parserCss.checkNode({
       selectors,
@@ -435,7 +435,7 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
    * // Remove by selector
    * css.remove('.my-cls-2');
    */
-  remove(rule: string | CSSRule, opts?: any) {
+  remove(rule: string | CssRule, opts?: any) {
     const toRemove = isString(rule) ? this.getRules(rule) : rule;
     const result = this.getAll().remove(toRemove, opts);
     return isArray(result) ? result : [result];
