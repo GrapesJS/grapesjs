@@ -61,6 +61,8 @@ export interface StyleManagerConfig {
    * @deprecated
    */
   avoidComputed?: string[];
+
+  pStylePrefix?: string;
 }
 
 export default {

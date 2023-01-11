@@ -1,5 +1,5 @@
 import { extend, isString } from 'underscore';
-import { AddOptions, Model } from '../../common';
+import { AddOptions, Collection, Model } from '../../common';
 import EditorModel from '../../editor/model/Editor';
 import Properties from './Properties';
 import Property, { PropertyProps } from './Property';
@@ -62,6 +62,10 @@ export default class Sector extends Model<SectorProperties> {
     const propsModel = new Properties(props, { em });
     propsModel.sector = this;
     this.set('properties', propsModel);
+  }
+
+  get properties() {
+    return this.get('properties') as unknown as Collection<Property>;
   }
 
   /**

@@ -7,6 +7,16 @@ import { StyleProps } from '../model/PropertyComposite';
 
 const clearProp = 'data-clear-style';
 
+export interface ICustomPropertyView {
+  create?: (data: ReturnType<PropertyView['_getClbOpts']>) => any;
+  destroy?: (data: ReturnType<PropertyView['_getClbOpts']>) => any;
+  update?: (data: ReturnType<PropertyView['_getClbOpts']> & { value: string }) => any;
+  emit?: (data: ReturnType<PropertyView['_getClbOpts']>, ...args: any) => any;
+  unset?: (data: ReturnType<PropertyView['_getClbOpts']>) => any;
+}
+
+export type CustomPropertyView<T> = ICustomPropertyView & T & ThisType<T & PropertyView>;
+
 export default class PropertyView extends View<Property> {
   em: EditorModel;
   pfx: string;

@@ -1,24 +1,20 @@
 import { View } from '../../common';
 import EditorModel from '../../editor/model/Editor';
 import html from '../../utils/html';
+import { StyleManagerConfig } from '../config/config';
 import Sector from '../model/Sector';
 import PropertiesView from './PropertiesView';
 
-export type SectorViewConfig = {
-  em: EditorModel;
-  stylePrefix?: string;
-  pStylePrefix?: string;
-};
-
 export default class SectorView extends View<Sector> {
   em: EditorModel;
-  config: SectorViewConfig;
+  config: StyleManagerConfig;
   pfx: string;
 
-  constructor(o: { config: SectorViewConfig; model?: Sector }) {
+  constructor(o: { config: StyleManagerConfig; model?: Sector }) {
     super(o);
     const config = o.config || {};
     const { model } = this;
+    // @ts-ignore
     const { em } = config;
     this.config = config;
     this.em = em;

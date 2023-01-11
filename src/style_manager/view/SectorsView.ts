@@ -1,15 +1,20 @@
 import { View } from '../../common';
+import EditorModel from '../../editor/model/Editor';
 import { appendAtIndex } from '../../utils/dom';
+import { StyleManagerConfig } from '../config/config';
 import Sector from '../model/Sector';
-import SectorView, { SectorViewConfig } from './SectorView';
+import Sectors from '../model/Sectors';
+import SectorView from './SectorView';
 
 export default class SectorsView extends View {
   pfx: string;
   ppfx: string;
-  config: SectorViewConfig;
+  config: StyleManagerConfig;
   module: any;
 
-  constructor(o: { module?: any; config?: SectorViewConfig } = {}) {
+  constructor(
+    o: { module?: any; config?: StyleManagerConfig; el?: HTMLElement; em?: EditorModel; collection?: Sectors } = {}
+  ) {
     // @ts-ignore
     super(o);
     const { module, config } = o;
