@@ -1,6 +1,6 @@
 /**
  * With Style Manager you build categories (called sectors) of CSS properties which could be used to customize the style of components.
- * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/style_manager/config/config.js)
+ * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/style_manager/config/config.ts)
  * ```js
  * const editor = grapesjs.init({
  *  styleManager: {
