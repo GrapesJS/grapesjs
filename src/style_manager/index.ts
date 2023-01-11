@@ -140,7 +140,6 @@ export default class StyleManager extends ItemManagerModule<
   constructor(em: EditorModel) {
     super(em, 'StyleManager', new Sectors([], { em }), events, defaults);
     bindAll(this, '__clearStateTarget');
-    // this.__initConfig(defaults, config);
     const c = this.config;
     const ppfx = c.pStylePrefix;
     if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
@@ -196,7 +195,7 @@ export default class StyleManager extends ItemManagerModule<
     const stateTarget = this.__getStateTarget();
     stateTarget &&
       em?.skip(() => {
-        em.get('CssComposer').remove(stateTarget);
+        em.Css.remove(stateTarget);
         this.model.set({ stateTarget: null });
       });
   }
@@ -525,9 +524,9 @@ export default class StyleManager extends ItemManagerModule<
 
     if (em && model?.toHTML) {
       const config = em.getConfig();
-      const um = em.get('UndoManager');
-      const cssC = em.get('CssComposer');
-      const sm = em.get('SelectorManager');
+      const um = em.UndoManager;
+      const cssC = em.Css;
+      const sm = em.Selectors;
       const smConf = sm ? sm.getConfig() : {};
       const state = !config.devicePreviewMode ? em.get('state') : '';
       const classes = model.get('classes');
