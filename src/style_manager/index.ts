@@ -146,12 +146,8 @@ export default class StyleManager extends ItemManagerModule<
     this.builtIn = new PropertyFactory();
     this.properties = new Properties([], { em, module: this });
     this.sectors = this.all; // TODO check if (module: this) is required
-    // this.sectors = new Sectors([], { ...c, module: this });
     const model = new Model({ targets: [] });
     this.model = model;
-    // this.__listenAdd(sectors, evSectorAdd);
-    // this.__listenRemove(sectors, evSectorRemove);
-    // this.__listenUpdate(sectors, evSectorUpdate);
 
     // Triggers for the selection refresh and properties
     const ev = 'component:toggled component:update:classes change:state change:device frame:resized selector:type';
@@ -173,8 +169,6 @@ export default class StyleManager extends ItemManagerModule<
 
     // Other listeners
     model.on('change:lastTarget', () => em.trigger(evTarget, this.getSelected()));
-
-    return this;
   }
 
   __upSel() {
