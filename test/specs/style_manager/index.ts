@@ -1,29 +1,33 @@
-import Editor from 'editor/model/Editor';
+import CssComposer from '../../../src/css_composer';
+import DeviceManager from '../../../src/device_manager';
+import ComponentManager from '../../../src/dom_components';
+import Editor from '../../../src/editor/model/Editor';
+import SelectorManager from '../../../src/selector_manager';
+import StyleManager from '../../../src/style_manager';
 
 describe('StyleManager', () => {
   describe('Main', () => {
-    let obj;
-    let em;
-    let domc;
-    let dv;
-    let cssc;
-    let sm;
+    let obj: StyleManager;
+    let em: Editor;
+    let domc: ComponentManager;
+    let dv: DeviceManager;
+    let cssc: CssComposer;
+    let sm: SelectorManager;
 
     beforeEach(() => {
       em = new Editor({
         mediaCondition: 'max-width',
         avoidInlineStyle: true,
       });
-      domc = em.get('DomComponents');
-      cssc = em.get('CssComposer');
-      dv = em.get('DeviceManager');
-      sm = em.get('SelectorManager');
-      obj = em.get('StyleManager');
+      domc = em.Components;
+      cssc = em.Css;
+      dv = em.Devices;
+      sm = em.Selectors;
+      obj = em.Styles;
       em.get('PageManager').onLoad();
     });
 
     afterEach(() => {
-      obj = null;
       em.destroy();
     });
 
@@ -46,14 +50,14 @@ describe('StyleManager', () => {
     });
 
     test('Add sectors', () => {
-      obj.addSector('test', {});
-      obj.addSector('test2', {});
+      obj.addSector('test', { name: 'test' });
+      obj.addSector('test2', { name: 'test2' });
       expect(obj.getSectors().length).toEqual(2);
     });
 
     test("Can't create more than one sector with the same id", () => {
-      var sect1 = obj.addSector('test', {});
-      var sect2 = obj.addSector('test', {});
+      var sect1 = obj.addSector('test', { name: 'test' });
+      var sect2 = obj.addSector('test', { name: 'test' });
       expect(obj.getSectors().length).toEqual(1);
       expect(sect1).toEqual(sect2);
     });
@@ -69,55 +73,59 @@ describe('StyleManager', () => {
     });
 
     test('Add property to inexistent sector', () => {
-      expect(obj.addProperty('test', {})).toEqual(null);
+      expect(obj.addProperty('test', { property: 'test' })).toEqual(null);
     });
 
     test('Add property', () => {
-      obj.addSector('test', {});
-      expect(obj.addProperty('test', {})).toBeTruthy();
+      obj.addSector('test', { name: 'test' });
+      expect(obj.addProperty('test', { property: 'test' })).toBeTruthy();
       expect(obj.getProperties('test').length).toEqual(1);
     });
 
     test('Check added property', () => {
-      obj.addSector('test', {});
+      obj.addSector('test', { name: 'test' });
       var prop = obj.addProperty('test', {
         name: 'test',
+        property: 'test',
       });
-      expect(prop.get('name')).toEqual('test');
+      expect(prop?.get('name')).toEqual('test');
     });
 
     test('Add properties', () => {
-      obj.addSector('test', {});
+      obj.addSector('test', { name: 'test' });
+      // @ts-ignore
       obj.addProperty('test', [{}, {}]);
       expect(obj.getProperties('test').length).toEqual(2);
     });
 
     test('Get property from inexistent sector', () => {
-      expect(obj.getProperty('test', 'test-prop')).toEqual(null);
+      expect(obj.getProperty('test', 'test-prop')).toEqual(undefined);
     });
 
     test("Can't get properties without proper name", () => {
-      obj.addSector('test', {});
+      obj.addSector('test', { name: 'test' });
+      // @ts-ignore
       obj.addProperty('test', [{}, {}]);
-      expect(obj.getProperty('test', 'test-prop')).toEqual(null);
+      expect(obj.getProperty('test', 'test-prop')).toEqual(undefined);
     });
 
     test('Get property with proper name', () => {
-      obj.addSector('test', {});
+      obj.addSector('test', { name: 'test' });
       var prop1 = obj.addProperty('test', { property: 'test-prop' });
       var prop2 = obj.getProperty('test', 'test-prop');
       expect(prop1).toEqual(prop2);
     });
 
     test('Get properties with proper name', () => {
-      obj.addSector('test', {});
+      obj.addSector('test', { name: 'test' });
+      // @ts-ignore
       obj.addProperty('test', [{ property: 'test-prop' }, { property: 'test-prop' }]);
       expect(obj.getProperty('test', 'test-prop')).toBeTruthy();
     });
 
     test('Get inexistent properties', () => {
-      expect(obj.getProperties('test')).toEqual(null);
-      expect(obj.getProperties()).toEqual(null);
+      expect(obj.getProperties('test')).toEqual(undefined);
+      expect(obj.getProperties('')).toEqual(undefined);
     });
 
     test('Renders correctly', () => {
@@ -222,7 +230,7 @@ describe('StyleManager', () => {
     describe('Init with configuration', () => {
       beforeEach(() => {
         em = new Editor({
-          StyleManager: {
+          styleManager: {
             sectors: [
               {
                 id: 'dim',
@@ -256,7 +264,6 @@ describe('StyleManager', () => {
       });
 
       afterEach(() => {
-        obj = null;
         em.destroy();
       });
 
@@ -269,21 +276,22 @@ describe('StyleManager', () => {
       test('Properties added', () => {
         var sect1 = obj.getSector('dim');
         var sect2 = obj.getSector('pos');
-        expect(sect1.get('properties').length).toEqual(2);
-        expect(sect2.get('properties').length).toEqual(1);
+        expect(sect1.get('properties')?.length).toEqual(2);
+        expect(sect2.get('properties')?.length).toEqual(1);
       });
 
       test('Property is correct', () => {
-        var prop1 = obj.getProperty('dim', 'width');
+        var prop1 = obj.getProperty('dim', 'width')!;
         expect(prop1.get('name')).toEqual('Width');
       });
 
       test('Add built-in', () => {
         obj.addBuiltIn('test', { type: 'number' });
         obj.addBuiltIn('test2', { type: 'stack' });
-        const added = obj.addProperty('dim', { extend: 'test' });
+        const added = obj.addProperty('dim', { extend: 'test', property: 'test' })!;
         expect(added.getType()).toEqual('number');
-        const added2 = obj.addProperty('dim', 'test2');
+        // @ts-ignore
+        const added2 = obj.addProperty('dim', 'test2')!;
         expect(added2.getType()).toEqual('stack');
       });
     });

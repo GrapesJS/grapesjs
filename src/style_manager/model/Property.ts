@@ -22,6 +22,7 @@ export interface PropertyProps {
   visible?: boolean;
   fixedValues?: string[];
   className?: string;
+  extend?: string;
   onChange?: (data: {
     property: Property;
     from: PartialPropertyProps;

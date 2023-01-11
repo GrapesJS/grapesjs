@@ -290,7 +290,7 @@ export default class StyleManager extends ItemManagerModule<
    *   ],
    * }, { at: 0 });
    */
-  addProperty(sectorId: string, property: PropertyProps, opts: AddOptions = {}) {
+  addProperty(sectorId: string, property: PropertyProps, opts: AddOptions = {}): Property | undefined {
     const sector = this.getSector(sectorId, { warn: true });
     let prop = null;
     if (sector) prop = sector.addProperty(property, opts);
@@ -499,7 +499,7 @@ export default class StyleManager extends ItemManagerModule<
    *  options: [{ id: 'value1', label: 'Some label' }, ...],
    * })
    */
-  addBuiltIn(prop: string, definition: PropertyProps) {
+  addBuiltIn(prop: string, definition: Omit<PropertyProps, 'property'> & { proeperty?: 'string' }) {
     return this.builtIn.add(prop, definition);
   }
 

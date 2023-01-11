@@ -515,7 +515,7 @@ export default class PropertyFactory {
     return this;
   }
 
-  add(property: string, def = {}, opts: { from?: string } = {}) {
+  add(property: string, def: Record<string, any> = {}, opts: { from?: string } = {}) {
     const from = opts.from || '';
     const fromRes = this.props[from || property] || {};
     const result: Property = { ...fromRes, property, ...def };

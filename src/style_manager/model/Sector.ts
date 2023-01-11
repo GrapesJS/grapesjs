@@ -11,8 +11,8 @@ export interface SectorProperties {
   open?: boolean;
   visible?: boolean;
   buildProps?: string[];
-  extendBuilded: boolean;
-  properties: PropertyProps[];
+  extendBuilded?: boolean;
+  properties?: PropertyProps[];
 }
 
 /**
