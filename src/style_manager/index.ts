@@ -65,7 +65,7 @@
 
 import { isUndefined, isArray, isString, debounce, bindAll } from 'underscore';
 import { isComponent } from '../utils/mixins';
-import { AddOptions, Model, Module } from '../common';
+import { AddOptions, Model } from '../common';
 import defaults, { StyleManagerConfig } from './config/config';
 import Sector, { SectorProperties } from './model/Sector';
 import Sectors from './model/Sectors';
@@ -78,7 +78,7 @@ import Property, { PropertyProps, StyleProps } from './model/Property';
 import Component from '../dom_components/model/Component';
 import CssRule from '../css_composer/model/CssRule';
 import StyleableModel from '../domain_abstract/model/StyleableModel';
-import { CustomPropertyView, ICustomPropertyView } from './view/PropertyView';
+import { CustomPropertyView } from './view/PropertyView';
 
 type StyleTarget = StyleableModel;
 
