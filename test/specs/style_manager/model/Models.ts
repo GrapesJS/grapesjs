@@ -1,7 +1,7 @@
-import Sector from 'style_manager/model/Sector';
-import Property from 'style_manager/model/Property';
-import PropertyNumber from 'style_manager/model/PropertyNumber';
-import Editor from 'editor/model/Editor';
+import Sector from '../../../../src/style_manager/model/Sector';
+import Property from '../../../../src/style_manager/model/Property';
+import PropertyNumber from '../../../../src/style_manager/model/PropertyNumber';
+import Editor from '../../../../src/editor/model/Editor';
 
 describe('Sector', () => {
   let em;
@@ -25,7 +25,7 @@ describe('Sector', () => {
     };
     em = new Editor({
       styleManager: {
-        sectors: [{ id: 'sector-1' }],
+        sectors: [{ id: 'sector-1', name: 's' }],
       },
     });
     sm = em.get('StyleManager');
@@ -48,7 +48,8 @@ describe('Sector', () => {
 
   test('Init with properties', () => {
     obj = new Sector({
-      properties: [{}, {}],
+      name: 'test',
+      properties: [{ property: '1' }, { property: '2' }],
     });
     expect(obj.get('properties').length).toEqual(2);
   });
@@ -112,14 +113,10 @@ describe('Sector', () => {
 });
 
 describe('Property', () => {
-  var obj;
+  let obj: Property;
 
   beforeEach(() => {
     obj = new Property();
-  });
-
-  afterEach(() => {
-    obj = null;
   });
 
   test('Has property field', () => {
@@ -137,34 +134,30 @@ describe('Property', () => {
   });
 
   test('parseValue with function and functionName', () => {
-    obj = new Property({ functionName: 'fn' });
+    obj = new Property({ functionName: 'fn', property: 'test' });
     const result = { value: 'testValue', functionName: 'fn' };
     expect(obj.parseValue('fn(testValue)')).toEqual(result);
     expect(obj.parseValue('fn(testValue')).toEqual(result);
   });
 
   test('Parse correctly a value with !important', () => {
-    const result = { value: 'red', important: 1 };
+    const result = { value: 'red', important: true };
     expect(obj.parseValue('red !important ')).toEqual(result);
   });
 
   test('getFullValue', () => {
-    obj = new Property({ functionName: 'fn', value: 'red' });
+    obj = new Property({ functionName: 'fn', value: 'red', property: 'test' });
     expect(obj.getFullValue()).toEqual('fn(red)');
-    obj = new Property({ functionName: 'fn', value: '#123', important: 1 });
+    obj = new Property({ functionName: 'fn', value: '#123', important: true, property: 'test' });
     expect(obj.getFullValue()).toEqual('fn(#123) !important');
   });
 });
 
 describe('PropertyNumber', () => {
-  var obj;
+  let obj: PropertyNumber;
 
   beforeEach(() => {
-    obj = new PropertyNumber({ units: ['px', 'deg'] });
-  });
-
-  afterEach(() => {
-    obj = null;
+    obj = new PropertyNumber({ units: ['px', 'deg'], property: 'test' });
   });
 
   test('parseValue with units', () => {
@@ -176,20 +169,21 @@ describe('PropertyNumber', () => {
     obj = new PropertyNumber({
       units: ['px', 'deg'],
       functionName: 'test',
+      property: 'test',
     });
     const result = { value: 55, unit: 'deg', functionName: 'test' };
     expect(obj.parseValue('test(55deg)')).toEqual(result);
   });
 
   test('parse input value with min', () => {
-    obj = new PropertyNumber({ units: ['px'], min: 10 });
+    obj = new PropertyNumber({ units: ['px'], min: 10, property: 'test' });
     const result = { value: 10, unit: 'px' };
     expect(obj.parseValue('1px')).toEqual(result);
     expect(obj.parseValue('15px')).toEqual({ value: 15, unit: 'px' });
   });
 
   test('parse input value with max', () => {
-    obj = new PropertyNumber({ units: ['px'], max: 100 });
+    obj = new PropertyNumber({ units: ['px'], max: 100, property: 'test' });
     const result = { value: 100, unit: 'px' };
     expect(obj.parseValue('200px')).toEqual(result);
     expect(obj.parseValue('95px')).toEqual({ value: 95, unit: 'px' });

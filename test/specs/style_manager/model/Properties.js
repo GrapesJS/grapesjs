@@ -499,7 +499,7 @@ describe('StyleManager properties logic', () => {
     });
 
     test('Has no selected layer', () => {
-      expect(compTypeProp.getSelectedLayer()).toBe(null);
+      expect(compTypeProp.getSelectedLayer()).toBe(undefined);
     });
 
     test('getLayersFromStyle returns correct values', () => {
