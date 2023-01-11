@@ -49,7 +49,7 @@ Returns **([Layer] | null)**
 
 Get selected layer.
 
-Returns **([Layer] | null)** 
+Returns **([Layer] | [undefined][7])** 
 
 ### selectLayer
 
@@ -103,8 +103,8 @@ Add new layer to the stack.
 
 #### Parameters
 
-*   `props` **[Object][7]** Custom property values to use in a new layer. (optional, default `{}`)
-*   `opts` **[Object][7]** Options (optional, default `{}`)
+*   `props` **[Object][8]** Custom property values to use in a new layer. (optional, default `{}`)
+*   `opts` **[Object][8]** Options (optional, default `{}`)
 
     *   `opts.at` **[Number][6]?** Position index (by default the layer will be appended at the end).
 
@@ -174,12 +174,12 @@ Get style object from the layer.
 #### Parameters
 
 *   `layer` **[Layer]** 
-*   `opts` **[Object][7]** Options (optional, default `{}`)
+*   `opts` **[Object][8]** Options (optional, default `{}`)
 
     *   `opts.camelCase` **[Boolean][1]?** Return property names in camelCase.
-    *   `opts.number` **[Object][7]?** Limit the result of the number types, eg. `number: { min: -3, max: 3 }`
+    *   `opts.number` **[Object][8]?** Limit the result of the number types, eg. `number: { min: -3, max: 3 }`
 
-Returns **[Object][7]** Style object
+Returns **[Object][8]** Style object
 
 ### getStylePreview
 
@@ -189,9 +189,9 @@ If the property has `preview: false` the returned object will be empty.
 #### Parameters
 
 *   `layer` **[Layer]** 
-*   `opts` **[Object][7]** Options. Same of `getStyleFromLayer` (optional, default `{}`)
+*   `opts` **[Object][8]** Options. Same of `getStyleFromLayer` (optional, default `{}`)
 
-Returns **[Object][7]** Style object
+Returns **[Object][8]** Style object
 
 ### getLayerSeparator
 
@@ -211,4 +211,6 @@ Returns **[RegExp][3]**
 
 [6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
 
-[7]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[7]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined
+
+[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object

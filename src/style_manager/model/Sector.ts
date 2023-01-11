@@ -39,6 +39,9 @@ export default class Sector extends Model<SectorProperties> {
     };
   }
 
+  /**
+   * @hideconstructor
+   */
   constructor(prp: SectorProperties, opts: { em?: EditorModel } = {}) {
     super(prp);
     const { em } = opts;

@@ -53,7 +53,7 @@ Add/update the CssRule.
 ### Parameters
 
 *   `selectors` **[String][8]** Selector string, eg. `.myclass`
-*   `style` **[Object][10]** Style properties and values
+*   `style` **[Object][10]** Style properties and values (optional, default `{}`)
 *   `opts` **[Object][10]** Additional properties (optional, default `{}`)
 
     *   `opts.atRuleType` **[String][8]** At-rule type, eg. `media` (optional, default `''`)

@@ -95,7 +95,7 @@ Extend the command. The command to extend should be defined as an object
 ### Parameters
 
 *   `id` **[string][11]** Command's ID
-*   `cmd` **CustomCommand**  (optional, default `{}`)
+*   `cmd` **CommandObject**  (optional, default `{}`)
 *   `Object` **[Object][12]** with the new command functions
 
 ### Examples
