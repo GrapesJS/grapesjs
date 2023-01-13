@@ -18,6 +18,7 @@ import { Plugin } from '../../plugin_manager';
 import { TraitManagerConfig } from '../../trait_manager/config/config';
 import { CommandsConfig } from '../../commands/config/config';
 import { StyleManagerConfig } from '../../style_manager/config/config';
+import { DomComponentsConfig } from '../../dom_components/config/config';
 
 type AnyObject = Record<string, any>;
 
@@ -328,11 +329,10 @@ export interface EditorConfig {
    */
   richTextEditor?: RichTextEditorConfig;
 
-  // TODO
   /**
    * Configurations for DomComponents
    */
-  domComponents?: AnyObject;
+  domComponents?: DomComponentsConfig;
 
   /**
    * Configurations for Modal Dialog.
