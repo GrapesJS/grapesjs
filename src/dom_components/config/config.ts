@@ -1,11 +1,16 @@
-export default {
-  stylePrefix: 'comp-',
+export interface DomComponentsConfig {
+  stylePrefix?: string;
 
-  // Could be used for default components
-  components: [],
+  /**
+   * Could be used for default components.
+   */
+  components?: Record<string, any>[];
 
-  // If the component is draggable you can drag the component itself (not only from the toolbar)
-  draggableComponents: 1,
+  /**
+   * If the component is draggable you can drag the component itself (not only from the toolbar).
+   * @default true
+   */
+  draggableComponents?: boolean;
 
   /**
    * You can setup a custom component definition processor before adding it into the editor.
@@ -26,10 +31,20 @@ export default {
    *  }
    * }
    */
-  processor: 0,
+  processor?: (obj: any) => Record<string, any> | undefined;
 
-  // List of HTML void elements
-  // https://www.w3.org/TR/2011/WD-html-markup-20110113/syntax.html#void-elements
+  /**
+   * List of HTML void elements.
+   * https://www.w3.org/TR/2011/WD-html-markup-20110113/syntax.html#void-elements
+   */
+  voidElements?: string[];
+}
+
+export default {
+  stylePrefix: 'comp-',
+  components: [],
+  draggableComponents: true,
+  processor: undefined,
   voidElements: [
     'area',
     'base',
@@ -48,4 +63,4 @@ export default {
     'track',
     'wbr',
   ],
-};
+} as DomComponentsConfig;
