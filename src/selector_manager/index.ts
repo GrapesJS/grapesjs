@@ -76,13 +76,14 @@ import { isString, debounce, isObject, isArray, bindAll } from 'underscore';
 import { isComponent, isRule } from '../utils/mixins';
 import Module from '../abstract/moduleLegacy';
 import { Model, Collection } from '../common';
-import defaults from './config/config';
+import defaults, { SelectorManagerConfig } from './config/config';
 import Selector from './model/Selector';
 import Selectors from './model/Selectors';
 import State from './model/State';
 import ClassTagsView from './view/ClassTagsView';
 import EditorModel from '../editor/model/Editor';
 import Component from '../dom_components/model/Component';
+import { ItemManagerModule } from '../abstract/Module';
 
 const isId = (str: string) => isString(str) && str[0] == '#';
 const isClass = (str: string) => isString(str) && str[0] == '.';
@@ -96,29 +97,28 @@ export const evRemoveBefore = `${evRemove}:before`;
 export const evCustom = `${evPfx}custom`;
 export const evState = `${evPfx}state`;
 
-export default class SelectorManager extends Module {
-  name = 'SelectorManager';
+const events = {
+  all: evAll,
+  update: evUpdate,
+  add: evAdd,
+  remove: evRemove,
+  removeBefore: evRemoveBefore,
+  state: evState,
+  custom: evCustom,
+};
 
+export default class SelectorManager extends ItemManagerModule<SelectorManagerConfig & { pStylePrefix?: string }> {
   Selector = Selector;
 
   Selectors = Selectors;
 
-  model!: Model;
-  states!: Collection<State>;
+  model: Model;
+  states: Collection<State>;
   selectorTags?: ClassTagsView;
-  selected!: Selectors;
-  all!: Selectors;
-  em!: EditorModel;
-
-  events = {
-    all: evAll,
-    update: evUpdate,
-    add: evAdd,
-    remove: evRemove,
-    removeBefore: evRemoveBefore,
-    state: evState,
-    custom: evCustom,
-  };
+  selected: Selectors;
+  all: Selectors;
+  storageKey = '';
+  __update: ReturnType<typeof debounce>;
 
   /**
    * Get configuration object
@@ -127,26 +127,22 @@ export default class SelectorManager extends Module {
    * @return {Object}
    */
 
-  init(conf = {}) {
-    //super();
-    this.__initConfig(defaults, conf);
+  constructor(em: EditorModel) {
+    super(em, 'SelectorManager', new Selectors([]), events, defaults, { skipListen: true });
     bindAll(this, '__updateSelectedByComponents');
-    const config = this.getConfig();
-    const em = this.em;
+    const { config } = this;
     const ppfx = config.pStylePrefix;
-
-    if (ppfx) {
-      config.stylePrefix = ppfx + config.stylePrefix;
-    }
+    if (ppfx) config.stylePrefix = ppfx + config.stylePrefix;
 
     // Global selectors container
     this.all = new Selectors(config.selectors);
     this.selected = new Selectors([], { em, config });
     this.states = new Collection<State>(
-      config.states.map((state: any) => new State(state)),
+      config.states!.map((state: any) => new State(state)),
       { model: State }
     );
     this.model = new Model({ cFirst: config.componentFirst, _undo: true });
+    this.__update = debounce(() => this.__trgCustom(), 0);
     this.__initListen({
       collections: [this.states, this.selected],
       propagate: [{ entity: this.states, event: this.events.state }],
@@ -157,16 +153,15 @@ export default class SelectorManager extends Module {
     const listenTo =
       'component:toggled component:update:classes change:device styleManager:update selector:state selector:type style:target';
     this.model.listenTo(em, listenTo, () => this.__update());
-
-    return this;
   }
-
-  __update = debounce(() => {
-    this.__trgCustom();
-  }, 0);
 
   __trgCustom(opts?: any) {
     this.em.trigger(this.events.custom, this.__customData(opts));
+  }
+
+  // @ts-ignore
+  getAll() {
+    return this.all;
   }
 
   __customData(opts: any = {}) {
@@ -203,7 +198,11 @@ export default class SelectorManager extends Module {
     return this;
   }
 
-  addSelector(name: string | { name?: string; label?: string } | Selector, opts = {}, cOpts = {}): Selector {
+  addSelector(
+    name: string | { name?: string; label?: string } | Selector,
+    opts = {},
+    cOpts = {}
+  ): Selector | Selector[] {
     let props: any = { ...opts };
 
     if (isObject(name)) {
@@ -225,8 +224,7 @@ export default class SelectorManager extends Module {
 
     const cname = props.name;
     const config = this.getConfig();
-    const all = this.getAll();
-    const em = this.em;
+    const { all, em } = this;
     const selector = cname ? this.get(cname, props.type) : all.where(props)[0];
 
     if (!selector) {
@@ -245,7 +243,7 @@ export default class SelectorManager extends Module {
       name = name.substr(1);
     }
 
-    return this.getAll().where({ name, type })[0];
+    return this.all.where({ name, type })[0];
   }
 
   /**
@@ -475,6 +473,7 @@ export default class SelectorManager extends Module {
    * @return {HTMLElement}
    * @private
    */
+  // @ts-ignore
   render(selectors: any[]) {
     const { selectorTags } = this;
     const config = this.getConfig();

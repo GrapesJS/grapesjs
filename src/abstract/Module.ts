@@ -109,11 +109,18 @@ export abstract class ItemManagerModule<
   protected all: TCollection;
   view?: View;
 
-  constructor(em: EditorModel, moduleName: string, all: any, events?: any, defaults?: TConf) {
+  constructor(
+    em: EditorModel,
+    moduleName: string,
+    all: any,
+    events?: any,
+    defaults?: TConf,
+    opts: { skipListen?: boolean } = {}
+  ) {
     super(em, moduleName, defaults);
     this.all = all;
     this.events = events;
-    this.__initListen();
+    !opts.skipListen && this.__initListen();
   }
 
   private: boolean = false;
