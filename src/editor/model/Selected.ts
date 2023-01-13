@@ -27,7 +27,7 @@ export default class Selected extends Collection<Selectable> {
 
   lastComponent() {
     const last = this.last();
-    return last && this.getComponent(last);
+    return last ? this.getComponent(last) : undefined;
   }
 
   allComponents() {

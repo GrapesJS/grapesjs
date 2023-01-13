@@ -33,6 +33,11 @@ import UndoManagerModule from '../../undo_manager';
 import RichTextEditorModule from '../../rich_text_editor';
 import CommandsModule from '../../commands';
 import StyleManager from '../../style_manager';
+import CssRule from '../../css_composer/model/CssRule';
+
+export interface ProjectData {
+  [key: string]: any;
+}
 
 //@ts-ignore
 Backbone.$ = $;
@@ -588,7 +593,7 @@ export default class EditorModel extends Model {
    * @param  {Object} [opts={}] Options, optional
    * @public
    */
-  addSelected(el: Component, opts: any = {}) {
+  addSelected(el: Component | Component[], opts: any = {}) {
     const model = getModel(el, $);
     const models = isArray(model) ? model : [model];
 
@@ -618,7 +623,7 @@ export default class EditorModel extends Model {
    * @param  {Object} [opts={}] Options, optional
    * @public
    */
-  removeSelected(el: any, opts = {}) {
+  removeSelected(el: Component | Component[], opts = {}) {
     this.selected.removeComponent(getModel(el, $), opts);
   }
 
@@ -628,7 +633,7 @@ export default class EditorModel extends Model {
    * @param  {Object} [opts={}] Options, optional
    * @public
    */
-  toggleSelected(el: any, opts = {}) {
+  toggleSelected(el: Component | Component[], opts: any = {}) {
     const model = getModel(el, $);
     const models = isArray(model) ? model : [model];
 
@@ -725,7 +730,7 @@ export default class EditorModel extends Model {
    * @returns {Array<CssRule>}
    * @public
    */
-  addStyle(style: any, opts = {}) {
+  addStyle(style: any, opts = {}): CssRule[] {
     const res = this.getStyle().add(style, opts);
     return isArray(res) ? res : [res];
   }
@@ -736,7 +741,7 @@ export default class EditorModel extends Model {
    * @private
    */
   getStyle() {
-    return this.get('CssComposer').getAll();
+    return this.Css.getAll();
   }
 
   /**
@@ -763,7 +768,7 @@ export default class EditorModel extends Model {
    * @returns {string} HTML string
    * @public
    */
-  getHtml(opts: any = {}) {
+  getHtml(opts: { component?: Component; cleanId?: boolean } = {}): string {
     const { config } = this;
     const { optsHtml } = config;
     const js = config.jsInHtml ? this.getJs(opts) : '';
@@ -784,17 +789,25 @@ export default class EditorModel extends Model {
    * @returns {string} CSS string
    * @public
    */
-  getCss(opts: any = {}) {
-    const config = this.config;
+  getCss(
+    opts: {
+      component?: Component;
+      json?: boolean;
+      avoidProtected?: boolean;
+      onlyMatched?: boolean;
+      keepUnusedStyles?: boolean;
+    } = {}
+  ) {
+    const { config } = this;
     const { optsCss } = config;
     const avoidProt = opts.avoidProtected;
     const keepUnusedStyles = !isUndefined(opts.keepUnusedStyles) ? opts.keepUnusedStyles : config.keepUnusedStyles;
     const cssc = this.get('CssComposer');
-    const wrp = opts.component || this.get('DomComponents').getComponent();
+    const wrp = opts.component || this.Components.getComponent();
     const protCss = !avoidProt ? config.protectedCss : '';
     const css =
       wrp &&
-      this.get('CodeManager').getCode(wrp, 'css', {
+      this.CodeManager.getCode(wrp, 'css', {
         cssc,
         keepUnusedStyles,
         ...optsCss,
@@ -808,9 +821,9 @@ export default class EditorModel extends Model {
    * @return {string} JS string
    * @public
    */
-  getJs(opts: any = {}) {
-    var wrp = opts.component || this.get('DomComponents').getWrapper();
-    return wrp ? this.get('CodeManager').getCode(wrp, 'js').trim() : '';
+  getJs(opts: { component?: Component } = {}) {
+    var wrp = opts.component || this.Components.getWrapper();
+    return wrp ? this.CodeManager.getCode(wrp, 'js').trim() : '';
   }
 
   /**
@@ -819,7 +832,7 @@ export default class EditorModel extends Model {
    */
   async store(options?: any) {
     const data = this.storeData();
-    await this.get('StorageManager').store(data, options);
+    await this.Storage.store(data, options);
     this.clearDirtyCount();
     return data;
   }
@@ -829,12 +842,12 @@ export default class EditorModel extends Model {
    * @public
    */
   async load(options?: any) {
-    const result = await this.get('StorageManager').load(options);
+    const result = await this.Storage.load(options);
     this.loadData(result);
     return result;
   }
 
-  storeData() {
+  storeData(): ProjectData {
     let result = {};
     // Sync content if there is an active RTE
     const editingCmp = this.getEditing();
@@ -846,7 +859,7 @@ export default class EditorModel extends Model {
     return JSON.parse(JSON.stringify(result));
   }
 
-  loadData(data = {}) {
+  loadData(data: ProjectData = {}): ProjectData {
     if (!isEmptyObj(data)) {
       this.storables.forEach(module => module.clear());
       this.storables.forEach(module => module.load(data));
@@ -1015,9 +1028,9 @@ export default class EditorModel extends Model {
     hasWin() && $(config.el).empty().attr(this.attrsOrig);
   }
 
-  getEditing() {
+  getEditing(): Component | undefined {
     const res = this.get('editing');
-    return (res && res.model) || null;
+    return (res && res.model) || undefined;
   }
 
   setEditing(value: boolean) {

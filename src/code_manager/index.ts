@@ -175,7 +175,7 @@ export default class CodeManagerModule extends Module<CodeManagerConfig & { pSty
    * @example
    * var codeStr = codeManager.getCode(model, 'html');
    * */
-  getCode(model: any, genId: string, opt: any = {}) {
+  getCode(model: any, genId: string, opt: any = {}): string {
     opt.em = this.em;
     const generator = this.getGenerator(genId);
     return generator ? generator.build(model, opt) : '';

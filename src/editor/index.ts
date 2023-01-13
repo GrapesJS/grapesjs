@@ -61,7 +61,7 @@ import { CustomParserCss } from '../parser/config/config';
 import cash from '../utils/cash-dom';
 import html from '../utils/html';
 import defaults, { EditorConfig, EditorConfigKeys } from './config/config';
-import EditorModel from './model/Editor';
+import EditorModel, { ProjectData } from './model/Editor';
 import EditorView from './view/EditorView';
 
 export type ParsedRule = {
@@ -72,6 +72,8 @@ export type ParsedRule = {
 };
 
 type EditorConfigType = EditorConfig & { pStylePrefix?: string };
+
+type EditorModelParam<T extends keyof EditorModel, N extends number> = Parameters<EditorModel[T]>[N];
 
 export default class EditorModule implements IBaseModule<EditorConfig> {
   editorView?: EditorView;
@@ -194,6 +196,10 @@ export default class EditorModule implements IBaseModule<EditorConfig> {
     return this.em.Devices;
   }
 
+  get EditorModel() {
+    return this.em;
+  }
+
   /**
    * Returns configuration object
    * @returns {any} Returns the configuration object or the value of the specified property
@@ -212,7 +218,7 @@ export default class EditorModule implements IBaseModule<EditorConfig> {
    * @param {Boolean} [opts.cleanId=false] Remove unnecessary IDs (eg. those created automatically)
    * @returns {string} HTML string
    */
-  getHtml(opts?: any) {
+  getHtml(opts?: { component?: Component; cleanId?: boolean }) {
     return this.em.getHtml(opts);
   }
 
@@ -226,7 +232,13 @@ export default class EditorModule implements IBaseModule<EditorConfig> {
    * @param {Boolean} [opts.keepUnusedStyles=false] Force keep all defined rules. Toggle on in case output looks different inside/outside of the editor.
    * @returns {String|Array<CssRule>} CSS string or array of CssRules
    */
-  getCss(opts?: any) {
+  getCss(opts?: {
+    component?: Component;
+    json?: boolean;
+    avoidProtected?: boolean;
+    onlyMatched?: boolean;
+    keepUnusedStyles?: boolean;
+  }) {
     return this.em.getCss(opts);
   }
 
@@ -236,7 +248,7 @@ export default class EditorModule implements IBaseModule<EditorConfig> {
    * @param {Component} [opts.component] Get the JS of a specific component
    * @returns {String} JS string
    */
-  getJs(opts: any) {
+  getJs(opts?: { component?: Component }) {
     return this.em.getJs(opts);
   }
 
@@ -245,7 +257,7 @@ export default class EditorModule implements IBaseModule<EditorConfig> {
    * @return {Components}
    */
   getComponents() {
-    return this.em.get('DomComponents').getComponents();
+    return this.Components.getComponents();
   }
 
   /**
@@ -253,7 +265,7 @@ export default class EditorModule implements IBaseModule<EditorConfig> {
    * @return {Component}
    */
   getWrapper() {
-    return this.em.get('DomComponents').getWrapper();
+    return this.Components.getWrapper();
   }
 
   /**
@@ -270,7 +282,7 @@ export default class EditorModule implements IBaseModule<EditorConfig> {
    *   content: 'New component'
    * });
    */
-  setComponents(components: any, opt = {}) {
+  setComponents(components: any, opt: any = {}) {
     this.em.setComponents(components, opt);
     return this;
   }
@@ -292,7 +304,7 @@ export default class EditorModule implements IBaseModule<EditorConfig> {
    *   content: 'New component'
    * });
    */
-  addComponents(components: any, opts: any) {
+  addComponents(components: any, opts?: any): Component[] {
     return this.getWrapper().append(components, opts);
   }
 
@@ -301,7 +313,7 @@ export default class EditorModule implements IBaseModule<EditorConfig> {
    * @return {Object}
    */
   getStyle() {
-    return this.em.get('CssComposer').getAll();
+    return this.em.Css.getAll();
   }
 
   /**
@@ -316,7 +328,7 @@ export default class EditorModule implements IBaseModule<EditorConfig> {
    *   style: { color: 'red' }
    * });
    */
-  setStyle(style: any, opt = {}) {
+  setStyle(style: any, opt: any = {}) {
     this.em.setStyle(style, opt);
     return this;
   }
@@ -376,7 +388,7 @@ export default class EditorModule implements IBaseModule<EditorConfig> {
    *  editor.select(model);
    * });
    */
-  select(el?: Component | Component[], opts?: any) {
+  select(el?: EditorModelParam<'setSelected', 0>, opts?: { scroll?: boolean }) {
     this.em.setSelected(el, opts);
     return this;
   }
@@ -388,7 +400,8 @@ export default class EditorModule implements IBaseModule<EditorConfig> {
    * @example
    * editor.selectAdd(model);
    */
-  selectAdd(el: any) {
+  // selectAdd(el: Parameters<EditorModel['addSelected']>[0]) {
+  selectAdd(el: EditorModelParam<'addSelected', 0>) {
     this.em.addSelected(el);
     return this;
   }
@@ -400,7 +413,7 @@ export default class EditorModule implements IBaseModule<EditorConfig> {
    * @example
    * editor.selectRemove(model);
    */
-  selectRemove(el: any) {
+  selectRemove(el: EditorModelParam<'removeSelected', 0>) {
     this.em.removeSelected(el);
     return this;
   }
@@ -412,7 +425,7 @@ export default class EditorModule implements IBaseModule<EditorConfig> {
    * @example
    * editor.selectToggle(model);
    */
-  selectToggle(el: any) {
+  selectToggle(el: EditorModelParam<'toggleSelected', 0>) {
     this.em.toggleSelected(el);
     return this;
   }
@@ -451,7 +464,7 @@ export default class EditorModule implements IBaseModule<EditorConfig> {
    * console.log(device);
    * // 'Tablet'
    */
-  getDevice() {
+  getDevice(): string {
     return this.em.get('device');
   }
 
@@ -464,7 +477,7 @@ export default class EditorModule implements IBaseModule<EditorConfig> {
    * editor.runCommand('myCommand', {someValue: 1});
    */
   runCommand(id: string, options: Record<string, unknown> = {}) {
-    return this.em.get('Commands').run(id, options);
+    return this.Commands.run(id, options);
   }
 
   /**
@@ -476,7 +489,7 @@ export default class EditorModule implements IBaseModule<EditorConfig> {
    * editor.stopCommand('myCommand', {someValue: 1});
    */
   stopCommand(id: string, options: Record<string, unknown> = {}) {
-    return this.em.get('Commands').stop(id, options);
+    return this.Commands.stop(id, options);
   }
 
   /**
@@ -519,7 +532,7 @@ export default class EditorModule implements IBaseModule<EditorConfig> {
    * @example
    * editor.loadProjectData({ pages: [...], styles: [...], ... })
    */
-  loadProjectData(data: any) {
+  loadProjectData(data: ProjectData) {
     return this.em.loadData(data);
   }
 
@@ -565,7 +578,7 @@ export default class EditorModule implements IBaseModule<EditorConfig> {
    * @param {Object} [options] Options
    * @param {Boolean} [options.tools=false] Update the position of tools (eg. rich text editor, component highlighter, etc.)
    */
-  refresh(opts?: any) {
+  refresh(opts?: { tools?: boolean }) {
     this.em.refreshCanvas(opts);
   }
 
@@ -652,7 +665,7 @@ export default class EditorModule implements IBaseModule<EditorConfig> {
    * // options, as arguments, eg:
    * // editor.on('log:info', (msg, opts) => console.info(msg, opts))
    */
-  log(msg: string, opts = {}) {
+  log(msg: string, opts: { ns?: string; level?: string } = {}) {
     this.em.log(msg, opts);
     return this;
   }
