@@ -232,13 +232,7 @@ export default class EditorModule implements IBaseModule<EditorConfig> {
    * @param {Boolean} [opts.keepUnusedStyles=false] Force keep all defined rules. Toggle on in case output looks different inside/outside of the editor.
    * @returns {String|Array<CssRule>} CSS string or array of CssRules
    */
-  getCss(opts?: {
-    component?: Component;
-    json?: boolean;
-    avoidProtected?: boolean;
-    onlyMatched?: boolean;
-    keepUnusedStyles?: boolean;
-  }) {
+  getCss(opts?: EditorModelParam<'getCss', 0>) {
     return this.em.getCss(opts);
   }
 
@@ -248,7 +242,7 @@ export default class EditorModule implements IBaseModule<EditorConfig> {
    * @param {Component} [opts.component] Get the JS of a specific component
    * @returns {String} JS string
    */
-  getJs(opts?: { component?: Component }) {
+  getJs(opts?: EditorModelParam<'getJs', 0>) {
     return this.em.getJs(opts);
   }
 

@@ -35,6 +35,7 @@ import CommandsModule from '../../commands';
 import StyleManager from '../../style_manager';
 import CssRule from '../../css_composer/model/CssRule';
 import { HTMLGeneratorBuildOptions } from '../../code_manager/model/HtmlGenerator';
+import { CssGeneratorBuildOptions } from '../../code_manager/model/CssGenerator';
 
 export interface ProjectData {
   [key: string]: any;
@@ -790,15 +791,7 @@ export default class EditorModel extends Model {
    * @returns {string} CSS string
    * @public
    */
-  getCss(
-    opts: {
-      component?: Component;
-      json?: boolean;
-      avoidProtected?: boolean;
-      onlyMatched?: boolean;
-      keepUnusedStyles?: boolean;
-    } = {}
-  ) {
+  getCss(opts: { component?: Component; avoidProtected?: boolean } & CssGeneratorBuildOptions = {}) {
     const { config } = this;
     const { optsCss } = config;
     const avoidProt = opts.avoidProtected;

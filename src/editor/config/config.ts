@@ -20,6 +20,7 @@ import { CommandsConfig } from '../../commands/config/config';
 import { StyleManagerConfig } from '../../style_manager/config/config';
 import { DomComponentsConfig } from '../../dom_components/config/config';
 import { HTMLGeneratorBuildOptions } from '../../code_manager/model/HtmlGenerator';
+import { CssGeneratorBuildOptions } from '../../code_manager/model/CssGenerator';
 
 type AnyObject = Record<string, any>;
 
@@ -232,12 +233,11 @@ export interface EditorConfig {
    */
   optsHtml?: HTMLGeneratorBuildOptions;
 
-  // TODO
   /**
    * Pass default available options wherever `editor.getCss()` is called
    * @default {}
    */
-  optsCss?: Record<string, any>;
+  optsCss?: CssGeneratorBuildOptions;
 
   /**
    * Usually when you update the `style` of the component this changes the
