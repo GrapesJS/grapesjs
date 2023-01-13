@@ -218,7 +218,7 @@ export default class EditorModule implements IBaseModule<EditorConfig> {
    * @param {Boolean} [opts.cleanId=false] Remove unnecessary IDs (eg. those created automatically)
    * @returns {string} HTML string
    */
-  getHtml(opts?: { component?: Component; cleanId?: boolean }) {
+  getHtml(opts?: EditorModelParam<'getHtml', 0>) {
     return this.em.getHtml(opts);
   }
 

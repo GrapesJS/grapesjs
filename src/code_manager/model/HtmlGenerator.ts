@@ -2,14 +2,21 @@ import { Model } from '../../common';
 import Component from '../../dom_components/model/Component';
 import EditorModel from '../../editor/model/Editor';
 
-type HTMLGeneratorBuildOptions = {
-  em?: EditorModel;
+export type HTMLGeneratorBuildOptions = {
+  /**
+   * Remove unnecessary IDs (eg. those created automatically).
+   */
   cleanId?: boolean;
+
+  /**
+   * You can pass an object of custom attributes to replace with the current ones
+   * or you can even pass a function to generate attributes dynamically.
+   */
   attributes?: Record<string, any> | ((component: Component, attr: Record<string, any>) => Record<string, any>);
 };
 
 export default class HTMLGenerator extends Model {
-  build(model: Component, opts: HTMLGeneratorBuildOptions = {}) {
+  build(model: Component, opts: HTMLGeneratorBuildOptions & { em?: EditorModel } = {}) {
     const { em, ...restOpts } = opts;
     const htmlOpts = restOpts;
 

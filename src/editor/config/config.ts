@@ -19,6 +19,7 @@ import { TraitManagerConfig } from '../../trait_manager/config/config';
 import { CommandsConfig } from '../../commands/config/config';
 import { StyleManagerConfig } from '../../style_manager/config/config';
 import { DomComponentsConfig } from '../../dom_components/config/config';
+import { HTMLGeneratorBuildOptions } from '../../code_manager/model/HtmlGenerator';
 
 type AnyObject = Record<string, any>;
 
@@ -225,12 +226,13 @@ export interface EditorConfig {
    */
   multipleSelection?: boolean;
 
-  // TODO
   /**
    * Pass default available options wherever `editor.getHtml()` is called.
    * @default {}
    */
-  optsHtml?: Record<string, any>;
+  optsHtml?: HTMLGeneratorBuildOptions;
+
+  // TODO
   /**
    * Pass default available options wherever `editor.getCss()` is called
    * @default {}

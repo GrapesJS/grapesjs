@@ -34,6 +34,7 @@ import RichTextEditorModule from '../../rich_text_editor';
 import CommandsModule from '../../commands';
 import StyleManager from '../../style_manager';
 import CssRule from '../../css_composer/model/CssRule';
+import { HTMLGeneratorBuildOptions } from '../../code_manager/model/HtmlGenerator';
 
 export interface ProjectData {
   [key: string]: any;
@@ -768,7 +769,7 @@ export default class EditorModel extends Model {
    * @returns {string} HTML string
    * @public
    */
-  getHtml(opts: { component?: Component; cleanId?: boolean } = {}): string {
+  getHtml(opts: { component?: Component } & HTMLGeneratorBuildOptions = {}): string {
     const { config } = this;
     const { optsHtml } = config;
     const js = config.jsInHtml ? this.getJs(opts) : '';
