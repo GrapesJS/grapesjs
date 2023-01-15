@@ -61,9 +61,12 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
   actions?: (RichTextEditorAction | string)[];
   customRte?: CustomRTE;
 
-  getConfig() {
-    return this.config;
-  }
+  /**
+   * Get configuration object
+   * @name getConfig
+   * @function
+   * @return {Object}
+   */
 
   constructor(em: EditorModel) {
     super(em, 'RichTextEditor', defaults);

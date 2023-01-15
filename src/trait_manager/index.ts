@@ -147,14 +147,14 @@ export default class TraitManager extends Module<TraitManagerConfig & { pStylePr
   }
 
   render() {
-    let { view } = this;
+    let { view, em } = this;
     const config = this.getConfig();
     const el = view && view.el;
     view = new TraitsView(
       {
         el,
         collection: [],
-        editor: config.em,
+        editor: em,
         config,
       },
       this.getTypes()

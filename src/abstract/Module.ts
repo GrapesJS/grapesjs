@@ -34,7 +34,7 @@ export interface IStorableModule extends IModule {
 
 export default abstract class Module<T extends ModuleConfig = ModuleConfig> implements IModule<T> {
   private _em: EditorModel;
-  private _config: T;
+  private _config: T & { pStylePrefix?: string };
   private _name: string;
   cls: any[] = [];
   events: any;
@@ -75,7 +75,9 @@ export default abstract class Module<T extends ModuleConfig = ModuleConfig> impl
     return this._name;
   }
 
-  getConfig(name?: string) {
+  getConfig<P extends keyof T | undefined = undefined, R = P extends keyof T ? T[P] : T>(
+    name?: P
+  ): R & { pStylePrefix?: string } {
     // @ts-ignore
     return name ? this.config[name] : this.config;
   }
@@ -96,7 +98,7 @@ export default abstract class Module<T extends ModuleConfig = ModuleConfig> impl
     if (elTo) {
       const el = isElement(elTo) ? elTo : document.querySelector(elTo);
       if (!el) return this.__logWarn('"appendTo" element not found');
-      el.appendChild(this.render());
+      el.appendChild(this.render() as any);
     }
   }
 }

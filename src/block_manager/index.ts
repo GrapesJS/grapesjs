@@ -112,6 +112,13 @@ export default class BlockManager extends ItemManagerModule<BlockManagerConfig, 
     return this;
   }
 
+  /**
+   * Get configuration object
+   * @name getConfig
+   * @function
+   * @return {Object}
+   */
+
   __trgCustom() {
     this.em.trigger(this.events.custom, this.__customData());
   }
@@ -202,14 +209,6 @@ export default class BlockManager extends ItemManagerModule<BlockManagerConfig, 
   endDrag(cancel: boolean) {
     this.__getFrameViews().forEach((fv: any) => fv.droppable.endCustom(cancel));
     this.__endDrag();
-  }
-
-  /**
-   * Get configuration object
-   * @return {Object}
-   */
-  getConfig() {
-    return this.config;
   }
 
   postRender() {

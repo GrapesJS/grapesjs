@@ -42,14 +42,11 @@ export default class ParserModule extends Module<ParserConfig & { name?: string 
   }
 
   /**
-   * Get the configuration object
-   * @returns {Object} Configuration object
-   * @example
-   * console.log(Parser.getConfig())
+   * Get configuration object
+   * @name getConfig
+   * @function
+   * @return {Object}
    */
-  getConfig() {
-    return this.config;
-  }
 
   /**
    * Parse HTML string and return the object containing the Component Definition

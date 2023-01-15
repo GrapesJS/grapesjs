@@ -760,7 +760,7 @@ export default class EditorModel extends Model {
    * Get the current selector state
    * @returns {String}
    */
-  getState() {
+  getState(): string {
     return this.get('state') || '';
   }
 

@@ -51,12 +51,11 @@ export default class I18nModule extends Module<I18nConfig & { stylePrefix?: stri
   }
 
   /**
-   * Get module configurations
-   * @returns {Object} Configuration object
+   * Get configuration object
+   * @name getConfig
+   * @function
+   * @return {Object}
    */
-  getConfig() {
-    return this.config;
-  }
 
   /**
    * Update current locale

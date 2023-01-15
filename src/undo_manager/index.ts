@@ -151,9 +151,6 @@ export default class UndoManagerModule extends Module<UndoManagerConfig & { name
    * const config = um.getConfig();
    * // { ... }
    */
-  getConfig() {
-    return this.config;
-  }
 
   /**
    * Add an entity (Model/Collection) to track

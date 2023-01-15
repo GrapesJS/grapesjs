@@ -135,7 +135,9 @@ export default class AssetManager extends ItemManagerModule<AssetManagerConfig, 
 
   __trgCustom() {
     const bhv = this.__getBehaviour();
-    if (!bhv.container && !this.getConfig().custom.open) {
+    const custom = this.getConfig().custom;
+
+    if (!bhv.container && !(custom as any).open) {
       return;
     }
     this.em.trigger(this.events.custom, this.__customData());

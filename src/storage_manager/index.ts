@@ -325,7 +325,7 @@ export default class StorageManager extends Module<
   getCurrentOptions(type?: string): StorageOptions {
     const config = this.getConfig();
     const current = type || this.getCurrent();
-    return config.options[current] || {};
+    return config.options![current] || {};
   }
 
   /**

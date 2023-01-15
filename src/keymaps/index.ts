@@ -61,14 +61,6 @@ export default class KeymapsModule extends Module<KeymapsConfig & { name?: strin
     this.keymaps = {};
   }
 
-  /**
-   * Get module configurations
-   * @return {Object} Configuration object
-   */
-  getConfig() {
-    return this.config;
-  }
-
   onLoad() {
     const defKeys = this.config.defaults;
 
@@ -77,6 +69,13 @@ export default class KeymapsModule extends Module<KeymapsConfig & { name?: strin
       this.add(id, value.keys, value.handler, value.opts || {});
     }
   }
+
+  /**
+   * Get configuration object
+   * @name getConfig
+   * @function
+   * @return {Object}
+   */
 
   /**
    * Add new keymap
