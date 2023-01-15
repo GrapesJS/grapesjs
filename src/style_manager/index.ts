@@ -96,6 +96,8 @@ export const evLayerSelect = `${evPfx}layer:select`;
 export const evTarget = `${evPfx}target`;
 export const evCustom = `${evPfx}custom`;
 
+export type StyleModuleParam<T extends keyof StyleManager, N extends number> = Parameters<StyleManager[T]>[N];
+
 const propDef = (value: any) => value || value === 0;
 
 const events = {
@@ -359,7 +361,10 @@ export default class StyleManager extends ItemManagerModule<
    * // Set as a target the CSS selector
    * styleManager.select('.btn > span');
    */
-  select(target: StyleTarget | string, opts: { stylable?: boolean; component?: Component } = {}) {
+  select(
+    target: StyleTarget | string | (StyleTarget | string)[],
+    opts: { stylable?: boolean; component?: Component } = {}
+  ) {
     const { em } = this;
     const trgs = isArray(target) ? target : [target];
     const { stylable } = opts;
@@ -375,7 +380,7 @@ export default class StyleManager extends ItemManagerModule<
         model = rule;
       }
 
-      targets.push(model);
+      targets.push(model as StyleTarget);
     });
 
     const component = opts.component || targets.filter(t => isComponent(t)).reverse()[0];

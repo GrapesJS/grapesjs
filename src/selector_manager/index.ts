@@ -83,6 +83,7 @@ import ClassTagsView from './view/ClassTagsView';
 import EditorModel from '../editor/model/Editor';
 import Component from '../dom_components/model/Component';
 import { ItemManagerModule } from '../abstract/Module';
+import { StyleModuleParam } from '../style_manager';
 
 const isId = (str: string) => isString(str) && str[0] == '#';
 const isClass = (str: string) => isString(str) && str[0] == '.';
@@ -185,9 +186,9 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
     this.__trgCustom();
   }
 
-  select(value: any, opts = {}) {
+  select(value: StyleModuleParam<'select', 0>, opts: StyleModuleParam<'select', 1> = {}) {
     const targets = Array.isArray(value) ? value : [value];
-    const toSelect: any[] = this.em.get('StyleManager').select(targets, opts);
+    const toSelect: any[] = this.em.Styles.select(targets, opts);
     this.selected.reset(this.__getCommonSelectors(toSelect));
     const selTags = this.selectorTags;
     const res = toSelect
