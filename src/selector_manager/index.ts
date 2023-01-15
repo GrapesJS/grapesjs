@@ -74,7 +74,6 @@
 
 import { isString, debounce, isObject, isArray, bindAll } from 'underscore';
 import { isComponent, isRule } from '../utils/mixins';
-import Module from '../abstract/moduleLegacy';
 import { Model, Collection } from '../common';
 import defaults, { SelectorManagerConfig } from './config/config';
 import Selector from './model/Selector';
