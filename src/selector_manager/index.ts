@@ -107,7 +107,7 @@ const events = {
   custom: evCustom,
 };
 
-type SelectorStringObject = string | { name?: string; label?: string };
+type SelectorStringObject = string | { name?: string; label?: string; type?: number };
 
 export default class SelectorManager extends ItemManagerModule<SelectorManagerConfig & { pStylePrefix?: string }> {
   Selector = Selector;
@@ -298,15 +298,17 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
    * // Get Id
    * const selectorId = selectorManager.get('#my-id');
    * */
-  get(name: string | string[], type?: number) {
+  get<T extends string | string[]>(name: T, type?: number): T extends string[] ? Selector[] : Selector {
     // Keep support for arrays but avoid it in docs
     if (isArray(name)) {
       const result: Selector[] = [];
       const selectors = name.map(item => this.getSelector(item)).filter(Boolean) as Selector[];
       selectors.forEach(item => result.indexOf(item) < 0 && result.push(item));
+      // @ts-ignore
       return result;
     } else {
-      return this.getSelector(name, type) || null;
+      // @ts-ignore
+      return this.getSelector(name, type)!;
     }
   }
 

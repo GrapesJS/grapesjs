@@ -1,19 +1,18 @@
-import SelectorManager from 'selector_manager';
-import Selector from 'selector_manager/model/Selector';
-import Editor from 'editor/model/Editor';
+import SelectorManager from '../../../src/selector_manager';
+import Selector from '../../../src/selector_manager/model/Selector';
+import EditorModel from '../../../src/editor/model/Editor';
 
 describe('SelectorManager', () => {
   describe('Main', () => {
-    var obj;
-    let em;
+    let obj: SelectorManager;
+    let em: EditorModel;
 
     beforeEach(() => {
-      em = new Editor({});
-      obj = new SelectorManager().init({ em });
+      em = new EditorModel({});
+      obj = new SelectorManager(em);
     });
 
     afterEach(() => {
-      obj = null;
       em.destroy();
     });
 
@@ -26,10 +25,8 @@ describe('SelectorManager', () => {
     });
 
     test('Able to add default selectors', () => {
-      var cm = new SelectorManager().init({
-        em,
-        selectors: ['test1', 'test2', 'test3'],
-      });
+      em = new EditorModel({ selectorManager: { selectors: ['test1', 'test2', 'test3'] } });
+      const cm = new SelectorManager(em);
       expect(cm.getAll().length).toEqual(3);
     });
 
@@ -39,14 +36,14 @@ describe('SelectorManager', () => {
     });
 
     test('Default new selector is a class type', () => {
-      const added = obj.add('test');
+      const added = obj.add('test') as Selector;
       expect(obj.get('test').get('type')).toEqual(obj.Selector.TYPE_CLASS);
       expect(added.getFullName()).toBe('.test');
     });
 
     test('Add a selector as an id', () => {
       const name = 'test';
-      var sel = obj.add(`#${name}`);
+      var sel = obj.add(`#${name}`) as Selector;
       expect(sel.get('name')).toEqual(name);
       expect(sel.get('label')).toEqual(name);
       expect(obj.get(`#${name}`).get('type')).toEqual(obj.Selector.TYPE_ID);
@@ -55,14 +52,14 @@ describe('SelectorManager', () => {
 
     test('Check name property', () => {
       var name = 'test';
-      var sel = obj.add(name);
+      var sel = obj.add(name) as Selector;
       expect(sel.get('name')).toEqual(name);
       expect(sel.get('label')).toEqual(name);
     });
 
     test('Check name property by adding as class', () => {
       var name = 'test';
-      var sel = obj.add(`.${name}`);
+      var sel = obj.add(`.${name}`) as Selector;
       expect(sel.get('name')).toEqual(name);
       expect(sel.get('label')).toEqual(name);
     });
@@ -82,7 +79,7 @@ describe('SelectorManager', () => {
 
     test('Add multiple selectors', () => {
       const cls = ['.test1', 'test1', '.test2', '.test2', '#test3', 'test3', 'test3', '#test3'];
-      const result = obj.add(cls);
+      const result = obj.add(cls as any) as Selector[];
       expect(Array.isArray(result)).toEqual(true);
       const concat = obj
         .getAll()
@@ -111,14 +108,14 @@ describe('SelectorManager', () => {
     });
 
     test('Get empty class', () => {
-      expect(obj.get('test')).toEqual(null);
+      expect(obj.get('test')).toEqual(undefined);
     });
 
     test('Get id selector', () => {
       const name = 'my-id';
       const type = Selector.TYPE_ID;
       const added = obj.add({ name, type });
-      expect(obj.get(name)).toEqual(null);
+      expect(obj.get(name)).toEqual(undefined);
       expect(obj.get(name, type)).toBe(added);
     });
 
@@ -152,7 +149,7 @@ describe('SelectorManager', () => {
     });
 
     test('Remove selector as instance', () => {
-      const addedCls = obj.add('.my-class');
+      const addedCls = obj.add('.my-class') as Selector;
       expect(obj.getAll().length).toBe(1);
       expect(obj.remove(addedCls)).toBe(addedCls);
       expect(obj.getAll().length).toBe(0);
@@ -222,7 +219,7 @@ describe('SelectorManager', () => {
         const itemTest = 'sel';
         const eventUp = jest.fn();
         const eventAll = jest.fn();
-        const added = obj.add(itemTest);
+        const added = obj.add(itemTest) as Selector;
         const newProps = { label: 'Heading 2' };
         em.on(obj.events.update, eventUp);
         em.on(obj.events.all, eventAll);
