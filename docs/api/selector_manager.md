@@ -134,7 +134,7 @@ Remove Selector.
 ### Parameters
 
 *   `selector` **([String][18] | [Selector])** Selector instance or Selector string identifier
-*   `opts` **any?** 
+*   `opts` **RemoveOptions?** 
 
 ### Examples
 

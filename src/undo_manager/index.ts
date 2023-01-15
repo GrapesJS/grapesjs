@@ -145,11 +145,10 @@ export default class UndoManagerModule extends Module<UndoManagerConfig & { name
   }
 
   /**
-   * Get module configurations
-   * @return {Object} Configuration object
-   * @example
-   * const config = um.getConfig();
-   * // { ... }
+   * Get configuration object
+   * @name getConfig
+   * @function
+   * @return {Object}
    */
 
   /**

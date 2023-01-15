@@ -39,14 +39,20 @@ rte.add(...);
 *   [remove][6]
 *   [getToolbarEl][7]
 
+## getConfig
+
+Get configuration object
+
+Returns **[Object][8]** 
+
 ## add
 
 Add a new action to the built-in RTE toolbar
 
 ### Parameters
 
-*   `name` **[string][8]** Action name
-*   `action` **[Object][9]** Action options (optional, default `{}`)
+*   `name` **[string][9]** Action name
+*   `action` **[Object][8]** Action options (optional, default `{}`)
 
 ### Examples
 
@@ -114,7 +120,7 @@ Get the action by its name
 
 ### Parameters
 
-*   `name` **[string][8]** Action name
+*   `name` **[string][9]** Action name
 
 ### Examples
 
@@ -123,7 +129,7 @@ const action = rte.get('bold');
 // {name: 'bold', ...}
 ```
 
-Returns **[Object][9]** 
+Returns **[Object][8]** 
 
 ## getAll
 
@@ -137,7 +143,7 @@ Remove the action from the toolbar
 
 ### Parameters
 
-*   `name` **[string][8]** 
+*   `name` **[string][9]** 
 
 ### Examples
 
@@ -146,7 +152,7 @@ const action = rte.remove('bold');
 // {name: 'bold', ...}
 ```
 
-Returns **[Object][9]** Removed action
+Returns **[Object][8]** Removed action
 
 ## getToolbarEl
 
@@ -168,9 +174,9 @@ Returns **[HTMLElement][11]**
 
 [7]: #gettoolbarel
 
-[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
 [10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 

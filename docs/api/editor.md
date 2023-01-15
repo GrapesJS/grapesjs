@@ -210,7 +210,7 @@ Set style inside editor's canvas. This method overrides actual style
 ### Parameters
 
 *   `style` **([Array][19]<[Object][16]> | [Object][16] | [string][18])** CSS string or style model
-*   `opt`   (optional, default `{}`)
+*   `opt` **any**  (optional, default `{}`)
 
 ### Examples
 
@@ -502,7 +502,7 @@ refresh you'll get misleading position of tools
 
 ### Parameters
 
-*   `opts` **any?** 
+*   `opts` **{tools: [boolean][17]?}?** 
 *   `options` **[Object][16]?** Options
 
     *   `options.tools` **[Boolean][17]** Update the position of tools (eg. rich text editor, component highlighter, etc.) (optional, default `false`)

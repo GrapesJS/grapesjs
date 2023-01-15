@@ -31,15 +31,9 @@ const { Parser } = editor;
 
 ## getConfig
 
-Get the configuration object
+Get configuration object
 
-### Examples
-
-```javascript
-console.log(Parser.getConfig())
-```
-
-Returns **[Object][5]** Configuration object
+Returns **[Object][5]** 
 
 ## parseHtml
 

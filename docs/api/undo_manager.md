@@ -26,16 +26,9 @@ const um = editor.UndoManager;
 
 ## getConfig
 
-Get module configurations
+Get configuration object
 
-### Examples
-
-```javascript
-const config = um.getConfig();
-// { ... }
-```
-
-Returns **[Object][15]** Configuration object
+Returns **[Object][15]** 
 
 ## add
 

@@ -48,9 +48,9 @@ keymaps.add(...);
 
 ## getConfig
 
-Get module configurations
+Get configuration object
 
-Returns **[Object][7]** Configuration object
+Returns **[Object][7]** 
 
 ## add
 
