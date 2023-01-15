@@ -287,19 +287,20 @@ export default class StorageManager extends Module<
 
     try {
       const editor = this.em?.getEditor();
+      let response: any;
 
       if (data) {
         let toStore = (onStore && (await onStore(data, editor))) || data;
         toStore = (opts.onStore && (await opts.onStore(toStore, editor))) || toStore;
-        await storage.store(toStore, opts);
+        response = await storage.store(toStore, opts);
         result = data;
       } else {
-        result = await storage.load(opts);
-        result = this.__clearKeys(result);
+        response = await storage.load(opts);
+        result = this.__clearKeys(response);
         result = (opts.onLoad && (await opts.onLoad(result, editor))) || result;
         result = (onLoad && (await onLoad(result, editor))) || result;
       }
-      this.onAfter(ev, result);
+      this.onAfter(ev, result, response);
       this.onEnd(ev, result);
     } catch (error) {
       this.onError(ev, error);
@@ -344,12 +345,12 @@ export default class StorageManager extends Module<
    * On after callback (before passing data to the callback)
    * @private
    */
-  onAfter(ctx: string, data: ProjectData) {
+  onAfter(ctx: string, data: ProjectData, response: any) {
     const { em } = this;
     if (em) {
       em.trigger(eventAfter);
-      em.trigger(`${eventAfter}:${ctx}`, data);
-      em.trigger(`storage:${ctx}`, data);
+      em.trigger(`${eventAfter}:${ctx}`, data, response);
+      em.trigger(`storage:${ctx}`, data, response);
     }
   }
 

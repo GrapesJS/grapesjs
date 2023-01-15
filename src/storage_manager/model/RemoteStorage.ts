@@ -63,7 +63,7 @@ export interface RemoteStorageConfig {
 
 export default class RemoteStorage implements IStorage<RemoteStorageConfig> {
   async store(data: ProjectData, opts: RemoteStorageConfig = {}) {
-    await this.request(opts.urlStore!, this.__props(opts, data), opts);
+    return await this.request(opts.urlStore!, this.__props(opts, data), opts);
   }
 
   async load(opts: RemoteStorageConfig = {}) {

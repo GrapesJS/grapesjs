@@ -20,6 +20,7 @@ export default class LocalStorage implements IStorage<LocalStorageConfig> {
     if (this.hasLocal(opts, true)) {
       localStorage.setItem(opts.key!, JSON.stringify(data));
     }
+    return data;
   }
 
   async load(opts: LocalStorageConfig = {}) {
