@@ -128,18 +128,19 @@ export default class PageManager extends ItemManagerModule<PageManagerConfig, Pa
 
   _onPageChange(m: any, page: Page, opts: any) {
     const { em } = this;
-    const lm = em.get('LayerManager');
+    const lm = em.Layers;
     const mainComp = page.getMainComponent();
-    lm && mainComp && lm.setRoot(mainComp);
+    lm && mainComp && lm.setRoot(mainComp as any);
     em.trigger(evPageSelect, page, m.previous('selected'));
     this.__onChange(chnSel, page, opts);
   }
 
   postLoad() {
-    const { em, model } = this;
-    const um = em.get('UndoManager');
-    um && um.add(model);
-    um && um.add(this.pages);
+    const { em, model, pages } = this;
+    const um = em.UndoManager;
+    um.add(model);
+    um.add(pages);
+    pages.on('add remove reset change', (m, c, o) => em.changesUp(o || c));
   }
 
   /**
@@ -197,7 +198,7 @@ export default class PageManager extends ItemManagerModule<PageManagerConfig, Pa
    * @example
    * const somePage = pageManager.get('page-id');
    */
-  get(id: string) {
+  get(id: string): Page | undefined {
     return this.pages.filter(p => p.get(p.idAttribute) === id)[0];
   }
 
@@ -250,7 +251,7 @@ export default class PageManager extends ItemManagerModule<PageManagerConfig, Pa
    * @example
    * const selectedPage = pageManager.getSelected();
    */
-  getSelected() {
+  getSelected(): Page | undefined {
     return this.model.get('selected');
   }
 
