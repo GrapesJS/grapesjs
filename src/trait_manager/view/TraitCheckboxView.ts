@@ -16,23 +16,7 @@ export default class TraitCheckboxView extends TraitView {
    * @private
    */
   onChange() {
-    const value = this.getInputElem().checked;
-    this.model.set('value', this.getCheckedValue(value));
-  }
-
-  getCheckedValue(checked: boolean) {
-    let result: boolean | string = checked;
-    const { valueTrue, valueFalse } = this.model.attributes;
-
-    if (result && !isUndefined(valueTrue)) {
-      result = valueTrue;
-    }
-
-    if (!result && !isUndefined(valueFalse)) {
-      result = valueFalse;
-    }
-
-    return result;
+    this.model.set('value', this.getInputElem().checked);
   }
 
   /**

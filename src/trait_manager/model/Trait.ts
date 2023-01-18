@@ -195,7 +195,7 @@ export default class Trait extends Model<TraitProperties> {
   }
 
   setTargetValue(value: any, opts: SetOptions = {}) {
-    const target = this.target;
+    const { target, attributes } = this;
     const name = this.getName();
     if (isUndefined(value)) return;
     let valueToSet = value;
@@ -204,6 +204,18 @@ export default class Trait extends Model<TraitProperties> {
       valueToSet = false;
     } else if (value === 'true') {
       valueToSet = true;
+    }
+
+    if (this.getType() === 'checkbox') {
+      const { valueTrue, valueFalse } = attributes;
+
+      if (valueToSet && !isUndefined(valueTrue)) {
+        valueToSet = valueTrue;
+      }
+
+      if (!valueToSet && !isUndefined(valueFalse)) {
+        valueToSet = valueFalse;
+      }
     }
 
     if (this.get('changeProp')) {
