@@ -34,6 +34,8 @@ declare namespace Backbone {
 
 declare namespace grapesjs {
   type PluginOptions = Record<string, any>;
+  type AnyObject = Record<string, any>;
+
 
   type Plugin<T extends PluginOptions = {}> = (editor: Editor, config: T) => void;
 
@@ -263,6 +265,11 @@ declare namespace grapesjs {
     layerManager?: LayerManagerConfig;
 
     parser?: ParserConfig;
+    /**
+       * Color picker options.
+       */
+    colorPicker?: AnyObject;
+    pStylePrefix?: string;
   }
 
   interface AssetManagerConfig {
