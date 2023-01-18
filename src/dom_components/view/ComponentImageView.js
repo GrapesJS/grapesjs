@@ -46,11 +46,17 @@ export default class ComponentImageView extends ComponentView {
    * @private
    * */
   updateSrc() {
-    const { model, classEmpty, $el } = this;
-    const src = model.getSrcResult();
-    const srcExists = src && !model.isDefaultSrc();
-    model.addAttributes({ src });
-    $el[srcExists ? 'removeClass' : 'addClass'](classEmpty);
+    const { model } = this;
+    model.addAttributes({ src: model.getSrcResult() });
+    this.updateClasses();
+  }
+
+  updateClasses() {
+    super.updateClasses();
+    const { el, classEmpty, model } = this;
+    const srcExists = model.getSrcResult() && !model.isDefaultSrc();
+    const method = srcExists ? 'remove' : 'add';
+    el.classList[method](classEmpty);
   }
 
   /**
