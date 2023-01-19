@@ -1,5 +1,5 @@
 import { keys } from 'underscore';
-import { CssRuleProperties } from '../../css_composer/model/CssRule';
+import { CssRuleJSON, CssRuleProperties } from '../../css_composer/model/CssRule';
 
 // At-rules
 // https://developer.mozilla.org/it/docs/Web/API/CSSRule#Type_constants
@@ -93,8 +93,8 @@ export const parseCondition = (node: CSSRule): string => {
  * @param {Object} style Key-value object of style declarations
  * @return {Object}
  */
-export const createNode = (selectors: string[], style = {}, opts = {}): CssRuleProperties => {
-  const node: Partial<CssRuleProperties> = {};
+export const createNode = (selectors: string[], style = {}, opts = {}): CssRuleJSON => {
+  const node: Partial<CssRuleJSON> = {};
   const selLen = selectors.length;
   const lastClass = selectors[selLen - 1];
   const stateArr = lastClass ? lastClass.split(/:(.+)/) : [];
@@ -114,11 +114,10 @@ export const createNode = (selectors: string[], style = {}, opts = {}): CssRuleP
     stateArr.splice(stateArr.length - 1, 1);
   }
 
-  // @ts-ignore
   node.selectors = selectors;
   node.style = style;
 
-  return node as CssRuleProperties;
+  return node as CssRuleJSON;
 };
 
 /**
@@ -127,7 +126,7 @@ export const createNode = (selectors: string[], style = {}, opts = {}): CssRuleP
  * @return {Array<Object>}
  */
 export const parseNode = (el: CSSStyleSheet | CSSRule) => {
-  let result: CssRuleProperties[] = [];
+  let result: CssRuleJSON[] = [];
   const nodes = (el as CSSStyleSheet).cssRules || [];
 
   for (let i = 0, len = nodes.length; i < len; i++) {
@@ -181,7 +180,7 @@ export const parseNode = (el: CSSStyleSheet | CSSRule) => {
       if (lastRule) {
         lastRule.selectorsAdd = selsAddStr;
       } else {
-        const model: CssRuleProperties = {
+        const model: CssRuleJSON = {
           selectors: [],
           selectorsAdd: selsAddStr,
           style,

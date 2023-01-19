@@ -33,7 +33,7 @@ import Frame from '../../canvas/model/Frame';
 import { DomComponentsConfig } from '../config/config';
 import ComponentView from '../view/ComponentView';
 import { AddOptions, ObjectAny, ObjectStrings, SetOptions } from '../../common';
-import CssRule, { CssRuleProperties } from '../../css_composer/model/CssRule';
+import CssRule, { CssRuleJSON, CssRuleProperties } from '../../css_composer/model/CssRule';
 import { TraitProperties } from '../../trait_manager/model/Trait';
 
 const escapeRegExp = (str: string) => {
@@ -194,6 +194,8 @@ export default class Component extends StyleableModel<ComponentProperties> {
   prevColl?: Components;
   __hasUm?: boolean;
   __symbReady?: boolean;
+  // @ts-ignore
+  collection!: Components;
 
   initialize(props = {}, opt: ComponentOptions = {}) {
     bindAll(this, '__upSymbProps', '__upSymbCls', '__upSymbComps');
@@ -208,7 +210,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     if (parentAttr && parentAttr.propagate && !propagate) {
       const newAttr: Partial<ComponentProperties> = {};
       const toPropagate = parentAttr.propagate;
-      toPropagate.forEach(prop => (newAttr[prop] = parent.get(prop)));
+      toPropagate.forEach(prop => (newAttr[prop] = parent.get(prop as string)));
       newAttr.propagate = toPropagate;
       this.set({ ...newAttr, ...props });
     }
@@ -989,7 +991,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     const components = this.get('components');
     const addChild = !this.opt.avoidChildren;
     this.set('components', comps);
-    addChild && components && comps.add(isFunction(components) ? components(this) : components, this.opt);
+    addChild && components && comps.add(isFunction(components) ? components(this) : components, this.opt as any);
     comps.on('add remove reset', this.__upSymbComps);
     // @ts-ignore
     this.listenTo(...toListen);
@@ -1059,7 +1061,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
         return comp;
       } else {
         // I have to remove components from the old container before adding them to a new one
-        comp.collection && comp.collection.remove(comp, { temporary: 1 });
+        comp.collection && (comp as Component).collection.remove(comp, { temporary: true } as any);
         return comp;
       }
     });
@@ -1138,7 +1140,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
    */
   parent(opts: any = {}): Component | undefined {
     const coll = this.collection || (opts.prev && this.prevColl);
-    return coll ? coll.parent : null;
+    return coll ? coll.parent : undefined;
   }
 
   /**
@@ -1172,7 +1174,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
       model.collection &&
         tb.push({
           label: em.getIcon('arrowUp'),
-          command: ed => ed.runCommand('core:component-exit', { force: 1 }),
+          command: (ed: any) => ed.runCommand('core:component-exit', { force: 1 }),
         });
       model.get('draggable') &&
         tb.push({
@@ -1499,7 +1501,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * });
    * // -> <span title="Custom attribute"></span>
    */
-  toHTML(opts: ToHTMLOptions = {}) {
+  toHTML(opts: ToHTMLOptions = {}): string {
     const model = this;
     const attrs = [];
     const customTag = opts.tag;
@@ -1718,7 +1720,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * @private
    */
   getScriptString(script?: string | Function) {
-    let scr = script || this.get('script');
+    let scr = script || this.get('script') || '';
 
     if (!scr) {
       return scr;
@@ -1795,7 +1797,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
       // Component without parent
       if (!coll) {
         this.components('', opts);
-        this.components().removeChildren(this, null, opts);
+        this.components().removeChildren(this, undefined, opts);
       }
     };
     const rmOpts = { ...opts };
@@ -2022,8 +2024,8 @@ export default class Component extends StyleableModel<ComponentProperties> {
   }
 
   static checkId(
-    components: ComponentDefinitionDefined[],
-    styles: { selectors: string[] }[] = [],
+    components: ComponentDefinitionDefined | ComponentDefinitionDefined[],
+    styles: CssRuleJSON[] = [],
     list: ObjectAny = {},
     opts: { keepIds?: string[] } = {}
   ) {

@@ -4,7 +4,7 @@ import StyleableModel from '../../domain_abstract/model/StyleableModel';
 import Selectors from '../../selector_manager/model/Selectors';
 import { getMediaLength } from '../../code_manager/model/CssGenerator';
 import { isEmptyObj, hasWin } from '../../utils/mixins';
-import Selector from '../../selector_manager/model/Selector';
+import Selector, { SelectorProps } from '../../selector_manager/model/Selector';
 import EditorModel from '../../editor/model/Editor';
 
 /** @private */
@@ -63,6 +63,10 @@ export interface CssRuleProperties {
    * @default false
    */
   shallow?: boolean;
+}
+
+export interface CssRuleJSON extends Omit<CssRuleProperties, 'selectors'> {
+  selectors: (string | SelectorProps)[];
 }
 
 type AnyObject = Record<string, any>;

@@ -32,7 +32,7 @@ import { isObject } from '../utils/mixins';
 import Selectors from '../selector_manager/model/Selectors';
 import Selector from '../selector_manager/model/Selector';
 import defaults, { CssComposerConfig } from './config/config';
-import CssRule, { CssRuleProperties } from './model/CssRule';
+import CssRule, { CssRuleJSON, CssRuleProperties } from './model/CssRule';
 import CssRules from './model/CssRules';
 import CssRulesView from './view/CssRulesView';
 import { ItemManagerModule } from '../abstract/Module';
@@ -192,7 +192,7 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
    * @return {Array<Model>}
    * @private
    */
-  addCollection(data: string | CssRuleProperties[], opts: Record<string, any> = {}, props = {}) {
+  addCollection(data: string | CssRuleJSON[], opts: Record<string, any> = {}, props = {}) {
     const { em } = this;
     const result: CssRule[] = [];
 
@@ -203,7 +203,7 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
     const d = data instanceof Array ? data : [data];
 
     for (var i = 0, l = d.length; i < l; i++) {
-      const rule = (d[i] || {}) as CssRuleProperties;
+      const rule = (d[i] || {}) as CssRuleJSON;
       if (!rule.selectors) continue;
 
       const sm = em?.Selectors;

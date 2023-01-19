@@ -162,8 +162,10 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
   }
 
   // @ts-ignore
-  getAll(opts: { array?: boolean } = {}) {
-    return this.all ? (opts.array ? [...this.all.models] : this.all) : [];
+  getAll<T extends { array?: boolean }>(opts: T = {} as T) {
+    return (this.all ? (opts.array ? [...this.all.models] : this.all) : []) as T['array'] extends true
+      ? Selector[]
+      : Selectors;
   }
 
   __customData(opts: any = {}) {

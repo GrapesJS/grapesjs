@@ -1,5 +1,6 @@
 import { each, isString, isFunction, isUndefined } from 'underscore';
-import { CssRuleProperties } from '../../css_composer/model/CssRule';
+import { CssRuleJSON, CssRuleProperties } from '../../css_composer/model/CssRule';
+import { ComponentDefinitionDefined } from '../../dom_components/model/types';
 import EditorModel from '../../editor/model/Editor';
 import { HTMLParserOptions, ParserConfig } from '../config/config';
 import BrowserParserHtml from './BrowserParserHtml';
@@ -9,8 +10,8 @@ type AnyObject = Record<string, any>;
 type StringObject = Record<string, string>;
 
 type HTMLParseResult = {
-  html: null | Record<string, any> | Record<string, any>[]; // TODO replace with components
-  css: null | CssRuleProperties[];
+  html?: ComponentDefinitionDefined | ComponentDefinitionDefined[]; // TODO replace with components
+  css?: CssRuleJSON[];
 };
 
 const modelAttrStart = 'data-gjs-';
@@ -118,7 +119,7 @@ export default (em?: EditorModel, config: ParserConfig = {}) => {
      * @return {Array<Object>}
      */
     parseNode(el: HTMLElement, opts: AnyObject = {}) {
-      const result = [];
+      const result: ComponentDefinitionDefined[] = [];
       const nodes = el.childNodes;
 
       for (var i = 0, len = nodes.length; i < len; i++) {
@@ -128,7 +129,7 @@ export default (em?: EditorModel, config: ParserConfig = {}) => {
         const nodePrev = result[result.length - 1];
         const nodeChild = node.childNodes.length;
         const ct = this.compTypes;
-        let model: Record<string, any> = {}; // TODO use component properties
+        let model: ComponentDefinitionDefined = {}; // TODO use component properties
 
         // Start with understanding what kind of component it is
         if (ct) {
@@ -204,10 +205,12 @@ export default (em?: EditorModel, config: ParserConfig = {}) => {
           // just make it content of the current node
           if (nodeChild === 1 && firstChild.nodeType === 3) {
             !model.type && (model.type = 'text');
-            model.components = {
-              type: 'textnode',
-              content: firstChild.nodeValue,
-            };
+            model.components = [
+              {
+                type: 'textnode',
+                content: firstChild.nodeValue,
+              },
+            ];
           } else {
             model.components = this.parseNode(node, {
               ...opts,
@@ -282,7 +285,7 @@ export default (em?: EditorModel, config: ParserConfig = {}) => {
      */
     parse(str: string, parserCss: any, opts: HTMLParserOptions = {}) {
       const conf = em?.get('Config') || {};
-      const res: HTMLParseResult = { html: null, css: null };
+      const res: HTMLParseResult = {};
       const cf: AnyObject = { ...config, ...opts };
       const options = {
         ...config.optionsHtml,

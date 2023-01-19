@@ -1,10 +1,17 @@
 import Backbone from 'backbone';
 import { isEmpty, isArray, isString, isFunction, each, includes, extend, flatten, debounce, keys } from 'underscore';
-import Component, { keySymbol, keySymbols } from './Component';
+import Component from './Component';
+import { AddOptions, Collection, ObjectAny } from '../../common';
+import { DomComponentsConfig } from '../config/config';
+import EditorModel from '../../editor/model/Editor';
+import ComponentManager from '..';
+import CssRules from '../../css_composer/model/CssRules';
+import CssRule from '../../css_composer/model/CssRule';
+import { ComponentAdd, ComponentDefinitionDefined, ComponentProperties } from './types';
 
-export const getComponentIds = (cmp, res = []) => {
+export const getComponentIds = (cmp?: Component | Component[] | Components, res: string[] = []) => {
   if (!cmp) return [];
-  const cmps = isArray(cmp) || isFunction(cmp.map) ? cmp : [cmp];
+  const cmps = (isArray(cmp) || isFunction((cmp as Components).map) ? cmp : [cmp]) as Component[];
   cmps.map(cmp => {
     res.push(cmp.getId());
     getComponentIds(cmp.components().models, res);
@@ -12,7 +19,7 @@ export const getComponentIds = (cmp, res = []) => {
   return res;
 };
 
-const getComponentsFromDefs = (items, all = {}, opts = {}) => {
+const getComponentsFromDefs = (items: any, all: ObjectAny = {}, opts: any = {}) => {
   opts.visitedCmps = opts.visitedCmps || {};
   const { visitedCmps } = opts;
   const itms = isArray(items) ? items : [items];
@@ -56,19 +63,33 @@ const getComponentsFromDefs = (items, all = {}, opts = {}) => {
   });
 };
 
-export default class Components extends Backbone.Collection {
-  initialize(models, opt = {}) {
+export interface ComponentsOptions {
+  em?: EditorModel;
+  config?: DomComponentsConfig;
+  domc?: ComponentManager;
+}
+
+// @ts-ignore
+export default class Components extends Collection<Component> {
+  opt!: ComponentsOptions;
+  config?: DomComponentsConfig;
+  em!: EditorModel;
+  domc?: ComponentManager;
+  parent?: Component;
+  __firstAdd?: any;
+
+  initialize(models: any, opt: ComponentsOptions = {}) {
     this.opt = opt;
     this.listenTo(this, 'add', this.onAdd);
     this.listenTo(this, 'remove', this.removeChildren);
     this.listenTo(this, 'reset', this.resetChildren);
     const { em, config } = opt;
     this.config = config;
-    this.em = em;
-    this.domc = opt.domc || (em && em.get('DomComponents'));
+    this.em = em!;
+    this.domc = opt.domc || em?.Components;
   }
 
-  resetChildren(models, opts = {}) {
+  resetChildren(models: Components, opts: { previousModels?: Component[]; keepIds?: string[] } = {}) {
     const coll = this;
     const prev = opts.previousModels || [];
     const toRemove = prev.filter(prev => !models.get(prev.cid));
@@ -78,10 +99,10 @@ export default class Components extends Backbone.Collection {
     models.each(model => this.onAdd(model));
   }
 
-  resetFromString(input = '', opts = {}) {
+  resetFromString(input = '', opts: { visitedCmps?: Record<string, Component[]>; keepIds?: string[] } = {}) {
     opts.keepIds = getComponentIds(this);
     const { domc, em, parent } = this;
-    const cssc = em?.get('CssComposer');
+    const cssc = em?.Css;
     const allByID = domc?.allById() || {};
     const parsed = this.parseString(input, opts);
     const newCmps = getComponentsFromDefs(parsed, allByID, opts);
@@ -98,19 +119,20 @@ export default class Components extends Backbone.Collection {
           cmps.forEach(cmp => {
             rulesToClone.forEach(rule => {
               const newRule = rule.clone();
+              // @ts-ignore
               newRule.set('selectors', [`#${cmp.attributes.id}`]);
-              cssc.getAll().add(newRule);
+              cssc!.getAll().add(newRule);
             });
           });
         }
       }
     });
 
-    this.reset(newCmps, opts);
+    this.reset(newCmps, opts as any);
     em?.trigger('component:content', parent, opts, input);
   }
 
-  removeChildren(removed, coll, opts = {}) {
+  removeChildren(removed: Component, coll?: Components, opts: any = {}) {
     // Removing a parent component can cause this function
     // to be called with an already removed child element
     if (!removed) {
@@ -124,19 +146,21 @@ export default class Components extends Backbone.Collection {
     if (!isTemp) {
       // Remove the component from the global list
       const id = removed.getId();
-      const sels = em.get('SelectorManager').getAll();
-      const rules = em.get('CssComposer').getAll();
+      const sels = em.Selectors.getAll();
+      const rules = em.Css.getAll();
       const canRemoveStyle = (opts.keepIds || []).indexOf(id) < 0;
       const allByID = domc ? domc.allById() : {};
       delete allByID[id];
 
       // Remove all component related styles
-      const rulesRemoved = canRemoveStyle
-        ? rules.remove(
-            rules.filter(r => r.getSelectors().getFullString() === `#${id}`),
-            opts
-          )
-        : [];
+      const rulesRemoved = (
+        canRemoveStyle
+          ? rules.remove(
+              rules.filter(r => r.getSelectors().getFullString() === `#${id}`),
+              opts
+            )
+          : []
+      ) as CssRule[];
 
       // Clean selectors
       sels.remove(rulesRemoved.map(rule => rule.getSelectors().at(0)));
@@ -162,11 +186,12 @@ export default class Components extends Backbone.Collection {
     removed.__postRemove();
   }
 
-  model(attrs, options) {
+  // @ts-ignore
+  model(attrs: Partial<ComponentProperties>, options: any) {
     const { opt } = options.collection;
-    const { em } = opt;
+    const em = opt.em as EditorModel;
     let model;
-    const df = em.get('DomComponents').componentTypes;
+    const df = em.Components.componentTypes;
     options.em = em;
     options.config = opt.config;
     options.componentTypes = df;
@@ -194,12 +219,12 @@ export default class Components extends Backbone.Collection {
     return new model(attrs, options);
   }
 
-  parseString(value, opt = {}) {
+  parseString(value: string, opt: AddOptions & { temporary?: boolean; keepIds?: string[] } = {}) {
     const { em, domc } = this;
-    const cssc = em.get('CssComposer');
-    const parsed = em.get('Parser').parseHtml(value);
+    const cssc = em.Css;
+    const parsed = em.Parser.parseHtml(value);
     // We need this to avoid duplicate IDs
-    Component.checkId(parsed.html, parsed.css, domc.componentsById, opt);
+    Component.checkId(parsed.html!, parsed.css, domc!.componentsById, opt);
 
     if (parsed.css && cssc && !opt.temporary) {
       const { at, ...optsToPass } = opt;
@@ -212,26 +237,29 @@ export default class Components extends Backbone.Collection {
     return parsed.html;
   }
 
-  add(models, opt = {}) {
+  // @ts-ignore
+  add(models: ComponentAdd, opt: AddOptions & { previousModels?: Component[]; keepIds?: string[] } = {}) {
     opt.keepIds = [...(opt.keepIds || []), ...getComponentIds(opt.previousModels)];
 
     if (isString(models)) {
-      models = this.parseString(models, opt);
+      models = this.parseString(models, opt)!;
     } else if (isArray(models)) {
       models = [...models];
-      models.forEach((item, index) => {
+      models.forEach((item: string, index: number) => {
         if (isString(item)) {
           const nodes = this.parseString(item, opt);
-          models[index] = isArray(nodes) && !nodes.length ? null : nodes;
+          (models as any)[index] = isArray(nodes) && !nodes.length ? null : nodes;
         }
       });
     }
 
     const isMult = isArray(models);
-    models = (isMult ? models : [models]).filter(i => i).map(model => this.processDef(model));
-    models = isMult ? flatten(models, 1) : models[0];
+    // @ts-ignore
+    models = (isMult ? models : [models]).filter(Boolean).map((model: any) => this.processDef(model));
+    // @ts-ignore
+    models = isMult ? flatten(models as any, 1) : models[0];
 
-    const result = Backbone.Collection.prototype.add.apply(this, [models, opt]);
+    const result = Backbone.Collection.prototype.add.apply(this, [models as any, opt]);
     this.__firstAdd = result;
     return result;
   }
@@ -239,7 +267,7 @@ export default class Components extends Backbone.Collection {
   /**
    * Process component definition.
    */
-  processDef(mdl) {
+  processDef(mdl: any) {
     // Avoid processing Models
     if (mdl.cid && mdl.ccid) return mdl;
     const { em, config = {} } = this;
@@ -259,8 +287,8 @@ export default class Components extends Backbone.Collection {
     if (model.$$typeof && typeof model.props == 'object') {
       model = { ...model };
       model.props = { ...model.props };
-      const domc = em.get('DomComponents');
-      const parser = em.get('Parser');
+      const domc = em.Components;
+      const parser = em.Parser;
       const { parserHtml } = parser;
 
       each(model, (value, key) => {
@@ -289,7 +317,7 @@ export default class Components extends Backbone.Collection {
     return model;
   }
 
-  onAdd(model, c, opts = {}) {
+  onAdd(model: Component, c?: any, opts: { temporary?: boolean } = {}) {
     const { domc, em } = this;
     const style = model.getStyle();
     const avoidInline = em && em.getConfig().avoidInlineStyle;
@@ -302,35 +330,35 @@ export default class Components extends Backbone.Collection {
       model.addClass(name);
     }
 
-    model.__postAdd({ recursive: 1 });
-    this.__onAddEnd();
+    model.__postAdd({ recursive: true });
+    // this.__onAddEnd();
   }
 
-  __onAddEnd = debounce(function () {
-    // TODO to check symbols on load, probably this might be removed as symbols
-    // are always recovered from the model
-    // const { domc } = this;
-    // const allComp = (domc && domc.allById()) || {};
-    // const firstAdd = this.__firstAdd;
-    // const toCheck = isArray(firstAdd) ? firstAdd : [firstAdd];
-    // const silent = { silent: true };
-    // const onAll = comps => {
-    //   comps.forEach(comp => {
-    //     const symbol = comp.get(keySymbols);
-    //     const symbolOf = comp.get(keySymbol);
-    //     if (symbol && isArray(symbol) && isString(symbol[0])) {
-    //       comp.set(
-    //         keySymbols,
-    //         symbol.map(smb => allComp[smb]).filter(i => i),
-    //         silent
-    //       );
-    //     }
-    //     if (isString(symbolOf)) {
-    //       comp.set(keySymbol, allComp[symbolOf], silent);
-    //     }
-    //     onAll(comp.components());
-    //   });
-    // };
-    // onAll(toCheck);
-  });
+  // __onAddEnd = debounce(function () {
+  //   // TODO to check symbols on load, probably this might be removed as symbols
+  //   // are always recovered from the model
+  //   // const { domc } = this;
+  //   // const allComp = (domc && domc.allById()) || {};
+  //   // const firstAdd = this.__firstAdd;
+  //   // const toCheck = isArray(firstAdd) ? firstAdd : [firstAdd];
+  //   // const silent = { silent: true };
+  //   // const onAll = comps => {
+  //   //   comps.forEach(comp => {
+  //   //     const symbol = comp.get(keySymbols);
+  //   //     const symbolOf = comp.get(keySymbol);
+  //   //     if (symbol && isArray(symbol) && isString(symbol[0])) {
+  //   //       comp.set(
+  //   //         keySymbols,
+  //   //         symbol.map(smb => allComp[smb]).filter(i => i),
+  //   //         silent
+  //   //       );
+  //   //     }
+  //   //     if (isString(symbolOf)) {
+  //   //       comp.set(keySymbol, allComp[symbolOf], silent);
+  //   //     }
+  //   //     onAll(comp.components());
+  //   //   });
+  //   // };
+  //   // onAll(toCheck);
+  // });
 }

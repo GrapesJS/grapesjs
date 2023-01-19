@@ -19,8 +19,8 @@ export default class JsGenerator extends Model {
   mapModel(model: Component) {
     let code = '';
     const script = model.get('script-export') || model.get('script');
-    const type = model.get('type');
-    const comps = model.get('components');
+    const type = model.get('type')!;
+    const comps = model.get('components')!;
     const id = model.getId();
 
     if (script) {

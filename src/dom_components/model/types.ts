@@ -188,8 +188,8 @@ export interface ComponentDefinitionDefined extends Omit<ComponentProperties, 'c
   /**
    * Children components.
    */
-  components: ComponentDefinitionDefined[];
-  traits: Partial<TraitProperties>[];
+  components?: ComponentDefinitionDefined[];
+  traits?: Partial<TraitProperties>[];
   [key: string]: any;
 }
 
@@ -197,7 +197,9 @@ export interface ComponentModelProperties extends ComponentProperties {
   [key: string]: any;
 }
 
-export type ComponentAdd = Component | ComponentDefinition | ComponentDefinition[] | string;
+type ComponentAddType = Component | ComponentDefinitionDefined | ComponentDefinitionDefined | string;
+
+export type ComponentAdd = ComponentAddType | ComponentAddType[];
 
 export type ToHTMLOptions = {
   /**

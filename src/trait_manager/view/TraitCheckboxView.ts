@@ -38,7 +38,7 @@ export default class TraitCheckboxView extends TraitView {
         checked = target.get(name);
         targetValue = checked;
       } else {
-        targetValue = target.get('attributes')[name];
+        targetValue = target.get('attributes')![name];
         checked = targetValue || targetValue === '' ? !0 : !1;
       }
 
