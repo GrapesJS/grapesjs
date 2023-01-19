@@ -323,6 +323,7 @@ export default class Components extends Collection<Component> {
     const avoidInline = em && em.getConfig().avoidInlineStyle;
     domc && domc.Component.ensureInList(model);
 
+    // @ts-ignore
     if (!isEmpty(style) && !avoidInline && em && em.get && em.getConfig().forceClass && !opts.temporary) {
       const name = model.cid;
       const rule = em.get('CssComposer').setClassRule(name, style);

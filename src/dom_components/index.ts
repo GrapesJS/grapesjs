@@ -342,7 +342,7 @@ export default class ComponentManager extends ItemManagerModule {
    */
   getComponents(): Components {
     const wrp = this.getWrapper();
-    return wrp && wrp.get('components');
+    return wrp?.get('components')!;
   }
 
   /**
@@ -617,7 +617,7 @@ export default class ComponentManager extends ItemManagerModule {
 
     if (!srcModel) {
       const wrapper = this.getShallowWrapper();
-      srcModel = wrapper?.append(source)[0];
+      srcModel = wrapper?.append(source)[0] || null;
     }
 
     //@ts-ignore

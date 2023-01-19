@@ -27,7 +27,7 @@ type CallbackOptions = {
   resizer: Resizer;
 };
 
-interface ResizerOptions {
+export interface ResizerOptions {
   /**
    * Function which returns custom X and Y coordinates of the mouse.
    */

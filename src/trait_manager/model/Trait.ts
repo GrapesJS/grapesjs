@@ -242,7 +242,7 @@ export default class Trait extends Model<TraitProperties> {
     let value;
 
     if (target) {
-      const attrs = target.get('attributes');
+      const attrs = target.get('attributes')!;
       value = this.get('changeProp') ? target.get(name) : attrs[name];
     }
 

@@ -31,7 +31,8 @@ export default class TraitsView extends DomainViews {
     const { ppfx, className, em } = this;
     const comp = em.getSelected();
     this.el.className = `${className} ${ppfx}one-bg ${ppfx}two-color`;
-    this.collection = comp ? comp.get('traits') : [];
+    // @ts-ignore
+    this.collection = comp ? comp.traits : [];
     this.render();
   }
 }

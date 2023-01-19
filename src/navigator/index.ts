@@ -367,7 +367,7 @@ export default class LayerManager extends Module<LayerManagerConfig> {
     const hideText = this.config.hideTextnode;
     const isValid = !hideText || (!cmp.is('textnode') && tag !== 'br');
 
-    return isValid && cmp.get('layerable');
+    return isValid && cmp.get('layerable')!;
   }
 
   __trgCustom(opts?: any) {

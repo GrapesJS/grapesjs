@@ -95,7 +95,7 @@ export default extend({}, SelectPosition, SelectComponent, {
     this.cacheEl = null;
     const lastModel = models[models.length - 1];
     const frame = (this.em.get('currentFrame') || {}).model;
-    const el = lastModel.getEl(frame);
+    const el = lastModel.getEl(frame)!;
     const doc = el.ownerDocument;
     this.startSelectPosition(el, doc, { onStart: this.onStart });
     this.sorter.draggable = lastModel.get('draggable');

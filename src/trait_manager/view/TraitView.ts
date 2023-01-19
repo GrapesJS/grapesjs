@@ -223,7 +223,7 @@ export default class TraitView extends View<Trait> {
     if (model.get('changeProp')) {
       value = target.get(name);
     } else {
-      const attrs = target.get('attributes');
+      const attrs = target.get('attributes')!;
       value = model.get('value') || attrs[name];
     }
 

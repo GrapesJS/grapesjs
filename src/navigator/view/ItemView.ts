@@ -274,7 +274,7 @@ export default class ItemView extends View {
     const { model, module } = this;
     ev?.stopImmediatePropagation();
 
-    if (!model.get('components').length) return;
+    if (!model.get('components')!.length) return;
 
     module.setOpen(model, !module.isOpen(model));
   }

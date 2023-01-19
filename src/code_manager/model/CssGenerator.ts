@@ -63,7 +63,7 @@ export default class CssGenerator extends Model {
     const em = this.em;
     const avoidInline = em && em.getConfig().avoidInlineStyle;
     const style = model.styleToString();
-    const classes = model.get('classes');
+    const classes = model.classes;
     this.ids.push(`#${model.getId()}`);
 
     // Let's know what classes I've found
@@ -197,7 +197,7 @@ export default class CssGenerator extends Model {
           rule
             .selectorsToString()
             .split(',')
-            .some(selector => el.matches(this.__cleanSelector(selector)))
+            .some(selector => el?.matches(this.__cleanSelector(selector)))
         ) {
           result.push(rule);
         }

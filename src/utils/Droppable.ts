@@ -30,7 +30,7 @@ export default class Droppable {
   constructor(em: EditorModel, rootEl?: HTMLElement) {
     this.em = em;
     this.canvas = em.get('Canvas');
-    const el = rootEl || this.canvas.getFrames().map(frame => frame.getComponent().getEl());
+    const el = rootEl || this.canvas.getFrames().map(frame => frame.getComponent().getEl()!);
     const els = Array.isArray(el) ? el : [el];
     this.el = els[0];
     this.counter = 0;

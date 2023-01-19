@@ -3,6 +3,7 @@ import EditorModel from '../../editor/model/Editor';
 import Selectors from '../../selector_manager/model/Selectors';
 import { TraitProperties } from '../../trait_manager/model/Trait';
 import Traits from '../../trait_manager/model/Traits';
+import { ResizerOptions } from '../../utils/Resizer';
 import { DomComponentsConfig } from '../config/config';
 import Component from './Component';
 import Components from './Components';
@@ -84,7 +85,7 @@ export interface ComponentProperties {
   /**
    * Indicates if it's possible to resize the component. It's also possible to pass an object as [options for the Resizer](https://github.com/artf/grapesjs/blob/master/src/utils/Resizer.js). Default: `false`
    */
-  resizable?: boolean;
+  resizable?: boolean | ResizerOptions;
   /**
    * Allow to edit the content of the component (used on Text components). Default: `false`
    */
