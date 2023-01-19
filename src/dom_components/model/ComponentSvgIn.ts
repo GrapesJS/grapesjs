@@ -6,12 +6,15 @@ import ComponentSvg from './ComponentSvg';
 export default class ComponentSvgln extends ComponentSvg {
   get defaults() {
     return {
+      // @ts-ignore
       ...super.defaults,
       selectable: false,
       hoverable: false,
       layerable: false,
     };
   }
-}
 
-ComponentSvgln.isComponent = (el, opts = {}) => !!opts.inSvg;
+  static isComponent(el: any, opts: any = {}) {
+    return !!opts.inSvg;
+  }
+}
