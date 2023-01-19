@@ -205,12 +205,10 @@ export default (em?: EditorModel, config: ParserConfig = {}) => {
           // just make it content of the current node
           if (nodeChild === 1 && firstChild.nodeType === 3) {
             !model.type && (model.type = 'text');
-            model.components = [
-              {
-                type: 'textnode',
-                content: firstChild.nodeValue,
-              },
-            ];
+            model.components = {
+              type: 'textnode',
+              content: firstChild.nodeValue,
+            };
           } else {
             model.components = this.parseNode(node, {
               ...opts,
