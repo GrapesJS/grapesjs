@@ -1946,7 +1946,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     return result(this.prototype, 'defaults');
   }
 
-  static isComponent(el: HTMLElement) {
+  static isComponent(el: HTMLElement): ComponentDefinitionDefined | boolean | undefined {
     return { tagName: toLowerCase(el.tagName) };
   }
 
