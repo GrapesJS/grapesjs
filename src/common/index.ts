@@ -7,3 +7,7 @@ export type SetOptions = Backbone.ModelSetOptions & { avoidStore?: boolean };
 export type AddOptions = Backbone.AddOptions;
 
 export type RemoveOptions = Backbone.Silenceable;
+
+export type ObjectAny = Record<string, any>;
+
+export type ObjectStrings = Record<string, string>;

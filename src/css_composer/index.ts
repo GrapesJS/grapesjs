@@ -379,7 +379,7 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
     const { mediaText } = opts;
     const state = opts.state || '';
     const media = !isUndefined(mediaText) ? mediaText : this.em.getCurrentMedia();
-    const selector = this.em.get('SelectorManager').get(name, Selector.TYPE_ID);
+    const selector = this.em.Selectors.get(name, Selector.TYPE_ID);
     return selector && this.get(selector, state, media);
   }
 
@@ -400,7 +400,7 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
   setClassRule(name: string, style: CssRuleStyle = {}, opts: AnyObject = {}) {
     const state = opts.state || '';
     const media = opts.mediaText || this.em.getCurrentMedia();
-    const sm = this.em.get('SelectorManager');
+    const sm = this.em.Selectors;
     const selector = sm.add({ name, type: Selector.TYPE_CLASS });
     const rule = this.add(selector, state, media);
     rule.setStyle(style, opts);

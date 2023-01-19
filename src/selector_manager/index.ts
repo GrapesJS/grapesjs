@@ -298,7 +298,7 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
    * // Get Id
    * const selectorId = selectorManager.get('#my-id');
    * */
-  get<T extends string | string[]>(name: T, type?: number): T extends string[] ? Selector[] : Selector {
+  get<T extends string | string[]>(name: T, type?: number): T extends string[] ? Selector[] : Selector | undefined {
     // Keep support for arrays but avoid it in docs
     if (isArray(name)) {
       const result: Selector[] = [];

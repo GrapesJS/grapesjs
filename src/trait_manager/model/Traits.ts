@@ -34,7 +34,7 @@ export default class Traits extends Collection<Trait> {
   }
 
   // @ts-ignore
-  add(models: string | Trait | (string | Trait)[], opt: AddOptions) {
+  add(models: string | Trait | TraitProperties | (string | Trait | TraitProperties)[], opt?: AddOptions) {
     const em = this.em;
 
     // Use TraitFactory if necessary

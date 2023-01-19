@@ -553,7 +553,10 @@ export default class StyleManager extends ItemManagerModule<
         const id = model.getId();
         rule = cssC.getIdRule(id, opts);
         !rule && !skipAdd && (rule = cssC.setIdRule(id, {}, opts));
-        if (model.is('wrapper')) rule.set('wrapper', 1, addOpts);
+        if (model.is('wrapper')) {
+          // @ts-ignore
+          rule!.set('wrapper', 1, addOpts);
+        }
       }
 
       rule && (model = rule);
