@@ -144,7 +144,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
       script: '',
       'script-props': '',
       'script-export': '',
-      attributes: '',
+      attributes: {},
       traits: ['id', 'title'],
       propagate: '',
       dmode: '',
