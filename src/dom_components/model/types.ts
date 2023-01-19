@@ -190,7 +190,7 @@ export interface ComponentDefinitionDefined extends Omit<ComponentProperties, 'c
    * Children components.
    */
   components?: ComponentDefinitionDefined[] | ComponentDefinitionDefined;
-  traits?: Partial<TraitProperties>[];
+  traits?: (Partial<TraitProperties> | string)[];
   [key: string]: any;
 }
 

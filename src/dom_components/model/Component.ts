@@ -112,7 +112,7 @@ export const keyUpdateInside = `${keyUpdate}-inside`;
  */
 export default class Component extends StyleableModel<ComponentProperties> {
   // @ts-ignore
-  get defaults() {
+  get defaults(): ComponentDefinitionDefined {
     return {
       tagName: 'div',
       type: '',
