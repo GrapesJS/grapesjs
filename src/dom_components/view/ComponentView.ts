@@ -77,7 +77,7 @@ export default class ComponentView extends View<Component> {
     this.initClasses();
     this.initComponents({ avoidRender: true });
     this.events = {
-      ...ComponentView.getEvents(),
+      ...(this.constructor as typeof ComponentView).getEvents(),
       dragstart: 'handleDragStart',
     };
     this.delegateEvents();
