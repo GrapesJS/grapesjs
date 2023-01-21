@@ -1,21 +1,22 @@
 import ComponentImage from './ComponentImage';
-import { toLowerCase } from 'utils/mixins';
+import { toLowerCase } from '../../utils/mixins';
 
 const type = 'video';
 const yt = 'yt';
 const vi = 'vi';
 const ytnc = 'ytnc';
 
-const hasParam = value => value && value !== '0';
+const hasParam = (value: string) => value && value !== '0';
 
 export default class ComponentVideo extends ComponentImage {
   get defaults() {
     return {
+      // @ts-ignore
       ...super.defaults,
       type,
       tagName: type,
       videoId: '',
-      void: 0,
+      void: false,
       provider: 'so', // on change of provider, traits are switched
       ytUrl: 'https://www.youtube.com/embed/',
       ytncUrl: 'https://www.youtube-nocookie.com/embed/',
@@ -34,13 +35,13 @@ export default class ComponentVideo extends ComponentImage {
     };
   }
 
-  initialize(o, opt) {
-    this.em = opt.em;
+  initialize(props: any, opts: any) {
+    this.em = opts.em;
     if (this.get('src')) this.parseFromSrc();
     this.updateTraits();
     this.listenTo(this, 'change:provider', this.updateTraits);
     this.listenTo(this, 'change:videoId change:provider', this.updateSrc);
-    ComponentImage.prototype.initialize.apply(this, arguments);
+    super.initialize(props, opts);
   }
 
   /**
@@ -66,8 +67,8 @@ export default class ComponentVideo extends ComponentImage {
         traits = this.getSourceTraits();
     }
 
-    this.set({ tagName }, { silent: 1 }); // avoid break in view
-    this.set({ traits });
+    this.set({ tagName }, { silent: true }); // avoid break in view
+    this.setTraits(traits);
     em.get('ready') && em.trigger('component:toggled');
   }
 
@@ -123,9 +124,10 @@ export default class ComponentVideo extends ComponentImage {
    * @return {Object}
    * @private
    */
-  getAttrToHTML(...args) {
-    var attr = ComponentImage.prototype.getAttrToHTML.apply(this, args);
-    var prov = this.get('provider');
+  getAttrToHTML() {
+    const attr = super.getAttrToHTML();
+    const prov = this.get('provider');
+
     switch (prov) {
       case yt:
       case ytnc:
@@ -136,6 +138,7 @@ export default class ComponentVideo extends ComponentImage {
         if (this.get('autoplay')) attr.autoplay = 'autoplay';
         if (this.get('controls')) attr.controls = 'controls';
     }
+
     return attr;
   }
 
@@ -151,7 +154,7 @@ export default class ComponentVideo extends ComponentImage {
       type: 'select',
       label: 'Provider',
       name: 'provider',
-      changeProp: 1,
+      changeProp: true,
       options: [
         { value: 'so', name: 'HTML5 Source' },
         { value: yt, name: 'Youtube' },
@@ -173,7 +176,7 @@ export default class ComponentVideo extends ComponentImage {
         label: 'Source',
         name: 'src',
         placeholder: 'eg. ./media/video.mp4',
-        changeProp: 1,
+        changeProp: true,
       },
       {
         label: 'Poster',
@@ -198,7 +201,7 @@ export default class ComponentVideo extends ComponentImage {
         label: 'Video ID',
         name: 'videoId',
         placeholder: 'eg. jNQXAC9IVRw',
-        changeProp: 1,
+        changeProp: true,
       },
       this.getAutoplayTrait(),
       this.getLoopTrait(),
@@ -207,13 +210,13 @@ export default class ComponentVideo extends ComponentImage {
         type: 'checkbox',
         label: 'Related',
         name: 'rel',
-        changeProp: 1,
+        changeProp: true,
       },
       {
         type: 'checkbox',
         label: 'Modest',
         name: 'modestbranding',
-        changeProp: 1,
+        changeProp: true,
       },
     ];
   }
@@ -230,13 +233,13 @@ export default class ComponentVideo extends ComponentImage {
         label: 'Video ID',
         name: 'videoId',
         placeholder: 'eg. 123456789',
-        changeProp: 1,
+        changeProp: true,
       },
       {
         label: 'Color',
         name: 'color',
         placeholder: 'eg. FF0000',
-        changeProp: 1,
+        changeProp: true,
       },
       this.getAutoplayTrait(),
       this.getLoopTrait(),
@@ -253,7 +256,7 @@ export default class ComponentVideo extends ComponentImage {
       type: 'checkbox',
       label: 'Autoplay',
       name: 'autoplay',
-      changeProp: 1,
+      changeProp: true,
     };
   }
 
@@ -267,7 +270,7 @@ export default class ComponentVideo extends ComponentImage {
       type: 'checkbox',
       label: 'Loop',
       name: 'loop',
-      changeProp: 1,
+      changeProp: true,
     };
   }
 
@@ -281,7 +284,7 @@ export default class ComponentVideo extends ComponentImage {
       type: 'checkbox',
       label: 'Controls',
       name: 'controls',
-      changeProp: 1,
+      changeProp: true,
     };
   }
 
@@ -331,30 +334,22 @@ export default class ComponentVideo extends ComponentImage {
     url += this.get('color') ? '&color=' + this.get('color') : '';
     return url;
   }
-}
-/**
- * Detect if the passed element is a valid component.
- * In case the element is valid an object abstracted
- * from the element will be returned
- * @param {HTMLElement}
- * @return {Object}
- * @private
- */
-ComponentVideo.isComponent = el => {
-  let result = '';
-  const { tagName, src } = el;
-  const isYtProv = /youtube\.com\/embed/.test(src);
-  const isYtncProv = /youtube-nocookie\.com\/embed/.test(src);
-  const isViProv = /player\.vimeo\.com\/video/.test(src);
-  const isExtProv = isYtProv || isYtncProv || isViProv;
-  if (toLowerCase(tagName) == type || (toLowerCase(tagName) == 'iframe' && isExtProv)) {
-    result = { type: 'video' };
-    if (src) result.src = src;
-    if (isExtProv) {
-      if (isYtProv) result.provider = yt;
-      else if (isYtncProv) result.provider = ytnc;
-      else if (isViProv) result.provider = vi;
+
+  static isComponent(el: HTMLVideoElement) {
+    const { tagName, src } = el;
+    const isYtProv = /youtube\.com\/embed/.test(src);
+    const isYtncProv = /youtube-nocookie\.com\/embed/.test(src);
+    const isViProv = /player\.vimeo\.com\/video/.test(src);
+    const isExtProv = isYtProv || isYtncProv || isViProv;
+    if (toLowerCase(tagName) == type || (toLowerCase(tagName) == 'iframe' && isExtProv)) {
+      const result: any = { type: 'video' };
+      if (src) result.src = src;
+      if (isExtProv) {
+        if (isYtProv) result.provider = yt;
+        else if (isYtncProv) result.provider = ytnc;
+        else if (isViProv) result.provider = vi;
+      }
+      return result;
     }
   }
-  return result;
-};
+}

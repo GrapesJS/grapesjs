@@ -11,7 +11,7 @@ export interface TraitProperties {
    * Trait type, defines how the trait should rendered.
    * Possible values: `text` (default), `number`, `select`, `checkbox`, `color`, `button`
    */
-  type: string;
+  type?: string;
 
   /**
    * The name of the trait used as a key for the attribute/property.
