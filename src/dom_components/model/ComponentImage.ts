@@ -1,6 +1,7 @@
 import { result } from 'underscore';
 import Component from './Component';
 import { toLowerCase, buildBase64UrlFromSvg, hasWin } from '../../utils/mixins';
+import { ObjectStrings } from '../../common';
 
 const svgAttrs =
   'xmlns="http://www.w3.org/2000/svg" width="100" viewBox="0 0 24 24" style="fill: rgba(0,0,0,0.15); transform: scale(0.75)"';
@@ -8,6 +9,7 @@ const svgAttrs =
 export default class ComponentImage extends Component {
   get defaults() {
     return {
+      // @ts-ignore
       ...super.defaults,
       type: 'image',
       tagName: 'img',
@@ -33,26 +35,26 @@ export default class ComponentImage extends Component {
     };
   }
 
-  initialize(o, opt) {
-    Component.prototype.initialize.apply(this, arguments);
-    const { src } = this.get('attributes');
+  initialize(props: any, opts: any) {
+    super.initialize(props, opts);
+    const { src } = this.get('attributes')!;
     if (src && buildBase64UrlFromSvg(result(this, 'defaults').src) !== src) {
-      this.set('src', src, { silent: 1 });
+      this.set('src', src, { silent: true });
     }
   }
 
-  initToolbar(...args) {
-    Component.prototype.initToolbar.apply(this, args);
-    const em = this.em;
+  initToolbar() {
+    super.initToolbar();
+    const { em } = this;
 
     if (em) {
-      var cmd = em.get('Commands');
-      var cmdName = 'image-editor';
+      const cmd = em.Commands;
+      const cmdName = 'image-editor';
 
       // Add Image Editor button only if the default command exists
       if (cmd.has(cmdName)) {
         let hasButtonBool = false;
-        var tb = this.get('toolbar');
+        const tb = this.get('toolbar')!;
 
         for (let i = 0; i < tb.length; i++) {
           if (tb[i].command === 'image-editor') {
@@ -77,14 +79,14 @@ export default class ComponentImage extends Component {
    * @return {Object}
    * @private
    */
-  getAttrToHTML(...args) {
-    const attr = Component.prototype.getAttrToHTML.apply(this, args);
+  getAttrToHTML() {
+    const attr = super.getAttrToHTML();
     const src = this.getSrcResult();
     if (src) attr.src = src;
     return attr;
   }
 
-  getSrcResult(opt = {}) {
+  getSrcResult(opt: { fallback?: boolean } = {}) {
     const src = this.get(opt.fallback ? 'fallback' : 'src') || '';
     let result = src;
 
@@ -107,9 +109,11 @@ export default class ComponentImage extends Component {
    * @return {Object}
    * @private
    */
-  toJSON(...args) {
-    const obj = Component.prototype.toJSON.apply(this, args);
-    if (obj.attributes && obj.src === obj.attributes.src) {
+  toJSON(opts: Parameters<Component['toJSON']>[0]) {
+    const obj = super.toJSON(opts);
+    const { attributes } = obj;
+
+    if (attributes && obj.src === attributes.src) {
       delete obj.src;
     }
 
@@ -122,10 +126,11 @@ export default class ComponentImage extends Component {
    * @return {object}
    * @private
    */
-  parseUri(uri) {
-    let result = {};
+  parseUri(uri: string) {
+    let result: HTMLAnchorElement | URL | ObjectStrings = {};
+
     const getQueryObject = (search = '') => {
-      const query = {};
+      const query: ObjectStrings = {};
       const qrs = search.substring(1).split('&');
 
       for (let i = 0; i < qrs.length; i++) {
@@ -156,6 +161,8 @@ export default class ComponentImage extends Component {
       query: getQueryObject(result.search),
     };
   }
-}
 
-ComponentImage.isComponent = el => toLowerCase(el.tagName) === 'img';
+  static isComponent(el: HTMLElement) {
+    return toLowerCase(el.tagName) === 'img';
+  }
+}

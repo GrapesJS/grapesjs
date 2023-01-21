@@ -7,6 +7,7 @@ import { ResizerOptions } from '../../utils/Resizer';
 import { DomComponentsConfig } from '../config/config';
 import Component from './Component';
 import Components from './Components';
+import { ToolbarButtonProps } from './ToolbarButton';
 
 export type DragMode = 'translate' | 'absolute';
 
@@ -152,12 +153,13 @@ export interface ComponentProperties {
        * @defaultValue []
        */
   propagate?: (keyof ComponentProperties)[];
+
   /**
-       * Set an array of items to show up inside the toolbar when the component is selected (move, clone, delete).
-      Eg. `toolbar: [ { attributes: {class: 'fa fa-arrows'}, command: 'tlb-move' }, ... ]`.
-      By default, when `toolbar` property is falsy the editor will add automatically commands `core:component-exit` (select parent component, added if there is one), `tlb-move` (added if `draggable`) , `tlb-clone` (added if `copyable`), `tlb-delete` (added if `removable`).
-       */
-  toolbar?: object[];
+   * Set an array of items to show up inside the toolbar when the component is selected (move, clone, delete).
+   * Eg. `toolbar: [ { attributes: {class: 'fa fa-arrows'}, command: 'tlb-move' }, ... ]`.
+   * By default, when `toolbar` property is falsy the editor will add automatically commands `core:component-exit` (select parent component, added if there is one), `tlb-move` (added if `draggable`) , `tlb-clone` (added if `copyable`), `tlb-delete` (added if `removable`).
+   */
+  toolbar?: ToolbarButtonProps[];
   ///**
   // * Children components. Default: `null`
   // */
@@ -182,6 +184,7 @@ export interface ComponentDefinition extends Omit<ComponentProperties, 'componen
    */
   components?: string | ComponentDefinition | (string | ComponentDefinition)[];
   traits?: (Partial<TraitProperties> | string)[];
+  attributes?: Record<string, any>;
   [key: string]: unknown;
 }
 

@@ -35,6 +35,7 @@ import ComponentView from '../view/ComponentView';
 import { AddOptions, ObjectAny, ObjectStrings, SetOptions } from '../../common';
 import CssRule, { CssRuleJSON, CssRuleProperties } from '../../css_composer/model/CssRule';
 import { TraitProperties } from '../../trait_manager/model/Trait';
+import { ToolbarButtonProps } from './ToolbarButton';
 
 const escapeRegExp = (str: string) => {
   return str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
@@ -1170,7 +1171,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     const ppfx = (em && em.getConfig().stylePrefix) || '';
 
     if (!model.get('toolbar') && em) {
-      const tb = [];
+      const tb: ToolbarButtonProps[] = [];
       model.collection &&
         tb.push({
           label: em.getIcon('arrowUp'),
