@@ -1,20 +1,25 @@
 import ComponentImage from './ComponentImage';
-import { toLowerCase } from 'utils/mixins';
+import { toLowerCase } from '../../utils/mixins';
 
 export default class ComponentMap extends ComponentImage {
+  // @ts-ignore
   get defaults() {
+    // @ts-ignore
+    const defs = super.defaults;
+
     return {
-      ...super.defaults,
+      ...defs,
       type: 'map',
       src: '',
-      void: 0,
+      void: false,
       mapUrl: 'https://maps.google.com/maps',
       tagName: 'iframe',
       mapType: 'q',
       address: '',
       zoom: '1',
       attributes: { frameborder: 0 },
-      toolbar: super.defaults.toolbar,
+      // @ts-ignore
+      toolbar: defs.toolbar,
       traits: [
         {
           label: 'Address',
@@ -44,10 +49,10 @@ export default class ComponentMap extends ComponentImage {
     };
   }
 
-  initialize(o, opt) {
+  initialize(props: any, opts: any) {
     if (this.get('src')) this.parseFromSrc();
     else this.updateSrc();
-    ComponentImage.prototype.initialize.apply(this, arguments);
+    super.initialize(props, opts);
     this.listenTo(this, 'change:address change:zoom change:mapType', this.updateSrc);
   }
 
@@ -61,15 +66,13 @@ export default class ComponentMap extends ComponentImage {
    * @private
    */
   getMapUrl() {
-    var md = this;
-    var addr = md.get('address');
-    var zoom = md.get('zoom');
-    var type = md.get('mapType');
-    var size = '';
+    let addr = this.get('address');
+    let zoom = this.get('zoom');
+    let type = this.get('mapType');
     addr = addr ? '&q=' + addr : '';
     zoom = zoom ? '&z=' + zoom : '';
     type = type ? '&t=' + type : '';
-    var result = md.get('mapUrl') + '?' + addr + zoom + type;
+    let result = this.get('mapUrl') + '?' + addr + zoom + type;
     result += '&output=embed';
     return result;
   }
@@ -79,26 +82,16 @@ export default class ComponentMap extends ComponentImage {
    * @private
    */
   parseFromSrc() {
-    var uri = this.parseUri(this.get('src'));
-    var qr = uri.query;
+    const uri = this.parseUri(this.get('src'));
+    const qr = uri.query;
     if (qr.q) this.set('address', qr.q);
     if (qr.z) this.set('zoom', qr.z);
     if (qr.t) this.set('mapType', qr.t);
   }
-}
 
-/**
- * Detect if the passed element is a valid component.
- * In case the element is valid an object abstracted
- * from the element will be returned
- * @param {HTMLElement}
- * @return {Object}
- * @private
- */
-ComponentMap.isComponent = el => {
-  var result = '';
-  if (toLowerCase(el.tagName) == 'iframe' && /maps\.google\.com/.test(el.src)) {
-    result = { type: 'map', src: el.src };
+  static isComponent(el: HTMLIFrameElement) {
+    if (toLowerCase(el.tagName) == 'iframe' && /maps\.google\.com/.test(el.src)) {
+      return { type: 'map', src: el.src };
+    }
   }
-  return result;
-};
+}
