@@ -1,8 +1,9 @@
 import Component from './Component';
 
 export default class ComponentWrapper extends Component {
-  defaults() {
+  get defaults() {
     return {
+      // @ts-ignore
       ...super.defaults,
       tagName: 'body',
       removable: false,
@@ -23,16 +24,18 @@ export default class ComponentWrapper extends Component {
   }
 
   __postAdd() {
-    const um = this.em && this.em.get('UndoManager');
-    um && !this.__hasUm && um.add(this);
-    return Component.prototype.__postAdd.call(this, arguments);
+    const um = this.em?.UndoManager;
+    !this.__hasUm && um?.add(this);
+    return super.__postAdd();
   }
 
   __postRemove() {
-    const um = this.em && this.em.get('UndoManager');
-    um && um.remove(this);
-    return Component.prototype.__postRemove.call(this, arguments);
+    const um = this.em?.UndoManager;
+    um?.remove(this);
+    return super.__postRemove();
+  }
+
+  static isComponent() {
+    return false;
   }
 }
-
-ComponentWrapper.isComponent = () => false;
