@@ -1,21 +1,53 @@
 import Backbone from 'backbone';
 import { isEmpty, each, keys, result } from 'underscore';
+import Component from '../model/Component';
 import Components from '../model/Components';
 import ComponentsView from './ComponentsView';
-import Selectors from 'selector_manager/model/Selectors';
-import { replaceWith } from 'utils/dom';
-import { setViewEl } from 'utils/mixins';
+import Selectors from '../../selector_manager/model/Selectors';
+import { replaceWith } from '../../utils/dom';
+import { setViewEl } from '../../utils/mixins';
+import { ObjectAny, View } from '../../common';
+import { ComponentOptions } from '../model/types';
+import EditorModel from '../../editor/model/Editor';
+import { DomComponentsConfig } from '../config/config';
 
-export default class ComponentView extends Backbone.View {
+type ClbObj = ReturnType<ComponentView['_clbObj']>;
+
+interface Rect {
+  top?: number;
+  left?: number;
+  bottom?: number;
+  right?: number;
+}
+
+// @ts-ignore
+export default class ComponentView extends View<Component> {
+  // @ts-ignore
+  model!: Component;
+
+  // @ts-ignore
   className() {
     return this.getClasses();
   }
 
+  // @ts-ignore
   tagName() {
-    return this.model.get('tagName');
+    return this.model.get('tagName')!;
   }
 
-  initialize(opt = {}) {
+  modelOpt!: ComponentOptions;
+  em!: EditorModel;
+  opts?: any;
+  pfx?: string;
+  ppfx?: string;
+  attr?: Record<string, any>;
+  classe?: string;
+  config!: DomComponentsConfig;
+  childrenView?: ComponentsView;
+  getChildrenSelector?: Function;
+  getTemplate?: Function;
+
+  initialize(opt: any = {}) {
     const model = this.model;
     const config = opt.config || {};
     const em = config.em;
@@ -24,10 +56,10 @@ export default class ComponentView extends Backbone.View {
     this.opts = opt;
     this.modelOpt = modelOpt;
     this.config = config;
-    this.em = em || '';
+    this.em = em;
     this.pfx = config.stylePrefix || '';
     this.ppfx = config.pStylePrefix || '';
-    this.attr = model.get('attributes');
+    this.attr = model.get('attributes')!;
     this.classe = this.attr.class || [];
     this.listenTo(model, 'change:style', this.updateStyle);
     this.listenTo(model, 'change:attributes', this.renderAttributes);
@@ -43,9 +75,9 @@ export default class ComponentView extends Backbone.View {
     model.view = this;
     this._getFrame() && model.views.push(this);
     this.initClasses();
-    this.initComponents({ avoidRender: 1 });
+    this.initComponents({ avoidRender: true });
     this.events = {
-      ...this.constructor.getEvents(),
+      ...ComponentView.getEvents(),
       dragstart: 'handleDragStart',
     };
     this.delegateEvents();
@@ -70,12 +102,17 @@ export default class ComponentView extends Backbone.View {
   /**
    * Initialize callback
    */
-  init() {}
+  init(opts: ClbObj) {}
 
   /**
    * Remove callback
    */
-  removed() {}
+  removed(opts: ClbObj) {}
+
+  /**
+   * On render callback
+   */
+  onRender(opts: ClbObj) {}
 
   /**
    * Callback executed when the `active` event is triggered on component
@@ -88,7 +125,7 @@ export default class ComponentView extends Backbone.View {
   onDisable() {}
 
   remove() {
-    Backbone.View.prototype.remove.apply(this, arguments);
+    super.remove();
     const { model, $el } = this;
     const { views } = model;
     const frame = this._getFrame() || {};
@@ -104,7 +141,7 @@ export default class ComponentView extends Backbone.View {
     return this;
   }
 
-  handleDragStart(event) {
+  handleDragStart(event: Event) {
     if (!this.__isDraggable()) return false;
     event.stopPropagation();
     event.preventDefault();
@@ -127,7 +164,7 @@ export default class ComponentView extends Backbone.View {
     }
   }
 
-  initComponents(opts = {}) {
+  initComponents(opts: { avoidRender?: boolean } = {}) {
     const { model, $el, childrenView } = this;
     const event = 'change:components';
     const comps = model.get('components');
@@ -138,6 +175,7 @@ export default class ComponentView extends Backbone.View {
       childrenView && childrenView.remove();
       this.stopListening(...toListen);
       !opts.avoidRender && this.renderChildren();
+      // @ts-ignore
       this.listenTo(...toListen);
     }
   }
@@ -162,10 +200,10 @@ export default class ComponentView extends Backbone.View {
    * @private
    * */
   importClasses() {
-    var clm = this.config.em.get('SelectorManager');
+    const clm = this.em.Selectors;
 
     if (clm) {
-      this.model.get('classes').each(m => {
+      this.model.classes.each(m => {
         clm.add(m.get('name'));
       });
     }
@@ -176,9 +214,9 @@ export default class ComponentView extends Backbone.View {
    * @param  {Event} e
    * @private
    * */
-  updateStatus(opts = {}) {
+  updateStatus(opts: { noExtHl?: boolean; avoidHover?: boolean } = {}) {
     const { em, el, ppfx, model } = this;
-    const { extHl } = em ? em.get('Canvas').getConfig() : {};
+    const extHl = em?.Canvas.getConfig().extHl;
     const status = model.get('status');
     const selectedCls = `${ppfx}selected`;
     const selectedParentCls = `${selectedCls}-parent`;
@@ -230,7 +268,7 @@ export default class ComponentView extends Backbone.View {
    * Update style attribute
    * @private
    * */
-  updateStyle(m, v, opts = {}) {
+  updateStyle(m?: any, v?: any, opts: ObjectAny = {}) {
     const { model, em } = this;
 
     if (em && em.getConfig().avoidInlineStyle && !opts.inline) {
@@ -246,7 +284,7 @@ export default class ComponentView extends Backbone.View {
    * @private
    * */
   updateClasses() {
-    const str = this.model.get('classes').pluck('name').join(' ');
+    const str = this.model.classes.pluck('name').join(' ');
     this.setAttribute('class', str);
 
     // Regenerate status class
@@ -259,7 +297,7 @@ export default class ComponentView extends Backbone.View {
    * @param {[type]} name  [description]
    * @param {[type]} value [description]
    */
-  setAttribute(name, value) {
+  setAttribute(name: string, value: any) {
     const el = this.$el;
     value ? el.attr(name, value) : el.removeAttr(name);
   }
@@ -280,7 +318,7 @@ export default class ComponentView extends Backbone.View {
    * @private
    * */
   updateAttributes() {
-    const attrs = [];
+    const attrs: string[] = [];
     const { model, $el, el } = this;
     const { textable, type } = model.attributes;
 
@@ -312,7 +350,7 @@ export default class ComponentView extends Backbone.View {
    * @private
    * */
   updateContent() {
-    const content = this.model.get('content');
+    const content = this.model.get('content')!;
     const hasComps = this.model.components().length;
     this.getChildrenContainer().innerHTML = hasComps ? '' : content;
   }
@@ -322,7 +360,7 @@ export default class ComponentView extends Backbone.View {
    * @param  {Event} e
    * @private
    */
-  prevDef(e) {
+  prevDef(e: Event) {
     e.preventDefault();
   }
 
@@ -333,7 +371,7 @@ export default class ComponentView extends Backbone.View {
   updateScript() {
     const { model, em } = this;
     if (!model.get('script')) return;
-    em && em.get('Canvas').getCanvasView().updateScript(this);
+    em?.Canvas.getCanvasView().updateScript(this);
   }
 
   /**
@@ -378,13 +416,13 @@ export default class ComponentView extends Backbone.View {
    * have to take in account offsetParent
    */
   getOffsetRect() {
-    const rect = {};
+    const rect: Rect = {};
     const target = this.el;
     let gtop = 0;
     let gleft = 0;
 
-    const assignRect = el => {
-      const { offsetParent } = el;
+    const assignRect = (el: HTMLElement) => {
+      const offsetParent = el.offsetParent as HTMLElement;
 
       if (offsetParent) {
         gtop += offsetParent.offsetTop;
@@ -402,23 +440,23 @@ export default class ComponentView extends Backbone.View {
     return rect;
   }
 
-  isInViewport({ rect } = {}) {
+  isInViewport({ rect }: { rect?: Rect } = {}) {
     const { el } = this;
     const elDoc = el.ownerDocument;
     const { body } = elDoc;
-    const { frameElement } = elDoc.defaultView;
+    const frameElement = elDoc.defaultView?.frameElement as HTMLIFrameElement;
     const { top, left } = rect || this.getOffsetRect();
     const frame = this._getFrame().getOffsetRect();
 
     return (
-      top >= frame.scrollTop &&
-      left >= frame.scrollLeft &&
-      top <= frame.scrollBottom &&
-      left <= frameElement.offsetWidth + body.scrollLeft
+      top! >= frame.scrollTop &&
+      left! >= frame.scrollLeft &&
+      top! <= frame.scrollBottom &&
+      left! <= frameElement?.offsetWidth + body.scrollLeft
     );
   }
 
-  scrollIntoView(opts = {}) {
+  scrollIntoView(opts: { force?: boolean } & ScrollIntoViewOptions = {}) {
     const rect = this.getOffsetRect();
     const isInViewport = this.isInViewport({ rect });
 
@@ -427,7 +465,7 @@ export default class ComponentView extends Backbone.View {
 
       // PATCH: scrollIntoView won't work with multiple requests from iframes
       if (opts.behavior !== 'smooth') {
-        el.ownerDocument.defaultView.scrollTo(0, rect.top);
+        el.ownerDocument.defaultView?.scrollTo(0, rect.top!);
       } else {
         el.scrollIntoView({
           behavior: 'smooth',
@@ -443,6 +481,7 @@ export default class ComponentView extends Backbone.View {
    */
   reset() {
     const { el } = this;
+    // @ts-ignore
     this.el = '';
     this._ensureElement();
     this._setData();
@@ -458,7 +497,7 @@ export default class ComponentView extends Backbone.View {
   }
 
   _getFrame() {
-    return this.config.em?.get('Canvas').config.frameView;
+    return this.em?.get('Canvas').config.frameView;
   }
 
   /**
@@ -471,7 +510,8 @@ export default class ComponentView extends Backbone.View {
     const view =
       this.childrenView ||
       new ComponentsView({
-        collection: this.model.get('components'),
+        // @ts-ignore
+        collection: this.model.get('components')!,
         config: this.config,
         componentTypes: this.opts.componentTypes,
       });
@@ -509,10 +549,7 @@ export default class ComponentView extends Backbone.View {
     }
   }
 
-  onRender() {}
+  static getEvents() {
+    return result(this.prototype, 'events');
+  }
 }
-
-// Due to the Backbone extend mechanism, static methods are not properly extended
-ComponentView.getEvents = function () {
-  return result(this.prototype, 'events');
-};

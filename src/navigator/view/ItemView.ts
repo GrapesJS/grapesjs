@@ -329,7 +329,7 @@ export default class ItemView extends View {
     ComponentView.prototype.updateStatus.apply(this, [
       {
         avoidHover: !this.config.highlightHover,
-        noExtHl: 1,
+        noExtHl: true,
       },
     ]);
   }
