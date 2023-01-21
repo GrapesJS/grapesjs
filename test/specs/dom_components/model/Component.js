@@ -591,7 +591,7 @@ describe('Map Component', () => {
   test('Component parse not map iframe', () => {
     var el = $('<iframe src="https://www.youtube.com/watch?v=jNQXAC9IVRw"></iframe>');
     obj = ComponentMap.isComponent(el.get(0));
-    expect(obj).toEqual('');
+    expect(obj).toEqual(undefined);
   });
 });
 
