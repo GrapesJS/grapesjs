@@ -1,4 +1,5 @@
 import { isString } from 'underscore';
+import { ObjectAny } from '../../common';
 import ComponentImage from '../model/ComponentImage';
 import ComponentView from './ComponentView';
 
@@ -11,7 +12,7 @@ export default class ComponentImageView extends ComponentView {
     return 'img';
   }
 
-  events() {
+  events(): ObjectAny {
     return {
       dblclick: 'onActive',
       click: 'initResize',

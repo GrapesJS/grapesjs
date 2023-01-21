@@ -7,7 +7,6 @@ export default class ComponentMapView extends ComponentImageView {
     return 'div';
   }
 
-  // @ts-ignore
   events() {
     return {};
   }
