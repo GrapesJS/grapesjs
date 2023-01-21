@@ -5,6 +5,7 @@ export default class ComponentScriptView extends ComponentView {
     return 'script';
   }
 
+  // @ts-ignore
   events() {
     return {};
   }
@@ -36,7 +37,7 @@ export default class ComponentScriptView extends ComponentView {
       `;
       em && em.set('scriptCount', scriptCount + 1);
     } else {
-      content = model.__innerHTML();
+      content = model.__innerHTML()!;
     }
 
     this.el.innerHTML = content;
