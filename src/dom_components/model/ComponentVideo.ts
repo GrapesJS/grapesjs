@@ -68,7 +68,8 @@ export default class ComponentVideo extends ComponentImage {
     }
 
     this.set({ tagName }, { silent: true }); // avoid break in view
-    this.setTraits(traits);
+    // @ts-ignore
+    this.set({ traits });
     em.get('ready') && em.trigger('component:toggled');
   }
 
