@@ -170,10 +170,10 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
   get(selectors: any, state?: string, width?: string, ruleProps?: Omit<CssRuleProperties, 'selectors'>) {
     let slc = selectors;
     if (isString(selectors)) {
-      const sm = this.em.get('SelectorManager');
+      const sm = this.em.Selectors;
       const singleSel = selectors.split(',')[0].trim();
-      const node = this.em.get('Parser').parserCss.checkNode({ selectors: singleSel })[0];
-      slc = sm.get(node.selectors);
+      const node = this.em.Parser.parserCss.checkNode({ selectors: singleSel } as any)[0];
+      slc = sm.get(node.selectors as string[]);
     }
     return this.rules.find(rule => rule.compare(slc, state, width, ruleProps)) || null;
   }
@@ -273,13 +273,13 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
    */
   setRule(selectors: any, style: CssRuleProperties['style'] = {}, opts: RuleOptions = {}) {
     const { atRuleType, atRuleParams } = opts;
-    const node = this.em.get('Parser').parserCss.checkNode({
+    const node = this.em.Parser.parserCss.checkNode({
       selectors,
       style,
     })[0];
     const { state, selectorsAdd } = node;
-    const sm = this.em.get('SelectorManager');
-    const selector = sm.add(node.selectors);
+    const sm = this.em.Selectors;
+    const selector = sm.add(node.selectors as any);
     const rule = this.add(selector, state, atRuleParams, {
       selectorsAdd,
       atRule: atRuleType,
@@ -358,7 +358,7 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
     const { addOpts = {}, mediaText } = opts;
     const state = opts.state || '';
     const media = !isUndefined(mediaText) ? mediaText : this.em.getCurrentMedia();
-    const sm = this.em.get('SelectorManager');
+    const sm = this.em.Selectors;
     const selector = sm.add({ name, type: Selector.TYPE_ID }, addOpts);
     const rule = this.add(selector, state, media, {}, addOpts);
     rule.setStyle(style, { ...opts, ...addOpts });
@@ -420,7 +420,7 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
   getClassRule(name: string, opts: AnyObject = {}) {
     const state = opts.state || '';
     const media = opts.mediaText || this.em.getCurrentMedia();
-    const selector = this.em.get('SelectorManager').get(name, Selector.TYPE_CLASS);
+    const selector = this.em.Selectors.get(name, Selector.TYPE_CLASS);
     return selector && this.get(selector, state, media);
   }
 

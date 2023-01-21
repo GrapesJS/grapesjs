@@ -10,7 +10,7 @@ export default {
    * */
   startSelectPosition(trg: HTMLElement, doc: Document, opts: any = {}) {
     this.isPointed = false;
-    var utils = this.em.get('Utils');
+    const utils = this.em.Utils;
     const container = trg.ownerDocument.body;
 
     if (utils && !this.sorter)

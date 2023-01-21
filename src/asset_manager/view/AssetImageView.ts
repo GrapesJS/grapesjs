@@ -74,7 +74,7 @@ export default class AssetImageView extends AssetView<AssetImage> {
       onDblClick(model);
     } else {
       this.updateTarget(target);
-      em && em.get('Modal').close();
+      em?.Modal.close();
     }
     isFunction(onSelect) && onSelect(model);
   }

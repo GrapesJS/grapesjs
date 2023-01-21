@@ -39,8 +39,8 @@ export default class AssetView<TModel extends Asset = Asset> extends View<TModel
 
   __getBhv() {
     const { em } = this;
-    const am = em && em.get('AssetManager');
-    return (am && am.__getBehaviour()) || {};
+    const am = em?.Assets;
+    return am?.__getBehaviour() || {};
   }
 
   template(view: AssetView, asset: Asset) {

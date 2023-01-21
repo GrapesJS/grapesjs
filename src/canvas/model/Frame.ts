@@ -42,16 +42,16 @@ export default class Frame extends Model<CanvasModule> {
     super(module, attr);
     const { em } = this;
     const { styles, component } = this.attributes;
-    const domc = em.get('DomComponents');
+    const domc = em.Components;
     const conf = domc.getConfig();
-    const allRules = em.get('CssComposer').getAll();
+    const allRules = em.Css.getAll();
     const idMap: any = {};
     const modOpts = { em, config: conf, frame: this, idMap };
 
     if (!isComponent(component)) {
       const wrp = isObject(component) ? component : { components: component };
       !wrp.type && (wrp.type = 'wrapper');
-      const Wrapper = domc.getType('wrapper').model;
+      const Wrapper = domc.getType('wrapper')!.model;
       this.set('component', new Wrapper(wrp, modOpts));
     }
 

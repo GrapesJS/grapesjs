@@ -88,7 +88,7 @@ export default class FrameView extends View<Frame, HTMLIFrameElement> {
   }
 
   getCanvasModel(): Canvas {
-    return this.em.get('Canvas').getModel();
+    return this.em.Canvas.getModel();
   }
 
   getWindow() {
@@ -124,7 +124,7 @@ export default class FrameView extends View<Frame, HTMLIFrameElement> {
   }
 
   getGlobalToolsEl() {
-    return this.em.get('Canvas').getGlobalToolsEl();
+    return this.em.Canvas.getGlobalToolsEl()!;
   }
 
   getHighlighter() {
@@ -202,11 +202,11 @@ export default class FrameView extends View<Frame, HTMLIFrameElement> {
   autoscroll() {
     if (this.dragging) {
       const { lastClientY } = this;
-      const canvas = this.em.get('Canvas');
+      const canvas = this.em.Canvas;
       const win = this.getWindow();
       const actualTop = win.pageYOffset;
       const clientY = lastClientY || 0;
-      const limitTop = canvas.getConfig().autoscrollLimit;
+      const limitTop = canvas.getConfig().autoscrollLimit!;
       const limitBottom = this.getRect().height - limitTop;
       let nextTop = actualTop;
 
@@ -225,7 +225,7 @@ export default class FrameView extends View<Frame, HTMLIFrameElement> {
         nextTop < this.lastMaxHeight
       ) {
         const toolsEl = this.getGlobalToolsEl();
-        toolsEl.style.opacity = 0;
+        toolsEl.style.opacity = '0';
         this.showGlobalTools();
         win.scrollTo(0, nextTop);
       }
@@ -409,7 +409,7 @@ export default class FrameView extends View<Frame, HTMLIFrameElement> {
     </style>`
     );
     const component = model.getComponent();
-    const { view } = em.get('DomComponents').getType('wrapper');
+    const { view } = em.Components.getType('wrapper')!;
     this.wrapper = new view({
       model: component,
       config: {
@@ -425,7 +425,7 @@ export default class FrameView extends View<Frame, HTMLIFrameElement> {
         collection: model.getStyles(),
         //@ts-ignore
         config: {
-          ...em.get('CssComposer').getConfig(),
+          ...em.Css.getConfig(),
           frameView: this,
         },
       }).render().el

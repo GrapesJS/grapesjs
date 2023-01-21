@@ -414,7 +414,7 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
     if (command && command.run) {
       const { em, config } = this;
       const id = command.id as string;
-      const editor = em.get('Editor');
+      const editor = em.Editor;
 
       if (this.isActive(id) || options.force || !config.strict) {
         if (id) delete this.active[id];

@@ -69,8 +69,8 @@ export default class BlocksView extends View {
     if (!em) return;
 
     if (!this.sorter) {
-      const utils = em.get('Utils');
-      const canvas = em.get('Canvas');
+      const utils = em.Utils;
+      const canvas = em.Canvas;
 
       this.sorter = new utils.Sorter({
         container: canvas.getBody(),
