@@ -295,7 +295,7 @@ export default class ComponentVideo extends ComponentImage {
    */
   getYoutubeSrc() {
     const id = this.get('videoId');
-    let url = this.get('ytUrl');
+    let url = this.get('ytUrl') as string;
     const list = this.get('list');
     url += id + (id.indexOf('?') < 0 ? '?' : '');
     url += list ? `&list=${list}` : '';
@@ -326,7 +326,7 @@ export default class ComponentVideo extends ComponentImage {
    * @private
    */
   getVimeoSrc() {
-    var url = this.get('viUrl');
+    let url = this.get('viUrl') as string;
     url += this.get('videoId') + '?';
     url += this.get('autoplay') ? '&autoplay=1' : '';
     url += this.get('loop') ? '&loop=1' : '';

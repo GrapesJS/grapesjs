@@ -1,17 +1,23 @@
-import ComponentView from './ComponentImageView';
-import OComponentView from './ComponentView';
+import ComponentVideo from '../model/ComponentVideo';
+import ComponentImageView from './ComponentImageView';
+import ComponentView from './ComponentView';
 
-export default class ComponentVideoView extends ComponentView {
+export default class ComponentVideoView extends ComponentImageView {
+  videoEl?: HTMLVideoElement | HTMLIFrameElement;
+  model!: ComponentVideo;
+
   tagName() {
     return 'div';
   }
 
+  // @ts-ignore
   events() {
     return {};
   }
 
-  initialize(o) {
-    OComponentView.prototype.initialize.apply(this, arguments);
+  initialize() {
+    // @ts-ignore
+    ComponentView.prototype.initialize.apply(this, arguments);
     const { model } = this;
     const props = ['loop', 'autoplay', 'controls', 'color', 'rel', 'modestbranding', 'poster'];
     const events = props.map(p => `change:${p}`).join(' ');
@@ -60,25 +66,29 @@ export default class ComponentVideoView extends ComponentView {
    * @private
    */
   updateVideo() {
-    var prov = this.model.get('provider');
-    var videoEl = this.videoEl;
-    var md = this.model;
+    const { model, videoEl } = this;
+    const prov = model.get('provider');
     switch (prov) {
       case 'yt':
       case 'ytnc':
       case 'vi':
-        this.model.trigger('change:videoId');
+        model.trigger('change:videoId');
         break;
-      default:
-        videoEl.loop = md.get('loop');
-        videoEl.autoplay = md.get('autoplay');
-        videoEl.controls = md.get('controls');
-        videoEl.poster = md.get('poster');
+      default: {
+        if (videoEl) {
+          const el = videoEl as HTMLVideoElement;
+          el.loop = model.get('loop');
+          el.autoplay = model.get('autoplay');
+          el.controls = model.get('controls');
+          el.poster = model.get('poster');
+        }
+      }
     }
   }
 
-  renderByProvider(prov) {
-    var videoEl;
+  renderByProvider(prov: string) {
+    let videoEl;
+
     switch (prov) {
       case 'yt':
         videoEl = this.renderYoutube();
@@ -92,22 +102,23 @@ export default class ComponentVideoView extends ComponentView {
       default:
         videoEl = this.renderSource();
     }
+
     this.videoEl = videoEl;
     return videoEl;
   }
 
   renderSource() {
-    var el = document.createElement('video');
+    const el = document.createElement('video');
     el.src = this.model.get('src');
     this.initVideoEl(el);
     return el;
   }
 
   renderYoutube() {
-    var el = document.createElement('iframe');
+    const el = document.createElement('iframe');
     el.src = this.model.getYoutubeSrc();
-    el.frameBorder = 0;
-    el.setAttribute('allowfullscreen', true);
+    el.frameBorder = '0';
+    el.setAttribute('allowfullscreen', 'true');
     this.initVideoEl(el);
     return el;
   }
@@ -115,8 +126,8 @@ export default class ComponentVideoView extends ComponentView {
   renderYoutubeNoCookie() {
     var el = document.createElement('iframe');
     el.src = this.model.getYoutubeNoCookieSrc();
-    el.frameBorder = 0;
-    el.setAttribute('allowfullscreen', true);
+    el.frameBorder = '0';
+    el.setAttribute('allowfullscreen', 'true');
     this.initVideoEl(el);
     return el;
   }
@@ -124,20 +135,20 @@ export default class ComponentVideoView extends ComponentView {
   renderVimeo() {
     var el = document.createElement('iframe');
     el.src = this.model.getVimeoSrc();
-    el.frameBorder = 0;
-    el.setAttribute('allowfullscreen', true);
+    el.frameBorder = '0';
+    el.setAttribute('allowfullscreen', 'true');
     this.initVideoEl(el);
     return el;
   }
 
-  initVideoEl(el) {
+  initVideoEl(el: HTMLElement) {
     el.className = this.ppfx + 'no-pointer';
     el.style.height = '100%';
     el.style.width = '100%';
   }
 
-  render(...args) {
-    ComponentView.prototype.render.apply(this, args);
+  render() {
+    ComponentView.prototype.render.apply(this);
     this.updateClasses();
     var prov = this.model.get('provider');
     this.el.appendChild(this.renderByProvider(prov));
