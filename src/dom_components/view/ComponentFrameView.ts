@@ -1,23 +1,23 @@
 import ComponentView from './ComponentView';
-import { createEl, find, attrUp } from 'utils/dom';
+import { createEl, find, attrUp } from '../../utils/dom';
 
 export default class ComponentFrameView extends ComponentView {
   tagName() {
     return 'div';
   }
 
-  initialize(...args) {
-    ComponentView.prototype.initialize.apply(this, args);
+  initialize(props: any) {
+    super.initialize(props);
     this.listenTo(this.model, 'change:attributes:src', this.updateSrc);
   }
 
   updateSrc() {
-    const frame = find(this.el, 'iframe')[0];
+    const frame = find(this.el, 'iframe')[0] as HTMLElement;
     frame && attrUp(frame, { src: this.__getSrc() });
   }
 
-  render(...args) {
-    ComponentView.prototype.render.apply(this, args);
+  render() {
+    super.render();
     const frame = createEl('iframe', {
       class: `${this.ppfx}no-pointer`,
       style: 'width: 100%; height: 100%; border: none',
