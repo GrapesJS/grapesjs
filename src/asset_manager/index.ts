@@ -184,7 +184,7 @@ export default class AssetManager extends ItemManagerModule<AssetManagerConfig, 
    * assetManager.open({ types: ['doc'], ... });
    */
   open(options: OpenOptions = {}) {
-    const cmd = this.em.get('Commands');
+    const cmd = this.em.Commands;
     cmd.run(assetCmd, {
       types: ['image'],
       select: () => {},
@@ -198,7 +198,7 @@ export default class AssetManager extends ItemManagerModule<AssetManagerConfig, 
    * assetManager.close();
    */
   close() {
-    const cmd = this.em.get('Commands');
+    const cmd = this.em.Commands;
     cmd.stop(assetCmd);
   }
 
@@ -209,7 +209,7 @@ export default class AssetManager extends ItemManagerModule<AssetManagerConfig, 
    * assetManager.isOpen(); // true | false
    */
   isOpen() {
-    const cmd = this.em.get('Commands');
+    const cmd = this.em.Commands;
     return !!cmd?.isActive(assetCmd);
   }
 
