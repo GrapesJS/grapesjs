@@ -1,10 +1,16 @@
 import { isString } from 'underscore';
+import ComponentImage from '../model/ComponentImage';
 import ComponentView from './ComponentView';
 
 export default class ComponentImageView extends ComponentView {
+  classEmpty!: string;
+  model!: ComponentImage;
+  el!: HTMLImageElement;
+
   tagName() {
     return 'img';
   }
+
   events() {
     return {
       dblclick: 'onActive',
@@ -15,8 +21,8 @@ export default class ComponentImageView extends ComponentView {
     };
   }
 
-  initialize(o) {
-    ComponentView.prototype.initialize.apply(this, arguments);
+  initialize(props: any) {
+    super.initialize(props);
     this.listenTo(this.model, 'change:src', this.updateSrc);
     this.classEmpty = `${this.ppfx}plh-image`;
     this.fetchFile();
@@ -32,7 +38,7 @@ export default class ComponentImageView extends ComponentView {
 
     if (file && em) {
       const fu = em.get('AssetManager').FileUploader();
-      fu?.uploadFile({ dataTransfer: { files: [file] } }, res => {
+      fu?.uploadFile({ dataTransfer: { files: [file] } }, (res: any) => {
         const obj = res && res.data && res.data[0];
         const src = obj && (isString(obj) ? obj : obj.src);
         src && model.set({ src });
@@ -64,10 +70,10 @@ export default class ComponentImageView extends ComponentView {
    * @param  {Object}  e  Event
    * @private
    * */
-  onActive(ev) {
-    ev && ev.stopPropagation();
+  onActive(ev: Event) {
+    ev?.stopPropagation();
     const { em, model } = this;
-    const am = em && em.get('AssetManager');
+    const am = em?.Assets;
 
     if (am && model.get('editable')) {
       am.open({
@@ -83,8 +89,10 @@ export default class ComponentImageView extends ComponentView {
   }
 
   onError() {
-    const fallback = this.model.getSrcResult({ fallback: 1 });
-    if (fallback) this.el.src = fallback;
+    const fallback = this.model.getSrcResult({ fallback: true });
+    if (fallback) {
+      this.el.src = fallback;
+    }
   }
 
   onLoad() {
@@ -92,7 +100,7 @@ export default class ComponentImageView extends ComponentView {
     this.em.trigger('change:canvasOffset');
   }
 
-  noDrag(ev) {
+  noDrag(ev: Event) {
     ev.preventDefault();
     return false;
   }

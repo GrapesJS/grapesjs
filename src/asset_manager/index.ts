@@ -91,6 +91,7 @@ type OpenOptions = {
   select?: (asset: Asset, complete: boolean) => void;
   types?: string[];
   accept?: string;
+  target?: any;
 };
 
 export default class AssetManager extends ItemManagerModule<AssetManagerConfig, Assets> {

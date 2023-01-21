@@ -117,7 +117,7 @@ export default class ComponentView extends View<Component> {
   /**
    * Callback executed when the `active` event is triggered on component
    */
-  onActive() {}
+  onActive(ev: Event) {}
 
   /**
    * Callback executed when the `disable` event is triggered on component
