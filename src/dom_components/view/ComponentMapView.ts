@@ -1,16 +1,19 @@
-import ComponentView from './ComponentImageView';
+import ComponentImageView from './ComponentImageView';
 
-export default class ComponentMapView extends ComponentView {
+export default class ComponentMapView extends ComponentImageView {
+  iframe?: HTMLIFrameElement;
+
   tagName() {
     return 'div';
   }
 
+  // @ts-ignore
   events() {
     return {};
   }
 
-  initialize(o) {
-    ComponentView.prototype.initialize.apply(this, arguments);
+  initialize(props: any) {
+    super.initialize(props);
     this.classEmpty = this.ppfx + 'plh-map';
   }
 
@@ -24,9 +27,9 @@ export default class ComponentMapView extends ComponentView {
 
   getIframe() {
     if (!this.iframe) {
-      var ifrm = document.createElement('iframe');
+      const ifrm = document.createElement('iframe');
       ifrm.src = this.model.get('src');
-      ifrm.frameBorder = 0;
+      ifrm.frameBorder = '0';
       ifrm.style.height = '100%';
       ifrm.style.width = '100%';
       ifrm.className = this.ppfx + 'no-pointer';
@@ -35,8 +38,8 @@ export default class ComponentMapView extends ComponentView {
     return this.iframe;
   }
 
-  render(...args) {
-    ComponentView.prototype.render.apply(this, args);
+  render() {
+    super.render();
     this.updateClasses();
     this.el.appendChild(this.getIframe());
     return this;
