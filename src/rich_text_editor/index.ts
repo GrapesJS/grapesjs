@@ -327,7 +327,7 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
    * @param {Object} rte The instance of already defined RTE
    * @private
    * */
-  disable(view: ComponentView, rte: RichTextEditor) {
+  disable(view: ComponentView, rte?: RichTextEditor) {
     const { em } = this;
     const customRte = this.customRte;
     // @ts-ignore

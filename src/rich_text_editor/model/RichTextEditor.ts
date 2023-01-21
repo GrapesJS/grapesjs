@@ -118,6 +118,7 @@ export default class RichTextEditor {
   el!: HTMLElement;
   doc!: Document;
   enabled?: boolean;
+  getContent?: () => string;
 
   constructor(em: EditorModel, el: HTMLElement & { _rte?: RichTextEditor }, settings: RichTextEditorOptions = {}) {
     this.em = em;

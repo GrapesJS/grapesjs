@@ -1,10 +1,19 @@
-import { on, off, getModel } from 'utils/mixins';
-import ComponentView from './ComponentView';
 import { bindAll } from 'underscore';
-
-const compProt = ComponentView.prototype;
+import { ObjectAny } from '../../common';
+import RichTextEditorModule from '../../rich_text_editor';
+import RichTextEditor from '../../rich_text_editor/model/RichTextEditor';
+import { getModel, off, on } from '../../utils/mixins';
+import Component from '../model/Component';
+import ComponentText from '../model/ComponentText';
+import { ComponentDefinition } from '../model/types';
+import ComponentView from './ComponentView';
 
 export default class ComponentTextView extends ComponentView {
+  rte?: RichTextEditorModule;
+  rteEnabled?: boolean;
+  activeRte?: RichTextEditor;
+  lastContent?: string;
+
   events() {
     return {
       dblclick: 'onActive',
@@ -12,18 +21,18 @@ export default class ComponentTextView extends ComponentView {
     };
   }
 
-  initialize(o) {
-    compProt.initialize.apply(this, arguments);
+  initialize(props: any) {
+    super.initialize(props);
     bindAll(this, 'disableEditing', 'onDisable');
     const model = this.model;
     const em = this.em;
     this.listenTo(model, 'focus', this.onActive);
     this.listenTo(model, 'change:content', this.updateContentText);
     this.listenTo(model, 'sync:content', this.syncContent);
-    this.rte = em && em.get('RichTextEditor');
+    this.rte = em?.RichTextEditor;
   }
 
-  updateContentText(m, v, opts = {}) {
+  updateContentText(m: any, v: any, opts: { fromDisable?: boolean } = {}) {
     !opts.fromDisable && this.disableEditing();
   }
 
@@ -60,7 +69,7 @@ export default class ComponentTextView extends ComponentView {
    * Enable element content editing
    * @private
    * */
-  async onActive(ev) {
+  async onActive(ev: Event) {
     const { rte, em } = this;
     const { result, delegate } = this.canActivate();
 
@@ -80,13 +89,13 @@ export default class ComponentTextView extends ComponentView {
 
     if (rte) {
       try {
-        this.activeRte = await rte.enable(this, this.activeRte, { event: ev });
+        this.activeRte = await rte.enable(this, this.activeRte!, { event: ev });
       } catch (err) {
-        em.logError(err);
+        em.logError(err as any);
       }
     }
 
-    this.toggleEvents(1);
+    this.toggleEvents(true);
   }
 
   onDisable() {
@@ -107,7 +116,7 @@ export default class ComponentTextView extends ComponentView {
       try {
         await rte.disable(this, activeRte);
       } catch (err) {
-        em.logError(err);
+        em.logError(err as any);
       }
 
       if (editable && this.getContent() !== this.lastContent) {
@@ -125,33 +134,32 @@ export default class ComponentTextView extends ComponentView {
    */
   getContent() {
     const { activeRte } = this;
-    const canGetRteContent = activeRte && typeof activeRte.getContent === 'function';
 
-    return canGetRteContent ? activeRte.getContent() : this.getChildrenContainer().innerHTML;
+    return typeof activeRte?.getContent === 'function' ? activeRte.getContent() : this.getChildrenContainer().innerHTML;
   }
 
   /**
    * Merge content from the DOM to the model
    */
-  syncContent(opts = {}) {
+  syncContent(opts: ObjectAny = {}) {
     const { model, rte, rteEnabled } = this;
     if (!rteEnabled && !opts.force) return;
     const content = this.getContent();
     const comps = model.components();
-    const contentOpt = { fromDisable: 1, ...opts };
+    const contentOpt: ObjectAny = { fromDisable: 1, ...opts };
     model.set('content', '', contentOpt);
 
     // If there is a custom RTE the content is just baked staticly
     // inside 'content'
-    if (rte.customRte) {
-      comps.length && comps.reset(null, opts);
+    if (rte?.customRte) {
+      comps.length && comps.reset(undefined, opts);
       model.set('content', content, contentOpt);
     } else {
       comps.resetFromString(content, opts);
     }
   }
 
-  insertComponent(content, opts = {}) {
+  insertComponent(content: ComponentDefinition, opts = {}) {
     const { model, el } = this;
     const doc = el.ownerDocument;
     const selection = doc.getSelection();
@@ -160,15 +168,15 @@ export default class ComponentTextView extends ComponentView {
       const range = selection.getRangeAt(0);
       const textNode = range.startContainer;
       const offset = range.startOffset;
-      const textModel = getModel(textNode);
-      const newCmps = [];
+      const textModel = getModel(textNode) as ComponentText;
+      const newCmps: (ComponentDefinition | Component)[] = [];
 
       if (textModel && textModel.is?.('textnode')) {
         const cmps = textModel.collection;
         cmps.forEach(cmp => {
           if (cmp === textModel) {
             const type = 'textnode';
-            const cnt = cmp.get('content');
+            const cnt = cmp.get('content') || '';
             newCmps.push({ type, content: cnt.slice(0, offset) });
             newCmps.push(content);
             newCmps.push({ type, content: cnt.slice(offset) });
@@ -206,7 +214,7 @@ export default class ComponentTextView extends ComponentView {
    * @param {Event}
    * @private
    * */
-  disablePropagation(e) {
+  disablePropagation(e: Event) {
     e.stopPropagation();
   }
 
@@ -214,11 +222,11 @@ export default class ComponentTextView extends ComponentView {
    * Enable/Disable events
    * @param {Boolean} enable
    */
-  toggleEvents(enable) {
+  toggleEvents(enable?: boolean) {
     const { em, model, $el } = this;
     const mixins = { on, off };
     const method = enable ? 'on' : 'off';
-    em.setEditing(enable ? this : 0);
+    em.setEditing(enable ? this : false);
     this.rteEnabled = !!enable;
 
     // The ownerDocument is from the frame
@@ -231,8 +239,9 @@ export default class ComponentTextView extends ComponentView {
       model.trigger(`rte:${enable ? 'enable' : 'disable'}`);
     }
 
-    // Avoid closing edit mode on component click
-    $el && $el.off('mousedown', this.disablePropagation);
+    // @ts-ignore Avoid closing edit mode on component click
+    $el?.off('mousedown', this.disablePropagation);
+    // @ts-ignore
     $el && $el[method]('mousedown', this.disablePropagation);
 
     // Fixes #2210 but use this also as a replacement
@@ -243,8 +252,11 @@ export default class ComponentTextView extends ComponentView {
       while (el) {
         el.draggable = enable ? !1 : !0;
         // Note: el.parentNode is sometimes null here
-        el = el.parentNode;
-        el && el.tagName == 'BODY' && (el = 0);
+        el = el.parentNode as HTMLElement;
+        if (el && el.tagName == 'BODY') {
+          // @ts-ignore
+          el = 0;
+        }
       }
     }
   }

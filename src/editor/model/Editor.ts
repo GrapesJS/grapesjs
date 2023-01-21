@@ -36,6 +36,7 @@ import StyleManager from '../../style_manager';
 import CssRule from '../../css_composer/model/CssRule';
 import { HTMLGeneratorBuildOptions } from '../../code_manager/model/HtmlGenerator';
 import { CssGeneratorBuildOptions } from '../../code_manager/model/CssGenerator';
+import ComponentView from '../../dom_components/view/ComponentView';
 
 export interface ProjectData {
   [key: string]: any;
@@ -1027,7 +1028,7 @@ export default class EditorModel extends Model {
     return (res && res.model) || undefined;
   }
 
-  setEditing(value: boolean) {
+  setEditing(value: boolean | ComponentView) {
     this.set('editing', value);
     return this;
   }

@@ -201,7 +201,7 @@ export interface ComponentModelProperties extends ComponentProperties {
   [key: string]: any;
 }
 
-type ComponentAddType = Component | ComponentDefinitionDefined | ComponentDefinitionDefined | string;
+type ComponentAddType = Component | ComponentDefinition | ComponentDefinitionDefined | string;
 
 export type ComponentAdd = ComponentAddType | ComponentAddType[];
 
