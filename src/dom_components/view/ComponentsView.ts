@@ -1,11 +1,24 @@
-import Backbone from 'backbone';
 import { isUndefined } from 'underscore';
 import { removeEl } from '../../utils/dom';
+import { View } from '../../common';
+import { DomComponentsConfig } from '../config/config';
+import EditorModel from '../../editor/model/Editor';
+import Component from '../model/Component';
+import ComponentView from './ComponentView';
+import FrameView from '../../canvas/view/FrameView';
+import Components from '../model/Components';
 
-export default class ComponentsView extends Backbone.View {
-  initialize(o) {
+export default class ComponentsView extends View {
+  opts!: any;
+  config!: DomComponentsConfig & { frameView?: FrameView };
+  em!: EditorModel;
+  parentEl?: HTMLElement;
+  compView = ComponentView;
+
+  initialize(o: any) {
     this.opts = o || {};
     this.config = o.config || {};
+    // @ts-ignore
     this.em = this.config.em;
     const coll = this.collection;
     this.listenTo(coll, 'add', this.addTo);
@@ -13,7 +26,7 @@ export default class ComponentsView extends Backbone.View {
     this.listenTo(coll, 'remove', this.removeChildren);
   }
 
-  removeChildren(removed, coll, opts = {}) {
+  removeChildren(removed: Component, coll: any, opts = {}) {
     removed.views.forEach(view => {
       if (!view) return;
       const { childrenView, scriptContainer } = view;
@@ -33,13 +46,13 @@ export default class ComponentsView extends Backbone.View {
    * @param {Object} opts
    * @private
    * */
-  addTo(model, coll = {}, opts = {}) {
-    const em = this.config.em;
+  addTo(model: Component, coll: any = {}, opts: { temporary?: boolean } = {}) {
+    const { em } = this;
     const i = this.collection.indexOf(model);
     this.addToCollection(model, null, i);
 
     if (em && !opts.temporary) {
-      const triggerAdd = model => {
+      const triggerAdd = (model: Component) => {
         em.trigger('component:add', model);
         model.components().forEach(comp => triggerAdd(comp));
       };
@@ -56,13 +69,13 @@ export default class ComponentsView extends Backbone.View {
    * @return   {Object}   Object rendered
    * @private
    * */
-  addToCollection(model, fragmentEl, index) {
-    if (!this.compView) this.compView = require('./ComponentView').default;
+  addToCollection(model: Component, fragmentEl?: DocumentFragment | null, index?: number) {
+    // if (!this.compView) this.compView = require('./ComponentView').default;
     const { config, opts, em } = this;
     const fragment = fragmentEl || null;
-    const { frameView = {} } = config;
-    const sameFrameView = frameView.model && model.getView(frameView.model);
-    const dt = opts.componentTypes || (em && em.get('DomComponents').getTypes());
+    const { frameView } = config;
+    const sameFrameView = frameView?.model && model.getView(frameView.model);
+    const dt = opts.componentTypes || em?.Components.getTypes();
     const type = model.get('type') || 'default';
     let viewObject = this.compView;
 
@@ -76,6 +89,7 @@ export default class ComponentsView extends Backbone.View {
       sameFrameView ||
       new viewObject({
         model,
+        // @ts-ignore
         config,
         componentTypes: dt,
       });
@@ -86,13 +100,13 @@ export default class ComponentsView extends Backbone.View {
       rendered = view.render().el;
     } catch (error) {
       rendered = document.createTextNode('');
-      em.logError(error);
+      em.logError(error as any);
     }
 
     if (fragment) {
       fragment.appendChild(rendered);
     } else {
-      const parent = this.parentEl;
+      const parent = this.parentEl!;
       const children = parent.childNodes;
 
       if (!isUndefined(index)) {
@@ -122,13 +136,14 @@ export default class ComponentsView extends Backbone.View {
     return rendered;
   }
 
-  resetChildren(models, { previousModels = [] } = {}) {
-    this.parentEl.innerHTML = '';
+  resetChildren(models: Components, { previousModels = [] } = {}) {
+    this.parentEl!.innerHTML = '';
     previousModels.forEach(md => this.removeChildren(md, this.collection));
     models.each(model => this.addToCollection(model));
   }
 
-  render(parent) {
+  // @ts-ignore
+  render(parent: HTMLElement) {
     const el = this.el;
     const frag = document.createDocumentFragment();
     this.parentEl = parent || this.el;

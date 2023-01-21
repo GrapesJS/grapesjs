@@ -1,4 +1,3 @@
-import Backbone from 'backbone';
 import { isEmpty, each, keys, result } from 'underscore';
 import Component from '../model/Component';
 import Components from '../model/Components';
@@ -46,6 +45,7 @@ export default class ComponentView extends View<Component> {
   childrenView?: ComponentsView;
   getChildrenSelector?: Function;
   getTemplate?: Function;
+  scriptContainer?: HTMLElement;
 
   initialize(opt: any = {}) {
     const model = this.model;
