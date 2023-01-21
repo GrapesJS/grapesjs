@@ -1,10 +1,6 @@
 import ComponentView from './ComponentView';
 
 export default class ComponentTextNodeView extends ComponentView {
-  initialize() {
-    ComponentView.prototype.initialize.apply(this, arguments);
-  }
-
   // Clear methods used on Nodes with attributes
   _setAttributes() {}
   renderAttributes() {}
@@ -14,7 +10,9 @@ export default class ComponentTextNodeView extends ComponentView {
   updateAttributes() {}
   initClasses() {}
   initComponents() {}
-  delegateEvents() {}
+  delegateEvents() {
+    return this;
+  }
 
   _createElement() {
     return document.createTextNode('');
@@ -23,7 +21,7 @@ export default class ComponentTextNodeView extends ComponentView {
   render() {
     const { model, el } = this;
     if (model.opt.temporary) return this;
-    el.textContent = model.get('content');
+    el.textContent = model.get('content')!;
     return this;
   }
 }
