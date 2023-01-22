@@ -1,8 +1,15 @@
 import Backbone from 'backbone';
+import { View } from '../../common';
+import EditorModel from '../../editor/model/Editor';
 
 const $ = Backbone.$;
 
-export default class Input extends Backbone.View {
+export default class Input extends View {
+  ppfx!: string;
+  em!: EditorModel;
+  opts!: any;
+  inputEl?: any;
+
   template() {
     return `<span class="${this.holderClass()}"></span>`;
   }
@@ -15,7 +22,7 @@ export default class Input extends Backbone.View {
     return `${this.ppfx}input-holder`;
   }
 
-  constructor(opts = {}) {
+  constructor(opts: any = {}) {
     super(opts);
     const ppfx = opts.ppfx || '';
     this.opts = opts;
@@ -35,7 +42,7 @@ export default class Input extends Backbone.View {
    * Set value to the input element
    * @param {string} value
    */
-  setValue(value) {
+  setValue(value: string, opts?: any) {
     const model = this.model;
     let val = value || model.get('defaults');
     const input = this.getInputEl();
@@ -45,21 +52,21 @@ export default class Input extends Backbone.View {
   /**
    * Updates the view when the model is changed
    * */
-  handleModelChange(model, value, opts) {
+  handleModelChange(model: any, value: string, opts: any) {
     this.setValue(value, opts);
   }
 
   /**
    * Handled when the view is changed
    */
-  handleChange(e) {
+  handleChange(e: Event) {
     e.stopPropagation();
     const value = this.getInputEl().value;
     this.__onInputChange(value);
     this.elementUpdated();
   }
 
-  __onInputChange(value) {
+  __onInputChange(value: string) {
     this.model.set({ value }, { fromInput: 1 });
   }
 
@@ -89,5 +96,6 @@ export default class Input extends Backbone.View {
 }
 
 Input.prototype.events = {
+  // @ts-ignore
   change: 'handleChange',
 };
