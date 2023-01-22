@@ -230,7 +230,7 @@ Update attributes of the component
 ### Parameters
 
 *   `attrs` **[Object][2]** Key value attributes
-*   `opts`   (optional, default `{}`)
+*   `opts` **SetOptions**  (optional, default `{}`)
 *   `options` **[Object][2]** Options for the model update
 
 ### Examples
@@ -248,7 +248,7 @@ Add attributes to the component
 ### Parameters
 
 *   `attrs` **[Object][2]** Key value attributes
-*   `opts`   (optional, default `{}`)
+*   `opts` **SetOptions**  (optional, default `{}`)
 *   `options` **[Object][2]** Options for the model update
 
 ### Examples
@@ -266,7 +266,7 @@ Remove attributes from the component
 ### Parameters
 
 *   `attrs` **([String][1] | [Array][5]<[String][1]>)** Array of attributes to remove (optional, default `[]`)
-*   `opts`   (optional, default `{}`)
+*   `opts` **SetOptions**  (optional, default `{}`)
 *   `options` **[Object][2]** Options for the model update
 
 ### Examples
@@ -284,8 +284,8 @@ Get the style of the component
 
 ### Parameters
 
-*   `options`   (optional, default `{}`)
-*   `optsAdd`   (optional, default `{}`)
+*   `options` **any**  (optional, default `{}`)
+*   `optsAdd` **any**  (optional, default `{}`)
 
 Returns **[Object][2]** 
 
@@ -296,7 +296,7 @@ Set the style on the component
 ### Parameters
 
 *   `prop` **[Object][2]** Key value style object (optional, default `{}`)
-*   `opts`   (optional, default `{}`)
+*   `opts` **any**  (optional, default `{}`)
 
 ### Examples
 
@@ -312,7 +312,7 @@ Return all component's attributes
 
 ### Parameters
 
-*   `opts`   (optional, default `{}`)
+*   `opts` **{noClass: [boolean][3]?, noStyle: [boolean][3]?}**  (optional, default `{}`)
 
 Returns **[Object][2]** 
 
@@ -474,7 +474,7 @@ Get the parent component, if exists
 
 ### Parameters
 
-*   `opts`   (optional, default `{}`)
+*   `opts` **any**  (optional, default `{}`)
 
 ### Examples
 
@@ -685,7 +685,9 @@ Return an object containing only changed props
 
 ### Parameters
 
-*   `res`  
+*   `res` **Partial\<ComponentDefinition>** 
+
+Returns **Partial\<ComponentDefinition>** 
 
 ## getId
 
@@ -700,7 +702,7 @@ Set new id on the component
 ### Parameters
 
 *   `id` **[String][1]** 
-*   `opts`  
+*   `opts` **any?** 
 
 Returns **this** 
 
@@ -750,7 +752,7 @@ Remove the component
 
 ### Parameters
 
-*   `opts`   (optional, default `{}`)
+*   `opts` **any**  (optional, default `{}`)
 
 Returns **this** 
 

@@ -18,7 +18,7 @@ async function generateDocs () {
     ['block_manager/model/Block.ts', 'block.md'],
     ['commands/index.ts', 'commands.md'],
     ['dom_components/index.ts', 'components.md'],
-    ['dom_components/model/Component.js', 'component.md'],
+    ['dom_components/model/Component.ts', 'component.md'],
     ['panels/index.ts', 'panels.md'],
     ['style_manager/index.ts', 'style_manager.md'],
     ['style_manager/model/Sector.ts', 'sector.md'],
