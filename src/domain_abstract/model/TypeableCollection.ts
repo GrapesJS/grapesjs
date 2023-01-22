@@ -1,3 +1,4 @@
+// @ts-nocheck TODO extend View
 import { isFunction } from 'underscore';
 import { View, Model } from '../../common';
 
