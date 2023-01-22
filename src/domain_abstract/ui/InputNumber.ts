@@ -1,11 +1,14 @@
-import Backbone from 'backbone';
 import { bindAll, isUndefined, indexOf } from 'underscore';
 import { on, off } from '../../utils/mixins';
 import Input from './Input';
 
-const $ = Backbone.$;
-
 export default class InputNumber extends Input {
+  doc: Document;
+  unitEl?: any;
+  moved?: boolean;
+  prValue?: number;
+  current?: { y: number; val: string };
+
   template() {
     const ppfx = this.ppfx;
     return `
@@ -35,10 +38,10 @@ export default class InputNumber extends Input {
    * @param {string} value
    * @param {Object} opts
    */
-  setValue(value, opts) {
-    var opt = opts || {};
-    var valid = this.validateInputValue(value, { deepCheck: 1 });
-    var validObj = { value: valid.value };
+  setValue(value: string, opts?: any) {
+    const opt = opts || {};
+    const valid = this.validateInputValue(value, { deepCheck: 1 });
+    const validObj = { value: valid.value, unit: '' };
 
     // If found some unit value
     if (valid.unit || valid.force) {
@@ -57,7 +60,7 @@ export default class InputNumber extends Input {
   /**
    * Handled when the view is changed
    */
-  handleChange(e) {
+  handleChange(e: Event) {
     e.stopPropagation();
     this.setValue(this.getInputEl().value);
     this.elementUpdated();
@@ -66,9 +69,9 @@ export default class InputNumber extends Input {
   /**
    * Handled when the view is changed
    */
-  handleUnitChange(e) {
+  handleUnitChange(e: Event) {
     e.stopPropagation();
-    var value = this.getUnitEl().value;
+    const value = this.getUnitEl().value;
     this.model.set('unit', value);
     this.elementUpdated();
   }
@@ -76,7 +79,7 @@ export default class InputNumber extends Input {
   /**
    * Handled when user uses keyboard
    */
-  handleKeyDown(e) {
+  handleKeyDown(e: KeyboardEvent) {
     if (e.key === 'ArrowUp') {
       e.preventDefault();
       this.upArrowClick();
@@ -117,7 +120,7 @@ export default class InputNumber extends Input {
       if (units.length) {
         const options = ['<option value="" disabled hidden>-</option>'];
 
-        units.forEach(unit => {
+        units.forEach((unit: string) => {
           const selected = unit == model.get('unit') ? 'selected' : '';
           options.push(`<option ${selected}>${unit}</option>`);
         });
@@ -159,13 +162,13 @@ export default class InputNumber extends Input {
    *
    * @return void
    * */
-  downIncrement(e) {
+  downIncrement(e: MouseEvent) {
     e.preventDefault();
-    this.moved = 0;
+    this.moved = false;
     var value = this.model.get('value') || 0;
     value = this.normalizeValue(value);
     this.current = { y: e.pageY, val: value };
-    on(this.doc, 'mousemove', this.moveIncrement);
+    on(this.doc, 'mousemove', this.moveIncrement as any);
     on(this.doc, 'mouseup', this.upIncrement);
   }
 
@@ -174,11 +177,11 @@ export default class InputNumber extends Input {
    *
    * @return bool
    * */
-  moveIncrement(ev) {
-    this.moved = 1;
+  moveIncrement(ev: MouseEvent) {
+    this.moved = true;
     const model = this.model;
     const step = model.get('step');
-    const data = this.current;
+    const data = this.current!;
     var pos = this.normalizeValue(data.val + (data.y - ev.pageY) * step);
     const { value, unit } = this.validateInputValue(pos);
     this.prValue = value;
@@ -193,16 +196,17 @@ export default class InputNumber extends Input {
     const model = this.model;
     const step = model.get('step');
     off(this.doc, 'mouseup', this.upIncrement);
-    off(this.doc, 'mousemove', this.moveIncrement);
+    off(this.doc, 'mousemove', this.moveIncrement as any);
 
     if (this.prValue && this.moved) {
       var value = this.prValue - step;
+      // @ts-ignore
       model.set('value', value, { avoidStore: 1 }).set('value', value + step);
       this.elementUpdated();
     }
   }
 
-  normalizeValue(value, defValue = 0) {
+  normalizeValue(value: any, defValue = 0) {
     const model = this.model;
     const step = model.get('step');
     let stepDecimals = 0;
@@ -227,7 +231,7 @@ export default class InputNumber extends Input {
    * @param {Object} opts Options
    * @return {Object} Validated string
    */
-  validateInputValue(value, opts = {}) {
+  validateInputValue(value?: any, opts: any = {}) {
     var force = 0;
     var opt = opts || {};
     var model = this.model;
@@ -278,12 +282,13 @@ export default class InputNumber extends Input {
     Input.prototype.render.call(this);
     this.unitEl = null;
     const unit = this.getUnitEl();
-    unit && this.$el.find(`.${this.ppfx}field-units`).get(0).appendChild(unit);
+    unit && this.$el.find(`.${this.ppfx}field-units`).get(0)!.appendChild(unit);
     return this;
   }
 }
 
 InputNumber.prototype.events = {
+  // @ts-ignore
   'change input': 'handleChange',
   'change select': 'handleUnitChange',
   'click [data-arrow-up]': 'upArrowClick',
