@@ -152,6 +152,7 @@ export default class BlockView extends View<Block> {
     `;
     el.title = attr.title || el.textContent?.trim();
     el.setAttribute('draggable', `${hasDnd(em) && !disable ? true : false}`);
+    // @ts-ignore
     const result = render && render({ el, model, className, prefix: ppfx });
     if (result) el.innerHTML = result;
     return this;

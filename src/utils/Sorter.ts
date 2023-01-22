@@ -373,7 +373,7 @@ export default class Sorter extends View {
    * Picking component to move
    * @param {HTMLElement} src
    * */
-  startSort(src: HTMLElement, opts: { container?: HTMLElement } = {}) {
+  startSort(src?: HTMLElement, opts: { container?: HTMLElement } = {}) {
     const { em, itemSel, containerSel, plh } = this;
     const container = this.getContainerEl(opts.container);
     const docs = this.getDocuments(src);

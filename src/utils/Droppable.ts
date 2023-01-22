@@ -143,6 +143,7 @@ export default class Droppable {
       dragContent = (cnt: any) => (content = cnt);
     } else {
       const sorter = new utils.Sorter({
+        // @ts-ignore
         em,
         wmargin: 1,
         nested: 1,
@@ -161,7 +162,7 @@ export default class Droppable {
       sorter.startSort();
       this.sorter = sorter;
       dragStop = (cancel?: boolean) => {
-        cancel && (sorter.moved = 0);
+        cancel && (sorter.moved = false);
         sorter.endMove();
       };
       dragContent = (content: any) => sorter.setDropContent(content);

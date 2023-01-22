@@ -15,6 +15,7 @@ export default {
 
     if (utils && !this.sorter)
       this.sorter = new utils.Sorter({
+        // @ts-ignore
         container,
         placer: this.canvas.getPlacerEl(),
         containerSel: '*',

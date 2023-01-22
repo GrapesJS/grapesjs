@@ -28,6 +28,7 @@ export default class ItemsView extends View {
     if (config.sortable && !this.opt.sorter) {
       const utils = em.Utils;
       this.opt.sorter = new utils.Sorter({
+        // @ts-ignore
         container: config.sortContainer || this.el,
         containerSel: `.${this.className}`,
         itemSel: `.${pfx}layer`,

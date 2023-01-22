@@ -32,6 +32,7 @@ export default class LayersView extends View<Layer> {
     const utils = em?.Utils;
     this.sorter = utils
       ? new utils.Sorter({
+          // @ts-ignore
           container: this.el,
           ignoreViewChildren: 1,
           containerSel: `.${pfx}layers`,

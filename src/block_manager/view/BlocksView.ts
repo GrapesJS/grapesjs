@@ -73,6 +73,7 @@ export default class BlocksView extends View {
       const canvas = em.Canvas;
 
       this.sorter = new utils.Sorter({
+        // @ts-ignore
         container: canvas.getBody(),
         placer: canvas.getPlacerEl(),
         containerSel: '*',
