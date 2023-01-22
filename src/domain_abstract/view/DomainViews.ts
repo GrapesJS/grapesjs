@@ -1,7 +1,12 @@
 import { includes } from 'underscore';
-import Backbone from 'backbone';
+import { ObjectAny, View } from '../../common';
 
-export default class DomainViews extends Backbone.View {
+export default class DomainViews extends View {
+  config?: any;
+  items: any[];
+  ns?: string;
+  itemView?: any;
+
   // Defines the View per type
   itemsView = '';
 
@@ -9,7 +14,7 @@ export default class DomainViews extends Backbone.View {
 
   reuseView = false;
 
-  constructor(opts = {}, config, autoAdd = false) {
+  constructor(opts: any = {}, config?: any, autoAdd = false) {
     super(opts);
     this.config = config || opts.config || {};
     autoAdd && this.listenTo(this.collection, 'add', this.addTo);
@@ -21,11 +26,11 @@ export default class DomainViews extends Backbone.View {
    * @param {Model} model
    * @private
    * */
-  addTo(model) {
+  addTo(model: any) {
     this.add(model);
   }
 
-  itemViewNotFound(type) {
+  itemViewNotFound(type: string) {
     const { config, ns } = this;
     const { em } = config;
     const warn = `${ns ? `[${ns}]: ` : ''}'${type}' type not found`;
@@ -38,8 +43,9 @@ export default class DomainViews extends Backbone.View {
    * @param {Object} fragment Fragment collection
    * @private
    * */
-  add(model, fragment) {
-    const { config, reuseView, items, itemsView = {} } = this;
+  add(model: any, fragment?: DocumentFragment) {
+    const { config, reuseView, items } = this;
+    const itemsView = (this.itemsView || {}) as ObjectAny;
     const inputTypes = [
       'button',
       'checkbox',
@@ -95,6 +101,7 @@ export default class DomainViews extends Backbone.View {
 
     if (this.collection.length)
       this.collection.each(function (model) {
+        // @ts-ignore
         this.add(model, frag);
       }, this);
 
@@ -104,16 +111,16 @@ export default class DomainViews extends Backbone.View {
   }
 
   onRender() {}
-
-  onRemoveBefore() {}
-  onRemove() {}
+  onRemoveBefore(items?: any, opts?: any) {}
+  onRemove(items?: any, opts?: any) {}
 
   remove(opts = {}) {
     const { items } = this;
     this.onRemoveBefore(items, opts);
     this.clearItems();
-    Backbone.View.prototype.remove.apply(this, arguments);
+    super.remove();
     this.onRemove(items, opts);
+    return this;
   }
 
   clearItems() {
