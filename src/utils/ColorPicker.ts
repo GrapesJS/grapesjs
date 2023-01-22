@@ -7,7 +7,7 @@
 // License: MIT
 import { hasWin } from './mixins';
 
-export default function ($, undefined) {
+export default function ($, undefined?: any) {
   'use strict';
   if (!hasWin()) return;
 

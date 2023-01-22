@@ -6,13 +6,18 @@ import Input from './Input';
 const { $ } = Backbone;
 $ && ColorPicker($);
 
-const getColor = color => {
+const getColor = (color: any) => {
   const name = color.getFormat() === 'name' && color.toName();
   const cl = color.getAlpha() == 1 ? color.toHexString() : color.toRgbString();
   return name || cl.replace(/ /g, '');
 };
 
 export default class InputColor extends Input {
+  colorEl?: any;
+  movedColor?: string;
+  noneColor?: boolean;
+  model!: any;
+
   template() {
     const ppfx = this.ppfx;
     return `
@@ -35,18 +40,19 @@ export default class InputColor extends Input {
   }
 
   remove() {
-    Input.prototype.remove.apply(this, arguments);
+    super.remove();
     this.colorEl.spectrum('destroy');
+    return this;
   }
 
-  handleChange(e) {
+  handleChange(e: any) {
     e.stopPropagation();
     const { value } = e.target;
     if (isUndefined(value)) return;
     this.__onInputChange(value);
   }
 
-  __onInputChange(val) {
+  __onInputChange(val: string) {
     const { model, opts } = this;
     const { onChange } = opts;
     let value = val;
@@ -68,7 +74,7 @@ export default class InputColor extends Input {
    * @param {string} val
    * @param {Object} opts
    */
-  setValue(val, opts = {}) {
+  setValue(val: string, opts: any = {}) {
     const { model } = this;
     const def = !isUndefined(opts.def) ? opts.def : model.get('defaults');
     const value = !isUndefined(val) ? val : !isUndefined(def) ? def : '';
@@ -97,16 +103,16 @@ export default class InputColor extends Input {
       const { onChange } = opts;
 
       var colorEl = $(`<div class="${this.ppfx}field-color-picker"></div>`);
-      var cpStyle = colorEl.get(0).style;
+      var cpStyle = colorEl.get(0)!.style;
       var elToAppend = em && em.config ? em.config.el : '';
       var colorPickerConfig = (em && em.getConfig && em.getConfig().colorPicker) || {};
 
       this.movedColor = '';
       let changed = false;
-      let previousColor;
+      let previousColor: string;
       this.$el.find('[data-colorp-c]').append(colorEl);
 
-      const handleChange = (value, complete = true) => {
+      const handleChange = (value: string, complete = true) => {
         if (onChange) {
           onChange(value, !complete);
         } else {
@@ -115,6 +121,7 @@ export default class InputColor extends Input {
         }
       };
 
+      // @ts-ignore
       colorEl.spectrum({
         color: model.getValue() || false,
         containerClassName: `${ppfx}one-bg ${ppfx}two-color`,
@@ -130,20 +137,20 @@ export default class InputColor extends Input {
         ...colorPickerConfig,
         ...(model.get('colorPicker') || {}),
 
-        move: color => {
+        move: (color: any) => {
           const cl = getColor(color);
           this.movedColor = cl;
           cpStyle.backgroundColor = cl;
           handleChange(cl, false);
         },
-        change: color => {
+        change: (color: any) => {
           changed = true;
           const cl = getColor(color);
           cpStyle.backgroundColor = cl;
           handleChange(cl);
-          this.noneColor = 0;
+          this.noneColor = false;
         },
-        show: color => {
+        show: (color: any) => {
           changed = false;
           this.movedColor = '';
           previousColor = onChange ? model.getValue({ noDefault: true }) : getColor(color);
@@ -154,17 +161,19 @@ export default class InputColor extends Input {
               previousColor = '';
             }
             cpStyle.backgroundColor = previousColor;
+            // @ts-ignore
             colorEl.spectrum('set', previousColor);
             handleChange(previousColor, false);
           }
         },
       });
 
-      if (em && em.on) {
+      if (em && em.on!) {
         this.listenTo(em, 'component:selected', () => {
           this.movedColor && handleChange(this.movedColor);
           changed = true;
           this.movedColor = '';
+          // @ts-ignore
           colorEl.spectrum('hide');
         });
       }
