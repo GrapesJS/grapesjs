@@ -278,7 +278,7 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
   updatePosition() {
     const { em, toolbar } = this;
     const un = 'px';
-    const canvas = em.get('Canvas');
+    const canvas = em.Canvas;
     const { style } = toolbar;
     const pos = canvas.getTargetToElementFixed(this.lastEl, toolbar, {
       event: 'rteToolbarPosUpdate',

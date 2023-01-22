@@ -151,7 +151,7 @@ export default class Property<T extends Record<string, any> = PropertyProps> ext
 
   __upTargets(p: this, opts: any = {}) {
     const { em } = this;
-    const sm = em.get('StyleManager');
+    const sm = em.Styles;
     const name = this.getName();
     const isClear = opts.__clear;
     const value = isClear ? '' : this.__getFullValue(opts);

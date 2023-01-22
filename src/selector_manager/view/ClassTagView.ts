@@ -1,6 +1,7 @@
 import { View } from '../../common';
 import State from '../model/State';
 import html from '../../utils/html';
+import EditorModel from '../../editor/model/Editor';
 
 const inputProp = 'contentEditable';
 
@@ -29,7 +30,7 @@ export default class ClassTagView extends View<State> {
   coll: any;
   pfx: any;
   ppfx: any;
-  em: any;
+  em: EditorModel;
   inputEl?: HTMLElement;
 
   constructor(o: any = {}) {
@@ -66,7 +67,7 @@ export default class ClassTagView extends View<State> {
     inputEl;
     inputEl[inputProp] = 'true';
     inputEl.focus();
-    em && em.setEditing(1);
+    em?.setEditing(true);
   }
 
   /**
@@ -77,11 +78,11 @@ export default class ClassTagView extends View<State> {
   endEditTag() {
     const model = this.model;
     const inputEl = this.getInputEl();
-    const label = inputEl.textContent;
+    const label = inputEl.textContent || '';
     const em = this.em;
-    const sm = em && em.get('SelectorManager');
+    const sm = em?.Selectors;
     inputEl[inputProp] = 'false';
-    em && em.setEditing(0);
+    em?.setEditing(false);
 
     if (sm) {
       const name = sm.escapeName(label);

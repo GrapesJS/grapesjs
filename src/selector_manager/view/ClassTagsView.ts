@@ -8,6 +8,7 @@ import State from '../model/State';
 import Component from '../../dom_components/model/Component';
 import Selector from '../model/Selector';
 import Selectors from '../model/Selectors';
+import CssRule from '../../css_composer/model/CssRule';
 
 export default class ClassTagsView extends View<Selector> {
   template({ labelInfo, labelHead, iconSync, iconAdd, pfx, ppfx }: any) {
@@ -74,10 +75,10 @@ export default class ClassTagsView extends View<Selector> {
     this.stateInputId = this.pfx + 'states';
     this.stateInputC = this.pfx + 'input-c';
     this.states = this.config.states || [];
-    const { em } = this.config;
+    const em = this.config.em as EditorModel;
     const coll = this.collection;
     this.target = em;
-    const md = em.get('SelectorManager');
+    const md = em.Selectors;
     this.module = md;
     this.em = em;
     this.componentChanged = debounce(this.componentChanged.bind(this), 0);
@@ -102,12 +103,12 @@ export default class ClassTagsView extends View<Selector> {
   syncStyle() {
     const { em } = this;
     const target = this.getTarget();
-    const cssC = em.get('CssComposer');
+    const cssC = em.Css;
     const opts = { noDisabled: 1 };
     const selectors = this.getCommonSelectors({ opts });
     const state = em.get('state');
     const mediaText = em.getCurrentMedia();
-    const ruleComponents: CSSRule[] = [];
+    const ruleComponents: CssRule[] = [];
     const rule = cssC.get(selectors, state, mediaText) || cssC.add(selectors, state, mediaText);
     let style;
 
@@ -115,7 +116,7 @@ export default class ClassTagsView extends View<Selector> {
       const ruleComponent = cssC.getIdRule(target.getId(), {
         state,
         mediaText,
-      });
+      })!;
       style = ruleComponent.getStyle();
       ruleComponent.setStyle({});
       ruleComponents.push(ruleComponent);

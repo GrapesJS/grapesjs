@@ -138,8 +138,8 @@ const normalizeFloat = (value: any, step = 1, valueDef = 0) => {
   return stepDecimals ? parseFloat(value.toFixed(stepDecimals)) : value;
 };
 
-const hasDnd = (em: any) => {
-  return 'draggable' in document.createElement('i') && (em ? em.get('Config').nativeDnD : 1);
+const hasDnd = (em: EditorModel) => {
+  return 'draggable' in document.createElement('i') && (em ? em.config.nativeDnD! : true);
 };
 
 /**

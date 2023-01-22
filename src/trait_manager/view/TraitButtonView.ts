@@ -16,9 +16,9 @@ export default class TraitButtonView extends TraitView {
 
     if (command) {
       if (isString(command)) {
-        em.get('Commands').run(command);
+        em.Commands.run(command);
       } else {
-        command(em.get('Editor'), model);
+        command(em.Editor, model);
       }
     }
   }

@@ -369,7 +369,7 @@ export default class PropertyStack extends PropertyComposite<PropertyStackProps>
   }
 
   __upSelected({ noEvent }: { noEvent?: boolean } = {}, opts: OptionsUpdate = {}) {
-    const sm = this.em.get('StyleManager');
+    const sm = this.em.Styles;
     const selected = this.getSelectedLayer();
     const values = selected?.getValues();
 

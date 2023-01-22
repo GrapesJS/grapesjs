@@ -1,4 +1,5 @@
 import { View } from '../../common';
+import EditorModel from '../../editor/model/Editor';
 import Layer from '../model/Layer';
 import LayerView from './LayerView';
 import PropertyStackView from './PropertyStackView';
@@ -15,7 +16,7 @@ export default class LayersView extends View<Layer> {
     super(o);
     const coll = this.collection;
     const config = o.config || {};
-    const em = config.em;
+    const em = config.em as EditorModel;
     const pfx = config.stylePrefix || '';
     const ppfx = config.pStylePrefix || '';
     this.config = config;
@@ -28,7 +29,7 @@ export default class LayersView extends View<Layer> {
     this.items = [];
 
     // For the Sorter
-    const utils = em ? em.get('Utils') : '';
+    const utils = em?.Utils;
     this.sorter = utils
       ? new utils.Sorter({
           container: this.el,

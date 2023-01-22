@@ -1,5 +1,6 @@
 import { View } from '../../common';
 import Component, { eventDrag } from '../../dom_components/model/Component';
+import EditorModel from '../../editor/model/Editor';
 import ItemView from './ItemView';
 
 export default class ItemsView extends View {
@@ -22,10 +23,10 @@ export default class ItemsView extends View {
     this.listenTo(coll, 'reset resetNavigator', this.render);
     this.listenTo(coll, 'remove', this.removeChildren);
     this.className = `${pfx}layers`;
-    const em = config.em;
+    const em = config.em as EditorModel;
 
     if (config.sortable && !this.opt.sorter) {
-      const utils = em.get('Utils');
+      const utils = em.Utils;
       this.opt.sorter = new utils.Sorter({
         container: config.sortContainer || this.el,
         containerSel: `.${this.className}`,

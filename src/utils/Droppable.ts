@@ -29,7 +29,7 @@ export default class Droppable {
 
   constructor(em: EditorModel, rootEl?: HTMLElement) {
     this.em = em;
-    this.canvas = em.get('Canvas');
+    this.canvas = em.Canvas;
     const el = rootEl || this.canvas.getFrames().map(frame => frame.getComponent().getEl()!);
     const els = Array.isArray(el) ? el : [el];
     this.el = els[0];
@@ -105,7 +105,7 @@ export default class Droppable {
     this.updateCounter(1, ev);
     if (this.over) return;
     this.over = true;
-    const utils = em.get('Utils');
+    const utils = em.Utils;
     // For security reason I can't read the drag data on dragenter, but
     // as I need it for the Sorter context I will use `dragContent` or just
     // any not empty element
@@ -116,9 +116,9 @@ export default class Droppable {
 
     // Select the right drag provider
     if (em.inAbsoluteMode()) {
-      const wrapper = em.get('DomComponents').getWrapper();
+      const wrapper = em.Components.getWrapper()!;
       const target = wrapper.append({})[0];
-      const dragger = em.get('Commands').run('core:component-drag', {
+      const dragger = em.Commands.run('core:component-drag', {
         event: ev,
         guidesInfo: 1,
         center: 1,
