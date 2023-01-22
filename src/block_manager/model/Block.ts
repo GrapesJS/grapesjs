@@ -2,6 +2,7 @@ import { Model } from '../../common';
 import { isFunction } from 'underscore';
 import EditorModule from '../../editor';
 import { BlockCategoryProperties } from './Category';
+import { ComponentDefinition } from '../../dom_components/model/types';
 
 /** @private */
 export interface BlockProperties {
@@ -12,7 +13,7 @@ export interface BlockProperties {
   /**
    * The content of the block. Might be an HTML string or a [Component Defintion](/modules/Components.html#component-definition)
    */
-  content: string | any;
+  content: string | ComponentDefinition;
   /**
    * HTML string for the media/icon of the block, eg. `<svg ...`, `<img ...`, etc.
    * @default ''

@@ -4,7 +4,7 @@ export { default as View } from './View';
 
 export type SetOptions = Backbone.ModelSetOptions & { avoidStore?: boolean };
 
-export type AddOptions = Backbone.AddOptions;
+export type AddOptions = Backbone.AddOptions & { temporary?: boolean };
 
 export type RemoveOptions = Backbone.Silenceable;
 

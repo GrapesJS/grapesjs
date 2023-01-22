@@ -1,14 +1,118 @@
 import Backbone from 'backbone';
 import { isString, isFunction, isArray, result, each, bindAll } from 'underscore';
-import { on, off, matches, getElement, getPointerEvent, isTextNode, getModel } from 'utils/mixins';
-import { getComponentIds } from '../dom_components/model/Components';
+import { on, off, matches, getElement, getPointerEvent, isTextNode, getModel } from './mixins';
+import { View, Model } from '../common';
+import EditorModel from '../editor/model/Editor';
+import { BlockProperties } from '../block_manager/model/Block';
+import CanvasModule from '../canvas';
 
 const $ = Backbone.$;
 
 const noop = () => {};
 
-export default Backbone.View.extend({
-  initialize(opt) {
+type DropContent = BlockProperties['content'];
+
+interface Dim {
+  top: number;
+  left: number;
+  height: number;
+  width: number;
+  offsets: ReturnType<CanvasModule['getElementOffsets']>;
+  dir?: boolean;
+  el?: HTMLElement;
+  indexEl?: number;
+}
+
+interface Pos {
+  index: number;
+  indexEl: number;
+  method: string;
+}
+
+export interface SorterOptions {
+  borderOffset?: number;
+  container?: HTMLElement;
+  containerSel?: string;
+  itemSel?: string;
+  draggable?: boolean | string[];
+  nested?: boolean;
+  pfx?: string;
+  ppfx?: string;
+  freezeClass?: string;
+  onStart?: Function;
+  onEndMove?: Function;
+  customTarget?: Function;
+  onEnd?: Function;
+  onMove?: Function;
+  direction?: 'v' | 'h' | 'a';
+  relative?: boolean;
+  ignoreViewChildren?: boolean;
+  placer?: HTMLElement;
+  document?: Document;
+  wmargin?: number;
+  offsetTop?: number;
+  offsetLeft?: number;
+  em?: EditorModel;
+  canvasRelative?: boolean;
+  avoidSelectOnEnd?: boolean;
+  scale?: number;
+}
+
+export default class Sorter extends View {
+  opt!: SorterOptions;
+  elT!: number;
+  elL!: number;
+  borderOffset!: number;
+  containerSel!: string;
+  itemSel!: string;
+  draggable!: SorterOptions['draggable'];
+  nested!: boolean;
+  pfx!: string;
+  ppfx?: string;
+  freezeClass?: string;
+  onStart!: Function;
+  onEndMove?: Function;
+  customTarget?: Function;
+  onEnd?: Function;
+  onMoveClb?: Function;
+  direction!: 'v' | 'h' | 'a';
+  relative!: boolean;
+  ignoreViewChildren!: boolean;
+  plh?: HTMLElement;
+  document!: Document;
+  wmargin!: number;
+  offTop!: number;
+  offLeft!: number;
+  dropContent?: DropContent;
+  em?: EditorModel;
+  dragHelper?: HTMLElement;
+  canvasRelative!: boolean;
+  selectOnEnd!: boolean;
+  scale?: number;
+  activeTextModel?: Model;
+  dropModel?: Model;
+
+  target?: HTMLElement;
+  prevTarget?: HTMLElement;
+  sourceEl?: HTMLElement;
+  moved?: boolean;
+  srcModel?: Model;
+  targetModel?: Model;
+  rX?: number;
+  rY?: number;
+  eventMove?: MouseEvent;
+  prevTargetDim?: Dim;
+  cacheDimsP?: Dim[];
+  cacheDims?: Dim[];
+  targetP?: HTMLElement;
+  targetPrev?: HTMLElement;
+  lastPos?: Pos;
+  lastDims?: Dim[];
+  $plh?: any;
+  toMove?: Model | Model[];
+
+  // @ts-ignore todo move to simple class
+  initialize(opt: SorterOptions = {}) {
     this.opt = opt || {};
     bindAll(this, 'startSort', 'onMove', 'endMove', 'rollback', 'updateOffset', 'moveDragHelper');
     var o = opt || {};
@@ -17,68 +121,64 @@ export default Backbone.View.extend({
     this.borderOffset = o.borderOffset || 10;
 
     var el = o.container;
-    this.el = typeof el === 'string' ? document.querySelector(el) : el;
-    this.$el = $(this.el);
+    this.el = typeof el === 'string' ? document.querySelector(el)! : el!;
+    this.$el = $(this.el); // TODO check if necessary
 
     this.containerSel = o.containerSel || 'div';
     this.itemSel = o.itemSel || 'div';
     this.draggable = o.draggable || true;
-    this.nested = o.nested || 0;
+    this.nested = !!o.nested;
     this.pfx = o.pfx || '';
     this.ppfx = o.ppfx || '';
     this.freezeClass = o.freezeClass || this.pfx + 'freezed';
     this.onStart = o.onStart || noop;
-    this.onEndMove = o.onEndMove || '';
+    this.onEndMove = o.onEndMove;
     this.customTarget = o.customTarget;
     this.onEnd = o.onEnd;
     this.direction = o.direction || 'v'; // v (vertical), h (horizontal), a (auto)
-    this.onMoveClb = o.onMove || '';
-    this.relative = o.relative || 0;
-    this.ignoreViewChildren = o.ignoreViewChildren || 0;
-    this.ignoreModels = o.ignoreModels || 0;
-    this.plh = o.placer || '';
+    this.onMoveClb = o.onMove;
+    this.relative = o.relative || false;
+    this.ignoreViewChildren = !!o.ignoreViewChildren;
+    this.plh = o.placer;
     // Frame offset
     this.wmargin = o.wmargin || 0;
     this.offTop = o.offsetTop || 0;
     this.offLeft = o.offsetLeft || 0;
     this.document = o.document || document;
-    this.$document = $(this.document);
-    this.dropContent = null;
-    this.em = o.em || null;
-    this.dragHelper = null;
-    this.canvasRelative = o.canvasRelative || 0;
+    this.em = o.em;
+    this.canvasRelative = !!o.canvasRelative;
     this.selectOnEnd = !o.avoidSelectOnEnd;
     this.scale = o.scale;
-    this.activeTextModel = null;
 
     if (this.em && this.em.on) {
       this.em.on('change:canvasOffset', this.updateOffset);
       this.updateOffset();
     }
-  },
+  }
 
   getScale() {
-    return result(this, scale) || 1;
-  },
+    return result(this, 'scale') || 1;
+  }
 
-  getContainerEl(elem) {
+  getContainerEl(elem?: HTMLElement) {
     if (elem) this.el = elem;
 
     if (!this.el) {
       var el = this.opt.container;
-      this.el = typeof el === 'string' ? document.querySelector(el) : el;
-      this.$el = $(this.el);
+      this.el = typeof el === 'string' ? document.querySelector(el)! : el!;
+      this.$el = $(this.el); // TODO check if necessary
     }
-    return this.el;
-  },
 
-  getDocuments(el) {
+    return this.el;
+  }
+
+  getDocuments(el?: HTMLElement) {
     const em = this.em;
-    const elDoc = el ? el.ownerDocument : em && em.get('Canvas').getBody().ownerDocument;
+    const elDoc = el ? el.ownerDocument : em?.Canvas.getBody().ownerDocument;
     const docs = [document];
     elDoc && docs.push(elDoc);
     return docs;
-  },
+  }
 
   /**
    * Triggered when the offset of the editro is changed
@@ -87,18 +187,18 @@ export default Backbone.View.extend({
     const offset = this.em?.get('canvasOffset') || {};
     this.offTop = offset.top;
     this.offLeft = offset.left;
-  },
+  }
 
   /**
    * Set content to drop
    * @param {String|Object} content
    */
-  setDropContent(content) {
-    this.dropModel = null;
+  setDropContent(content: DropContent) {
+    delete this.dropModel;
     this.dropContent = content;
-  },
+  }
 
-  updateTextViewCursorPosition(e) {
+  updateTextViewCursorPosition(e: any) {
     const { em } = this;
     if (!em) return;
     const Canvas = em.get('Canvas');
@@ -120,36 +220,37 @@ export default Backbone.View.extend({
     sel.removeAllRanges();
     range && sel.addRange(range);
     this.setContentEditable(this.activeTextModel, true);
-  },
+  }
 
-  setContentEditable(model, mode) {
+  setContentEditable(model?: Model, mode?: boolean) {
     if (model) {
+      // @ts-ignore
       const el = model.getEl();
       if (el.contentEditable != mode) el.contentEditable = mode;
     }
-  },
+  }
 
   /**
    * Toggle cursor while sorting
    * @param {Boolean} active
    */
-  toggleSortCursor(active) {
+  toggleSortCursor(active?: boolean) {
     const { em } = this;
     const cv = em && em.get('Canvas');
 
     // Avoid updating body className as it causes a huge repaint
     // Noticeable with "fast" drag of blocks
     cv && (active ? cv.startAutoscroll() : cv.stopAutoscroll());
-  },
+  }
 
   /**
    * Set drag helper
    * @param {HTMLElement} el
    * @param {Event} event
    */
-  setDragHelper(el, event) {
+  setDragHelper(el: HTMLElement, event: Event) {
     const ev = event || '';
-    const clonedEl = el.cloneNode(1);
+    const clonedEl = el.cloneNode(true) as HTMLElement;
     const rect = el.getBoundingClientRect();
     const computed = getComputedStyle(el);
     let style = '';
@@ -169,19 +270,18 @@ export default Backbone.View.extend({
 
     // Listen mouse move events
     if (this.em) {
-      $(this.em.get('Canvas').getBody().ownerDocument)
-        .off('mousemove', this.moveDragHelper)
-        .on('mousemove', this.moveDragHelper);
+      const $doc = $(this.em.Canvas.getBody().ownerDocument);
+      $doc.off('mousemove', this.moveDragHelper).on('mousemove', this.moveDragHelper);
     }
     $(document).off('mousemove', this.moveDragHelper).on('mousemove', this.moveDragHelper);
-  },
+  }
 
   /**
    * Update the position of the helper
    * @param  {Event} e
    */
-  moveDragHelper(e) {
-    const doc = e.target.ownerDocument;
+  moveDragHelper(e: any) {
+    const doc = (e.target as HTMLElement).ownerDocument;
 
     if (!this.dragHelper || !doc) {
       return;
@@ -191,7 +291,8 @@ export default Backbone.View.extend({
     let posX = e.pageX;
     let addTop = 0;
     let addLeft = 0;
-    const window = doc.defaultView || doc.parentWindow;
+    // @ts-ignore
+    const window = doc.defaultView || (doc.parentWindow as Window);
     const frame = window.frameElement;
     const dragHelperStyle = this.dragHelper.style;
 
@@ -210,7 +311,7 @@ export default Backbone.View.extend({
 
     dragHelperStyle.top = posY + addTop + 'px';
     dragHelperStyle.left = posX + addLeft + 'px';
-  },
+  }
 
   /**
    * Returns true if the element matches with selector
@@ -218,9 +319,9 @@ export default Backbone.View.extend({
    * @param {String} selector
    * @return {Boolean}
    */
-  matches(el, selector, useBody) {
+  matches(el: HTMLElement, selector: string) {
     return matches.call(el, selector);
-  },
+  }
 
   /**
    * Closest parent
@@ -228,62 +329,63 @@ export default Backbone.View.extend({
    * @param {String} selector
    * @return {Element|null}
    */
-  closest(el, selector) {
+  closest(el: HTMLElement, selector: string): HTMLElement | undefined {
     if (!el) return;
-    var elem = el.parentNode;
+    let elem = el.parentNode;
+
     while (elem && elem.nodeType === 1) {
-      if (this.matches(elem, selector)) return elem;
+      if (this.matches(elem as HTMLElement, selector)) return elem as HTMLElement;
       elem = elem.parentNode;
     }
-    return null;
-  },
+  }
 
   /**
    * Get the offset of the element
    * @param  {HTMLElement} el
    * @return {Object}
    */
-  offset(el) {
-    var rect = el.getBoundingClientRect();
+  offset(el: HTMLElement) {
+    const rect = el.getBoundingClientRect();
+
     return {
       top: rect.top + document.body.scrollTop,
       left: rect.left + document.body.scrollLeft,
     };
-  },
+  }
 
   /**
    * Create placeholder
    * @return {HTMLElement}
    */
   createPlaceholder() {
-    var pfx = this.pfx;
-    var el = document.createElement('div');
-    var ins = document.createElement('div');
+    const { pfx } = this;
+    const el = document.createElement('div');
+    const ins = document.createElement('div');
     el.className = pfx + 'placeholder';
     el.style.display = 'none';
-    el.style['pointer-events'] = 'none';
+    el.style.pointerEvents = 'none';
     ins.className = pfx + 'placeholder-int';
     el.appendChild(ins);
     return el;
-  },
+  }
 
   /**
    * Picking component to move
    * @param {HTMLElement} src
    * */
-  startSort(src, opts = {}) {
+  startSort(src: HTMLElement, opts: { container?: HTMLElement } = {}) {
     const { em, itemSel, containerSel, plh } = this;
     const container = this.getContainerEl(opts.container);
     const docs = this.getDocuments(src);
     let srcModel;
-    this.dropModel = null;
-    this.target = null;
-    this.prevTarget = null;
-    this.moved = 0;
+    delete this.dropModel;
+    delete this.target;
+    delete this.prevTarget;
+    this.moved = false;
 
     // Check if the start element is a valid one, if not, try the closest valid one
     if (src && !this.matches(src, `${itemSel}, ${containerSel}`)) {
-      src = this.closest(src, itemSel);
+      src = this.closest(src, itemSel)!;
     }
 
     this.sourceEl = src;
@@ -300,55 +402,59 @@ export default Backbone.View.extend({
       this.srcModel = srcModel;
     }
 
-    on(container, 'mousemove dragover', this.onMove);
+    on(container, 'mousemove dragover', this.onMove as any);
     on(docs, 'mouseup dragend touchend', this.endMove);
     on(docs, 'keydown', this.rollback);
     this.onStart({
       sorter: this,
       target: srcModel,
+      // @ts-ignore
       parent: srcModel && srcModel.parent?.(),
+      // @ts-ignore
       index: srcModel && srcModel.index?.(),
     });
 
     // Avoid strange effects on dragging
     em?.clearSelection();
-    this.toggleSortCursor(1);
+    this.toggleSortCursor(true);
     em?.trigger('sorter:drag:start', src, srcModel);
-  },
+  }
 
   /**
    * Get the model from HTMLElement target
    * @return {Model|null}
    */
-  getTargetModel(el) {
-    let elem = el || this.target;
+  getTargetModel(el: HTMLElement) {
+    const elem = el || this.target;
     return $(elem).data('model');
-  },
+  }
 
   /**
    * Get the model of the current source element (element to drag)
    * @return {Model}
    */
-  getSourceModel(source, { target, avoidChildren = 1 } = {}) {
+  getSourceModel(source?: HTMLElement, { target, avoidChildren = 1 }: any = {}): Model {
     const { em, sourceEl } = this;
     const src = source || sourceEl;
     let { dropModel, dropContent } = this;
-    const isTextable = src => src && target && src.opt && src.opt.avoidChildren && this.isTextableActive(src, target);
+    const isTextable = (src: any) =>
+      src && target && src.opt && src.opt.avoidChildren && this.isTextableActive(src, target);
 
     if (dropContent && em) {
       if (isTextable(dropModel)) {
-        dropModel = null;
+        dropModel = undefined;
       }
 
       if (!dropModel) {
-        const comps = em.get('DomComponents').getComponents();
+        const comps = em.Components.getComponents();
         const opts = {
           avoidChildren,
           avoidStore: 1,
           avoidUpdateStyle: 1,
         };
-        const tempModel = comps.add(dropContent, { ...opts, temporary: 1 });
-        dropModel = comps.remove(tempModel, opts);
+        const tempModel = comps.add(dropContent, { ...opts, temporary: true });
+        // @ts-ignore
+        dropModel = comps.remove(tempModel, opts as any);
         dropModel = dropModel instanceof Array ? dropModel[0] : dropModel;
         this.dropModel = dropModel;
 
@@ -357,17 +463,17 @@ export default Backbone.View.extend({
         }
       }
 
-      return dropModel;
+      return dropModel!;
     }
 
     return src && $(src).data('model');
-  },
+  }
 
   /**
    * Highlight target
    * @param  {Model|null} model
    */
-  selectTargetModel(model, source) {
+  selectTargetModel(model?: Model, source?: Model) {
     if (model instanceof Backbone.Collection) {
       return;
     }
@@ -388,20 +494,20 @@ export default Backbone.View.extend({
       model.set('status', 'selected-parent');
       this.targetModel = model;
     }
-  },
+  }
 
   /**
    * During move
    * @param {Event} e
    * */
-  onMove(e) {
+  onMove(e: MouseEvent) {
     const ev = e;
     const { em, onMoveClb, plh, customTarget } = this;
-    this.moved = 1;
+    this.moved = true;
 
     // Turn placeholder visibile
-    var dsp = plh.style.display;
-    if (!dsp || dsp === 'none') plh.style.display = 'block';
+    const dsp = plh!.style.display;
+    if (!dsp || dsp === 'none') plh!.style.display = 'block';
 
     // Cache all necessary positions
     var eO = this.offset(this.el);
@@ -423,28 +529,28 @@ export default Backbone.View.extend({
     //var targetNew = this.getTargetFromEl(e.target);
     const sourceModel = this.getSourceModel();
     const targetEl = customTarget ? customTarget({ sorter: this, event: e }) : e.target;
-    const dims = this.dimsFromTarget(targetEl, rX, rY);
+    const dims = this.dimsFromTarget(targetEl as HTMLElement, rX, rY);
     const target = this.target;
     const targetModel = target && this.getTargetModel(target);
     this.selectTargetModel(targetModel, sourceModel);
-    if (!targetModel) plh.style.display = 'none';
+    if (!targetModel) plh!.style.display = 'none';
     if (!target) return;
     this.lastDims = dims;
     const pos = this.findPosition(dims, rX, rY);
 
     if (this.isTextableActive(sourceModel, targetModel)) {
       this.activeTextModel = targetModel;
-      plh.style.display = 'none';
+      plh!.style.display = 'none';
       this.lastPos = pos;
       this.updateTextViewCursorPosition(ev);
     } else {
       this.disableTextable();
-      this.activeTextModel = null;
+      delete this.activeTextModel;
 
       // If there is a significant changes with the pointer
       if (!this.lastPos || this.lastPos.index != pos.index || this.lastPos.method != pos.method) {
-        this.movePlaceholder(this.plh, dims, pos, this.prevTargetDim);
-        if (!this.$plh) this.$plh = $(this.plh);
+        this.movePlaceholder(this.plh!, dims, pos, this.prevTargetDim);
+        if (!this.$plh) this.$plh = $(this.plh!);
 
         // With canvasRelative the offset is calculated automatically for
         // each element
@@ -475,17 +581,18 @@ export default Backbone.View.extend({
         x: rX,
         y: rY,
       });
-  },
+  }
 
-  isTextableActive(src, trg) {
+  isTextableActive(src: any, trg: any) {
     return src?.get?.('textable') && trg?.isInstanceOf('text');
-  },
+  }
 
   disableTextable() {
     const { activeTextModel } = this;
-    activeTextModel && activeTextModel.getView().disableEditing();
+    // @ts-ignore
+    activeTextModel?.getView().disableEditing();
     this.setContentEditable(activeTextModel, false);
-  },
+  }
 
   /**
    * Returns true if the elements is in flow, so is not in flow where
@@ -495,7 +602,7 @@ export default Backbone.View.extend({
    * @return {Boolean}
    * @private
    * */
-  isInFlow(el, parent) {
+  isInFlow(el: HTMLElement, parent: HTMLElement) {
     if (!el) return false;
 
     parent = parent || document.body;
@@ -505,7 +612,7 @@ export default Backbone.View.extend({
     h = elem.offsetHeight;
     if (/*h < ch || */ !this.styleInFlow(elem, parent)) return false;
     else return true;
-  },
+  }
 
   /**
    * Check if el has style to be in flow
@@ -514,7 +621,7 @@ export default Backbone.View.extend({
    * @return {Boolean}
    * @private
    */
-  styleInFlow(el, parent) {
+  styleInFlow(el: HTMLElement, parent: HTMLElement) {
     if (isTextNode(el)) return;
     const style = el.style || {};
     const $el = $(el);
@@ -547,16 +654,17 @@ export default Backbone.View.extend({
         return true;
     }
     return;
-  },
+  }
 
   /**
    * Check if the target is valid with the actual source
    * @param  {HTMLElement} trg
    * @return {Boolean}
    */
-  validTarget(trg, src) {
+  validTarget(trg: HTMLElement, src?: HTMLElement) {
     const trgModel = this.getTargetModel(trg);
     const srcModel = this.getSourceModel(src, { target: trgModel });
+    // @ts-ignore
     src = srcModel && srcModel.view && srcModel.view.el;
     trg = trgModel && trgModel.view && trgModel.view.el;
     let result = {
@@ -565,6 +673,10 @@ export default Backbone.View.extend({
       srcModel,
       trg,
       trgModel,
+      draggable: false,
+      droppable: false,
+      dragInfo: '',
+      dropInfo: '',
     };
 
     if (!src || !trg) {
@@ -607,7 +719,7 @@ export default Backbone.View.extend({
     }
 
     return result;
-  },
+  }
 
   /**
    * Get dimensions of nodes relative to the coordinates
@@ -616,9 +728,9 @@ export default Backbone.View.extend({
    * @param {number} rY Relative Y position
    * @return {Array<Array>}
    */
-  dimsFromTarget(target, rX, rY) {
+  dimsFromTarget(target: HTMLElement, rX: number, rY: number): Dim[] {
     const em = this.em;
-    var dims = [];
+    let dims: Dim[] = [];
 
     if (!target) {
       return dims;
@@ -626,12 +738,12 @@ export default Backbone.View.extend({
 
     // Select the first valuable target
     if (!this.matches(target, `${this.itemSel}, ${this.containerSel}`)) {
-      target = this.closest(target, this.itemSel);
+      target = this.closest(target, this.itemSel)!;
     }
 
     // If draggable is an array the target will be one of those
     if (this.draggable instanceof Array) {
-      target = this.closest(target, this.draggable.join(','));
+      target = this.closest(target, this.draggable.join(','))!;
     }
 
     if (!target) {
@@ -640,7 +752,7 @@ export default Backbone.View.extend({
 
     // Check if the target is different from the previous one
     if (this.prevTarget && this.prevTarget != target) {
-      this.prevTarget = null;
+      delete this.prevTarget;
     }
 
     // New target found
@@ -657,30 +769,30 @@ export default Backbone.View.extend({
 
       this.prevTarget = target;
       this.prevTargetDim = this.getDim(target);
-      this.cacheDimsP = this.getChildrenDim(this.targetP);
+      this.cacheDimsP = this.getChildrenDim(this.targetP!);
       this.cacheDims = this.getChildrenDim(target);
     }
 
     // If the target is the previous one will return the cached dims
-    if (this.prevTarget == target) dims = this.cacheDims;
+    if (this.prevTarget == target) dims = this.cacheDims!;
 
     // Target when I will drop element to sort
     this.target = this.prevTarget;
 
     // Generally, on any new target the poiner enters inside its area and
     // triggers nearBorders(), so have to take care of this
-    if (this.nearBorders(this.prevTargetDim, rX, rY) || (!this.nested && !this.cacheDims.length)) {
+    if (this.nearBorders(this.prevTargetDim!, rX, rY) || (!this.nested && !this.cacheDims!.length)) {
       const targetParent = this.targetP;
 
       if (targetParent && this.validTarget(targetParent).valid) {
-        dims = this.cacheDimsP;
+        dims = this.cacheDimsP!;
         this.target = targetParent;
       }
     }
 
-    this.lastPos = null;
+    delete this.lastPos;
     return dims;
-  },
+  }
 
   /**
    * Get valid target from element
@@ -688,7 +800,7 @@ export default Backbone.View.extend({
    * @param  {HTMLElement} el
    * @return {HTMLElement}
    */
-  getTargetFromEl(el) {
+  getTargetFromEl(el: HTMLElement): HTMLElement {
     let target = el;
     let targetParent;
     let targetPrev = this.targetPrev;
@@ -698,18 +810,18 @@ export default Backbone.View.extend({
 
     // Select the first valuable target
     if (!this.matches(target, `${itemSel}, ${containerSel}`)) {
-      target = this.closest(target, itemSel);
+      target = this.closest(target, itemSel)!;
     }
 
     // If draggable is an array the target will be one of those
     // TODO check if this options is used somewhere
     if (this.draggable instanceof Array) {
-      target = this.closest(target, this.draggable.join(','));
+      target = this.closest(target, this.draggable.join(','))!;
     }
 
     // Check if the target is different from the previous one
     if (targetPrev && targetPrev != target) {
-      this.targetPrev = '';
+      delete this.targetPrev;
     }
 
     // New target found
@@ -739,13 +851,13 @@ export default Backbone.View.extend({
     }
 
     return target;
-  },
+  }
 
   /**
    * Check if the current pointer is neare to element borders
    * @return {Boolen}
    */
-  nearElBorders(el) {
+  nearElBorders(el: HTMLElement) {
     const off = 10;
     const rect = el.getBoundingClientRect();
     const body = el.ownerDocument.body;
@@ -763,28 +875,28 @@ export default Backbone.View.extend({
     ) {
       return 1;
     }
-  },
+  }
 
   getCurrentPos() {
     const ev = this.eventMove;
-    const x = ev.pageX || 0;
-    const y = ev.pageY || 0;
+    const x = ev?.pageX || 0;
+    const y = ev?.pageY || 0;
     return { x, y };
-  },
+  }
 
   /**
    * Returns dimensions and positions about the element
    * @param {HTMLElement} el
    * @return {Array<number>}
    */
-  getDim(el) {
+  getDim(el: HTMLElement): Dim {
     const { em, canvasRelative } = this;
-    const canvas = em && em.get('Canvas');
+    const canvas = em?.Canvas;
     const offsets = canvas ? canvas.getElementOffsets(el) : {};
     let top, left, height, width;
 
     if (canvasRelative && em) {
-      const pos = canvas.getElementPos(el, { noScroll: 1 });
+      const pos = canvas!.getElementPos(el, { noScroll: 1 })!;
       top = pos.top; // - offsets.marginTop;
       left = pos.left; // - offsets.marginLeft;
       height = pos.height; // + offsets.marginTop + offsets.marginBottom;
@@ -798,15 +910,15 @@ export default Backbone.View.extend({
     }
 
     return { top, left, height, width, offsets };
-  },
+  }
 
   /**
    * Get children dimensions
    * @param {HTMLELement} el Element root
    * @return {Array}
    * */
-  getChildrenDim(trg) {
-    const dims = [];
+  getChildrenDim(trg: HTMLElement) {
+    const dims: Dim[] = [];
     if (!trg) return dims;
 
     // Get children based on getChildrenContainer
@@ -816,7 +928,8 @@ export default Backbone.View.extend({
       trg = view.getChildrenContainer();
     }
 
-    each(trg.children, (el, i) => {
+    each(trg.children, (ele, i) => {
+      const el = ele as HTMLElement;
       const model = getModel(el, $);
       const elIndex = model && model.index ? model.index() : i;
 
@@ -826,19 +939,20 @@ export default Backbone.View.extend({
 
       const dim = this.getDim(el);
       let dir = this.direction;
+      let dirValue: boolean;
 
-      if (dir == 'v') dir = true;
-      else if (dir == 'h') dir = false;
-      else dir = this.isInFlow(el, trg);
+      if (dir == 'v') dirValue = true;
+      else if (dir == 'h') dirValue = false;
+      else dirValue = this.isInFlow(el, trg);
 
-      dim.dir = dir;
+      dim.dir = dirValue;
       dim.el = el;
       dim.indexEl = elIndex;
       dims.push(dim);
     });
 
     return dims;
-  },
+  }
 
   /**
    * Check if the coordinates are near to the borders
@@ -847,19 +961,19 @@ export default Backbone.View.extend({
    * @param {number} rY Relative Y position
    * @return {Boolean}
    * */
-  nearBorders(dim, rX, rY) {
-    var result = 0;
-    var off = this.borderOffset;
-    var x = rX || 0;
-    var y = rY || 0;
-    var t = dim.top;
-    var l = dim.left;
-    var h = dim.height;
-    var w = dim.width;
-    if (t + off > y || y > t + h - off || l + off > x || x > l + w - off) result = 1;
+  nearBorders(dim: Dim, rX: number, rY: number) {
+    let result = false;
+    const off = this.borderOffset;
+    const x = rX || 0;
+    const y = rY || 0;
+    const t = dim.top;
+    const l = dim.left;
+    const h = dim.height;
+    const w = dim.width;
+    if (t + off > y || y > t + h - off || l + off > x || x > l + w - off) result = true;
 
-    return !!result;
-  },
+    return result;
+  }
 
   /**
    * Find the position based on passed dimensions and coordinates
@@ -868,16 +982,17 @@ export default Backbone.View.extend({
    * @param {number} posY Y coordindate
    * @return {Object}
    * */
-  findPosition(dims, posX, posY) {
-    var result = { index: 0, indexEl: 0, method: 'before' };
-    var leftLimit = 0,
-      xLimit = 0,
-      dimRight = 0,
-      yLimit = 0,
-      xCenter = 0,
-      yCenter = 0,
-      dimDown = 0,
-      dim = 0;
+  findPosition(dims: Dim[], posX: number, posY: number): Pos {
+    const result: Pos = { index: 0, indexEl: 0, method: 'before' };
+    let leftLimit = 0;
+    let xLimit = 0;
+    let dimRight = 0;
+    let yLimit = 0;
+    let xCenter = 0;
+    let yCenter = 0;
+    let dimDown = 0;
+    let dim: Dim;
+
     // Each dim is: Top, Left, Height, Width
     for (var i = 0, len = dims.length; i < len; i++) {
       dim = dims[i];
@@ -898,7 +1013,7 @@ export default Backbone.View.extend({
       )
         continue;
       result.index = i;
-      result.indexEl = dim.indexEl;
+      result.indexEl = dim.indexEl!;
       // If it's not in flow (like 'float' element)
       if (!dim.dir) {
         if (posY < dimDown) yLimit = dimDown;
@@ -918,8 +1033,9 @@ export default Backbone.View.extend({
         } else result.method = 'after'; // After last element
       }
     }
+
     return result;
-  },
+  }
 
   /**
    * Updates the position of the placeholder
@@ -928,15 +1044,15 @@ export default Backbone.View.extend({
    * @param {Object} pos Position object
    * @param {Array<number>} trgDim target dimensions ([top, left, height, width])
    * */
-  movePlaceholder(plh, dims, pos, trgDim) {
-    var marg = 0,
-      t = 0,
-      l = 0,
-      w = 0,
-      h = 0,
-      un = 'px',
-      margI = 5,
-      method = pos.method;
+  movePlaceholder(plh: HTMLElement, dims: Dim[], pos: Pos, trgDim?: Dim) {
+    let marg = 0;
+    let t = 0;
+    let l = 0;
+    let w = '';
+    let h = '';
+    let un = 'px';
+    let margI = 5;
+    let method = pos.method;
     const elDim = dims[pos.index];
 
     // Placeholder orientation
@@ -972,7 +1088,7 @@ export default Backbone.View.extend({
         const pL = offset.paddingLeft || margI;
         t = trgDim.top + pT;
         l = trgDim.left + pL;
-        w = parseInt(trgDim.width) - pL * 2 + un;
+        w = parseInt(`${trgDim.width}`) - pL * 2 + un;
         h = 'auto';
       }
     }
@@ -980,24 +1096,24 @@ export default Backbone.View.extend({
     plh.style.left = l + un;
     if (w) plh.style.width = w;
     if (h) plh.style.height = h;
-  },
+  }
 
   /**
    * Build an array of all the parents, including the component itself
    * @return {Model|null}
    */
-  parents(model) {
+  parents(model: any): any[] {
     return model ? [model].concat(this.parents(model.parent())) : [];
-  },
+  }
 
   /**
    * Sort according to the position in the dom
    * @param {Object} obj1 contains {model, parents}
    * @param {Object} obj2 contains {model, parents}
    */
-  sort(obj1, obj2) {
+  sort(obj1: any, obj2: any) {
     // common ancesters
-    const ancesters = obj1.parents.filter(p => obj2.parents.includes(p));
+    const ancesters = obj1.parents.filter((p: any) => obj2.parents.includes(p));
     const ancester = ancesters[0];
     if (!ancester) {
       // this is never supposed to happen
@@ -1009,7 +1125,7 @@ export default Backbone.View.extend({
     const s2 = obj2.parents[obj2.parents.indexOf(ancester) - 1];
     // order according to the position in the DOM
     return s2.index() - s1.index();
-  },
+  }
 
   /**
    * Leave item
@@ -1017,7 +1133,7 @@ export default Backbone.View.extend({
    *
    * @return void
    * */
-  endMove(e) {
+  endMove() {
     const src = this.sourceEl;
     const moved = [];
     const docs = this.getDocuments();
@@ -1026,10 +1142,10 @@ export default Backbone.View.extend({
     const onEnd = this.onEnd;
     const { target, lastPos } = this;
     let srcModel;
-    off(container, 'mousemove dragover', this.onMove);
+    off(container, 'mousemove dragover', this.onMove as any);
     off(docs, 'mouseup dragend touchend', this.endMove);
     off(docs, 'keydown', this.rollback);
-    this.plh.style.display = 'none';
+    this.plh!.style.display = 'none';
 
     if (src) {
       srcModel = this.getSourceModel();
@@ -1047,7 +1163,7 @@ export default Backbone.View.extend({
         // do not sort the array in this case
         // there are cases for the sorter where toMoveArr is [undefined]
         // which allows the drop from blocks, native D&D and sort of layers in Style Manager
-        moved.push(this.move(target, toMoveArr[0], lastPos));
+        moved.push(this.move(target, toMoveArr[0]!, lastPos!));
       } else {
         toMoveArr
           // add the model's parents
@@ -1059,21 +1175,22 @@ export default Backbone.View.extend({
           .sort(this.sort)
           // move each component to the new parent and position
           .forEach(({ model }) => {
-            // store state before move
+            // @ts-ignore store state before move
             const index = model.index();
+            // @ts-ignore
             const parent = model.parent().getEl();
             // move the component to the desired position
             moved.push(
-              this.move(target, model, {
-                ...lastPos,
-                indexEl: lastPos.indexEl - domPositionOffset,
-                index: lastPos.index - domPositionOffset,
+              this.move(target, model!, {
+                ...lastPos!,
+                indexEl: lastPos!.indexEl - domPositionOffset,
+                index: lastPos!.index - domPositionOffset,
               })
             );
             // when the element is dragged to the same parent and after its position
             //  it will be removed from the children list
             //  in that case we need to adjust the following elements target position
-            if (parent === target && index <= lastPos.index) {
+            if (parent === target && index <= lastPos!.index) {
               // the next elements will be inserted 1 element before this one
               domPositionOffset++;
             }
@@ -1082,32 +1199,34 @@ export default Backbone.View.extend({
     }
 
     if (this.plh) this.plh.style.display = 'none';
-    var dragHelper = this.dragHelper;
+    const dragHelper = this.dragHelper;
 
     if (dragHelper) {
-      dragHelper.parentNode.removeChild(dragHelper);
-      this.dragHelper = null;
+      dragHelper.parentNode!.removeChild(dragHelper);
+      delete this.dragHelper;
     }
 
     this.disableTextable();
     this.selectTargetModel();
     this.toggleSortCursor();
 
-    this.toMove = null;
-    this.eventMove = 0;
-    this.dropModel = null;
+    delete this.toMove;
+    delete this.eventMove;
+    delete this.dropModel;
 
     if (isFunction(onEndMove)) {
       const data = {
         target: srcModel,
+        // @ts-ignore
         parent: srcModel && srcModel.parent(),
+        // @ts-ignore
         index: srcModel && srcModel.index(),
       };
       moved.length ? moved.forEach(m => onEndMove(m, this, data)) : onEndMove(null, this, { ...data, cancelled: 1 });
     }
 
     isFunction(onEnd) && onEnd({ sorter: this });
-  },
+  }
 
   /**
    * Move component to new position
@@ -1115,9 +1234,9 @@ export default Backbone.View.extend({
    * @param {HTMLElement} src Element to move
    * @param {Object} pos Object with position coordinates
    * */
-  move(dst, src, pos) {
+  move(dst: HTMLElement, src: HTMLElement | Model, pos: Pos) {
     const { em, dropContent } = this;
-    const srcEl = getElement(src);
+    const srcEl = getElement(src as HTMLElement);
     const warns = [];
     const index = pos.method === 'after' ? pos.indexEl + 1 : pos.indexEl;
     const validResult = this.validTarget(dst, srcEl);
@@ -1127,7 +1246,7 @@ export default Backbone.View.extend({
     let modelToDrop, created;
 
     if (targetCollection && droppable && draggable) {
-      const opts = { at: index, action: 'move-component' };
+      const opts: any = { at: index, action: 'move-component' };
       const isTextable = this.isTextableActive(srcModel, trgModel);
 
       if (!dropContent) {
@@ -1139,12 +1258,13 @@ export default Backbone.View.extend({
         if (canRemove) {
           modelToDrop = srcModel.collection.remove(srcModel, {
             temporary: true,
-          });
+          } as any);
           if (sameCollection && index > srcIndex) {
             opts.at = index - 1;
           }
         }
       } else {
+        // @ts-ignore
         modelToDrop = isFunction(dropContent) ? dropContent() : dropContent;
         opts.avoidUpdateStyle = true;
         opts.action = 'add-component';
@@ -1159,8 +1279,8 @@ export default Backbone.View.extend({
         }
       }
 
-      this.dropContent = null;
-      this.prevTarget = null; // This will recalculate children dimensions
+      delete this.dropContent;
+      delete this.prevTarget; // This will recalculate children dimensions
     } else if (em) {
       const dropInfo = validResult.dropInfo || trgModel?.get('droppable');
       const dragInfo = validResult.dragInfo || srcModel?.get('draggable');
@@ -1186,20 +1306,20 @@ export default Backbone.View.extend({
     });
 
     return created;
-  },
+  }
 
   /**
    * Rollback to previous situation
    * @param {Event}
    * @param {Bool} Indicates if rollback in anycase
    * */
-  rollback(e) {
+  rollback(e: any) {
     off(this.getDocuments(), 'keydown', this.rollback);
     const key = e.which || e.keyCode;
 
     if (key == 27) {
-      this.moved = 0;
+      this.moved = false;
       this.endMove();
     }
-  },
-});
+  }
+}
