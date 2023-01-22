@@ -799,7 +799,7 @@ export default class EditorModel extends Model {
     const keepUnusedStyles = !isUndefined(opts.keepUnusedStyles) ? opts.keepUnusedStyles : config.keepUnusedStyles;
     const cssc = this.get('CssComposer');
     const wrp = opts.component || this.Components.getComponent();
-    const protCss = !avoidProt ? config.protectedCss : '';
+    const protCss = !avoidProt ? config.protectedCss! : '';
     const css =
       wrp &&
       this.CodeManager.getCode(wrp, 'css', {

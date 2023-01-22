@@ -368,8 +368,8 @@ export default {
    */
   initResize(elem: HTMLElement) {
     const { em, canvas } = this;
-    const editor = em ? em.get('Editor') : '';
-    const config = em ? em.get('Config') : '';
+    const editor = em?.Editor;
+    const config = em?.config;
     const pfx = config.stylePrefix || '';
     const resizeClass = `${pfx}resizing`;
     const model = !isElement(elem) && isTaggableNode(elem) ? elem : em.getSelected();
@@ -395,7 +395,7 @@ export default {
           const { el, config, resizer } = opts;
           const { keyHeight, keyWidth, currentUnit, keepAutoHeight, keepAutoWidth } = config;
           toggleBodyClass('add', e, opts);
-          modelToStyle = em.get('StyleManager').getModelToStyle(model);
+          modelToStyle = em.Styles.getModelToStyle(model);
           canvas.toggleFramesEvents(false);
           const computedStyle = getComputedStyle(el);
           const modelStyle = modelToStyle.getStyle();
@@ -484,7 +484,7 @@ export default {
     const toolbarEl = this.canvas.getToolbarEl()!;
     const toolbarStyle = toolbarEl.style;
     const toolbar = model.get('toolbar');
-    const showToolbar = em.get('Config').showToolbar;
+    const showToolbar = em.config.showToolbar;
 
     if (model && showToolbar && toolbar && toolbar.length) {
       toolbarStyle.display = '';

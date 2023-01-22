@@ -166,7 +166,7 @@ export default class Components extends Collection<Component> {
       sels.remove(rulesRemoved.map(rule => rule.getSelectors().at(0)));
 
       if (!removed.opt.temporary) {
-        em.get('Commands').run('core:component-style-clear', {
+        em.Commands.run('core:component-style-clear', {
           target: removed,
         });
         removed.removed();
@@ -326,7 +326,7 @@ export default class Components extends Collection<Component> {
     // @ts-ignore
     if (!isEmpty(style) && !avoidInline && em && em.get && em.getConfig().forceClass && !opts.temporary) {
       const name = model.cid;
-      const rule = em.get('CssComposer').setClassRule(name, style);
+      em.Css.setClassRule(name, style);
       model.setStyle({});
       model.addClass(name);
     }

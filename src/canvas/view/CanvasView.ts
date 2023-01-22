@@ -137,9 +137,9 @@ export default class CanvasView extends View<Canvas> {
     const { em } = this;
     const key = getKeyChar(ev);
 
-    if (key === ' ' && em.getZoomDecimal() !== 1 && !em.get('Canvas').isInputFocused()) {
+    if (key === ' ' && em.getZoomDecimal() !== 1 && !em.Canvas.isInputFocused()) {
       this.preventDefault(ev);
-      em.get('Editor').runCommand('core:canvas-move');
+      em.Editor.runCommand('core:canvas-move');
     }
   }
 

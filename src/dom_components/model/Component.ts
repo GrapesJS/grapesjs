@@ -583,7 +583,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
       prop = isString(prop) ? this.parseStyle(prop) : prop;
       prop = { ...prop, ...style };
       const state = em.get('state');
-      const cc = em.get('CssComposer');
+      const cc = em.Css;
       const propOrig = this.getStyle(opts);
       this.rule = cc.setIdRule(this.getId(), prop, { ...opts, state });
       const diff = shallowDiff(propOrig, prop);
@@ -605,7 +605,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     const { em } = this;
     const classes: string[] = [];
     const attributes = { ...this.get('attributes') };
-    const sm = em && em.get('SelectorManager');
+    const sm = em?.Selectors;
     const id = this.getId();
 
     // Add classes
@@ -753,7 +753,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
   __getAllById() {
     const { em } = this;
-    return em ? em.get('DomComponents').allById() : {};
+    return em ? em.Components.allById() : {};
   }
 
   __getSymbol(): Component | undefined {
@@ -1900,24 +1900,24 @@ export default class Component extends StyleableModel<ComponentProperties> {
   resetId(opts = {}) {
     const { em } = this;
     const oldId = this.getId();
-    if (!oldId) return;
+    if (!oldId) return this;
     const newId = Component.createId(this);
     this.setId(newId);
-    const rule = em && em.get('CssComposer').getIdRule(oldId);
-    const selector = rule && rule.get('selectors').at(0);
-    selector && selector.set('name', newId);
+    const rule = em?.Css.getIdRule(oldId);
+    const selector = rule?.get('selectors')!.at(0);
+    selector?.set('name', newId);
     return this;
   }
 
   _getStyleRule({ id }: { id?: string } = {}) {
     const { em } = this;
     const idS = id || this.getId();
-    return em && em.get('CssComposer').getIdRule(idS);
+    return em?.Css.getIdRule(idS);
   }
 
   _getStyleSelector(opts?: { id?: string }) {
     const rule = this._getStyleRule(opts);
-    return rule && rule.get('selectors').at(0);
+    return rule?.get('selectors')!.at(0);
   }
 
   _idUpdated(m: any, v: any, opts: { idUpdate?: boolean } = {}) {

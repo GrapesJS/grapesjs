@@ -29,7 +29,7 @@ export default class CssRules extends Collection<CssRule> {
   onRemove(removed: CssRule) {
     const em = this.editor;
     em.stopListening(removed);
-    em.get('UndoManager').remove(removed);
+    em.UndoManager.remove(removed);
   }
 
   // @ts-ignore

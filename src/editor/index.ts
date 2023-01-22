@@ -299,7 +299,7 @@ export default class EditorModule implements IBaseModule<EditorConfig> {
    * });
    */
   addComponents(components: any, opts?: any): Component[] {
-    return this.getWrapper().append(components, opts);
+    return this.getWrapper()!.append(components, opts);
   }
 
   /**

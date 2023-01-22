@@ -1,9 +1,9 @@
-import EditorModule from '../editor';
+import { CommandFunction } from '../commands/view/CommandAbstract';
 
 export interface Keymap {
   id: string;
   keys: string;
-  handler: string | ((editor: EditorModule) => any);
+  handler: string | CommandFunction;
 }
 
 export interface KeymapOptions {

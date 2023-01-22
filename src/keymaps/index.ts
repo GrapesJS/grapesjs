@@ -43,7 +43,7 @@
  * @module Keymaps
  */
 
-import { isString } from 'underscore';
+import { isFunction, isString } from 'underscore';
 import { hasWin, isObject } from '../utils/mixins';
 import keymaster from '../utils/keymaster';
 import { Module } from '../abstract';
@@ -100,7 +100,7 @@ export default class KeymapsModule extends Module<KeymapsConfig & { name?: strin
    */
   add(id: Keymap['id'], keys: Keymap['keys'], handler: Keymap['handler'], opts: KeymapOptions = {}) {
     const { em } = this;
-    const cmd = em.get('Commands');
+    const cmd = em.Commands;
     const editor = em.getEditor();
     const canvas = em.Canvas;
     const keymap: Keymap = { id, keys, handler };
@@ -116,7 +116,7 @@ export default class KeymapsModule extends Module<KeymapsConfig & { name?: strin
         const ableTorun = !em.isEditing() && !editor.Canvas.isInputFocused();
         if (ableTorun || opts.force) {
           opts.prevent && canvas.getCanvasView().preventDefault(e);
-          isObject(handlerRes) ? cmd.runCommand(handlerRes, opt) : handlerRes(editor, 0, opt);
+          isFunction(handlerRes) ? handlerRes(editor, 0, opt) : cmd.runCommand(handlerRes, opt);
           const args = [id, h.shortcut, e];
           em.trigger('keymap:emit', ...args);
           em.trigger(`keymap:emit:${id}`, ...args);

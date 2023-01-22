@@ -145,7 +145,7 @@ export default class ComponentView extends View<Component> {
     if (!this.__isDraggable()) return false;
     event.stopPropagation();
     event.preventDefault();
-    this.em.get('Commands').run('tlb-move', {
+    this.em.Commands.run('tlb-move', {
       target: this.model,
       event,
     });

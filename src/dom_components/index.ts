@@ -249,8 +249,8 @@ export default class ComponentManager extends ItemManagerModule {
 
     // Load dependencies
     if (em) {
-      this.config.modal = em.get('Modal') || '';
-      this.config.am = em.get('AssetManager') || '';
+      this.config.modal = em.Modal || '';
+      this.config.am = em.Assets || '';
       em.get('Parser').compTypes = this.componentTypes;
       em.on('change:componentHovered', this.componentHovered, this);
 
@@ -265,11 +265,11 @@ export default class ComponentManager extends ItemManagerModule {
   load(data: any) {
     return this.loadProjectData(data, {
       onResult: (result: Component) => {
-        let wrapper = this.getWrapper();
+        let wrapper = this.getWrapper()!;
 
         if (!wrapper) {
-          this.em.get('PageManager').add({}, { select: true });
-          wrapper = this.getWrapper();
+          this.em.Pages.add({}, { select: true });
+          wrapper = this.getWrapper()!;
         }
 
         if (isArray(result)) {
@@ -293,10 +293,10 @@ export default class ComponentManager extends ItemManagerModule {
    * @return {Object}
    * @private
    */
-  getComponent(): Component {
-    const sel = this.em.get('PageManager').getSelected();
-    const frame = sel && sel.getMainFrame();
-    return frame && frame.getComponent();
+  getComponent() {
+    const sel = this.em.Pages.getSelected();
+    const frame = sel?.getMainFrame();
+    return frame?.getComponent();
   }
 
   /**
@@ -574,7 +574,7 @@ export default class ComponentManager extends ItemManagerModule {
     if (!shallow && em) {
       const shallowEm = em.shallow;
       if (!shallowEm) return;
-      const domc = shallowEm.get('DomComponents');
+      const domc = shallowEm.Components;
       domc.componentTypes = this.componentTypes;
       shallow = domc.getWrapper();
       if (shallow) {

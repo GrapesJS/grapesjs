@@ -38,12 +38,18 @@ export default class ComponentImageView extends ComponentView {
     const file = model.get('file');
 
     if (file && em) {
-      const fu = em.get('AssetManager').FileUploader();
-      fu?.uploadFile({ dataTransfer: { files: [file] } }, (res: any) => {
-        const obj = res && res.data && res.data[0];
-        const src = obj && (isString(obj) ? obj : obj.src);
-        src && model.set({ src });
-      });
+      const fu = em.Assets.FileUploader();
+      fu?.uploadFile(
+        {
+          // @ts-ignore
+          dataTransfer: { files: [file] },
+        },
+        (res: any) => {
+          const obj = res && res.data && res.data[0];
+          const src = obj && (isString(obj) ? obj : obj.src);
+          src && model.set({ src });
+        }
+      );
       model.set('file', '');
     }
   }
