@@ -1,4 +1,4 @@
-import EditorModule from '../../editor';
+import Editor from '../../editor';
 
 export interface ParsedCssRule {
   selectors: string;
@@ -7,7 +7,7 @@ export interface ParsedCssRule {
   params?: string;
 }
 
-export type CustomParserCss = (input: string, editor: EditorModule) => ParsedCssRule[];
+export type CustomParserCss = (input: string, editor: Editor) => ParsedCssRule[];
 
 export type CustomParserHtml = (input: string, options: HTMLParserOptions) => HTMLElement;
 

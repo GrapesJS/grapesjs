@@ -11,3 +11,8 @@ export type RemoveOptions = Backbone.Silenceable;
 export type ObjectAny = Record<string, any>;
 
 export type ObjectStrings = Record<string, string>;
+
+export type Position = {
+  x: number;
+  y: number;
+};

@@ -24,7 +24,7 @@ import gCss from './model/CssGenerator';
 import gJson from './model/JsonGenerator';
 import gJs from './model/JsGenerator';
 import eCM from './model/CodeMirrorEditor';
-import editorView from './view/EditorView';
+import CodeEditorView from './view/EditorView';
 import { Module } from '../abstract';
 import EditorModel from '../editor/model/Editor';
 
@@ -36,7 +36,7 @@ export default class CodeManagerModule extends Module<CodeManagerConfig & { pSty
   generators: Record<string, any>;
   viewers: Record<string, any>;
 
-  EditorView = editorView;
+  EditorView = CodeEditorView;
 
   constructor(em: EditorModel) {
     super(em, 'CodeManager', defaults);

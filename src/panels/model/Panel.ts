@@ -1,8 +1,8 @@
 import PanelManager from '..';
-import { Model } from '../../abstract';
+import { ModuleModel } from '../../abstract';
 import Buttons from './Buttons';
 
-export default class Panel extends Model<PanelManager> {
+export default class Panel extends ModuleModel<PanelManager> {
   defaults() {
     return {
       id: '',

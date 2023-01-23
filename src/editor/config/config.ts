@@ -21,8 +21,7 @@ import { StyleManagerConfig } from '../../style_manager/config/config';
 import { DomComponentsConfig } from '../../dom_components/config/config';
 import { HTMLGeneratorBuildOptions } from '../../code_manager/model/HtmlGenerator';
 import { CssGeneratorBuildOptions } from '../../code_manager/model/CssGenerator';
-
-type AnyObject = Record<string, any>;
+import { ObjectAny } from '../../common';
 
 export interface EditorConfig {
   /**
@@ -63,7 +62,7 @@ export interface EditorConfig {
   /**
    * Initial project data (JSON containing your components/styles/etc) to load.
    */
-  projectData?: AnyObject;
+  projectData?: ObjectAny;
 
   /**
    * HTML string or object of components
@@ -299,7 +298,7 @@ export interface EditorConfig {
    * Experimental: don't use.
    * Editor icons
    */
-  icons?: AnyObject;
+  icons?: ObjectAny;
 
   /**
    * Configurations for I18n.
@@ -420,7 +419,7 @@ export interface EditorConfig {
   /**
    * Color picker options.
    */
-  colorPicker?: AnyObject;
+  colorPicker?: ObjectAny;
   pStylePrefix?: string;
 }
 

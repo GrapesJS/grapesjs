@@ -1,10 +1,10 @@
 import { result } from 'underscore';
-import { View } from '../../abstract';
+import { ModuleView } from '../../abstract';
 import Button from '../model/Button';
 import Buttons from '../model/Buttons';
 import ButtonView from './ButtonView';
 
-export default class ButtonsView extends View<Buttons> {
+export default class ButtonsView extends ModuleView<Buttons> {
   constructor(collection: Buttons) {
     super({ collection });
     this.listenTo(this.collection, 'add', this.addTo);

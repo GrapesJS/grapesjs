@@ -50,7 +50,7 @@ import defaults, { AssetManagerConfig } from './config/config';
 import Asset from './model/Asset';
 import Assets from './model/Assets';
 import AssetsView from './view/AssetsView';
-import FileUpload from './view/FileUploader';
+import FileUploaderView from './view/FileUploader';
 
 export const evAll = 'asset';
 export const evPfx = `${evAll}:`;
@@ -100,7 +100,7 @@ export default class AssetManager extends ItemManagerModule<AssetManagerConfig, 
   Assets = Assets;
   assetsVis: Assets;
   am?: AssetsView;
-  fu?: FileUpload;
+  fu?: FileUploaderView;
   _bhv?: any;
 
   /**
@@ -147,7 +147,7 @@ export default class AssetManager extends ItemManagerModule<AssetManagerConfig, 
   __customData() {
     const bhv = this.__getBehaviour();
     return {
-      am: this,
+      am: this as AssetManager,
       open: this.isOpen(),
       assets: this.getAll().models,
       types: bhv.types || [],
@@ -256,7 +256,6 @@ export default class AssetManager extends ItemManagerModule<AssetManagerConfig, 
    * Return the global collection, containing all the assets
    * @returns {Collection<[Asset]>}
    */
-  // @ts-ignore
   getAll() {
     return this.all;
   }
@@ -344,7 +343,7 @@ export default class AssetManager extends ItemManagerModule<AssetManagerConfig, 
       collection: this.assetsVis, // Collection visible in asset manager
       globalCollection: this.all,
       config: this.config,
-      module: this,
+      module: this as AssetManager,
       fu: undefined as any,
     };
   }
@@ -395,7 +394,7 @@ export default class AssetManager extends ItemManagerModule<AssetManagerConfig, 
 
   FileUploader() {
     if (!this.fu) {
-      this.fu = new FileUpload(this.__viewParams());
+      this.fu = new FileUploaderView(this.__viewParams());
     }
     return this.fu;
   }

@@ -216,7 +216,7 @@ export default class Components extends Collection<Component> {
         });
     }
 
-    return new model(attrs, options);
+    return new model(attrs, options) as Component;
   }
 
   parseString(value: string, opt: AddOptions & { temporary?: boolean; keepIds?: string[] } = {}) {

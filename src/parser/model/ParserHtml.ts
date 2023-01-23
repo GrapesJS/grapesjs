@@ -1,11 +1,10 @@
-import { each, isString, isFunction, isUndefined } from 'underscore';
-import { CssRuleJSON, CssRuleProperties } from '../../css_composer/model/CssRule';
+import { each, isFunction, isUndefined } from 'underscore';
+import { ObjectAny } from '../../common';
+import { CssRuleJSON } from '../../css_composer/model/CssRule';
 import { ComponentDefinitionDefined } from '../../dom_components/model/types';
 import EditorModel from '../../editor/model/Editor';
 import { HTMLParserOptions, ParserConfig } from '../config/config';
 import BrowserParserHtml from './BrowserParserHtml';
-
-type AnyObject = Record<string, any>;
 
 type StringObject = Record<string, string>;
 
@@ -17,7 +16,7 @@ type HTMLParseResult = {
 const modelAttrStart = 'data-gjs-';
 const event = 'parse:html';
 
-export default (em?: EditorModel, config: ParserConfig = {}) => {
+const ParserHtml = (em?: EditorModel, config: ParserConfig = {}) => {
   return {
     compTypes: '',
 
@@ -49,8 +48,8 @@ export default (em?: EditorModel, config: ParserConfig = {}) => {
      * @param {Object} attr
      * @returns {Object} An object containing props and attributes without them
      */
-    splitPropsFromAttr(attr: AnyObject = {}) {
-      const props: AnyObject = {};
+    splitPropsFromAttr(attr: ObjectAny = {}) {
+      const props: ObjectAny = {};
       const attrs: StringObject = {};
 
       each(attr, (value, key) => {
@@ -118,7 +117,7 @@ export default (em?: EditorModel, config: ParserConfig = {}) => {
      * @param  {HTMLElement} el DOM element to traverse
      * @return {Array<Object>}
      */
-    parseNode(el: HTMLElement, opts: AnyObject = {}) {
+    parseNode(el: HTMLElement, opts: ObjectAny = {}) {
       const result: ComponentDefinitionDefined[] = [];
       const nodes = el.childNodes;
 
@@ -284,7 +283,7 @@ export default (em?: EditorModel, config: ParserConfig = {}) => {
     parse(str: string, parserCss: any, opts: HTMLParserOptions = {}) {
       const conf = em?.get('Config') || {};
       const res: HTMLParseResult = {};
-      const cf: AnyObject = { ...config, ...opts };
+      const cf: ObjectAny = { ...config, ...opts };
       const options = {
         ...config.optionsHtml,
         // @ts-ignore Support previous `configParser.htmlType` option
@@ -345,3 +344,5 @@ export default (em?: EditorModel, config: ParserConfig = {}) => {
     },
   };
 };
+
+export default ParserHtml;

@@ -43,17 +43,12 @@
  */
 
 import { isFunction, includes } from 'underscore';
-import CommandAbstract, {
-  Command,
-  CommandOptions,
-  CommandObject,
-  CommandFunction,
-  AnyObject,
-} from './view/CommandAbstract';
+import CommandAbstract, { Command, CommandOptions, CommandObject, CommandFunction } from './view/CommandAbstract';
 import defaults, { CommandsConfig } from './config/config';
 import { Module } from '../abstract';
 import { eventDrag } from '../dom_components/model/Component';
 import Editor from '../editor/model/Editor';
+import { ObjectAny } from '../common';
 
 const commandsDef = [
   ['preview', 'Preview', 'preview'],
@@ -237,7 +232,7 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
    * // As a function
    * commands.add('myCommand2', editor => { ... });
    * */
-  add<T extends AnyObject = {}>(id: string, command: CommandFunction | CommandObject<any, T>) {
+  add<T extends ObjectAny = {}>(id: string, command: CommandFunction | CommandObject<any, T>) {
     let result: CommandObject = isFunction(command) ? { run: command } : command;
 
     if (!result.stop) {

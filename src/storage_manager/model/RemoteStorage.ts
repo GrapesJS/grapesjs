@@ -2,15 +2,14 @@ import Editor from '../../editor';
 import { isUndefined, isFunction, isString } from 'underscore';
 import fetch from '../../utils/fetch';
 import IStorage, { ProjectData } from './IStorage';
-
-type AnyObject = Record<string, any>;
+import { ObjectAny } from '../../common';
 
 export interface RemoteStorageConfig {
   /**
    * Custom headers.
    * @default {}
    */
-  headers?: AnyObject;
+  headers?: ObjectAny;
 
   /**
    * Endpoint URL where to store data project.
@@ -77,7 +76,7 @@ export default class RemoteStorage implements IStorage<RemoteStorageConfig> {
         const isOk = ((res.status / 200) | 0) === 1;
         return isOk ? result : result.then(Promise.reject);
       })
-      .then(text => {
+      .then((text: string) => {
         const parsable = text && isString(text);
         return opts.contentTypeJson && parsable ? JSON.parse(text) : text;
       });

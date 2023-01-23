@@ -46,7 +46,7 @@
 
 import { isString, bindAll, unique, flatten } from 'underscore';
 import { createId } from '../utils/mixins';
-import { Model, Module } from '../abstract';
+import { ModuleModel } from '../abstract';
 import { ItemManagerModule, ModuleConfig } from '../abstract/Module';
 import Pages from './model/Pages';
 import Page from './model/Page';
@@ -85,7 +85,12 @@ export default class PageManager extends ItemManagerModule<PageManagerConfig, Pa
     return this.all;
   }
 
-  model: Model;
+  model: ModuleModel;
+
+  getAll() {
+    // this avoids issues during the TS build (some getAll are inconsistent)
+    return [...this.all.models];
+  }
 
   /**
    * Get all pages
@@ -104,7 +109,7 @@ export default class PageManager extends ItemManagerModule<PageManagerConfig, Pa
   constructor(em: EditorModel) {
     super(em, 'PageManager', new Pages([], em), events);
     bindAll(this, '_onPageChange');
-    const model = new Model({ _undo: true } as any);
+    const model = new ModuleModel({ _undo: true } as any);
     this.model = model;
     this.pages.on('reset', coll => coll.at(0) && this.select(coll.at(0)));
     this.pages.on('all', this.__onChange, this);

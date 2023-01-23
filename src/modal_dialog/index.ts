@@ -82,7 +82,9 @@ export default class ModalModule extends Module<ModalConfig> {
       title: isString(titl) ? createText(titl) : titl,
       //@ts-ignore
       content: isString(cnt) ? createText(cnt) : cnt.get ? cnt.get(0) : cnt,
-      close: () => this.close(),
+      close: () => {
+        this.close();
+      },
     };
   }
 

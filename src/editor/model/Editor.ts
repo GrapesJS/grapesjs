@@ -6,7 +6,7 @@ import { getModel, hasWin, isEmptyObj } from '../../utils/mixins';
 import { Model } from '../../common';
 import Selected from './Selected';
 import FrameView from '../../canvas/view/FrameView';
-import EditorModule from '..';
+import Editor from '..';
 import EditorView from '../view/EditorView';
 import { IModule } from '../../abstract/Module';
 import CanvasModule from '../../canvas';
@@ -37,10 +37,7 @@ import CssRule from '../../css_composer/model/CssRule';
 import { HTMLGeneratorBuildOptions } from '../../code_manager/model/HtmlGenerator';
 import { CssGeneratorBuildOptions } from '../../code_manager/model/CssGenerator';
 import ComponentView from '../../dom_components/view/ComponentView';
-
-export interface ProjectData {
-  [key: string]: any;
-}
+import { ProjectData } from '../../storage_manager/model/IStorage';
 
 //@ts-ignore
 Backbone.$ = $;
@@ -172,7 +169,7 @@ export default class EditorModel extends Model {
     return this.get('Canvas');
   }
 
-  get Editor(): EditorModule {
+  get Editor(): Editor {
     return this.get('Editor');
   }
 
@@ -435,7 +432,7 @@ export default class EditorModel extends Model {
    * @return {this}
    * @public
    */
-  init(editor: EditorModule, opts = {}) {
+  init(editor: Editor, opts = {}) {
     if (this.destroyed) {
       this.initialize(opts);
       this.destroyed = false;
@@ -443,7 +440,7 @@ export default class EditorModel extends Model {
     this.set('Editor', editor);
   }
 
-  getEditor(): EditorModule {
+  getEditor(): Editor {
     return this.get('Editor');
   }
 

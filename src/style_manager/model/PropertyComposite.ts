@@ -1,11 +1,11 @@
 import { isString, isUndefined, keys } from 'underscore';
-import Property, { OptionsStyle, OptionsUpdate, PropertyProps } from './Property';
+import Property, { OptionsStyle, OptionsUpdate, PropertyProps, StyleProps } from './Property';
 import Properties from './Properties';
 import { camelCase } from '../../utils/mixins';
+import { PropertyNumberProps } from './PropertyNumber';
+import { PropertySelectProps } from './PropertySelect';
 
 export const isNumberType = (type: string) => type === 'integer' || type === 'number';
-
-export type StyleProps = Record<string, string>;
 
 export type PropValues = Record<string, any>;
 
@@ -25,7 +25,7 @@ export interface PropertyCompositeProps extends PropertyProps {
   /**
    * Array of sub properties, eg. `[{ type: 'number', property: 'margin-top' }, ...]`
    */
-  properties: PropertyProps[];
+  properties: (PropertyProps | PropertyNumberProps | PropertySelectProps)[];
 
   /**
    * Value used to split property values, default `" "`.

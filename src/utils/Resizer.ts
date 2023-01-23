@@ -1,10 +1,6 @@
 import { bindAll, isFunction, each } from 'underscore';
+import { Position } from '../common';
 import { on, off, normalizeFloat } from './mixins';
-
-type Position = {
-  x: number;
-  y: number;
-};
 
 type RectDim = {
   t: number;

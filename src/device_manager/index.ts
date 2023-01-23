@@ -202,7 +202,6 @@ export default class DeviceManager extends ItemManagerModule<
     return this.get(this.em.get('device'));
   }
 
-  // @ts-ignore
   getAll() {
     return this.devices;
   }

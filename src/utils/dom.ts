@@ -1,10 +1,9 @@
 import { each, isUndefined, isString } from 'underscore';
-
-type AnyObject = Record<string, any>;
+import { ObjectAny } from '../common';
 
 type vNode = {
   tag?: string;
-  attributes?: AnyObject;
+  attributes?: ObjectAny;
   children?: vNode[];
 };
 
@@ -25,7 +24,7 @@ export const removeEl = (el?: HTMLElement) => {
 
 export const find = (el: HTMLElement, query: string) => el.querySelectorAll(query);
 
-export const attrUp = (el?: HTMLElement, attrs: AnyObject = {}) =>
+export const attrUp = (el?: HTMLElement, attrs: ObjectAny = {}) =>
   el && el.setAttribute && each(attrs, (value, key) => el.setAttribute(key, value));
 
 export const isVisible = (el?: HTMLElement) => {
@@ -61,7 +60,7 @@ export const appendAtIndex = (parent: HTMLElement | DocumentFragment, child: Chi
 
 export const append = (parent: HTMLElement, child: ChildHTML) => appendAtIndex(parent, child);
 
-export const createEl = (tag: string, attrs: AnyObject = {}, child?: ChildHTML) => {
+export const createEl = (tag: string, attrs: ObjectAny = {}, child?: ChildHTML) => {
   const el = document.createElement(tag);
   attrs && each(attrs, (value, key) => el.setAttribute(key, value));
 

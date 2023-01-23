@@ -19,7 +19,7 @@ import PropertyView from './../view/PropertyView';
 
 const TypeableCollectionExt = Collection.extend(TypeableCollection);
 
-export default TypeableCollectionExt.extend({
+const Properties = TypeableCollectionExt.extend({
   extendViewApi: 1,
 
   init() {
@@ -133,3 +133,5 @@ export default TypeableCollectionExt.extend({
     },
   ],
 });
+
+export default Properties;

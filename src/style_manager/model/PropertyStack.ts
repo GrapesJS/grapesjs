@@ -6,11 +6,10 @@ import PropertyComposite, {
   isNumberType,
   PropertyCompositeProps,
   PropValues,
-  StyleProps,
   ToStyle,
   ToStyleData,
 } from './PropertyComposite';
-import PropertyBase, { OptionsStyle, OptionsUpdate } from './Property';
+import PropertyBase, { OptionsStyle, OptionsUpdate, StyleProps } from './Property';
 import Layers from './Layers';
 import Layer, { LayerProps, LayerValues } from './Layer';
 import PropertyNumber from './PropertyNumber';

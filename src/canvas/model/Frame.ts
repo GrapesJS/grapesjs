@@ -1,5 +1,5 @@
 import { result, forEach, isEmpty, isString } from 'underscore';
-import { Model } from '../../abstract';
+import { ModuleModel } from '../../abstract';
 import CanvasModule from '..';
 import ComponentWrapper from '../../dom_components/model/ComponentWrapper';
 import { isComponent, isObject } from '../../utils/mixins';
@@ -17,7 +17,7 @@ const keyAutoH = '__ah';
  * @property {Number} [y=0] Vertical position of the frame in the canvas.
  *
  */
-export default class Frame extends Model<CanvasModule> {
+export default class Frame extends ModuleModel<CanvasModule> {
   defaults() {
     return {
       x: 0,
@@ -182,7 +182,7 @@ export default class Frame extends Model<CanvasModule> {
   }
 
   toJSON(opts: any = {}) {
-    const obj = Model.prototype.toJSON.call(this, opts);
+    const obj = ModuleModel.prototype.toJSON.call(this, opts);
     const defaults = result(this, 'defaults');
 
     if (opts.fromUndo) delete obj.component;

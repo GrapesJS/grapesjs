@@ -1,5 +1,5 @@
 import { isEmpty, forEach, isString, isArray } from 'underscore';
-import { Model } from '../../common';
+import { Model, ObjectAny } from '../../common';
 import StyleableModel from '../../domain_abstract/model/StyleableModel';
 import Selectors from '../../selector_manager/model/Selectors';
 import { getMediaLength } from '../../code_manager/model/CssGenerator';
@@ -68,8 +68,6 @@ export interface CssRuleProperties {
 export interface CssRuleJSON extends Omit<CssRuleProperties, 'selectors'> {
   selectors: (string | SelectorProps)[];
 }
-
-type AnyObject = Record<string, any>;
 
 // @ts-ignore
 const { CSS } = hasWin() ? window : {};
@@ -187,7 +185,7 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
    * cssRule.selectorsToString(); // ".class1:hover"
    * cssRule.selectorsToString({ skipState: true }); // ".class1"
    */
-  selectorsToString(opts: AnyObject = {}) {
+  selectorsToString(opts: ObjectAny = {}) {
     const result = [];
     const state = this.get('state');
     const addSelector = this.get('selectorsAdd');
@@ -213,7 +211,7 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
    * });
    * cssRule.getDeclaration() // ".class1{color:red;}"
    */
-  getDeclaration(opts: AnyObject = {}) {
+  getDeclaration(opts: ObjectAny = {}) {
     let result = '';
     const { important } = this.attributes;
     const selectors = this.selectorsToString(opts);
@@ -284,7 +282,7 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
    * });
    * cssRule.toCSS() // "@media (min-width: 500px){.class1{color:red;}}"
    */
-  toCSS(opts: AnyObject = {}) {
+  toCSS(opts: ObjectAny = {}) {
     let result = '';
     const atRule = this.getAtRule();
     const block = this.getDeclaration(opts);

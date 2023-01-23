@@ -1,4 +1,5 @@
 import { isString } from 'underscore';
+import { ObjectAny } from '../../common';
 import { isDef } from '../../utils/mixins';
 import Property, { PropertyProps } from './Property';
 
@@ -10,6 +11,7 @@ type SelectOption = {
   className?: string;
   title?: string;
   style?: string;
+  propValue?: ObjectAny;
 };
 
 /** @private */

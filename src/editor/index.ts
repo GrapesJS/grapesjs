@@ -52,16 +52,17 @@
  * Check the [Pages](/api/pages.html) module.
  *
  * ## Methods
- * @module Editor
+ * @module docsjs.Editor
  */
 import { EventHandler } from 'backbone';
 import { IBaseModule } from '../abstract/Module';
 import Component from '../dom_components/model/Component';
 import { CustomParserCss } from '../parser/config/config';
+import { ProjectData } from '../storage_manager/model/IStorage';
 import cash from '../utils/cash-dom';
 import html from '../utils/html';
 import defaults, { EditorConfig, EditorConfigKeys } from './config/config';
-import EditorModel, { ProjectData } from './model/Editor';
+import EditorModel from './model/Editor';
 import EditorView from './view/EditorView';
 
 export type ParsedRule = {
@@ -75,7 +76,7 @@ type EditorConfigType = EditorConfig & { pStylePrefix?: string };
 
 type EditorModelParam<T extends keyof EditorModel, N extends number> = Parameters<EditorModel[T]>[N];
 
-export default class EditorModule implements IBaseModule<EditorConfig> {
+export default class Editor implements IBaseModule<EditorConfig> {
   editorView?: EditorView;
   editor: EditorModel;
   $: typeof cash;

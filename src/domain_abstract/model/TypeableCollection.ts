@@ -2,7 +2,7 @@
 import { isFunction } from 'underscore';
 import { View, Model } from '../../common';
 
-export default {
+const TypeableCollection = {
   types: [],
 
   initialize(models, opts = {}) {
@@ -140,3 +140,5 @@ export default {
     }
   },
 };
+
+export default TypeableCollection;

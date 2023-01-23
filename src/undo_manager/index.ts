@@ -42,7 +42,7 @@ const getChanged = (obj: any) => Object.keys(obj.changedAttributes());
 
 export default class UndoManagerModule extends Module<UndoManagerConfig & { name?: string; _disable?: boolean }> {
   beforeCache?: any;
-  um: UndoManager;
+  um: any;
 
   constructor(em: EditorModel) {
     super(em, 'UndoManager', defaults);

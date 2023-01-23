@@ -1,13 +1,12 @@
-import { includes } from 'underscore';
 import Backbone from 'backbone';
-import View from './View';
-import Collection from './Collection';
-import Model from './Model';
+import ModuleView from './ModuleView';
+import ModuleCollection from './ModuleCollection';
+import ModuleModel from './ModuleModel';
 
-export default abstract class DomainViews<
-  TCollection extends Collection,
-  TItemView extends View
-> extends View<TCollection> {
+export default abstract class ModuleDomainViews<
+  TCollection extends ModuleCollection,
+  TItemView extends ModuleView
+> extends ModuleView<TCollection> {
   // Defines the View per type
   itemsView = '';
 
@@ -23,10 +22,10 @@ export default abstract class DomainViews<
 
   /**
    * Add new model to the collection
-   * @param {Model} model
+   * @param {ModuleModel} model
    * @private
    * */
-  private addTo(model: Model) {
+  private addTo(model: ModuleModel) {
     this.add(model);
   }
 
@@ -35,15 +34,15 @@ export default abstract class DomainViews<
     const warn = `${ns ? `[${ns}]: ` : ''}'${type}' type not found`;
     em?.logWarning(warn);*/
   }
-  protected abstract renderView(model: Model, itemType: string): TItemView;
+  protected abstract renderView(model: ModuleModel, itemType: string): TItemView;
 
   /**
    * Render new model inside the view
-   * @param {Model} model
+   * @param {ModuleModel} model
    * @param {Object} fragment Fragment collection
    * @private
    * */
-  private add(model: Model, fragment?: DocumentFragment) {
+  private add(model: ModuleModel, fragment?: DocumentFragment) {
     const { reuseView, viewCollection, itemsView = {} } = this;
     var frag = fragment || null;
     var typeField = model.get(this.itemType);

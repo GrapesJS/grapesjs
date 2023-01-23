@@ -1,6 +1,6 @@
 import { Model } from '../../common';
 import { isFunction } from 'underscore';
-import EditorModule from '../../editor';
+import Editor from '../../editor';
 import { BlockCategoryProperties } from './Category';
 import { ComponentDefinition } from '../../dom_components/model/types';
 
@@ -49,7 +49,7 @@ export interface BlockProperties {
    * @example
    * onClick: (block, editor) => editor.getWrapper().append(block.get('content'))
    */
-  onClick?: (block: Block, editor: EditorModule) => void;
+  onClick?: (block: Block, editor: Editor) => void;
   /**
    * Block attributes
    */

@@ -1,7 +1,7 @@
 import { View } from '../../common';
 import html from '../../utils/html';
 
-export default class EditorView extends View {
+export default class CodeEditorView extends View {
   pfx?: string;
   config!: Record<string, any>;
 

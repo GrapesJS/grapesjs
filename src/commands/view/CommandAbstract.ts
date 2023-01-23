@@ -1,32 +1,30 @@
 import CanvasModule from '../../canvas';
-import { Model } from '../../common';
+import { Model, ObjectAny } from '../../common';
 import Editor from '../../editor';
 import EditorModel from '../../editor/model/Editor';
 
-interface ICommand<O extends AnyObject = any> {
+interface ICommand<O extends ObjectAny = any> {
   run?: CommandAbstract<O>['run'];
   stop?: CommandAbstract<O>['stop'];
   id?: string;
   [key: string]: unknown;
 }
 
-export type CommandFunction<O extends AnyObject = any> = CommandAbstract<O>['run'];
+export type CommandFunction<O extends ObjectAny = any> = CommandAbstract<O>['run'];
 
 export type Command = CommandObject | CommandFunction;
 
 export type CommandOptions = Record<string, any>;
 
-export type AnyObject = Record<string, any>;
-
-export type CommandObject<O extends AnyObject = any, T extends AnyObject = {}> = ICommand<O> &
+export type CommandObject<O extends ObjectAny = any, T extends ObjectAny = {}> = ICommand<O> &
   T &
   ThisType<T & CommandAbstract<O>>;
 
-export function defineCommand<O extends AnyObject = any, T extends AnyObject = {}>(def: CommandObject<O, T>) {
+export function defineCommand<O extends ObjectAny = any, T extends ObjectAny = {}>(def: CommandObject<O, T>) {
   return def;
 }
 
-export default class CommandAbstract<O extends AnyObject = any> extends Model {
+export default class CommandAbstract<O extends ObjectAny = any> extends Model {
   config: any;
   em: EditorModel;
   pfx: string;

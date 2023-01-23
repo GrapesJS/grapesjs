@@ -44,7 +44,7 @@
  */
 
 import { isFunction, isString } from 'underscore';
-import { hasWin, isObject } from '../utils/mixins';
+import { hasWin } from '../utils/mixins';
 import keymaster from '../utils/keymaster';
 import { Module } from '../abstract';
 import EditorModel from '../editor/model/Editor';

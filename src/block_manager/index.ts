@@ -126,7 +126,7 @@ export default class BlockManager extends ItemManagerModule<BlockManagerConfig, 
   __customData() {
     const bhv = this.__getBehaviour();
     return {
-      bm: this,
+      bm: this as BlockManager,
       blocks: this.getAll().models,
       container: bhv.container,
       dragStart: (block: Block, ev: Event) => this.startDrag(block, ev),
@@ -261,7 +261,6 @@ export default class BlockManager extends ItemManagerModule<BlockManagerConfig, 
    * console.log(JSON.stringify(blocks));
    * // [{label: 'Heading', content: '<h1>Put your ...'}, ...]
    */
-  // @ts-ignore
   getAll() {
     return this.blocks;
   }

@@ -1,10 +1,10 @@
 import { isString } from 'underscore';
-import { CssRuleJSON, CssRuleProperties } from '../../css_composer/model/CssRule';
+import { CssRuleJSON } from '../../css_composer/model/CssRule';
 import EditorModel from '../../editor/model/Editor';
 import { ParsedCssRule, ParserConfig } from '../config/config';
 import BrowserCssParser, { parseSelector, createNode } from './BrowserParserCss';
 
-export default (em?: EditorModel, config: ParserConfig = {}) => ({
+const ParserCss = (em?: EditorModel, config: ParserConfig = {}) => ({
   /**
    * Parse CSS string to a desired model object
    * @param  {String} str CSS string
@@ -57,3 +57,5 @@ export default (em?: EditorModel, config: ParserConfig = {}) => ({
     return result;
   },
 });
+
+export default ParserCss;

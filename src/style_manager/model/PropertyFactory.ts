@@ -1,19 +1,23 @@
 import { isFunction, isString } from 'underscore';
+import { PropertyProps } from './Property';
 import { PropertyCompositeProps } from './PropertyComposite';
+import { PropertyNumberProps } from './PropertyNumber';
+import { PropertySelectProps } from './PropertySelect';
+import { PropertyStackProps } from './PropertyStack';
 
 type Option = {
   id: string;
   label?: string;
 };
 
-type Property = Record<string, any>;
-
-type PartialProps = Partial<Property | PropertyCompositeProps>;
+type PartialProps = Partial<
+  PropertyProps | PropertyStackProps | PropertyNumberProps | PropertySelectProps | { properties?: any }
+>;
 
 const getOptions = (items: string[]): Option[] => items.map(item => ({ id: item }));
 
 export default class PropertyFactory {
-  props: Record<string, Property | undefined> = {};
+  props: Record<string, PropertyProps | undefined> = {};
   typeNumber: string;
   typeColor: string;
   typeRadio: string;
@@ -172,13 +176,13 @@ export default class PropertyFactory {
     this.init();
   }
 
-  __sub(items: (string | Property)[]) {
+  __sub(items: (string | PropertyProps)[]) {
     return () =>
       items.map(p => {
         if (isString(p)) return this.get(p)!;
         const { extend, ...rest } = p;
         return {
-          ...this.get(extend),
+          ...this.get(extend!),
           ...rest,
         };
       });
@@ -518,7 +522,7 @@ export default class PropertyFactory {
   add(property: string, def: Record<string, any> = {}, opts: { from?: string } = {}) {
     const from = opts.from || '';
     const fromRes = this.props[from || property] || {};
-    const result: Property = { ...fromRes, property, ...def };
+    const result: any = { ...fromRes, property, ...def };
     if (result.properties && isFunction(result.properties)) {
       result.properties = result.properties();
     }
@@ -536,7 +540,7 @@ export default class PropertyFactory {
    * @return {Array<Object>}
    */
   build(props: string | string[]) {
-    const result: Property[] = [];
+    const result: PropertyProps[] = [];
     const propsArr = isString(props) ? [props] : props;
 
     propsArr.forEach(prop => {

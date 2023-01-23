@@ -10,7 +10,7 @@ export interface PropertyProps {
   name?: string;
   label?: string;
   id?: string;
-  property: string;
+  property?: string;
   type?: string;
   defaults?: string;
   default?: string;

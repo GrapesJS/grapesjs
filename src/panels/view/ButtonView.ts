@@ -1,9 +1,9 @@
 import { isString, isObject, isFunction } from 'underscore';
-import { View } from '../../abstract';
+import { ModuleView } from '../../abstract';
 import Button from '../model/Button';
 import Buttons from '../model/Buttons';
 
-export default class ButtonView extends View<Button> {
+export default class ButtonView extends ModuleView<Button> {
   //@ts-ignore
   tagName() {
     return this.model.get('tagName');

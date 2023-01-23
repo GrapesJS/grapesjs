@@ -34,7 +34,7 @@ import { DomComponentsConfig } from '../config/config';
 import ComponentView from '../view/ComponentView';
 import { AddOptions, ObjectAny, ObjectStrings, SetOptions } from '../../common';
 import CssRule, { CssRuleJSON, CssRuleProperties } from '../../css_composer/model/CssRule';
-import { TraitProperties } from '../../trait_manager/model/Trait';
+import Trait, { TraitProperties } from '../../trait_manager/model/Trait';
 import { ToolbarButtonProps } from './ToolbarButton';
 
 const escapeRegExp = (str: string) => {
@@ -1224,7 +1224,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * console.log(traits);
    * // [Trait, Trait, Trait, ...]
    */
-  getTraits() {
+  getTraits(): Trait[] {
     this.__loadTraits();
     return [...this.traits.models];
   }

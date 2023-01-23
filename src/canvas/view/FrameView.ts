@@ -1,15 +1,14 @@
 import { bindAll, isString, debounce, isUndefined } from 'underscore';
 import { appendVNodes, append, createEl, createCustomEvent, motionsEv } from '../../utils/dom';
 import { on, off, setViewEl, hasDnd, getPointerEvent } from '../../utils/mixins';
-import { View } from '../../abstract';
+import { ModuleView } from '../../abstract';
 import CssRulesView from '../../css_composer/view/CssRulesView';
 import Droppable from '../../utils/Droppable';
 import Frame from '../model/Frame';
 import Canvas from '../model/Canvas';
-import ComponentWrapper from '../../dom_components/model/ComponentWrapper';
 import FrameWrapView from './FrameWrapView';
 
-export default class FrameView extends View<Frame, HTMLIFrameElement> {
+export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
   //@ts-ignore
   get tagName() {
     return 'iframe';
@@ -184,7 +183,7 @@ export default class FrameView extends View<Frame, HTMLIFrameElement> {
     this._toggleEffects(false);
     this.tools = {};
     wrp && wrp.remove();
-    View.prototype.remove.apply(this, args);
+    ModuleView.prototype.remove.apply(this, args);
     return this;
   }
 

@@ -27,18 +27,18 @@
 import { Module } from '../abstract';
 import EditorModel from '../editor/model/Editor';
 import defaults, { HTMLParserOptions, ParserConfig } from './config/config';
-import parserCss from './model/ParserCss';
-import parserHtml from './model/ParserHtml';
+import ParserCss from './model/ParserCss';
+import ParserHtml from './model/ParserHtml';
 
 export default class ParserModule extends Module<ParserConfig & { name?: string }> {
-  parserHtml: ReturnType<typeof parserHtml>;
-  parserCss: ReturnType<typeof parserCss>;
+  parserHtml: ReturnType<typeof ParserHtml>;
+  parserCss: ReturnType<typeof ParserCss>;
 
   constructor(em: EditorModel) {
     super(em, 'Parser', defaults);
     const { config } = this;
-    this.parserCss = parserCss(em, config);
-    this.parserHtml = parserHtml(em, config);
+    this.parserCss = ParserCss(em, config);
+    this.parserHtml = ParserHtml(em, config);
   }
 
   /**

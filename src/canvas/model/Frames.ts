@@ -1,10 +1,10 @@
 import { bindAll } from 'underscore';
 import CanvasModule from '..';
-import { Collection } from '../../abstract';
+import { ModuleCollection } from '../../abstract';
 import Page from '../../pages/model/Page';
 import Frame from './Frame';
 
-export default class Frames extends Collection<Frame> {
+export default class Frames extends ModuleCollection<Frame> {
   loadedItems = 0;
   itemsToLoad = 0;
   page?: Page;

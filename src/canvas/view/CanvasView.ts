@@ -1,5 +1,5 @@
 import { bindAll } from 'underscore';
-import { View } from '../../abstract';
+import { ModuleView } from '../../abstract';
 import { on, off, getElement, getKeyChar, isTextNode, getElRect, getUiClass } from '../../utils/mixins';
 import { createEl } from '../../utils/dom';
 import FramesView from './FramesView';
@@ -8,7 +8,7 @@ import FrameView from './FrameView';
 import ComponentView from '../../dom_components/view/ComponentView';
 import Component from '../../dom_components/model/Component';
 
-interface MarginPaddingOffsets {
+export interface MarginPaddingOffsets {
   marginTop?: number;
   marginRight?: number;
   marginBottom?: number;
@@ -18,7 +18,8 @@ interface MarginPaddingOffsets {
   paddingBottom?: number;
   paddingLeft?: number;
 }
-export default class CanvasView extends View<Canvas> {
+
+export default class CanvasView extends ModuleView<Canvas> {
   events() {
     return {
       wheel: 'onWheel',
@@ -104,7 +105,7 @@ export default class CanvasView extends View<Canvas> {
     this.frames?.remove();
     //@ts-ignore
     this.frames = undefined;
-    View.prototype.remove.apply(this, args);
+    ModuleView.prototype.remove.apply(this, args);
     this.toggleListeners(false);
     return this;
   }
@@ -314,7 +315,7 @@ export default class CanvasView extends View<Canvas> {
 
   /**
    * Update javascript of a specific component passed by its View
-   * @param {View} view Component's View
+   * @param {ModuleView} view Component's View
    * @private
    */
   //TODO change type after the ComponentView was updated to ts

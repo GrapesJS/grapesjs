@@ -40,7 +40,7 @@
  */
 
 import { isString, bindAll } from 'underscore';
-import { Model } from '../abstract';
+import { ModuleModel } from '../abstract';
 import Module from '../abstract/Module';
 import Component from '../dom_components/model/Component';
 import EditorModel from '../editor/model/Editor';
@@ -82,7 +82,7 @@ const isStyleHidden = (style: any = {}) => {
 };
 
 export default class LayerManager extends Module<LayerManagerConfig> {
-  model!: Model;
+  model!: ModuleModel;
 
   view?: View;
 
@@ -91,7 +91,7 @@ export default class LayerManager extends Module<LayerManagerConfig> {
   constructor(em: EditorModel) {
     super(em, 'LayerManager', defaults);
     bindAll(this, 'componentChanged', '__onRootChange', '__onComponent');
-    this.model = new Model(this, { opened: {} });
+    this.model = new ModuleModel(this, { opened: {} });
     // @ts-ignore
     this.config.stylePrefix = this.config.pStylePrefix;
     return this;

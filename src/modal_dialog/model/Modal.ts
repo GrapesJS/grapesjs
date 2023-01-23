@@ -1,7 +1,7 @@
-import ModalManager from '..';
-import { Model } from '../../abstract';
+import ModalModule from '..';
+import { ModuleModel } from '../../abstract';
 
-export default class Modal extends Model<ModalManager> {
+export default class Modal extends ModuleModel<ModalModule> {
   defaults() {
     return {
       title: '',

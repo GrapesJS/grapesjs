@@ -38,6 +38,7 @@ import CssRulesView from './view/CssRulesView';
 import { ItemManagerModule } from '../abstract/Module';
 import EditorModel from '../editor/model/Editor';
 import Component from '../dom_components/model/Component';
+import { ObjectAny } from '../common';
 
 type RuleOptions = {
   atRuleType?: string;
@@ -45,7 +46,6 @@ type RuleOptions = {
 };
 
 type CssRuleStyle = Required<CssRuleProperties>['style'];
-type AnyObject = Record<string, any>;
 
 export default class CssComposer extends ItemManagerModule<CssComposerConfig & { pStylePrefix?: string }> {
   rules: CssRules;
@@ -178,8 +178,7 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
     return this.rules.find(rule => rule.compare(slc, state, width, ruleProps)) || null;
   }
 
-  // @ts-ignore
-  getAll() {
+  getAll(): CssRules {
     return this.rules;
   }
 
@@ -354,7 +353,7 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
    * // #myid { color: red }
    * // #myid:hover { color: blue }
    */
-  setIdRule(name: string, style: CssRuleStyle = {}, opts: AnyObject = {}) {
+  setIdRule(name: string, style: CssRuleStyle = {}, opts: ObjectAny = {}) {
     const { addOpts = {}, mediaText } = opts;
     const state = opts.state || '';
     const media = !isUndefined(mediaText) ? mediaText : this.em.getCurrentMedia();
@@ -375,7 +374,7 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
    * const rule = css.getIdRule('myid');
    * const ruleHover = css.setIdRule('myid', { state: 'hover' });
    */
-  getIdRule(name: string, opts: AnyObject = {}) {
+  getIdRule(name: string, opts: ObjectAny = {}) {
     const { mediaText } = opts;
     const state = opts.state || '';
     const media = !isUndefined(mediaText) ? mediaText : this.em.getCurrentMedia();
@@ -397,7 +396,7 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
    * // .myclass { color: red }
    * // .myclass:hover { color: blue }
    */
-  setClassRule(name: string, style: CssRuleStyle = {}, opts: AnyObject = {}) {
+  setClassRule(name: string, style: CssRuleStyle = {}, opts: ObjectAny = {}) {
     const state = opts.state || '';
     const media = opts.mediaText || this.em.getCurrentMedia();
     const sm = this.em.Selectors;
@@ -417,7 +416,7 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
    * const rule = css.getClassRule('myclass');
    * const ruleHover = css.getClassRule('myclass', { state: 'hover' });
    */
-  getClassRule(name: string, opts: AnyObject = {}) {
+  getClassRule(name: string, opts: ObjectAny = {}) {
     const state = opts.state || '';
     const media = opts.mediaText || this.em.getCurrentMedia();
     const selector = this.em.Selectors.get(name, Selector.TYPE_CLASS);
@@ -450,7 +449,7 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
     return this;
   }
 
-  getComponentRules(cmp: Component, opts: AnyObject = {}) {
+  getComponentRules(cmp: Component, opts: ObjectAny = {}) {
     let { state, mediaText, current } = opts;
     if (current) {
       state = this.em.get('state') || '';

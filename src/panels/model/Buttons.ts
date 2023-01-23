@@ -1,8 +1,8 @@
 import PanelManager from '..';
-import { Collection } from '../../abstract';
+import { ModuleCollection } from '../../abstract';
 import Button from './Button';
 
-export default class Buttons extends Collection<Button> {
+export default class Buttons extends ModuleCollection<Button> {
   constructor(module: PanelManager, models: Button[]) {
     super(module, models, Button);
   }

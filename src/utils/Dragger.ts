@@ -1,13 +1,10 @@
 import { bindAll, isFunction, result, isUndefined } from 'underscore';
+import { Position } from '../common';
 import { on, off, isEscKey, getPointerEvent } from './mixins';
 
-type Position = {
-  x: number;
-  y: number;
-  end?: boolean;
-};
+type DraggerPosition = Position & { end?: boolean };
 
-type PositionXY = keyof Omit<Position, 'end'>;
+type PositionXY = keyof Omit<DraggerPosition, 'end'>;
 
 type Guide = {
   x: number;
@@ -52,7 +49,7 @@ interface DraggerOptions {
   /**
    * Indicate a callback where to pass an object with new coordinates
    */
-  setPosition?: (position: Position) => void;
+  setPosition?: (position: DraggerPosition) => void;
 
   /**
    * Indicate a callback where to get initial coordinates.
@@ -62,12 +59,12 @@ interface DraggerOptions {
    *   return { x: 10, y: 100 }
    * }
    */
-  getPosition?: () => Position;
+  getPosition?: () => DraggerPosition;
 
   /**
    * Indicate a callback where to get pointer coordinates.
    */
-  getPointerPosition?: (ev: Event) => Position;
+  getPointerPosition?: (ev: Event) => DraggerPosition;
 
   /**
    * Static guides to be snapped.
@@ -103,14 +100,14 @@ const xyArr: PositionXY[] = ['x', 'y'];
 
 export default class Dragger {
   opts: DraggerOptions;
-  startPointer: Position;
-  delta: Position;
-  lastScroll: Position;
-  lastScrollDiff: Position;
-  startPosition: Position;
-  globScrollDiff: Position;
-  currentPointer: Position;
-  position: Position;
+  startPointer: DraggerPosition;
+  delta: DraggerPosition;
+  lastScroll: DraggerPosition;
+  lastScrollDiff: DraggerPosition;
+  startPosition: DraggerPosition;
+  globScrollDiff: DraggerPosition;
+  currentPointer: DraggerPosition;
+  position: DraggerPosition;
   el?: HTMLElement;
   guidesStatic: Guide[];
   guidesTarget: Guide[];
@@ -230,7 +227,7 @@ export default class Dragger {
       delta.y = startPointer.y;
     }
 
-    const moveDelta = (delta: Position) => {
+    const moveDelta = (delta: DraggerPosition) => {
       xyArr.forEach(co => (delta[co] = delta[co] * result(opts, 'scale')));
       this.delta = delta;
       this.move(delta.x, delta.y);
@@ -254,7 +251,7 @@ export default class Dragger {
   /**
    * Check if the delta hits some guide
    */
-  snapGuides(delta: Position) {
+  snapGuides(delta: DraggerPosition) {
     const newDelta = delta;
     let { trgX, trgY } = this;
 

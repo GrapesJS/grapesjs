@@ -1,12 +1,12 @@
 import Backbone, { AddOptions } from 'backbone';
-import { isArray, isObject, isUndefined } from 'underscore';
-import Model from './Model';
+import { isArray, isUndefined } from 'underscore';
+import ModuleModel from './ModuleModel';
 
-type Module<TModel extends Model> = TModel extends Model<infer M> ? M : unknown;
-type ModelConstructor<TModel extends Model> = { new (mod: Module<TModel>, attr: any): TModel };
+type ModuleExt<TModel extends ModuleModel> = TModel extends ModuleModel<infer M> ? M : unknown;
+type ModelConstructor<TModel extends ModuleModel> = { new (mod: ModuleExt<TModel>, attr: any): TModel };
 
-export default class Collection<TModel extends Model = Model> extends Backbone.Collection<TModel> {
-  module!: Module<TModel>;
+export default class ModuleCollection<TModel extends ModuleModel = ModuleModel> extends Backbone.Collection<TModel> {
+  module!: ModuleExt<TModel>;
   private newModel!: ModelConstructor<TModel>;
 
   add(model: Array<Record<string, any>> | TModel, options?: AddOptions): TModel;
@@ -21,7 +21,7 @@ export default class Collection<TModel extends Model = Model> extends Backbone.C
   }
 
   constructor(
-    module: Module<TModel>,
+    module: ModuleExt<TModel>,
     models: TModel[] | Array<Record<string, any>>,
     modelConstructor: ModelConstructor<TModel>
   ) {

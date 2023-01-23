@@ -1,12 +1,12 @@
 import { bindAll, isNumber, isNull, debounce } from 'underscore';
-import { View } from '../../abstract';
+import { ModuleView } from '../../abstract';
 import FrameView from './FrameView';
 import { createEl, removeEl } from '../../utils/dom';
 import Dragger from '../../utils/Dragger';
 import CanvasView from './CanvasView';
 import Frame from '../model/Frame';
 
-export default class FrameWrapView extends View<Frame> {
+export default class FrameWrapView extends ModuleView<Frame> {
   events() {
     return {
       'click [data-action-remove]': 'remove',
@@ -77,7 +77,7 @@ export default class FrameWrapView extends View<Frame> {
 
   remove(opts?: any) {
     this.__clear(opts);
-    View.prototype.remove.apply(this, opts);
+    ModuleView.prototype.remove.apply(this, opts);
     //@ts-ignore
     ['frame', 'dragger', 'cv', 'elTools'].forEach(i => (this[i] = 0));
     return this;

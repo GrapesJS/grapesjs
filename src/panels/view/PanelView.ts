@@ -1,10 +1,9 @@
-import { View } from '../../abstract';
-import EditorModule from '../../editor';
+import { ModuleView } from '../../abstract';
 import Resizer from '../../utils/Resizer';
 import Panel from '../model/Panel';
 import ButtonsView from './ButtonsView';
 
-export default class PanelView extends View<Panel> {
+export default class PanelView extends ModuleView<Panel> {
   constructor(model: Panel) {
     super({ model, el: model.get('el') });
     this.className = this.pfx + 'panel';
@@ -44,7 +43,7 @@ export default class PanelView extends View<Panel> {
 
   initResize() {
     const { em } = this;
-    const editor = em?.get('Editor') as EditorModule;
+    const editor = em?.Editor;
     const resizable = this.model.get('resizable');
 
     if (editor && resizable) {

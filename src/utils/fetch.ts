@@ -1,3 +1,4 @@
+// @ts-ignore avoid errors during TS build
 import Promise from 'promise-polyfill';
 import { hasWin } from './mixins';
 
@@ -9,6 +10,7 @@ export default typeof fetch == 'function'
   ? // @ts-ignore
     fetch.bind()
   : (url: string, options: Record<string, any>) => {
+      // @ts-ignore avoid errors during TS build
       return new Promise((res, rej) => {
         const req = new XMLHttpRequest();
         req.open(options.method || 'get', url);

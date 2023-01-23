@@ -174,14 +174,15 @@ export abstract class ItemManagerModule<
     return this;
   }
 
-  getAll(): TCollection extends Collection<infer C> ? C[] : unknown[] {
-    return [...this.all.models] as any;
+  // getAll(): TCollection extends Collection<infer C> ? C[] : TCollection {
+  getAll() {
+    return [...this.all.models] as TCollection | any;
   }
 
   getAllMap(): {
     [key: string]: TCollection extends Collection<infer C> ? C : unknown;
   } {
-    return this.getAll().reduce((acc, i) => {
+    return this.getAll().reduce((acc: any, i: any) => {
       acc[i.get(i.idAttribute)] = i;
       return acc;
     }, {} as any);

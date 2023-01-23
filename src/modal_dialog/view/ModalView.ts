@@ -1,7 +1,7 @@
-import { View } from '../../abstract';
+import { ModuleView } from '../../abstract';
 import Modal from '../model/Modal';
 
-export default class ModalView extends View<Modal> {
+export default class ModalView extends ModuleView<Modal> {
   template({ pfx, ppfx, content, title }: any) {
     return `<div class="${pfx}dialog ${ppfx}one-bg ${ppfx}two-color">
       <div class="${pfx}header">

@@ -1,9 +1,9 @@
-import { View } from '../../abstract';
+import { ModuleView } from '../../abstract';
 import Panel from '../model/Panel';
 import Panels from '../model/Panels';
 import PanelView from './PanelView';
 
-export default class PanelsView extends View<Panels> {
+export default class PanelsView extends ModuleView<Panels> {
   constructor(target: Panels) {
     super({ collection: target });
     this.listenTo(target, 'add', this.addTo);

@@ -2,8 +2,7 @@ import { bindAll, isUndefined, debounce } from 'underscore';
 import { View } from '../../common';
 import EditorModel from '../../editor/model/Editor';
 import { isObject } from '../../utils/mixins';
-import Property from '../model/Property';
-import { StyleProps } from '../model/PropertyComposite';
+import Property, { StyleProps } from '../model/Property';
 
 const clearProp = 'data-clear-style';
 
