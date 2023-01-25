@@ -6,6 +6,7 @@
   "license": "BSD-3-Clause",
   "homepage": "http://grapesjs.com",
   "main": "dist/grapes.min.js",
+  "types": "index.d.ts",
   "sideEffects": [
     "*.vue",
     "*.css",
