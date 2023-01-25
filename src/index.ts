@@ -4,30 +4,25 @@ import Editor from './editor';
 import polyfills from './utils/polyfills';
 import { getGlobal } from './utils/mixins';
 import PluginManager from './plugin_manager';
+import { EditorConfig } from './editor/config/config';
+
+interface InitEditorConfig extends EditorConfig {
+  grapesjs?: typeof GrapesJS;
+}
 
 polyfills();
 
 const plugins = new PluginManager();
-const editors = [];
-const defaultConfig = {
-  // If true renders editor on init
-  autorender: 1,
+const editors: Editor[] = [];
 
-  // Array of plugins to init
-  plugins: [],
-
-  // Custom options for plugins
-  pluginsOpts: {},
-};
-
-export default {
+const GrapesJS = {
   $,
 
   editors,
 
   plugins,
 
-  // Will be replaced on build
+  // @ts-ignore Will be replaced on build
   version: __GJS_VERSION__,
 
   /**
@@ -46,22 +41,29 @@ export default {
    *   style: '.hello{color: red}',
    * })
    */
-  init(config = {}) {
+  init(config: EditorConfig = {}) {
     const { headless } = config;
     const els = config.container;
     if (!els && !headless) throw new Error("'container' is required");
-    config = { ...defaultConfig, ...config, grapesjs: this };
-    config.el = !headless && (isElement(els) ? els : document.querySelector(els));
-    const editor = new Editor(config, { $ });
+    const initConfig: InitEditorConfig = {
+      autorender: true,
+      plugins: [],
+      pluginsOpts: {},
+      ...config,
+      grapesjs: this,
+      el: headless ? undefined : isElement(els) ? els : (document.querySelector(els!) as HTMLElement),
+    };
+    const editor = new Editor(initConfig, { $ });
     const em = editor.getModel();
 
     // Load plugins
-    config.plugins.forEach(pluginId => {
+    initConfig.plugins!.forEach(pluginId => {
       let plugin = isFunction(pluginId) ? pluginId : plugins.get(pluginId);
-      const plgOptions = config.pluginsOpts[pluginId] || {};
+      const plgOptions = initConfig.pluginsOpts![pluginId as string] || {};
 
       // Try to search in global context
       if (!plugin) {
+        // @ts-ignore
         const wplg = getGlobal()[pluginId];
         plugin = wplg?.default || wplg;
       }
@@ -82,9 +84,11 @@ export default {
     // A plugin might have extended/added some custom type so this
     // is a good point to load stuff like components, css rules, etc.
     em.loadOnStart();
-    config.autorender && !headless && editor.render();
+    initConfig.autorender && !headless && editor.render();
     editors.push(editor);
 
     return editor;
   },
 };
+
+export default GrapesJS;
