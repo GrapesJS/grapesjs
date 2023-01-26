@@ -68,7 +68,7 @@ export default abstract class Module<T extends ModuleConfig = ModuleConfig> impl
   onLoad?(): void;
   init(cfg: T) {}
   abstract destroy(): void;
-  render(): HTMLElement | JQuery<HTMLElement> | void {}
+  render(opts?: any): HTMLElement | JQuery<HTMLElement> | void {}
   postLoad(key: any): void {}
 
   get name(): string {

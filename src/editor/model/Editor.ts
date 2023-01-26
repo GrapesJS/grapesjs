@@ -8,7 +8,7 @@ import Selected from './Selected';
 import FrameView from '../../canvas/view/FrameView';
 import Editor from '..';
 import EditorView from '../view/EditorView';
-import { IModule } from '../../abstract/Module';
+import Module from '../../abstract/Module';
 import CanvasModule from '../../canvas';
 import ComponentManager from '../../dom_components';
 import CssComposer from '../../css_composer';
@@ -43,7 +43,7 @@ import Frame from '../../canvas/model/Frame';
 
 Backbone.$ = $;
 
-const deps = [
+const deps: (new (em: EditorModel) => Module)[] = [
   UtilsModule,
   I18nModule,
   KeymapsModule,
@@ -110,7 +110,7 @@ export default class EditorModel extends Model {
     return this.get('storables');
   }
 
-  get modules(): IModule[] {
+  get modules(): Module[] {
     return this.get('modules');
   }
 
