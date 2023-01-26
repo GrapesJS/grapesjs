@@ -20,7 +20,9 @@ interface Rect {
   right?: number;
 }
 
-export default class ComponentView extends View</** @ts-ignore */
+export default class ComponentView extends View</**
+ * Keep this format to avoid errors in TS bundler */
+/** @ts-ignore */
 Component> {
   /** @ts-ignore */
   model!: Component;

@@ -67,7 +67,8 @@ export interface ComponentsOptions {
   domc?: ComponentManager;
 }
 
-export default class Components extends Collection</** @ts-ignore */
+export default class Components extends Collection</**
+ * Keep this format to avoid errors in TS bundler */
 /** @ts-ignore */
 Component> {
   opt!: ComponentsOptions;
