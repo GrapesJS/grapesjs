@@ -53,7 +53,7 @@ import defaults, { Keymap, KeymapOptions, KeymapsConfig } from './config';
 hasWin() && keymaster.init(window);
 
 export default class KeymapsModule extends Module<KeymapsConfig & { name?: string }> {
-  keymaster = keymaster;
+  keymaster: any = keymaster;
   keymaps: Record<string, Keymap>;
 
   constructor(em: EditorModel) {

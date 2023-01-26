@@ -1,8 +1,7 @@
 import { isString, isArray, keys } from 'underscore';
 import { shallowDiff } from '../../utils/mixins';
 import ParserHtml from '../../parser/model/ParserHtml';
-import { Model, ObjectAny } from '../../common';
-import { ObjectHash } from 'backbone';
+import { Model, ObjectAny, ObjectHash } from '../../common';
 import Selectors from '../../selector_manager/model/Selectors';
 
 const parserHtml = ParserHtml();

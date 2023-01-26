@@ -1,11 +1,11 @@
-import Backbone, { AddOptions } from 'backbone';
 import { isArray, isUndefined } from 'underscore';
+import { AddOptions, Collection } from '../common';
 import ModuleModel from './ModuleModel';
 
 type ModuleExt<TModel extends ModuleModel> = TModel extends ModuleModel<infer M> ? M : unknown;
 type ModelConstructor<TModel extends ModuleModel> = { new (mod: ModuleExt<TModel>, attr: any): TModel };
 
-export default class ModuleCollection<TModel extends ModuleModel = ModuleModel> extends Backbone.Collection<TModel> {
+export default class ModuleCollection<TModel extends ModuleModel = ModuleModel> extends Collection<TModel> {
   module!: ModuleExt<TModel>;
   private newModel!: ModelConstructor<TModel>;
 

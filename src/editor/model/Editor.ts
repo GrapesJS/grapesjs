@@ -38,8 +38,9 @@ import { HTMLGeneratorBuildOptions } from '../../code_manager/model/HtmlGenerato
 import { CssGeneratorBuildOptions } from '../../code_manager/model/CssGenerator';
 import ComponentView from '../../dom_components/view/ComponentView';
 import { ProjectData } from '../../storage_manager/model/IStorage';
+import CssRules from '../../css_composer/model/CssRules';
+import Frame from '../../canvas/model/Frame';
 
-//@ts-ignore
 Backbone.$ = $;
 
 const deps = [
@@ -70,8 +71,6 @@ const deps = [
 const ts_deps: any[] = [];
 
 Extender({
-  //@ts-ignore
-  Backbone: Backbone,
   $: Backbone.$,
 });
 
@@ -740,7 +739,7 @@ export default class EditorModel extends Model {
    * @return {Rules}
    * @private
    */
-  getStyle() {
+  getStyle(): CssRules {
     return this.Css.getAll();
   }
 
@@ -945,7 +944,7 @@ export default class EditorModel extends Model {
     return this.get('currentFrame');
   }
 
-  getCurrentFrameModel() {
+  getCurrentFrameModel(): Frame {
     return (this.getCurrentFrame() || {}).model;
   }
 

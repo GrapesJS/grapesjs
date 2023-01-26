@@ -9,11 +9,11 @@ import Canvas from '../model/Canvas';
 import FrameWrapView from './FrameWrapView';
 
 export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
-  //@ts-ignore
+  /** @ts-ignore */
   get tagName() {
     return 'iframe';
   }
-  //@ts-ignore
+  /** @ts-ignore */
   get attributes() {
     return { allowfullscreen: 'allowfullscreen' };
   }

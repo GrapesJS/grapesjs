@@ -1,12 +1,14 @@
 import Backbone from 'backbone';
+import { Model, ObjectHash, SetOptions } from '../common';
+import EditorModel from '../editor/model/Editor';
 import Module, { IBaseModule } from './Module';
 
 export default class ModuleModel<
   TModule extends IBaseModule<any> = Module,
-  T extends Backbone.ObjectHash = any,
-  S = Backbone.ModelSetOptions,
+  T extends ObjectHash = any,
+  S = SetOptions,
   E = any
-> extends Backbone.Model<T, S, E> {
+> extends Model<T, S, E> {
   private _module: TModule;
 
   constructor(module: TModule, attributes?: T, options?: Backbone.CombinedModelConstructorOptions<E>) {
@@ -22,7 +24,7 @@ export default class ModuleModel<
     return this._module.config;
   }
 
-  public get em() {
+  public get em(): EditorModel {
     return this._module.em;
   }
 }

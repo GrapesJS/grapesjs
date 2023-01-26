@@ -9,6 +9,7 @@ import { ObjectAny, View } from '../../common';
 import { ComponentOptions } from '../model/types';
 import EditorModel from '../../editor/model/Editor';
 import { DomComponentsConfig } from '../config/config';
+import Editor from '../../editor';
 
 type ClbObj = ReturnType<ComponentView['_clbObj']>;
 
@@ -19,17 +20,17 @@ interface Rect {
   right?: number;
 }
 
-// @ts-ignore
-export default class ComponentView extends View<Component> {
-  // @ts-ignore
+export default class ComponentView extends View</** @ts-ignore */
+Component> {
+  /** @ts-ignore */
   model!: Component;
 
-  // @ts-ignore
+  /** @ts-ignore */
   className() {
     return this.getClasses();
   }
 
-  // @ts-ignore
+  /** @ts-ignore */
   tagName() {
     return this.model.get('tagName')!;
   }
@@ -93,7 +94,7 @@ export default class ComponentView extends View<Component> {
   _clbObj() {
     const { em, model, el } = this;
     return {
-      editor: em && em.getEditor(),
+      editor: em?.getEditor() as Editor,
       model,
       el,
     };

@@ -1,7 +1,8 @@
-import Backbone from 'backbone';
 import ModuleCollection from './ModuleCollection';
 import ModuleModel from './ModuleModel';
 import { IBaseModule } from './Module';
+import { View } from '../common';
+import EditorModel from '../editor/model/Editor';
 
 type ModuleFromModel<TModel extends ModuleModel> = TModel extends ModuleModel<infer M> ? M : unknown;
 type ModuleModelExt<TItem extends ModuleModel | ModuleCollection> = TItem extends ModuleCollection<infer M>
@@ -15,7 +16,7 @@ type ModuleModelExt<TItem extends ModuleModel | ModuleCollection> = TItem extend
 export default class ModuleView<
   TModel extends ModuleModel | ModuleCollection = ModuleModel,
   TElement extends Element = HTMLElement
-> extends Backbone.View<TModel extends ModuleModel ? TModel : undefined, TElement> {
+> extends View<TModel extends ModuleModel ? TModel : undefined, TElement> {
   protected get pfx() {
     return this.ppfx + (this.config as any).stylePrefix || '';
   }
@@ -30,7 +31,7 @@ export default class ModuleView<
     return (this.model as any)?.module ?? this.collection.module;
   }
 
-  protected get em() {
+  protected get em(): EditorModel {
     return this.module.em;
   }
 

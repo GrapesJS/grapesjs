@@ -2,7 +2,7 @@ import ComponentImage from './ComponentImage';
 import { toLowerCase } from '../../utils/mixins';
 
 export default class ComponentMap extends ComponentImage {
-  // @ts-ignore
+  /** @ts-ignore */
   get defaults() {
     // @ts-ignore
     const defs = super.defaults;

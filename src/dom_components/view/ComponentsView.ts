@@ -142,8 +142,7 @@ export default class ComponentsView extends View {
     models.each(model => this.addToCollection(model));
   }
 
-  // @ts-ignore
-  render(parent: HTMLElement) {
+  render(parent?: HTMLElement) {
     const el = this.el;
     const frag = document.createDocumentFragment();
     this.parentEl = parent || this.el;

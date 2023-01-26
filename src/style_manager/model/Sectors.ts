@@ -13,7 +13,7 @@ export default class Sectors extends Collection<Sector> {
     this.listenTo(this, 'reset', this.onReset);
   }
 
-  // @ts-ignore
+  /** @ts-ignore */
   model(props, opts = {}) {
     // @ts-ignore
     const { em } = opts.collection;

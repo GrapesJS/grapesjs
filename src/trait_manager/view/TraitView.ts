@@ -27,7 +27,7 @@ export default class TraitView extends View<Trait> {
 
   appendInput = true;
 
-  // @ts-ignore
+  /** @ts-ignore */
   attributes() {
     return this.model.get('attributes') || {};
   }

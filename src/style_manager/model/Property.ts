@@ -106,7 +106,7 @@ export default class Property<T extends Record<string, any> = PropertyProps> ext
     return result(this.prototype, 'defaults');
   }
 
-  // @ts-ignore
+  /** @ts-ignore */
   defaults() {
     return {
       name: '',

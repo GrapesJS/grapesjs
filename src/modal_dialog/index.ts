@@ -33,7 +33,6 @@
  * @module Modal
  */
 
-import { EventHandler } from 'backbone';
 import { debounce, isFunction, isString } from 'underscore';
 import { Module } from '../abstract';
 import EditorView from '../editor/view/EditorView';
@@ -42,6 +41,7 @@ import { createText } from '../utils/dom';
 import defaults, { ModalConfig } from './config/config';
 import ModalM from './model/Modal';
 import ModalView from './view/ModalView';
+import { EventHandler } from '../common';
 
 export default class ModalModule extends Module<ModalConfig> {
   modal?: ModalView;

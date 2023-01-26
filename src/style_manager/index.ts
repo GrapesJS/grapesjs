@@ -65,7 +65,7 @@
 
 import { isUndefined, isArray, isString, debounce, bindAll } from 'underscore';
 import { isComponent } from '../utils/mixins';
-import { AddOptions, Model } from '../common';
+import { AddOptions, Debounced, Model } from '../common';
 import defaults, { StyleManagerConfig } from './config/config';
 import Sector, { SectorProperties } from './model/Sector';
 import Sectors from './model/Sectors';
@@ -115,11 +115,11 @@ const events = {
 
 export default class StyleManager extends ItemManagerModule<
   StyleManagerConfig,
-  // @ts-ignore
+  /** @ts-ignore */
   Sectors
 > {
   builtIn: PropertyFactory;
-  upAll: ReturnType<typeof debounce>;
+  upAll: Debounced;
   properties: typeof Properties;
   sectors: Sectors;
   SectView!: SectorsView;

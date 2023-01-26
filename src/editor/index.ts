@@ -54,12 +54,37 @@
  * ## Methods
  * @module docsjs.Editor
  */
-import { EventHandler } from 'backbone';
 import { IBaseModule } from '../abstract/Module';
+import AssetManager from '../asset_manager';
+import BlockManager from '../block_manager';
+import CanvasModule from '../canvas';
+import CodeManagerModule from '../code_manager';
+import CommandsModule from '../commands';
+import { EventHandler } from '../common';
+import CssComposer from '../css_composer';
+import CssRule from '../css_composer/model/CssRule';
+import CssRules from '../css_composer/model/CssRules';
+import DeviceManager from '../device_manager';
+import ComponentManager from '../dom_components';
 import Component from '../dom_components/model/Component';
+import Components from '../dom_components/model/Components';
+import ComponentWrapper from '../dom_components/model/ComponentWrapper';
+import I18nModule from '../i18n';
+import KeymapsModule from '../keymaps';
+import ModalModule from '../modal_dialog';
+import LayerManager from '../navigator';
+import PageManager from '../pages';
+import PanelManager from '../panels';
+import ParserModule from '../parser';
 import { CustomParserCss } from '../parser/config/config';
+import RichTextEditorModule from '../rich_text_editor';
+import SelectorManager from '../selector_manager';
+import StorageManager from '../storage_manager';
 import { ProjectData } from '../storage_manager/model/IStorage';
-import cash from '../utils/cash-dom';
+import StyleManager from '../style_manager';
+import TraitManager from '../trait_manager';
+import UndoManagerModule from '../undo_manager';
+import UtilsModule from '../utils';
 import html from '../utils/html';
 import defaults, { EditorConfig, EditorConfigKeys } from './config/config';
 import EditorModel from './model/Editor';
@@ -79,7 +104,7 @@ type EditorModelParam<T extends keyof EditorModel, N extends number> = Parameter
 export default class Editor implements IBaseModule<EditorConfig> {
   editorView?: EditorView;
   editor: EditorModel;
-  $: typeof cash;
+  $: any;
   em: EditorModel;
   config: EditorConfigType;
 
@@ -100,100 +125,100 @@ export default class Editor implements IBaseModule<EditorConfig> {
   get Config() {
     return this.em.config;
   }
-  get I18n() {
+  get I18n(): I18nModule {
     return this.em.I18n;
   }
-  get Utils() {
+  get Utils(): UtilsModule {
     return this.em.Utils;
   }
-  get Commands() {
+  get Commands(): CommandsModule {
     return this.em.Commands;
   }
-  get Keymaps() {
+  get Keymaps(): KeymapsModule {
     return this.em.Keymaps;
   }
-  get Modal() {
+  get Modal(): ModalModule {
     return this.em.Modal;
   }
-  get Panels() {
+  get Panels(): PanelManager {
     return this.em.Panels;
   }
-  get Canvas() {
+  get Canvas(): CanvasModule {
     return this.em.Canvas;
   }
-  get Parser() {
+  get Parser(): ParserModule {
     return this.em.Parser;
   }
-  get CodeManager() {
+  get CodeManager(): CodeManagerModule {
     return this.em.CodeManager;
   }
-  get UndoManager() {
+  get UndoManager(): UndoManagerModule {
     return this.em.UndoManager;
   }
-  get RichTextEditor() {
+  get RichTextEditor(): RichTextEditorModule {
     return this.em.RichTextEditor;
   }
-  get Pages() {
+  get Pages(): PageManager {
     return this.em.Pages;
   }
-  get Components() {
+  get Components(): ComponentManager {
     return this.em.Components;
   }
-  get DomComponents() {
+  get DomComponents(): ComponentManager {
     return this.em.Components;
   }
-  get Layers() {
+  get Layers(): LayerManager {
     return this.em.Layers;
   }
-  get LayerManager() {
+  get LayerManager(): LayerManager {
     return this.em.Layers;
   }
-  get Css() {
+  get Css(): CssComposer {
     return this.em.Css;
   }
-  get CssComposer() {
+  get CssComposer(): CssComposer {
     return this.em.Css;
   }
-  get Storage() {
+  get Storage(): StorageManager {
     return this.em.Storage;
   }
-  get StorageManager() {
+  get StorageManager(): StorageManager {
     return this.em.Storage;
   }
-  get Assets() {
+  get Assets(): AssetManager {
     return this.em.Assets;
   }
-  get AssetManager() {
+  get AssetManager(): AssetManager {
     return this.em.Assets;
   }
-  get Blocks() {
+  get Blocks(): BlockManager {
     return this.em.Blocks;
   }
-  get BlockManager() {
+  get BlockManager(): BlockManager {
     return this.em.Blocks;
   }
-  get Traits() {
+  get Traits(): TraitManager {
     return this.em.Traits;
   }
-  get TraitManager() {
+  get TraitManager(): TraitManager {
     return this.em.Traits;
   }
-  get Selectors() {
+  get Selectors(): SelectorManager {
     return this.em.Selectors;
   }
-  get SelectorManager() {
+  get SelectorManager(): SelectorManager {
     return this.em.Selectors;
   }
-  get Styles() {
+  get Styles(): StyleManager {
     return this.em.Styles;
   }
-  get StyleManager() {
+  get StyleManager(): StyleManager {
     return this.em.Styles;
   }
-  get Devices() {
+  get Devices(): DeviceManager {
     return this.em.Devices;
   }
-  get DeviceManager() {
+  get DeviceManager(): DeviceManager {
     return this.em.Devices;
   }
 
@@ -251,7 +276,7 @@ export default class Editor implements IBaseModule<EditorConfig> {
    * Return the complete tree of components. Use `getWrapper` to include also the wrapper
    * @return {Components}
    */
-  getComponents() {
+  getComponents(): Components {
     return this.Components.getComponents();
   }
 
@@ -259,7 +284,7 @@ export default class Editor implements IBaseModule<EditorConfig> {
    * Return the wrapper and its all components
    * @return {Component}
    */
-  getWrapper() {
+  getWrapper(): ComponentWrapper | undefined {
     return this.Components.getWrapper();
   }
 
@@ -307,7 +332,7 @@ export default class Editor implements IBaseModule<EditorConfig> {
    * Returns style in JSON format object
    * @return {Object}
    */
-  getStyle() {
+  getStyle(): CssRules {
     return this.em.Css.getAll();
   }
 
@@ -335,7 +360,7 @@ export default class Editor implements IBaseModule<EditorConfig> {
    * @example
    * editor.addStyle('.cls{color: red}');
    */
-  addStyle(style: any, opts = {}) {
+  addStyle(style: any, opts = {}): CssRule[] {
     return this.em.addStyle(style, opts);
   }
 

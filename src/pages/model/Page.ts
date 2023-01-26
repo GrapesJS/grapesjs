@@ -4,6 +4,7 @@ import Frames from '../../canvas/model/Frames';
 import Frame from '../../canvas/model/Frame';
 import EditorModel from '../../editor/model/Editor';
 import { PageManagerConfig } from '..';
+import ComponentWrapper from '../../dom_components/model/ComponentWrapper';
 
 export default class Page extends Model {
   defaults() {
@@ -73,8 +74,7 @@ export default class Page extends Model {
    * @example
    * const arrayOfFrames = page.getAllFrames();
    */
-  getAllFrames(): Frame[] {
-    //@ts-ignore
+  getAllFrames() {
     return this.getFrames().models || [];
   }
 
@@ -84,7 +84,7 @@ export default class Page extends Model {
    * @example
    * const mainFrame = page.getMainFrame();
    */
-  getMainFrame(): Frame {
+  getMainFrame() {
     return this.getFrames().at(0);
   }
 
@@ -95,7 +95,7 @@ export default class Page extends Model {
    * const rootComponent = page.getMainComponent();
    * console.log(rootComponent.toHTML());
    */
-  getMainComponent() {
+  getMainComponent(): ComponentWrapper {
     const frame = this.getMainFrame();
     return frame?.getComponent();
   }

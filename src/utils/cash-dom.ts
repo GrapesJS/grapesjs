@@ -1386,4 +1386,4 @@ fn.siblings = function () {
 // @optional offset/index.js
 // @optional traversal/index.js
 // @require core/index.js
-export default cash;
+export default cash as any;

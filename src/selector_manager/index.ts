@@ -74,7 +74,7 @@
 
 import { isString, debounce, isObject, isArray, bindAll } from 'underscore';
 import { isComponent, isRule } from '../utils/mixins';
-import { Model, Collection, RemoveOptions } from '../common';
+import { Model, Collection, RemoveOptions, Debounced } from '../common';
 import defaults, { SelectorManagerConfig } from './config/config';
 import Selector from './model/Selector';
 import Selectors from './model/Selectors';
@@ -84,6 +84,7 @@ import EditorModel from '../editor/model/Editor';
 import Component from '../dom_components/model/Component';
 import { ItemManagerModule } from '../abstract/Module';
 import { StyleModuleParam } from '../style_manager';
+import StyleableModel from '../domain_abstract/model/StyleableModel';
 
 const isId = (str: string) => isString(str) && str[0] == '#';
 const isClass = (str: string) => isString(str) && str[0] == '.';
@@ -120,7 +121,7 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
   selected: Selectors;
   all: Selectors;
   storageKey = '';
-  __update: ReturnType<typeof debounce>;
+  __update: Debounced;
 
   /**
    * Get configuration object
@@ -161,7 +162,6 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
     this.em.trigger(this.events.custom, this.__customData(opts));
   }
 
-  // @ts-ignore
   getAll<T extends { array?: boolean }>(opts: T = {} as T) {
     return (this.all ? (opts.array ? [...this.all.models] : this.all) : []) as T['array'] extends true
       ? Selector[]
@@ -428,7 +428,7 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
    * const targetsToStyle = selectorManager.getSelectedTargets();
    * console.log(targetsToStyle.map(target => target.getSelectorsString()))
    */
-  getSelectedTargets() {
+  getSelectedTargets(): StyleableModel[] {
     return this.em.Styles.getSelectedAll();
   }
 
@@ -475,7 +475,6 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
    * @return {HTMLElement}
    * @private
    */
-  // @ts-ignore
   render(selectors: any[]) {
     const { selectorTags } = this;
     const config = this.getConfig();

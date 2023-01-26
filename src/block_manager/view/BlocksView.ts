@@ -1,4 +1,5 @@
 import { isString, isObject, bindAll } from 'underscore';
+import BlockManager from '..';
 import { View } from '../../common';
 import Component from '../../dom_components/model/Component';
 import EditorModel from '../../editor/model/Editor';
@@ -49,7 +50,7 @@ export default class BlocksView extends View {
     }
   }
 
-  __getModule() {
+  __getModule(): BlockManager {
     return this.em.Blocks;
   }
 

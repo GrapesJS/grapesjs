@@ -111,7 +111,7 @@ export default class Sorter extends View {
   $plh?: any;
   toMove?: Model | Model[];
 
-  // @ts-ignore todo move to simple class
+  /** @ts-ignore */
   initialize(opt: SorterOptions = {}) {
     this.opt = opt || {};
     bindAll(this, 'startSort', 'onMove', 'endMove', 'rollback', 'updateOffset', 'moveDragHelper');

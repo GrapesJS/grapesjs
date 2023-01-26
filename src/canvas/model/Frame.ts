@@ -5,6 +5,7 @@ import ComponentWrapper from '../../dom_components/model/ComponentWrapper';
 import { isComponent, isObject } from '../../utils/mixins';
 import FrameView from '../view/FrameView';
 import Frames from './Frames';
+import Page from '../../pages/model/Page';
 
 const keyAutoW = '__aw';
 const keyAutoH = '__ah';
@@ -173,7 +174,7 @@ export default class Frame extends ModuleModel<CanvasModule> {
     this.removeHeadByAttr('src', src, 'script');
   }
 
-  getPage() {
+  getPage(): Page | undefined {
     return (this.collection as unknown as Frames)?.page;
   }
 

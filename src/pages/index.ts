@@ -51,6 +51,7 @@ import { ItemManagerModule, ModuleConfig } from '../abstract/Module';
 import Pages from './model/Pages';
 import Page from './model/Page';
 import EditorModel from '../editor/model/Editor';
+import ComponentWrapper from '../dom_components/model/ComponentWrapper';
 
 export const evAll = 'page';
 export const evPfx = `${evAll}:`;
@@ -226,7 +227,7 @@ export default class PageManager extends ItemManagerModule<PageManagerConfig, Pa
    * // Get all `image` components from the project
    * const allImages = wrappers.map(wrp => wrp.findType('image')).flat();
    */
-  getAllWrappers() {
+  getAllWrappers(): ComponentWrapper[] {
     const pages = this.getAll();
     return unique(flatten(pages.map(page => page.getAllFrames().map(frame => frame.getComponent()))));
   }

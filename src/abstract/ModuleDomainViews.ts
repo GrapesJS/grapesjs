@@ -1,7 +1,7 @@
-import Backbone from 'backbone';
 import ModuleView from './ModuleView';
 import ModuleCollection from './ModuleCollection';
 import ModuleModel from './ModuleModel';
+import { View } from '../common';
 
 export default abstract class ModuleDomainViews<
   TCollection extends ModuleCollection,
@@ -84,7 +84,7 @@ export default abstract class ModuleDomainViews<
     const { viewCollection } = this;
     this.onRemoveBefore(viewCollection, opts);
     this.clearItems();
-    Backbone.View.prototype.remove.apply(this, opts);
+    View.prototype.remove.apply(this, opts);
     this.onRemove(viewCollection, opts);
     return this;
   }

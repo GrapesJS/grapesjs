@@ -35,7 +35,7 @@ export default class CategoryView extends View<Category> {
     `;
   }
 
-  // @ts-ignore
+  /** @ts-ignore */
   attributes() {
     return this.model.get('attributes') || {};
   }

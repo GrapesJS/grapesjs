@@ -178,7 +178,7 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
     return this.rules.find(rule => rule.compare(slc, state, width, ruleProps)) || null;
   }
 
-  getAll(): CssRules {
+  getAll() {
     return this.rules;
   }
 

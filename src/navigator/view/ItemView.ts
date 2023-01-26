@@ -91,7 +91,7 @@ export default class ItemView extends View {
   module: any;
   config: any;
   sorter: any;
-  // @ts-ignore
+  /** @ts-ignore */
   model!: Component;
   parentView: ItemView;
   items?: ItemsView;

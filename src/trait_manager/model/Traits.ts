@@ -33,7 +33,7 @@ export default class Traits extends Collection<Trait> {
     this.target = target;
   }
 
-  // @ts-ignore
+  /** @ts-ignore */
   add(models: string | Trait | TraitProperties | (string | Trait | TraitProperties)[], opt?: AddOptions) {
     const em = this.em;
 

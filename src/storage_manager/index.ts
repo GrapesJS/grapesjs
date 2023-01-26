@@ -265,7 +265,7 @@ export default class StorageManager extends Module<
     });
   }
 
-  getRecovery() {
+  getRecovery(): StorageManagerConfig['recovery'] {
     return this.config.recovery;
   }
 

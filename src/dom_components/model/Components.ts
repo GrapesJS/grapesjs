@@ -5,7 +5,6 @@ import { AddOptions, Collection, ObjectAny } from '../../common';
 import { DomComponentsConfig } from '../config/config';
 import EditorModel from '../../editor/model/Editor';
 import ComponentManager from '..';
-import CssRules from '../../css_composer/model/CssRules';
 import CssRule from '../../css_composer/model/CssRule';
 import { ComponentAdd, ComponentDefinitionDefined, ComponentProperties } from './types';
 
@@ -69,8 +68,8 @@ export interface ComponentsOptions {
   domc?: ComponentManager;
 }
 
-// @ts-ignore
-export default class Components extends Collection<Component> {
+export default class Components extends Collection</** @ts-ignore */
+Component> {
   opt!: ComponentsOptions;
   config?: DomComponentsConfig;
   em!: EditorModel;
@@ -186,7 +185,7 @@ export default class Components extends Collection<Component> {
     removed.__postRemove();
   }
 
-  // @ts-ignore
+  /** @ts-ignore */
   model(attrs: Partial<ComponentProperties>, options: any) {
     const { opt } = options.collection;
     const em = opt.em as EditorModel;
@@ -237,7 +236,7 @@ export default class Components extends Collection<Component> {
     return parsed.html;
   }
 
-  // @ts-ignore
+  /** @ts-ignore */
   add(models: ComponentAdd, opt: AddOptions & { previousModels?: Component[]; keepIds?: string[] } = {}) {
     opt.keepIds = [...(opt.keepIds || []), ...getComponentIds(opt.previousModels)];
 

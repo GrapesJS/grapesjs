@@ -32,7 +32,7 @@ export default class CssRules extends Collection<CssRule> {
     em.UndoManager.remove(removed);
   }
 
-  // @ts-ignore
+  /** @ts-ignore */
   add(models: any, opt: any = {}) {
     if (typeof models === 'string') {
       models = this.editor.get('Parser').parseCss(models);

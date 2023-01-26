@@ -130,8 +130,7 @@ export abstract class ItemManagerModule<
   abstract storageKey: string;
   abstract destroy(): void;
   postLoad(key: any): void {}
-  // @ts-ignore
-  render() {}
+  render(opts?: any) {}
 
   getProjectData(data?: any) {
     const obj: any = {};
