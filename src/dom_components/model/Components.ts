@@ -68,6 +68,7 @@ export interface ComponentsOptions {
 }
 
 export default class Components extends Collection</** @ts-ignore */
+/** @ts-ignore */
 Component> {
   opt!: ComponentsOptions;
   config?: DomComponentsConfig;
