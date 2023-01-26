@@ -1,9 +1,6 @@
-import Backbone from 'backbone';
-import { View } from '../../common';
+import { View, $ } from '../../common';
 import { appendStyles } from '../../utils/mixins';
 import EditorModel from '../model/Editor';
-
-const $ = Backbone.$;
 
 export default class EditorView extends View<EditorModel> {
   constructor(model: EditorModel) {

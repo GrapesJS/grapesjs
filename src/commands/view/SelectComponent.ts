@@ -1,13 +1,12 @@
-import Backbone from 'backbone';
-import { bindAll, isElement, debounce } from 'underscore';
-import { on, off, getUnitFromValue, isTaggableNode, getViewEl, hasWin } from '../../utils/mixins';
-import { isVisible, isDoc } from '../../utils/dom';
-import ToolbarView from '../../dom_components/view/ToolbarView';
-import Toolbar from '../../dom_components/model/Toolbar';
-import { CommandObject } from './CommandAbstract';
+import { bindAll, debounce, isElement } from 'underscore';
+import { $ } from '../../common';
 import Component from '../../dom_components/model/Component';
+import Toolbar from '../../dom_components/model/Toolbar';
+import ToolbarView from '../../dom_components/view/ToolbarView';
+import { isDoc, isVisible } from '../../utils/dom';
+import { getUnitFromValue, getViewEl, hasWin, isTaggableNode, off, on } from '../../utils/mixins';
+import { CommandObject } from './CommandAbstract';
 
-const $ = Backbone.$;
 let showOffsets: boolean;
 /**
  * This command is responsible for show selecting components and displaying

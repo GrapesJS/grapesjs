@@ -44,35 +44,33 @@ import Frame from '../../canvas/model/Frame';
 Backbone.$ = $;
 
 const deps = [
-  require('utils'),
-  require('i18n'),
-  require('keymaps'),
-  require('undo_manager'),
-  require('storage_manager'),
-  require('device_manager'),
-  require('parser'),
-  require('style_manager'),
-  require('selector_manager'),
-  require('modal_dialog'),
-  require('code_manager'),
-  require('panels'),
-  require('rich_text_editor'),
-  require('asset_manager'),
-  require('css_composer'),
-  require('pages'),
-  require('trait_manager'),
-  require('dom_components'),
-  require('navigator'),
-  require('canvas'),
-  require('commands'),
-  require('block_manager'),
+  UtilsModule,
+  I18nModule,
+  KeymapsModule,
+  UndoManagerModule,
+  StorageManager,
+  DeviceManager,
+  ParserModule,
+  StyleManager,
+  SelectorManager,
+  ModalModule,
+  CodeManagerModule,
+  PanelManager,
+  RichTextEditorModule,
+  AssetManager,
+  CssComposer,
+  PageManager,
+  TraitManager,
+  ComponentManager,
+  LayerManager,
+  CanvasModule,
+  CommandsModule,
+  BlockManager,
 ];
 
 const ts_deps: any[] = [];
 
-Extender({
-  $: Backbone.$,
-});
+Extender({ $ });
 
 const logs = {
   debug: console.log,
@@ -378,9 +376,8 @@ export default class EditorModel extends Model {
    * @return {this}
    * @private
    */
-  loadModule(moduleName: any) {
+  loadModule(Module: any) {
     const { config } = this;
-    const Module = moduleName.default || moduleName;
     const Mod = new Module(this);
     const name = (Mod.name.charAt(0).toLowerCase() + Mod.name.slice(1)) as EditorConfigKeys;
     const cfgParent = !isUndefined(config[name]) ? config[name] : config[Mod.name as EditorConfigKeys];

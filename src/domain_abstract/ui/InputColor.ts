@@ -1,9 +1,8 @@
-import Backbone from 'backbone';
 import { isUndefined } from 'underscore';
 import ColorPicker from '../../utils/ColorPicker';
+import $ from '../../utils/cash-dom';
 import Input from './Input';
 
-const { $ } = Backbone;
 $ && ColorPicker($);
 
 const getColor = (color: any) => {

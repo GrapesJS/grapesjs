@@ -1,10 +1,8 @@
-import { extend, bindAll } from 'underscore';
-import Backbone from 'backbone';
-import SelectComponent from './SelectComponent';
-import { CommandObject } from './CommandAbstract';
+import { bindAll, extend } from 'underscore';
+import { $ } from '../../common';
 import Component from '../../dom_components/model/Component';
-
-const $ = Backbone.$;
+import { CommandObject } from './CommandAbstract';
+import SelectComponent from './SelectComponent';
 
 export default extend({}, SelectComponent, {
   init() {

@@ -1,12 +1,9 @@
-import Backbone from 'backbone';
 import { isString, isFunction, isArray, result, each, bindAll } from 'underscore';
 import { on, off, matches, getElement, getPointerEvent, isTextNode, getModel } from './mixins';
-import { View, Model } from '../common';
+import { View, Model, Collection, $ } from '../common';
 import EditorModel from '../editor/model/Editor';
 import { BlockProperties } from '../block_manager/model/Block';
 import CanvasModule from '../canvas';
-
-const $ = Backbone.$;
 
 const noop = () => {};
 
@@ -474,7 +471,7 @@ export default class Sorter extends View {
    * @param  {Model|null} model
    */
   selectTargetModel(model?: Model, source?: Model) {
-    if (model instanceof Backbone.Collection) {
+    if (model instanceof Collection) {
       return;
     }
 
@@ -706,7 +703,7 @@ export default class Sorter extends View {
       result.dropInfo = res;
       droppable = res;
     } else {
-      droppable = droppable instanceof Backbone.Collection ? 1 : droppable;
+      droppable = droppable instanceof Collection ? 1 : droppable;
       droppable = droppable instanceof Array ? droppable.join(', ') : droppable;
       result.dropInfo = droppable;
       droppable = isString(droppable) ? this.matches(src, droppable) : droppable;
@@ -1242,7 +1239,7 @@ export default class Sorter extends View {
     const validResult = this.validTarget(dst, srcEl);
     const targetCollection = $(dst).data('collection');
     const { trgModel, srcModel, draggable } = validResult;
-    const droppable = trgModel instanceof Backbone.Collection ? 1 : validResult.droppable;
+    const droppable = trgModel instanceof Collection ? 1 : validResult.droppable;
     let modelToDrop, created;
 
     if (targetCollection && droppable && draggable) {

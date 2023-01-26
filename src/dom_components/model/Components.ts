@@ -1,12 +1,11 @@
-import Backbone from 'backbone';
-import { isEmpty, isArray, isString, isFunction, each, includes, extend, flatten, debounce, keys } from 'underscore';
+import { isEmpty, isArray, isString, isFunction, each, includes, extend, flatten, keys } from 'underscore';
 import Component from './Component';
 import { AddOptions, Collection, ObjectAny } from '../../common';
 import { DomComponentsConfig } from '../config/config';
 import EditorModel from '../../editor/model/Editor';
 import ComponentManager from '..';
 import CssRule from '../../css_composer/model/CssRule';
-import { ComponentAdd, ComponentDefinitionDefined, ComponentProperties } from './types';
+import { ComponentAdd, ComponentProperties } from './types';
 
 export const getComponentIds = (cmp?: Component | Component[] | Components, res: string[] = []) => {
   if (!cmp) return [];
@@ -258,7 +257,7 @@ Component> {
     // @ts-ignore
     models = isMult ? flatten(models as any, 1) : models[0];
 
-    const result = Backbone.Collection.prototype.add.apply(this, [models as any, opt]);
+    const result = Collection.prototype.add.apply(this, [models as any, opt]);
     this.__firstAdd = result;
     return result;
   }

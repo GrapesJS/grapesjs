@@ -1,8 +1,7 @@
-import Backbone from 'backbone';
 import { isUndefined } from 'underscore';
+import { $ } from '../../common';
 import { isTextNode } from '../../utils/mixins';
 import { CommandObject } from './CommandAbstract';
-const $ = Backbone.$;
 
 export default {
   getOffsetMethod(state: string) {

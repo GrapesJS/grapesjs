@@ -1,12 +1,9 @@
-import Backbone from 'backbone';
-import { isUndefined, isString, isFunction } from 'underscore';
-import { SetOptions, View } from '../../common';
+import { isFunction, isString, isUndefined } from 'underscore';
+import { $, SetOptions, View } from '../../common';
+import Component from '../../dom_components/model/Component';
+import EditorModel from '../../editor/model/Editor';
 import { capitalize } from '../../utils/mixins';
 import Trait from '../model/Trait';
-import EditorModel from '../../editor/model/Editor';
-import Component from '../../dom_components/model/Component';
-
-const $ = Backbone.$;
 
 export default class TraitView extends View<Trait> {
   pfx: string;

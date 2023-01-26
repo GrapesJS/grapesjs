@@ -1,8 +1,6 @@
-import Backbone from 'backbone';
 import { isString, isUndefined } from 'underscore';
+import { $ } from '../../common';
 import TraitView from './TraitView';
-
-const $ = Backbone.$;
 
 export default class TraitSelectView extends TraitView {
   constructor(o = {}) {
@@ -55,9 +53,9 @@ export default class TraitSelectView extends TraitView {
       this.$input = $(input);
       const val = model.getTargetValue();
       const valResult = values.indexOf(val) >= 0 ? val : model.get('default');
-      !isUndefined(valResult) && this.$input.val(valResult);
+      !isUndefined(valResult) && this.$input!.val(valResult);
     }
 
-    return this.$input.get(0);
+    return this.$input!.get(0);
   }
 }

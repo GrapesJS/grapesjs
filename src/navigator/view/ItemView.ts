@@ -1,5 +1,5 @@
 import { isString, bindAll } from 'underscore';
-import { View } from '../../common';
+import { View, ViewOptions } from '../../common';
 import { getModel, isEscKey, isEnterKey } from '../../utils/mixins';
 import ComponentView from '../../dom_components/view/ComponentView';
 import Component, { eventDrag } from '../../dom_components/model/Component';
@@ -7,7 +7,7 @@ import ItemsView from './ItemsView';
 import EditorModel from '../../editor/model/Editor';
 import LayerManager from '../index';
 
-export type ItemViewProps = Backbone.ViewOptions & {
+export type ItemViewProps = ViewOptions & {
   ItemView: ItemView;
   level: number;
   config: any;

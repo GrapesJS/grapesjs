@@ -1,7 +1,5 @@
-import Backbone from 'backbone';
 import { CommandObject } from './CommandAbstract';
-
-const $ = Backbone.$;
+import { $ } from '../../common';
 
 export default {
   run(editor, sender) {

@@ -1,4 +1,5 @@
 import Backbone from 'backbone';
+export { default as $ } from '../utils/cash-dom';
 
 export type Debounced = Function & { cancel(): void };
 
@@ -20,6 +21,14 @@ export type Position = {
   x: number;
   y: number;
 };
+
+export type CombinedModelConstructorOptions<
+  E,
+  M extends Model<any, any, E> = Model
+> = Backbone.ModelConstructorOptions<M> & E;
+
+export interface ViewOptions<TModel extends Model | undefined = Model, TElement extends Element = HTMLElement>
+  extends Backbone.ViewOptions<TModel, TElement> {}
 
 export class Model<T extends ObjectHash = any, S = SetOptions, E = any> extends Backbone.Model<T, S, E> {}
 

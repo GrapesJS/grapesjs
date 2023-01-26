@@ -1,8 +1,5 @@
-import Backbone from 'backbone';
-import { View } from '../../common';
+import { View, $ } from '../../common';
 import EditorModel from '../../editor/model/Editor';
-
-const $ = Backbone.$;
 
 export default class Input extends View {
   ppfx!: string;

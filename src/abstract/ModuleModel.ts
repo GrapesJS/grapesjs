@@ -1,5 +1,4 @@
-import Backbone from 'backbone';
-import { Model, ObjectHash, SetOptions } from '../common';
+import { Model, ObjectHash, SetOptions, CombinedModelConstructorOptions } from '../common';
 import EditorModel from '../editor/model/Editor';
 import Module, { IBaseModule } from './Module';
 
@@ -11,7 +10,7 @@ export default class ModuleModel<
 > extends Model<T, S, E> {
   private _module: TModule;
 
-  constructor(module: TModule, attributes?: T, options?: Backbone.CombinedModelConstructorOptions<E>) {
+  constructor(module: TModule, attributes?: T, options?: CombinedModelConstructorOptions<E>) {
     super(attributes, options);
     this._module = module;
   }

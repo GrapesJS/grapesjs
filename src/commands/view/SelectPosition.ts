@@ -1,6 +1,5 @@
-import Backbone from 'backbone';
+import { $ } from '../../common';
 import { CommandObject } from './CommandAbstract';
-const $ = Backbone.$;
 
 export default {
   /**

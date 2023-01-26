@@ -1,12 +1,10 @@
 import { extend, bindAll } from 'underscore';
-import Backbone from 'backbone';
+import { $ } from '../../common';
 import { on, off } from '../../utils/mixins';
 import SelectComponent from './SelectComponent';
 import SelectPosition from './SelectPosition';
 import { CommandObject } from './CommandAbstract';
 import Component from '../../dom_components/model/Component';
-
-const $ = Backbone.$;
 
 export default extend({}, SelectPosition, SelectComponent, {
   init(o: any) {
