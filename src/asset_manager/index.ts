@@ -52,6 +52,19 @@ import Assets from './model/Assets';
 import AssetsView from './view/AssetsView';
 import FileUploaderView from './view/FileUploader';
 
+export type AssetEvent =
+  | 'asset'
+  | 'asset:open'
+  | 'asset:close'
+  | 'asset:add'
+  | 'asset:remove'
+  | 'asset:update'
+  | 'asset:custom'
+  | 'asset:upload:start'
+  | 'asset:upload:end'
+  | 'asset:upload:error'
+  | 'asset:upload:response';
+
 export const evAll = 'asset';
 export const evPfx = `${evAll}:`;
 export const evSelect = `${evPfx}select`;

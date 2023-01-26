@@ -44,6 +44,8 @@ import EditorModel from '../editor/model/Editor';
 import { removeEl } from '../utils/dom';
 import ComponentView from '../dom_components/view/ComponentView';
 
+export type RichTextEditorEvent = 'rte:enable' | 'rte:disable';
+
 const eventsUp = 'change:canvasOffset frame:scroll component:update';
 
 export interface CustomRTE<T = any> {

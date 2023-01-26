@@ -80,6 +80,15 @@ import CssRule from '../css_composer/model/CssRule';
 import StyleableModel from '../domain_abstract/model/StyleableModel';
 import { CustomPropertyView } from './view/PropertyView';
 
+export type StyleManagerEvent =
+  | 'style:sector:add'
+  | 'style:sector:remove'
+  | 'style:sector:update'
+  | 'style:property:add'
+  | 'style:property:remove'
+  | 'style:property:update'
+  | 'style:target';
+
 type StyleTarget = StyleableModel;
 
 export const evAll = 'style';

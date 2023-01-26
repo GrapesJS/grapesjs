@@ -99,6 +99,24 @@ import { ItemManagerModule } from '../abstract/Module';
 import EditorModel from '../editor/model/Editor';
 import { ComponentAdd } from './model/types';
 
+export type ComponentEvent =
+  | 'component:create'
+  | 'component:mount'
+  | 'component:add'
+  | 'component:remove'
+  | 'component:remove:before'
+  | 'component:clone'
+  | 'component:update'
+  | 'component:styleUpdate'
+  | 'component:selected'
+  | 'component:deselected'
+  | 'component:toggled'
+  | 'component:type:add'
+  | 'component:type:update'
+  | 'component:drag:start'
+  | 'component:drag'
+  | 'component:drag:end';
+
 export default class ComponentManager extends ItemManagerModule {
   componentTypes = [
     {

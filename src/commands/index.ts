@@ -50,6 +50,8 @@ import { eventDrag } from '../dom_components/model/Component';
 import Editor from '../editor/model/Editor';
 import { ObjectAny } from '../common';
 
+export type CommandEvent = 'run' | 'stop' | `run:${string}` | `stop:${string}` | `abort:${string}`;
+
 const commandsDef = [
   ['preview', 'Preview', 'preview'],
   ['resize', 'Resize', 'resize'],

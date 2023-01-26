@@ -43,6 +43,8 @@ import ModalM from './model/Modal';
 import ModalView from './view/ModalView';
 import { EventHandler } from '../common';
 
+export type ModalEvent = 'modal:open' | 'modal:close' | 'modal';
+
 export default class ModalModule extends Module<ModalConfig> {
   modal?: ModalView;
 

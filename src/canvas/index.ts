@@ -57,6 +57,8 @@ import Frame from './model/Frame';
 import CanvasView from './view/CanvasView';
 import FrameView from './view/FrameView';
 
+export type CanvasEvent = 'canvas:dragenter' | 'canvas:dragover' | 'canvas:drop' | 'canvas:dragend' | 'canvas:dragdata';
+
 export default class CanvasModule extends Module<CanvasConfig> {
   /**
    * Get configuration object

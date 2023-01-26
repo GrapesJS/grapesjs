@@ -86,6 +86,8 @@ import { ItemManagerModule } from '../abstract/Module';
 import { StyleModuleParam } from '../style_manager';
 import StyleableModel from '../domain_abstract/model/StyleableModel';
 
+export type SelectorEvent = 'selector:add' | 'selector:remove' | 'selector:update' | 'selector:state' | 'selector';
+
 const isId = (str: string) => isString(str) && str[0] == '#';
 const isClass = (str: string) => isString(str) && str[0] == '.';
 

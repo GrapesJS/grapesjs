@@ -55,33 +55,33 @@
  * @module docsjs.Editor
  */
 import { IBaseModule } from '../abstract/Module';
-import AssetManager from '../asset_manager';
-import BlockManager from '../block_manager';
-import CanvasModule from '../canvas';
+import AssetManager, { AssetEvent } from '../asset_manager';
+import BlockManager, { BlockEvent } from '../block_manager';
+import CanvasModule, { CanvasEvent } from '../canvas';
 import CodeManagerModule from '../code_manager';
-import CommandsModule from '../commands';
+import CommandsModule, { CommandEvent } from '../commands';
 import { EventHandler } from '../common';
 import CssComposer from '../css_composer';
 import CssRule from '../css_composer/model/CssRule';
 import CssRules from '../css_composer/model/CssRules';
 import DeviceManager from '../device_manager';
-import ComponentManager from '../dom_components';
+import ComponentManager, { ComponentEvent } from '../dom_components';
 import Component from '../dom_components/model/Component';
 import Components from '../dom_components/model/Components';
 import ComponentWrapper from '../dom_components/model/ComponentWrapper';
 import I18nModule from '../i18n';
-import KeymapsModule from '../keymaps';
-import ModalModule from '../modal_dialog';
+import KeymapsModule, { KeymapEvent } from '../keymaps';
+import ModalModule, { ModalEvent } from '../modal_dialog';
 import LayerManager from '../navigator';
 import PageManager from '../pages';
 import PanelManager from '../panels';
 import ParserModule from '../parser';
 import { CustomParserCss } from '../parser/config/config';
-import RichTextEditorModule from '../rich_text_editor';
-import SelectorManager from '../selector_manager';
-import StorageManager from '../storage_manager';
+import RichTextEditorModule, { RichTextEditorEvent } from '../rich_text_editor';
+import SelectorManager, { SelectorEvent } from '../selector_manager';
+import StorageManager, { StorageEvent } from '../storage_manager';
 import { ProjectData } from '../storage_manager/model/IStorage';
-import StyleManager from '../style_manager';
+import StyleManager, { StyleManagerEvent } from '../style_manager';
 import TraitManager from '../trait_manager';
 import UndoManagerModule from '../undo_manager';
 import UtilsModule from '../utils';
@@ -96,6 +96,23 @@ export type ParsedRule = {
   atRule?: string;
   params?: string;
 };
+
+type EditorEvent =
+  | ComponentEvent
+  | BlockEvent
+  | AssetEvent
+  | KeymapEvent
+  | StyleManagerEvent
+  | StorageEvent
+  | CanvasEvent
+  | SelectorEvent
+  | RichTextEditorEvent
+  | ModalEvent
+  | CommandEvent
+  | GeneralEvent
+  | string;
+
+type GeneralEvent = 'canvasScroll' | 'undo' | 'redo' | 'load' | 'update';
 
 type EditorConfigType = EditorConfig & { pStylePrefix?: string };
 
@@ -714,7 +731,7 @@ export default class Editor implements IBaseModule<EditorConfig> {
    * @param  {Function} callback Callback function
    * @return {this}
    */
-  on(event: string, callback: EventHandler) {
+  on(event: EditorEvent, callback: EventHandler) {
     this.em.on(event, callback);
     return this;
   }
@@ -725,7 +742,7 @@ export default class Editor implements IBaseModule<EditorConfig> {
    * @param  {Function} callback Callback function
    * @return {this}
    */
-  once(event: string, callback: EventHandler) {
+  once(event: EditorEvent, callback: EventHandler) {
     this.em.once(event, callback);
     return this;
   }
@@ -736,7 +753,7 @@ export default class Editor implements IBaseModule<EditorConfig> {
    * @param  {Function} callback Callback function
    * @return {this}
    */
-  off(event: string, callback: EventHandler) {
+  off(event: EditorEvent, callback: EventHandler) {
     this.em.off(event, callback);
     return this;
   }
@@ -746,8 +763,8 @@ export default class Editor implements IBaseModule<EditorConfig> {
    * @param  {string} event Event to trigger
    * @return {this}
    */
-  trigger(eventName: string, ...args: any[]) {
-    this.em.trigger.apply(this.em, [eventName, ...args]);
+  trigger(event: EditorEvent, ...args: any[]) {
+    this.em.trigger.apply(this.em, [event, ...args]);
     return this;
   }
 

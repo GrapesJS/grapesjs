@@ -50,6 +50,8 @@ import { Module } from '../abstract';
 import EditorModel from '../editor/model/Editor';
 import defaults, { Keymap, KeymapOptions, KeymapsConfig } from './config';
 
+export type KeymapEvent = 'keymap:add' | 'keymap:remove' | 'keymap:emit' | `keymap:emit:${string}`;
+
 hasWin() && keymaster.init(window);
 
 export default class KeymapsModule extends Module<KeymapsConfig & { name?: string }> {
