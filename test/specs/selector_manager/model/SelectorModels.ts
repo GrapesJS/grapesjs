@@ -1,15 +1,13 @@
-import Selector from 'selector_manager/model/Selector';
-import Selectors from 'selector_manager/model/Selectors';
+import Selector from '../../../../src/selector_manager/model/Selector';
+import Selectors from '../../../../src/selector_manager/model/Selectors';
 
 describe('Selector', () => {
-  var obj;
+  let obj: Selector;
+  const nameToEscape = '@Te s:T*';
+  const nameEscaped = '@Te-s:T-';
 
   beforeEach(() => {
-    obj = new Selector();
-  });
-
-  afterEach(() => {
-    obj = null;
+    obj = new Selector({});
   });
 
   test('Has name property', () => {
@@ -25,12 +23,12 @@ describe('Selector', () => {
   });
 
   test('escapeName test', () => {
-    expect(Selector.escapeName('@Te sT*')).toEqual('-Te-sT-');
+    expect(Selector.escapeName(nameToEscape)).toEqual(nameEscaped);
   });
 
   test('Name is corrected at instantiation', () => {
-    obj = new Selector({ name: '@Te sT*' });
-    expect(obj.get('name')).toEqual('-Te-sT-');
+    obj = new Selector({ name: nameToEscape });
+    expect(obj.get('name')).toEqual(nameEscaped);
   });
 });
 

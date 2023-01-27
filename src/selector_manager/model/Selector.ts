@@ -179,7 +179,7 @@ export default class Selector extends Model {
    * @private
    */
   static escapeName(name: string) {
-    return `${name}`.trim().replace(/([^a-z0-9\w-\:]+)/gi, '-');
+    return `${name}`.trim().replace(/([^a-z0-9\w-\:@]+)/gi, '-');
   }
 }
 
