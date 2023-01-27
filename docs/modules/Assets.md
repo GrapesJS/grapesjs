@@ -211,7 +211,7 @@ If you need to manage your assets programmatically you have to use its [APIs][AP
 const am = editor.AssetManager;
 ```
 
-First of all, it's worth nothing that Asset Manager keeps 2 collections of assets:
+First of all, it's worth noting that Asset Manager keeps 2 collections of assets:
 * **global** - which is just the one with all available assets, you can get it with `am.getAll()`
 * **visible** - this is the collection which is currently rendered by the Asset Manager, you get it with `am.getAllVisible()`
 

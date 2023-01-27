@@ -57,7 +57,7 @@ grapesjs.init({
 It makes sense to show the Style Manager UI only when you have at least one component selected, so by default the Style Manager is hidden if there are no selected components.
 :::
 
-### Sector defintions
+### Sector definitions
 
 Each sector is identified by its `name` and a list of `properties` to display. You can also specify the `id` in order to access the sector via API (if not indicated it will be generated from the `name`) and the default `open` state.
 
@@ -82,7 +82,7 @@ grapesjs.init({
 });
 ```
 
-### Property defintions
+### Property definitions
 
 Once you have defined your sector you can start adding property definitions inside `properties`. Each property has a common set of options (`label`, `default`, etc.) and others specific by their `type`.
 
