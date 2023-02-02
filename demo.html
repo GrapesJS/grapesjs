@@ -5,7 +5,7 @@
     <title>GrapesJS Demo - Free Open Source Website Page Builder</title>
     <meta content="Best Free Open Source Responsive Websites Builder" name="description">
     <link rel="stylesheet" href="stylesheets/toastr.min.css">
-    <link rel="stylesheet" href="stylesheets/grapes.min.css?v0.20.3">
+    <link rel="stylesheet" href="stylesheets/grapes.min.css?v0.20.4">
     <link rel="stylesheet" href="stylesheets/grapesjs-preset-webpage.min.css">
     <link rel="stylesheet" href="stylesheets/tooltip.css">
     <link rel="stylesheet" href="stylesheets/demos.css?v3">
@@ -13,7 +13,7 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="js/toastr.min.js"></script>
-    <script src="js/grapes.min.js?v0.20.3"></script>
+    <script src="js/grapes.min.js?v0.20.4"></script>
     <script src="https://unpkg.com/grapesjs-preset-webpage@1.0.2"></script>
     <script src="https://unpkg.com/grapesjs-blocks-basic@1.0.1"></script>
     <script src="https://unpkg.com/grapesjs-plugin-forms@2.0.5"></script>
@@ -474,24 +474,24 @@
         }
         .card-header{
           height: 155px;
-          background-image:url("https://via.placeholder.com/350x250/78c5d6/fff/image1.jpg");
+          background-image:url("https://via.placeholder.com/350x250/78c5d6/fff");
           background-size:cover;
           background-position:center center;
         }
         .card-header.ch2{
-          background-image:url("https://via.placeholder.com/350x250/459ba8/fff/image2.jpg");
+          background-image:url("https://via.placeholder.com/350x250/459ba8/fff");
         }
         .card-header.ch3{
-          background-image:url("https://via.placeholder.com/350x250/79c267/fff/image3.jpg");
+          background-image:url("https://via.placeholder.com/350x250/79c267/fff");
         }
         .card-header.ch4{
-          background-image:url("https://via.placeholder.com/350x250/c5d647/fff/image4.jpg");
+          background-image:url("https://via.placeholder.com/350x250/c5d647/fff");
         }
         .card-header.ch5{
-          background-image:url("https://via.placeholder.com/350x250/f28c33/fff/image5.jpg");
+          background-image:url("https://via.placeholder.com/350x250/f28c33/fff");
         }
         .card-header.ch6{
-          background-image:url("https://via.placeholder.com/350x250/e868a2/fff/image6.jpg");
+          background-image:url("https://via.placeholder.com/350x250/e868a2/fff");
         }
         .card-body{
           padding: 15px 15px 5px 15px;
@@ -941,9 +941,19 @@
       var lp = './img/';
       var plp = 'https://via.placeholder.com/350x250/';
       var images = [
-        lp+'team1.jpg', lp+'team2.jpg', lp+'team3.jpg', plp+'78c5d6/fff/image1.jpg', plp+'459ba8/fff/image2.jpg', plp+'79c267/fff/image3.jpg',
-        plp+'c5d647/fff/image4.jpg', plp+'f28c33/fff/image5.jpg', plp+'e868a2/fff/image6.jpg', plp+'cc4360/fff/image7.jpg',
-        lp+'work-desk.jpg', lp+'phone-app.png', lp+'bg-gr-v.png'
+        lp + 'team1.jpg',
+        lp + 'team2.jpg',
+        lp + 'team3.jpg',
+        plp + '78c5d6/fff',
+        plp + '459ba8/fff',
+        plp + '79c267/fff',
+        plp + 'c5d647/fff',
+        plp + 'f28c33/fff',
+        plp + 'e868a2/fff',
+        plp + 'cc4360/fff',
+        lp + 'work-desk.jpg',
+        lp + 'phone-app.png',
+        lp + 'bg-gr-v.png'
       ];
 
       var editor  = grapesjs.init({
