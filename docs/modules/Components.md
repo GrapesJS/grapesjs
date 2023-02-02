@@ -365,7 +365,7 @@ The `model` is probably the one you'll use the most as is what is used for the d
 
 The model defines also what you will see as the resultant HTML (the export code) and you've probably noticed the use of `tagName` (if not specified the `div` will be used) and `attributes` properties on the model.
 
-One another important property (not used because `<input/>` doesn't need it) might be `components`, which defines default internal components
+One another important property (not used in our input component integration because `<input/>` doesn't need it) might be `components`, which defines default internal components
 
 ```js
 defaults: {
