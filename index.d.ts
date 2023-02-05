@@ -26,7 +26,7 @@ declare namespace Backbone {
     forEach(iterator: (item: TModel) => void, context?: any): TModel[];
     filter(iterator: (item: TModel) => boolean, context?: any): TModel[];
     map(iterator: (item: TModel) => any, context?: any): any[];
-    each(callback: (item: TModel) => void);
+    each(callback: (item: TModel) => void): void;
   }
 
   interface GenericModel extends Model<{}> { }
