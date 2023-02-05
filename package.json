@@ -1,7 +1,7 @@
 {
   "name": "grapesjs",
   "description": "Free and Open Source Web Builder Framework",
-  "version": "0.20.3",
+  "version": "0.20.4",
   "author": "Artur Arseniev",
   "license": "BSD-3-Clause",
   "homepage": "http://grapesjs.com",
@@ -107,6 +107,7 @@
     "docs:deploy": "docs/deploy.sh",
     "lint": "eslint . --ext .ts,.js",
     "check": "npm run lint && npm run test",
+    "check:ts": "tsc --noEmit --esModuleInterop dist/index.d.ts",
     "build": "npm run check && run-s build:*",
     "build:js": "grapesjs-cli build --targets=\"> 1%, ie 11, safari 8, not dead\" --statsOutput=\"stats.json\" --localePath=\"src/i18n/locale\"",
     "build:css": "sass src/styles/scss/main.scss dist/css/grapes.min.css --no-source-map --style=compressed --load-path=node_modules",
