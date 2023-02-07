@@ -152,36 +152,36 @@ $ yarn test
 ## Plugins
 
 ### Extensions
-* [grapesjs-plugin-export](https://github.com/GrapesJS/grapesjs-plugin-export) - Export GrapesJS templates in a zip archive
-* [grapesjs-plugin-filestack](https://github.com/GrapesJS/grapesjs-plugin-filestack) - Add Filestack uploader in Asset Manager
-* [grapesjs-plugin-ckeditor](https://github.com/GrapesJS/grapesjs-plugin-ckeditor) - Replaces the built-in RTE with CKEditor
-* [grapesjs-aviary](https://github.com/GrapesJS/grapesjs-aviary) - Add the Aviary Image Editor (dismissed, use the plugin below instead)
-* [grapesjs-tui-image-editor](https://github.com/GrapesJS/grapesjs-tui-image-editor) - GrapesJS TOAST UI Image Editor
-* [grapesjs-blocks-basic](https://github.com/GrapesJS/grapesjs-blocks-basic) - Basic set of blocks
-* [grapesjs-plugin-forms](https://github.com/GrapesJS/grapesjs-plugin-forms) - Set of form components and blocks
-* [grapesjs-navbar](https://github.com/GrapesJS/grapesjs-navbar) - Simple navbar component
-* [grapesjs-component-countdown](https://github.com/GrapesJS/grapesjs-component-countdown) - Simple countdown component
-* [grapesjs-style-gradient](https://github.com/GrapesJS/grapesjs-style-gradient) - Add `gradient` type input to the Style Manager
-* [grapesjs-style-filter](https://github.com/GrapesJS/grapesjs-style-filter) - Add `filter` type input to the Style Manager
-* [grapesjs-style-bg](https://github.com/GrapesJS/grapesjs-style-bg) - Full-stack background style property type, with the possibility to add images, colors, and gradients
-* [grapesjs-blocks-flexbox](https://github.com/GrapesJS/grapesjs-blocks-flexbox) - Add the flexbox block
-* [grapesjs-lory-slider](https://github.com/GrapesJS/grapesjs-lory-slider) - Slider component by using [lory](https://github.com/meandmax/lory)
-* [grapesjs-tabs](https://github.com/GrapesJS/grapesjs-tabs) - Simple tabs component
-* [grapesjs-tooltip](https://github.com/GrapesJS/grapesjs-tooltip) - Simple, CSS only, tooltip component for GrapesJS
-* [grapesjs-custom-code](https://github.com/GrapesJS/grapesjs-custom-code) - Embed custom code
-* [grapesjs-touch](https://github.com/GrapesJS/grapesjs-touch) - Enable touch support
-* [grapesjs-indexeddb](https://github.com/GrapesJS/grapesjs-indexeddb) - Storage wrapper for IndexedDB
-* [grapesjs-firestore](https://github.com/GrapesJS/grapesjs-firestore) - Storage wrapper for [Cloud Firestore](https://firebase.google.com/docs/firestore)
-* [grapesjs-parser-postcss](https://github.com/GrapesJS/grapesjs-parser-postcss) - Custom CSS parser for GrapesJS by using [PostCSS](https://github.com/postcss/postcss)
-* [grapesjs-typed](https://github.com/GrapesJS/grapesjs-typed) - Typed component made by wrapping Typed.js library
+* [grapesjs-plugin-export](https://github.com/GrapesJS/export) - Export GrapesJS templates in a zip archive
+* [grapesjs-plugin-filestack](https://github.com/GrapesJS/filestack) - Add Filestack uploader in Asset Manager
+* [grapesjs-plugin-ckeditor](https://github.com/GrapesJS/ckeditor) - Replaces the built-in RTE with CKEditor
+* [grapesjs-aviary](https://github.com/GrapesJS/aviary) - Add the Aviary Image Editor (dismissed, use the plugin below instead)
+* [grapesjs-tui-image-editor](https://github.com/GrapesJS/tui-image-editor) - GrapesJS TOAST UI Image Editor
+* [grapesjs-blocks-basic](https://github.com/GrapesJS/blocks-basic) - Basic set of blocks
+* [grapesjs-plugin-forms](https://github.com/GrapesJS/forms) - Set of form components and blocks
+* [grapesjs-navbar](https://github.com/GrapesJS/navbar) - Simple navbar component
+* [grapesjs-component-countdown](https://github.com/GrapesJS/component-countdown) - Simple countdown component
+* [grapesjs-style-gradient](https://github.com/GrapesJS/style-gradient) - Add `gradient` type input to the Style Manager
+* [grapesjs-style-filter](https://github.com/GrapesJS/style-filter) - Add `filter` type input to the Style Manager
+* [grapesjs-style-bg](https://github.com/GrapesJS/style-bg) - Full-stack background style property type, with the possibility to add images, colors, and gradients
+* [grapesjs-blocks-flexbox](https://github.com/GrapesJS/blocks-flexbox) - Add the flexbox block
+* [grapesjs-lory-slider](https://github.com/GrapesJS/lory-slider) - Slider component by using [lory](https://github.com/meandmax/lory)
+* [grapesjs-tabs](https://github.com/GrapesJS/tabs) - Simple tabs component
+* [grapesjs-tooltip](https://github.com/GrapesJS/tooltip) - Simple, CSS only, tooltip component for GrapesJS
+* [grapesjs-custom-code](https://github.com/GrapesJS/custom-code) - Embed custom code
+* [grapesjs-touch](https://github.com/GrapesJS/touch) - Enable touch support
+* [grapesjs-indexeddb](https://github.com/GrapesJS/indexeddb) - Storage wrapper for IndexedDB
+* [grapesjs-firestore](https://github.com/GrapesJS/firestore) - Storage wrapper for [Cloud Firestore](https://firebase.google.com/docs/firestore)
+* [grapesjs-parser-postcss](https://github.com/GrapesJS/parser-postcss) - Custom CSS parser for GrapesJS by using [PostCSS](https://github.com/postcss/postcss)
+* [grapesjs-typed](https://github.com/GrapesJS/typed) - Typed component made by wrapping Typed.js library
 * [grapesjs-ui-suggest-classes](https://github.com/silexlabs/grapesjs-ui-suggest-classes) - Enable auto-complete of classes in the SelectorManager UI
 * [grapesjs-fonts](https://github.com/silexlabs/grapesjs-fonts) - Custom Fonts plugin, adds a UI to manage fonts in websites
 * [grapesjs-symbols](https://github.com/silexlabs/grapesjs-symbols) - Symbols plugin to reuse elements in a website and accross pages
 
 ### Presets
-* [grapesjs-preset-webpage](https://github.com/GrapesJS/grapesjs-preset-webpage) - Webpage Builder
-* [grapesjs-preset-newsletter](https://github.com/GrapesJS/grapesjs-preset-newsletter) - Newsletter Builder
-* [grapesjs-mjml](https://github.com/GrapesJS/grapesjs-mjml) - Newsletter Builder with MJML components
+* [grapesjs-preset-webpage](https://github.com/GrapesJS/preset-webpage) - Webpage Builder
+* [grapesjs-preset-newsletter](https://github.com/GrapesJS/preset-newsletter) - Newsletter Builder
+* [grapesjs-mjml](https://github.com/GrapesJS/mjml) - Newsletter Builder with MJML components
 
 
 Find out more about plugins here: [Creating plugins](https://grapesjs.com/docs/modules/Plugins.html)

@@ -602,7 +602,7 @@ Check out the [Device Manager API](api/device_manager.html) to see all the avail
 
 ## Store & load data
 Once you have finished with defining your builder interface the next step would be to setup the storing and loading process.
-GrapesJS implements 2 simple type of storages inside its Storage Manager: The local (by using `localStorage`, active by default) and the remote one. Those are enough to cover most of the cases, but it's also possible to add new implementations ([grapesjs-indexeddb](https://github.com/GrapesJS/grapesjs-indexeddb) is a good example).
+GrapesJS implements 2 simple type of storages inside its Storage Manager: The local (by using `localStorage`, active by default) and the remote one. Those are enough to cover most of the cases, but it's also possible to add new implementations ([grapesjs-indexeddb](https://github.com/GrapesJS/storage-indexeddb) is a good example).
 Let's see how the default options work:
 
 ```js

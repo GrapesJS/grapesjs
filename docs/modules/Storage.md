@@ -443,8 +443,8 @@ For a complete list of available events, you can check it [here](/api/storage_ma
 
 
 
-[grapesjs-indexeddb]: <https://github.com/GrapesJS/grapesjs-indexeddb>
-[grapesjs-firestore]: <https://github.com/GrapesJS/grapesjs-firestore>
+[grapesjs-indexeddb]: <https://github.com/GrapesJS/storage-indexeddb>
+[grapesjs-firestore]: <https://github.com/GrapesJS/storage-firestore>
 [localStorage API]: <https://developer.mozilla.org/it/docs/Web/API/Window/localStorage>
 [IndexedDB  API]: <https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API>
 [json-server]: <https://github.com/typicode/json-server>
