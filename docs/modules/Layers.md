@@ -28,7 +28,7 @@ const editor = grapesjs.init({
 });
 ```
 
-You can check here the full list of available configuration options: [Layer Manager Config](https://github.com/artf/grapesjs/blob/master/src/navigator/config/config.ts)
+You can check here the full list of available configuration options: [Layer Manager Config](https://github.com/GrapesJS/grapesjs/blob/master/src/navigator/config/config.ts)
 
 
 Layers are a direct representation of your components, therefore they will only be available once your components are loaded in the editor (eg. you might load your project data from a remote endpoint).

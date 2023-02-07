@@ -1,6 +1,6 @@
 /**
  * Editor contains the top level API which you'll probably use to customize the editor or extend it with plugins.
- * You get the Editor instance on init method and you can pass options via its [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/editor/config/config.ts)
+ * You get the Editor instance on init method and you can pass options via its [Configuration Object](https://github.com/GrapesJS/grapesjs/blob/master/src/editor/config/config.ts)
  *
  * ```js
  * const editor = grapesjs.init({
@@ -678,7 +678,7 @@ export default class Editor implements IBaseModule<EditorConfig> {
 
   /**
    * Change the global drag mode of components.
-   * To get more about this feature read: https://github.com/artf/grapesjs/issues/1936
+   * To get more about this feature read: https://github.com/GrapesJS/grapesjs/issues/1936
    * @param {String} value Drag mode, options: 'absolute' | 'translate'
    * @returns {this}
    */

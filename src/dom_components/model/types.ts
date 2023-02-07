@@ -84,7 +84,7 @@ export interface ComponentProperties {
    */
   copyable?: boolean;
   /**
-   * Indicates if it's possible to resize the component. It's also possible to pass an object as [options for the Resizer](https://github.com/artf/grapesjs/blob/master/src/utils/Resizer.js). Default: `false`
+   * Indicates if it's possible to resize the component. It's also possible to pass an object as [options for the Resizer](https://github.com/GrapesJS/grapesjs/blob/master/src/utils/Resizer.js). Default: `false`
    */
   resizable?: boolean | ResizerOptions;
   /**

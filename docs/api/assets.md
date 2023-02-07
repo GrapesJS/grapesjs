@@ -179,7 +179,7 @@ Return the Asset Manager Container
 
 Returns **[HTMLElement][16]** 
 
-[1]: https://github.com/artf/grapesjs/blob/master/src/asset_manager/config/config.ts
+[1]: https://github.com/GrapesJS/grapesjs/blob/master/src/asset_manager/config/config.ts
 
 [2]: #open
 

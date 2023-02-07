@@ -273,7 +273,7 @@ export interface EditorConfig {
    * following the HTML flow. Two other options are available:
    * 'absolute' - Move components absolutely (design tools way)
    * 'translate' - Use translate CSS from transform property
-   * To get more about this feature read: https://github.com/artf/grapesjs/issues/1936.
+   * To get more about this feature read: https://github.com/GrapesJS/grapesjs/issues/1936.
    */
   dragMode?: 'translate' | 'absolute';
 

@@ -40,8 +40,8 @@ export default class ToolbarButtonView extends View<ToolbarButton> {
      * This makes sure the offsets are calculated.
      *
      * More information on
-     * https://github.com/artf/grapesjs/issues/2372
-     * https://github.com/artf/grapesjs/issues/2207
+     * https://github.com/GrapesJS/grapesjs/issues/2372
+     * https://github.com/GrapesJS/grapesjs/issues/2207
      */
 
     const { em } = this;

@@ -1,6 +1,6 @@
 /**
  * File made for IE/Edge support
- * https://github.com/artf/grapesjs/issues/214
+ * https://github.com/GrapesJS/grapesjs/issues/214
  */
 import { hasWin } from './mixins';
 

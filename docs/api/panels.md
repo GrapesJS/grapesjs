@@ -179,7 +179,7 @@ var button = panelManager.getButton('myPanel','myButton');
 
 Returns **(Button | null)** 
 
-[1]: https://github.com/artf/grapesjs/blob/master/src/panels/config/config.ts
+[1]: https://github.com/GrapesJS/grapesjs/blob/master/src/panels/config/config.ts
 
 [2]: #addpanel
 
