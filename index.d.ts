@@ -1243,7 +1243,7 @@ declare namespace grapesjs {
      * @param event - Event to trigger
      * @param args - payload to send along with the event
      */
-    trigger(event: EditorEvent, ...args: any[]): Editor;
+    trigger(event: GrapesEvent, ...args: any[]): Editor;
     /**
      * Destroy the editor
      */
