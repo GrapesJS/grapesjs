@@ -113,7 +113,7 @@ Returns **[Number][9]**
 ## setDragMode
 
 Change the drag mode of the component.
-To get more about this feature read: [https://github.com/artf/grapesjs/issues/1936][10]
+To get more about this feature read: [https://github.com/GrapesJS/grapesjs/issues/1936][10]
 
 ### Parameters
 
@@ -829,7 +829,7 @@ Returns **[Boolean][3]**
 
 [5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
-[6]: https://github.com/artf/grapesjs/blob/master/src/utils/Resizer.js
+[6]: https://github.com/GrapesJS/grapesjs/blob/master/src/utils/Resizer.js
 
 [7]: /modules/Components-js.html
 
@@ -837,6 +837,6 @@ Returns **[Boolean][3]**
 
 [9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
 
-[10]: https://github.com/artf/grapesjs/issues/1936
+[10]: https://github.com/GrapesJS/grapesjs/issues/1936
 
 [11]: https://developer.mozilla.org/docs/Web/HTML/Element

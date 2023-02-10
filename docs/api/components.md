@@ -200,7 +200,7 @@ Return the array of all types
 
 Returns **[Array][11]** 
 
-[1]: https://github.com/artf/grapesjs/blob/master/src/dom_components/config/config.ts
+[1]: https://github.com/GrapesJS/grapesjs/blob/master/src/dom_components/config/config.ts
 
 [2]: #getwrapper
 

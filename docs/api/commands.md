@@ -197,7 +197,7 @@ console.log(commands.getActive());
 
 Returns **[Object][12]** 
 
-[1]: https://github.com/artf/grapesjs/blob/master/src/commands/config/config.ts
+[1]: https://github.com/GrapesJS/grapesjs/blob/master/src/commands/config/config.ts
 
 [2]: #add
 

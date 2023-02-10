@@ -29,7 +29,7 @@ const editor = grapesjs.init({
 });
 ```
 
-Check the full list of available options here: [Selector Manager Config](https://github.com/artf/grapesjs/blob/master/src/selector_manager/config/config.ts)
+Check the full list of available options here: [Selector Manager Config](https://github.com/GrapesJS/grapesjs/blob/master/src/selector_manager/config/config.ts)
 
 
 ## Initialization

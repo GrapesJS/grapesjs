@@ -86,7 +86,7 @@ export const keyUpdateInside = `${keyUpdate}-inside`;
  * @property {Array<String>} [unstylable=[]] Indicate an array of style properties which should be hidden from the style manager. Default: `[]`
  * @property {Boolean} [highlightable=true] It can be highlighted with 'dotted' borders if true. Default: `true`
  * @property {Boolean} [copyable=true] True if it's possible to clone the component. Default: `true`
- * @property {Boolean} [resizable=false] Indicates if it's possible to resize the component. It's also possible to pass an object as [options for the Resizer](https://github.com/artf/grapesjs/blob/master/src/utils/Resizer.js). Default: `false`
+ * @property {Boolean} [resizable=false] Indicates if it's possible to resize the component. It's also possible to pass an object as [options for the Resizer](https://github.com/GrapesJS/grapesjs/blob/master/src/utils/Resizer.js). Default: `false`
  * @property {Boolean} [editable=false] Allow to edit the content of the component (used on Text components). Default: `false`
  * @property {Boolean} [layerable=true] Set to `false` if you need to hide the component inside Layers. Default: `true`
  * @property {Boolean} [selectable=true] Allow component to be selected when clicked. Default: `true`
@@ -350,7 +350,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
   /**
    * Change the drag mode of the component.
-   * To get more about this feature read: https://github.com/artf/grapesjs/issues/1936
+   * To get more about this feature read: https://github.com/GrapesJS/grapesjs/issues/1936
    * @param {String} value Drag mode, options: 'absolute' | 'translate'
    * @returns {this}
    */
