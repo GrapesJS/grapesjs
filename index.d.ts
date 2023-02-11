@@ -406,8 +406,8 @@ declare namespace grapesjs {
 
   interface CanvasConfig {
     stylePrefix?: string;
-    scripts?: Array<string>;
-    styles?: Array<string>;
+    scripts?: Array<string | Record<string, string>>;
+    styles?: Array<string | Record<string, string>>;
     customBadgeLabel?: Function;
     autoscrollLimit?: number;
     notTextable?: Array<string>;
