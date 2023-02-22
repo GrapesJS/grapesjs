@@ -20,9 +20,9 @@ GrapesJS was designed  primarily for use inside Content Management Systems to sp
 ## Quick Start
 To showcase the power of GrapesJS we have created some presets.
 
-* [grapesjs-preset-webpage](https://github.com/artf/grapesjs-preset-webpage) - [Webpage Builder](http://artf.github.io/grapesjs/demo.html)
-* [grapesjs-preset-newsletter](https://github.com/artf/grapesjs-preset-newsletter) - [Newsletter Builder](http://artf.github.io/grapesjs/demo-newsletter-editor.html)
-* [grapesjs-mjml](https://github.com/artf/grapesjs-mjml) - [Newsletter Builder with MJML](http://artf.github.io/grapesjs/demo-mjml.html)
+* [grapesjs-preset-webpage](https://github.com/GrapesJS/preset-webpage) - [Webpage Builder](https://grapesjs.com/demo.html)
+* [grapesjs-preset-newsletter](https://github.com/GrapesJS/preset-newsletter) - [Newsletter Builder](https://grapesjs.com/demo-newsletter-editor.html)
+* [grapesjs-mjml](https://github.com/GrapesJS/mjml) - [Newsletter Builder with MJML](https://grapesjs/demo-mjml.html)
 
 You can actually use them as a starting point for your editors, so, just follow the instructions on their repositories to get a quick start for your builder.
 
@@ -46,12 +46,12 @@ You can download GrapesJS from one of these sources
 * npm
   * `npm i grapesjs`
 * git
-  * `git clone https://github.com/artf/grapesjs.git`
+  * `git clone https://github.com/GrapesJS/grapesjs.git`
 
 
 
 
 ## Changelog
 
-To track changes made in the library we rely on [Github Releases](https://github.com/artf/grapesjs/releases)
+To track changes made in the library we rely on [Github Releases](https://github.com/GrapesJS/grapesjs/releases)
 

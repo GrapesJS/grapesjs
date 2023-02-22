@@ -39,14 +39,14 @@ Before submitting an expense contact core contributors via the current active ch
 
 ## Questions
 
-If you have any questions, create an [issue](https://github.com/artf/grapesjs/issues) (protip: do a quick search first to see if someone else didn't ask the same question before!).
+If you have any questions, create an [issue](https://github.com/GrapesJS/grapesjs/issues) (protip: do a quick search first to see if someone else didn't ask the same question before!).
 
 
 
 ## Credits
 
 Thank you to all the people who have already contributed to GrapesJS!
-<a href="/artf/grapesjs/graphs/contributors"><img src="https://opencollective.com/grapesjs/contributors.svg?width=890" /></a>
+<a href="/GrapesJS/grapesjs/graphs/contributors"><img src="https://opencollective.com/grapesjs/contributors.svg?width=890" /></a>
 
 
 [Open Collective]: <https://opencollective.com/grapesjs>

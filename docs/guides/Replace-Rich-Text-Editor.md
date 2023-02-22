@@ -122,4 +122,4 @@ Obviously, each third-party library has its own APIs and can present some limita
 
 ## Plugins
 
-For the CKEditor, you can find a complete plugin here [grapesjs-plugin-ckeditor](https://github.com/artf/grapesjs-plugin-ckeditor).
+For the CKEditor, you can find a complete plugin here [grapesjs-plugin-ckeditor](https://github.com/GrapesJS/ckeditor).

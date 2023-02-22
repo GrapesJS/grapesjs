@@ -142,10 +142,10 @@ In this example, the plugin name is `my-plugin-name` and can't be used by other 
 
 ## Boilerplate
 
-For fast plugin development, we highly recommend using [grapesjs-cli](https://github.com/artf/grapesjs-cli) which helps to avoid the hassle of setting up all the dependencies and configurations for development and building (no need to touch Webpack o Babel configurations). For more information check the repository
+For fast plugin development, we highly recommend using [grapesjs-cli](https://github.com/GrapesJS/cli) which helps to avoid the hassle of setting up all the dependencies and configurations for development and building (no need to touch Webpack o Babel configurations). For more information check the repository
 
 
 ## Popular Plugins
 
- - https://github.com/artf/grapesjs-preset-webpage
- - https://github.com/artf/grapesjs-preset-newsletter
+ - https://github.com/GrapesJS/preset-webpage
+ - https://github.com/GrapesJS/preset-newsletter

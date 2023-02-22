@@ -476,13 +476,13 @@ export default class Sorter extends View {
     }
 
     // Prevents loops in Firefox
-    // https://github.com/artf/grapesjs/issues/2911
+    // https://github.com/GrapesJS/grapesjs/issues/2911
     if (source && source === model) return;
 
     const { targetModel } = this;
 
     // Reset the previous model but not if it's the same as the source
-    // https://github.com/artf/grapesjs/issues/2478#issuecomment-570314736
+    // https://github.com/GrapesJS/grapesjs/issues/2478#issuecomment-570314736
     if (targetModel && targetModel !== this.srcModel) {
       targetModel.set('status', '');
     }

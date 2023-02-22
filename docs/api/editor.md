@@ -575,7 +575,7 @@ Returns **this**
 ## setDragMode
 
 Change the global drag mode of components.
-To get more about this feature read: [https://github.com/artf/grapesjs/issues/1936][24]
+To get more about this feature read: [https://github.com/GrapesJS/grapesjs/issues/1936][24]
 
 ### Parameters
 
@@ -725,7 +725,7 @@ const strHtml = editor.html`Escaped ${unsafeStr} unescaped $${safeStr}`;
 
 Returns **[String][18]** 
 
-[1]: https://github.com/artf/grapesjs/blob/master/src/editor/config/config.ts
+[1]: https://github.com/GrapesJS/grapesjs/blob/master/src/editor/config/config.ts
 
 [2]: /api/components.html
 
@@ -771,4 +771,4 @@ Returns **[String][18]**
 
 [23]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
 
-[24]: https://github.com/artf/grapesjs/issues/1936
+[24]: https://github.com/GrapesJS/grapesjs/issues/1936

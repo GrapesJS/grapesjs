@@ -26,7 +26,7 @@ declare namespace Backbone {
     forEach(iterator: (item: TModel) => void, context?: any): TModel[];
     filter(iterator: (item: TModel) => boolean, context?: any): TModel[];
     map(iterator: (item: TModel) => any, context?: any): any[];
-    each(callback: (item: TModel) => void);
+    each(callback: (item: TModel) => void): void;
   }
 
   interface GenericModel extends Model<{}> { }
@@ -182,7 +182,7 @@ declare namespace grapesjs {
      * following the HTML flow. Two other options are available:
      * 'absolute' - Move components absolutely (design tools way)
      * 'translate' - Use translate CSS from transform property
-     * To get more about this feature read: https://github.com/artf/grapesjs/issues/1936 */
+     * To get more about this feature read: https://github.com/GrapesJS/grapesjs/issues/1936 */
     dragMode?: 'translate' | 'absolute';
 
     /** When the editor is placed in a scrollable container (eg. modals) this might
@@ -406,8 +406,8 @@ declare namespace grapesjs {
 
   interface CanvasConfig {
     stylePrefix?: string;
-    scripts?: Array<string>;
-    styles?: Array<string>;
+    scripts?: Array<string | Record<string, string>>;
+    styles?: Array<string | Record<string, string>>;
     customBadgeLabel?: Function;
     autoscrollLimit?: number;
     notTextable?: Array<string>;
@@ -779,7 +779,7 @@ declare namespace grapesjs {
 
   /**
    * Editor contains the top level API which you'll probably use to customize the editor or extend it with plugins.
-   * You get the Editor instance on init method and you can pass options via its [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/editor/config/config.js)
+   * You get the Editor instance on init method and you can pass options via its [Configuration Object](https://github.com/GrapesJS/grapesjs/blob/master/src/editor/config/config.js)
    *
    * ```js
    * const editor = grapesjs.init({
@@ -1175,7 +1175,7 @@ declare namespace grapesjs {
     setCustomParserCss(parser: ((...params: any[]) => any) | null): Editor;
     /**
      * Change the global drag mode of components.
-     * To get more about this feature read: https://github.com/artf/grapesjs/issues/1936
+     * To get more about this feature read: https://github.com/GrapesJS/grapesjs/issues/1936
      * @param value - Drag mode, options: 'absolute' | 'translate'
      */
     setDragMode(value: string): Editor;
@@ -1241,8 +1241,9 @@ declare namespace grapesjs {
     /**
      * Trigger event
      * @param event - Event to trigger
+     * @param args - payload to send along with the event
      */
-    trigger(event: GrapesEvent): Editor;
+    trigger(event: GrapesEvent, ...args: any[]): Editor;
     /**
      * Destroy the editor
      */
@@ -1367,7 +1368,7 @@ declare namespace grapesjs {
   type GeneralEvent = 'canvasScroll' | 'undo' | 'redo' | 'load' | 'update';
 
   /**
-   * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/asset_manager/config/config.js)
+   * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/GrapesJS/grapesjs/blob/master/src/asset_manager/config/config.js)
    * ```js
    * const editor = grapesjs.init({
    *  assetManager: {
@@ -1579,7 +1580,7 @@ declare namespace grapesjs {
   }
 
   /**
-   * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/block_manager/config/config.js)
+   * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/GrapesJS/grapesjs/blob/master/src/block_manager/config/config.js)
    * ```js
    * const editor = grapesjs.init({
    *  blockManager: {
@@ -1805,7 +1806,7 @@ declare namespace grapesjs {
   }
 
   /**
-   * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/commands/config/config.js)
+   * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/GrapesJS/grapesjs/blob/master/src/commands/config/config.js)
    * ```js
    * const editor = grapesjs.init({
    *  commands: {
@@ -1964,7 +1965,7 @@ declare namespace grapesjs {
   }
 
   /**
-   * With this module is possible to manage components inside the canvas. You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/dom_components/config/config.js)
+   * With this module is possible to manage components inside the canvas. You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/GrapesJS/grapesjs/blob/master/src/dom_components/config/config.js)
    * ```js
    * const editor = grapesjs.init({
    *  domComponents: {
@@ -2225,7 +2226,7 @@ declare namespace grapesjs {
      */
     copyable?: boolean;
     /**
-     * Indicates if it's possible to resize the component. It's also possible to pass an object as [options for the Resizer](https://github.com/artf/grapesjs/blob/master/src/utils/Resizer.js). Default: `false`
+     * Indicates if it's possible to resize the component. It's also possible to pass an object as [options for the Resizer](https://github.com/GrapesJS/grapesjs/blob/master/src/utils/Resizer.js). Default: `false`
      */
     resizable?: boolean;
     /**
@@ -2382,7 +2383,7 @@ declare namespace grapesjs {
 
     /**
      * Change the drag mode of the component.
-     * To get more about this feature read: https://github.com/artf/grapesjs/issues/1936
+     * To get more about this feature read: https://github.com/GrapesJS/grapesjs/issues/1936
      * @param value - Drag mode, options: 'absolute' | 'translate'
      */
     setDragMode(value: string): this;
@@ -2794,7 +2795,7 @@ declare namespace grapesjs {
   }
 
   /**
-   * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/panels/config/config.js)
+   * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/GrapesJS/grapesjs/blob/master/src/panels/config/config.js)
    * ```js
    * const editor = grapesjs.init({
    *  panels: {
@@ -2921,7 +2922,7 @@ declare namespace grapesjs {
 
   /**
    * With Style Manager you build categories (called sectors) of CSS properties which could be used to customize the style of components.
-   * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/style_manager/config/config.js)
+   * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/GrapesJS/grapesjs/blob/master/src/style_manager/config/config.js)
    * ```js
    * const editor = grapesjs.init({
    *  styleManager: {
@@ -3811,7 +3812,7 @@ declare namespace grapesjs {
   }
 
   /**
-   * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/storage_manager/config/config.js)
+   * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/GrapesJS/grapesjs/blob/master/src/storage_manager/config/config.js)
    * ```js
    * const editor = grapesjs.init({
    *  storageManager: {
@@ -3962,7 +3963,7 @@ declare namespace grapesjs {
   }
 
   /**
-   * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/device_manager/config/config.js)
+   * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/GrapesJS/grapesjs/blob/master/src/device_manager/config/config.js)
    * ```js
    * const editor = grapesjs.init({
    *  deviceManager: {
@@ -4110,7 +4111,7 @@ declare namespace grapesjs {
    *
    * So, for example, being `btn` the same class entity it'll be easier to refactor and track things.
    *
-   * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/selector_manager/config/config.js)
+   * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/GrapesJS/grapesjs/blob/master/src/selector_manager/config/config.js)
    * ```js
    * const editor = grapesjs.init({
    *  selectorManager: {
@@ -4353,7 +4354,7 @@ declare namespace grapesjs {
 
   /**
    * This module manages CSS rules in the canvas.
-   * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/css_composer/config/config.js)
+   * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/GrapesJS/grapesjs/blob/master/src/css_composer/config/config.js)
    * ```js
    * const editor = grapesjs.init({
    *  cssComposer: {
@@ -4624,7 +4625,7 @@ declare namespace grapesjs {
   }
 
   /**
-   * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/modal_dialog/config/config.js)
+   * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/GrapesJS/grapesjs/blob/master/src/modal_dialog/config/config.js)
    * ```js
    * const editor = grapesjs.init({
    *  modal: {
@@ -4752,7 +4753,7 @@ declare namespace grapesjs {
    * This module allows to customize the built-in toolbar of the Rich Text Editor and use commands from the [HTML Editing APIs](https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand).
    * It's highly recommended to keep this toolbar as small as possible, especially from styling commands (eg. 'fontSize') and leave this task to the Style Manager
    *
-   * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/rich_text_editor/config/config.js)
+   * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/GrapesJS/grapesjs/blob/master/src/rich_text_editor/config/config.js)
    * ```js
    * const editor = grapesjs.init({
    *  richTextEditor: {
@@ -5117,7 +5118,7 @@ declare namespace grapesjs {
   }
 
   /**
-   * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/canvas/config/config.js)
+   * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/GrapesJS/grapesjs/blob/master/src/canvas/config/config.js)
    * ```js
    * const editor = grapesjs.init({
    *  canvas: {
@@ -5309,7 +5310,7 @@ declare namespace grapesjs {
   interface Frame extends Backbone.Model<FrameOptions> { }
 
   /**
-   * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/i18n/config.js)
+   * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/GrapesJS/grapesjs/blob/master/src/i18n/config.js)
    * ```js
    * const editor = grapesjs.init({
    *  i18n: {
@@ -5574,7 +5575,7 @@ declare namespace grapesjs {
   }
 
   /**
-   * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/parser/config/config.js)
+   * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/GrapesJS/grapesjs/blob/master/src/parser/config/config.js)
    * ```js
    * const editor = grapesjs.init({
    *  parser: {
