@@ -68,8 +68,6 @@ const deps: (new (em: EditorModel) => Module)[] = [
   BlockManager,
 ];
 
-const ts_deps: any[] = [];
-
 Extender({ $ });
 
 const logs = {
@@ -251,7 +249,6 @@ export default class EditorModel extends Model {
 
     // Load modules
     deps.forEach(name => this.loadModule(name));
-    ts_deps.forEach(name => this.tsLoadModule(name));
     this.on('change:componentHovered', this.componentHovered, this);
     this.on('change:changesCount', this.updateChanges, this);
     this.on('change:readyLoad change:readyCanvas', this._checkReady, this);
@@ -403,26 +400,6 @@ export default class EditorModel extends Model {
     return this;
   }
 
-  /**
-   * Load generic module
-   * @param {String} moduleName Module name
-   * @return {this}
-   * @private
-   */
-  tsLoadModule(moduleName: any) {
-    const Module = moduleName.default || moduleName;
-    const Mod = new Module(this);
-
-    if (Mod.storageKey && Mod.store && Mod.load) {
-      this.storables.push(Mod);
-    }
-
-    // Bind the module to the editor model if public
-    !Mod.private && this.set(Mod.name, Mod);
-    Mod.onLoad && this.toLoad.push(Mod);
-    this.modules.push(Mod);
-    return this;
-  }
   /**
    * Initialize editor model and set editor instance
    * @param {Editor} editor Editor instance
