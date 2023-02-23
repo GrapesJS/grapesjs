@@ -85,7 +85,7 @@ export default class FrameWrapView extends ModuleView<Frame> {
 
   updateOffset() {
     const { em, $el, frame } = this;
-    if (!em) return;
+    if (!em || em.destroyed) return;
     em.runDefault({ preserveSelected: 1 });
     $el.removeClass(this.classAnim);
     frame?.model?._emitUpdated();

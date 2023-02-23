@@ -101,6 +101,7 @@ export default class EditorModel extends Model {
   defaultRunning = false;
   destroyed = false;
   _config: EditorConfig;
+  _storageTimeout?: NodeJS.Timeout;
   attrsOrig: any;
   timedInterval?: number;
   updateItr?: number;
@@ -323,7 +324,7 @@ export default class EditorModel extends Model {
       postLoad();
     } else {
       // Defer for storage load events.
-      setTimeout(async () => {
+      this._storageTimeout = setTimeout(async () => {
         if (projectData) {
           this.loadData(projectData);
         } else if (sm?.canAutoload()) {
@@ -997,6 +998,7 @@ export default class EditorModel extends Model {
     // @ts-ignore
     const { editors = [] } = config.grapesjs || {};
     const shallow = this.get('shallow');
+    clearTimeout(this._storageTimeout);
     shallow?.destroyAll();
     this.stopListening();
     this.stopDefault();
