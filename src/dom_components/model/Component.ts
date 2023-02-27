@@ -1443,7 +1443,14 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * Get the name of the component
    * @return {String}
    * */
-  getName() {
+  getName(
+    opts: {
+      /**
+       * Avoid custom name assigned to the component.
+       */
+      noCustom?: boolean;
+    } = {}
+  ) {
     const { em } = this;
     const { type, tagName, name } = this.attributes;
     const defName = type || tagName;
@@ -1452,8 +1459,10 @@ export default class Component extends StyleableModel<ComponentProperties> {
     const i18nName = name && em?.t(`${i18nPfx}${name}`);
     const i18nNameTag = nameTag && em?.t(`${i18nPfx}${nameTag}`);
     const i18nDefName = em && (em.t(`${i18nPfx}${type}`) || em.t(`${i18nPfx}${tagName}`));
+    const customName = this.get('custom-name');
+
     return (
-      this.get('custom-name') || // Used in Layers (when the user changes the name)
+      (!opts.noCustom ? customName : '') || // Used in Layers (when the user changes the name)
       i18nName || // Use local component `name` key (eg. `domComponents.names.myComponentName`)
       name || // Use component `name` key
       i18nNameTag || // Use local component `tagName` key (eg. `domComponents.names.div`)
