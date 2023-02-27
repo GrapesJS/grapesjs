@@ -1440,17 +1440,12 @@ export default class Component extends StyleableModel<ComponentProperties> {
   }
 
   /**
-   * Get the name of the component
-   * @return {String}
+   * Get the name of the component.
+   * @param {Object} [opts={}] Options
+   * @param {Boolean} [opts.noCustom] Avoid custom name assigned to the component.
+   * @returns {String}
    * */
-  getName(
-    opts: {
-      /**
-       * Avoid custom name assigned to the component.
-       */
-      noCustom?: boolean;
-    } = {}
-  ) {
+  getName(opts: { noCustom?: boolean } = {}) {
     const { em } = this;
     const { type, tagName, name } = this.attributes;
     const defName = type || tagName;
