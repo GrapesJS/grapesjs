@@ -52,6 +52,7 @@
  * * [add](#add)
  * * [get](#get)
  * * [remove](#remove)
+ * * [rename](#rename)
  * * [getAll](#getall)
  * * [setState](#setstate)
  * * [getState](#getstate)
@@ -74,7 +75,7 @@
 
 import { isString, debounce, isObject, isArray, bindAll } from 'underscore';
 import { isComponent, isRule } from '../utils/mixins';
-import { Model, Collection, RemoveOptions, Debounced } from '../common';
+import { Model, Collection, RemoveOptions, SetOptions, Debounced } from '../common';
 import defaults, { SelectorManagerConfig } from './config/config';
 import Selector from './model/Selector';
 import Selectors from './model/Selectors';
@@ -327,6 +328,23 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
    */
   remove(selector: string | Selector, opts?: RemoveOptions) {
     return this.__remove(selector, opts);
+  }
+
+  /**
+   * Rename Selector.
+   * @param {[Selector]} selector Selector to update.
+   * @param {String} name New name for the selector.
+   * @returns {[Selector]} Selector containing the passed name.
+   * @example
+   * const selector = selectorManager.get('myclass');
+   * const result = selectorManager.rename(selector, 'myclass2');
+   * console.log(result === selector ? 'Selector updated' : 'Selector with this name exists already');
+   */
+  rename(selector: Selector, name: string, opts?: SetOptions) {
+    const newName = this.escapeName(name);
+    const result = this.get(newName);
+
+    return result || selector.set({ name: newName, label: name }, opts);
   }
 
   /**
