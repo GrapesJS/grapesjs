@@ -1,11 +1,11 @@
 import { View } from '../../common';
-import State from '../model/State';
+import Selector from '../model/Selector';
 import html from '../../utils/html';
 import EditorModel from '../../editor/model/Editor';
 
 const inputProp = 'contentEditable';
 
-export default class ClassTagView extends View<State> {
+export default class ClassTagView extends View<Selector> {
   template() {
     const { pfx, model, config } = this;
     const label = model.get('label') || '';
@@ -76,22 +76,15 @@ export default class ClassTagView extends View<State> {
    * @private
    */
   endEditTag() {
-    const model = this.model;
+    const { model, em } = this;
     const inputEl = this.getInputEl();
     const label = inputEl.textContent || '';
-    const em = this.em;
     const sm = em?.Selectors;
     inputEl[inputProp] = 'false';
     em?.setEditing(false);
 
-    if (sm) {
-      const name = sm.escapeName(label);
-
-      if (sm.get(name)) {
-        inputEl.innerText = model.get('label');
-      } else {
-        model.set({ name, label });
-      }
+    if (sm && sm.rename(model, label) !== model) {
+      inputEl.innerText = model.get('label');
     }
   }
 
