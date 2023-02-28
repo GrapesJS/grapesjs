@@ -1,7 +1,7 @@
 import { isString, isArray, keys } from 'underscore';
 import { shallowDiff } from '../../utils/mixins';
 import ParserHtml from '../../parser/model/ParserHtml';
-import { Model, ObjectAny, ObjectHash } from '../../common';
+import { Model, ObjectAny, ObjectHash, ObjectStrings } from '../../common';
 import Selectors from '../../selector_manager/model/Selectors';
 
 const parserHtml = ParserHtml();
@@ -30,7 +30,7 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
    * Get style object
    * @return {Object}
    */
-  getStyle(prop?: string | ObjectAny) {
+  getStyle(prop?: string | ObjectAny): ObjectStrings {
     const style = this.get('style') || {};
     const result: ObjectAny = { ...style };
     return prop && isString(prop) ? result[prop] : result;

@@ -86,6 +86,7 @@ import Component from '../dom_components/model/Component';
 import { ItemManagerModule } from '../abstract/Module';
 import { StyleModuleParam } from '../style_manager';
 import StyleableModel from '../domain_abstract/model/StyleableModel';
+import CssRule from '../css_composer/model/CssRule';
 
 export type SelectorEvent = 'selector:add' | 'selector:remove' | 'selector:update' | 'selector:state' | 'selector';
 
@@ -422,7 +423,6 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
    */
   addSelected(props: SelectorStringObject) {
     const added = this.add(props);
-    // TODO: target should be the one from StyleManager
     this.em.getSelectedAll().forEach(target => {
       target.getSelectors().add(added);
     });
@@ -439,6 +439,34 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
     this.em.getSelectedAll().forEach(trg => {
       !selector.get('protected') && trg && trg.getSelectors().remove(selector);
     });
+  }
+
+  duplicateSelected(selector: Selector, opts: { suffix?: string } = {}) {
+    const { em } = this;
+    const commonSelectors = this.getSelected();
+    if (commonSelectors.indexOf(selector) < 0) return;
+
+    const state = this.getState();
+    const media = em.getCurrentMedia();
+    const rule = em.Css.get(commonSelectors, state, media);
+    const styleToApply = rule?.getStyle();
+
+    em.getSelectedAll().forEach(component => {
+      const selectors = component.getSelectors();
+      if (selectors.includes(selector)) {
+        const suffix = opts.suffix || ' copy';
+        const label = selector.getLabel();
+        const newSelector = this.addSelector(`${label}${suffix}`);
+        const at = selectors.indexOf(selector);
+        selectors.remove(selector);
+        selectors.add(newSelector, { at });
+      }
+    });
+
+    if (styleToApply) {
+      const newRule = em.Css.add(this.getSelected(), state, media);
+      newRule.setStyle(styleToApply);
+    }
   }
 
   /**

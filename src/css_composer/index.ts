@@ -167,7 +167,12 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
    *   color: '#000',
    * });
    * */
-  get(selectors: any, state?: string, width?: string, ruleProps?: Omit<CssRuleProperties, 'selectors'>) {
+  get(
+    selectors: any,
+    state?: string,
+    width?: string,
+    ruleProps?: Omit<CssRuleProperties, 'selectors'>
+  ): CssRule | undefined {
     let slc = selectors;
     if (isString(selectors)) {
       const sm = this.em.Selectors;
