@@ -523,7 +523,7 @@ The integration with external components is possible by following these simple c
 
 1. **Component rendering**: `new Vue({ render: ...`<br/>
   Depends on the framework, for example, in React it should be `ReactDOM.render(element, ...`
-1. **Change propogation**: `sliderInst.$on('change', ev => this.onChange(ev))`<br/>
+1. **Change propagation**: `sliderInst.$on('change', ev => this.onChange(ev))`<br/>
   The framework should have a mechanism to subscribe to changes and the component [should expose that change](https://nightcatsama.github.io/vue-slider-component/#/api/events)<br/>
   We've also used `onChange` method which comes handy when you need to trigger manually the `onEvent` event (you should never call directly `onEvent` method, but only via `onChange` when you need)
 1. **Property getters/setters**: [`sliderInst.getValue()`](https://nightcatsama.github.io/vue-slider-component/#/api/methods?hash=getvalue)/ [`sliderInst.setValue(value)`](https://nightcatsama.github.io/vue-slider-component/#/api/methods?hash=setvaluevalue)<br/>
