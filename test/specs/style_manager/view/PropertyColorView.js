@@ -1,4 +1,3 @@
-import Backbone from 'backbone';
 import PropertyColorView from 'style_manager/view/PropertyColorView';
 import Property from 'style_manager/model/Property';
 import Component from 'dom_components/model/Component';
@@ -9,38 +8,34 @@ describe('PropertyColorView', () => {
   let em;
   let dcomp;
   let compOpts;
-  var component;
-  var fixtures;
-  var target;
-  var model;
-  var view;
-  var propTarget;
-  var propName = 'testprop';
-  var propValue = '#fff';
-  var defValue = 'test2value';
+  let component;
+  let fixtures;
+  let target;
+  let model;
+  let view;
+  let propName = 'testprop';
+  let propValue = '#fff';
 
   beforeAll(() => {
-    $.fn.spectrum = function() {
+    $.fn.spectrum = function () {
       return this;
     };
   });
 
   beforeEach(() => {
     em = new Editor({});
-    dcomp = new DomComponents();
+    dcomp = new DomComponents(em);
     compOpts = { em, componentTypes: dcomp.componentTypes };
-    propTarget = { ...Backbone.Events };
     target = new Component({}, compOpts);
     component = new Component({}, compOpts);
-    model = new Property({
-      type: 'color',
-      property: propName
-    });
-    propTarget.model = component;
-    view = new PropertyColorView({
-      model,
-      propTarget
-    });
+    model = new Property(
+      {
+        type: 'color',
+        property: propName,
+      },
+      { em }
+    );
+    view = new PropertyColorView({ model });
     document.body.innerHTML = '<div id="fixtures"></div>';
     fixtures = document.body.firstChild;
     view.render();
@@ -70,72 +65,34 @@ describe('PropertyColorView', () => {
   });
 
   test('Inputs should exist', () => {
-    expect(view.$input).toBeTruthy();
-    expect(view.$color).toBeTruthy();
+    expect(view.inputInst).toBeTruthy();
   });
 
   test('Input value is empty', () => {
     expect(view.model.get('value')).toBeFalsy();
-    expect(view.getInputValue()).toBeFalsy();
+    expect(view.getInputEl().value).toBeFalsy();
   });
 
   test('Update model on setValue', () => {
     view.setValue(propValue);
-    expect(view.getInputValue()).toEqual(propValue);
+    expect(view.getInputEl().value).toEqual(propValue);
   });
 
   test('Update model on input change', () => {
     view.getInputEl().value = propValue;
-    view.inputValueChanged();
+    view.inputValueChanged({
+      target: { value: propValue },
+      stopPropagation() {},
+    });
     expect(view.model.get('value')).toEqual(propValue);
   });
 
-  test('Update input on value change', () => {
+  test('Update input on value change', done => {
     view.model.set('value', propValue);
-    expect(view.getInputValue()).toEqual(propValue);
-  });
-
-  test('Update target on value change', () => {
-    view.selectedComponent = component;
-    view.model.set('value', propValue);
-    var compStyle = view.selectedComponent.get('style');
-    var assertStyle = {};
-    assertStyle[propName] = propValue;
-    expect(compStyle).toEqual(assertStyle);
-  });
-
-  describe('With target setted', () => {
-    beforeEach(() => {
-      target.model = component;
-      view = new PropertyColorView({
-        model,
-        propTarget: target
-      });
-      fixtures.innerHTML = '';
-      view.render();
-      fixtures.appendChild(view.el);
-    });
-
-    test('Update value and input on target swap', () => {
-      var style = {};
-      style[propName] = propValue;
-      component.set('style', style);
-      view.propTarget.trigger('update');
-      expect(view.model.get('value')).toEqual(propValue);
-      expect(view.getInputValue()).toEqual(propValue);
-    });
-
-    test('Update value after multiple swaps', () => {
-      var style = {};
-      style[propName] = propValue;
-      component.set('style', style);
-      view.propTarget.trigger('update');
-      style[propName] = '#123123';
-      component.set('style', style);
-      view.propTarget.trigger('update');
-      expect(view.model.get('value')).toEqual('#123123');
-      expect(view.getInputValue()).toEqual('#123123');
-    });
+    setTimeout(() => {
+      expect(view.getInputEl().value).toEqual(propValue);
+      done();
+    }, 15);
   });
 
   describe('Init property', () => {
@@ -144,10 +101,10 @@ describe('PropertyColorView', () => {
       model = new Property({
         type: 'color',
         property: propName,
-        defaults: propValue
+        defaults: propValue,
       });
       view = new PropertyColorView({
-        model
+        model,
       });
       fixtures.innerHTML = '';
       view.render();
@@ -155,11 +112,11 @@ describe('PropertyColorView', () => {
     });
 
     test('Value as default', () => {
-      expect(view.model.get('value')).toEqual(propValue);
+      expect(view.model.getValue()).toEqual(propValue);
     });
 
     test('Input value is the default', () => {
-      expect(view.getInputValue()).toEqual(propValue);
+      expect(view.getInputEl().value).toEqual(propValue);
     });
   });
 });

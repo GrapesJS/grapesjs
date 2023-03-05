@@ -29,28 +29,46 @@ $layerNameSpacing: 5px !default;
     }
 
     &-vis {
-      height: auto !important;
-      width: auto !important;
       left: 0;
       top: 0;
       padding: 7px 5px 7px 10px;
       position: absolute;
+      box-sizing: content-box;
       cursor: pointer;
+      width: 13px;
       z-index: 1;
+
+      &-off {
+        display: none;
+      }
+
+      &.#{$nv-prefix}layer-off {
+        .#{$nv-prefix}layer-vis-on {
+          display: none;
+        }
+        .#{$nv-prefix}layer-vis-off {
+          display: block;
+        }
+      }
     }
 
     &-caret {
-      font-size: 0.5rem;
-      width: 8px;
+      width: 15px;
       padding: 2px;
       cursor: pointer;
       position: absolute;
-      left: -9px;
-      top: 6px;
+      box-sizing: content-box;
+      left: -15px;
+      top: 0;
+      transform: rotate(90deg);
       @include opacity(0.7);
 
       &:hover {
         @include opacity(1);
+      }
+
+      &.#{$nv-prefix}layer-open {
+        transform: rotate(180deg);
       }
     }
 
@@ -88,6 +106,7 @@ $layerNameSpacing: 5px !default;
       overflow: hidden;
       white-space: nowrap;
       margin: 0 30px 0 $layerNameSpacing;
+      max-width: 170px;
       @extend .#{$app-prefix}no-user-select;
 
       &--no-edit {
@@ -108,9 +127,10 @@ $layerNameSpacing: 5px !default;
     }
 
     &-move {
-      padding: 7px 10px 7px 5px;
+      padding: 9px 7px;
       position: absolute;
-      font-size: 12px;
+      width: 13px;
+      box-sizing: content-box;
       cursor: move;
       right: 0;
       top: 0;

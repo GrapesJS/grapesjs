@@ -188,7 +188,7 @@ modal.getContent();
 
 Returns **([string][12] | [HTMLElement][13])** 
 
-[1]: https://github.com/artf/grapesjs/blob/master/src/modal_dialog/config/config.js
+[1]: https://github.com/GrapesJS/grapesjs/blob/master/src/modal_dialog/config/config.ts
 
 [2]: #open
 

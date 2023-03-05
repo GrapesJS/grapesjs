@@ -44,7 +44,7 @@ Add new device
 ### Parameters
 
 *   `props` **[Object][8]** Device properties
-*   `options`   (optional, default `{}`)
+*   `options` **Record<[string][9], any>**  (optional, default `{}`)
 
 ### Examples
 
@@ -148,7 +148,7 @@ const selected = deviceManager.getSelected();
 
 Returns **[Device]** 
 
-[1]: https://github.com/artf/grapesjs/blob/master/src/device_manager/config/config.js
+[1]: https://github.com/GrapesJS/grapesjs/blob/master/src/device_manager/config/config.ts
 
 [2]: #add
 

@@ -43,7 +43,7 @@ export default function (editor) {
         }
 
         this.$input = document.createElement('textarea');
-        this.$input.value = optionsArr.join("\n");
+        this.$input.value = optionsArr.join('\n');
       }
       return this.$input;
   	},

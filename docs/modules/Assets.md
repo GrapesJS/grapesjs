@@ -31,7 +31,7 @@ You can update most of them later by using `getConfig` inside of the module
 const amConfig = editor.AssetManager.getConfig();
 ```
 
-Check the full list of available options here: [Asset Manager Config](https://github.com/artf/grapesjs/blob/master/src/asset_manager/config/config.js)
+Check the full list of available options here: [Asset Manager Config](https://github.com/GrapesJS/grapesjs/blob/master/src/asset_manager/config/config.js)
 
 
 
@@ -69,7 +69,7 @@ const editor = grapesjs.init({
 ```
 
 
-If you want a complete list of available properties check out the source [AssetImage Model](https://github.com/artf/grapesjs/blob/dev/src/asset_manager/model/AssetImage.js)
+If you want a complete list of available properties check out the source [AssetImage Model](https://github.com/GrapesJS/grapesjs/blob/dev/src/asset_manager/model/AssetImage.js)
 
 The built-in Asset Manager modal is implemented and is showing up when requested. By default, you can make it appear by dragging Image Components in canvas, double clicking on images and all other stuff related to images (eg. CSS styling)
 
@@ -211,7 +211,7 @@ If you need to manage your assets programmatically you have to use its [APIs][AP
 const am = editor.AssetManager;
 ```
 
-First of all, it's worth nothing that Asset Manager keeps 2 collections of assets:
+First of all, it's worth noting that Asset Manager keeps 2 collections of assets:
 * **global** - which is just the one with all available assets, you can get it with `am.getAll()`
 * **visible** - this is the collection which is currently rendered by the Asset Manager, you get it with `am.getAllVisible()`
 
@@ -454,7 +454,7 @@ am.addType('svg-icon', {
     // `getPreview()` and `getInfo()` are just few helpers, you can
     // override the entire template with `template()`
     // Check the base `template()` here:
-    // https://github.com/artf/grapesjs/blob/dev/src/asset_manager/view/AssetView.js
+    // https://github.com/GrapesJS/grapesjs/blob/dev/src/asset_manager/view/AssetView.js
     getPreview() {
       return `<div style="text-align: center">${this.model.get('svgContent')}</div>`;
     },
@@ -568,7 +568,7 @@ am.addType('image', {
   // but you can eventually extend some other type
   view: {
     // If you want to see more methods to extend check out
-    // https://github.com/artf/grapesjs/blob/dev/src/asset_manager/view/AssetImageView.js
+    // https://github.com/GrapesJS/grapesjs/blob/dev/src/asset_manager/view/AssetImageView.js
     onRemove(e) {
       e.stopPropagation();
       const model = this.model;

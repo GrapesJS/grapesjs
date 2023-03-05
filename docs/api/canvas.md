@@ -12,11 +12,28 @@ const editor = grapesjs.init({
 })
 ```
 
-Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+Once the editor is instantiated you can use its API and listen to its events. Before using these methods, you should get the module from the instance.
 
 ```js
+// Listen to events
+editor.on('canvas:drop', () => { ... });
+
+// Use the API
 const canvas = editor.Canvas;
+canvas.setCoords(...);
 ```
+
+## Available Events
+
+*   `canvas:dragenter` - When something is dragged inside the canvas, `DataTransfer` instance passed as an argument
+*   `canvas:dragover` - When something is dragging on canvas, `DataTransfer` instance passed as an argument
+*   `canvas:drop` - Something is dropped in canvas, `DataTransfer` instance and the dropped model are passed as arguments
+*   `canvas:dragend` - When a drag operation is ended, `DataTransfer` instance passed as an argument
+*   `canvas:dragdata` - On any dataTransfer parse, `DataTransfer` instance and the `result` are passed as arguments.
+
+By changing `result.content` you're able to customize what is dropped
+
+## Methods
 
 *   [getConfig][2]
 *   [getElement][3]
@@ -38,15 +55,9 @@ const canvas = editor.Canvas;
 
 ## getConfig
 
-Get the configuration object
+Get configuration object
 
-### Examples
-
-```javascript
-console.log(canvas.getConfig())
-```
-
-Returns **[Object][15]** Configuration object
+Returns **[Object][15]** 
 
 ## getElement
 
@@ -222,7 +233,7 @@ canvas.addFrame({
 
 Returns **[Frame]** 
 
-[1]: https://github.com/artf/grapesjs/blob/master/src/canvas/config/config.js
+[1]: https://github.com/GrapesJS/grapesjs/blob/master/src/canvas/config/config.ts
 
 [2]: #getconfig
 

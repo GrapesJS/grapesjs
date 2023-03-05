@@ -33,7 +33,7 @@ const editor = grapesjs.init({
 });
 ```
 
-Check the full list of available options here: [Block Manager Config](https://github.com/artf/grapesjs/blob/master/src/block_manager/config/config.js)
+Check the full list of available options here: [Block Manager Config](https://github.com/GrapesJS/grapesjs/blob/master/src/block_manager/config/config.js)
 
 
 ## Initialization
@@ -135,7 +135,7 @@ Using HTML strings as `content` is not wrong, in some cases you don't need the f
 ```
 In such a case, all rendered elements will be converted to the best suited default component (eg. `.el-Y` elements will be treated like `text` components). The user will be able to style and drag them with no particular restrictions.
 
-Thanks to Components' [isComponet](http://localhost:8081/docs/modules/Components.html#iscomponent) feature (executed post parsing), you're still able to bind your rendered elements to components and enforce an extra logic. Here an example how you would enforce all `.el-Y` elements to be placed only inside `.el-X` one, without touching any part of the original HTML used in the `content`.
+Thanks to Components' [isComponet](Components.html#iscomponent) feature (executed post parsing), you're still able to bind your rendered elements to components and enforce an extra logic. Here an example how you would enforce all `.el-Y` elements to be placed only inside `.el-X` one, without touching any part of the original HTML used in the `content`.
 
 ```js
 // Your component

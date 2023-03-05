@@ -8,7 +8,6 @@ describe('Editor', () => {
 
   beforeEach(() => {
     editor = new Editor();
-    editor.init();
     editor.getModel().loadOnStart();
   });
 
@@ -78,7 +77,7 @@ describe('Editor', () => {
     const umStack = um.getStack();
     const wrapper = editor.getWrapper();
     expect(umStack.length).toBe(0);
-    const comp = wrapper.append(`<div>Component 1</div>`)[0];
+    const comp = wrapper.append('<div>Component 1</div>')[0];
     expect(umStack.length).toBe(1);
     wrapper.empty();
     expect(umStack.length).toBe(2);
@@ -99,12 +98,7 @@ describe('Editor', () => {
     </div>`);
     expect(umStack.length).toBe(1); // UM counts first children
     expect(keys(all).length).toBe(5 + initComps);
-    wrapper
-      .components()
-      .at(0)
-      .components()
-      .at(0)
-      .remove(); // Remove 1 component
+    wrapper.components().at(0).components().at(0).remove(); // Remove 1 component
 
     expect(umStack.length).toBe(2);
     expect(keys(all).length).toBe(3 + initComps);

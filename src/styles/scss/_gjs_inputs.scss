@@ -266,6 +266,10 @@
   cursor: pointer;
 }
 
+.#{$app-prefix}input-unit {
+  text-align: center;
+}
+
 .#{$app-prefix}field-arrow-u,
 .#{$app-prefix}field-arrow-d {
   position: absolute;

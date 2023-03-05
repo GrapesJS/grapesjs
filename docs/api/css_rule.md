@@ -2,7 +2,12 @@
 
 ## CssRule
 
-**Extends Model.extend(Styleable)**
+**Extends StyleableModel**
+
+### Parameters
+
+*   `props` **CssRuleProperties** 
+*   `opt` **any**  (optional, default `{}`)
 
 ### Properties
 
@@ -14,7 +19,7 @@
 *   `singleAtRule` **[Boolean][4]?** This property is used only on at-rules, like 'page' or 'font-face', where the block containes only style declarations
 *   `state` **[String][3]?** State of the rule, eg: `hover`, `focused`
 *   `important` **([Boolean][4] | [Array][1]<[String][3]>)?** If true, sets `!important` on all properties. You can also pass an array to specify properties on which use important
-*   `stylable` **[Boolean][4]?** Indicates if the rule is stylable from the editor
+*   `stylable` **[Boolean][4]?** Indicates if the rule is stylable from the editor[Device]: device.html[State]: state.html[Component]: component.html
 
 ### getAtRule
 
@@ -71,6 +76,45 @@ cssRule.getDeclaration() // ".class1{color:red;}"
 ```
 
 Returns **[String][3]** 
+
+### getDevice
+
+Get the Device the rule is related to.
+
+#### Examples
+
+```javascript
+const device = rule.getDevice();
+console.log(device?.getName());
+```
+
+Returns **([Device] | null)** 
+
+### getState
+
+Get the State the rule is related to.
+
+#### Examples
+
+```javascript
+const state = rule.getState();
+console.log(state?.getLabel());
+```
+
+Returns **([State] | null)** 
+
+### getComponent
+
+Returns the related Component (valid only for component-specific rules).
+
+#### Examples
+
+```javascript
+const cmp = rule.getComponent();
+console.log(cmp?.toHTML());
+```
+
+Returns **([Component] | null)** 
 
 ### toCSS
 

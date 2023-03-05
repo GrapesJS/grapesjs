@@ -1,16 +1,17 @@
 import PanelView from 'panels/view/PanelView';
 import Panel from 'panels/model/Panel';
+import Editor from 'editor';
 
 describe('PanelView', () => {
   var fixtures;
+  var em;
   var model;
   var view;
 
   beforeEach(() => {
-    model = new Panel();
-    view = new PanelView({
-      model
-    });
+    em = new Editor();
+    model = new Panel(em.Panels);
+    view = new PanelView(model);
     document.body.innerHTML = '<div id="fixtures"></div>';
     fixtures = document.body.querySelector('#fixtures');
     fixtures.appendChild(view.render().el);
@@ -38,26 +39,24 @@ describe('PanelView', () => {
   });
 
   test('Hide panel', () => {
-    expect(view.$el.hasClass('hidden')).toBeFalsy();
+    expect(view.$el.hasClass('gjs-hidden')).toBeFalsy();
     model.set('visible', false);
-    expect(view.$el.hasClass('hidden')).toBeTruthy();
+    expect(view.$el.hasClass('gjs-hidden')).toBeTruthy();
   });
 
   test('Show panel', () => {
     model.set('visible', false);
-    expect(view.$el.hasClass('hidden')).toBeTruthy();
+    expect(view.$el.hasClass('gjs-hidden')).toBeTruthy();
     model.set('visible', true);
-    expect(view.$el.hasClass('hidden')).toBeFalsy();
+    expect(view.$el.hasClass('gjs-hidden')).toBeFalsy();
   });
 
   describe('Init with options', () => {
     beforeEach(() => {
       model = new Panel({
-        buttons: [{}]
+        buttons: [{}],
       });
-      view = new PanelView({
-        model
-      });
+      view = new PanelView(model);
       document.body.innerHTML = '<div id="fixtures"></div>';
       fixtures = document.body.querySelector('#fixtures');
       fixtures.appendChild(view.render().el);

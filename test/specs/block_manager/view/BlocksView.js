@@ -50,10 +50,10 @@ describe('BlocksView', () => {
       model = new Blocks([{ name: 'test1' }, { name: 'test2' }]);
       view = new BlocksView(
         {
-          collection: model
+          collection: model,
         },
         {
-          pStylePrefix: ppfx
+          pStylePrefix: ppfx,
         }
       );
       document.body.innerHTML = '<div id="fixtures"></div>';
@@ -65,9 +65,7 @@ describe('BlocksView', () => {
     });
 
     test('Render container', () => {
-      expect(view.getBlocksEl().getAttribute('class')).toEqual(
-        ppfx + 'blocks-c'
-      );
+      expect(view.getBlocksEl().getAttribute('class')).toEqual(ppfx + 'blocks-c');
     });
   });
 });

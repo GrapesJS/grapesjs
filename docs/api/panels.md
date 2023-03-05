@@ -143,7 +143,7 @@ Remove button from the panel
 ### Parameters
 
 *   `panelId` **[String][12]** Panel's ID
-*   `button`  
+*   `button` **any** 
 *   `buttonId` **[String][12]** Button's ID
 
 ### Examples
@@ -179,7 +179,7 @@ var button = panelManager.getButton('myPanel','myButton');
 
 Returns **(Button | null)** 
 
-[1]: https://github.com/artf/grapesjs/blob/master/src/panels/config/config.js
+[1]: https://github.com/GrapesJS/grapesjs/blob/master/src/panels/config/config.ts
 
 [2]: #addpanel
 

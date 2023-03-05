@@ -1,17 +1,15 @@
 import Panels from 'panels';
-import e2e from './e2e/PanelsE2e';
-import Models from './model/PanelModels';
-import PanelView from './view/PanelView';
-import PanelsView from './view/PanelsView';
-import ButtonView from './view/ButtonView';
-import ButtonsView from './view/ButtonsView';
+import Panel from 'panels/model/Panel';
+import Editor from 'editor/model/Editor';
 
 describe('Panels', () => {
   describe('Main', () => {
+    var em;
     var obj;
 
     beforeEach(() => {
-      obj = new Panels().init();
+      em = new Editor({});
+      obj = new Panels(em);
     });
 
     afterEach(() => {
@@ -37,7 +35,7 @@ describe('Panels', () => {
     });
 
     test('Adds new panel correctly via Panel instance', () => {
-      var oPanel = new obj.Panel({ id: 'test' });
+      var oPanel = new Panel(obj, { id: 'test' });
       var panel = obj.addPanel(oPanel);
       expect(panel).toEqual(oPanel);
       expect(panel.get('id')).toEqual('test');
@@ -60,12 +58,7 @@ describe('Panels', () => {
       var panel = obj.addPanel({ id: 'test' });
       var btn = obj.addButton('test', { id: 'btn' });
       expect(panel.get('buttons').length).toEqual(1);
-      expect(
-        panel
-          .get('buttons')
-          .at(0)
-          .get('id')
-      ).toEqual('btn');
+      expect(panel.get('buttons').at(0).get('id')).toEqual('btn');
     });
 
     test('getButton returns null in case there is no requested panel', () => {
@@ -114,12 +107,7 @@ describe('Panels', () => {
         var panel = obj.addPanel({ id: 'test' });
         var btn = obj.addButton('test', { id: 'btn' });
         expect(panel.get('buttons').length).toEqual(1);
-        expect(
-          panel
-            .get('buttons')
-            .at(0)
-            .get('id')
-        ).toEqual('btn');
+        expect(panel.get('buttons').at(0).get('id')).toEqual('btn');
         expect(obj.removeButton('test', { id: 'btn' })).toEqual(btn);
         expect(panel.get('buttons').length).toEqual(0);
       });
@@ -128,12 +116,7 @@ describe('Panels', () => {
         var panel = obj.addPanel({ id: 'test' });
         var btn = obj.addButton('test', { id: 'btn' });
         expect(panel.get('buttons').length).toEqual(1);
-        expect(
-          panel
-            .get('buttons')
-            .at(0)
-            .get('id')
-        ).toEqual('btn');
+        expect(panel.get('buttons').at(0).get('id')).toEqual('btn');
         expect(obj.removeButton('test', 'btn')).toEqual(btn);
         expect(panel.get('buttons').length).toEqual(0);
       });
@@ -148,7 +131,7 @@ describe('Panels', () => {
       });
 
       test('Removes panel correctly via Panel instance', () => {
-        var oPanel = new obj.Panel({ id: 'test' });
+        var oPanel = new Panel(obj, { id: 'test' });
         var panel = obj.addPanel(oPanel);
         expect(panel).toEqual(oPanel);
         expect(panel.get('id')).toEqual('test');
@@ -157,7 +140,7 @@ describe('Panels', () => {
       });
 
       test('Removes panel correctly via id', () => {
-        var oPanel = new obj.Panel({ id: 'test' });
+        var oPanel = new Panel(obj, { id: 'test' });
         var panel = obj.addPanel(oPanel);
         expect(panel).toEqual(oPanel);
         expect(panel.get('id')).toEqual('test');

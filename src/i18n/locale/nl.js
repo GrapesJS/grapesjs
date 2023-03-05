@@ -5,7 +5,7 @@ export default {
     addButton: 'Afbeelding toevoegen',
     inputPlh: 'http://path/to/the/image.jpg',
     modalTitle: 'Selecteer afbeelding',
-    uploadTitle: 'Zet bestanden hier neer of klik om te uploaden'
+    uploadTitle: 'Zet bestanden hier neer of klik om te uploaden',
   },
   // Here just as a reference, GrapesJS core doesn't contain any block,
   // so this should be omitted from other local files
@@ -15,7 +15,7 @@ export default {
     },
     categories: {
       // 'category-id': 'Categorie Label',
-    }
+    },
   },
   domComponents: {
     names: {
@@ -33,8 +33,8 @@ export default {
       thead: 'Tabel head',
       table: 'Tabel',
       row: 'Tabel rij',
-      cell: 'Tabel cel'
-    }
+      cell: 'Tabel cel',
+    },
   },
   deviceManager: {
     device: 'Apparaat',
@@ -42,8 +42,8 @@ export default {
       desktop: 'Desktop',
       tablet: 'Tablet',
       mobileLandscape: 'Mobile Landscape',
-      mobilePortrait: 'Mobile Portrait'
-    }
+      mobilePortrait: 'Mobile Portrait',
+    },
   },
   panels: {
     buttons: {
@@ -55,9 +55,9 @@ export default {
         'open-sm': 'Open Stijl Manager',
         'open-tm': 'Instellingen',
         'open-layers': 'Open Laag Manager',
-        'open-blocks': 'Open Blocks'
-      }
-    }
+        'open-blocks': 'Open Blocks',
+      },
+    },
   },
   selectorManager: {
     label: 'Classes',
@@ -66,8 +66,8 @@ export default {
     states: {
       hover: 'Zweven',
       active: 'Klik',
-      'nth-of-type(2n)': 'Even/oneven'
-    }
+      'nth-of-type(2n)': 'Even/oneven',
+    },
   },
   styleManager: {
     empty: 'Selecteer een element voordat je Stijl Manager kan gebruiken.',
@@ -80,7 +80,7 @@ export default {
       decorations: 'Decoraties',
       extra: 'Extra',
       flex: 'Flex',
-      dimension: 'Afmetingen'
+      dimension: 'Afmetingen',
     },
     // The core library generates the name by their `property` name
     properties: {
@@ -165,8 +165,8 @@ export default {
       'flex-basis': 'Flex basis',
       'flex-grow': 'Flex groei',
       'flex-shrink': 'Flex krimp',
-      'align-self': 'Lijn jezelf uit'
-    }
+      'align-self': 'Lijn jezelf uit',
+    },
   },
   traitManager: {
     empty: 'Selecteer een element voordat je Trait Manager kan gebruiken.',
@@ -177,22 +177,22 @@ export default {
         id: 'ID',
         alt: 'Tekst alternatief',
         title: 'Titel',
-        href: 'Link'
+        href: 'Link',
       },
       // In a simple trait, like text input, these are used on input attributes
       attributes: {
         id: traitInputAttr,
         alt: traitInputAttr,
         title: traitInputAttr,
-        href: { placeholder: 'Bijv. https://google.com' }
+        href: { placeholder: 'Bijv. https://google.com' },
       },
       // In a trait like select, these are used to translate option names
       options: {
         target: {
           false: 'Dit scherm',
-          _blank: 'Nieuw scherm'
-        }
-      }
-    }
-  }
+          _blank: 'Nieuw scherm',
+        },
+      },
+    },
+  },
 };

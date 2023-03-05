@@ -12,11 +12,27 @@ const editor = grapesjs.init({
 })
 ```
 
-Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+Once the editor is instantiated you can use its API and listen to its events. Before using these methods, you should get the module from the instance.
 
 ```js
+// Listen to events
+editor.on('run', () => { ... });
+
+// Use the API
 const commands = editor.Commands;
+commands.add(...);
 ```
+
+*   ## Available Events
+*   `run:{commandName}` - Triggered when some command is called to run (eg. editor.runCommand('preview'))
+*   `stop:{commandName}` - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
+*   `run:{commandName}:before` - Triggered before the command is called
+*   `stop:{commandName}:before` - Triggered before the command is called to stop
+*   `abort:{commandName}` - Triggered when the command execution is aborted (`editor.on(`run:preview:before`, opts => opts.abort = 1);`)
+*   `run` - Triggered on run of any command. The id and the result are passed as arguments to the callback
+*   `stop` - Triggered on stop of any command. The id and the result are passed as arguments to the callback
+
+## Methods
 
 *   [add][2]
 *   [get][3]
@@ -79,7 +95,7 @@ Extend the command. The command to extend should be defined as an object
 ### Parameters
 
 *   `id` **[string][11]** Command's ID
-*   `cmd`   (optional, default `{}`)
+*   `cmd` **CommandObject**  (optional, default `{}`)
 *   `Object` **[Object][12]** with the new command functions
 
 ### Examples
@@ -181,7 +197,7 @@ console.log(commands.getActive());
 
 Returns **[Object][12]** 
 
-[1]: https://github.com/artf/grapesjs/blob/master/src/commands/config/config.js
+[1]: https://github.com/GrapesJS/grapesjs/blob/master/src/commands/config/config.ts
 
 [2]: #add
 

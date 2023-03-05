@@ -95,8 +95,8 @@ export default (editor, opt = {}) => {
               return;
             }
 
-            var navParent = this.closest(`[data-gjs=navbar]`);
-            var navItems = navParent.querySelector(`[data-gjs=navbar-items]`);
+            var navParent = this.closest('[data-gjs=navbar]');
+            var navItems = navParent.querySelector('[data-gjs=navbar-items]');
             toggleSlide(navItems);
 
             if (!transEndAdded) {

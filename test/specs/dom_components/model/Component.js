@@ -18,14 +18,14 @@ let em;
 
 describe('Component', () => {
   beforeEach(() => {
-    em = new Editor();
+    em = new Editor({ avoidDefaults: true });
     dcomp = em.get('DomComponents');
     em.get('PageManager').onLoad();
-    // dcomp = new DomComponents();
+    // dcomp = new DomComponents(em);
     compOpts = {
       em,
       componentTypes: dcomp.componentTypes,
-      domc: dcomp
+      domc: dcomp,
     };
     obj = new Component({}, compOpts);
     dcomp.init({ em });
@@ -51,22 +51,11 @@ describe('Component', () => {
   });
 
   test('Clones correctly with traits', () => {
-    obj
-      .get('traits')
-      .at(0)
-      .set('value', 'testTitle');
+    obj.get('traits').at(0).set('value', 'testTitle');
     var cloned = obj.clone();
     cloned.set('stylable', 0);
-    cloned
-      .get('traits')
-      .at(0)
-      .set('value', 'testTitle2');
-    expect(
-      obj
-        .get('traits')
-        .at(0)
-        .get('value')
-    ).toEqual('testTitle');
+    cloned.get('traits').at(0).set('value', 'testTitle2');
+    expect(obj.get('traits').at(0).get('value')).toEqual('testTitle');
     expect(obj.get('stylable')).toEqual(true);
   });
 
@@ -75,18 +64,18 @@ describe('Component', () => {
       {
         label: 'Title',
         name: 'title',
-        value: 'The title'
+        value: 'The title',
       },
       {
         label: 'Context',
-        value: 'primary'
-      }
+        value: 'primary',
+      },
     ]);
     expect(obj.get('attributes')).toEqual({ title: 'The title' });
   });
 
   test('Has expected name', () => {
-    expect(obj.getName()).toEqual('Box');
+    expect(obj.getName()).toEqual('Div');
   });
 
   test('Has expected name 2', () => {
@@ -104,27 +93,25 @@ describe('Component', () => {
       tagName: 'article',
       attributes: {
         'data-test1': 'value1',
-        'data-test2': 'value2'
-      }
+        'data-test2': 'value2',
+      },
     });
-    expect(obj.toHTML()).toEqual(
-      '<article data-test1="value1" data-test2="value2"></article>'
-    );
+    expect(obj.toHTML()).toEqual('<article data-test1="value1" data-test2="value2"></article>');
   });
 
   test('Component toHTML with value-less attribute', () => {
     obj = new Component({
       tagName: 'div',
       attributes: {
-        'data-is-a-test': ''
-      }
+        'data-is-a-test': '',
+      },
     });
     expect(obj.toHTML()).toEqual('<div data-is-a-test=""></div>');
   });
 
   test('Component toHTML with classes', () => {
     obj = new Component({
-      tagName: 'article'
+      tagName: 'article',
     });
     ['class1', 'class2'].forEach(item => {
       obj.get('classes').add({ name: item });
@@ -157,17 +144,41 @@ describe('Component', () => {
     expect(obj.toHTML()).toEqual('<div data-test="&quot;value&quot;"></div>');
   });
 
+  test('Component toHTML and withProps', () => {
+    obj = new Component({}, { em });
+    obj.set({
+      bool: true,
+      boolf: false,
+      string: 'st\'ri"ng',
+      array: [1, 'string', true],
+      object: { a: 1, b: 'string', c: true },
+      null: null,
+      undef: undefined,
+      empty: '',
+      zero: 0,
+      _private: 'value',
+    });
+    let resStr = "st'ri&quot;ng";
+    let resArr = '[1,&quot;string&quot;,true]';
+    let resObj = '{&quot;a&quot;:1,&quot;b&quot;:&quot;string&quot;,&quot;c&quot;:true}';
+    let res = `<div data-gjs-bool data-gjs-string="${resStr}" data-gjs-array="${resArr}" data-gjs-object="${resObj}" data-gjs-empty="" data-gjs-zero="0"></div>`;
+    expect(obj.toHTML({ withProps: true })).toEqual(res);
+    resStr = 'st&apos;ri"ng';
+    resArr = '[1,"string",true]';
+    resObj = '{"a":1,"b":"string","c":true}';
+    res = `<div data-gjs-bool data-gjs-string='${resStr}' data-gjs-array='${resArr}' data-gjs-object='${resObj}' data-gjs-empty="" data-gjs-zero="0"></div>`;
+    expect(obj.toHTML({ withProps: true, altQuoteAttr: true })).toEqual(res);
+  });
+
   test('Manage correctly boolean attributes', () => {
     obj = new Component();
     obj.set('attributes', {
       'data-test': 'value',
       checked: false,
       required: true,
-      avoid: true
+      avoid: true,
     });
-    expect(obj.toHTML()).toEqual(
-      '<div data-test="value" required avoid></div>'
-    );
+    expect(obj.toHTML()).toEqual('<div data-test="value" required avoid></div>');
   });
 
   test('Component parse empty div', () => {
@@ -261,18 +272,18 @@ describe('Component', () => {
       id: 'test',
       'data-test': 'value',
       class: 'class1 class2',
-      style: 'color: white; background: #fff'
+      style: 'color: white; background: #fff',
     });
     expect(obj.getAttributes()).toEqual({
       id: 'test',
       class: 'class1 class2',
       style: 'color:white;background:#fff;',
-      'data-test': 'value'
+      'data-test': 'value',
     });
     expect(obj.get('classes').length).toEqual(2);
     expect(obj.getStyle()).toEqual({
       color: 'white',
-      background: '#fff'
+      background: '#fff',
     });
   });
 
@@ -370,7 +381,7 @@ describe('Component', () => {
     obj.append({
       removable: false,
       draggable: false,
-      propagate: ['removable', 'draggable']
+      propagate: ['removable', 'draggable'],
     });
     const result = obj.components();
     const newObj = result.models[0];
@@ -406,6 +417,29 @@ describe('Component', () => {
     };
     newObj.components().each(model => inhereted(model));
   });
+
+  test('setStyle parses styles correctly', () => {
+    const styles = 'padding: 12px;height:auto;';
+    const expectedObj = {
+      padding: '12px',
+      height: 'auto',
+    };
+
+    const c = new Component();
+
+    expect(c.setStyle(styles)).toEqual(expectedObj);
+  });
+
+  test('setStyle should be called successfully when invoked internally', () => {
+    const ExtendedComponent = Component.extend({
+      init() {
+        const styles = 'padding: 12px;height:auto;';
+        this.setStyle(styles);
+      },
+    });
+
+    expect(() => new ExtendedComponent()).not.toThrowError();
+  });
 });
 
 describe('Image Component', () => {
@@ -433,7 +467,7 @@ describe('Image Component', () => {
   test('Component toHTML with attributes', () => {
     obj = new ComponentImage({
       attributes: { alt: 'AltTest' },
-      src: 'testPath'
+      src: 'testPath',
     });
     expect(obj.toHTML()).toEqual('<img alt="AltTest" src="testPath"/>');
   });
@@ -475,7 +509,7 @@ describe('Text Component', () => {
   test('Component toHTML with attributes', () => {
     obj = new ComponentText({
       attributes: { 'data-test': 'value' },
-      content: 'test content'
+      content: 'test content',
     });
     expect(obj.toHTML()).toEqual('<div data-test="value">test content</div>');
   });
@@ -505,9 +539,9 @@ describe('Text Node Component', () => {
   test('Component toHTML with attributes', () => {
     obj = new ComponentTextNode({
       attributes: { 'data-test': 'value' },
-      content: `test content &<>"'`
+      content: 'test content &<>"\'',
     });
-    expect(obj.toHTML()).toEqual('test content &amp;&lt;&gt;&quot;&#039;');
+    expect(obj.toHTML()).toEqual('test content &amp;&lt;&gt;"\'');
   });
 });
 
@@ -536,13 +570,13 @@ describe('Link Component', () => {
     <div>text</div>
     <div>here </div>`;
     obj = ComponentLink.isComponent(aEl);
-    expect(obj).toEqual({ type: 'link', editable: 0 });
+    expect(obj).toEqual({ type: 'link', editable: false });
   });
 
   test('Link element with only an image inside is not editable', () => {
     aEl.innerHTML = '<img src="##"/>';
     obj = ComponentLink.isComponent(aEl);
-    expect(obj).toEqual({ type: 'link', editable: 0 });
+    expect(obj).toEqual({ type: 'link', editable: false });
   });
 });
 
@@ -555,11 +589,9 @@ describe('Map Component', () => {
   });
 
   test('Component parse not map iframe', () => {
-    var el = $(
-      '<iframe src="https://www.youtube.com/watch?v=jNQXAC9IVRw"></iframe>'
-    );
+    var el = $('<iframe src="https://www.youtube.com/watch?v=jNQXAC9IVRw"></iframe>');
     obj = ComponentMap.isComponent(el.get(0));
-    expect(obj).toEqual('');
+    expect(obj).toEqual(undefined);
   });
 });
 
@@ -593,7 +625,7 @@ describe('Components', () => {
     em.get('PageManager').onLoad();
     compOpts = {
       em,
-      componentTypes: dcomp.componentTypes
+      componentTypes: dcomp.componentTypes,
     };
   });
 

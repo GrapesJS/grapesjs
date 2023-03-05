@@ -44,8 +44,8 @@ describe('File Uploader', () => {
       var view = new FileUploader({
         config: {
           disableUpload: true,
-          upload: 'something'
-        }
+          upload: 'something',
+        },
       });
       view.render();
       expect(view.$el.find('input[type=file]').prop('disabled')).toEqual(true);
@@ -54,8 +54,8 @@ describe('File Uploader', () => {
     test('Handles multiUpload false', () => {
       var view = new FileUploader({
         config: {
-          multiUpload: false
-        }
+          multiUpload: false,
+        },
       });
       view.render();
       expect(view.$el.find('input[type=file]').prop('multiple')).toBeFalsy();
@@ -64,8 +64,8 @@ describe('File Uploader', () => {
     test('Handles embedAsBase64 parameter', () => {
       var view = new FileUploader({
         config: {
-          embedAsBase64: true
-        }
+          embedAsBase64: true,
+        },
       });
       view.render();
       expect(view.$el.find('input[type=file]').prop('disabled')).toEqual(false);

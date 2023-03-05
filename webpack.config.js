@@ -12,17 +12,19 @@ export default ({ config }) => ({
     libraryExport: 'default',
   },
   devServer: {
+    ...config.devServer,
+    static: [rootDir],
     headers: { 'Access-Control-Allow-Origin': '*' },
-    disableHostCheck: true,
-  },
-  module: {
-    rules: [
-      ...config.module.rules,
-    ],
+    allowedHosts: 'all',
   },
   resolve: {
-    modules: ['src', 'node_modules'],
+    ...config.resolve,
+    modules: [
+      ...(config.resolve && config.resolve.modules),
+      'src'
+    ],
     alias: {
+      ...(config.resolve && config.resolve.alias),
       jquery: 'utils/cash-dom',
       backbone: `${rootDir}/node_modules/backbone`,
       underscore: `${rootDir}/node_modules/underscore`,

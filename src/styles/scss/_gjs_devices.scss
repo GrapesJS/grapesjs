@@ -1,7 +1,7 @@
 .#{$app-prefix}devices-c {
   display: flex;
   align-items: center;
-  padding: 3px;
+  padding: 2px 3px 3px 3px;
 
   .#{$app-prefix}device-label {
     flex-grow: 2;

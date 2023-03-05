@@ -1,4 +1,4 @@
-import ezygrapes from "ezygrapes";
+import ezygrapes from 'ezygrapes';
 
 export default ezygrapes.plugins.add('gjs-plugin-filestack', (editor, opts = {}) => {
   let c = opts;
@@ -40,7 +40,7 @@ export default ezygrapes.plugins.add('gjs-plugin-filestack', (editor, opts = {})
   }
 
   if(!c.key){
-    throw new Error("Filestack's API key not found");
+    throw new Error('Filestack\'s API key not found');
   }
 
   const fsClient = filestack.init(c.key);
