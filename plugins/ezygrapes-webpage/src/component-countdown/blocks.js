@@ -38,7 +38,7 @@ export default function (editor, opt = {}) {
       category: c.labelCountdownCategory,
       attributes: {class: 'far fa-clock', style: 'font-size: 1.5rem; font-weight: 900'},
       content: `
-        <div class="${pfx}" data-gjs-type="countdown"></div>
+        <div class='${pfx}' data-gjs-type='countdown'></div>
         ${style}
       `
     });

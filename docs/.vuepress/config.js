@@ -1,6 +1,7 @@
 const version = require('./../../package.json').version;
 const isDev = process.argv[2] === 'dev';
-const devPath = 'http://localhost:8080/dist';
+const devPath = 'http://localhost:8080';
+const baseUrl = 'https://grapesjs.com';
 const subDivider = " ‍  ‍  ‍ ";
 
 module.exports = {
@@ -10,8 +11,8 @@ module.exports = {
   serviceWorker: false, // Enable Service Worker for offline usage
   head: [
     ['link', { rel: 'icon', href: '/logo-icon.png' }],
-    ['link', { rel: 'stylesheet', href: isDev ? `${devPath}/css/grapes.min.css` : `../stylesheets/grapes.min.css?v${version}` }],
-    ['script', { src: isDev ? `${devPath}/grapes.min.js` : `../js/grapes.min.js?v${version}` }],
+    ['link', { rel: 'stylesheet', href: isDev ? `${devPath}/dist/css/grapes.min.css` : `${baseUrl}/stylesheets/grapes.min.css?v${version}` }],
+    ['script', { src: isDev ? `${devPath}/grapes.min.js` : `${baseUrl}/js/grapes.min.js?v${version}` }],
   ],
   localesSKIP: {
     '/': {
@@ -71,8 +72,15 @@ module.exports = {
         ['/api/panels', 'Panels'],
         ['/api/pages', 'Pages'],
         ['/api/page', `${subDivider}Page`],
+        ['/api/layer_manager', 'Layers'],
         ['/api/style_manager', 'Style Manager'],
         ['/api/sector', `${subDivider}Sector`],
+        ['/api/property', `${subDivider}Property`],
+        ['/api/property_number', `${subDivider}PropertyNumber`],
+        ['/api/property_select', `${subDivider}PropertySelect`],
+        ['/api/property_composite', `${subDivider}PropertyComposite`],
+        ['/api/property_stack', `${subDivider}PropertyStack`],
+        ['/api/layer', `${subDivider}Layer`],
         ['/api/storage_manager', 'Storage Manager'],
         ['/api/device_manager', 'Device Manager'],
         ['/api/device', `${subDivider}Device`],
@@ -103,6 +111,7 @@ module.exports = {
             ['/modules/Commands', 'Commands'],
             ['/modules/I18n', 'I18n'],
             ['/modules/Selectors', 'Selectors'],
+            ['/modules/Layers', 'Layers'],
             ['/modules/Style-manager', 'Style Manager'],
             ['/modules/Storage', 'Storage Manager'],
             ['/modules/Modal', 'Modal'],

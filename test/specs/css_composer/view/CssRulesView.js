@@ -7,36 +7,59 @@ describe('CssRulesView', () => {
   const prefix = 'rules';
   const devices = [
     {
-      name: 'Mobile portrait',
-      width: '320px',
-      widthMedia: '480px'
+      name: 'Desktop',
+      width: '',
+      widthMedia: '',
     },
     {
       name: 'Tablet',
       width: '768px',
-      widthMedia: '992px'
+      widthMedia: '992px',
+    },
+    {
+      name: 'Mobile portrait',
+      width: '320px',
+      widthMedia: '480px',
+    },
+  ];
+  const mobileFirstDevices = [
+    {
+      name: 'Mobile portrait',
+      width: '',
+      widthMedia: '',
+    },
+    {
+      name: 'Tablet',
+      width: '768px',
+      widthMedia: '992px',
     },
     {
       name: 'Desktop',
-      width: '',
-      widthMedia: ''
-    }
+      width: '1024px',
+      widthMedia: '1280px',
+    },
   ];
 
-  beforeEach(() => {
+  function buildEditor(editorOptions) {
     const col = new CssRules([]);
-    obj = new CssRulesView({
+    const obj = new CssRulesView({
       collection: col,
       config: {
-        em: new Editor({
-          deviceManager: {
-            devices
-          }
-        })
-      }
+        em: new Editor(editorOptions),
+      },
     });
     document.body.innerHTML = '<div id="fixtures"></div>';
     document.body.querySelector('#fixtures').appendChild(obj.render().el);
+
+    return obj;
+  }
+
+  beforeEach(() => {
+    obj = buildEditor({
+      deviceManager: {
+        devices,
+      },
+    });
   });
 
   afterEach(() => {
@@ -68,6 +91,33 @@ describe('CssRulesView', () => {
     });
   });
 
+  test('Collection is empty. Styles structure with mobile first bootstraped', () => {
+    obj = buildEditor({
+      mediaCondition: 'min-width',
+      deviceManager: {
+        devices: mobileFirstDevices,
+      },
+    });
+
+    expect(obj.$el.html()).toBeTruthy();
+    const foundStylesContainers = obj.$el.find('div');
+    expect(foundStylesContainers.length).toEqual(mobileFirstDevices.length);
+
+    const sortedDevicesWidthMedia = mobileFirstDevices
+      .map(dvc => dvc.widthMedia)
+      .sort((left, right) => {
+        const a = (left && left.replace('px', '')) || Number.MIN_VALUE;
+        const b = (right && right.replace('px', '')) || Number.MIN_VALUE;
+        return a - b;
+      })
+      .map(widthMedia => parseFloat(widthMedia));
+
+    foundStylesContainers.each((idx, $styleC) => {
+      const width = sortedDevicesWidthMedia[idx];
+      expect($styleC.id).toEqual(`${prefix}${width ? `-${width}` : ''}`);
+    });
+  });
+
   test('Add new rule', () => {
     sinon.stub(obj, 'addToCollection');
     obj.collection.add({});
@@ -78,20 +128,20 @@ describe('CssRulesView', () => {
     const foundStylesContainers = obj.$el.find('div');
     const rules = [
       {
-        selectorsAdd: '#testid'
+        selectorsAdd: '#testid',
       },
       {
         selectorsAdd: '#testid2',
-        mediaText: '(max-width: 1000px)'
+        mediaText: '(max-width: 1000px)',
       },
       {
         selectorsAdd: '#testid3',
-        mediaText: '(min-width: 900px)'
+        mediaText: '(min-width: 900px)',
       },
       {
         selectorsAdd: '#testid4',
-        mediaText: 'screen and (max-width: 900px) and (min-width: 600px)'
-      }
+        mediaText: 'screen and (max-width: 900px) and (min-width: 600px)',
+      },
     ];
     obj.collection.add(rules);
     const stylesCont = obj.el.querySelector(`#${obj.className}`);

@@ -4,29 +4,30 @@ import DomComponents from 'dom_components';
 import Editor from 'editor/model/Editor';
 
 describe('ComponentView', () => {
-  var fixtures;
-  var model;
-  var view;
-  var hClass = 'hc-state';
-  var dcomp;
-  var compOpts;
+  let fixtures;
+  let model;
+  let view;
+  let dcomp;
+  let compOpts;
   let em;
+  let el;
 
   beforeEach(() => {
     em = new Editor({});
-    dcomp = new DomComponents();
+    dcomp = new DomComponents(em);
     compOpts = {
       em,
-      componentTypes: dcomp.componentTypes
+      componentTypes: dcomp.componentTypes,
     };
     model = new Component({}, compOpts);
     view = new ComponentView({
-      model
+      model,
     });
     em.get('StyleManager').render(); // Enable to listen em.setState
     document.body.innerHTML = '<div id="fixtures"></div>';
     fixtures = document.body.querySelector('#fixtures');
-    fixtures.appendChild(view.render().el);
+    el = view.render().el;
+    fixtures.appendChild(el);
   });
 
   afterEach(() => {
@@ -35,15 +36,7 @@ describe('ComponentView', () => {
 
   test('Component empty', () => {
     expect(fixtures.innerHTML).toEqual(
-      '<div data-gjs-type="default" data-highlightable="1"></div>'
-    );
-  });
-
-  test('Add helper class on update of state', () => {
-    em.setSelected(model);
-    em.setState('test');
-    expect(fixtures.innerHTML).toEqual(
-      `<div data-gjs-type="default" data-highlightable="1" class="selected ${hClass}"></div>`
+      `<div data-gjs-highlightable="true" id="${el.id}" data-gjs-type="default"></div>`
     );
   });
 
@@ -52,14 +45,14 @@ describe('ComponentView', () => {
     em.setState('test');
     em.setState();
     expect(fixtures.innerHTML).toEqual(
-      '<div data-gjs-type="default" data-highlightable="1" class="selected"></div>'
+      `<div data-gjs-highlightable="true" id="${el.id}" data-gjs-type="default" class="selected"></div>`
     );
   });
 
   test('Add helper class on status update', () => {
     model.set('status', 'selected');
     expect(fixtures.innerHTML).toEqual(
-      '<div data-gjs-type="default" data-highlightable="1" class="selected"></div>'
+      `<div data-gjs-highlightable="true" id="${el.id}" data-gjs-type="default" class="selected"></div>`
     );
   });
 
@@ -71,7 +64,7 @@ describe('ComponentView', () => {
   test('Update attributes', () => {
     model.set('attributes', {
       title: 'value',
-      'data-test': 'value2'
+      'data-test': 'value2',
     });
     expect(view.el.getAttribute('title')).toEqual('value');
     expect(view.el.getAttribute('data-test')).toEqual('value2');
@@ -80,7 +73,7 @@ describe('ComponentView', () => {
   test('Update style', () => {
     model.set('style', {
       color: 'red',
-      float: 'left'
+      float: 'left',
     });
     expect(view.el.getAttribute('style')).toEqual('color:red;float:left;');
   });
@@ -119,18 +112,21 @@ describe('ComponentView', () => {
   test('Init with nested components', () => {
     model = new Component(
       {
-        components: [{ tagName: 'span' }, { attributes: { title: 'test' } }]
+        components: [{ tagName: 'span' }, { attributes: { title: 'test' } }],
       },
       compOpts
     );
     view = new ComponentView({
       model,
-      componentTypes: dcomp.componentTypes
+      componentTypes: dcomp.componentTypes,
     });
     fixtures.innerHTML = '';
-    fixtures.appendChild(view.render().el);
+    el = view.render().el;
+    fixtures.appendChild(el);
+    const firstId = el.children[0].id;
+    const secondId = el.children[1].id;
     expect(view.$el.html()).toEqual(
-      '<span data-gjs-type="default" data-highlightable="1"></span><div data-gjs-type="default" data-highlightable="1" title="test"></div>'
+      `<span data-gjs-highlightable="true" id="${firstId}" data-gjs-type="default"></span><div data-gjs-highlightable="true" id="${secondId}" data-gjs-type="default" title="test"></div>`
     );
   });
 

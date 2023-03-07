@@ -1,15 +1,17 @@
 import ModalView from 'modal_dialog/view/ModalView';
 import Modal from 'modal_dialog/model/Modal';
+import Editor from 'editor';
 
 describe('ModalView', () => {
   var model;
   var view;
-  var editorModel;
+  var em;
 
   beforeEach(() => {
-    model = new Modal();
+    em = new Editor({});
+    model = new Modal(em);
     view = new ModalView({
-      model
+      model,
     });
     document.body.innerHTML = '<div id="fixtures"></div>';
     document.body.querySelector('#fixtures').appendChild(view.render().el);

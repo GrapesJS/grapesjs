@@ -1,4 +1,3 @@
-import Backbone from 'backbone';
 import PropertySelectView from 'style_manager/view/PropertySelectView';
 import Property from 'style_manager/model/PropertyRadio';
 import Editor from 'editor/model/Editor';
@@ -14,33 +13,30 @@ describe('PropertySelectView', () => {
   var target;
   var model;
   var view;
-  var propTarget;
   var options;
   var propName = 'testprop';
   var propValue = 'test1value';
   var defValue = 'test2value';
   var options = [
     { value: 'test1value', style: 'test:style' },
-    { name: 'test2', value: 'test2value' }
+    { name: 'test2', value: 'test2value' },
   ];
 
   beforeEach(() => {
     em = new Editor({});
-    dcomp = new DomComponents();
+    dcomp = new DomComponents(em);
     compOpts = { em, componentTypes: dcomp.componentTypes };
-    propTarget = { ...Backbone.Events };
     target = new Component({}, compOpts);
     component = new Component({}, compOpts);
-    model = new Property({
-      type: 'select',
-      list: options,
-      property: propName
-    });
-    propTarget.model = component;
-    view = new PropertySelectView({
-      model,
-      propTarget
-    });
+    model = new Property(
+      {
+        type: 'select',
+        list: options,
+        property: propName,
+      },
+      { em }
+    );
+    view = new PropertySelectView({ model });
     document.body.innerHTML = '<div id="fixtures"></div>';
     fixtures = document.body.firstChild;
     view.render();
@@ -93,56 +89,19 @@ describe('PropertySelectView', () => {
 
   test('Update model on input change', () => {
     view.getInputEl().value = propValue;
-    view.inputValueChanged();
+    view.inputValueChanged({
+      target: { value: propValue },
+      stopPropagation() {},
+    });
     expect(view.model.get('value')).toEqual(propValue);
   });
 
-  test('Update input on value change', () => {
+  test('Update input on value change', done => {
     view.model.set('value', propValue);
-    expect(view.getInputValue()).toEqual(propValue);
-  });
-
-  test('Update target on value change', () => {
-    view.selectedComponent = component;
-    view.model.set('value', propValue);
-    var compStyle = view.selectedComponent.get('style');
-    var assertStyle = {};
-    assertStyle[propName] = propValue;
-    expect(compStyle).toEqual(assertStyle);
-  });
-
-  describe('With target setted', () => {
-    beforeEach(() => {
-      target.model = component;
-      view = new PropertySelectView({
-        model,
-        propTarget: target
-      });
-      fixtures.innerHTML = '';
-      view.render();
-      fixtures.appendChild(view.el);
-    });
-
-    test('Update value and input on target swap', () => {
-      var style = {};
-      style[propName] = propValue;
-      component.set('style', style);
-      view.propTarget.trigger('update');
-      expect(view.model.get('value')).toEqual(propValue);
-      expect(view.getInputValue()).toEqual(propValue);
-    });
-
-    test('Update value after multiple swaps', () => {
-      var style = {};
-      style[propName] = propValue;
-      component.set('style', style);
-      view.propTarget.trigger('update');
-      style[propName] = 'test2value';
-      component.set('style', style);
-      view.propTarget.trigger('update');
-      expect(view.model.get('value')).toEqual('test2value');
-      expect(view.getInputValue()).toEqual('test2value');
-    });
+    setTimeout(() => {
+      expect(view.getInputEl().value).toEqual(propValue);
+      done();
+    }, 11);
   });
 
   describe('Init property', () => {
@@ -152,10 +111,10 @@ describe('PropertySelectView', () => {
         type: 'select',
         list: options,
         defaults: defValue,
-        property: propName
+        property: propName,
       });
       view = new PropertySelectView({
-        model
+        model,
       });
       fixtures.innerHTML = '';
       view.render();
@@ -163,7 +122,7 @@ describe('PropertySelectView', () => {
     });
 
     test('Value as default', () => {
-      expect(view.model.get('value')).toEqual(defValue);
+      expect(view.model.getValue()).toEqual(defValue);
     });
 
     test('Empty value as default', () => {
@@ -171,22 +130,22 @@ describe('PropertySelectView', () => {
         { value: '', name: 'test' },
         { value: 'test1value', name: 'test1' },
         { value: 'test2value', name: 'test2' },
-        { value: '', name: 'TestDef' }
+        { value: '', name: 'TestDef' },
       ];
       component = new Component();
       model = new Property({
         type: 'select',
         list: options,
         defaults: '',
-        property: 'emptyDefault'
+        property: 'emptyDefault',
       });
       view = new PropertySelectView({
-        model
+        model,
       });
       view.render();
       fixtures.innerHTML = '';
       fixtures.appendChild(view.el);
-      expect(view.getInputValue()).toEqual('');
+      expect(view.getInputEl().value).toEqual('');
     });
 
     test('Input value is as default', () => {

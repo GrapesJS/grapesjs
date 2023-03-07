@@ -1,17 +1,17 @@
 import PanelsView from 'panels/view/PanelsView';
 import Panels from 'panels/model/Panels';
-
+import Editor from 'editor';
 describe('PanelsView', () => {
   var fixtures;
   var $fixture;
+  var em;
   var model;
   var view;
 
   beforeEach(() => {
-    model = new Panels([]);
-    view = new PanelsView({
-      collection: model
-    });
+    em = new Editor({});
+    model = new Panels(em.Panels);
+    view = new PanelsView(model);
     document.body.innerHTML = '<div id="fixtures"></div>';
     fixtures = document.body.querySelector('#fixtures');
     fixtures.appendChild(view.render().el);

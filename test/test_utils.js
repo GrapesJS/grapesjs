@@ -11,7 +11,7 @@ module.exports = {
       },
       getDb() {
         return db;
-      }
+      },
     };
-  }
+  },
 };

@@ -1,11 +1,12 @@
 {
   "name": "ezygrapes",
   "description": "Web Builder Framework for EzyPlatform",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "youngmonkeys",
   "license": "BSD-3-Clause",
   "homepage": "youngmonkeys.org",
   "main": "dist/grapes.min.js",
+  "types": "index.d.ts",
   "sideEffects": [
     "*.vue",
     "*.css",
@@ -16,25 +17,29 @@
     "url": "https://github.com/youngmonkeys/ezygrapes.git"
   },
   "dependencies": {
-    "backbone": "1.3.3",
+    "backbone": "1.4.1",
     "backbone-undo": "^0.2.5",
     "codemirror": "^5.63.0",
     "codemirror-formatting": "^1.0.0",
     "promise-polyfill": "^8.1.3",
-    "spectrum-colorpicker": "^1.8.0",
     "underscore": "^1.13.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.15.7",
+    "@babel/preset-typescript": "^7.16.7",
+    "@types/backbone": "^1.4.15",
+    "@types/jest": "^28.1.1",
+    "@typescript-eslint/parser": "^5.22.0",
     "@vuepress/plugin-google-analytics": "^1.8.2",
     "documentation": "^13.2.5",
-    "eslint": "^7.32.0",
-    "grapesjs-cli": "^2.0.0",
+    "eslint": "^8.12.0",
+    "grapesjs-cli": "^4.0.0",
+    "html-entities": "^1.4.0",
     "husky": "^2.7.0",
     "jest": "^24.9.0",
     "lint-staged": "^8.2.1",
     "npm-run-all": "^4.1.5",
-    "prettier": "^1.18.2",
+    "prettier": "^2.4.1",
     "sass": "^1.42.1",
     "sinon": "^7.5.0",
     "vuepress": "^1.8.2",
@@ -59,24 +64,31 @@
     "env": {
       "test": {
         "presets": [
-          "@babel/preset-env"
+          "@babel/preset-env",
+          "@babel/preset-typescript"
         ]
       }
     }
   },
   "lint-staged": {
-    "{src,test}/**/*.js": [
-      "prettier --single-quote --write",
+    "{src,test}/**/*.(t|j)s": [
+      "eslint --ext .ts,.js --fix",
+      "prettier --single-quote --print-width 120 --arrow-parens avoid --write",
       "git add"
     ]
   },
   "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "ts"
+    ],
+    "verbose": true,
     "testURL": "http://localhost/",
     "modulePaths": [
-      "./src"
+      "<rootDir>/src"
     ],
     "testMatch": [
-      "<rootDir>/test/specs/**/*.js"
+      "<rootDir>/test/specs/**/*.(t|j)s"
     ],
     "setupFiles": [
       "<rootDir>/test/setup.js"
@@ -93,8 +105,9 @@
     "docs:build-vp": "vuepress build docs",
     "docs:build": "npm run docs:api && npm run docs:build-vp",
     "docs:deploy": "docs/deploy.sh",
-    "lint": "eslint src",
+    "lint": "eslint . --ext .ts,.js",
     "check": "npm run lint && npm run test",
+    "check:ts": "tsc --noEmit --esModuleInterop dist/index.d.ts",
     "build": "npm run check && run-s build:*",
     "build:js": "grapesjs-cli build --targets=\"> 1%, ie 11, safari 8, not dead\" --statsOutput=\"stats.json\" --localePath=\"src/i18n/locale\"",
     "build:css": "sass src/styles/scss/main.scss dist/css/grapes.min.css --no-source-map --style=compressed --load-path=node_modules",

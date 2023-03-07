@@ -8,7 +8,7 @@ describe('CssRuleView', () => {
   beforeEach(() => {
     var m = new CssRule();
     obj = new CssRuleView({
-      model: m
+      model: m,
     });
     document.body.innerHTML = '<div id="fixtures"></div>';
     fixtures = document.body.querySelector('#fixtures');
@@ -37,10 +37,10 @@ describe('CssRuleView', () => {
 
     beforeEach(() => {
       var m = new CssRule({
-        selectors: [{ name: 'test1' }, { name: 'test2' }]
+        selectors: [{ name: 'test1' }, { name: 'test2' }],
       });
       objReg = new CssRuleView({
-        model: m
+        model: m,
       });
       objReg.render();
       document.body.innerHTML = '<div id="fixtures"></div>';
@@ -77,9 +77,7 @@ describe('CssRuleView', () => {
     test('Render media queries', () => {
       objReg.model.set('style', { prop: 'value' });
       objReg.model.set('mediaText', '(max-width: 999px)');
-      expect(objReg.$el.html()).toEqual(
-        '@media (max-width: 999px){.test1.test2{prop:value;}}'
-      );
+      expect(objReg.$el.html()).toEqual('@media (max-width: 999px){.test1.test2{prop:value;}}');
     });
 
     test('Empty on clear', () => {

@@ -16,7 +16,7 @@ describe('Preview command', () => {
 
       getModel: jest.fn().mockReturnValue({
         runDefault: jest.fn(),
-        stopDefault: jest.fn()
+        stopDefault: jest.fn(),
       }),
 
       Config: {},
@@ -24,8 +24,8 @@ describe('Preview command', () => {
       Canvas: {
         getElement: jest.fn().mockReturnValue({
           style: {},
-          setAttribute: jest.fn()
-        })
+          setAttribute: jest.fn(),
+        }),
       },
 
       select: jest.fn(),
@@ -33,12 +33,12 @@ describe('Preview command', () => {
       getSelectedAll: jest.fn().mockReturnValue([]),
 
       Commands: {
-        isActive: jest.fn(() => fakeIsActive)
+        isActive: jest.fn(() => fakeIsActive),
       },
 
       Panels: {
-        getPanels: jest.fn(() => fakePanels)
-      }
+        getPanels: jest.fn(() => fakePanels),
+      },
     };
 
     Preview.panels = undefined;
@@ -65,12 +65,12 @@ describe('Preview command', () => {
       fakePanels.forEach(panel => expect(panel.get('visible')).toEqual(false));
     });
 
-    it("should stop the 'sw-visibility' command if active", () => {
+    it("should stop the 'core:component-outline' command if active", () => {
       Preview.run(fakeEditor);
       expect(fakeEditor.stopCommand).not.toHaveBeenCalled();
       fakeIsActive = true;
       Preview.run(fakeEditor);
-      expect(fakeEditor.stopCommand).toHaveBeenCalledWith('sw-visibility');
+      expect(fakeEditor.stopCommand).toHaveBeenCalledWith('core:component-outline');
     });
 
     it('should not reset the `shouldRunSwVisibility` state once active if run multiple times', () => {
@@ -91,12 +91,12 @@ describe('Preview command', () => {
       fakePanels.forEach(panel => expect(panel.get('visible')).toEqual(true));
     });
 
-    it("should run the 'sw-visibility' command if it was active before run", () => {
+    it("should run the 'core:component-outline' command if it was active before run", () => {
       Preview.stop(fakeEditor);
       expect(fakeEditor.runCommand).not.toHaveBeenCalled();
       Preview.shouldRunSwVisibility = true;
       Preview.stop(fakeEditor);
-      expect(fakeEditor.runCommand).toHaveBeenCalledWith('sw-visibility');
+      expect(fakeEditor.runCommand).toHaveBeenCalledWith('core:component-outline');
       expect(Preview.shouldRunSwVisibility).toEqual(false);
     });
   });

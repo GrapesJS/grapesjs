@@ -9,12 +9,12 @@ describe('SwitchVisibility command', () => {
 
     fakeEditor = {
       Canvas: {
-        getFrames: jest.fn(() => fakeFrames)
+        getFrames: jest.fn(() => fakeFrames),
       },
 
       Commands: {
-        isActive: jest.fn(() => fakeIsActive)
-      }
+        isActive: jest.fn(() => fakeIsActive),
+      },
     };
   });
 

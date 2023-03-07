@@ -1,4 +1,4 @@
-import ezygrapes from "ezygrapes";
+import ezygrapes from 'ezygrapes';
 
 export default ezygrapes.plugins.add('gjs-blocks-basic', (editor, opts = {}) => {
   const config = {

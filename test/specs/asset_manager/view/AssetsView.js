@@ -12,7 +12,7 @@ describe('AssetsView', () => {
       config: {},
       collection: coll,
       globalCollection: new Assets([]),
-      fu: new FileUploader({})
+      fu: new FileUploader({}),
     });
     document.body.innerHTML = '<div id="fixtures"></div>';
     obj.render();
@@ -74,14 +74,14 @@ describe('AssetsView', () => {
 
     beforeEach(() => {
       var config = {
-        showUrlInput: true
+        showUrlInput: true,
       };
 
       obj = new AssetsView({
         config: config,
         collection: coll,
         globalCollection: new Assets([]),
-        fu: new FileUploader({})
+        fu: new FileUploader({}),
       });
       document.body.innerHTML = '<div id="fixtures"></div>';
       obj.render();
@@ -95,7 +95,7 @@ describe('AssetsView', () => {
     test('Add image asset from input string', () => {
       obj.getAddInput().value = 'test';
       obj.handleSubmit({
-        preventDefault() {}
+        preventDefault() {},
       });
       var asset = obj.options.globalCollection.at(0);
       expect(asset.get('src')).toEqual('test');
@@ -108,7 +108,7 @@ describe('AssetsView', () => {
 
     beforeEach(() => {
       var config = {
-        showUrlInput: false
+        showUrlInput: false,
       };
 
       coll = new Assets([]);
@@ -116,7 +116,7 @@ describe('AssetsView', () => {
         config: config,
         collection: coll,
         globalCollection: new Assets([]),
-        fu: new FileUploader({})
+        fu: new FileUploader({}),
       });
       document.body.innerHTML = '<div id="fixtures"></div>';
       obj.render();

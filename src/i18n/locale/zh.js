@@ -5,7 +5,7 @@ export default {
     addButton: '添加图片',
     inputPlh: 'http://path/to/the/image.jpg',
     modalTitle: '选择图片',
-    uploadTitle: '点击或者拖拽图片上传'
+    uploadTitle: '点击或者拖拽图片上传',
   },
   domComponents: {
     names: {
@@ -23,8 +23,8 @@ export default {
       thead: '表头',
       table: '表格',
       row: '行',
-      cell: '单元格'
-    }
+      cell: '单元格',
+    },
   },
   deviceManager: {
     device: '设备',
@@ -32,8 +32,8 @@ export default {
       desktop: '桌面',
       tablet: '平板',
       mobileLandscape: 'Mobile Landscape',
-      mobilePortrait: 'Mobile Portrait'
-    }
+      mobilePortrait: 'Mobile Portrait',
+    },
   },
   panels: {
     buttons: {
@@ -45,9 +45,9 @@ export default {
         'open-sm': '打开样式管理器',
         'open-tm': '设置',
         'open-layers': '打开布局管理器',
-        'open-blocks': '打开块'
-      }
-    }
+        'open-blocks': '打开块',
+      },
+    },
   },
   selectorManager: {
     label: 'Classes',
@@ -56,8 +56,8 @@ export default {
     states: {
       hover: 'Hover',
       active: 'Click',
-      'nth-of-type(2n)': 'Even/Odd'
-    }
+      'nth-of-type(2n)': 'Even/Odd',
+    },
   },
   styleManager: {
     empty: '设置样式前选择请一个元素',
@@ -70,12 +70,12 @@ export default {
       decorations: '装饰',
       extra: '扩展',
       flex: '盒子模型',
-      dimension: '尺寸'
+      dimension: '尺寸',
     },
     // The core library generates the name by their `property` name
     properties: {
       // float: 'Float',
-    }
+    },
   },
   traitManager: {
     empty: '用设置项前选择一个组件',
@@ -86,15 +86,15 @@ export default {
         id: traitInputAttr,
         alt: traitInputAttr,
         title: traitInputAttr,
-        href: { placeholder: 'eg. https://google.com' }
+        href: { placeholder: 'eg. https://google.com' },
       },
       // In a trait like select, these are used to translate option names
       options: {
         target: {
           false: '本窗口',
-          _blank: '新窗口'
-        }
-      }
-    }
-  }
+          _blank: '新窗口',
+        },
+      },
+    },
+  },
 };

@@ -5,7 +5,7 @@ export default {
     addButton: 'Dodaj sliku',
     inputPlh: 'http://putanja/url/do/slike.jpg',
     modalTitle: 'Odaberi sliku',
-    uploadTitle: 'Ubaci datoteke ovdje ili klikni za Upload'
+    uploadTitle: 'Ubaci datoteke ovdje ili klikni za Upload',
   },
   // Here just as a reference, GrapesJS core doesn't contain any block,
   // so this should be omitted from other local files
@@ -15,7 +15,7 @@ export default {
     },
     categories: {
       // 'category-id': 'Category Label',
-    }
+    },
   },
   domComponents: {
     names: {
@@ -33,8 +33,8 @@ export default {
       thead: 'Zaglavlje tabele',
       table: 'Tabela',
       row: 'Red tabele',
-      cell: 'Ćelija tabele'
-    }
+      cell: 'Ćelija tabele',
+    },
   },
   deviceManager: {
     device: 'Uređaj',
@@ -42,8 +42,8 @@ export default {
       desktop: 'Računar',
       tablet: 'Tablet',
       mobileLandscape: 'Mobitel vodoravno',
-      mobilePortrait: 'Mobitel uspravno'
-    }
+      mobilePortrait: 'Mobitel uspravno',
+    },
   },
   panels: {
     buttons: {
@@ -55,9 +55,9 @@ export default {
         'open-sm': 'Otvori postavke izgleda',
         'open-tm': 'Postavke',
         'open-layers': 'Otvori postavke slojeva',
-        'open-blocks': 'Otvori blokove'
-      }
-    }
+        'open-blocks': 'Otvori blokove',
+      },
+    },
   },
   selectorManager: {
     label: 'Klase',
@@ -66,8 +66,8 @@ export default {
     states: {
       hover: 'Miš preko',
       active: 'Kliknuto',
-      'nth-of-type(2n)': 'Parno/Neparno'
-    }
+      'nth-of-type(2n)': 'Parno/Neparno',
+    },
   },
   styleManager: {
     empty: 'Odaberi element prije korištenja Postavki Izgleda',
@@ -80,7 +80,7 @@ export default {
       decorations: 'Dekoracije',
       extra: 'Dodatno',
       flex: 'Flex',
-      dimension: 'Dimenzije'
+      dimension: 'Dimenzije',
     },
     // The core library generates the name by their `property` name
     properties: {
@@ -134,9 +134,9 @@ export default {
       'box-shadow-h': 'Sjena: horizontalno',
       'box-shadow-v': 'Sjena: vertikalno',
       'box-shadow-blur': 'Sjena: zamagljenost',
-      'box-shadow-spread': "Sjena: širenje",
-      'box-shadow-color': "Sjena: boja",
-      'box-shadow-type': "Sjena: tip",
+      'box-shadow-spread': 'Sjena: širenje',
+      'box-shadow-color': 'Sjena: boja',
+      'box-shadow-type': 'Sjena: tip',
       background: 'Pozadina',
       'background-image': 'Pozadinska slika',
       'background-repeat': 'Ponavljanje pozadine',
@@ -165,8 +165,8 @@ export default {
       'flex-basis': 'Flex Basis',
       'flex-grow': 'Flex Rast',
       'flex-shrink': 'Flex Smanjenje',
-      'align-self': 'Poravnaj sebe'
-    }
+      'align-self': 'Poravnaj sebe',
+    },
   },
   traitManager: {
     empty: 'Odaberi element prije korištenja Postavki Osobina',
@@ -184,15 +184,15 @@ export default {
         id: traitInputAttr,
         alt: traitInputAttr,
         title: traitInputAttr,
-        href: { placeholder: 'npr. https://google.com' }
+        href: { placeholder: 'npr. https://google.com' },
       },
       // In a trait like select, these are used to translate option names
       options: {
         target: {
           false: 'Ovaj prozor',
-          _blank: 'Novi prozor'
-        }
-      }
-    }
-  }
+          _blank: 'Novi prozor',
+        },
+      },
+    },
+  },
 };

@@ -5,7 +5,7 @@ export default {
     addButton: 'Ajouter image',
     inputPlh: 'http://chemin/vers/image.jpg',
     modalTitle: 'Sélectionner une image',
-    uploadTitle: 'Déposez des fichiers ici ou cliquez pour envoyer des fichiers'
+    uploadTitle: 'Déposez des fichiers ici ou cliquez pour envoyer des fichiers',
   },
   blockManager: {
     labels: {
@@ -13,7 +13,7 @@ export default {
     },
     categories: {
       // 'category-id': 'Identifiant de la catégorie',
-    }
+    },
   },
   domComponents: {
     names: {
@@ -31,8 +31,8 @@ export default {
       thead: 'En-tête de tableau',
       table: 'Tableau',
       row: 'Ligne tableau',
-      cell: 'Cellule tableau'
-    }
+      cell: 'Cellule tableau',
+    },
   },
   deviceManager: {
     device: 'Appareil',
@@ -40,8 +40,8 @@ export default {
       desktop: 'Ordinateur de bureau',
       tablet: 'Tablette',
       mobileLandscape: 'Mobile format paysage',
-      mobilePortrait: 'Mobile format portrait'
-    }
+      mobilePortrait: 'Mobile format portrait',
+    },
   },
   panels: {
     buttons: {
@@ -53,9 +53,9 @@ export default {
         'open-sm': 'Ouvrir le gestionnaire de style',
         'open-tm': 'Paramètres',
         'open-layers': 'Ouvrir le gestionnaire de calques',
-        'open-blocks': 'Ouvrir le gestionnaire de blocs'
-      }
-    }
+        'open-blocks': 'Ouvrir le gestionnaire de blocs',
+      },
+    },
   },
   selectorManager: {
     label: 'Classes',
@@ -64,12 +64,11 @@ export default {
     states: {
       hover: 'Survol',
       active: 'Clic',
-      'nth-of-type(2n)': 'Paire/Impaire'
-    }
+      'nth-of-type(2n)': 'Paire/Impaire',
+    },
   },
   styleManager: {
-    empty:
-      "Veuillez sélectionner un élément avant d'utiliser le gestionnaire de style",
+    empty: "Veuillez sélectionner un élément avant d'utiliser le gestionnaire de style",
     layer: 'Calque',
     fileButton: 'Images',
     sectors: {
@@ -79,7 +78,7 @@ export default {
       decorations: 'Décorations',
       extra: 'Extra',
       flex: 'Flex',
-      dimension: 'Dimension'
+      dimension: 'Dimension',
     },
     // The core library generates the name by their `property` name
     properties: {
@@ -164,12 +163,11 @@ export default {
       'flex-basis': 'Base Flex',
       'flex-grow': 'Flex grow',
       'flex-shrink': 'Flex shrink',
-      'align-self': 'Aligner'
-    }
+      'align-self': 'Aligner',
+    },
   },
   traitManager: {
-    empty:
-      'Veuillez sélectionner un élément pour modifier les paramètres de cet élément',
+    empty: 'Veuillez sélectionner un élément pour modifier les paramètres de cet élément',
     label: 'Paramètres composant',
     traits: {
       // The core library generates the name by their `name` property
@@ -177,22 +175,22 @@ export default {
         id: 'Identifiant',
         alt: 'Texte alternatif',
         title: 'Titre',
-        href: 'Source lien'
+        href: 'Source lien',
       },
       // In a simple trait, like text input, these are used on input attributes
       attributes: {
         id: traitInputAttr,
         alt: traitInputAttr,
         title: traitInputAttr,
-        href: { placeholder: 'eg. https://google.com' }
+        href: { placeholder: 'eg. https://google.com' },
       },
       // In a trait like select, these are used to translate option names
       options: {
         target: {
           false: 'Cette fenêtre',
-          _blank: 'Nouvelle fenêtre'
-        }
-      }
-    }
-  }
+          _blank: 'Nouvelle fenêtre',
+        },
+      },
+    },
+  },
 };

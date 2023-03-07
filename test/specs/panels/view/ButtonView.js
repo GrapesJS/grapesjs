@@ -1,16 +1,19 @@
 import ButtonView from 'panels/view/ButtonView';
 import Button from 'panels/model/Button';
+import Editor from 'editor';
 
 describe('ButtonView', () => {
   var fixtures;
+  var em;
   var model;
   var view;
-  var btnClass = 'btn';
+  var btnClass = 'gjs-pn-btn';
 
   beforeEach(() => {
-    model = new Button({ command: 'fake-command' });
+    em = new Editor({});
+    model = new Button(em.Panels, { command: 'fake-command' });
     view = new ButtonView({
-      model: model
+      model: model,
     });
     document.body.innerHTML = '<div id="fixtures"></div>';
     fixtures = document.body.querySelector('#fixtures');
@@ -22,9 +25,7 @@ describe('ButtonView', () => {
   });
 
   test('Button empty', () => {
-    expect(fixtures.innerHTML).toEqual(
-      '<span class="' + btnClass + '"></span>'
-    );
+    expect(fixtures.innerHTML).toEqual('<span class="' + btnClass + '"></span>');
   });
 
   test('Update class', () => {
@@ -34,7 +35,7 @@ describe('ButtonView', () => {
 
   test('Update attributes', () => {
     model.set('attributes', {
-      'data-test': 'test-value'
+      'data-test': 'test-value',
     });
     expect(view.el.getAttribute('data-test')).toEqual('test-value');
   });
@@ -42,7 +43,7 @@ describe('ButtonView', () => {
   test('Check enable active', () => {
     model.set('active', true, { silent: true });
     view.checkActive();
-    expect(view.el.getAttribute('class')).toContain(btnClass + ' active');
+    expect(view.el.getAttribute('class')).toContain(btnClass + ' gjs-pn-active');
   });
 
   test('Check disable active', () => {
@@ -56,7 +57,7 @@ describe('ButtonView', () => {
   test('Disable the button', () => {
     model.set('disable', true, { silent: true });
     view.updateDisable();
-    expect(view.el.getAttribute('class')).toEqual(btnClass + ' disabled');
+    expect(view.el.getAttribute('class')).toEqual(btnClass + ' gjs-disabled');
   });
 
   test('Enable the disabled button', () => {

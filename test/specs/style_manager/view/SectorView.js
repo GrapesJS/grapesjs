@@ -9,7 +9,7 @@ describe('SectorView', () => {
   beforeEach(() => {
     model = new Sector();
     view = new SectorView({
-      model
+      model,
     });
     document.body.innerHTML = '<div id="fixtures"></div>';
     fixtures = document.body.querySelector('#fixtures');
@@ -22,7 +22,7 @@ describe('SectorView', () => {
 
   test('Rendered correctly', () => {
     var sector = view.el;
-    expect(sector.querySelector('.title')).toBeTruthy();
+    expect(sector.querySelector('[data-sector-title]')).toBeTruthy();
     var props = sector.querySelector('.properties');
     expect(props).toBeTruthy();
     expect(sector.classList.contains('open')).toEqual(true);
@@ -43,7 +43,7 @@ describe('SectorView', () => {
 
   test('Toggle on click', () => {
     var sector = view.el;
-    view.$el.find('.title').click();
+    view.$el.find('[data-sector-title]').click();
     expect(sector.classList.contains('open')).toEqual(false);
   });
 
@@ -52,17 +52,11 @@ describe('SectorView', () => {
       model = new Sector({
         open: false,
         name: 'TestName',
-        properties: [
-          { type: 'integer' },
-          { type: 'integer' },
-          { type: 'integer' }
-        ]
+        properties: [{ type: 'integer' }, { type: 'integer' }, { type: 'integer' }],
       });
       view = new SectorView({
-        model
+        model,
       });
-      //$fixture.empty().appendTo($fixtures);
-      //$fixture.html(view.render().el);
       document.body.innerHTML = '<div id="fixtures"></div>';
       fixtures = document.body.querySelector('#fixtures');
       fixtures.appendChild(view.render().el);
@@ -71,7 +65,7 @@ describe('SectorView', () => {
     test('Rendered correctly', () => {
       var sector = view.el;
       var props = sector.querySelector('.properties');
-      expect(sector.querySelector('.title').innerHTML).toContain('TestName');
+      expect(sector.querySelector('[data-sector-title]').innerHTML).toContain('TestName');
       expect(props).toBeTruthy();
       expect(sector.classList.contains('open')).toEqual(false);
       expect(props.style.display).toEqual('none');

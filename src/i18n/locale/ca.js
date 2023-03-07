@@ -5,7 +5,7 @@ export default {
     addButton: 'Afegir imatge',
     inputPlh: 'http://ruta/a/la/imatge.jpg',
     modalTitle: 'Escollir imatge',
-    uploadTitle: 'Arrossega els fitxers aquí o fes clic per a pujar-ne'
+    uploadTitle: 'Arrossega els fitxers aquí o fes clic per a pujar-ne',
   },
   // Here just as a reference, GrapesJS core doesn't contain any block,
   // so this should be omitted from other local files
@@ -15,7 +15,7 @@ export default {
     },
     categories: {
       // 'category-id': 'Category Label',
-    }
+    },
   },
   domComponents: {
     names: {
@@ -33,8 +33,8 @@ export default {
       thead: 'Capçalera de la taula',
       table: 'Taula',
       row: 'Fila de la taula',
-      cell: 'Cel·la de la taula'
-    }
+      cell: 'Cel·la de la taula',
+    },
   },
   deviceManager: {
     device: 'Dispositius',
@@ -42,8 +42,8 @@ export default {
       desktop: 'Escriptori',
       tablet: 'Tauleta',
       mobileLandscape: 'Mòbil en horitzontal',
-      mobilePortrait: 'Mòbil en vertical'
-    }
+      mobilePortrait: 'Mòbil en vertical',
+    },
   },
   panels: {
     buttons: {
@@ -52,12 +52,12 @@ export default {
         fullscreen: 'Pantalla sencera',
         'sw-visibility': 'Veure components',
         'export-template': 'Veure codi',
-        'open-sm': 'Obrir Administrador d\'estils',
+        'open-sm': "Obrir Administrador d'estils",
         'open-tm': 'Configuració',
         'open-layers': 'Obrir Aministrador de capes',
-        'open-blocks': 'Obrir Blocs'
-      }
-    }
+        'open-blocks': 'Obrir Blocs',
+      },
+    },
   },
   selectorManager: {
     label: 'Classes',
@@ -66,11 +66,11 @@ export default {
     states: {
       hover: 'A sobre',
       active: 'Clic',
-      'nth-of-type(2n)': 'Parell/Senar'
-    }
+      'nth-of-type(2n)': 'Parell/Senar',
+    },
   },
   styleManager: {
-    empty: 'Escull un element abans d\'utilitzar l\'Administrador d\'estils',
+    empty: "Escull un element abans d'utilitzar l'Administrador d'estils",
     layer: 'Capa',
     fileButton: 'Imatges',
     sectors: {
@@ -80,7 +80,7 @@ export default {
       decorations: 'Decoracions',
       extra: 'Extres',
       flex: 'Flex',
-      dimension: 'Tamany'
+      dimension: 'Tamany',
     },
     // The core library generates the name by their `property` name
     properties: {
@@ -115,8 +115,8 @@ export default {
       'text-shadow': 'Ombra del text',
       'text-shadow-h': 'Ombra del text: horizontal',
       'text-shadow-v': 'Ombra del text: vertical',
-      'text-shadow-blur': 'Desenfocament de l\'ombra del text',
-      'text-shadow-color': 'Color de l\'ombra del text',
+      'text-shadow-blur': "Desenfocament de l'ombra del text",
+      'text-shadow-color': "Color de l'ombra del text",
       'border-top-left': 'Marc superior esquerra',
       'border-top-right': 'Marc superior dret',
       'border-bottom-left': 'Marc inferior esquerra',
@@ -133,10 +133,10 @@ export default {
       'box-shadow': 'Ombra de la capsa',
       'box-shadow-h': 'Ombra de la capsa: horizontal',
       'box-shadow-v': 'Ombra de la capsa: vertical',
-      'box-shadow-blur': 'Desenfocament de l\'ombra de la capsa',
-      'box-shadow-spread': 'Propagació de l\'ombra de la capsa',
-      'box-shadow-color': 'Color de l\'ombra de la capsa',
-      'box-shadow-type': 'Tipus de l\'ombra de la capsa',
+      'box-shadow-blur': "Desenfocament de l'ombra de la capsa",
+      'box-shadow-spread': "Propagació de l'ombra de la capsa",
+      'box-shadow-color': "Color de l'ombra de la capsa",
+      'box-shadow-type': "Tipus de l'ombra de la capsa",
       background: 'Fons',
       'background-image': 'Imatge de fons',
       'background-repeat': 'Repetir fons',
@@ -165,11 +165,11 @@ export default {
       'flex-grow': 'Creixement flex',
       'flex-shrink': 'Contracció flex',
       'align-self': 'Alineació pròpia',
-      'background-color': 'Color de fons'
-    }
+      'background-color': 'Color de fons',
+    },
   },
   traitManager: {
-    empty: 'Escull un element abans d\'usar l\'Administrador de característiques',
+    empty: "Escull un element abans d'usar l'Administrador de característiques",
     label: 'Configuració de components',
     traits: {
       // The core library generates the name by their `name` property
@@ -177,22 +177,22 @@ export default {
         id: 'Identificador',
         alt: 'Títol alternatiu',
         title: 'Títol',
-        href: 'Enllaç'
+        href: 'Enllaç',
       },
       // In a simple trait, like text input, these are used on input attributes
       attributes: {
         id: traitInputAttr,
         alt: traitInputAttr,
         title: traitInputAttr,
-        href: { placeholder: 'ex. https://google.com' }
+        href: { placeholder: 'ex. https://google.com' },
       },
       // In a trait like select, these are used to translate option names
       options: {
         target: {
           false: 'Mateixa pestanya/finestra',
-          _blank: 'Nova pestanya/finestra'
-        }
-      }
-    }
-  }
+          _blank: 'Nova pestanya/finestra',
+        },
+      },
+    },
+  },
 };

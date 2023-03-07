@@ -10,14 +10,14 @@ describe('BlockManager', () => {
     beforeEach(() => {
       editor = new Editor({
         blockManager: {
-          blocks: []
-        }
-      }).init();
+          blocks: [],
+        },
+      });
 
       idTest = 'h1-block';
       optsTest = {
         label: 'Heading',
-        content: '<h1>Test</h1>'
+        content: '<h1>Test</h1>',
       };
 
       obj = editor.Blocks;

@@ -89,7 +89,7 @@ At this point, a good question would be, how the editor assigns those types by s
 
 ### Component Recognition and Component Type Stack
 
-As we mentioned before, when you pass an HTML string as a component to the editor, that string is parsed and compiled to the [Component Definition] with a new `type` property. To understand what `type` should be assigned, for each parsed HTML Element, the editor iterates over all the defined components, called **Component Type Stack**, and checks via `isComponent` method (we will see it later) if that component type is appropriate for that element. The Component Type Stack is just a simple array of component types but what is matter is the order of those types. Any new added custom **Component Type** (we'll see later how to create them) goes on top of the Component Type Stack and each element returned from the parser iterates the stack from top to bottom (the last element of the stack is the `default` one), the iteration stops once one of the component returns a truthy value from the `isComponent` method.
+As we mentioned before, when you pass an HTML string as a component to the editor, that string is parsed and compiled to the [Component Definition] with a new `type` property. To understand what `type` should be assigned, for each parsed HTML Element, the editor iterates over all the defined components, called **Component Type Stack**, and checks via `isComponent` method (we will see it later) if that component type is appropriate for that element. The Component Type Stack is just a simple array of component types but what matters is the order of those types. Any new added custom **Component Type** (we'll see later how to create them) goes on top of the Component Type Stack and each element returned from the parser iterates the stack from top to bottom (the last element of the stack is the `default` one), the iteration stops once one of the component returns a truthy value from the `isComponent` method.
 
 <img :src="$withBase('/component-type-stack.svg')" class="img-ctr">
 
@@ -189,24 +189,24 @@ A more advanced use case of custom components is an implementation of a custom r
 
 Here below you can see the list of built-in component types, ordered by their position in the **Component Type Stack**
 
-* [`cell`](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/ComponentTableCell.js) - Component for handle `<td>` and `<th>` elements
-* [`row`](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/ComponentTableRow.js) - Component for handle `<tr>` elements
-* [`table`](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/ComponentTable.js) - Component for handle `<table>` elements
-* [`thead`](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/ComponentTableHead.js) - Component for handle `<thead>` elements
-* [`tbody`](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/ComponentTableBody.js) - Component for handle `<tbody>` elements
-* [`tfoot`](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/ComponentTableFoot.js) - Component for handle `<tfoot>` elements
-* [`map`](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/ComponentMap.js) - Component for handle `<a>` elements
-* [`link`](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/ComponentLink.js) - Component for handle `<a>` elements
-* [`label`](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/ComponentLabel.js) - Component for handle properly `<label>` elements
-* [`video`](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/ComponentVideo.js) - Component for videos
-* [`image`](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/ComponentImage.js) - Component for images
-* [`script`](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/ComponentScript.js) - Component for handle `<script>` elements
-* [`svg`](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/ComponentSvg.js) - Component for handle SVG elements
-* [`comment`](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/ComponentComment.js) - Component for comments (might be useful for email editors)
-* [`textnode`](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/ComponentTextNode.js) - Similar to the textnode in DOM definition, so a text element without a tag element.
-* [`text`](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/ComponentText.js) - A simple text component that can be edited inline
-* [`wrapper`](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/ComponentWrapper.js) - The canvas need to contain a root component, a wrapper, this component was made to identify it
-* [`default`](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/Component.js) - Default base component
+* [`cell`](https://github.com/GrapesJS/grapesjs/blob/dev/src/dom_components/model/ComponentTableCell.js) - Component for handle `<td>` and `<th>` elements
+* [`row`](https://github.com/GrapesJS/grapesjs/blob/dev/src/dom_components/model/ComponentTableRow.js) - Component for handle `<tr>` elements
+* [`table`](https://github.com/GrapesJS/grapesjs/blob/dev/src/dom_components/model/ComponentTable.js) - Component for handle `<table>` elements
+* [`thead`](https://github.com/GrapesJS/grapesjs/blob/dev/src/dom_components/model/ComponentTableHead.js) - Component for handle `<thead>` elements
+* [`tbody`](https://github.com/GrapesJS/grapesjs/blob/dev/src/dom_components/model/ComponentTableBody.js) - Component for handle `<tbody>` elements
+* [`tfoot`](https://github.com/GrapesJS/grapesjs/blob/dev/src/dom_components/model/ComponentTableFoot.js) - Component for handle `<tfoot>` elements
+* [`map`](https://github.com/GrapesJS/grapesjs/blob/dev/src/dom_components/model/ComponentMap.js) - Component for handle `<a>` elements
+* [`link`](https://github.com/GrapesJS/grapesjs/blob/dev/src/dom_components/model/ComponentLink.js) - Component for handle `<a>` elements
+* [`label`](https://github.com/GrapesJS/grapesjs/blob/dev/src/dom_components/model/ComponentLabel.js) - Component for handle properly `<label>` elements
+* [`video`](https://github.com/GrapesJS/grapesjs/blob/dev/src/dom_components/model/ComponentVideo.js) - Component for videos
+* [`image`](https://github.com/GrapesJS/grapesjs/blob/dev/src/dom_components/model/ComponentImage.js) - Component for images
+* [`script`](https://github.com/GrapesJS/grapesjs/blob/dev/src/dom_components/model/ComponentScript.js) - Component for handle `<script>` elements
+* [`svg`](https://github.com/GrapesJS/grapesjs/blob/dev/src/dom_components/model/ComponentSvg.js) - Component for handle SVG elements
+* [`comment`](https://github.com/GrapesJS/grapesjs/blob/dev/src/dom_components/model/ComponentComment.js) - Component for comments (might be useful for email editors)
+* [`textnode`](https://github.com/GrapesJS/grapesjs/blob/dev/src/dom_components/model/ComponentTextNode.js) - Similar to the textnode in DOM definition, so a text element without a tag element.
+* [`text`](https://github.com/GrapesJS/grapesjs/blob/dev/src/dom_components/model/ComponentText.js) - A simple text component that can be edited inline
+* [`wrapper`](https://github.com/GrapesJS/grapesjs/blob/dev/src/dom_components/model/ComponentWrapper.js) - The canvas need to contain a root component, a wrapper, this component was made to identify it
+* [`default`](https://github.com/GrapesJS/grapesjs/blob/dev/src/dom_components/model/Component.js) - Default base component
 
 
 
@@ -365,7 +365,7 @@ The `model` is probably the one you'll use the most as is what is used for the d
 
 The model defines also what you will see as the resultant HTML (the export code) and you've probably noticed the use of `tagName` (if not specified the `div` will be used) and `attributes` properties on the model.
 
-One another important property (not used because `<input/>` doesn't need it) might be `components`, which defines default internal components
+One another important property (not used in our input component integration because `<input/>` doesn't need it) might be `components`, which defines default internal components
 
 ```js
 defaults: {

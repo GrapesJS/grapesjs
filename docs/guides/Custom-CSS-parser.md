@@ -3,7 +3,7 @@ title: Use Custom CSS Parser
 ---
 # Use Custom CSS Parser
 
-If you just use GrapesJS for building templates from scratch, so you start from an empty canvas and for editing you strictly rely  on the generated JSON (final HTML/CSS only for end-users) then, probably, you might skip this guide. On the other hand, if you import templates from already defined HTML/CSS or let the user embed custom codes (eg. using the [grapesjs-custom-code](https://github.com/artf/grapesjs-custom-code) plugin), then you have to know that you might face strange behaviors.
+If you just use GrapesJS for building templates from scratch, so you start from an empty canvas and for editing you strictly rely  on the generated JSON (final HTML/CSS only for end-users) then, probably, you might skip this guide. On the other hand, if you import templates from already defined HTML/CSS or let the user embed custom codes (eg. using the [grapesjs-custom-code](https://github.com/GrapesJS/components-custom-code) plugin), then you have to know that you might face strange behaviors.
 
 ::: warning
 This guide requires GrapesJS v0.14.33 or higher
@@ -101,6 +101,11 @@ As you see, this is what we get for asking only 7 properties, who adds more or l
 <img :src="$withBase('/cssom-devtools.png')">
 
 So it's clear that we can't rely on CSSOM objects, that's why we added the possibility to set custom CSS parser via `editor.setCustomParserCss` method or `config.Parser.parserCss` option to use on initialization. Let's see in detail how it's expected to work
+
+## CSSOM results can be nonintuitive
+
+As per current [csswg specification](https://drafts.csswg.org/css-variables-1/#variables-in-shorthands) variables in shorthand properties can serialize to the empty string.
+This means that while `background-color: var(--my-var)` will serialize fine `background: var(--my-var)` will not.
 
 ## Set CSS parser
 
@@ -244,4 +249,4 @@ To make it more clear let's see a few examples
 
 Below the list of current available CSS parsers as plugins, if you need to create your own we highly suggest to explore their sources
 
-* [grapesjs-parser-postcss](https://github.com/artf/grapesjs-parser-postcss) - Using [PostCSS](https://github.com/postcss/postcss) parser
+* [grapesjs-parser-postcss](https://github.com/GrapesJS/parser-postcss) - Using [PostCSS](https://github.com/postcss/postcss) parser

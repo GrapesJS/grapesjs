@@ -1,4 +1,4 @@
-import ezygrapes from "ezygrapes";
+import ezygrapes from 'ezygrapes';
 import loadComponents from './components';
 import loadBlocks from './blocks';
 import {

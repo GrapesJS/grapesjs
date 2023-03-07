@@ -5,7 +5,7 @@ export default {
     addButton: 'Προσθήκη Εικόνας',
     inputPlh: 'http://διαδρομή/μέχρι/την/εικόνα.jpg',
     modalTitle: 'Επιλογή Εικόνας',
-    uploadTitle: 'Αφήστε τα αρχεία εδώ ή κάντε κλικ για ανέβασμα'
+    uploadTitle: 'Αφήστε τα αρχεία εδώ ή κάντε κλικ για ανέβασμα',
   },
   // Εδώ υπάρχει απλά αναφορά, ο πυρήνας του GrapesJS δεν διαθέτει κανένα πλαίσιο,
   // οπότε αυτό θα πρέπει να αγνοηθεί από τα υπόλοιπα αρχεία μετάφρασης
@@ -15,7 +15,7 @@ export default {
     },
     categories: {
       // 'category-id': 'Ετικέτα Κατηγορίας',
-    }
+    },
   },
   domComponents: {
     names: {
@@ -33,8 +33,8 @@ export default {
       thead: 'Κεφαλίδα πίνακα',
       table: 'Πίνακας',
       row: 'Γραμμή πίνακα',
-      cell: 'Κελί πίνακα'
-    }
+      cell: 'Κελί πίνακα',
+    },
   },
   deviceManager: {
     device: 'Συσκευή',
@@ -42,8 +42,8 @@ export default {
       desktop: 'Σθαθερός Υπολογιστής',
       tablet: 'Τάμπλετ',
       mobileLandscape: 'Κινητό Οριζόντια',
-      mobilePortrait: 'Κινητό Κάθετα'
-    }
+      mobilePortrait: 'Κινητό Κάθετα',
+    },
   },
   panels: {
     buttons: {
@@ -55,9 +55,9 @@ export default {
         'open-sm': 'Άνοιγμα Του Διαχειριστή Μορφοποίησης',
         'open-tm': 'Ρυθμίσεις',
         'open-layers': 'Άνοιγμα Του Διαχειριστή Επιπέδων',
-        'open-blocks': 'Άνοιγμα Πλαισίων'
-      }
-    }
+        'open-blocks': 'Άνοιγμα Πλαισίων',
+      },
+    },
   },
   selectorManager: {
     label: 'Κλάσεις',
@@ -66,8 +66,8 @@ export default {
     states: {
       hover: 'Αιώρηση',
       active: 'Κλικ',
-      'nth-of-type(2n)': 'Μονές/Ζυγές'
-    }
+      'nth-of-type(2n)': 'Μονές/Ζυγές',
+    },
   },
   styleManager: {
     empty: 'Επιλέξτε ένα στοιχεία πριν χρησιμοποιήσετε τον διαχειριστή μορφοποίησης',
@@ -80,12 +80,12 @@ export default {
       decorations: 'Μορφοποίηση',
       extra: 'Επιπρόσθετα',
       flex: 'Φλεξ',
-      dimension: 'Διάσταση'
+      dimension: 'Διάσταση',
     },
     // Η βασική βιβλιοθήκη παράγει το όνομα από την δικού του `ιδιότητα` name
     properties: {
       // float: 'Float',
-    }
+    },
   },
   traitManager: {
     empty: 'Επιλέξτε ένα στοιχεία πριν χρησιμοποιήσετε τον Διαχειριστή Χαρακτηριστικών',
@@ -103,15 +103,15 @@ export default {
         id: traitInputAttr,
         alt: traitInputAttr,
         title: traitInputAttr,
-        href: { placeholder: 'πχ. https://google.gr' }
+        href: { placeholder: 'πχ. https://google.gr' },
       },
       // Σε χαρακτηριστικό όπως το select, αυτά χρησιμοποιούνται για την μετάφραση των ονομάτων των επιλογών
       options: {
         target: {
           false: 'Στο ίδιο παράθυρο',
-          _blank: 'Σε νέο παράθυρο'
-        }
-      }
-    }
-  }
+          _blank: 'Σε νέο παράθυρο',
+        },
+      },
+    },
+  },
 };
