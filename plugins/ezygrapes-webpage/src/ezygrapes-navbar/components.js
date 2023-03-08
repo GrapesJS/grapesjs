@@ -4,6 +4,8 @@ export default (editor, opt = {}) => {
   const defaultType = dc.getType('default');
   const defaultModel = defaultType.model;
   const burgerType = 'burger-menu';
+  console.log(defaultType);
+  console.log(defaultModel);
 
   dc.addType(burgerType, {
     model: defaultModel.extend({
@@ -95,8 +97,8 @@ export default (editor, opt = {}) => {
               return;
             }
 
-            var navParent = this.closest('[data-gjs=navbar]');
-            var navItems = navParent.querySelector('[data-gjs=navbar-items]');
+            var navParent = this.closest(`[data-gjs=navbar]`);
+            var navItems = navParent.querySelector(`[data-gjs=navbar-items]`);
             toggleSlide(navItems);
 
             if (!transEndAdded) {

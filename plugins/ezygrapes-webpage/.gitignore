@@ -5,3 +5,4 @@ node_modules/
 *.log
 _index.html
 .idea/*
+lib/*

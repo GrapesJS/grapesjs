@@ -1,6 +1,6 @@
 {
   "name": "ezygrapes-webpage",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "Ezygrapes default editor plugin",
   "main": "dist/ezygrapes-webpage.min.js",
   "scripts": {
@@ -30,9 +30,6 @@
     "plugins": [
       "transform-object-rest-spread"
     ]
-  },
-  "peerDependencies": {
-    "ezygrapes": "0.x"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
