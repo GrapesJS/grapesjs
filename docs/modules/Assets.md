@@ -31,7 +31,7 @@ You can update most of them later by using `getConfig` inside of the module
 const amConfig = editor.AssetManager.getConfig();
 ```
 
-Check the full list of available options here: [Asset Manager Config](https://github.com/GrapesJS/grapesjs/blob/master/src/asset_manager/config/config.js)
+Check the full list of available options here: [Asset Manager Config](https://github.com/GrapesJS/grapesjs/blob/master/src/asset_manager/config/config.ts)
 
 
 
