@@ -26,10 +26,10 @@ storageManager.add(...);
 ## Available Events
 
 *   `storage:start` - Before the storage request is started
-*   `storage:start:store` - Before the store request. The object to store is passed as an argumnet (which you can edit)
-*   `storage:start:load` - Before the load request. Items to load are passed as an argumnet (which you can edit)
-*   `storage:load` - Triggered when something was loaded from the storage, loaded object passed as an argumnet
-*   `storage:store` - Triggered when something is stored to the storage, stored object passed as an argumnet
+*   `storage:start:store` - Before the store request. The object to store is passed as an argument (which you can edit)
+*   `storage:start:load` - Before the load request. Items to load are passed as an argument (which you can edit)
+*   `storage:load` - Triggered when something was loaded from the storage, loaded object passed as an argument
+*   `storage:store` - Triggered when something is stored to the storage, stored object passed as an argument
 *   `storage:end` - After the storage request is ended
 *   `storage:end:store` - After the store request
 *   `storage:end:load` - After the load request
