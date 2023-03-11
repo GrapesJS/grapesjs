@@ -287,7 +287,7 @@ Storage.add('remote-local', {
 
 You can also replace already defined storages with other implementations by passing the same storage type in the `Storage.add` method. You can switch, for example, the default `local`, which relies on [localStorage API], with something more scalable like [IndexedDB  API].
 
-It might also be possible that you're already using some HTTP client library (eg. [axios](https://github.com/axios/axios)) which handles for you all the necessary HTTP headers in your application (CSRF token, session data, etc.), so you can simply replace the default `remote` storage wiht your implemenation of choice without caring about the default configurations.
+It might also be possible that you're already using some HTTP client library (eg. [axios](https://github.com/axios/axios)) which handles for you all the necessary HTTP headers in your application (CSRF token, session data, etc.), so you can simply replace the default `remote` storage with your implementation of choice without caring about the default configurations.
 
 ```js
 editor.Storage.add('remote', {
