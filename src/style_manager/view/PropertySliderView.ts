@@ -30,11 +30,13 @@ export default class PropertySliderView extends PropertyNumberView {
     return this.slider;
   }
 
-  inputValueChanged() {
+  inputValueChanged(ev: Event) {
+    ev.stopPropagation();
     this.model.upValue(this.getSliderEl().value);
   }
 
-  inputValueChangedSoft() {
+  inputValueChangedSoft(ev: Event) {
+    ev.stopPropagation();
     this.model.upValue(this.getSliderEl().value, { partial: true });
   }
 
