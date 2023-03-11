@@ -33,7 +33,7 @@ const editor = grapesjs.init({
 });
 ```
 
-Check the full list of available options here: [Block Manager Config](https://github.com/GrapesJS/grapesjs/blob/master/src/block_manager/config/config.js)
+Check the full list of available options here: [Block Manager Config](https://github.com/GrapesJS/grapesjs/blob/master/src/block_manager/config/config.ts)
 
 
 ## Initialization
@@ -79,7 +79,7 @@ const editor = grapesjs.init({
 The key of connecting blocks to components is the `block.content` property and what we passed in the example above is the [Component Definition]. This is the component-oriented way to create blocks and this is how we highly recommend the creation of your blocks.
 
 ### Component-oriented
-The `content` can accept different formats, like an HTML string (which will be parsed and converted to components), but the component-oriented approach is the most precise as you can keep the control of your each dropped block in the canvas. Another advice is to keep your blocks' [Component Definition] as light as possible, if you're defining a lot of redundent properties, probably it makes sense to create another dedicated component, this might reduce the size of your project JSON file. Here an example:
+The `content` can accept different formats, like an HTML string (which will be parsed and converted to components), but the component-oriented approach is the most precise as you can keep the control of your each dropped block in the canvas. Another advice is to keep your blocks' [Component Definition] as light as possible, if you're defining a lot of redundant properties, probably it makes sense to create another dedicated component, this might reduce the size of your project JSON file. Here an example:
 
 ```js
 // Your components

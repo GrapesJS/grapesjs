@@ -21,7 +21,7 @@ export interface SelectorProps {
  * @property {Number} [type=1] Type of the selector. 1 (class) | 2 (id)
  * @property {Boolean} [active=true] If not active, it's not selectable by the Style Manager.
  * @property {Boolean} [private=false] If true, it can't be seen by the Style Manager, but it will be rendered in the canvas and in export code.
- * @property {Boolean} [protected=false] If true, it can't be removed from the attacched component.
+ * @property {Boolean} [protected=false] If true, it can't be removed from the attached component.
  */
 export default class Selector extends Model {
   defaults() {
