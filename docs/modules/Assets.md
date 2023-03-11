@@ -283,7 +283,7 @@ asset.set({ src: 'http://.../new-img.jpg' });
 am.remove(asset); // or via src, am.remove('http://.../new-img.jpg');
 ```
 
-For more APIs methods check out the [API Reference](API-Asset-Manager)
+For more APIs methods check out the [API Reference][API-Asset-Manager].
 
 ### Custom select logic
 
