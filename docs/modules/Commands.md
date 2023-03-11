@@ -37,7 +37,7 @@ const editor = grapesjs.init({
 });
 ```
 
-For all other available options check directly the [configuration source file](https://github.com/GrapesJS/grapesjs/blob/dev/src/commands/config/config.js).
+For all other available options check directly the [configuration source file](https://github.com/GrapesJS/grapesjs/blob/master/src/commands/config/config.ts).
 
 Most commonly commands are created dynamically post-initialization, in that case, you'll need to use the [Commands API](/api/commands.html) (eg. this is what you need if you create a plugin)
 

@@ -32,7 +32,7 @@ const editor = grapesjs.init({
 });
 ```
 
-Check the full list of available options here: [Style Manager Config](https://github.com/GrapesJS/grapesjs/blob/master/src/style_manager/config/config.js)
+Check the full list of available options here: [Style Manager Config](https://github.com/GrapesJS/grapesjs/blob/master/src/style_manager/config/config.ts)
 
 
 

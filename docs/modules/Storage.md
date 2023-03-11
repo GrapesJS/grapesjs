@@ -43,7 +43,7 @@ const editor = grapesjs.init({
 });
 ```
 
-Check the full list of available options here: [Storage Manager Config](https://github.com/GrapesJS/grapesjs/blob/master/src/storage_manager/config/config.js)
+Check the full list of available options here: [Storage Manager Config](https://github.com/GrapesJS/grapesjs/blob/master/src/storage_manager/config/config.ts)
 
 
 

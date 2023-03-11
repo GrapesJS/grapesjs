@@ -33,7 +33,7 @@ const editor = grapesjs.init({
 });
 ```
 
-Check the full list of available options here: [Block Manager Config](https://github.com/GrapesJS/grapesjs/blob/master/src/block_manager/config/config.js)
+Check the full list of available options here: [Block Manager Config](https://github.com/GrapesJS/grapesjs/blob/master/src/block_manager/config/config.ts)
 
 
 ## Initialization
