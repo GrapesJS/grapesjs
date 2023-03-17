@@ -15,7 +15,6 @@ describe('Asset Manager', () => {
         height: 102,
       };
       obj = new AssetManager(new Editor());
-      obj.init();
       document.body.querySelector('#asset-c').appendChild(obj.render());
     });
 

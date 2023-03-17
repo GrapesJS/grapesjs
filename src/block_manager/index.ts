@@ -55,7 +55,13 @@ import { ItemManagerModule } from '../abstract/Module';
 import EditorModel from '../editor/model/Editor';
 import Component from '../dom_components/model/Component';
 
-export type BlockEvent = 'block:add' | 'block:remove' | 'block:drag:start' | 'block:drag' | 'block:drag:stop' | 'block:custom';
+export type BlockEvent =
+  | 'block:add'
+  | 'block:remove'
+  | 'block:drag:start'
+  | 'block:drag'
+  | 'block:drag:stop'
+  | 'block:custom';
 
 export const evAll = 'block';
 export const evPfx = `${evAll}:`;
