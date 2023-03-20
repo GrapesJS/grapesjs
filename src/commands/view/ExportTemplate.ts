@@ -2,7 +2,7 @@ import { CommandObject } from './CommandAbstract';
 import { $ } from '../../common';
 
 export default {
-  run(editor, sender) {
+  run(editor, sender, opts = {}) {
     sender && sender.set && sender.set('active', 0);
     const config = editor.getConfig();
     const modal = editor.Modal;
@@ -26,8 +26,8 @@ export default {
       })
       .getModel()
       .once('change:open', () => editor.stopCommand(`${this.id}`));
-    this.htmlEditor.setContent(editor.getHtml());
-    this.cssEditor.setContent(editor.getCss());
+    this.htmlEditor.setContent(editor.getHtml(opts));
+    this.cssEditor.setContent(editor.getCss(opts));
   },
 
   stop(editor) {
