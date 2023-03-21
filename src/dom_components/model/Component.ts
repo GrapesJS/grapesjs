@@ -601,7 +601,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * Return all component's attributes
    * @return {Object}
    */
-  getAttributes(opts: { noClass?: boolean; noStyle?: boolean } = {}) {
+  getAttributes(opts: { noClass?: boolean; noStyle?: boolean; noId?: boolean } = {}) {
     const { em } = this;
     const classes: string[] = [];
     const attributes = { ...this.get('attributes') };
@@ -625,7 +625,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     }
 
     // Check if we need an ID on the component
-    if (!has(attributes, 'id')) {
+    if (!has(attributes, 'id') && !opts.noId) {
       let addId;
 
       // If we don't rely on inline styling we have to check
