@@ -648,6 +648,7 @@ export default class Sorter extends View {
       case 'list-item':
       case 'table':
       case 'flex':
+      case 'grid':
         return true;
     }
     return;
