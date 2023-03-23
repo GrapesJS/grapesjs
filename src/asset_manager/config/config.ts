@@ -57,6 +57,12 @@ export interface AssetManagerConfig {
    */
   autoAdd?: boolean;
   /**
+   * Customize the options passed to the default Fetch API.
+   * @example
+   * fetchOptions: (options) => ({ ...options, method: 'put' }),
+   */
+  fetchOptions?: (options: RequestInit) => RequestInit;
+  /**
    * To upload your assets, the module uses Fetch API. With this option you can overwrite it with your own logic. The custom function should return a Promise.
    * @example
    * customFetch: (url, options) => axios(url, { data: options.body }),
