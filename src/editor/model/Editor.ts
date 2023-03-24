@@ -961,7 +961,7 @@ export default class EditorModel extends Model {
     // @ts-ignore
     const { editors = [] } = config.grapesjs || {};
     const shallow = this.get('shallow');
-    this._storageTimeout ?? clearTimeout(this._storageTimeout);
+    this._storageTimeout && clearTimeout(this._storageTimeout);
     shallow?.destroyAll();
     this.stopListening();
     this.stopDefault();
