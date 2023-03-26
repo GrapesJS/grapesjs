@@ -355,7 +355,8 @@ export default class RichTextEditor {
   }
 
   /**
-   * Execute the command
+   * Wrapper around [execCommand](https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand) to allow
+   * you to perform operations like `insertText`
    * @param  {string} command Command name
    * @param  {any} [value=null Command's arguments
    */
