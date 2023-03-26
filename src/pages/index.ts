@@ -105,7 +105,6 @@ export default class PageManager extends ItemManagerModule<PageManagerConfig, Pa
   /**
    * Initialize module
    * @param {Object} config Configurations
-   * @private
    */
   constructor(em: EditorModel) {
     super(em, 'PageManager', new Pages([], em), events);
@@ -115,8 +114,6 @@ export default class PageManager extends ItemManagerModule<PageManagerConfig, Pa
     this.pages.on('reset', coll => coll.at(0) && this.select(coll.at(0)));
     this.pages.on('all', this.__onChange, this);
     model.on(chnSel, this._onPageChange);
-
-    return this;
   }
 
   __onChange(event: string, page: Page, coll: Pages, opts?: any) {

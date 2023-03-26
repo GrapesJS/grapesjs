@@ -2,13 +2,12 @@ import { isElement, isUndefined, isString } from 'underscore';
 import { Collection, View } from '../common';
 import { EditorConfigKeys } from '../editor/config/config';
 import EditorModel from '../editor/model/Editor';
+import { ProjectData } from '../storage_manager/model/IStorage';
 import { createId, isDef, deepMerge } from '../utils/mixins';
 
-export interface IModule<TConfig extends any = any> extends IBaseModule<TConfig> {
-  init(cfg: any): void;
+export interface IModule<TConfig extends ModuleConfig = ModuleConfig> extends IBaseModule<TConfig> {
   destroy(): void;
   postLoad(key: any): any;
-  config: TConfig;
   onLoad?(): void;
   name: string;
   postRender?(view: any): void;
@@ -25,11 +24,15 @@ export interface ModuleConfig {
   appendTo?: string | HTMLElement;
 }
 
-export interface IStorableModule extends IModule {
+export interface IStorableModule {
   storageKey: string[] | string;
   store(result: any): any;
-  load(keys: string[]): void;
-  postLoad(key: any): any;
+  load(keys: ProjectData): void;
+  clear(): void;
+}
+
+export interface ILoadableModule {
+  onLoad(): void;
 }
 
 export default abstract class Module<T extends ModuleConfig = ModuleConfig> implements IModule<T> {
@@ -63,10 +66,7 @@ export default abstract class Module<T extends ModuleConfig = ModuleConfig> impl
   public get config() {
     return this._config;
   }
-  //abstract name: string;
-  isPrivate: boolean = false;
-  onLoad?(): void;
-  init(cfg: T) {}
+
   abstract destroy(): void;
   render(opts?: any): HTMLElement | JQuery<HTMLElement> | void {}
   postLoad(key: any): void {}
@@ -104,7 +104,7 @@ export default abstract class Module<T extends ModuleConfig = ModuleConfig> impl
 }
 
 export abstract class ItemManagerModule<
-  TConf extends ModuleConfig = any,
+  TConf extends ModuleConfig = ModuleConfig,
   TCollection extends Collection = Collection
 > extends Module<TConf> {
   cls: any[] = [];

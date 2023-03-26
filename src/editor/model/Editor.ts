@@ -8,7 +8,7 @@ import Selected from './Selected';
 import FrameView from '../../canvas/view/FrameView';
 import Editor from '..';
 import EditorView from '../view/EditorView';
-import Module from '../../abstract/Module';
+import { ILoadableModule, IModule, IStorableModule } from '../../abstract/Module';
 import CanvasModule from '../../canvas';
 import ComponentManager from '../../dom_components';
 import CssComposer from '../../css_composer';
@@ -43,7 +43,7 @@ import Frame from '../../canvas/model/Frame';
 
 Backbone.$ = $;
 
-const deps: (new (em: EditorModel) => Module)[] = [
+const deps: (new (em: EditorModel) => IModule)[] = [
   UtilsModule,
   I18nModule,
   KeymapsModule,
@@ -57,15 +57,17 @@ const deps: (new (em: EditorModel) => Module)[] = [
   CodeManagerModule,
   PanelManager,
   RichTextEditorModule,
-  AssetManager,
-  CssComposer,
-  PageManager,
   TraitManager,
-  ComponentManager,
   LayerManager,
   CanvasModule,
   CommandsModule,
   BlockManager,
+];
+const storableDeps: (new (em: EditorModel) => IModule & IStorableModule)[] = [
+  AssetManager,
+  CssComposer,
+  PageManager,
+  ComponentManager,
 ];
 
 Extender({ $ });
@@ -99,21 +101,21 @@ export default class EditorModel extends Model {
   defaultRunning = false;
   destroyed = false;
   _config: EditorConfig;
-  _storageTimeout?: NodeJS.Timeout;
+  _storageTimeout?: ReturnType<typeof setTimeout>;
   attrsOrig: any;
-  timedInterval?: number;
-  updateItr?: number;
+  timedInterval?: ReturnType<typeof setTimeout>;
+  updateItr?: ReturnType<typeof setTimeout>;
   view?: EditorView;
 
-  get storables(): any[] {
+  get storables(): IStorableModule[] {
     return this.get('storables');
   }
 
-  get modules(): Module[] {
+  get modules(): IModule[] {
     return this.get('modules');
   }
 
-  get toLoad(): any[] {
+  get toLoad(): ILoadableModule[] {
     return this.get('toLoad');
   }
 
@@ -248,7 +250,8 @@ export default class EditorModel extends Model {
     }
 
     // Load modules
-    deps.forEach(name => this.loadModule(name));
+    deps.forEach(constr => this.loadModule(constr));
+    storableDeps.forEach(constr => this.loadStorableModule(constr));
     this.on('change:componentHovered', this.componentHovered, this);
     this.on('change:changesCount', this.updateChanges, this);
     this.on('change:readyLoad change:readyCanvas', this._checkReady, this);
@@ -308,7 +311,7 @@ export default class EditorModel extends Model {
     const sm = this.get('StorageManager');
 
     // In `onLoad`, the module will try to load the data from its configurations.
-    this.toLoad.forEach(mdl => mdl.onLoad());
+    this.toLoad.reverse().forEach(mdl => mdl.onLoad());
 
     // Stuff to do post load
     const postLoad = () => {
@@ -356,7 +359,6 @@ export default class EditorModel extends Model {
     const stm = this.get('StorageManager');
     const changes = this.getDirtyCount();
     this.updateItr && clearTimeout(this.updateItr);
-    //@ts-ignore
     this.updateItr = setTimeout(() => this.trigger('update'));
 
     if (this.config.noticeOnUnload) {
@@ -370,34 +372,19 @@ export default class EditorModel extends Model {
 
   /**
    * Load generic module
-   * @param {String} moduleName Module name
-   * @return {this}
-   * @private
    */
-  loadModule(Module: any) {
-    const { config } = this;
-    const Mod = new Module(this);
-    const name = (Mod.name.charAt(0).toLowerCase() + Mod.name.slice(1)) as EditorConfigKeys;
-    const cfgParent = !isUndefined(config[name]) ? config[name] : config[Mod.name as EditorConfigKeys];
-    const cfg = (cfgParent === true ? {} : cfgParent || {}) as Record<string, any>;
-    cfg.pStylePrefix = config.pStylePrefix || '';
-
-    if (!isUndefined(cfgParent) && !cfgParent) {
-      cfg._disable = 1;
-    }
-
-    if (Mod.storageKey && Mod.store && Mod.load) {
-      this.storables.push(Mod);
-    }
-
-    cfg.em = this;
-    Mod.init({ ...cfg });
-
-    // Bind the module to the editor model if public
-    !Mod.private && this.set(Mod.name, Mod);
-    Mod.onLoad && this.toLoad.push(Mod);
+  private loadModule(InitModule: new (em: EditorModel) => IModule) {
+    const Mod = new InitModule(this);
+    this.set(Mod.name, Mod);
+    Mod.onLoad && this.toLoad.push(Mod as ILoadableModule);
     this.modules.push(Mod);
-    return this;
+    return Mod;
+  }
+
+  private loadStorableModule(InitModule: new (em: EditorModel) => IModule & IStorableModule) {
+    const Mod = this.loadModule(InitModule) as IModule & IStorableModule;
+    this.storables.push(Mod);
+    return Mod;
   }
 
   /**
@@ -433,7 +420,6 @@ export default class EditorModel extends Model {
     }
 
     this.timedInterval && clearTimeout(this.timedInterval);
-    //@ts-ignore
     this.timedInterval = setTimeout(() => {
       const curr = this.getDirtyCount() || 0;
       const { unset, ...opts } = opt;
@@ -975,7 +961,7 @@ export default class EditorModel extends Model {
     // @ts-ignore
     const { editors = [] } = config.grapesjs || {};
     const shallow = this.get('shallow');
-    clearTimeout(this._storageTimeout);
+    this._storageTimeout && clearTimeout(this._storageTimeout);
     shallow?.destroyAll();
     this.stopListening();
     this.stopDefault();

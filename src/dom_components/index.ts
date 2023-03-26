@@ -53,7 +53,7 @@
  * @module Components
  */
 import { isEmpty, isObject, isArray, isFunction, isString, result, debounce } from 'underscore';
-import defaults from './config/config';
+import defaults, { DomComponentsConfig } from './config/config';
 import Component, { keyUpdate, keyUpdateInside } from './model/Component';
 import Components from './model/Components';
 import ComponentView from './view/ComponentView';
@@ -117,7 +117,7 @@ export type ComponentEvent =
   | 'component:drag'
   | 'component:drag:end';
 
-export default class ComponentManager extends ItemManagerModule {
+export default class ComponentManager extends ItemManagerModule<DomComponentsConfig, any> {
   componentTypes = [
     {
       id: 'cell',
@@ -251,6 +251,7 @@ export default class ComponentManager extends ItemManagerModule {
     super(em, 'DomComponents', new Components(undefined, { em }));
 
     if (em) {
+      //@ts-ignore
       this.config.components = em.config.components || this.config.components;
     }
 
@@ -264,8 +265,6 @@ export default class ComponentManager extends ItemManagerModule {
 
     // Load dependencies
     if (em) {
-      this.config.modal = em.Modal || '';
-      this.config.am = em.Assets || '';
       em.get('Parser').compTypes = this.componentTypes;
       em.on('change:componentHovered', this.componentHovered, this);
 

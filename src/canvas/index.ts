@@ -94,7 +94,6 @@ export default class CanvasModule extends Module<CanvasConfig> {
     this.stopAutoscroll = this.stopAutoscroll.bind(this);
     return this;
   }
-  init() {}
 
   onLoad() {
     this.model.init();

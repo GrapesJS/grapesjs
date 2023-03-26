@@ -125,8 +125,6 @@ export default class Editor implements IBaseModule<EditorConfig> {
   em: EditorModel;
   config: EditorConfigType;
 
-  modules = [];
-
   constructor(config: EditorConfig = {}, opts: any = {}) {
     this.config = {
       ...defaults,
