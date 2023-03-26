@@ -7,9 +7,10 @@ declare namespace Backbone {
     collection: Collection<this>;
     cid: string;
     get<K extends keyof T>(prop: K): T[K];
-    set<K extends keyof T>(prop: K, val: T[K]): void;
+    set<K extends keyof T>(prop: K, val: T[K], opt?: any): void;
     defaults(): T;
     on(eventName: string, callback: (...args: any[]) => void): this;
+    off(eventName: string, callback: (...args: any[]) => void): this;
     toJSON(options?: any): any;
   }
 
@@ -725,6 +726,8 @@ declare namespace grapesjs {
       model?: Component;
       el?: HTMLElement;
     }): void;
+
+    render(): void;
   }
 
   interface View { }
@@ -4871,6 +4874,19 @@ declare namespace grapesjs {
      * Get the toolbar element
      */
     getToolbarEl(): HTMLElement;
+
+    /**
+     * Retrieves the standard (non-custom) rich text editor
+     */
+    globalRte?: RichTextEditor
+
+    /**
+     * Wrapper around [execCommand](https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand) to allow
+     * you to perform operations like `insertText`
+     * @param  {string} command Command name
+     * @param  {any} [value=null Command's arguments
+     */
+    exec(command: string, value: string);
   }
 
   /**
