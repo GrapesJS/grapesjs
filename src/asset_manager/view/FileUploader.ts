@@ -147,7 +147,7 @@ export default class FileUploaderView extends View {
     if (beforeUploadResponse === false) return;
 
     const body = new FormData();
-    const { params, customFetch } = config;
+    const { params, customFetch, fetchOptions } = config;
 
     for (let param in params) {
       body.append(param, params[param]);
@@ -161,7 +161,6 @@ export default class FileUploaderView extends View {
       body.append(config.uploadName!, files[0]);
     }
 
-    var target = this.target;
     const url = config.upload;
     const headers = config.headers!;
     const reqHead = 'X-Requested-With';
@@ -178,9 +177,10 @@ export default class FileUploaderView extends View {
         headers,
         body,
       };
+      const fetchOptsResult = fetchOptions?.(fetchOpts) || fetchOpts;
       const fetchResult = customFetch
-        ? customFetch(url, fetchOpts)
-        : fetch(url, fetchOpts).then((res: any) =>
+        ? customFetch(url, fetchOptsResult)
+        : fetch(url, fetchOptsResult).then((res: any) =>
             ((res.status / 200) | 0) == 1 ? res.text() : res.text().then((text: string) => Promise.reject(text))
           );
       return fetchResult
