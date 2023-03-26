@@ -1,8 +1,14 @@
 import { CommandObject } from './CommandAbstract';
+import { EditorParam } from '../../editor';
 import { $ } from '../../common';
 
+interface ExportTemplateRunOptions {
+  optsHtml?: EditorParam<'getHtml', 0>;
+  optsCss?: EditorParam<'getCss', 0>;
+}
+
 export default {
-  run(editor, sender) {
+  run(editor, sender, opts: ExportTemplateRunOptions = {}) {
     sender && sender.set && sender.set('active', 0);
     const config = editor.getConfig();
     const modal = editor.Modal;
@@ -26,8 +32,8 @@ export default {
       })
       .getModel()
       .once('change:open', () => editor.stopCommand(`${this.id}`));
-    this.htmlEditor.setContent(editor.getHtml());
-    this.cssEditor.setContent(editor.getCss());
+    this.htmlEditor.setContent(editor.getHtml(opts.optsHtml));
+    this.cssEditor.setContent(editor.getCss(opts.optsCss));
   },
 
   stop(editor) {
