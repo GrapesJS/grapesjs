@@ -556,6 +556,7 @@ export default {
    * @param {Object} pos
    */
   updateToolsLocal(data: any) {
+    const config = this.em.getConfig();
     const { el, pos, view, component } = data || this.getElHovered();
 
     if (!el) {
@@ -575,7 +576,7 @@ export default {
 
     if (this.isCompSelected(component)) {
       this.hideHighlighter(view);
-      this.hideElementOffset(view);
+      !config.showOffsetsSelected && this.hideElementOffset(view);
     }
 
     const unit = 'px';
