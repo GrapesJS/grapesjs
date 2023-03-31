@@ -40,6 +40,7 @@ import ComponentView from '../../dom_components/view/ComponentView';
 import { ProjectData } from '../../storage_manager/model/IStorage';
 import CssRules from '../../css_composer/model/CssRules';
 import Frame from '../../canvas/model/Frame';
+import { DragMode } from '../../dom_components/model/types';
 
 Backbone.$ = $;
 
@@ -935,8 +936,13 @@ export default class EditorModel extends Model {
     return this.get('Canvas').getZoomMultiplier();
   }
 
-  setDragMode(value: string) {
+  setDragMode(value: DragMode) {
     return this.set('dmode', value);
+  }
+
+  getDragMode(component?: Component): DragMode {
+    const mode = component?.getDragMode() || this.get('dmode');
+    return mode || '';
   }
 
   t(...args: any[]) {
@@ -948,8 +954,8 @@ export default class EditorModel extends Model {
    * Returns true if the editor is in absolute mode
    * @returns {Boolean}
    */
-  inAbsoluteMode() {
-    return this.get('dmode') === 'absolute';
+  inAbsoluteMode(component?: Component) {
+    return this.getDragMode(component) === 'absolute';
   }
 
   /**

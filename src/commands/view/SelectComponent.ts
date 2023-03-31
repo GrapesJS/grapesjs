@@ -455,8 +455,10 @@ export default {
             style[keyHeight] = autoHeight ? 'auto' : `${rect.h}${unitHeight}`;
           }
 
-          style.top = rect.t + unitHeight;
-          style.left = rect.l + unitWidth;
+          if (em.getDragMode(model)) {
+            style.top = `${rect.t}${unitHeight}`;
+            style.left = `${rect.l}${unitWidth}`;
+          }
 
           modelToStyle.addStyle({ ...style, en }, { avoidStore: !store });
           const updateEvent = 'update:component:style';

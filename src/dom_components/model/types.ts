@@ -9,7 +9,7 @@ import Component from './Component';
 import Components from './Components';
 import { ToolbarButtonProps } from './ToolbarButton';
 
-export type DragMode = 'translate' | 'absolute';
+export type DragMode = 'translate' | 'absolute' | '';
 
 export interface ComponentProperties {
   /**
