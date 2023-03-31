@@ -91,4 +91,6 @@ const GrapesJS = {
   },
 };
 
+export { default as Editor } from './editor';
+
 export default GrapesJS;
