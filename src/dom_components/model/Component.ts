@@ -351,11 +351,19 @@ export default class Component extends StyleableModel<ComponentProperties> {
   /**
    * Change the drag mode of the component.
    * To get more about this feature read: https://github.com/GrapesJS/grapesjs/issues/1936
-   * @param {String} value Drag mode, options: 'absolute' | 'translate'
+   * @param {String} value Drag mode, options: `'absolute'` | `'translate'` | `''`
    * @returns {this}
    */
   setDragMode(value?: DragMode) {
     return this.set('dmode', value);
+  }
+
+  /**
+   * Get the drag mode of the component.
+   * @returns {String} Drag mode value, options: `'absolute'` | `'translate'` | `''`
+   */
+  getDragMode(): DragMode {
+    return this.get('dmode') || '';
   }
 
   /**
