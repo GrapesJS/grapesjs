@@ -443,7 +443,6 @@ export default {
           const onlyHeight = ['tc', 'bc'].indexOf(selectedHandler) >= 0;
           const onlyWidth = ['cl', 'cr'].indexOf(selectedHandler) >= 0;
           const style: any = {};
-          const en = !store ? 1 : ''; // this will trigger the final change
 
           if (!onlyHeight) {
             const bodyw = canvas.getBody().offsetWidth;
@@ -460,7 +459,14 @@ export default {
             style.left = `${rect.l}${unitWidth}`;
           }
 
-          modelToStyle.addStyle({ ...style, en }, { avoidStore: !store });
+          modelToStyle.addStyle(
+            {
+              ...style,
+              // value for the partial update
+              __p: !store ? 1 : '',
+            },
+            { avoidStore: !store }
+          );
           const updateEvent = 'update:component:style';
           const eventToListen = `${updateEvent}:${keyHeight} ${updateEvent}:${keyWidth}`;
           em && em.trigger(eventToListen, null, null, { noEmit: 1 });
