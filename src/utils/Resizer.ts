@@ -571,6 +571,8 @@ export default class Resizer {
       const elStyle = el.style as Record<string, any>;
       elStyle[keyWidth!] = rect.w + unitWidth!;
       elStyle[keyHeight!] = rect.h + unitHeight!;
+      elStyle.top = rect.t + unitHeight!;
+      elStyle.left = rect.l + unitWidth!;
     }
 
     this.updateContainer();
@@ -663,9 +665,9 @@ export default class Resizer {
     const unitHeight = this.opts.unitHeight;
     const startW = unitWidth === '%' ? (startDim.w / 100) * parentW : startDim.w;
     const startH = unitHeight === '%' ? (startDim.h / 100) * parentH : startDim.h;
-    var box = {
-      t: 0,
-      l: 0,
+    var box: RectDim = {
+      t: startDim.t,
+      l: startDim.l,
       w: startW,
       h: startH,
     };
@@ -722,10 +724,10 @@ export default class Resizer {
     }
 
     if (~attr.indexOf('l')) {
-      box.l = startDim.w - box.w;
+      box.l += startDim.w - box.w;
     }
     if (~attr.indexOf('t')) {
-      box.t = startDim.h - box.h;
+      box.t += startDim.h - box.h;
     }
 
     return box;
