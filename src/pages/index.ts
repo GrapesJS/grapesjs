@@ -104,6 +104,7 @@ export default class PageManager extends ItemManagerModule<PageManagerConfig, Pa
 
   /**
    * Initialize module
+   * @hideconstructor
    * @param {Object} config Configurations
    */
   constructor(em: EditorModel) {

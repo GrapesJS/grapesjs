@@ -672,9 +672,8 @@ Trigger event
 
 ### Parameters
 
-*   `eventName` **[string][18]** 
-*   `args` **...[Array][19]\<any>** 
 *   `event` **[string][18]** Event to trigger
+*   `args` **...[Array][19]\<any>** 
 
 Returns **this** 
 

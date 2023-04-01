@@ -117,9 +117,15 @@ To get more about this feature read: [https://github.com/GrapesJS/grapesjs/issue
 
 ### Parameters
 
-*   `value` **[String][1]** Drag mode, options: 'absolute' | 'translate'
+*   `value` **[String][1]** Drag mode, options: `'absolute'` | `'translate'` | `''`
 
 Returns **this** 
+
+## getDragMode
+
+Get the drag mode of the component.
+
+Returns **[String][1]** Drag mode value, options: `'absolute'` | `'translate'` | `''`
 
 ## find
 
@@ -619,7 +625,13 @@ Returns **[Array][5]\<Trait>** Array of added traits
 
 ## getName
 
-Get the name of the component
+Get the name of the component.
+
+### Parameters
+
+*   `opts` **[Object][2]** Options (optional, default `{}`)
+
+    *   `opts.noCustom` **[Boolean][3]?** Avoid custom name assigned to the component.
 
 Returns **[String][1]** 
 

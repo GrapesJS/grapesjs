@@ -71,6 +71,8 @@ styleManager.addSector(...);
 
 [Property]: property.html
 
+## Sectors
+
 ## getConfig
 
 Get configuration object

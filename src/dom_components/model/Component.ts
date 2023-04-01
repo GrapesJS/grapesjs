@@ -112,7 +112,9 @@ export const keyUpdateInside = `${keyUpdate}-inside`;
  * @module docsjs.Component
  */
 export default class Component extends StyleableModel<ComponentProperties> {
-  /** @ts-ignore */
+  /**
+   * @private
+   * @ts-ignore */
   get defaults(): ComponentDefinitionDefined {
     return {
       tagName: 'div',
@@ -195,7 +197,9 @@ export default class Component extends StyleableModel<ComponentProperties> {
   prevColl?: Components;
   __hasUm?: boolean;
   __symbReady?: boolean;
-  /** @ts-ignore */
+  /**
+   * @private
+   * @ts-ignore */
   collection!: Components;
 
   initialize(props = {}, opt: ComponentOptions = {}) {
