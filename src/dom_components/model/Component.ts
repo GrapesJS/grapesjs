@@ -236,8 +236,8 @@ export default class Component extends StyleableModel<ComponentProperties> {
     });
     this.ccid = Component.createId(this, opt);
     this.initClasses();
-    this.initTraits();
     this.initComponents();
+    this.initTraits();
     this.initToolbar();
     this.initScriptProps();
     this.listenTo(this, 'change:script', this.scriptUpdated);

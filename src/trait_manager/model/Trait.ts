@@ -51,6 +51,8 @@ export interface TraitProperties {
   labelButton?: string;
   text?: string;
   full?: boolean;
+  getValue?: (props: { editor: Editor; trait: Trait; component: Component }) => any;
+  setValue?: (props: { value: any; editor: Editor; trait: Trait; component: Component; partial: boolean }) => void;
 }
 
 /**
@@ -153,6 +155,18 @@ export default class Trait extends Model<TraitProperties> {
    */
   setValue(value: any, opts: { partial?: boolean } = {}) {
     const valueOpts: { avoidStore?: boolean } = {};
+    const setValue = this.get('setValue');
+
+    if (setValue) {
+      setValue({
+        value,
+        editor: this.em?.getEditor()!,
+        trait: this,
+        component: this.target,
+        partial: !!opts.partial,
+      });
+      return;
+    }
 
     if (opts.partial) {
       valueOpts.avoidStore = true;
@@ -182,9 +196,16 @@ export default class Trait extends Model<TraitProperties> {
   getTargetValue() {
     const name = this.getName();
     const target = this.target;
+    const getValue = this.get('getValue');
     let value;
 
-    if (this.get('changeProp')) {
+    if (getValue) {
+      value = getValue({
+        editor: this.em?.getEditor()!,
+        trait: this,
+        component: target,
+      });
+    } else if (this.get('changeProp')) {
       value = target.get(name);
     } else {
       // @ts-ignore TODO update post component update
