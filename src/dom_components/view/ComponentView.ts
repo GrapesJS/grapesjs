@@ -5,7 +5,7 @@ import ComponentsView from './ComponentsView';
 import Selectors from '../../selector_manager/model/Selectors';
 import { replaceWith } from '../../utils/dom';
 import { setViewEl } from '../../utils/mixins';
-import { ObjectAny, View } from '../../common';
+import { ExtractMethods, ObjectAny, View } from '../../common';
 import { ComponentOptions } from '../model/types';
 import EditorModel from '../../editor/model/Editor';
 import { DomComponentsConfig } from '../config/config';
@@ -19,6 +19,8 @@ interface Rect {
   bottom?: number;
   right?: number;
 }
+
+export interface IComponentView extends ExtractMethods<ComponentView> {}
 
 export default class ComponentView extends View</**
  * Keep this format to avoid errors in TS bundler */

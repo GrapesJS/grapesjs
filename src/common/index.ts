@@ -35,3 +35,7 @@ export class Model<T extends ObjectHash = any, S = SetOptions, E = any> extends 
 export class Collection<T extends Model = Model> extends Backbone.Collection<T> {}
 
 export class View<T extends Model | undefined = Model, E extends Element = HTMLElement> extends Backbone.View<T, E> {}
+
+export type PickMatching<T, V> = { [K in keyof T as T[K] extends V ? K : never]: T[K] };
+
+export type ExtractMethods<T> = PickMatching<T, Function>;
