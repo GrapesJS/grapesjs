@@ -152,12 +152,30 @@ export const isCommentNode = (el?: Node): el is Comment => el?.nodeType === Node
  */
 export const isTaggableNode = (el?: Node) => el && !isTextNode(el) && !isCommentNode(el);
 
+export const getBoundingRect = (el: HTMLElement) => {
+  const top = el.offsetTop;
+  const left = el.offsetLeft;
+  const width = el.offsetWidth;
+  const height = el.offsetHeight;
+
+  return {
+    top,
+    left,
+    width,
+    height,
+    bottom: top + height,
+    right: left + width,
+    x: left,
+    y: top,
+  };
+};
+
 /**
  * Get DOMRect of the element.
  * @param el
  * @returns {DOMRect}
  */
-export const getElRect = (el?: Element) => {
+export const getElRect = (el?: HTMLElement, nativeBoundingRect = true) => {
   const def = {
     top: 0,
     left: 0,
@@ -170,11 +188,13 @@ export const getElRect = (el?: Element) => {
   if (isTextNode(el)) {
     const range = document.createRange();
     range.selectNode(el);
-    rectText = range.getBoundingClientRect();
+    rectText = nativeBoundingRect ? range.getBoundingClientRect() : getBoundingRect(range as unknown as HTMLElement);
     range.detach();
   }
 
-  return rectText || (el.getBoundingClientRect ? el.getBoundingClientRect() : def);
+  return nativeBoundingRect
+    ? rectText || (el.getBoundingClientRect ? el.getBoundingClientRect() : def)
+    : rectText || getBoundingRect(el);
 };
 
 /**
