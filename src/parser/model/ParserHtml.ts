@@ -122,6 +122,7 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig = {}) => {
       const nodes = el.childNodes;
 
       for (var i = 0, len = nodes.length; i < len; i++) {
+        const conf = em?.get('Config') || {};
         const node = nodes[i] as HTMLElement;
         const attrs = node.attributes || [];
         const attrsLen = attrs.length;
@@ -129,6 +130,7 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig = {}) => {
         const nodeChild = node.childNodes.length;
         const ct = this.compTypes;
         let model: ComponentDefinitionDefined = {}; // TODO use component properties
+        const disableNestingForTypes = !isUndefined(conf.disableNestingForTypes) ? conf.disableNestingForTypes : [];
 
         // Start with understanding what kind of component it is
         if (ct) {
@@ -261,6 +263,11 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig = {}) => {
           if (allTxt && foundTextNode) {
             model.type = 'text';
           }
+        }
+
+        if (disableNestingForTypes.indexOf(model.type) >= 0) {
+          delete model.components;
+          model.content = node.innerHTML;
         }
 
         // If tagName is still empty and is not a textnode, do not push it
