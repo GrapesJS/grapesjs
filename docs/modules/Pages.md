@@ -445,7 +445,7 @@ const app = new Vue({
 
 ## Events
 
-For a complete list of available events, you can check it [here](/api/layer_manager.html#available-events).
+For a complete list of available events, you can check it [here](/api/pages.html#available-events).
 
 
 [Components]: <Components.html>
