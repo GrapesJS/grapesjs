@@ -4,13 +4,99 @@ title: Pages
 
 # Pages
 
-The Layer Manager module is responsible to manage and display your [Components] as a tree.
+The Pages module in GrapesJS allows you to leverage the built-in support for creating a project with multiple pages and one page is always created under the hood, even if you don't need multi-page support. This allows to keep the API consistent and easier to extend in case you need to add multiple pages later.
 
 ::: warning
 This guide is referring to GrapesJS v0.21.1 or higher
 :::
 
 [[toc]]
+
+## Initialization
+
+The default editor initialization doesn't require any knowledge of pages and this was mainly done to avoid introducing breaking changes when the Pages module was introduced.
+
+This is how a typical editor initialization looks like
+
+```js
+const editor = grapesjs.init({
+  container: '#gjs',
+  height: '100%',
+  storageManager: false,
+  // CSS or a JSON of styles
+  style: '.my-el { color: red }',
+  // HTML string or a JSON of components
+  components: '<div class="my-el">Hello world!</div>',
+  // ...other config options
+});
+```
+
+What actually is happening is that this configuration is automatically migrated to the Page Manager.
+
+```js
+const editor = grapesjs.init({
+  container: '#gjs',
+  height: '100%',
+  storageManager: false,
+  pageManager: {
+   pages: [
+     {
+       // the `id` will be generated automatically if not specified
+       id: 'my-first-page',
+       // CSS or a JSON of styles
+       styles: '.my-el { color: red }',
+       // HTML string or a JSON of components
+       component: '<div class="my-el">Hello world!</div>',
+     }
+  ]
+ },
+});
+```
+
+::: warning
+Worth noting the previous keys are `style` and `components`, where in pages you should use `styles` and `component`.
+:::
+
+As you might guess, this is how initializing the editor with multiple pages would look like
+
+```js
+const editor = grapesjs.init({
+  // ...
+  pageManager: {
+   pages: [
+     {
+       id: 'my-first-page',
+       styles: '.my-page1-el { color: red }',
+       component: '<div class="my-page1-el">Page 1</div>',
+     },
+     {
+       id: 'my-second-page',
+       styles: '.my-page2-el { color: blue }',
+       component: '<div class="my-page2-el">Page 2</div>',
+     },
+  ]
+ },
+});
+```
+
+GrapesJS doesn't provide any default UI for the Page Manager but you can easily built one by leveraging its [APIs][Pages API]. Check the [Customization](#customization) section for more details on how to create your own Page Manager UI.
+
+::: tip API tips
+Get an array of all pages:
+```js
+editor.Pages.getAll()
+```
+Get currently selected page:
+```js
+editor.Pages.getSelected()
+```
+Select another page by ID:
+```js
+editor.Pages.select('my-second-page')
+```
+:::
+
+
 
 
 ## Configuration
@@ -381,4 +467,4 @@ For a complete list of available events, you can check it [here](/api/layer_mana
 
 
 [Components]: <Components.html>
-[Layers API]: </api/layer_manager.html>
+[Pages API]: </api/pages.html>
