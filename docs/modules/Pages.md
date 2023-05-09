@@ -41,7 +41,7 @@ const editor = grapesjs.init({
   pageManager: {
    pages: [
      {
-       // the `id` will be generated automatically if not specified
+       // without an explicit ID, a random one will be created
        id: 'my-first-page',
        // CSS or a JSON of styles
        styles: '.my-el { color: red }',
@@ -81,66 +81,48 @@ const editor = grapesjs.init({
 
 GrapesJS doesn't provide any default UI for the Page Manager but you can easily built one by leveraging its [APIs][Pages API]. Check the [Customization](#customization) section for more details on how to create your own Page Manager UI.
 
-::: tip API tips
-Get an array of all pages:
-```js
-editor.Pages.getAll()
-```
-Get currently selected page:
-```js
-editor.Pages.getSelected()
-```
-Select another page by ID:
-```js
-editor.Pages.select('my-second-page')
-```
-:::
 
-
-
-
-## Configuration
-
-To change the default configurations you have to pass the `layerManager` option with the main configuration object.
-
-```js
-const editor = grapesjs.init({
-  ...
-  layerManager: {
-    ...
-  }
-});
-```
-
-You can check here the full list of available configuration options: [Layer Manager Config](https://github.com/GrapesJS/grapesjs/blob/master/src/navigator/config/config.ts)
-
-
-Layers are a direct representation of your components, therefore they will only be available once your components are loaded in the editor (eg. you might load your project data from a remote endpoint).
-
-In your configuration, you're able to change the global behavior of layers (eg. make all the layers not sortable) and also decide which component layer should be used as a root.
-
-```js
-const editor = grapesjs.init({
-  ...
-  layerManager: {
-    // If the `root` is not specified or the component element is not found,
-    // the main wrapper component will be used.
-    root: '#my-custom-root',
-    sortable: false,
-    hidable: false,
-  }
-});
-```
-
-The configurations are mainly targeting the default UI provided by GrapesJS core, in case you need more control over the tree of your layers, you can read more in the [Customization](#customization) section below.
 
 
 
 ## Programmatic usage
 
-If you need to manage layers programmatically you can use its [APIs][Layers API].
+If you need to manage pages programmatically you can use its [APIs][Pages API].
 
+Below an example of commonly used methods.
+```js
+// Get the Pages module first
+const pages = editor.Pages;
 
+// Get an array of all pages
+const allPages = pages.getAll();
+
+// Get currently selected page
+const selectedPage = pages.getSelected();
+
+// Add a new Page
+const newPage = pages.add({
+  id: 'new-page-id',
+  styles: '.my-class { color: red }',
+  component: '<div class="my-class">My element</div>',
+});
+
+// Get the Page by ID
+const page = pages.get('new-page-id');
+
+// Select another page by ID
+pages.select('new-page-id');
+// or by passing the Page instance
+pages.select(page);
+
+// Get the HTML/CSS code from the page component
+const component = page.getMainComponent();
+const htmlPage = editor.getHtml({ component });
+const cssPage = editor.getCss({ component });
+
+// Remove the Page by ID (or by Page instance)
+pages.remove('new-page-id');
+```
 
 
 
