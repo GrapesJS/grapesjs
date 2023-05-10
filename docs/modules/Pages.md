@@ -149,276 +149,133 @@ In the example below you can see an quick implementation of the Page Manager UI.
 
 <!-- Demo template, here for reference
 <style>
-.layer-manager {
-  position: relative;
-  text-align: left;
-}
-.layer-item.hidden {
-  opacity: 0.5;
-}
-.layer-item-icon {
-  width: 15px;
-  cursor: pointer;
-}
-.layer-item-eye {
-}
-.layer-item-chevron {
-  transform: rotate(90deg);
-}
-.layer-item-chevron.open {
-  transform: rotate(180deg);
-}
-.layer-item-chevron.hidden {
-  opacity: 0;
-  pointer-events: none;
-}
-.layer-item-row {
-  display: flex;
-  align-items: center;
-  user-select: none;
-  gap: 8px;
-  padding: 5px 8px;
-  border-bottom: 1px solid rgba(0,0,0,0.35);
-}
-.layer-item-row.selected {
-  background-color: rgba(255,255,255,0.15);
-}
-.layer-item-row.hovered {
-  background-color: rgba(255,255,255,0.05);
-}
-.layer-item-name {
-  margin-left: 3px;
-}
-.layer-item-name.editing {
-  background-color: white;
-  color: #555;
-  padding: 0 3px;
-}
-.layer-item-name-cnt {
-  display: flex;
-  align-items: center;
-  flex-grow: 1;
-}
-.layer-drag-indicator {
-  position: absolute;
-  width: 100%;
-  height: 1px;
-  left: 0;
-  background-color: #3b97e3;
-}
-</style>
-<div style="display: none">
-  <div
-    class="layer-manager"
-    @pointerdown="onDragStart"
-    @pointermove="onDragMove"
-    @pointerup="onDragEnd"
-  >
-    <layer-item v-if="root" :component="root" :level="0"></layer-item>
-    <div
-      v-if="dragIndicator.show"
-      class="layer-drag-indicator"
-      :style="{ top: `${dragIndicator.y}px`, marginLeft: `${dragIndicator.offset}px`, width: `calc(100% - ${dragIndicator.offset}px)` }"></div>
-  </div>
+  .app-wrap {
+    height: 100%;
+    width: 100%;
+    display: flex;
+  }
+  .editor-wrap  {
+    widtH: 100%;
+    height: 100%;
+  }
+  .pages-wrp, .pages {
+    display: flex;
+    flex-direction: column
+  }
+  .pages-wrp {
+      background: #333;
+      padding: 5px;
+  }
+  .add-page {
+    background: #444444;
+    color: white;
+    padding: 5px;
+    border-radius: 2px;
+    cursor: pointer;
+    white-space: nowrap;
+    margin-bottom: 10px;
+  }
+  .page {
+    background-color: #444;
+    color: white;
+    padding: 5px;
+    margin-bottom: 5px;
+    border-radius: 2px;
+    cursor: pointer;
 
-  <div id="layer-item-template" style="display: none;">
-    <div :class="['layer-item', !visible && 'hidden']">
-      <div
-        :class="['layer-item-row', selected && 'selected', hovered && 'hovered']"
-        @click="setSelected"
-        @mouseenter="setHover(true)"
-        @mouseleave="setHover(false)"
-        ref="layerRef"
-        data-layer-item
-      >
-        <div class="layer-item-icon layer-item-eye" @click.stop="toggleVisibility()">
-          <svg v-if="visible" viewBox="0 0 24 24"><path fill="currentColor" d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z" /></svg>
-          <svg v-else viewBox="0 0 24 24"><path fill="currentColor" d="M11.83,9L15,12.16C15,12.11 15,12.05 15,12A3,3 0 0,0 12,9C11.94,9 11.89,9 11.83,9M7.53,9.8L9.08,11.35C9.03,11.56 9,11.77 9,12A3,3 0 0,0 12,15C12.22,15 12.44,14.97 12.65,14.92L14.2,16.47C13.53,16.8 12.79,17 12,17A5,5 0 0,1 7,12C7,11.21 7.2,10.47 7.53,9.8M2,4.27L4.28,6.55L4.73,7C3.08,8.3 1.78,10 1,12C2.73,16.39 7,19.5 12,19.5C13.55,19.5 15.03,19.2 16.38,18.66L16.81,19.08L19.73,22L21,20.73L3.27,3M12,7A5,5 0 0,1 17,12C17,12.64 16.87,13.26 16.64,13.82L19.57,16.75C21.07,15.5 22.27,13.86 23,12C21.27,7.61 17,4.5 12,4.5C10.6,4.5 9.26,4.75 8,5.2L10.17,7.35C10.74,7.13 11.35,7 12,7Z" /></svg>
-        </div>
-        <div class="layer-item-name-cnt" :style="{ marginLeft: `${level*10}px` }">
-          <div :class="['layer-item-icon layer-item-chevron', open && 'open', !components.length && 'hidden']" @click.stop="toggleOpen()">
-            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M7.41,15.41L12,10.83L16.59,15.41L18,14L12,8L6,14L7.41,15.41Z" /></svg>
+    &.selected {
+      background-color: #706f6f
+    }
+  }
+
+  .page-close {
+    opacity: 0.5;
+    float: right;
+    background-color: #2c2c2c;
+    height: 20px;
+    display: inline-block;
+    width: 17px;
+    text-align: center;
+    border-radius: 3px;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+</style>
+
+<div style="height: 100%">
+  <div class="app-wrap">
+    <div class="pages-wrp">
+        <div class="add-page" @click="addPage">Add new page</div>
+        <div class="pages">
+          <div v-for="page in pages" :key="page.id" :class="{page: 1, selected: isSelected(page) }" @click="selectPage(page.id)">
+            {{ page.get('name') || page.id }} <span v-if="!isSelected(page)" @click="removePage(page.id)" class="page-close">&Cross;</span>
           </div>
-          <div ref="nameInput"
-            :class="['layer-item-name', editing && 'editing']"
-            :contenteditable="editing"
-            @dblclick.stop="setEditing(true)"
-            @blur.stop="setEditing(false)"
-            @keydown.enter="setEditing(false)"
-          >
-            {{ name }}
-          </div>
         </div>
-        <div v-if="component.get('draggable')" class="layer-item-icon layer-item-move" data-layer-move>
-          <svg viewBox="0 0 24 24"><path fill="currentColor" d="M13,6V11H18V7.75L22.25,12L18,16.25V13H13V18H16.25L12,22.25L7.75,18H11V13H6V16.25L1.75,12L6,7.75V11H11V6H7.75L12,1.75L16.25,6H13Z"/></svg>
-        </div>
-      </div>
-      <div v-if="open" class="layer-items">
-        <layer-item v-for="cmp in components" :key="cmp.getId()" :component="cmp" :level="level + 1"/>
-      </div>
+    </div>
+    <div class="editor-wrap">
+      <div id="gjs"></div>
     </div>
   </div>
 </div>
-<script>
-const { Components, Layers } = editor;
-const cmpElMap = new WeakMap();
 
-Vue.component('layer-item', {
-  template: '#layer-item-template',
-  props: { component: Object, level: Number },
-  data() {
-    return {
-      name: '',
-      components: [],
-      visible: true,
-      open: false,
-      selected: false,
-      hovered: false,
-      editing: false,
-    }
+<script>
+const editor = grapesjs.init({
+  container: '#gjs',
+  height: '100%',
+  storageManager: false,
+  plugins: ['gjs-blocks-basic'],
+  pageManager: {
+    pages: [{
+      id: 'page-1',
+      name: 'Page 1',
+      component: '<div id="comp1">Page 1</div>',
+      styles: `#comp1 { color: red }`,
+    }, {
+      id: 'page-2',
+      name: 'Page 2',
+      component: '<div id="comp2">Page 2</div>',
+      styles: `#comp2 { color: green }`,
+    }, {
+      id: 'page-3',
+      name: 'Page 3',
+      component: '<div id="comp3">Page 3</div>',
+      styles: `#comp3 { color: blue }`,
+    }]
   },
-  mounted() {
-    this.updateLayer(Layers.getLayerData(this.component));
-    cmpElMap.set(this.$refs.layerRef, this.component);
-    editor.on('layer:component', this.onLayerComponentUpdate);
-  },
-  destroyed() {
-    editor.off('layer:component', this.onLayerComponentUpdate);
-  },
-  methods: {
-    onLayerComponentUpdate(cmp) {
-      if (cmp === this.component) {
-        this.updateLayer(Layers.getLayerData(cmp));
-      }
-    },
-    updateLayer(data) {
-      this.name = data.name;
-      this.components = data.components;
-      this.visible = data.visible;
-      this.open = data.open;
-      this.selected = data.selected;
-      this.hovered = data.hovered;
-    },
-    toggleVisibility() {
-      const { component } = this;
-      Layers.setVisible(this.component, !this.visible);
-    },
-    toggleOpen() {
-      const { component } = this;
-      Layers.setOpen(this.component, !this.open);
-    },
-    setHover(hovered) {
-      Layers.setLayerData(this.component, { hovered })
-    },
-    setSelected(event) {
-      Layers.setLayerData(this.component, { selected: true }, { event })
-    },
-    setEditing(value) {
-      this.editing = value;
-      const el = this.$refs.nameInput;
-      if (!value) {
-        Layers.setName(this.component, el.innerText)
-      } else {
-        setTimeout(() => el.focus())
-      }
-    },
-  }
 });
 
+const pm = editor.Pages;
+
 const app = new Vue({
-  el: '.layer-manager',
-  data: {
-    root: null,
-    isDragging: false,
-    draggingCmp: null,
-    draggingOverCmp: null,
-    dragIndicator: {},
-    canMoveRes: {},
-  },
+  el: '.pages-wrp',
+  data: { pages: [] },
   mounted() {
-    editor.on('layer:custom', this.handleCustom);
-    editor.on('layer:root', this.handleRootChange);
-  },
-  destroyed() {
-    editor.off('layer:custom', this.handleCustom);
-    editor.off('layer:root', this.handleRootChange);
+    this.setPages(pm.getAll());
+    editor.on('page', () => {
+      this.pages = [...pm.getAll()];
+    });
   },
   methods: {
-    handleCustom(props = {}) {
-      const { container, root } = props;
-      container && container.appendChild(this.$el);
-      this.handleRootChange(root);
+    setPages(pages) {
+      this.pages = [...pages];
     },
-    handleRootChange(root) {
-      console.log('root update', root);
-      this.root = root;
+    isSelected(page) {
+      return pm.getSelected().id == page.id;
     },
-    getDragTarget(ev) {
-      const el = document.elementFromPoint(ev.clientX, ev.clientY);
-      const dragEl = el?.closest('[data-layer-move]');
-      const elLayer = el?.closest('[data-layer-item]');
-
-      return {
-          dragEl,
-          elLayer,
-          cmp: cmpElMap.get(elLayer),
-      }
+    selectPage(pageId) {
+      return pm.select(pageId);
     },
-    onDragStart(ev) {
-      if (this.getDragTarget(ev).dragEl) {
-        this.isDragging = true;
-      }
+    removePage(pageId) {
+      return pm.remove(pageId);
     },
-    onDragMove(ev) {
-      if (!this.isDragging) return;
-      const { cmp, elLayer } = this.getDragTarget(ev);
-      if (!cmp || !elLayer) return;
-      const { draggingCmp } = this;
-      const layerRect = elLayer.getBoundingClientRect();
-      const layerH = elLayer.offsetHeight;
-      const layerY = elLayer.offsetTop;
-      const pointerY = ev.clientY;
-      const isBefore = pointerY < (layerRect.y + layerH / 2);
-      const cmpSource = !draggingCmp ? cmp : draggingCmp;
-      const cmpTarget = cmp.parent();
-      const cmpIndex = cmp.index() + (isBefore ? 0 : 1);
-      this.draggingCmp = !draggingCmp ? cmp : draggingCmp;
-      this.draggingOverCmp = cmp;
-      const canMove = Components.canMove(cmpTarget, cmpSource, cmpIndex);
-      const canMoveInside = Components.canMove(cmp, cmpSource);
-      const canMoveRes = {
-          ...canMove,
-          canMoveInside,
-          index: cmpIndex,
-      };
-      // if (
-      //     canMoveInside.result &&
-      //     (
-      //         pointerY > (layerRect.y + LAYER_PAD)
-      //         && pointerY < (layerRect.y + layerH - LAYER_PAD))
-      // ) {
-      //     pointerInside = true;
-      //     canMoveRes.target = cmp;
-      //     delete canMoveRes.index;
-      // }
-      // setDragParent(pointerInside ? cmp : undefined);
-      this.canMoveRes = canMoveRes;
-      const dragLevel = (cmp ? cmp.parents() : []).length;
-      this.dragIndicator = {
-          y: layerY + (isBefore ? 0 : layerH),
-          h: layerH,
-          offset: dragLevel * 10 + 20,
-          show: !!(this.draggingCmp && canMoveRes?.result),
-      };
-    },
-    onDragEnd(ev) {
-      const { canMoveRes } = this;
-      canMoveRes.result && canMoveRes.source.move(canMoveRes.target, { at: canMoveRes.index });
-      this.isDragging = false;
-      this.draggingCmp = null;
-      this.draggingOverCmp = null;
-      this.dragIndicator = {};
-      this.canMoveRes = {};
+    addPage() {
+      const len = pm.getAll().length;
+      pm.add({
+        name: `Page ${len + 1}`,
+        component: '<div>New page</div>',
+      });
     },
   }
 });
