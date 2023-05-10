@@ -144,7 +144,7 @@ editor.on('page', () => {
 
 In the example below you can see an quick implementation of the Page Manager UI.
 
-<demo-viewer value="L24hkgm5" height="500" darkcode/>
+<demo-viewer value="1y6bgeo3" height="500" darkcode/>
 
 
 <!-- Demo template, here for reference
