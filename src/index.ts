@@ -91,6 +91,10 @@ const GrapesJS = {
   },
 };
 
+export { default as Component } from './dom_components/model/Component';
+export { default as Components } from './dom_components/model/Components';
+export { default as ComponentView } from './dom_components/view/ComponentView';
+export { default as ComponentManager } from './dom_components';
 export { default as Editor } from './editor';
 
 export default GrapesJS;

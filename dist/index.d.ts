@@ -27,6 +27,10 @@ declare class Collection<T extends Model = Model> extends Backbone.Collection<T>
 }
 declare class View<T extends Model | undefined = Model, E extends Element = HTMLElement> extends Backbone.View<T, E> {
 }
+export type PickMatching<T, V> = {
+	[K in keyof T as T[K] extends V ? K : never]: T[K];
+};
+export type ExtractMethods<T> = PickMatching<T, Function>;
 export interface SelectorProps {
 	name: string;
 	label?: string;
@@ -379,6 +383,7 @@ declare class PageManager extends ItemManagerModule<PageManagerConfig, Pages> {
 	 */
 	/**
 	 * Initialize module
+	 * @hideconstructor
 	 * @param {Object} config Configurations
 	 */
 	constructor(em: EditorModel);
@@ -1544,6 +1549,18 @@ export interface TraitProperties {
 	labelButton?: string;
 	text?: string;
 	full?: boolean;
+	getValue?: (props: {
+		editor: Editor;
+		trait: Trait;
+		component: Component;
+	}) => any;
+	setValue?: (props: {
+		value: any;
+		editor: Editor;
+		trait: Trait;
+		component: Component;
+		partial: boolean;
+	}) => void;
 }
 declare class Trait extends Model<TraitProperties> {
 	target: Component;
@@ -2233,7 +2250,9 @@ export interface Rect {
 	bottom?: number;
 	right?: number;
 }
-declare class ComponentView extends View</**
+export interface IComponentView extends ExtractMethods<ComponentView> {
+}
+export declare class ComponentView extends View</**
  * Keep this format to avoid errors in TS bundler */ 
 /** @ts-ignore */
 Component> {
@@ -3214,7 +3233,23 @@ declare class ComponentTextNodeView extends ComponentView {
 	render(): this;
 }
 export type ComponentEvent = "component:create" | "component:mount" | "component:add" | "component:remove" | "component:remove:before" | "component:clone" | "component:update" | "component:styleUpdate" | "component:selected" | "component:deselected" | "component:toggled" | "component:type:add" | "component:type:update" | "component:drag:start" | "component:drag" | "component:drag:end";
-declare class ComponentManager extends ItemManagerModule<DomComponentsConfig, any> {
+export interface ComponentModelDefinition extends IComponent {
+	defaults?: ComponentDefinitionDefined;
+	[key: string]: any;
+}
+export interface ComponentViewDefinition extends IComponentView {
+	[key: string]: any;
+}
+export interface AddComponentTypeOptions {
+	isComponent?: (el: HTMLElement) => boolean | ComponentDefinitionDefined | undefined;
+	model?: Partial<ComponentModelDefinition> & ThisType<ComponentModelDefinition & Component>;
+	view?: Partial<ComponentViewDefinition> & ThisType<ComponentViewDefinition & ComponentView>;
+	extend?: string;
+	extendView?: string;
+	extendFn?: string[];
+	extendFnView?: string[];
+}
+export declare class ComponentManager extends ItemManagerModule<DomComponentsConfig, any> {
 	componentTypes: ({
 		id: string;
 		model: typeof ComponentTable;
@@ -3379,7 +3414,7 @@ declare class ComponentManager extends ItemManagerModule<DomComponentsConfig, an
 	 * @param {Object} methods Component methods
 	 * @return {this}
 	 */
-	addType(type: string, methods: any): this;
+	addType(type: string, methods: AddComponentTypeOptions): this;
 	/**
 	 * Get component type.
 	 * Read more about this in [Define New Component](https://grapesjs.com/docs/modules/Components.html#define-new-component)
@@ -3483,7 +3518,7 @@ export interface ComponentsOptions {
 	config?: DomComponentsConfig;
 	domc?: ComponentManager;
 }
-declare class Components extends Collection</**
+export declare class Components extends Collection</**
  * Keep this format to avoid errors in TS bundler */ 
 /** @ts-ignore */
 Component> {
@@ -3686,8 +3721,73 @@ declare class CssRule extends StyleableModel<CssRuleProperties> {
 	 */
 	compare(selectors: any, state?: string, width?: string, ruleProps?: Partial<CssRuleProperties>): boolean;
 }
-declare class Component extends StyleableModel<ComponentProperties> {
-	/** @ts-ignore */
+export interface IComponent extends ExtractMethods<Component> {
+}
+/**
+ * The Component object represents a single node of our template structure, so when you update its properties the changes are
+ * immediately reflected on the canvas and in the code to export (indeed, when you ask to export the code we just go through all
+ * the tree of nodes).
+ * An example on how to update properties:
+ * ```js
+ * component.set({
+ *  tagName: 'span',
+ *  attributes: { ... },
+ *  removable: false,
+ * });
+ * component.get('tagName');
+ * // -> 'span'
+ * ```
+ *
+ * [Component]: component.html
+ *
+ * @property {String} [type=''] Component type, eg. `text`, `image`, `video`, etc.
+ * @property {String} [tagName='div'] HTML tag of the component, eg. `span`. Default: `div`
+ * @property {Object} [attributes={}] Key-value object of the component's attributes, eg. `{ title: 'Hello' }` Default: `{}`
+ * @property {String} [name=''] Name of the component. Will be used, for example, in Layers and badges
+ * @property {Boolean} [removable=true] When `true` the component is removable from the canvas, default: `true`
+ * @property {Boolean|String|Function} [draggable=true] Indicates if it's possible to drag the component inside others.
+ *  You can also specify a query string to indentify elements,
+ *  eg. `'.some-class[title=Hello], [data-gjs-type=column]'` means you can drag the component only inside elements
+ *  containing `some-class` class and `Hello` title, and `column` components. In the case of a function, target and destination components are passed as arguments, return a Boolean to indicate if the drag is possible. Default: `true`
+ * @property {Boolean|String|Function} [droppable=true] Indicates if it's possible to drop other components inside. You can use
+ * a query string as with `draggable`. In the case of a function, target and destination components are passed as arguments, return a Boolean to indicate if the drop is possible. Default: `true`
+ * @property {Boolean} [badgable=true] Set to false if you don't want to see the badge (with the name) over the component. Default: `true`
+ * @property {Boolean|Array<String>} [stylable=true] True if it's possible to style the component.
+ * You can also indicate an array of CSS properties which is possible to style, eg. `['color', 'width']`, all other properties
+ * will be hidden from the style manager. Default: `true`
+ * @property {Array<String>} [stylable-require=[]] Indicate an array of style properties to show up which has been marked as `toRequire`. Default: `[]`
+ * @property {Array<String>} [unstylable=[]] Indicate an array of style properties which should be hidden from the style manager. Default: `[]`
+ * @property {Boolean} [highlightable=true] It can be highlighted with 'dotted' borders if true. Default: `true`
+ * @property {Boolean} [copyable=true] True if it's possible to clone the component. Default: `true`
+ * @property {Boolean} [resizable=false] Indicates if it's possible to resize the component. It's also possible to pass an object as [options for the Resizer](https://github.com/GrapesJS/grapesjs/blob/master/src/utils/Resizer.js). Default: `false`
+ * @property {Boolean} [editable=false] Allow to edit the content of the component (used on Text components). Default: `false`
+ * @property {Boolean} [layerable=true] Set to `false` if you need to hide the component inside Layers. Default: `true`
+ * @property {Boolean} [selectable=true] Allow component to be selected when clicked. Default: `true`
+ * @property {Boolean} [hoverable=true] Shows a highlight outline when hovering on the element if `true`. Default: `true`
+ * @property {Boolean} [locked=false] Disable the selection of the component and its children in the canvas. Default: `false`
+ * @property {Boolean} [void=false] This property is used by the HTML exporter as void elements don't have closing tags, eg. `<br/>`, `<hr/>`, etc. Default: `false`
+ * @property {Object} [style={}] Component default style, eg. `{ width: '100px', height: '100px', 'background-color': 'red' }`
+ * @property {String} [styles=''] Component related styles, eg. `.my-component-class { color: red }`
+ * @property {String} [content=''] Content of the component (not escaped) which will be appended before children rendering. Default: `''`
+ * @property {String} [icon=''] Component's icon, this string will be inserted before the name (in Layers and badge), eg. it can be an HTML string '<i class="fa fa-square-o"></i>'. Default: `''`
+ * @property {String|Function} [script=''] Component's javascript. More about it [here](/modules/Components-js.html). Default: `''`
+ * @property {String|Function} [script-export=''] You can specify javascript available only in export functions (eg. when you get the HTML).
+ * If this property is defined it will overwrite the `script` one (in export functions). Default: `''`
+ * @property {Array<Object|String>} [traits=''] Component's traits. More about it [here](/modules/Traits.html). Default: `['id', 'title']`
+ * @property {Array<String>} [propagate=[]] Indicates an array of properties which will be inhereted by all NEW appended children.
+ *  For example if you create a component likes this: `{ removable: false, draggable: false, propagate: ['removable', 'draggable'] }`
+ *  and append some new component inside, the new added component will get the exact same properties indicated in the `propagate` array (and the `propagate` property itself). Default: `[]`
+ * @property {Array<Object>} [toolbar=null] Set an array of items to show up inside the toolbar when the component is selected (move, clone, delete).
+ * Eg. `toolbar: [ { attributes: {class: 'fa fa-arrows'}, command: 'tlb-move' }, ... ]`.
+ * By default, when `toolbar` property is falsy the editor will add automatically commands `core:component-exit` (select parent component, added if there is one), `tlb-move` (added if `draggable`) , `tlb-clone` (added if `copyable`), `tlb-delete` (added if `removable`).
+ * @property {Collection<Component>} [components=null] Children components. Default: `null`
+ *
+ * @module docsjs.Component
+ */
+export declare class Component extends StyleableModel<ComponentProperties> {
+	/**
+	 * @private
+	 * @ts-ignore */
 	get defaults(): ComponentDefinitionDefined;
 	get classes(): Selectors;
 	get traits(): Traits;
@@ -3717,7 +3817,9 @@ declare class Component extends StyleableModel<ComponentProperties> {
 	prevColl?: Components;
 	__hasUm?: boolean;
 	__symbReady?: boolean;
-	/** @ts-ignore */
+	/**
+	 * @private
+	 * @ts-ignore */
 	collection: Components;
 	initialize(props?: {}, opt?: ComponentOptions): void;
 	__postAdd(opts?: {
@@ -5719,7 +5821,9 @@ declare class Property<T extends Record<string, any> = PropertyProps> extends Mo
 	em: EditorModel;
 	parent?: Property;
 	static getDefaults(): any;
-	/** @ts-ignore */
+	/**
+	 * @private
+	 * @ts-ignore */
 	defaults(): {
 		name: string;
 		property: string;
