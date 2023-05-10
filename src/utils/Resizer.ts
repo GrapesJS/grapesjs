@@ -1,6 +1,7 @@
 import { bindAll, isFunction, each } from 'underscore';
 import { Position } from '../common';
 import { on, off, normalizeFloat } from './mixins';
+import { ElementPosOpts } from '../canvas/view/CanvasView';
 
 type RectDim = {
   t: number;
@@ -409,7 +410,7 @@ export default class Resizer {
    * @param  {Object} opts Custom options
    * @return {Object}
    */
-  getElementPos(el: HTMLElement, opts = {}) {
+  getElementPos(el: HTMLElement, opts: ElementPosOpts = {}) {
     const { posFetcher } = this;
     return posFetcher ? posFetcher(el, opts) : getBoundingRect(el);
   }
@@ -456,8 +457,8 @@ export default class Resizer {
     const resizer = this;
     const config = this.opts || {};
     const mouseFetch = this.mousePosFetcher;
-    const attrName = 'data-' + config.prefix + 'handler';
-    const rect = this.getElementPos(el!, { target: 'el' });
+    const attrName = 'data-' + config.prefix + 'handler';    
+    const rect = this.getElementPos(el!, { avoidFrameZoom: true, avoidFrameOffset: true });
     const parentRect = this.getElementPos(parentEl!);
     const target = e.target as HTMLElement;
     this.handlerAttr = target.getAttribute(attrName)!;
