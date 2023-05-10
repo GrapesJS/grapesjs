@@ -128,38 +128,21 @@ pages.remove('new-page-id');
 
 ## Customization
 
-By using the [Layers API][Layers API] you're able to replace the default UI with your own implementation.
+By using the [Pages API] it's easy to create your own Page Manager UI.
 
-All you have to do is to indicate to the editor your intent to use a custom UI and then subscribe to a few events that allow you to properly update your UI.
+The simpliest way is to subscribe to the catch-all `page` event, which is triggered on any change related to the Page module (not related to page content like components or styles), and update your UI accordingly.
 
 ```js
 const editor = grapesjs.init({
     // ...
-    layerManager: {
-      custom: true,
-      // ...
-    },
 });
 
-// Use this event to append your UI in the default container provided by GrapesJS.
-// You can skip this event if you don't rely on the core panels and decide to
-// place the UI in some other place.
-editor.on('layer:custom', (props) => {
-    // props.container (HTMLElement) - The default element where you can append your UI
-});
-
-// Triggered when the root layer is changed.
-editor.on('layer:root', (root) => {
-    // Update the root of your UI
-});
-
-// Triggered when a component is updated, this allows you to update specific layers.
-editor.on('layer:component', (component) => {
-    // Update the specific layer of your UI
+editor.on('page', () => {
+    // Update your UI
 });
 ```
 
-In the example below we'll replicate most of the default functionality with our own implementation.
+In the example below you can see an quick implementation of the Page Manager UI.
 
 <demo-viewer value="L24hkgm5" height="500" darkcode/>
 
