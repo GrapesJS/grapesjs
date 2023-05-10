@@ -288,5 +288,4 @@ const app = new Vue({
 For a complete list of available events, you can check it [here](/api/pages.html#available-events).
 
 
-[Components]: <Components.html>
 [Pages API]: </api/pages.html>
