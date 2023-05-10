@@ -4,7 +4,7 @@ title: Pages
 
 # Pages
 
-The Pages module in GrapesJS allows you to leverage the built-in support for creating a project with multiple pages and one page is always created under the hood, even if you don't need multi-page support. This allows to keep the API consistent and easier to extend in case you need to add multiple pages later.
+The Pages module in GrapesJS allows you to create a project with multiple pages. By default, one page is always created under the hood, even if you don't need multi-page support. This allows keeping the API consistent and easier to extend if you need to add multiple pages later.
 
 ::: warning
 This guide is referring to GrapesJS v0.21.1 or higher
@@ -16,7 +16,7 @@ This guide is referring to GrapesJS v0.21.1 or higher
 
 The default editor initialization doesn't require any knowledge of pages and this was mainly done to avoid introducing breaking changes when the Pages module was introduced.
 
-This is how a typical editor initialization looks like
+This is how a typical editor initialization looks like:
 
 ```js
 const editor = grapesjs.init({
@@ -57,7 +57,7 @@ const editor = grapesjs.init({
 Worth noting the previous keys are `style` and `components`, where in pages you should use `styles` and `component`.
 :::
 
-As you might guess, this is how initializing the editor with multiple pages would look like
+As you might guess, this is how initializing the editor with multiple pages would look like:
 
 ```js
 const editor = grapesjs.init({
@@ -89,7 +89,7 @@ GrapesJS doesn't provide any default UI for the Page Manager but you can easily 
 
 If you need to manage pages programmatically you can use its [APIs][Pages API].
 
-Below an example of commonly used methods.
+Below are some commonly used methods:
 ```js
 // Get the Pages module first
 const pages = editor.Pages;
