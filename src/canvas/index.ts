@@ -574,8 +574,8 @@ export default class CanvasModule extends Module<CanvasConfig> {
    * @example
    * canvas.setZoom(50); // set zoom to 50%
    */
-  setZoom(value: string) {
-    this.canvas.set('zoom', parseFloat(value));
+  setZoom(value: number|string) {
+    this.canvas.set('zoom', typeof value === 'string' ? parseFloat(value) : value);
     return this;
   }
 
