@@ -91,6 +91,36 @@ const GrapesJS = {
   },
 };
 
-export { default as Editor } from './editor';
+// Exports for TS
+export type { default as Editor } from './editor';
+export type { default as Asset } from './asset_manager/model/Asset';
+export type { default as Assets } from './asset_manager/model/Assets';
+export type { default as Block } from './block_manager/model/Block';
+export type { default as Blocks } from './block_manager/model/Blocks';
+export type { default as Category } from './block_manager/model/Category';
+export type { default as Categories } from './block_manager/model/Categories';
+export type { default as Canvas } from './canvas/model/Canvas';
+export type { default as Frame } from './canvas/model/Frame';
+export type { default as Frames } from './canvas/model/Frames';
+export type { default as CssRule } from './css_composer/model/CssRule';
+export type { default as CssRules } from './css_composer/model/CssRules';
+export type { default as Device } from './device_manager/model/Device';
+export type { default as Devices } from './device_manager/model/Devices';
+export type { default as Component } from './dom_components/model/Component';
+export type { default as Components } from './dom_components/model/Components';
+export type { default as Modal } from './modal_dialog/model/Modal';
+export type { default as Page } from './pages/model/Page';
+export type { default as Pages } from './pages/model/Pages';
+export type { default as Button } from './panels/model/Button';
+export type { default as Buttons } from './panels/model/Buttons';
+export type { default as Panel } from './panels/model/Panel';
+export type { default as Panels } from './panels/model/Panels';
+export type { default as Selector } from './selector_manager/model/Selector';
+export type { default as Selectors } from './selector_manager/model/Selectors';
+export type { default as State } from './selector_manager/model/State';
+export type { default as Property } from './style_manager/model/Property';
+export type { default as Properties } from './style_manager/model/Properties';
+export type { default as Trait } from './trait_manager/model/Trait';
+export type { default as Traits } from './trait_manager/model/Traits';
 
 export default GrapesJS;

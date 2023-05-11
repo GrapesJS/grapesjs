@@ -112,6 +112,7 @@ module.exports = {
             ['/modules/I18n', 'I18n'],
             ['/modules/Selectors', 'Selectors'],
             ['/modules/Layers', 'Layers'],
+            ['/modules/Pages', 'Pages'],
             ['/modules/Style-manager', 'Style Manager'],
             ['/modules/Storage', 'Storage Manager'],
             ['/modules/Modal', 'Modal'],

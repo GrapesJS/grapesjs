@@ -85,7 +85,7 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
   addStyle(prop: string | ObjectAny, value = '', opts = {}) {
     if (typeof prop == 'string') {
       prop = {
-        prop: value,
+        [prop]: value,
       };
     } else {
       opts = value || {};
