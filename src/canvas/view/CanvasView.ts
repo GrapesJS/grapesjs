@@ -19,6 +19,11 @@ export interface MarginPaddingOffsets {
   paddingLeft?: number;
 }
 
+export type ElementPosOpts = { 
+  avoidFrameOffset?: boolean;
+  avoidFrameZoom?: boolean;
+  noScroll?: boolean;
+};
 export default class CanvasView extends ModuleView<Canvas> {
   events() {
     return {
@@ -193,7 +198,7 @@ export default class CanvasView extends ModuleView<Canvas> {
    * @param  {HTMLElement} el
    * @return { {top: number, left: number, width: number, height: number} }
    */
-  offset(el?: HTMLElement, opts: any = {}) {
+  offset(el?: HTMLElement, opts: ElementPosOpts = {}) {
     const rect = getElRect(el);
     const docBody = el?.ownerDocument.body;
     const { noScroll } = opts;
@@ -243,23 +248,26 @@ export default class CanvasView extends ModuleView<Canvas> {
   /**
    * Returns element's rect info
    * @param {HTMLElement} el
+   * @param {object} opts
    * @return { {top: number, left: number, width: number, height: number, zoom: number, rect: any} }
    * @public
    */
-  getElementPos(el: HTMLElement, opts: any = {}) {
+  getElementPos(el: HTMLElement, opts: ElementPosOpts = {}) {
     const zoom = this.getZoom();
-    const opt = opts || {};
     const frameOffset = this.getFrameOffset(el);
     const canvasEl = this.el;
     const canvasOffset = this.getCanvasOffset();
     const elRect = this.offset(el, opts);
-    const frameTop = opt.avoidFrameOffset ? 0 : frameOffset.top;
-    const frameLeft = opt.avoidFrameOffset ? 0 : frameOffset.left;
+    const frameTop = opts.avoidFrameOffset ? 0 : frameOffset.top;
+    const frameLeft = opts.avoidFrameOffset ? 0 : frameOffset.left;
 
-    const top = elRect.top * zoom + frameTop - canvasOffset.top + canvasEl.scrollTop;
-    const left = elRect.left * zoom + frameLeft - canvasOffset.left + canvasEl.scrollLeft;
-    const height = elRect.height * zoom;
-    const width = elRect.width * zoom;
+    const elTop = opts.avoidFrameZoom ? elRect.top : elRect.top * zoom;
+    const elLeft = opts.avoidFrameZoom ? elRect.left : elRect.left * zoom;
+
+    const top = opts.avoidFrameOffset ? elTop : (elTop + frameTop - canvasOffset.top + canvasEl.scrollTop);
+    const left = opts.avoidFrameOffset ? elLeft : (elLeft + frameLeft - canvasOffset.left + canvasEl.scrollLeft);
+    const height = opts.avoidFrameZoom ? elRect.height : elRect.height * zoom;
+    const width = opts.avoidFrameZoom ? elRect.width : elRect.width * zoom;
 
     return { top, left, height, width, zoom, rect: elRect };
   }
