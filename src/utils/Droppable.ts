@@ -1,6 +1,7 @@
 import { bindAll, indexOf } from 'underscore';
 import CanvasModule from '../canvas';
 import EditorModel from '../editor/model/Editor';
+import { getDocumentScroll } from './dom';
 import { on, off } from './mixins';
 
 // TODO move in sorter
@@ -129,9 +130,13 @@ export default class Droppable {
             comp = wrapper.append(content)[0];
             const canvasOffset = canvas.getOffset();
             const { top, left, position } = target.getStyle();
+            const scroll = getDocumentScroll(ev.target);
+            const postLeft = parseInt(`${parseFloat(left) + scroll.x - canvasOffset.left}`, 10);
+            const posTop = parseInt(`${parseFloat(top) + scroll.y - canvasOffset.top}`, 10);
+
             comp.addStyle({
-              left: parseFloat(left) - canvasOffset.left + 'px',
-              top: parseFloat(top) - canvasOffset.top + 'px',
+              left: postLeft + 'px',
+              top: posTop + 'px',
               position,
             });
           }
