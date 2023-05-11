@@ -1,7 +1,7 @@
 import { bindAll } from 'underscore';
 import { ModuleView } from '../../abstract';
 import { on, off, getElement, getKeyChar, isTextNode, getElRect, getUiClass } from '../../utils/mixins';
-import { createEl } from '../../utils/dom';
+import { createEl, getDocumentScroll } from '../../utils/dom';
 import FramesView from './FramesView';
 import Canvas from '../model/Canvas';
 import FrameView from './FrameView';
@@ -19,7 +19,7 @@ export interface MarginPaddingOffsets {
   paddingLeft?: number;
 }
 
-export type ElementPosOpts = { 
+export type ElementPosOpts = {
   avoidFrameOffset?: boolean;
   avoidFrameZoom?: boolean;
   noScroll?: boolean;
@@ -199,13 +199,13 @@ export default class CanvasView extends ModuleView<Canvas> {
    * @return { {top: number, left: number, width: number, height: number} }
    */
   offset(el?: HTMLElement, opts: ElementPosOpts = {}) {
-    const rect = getElRect(el);
-    const docBody = el?.ownerDocument.body;
     const { noScroll } = opts;
+    const rect = getElRect(el);
+    const scroll = noScroll ? { x: 0, y: 0 } : getDocumentScroll(el);
 
     return {
-      top: rect.top + (noScroll ? 0 : docBody?.scrollTop ?? 0),
-      left: rect.left + (noScroll ? 0 : docBody?.scrollLeft ?? 0),
+      top: rect.top + scroll.y,
+      left: rect.left + scroll.x,
       width: rect.width,
       height: rect.height,
     };
@@ -264,8 +264,8 @@ export default class CanvasView extends ModuleView<Canvas> {
     const elTop = opts.avoidFrameZoom ? elRect.top : elRect.top * zoom;
     const elLeft = opts.avoidFrameZoom ? elRect.left : elRect.left * zoom;
 
-    const top = opts.avoidFrameOffset ? elTop : (elTop + frameTop - canvasOffset.top + canvasEl.scrollTop);
-    const left = opts.avoidFrameOffset ? elLeft : (elLeft + frameLeft - canvasOffset.left + canvasEl.scrollLeft);
+    const top = opts.avoidFrameOffset ? elTop : elTop + frameTop - canvasOffset.top + canvasEl.scrollTop;
+    const left = opts.avoidFrameOffset ? elLeft : elLeft + frameLeft - canvasOffset.left + canvasEl.scrollLeft;
     const height = opts.avoidFrameZoom ? elRect.height : elRect.height * zoom;
     const width = opts.avoidFrameZoom ? elRect.width : elRect.width * zoom;
 

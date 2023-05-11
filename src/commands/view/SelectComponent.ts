@@ -690,7 +690,7 @@ export default {
    * @private
    */
   getElementPos(el: HTMLElement) {
-    return this.canvas.getCanvasView().getElementPos(el);
+    return this.canvas.getCanvasView().getElementPos(el, { noScroll: true });
   },
 
   /**

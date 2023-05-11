@@ -121,3 +121,17 @@ export const appendVNodes = (node: HTMLElement, vNodes: vNode | vNode[] = []) =>
     node.appendChild(el);
   });
 };
+
+/**
+ * Get document scroll coordinates
+ */
+export const getDocumentScroll = (el?: HTMLElement) => {
+  const doc = el?.ownerDocument || document;
+  const docEl = doc.documentElement;
+  const win = doc.defaultView || window;
+
+  return {
+    x: (win.pageXOffset || docEl.scrollLeft || 0) - (docEl.clientLeft || 0),
+    y: (win.pageYOffset || docEl.scrollTop || 0) - (docEl.clientTop || 0),
+  };
+};
