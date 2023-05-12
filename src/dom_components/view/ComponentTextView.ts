@@ -4,6 +4,7 @@ import RichTextEditorModule from '../../rich_text_editor';
 import RichTextEditor from '../../rich_text_editor/model/RichTextEditor';
 import { getModel, off, on } from '../../utils/mixins';
 import Component from '../model/Component';
+import { getComponentIds } from '../model/Components';
 import ComponentText from '../model/ComponentText';
 import { ComponentDefinition } from '../model/types';
 import ComponentView from './ComponentView';
@@ -152,7 +153,12 @@ export default class ComponentTextView extends ComponentView {
     // If there is a custom RTE the content is just baked staticly
     // inside 'content'
     if (rte?.customRte && !rte.customRte.parseContent) {
-      comps.length && comps.reset(undefined, opts);
+      comps.length &&
+        comps.reset(undefined, {
+          ...opts,
+          // @ts-ignore
+          keepIds: getComponentIds(comps),
+        });
       model.set('content', content, contentOpt);
     } else {
       comps.resetFromString(content, opts);

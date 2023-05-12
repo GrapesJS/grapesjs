@@ -94,7 +94,8 @@ Component> {
     const prev = opts.previousModels || [];
     const toRemove = prev.filter(prev => !models.get(prev.cid));
     const newIds = getComponentIds(models);
-    opts.keepIds = getComponentIds(prev).filter(pr => newIds.indexOf(pr) >= 0);
+    const idsToKeep = getComponentIds(prev).filter(pr => newIds.indexOf(pr) >= 0);
+    opts.keepIds = (opts.keepIds || []).concat(idsToKeep);
     toRemove.forEach(md => this.removeChildren(md, coll, opts));
     models.each(model => this.onAdd(model));
   }
