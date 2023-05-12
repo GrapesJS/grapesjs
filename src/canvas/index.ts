@@ -415,8 +415,15 @@ export default class CanvasModule extends Module<CanvasConfig> {
     };
   }
 
-  getTargetToElementFixed(el: any, elToMove: any, opts: any = {}) {
-    const pos = opts.pos || this.getElementPos(el);
+  /**
+   *
+   * @param {HTMLElement} el The element on which I'd attach the toolbar
+   * @param {HTMLElement} elToMove The target in this case could be the toolbar
+   * @param {Object} opts
+   * @private
+   */
+  getTargetToElementFixed(el: HTMLElement, elToMove: HTMLElement, opts: any = {}) {
+    const pos = opts.pos || this.getElementPos(el, { noScroll: true });
     const cvOff = opts.canvasOff || this.canvasRectOffset(el, pos);
     const toolbarH = elToMove.offsetHeight || 0;
     const toolbarW = elToMove.offsetWidth || 0;
@@ -574,7 +581,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
    * @example
    * canvas.setZoom(50); // set zoom to 50%
    */
-  setZoom(value: number|string) {
+  setZoom(value: number | string) {
     this.canvas.set('zoom', typeof value === 'string' ? parseFloat(value) : value);
     return this;
   }

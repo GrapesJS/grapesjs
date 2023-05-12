@@ -651,7 +651,7 @@ export default {
     const unit = 'px';
     const toolsEl = this.toggleToolsEl(1);
     const { style } = toolsEl;
-    const targetToElem = canvas.getTargetToElementFixed(el, canvas.getToolbarEl(), { pos });
+    const targetToElem = canvas.getTargetToElementFixed(el, canvas.getToolbarEl()!, { pos });
     const topOff = targetToElem.canvasOffsetTop;
     const leftOff = targetToElem.canvasOffsetLeft;
     style.top = topOff + unit;
