@@ -151,7 +151,7 @@ export default class ComponentTextView extends ComponentView {
 
     // If there is a custom RTE the content is just baked staticly
     // inside 'content'
-    if (rte?.customRte) {
+    if (rte?.customRte && !rte.customRte.parseContent) {
       comps.length && comps.reset(undefined, opts);
       model.set('content', content, contentOpt);
     } else {

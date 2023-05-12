@@ -49,9 +49,32 @@ export type RichTextEditorEvent = 'rte:enable' | 'rte:disable';
 const eventsUp = 'change:canvasOffset frame:scroll component:update';
 
 export interface CustomRTE<T = any> {
-  enable: (el: HTMLElement, rte: T) => T;
-  disable: (el: HTMLElement, rte: T) => T;
+  /**
+   * If true, the returned HTML content will be parsed into Components, allowing
+   * the custom RTE to behave in the same way as the native one.
+   * If false, the HTML content will be used as it is in the canvas and the export code.
+   */
+  parseContent?: boolean;
+  /**
+   * Create or enable the custom RTE.
+   */
+  enable: (el: HTMLElement, rte: T) => T | Promise<T>;
+  /**
+   * Disable the custom RTE.
+   */
+  disable: (el: HTMLElement, rte: T) => any | Promise<any>;
+  /**
+   * Get HTML content from the custom RTE.
+   * If not specified, it will use the innerHTML of the element.
+   */
+  getContent?: () => string;
+  /**
+   * Destroy the custom RTE.
+   * Will be triggered on editor destroy.
+   */
   destroy?: () => void;
+
+  [key: string]: unknown;
 }
 
 export default class RichTextEditorModule extends Module<RichTextEditorConfig & { pStylePrefix?: string }> {

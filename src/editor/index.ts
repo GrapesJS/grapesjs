@@ -78,7 +78,7 @@ import PageManager from '../pages';
 import PanelManager from '../panels';
 import ParserModule from '../parser';
 import { CustomParserCss } from '../parser/config/config';
-import RichTextEditorModule, { RichTextEditorEvent } from '../rich_text_editor';
+import RichTextEditorModule, { CustomRTE, RichTextEditorEvent } from '../rich_text_editor';
 import SelectorManager, { SelectorEvent } from '../selector_manager';
 import StorageManager, { StorageEvent } from '../storage_manager';
 import { ProjectData } from '../storage_manager/model/IStorage';
@@ -649,7 +649,7 @@ export default class Editor implements IBaseModule<EditorConfig> {
    *  }
    * });
    */
-  setCustomRte(obj: any) {
+  setCustomRte<T>(obj: CustomRTE & ThisType<T & CustomRTE>) {
     this.RichTextEditor.customRte = obj;
   }
 
