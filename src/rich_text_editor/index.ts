@@ -36,13 +36,14 @@
  * @module RichTextEditor
  */
 
-import { on, hasWin } from '../utils/mixins';
-import RichTextEditor, { RichTextEditorAction } from './model/RichTextEditor';
-import defaults, { RichTextEditorConfig } from './config/config';
+import { isString } from 'underscore';
 import { Module } from '../abstract';
+import ComponentView from '../dom_components/view/ComponentView';
 import EditorModel from '../editor/model/Editor';
 import { removeEl } from '../utils/dom';
-import ComponentView from '../dom_components/view/ComponentView';
+import { hasWin, isDef, on } from '../utils/mixins';
+import defaults, { RichTextEditorConfig } from './config/config';
+import RichTextEditor, { RichTextEditorAction } from './model/RichTextEditor';
 
 export type RichTextEditorEvent = 'rte:enable' | 'rte:disable';
 
@@ -309,8 +310,12 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
       event: 'rteToolbarPosUpdate',
       left: 0,
     });
-    style.top = (pos.top || 0) + un;
-    style.left = (pos.left || 0) + un;
+    ['top', 'left', 'bottom', 'right'].forEach(key => {
+      const value = pos[key as keyof typeof pos];
+      if (isDef(value)) {
+        style[key as any] = isString(value) ? value : (value || 0) + un;
+      }
+    });
   }
 
   /**
