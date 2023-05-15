@@ -7,6 +7,7 @@ import Canvas from '../model/Canvas';
 import FrameView from './FrameView';
 import ComponentView from '../../dom_components/view/ComponentView';
 import Component from '../../dom_components/model/Component';
+import { ElementRect } from '../../common';
 
 export interface MarginPaddingOffsets {
   marginTop?: number;
@@ -304,9 +305,16 @@ export default class CanvasView extends ModuleView<Canvas> {
    * @return { {top: number, left: number, width: number, height: number} } obj Position object
    * @public
    */
-  getPosition(opts: any = {}) {
+  getPosition(opts: any = {}): ElementRect {
     const doc = this.frame?.el.contentDocument;
-    if (!doc) return;
+    if (!doc) {
+      return {
+        top: 0,
+        left: 0,
+        width: 0,
+        height: 0,
+      };
+    }
     const bEl = doc.body;
     const zoom = this.getZoom();
     const fo = this.getFrameOffset();

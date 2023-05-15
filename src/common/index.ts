@@ -22,6 +22,13 @@ export type Position = {
   y: number;
 };
 
+export type ElementRect = {
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+};
+
 export type CombinedModelConstructorOptions<
   E,
   M extends Model<any, any, E> = Model
