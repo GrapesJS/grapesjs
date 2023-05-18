@@ -90,7 +90,7 @@ export interface CustomRTE<T = any> {
 }
 
 interface ModelRTE {
-  enabled: boolean;
+  currentView?: ComponentView;
 }
 
 export default class RichTextEditorModule extends Module<RichTextEditorConfig & { pStylePrefix?: string }> {
@@ -123,11 +123,9 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
 
     this.pfx = config.stylePrefix!;
     this.actions = config.actions || [];
-    const model = new Model({
-      enabled: false,
-    });
+    const model = new Model();
     this.model = model;
-    model.on('change:enabled', this.__trgCustom, this);
+    model.on('change:currentView', this.__trgCustom, this);
     this.__dbdTrgCustom = debounce(() => this.__trgCustom(), 0);
     if (!hasWin()) return this;
     const toolbar = document.createElement('div');
@@ -142,7 +140,7 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
   __trgCustom() {
     const { model, em, events } = this;
     em.trigger(events.custom, {
-      enabled: !!model.get('enabled'),
+      enabled: !!model.get('currentView'),
       container: this.getToolbarEl(),
       actions: this.getAll(),
     });
@@ -375,7 +373,7 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
       em.trigger('rte:enable', view, rteInst);
     }
 
-    this.model.set({ enabled: true });
+    this.model.set({ currentView: view });
 
     return rteInst;
   }
@@ -413,6 +411,6 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
       em.trigger('rte:disable', view, rte);
     }
 
-    this.model.set({ enabled: false });
+    this.model.unset('currentView');
   }
 }
