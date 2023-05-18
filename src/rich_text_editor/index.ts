@@ -192,6 +192,7 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
         actions,
         actionbar,
         actionbarContainer: this.toolbar,
+        module: this,
       });
       this.globalRte = globalRte;
     } else {
