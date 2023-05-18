@@ -130,7 +130,7 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
     this.__dbdTrgCustom = debounce(() => this.__trgCustom(), 0);
     if (!hasWin()) return this;
     const toolbar = createEl('div', {
-      class: cx(`${ppfx}rte-toolbar`, !isCustom && `${ppfx}one-bg`),
+      class: cx(`${ppfx}rte-toolbar`, !isCustom && `${ppfx}one-bg ${ppfx}rte-toolbar-ui`),
     });
     this.toolbar = toolbar;
     this.initRte(createEl('div'));
