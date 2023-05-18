@@ -36,8 +36,9 @@
  * @module RichTextEditor
  */
 
-import { isString } from 'underscore';
+import { debounce, isString } from 'underscore';
 import { Module } from '../abstract';
+import { Debounced, Model } from '../common';
 import ComponentView from '../dom_components/view/ComponentView';
 import EditorModel from '../editor/model/Editor';
 import { removeEl } from '../utils/dom';
@@ -45,9 +46,19 @@ import { hasWin, isDef, on } from '../utils/mixins';
 import defaults, { RichTextEditorConfig } from './config/config';
 import RichTextEditor, { RichTextEditorAction } from './model/RichTextEditor';
 
-export type RichTextEditorEvent = 'rte:enable' | 'rte:disable';
+export type RichTextEditorEvent = 'rte:enable' | 'rte:disable' | 'rte:custom';
 
 const eventsUp = 'change:canvasOffset frame:scroll component:update';
+
+export const evEnable = 'rte:enable';
+export const evDisable = 'rte:disable';
+export const evCustom = 'rte:custom';
+
+const events = {
+  enable: evEnable,
+  disable: evDisable,
+  custom: evCustom,
+};
 
 export interface CustomRTE<T = any> {
   /**
@@ -78,6 +89,10 @@ export interface CustomRTE<T = any> {
   [key: string]: unknown;
 }
 
+interface ModelRTE {
+  enabled: boolean;
+}
+
 export default class RichTextEditorModule extends Module<RichTextEditorConfig & { pStylePrefix?: string }> {
   pfx: string;
   toolbar!: HTMLElement;
@@ -86,6 +101,9 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
   lastEl?: HTMLElement;
   actions?: (RichTextEditorAction | string)[];
   customRte?: CustomRTE;
+  model: Model<ModelRTE>;
+  __dbdTrgCustom: Debounced;
+  events = events;
 
   /**
    * Get configuration object
@@ -105,6 +123,12 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
 
     this.pfx = config.stylePrefix!;
     this.actions = config.actions || [];
+    const model = new Model({
+      enabled: false,
+    });
+    this.model = model;
+    model.on('change:enabled', this.__trgCustom, this);
+    this.__dbdTrgCustom = debounce(() => this.__trgCustom(), 0);
     if (!hasWin()) return this;
     const toolbar = document.createElement('div');
     toolbar.className = `${ppfx}rte-toolbar ${ppfx}one-bg`;
@@ -115,9 +139,20 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
     on(toolbar, 'mousedown', e => e.stopPropagation());
   }
 
+  __trgCustom() {
+    const { model, em, events } = this;
+    em.trigger(events.custom, {
+      enabled: !!model.get('enabled'),
+      container: this.getToolbarEl(),
+      actions: this.getAll(),
+    });
+  }
+
   destroy() {
     this.globalRte?.destroy();
     this.customRte?.destroy?.();
+    this.model.stopListening().clear({ silent: true });
+    this.__dbdTrgCustom.cancel();
     removeEl(this.toolbar);
   }
 
@@ -340,6 +375,8 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
       em.trigger('rte:enable', view, rteInst);
     }
 
+    this.model.set({ enabled: true });
+
     return rteInst;
   }
 
@@ -375,5 +412,7 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
       em.off(eventsUp, this.updatePosition, this);
       em.trigger('rte:disable', view, rte);
     }
+
+    this.model.set({ enabled: false });
   }
 }

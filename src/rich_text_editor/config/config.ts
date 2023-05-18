@@ -16,12 +16,18 @@ export interface RichTextEditorConfig {
    * @default ['bold', 'italic', 'underline', 'strikethrough', 'link', 'wrap']
    */
   actions?: string[];
+  /**
+   * Avoid rendering the default RTE UI.
+   * @default false
+   */
+  custom?: boolean;
 }
 
 const config: RichTextEditorConfig = {
   stylePrefix: 'rte-',
   adjustToolbar: true,
   actions: ['bold', 'italic', 'underline', 'strikethrough', 'link', 'wrap'],
+  custom: false,
 };
 
 export default config;

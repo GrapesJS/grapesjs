@@ -14,6 +14,13 @@ export interface RichTextEditorAction {
   update?: (rte: RichTextEditor, action: RichTextEditorAction) => number;
   state?: (rte: RichTextEditor, doc: Document) => number;
   btn?: HTMLElement;
+  currentState?: RichTextEditorActionState;
+}
+
+export enum RichTextEditorActionState {
+  ACTIVE = 1,
+  INACTIVE = 0,
+  DISABLED = -1,
 }
 
 export interface RichTextEditorOptions {
@@ -181,7 +188,8 @@ export default class RichTextEditor {
   }
 
   updateActiveActions() {
-    this.getActions().forEach(action => {
+    const actions = this.getActions();
+    actions.forEach(action => {
       const { update } = action;
       const btn = action.btn!;
       const { active, inactive, disabled } = this.classes;
@@ -191,11 +199,14 @@ export default class RichTextEditor {
       btn.className = btn.className.replace(active, '').trim();
       btn.className = btn.className.replace(inactive, '').trim();
       btn.className = btn.className.replace(disabled, '').trim();
+      let currentState = RichTextEditorActionState.INACTIVE;
 
       // if there is a state function, which depicts the state,
       // i.e. `active`, `disabled`, then call it
       if (state) {
-        switch (state(this, doc)) {
+        const newState = state(this, doc);
+        currentState = newState;
+        switch (newState) {
           case btnState.ACTIVE:
             btn.className += ` ${active}`;
             break;
@@ -210,11 +221,14 @@ export default class RichTextEditor {
         // otherwise default to checking if the name command is supported & enabled
         if (doc.queryCommandSupported(name) && doc.queryCommandState(name)) {
           btn.className += ` ${active}`;
+          currentState = RichTextEditorActionState.ACTIVE;
         }
       }
-
+      action.currentState = currentState;
       update?.(this, action);
     });
+
+    actions.length && this.em.RichTextEditor.__dbdTrgCustom();
   }
 
   enable(opts: EffectOptions) {
