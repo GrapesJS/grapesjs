@@ -24,11 +24,15 @@ export default Backbone.View.extend({
     body.removeChild(dummy);
     this.propTarget = target;
     const coll = this.collection;
-    const events =
+    //** CCIDE select / deselect optimization
+    this.events =
       'component:toggled component:update:classes change:state change:device frame:resized';
     this.listenTo(coll, 'add', this.addTo);
     this.listenTo(coll, 'reset', this.render);
-    this.listenTo(this.target, events, this.targetUpdated);
+
+    //** CCIDE select / deselect optimization
+    // this.listenTo(this.target, events, this.targetUpdated);
+    this.enableViewCollectionUpdatedEventHandler();
   },
 
   remove() {
@@ -195,5 +199,13 @@ export default Backbone.View.extend({
     $el.append(frag);
     $el.addClass(`${pfx}sectors ${ppfx}one-bg ${ppfx}two-color`);
     return this;
+  },
+  disableViewCollectionUpdatedEventHandler() {
+    //** CCIDE select / deselect optimization
+    this.stopListening(this.target, this.events, this.targetUpdated);
+  },
+  enableViewCollectionUpdatedEventHandler() {
+    //** CCIDE select / deselect optimization
+    this.listenTo(this.target, this.events, this.targetUpdated);
   }
 });

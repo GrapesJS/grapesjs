@@ -98,5 +98,5 @@ export default {
   // With this option enabled, also in the second case, the Component will be passed.
   // This method allows to avoid styling classes directly and make, for example, some
   // unintended changes below the visible canvas area (when components share same classes)
-  componentFirst: 0
+  componentFirst: 1
 };

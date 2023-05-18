@@ -86,6 +86,9 @@ export default Backbone.View.extend({
       });
     }
 
+    this.modelValueChanged = debounce(this.modelValueChanged.bind(this));
+    this.updateStatus = debounce(this.updateStatus.bind(this));
+
     this.listenTo(this.propTarget, 'update', this.targetUpdated);
     this.listenTo(model, 'destroy remove', this.remove);
     this.listenTo(model, 'change:value', this.modelValueChanged);
@@ -149,7 +152,7 @@ export default Backbone.View.extend({
    */
   clear(ev) {
     ev && ev.stopPropagation();
-    this.model.clearValue();
+    this.model.clearValue({ fromInput: 1 });
     // Skip one stack with setTimeout to avoid inconsistencies (eg. visible on padding composite clear)
     setTimeout(() => this.targetUpdated());
   },
@@ -427,14 +430,24 @@ export default Backbone.View.extend({
 
     // Avoid target update if the changes comes from it
     if (!opt.fromTarget) {
+      const { em } = this.config;
+      let selectedComponents;
+      if (em) {
+        selectedComponents = em.getSelectedAll();
+        if (selectedComponents && opt.fromInput && !opt.avoidStore) {
+          // this event is not a native GrapesJS event, it was added for CCIDE
+          // note: this event must fire before updating targets below
+          em.trigger('propertyview:change', this, selectedComponents, value);
+        }
+      }
+
       this.getTargets().forEach(target => this.__updateTarget(target, opt));
 
       // Update the editor and selected components about the change
-      const { em } = this.config;
       if (!em) return;
       const prop = model.get('property');
       const updated = { [prop]: value };
-      em.getSelectedAll().forEach(component => {
+      selectedComponents.forEach(component => {
         !opt.noEmit && em.trigger('component:update', component, updated, opt);
         em.trigger('component:styleUpdate', component, prop, opt);
         em.trigger(`component:styleUpdate:${prop}`, component, value, opt);

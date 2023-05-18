@@ -6,5 +6,7 @@ export default {
   // Append blocks to canvas on click
   appendOnClick: 0,
 
-  blocks: []
+  blocks: [],
+
+  showSearch: true
 };

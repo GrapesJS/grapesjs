@@ -28,7 +28,7 @@
 import { isElement } from 'underscore';
 import defaults from './config/config';
 import Blocks from './model/Blocks';
-import BlockCategories from './model/Categories';
+import BlockCategories from 'category/model/Categories';
 import BlocksView from './view/BlocksView';
 
 export default () => {

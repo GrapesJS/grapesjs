@@ -46,6 +46,14 @@ export default ComponentView.extend({
     if (rte) {
       try {
         this.activeRte = rte.enable(this, this.activeRte);
+
+        // this event is not a native GrapesJS event, it was added for CCIDE
+        em.trigger(
+          'componenttextview:active',
+          this,
+          this.model,
+          this.getContent()
+        );
       } catch (err) {
         em.logError(err);
       }
@@ -74,6 +82,14 @@ export default ComponentView.extend({
       }
 
       this.syncContent();
+
+      // this event is not a native GrapesJS event, it was added for CCIDE
+      em.trigger(
+        'componenttextview:disable',
+        this,
+        this.model,
+        this.getContent()
+      );
     }
 
     this.toggleEvents();

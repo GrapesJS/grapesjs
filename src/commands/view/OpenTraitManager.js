@@ -53,7 +53,7 @@ export default {
     const sender = this.sender;
     if (sender && sender.get && !sender.get('active')) return;
 
-    if (this.target.getSelectedAll().length === 1) {
+    if (this.target.getSelectedAll().length > 0) {
       this.$cn2.show();
       this.$header.hide();
     } else {

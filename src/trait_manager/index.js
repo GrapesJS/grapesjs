@@ -1,11 +1,12 @@
 import { defaults, isElement } from 'underscore';
 import defaultOpts from './config/config';
 import TraitsView from './view/TraitsView';
+import TraitsCategories from 'category/model/Categories';
 
 export default () => {
   let c = {};
   let TraitsViewer;
-
+  let categories = [];
   return {
     TraitsView,
 
@@ -34,11 +35,15 @@ export default () => {
       defaults(c, defaultOpts);
       const ppfx = c.pStylePrefix;
       ppfx && (c.stylePrefix = `${ppfx}${c.stylePrefix}`);
+
+      categories = new TraitsCategories();
       TraitsViewer = new TraitsView({
         collection: [],
         editor: c.em,
-        config: c
+        config: c,
+        categories
       });
+
       return this;
     },
 
@@ -86,6 +91,14 @@ export default () => {
     destroy() {
       TraitsViewer.remove();
       [c, TraitsViewer].forEach(i => (i = {}));
+    },
+    disableCollectionUpdatedEventHandler() {
+      //** CCIDE select / deselect optimization
+      TraitsViewer.disableViewCollectionUpdatedEventHandler();
+    },
+    enableCollectionUpdatedEventHandler() {
+      //** CCIDE select / deselect optimization
+      TraitsViewer.enableViewCollectionUpdatedEventHandler();
     }
   };
 };

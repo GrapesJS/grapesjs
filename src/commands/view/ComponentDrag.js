@@ -301,10 +301,12 @@ export default {
 
   _getDragData() {
     const { target } = this;
+    const selected = target.em.getSelectedAll();
     return {
       target,
       parent: target.parent(),
-      index: target.index()
+      index: target.index(),
+      selected
     };
   },
 

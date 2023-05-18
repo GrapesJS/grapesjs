@@ -182,7 +182,7 @@ export default () => {
      * Add new rule to the collection, if not yet exists with the same selectors
      * @param {Array<Selector>} selectors Array of selectors
      * @param {String} state Css rule state
-     * @param {String} width For which device this style is oriented
+     * @param {String} widthHeight For which device this style is oriented
      * @param {Object} props Other props for the rule
      * @param {Object} opts Options for the add of new rule
      * @return {Model}
@@ -196,11 +196,11 @@ export default () => {
      *   color: '#fff',
      * });
      * */
-    add(selectors, state, width, opts = {}, addOpts = {}) {
+    add(selectors, state, widthHeight, opts = {}, addOpts = {}) {
       var s = state || '';
-      var w = width || '';
+      var wh = widthHeight || '';
       var opt = { ...opts };
-      var rule = this.get(selectors, s, w, opt);
+      var rule = this.get(selectors, s, wh, opt);
 
       // do not create rules that were found before
       // unless this is a single at-rule, for which multiple declarations
@@ -209,7 +209,7 @@ export default () => {
         return rule;
       } else {
         opt.state = s;
-        opt.mediaText = w;
+        opt.mediaText = wh;
         opt.selectors = [];
         rule = new CssRule(opt, c);
         rule.get('selectors').add(selectors, addOpts);
@@ -222,7 +222,7 @@ export default () => {
      * Get the rule
      * @param {Array<Selector>} selectors Array of selectors
      * @param {String} state Css rule state
-     * @param {String} width For which device this style is oriented
+     * @param {String} widthHeight For which device this style is oriented
      * @param {Object} ruleProps Other rule props
      * @return  {Model|null}
      * @example
@@ -236,11 +236,11 @@ export default () => {
      *   color: '#000',
      * });
      * */
-    get(selectors, state, width, ruleProps) {
+    get(selectors, state, widthHeight, ruleProps) {
       var rule = null;
       rules.each(m => {
         if (rule) return;
-        if (m.compare(selectors, state, width, ruleProps)) rule = m;
+        if (m.compare(selectors, state, widthHeight, ruleProps)) rule = m;
       });
       return rule;
     },

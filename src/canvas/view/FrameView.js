@@ -291,18 +291,23 @@ export default Backbone.View.extend({
     // `body {height: 100%;}`.
     // For the moment I give the priority to Firefox as it might be
     // CKEditor's issue
+    // todo: remove 0px border from dashed *[data-highlightable]
     append(
       body,
       `<style>
       ${conf.baseCss || ''}
-
+      html {
+        background: #B6C6D5;
+      }
       .${ppfx}dashed *[data-highlightable] {
-        outline: 1px dashed rgba(170,170,170,0.7);
+        outline: 0px dashed rgba(64,50,168,0.7);
         outline-offset: -2px;
       }
-
+      .${ppfx}dashed {
+        overflow: visible;
+      }
       .${ppfx}selected {
-        outline: 3px solid #3b97e3 !important;
+        outline: 6px solid #4032a8 !important;
         outline-offset: -3px;
       }
 
@@ -377,11 +382,9 @@ export default Backbone.View.extend({
     //this.updateOffset(); // TOFIX (check if I need it)
 
     // Avoid some default behaviours
-    on(
-      body,
-      'click',
-      ev => ev && ev.target.tagName == 'A' && ev.preventDefault()
-    );
+    on(body, 'click', ev => {
+      ev && ev.target.tagName == 'A' && ev.preventDefault();
+    });
     on(body, 'submit', ev => ev && ev.preventDefault());
 
     // When the iframe is focused the event dispatcher is not the same so
@@ -392,9 +395,19 @@ export default Backbone.View.extend({
       { event: 'wheel', class: 'WheelEvent' }
     ].forEach(obj =>
       obj.event.split(' ').forEach(event => {
-        doc.addEventListener(event, ev =>
-          this.el.dispatchEvent(createCustomEvent(ev, obj.class))
-        );
+        doc.addEventListener(event, ev => {
+          //** CCIDE modification for CCID-1560: support for arrow keys moving UI elements
+          //
+          // The dispatchEvent() is not returning false when the customEvent.preventDefault() is called.
+          // However, the customEvent.defaultPrevented value is set properly.  Logic has been added to
+          // call the ev.preventDefault() if the customEvent.defaultPrevented value is true.
+
+          const customEvent = createCustomEvent(ev, obj.class);
+          this.el.dispatchEvent(customEvent);
+          if (customEvent.defaultPrevented) {
+            ev.preventDefault();
+          }
+        });
       })
     );
 

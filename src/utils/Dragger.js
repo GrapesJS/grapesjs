@@ -134,11 +134,25 @@ export default class Dragger {
       x: globScrollDiff.x + lastScrollDiff.x,
       y: globScrollDiff.y + lastScrollDiff.y
     };
+    let delta = {};
     this.globScrollDiff = glDiff;
-    const delta = {
-      x: currentPos.x - startPointer.x + glDiff.x,
-      y: currentPos.y - startPointer.y + glDiff.y
-    };
+    if (currentPos.y > startPointer.y) {
+      delta = {
+        x: currentPos.x - startPointer.x + glDiff.x,
+        y: currentPos.y - startPointer.y + glDiff.y
+      };
+    } else if (currentPos.y < startPointer.y) {
+      delta = {
+        x: currentPos.x - startPointer.x + glDiff.x,
+        y: currentPos.y - startPointer.y + glDiff.y - 22
+      };
+    } else if (currentPos.y == startPointer.y) {
+      delta = {
+        x: currentPos.x - startPointer.x + glDiff.x,
+        y: currentPos.y - startPointer.y + glDiff.y
+      };
+    }
+
     this.lastScrollDiff = resetPos();
     let { lockedAxis } = this;
 
@@ -339,7 +353,6 @@ export default class Dragger {
   getPointerPos(ev) {
     const getPos = this.opts.getPointerPosition;
     const pEv = getPointerEvent(ev);
-
     return getPos
       ? getPos(ev)
       : {

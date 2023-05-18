@@ -34,6 +34,10 @@ export default Backbone.View.extend({
           const srcModel = sorter.getSourceModel();
           em.setSelected(srcModel, { forceChange: 1 });
           em.trigger(`${eventDrag}:end`, data);
+          em.trigger('itemsview:change', srcModel, {
+            ...data,
+            startIndex: srcModel.startIndex
+          }); // this event is not a native GrapesJS event, it was added for CCIDE
         },
         avoidSelectOnEnd: 1,
         nested: 1,

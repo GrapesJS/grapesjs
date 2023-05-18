@@ -4,10 +4,10 @@ export default {
   run(ed) {
     const em = ed.getModel();
     const clp = em.get('clipboard');
-    const selected = ed.getSelected();
 
-    if (clp && selected) {
-      ed.getSelectedAll().forEach(comp => {
+    if (clp) {
+      let currentIndex = 0;
+      clp.forEach(comp => {
         if (!comp) return;
         const coll = comp.collection;
         const at = coll.indexOf(comp) + 1;
@@ -17,14 +17,23 @@ export default {
         if (contains(clp, comp) && comp.get('copyable')) {
           added = coll.add(comp.clone(), { at });
         } else {
-          added = coll.add(copyable.map(cop => cop.clone()), { at });
+          added = coll.add(
+            copyable.map(cop => cop.clone()),
+            { at }
+          );
         }
+        currentIndex++;
 
         added = isArray(added) ? added : [added];
-        added.forEach(add => ed.trigger('component:paste', add));
+        added.forEach(add => {
+          add['copyIndex'] = currentIndex;
+          ed.trigger('component:paste', add);
+        });
       });
 
-      selected.emitUpdate();
+      for (let i = 0; i < clp.length; i++) {
+        clp[i].emitUpdate();
+      }
     }
   }
 };

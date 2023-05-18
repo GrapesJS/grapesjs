@@ -3,6 +3,7 @@ import { isUndefined } from 'underscore';
 
 export default Backbone.Model.extend({
   defaults: {
+    category: 'category',
     type: 'text', // text, number, range, select
     label: '',
     name: '',
@@ -15,6 +16,7 @@ export default Backbone.Model.extend({
     default: '',
     placeholder: '',
     changeProp: 0,
+    visible: true,
     options: []
   },
 

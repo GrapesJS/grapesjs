@@ -64,6 +64,7 @@ export default () => {
         collection: devices,
         config: c
       });
+
       return this;
     },
 

@@ -17,6 +17,16 @@ export default PropertyView.extend({
 
   setValue(value) {
     const parsed = this.model.parseValue(value);
+
+    //Reverting the code as this is causing other issues, Handled in Omni code.
+    // if (parsed.unit === 'name') {
+    //   //Code to handle newly added 'name' unit for Font-size
+    //   //CCID-40
+    //   value = value.split('name')[0];
+    //   //value = `${parsed.value}`;
+    // } else {
+    //   value = `${parsed.value}${parsed.unit}`;
+    // }
     value = `${parsed.value}${parsed.unit}`;
     this.inputInst.setValue(value, { silent: 1 });
   },

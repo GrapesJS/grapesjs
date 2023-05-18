@@ -273,6 +273,24 @@ export default () => {
     },
 
     /**
+     * Restore key names
+     * @param {Object} data
+     * @returns {Object}
+     * @private
+     */
+    __clearKeys(data = {}) {
+      const result = {};
+      const reg = new RegExp('^' + c.id + '');
+
+      for (let itemKey in data) {
+        const itemKeyR = itemKey.replace(reg, '');
+        result[itemKeyR] = data[itemKey];
+      }
+
+      return result;
+    },
+
+    /**
      * Load default storages
      * @return {this}
      * @private

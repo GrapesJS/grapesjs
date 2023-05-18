@@ -322,6 +322,10 @@ export default Backbone.View.extend({
       srcModel = this.getSourceModel(src);
       srcModel && srcModel.set && srcModel.set('status', 'freezed');
       this.srcModel = srcModel;
+
+      if (srcModel) {
+        srcModel.startIndex = srcModel.index(); // record this for the end of the layer manager move, in ItemsView onEndMove()
+      }
     }
 
     on(container, 'mousemove dragover', this.onMove);

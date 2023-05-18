@@ -70,8 +70,7 @@ export default {
     }
   },
   styleManager: {
-    empty:
-      "Wählen Sie ein Element aus bevor Sie den Stil Manager nutzen",
+    empty: 'Wählen Sie ein Element aus bevor Sie den Stil Manager nutzen',
     layer: 'Ebene',
     fileButton: 'Bilder',
     sectors: {
@@ -135,9 +134,9 @@ export default {
       'box-shadow-h': 'Boxschatten: horizontal',
       'box-shadow-v': 'Boxschatten: vertikal',
       'box-shadow-blur': 'Boxschatten: Unschärfe',
-      'box-shadow-spread': "Boxschatten: Streuung",
-      'box-shadow-color': "Boxschatten: Farbe",
-      'box-shadow-type': "Boxschatten: Typ",
+      'box-shadow-spread': 'Boxschatten: Streuung',
+      'box-shadow-color': 'Boxschatten: Farbe',
+      'box-shadow-type': 'Boxschatten: Typ',
       background: 'Hintergrund',
       'background-image': 'Hintergrundbild',
       'background-repeat': 'Hintergrund wiederholen',
@@ -171,7 +170,7 @@ export default {
   },
   traitManager: {
     empty:
-      "Wählen Sie ein Element aus bevor Sie den Komponenten Manager nutzen",
+      'Wählen Sie ein Element aus bevor Sie den Komponenten Manager nutzen',
     label: 'Komponenteneinstellungen',
     traits: {
       // The core library generates the name by their `name` property

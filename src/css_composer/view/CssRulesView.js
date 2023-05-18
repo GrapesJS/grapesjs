@@ -6,7 +6,6 @@ const $ = Backbone.$;
 
 const getBlockId = (pfx, order) =>
   `${pfx}${order ? `-${parseFloat(order)}` : ''}`;
-
 export default Backbone.View.extend({
   initialize(o) {
     const config = o.config || {};
@@ -79,7 +78,10 @@ export default Backbone.View.extend({
     // If the rule contains a media query it might have a different container
     // for it (eg. rules created with Device Manager)
     if (mediaText) {
-      blockId = getBlockId(clsName, this.getMediaWidth(mediaText));
+      blockId = getBlockId(
+        clsName,
+        this.getMediaWidthAndHeightAndOrientation(mediaText)
+      );
     }
 
     if (rendered) {
@@ -102,12 +104,18 @@ export default Backbone.View.extend({
     return rendered;
   },
 
-  getMediaWidth(mediaText) {
+  //return a combination of the width and height of device
+  getMediaWidthAndHeightAndOrientation(mediaText) {
     return (
       mediaText &&
       mediaText
-        .replace(`(${this.em.getConfig('mediaCondition')}: `, '')
-        .replace(')', '')
+        .replace(`(${this.em.getConfig('mediaConditionMaxWidth')}: `, '')
+        .replace(/and/g, '')
+        .replace(`(${this.em.getConfig('mediaConditionMaxHeight')}: `, '')
+        .replace(/\)/g, '')
+        .replace(/px/g, '')
+        .replace(/\(/g, '')
+        .replace(/\s/g, '')
     );
   },
 
@@ -127,7 +135,6 @@ export default Backbone.View.extend({
     prs.forEach(pr =>
       $(`<div id="${getBlockId(className, pr)}"></div>`).appendTo(frag)
     );
-
     collection.each(model => this.addToCollection(model, frag));
     $el.append(frag);
     $el.attr('class', className);

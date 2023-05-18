@@ -17,7 +17,7 @@ export default Backbone.Model.extend(Styleable).extend({
     // Css properties style
     style: {},
 
-    // On which device width this rule should be rendered, eg. @media (max-width: 1000px)
+    // On which device width and height this rule should be rendered, eg. @media (max-width: 1000px) and (max-height: 1200px)
     mediaText: '',
 
     // State of the rule, eg: hover | pressed | focused

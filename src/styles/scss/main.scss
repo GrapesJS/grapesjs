@@ -253,9 +253,10 @@ $colorsAll: (one, $primaryColor),
 .no-dots, .ui-resizable-handle{ border: none !important; margin:0 !important; outline: none !important; }
 
 .#{$com-prefix}dashed *{
-	outline: 1px dashed #888;
+  outline: 3px dashed rgba(64,50,168,0.7);
+  outline-offset: -2px;;
 	outline-offset: -2px;
-  	box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 .#{$com-prefix}no-select, .#{$com-prefix}no-select img{
@@ -263,7 +264,7 @@ $colorsAll: (one, $primaryColor),
 }
 
 .#{$cv-prefix}canvas .#{$comp-prefix}selected{//TODO
-	outline: 3px solid $colorBlue !important;
+	outline: 3px solid $quaternaryColor!important;
 }
 
 *.#{$com-prefix}hover, div.#{$com-prefix}hover { outline: 1px solid $colorBlue; }

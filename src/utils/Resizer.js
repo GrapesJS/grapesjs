@@ -58,6 +58,9 @@ var defaultOpts = {
   // When keepAutoWidth is true and the width has the value 'auto', this is set to true and width isn't updated
   autoWidth: false,
 
+  // When clicking away from the canvas, continue to show the resize handles
+  showWhenFocusOffCanvas: true,
+
   // Handlers
   tl: 1, // Top left
   tc: 1, // Top center
@@ -261,7 +264,8 @@ class Resizer {
     var attrName = 'data-' + config.prefix + 'handler';
     var rect = this.getElementPos(el, { target: 'el' });
     var parentRect = this.getElementPos(parentEl);
-    this.handlerAttr = e.target.getAttribute(attrName);
+    this.handlerAttr =
+      e.path[0].getAttribute(attrName) || e.target.getAttribute(attrName);
     this.clickedHandler = e.target;
     this.startDim = {
       t: rect.top,
@@ -434,12 +438,23 @@ class Resizer {
    * @param  {Event} e
    */
   handleMouseDown(e) {
-    var el = e.target;
+    var el = e.path[0] || e.target;
+
     if (this.isHandler(el)) {
       this.selectedHandler = el;
       this.start(e);
     } else if (el !== this.el) {
       this.selectedHandler = '';
+      // if the document of the clicked element is not the document that contains this
+      // component, don't blur it. (When clicking in property grid)
+      const docEls = this.getDocumentEl();
+      if (
+        this.opts.showWhenFocusOffCanvas &&
+        docEls.length &&
+        el.ownerDocument !== docEls[0]
+      ) {
+        return;
+      }
       this.blur();
     }
   }

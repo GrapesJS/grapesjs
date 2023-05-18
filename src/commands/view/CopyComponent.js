@@ -1,3 +1,5 @@
+import { select } from 'underscore';
+
 export default {
   run(ed) {
     const em = ed.getModel();

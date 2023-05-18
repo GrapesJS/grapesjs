@@ -68,7 +68,15 @@ export default Input.extend({
    */
   handleChange(e) {
     e.stopPropagation();
-    this.setValue(this.getInputEl().value);
+    var input = this.getInputEl().value;
+    //checks for invalid chars appending in the input box
+    input = this.checkInvalidCharacters(input, this.model.get('unit'));
+    this.setValue(input, { fromInput: 1 });
+
+    if (input != this.getInputEl().value) {
+      this.getInputEl().value = input;
+    }
+
     this.elementUpdated();
   },
 
@@ -80,6 +88,23 @@ export default Input.extend({
     var value = this.getUnitEl().value;
     this.model.set('unit', value);
     this.elementUpdated();
+  },
+
+  checkInvalidCharacters(val, unit) {
+    if (this.model && this.model.get('name') == 'Font Size') {
+      if (val && val != '') {
+        if (unit == 'px' || unit == '%') {
+          val = isNaN(val) ? '' : val;
+        } else if (unit == 'name') {
+          var fixed = this.model.get('fixedValues');
+          var regFixed = new RegExp('^' + fixed.join('|'), 'g');
+          if (fixed.length && regFixed.test(val)) {
+            val = val.match(regFixed)[0];
+          }
+        }
+      }
+    }
+    return val;
   },
 
   /**
@@ -151,7 +176,7 @@ export default Input.extend({
     let value = parseFloat(model.get('value'));
     value = this.normalizeValue(value + step);
     var valid = this.validateInputValue(value);
-    model.set('value', valid.value);
+    model.set('value', valid.value, { fromInput: 1 });
     this.elementUpdated();
   },
 
@@ -164,7 +189,7 @@ export default Input.extend({
     const value = parseFloat(model.get('value'));
     const val = this.normalizeValue(value - step);
     var valid = this.validateInputValue(val);
-    model.set('value', valid.value);
+    model.set('value', valid.value, { fromInput: 1 });
     this.elementUpdated();
   },
 
@@ -196,7 +221,12 @@ export default Input.extend({
     const data = this.current;
     var pos = this.normalizeValue(data.val + (data.y - ev.pageY) * step);
     this.prValue = this.validateInputValue(pos).value;
-    model.set('value', this.prValue, { avoidStore: 1 });
+
+    const em = model.view.em;
+    const propertyId = model.attributes.property;
+    em.trigger('inputnumber:moveincrement', this, propertyId, this.prValue); // this event is not a native GrapesJS event, it was added for CCIDE
+
+    model.set('value', this.prValue, { avoidStore: 1, fromInput: 1 });
     return false;
   },
 
@@ -211,7 +241,9 @@ export default Input.extend({
 
     if (this.prValue && this.moved) {
       var value = this.prValue - step;
-      model.set('value', value, { avoidStore: 1 }).set('value', value + step);
+      model
+        .set('value', value, { avoidStore: 1, fromInput: 1 })
+        .set('value', value + step, { fromInput: 1 });
       this.elementUpdated();
     }
   },
@@ -272,9 +304,23 @@ export default Input.extend({
           var uN = valCopy.replace(val, '');
           // Check if exists as unit
           if (indexOf(units, uN) >= 0) unit = uN;
+          if (units.includes('name') && val === '') {
+            //Code to handle newly added 'name' unit for Font-size
+            //CCID-40
+            if (valCopy != 'px' && valCopy != '%') {
+              val = valCopy;
+              if (valCopy.includes('name')) {
+                val = valCopy.split('name')[0];
+                unit = 'name';
+              }
+            }
+          }
         }
       }
     }
+    //checks for invalid chars appending in the input box
+    //ex: mediumpx, pxpx, etc
+    val = this.checkInvalidCharacters(val, unit);
 
     if (!limitlessMax && !isUndefined(max) && max !== '')
       val = val > max ? max : val;
