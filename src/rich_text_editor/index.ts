@@ -41,7 +41,7 @@ import { Module } from '../abstract';
 import { Debounced, Model } from '../common';
 import ComponentView from '../dom_components/view/ComponentView';
 import EditorModel from '../editor/model/Editor';
-import { removeEl } from '../utils/dom';
+import { createEl, cx, removeEl } from '../utils/dom';
 import { hasWin, isDef, on } from '../utils/mixins';
 import defaults, { RichTextEditorConfig } from './config/config';
 import RichTextEditor, { RichTextEditorAction } from './model/RichTextEditor';
@@ -116,6 +116,7 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
     super(em, 'RichTextEditor', defaults);
     const { config } = this;
     const ppfx = config.pStylePrefix;
+    const isCustom = config.custom;
 
     if (ppfx) {
       config.stylePrefix = ppfx + config.stylePrefix;
@@ -128,10 +129,11 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
     model.on('change:currentView', this.__trgCustom, this);
     this.__dbdTrgCustom = debounce(() => this.__trgCustom(), 0);
     if (!hasWin()) return this;
-    const toolbar = document.createElement('div');
-    toolbar.className = `${ppfx}rte-toolbar ${ppfx}one-bg`;
+    const toolbar = createEl('div', {
+      class: cx(`${ppfx}rte-toolbar`, !isCustom && `${ppfx}one-bg`),
+    });
     this.toolbar = toolbar;
-    this.initRte(document.createElement('div'));
+    this.initRte(createEl('div'));
 
     //Avoid closing on toolbar clicking
     on(toolbar, 'mousedown', e => e.stopPropagation());
