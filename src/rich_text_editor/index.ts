@@ -29,6 +29,7 @@
  * ## Methods
  * * [add](#add)
  * * [get](#get)
+ * * [run](#run)
  * * [getAll](#getall)
  * * [remove](#remove)
  * * [getToolbarEl](#gettoolbarel)
@@ -323,6 +324,23 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
     }
 
     return action;
+  }
+
+  /**
+   * Run action command.
+   * @param action Action to run
+   * @example
+   * const action = rte.get('bold');
+   * rte.run(action) // or rte.run('bold')
+   */
+  run(action: string | RichTextEditorAction) {
+    const rte = this.globalRte;
+    const actionRes = isString(action) ? this.get(action) : action;
+
+    if (rte && actionRes) {
+      actionRes.result(rte, actionRes);
+      rte.updateActiveActions();
+    }
   }
 
   /**
