@@ -1,6 +1,8 @@
 import Backbone from 'backbone';
 export { default as $ } from '../utils/cash-dom';
 
+interface NOOP {}
+
 export type Debounced = Function & { cancel(): void };
 
 export type SetOptions = Backbone.ModelSetOptions & { avoidStore?: boolean };
@@ -16,6 +18,9 @@ export type ObjectHash = Backbone.ObjectHash;
 export type ObjectAny = Record<string, any>;
 
 export type ObjectStrings = Record<string, string>;
+
+// https://github.com/microsoft/TypeScript/issues/29729#issuecomment-1483854699
+export type LiteralUnion<T, U> = T | (U & NOOP);
 
 export type Position = {
   x: number;

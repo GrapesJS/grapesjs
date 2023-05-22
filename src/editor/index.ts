@@ -60,7 +60,7 @@ import BlockManager, { BlockEvent } from '../block_manager';
 import CanvasModule, { CanvasEvent } from '../canvas';
 import CodeManagerModule from '../code_manager';
 import CommandsModule, { CommandEvent } from '../commands';
-import { EventHandler } from '../common';
+import { EventHandler, LiteralUnion } from '../common';
 import CssComposer from '../css_composer';
 import CssRule from '../css_composer/model/CssRule';
 import CssRules from '../css_composer/model/CssRules';
@@ -98,7 +98,9 @@ export type ParsedRule = {
   params?: string;
 };
 
-type EditorEvent =
+type GeneralEvent = 'canvasScroll' | 'undo' | 'redo' | 'load' | 'update';
+
+type EditorBuiltInEvents =
   | ComponentEvent
   | BlockEvent
   | AssetEvent
@@ -110,10 +112,9 @@ type EditorEvent =
   | RichTextEditorEvent
   | ModalEvent
   | CommandEvent
-  | GeneralEvent
-  | string;
+  | GeneralEvent;
 
-type GeneralEvent = 'canvasScroll' | 'undo' | 'redo' | 'load' | 'update';
+type EditorEvent = LiteralUnion<EditorBuiltInEvents, string>;
 
 type EditorConfigType = EditorConfig & { pStylePrefix?: string };
 
