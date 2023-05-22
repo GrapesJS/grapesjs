@@ -283,8 +283,8 @@ export default {
     const { target, isTran, em } = this;
     const unit = 'px';
     const __p = !end; // Indicate if partial change
-    const left = `${x}${unit}`;
-    const top = `${y}${unit}`;
+    const left = `${parseInt(x, 10)}${unit}`;
+    const top = `${parseInt(y, 10)}${unit}`;
     let styleUp = {};
 
     if (isTran) {
@@ -303,9 +303,6 @@ export default {
       styleUp = style;
       target.addStyle(styleUp, { avoidStore: !end });
     }
-
-    // Update StyleManager properties
-    em.getSelected() && keys(styleUp).forEach(i => em.trigger(`update:component:style:${i}`));
   },
 
   _getDragData() {
