@@ -459,17 +459,13 @@ export default {
             style.left = `${rect.l}${unitWidth}`;
           }
 
-          modelToStyle.addStyle(
-            {
-              ...style,
-              // value for the partial update
-              __p: !store,
-            },
-            { avoidStore: !store }
-          );
-          const updateEvent = 'update:component:style';
-          const eventToListen = `${updateEvent}:${keyHeight} ${updateEvent}:${keyWidth}`;
-          em && em.trigger(eventToListen, null, null, { noEmit: 1 });
+          const finalStyle = {
+            ...style,
+            // value for the partial update
+            __p: !store,
+          };
+          modelToStyle.addStyle(finalStyle, { avoidStore: !store });
+          em.Styles.__emitCmpStyleUpdate(finalStyle, { components: em.getSelected() });
         },
       };
 

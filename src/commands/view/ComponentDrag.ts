@@ -303,6 +303,8 @@ export default {
       styleUp = style;
       target.addStyle(styleUp, { avoidStore: !end });
     }
+
+    em?.Styles.__emitCmpStyleUpdate(styleUp, { components: em.getSelected() });
   },
 
   _getDragData() {
