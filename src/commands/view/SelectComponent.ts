@@ -463,7 +463,7 @@ export default {
             {
               ...style,
               // value for the partial update
-              __p: !store ? 1 : '',
+              __p: !store,
             },
             { avoidStore: !store }
           );

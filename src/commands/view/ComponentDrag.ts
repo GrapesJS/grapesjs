@@ -282,7 +282,7 @@ export default {
   setPosition({ x, y, end, position, width, height }: any) {
     const { target, isTran, em } = this;
     const unit = 'px';
-    const en = !end ? 1 : ''; // this will trigger the final change
+    const __p = !end; // Indicate if partial change
     const left = `${x}${unit}`;
     const top = `${y}${unit}`;
     let styleUp = {};
@@ -291,11 +291,11 @@ export default {
       let transform = target.getStyle()['transform'] || '';
       transform = this.setTranslate(transform, 'x', left);
       transform = this.setTranslate(transform, 'y', top);
-      styleUp = { transform, en };
+      styleUp = { transform, __p };
       target.addStyle(styleUp, { avoidStore: !end });
     } else {
       const adds: any = { position, width, height };
-      const style: any = { left, top, en };
+      const style: any = { left, top, __p };
       keys(adds).forEach(add => {
         const prop = adds[add];
         if (prop) style[add] = prop;
