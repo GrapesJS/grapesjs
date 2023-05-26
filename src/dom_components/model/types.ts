@@ -14,27 +14,27 @@ export type DragMode = 'translate' | 'absolute' | '';
 export interface ComponentProperties {
   /**
    * Component type, eg. `text`, `image`, `video`, etc.
-   * @defaultValue ''
+   * @default ''
    */
   type?: string;
   /**
    * HTML tag of the component, eg. `span`. Default: `div`
-   * @defaultValue 'div'
+   * @default 'div'
    */
   tagName?: string;
   /**
    * Key-value object of the component's attributes, eg. `{ title: 'Hello' }` Default: `{}`
-   * @defaultValue {}
+   * @default {}
    */
   attributes?: Record<string, any>;
   /**
    * Name of the component. Will be used, for example, in Layers and badges
-   * @defaultValue ''
+   * @default ''
    */
   name?: string;
   /**
    * When `true` the component is removable from the canvas, default: `true`
-   * @defaultValue true
+   * @default true
    */
   removable?: boolean;
   /**
@@ -42,45 +42,45 @@ export interface ComponentProperties {
        You can also specify a query string to indentify elements,
        eg. `'.some-class[title=Hello], [data-gjs-type=column]'` means you can drag the component only inside elements
        containing `some-class` class and `Hello` title, and `column` components. In the case of a function, target and destination components are passed as arguments, return a Boolean to indicate if the drag is possible. Default: `true`
-       * @defaultValue true
+       * @default true
        */
   draggable?: boolean | string | ((...params: any[]) => any);
   /**
        * Indicates if it's possible to drop other components inside. You can use
       a query string as with `draggable`. In the case of a function, target and destination components are passed as arguments, return a Boolean to indicate if the drop is possible. Default: `true`
-       * @defaultValue true
+       * @default true
        */
   droppable?: boolean | string | ((...params: any[]) => any);
   /**
    * Set to false if you don't want to see the badge (with the name) over the component. Default: `true`
-   * @defaultValue true
+   * @default true
    */
   badgable?: boolean;
   /**
        * True if it's possible to style the component.
       You can also indicate an array of CSS properties which is possible to style, eg. `['color', 'width']`, all other properties
       will be hidden from the style manager. Default: `true`
-       * @defaultValue true
+       * @default true
        */
   stylable?: boolean | String[];
   ///**
   // * Indicate an array of style properties to show up which has been marked as `toRequire`. Default: `[]`
-  // * @defaultValue []
+  // * @default []
   // */
   //`stylable-require`?: String[];
   /**
    * Indicate an array of style properties which should be hidden from the style manager. Default: `[]`
-   * @defaultValue []
+   * @default []
    */
   unstylable?: String[];
   /**
    * It can be highlighted with 'dotted' borders if true. Default: `true`
-   * @defaultValue true
+   * @default true
    */
   highlightable?: boolean;
   /**
    * True if it's possible to clone the component. Default: `true`
-   * @defaultValue true
+   * @default true
    */
   copyable?: boolean;
   /**
@@ -93,17 +93,17 @@ export interface ComponentProperties {
   editable?: boolean;
   /**
    * Set to `false` if you need to hide the component inside Layers. Default: `true`
-   * @defaultValue true
+   * @default true
    */
   layerable?: boolean;
   /**
    * Allow component to be selected when clicked. Default: `true`
-   * @defaultValue true
+   * @default true
    */
   selectable?: boolean;
   /**
    * Shows a highlight outline when hovering on the element if `true`. Default: `true`
-   * @defaultValue true
+   * @default true
    */
   hoverable?: boolean;
   /**
@@ -117,45 +117,45 @@ export interface ComponentProperties {
   void?: boolean;
   /**
    * Component default style, eg. `{ width: '100px', height: '100px', 'background-color': 'red' }`
-   * @defaultValue {}
+   * @default {}
    */
   style?: any;
   /**
    * Component related styles, eg. `.my-component-class { color: red }`
-   * @defaultValue ''
+   * @default ''
    */
   styles?: string;
   /**
    * Content of the component (not escaped) which will be appended before children rendering. Default: `''`
-   * @defaultValue ''
+   * @default ''
    */
   content?: string;
   /**
    * Component's icon, this string will be inserted before the name (in Layers and badge), eg. it can be an HTML string '<i class="fa fa-square-o"></i>'. Default: `''`
-   * @defaultValue ''
+   * @default ''
    */
   icon?: string;
   /**
    * Component's javascript. More about it [here](/modules/Components-js.html). Default: `''`
-   * @defaultValue ''
+   * @default ''
    */
   script?: string | ((...params: any[]) => any);
   ///**
   // * You can specify javascript available only in export functions (eg. when you get the HTML).
   //If this property is defined it will overwrite the `script` one (in export functions). Default: `''`
-  // * @defaultValue ''
+  // * @default ''
   // */
   //script-export?: string | ((...params: any[]) => any);
   /**
    * Component's traits. More about it [here](/modules/Traits.html). Default: `['id', 'title']`
-   * @defaultValue ''
+   * @default ''
    */
   traits?: Traits;
   /**
        * Indicates an array of properties which will be inhereted by all NEW appended children.
        For example if you create a component likes this: `{ removable: false, draggable: false, propagate: ['removable', 'draggable'] }`
        and append some new component inside, the new added component will get the exact same properties indicated in the `propagate` array (and the `propagate` property itself). Default: `[]`
-       * @defaultValue []
+       * @default []
        */
   propagate?: (keyof ComponentProperties)[];
 
