@@ -1805,6 +1805,23 @@ export default class Component extends StyleableModel<ComponentProperties> {
   }
 
   /**
+   * Execute a callback function on all inner child components.
+   * @param  {Function} clb Callback function, the child component is passed as an argument
+   * @example
+   * component.forEachChild(child => {
+   *  console.log(child)
+   * })
+   */
+  forEachChild(clb: (child: Component) => void) {
+    if (isFunction(clb)) {
+      this.components().forEach(child => {
+        clb(child);
+        child.forEachChild(clb);
+      });
+    }
+  }
+
+  /**
    * Remove the component
    * @return {this}
    */
