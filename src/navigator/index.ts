@@ -223,7 +223,7 @@ export default class LayerManager extends Module<LayerManagerConfig> {
    * @returns {Boolean}
    */
   isLocked(component: Component): boolean {
-    return component.get('locked');
+    return !!component.get('locked');
   }
 
   /**

@@ -6,6 +6,7 @@ import EditorModel from '../../editor/model/Editor';
 import ComponentManager from '..';
 import CssRule from '../../css_composer/model/CssRule';
 import { ComponentAdd, ComponentProperties } from './types';
+import ComponentText from './ComponentText';
 
 export const getComponentIds = (cmp?: Component | Component[] | Components, res: string[] = []) => {
   if (!cmp) return [];
@@ -131,6 +132,7 @@ Component> {
 
     this.reset(newCmps, opts as any);
     em?.trigger('component:content', parent, opts, input);
+    (parent as ComponentText).__checkInnerChilds?.();
   }
 
   removeChildren(removed: Component, coll?: Components, opts: any = {}) {

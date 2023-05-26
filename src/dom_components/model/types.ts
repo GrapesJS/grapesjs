@@ -107,6 +107,11 @@ export interface ComponentProperties {
    */
   hoverable?: boolean;
   /**
+   * Disable the selection of the component and its children in the canvas.
+   * @default false
+   */
+  locked?: boolean;
+  /**
    * This property is used by the HTML exporter as void elements don't have closing tags, eg. `<br/>`, `<hr/>`, etc. Default: `false`
    */
   void?: boolean;
