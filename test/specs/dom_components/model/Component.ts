@@ -1,14 +1,14 @@
 import Backbone from 'backbone';
-import Component from 'dom_components/model/Component';
-import ComponentImage from 'dom_components/model/ComponentImage';
-import ComponentText from 'dom_components/model/ComponentText';
-import ComponentTextNode from 'dom_components/model/ComponentTextNode';
-import ComponentLink from 'dom_components/model/ComponentLink';
-import ComponentMap from 'dom_components/model/ComponentMap';
-import ComponentVideo from 'dom_components/model/ComponentVideo';
-import Components from 'dom_components/model/Components';
-import Selector from 'selector_manager/model/Selector';
-import Editor from 'editor/model/Editor';
+import Component from '../../../../src/dom_components/model/Component';
+import ComponentImage from '../../../../src/dom_components/model/ComponentImage';
+import ComponentText from '../../../../src/dom_components/model/ComponentText';
+import ComponentTextNode from '../../../../src/dom_components/model/ComponentTextNode';
+import ComponentLink from '../../../../src/dom_components/model/ComponentLink';
+import ComponentMap from '../../../../src/dom_components/model/ComponentMap';
+import ComponentVideo from '../../../../src/dom_components/model/ComponentVideo';
+import Components from '../../../../src/dom_components/model/Components';
+import Selector from '../../../../src/selector_manager/model/Selector';
+import Editor from '../../../../src/editor/model/Editor';
 const $ = Backbone.$;
 
 let obj;
@@ -88,30 +88,39 @@ describe('Component', () => {
   });
 
   test('Component toHTML with attributes', () => {
-    obj = new Component({
-      tagName: 'article',
-      attributes: {
-        'data-test1': 'value1',
-        'data-test2': 'value2',
+    obj = new Component(
+      {
+        tagName: 'article',
+        attributes: {
+          'data-test1': 'value1',
+          'data-test2': 'value2',
+        },
       },
-    });
+      compOpts
+    );
     expect(obj.toHTML()).toEqual('<article data-test1="value1" data-test2="value2"></article>');
   });
 
   test('Component toHTML with value-less attribute', () => {
-    obj = new Component({
-      tagName: 'div',
-      attributes: {
-        'data-is-a-test': '',
+    obj = new Component(
+      {
+        tagName: 'div',
+        attributes: {
+          'data-is-a-test': '',
+        },
       },
-    });
+      compOpts
+    );
     expect(obj.toHTML()).toEqual('<div data-is-a-test=""></div>');
   });
 
   test('Component toHTML with classes', () => {
-    obj = new Component({
-      tagName: 'article',
-    });
+    obj = new Component(
+      {
+        tagName: 'article',
+      },
+      compOpts
+    );
     ['class1', 'class2'].forEach(item => {
       obj.get('classes').add({ name: item });
     });
@@ -131,12 +140,12 @@ describe('Component', () => {
   });
 
   test('Component toHTML with no closing tag', () => {
-    obj = new Component({ void: 1 });
+    obj = new Component({ void: true }, compOpts);
     expect(obj.toHTML()).toEqual('<div/>');
   });
 
   test('Component toHTML with quotes in attribute', () => {
-    obj = new Component();
+    obj = new Component({}, compOpts);
     let attrs = obj.get('attributes');
     attrs['data-test'] = '"value"';
     obj.set('attributes', attrs);
@@ -144,7 +153,7 @@ describe('Component', () => {
   });
 
   test('Component toHTML and withProps', () => {
-    obj = new Component({}, { em });
+    obj = new Component({}, compOpts);
     obj.set({
       bool: true,
       boolf: false,
@@ -170,7 +179,7 @@ describe('Component', () => {
   });
 
   test('Manage correctly boolean attributes', () => {
-    obj = new Component();
+    obj = new Component({}, compOpts);
     obj.set('attributes', {
       'data-test': 'value',
       checked: false,
@@ -424,9 +433,9 @@ describe('Component', () => {
       height: 'auto',
     };
 
-    const c = new Component();
+    const c = new Component({}, compOpts);
 
-    expect(c.setStyle(styles)).toEqual(expectedObj);
+    expect(c.setStyle(styles as any)).toEqual(expectedObj);
   });
 
   test('setStyle should be called successfully when invoked internally', () => {
@@ -464,10 +473,13 @@ describe('Image Component', () => {
   });
 
   test('Component toHTML with attributes', () => {
-    obj = new ComponentImage({
-      attributes: { alt: 'AltTest' },
-      src: 'testPath',
-    });
+    obj = new ComponentImage(
+      {
+        attributes: { alt: 'AltTest' },
+        src: 'testPath',
+      },
+      compOpts
+    );
     expect(obj.toHTML()).toEqual('<img alt="AltTest" src="testPath"/>');
   });
 
@@ -490,7 +502,7 @@ describe('Image Component', () => {
 
 describe('Text Component', () => {
   beforeEach(() => {
-    obj = new ComponentText();
+    obj = new ComponentText({}, compOpts);
   });
 
   afterEach(() => {
@@ -506,17 +518,20 @@ describe('Text Component', () => {
   });
 
   test('Component toHTML with attributes', () => {
-    obj = new ComponentText({
-      attributes: { 'data-test': 'value' },
-      content: 'test content',
-    });
+    obj = new ComponentText(
+      {
+        attributes: { 'data-test': 'value' },
+        content: 'test content',
+      },
+      compOpts
+    );
     expect(obj.toHTML()).toEqual('<div data-test="value">test content</div>');
   });
 });
 
 describe('Text Node Component', () => {
   beforeEach(() => {
-    obj = new ComponentTextNode();
+    obj = new ComponentTextNode({}, compOpts);
   });
 
   afterEach(() => {
@@ -536,10 +551,13 @@ describe('Text Node Component', () => {
   });
 
   test('Component toHTML with attributes', () => {
-    obj = new ComponentTextNode({
-      attributes: { 'data-test': 'value' },
-      content: 'test content &<>"\'',
-    });
+    obj = new ComponentTextNode(
+      {
+        attributes: { 'data-test': 'value' },
+        content: 'test content &<>"\'',
+      },
+      compOpts
+    );
     expect(obj.toHTML()).toEqual('test content &amp;&lt;&gt;"\'');
   });
 });
@@ -583,13 +601,13 @@ describe('Map Component', () => {
   test('Component parse map iframe', () => {
     var src = 'https://maps.google.com/maps?&q=London,UK&z=11&t=q&output=embed';
     var el = $('<iframe src="' + src + '"></iframe>');
-    obj = ComponentMap.isComponent(el.get(0));
+    obj = ComponentMap.isComponent(el.get(0) as HTMLIFrameElement);
     expect(obj).toEqual({ type: 'map', src });
   });
 
   test('Component parse not map iframe', () => {
     var el = $('<iframe src="https://www.youtube.com/watch?v=jNQXAC9IVRw"></iframe>');
-    obj = ComponentMap.isComponent(el.get(0));
+    obj = ComponentMap.isComponent(el.get(0) as HTMLIFrameElement);
     expect(obj).toEqual(undefined);
   });
 });
@@ -597,22 +615,22 @@ describe('Map Component', () => {
 describe('Video Component', () => {
   test('Component parse video', () => {
     var src = 'http://localhost/';
-    var el = $('<video src="' + src + '"></video>');
-    obj = ComponentVideo.isComponent(el.get(0));
+    var el = $<HTMLVideoElement>('<video src="' + src + '"></video>');
+    obj = ComponentVideo.isComponent(el.get(0) as HTMLVideoElement);
     expect(obj).toEqual({ type: 'video', src });
   });
 
   test('Component parse youtube video iframe', () => {
     var src = 'http://www.youtube.com/embed/jNQXAC9IVRw?';
     var el = $('<iframe src="' + src + '"></video>');
-    obj = ComponentVideo.isComponent(el.get(0));
+    obj = ComponentVideo.isComponent(el.get(0) as HTMLVideoElement);
     expect(obj).toEqual({ type: 'video', provider: 'yt', src });
   });
 
   test('Component parse vimeo video iframe', () => {
     var src = 'http://player.vimeo.com/video/2?';
     var el = $('<iframe src="' + src + '"></video>');
-    obj = ComponentVideo.isComponent(el.get(0));
+    obj = ComponentVideo.isComponent(el.get(0) as HTMLVideoElement);
     expect(obj).toEqual({ type: 'video', provider: 'vi', src });
   });
 });
@@ -629,19 +647,19 @@ describe('Components', () => {
   });
 
   test('Creates component correctly', () => {
-    var c = new Components({}, compOpts);
+    var c = new Components([], compOpts);
     var m = c.add({});
     expect(m instanceof Component).toEqual(true);
   });
 
   test('Creates image component correctly', () => {
-    var c = new Components({}, compOpts);
+    var c = new Components([], compOpts);
     var m = c.add({ type: 'image' });
     expect(m instanceof ComponentImage).toEqual(true);
   });
 
   test('Creates text component correctly', () => {
-    var c = new Components({}, compOpts);
+    var c = new Components([], compOpts);
     var m = c.add({ type: 'text' });
     expect(m instanceof ComponentText).toEqual(true);
   });
