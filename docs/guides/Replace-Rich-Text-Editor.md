@@ -17,42 +17,53 @@ In the following guide we'll integrate the CKEditor and to accomplish this task 
 The first step is to indicate how to enable the third-party library and so for we gonna start with the `enable()` function. This method should take care of the first initialization of our custom RTE but also for the next time is called on the same element, this is why there is the `rte` argument.
 
 ```js
-var editor = grapesjs.init({...});
-editor.setCustomRte({
-  /**
-   * Enabling the custom RTE
-   * @param  {HTMLElement} el This is the HTML node which was selected to be edited
-   * @param  {Object} rte It's the instance you'd return from the first call of enable().
-   *                      At the first call it'd be undefined. This is useful when you need
-   *                      to check if the RTE is already enabled on the component
-   * @return {Object} The return should be the RTE initialized instance
-   */
-  enable: function(el, rte) {
-    // If already exists just focus
-    if (rte) {
-      this.focus(el, rte); // implemented later
-      return rte;
-    }
+// IMPORTANT: place the code in a new plugin
+const customRTE = (editor) => {
+  const focus = (el, rte) => {
+    // implemented later
+  }
 
-    // CKEditor initialization
-    rte = CKEDITOR.inline(el, {
-      // Your configurations...
-      toolbar: [...],
-      // IMPORTANT
-      // Generally, inline editors are attached exactly at the same position of
-      // the selected element but in this case it'd work until you start to scroll
-      // the canvas. For this reason you have to move the RTE's toolbar inside the
-      // one from GrapesJS. For this purpose we used a plugin which simplify
-      // this process and move all next CKEditor's toolbars inside our indicated
-      // element
-      sharedSpaces: {
-        top: editor.RichTextEditor.getToolbarEl(),
+  editor.setCustomRte({
+    /**
+     * Enabling the custom RTE
+     * @param  {HTMLElement} el This is the HTML node which was selected to be edited
+     * @param  {Object} rte It's the instance you'd return from the first call of enable().
+     *                      At the first call it'd be undefined. This is useful when you need
+     *                      to check if the RTE is already enabled on the component
+     * @return {Object} The return should be the RTE initialized instance
+     */
+    enable: function(el, rte) {
+      // If already exists just focus
+      if (rte) {
+        focus(el, rte);
+        return rte;
       }
-    });
 
-    this.focus(el, rte); // implemented later
-    return rte;
-  },
+      // CKEditor initialization
+      rte = CKEDITOR.inline(el, {
+        // Your configurations...
+        toolbar: [...],
+        // IMPORTANT
+        // Generally, inline editors are attached exactly at the same position of
+        // the selected element but in this case it'd work until you start to scroll
+        // the canvas. For this reason you have to move the RTE's toolbar inside the
+        // one from GrapesJS. For this purpose we used a plugin which simplify
+        // this process and move all next CKEditor's toolbars inside our indicated
+        // element
+        sharedSpaces: {
+          top: editor.RichTextEditor.getToolbarEl(),
+        }
+      });
+
+      focus(el, rte);
+      return rte;
+    },
+  });
+}
+
+const editor = grapesjs.init({
+  ...
+  plugins: [customRTE],
 });
 ```
 
@@ -66,13 +77,11 @@ Once we know how to enable the RTE let's implement the method which disable it, 
 editor.setCustomRte({
   // ...
   /**
-   * The signature of the function is the same of the enable
+   * The signature of the function is the same of the `enable`
    */
   disable: function(el, rte) {
     el.contentEditable = false;
-    if (rte && rte.focusManager) {
-      rte.focusManager.blur(true);
-    }
+    rte?.focusManager?.blur(true);
   },
 });
 ```
@@ -84,15 +93,21 @@ editor.setCustomRte({
 The `focus()` method is just a helper used inside `enable()` and not required by the interface
 
 ```js
+const focus = (el, rte) => {
+  // Do nothing if already focused
+  if (rte?.focusManager?.hasFocus) {
+    return;
+  }
+  el.contentEditable = true;
+  rte?.focus();
+}
+
 editor.setCustomRte({
   // ...
-  focus: function (el, rte) {
-    // Do nothing if already focused
-    if (rte && rte.focusManager.hasFocus) {
-      return;
-    }
-    el.contentEditable = true;
-    rte && rte.focus();
+  enable: function (el, rte) {
+    // ...
+    focus(el, rte);
+    // ...
   },
 });
 ```
