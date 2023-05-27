@@ -144,9 +144,23 @@ editor.on('rteToolbarPosUpdate', (pos) => {
 
 ## The built-in vs third-party
 
-The only one thing you have to keep in mind when using a custom RTE is that all the content and its behavior are handled by the library itself, the GrapesJS's component will just store the content as it is.
+One thing you have to keep in mind when using a custom RTE is that all the content and its behavior are handled by the library itself, the GrapesJS's component will just store the content as it is.
 For example, when you create a link using the built-in RTE then you'll be able to select it and edit its `href` via Component Settings. With a custom RTE, it will be its own task to show the proper modal for the link editing.
 Obviously, each third-party library has its own APIs and can present some limitations and drawbacks, so, a minimal knowledge of the library is a plus.
+
+
+### Enable content parser <Badge text="0.21.2+"/>
+
+As an experimental feature, now it's possible to tell the editor to parse the returned HTML content from the custom RTE and store the result as components and not as a simple HTML string. This allows GrapesJS to handle the custom RTE more closely to the native implementation and enable features like [textable components](https://github.com/GrapesJS/grapesjs/issues/2771#issuecomment-1040486056).
+
+```js
+editor.setCustomRte({
+  // ...
+  // Enable content parser
+  parseContent: true,
+});
+```
+
 
 
 ## Plugins
