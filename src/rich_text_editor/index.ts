@@ -117,7 +117,6 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
     super(em, 'RichTextEditor', defaults);
     const { config } = this;
     const ppfx = config.pStylePrefix;
-    const isCustom = config.custom;
 
     if (ppfx) {
       config.stylePrefix = ppfx + config.stylePrefix;
@@ -129,7 +128,13 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
     this.model = model;
     model.on('change:currentView', this.__trgCustom, this);
     this.__dbdTrgCustom = debounce(() => this.__trgCustom(), 0);
-    if (!hasWin()) return this;
+  }
+
+  onLoad() {
+    if (!hasWin()) return;
+    const { config } = this;
+    const ppfx = config.pStylePrefix;
+    const isCustom = config.custom;
     const toolbar = createEl('div', {
       class: cx(`${ppfx}rte-toolbar`, !isCustom && `${ppfx}one-bg ${ppfx}rte-toolbar-ui`),
     });

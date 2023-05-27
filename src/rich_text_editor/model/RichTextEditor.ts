@@ -186,7 +186,7 @@ export default class RichTextEditor {
 
   isCustom(module?: RichTextEditorModule) {
     const rte = module || this.em.RichTextEditor;
-    return !!rte?.config.custom;
+    return !!(rte?.config.custom || rte?.customRte);
   }
 
   destroy() {}
