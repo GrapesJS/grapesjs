@@ -86,7 +86,7 @@ export default class ComponentTextView extends ComponentView {
     }
 
     ev?.stopPropagation?.();
-    this.lastContent = this.getContent();
+    this.lastContent = await this.getContent();
 
     if (rte) {
       try {
@@ -120,8 +120,8 @@ export default class ComponentTextView extends ComponentView {
         em.logError(err as any);
       }
 
-      if (editable && this.getContent() !== this.lastContent) {
-        this.syncContent(opts);
+      if (editable && (await this.getContent()) !== this.lastContent) {
+        await this.syncContent(opts);
         this.lastContent = '';
       }
     }
@@ -133,19 +133,24 @@ export default class ComponentTextView extends ComponentView {
    * get content from RTE
    * @return string
    */
-  getContent() {
-    const { activeRte } = this;
+  async getContent() {
+    const { rte, activeRte } = this;
+    let result = '';
 
-    return typeof activeRte?.getContent === 'function' ? activeRte.getContent() : this.getChildrenContainer().innerHTML;
+    if (rte) {
+      result = await rte.getContent(this, activeRte!);
+    }
+
+    return result;
   }
 
   /**
    * Merge content from the DOM to the model
    */
-  syncContent(opts: ObjectAny = {}) {
+  async syncContent(opts: ObjectAny = {}) {
     const { model, rte, rteEnabled } = this;
     if (!rteEnabled && !opts.force) return;
-    const content = this.getContent();
+    const content = await this.getContent();
     const comps = model.components();
     const contentOpt: ObjectAny = { fromDisable: 1, ...opts };
     model.set('content', '', contentOpt);

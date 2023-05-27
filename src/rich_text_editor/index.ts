@@ -37,7 +37,7 @@
  * @module RichTextEditor
  */
 
-import { debounce, isString } from 'underscore';
+import { debounce, isFunction, isString } from 'underscore';
 import { Module } from '../abstract';
 import { Debounced, Model } from '../common';
 import ComponentView from '../dom_components/view/ComponentView';
@@ -78,9 +78,9 @@ export interface CustomRTE<T = any> {
   disable: (el: HTMLElement, rte: T) => any | Promise<any>;
   /**
    * Get HTML content from the custom RTE.
-   * If not specified, it will use the innerHTML of the element.
+   * If not specified, it will use the innerHTML of the element (passed also as `content` in options).
    */
-  getContent?: () => string;
+  getContent?: (el: HTMLElement, rte: T, opts: { content: string }) => string | Promise<string>;
   /**
    * Destroy the custom RTE.
    * Will be triggered on editor destroy.
@@ -386,7 +386,6 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
   async enable(view: ComponentView, rte: RichTextEditor, opts: any = {}) {
     this.lastEl = view.el;
     const { customRte, em } = this;
-    // @ts-ignore
     const el = view.getChildrenContainer();
 
     this.toolbar.style.display = '';
@@ -402,6 +401,17 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
     this.model.set({ currentView: view });
 
     return rteInst;
+  }
+
+  async getContent(view: ComponentView, rte: RichTextEditor) {
+    const { customRte } = this;
+    const content = view.getChildrenContainer().innerHTML;
+
+    if (customRte && isFunction(customRte.getContent)) {
+      return await customRte.getContent(view.el, rte, { content });
+    }
+
+    return content;
   }
 
   hideToolbar() {
