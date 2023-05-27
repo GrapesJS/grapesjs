@@ -71,7 +71,7 @@ export interface CustomRTE<T = any> {
   /**
    * Create or enable the custom RTE.
    */
-  enable: (el: HTMLElement, rte: T) => T | Promise<T>;
+  enable: (el: HTMLElement, rte: T | undefined) => T | Promise<T>;
   /**
    * Disable the custom RTE.
    */
@@ -80,7 +80,7 @@ export interface CustomRTE<T = any> {
    * Get HTML content from the custom RTE.
    * If not specified, it will use the innerHTML of the element (passed also as `content` in options).
    */
-  getContent?: (el: HTMLElement, rte: T, opts: { content: string }) => string | Promise<string>;
+  getContent?: (el: HTMLElement, rte: T | undefined) => string | Promise<string>;
   /**
    * Destroy the custom RTE.
    * Will be triggered on editor destroy.
@@ -405,13 +405,12 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
 
   async getContent(view: ComponentView, rte: RichTextEditor) {
     const { customRte } = this;
-    const content = view.getChildrenContainer().innerHTML;
 
-    if (customRte && isFunction(customRte.getContent)) {
-      return await customRte.getContent(view.el, rte, { content });
+    if (customRte && rte && isFunction(customRte.getContent)) {
+      return await customRte.getContent(view.el, rte);
+    } else {
+      return view.getChildrenContainer().innerHTML;
     }
-
-    return content;
   }
 
   hideToolbar() {
