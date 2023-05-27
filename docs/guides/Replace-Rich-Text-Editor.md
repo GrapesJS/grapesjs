@@ -32,7 +32,7 @@ const customRTE = (editor) => {
      *                      to check if the RTE is already enabled on the component
      * @return {Object} The return should be the RTE initialized instance
      */
-    enable: function(el, rte) {
+    enable(el, rte) {
       // If already exists just focus
       if (rte) {
         focus(el, rte);
@@ -79,9 +79,25 @@ editor.setCustomRte({
   /**
    * The signature of the function is the same of the `enable`
    */
-  disable: function(el, rte) {
+  disable(el, rte) {
     el.contentEditable = false;
     rte?.focusManager?.blur(true);
+  },
+});
+```
+
+
+
+### Content
+
+Each third-party library could handle the state of the content differently and what is actually rendered as a DOM in the preview might not rapresent the final HTML output. So, by default, GrapesJS takes the `innerHTML` as the final output directly from the DOM element but is highly recommended to specify the method responsable to return the final state as HTML string (each third-party library might handle it differently).
+
+```js
+editor.setCustomRte({
+  // ...
+  getContent(el, rte) {
+    const htmlString = rte.getData();
+    return htmlString;
   },
 });
 ```
@@ -104,7 +120,7 @@ const focus = (el, rte) => {
 
 editor.setCustomRte({
   // ...
-  enable: function (el, rte) {
+  enable(el, rte) {
     // ...
     focus(el, rte);
     // ...
@@ -120,9 +136,7 @@ Sometimes the default top-left position of the toolbar is not always what you ne
 
 ```js
 editor.on('rteToolbarPosUpdate', (pos) => {
-  if (pos.top <= pos.canvasTop) {
-    pos.top = pos.elementTop + pos.elementHeight;
-  }
+  // eg. update `pos.top` and `pos.left` based on additional data passed inside `pos`
 });
 ```
 
