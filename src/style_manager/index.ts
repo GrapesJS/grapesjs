@@ -79,6 +79,11 @@ import Component from '../dom_components/model/Component';
 import CssRule from '../css_composer/model/CssRule';
 import StyleableModel from '../domain_abstract/model/StyleableModel';
 import { CustomPropertyView } from './view/PropertyView';
+import { PropertySelectProps } from './model/PropertySelect';
+import { PropertyNumberProps } from './model/PropertyNumber';
+import { PropertyStackProps } from './model/PropertyStack';
+
+export type PropertyTypes = PropertyStackProps | PropertySelectProps | PropertyNumberProps;
 
 export type StyleManagerEvent =
   | 'style:sector:add'
@@ -301,7 +306,7 @@ export default class StyleManager extends ItemManagerModule<
    *   ],
    * }, { at: 0 });
    */
-  addProperty(sectorId: string, property: PropertyProps, opts: AddOptions = {}): Property | undefined {
+  addProperty(sectorId: string, property: PropertyTypes, opts: AddOptions = {}): Property | undefined {
     const sector = this.getSector(sectorId, { warn: true });
     let prop = null;
     if (sector) prop = sector.addProperty(property, opts);
