@@ -21,7 +21,6 @@ describe('Component', () => {
     em = new Editor({ avoidDefaults: true });
     dcomp = em.get('DomComponents');
     em.get('PageManager').onLoad();
-    // dcomp = new DomComponents(em);
     compOpts = {
       em,
       componentTypes: dcomp.componentTypes,

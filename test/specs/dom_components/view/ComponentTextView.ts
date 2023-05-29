@@ -1,16 +1,29 @@
-import ComponentTextView from 'dom_components/view/ComponentTextView';
-import Component from 'dom_components/model/Component';
+import ComponentTextView from '../../../../src/dom_components/view/ComponentTextView';
+import Component from '../../../../src/dom_components/model/Component';
+import Editor from '../../../../src/editor/model/Editor';
 
 describe('ComponentTextView', () => {
   let fixtures;
   let model;
   let view;
   let el;
+  let dcomp;
+  let compOpts;
+  let em: Editor;
 
   beforeEach(() => {
-    model = new Component();
+    em = new Editor({ avoidDefaults: true });
+    dcomp = em.Components;
+    compOpts = {
+      em,
+      componentTypes: dcomp.componentTypes,
+      domc: dcomp,
+    };
+    model = new Component({}, compOpts);
     view = new ComponentTextView({
       model,
+      // @ts-ignore
+      config: { ...em.config, em },
     });
     document.body.innerHTML = '<div id="fixtures"></div>';
     fixtures = document.body.querySelector('#fixtures');
@@ -36,7 +49,7 @@ describe('ComponentTextView', () => {
   });
 
   test('Init with content', () => {
-    model = new Component({ content: 'test' });
+    model = new Component({ content: 'test' }, compOpts);
     view = new ComponentTextView({ model });
     fixtures.appendChild(view.render().el);
     expect(view.el.innerHTML).toEqual('test');
@@ -57,20 +70,21 @@ describe('ComponentTextView', () => {
       };
 
       spyOn(view, 'getChildrenContainer').and.returnValue(fakeChildContainer);
+      em.RichTextEditor.customRte = fakeRte;
     });
 
-    it('should get content from active RTE if available', () => {
-      view.activeRte = fakeRte;
-      expect(view.getContent()).toEqual(fakeRteContent);
+    it('should get content from active RTE if available', async () => {
+      view.activeRte = {};
+      expect(await view.getContent()).toEqual(fakeRteContent);
       expect(fakeRte.getContent).toHaveBeenCalled();
     });
 
-    it("should get child container's `innerHTML` if active RTE is not available or if it has no `getContent` function", () => {
-      expect(view.getContent()).toEqual(fakeChildContainer.innerHTML);
+    it("should get child container's `innerHTML` if active RTE is not available or if it has no `getContent` function", async () => {
+      expect(await view.getContent()).toEqual(fakeChildContainer.innerHTML);
 
       fakeRte.getContent = null;
-      view.activeRte = fakeRte;
-      expect(view.getContent()).toEqual(fakeChildContainer.innerHTML);
+      view.activeRte = {};
+      expect(await view.getContent()).toEqual(fakeChildContainer.innerHTML);
 
       expect(view.getChildrenContainer).toHaveBeenCalledTimes(2);
     });
