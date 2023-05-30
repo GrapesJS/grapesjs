@@ -6,40 +6,46 @@ title: Plugins
 
 Creating plugins in GrapesJS is pretty straightforward and here you'll get how to achieve it.
 
+::: warning
+This guide is referring to GrapesJS v0.21.2 or higher
+:::
+
 [[toc]]
 
 ## Basic plugin
 
-The most simple plugins are just functions that are run when the editor is being built.
+Plugins are simple functions that are run when the editor is initialized.
 
 ```js
-  function myPlugin(editor){
-      editor.BlockManager.add('my-first-block', {
-        label: 'Simple block',
-        content: '<div class="my-block">This is a simple block</div>',
-      });
-  }
-
-  var editor = grapesjs.init({
-      container : '#gjs',
-      plugins: [myPlugin]
+function myPlugin(editor) {
+  // Use the API: https://grapesjs.com/docs/api/
+  editor.Blocks.add('my-first-block', {
+    label: 'Simple block',
+    content: '<div class="my-block">This is a simple block</div>',
   });
+}
+
+const editor = grapesjs.init({
+  container: '#gjs',
+  plugins: [myPlugin]
+});
 ```
 
-This means that plugins can be moved to separate folders to keep thing cleaner or imported from NPM.
+This means plugins can be moved to separate folders to keep thing cleaner or imported from NPM.
 
 ```js
-  import myPlugin from './plugins/myPlugin'
-  import npmPackage from '@npm/package'
+import myPlugin from './plugins/myPlugin'
+import npmPackage from '@npm/package'
 
-  var editor = grapesjs.init({
-      container : '#gjs',
-      plugins: [myPlugin, npmPackage]
-  });
+const editor = grapesjs.init({
+    container : '#gjs',
+    plugins: [myPlugin, npmPackage]
+});
 ```
 
 
 
+<!--
 ## Named plugin
 
 If you're distributing your plugin globally, you may want to make a named plugin. To keep thing cleaner, so you'll probably get a similar structure:
@@ -83,7 +89,7 @@ Here is a complete generic example:
   });
 </script>
 ```
-
+-->
 
 
 
@@ -92,6 +98,7 @@ Here is a complete generic example:
 
 It's also possible to pass custom parameters to plugins in to make them more flexible.
 
+<!--
 ```js
   var editor = grapesjs.init({
       container : '#gjs',
@@ -115,21 +122,25 @@ export default grapesjs.plugins.add('my-plugin-name', (editor, options) => {
 
 This also works with plugins that aren't named.
 
+-->
 ```js
-  import myPlugin from '../plugin'
+const myPluginWithOptions = (editor, options) => {
+  console.log(options);
+  // { customField: 'customValue' }
+}
 
-  var editor = grapesjs.init({
-      container : '#gjs',
-      plugins: [myPlugin],
-      pluginsOpts: {
-        [myPlugin]: {
-          customField: 'customValue'
-        }
-      }
-  });
+const editor = grapesjs.init({
+  container : '#gjs',
+  plugins: [myPluginWithOptions],
+  pluginsOpts: {
+    [myPluginWithOptions]: {
+      customField: 'customValue'
+    }
+  }
+});
 ```
 
-
+<!--
 ## Named Plugins vs Non-Named Plugins
 
 When you use a named plugin, then that name must be unique across all other plugins.
@@ -140,12 +151,35 @@ grapesjs.plugins.add('my-plugin-name', fn);
 
 In this example, the plugin name is `my-plugin-name` and can't be used by other plugins. To avoid namespace restrictions use basic plugins that are purely functional.
 
+-->
+
+## Usage with TS
+
+If you're using TypeScript, for a better type safety, we recommend using the `usePlugin` helper.
+
+```ts
+import grapesjs, { usePlugin } from 'grapesjs';
+import type { Plugin } from 'grapesjs';
+
+interface MyPluginOptions {
+  opt1: string,
+  opt2?: number,
+}
+
+const myPlugin: Plugin<MyPluginOptions> = (editor, options) => {
+    // ...
+}
+
+grapesjs.init({
+  // ...
+  plugins: [
+    // no need for `pluginsOpts`
+    usePlugin(myPlugin, { opt1: 'A', opt2: 1 })
+  ]
+});
+```
+
+
 ## Boilerplate
 
-For fast plugin development, we highly recommend using [grapesjs-cli](https://github.com/GrapesJS/cli) which helps to avoid the hassle of setting up all the dependencies and configurations for development and building (no need to touch Webpack o Babel configurations). For more information check the repository
-
-
-## Popular Plugins
-
- - https://github.com/GrapesJS/preset-webpage
- - https://github.com/GrapesJS/preset-newsletter
+For fast plugin development, we highly recommend using [grapesjs-cli](https://github.com/GrapesJS/cli) which helps to avoid the hassle of setting up all the dependencies and configurations for development and building (no need to touch Webpack o Babel configurations). For more information check the repository.
