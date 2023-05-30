@@ -44,7 +44,7 @@ import ComponentView from '../dom_components/view/ComponentView';
 import EditorModel from '../editor/model/Editor';
 import { createEl, cx, removeEl } from '../utils/dom';
 import { hasWin, isDef, on } from '../utils/mixins';
-import defaults, { RichTextEditorConfig } from './config/config';
+import defaults, { CustomRTE, RichTextEditorConfig } from './config/config';
 import RichTextEditor, { RichTextEditorAction } from './model/RichTextEditor';
 
 export type RichTextEditorEvent = 'rte:enable' | 'rte:disable' | 'rte:custom';
@@ -60,35 +60,6 @@ const events = {
   disable: evDisable,
   custom: evCustom,
 };
-
-export interface CustomRTE<T = any> {
-  /**
-   * If true, the returned HTML content will be parsed into Components, allowing
-   * the custom RTE to behave in the same way as the native one.
-   * If false, the HTML content will be used as it is in the canvas and the export code.
-   */
-  parseContent?: boolean;
-  /**
-   * Create or enable the custom RTE.
-   */
-  enable: (el: HTMLElement, rte: T | undefined) => T | Promise<T>;
-  /**
-   * Disable the custom RTE.
-   */
-  disable: (el: HTMLElement, rte: T) => any | Promise<any>;
-  /**
-   * Get HTML content from the custom RTE.
-   * If not specified, it will use the innerHTML of the element (passed also as `content` in options).
-   */
-  getContent?: (el: HTMLElement, rte: T | undefined) => string | Promise<string>;
-  /**
-   * Destroy the custom RTE.
-   * Will be triggered on editor destroy.
-   */
-  destroy?: () => void;
-
-  [key: string]: unknown;
-}
 
 interface ModelRTE {
   currentView?: ComponentView;
