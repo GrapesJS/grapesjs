@@ -1,8 +1,33 @@
+import { isString } from 'underscore';
 import Editor from '../editor';
+import { getGlobal } from '../utils/mixins';
 
 type PluginOptions = Record<string, any>;
 
 export type Plugin<T extends PluginOptions = {}> = (editor: Editor, config: T) => void;
+
+const getPluginById = (pluginId: string, plugins: PluginManager) => {
+  let result = plugins.get(pluginId);
+
+  // Try to search in global context
+  if (!result) {
+    const wplg = (getGlobal() as any)[pluginId];
+    result = wplg?.default || wplg;
+  }
+
+  return result;
+};
+
+export const getPlugin = (plugin: string | Plugin<any>, plugins: PluginManager) => {
+  return isString(plugin) ? getPluginById(plugin, plugins) : plugin;
+};
+
+export const logPluginWarn = (editor: Editor, plugin: string) => {
+  editor.getModel().logWarning(`Plugin ${plugin} not found`, {
+    context: 'plugins',
+    plugin,
+  });
+};
 
 export default class PluginManager {
   plugins: Record<string, Plugin> = {};

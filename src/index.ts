@@ -1,9 +1,9 @@
-import { isElement, isFunction } from 'underscore';
+import { isElement, isFunction, isString } from 'underscore';
 import $ from './utils/cash-dom';
 import Editor from './editor';
 import polyfills from './utils/polyfills';
 import { getGlobal } from './utils/mixins';
-import PluginManager from './plugin_manager';
+import PluginManager, { Plugin, getPlugin, logPluginWarn } from './plugin_manager';
 import { EditorConfig } from './editor/config/config';
 
 interface InitEditorConfig extends EditorConfig {
@@ -14,6 +14,18 @@ polyfills();
 
 const plugins = new PluginManager();
 const editors: Editor[] = [];
+
+export const usePlugin = <P extends Plugin<any> | string>(plugin: P, opts?: P extends Plugin<infer C> ? C : {}) => {
+  let pluginResult = getPlugin(plugin, plugins);
+
+  return (editor: Editor) => {
+    if (pluginResult) {
+      pluginResult(editor, opts || {});
+    } else {
+      logPluginWarn(editor, plugin as string);
+    }
+  };
+};
 
 const GrapesJS = {
   $,

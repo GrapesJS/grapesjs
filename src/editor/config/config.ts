@@ -45,7 +45,7 @@ export interface EditorConfig {
    * Array of plugins to execute on start.
    * @default []
    */
-  plugins?: (string | Plugin)[];
+  plugins?: (string | Plugin<any>)[];
 
   /**
    * Custom options for plugins
