@@ -7,6 +7,10 @@ As you might have noticed the default Rich Text Editor (RTE) is really tiny and 
 
 In the following guide we'll integrate the CKEditor and to accomplish this task we just need to provide few functions to the GrapesJS API method `setCustomRte` as an interface.
 
+::: warning
+This guide is referring to GrapesJS v0.21.2 or higher
+:::
+
 [[toc]]
 
 
@@ -149,7 +153,7 @@ For example, when you create a link using the built-in RTE then you'll be able t
 Obviously, each third-party library has its own APIs and can present some limitations and drawbacks, so, a minimal knowledge of the library is a plus.
 
 
-### Enable content parser <Badge text="0.21.2+"/>
+### Enable content parser
 
 As an experimental feature, now it's possible to tell the editor to parse the returned HTML content from the custom RTE and store the result as components and not as a simple HTML string. This allows GrapesJS to handle the custom RTE more closely to the native implementation and enable features like [textable components](https://github.com/GrapesJS/grapesjs/issues/2771#issuecomment-1040486056).
 
