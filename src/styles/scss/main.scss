@@ -5,20 +5,6 @@
 @import "spectrum.scss";
 @import "gjs_variables.scss";
 
-
-@font-face {
-  font-family: 'font3336';
-  src: url('#{$fontPath}/#{$fontName}.eot?v=#{$fontV}');
-  src:
-    url('#{$fontPath}/#{$fontName}.woff?v=#{$fontV}') format('woff'),
-    //url('#{$fontPath}/#{$fontName}.woff2?v=#{$fontV}') format('woff2'),
-    url('#{$fontPath}/#{$fontName}.ttf?v=#{$fontV}') format('truetype'),
-    url('#{$fontPath}/#{$fontName}.svg?v=#{$fontV}') format('svg'),
-    url('#{$fontPath}/#{$fontName}.eot?v=#{$fontV}') format('embedded-opentype');
-  font-weight: normal;
-  font-style: normal;
-}
-
 @mixin user-select($v) {
   -moz-user-select: $v;
   -khtml-user-select: $v;
@@ -102,28 +88,6 @@ $colorsAll: (one, $primaryColor),
     fill: $colorHighlight;
   }
 }
-
-.#{$app-prefix}fonts::before {
-  display: block;
-  font: normal normal normal 14px font3336; // shortening font declaration
-  text-rendering: auto; // optimizelegibility throws things off #1094
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-size: 5em;
-}
-.#{$app-prefix}f-b1::before { content: 'Q'; }
-.#{$app-prefix}f-b2::before { content: 'W'; }
-.#{$app-prefix}f-b3::before { content: 'E'; }
-.#{$app-prefix}f-b37::before { content: 'R'; }
-.#{$app-prefix}f-hero::before { content: 'T'; }
-.#{$app-prefix}f-h1p::before { content: 'y'; }
-.#{$app-prefix}f-3ba::before { content: 'u'; }
-.#{$app-prefix}f-image::before { content: 'I'; }
-.#{$app-prefix}f-text::before { content: 'o'; }
-.#{$app-prefix}f-quo::before { content: 'p'; }
-.#{$app-prefix}f-button::before { content: 'B'; }
-.#{$app-prefix}f-divider::before { content: 'D'; }
-
 
 .#{$app-prefix}invis-invis,
 .#{$app-prefix}no-app {
