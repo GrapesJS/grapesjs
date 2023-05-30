@@ -1,18 +1,19 @@
+import grapesjs from '../../../src';
+
 describe('GrapesJS', () => {
   describe('Main', () => {
-    var obj;
-    var fixtures;
-    var fixture;
-    var editorName;
-    var htmlString;
-    var config;
-    var cssString;
-    var documentEl;
+    let fixtures;
+    let fixture;
+    let editorName;
+    let htmlString;
+    let config;
+    let cssString;
+    let documentEl;
 
-    var storage;
-    var storageId = 'testStorage';
-    var storageMock = {
-      store(data) {
+    let storage;
+    let storageId = 'testStorage';
+    let storageMock = {
+      async store(data) {
         storage = data;
       },
       load() {
@@ -38,14 +39,13 @@ describe('GrapesJS', () => {
           type: 0,
         },
       };
-      obj = grapesjs;
       document.body.innerHTML = `<div id="fixtures"><div id="${editorName}"></div></div>`;
       fixtures = document.body.querySelector('#fixtures');
       fixture = document.body.querySelector(`#${editorName}`);
     });
 
     afterEach(() => {
-      var plugins = obj.plugins.getAll();
+      var plugins = grapesjs.plugins.getAll();
       for (let id in plugins) {
         if (plugins.hasOwnProperty(id)) {
           delete plugins[id];
@@ -54,28 +54,27 @@ describe('GrapesJS', () => {
     });
 
     test('Main object should be loaded', () => {
-      expect(obj).toBeTruthy();
+      expect(grapesjs).toBeTruthy();
     });
 
     test('Init new editor', () => {
-      var editor = obj.init(config);
+      var editor = grapesjs.init(config);
       expect(editor).toBeTruthy();
     });
 
     test('Init new editor with node for container', () => {
-      var configAlt = {
+      const editor = grapesjs.init({
         container: document.createElement('div'),
         storageManager: {
-          autoload: 0,
+          autoload: false,
           type: 'none',
         },
-      };
-      var editor = obj.init(configAlt);
+      });
       expect(editor).toBeTruthy();
     });
 
     test('New editor is empty', () => {
-      const editor = obj.init(config);
+      const editor = grapesjs.init(config);
       const html = editor.getHtml();
       //const css = editor.getCss();
       const protCss = editor.getConfig().protectedCss;
@@ -89,7 +88,7 @@ describe('GrapesJS', () => {
       config.components = htmlString;
       config.baseCss = '#wrapper { background-color: #eee; }';
       config.protectedCss = '';
-      const editor = obj.init(config);
+      const editor = grapesjs.init(config);
       const body = editor.Canvas.getBody();
 
       expect(body.outerHTML).toContain(config.baseCss);
@@ -99,7 +98,7 @@ describe('GrapesJS', () => {
     test('Editor canvas baseCSS defaults to sensible values if not defined', () => {
       config.components = htmlString;
       config.protectedCss = '';
-      obj.init(config);
+      grapesjs.init(config);
       expect(window.frames[0].document.documentElement.outerHTML.replace(/\s+/g, ' ')).toContain(
         'body { background-color: #fff'
       );
@@ -107,25 +106,25 @@ describe('GrapesJS', () => {
 
     test('Init editor with html', () => {
       config.components = htmlString;
-      var editor = obj.init(config);
+      var editor = grapesjs.init(config);
       var comps = editor.DomComponents.getComponents();
       expect(comps.length).toEqual(2);
-      expect(comps.at(0).get('classes').at(0).get('name')).toEqual('test1');
+      expect(comps.at(0).get('classes')?.at(0).get('name')).toEqual('test1');
     });
 
     test('Init editor with css', () => {
       config.style = cssString;
-      var editor = obj.init(config);
+      var editor = grapesjs.init(config);
       var rules = editor.CssComposer.getAll();
       expect(rules.length).toEqual(2);
-      expect(rules.at(0).get('selectors').at(0).get('name')).toEqual('test2');
+      expect(rules.at(0).get('selectors')?.at(0)?.get('name')).toEqual('test2');
     });
 
     test('Init editor from element', () => {
       config.fromElement = 1;
       config.storageManager = { type: 0 };
       fixture.innerHTML = documentEl;
-      const editor = obj.init(config);
+      const editor = grapesjs.init(config);
       const html = editor.getHtml();
       const css = editor.getCss();
       const protCss = editor.getConfig().protectedCss;
@@ -152,48 +151,48 @@ describe('GrapesJS', () => {
           src: url('http://b.link') format('woff2');
         }
       </style>` + htmlString;
-      const editor = obj.init(config);
-      const css = editor.getCss();
+      const editor = grapesjs.init(config);
+      const css = editor.getCss()!;
       const styles = editor.getStyle();
       expect(styles.length).toEqual(2);
       expect((css.match(/@font-face/g) || []).length).toEqual(2);
     });
 
     test('Set components as HTML', () => {
-      var editor = obj.init(config);
+      var editor = grapesjs.init(config);
       editor.setComponents(htmlString);
       expect(editor.getComponents().length).toEqual(2);
     });
 
     test('Set components as array of objects', () => {
-      var editor = obj.init(config);
+      var editor = grapesjs.init(config);
       editor.setComponents([{}, {}, {}]);
       expect(editor.getComponents().length).toEqual(3);
     });
 
     test('Set style as CSS', () => {
-      var editor = obj.init(config);
+      var editor = grapesjs.init(config);
       editor.setStyle(cssString);
       editor.setStyle(cssString);
       var styles = editor.getStyle();
       expect(styles.length).toEqual(2);
-      expect(styles.at(1).get('selectors').at(0).get('name')).toEqual('test3');
+      expect(styles.at(1).get('selectors')?.at(0)?.get('name')).toEqual('test3');
     });
 
     test('Set style as as array of objects', () => {
-      var editor = obj.init(config);
+      var editor = grapesjs.init(config);
       editor.setStyle([{ selectors: ['test4'] }, { selectors: ['test5'] }]);
       var styles = editor.getStyle();
       expect(styles.length).toEqual(2);
-      expect(styles.at(1).get('selectors').at(0).get('name')).toEqual('test5');
+      expect(styles.at(1).get('selectors')?.at(0)?.get('name')).toEqual('test5');
     });
 
     test.skip('Adds new storage as plugin and store data there', done => {
       const pluginName = storageId + '-p2';
-      obj.plugins.add(pluginName, e => e.StorageManager.add(storageId, storageMock));
+      grapesjs.plugins.add(pluginName, e => e.StorageManager.add(storageId, storageMock));
       config.storageManager.type = storageId;
       config.plugins = [pluginName];
-      const editor = obj.init(config);
+      const editor = grapesjs.init(config);
       editor.setComponents(htmlString);
       editor.store(() => {
         editor.load(data => {
@@ -226,12 +225,12 @@ describe('GrapesJS', () => {
       };
 
       const pluginName = storageId + '-p';
-      obj.plugins.add(pluginName, e => e.StorageManager.add(storageId, storageMock));
+      grapesjs.plugins.add(pluginName, e => e.StorageManager.add(storageId, storageMock));
       config.fromElement = 1;
       config.storageManager.type = storageId;
       config.plugins = [pluginName];
       config.storageManager.autoload = 1;
-      const editor = obj.init(config);
+      const editor = grapesjs.init(config);
       editor.on('load', () => {
         const cc = editor.CssComposer;
         expect(cc.getAll().length).toEqual(style.length);
@@ -241,82 +240,82 @@ describe('GrapesJS', () => {
     });
 
     test('Execute plugins with custom options', () => {
-      var pluginName = storageId + '-plugin-opts';
-      obj.plugins.add(pluginName, (edt, opts) => {
+      const pluginName = storageId + '-plugin-opts';
+      grapesjs.plugins.add(pluginName, (edt, opts) => {
         var opts = opts || {};
-        edt.customValue = opts.cVal || '';
+        edt.getModel().set('customValue', opts.cVal || '');
       });
       config.plugins = [pluginName];
       config.pluginsOpts = {};
       config.pluginsOpts[pluginName] = { cVal: 'TEST' };
-      var editor = obj.init(config);
-      expect(editor.customValue).toEqual('TEST');
+      const editor = grapesjs.init(config);
+      expect(editor.getModel().get('customValue')).toEqual('TEST');
     });
 
     test('Execute inline plugins with custom options', () => {
       const inlinePlugin = (edt, opts) => {
         var opts = opts || {};
-        edt.customValue = opts.cVal || '';
+        edt.getModel().set('customValue', opts.cVal || '');
       };
       config.plugins = [inlinePlugin];
       config.pluginsOpts = {};
-      config.pluginsOpts[inlinePlugin] = { cVal: 'TEST' };
-      var editor = obj.init(config);
-      expect(editor.customValue).toEqual('TEST');
+      config.pluginsOpts[inlinePlugin.toString()] = { cVal: 'TEST' };
+      var editor = grapesjs.init(config);
+      expect(editor.getModel().get('customValue')).toEqual('TEST');
     });
 
     test('Execute inline plugins without any options', () => {
       const inlinePlugin = edt => {
-        edt.customValue = 'TEST';
+        edt.getModel().set('customValue', 'TEST');
       };
       config.plugins = [inlinePlugin];
       config.pluginsOpts = {};
-      var editor = obj.init(config);
-      expect(editor.customValue).toEqual('TEST');
+      var editor = grapesjs.init(config);
+      expect(editor.getModel().get('customValue')).toEqual('TEST');
     });
 
     test('Use plugins defined on window, with custom options', () => {
-      window.globalPlugin = (edt, opts) => {
+      (window as any).globalPlugin = (edt, opts) => {
         var opts = opts || {};
-        edt.customValue = opts.cVal || '';
+        edt.getModel().set('customValue', opts.cVal || '');
       };
       config.plugins = ['globalPlugin'];
       config.pluginsOpts = {};
       config.pluginsOpts['globalPlugin'] = { cVal: 'TEST' };
-      var editor = obj.init(config);
-      expect(editor.customValue).toEqual('TEST');
+      var editor = grapesjs.init(config);
+      expect(editor.getModel().get('customValue')).toEqual('TEST');
     });
 
     test('Execute custom command', () => {
-      var editor = obj.init(config);
-      editor.testVal = '';
+      var editor = grapesjs.init(config);
+      let testValue = '';
       editor.setComponents(htmlString);
       editor.Commands.add('test-command', {
         run(ed, caller, opts) {
-          ed.testVal = ed.getHtml() + opts.val;
+          testValue = ed.getHtml() + opts.val;
         },
       });
       editor.runCommand('test-command', { val: 5 });
-      expect(editor.testVal).toEqual(htmlString + '5');
+      expect(testValue).toEqual(htmlString + '5');
     });
 
     test('Stop custom command', () => {
-      var editor = obj.init(config);
-      editor.testVal = '';
+      var editor = grapesjs.init(config);
+      let testValue = '';
       editor.setComponents(htmlString);
       editor.Commands.add('test-command', {
         stop(ed, caller, opts) {
-          ed.testVal = ed.getHtml() + opts.val;
+          testValue = ed.getHtml() + opts.val;
         },
       });
       editor.stopCommand('test-command', { val: 5, force: 1 });
-      expect(editor.testVal).toEqual(htmlString + '5');
+      expect(testValue).toEqual(htmlString + '5');
     });
 
     test('Trigger custom command events', () => {
       const id = 'test-command';
-      const editor = obj.init(config);
-      const result = {};
+      const editor = grapesjs.init(config);
+      const result: Record<string, any> = {};
       editor.on(`run:${id}`, () => (result.run = 1));
       editor.on(`run:${id}:before`, () => (result.runBefore = 1));
       editor.on(`stop:${id}`, () => (result.stop = 1));
@@ -345,17 +344,17 @@ describe('GrapesJS', () => {
         { name: '1', width: '2' },
         { name: '3', width: '4' },
       ];
-      var editor = obj.init(config);
+      var editor = grapesjs.init(config);
       expect(editor.DeviceManager.getAll().length).toEqual(2);
     });
 
     test('There is no active device', () => {
-      var editor = obj.init(config);
+      var editor = grapesjs.init(config);
       expect(editor.getDevice()).toBe('desktop');
     });
 
     test('Active another device', () => {
-      var editor = obj.init(config);
+      var editor = grapesjs.init(config);
       editor.setDevice('Tablet');
       expect(editor.getDevice()).toEqual('Tablet');
     });
@@ -365,14 +364,14 @@ describe('GrapesJS', () => {
       var editor,
         pluginName = 'test-plugin-opts';
 
-      obj.plugins.add(pluginName, (edt, opts) => {
+      grapesjs.plugins.add(pluginName, (edt, opts) => {
         let cmdm = edt.Commands;
         // Overwrite export template
         cmdm.add('export-template', { test: 1 });
       });
       config.plugins = [pluginName];
 
-      editor = obj.init(config);
+      editor = grapesjs.init(config);
       expect(editor.Commands.get('export-template').test).toEqual(1);
     });
 
@@ -380,8 +379,8 @@ describe('GrapesJS', () => {
       config.fromElement = 1;
       config.storageManager = { type: 0 };
       fixture.innerHTML = documentEl;
-      const editor = obj.init(config);
-      const css = editor.getCss({ keepUnusedStyles: 1 });
+      const editor = grapesjs.init(config);
+      const css = editor.getCss({ keepUnusedStyles: true });
       const protCss = editor.getConfig().protectedCss;
       expect(editor.getStyle().length).toEqual(2);
       expect(css).toEqual(`${protCss}.test2{color:red;}.test3{color:blue;}`);
@@ -394,8 +393,8 @@ describe('GrapesJS', () => {
       config.fromElement = 1;
       config.storageManager = { type: 0 };
       fixture.innerHTML = documentEl;
-      const editor = obj.init(config);
-      const css = editor.getCss({ keepUnusedStyles: 1 });
+      const editor = grapesjs.init(config);
+      const css = editor.getCss({ keepUnusedStyles: true });
       const protCss = editor.getConfig().protectedCss;
       expect(editor.getStyle().length).toEqual(3);
       expect(css).toEqual(
@@ -407,7 +406,7 @@ describe('GrapesJS', () => {
       config.fromElement = 1;
       config.storageManager = { type: 0 };
       fixture.innerHTML = documentEl;
-      const editor = obj.init({ ...config, keepUnusedStyles: 1 });
+      const editor = grapesjs.init({ ...config, keepUnusedStyles: 1 });
       const css = editor.getCss();
       const protCss = editor.getConfig().protectedCss;
       expect(editor.getStyle().length).toEqual(2);
@@ -424,7 +423,7 @@ describe('GrapesJS', () => {
           <div id="el2"></div>
           <div id="el3"></div>
         </div>`;
-        editor = obj.init(config);
+        editor = grapesjs.init(config);
         wrapper = editor.DomComponents.getWrapper();
         el1 = wrapper.find('#el1')[0];
         el2 = wrapper.find('#el2')[0];
