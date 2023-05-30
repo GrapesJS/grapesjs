@@ -187,105 +187,6 @@ describe('GrapesJS', () => {
       expect(styles.at(1).get('selectors')?.at(0)?.get('name')).toEqual('test5');
     });
 
-    test.skip('Adds new storage as plugin and store data there', done => {
-      const pluginName = storageId + '-p2';
-      grapesjs.plugins.add(pluginName, e => e.StorageManager.add(storageId, storageMock));
-      config.storageManager.type = storageId;
-      config.plugins = [pluginName];
-      const editor = grapesjs.init(config);
-      editor.setComponents(htmlString);
-      editor.store(() => {
-        editor.load(data => {
-          expect(data.html).toEqual(htmlString);
-          done();
-        });
-      });
-    });
-
-    test('Adds a new storage and fetch correctly data from it', done => {
-      fixture.innerHTML = documentEl;
-      const styleResult = { color: 'white', display: 'block' };
-      const style = [
-        {
-          selectors: [{ name: 'sclass1' }],
-          style: { color: 'green' },
-        },
-        {
-          selectors: [{ name: 'test2' }],
-          style: styleResult,
-        },
-        {
-          selectors: [{ name: 'test3' }],
-          style: { color: 'black', display: 'block' },
-        },
-      ];
-      storage = {
-        css: '* { box-sizing: border-box; } body {margin: 0;}',
-        styles: JSON.stringify(style),
-      };
-
-      const pluginName = storageId + '-p';
-      grapesjs.plugins.add(pluginName, e => e.StorageManager.add(storageId, storageMock));
-      config.fromElement = 1;
-      config.storageManager.type = storageId;
-      config.plugins = [pluginName];
-      config.storageManager.autoload = 1;
-      const editor = grapesjs.init(config);
-      editor.on('load', () => {
-        const cc = editor.CssComposer;
-        expect(cc.getAll().length).toEqual(style.length);
-        // expect(cc.setClassRule('test2').getStyle()).toEqual(styleResult);
-        done();
-      });
-    });
-
-    test('Execute plugins with custom options', () => {
-      const pluginName = storageId + '-plugin-opts';
-      grapesjs.plugins.add(pluginName, (edt, opts) => {
-        var opts = opts || {};
-        edt.getModel().set('customValue', opts.cVal || '');
-      });
-      config.plugins = [pluginName];
-      config.pluginsOpts = {};
-      config.pluginsOpts[pluginName] = { cVal: 'TEST' };
-      const editor = grapesjs.init(config);
-      expect(editor.getModel().get('customValue')).toEqual('TEST');
-    });
-
-    test('Execute inline plugins with custom options', () => {
-      const inlinePlugin = (edt, opts) => {
-        var opts = opts || {};
-        edt.getModel().set('customValue', opts.cVal || '');
-      };
-      config.plugins = [inlinePlugin];
-      config.pluginsOpts = {};
-      config.pluginsOpts[inlinePlugin.toString()] = { cVal: 'TEST' };
-      var editor = grapesjs.init(config);
-      expect(editor.getModel().get('customValue')).toEqual('TEST');
-    });
-
-    test('Execute inline plugins without any options', () => {
-      const inlinePlugin = edt => {
-        edt.getModel().set('customValue', 'TEST');
-      };
-      config.plugins = [inlinePlugin];
-      config.pluginsOpts = {};
-      var editor = grapesjs.init(config);
-      expect(editor.getModel().get('customValue')).toEqual('TEST');
-    });
-
-    test('Use plugins defined on window, with custom options', () => {
-      (window as any).globalPlugin = (edt, opts) => {
-        var opts = opts || {};
-        edt.getModel().set('customValue', opts.cVal || '');
-      };
-      config.plugins = ['globalPlugin'];
-      config.pluginsOpts = {};
-      config.pluginsOpts['globalPlugin'] = { cVal: 'TEST' };
-      var editor = grapesjs.init(config);
-      expect(editor.getModel().get('customValue')).toEqual('TEST');
-    });
-
     test('Execute custom command', () => {
       var editor = grapesjs.init(config);
       let testValue = '';
@@ -359,22 +260,6 @@ describe('GrapesJS', () => {
       expect(editor.getDevice()).toEqual('Tablet');
     });
 
-    // Problems with iframe loading
-    test('Init new editor with custom plugin overrides default commands', () => {
-      var editor,
-        pluginName = 'test-plugin-opts';
-
-      grapesjs.plugins.add(pluginName, (edt, opts) => {
-        let cmdm = edt.Commands;
-        // Overwrite export template
-        cmdm.add('export-template', { test: 1 });
-      });
-      config.plugins = [pluginName];
-
-      editor = grapesjs.init(config);
-      expect(editor.Commands.get('export-template').test).toEqual(1);
-    });
-
     test('Keep unused css classes/selectors option for getCSS method', () => {
       config.fromElement = 1;
       config.storageManager = { type: 0 };
@@ -411,6 +296,123 @@ describe('GrapesJS', () => {
       const protCss = editor.getConfig().protectedCss;
       expect(editor.getStyle().length).toEqual(2);
       expect(css).toEqual(`${protCss}.test2{color:red;}.test3{color:blue;}`);
+    });
+
+    describe('Plugins', () => {
+      test.skip('Adds new storage as plugin and store data there', done => {
+        const pluginName = storageId + '-p2';
+        grapesjs.plugins.add(pluginName, e => e.StorageManager.add(storageId, storageMock));
+        config.storageManager.type = storageId;
+        config.plugins = [pluginName];
+        const editor = grapesjs.init(config);
+        editor.setComponents(htmlString);
+        editor.store(() => {
+          editor.load(data => {
+            expect(data.html).toEqual(htmlString);
+            done();
+          });
+        });
+      });
+
+      test('Adds a new storage and fetch correctly data from it', done => {
+        fixture.innerHTML = documentEl;
+        const styleResult = { color: 'white', display: 'block' };
+        const style = [
+          {
+            selectors: [{ name: 'sclass1' }],
+            style: { color: 'green' },
+          },
+          {
+            selectors: [{ name: 'test2' }],
+            style: styleResult,
+          },
+          {
+            selectors: [{ name: 'test3' }],
+            style: { color: 'black', display: 'block' },
+          },
+        ];
+        storage = {
+          css: '* { box-sizing: border-box; } body {margin: 0;}',
+          styles: JSON.stringify(style),
+        };
+
+        const pluginName = storageId + '-p';
+        grapesjs.plugins.add(pluginName, e => e.StorageManager.add(storageId, storageMock));
+        config.fromElement = 1;
+        config.storageManager.type = storageId;
+        config.plugins = [pluginName];
+        config.storageManager.autoload = 1;
+        const editor = grapesjs.init(config);
+        editor.on('load', () => {
+          const cc = editor.CssComposer;
+          expect(cc.getAll().length).toEqual(style.length);
+          // expect(cc.setClassRule('test2').getStyle()).toEqual(styleResult);
+          done();
+        });
+      });
+
+      test('Execute plugins with custom options', () => {
+        const pluginName = storageId + '-plugin-opts';
+        grapesjs.plugins.add(pluginName, (edt, opts) => {
+          var opts = opts || {};
+          edt.getModel().set('customValue', opts.cVal || '');
+        });
+        config.plugins = [pluginName];
+        config.pluginsOpts = {};
+        config.pluginsOpts[pluginName] = { cVal: 'TEST' };
+        const editor = grapesjs.init(config);
+        expect(editor.getModel().get('customValue')).toEqual('TEST');
+      });
+
+      test('Execute inline plugins with custom options', () => {
+        const inlinePlugin = (edt, opts) => {
+          var opts = opts || {};
+          edt.getModel().set('customValue', opts.cVal || '');
+        };
+        config.plugins = [inlinePlugin];
+        config.pluginsOpts = {};
+        config.pluginsOpts[inlinePlugin.toString()] = { cVal: 'TEST' };
+        var editor = grapesjs.init(config);
+        expect(editor.getModel().get('customValue')).toEqual('TEST');
+      });
+
+      test('Execute inline plugins without any options', () => {
+        const inlinePlugin = edt => {
+          edt.getModel().set('customValue', 'TEST');
+        };
+        config.plugins = [inlinePlugin];
+        config.pluginsOpts = {};
+        var editor = grapesjs.init(config);
+        expect(editor.getModel().get('customValue')).toEqual('TEST');
+      });
+
+      test('Use plugins defined on window, with custom options', () => {
+        (window as any).globalPlugin = (edt, opts) => {
+          var opts = opts || {};
+          edt.getModel().set('customValue', opts.cVal || '');
+        };
+        config.plugins = ['globalPlugin'];
+        config.pluginsOpts = {};
+        config.pluginsOpts['globalPlugin'] = { cVal: 'TEST' };
+        var editor = grapesjs.init(config);
+        expect(editor.getModel().get('customValue')).toEqual('TEST');
+      });
+
+      // Problems with iframe loading
+      test('Init new editor with custom plugin overrides default commands', () => {
+        var editor,
+          pluginName = 'test-plugin-opts';
+
+        grapesjs.plugins.add(pluginName, (edt, opts) => {
+          let cmdm = edt.Commands;
+          // Overwrite export template
+          cmdm.add('export-template', { test: 1 });
+        });
+        config.plugins = [pluginName];
+
+        editor = grapesjs.init(config);
+        expect(editor.Commands.get('export-template').test).toEqual(1);
+      });
     });
 
     describe('Component selection', () => {
