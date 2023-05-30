@@ -1,4 +1,7 @@
-import grapesjs from '../../../src';
+import grapesjs, { usePlugin } from '../../../src';
+import type { Plugin } from '../../../src/plugin_manager';
+
+type TestPlugin = Plugin<{ cVal: string }>;
 
 describe('GrapesJS', () => {
   describe('Main', () => {
@@ -412,6 +415,49 @@ describe('GrapesJS', () => {
 
         editor = grapesjs.init(config);
         expect(editor.Commands.get('export-template').test).toEqual(1);
+      });
+
+      describe('usePlugin', () => {
+        test('Execute named plugin from PluginManager', () => {
+          let varToTest = '';
+          const optionValue = 'TEST-PM';
+          const pluginName = 'testplugin';
+          grapesjs.plugins.add(pluginName, (edt, opts = {}) => {
+            varToTest = opts.cVal || '';
+          });
+          grapesjs.init({
+            ...config,
+            plugins: [usePlugin(pluginName, { cVal: optionValue })],
+          });
+          expect(varToTest).toEqual(optionValue);
+        });
+
+        test('Execute inline plugin', () => {
+          let varToTest = '';
+          const optionValue = 'TEST-inline';
+          const inlinePlugin: TestPlugin = (edt, opts) => {
+            varToTest = opts.cVal;
+          };
+          grapesjs.init({
+            ...config,
+            plugins: [usePlugin(inlinePlugin, { cVal: optionValue })],
+          });
+          expect(varToTest).toEqual(optionValue);
+        });
+
+        test('Execute global plugin', () => {
+          let varToTest = '';
+          const optionValue = 'TEST-global';
+          const pluginName = 'globalPlugin';
+          (window as any)[pluginName] = (edt, opts) => {
+            varToTest = opts.cVal;
+          };
+          grapesjs.init({
+            ...config,
+            plugins: [usePlugin(pluginName, { cVal: optionValue })],
+          });
+          expect(varToTest).toEqual(optionValue);
+        });
       });
     });
 
