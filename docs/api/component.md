@@ -758,6 +758,22 @@ component.onAll(component => {
 
 Returns **this** 
 
+## forEachChild
+
+Execute a callback function on all inner child components.
+
+### Parameters
+
+*   `clb` **[Function][4]** Callback function, the child component is passed as an argument
+
+### Examples
+
+```javascript
+component.forEachChild(child => {
+ console.log(child)
+})
+```
+
 ## remove
 
 Remove the component

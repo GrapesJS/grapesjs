@@ -35,15 +35,16 @@ rte.add(...);
 
 *   [add][3]
 *   [get][4]
-*   [getAll][5]
-*   [remove][6]
-*   [getToolbarEl][7]
+*   [run][5]
+*   [getAll][6]
+*   [remove][7]
+*   [getToolbarEl][8]
 
 ## getConfig
 
 Get configuration object
 
-Returns **[Object][8]** 
+Returns **[Object][9]** 
 
 ## add
 
@@ -51,8 +52,8 @@ Add a new action to the built-in RTE toolbar
 
 ### Parameters
 
-*   `name` **[string][9]** Action name
-*   `action` **[Object][8]** Action options (optional, default `{}`)
+*   `name` **[string][10]** Action name
+*   `action` **[Object][9]** Action options (optional, default `{}`)
 
 ### Examples
 
@@ -120,7 +121,7 @@ Get the action by its name
 
 ### Parameters
 
-*   `name` **[string][9]** Action name
+*   `name` **[string][10]** Action name
 
 ### Examples
 
@@ -129,13 +130,13 @@ const action = rte.get('bold');
 // {name: 'bold', ...}
 ```
 
-Returns **[Object][8]** 
+Returns **[Object][9]** 
 
 ## getAll
 
 Get all actions
 
-Returns **[Array][10]** 
+Returns **[Array][11]** 
 
 ## remove
 
@@ -143,7 +144,7 @@ Remove the action from the toolbar
 
 ### Parameters
 
-*   `name` **[string][9]** 
+*   `name` **[string][10]** 
 
 ### Examples
 
@@ -152,13 +153,28 @@ const action = rte.remove('bold');
 // {name: 'bold', ...}
 ```
 
-Returns **[Object][8]** Removed action
+Returns **[Object][9]** Removed action
+
+## run
+
+Run action command.
+
+### Parameters
+
+*   `action` **([string][10] | RichTextEditorAction)** Action to run
+
+### Examples
+
+```javascript
+const action = rte.get('bold');
+rte.run(action) // or rte.run('bold')
+```
 
 ## getToolbarEl
 
 Get the toolbar element
 
-Returns **[HTMLElement][11]** 
+Returns **[HTMLElement][12]** 
 
 [1]: https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand
 
@@ -168,16 +184,18 @@ Returns **[HTMLElement][11]**
 
 [4]: #get
 
-[5]: #getall
+[5]: #run
 
-[6]: #remove
+[6]: #getall
 
-[7]: #gettoolbarel
+[7]: #remove
 
-[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[8]: #gettoolbarel
 
-[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-[11]: https://developer.mozilla.org/docs/Web/HTML/Element
+[11]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+
+[12]: https://developer.mozilla.org/docs/Web/HTML/Element
