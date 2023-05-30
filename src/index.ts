@@ -70,25 +70,13 @@ const GrapesJS = {
 
     // Load plugins
     initConfig.plugins!.forEach(pluginId => {
-      let plugin = isFunction(pluginId) ? pluginId : plugins.get(pluginId);
+      const plugin = getPlugin(pluginId, plugins);
       const plgOptions = initConfig.pluginsOpts![pluginId as string] || {};
-
-      // Try to search in global context
-      if (!plugin) {
-        // @ts-ignore
-        const wplg = getGlobal()[pluginId];
-        plugin = wplg?.default || wplg;
-      }
 
       if (plugin) {
         plugin(editor, plgOptions);
-      } else if (isFunction(pluginId)) {
-        pluginId(editor, plgOptions);
       } else {
-        em.logWarning(`Plugin ${pluginId} not found`, {
-          context: 'plugins',
-          plugin: pluginId,
-        });
+        logPluginWarn(editor, pluginId as string);
       }
     });
 
