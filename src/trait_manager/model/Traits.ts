@@ -35,6 +35,7 @@ export default class Traits extends Collection<Trait> {
 
   setTarget(target: Component) {
     this.target = target;
+    this.models.forEach(trait => trait.setTarget(target));
   }
 
   add(model: string | TraitProperties | Trait, options?: AddOptions): Trait;
@@ -43,18 +44,19 @@ export default class Traits extends Collection<Trait> {
     if (models == undefined) {
       return undefined;
     }
+    const { target, em } = this;
 
     if (isArray(models)) {
       var traits: Trait[] = [];
       for (var i = 0, len = models.length; i < len; i++) {
         const trait = models[i];
-        traits[i] = trait instanceof Trait ? trait : this.tf.build(trait);
-        traits[i].target = this.target;
+        traits[i] = trait instanceof Trait ? trait : this.tf.build(trait, em);
+        traits[i].setTarget(target);
       }
       return super.add(traits, opt);
     }
-    const trait = models instanceof Trait ? models : this.tf.build(models as any);
-    trait.target = this.target;
+    const trait = models instanceof Trait ? models : this.tf.build(models as any, em);
+    trait.setTarget(target);
 
     return super.add(trait, opt);
   }

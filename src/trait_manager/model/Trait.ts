@@ -64,7 +64,7 @@ export interface TraitProperties {
  */
 export default class Trait extends Model<TraitProperties> {
   target!: Component;
-  em?: EditorModel;
+  em: EditorModel;
   view?: TraitView;
   el?: HTMLElement;
 
@@ -83,12 +83,19 @@ export default class Trait extends Model<TraitProperties> {
     };
   }
 
-  constructor(prop: TraitProperties) {
+  constructor(prop: TraitProperties, em: EditorModel) {
     super(prop);
-    const { target, name, changeProp, value: initValue } = this.attributes;
+    const { target, name } = this.attributes;
     !this.get('id') && this.set('id', name);
-
     if (target) {
+      this.setTarget(target);
+    }
+    this.em = em;
+  }
+
+  setTarget(target: Component) {
+    if (target) {
+      const { name, changeProp, value: initValue } = this.attributes;
       this.target = target;
       this.unset('target');
       const targetEvent = changeProp ? `change:${name}` : `change:attributes:${name}`;
