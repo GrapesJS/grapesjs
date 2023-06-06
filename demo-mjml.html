@@ -16,10 +16,11 @@
     <script src="./js/toastr.min.js"></script>
     <script src="./js/ajaxable.min.js"></script>
     <script src="js/aviary.js"></script>
-    <script src="./js/ckeditor/ckeditor.js"></script>
+    <!-- <script src="./js/ckeditor/ckeditor.js"></script> -->
 
     <!-- Plugins -->
-    <script src="./js/grapesjs-plugin-ckeditor.min.js"></script>
+    <!-- <script src="./js/grapesjs-plugin-ckeditor.min.js"></script> -->
+    <script src="./js/grapesjs-plugin-ckeditor/index.js"></script>
     <script src="https://unpkg.com/grapesjs-mjml@1.0.2"></script>
 
   </head>
@@ -34,6 +35,10 @@
 
     .gjs-logo-version {
       background-color: #4b4e54;
+    }
+
+    .cke_toolbar.cke_toolbar {
+      min-height: 33px;
     }
   </style>
   <body>
@@ -149,8 +154,6 @@
 
 
     <script type="text/javascript">
-      CKEDITOR.dtd.$editable.a = 1;
-
       var lp = './img/';
       var plp = 'https://via.placeholder.com/350x250/';
       var images = [
@@ -188,15 +191,14 @@
         container : '#gjs',
         fromElement: true,
 
-        plugins: ['grapesjs-mjml', 'gjs-plugin-ckeditor'],
+        plugins: ['grapesjs-mjml', 'grapesjs-plugin-ckeditor'],
         pluginsOpts: {
-          'gjs-plugin-ckeditor': {
-            position: 'center',
+          'grapesjs-plugin-ckeditor': {
             options: {
               startupFocus: true,
               extraAllowedContent: '*(*);*{*}', // Allows any class and any inline style
               allowedContent: true, // Disable auto-formatting, class removing, etc.
-              enterMode: CKEDITOR.ENTER_BR,
+              enterMode: 2, // CKEDITOR.ENTER_BR,
               extraPlugins: 'sharedspace,justify,colorbutton,panelbutton,font',
               toolbar: [
                 { name: 'styles', items: ['Font', 'FontSize' ] },
@@ -280,6 +282,13 @@
 
         // Move Ad
         $('#gjs').append($('.ad-cont'));
+
+        // Wait for CKEDITOR load
+        setTimeout(() => {
+          if (CKEDITOR) {
+            CKEDITOR.dtd.$editable.a = 1;
+          }
+        }, 200);
       });
     </script>
     <script>

@@ -10,8 +10,9 @@
     <link rel="stylesheet" href="stylesheets/demos.css?v2">
 
     <script src="js/grapes.min.js?v0.21.2"></script>
-    <script src="./js/ckeditor/ckeditor.js"></script>
-    <script src="https://unpkg.com/grapesjs-plugin-ckeditor@0.0.10"></script>
+    <!-- <script src="./js/ckeditor/ckeditor.js"></script> -->
+    <!-- <script src="https://unpkg.com/grapesjs-plugin-ckeditor@0.0.10"></script> -->
+    <script src="./js/grapesjs-plugin-ckeditor/index.js"></script>
     <script src="https://unpkg.com/grapesjs-preset-newsletter@1.0.1"></script>
   </head>
   <style>
@@ -21,6 +22,9 @@
 
     .gjs-logo-version {
       background-color: #5a606d;
+    }
+    .cke_toolbar.cke_toolbar {
+      min-height: 33px;
     }
   </style>
   <body>
@@ -543,7 +547,7 @@
         },
         container : '#gjs',
         fromElement: true,
-        plugins: ['grapesjs-preset-newsletter', 'gjs-plugin-ckeditor'],
+        plugins: ['grapesjs-preset-newsletter', 'grapesjs-plugin-ckeditor'],
         pluginsOpts: {
           'grapesjs-preset-newsletter': {
             modalLabelImport: 'Paste all your code here below and click import',
@@ -559,13 +563,12 @@
               padding: 0,
             }
           },
-          'gjs-plugin-ckeditor': {
-            position: 'center',
+          'grapesjs-plugin-ckeditor': {
             options: {
               startupFocus: true,
               extraAllowedContent: '*(*);*{*}', // Allows any class and any inline style
               allowedContent: true, // Disable auto-formatting, class removing, etc.
-              enterMode: CKEDITOR.ENTER_BR,
+              enterMode: 2, // CKEDITOR.ENTER_BR,
               extraPlugins: 'sharedspace,justify,colorbutton,panelbutton,font',
               toolbar: [
                 { name: 'styles', items: ['Font', 'FontSize' ] },
