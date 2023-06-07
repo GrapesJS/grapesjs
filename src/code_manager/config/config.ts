@@ -6,6 +6,12 @@ export interface CodeManagerConfig {
   stylePrefix?: string;
 
   /**
+   * Pass default options to code viewer
+   * @default {}
+   */
+  optsCodeViewer?: Record<string, any>;
+
+  /**
    * Inline Css
    * @default false
    */
@@ -15,6 +21,7 @@ export interface CodeManagerConfig {
 const config: CodeManagerConfig = {
   stylePrefix: 'cm-',
   inlineCss: false,
+  optsCodeViewer: {},
 };
 
 export default config;
