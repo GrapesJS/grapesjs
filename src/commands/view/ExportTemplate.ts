@@ -1,6 +1,6 @@
 import { CommandObject } from './CommandAbstract';
 import { EditorParam } from '../../editor';
-import { $ } from '../../common';
+import { createEl } from '../../utils/dom';
 
 interface ExportTemplateRunOptions {
   optsHtml?: EditorParam<'getHtml', 0>;
@@ -15,20 +15,21 @@ export default {
     const pfx = config.stylePrefix;
     this.cm = editor.CodeManager || null;
 
-    if (!this.$editors) {
+    if (!this.editors) {
       const oHtmlEd = this.buildEditor('htmlmixed', 'hopscotch', 'HTML');
       const oCsslEd = this.buildEditor('css', 'hopscotch', 'CSS');
       this.htmlEditor = oHtmlEd.model;
       this.cssEditor = oCsslEd.model;
-      const $editors = $(`<div class="${pfx}export-dl"></div>`);
-      $editors.append(oHtmlEd.el).append(oCsslEd.el);
-      this.$editors = $editors;
+      const editors = createEl('div', { class: `${pfx}export-dl` });
+      editors.appendChild(oHtmlEd.el);
+      editors.appendChild(oCsslEd.el);
+      this.editors = editors;
     }
 
     modal
       .open({
         title: config.textViewCode,
-        content: this.$editors,
+        content: this.editors,
       })
       .getModel()
       .once('change:open', () => editor.stopCommand(`${this.id}`));
