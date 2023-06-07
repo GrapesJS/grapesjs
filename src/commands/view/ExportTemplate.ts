@@ -18,10 +18,10 @@ export default {
     if (!this.$editors) {
       const oHtmlEd = this.buildEditor('htmlmixed', 'hopscotch', 'HTML');
       const oCsslEd = this.buildEditor('css', 'hopscotch', 'CSS');
-      this.htmlEditor = oHtmlEd.el;
-      this.cssEditor = oCsslEd.el;
+      this.htmlEditor = oHtmlEd.model;
+      this.cssEditor = oCsslEd.model;
       const $editors = $(`<div class="${pfx}export-dl"></div>`);
-      $editors.append(oHtmlEd.$el).append(oCsslEd.$el);
+      $editors.append(oHtmlEd.el).append(oCsslEd.el);
       this.$editors = $editors;
     }
 
@@ -42,23 +42,18 @@ export default {
   },
 
   buildEditor(codeName: string, theme: string, label: string) {
-    const input = document.createElement('textarea');
-    !this.codeMirror && (this.codeMirror = this.cm.getViewer('CodeMirror'));
-
-    const el = this.codeMirror.clone().set({
+    const cm = this.em.CodeManager;
+    const model = cm.createViewer({
       label,
       codeName,
       theme,
-      input,
     });
 
-    const $el = new this.cm.EditorView({
-      model: el,
-      config: this.cm.getConfig(),
-    }).render().$el;
+    const el = new cm.EditorView({
+      model,
+      config: cm.getConfig(),
+    } as any).render().el;
 
-    el.init(input);
-
-    return { el, $el };
+    return { model, el };
   },
 } as CommandObject<{}, { [k: string]: any }>;
