@@ -33,14 +33,3 @@ export default class ComponentTextNode extends Component {
     }
   }
 }
-
-// ComponentTextNode.isComponent = el => {
-//   var result = '';
-//   if (el.nodeType === 3) {
-//     result = {
-//       type: 'textnode',
-//       content: el.textContent,
-//     };
-//   }
-//   return result;
-// };
