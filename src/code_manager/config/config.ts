@@ -10,17 +10,10 @@ export interface CodeManagerConfig {
    * @default {}
    */
   optsCodeViewer?: Record<string, any>;
-
-  /**
-   * Inline Css
-   * @default false
-   */
-  inlineCss?: boolean;
 }
 
 const config: CodeManagerConfig = {
   stylePrefix: 'cm-',
-  inlineCss: false,
   optsCodeViewer: {},
 };
 
