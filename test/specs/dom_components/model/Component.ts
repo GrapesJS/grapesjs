@@ -447,6 +447,37 @@ describe('Component', () => {
 
     expect(() => new ExtendedComponent()).not.toThrowError();
   });
+
+  test('Component moves correclty to the same parent', () => {
+    const expectedIndex = 1;
+    const parent = new Component({}, compOpts);
+    parent.append('<div>text1</div><div>text2</div><div>text3</div>');
+
+    const cmp = parent.getChildAt(0);
+
+    expect(cmp.index()).toEqual(0);
+
+    cmp.move(parent, { at: 1 });
+
+    expect(cmp.index()).toEqual(expectedIndex);
+  });
+
+  test('Component moves correclty to the different parent', () => {
+    const expectedIndex = 0;
+    const parent = new Component({}, compOpts);
+    parent.append('<div>text1</div><div>text2</div><div>text3</div>');
+
+    const parent1 = new Component({}, compOpts);
+    parent1.append('<div>text1</div>');
+
+    const cmp = parent.getChildAt(1);
+
+    expect(cmp.index()).toEqual(1);
+
+    cmp.move(parent1, { at: 0 });
+
+    expect(cmp.index()).toEqual(expectedIndex);
+  });
 });
 
 describe('Image Component', () => {

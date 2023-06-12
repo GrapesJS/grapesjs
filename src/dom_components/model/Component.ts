@@ -1857,12 +1857,9 @@ export default class Component extends StyleableModel<ComponentProperties> {
       const { at } = opts;
       const index = this.index();
       const sameParent = component === this.parent();
-      const sameIndex = index === at || index === at! - 1;
+      const sameIndex = index === at;
 
       if (!sameParent || !sameIndex) {
-        if (sameParent && at && at > index) {
-          opts.at = at - 1;
-        }
         this.remove({ temporary: 1 });
         component.append(this, opts);
         this.emitUpdate();
