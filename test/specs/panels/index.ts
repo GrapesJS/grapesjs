@@ -1,6 +1,6 @@
-import Panels from 'panels';
-import Panel from 'panels/model/Panel';
-import Editor from 'editor/model/Editor';
+import Panels from '../../../src/panels';
+import Panel from '../../../src/panels/model/Panel';
+import Editor from '../../../src/editor/model/Editor';
 
 describe('Panels', () => {
   describe('Main', () => {
@@ -81,21 +81,21 @@ describe('Panels', () => {
     });
 
     test('Active correctly activable buttons', () => {
-      var spy = sinon.spy();
-      var panel = obj.addPanel({ id: 'test' });
-      var btn = obj.addButton('test', { id: 'btn', active: true });
-      btn.on('updateActive', spy);
+      const fn = jest.fn();
+      obj.addPanel({ id: 'test' });
+      const btn = obj.addButton('test', { id: 'btn', active: true });
+      btn.on('updateActive', fn);
       obj.active();
-      expect(spy.called).toEqual(true);
+      expect(fn).toBeCalledTimes(1);
     });
 
     test('Disable correctly buttons flagged as disabled', () => {
-      var spy = sinon.spy();
-      var panel = obj.addPanel({ id: 'test' });
-      var btn = obj.addButton('test', { id: 'btn', disable: true });
-      btn.on('change:disable', spy);
+      const fn = jest.fn();
+      obj.addPanel({ id: 'test' });
+      const btn = obj.addButton('test', { id: 'btn', disable: true });
+      btn.on('change:disable', fn);
       obj.disableButtons();
-      expect(spy.called).toEqual(true);
+      expect(fn).toBeCalledTimes(1);
     });
 
     test("Can't remove button to non existent panel", () => {

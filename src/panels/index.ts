@@ -79,7 +79,7 @@ export default class PanelManager extends Module<PanelsConfig> {
    *  buttons  : [...],
    * });
    */
-  addPanel(panel: Panel | Array<Record<string, any>>) {
+  addPanel(panel: Panel | Record<string, any>[]) {
     return this.panels.add(panel);
   }
 
