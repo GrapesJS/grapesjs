@@ -6,7 +6,7 @@ import $ from './utils/cash-dom';
 import polyfills from './utils/polyfills';
 
 interface InitEditorConfig extends EditorConfig {
-  grapesjs?: typeof GrapesJS;
+  grapesjs?: typeof grapesjs;
 }
 
 polyfills();
@@ -26,12 +26,14 @@ export const usePlugin = <P extends Plugin<any> | string>(plugin: P, opts?: P ex
   };
 };
 
-const GrapesJS = {
+export const grapesjs = {
   $,
 
   editors,
 
   plugins,
+
+  usePlugin,
 
   // @ts-ignore Will be replaced on build
   version: __GJS_VERSION__,
@@ -124,4 +126,4 @@ export type { default as Property } from './style_manager/model/Property';
 export type { default as Trait } from './trait_manager/model/Trait';
 export type { default as Traits } from './trait_manager/model/Traits';
 
-export default GrapesJS;
+export default grapesjs;
