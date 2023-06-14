@@ -33,7 +33,6 @@ import Panels from './model/Panels';
 import PanelsView from './view/PanelsView';
 
 export default class PanelManager extends Module<PanelsConfig> {
-  //config = {};
   panels: Panels;
   PanelsViewObj?: PanelsView;
 
@@ -65,7 +64,7 @@ export default class PanelManager extends Module<PanelsConfig> {
    * @return {HTMLElement}
    */
   getPanelsEl() {
-    return this.PanelsViewObj && this.PanelsViewObj.el;
+    return this.PanelsViewObj?.el;
   }
 
   /**
@@ -85,13 +84,14 @@ export default class PanelManager extends Module<PanelsConfig> {
 
   /**
    * Remove a panel from the collection
-   * @param {Object|Panel|String} panel Object with right properties or an instance of Panel or Painel id
-   * @return {Panel} Removed panel. Useful in case passed argument was an Object
+   * @param {Panel|String} panel Panel instance or panel id
+   * @return {Panel} Removed panel
    * @example
    * const somePanel = panelManager.getPanel('somePanel');
-   * const newPanel = panelManager.removePanel(somePanel);
-   * // or with id
-   * const newPanel = panelManager.removePanel('myNewPanel');
+   * const removedPanel = panelManager.removePanel(somePanel);
+   *
+   * // or by id
+   * const removedPanel = panelManager.removePanel('myNewPanel');
    *
    */
   removePanel(panel: Panel | string) {
@@ -103,10 +103,10 @@ export default class PanelManager extends Module<PanelsConfig> {
    * @param  {string} id Id string
    * @return {Panel|null}
    * @example
-   * var myPanel = panelManager.getPanel('myNewPanel');
+   * const myPanel = panelManager.getPanel('myPanel');
    */
   getPanel(id: string) {
-    var res = this.panels.where({ id });
+    const res = this.panels.where({ id });
     return res.length ? res[0] : null;
   }
 
@@ -116,7 +116,7 @@ export default class PanelManager extends Module<PanelsConfig> {
    * @param {Object|Button} button Button object or instance of Button
    * @return {Button|null} Added button. Useful in case passed button was an Object
    * @example
-   * var newButton = panelManager.addButton('myNewPanel',{
+   * const newButton = panelManager.addButton('myNewPanel',{
    *   id: 'myNewButton',
    *   className: 'someClass',
    *   command: 'someCommand',
@@ -141,7 +141,7 @@ export default class PanelManager extends Module<PanelsConfig> {
    * }
    */
   addButton(panelId: string, button: any) {
-    var pn = this.getPanel(panelId);
+    const pn = this.getPanel(panelId);
     return pn ? pn.buttons.add(button) : null;
   }
 
@@ -163,7 +163,7 @@ export default class PanelManager extends Module<PanelsConfig> {
    *
    */
   removeButton(panelId: string, button: any) {
-    var pn = this.getPanel(panelId);
+    const pn = this.getPanel(panelId);
     return pn && pn.buttons.remove(button);
   }
 
@@ -173,12 +173,12 @@ export default class PanelManager extends Module<PanelsConfig> {
    * @param {string} id Button's ID
    * @return {Button|null}
    * @example
-   * var button = panelManager.getButton('myPanel','myButton');
+   * const button = panelManager.getButton('myPanel', 'myButton');
    */
   getButton(panelId: string, id: string) {
-    var pn = this.getPanel(panelId);
+    const pn = this.getPanel(panelId);
     if (pn) {
-      var res = pn.buttons.where({ id });
+      const res = pn.buttons.where({ id });
       return res.length ? res[0] : null;
     }
     return null;
@@ -190,7 +190,7 @@ export default class PanelManager extends Module<PanelsConfig> {
    * @private
    */
   render() {
-    this.PanelsViewObj && this.PanelsViewObj.remove();
+    this.PanelsViewObj?.remove();
     this.PanelsViewObj = new PanelsView(this.panels);
     return this.PanelsViewObj.render().el;
   }
@@ -201,8 +201,7 @@ export default class PanelManager extends Module<PanelsConfig> {
    */
   active() {
     this.getPanels().each(p => {
-      //@ts-ignore
-      p.get('buttons').each(btn => {
+      p.buttons.each(btn => {
         btn.get('active') && btn.trigger('updateActive');
       });
     });
@@ -214,8 +213,7 @@ export default class PanelManager extends Module<PanelsConfig> {
    */
   disableButtons() {
     this.getPanels().each(p => {
-      //@ts-ignore
-      p.get('buttons').each(btn => {
+      p.buttons.each(btn => {
         if (btn.get('disable')) btn.trigger('change:disable');
       });
     });
