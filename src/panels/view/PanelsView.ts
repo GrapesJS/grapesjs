@@ -39,7 +39,6 @@ export default class PanelsView extends ModuleView<Panels> {
    * */
   private addToCollection(model: Panel, fragmentEl?: DocumentFragment) {
     const fragment = fragmentEl || null;
-    const config = this.config;
     const el = model.get('el');
     const view = new PanelView(model);
     const rendered = view.render().el;
@@ -48,8 +47,8 @@ export default class PanelsView extends ModuleView<Panels> {
     // Do nothing if the panel was requested to be another element
     if (el) {
     } else if (appendTo) {
-      var appendEl = document.querySelector(appendTo);
-      appendEl.appendChild(rendered);
+      const appendEl = document.querySelector(appendTo);
+      appendEl?.appendChild(rendered);
     } else {
       if (fragment) {
         fragment.appendChild(rendered);

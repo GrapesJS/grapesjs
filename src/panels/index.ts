@@ -28,7 +28,7 @@
 import { Module } from '../abstract';
 import EditorModel from '../editor/model/Editor';
 import defaults, { PanelsConfig } from './config/config';
-import Panel from './model/Panel';
+import Panel, { PanelProperties } from './model/Panel';
 import Panels from './model/Panels';
 import PanelsView from './view/PanelsView';
 
@@ -73,14 +73,14 @@ export default class PanelManager extends Module<PanelsConfig> {
    * @param {Object|Panel} panel Object with right properties or an instance of Panel
    * @return {Panel} Added panel. Useful in case passed argument was an Object
    * @example
-   * var newPanel = panelManager.addPanel({
-   *   id: 'myNewPanel',
-   *  visible  : true,
-   *  buttons  : [...],
+   * const newPanel = panelManager.addPanel({
+   *  id: 'myNewPanel',
+   *  visible: true,
+   *  buttons: [...],
    * });
    */
-  addPanel(panel: Panel | Record<string, any>[]) {
-    return this.panels.add(panel);
+  addPanel(panel: Panel | PanelProperties) {
+    return this.panels.add(panel as Panel);
   }
 
   /**
@@ -88,16 +88,13 @@ export default class PanelManager extends Module<PanelsConfig> {
    * @param {Object|Panel|String} panel Object with right properties or an instance of Panel or Painel id
    * @return {Panel} Removed panel. Useful in case passed argument was an Object
    * @example
-   * const newPanel = panelManager.removePanel({
-   *   id: 'myNewPanel',
-   *  visible  : true,
-   *  buttons  : [...],
-   * });
-   *
+   * const somePanel = panelManager.getPanel('somePanel');
+   * const newPanel = panelManager.removePanel(somePanel);
+   * // or with id
    * const newPanel = panelManager.removePanel('myNewPanel');
    *
    */
-  removePanel(panel: Panel) {
+  removePanel(panel: Panel | string) {
     return this.panels.remove(panel);
   }
 
@@ -145,7 +142,7 @@ export default class PanelManager extends Module<PanelsConfig> {
    */
   addButton(panelId: string, button: any) {
     var pn = this.getPanel(panelId);
-    return pn ? pn.get('buttons').add(button) : null;
+    return pn ? pn.buttons.add(button) : null;
   }
 
   /**
@@ -167,7 +164,7 @@ export default class PanelManager extends Module<PanelsConfig> {
    */
   removeButton(panelId: string, button: any) {
     var pn = this.getPanel(panelId);
-    return pn && pn.get('buttons').remove(button);
+    return pn && pn.buttons.remove(button);
   }
 
   /**
@@ -181,7 +178,7 @@ export default class PanelManager extends Module<PanelsConfig> {
   getButton(panelId: string, id: string) {
     var pn = this.getPanel(panelId);
     if (pn) {
-      var res = pn.get('buttons').where({ id });
+      var res = pn.buttons.where({ id });
       return res.length ? res[0] : null;
     }
     return null;
