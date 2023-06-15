@@ -260,7 +260,7 @@ export default class PropertyComposite<T extends Record<string, any> = PropertyC
     this.__upTargetsStyle(style, opts);
   }
 
-  _up(props: Partial<PropertyCompositeProps>, opts: OptionsUpdate = {}) {
+  _up(props: Partial<T>, opts: OptionsUpdate = {}) {
     this.__setProperties(this.__getSplitValue(props.value), opts);
     Property.prototype._up.call(this, props, opts);
     return this;

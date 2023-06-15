@@ -185,7 +185,6 @@ export default class Property<T extends Record<string, any> = PropertyProps> ext
     const { partial, ...rest } = opts;
     // @ts-ignore
     props.__p = !!(rest.avoidStore || partial);
-    // @ts-ignore
     return this.set(props, { ...rest, avoidStore: props.__p });
   }
 
