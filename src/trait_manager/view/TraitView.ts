@@ -48,8 +48,8 @@ export default class TraitView extends View<Trait> {
     const { type } = model.attributes;
     this.config = config;
     this.em = config.em;
-    this.pfx = config.stylePrefix || '';
     this.ppfx = config.pStylePrefix || '';
+    this.pfx = this.ppfx + config.stylePrefix || '';
     this.target = target;
     const { ppfx } = this;
     this.clsField = `${ppfx}field ${ppfx}field-${type}`;

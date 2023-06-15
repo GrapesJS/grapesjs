@@ -16,7 +16,7 @@ export const evAll = 'trait';
 export const evPfx = `${evAll}:`;
 export const evCustom = `${evPfx}custom`;
 
-const typesDef = {
+const typesDef: { [id: string]: { new (o: any): TraitView } } = {
   text: TraitView,
   number: TraitNumberView,
   select: TraitSelectView,
@@ -62,12 +62,9 @@ export default class TraitManager extends Module<TraitManagerConfig & { pStylePr
    */
   constructor(em: EditorModel) {
     super(em, 'TraitManager', defaults);
-    const c = this.config;
     const model = new Model();
     this.model = model;
-    const ppfx = c.pStylePrefix;
-    this.types = { ...typesDef };
-    ppfx && (c.stylePrefix = `${ppfx}${c.stylePrefix}`);
+    this.types = typesDef;
 
     const upAll = debounce(() => this.__upSel(), 0);
     model.listenTo(em, 'component:toggled', upAll);

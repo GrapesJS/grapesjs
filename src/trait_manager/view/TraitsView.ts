@@ -12,13 +12,13 @@ export default class TraitsView extends DomainViews {
     super(o);
     this.itemsView = itemsView;
     const config = o.config || {};
-    const pfx = config.stylePrefix || '';
+
     const em = o.editor;
     this.config = config;
     this.em = em;
-    this.pfx = pfx;
     this.ppfx = config.pStylePrefix || '';
-    this.className = `${pfx}traits`;
+    this.pfx = this.ppfx + config.stylePrefix || '';
+    this.className = `${this.pfx}traits`;
     this.listenTo(em, 'component:toggled', this.updatedCollection);
     this.updatedCollection();
   }

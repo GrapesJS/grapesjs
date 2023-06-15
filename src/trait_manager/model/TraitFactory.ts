@@ -1,35 +1,35 @@
 import { TraitManagerConfig } from '../config/config';
-import { TraitProperties } from './Trait';
+import { isString } from 'underscore';
+import Trait, { TraitProperties } from './Trait';
+import EditorModel from '../../editor/model/Editor';
 
-export default (config: Partial<TraitManagerConfig> = {}) => ({
+export default class TraitFactory {
+  config: Partial<TraitManagerConfig>;
+
+  constructor(config: Partial<TraitManagerConfig> = {}) {
+    this.config = config;
+  }
+
   /**
    * Build props object by their name
-   * @param  {Array<string>|string} props Array of properties name
-   * @return {Array<Object>}
    */
-  build(props: string | string[]) {
-    const objs = [];
+  build(prop: string | TraitProperties, em: EditorModel): Trait {
+    return isString(prop) ? this.buildFromString(prop, em) : new Trait(prop, em);
+  }
 
-    if (typeof props === 'string') props = [props];
+  private buildFromString(name: string, em: EditorModel): Trait {
+    const obj: TraitProperties = {
+      name: name,
+      type: 'text',
+    };
 
-    for (let i = 0; i < props.length; i++) {
-      const prop = props[i];
-      const obj: TraitProperties = {
-        name: prop,
-        type: 'text',
-      };
-
-      switch (prop) {
-        case 'target':
-          obj.type = 'select';
-          obj.default = false;
-          obj.options = config.optionsTarget;
-          break;
-      }
-
-      objs.push(obj);
+    switch (name) {
+      case 'target':
+        obj.type = 'select';
+        obj.default = false;
+        obj.options = this.config.optionsTarget;
+        break;
     }
-
-    return objs;
-  },
-});
+    return new Trait(obj, em);
+  }
+}

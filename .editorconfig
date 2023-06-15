@@ -8,3 +8,11 @@ insert_final_newline = true
 charset = utf-8
 indent_style = space
 indent_size = 2
+quote_type = single
+
+[*.ts]
+charset = utf-8
+indent_style = space
+indent_size = 2
+quote_type = single
+max_line_length = 120
