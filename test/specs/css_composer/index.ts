@@ -1,6 +1,6 @@
-import CssComposer from 'css_composer';
+import CssComposer from '../../../src/css_composer';
+import Editor from '../../../src/editor/model/Editor';
 import utils from './../../test_utils.js';
-import Editor from 'editor/model/Editor';
 
 describe('Css Composer', () => {
   describe('Main', () => {
@@ -293,10 +293,10 @@ describe('Css Composer', () => {
         },
       ];
       toTest.forEach(test => {
-        const { selector, style, opt = {} } = test;
+        const { selector, style, opt } = test;
         obj.setRule(selector, style, opt);
         const rule = obj.getRule(selector, opt);
-        const atRule = `${opt.atRuleType || ''} ${opt.atRuleParams || ''}`.trim();
+        const atRule = `${opt?.atRuleType || ''} ${opt?.atRuleParams || ''}`.trim();
         expect(rule.getAtRule()).toEqual(atRule ? `@${atRule}` : '');
         expect(rule.selectorsToString()).toEqual(selector);
         expect(rule.getStyle()).toEqual(style);
