@@ -216,7 +216,7 @@ describe('Css Composer', () => {
     describe('setRule/getRule', () => {
       test('Create a simple class-based rule', () => {
         const selector = '.test';
-        const result = obj.setRule(selector, { color: 'red' });
+        obj.setRule(selector, { color: 'red' });
         expect(obj.getAll().length).toEqual(1);
         const rule = obj.getRule(selector)!;
         expect(rule.selectorsToString()).toEqual(selector);
@@ -225,7 +225,7 @@ describe('Css Composer', () => {
 
       test('Avoid creating multiple rules with the same selector', () => {
         const selector = '.test';
-        obj.setRule(selector, { color: 'red' });
+        obj.setRule(selector, { color: 'red', background: 'red' });
         obj.setRule(selector, { color: 'blue' });
         expect(obj.getAll().length).toEqual(1);
         const rule = obj.getRule(selector)!;
@@ -233,9 +233,17 @@ describe('Css Composer', () => {
         expect(rule.styleToString()).toEqual('color:blue;');
       });
 
+      test('Update rule with addStyles option', () => {
+        const selector = '.test';
+        obj.setRule(selector, { color: 'red', background: 'red' });
+        obj.setRule(selector, { color: 'blue' }, { addStyles: true });
+        const rule = obj.getRule(selector)!;
+        expect(rule.styleToString()).toEqual('color:blue;background:red;');
+      });
+
       test('Create a class-based rule', () => {
         const selector = '.test.test2';
-        const result = obj.setRule(selector, { color: 'red' });
+        obj.setRule(selector, { color: 'red' });
         expect(obj.getAll().length).toEqual(1);
         const rule = obj.getRule(selector)!;
         expect(rule.selectorsToString()).toEqual(selector);
@@ -244,7 +252,7 @@ describe('Css Composer', () => {
 
       test('Create a class-based rule with a state', () => {
         const selector = '.test.test2:hover';
-        const result = obj.setRule(selector, { color: 'red' });
+        obj.setRule(selector, { color: 'red' });
         expect(obj.getAll().length).toEqual(1);
         const rule = obj.getRule(selector)!;
         expect(rule.selectorsToString()).toEqual(selector);
