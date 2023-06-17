@@ -69,7 +69,7 @@ import ComponentManager, { ComponentEvent } from '../dom_components';
 import Component from '../dom_components/model/Component';
 import Components from '../dom_components/model/Components';
 import ComponentWrapper from '../dom_components/model/ComponentWrapper';
-import { DragMode } from '../dom_components/model/types';
+import { ComponentDefinition, DragMode } from '../dom_components/model/types';
 import I18nModule from '../i18n';
 import KeymapsModule, { KeymapEvent } from '../keymaps';
 import ModalModule, { ModalEvent } from '../modal_dialog';
@@ -320,7 +320,7 @@ export default class Editor implements IBaseModule<EditorConfig> {
    *   content: 'New component'
    * });
    */
-  setComponents(components: any, opt: any = {}) {
+  setComponents(components: string | ComponentDefinition, opt: any = {}) {
     this.em.setComponents(components, opt);
     return this;
   }
@@ -342,7 +342,7 @@ export default class Editor implements IBaseModule<EditorConfig> {
    *   content: 'New component'
    * });
    */
-  addComponents(components: any, opts?: any): Component[] {
+  addComponents(components: string | ComponentDefinition, opts?: any): Component[] {
     return this.getWrapper()!.append(components, opts);
   }
 
