@@ -97,7 +97,7 @@ import ComponentFrame from './model/ComponentFrame';
 import ComponentFrameView from './view/ComponentFrameView';
 import { ItemManagerModule } from '../abstract/Module';
 import EditorModel from '../editor/model/Editor';
-import { ComponentAdd, ComponentDefinitionDefined } from './model/types';
+import { ComponentAdd, ComponentDefinition, ComponentDefinitionDefined } from './model/types';
 import { AddOptions } from '../common';
 
 export type ComponentEvent =
@@ -120,7 +120,7 @@ export type ComponentEvent =
   | 'component:resize';
 
 export interface ComponentModelDefinition extends IComponent {
-  defaults?: ComponentDefinitionDefined;
+  defaults?: ComponentDefinition;
   [key: string]: any;
 }
 
