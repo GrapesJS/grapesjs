@@ -98,6 +98,7 @@ import ComponentFrameView from './view/ComponentFrameView';
 import { ItemManagerModule } from '../abstract/Module';
 import EditorModel from '../editor/model/Editor';
 import { ComponentAdd, ComponentDefinitionDefined } from './model/types';
+import { AddOptions } from '../common';
 
 export type ComponentEvent =
   | 'component:create'
@@ -323,7 +324,7 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
   }
 
   /**
-   * Returns privately the main wrapper
+   * Returns the main wrapper.
    * @return {Object}
    * @private
    */
@@ -376,7 +377,7 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
    */
   getComponents(): Components {
     const wrp = this.getWrapper();
-    return wrp?.get('components')!;
+    return wrp?.components()!;
   }
 
   /**
@@ -408,7 +409,7 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
    *   attributes: { title: 'here' }
    * });
    */
-  addComponent(component: ComponentAdd, opt = {}) {
+  addComponent(component: ComponentAdd, opt: AddOptions = {}) {
     return this.getComponents().add(component, opt);
   }
 
@@ -442,7 +443,7 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
    * @return {this}
    * @private
    */
-  setComponents(components: Component, opt = {}) {
+  setComponents(components: ComponentAdd, opt: AddOptions = {}) {
     this.clear(opt).addComponent(components, opt);
   }
 

@@ -60,7 +60,7 @@ import BlockManager, { BlockEvent } from '../block_manager';
 import CanvasModule, { CanvasEvent } from '../canvas';
 import CodeManagerModule from '../code_manager';
 import CommandsModule, { CommandEvent } from '../commands';
-import { EventHandler, LiteralUnion } from '../common';
+import { AddOptions, EventHandler, LiteralUnion } from '../common';
 import CssComposer from '../css_composer';
 import CssRule from '../css_composer/model/CssRule';
 import CssRules from '../css_composer/model/CssRules';
@@ -69,7 +69,7 @@ import ComponentManager, { ComponentEvent } from '../dom_components';
 import Component from '../dom_components/model/Component';
 import Components from '../dom_components/model/Components';
 import ComponentWrapper from '../dom_components/model/ComponentWrapper';
-import { ComponentDefinition, DragMode } from '../dom_components/model/types';
+import { ComponentAdd, DragMode } from '../dom_components/model/types';
 import I18nModule from '../i18n';
 import KeymapsModule, { KeymapEvent } from '../keymaps';
 import ModalModule, { ModalEvent } from '../modal_dialog';
@@ -322,7 +322,7 @@ export default class Editor implements IBaseModule<EditorConfig> {
    *   content: 'New component'
    * });
    */
-  setComponents(components: string | ComponentDefinition, opt: any = {}) {
+  setComponents(components: ComponentAdd, opt: AddOptions = {}) {
     this.em.setComponents(components, opt);
     return this;
   }
@@ -344,7 +344,7 @@ export default class Editor implements IBaseModule<EditorConfig> {
    *   content: 'New component'
    * });
    */
-  addComponents(components: string | ComponentDefinition, opts?: any): Component[] {
+  addComponents(components: ComponentAdd, opts?: AddOptions): Component[] {
     return this.getWrapper()!.append(components, opts);
   }
 

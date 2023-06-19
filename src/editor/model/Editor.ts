@@ -3,7 +3,7 @@ import Backbone from 'backbone';
 import $ from '../../utils/cash-dom';
 import Extender from '../../utils/extender';
 import { getModel, hasWin, isEmptyObj } from '../../utils/mixins';
-import { Model } from '../../common';
+import { AddOptions, Model } from '../../common';
 import Selected from './Selected';
 import FrameView from '../../canvas/view/FrameView';
 import Editor from '..';
@@ -40,7 +40,7 @@ import ComponentView from '../../dom_components/view/ComponentView';
 import { ProjectData } from '../../storage_manager/model/IStorage';
 import CssRules from '../../css_composer/model/CssRules';
 import Frame from '../../canvas/model/Frame';
-import { DragMode } from '../../dom_components/model/types';
+import { ComponentAdd, DragMode } from '../../dom_components/model/types';
 
 Backbone.$ = $;
 
@@ -652,7 +652,7 @@ export default class EditorModel extends Model {
    * @return {this}
    * @public
    */
-  setComponents(components: any, opt = {}) {
+  setComponents(components: ComponentAdd, opt: AddOptions = {}) {
     return this.Components.setComponents(components, opt);
   }
 
