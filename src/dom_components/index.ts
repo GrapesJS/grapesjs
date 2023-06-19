@@ -115,7 +115,8 @@ export type ComponentEvent =
   | 'component:type:update'
   | 'component:drag:start'
   | 'component:drag'
-  | 'component:drag:end';
+  | 'component:drag:end'
+  | 'component:resize';
 
 export interface ComponentModelDefinition extends IComponent {
   defaults?: ComponentDefinitionDefined;
