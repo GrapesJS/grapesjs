@@ -118,7 +118,7 @@ export default class LayerManager extends Module<LayerManagerConfig> {
    * layers.setRoot(component);
    */
   setRoot(component: Component | string): Component {
-    const wrapper: Component = this.em.getWrapper();
+    const wrapper: Component = this.em.getWrapper()!;
     let root = isComponent(component) ? (component as Component) : wrapper;
 
     if (component && isString(component) && hasWin()) {

@@ -73,7 +73,7 @@ export default class DevicesView extends View {
 
     if (em && em.getDeviceModel && devicesEl) {
       const device = em.getDeviceModel();
-      devicesEl.val(device ? device.get('id') : '');
+      devicesEl.val(device ? device.get('id')! : '');
     }
   }
 

@@ -653,7 +653,7 @@ export default class EditorModel extends Model {
    * @public
    */
   setComponents(components: any, opt = {}) {
-    return this.get('DomComponents').setComponents(components, opt);
+    return this.Components.setComponents(components, opt);
   }
 
   /**
@@ -662,12 +662,12 @@ export default class EditorModel extends Model {
    * @private
    */
   getComponents() {
-    var cmp = this.get('DomComponents');
-    var cm = this.get('CodeManager');
+    const cmp = this.Components;
+    const cm = this.CodeManager;
 
     if (!cmp || !cm) return;
 
-    var wrp = cmp.getComponents();
+    const wrp = cmp.getComponents();
     return cm.getCode(wrp, 'json');
   }
 
@@ -679,7 +679,7 @@ export default class EditorModel extends Model {
    * @public
    */
   setStyle(style: any, opt = {}) {
-    const cssc = this.get('CssComposer');
+    const cssc = this.Css;
     cssc.clear(opt);
     cssc.getAll().add(style, opt);
     return this;
@@ -733,9 +733,9 @@ export default class EditorModel extends Model {
     const { config } = this;
     const { optsHtml } = config;
     const js = config.jsInHtml ? this.getJs(opts) : '';
-    const cmp = opts.component || this.get('DomComponents').getComponent();
+    const cmp = opts.component || this.Components.getComponent();
     let html = cmp
-      ? this.get('CodeManager').getCode(cmp, 'html', {
+      ? this.CodeManager.getCode(cmp, 'html', {
           ...optsHtml,
           ...opts,
         })
@@ -755,7 +755,7 @@ export default class EditorModel extends Model {
     const { optsCss } = config;
     const avoidProt = opts.avoidProtected;
     const keepUnusedStyles = !isUndefined(opts.keepUnusedStyles) ? opts.keepUnusedStyles : config.keepUnusedStyles;
-    const cssc = this.get('CssComposer');
+    const cssc = this.Css;
     const wrp = opts.component || this.Components.getComponent();
     const protCss = !avoidProt ? config.protectedCss! : '';
     const css =
@@ -826,8 +826,8 @@ export default class EditorModel extends Model {
    * @private
    */
   getDeviceModel() {
-    var name = this.get('device');
-    return this.get('DeviceManager').get(name);
+    const name = this.get('device');
+    return this.Devices.get(name);
   }
 
   /**
@@ -862,7 +862,7 @@ export default class EditorModel extends Model {
    */
   refreshCanvas(opts: any = {}) {
     this.set('canvasOffset', null);
-    this.set('canvasOffset', this.get('Canvas').getOffset());
+    this.set('canvasOffset', this.Canvas.getOffset());
     opts.tools && this.trigger('canvas:updateTools');
   }
 
@@ -895,7 +895,7 @@ export default class EditorModel extends Model {
    * @return {Component}
    */
   getWrapper() {
-    return this.get('DomComponents').getWrapper();
+    return this.Components.getWrapper();
   }
 
   setCurrentFrame(frameView?: FrameView) {
@@ -929,11 +929,11 @@ export default class EditorModel extends Model {
   }
 
   getZoomDecimal() {
-    return this.get('Canvas').getZoomDecimal();
+    return this.Canvas.getZoomDecimal();
   }
 
   getZoomMultiplier() {
-    return this.get('Canvas').getZoomMultiplier();
+    return this.Canvas.getZoomMultiplier();
   }
 
   setDragMode(value: DragMode) {
@@ -1053,7 +1053,7 @@ export default class EditorModel extends Model {
    */
   skip(clb: Function) {
     this.__skip = true;
-    const um = this.get('UndoManager');
+    const um = this.UndoManager;
     um ? um.skip(clb) : clb();
     this.__skip = false;
   }

@@ -52,7 +52,7 @@ export default class BlockView extends View<Block> {
       return onClick(model, em?.getEditor(), { event: ev });
     }
     const sorter = config.getSorter();
-    const content = model.get('content');
+    const content = model.get('content')!;
     const selected = em.getSelected();
     sorter.setDropContent(content);
     let target, valid, insertAt;
@@ -78,7 +78,7 @@ export default class BlockView extends View<Block> {
 
     // If no target found yet, try to append the block to the wrapper
     if (!target) {
-      const wrapper = em.getWrapper();
+      const wrapper = em.getWrapper()!;
       valid = sorter.validTarget(wrapper.getEl(), content);
       if (valid.valid) target = wrapper;
     }
