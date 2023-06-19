@@ -88,7 +88,7 @@ export default class StorageManager extends Module<
   constructor(em: EditorModel) {
     super(em, 'StorageManager', defaults);
     const { config } = this;
-    if (config._disable) config.type = '';
+    if (config._disable) config.type = undefined;
     this.storages = {};
     this.add(STORAGE_LOCAL, new LocalStorage());
     this.add(STORAGE_REMOTE, new RemoteStorage());

@@ -16,7 +16,7 @@ export interface StorageManagerConfig {
    * Available by default: 'local' | 'remote'
    * @default 'local'
    */
-  type?: string;
+  type?: 'local' | 'remote';
 
   /**
    * Enable/disable autosaving.
