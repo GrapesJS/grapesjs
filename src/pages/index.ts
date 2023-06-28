@@ -49,7 +49,7 @@ import { createId } from '../utils/mixins';
 import { ModuleModel } from '../abstract';
 import { ItemManagerModule, ModuleConfig } from '../abstract/Module';
 import Pages from './model/Pages';
-import Page from './model/Page';
+import Page, { PageProperties } from './model/Page';
 import EditorModel from '../editor/model/Editor';
 import ComponentWrapper from '../dom_components/model/ComponentWrapper';
 import { AddOptions, RemoveOptions, SetOptions } from '../common';
@@ -171,10 +171,7 @@ export default class PageManager extends ItemManagerModule<PageManagerConfig, Pa
    *  component: '<div class="my-class">My element</div>', // or a JSON of components
    * });
    */
-  add(
-    props: any, //{ id?: string; styles: string; component: string },
-    opts: AddOptions & SelectOption & AbortOption = {}
-  ) {
+  add(props: PageProperties, opts: AddOptions & SelectOption & AbortOption = {}) {
     const { em } = this;
     props.id = props.id || this._createId();
     const add = () => {
