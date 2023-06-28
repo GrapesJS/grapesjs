@@ -1,15 +1,47 @@
-import { result, forEach } from 'underscore';
-import { Model } from '../../common';
-import Frames from '../../canvas/model/Frames';
-import Frame from '../../canvas/model/Frame';
-import EditorModel from '../../editor/model/Editor';
+import { forEach, result } from 'underscore';
 import { PageManagerConfig } from '..';
+import Frames from '../../canvas/model/Frames';
+import { Model } from '../../common';
 import ComponentWrapper from '../../dom_components/model/ComponentWrapper';
+import EditorModel from '../../editor/model/Editor';
+import { CssRuleJSON } from '../../css_composer/model/CssRule';
+import { ComponentDefinition } from '../../dom_components/model/types';
 
-export default class Page extends Model {
+/** @private */
+export interface PageProperties {
+  /**
+   * Panel id.
+   */
+  id?: string;
+
+  /**
+   * Page name.
+   */
+  name?: string;
+
+  /**
+   * HTML to load as page content.
+   */
+  component?: string | ComponentDefinition | ComponentDefinition[];
+
+  /**
+   * CSS to load with the page.
+   */
+  styles?: string | CssRuleJSON[];
+
+  [key: string]: unknown;
+}
+
+export interface PagePropertiesDefined extends Pick<PageProperties, 'id' | 'name'> {
+  frames: Frames;
+  [key: string]: unknown;
+}
+
+export default class Page extends Model<PagePropertiesDefined> {
   defaults() {
     return {
-      frames: [],
+      name: '',
+      frames: [] as unknown as Frames,
       _undo: true,
     };
   }
@@ -38,8 +70,8 @@ export default class Page extends Model {
     this.getFrames().reset();
   }
 
-  getFrames(): Frames {
-    return this.get('frames');
+  getFrames() {
+    return this.get('frames')!;
   }
 
   /**
@@ -47,15 +79,15 @@ export default class Page extends Model {
    * @returns {String}
    */
   getId() {
-    return this.id;
+    return this.id as string;
   }
 
   /**
    * Get page name
    * @returns {String}
    */
-  getName(): string {
-    return this.get('name');
+  getName() {
+    return this.get('name')!;
   }
 
   /**
