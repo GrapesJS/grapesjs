@@ -52,6 +52,18 @@ import Pages from './model/Pages';
 import Page from './model/Page';
 import EditorModel from '../editor/model/Editor';
 import ComponentWrapper from '../dom_components/model/ComponentWrapper';
+import { AddOptions, RemoveOptions, SetOptions } from '../common';
+
+interface SelectOption {
+  /**
+   * Select the page.
+   */
+  select?: boolean;
+}
+
+interface AbortOption {
+  abort?: boolean;
+}
 
 export const evAll = 'page';
 export const evPfx = `${evAll}:`;
@@ -161,7 +173,7 @@ export default class PageManager extends ItemManagerModule<PageManagerConfig, Pa
    */
   add(
     props: any, //{ id?: string; styles: string; component: string },
-    opts: any = {}
+    opts: AddOptions & SelectOption & AbortOption = {}
   ) {
     const { em } = this;
     props.id = props.id || this._createId();
@@ -184,7 +196,7 @@ export default class PageManager extends ItemManagerModule<PageManagerConfig, Pa
    * const somePage = pageManager.get('page-id');
    * pageManager.remove(somePage);
    */
-  remove(page: string | Page, opts: any = {}) {
+  remove(page: string | Page, opts: RemoveOptions & AbortOption = {}) {
     const { em } = this;
     const pg = isString(page) ? this.get(page) : page;
     const rm = () => {
@@ -240,7 +252,7 @@ export default class PageManager extends ItemManagerModule<PageManagerConfig, Pa
    * const somePage = pageManager.get('page-id');
    * pageManager.select(somePage);
    */
-  select(page: string | Page, opts = {}) {
+  select(page: string | Page, opts: SetOptions = {}) {
     const pg = isString(page) ? this.get(page) : page;
     if (pg) {
       this.em.trigger(evPageSelectBefore, pg, opts);
