@@ -94,7 +94,7 @@ export type StyleManagerEvent =
   | 'style:property:update'
   | 'style:target';
 
-type StyleTarget = StyleableModel;
+export type StyleTarget = StyleableModel;
 
 export const evAll = 'style';
 export const evPfx = `${evAll}:`;
@@ -446,8 +446,8 @@ export default class StyleManager extends ItemManagerModule<
    * By default, the Style Manager shows styles of the last selected target.
    * @returns {[Component]|[CSSRule]|null}
    */
-  getSelected() {
-    return this.model.get('lastTarget') || null;
+  getSelected(): StyleTarget | undefined {
+    return this.model.get('lastTarget');
   }
 
   /**
@@ -455,14 +455,14 @@ export default class StyleManager extends ItemManagerModule<
    * @returns {Array<[Component]|[CSSRule]>}
    */
   getSelectedAll() {
-    return this.model.get('targets') as Array<StyleTarget>;
+    return this.model.get('targets') as StyleTarget[];
   }
 
   /**
    * Get parent rules of the last selected target.
    * @returns {Array<[CSSRule]>}
    */
-  getSelectedParents(): Array<CssRule> {
+  getSelectedParents(): CssRule[] {
     return this.model.get('lastTargetParents') || [];
   }
 
