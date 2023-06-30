@@ -54,7 +54,7 @@ import EditorModel from '../editor/model/Editor';
 import ComponentWrapper from '../dom_components/model/ComponentWrapper';
 import { AddOptions, RemoveOptions, SetOptions } from '../common';
 
-interface SelectOption {
+interface SelectableOption {
   /**
    * Select the page.
    */
@@ -171,7 +171,7 @@ export default class PageManager extends ItemManagerModule<PageManagerConfig, Pa
    *  component: '<div class="my-class">My element</div>', // or a JSON of components
    * });
    */
-  add(props: PageProperties, opts: AddOptions & SelectOption & AbortOption = {}) {
+  add(props: PageProperties, opts: AddOptions & SelectableOption & AbortOption = {}) {
     const { em } = this;
     props.id = props.id || this._createId();
     const add = () => {

@@ -41,6 +41,7 @@ import { ProjectData } from '../../storage_manager/model/IStorage';
 import CssRules from '../../css_composer/model/CssRules';
 import Frame from '../../canvas/model/Frame';
 import { ComponentAdd, DragMode } from '../../dom_components/model/types';
+import ComponentWrapper from '../../dom_components/model/ComponentWrapper';
 
 Backbone.$ = $;
 
@@ -894,7 +895,7 @@ export default class EditorModel extends Model {
    * Return the component wrapper
    * @return {Component}
    */
-  getWrapper() {
+  getWrapper(): ComponentWrapper | undefined {
     return this.Components.getWrapper();
   }
 
