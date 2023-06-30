@@ -2307,7 +2307,7 @@ export interface Rect {
 export interface IComponentView extends ExtractMethods<ComponentView> {
 }
 export declare class ComponentView extends View</**
- * Keep this format to avoid errors in TS bundler */ 
+ * Keep this format to avoid errors in TS bundler */
 /** @ts-ignore */
 Component> {
 	/** @ts-ignore */
@@ -3631,7 +3631,7 @@ export interface ComponentsOptions {
 	domc?: ComponentManager;
 }
 export declare class Components extends Collection</**
- * Keep this format to avoid errors in TS bundler */ 
+ * Keep this format to avoid errors in TS bundler */
 /** @ts-ignore */
 Component> {
 	opt: ComponentsOptions;
@@ -5829,7 +5829,7 @@ export interface SectorProperties {
 	extendBuilded?: boolean;
 	properties?: PropertyProps[];
 }
-declare class Sector extends Model<SectorProperties> {
+export declare class Sector extends Model<SectorProperties> {
 	em: EditorModel;
 	defaults(): {
 		id: string;
@@ -6949,7 +6949,7 @@ declare class ClassTagsView extends View<Selector> {
 	renderStates(): void;
 	render(): this;
 }
-declare class Sectors extends Collection<Sector> {
+export declare class Sectors extends Collection<Sector> {
 	em: EditorModel;
 	module: any;
 	initialize(prop: any, opts?: {
@@ -7625,7 +7625,7 @@ export type PropertyTypes = PropertyStackProps | PropertySelectProps | PropertyN
 export type StyleManagerEvent = "style:sector:add" | "style:sector:remove" | "style:sector:update" | "style:property:add" | "style:property:remove" | "style:property:update" | "style:target";
 export type StyleTarget = StyleableModel;
 export type StyleModuleParam<T extends keyof StyleManager, N extends number> = Parameters<StyleManager[T]>[N];
-declare class StyleManager extends ItemManagerModule<StyleManagerConfig, 
+declare class StyleManager extends ItemManagerModule<StyleManagerConfig,
 /** @ts-ignore */
 Sectors> {
 	builtIn: PropertyFactory;

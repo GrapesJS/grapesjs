@@ -123,6 +123,8 @@ export type { default as Selectors } from './selector_manager/model/Selectors';
 export type { default as State } from './selector_manager/model/State';
 export type { default as Properties } from './style_manager/model/Properties';
 export type { default as Property } from './style_manager/model/Property';
+export type { default as Sector } from './style_manager/model/Sector';
+export type { default as Sectors } from './style_manager/model/Sectors';
 export type { default as Trait } from './trait_manager/model/Trait';
 export type { default as Traits } from './trait_manager/model/Traits';
 
