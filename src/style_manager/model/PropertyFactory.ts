@@ -1,8 +1,8 @@
 import { isFunction, isString } from 'underscore';
 import { PropertyProps } from './Property';
 import { PropertyCompositeProps } from './PropertyComposite';
-import { PropertyNumberProps } from './PropertyNumber';
-import { PropertySelectProps } from './PropertySelect';
+import PropertyNumber, { PropertyNumberProps } from './PropertyNumber';
+import PropertySelect, { PropertySelectProps } from './PropertySelect';
 import { PropertyStackProps } from './PropertyStack';
 
 type Option = {
@@ -374,7 +374,6 @@ export default class PropertyFactory {
         'box-shadow',
         {
           preview: true,
-          // @ts-ignore
           layerLabel: (l, { values }) => {
             const x = values['box-shadow-h'];
             const y = values['box-shadow-v'];
@@ -397,7 +396,6 @@ export default class PropertyFactory {
         'text-shadow',
         {
           default: 'none',
-          // @ts-ignore
           layerLabel: (l, { values }) => {
             const x = values['text-shadow-h'];
             const y = values['text-shadow-v'];
@@ -412,7 +410,6 @@ export default class PropertyFactory {
         'background',
         {
           detached: true,
-          // @ts-ignore
           layerLabel: (l, { values }) => {
             const repeat = values['background-repeat-sub'] || '';
             const pos = values['background-position-sub'] || '';
@@ -440,7 +437,6 @@ export default class PropertyFactory {
           layerSeparator: ' ',
           fromStyle(style, { property, name }) {
             const filter = style[name] || '';
-            // @ts-ignore
             const sep = property.getLayerSeparator();
             return filter
               ? filter.split(sep).map(input => {
@@ -489,10 +485,9 @@ export default class PropertyFactory {
               ],
               onChange({ property, to }) {
                 if (to.value) {
-                  // @ts-ignore
-                  const option = property.getOption();
+                  const option = (property as PropertySelect).getOption();
                   const props = { ...(option.propValue || {}) };
-                  const propToUp = property.getParent().getProperty('transform-value');
+                  const propToUp = property.getParent().getProperty('transform-value') as PropertyNumber;
                   const unit = propToUp.getUnit();
                   if (!unit || props?.units.indexOf(unit) < 0) {
                     props.unit = props?.units[0] || '';
