@@ -5979,6 +5979,122 @@ export declare class Sector extends Model<SectorProperties> {
 	 */
 	buildProperties(props: string | string[]): PropertyProps[];
 }
+declare class Input extends View {
+	ppfx: string;
+	em: EditorModel;
+	opts: any;
+	inputEl?: any;
+	template(): string;
+	inputClass(): string;
+	holderClass(): string;
+	constructor(opts?: any);
+	/**
+	 * Fired when the element of the property is updated
+	 */
+	elementUpdated(): void;
+	/**
+	 * Set value to the input element
+	 * @param {string} value
+	 */
+	setValue(value: string, opts?: any): void;
+	/**
+	 * Updates the view when the model is changed
+	 * */
+	handleModelChange(model: any, value: string, opts: any): void;
+	/**
+	 * Handled when the view is changed
+	 */
+	handleChange(e: Event): void;
+	__onInputChange(value: string): void;
+	/**
+	 * Get the input element
+	 * @return {HTMLElement}
+	 */
+	getInputEl(): any;
+	render(): this;
+}
+declare class InputNumber extends Input {
+	doc: Document;
+	unitEl?: any;
+	moved?: boolean;
+	prValue?: number;
+	current?: {
+		y: number;
+		val: string;
+	};
+	template(): string;
+	inputClass(): any;
+	constructor(opts?: {});
+	/**
+	 * Set value to the model
+	 * @param {string} value
+	 * @param {Object} opts
+	 */
+	setValue(value: string, opts?: any): void;
+	/**
+	 * Handled when the view is changed
+	 */
+	handleChange(e: Event): void;
+	/**
+	 * Handled when the view is changed
+	 */
+	handleUnitChange(e: Event): void;
+	/**
+	 * Handled when user uses keyboard
+	 */
+	handleKeyDown(e: KeyboardEvent): void;
+	/**
+	 * Fired when the element of the property is updated
+	 */
+	elementUpdated(): void;
+	/**
+	 * Updates the view when the model is changed
+	 * */
+	handleModelChange(): void;
+	/**
+	 * Get the unit element
+	 * @return {HTMLElement}
+	 */
+	getUnitEl(): any;
+	/**
+	 * Invoked when the up arrow is clicked
+	 * */
+	upArrowClick(): void;
+	/**
+	 * Invoked when the down arrow is clicked
+	 * */
+	downArrowClick(): void;
+	/**
+	 * Change easily integer input value with click&drag method
+	 * @param Event
+	 *
+	 * @return void
+	 * */
+	downIncrement(e: MouseEvent): void;
+	/** While the increment is clicked, moving the mouse will update input value
+	 * @param Object
+	 *
+	 * @return bool
+	 * */
+	moveIncrement(ev: MouseEvent): boolean;
+	/**
+	 * Stop moveIncrement method
+	 * */
+	upIncrement(): void;
+	normalizeValue(value: any, defValue?: number): any;
+	/**
+	 * Validate input value
+	 * @param {String} value Raw value
+	 * @param {Object} opts Options
+	 * @return {Object} Validated string
+	 */
+	validateInputValue(value?: any, opts?: any): {
+		force: number;
+		value: any;
+		unit: any;
+	};
+	render(): this;
+}
 /** @private */
 export interface PropertyNumberProps extends PropertyProps {
 	/**
@@ -6003,6 +6119,60 @@ export interface PropertyNumberProps extends PropertyProps {
 	 */
 	step?: number;
 }
+/**
+ * @typedef PropertyNumber
+ * @property {Array<String>} units Array of units, eg. `['px', '%']`
+ * @property {Number} min Minimum value.
+ * @property {Number} max Maximum value.
+ * @property {Number} step Step value.
+ *
+ */
+export declare class PropertyNumber extends Property<PropertyNumberProps> {
+	input?: InputNumber;
+	defaults(): any;
+	/**
+	 * Get property units.
+	 * @returns {Array<String>}
+	 */
+	getUnits(): string[];
+	/**
+	 * Get property unit value.
+	 * @returns {String}
+	 */
+	getUnit(): string;
+	/**
+	 * Get min value.
+	 * @returns {Number}
+	 */
+	getMin(): number;
+	/**
+	 * Get max value.
+	 * @returns {Number}
+	 */
+	getMax(): number;
+	/**
+	 * Get step value.
+	 * @returns {Number}
+	 */
+	getStep(): number;
+	/**
+	 * Update property unit value.
+	 * The change is also propagated to the selected targets.
+	 * @param {String} unit New unit value
+	 * @param {Object} [opts={}] Options
+	 * @param {Boolean} [opts.noTarget=false] If `true` the change won't be propagated to selected targets.
+	 * @returns {String}
+	 */
+	upUnit(unit: string, opts?: {
+		noTarget?: boolean;
+	}): this;
+	initialize(props?: {}, opts?: {}): void;
+	__getClearProps(): {
+		unit: string;
+	};
+	parseValue(val: any, opts?: {}): Partial<PropertyNumberProps>;
+	getFullValue(): string;
+}
 export type SelectOption = {
 	id: string;
 	value?: string;
@@ -6017,6 +6187,60 @@ export type SelectOption = {
 export interface PropertySelectProps extends PropertyProps {
 	options?: SelectOption[];
 	list?: SelectOption[];
+}
+/**
+ * @typedef PropertySelect
+ * @property {Array<Object>} options Array of option definitions.
+ * \n
+ * ```js
+ * options: [
+ *  { id: '100', label: 'Set 100' },
+ *  { id: '200', label: 'Set 200' },
+ * ]
+ * ```
+ */
+export declare class PropertySelect extends Property<PropertySelectProps> {
+	defaults(): any;
+	/**
+	 * Get available options.
+	 * @returns {Array<Object>} Array of options
+	 */
+	getOptions(): SelectOption[];
+	/**
+	 * Get current selected option or by id.
+	 * @param {String} [id] Option id.
+	 * @returns {Object | null}
+	 */
+	getOption(id?: string): SelectOption;
+	/**
+	 * Update options.
+	 * @param {Array<Object>} value New array of options, eg. `[{ id: 'val-1', label: 'Value 1' }]`
+	 */
+	setOptions(value?: SelectOption[]): this;
+	/**
+	 * Add new option.
+	 * @param {Object} value Option object, eg. `{ id: 'val-1', label: 'Value 1' }`
+	 */
+	addOption(value: SelectOption): this;
+	/**
+	 * Get the option id from the option object.
+	 * @param {Object} option Option object
+	 * @returns {String} Option id
+	 */
+	getOptionId(option: SelectOption): string;
+	/**
+	 * Get option label.
+	 * @param {String|Object} id Option id or the option object
+	 * @param {Object} [opts={}] Options
+	 * @param {Boolean} [opts.locale=true] Use the locale string from i18n module
+	 * @returns {String} Option label
+	 */
+	getOptionLabel(id: string | SelectOption, opts?: {
+		locale?: boolean;
+		property?: string;
+	}): string;
+	initialize(...args: any): void;
+	__onOptionChange(): void;
 }
 export type PropValues = Record<string, any>;
 export type OptionByName = {
@@ -6058,7 +6282,41 @@ export interface PropertyCompositeProps extends PropertyProps {
 	 */
 	toStyle?: ToStyle;
 }
-declare class PropertyComposite<T extends Record<string, any> = PropertyCompositeProps> extends Property<T> {
+/**
+ *
+ * [Property]: property.html
+ *
+ *
+ * @typedef PropertyComposite
+ * @property {Array<Object>} properties Array of sub properties, eg. `[{ type: 'number', property: 'margin-top' }, ...]`
+ * @property {Boolean} [detached=false] Indicate if the final CSS property is splitted (detached: `margin-top: X; margin-right: Y; ...`) or combined (not detached: `margin: X Y ...;`)
+ * @property {String|RegExp} [separator=' '] Value used to split property values, default `" "`.
+ * @property {String} [join=' '] Value used to join property values, default `" "`.
+ * @property {Function} [fromStyle] Custom logic for getting property values from the target style object.
+ * \n
+ * ```js
+ *  fromStyle: (style) => {
+ *    const margins = parseMarginShorthand(style.margin);
+ *    return {
+ *      'margin-top': margins.top,
+ *      // ...
+ *    };
+ *  }
+ * ```
+ * @property {Function} [toStyle] Custom logic for creating the CSS style object to apply on selected targets.
+ * \n
+ * ```js
+ *  toStyle: (values) => {
+ *    const top = values['margin-top'] || 0;
+ *    const right = values['margin-right'] || 0;
+ *    // ...
+ *    return {
+ *      margin: `${top} ${right} ...`,
+ *    };
+ *  }
+ * ```
+ */
+export declare class PropertyComposite<T extends Record<string, any> = PropertyCompositeProps> extends Property<T> {
 	defaults(): any;
 	initialize(props?: {}, opts?: {}): void;
 	get properties(): Property[];
@@ -7490,7 +7748,7 @@ declare class Layer extends Model<LayerProps> {
 	 * @param {Object} [opts={}] Options. Same of `PropertyStack.getStyleFromLayer`
 	 * @returns {Object} Style object
 	 */
-	getStylePreview(opts?: {}): Record<string, any>;
+	getStylePreview(opts?: OptionStyleStack): Record<string, any>;
 	/**
 	 * Check if the property has the preview enabled for this layer.
 	 * @returns {Boolean}
@@ -7552,7 +7810,26 @@ export interface PropertyStackProps extends Omit<PropertyCompositeProps, "toStyl
 	prepend?: boolean;
 	__layers?: PropValues[];
 }
-declare class PropertyStack extends PropertyComposite<PropertyStackProps> {
+/**
+ *
+ * [Layer]: layer.html
+ *
+ *
+ * @typedef PropertyStack
+ * @property {Boolean} [preview=false] Indicate if the layer should display a preview.
+ * @property {String|RegExp} [layerSeparator=', '] The separator used to split layer values.
+ * @property {String} [layerJoin=', '] Value used to join layer values.
+ * @property {Function} [layerLabel] Custom logic for creating layer labels.
+ * \n
+ * ```js
+ *  layerLabel: (layer) => {
+ *    const values = layer.getValues();
+ *    return `A: ${values['prop-a']} B: ${values['prop-b']}`;
+ *  }
+ *  ```
+ *
+ */
+export declare class PropertyStack extends PropertyComposite<PropertyStackProps> {
 	defaults(): any;
 	initialize(props?: {}, opts?: {}): void;
 	/**
@@ -7656,7 +7933,7 @@ declare class PropertyStack extends PropertyComposite<PropertyStackProps> {
 	 * @param {Object} [opts={}] Options. Same of `getStyleFromLayer`
 	 * @returns {Object} Style object
 	 */
-	getStylePreview(layer: Layer, opts?: {}): {};
+	getStylePreview(layer: Layer, opts?: OptionStyleStack): {};
 	/**
 	 * Get layer separator.
 	 * @return {RegExp}
@@ -11649,6 +11926,12 @@ export declare class Editor implements IBaseModule<EditorConfig> {
 	 * const strHtml = editor.html`Escaped ${unsafeStr} unescaped $${safeStr}`;
 	 */
 	html: typeof html;
+}
+export declare class PropertyRadio extends PropertySelect {
+	defaults(): any;
+}
+export declare class PropertySlider extends PropertyNumber {
+	defaults(): any;
 }
 export declare const usePlugin: <P extends string | Plugin<any>>(plugin: P, opts?: (P extends Plugin<infer C extends {
 	[x: string]: any;

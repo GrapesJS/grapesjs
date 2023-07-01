@@ -1,6 +1,7 @@
 import { Model } from '../../common';
 import { camelCase } from '../../utils/mixins';
 import LayerView from '../view/LayerView';
+import { OptionStyleStack } from './PropertyStack';
 
 export type LayerValues = Record<string, any>;
 
@@ -101,7 +102,7 @@ export default class Layer extends Model<LayerProps> {
    * @param {Object} [opts={}] Options. Same of `PropertyStack.getStyleFromLayer`
    * @returns {Object} Style object
    */
-  getStylePreview(opts = {}): Record<string, any> {
+  getStylePreview(opts: OptionStyleStack = {}): Record<string, any> {
     return this.prop?.getStylePreview(this, opts);
   }
 

@@ -25,7 +25,7 @@ type FromStyleDataStack = Omit<FromStyleData, 'property' | 'separator'> & {
   separatorLayers: RegExp;
 };
 
-type OptionStyleStack = OptionsStyle & { number?: { min?: number; max?: number } };
+export type OptionStyleStack = OptionsStyle & { number?: { min?: number; max?: number } };
 
 /** @private */
 export interface PropertyStackProps extends Omit<PropertyCompositeProps, 'toStyle' | 'fromStyle'> {
@@ -322,7 +322,7 @@ export default class PropertyStack extends PropertyComposite<PropertyStackProps>
    * @param {Object} [opts={}] Options. Same of `getStyleFromLayer`
    * @returns {Object} Style object
    */
-  getStylePreview(layer: Layer, opts = {}) {
+  getStylePreview(layer: Layer, opts: OptionStyleStack = {}) {
     let result = {};
     const preview = this.get('preview');
 

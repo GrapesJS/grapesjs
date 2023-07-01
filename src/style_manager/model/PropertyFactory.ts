@@ -243,7 +243,7 @@ export default class PropertyFactory {
       ['text-align', { default: 'left', options: this.optsTextAlign }, 'float'],
 
       // Color types
-      ['color', { type: this.typeColor, default: 'black' }],
+      ['color', { type: this.typeColor, default: 'black', full: true }],
       ['text-shadow-color', {}, 'color'],
       ['border-color', {}, 'color'],
       ['box-shadow-color', {}, 'color'],
@@ -261,7 +261,7 @@ export default class PropertyFactory {
       ],
 
       // Slider type
-      ['opacity', { type: this.typeSlider, default: '1', min: 0, max: 1, step: 0.01 }],
+      ['opacity', { type: this.typeSlider, default: '1', min: 0, max: 1, step: 0.01, full: true }],
 
       // Select types
       ['display', { type: this.typeSelect, default: 'block', options: this.opstDisplay }],
