@@ -837,7 +837,7 @@ export default class EditorModel extends Model {
    * @private
    */
   runDefault(opts = {}) {
-    var command = this.get('Commands').get(this.config.defaultCommand);
+    const command = this.get('Commands').get(this.config.defaultCommand);
     if (!command || this.defaultRunning) return;
     command.stop(this, this, opts);
     command.run(this, this, opts);

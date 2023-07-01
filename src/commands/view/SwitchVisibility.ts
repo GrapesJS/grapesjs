@@ -20,18 +20,23 @@ export default {
     if (!ed.Commands.isActive('preview')) {
       const cv = ed.Canvas;
       const mth = active ? 'on' : 'off';
+      const canvasModel = cv.getModel();
       cv.getFrames().forEach(frame => this._upFrame(frame, active));
-      cv.getModel()[mth]('change:frames', this._onFramesChange);
+      canvasModel[mth]('change:frames', this._onFramesChange);
     }
   },
 
   _onFramesChange(m: any, frames: Frame[]) {
-    frames.forEach(frame => frame.once('loaded', () => this._upFrame(frame, true)));
+    frames.forEach(frame => {
+      const load = () => this._upFrame(frame, true);
+      frame.view?.loaded ? load() : frame.once('loaded', load);
+    });
   },
 
   _upFrame(frame: Frame, active: boolean) {
     const method = active ? 'add' : 'remove';
-    frame.view?.getBody().classList[method](`${this.ppfx}dashed`);
+    const cls = `${this.ppfx}dashed`;
+    frame.view?.getBody().classList[method](cls);
   },
 } as CommandObject<
   {},
