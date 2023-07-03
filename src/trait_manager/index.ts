@@ -11,6 +11,7 @@ import TraitColorView from './view/TraitColorView';
 import TraitButtonView from './view/TraitButtonView';
 import EditorModel from '../editor/model/Editor';
 import Component from '../dom_components/model/Component';
+import Trait from './model/Trait';
 
 export const evAll = 'trait';
 export const evPfx = `${evAll}:`;
@@ -89,11 +90,14 @@ export default class TraitManager extends Module<TraitManagerConfig & { pStylePr
     this.__trgCustom();
   }
 
-  getSelected() {
-    return this.model.get('component') || null;
+  getSelected(): Component | undefined {
+    return this.model.get('component');
   }
 
-  getCurrent() {
+  /**
+   * Get traits from the currently selected component.
+   */
+  getCurrent(): Trait[] {
     return this.model.get('traits') || [];
   }
 

@@ -1,9 +1,10 @@
-import { isUndefined } from 'underscore';
+import { isString, isUndefined } from 'underscore';
 import { Model, SetOptions } from '../../common';
 import Component from '../../dom_components/model/Component';
 import Editor from '../../editor';
 import EditorModel from '../../editor/model/Editor';
 import TraitView from '../view/TraitView';
+import { isDef } from '../../utils/mixins';
 
 /** @private */
 export interface TraitProperties {
@@ -54,6 +55,11 @@ export interface TraitProperties {
   getValue?: (props: { editor: Editor; trait: Trait; component: Component }) => any;
   setValue?: (props: { value: any; editor: Editor; trait: Trait; component: Component; partial: boolean }) => void;
 }
+
+type TraitOption = {
+  id: string;
+  label?: string;
+};
 
 /**
  * @typedef Trait
@@ -185,6 +191,55 @@ export default class Trait extends Model<TraitProperties> {
       this.setTargetValue('');
       this.setTargetValue(value);
     }
+  }
+
+  /**
+   * Get default value.
+   */
+  getDefault() {
+    return this.get('default');
+  }
+
+  /**
+   * Get trait options.
+   */
+  getOptions(): TraitOption[] {
+    return (this.get('options') as TraitOption[]) || [];
+  }
+
+  /**
+   * Get current selected option or by id.
+   * @param {String} [id] Option id.
+   * @returns {Object | null}
+   */
+  getOption(id?: string): TraitOption | undefined {
+    const idSel = isDef(id) ? id : this.getValue();
+    return this.getOptions().filter(o => this.getOptionId(o) === idSel)[0];
+  }
+
+  /**
+   * Get the option id from the option object.
+   * @param {Object} option Option object
+   * @returns {String} Option id
+   */
+  getOptionId(option: TraitOption) {
+    return option.id || (option as any).value;
+  }
+
+  /**
+   * Get option label.
+   * @param {String|Object} id Option id or the option object
+   * @param {Object} [opts={}] Options
+   * @param {Boolean} [opts.locale=true] Use the locale string from i18n module
+   * @returns {String} Option label
+   */
+  getOptionLabel(id: string | TraitOption, opts: { locale?: boolean } = {}): string {
+    const { locale = true } = opts;
+    const option = (isString(id) ? this.getOption(id) : id)!;
+    const optId = this.getOptionId(option);
+    const label = option.label || (option as any).name || optId;
+    const propName = this.getName();
+    return (locale && this.em?.t(`traitManager.traits.options.${propName}.${optId}`)) || label;
   }
 
   props() {
