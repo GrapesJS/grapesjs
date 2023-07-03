@@ -55,8 +55,8 @@ export default {
       pnl.set('appendContent', $cnt).trigger(trgEvCnt);
 
       // Toggle Style Manager on target selection
-      this.em = editor.getModel();
-      this.listenTo(this.em, StyleManager.events.target, this.toggleSm);
+      const em = editor.getModel();
+      this.listenTo(em, StyleManager.events.target, this.toggleSm);
     }
 
     this.toggleSm();
@@ -67,15 +67,15 @@ export default {
    * @private
    */
   toggleSm() {
-    const { sender, sm } = this;
+    const { sender, sm, $cntInner, $header } = this;
     if ((sender && sender.get && !sender.get('active')) || !sm) return;
 
     if (sm.getSelected()) {
-      this.$cntInner?.show();
-      this.$header?.hide();
+      $cntInner?.show();
+      $header?.hide();
     } else {
-      this.$cntInner?.hide();
-      this.$header?.show();
+      $cntInner?.hide();
+      $header?.show();
     }
   },
 
