@@ -21,7 +21,6 @@ export default {
 
       // Device Manager
       if (DeviceManager && config.showDevices) {
-        // @ts-ignore
         const devicePanel = Panels.addPanel({ id: 'devices-c' });
         const dvEl = DeviceManager.render();
         devicePanel.set('appendContent', dvEl).trigger(trgEvCnt);
@@ -50,12 +49,10 @@ export default {
 
       // Create panel if not exists
       const pnCnt = 'views-container';
-      this.panel = Panels.getPanel(pnCnt);
-      // @ts-ignore
-      if (!this.panel) this.panel = Panels.addPanel({ id: pnCnt });
+      const pnl = Panels.getPanel(pnCnt) || Panels.addPanel({ id: pnCnt });
 
       // Add all containers to the panel
-      this.panel.set('appendContent', $cnt).trigger(trgEvCnt);
+      pnl.set('appendContent', $cnt).trigger(trgEvCnt);
 
       // Toggle Style Manager on target selection
       this.em = editor.getModel();
