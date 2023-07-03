@@ -126,6 +126,7 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
   all: Selectors;
   storageKey = '';
   __update: Debounced;
+  _cnt?: HTMLElement;
 
   /**
    * Get configuration object
@@ -173,7 +174,9 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
   }
 
   __customData(opts: any = {}) {
-    const { container } = opts;
+    const container = this._cnt || opts.container;
+    if (!this._cnt) this._cnt = container;
+
     return {
       states: this.getStates(),
       selected: this.getSelected(),
