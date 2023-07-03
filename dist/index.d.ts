@@ -829,6 +829,10 @@ export interface TraitProperties {
 		partial: boolean;
 	}) => void;
 }
+export type TraitOption = {
+	id: string;
+	label?: string;
+};
 /**
  * @typedef Trait
  * @property {String} id Trait id, eg. `my-trait-id`.
@@ -897,6 +901,36 @@ export declare class Trait extends Model<TraitProperties> {
 	setValue(value: any, opts?: {
 		partial?: boolean;
 	}): void;
+	/**
+	 * Get default value.
+	 */
+	getDefault(): any;
+	/**
+	 * Get trait options.
+	 */
+	getOptions(): TraitOption[];
+	/**
+	 * Get current selected option or by id.
+	 * @param {String} [id] Option id.
+	 * @returns {Object | null}
+	 */
+	getOption(id?: string): TraitOption | undefined;
+	/**
+	 * Get the option id from the option object.
+	 * @param {Object} option Option object
+	 * @returns {String} Option id
+	 */
+	getOptionId(option: TraitOption): any;
+	/**
+	 * Get option label.
+	 * @param {String|Object} id Option id or the option object
+	 * @param {Object} [opts={}] Options
+	 * @param {Boolean} [opts.locale=true] Use the locale string from i18n module
+	 * @returns {String} Option label
+	 */
+	getOptionLabel(id: string | TraitOption, opts?: {
+		locale?: boolean;
+	}): string;
 	props(): Partial<TraitProperties>;
 	targetUpdated(): void;
 	getTargetValue(): any;
@@ -916,6 +950,11 @@ export interface TraitManagerConfig {
 	 * @default ''
 	 */
 	appendTo?: string | HTMLElement;
+	/**
+	 * Avoid rendering the default Trait Manager UI.
+	 * @default false
+	 */
+	custom?: boolean;
 	optionsTarget?: Record<string, any>[];
 }
 declare class TraitFactory {
@@ -2445,6 +2484,7 @@ declare class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
 		allowfullscreen: string;
 	};
 	dragging: boolean;
+	loaded: boolean;
 	droppable?: Droppable;
 	rect?: DOMRect;
 	lastClientY?: number;
@@ -8278,6 +8318,7 @@ declare class SelectorManager extends ItemManagerModule<SelectorManagerConfig & 
 	all: Selectors;
 	storageKey: string;
 	__update: Debounced;
+	__ctn?: HTMLElement;
 	/**
 	 * Get configuration object
 	 * @name getConfig
@@ -8292,7 +8333,7 @@ declare class SelectorManager extends ItemManagerModule<SelectorManagerConfig & 
 	__customData(opts?: any): {
 		states: State[];
 		selected: Selector[];
-		container: any;
+		container: HTMLElement | undefined;
 	};
 	postRender(): void;
 	select(value: StyleModuleParam<"select", 0>, opts?: StyleModuleParam<"select", 1>): this;
@@ -8798,8 +8839,11 @@ declare class TraitManager extends Module<TraitManagerConfig & {
 	__upSel(): void;
 	__onUp(): void;
 	select(component?: Component): void;
-	getSelected(): any;
-	getCurrent(): any;
+	getSelected(): Component | undefined;
+	/**
+	 * Get traits from the currently selected component.
+	 */
+	getCurrent(): Trait[];
 	__trgCustom(opts?: any): void;
 	postRender(): void;
 	/**
