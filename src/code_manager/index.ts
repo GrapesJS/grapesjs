@@ -144,7 +144,10 @@ export default class CodeManagerModule extends Module<CodeManagerConfig & { pSty
     const cont = document.createElement('div');
     const txtarea = document.createElement('textarea');
     cont.appendChild(txtarea);
-    viewer.set(opts);
+    viewer.set({
+      ...this.config.optsCodeViewer,
+      ...opts,
+    });
     viewer.init(txtarea);
     viewer.setElement(cont);
 

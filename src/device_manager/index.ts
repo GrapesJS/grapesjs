@@ -145,7 +145,7 @@ export default class DeviceManager extends ItemManagerModule<
    * console.log(JSON.stringify(device));
    * // {name: 'Tablet', width: '900px'}
    */
-  get(id: string) {
+  get(id: string): Device | undefined {
     // Support old API
     const byName = this.getAll().filter(d => d.get('name') === id)[0];
     return byName || this.devices.get(id) || null;

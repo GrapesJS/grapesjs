@@ -82,7 +82,7 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
    * this.addStyle({color: 'red'});
    * this.addStyle('color', 'blue');
    */
-  addStyle(prop: string | ObjectAny, value = '', opts = {}) {
+  addStyle(prop: string | ObjectAny, value: any = '', opts: ObjectAny = {}) {
     if (typeof prop == 'string') {
       prop = {
         [prop]: value,

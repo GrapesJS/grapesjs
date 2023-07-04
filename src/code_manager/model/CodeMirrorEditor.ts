@@ -23,6 +23,7 @@ export default class CodeMirrorEditor extends Model {
       theme: 'hopscotch',
       readOnly: true,
       lineNumbers: true,
+      autoFormat: true,
     };
   }
 
@@ -96,8 +97,12 @@ export default class CodeMirrorEditor extends Model {
     const { editor } = this;
     if (!editor) return;
     editor.setValue(value);
+    const autoFormat = this.get('autoFormat');
+    const canAutoFormat =
+      editor.autoFormatRange &&
+      (autoFormat === true || (Array.isArray(autoFormat) && autoFormat.includes(this.get('codeName'))));
 
-    if (editor.autoFormatRange) {
+    if (canAutoFormat) {
       CodeMirror.commands.selectAll(editor);
       editor.autoFormatRange(editor.getCursor(true), editor.getCursor(false));
       CodeMirror.commands.goDocStart(editor);

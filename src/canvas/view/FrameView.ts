@@ -19,6 +19,7 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
   }
 
   dragging = false;
+  loaded = false;
   droppable?: Droppable;
   rect?: DOMRect;
 
@@ -456,6 +457,7 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
       this.droppable = new Droppable(em, this.wrapper?.el);
     }
     model.trigger('loaded');
+    this.loaded = true;
   }
 
   _toggleEffects(enable: boolean) {

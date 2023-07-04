@@ -67,8 +67,8 @@ export default class CanvasView extends ModuleView<Canvas> {
   constructor(model: Canvas) {
     super({ model });
     bindAll(this, 'clearOff', 'onKeyPress', 'onCanvasMove');
-    this.className = this.pfx + 'canvas';
-    const { em } = this;
+    const { em, pfx } = this;
+    this.className = `${pfx}canvas${!em.config.customUI ? ` ${pfx}canvas-bg` : ''}`;
     this._initFrames();
     this.listenTo(em, 'change:canvasOffset', this.clearOff);
     this.listenTo(em, 'component:selected', this.checkSelected);

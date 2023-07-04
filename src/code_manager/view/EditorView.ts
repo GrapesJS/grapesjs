@@ -22,10 +22,11 @@ export default class CodeEditorView extends View {
   render() {
     const { model, pfx, $el } = this;
     const obj = model.toJSON();
+    const toAppend = model.get('input') || (model as any).getElement?.();
     obj.pfx = pfx;
     $el.html(this.template(obj));
     $el.attr('class', `${pfx}editor-c`);
-    $el.find(`#${pfx}code`).append(model.get('input'));
+    $el.find(`#${pfx}code`).append(toAppend);
     return this;
   }
 }

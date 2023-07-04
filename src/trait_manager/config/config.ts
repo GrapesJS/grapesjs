@@ -12,6 +12,12 @@ export interface TraitManagerConfig {
    */
   appendTo?: string | HTMLElement;
 
+  /**
+   * Avoid rendering the default Trait Manager UI.
+   * @default false
+   */
+  custom?: boolean;
+
   optionsTarget?: Record<string, any>[];
 }
 
@@ -19,6 +25,7 @@ const config: TraitManagerConfig = {
   stylePrefix: 'trt-',
   appendTo: '',
   optionsTarget: [{ value: false }, { value: '_blank' }],
+  custom: false,
 };
 
 export default config;

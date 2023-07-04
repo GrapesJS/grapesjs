@@ -5,7 +5,7 @@ import ButtonsView from './ButtonsView';
 
 export default class PanelView extends ModuleView<Panel> {
   constructor(model: Panel) {
-    super({ model, el: model.get('el') });
+    super({ model, el: model.get('el') as string });
     this.className = this.pfx + 'panel';
     this.id = this.pfx + model.get('id');
     this.listenTo(model, 'change:appendContent', this.appendContent);
@@ -18,14 +18,14 @@ export default class PanelView extends ModuleView<Panel> {
    * Append content of the panel
    * */
   appendContent() {
-    this.$el.append(this.model.get('appendContent'));
+    this.$el.append(this.model.get('appendContent')!);
   }
 
   /**
    * Update content
    * */
   updateContent() {
-    this.$el.html(this.model.get('content'));
+    this.$el.html(this.model.get('content')!);
   }
 
   toggleVisible() {
@@ -47,24 +47,26 @@ export default class PanelView extends ModuleView<Panel> {
     const resizable = this.model.get('resizable');
 
     if (editor && resizable) {
-      var resz = resizable === true ? [1, 1, 1, 1] : resizable;
-      var resLen = resz.length;
-      var tc,
+      const resz = resizable === true ? [true, true, true, true] : resizable;
+      const resLen = (resz as boolean[]).length;
+      let tc,
         cr,
         bc,
-        cl = 0;
+        cl = false;
 
       // Choose which sides of the panel are resizable
       if (resLen == 2) {
-        tc = resz[0];
-        bc = resz[0];
-        cr = resz[1];
-        cl = resz[1];
+        const resBools = resz as boolean[];
+        tc = resBools[0];
+        bc = resBools[0];
+        cr = resBools[1];
+        cl = resBools[1];
       } else if (resLen == 4) {
-        tc = resz[0];
-        cr = resz[1];
-        bc = resz[2];
-        cl = resz[3];
+        const resBools = resz as boolean[];
+        tc = resBools[0];
+        cr = resBools[1];
+        bc = resBools[2];
+        cl = resBools[3];
       }
 
       const resizer: Resizer = new editor.Utils.Resizer({
@@ -72,13 +74,13 @@ export default class PanelView extends ModuleView<Panel> {
         cr,
         bc,
         cl,
-        tl: 0,
-        tr: 0,
-        bl: 0,
-        br: 0,
+        tl: false,
+        tr: false,
+        bl: false,
+        br: false,
         appendTo: this.el,
-        silentFrames: 1,
-        avoidContainerUpdate: 1,
+        silentFrames: true,
+        avoidContainerUpdate: true,
         prefix: editor.getConfig().stylePrefix,
         onEnd() {
           em && em.trigger('change:canvasOffset');
@@ -101,7 +103,7 @@ export default class PanelView extends ModuleView<Panel> {
             height,
           };
         },
-        ...resizable,
+        ...(resizable && typeof resizable !== 'boolean' ? resizable : {}),
       });
       resizer.blur = () => {};
       resizer.focus(this.el);
@@ -122,7 +124,7 @@ export default class PanelView extends ModuleView<Panel> {
       $el.append(buttonsView.render().el);
     }
 
-    $el.append(this.model.get('content'));
+    $el.append(this.model.get('content')!);
     return this;
   }
 }

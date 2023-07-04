@@ -9,7 +9,8 @@ export default ({ config }) => ({
   output: {
     ...config.output,
     filename: 'grapes.min.js',
-    libraryExport: 'default',
+    // This will assign all exports to the global object
+    library: undefined,
   },
   devServer: {
     ...config.devServer,

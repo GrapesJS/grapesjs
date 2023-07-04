@@ -63,6 +63,9 @@ Add new keymap
 *   `handler` **([Function][9] | [string][8])** Keymap handler, might be a function
 *   `opts` **[Object][7]** Options (optional, default `{}`)
 
+    *   `opts.force` **[Boolean][10]** Force the handler to be executed. (optional, default `false`)
+    *   `opts.prevent` **[Boolean][10]** Prevent default of the original triggered event. (optional, default `false`)
+
 ### Examples
 
 ```javascript
@@ -71,16 +74,18 @@ keymaps.add('ns:my-keymap', '⌘+j, ⌘+u, ctrl+j, alt+u', editor => {
  console.log('do stuff');
 });
 // or
-keymaps.add('ns:my-keymap', '⌘+s, ctrl+s', 'some-gjs-command');
+keymaps.add('ns:my-keymap', '⌘+s, ctrl+s', 'some-gjs-command', {
+ // Prevent the default browser action
+ prevent: true,
+});
 
 // listen to events
-editor.on('keymap:emit', (id, shortcut, e) => {
+editor.on('keymap:emit', (id, shortcut, event) => {
  // ...
 })
 ```
 
 Returns **[Object][7]** Added keymap
-or just a command id as a string
 
 ## get
 
@@ -152,3 +157,5 @@ Returns **this**
 [8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
 [9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+
+[10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean

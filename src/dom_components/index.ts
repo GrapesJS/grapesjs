@@ -38,6 +38,7 @@
  * * `component:drag:start` - Component drag started. Passed an object, to the callback, containing the `target` (component to drag), `parent` (parent of the component) and `index` (component index in the parent)
  * * `component:drag` - During component drag. Passed the same object as in `component:drag:start` event, but in this case, `parent` and `index` are updated by the current pointer
  * * `component:drag:end` - Component drag ended. Passed the same object as in `component:drag:start` event, but in this case, `parent` and `index` are updated by the final pointer
+ * * `component:resize` - During component resize.
  *
  * ## Methods
  * * [getWrapper](#getwrapper)
@@ -97,7 +98,8 @@ import ComponentFrame from './model/ComponentFrame';
 import ComponentFrameView from './view/ComponentFrameView';
 import { ItemManagerModule } from '../abstract/Module';
 import EditorModel from '../editor/model/Editor';
-import { ComponentAdd, ComponentDefinitionDefined } from './model/types';
+import { ComponentAdd, ComponentDefinition, ComponentDefinitionDefined } from './model/types';
+import { AddOptions } from '../common';
 
 export type ComponentEvent =
   | 'component:create'
@@ -115,10 +117,11 @@ export type ComponentEvent =
   | 'component:type:update'
   | 'component:drag:start'
   | 'component:drag'
-  | 'component:drag:end';
+  | 'component:drag:end'
+  | 'component:resize';
 
 export interface ComponentModelDefinition extends IComponent {
-  defaults?: ComponentDefinitionDefined;
+  defaults?: ComponentDefinition;
   [key: string]: any;
 }
 
@@ -322,7 +325,7 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
   }
 
   /**
-   * Returns privately the main wrapper
+   * Returns the main wrapper.
    * @return {Object}
    * @private
    */
@@ -375,7 +378,7 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
    */
   getComponents(): Components {
     const wrp = this.getWrapper();
-    return wrp?.get('components')!;
+    return wrp?.components()!;
   }
 
   /**
@@ -407,7 +410,7 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
    *   attributes: { title: 'here' }
    * });
    */
-  addComponent(component: ComponentAdd, opt = {}) {
+  addComponent(component: ComponentAdd, opt: AddOptions = {}) {
     return this.getComponents().add(component, opt);
   }
 
@@ -441,7 +444,7 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
    * @return {this}
    * @private
    */
-  setComponents(components: Component, opt = {}) {
+  setComponents(components: ComponentAdd, opt: AddOptions = {}) {
     this.clear(opt).addComponent(components, opt);
   }
 
@@ -478,8 +481,7 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
 
     // If the model/view is a simple object I need to extend it
     if (typeof model === 'object') {
-      const defaults = result(model, 'defaults');
-      // @ts-ignore
+      const modelDefaults = { defaults: model.defaults };
       delete model.defaults;
       methods.model = modelToExt.extend(
         {
@@ -490,12 +492,12 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
           isComponent: compType && !extendType && !isComponent ? modelToExt.isComponent : isComponent || (() => 0),
         }
       );
-      // @ts-ignore
-      Object.defineProperty(methods.model.prototype, 'defaults', {
-        value: {
+      // Reassign the defaults getter to the model
+      Object.defineProperty(methods.model!.prototype, 'defaults', {
+        get: () => ({
           ...(result(modelToExt.prototype, 'defaults') || {}),
-          ...(defaults || {}),
-        },
+          ...(result(modelDefaults, 'defaults') || {}),
+        }),
       });
     }
 

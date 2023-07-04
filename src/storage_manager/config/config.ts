@@ -1,3 +1,4 @@
+import { LiteralUnion } from '../../common';
 import Editor from '../../editor';
 import { ProjectData } from '../model/IStorage';
 import { LocalStorageConfig } from '../model/LocalStorage';
@@ -16,7 +17,7 @@ export interface StorageManagerConfig {
    * Available by default: 'local' | 'remote'
    * @default 'local'
    */
-  type?: string;
+  type?: LiteralUnion<'local' | 'remote', string>;
 
   /**
    * Enable/disable autosaving.

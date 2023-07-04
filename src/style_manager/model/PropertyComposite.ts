@@ -240,11 +240,11 @@ export default class PropertyComposite<T extends Record<string, any> = PropertyC
     return new RegExp(`${this.get('separator')}(?![^\\(]*\\))`);
   }
 
-  __upProperties(p: PropertyComposite, opts: any = {}) {
+  __upProperties(p: PropertyComposite, opts: any = {}): void {
     if (opts.__up || opts.__clearIn) return;
 
     const parentProp = this.__getParentProp();
-    if (parentProp) return parentProp.__upProperties(this, opts);
+    if (parentProp) return parentProp.__upProperties(this as any, opts);
 
     this.__upTargetsStyleProps(opts, p);
   }
@@ -260,7 +260,7 @@ export default class PropertyComposite<T extends Record<string, any> = PropertyC
     this.__upTargetsStyle(style, opts);
   }
 
-  _up(props: Partial<PropertyCompositeProps>, opts: OptionsUpdate = {}) {
+  _up(props: Partial<T>, opts: OptionsUpdate = {}) {
     this.__setProperties(this.__getSplitValue(props.value), opts);
     Property.prototype._up.call(this, props, opts);
     return this;

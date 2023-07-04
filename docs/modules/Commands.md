@@ -93,25 +93,25 @@ Until now there is nothing exciting except a common entry point for functions, b
 
 GrapesJS comes along with some default set of commands and you can get a list of all currently available commands via `editor.Commands.getAll()`. This will give you an object of all available commands, so, also those added later, like via plugins. You can recognize default commands by their namespace `core:*`, we also recommend to use namespaces in your own custom commands, but let's get a look more in detail here:
 
-* [`core:canvas-clear`](https://github.com/GrapesJS/grapesjs/blob/dev/src/commands/view/CanvasClear.js) - Clear all the content from the canvas (HTML and CSS)
-* [`core:component-delete`](https://github.com/GrapesJS/grapesjs/blob/dev/src/commands/view/ComponentDelete.js) - Delete a component
-* [`core:component-enter`](https://github.com/GrapesJS/grapesjs/blob/dev/src/commands/view/ComponentEnter.js) - Select the first children component of the selected one
-* [`core:component-exit`](https://github.com/GrapesJS/grapesjs/blob/dev/src/commands/view/ComponentExit.js) - Select the parent component of the current selected one
-* [`core:component-next`](https://github.com/GrapesJS/grapesjs/blob/dev/src/commands/view/ComponentNext.js) - Select the next sibling component
-* [`core:component-prev`](https://github.com/GrapesJS/grapesjs/blob/dev/src/commands/view/ComponentPrev.js) - Select the previous sibling component
-* [`core:component-outline`](https://github.com/GrapesJS/grapesjs/blob/dev/src/commands/view/SwitchVisibility.js) - Enable outline border on components
-* [`core:component-offset`](https://github.com/GrapesJS/grapesjs/blob/dev/src/commands/view/ShowOffset.js) - Enable components offset (margins, paddings)
-* [`core:component-select`](https://github.com/GrapesJS/grapesjs/blob/dev/src/commands/view/SelectComponent.js) - Enable the process of selecting components in the canvas
-* [`core:copy`](https://github.com/GrapesJS/grapesjs/blob/dev/src/commands/view/CopyComponent.js) - Copy the current selected component
-* [`core:paste`](https://github.com/GrapesJS/grapesjs/blob/dev/src/commands/view/PasteComponent.js) - Paste copied component
-* [`core:preview`](https://github.com/GrapesJS/grapesjs/blob/dev/src/commands/view/Preview.js) - Show the preview of the template in canvas
-* [`core:fullscreen`](https://github.com/GrapesJS/grapesjs/blob/dev/src/commands/view/Fullscreen.js) - Set the editor fullscreen
-* [`core:open-code`](https://github.com/GrapesJS/grapesjs/blob/dev/src/commands/view/ExportTemplate.js) - Open a default panel with the template code
-* [`core:open-layers`](https://github.com/GrapesJS/grapesjs/blob/dev/src/commands/view/OpenLayers.js) - Open a default panel with layers
-* [`core:open-styles`](https://github.com/GrapesJS/grapesjs/blob/dev/src/commands/view/OpenStyleManager.js) - Open a default panel with the style manager
-* [`core:open-traits`](https://github.com/GrapesJS/grapesjs/blob/dev/src/commands/view/OpenTraitManager.js) - Open a default panel with the trait manager
-* [`core:open-blocks`](https://github.com/GrapesJS/grapesjs/blob/dev/src/commands/view/OpenBlocks.js) - Open a default panel with the blocks
-* [`core:open-assets`](https://github.com/GrapesJS/grapesjs/blob/dev/src/commands/view/OpenAssets.js) - Open a default panel with the assets
+* [`core:canvas-clear`](https://github.com/GrapesJS/grapesjs/blob/dev/src/commands/view/CanvasClear.ts) - Clear all the content from the canvas (HTML and CSS)
+* [`core:component-delete`](https://github.com/GrapesJS/grapesjs/blob/dev/src/commands/view/ComponentDelete.ts) - Delete a component
+* [`core:component-enter`](https://github.com/GrapesJS/grapesjs/blob/dev/src/commands/view/ComponentEnter.ts) - Select the first children component of the selected one
+* [`core:component-exit`](https://github.com/GrapesJS/grapesjs/blob/dev/src/commands/view/ComponentExit.ts) - Select the parent component of the current selected one
+* [`core:component-next`](https://github.com/GrapesJS/grapesjs/blob/dev/src/commands/view/ComponentNext.ts) - Select the next sibling component
+* [`core:component-prev`](https://github.com/GrapesJS/grapesjs/blob/dev/src/commands/view/ComponentPrev.ts) - Select the previous sibling component
+* [`core:component-outline`](https://github.com/GrapesJS/grapesjs/blob/dev/src/commands/view/SwitchVisibility.ts) - Enable outline border on components
+* [`core:component-offset`](https://github.com/GrapesJS/grapesjs/blob/dev/src/commands/view/ShowOffset.ts) - Enable components offset (margins, paddings)
+* [`core:component-select`](https://github.com/GrapesJS/grapesjs/blob/dev/src/commands/view/SelectComponent.ts) - Enable the process of selecting components in the canvas
+* [`core:copy`](https://github.com/GrapesJS/grapesjs/blob/dev/src/commands/view/CopyComponent.ts) - Copy the current selected component
+* [`core:paste`](https://github.com/GrapesJS/grapesjs/blob/dev/src/commands/view/PasteComponent.ts) - Paste copied component
+* [`core:preview`](https://github.com/GrapesJS/grapesjs/blob/dev/src/commands/view/Preview.ts) - Show the preview of the template in canvas
+* [`core:fullscreen`](https://github.com/GrapesJS/grapesjs/blob/dev/src/commands/view/Fullscreen.ts) - Set the editor fullscreen
+* [`core:open-code`](https://github.com/GrapesJS/grapesjs/blob/dev/src/commands/view/ExportTemplate.ts) - Open a default panel with the template code
+* [`core:open-layers`](https://github.com/GrapesJS/grapesjs/blob/dev/src/commands/view/OpenLayers.ts) - Open a default panel with layers
+* [`core:open-styles`](https://github.com/GrapesJS/grapesjs/blob/dev/src/commands/view/OpenStyleManager.ts) - Open a default panel with the style manager
+* [`core:open-traits`](https://github.com/GrapesJS/grapesjs/blob/dev/src/commands/view/OpenTraitManager.ts) - Open a default panel with the trait manager
+* [`core:open-blocks`](https://github.com/GrapesJS/grapesjs/blob/dev/src/commands/view/OpenBlocks.ts) - Open a default panel with the blocks
+* [`core:open-assets`](https://github.com/GrapesJS/grapesjs/blob/dev/src/commands/view/OpenAssets.ts) - Open a default panel with the assets
 * `core:undo` - Call undo operation
 * `core:redo` - Call redo operation
 <!-- * `core:canvas-move` -->

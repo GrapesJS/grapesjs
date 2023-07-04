@@ -5,59 +5,58 @@ export default {
   run(editor, sender) {
     this.sender = sender;
 
-    if (!this.$cn) {
+    if (!this.$cnt) {
       const config = editor.getConfig();
-      const panels = editor.Panels;
+      const { Panels, DeviceManager, SelectorManager, StyleManager } = editor;
       const trgEvCnt = 'change:appendContent';
-      this.$cn = $('<div></div>');
-      this.$cn2 = $('<div></div>');
-      this.$cn.append(this.$cn2);
+      const $cnt = $('<div></div>');
+      const $cntInner = $('<div></div>');
+      const $cntSlm = $('<div></div>');
+      const $cntSm = $('<div></div>');
+      this.$cnt = $cnt;
+      this.$cntInner = $cntInner;
+      $cntInner.append($cntSlm);
+      $cntInner.append($cntSm);
+      $cnt.append($cntInner);
 
       // Device Manager
-      const dvm = editor.DeviceManager;
-      if (dvm && config.showDevices) {
-        // @ts-ignore
-        const devicePanel = panels.addPanel({ id: 'devices-c' });
-        const dvEl = dvm.render();
+      if (DeviceManager && config.showDevices) {
+        const devicePanel = Panels.addPanel({ id: 'devices-c' });
+        const dvEl = DeviceManager.render();
         devicePanel.set('appendContent', dvEl).trigger(trgEvCnt);
       }
 
       // Selector Manager container
-      const slm = editor.SelectorManager;
-      this.slm = slm;
-      const slmConfig = slm.getConfig();
+      const slmConfig = SelectorManager.getConfig();
       if (slmConfig.custom) {
-        slm.__trgCustom({ container: this.$cn2.get(0) });
+        SelectorManager.__trgCustom({ container: $cntSlm.get(0) });
       } else if (!slmConfig.appendTo) {
-        this.$cn2.append(slm.render([]));
+        $cntSlm.append(SelectorManager.render([]));
       }
 
       // Style Manager
-      const sm = editor.StyleManager;
-      this.sm = sm;
-      const smConfig = sm.getConfig();
+      this.sm = StyleManager;
+      const smConfig = StyleManager.getConfig();
       const pfx = smConfig.stylePrefix;
       this.$header = $(`<div class="${pfx}header">${editor.t('styleManager.empty')}</div>`);
-      this.$cn.append(this.$header);
+      $cnt.append(this.$header);
 
       if (smConfig.custom) {
-        sm.__trgCustom({ container: this.$cn2.get(0) });
+        StyleManager.__trgCustom({ container: $cntSm.get(0) });
       } else if (!smConfig.appendTo) {
-        this.$cn2.append(sm.render());
+        $cntSm.append(StyleManager.render());
       }
 
       // Create panel if not exists
       const pnCnt = 'views-container';
-      this.panel = panels.getPanel(pnCnt);
-      // @ts-ignore
-      if (!this.panel) this.panel = panels.addPanel({ id: pnCnt });
+      const pnl = Panels.getPanel(pnCnt) || Panels.addPanel({ id: pnCnt });
 
       // Add all containers to the panel
-      this.panel.set('appendContent', this.$cn).trigger(trgEvCnt);
+      pnl.set('appendContent', $cnt).trigger(trgEvCnt);
 
       // Toggle Style Manager on target selection
-      this.em = editor.getModel();
-      this.listenTo(this.em, sm.events.target, this.toggleSm);
+      const em = editor.getModel();
+      this.listenTo(em, StyleManager.events.target, this.toggleSm);
     }
 
     this.toggleSm();
@@ -68,20 +67,20 @@ export default {
    * @private
    */
   toggleSm() {
-    const { sender, sm } = this;
+    const { sender, sm, $cntInner, $header } = this;
     if ((sender && sender.get && !sender.get('active')) || !sm) return;
 
     if (sm.getSelected()) {
-      this.$cn2?.show();
-      this.$header?.hide();
+      $cntInner?.show();
+      $header?.hide();
     } else {
-      this.$cn2?.hide();
-      this.$header?.show();
+      $cntInner?.hide();
+      $header?.show();
     }
   },
 
   stop() {
-    this.$cn2?.hide();
+    this.$cntInner?.hide();
     this.$header?.hide();
   },
 } as CommandObject<{}, { [k: string]: any }>;

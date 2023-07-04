@@ -20,8 +20,14 @@ export default {
       this.$cn.append(this.$cn2);
       this.$header = $('<div>').append(`<div class="${confTm.stylePrefix}header">${em.t('traitManager.empty')}</div>`);
       this.$cn.append(this.$header);
-      this.$cn2.append(`<div class="${pfx}traits-label">${em.t('traitManager.label')}</div>`);
-      this.$cn2.append(tm.render());
+
+      if (confTm.custom) {
+        tm.__trgCustom({ container: this.$cn2.get(0) });
+      } else {
+        this.$cn2.append(`<div class="${pfx}traits-label">${em.t('traitManager.label')}</div>`);
+        this.$cn2.append(tm.render());
+      }
+
       var panels = editor.Panels;
 
       if (!panels.getPanel('views-container')) {

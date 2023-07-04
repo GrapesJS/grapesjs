@@ -85,18 +85,22 @@ export default class KeymapsModule extends Module<KeymapsConfig & { name?: strin
    * @param {string} keys Keymap keys, eg. `ctrl+a`, `⌘+z, ctrl+z`
    * @param {Function|string} handler Keymap handler, might be a function
    * @param {Object} [opts={}] Options
-   * @return {Object} Added keymap
-   *  or just a command id as a string
+   * @param {Boolean} [opts.force=false] Force the handler to be executed.
+   * @param {Boolean} [opts.prevent=false] Prevent default of the original triggered event.
+   * @returns {Object} Added keymap
    * @example
    * // 'ns' is just a custom namespace
    * keymaps.add('ns:my-keymap', '⌘+j, ⌘+u, ctrl+j, alt+u', editor => {
    *  console.log('do stuff');
    * });
    * // or
-   * keymaps.add('ns:my-keymap', '⌘+s, ctrl+s', 'some-gjs-command');
+   * keymaps.add('ns:my-keymap', '⌘+s, ctrl+s', 'some-gjs-command', {
+   *  // Prevent the default browser action
+   *  prevent: true,
+   * });
    *
    * // listen to events
-   * editor.on('keymap:emit', (id, shortcut, e) => {
+   * editor.on('keymap:emit', (id, shortcut, event) => {
    *  // ...
    * })
    */

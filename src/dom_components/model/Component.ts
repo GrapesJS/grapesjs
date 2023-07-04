@@ -43,7 +43,7 @@ const escapeRegExp = (str: string) => {
   return str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
 };
 
-const avoidInline = (em: EditorModel) => em && em.getConfig().avoidInlineStyle;
+const avoidInline = (em: EditorModel) => !!em?.getConfig().avoidInlineStyle;
 
 export const eventDrag = 'component:drag';
 export const keySymbols = '__symbols';
@@ -564,11 +564,11 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * @return {Object}
    */
   getStyle(options: any = {}, optsAdd: any = {}) {
-    const em = this.em;
+    const { em } = this;
     const prop = isString(options) ? options : '';
     const opts = prop ? optsAdd : options;
 
-    if (em && em.getConfig().avoidInlineStyle && !opts.inline) {
+    if (avoidInline(em) && !opts.inline) {
       const state = em.get('state');
       const cc = em.Css;
       const rule = cc.getIdRule(this.getId(), { state, ...opts });
@@ -592,7 +592,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
   setStyle(prop: ObjectStrings = {}, opts: any = {}) {
     const { opt, em } = this;
 
-    if (em && em.getConfig().avoidInlineStyle && !opt.temporary && !opts.inline) {
+    if (avoidInline(em) && !opt.temporary && !opts.inline) {
       const style = this.get('style') || {};
       prop = isString(prop) ? this.parseStyle(prop) : prop;
       prop = { ...prop, ...style };
@@ -640,19 +640,17 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
     // Check if we need an ID on the component
     if (!has(attributes, 'id')) {
-      let addId;
+      let addId = false;
 
       // If we don't rely on inline styling we have to check
       // for the ID selector
-      if (avoidInline(em)) {
-        addId = sm && sm.get(id, sm.Selector.TYPE_ID);
-      } else if (!isEmpty(this.getStyle())) {
-        addId = 1;
+      if (avoidInline(em) || !isEmpty(this.getStyle())) {
+        addId = !!sm?.get(id, sm.Selector.TYPE_ID);
       }
 
       // Symbols should always have an id
       if (this.__getSymbol() || this.__getSymbols()) {
-        addId = 1;
+        addId = true;
       }
 
       if (addId) {
@@ -1598,9 +1596,13 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * @private
    */
   getAttrToHTML() {
-    var attr = this.getAttributes();
-    delete attr.style;
-    return attr;
+    const attrs = this.getAttributes();
+
+    if (avoidInline(this.em)) {
+      delete attrs.style;
+    }
+
+    return attrs;
   }
 
   /**

@@ -364,7 +364,7 @@ export default class ItemView extends View {
   }
 
   setRoot(el: Component | string) {
-    el = isString(el) ? this.em.getWrapper().find(el)[0] : el;
+    el = isString(el) ? this.em.getWrapper()?.find(el)[0]! : el;
     const model = getModel(el, 0);
     if (!model) return;
     this.stopListening();

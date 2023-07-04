@@ -40,10 +40,25 @@ import EditorModel from '../editor/model/Editor';
 import Component from '../dom_components/model/Component';
 import { ObjectAny } from '../common';
 
-type RuleOptions = {
+/** @private */
+interface RuleOptions {
+  /**
+   * At-rule type, eg. `media`
+   */
   atRuleType?: string;
+  /**
+   * At-rule parameters, eg. `(min-width: 500px)`
+   */
   atRuleParams?: string;
-};
+}
+
+/** @private */
+interface SetRuleOptions extends RuleOptions {
+  /**
+   * If the rule exists already, merge passed styles instead of replacing them.
+   */
+  addStyles?: boolean;
+}
 
 type CssRuleStyle = Required<CssRuleProperties>['style'];
 
@@ -256,11 +271,12 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
   /**
    * Add/update the CssRule.
    * @param {String} selectors Selector string, eg. `.myclass`
-   * @param {Object} style  Style properties and values
-   * @param {Object} [opts={}]  Additional properties
-   * @param {String} [opts.atRuleType='']  At-rule type, eg. `media`
-   * @param {String} [opts.atRuleParams='']  At-rule parameters, eg. `(min-width: 500px)`
-   * @returns {[CssRule]} The new/updated CssRule
+   * @param {Object} style  Style properties and values. If the rule exists, styles will be replaced unless `addStyles` option is used.
+   * @param {Object} [opts={}]  Additional properties.
+   * @param {String} [opts.atRuleType='']  At-rule type, eg. `media`.
+   * @param {String} [opts.atRuleParams='']  At-rule parameters, eg. `(min-width: 500px)`.
+   * @param {Boolean} [opts.addStyles=false] If the rule exists already, merge passed styles instead of replacing them.
+   * @returns {[CssRule]} The new/updated CssRule.
    * @example
    * // Simple class-based rule
    * const rule = css.setRule('.class1.class2', { color: 'red' });
@@ -273,9 +289,14 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
    *  atRuleType: 'media',
    *  atRuleParams: '(min-width: 500px)',
    * });
-   * // output: @media (min-width: 500px) { .class1:hover { color: red } }
+   * // output: `@media (min-width: 500px) { .class1:hover { color: red } }`
+   *
+   * // Update styles of existent rule
+   * css.setRule('.class1', { color: 'red', background: 'red' });
+   * css.setRule('.class1', { color: 'blue' }, { addStyles: true });
+   * // output: .class1 { color: blue; background: red }
    */
-  setRule(selectors: any, style: CssRuleProperties['style'] = {}, opts: RuleOptions = {}) {
+  setRule(selectors: any, style: CssRuleProperties['style'] = {}, opts: SetRuleOptions = {}) {
     const { atRuleType, atRuleParams } = opts;
     const node = this.em.Parser.parserCss.checkNode({
       selectors,
@@ -288,7 +309,13 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
       selectorsAdd,
       atRule: atRuleType,
     });
-    rule.setStyle(style, opts);
+
+    if (opts.addStyles) {
+      rule.addStyle(style, opts);
+    } else {
+      rule.setStyle(style, opts);
+    }
+
     return rule;
   }
 

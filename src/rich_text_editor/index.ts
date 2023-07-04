@@ -200,8 +200,8 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
    * });
    * rte.add('link', {
    *   icon: document.getElementById('t'),
-   *   attributes: {title: 'Link',}
-   *   // Example on it's easy to wrap a selected content
+   *   attributes: { title: 'Link' },
+   *   // Example on how to wrap selected content
    *   result: rte => rte.insertHTML(`<a href="#">${rte.selection()}</a>`)
    * });
    * // An example with fontSize

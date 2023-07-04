@@ -55,7 +55,7 @@ export default class PropertySelect extends Property<PropertySelectProps> {
    * @param {String} [id] Option id.
    * @returns {Object | null}
    */
-  getOption(id: string): SelectOption {
+  getOption(id?: string): SelectOption {
     const idSel = isDef(id) ? id : this.getValue();
     return this.getOptions().filter(o => this.getOptionId(o) === idSel)[0] || null;
   }
@@ -97,7 +97,7 @@ export default class PropertySelect extends Property<PropertySelectProps> {
    * @param {Boolean} [opts.locale=true] Use the locale string from i18n module
    * @returns {String} Option label
    */
-  getOptionLabel(id: string, opts: { locale?: boolean; property?: string } = {}): string {
+  getOptionLabel(id: string | SelectOption, opts: { locale?: boolean; property?: string } = {}): string {
     const { locale = true } = opts;
     const option = (isString(id) ? this.getOption(id) : id) || {};
     const optId = this.getOptionId(option);
