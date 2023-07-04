@@ -48,6 +48,12 @@ const pageManager = editor.Pages;
 
 [Component]: component.html
 
+## select
+
+Select the page.
+
+Type: [boolean][9]
+
 ## getAll
 
 Get all pages
@@ -58,7 +64,7 @@ Get all pages
 const arrayOfPages = pageManager.getAll();
 ```
 
-Returns **[Array][9]<[Page]>** 
+Returns **[Array][10]<[Page]>** 
 
 ## add
 
@@ -66,8 +72,8 @@ Add new page
 
 ### Parameters
 
-*   `props` **[Object][10]** Page properties
-*   `opts` **[Object][10]?** Options (optional, default `{}`)
+*   `props` **[Object][11]** Page properties
+*   `opts` **[Object][11]?** Options (optional, default `{}`)
 
 ### Examples
 
@@ -87,7 +93,7 @@ Remove page
 
 ### Parameters
 
-*   `page` **([String][11] | [Page])** Page or page id
+*   `page` **([String][12] | [Page])** Page or page id
 *   `opts` **any**  (optional, default `{}`)
 
 ### Examples
@@ -107,7 +113,7 @@ Get page by id
 
 ### Parameters
 
-*   `id` **[String][11]** Page id
+*   `id` **[String][12]** Page id
 
 ### Examples
 
@@ -141,7 +147,7 @@ const wrappers = pageManager.getAllWrappers();
 const allImages = wrappers.map(wrp => wrp.findType('image')).flat();
 ```
 
-Returns **[Array][9]<[Component]>** 
+Returns **[Array][10]<[Component]>** 
 
 ## select
 
@@ -149,8 +155,8 @@ Change the selected page. This will switch the page rendered in canvas
 
 ### Parameters
 
-*   `page` **([String][11] | [Page])** Page or page id
-*   `opts`   (optional, default `{}`)
+*   `page` **([String][12] | [Page])** Page or page id
+*   `opts` **SetOptions**  (optional, default `{}`)
 
 ### Examples
 
@@ -191,8 +197,10 @@ Returns **[Page]**
 
 [8]: #getselected
 
-[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
 
-[10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
-[11]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[11]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+
+[12]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String

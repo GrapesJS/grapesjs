@@ -53,11 +53,12 @@ Add/update the CssRule.
 ### Parameters
 
 *   `selectors` **[String][8]** Selector string, eg. `.myclass`
-*   `style` **[Object][10]** Style properties and values (optional, default `{}`)
-*   `opts` **[Object][10]** Additional properties (optional, default `{}`)
+*   `style` **[Object][10]** Style properties and values. If the rule exists, styles will be replaced unless `addStyles` option is used. (optional, default `{}`)
+*   `opts` **[Object][10]** Additional properties. (optional, default `{}`)
 
-    *   `opts.atRuleType` **[String][8]** At-rule type, eg. `media` (optional, default `''`)
-    *   `opts.atRuleParams` **[String][8]** At-rule parameters, eg. `(min-width: 500px)` (optional, default `''`)
+    *   `opts.atRuleType` **[String][8]** At-rule type, eg. `media`. (optional, default `''`)
+    *   `opts.atRuleParams` **[String][8]** At-rule parameters, eg. `(min-width: 500px)`. (optional, default `''`)
+    *   `opts.addStyles` **[Boolean][11]** If the rule exists already, merge passed styles instead of replacing them. (optional, default `false`)
 
 ### Examples
 
@@ -73,10 +74,15 @@ const rule = css.setRule('.class1:hover', { color: 'red' }, {
  atRuleType: 'media',
  atRuleParams: '(min-width: 500px)',
 });
-// output: @media (min-width: 500px) { .class1:hover { color: red } }
+// output: `@media (min-width: 500px) { .class1:hover { color: red } }`
+
+// Update styles of existent rule
+css.setRule('.class1', { color: 'red', background: 'red' });
+css.setRule('.class1', { color: 'blue' }, { addStyles: true });
+// output: .class1 { color: blue; background: red }
 ```
 
-Returns **[CssRule]** The new/updated CssRule
+Returns **[CssRule]** The new/updated CssRule.
 
 ## getRule
 
@@ -174,3 +180,5 @@ Returns **this**
 [9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
 [10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+
+[11]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean

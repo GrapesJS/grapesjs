@@ -50,10 +50,10 @@ Add new panel to the collection
 ### Examples
 
 ```javascript
-var newPanel = panelManager.addPanel({
-  id: 'myNewPanel',
- visible  : true,
- buttons  : [...],
+const newPanel = panelManager.addPanel({
+ id: 'myNewPanel',
+ visible: true,
+ buttons: [...],
 });
 ```
 
@@ -65,21 +65,19 @@ Remove a panel from the collection
 
 ### Parameters
 
-*   `panel` **([Object][11] | Panel | [String][12])** Object with right properties or an instance of Panel or Painel id
+*   `panel` **(Panel | [String][12])** Panel instance or panel id
 
 ### Examples
 
 ```javascript
-const newPanel = panelManager.removePanel({
-  id: 'myNewPanel',
- visible  : true,
- buttons  : [...],
-});
+const somePanel = panelManager.getPanel('somePanel');
+const removedPanel = panelManager.removePanel(somePanel);
 
-const newPanel = panelManager.removePanel('myNewPanel');
+// or by id
+const removedPanel = panelManager.removePanel('myNewPanel');
 ```
 
-Returns **Panel** Removed panel. Useful in case passed argument was an Object
+Returns **Panel** Removed panel
 
 ## getPanel
 
@@ -92,7 +90,7 @@ Get panel by ID
 ### Examples
 
 ```javascript
-var myPanel = panelManager.getPanel('myNewPanel');
+const myPanel = panelManager.getPanel('myPanel');
 ```
 
 Returns **(Panel | null)** 
@@ -109,7 +107,7 @@ Add button to the panel
 ### Examples
 
 ```javascript
-var newButton = panelManager.addButton('myNewPanel',{
+const newButton = panelManager.addButton('myNewPanel',{
   id: 'myNewButton',
   className: 'someClass',
   command: 'someCommand',
@@ -174,7 +172,7 @@ Get button from the panel
 ### Examples
 
 ```javascript
-var button = panelManager.getButton('myPanel','myButton');
+const button = panelManager.getButton('myPanel', 'myButton');
 ```
 
 Returns **(Button | null)** 

@@ -40,6 +40,7 @@ import EditorModel from '../editor/model/Editor';
 import Component from '../dom_components/model/Component';
 import { ObjectAny } from '../common';
 
+/** @private */
 interface RuleOptions {
   /**
    * At-rule type, eg. `media`
@@ -50,6 +51,8 @@ interface RuleOptions {
    */
   atRuleParams?: string;
 }
+
+/** @private */
 interface SetRuleOptions extends RuleOptions {
   /**
    * If the rule exists already, merge passed styles instead of replacing them.
