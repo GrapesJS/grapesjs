@@ -480,8 +480,7 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
 
     // If the model/view is a simple object I need to extend it
     if (typeof model === 'object') {
-      const defaults = result(model, 'defaults');
-      // @ts-ignore
+      const modelDefaults = { defaults: model.defaults };
       delete model.defaults;
       methods.model = modelToExt.extend(
         {
@@ -492,12 +491,12 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
           isComponent: compType && !extendType && !isComponent ? modelToExt.isComponent : isComponent || (() => 0),
         }
       );
-      // @ts-ignore
-      Object.defineProperty(methods.model.prototype, 'defaults', {
-        value: {
+      // Reassign the defaults getter to the model
+      Object.defineProperty(methods.model!.prototype, 'defaults', {
+        get: () => ({
           ...(result(modelToExt.prototype, 'defaults') || {}),
-          ...(defaults || {}),
-        },
+          ...(result(modelDefaults, 'defaults') || {}),
+        }),
       });
     }
 
