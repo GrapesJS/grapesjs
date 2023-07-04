@@ -1,14 +1,10 @@
-import PropertyFactory from 'style_manager/model/PropertyFactory';
+import PropertyFactory from '../../../../src/style_manager/model/PropertyFactory';
 
 describe('PropertyFactory', () => {
-  var obj;
+  let obj: PropertyFactory;
 
   beforeEach(() => {
     obj = new PropertyFactory();
-  });
-
-  afterEach(() => {
-    obj = null;
   });
 
   test('Object exists', () => {
@@ -142,40 +138,40 @@ describe('PropertyFactory', () => {
   });
 
   test('Build left, right', () => {
-    var res = {
+    const res = {
       type: 'number',
       units: obj.unitsSize,
       default: 'auto',
+      property: 'right',
       fixedValues: ['initial', 'inherit', 'auto'],
     };
-    res.property = 'right';
     expect(obj.build('right')).toEqual([res]);
     res.property = 'left';
     expect(obj.build('left')).toEqual([res]);
   });
 
   test('Build top, bottom', () => {
-    var res = {
+    const res = {
       type: 'number',
       units: obj.unitsSize,
       default: 'auto',
+      property: 'top',
       fixedValues: ['initial', 'inherit', 'auto'],
     };
-    res.property = 'top';
     expect(obj.build('top')).toEqual([res]);
     res.property = 'bottom';
     expect(obj.build('bottom')).toEqual([res]);
   });
 
   test('Build width family', () => {
-    var res = {
+    const res = {
       type: 'number',
       units: obj.unitsSize,
       default: 'auto',
+      property: 'width',
       fixedValues: ['initial', 'inherit', 'auto'],
       min: 0,
     };
-    res.property = 'width';
     expect(obj.build('width')).toEqual([res]);
     res.property = 'min-width';
     expect(obj.build('min-width')).toEqual([res]);
@@ -184,27 +180,27 @@ describe('PropertyFactory', () => {
   });
 
   test('Build flex-basis', () => {
-    var res = {
+    const res = {
       type: 'number',
       units: obj.unitsSize,
       default: 'auto',
       fixedValues: ['initial', 'inherit', 'auto'],
       requiresParent: { display: ['flex'] },
       min: 0,
+      property: 'flex-basis',
     };
-    res.property = 'flex-basis';
     expect(obj.build('flex-basis')).toEqual([res]);
   });
 
   test('Build height family', () => {
-    var res = {
+    const res = {
       type: 'number',
       units: obj.unitsSize,
       default: 'auto',
       fixedValues: ['initial', 'inherit', 'auto'],
       min: 0,
+      property: 'height',
     };
-    res.property = 'height';
     expect(obj.build('height')).toEqual([res]);
     res.property = 'min-height';
     expect(obj.build('min-height')).toEqual([res]);
@@ -213,7 +209,7 @@ describe('PropertyFactory', () => {
   });
 
   test('Build margin', () => {
-    var res = {
+    const res = {
       property: 'margin',
       type: 'composite',
       properties: [
@@ -255,7 +251,7 @@ describe('PropertyFactory', () => {
   });
 
   test('Build padding', () => {
-    var res = {
+    const res = {
       property: 'padding',
       type: 'composite',
       properties: [
@@ -303,7 +299,7 @@ describe('PropertyFactory', () => {
   test('Build font-family', () => {
     var ss = ', sans-serif';
     var ms = ', monospace';
-    var res = {
+    const res = {
       property: 'font-family',
       type: 'select',
       default: 'Arial, Helvetica' + ss,
@@ -330,11 +326,12 @@ describe('PropertyFactory', () => {
   });
 
   test('Build font-size', () => {
-    var res = {
+    const res = {
       type: 'number',
       units: obj.unitsSize,
       default: 'medium',
       min: 0,
+      property: 'font-size',
       fixedValues: [
         'medium',
         'xx-small',
@@ -350,25 +347,25 @@ describe('PropertyFactory', () => {
         'inherit',
       ],
     };
-    res.property = 'font-size';
     expect(obj.build('font-size')).toEqual([res]);
   });
 
   test('Build letter-spacing', () => {
-    var res = {
+    const res = {
       type: 'number',
       units: obj.unitsSize,
       default: 'normal',
+      property: 'letter-spacing',
       fixedValues: ['normal', 'initial', 'inherit'],
     };
-    res.property = 'letter-spacing';
     expect(obj.build('letter-spacing')).toEqual([res]);
   });
 
   test('Build font-weight', () => {
-    var res = {
+    const res = {
       type: 'select',
       default: '400',
+      property: 'font-weight',
       options: [
         { id: '100', label: 'Thin' },
         { id: '200', label: 'Extra-Light' },
@@ -381,45 +378,46 @@ describe('PropertyFactory', () => {
         { id: '900', label: 'Ultra-Bold' },
       ],
     };
-    res.property = 'font-weight';
     expect(obj.build('font-weight')).toEqual([res]);
   });
 
   test('Build color', () => {
-    var res = {
+    const res = {
       property: 'color',
       type: 'color',
       default: 'black',
+      full: true,
     };
     expect(obj.build('color')).toEqual([res]);
   });
 
   test('Build line-height', () => {
-    var res = {
+    const res = {
       type: 'number',
       units: obj.unitsSize,
       default: 'normal',
+      property: 'line-height',
       fixedValues: ['normal', 'initial', 'inherit'],
     };
-    res.property = 'line-height';
     expect(obj.build('line-height')).toEqual([res]);
   });
 
   test('Build text-align', () => {
-    var res = {
+    const res = {
       type: 'radio',
       default: 'left',
+      property: 'text-align',
       options: [{ id: 'left' }, { id: 'center' }, { id: 'right' }, { id: 'justify' }],
     };
-    res.property = 'text-align';
     expect(obj.build('text-align')).toEqual([res]);
   });
 
   test('Build text-shadow', () => {
-    var res = {
+    const res = {
       type: 'stack',
       preview: true,
       default: 'none',
+      property: 'text-shadow',
       properties: [
         {
           property: 'text-shadow-h',
@@ -442,30 +440,31 @@ describe('PropertyFactory', () => {
         },
         {
           property: 'text-shadow-color',
+          full: true,
           type: 'color',
           default: 'black',
         },
       ],
     };
-    res.property = 'text-shadow';
     const result = obj.build('text-shadow');
+    // @ts-ignore
     delete result[0].layerLabel;
     expect(result).toEqual([res]);
   });
 
   test('Build border-radius-c', () => {
-    var res = {
+    const res = {
       type: 'number',
       units: obj.unitsSize,
+      property: 'border-radius',
       default: '0',
       min: 0,
     };
-    res.property = 'border-radius';
     expect(obj.build('border-radius-c')).toEqual([res]);
   });
 
   test('Build border-radius', () => {
-    var res = {
+    const res = {
       property: 'border-radius',
       type: 'composite',
       properties: [
@@ -503,21 +502,21 @@ describe('PropertyFactory', () => {
         },
       ],
     };
-    res.property = 'border-radius';
     expect(obj.build('border-radius')).toEqual([res]);
   });
 
   test('Build background-color', () => {
-    var res = {
+    const res = {
       type: 'color',
       default: 'none',
+      full: true,
+      property: 'background-color',
     };
-    res.property = 'background-color';
     expect(obj.build('background-color')).toEqual([res]);
   });
 
   test('Build border', () => {
-    var res = {
+    const res = {
       property: 'border',
       type: 'composite',
       properties: [
@@ -549,6 +548,7 @@ describe('PropertyFactory', () => {
         {
           property: 'border-color',
           id: 'border-color-sub',
+          full: true,
           type: 'color',
           default: 'black',
         },
@@ -558,7 +558,7 @@ describe('PropertyFactory', () => {
   });
 
   test('Build box-shadow', () => {
-    var res = {
+    const res = {
       property: 'box-shadow',
       type: 'stack',
       preview: true,
@@ -592,6 +592,7 @@ describe('PropertyFactory', () => {
           property: 'box-shadow-color',
           type: 'color',
           default: 'black',
+          full: true,
         },
         {
           property: 'box-shadow-type',
@@ -605,12 +606,13 @@ describe('PropertyFactory', () => {
       ],
     };
     const result = obj.build('box-shadow');
+    // @ts-ignore
     delete result[0].layerLabel;
     expect(result).toEqual([res]);
   });
 
   test('Build background', () => {
-    var res = {
+    const res = {
       property: 'background',
       type: 'stack',
       preview: true,
@@ -665,12 +667,13 @@ describe('PropertyFactory', () => {
       ],
     };
     const result = obj.build('background');
+    // @ts-ignore
     delete result[0].layerLabel;
     expect(result).toEqual([res]);
   });
 
   test('Build transition', () => {
-    var res = {
+    const res = {
       property: 'transition',
       type: 'stack',
       properties: [
@@ -710,7 +713,7 @@ describe('PropertyFactory', () => {
   });
 
   test('Build perspective', () => {
-    var res = {
+    const res = {
       property: 'perspective',
       type: 'number',
       units: obj.unitsSize,
@@ -725,7 +728,7 @@ describe('PropertyFactory', () => {
   });
 
   test('Build cursor', () => {
-    var res = {
+    const res = {
       type: 'select',
       property: 'cursor',
       default: 'auto',
@@ -745,7 +748,7 @@ describe('PropertyFactory', () => {
   });
 
   test('Build overflow', () => {
-    var res = {
+    const res = {
       type: 'select',
       property: 'overflow',
       default: 'visible',
@@ -755,7 +758,7 @@ describe('PropertyFactory', () => {
   });
 
   test('Build overflow-x', () => {
-    var res = {
+    const res = {
       type: 'select',
       property: 'overflow-x',
       default: 'visible',
@@ -765,7 +768,7 @@ describe('PropertyFactory', () => {
   });
 
   test('Build overflow-y', () => {
-    var res = {
+    const res = {
       type: 'select',
       property: 'overflow-y',
       default: 'visible',
