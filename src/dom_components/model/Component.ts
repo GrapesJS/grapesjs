@@ -170,6 +170,10 @@ export default class Component extends StyleableModel<ComponentProperties> {
     return this.get('traits')!;
   }
 
+  get content() {
+    return this.get('content') ?? '';
+  }
+
   /**
    * Hook method, called once the model is created
    */
@@ -1587,7 +1591,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
   __innerHTML(opts: ToHTMLOptions = {}) {
     const cmps = this.components();
-    return !cmps.length ? this.get('content') : cmps.map(c => c.toHTML(opts)).join('');
+    return !cmps.length ? this.content : cmps.map(c => c.toHTML(opts)).join('');
   }
 
   /**

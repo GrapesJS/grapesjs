@@ -7,7 +7,7 @@ export default class ComponentComment extends ComponentTextNode {
   }
 
   toHTML() {
-    return `<!--${this.get('content')}-->`;
+    return `<!--${this.content}-->`;
   }
 
   static isComponent(el: HTMLElement) {
@@ -15,18 +15,8 @@ export default class ComponentComment extends ComponentTextNode {
       return {
         tagName: 'NULL',
         type: 'comment',
-        content: el.textContent,
+        content: el.textContent ?? '',
       };
     }
   }
 }
-
-// ComponentComment.isComponent = el => {
-//   if (el.nodeType == 8) {
-//     return {
-//       tagName: 'NULL',
-//       type: 'comment',
-//       content: el.textContent,
-//     };
-//   }
-// };

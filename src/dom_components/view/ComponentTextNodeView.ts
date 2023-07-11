@@ -21,7 +21,7 @@ export default class ComponentTextNodeView extends ComponentView {
   render() {
     const { model, el } = this;
     if (model.opt.temporary) return this;
-    el.textContent = model.get('content')!;
+    el.textContent = model.content;
     return this;
   }
 }

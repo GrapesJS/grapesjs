@@ -355,7 +355,7 @@ Component> {
    * @private
    * */
   updateContent() {
-    const content = this.model.get('content')!;
+    const { content } = this.model;
     const hasComps = this.model.components().length;
     this.getChildrenContainer().innerHTML = hasComps ? '' : content;
   }

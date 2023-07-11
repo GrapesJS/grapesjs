@@ -187,7 +187,7 @@ export default class ComponentTextView extends ComponentView {
         cmps.forEach(cmp => {
           if (cmp === textModel) {
             const type = 'textnode';
-            const cnt = cmp.get('content') || '';
+            const cnt = cmp.content;
             newCmps.push({ type, content: cnt.slice(0, offset) });
             newCmps.push(content);
             newCmps.push({ type, content: cnt.slice(offset) });

@@ -15,8 +15,8 @@ export default class ComponentTextNode extends Component {
   }
 
   toHTML() {
+    const { content } = this;
     const parent = this.parent();
-    const content = this.get('content')!;
     return parent?.is('script') ? content : this.__escapeContent(content);
   }
 
@@ -28,7 +28,7 @@ export default class ComponentTextNode extends Component {
     if (el.nodeType === 3) {
       return {
         type: 'textnode',
-        content: el.textContent,
+        content: el.textContent ?? '',
       };
     }
   }
