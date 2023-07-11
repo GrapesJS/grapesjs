@@ -60,6 +60,14 @@ interface SetRuleOptions extends RuleOptions {
   addStyles?: boolean;
 }
 
+/** @private */
+export interface GetSetRuleOptions {
+  state?: string;
+  mediaText?: string;
+  addOpts?: ObjectAny;
+  current?: boolean;
+}
+
 type CssRuleStyle = Required<CssRuleProperties>['style'];
 
 export default class CssComposer extends ItemManagerModule<CssComposerConfig & { pStylePrefix?: string }> {
@@ -385,7 +393,7 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
    * // #myid { color: red }
    * // #myid:hover { color: blue }
    */
-  setIdRule(name: string, style: CssRuleStyle = {}, opts: ObjectAny = {}) {
+  setIdRule(name: string, style: CssRuleStyle = {}, opts: GetSetRuleOptions = {}) {
     const { addOpts = {}, mediaText } = opts;
     const state = opts.state || '';
     const media = !isUndefined(mediaText) ? mediaText : this.em.getCurrentMedia();
@@ -406,7 +414,7 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
    * const rule = css.getIdRule('myid');
    * const ruleHover = css.setIdRule('myid', { state: 'hover' });
    */
-  getIdRule(name: string, opts: ObjectAny = {}) {
+  getIdRule(name: string, opts: GetSetRuleOptions = {}) {
     const { mediaText } = opts;
     const state = opts.state || '';
     const media = !isUndefined(mediaText) ? mediaText : this.em.getCurrentMedia();
@@ -428,7 +436,7 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
    * // .myclass { color: red }
    * // .myclass:hover { color: blue }
    */
-  setClassRule(name: string, style: CssRuleStyle = {}, opts: ObjectAny = {}) {
+  setClassRule(name: string, style: CssRuleStyle = {}, opts: GetSetRuleOptions = {}) {
     const state = opts.state || '';
     const media = opts.mediaText || this.em.getCurrentMedia();
     const sm = this.em.Selectors;
@@ -448,7 +456,7 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
    * const rule = css.getClassRule('myclass');
    * const ruleHover = css.getClassRule('myclass', { state: 'hover' });
    */
-  getClassRule(name: string, opts: ObjectAny = {}) {
+  getClassRule(name: string, opts: GetSetRuleOptions = {}) {
     const state = opts.state || '';
     const media = opts.mediaText || this.em.getCurrentMedia();
     const selector = this.em.Selectors.get(name, Selector.TYPE_CLASS);
@@ -481,7 +489,7 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
     return this;
   }
 
-  getComponentRules(cmp: Component, opts: ObjectAny = {}) {
+  getComponentRules(cmp: Component, opts: GetSetRuleOptions = {}) {
     let { state, mediaText, current } = opts;
     if (current) {
       state = this.em.get('state') || '';

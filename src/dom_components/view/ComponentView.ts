@@ -1,5 +1,5 @@
 import { isEmpty, each, keys, result } from 'underscore';
-import Component from '../model/Component';
+import Component, { avoidInline } from '../model/Component';
 import Components from '../model/Components';
 import ComponentsView from './ComponentsView';
 import Selectors from '../../selector_manager/model/Selectors';
@@ -10,6 +10,7 @@ import { ComponentOptions } from '../model/types';
 import EditorModel from '../../editor/model/Editor';
 import { DomComponentsConfig } from '../config/config';
 import Editor from '../../editor';
+import { GetSetRuleOptions } from '../../css_composer';
 
 type ClbObj = ReturnType<ComponentView['_clbObj']>;
 
@@ -87,6 +88,10 @@ Component> {
     };
     this.delegateEvents();
     !modelOpt.temporary && this.init(this._clbObj());
+  }
+
+  get __cmpStyleOpts(): GetSetRuleOptions {
+    return { state: '', mediaText: '' };
   }
 
   __isDraggable() {
@@ -276,9 +281,10 @@ Component> {
   updateStyle(m?: any, v?: any, opts: ObjectAny = {}) {
     const { model, em } = this;
 
-    if (em && em.getConfig().avoidInlineStyle && !opts.inline) {
-      const style = model.getStyle();
-      !isEmpty(style) && model.setStyle(style);
+    if (avoidInline(em) && !opts.inline) {
+      const styleOpts = this.__cmpStyleOpts;
+      const style = model.getStyle(styleOpts);
+      !isEmpty(style) && model.setStyle(style, styleOpts);
     } else {
       this.setAttribute('style', model.styleToString(opts));
     }

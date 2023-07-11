@@ -43,7 +43,7 @@ const escapeRegExp = (str: string) => {
   return str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
 };
 
-const avoidInline = (em: EditorModel) => !!em?.getConfig().avoidInlineStyle;
+export const avoidInline = (em: EditorModel) => !!em?.getConfig().avoidInlineStyle;
 
 export const eventDrag = 'component:drag';
 export const keySymbols = '__symbols';
@@ -603,7 +603,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
       const state = em.get('state');
       const cc = em.Css;
       const propOrig = this.getStyle(opts);
-      this.rule = cc.setIdRule(this.getId(), prop, { ...opts, state });
+      this.rule = cc.setIdRule(this.getId(), prop, { state, ...opts });
       const diff = shallowDiff(propOrig, prop);
       this.set('style', '', { silent: true });
       keys(diff).forEach(pr => this.trigger(`change:style:${pr}`));
