@@ -83,6 +83,7 @@ const isStyleHidden = (style: any = {}) => {
 
 export default class LayerManager extends Module<LayerManagerConfig> {
   model!: ModuleModel;
+  __ctn?: HTMLElement;
 
   view?: View;
 
@@ -356,6 +357,7 @@ export default class LayerManager extends Module<LayerManagerConfig> {
     const root = this.getRoot();
     this.view?.setRoot(root);
     this.em.trigger(evRoot, root);
+    this.__trgCustom();
   }
 
   __onComponent(component: Component) {
@@ -371,8 +373,10 @@ export default class LayerManager extends Module<LayerManagerConfig> {
   }
 
   __trgCustom(opts?: any) {
-    this.em.trigger(this.events.custom, {
-      container: opts.container,
+    const { __ctn, em, events } = this;
+    this.__ctn = __ctn || opts?.container;
+    em.trigger(events.custom, {
+      container: this.__ctn,
       root: this.getRoot(),
     });
   }
