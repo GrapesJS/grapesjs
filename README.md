@@ -151,6 +151,12 @@ $ yarn test
 
 ## Plugins
 
+### Wrappers
+
+* [@grapesjs/react](https://github.com/GrapesJS/react) - GrapesJS wrapper for React that allows you to build custom and declarative UI for your editor.
+
+
+
 ### Extensions
 * [grapesjs-plugin-export](https://github.com/GrapesJS/export) - Export GrapesJS templates in a zip archive
 * [grapesjs-plugin-filestack](https://github.com/GrapesJS/filestack) - Add Filestack uploader in Asset Manager
