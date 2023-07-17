@@ -61,6 +61,15 @@ export interface CanvasConfig {
    * This option allows to customize, by a selector, which element should not be considered textable.
    */
   notTextable?: string[];
+
+  /**
+   * By default, the editor allows to drop external elements by relying on the native HTML5
+   * drag & drop API (eg. like a D&D of an image file from your desktop).
+   * If you want to customize how external elements are interpreted by the editor, you can rely
+   * on `canvas:dragdata` event, eg. https://github.com/GrapesJS/grapesjs/discussions/3849
+   * @default true
+   */
+  allowExternalDrop?: boolean;
 }
 
 const config: CanvasConfig = {
@@ -78,6 +87,7 @@ const config: CanvasConfig = {
     * ::-webkit-scrollbar { width: 10px }
   `,
   notTextable: ['button', 'a', 'input[type=checkbox]', 'input[type=radio]'],
+  allowExternalDrop: true,
 };
 
 export default config;
