@@ -95,7 +95,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
     return this;
   }
 
-  onLoad() {
+  postLoad() {
     this.model.init();
   }
 

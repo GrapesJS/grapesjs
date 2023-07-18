@@ -348,7 +348,8 @@ export default class EditorModel extends Model {
       undoManager: false,
     });
     // We only need to load a few modules
-    ['PageManager', 'Canvas'].forEach(key => shallow.get(key).onLoad());
+    shallow.Pages.onLoad();
+    shallow.Canvas.postLoad();
     this.set('shallow', shallow);
   }
 

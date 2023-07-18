@@ -135,9 +135,10 @@ export default class PageManager extends ItemManagerModule<PageManagerConfig, Pa
   }
 
   onLoad() {
-    const { pages } = this;
+    const { pages, config, em } = this;
     const opt = { silent: true };
-    pages.add(this.config.pages?.map(page => new Page(page, { em: this.em, config: this.config })) || [], opt);
+    const configPages = config.pages?.map(page => new Page(page, { em, config })) || [];
+    pages.add(configPages, opt);
     const mainPage = !pages.length ? this.add({ type: typeMain }, opt) : this.getMain();
     mainPage && this.select(mainPage, opt);
   }
