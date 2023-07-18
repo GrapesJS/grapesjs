@@ -6,9 +6,10 @@ const initComps = 1;
 describe('Editor', () => {
   let editor: Editor;
 
-  beforeEach(() => {
+  beforeEach(done => {
     editor = new Editor();
     editor.getModel().loadOnStart();
+    editor.on('change:readyLoad', () => done());
   });
 
   afterEach(() => {

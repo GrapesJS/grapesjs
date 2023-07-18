@@ -6,7 +6,6 @@ type TestPlugin = Plugin<{ cVal: string }>;
 
 describe('GrapesJS', () => {
   describe('Main', () => {
-    let fixtures: HTMLElement;
     let fixture: HTMLElement;
     let editorName = '';
     let htmlString = '';
@@ -44,7 +43,6 @@ describe('GrapesJS', () => {
         },
       };
       document.body.innerHTML = `<div id="fixtures"><div id="${editorName}"></div></div>`;
-      fixtures = document.body.querySelector('#fixtures')!;
       fixture = document.body.querySelector(`#${editorName}`)!;
     });
 
@@ -88,15 +86,17 @@ describe('GrapesJS', () => {
       expect(editor.getStyle().length).toEqual(0);
     });
 
-    test('Editor canvas baseCSS can be overwritten', () => {
+    test('Editor canvas baseCSS can be overwritten', done => {
       config.components = htmlString;
       config.baseCss = '#wrapper { background-color: #eee; }';
       config.protectedCss = '';
       const editor = grapesjs.init(config);
-      const body = editor.Canvas.getBody();
-
-      expect(body.outerHTML).toContain(config.baseCss);
-      expect(body.outerHTML.replace(/\s+/g, ' ')).not.toContain('body { margin: 0;');
+      editor.onReady(() => {
+        const body = editor.Canvas.getBody();
+        expect(body.outerHTML).toContain(config.baseCss);
+        expect(body.outerHTML.replace(/\s+/g, ' ')).not.toContain('body { margin: 0;');
+        done();
+      });
     });
 
     test('Editor canvas baseCSS defaults to sensible values if not defined', () => {
@@ -338,19 +338,20 @@ describe('GrapesJS', () => {
         storage = {
           css: '* { box-sizing: border-box; } body {margin: 0;}',
           styles: JSON.stringify(style),
+          pages: [{}],
         };
 
         const pluginName = storageId + '-p';
         grapesjs.plugins.add(pluginName, e => e.StorageManager.add(storageId, storageMock));
-        config.fromElement = 1;
+        config.fromElement = true;
         config.storageManager.type = storageId;
         config.plugins = [pluginName];
         config.storageManager.autoload = 1;
         const editor = grapesjs.init(config);
-        editor.on('load', () => {
+        editor.onReady(() => {
           const cc = editor.CssComposer;
           expect(cc.getAll().length).toEqual(style.length);
-          // expect(cc.setClassRule('test2').getStyle()).toEqual(styleResult);
+          expect(cc.getClassRule('test2')!.getStyle()).toEqual(styleResult);
           done();
         });
       });
@@ -471,7 +472,7 @@ describe('GrapesJS', () => {
       let el2: Component;
       let el3: Component;
 
-      beforeEach(() => {
+      beforeEach(done => {
         config.storageManager = { type: 0 };
         config.components = `<div>
           <div id="el1"></div>
@@ -479,11 +480,13 @@ describe('GrapesJS', () => {
           <div id="el3"></div>
         </div>`;
         editor = grapesjs.init(config);
-        wrapper = editor.DomComponents.getWrapper()!;
-        el1 = wrapper.find('#el1')[0];
-        el2 = wrapper.find('#el2')[0];
-        el3 = wrapper.find('#el3')[0];
-        // console.log('wrapper', wrapper.getEl().innerHTML);
+        editor.onReady(() => {
+          wrapper = editor.DomComponents.getWrapper()!;
+          el1 = wrapper.find('#el1')[0];
+          el2 = wrapper.find('#el2')[0];
+          el3 = wrapper.find('#el3')[0];
+          done();
+        });
       });
 
       test('Select a single component', () => {
