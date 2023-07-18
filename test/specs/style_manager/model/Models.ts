@@ -4,10 +4,10 @@ import PropertyNumber from '../../../../src/style_manager/model/PropertyNumber';
 import Editor from '../../../../src/editor/model/Editor';
 
 describe('Sector', () => {
-  let em;
-  let sm;
-  let obj;
-  let confToExt;
+  let em: Editor;
+  let sm: Editor['Styles'];
+  let obj: Sector;
+  let confToExt: any;
 
   beforeEach(() => {
     confToExt = {
@@ -28,13 +28,12 @@ describe('Sector', () => {
         sectors: [{ id: 'sector-1', name: 's' }],
       },
     });
-    sm = em.get('StyleManager');
+    sm = em.Styles;
     sm.onLoad();
     obj = sm.getSector('sector-1');
   });
 
   afterEach(() => {
-    obj = null;
     em.destroy();
   });
 
@@ -43,7 +42,7 @@ describe('Sector', () => {
   });
 
   test('Has no properties', () => {
-    expect(obj.get('properties').length).toEqual(0);
+    expect(obj.get('properties')!.length).toEqual(0);
   });
 
   test('Init with properties', () => {
@@ -51,7 +50,7 @@ describe('Sector', () => {
       name: 'test',
       properties: [{ property: '1' }, { property: '2' }],
     });
-    expect(obj.get('properties').length).toEqual(2);
+    expect(obj.getProperties().length).toEqual(2);
   });
 
   test('Build properties', () => {
@@ -67,8 +66,8 @@ describe('Sector', () => {
 
   test('Extend properties', () => {
     obj = sm.addSector('test', confToExt);
-    expect(obj.get('properties').length).toEqual(3);
-    var prop0 = obj.get('properties').at(0);
+    expect(obj.getProperties().length).toEqual(3);
+    var prop0 = obj.getProperties()[0];
     expect(prop0.get('type')).toEqual('radio');
     expect(prop0.get('default')).toEqual('block');
   });
@@ -76,8 +75,8 @@ describe('Sector', () => {
   test('Do not extend properties', () => {
     confToExt.extendBuilded = 0;
     obj = sm.addSector('test', confToExt);
-    expect(obj.get('properties').length).toEqual(3);
-    var prop0 = obj.get('properties').at(0);
+    expect(obj.getProperties().length).toEqual(3);
+    var prop0 = obj.getProperties()[0];
     expect(prop0.get('type')).toEqual('radio');
     expect(prop0.get('defaults')).toEqual('');
   });
@@ -88,6 +87,7 @@ describe('Sector', () => {
       properties: [
         {
           property: 'margin',
+          // @ts-ignore
           properties: [
             {
               name: 'Top',
@@ -100,10 +100,10 @@ describe('Sector', () => {
         },
       ],
     });
-    var sectProps = obj.get('properties');
+    var sectProps = obj.getProperties();
     expect(sectProps.length).toEqual(2);
-    var prop0 = obj.get('properties').at(0);
-    var propProps = prop0.get('properties');
+    var prop0 = obj.getProperties()[0];
+    var propProps = prop0.get('properties' as any);
 
     expect(propProps.length).toEqual(2);
     var propTop = propProps.at(0);

@@ -1,14 +1,15 @@
 import Backbone from 'backbone';
 import Commands from '../../../src/commands';
 import EditorModel from '../../../src/editor/model/Editor';
+import { Command, CommandFunction } from '../../../src/commands/view/CommandAbstract';
 
 describe('Commands', () => {
   describe('Main', () => {
     let em: EditorModel;
     let obj: Commands;
-    let commSimple;
-    let commRunOnly;
-    let commFunc;
+    let commSimple: Command;
+    let commRunOnly: Command;
+    let commFunc: CommandFunction;
     let commName = 'commandTest';
     let commResultRun = 'Run executed';
     let commResultStop = 'Stop executed';

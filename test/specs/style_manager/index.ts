@@ -79,7 +79,7 @@ describe('StyleManager', () => {
     test('Add property', () => {
       obj.addSector('test', { name: 'test' });
       expect(obj.addProperty('test', { property: 'test' })).toBeTruthy();
-      expect(obj.getProperties('test').length).toEqual(1);
+      expect(obj.getProperties('test')!.length).toEqual(1);
     });
 
     test('Check added property', () => {
@@ -95,7 +95,7 @@ describe('StyleManager', () => {
       obj.addSector('test', { name: 'test' });
       // @ts-ignore
       obj.addProperty('test', [{}, {}]);
-      expect(obj.getProperties('test').length).toEqual(2);
+      expect(obj.getProperties('test')!.length).toEqual(2);
     });
 
     test('Get property from inexistent sector', () => {

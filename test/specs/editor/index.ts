@@ -1,10 +1,10 @@
-import Editor from 'editor';
+import Editor from '../../../src/editor';
 
 const { keys } = Object;
 const initComps = 1;
 
 describe('Editor', () => {
-  let editor;
+  let editor: Editor;
 
   beforeEach(() => {
     editor = new Editor();
@@ -47,14 +47,14 @@ describe('Editor', () => {
 
   test('Components are correctly tracked on add', () => {
     const all = editor.Components.allById();
-    const wrapper = editor.getWrapper();
+    const wrapper = editor.getWrapper()!;
     wrapper.append('<div>Component</div>'); // Div component + textnode
     expect(keys(all).length).toBe(2 + initComps);
   });
 
   test('Components are correctly tracked on add and remove', () => {
     const all = editor.Components.allById();
-    const wrapper = editor.getWrapper();
+    const wrapper = editor.getWrapper()!;
     const added = wrapper.append(`
         <div>Component 1</div>
         <div></div>
@@ -75,9 +75,9 @@ describe('Editor', () => {
     const all = editor.Components.allById();
     const um = editor.UndoManager;
     const umStack = um.getStack();
-    const wrapper = editor.getWrapper();
+    const wrapper = editor.getWrapper()!;
     expect(umStack.length).toBe(0);
-    const comp = wrapper.append('<div>Component 1</div>')[0];
+    wrapper.append('<div>Component 1</div>')[0];
     expect(umStack.length).toBe(1);
     wrapper.empty();
     expect(umStack.length).toBe(2);
@@ -90,7 +90,7 @@ describe('Editor', () => {
     const all = editor.Components.allById();
     const um = editor.UndoManager;
     const umStack = um.getStack();
-    const wrapper = editor.getWrapper();
+    const wrapper = editor.getWrapper()!;
     expect(umStack.length).toBe(0);
     wrapper.append(`<div>
         <div>Component 1</div>

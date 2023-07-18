@@ -33,7 +33,7 @@ describe('Selector', () => {
 });
 
 describe('Selectors', () => {
-  var obj;
+  let obj: Selectors;
 
   beforeEach(() => {
     obj = new Selectors();

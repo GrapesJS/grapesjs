@@ -11,15 +11,15 @@ import Selector from '../../../../src/selector_manager/model/Selector';
 import Editor from '../../../../src/editor/model/Editor';
 const $ = Backbone.$;
 
-let obj;
-let dcomp;
-let compOpts;
-let em;
+let obj: Component;
+let dcomp: Editor['Components'];
+let compOpts: any;
+let em: Editor;
 
 describe('Component', () => {
   beforeEach(() => {
     em = new Editor({ avoidDefaults: true });
-    dcomp = em.get('DomComponents');
+    dcomp = em.Components;
     em.get('PageManager').onLoad();
     compOpts = {
       em,
@@ -29,12 +29,8 @@ describe('Component', () => {
     obj = new Component({}, compOpts);
   });
 
-  afterEach(() => {
-    obj = null;
-  });
-
   test('Has no children', () => {
-    expect(obj.get('components').length).toEqual(0);
+    expect(obj.components().length).toEqual(0);
   });
 
   test('Clones correctly', () => {
@@ -42,18 +38,18 @@ describe('Component', () => {
     var cloned = obj.clone();
     var eAttr = cloned.attributes;
     eAttr.components = {};
-    sAttr.components = {};
+    sAttr.components = {} as any;
     eAttr.traits = {};
-    sAttr.traits = {};
+    sAttr.traits = {} as any;
     expect(sAttr.length).toEqual(eAttr.length);
   });
 
   test('Clones correctly with traits', () => {
-    obj.get('traits').at(0).set('value', 'testTitle');
+    obj.traits.at(0).set('value', 'testTitle');
     var cloned = obj.clone();
     cloned.set('stylable', 0);
-    cloned.get('traits').at(0).set('value', 'testTitle2');
-    expect(obj.get('traits').at(0).get('value')).toEqual('testTitle');
+    cloned.traits.at(0).set('value', 'testTitle2');
+    expect(obj.traits.at(0).get('value')).toEqual('testTitle');
     expect(obj.get('stylable')).toEqual(true);
   });
 
@@ -68,7 +64,7 @@ describe('Component', () => {
         label: 'Context',
         value: 'primary',
       },
-    ]);
+    ] as any);
     expect(obj.get('attributes')).toEqual({ title: 'The title' });
   });
 
@@ -121,20 +117,20 @@ describe('Component', () => {
       compOpts
     );
     ['class1', 'class2'].forEach(item => {
-      obj.get('classes').add({ name: item });
+      obj.classes.add({ name: item });
     });
     expect(obj.toHTML()).toEqual('<article class="class1 class2"></article>');
   });
 
   test('Component toHTML with children', () => {
     obj = new Component({ tagName: 'article' }, compOpts);
-    obj.get('components').add({ tagName: 'span' });
+    obj.components().add({ tagName: 'span' });
     expect(obj.toHTML()).toEqual('<article><span></span></article>');
   });
 
   test('Component toHTML with more children', () => {
     obj = new Component({ tagName: 'article' }, compOpts);
-    obj.get('components').add([{ tagName: 'span' }, { tagName: 'div' }]);
+    obj.components().add([{ tagName: 'span' }, { tagName: 'div' }]);
     expect(obj.toHTML()).toEqual('<article><span></span><div></div></article>');
   });
 
@@ -145,7 +141,7 @@ describe('Component', () => {
 
   test('Component toHTML with quotes in attribute', () => {
     obj = new Component({}, compOpts);
-    let attrs = obj.get('attributes');
+    let attrs = obj.get('attributes')!;
     attrs['data-test'] = '"value"';
     obj.set('attributes', attrs);
     expect(obj.toHTML()).toEqual('<div data-test="&quot;value&quot;"></div>');
@@ -189,20 +185,20 @@ describe('Component', () => {
   });
 
   test('Component parse empty div', () => {
-    var el = document.createElement('div');
-    obj = Component.isComponent(el);
-    expect(obj).toEqual({ tagName: 'div' });
+    const el = document.createElement('div');
+    const res = Component.isComponent(el);
+    expect(res).toEqual({ tagName: 'div' });
   });
 
   test('Component parse span', () => {
-    var el = document.createElement('span');
-    obj = Component.isComponent(el);
-    expect(obj).toEqual({ tagName: 'span' });
+    const el = document.createElement('span');
+    const res = Component.isComponent(el);
+    expect(res).toEqual({ tagName: 'span' });
   });
 
   test('setClass single class string', () => {
     obj.setClass('class1');
-    const result = obj.get('classes').models;
+    const result = obj.classes.models;
     expect(result.length).toEqual(1);
     expect(result[0] instanceof Selector).toEqual(true);
     expect(result[0].get('name')).toEqual('class1');
@@ -210,60 +206,60 @@ describe('Component', () => {
 
   test('setClass multiple class string', () => {
     obj.setClass('class1 class2');
-    const result = obj.get('classes').models;
+    const result = obj.classes.models;
     expect(result.length).toEqual(2);
   });
 
   test('setClass single class array', () => {
     obj.setClass(['class1']);
-    const result = obj.get('classes').models;
+    const result = obj.classes.models;
     expect(result.length).toEqual(1);
   });
 
   test('setClass multiple class array', () => {
     obj.setClass(['class1', 'class2']);
-    const result = obj.get('classes').models;
+    const result = obj.classes.models;
     expect(result.length).toEqual(2);
   });
 
   test('addClass multiple array', () => {
     obj.addClass(['class1', 'class2']);
-    const result = obj.get('classes').models;
+    const result = obj.classes.models;
     expect(result.length).toEqual(2);
   });
 
   test('addClass avoid same name classes', () => {
     obj.addClass(['class1', 'class2']);
     obj.addClass(['class1', 'class3']);
-    const result = obj.get('classes').models;
+    const result = obj.classes.models;
     expect(result.length).toEqual(3);
   });
 
   test('removeClass by string', () => {
     obj.addClass(['class1', 'class2']);
     obj.removeClass('class2');
-    const result = obj.get('classes').models;
+    const result = obj.classes.models;
     expect(result.length).toEqual(1);
   });
 
   test('removeClass by string with multiple classes', () => {
     obj.addClass(['class1', 'class2']);
     obj.removeClass('class2 class1');
-    const result = obj.get('classes').models;
+    const result = obj.classes.models;
     expect(result.length).toEqual(0);
   });
 
   test('removeClass by array', () => {
     obj.addClass(['class1', 'class2']);
     obj.removeClass(['class1', 'class2']);
-    const result = obj.get('classes').models;
+    const result = obj.classes.models;
     expect(result.length).toEqual(0);
   });
 
   test('removeClass do nothing with undefined classes', () => {
     obj.addClass(['class1', 'class2']);
     obj.removeClass(['class3']);
-    const result = obj.get('classes').models;
+    const result = obj.classes.models;
     expect(result.length).toEqual(2);
   });
 
@@ -287,7 +283,7 @@ describe('Component', () => {
       style: 'color:white;background:#fff;',
       'data-test': 'value',
     });
-    expect(obj.get('classes').length).toEqual(2);
+    expect(obj.classes.length).toEqual(2);
     expect(obj.getStyle()).toEqual({
       color: 'white',
       background: '#fff',
@@ -351,7 +347,7 @@ describe('Component', () => {
         <div>Comp 2</div>
         <div>Comp 3</div>
       </div>
-    `);
+    `) as Component;
     const comp1 = added.components().at(0);
     comp1.remove();
     added.append(comp1);
@@ -369,11 +365,11 @@ describe('Component', () => {
           color: red;
         }
       </style>
-    `);
+    `) as Component[];
     const comp1 = added[0];
     const comp2 = added[1];
     const comp1Id = comp1.getId();
-    const comp2Sel = comp2._getStyleSelector();
+    const comp2Sel = comp2._getStyleSelector()!;
     expect(comp2Sel.get('name')).toEqual(idName);
     const idNameNew = `${idName}2`;
     comp2.setId(idNameNew);
@@ -405,14 +401,14 @@ describe('Component', () => {
         </div>
       </div>
       <div id="comp02">TEST</div>`);
-    const notInhereted = model => {
+    const notInhereted = (model: Component) => {
       expect(model.get('stop')).toEqual('1');
       expect(model.get('removable')).toEqual(true);
       expect(model.get('draggable')).toEqual(true);
       expect(model.get('propagate')).toEqual(['stop']);
       model.components().each(model => inhereted(model));
     };
-    const inhereted = model => {
+    const inhereted = (model: Component) => {
       if (model.get('stop')) {
         notInhereted(model);
       } else {
@@ -452,10 +448,6 @@ describe('Component', () => {
 describe('Image Component', () => {
   beforeEach(() => {
     obj = new ComponentImage();
-  });
-
-  afterEach(() => {
-    obj = null;
   });
 
   test('Has src property', () => {
@@ -504,10 +496,6 @@ describe('Text Component', () => {
     obj = new ComponentText({}, compOpts);
   });
 
-  afterEach(() => {
-    obj = null;
-  });
-
   test('Has content property', () => {
     expect(obj.has('content')).toEqual(true);
   });
@@ -531,10 +519,6 @@ describe('Text Component', () => {
 describe('Text Node Component', () => {
   beforeEach(() => {
     obj = new ComponentTextNode({}, compOpts);
-  });
-
-  afterEach(() => {
-    obj = null;
   });
 
   test('Has content property', () => {
@@ -600,14 +584,14 @@ describe('Map Component', () => {
   test('Component parse map iframe', () => {
     var src = 'https://maps.google.com/maps?&q=London,UK&z=11&t=q&output=embed';
     var el = $('<iframe src="' + src + '"></iframe>');
-    obj = ComponentMap.isComponent(el.get(0) as HTMLIFrameElement);
-    expect(obj).toEqual({ type: 'map', src });
+    const res = ComponentMap.isComponent(el.get(0) as HTMLIFrameElement);
+    expect(res).toEqual({ type: 'map', src });
   });
 
   test('Component parse not map iframe', () => {
     var el = $('<iframe src="https://www.youtube.com/watch?v=jNQXAC9IVRw"></iframe>');
-    obj = ComponentMap.isComponent(el.get(0) as HTMLIFrameElement);
-    expect(obj).toEqual(undefined);
+    const res = ComponentMap.isComponent(el.get(0) as HTMLIFrameElement);
+    expect(res).toEqual(undefined);
   });
 });
 
@@ -685,7 +669,7 @@ describe('Components', () => {
         }
       </style>
     `;
-    const added = dcomp.addComponent(block);
+    const added = dcomp.addComponent(block) as Component;
     const addComps = added.components();
     // Let's check if everthing is working as expected
     expect(Object.keys(dcomp.componentsById).length).toBe(3); // + 1 wrapper
@@ -698,7 +682,7 @@ describe('Components', () => {
     expect(rules.at(1).selectorsToString()).toBe(`#${id}:hover`);
     expect(rules.at(2).selectorsToString()).toBe(`#${idB}`);
     // Now let's add the same block
-    const added2 = dcomp.addComponent(block);
+    const added2 = dcomp.addComponent(block) as Component;
     const addComps2 = added2.components();
     const id2 = added2.getId();
     const newId = `${id}-2`;

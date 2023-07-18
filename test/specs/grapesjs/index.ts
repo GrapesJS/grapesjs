@@ -1,22 +1,23 @@
-import grapesjs, { usePlugin } from '../../../src';
+import grapesjs, { Component, Editor, usePlugin } from '../../../src';
+import ComponentWrapper from '../../../src/dom_components/model/ComponentWrapper';
 import type { Plugin } from '../../../src/plugin_manager';
 
 type TestPlugin = Plugin<{ cVal: string }>;
 
 describe('GrapesJS', () => {
   describe('Main', () => {
-    let fixtures;
-    let fixture;
-    let editorName;
-    let htmlString;
-    let config;
-    let cssString;
-    let documentEl;
+    let fixtures: HTMLElement;
+    let fixture: HTMLElement;
+    let editorName = '';
+    let htmlString = '';
+    let config: any;
+    let cssString = '';
+    let documentEl = '';
 
-    let storage;
+    let storage: any;
     let storageId = 'testStorage';
     let storageMock = {
-      async store(data) {
+      async store(data: any) {
         storage = data;
       },
       load() {
@@ -43,8 +44,8 @@ describe('GrapesJS', () => {
         },
       };
       document.body.innerHTML = `<div id="fixtures"><div id="${editorName}"></div></div>`;
-      fixtures = document.body.querySelector('#fixtures');
-      fixture = document.body.querySelector(`#${editorName}`);
+      fixtures = document.body.querySelector('#fixtures')!;
+      fixture = document.body.querySelector(`#${editorName}`)!;
     });
 
     afterEach(() => {
@@ -310,7 +311,7 @@ describe('GrapesJS', () => {
         const editor = grapesjs.init(config);
         editor.setComponents(htmlString);
         editor.store(() => {
-          editor.load(data => {
+          editor.load((data: any) => {
             expect(data.html).toEqual(htmlString);
             done();
           });
@@ -368,7 +369,7 @@ describe('GrapesJS', () => {
       });
 
       test('Execute inline plugins with custom options', () => {
-        const inlinePlugin = (edt, opts) => {
+        const inlinePlugin: Plugin<any> = (edt, opts) => {
           var opts = opts || {};
           edt.getModel().set('customValue', opts.cVal || '');
         };
@@ -380,7 +381,7 @@ describe('GrapesJS', () => {
       });
 
       test('Execute inline plugins without any options', () => {
-        const inlinePlugin = edt => {
+        const inlinePlugin: Plugin = edt => {
           edt.getModel().set('customValue', 'TEST');
         };
         config.plugins = [inlinePlugin];
@@ -390,10 +391,11 @@ describe('GrapesJS', () => {
       });
 
       test('Use plugins defined on window, with custom options', () => {
-        (window as any).globalPlugin = (edt, opts) => {
+        const plg: Plugin<any> = (edt, opts) => {
           var opts = opts || {};
           edt.getModel().set('customValue', opts.cVal || '');
         };
+        (window as any).globalPlugin = plg;
         config.plugins = ['globalPlugin'];
         config.pluginsOpts = {};
         config.pluginsOpts['globalPlugin'] = { cVal: 'TEST' };
@@ -414,7 +416,7 @@ describe('GrapesJS', () => {
         config.plugins = [pluginName];
 
         editor = grapesjs.init(config);
-        expect(editor.Commands.get('export-template').test).toEqual(1);
+        expect(editor.Commands.get('export-template')!.test).toEqual(1);
       });
 
       describe('usePlugin', () => {
@@ -449,9 +451,10 @@ describe('GrapesJS', () => {
           let varToTest = '';
           const optionValue = 'TEST-global';
           const pluginName = 'globalPlugin';
-          (window as any)[pluginName] = (edt, opts) => {
+          const plg: Plugin<any> = (edt, opts) => {
             varToTest = opts.cVal;
           };
+          (window as any)[pluginName] = plg;
           grapesjs.init({
             ...config,
             plugins: [usePlugin(pluginName, { cVal: optionValue })],
@@ -462,7 +465,11 @@ describe('GrapesJS', () => {
     });
 
     describe('Component selection', () => {
-      let editor, wrapper, el1, el2, el3;
+      let editor: Editor;
+      let wrapper: ComponentWrapper;
+      let el1: Component;
+      let el2: Component;
+      let el3: Component;
 
       beforeEach(() => {
         config.storageManager = { type: 0 };
@@ -472,7 +479,7 @@ describe('GrapesJS', () => {
           <div id="el3"></div>
         </div>`;
         editor = grapesjs.init(config);
-        wrapper = editor.DomComponents.getWrapper();
+        wrapper = editor.DomComponents.getWrapper()!;
         el1 = wrapper.find('#el1')[0];
         el2 = wrapper.find('#el2')[0];
         el3 = wrapper.find('#el3')[0];
@@ -487,7 +494,7 @@ describe('GrapesJS', () => {
         expect(editor.getSelected()).toBe(el1);
         expect(editor.getSelectedAll().length).toBe(1);
         // Select via element
-        editor.select(el2.getEl());
+        editor.select(el2.getEl() as any);
         expect(editor.getSelected()).toBe(el2);
         expect(editor.getSelectedAll().length).toBe(1);
         // Deselect via empty array
@@ -498,7 +505,7 @@ describe('GrapesJS', () => {
 
       test('Select multiple components', () => {
         // Select at first el1 and el3
-        editor.select([el1, el3.getEl()]);
+        editor.select([el1, el3.getEl() as any]);
         expect(editor.getSelected()).toBe(el3);
         expect(editor.getSelectedAll().length).toBe(2);
         // Add el2
@@ -536,9 +543,9 @@ describe('GrapesJS', () => {
         const selected = jest.spyOn(toSpy, 'selected');
         const deselected = jest.spyOn(toSpy, 'deselected');
         const toggled = jest.spyOn(toSpy, 'toggled');
-        editor.on('component:selected', selected);
-        editor.on('component:deselected', deselected);
-        editor.on('component:toggled', toggled);
+        editor.on('component:selected', selected as any);
+        editor.on('component:deselected', deselected as any);
+        editor.on('component:toggled', toggled as any);
 
         editor.select(el1); // selected=1
         editor.selectAdd(el1); // selected=1

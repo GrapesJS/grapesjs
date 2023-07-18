@@ -6,7 +6,7 @@ describe('Css Composer', () => {
   describe('Main', () => {
     let obj: CssComposer;
     let em: Editor;
-    let config;
+    let config: any;
     let storagMock = utils.storageMock();
     let editorModel = {
       getCss() {
@@ -28,7 +28,7 @@ describe('Css Composer', () => {
       config.em = editorModel;
     };
 
-    const getCSS = obj =>
+    const getCSS = (obj: CssComposer) =>
       obj
         .getAll()
         .map(r => r.toCSS())

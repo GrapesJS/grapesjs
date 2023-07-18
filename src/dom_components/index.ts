@@ -121,7 +121,7 @@ export type ComponentEvent =
   | 'component:resize';
 
 export interface ComponentModelDefinition extends IComponent {
-  defaults?: ComponentDefinition;
+  defaults?: ComponentDefinition | (() => ComponentDefinition);
   [key: string]: any;
 }
 
@@ -410,7 +410,7 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
    *   attributes: { title: 'here' }
    * });
    */
-  addComponent(component: ComponentAdd, opt: AddOptions = {}) {
+  addComponent(component: ComponentAdd, opt: AddOptions = {}): Component | Component[] {
     return this.getComponents().add(component, opt);
   }
 

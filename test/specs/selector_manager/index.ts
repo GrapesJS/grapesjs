@@ -37,7 +37,7 @@ describe('SelectorManager', () => {
 
     test('Default new selector is a class type', () => {
       const added = obj.add('test') as Selector;
-      expect(obj.get('test').get('type')).toEqual(obj.Selector.TYPE_CLASS);
+      expect(obj.get('test')!.get('type')).toEqual(obj.Selector.TYPE_CLASS);
       expect(added.getFullName()).toBe('.test');
     });
 
@@ -46,7 +46,7 @@ describe('SelectorManager', () => {
       var sel = obj.add(`#${name}`) as Selector;
       expect(sel.get('name')).toEqual(name);
       expect(sel.get('label')).toEqual(name);
-      expect(obj.get(`#${name}`).get('type')).toEqual(obj.Selector.TYPE_ID);
+      expect(obj.get(`#${name}`)!.get('type')).toEqual(obj.Selector.TYPE_ID);
       expect(sel.getFullName()).toBe('#test');
     });
 
