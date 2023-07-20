@@ -53,7 +53,14 @@ export interface TraitProperties {
   text?: string;
   full?: boolean;
   getValue?: (props: { editor: Editor; trait: Trait; component: Component }) => any;
-  setValue?: (props: { value: any; editor: Editor; trait: Trait; component: Component; partial: boolean }) => void;
+  setValue?: (props: {
+    value: any;
+    editor: Editor;
+    trait: Trait;
+    component: Component;
+    partial: boolean;
+    emitUpdate: () => void;
+  }) => void;
 }
 
 type TraitOption = {
@@ -177,6 +184,7 @@ export default class Trait extends Model<TraitProperties> {
         trait: this,
         component: this.target,
         partial: !!opts.partial,
+        emitUpdate: () => this.targetUpdated(),
       });
       return;
     }
