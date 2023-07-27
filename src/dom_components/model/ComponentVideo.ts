@@ -1,10 +1,12 @@
+import { ObjectAny } from '../../common';
+import { isDef, isEmptyObj, toLowerCase } from '../../utils/mixins';
 import ComponentImage from './ComponentImage';
-import { toLowerCase } from '../../utils/mixins';
 
 const type = 'video';
 const yt = 'yt';
 const vi = 'vi';
 const ytnc = 'ytnc';
+const defProvider = 'so';
 
 const hasParam = (value: string) => value && value !== '0';
 
@@ -17,15 +19,15 @@ export default class ComponentVideo extends ComponentImage {
       tagName: type,
       videoId: '',
       void: false,
-      provider: 'so', // on change of provider, traits are switched
+      provider: defProvider, // on change of provider, traits are switched
       ytUrl: 'https://www.youtube.com/embed/',
       ytncUrl: 'https://www.youtube-nocookie.com/embed/',
       viUrl: 'https://player.vimeo.com/video/',
-      loop: 0,
+      loop: false,
       poster: '',
       muted: 0,
-      autoplay: 0,
-      controls: 1,
+      autoplay: false,
+      controls: true,
       color: '',
       list: '',
       rel: 1, // YT related videos
@@ -38,10 +40,26 @@ export default class ComponentVideo extends ComponentImage {
   initialize(props: any, opts: any) {
     this.em = opts.em;
     if (this.get('src')) this.parseFromSrc();
+    this.updatePropsFromAttr();
     this.updateTraits();
-    this.listenTo(this, 'change:provider', this.updateTraits);
-    this.listenTo(this, 'change:videoId change:provider', this.updateSrc);
+    this.on('change:provider', this.updateTraits);
+    this.on('change:videoId change:provider', this.updateSrc);
     super.initialize(props, opts);
+  }
+
+  updatePropsFromAttr() {
+    if (this.get('provider') === defProvider) {
+      const { controls, autoplay, loop } = this.get('attributes')!;
+      const toUp: ObjectAny = {};
+
+      if (isDef(controls)) toUp.controls = !!controls;
+      if (isDef(autoplay)) toUp.autoplay = !!autoplay;
+      if (isDef(loop)) toUp.loop = !!loop;
+
+      if (!isEmptyObj(toUp)) {
+        this.set(toUp);
+      }
+    }
   }
 
   /**
@@ -86,9 +104,9 @@ export default class ComponentVideo extends ComponentImage {
       case vi:
         this.set('videoId', uri.pathname.split('/').pop());
         qr.list && this.set('list', qr.list);
-        hasParam(qr.autoplay) && this.set('autoplay', 1);
-        hasParam(qr.loop) && this.set('loop', 1);
-        parseInt(qr.controls) === 0 && this.set('controls', 0);
+        hasParam(qr.autoplay) && this.set('autoplay', true);
+        hasParam(qr.loop) && this.set('loop', true);
+        parseInt(qr.controls) === 0 && this.set('controls', false);
         hasParam(qr.color) && this.set('color', qr.color);
         qr.rel === '0' && this.set('rel', 0);
         qr.modestbranding === '1' && this.set('modestbranding', 1);
@@ -135,9 +153,9 @@ export default class ComponentVideo extends ComponentImage {
       case vi:
         break;
       default:
-        if (this.get('loop')) attr.loop = 'loop';
-        if (this.get('autoplay')) attr.autoplay = 'autoplay';
-        if (this.get('controls')) attr.controls = 'controls';
+        attr.loop = !!this.get('loop');
+        attr.autoplay = !!this.get('autoplay');
+        attr.controls = !!this.get('controls');
     }
 
     return attr;
@@ -183,7 +201,6 @@ export default class ComponentVideo extends ComponentImage {
         label: 'Poster',
         name: 'poster',
         placeholder: 'eg. ./media/image.jpg',
-        // changeProp: 1
       },
       this.getAutoplayTrait(),
       this.getLoopTrait(),
