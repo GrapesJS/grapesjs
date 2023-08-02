@@ -317,7 +317,7 @@ export default class ComponentVideo extends ComponentImage {
     const list = this.get('list');
     url += id + (id.indexOf('?') < 0 ? '?' : '');
     url += list ? `&list=${list}` : '';
-    url += this.get('autoplay') ? '&autoplay=1' : '';
+    url += this.get('autoplay') ? '&autoplay=1&muted=1' : '';
     url += !this.get('controls') ? '&controls=0&showinfo=0' : '';
     // Loop works only with playlist enabled
     // https://stackoverflow.com/questions/25779966/youtube-iframe-loop-doesnt-work
@@ -346,7 +346,7 @@ export default class ComponentVideo extends ComponentImage {
   getVimeoSrc() {
     let url = this.get('viUrl') as string;
     url += this.get('videoId') + '?';
-    url += this.get('autoplay') ? '&autoplay=1' : '';
+    url += this.get('autoplay') ? '&autoplay=1&muted=1' : '';
     url += this.get('loop') ? '&loop=1' : '';
     url += !this.get('controls') ? '&title=0&portrait=0&badge=0' : '';
     url += this.get('color') ? '&color=' + this.get('color') : '';
