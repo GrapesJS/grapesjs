@@ -1,3 +1,5 @@
+import { PanelProperties } from '../model/Panel';
+
 const swv = 'sw-visibility';
 const expt = 'export-template';
 const osm = 'open-sm';
@@ -17,7 +19,7 @@ interface ButtonProps {
   attributes?: Record<string, any>;
 }
 
-interface PanelProps {
+interface PanelProps extends Omit<PanelProperties, 'id' | 'buttons'> {
   id?: string;
   buttons?: ButtonProps[];
 }
