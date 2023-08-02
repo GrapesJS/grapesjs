@@ -1,24 +1,19 @@
-import ParserHtml from 'parser/model/ParserHtml';
-import ParserCss from 'parser/model/ParserCss';
-import DomComponents from 'dom_components';
-import Editor from 'editor/model/Editor';
+import ParserHtml from '../../../../src/parser/model/ParserHtml';
+import ParserCss from '../../../../src/parser/model/ParserCss';
+import DomComponents from '../../../../src/dom_components';
+import Editor from '../../../../src/editor/model/Editor';
 
 describe('ParserHtml', () => {
-  var obj;
+  let obj: ReturnType<typeof ParserHtml>;
 
   beforeEach(() => {
     const em = new Editor({});
     var dom = new DomComponents(em);
-    obj = new ParserHtml(em, {
+    obj = ParserHtml(em, {
       textTags: ['br', 'b', 'i', 'u'],
-      pStylePrefix: 'gjs-',
-      returnArray: 1,
+      returnArray: true,
     });
-    obj.compTypes = dom.componentTypes;
-  });
-
-  afterEach(() => {
-    obj = null;
+    obj.compTypes = dom.componentTypes as any;
   });
 
   test('Simple div node', () => {
@@ -381,7 +376,7 @@ describe('ParserHtml', () => {
         style: { color: 'blue' },
       },
     ];
-    var res = obj.parse(str, new ParserCss());
+    var res = obj.parse(str, ParserCss());
     expect(res.html).toEqual(resHtml);
     expect(res.css).toEqual(resCss);
   });
@@ -424,7 +419,7 @@ describe('ParserHtml', () => {
       },
     ];
 
-    const res = obj.parse(str, new ParserCss());
+    const res = obj.parse(str, ParserCss());
     expect(res.css).toEqual(expected);
   });
 

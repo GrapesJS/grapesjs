@@ -16,7 +16,7 @@ type HTMLParseResult = {
 const modelAttrStart = 'data-gjs-';
 const event = 'parse:html';
 
-const ParserHtml = (em?: EditorModel, config: ParserConfig = {}) => {
+const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boolean } = {}) => {
   return {
     compTypes: '',
 
@@ -280,7 +280,7 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig = {}) => {
      * @param  {ParserCss} parserCss In case there is style tags inside HTML
      * @return {Object}
      */
-    parse(str: string, parserCss: any, opts: HTMLParserOptions = {}) {
+    parse(str: string, parserCss?: any, opts: HTMLParserOptions = {}) {
       const conf = em?.get('Config') || {};
       const res: HTMLParseResult = {};
       const cf: ObjectAny = { ...config, ...opts };
