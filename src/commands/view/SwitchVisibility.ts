@@ -2,6 +2,7 @@ import { bindAll } from 'underscore';
 import Frame from '../../canvas/model/Frame';
 import Editor from '../../editor';
 import { CommandObject } from './CommandAbstract';
+import { isDef } from '../../utils/mixins';
 
 export default {
   init() {
@@ -9,33 +10,43 @@ export default {
   },
 
   run(ed) {
-    this.toggleVis(ed);
+    this.toggleVis(ed, true);
   },
 
   stop(ed) {
-    this.toggleVis(ed, 0);
+    this.toggleVis(ed, false);
   },
 
-  toggleVis(ed: Editor, active = 1) {
+  toggleVis(ed: Editor, active = true) {
     if (!ed.Commands.isActive('preview')) {
       const cv = ed.Canvas;
       const mth = active ? 'on' : 'off';
       const canvasModel = cv.getModel();
-      cv.getFrames().forEach(frame => this._upFrame(frame, active));
       canvasModel[mth]('change:frames', this._onFramesChange);
+      this.handleFrames(cv.getFrames(), active);
     }
   },
 
-  _onFramesChange(m: any, frames: Frame[]) {
-    frames.forEach(frame => {
-      const load = () => this._upFrame(frame, true);
-      frame.view?.loaded ? load() : frame.once('loaded', load);
+  handleFrames(frames: Frame[], active?: boolean) {
+    frames.forEach((frame: Frame & { __ol?: boolean }) => {
+      frame.view?.loaded && this._upFrame(frame, active);
+
+      if (!frame.__ol) {
+        frame.on('loaded', () => this._upFrame(frame));
+        frame.__ol = true;
+      }
     });
   },
 
-  _upFrame(frame: Frame, active: boolean) {
-    const method = active ? 'add' : 'remove';
-    const cls = `${this.ppfx}dashed`;
+  _onFramesChange(_: any, frames: Frame[]) {
+    this.handleFrames(frames);
+  },
+
+  _upFrame(frame: Frame, active?: boolean) {
+    const { ppfx, em, id } = this;
+    const isActive = isDef(active) ? active : em.Commands.isActive(id as string);
+    const method = isActive ? 'add' : 'remove';
+    const cls = `${ppfx}dashed`;
     frame.view?.getBody().classList[method](cls);
   },
 } as CommandObject<

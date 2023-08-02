@@ -452,11 +452,13 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
     );
 
     this._toggleEffects(true);
+
     if (hasDnd(em)) {
       this.droppable = new Droppable(em, this.wrapper?.el);
     }
-    model.trigger('loaded');
+
     this.loaded = true;
+    model.trigger('loaded');
   }
 
   _toggleEffects(enable: boolean) {

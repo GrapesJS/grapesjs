@@ -392,6 +392,10 @@ export default class CanvasView extends ModuleView<Canvas> {
     this.frame = currFrame;
   }
 
+  renderFrames() {
+    this._renderFrames();
+  }
+
   render() {
     const { el, $el, ppfx, config, em } = this;
     $el.html(this.template());
