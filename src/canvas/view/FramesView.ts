@@ -10,7 +10,6 @@ export default class FramesView extends ModuleDomainViews<Frames, FrameWrapView>
 
   constructor(opts = {}, config: any) {
     super(opts, true);
-    //console.log(this.collection)
     this.listenTo(this.collection, 'reset', this.render);
     this.canvasView = config.canvasView;
     this._module = config.module;
@@ -24,6 +23,13 @@ export default class FramesView extends ModuleDomainViews<Frames, FrameWrapView>
     const { $el, ppfx } = this;
     $el.attr({ class: `${ppfx}frames` });
   }
+
+  clearItems() {
+    const items = this.viewCollection || [];
+    items.forEach(item => item.remove());
+    this.viewCollection = [];
+  }
+
   protected renderView(item: any, type: string) {
     return new FrameWrapView(item, this.canvasView);
   }

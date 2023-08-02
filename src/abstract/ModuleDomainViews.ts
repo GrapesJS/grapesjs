@@ -43,7 +43,7 @@ export default abstract class ModuleDomainViews<
    * @private
    * */
   private add(model: ModuleModel, fragment?: DocumentFragment) {
-    const { reuseView, viewCollection, itemsView = {} } = this;
+    const { reuseView, viewCollection } = this;
     var frag = fragment || null;
     var typeField = model.get(this.itemType);
     let view;
@@ -64,7 +64,7 @@ export default abstract class ModuleDomainViews<
   }
 
   render() {
-    var frag = document.createDocumentFragment();
+    const frag = document.createDocumentFragment();
     this.clearItems();
     this.$el.empty();
 
