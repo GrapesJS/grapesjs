@@ -598,7 +598,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
     if (avoidInline(em) && !opt.temporary && !opts.inline) {
       const style = this.get('style') || {};
-      prop = isString(prop) ? this.parseStyle(prop) : prop;
+      prop = isString(prop) ? (this.parseStyle(prop) as ObjectStrings) : prop;
       prop = { ...prop, ...style };
       const state = em.get('state');
       const cc = em.Css;
@@ -608,8 +608,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
       this.set('style', '', { silent: true });
       keys(diff).forEach(pr => this.trigger(`change:style:${pr}`));
     } else {
-      // @ts-ignore
-      prop = super.setStyle.apply(this, arguments);
+      prop = super.setStyle.apply(this, arguments as any);
     }
 
     return prop;

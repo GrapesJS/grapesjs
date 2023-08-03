@@ -2,6 +2,7 @@ import ParserHtml from '../../../../src/parser/model/ParserHtml';
 import ParserCss from '../../../../src/parser/model/ParserCss';
 import DomComponents from '../../../../src/dom_components';
 import Editor from '../../../../src/editor/model/Editor';
+import { CSS_BG_OBJ, CSS_BG_STR } from './ParserCss';
 
 describe('ParserHtml', () => {
   let obj: ReturnType<typeof ParserHtml>;
@@ -61,6 +62,10 @@ describe('ParserHtml', () => {
       test: 'value',
     };
     expect(obj.parseStyle(str)).toEqual(result);
+  });
+
+  test('Parse style with multiple values of the same key', () => {
+    expect(obj.parseStyle(CSS_BG_STR)).toEqual(CSS_BG_OBJ);
   });
 
   test('Parse class string to array', () => {

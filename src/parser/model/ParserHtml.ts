@@ -1,4 +1,4 @@
-import { each, isFunction, isUndefined } from 'underscore';
+import { each, isArray, isFunction, isUndefined } from 'underscore';
 import { ObjectAny } from '../../common';
 import { CssRuleJSON } from '../../css_composer/model/CssRule';
 import { ComponentDefinitionDefined } from '../../dom_components/model/types';
@@ -77,14 +77,26 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
      * // {color: 'black', width: '100px', test: 'value'}
      */
     parseStyle(str: string) {
-      const result: StringObject = {};
+      const result: Record<string, string | string[]> = {};
       const decls = str.split(';');
 
       for (let i = 0, len = decls.length; i < len; i++) {
         const decl = decls[i].trim();
         if (!decl) continue;
         const prop = decl.split(':');
-        result[prop[0].trim()] = prop.slice(1).join(':').trim();
+        const key = prop[0].trim();
+        const value = prop.slice(1).join(':').trim();
+
+        // Support multiple values for the same key
+        if (result[key]) {
+          if (!isArray(result[key])) {
+            result[key] = [result[key] as string];
+          }
+
+          (result[key] as string[]).push(value);
+        } else {
+          result[key] = value;
+        }
       }
 
       return result;

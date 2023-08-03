@@ -1,7 +1,7 @@
 import Editor from '../../editor';
 
 export interface ParsedCssRule {
-  selectors: string;
+  selectors: string | string[];
   style: Record<string, string>;
   atRule?: string;
   params?: string;

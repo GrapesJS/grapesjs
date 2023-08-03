@@ -9,6 +9,7 @@ import ComponentVideo from '../../../../src/dom_components/model/ComponentVideo'
 import Components from '../../../../src/dom_components/model/Components';
 import Selector from '../../../../src/selector_manager/model/Selector';
 import Editor from '../../../../src/editor/model/Editor';
+import { CSS_BG_OBJ, CSS_BG_STR } from '../../parser/model/ParserCss';
 const $ = Backbone.$;
 
 let obj: Component;
@@ -287,6 +288,18 @@ describe('Component', () => {
     expect(obj.getStyle()).toEqual({
       color: 'white',
       background: '#fff',
+    });
+  });
+
+  test('set inline style with multiple values of the same key', () => {
+    obj.setAttributes({ style: CSS_BG_STR });
+    expect(obj.getStyle()).toEqual(CSS_BG_OBJ);
+  });
+
+  test('get proper style from inline style with multiple values of the same key', () => {
+    obj.setAttributes({ style: CSS_BG_STR });
+    expect(obj.getAttributes()).toEqual({
+      style: CSS_BG_STR.split('\n').join(''),
     });
   });
 

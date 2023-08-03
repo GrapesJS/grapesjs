@@ -61,8 +61,7 @@ export const parseSelector = (str = '') => {
  * @param {CSSRule} node
  * @return {Object}
  */
-export const parseStyle = (node: CSSRule) => {
-  // @ts-ignore
+export const parseStyle = (node: CSSStyleRule) => {
   const stl = node.style;
   const style: Record<string, string> = {};
 
@@ -158,7 +157,7 @@ export const parseNode = (el: CSSStyleSheet | CSSRule) => {
 
     if (!sels && !isSingleAtRule) continue;
 
-    const style = parseStyle(node);
+    const style = parseStyle(node as CSSStyleRule);
     const selsParsed = parseSelector(sels);
     const selsAdd = selsParsed.add;
     const selsArr: string[][] = selsParsed.result;

@@ -111,15 +111,24 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
    * @return {String}
    */
   styleToString(opts: ObjectAny = {}) {
-    const result = [];
+    const result: string[] = [];
     const style = this.getStyle(opts);
+    const imp = opts.important;
 
     for (let prop in style) {
-      const imp = opts.important;
       const important = isArray(imp) ? imp.indexOf(prop) >= 0 : imp;
-      const value = `${style[prop]}${important ? ' !important' : ''}`;
-      const propPrv = prop.substr(0, 2) == '__';
-      value && !propPrv && result.push(`${prop}:${value};`);
+      const firstChars = prop.substring(0, 2);
+      const isPrivate = firstChars === '__';
+
+      if (isPrivate) continue;
+
+      const value = style[prop];
+      const values = isArray(value) ? (value as string[]) : [value];
+
+      values.forEach((val: string) => {
+        const value = `${val}${important ? ' !important' : ''}`;
+        value && result.push(`${prop}:${value};`);
+      });
     }
 
     return result.join('');

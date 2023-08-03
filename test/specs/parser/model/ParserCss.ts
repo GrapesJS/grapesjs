@@ -1,46 +1,59 @@
-import { parseSelector } from 'parser/model/BrowserParserCss';
-import ParserCss from 'parser/model/ParserCss';
+import EditorModel from '../../../../src/editor/model/Editor';
+import { parseSelector } from '../../../../src/parser/model/BrowserParserCss';
+import ParserCss from '../../../../src/parser/model/ParserCss';
+
+export const CSS_BG_STR = `background-image:url("a/b.png");
+background-image:-webkit-linear-gradient(to bottom, #aaa, #bbb);
+background-image:-moz-linear-gradient(to bottom, #aaa, #bbb);
+background-image:linear-gradient(to bottom, #aaa, #bbb);`;
+
+export const CSS_BG_OBJ = {
+  'background-image': [
+    'url("a/b.png")',
+    '-webkit-linear-gradient(to bottom, #aaa, #bbb)',
+    '-moz-linear-gradient(to bottom, #aaa, #bbb)',
+    'linear-gradient(to bottom, #aaa, #bbb)',
+  ],
+};
 
 describe('ParserCss', () => {
-  let obj;
+  let obj: ReturnType<typeof ParserCss>;
   let config;
-  let customParser;
+  let customParser: any;
   let em = {
     getCustomParserCss: () => customParser,
     trigger: () => {},
-  };
+  } as unknown as EditorModel;
 
   beforeEach(() => {
     config = {};
-    obj = new ParserCss(em, config);
+    obj = ParserCss(em, config);
   });
 
-  afterEach(() => {
-    obj = null;
-  });
+  describe('parseSelector', () => {
+    test('Parse selector', () => {
+      var str = '.test';
+      var result = [['test']];
+      expect(parseSelector(str).result).toEqual(result);
+    });
 
-  test('Parse selector', () => {
-    var str = '.test';
-    var result = [['test']];
-    expect(parseSelector(str).result).toEqual(result);
-  });
+    test('Parse selectors', () => {
+      var str = '.test1, .test1.test2, .test2.test3';
+      var result = [['test1'], ['test1', 'test2'], ['test2', 'test3']];
+      expect(parseSelector(str).result).toEqual(result);
+    });
 
-  test('Parse selectors', () => {
-    var str = '.test1, .test1.test2, .test2.test3';
-    var result = [['test1'], ['test1', 'test2'], ['test2', 'test3']];
-    expect(parseSelector(str).result).toEqual(result);
-  });
+    test('Ignore not valid selectors', () => {
+      var str = '.test1.test2, .test2 .test3, div > .test4, #test.test5, .test6';
+      var result = [['test1', 'test2'], ['test6']];
+      expect(parseSelector(str).result).toEqual(result);
+    });
 
-  test('Ignore not valid selectors', () => {
-    var str = '.test1.test2, .test2 .test3, div > .test4, #test.test5, .test6';
-    var result = [['test1', 'test2'], ['test6']];
-    expect(parseSelector(str).result).toEqual(result);
-  });
-
-  test('Parse selectors with state', () => {
-    var str = '.test1. test2, .test2>test3, .test4.test5:hover';
-    var result = [['test4', 'test5:hover']];
-    expect(parseSelector(str).result).toEqual(result);
+    test('Parse selectors with state', () => {
+      var str = '.test1. test2, .test2>test3, .test4.test5:hover';
+      var result = [['test4', 'test5:hover']];
+      expect(parseSelector(str).result).toEqual(result);
+    });
   });
 
   test('Parse simple rule', () => {
@@ -132,7 +145,6 @@ describe('ParserCss', () => {
     expect(obj.parse(str)).toEqual([result]);
   });
 
-  // Phantom don't find 'node.conditionText' so will skip it
   test('Parse rule inside media query', () => {
     var str = '@media only screen and (max-width: 992px){ .test1.test2:hover{ color:red }}';
     var result = {
@@ -145,7 +157,6 @@ describe('ParserCss', () => {
     expect(obj.parse(str)).toEqual([result]);
   });
 
-  // Phantom don't find 'node.conditionText' so will skip it
   test('Parse rule inside media query', () => {
     var str = '@media (max-width: 992px){ .test1.test2:hover{ color:red }}';
     var result = {
@@ -344,7 +355,7 @@ describe('ParserCss', () => {
       selectors: ['test1'],
       style: { color: 'blue' },
     };
-    obj = new ParserCss(em, {
+    obj = ParserCss(em, {
       parserCss: () => [result],
     });
     expect(obj.parse(str)).toEqual([result]);
@@ -385,7 +396,7 @@ describe('ParserCss', () => {
   });
 
   test('Check node with keyframes rule', () => {
-    const style = { opacity: 0 };
+    const style = { opacity: '0' };
     expect(
       obj.checkNode({
         atRule: 'keyframes',
