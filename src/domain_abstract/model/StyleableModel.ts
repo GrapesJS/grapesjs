@@ -1,8 +1,8 @@
-import { isString, isArray, keys } from 'underscore';
-import { shallowDiff } from '../../utils/mixins';
+import { isArray, isString, keys } from 'underscore';
+import { Model, ObjectAny, ObjectHash } from '../../common';
 import ParserHtml from '../../parser/model/ParserHtml';
-import { Model, ObjectAny, ObjectHash, ObjectStrings } from '../../common';
 import Selectors from '../../selector_manager/model/Selectors';
+import { shallowDiff } from '../../utils/mixins';
 
 export type StyleProps = Record<string, string | string[]>;
 
