@@ -68,6 +68,12 @@ describe('ParserHtml', () => {
     expect(obj.parseStyle(CSS_BG_STR)).toEqual(CSS_BG_OBJ);
   });
 
+  test('Parse style with comments', () => {
+    expect(obj.parseStyle('/* color #ffffff; */ width: 100px;')).toEqual({
+      width: '100px',
+    });
+  });
+
   test('Parse class string to array', () => {
     var str = 'test1 test2    test3 test-4';
     var result = ['test1', 'test2', 'test3', 'test-4'];

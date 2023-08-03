@@ -78,6 +78,13 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
      */
     parseStyle(str: string) {
       const result: Record<string, string | string[]> = {};
+
+      while (str.indexOf('/*') >= 0) {
+        const start = str.indexOf('/*');
+        const end = str.indexOf('*/') + 2;
+        str = str.replace(str.slice(start, end), '');
+      }
+
       const decls = str.split(';');
 
       for (let i = 0, len = decls.length; i < len; i++) {
