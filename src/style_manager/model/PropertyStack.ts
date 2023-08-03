@@ -1,19 +1,19 @@
-import { keys, isUndefined, isArray, isString, isNumber } from 'underscore';
+import { isArray, isNumber, isString, isUndefined, keys } from 'underscore';
+import { StyleProps, getLastStyleValue } from '../../domain_abstract/model/StyleableModel';
 import { camelCase } from '../../utils/mixins';
+import Layer, { LayerProps, LayerValues } from './Layer';
+import Layers from './Layers';
+import { OptionsStyle, OptionsUpdate, default as Property, default as PropertyBase } from './Property';
 import PropertyComposite, {
   FromStyle,
   FromStyleData,
-  isNumberType,
-  PropertyCompositeProps,
   PropValues,
+  PropertyCompositeProps,
   ToStyle,
   ToStyleData,
+  isNumberType,
 } from './PropertyComposite';
-import PropertyBase, { OptionsStyle, OptionsUpdate, StyleProps } from './Property';
-import Layers from './Layers';
-import Layer, { LayerProps, LayerValues } from './Layer';
 import PropertyNumber from './PropertyNumber';
-import Property from './Property';
 
 const VALUES_REG = /,(?![^\(]*\))/;
 const PARTS_REG = /\s(?![^(]*\))/;
@@ -354,9 +354,9 @@ export default class PropertyStack extends PropertyComposite<PropertyStackProps>
     this.__upTargetsStyleProps(o || c);
   }
 
-  __upTargets(p: this, opts: any = {}) {
+  __upTargets(p: this, opts: any = {}): void {
     if (opts.__select) return;
-    return PropertyBase.prototype.__upTargets.call(this, p, opts);
+    return PropertyBase.prototype.__upTargets.call(this, p as any, opts);
   }
 
   __upTargetsStyleProps(opts = {}) {
@@ -519,7 +519,7 @@ export default class PropertyStack extends PropertyComposite<PropertyStackProps>
     if (this.get('detached')) return '';
     const style = this.getStyleFromLayers();
 
-    return style[this.getName()];
+    return getLastStyleValue(style[this.getName()]);
   }
 
   /**

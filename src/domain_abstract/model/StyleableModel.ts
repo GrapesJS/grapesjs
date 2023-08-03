@@ -4,7 +4,13 @@ import ParserHtml from '../../parser/model/ParserHtml';
 import { Model, ObjectAny, ObjectHash, ObjectStrings } from '../../common';
 import Selectors from '../../selector_manager/model/Selectors';
 
+export type StyleProps = Record<string, string | string[]>;
+
 const parserHtml = ParserHtml();
+
+export const getLastStyleValue = (value: string | string[]) => {
+  return isArray(value) ? value[value.length - 1] : value;
+};
 
 export default class StyleableModel<T extends ObjectHash = any> extends Model<T> {
   /**
@@ -30,7 +36,7 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
    * Get style object
    * @return {Object}
    */
-  getStyle(prop?: string | ObjectAny): ObjectStrings {
+  getStyle(prop?: string | ObjectAny): StyleProps {
     const style = this.get('style') || {};
     const result: ObjectAny = { ...style };
     return prop && isString(prop) ? result[prop] : result;

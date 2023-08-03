@@ -1,7 +1,8 @@
-import { isString, isUndefined, keys } from 'underscore';
-import Property, { OptionsStyle, OptionsUpdate, PropertyProps, StyleProps } from './Property';
-import Properties from './Properties';
+import { isArray, isString, isUndefined, keys } from 'underscore';
+import { StyleProps, getLastStyleValue } from '../../domain_abstract/model/StyleableModel';
 import { camelCase } from '../../utils/mixins';
+import Properties from './Properties';
+import Property, { OptionsStyle, OptionsUpdate, PropertyProps } from './Property';
 import { PropertyNumberProps } from './PropertyNumber';
 import { PropertySelectProps } from './PropertySelect';
 
@@ -273,7 +274,9 @@ export default class PropertyComposite<T extends Record<string, any> = PropertyC
   __getFullValue(opts: any = {}) {
     if (this.isDetached() || opts.__clear) return '';
 
-    return this.getStyleFromProps()[this.getName()] || '';
+    const result = this.getStyleFromProps()[this.getName()] || '';
+
+    return getLastStyleValue(result);
   }
 
   __getJoin() {
@@ -289,8 +292,8 @@ export default class PropertyComposite<T extends Record<string, any> = PropertyC
     return allNameProps.some(prop => !isUndefined(style[prop]) && style[prop] !== '');
   }
 
-  __splitValue(value: string, sep: string | RegExp) {
-    return value
+  __splitValue(value: string | string[], sep: string | RegExp) {
+    return getLastStyleValue(value)
       .split(sep)
       .map(value => value.trim())
       .filter(Boolean);
@@ -300,7 +303,7 @@ export default class PropertyComposite<T extends Record<string, any> = PropertyC
     return this.__splitValue(style[name] || '', sep);
   }
 
-  __getSplitValue(value = '', { byName }: OptionByName = {}) {
+  __getSplitValue(value: string | string[] = '', { byName }: OptionByName = {}) {
     const props = this.getProperties();
     const props4Nums = props.length === 4 && props.every(prop => isNumberType(prop.getType()));
     const values = this.__splitValue(value, this.getSplitSeparator());

@@ -436,7 +436,7 @@ export default class PropertyFactory {
           type: 'stack',
           layerSeparator: ' ',
           fromStyle(style, { property, name }) {
-            const filter = style[name] || '';
+            const filter = (style[name] || '') as string;
             const sep = property.getLayerSeparator();
             return filter
               ? filter.split(sep).map(input => {

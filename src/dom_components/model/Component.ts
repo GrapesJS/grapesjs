@@ -12,7 +12,7 @@ import {
   keys,
 } from 'underscore';
 import { shallowDiff, capitalize, isEmptyObj, isObject, toLowerCase } from '../../utils/mixins';
-import StyleableModel from '../../domain_abstract/model/StyleableModel';
+import StyleableModel, { StyleProps } from '../../domain_abstract/model/StyleableModel';
 import { Model } from 'backbone';
 import Components from './Components';
 import Selector from '../../selector_manager/model/Selector';
@@ -593,12 +593,12 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * @example
    * component.setStyle({ color: 'red' });
    */
-  setStyle(prop: ObjectStrings = {}, opts: any = {}) {
+  setStyle(prop: StyleProps = {}, opts: any = {}) {
     const { opt, em } = this;
 
     if (avoidInline(em) && !opt.temporary && !opts.inline) {
       const style = this.get('style') || {};
-      prop = isString(prop) ? (this.parseStyle(prop) as ObjectStrings) : prop;
+      prop = isString(prop) ? this.parseStyle(prop) : prop;
       prop = { ...prop, ...style };
       const state = em.get('state');
       const cc = em.Css;

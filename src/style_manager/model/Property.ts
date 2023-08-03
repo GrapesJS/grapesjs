@@ -5,6 +5,7 @@ import EditorModel from '../../editor/model/Editor';
 import { capitalize, camelCase, hasWin } from '../../utils/mixins';
 import Sector from './Sector';
 import PropertyComposite from './PropertyComposite';
+import { StyleProps } from '../../domain_abstract/model/StyleableModel';
 
 /** @private */
 export interface PropertyProps {
@@ -70,8 +71,6 @@ export interface PropertyProps {
   parentTarget?: any;
   __p?: any;
 }
-
-export type StyleProps = Record<string, string>;
 
 export type OptionsUpdate = {
   partial?: boolean;
@@ -152,7 +151,7 @@ export default class Property<T extends Record<string, any> = PropertyProps> ext
     return this.collection?.opts?.parentProp;
   }
 
-  __upTargets(p: this, opts: any = {}) {
+  __upTargets(p: this, opts: any = {}): void {
     const { em } = this;
     const sm = em.Styles;
     const name = this.getName();
@@ -278,7 +277,7 @@ export default class Property<T extends Record<string, any> = PropertyProps> ext
    * console.log(property.getStyle());
    * // { color: 'red' };
    */
-  getStyle(opts: OptionsStyle = {}) {
+  getStyle(opts: OptionsStyle = {}): StyleProps {
     const name = this.getName();
     const key = opts.camelCase ? camelCase(name) : name;
     return { [key]: this.__getFullValue(opts) };
