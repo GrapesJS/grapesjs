@@ -162,18 +162,26 @@ export default class CanvasView extends ModuleView<Canvas> {
   }
 
   updateFrames(ev: Event) {
-    const { em, model } = this;
-    const { x, y } = model.attributes;
-    const zoom = this.getZoom();
+    const { em } = this;
     const defOpts = { preserveSelected: 1 };
-    const mpl = zoom ? 1 / zoom : 1;
-    //@ts-ignore
-    this.framesArea.style.transform = `scale(${zoom}) translate(${x * mpl}px, ${y * mpl}px)`;
+    this.updateFramesArea();
     this.clearOff();
     em.stopDefault(defOpts);
     em.trigger('canvas:update', ev);
     this.timerZoom && clearTimeout(this.timerZoom);
     this.timerZoom = setTimeout(() => em.runDefault(defOpts), 300) as any;
+  }
+
+  updateFramesArea() {
+    const { framesArea, model } = this;
+
+    if (framesArea) {
+      const zoom = this.getZoom();
+      const { x, y } = model.attributes;
+      const mpl = zoom ? 1 / zoom : 1;
+
+      framesArea.style.transform = `scale(${zoom}) translate(${x * mpl}px, ${y * mpl}px)`;
+    }
   }
 
   getZoom() {
@@ -390,6 +398,7 @@ export default class CanvasView extends ModuleView<Canvas> {
     em.setCurrentFrame(currFrame);
     framesArea?.appendChild(frames.el);
     this.frame = currFrame;
+    this.updateFramesArea();
   }
 
   renderFrames() {
