@@ -240,10 +240,6 @@ export default class CanvasView extends ModuleView<Canvas> {
     module.setCoords(coords.x, coords.y);
   }
 
-  getZoom() {
-    return this.em.getZoomDecimal();
-  }
-
   /**
    * Checks if the element is visible in the canvas's viewport
    * @param  {HTMLElement}  el
@@ -318,7 +314,7 @@ export default class CanvasView extends ModuleView<Canvas> {
    * @public
    */
   getElementPos(el: HTMLElement, opts: ElementPosOpts = {}) {
-    const zoom = this.getZoom();
+    const zoom = this.module.getZoomDecimal();
     const frameOffset = this.getFrameOffset(el);
     const canvasEl = this.el;
     const canvasOffset = this.getCanvasOffset();
@@ -347,6 +343,7 @@ export default class CanvasView extends ModuleView<Canvas> {
     if (!el || isTextNode(el)) return {};
     const result: MarginPaddingOffsets = {};
     const styles = window.getComputedStyle(el);
+    const zoom = this.module.getZoomDecimal();
     const marginPaddingOffsets: (keyof MarginPaddingOffsets)[] = [
       'marginTop',
       'marginRight',
@@ -358,7 +355,7 @@ export default class CanvasView extends ModuleView<Canvas> {
       'paddingLeft',
     ];
     marginPaddingOffsets.forEach(offset => {
-      result[offset] = parseFloat(styles[offset]) * this.getZoom();
+      result[offset] = parseFloat(styles[offset]) * zoom;
     });
 
     return result;
@@ -380,7 +377,7 @@ export default class CanvasView extends ModuleView<Canvas> {
       };
     }
     const bEl = doc.body;
-    const zoom = this.getZoom();
+    const zoom = this.module.getZoomDecimal();
     const fo = this.getFrameOffset();
     const co = this.getCanvasOffset();
     const { noScroll } = opts;
