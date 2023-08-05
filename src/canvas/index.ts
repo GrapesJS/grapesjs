@@ -54,7 +54,7 @@ import { getElement, getViewEl } from '../utils/mixins';
 import defaults, { CanvasConfig } from './config/config';
 import Canvas from './model/Canvas';
 import Frame from './model/Frame';
-import CanvasView from './view/CanvasView';
+import CanvasView, { FitViewportOptions } from './view/CanvasView';
 import FrameView from './view/FrameView';
 
 export type CanvasEvent = 'canvas:dragenter' | 'canvas:dragover' | 'canvas:drop' | 'canvas:dragend' | 'canvas:dragdata';
@@ -606,8 +606,17 @@ export default class CanvasModule extends Module<CanvasConfig> {
    * @example
    * canvas.setCoords(100, 100);
    */
-  setCoords(x: string, y: string) {
-    this.canvas.set({ x: parseFloat(x), y: parseFloat(y) });
+  setCoords(x?: string | number, y?: string | number) {
+    const coords = {
+      x: this.canvas.get('x'),
+      y: this.canvas.get('y'),
+    };
+
+    if (x || x === 0) coords.x = parseFloat(`${x}`);
+    if (y || y === 0) coords.y = parseFloat(`${y}`);
+
+    this.canvas.set(coords);
+
     return this;
   }
 
@@ -631,6 +640,10 @@ export default class CanvasModule extends Module<CanvasConfig> {
   getZoomMultiplier() {
     const zoom = this.getZoomDecimal();
     return zoom ? 1 / zoom : 1;
+  }
+
+  fitViewport(opts?: FitViewportOptions) {
+    this.canvasView?.fitViewport(opts);
   }
 
   toggleFramesEvents(on: boolean) {

@@ -1,13 +1,14 @@
-import { bindAll } from 'underscore';
+import { bindAll, isNumber } from 'underscore';
 import { ModuleView } from '../../abstract';
-import { on, off, getElement, getKeyChar, isTextNode, getElRect, getUiClass } from '../../utils/mixins';
-import { createEl, getDocumentScroll } from '../../utils/dom';
-import FramesView from './FramesView';
-import Canvas from '../model/Canvas';
-import FrameView from './FrameView';
-import ComponentView from '../../dom_components/view/ComponentView';
+import { BoxRect, ElementRect } from '../../common';
 import Component from '../../dom_components/model/Component';
-import { ElementRect } from '../../common';
+import ComponentView from '../../dom_components/view/ComponentView';
+import { createEl, getDocumentScroll } from '../../utils/dom';
+import { getElRect, getElement, getKeyChar, getUiClass, isTextNode, off, on } from '../../utils/mixins';
+import Canvas from '../model/Canvas';
+import Frame from '../model/Frame';
+import FrameView from './FrameView';
+import FramesView from './FramesView';
 
 export interface MarginPaddingOffsets {
   marginTop?: number;
@@ -25,6 +26,13 @@ export type ElementPosOpts = {
   avoidFrameZoom?: boolean;
   noScroll?: boolean;
 };
+
+export interface FitViewportOptions {
+  frame?: Frame;
+  gap?: number | { x: number; y: number };
+  ignoreHeight?: boolean;
+}
+
 export default class CanvasView extends ModuleView<Canvas> {
   events() {
     return {
@@ -173,15 +181,63 @@ export default class CanvasView extends ModuleView<Canvas> {
   }
 
   updateFramesArea() {
-    const { framesArea, model } = this;
+    const { framesArea, model, module } = this;
 
     if (framesArea) {
-      const zoom = this.getZoom();
       const { x, y } = model.attributes;
-      const mpl = zoom ? 1 / zoom : 1;
+      const zoomDc = module.getZoomDecimal();
+      const mpl = module.getZoomMultiplier();
 
-      framesArea.style.transform = `scale(${zoom}) translate(${x * mpl}px, ${y * mpl}px)`;
+      framesArea.style.transform = `scale(${zoomDc}) translate(${x * mpl}px, ${y * mpl}px)`;
     }
+  }
+
+  fitViewport(opts: FitViewportOptions = {}) {
+    const { em, module } = this;
+    const canvasRect = this.getCanvasOffset();
+    const frame = opts.frame || em.getCurrentFrameModel() || this.model.frames.at(0);
+    const { x, y } = frame.attributes;
+    const boxRect: BoxRect = {
+      x: x ?? 0,
+      y: y ?? 0,
+      width: frame.width,
+      height: frame.height,
+    };
+
+    const noHeight = opts.ignoreHeight;
+    const gap = opts.gap ?? 0;
+    const gapIsNum = isNumber(gap);
+    const gapX = gapIsNum ? gap : gap.x;
+    const gapY = gapIsNum ? gap : gap.y;
+    const boxWidth = boxRect.width + gapX * 2;
+    const boxHeight = boxRect.height + gapY * 2;
+    const canvasWidth = canvasRect.width;
+    const canvasHeight = canvasRect.height;
+    const widthRatio = canvasWidth / boxWidth;
+    const heightRatio = canvasHeight / boxHeight;
+
+    const zoomRatio = noHeight ? widthRatio : Math.min(widthRatio, heightRatio);
+    const zoom = zoomRatio * 100;
+    module.setZoom(zoom);
+
+    // check for the boxWidth is necessary as we're centering the frame via CSS
+    const coordX = boxRect.x + (boxWidth > canvasWidth ? canvasWidth / 2 - boxWidth / 2 : -gapX);
+    const coordY = boxRect.y + canvasHeight / 2 - boxHeight / 2;
+
+    const coords = {
+      x: (coordX + gapX) * zoomRatio,
+      y: (coordY + gapY) * zoomRatio,
+    };
+
+    if (noHeight) {
+      const zoomMltp = module.getZoomMultiplier();
+      const canvasWorldHeight = canvasHeight * zoomMltp;
+      const canvasHeightDiff = canvasWorldHeight - canvasHeight;
+      const yDelta = canvasHeightDiff / 2;
+      coords.y = (boxRect.y + gapY) * zoomRatio - yDelta / zoomMltp;
+    }
+
+    module.setCoords(coords.x, coords.y);
   }
 
   getZoom() {

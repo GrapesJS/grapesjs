@@ -1,4 +1,4 @@
-import { result, forEach, isEmpty, isString } from 'underscore';
+import { result, forEach, isEmpty, isString, isNumber } from 'underscore';
 import { ModuleModel } from '../../abstract';
 import CanvasModule from '..';
 import ComponentWrapper from '../../dom_components/model/ComponentWrapper';
@@ -9,6 +9,21 @@ import Page from '../../pages/model/Page';
 
 const keyAutoW = '__aw';
 const keyAutoH = '__ah';
+
+const getDimension = (frame: Frame, type: 'width' | 'height') => {
+  const dim = frame.get(type);
+  const viewDim = frame.view?.el['width' ? 'offsetWidth' : 'offsetHeight'];
+
+  if (isNumber(dim)) {
+    return dim;
+  } else if (isString(dim) && dim.endsWith('px')) {
+    return parseFloat(dim);
+  } else if (viewDim) {
+    return viewDim;
+  } else {
+    return 0;
+  }
+};
 
 /**
  * @property {Object|String} component Wrapper component definition. You can also pass an HTML string as components of the default wrapper component.
@@ -85,6 +100,14 @@ export default class Frame extends ModuleModel<CanvasModule> {
 
     !attr.width && this.set(keyAutoW, 1);
     !attr.height && this.set(keyAutoH, 1);
+  }
+
+  get width() {
+    return getDimension(this, 'width');
+  }
+
+  get height() {
+    return getDimension(this, 'height');
   }
 
   get head(): { tag: string; attributes: any }[] {

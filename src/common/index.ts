@@ -27,6 +27,18 @@ export type Position = {
   y: number;
 };
 
+export interface Coordinates {
+  x: number;
+  y: number;
+}
+
+export interface Dimensions {
+  height: number;
+  width: number;
+}
+
+export interface BoxRect extends Coordinates, Dimensions {}
+
 export type ElementRect = {
   top: number;
   left: number;

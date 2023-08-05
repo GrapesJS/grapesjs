@@ -904,12 +904,12 @@ export default class EditorModel extends Model {
     return this.set('currentFrame', frameView);
   }
 
-  getCurrentFrame(): FrameView {
+  getCurrentFrame(): FrameView | undefined {
     return this.get('currentFrame');
   }
 
-  getCurrentFrameModel(): Frame {
-    return (this.getCurrentFrame() || {}).model;
+  getCurrentFrameModel() {
+    return (this.getCurrentFrame() || {})?.model;
   }
 
   getIcon(icon: string) {
