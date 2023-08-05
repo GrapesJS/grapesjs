@@ -1,16 +1,17 @@
-import { isEmpty, each, keys, result } from 'underscore';
-import Component, { avoidInline } from '../model/Component';
-import Components from '../model/Components';
-import ComponentsView from './ComponentsView';
+import { each, isEmpty, keys, result } from 'underscore';
+import FrameView from '../../canvas/view/FrameView';
+import { ExtractMethods, ObjectAny, View } from '../../common';
+import { GetSetRuleOptions } from '../../css_composer';
+import Editor from '../../editor';
+import EditorModel from '../../editor/model/Editor';
 import Selectors from '../../selector_manager/model/Selectors';
 import { replaceWith } from '../../utils/dom';
 import { setViewEl } from '../../utils/mixins';
-import { ExtractMethods, ObjectAny, View } from '../../common';
-import { ComponentOptions } from '../model/types';
-import EditorModel from '../../editor/model/Editor';
 import { DomComponentsConfig } from '../config/config';
-import Editor from '../../editor';
-import { GetSetRuleOptions } from '../../css_composer';
+import Component, { avoidInline } from '../model/Component';
+import Components from '../model/Components';
+import { ComponentOptions } from '../model/types';
+import ComponentsView from './ComponentsView';
 
 type ClbObj = ReturnType<ComponentView['_clbObj']>;
 
@@ -92,6 +93,10 @@ Component> {
 
   get __cmpStyleOpts(): GetSetRuleOptions {
     return { state: '', mediaText: '' };
+  }
+
+  get frameView(): FrameView {
+    return this.opts.config.frameView;
   }
 
   __isDraggable() {
