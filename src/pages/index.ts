@@ -92,6 +92,7 @@ export interface PageManagerConfig extends ModuleConfig {
 }
 
 export default class PageManager extends ItemManagerModule<PageManagerConfig, Pages> {
+  events!: typeof events;
   storageKey = 'pages';
 
   get pages() {

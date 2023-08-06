@@ -124,6 +124,7 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
   selectorTags?: ClassTagsView;
   selected: Selectors;
   all: Selectors;
+  events!: typeof events;
   storageKey = '';
   __update: Debounced;
   __ctn?: HTMLElement;

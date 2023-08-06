@@ -115,6 +115,7 @@ export default class AssetManager extends ItemManagerModule<AssetManagerConfig, 
   am?: AssetsView;
   fu?: FileUploaderView;
   _bhv?: any;
+  events!: typeof events;
 
   /**
    * Initialize module

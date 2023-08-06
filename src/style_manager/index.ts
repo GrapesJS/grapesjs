@@ -135,6 +135,7 @@ export default class StyleManager extends ItemManagerModule<
   builtIn: PropertyFactory;
   upAll: Debounced;
   properties: typeof Properties;
+  events!: typeof events;
   sectors: Sectors;
   SectView!: SectorsView;
   Sector = Sector;

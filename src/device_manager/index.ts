@@ -65,7 +65,7 @@ export default class DeviceManager extends ItemManagerModule<
   Devices
 > {
   devices: Devices;
-
+  events!: typeof events;
   view?: DevicesView;
 
   Device = Device;

@@ -93,6 +93,7 @@ export default class BlockManager extends ItemManagerModule<BlockManagerConfig, 
   blocksView?: BlocksView;
   _dragBlock?: Block;
   _bhv?: Record<string, any>;
+  events!: typeof events;
 
   Block = Block;
 
