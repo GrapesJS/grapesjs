@@ -60,6 +60,10 @@ import { Coordinates } from '../common';
 
 export type CanvasEvent = 'canvas:dragenter' | 'canvas:dragover' | 'canvas:drop' | 'canvas:dragend' | 'canvas:dragdata';
 
+export interface ToWorldOption {
+  toWorld?: boolean;
+}
+
 export default class CanvasModule extends Module<CanvasConfig> {
   /**
    * Get configuration object
@@ -607,14 +611,24 @@ export default class CanvasModule extends Module<CanvasConfig> {
    * @example
    * canvas.setCoords(100, 100);
    */
-  setCoords(x?: string | number, y?: string | number) {
+  setCoords(x?: string | number, y?: string | number, opts: ToWorldOption = {}) {
+    const hasX = x || x === 0;
+    const hasY = y || y === 0;
     const coords = {
       x: this.canvas.get('x'),
       y: this.canvas.get('y'),
     };
 
-    if (x || x === 0) coords.x = parseFloat(`${x}`);
-    if (y || y === 0) coords.y = parseFloat(`${y}`);
+    if (hasX) coords.x = parseFloat(`${x}`);
+    if (hasY) coords.y = parseFloat(`${y}`);
+
+    if (opts.toWorld) {
+      const delta = this.canvasView?.getViewportDelta();
+      if (delta) {
+        if (hasX) coords.x = coords.x - delta.x;
+        if (hasY) coords.y = coords.y - delta.y;
+      }
+    }
 
     this.canvas.set(coords);
 
