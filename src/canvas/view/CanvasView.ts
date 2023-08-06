@@ -9,6 +9,7 @@ import Canvas from '../model/Canvas';
 import Frame from '../model/Frame';
 import FrameView from './FrameView';
 import FramesView from './FramesView';
+import { ToWorldOption } from '..';
 
 export interface MarginPaddingOffsets {
   marginTop?: number;
@@ -293,7 +294,7 @@ export default class CanvasView extends ModuleView<Canvas> {
     };
   }
 
-  getViewportRect(opts: { toWorld?: boolean } = {}): BoxRect {
+  getViewportRect(opts: ToWorldOption = {}): BoxRect {
     const { top, left, width, height } = this.getCanvasOffset();
     const { module } = this;
 
