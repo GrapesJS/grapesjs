@@ -293,6 +293,40 @@ export default class CanvasView extends ModuleView<Canvas> {
     };
   }
 
+  getViewportRect(opts: { toWorld?: boolean } = {}): BoxRect {
+    const { module } = this;
+    const { top, left, width, height } = this.getCanvasOffset();
+
+    if (opts.toWorld) {
+      const zoom = module.getZoomMultiplier();
+      const coords = module.getCoords();
+
+      // Get coords based on zoom
+      const canvasWorldWidth = width * zoom;
+      const canvasWorldHeight = height * zoom;
+      const canvasWidthDelta = canvasWorldWidth - width;
+      const canvasHeightDelta = canvasWorldHeight - height;
+      const xDelta = canvasWidthDelta / 2 / zoom;
+      const yDelta = canvasHeightDelta / 2 / zoom;
+      const x = (-coords.x - xDelta) * zoom;
+      const y = (-coords.y - yDelta) * zoom;
+
+      return {
+        x: x || 0,
+        y: y || 0,
+        width: canvasWorldWidth,
+        height: canvasWorldHeight,
+      };
+    } else {
+      return {
+        x: left,
+        y: top,
+        width,
+        height,
+      };
+    }
+  }
+
   /**
    * Cleare cached offsets
    * @private
