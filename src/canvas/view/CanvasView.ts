@@ -1,6 +1,6 @@
 import { bindAll, isNumber } from 'underscore';
 import { ModuleView } from '../../abstract';
-import { BoxRect, ElementRect } from '../../common';
+import { BoxRect, Coordinates, ElementRect } from '../../common';
 import Component from '../../dom_components/model/Component';
 import ComponentView from '../../dom_components/view/ComponentView';
 import { createEl, getDocumentScroll } from '../../utils/dom';
@@ -294,28 +294,21 @@ export default class CanvasView extends ModuleView<Canvas> {
   }
 
   getViewportRect(opts: { toWorld?: boolean } = {}): BoxRect {
-    const { module } = this;
     const { top, left, width, height } = this.getCanvasOffset();
+    const { module } = this;
 
     if (opts.toWorld) {
       const zoom = module.getZoomMultiplier();
       const coords = module.getCoords();
-
-      // Get coords based on zoom
-      const canvasWorldWidth = width * zoom;
-      const canvasWorldHeight = height * zoom;
-      const canvasWidthDelta = canvasWorldWidth - width;
-      const canvasHeightDelta = canvasWorldHeight - height;
-      const xDelta = canvasWidthDelta / 2 / zoom;
-      const yDelta = canvasHeightDelta / 2 / zoom;
-      const x = (-coords.x - xDelta) * zoom;
-      const y = (-coords.y - yDelta) * zoom;
+      const vwDelta = this.getViewportDelta();
+      const x = -coords.x - vwDelta.x || 0;
+      const y = -coords.y - vwDelta.y || 0;
 
       return {
-        x: x || 0,
-        y: y || 0,
-        width: canvasWorldWidth,
-        height: canvasWorldHeight,
+        x: x * zoom,
+        y: y * zoom,
+        width: width * zoom,
+        height: height * zoom,
       };
     } else {
       return {
@@ -325,6 +318,20 @@ export default class CanvasView extends ModuleView<Canvas> {
         height,
       };
     }
+  }
+
+  getViewportDelta(): Coordinates {
+    const zoom = this.module.getZoomMultiplier();
+    const { width, height } = this.getCanvasOffset();
+    const worldWidth = width * zoom;
+    const worldHeight = height * zoom;
+    const widthDelta = worldWidth - width;
+    const heightDelta = worldHeight - height;
+
+    return {
+      x: widthDelta / 2 / zoom,
+      y: heightDelta / 2 / zoom,
+    };
   }
 
   /**
