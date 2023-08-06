@@ -56,6 +56,7 @@ import Canvas from './model/Canvas';
 import Frame from './model/Frame';
 import CanvasView, { FitViewportOptions } from './view/CanvasView';
 import FrameView from './view/FrameView';
+import { Coordinates } from '../common';
 
 export type CanvasEvent = 'canvas:dragenter' | 'canvas:dragover' | 'canvas:drop' | 'canvas:dragend' | 'canvas:dragdata';
 
@@ -628,7 +629,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
    * const coords = canvas.getCoords();
    * // { x: 100, y: 100 }
    */
-  getCoords(): { x: number; y: number } {
+  getCoords(): Coordinates {
     const { x, y } = this.canvas.attributes;
     return { x, y };
   }
