@@ -178,6 +178,7 @@ Set canvas position coordinates
 
 *   `x` **[Number][22]** Horizontal position
 *   `y` **[Number][22]** Vertical position
+*   `opts` **ToWorldOption**  (optional, default `{}`)
 
 ### Examples
 
@@ -233,6 +234,12 @@ canvas.addFrame({
 
 Returns **[Frame]** 
 
+## getLastDragResult
+
+Get the last created Component from a drag & drop to the canvas.
+
+Returns **([Component] | [undefined][23])** 
+
 [1]: https://github.com/GrapesJS/grapesjs/blob/master/src/canvas/config/config.ts
 
 [2]: #getconfig
@@ -276,3 +283,5 @@ Returns **[Frame]**
 [21]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
 
 [22]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+
+[23]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined

@@ -151,6 +151,13 @@ Return the Blocks container element
 
 Returns **[HTMLElement][14]** 
 
+## getDragBlock
+
+Returns currently dragging block.
+Updated when the drag starts and cleared once it's done.
+
+Returns **([Block] | [undefined][15])** 
+
 ## render
 
 Render blocks
@@ -160,8 +167,8 @@ Render blocks
 *   `blocks` **[Array][13]** Blocks to render, without the argument will render all global blocks
 *   `opts` **[Object][11]** Options (optional, default `{}`)
 
-    *   `opts.external` **[Boolean][15]?** Render blocks in a new container (HTMLElement will be returned)
-    *   `opts.ignoreCategories` **[Boolean][15]?** Render blocks without categories
+    *   `opts.external` **[Boolean][16]?** Render blocks in a new container (HTMLElement will be returned)
+    *   `opts.ignoreCategories` **[Boolean][16]?** Render blocks without categories
 
 ### Examples
 
@@ -217,4 +224,6 @@ Returns **[HTMLElement][14]** Rendered element
 
 [14]: https://developer.mozilla.org/docs/Web/HTML/Element
 
-[15]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[15]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined
+
+[16]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
