@@ -49,6 +49,8 @@
 
 import { isUndefined } from 'underscore';
 import { Module } from '../abstract';
+import { Coordinates } from '../common';
+import Component from '../dom_components/model/Component';
 import EditorModel from '../editor/model/Editor';
 import { getElement, getViewEl } from '../utils/mixins';
 import defaults, { CanvasConfig } from './config/config';
@@ -56,7 +58,6 @@ import Canvas from './model/Canvas';
 import Frame from './model/Frame';
 import CanvasView, { FitViewportOptions } from './view/CanvasView';
 import FrameView from './view/FrameView';
-import { Coordinates } from '../common';
 
 export type CanvasEvent = 'canvas:dragenter' | 'canvas:dragover' | 'canvas:drop' | 'canvas:dragend' | 'canvas:dragdata';
 
@@ -694,6 +695,14 @@ export default class CanvasModule extends Module<CanvasConfig> {
    */
   addFrame(props = {}, opts = {}) {
     return this.canvas.frames.add(new Frame(this, { ...props }), opts);
+  }
+
+  /**
+   * Get the last created Component from a drag & drop to the canvas.
+   * @returns {[Component]|undefined}
+   */
+  getLastDragResult(): Component | undefined {
+    return this.em.get('dragResult');
   }
 
   destroy() {
