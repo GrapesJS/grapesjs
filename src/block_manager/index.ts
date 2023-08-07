@@ -316,6 +316,15 @@ export default class BlockManager extends ItemManagerModule<BlockManagerConfig, 
   }
 
   /**
+   * Returns currently dragging block.
+   * Updated when the drag starts and cleared once it's done.
+   * @returns {[Block]|undefined}
+   */
+  getDragBlock() {
+    return this._dragBlock;
+  }
+
+  /**
    * Render blocks
    * @param  {Array} blocks Blocks to render, without the argument will render all global blocks
    * @param  {Object} [opts={}] Options
