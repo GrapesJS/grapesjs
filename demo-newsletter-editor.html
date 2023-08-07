@@ -4,12 +4,12 @@
     <meta charset="utf-8">
     <title>GrapesJS Demo - Free Open Source Newsletter Editor</title>
     <meta content="Best Free Open Source Responsive No-Code Newsletter HTML Email Builder" name="description">
-    <link rel="stylesheet" href="stylesheets/grapes.min.css?v0.21.3">
+    <link rel="stylesheet" href="stylesheets/grapes.min.css?v0.21.4">
     <link rel="stylesheet" href="stylesheets/material.css">
     <link rel="stylesheet" href="stylesheets/tooltip.css">
     <link rel="stylesheet" href="stylesheets/demos.css?v2">
 
-    <script src="js/grapes.min.js?v0.21.3"></script>
+    <script src="js/grapes.min.js?v0.21.4"></script>
     <!-- <script src="./js/ckeditor/ckeditor.js"></script> -->
     <!-- <script src="https://unpkg.com/grapesjs-plugin-ckeditor@0.0.10"></script> -->
     <script src="./js/grapesjs-plugin-ckeditor/index.js"></script>
@@ -564,6 +564,9 @@
             }
           },
           'grapesjs-plugin-ckeditor': {
+            onToolbar: el => {
+              el.style.minWidth = '350px';
+            },
             options: {
               startupFocus: true,
               extraAllowedContent: '*(*);*{*}', // Allows any class and any inline style
@@ -664,7 +667,7 @@
       });
 
       // Do stuff on load
-      editor.on('load', function() {
+      editor.onReady(function() {
         // Show borders by default
         pnm.getButton('options', 'sw-visibility').set('active', 1);
 
@@ -673,6 +676,13 @@
         document.querySelector('.gjs-logo-version').innerHTML = 'v' + grapesjs.version;
         var logoPanel = document.querySelector('.gjs-pn-commands');
         logoPanel.appendChild(logoCont);
+
+        // Wait for CKEDITOR load
+        setTimeout(() => {
+          if (CKEDITOR) {
+            CKEDITOR.dtd.$editable.a = 1;
+          }
+        }, 200);
       });
     </script>
     <script>
