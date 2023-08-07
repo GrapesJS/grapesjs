@@ -21,6 +21,16 @@ export type Position = {
 	x: number;
 	y: number;
 };
+export interface Coordinates {
+	x: number;
+	y: number;
+}
+export interface Dimensions {
+	height: number;
+	width: number;
+}
+export interface BoxRect extends Coordinates, Dimensions {
+}
 export type ElementRect = {
 	top: number;
 	left: number;
@@ -133,15 +143,14 @@ export declare class Selectors extends Collection<Selector> {
 	}): string;
 	getFullName(opts?: any): string | string[];
 }
+export type StyleProps = Record<string, string | string[]>;
 declare class StyleableModel<T extends ObjectHash = any> extends Model<T> {
 	/**
 	 * Forward style string to `parseStyle` to be parse to an object
 	 * @param  {string} str
 	 * @returns
 	 */
-	parseStyle(str: string): {
-		[x: string]: string;
-	};
+	parseStyle(str: string): Record<string, string | string[]>;
 	/**
 	 * To trigger the style change event on models I have to
 	 * pass a new object instance
@@ -153,7 +162,7 @@ declare class StyleableModel<T extends ObjectHash = any> extends Model<T> {
 	 * Get style object
 	 * @return {Object}
 	 */
-	getStyle(prop?: string | ObjectAny): ObjectStrings;
+	getStyle(prop?: string | ObjectAny): StyleProps;
 	/**
 	 * Set new style object
 	 * @param {Object|string} prop
@@ -319,6 +328,14 @@ export interface CanvasConfig {
 	 * This option allows to customize, by a selector, which element should not be considered textable.
 	 */
 	notTextable?: string[];
+	/**
+	 * By default, the editor allows to drop external elements by relying on the native HTML5
+	 * drag & drop API (eg. like a D&D of an image file from your desktop).
+	 * If you want to customize how external elements are interpreted by the editor, you can rely
+	 * on `canvas:dragdata` event, eg. https://github.com/GrapesJS/grapesjs/discussions/3849
+	 * @default true
+	 */
+	allowExternalDrop?: boolean;
 }
 export declare class Pages extends Collection<Page> {
 	constructor(models: any, em: EditorModel);
@@ -350,10 +367,21 @@ export interface SelectableOption {
 export interface AbortOption {
 	abort?: boolean;
 }
+declare const pageEvents: {
+	all: string;
+	select: string;
+	selectBefore: string;
+	update: string;
+	add: string;
+	addBefore: string;
+	remove: string;
+	removeBefore: string;
+};
 export interface PageManagerConfig extends ModuleConfig {
 	pages?: any[];
 }
 declare class PageManager extends ItemManagerModule<PageManagerConfig, Pages> {
+	events: typeof pageEvents;
 	storageKey: string;
 	get pages(): Pages;
 	model: ModuleModel;
@@ -654,6 +682,8 @@ export declare class Frame extends ModuleModel<CanvasModule> {
 	 * @hideconstructor
 	 */
 	constructor(module: CanvasModule, attr: any);
+	get width(): number;
+	get height(): number;
 	get head(): {
 		tag: string;
 		attributes: any;
@@ -827,6 +857,7 @@ export interface TraitProperties {
 		trait: Trait;
 		component: Component;
 		partial: boolean;
+		emitUpdate: () => void;
 	}) => void;
 }
 export type TraitOption = {
@@ -1218,6 +1249,7 @@ declare class FramesView extends ModuleDomainViews<Frames, FrameWrapView> {
 	constructor(opts: {} | undefined, config: any);
 	onRemoveBefore(items: FrameWrapView[], opts?: {}): void;
 	onRender(): void;
+	clearItems(): void;
 	protected renderView(item: any, type: string): FrameWrapView;
 }
 export interface MarginPaddingOffsets {
@@ -1235,6 +1267,15 @@ export type ElementPosOpts = {
 	avoidFrameZoom?: boolean;
 	noScroll?: boolean;
 };
+export interface FitViewportOptions {
+	frame?: Frame;
+	gap?: number | {
+		x: number;
+		y: number;
+	};
+	ignoreHeight?: boolean;
+	el?: HTMLElement;
+}
 declare class CanvasView extends ModuleView<Canvas> {
 	events(): {
 		wheel: string;
@@ -1269,7 +1310,8 @@ declare class CanvasView extends ModuleView<Canvas> {
 	onKeyPress(ev: KeyboardEvent): void;
 	onWheel(ev: KeyboardEvent): void;
 	updateFrames(ev: Event): void;
-	getZoom(): number;
+	updateFramesArea(): void;
+	fitViewport(opts?: FitViewportOptions): void;
 	/**
 	 * Checks if the element is visible in the canvas's viewport
 	 * @param  {HTMLElement}  el
@@ -1287,6 +1329,9 @@ declare class CanvasView extends ModuleView<Canvas> {
 		width: number;
 		height: number;
 	};
+	getElBoxRect(el: HTMLElement): BoxRect;
+	getViewportRect(opts?: ToWorldOption): BoxRect;
+	getViewportDelta(): Coordinates;
 	/**
 	 * Cleare cached offsets
 	 * @private
@@ -1360,6 +1405,7 @@ declare class CanvasView extends ModuleView<Canvas> {
 	getJsContainer(view?: ComponentView): any;
 	getFrameView(view?: ComponentView): any;
 	_renderFrames(): void;
+	renderFrames(): void;
 	render(): this;
 }
 export type RectDim = {
@@ -2079,6 +2125,9 @@ export declare class Canvas extends ModuleModel<CanvasModule> {
 	onZoomChange(): void;
 }
 export type CanvasEvent = "canvas:dragenter" | "canvas:dragover" | "canvas:drop" | "canvas:dragend" | "canvas:dragdata";
+export interface ToWorldOption {
+	toWorld?: boolean;
+}
 declare class CanvasModule extends Module<CanvasConfig> {
 	/**
 	 * Get configuration object
@@ -2100,7 +2149,7 @@ declare class CanvasModule extends Module<CanvasConfig> {
 	 * @private
 	 */
 	constructor(em: EditorModel);
-	onLoad(): void;
+	postLoad(): void;
 	getModel(): Canvas;
 	/**
 	 * Get the canvas element
@@ -2398,7 +2447,7 @@ declare class CanvasModule extends Module<CanvasConfig> {
 	 * @example
 	 * canvas.setCoords(100, 100);
 	 */
-	setCoords(x: string, y: string): this;
+	setCoords(x?: string | number, y?: string | number, opts?: ToWorldOption): this;
 	/**
 	 * Get canvas position coordinates
 	 * @returns {Object} Object containing coordinates
@@ -2407,12 +2456,10 @@ declare class CanvasModule extends Module<CanvasConfig> {
 	 * const coords = canvas.getCoords();
 	 * // { x: 100, y: 100 }
 	 */
-	getCoords(): {
-		x: number;
-		y: number;
-	};
+	getCoords(): Coordinates;
 	getZoomDecimal(): number;
 	getZoomMultiplier(): number;
+	fitViewport(opts?: FitViewportOptions): void;
 	toggleFramesEvents(on: boolean): void;
 	getFrames(): Frame[];
 	/**
@@ -2438,6 +2485,11 @@ declare class CanvasModule extends Module<CanvasConfig> {
 	 * });
 	 */
 	addFrame(props?: {}, opts?: {}): Frame;
+	/**
+	 * Get the last created Component from a drag & drop to the canvas.
+	 * @returns {[Component]|undefined}
+	 */
+	getLastDragResult(): Component | undefined;
 	destroy(): void;
 }
 export type DragStop = (cancel?: boolean) => void;
@@ -2457,6 +2509,9 @@ declare class Droppable {
 	__customTglEff(enable: boolean): void;
 	startCustom(): void;
 	endCustom(cancel?: boolean): void;
+	/**
+	 * This function is expected to be always executed at the end of d&d.
+	 */
 	endDrop(cancel?: boolean, ev?: Event): void;
 	handleDragLeave(ev: Event): void;
 	updateCounter(value: number, ev: Event): void;
@@ -2540,6 +2595,300 @@ declare class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
 	_toggleEffects(enable: boolean): void;
 	_emitUpdate(): void;
 }
+export interface CssComposerConfig {
+	/**
+	 * Style prefix.
+	 * @default 'css-'
+	 */
+	stylePrefix?: string;
+	/**
+	 * Default CSS style rules
+	 */
+	rules?: Array<string>;
+}
+export declare class CssRules extends Collection<CssRule> {
+	editor: EditorModel;
+	constructor(props: any, opt: any);
+	toJSON(opts?: any): any;
+	onAdd(model: CssRule, c: CssRules, o: any): void;
+	onRemove(removed: CssRule): void;
+	/** @ts-ignore */
+	add(models: any, opt?: any): any[];
+}
+declare class CssRulesView extends View {
+	atRules: Record<string, any>;
+	config: Record<string, any>;
+	em: EditorModel;
+	pfx: string;
+	renderStarted?: boolean;
+	constructor(o: any);
+	/**
+	 * Add to collection
+	 * @param {Object} model
+	 * @private
+	 * */
+	addTo(model: CssRule): void;
+	/**
+	 * Add new object to collection
+	 * @param {Object} model
+	 * @param {Object} fragmentEl
+	 * @return {Object}
+	 * @private
+	 * */
+	addToCollection(model: CssRule, fragmentEl?: DocumentFragment): HTMLElement | undefined;
+	getMediaWidth(mediaText: string): string;
+	sortRules(a: number, b: number): number;
+	render(): this;
+}
+/** @private */
+export interface RuleOptions {
+	/**
+	 * At-rule type, eg. `media`
+	 */
+	atRuleType?: string;
+	/**
+	 * At-rule parameters, eg. `(min-width: 500px)`
+	 */
+	atRuleParams?: string;
+}
+/** @private */
+export interface SetRuleOptions extends RuleOptions {
+	/**
+	 * If the rule exists already, merge passed styles instead of replacing them.
+	 */
+	addStyles?: boolean;
+}
+/** @private */
+export interface GetSetRuleOptions {
+	state?: string;
+	mediaText?: string;
+	addOpts?: ObjectAny;
+	current?: boolean;
+}
+export type CssRuleStyle = Required<CssRuleProperties>["style"];
+declare class CssComposer extends ItemManagerModule<CssComposerConfig & {
+	pStylePrefix?: string;
+}> {
+	rules: CssRules;
+	rulesView?: CssRulesView;
+	Selectors: typeof Selectors;
+	storageKey: string;
+	/**
+	 * Initializes module. Automatically called with a new instance of the editor
+	 * @param {Object} config Configurations
+	 * @private
+	 */
+	constructor(em: EditorModel);
+	/**
+	 * On load callback
+	 * @private
+	 */
+	onLoad(): void;
+	/**
+	 * Do stuff after load
+	 * @param  {Editor} em
+	 * @private
+	 */
+	postLoad(): void;
+	store(): any;
+	load(data: any): any;
+	/**
+	 * Add new rule to the collection, if not yet exists with the same selectors
+	 * @param {Array<Selector>} selectors Array of selectors
+	 * @param {String} state Css rule state
+	 * @param {String} width For which device this style is oriented
+	 * @param {Object} props Other props for the rule
+	 * @param {Object} opts Options for the add of new rule
+	 * @return {Model}
+	 * @private
+	 * @example
+	 * var sm = editor.SelectorManager;
+	 * var sel1 = sm.add('myClass1');
+	 * var sel2 = sm.add('myClass2');
+	 * var rule = cssComposer.add([sel1, sel2], 'hover');
+	 * rule.set('style', {
+	 *   width: '100px',
+	 *   color: '#fff',
+	 * });
+	 * */
+	add(selectors: any, state?: string, width?: string, opts?: {}, addOpts?: {}): CssRule;
+	/**
+	 * Get the rule
+	 * @param {String|Array<Selector>} selectors Array of selectors or selector string, eg `.myClass1.myClass2`
+	 * @param {String} state Css rule state, eg. 'hover'
+	 * @param {String} width Media rule value, eg. '(max-width: 992px)'
+	 * @param {Object} ruleProps Other rule props
+	 * @return  {Model|null}
+	 * @private
+	 * @example
+	 * const sm = editor.SelectorManager;
+	 * const sel1 = sm.add('myClass1');
+	 * const sel2 = sm.add('myClass2');
+	 * const rule = cssComposer.get([sel1, sel2], 'hover', '(max-width: 992px)');
+	 * // Update the style
+	 * rule.set('style', {
+	 *   width: '300px',
+	 *   color: '#000',
+	 * });
+	 * */
+	get(selectors: any, state?: string, width?: string, ruleProps?: Omit<CssRuleProperties, "selectors">): CssRule | undefined;
+	getAll(): CssRules;
+	/**
+	 * Add a raw collection of rule objects
+	 * This method overrides styles, in case, of already defined rule
+	 * @param {String|Array<Object>} data CSS string or an array of rule objects, eg. [{selectors: ['class1'], style: {....}}, ..]
+	 * @param {Object} opts Options
+	 * @param {Object} props Additional properties to add on rules
+	 * @return {Array<Model>}
+	 * @private
+	 */
+	addCollection(data: string | CssRuleJSON[], opts?: Record<string, any>, props?: {}): CssRule[];
+	/**
+	 * Add CssRules via CSS string.
+	 * @param {String} css CSS string of rules to add.
+	 * @returns {Array<[CssRule]>} Array of rules
+	 * @example
+	 * const addedRules = css.addRules('.my-cls{ color: red } @media (max-width: 992px) { .my-cls{ color: darkred } }');
+	 * // Check rules
+	 * console.log(addedRules.map(rule => rule.toCSS()));
+	 */
+	addRules(css: string): CssRule[];
+	/**
+	 * Add/update the CssRule.
+	 * @param {String} selectors Selector string, eg. `.myclass`
+	 * @param {Object} style  Style properties and values. If the rule exists, styles will be replaced unless `addStyles` option is used.
+	 * @param {Object} [opts={}]  Additional properties.
+	 * @param {String} [opts.atRuleType='']  At-rule type, eg. `media`.
+	 * @param {String} [opts.atRuleParams='']  At-rule parameters, eg. `(min-width: 500px)`.
+	 * @param {Boolean} [opts.addStyles=false] If the rule exists already, merge passed styles instead of replacing them.
+	 * @returns {[CssRule]} The new/updated CssRule.
+	 * @example
+	 * // Simple class-based rule
+	 * const rule = css.setRule('.class1.class2', { color: 'red' });
+	 * console.log(rule.toCSS()) // output: .class1.class2 { color: red }
+	 * // With state and other mixed selector
+	 * const rule = css.setRule('.class1.class2:hover, div#myid', { color: 'red' });
+	 * // output: .class1.class2:hover, div#myid { color: red }
+	 * // With media
+	 * const rule = css.setRule('.class1:hover', { color: 'red' }, {
+	 *  atRuleType: 'media',
+	 *  atRuleParams: '(min-width: 500px)',
+	 * });
+	 * // output: `@media (min-width: 500px) { .class1:hover { color: red } }`
+	 *
+	 * // Update styles of existent rule
+	 * css.setRule('.class1', { color: 'red', background: 'red' });
+	 * css.setRule('.class1', { color: 'blue' }, { addStyles: true });
+	 * // output: .class1 { color: blue; background: red }
+	 */
+	setRule(selectors: any, style?: CssRuleProperties["style"], opts?: SetRuleOptions): CssRule;
+	/**
+	 * Get the CssRule.
+	 * @param {String} selectors Selector string, eg. `.myclass:hover`
+	 * @param {Object} [opts={}]  Additional properties
+	 * @param {String} [opts.atRuleType='']  At-rule type, eg. `media`
+	 * @param {String} [opts.atRuleParams='']  At-rule parameters, eg. '(min-width: 500px)'
+	 * @returns {[CssRule]}
+	 * @example
+	 * const rule = css.getRule('.myclass1:hover');
+	 * const rule2 = css.getRule('.myclass1:hover, div#myid');
+	 * const rule3 = css.getRule('.myclass1', {
+	 *  atRuleType: 'media',
+	 *  atRuleParams: '(min-width: 500px)',
+	 * });
+	 */
+	getRule(selectors: any, opts?: RuleOptions): CssRule | undefined;
+	/**
+	 * Get all rules or filtered by a matching selector.
+	 * @param {String} [selector=''] Selector, eg. `.myclass`
+	 * @returns {Array<[CssRule]>}
+	 * @example
+	 * // Take all the component specific rules
+	 * const id = someComponent.getId();
+	 * const rules = css.getRules(`#${id}`);
+	 * console.log(rules.map(rule => rule.toCSS()))
+	 * // All rules in the project
+	 * console.log(css.getRules())
+	 */
+	getRules(selector: string): CssRule[];
+	/**
+	 * Add/update the CSS rule with id selector
+	 * @param {string} name Id selector name, eg. 'my-id'
+	 * @param {Object} style  Style properties and values
+	 * @param {Object} [opts={}]  Custom options, like `state` and `mediaText`
+	 * @return {CssRule} The new/updated rule
+	 * @private
+	 * @example
+	 * const rule = css.setIdRule('myid', { color: 'red' });
+	 * const ruleHover = css.setIdRule('myid', { color: 'blue' }, { state: 'hover' });
+	 * // This will add current CSS:
+	 * // #myid { color: red }
+	 * // #myid:hover { color: blue }
+	 */
+	setIdRule(name: string, style?: CssRuleStyle, opts?: GetSetRuleOptions): CssRule;
+	/**
+	 * Get the CSS rule by id selector
+	 * @param {string} name Id selector name, eg. 'my-id'
+	 * @param  {Object} [opts={}]  Custom options, like `state` and `mediaText`
+	 * @return {CssRule}
+	 * @private
+	 * @example
+	 * const rule = css.getIdRule('myid');
+	 * const ruleHover = css.setIdRule('myid', { state: 'hover' });
+	 */
+	getIdRule(name: string, opts?: GetSetRuleOptions): CssRule | undefined;
+	/**
+	 * Add/update the CSS rule with class selector
+	 * @param {string} name Class selector name, eg. 'my-class'
+	 * @param {Object} style  Style properties and values
+	 * @param {Object} [opts={}]  Custom options, like `state` and `mediaText`
+	 * @return {CssRule} The new/updated rule
+	 * @private
+	 * @example
+	 * const rule = css.setClassRule('myclass', { color: 'red' });
+	 * const ruleHover = css.setClassRule('myclass', { color: 'blue' }, { state: 'hover' });
+	 * // This will add current CSS:
+	 * // .myclass { color: red }
+	 * // .myclass:hover { color: blue }
+	 */
+	setClassRule(name: string, style?: CssRuleStyle, opts?: GetSetRuleOptions): CssRule;
+	/**
+	 * Get the CSS rule by class selector
+	 * @param {string} name Class selector name, eg. 'my-class'
+	 * @param  {Object} [opts={}]  Custom options, like `state` and `mediaText`
+	 * @return {CssRule}
+	 * @private
+	 * @example
+	 * const rule = css.getClassRule('myclass');
+	 * const ruleHover = css.getClassRule('myclass', { state: 'hover' });
+	 */
+	getClassRule(name: string, opts?: GetSetRuleOptions): CssRule | undefined;
+	/**
+	 * Remove rule, by CssRule or matching selector (eg. the selector will match also at-rules like `@media`)
+	 * @param {String|[CssRule]|Array<[CssRule]>} rule CssRule or matching selector.
+	 * @return {Array<[CssRule]>} Removed rules
+	 * @example
+	 * // Remove by CssRule
+	 * const toRemove = css.getRules('.my-cls');
+	 * css.remove(toRemove);
+	 * // Remove by selector
+	 * css.remove('.my-cls-2');
+	 */
+	remove(rule: string | CssRule, opts?: any): CssRule[] | (CssRule & any[]);
+	/**
+	 * Remove all rules
+	 * @return {this}
+	 */
+	clear(opts?: {}): this;
+	getComponentRules(cmp: Component, opts?: GetSetRuleOptions): CssRule[];
+	/**
+	 * Render the block of CSS rules
+	 * @return {HTMLElement}
+	 * @private
+	 */
+	render(): HTMLElement;
+	destroy(): void;
+}
 declare class ComponentsView extends View {
 	opts: any;
 	config: DomComponentsConfig & {
@@ -2607,6 +2956,8 @@ Component> {
 	getTemplate?: Function;
 	scriptContainer?: HTMLElement;
 	initialize(opt?: any): void;
+	get __cmpStyleOpts(): GetSetRuleOptions;
+	get frameView(): FrameView;
 	__isDraggable(): string | boolean | ((...params: any[]) => any) | undefined;
 	_clbObj(): {
 		editor: Editor;
@@ -3341,11 +3692,11 @@ declare class ComponentVideo extends ComponentImage {
 		ytUrl: string;
 		ytncUrl: string;
 		viUrl: string;
-		loop: number;
+		loop: boolean;
 		poster: string;
 		muted: number;
-		autoplay: number;
-		controls: number;
+		autoplay: boolean;
+		controls: boolean;
 		color: string;
 		list: string;
 		rel: number;
@@ -3363,13 +3714,11 @@ declare class ComponentVideo extends ComponentImage {
 		traits: string[];
 		src: string;
 		fallback: string;
-		file: string; /**
-		 * Update traits by provider
-		 * @private
-		 */
+		file: string;
 		components?: ComponentDefinitionDefined | ComponentDefinitionDefined[] | undefined;
 	};
 	initialize(props: any, opts: any): void;
+	updatePropsFromAttr(): void;
 	/**
 	 * Update traits by provider
 	 * @private
@@ -3606,7 +3955,7 @@ declare class ComponentTextNode extends Component {
 	__escapeContent(content: string): string;
 	static isComponent(el: HTMLElement): {
 		type: string;
-		content: string | null;
+		content: string;
 	} | undefined;
 }
 declare class ComponentTextNodeView extends ComponentView {
@@ -3624,7 +3973,7 @@ declare class ComponentTextNodeView extends ComponentView {
 }
 export type ComponentEvent = "component:create" | "component:mount" | "component:add" | "component:remove" | "component:remove:before" | "component:clone" | "component:update" | "component:styleUpdate" | "component:selected" | "component:deselected" | "component:toggled" | "component:type:add" | "component:type:update" | "component:drag:start" | "component:drag" | "component:drag:end" | "component:resize";
 export interface ComponentModelDefinition extends IComponent {
-	defaults?: ComponentDefinition;
+	defaults?: ComponentDefinition | (() => ComponentDefinition);
 	[key: string]: any;
 }
 export interface ComponentViewDefinition extends IComponentView {
@@ -3774,7 +4123,7 @@ export declare class ComponentManager extends ItemManagerModule<DomComponentsCon
 	 *   attributes: { title: 'here' }
 	 * });
 	 */
-	addComponent(component: ComponentAdd, opt?: AddOptions): any[];
+	addComponent(component: ComponentAdd, opt?: AddOptions): Component | Component[];
 	/**
 	 * Render and returns wrapper element with all components inside.
 	 * Once the wrapper is rendered, and it's what happens when you init the editor,
@@ -4017,6 +4366,7 @@ export declare class Component extends StyleableModel<ComponentProperties> {
 	get defaults(): ComponentDefinitionDefined;
 	get classes(): Selectors;
 	get traits(): Traits;
+	get content(): string;
 	/**
 	 * Hook method, called once the model is created
 	 */
@@ -4188,7 +4538,7 @@ export declare class Component extends StyleableModel<ComponentProperties> {
 	 * Get the style of the component
 	 * @return {Object}
 	 */
-	getStyle(options?: any, optsAdd?: any): ObjectStrings;
+	getStyle(options?: any, optsAdd?: any): StyleProps;
 	/**
 	 * Set the style on the component
 	 * @param {Object} prop Key value style object
@@ -4196,7 +4546,7 @@ export declare class Component extends StyleableModel<ComponentProperties> {
 	 * @example
 	 * component.setStyle({ color: 'red' });
 	 */
-	setStyle(prop?: ObjectStrings, opts?: any): ObjectStrings;
+	setStyle(prop?: StyleProps, opts?: any): StyleProps;
 	/**
 	 * Return all component's attributes
 	 * @return {Object}
@@ -4484,8 +4834,8 @@ export declare class Component extends StyleableModel<ComponentProperties> {
 	 * @param {Object} [opts={}] Same options of `toHTML`
 	 * @returns {String} HTML string
 	 */
-	getInnerHTML(opts?: ToHTMLOptions): string | undefined;
-	__innerHTML(opts?: ToHTMLOptions): string | undefined;
+	getInnerHTML(opts?: ToHTMLOptions): string;
+	__innerHTML(opts?: ToHTMLOptions): string;
 	/**
 	 * Returns object of attributes for HTML
 	 * @return {Object}
@@ -4649,291 +4999,6 @@ declare class Selected extends Collection<Selectable> {
 declare class EditorView extends View<EditorModel> {
 	constructor(model: EditorModel);
 	render(): this;
-}
-export interface CssComposerConfig {
-	/**
-	 * Style prefix.
-	 * @default 'css-'
-	 */
-	stylePrefix?: string;
-	/**
-	 * Default CSS style rules
-	 */
-	rules?: Array<string>;
-}
-export declare class CssRules extends Collection<CssRule> {
-	editor: EditorModel;
-	constructor(props: any, opt: any);
-	toJSON(opts?: any): any;
-	onAdd(model: CssRule, c: CssRules, o: any): void;
-	onRemove(removed: CssRule): void;
-	/** @ts-ignore */
-	add(models: any, opt?: any): any[];
-}
-declare class CssRulesView extends View {
-	atRules: Record<string, any>;
-	config: Record<string, any>;
-	em: EditorModel;
-	pfx: string;
-	renderStarted?: boolean;
-	constructor(o: any);
-	/**
-	 * Add to collection
-	 * @param {Object} model
-	 * @private
-	 * */
-	addTo(model: CssRule): void;
-	/**
-	 * Add new object to collection
-	 * @param {Object} model
-	 * @param {Object} fragmentEl
-	 * @return {Object}
-	 * @private
-	 * */
-	addToCollection(model: CssRule, fragmentEl?: DocumentFragment): HTMLElement | undefined;
-	getMediaWidth(mediaText: string): string;
-	sortRules(a: number, b: number): number;
-	render(): this;
-}
-export interface RuleOptions {
-	/**
-	 * At-rule type, eg. `media`
-	 */
-	atRuleType?: string;
-	/**
-	 * At-rule parameters, eg. `(min-width: 500px)`
-	 */
-	atRuleParams?: string;
-}
-export interface SetRuleOptions extends RuleOptions {
-	/**
-	 * If the rule exists already, merge passed styles instead of replacing them.
-	 */
-	addStyles?: boolean;
-}
-export type CssRuleStyle = Required<CssRuleProperties>["style"];
-declare class CssComposer extends ItemManagerModule<CssComposerConfig & {
-	pStylePrefix?: string;
-}> {
-	rules: CssRules;
-	rulesView?: CssRulesView;
-	Selectors: typeof Selectors;
-	storageKey: string;
-	/**
-	 * Initializes module. Automatically called with a new instance of the editor
-	 * @param {Object} config Configurations
-	 * @private
-	 */
-	constructor(em: EditorModel);
-	/**
-	 * On load callback
-	 * @private
-	 */
-	onLoad(): void;
-	/**
-	 * Do stuff after load
-	 * @param  {Editor} em
-	 * @private
-	 */
-	postLoad(): void;
-	store(): any;
-	load(data: any): any;
-	/**
-	 * Add new rule to the collection, if not yet exists with the same selectors
-	 * @param {Array<Selector>} selectors Array of selectors
-	 * @param {String} state Css rule state
-	 * @param {String} width For which device this style is oriented
-	 * @param {Object} props Other props for the rule
-	 * @param {Object} opts Options for the add of new rule
-	 * @return {Model}
-	 * @private
-	 * @example
-	 * var sm = editor.SelectorManager;
-	 * var sel1 = sm.add('myClass1');
-	 * var sel2 = sm.add('myClass2');
-	 * var rule = cssComposer.add([sel1, sel2], 'hover');
-	 * rule.set('style', {
-	 *   width: '100px',
-	 *   color: '#fff',
-	 * });
-	 * */
-	add(selectors: any, state?: string, width?: string, opts?: {}, addOpts?: {}): CssRule;
-	/**
-	 * Get the rule
-	 * @param {String|Array<Selector>} selectors Array of selectors or selector string, eg `.myClass1.myClass2`
-	 * @param {String} state Css rule state, eg. 'hover'
-	 * @param {String} width Media rule value, eg. '(max-width: 992px)'
-	 * @param {Object} ruleProps Other rule props
-	 * @return  {Model|null}
-	 * @private
-	 * @example
-	 * const sm = editor.SelectorManager;
-	 * const sel1 = sm.add('myClass1');
-	 * const sel2 = sm.add('myClass2');
-	 * const rule = cssComposer.get([sel1, sel2], 'hover', '(max-width: 992px)');
-	 * // Update the style
-	 * rule.set('style', {
-	 *   width: '300px',
-	 *   color: '#000',
-	 * });
-	 * */
-	get(selectors: any, state?: string, width?: string, ruleProps?: Omit<CssRuleProperties, "selectors">): CssRule | undefined;
-	getAll(): CssRules;
-	/**
-	 * Add a raw collection of rule objects
-	 * This method overrides styles, in case, of already defined rule
-	 * @param {String|Array<Object>} data CSS string or an array of rule objects, eg. [{selectors: ['class1'], style: {....}}, ..]
-	 * @param {Object} opts Options
-	 * @param {Object} props Additional properties to add on rules
-	 * @return {Array<Model>}
-	 * @private
-	 */
-	addCollection(data: string | CssRuleJSON[], opts?: Record<string, any>, props?: {}): CssRule[];
-	/**
-	 * Add CssRules via CSS string.
-	 * @param {String} css CSS string of rules to add.
-	 * @returns {Array<[CssRule]>} Array of rules
-	 * @example
-	 * const addedRules = css.addRules('.my-cls{ color: red } @media (max-width: 992px) { .my-cls{ color: darkred } }');
-	 * // Check rules
-	 * console.log(addedRules.map(rule => rule.toCSS()));
-	 */
-	addRules(css: string): CssRule[];
-	/**
-	 * Add/update the CssRule.
-	 * @param {String} selectors Selector string, eg. `.myclass`
-	 * @param {Object} style  Style properties and values. If the rule exists, styles will be replaced unless `addStyles` option is used.
-	 * @param {Object} [opts={}]  Additional properties.
-	 * @param {String} [opts.atRuleType='']  At-rule type, eg. `media`.
-	 * @param {String} [opts.atRuleParams='']  At-rule parameters, eg. `(min-width: 500px)`.
-	 * @param {Boolean} [opts.addStyles=false] If the rule exists already, merge passed styles instead of replacing them.
-	 * @returns {[CssRule]} The new/updated CssRule.
-	 * @example
-	 * // Simple class-based rule
-	 * const rule = css.setRule('.class1.class2', { color: 'red' });
-	 * console.log(rule.toCSS()) // output: .class1.class2 { color: red }
-	 * // With state and other mixed selector
-	 * const rule = css.setRule('.class1.class2:hover, div#myid', { color: 'red' });
-	 * // output: .class1.class2:hover, div#myid { color: red }
-	 * // With media
-	 * const rule = css.setRule('.class1:hover', { color: 'red' }, {
-	 *  atRuleType: 'media',
-	 *  atRuleParams: '(min-width: 500px)',
-	 * });
-	 * // output: `@media (min-width: 500px) { .class1:hover { color: red } }`
-	 *
-	 * // Update styles of existent rule
-	 * css.setRule('.class1', { color: 'red', background: 'red' });
-	 * css.setRule('.class1', { color: 'blue' }, { addStyles: true });
-	 * // output: .class1 { color: blue; background: red }
-	 */
-	setRule(selectors: any, style?: CssRuleProperties["style"], opts?: SetRuleOptions): CssRule;
-	/**
-	 * Get the CssRule.
-	 * @param {String} selectors Selector string, eg. `.myclass:hover`
-	 * @param {Object} [opts={}]  Additional properties
-	 * @param {String} [opts.atRuleType='']  At-rule type, eg. `media`
-	 * @param {String} [opts.atRuleParams='']  At-rule parameters, eg. '(min-width: 500px)'
-	 * @returns {[CssRule]}
-	 * @example
-	 * const rule = css.getRule('.myclass1:hover');
-	 * const rule2 = css.getRule('.myclass1:hover, div#myid');
-	 * const rule3 = css.getRule('.myclass1', {
-	 *  atRuleType: 'media',
-	 *  atRuleParams: '(min-width: 500px)',
-	 * });
-	 */
-	getRule(selectors: any, opts?: RuleOptions): CssRule | undefined;
-	/**
-	 * Get all rules or filtered by a matching selector.
-	 * @param {String} [selector=''] Selector, eg. `.myclass`
-	 * @returns {Array<[CssRule]>}
-	 * @example
-	 * // Take all the component specific rules
-	 * const id = someComponent.getId();
-	 * const rules = css.getRules(`#${id}`);
-	 * console.log(rules.map(rule => rule.toCSS()))
-	 * // All rules in the project
-	 * console.log(css.getRules())
-	 */
-	getRules(selector: string): CssRule[];
-	/**
-	 * Add/update the CSS rule with id selector
-	 * @param {string} name Id selector name, eg. 'my-id'
-	 * @param {Object} style  Style properties and values
-	 * @param {Object} [opts={}]  Custom options, like `state` and `mediaText`
-	 * @return {CssRule} The new/updated rule
-	 * @private
-	 * @example
-	 * const rule = css.setIdRule('myid', { color: 'red' });
-	 * const ruleHover = css.setIdRule('myid', { color: 'blue' }, { state: 'hover' });
-	 * // This will add current CSS:
-	 * // #myid { color: red }
-	 * // #myid:hover { color: blue }
-	 */
-	setIdRule(name: string, style?: CssRuleStyle, opts?: ObjectAny): CssRule;
-	/**
-	 * Get the CSS rule by id selector
-	 * @param {string} name Id selector name, eg. 'my-id'
-	 * @param  {Object} [opts={}]  Custom options, like `state` and `mediaText`
-	 * @return {CssRule}
-	 * @private
-	 * @example
-	 * const rule = css.getIdRule('myid');
-	 * const ruleHover = css.setIdRule('myid', { state: 'hover' });
-	 */
-	getIdRule(name: string, opts?: ObjectAny): CssRule | undefined;
-	/**
-	 * Add/update the CSS rule with class selector
-	 * @param {string} name Class selector name, eg. 'my-class'
-	 * @param {Object} style  Style properties and values
-	 * @param {Object} [opts={}]  Custom options, like `state` and `mediaText`
-	 * @return {CssRule} The new/updated rule
-	 * @private
-	 * @example
-	 * const rule = css.setClassRule('myclass', { color: 'red' });
-	 * const ruleHover = css.setClassRule('myclass', { color: 'blue' }, { state: 'hover' });
-	 * // This will add current CSS:
-	 * // .myclass { color: red }
-	 * // .myclass:hover { color: blue }
-	 */
-	setClassRule(name: string, style?: CssRuleStyle, opts?: ObjectAny): CssRule;
-	/**
-	 * Get the CSS rule by class selector
-	 * @param {string} name Class selector name, eg. 'my-class'
-	 * @param  {Object} [opts={}]  Custom options, like `state` and `mediaText`
-	 * @return {CssRule}
-	 * @private
-	 * @example
-	 * const rule = css.getClassRule('myclass');
-	 * const ruleHover = css.getClassRule('myclass', { state: 'hover' });
-	 */
-	getClassRule(name: string, opts?: ObjectAny): CssRule | undefined;
-	/**
-	 * Remove rule, by CssRule or matching selector (eg. the selector will match also at-rules like `@media`)
-	 * @param {String|[CssRule]|Array<[CssRule]>} rule CssRule or matching selector.
-	 * @return {Array<[CssRule]>} Removed rules
-	 * @example
-	 * // Remove by CssRule
-	 * const toRemove = css.getRules('.my-cls');
-	 * css.remove(toRemove);
-	 * // Remove by selector
-	 * css.remove('.my-cls-2');
-	 */
-	remove(rule: string | CssRule, opts?: any): CssRule[] | (CssRule & any[]);
-	/**
-	 * Remove all rules
-	 * @return {this}
-	 */
-	clear(opts?: {}): this;
-	getComponentRules(cmp: Component, opts?: ObjectAny): CssRule[];
-	/**
-	 * Render the block of CSS rules
-	 * @return {HTMLElement}
-	 * @private
-	 */
-	render(): HTMLElement;
-	destroy(): void;
 }
 export interface AssetManagerConfig {
 	/**
@@ -5520,6 +5585,274 @@ export interface LayerManagerConfig {
 	 */
 	extend?: Record<string, any>;
 }
+export declare class Panels extends ModuleCollection<Panel> {
+	constructor(module: PanelManager, models: Panel[] | Array<Record<string, any>>);
+}
+declare class PanelsView extends ModuleView<Panels> {
+	constructor(target: Panels);
+	private onRemove;
+	/**
+	 * Add to collection
+	 * @param Object Model
+	 *
+	 * @return Object
+	 * @private
+	 * */
+	private addTo;
+	/**
+	 * Add new object to collection
+	 * @param  Object  Model
+	 * @param  Object   Fragment collection
+	 * @param  integer  Index of append
+	 *
+	 * @return Object Object created
+	 * @private
+	 * */
+	private addToCollection;
+	render(): this;
+}
+declare class PanelManager extends Module<PanelsConfig> {
+	panels: Panels;
+	PanelsViewObj?: PanelsView;
+	/**
+	 * Initialize module. Automatically called with a new instance of the editor
+	 * @param {Object} config Configurations
+	 * @private
+	 */
+	constructor(em: EditorModel);
+	/**
+	 * Returns the collection of panels
+	 * @return {Collection} Collection of panel
+	 */
+	getPanels(): Panels;
+	/**
+	 * Returns panels element
+	 * @return {HTMLElement}
+	 */
+	getPanelsEl(): HTMLElement | undefined;
+	/**
+	 * Add new panel to the collection
+	 * @param {Object|Panel} panel Object with right properties or an instance of Panel
+	 * @return {Panel} Added panel. Useful in case passed argument was an Object
+	 * @example
+	 * const newPanel = panelManager.addPanel({
+	 *  id: 'myNewPanel',
+	 *  visible: true,
+	 *  buttons: [...],
+	 * });
+	 */
+	addPanel(panel: Panel | PanelProperties): Panel;
+	/**
+	 * Remove a panel from the collection
+	 * @param {Panel|String} panel Panel instance or panel id
+	 * @return {Panel} Removed panel
+	 * @example
+	 * const somePanel = panelManager.getPanel('somePanel');
+	 * const removedPanel = panelManager.removePanel(somePanel);
+	 *
+	 * // or by id
+	 * const removedPanel = panelManager.removePanel('myNewPanel');
+	 *
+	 */
+	removePanel(panel: Panel | string): Panel;
+	/**
+	 * Get panel by ID
+	 * @param  {string} id Id string
+	 * @return {Panel|null}
+	 * @example
+	 * const myPanel = panelManager.getPanel('myPanel');
+	 */
+	getPanel(id: string): Panel | null;
+	/**
+	 * Add button to the panel
+	 * @param {string} panelId Panel's ID
+	 * @param {Object|Button} button Button object or instance of Button
+	 * @return {Button|null} Added button. Useful in case passed button was an Object
+	 * @example
+	 * const newButton = panelManager.addButton('myNewPanel',{
+	 *   id: 'myNewButton',
+	 *   className: 'someClass',
+	 *   command: 'someCommand',
+	 *   attributes: { title: 'Some title'},
+	 *   active: false,
+	 * });
+	 * // It's also possible to pass the command as an object
+	 * // with .run and .stop methods
+	 * ...
+	 * command: {
+	 *   run: function(editor) {
+	 *     ...
+	 *   },
+	 *   stop: function(editor) {
+	 *     ...
+	 *   }
+	 * },
+	 * // Or simply like a function which will be evaluated as a single .run command
+	 * ...
+	 * command: function(editor) {
+	 *   ...
+	 * }
+	 */
+	addButton(panelId: string, button: any): Button | null;
+	/**
+	 * Remove button from the panel
+	 * @param {String} panelId Panel's ID
+	 * @param {String} buttonId Button's ID
+	 * @return {Button|null} Removed button.
+	 * @example
+	 * const removedButton = panelManager.addButton('myNewPanel',{
+	 *   id: 'myNewButton',
+	 *   className: 'someClass',
+	 *   command: 'someCommand',
+	 *   attributes: { title: 'Some title'},
+	 *   active: false,
+	 * });
+	 *
+	 * const removedButton = panelManager.removeButton('myNewPanel', 'myNewButton');
+	 *
+	 */
+	removeButton(panelId: string, button: any): Button | null;
+	/**
+	 * Get button from the panel
+	 * @param {string} panelId Panel's ID
+	 * @param {string} id Button's ID
+	 * @return {Button|null}
+	 * @example
+	 * const button = panelManager.getButton('myPanel', 'myButton');
+	 */
+	getButton(panelId: string, id: string): Button | null;
+	/**
+	 * Render panels and buttons
+	 * @return {HTMLElement}
+	 * @private
+	 */
+	render(): HTMLElement;
+	/**
+	 * Active activable buttons
+	 * @private
+	 */
+	active(): void;
+	/**
+	 * Disable buttons flagged as disabled
+	 * @private
+	 */
+	disableButtons(): void;
+	destroy(): void;
+}
+export declare class Button extends ModuleModel<PanelManager> {
+	defaults(): {
+		id: string;
+		label: string;
+		tagName: string;
+		className: string;
+		command: string;
+		context: string;
+		buttons: never[];
+		attributes: {};
+		options: {};
+		active: boolean;
+		dragDrop: boolean;
+		togglable: boolean;
+		runDefaultCommand: boolean;
+		stopDefaultCommand: boolean;
+		disable: boolean;
+	};
+	get className(): string;
+	get command(): string;
+	get active(): boolean;
+	set active(isActive: boolean);
+	get togglable(): boolean;
+	get runDefaultCommand(): boolean;
+	get stopDefaultCommand(): boolean;
+	get disable(): boolean;
+	constructor(module: PanelManager, options: any);
+}
+export declare class Buttons extends ModuleCollection<Button> {
+	constructor(module: PanelManager, models: Button[]);
+	/**
+	 * Deactivate all buttons, except one passed
+	 * @param  {Object}  except  Model to ignore
+	 * @param  {Boolean}  r     Recursive flag
+	 *
+	 * @return  void
+	 * */
+	deactivateAllExceptOne(except: Button, r: boolean): void;
+	/**
+	 * Deactivate all buttons
+	 * @param  {String}  ctx Context string
+	 *
+	 * @return  void
+	 * */
+	deactivateAll(ctx?: string, sender?: any): void;
+	/**
+	 * Disables all buttons
+	 * @param  {String}  ctx Context string
+	 *
+	 * @return  void
+	 * */
+	disableAllButtons(ctx?: string): void;
+	/**
+	 * Disables all buttons, except one passed
+	 * @param  {Object}  except  Model to ignore
+	 * @param  {Boolean}  r     Recursive flag
+	 *
+	 * @return  void
+	 * */
+	disableAllButtonsExceptOne(except: Button, r: boolean): void;
+}
+/** @private */
+export interface PanelProperties {
+	/**
+	 * Panel id.
+	 */
+	id: string;
+	/**
+	 * Panel content.
+	 */
+	content?: string;
+	/**
+	 * Panel visibility.
+	 * @default true
+	 */
+	visible?: boolean;
+	/**
+	 * Panel buttons.
+	 * @default []
+	 */
+	buttons?: ObjectAny[];
+	/**
+	 * Panel attributes.
+	 * @default {}
+	 */
+	attributes?: ObjectAny;
+	/**
+	 * Specify element query where to append the panel
+	 */
+	appendTo?: string;
+	/**
+	 * Resizable options.
+	 */
+	resizable?: boolean | ResizerOptions;
+	el?: string;
+	appendContent?: HTMLElement;
+}
+export interface PanelPropertiesDefined extends Omit<Required<PanelProperties>, "buttons"> {
+	buttons: Buttons;
+	[key: string]: unknown;
+}
+export declare class Panel extends ModuleModel<PanelManager, PanelPropertiesDefined> {
+	defaults(): {
+		id: string;
+		content: string;
+		visible: boolean;
+		buttons: Buttons;
+		attributes: {};
+	};
+	get buttons(): Buttons;
+	private set buttons(value);
+	view?: any;
+	constructor(module: PanelManager, options: PanelProperties);
+}
 export interface ButtonProps {
 	id?: string;
 	active?: boolean;
@@ -5529,7 +5862,7 @@ export interface ButtonProps {
 	context?: string;
 	attributes?: Record<string, any>;
 }
-export interface PanelProps {
+export interface PanelProps extends Omit<PanelProperties, "id" | "buttons"> {
 	id?: string;
 	buttons?: ButtonProps[];
 }
@@ -5541,7 +5874,7 @@ export interface PanelsConfig {
 	defaults?: PanelProps[];
 }
 export interface ParsedCssRule {
-	selectors: string;
+	selectors: string | string[];
 	style: Record<string, string>;
 	atRule?: string;
 	params?: string;
@@ -6423,9 +6756,9 @@ export declare class PropertyComposite<T extends Record<string, any> = PropertyC
 	__getFullValue(opts?: any): string;
 	__getJoin(): (T["join"] & string) | NonNullable<T["separator"]>;
 	__styleHasProps(style?: StyleProps): boolean;
-	__splitValue(value: string, sep: string | RegExp): string[];
+	__splitValue(value: string | string[], sep: string | RegExp): string[];
 	__splitStyleName(style: StyleProps, name: string, sep: string | RegExp): string[];
-	__getSplitValue(value?: string, { byName }?: OptionByName): StyleProps;
+	__getSplitValue(value?: string | string[], { byName }?: OptionByName): StyleProps;
 	__getPropsFromStyle(style?: StyleProps, opts?: OptionByName): any;
 	__setProperties(values?: Record<string, any>, opts?: OptionsUpdate): void;
 	clear(): this;
@@ -6491,7 +6824,6 @@ export interface PropertyProps {
 	parentTarget?: any;
 	__p?: any;
 }
-export type StyleProps = Record<string, string>;
 export type OptionsUpdate = {
 	partial?: boolean;
 	noTarget?: boolean;
@@ -6609,9 +6941,7 @@ export declare class Property<T extends Record<string, any> = PropertyProps> ext
 	 * console.log(property.getStyle());
 	 * // { color: 'red' };
 	 */
-	getStyle(opts?: OptionsStyle): {
-		[x: string]: string;
-	};
+	getStyle(opts?: OptionsStyle): StyleProps;
 	/**
 	 * Get the default value.
 	 * @return {string}
@@ -7191,6 +7521,17 @@ declare class BlocksView extends View {
 	render(): this;
 }
 export type BlockEvent = "block:add" | "block:remove" | "block:drag:start" | "block:drag" | "block:drag:stop" | "block:custom";
+declare const blockEvents: {
+	all: string;
+	update: string;
+	add: string;
+	remove: string;
+	removeBefore: string;
+	drag: string;
+	dragStart: string;
+	dragEnd: string;
+	custom: string;
+};
 declare class BlockManager extends ItemManagerModule<BlockManagerConfig, Blocks> {
 	blocks: Blocks;
 	blocksVisible: Blocks;
@@ -7198,6 +7539,7 @@ declare class BlockManager extends ItemManagerModule<BlockManagerConfig, Blocks>
 	blocksView?: BlocksView;
 	_dragBlock?: Block;
 	_bhv?: Record<string, any>;
+	events: typeof blockEvents;
 	Block: typeof Block;
 	Blocks: typeof Blocks;
 	Category: typeof Category;
@@ -7292,6 +7634,12 @@ declare class BlockManager extends ItemManagerModule<BlockManagerConfig, Blocks>
 	 * @return {HTMLElement}
 	 */
 	getContainer(): HTMLElement | undefined;
+	/**
+	 * Returns currently dragging block.
+	 * Updated when the drag starts and cleared once it's done.
+	 * @returns {[Block]|undefined}
+	 */
+	getDragBlock(): Block | undefined;
 	/**
 	 * Render blocks
 	 * @param  {Array} blocks Blocks to render, without the argument will render all global blocks
@@ -8014,12 +8362,25 @@ export type PropertyTypes = PropertyStackProps | PropertySelectProps | PropertyN
 export type StyleManagerEvent = "style:sector:add" | "style:sector:remove" | "style:sector:update" | "style:property:add" | "style:property:remove" | "style:property:update" | "style:target";
 export type StyleTarget = StyleableModel;
 export type StyleModuleParam<T extends keyof StyleManager, N extends number> = Parameters<StyleManager[T]>[N];
+declare const stylesEvents: {
+	all: string;
+	sectorAdd: string;
+	sectorRemove: string;
+	sectorUpdate: string;
+	propertyAdd: string;
+	propertyRemove: string;
+	propertyUpdate: string;
+	layerSelect: string;
+	target: string;
+	custom: string;
+};
 declare class StyleManager extends ItemManagerModule<StyleManagerConfig, 
 /** @ts-ignore */
 Sectors> {
 	builtIn: PropertyFactory;
 	upAll: Debounced;
 	properties: typeof Properties;
+	events: typeof stylesEvents;
 	sectors: Sectors;
 	SectView: SectorsView;
 	Sector: typeof Sector;
@@ -8301,6 +8662,15 @@ Sectors> {
 	destroy(): void;
 }
 export type SelectorEvent = "selector:add" | "selector:remove" | "selector:update" | "selector:state" | "selector";
+declare const selectorEvents: {
+	all: string;
+	update: string;
+	add: string;
+	remove: string;
+	removeBefore: string;
+	state: string;
+	custom: string;
+};
 export type SelectorStringObject = string | {
 	name?: string;
 	label?: string;
@@ -8316,6 +8686,7 @@ declare class SelectorManager extends ItemManagerModule<SelectorManagerConfig & 
 	selectorTags?: ClassTagsView;
 	selected: Selectors;
 	all: Selectors;
+	events: typeof selectorEvents;
 	storageKey: string;
 	__update: Debounced;
 	__ctn?: HTMLElement;
@@ -8528,7 +8899,9 @@ export type HTMLParseResult = {
 	html?: ComponentDefinitionDefined | ComponentDefinitionDefined[];
 	css?: CssRuleJSON[];
 };
-declare const ParserHtml: (em?: EditorModel, config?: ParserConfig) => {
+declare const ParserHtml: (em?: EditorModel, config?: ParserConfig & {
+	returnArray?: boolean;
+}) => {
 	compTypes: string;
 	modelAttrStart: string;
 	getPropAttribute(attrName: string, attrValue?: string): {
@@ -8553,7 +8926,7 @@ declare const ParserHtml: (em?: EditorModel, config?: ParserConfig) => {
 	 * console.log(stl);
 	 * // {color: 'black', width: '100px', test: 'value'}
 	 */
-	parseStyle(str: string): StringObject;
+	parseStyle(str: string): Record<string, string | string[]>;
 	/**
 	 * Parse class string to array
 	 * @param {string} str
@@ -8576,7 +8949,7 @@ declare const ParserHtml: (em?: EditorModel, config?: ParserConfig) => {
 	 * @param  {ParserCss} parserCss In case there is style tags inside HTML
 	 * @return {Object}
 	 */
-	parse(str: string, parserCss: any, opts?: HTMLParserOptions): HTMLParseResult;
+	parse(str: string, parserCss?: any, opts?: HTMLParserOptions): HTMLParseResult;
 	__clearUnsafeAttr(node: HTMLElement): void;
 };
 declare class ParserModule extends Module<ParserConfig & {
@@ -9039,6 +9412,7 @@ export interface LayerData {
 }
 declare class LayerManager extends Module<LayerManagerConfig> {
 	model: ModuleModel;
+	__ctn?: HTMLElement;
 	view?: View;
 	events: {
 		all: string;
@@ -9324,6 +9698,21 @@ declare class FileUploaderView extends View {
 	static embedAsBase64(e: DragEvent, clb?: () => void): Promise<void> | undefined;
 }
 export type AssetEvent = "asset" | "asset:open" | "asset:close" | "asset:add" | "asset:remove" | "asset:update" | "asset:custom" | "asset:upload:start" | "asset:upload:end" | "asset:upload:error" | "asset:upload:response";
+declare const assetEvents: {
+	all: string;
+	select: string;
+	update: string;
+	add: string;
+	remove: string;
+	removeBefore: string;
+	custom: string;
+	open: string;
+	close: string;
+	uploadStart: string;
+	uploadEnd: string;
+	uploadError: string;
+	uploadResponse: string;
+};
 export type AssetProps = Record<string, any>;
 export type OpenOptions = {
 	select?: (asset: Asset, complete: boolean) => void;
@@ -9339,6 +9728,7 @@ declare class AssetManager extends ItemManagerModule<AssetManagerConfig, Assets>
 	am?: AssetsView;
 	fu?: FileUploaderView;
 	_bhv?: any;
+	events: typeof assetEvents;
 	/**
 	 * Initialize module
 	 * @param {Object} config Configurations
@@ -9587,10 +9977,19 @@ declare class DevicesView extends View {
 	getOptions(): string;
 	render(): this;
 }
+declare const deviceEvents: {
+	all: string;
+	select: string;
+	update: string;
+	add: string;
+	remove: string;
+	removeBefore: string;
+};
 declare class DeviceManager extends ItemManagerModule<DeviceManagerConfig & {
 	appendTo?: HTMLElement | string;
 }, Devices> {
 	devices: Devices;
+	events: typeof deviceEvents;
 	view?: DevicesView;
 	Device: typeof Device;
 	Devices: typeof Devices;
@@ -10421,274 +10820,6 @@ declare class ModalModule extends Module<ModalConfig> {
 	render(): HTMLElement | undefined;
 	destroy(): void;
 }
-export declare class Button extends ModuleModel<PanelManager> {
-	defaults(): {
-		id: string;
-		label: string;
-		tagName: string;
-		className: string;
-		command: string;
-		context: string;
-		buttons: never[];
-		attributes: {};
-		options: {};
-		active: boolean;
-		dragDrop: boolean;
-		togglable: boolean;
-		runDefaultCommand: boolean;
-		stopDefaultCommand: boolean;
-		disable: boolean;
-	};
-	get className(): string;
-	get command(): string;
-	get active(): boolean;
-	set active(isActive: boolean);
-	get togglable(): boolean;
-	get runDefaultCommand(): boolean;
-	get stopDefaultCommand(): boolean;
-	get disable(): boolean;
-	constructor(module: PanelManager, options: any);
-}
-export declare class Buttons extends ModuleCollection<Button> {
-	constructor(module: PanelManager, models: Button[]);
-	/**
-	 * Deactivate all buttons, except one passed
-	 * @param  {Object}  except  Model to ignore
-	 * @param  {Boolean}  r     Recursive flag
-	 *
-	 * @return  void
-	 * */
-	deactivateAllExceptOne(except: Button, r: boolean): void;
-	/**
-	 * Deactivate all buttons
-	 * @param  {String}  ctx Context string
-	 *
-	 * @return  void
-	 * */
-	deactivateAll(ctx?: string, sender?: any): void;
-	/**
-	 * Disables all buttons
-	 * @param  {String}  ctx Context string
-	 *
-	 * @return  void
-	 * */
-	disableAllButtons(ctx?: string): void;
-	/**
-	 * Disables all buttons, except one passed
-	 * @param  {Object}  except  Model to ignore
-	 * @param  {Boolean}  r     Recursive flag
-	 *
-	 * @return  void
-	 * */
-	disableAllButtonsExceptOne(except: Button, r: boolean): void;
-}
-/** @private */
-export interface PanelProperties {
-	/**
-	 * Panel id.
-	 */
-	id: string;
-	/**
-	 * Panel content.
-	 */
-	content?: string;
-	/**
-	 * Panel visibility.
-	 * @default true
-	 */
-	visible?: boolean;
-	/**
-	 * Panel buttons.
-	 * @default []
-	 */
-	buttons?: ObjectAny[];
-	/**
-	 * Panel attributes.
-	 * @default {}
-	 */
-	attributes?: ObjectAny;
-	/**
-	 * Specify element query where to append the panel
-	 */
-	appendTo?: string;
-	/**
-	 * Resizable options.
-	 */
-	resizable?: boolean | ResizerOptions;
-	el?: string;
-	appendContent?: HTMLElement;
-}
-export interface PanelPropertiesDefined extends Omit<Required<PanelProperties>, "buttons"> {
-	buttons: Buttons;
-	[key: string]: unknown;
-}
-export declare class Panel extends ModuleModel<PanelManager, PanelPropertiesDefined> {
-	defaults(): {
-		id: string;
-		content: string;
-		visible: boolean;
-		buttons: Buttons;
-		attributes: {};
-	};
-	get buttons(): Buttons;
-	private set buttons(value);
-	view?: any;
-	constructor(module: PanelManager, options: PanelProperties);
-}
-export declare class Panels extends ModuleCollection<Panel> {
-	constructor(module: PanelManager, models: Panel[] | Array<Record<string, any>>);
-}
-declare class PanelsView extends ModuleView<Panels> {
-	constructor(target: Panels);
-	private onRemove;
-	/**
-	 * Add to collection
-	 * @param Object Model
-	 *
-	 * @return Object
-	 * @private
-	 * */
-	private addTo;
-	/**
-	 * Add new object to collection
-	 * @param  Object  Model
-	 * @param  Object   Fragment collection
-	 * @param  integer  Index of append
-	 *
-	 * @return Object Object created
-	 * @private
-	 * */
-	private addToCollection;
-	render(): this;
-}
-declare class PanelManager extends Module<PanelsConfig> {
-	panels: Panels;
-	PanelsViewObj?: PanelsView;
-	/**
-	 * Initialize module. Automatically called with a new instance of the editor
-	 * @param {Object} config Configurations
-	 * @private
-	 */
-	constructor(em: EditorModel);
-	/**
-	 * Returns the collection of panels
-	 * @return {Collection} Collection of panel
-	 */
-	getPanels(): Panels;
-	/**
-	 * Returns panels element
-	 * @return {HTMLElement}
-	 */
-	getPanelsEl(): HTMLElement | undefined;
-	/**
-	 * Add new panel to the collection
-	 * @param {Object|Panel} panel Object with right properties or an instance of Panel
-	 * @return {Panel} Added panel. Useful in case passed argument was an Object
-	 * @example
-	 * const newPanel = panelManager.addPanel({
-	 *  id: 'myNewPanel',
-	 *  visible: true,
-	 *  buttons: [...],
-	 * });
-	 */
-	addPanel(panel: Panel | PanelProperties): Panel;
-	/**
-	 * Remove a panel from the collection
-	 * @param {Panel|String} panel Panel instance or panel id
-	 * @return {Panel} Removed panel
-	 * @example
-	 * const somePanel = panelManager.getPanel('somePanel');
-	 * const removedPanel = panelManager.removePanel(somePanel);
-	 *
-	 * // or by id
-	 * const removedPanel = panelManager.removePanel('myNewPanel');
-	 *
-	 */
-	removePanel(panel: Panel | string): Panel;
-	/**
-	 * Get panel by ID
-	 * @param  {string} id Id string
-	 * @return {Panel|null}
-	 * @example
-	 * const myPanel = panelManager.getPanel('myPanel');
-	 */
-	getPanel(id: string): Panel | null;
-	/**
-	 * Add button to the panel
-	 * @param {string} panelId Panel's ID
-	 * @param {Object|Button} button Button object or instance of Button
-	 * @return {Button|null} Added button. Useful in case passed button was an Object
-	 * @example
-	 * const newButton = panelManager.addButton('myNewPanel',{
-	 *   id: 'myNewButton',
-	 *   className: 'someClass',
-	 *   command: 'someCommand',
-	 *   attributes: { title: 'Some title'},
-	 *   active: false,
-	 * });
-	 * // It's also possible to pass the command as an object
-	 * // with .run and .stop methods
-	 * ...
-	 * command: {
-	 *   run: function(editor) {
-	 *     ...
-	 *   },
-	 *   stop: function(editor) {
-	 *     ...
-	 *   }
-	 * },
-	 * // Or simply like a function which will be evaluated as a single .run command
-	 * ...
-	 * command: function(editor) {
-	 *   ...
-	 * }
-	 */
-	addButton(panelId: string, button: any): Button | null;
-	/**
-	 * Remove button from the panel
-	 * @param {String} panelId Panel's ID
-	 * @param {String} buttonId Button's ID
-	 * @return {Button|null} Removed button.
-	 * @example
-	 * const removedButton = panelManager.addButton('myNewPanel',{
-	 *   id: 'myNewButton',
-	 *   className: 'someClass',
-	 *   command: 'someCommand',
-	 *   attributes: { title: 'Some title'},
-	 *   active: false,
-	 * });
-	 *
-	 * const removedButton = panelManager.removeButton('myNewPanel', 'myNewButton');
-	 *
-	 */
-	removeButton(panelId: string, button: any): Button | null;
-	/**
-	 * Get button from the panel
-	 * @param {string} panelId Panel's ID
-	 * @param {string} id Button's ID
-	 * @return {Button|null}
-	 * @example
-	 * const button = panelManager.getButton('myPanel', 'myButton');
-	 */
-	getButton(panelId: string, id: string): Button | null;
-	/**
-	 * Render panels and buttons
-	 * @return {HTMLElement}
-	 * @private
-	 */
-	render(): HTMLElement;
-	/**
-	 * Active activable buttons
-	 * @private
-	 */
-	active(): void;
-	/**
-	 * Disable buttons flagged as disabled
-	 * @private
-	 */
-	disableButtons(): void;
-	destroy(): void;
-}
 declare class CodeEditorView extends View {
 	pfx?: string;
 	config: Record<string, any>;
@@ -11359,8 +11490,8 @@ declare class EditorModel extends Model {
 	 */
 	getWrapper(): ComponentWrapper | undefined;
 	setCurrentFrame(frameView?: FrameView): this;
-	getCurrentFrame(): FrameView;
-	getCurrentFrameModel(): Frame;
+	getCurrentFrame(): FrameView | undefined;
+	getCurrentFrameModel(): Frame | undefined;
 	getIcon(icon: string): any;
 	/**
 	 * Return the count of changes made to the content and not yet stored.
