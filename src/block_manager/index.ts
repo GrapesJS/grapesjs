@@ -74,7 +74,7 @@ export const evDragStart = `${evDrag}:start`;
 export const evDragStop = `${evDrag}:stop`;
 export const evCustom = `${evPfx}custom`;
 
-const events = {
+const blockEvents = {
   all: evAll,
   update: evUpdate,
   add: evAdd,
@@ -93,7 +93,7 @@ export default class BlockManager extends ItemManagerModule<BlockManagerConfig, 
   blocksView?: BlocksView;
   _dragBlock?: Block;
   _bhv?: Record<string, any>;
-  events!: typeof events;
+  events!: typeof blockEvents;
 
   Block = Block;
 
@@ -106,7 +106,7 @@ export default class BlockManager extends ItemManagerModule<BlockManagerConfig, 
   storageKey = '';
 
   constructor(em: EditorModel) {
-    super(em, 'BlockManager', new Blocks(em.config.blockManager?.blocks || []), events, defaults);
+    super(em, 'BlockManager', new Blocks(em.config.blockManager?.blocks || []), blockEvents, defaults);
 
     // Global blocks collection
     this.blocks = this.all;

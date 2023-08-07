@@ -102,7 +102,7 @@ export const evRemoveBefore = `${evRemove}:before`;
 export const evCustom = `${evPfx}custom`;
 export const evState = `${evPfx}state`;
 
-const events = {
+const selectorEvents = {
   all: evAll,
   update: evUpdate,
   add: evAdd,
@@ -124,7 +124,7 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
   selectorTags?: ClassTagsView;
   selected: Selectors;
   all: Selectors;
-  events!: typeof events;
+  events!: typeof selectorEvents;
   storageKey = '';
   __update: Debounced;
   __ctn?: HTMLElement;
@@ -137,7 +137,7 @@ export default class SelectorManager extends ItemManagerModule<SelectorManagerCo
    */
 
   constructor(em: EditorModel) {
-    super(em, 'SelectorManager', new Selectors([]), events, defaults, { skipListen: true });
+    super(em, 'SelectorManager', new Selectors([]), selectorEvents, defaults, { skipListen: true });
     bindAll(this, '__updateSelectedByComponents');
     const { config } = this;
     const ppfx = config.pStylePrefix;

@@ -81,7 +81,7 @@ export const evUploadEnd = `${evUpload}:end`;
 export const evUploadError = `${evUpload}:error`;
 export const evUploadRes = `${evUpload}:response`;
 const assetCmd = 'open-assets';
-const events = {
+const assetEvents = {
   all: evAll,
   select: evSelect,
   update: evUpdate,
@@ -115,7 +115,7 @@ export default class AssetManager extends ItemManagerModule<AssetManagerConfig, 
   am?: AssetsView;
   fu?: FileUploaderView;
   _bhv?: any;
-  events!: typeof events;
+  events!: typeof assetEvents;
 
   /**
    * Initialize module
@@ -124,7 +124,7 @@ export default class AssetManager extends ItemManagerModule<AssetManagerConfig, 
    */
   constructor(em: EditorModel) {
     // @ts-ignore
-    super(em, 'AssetManager', new Assets([], em), events, defaults);
+    super(em, 'AssetManager', new Assets([], em), assetEvents, defaults);
     const { all, config } = this;
     // @ts-ignore
     this.assetsVis = new Assets([]);
