@@ -284,8 +284,24 @@ export default class CanvasView extends ModuleView<Canvas> {
     };
   }
 
-  getElBoxRect(el: HTMLElement): BoxRect {
+  getElBoxRect(el: HTMLElement, opts: ToWorldOption = {}): BoxRect {
     const { width, height, left, top } = getElRect(el);
+
+    if (opts.toWorld) {
+      const { module } = this;
+      const zoom = module.getZoomDecimal();
+      const vwDelta = this.getViewportDelta();
+      const x = left * zoom + vwDelta.x || 0;
+      const y = top * zoom + vwDelta.y || 0;
+
+      return {
+        x,
+        y,
+        width: width * zoom,
+        height: height * zoom,
+      };
+    }
+
     return {
       x: left,
       y: top,
