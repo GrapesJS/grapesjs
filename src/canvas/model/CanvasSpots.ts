@@ -1,5 +1,6 @@
 import CanvasModule from '..';
 import { ModuleCollection } from '../../abstract';
+import { ObjectAny } from '../../common';
 import CanvasSpot, { CanvasSpotProps } from './CanvasSpot';
 
 export default class CanvasSpots extends ModuleCollection<CanvasSpot> {
@@ -7,17 +8,29 @@ export default class CanvasSpots extends ModuleCollection<CanvasSpot> {
     super(module, models, CanvasSpot);
     this.on('add', this.onAdd);
     this.on('change', this.onChange);
+    this.on('remove', this.onRemove);
+  }
+
+  __trgEvent(event: string, props: ObjectAny) {
+    const { module, events } = this;
+    const { em } = module;
+    em.trigger(event, props);
+    em.trigger(events.spot);
+  }
+
+  get events() {
+    return this.module.events;
   }
 
   onAdd(spot: CanvasSpot) {
-    const { module } = this;
-    const { em, events } = module;
-    em.trigger(events.spotAdd, { spot });
+    this.__trgEvent(this.events.spotAdd, { spot });
   }
 
   onChange(spot: CanvasSpot) {
-    const { module } = this;
-    const { em, events } = module;
-    em.trigger(events.spotUpdate, { spot });
+    this.__trgEvent(this.events.spotUpdate, { spot });
+  }
+
+  onRemove(spot: CanvasSpot) {
+    this.__trgEvent(this.events.spotRemove, { spot });
   }
 }

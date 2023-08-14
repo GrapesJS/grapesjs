@@ -751,7 +751,6 @@ export default class CanvasModule extends Module<CanvasConfig> {
     this.spots.add(spot, opts);
 
     return spot;
-    // 'canvas:spot'
   }
 
   getSpots<T extends CanvasSpotProps>(spotProps: Partial<T> = {}) {
@@ -760,13 +759,11 @@ export default class CanvasModule extends Module<CanvasConfig> {
 
   removeSpot<T extends CanvasSpotProps>(spotProps: Partial<T> = {}) {
     const spots = this.getSpots(spotProps);
-    console.log('removeSpot', {
+    console.log('removeSpot4', {
       spotProps,
       spots,
     });
     return this.spots.remove(spots);
-    // 'canvas:spot:remove'
-    // 'canvas:spot'
     // remove all spots: canvas.getSpots().forEach(spot => canvas.removeSpot(spot))
   }
 }
