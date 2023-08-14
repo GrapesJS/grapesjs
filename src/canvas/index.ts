@@ -63,6 +63,18 @@ import CanvasSpot, { CanvasSpotProps } from './model/CanvasSpot';
 
 export type CanvasEvent = 'canvas:dragenter' | 'canvas:dragover' | 'canvas:drop' | 'canvas:dragend' | 'canvas:dragdata';
 
+const canvasEvents = {
+  dragEnter: 'canvas:dragenter',
+  dragOver: 'canvas:dragover',
+  dragEnd: 'canvas:dragend',
+  dragData: 'canvas:dragdata',
+  drop: 'canvas:drop',
+  spot: 'canvas:spot',
+  spotAdd: 'canvas:spot:add',
+  spotUpdate: 'canvas:spot:update',
+  spotRemove: 'canvas:spot:remove',
+} as const;
+
 export interface ToWorldOption {
   toWorld?: boolean;
 }
@@ -87,6 +99,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
   canvas: Canvas;
   model: Canvas;
   spots: CanvasSpots;
+  events = canvasEvents;
   private canvasView?: CanvasView;
 
   /**
