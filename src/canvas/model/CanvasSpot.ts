@@ -12,7 +12,7 @@ export type CanvasSpotType = LiteralUnion<CanvasSpotBuiltInType, string>;
 export interface CanvasSpotProps<T = CanvasSpotType> {
   id: string;
   type: T;
-  boxRect: BoxRect;
+  boxRect?: BoxRect;
   component?: Component;
   frame?: Frame;
 }
@@ -22,12 +22,17 @@ export default class CanvasSpot extends ModuleModel<CanvasModule, CanvasSpotProp
     return {
       id: '',
       type: '',
-      boxRect: {
+    };
+  }
+
+  get boxRect() {
+    return (
+      this.get('boxRect') || {
         x: 0,
         y: 0,
         width: 0,
         height: 0,
-      },
-    };
+      }
+    );
   }
 }

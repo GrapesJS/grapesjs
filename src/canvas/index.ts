@@ -49,7 +49,7 @@
 
 import { isUndefined } from 'underscore';
 import { Module } from '../abstract';
-import { Coordinates } from '../common';
+import { AddOptions, Coordinates } from '../common';
 import Component from '../dom_components/model/Component';
 import EditorModel from '../editor/model/Editor';
 import { getElement, getViewEl } from '../utils/mixins';
@@ -58,6 +58,8 @@ import Canvas from './model/Canvas';
 import Frame from './model/Frame';
 import CanvasView, { FitViewportOptions } from './view/CanvasView';
 import FrameView from './view/FrameView';
+import CanvasSpots from './model/CanvasSpotS';
+import CanvasSpot, { CanvasSpotProps } from './model/CanvasSpot';
 
 export type CanvasEvent = 'canvas:dragenter' | 'canvas:dragover' | 'canvas:drop' | 'canvas:dragend' | 'canvas:dragdata';
 
@@ -84,6 +86,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
   //name = 'Canvas';
   canvas: Canvas;
   model: Canvas;
+  spots: CanvasSpots;
   private canvasView?: CanvasView;
 
   /**
@@ -95,6 +98,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
     super(em, 'Canvas', defaults);
 
     this.canvas = new Canvas(this);
+    this.spots = new CanvasSpots(this);
     this.model = this.canvas;
     this.startAutoscroll = this.startAutoscroll.bind(this);
     this.stopAutoscroll = this.stopAutoscroll.bind(this);
@@ -713,7 +717,17 @@ export default class CanvasModule extends Module<CanvasConfig> {
     ['model', 'droppable'].forEach(i => (this[i] = {}));
   }
 
-  setSpot(spot: any = {}) {
+  setSpot<T extends CanvasSpotProps>(spotProps: Partial<T> = {}, opts: AddOptions = {}) {
+    const spot = new CanvasSpot(this, {
+      ...spotProps,
+      id: spotProps.id || `cs_${spotProps.frame?.id}_${spotProps.component?.getId()}`,
+      // TODO type should be mandatory
+      type: spotProps.type || '',
+    });
+
+    this.spots.add(spot, opts);
+
+    return spot;
     // CanvasSpot
     // 'canvas:spot:add' | 'canvas:spot:update'
     // 'canvas:spot'
