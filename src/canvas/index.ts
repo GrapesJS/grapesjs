@@ -718,6 +718,14 @@ export default class CanvasModule extends Module<CanvasConfig> {
   }
 
   setSpot<T extends CanvasSpotProps>(spotProps: Partial<T> = {}, opts: AddOptions = {}) {
+    const spots = this.getSpots(spotProps);
+
+    if (spots.length) {
+      const spot = spots[0];
+      spot.set(spotProps);
+      return spot;
+    }
+
     const spot = new CanvasSpot(this, {
       ...spotProps,
       id: spotProps.id || `cs_${spotProps.frame?.id}_${spotProps.component?.getId()}`,
@@ -728,17 +736,17 @@ export default class CanvasModule extends Module<CanvasConfig> {
     this.spots.add(spot, opts);
 
     return spot;
-    // CanvasSpot
     // 'canvas:spot:add' | 'canvas:spot:update'
     // 'canvas:spot'
   }
 
-  getSpots(spot: any = {}) {
-    // CanvasSpot[]
+  getSpots<T extends CanvasSpotProps>(spotProps: Partial<T> = {}) {
+    return this.spots.where(spotProps.id ? { id: spotProps.id } : spotProps);
   }
 
-  removeSpot(spot: any = {}) {
-    // CanvasSpot[]
+  removeSpot<T extends CanvasSpotProps>(spotProps: Partial<T> = {}) {
+    const spots = this.getSpots(spotProps);
+    return this.spots.remove(spots);
     // 'canvas:spot:remove'
     // 'canvas:spot'
     // remove all spots: canvas.getSpots().forEach(spot => canvas.removeSpot(spot))
