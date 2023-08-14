@@ -741,9 +741,12 @@ export default class CanvasModule extends Module<CanvasConfig> {
       return spot;
     }
 
+    const cmp = spotProps.component;
+    const frame = spotProps.frame || cmp?.frame;
+    const frameId = frame?.id || frame?.cid;
     const spot = new CanvasSpot(this, {
       ...spotProps,
-      id: spotProps.id || `cs_${spotProps.frame?.id}_${spotProps.component?.getId()}`,
+      id: spotProps.id || `cs_${frameId}_${cmp?.getId()}`,
       // TODO type should be mandatory
       type: spotProps.type || '',
     });
@@ -751,7 +754,6 @@ export default class CanvasModule extends Module<CanvasConfig> {
     this.spots.add(spot, opts);
 
     return spot;
-    // 'canvas:spot:add' | 'canvas:spot:update'
     // 'canvas:spot'
   }
 

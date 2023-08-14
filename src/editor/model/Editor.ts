@@ -578,7 +578,6 @@ export default class EditorModel extends Model {
       selected.addComponent(model, opts);
       this.trigger('component:select', model, opts);
       this.Canvas.setSpot({
-        id: 'select',
         type: 'select',
         component: model,
       });

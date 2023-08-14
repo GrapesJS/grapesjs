@@ -35,4 +35,8 @@ export default class CanvasSpot extends ModuleModel<CanvasModule, CanvasSpotProp
       }
     );
   }
+
+  get type() {
+    return this.get('type') || '';
+  }
 }
