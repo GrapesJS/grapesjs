@@ -712,4 +712,21 @@ export default class CanvasModule extends Module<CanvasConfig> {
     //@ts-ignore
     ['model', 'droppable'].forEach(i => (this[i] = {}));
   }
+
+  setSpot(spot: any = {}) {
+    // CanvasSpot
+    // 'canvas:spot:add' | 'canvas:spot:update'
+    // 'canvas:spot'
+  }
+
+  getSpots(spot: any = {}) {
+    // CanvasSpot[]
+  }
+
+  removeSpot(spot: any = {}) {
+    // CanvasSpot[]
+    // 'canvas:spot:remove'
+    // 'canvas:spot'
+    // remove all spots: canvas.getSpots().forEach(spot => canvas.removeSpot(spot))
+  }
 }

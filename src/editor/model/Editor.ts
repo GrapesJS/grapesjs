@@ -558,7 +558,7 @@ export default class EditorModel extends Model {
    */
   addSelected(el: Component | Component[], opts: any = {}) {
     const model = getModel(el, $);
-    const models = isArray(model) ? model : [model];
+    const models: Component[] = isArray(model) ? model : [model];
 
     models.forEach(model => {
       const { selected } = this;
@@ -576,7 +576,12 @@ export default class EditorModel extends Model {
       toDeselect.forEach(cmp => this.removeSelected(cmp, opts));
 
       selected.addComponent(model, opts);
-      model && this.trigger('component:select', model, opts);
+      this.trigger('component:select', model, opts);
+      this.Canvas.setSpot({
+        id: 'select',
+        type: 'select',
+        component: model,
+      });
     });
   }
 
