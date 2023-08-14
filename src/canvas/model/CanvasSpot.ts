@@ -4,7 +4,15 @@ import { BoxRect, LiteralUnion } from '../../common';
 import Component from '../../dom_components/model/Component';
 import Frame from './Frame';
 
-export type CanvasSpotBuiltInType = 'select' | 'hover' | 'padding' | 'margin' | 'resize';
+export enum CanvasSpotBuiltInTypes {
+  Select = 'select',
+  Hover = 'hover',
+  Padding = 'padding',
+  Margin = 'margin',
+  Resize = 'resize',
+}
+
+export type CanvasSpotBuiltInType = `${CanvasSpotBuiltInTypes}`;
 
 export type CanvasSpotType = LiteralUnion<CanvasSpotBuiltInType, string>;
 

@@ -42,6 +42,7 @@ import CssRules from '../../css_composer/model/CssRules';
 import Frame from '../../canvas/model/Frame';
 import { ComponentAdd, DragMode } from '../../dom_components/model/types';
 import ComponentWrapper from '../../dom_components/model/ComponentWrapper';
+import { CanvasSpotBuiltInTypes } from '../../canvas/model/CanvasSpot';
 
 Backbone.$ = $;
 
@@ -578,7 +579,7 @@ export default class EditorModel extends Model {
       selected.addComponent(model, opts);
       this.trigger('component:select', model, opts);
       this.Canvas.setSpot({
-        type: 'select',
+        type: CanvasSpotBuiltInTypes.Select,
         component: model,
       });
     });
@@ -591,7 +592,15 @@ export default class EditorModel extends Model {
    * @public
    */
   removeSelected(el: Component | Component[], opts = {}) {
-    this.selected.removeComponent(getModel(el, $), opts);
+    const component = getModel(el, $);
+    this.selected.removeComponent(component, opts);
+    const cmps: Component[] = isArray(component) ? component : [component];
+    cmps.forEach(component =>
+      this.Canvas.removeSpot({
+        type: CanvasSpotBuiltInTypes.Select,
+        component,
+      })
+    );
   }
 
   /**

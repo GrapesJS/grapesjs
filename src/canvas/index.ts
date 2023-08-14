@@ -733,8 +733,6 @@ export default class CanvasModule extends Module<CanvasConfig> {
   setSpot<T extends CanvasSpotProps>(spotProps: Partial<T> = {}, opts: AddOptions = {}) {
     const spots = this.getSpots(spotProps);
 
-    console.log('setSpot');
-
     if (spots.length) {
       const spot = spots[0];
       spot.set(spotProps);
@@ -747,7 +745,6 @@ export default class CanvasModule extends Module<CanvasConfig> {
     const spot = new CanvasSpot(this, {
       ...spotProps,
       id: spotProps.id || `cs_${frameId}_${cmp?.getId()}`,
-      // TODO type should be mandatory
       type: spotProps.type || '',
     });
 
@@ -763,6 +760,10 @@ export default class CanvasModule extends Module<CanvasConfig> {
 
   removeSpot<T extends CanvasSpotProps>(spotProps: Partial<T> = {}) {
     const spots = this.getSpots(spotProps);
+    console.log('removeSpot', {
+      spotProps,
+      spots,
+    });
     return this.spots.remove(spots);
     // 'canvas:spot:remove'
     // 'canvas:spot'
