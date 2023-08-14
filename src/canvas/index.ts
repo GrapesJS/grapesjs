@@ -733,6 +733,8 @@ export default class CanvasModule extends Module<CanvasConfig> {
   setSpot<T extends CanvasSpotProps>(spotProps: Partial<T> = {}, opts: AddOptions = {}) {
     const spots = this.getSpots(spotProps);
 
+    console.log('setSpot');
+
     if (spots.length) {
       const spot = spots[0];
       spot.set(spotProps);
