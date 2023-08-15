@@ -12,10 +12,10 @@ export default class CanvasSpots extends ModuleCollection<CanvasSpot> {
   }
 
   __trgEvent(event: string, props: ObjectAny) {
-    const { module, events } = this;
+    const { module } = this;
     const { em } = module;
     em.trigger(event, props);
-    em.trigger(events.spot);
+    module.refreshSpots();
   }
 
   get events() {
