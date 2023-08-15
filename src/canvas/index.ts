@@ -58,7 +58,7 @@ import Canvas from './model/Canvas';
 import Frame from './model/Frame';
 import CanvasView, { FitViewportOptions } from './view/CanvasView';
 import FrameView from './view/FrameView';
-import CanvasSpots from './model/CanvasSpotS';
+import CanvasSpots from './model/__CanvasSpots';
 import CanvasSpot, { CanvasSpotProps } from './model/CanvasSpot';
 
 export type CanvasEvent = 'canvas:dragenter' | 'canvas:dragover' | 'canvas:drop' | 'canvas:dragend' | 'canvas:dragdata';
@@ -763,7 +763,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
 
   removeSpot<T extends CanvasSpotProps>(spotProps: Partial<T> = {}) {
     const spots = this.getSpots(spotProps);
-    console.log('removeSpot4', {
+    console.log('removeSpot5', {
       spotProps,
       spots,
     });
