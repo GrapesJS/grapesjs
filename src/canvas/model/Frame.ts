@@ -6,13 +6,14 @@ import { isComponent, isObject } from '../../utils/mixins';
 import FrameView from '../view/FrameView';
 import Frames from './Frames';
 import Page from '../../pages/model/Page';
+import { BoxRect } from '../../common';
 
 const keyAutoW = '__aw';
 const keyAutoH = '__ah';
 
 const getDimension = (frame: Frame, type: 'width' | 'height') => {
   const dim = frame.get(type);
-  const viewDim = frame.view?.el['width' ? 'offsetWidth' : 'offsetHeight'];
+  const viewDim = frame.view?.el[type === 'width' ? 'offsetWidth' : 'offsetHeight'];
 
   if (isNumber(dim)) {
     return dim;
@@ -112,6 +113,18 @@ export default class Frame extends ModuleModel<CanvasModule> {
 
   get head(): { tag: string; attributes: any }[] {
     return this.get('head');
+  }
+
+  getBoxRect(): BoxRect {
+    const { x, y } = this.attributes;
+    const { width, height } = this;
+
+    return {
+      x,
+      y,
+      width,
+      height,
+    };
   }
 
   onRemove() {
