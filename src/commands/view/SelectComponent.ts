@@ -546,6 +546,7 @@ export default {
    */
   onFrameScroll() {
     this.updateTools();
+    this.canvas.refreshSpots();
   },
 
   updateTools() {
