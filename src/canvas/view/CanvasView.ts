@@ -45,7 +45,9 @@ export default class CanvasView extends ModuleView<Canvas> {
   template() {
     const { pfx } = this;
     return `
-      <div class="${pfx}canvas__frames" data-frames></div>
+      <div class="${pfx}canvas__frames" data-frames>
+        <div class="${pfx}canvas__spots" data-spots style="z-index: 1; position: absolute; pointer-events: none"></div>
+      </div>
       <div id="${pfx}tools" class="${pfx}canvas__tools" data-tools></div>
     `;
   }
@@ -64,6 +66,7 @@ export default class CanvasView extends ModuleView<Canvas> {
   toolsEl?: HTMLElement;
   framesArea?: HTMLElement;
   toolsWrapper?: HTMLElement;
+  spotsEl?: HTMLElement;
   ready = false;
 
   frames!: FramesView;
@@ -571,6 +574,7 @@ export default class CanvasView extends ModuleView<Canvas> {
     this.offsetEl = el.querySelector(`.${ppfx}offset-v`)!;
     this.fixedOffsetEl = el.querySelector(`.${ppfx}offset-fixed-v`)!;
     this.toolsGlobEl = el.querySelector(`.${ppfx}tools-gl`)!;
+    this.spotsEl = el.querySelector('[data-spots]')!;
     this.el.className = getUiClass(em, this.className);
     this.ready = true;
     this._renderFrames();

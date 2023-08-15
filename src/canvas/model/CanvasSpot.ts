@@ -2,6 +2,7 @@ import CanvasModule from '..';
 import { ModuleModel } from '../../abstract';
 import { BoxRect, LiteralUnion } from '../../common';
 import Component from '../../dom_components/model/Component';
+import ComponentView from '../../dom_components/view/ComponentView';
 import Frame from './Frame';
 
 export enum CanvasSpotBuiltInTypes {
@@ -22,6 +23,7 @@ export interface CanvasSpotProps<T = CanvasSpotType> {
   type: T;
   boxRect?: BoxRect;
   component?: Component;
+  componentView?: ComponentView;
   frame?: Frame;
 }
 
@@ -34,17 +36,59 @@ export default class CanvasSpot extends ModuleModel<CanvasModule, CanvasSpotProp
   }
 
   get boxRect() {
-    return (
-      this.get('boxRect') || {
-        x: 0,
-        y: 0,
-        width: 0,
-        height: 0,
-      }
-    );
+    const { el, em } = this;
+    const cvView = em.Canvas.getCanvasView();
+    const boxRect = this.get('boxRect');
+
+    if (boxRect) {
+      return boxRect;
+    } else if (el && cvView) {
+      return cvView.getElBoxRect(el);
+    }
+
+    return {
+      x: 0,
+      y: 0,
+      width: 0,
+      height: 0,
+    };
   }
 
   get type() {
     return this.get('type') || '';
+  }
+
+  get component() {
+    return this.get('component');
+  }
+
+  get componentView() {
+    return this.get('componentView');
+  }
+
+  get el() {
+    const { component, componentView } = this;
+    return componentView?.el || component?.getEl();
+  }
+
+  get style() {
+    const { em, component } = this;
+    const cmpView = this.get('componentView');
+    const el = cmpView?.el || component?.getEl();
+
+    if (el) {
+      const { width, height, x, y } = this.boxRect;
+
+      return {
+        width,
+        height,
+        top: 0,
+        left: 0,
+        position: 'absolute',
+        translate: `${x}px ${y}px`,
+      };
+    }
+
+    return {};
   }
 }

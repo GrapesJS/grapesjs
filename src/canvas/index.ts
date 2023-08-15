@@ -276,6 +276,10 @@ export default class CanvasModule extends Module<CanvasConfig> {
     return this.getCanvasView().fixedOffsetEl;
   }
 
+  getSpotsEl() {
+    return this.canvasView?.spotsEl;
+  }
+
   render(): HTMLElement {
     this.canvasView?.remove();
     this.canvasView = new CanvasView(this.canvas);
