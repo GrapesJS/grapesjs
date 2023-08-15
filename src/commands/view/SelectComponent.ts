@@ -30,7 +30,16 @@ let showOffsets: boolean;
  */
 export default {
   init() {
-    bindAll(this, 'onHover', 'onOut', 'onClick', 'onFrameScroll', 'onFrameUpdated', 'onContainerChange');
+    bindAll(
+      this,
+      'onHover',
+      'onOut',
+      'onClick',
+      'onFrameScroll',
+      'onFrameResize',
+      'onFrameUpdated',
+      'onContainerChange'
+    );
   },
 
   enable() {
@@ -73,6 +82,7 @@ export default {
       methods[method](body, 'click', this.onClick);
       // @ts-ignore
       methods[method](win, 'scroll', this.onFrameScroll, true);
+      methods[method](win, 'resize', this.onFrameResize);
     };
     methods[method](window, 'resize', this.onFrameUpdated);
     methods[method](listenToEl, 'scroll', this.onContainerChange);
@@ -546,6 +556,10 @@ export default {
    */
   onFrameScroll() {
     this.updateTools();
+    this.canvas.refreshSpots();
+  },
+
+  onFrameResize() {
     this.canvas.refreshSpots();
   },
 

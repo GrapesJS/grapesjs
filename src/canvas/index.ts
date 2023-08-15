@@ -55,34 +55,14 @@ import EditorModel from '../editor/model/Editor';
 import { getElement, getViewEl } from '../utils/mixins';
 import defaults, { CanvasConfig } from './config/config';
 import Canvas from './model/Canvas';
+import CanvasSpot, { CanvasSpotProps } from './model/CanvasSpot';
+import CanvasSpots from './model/CanvasSpots';
 import Frame from './model/Frame';
+import { CanvasEvents } from './types';
 import CanvasView, { FitViewportOptions } from './view/CanvasView';
 import FrameView from './view/FrameView';
-import CanvasSpots from './model/CanvasSpots';
-import CanvasSpot, { CanvasSpotProps } from './model/CanvasSpot';
 
-export type CanvasEvent =
-  | 'canvas:dragenter'
-  | 'canvas:dragover'
-  | 'canvas:drop'
-  | 'canvas:dragend'
-  | 'canvas:dragdata'
-  | 'canvas:spot'
-  | 'canvas:spot:add'
-  | 'canvas:spot:update'
-  | 'canvas:spot:remove';
-
-const canvasEvents = {
-  dragEnter: 'canvas:dragenter',
-  dragOver: 'canvas:dragover',
-  dragEnd: 'canvas:dragend',
-  dragData: 'canvas:dragdata',
-  drop: 'canvas:drop',
-  spot: 'canvas:spot',
-  spotAdd: 'canvas:spot:add',
-  spotUpdate: 'canvas:spot:update',
-  spotRemove: 'canvas:spot:remove',
-} as const;
+export type CanvasEvent = `${CanvasEvents}`;
 
 export interface ToWorldOption {
   toWorld?: boolean;
@@ -108,7 +88,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
   canvas: Canvas;
   model: Canvas;
   spots: CanvasSpots;
-  events = canvasEvents;
+  events = CanvasEvents;
   private canvasView?: CanvasView;
 
   /**
