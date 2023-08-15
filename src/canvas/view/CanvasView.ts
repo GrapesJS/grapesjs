@@ -58,6 +58,7 @@ export default class CanvasView extends ModuleView<Canvas> {
         <div class="${pfx}canvas__spots" data-spots style="z-index: 1; position: absolute; pointer-events: none"></div>
       </div>
       <div id="${pfx}tools" class="${pfx}canvas__tools" data-tools></div>
+      <style data-canvas-style></style>
     `;
   }
   /*get className(){
@@ -76,6 +77,8 @@ export default class CanvasView extends ModuleView<Canvas> {
   framesArea?: HTMLElement;
   toolsWrapper?: HTMLElement;
   spotsEl?: HTMLElement;
+  cvStyle?: HTMLElement;
+  clsUnscale: string;
   ready = false;
 
   frames!: FramesView;
@@ -91,6 +94,7 @@ export default class CanvasView extends ModuleView<Canvas> {
     bindAll(this, 'clearOff', 'onKeyPress', 'onCanvasMove');
     const { em, pfx } = this;
     this.className = `${pfx}canvas${!em.config.customUI ? ` ${pfx}canvas-bg` : ''}`;
+    this.clsUnscale = `${pfx}unscale`;
     this._initFrames();
     this.listenTo(em, 'change:canvasOffset', this.clearOff);
     this.listenTo(em, 'component:selected', this.checkSelected);
@@ -195,14 +199,20 @@ export default class CanvasView extends ModuleView<Canvas> {
   }
 
   updateFramesArea() {
-    const { framesArea, model, module } = this;
+    const { framesArea, model, module, cvStyle, clsUnscale } = this;
+    const mpl = module.getZoomMultiplier();
 
     if (framesArea) {
       const { x, y } = model.attributes;
       const zoomDc = module.getZoomDecimal();
-      const mpl = module.getZoomMultiplier();
 
       framesArea.style.transform = `scale(${zoomDc}) translate(${x * mpl}px, ${y * mpl}px)`;
+    }
+
+    if (cvStyle) {
+      cvStyle.innerHTML = `
+        .${clsUnscale} { scale: ${mpl} }
+      `;
     }
   }
 
@@ -590,6 +600,7 @@ export default class CanvasView extends ModuleView<Canvas> {
     this.fixedOffsetEl = el.querySelector(`.${ppfx}offset-fixed-v`)!;
     this.toolsGlobEl = el.querySelector(`.${ppfx}tools-gl`)!;
     this.spotsEl = el.querySelector('[data-spots]')!;
+    this.cvStyle = el.querySelector('[data-canvas-style]')!;
     this.el.className = getUiClass(em, this.className);
     this.ready = true;
     this._renderFrames();
