@@ -772,7 +772,6 @@ export default class CanvasModule extends Module<CanvasConfig> {
   }
 
   refreshSpots() {
-    const { em, events } = this;
-    em.trigger(events.spot);
+    this.spots.refresh();
   }
 }

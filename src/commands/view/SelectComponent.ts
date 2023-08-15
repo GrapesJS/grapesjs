@@ -29,7 +29,7 @@ let showOffsets: boolean;
  *
  */
 export default {
-  init(o: any) {
+  init() {
     bindAll(this, 'onHover', 'onOut', 'onClick', 'onFrameScroll', 'onFrameUpdated', 'onContainerChange');
   },
 

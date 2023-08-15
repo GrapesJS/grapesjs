@@ -11,11 +11,20 @@ export default class CanvasSpots extends ModuleCollection<CanvasSpot> {
     this.on('remove', this.onRemove);
   }
 
+  refresh() {
+    const { em, events } = this;
+    em.trigger(events.spot);
+  }
+
   __trgEvent(event: string, props: ObjectAny) {
     const { module } = this;
     const { em } = module;
     em.trigger(event, props);
-    module.refreshSpots();
+    this.refresh();
+  }
+
+  get em() {
+    return this.module.em;
   }
 
   get events() {
