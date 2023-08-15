@@ -1,15 +1,24 @@
 import { bindAll, isNumber } from 'underscore';
+import { ToWorldOption } from '..';
 import { ModuleView } from '../../abstract';
 import { BoxRect, Coordinates, ElementRect } from '../../common';
 import Component from '../../dom_components/model/Component';
 import ComponentView from '../../dom_components/view/ComponentView';
 import { createEl, getDocumentScroll } from '../../utils/dom';
-import { getElRect, getElement, getKeyChar, getUiClass, getViewEl, isTextNode, off, on } from '../../utils/mixins';
+import {
+  getComponentView,
+  getElRect,
+  getElement,
+  getKeyChar,
+  getUiClass,
+  isTextNode,
+  off,
+  on,
+} from '../../utils/mixins';
 import Canvas from '../model/Canvas';
 import Frame from '../model/Frame';
 import FrameView from './FrameView';
 import FramesView from './FramesView';
-import { ToWorldOption } from '..';
 
 export interface MarginPaddingOffsets {
   marginTop?: number;
@@ -201,7 +210,7 @@ export default class CanvasView extends ModuleView<Canvas> {
     const { em, module, model } = this;
     const canvasRect = this.getCanvasOffset();
     const { el } = opts;
-    const elFrame = el && (getViewEl(el).frameView as FrameView);
+    const elFrame = el && getComponentView(el)?.frameView;
     const frame = elFrame ? elFrame.model : opts.frame || em.getCurrentFrameModel() || model.frames.at(0);
     const { x, y } = frame.attributes;
     const boxRect: BoxRect = {
@@ -289,6 +298,7 @@ export default class CanvasView extends ModuleView<Canvas> {
 
   getElBoxRect(el: HTMLElement, opts: ToWorldOption = {}): BoxRect {
     const { width, height, left, top } = getElRect(el);
+    const frameView = getComponentView(el)?.frameView;
 
     if (opts.toWorld) {
       const { module } = this;

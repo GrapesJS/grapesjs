@@ -1,5 +1,7 @@
 import { keys, isUndefined, isElement, isArray } from 'underscore';
 import EditorModel from '../editor/model/Editor';
+import { View } from '../common';
+import ComponentView from '../dom_components/view/ComponentView';
 
 export const isDef = (value: any) => typeof value !== 'undefined';
 
@@ -279,7 +281,8 @@ const capitalize = (str: string = '') => str && str.charAt(0).toUpperCase() + st
 const isComponent = (obj: any) => obj && obj.toHTML;
 const isRule = (obj: any) => obj && obj.toCSS;
 
-const getViewEl = (el: any) => el.__gjsv;
+const getViewEl = <T extends any>(el: any): T | undefined => el.__gjsv;
+export const getComponentView = (el: HTMLElement) => getViewEl<ComponentView>(el);
 const setViewEl = (el: any, view: any) => {
   el.__gjsv = view;
 };

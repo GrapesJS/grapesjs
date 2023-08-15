@@ -4,7 +4,7 @@ import Component from '../../dom_components/model/Component';
 import Toolbar from '../../dom_components/model/Toolbar';
 import ToolbarView from '../../dom_components/view/ToolbarView';
 import { isDoc, isVisible } from '../../utils/dom';
-import { getUnitFromValue, getViewEl, hasWin, isTaggableNode, off, on } from '../../utils/mixins';
+import { getComponentView, getUnitFromValue, getViewEl, hasWin, isTaggableNode, off, on } from '../../utils/mixins';
 import { CommandObject } from './CommandAbstract';
 
 let showOffsets: boolean;
@@ -113,7 +113,7 @@ export default {
     e.stopPropagation();
     const { em } = this;
     const trg = e.target;
-    const view = getViewEl(trg);
+    const view = getComponentView(trg);
     const frameView = view && view._getFrame();
     const $el = $(trg);
     let model = $el.data('model');
