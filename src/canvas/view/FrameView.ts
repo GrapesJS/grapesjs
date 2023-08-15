@@ -7,6 +7,7 @@ import Droppable from '../../utils/Droppable';
 import Frame from '../model/Frame';
 import Canvas from '../model/Canvas';
 import FrameWrapView from './FrameWrapView';
+import { BoxRect } from '../../common';
 
 export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
   /** @ts-ignore */
@@ -48,6 +49,27 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
     this.listenTo(cvModel, 'change:styles', this.renderStyles);
     model.view = this;
     setViewEl(el, this);
+  }
+
+  getBoxRect(): BoxRect {
+    const { el, module } = this;
+    const canvasView = module.getCanvasView();
+    const coords = module.getCoords();
+    const frameRect = el.getBoundingClientRect();
+    const canvasRect = canvasView.getCanvasOffset();
+    const vwDelta = canvasView.getViewportDelta();
+    const zoomM = module.getZoomMultiplier();
+    const x = (frameRect.x - canvasRect.left - vwDelta.x - coords.x) * zoomM;
+    const y = (frameRect.y - canvasRect.top - vwDelta.y - coords.y) * zoomM;
+    const width = frameRect.width * zoomM;
+    const height = frameRect.height * zoomM;
+
+    return {
+      x,
+      y,
+      width,
+      height,
+    };
   }
 
   /**
