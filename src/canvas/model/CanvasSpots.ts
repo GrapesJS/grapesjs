@@ -13,9 +13,9 @@ export default class CanvasSpots extends ModuleCollection<CanvasSpot> {
     this.on('change', this.onChange);
     this.on('remove', this.onRemove);
     const { em } = this;
-    this.refreshDbn = debounce(() => this.refresh(), 100);
-    const dbnEvents = 'component:resize styleable:change component:input';
-    this.listenTo(em, dbnEvents, () => this.refreshDbn());
+    this.refreshDbn = debounce(() => this.refresh(), 0);
+    const evToRefreshDbn = 'component:resize styleable:change component:input component:update undo redo';
+    this.listenTo(em, evToRefreshDbn, () => this.refreshDbn());
   }
 
   get em() {

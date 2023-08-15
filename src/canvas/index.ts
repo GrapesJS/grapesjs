@@ -61,7 +61,16 @@ import FrameView from './view/FrameView';
 import CanvasSpots from './model/CanvasSpots';
 import CanvasSpot, { CanvasSpotProps } from './model/CanvasSpot';
 
-export type CanvasEvent = 'canvas:dragenter' | 'canvas:dragover' | 'canvas:drop' | 'canvas:dragend' | 'canvas:dragdata';
+export type CanvasEvent =
+  | 'canvas:dragenter'
+  | 'canvas:dragover'
+  | 'canvas:drop'
+  | 'canvas:dragend'
+  | 'canvas:dragdata'
+  | 'canvas:spot'
+  | 'canvas:spot:add'
+  | 'canvas:spot:update'
+  | 'canvas:spot:remove';
 
 const canvasEvents = {
   dragEnter: 'canvas:dragenter',
