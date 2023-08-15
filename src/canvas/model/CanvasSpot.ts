@@ -18,7 +18,7 @@ export type CanvasSpotBuiltInType = `${CanvasSpotBuiltInTypes}`;
 export type CanvasSpotType = LiteralUnion<CanvasSpotBuiltInType, string>;
 
 /** @private */
-export interface CanvasSpotProps<T = CanvasSpotType> {
+export interface CanvasSpotBase<T extends CanvasSpotType> {
   id: string;
   type: T;
   boxRect?: BoxRect;
@@ -27,12 +27,15 @@ export interface CanvasSpotProps<T = CanvasSpotType> {
   frame?: Frame;
 }
 
-export default class CanvasSpot extends ModuleModel<CanvasModule, CanvasSpotProps> {
+/** @private */
+export interface CanvasSpotProps<T extends CanvasSpotType = CanvasSpotType> extends CanvasSpotBase<T> {}
+
+export default class CanvasSpot<T extends CanvasSpotProps = CanvasSpotProps> extends ModuleModel<CanvasModule, T> {
   defaults() {
     return {
       id: '',
       type: '',
-    };
+    } as T;
   }
 
   get boxRect() {
@@ -82,5 +85,9 @@ export default class CanvasSpot extends ModuleModel<CanvasModule, CanvasSpotProp
       position: 'absolute',
       translate: `${x}px ${y}px`,
     };
+  }
+
+  isType<E extends T>(type: E['type']): this is CanvasSpot<E> {
+    return this.type === type;
   }
 }

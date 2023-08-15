@@ -747,7 +747,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
   }
 
   getSpots<T extends CanvasSpotProps>(spotProps: Partial<T> = {}) {
-    return this.spots.where(spotProps.id ? { id: spotProps.id } : spotProps);
+    return this.spots.where(spotProps.id ? { id: spotProps.id } : spotProps) as CanvasSpot<T>[];
   }
 
   removeSpot<T extends CanvasSpotProps>(spotProps: Partial<T> = {}) {
