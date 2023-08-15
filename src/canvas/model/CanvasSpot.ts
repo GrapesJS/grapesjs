@@ -72,23 +72,15 @@ export default class CanvasSpot extends ModuleModel<CanvasModule, CanvasSpotProp
   }
 
   get style() {
-    const { em, component } = this;
-    const cmpView = this.get('componentView');
-    const el = cmpView?.el || component?.getEl();
+    const { width, height, x, y } = this.boxRect;
 
-    if (el) {
-      const { width, height, x, y } = this.boxRect;
-
-      return {
-        width,
-        height,
-        top: 0,
-        left: 0,
-        position: 'absolute',
-        translate: `${x}px ${y}px`,
-      };
-    }
-
-    return {};
+    return {
+      width,
+      height,
+      top: 0,
+      left: 0,
+      position: 'absolute',
+      translate: `${x}px ${y}px`,
+    };
   }
 }
