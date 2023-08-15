@@ -752,12 +752,8 @@ export default class CanvasModule extends Module<CanvasConfig> {
 
   removeSpot<T extends CanvasSpotProps>(spotProps: Partial<T> = {}) {
     const spots = this.getSpots(spotProps);
-    console.log('removeSpot5', {
-      spotProps,
-      spots,
-    });
-    return this.spots.remove(spots);
-    // remove all spots: canvas.getSpots().forEach(spot => canvas.removeSpot(spot))
+    const removed = this.spots.remove(spots);
+    return removed as unknown as CanvasSpot<T>[];
   }
 
   refreshSpots() {
