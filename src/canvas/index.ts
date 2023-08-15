@@ -58,7 +58,7 @@ import Canvas from './model/Canvas';
 import Frame from './model/Frame';
 import CanvasView, { FitViewportOptions } from './view/CanvasView';
 import FrameView from './view/FrameView';
-import CanvasSpots from './model/__CanvasSpots';
+import CanvasSpots from './model/CanvasSpots';
 import CanvasSpot, { CanvasSpotProps } from './model/CanvasSpot';
 
 export type CanvasEvent = 'canvas:dragenter' | 'canvas:dragover' | 'canvas:drop' | 'canvas:dragend' | 'canvas:dragdata';
