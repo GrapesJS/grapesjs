@@ -724,7 +724,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
   }
 
   setSpot<T extends CanvasSpotProps>(spotProps: Partial<T> = {}, opts: AddOptions = {}) {
-    const spots = this.getSpots(spotProps);
+    const spots = this.getSpots<T>(spotProps);
 
     if (spots.length) {
       const spot = spots[0];
@@ -735,11 +735,11 @@ export default class CanvasModule extends Module<CanvasConfig> {
     const cmp = spotProps.component;
     const frame = spotProps.frame || cmp?.frame;
     const frameId = frame?.id || frame?.cid;
-    const spot = new CanvasSpot(this, {
+    const spot = new CanvasSpot<T>(this, {
       ...spotProps,
       id: spotProps.id || `cs_${frameId}_${cmp?.getId()}`,
       type: spotProps.type || '',
-    });
+    } as T);
 
     this.spots.add(spot, opts);
 
