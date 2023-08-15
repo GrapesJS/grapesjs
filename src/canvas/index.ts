@@ -770,4 +770,9 @@ export default class CanvasModule extends Module<CanvasConfig> {
     return this.spots.remove(spots);
     // remove all spots: canvas.getSpots().forEach(spot => canvas.removeSpot(spot))
   }
+
+  refreshSpots() {
+    const { em, events } = this;
+    em.trigger(events.spot);
+  }
 }
