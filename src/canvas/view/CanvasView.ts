@@ -123,13 +123,13 @@ export default class CanvasView extends ModuleView<Canvas> {
     );
   }
 
-  checkSelected(component: Component, opts: any = {}) {
+  checkSelected(component: Component, opts: { scroll?: ScrollIntoViewOptions } = {}) {
     const { scroll } = opts;
-    const currFrame = this.em.get('currentFrame');
+    const currFrame = this.em.getCurrentFrame();
 
     scroll &&
       component.views?.forEach(view => {
-        view._getFrame() === currFrame && view.scrollIntoView(scroll);
+        view.frameView === currFrame && view.scrollIntoView(scroll);
       });
   }
 
@@ -509,7 +509,8 @@ export default class CanvasView extends ModuleView<Canvas> {
 
     if (!view.scriptContainer) {
       view.scriptContainer = createEl('div', { 'data-id': id });
-      this.getJsContainer().appendChild(view.scriptContainer);
+      const jsEl = this.getJsContainer();
+      jsEl?.appendChild(view.scriptContainer);
     }
 
     view.el.id = id;
@@ -540,11 +541,11 @@ export default class CanvasView extends ModuleView<Canvas> {
    */
   getJsContainer(view?: ComponentView) {
     const frameView = this.getFrameView(view);
-    return frameView && frameView.getJsContainer();
+    return frameView?.getJsContainer();
   }
 
   getFrameView(view?: ComponentView) {
-    return view?._getFrame() || this.em.get('currentFrame');
+    return view?.frameView || this.em.getCurrentFrame();
   }
 
   _renderFrames() {

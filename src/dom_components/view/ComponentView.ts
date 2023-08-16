@@ -143,7 +143,7 @@ Component> {
     super.remove();
     const { model, $el } = this;
     const { views } = model;
-    const frame = this._getFrame() || {};
+    const frame = this.frameView || {};
     model.components().forEach(comp => {
       const view = comp.getView(frame.model);
       view?.remove();
@@ -462,7 +462,7 @@ Component> {
     const { body } = elDoc;
     const frameElement = elDoc.defaultView?.frameElement as HTMLIFrameElement;
     const { top, left } = rect || this.getOffsetRect();
-    const frame = this._getFrame().getOffsetRect();
+    const frame = this.frameView.getOffsetRect();
 
     return (
       top! >= frame.scrollTop &&
@@ -510,10 +510,6 @@ Component> {
     const collection = model.components();
     const view = this;
     this.$el.data({ model, collection, view });
-  }
-
-  _getFrame() {
-    return this.em?.get('Canvas').config.frameView;
   }
 
   /**
