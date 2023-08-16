@@ -62,16 +62,17 @@ export default class CanvasSpot<T extends CanvasSpotProps = CanvasSpotProps> ext
   }
 
   get component() {
-    return this.get('component');
+    const cmp = this.get('component');
+    return cmp || this.get('componentView')?.model;
   }
 
   get componentView() {
-    return this.get('componentView');
+    const cmpView = this.get('componentView');
+    return cmpView || this.get('component')?.getView();
   }
 
   get el() {
-    const { component, componentView } = this;
-    return componentView?.el || component?.getEl();
+    return this.componentView?.el;
   }
 
   get style() {
