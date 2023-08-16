@@ -37,4 +37,6 @@ function BSANativeCallback (a) {
   }
 }
 
-loadScript('//m.servedby-buysellads.com/monetization.js', loadAd);
+if (['grapesjs.com', 'localhost'].indexOf(location.hostname) >= 0 ) {
+  loadScript('//m.servedby-buysellads.com/monetization.js', loadAd);
+}

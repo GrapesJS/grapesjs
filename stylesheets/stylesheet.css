@@ -46,11 +46,14 @@ a {
   border-width: 1px;
   border-radius: 0.3rem;
   min-width: 150px;
-  transition: color 0.2s, background-color 0.2s, border-color 0.2s; }
-  .btn + .btn {
-    margin-left: 1rem; }
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s;
+}
 
-.btn.try{
+.btn + .btn {
+    margin-left: 1rem;
+}
+
+.btn.try {
   padding: 0.75rem 3rem;
   font-size: 20px;
 }
@@ -268,22 +271,6 @@ a {
   .btn {
     padding: 0.6rem 0.9rem;
     font-size: 0.9rem; }
-}
-
-@media screen and (max-width: 42em) {
-  .btn {
-    display: block;
-    width: 100%;
-    padding: 0.75rem;
-    font-size: 0.9rem;
-  }
-    .btn + .btn {
-      margin-top: 1rem;
-      margin-left: 0; }
-  .github-ribbon, .btn.try{ display: none; }
-  .device-small{
-    display:block;
-  }
 }
 
 .page-header,
@@ -736,6 +723,18 @@ a {
   opacity: 1;
 }
 
+.btn.btn-studio {
+  display: inline-flex;
+  margin-right: auto;
+  margin-left: auto;
+  border-radius: 1000px;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 20px;
+  margin-top: 10px;
+}
+
 .copyr-content {
   background-color: #333;
 }
@@ -986,4 +985,23 @@ a {
   width: 20px;
   height: 20px;
   vertical-align: middle;
+}
+
+@media screen and (max-width: 42em) {
+  .btn {
+    display: block;
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+  .btn + .btn {
+      margin-top: 1rem;
+      margin-left: 0;
+  }
+  .github-ribbon, .btn.try {
+    display: none;
+  }
+  .device-small{
+    display:block;
+  }
 }
