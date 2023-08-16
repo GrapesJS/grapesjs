@@ -238,6 +238,11 @@ export default class Frame extends ModuleModel<CanvasModule> {
     obj[keyAutoW] && delete obj.width;
     obj[keyAutoH] && delete obj.height;
 
+    if (obj.refFrame) {
+      obj.refFrame = obj.refFrame.id;
+      delete obj.component;
+    }
+
     // Remove private keys
     forEach(obj, (value, key) => {
       key.indexOf('_') === 0 && delete obj[key];
