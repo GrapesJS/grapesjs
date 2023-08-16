@@ -47,6 +47,6 @@ export default class CanvasSpots extends ModuleCollection<CanvasSpot> {
     const { module } = this;
     const { em } = module;
     em.trigger(event, props);
-    this.refresh();
+    this.refreshDbn();
   }
 }

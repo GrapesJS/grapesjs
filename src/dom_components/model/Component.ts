@@ -1716,7 +1716,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     let { view, views } = this;
 
     if (frame) {
-      view = views.filter(view => view._getFrame() === frame.view)[0];
+      view = views.filter(view => view.frameView === frame.view)[0];
     }
 
     return view;

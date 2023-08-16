@@ -80,7 +80,7 @@ Component> {
     $el.data('model', model);
     setViewEl(el, this);
     model.view = this;
-    this._getFrame() && model.views.push(this);
+    this.frameView && model.views.push(this);
     this.initClasses();
     this.initComponents({ avoidRender: true });
     this.events = {

@@ -114,7 +114,7 @@ export default {
     const { em } = this;
     const trg = e.target;
     const view = getComponentView(trg);
-    const frameView = view && view._getFrame();
+    const frameView = view?.frameView;
     const $el = $(trg);
     let model = $el.data('model');
 
@@ -145,9 +145,12 @@ export default {
         const el = view.el;
         const pos = this.getElementPos(el);
         result = { el, pos, component, view: getViewEl(el) };
-        this.updateToolsLocal(result);
 
-        if (el.ownerDocument === this.currentDoc) this.elHovered = result;
+        if (el.ownerDocument === this.currentDoc) {
+          this.elHovered = result;
+        }
+
+        this.updateToolsLocal(result);
       });
     } else {
       this.currentDoc = null;

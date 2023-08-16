@@ -429,12 +429,12 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
       ${conf.protectedCss || ''}
     </style>`
     );
-    const component = model.getComponent();
+    const { root } = model;
     const { view } = em.Components.getType('wrapper')!;
     this.wrapper = new view({
-      model: component,
+      model: root,
       config: {
-        ...component.config,
+        ...root.config,
         em,
         frameView: this,
       },

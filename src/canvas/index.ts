@@ -51,6 +51,7 @@ import { isUndefined } from 'underscore';
 import { Module } from '../abstract';
 import { AddOptions, Coordinates } from '../common';
 import Component from '../dom_components/model/Component';
+import ComponentView from '../dom_components/view/ComponentView';
 import EditorModel from '../editor/model/Editor';
 import { getElement, getViewEl } from '../utils/mixins';
 import defaults, { CanvasConfig } from './config/config';
@@ -167,10 +168,10 @@ export default class CanvasModule extends Module<CanvasConfig> {
     return doc?.body as HTMLBodyElement;
   }
 
-  _getLocalEl(globalEl: any, compView: any, method: keyof FrameView) {
+  _getLocalEl(globalEl: any, compView: ComponentView, method: keyof FrameView) {
     let result = globalEl;
-    const frameView = compView?._getFrame();
-    result = frameView ? frameView[method]() : result;
+    const frameView = compView?.frameView;
+    result = frameView ? (frameView as any)[method]() : result;
 
     return result;
   }

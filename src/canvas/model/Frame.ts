@@ -46,6 +46,7 @@ export default class Frame extends ModuleModel<CanvasModule> {
       head: [],
       component: '',
       styles: '',
+      refFrame: null,
       _undo: true,
       _undoexc: ['changesCount'],
     };
@@ -113,6 +114,15 @@ export default class Frame extends ModuleModel<CanvasModule> {
 
   get head(): { tag: string; attributes: any }[] {
     return this.get('head');
+  }
+
+  get refFrame(): Frame | undefined {
+    return this.get('refFrame');
+  }
+
+  get root() {
+    const { refFrame } = this;
+    return refFrame?.getComponent() || this.getComponent();
   }
 
   getBoxRect(): BoxRect {
