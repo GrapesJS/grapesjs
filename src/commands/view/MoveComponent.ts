@@ -92,8 +92,8 @@ export default extend({}, SelectPosition, SelectComponent, {
     // Avoid badge showing on move
     this.cacheEl = null;
     const lastModel = models[models.length - 1];
-    const frame = (this.em.get('currentFrame') || {}).model;
-    const el = lastModel.getEl(frame)!;
+    const frameView = this.em.getCurrentFrame();
+    const el = lastModel.getEl(frameView?.model)!;
     const doc = el.ownerDocument;
     this.startSelectPosition(el, doc, { onStart: this.onStart });
     this.sorter.draggable = lastModel.get('draggable');

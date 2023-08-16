@@ -30,6 +30,7 @@ let showOffsets: boolean;
  */
 export default {
   init() {
+    this.onSelect = debounce(this.onSelect, 0);
     bindAll(
       this,
       'onHover',
@@ -129,7 +130,7 @@ export default {
 
     this.currentDoc = trg.ownerDocument;
     em.setHovered(model, { useValid: true });
-    frameView && em.set('currentFrame', frameView);
+    frameView && em.setCurrentFrame(frameView);
   },
 
   onFrameUpdated() {
@@ -170,30 +171,25 @@ export default {
    * @param {Object}  el
    * @private
    * */
-  onSelect: debounce(function () {
-    // @ts-ignore
+  onSelect() {
     const { em } = this;
     const component = em.getSelected();
-    const currentFrame = em.get('currentFrame') || {};
-    const view = component && component.getView(currentFrame.model);
+    const currentFrame = em.getCurrentFrame();
+    const view = component && component.getView(currentFrame?.model);
     let el = view && view.el;
     let result = {};
 
     if (el && isVisible(el)) {
-      // @ts-ignore
       const pos = this.getElementPos(el);
       result = { el, pos, component, view: getViewEl(el) };
     }
 
-    // @ts-ignore
     this.elSelected = result;
-    // @ts-ignore
     this.updateToolsGlobal();
-    // @ts-ignore This will hide some elements from the select component
+    // This will hide some elements from the select component
     this.updateLocalPos(result);
-    // @ts-ignore
     this.initResize(component);
-  }, 0),
+  },
 
   updateGlobalPos() {
     const sel = this.getElSelected();

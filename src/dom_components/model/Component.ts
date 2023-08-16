@@ -1701,7 +1701,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * @param {Frame} frame Specific frame from which taking the element
    * @return {HTMLElement}
    */
-  getEl(frame = undefined) {
+  getEl(frame?: Frame) {
     const view = this.getView(frame);
     return view && view.el;
   }
@@ -1723,7 +1723,8 @@ export default class Component extends StyleableModel<ComponentProperties> {
   }
 
   getCurrentView() {
-    const frame = (this.em.get('currentFrame') || {}).model;
+    const frameView = this.em.getCurrentFrame();
+    const frame = frameView?.model;
     return this.getView(frame);
   }
 
