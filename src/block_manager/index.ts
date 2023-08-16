@@ -195,10 +195,9 @@ export default class BlockManager extends ItemManagerModule<BlockManagerConfig, 
   }
 
   __getFrameViews() {
-    return this.em
-      .get('Canvas')
-      .getFrames()
-      .map((frame: any) => frame.view);
+    return this.em.Canvas.getFrames()
+      .map(frame => frame.view!)
+      .filter(Boolean);
   }
 
   __behaviour(opts = {}) {
@@ -214,11 +213,11 @@ export default class BlockManager extends ItemManagerModule<BlockManagerConfig, 
 
   startDrag(block: Block, ev?: Event) {
     this.__startDrag(block, ev);
-    this.__getFrameViews().forEach((fv: any) => fv.droppable.startCustom());
+    this.__getFrameViews().forEach(fv => fv.droppable?.startCustom());
   }
 
   endDrag(cancel?: boolean) {
-    this.__getFrameViews().forEach((fv: any) => fv.droppable.endCustom(cancel));
+    this.__getFrameViews().forEach(fv => fv.droppable?.endCustom(cancel));
     this.__endDrag();
   }
 
