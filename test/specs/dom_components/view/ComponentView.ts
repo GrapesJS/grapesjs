@@ -1,31 +1,35 @@
-import ComponentView from 'dom_components/view/ComponentView';
-import Component from 'dom_components/model/Component';
-import DomComponents from 'dom_components';
-import Editor from 'editor/model/Editor';
+import Component from '../../../../src/dom_components/model/Component';
+import ComponentView from '../../../../src/dom_components/view/ComponentView';
+import Editor from '../../../../src/editor/model/Editor';
 
 describe('ComponentView', () => {
-  let fixtures;
-  let model;
-  let view;
-  let dcomp;
-  let compOpts;
-  let em;
-  let el;
+  let fixtures: Element;
+  let model: Component;
+  let view: ComponentView;
+  let dcomp: Editor['Components'];
+  let compOpts: any;
+  let em: Editor;
+  let el: HTMLElement;
+  let compViewOpst: any;
 
   beforeEach(() => {
     em = new Editor({});
-    dcomp = new DomComponents(em);
+    dcomp = em.Components;
     compOpts = {
       em,
       componentTypes: dcomp.componentTypes,
     };
     model = new Component({}, compOpts);
+    compViewOpst = {
+      config: {},
+    };
     view = new ComponentView({
+      ...compViewOpst,
       model,
     });
-    em.get('StyleManager').render(); // Enable to listen em.setState
+    em.Styles.render(); // Enable to listen em.setState
     document.body.innerHTML = '<div id="fixtures"></div>';
-    fixtures = document.body.querySelector('#fixtures');
+    fixtures = document.body.querySelector('#fixtures')!;
     el = view.render().el;
     fixtures.appendChild(el);
   });
@@ -43,7 +47,7 @@ describe('ComponentView', () => {
   test('Clean form helper state', () => {
     em.setSelected(model);
     em.setState('test');
-    em.setState();
+    em.setState('');
     expect(fixtures.innerHTML).toEqual(
       `<div data-gjs-highlightable="true" id="${el.id}" data-gjs-type="default" class="selected"></div>`
     );
@@ -85,25 +89,25 @@ describe('ComponentView', () => {
   });
 
   test('Add class', () => {
-    model.get('classes').add({ name: 'test' });
+    model.classes.add({ name: 'test' });
     expect(view.el.getAttribute('class')).toEqual('test');
   });
 
   test('Add classes', () => {
-    model.get('classes').add([{ name: 'test' }, { name: 'test2' }]);
+    model.classes.add([{ name: 'test' }, { name: 'test2' }]);
     expect(view.el.getAttribute('class')).toEqual('test test2');
   });
 
   test('Update on remove of some class', () => {
-    var cls1 = model.get('classes').add({ name: 'test' });
-    var cls12 = model.get('classes').add({ name: 'test2' });
-    model.get('classes').remove(cls1);
+    var cls1 = model.classes.add({ name: 'test' });
+    var cls12 = model.classes.add({ name: 'test2' });
+    model.classes.remove(cls1);
     expect(view.el.getAttribute('class')).toEqual('test2');
   });
 
   test('Init with different tag', () => {
     model = new Component({ tagName: 'span' });
-    view = new ComponentView({ model });
+    view = new ComponentView({ ...compViewOpst, model });
     fixtures.innerHTML = '';
     fixtures.appendChild(view.render().el);
     expect(view.render().el.tagName).toEqual('SPAN');
@@ -112,12 +116,15 @@ describe('ComponentView', () => {
   test('Init with nested components', () => {
     model = new Component(
       {
+        // @ts-ignore
         components: [{ tagName: 'span' }, { attributes: { title: 'test' } }],
       },
       compOpts
     );
     view = new ComponentView({
+      ...compViewOpst,
       model,
+      // @ts-ignore
       componentTypes: dcomp.componentTypes,
     });
     fixtures.innerHTML = '';
