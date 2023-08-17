@@ -284,19 +284,22 @@ export default {
    * @param {Event}  e
    * @private
    */
-  onClick(ev: any) {
+  onClick(ev: Event) {
     ev.stopPropagation();
     ev.preventDefault();
     const { em } = this;
+
     if (em.get('_cmpDrag')) return em.set('_cmpDrag');
-    const $el = $(ev.target);
-    let model = $el.data('model');
+
+    const el = ev.target as HTMLElement;
+    let model = getComponentModel(el);
 
     if (!model) {
-      let parent = $el.parent();
-      while (!model && parent.length && !isDoc(parent[0])) {
-        model = parent.data('model');
-        parent = parent.parent();
+      let parentEl = el.parentNode;
+
+      while (!model && parentEl && !isDoc(parentEl)) {
+        model = getComponentModel(parentEl);
+        parentEl = parentEl.parentNode;
       }
     }
 
