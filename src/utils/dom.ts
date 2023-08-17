@@ -153,6 +153,31 @@ export const isCommentNode = (el?: Node): el is Comment => el?.nodeType === Node
 export const isTaggableNode = (el?: Node) => el && !isTextNode(el) && !isCommentNode(el);
 
 /**
+ * Get DOMRect of the element.
+ * @param el
+ * @returns {DOMRect}
+ */
+export const getElRect = (el?: Element) => {
+  const def = {
+    top: 0,
+    left: 0,
+    width: 0,
+    height: 0,
+  };
+  if (!el) return def;
+  let rectText;
+
+  if (isTextNode(el)) {
+    const range = document.createRange();
+    range.selectNode(el);
+    rectText = range.getBoundingClientRect();
+    range.detach();
+  }
+
+  return rectText || (el.getBoundingClientRect ? el.getBoundingClientRect() : def);
+};
+
+/**
  * Get document scroll coordinates
  */
 export const getDocumentScroll = (el?: HTMLElement) => {

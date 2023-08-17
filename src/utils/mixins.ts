@@ -215,26 +215,6 @@ const getModel = (el: any, $?: any) => {
   return model;
 };
 
-const getElRect = (el?: HTMLElement) => {
-  const def = {
-    top: 0,
-    left: 0,
-    width: 0,
-    height: 0,
-  };
-  if (!el) return def;
-  let rectText;
-
-  if (isTextNode(el)) {
-    const range = document.createRange();
-    range.selectNode(el);
-    rectText = range.getBoundingClientRect();
-    range.detach();
-  }
-
-  return rectText || (el.getBoundingClientRect ? el.getBoundingClientRect() : def);
-};
-
 /**
  * Get cross-device pointer event
  * @param  {Event} ev
@@ -299,7 +279,6 @@ export {
   upFirst,
   matches,
   getModel,
-  getElRect,
   camelCase,
   getKeyCode,
   getKeyChar,
