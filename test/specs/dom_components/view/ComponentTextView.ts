@@ -10,6 +10,7 @@ describe('ComponentTextView', () => {
   let el: HTMLElement;
   let dcomp;
   let compOpts: any;
+  let compViewOpts: any;
   let em: Editor;
 
   beforeEach(() => {
@@ -21,11 +22,11 @@ describe('ComponentTextView', () => {
       domc: dcomp,
     };
     model = new Component({}, compOpts);
-    view = new ComponentTextView({
-      model,
-      // @ts-ignore
+    compViewOpts = {
       config: { ...em.config, em },
-    });
+      model,
+    };
+    view = new ComponentTextView(compViewOpts);
     document.body.innerHTML = '<div id="fixtures"></div>';
     fixtures = document.body.querySelector('#fixtures')!;
     el = view.render().el;
@@ -51,7 +52,7 @@ describe('ComponentTextView', () => {
 
   test('Init with content', () => {
     model = new Component({ content: 'test' }, compOpts);
-    view = new ComponentTextView({ model });
+    view = new ComponentTextView({ ...compViewOpts, model });
     fixtures.appendChild(view.render().el);
     expect(view.el.innerHTML).toEqual('test');
   });

@@ -1,17 +1,19 @@
-import ComponentImageView from 'dom_components/view/ComponentImageView';
-import Component from 'dom_components/model/ComponentImage';
+import ComponentImageView from '../../../../src/dom_components/view/ComponentImageView';
+import Component from '../../../../src/dom_components/model/ComponentImage';
 
 describe('ComponentImageView', () => {
-  var model;
-  var view;
+  let model: Component;
+  let view: ComponentImageView;
 
   beforeEach(() => {
     model = new Component();
-    view = new ComponentImageView({
+    const cmpViewOpts = {
       model,
-    });
+      config: {},
+    };
+    view = new ComponentImageView(cmpViewOpts);
     document.body.innerHTML = '<div id="fixtures"></div>';
-    document.body.querySelector('#fixtures').appendChild(view.render().el);
+    document.body.querySelector('#fixtures')!.appendChild(view.render().el);
   });
 
   afterEach(() => {
