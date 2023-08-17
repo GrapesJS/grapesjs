@@ -600,7 +600,7 @@ export default class Sorter extends View {
    * @return {Boolean}
    * @private
    * */
-  isInFlow(el: HTMLElement, parent: HTMLElement) {
+  isInFlow(el: HTMLElement, parent?: HTMLElement) {
     if (!el) return false;
 
     parent = parent || document.body;
@@ -727,7 +727,7 @@ export default class Sorter extends View {
    * @param {number} rY Relative Y position
    * @return {Array<Array>}
    */
-  dimsFromTarget(target: HTMLElement, rX: number, rY: number): Dim[] {
+  dimsFromTarget(target: HTMLElement, rX = 0, rY = 0): Dim[] {
     const em = this.em;
     let dims: Dim[] = [];
 

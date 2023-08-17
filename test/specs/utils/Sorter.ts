@@ -1,20 +1,18 @@
-import Backbone from 'backbone';
-import Sorter from 'utils/Sorter';
-import ComponentTextView from 'dom_components/view/ComponentTextView';
-import Component from 'dom_components/model/Component';
-const $ = Backbone.$;
-
-// TODO: Migrate this file to Jest
+import Component from '../../../src/dom_components/model/Component';
+import ComponentTextView from '../../../src/dom_components/view/ComponentTextView';
+import Sorter from '../../../src/utils/Sorter';
 
 describe('Sorter', () => {
-  var fixture;
-  var obj;
-  var parent;
-  var plh;
-  var html;
+  let fixture: HTMLElement;
+  let obj: Sorter;
+  let parent: HTMLElement;
+  let plh: HTMLElement;
+  let html = '';
+  const cmpViewOpts: any = { config: {} };
 
   beforeAll(function () {
-    fixture = $('<div class="sorter-fixture"></div>').get(0);
+    fixture = document.createElement('div');
+    fixture.setAttribute('class', 'sorter-fixture');
   });
 
   beforeEach(() => {
@@ -22,7 +20,7 @@ describe('Sorter', () => {
     parent.setAttribute('class', 'parent1');
     plh = document.createElement('div');
     document.body.appendChild(parent);
-    obj = new Sorter({ container: '.parent1' });
+    obj = new Sorter({ container: '.parent1' } as any);
     document.body.appendChild(fixture);
     fixture.appendChild(parent);
     html = `
@@ -55,9 +53,6 @@ describe('Sorter', () => {
 
   afterEach(() => {
     document.body.removeChild(fixture);
-    obj = null;
-    parent = null;
-    html = null;
   });
 
   test('matches class', () => {
@@ -92,13 +87,13 @@ describe('Sorter', () => {
 
   test('isInFlow to overflow hidden', () => {
     parent.innerHTML = html;
-    var el = parent.querySelector('#el1');
+    var el = parent.querySelector('#el1') as HTMLElement;
     expect(obj.isInFlow(el)).toEqual(false);
   });
 
   test('isInFlow inner to overflow', () => {
     parent.innerHTML = html;
-    var el = parent.querySelector('#el2');
+    var el = parent.querySelector('#el2') as HTMLElement;
     if (!el) {
       console.log('phantom issue');
       return;
@@ -108,13 +103,13 @@ describe('Sorter', () => {
 
   test('isInFlow for span', () => {
     parent.innerHTML = html;
-    var el = parent.querySelector('#elspan');
+    var el = parent.querySelector('#elspan') as HTMLElement;
     expect(obj.isInFlow(el)).toEqual(false);
   });
 
   test('isInFlow for div #a', () => {
     parent.innerHTML = html;
-    var el = parent.querySelector('#a');
+    var el = parent.querySelector('#a') as HTMLElement;
     if (!el) {
       console.log('phantom issue');
       return;
@@ -124,7 +119,7 @@ describe('Sorter', () => {
 
   test('isInFlow for div #aa', () => {
     parent.innerHTML = html;
-    var el = parent.querySelector('#aa');
+    var el = parent.querySelector('#aa') as HTMLElement;
     if (!el) {
       console.log('phantom issue');
       return;
@@ -134,7 +129,7 @@ describe('Sorter', () => {
 
   test('isInFlow for p #aaa', () => {
     parent.innerHTML = html;
-    var el = parent.querySelector('#aaa');
+    var el = parent.querySelector('#aaa') as HTMLElement;
     if (!el) {
       console.log('phantom issue');
       return;
@@ -144,13 +139,13 @@ describe('Sorter', () => {
 
   test('isInFlow for span #aab', () => {
     parent.innerHTML = html;
-    var el = parent.querySelector('#aab');
+    var el = parent.querySelector('#aab') as HTMLElement;
     expect(obj.isInFlow(el)).toEqual(false);
   });
 
   test('isInFlow for span #aac with display block', () => {
     parent.innerHTML = html;
-    var el = parent.querySelector('#aac');
+    var el = parent.querySelector('#aac') as HTMLElement;
     if (!el)
       // in phantom doesnt work
       return;
@@ -159,19 +154,19 @@ describe('Sorter', () => {
 
   test('isInFlow for div #ab with float left', () => {
     parent.innerHTML = html;
-    var el = parent.querySelector('#ab');
+    var el = parent.querySelector('#ab') as HTMLElement;
     expect(obj.isInFlow(el)).toEqual(false);
   });
 
   test('isInFlow for div #ac in absolute', () => {
     parent.innerHTML = html;
-    var el = parent.querySelector('#ac');
+    var el = parent.querySelector('#ac') as HTMLElement;
     expect(obj.isInFlow(el)).toEqual(false);
   });
 
   test('isInFlow for div #acb inside absolute', () => {
     parent.innerHTML = html;
-    var el = parent.querySelector('#acb');
+    var el = parent.querySelector('#acb') as HTMLElement;
     if (!el) {
       console.log('phantom issue');
       return;
@@ -181,13 +176,13 @@ describe('Sorter', () => {
 
   test('isInFlow for div #ad overflow hidden', () => {
     parent.innerHTML = html;
-    var el = parent.querySelector('#ad');
+    var el = parent.querySelector('#ad') as HTMLElement;
     expect(obj.isInFlow(el)).toEqual(false);
   });
 
   describe('Closest method', () => {
-    var parent2;
-    var parent3;
+    let parent2: HTMLElement;
+    let parent3: HTMLElement;
 
     beforeEach(() => {
       parent2 = document.createElement('span');
@@ -217,14 +212,14 @@ describe('Sorter', () => {
   });
 
   describe.skip('With elements', () => {
-    var vertDims;
-    var parent2;
-    var parent3;
-    var sib1;
-    var sib2;
-    var sib3;
-    var sib4;
-    var el;
+    let vertDims: any[];
+    let parent2: HTMLElement;
+    let parent3: HTMLElement;
+    let sib1: HTMLElement;
+    let sib2: HTMLElement;
+    let sib3: HTMLElement;
+    let sib4: HTMLElement;
+    let el: HTMLElement;
 
     beforeEach(() => {
       parent2 = document.createElement('span');
@@ -267,7 +262,7 @@ describe('Sorter', () => {
     test('startSort inits correctly inits', () => {
       obj.startSort(el);
       expect(obj.moved).toEqual(0);
-      expect(obj.plh.style.display).toEqual('none');
+      expect(obj.plh!.style.display).toEqual('none');
     });
 
     test('onMove', () => {
@@ -277,7 +272,7 @@ describe('Sorter', () => {
         pageX: 0,
         pageY: 0,
         target: target,
-      });
+      } as any);
       expect(obj.moved).toEqual(1);
     });
 
@@ -293,7 +288,8 @@ describe('Sorter', () => {
       el.style.position = 'absolute';
       el.style.top = '0';
       var ch = obj.getChildrenDim(el);
-      ch = ch.map(function (v) {
+      ch = ch.map(v => {
+        // @ts-ignore
         return v.slice(0, 5);
       });
       var subPos = obj.offset(sib1);
@@ -310,7 +306,7 @@ describe('Sorter', () => {
 
     test('nearBorders', () => {
       obj.borderOffset = 10;
-      var dim = [0, 0, 100, 200];
+      var dim = [0, 0, 100, 200] as any;
       expect(obj.nearBorders(dim, 20, 15)).toEqual(false);
       expect(obj.nearBorders(dim, 3, 4)).toEqual(true);
       expect(obj.nearBorders(dim, 500, 500)).toEqual(true);
@@ -343,7 +339,8 @@ describe('Sorter', () => {
       ];
 
       var dims = obj.dimsFromTarget(sib3);
-      dims = dims.map(function (v) {
+      dims = dims.map(v => {
+        // @ts-ignore
         return v.slice(0, 5);
       });
 
@@ -352,6 +349,7 @@ describe('Sorter', () => {
       // Inside target
       var dims = obj.dimsFromTarget(sib3, leftSib3 + 15, topSib3 + 15);
       dims = dims.map(function (v) {
+        // @ts-ignore
         return v.slice(0, 5);
       });
       expect(dims).toEqual(resultChildren);
@@ -360,6 +358,7 @@ describe('Sorter', () => {
       var bOffset = obj.borderOffset;
       var dims = obj.dimsFromTarget(sib3, leftSib3 + bOffset, topSib3 + bOffset);
       dims = dims.map(function (v) {
+        // @ts-ignore
         return v.slice(0, 5);
       });
       expect(dims).toEqual(resultChildren);
@@ -367,6 +366,7 @@ describe('Sorter', () => {
       // Slightly near border
       var dims = obj.dimsFromTarget(sib3, leftSib3 + bOffset - 3, topSib3 + bOffset);
       dims = dims.map(function (v) {
+        // @ts-ignore
         return v.slice(0, 5);
       });
       expect(dims).toEqual(resultParent);
@@ -408,7 +408,7 @@ describe('Sorter', () => {
       });
 
       test('Vertical dimensions with before position', () => {
-        var pos = { index: 2, method: 'before' };
+        var pos = { index: 2, method: 'before', indexEl: 0 };
         obj.movePlaceholder(plh, vertDims, pos);
         var style = plh.style;
         expect(style.top).toEqual('100px');
@@ -417,7 +417,7 @@ describe('Sorter', () => {
       });
 
       test('Vertical dimensions with after position', () => {
-        var pos = { index: 1, method: 'after' };
+        var pos = { index: 1, method: 'after', indexEl: 0 };
         obj.movePlaceholder(plh, vertDims, pos);
         var style = plh.style;
         expect(style.top).toEqual('100px');
@@ -429,8 +429,8 @@ describe('Sorter', () => {
 
   describe('Valid Target with components', () => {
     describe('Droppable', () => {
-      var parentModel;
-      var parentView;
+      let parentModel;
+      let parentView: ComponentTextView;
 
       beforeEach(() => {
         parentModel = new Component({
@@ -439,6 +439,7 @@ describe('Sorter', () => {
           },
         });
         parentView = new ComponentTextView({
+          ...cmpViewOpts,
           model: parentModel,
         });
       });
@@ -455,6 +456,7 @@ describe('Sorter', () => {
           attributes: { class: 'canDrop' },
         });
         var srcView = new ComponentTextView({
+          ...cmpViewOpts,
           model: srcModel,
         });
 
@@ -469,6 +471,7 @@ describe('Sorter', () => {
           attributes: { class: 'cannotDrop' },
         });
         var srcView = new ComponentTextView({
+          ...cmpViewOpts,
           model: srcModel,
         });
 
@@ -478,7 +481,7 @@ describe('Sorter', () => {
 
     describe('Draggable', () => {
       var srcModel;
-      var srcView;
+      var srcView: ComponentTextView;
 
       beforeEach(() => {
         srcModel = new Component({
@@ -487,6 +490,7 @@ describe('Sorter', () => {
           },
         });
         srcView = new ComponentTextView({
+          ...cmpViewOpts,
           model: srcModel,
         });
       });
@@ -503,6 +507,7 @@ describe('Sorter', () => {
           attributes: { class: 'canDrag' },
         });
         var parentView = new ComponentTextView({
+          ...cmpViewOpts,
           model: parentModel,
         });
 
@@ -517,6 +522,7 @@ describe('Sorter', () => {
           attributes: { class: 'cannotDrag' },
         });
         var parentView = new ComponentTextView({
+          ...cmpViewOpts,
           model: parentModel,
         });
 
@@ -525,13 +531,14 @@ describe('Sorter', () => {
     });
   });
   describe('Parents', () => {
-    var child00;
-    var child01;
-    var child0;
-    var child10;
-    var child1;
-    var child2;
-    var root;
+    let child00: Component;
+    let child01: Component;
+    let child0: Component;
+    let child10: Component;
+    let child1: Component;
+    let child2: Component;
+    let root: Component;
+
     beforeAll(() => {
       child00 = new Component({
         tagName: 'div',
@@ -544,6 +551,7 @@ describe('Sorter', () => {
       child0 = new Component({
         tagName: 'div',
         name: 'child0',
+        // @ts-ignore
         components: [child00, child01],
       });
       child10 = new Component({
@@ -553,6 +561,7 @@ describe('Sorter', () => {
       child1 = new Component({
         tagName: 'div',
         name: 'child1',
+        // @ts-ignore
         components: [child10],
       });
       child2 = new Component({
@@ -562,6 +571,7 @@ describe('Sorter', () => {
       root = new Component({
         tagName: 'div',
         name: 'root',
+        // @ts-ignore
         components: [child0, child1, child2],
       });
     });
@@ -571,7 +581,7 @@ describe('Sorter', () => {
       expect(obj.parents(child00)).toEqual([child00, child0, root]);
     });
     test('Sort', () => {
-      const withParents = model => ({ model, parents: obj.parents(model) });
+      const withParents = (model: Component) => ({ model, parents: obj.parents(model) });
       expect(obj.sort(withParents(child00), withParents(child1))).toEqual(1);
       expect(obj.sort(withParents(child00), withParents(child01))).toEqual(1);
       expect(obj.sort(withParents(child00), withParents(child10))).toEqual(1);
