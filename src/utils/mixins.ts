@@ -195,7 +195,11 @@ const isComponent = (obj: any) => obj && obj.toHTML;
 const isRule = (obj: any) => obj && obj.toCSS;
 
 const getViewEl = <T extends any>(el: any): T | undefined => el.__gjsv;
-export const getComponentView = (el: HTMLElement) => getViewEl<ComponentView>(el);
+
+export const getComponentView = (el: Node) => getViewEl<ComponentView>(el);
+
+export const getComponentModel = (el: Node) => getComponentView(el)?.model;
+
 const setViewEl = (el: any, view: any) => {
   el.__gjsv = view;
 };

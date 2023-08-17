@@ -19,7 +19,7 @@ const KEY_CHILD = 'children';
 
 export const motionsEv = 'transitionend oTransitionEnd transitionend webkitTransitionEnd';
 
-export const isDoc = (el?: HTMLElement) => el && el.nodeType === 9;
+export const isDoc = (el?: Node): el is Document => el?.nodeType === Node.DOCUMENT_NODE;
 
 export const removeEl = (el?: HTMLElement) => {
   const parent = el && el.parentNode;

@@ -4,7 +4,7 @@ import Component from '../../dom_components/model/Component';
 import Toolbar from '../../dom_components/model/Toolbar';
 import ToolbarView from '../../dom_components/view/ToolbarView';
 import { isDoc, isTaggableNode, isVisible, off, on } from '../../utils/dom';
-import { getComponentView, getUnitFromValue, getViewEl, hasWin } from '../../utils/mixins';
+import { getComponentModel, getComponentView, getUnitFromValue, getViewEl, hasWin } from '../../utils/mixins';
 import { CommandObject } from './CommandAbstract';
 
 let showOffsets: boolean;
@@ -110,25 +110,24 @@ export default {
    * @param {Object}  e
    * @private
    */
-  onHover(e: any) {
-    e.stopPropagation();
+  onHover(ev: Event) {
+    ev.stopPropagation();
     const { em } = this;
-    const trg = e.target;
-    const view = getComponentView(trg);
+    const el = ev.target as HTMLElement;
+    const view = getComponentView(el);
     const frameView = view?.frameView;
-    const $el = $(trg);
-    let model = $el.data('model');
+    let model = view?.model;
 
     // Get first valid model
     if (!model) {
-      let parent = $el.parent();
-      while (!model && parent.length && !isDoc(parent[0])) {
-        model = parent.data('model');
-        parent = parent.parent();
+      let parentEl = el.parentNode;
+      while (!model && parentEl && !isDoc(parentEl)) {
+        model = getComponentModel(parentEl);
+        parentEl = parentEl.parentNode;
       }
     }
 
-    this.currentDoc = trg.ownerDocument;
+    this.currentDoc = el.ownerDocument;
     em.setHovered(model, { useValid: true });
     frameView && em.setCurrentFrame(frameView);
   },
