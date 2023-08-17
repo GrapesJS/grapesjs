@@ -19,8 +19,8 @@ export type CanvasSpotType = LiteralUnion<CanvasSpotBuiltInType, string>;
 
 /** @private */
 export interface CanvasSpotBase<T extends CanvasSpotType> {
-  id: string;
   type: T;
+  id: string;
   boxRect?: BoxRect;
   component?: Component;
   componentView?: ComponentView;
