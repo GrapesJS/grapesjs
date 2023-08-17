@@ -212,7 +212,7 @@ export default {
   },
 
   onOut() {
-    this.em.setHovered(0);
+    this.em.setHovered();
   },
 
   toggleToolsEl(on: boolean, view: any, opts: any = {}) {

@@ -628,25 +628,41 @@ export default class EditorModel extends Model {
 
   /**
    * Hover a component
-   * @param  {Component|HTMLElement} el Component to select
+   * @param  {Component|HTMLElement} cmp Component to select
    * @param  {Object} [opts={}] Options, optional
    * @private
    */
-  setHovered(el: any, opts: any = {}) {
-    if (!el) return this.set('componentHovered', '');
+  setHovered(cmp?: Component | null, opts: any = {}) {
+    const upHovered = (cmp?: Component, opts?: any) => {
+      const current = this.getHovered();
+      const type = CanvasSpotBuiltInTypes.Hover;
+      this.set('componentHovered', cmp || null, opts);
+
+      current?.views.forEach(componentView => {
+        this.Canvas.removeSpot({ type, componentView });
+      });
+
+      cmp?.views.forEach(componentView => {
+        this.Canvas.setSpot({ type, componentView });
+      });
+    };
+
+    if (!cmp) {
+      return upHovered();
+    }
 
     const ev = 'component:hover';
-    let model = getModel(el, undefined);
+    let model = getModel(cmp, undefined) as Component | undefined;
 
     if (!model) return;
 
-    opts.forceChange && this.set('componentHovered', '');
+    opts.forceChange && upHovered();
     this.trigger(`${ev}:before`, model, opts);
 
     // Check for valid hoverable
     if (!model.get('hoverable')) {
       if (opts.useValid && !opts.abort) {
-        let parent = model && model.parent();
+        let parent = model.parent();
         while (parent && !parent.get('hoverable')) parent = parent.parent();
         model = parent;
       } else {
@@ -655,13 +671,13 @@ export default class EditorModel extends Model {
     }
 
     if (!opts.abort) {
-      this.set('componentHovered', model, opts);
+      upHovered(model, opts);
       this.trigger(ev, model, opts);
     }
   }
 
   getHovered() {
-    return this.get('componentHovered');
+    return this.get('componentHovered') as Component | undefined;
   }
 
   /**
