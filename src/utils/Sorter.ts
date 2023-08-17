@@ -1,9 +1,10 @@
-import { isString, isFunction, isArray, result, each, bindAll } from 'underscore';
-import { on, off, matches, getElement, getPointerEvent, isTextNode, getModel } from './mixins';
-import { View, Model, Collection, $ } from '../common';
-import EditorModel from '../editor/model/Editor';
+import { bindAll, each, isArray, isFunction, isString, result } from 'underscore';
 import { BlockProperties } from '../block_manager/model/Block';
 import CanvasModule from '../canvas';
+import { $, Collection, Model, View } from '../common';
+import EditorModel from '../editor/model/Editor';
+import { isTextNode } from './dom';
+import { getElement, getModel, getPointerEvent, matches, off, on } from './mixins';
 
 const noop = () => {};
 

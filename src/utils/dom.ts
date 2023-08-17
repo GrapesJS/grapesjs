@@ -132,6 +132,27 @@ export const appendVNodes = (node: HTMLElement, vNodes: vNode | vNode[] = []) =>
 };
 
 /**
+ * Check if element is a text node
+ * @param  {Node} el
+ * @return {Boolean}
+ */
+export const isTextNode = (el?: Node): el is Text => el?.nodeType === Node.TEXT_NODE;
+
+/**
+ * Check if element is a comment node
+ * @param  {Node} el
+ * @return {Boolean}
+ */
+export const isCommentNode = (el?: Node): el is Comment => el?.nodeType === Node.COMMENT_NODE;
+
+/**
+ * Check if taggable node
+ * @param  {Node} el
+ * @return {Boolean}
+ */
+export const isTaggableNode = (el?: Node) => el && !isTextNode(el) && !isCommentNode(el);
+
+/**
  * Get document scroll coordinates
  */
 export const getDocumentScroll = (el?: HTMLElement) => {

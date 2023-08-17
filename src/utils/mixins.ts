@@ -1,7 +1,7 @@
-import { keys, isUndefined, isElement, isArray } from 'underscore';
-import EditorModel from '../editor/model/Editor';
-import { View } from '../common';
+import { isArray, isElement, isUndefined, keys } from 'underscore';
 import ComponentView from '../dom_components/view/ComponentView';
+import EditorModel from '../editor/model/Editor';
+import { isTextNode } from './dom';
 
 export const isDef = (value: any) => typeof value !== 'undefined';
 
@@ -159,27 +159,6 @@ const getElement = (el: HTMLElement) => {
   }
 };
 
-/**
- * Check if element is a text node
- * @param  {HTMLElement} el
- * @return {Boolean}
- */
-const isTextNode = (el: HTMLElement) => el && el.nodeType === 3;
-
-/**
- * Check if element is a comment node
- * @param  {HTMLElement} el
- * @return {Boolean}
- */
-export const isCommentNode = (el: HTMLElement) => el && el.nodeType === 8;
-
-/**
- * Check if element is a comment node
- * @param  {HTMLElement} el
- * @return {Boolean}
- */
-export const isTaggableNode = (el: HTMLElement) => el && !isTextNode(el) && !isCommentNode(el);
-
 export const find = (arr: any[], test: (item: any, i: number, arr: any[]) => boolean) => {
   let result = null;
   arr.some((el, i) => (test(el, i, arr) ? ((result = el), 1) : 0));
@@ -322,7 +301,6 @@ export {
   getModel,
   getElRect,
   camelCase,
-  isTextNode,
   getKeyCode,
   getKeyChar,
   isEscKey,

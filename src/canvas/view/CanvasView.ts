@@ -4,17 +4,8 @@ import { ModuleView } from '../../abstract';
 import { BoxRect, Coordinates, ElementRect } from '../../common';
 import Component from '../../dom_components/model/Component';
 import ComponentView from '../../dom_components/view/ComponentView';
-import { createEl, getDocumentScroll } from '../../utils/dom';
-import {
-  getComponentView,
-  getElRect,
-  getElement,
-  getKeyChar,
-  getUiClass,
-  isTextNode,
-  off,
-  on,
-} from '../../utils/mixins';
+import { createEl, getDocumentScroll, isTextNode } from '../../utils/dom';
+import { getComponentView, getElRect, getElement, getKeyChar, getUiClass, off, on } from '../../utils/mixins';
 import Canvas from '../model/Canvas';
 import Frame from '../model/Frame';
 import FrameView from './FrameView';

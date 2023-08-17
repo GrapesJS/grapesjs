@@ -1,6 +1,6 @@
 import { isUndefined } from 'underscore';
 import { $ } from '../../common';
-import { isTextNode } from '../../utils/mixins';
+import { isTextNode } from '../../utils/dom';
 import { CommandObject } from './CommandAbstract';
 
 export default {
