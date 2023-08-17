@@ -1,29 +1,30 @@
-import DomComponents from 'dom_components';
-import ComponentsView from 'dom_components/view/ComponentsView';
-import Components from 'dom_components/model/Components';
-import Editor from 'editor/model/Editor';
+import Components from '../../../../src/dom_components/model/Components';
+import ComponentsView from '../../../../src/dom_components/view/ComponentsView';
+import Editor from '../../../../src/editor/model/Editor';
 
 describe('ComponentsView', () => {
-  var model;
-  var view;
-  var dcomp;
-  var compOpts;
-  const em = new Editor();
+  let model: Components;
+  let view: ComponentsView;
+  let dcomp: Editor['Components'];
+  let compOpts: any;
+  let em: Editor;
 
   beforeEach(() => {
-    dcomp = new DomComponents(em);
+    em = new Editor();
+    dcomp = em.Components;
     compOpts = {
       em,
       componentTypes: dcomp.componentTypes,
     };
     model = new Components([], compOpts);
     view = new ComponentsView({
+      // @ts-ignore
       collection: model,
       componentTypes: dcomp.componentTypes,
       config: { em },
     });
     document.body.innerHTML = '<div id="fixtures"></div>';
-    document.body.querySelector('#fixtures').appendChild(view.render().el);
+    document.body.querySelector('#fixtures')!.appendChild(view.render().el);
   });
 
   afterEach(() => {
@@ -35,9 +36,9 @@ describe('ComponentsView', () => {
   });
 
   test('Add new component', () => {
-    sinon.stub(view, 'addToCollection');
+    const addSpy = jest.spyOn(view, 'addToCollection');
     view.collection.add({});
-    expect(view.addToCollection.calledOnce).toEqual(true);
+    expect(addSpy).toBeCalledTimes(1);
   });
 
   test('Render new component', () => {
