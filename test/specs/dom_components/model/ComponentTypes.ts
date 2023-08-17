@@ -1,10 +1,10 @@
-import Editor from 'editor';
+import Editor from '../../../../src/editor';
 
 describe('Component Types', () => {
-  let editor;
-  let wrapper;
+  let editor: Editor;
+  let wrapper: NonNullable<ReturnType<Editor['getWrapper']>>;
 
-  const expectedType = (input, type, opts = {}) => {
+  const expectedType = (input: string, type: string, opts: any = {}) => {
     const cmp = wrapper.append(input)[0];
     expect(wrapper.components().length).toBe(opts.total || 1);
     !opts.skipHtml && expect(cmp.toHTML()).toBe(input);
@@ -13,9 +13,9 @@ describe('Component Types', () => {
   };
 
   beforeAll(() => {
-    editor = new Editor({ allowScripts: 1 });
-    editor.getModel().get('PageManager').onLoad();
-    wrapper = editor.getWrapper();
+    editor = new Editor({ allowScripts: true } as any);
+    editor.Pages.onLoad();
+    wrapper = editor.getWrapper()!;
   });
 
   afterAll(() => {
@@ -24,9 +24,9 @@ describe('Component Types', () => {
 
   afterEach(() => {
     wrapper.components().reset();
-    editor = new Editor({ allowScripts: 1 });
+    editor = new Editor({ allowScripts: true } as any);
     editor.getModel().get('PageManager').onLoad();
-    wrapper = editor.getWrapper();
+    wrapper = editor.getWrapper()!;
   });
 
   test('<img> is correctly recognized', () => {
