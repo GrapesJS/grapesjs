@@ -1,19 +1,17 @@
-import Component from 'dom_components/model/Component';
-import ComponentImage from 'dom_components/model/ComponentImage';
-import Editor from 'editor/model/Editor';
-import Backbone from 'backbone';
-import { buildBase64UrlFromSvg } from 'utils/mixins';
+import Component from '../../../../src/dom_components/model/Component';
+import ComponentImage from '../../../../src/dom_components/model/ComponentImage';
+import Editor from '../../../../src/editor/model/Editor';
+import { buildBase64UrlFromSvg } from '../../../../src/utils/mixins';
 
-const $ = Backbone.$;
 describe('ComponentImage', () => {
-  let componentImage;
-  let dcomp;
-  let compOpts;
-  let em;
+  let componentImage: ComponentImage;
+  let dcomp: Editor['Components'];
+  let compOpts: any;
+  let em: Editor;
 
   beforeEach(() => {
     em = new Editor({ avoidDefaults: true });
-    dcomp = em.get('DomComponents');
+    dcomp = em.Components;
     em.get('PageManager').onLoad();
     compOpts = {
       em,
@@ -44,7 +42,7 @@ describe('ComponentImage', () => {
   });
 
   describe('.getAttrToHTML', () => {
-    let getSrcResultSpy;
+    let getSrcResultSpy: ReturnType<typeof spyOn>;
     const fakeAttributes = {};
 
     beforeEach(() => {
