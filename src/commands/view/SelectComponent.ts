@@ -1,5 +1,4 @@
 import { bindAll, debounce, isElement } from 'underscore';
-import { $ } from '../../common';
 import Component from '../../dom_components/model/Component';
 import Toolbar from '../../dom_components/model/Toolbar';
 import ToolbarView from '../../dom_components/view/ToolbarView';
@@ -331,7 +330,7 @@ export default {
    * */
   updateBadge(el: HTMLElement, pos: any, opts: any = {}) {
     const { canvas } = this;
-    const model = $(el).data('model');
+    const model = getComponentModel(el);
     if (!model || !model.get('badgable')) return;
     const badge = this.getBadge(opts);
 
