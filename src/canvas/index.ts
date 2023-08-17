@@ -733,12 +733,10 @@ export default class CanvasModule extends Module<CanvasConfig> {
       return spot;
     }
 
-    const cmp = spotProps.component;
-    const frame = spotProps.frame || cmp?.frame;
-    const frameId = frame?.id || frame?.cid;
+    const cmpView = spotProps.componentView || spotProps.component?.view;
     const spot = new CanvasSpot<T>(this, {
       ...spotProps,
-      id: spotProps.id || `cs_${frameId}_${cmp?.getId()}`,
+      id: spotProps.id || `cs_${cmpView?.cid}`,
       type: spotProps.type || '',
     } as T);
 

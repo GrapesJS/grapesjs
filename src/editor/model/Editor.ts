@@ -578,9 +578,11 @@ export default class EditorModel extends Model {
 
       selected.addComponent(model, opts);
       this.trigger('component:select', model, opts);
-      this.Canvas.setSpot({
-        type: CanvasSpotBuiltInTypes.Select,
-        component: model,
+      model.views.forEach(view => {
+        this.Canvas.setSpot({
+          type: CanvasSpotBuiltInTypes.Select,
+          componentView: view,
+        });
       });
     });
   }
@@ -596,9 +598,11 @@ export default class EditorModel extends Model {
     this.selected.removeComponent(component, opts);
     const cmps: Component[] = isArray(component) ? component : [component];
     cmps.forEach(component =>
-      this.Canvas.removeSpot({
-        type: CanvasSpotBuiltInTypes.Select,
-        component,
+      component.views.forEach(view => {
+        this.Canvas.removeSpot({
+          type: CanvasSpotBuiltInTypes.Select,
+          componentView: view,
+        });
       })
     );
   }
