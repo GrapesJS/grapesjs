@@ -1,7 +1,8 @@
-import { bindAll, isFunction, each } from 'underscore';
-import { Position } from '../common';
-import { on, off, normalizeFloat } from './mixins';
+import { bindAll, each, isFunction } from 'underscore';
 import { ElementPosOpts } from '../canvas/view/CanvasView';
+import { Position } from '../common';
+import { off, on } from './dom';
+import { normalizeFloat } from './mixins';
 
 type RectDim = {
   t: number;
@@ -457,7 +458,7 @@ export default class Resizer {
     const resizer = this;
     const config = this.opts || {};
     const mouseFetch = this.mousePosFetcher;
-    const attrName = 'data-' + config.prefix + 'handler';    
+    const attrName = 'data-' + config.prefix + 'handler';
     const rect = this.getElementPos(el!, { avoidFrameZoom: true, avoidFrameOffset: true });
     const parentRect = this.getElementPos(parentEl!);
     const target = e.target as HTMLElement;

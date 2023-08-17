@@ -2,10 +2,11 @@ import { bindAll } from 'underscore';
 import { ObjectAny } from '../../common';
 import RichTextEditorModule from '../../rich_text_editor';
 import RichTextEditor from '../../rich_text_editor/model/RichTextEditor';
-import { getModel, off, on } from '../../utils/mixins';
+import { off, on } from '../../utils/dom';
+import { getModel } from '../../utils/mixins';
 import Component from '../model/Component';
-import { getComponentIds } from '../model/Components';
 import ComponentText from '../model/ComponentText';
+import { getComponentIds } from '../model/Components';
 import { ComponentDefinition } from '../model/types';
 import ComponentView from './ComponentView';
 

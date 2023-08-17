@@ -1,6 +1,6 @@
 import { bindAll } from 'underscore';
-import { on, off, getKeyChar } from '../../utils/mixins';
 import Dragger from '../../utils/Dragger';
+import { getKeyChar, off, on } from '../../utils/dom';
 import { CommandObject } from './CommandAbstract';
 
 export default {

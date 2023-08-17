@@ -1,6 +1,6 @@
-import { bindAll, isFunction, result, isUndefined } from 'underscore';
+import { bindAll, isFunction, isUndefined, result } from 'underscore';
 import { Position } from '../common';
-import { on, off, isEscKey, getPointerEvent } from './mixins';
+import { getPointerEvent, isEscKey, off, on } from './dom';
 
 type DraggerPosition = Position & { end?: boolean };
 

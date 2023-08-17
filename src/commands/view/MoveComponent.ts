@@ -1,10 +1,10 @@
-import { extend, bindAll } from 'underscore';
+import { bindAll, extend } from 'underscore';
 import { $ } from '../../common';
-import { on, off } from '../../utils/mixins';
+import Component from '../../dom_components/model/Component';
+import { off, on } from '../../utils/dom';
+import { CommandObject } from './CommandAbstract';
 import SelectComponent from './SelectComponent';
 import SelectPosition from './SelectPosition';
-import { CommandObject } from './CommandAbstract';
-import Component from '../../dom_components/model/Component';
 
 export default extend({}, SelectPosition, SelectComponent, {
   init(o: any) {

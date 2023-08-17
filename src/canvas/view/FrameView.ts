@@ -1,13 +1,22 @@
-import { bindAll, isString, debounce, isUndefined } from 'underscore';
-import { appendVNodes, append, createEl, createCustomEvent, motionsEv } from '../../utils/dom';
-import { on, off, setViewEl, hasDnd, getPointerEvent } from '../../utils/mixins';
+import { bindAll, debounce, isString, isUndefined } from 'underscore';
 import { ModuleView } from '../../abstract';
+import { BoxRect } from '../../common';
 import CssRulesView from '../../css_composer/view/CssRulesView';
 import Droppable from '../../utils/Droppable';
-import Frame from '../model/Frame';
+import {
+  append,
+  appendVNodes,
+  createCustomEvent,
+  createEl,
+  getPointerEvent,
+  motionsEv,
+  off,
+  on,
+} from '../../utils/dom';
+import { hasDnd, setViewEl } from '../../utils/mixins';
 import Canvas from '../model/Canvas';
+import Frame from '../model/Frame';
 import FrameWrapView from './FrameWrapView';
-import { BoxRect } from '../../common';
 
 export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
   /** @ts-ignore */

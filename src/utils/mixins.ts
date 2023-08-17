@@ -89,34 +89,6 @@ const shallowDiff = (objOrig: Record<string, any>, objNew: Record<string, any>) 
   return result;
 };
 
-const on = (
-  el: HTMLElement | Window | Document | (Window | HTMLElement | Document)[],
-  ev: string,
-  fn: (ev: Event) => void,
-  opts?: AddEventListenerOptions
-) => {
-  const evs = ev.split(/\s+/);
-  el = el instanceof Array ? el : [el];
-
-  for (let i = 0; i < evs.length; ++i) {
-    el.forEach(elem => elem && elem.addEventListener(evs[i], fn, opts));
-  }
-};
-
-const off = (
-  el: HTMLElement | Window | Document | (Window | HTMLElement | Document)[],
-  ev: string,
-  fn: (ev: Event) => void,
-  opts?: AddEventListenerOptions
-) => {
-  const evs = ev.split(/\s+/);
-  el = el instanceof Array ? el : [el];
-
-  for (let i = 0; i < evs.length; ++i) {
-    el.forEach(elem => elem && elem.removeEventListener(evs[i], fn, opts));
-  }
-};
-
 const getUnitFromValue = (value: any) => {
   return value.replace(parseFloat(value), '');
 };
@@ -215,24 +187,6 @@ const getModel = (el: any, $?: any) => {
   return model;
 };
 
-/**
- * Get cross-device pointer event
- * @param  {Event} ev
- * @return {PointerEvent}
- */
-const getPointerEvent = (ev: Event) =>
-  // @ts-ignore
-  ev.touches && ev.touches[0] ? ev.touches[0] : ev;
-
-/**
- * Get cross-browser keycode
- * @param  {Event} ev
- * @return {Number}
- */
-const getKeyCode = (ev: KeyboardEvent) => ev.which || ev.keyCode;
-const getKeyChar = (ev: KeyboardEvent) => String.fromCharCode(getKeyCode(ev));
-const isEscKey = (ev: KeyboardEvent) => getKeyCode(ev) === 27;
-const isEnterKey = (ev: KeyboardEvent) => getKeyCode(ev) === 13;
 const isObject = (val: any): val is Object => val !== null && !Array.isArray(val) && typeof val === 'object';
 const isEmptyObj = (val: Record<string, any>) => Object.keys(val).length <= 0;
 
@@ -273,21 +227,14 @@ export const buildBase64UrlFromSvg = (svg: string) => {
 };
 
 export {
-  on,
-  off,
   hasDnd,
   upFirst,
   matches,
   getModel,
   camelCase,
-  getKeyCode,
-  getKeyChar,
-  isEscKey,
-  isEnterKey,
   getElement,
   shallowDiff,
   normalizeFloat,
-  getPointerEvent,
   getUnitFromValue,
   capitalize,
   getViewEl,

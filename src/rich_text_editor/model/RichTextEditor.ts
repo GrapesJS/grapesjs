@@ -4,7 +4,8 @@
 import { isString } from 'underscore';
 import RichTextEditorModule from '..';
 import EditorModel from '../../editor/model/Editor';
-import { on, off, getPointerEvent, getModel } from '../../utils/mixins';
+import { getPointerEvent, off, on } from '../../utils/dom';
+import { getModel } from '../../utils/mixins';
 
 export interface RichTextEditorAction {
   name: string;

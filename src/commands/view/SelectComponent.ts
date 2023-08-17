@@ -3,8 +3,8 @@ import { $ } from '../../common';
 import Component from '../../dom_components/model/Component';
 import Toolbar from '../../dom_components/model/Toolbar';
 import ToolbarView from '../../dom_components/view/ToolbarView';
-import { isDoc, isTaggableNode, isVisible } from '../../utils/dom';
-import { getComponentView, getUnitFromValue, getViewEl, hasWin, off, on } from '../../utils/mixins';
+import { isDoc, isTaggableNode, isVisible, off, on } from '../../utils/dom';
+import { getComponentView, getUnitFromValue, getViewEl, hasWin } from '../../utils/mixins';
 import { CommandObject } from './CommandAbstract';
 
 let showOffsets: boolean;

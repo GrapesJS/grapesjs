@@ -1,4 +1,4 @@
-import { each, isUndefined, isString } from 'underscore';
+import { each, isArray, isString, isUndefined } from 'underscore';
 import { ObjectAny } from '../common';
 
 type vNode = {
@@ -189,4 +189,42 @@ export const getDocumentScroll = (el?: HTMLElement) => {
     x: (win.pageXOffset || docEl.scrollLeft || 0) - (docEl.clientLeft || 0),
     y: (win.pageYOffset || docEl.scrollTop || 0) - (docEl.clientTop || 0),
   };
+};
+
+export const getKeyCode = (ev: KeyboardEvent) => ev.which || ev.keyCode;
+
+export const getKeyChar = (ev: KeyboardEvent) => String.fromCharCode(getKeyCode(ev));
+
+export const getPointerEvent = (ev: any): PointerEvent => (ev.touches && ev.touches[0] ? ev.touches[0] : ev);
+
+export const isEscKey = (ev: KeyboardEvent) => getKeyCode(ev) === 27;
+
+export const isEnterKey = (ev: KeyboardEvent) => getKeyCode(ev) === 13;
+
+export const on = <E extends Event = Event>(
+  el: EventTarget | EventTarget[],
+  ev: string,
+  fn: (ev: E) => void,
+  opts?: AddEventListenerOptions
+) => {
+  const evs = ev.split(/\s+/);
+  const els = isArray(el) ? el : [el];
+
+  evs.forEach(ev => {
+    els.forEach(el => el?.addEventListener(ev, fn as EventListener, opts));
+  });
+};
+
+export const off = <E extends Event = Event>(
+  el: EventTarget | EventTarget[],
+  ev: string,
+  fn: (ev: E) => void,
+  opts?: AddEventListenerOptions
+) => {
+  const evs = ev.split(/\s+/);
+  const els = isArray(el) ? el : [el];
+
+  evs.forEach(ev => {
+    els.forEach(el => el?.removeEventListener(ev, fn as EventListener, opts));
+  });
 };

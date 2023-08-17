@@ -2,8 +2,7 @@ import { bindAll, indexOf } from 'underscore';
 import CanvasModule from '../canvas';
 import { ObjectStrings } from '../common';
 import EditorModel from '../editor/model/Editor';
-import { getDocumentScroll } from './dom';
-import { off, on } from './mixins';
+import { getDocumentScroll, off, on } from './dom';
 
 // TODO move in sorter
 type SorterOptions = {

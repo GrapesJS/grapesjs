@@ -1,5 +1,5 @@
-import { bindAll, isUndefined, indexOf } from 'underscore';
-import { on, off } from '../../utils/mixins';
+import { bindAll, indexOf, isUndefined } from 'underscore';
+import { off, on } from '../../utils/dom';
 import Input from './Input';
 
 export default class InputNumber extends Input {

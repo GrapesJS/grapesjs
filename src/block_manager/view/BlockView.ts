@@ -1,7 +1,8 @@
 import { isFunction } from 'underscore';
 import { View } from '../../common';
 import EditorModel from '../../editor/model/Editor';
-import { on, off, hasDnd } from '../../utils/mixins';
+import { on, off } from '../../utils/dom';
+import { hasDnd } from '../../utils/mixins';
 import { BlockManagerConfig } from '../config/config';
 import Block from '../model/Block';
 

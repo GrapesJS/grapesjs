@@ -42,8 +42,8 @@ import { Module } from '../abstract';
 import { Debounced, Model } from '../common';
 import ComponentView from '../dom_components/view/ComponentView';
 import EditorModel from '../editor/model/Editor';
-import { createEl, cx, removeEl } from '../utils/dom';
-import { hasWin, isDef, on } from '../utils/mixins';
+import { createEl, cx, on, removeEl } from '../utils/dom';
+import { hasWin, isDef } from '../utils/mixins';
 import defaults, { CustomRTE, RichTextEditorConfig } from './config/config';
 import RichTextEditor, { RichTextEditorAction } from './model/RichTextEditor';
 

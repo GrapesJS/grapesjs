@@ -3,8 +3,8 @@ import { BlockProperties } from '../block_manager/model/Block';
 import CanvasModule from '../canvas';
 import { $, Collection, Model, View } from '../common';
 import EditorModel from '../editor/model/Editor';
-import { isTextNode } from './dom';
-import { getElement, getModel, getPointerEvent, matches, off, on } from './mixins';
+import { getPointerEvent, isTextNode, off, on } from './dom';
+import { getElement, getModel, matches } from './mixins';
 
 const noop = () => {};
 

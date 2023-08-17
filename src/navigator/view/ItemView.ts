@@ -1,11 +1,12 @@
-import { isString, bindAll } from 'underscore';
+import { bindAll, isString } from 'underscore';
 import { View, ViewOptions } from '../../common';
-import { getModel, isEscKey, isEnterKey } from '../../utils/mixins';
-import ComponentView from '../../dom_components/view/ComponentView';
 import Component, { eventDrag } from '../../dom_components/model/Component';
-import ItemsView from './ItemsView';
+import ComponentView from '../../dom_components/view/ComponentView';
 import EditorModel from '../../editor/model/Editor';
+import { isEnterKey, isEscKey } from '../../utils/dom';
+import { getModel } from '../../utils/mixins';
 import LayerManager from '../index';
+import ItemsView from './ItemsView';
 
 export type ItemViewProps = ViewOptions & {
   ItemView: ItemView;
