@@ -1,4 +1,5 @@
 import Component from '../../dom_components/model/Component';
+import { CanvasSpotBuiltInTypes } from '../model/CanvasSpot';
 
 export interface CanvasConfig {
   stylePrefix?: string;
@@ -70,6 +71,8 @@ export interface CanvasConfig {
    * @default true
    */
   allowExternalDrop?: boolean;
+
+  customSpots?: boolean | Partial<Record<CanvasSpotBuiltInTypes, boolean>>;
 }
 
 const config: CanvasConfig = {
@@ -88,6 +91,9 @@ const config: CanvasConfig = {
   `,
   notTextable: ['button', 'a', 'input[type=checkbox]', 'input[type=radio]'],
   allowExternalDrop: true,
+  customSpots: {
+    hover: true,
+  },
 };
 
 export default config;

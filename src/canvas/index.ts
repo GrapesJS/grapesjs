@@ -56,7 +56,7 @@ import EditorModel from '../editor/model/Editor';
 import { getElement, getViewEl } from '../utils/mixins';
 import defaults, { CanvasConfig } from './config/config';
 import Canvas from './model/Canvas';
-import CanvasSpot, { CanvasSpotProps } from './model/CanvasSpot';
+import CanvasSpot, { CanvasSpotBuiltInTypes, CanvasSpotProps } from './model/CanvasSpot';
 import CanvasSpots from './model/CanvasSpots';
 import Frame from './model/Frame';
 import { CanvasEvents } from './types';
@@ -758,5 +758,15 @@ export default class CanvasModule extends Module<CanvasConfig> {
 
   refreshSpots() {
     this.spots.refresh();
+  }
+
+  hasCustomSpot(type?: CanvasSpotBuiltInTypes) {
+    const { customSpots } = this.getConfig();
+
+    if (customSpots === true || (customSpots && type && customSpots[type])) {
+      return true;
+    }
+
+    return false;
   }
 }

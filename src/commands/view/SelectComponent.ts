@@ -5,6 +5,7 @@ import ToolbarView from '../../dom_components/view/ToolbarView';
 import { isDoc, isTaggableNode, isVisible, off, on } from '../../utils/dom';
 import { getComponentModel, getComponentView, getUnitFromValue, getViewEl, hasWin } from '../../utils/mixins';
 import { CommandObject } from './CommandAbstract';
+import { CanvasSpotBuiltInTypes } from '../../canvas/model/CanvasSpot';
 
 let showOffsets: boolean;
 /**
@@ -589,10 +590,11 @@ export default {
     const isHoverEn = component.get('hoverable');
     const isNewEl = this.lastHovered !== el;
     const badgeOpts = isNewEl ? {} : { posOnly: 1 };
+    const customHoverSpot = this.canvas.hasCustomSpot(CanvasSpotBuiltInTypes.Hover);
 
     if (isNewEl && isHoverEn) {
       this.lastHovered = el;
-      this.showHighlighter(view);
+      customHoverSpot ? this.hideHighlighter(view) : this.showHighlighter(view);
       this.showElementOffset(el, pos, { view });
     }
 
@@ -608,12 +610,13 @@ export default {
     const topOff = frameOff.top;
     const leftOff = frameOff.left;
 
-    this.updateBadge(el, pos, {
-      ...badgeOpts,
-      view,
-      topOff,
-      leftOff,
-    });
+    !customHoverSpot &&
+      this.updateBadge(el, pos, {
+        ...badgeOpts,
+        view,
+        topOff,
+        leftOff,
+      });
 
     style.top = topOff + unit;
     style.left = leftOff + unit;
