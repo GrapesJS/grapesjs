@@ -229,6 +229,7 @@ export default {
    */
   showElementOffset(el: HTMLElement, pos: any, opts: any = {}) {
     if (!showOffsets) return;
+    console.log('showElementOffset');
     this.editor.runCommand('show-offset', {
       el,
       elPos: pos,
@@ -245,6 +246,7 @@ export default {
    * @param {Object} pos
    */
   hideElementOffset(view: any) {
+    console.log('hideElementOffset');
     this.editor.stopCommand('show-offset', {
       view,
     });
@@ -256,6 +258,7 @@ export default {
    * @param {Object} pos
    */
   showFixedElementOffset(el: HTMLElement, pos: any) {
+    console.log('showFixedElementOffset');
     this.editor.runCommand('show-offset', {
       el,
       elPos: pos,
@@ -269,6 +272,7 @@ export default {
    * @param {Object} pos
    */
   hideFixedElementOffset() {
+    console.log('hideFixedElementOffset');
     if (this.editor) this.editor.stopCommand('show-offset', { state: 'Fixed' });
   },
 

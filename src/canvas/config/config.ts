@@ -93,6 +93,7 @@ const config: CanvasConfig = {
   allowExternalDrop: true,
   customSpots: {
     hover: true,
+    spacing: true,
   },
 };
 

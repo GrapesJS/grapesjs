@@ -194,11 +194,11 @@ const capitalize = (str: string = '') => str && str.charAt(0).toUpperCase() + st
 const isComponent = (obj: any) => obj && obj.toHTML;
 const isRule = (obj: any) => obj && obj.toCSS;
 
-const getViewEl = <T extends any>(el: any): T | undefined => el.__gjsv;
+const getViewEl = <T extends any>(el?: Node): T | undefined => (el as any)?.__gjsv;
 
-export const getComponentView = (el: Node) => getViewEl<ComponentView>(el);
+export const getComponentView = (el?: Node) => getViewEl<ComponentView>(el);
 
-export const getComponentModel = (el: Node) => getComponentView(el)?.model;
+export const getComponentModel = (el?: Node) => getComponentView(el)?.model;
 
 const setViewEl = (el: any, view: any) => {
   el.__gjsv = view;

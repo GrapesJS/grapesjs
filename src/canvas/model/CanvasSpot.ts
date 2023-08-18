@@ -8,9 +8,9 @@ import Frame from './Frame';
 export enum CanvasSpotBuiltInTypes {
   Select = 'select',
   Hover = 'hover',
-  Padding = 'padding',
-  Margin = 'margin',
+  Spacing = 'spacing',
   Resize = 'resize',
+  Target = 'target',
 }
 
 export type CanvasSpotBuiltInType = `${CanvasSpotBuiltInTypes}`;
@@ -29,6 +29,9 @@ export interface CanvasSpotBase<T extends CanvasSpotType> {
 
 /** @private */
 export interface CanvasSpotProps<T extends CanvasSpotType = CanvasSpotType> extends CanvasSpotBase<T> {}
+
+/** @private */
+export interface CanvasSpotSpacingProps extends CanvasSpotBase<CanvasSpotBuiltInTypes.Spacing> {}
 
 export default class CanvasSpot<T extends CanvasSpotProps = CanvasSpotProps> extends ModuleModel<CanvasModule, T> {
   defaults() {

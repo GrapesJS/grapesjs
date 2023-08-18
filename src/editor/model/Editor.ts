@@ -634,16 +634,23 @@ export default class EditorModel extends Model {
    */
   setHovered(cmp?: Component | null, opts: any = {}) {
     const upHovered = (cmp?: Component, opts?: any) => {
+      const { config } = this;
       const current = this.getHovered();
-      const type = CanvasSpotBuiltInTypes.Hover;
+      const selectedAll = this.getSelectedAll();
+      const typeHover = CanvasSpotBuiltInTypes.Hover;
+      const typeSpacing = CanvasSpotBuiltInTypes.Spacing;
       this.set('componentHovered', cmp || null, opts);
 
       current?.views.forEach(componentView => {
-        this.Canvas.removeSpot({ type, componentView });
+        this.Canvas.removeSpot({ type: typeHover, componentView });
+        this.Canvas.removeSpot({ type: typeSpacing, componentView });
       });
 
       cmp?.views.forEach(componentView => {
-        this.Canvas.setSpot({ type, componentView });
+        this.Canvas.setSpot({ type: typeHover, componentView });
+        if (!selectedAll.includes(componentView.model) || config.showOffsetsSelected) {
+          this.Canvas.setSpot({ type: typeSpacing, componentView });
+        }
       });
     };
 

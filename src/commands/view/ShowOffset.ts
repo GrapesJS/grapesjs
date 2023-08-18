@@ -1,4 +1,5 @@
 import { isUndefined } from 'underscore';
+import { CanvasSpotBuiltInTypes } from '../../canvas/model/CanvasSpot';
 import { $ } from '../../common';
 import { isTextNode } from '../../utils/dom';
 import { CommandObject } from './CommandAbstract';
@@ -10,18 +11,22 @@ export default {
   },
 
   run(editor, sender, opts) {
-    var opt = opts || {};
-    var state = opt.state || '';
-    var config = editor.getConfig();
+    const { canvas } = this;
+    const opt = opts || {};
+    const state = opt.state || '';
+    const config = editor.getConfig();
     const zoom = this.em.getZoomDecimal();
-    const el = opt.el || '';
+    const el = opt.el as HTMLElement | undefined;
 
-    if (!config.showOffsets || isTextNode(el) || (!config.showOffsetsSelected && state == 'Fixed')) {
+    if (!config.showOffsets || !el || isTextNode(el) || (!config.showOffsetsSelected && state == 'Fixed')) {
       editor.stopCommand(`${this.id}`, opts);
       return;
     }
 
-    var canvas = editor.Canvas;
+    if (canvas.hasCustomSpot(CanvasSpotBuiltInTypes.Spacing)) {
+      return;
+    }
+
     var pos = { ...(opt.elPos || canvas.getElementPos(el)) };
 
     if (!isUndefined(opt.top)) {
@@ -171,9 +176,10 @@ export default {
     var opt = opts || {};
     var state = opt.state || '';
     var method = this.getOffsetMethod(state);
-    var canvas = editor.Canvas;
+    const { view } = opts;
+    const canvas = this.canvas;
     // @ts-ignore
-    var offsetViewer = canvas[method](opts.view);
+    var offsetViewer = canvas[method](view);
     offsetViewer.style.opacity = 0;
   },
 } as CommandObject<any, { [k: string]: any }>;
