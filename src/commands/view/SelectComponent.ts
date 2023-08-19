@@ -81,7 +81,6 @@ export default {
       methods[method](body, 'mouseover', this.onHover);
       methods[method](body, 'mouseleave', this.onOut);
       methods[method](body, 'click', this.onClick);
-      // @ts-ignore
       methods[method](win, 'scroll', this.onFrameScroll, true);
       methods[method](win, 'resize', this.onFrameResize);
     };

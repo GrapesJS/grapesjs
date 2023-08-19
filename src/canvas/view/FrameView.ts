@@ -257,6 +257,7 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
         toolsEl.style.opacity = '0';
         this.showGlobalTools();
         win.scrollTo(0, nextTop);
+        canvas.spots.refreshDbn();
       }
 
       requestAnimationFrame(this.autoscroll);

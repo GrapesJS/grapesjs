@@ -205,7 +205,7 @@ export const on = <E extends Event = Event>(
   el: EventTarget | EventTarget[],
   ev: string,
   fn: (ev: E) => void,
-  opts?: AddEventListenerOptions
+  opts?: boolean | AddEventListenerOptions
 ) => {
   const evs = ev.split(/\s+/);
   const els = isArray(el) ? el : [el];
@@ -219,7 +219,7 @@ export const off = <E extends Event = Event>(
   el: EventTarget | EventTarget[],
   ev: string,
   fn: (ev: E) => void,
-  opts?: AddEventListenerOptions
+  opts?: boolean | AddEventListenerOptions
 ) => {
   const evs = ev.split(/\s+/);
   const els = isArray(el) ? el : [el];
