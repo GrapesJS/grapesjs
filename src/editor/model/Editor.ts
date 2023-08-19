@@ -578,11 +578,9 @@ export default class EditorModel extends Model {
 
       selected.addComponent(model, opts);
       this.trigger('component:select', model, opts);
-      model.views.forEach(view => {
-        this.Canvas.setSpot({
-          type: CanvasSpotBuiltInTypes.Select,
-          componentView: view,
-        });
+      this.Canvas.setSpot({
+        type: CanvasSpotBuiltInTypes.Select,
+        component: model,
       });
     });
   }
@@ -598,11 +596,9 @@ export default class EditorModel extends Model {
     this.selected.removeComponent(component, opts);
     const cmps: Component[] = isArray(component) ? component : [component];
     cmps.forEach(component =>
-      component.views.forEach(view => {
-        this.Canvas.removeSpot({
-          type: CanvasSpotBuiltInTypes.Select,
-          componentView: view,
-        });
+      this.Canvas.removeSpot({
+        type: CanvasSpotBuiltInTypes.Select,
+        component,
       })
     );
   }
@@ -634,24 +630,24 @@ export default class EditorModel extends Model {
    */
   setHovered(cmp?: Component | null, opts: any = {}) {
     const upHovered = (cmp?: Component, opts?: any) => {
-      const { config } = this;
+      const { config, Canvas } = this;
       const current = this.getHovered();
       const selectedAll = this.getSelectedAll();
       const typeHover = CanvasSpotBuiltInTypes.Hover;
       const typeSpacing = CanvasSpotBuiltInTypes.Spacing;
       this.set('componentHovered', cmp || null, opts);
 
-      current?.views.forEach(componentView => {
-        this.Canvas.removeSpot({ type: typeHover, componentView });
-        this.Canvas.removeSpot({ type: typeSpacing, componentView });
-      });
+      if (current) {
+        Canvas.removeSpot({ type: typeHover, component: current });
+        Canvas.removeSpot({ type: typeSpacing, component: current });
+      }
 
-      cmp?.views.forEach(componentView => {
-        this.Canvas.setSpot({ type: typeHover, componentView });
-        if (!selectedAll.includes(componentView.model) || config.showOffsetsSelected) {
-          this.Canvas.setSpot({ type: typeSpacing, componentView });
+      if (cmp) {
+        Canvas.setSpot({ type: typeHover, component: cmp });
+        if (!selectedAll.includes(cmp) || config.showOffsetsSelected) {
+          Canvas.setSpot({ type: typeSpacing, component: cmp });
         }
-      });
+      }
     };
 
     if (!cmp) {
