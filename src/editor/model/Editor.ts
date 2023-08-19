@@ -578,7 +578,7 @@ export default class EditorModel extends Model {
 
       selected.addComponent(model, opts);
       this.trigger('component:select', model, opts);
-      this.Canvas.setSpot({
+      this.Canvas.addSpot({
         type: CanvasSpotBuiltInTypes.Select,
         component: model,
       });
@@ -596,7 +596,7 @@ export default class EditorModel extends Model {
     this.selected.removeComponent(component, opts);
     const cmps: Component[] = isArray(component) ? component : [component];
     cmps.forEach(component =>
-      this.Canvas.removeSpot({
+      this.Canvas.removeSpots({
         type: CanvasSpotBuiltInTypes.Select,
         component,
       })
@@ -638,14 +638,14 @@ export default class EditorModel extends Model {
       this.set('componentHovered', cmp || null, opts);
 
       if (current) {
-        Canvas.removeSpot({ type: typeHover, component: current });
-        Canvas.removeSpot({ type: typeSpacing, component: current });
+        Canvas.removeSpots({ type: typeHover, component: current });
+        Canvas.removeSpots({ type: typeSpacing, component: current });
       }
 
       if (cmp) {
-        Canvas.setSpot({ type: typeHover, component: cmp });
+        Canvas.addSpot({ type: typeHover, component: cmp });
         if (!selectedAll.includes(cmp) || config.showOffsetsSelected) {
-          Canvas.setSpot({ type: typeSpacing, component: cmp });
+          Canvas.addSpot({ type: typeSpacing, component: cmp });
         }
       }
     };

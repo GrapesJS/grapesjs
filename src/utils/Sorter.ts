@@ -498,7 +498,9 @@ export default class Sorter extends View {
 
     if (model?.set) {
       const cv = this.em!.Canvas;
-      cv.setSpot({ ...spotTarget, component: model as any });
+      const { Select, Hover, Spacing } = CanvasSpotBuiltInTypes;
+      [Select, Hover, Spacing].forEach(type => cv.removeSpots({ type }));
+      cv.addSpot({ ...spotTarget, component: model as any });
       !cv.hasCustomSpot(targetSpotType) && model.set('status', 'selected-parent');
       this.targetModel = model;
     }
@@ -1218,7 +1220,7 @@ export default class Sorter extends View {
     this.disableTextable();
     this.selectTargetModel();
     this.toggleSortCursor();
-    this.em?.Canvas.removeSpot(spotTarget);
+    this.em?.Canvas.removeSpots(spotTarget);
 
     delete this.toMove;
     delete this.eventMove;

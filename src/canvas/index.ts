@@ -724,7 +724,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
     ['model', 'droppable'].forEach(i => (this[i] = {}));
   }
 
-  setSpot<T extends CanvasSpotProps>(props: Omit<T, 'id'> & { id?: string }, opts: AddOptions = {}) {
+  addSpot<T extends CanvasSpotProps>(props: Omit<T, 'id'> & { id?: string }, opts: AddOptions = {}) {
     const spotProps = props as T;
     const spots = this.getSpots<T>(spotProps);
 
@@ -750,7 +750,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
     return this.spots.where(spotProps.id ? { id: spotProps.id } : spotProps) as CanvasSpot<T>[];
   }
 
-  removeSpot<T extends CanvasSpotProps>(spotProps: Partial<T> = {}) {
+  removeSpots<T extends CanvasSpotProps>(spotProps: Partial<T> = {}) {
     const spots = this.getSpots(spotProps);
     const removed = this.spots.remove(spots);
     return removed as unknown as CanvasSpot<T>[];
