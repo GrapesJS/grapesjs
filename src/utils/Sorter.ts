@@ -1,12 +1,11 @@
 import { bindAll, each, isArray, isFunction, isString, result } from 'underscore';
 import { BlockProperties } from '../block_manager/model/Block';
 import CanvasModule from '../canvas';
+import { CanvasSpotBuiltInTypes } from '../canvas/model/CanvasSpot';
 import { $, Collection, Model, View } from '../common';
 import EditorModel from '../editor/model/Editor';
 import { getPointerEvent, isTextNode, off, on } from './dom';
 import { getElement, getModel, matches } from './mixins';
-
-const noop = () => {};
 
 type DropContent = BlockProperties['content'];
 
@@ -55,6 +54,15 @@ export interface SorterOptions {
   avoidSelectOnEnd?: boolean;
   scale?: number;
 }
+
+const noop = () => {};
+
+const targetSpotType = CanvasSpotBuiltInTypes.Target;
+
+const spotTarget = {
+  id: 'sorter-target',
+  type: targetSpotType,
+};
 
 export default class Sorter extends View {
   opt!: SorterOptions;
@@ -396,7 +404,7 @@ export default class Sorter extends View {
 
     if (src) {
       srcModel = this.getSourceModel(src);
-      srcModel && srcModel.set && srcModel.set('status', 'freezed');
+      srcModel?.set && srcModel.set('status', 'freezed');
       this.srcModel = srcModel;
     }
 
@@ -488,8 +496,10 @@ export default class Sorter extends View {
       targetModel.set('status', '');
     }
 
-    if (model && model.set) {
-      model.set('status', 'selected-parent');
+    if (model?.set) {
+      const cv = this.em!.Canvas;
+      cv.setSpot({ ...spotTarget, component: model as any });
+      !cv.hasCustomSpot(targetSpotType) && model.set('status', 'selected-parent');
       this.targetModel = model;
     }
   }
@@ -1208,6 +1218,7 @@ export default class Sorter extends View {
     this.disableTextable();
     this.selectTargetModel();
     this.toggleSortCursor();
+    this.em?.Canvas.removeSpot(spotTarget);
 
     delete this.toMove;
     delete this.eventMove;

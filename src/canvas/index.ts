@@ -724,7 +724,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
     ['model', 'droppable'].forEach(i => (this[i] = {}));
   }
 
-  setSpot<T extends CanvasSpotProps>(props: Omit<T, 'id'>, opts: AddOptions = {}) {
+  setSpot<T extends CanvasSpotProps>(props: Omit<T, 'id'> & { id?: string }, opts: AddOptions = {}) {
     const spotProps = props as T;
     const spots = this.getSpots<T>(spotProps);
 

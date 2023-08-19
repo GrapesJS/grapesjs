@@ -9,8 +9,8 @@ export enum CanvasSpotBuiltInTypes {
   Select = 'select',
   Hover = 'hover',
   Spacing = 'spacing',
-  Resize = 'resize',
   Target = 'target',
+  Resize = 'resize',
 }
 
 export type CanvasSpotBuiltInType = `${CanvasSpotBuiltInTypes}`;
@@ -78,14 +78,14 @@ export default class CanvasSpot<T extends CanvasSpotProps = CanvasSpotProps> ext
     return this.componentView?.el;
   }
 
-  get style() {
-    const { width, height, x, y } = this.boxRect;
+  getStyle(opts: { boxRect?: BoxRect } = {}): Partial<CSSStyleDeclaration> {
+    const { width, height, x, y } = opts.boxRect || this.boxRect;
 
     return {
-      width,
-      height,
-      top: 0,
-      left: 0,
+      width: `${width}px`,
+      height: `${height}px`,
+      top: '0',
+      left: '0',
       position: 'absolute',
       translate: `${x}px ${y}px`,
     };
