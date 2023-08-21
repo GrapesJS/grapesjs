@@ -85,7 +85,7 @@ export default class CanvasView extends ModuleView<Canvas> {
 
   constructor(model: Canvas) {
     super({ model });
-    bindAll(this, 'clearOff', 'onKeyPress', 'onCanvasMove', 'onWheel');
+    bindAll(this, 'clearOff', 'onKeyPress', 'onWheel', 'onPointer');
     const { em, pfx } = this;
     this.className = `${pfx}canvas${!em.config.customUI ? ` ${pfx}canvas-bg` : ''}`;
     this.clsUnscale = `${pfx}unscale`;
@@ -144,20 +144,39 @@ export default class CanvasView extends ModuleView<Canvas> {
     }
   }
 
-  onCanvasMove(ev: Event) {
-    // const data = { x: ev.clientX, y: ev.clientY };
-    // const data2 = this.em.get('Canvas').getMouseRelativeCanvas(ev);
-    // const data3 = this.em.get('Canvas').getMouseRelativePos(ev);
-    // this.em.trigger('canvas:over', data, data2, data3);
-  }
-
   toggleListeners(enable: boolean) {
     const { el, config } = this;
     const fn = enable ? on : off;
     fn(document, 'keypress', this.onKeyPress);
     fn(window, 'scroll resize', this.clearOff);
     fn(el, 'wheel', this.onWheel, { passive: !config.infiniteCanvas });
-    // fn(el, 'mousemove dragover', this.onCanvasMove);
+    fn(el, 'pointermove', this.onPointer);
+  }
+
+  screenToWorld(x: number, y: number): Coordinates {
+    const { left, top } = this.getCanvasOffset();
+    const coords = this.module.getCoords();
+    const vwDelta = this.getViewportDelta();
+
+    return {
+      x: x - left - coords.x - vwDelta.x,
+      y: y - top - coords.y - vwDelta.y,
+    };
+  }
+
+  onPointer(ev: PointerEvent) {
+    if (!this.config.infiniteCanvas) return;
+
+    const coords: Coordinates = { x: ev.clientX, y: ev.clientY };
+
+    if ((ev as any)._parentEvent) {
+      // with _parentEvent means was triggered from the iframe
+      const { top, left } = (ev.target as HTMLElement).getBoundingClientRect();
+      coords.y += top;
+      coords.x += left;
+    }
+
+    this.model.set({ pointer: this.screenToWorld(coords.x, coords.y) });
   }
 
   onKeyPress(ev: KeyboardEvent) {
