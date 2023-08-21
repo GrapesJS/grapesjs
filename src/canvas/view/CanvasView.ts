@@ -182,10 +182,8 @@ export default class CanvasView extends ModuleView<Canvas> {
         const newZoom = zoom - deltaY * zoom * 0.01;
         module.setZoom(newZoom * 100);
       } else {
-        const diffX = deltaX / zoom;
-        const diffY = deltaY / zoom;
-        const coords = module.getCoords();
-        module.setCoords(coords.x - diffX, coords.y - diffY);
+        const { x, y } = module.getCoords();
+        module.setCoords(x - deltaX, y - deltaY);
       }
     }
   }
