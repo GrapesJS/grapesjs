@@ -415,7 +415,6 @@ export interface EditorConfig {
    */
   customUI?: boolean;
   el?: HTMLElement;
-  multiFrames?: boolean;
   /**
    * Color picker options.
    */
@@ -496,7 +495,6 @@ const config: EditorConfig = {
   traitManager: {},
   textViewCode: 'Code',
   keepUnusedStyles: false,
-  multiFrames: false,
   customUI: false,
 };
 

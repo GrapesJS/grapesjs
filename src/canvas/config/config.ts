@@ -73,6 +73,11 @@ export interface CanvasConfig {
   allowExternalDrop?: boolean;
 
   customSpots?: boolean | Partial<Record<CanvasSpotBuiltInTypes, boolean>>;
+
+  /**
+   * Experimental: enable infinite canvas.
+   */
+  infiniteCanvas?: boolean;
 }
 
 const config: CanvasConfig = {

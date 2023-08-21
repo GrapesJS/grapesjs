@@ -4,7 +4,16 @@ import { ModuleView } from '../../abstract';
 import { BoxRect, Coordinates, ElementRect } from '../../common';
 import Component from '../../dom_components/model/Component';
 import ComponentView from '../../dom_components/view/ComponentView';
-import { createEl, getDocumentScroll, getElRect, getKeyChar, isTextNode, off, on } from '../../utils/dom';
+import {
+  createEl,
+  getDocumentScroll,
+  getElRect,
+  getKeyChar,
+  hasModifierKey,
+  isTextNode,
+  off,
+  on,
+} from '../../utils/dom';
 import { getComponentView, getElement, getUiClass } from '../../utils/mixins';
 import Canvas from '../model/Canvas';
 import Frame from '../model/Frame';
@@ -36,12 +45,6 @@ export interface FitViewportOptions {
 }
 
 export default class CanvasView extends ModuleView<Canvas> {
-  events() {
-    return {
-      wheel: 'onWheel',
-    };
-  }
-
   template() {
     const { pfx } = this;
     return `
@@ -82,7 +85,7 @@ export default class CanvasView extends ModuleView<Canvas> {
 
   constructor(model: Canvas) {
     super({ model });
-    bindAll(this, 'clearOff', 'onKeyPress', 'onCanvasMove');
+    bindAll(this, 'clearOff', 'onKeyPress', 'onCanvasMove', 'onWheel');
     const { em, pfx } = this;
     this.className = `${pfx}canvas${!em.config.customUI ? ` ${pfx}canvas-bg` : ''}`;
     this.clsUnscale = `${pfx}unscale`;
@@ -149,11 +152,11 @@ export default class CanvasView extends ModuleView<Canvas> {
   }
 
   toggleListeners(enable: boolean) {
-    const { el } = this;
+    const { el, config } = this;
     const fn = enable ? on : off;
-    // @ts-ignore
     fn(document, 'keypress', this.onKeyPress);
     fn(window, 'scroll resize', this.clearOff);
+    fn(el, 'wheel', this.onWheel, { passive: !config.infiniteCanvas });
     // fn(el, 'mousemove dragover', this.onCanvasMove);
   }
 
@@ -167,14 +170,23 @@ export default class CanvasView extends ModuleView<Canvas> {
     }
   }
 
-  onWheel(ev: KeyboardEvent) {
-    if ((ev.ctrlKey || ev.metaKey) && this.em.getConfig().multiFrames) {
+  onWheel(ev: WheelEvent) {
+    const { module, config } = this;
+    if (config.infiniteCanvas) {
+      const { deltaX, deltaY } = ev;
+      const zoom = module.getZoomDecimal();
+      const isZooming = hasModifierKey(ev);
       this.preventDefault(ev);
-      const { model } = this;
-      //@ts-ignore this is potentially deprecated
-      const delta = Math.max(-1, Math.min(1, ev.wheelDelta || -ev.detail));
-      const zoom = model.get('zoom');
-      model.set('zoom', zoom + delta * 2);
+
+      if (isZooming) {
+        const newZoom = zoom - deltaY * zoom * 0.01;
+        module.setZoom(newZoom * 100);
+      } else {
+        const diffX = deltaX / zoom;
+        const diffY = deltaY / zoom;
+        const coords = module.getCoords();
+        module.setCoords(coords.x - diffX, coords.y - diffY);
+      }
     }
   }
 

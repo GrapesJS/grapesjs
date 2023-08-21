@@ -201,6 +201,10 @@ export const isEscKey = (ev: KeyboardEvent) => getKeyCode(ev) === 27;
 
 export const isEnterKey = (ev: KeyboardEvent) => getKeyCode(ev) === 13;
 
+export const hasCtrlKey = (ev: WheelEvent) => ev.ctrlKey;
+
+export const hasModifierKey = (ev: WheelEvent) => hasCtrlKey(ev) || ev.metaKey;
+
 export const on = <E extends Event = Event>(
   el: EventTarget | EventTarget[],
   ev: string,
