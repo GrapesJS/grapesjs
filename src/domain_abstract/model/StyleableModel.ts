@@ -6,6 +6,10 @@ import { shallowDiff } from '../../utils/mixins';
 
 export type StyleProps = Record<string, string | string[]>;
 
+export type UpdateStyleOptions = ObjectAny & {
+  partial?: boolean;
+};
+
 const parserHtml = ParserHtml();
 
 export const getLastStyleValue = (value: string | string[]) => {
@@ -48,12 +52,20 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
    * @param {Object} opts
    * @return {Object} Applied properties
    */
-  setStyle(prop: string | ObjectAny = {}, opts: ObjectAny = {}) {
+  setStyle(prop: string | ObjectAny = {}, opts: UpdateStyleOptions = {}) {
     if (isString(prop)) {
       prop = this.parseStyle(prop);
     }
 
     const propOrig = this.getStyle(opts);
+
+    if (opts.partial) {
+      opts.avoidStore = true;
+      prop.__p = true;
+    } else {
+      delete prop.__p;
+    }
+
     const propNew = { ...prop };
     const newStyle = { ...propNew };
     // Remove empty style properties
@@ -62,7 +74,7 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
         delete newStyle[prop];
       }
     });
-    this.set('style', newStyle, opts);
+    this.set('style', newStyle, opts as any);
     const diff = shallowDiff(propOrig, propNew);
     // Delete the property used for partial updates
     delete diff.__p;
@@ -88,7 +100,7 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
    * this.addStyle({color: 'red'});
    * this.addStyle('color', 'blue');
    */
-  addStyle(prop: string | ObjectAny, value: any = '', opts: ObjectAny = {}) {
+  addStyle(prop: string | ObjectAny, value: any = '', opts: UpdateStyleOptions = {}) {
     if (typeof prop == 'string') {
       prop = {
         [prop]: value,
