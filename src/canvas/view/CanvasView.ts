@@ -179,14 +179,20 @@ export default class CanvasView extends ModuleView<Canvas> {
   }
 
   updateFrames(ev: Event) {
-    const { em } = this;
+    const { em, module } = this;
+    const { events } = module;
     const defOpts = { preserveSelected: 1 };
     this.updateFramesArea();
     this.clearOff();
     em.stopDefault(defOpts);
     em.trigger('canvas:update', ev);
-    this.timerZoom && clearTimeout(this.timerZoom);
-    this.timerZoom = setTimeout(() => em.runDefault(defOpts), 300) as any;
+    em.trigger(events.viewport);
+    this.timerZoom ? clearTimeout(this.timerZoom) : em.trigger(events.viewportStart);
+    this.timerZoom = setTimeout(() => {
+      em.runDefault(defOpts);
+      em.trigger(events.viewportEnd);
+      delete this.timerZoom;
+    }, 300) as any;
   }
 
   updateFramesArea() {

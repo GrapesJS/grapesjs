@@ -26,7 +26,7 @@ export default class Canvas extends ModuleModel<CanvasModule> {
     const { scripts, styles } = config;
     super(module, { scripts, styles });
     this.set('frames', new Frames(module));
-    this.listenTo(this, 'change:zoom', this.onZoomChange);
+    this.on('change:zoom', this.onZoomChange);
     this.listenTo(em, `change:device ${evDeviceUpdate}`, this.updateDevice);
     this.listenTo(em, evPageSelect, this._pageUpdated);
   }
@@ -63,7 +63,9 @@ export default class Canvas extends ModuleModel<CanvasModule> {
   }
 
   onZoomChange() {
+    const { em, module } = this;
     const zoom = this.get('zoom');
     zoom < 1 && this.set('zoom', 1);
+    em.trigger(module.events.zoom);
   }
 }
