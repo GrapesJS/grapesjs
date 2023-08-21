@@ -46,7 +46,7 @@ export default class CanvasView extends ModuleView<Canvas> {
     const { pfx } = this;
     return `
       <div class="${pfx}canvas__frames" data-frames>
-        <div class="${pfx}canvas__spots" data-spots style="z-index: 1; position: absolute; pointer-events: none"></div>
+        <div class="${pfx}canvas__spots" data-spots></div>
       </div>
       <div id="${pfx}tools" class="${pfx}canvas__tools" data-tools></div>
       <style data-canvas-style></style>

@@ -227,6 +227,12 @@ $guide_pad: 5px !default;
     height: 100%;
   }
 
+  &__spots {
+    position: absolute;
+    pointer-events: none;
+    z-index: 1;
+  }
+
   .#{$app-prefix}ghost {
     display: none;
     pointer-events: none;
