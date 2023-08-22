@@ -154,29 +154,38 @@ export default class CanvasView extends ModuleView<Canvas> {
   }
 
   screenToWorld(x: number, y: number): Coordinates {
-    const { left, top } = this.getCanvasOffset();
-    const coords = this.module.getCoords();
+    const { module } = this;
+    const coords = module.getCoords();
+    const zoom = module.getZoomMultiplier();
     const vwDelta = this.getViewportDelta();
 
     return {
-      x: x - left - coords.x - vwDelta.x,
-      y: y - top - coords.y - vwDelta.y,
+      x: (x - coords.x - vwDelta.x) * zoom,
+      y: (y - coords.y - vwDelta.y) * zoom,
     };
   }
 
   onPointer(ev: PointerEvent) {
     if (!this.config.infiniteCanvas) return;
 
-    const coords: Coordinates = { x: ev.clientX, y: ev.clientY };
+    const canvasRect = this.getCanvasOffset();
+    const screenCoords: Coordinates = {
+      x: ev.clientX - canvasRect.left,
+      y: ev.clientY - canvasRect.top,
+    };
 
     if ((ev as any)._parentEvent) {
       // with _parentEvent means was triggered from the iframe
-      const { top, left } = (ev.target as HTMLElement).getBoundingClientRect();
-      coords.y += top;
-      coords.x += left;
+      const frameRect = (ev.target as HTMLElement).getBoundingClientRect();
+      const zoom = this.module.getZoomDecimal();
+      screenCoords.x = frameRect.left - canvasRect.left + ev.clientX * zoom;
+      screenCoords.y = frameRect.top - canvasRect.top + ev.clientY * zoom;
     }
 
-    this.model.set({ pointer: this.screenToWorld(coords.x, coords.y) });
+    this.model.set({
+      pointerScreen: screenCoords,
+      pointer: this.screenToWorld(screenCoords.x, screenCoords.y),
+    });
   }
 
   onKeyPress(ev: KeyboardEvent) {
@@ -192,17 +201,27 @@ export default class CanvasView extends ModuleView<Canvas> {
   onWheel(ev: WheelEvent) {
     const { module, config } = this;
     if (config.infiniteCanvas) {
+      this.preventDefault(ev);
       const { deltaX, deltaY } = ev;
       const zoom = module.getZoomDecimal();
       const isZooming = hasModifierKey(ev);
-      this.preventDefault(ev);
+      const coords = module.getCoords();
 
       if (isZooming) {
         const newZoom = zoom - deltaY * zoom * 0.01;
         module.setZoom(newZoom * 100);
+
+        // Update coordinates based on pointer
+        const pointer = this.model.get('pointerScreen');
+        const canvasRect = this.getCanvasOffset();
+        const pointerX = pointer.x - canvasRect.width / 2;
+        const pointerY = pointer.y - canvasRect.height / 2;
+        const zoomDelta = newZoom / zoom;
+        const x = pointerX - (pointerX - coords.x) * zoomDelta;
+        const y = pointerY - (pointerY - coords.y) * zoomDelta;
+        module.setCoords(x, y);
       } else {
-        const { x, y } = module.getCoords();
-        module.setCoords(x - deltaX, y - deltaY);
+        module.setCoords(coords.x - deltaX, coords.y - deltaY);
       }
     }
   }
@@ -233,6 +252,7 @@ export default class CanvasView extends ModuleView<Canvas> {
       const zoomDc = module.getZoomDecimal();
 
       framesArea.style.transform = `scale(${zoomDc}) translate(${x * mpl}px, ${y * mpl}px)`;
+      // framesArea.style.transformOrigin = 'top left';
     }
 
     if (cvStyle) {
@@ -391,7 +411,7 @@ export default class CanvasView extends ModuleView<Canvas> {
     }
   }
 
-  getViewportDelta(): Coordinates {
+  getViewportDelta(opts: { withZoom?: number } = {}): Coordinates {
     const zoom = this.module.getZoomMultiplier();
     const { width, height } = this.getCanvasOffset();
     const worldWidth = width * zoom;

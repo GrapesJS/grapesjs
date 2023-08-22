@@ -476,10 +476,10 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
       { event: 'keydown keyup keypress', class: 'KeyboardEvent' },
       { event: 'mousedown mousemove mouseup', class: 'MouseEvent' },
       { event: 'pointerdown pointermove pointerup', class: 'PointerEvent' },
-      { event: 'wheel', class: 'WheelEvent' },
+      { event: 'wheel', class: 'WheelEvent', opts: { passive: !config.infiniteCanvas } },
     ].forEach(obj =>
       obj.event.split(' ').forEach(event => {
-        doc.addEventListener(event, ev => this.el.dispatchEvent(createCustomEvent(ev, obj.class)));
+        doc.addEventListener(event, ev => this.el.dispatchEvent(createCustomEvent(ev, obj.class)), obj.opts);
       })
     );
 

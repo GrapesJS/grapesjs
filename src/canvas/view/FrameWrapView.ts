@@ -22,7 +22,6 @@ export default class FrameWrapView extends ModuleView<Frame> {
   constructor(model: Frame, canvasView: CanvasView) {
     super({ model });
     bindAll(this, 'onScroll', 'frameLoaded', 'updateOffset', 'remove', 'startDrag');
-    //console.log(model.module)
     const config = {
       ...model.config,
       frameWrapView: this,
@@ -143,9 +142,20 @@ export default class FrameWrapView extends ModuleView<Frame> {
   }
 
   frameLoaded() {
-    const { frame } = this;
+    const { frame, config } = this;
     frame.getWindow().onscroll = this.onScroll;
     this.updateDim();
+
+    if (this.config.infiniteCanvas) {
+      // const iframe = this.frame.el;
+      // console.log('frameEl', iframe.contentDocument)
+      // const observer = new ResizeObserver(() => {
+      //     // console.log('height', iframe.contentDocument!.body.scrollHeight)
+      //     this.el.style.height = `${iframe.contentDocument!.body.scrollHeight}px`;
+      // })
+      // observer.observe(iframe.contentDocument!.body);
+      // TODO: disable min-height: 100vh;
+    }
   }
 
   __handleSize() {
