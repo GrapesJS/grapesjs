@@ -283,7 +283,9 @@ export default class PageManager extends ItemManagerModule<PageManagerConfig, Pa
   }
 
   load(data: any) {
-    return this.loadProjectData(data, { all: this.pages, reset: true });
+    const result = this.loadProjectData(data, { all: this.pages, reset: true });
+    this.pages.forEach(page => page.getFrames().initRefs());
+    return result;
   }
 
   _createId() {

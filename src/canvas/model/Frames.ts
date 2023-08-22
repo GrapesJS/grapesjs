@@ -12,8 +12,14 @@ export default class Frames extends ModuleCollection<Frame> {
   constructor(module: CanvasModule, models: Frame[] | Array<Record<string, any>> = []) {
     super(module, models, Frame);
     bindAll(this, 'itemLoaded');
+    this.on('add', this.onAdd);
     this.on('reset', this.onReset);
     this.on('remove', this.onRemove);
+    this.forEach(frame => this.onAdd(frame));
+  }
+
+  onAdd(frame: Frame) {
+    this.module.framesById[frame.id] = frame;
   }
 
   onReset(m: Frame, opts?: { previousModels?: Frame[] }) {
@@ -21,8 +27,13 @@ export default class Frames extends ModuleCollection<Frame> {
     prev.map(p => this.onRemove(p));
   }
 
-  onRemove(removed?: Frame) {
-    removed?.onRemove();
+  onRemove(frame: Frame) {
+    frame.onRemove();
+    delete this.module.framesById[frame.id];
+  }
+
+  initRefs() {
+    this.forEach(frame => frame.initRefs());
   }
 
   itemLoaded() {

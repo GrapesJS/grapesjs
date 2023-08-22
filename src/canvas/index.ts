@@ -85,11 +85,11 @@ export default class CanvasModule extends Module<CanvasConfig> {
     return this.canvasView as any;
   }
 
-  //name = 'Canvas';
   canvas: Canvas;
   model: Canvas;
   spots: CanvasSpots;
   events = CanvasEvents;
+  framesById: Record<string, Frame | undefined> = {};
   private canvasView?: CanvasView;
 
   /**

@@ -61,9 +61,8 @@ export default class Page extends Model<PagePropertiesDefined> {
     const frames = new Frames(em!.Canvas, frms);
     frames.page = this;
     this.set('frames', frames);
-    !this.getId() && this.set('id', em?.get('PageManager')._createId());
-    const um = em?.get('UndoManager');
-    um?.add(frames);
+    !this.getId() && this.set('id', em?.Pages._createId());
+    em?.UndoManager.add(frames);
   }
 
   onRemove() {

@@ -1,12 +1,12 @@
-import { result, forEach, isEmpty, isString, isNumber } from 'underscore';
-import { ModuleModel } from '../../abstract';
+import { forEach, isEmpty, isNumber, isString, result } from 'underscore';
 import CanvasModule from '..';
+import { ModuleModel } from '../../abstract';
+import { BoxRect } from '../../common';
 import ComponentWrapper from '../../dom_components/model/ComponentWrapper';
-import { isComponent, isObject } from '../../utils/mixins';
+import Page from '../../pages/model/Page';
+import { createId, isComponent, isObject } from '../../utils/mixins';
 import FrameView from '../view/FrameView';
 import Frames from './Frames';
-import Page from '../../pages/model/Page';
-import { BoxRect } from '../../common';
 
 const keyAutoW = '__aw';
 const keyAutoH = '__ah';
@@ -102,6 +102,8 @@ export default class Frame extends ModuleModel<CanvasModule> {
 
     !attr.width && this.set(keyAutoW, 1);
     !attr.height && this.set(keyAutoH, 1);
+
+    !this.id && this.set('id', createId());
   }
 
   get width() {
@@ -123,6 +125,14 @@ export default class Frame extends ModuleModel<CanvasModule> {
   get root() {
     const { refFrame } = this;
     return refFrame?.getComponent() || this.getComponent();
+  }
+
+  initRefs() {
+    const { refFrame } = this;
+    if (isString(refFrame)) {
+      const frame = this.module.framesById[refFrame];
+      frame && this.set({ refFrame: frame }, { silent: true });
+    }
   }
 
   getBoxRect(): BoxRect {
