@@ -165,7 +165,7 @@ export default class CanvasView extends ModuleView<Canvas> {
     };
   }
 
-  onPointer(ev: PointerEvent) {
+  onPointer(ev: WheelEvent) {
     if (!this.config.infiniteCanvas) return;
 
     const canvasRect = this.getCanvasOffset();
@@ -201,6 +201,7 @@ export default class CanvasView extends ModuleView<Canvas> {
   onWheel(ev: WheelEvent) {
     const { module, config } = this;
     if (config.infiniteCanvas) {
+      navigator.maxTouchPoints && this.onPointer(ev);
       this.preventDefault(ev);
       const { deltaX, deltaY } = ev;
       const zoom = module.getZoomDecimal();
