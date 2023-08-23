@@ -354,16 +354,18 @@ export default class CanvasView extends ModuleView<Canvas> {
   }
 
   getElBoxRect(el: HTMLElement, opts: ToWorldOption = {}): BoxRect {
+    const { module } = this;
     const { width, height, left, top } = getElRect(el);
     const frameView = getComponentView(el)?.frameView;
     const frameRect = frameView?.getBoxRect();
+    const zoomMlt = module.getZoomMultiplier();
     const frameX = frameRect?.x ?? 0;
     const frameY = frameRect?.y ?? 0;
-    const xWithFrame = left + frameX;
-    const yWithFrame = top + frameY;
+    const canvasEl = this.el;
+    const xWithFrame = left + frameX + canvasEl.scrollLeft * zoomMlt;
+    const yWithFrame = top + frameY + canvasEl.scrollTop * zoomMlt;
 
     if (opts.toWorld) {
-      const { module } = this;
       const zoom = module.getZoomDecimal();
       const vwDelta = this.getViewportDelta();
       const x = xWithFrame * zoom + vwDelta.x || 0;
