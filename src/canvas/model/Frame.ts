@@ -148,7 +148,7 @@ export default class Frame extends ModuleModel<CanvasModule> {
   }
 
   onRemove() {
-    this.getComponent().remove({ root: 1 });
+    !this.refFrame && this.getComponent().remove({ root: 1 });
   }
 
   changesUp(opt: any = {}) {
@@ -171,6 +171,7 @@ export default class Frame extends ModuleModel<CanvasModule> {
   }
 
   remove() {
+    this.view?.remove();
     this.view = undefined;
     const coll = this.collection;
     return coll && coll.remove(this);

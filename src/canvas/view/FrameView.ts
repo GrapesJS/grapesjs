@@ -2,6 +2,7 @@ import { bindAll, debounce, isString, isUndefined } from 'underscore';
 import { ModuleView } from '../../abstract';
 import { BoxRect } from '../../common';
 import CssRulesView from '../../css_composer/view/CssRulesView';
+import ComponentWrapperView from '../../dom_components/view/ComponentWrapperView';
 import Droppable from '../../utils/Droppable';
 import {
   append,
@@ -37,7 +38,7 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
   lastMaxHeight = 0;
   private jsContainer?: HTMLElement;
   private tools: { [key: string]: HTMLElement } = {};
-  private wrapper?: any;
+  private wrapper?: ComponentWrapperView;
   private frameWrapView?: FrameWrapView;
 
   constructor(model: Frame, view?: FrameWrapView) {
@@ -209,10 +210,9 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
   }
 
   remove(...args: any) {
-    const wrp = this.wrapper;
     this._toggleEffects(false);
     this.tools = {};
-    wrp && wrp.remove();
+    this.wrapper?.remove();
     ModuleView.prototype.remove.apply(this, args);
     return this;
   }
@@ -449,7 +449,7 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
         frameView: this,
       },
     }).render();
-    append(body, this.wrapper?.el);
+    append(body, this.wrapper?.el!);
     append(
       body,
       new CssRulesView({
