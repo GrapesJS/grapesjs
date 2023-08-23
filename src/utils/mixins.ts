@@ -2,6 +2,7 @@ import { isArray, isElement, isUndefined, keys } from 'underscore';
 import ComponentView from '../dom_components/view/ComponentView';
 import EditorModel from '../editor/model/Editor';
 import { isTextNode } from './dom';
+import Component from '../dom_components/model/Component';
 
 export const isDef = (value: any) => typeof value !== 'undefined';
 
@@ -191,10 +192,11 @@ const isObject = (val: any): val is Object => val !== null && !Array.isArray(val
 const isEmptyObj = (val: Record<string, any>) => Object.keys(val).length <= 0;
 
 const capitalize = (str: string = '') => str && str.charAt(0).toUpperCase() + str.substring(1);
-const isComponent = (obj: any) => obj && obj.toHTML;
 const isRule = (obj: any) => obj && obj.toCSS;
 
 const getViewEl = <T extends any>(el?: Node): T | undefined => (el as any)?.__gjsv;
+
+export const isComponent = (obj: any): obj is Component => !!obj?.toHTML;
 
 export const getComponentView = (el?: Node) => getViewEl<ComponentView>(el);
 
@@ -246,7 +248,6 @@ export {
   appendStyles,
   isObject,
   isEmptyObj,
-  isComponent,
   createId,
   isRule,
 };

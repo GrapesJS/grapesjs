@@ -11,6 +11,8 @@ import { ToolbarButtonProps } from './ToolbarButton';
 
 export type DragMode = 'translate' | 'absolute' | '';
 
+export type DraggableDroppableFn = (source: Component, target: Component, index?: number) => boolean | void;
+
 export interface ComponentProperties {
   /**
    * Component type, eg. `text`, `image`, `video`, etc.
@@ -44,13 +46,13 @@ export interface ComponentProperties {
        containing `some-class` class and `Hello` title, and `column` components. In the case of a function, target and destination components are passed as arguments, return a Boolean to indicate if the drag is possible. Default: `true`
        * @default true
        */
-  draggable?: boolean | string | ((...params: any[]) => any);
+  draggable?: boolean | string | DraggableDroppableFn;
   /**
        * Indicates if it's possible to drop other components inside. You can use
       a query string as with `draggable`. In the case of a function, target and destination components are passed as arguments, return a Boolean to indicate if the drop is possible. Default: `true`
        * @default true
        */
-  droppable?: boolean | string | ((...params: any[]) => any);
+  droppable?: boolean | string | DraggableDroppableFn;
   /**
    * Set to false if you don't want to see the badge (with the name) over the component. Default: `true`
    * @default true
