@@ -372,7 +372,7 @@ export default class PropertyComposite<T extends Record<string, any> = PropertyC
     return this;
   }
 
-  hasValue(opts: Parameters<Property['hasValue']>[0]) {
+  hasValue(opts?: Parameters<Property['hasValue']>[0]) {
     return this.getProperties().some(prop => prop.hasValue(opts));
   }
 
