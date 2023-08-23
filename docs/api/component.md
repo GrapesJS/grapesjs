@@ -725,7 +725,7 @@ This works only if the component is already rendered
 
 ### Parameters
 
-*   `frame` **Frame** Specific frame from which taking the element (optional, default `undefined`)
+*   `frame` **Frame** Specific frame from which taking the element
 
 Returns **[HTMLElement][11]** 
 

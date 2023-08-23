@@ -201,6 +201,36 @@ Return the array of all types
 
 Returns **[Array][11]** 
 
+## canMove
+
+Check if a component can be moved inside another one.
+
+### Parameters
+
+*   `target` **[Component]** The target component is the one that is supposed to receive the source one.
+*   `source` **([Component] | [String][12])** The source can be another component, a component definition or an HTML string.
+*   `index` **[Number][17]?** Index position, if not specified, the check will be performed against appending the source to the target.
+
+### Examples
+
+```javascript
+const rootComponent = editor.getWrapper();
+const someComponent = editor.getSelected();
+
+// Check with two components
+editor.Components.canMove(rootComponent, someComponent);
+
+// Check with component definition
+editor.Components.canMove(rootComponent, { tagName: 'a', draggable: false });
+
+// Check with HTML string
+editor.Components.canMove(rootComponent, '<form>...</form>');
+```
+
+Returns **[Object][10]** Object containing the `result` (Boolean), `source`, `target` (as Components), and a `reason` (Number) with these meanings:*   `0` - Invalid source. This is a default value and should be ignored in case the `result` is true.
+*   `1` - Source doesn't accept target as destination.
+*   `2` - Target doesn't accept source.
+
 [1]: https://github.com/GrapesJS/grapesjs/blob/master/src/dom_components/config/config.ts
 
 [2]: #getwrapper
@@ -232,3 +262,5 @@ Returns **[Array][11]**
 [15]: https://grapesjs.com/docs/modules/Components.html#define-new-component
 
 [16]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined
+
+[17]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
