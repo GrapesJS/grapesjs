@@ -86,8 +86,8 @@ export default class CanvasView extends ModuleView<Canvas> {
   constructor(model: Canvas) {
     super({ model });
     bindAll(this, 'clearOff', 'onKeyPress', 'onWheel', 'onPointer');
-    const { em, pfx } = this;
-    this.className = `${pfx}canvas${!em.config.customUI ? ` ${pfx}canvas-bg` : ''}`;
+    const { em, pfx, ppfx } = this;
+    this.className = `${pfx}canvas ${ppfx}no-touch-actions${!em.config.customUI ? ` ${pfx}canvas-bg` : ''}`;
     this.clsUnscale = `${pfx}unscale`;
     this._initFrames();
     this.listenTo(em, 'change:canvasOffset', this.clearOff);
