@@ -239,6 +239,16 @@ export default class Frame extends ModuleModel<CanvasModule> {
     this.em.trigger('frame:updated', { frame: this, ...data });
   }
 
+  hasAutoHeight() {
+    const { height } = this.attributes;
+
+    if (height === 'auto' || this.config.infiniteCanvas) {
+      return true;
+    }
+
+    return false;
+  }
+
   toJSON(opts: any = {}) {
     const obj = ModuleModel.prototype.toJSON.call(this, opts);
     const defaults = result(this, 'defaults');

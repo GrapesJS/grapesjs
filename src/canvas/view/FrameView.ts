@@ -363,6 +363,7 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
     const doc = this.getDoc();
     const body = this.getBody();
     const win = this.getWindow();
+    const hasAutoHeight = model.hasAutoHeight();
     const conf = em.config;
     //@ts-ignore This could be used inside component-related scripts to check if the
     // script is executed inside the editor.
@@ -376,8 +377,10 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
       `<style>
       ${conf.baseCss || config.frameStyle || ''}
 
+      ${hasAutoHeight ? 'body { overflow: hidden }' : ''}
+
       [data-gjs-type="wrapper"] {
-        min-height: 100vh;
+        ${!hasAutoHeight ? 'min-height: 100vh;' : ''}
         padding-top: 0.001em;
       }
 

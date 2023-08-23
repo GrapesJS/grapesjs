@@ -18,6 +18,7 @@ export default class FrameWrapView extends ModuleView<Frame> {
   dragger?: Dragger;
   cv: CanvasView;
   classAnim: string;
+  sizeObserver?: ResizeObserver;
 
   constructor(model: Frame, canvasView: CanvasView) {
     super({ model });
@@ -145,17 +146,6 @@ export default class FrameWrapView extends ModuleView<Frame> {
     const { frame, config } = this;
     frame.getWindow().onscroll = this.onScroll;
     this.updateDim();
-
-    if (this.config.infiniteCanvas) {
-      // const iframe = this.frame.el;
-      // console.log('frameEl', iframe.contentDocument)
-      // const observer = new ResizeObserver(() => {
-      //     // console.log('height', iframe.contentDocument!.body.scrollHeight)
-      //     this.el.style.height = `${iframe.contentDocument!.body.scrollHeight}px`;
-      // })
-      // observer.observe(iframe.contentDocument!.body);
-      // TODO: disable min-height: 100vh;
-    }
   }
 
   __handleSize() {
@@ -168,8 +158,32 @@ export default class FrameWrapView extends ModuleView<Frame> {
     const newW = width || '';
     const newH = height || '';
     const noChanges = currW == newW && currH == newH;
-    style.width = isNumber(newW) ? `${newW}${un}` : newW;
-    style.height = isNumber(newH) ? `${newH}${un}` : newH;
+    const newWidth = isNumber(newW) ? `${newW}${un}` : newW;
+    const newHeight = isNumber(newH) ? `${newH}${un}` : newH;
+    style.width = newWidth;
+
+    if (model.hasAutoHeight()) {
+      const iframe = this.frame.el;
+
+      if (
+        iframe.contentDocument
+        // this doesn't work always
+        // && !this.sizeObserver
+      ) {
+        const { contentDocument } = iframe;
+        const observer = new ResizeObserver(() => {
+          style.height = `${contentDocument.body.scrollHeight}px`;
+        });
+        observer.observe(contentDocument.body);
+        this.sizeObserver?.disconnect();
+        this.sizeObserver = observer;
+      }
+    } else {
+      style.height = newHeight;
+      this.sizeObserver?.disconnect();
+      delete this.sizeObserver;
+    }
+
     return { noChanges, width, height, newW, newH };
   }
 
