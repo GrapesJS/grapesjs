@@ -63,3 +63,19 @@ export class View<T extends Model | undefined = Model, E extends Element = HTMLE
 export type PickMatching<T, V> = { [K in keyof T as T[K] extends V ? K : never]: T[K] };
 
 export type ExtractMethods<T> = PickMatching<T, Function>;
+
+export enum CoordinatesTypes {
+  Screen = 'screen',
+  World = 'world',
+}
+
+export const DEFAULT_COORDS: Coordinates = {
+  x: 0,
+  y: 0,
+};
+
+export const DEFAULT_BOXRECT: BoxRect = {
+  ...DEFAULT_COORDS,
+  width: 0,
+  height: 0,
+};

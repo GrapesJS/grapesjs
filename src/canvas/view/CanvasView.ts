@@ -1,7 +1,7 @@
 import { bindAll, isNumber } from 'underscore';
 import { ToWorldOption } from '..';
 import { ModuleView } from '../../abstract';
-import { BoxRect, Coordinates, ElementRect } from '../../common';
+import { BoxRect, Coordinates, CoordinatesTypes, ElementRect } from '../../common';
 import Component from '../../dom_components/model/Component';
 import ComponentView from '../../dom_components/view/ComponentView';
 import {
@@ -212,7 +212,7 @@ export default class CanvasView extends ModuleView<Canvas> {
         module.setZoom(newZoom * 100);
 
         // Update coordinates based on pointer
-        const pointer = this.model.get('pointerScreen');
+        const pointer = this.model.getPointerCoords(CoordinatesTypes.Screen);
         const canvasRect = this.getCanvasOffset();
         const pointerX = pointer.x - canvasRect.width / 2;
         const pointerY = pointer.y - canvasRect.height / 2;
