@@ -96,12 +96,6 @@ const config: CanvasConfig = {
   `,
   notTextable: ['button', 'a', 'input[type=checkbox]', 'input[type=radio]'],
   allowExternalDrop: true,
-  customSpots: {
-    // select: true,
-    hover: true,
-    spacing: true,
-    target: true,
-  },
 };
 
 export default config;
