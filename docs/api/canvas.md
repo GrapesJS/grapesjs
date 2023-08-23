@@ -24,14 +24,80 @@ canvas.setCoords(...);
 ```
 
 ## Available Events
+* `canvas:dragenter` Something is dragged inside the canvas, `DataTransfer` instance passed as an argument.
 
-*   `canvas:dragenter` - When something is dragged inside the canvas, `DataTransfer` instance passed as an argument
-*   `canvas:dragover` - When something is dragging on canvas, `DataTransfer` instance passed as an argument
-*   `canvas:drop` - Something is dropped in canvas, `DataTransfer` instance and the dropped model are passed as arguments
-*   `canvas:dragend` - When a drag operation is ended, `DataTransfer` instance passed as an argument
-*   `canvas:dragdata` - On any dataTransfer parse, `DataTransfer` instance and the `result` are passed as arguments.
+* `canvas:dragover` Something is dragging on the canvas, `DataTransfer` instance passed as an argument.
 
-By changing `result.content` you're able to customize what is dropped
+* `canvas:dragend` When a drag operation is ended, `DataTransfer` instance passed as an argument.
+
+* `canvas:dragdata` On any dataTransfer parse, `DataTransfer` instance and the `result` are passed as arguments.&#xA;By changing `result.content` you're able to customize what is dropped.
+
+* `canvas:drop` Something is dropped in canvas, `DataTransfer` instance and the dropped model are passed as arguments.
+
+* `canvas:spot` Spots updated.
+
+```javascript
+editor.on('canvas:spot', () => {
+ console.log('Spots', editor.Canvas.getSpots());
+});
+```
+
+* `canvas:spot:add` New canvas spot added.
+
+```javascript
+editor.on('canvas:spot:add', ({ spot }) => {
+ console.log('Spot added', spot);
+});
+```
+
+* `canvas:spot:update` Canvas spot updated.
+
+```javascript
+editor.on('canvas:spot:update', ({ spot }) => {
+ console.log('Spot updated', spot);
+});
+```
+
+* `canvas:spot:remove` Canvas spot removed.
+
+```javascript
+editor.on('canvas:spot:remove', ({ spot }) => {
+ console.log('Spot removed', spot);
+});
+```
+
+* `canvas:viewport` Canvas viewport updated (eg. zoom or coordinates).
+
+```javascript
+editor.on('canvas:viewport', () => {
+ const { Canvas } = editor;
+ console.log('Canvas, zoom:', Canvas.getZoom(), 'coords:', Canvas.getCoords());
+});
+```
+
+* `canvas:viewport:start` Canvas viewport update started (eg. zooming or panning)
+
+```javascript
+editor.on('canvas:viewport:start', () => {
+ console.log('viewport update started')
+});
+```
+
+* `canvas:viewport:end` Canvas viewport update ended. This event is debounced on 300ms from the `canvas:viewport:start`.
+
+```javascript
+editor.on('canvas:viewport:end', () => {
+ console.log('viewport updated ended')
+});
+```
+
+* `canvas:zoom` Canvas zoom updated.
+
+```javascript
+editor.on('canvas:zoom', () => {
+ console.log('New canvas zoom:', editor.Canvas.getZoom());
+});
+```
 
 ## Methods
 

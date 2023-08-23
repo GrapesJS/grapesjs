@@ -4,8 +4,34 @@ const documentation = require('documentation');
 const fs = require('fs');
 const docRoot = __dirname;
 const srcRoot = path.join(docRoot, '../src/');
+const START_EVENTS = '{START_EVENTS}';
+const END_EVENTS = '{END_EVENTS}';
+const REPLACE_EVENTS = '{REPLACE_EVENTS}';
 
 const log = (...args) => console.log(...args);
+
+const getEventsMdFromTypes = async (filePath) => {
+  const dirname = filePath.replace(path.basename(filePath), '');
+  const typesFilePath = `${dirname}types.ts`;
+
+  if (fs.existsSync(typesFilePath) && typesFilePath.includes('canvas')) {
+    const resTypes = await documentation.build([typesFilePath], { shallow: true })
+      .then(cm => documentation.formats.md(cm, /*{ markdownToc: true }*/));
+    const indexFrom = resTypes.indexOf(START_EVENTS) + START_EVENTS.length;
+    const indexTo = resTypes.indexOf(END_EVENTS);
+
+    const result = resTypes.substring(indexFrom, indexTo)
+      .replace(/\n### Examples\n/gi, '')
+      .replace(/## /gi, '* ')
+      .replace(/\\`/gi, '`')
+      .replace(/##/gi, '')
+      .trim();
+
+    return result
+  }
+
+  return '';
+}
 
 async function generateDocs () {
   log('Start API Reference generation...');
@@ -56,8 +82,8 @@ async function generateDocs () {
 
     return documentation.build([filePath], { shallow: true })
       .then(cm => documentation.formats.md(cm, /*{ markdownToc: true }*/))
-      .then(output => {
-        const res = output
+      .then(async (output) => {
+        let result = output
           .replace(/\*\*\\\[/g, '**[')
           .replace(/\*\*\(\\\[/g, '**([')
           .replace(/<\\\[/g, '<[')
@@ -67,7 +93,14 @@ async function generateDocs () {
           .replace(/docsjs\./g, '')
           .replace('**Extends ModuleModel**', '')
           .replace('**Extends Model**', '');
-        fs.writeFileSync(`${docRoot}/api/${file[1]}`, res);
+
+        // Search for module event documentation
+        if (result.indexOf(REPLACE_EVENTS) >= 0) {
+          const eventsMd = await getEventsMdFromTypes(filePath);
+          result = eventsMd ? result.replace(REPLACE_EVENTS, `## Available Events\n${eventsMd}`) : result;
+        }
+
+        fs.writeFileSync(`${docRoot}/api/${file[1]}`, result);
         log('Created', file[1]);
       });
   }));
