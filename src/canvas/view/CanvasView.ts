@@ -169,17 +169,18 @@ export default class CanvasView extends ModuleView<Canvas> {
     if (!this.config.infiniteCanvas) return;
 
     const canvasRect = this.getCanvasOffset();
+    const docScroll = getDocumentScroll();
     const screenCoords: Coordinates = {
-      x: ev.clientX - canvasRect.left,
-      y: ev.clientY - canvasRect.top,
+      x: ev.clientX - canvasRect.left + docScroll.x,
+      y: ev.clientY - canvasRect.top + docScroll.y,
     };
 
     if ((ev as any)._parentEvent) {
       // with _parentEvent means was triggered from the iframe
       const frameRect = (ev.target as HTMLElement).getBoundingClientRect();
       const zoom = this.module.getZoomDecimal();
-      screenCoords.x = frameRect.left - canvasRect.left + ev.clientX * zoom;
-      screenCoords.y = frameRect.top - canvasRect.top + ev.clientY * zoom;
+      screenCoords.x = frameRect.left - canvasRect.left + docScroll.x + ev.clientX * zoom;
+      screenCoords.y = frameRect.top - canvasRect.top + docScroll.y + ev.clientY * zoom;
     }
 
     this.model.set({
@@ -362,8 +363,9 @@ export default class CanvasView extends ModuleView<Canvas> {
     const frameX = frameRect?.x ?? 0;
     const frameY = frameRect?.y ?? 0;
     const canvasEl = this.el;
-    const xWithFrame = left + frameX + canvasEl.scrollLeft * zoomMlt;
-    const yWithFrame = top + frameY + canvasEl.scrollTop * zoomMlt;
+    const docScroll = getDocumentScroll();
+    const xWithFrame = left + frameX + (canvasEl.scrollLeft + docScroll.x) * zoomMlt;
+    const yWithFrame = top + frameY + (canvasEl.scrollTop + docScroll.y) * zoomMlt;
 
     if (opts.toWorld) {
       const zoom = module.getZoomDecimal();
