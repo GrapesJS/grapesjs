@@ -139,8 +139,7 @@ export default class CanvasView extends ModuleView<Canvas> {
   preventDefault(ev: Event) {
     if (ev) {
       ev.preventDefault();
-      //@ts-ignore
-      ev._parentEvent?.preventDefault();
+      (ev as any)._parentEvent?.preventDefault();
     }
   }
 
