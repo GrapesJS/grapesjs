@@ -59,7 +59,7 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
 
     const propOrig = this.getStyle(opts);
 
-    if (opts.partial) {
+    if (opts.partial || opts.avoidStore) {
       opts.avoidStore = true;
       prop.__p = true;
     } else {
