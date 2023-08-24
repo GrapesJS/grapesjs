@@ -79,5 +79,14 @@ export enum CanvasEvents {
    * });
    */
   zoom = 'canvas:zoom',
+
+  /**
+   * @event `canvas:pointer` Canvas pointer updated.
+   * @example
+   * editor.on('canvas:pointer', () => {
+   *  console.log('Canvas pointer updated:', editor.Canvas.getPointer());
+   * });
+   */
+  pointer = 'canvas:pointer',
 }
 /**{END_EVENTS}*/

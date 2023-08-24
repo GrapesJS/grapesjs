@@ -201,7 +201,6 @@ export default class CanvasView extends ModuleView<Canvas> {
   onWheel(ev: WheelEvent) {
     const { module, config } = this;
     if (config.infiniteCanvas) {
-      navigator.maxTouchPoints && this.onPointer(ev);
       this.preventDefault(ev);
       const { deltaX, deltaY } = ev;
       const zoom = module.getZoomDecimal();
@@ -222,6 +221,7 @@ export default class CanvasView extends ModuleView<Canvas> {
         const y = pointerY - (pointerY - coords.y) * zoomDelta;
         module.setCoords(x, y);
       } else {
+        this.onPointer(ev);
         module.setCoords(coords.x - deltaX, coords.y - deltaY);
       }
     }

@@ -655,6 +655,19 @@ export default class CanvasModule extends Module<CanvasConfig> {
     return { x, y };
   }
 
+  /**
+   * Get canvas pointer position coordinates.
+   * @returns {Object} Object containing pointer coordinates
+   * @private
+   * @example
+   * const worldPointer = canvas.getPointer();
+   * const screenPointer = canvas.getPointer(true);
+   */
+  getPointer(screen?: boolean): Coordinates {
+    const { pointer, pointerScreen } = this.canvas.attributes;
+    return screen ? pointerScreen : pointer;
+  }
+
   getZoomDecimal() {
     return this.getZoom() / 100;
   }
