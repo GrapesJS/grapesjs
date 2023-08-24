@@ -1,4 +1,5 @@
 import { each, isEmpty, keys, result } from 'underscore';
+import { CanvasSpotBuiltInTypes } from '../../canvas/model/CanvasSpot';
 import FrameView from '../../canvas/view/FrameView';
 import { ExtractMethods, ObjectAny, View } from '../../common';
 import { GetSetRuleOptions } from '../../css_composer';
@@ -231,7 +232,8 @@ Component> {
    * */
   updateStatus(opts: { noExtHl?: boolean; avoidHover?: boolean } = {}) {
     const { em, el, ppfx, model } = this;
-    const extHl = em?.Canvas.getConfig().extHl;
+    const canvas = em.Canvas;
+    const extHl = canvas.getConfig().extHl;
     const status = model.get('status');
     const selectedCls = `${ppfx}selected`;
     const selectedParentCls = `${selectedCls}-parent`;
@@ -243,10 +245,11 @@ Component> {
     this.$el.removeClass(toRemove.join(' '));
     const actualCls = el.getAttribute('class') || '';
     const cls = [actualCls];
+    const noCustomSpotSelect = !canvas.hasCustomSpot(CanvasSpotBuiltInTypes.Select);
 
     switch (status) {
       case 'selected':
-        cls.push(selCls);
+        noCustomSpotSelect && cls.push(selCls);
         break;
       case 'selected-parent':
         cls.push(selectedParentCls);
@@ -255,7 +258,8 @@ Component> {
         cls.push(freezedCls);
         break;
       case 'freezed-selected':
-        cls.push(freezedCls, selCls);
+        cls.push(freezedCls);
+        noCustomSpotSelect && cls.push(selCls);
         break;
       case 'hovered':
         !opts.avoidHover && cls.push(hoveredCls);

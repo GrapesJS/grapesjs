@@ -495,14 +495,16 @@ export default {
    * @param {Object} mod
    */
   updateToolbar(mod: Component) {
+    const { canvas } = this;
     const { em } = this.config;
-    const model = mod == em ? em.getSelected() : mod;
-    const toolbarEl = this.canvas.getToolbarEl()!;
+    const model = mod === em ? em.getSelected() : mod;
+    const toolbarEl = canvas.getToolbarEl()!;
     const toolbarStyle = toolbarEl.style;
     const toolbar = model.get('toolbar');
     const showToolbar = em.config.showToolbar;
+    const noCustomSpotSelect = !canvas.hasCustomSpot(CanvasSpotBuiltInTypes.Select);
 
-    if (model && showToolbar && toolbar && toolbar.length) {
+    if (model && showToolbar && toolbar && toolbar.length && noCustomSpotSelect) {
       toolbarStyle.display = '';
       if (!this.toolbar) {
         toolbarEl.innerHTML = '';
