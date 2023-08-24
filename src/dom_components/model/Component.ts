@@ -174,6 +174,10 @@ export default class Component extends StyleableModel<ComponentProperties> {
     return this.get('content') ?? '';
   }
 
+  get toolbar() {
+    return this.get('toolbar') || [];
+  }
+
   /**
    * Hook method, called once the model is created
    */

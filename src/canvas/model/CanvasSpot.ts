@@ -3,6 +3,7 @@ import { ModuleModel } from '../../abstract';
 import { BoxRect, LiteralUnion } from '../../common';
 import Component from '../../dom_components/model/Component';
 import ComponentView from '../../dom_components/view/ComponentView';
+import { GetBoxRectOptions } from '../types';
 import Frame from './Frame';
 
 export enum CanvasSpotBuiltInTypes {
@@ -41,25 +42,6 @@ export default class CanvasSpot<T extends CanvasSpotProps = CanvasSpotProps> ext
     } as T;
   }
 
-  get boxRect() {
-    const { el, em } = this;
-    const cvView = em.Canvas.getCanvasView();
-    const boxRect = this.get('boxRect');
-
-    if (boxRect) {
-      return boxRect;
-    } else if (el && cvView) {
-      return cvView.getElBoxRect(el);
-    }
-
-    return {
-      x: 0,
-      y: 0,
-      width: 0,
-      height: 0,
-    };
-  }
-
   get type() {
     return this.get('type') || '';
   }
@@ -78,8 +60,27 @@ export default class CanvasSpot<T extends CanvasSpotProps = CanvasSpotProps> ext
     return this.componentView?.el;
   }
 
-  getStyle(opts: { boxRect?: BoxRect } = {}): Partial<CSSStyleDeclaration> {
-    const { width, height, x, y } = opts.boxRect || this.boxRect;
+  getBoxRect(opts?: GetBoxRectOptions) {
+    const { el, em } = this;
+    const cvView = em.Canvas.getCanvasView();
+    const boxRect = this.get('boxRect');
+
+    if (boxRect) {
+      return boxRect;
+    } else if (el && cvView) {
+      return cvView.getElBoxRect(el, opts);
+    }
+
+    return {
+      x: 0,
+      y: 0,
+      width: 0,
+      height: 0,
+    };
+  }
+
+  getStyle(opts: { boxRect?: BoxRect } & GetBoxRectOptions = {}): Partial<CSSStyleDeclaration> {
+    const { width, height, x, y } = opts.boxRect || this.getBoxRect(opts);
 
     return {
       width: `${width}px`,

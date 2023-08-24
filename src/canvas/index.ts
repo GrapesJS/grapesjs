@@ -54,15 +54,11 @@ import Canvas from './model/Canvas';
 import CanvasSpot, { CanvasSpotBuiltInTypes, CanvasSpotProps } from './model/CanvasSpot';
 import CanvasSpots from './model/CanvasSpots';
 import Frame from './model/Frame';
-import { CanvasEvents } from './types';
+import { CanvasEvents, ToWorldOption } from './types';
 import CanvasView, { FitViewportOptions } from './view/CanvasView';
 import FrameView from './view/FrameView';
 
 export type CanvasEvent = `${CanvasEvents}`;
-
-export interface ToWorldOption {
-  toWorld?: boolean;
-}
 
 export default class CanvasModule extends Module<CanvasConfig> {
   /**

@@ -90,3 +90,13 @@ export enum CanvasEvents {
   pointer = 'canvas:pointer',
 }
 /**{END_EVENTS}*/
+
+export interface ToScreenOption {
+  toScreen?: boolean;
+}
+
+export interface ToWorldOption {
+  toWorld?: boolean;
+}
+
+export interface GetBoxRectOptions extends ToScreenOption {}

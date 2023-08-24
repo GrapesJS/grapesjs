@@ -1,5 +1,4 @@
 import { bindAll, isNumber } from 'underscore';
-import { ToWorldOption } from '..';
 import { ModuleView } from '../../abstract';
 import { BoxRect, Coordinates, CoordinatesTypes, ElementRect } from '../../common';
 import Component from '../../dom_components/model/Component';
@@ -17,6 +16,7 @@ import {
 import { getComponentView, getElement, getUiClass } from '../../utils/mixins';
 import Canvas from '../model/Canvas';
 import Frame from '../model/Frame';
+import { GetBoxRectOptions, ToWorldOption } from '../types';
 import FrameView from './FrameView';
 import FramesView from './FramesView';
 
@@ -352,7 +352,7 @@ export default class CanvasView extends ModuleView<Canvas> {
     };
   }
 
-  getElBoxRect(el: HTMLElement, opts: ToWorldOption = {}): BoxRect {
+  getElBoxRect(el: HTMLElement, opts: GetBoxRectOptions = {}): BoxRect {
     const { module } = this;
     const { width, height, left, top } = getElRect(el);
     const frameView = getComponentView(el)?.frameView;
@@ -365,7 +365,7 @@ export default class CanvasView extends ModuleView<Canvas> {
     const xWithFrame = left + frameX + (canvasEl.scrollLeft + docScroll.x) * zoomMlt;
     const yWithFrame = top + frameY + (canvasEl.scrollTop + docScroll.y) * zoomMlt;
 
-    if (opts.toWorld) {
+    if (opts.toScreen) {
       const zoom = module.getZoomDecimal();
       const vwDelta = this.getViewportDelta();
       const x = xWithFrame * zoom + vwDelta.x || 0;
