@@ -87,12 +87,13 @@ export default class CanvasView extends ModuleView<Canvas> {
     super({ model });
     bindAll(this, 'clearOff', 'onKeyPress', 'onWheel', 'onPointer');
     const { em, pfx, ppfx } = this;
+    const { events } = this.module;
     this.className = `${pfx}canvas ${ppfx}no-touch-actions${!em.config.customUI ? ` ${pfx}canvas-bg` : ''}`;
     this.clsUnscale = `${pfx}unscale`;
     this._initFrames();
     this.listenTo(em, 'change:canvasOffset', this.clearOff);
     this.listenTo(em, 'component:selected', this.checkSelected);
-    this.listenTo(model, 'change:zoom change:x change:y', this.updateFrames);
+    this.listenTo(em, `${events.coords} ${events.zoom}`, this.updateFrames);
     this.listenTo(model, 'change:frames', this._onFramesUpdate);
     this.toggleListeners(true);
   }
@@ -229,13 +230,18 @@ export default class CanvasView extends ModuleView<Canvas> {
 
   updateFrames(ev: Event) {
     const { em } = this;
+    const toolsWrpEl = this.toolsWrapper!;
     const defOpts = { preserveSelected: 1 };
     this.updateFramesArea();
     this.clearOff();
-    em.stopDefault(defOpts);
+    toolsWrpEl.style.display = 'none';
     em.trigger('canvas:update', ev);
     this.timerZoom && clearTimeout(this.timerZoom);
-    this.timerZoom = setTimeout(() => em.runDefault(defOpts), 300) as any;
+    this.timerZoom = setTimeout(() => {
+      em.stopDefault(defOpts);
+      em.runDefault(defOpts);
+      toolsWrpEl.style.display = '';
+    }, 300) as any;
   }
 
   updateFramesArea() {
