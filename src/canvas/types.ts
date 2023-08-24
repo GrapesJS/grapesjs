@@ -91,6 +91,15 @@ export enum CanvasEvents {
   viewportEnd = 'canvas:viewport:end',
 
   /**
+   * @event `canvas:coords` Canvas coordinates updated.
+   * @example
+   * editor.on('canvas:coords', () => {
+   *  console.log('Canvas coordinates updated:', editor.Canvas.getCoords());
+   * });
+   */
+  coords = 'canvas:coords',
+
+  /**
    * @event `canvas:zoom` Canvas zoom updated.
    * @example
    * editor.on('canvas:zoom', () => {

@@ -30,6 +30,7 @@ export default class Canvas extends ModuleModel<CanvasModule> {
     super(module, { scripts, styles });
     this.set('frames', new Frames(module));
     this.on('change:zoom', this.onZoomChange);
+    this.on('change:x change:y', this.onCoordsChange);
     this.listenTo(em, `change:device ${evDeviceUpdate}`, this.updateDevice);
     this.listenTo(em, evPageSelect, this._pageUpdated);
   }
@@ -70,6 +71,11 @@ export default class Canvas extends ModuleModel<CanvasModule> {
     const zoom = this.get('zoom');
     zoom < 1 && this.set('zoom', 1);
     em.trigger(module.events.zoom);
+  }
+
+  onCoordsChange() {
+    const { em, module } = this;
+    em.trigger(module.events.coords);
   }
 
   getPointerCoords(type: CoordinatesTypes = CoordinatesTypes.World): Coordinates {
