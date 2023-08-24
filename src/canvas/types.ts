@@ -63,34 +63,6 @@ export enum CanvasEvents {
   spotRemove = 'canvas:spot:remove',
 
   /**
-   * @event `canvas:viewport` Canvas viewport updated (eg. zoom or coordinates).
-   * @example
-   * editor.on('canvas:viewport', () => {
-   *  const { Canvas } = editor;
-   *  console.log('Canvas, zoom:', Canvas.getZoom(), 'coords:', Canvas.getCoords());
-   * });
-   */
-  viewport = 'canvas:viewport',
-
-  /**
-   * @event `canvas:viewport:start` Canvas viewport update started (eg. zooming or panning)
-   * @example
-   * editor.on('canvas:viewport:start', () => {
-   *  console.log('viewport update started')
-   * });
-   */
-  viewportStart = 'canvas:viewport:start',
-
-  /**
-   * @event `canvas:viewport:end` Canvas viewport update ended. This event is debounced on 300ms from the `canvas:viewport:start`.
-   * @example
-   * editor.on('canvas:viewport:end', () => {
-   *  console.log('viewport updated ended')
-   * });
-   */
-  viewportEnd = 'canvas:viewport:end',
-
-  /**
    * @event `canvas:coords` Canvas coordinates updated.
    * @example
    * editor.on('canvas:coords', () => {
@@ -103,7 +75,7 @@ export enum CanvasEvents {
    * @event `canvas:zoom` Canvas zoom updated.
    * @example
    * editor.on('canvas:zoom', () => {
-   *  console.log('New canvas zoom:', editor.Canvas.getZoom());
+   *  console.log('Canvas zoom updated:', editor.Canvas.getZoom());
    * });
    */
   zoom = 'canvas:zoom',
