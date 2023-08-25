@@ -228,8 +228,8 @@ Component> {
    * */
   updateStatus(opts: { noExtHl?: boolean; avoidHover?: boolean } = {}) {
     const { em, el, ppfx, model } = this;
-    const canvas = em.Canvas;
-    const extHl = canvas.getConfig().extHl;
+    const canvas = em?.Canvas;
+    const extHl = canvas?.config.extHl;
     const status = model.get('status');
     const selectedCls = `${ppfx}selected`;
     const selectedParentCls = `${selectedCls}-parent`;
@@ -241,7 +241,7 @@ Component> {
     this.$el.removeClass(toRemove.join(' '));
     const actualCls = el.getAttribute('class') || '';
     const cls = [actualCls];
-    const noCustomSpotSelect = !canvas.hasCustomSpot(CanvasSpotBuiltInTypes.Select);
+    const noCustomSpotSelect = !canvas?.hasCustomSpot(CanvasSpotBuiltInTypes.Select);
 
     switch (status) {
       case 'selected':
