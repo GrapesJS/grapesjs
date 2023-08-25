@@ -29,10 +29,12 @@ const config: KeymapsConfig = {
     'core:undo': {
       keys: '⌘+z, ctrl+z',
       handler: 'core:undo',
+      opts: { prevent: true },
     },
     'core:redo': {
       keys: '⌘+shift+z, ctrl+shift+z',
       handler: 'core:redo',
+      opts: { prevent: true },
     },
     'core:copy': {
       keys: '⌘+c, ctrl+c',
