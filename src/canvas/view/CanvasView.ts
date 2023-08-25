@@ -352,6 +352,21 @@ export default class CanvasView extends ModuleView<Canvas> {
     };
   }
 
+  getRectToScreen(boxRect: Partial<BoxRect>): BoxRect {
+    const zoom = this.module.getZoomDecimal();
+    const coords = this.module.getCoords();
+    const vwDelta = this.getViewportDelta();
+    const x = (boxRect.x ?? 0) * zoom + coords.x + vwDelta.x || 0;
+    const y = (boxRect.y ?? 0) * zoom + coords.y + vwDelta.y || 0;
+
+    return {
+      x,
+      y,
+      width: (boxRect.width ?? 0) * zoom,
+      height: (boxRect.height ?? 0) * zoom,
+    };
+  }
+
   getElBoxRect(el: HTMLElement, opts: GetBoxRectOptions = {}): BoxRect {
     const { module } = this;
     const { width, height, left, top } = getElRect(el);
@@ -364,27 +379,14 @@ export default class CanvasView extends ModuleView<Canvas> {
     const docScroll = getDocumentScroll();
     const xWithFrame = left + frameX + (canvasEl.scrollLeft + docScroll.x) * zoomMlt;
     const yWithFrame = top + frameY + (canvasEl.scrollTop + docScroll.y) * zoomMlt;
-
-    if (opts.toScreen) {
-      const zoom = module.getZoomDecimal();
-      const vwDelta = this.getViewportDelta();
-      const x = xWithFrame * zoom + vwDelta.x || 0;
-      const y = yWithFrame * zoom + vwDelta.y || 0;
-
-      return {
-        x,
-        y,
-        width: width * zoom,
-        height: height * zoom,
-      };
-    }
-
-    return {
+    const boxRect = {
       x: xWithFrame,
       y: yWithFrame,
       width,
       height,
     };
+
+    return opts.toScreen ? this.getRectToScreen(boxRect) : boxRect;
   }
 
   getViewportRect(opts: ToWorldOption = {}): BoxRect {

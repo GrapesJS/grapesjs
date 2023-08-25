@@ -728,6 +728,10 @@ export default class CanvasModule extends Module<CanvasConfig> {
     ['model', 'droppable'].forEach(i => (this[i] = {}));
   }
 
+  getRectToScreen(boxRect: Parameters<CanvasView['getRectToScreen']>[0]) {
+    return this.canvasView?.getRectToScreen(boxRect);
+  }
+
   addSpot<T extends CanvasSpotProps>(props: Omit<T, 'id'> & { id?: string }, opts: AddOptions = {}) {
     const spotProps = props as T;
     const spots = this.getSpots<T>(spotProps);
