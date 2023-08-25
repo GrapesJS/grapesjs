@@ -985,7 +985,6 @@ export default function ($, undefined?: any) {
    * Thanks https://github.com/jquery/jquery-ui/blob/master/ui/jquery.ui.datepicker.js
    */
   function getOffset(picker, input) {
-    var extraY = 0;
     var dpWidth = picker.outerWidth();
     var dpHeight = picker.outerHeight();
     var inputHeight = input.outerHeight();
@@ -999,17 +998,23 @@ export default function ($, undefined?: any) {
     var viewHeight = cH + scT;
     var offset = input.offset();
 
-    offset.top += inputHeight;
+    offset.top += inputHeight; // place "picker" right below "input"
 
-    offset.left -= Math.min(
-      offset.left,
-      offset.left + dpWidth > viewWidth && viewWidth > dpWidth ? Math.abs(offset.left + dpWidth - viewWidth) : 0
-    );
+    if (offset.left + dpWidth > viewWidth) {
+      // "picker" would extend viewport
+      offset.left = viewWidth - dpWidth;
+    }
 
-    offset.top -= Math.min(
-      offset.top,
-      offset.top + dpHeight > viewHeight && viewHeight > dpHeight ? Math.abs(dpHeight + inputHeight - extraY) : extraY
-    );
+    if (offset.top + dpHeight > viewHeight) {
+      // "picker" would extend viewport
+      offset.top = viewHeight - dpHeight;
+    }
+
+    // nota bene: "picker" is placed relative to the editor!
+    var EditorOffset = picker.closest('.gjs-editor-cont').offset();
+
+    offset.left = Math.max(0, offset.left - EditorOffset.left);
+    offset.top = Math.max(0, offset.top - EditorOffset.top);
 
     return offset;
   }
