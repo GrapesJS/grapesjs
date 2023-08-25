@@ -435,7 +435,7 @@ describe('Sorter', () => {
       beforeEach(() => {
         parentModel = new Component({
           droppable: (srcModel, trgModel) => {
-            return srcModel.getEl().className === 'canDrop';
+            return srcModel.getEl()!.className === 'canDrop';
           },
         });
         parentView = new ComponentTextView({
@@ -486,7 +486,7 @@ describe('Sorter', () => {
       beforeEach(() => {
         srcModel = new Component({
           draggable: (srcModel, trgModel) => {
-            return trgModel.getEl().className === 'canDrag';
+            return trgModel.getEl()!.className === 'canDrag';
           },
         });
         srcView = new ComponentTextView({

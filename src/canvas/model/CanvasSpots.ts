@@ -1,11 +1,12 @@
 import { debounce } from 'underscore';
 import CanvasModule from '..';
 import { ModuleCollection } from '../../abstract';
-import { ObjectAny } from '../../common';
+import { Debounced, ObjectAny } from '../../common';
+import EditorModel from '../../editor/model/Editor';
 import CanvasSpot, { CanvasSpotProps } from './CanvasSpot';
 
 export default class CanvasSpots extends ModuleCollection<CanvasSpot> {
-  refreshDbn: ReturnType<typeof debounce>;
+  refreshDbn: Debounced;
 
   constructor(module: CanvasModule, models: CanvasSpot[] | CanvasSpotProps[] = []) {
     super(module, models, CanvasSpot);
@@ -18,7 +19,7 @@ export default class CanvasSpots extends ModuleCollection<CanvasSpot> {
     this.listenTo(em, evToRefreshDbn, () => this.refreshDbn());
   }
 
-  get em() {
+  get em(): EditorModel {
     return this.module.em;
   }
 

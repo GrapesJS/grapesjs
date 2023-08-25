@@ -50,6 +50,10 @@ export type PickMatching<T, V> = {
 	[K in keyof T as T[K] extends V ? K : never]: T[K];
 };
 export type ExtractMethods<T> = PickMatching<T, Function>;
+declare enum CoordinatesTypes {
+	Screen = "screen",
+	World = "world"
+}
 export interface SelectorProps {
 	name: string;
 	label?: string;
@@ -144,6 +148,9 @@ export declare class Selectors extends Collection<Selector> {
 	getFullName(opts?: any): string | string[];
 }
 export type StyleProps = Record<string, string | string[]>;
+export type UpdateStyleOptions = ObjectAny & {
+	partial?: boolean;
+};
 declare class StyleableModel<T extends ObjectHash = any> extends Model<T> {
 	/**
 	 * Forward style string to `parseStyle` to be parse to an object
@@ -169,7 +176,7 @@ declare class StyleableModel<T extends ObjectHash = any> extends Model<T> {
 	 * @param {Object} opts
 	 * @return {Object} Applied properties
 	 */
-	setStyle(prop?: string | ObjectAny, opts?: ObjectAny): {
+	setStyle(prop?: string | ObjectAny, opts?: UpdateStyleOptions): {
 		[x: string]: any;
 	};
 	/**
@@ -180,7 +187,7 @@ declare class StyleableModel<T extends ObjectHash = any> extends Model<T> {
 	 * this.addStyle({color: 'red'});
 	 * this.addStyle('color', 'blue');
 	 */
-	addStyle(prop: string | ObjectAny, value?: any, opts?: ObjectAny): void;
+	addStyle(prop: string | ObjectAny, value?: any, opts?: UpdateStyleOptions): void;
 	/**
 	 * Remove style property
 	 * @param {string} prop
@@ -275,74 +282,93 @@ declare class ModuleView<TModel extends ModuleModel | ModuleCollection = ModuleM
 	className: string;
 	preinitialize(options?: any): void;
 }
-export interface CanvasConfig {
-	stylePrefix?: string;
+declare enum CanvasEvents {
 	/**
-	 * Append external scripts to the `<head>` of the iframe.
-	 * Be aware that these scripts will not be printed in the export code.
-	 * @default []
+	 * @event `canvas:dragenter` Something is dragged inside the canvas, `DataTransfer` instance passed as an argument.
+	 */
+	dragEnter = "canvas:dragenter",
+	/**
+	 * @event `canvas:dragover` Something is dragging on the canvas, `DataTransfer` instance passed as an argument.
+	 */
+	dragOver = "canvas:dragover",
+	/**
+	 * @event `canvas:dragend` When a drag operation is ended, `DataTransfer` instance passed as an argument.
+	 */
+	dragEnd = "canvas:dragend",
+	/**
+	 * @event `canvas:dragdata` On any dataTransfer parse, `DataTransfer` instance and the `result` are passed as arguments.
+	 * By changing `result.content` you're able to customize what is dropped.
+	 */
+	dragData = "canvas:dragdata",
+	/**
+	 * @event `canvas:drop` Something is dropped in canvas, `DataTransfer` instance and the dropped model are passed as arguments.
+	 */
+	drop = "canvas:drop",
+	/**
+	 * @event `canvas:spot` Spots updated.
 	 * @example
-	 * scripts: [ 'https://...1.js', 'https://...2.js' ]
-	 * // or passing objects as attributes
-	 * scripts: [ { src: '/file.js', someattr: 'value' }, ... ]
+	 * editor.on('canvas:spot', () => {
+	 *  console.log('Spots', editor.Canvas.getSpots());
+	 * });
 	 */
-	scripts?: (string | Record<string, any>)[];
+	spot = "canvas:spot",
 	/**
-	 * Append external styles to the `<head>` of the iframe.
-	 * Be aware that these scripts will not be printed in the export code.
-	 * @default []
+	 * @event `canvas:spot:add` New canvas spot added.
 	 * @example
-	 * styles: [ 'https://...1.css', 'https://...2.css' ]
-	 * // or passing objects as attributes
-	 * styles: [ { href: '/style.css', someattr: 'value' }, ... ]
+	 * editor.on('canvas:spot:add', ({ spot }) => {
+	 *  console.log('Spot added', spot);
+	 * });
 	 */
-	styles?: (string | Record<string, any>)[];
+	spotAdd = "canvas:spot:add",
 	/**
-	 * Add custom badge naming strategy.
+	 * @event `canvas:spot:update` Canvas spot updated.
 	 * @example
-	 * customBadgeLabel: component => component.getName(),
+	 * editor.on('canvas:spot:update', ({ spot }) => {
+	 *  console.log('Spot updated', spot);
+	 * });
 	 */
-	customBadgeLabel?: (component: Component) => string;
+	spotUpdate = "canvas:spot:update",
 	/**
-	 * Indicate when to start the autoscroll of the canvas on component/block dragging (value in px).
-	 * @default 50
+	 * @event `canvas:spot:remove` Canvas spot removed.
+	 * @example
+	 * editor.on('canvas:spot:remove', ({ spot }) => {
+	 *  console.log('Spot removed', spot);
+	 * });
 	 */
-	autoscrollLimit?: number;
+	spotRemove = "canvas:spot:remove",
 	/**
-	 * Experimental: external highlighter box
+	 * @event `canvas:coords` Canvas coordinates updated.
+	 * @example
+	 * editor.on('canvas:coords', () => {
+	 *  console.log('Canvas coordinates updated:', editor.Canvas.getCoords());
+	 * });
 	 */
-	extHl?: boolean;
+	coords = "canvas:coords",
 	/**
-	 * Initial content to load in all frames.
-	 * The default value enables the standard mode for the iframe.
-	 * @default '<!DOCTYPE html>'
+	 * @event `canvas:zoom` Canvas zoom updated.
+	 * @example
+	 * editor.on('canvas:zoom', () => {
+	 *  console.log('Canvas zoom updated:', editor.Canvas.getZoom());
+	 * });
 	 */
-	frameContent?: string;
+	zoom = "canvas:zoom",
 	/**
-	 * Initial style to load in all frames.
+	 * @event `canvas:pointer` Canvas pointer updated.
+	 * @example
+	 * editor.on('canvas:pointer', () => {
+	 *  console.log('Canvas pointer updated:', editor.Canvas.getPointer());
+	 * });
 	 */
-	frameStyle?: string;
-	/**
-	 * When some textable component is selected and focused (eg. input or text component), the editor
-	 * stops some commands (eg. disables the copy/paste of components with CTRL+C/V to allow the copy/paste of the text).
-	 * This option allows to customize, by a selector, which element should not be considered textable.
-	 */
-	notTextable?: string[];
-	/**
-	 * By default, the editor allows to drop external elements by relying on the native HTML5
-	 * drag & drop API (eg. like a D&D of an image file from your desktop).
-	 * If you want to customize how external elements are interpreted by the editor, you can rely
-	 * on `canvas:dragdata` event, eg. https://github.com/GrapesJS/grapesjs/discussions/3849
-	 * @default true
-	 */
-	allowExternalDrop?: boolean;
+	pointer = "canvas:pointer"
 }
-export declare class Pages extends Collection<Page> {
-	constructor(models: any, em: EditorModel);
-	onReset(m: Page, opts?: {
-		previousModels?: Pages;
-	}): void;
-	onRemove(removed?: Page): void;
+/**{END_EVENTS}*/
+export interface ToScreenOption {
+	toScreen?: boolean;
+}
+export interface ToWorldOption {
+	toWorld?: boolean;
+}
+export interface GetBoxRectOptions extends ToScreenOption {
 }
 declare class ComponentWrapper extends Component {
 	get defaults(): {
@@ -357,6 +383,13 @@ declare class ComponentWrapper extends Component {
 	__postAdd(): void;
 	__postRemove(): void;
 	static isComponent(): boolean;
+}
+export declare class Pages extends Collection<Page> {
+	constructor(models: any, em: EditorModel);
+	onReset(m: Page, opts?: {
+		previousModels?: Pages;
+	}): void;
+	onRemove(removed?: Page): void;
 }
 export interface SelectableOption {
 	/**
@@ -474,6 +507,21 @@ declare class PageManager extends ItemManagerModule<PageManagerConfig, Pages> {
 	store(): any;
 	load(data: any): any;
 	_createId(): string;
+}
+export declare class Frames extends ModuleCollection<Frame> {
+	loadedItems: number;
+	itemsToLoad: number;
+	page?: Page;
+	constructor(module: CanvasModule, models?: Frame[] | Array<Record<string, any>>);
+	onAdd(frame: Frame): void;
+	onReset(m: Frame, opts?: {
+		previousModels?: Frame[];
+	}): void;
+	onRemove(frame: Frame): void;
+	initRefs(): void;
+	itemLoaded(): void;
+	listenToLoad(): void;
+	listenToLoadItems(on: boolean): void;
 }
 /** @private */
 export interface CssRuleProperties {
@@ -654,70 +702,6 @@ export declare class CssRule extends StyleableModel<CssRuleProperties> {
 	 * @private
 	 */
 	compare(selectors: any, state?: string, width?: string, ruleProps?: Partial<CssRuleProperties>): boolean;
-}
-/**
- * @property {Object|String} component Wrapper component definition. You can also pass an HTML string as components of the default wrapper component.
- * @property {String} [width=''] Width of the frame. By default, the canvas width will be taken.
- * @property {String} [height=''] Height of the frame. By default, the canvas height will be taken.
- * @property {Number} [x=0] Horizontal position of the frame in the canvas.
- * @property {Number} [y=0] Vertical position of the frame in the canvas.
- *
- */
-export declare class Frame extends ModuleModel<CanvasModule> {
-	defaults(): {
-		x: number;
-		y: number;
-		changesCount: number;
-		attributes: {};
-		width: null;
-		height: null;
-		head: never[];
-		component: string;
-		styles: string;
-		_undo: boolean;
-		_undoexc: string[];
-	};
-	view?: FrameView;
-	/**
-	 * @hideconstructor
-	 */
-	constructor(module: CanvasModule, attr: any);
-	get width(): number;
-	get height(): number;
-	get head(): {
-		tag: string;
-		attributes: any;
-	}[];
-	onRemove(): void;
-	changesUp(opt?: any): void;
-	getComponent(): ComponentWrapper;
-	getStyles(): any;
-	disable(): void;
-	remove(): this;
-	getHead(): {
-		tag: string;
-		attributes: any;
-	}[];
-	setHead(value: {
-		tag: string;
-		attributes: any;
-	}[]): this;
-	addHeadItem(item: {
-		tag: string;
-		attributes: any;
-	}): void;
-	getHeadByAttr(attr: string, value: any, tag: string): {
-		tag: string;
-		attributes: any;
-	};
-	removeHeadByAttr(attr: string, value: any, tag: string): void;
-	addLink(href: string): void;
-	removeLink(href: string): void;
-	addScript(src: string): void;
-	removeScript(src: string): void;
-	getPage(): Page | undefined;
-	_emitUpdated(data?: {}): void;
-	toJSON(opts?: any): any;
 }
 declare class TraitView extends View<Trait> {
 	pfx: string;
@@ -1012,6 +996,29 @@ export declare class Traits extends Collection<Trait> {
 	add(model: string | TraitProperties | Trait, options?: AddOptions): Trait;
 	add(models: Array<string | TraitProperties | Trait>, options?: AddOptions): Trait[];
 }
+export declare class Canvas extends ModuleModel<CanvasModule> {
+	defaults(): {
+		frame: string;
+		frames: never[];
+		rulers: boolean;
+		zoom: number;
+		x: number;
+		y: number;
+		scripts: never[];
+		styles: never[];
+		pointer: Coordinates;
+		pointerScreen: Coordinates;
+	};
+	constructor(module: CanvasModule);
+	get frames(): Frames;
+	init(): void;
+	_pageUpdated(page: Page, prev?: Page): void;
+	updateDevice(opts?: any): void;
+	onZoomChange(): void;
+	onCoordsChange(): void;
+	onPointerChange(): void;
+	getPointerCoords(type?: CoordinatesTypes): Coordinates;
+}
 declare abstract class ModuleDomainViews<TCollection extends ModuleCollection, TItemView extends ModuleView> extends ModuleView<TCollection> {
 	itemsView: string;
 	protected itemType: string;
@@ -1195,10 +1202,7 @@ declare class Dragger {
 	 * @param  {Event} event
 	 * @return {Object}
 	 */
-	getPointerPos(ev: Event): DraggerPosition | {
-		x: any;
-		y: any;
-	};
+	getPointerPos(ev: Event): DraggerPosition;
 	getStartPosition(): {
 		x: number;
 		y: number;
@@ -1219,6 +1223,7 @@ declare class FrameWrapView extends ModuleView<Frame> {
 	dragger?: Dragger;
 	cv: CanvasView;
 	classAnim: string;
+	sizeObserver?: ResizeObserver;
 	constructor(model: Frame, canvasView: CanvasView);
 	setupDragger(): void;
 	startDrag(ev?: Event): void;
@@ -1277,9 +1282,6 @@ export interface FitViewportOptions {
 	el?: HTMLElement;
 }
 declare class CanvasView extends ModuleView<Canvas> {
-	events(): {
-		wheel: string;
-	};
 	template(): string;
 	hlEl?: HTMLElement;
 	badgeEl?: HTMLElement;
@@ -1293,6 +1295,9 @@ declare class CanvasView extends ModuleView<Canvas> {
 	toolsEl?: HTMLElement;
 	framesArea?: HTMLElement;
 	toolsWrapper?: HTMLElement;
+	spotsEl?: HTMLElement;
+	cvStyle?: HTMLElement;
+	clsUnscale: string;
 	ready: boolean;
 	frames: FramesView;
 	frame?: FrameView;
@@ -1302,13 +1307,16 @@ declare class CanvasView extends ModuleView<Canvas> {
 	constructor(model: Canvas);
 	_onFramesUpdate(): void;
 	_initFrames(): void;
-	checkSelected(component: Component, opts?: any): void;
+	checkSelected(component: Component, opts?: {
+		scroll?: ScrollIntoViewOptions;
+	}): void;
 	remove(...args: any): this;
 	preventDefault(ev: Event): void;
-	onCanvasMove(ev: Event): void;
 	toggleListeners(enable: boolean): void;
+	screenToWorld(x: number, y: number): Coordinates;
+	onPointer(ev: WheelEvent): void;
 	onKeyPress(ev: KeyboardEvent): void;
-	onWheel(ev: KeyboardEvent): void;
+	onWheel(ev: WheelEvent): void;
 	updateFrames(ev: Event): void;
 	updateFramesArea(): void;
 	fitViewport(opts?: FitViewportOptions): void;
@@ -1329,9 +1337,12 @@ declare class CanvasView extends ModuleView<Canvas> {
 		width: number;
 		height: number;
 	};
-	getElBoxRect(el: HTMLElement): BoxRect;
+	getRectToScreen(boxRect: Partial<BoxRect>): BoxRect;
+	getElBoxRect(el: HTMLElement, opts?: GetBoxRectOptions): BoxRect;
 	getViewportRect(opts?: ToWorldOption): BoxRect;
-	getViewportDelta(): Coordinates;
+	getViewportDelta(opts?: {
+		withZoom?: number;
+	}): Coordinates;
 	/**
 	 * Cleare cached offsets
 	 * @private
@@ -1402,8 +1413,8 @@ declare class CanvasView extends ModuleView<Canvas> {
 	 * Get javascript container
 	 * @private
 	 */
-	getJsContainer(view?: ComponentView): any;
-	getFrameView(view?: ComponentView): any;
+	getJsContainer(view?: ComponentView): HTMLElement | undefined;
+	getFrameView(view?: ComponentView): FrameView | undefined;
 	_renderFrames(): void;
 	renderFrames(): void;
 	render(): this;
@@ -1816,6 +1827,7 @@ export interface ToolbarButtonProps {
 	events?: ObjectAny;
 }
 export type DragMode = "translate" | "absolute" | "";
+export type DraggableDroppableFn = (source: Component, target: Component, index?: number) => boolean | void;
 export interface ComponentProperties {
 	/**
 	 * Component type, eg. `text`, `image`, `video`, etc.
@@ -1849,13 +1861,13 @@ export interface ComponentProperties {
 		 containing `some-class` class and `Hello` title, and `column` components. In the case of a function, target and destination components are passed as arguments, return a Boolean to indicate if the drag is possible. Default: `true`
 		 * @default true
 		 */
-	draggable?: boolean | string | ((...params: any[]) => any);
+	draggable?: boolean | string | DraggableDroppableFn;
 	/**
 		 * Indicates if it's possible to drop other components inside. You can use
 		a query string as with `draggable`. In the case of a function, target and destination components are passed as arguments, return a Boolean to indicate if the drop is possible. Default: `true`
 		 * @default true
 		 */
-	droppable?: boolean | string | ((...params: any[]) => any);
+	droppable?: boolean | string | DraggableDroppableFn;
 	/**
 	 * Set to false if you don't want to see the badge (with the name) over the component. Default: `true`
 	 * @default true
@@ -2093,41 +2105,188 @@ export declare class Page extends Model<PagePropertiesDefined> {
 	getMainComponent(): ComponentWrapper;
 	toJSON(opts?: {}): any;
 }
-export declare class Frames extends ModuleCollection<Frame> {
-	loadedItems: number;
-	itemsToLoad: number;
-	page?: Page;
-	constructor(module: CanvasModule, models?: Frame[] | Array<Record<string, any>>);
-	onReset(m: Frame, opts?: {
-		previousModels?: Frame[];
-	}): void;
-	onRemove(removed?: Frame): void;
-	itemLoaded(): void;
-	listenToLoad(): void;
-	listenToLoadItems(on: boolean): void;
-}
-export declare class Canvas extends ModuleModel<CanvasModule> {
+/**
+ * @property {Object|String} component Wrapper component definition. You can also pass an HTML string as components of the default wrapper component.
+ * @property {String} [width=''] Width of the frame. By default, the canvas width will be taken.
+ * @property {String} [height=''] Height of the frame. By default, the canvas height will be taken.
+ * @property {Number} [x=0] Horizontal position of the frame in the canvas.
+ * @property {Number} [y=0] Vertical position of the frame in the canvas.
+ *
+ */
+export declare class Frame extends ModuleModel<CanvasModule> {
 	defaults(): {
-		frame: string;
-		frames: never[];
-		rulers: boolean;
-		zoom: number;
 		x: number;
 		y: number;
-		scripts: never[];
-		styles: never[];
+		changesCount: number;
+		attributes: {};
+		width: null;
+		height: null;
+		head: never[];
+		component: string;
+		styles: string;
+		refFrame: null;
+		_undo: boolean;
+		_undoexc: string[];
 	};
-	constructor(module: CanvasModule);
-	get frames(): Frames;
-	init(): void;
-	_pageUpdated(page: Page, prev?: Page): void;
-	updateDevice(opts?: any): void;
-	onZoomChange(): void;
+	view?: FrameView;
+	/**
+	 * @hideconstructor
+	 */
+	constructor(module: CanvasModule, attr: any);
+	get width(): number;
+	get height(): number;
+	get head(): {
+		tag: string;
+		attributes: any;
+	}[];
+	get refFrame(): Frame | undefined;
+	get root(): ComponentWrapper;
+	initRefs(): void;
+	getBoxRect(): BoxRect;
+	onRemove(): void;
+	changesUp(opt?: any): void;
+	getComponent(): ComponentWrapper;
+	getStyles(): any;
+	disable(): void;
+	remove(): this;
+	getHead(): {
+		tag: string;
+		attributes: any;
+	}[];
+	setHead(value: {
+		tag: string;
+		attributes: any;
+	}[]): this;
+	addHeadItem(item: {
+		tag: string;
+		attributes: any;
+	}): void;
+	getHeadByAttr(attr: string, value: any, tag: string): {
+		tag: string;
+		attributes: any;
+	};
+	removeHeadByAttr(attr: string, value: any, tag: string): void;
+	addLink(href: string): void;
+	removeLink(href: string): void;
+	addScript(src: string): void;
+	removeScript(src: string): void;
+	getPage(): Page | undefined;
+	_emitUpdated(data?: {}): void;
+	hasAutoHeight(): boolean;
+	toJSON(opts?: any): any;
 }
-export type CanvasEvent = "canvas:dragenter" | "canvas:dragover" | "canvas:drop" | "canvas:dragend" | "canvas:dragdata";
-export interface ToWorldOption {
-	toWorld?: boolean;
+declare enum CanvasSpotBuiltInTypes {
+	Select = "select",
+	Hover = "hover",
+	Spacing = "spacing",
+	Target = "target",
+	Resize = "resize"
 }
+export type CanvasSpotBuiltInType = `${CanvasSpotBuiltInTypes}`;
+export type CanvasSpotType = LiteralUnion<CanvasSpotBuiltInType, string>;
+/** @private */
+export interface CanvasSpotBase<T extends CanvasSpotType> {
+	type: T;
+	id: string;
+	boxRect?: BoxRect;
+	component?: Component;
+	componentView?: ComponentView;
+	frame?: Frame;
+}
+/** @private */
+export interface CanvasSpotProps<T extends CanvasSpotType = CanvasSpotType> extends CanvasSpotBase<T> {
+}
+declare class CanvasSpot<T extends CanvasSpotProps = CanvasSpotProps> extends ModuleModel<CanvasModule, T> {
+	defaults(): T;
+	get type(): "" | T["type"];
+	get component(): Component | undefined;
+	get componentView(): ComponentView | undefined;
+	get el(): HTMLElement | undefined;
+	getBoxRect(opts?: GetBoxRectOptions): BoxRect;
+	getStyle(opts?: {
+		boxRect?: BoxRect;
+	} & GetBoxRectOptions): Partial<CSSStyleDeclaration>;
+	isType<E extends T>(type: E["type"]): this is CanvasSpot<E>;
+}
+export interface CanvasConfig {
+	stylePrefix?: string;
+	/**
+	 * Append external scripts to the `<head>` of the iframe.
+	 * Be aware that these scripts will not be printed in the export code.
+	 * @default []
+	 * @example
+	 * scripts: [ 'https://...1.js', 'https://...2.js' ]
+	 * // or passing objects as attributes
+	 * scripts: [ { src: '/file.js', someattr: 'value' }, ... ]
+	 */
+	scripts?: (string | Record<string, any>)[];
+	/**
+	 * Append external styles to the `<head>` of the iframe.
+	 * Be aware that these scripts will not be printed in the export code.
+	 * @default []
+	 * @example
+	 * styles: [ 'https://...1.css', 'https://...2.css' ]
+	 * // or passing objects as attributes
+	 * styles: [ { href: '/style.css', someattr: 'value' }, ... ]
+	 */
+	styles?: (string | Record<string, any>)[];
+	/**
+	 * Add custom badge naming strategy.
+	 * @example
+	 * customBadgeLabel: component => component.getName(),
+	 */
+	customBadgeLabel?: (component: Component) => string;
+	/**
+	 * Indicate when to start the autoscroll of the canvas on component/block dragging (value in px).
+	 * @default 50
+	 */
+	autoscrollLimit?: number;
+	/**
+	 * Experimental: external highlighter box
+	 */
+	extHl?: boolean;
+	/**
+	 * Initial content to load in all frames.
+	 * The default value enables the standard mode for the iframe.
+	 * @default '<!DOCTYPE html>'
+	 */
+	frameContent?: string;
+	/**
+	 * Initial style to load in all frames.
+	 */
+	frameStyle?: string;
+	/**
+	 * When some textable component is selected and focused (eg. input or text component), the editor
+	 * stops some commands (eg. disables the copy/paste of components with CTRL+C/V to allow the copy/paste of the text).
+	 * This option allows to customize, by a selector, which element should not be considered textable.
+	 */
+	notTextable?: string[];
+	/**
+	 * By default, the editor allows to drop external elements by relying on the native HTML5
+	 * drag & drop API (eg. like a D&D of an image file from your desktop).
+	 * If you want to customize how external elements are interpreted by the editor, you can rely
+	 * on `canvas:dragdata` event, eg. https://github.com/GrapesJS/grapesjs/discussions/3849
+	 * @default true
+	 */
+	allowExternalDrop?: boolean;
+	customSpots?: boolean | Partial<Record<CanvasSpotBuiltInTypes, boolean>>;
+	/**
+	 * Experimental: enable infinite canvas.
+	 */
+	infiniteCanvas?: boolean;
+}
+declare class CanvasSpots extends ModuleCollection<CanvasSpot> {
+	refreshDbn: Debounced;
+	constructor(module: CanvasModule, models?: CanvasSpot[] | CanvasSpotProps[]);
+	get em(): EditorModel;
+	get events(): typeof CanvasEvents;
+	refresh(): void;
+	onAdd(spot: CanvasSpot): void;
+	onChange(spot: CanvasSpot): void;
+	onRemove(spot: CanvasSpot): void;
+	__trgEvent(event: string, props: ObjectAny): void;
+}
+export type CanvasEvent = `${CanvasEvents}`;
 declare class CanvasModule extends Module<CanvasConfig> {
 	/**
 	 * Get configuration object
@@ -2142,6 +2301,9 @@ declare class CanvasModule extends Module<CanvasConfig> {
 	getCanvasView(): CanvasView;
 	canvas: Canvas;
 	model: Canvas;
+	spots: CanvasSpots;
+	events: typeof CanvasEvents;
+	framesById: Record<string, Frame | undefined>;
 	private canvasView?;
 	/**
 	 * Initialize module. Automatically called with a new instance of the editor
@@ -2178,7 +2340,7 @@ declare class CanvasModule extends Module<CanvasConfig> {
 	 * @return {HTMLBodyElement}
 	 */
 	getBody(): HTMLBodyElement;
-	_getLocalEl(globalEl: any, compView: any, method: keyof FrameView): any;
+	_getLocalEl(globalEl: any, compView: ComponentView, method: keyof FrameView): any;
 	/**
 	 * Returns element containing all global canvas tools
 	 * @returns {HTMLElement}
@@ -2239,6 +2401,7 @@ declare class CanvasModule extends Module<CanvasConfig> {
 	 * @private
 	 */
 	getFixedOffsetViewerEl(): HTMLElement | undefined;
+	getSpotsEl(): HTMLElement | undefined;
 	render(): HTMLElement;
 	/**
 	 * Get frame position
@@ -2457,6 +2620,15 @@ declare class CanvasModule extends Module<CanvasConfig> {
 	 * // { x: 100, y: 100 }
 	 */
 	getCoords(): Coordinates;
+	/**
+	 * Get canvas pointer position coordinates.
+	 * @returns {Object} Object containing pointer coordinates
+	 * @private
+	 * @example
+	 * const worldPointer = canvas.getPointer();
+	 * const screenPointer = canvas.getPointer(true);
+	 */
+	getPointer(screen?: boolean): Coordinates;
 	getZoomDecimal(): number;
 	getZoomMultiplier(): number;
 	fitViewport(opts?: FitViewportOptions): void;
@@ -2491,6 +2663,14 @@ declare class CanvasModule extends Module<CanvasConfig> {
 	 */
 	getLastDragResult(): Component | undefined;
 	destroy(): void;
+	getRectToScreen(boxRect: Parameters<CanvasView["getRectToScreen"]>[0]): BoxRect | undefined;
+	addSpot<T extends CanvasSpotProps>(props: Omit<T, "id"> & {
+		id?: string;
+	}, opts?: AddOptions): CanvasSpot<T>;
+	getSpots<T extends CanvasSpotProps>(spotProps?: Partial<T>): CanvasSpot<T>[];
+	removeSpots<T extends CanvasSpotProps>(spotProps?: Partial<T>): CanvasSpot<T>[];
+	refreshSpots(): void;
+	hasCustomSpot(type?: CanvasSpotBuiltInTypes): boolean;
 }
 export type DragStop = (cancel?: boolean) => void;
 export type DragContent = (content: any) => void;
@@ -2549,6 +2729,7 @@ declare class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
 	private wrapper?;
 	private frameWrapView?;
 	constructor(model: Frame, view?: FrameWrapView);
+	getBoxRect(): BoxRect;
 	/**
 	 * Update `<head>` content of the frame
 	 */
@@ -2958,7 +3139,7 @@ Component> {
 	initialize(opt?: any): void;
 	get __cmpStyleOpts(): GetSetRuleOptions;
 	get frameView(): FrameView;
-	__isDraggable(): string | boolean | ((...params: any[]) => any) | undefined;
+	__isDraggable(): string | boolean | DraggableDroppableFn | undefined;
 	_clbObj(): {
 		editor: Editor;
 		model: Component;
@@ -3101,7 +3282,6 @@ Component> {
 	 */
 	reset(): void;
 	_setData(): void;
-	_getFrame(): any;
 	/**
 	 * Render children components
 	 * @private
@@ -3883,7 +4063,7 @@ declare class ComponentVideoView extends ComponentImageView {
 	 * @private
 	 */
 	updateVideo(): void;
-	renderByProvider(prov: string): HTMLVideoElement | HTMLIFrameElement;
+	renderByProvider(prov: string): HTMLIFrameElement | HTMLVideoElement;
 	renderSource(): HTMLVideoElement;
 	renderYoutube(): HTMLIFrameElement;
 	renderYoutubeNoCookie(): HTMLIFrameElement;
@@ -3987,6 +4167,26 @@ export interface AddComponentTypeOptions {
 	extendView?: string;
 	extendFn?: string[];
 	extendFnView?: string[];
+}
+declare enum CanMoveReason {
+	/**
+	 * Invalid source. This is a default value and should be ignored in case the `result` is true
+	 */
+	InvalidSource = 0,
+	/**
+	 * Source doesn't accept target as destination.
+	 */
+	SourceReject = 1,
+	/**
+	 * Target doesn't accept source.
+	 */
+	TargetReject = 2
+}
+export interface CanMoveResult {
+	result: boolean;
+	reason: CanMoveReason;
+	target: Component;
+	source?: Component | null;
 }
 export declare class ComponentManager extends ItemManagerModule<DomComponentsConfig, any> {
 	componentTypes: ({
@@ -4230,22 +4430,28 @@ export declare class ComponentManager extends ItemManagerModule<DomComponentsCon
 	componentHovered(): void;
 	getShallowWrapper(): Component | undefined;
 	/**
-	 * Check if the component can be moved inside another.
-	 * @param {[Component]} target The target Component is the one that is supposed to receive the source one.
-	 * @param {[Component]|String} source The source can be another Component or an HTML string.
-	 * @param {Number} [index] Index position. If not specified, the check will perform against appending the source to target.
+	 * Check if a component can be moved inside another one.
+	 * @param {[Component]} target The target component is the one that is supposed to receive the source one.
+	 * @param {[Component]|String} source The source can be another component, a component definition or an HTML string.
+	 * @param {Number} [index] Index position, if not specified, the check will be performed against appending the source to the target.
 	 * @returns {Object} Object containing the `result` (Boolean), `source`, `target` (as Components), and a `reason` (Number) with these meanings:
 	 * * `0` - Invalid source. This is a default value and should be ignored in case the `result` is true.
 	 * * `1` - Source doesn't accept target as destination.
 	 * * `2` - Target doesn't accept source.
-	 * @private
+	 * @example
+	 * const rootComponent = editor.getWrapper();
+	 * const someComponent = editor.getSelected();
+	 *
+	 * // Check with two components
+	 * editor.Components.canMove(rootComponent, someComponent);
+	 *
+	 * // Check with component definition
+	 * editor.Components.canMove(rootComponent, { tagName: 'a', draggable: false });
+	 *
+	 * // Check with HTML string
+	 * editor.Components.canMove(rootComponent, '<form>...</form>');
 	 */
-	canMove(target: Component, source?: Component, index?: number): {
-		result: boolean;
-		reason: number;
-		target: Component;
-		source: null;
-	};
+	canMove(target: Component, source?: Component | ComponentDefinition | string, index?: number): CanMoveResult;
 	allById(): {
 		[id: string]: Component;
 	};
@@ -4282,7 +4488,7 @@ Component> {
 	parseString(value: string, opt?: AddOptions & {
 		temporary?: boolean;
 		keepIds?: string[];
-	}): ComponentDefinitionDefined | ComponentDefinitionDefined[] | undefined;
+	}): ComponentDefinitionDefined | ComponentDefinitionDefined[];
 	/** @ts-ignore */
 	add(models: ComponentAdd, opt?: AddOptions & {
 		previousModels?: Component[];
@@ -4367,6 +4573,7 @@ export declare class Component extends StyleableModel<ComponentProperties> {
 	get classes(): Selectors;
 	get traits(): Traits;
 	get content(): string;
+	get toolbar(): ToolbarButtonProps[];
 	/**
 	 * Hook method, called once the model is created
 	 */
@@ -4874,7 +5081,7 @@ export declare class Component extends StyleableModel<ComponentProperties> {
 	 * @param {Frame} frame Specific frame from which taking the element
 	 * @return {HTMLElement}
 	 */
-	getEl(frame?: undefined): HTMLElement | undefined;
+	getEl(frame?: Frame): HTMLElement | undefined;
 	/**
 	 * Get the View of the component.
 	 * This works only if the component is already rendered
@@ -6762,7 +6969,7 @@ export declare class PropertyComposite<T extends Record<string, any> = PropertyC
 	__getPropsFromStyle(style?: StyleProps, opts?: OptionByName): any;
 	__setProperties(values?: Record<string, any>, opts?: OptionsUpdate): void;
 	clear(): this;
-	hasValue(opts: Parameters<Property["hasValue"]>[0]): boolean;
+	hasValue(opts?: Parameters<Property["hasValue"]>[0]): boolean;
 	getFullValue(): string;
 	__canClearProp(prop: Property): boolean;
 }
@@ -7460,7 +7667,6 @@ export interface EditorConfig {
 	 */
 	customUI?: boolean;
 	el?: HTMLElement;
-	multiFrames?: boolean;
 	/**
 	 * Color picker options.
 	 */
@@ -7566,7 +7772,7 @@ declare class BlockManager extends ItemManagerModule<BlockManagerConfig, Blocks>
 	__endDrag(opts?: {
 		component?: Component;
 	}): void;
-	__getFrameViews(): any;
+	__getFrameViews(): FrameView[];
 	__behaviour(opts?: {}): {};
 	__getBehaviour(): Record<string, any>;
 	startDrag(block: Block, ev?: Event): void;
@@ -8896,7 +9102,7 @@ declare const ParserCss: (em?: EditorModel, config?: ParserConfig) => {
 };
 export type StringObject = Record<string, string>;
 export type HTMLParseResult = {
-	html?: ComponentDefinitionDefined | ComponentDefinitionDefined[];
+	html: ComponentDefinitionDefined | ComponentDefinitionDefined[];
 	css?: CssRuleJSON[];
 };
 declare const ParserHtml: (em?: EditorModel, config?: ParserConfig & {
@@ -8984,7 +9190,7 @@ declare class ParserModule extends Module<ParserConfig & {
 	 * // This will preserve the original format as, from the XML point of view, is a valid format
 	 */
 	parseHtml(input: string, options?: HTMLParserOptions): {
-		html?: ComponentDefinitionDefined | ComponentDefinitionDefined[] | undefined;
+		html: ComponentDefinitionDefined | ComponentDefinitionDefined[];
 		css?: CssRuleJSON[] | undefined;
 	};
 	/**
@@ -10355,7 +10561,7 @@ declare class Sorter extends View {
 	 * @return {Boolean}
 	 * @private
 	 * */
-	isInFlow(el: HTMLElement, parent: HTMLElement): boolean;
+	isInFlow(el: HTMLElement, parent?: HTMLElement): boolean;
 	/**
 	 * Check if el has style to be in flow
 	 * @param  {HTMLElement} el
@@ -10387,7 +10593,7 @@ declare class Sorter extends View {
 	 * @param {number} rY Relative Y position
 	 * @return {Array<Array>}
 	 */
-	dimsFromTarget(target: HTMLElement, rX: number, rY: number): Dim[];
+	dimsFromTarget(target: HTMLElement, rX?: number, rY?: number): Dim[];
 	/**
 	 * Get valid target from element
 	 * This method should replace dimsFromTarget()
@@ -10482,40 +10688,27 @@ declare class UtilsModule extends Module {
 		getGlobal: () => typeof globalThis;
 		toLowerCase: (str: string) => string;
 		getUiClass: (em: EditorModel, defCls: string) => string;
-		isCommentNode: (el: HTMLElement) => boolean;
-		isTaggableNode: (el: HTMLElement) => boolean;
 		find: (arr: any[], test: (item: any, i: number, arr: any[]) => boolean) => null;
 		escape: (str?: string) => string;
 		escapeNodeContent: (str?: string) => string;
 		deepMerge: (...args: Record<string, any>[]) => {
 			[x: string]: any;
 		};
+		isComponent: (obj: any) => obj is Component;
+		getComponentView: (el?: Node | undefined) => ComponentView | undefined;
+		getComponentModel: (el?: Node | undefined) => Component | undefined;
 		buildBase64UrlFromSvg: (svg: string) => string;
-		on: (el: HTMLElement | Window | Document | (HTMLElement | Window | Document)[], ev: string, fn: (ev: Event) => void, opts?: AddEventListenerOptions | undefined) => void;
-		off: (el: HTMLElement | Window | Document | (HTMLElement | Window | Document)[], ev: string, fn: (ev: Event) => void, opts?: AddEventListenerOptions | undefined) => void;
 		hasDnd: (em: EditorModel) => boolean;
 		upFirst: (value: string) => string;
 		matches: any;
 		getModel: (el: any, $?: any) => any;
-		getElRect: (el?: HTMLElement | undefined) => {
-			top: number;
-			left: number;
-			width: number;
-			height: number;
-		} | DOMRect;
 		camelCase: (value: string) => string;
-		isTextNode: (el: HTMLElement) => boolean;
-		getKeyCode: (ev: KeyboardEvent) => number;
-		getKeyChar: (ev: KeyboardEvent) => string;
-		isEscKey: (ev: KeyboardEvent) => boolean;
-		isEnterKey: (ev: KeyboardEvent) => boolean;
 		getElement: (el: HTMLElement) => any;
 		shallowDiff: (objOrig: Record<string, any>, objNew: Record<string, any>) => Record<string, any>;
 		normalizeFloat: (value: any, step?: number, valueDef?: number) => any;
-		getPointerEvent: (ev: Event) => any;
 		getUnitFromValue: (value: any) => any;
 		capitalize: (str?: string) => string;
-		getViewEl: (el: any) => any;
+		getViewEl: <T extends unknown>(el?: Node | undefined) => T | undefined;
 		setViewEl: (el: any, view: any) => void;
 		appendStyles: (styles: {}, opts?: {
 			unique?: boolean | undefined;
@@ -10523,7 +10716,6 @@ declare class UtilsModule extends Module {
 		}) => void;
 		isObject: (val: any) => val is Object;
 		isEmptyObj: (val: Record<string, any>) => boolean;
-		isComponent: (obj: any) => any;
 		createId: (length?: number) => string;
 		isRule: (obj: any) => any;
 	};
@@ -11358,12 +11550,12 @@ declare class EditorModel extends Model {
 	toggleSelected(el: Component | Component[], opts?: any): void;
 	/**
 	 * Hover a component
-	 * @param  {Component|HTMLElement} el Component to select
+	 * @param  {Component|HTMLElement} cmp Component to select
 	 * @param  {Object} [opts={}] Options, optional
 	 * @private
 	 */
-	setHovered(el: any, opts?: any): this | undefined;
-	getHovered(): any;
+	setHovered(cmp?: Component | null, opts?: any): void;
+	getHovered(): Component | undefined;
 	/**
 	 * Set components inside editor's canvas. This method overrides actual components
 	 * @param {Object|string} components HTML string or components model
