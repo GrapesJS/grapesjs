@@ -169,13 +169,13 @@ Component> {
 
   initClasses() {
     const { model } = this;
+    const { classes } = model;
     const event = 'change:classes';
-    const classes = model.get('classes');
 
     if (classes instanceof Selectors) {
       this.stopListening(model, event, this.initClasses);
       this.listenTo(model, event, this.initClasses);
-      this.listenTo(classes, 'add remove change', this.updateClasses);
+      this.listenTo(classes, 'add remove change reset', this.updateClasses);
       classes.length && this.importClasses();
     }
   }
@@ -216,13 +216,9 @@ Component> {
    * @private
    * */
   importClasses() {
-    const clm = this.em.Selectors;
-
-    if (clm) {
-      this.model.classes.each(m => {
-        clm.add(m.get('name'));
-      });
-    }
+    const { em, model } = this;
+    const sm = em.Selectors;
+    sm && model.classes.forEach(s => sm.add(s.get('name')));
   }
 
   /**
