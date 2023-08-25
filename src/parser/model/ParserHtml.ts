@@ -9,7 +9,7 @@ import BrowserParserHtml from './BrowserParserHtml';
 type StringObject = Record<string, string>;
 
 type HTMLParseResult = {
-  html?: ComponentDefinitionDefined | ComponentDefinitionDefined[]; // TODO replace with components
+  html: ComponentDefinitionDefined | ComponentDefinitionDefined[]; // TODO replace with components
   css?: CssRuleJSON[];
 };
 
@@ -301,7 +301,7 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
      */
     parse(str: string, parserCss?: any, opts: HTMLParserOptions = {}) {
       const conf = em?.get('Config') || {};
-      const res: HTMLParseResult = {};
+      const res: HTMLParseResult = { html: [] };
       const cf: ObjectAny = { ...config, ...opts };
       const options = {
         ...config.optionsHtml,
