@@ -100,6 +100,8 @@ export type { default as Blocks } from './block_manager/model/Blocks';
 export type { default as Categories } from './block_manager/model/Categories';
 export type { default as Category } from './block_manager/model/Category';
 export type { default as Canvas } from './canvas/model/Canvas';
+export type { default as CanvasSpot } from './canvas/model/CanvasSpot';
+export type { default as CanvasSpots } from './canvas/model/CanvasSpots';
 export type { default as Frame } from './canvas/model/Frame';
 export type { default as Frames } from './canvas/model/Frames';
 export type { default as CssRule } from './css_composer/model/CssRule';
