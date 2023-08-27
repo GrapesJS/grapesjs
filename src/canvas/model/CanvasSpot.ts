@@ -31,9 +31,6 @@ export interface CanvasSpotBase<T extends CanvasSpotType> {
 /** @private */
 export interface CanvasSpotProps<T extends CanvasSpotType = CanvasSpotType> extends CanvasSpotBase<T> {}
 
-/** @private */
-export interface CanvasSpotSpacingProps extends CanvasSpotBase<CanvasSpotBuiltInTypes.Spacing> {}
-
 export default class CanvasSpot<T extends CanvasSpotProps = CanvasSpotProps> extends ModuleModel<CanvasModule, T> {
   defaults() {
     return {
