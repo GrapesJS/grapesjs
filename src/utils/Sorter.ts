@@ -501,7 +501,7 @@ export default class Sorter extends View {
       const { Select, Hover, Spacing } = CanvasSpotBuiltInTypes;
       [Select, Hover, Spacing].forEach(type => cv.removeSpots({ type }));
       cv.addSpot({ ...spotTarget, component: model as any });
-      !cv.hasCustomSpot(targetSpotType) && model.set('status', 'selected-parent');
+      model.set('status', 'selected-parent');
       this.targetModel = model;
     }
   }

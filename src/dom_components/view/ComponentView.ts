@@ -242,13 +242,14 @@ Component> {
     const actualCls = el.getAttribute('class') || '';
     const cls = [actualCls];
     const noCustomSpotSelect = !canvas?.hasCustomSpot(CanvasSpotBuiltInTypes.Select);
+    const noCustomSpotTarget = !canvas?.hasCustomSpot(CanvasSpotBuiltInTypes.Target);
 
     switch (status) {
       case 'selected':
         noCustomSpotSelect && cls.push(selCls);
         break;
       case 'selected-parent':
-        cls.push(selectedParentCls);
+        noCustomSpotTarget && cls.push(selectedParentCls);
         break;
       case 'freezed':
         cls.push(freezedCls);
