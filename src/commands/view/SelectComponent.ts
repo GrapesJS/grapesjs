@@ -379,14 +379,22 @@ export default {
   initResize(elem: HTMLElement) {
     const { em, canvas } = this;
     const editor = em.Editor;
-    const config = em.config;
-    const pfx = config.stylePrefix || '';
-    const resizeClass = `${pfx}resizing`;
     const model = !isElement(elem) && isTaggableNode(elem) ? elem : em.getSelected();
     const resizable = model?.get('resizable');
-    let modelToStyle: any;
+    const spotTypeResize = CanvasSpotBuiltInTypes.Resize;
+    const hasCustomResize = canvas.hasCustomSpot(spotTypeResize);
+    canvas.removeSpots({ type: spotTypeResize });
 
     if (model && resizable) {
+      canvas.addSpot({ type: spotTypeResize, component: model });
+
+      if (hasCustomResize) return;
+
+      let modelToStyle: any;
+      const { config } = em;
+      const pfx = config.stylePrefix || '';
+      const resizeClass = `${pfx}resizing`;
+
       const toggleBodyClass = (method: string, e: any, opts: any) => {
         const docs = opts.docs;
         docs &&
@@ -482,6 +490,8 @@ export default {
 
       this.resizer = editor.runCommand('resize', { el, options, force: 1 });
     } else {
+      if (hasCustomResize) return;
+
       editor.stopCommand('resize');
       this.resizer = null;
     }
