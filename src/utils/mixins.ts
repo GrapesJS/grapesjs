@@ -3,6 +3,7 @@ import ComponentView from '../dom_components/view/ComponentView';
 import EditorModel from '../editor/model/Editor';
 import { isTextNode } from './dom';
 import Component from '../dom_components/model/Component';
+import { ObjectAny } from '../common';
 
 export const isDef = (value: any) => typeof value !== 'undefined';
 
@@ -60,8 +61,8 @@ const appendStyles = (styles: {}, opts: { unique?: boolean; prepand?: boolean } 
  * shallowDiff(a, b);
  * // -> {baz: 2, faz: null, bar: ''};
  */
-const shallowDiff = (objOrig: Record<string, any>, objNew: Record<string, any>) => {
-  const result: Record<string, any> = {};
+const shallowDiff = (objOrig: ObjectAny, objNew: ObjectAny) => {
+  const result: ObjectAny = {};
   const keysNew = keys(objNew);
 
   for (let prop in objOrig) {
@@ -152,7 +153,7 @@ export const escapeNodeContent = (str = '') => {
   return `${str}`.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 };
 
-export const deepMerge = (...args: Record<string, any>[]) => {
+export const deepMerge = (...args: ObjectAny[]) => {
   const target = { ...args[0] };
 
   for (let i = 1; i < args.length; i++) {
@@ -188,8 +189,8 @@ const getModel = (el: any, $?: any) => {
   return model;
 };
 
-const isObject = (val: any): val is Object => val !== null && !Array.isArray(val) && typeof val === 'object';
-const isEmptyObj = (val: Record<string, any>) => Object.keys(val).length <= 0;
+const isObject = (val: any): val is ObjectAny => val && !Array.isArray(val) && typeof val === 'object';
+const isEmptyObj = (val: ObjectAny) => Object.keys(val).length <= 0;
 
 const capitalize = (str: string = '') => str && str.charAt(0).toUpperCase() + str.substring(1);
 const isRule = (obj: any) => obj && obj.toCSS;

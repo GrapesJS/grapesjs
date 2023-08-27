@@ -3,9 +3,10 @@ import Component from '../../dom_components/model/Component';
 import Toolbar from '../../dom_components/model/Toolbar';
 import ToolbarView from '../../dom_components/view/ToolbarView';
 import { isDoc, isTaggableNode, isVisible, off, on } from '../../utils/dom';
-import { getComponentModel, getComponentView, getUnitFromValue, getViewEl, hasWin } from '../../utils/mixins';
+import { getComponentModel, getComponentView, getUnitFromValue, getViewEl, hasWin, isObject } from '../../utils/mixins';
 import { CommandObject } from './CommandAbstract';
 import { CanvasSpotBuiltInTypes } from '../../canvas/model/CanvasSpot';
+import { ResizerOptions } from '../../utils/Resizer';
 
 let showOffsets: boolean;
 /**
@@ -377,28 +378,27 @@ export default {
    */
   initResize(elem: HTMLElement) {
     const { em, canvas } = this;
-    const editor = em?.Editor;
-    const config = em?.config;
+    const editor = em.Editor;
+    const config = em.config;
     const pfx = config.stylePrefix || '';
     const resizeClass = `${pfx}resizing`;
     const model = !isElement(elem) && isTaggableNode(elem) ? elem : em.getSelected();
-    const resizable = model && model.get('resizable');
-    let options = {};
+    const resizable = model?.get('resizable');
     let modelToStyle: any;
 
-    var toggleBodyClass = (method: string, e: any, opts: any) => {
-      const docs = opts.docs;
-      docs &&
-        docs.forEach((doc: Document) => {
-          const body = doc.body;
-          const cls = body.className || '';
-          body.className = (method == 'add' ? `${cls} ${resizeClass}` : cls.replace(resizeClass, '')).trim();
-        });
-    };
+    if (model && resizable) {
+      const toggleBodyClass = (method: string, e: any, opts: any) => {
+        const docs = opts.docs;
+        docs &&
+          docs.forEach((doc: Document) => {
+            const body = doc.body;
+            const cls = body.className || '';
+            body.className = (method == 'add' ? `${cls} ${resizeClass}` : cls.replace(resizeClass, '')).trim();
+          });
+      };
 
-    if (editor && resizable) {
       const el = isElement(elem) ? elem : model.getEl();
-      options = {
+      const options: ResizerOptions = {
         // Here the resizer is updated with the current element height and width
         onStart(e: Event, opts: any = {}) {
           const { el, config, resizer } = opts;
@@ -477,11 +477,8 @@ export default {
           modelToStyle.addStyle(finalStyle, { avoidStore: !store });
           em.Styles.__emitCmpStyleUpdate(finalStyle, { components: em.getSelected() });
         },
+        ...(isObject(resizable) ? resizable : {}),
       };
-
-      if (typeof resizable == 'object') {
-        options = { ...options, ...resizable, parent: options };
-      }
 
       this.resizer = editor.runCommand('resize', { el, options, force: 1 });
     } else {
