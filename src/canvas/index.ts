@@ -769,7 +769,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
   }
 
   hasCustomSpot(type?: CanvasSpotBuiltInTypes) {
-    const { customSpots } = this.getConfig();
+    const { customSpots } = this.config;
 
     if (customSpots === true || (customSpots && type && customSpots[type])) {
       return true;
