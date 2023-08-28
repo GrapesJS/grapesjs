@@ -148,6 +148,21 @@ describe('Canvas', () => {
           done();
         });
       });
+
+      test('removeSpot() triggers proper events', done => {
+        const eventRemove = jest.fn();
+        const eventAll = jest.fn();
+        em.on(canvas.events.spotRemove, eventRemove);
+        em.on(canvas.events.spot, eventAll);
+        const spot = canvas.addSpot({ type: Select });
+        canvas.removeSpots();
+        expect(eventRemove).toBeCalledTimes(1);
+        expect(eventRemove).toBeCalledWith({ spot });
+        setTimeout(() => {
+          expect(eventAll).toBeCalledTimes(1);
+          done();
+        });
+      });
     });
   });
 });
