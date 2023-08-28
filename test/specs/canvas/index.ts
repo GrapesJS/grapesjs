@@ -49,6 +49,27 @@ describe('Canvas', () => {
       });
     });
 
+    describe('getSpots()', () => {
+      test('Get all spots', () => {
+        canvas.addSpot({ type: Select });
+        canvas.addSpot({ type: Target });
+        const spots = canvas.getSpots();
+        expect(spots.length).toBe(2);
+        expect(spots[0].type).toBe(Select);
+        expect(spots[1].type).toBe(Target);
+      });
+
+      test('Get spots by props', () => {
+        canvas.addSpot({ type: Select });
+        canvas.addSpot({ type: Target });
+        canvas.addSpot({ id: 'target2', type: Target });
+        const spotsSelect = canvas.getSpots({ type: Select });
+        const spotsTarget = canvas.getSpots({ type: Target });
+        expect(spotsSelect.length).toBe(1);
+        expect(spotsTarget.length).toBe(2);
+      });
+    });
+
     describe('Spot Events', () => {
       test('addSpot() triggers proper events', done => {
         const eventAdd = jest.fn();
