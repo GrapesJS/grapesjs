@@ -80,6 +80,44 @@ describe('Canvas', () => {
       });
     });
 
+    describe('removeSpots()', () => {
+      test('Remove all spots', () => {
+        canvas.addSpot({ type: Select });
+        canvas.addSpot({ type: Target });
+        canvas.removeSpots();
+        const spots = canvas.getSpots();
+        expect(spots.length).toBe(0);
+      });
+
+      test('Remove spots by props', () => {
+        canvas.addSpot({ type: Select });
+        canvas.addSpot({ type: Target });
+        canvas.addSpot({ id: 'target2', type: Target });
+        canvas.removeSpots({ type: Target });
+        const spots = canvas.getSpots();
+        expect(spots.length).toBe(1);
+      });
+
+      test('Remove spots by id', () => {
+        canvas.addSpot({ type: Select });
+        canvas.addSpot({ type: Target });
+        canvas.addSpot({ id: 'target2', type: Target });
+        canvas.removeSpots({ id: 'target2' });
+        const spots = canvas.getSpots();
+        expect(spots.length).toBe(2);
+      });
+
+      test('Remove spots by array of spots', () => {
+        const spotSelect = canvas.addSpot({ type: Select });
+        const spotTarget1 = canvas.addSpot({ type: Target });
+        const spotTarget2 = canvas.addSpot({ id: 'target2', type: Target });
+        canvas.removeSpots([spotTarget1, spotTarget2]);
+        const spots = canvas.getSpots();
+        expect(spots.length).toBe(1);
+        expect(spots[0]).toBe(spotSelect);
+      });
+    });
+
     describe('Spot Events', () => {
       test('addSpot() triggers proper events', done => {
         const eventAdd = jest.fn();

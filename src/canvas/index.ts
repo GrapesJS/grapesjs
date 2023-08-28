@@ -42,7 +42,7 @@
  * @module Canvas
  */
 
-import { isUndefined } from 'underscore';
+import { isArray, isUndefined } from 'underscore';
 import { Module } from '../abstract';
 import { AddOptions, Coordinates } from '../common';
 import Component from '../dom_components/model/Component';
@@ -758,8 +758,8 @@ export default class CanvasModule extends Module<CanvasConfig> {
     return this.spots.where(spotProps.id ? { id: spotProps.id } : spotProps) as CanvasSpot<T>[];
   }
 
-  removeSpots<T extends CanvasSpotProps>(spotProps: Partial<T> = {}) {
-    const spots = this.getSpots(spotProps);
+  removeSpots<T extends CanvasSpotProps>(spotProps: Partial<T> | CanvasSpot[] = {}) {
+    const spots = isArray(spotProps) ? spotProps : this.getSpots(spotProps);
     const removed = this.spots.remove(spots);
     return removed as unknown as CanvasSpot<T>[];
   }
