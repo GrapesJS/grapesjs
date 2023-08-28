@@ -68,6 +68,16 @@ describe('Canvas', () => {
         expect(spotsSelect.length).toBe(1);
         expect(spotsTarget.length).toBe(2);
       });
+
+      test('Get spot by id', () => {
+        canvas.addSpot({ type: Select });
+        canvas.addSpot({ type: Target });
+        const spotT2 = canvas.addSpot({ id: 'target2', type: Target });
+
+        const spotsTarget = canvas.getSpots({ id: 'target2', type: Select });
+        expect(spotsTarget.length).toBe(1);
+        expect(spotsTarget[0]).toBe(spotT2);
+      });
     });
 
     describe('Spot Events', () => {
