@@ -1,7 +1,7 @@
 import { CanvasSpotBuiltInTypes } from '../../../src/canvas/model/CanvasSpot';
 import EditorModel from '../../../src/editor/model/Editor';
 
-const { Select } = CanvasSpotBuiltInTypes;
+const { Select, Target } = CanvasSpotBuiltInTypes;
 
 describe('Canvas', () => {
   let em: EditorModel;
@@ -21,25 +21,36 @@ describe('Canvas', () => {
   });
 
   describe('Canvas Spots', () => {
-    test('addSpot() single spot', () => {
-      canvas.addSpot({ type: Select });
-      const spots = canvas.getSpots();
-      expect(spots.length).toBe(1);
-      expect(spots[0].type).toBe(Select);
-    });
+    describe('addSpot()', () => {
+      test('Add single spot', () => {
+        canvas.addSpot({ type: Select });
+        const spots = canvas.getSpots();
+        expect(spots.length).toBe(1);
+        expect(spots[0].type).toBe(Select);
+      });
 
-    test('addSpot() multiple spots with the same schema', () => {
-      const spot1 = canvas.addSpot({ type: Select });
-      // The id of this spot is the same as the one above
-      const spot2 = canvas.addSpot({ type: Select });
-      const spots = canvas.getSpots();
-      expect(spots.length).toBe(1);
-      expect(spots[0].type).toBe(Select);
-      expect(spot1).toBe(spot2);
+      test('Add multiple spots with the same schema', () => {
+        const spot1 = canvas.addSpot({ type: Select });
+        // The id of this spot is the same as the one above
+        const spot2 = canvas.addSpot({ type: Select });
+        const spots = canvas.getSpots();
+        expect(spots.length).toBe(1);
+        expect(spots[0].type).toBe(Select);
+        expect(spot1).toBe(spot2);
+      });
+
+      test('Adding multiple spots with the same id, will update the spot', () => {
+        const spot1 = canvas.addSpot({ id: 'spot1', type: Select });
+        const spot2 = canvas.addSpot({ id: 'spot1', type: Target });
+        const spots = canvas.getSpots();
+        expect(spots.length).toBe(1);
+        expect(spots[0].type).toBe(Target);
+        expect(spot1).toBe(spot2);
+      });
     });
 
     describe('Spot Events', () => {
-      test('Add triggers proper events', done => {
+      test('addSpot() triggers proper events', done => {
         const eventAdd = jest.fn();
         const eventAll = jest.fn();
         em.on(canvas.events.spotAdd, eventAdd);
