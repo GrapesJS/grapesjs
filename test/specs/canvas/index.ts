@@ -63,6 +63,22 @@ describe('Canvas', () => {
           done();
         });
       });
+
+      test('Update of spots triggers proper events', done => {
+        const eventUpdate = jest.fn();
+        const eventAll = jest.fn();
+        em.on(canvas.events.spotUpdate, eventUpdate);
+        em.on(canvas.events.spot, eventAll);
+        const spot = canvas.addSpot({ id: 'spot1', type: Select });
+        canvas.addSpot({ id: 'spot1', type: Target });
+
+        expect(eventUpdate).toBeCalledTimes(1);
+        expect(eventUpdate).toBeCalledWith({ spot });
+        setTimeout(() => {
+          expect(eventAll).toBeCalledTimes(1);
+          done();
+        });
+      });
     });
   });
 });
