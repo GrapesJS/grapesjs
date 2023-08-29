@@ -132,6 +132,33 @@ In the next section, we'll see how it's possible to reuse the built-in spots and
 
 In the example below we'll see how to reuse the built-in `hover` canvas spot to render our custom highlighting rectangle (we'll disable the rendering of the default one) and create a new one in order to render a button below the selected `text` components.
 
+[DEMO](https://jsfiddle.net/artur_arseniev/zdetbjsg/)
+
+<demo-viewer value="zdetbjsg" height="500" darkcode/>
+
+Worth noting a few important points:
+
+* Our custom container has to be moved inside the GrapesJS spots container.
+```js
+editor.onReady(() => {
+ Canvas.getSpotsEl().appendChild(this.$el);
+});
+```
+* We pass the `component` to our custom spot, in order to have the style coordinates properly updated when we scroll the page or update the component.
+```js
+Canvas.addSpot({ type: customSpotType, component });
+```
+* The single spot is placed properly with `spot.getStyle()`
+```html
+<div ... class="spot" :style="spot.getStyle()">...</div>
+```
+* The spots container, by default, relies on `pointer-events: none`, in order to prevent the spot from blocking the interaction with the components. This is why we have to re-enable the pointer event on the button in order to make it interactable.
+```css
+.spot-text-btn {
+  /*...*/
+  pointer-events: auto;
+}
+```
 
 <!-- Demo template, here for reference
 <style>
