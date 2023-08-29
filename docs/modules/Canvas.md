@@ -108,17 +108,136 @@ The `spacing` type is used to show component offsets like paddings and margins (
 
 ### Disable built-in types
 
+You can disable the rendering of built-in canvas spots (some or all of them) during the editor initialization.
+
 ```js
-canvas: {
-  customSpots: {
-    select: true,
-    hover: true,
-    spacing: true,
-    target: true,
-    // resize: true,
-  },
-},
+grapesjs.init({
+    // ...
+    canvas: {
+        // Disable only the hover type spot
+        customSpots: {
+            hover: true,
+        },
+        // Disable all built-in spots
+        customSpots: true,
+    },
+})
 ```
+In the next section, we'll see how it's possible to reuse the built-in spots and create your own.
+
+
+
+
+### Spots customization
+
+In the example below we'll see how to reuse the built-in `hover` canvas spot to render our custom highlighting rectangle (we'll disable the rendering of the default one) and create a new one in order to render a button below the selected `text` components.
+
+
+<!-- Demo template, here for reference
+<style>
+    .spot-text-btn {
+        background-color: #3b97e3;
+        border: none;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 3px;
+        cursor: pointer;
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        translate: -50% 120%;
+        pointer-events: auto;
+    }
+    .spot-hover {
+        border: 2px solid #d23be3;
+    }
+    .spot-hover-tag {
+        background-color: #d23be3;
+        color: white;
+        padding: 4px 8px;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        translate: 0% 100%;
+        white-space: nowrap;
+    }
+</style>
+
+<div class="vue-app">
+    <div
+      v-for="spot in spots"
+      v-if="isSpotToShow(spot)"
+      :key="spot.id"
+      :class="{spot: 1, 'spot-hover': isHoverSpot(spot) }"
+      :style="spot.getStyle()"
+    >
+      <button
+        v-if="isTextSelectedSpot(spot)"
+        class="spot-text-btn" type="button" @click="onBtnAdd"
+      >
+        + Add
+      </button>
+      <span
+        v-if="isHoverSpot(spot)"
+        class="spot-hover-tag"
+      >
+        Name: {{ spot.component.getName() }}
+      </span>
+    </div>
+</div>
+
+<script>
+  const app = new Vue({
+    el: '.vue-app',
+    data: { spots: [] },
+    mounted() {
+      const { Canvas } = editor;
+      // Catch-all event for any spot update
+      editor.on('canvas:spot', this.onCanvasSpot);
+
+      // Add a new custom canvas spot for the last selected text component.
+      editor.on('component:toggled', (component) => {
+        // Remove all spots related to out custom type
+        Canvas.removeSpots({ type: 'my-text-spot' });
+
+        if (component === editor.getSelected() && component.is('text')) {
+          Canvas.addSpot({ type: 'my-text-spot', component });
+        }
+      });
+
+      editor.onReady(() => {
+        editor.Canvas.getSpotsEl().appendChild(this.$el);
+      });
+    },
+    methods: {
+      onCanvasSpot() {
+        this.spots = editor.Canvas.getSpots();
+        console.log('onCanvasSpot', this.spots.map(s => s.id));
+      },
+      onBtnAdd() {
+        const selected = editor.getSelected();
+        const parent = selected.parent();
+        if (parent) {
+          parent.append(
+            { type: 'text', components: 'New text component' },
+            { at: selected.index() + 1 }
+          )
+        }
+      },
+      isTextSelectedSpot(spot) {
+        return spot.type === 'my-text-spot';
+      },
+      isHoverSpot(spot) {
+        return spot.type === 'hover';
+      },
+      isSpotToShow(spot) {
+        return this.isTextSelectedSpot(spot) || this.isHoverSpot(spot);
+      },
+    }
+  });
+</script>
+-->
+
 
 
 
