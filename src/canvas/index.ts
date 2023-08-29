@@ -21,21 +21,6 @@
  *
  * {REPLACE_EVENTS}
  *
- * ## Methods
- * * [getConfig](#getconfig)
- * * [getElement](#getelement)
- * * [getFrameEl](#getframeel)
- * * [getWindow](#getwindow)
- * * [getDocument](#getdocument)
- * * [getBody](#getbody)
- * * [setCustomBadgeLabel](#setcustombadgelabel)
- * * [hasFocus](#hasfocus)
- * * [scrollTo](#scrollto)
- * * [setZoom](#setzoom)
- * * [getZoom](#getzoom)
- * * [getCoords](#getcoords)
- * * [setCoords](#setcoords)
- *
  * [Component]: component.html
  * [Frame]: frame.html
  *
