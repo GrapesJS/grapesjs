@@ -178,6 +178,10 @@ export default class Component extends StyleableModel<ComponentProperties> {
     return this.get('toolbar') || [];
   }
 
+  get resizable() {
+    return this.get('resizable')!;
+  }
+
   /**
    * Hook method, called once the model is created
    */
