@@ -675,6 +675,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
    * Add new frame to the canvas
    * @param {Object} props Frame properties
    * @returns {[Frame]}
+   * @private
    * @example
    * canvas.addFrame({
    *   name: 'Mobile home page',
