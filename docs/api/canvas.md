@@ -66,28 +66,11 @@ editor.on('canvas:spot:remove', ({ spot }) => {
 });
 ```
 
-* `canvas:viewport` Canvas viewport updated (eg. zoom or coordinates).
+* `canvas:coords` Canvas coordinates updated.
 
 ```javascript
-editor.on('canvas:viewport', () => {
- const { Canvas } = editor;
- console.log('Canvas, zoom:', Canvas.getZoom(), 'coords:', Canvas.getCoords());
-});
-```
-
-* `canvas:viewport:start` Canvas viewport update started (eg. zooming or panning)
-
-```javascript
-editor.on('canvas:viewport:start', () => {
- console.log('viewport update started')
-});
-```
-
-* `canvas:viewport:end` Canvas viewport update ended. This event is debounced on 300ms from the `canvas:viewport:start`.
-
-```javascript
-editor.on('canvas:viewport:end', () => {
- console.log('viewport updated ended')
+editor.on('canvas:coords', () => {
+ console.log('Canvas coordinates updated:', editor.Canvas.getCoords());
 });
 ```
 
@@ -95,25 +78,19 @@ editor.on('canvas:viewport:end', () => {
 
 ```javascript
 editor.on('canvas:zoom', () => {
- console.log('New canvas zoom:', editor.Canvas.getZoom());
+ console.log('Canvas zoom updated:', editor.Canvas.getZoom());
 });
 ```
 
-## Methods
+* `canvas:pointer` Canvas pointer updated.
 
-*   [getConfig][2]
-*   [getElement][3]
-*   [getFrameEl][4]
-*   [getWindow][5]
-*   [getDocument][6]
-*   [getBody][7]
-*   [setCustomBadgeLabel][8]
-*   [hasFocus][9]
-*   [scrollTo][10]
-*   [setZoom][11]
-*   [getZoom][12]
-*   [getCoords][13]
-*   [setCoords][14]
+```javascript
+editor.on('canvas:pointer', () => {
+ console.log('Canvas pointer updated:', editor.Canvas.getPointer());
+});
+```
+
+* ToScreenOption
 
 [Component]: component.html
 
@@ -123,25 +100,25 @@ editor.on('canvas:zoom', () => {
 
 Get configuration object
 
-Returns **[Object][15]** 
+Returns **[Object][2]** 
 
 ## getElement
 
 Get the canvas element
 
-Returns **[HTMLElement][16]** 
+Returns **[HTMLElement][3]** 
 
 ## getFrameEl
 
 Get the main frame element of the canvas
 
-Returns **[HTMLIFrameElement][17]** 
+Returns **[HTMLIFrameElement][4]** 
 
 ## getWindow
 
 Get the main frame window instance
 
-Returns **[Window][18]** 
+Returns **[Window][5]** 
 
 ## getDocument
 
@@ -153,7 +130,7 @@ Returns **HTMLDocument**
 
 Get the main frame body element
 
-Returns **[HTMLBodyElement][19]** 
+Returns **[HTMLBodyElement][6]** 
 
 ## setCustomBadgeLabel
 
@@ -161,7 +138,7 @@ Set custom badge naming strategy
 
 ### Parameters
 
-*   `f` **[Function][20]** 
+*   `f` **[Function][7]** 
 
 ### Examples
 
@@ -175,13 +152,13 @@ canvas.setCustomBadgeLabel(function(component){
 
 Get canvas rectangular data
 
-Returns **[Object][15]** 
+Returns **[Object][2]** 
 
 ## hasFocus
 
 Check if the canvas is focused
 
-Returns **[Boolean][21]** 
+Returns **[Boolean][8]** 
 
 ## scrollTo
 
@@ -192,10 +169,10 @@ passed to it. For instance, you can scroll smoothly by using
 
 ### Parameters
 
-*   `el` **([HTMLElement][16] | [Component])** 
-*   `opts` **[Object][15]** Options, same as options for `scrollIntoView` (optional, default `{}`)
+*   `el` **([HTMLElement][3] | [Component])** 
+*   `opts` **[Object][2]** Options, same as options for `scrollIntoView` (optional, default `{}`)
 
-    *   `opts.force` **[Boolean][21]** Force the scroll, even if the element is already visible (optional, default `false`)
+    *   `opts.force` **[Boolean][8]** Force the scroll, even if the element is already visible (optional, default `false`)
 
 ### Examples
 
@@ -213,7 +190,7 @@ Set canvas zoom value
 
 ### Parameters
 
-*   `value` **[Number][22]** The zoom value, from 0 to 100
+*   `value` **[Number][9]** The zoom value, from 0 to 100
 
 ### Examples
 
@@ -234,7 +211,7 @@ canvas.setZoom(50); // set zoom to 50%
 const zoom = canvas.getZoom(); // 50
 ```
 
-Returns **[Number][22]** 
+Returns **[Number][9]** 
 
 ## setCoords
 
@@ -242,8 +219,8 @@ Set canvas position coordinates
 
 ### Parameters
 
-*   `x` **[Number][22]** Horizontal position
-*   `y` **[Number][22]** Vertical position
+*   `x` **[Number][9]** Horizontal position
+*   `y` **[Number][9]** Vertical position
 *   `opts` **ToWorldOption**  (optional, default `{}`)
 
 ### Examples
@@ -266,7 +243,7 @@ const coords = canvas.getCoords();
 // { x: 100, y: 100 }
 ```
 
-Returns **[Object][15]** Object containing coordinates
+Returns **[Object][2]** Object containing coordinates
 
 ## addFrame
 
@@ -274,7 +251,7 @@ Add new frame to the canvas
 
 ### Parameters
 
-*   `props` **[Object][15]** Frame properties (optional, default `{}`)
+*   `props` **[Object][2]** Frame properties (optional, default `{}`)
 *   `opts`   (optional, default `{}`)
 
 ### Examples
@@ -304,50 +281,149 @@ Returns **[Frame]**
 
 Get the last created Component from a drag & drop to the canvas.
 
-Returns **([Component] | [undefined][23])** 
+Returns **([Component] | [undefined][10])** 
+
+## addSpot
+
+Add or update canvas spot.
+
+### Parameters
+
+*   `props` **[Object][2]** Canvas spot properties.
+*   `opts` **AddOptions**  (optional, default `{}`)
+
+### Examples
+
+```javascript
+// Add new canvas spot
+const spot = canvas.addSpot({
+ type: 'select', // 'select' is one of the built-in spots
+ component: editor.getSelected(),
+});
+
+// Add custom canvas spot
+const spot = canvas.addSpot({
+ type: 'my-custom-spot',
+ component: editor.getSelected(),
+});
+// Update the same spot by reusing its ID
+canvas.addSpot({
+ id: spot.id,
+ component: anotherComponent,
+});
+```
+
+Returns **[CanvasSpot]** 
+
+## getSpots
+
+Get canvas spots.
+
+### Parameters
+
+*   `spotProps` **[Object][2]?** Canvas spot properties for filtering the result. With no properties, all available spots will be returned. (optional, default `{}`)
+
+### Examples
+
+```javascript
+canvas.addSpot({ type: 'select', component: cmp1 });
+canvas.addSpot({ type: 'select', component: cmp2 });
+canvas.addSpot({ type: 'target', component: cmp3 });
+
+// Get all spots
+const allSpots = canvas.getSpots();
+allSpots.length; // 3
+
+// Get all 'select' spots
+const allSelectSpots = canvas.getSpots({ type: 'select' });
+allSelectSpots.length; // 2
+```
+
+Returns **[Array][11]<[CanvasSpot]>** 
+
+## removeSpots
+
+Remove canvas spots.
+
+### Parameters
+
+*   `spotProps` **([Object][2] | [Array][11]<[CanvasSpot]>)?** Canvas spot properties for filtering spots to remove or an array of spots to remove. With no properties, all available spots will be removed. (optional, default `{}`)
+
+### Examples
+
+```javascript
+canvas.addSpot({ type: 'select', component: cmp1 });
+canvas.addSpot({ type: 'select', component: cmp2 });
+canvas.addSpot({ type: 'target', component: cmp3 });
+
+// Remove all 'select' spots
+canvas.removeSpots({ type: 'select' });
+
+// Remove spots by an array of canvas spots
+const filteredSpots = canvas.getSpots().filter(spot => myCustomCondition);
+canvas.removeSpots(filteredSpots);
+
+// Remove all spots
+canvas.removeSpots();
+```
+
+Returns **[Array][11]<[CanvasSpot]>** 
+
+## hasCustomSpot
+
+Check if the built-in canvas spot has a declared custom rendering.
+
+### Parameters
+
+*   `type` **[String][12]** Built-in canvas spot type
+
+### Examples
+
+```javascript
+grapesjs.init({
+ // ...
+ canvas: {
+   // avoid rendering the built-in 'target' canvas spot
+   customSpots: { target: true }
+ }
+});
+// ...
+canvas.hasCustomSpot('select'); // false
+canvas.hasCustomSpot('target'); // true
+```
+
+Returns **[Boolean][8]** 
+
+## getWorldRectToScreen
+
+Transform a box rect from the world coordinate system to the screen one.
+
+### Parameters
+
+*   `boxRect` **[Object][2]** 
+
+Returns **[Object][2]** 
 
 [1]: https://github.com/GrapesJS/grapesjs/blob/master/src/canvas/config/config.ts
 
-[2]: #getconfig
+[2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[3]: #getelement
+[3]: https://developer.mozilla.org/docs/Web/HTML/Element
 
-[4]: #getframeel
+[4]: https://developer.mozilla.org/docs/Web/API/HTMLIFrameElement
 
-[5]: #getwindow
+[5]: https://developer.mozilla.org/docs/Web/API/Window
 
-[6]: #getdocument
+[6]: https://developer.mozilla.org/docs/Web/HTML/Element/body
 
-[7]: #getbody
+[7]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
 
-[8]: #setcustombadgelabel
+[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
 
-[9]: #hasfocus
+[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
 
-[10]: #scrollto
+[10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined
 
-[11]: #setzoom
+[11]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
-[12]: #getzoom
-
-[13]: #getcoords
-
-[14]: #setcoords
-
-[15]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
-
-[16]: https://developer.mozilla.org/docs/Web/HTML/Element
-
-[17]: https://developer.mozilla.org/docs/Web/API/HTMLIFrameElement
-
-[18]: https://developer.mozilla.org/docs/Web/API/Window
-
-[19]: https://developer.mozilla.org/docs/Web/HTML/Element/body
-
-[20]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
-
-[21]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
-
-[22]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
-
-[23]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined
+[12]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
