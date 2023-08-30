@@ -69,7 +69,7 @@ canvasSpot.isType('select');
 
 Returns **[Boolean][4]** 
 
-[1]: https://github.com/GrapesJS/grapesjs/blob/dev/docs/modules/Canvas.md#canvas-spots
+[1]: https://grapesjs.com/docs/modules/Canvas.html#canvas-spots
 
 [2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
