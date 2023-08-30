@@ -27,16 +27,18 @@ var loadScript = function(src, clb) {
   return scr;
 };
 
+var loadNativeCarbon = () => {
+  var script = loadScript('https://cdn.carbonads.com/carbon.js?serve=CEAIVK77&placement=grapesjscom');
+  script.setAttribute('id', '_carbonads_js');
+  var adCont = document.getElementById('native-carbon');
+  adCont && adCont.appendChild(script);
+}
+
 function BSANativeCallback (a) {
   var total = a.ads.length;
-  if (!total) {
-    var script = loadScript('//cdn.carbonads.com/carbon.js?serve=CEAIVK77&placement=grapesjscom');
-    script.setAttribute('id', '_carbonads_js');
-    var adCont = document.getElementById('native-carbon');
-    adCont && adCont.appendChild(script);
-  }
+  !total && loadNativeCarbon()
 }
 
 if (['grapesjs.com', 'localhost'].indexOf(location.hostname) >= 0 ) {
-  loadScript('//m.servedby-buysellads.com/monetization.js', loadAd);
+  loadNativeCarbon();
 }
