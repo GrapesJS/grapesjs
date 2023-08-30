@@ -102,3 +102,6 @@ export enum CanvasEvents {
   pointer = 'canvas:pointer',
 }
 /**{END_EVENTS}*/
+
+// need this to avoid the TS documentation generator to break
+export default CanvasEvents;

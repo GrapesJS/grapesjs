@@ -19,9 +19,10 @@ const getEventsMdFromTypes = async (filePath) => {
       .then(cm => documentation.formats.md(cm, /*{ markdownToc: true }*/));
     const indexFrom = resTypes.indexOf(START_EVENTS) + START_EVENTS.length;
     const indexTo = resTypes.indexOf(END_EVENTS);
-
+    // console.log(`${resTypes}`)
     const result = resTypes.substring(indexFrom, indexTo)
       .replace(/\n### Examples\n/gi, '')
+      .replace(/\n## types\n/gi, '')
       .replace(/## /gi, '* ')
       .replace(/\\`/gi, '`')
       .replace(/##/gi, '')

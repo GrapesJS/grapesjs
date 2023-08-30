@@ -20,6 +20,6 @@
   }],
   "ignorePatterns": [
     "dist/*",
-    "private/*",
+    "private/*"
   ]
 }
