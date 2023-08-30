@@ -6,7 +6,9 @@ export interface ToWorldOption {
   toWorld?: boolean;
 }
 
-export interface GetBoxRectOptions extends ToScreenOption {}
+export interface GetBoxRectOptions extends ToScreenOption {
+  local?: boolean;
+}
 
 /**{START_EVENTS}*/
 export enum CanvasEvents {
