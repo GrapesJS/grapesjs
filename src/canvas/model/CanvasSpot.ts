@@ -49,7 +49,7 @@ export interface CanvasSpotProps<T extends CanvasSpotType = CanvasSpotType> exte
  * Canvas spots are elements drawn on top of the canvas. They can be used to represent anything you
  * might need but the most common use case of canvas spots is rendering information and managing
  * components rendered in the canvas.
- * Read here for more information about [Canvas Spots](https://github.com/GrapesJS/grapesjs/blob/dev/docs/modules/Canvas.md#canvas-spots)
+ * Read here for more information about [Canvas Spots](https://grapesjs.com/docs/modules/Canvas.html#canvas-spots)
  *
  * [Component]: component.html
  *

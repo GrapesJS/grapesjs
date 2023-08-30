@@ -4,8 +4,9 @@ title: Canvas
 
 # Canvas
 
-> [!WARNING]
-> The documentation of this module is still a work in progress.
+::: danger WIP
+The documentation of this module is still a work in progress.
+:::
 
 ::: warning
 This guide is referring to GrapesJS v0.21.5 or higher
