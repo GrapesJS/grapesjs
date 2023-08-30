@@ -332,8 +332,13 @@ export default {
   updateBadge(el: HTMLElement, pos: any, opts: any = {}) {
     const { canvas } = this;
     const model = getComponentModel(el);
-    if (!model || !model.get('badgable')) return;
     const badge = this.getBadge(opts);
+    const bStyle = badge.style;
+
+    if (!model || !model.get('badgable')) {
+      bStyle.display = 'none';
+      return;
+    }
 
     if (!opts.posOnly) {
       const config = this.canvas.getConfig();
@@ -347,7 +352,6 @@ export default {
     }
 
     const un = 'px';
-    const bStyle = badge.style;
     bStyle.display = 'block';
 
     const targetToElem = canvas.getTargetToElementFixed(el, badge, {
