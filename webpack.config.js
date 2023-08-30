@@ -1,10 +1,7 @@
-import path from 'path';
-import webpack from 'webpack';
-import pkg from './package.json';
-
+const path = require('path');
 const rootDir = path.resolve(__dirname);
 
-export default ({ config }) => ({
+module.exports = ({ config, pkg, webpack }) => ({
   ...config,
   output: {
     ...config.output,
