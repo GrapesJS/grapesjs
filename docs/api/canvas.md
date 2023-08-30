@@ -90,11 +90,11 @@ editor.on('canvas:pointer', () => {
 });
 ```
 
-* ToScreenOption
-
 [Component]: component.html
 
 [Frame]: frame.html
+
+[CanvasSpot]: canvas_spot.html
 
 ## getConfig
 

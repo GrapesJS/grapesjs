@@ -23,6 +23,7 @@
  *
  * [Component]: component.html
  * [Frame]: frame.html
+ * [CanvasSpot]: canvas_spot.html
  *
  * @module Canvas
  */
