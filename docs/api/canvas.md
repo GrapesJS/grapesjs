@@ -245,38 +245,6 @@ const coords = canvas.getCoords();
 
 Returns **[Object][2]** Object containing coordinates
 
-## addFrame
-
-Add new frame to the canvas
-
-### Parameters
-
-*   `props` **[Object][2]** Frame properties (optional, default `{}`)
-*   `opts`   (optional, default `{}`)
-
-### Examples
-
-```javascript
-canvas.addFrame({
-  name: 'Mobile home page',
-  x: 100, // Position in canvas
-  y: 100,
-  width: 500, // Frame dimensions
-  height: 600,
-  // device: 'DEVICE-ID',
-  components: [
-    '<h1 class="testh">Title frame</h1>',
-    '<p class="testp">Paragraph frame</p>',
-  ],
-  styles: `
-    .testh { color: red; }
-    .testp { color: blue; }
-  `,
-});
-```
-
-Returns **[Frame]** 
-
 ## getLastDragResult
 
 Get the last created Component from a drag & drop to the canvas.

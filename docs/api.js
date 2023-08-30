@@ -68,6 +68,7 @@ async function generateDocs () {
     ['undo_manager/index.ts', 'undo_manager.md'],
     ['canvas/index.ts', 'canvas.md'],
     ['canvas/model/Frame.ts', 'frame.md'],
+    ['canvas/model/CanvasSpot.ts', 'canvas_spot.md'],
     ['i18n/index.ts', 'i18n.md'],
     ['navigator/index.ts', 'layer_manager.md'],
     ['pages/index.ts', 'pages.md'],
@@ -83,6 +84,7 @@ async function generateDocs () {
     return documentation.build([filePath], { shallow: true })
       .then(cm => documentation.formats.md(cm, /*{ markdownToc: true }*/))
       .then(async (output) => {
+        let addLogs = [];
         let result = output
           .replace(/\*\*\\\[/g, '**[')
           .replace(/\*\*\(\\\[/g, '**([')
@@ -97,11 +99,14 @@ async function generateDocs () {
         // Search for module event documentation
         if (result.indexOf(REPLACE_EVENTS) >= 0) {
           const eventsMd = await getEventsMdFromTypes(filePath);
+          if (eventsMd && result.indexOf(REPLACE_EVENTS) >= 0) {
+            addLogs.push('replaced events');
+          }
           result = eventsMd ? result.replace(REPLACE_EVENTS, `## Available Events\n${eventsMd}`) : result;
         }
 
         fs.writeFileSync(`${docRoot}/api/${file[1]}`, result);
-        log('Created', file[1]);
+        log('Created', file[1], addLogs.length ? `(${addLogs.join(', ')})` : '');
       });
   }));
 
