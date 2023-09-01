@@ -1,8 +1,8 @@
-import Assets from 'asset_manager/model/Assets';
-import AssetView from 'asset_manager/view/AssetView';
+import Assets from '../../../../src/asset_manager/model/Assets';
+import AssetView from '../../../../src/asset_manager/view/AssetView';
 
 describe('AssetView', () => {
-  let testContext;
+  let testContext: { view?: AssetView };
 
   beforeEach(() => {
     testContext = {};
@@ -14,13 +14,13 @@ describe('AssetView', () => {
     testContext.view = new AssetView({
       config: {},
       model,
-    });
+    } as any);
     document.body.innerHTML = '<div id="fixtures"></div>';
-    document.body.querySelector('#fixtures').appendChild(testContext.view.render().el);
+    document.body.querySelector('#fixtures')!.appendChild(testContext.view.render().el);
   });
 
   afterEach(() => {
-    testContext.view.remove();
+    testContext.view!.remove();
   });
 
   test('Object exists', () => {
@@ -28,6 +28,6 @@ describe('AssetView', () => {
   });
 
   test('Has correct prefix', () => {
-    expect(testContext.view.pfx).toEqual('');
+    expect(testContext.view!.pfx).toEqual('');
   });
 });
