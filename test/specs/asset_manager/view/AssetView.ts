@@ -9,8 +9,8 @@ describe('AssetView', () => {
   });
 
   beforeEach(() => {
-    var coll = new Assets();
-    var model = coll.add({ src: 'test' });
+    const coll = new Assets();
+    const model = coll.add({ src: 'test' });
     testContext.view = new AssetView({
       config: {},
       model,
