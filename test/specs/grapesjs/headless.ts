@@ -1,6 +1,7 @@
 /**
  * @jest-environment node
  */
+import grapesjs, { Editor } from '../../../src';
 
 describe('GrapesJS Headless', () => {
   test('Can init and destroy an editor', () => {
@@ -10,12 +11,12 @@ describe('GrapesJS Headless', () => {
   });
 
   describe('Headless operations', () => {
-    let editor;
+    let editor: Editor;
     const cmpObj = {
-      attributes: { class: 'cls', test: 'value' },
+      attributes: { test: 'value', class: 'cls' },
       components: { type: 'textnode', content: 'Test' },
     };
-    const cmpStr = '<div class="cls" test="value">Test</div>';
+    const cmpStr = '<div test="value" class="cls">Test</div>';
     const fullHtml = `<body>${cmpStr}</body>`;
     const styleObj = {
       selectors: [{ name: 'cls' }],

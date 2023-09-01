@@ -989,9 +989,9 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
   initClasses(m?: any, c?: any, opts: any = {}) {
     const event = 'change:classes';
-    const attrCls = this.get('attributes')!.class || [];
+    const { class: attrCls, ...restAttr } = this.get('attributes') || {};
     const toListen = [this, event, this.initClasses];
-    const cls = this.get('classes') || attrCls;
+    const cls = this.get('classes') || attrCls || [];
     const clsArr = isString(cls) ? cls.split(' ') : cls;
     this.stopListening(...toListen);
     const classes = this.normalizeClasses(clsArr);
@@ -999,6 +999,8 @@ export default class Component extends StyleableModel<ComponentProperties> {
     this.set('classes', selectors, opts);
     selectors.add(classes);
     selectors.on('add remove reset', this.__upSymbCls);
+    // Clear attributes from classes
+    attrCls && classes.length && this.set('attributes', restAttr);
     // @ts-ignore
     this.listenTo(...toListen);
     return this;
