@@ -1,25 +1,20 @@
-import AssetManager from 'asset_manager';
-import Editor from 'editor';
+import AssetManager from '../../../src/asset_manager';
+import EditorModel from '../../../src/editor/model/Editor';
 
 describe('Asset Manager', () => {
   describe('Main', () => {
-    let obj;
-    let imgObj;
+    let obj: AssetManager;
+    const imgObj = {
+      type: 'image',
+      src: 'path/to/image',
+      width: 101,
+      height: 102,
+    };
 
     beforeEach(() => {
       document.body.innerHTML = '<div id="asset-c"></div>';
-      imgObj = {
-        type: 'image',
-        src: 'path/to/image',
-        width: 101,
-        height: 102,
-      };
-      obj = new AssetManager(new Editor());
-      document.body.querySelector('#asset-c').appendChild(obj.render());
-    });
-
-    afterEach(() => {
-      obj = null;
+      obj = new AssetManager(new EditorModel());
+      document.body.querySelector('#asset-c')!.appendChild(obj.render());
     });
 
     test('Object exists', () => {
@@ -37,7 +32,7 @@ describe('Asset Manager', () => {
 
     test('Added asset has correct data', () => {
       obj.add(imgObj);
-      var asset = obj.get(imgObj.src);
+      const asset = obj.get(imgObj.src)!;
       expect(asset.get('width')).toEqual(imgObj.width);
       expect(asset.get('height')).toEqual(imgObj.height);
       expect(asset.get('type')).toEqual(imgObj.type);
@@ -45,7 +40,7 @@ describe('Asset Manager', () => {
 
     test('Add asset with src', () => {
       obj.add(imgObj.src);
-      var asset = obj.get(imgObj.src);
+      const asset = obj.get(imgObj.src)!;
       expect(asset.get('type')).toEqual('image');
       expect(asset.get('src')).toEqual(imgObj.src);
     });
@@ -53,8 +48,8 @@ describe('Asset Manager', () => {
     test('Add asset with more src', () => {
       obj.add([imgObj.src, imgObj.src + '2']);
       expect(obj.getAll().length).toEqual(2);
-      var asset1 = obj.getAll().at(0);
-      var asset2 = obj.getAll().at(1);
+      const asset1 = obj.getAll().at(0);
+      const asset2 = obj.getAll().at(1);
       expect(asset1.get('src')).toEqual(imgObj.src);
       expect(asset2.get('src')).toEqual(imgObj.src + '2');
     });
