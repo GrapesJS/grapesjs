@@ -1,19 +1,18 @@
-import EditorModel from 'editor/model/Editor';
-import ClassTagView from 'selector_manager/view/ClassTagView';
-import Selectors from 'selector_manager/model/Selectors';
+import EditorModel from '../../../../src/editor/model/Editor';
+import ClassTagView from '../../../../src/selector_manager/view/ClassTagView';
+import Selectors from '../../../../src/selector_manager/model/Selectors';
 
 describe('ClassTagView', () => {
-  var obj;
-  var fixtures;
-  var testLabel;
-  var coll;
-  var em;
+  let obj: ClassTagView;
+  let fixtures: HTMLElement;
+  let coll: Selectors;
+  let em: EditorModel;
+  const testLabel = 'TestLabel';
 
   beforeEach(() => {
     coll = new Selectors();
-    testLabel = 'TestLabel';
     em = new EditorModel();
-    var model = coll.add({
+    const model = coll.add({
       name: 'test',
       label: testLabel,
     });
@@ -22,15 +21,9 @@ describe('ClassTagView', () => {
       model,
       coll,
     });
-    //obj.target = { get() {} };
-    //_.extend(obj.target, Backbone.Events);
     document.body.innerHTML = '<div id="fixtures"></div>';
-    fixtures = document.body.querySelector('#fixtures');
+    fixtures = document.body.querySelector('#fixtures')!;
     fixtures.appendChild(obj.render().el);
-  });
-
-  afterEach(() => {
-    obj.model = null;
   });
 
   test('Object exists', () => {
@@ -38,26 +31,26 @@ describe('ClassTagView', () => {
   });
 
   test('Not empty', () => {
-    var $el = obj.$el;
+    const $el = obj.$el;
     expect($el.html()).toBeTruthy();
   });
 
   test('Not empty', () => {
-    var $el = obj.$el;
+    const $el = obj.$el;
     expect($el.html()).toContain(testLabel);
   });
 
   describe('Should be rendered correctly', () => {
     test('Has close button', () => {
-      var $el = obj.$el;
+      const $el = obj.$el;
       expect($el.find('#close')[0]).toBeTruthy();
     });
     test('Has checkbox', () => {
-      var $el = obj.$el;
+      const $el = obj.$el;
       expect($el.find('#checkbox')[0]).toBeTruthy();
     });
     test('Has label', () => {
-      var $el = obj.$el;
+      const $el = obj.$el;
       expect($el.find('#tag-label')[0]).toBeTruthy();
     });
   });
@@ -68,12 +61,13 @@ describe('ClassTagView', () => {
   });
 
   test('Checkbox toggles status', () => {
-    var spy = sinon.spy();
+    const spy = jest.fn();
     obj.model.on('change:active', spy);
     obj.model.set('active', true);
     obj.$el.find('#checkbox').trigger('click');
     expect(obj.model.get('active')).toEqual(false);
-    expect(spy.called).toEqual(true);
+    // expect(spy.called).toEqual(true);
+    expect(spy).toBeCalledTimes(1);
   });
 
   test('Label input is disabled', () => {
