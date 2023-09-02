@@ -1,32 +1,32 @@
-import Backbone from 'backbone';
-const $ = Backbone.$;
+import grapesjs, { Editor } from '../../../../src';
+import { CssRuleJSON } from '../../../../src/css_composer/model/CssRule';
+import { createEl } from '../../../../src/utils/dom';
 
 describe('E2E tests', () => {
-  var fixtures;
-  var fixture;
-  var gjs;
-  var cssc;
-  var clsm;
-  var domc;
-  var rulesSet;
-  var rulesSet2;
+  let fixtures: Element;
+  let fixture: Element;
+  let cssc: Editor['Css'];
+  let clsm: Editor['Selectors'];
+  let domc: Editor['Components'];
+  let rulesSet: CssRuleJSON[];
+  let rulesSet2: CssRuleJSON[];
 
   beforeAll(() => {
-    fixtures = $('#fixtures');
-    fixture = $('<div class="csscomposer-fixture"></div>');
+    document.body.innerHTML = '<div id="fixtures"></div>';
+    fixtures = document.body.firstElementChild!;
   });
 
   beforeEach(done => {
-    gjs = grapesjs.init({
+    const gjs = grapesjs.init({
       stylePrefix: '',
-      storageManager: { autoload: 0, type: 'none' },
-      assetManager: { storageType: 'none' },
+      storageManager: { autoload: false, type: 'none' },
       container: 'csscomposer-fixture',
     });
     cssc = gjs.CssComposer;
     clsm = gjs.SelectorManager;
     domc = gjs.DomComponents;
-    fixture.empty().appendTo(fixtures);
+    fixture = createEl('div', { class: 'csscomposer-fixture' });
+    fixtures.appendChild(fixture);
     rulesSet = [
       { selectors: [{ name: 'test1' }, { name: 'test2' }] },
       { selectors: [{ name: 'test2' }, { name: 'test3' }] },
@@ -43,43 +43,37 @@ describe('E2E tests', () => {
     done();
   });
 
-  afterEach(() => {
-    gjs = null;
-    cssc = null;
-    clsm = null;
-  });
-
   afterAll(() => {
     fixture.remove();
   });
 
   test('Rules are correctly imported from default property', () => {
-    var gj = grapesjs.init({
+    const gj = grapesjs.init({
       stylePrefix: '',
-      storageManager: { autoload: 0, type: 'none' },
-      cssComposer: { rules: rulesSet },
+      storageManager: { autoload: false, type: 'none' },
+      cssComposer: { rules: rulesSet as any },
       container: 'csscomposer-fixture',
     });
-    var cssc = gj.editor.get('CssComposer');
+    const cssc = gj.editor.get('CssComposer');
     expect(cssc.getAll().length).toEqual(rulesSet.length);
-    var cls = gj.editor.get('SelectorManager').getAll();
+    const cls = gj.editor.get('SelectorManager').getAll();
     expect(cls.length).toEqual(3);
   });
 
   test('New rule adds correctly the class inside selector manager', () => {
-    var rules = cssc.getAll();
+    const rules = cssc.getAll();
     rules.add({ selectors: [{ name: 'test1', private: true }] });
-    var rule = clsm.getAll().at(0);
+    const rule = clsm.getAll().at(0);
     expect(rule.get('name')).toEqual('test1');
     expect(rule.get('private')).toEqual(true);
   });
 
   test('New rules are correctly imported inside selector manager', () => {
-    var rules = cssc.getAll();
+    const rules = cssc.getAll();
     rulesSet.forEach(item => {
       rules.add(item);
     });
-    var cls = clsm.getAll();
+    const cls = clsm.getAll();
     expect(cls.length).toEqual(3);
     expect(cls.at(0).get('name')).toEqual('test1');
     expect(cls.at(1).get('name')).toEqual('test2');
@@ -87,8 +81,8 @@ describe('E2E tests', () => {
   });
 
   test('Add rules from the new component added as a string with style tag', () => {
-    var comps = domc.getComponents();
-    var rules = cssc.getAll();
+    const comps = domc.getComponents();
+    const rules = cssc.getAll();
     comps.add('<div>Test</div><style>.test{color: red} .test2{color: blue}</style>');
     expect(comps.length).toEqual(1);
     expect(rules.length).toEqual(2);
@@ -101,29 +95,29 @@ describe('E2E tests', () => {
   });
 
   test('Add raw rule objects twice with addCollection do not duplucate rules', () => {
-    var rulesSet2Copy = JSON.parse(JSON.stringify(rulesSet2));
-    var coll1 = cssc.addCollection(rulesSet2);
-    var coll2 = cssc.addCollection(rulesSet2Copy);
+    const rulesSet2Copy = JSON.parse(JSON.stringify(rulesSet2));
+    const coll1 = cssc.addCollection(rulesSet2);
+    const coll2 = cssc.addCollection(rulesSet2Copy);
     expect(cssc.getAll().length).toEqual(3);
     expect(clsm.getAll().length).toEqual(3);
     expect(coll1).toEqual(coll2);
   });
 
   test('Extend css rule style, if requested', () => {
-    var style1 = { color: 'red', width: '10px' };
-    var style2 = { height: '20px', width: '20px' };
-    var rule1 = {
+    const style1 = { color: 'red', width: '10px' };
+    const style2 = { height: '20px', width: '20px' };
+    const rule1 = {
       selectors: ['test1'],
       style: style1,
     };
-    var rule2 = {
+    const rule2 = {
       selectors: ['test1'],
       style: style2,
     };
-    var ruleOut = cssc.addCollection(rule1)[0];
+    let ruleOut = cssc.addCollection([rule1])[0];
     // ruleOut is a Model
     ruleOut = JSON.parse(JSON.stringify(ruleOut));
-    var ruleResult = {
+    const ruleResult: CssRuleJSON = {
       selectors: ['test1'],
       style: {
         color: 'red',
@@ -131,7 +125,7 @@ describe('E2E tests', () => {
       },
     };
     expect(ruleOut).toEqual(ruleResult);
-    var ruleOut = cssc.addCollection(rule2, { extend: 1 })[0];
+    ruleOut = cssc.addCollection([rule2], { extend: 1 })[0];
     ruleOut = JSON.parse(JSON.stringify(ruleOut));
     ruleResult.style = {
       color: 'red',
@@ -142,23 +136,23 @@ describe('E2E tests', () => {
   });
 
   test('Do not extend with different selectorsAdd', () => {
-    var style1 = { color: 'red', width: '10px' };
-    var style2 = { height: '20px', width: '20px' };
-    var rule1 = {
+    const style1 = { color: 'red', width: '10px' };
+    const style2 = { height: '20px', width: '20px' };
+    const rule1 = {
       selectors: [],
       selectorsAdd: '*',
       style: style1,
     };
-    var rule2 = {
+    const rule2 = {
       selectors: [],
       selectorsAdd: 'p',
       style: style2,
     };
-    var rule1Out = cssc.addCollection(rule1, { extend: 1 })[0];
-    var rule2Out = cssc.addCollection(rule2, { extend: 1 })[0];
+    let rule1Out = cssc.addCollection([rule1], { extend: 1 })[0];
+    let rule2Out = cssc.addCollection([rule2], { extend: 1 })[0];
     rule1Out = JSON.parse(JSON.stringify(rule1Out));
     rule2Out = JSON.parse(JSON.stringify(rule2Out));
-    var rule1Result = {
+    const rule1Result = {
       selectors: [],
       selectorsAdd: '*',
       style: {
@@ -166,7 +160,7 @@ describe('E2E tests', () => {
         width: '10px',
       },
     };
-    var rule2Result = {
+    const rule2Result = {
       selectors: [],
       selectorsAdd: 'p',
       style: {
@@ -179,7 +173,7 @@ describe('E2E tests', () => {
   });
 
   test('Add raw rule objects with width via addCollection', () => {
-    var coll1 = cssc.addCollection(rulesSet2);
+    const coll1 = cssc.addCollection(rulesSet2);
     expect(coll1[2].get('mediaText')).toEqual(rulesSet2[2].mediaText);
   });
 });
