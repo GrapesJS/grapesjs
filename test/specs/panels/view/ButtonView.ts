@@ -1,22 +1,22 @@
-import ButtonView from 'panels/view/ButtonView';
-import Button from 'panels/model/Button';
-import Editor from 'editor';
+import ButtonView from '../../../../src/panels/view/ButtonView';
+import Button from '../../../../src/panels/model/Button';
+import EditorModel from '../../../../src/editor/model/Editor';
 
 describe('ButtonView', () => {
-  var fixtures;
-  var em;
-  var model;
-  var view;
-  var btnClass = 'gjs-pn-btn';
+  let fixtures: HTMLElement;
+  let em: EditorModel;
+  let model: Button;
+  let view: ButtonView;
+  let btnClass = 'pn-btn';
 
   beforeEach(() => {
-    em = new Editor({});
+    em = new EditorModel({});
     model = new Button(em.Panels, { command: 'fake-command' });
     view = new ButtonView({
       model: model,
     });
     document.body.innerHTML = '<div id="fixtures"></div>';
-    fixtures = document.body.querySelector('#fixtures');
+    fixtures = document.body.querySelector('#fixtures')!;
     fixtures.appendChild(view.render().el);
   });
 
@@ -43,7 +43,7 @@ describe('ButtonView', () => {
   test('Check enable active', () => {
     model.set('active', true, { silent: true });
     view.checkActive();
-    expect(view.el.getAttribute('class')).toContain(btnClass + ' gjs-pn-active');
+    expect(view.el.getAttribute('class')).toContain(btnClass + ' pn-active');
   });
 
   test('Check disable active', () => {
@@ -57,7 +57,7 @@ describe('ButtonView', () => {
   test('Disable the button', () => {
     model.set('disable', true, { silent: true });
     view.updateDisable();
-    expect(view.el.getAttribute('class')).toEqual(btnClass + ' gjs-disabled');
+    expect(view.el.getAttribute('class')).toEqual(btnClass + ' disabled');
   });
 
   test('Enable the disabled button', () => {
@@ -69,17 +69,17 @@ describe('ButtonView', () => {
   });
 
   test('Cancels the click action when button is disabled', () => {
-    const stub = sinon.stub(view, 'toggleActive');
+    const spy = jest.spyOn(view, 'toggleActive' as any);
     model.set('disable', true, { silent: true });
     view.clicked();
-    expect(stub.called).toEqual(false);
+    expect(spy).toBeCalledTimes(0);
   });
 
   test('Enable the click action when button is enable', () => {
-    const stub = sinon.stub(view, 'toggleActive');
+    const spy = jest.spyOn(view, 'toggleActive' as any);
     model.set('disable', false, { silent: true });
     view.clicked();
-    expect(stub.called).toEqual(true);
+    expect(spy).toBeCalledTimes(1);
   });
 
   test('Renders correctly', () => {
