@@ -1,9 +1,10 @@
-import CssRulesView from 'css_composer/view/CssRulesView';
-import CssRules from 'css_composer/model/CssRules';
-import Editor from 'editor/model/Editor';
+import CssRulesView from '../../../../src/css_composer/view/CssRulesView';
+import CssRules from '../../../../src/css_composer/model/CssRules';
+import EditorModel from '../../../../src/editor/model/Editor';
+import { EditorConfig } from '../../../../src/editor/config/config';
 
 describe('CssRulesView', () => {
-  let obj;
+  let obj: CssRulesView;
   const prefix = 'rules';
   const devices = [
     {
@@ -40,16 +41,16 @@ describe('CssRulesView', () => {
     },
   ];
 
-  function buildEditor(editorOptions) {
-    const col = new CssRules([]);
+  function buildEditor(editorOptions: EditorConfig) {
+    const col = new CssRules([], {});
     const obj = new CssRulesView({
       collection: col,
       config: {
-        em: new Editor(editorOptions),
+        em: new EditorModel(editorOptions),
       },
     });
     document.body.innerHTML = '<div id="fixtures"></div>';
-    document.body.querySelector('#fixtures').appendChild(obj.render().el);
+    document.body.querySelector('#fixtures')!.appendChild(obj.render().el);
 
     return obj;
   }
@@ -79,8 +80,7 @@ describe('CssRulesView', () => {
       .map(dvc => dvc.widthMedia)
       .sort((left, right) => {
         return (
-          ((right && right.replace('px', '')) || Number.MAX_VALUE) -
-          ((left && left.replace('px', '')) || Number.MAX_VALUE)
+          (Number(right?.replace('px', '')) || Number.MAX_VALUE) - (Number(left?.replace('px', '')) || Number.MAX_VALUE)
         );
       })
       .map(widthMedia => parseFloat(widthMedia));
@@ -106,8 +106,8 @@ describe('CssRulesView', () => {
     const sortedDevicesWidthMedia = mobileFirstDevices
       .map(dvc => dvc.widthMedia)
       .sort((left, right) => {
-        const a = (left && left.replace('px', '')) || Number.MIN_VALUE;
-        const b = (right && right.replace('px', '')) || Number.MIN_VALUE;
+        const a = Number(left?.replace('px', '')) || Number.MIN_VALUE;
+        const b = Number(right?.replace('px', '')) || Number.MIN_VALUE;
         return a - b;
       })
       .map(widthMedia => parseFloat(widthMedia));
@@ -119,13 +119,12 @@ describe('CssRulesView', () => {
   });
 
   test('Add new rule', () => {
-    sinon.stub(obj, 'addToCollection');
+    const spy = jest.spyOn(obj, 'addToCollection');
     obj.collection.add({});
-    expect(obj.addToCollection.calledOnce).toBeTruthy();
+    expect(spy).toBeCalledTimes(1);
   });
 
   test('Add correctly rules with different media queries', () => {
-    const foundStylesContainers = obj.$el.find('div');
     const rules = [
       {
         selectorsAdd: '#testid',
@@ -144,7 +143,7 @@ describe('CssRulesView', () => {
       },
     ];
     obj.collection.add(rules);
-    const stylesCont = obj.el.querySelector(`#${obj.className}`);
+    const stylesCont = obj.el.querySelector(`#${obj.className}`)!;
     expect(stylesCont.children.length).toEqual(rules.length);
   });
 
