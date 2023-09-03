@@ -9,7 +9,7 @@ import { getModel } from '../../utils/mixins';
 
 export interface RichTextEditorAction {
   name: string;
-  icon: string;
+  icon: string | HTMLElement;
   event?: string;
   attributes?: Record<string, any>;
   result: (rte: RichTextEditor, action: RichTextEditorAction) => void;
