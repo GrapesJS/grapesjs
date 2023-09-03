@@ -1767,16 +1767,16 @@ export default class Component extends StyleableModel<ComponentProperties> {
     } else {
       // Deprecated
       // Need to convert script functions to strings
-      if (typeof scr == 'function') {
-        var scrStr = scr.toString().trim();
-        scrStr = scrStr.replace(/^function[\s\w]*\(\)\s?\{/, '').replace(/\}$/, '');
+      if (isFunction(scr)) {
+        let scrStr = scr.toString().trim();
+        scrStr = scrStr.slice(scrStr.indexOf('{') + 1, scrStr.lastIndexOf('}'));
         scr = scrStr.trim();
       }
 
-      var config = this.em.getConfig();
-      var tagVarStart = escapeRegExp(config.tagVarStart || '{[ ');
-      var tagVarEnd = escapeRegExp(config.tagVarEnd || ' ]}');
-      var reg = new RegExp(`${tagVarStart}([\\w\\d-]*)${tagVarEnd}`, 'g');
+      const config = this.em.getConfig();
+      const tagVarStart = escapeRegExp(config.tagVarStart || '{[ ');
+      const tagVarEnd = escapeRegExp(config.tagVarEnd || ' ]}');
+      const reg = new RegExp(`${tagVarStart}([\\w\\d-]*)${tagVarEnd}`, 'g');
       scr = scr.replace(reg, (match, v) => {
         // If at least one match is found I have to track this change for a
         // better optimization inside JS generator
