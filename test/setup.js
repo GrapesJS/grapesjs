@@ -1,7 +1,6 @@
 import 'regenerator-runtime/runtime';
 import 'whatwg-fetch';
 import _ from 'underscore';
-import sinon from 'sinon';
 
 const localStorage = {
   getItem(key) {
@@ -16,7 +15,6 @@ const localStorage = {
 };
 
 global._ = _;
-global.sinon = sinon;
 global.__GJS_VERSION__ = '';
 global.grapesjs = require('./../src').default;
 global.$ = global.grapesjs.$;

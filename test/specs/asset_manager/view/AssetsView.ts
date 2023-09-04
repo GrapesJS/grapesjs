@@ -1,22 +1,22 @@
-import AssetsView from 'asset_manager/view/AssetsView';
-import FileUploader from 'asset_manager/view/FileUploader';
-import Assets from 'asset_manager/model/Assets';
+import AssetsView from '../../../../src/asset_manager/view/AssetsView';
+import FileUploader from '../../../../src/asset_manager/view/FileUploader';
+import Assets from '../../../../src/asset_manager/model/Assets';
 
 describe('AssetsView', () => {
-  var obj;
-  var coll;
+  let obj: AssetsView;
+  let coll: Assets;
 
   beforeEach(() => {
-    coll = new Assets([]);
+    coll = new Assets();
     obj = new AssetsView({
       config: {},
       collection: coll,
-      globalCollection: new Assets([]),
+      globalCollection: new Assets(),
       fu: new FileUploader({}),
     });
     document.body.innerHTML = '<div id="fixtures"></div>';
     obj.render();
-    document.body.querySelector('#fixtures').appendChild(obj.el);
+    document.body.querySelector('#fixtures')!.appendChild(obj.el);
   });
 
   afterEach(() => {
@@ -28,36 +28,36 @@ describe('AssetsView', () => {
   });
 
   test('Collection is empty', () => {
-    expect(obj.getAssetsEl().innerHTML).toBeFalsy();
+    expect(obj.getAssetsEl()!.innerHTML).toBeFalsy();
   });
 
   test('Add new asset', () => {
-    sinon.stub(obj, 'addAsset');
+    const spy = jest.spyOn(obj, 'addAsset');
     coll.add({ src: 'test' });
-    expect(obj.addAsset.calledOnce).toEqual(true);
+    expect(spy).toBeCalledTimes(1);
   });
 
   test('Render new asset', () => {
     coll.add({ src: 'test' });
-    expect(obj.getAssetsEl().innerHTML).toBeTruthy();
+    expect(obj.getAssetsEl()!.innerHTML).toBeTruthy();
   });
 
   test('Render correctly new image asset', () => {
     coll.add({ type: 'image', src: 'test' });
-    var asset = obj.getAssetsEl().firstChild;
+    const asset = obj.getAssetsEl()!.firstChild as HTMLElement;
     expect(asset.tagName).toEqual('DIV');
     expect(asset.innerHTML).toBeTruthy();
   });
 
   test('Clean collection from asset', () => {
-    var model = coll.add({ src: 'test' });
+    const model = coll.add({ src: 'test' });
     coll.remove(model);
-    expect(obj.getAssetsEl().innerHTML).toBeFalsy();
+    expect(obj.getAssetsEl()!.innerHTML).toBeFalsy();
   });
 
   test('Deselect works', () => {
     coll.add([{}, {}]);
-    var $asset = obj.$el.children().first();
+    const $asset = obj.$el.children().first();
     $asset.attr('class', obj.pfx + 'highlight');
     coll.trigger('deselectAll');
     expect($asset.attr('class')).toBeFalsy();
@@ -68,24 +68,23 @@ describe('AssetsView', () => {
   });
 
   describe('Assets input is enabled', () => {
-    var obj;
-    var coll;
-    coll = new Assets([]);
+    let obj: AssetsView;
+    let coll = new Assets();
 
     beforeEach(() => {
-      var config = {
+      const config = {
         showUrlInput: true,
       };
 
       obj = new AssetsView({
         config: config,
         collection: coll,
-        globalCollection: new Assets([]),
+        globalCollection: new Assets(),
         fu: new FileUploader({}),
       });
       document.body.innerHTML = '<div id="fixtures"></div>';
       obj.render();
-      document.body.querySelector('#fixtures').appendChild(obj.el);
+      document.body.querySelector('#fixtures')!.appendChild(obj.el);
     });
 
     test('Returns not empty url input', () => {
@@ -93,34 +92,34 @@ describe('AssetsView', () => {
     });
 
     test('Add image asset from input string', () => {
-      obj.getAddInput().value = 'test';
+      obj.getAddInput()!.value = 'test';
       obj.handleSubmit({
         preventDefault() {},
-      });
-      var asset = obj.options.globalCollection.at(0);
+      } as Event);
+      const asset = obj.options.globalCollection.at(0);
       expect(asset.get('src')).toEqual('test');
     });
   });
 
   describe('Assets inputs is disabled', () => {
-    var obj;
-    var coll;
+    let obj: AssetsView;
+    let coll: Assets;
 
     beforeEach(() => {
-      var config = {
+      const config = {
         showUrlInput: false,
       };
 
-      coll = new Assets([]);
+      coll = new Assets();
       obj = new AssetsView({
         config: config,
         collection: coll,
-        globalCollection: new Assets([]),
+        globalCollection: new Assets(),
         fu: new FileUploader({}),
       });
       document.body.innerHTML = '<div id="fixtures"></div>';
       obj.render();
-      document.body.querySelector('#fixtures').appendChild(obj.el);
+      document.body.querySelector('#fixtures')!.appendChild(obj.el);
     });
 
     test('No presence of url input', () => {

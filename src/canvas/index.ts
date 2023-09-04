@@ -21,28 +21,14 @@
  *
  * {REPLACE_EVENTS}
  *
- * ## Methods
- * * [getConfig](#getconfig)
- * * [getElement](#getelement)
- * * [getFrameEl](#getframeel)
- * * [getWindow](#getwindow)
- * * [getDocument](#getdocument)
- * * [getBody](#getbody)
- * * [setCustomBadgeLabel](#setcustombadgelabel)
- * * [hasFocus](#hasfocus)
- * * [scrollTo](#scrollto)
- * * [setZoom](#setzoom)
- * * [getZoom](#getzoom)
- * * [getCoords](#getcoords)
- * * [setCoords](#setcoords)
- *
  * [Component]: component.html
  * [Frame]: frame.html
+ * [CanvasSpot]: canvas_spot.html
  *
  * @module Canvas
  */
 
-import { isUndefined } from 'underscore';
+import { isArray, isUndefined } from 'underscore';
 import { Module } from '../abstract';
 import { AddOptions, Coordinates } from '../common';
 import Component from '../dom_components/model/Component';
@@ -690,6 +676,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
    * Add new frame to the canvas
    * @param {Object} props Frame properties
    * @returns {[Frame]}
+   * @private
    * @example
    * canvas.addFrame({
    *   name: 'Mobile home page',
@@ -720,18 +707,29 @@ export default class CanvasModule extends Module<CanvasConfig> {
     return this.em.get('dragResult');
   }
 
-  destroy() {
-    this.canvas.stopListening();
-    this.canvasView?.remove();
-    //[this.canvas, this.canvasView].forEach(i => (i = {}));
-    //@ts-ignore
-    ['model', 'droppable'].forEach(i => (this[i] = {}));
-  }
-
-  getRectToScreen(boxRect: Parameters<CanvasView['getRectToScreen']>[0]) {
-    return this.canvasView?.getRectToScreen(boxRect);
-  }
-
+  /**
+   * Add or update canvas spot.
+   * @param {Object} props Canvas spot properties.
+   * @param opts
+   * @returns {[CanvasSpot]}
+   * @example
+   * // Add new canvas spot
+   * const spot = canvas.addSpot({
+   *  type: 'select', // 'select' is one of the built-in spots
+   *  component: editor.getSelected(),
+   * });
+   *
+   * // Add custom canvas spot
+   * const spot = canvas.addSpot({
+   *  type: 'my-custom-spot',
+   *  component: editor.getSelected(),
+   * });
+   * // Update the same spot by reusing its ID
+   * canvas.addSpot({
+   *  id: spot.id,
+   *  component: anotherComponent,
+   * });
+   */
   addSpot<T extends CanvasSpotProps>(props: Omit<T, 'id'> & { id?: string }, opts: AddOptions = {}) {
     const spotProps = props as T;
     const spots = this.getSpots<T>(spotProps);
@@ -754,27 +752,96 @@ export default class CanvasModule extends Module<CanvasConfig> {
     return spot;
   }
 
+  /**
+   * Get canvas spots.
+   * @param {Object} [spotProps] Canvas spot properties for filtering the result. With no properties, all available spots will be returned.
+   * @returns {[CanvasSpot][]}
+   * @example
+   * canvas.addSpot({ type: 'select', component: cmp1 });
+   * canvas.addSpot({ type: 'select', component: cmp2 });
+   * canvas.addSpot({ type: 'target', component: cmp3 });
+   *
+   * // Get all spots
+   * const allSpots = canvas.getSpots();
+   * allSpots.length; // 3
+   *
+   * // Get all 'select' spots
+   * const allSelectSpots = canvas.getSpots({ type: 'select' });
+   * allSelectSpots.length; // 2
+   */
   getSpots<T extends CanvasSpotProps>(spotProps: Partial<T> = {}) {
     return this.spots.where(spotProps.id ? { id: spotProps.id } : spotProps) as CanvasSpot<T>[];
   }
 
-  removeSpots<T extends CanvasSpotProps>(spotProps: Partial<T> = {}) {
-    const spots = this.getSpots(spotProps);
+  /**
+   * Remove canvas spots.
+   * @param {Object|[CanvasSpot][]} [spotProps] Canvas spot properties for filtering spots to remove or an array of spots to remove. With no properties, all available spots will be removed.
+   * @returns {[CanvasSpot][]}
+   * @example
+   * canvas.addSpot({ type: 'select', component: cmp1 });
+   * canvas.addSpot({ type: 'select', component: cmp2 });
+   * canvas.addSpot({ type: 'target', component: cmp3 });
+   *
+   * // Remove all 'select' spots
+   * canvas.removeSpots({ type: 'select' });
+   *
+   * // Remove spots by an array of canvas spots
+   * const filteredSpots = canvas.getSpots().filter(spot => myCustomCondition);
+   * canvas.removeSpots(filteredSpots);
+   *
+   * // Remove all spots
+   * canvas.removeSpots();
+   */
+  removeSpots<T extends CanvasSpotProps>(spotProps: Partial<T> | CanvasSpot[] = {}) {
+    const spots = isArray(spotProps) ? spotProps : this.getSpots(spotProps);
     const removed = this.spots.remove(spots);
     return removed as unknown as CanvasSpot<T>[];
   }
 
-  refreshSpots() {
-    this.spots.refresh();
-  }
-
+  /**
+   * Check if the built-in canvas spot has a declared custom rendering.
+   * @param {String} type Built-in canvas spot type
+   * @returns {Boolean}
+   * @example
+   * grapesjs.init({
+   *  // ...
+   *  canvas: {
+   *    // avoid rendering the built-in 'target' canvas spot
+   *    customSpots: { target: true }
+   *  }
+   * });
+   * // ...
+   * canvas.hasCustomSpot('select'); // false
+   * canvas.hasCustomSpot('target'); // true
+   */
   hasCustomSpot(type?: CanvasSpotBuiltInTypes) {
-    const { customSpots } = this.getConfig();
+    const { customSpots } = this.config;
 
     if (customSpots === true || (customSpots && type && customSpots[type])) {
       return true;
     }
 
     return false;
+  }
+
+  /**
+   * Transform a box rect from the world coordinate system to the screen one.
+   * @param {Object} boxRect
+   * @returns {Object}
+   */
+  getWorldRectToScreen(boxRect: Parameters<CanvasView['getRectToScreen']>[0]) {
+    return this.canvasView?.getRectToScreen(boxRect);
+  }
+
+  refreshSpots() {
+    this.spots.refresh();
+  }
+
+  destroy() {
+    this.canvas.stopListening();
+    this.canvasView?.remove();
+    //[this.canvas, this.canvasView].forEach(i => (i = {}));
+    //@ts-ignore
+    ['model', 'droppable'].forEach(i => (this[i] = {}));
   }
 }

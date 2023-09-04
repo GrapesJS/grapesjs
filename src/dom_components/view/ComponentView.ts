@@ -16,13 +16,6 @@ import ComponentsView from './ComponentsView';
 
 type ClbObj = ReturnType<ComponentView['_clbObj']>;
 
-interface Rect {
-  top?: number;
-  left?: number;
-  bottom?: number;
-  right?: number;
-}
-
 export interface IComponentView extends ExtractMethods<ComponentView> {}
 
 export default class ComponentView extends View</**
@@ -242,13 +235,14 @@ Component> {
     const actualCls = el.getAttribute('class') || '';
     const cls = [actualCls];
     const noCustomSpotSelect = !canvas?.hasCustomSpot(CanvasSpotBuiltInTypes.Select);
+    const noCustomSpotTarget = !canvas?.hasCustomSpot(CanvasSpotBuiltInTypes.Target);
 
     switch (status) {
       case 'selected':
         noCustomSpotSelect && cls.push(selCls);
         break;
       case 'selected-parent':
-        cls.push(selectedParentCls);
+        noCustomSpotTarget && cls.push(selectedParentCls);
         break;
       case 'freezed':
         cls.push(freezedCls);
@@ -432,7 +426,7 @@ Component> {
    * have to take in account offsetParent
    */
   getOffsetRect() {
-    const rect: Rect = {};
+    const rect = { top: 0, left: 0, bottom: 0, right: 0 };
     const target = this.el;
     let gtop = 0;
     let gleft = 0;
@@ -456,32 +450,38 @@ Component> {
     return rect;
   }
 
-  isInViewport({ rect }: { rect?: Rect } = {}) {
-    const { el } = this;
-    const elDoc = el.ownerDocument;
-    const { body } = elDoc;
-    const frameElement = elDoc.defaultView?.frameElement as HTMLIFrameElement;
-    const { top, left } = rect || this.getOffsetRect();
-    const frame = this.frameView.getOffsetRect();
+  isInViewport() {
+    const { el, em, frameView } = this;
+    const canvasView = em.Canvas.getCanvasView();
+    const elRect = canvasView.getElBoxRect(el, { local: true });
+    const frameEl = frameView.el;
+    const frameH = frameEl.clientHeight;
+    const frameW = frameEl.clientWidth;
 
-    return (
-      top! >= frame.scrollTop &&
-      left! >= frame.scrollLeft &&
-      top! <= frame.scrollBottom &&
-      left! <= frameElement?.offsetWidth + body.scrollLeft
-    );
+    const elTop = elRect.y;
+    const elRight = elRect.x;
+    const elBottom = elTop + elRect.height;
+    const elLeft = elRight + elRect.width;
+    const isTopInside = elTop >= 0 && elTop < frameH;
+    const isBottomInside = elBottom > 0 && elBottom < frameH;
+    const isLeftInside = elLeft >= 0 && elLeft < frameW;
+    const isRightInside = elRight > 0 && elRight <= frameW;
+
+    const partiallyIn = (isTopInside || isBottomInside) && (isLeftInside || isRightInside);
+
+    return partiallyIn;
   }
 
   scrollIntoView(opts: { force?: boolean } & ScrollIntoViewOptions = {}) {
-    const rect = this.getOffsetRect();
-    const isInViewport = this.isInViewport({ rect });
+    const isInViewport = this.isInViewport();
 
     if (!isInViewport || opts.force) {
       const { el } = this;
 
       // PATCH: scrollIntoView won't work with multiple requests from iframes
       if (opts.behavior !== 'smooth') {
-        el.ownerDocument.defaultView?.scrollTo(0, rect.top!);
+        const rect = this.getOffsetRect();
+        el.ownerDocument.defaultView?.scrollTo(0, rect.top);
       } else {
         el.scrollIntoView({
           behavior: 'smooth',

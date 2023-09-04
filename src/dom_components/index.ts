@@ -53,54 +53,54 @@
  *
  * @module Components
  */
-import { isEmpty, isObject, isArray, isFunction, isString, result, debounce } from 'underscore';
+import { debounce, isArray, isEmpty, isFunction, isString, result } from 'underscore';
+import { ItemManagerModule } from '../abstract/Module';
+import { AddOptions, ObjectAny } from '../common';
+import EditorModel from '../editor/model/Editor';
+import { isComponent } from '../utils/mixins';
 import defaults, { DomComponentsConfig } from './config/config';
 import Component, { IComponent, keyUpdate, keyUpdateInside } from './model/Component';
+import ComponentComment from './model/ComponentComment';
+import ComponentFrame from './model/ComponentFrame';
+import ComponentImage from './model/ComponentImage';
+import ComponentLabel from './model/ComponentLabel';
+import ComponentLink from './model/ComponentLink';
+import ComponentMap from './model/ComponentMap';
+import ComponentScript from './model/ComponentScript';
+import ComponentSvg from './model/ComponentSvg';
+import ComponentSvgIn from './model/ComponentSvgIn';
+import ComponentTable from './model/ComponentTable';
+import ComponentTableBody from './model/ComponentTableBody';
+import ComponentTableCell from './model/ComponentTableCell';
+import ComponentTableFoot from './model/ComponentTableFoot';
+import ComponentTableHead from './model/ComponentTableHead';
+import ComponentTableRow from './model/ComponentTableRow';
+import ComponentText from './model/ComponentText';
+import ComponentTextNode from './model/ComponentTextNode';
+import ComponentVideo from './model/ComponentVideo';
+import ComponentWrapper from './model/ComponentWrapper';
 import Components from './model/Components';
+import { ComponentAdd, ComponentDefinition, ComponentDefinitionDefined } from './model/types';
+import ComponentCommentView from './view/ComponentCommentView';
+import ComponentFrameView from './view/ComponentFrameView';
+import ComponentImageView from './view/ComponentImageView';
+import ComponentLabelView from './view/ComponentLabelView';
+import ComponentLinkView from './view/ComponentLinkView';
+import ComponentMapView from './view/ComponentMapView';
+import ComponentScriptView from './view/ComponentScriptView';
+import ComponentSvgView from './view/ComponentSvgView';
+import ComponentTableBodyView from './view/ComponentTableBodyView';
+import ComponentTableCellView from './view/ComponentTableCellView';
+import ComponentTableFootView from './view/ComponentTableFootView';
+import ComponentTableHeadView from './view/ComponentTableHeadView';
+import ComponentTableRowView from './view/ComponentTableRowView';
+import ComponentTableView from './view/ComponentTableView';
+import ComponentTextNodeView from './view/ComponentTextNodeView';
+import ComponentTextView from './view/ComponentTextView';
+import ComponentVideoView from './view/ComponentVideoView';
 import ComponentView, { IComponentView } from './view/ComponentView';
 import ComponentWrapperView from './view/ComponentWrapperView';
 import ComponentsView from './view/ComponentsView';
-import ComponentTableCell from './model/ComponentTableCell';
-import ComponentTableCellView from './view/ComponentTableCellView';
-import ComponentTableRow from './model/ComponentTableRow';
-import ComponentTableRowView from './view/ComponentTableRowView';
-import ComponentTable from './model/ComponentTable';
-import ComponentTableView from './view/ComponentTableView';
-import ComponentTableHead from './model/ComponentTableHead';
-import ComponentTableHeadView from './view/ComponentTableHeadView';
-import ComponentTableBody from './model/ComponentTableBody';
-import ComponentTableBodyView from './view/ComponentTableBodyView';
-import ComponentTableFoot from './model/ComponentTableFoot';
-import ComponentTableFootView from './view/ComponentTableFootView';
-import ComponentMap from './model/ComponentMap';
-import ComponentMapView from './view/ComponentMapView';
-import ComponentLink from './model/ComponentLink';
-import ComponentLinkView from './view/ComponentLinkView';
-import ComponentLabel from './model/ComponentLabel';
-import ComponentLabelView from './view/ComponentLabelView';
-import ComponentVideo from './model/ComponentVideo';
-import ComponentVideoView from './view/ComponentVideoView';
-import ComponentImage from './model/ComponentImage';
-import ComponentImageView from './view/ComponentImageView';
-import ComponentScript from './model/ComponentScript';
-import ComponentScriptView from './view/ComponentScriptView';
-import ComponentSvg from './model/ComponentSvg';
-import ComponentSvgIn from './model/ComponentSvgIn';
-import ComponentSvgView from './view/ComponentSvgView';
-import ComponentComment from './model/ComponentComment';
-import ComponentCommentView from './view/ComponentCommentView';
-import ComponentTextNode from './model/ComponentTextNode';
-import ComponentTextNodeView from './view/ComponentTextNodeView';
-import ComponentText from './model/ComponentText';
-import ComponentTextView from './view/ComponentTextView';
-import ComponentWrapper from './model/ComponentWrapper';
-import ComponentFrame from './model/ComponentFrame';
-import ComponentFrameView from './view/ComponentFrameView';
-import { ItemManagerModule } from '../abstract/Module';
-import EditorModel from '../editor/model/Editor';
-import { ComponentAdd, ComponentDefinition, ComponentDefinitionDefined } from './model/types';
-import { AddOptions } from '../common';
-import { isComponent } from '../utils/mixins';
 
 export type ComponentEvent =
   | 'component:create'
@@ -273,6 +273,8 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
   Component = Component;
 
   Components = Components;
+
+  ComponentView = ComponentView;
 
   ComponentsView = ComponentsView;
 
@@ -650,6 +652,18 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
     }
 
     return shallow;
+  }
+
+  /**
+   * Check if the object is a [Component].
+   * @param {Object} obj
+   * @returns {Boolean}
+   * @example
+   * cmp.isComponent(editor.getSelected()); // true
+   * cmp.isComponent({}); // false
+   */
+  isComponent(obj?: ObjectAny): obj is Component {
+    return isComponent(obj);
   }
 
   /**

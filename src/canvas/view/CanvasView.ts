@@ -386,6 +386,11 @@ export default class CanvasView extends ModuleView<Canvas> {
       height,
     };
 
+    if (opts.local) {
+      boxRect.x = left;
+      boxRect.y = top;
+    }
+
     return opts.toScreen ? this.getRectToScreen(boxRect) : boxRect;
   }
 

@@ -517,7 +517,7 @@ editor.TraitManager.addType('slider', {
 });
 ```
 
-<demo-viewer value="x9sw2udv/79"/>
+<demo-viewer value="x9sw2udv"/>
 
 The integration with external components is possible by following these simple core points:
 

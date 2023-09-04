@@ -1,24 +1,23 @@
-import Backbone from 'backbone';
-import BlocksView from 'block_manager/view/BlocksView';
-import Blocks from 'block_manager/model/Blocks';
+import BlocksView from '../../../../src/block_manager/view/BlocksView';
+import Blocks from '../../../../src/block_manager/model/Blocks';
+import EditorModel from '../../../../src/editor/model/Editor';
 
 describe('BlocksView', () => {
-  var $fixtures;
-  var $fixture;
-  var model;
-  var view;
-  var editorModel;
-  var ppfx;
+  let model: Blocks;
+  let view: BlocksView;
+  let em: EditorModel;
 
   beforeEach(() => {
-    model = new Blocks([]);
-    view = new BlocksView({ collection: model });
+    em = new EditorModel();
+    model = em.Blocks.blocks;
+    view = new BlocksView({ collection: model }, { em });
     document.body.innerHTML = '<div id="fixtures"></div>';
-    document.body.querySelector('#fixtures').appendChild(view.render().el);
+    document.body.querySelector('#fixtures')!.appendChild(view.render().el);
   });
 
   afterEach(() => {
     view.collection.reset();
+    em.destroy();
   });
 
   test('The container is not empty', () => {
@@ -45,19 +44,18 @@ describe('BlocksView', () => {
 
   describe('With configs', () => {
     beforeEach(() => {
-      ppfx = 'pfx-t-';
-      editorModel = new Backbone.Model();
-      model = new Blocks([{ name: 'test1' }, { name: 'test2' }]);
-      view = new BlocksView(
-        {
-          collection: model,
+      em = new EditorModel({
+        blockManager: {
+          blocks: [
+            { label: 'test1', content: '1' },
+            { label: 'test2', content: '2' },
+          ],
         },
-        {
-          pStylePrefix: ppfx,
-        }
-      );
+      });
+      model = em.Blocks.blocks;
+      view = new BlocksView({ collection: model }, { em });
       document.body.innerHTML = '<div id="fixtures"></div>';
-      document.body.querySelector('#fixtures').appendChild(view.render().el);
+      document.body.querySelector('#fixtures')!.appendChild(view.render().el);
     });
 
     test('Render children', () => {
@@ -65,7 +63,7 @@ describe('BlocksView', () => {
     });
 
     test('Render container', () => {
-      expect(view.getBlocksEl().getAttribute('class')).toEqual(ppfx + 'blocks-c');
+      expect(view.getBlocksEl().getAttribute('class')).toEqual('blocks-c');
     });
   });
 });

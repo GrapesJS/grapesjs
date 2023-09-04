@@ -1,17 +1,15 @@
-import CssRuleView from 'css_composer/view/CssRuleView';
-import CssRule from 'css_composer/model/CssRule';
+import CssRuleView from '../../../../src/css_composer/view/CssRuleView';
+import CssRule from '../../../../src/css_composer/model/CssRule';
 
 describe('CssRuleView', () => {
-  let obj;
-  let fixtures;
+  let obj: CssRuleView;
+  let fixtures: HTMLElement;
 
   beforeEach(() => {
-    var m = new CssRule();
-    obj = new CssRuleView({
-      model: m,
-    });
+    const model = new CssRule({} as any, {});
+    obj = new CssRuleView({ model });
     document.body.innerHTML = '<div id="fixtures"></div>';
-    fixtures = document.body.querySelector('#fixtures');
+    fixtures = document.body.querySelector('#fixtures')!;
     fixtures.appendChild(obj.render().el);
   });
 
@@ -33,18 +31,15 @@ describe('CssRuleView', () => {
   });
 
   describe('CssRuleView with selectors', () => {
-    let objReg;
+    let objReg: CssRuleView;
 
     beforeEach(() => {
-      var m = new CssRule({
-        selectors: [{ name: 'test1' }, { name: 'test2' }],
-      });
-      objReg = new CssRuleView({
-        model: m,
-      });
+      const selectors = [{ name: 'test1' }, { name: 'test2' }] as any;
+      const model = new CssRule({ selectors });
+      objReg = new CssRuleView({ model });
       objReg.render();
       document.body.innerHTML = '<div id="fixtures"></div>';
-      fixtures = document.body.querySelector('#fixtures');
+      fixtures = document.body.querySelector('#fixtures')!;
       fixtures.appendChild(objReg.el);
     });
 

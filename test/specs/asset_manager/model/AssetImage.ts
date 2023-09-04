@@ -1,4 +1,4 @@
-import AssetImage from 'asset_manager/model/AssetImage';
+import AssetImage from '../../../../src/asset_manager/model/AssetImage';
 
 describe('AssetImage', () => {
   test('Object exists', () => {
@@ -6,7 +6,7 @@ describe('AssetImage', () => {
   });
 
   test('Has default values', () => {
-    var obj = new AssetImage({});
+    const obj = new AssetImage({});
     expect(obj.get('type')).toEqual('image');
     expect(obj.get('src')).toBeFalsy();
     expect(obj.get('unitDim')).toEqual('px');

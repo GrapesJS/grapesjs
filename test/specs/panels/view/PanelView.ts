@@ -1,19 +1,19 @@
-import PanelView from 'panels/view/PanelView';
-import Panel from 'panels/model/Panel';
-import Editor from 'editor';
+import PanelView from '../../../../src/panels/view/PanelView';
+import Panel from '../../../../src/panels/model/Panel';
+import Editor from '../../../../src/editor';
 
 describe('PanelView', () => {
-  var fixtures;
-  var em;
-  var model;
-  var view;
+  let fixtures: HTMLElement;
+  let editor: Editor;
+  let model: Panel;
+  let view: PanelView;
 
   beforeEach(() => {
-    em = new Editor();
-    model = new Panel(em.Panels);
+    editor = new Editor();
+    model = new Panel(editor.Panels, {} as any);
     view = new PanelView(model);
     document.body.innerHTML = '<div id="fixtures"></div>';
-    fixtures = document.body.querySelector('#fixtures');
+    fixtures = document.body.querySelector('#fixtures')!;
     fixtures.appendChild(view.render().el);
   });
 
@@ -22,13 +22,13 @@ describe('PanelView', () => {
   });
 
   test('Panel empty', () => {
-    fixtures.firstChild.className = '';
+    fixtures.firstElementChild!.className = '';
     expect(fixtures.innerHTML).toEqual('<div class=""></div>');
   });
 
   test('Append content', () => {
-    model.set('appendContent', 'test');
-    model.set('appendContent', 'test2');
+    model.set('appendContent', 'test' as any);
+    model.set('appendContent', 'test2' as any);
     expect(view.$el.html()).toEqual('testtest2');
   });
 
@@ -53,12 +53,15 @@ describe('PanelView', () => {
 
   describe('Init with options', () => {
     beforeEach(() => {
-      model = new Panel({
-        buttons: [{}],
-      });
+      model = new Panel(
+        {
+          buttons: [{}],
+        } as any,
+        {} as any
+      );
       view = new PanelView(model);
       document.body.innerHTML = '<div id="fixtures"></div>';
-      fixtures = document.body.querySelector('#fixtures');
+      fixtures = document.body.querySelector('#fixtures')!;
       fixtures.appendChild(view.render().el);
     });
 

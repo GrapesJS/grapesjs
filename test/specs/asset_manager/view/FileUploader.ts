@@ -1,12 +1,12 @@
-import FileUploader from 'asset_manager/view/FileUploader';
+import FileUploader from '../../../../src/asset_manager/view/FileUploader';
 
 describe('File Uploader', () => {
-  let obj;
+  let obj: FileUploader;
 
   beforeEach(() => {
     obj = new FileUploader({ config: {} });
     document.body.innerHTML = '<div id="fixtures"></div>';
-    document.body.querySelector('#fixtures').appendChild(obj.render().el);
+    document.body.querySelector('#fixtures')!.appendChild(obj.render().el);
   });
 
   afterEach(() => {
@@ -41,7 +41,7 @@ describe('File Uploader', () => {
 
   describe('Interprets configurations correctly', () => {
     test('Could be disabled', () => {
-      var view = new FileUploader({
+      const view = new FileUploader({
         config: {
           disableUpload: true,
           upload: 'something',
@@ -52,7 +52,7 @@ describe('File Uploader', () => {
     });
 
     test('Handles multiUpload false', () => {
-      var view = new FileUploader({
+      const view = new FileUploader({
         config: {
           multiUpload: false,
         },
@@ -62,7 +62,7 @@ describe('File Uploader', () => {
     });
 
     test('Handles embedAsBase64 parameter', () => {
-      var view = new FileUploader({
+      const view = new FileUploader({
         config: {
           embedAsBase64: true,
         },

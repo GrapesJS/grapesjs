@@ -3,9 +3,10 @@ import Component from '../../dom_components/model/Component';
 import Toolbar from '../../dom_components/model/Toolbar';
 import ToolbarView from '../../dom_components/view/ToolbarView';
 import { isDoc, isTaggableNode, isVisible, off, on } from '../../utils/dom';
-import { getComponentModel, getComponentView, getUnitFromValue, getViewEl, hasWin } from '../../utils/mixins';
+import { getComponentModel, getComponentView, getUnitFromValue, getViewEl, hasWin, isObject } from '../../utils/mixins';
 import { CommandObject } from './CommandAbstract';
 import { CanvasSpotBuiltInTypes } from '../../canvas/model/CanvasSpot';
+import { ResizerOptions } from '../../utils/Resizer';
 
 let showOffsets: boolean;
 /**
@@ -331,8 +332,13 @@ export default {
   updateBadge(el: HTMLElement, pos: any, opts: any = {}) {
     const { canvas } = this;
     const model = getComponentModel(el);
-    if (!model || !model.get('badgable')) return;
     const badge = this.getBadge(opts);
+    const bStyle = badge.style;
+
+    if (!model || !model.get('badgable')) {
+      bStyle.display = 'none';
+      return;
+    }
 
     if (!opts.posOnly) {
       const config = this.canvas.getConfig();
@@ -346,7 +352,6 @@ export default {
     }
 
     const un = 'px';
-    const bStyle = badge.style;
     bStyle.display = 'block';
 
     const targetToElem = canvas.getTargetToElementFixed(el, badge, {
@@ -377,28 +382,35 @@ export default {
    */
   initResize(elem: HTMLElement) {
     const { em, canvas } = this;
-    const editor = em?.Editor;
-    const config = em?.config;
-    const pfx = config.stylePrefix || '';
-    const resizeClass = `${pfx}resizing`;
+    const editor = em.Editor;
     const model = !isElement(elem) && isTaggableNode(elem) ? elem : em.getSelected();
-    const resizable = model && model.get('resizable');
-    let options = {};
-    let modelToStyle: any;
+    const resizable = model?.get('resizable');
+    const spotTypeResize = CanvasSpotBuiltInTypes.Resize;
+    const hasCustomResize = canvas.hasCustomSpot(spotTypeResize);
+    canvas.removeSpots({ type: spotTypeResize });
 
-    var toggleBodyClass = (method: string, e: any, opts: any) => {
-      const docs = opts.docs;
-      docs &&
-        docs.forEach((doc: Document) => {
-          const body = doc.body;
-          const cls = body.className || '';
-          body.className = (method == 'add' ? `${cls} ${resizeClass}` : cls.replace(resizeClass, '')).trim();
-        });
-    };
+    if (model && resizable) {
+      canvas.addSpot({ type: spotTypeResize, component: model });
 
-    if (editor && resizable) {
+      if (hasCustomResize) return;
+
+      let modelToStyle: any;
+      const { config } = em;
+      const pfx = config.stylePrefix || '';
+      const resizeClass = `${pfx}resizing`;
+
+      const toggleBodyClass = (method: string, e: any, opts: any) => {
+        const docs = opts.docs;
+        docs &&
+          docs.forEach((doc: Document) => {
+            const body = doc.body;
+            const cls = body.className || '';
+            body.className = (method == 'add' ? `${cls} ${resizeClass}` : cls.replace(resizeClass, '')).trim();
+          });
+      };
+
       const el = isElement(elem) ? elem : model.getEl();
-      options = {
+      const options: ResizerOptions = {
         // Here the resizer is updated with the current element height and width
         onStart(e: Event, opts: any = {}) {
           const { el, config, resizer } = opts;
@@ -477,14 +489,13 @@ export default {
           modelToStyle.addStyle(finalStyle, { avoidStore: !store });
           em.Styles.__emitCmpStyleUpdate(finalStyle, { components: em.getSelected() });
         },
+        ...(isObject(resizable) ? resizable : {}),
       };
-
-      if (typeof resizable == 'object') {
-        options = { ...options, ...resizable, parent: options };
-      }
 
       this.resizer = editor.runCommand('resize', { el, options, force: 1 });
     } else {
+      if (hasCustomResize) return;
+
       editor.stopCommand('resize');
       this.resizer = null;
     }

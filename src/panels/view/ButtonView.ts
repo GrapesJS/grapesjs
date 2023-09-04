@@ -146,11 +146,9 @@ export default class ButtonView extends ModuleView<Button> {
 
   /**
    * Triggered when button is clicked
-   * @param  {Object}  e  Event
-   *
    * @return   void
    * */
-  clicked(e: Event) {
+  clicked() {
     const { model } = this;
 
     if (model.get('bntsVis') || model.disable || !model.command) return;

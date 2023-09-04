@@ -352,7 +352,7 @@ export default class BlockManager extends ItemManagerModule<BlockManagerConfig, 
    * const newBlocksEl = blockManager.render(filtered, { external: true });
    * document.getElementById('some-id').appendChild(newBlocksEl);
    */
-  render(blocks: Block[], opts: { external?: boolean } = {}) {
+  render(blocks?: Block[], opts: { external?: boolean } = {}) {
     const { categories, config, em } = this;
     const toRender = blocks || this.getAll().models;
 

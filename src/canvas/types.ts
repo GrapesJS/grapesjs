@@ -1,3 +1,15 @@
+export interface ToScreenOption {
+  toScreen?: boolean;
+}
+
+export interface ToWorldOption {
+  toWorld?: boolean;
+}
+
+export interface GetBoxRectOptions extends ToScreenOption {
+  local?: boolean;
+}
+
 /**{START_EVENTS}*/
 export enum CanvasEvents {
   /**
@@ -91,12 +103,5 @@ export enum CanvasEvents {
 }
 /**{END_EVENTS}*/
 
-export interface ToScreenOption {
-  toScreen?: boolean;
-}
-
-export interface ToWorldOption {
-  toWorld?: boolean;
-}
-
-export interface GetBoxRectOptions extends ToScreenOption {}
+// need this to avoid the TS documentation generator to break
+export default CanvasEvents;

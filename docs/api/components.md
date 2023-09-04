@@ -201,6 +201,23 @@ Return the array of all types
 
 Returns **[Array][11]** 
 
+## isComponent
+
+Check if the object is a \[Component].
+
+### Parameters
+
+*   `obj` **[Object][10]** 
+
+### Examples
+
+```javascript
+cmp.isComponent(editor.getSelected()); // true
+cmp.isComponent({}); // false
+```
+
+Returns **[Boolean][13]** 
+
 ## canMove
 
 Check if a component can be moved inside another one.

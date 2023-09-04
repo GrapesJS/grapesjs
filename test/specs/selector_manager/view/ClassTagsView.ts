@@ -1,31 +1,28 @@
-import ClassTagsView from 'selector_manager/view/ClassTagsView';
-import Selectors from 'selector_manager/model/Selectors';
-import Component from 'dom_components/model/Component';
-import Rule from 'css_composer/model/CssRule';
-import Editor from 'editor/model/Editor';
+import ClassTagsView from '../../../../src/selector_manager/view/ClassTagsView';
+import Selectors from '../../../../src/selector_manager/model/Selectors';
+import Component from '../../../../src/dom_components/model/Component';
+import Rule from '../../../../src/css_composer/model/CssRule';
+import Editor from '../../../../src/editor/model/Editor';
+import { Selector } from '../../../../src';
+import { createEl } from '../../../../src/utils/dom';
 
 describe('ClassTagsView', () => {
-  let testContext;
-
-  beforeEach(() => {
-    testContext = {};
-  });
-
-  let view;
-  let fixture;
-  let fixtures;
-  let coll;
-  let target;
-  let em;
-  let compTest;
-  const getSelectorNames = arr => arr.map(item => item.getFullName());
-  const newComponent = obj => new Component(obj, { em });
-  const newRule = obj => new Rule(obj, { em });
+  let testContext: any;
+  let view: ClassTagsView;
+  let fixture: HTMLElement;
+  let fixtures: HTMLElement;
+  let coll: Selectors;
+  let target: Editor;
+  let em: Editor;
+  let compTest: Component;
+  const getSelectorNames = (arr: Selector[] | Selectors) => arr.map(item => item.getFullName());
+  const newComponent = (obj: any) => new Component(obj, { em });
+  const newRule = (obj: any) => new Rule(obj, { em });
 
   beforeAll(() => {
     document.body.innerHTML = '<div id="fixtures"></div>';
-    fixtures = document.body.querySelector('#fixtures');
-    fixture = $('<div class="classtag-fixture"></div>');
+    fixtures = document.body.querySelector('#fixtures')!;
+    testContext = {};
   });
 
   afterAll(() => {
@@ -39,11 +36,11 @@ describe('ClassTagsView', () => {
     view = new ClassTagsView({
       config: { em },
       collection: coll,
-      module: em.get('SelectorManager'),
+      module: em.Selectors,
     });
 
     testContext.targetStub = {
-      add(v) {
+      add(v: any) {
         return { name: v };
       },
     };
@@ -52,17 +49,19 @@ describe('ClassTagsView', () => {
     testContext.compTargetStub = compTest;
 
     fixtures.innerHTML = '';
-    fixture.empty().appendTo(fixtures);
-    fixture.append(view.render().el);
+    fixture = createEl('div', { class: 'classtag-fixture' });
+    fixtures.appendChild(fixture);
+    // fixture.empty().appendTo(fixtures);
+    fixture.appendChild(view.render().el);
     testContext.btnAdd = view.$addBtn;
     testContext.input = view.$el.find('[data-input]');
-    testContext.$tags = fixture.find('[data-selectors]');
-    testContext.$statesC = fixture.find('[data-states-c]');
+    testContext.$tags = view.$el.find('[data-selectors]');
+    testContext.$statesC = view.$el.find('[data-states-c]');
   });
 
   afterEach(() => {
     target.destroy();
-    delete view.collection;
+    fixture.remove();
   });
 
   test('Object exists', () => {
@@ -74,9 +73,9 @@ describe('ClassTagsView', () => {
   });
 
   test('Add new tag triggers correct method', () => {
-    sinon.stub(view, 'addToClasses');
+    const spy = jest.spyOn(view, 'addToClasses');
     coll.add({ name: 'test' });
-    expect(view.addToClasses.calledOnce).toEqual(true);
+    expect(spy).toBeCalledTimes(1);
   });
 
   test('Start new tag creation', () => {
@@ -95,23 +94,23 @@ describe('ClassTagsView', () => {
   });
 
   test.skip('Check keyup of ESC on input', function () {
-    this.btnAdd.click();
-    sinon.stub(view, 'addNewTag');
-    this.input.trigger({
-      type: 'keyup',
-      keyCode: 13,
-    });
-    expect(view.addNewTag.calledOnce).toEqual(true);
+    // this.btnAdd.click();
+    // sinon.stub(view, 'addNewTag');
+    // this.input.trigger({
+    //   type: 'keyup',
+    //   keyCode: 13,
+    // });
+    // expect(view.addNewTag.calledOnce).toEqual(true);
   });
 
   test.skip('Check keyup on ENTER on input', function () {
-    this.btnAdd.click();
-    sinon.stub(view, 'endNewTag');
-    this.input.trigger({
-      type: 'keyup',
-      keyCode: 27,
-    });
-    expect(view.endNewTag.calledOnce).toEqual(true);
+    // this.btnAdd.click();
+    // sinon.stub(view, 'endNewTag');
+    // this.input.trigger({
+    //   type: 'keyup',
+    //   keyCode: 27,
+    // });
+    // expect(view.endNewTag.calledOnce).toEqual(true);
   });
 
   test('Collection changes on update of target', done => {
@@ -125,9 +124,9 @@ describe('ClassTagsView', () => {
 
   test('Collection reacts on reset', () => {
     coll.add([{ name: 'test1' }, { name: 'test2' }]);
-    sinon.stub(view, 'addToClasses');
+    const spy = jest.spyOn(view, 'addToClasses');
     coll.trigger('reset');
-    expect(view.addToClasses.calledTwice).toEqual(true);
+    expect(spy).toBeCalledTimes(2);
   });
 
   test("Don't accept empty tags", () => {
@@ -162,11 +161,11 @@ describe('ClassTagsView', () => {
   });
 
   test('Update state visibility on new tag', done => {
-    sinon.stub(view, 'updateStateVis');
+    const spy = jest.spyOn(view, 'updateStateVis');
     em.setSelected(compTest);
     view.addNewTag('test');
     setTimeout(() => {
-      expect(view.updateStateVis.called).toEqual(true);
+      expect(spy).toBeCalledTimes(1);
       done();
     });
   });
@@ -174,10 +173,10 @@ describe('ClassTagsView', () => {
   test('Update state visibility on removing of the tag', done => {
     em.setSelected(compTest);
     view.addNewTag('test');
-    sinon.stub(view, 'updateStateVis');
+    const spy = jest.spyOn(view, 'updateStateVis');
     coll.remove(coll.at(0));
     setTimeout(() => {
-      expect(view.updateStateVis.calledOnce).toEqual(true);
+      expect(spy).toBeCalledTimes(1);
       done();
     });
   });
@@ -257,7 +256,7 @@ describe('ClassTagsView', () => {
     });
 
     test('Returns empty array with invalid selectors', () => {
-      expect(view.updateSelection('body .test')).toEqual([]);
+      expect(view.updateSelection('body .test' as any)).toEqual([]);
     });
 
     test('Returns array with common selectors from Components', () => {
@@ -272,7 +271,7 @@ describe('ClassTagsView', () => {
       const rule1 = newRule({ selectors: 'test1 test2 test3'.split(' ') });
       const rule2 = newRule({ selectors: 'test1 test2'.split(' ') });
       const rule3 = newRule({ selectors: 'test2 test3'.split(' ') });
-      const result = view.updateSelection([rule1, rule2, rule3]);
+      const result = view.updateSelection([rule1, rule2, rule3] as any);
       expect(getSelectorNames(result)).toEqual(['.test2']);
     });
 
@@ -280,7 +279,7 @@ describe('ClassTagsView', () => {
       const rule1 = newRule({ selectors: 'test1 test2 test3'.split(' ') });
       const rule2 = newRule({ selectors: 'test1 test2'.split(' ') });
       const cmp1 = newComponent({ classes: 'test2 test3' });
-      const result = view.updateSelection([rule1, rule2, cmp1]);
+      const result = view.updateSelection([rule1, rule2, cmp1] as any);
       expect(getSelectorNames(result)).toEqual(['.test2']);
     });
   });

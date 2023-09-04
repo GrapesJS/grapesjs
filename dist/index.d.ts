@@ -282,93 +282,51 @@ declare class ModuleView<TModel extends ModuleModel | ModuleCollection = ModuleM
 	className: string;
 	preinitialize(options?: any): void;
 }
-declare enum CanvasEvents {
+export type DragStop = (cancel?: boolean) => void;
+export type DragContent = (content: any) => void;
+declare class Droppable {
+	em: EditorModel;
+	canvas: CanvasModule;
+	el: HTMLElement;
+	counter: number;
+	sortOpts?: Record<string, any> | null;
+	over?: boolean;
+	dragStop?: DragStop;
+	dragContent?: DragContent;
+	sorter?: any;
+	constructor(em: EditorModel, rootEl?: HTMLElement);
+	toggleEffects(el: HTMLElement, enable: boolean): void;
+	__customTglEff(enable: boolean): void;
+	startCustom(): void;
+	endCustom(cancel?: boolean): void;
 	/**
-	 * @event `canvas:dragenter` Something is dragged inside the canvas, `DataTransfer` instance passed as an argument.
+	 * This function is expected to be always executed at the end of d&d.
 	 */
-	dragEnter = "canvas:dragenter",
+	endDrop(cancel?: boolean, ev?: Event): void;
+	handleDragLeave(ev: Event): void;
+	updateCounter(value: number, ev: Event): void;
+	handleDragEnter(ev: DragEvent | Event): void;
+	handleDragEnd(model: any, dt: any): void;
 	/**
-	 * @event `canvas:dragover` Something is dragging on the canvas, `DataTransfer` instance passed as an argument.
+	 * Always need to have this handler active for enabling the drop
+	 * @param {Event} ev
 	 */
-	dragOver = "canvas:dragover",
+	handleDragOver(ev: Event): void;
 	/**
-	 * @event `canvas:dragend` When a drag operation is ended, `DataTransfer` instance passed as an argument.
+	 * WARNING: This function might fail to run on drop, for example, when the
+	 * drop, accidentally, happens on some external element (DOM not inside the iframe)
 	 */
-	dragEnd = "canvas:dragend",
-	/**
-	 * @event `canvas:dragdata` On any dataTransfer parse, `DataTransfer` instance and the `result` are passed as arguments.
-	 * By changing `result.content` you're able to customize what is dropped.
-	 */
-	dragData = "canvas:dragdata",
-	/**
-	 * @event `canvas:drop` Something is dropped in canvas, `DataTransfer` instance and the dropped model are passed as arguments.
-	 */
-	drop = "canvas:drop",
-	/**
-	 * @event `canvas:spot` Spots updated.
-	 * @example
-	 * editor.on('canvas:spot', () => {
-	 *  console.log('Spots', editor.Canvas.getSpots());
-	 * });
-	 */
-	spot = "canvas:spot",
-	/**
-	 * @event `canvas:spot:add` New canvas spot added.
-	 * @example
-	 * editor.on('canvas:spot:add', ({ spot }) => {
-	 *  console.log('Spot added', spot);
-	 * });
-	 */
-	spotAdd = "canvas:spot:add",
-	/**
-	 * @event `canvas:spot:update` Canvas spot updated.
-	 * @example
-	 * editor.on('canvas:spot:update', ({ spot }) => {
-	 *  console.log('Spot updated', spot);
-	 * });
-	 */
-	spotUpdate = "canvas:spot:update",
-	/**
-	 * @event `canvas:spot:remove` Canvas spot removed.
-	 * @example
-	 * editor.on('canvas:spot:remove', ({ spot }) => {
-	 *  console.log('Spot removed', spot);
-	 * });
-	 */
-	spotRemove = "canvas:spot:remove",
-	/**
-	 * @event `canvas:coords` Canvas coordinates updated.
-	 * @example
-	 * editor.on('canvas:coords', () => {
-	 *  console.log('Canvas coordinates updated:', editor.Canvas.getCoords());
-	 * });
-	 */
-	coords = "canvas:coords",
-	/**
-	 * @event `canvas:zoom` Canvas zoom updated.
-	 * @example
-	 * editor.on('canvas:zoom', () => {
-	 *  console.log('Canvas zoom updated:', editor.Canvas.getZoom());
-	 * });
-	 */
-	zoom = "canvas:zoom",
-	/**
-	 * @event `canvas:pointer` Canvas pointer updated.
-	 * @example
-	 * editor.on('canvas:pointer', () => {
-	 *  console.log('Canvas pointer updated:', editor.Canvas.getPointer());
-	 * });
-	 */
-	pointer = "canvas:pointer"
+	handleDrop(ev: Event | DragEvent): void;
+	getContentByData(dt: any): {
+		content: any;
+	};
 }
-/**{END_EVENTS}*/
-export interface ToScreenOption {
-	toScreen?: boolean;
-}
-export interface ToWorldOption {
-	toWorld?: boolean;
-}
-export interface GetBoxRectOptions extends ToScreenOption {
+export declare class Pages extends Collection<Page> {
+	constructor(models: any, em: EditorModel);
+	onReset(m: Page, opts?: {
+		previousModels?: Pages;
+	}): void;
+	onRemove(removed?: Page): void;
 }
 declare class ComponentWrapper extends Component {
 	get defaults(): {
@@ -383,13 +341,6 @@ declare class ComponentWrapper extends Component {
 	__postAdd(): void;
 	__postRemove(): void;
 	static isComponent(): boolean;
-}
-export declare class Pages extends Collection<Page> {
-	constructor(models: any, em: EditorModel);
-	onReset(m: Page, opts?: {
-		previousModels?: Pages;
-	}): void;
-	onRemove(removed?: Page): void;
 }
 export interface SelectableOption {
 	/**
@@ -703,6 +654,1885 @@ export declare class CssRule extends StyleableModel<CssRuleProperties> {
 	 */
 	compare(selectors: any, state?: string, width?: string, ruleProps?: Partial<CssRuleProperties>): boolean;
 }
+/** @private */
+export interface PageProperties {
+	/**
+	 * Panel id.
+	 */
+	id?: string;
+	/**
+	 * Page name.
+	 */
+	name?: string;
+	/**
+	 * HTML to load as page content.
+	 */
+	component?: string | ComponentDefinition | ComponentDefinition[];
+	/**
+	 * CSS to load with the page.
+	 */
+	styles?: string | CssRuleJSON[];
+	[key: string]: unknown;
+}
+export interface PagePropertiesDefined extends Pick<PageProperties, "id" | "name"> {
+	frames: Frames;
+	[key: string]: unknown;
+}
+export declare class Page extends Model<PagePropertiesDefined> {
+	defaults(): {
+		name: string;
+		frames: Frames;
+		_undo: boolean;
+	};
+	em: EditorModel;
+	constructor(props: any, opts?: {
+		em?: EditorModel;
+		config?: PageManagerConfig;
+	});
+	onRemove(): void;
+	getFrames(): Frames;
+	/**
+	 * Get page id
+	 * @returns {String}
+	 */
+	getId(): string;
+	/**
+	 * Get page name
+	 * @returns {String}
+	 */
+	getName(): string;
+	/**
+	 * Update page name
+	 * @param {String} name New page name
+	 * @example
+	 * page.setName('New name');
+	 */
+	setName(name: string): this;
+	/**
+	 * Get all frames
+	 * @returns {Array<Frame>}
+	 * @example
+	 * const arrayOfFrames = page.getAllFrames();
+	 */
+	getAllFrames(): Frame[];
+	/**
+	 * Get the first frame of the page (identified always as the main one)
+	 * @returns {Frame}
+	 * @example
+	 * const mainFrame = page.getMainFrame();
+	 */
+	getMainFrame(): Frame;
+	/**
+	 * Get the root component (usually is the `wrapper` component) from the main frame
+	 * @returns {Component}
+	 * @example
+	 * const rootComponent = page.getMainComponent();
+	 * console.log(rootComponent.toHTML());
+	 */
+	getMainComponent(): ComponentWrapper;
+	toJSON(opts?: {}): any;
+}
+export declare class Canvas extends ModuleModel<CanvasModule> {
+	defaults(): {
+		frame: string;
+		frames: never[];
+		rulers: boolean;
+		zoom: number;
+		x: number;
+		y: number;
+		scripts: never[];
+		styles: never[];
+		pointer: Coordinates;
+		pointerScreen: Coordinates;
+	};
+	constructor(module: CanvasModule);
+	get frames(): Frames;
+	init(): void;
+	_pageUpdated(page: Page, prev?: Page): void;
+	updateDevice(opts?: any): void;
+	onZoomChange(): void;
+	onCoordsChange(): void;
+	onPointerChange(): void;
+	getPointerCoords(type?: CoordinatesTypes): Coordinates;
+}
+export type DraggerPosition = Position & {
+	end?: boolean;
+};
+export type Guide = {
+	x: number;
+	y: number;
+	lock?: number;
+	active?: boolean;
+};
+export interface DraggerOptions {
+	/**
+	 * Element on which the drag will be executed. By default, the document will be used
+	 */
+	container?: HTMLElement;
+	/**
+	 * Callback on drag start.
+	 * @example
+	 * onStart(ev, dragger) {
+	 *  console.log('pointer start', dragger.startPointer, 'position start', dragger.startPosition);
+	 * }
+	 */
+	onStart?: (ev: Event, dragger: Dragger) => void;
+	/**
+	 * Callback on drag.
+	 * @example
+	 * onDrag(ev, dragger) {
+	 *  console.log('pointer', dragger.currentPointer, 'position', dragger.position, 'delta', dragger.delta);
+	 * }
+	 */
+	onDrag?: (ev: Event, dragger: Dragger) => void;
+	/**
+	 * Callback on drag end.
+	 * @example
+	 * onEnd(ev, dragger) {
+	 *   console.log('pointer', dragger.currentPointer, 'position', dragger.position, 'delta', dragger.delta);
+	 * }
+	 */
+	onEnd?: (ev: Event, dragger: Dragger, opts: {
+		cancelled: boolean;
+	}) => void;
+	/**
+	 * Indicate a callback where to pass an object with new coordinates
+	 */
+	setPosition?: (position: DraggerPosition) => void;
+	/**
+	 * Indicate a callback where to get initial coordinates.
+	 * @example
+	 * getPosition: () => {
+	 *   // ...
+	 *   return { x: 10, y: 100 }
+	 * }
+	 */
+	getPosition?: () => DraggerPosition;
+	/**
+	 * Indicate a callback where to get pointer coordinates.
+	 */
+	getPointerPosition?: (ev: Event) => DraggerPosition;
+	/**
+	 * Static guides to be snapped.
+	 */
+	guidesStatic?: () => Guide[];
+	/**
+	 * Target guides that will snap to static one.
+	 */
+	guidesTarget?: () => Guide[];
+	/**
+	 * Offset before snap to guides.
+	 * @default 5
+	 */
+	snapOffset?: number;
+	/**
+	 * Document on which listen to pointer events.
+	 */
+	doc?: Document;
+	/**
+	 * Scale result points, can also be a function.
+	 * @default 1
+	 */
+	scale?: number | (() => number);
+}
+declare class Dragger {
+	opts: DraggerOptions;
+	startPointer: DraggerPosition;
+	delta: DraggerPosition;
+	lastScroll: DraggerPosition;
+	lastScrollDiff: DraggerPosition;
+	startPosition: DraggerPosition;
+	globScrollDiff: DraggerPosition;
+	currentPointer: DraggerPosition;
+	position: DraggerPosition;
+	el?: HTMLElement;
+	guidesStatic: Guide[];
+	guidesTarget: Guide[];
+	lockedAxis?: any;
+	docs: Document[];
+	trgX?: Guide;
+	trgY?: Guide;
+	/**
+	 * Init the dragger
+	 * @param  {Object} opts
+	 */
+	constructor(opts?: DraggerOptions);
+	/**
+	 * Update options
+	 * @param {Object} options
+	 */
+	setOptions(opts?: Partial<DraggerOptions>): void;
+	toggleDrag(enable?: boolean): void;
+	handleScroll(): void;
+	/**
+	 * Start dragging
+	 * @param  {Event} e
+	 */
+	start(ev: Event): void;
+	/**
+	 * Drag event
+	 * @param  {Event} event
+	 */
+	drag(ev: Event): void;
+	/**
+	 * Check if the delta hits some guide
+	 */
+	snapGuides(delta: DraggerPosition): {
+		newDelta: DraggerPosition;
+		trgX: Guide | undefined;
+		trgY: Guide | undefined;
+	};
+	isPointIn(src: number, trg: number, { offset }?: {
+		offset?: number;
+	}): boolean;
+	setGuideLock(guide: Guide, value: any): Guide;
+	/**
+	 * Stop dragging
+	 */
+	stop(ev: Event, opts?: {
+		cancel?: boolean;
+	}): void;
+	keyHandle(ev: Event): void;
+	/**
+	 * Move the element
+	 * @param  {integer} x
+	 * @param  {integer} y
+	 */
+	move(x: number, y: number, end?: boolean): void;
+	getContainerEl(): HTMLElement[] | Document[];
+	getWindowEl(): any[];
+	/**
+	 * Returns documents
+	 */
+	getDocumentEl(el?: HTMLElement): Document[];
+	/**
+	 * Get mouse coordinates
+	 * @param  {Event} event
+	 * @return {Object}
+	 */
+	getPointerPos(ev: Event): DraggerPosition;
+	getStartPosition(): {
+		x: number;
+		y: number;
+	};
+	getScrollInfo(): {
+		y: number;
+		x: number;
+	};
+	detectAxisLock(x: number, y: number): "x" | "y" | undefined;
+}
+export interface ToScreenOption {
+	toScreen?: boolean;
+}
+export interface ToWorldOption {
+	toWorld?: boolean;
+}
+export interface GetBoxRectOptions extends ToScreenOption {
+	local?: boolean;
+}
+declare enum CanvasEvents {
+	/**
+	 * @event `canvas:dragenter` Something is dragged inside the canvas, `DataTransfer` instance passed as an argument.
+	 */
+	dragEnter = "canvas:dragenter",
+	/**
+	 * @event `canvas:dragover` Something is dragging on the canvas, `DataTransfer` instance passed as an argument.
+	 */
+	dragOver = "canvas:dragover",
+	/**
+	 * @event `canvas:dragend` When a drag operation is ended, `DataTransfer` instance passed as an argument.
+	 */
+	dragEnd = "canvas:dragend",
+	/**
+	 * @event `canvas:dragdata` On any dataTransfer parse, `DataTransfer` instance and the `result` are passed as arguments.
+	 * By changing `result.content` you're able to customize what is dropped.
+	 */
+	dragData = "canvas:dragdata",
+	/**
+	 * @event `canvas:drop` Something is dropped in canvas, `DataTransfer` instance and the dropped model are passed as arguments.
+	 */
+	drop = "canvas:drop",
+	/**
+	 * @event `canvas:spot` Spots updated.
+	 * @example
+	 * editor.on('canvas:spot', () => {
+	 *  console.log('Spots', editor.Canvas.getSpots());
+	 * });
+	 */
+	spot = "canvas:spot",
+	/**
+	 * @event `canvas:spot:add` New canvas spot added.
+	 * @example
+	 * editor.on('canvas:spot:add', ({ spot }) => {
+	 *  console.log('Spot added', spot);
+	 * });
+	 */
+	spotAdd = "canvas:spot:add",
+	/**
+	 * @event `canvas:spot:update` Canvas spot updated.
+	 * @example
+	 * editor.on('canvas:spot:update', ({ spot }) => {
+	 *  console.log('Spot updated', spot);
+	 * });
+	 */
+	spotUpdate = "canvas:spot:update",
+	/**
+	 * @event `canvas:spot:remove` Canvas spot removed.
+	 * @example
+	 * editor.on('canvas:spot:remove', ({ spot }) => {
+	 *  console.log('Spot removed', spot);
+	 * });
+	 */
+	spotRemove = "canvas:spot:remove",
+	/**
+	 * @event `canvas:coords` Canvas coordinates updated.
+	 * @example
+	 * editor.on('canvas:coords', () => {
+	 *  console.log('Canvas coordinates updated:', editor.Canvas.getCoords());
+	 * });
+	 */
+	coords = "canvas:coords",
+	/**
+	 * @event `canvas:zoom` Canvas zoom updated.
+	 * @example
+	 * editor.on('canvas:zoom', () => {
+	 *  console.log('Canvas zoom updated:', editor.Canvas.getZoom());
+	 * });
+	 */
+	zoom = "canvas:zoom",
+	/**
+	 * @event `canvas:pointer` Canvas pointer updated.
+	 * @example
+	 * editor.on('canvas:pointer', () => {
+	 *  console.log('Canvas pointer updated:', editor.Canvas.getPointer());
+	 * });
+	 */
+	pointer = "canvas:pointer"
+}
+declare abstract class ModuleDomainViews<TCollection extends ModuleCollection, TItemView extends ModuleView> extends ModuleView<TCollection> {
+	itemsView: string;
+	protected itemType: string;
+	reuseView: boolean;
+	viewCollection: TItemView[];
+	constructor(opts?: any, autoAdd?: boolean);
+	/**
+	 * Add new model to the collection
+	 * @param {ModuleModel} model
+	 * @private
+	 * */
+	private addTo;
+	private itemViewNotFound;
+	protected abstract renderView(model: ModuleModel, itemType: string): TItemView;
+	/**
+	 * Render new model inside the view
+	 * @param {ModuleModel} model
+	 * @param {Object} fragment Fragment collection
+	 * @private
+	 * */
+	private add;
+	render(): this;
+	onRender(): void;
+	onRemoveBefore(items: TItemView[], opts: any): void;
+	onRemove(items: TItemView[], opts: any): void;
+	remove(opts?: any): this;
+	clearItems(): void;
+}
+declare class FramesView extends ModuleDomainViews<Frames, FrameWrapView> {
+	canvasView: CanvasView;
+	private _module;
+	constructor(opts: {} | undefined, config: any);
+	onRemoveBefore(items: FrameWrapView[], opts?: {}): void;
+	onRender(): void;
+	clearItems(): void;
+	protected renderView(item: any, type: string): FrameWrapView;
+}
+export interface MarginPaddingOffsets {
+	marginTop?: number;
+	marginRight?: number;
+	marginBottom?: number;
+	marginLeft?: number;
+	paddingTop?: number;
+	paddingRight?: number;
+	paddingBottom?: number;
+	paddingLeft?: number;
+}
+export type ElementPosOpts = {
+	avoidFrameOffset?: boolean;
+	avoidFrameZoom?: boolean;
+	noScroll?: boolean;
+};
+export interface FitViewportOptions {
+	frame?: Frame;
+	gap?: number | {
+		x: number;
+		y: number;
+	};
+	ignoreHeight?: boolean;
+	el?: HTMLElement;
+}
+declare class CanvasView extends ModuleView<Canvas> {
+	template(): string;
+	hlEl?: HTMLElement;
+	badgeEl?: HTMLElement;
+	placerEl?: HTMLElement;
+	ghostEl?: HTMLElement;
+	toolbarEl?: HTMLElement;
+	resizerEl?: HTMLElement;
+	offsetEl?: HTMLElement;
+	fixedOffsetEl?: HTMLElement;
+	toolsGlobEl?: HTMLElement;
+	toolsEl?: HTMLElement;
+	framesArea?: HTMLElement;
+	toolsWrapper?: HTMLElement;
+	spotsEl?: HTMLElement;
+	cvStyle?: HTMLElement;
+	clsUnscale: string;
+	ready: boolean;
+	frames: FramesView;
+	frame?: FrameView;
+	private timerZoom?;
+	private frmOff?;
+	private cvsOff?;
+	constructor(model: Canvas);
+	_onFramesUpdate(): void;
+	_initFrames(): void;
+	checkSelected(component: Component, opts?: {
+		scroll?: ScrollIntoViewOptions;
+	}): void;
+	remove(...args: any): this;
+	preventDefault(ev: Event): void;
+	toggleListeners(enable: boolean): void;
+	screenToWorld(x: number, y: number): Coordinates;
+	onPointer(ev: WheelEvent): void;
+	onKeyPress(ev: KeyboardEvent): void;
+	onWheel(ev: WheelEvent): void;
+	updateFrames(ev: Event): void;
+	updateFramesArea(): void;
+	fitViewport(opts?: FitViewportOptions): void;
+	/**
+	 * Checks if the element is visible in the canvas's viewport
+	 * @param  {HTMLElement}  el
+	 * @return {Boolean}
+	 */
+	isElInViewport(el: HTMLElement): boolean;
+	/**
+	 * Get the offset of the element
+	 * @param  {HTMLElement} el
+	 * @return { {top: number, left: number, width: number, height: number} }
+	 */
+	offset(el?: HTMLElement, opts?: ElementPosOpts): {
+		top: number;
+		left: number;
+		width: number;
+		height: number;
+	};
+	getRectToScreen(boxRect: Partial<BoxRect>): BoxRect;
+	getElBoxRect(el: HTMLElement, opts?: GetBoxRectOptions): BoxRect;
+	getViewportRect(opts?: ToWorldOption): BoxRect;
+	getViewportDelta(opts?: {
+		withZoom?: number;
+	}): Coordinates;
+	/**
+	 * Cleare cached offsets
+	 * @private
+	 */
+	clearOff(): void;
+	/**
+	 * Return frame offset
+	 * @return { {top: number, left: number, width: number, height: number} }
+	 * @public
+	 */
+	getFrameOffset(el?: HTMLElement): {
+		top: number;
+		left: number;
+		width: number;
+		height: number;
+	};
+	/**
+	 * Return canvas offset
+	 * @return { {top: number, left: number, width: number, height: number} }
+	 * @public
+	 */
+	getCanvasOffset(): {
+		top: number;
+		left: number;
+		width: number;
+		height: number;
+	};
+	/**
+	 * Returns element's rect info
+	 * @param {HTMLElement} el
+	 * @param {object} opts
+	 * @return { {top: number, left: number, width: number, height: number, zoom: number, rect: any} }
+	 * @public
+	 */
+	getElementPos(el: HTMLElement, opts?: ElementPosOpts): {
+		top: number;
+		left: number;
+		height: number;
+		width: number;
+		zoom: number;
+		rect: {
+			top: number;
+			left: number;
+			width: number;
+			height: number;
+		};
+	};
+	/**
+	 * Returns element's offsets like margins and paddings
+	 * @param {HTMLElement} el
+	 * @return { MarginPaddingOffsets }
+	 * @public
+	 */
+	getElementOffsets(el: HTMLElement): MarginPaddingOffsets;
+	/**
+	 * Returns position data of the canvas element
+	 * @return { {top: number, left: number, width: number, height: number} } obj Position object
+	 * @public
+	 */
+	getPosition(opts?: any): ElementRect;
+	/**
+	 * Update javascript of a specific component passed by its View
+	 * @param {ModuleView} view Component's View
+	 * @private
+	 */
+	updateScript(view: any): void;
+	/**
+	 * Get javascript container
+	 * @private
+	 */
+	getJsContainer(view?: ComponentView): HTMLElement | undefined;
+	getFrameView(view?: ComponentView): FrameView | undefined;
+	_renderFrames(): void;
+	renderFrames(): void;
+	render(): this;
+}
+declare class FrameWrapView extends ModuleView<Frame> {
+	events(): {
+		"click [data-action-remove]": string;
+		"mousedown [data-action-move]": string;
+	};
+	elTools?: HTMLElement;
+	frame: FrameView;
+	dragger?: Dragger;
+	cv: CanvasView;
+	classAnim: string;
+	sizeObserver?: ResizeObserver;
+	constructor(model: Frame, canvasView: CanvasView);
+	setupDragger(): void;
+	startDrag(ev?: Event): void;
+	__clear(opts?: any): void;
+	remove(opts?: any): this;
+	updateOffset(): void;
+	updatePos(md?: boolean): void;
+	updateSize(): void;
+	/**
+	 * Update dimensions of the frame
+	 * @private
+	 */
+	updateDim(): void;
+	onScroll(): void;
+	frameLoaded(): void;
+	__handleSize(): {
+		noChanges: boolean;
+		width: any;
+		height: any;
+		newW: any;
+		newH: any;
+	};
+	render(): this;
+}
+declare class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
+	/** @ts-ignore */
+	get tagName(): string;
+	/** @ts-ignore */
+	get attributes(): {
+		allowfullscreen: string;
+	};
+	dragging: boolean;
+	loaded: boolean;
+	droppable?: Droppable;
+	rect?: DOMRect;
+	lastClientY?: number;
+	lastMaxHeight: number;
+	private jsContainer?;
+	private tools;
+	private wrapper?;
+	private frameWrapView?;
+	constructor(model: Frame, view?: FrameWrapView);
+	getBoxRect(): BoxRect;
+	/**
+	 * Update `<head>` content of the frame
+	 */
+	updateHead(): void;
+	getEl(): HTMLIFrameElement;
+	getCanvasModel(): Canvas;
+	getWindow(): Window;
+	getDoc(): Document;
+	getHead(): HTMLHeadElement;
+	getBody(): HTMLBodyElement;
+	getWrapper(): HTMLElement;
+	getJsContainer(): HTMLElement;
+	getToolsEl(): HTMLElement;
+	getGlobalToolsEl(): HTMLElement;
+	getHighlighter(): HTMLElement;
+	getBadgeEl(): HTMLElement;
+	getOffsetViewerEl(): HTMLElement;
+	getRect(): DOMRect;
+	/**
+	 * Get rect data, not affected by the canvas zoom
+	 */
+	getOffsetRect(): {
+		top: number;
+		left: number;
+		height: number;
+		width: number;
+		scrollTop: number;
+		scrollLeft: number;
+		scrollBottom: number;
+		scrollRight: number;
+	};
+	_getTool(name: string): HTMLElement;
+	remove(...args: any): this;
+	startAutoscroll(): void;
+	autoscroll(): void;
+	updateClientY(ev: Event): void;
+	showGlobalTools(): void;
+	stopAutoscroll(): void;
+	_toggleAutoscrollFx(enable: boolean): void;
+	render(): this;
+	renderScripts(): void;
+	renderStyles(opts?: any): void;
+	renderBody(): void;
+	_toggleEffects(enable: boolean): void;
+	_emitUpdate(): void;
+}
+export interface CssComposerConfig {
+	/**
+	 * Style prefix.
+	 * @default 'css-'
+	 */
+	stylePrefix?: string;
+	/**
+	 * Default CSS style rules
+	 */
+	rules?: Array<string>;
+}
+export declare class CssRules extends Collection<CssRule> {
+	editor: EditorModel;
+	constructor(props: any, opt: any);
+	toJSON(opts?: any): any;
+	onAdd(model: CssRule, c: CssRules, o: any): void;
+	onRemove(removed: CssRule): void;
+	/** @ts-ignore */
+	add(models: any, opt?: any): any[];
+}
+declare class CssRulesView extends View {
+	atRules: Record<string, any>;
+	config: Record<string, any>;
+	em: EditorModel;
+	pfx: string;
+	renderStarted?: boolean;
+	constructor(o: any);
+	/**
+	 * Add to collection
+	 * @param {Object} model
+	 * @private
+	 * */
+	addTo(model: CssRule): void;
+	/**
+	 * Add new object to collection
+	 * @param {Object} model
+	 * @param {Object} fragmentEl
+	 * @return {Object}
+	 * @private
+	 * */
+	addToCollection(model: CssRule, fragmentEl?: DocumentFragment): HTMLElement | undefined;
+	getMediaWidth(mediaText: string): string;
+	sortRules(a: number, b: number): number;
+	render(): this;
+}
+/** @private */
+export interface RuleOptions {
+	/**
+	 * At-rule type, eg. `media`
+	 */
+	atRuleType?: string;
+	/**
+	 * At-rule parameters, eg. `(min-width: 500px)`
+	 */
+	atRuleParams?: string;
+}
+/** @private */
+export interface SetRuleOptions extends RuleOptions {
+	/**
+	 * If the rule exists already, merge passed styles instead of replacing them.
+	 */
+	addStyles?: boolean;
+}
+/** @private */
+export interface GetSetRuleOptions {
+	state?: string;
+	mediaText?: string;
+	addOpts?: ObjectAny;
+	current?: boolean;
+}
+export type CssRuleStyle = Required<CssRuleProperties>["style"];
+declare class CssComposer extends ItemManagerModule<CssComposerConfig & {
+	pStylePrefix?: string;
+}> {
+	rules: CssRules;
+	rulesView?: CssRulesView;
+	Selectors: typeof Selectors;
+	storageKey: string;
+	/**
+	 * Initializes module. Automatically called with a new instance of the editor
+	 * @param {Object} config Configurations
+	 * @private
+	 */
+	constructor(em: EditorModel);
+	/**
+	 * On load callback
+	 * @private
+	 */
+	onLoad(): void;
+	/**
+	 * Do stuff after load
+	 * @param  {Editor} em
+	 * @private
+	 */
+	postLoad(): void;
+	store(): any;
+	load(data: any): any;
+	/**
+	 * Add new rule to the collection, if not yet exists with the same selectors
+	 * @param {Array<Selector>} selectors Array of selectors
+	 * @param {String} state Css rule state
+	 * @param {String} width For which device this style is oriented
+	 * @param {Object} props Other props for the rule
+	 * @param {Object} opts Options for the add of new rule
+	 * @return {Model}
+	 * @private
+	 * @example
+	 * var sm = editor.SelectorManager;
+	 * var sel1 = sm.add('myClass1');
+	 * var sel2 = sm.add('myClass2');
+	 * var rule = cssComposer.add([sel1, sel2], 'hover');
+	 * rule.set('style', {
+	 *   width: '100px',
+	 *   color: '#fff',
+	 * });
+	 * */
+	add(selectors: any, state?: string, width?: string, opts?: {}, addOpts?: {}): CssRule;
+	/**
+	 * Get the rule
+	 * @param {String|Array<Selector>} selectors Array of selectors or selector string, eg `.myClass1.myClass2`
+	 * @param {String} state Css rule state, eg. 'hover'
+	 * @param {String} width Media rule value, eg. '(max-width: 992px)'
+	 * @param {Object} ruleProps Other rule props
+	 * @return  {Model|null}
+	 * @private
+	 * @example
+	 * const sm = editor.SelectorManager;
+	 * const sel1 = sm.add('myClass1');
+	 * const sel2 = sm.add('myClass2');
+	 * const rule = cssComposer.get([sel1, sel2], 'hover', '(max-width: 992px)');
+	 * // Update the style
+	 * rule.set('style', {
+	 *   width: '300px',
+	 *   color: '#000',
+	 * });
+	 * */
+	get(selectors: any, state?: string, width?: string, ruleProps?: Omit<CssRuleProperties, "selectors">): CssRule | undefined;
+	getAll(): CssRules;
+	/**
+	 * Add a raw collection of rule objects
+	 * This method overrides styles, in case, of already defined rule
+	 * @param {String|Array<Object>} data CSS string or an array of rule objects, eg. [{selectors: ['class1'], style: {....}}, ..]
+	 * @param {Object} opts Options
+	 * @param {Object} props Additional properties to add on rules
+	 * @return {Array<Model>}
+	 * @private
+	 */
+	addCollection(data: string | CssRuleJSON[], opts?: Record<string, any>, props?: {}): CssRule[];
+	/**
+	 * Add CssRules via CSS string.
+	 * @param {String} css CSS string of rules to add.
+	 * @returns {Array<[CssRule]>} Array of rules
+	 * @example
+	 * const addedRules = css.addRules('.my-cls{ color: red } @media (max-width: 992px) { .my-cls{ color: darkred } }');
+	 * // Check rules
+	 * console.log(addedRules.map(rule => rule.toCSS()));
+	 */
+	addRules(css: string): CssRule[];
+	/**
+	 * Add/update the CssRule.
+	 * @param {String} selectors Selector string, eg. `.myclass`
+	 * @param {Object} style  Style properties and values. If the rule exists, styles will be replaced unless `addStyles` option is used.
+	 * @param {Object} [opts={}]  Additional properties.
+	 * @param {String} [opts.atRuleType='']  At-rule type, eg. `media`.
+	 * @param {String} [opts.atRuleParams='']  At-rule parameters, eg. `(min-width: 500px)`.
+	 * @param {Boolean} [opts.addStyles=false] If the rule exists already, merge passed styles instead of replacing them.
+	 * @returns {[CssRule]} The new/updated CssRule.
+	 * @example
+	 * // Simple class-based rule
+	 * const rule = css.setRule('.class1.class2', { color: 'red' });
+	 * console.log(rule.toCSS()) // output: .class1.class2 { color: red }
+	 * // With state and other mixed selector
+	 * const rule = css.setRule('.class1.class2:hover, div#myid', { color: 'red' });
+	 * // output: .class1.class2:hover, div#myid { color: red }
+	 * // With media
+	 * const rule = css.setRule('.class1:hover', { color: 'red' }, {
+	 *  atRuleType: 'media',
+	 *  atRuleParams: '(min-width: 500px)',
+	 * });
+	 * // output: `@media (min-width: 500px) { .class1:hover { color: red } }`
+	 *
+	 * // Update styles of existent rule
+	 * css.setRule('.class1', { color: 'red', background: 'red' });
+	 * css.setRule('.class1', { color: 'blue' }, { addStyles: true });
+	 * // output: .class1 { color: blue; background: red }
+	 */
+	setRule(selectors: any, style?: CssRuleProperties["style"], opts?: SetRuleOptions): CssRule;
+	/**
+	 * Get the CssRule.
+	 * @param {String} selectors Selector string, eg. `.myclass:hover`
+	 * @param {Object} [opts={}]  Additional properties
+	 * @param {String} [opts.atRuleType='']  At-rule type, eg. `media`
+	 * @param {String} [opts.atRuleParams='']  At-rule parameters, eg. '(min-width: 500px)'
+	 * @returns {[CssRule]}
+	 * @example
+	 * const rule = css.getRule('.myclass1:hover');
+	 * const rule2 = css.getRule('.myclass1:hover, div#myid');
+	 * const rule3 = css.getRule('.myclass1', {
+	 *  atRuleType: 'media',
+	 *  atRuleParams: '(min-width: 500px)',
+	 * });
+	 */
+	getRule(selectors: any, opts?: RuleOptions): CssRule | undefined;
+	/**
+	 * Get all rules or filtered by a matching selector.
+	 * @param {String} [selector=''] Selector, eg. `.myclass`
+	 * @returns {Array<[CssRule]>}
+	 * @example
+	 * // Take all the component specific rules
+	 * const id = someComponent.getId();
+	 * const rules = css.getRules(`#${id}`);
+	 * console.log(rules.map(rule => rule.toCSS()))
+	 * // All rules in the project
+	 * console.log(css.getRules())
+	 */
+	getRules(selector: string): CssRule[];
+	/**
+	 * Add/update the CSS rule with id selector
+	 * @param {string} name Id selector name, eg. 'my-id'
+	 * @param {Object} style  Style properties and values
+	 * @param {Object} [opts={}]  Custom options, like `state` and `mediaText`
+	 * @return {CssRule} The new/updated rule
+	 * @private
+	 * @example
+	 * const rule = css.setIdRule('myid', { color: 'red' });
+	 * const ruleHover = css.setIdRule('myid', { color: 'blue' }, { state: 'hover' });
+	 * // This will add current CSS:
+	 * // #myid { color: red }
+	 * // #myid:hover { color: blue }
+	 */
+	setIdRule(name: string, style?: CssRuleStyle, opts?: GetSetRuleOptions): CssRule;
+	/**
+	 * Get the CSS rule by id selector
+	 * @param {string} name Id selector name, eg. 'my-id'
+	 * @param  {Object} [opts={}]  Custom options, like `state` and `mediaText`
+	 * @return {CssRule}
+	 * @private
+	 * @example
+	 * const rule = css.getIdRule('myid');
+	 * const ruleHover = css.setIdRule('myid', { state: 'hover' });
+	 */
+	getIdRule(name: string, opts?: GetSetRuleOptions): CssRule | undefined;
+	/**
+	 * Add/update the CSS rule with class selector
+	 * @param {string} name Class selector name, eg. 'my-class'
+	 * @param {Object} style  Style properties and values
+	 * @param {Object} [opts={}]  Custom options, like `state` and `mediaText`
+	 * @return {CssRule} The new/updated rule
+	 * @private
+	 * @example
+	 * const rule = css.setClassRule('myclass', { color: 'red' });
+	 * const ruleHover = css.setClassRule('myclass', { color: 'blue' }, { state: 'hover' });
+	 * // This will add current CSS:
+	 * // .myclass { color: red }
+	 * // .myclass:hover { color: blue }
+	 */
+	setClassRule(name: string, style?: CssRuleStyle, opts?: GetSetRuleOptions): CssRule;
+	/**
+	 * Get the CSS rule by class selector
+	 * @param {string} name Class selector name, eg. 'my-class'
+	 * @param  {Object} [opts={}]  Custom options, like `state` and `mediaText`
+	 * @return {CssRule}
+	 * @private
+	 * @example
+	 * const rule = css.getClassRule('myclass');
+	 * const ruleHover = css.getClassRule('myclass', { state: 'hover' });
+	 */
+	getClassRule(name: string, opts?: GetSetRuleOptions): CssRule | undefined;
+	/**
+	 * Remove rule, by CssRule or matching selector (eg. the selector will match also at-rules like `@media`)
+	 * @param {String|[CssRule]|Array<[CssRule]>} rule CssRule or matching selector.
+	 * @return {Array<[CssRule]>} Removed rules
+	 * @example
+	 * // Remove by CssRule
+	 * const toRemove = css.getRules('.my-cls');
+	 * css.remove(toRemove);
+	 * // Remove by selector
+	 * css.remove('.my-cls-2');
+	 */
+	remove(rule: string | CssRule, opts?: any): CssRule[] | (CssRule & any[]);
+	/**
+	 * Remove all rules
+	 * @return {this}
+	 */
+	clear(opts?: {}): this;
+	getComponentRules(cmp: Component, opts?: GetSetRuleOptions): CssRule[];
+	/**
+	 * Render the block of CSS rules
+	 * @return {HTMLElement}
+	 * @private
+	 */
+	render(): HTMLElement;
+	destroy(): void;
+}
+declare class ComponentsView extends View {
+	opts: any;
+	config: DomComponentsConfig & {
+		frameView?: FrameView;
+	};
+	em: EditorModel;
+	parentEl?: HTMLElement;
+	compView: typeof ComponentView;
+	initialize(o: any): void;
+	removeChildren(removed: Component, coll: any, opts?: {}): void;
+	/**
+	 * Add to collection
+	 * @param {Model} model
+	 * @param {Collection} coll
+	 * @param {Object} opts
+	 * @private
+	 * */
+	addTo(model: Component, coll?: any, opts?: {
+		temporary?: boolean;
+	}): void;
+	/**
+	 * Add new object to collection
+	 * @param  {Object}  Model
+	 * @param  {Object}   Fragment collection
+	 * @param  {Integer}  Index of append
+	 *
+	 * @return   {Object}   Object rendered
+	 * @private
+	 * */
+	addToCollection(model: Component, fragmentEl?: DocumentFragment | null, index?: number): HTMLElement | Text;
+	resetChildren(models: Components, { previousModels }?: {
+		previousModels?: never[] | undefined;
+	}): void;
+	render(parent?: HTMLElement): this;
+}
+export type ClbObj = ReturnType<ComponentView["_clbObj"]>;
+export interface IComponentView extends ExtractMethods<ComponentView> {
+}
+export declare class ComponentView extends View</**
+ * Keep this format to avoid errors in TS bundler */ 
+/** @ts-ignore */
+Component> {
+	/** @ts-ignore */
+	model: Component;
+	/** @ts-ignore */
+	className(): any;
+	/** @ts-ignore */
+	tagName(): string;
+	modelOpt: ComponentOptions;
+	em: EditorModel;
+	opts?: any;
+	pfx?: string;
+	ppfx?: string;
+	attr?: Record<string, any>;
+	classe?: string;
+	config: DomComponentsConfig;
+	childrenView?: ComponentsView;
+	getChildrenSelector?: Function;
+	getTemplate?: Function;
+	scriptContainer?: HTMLElement;
+	initialize(opt?: any): void;
+	get __cmpStyleOpts(): GetSetRuleOptions;
+	get frameView(): FrameView;
+	__isDraggable(): string | boolean | DraggableDroppableFn | undefined;
+	_clbObj(): {
+		editor: Editor;
+		model: Component;
+		el: HTMLElement;
+	};
+	/**
+	 * Initialize callback
+	 */
+	init(opts: ClbObj): void;
+	/**
+	 * Remove callback
+	 */
+	removed(opts: ClbObj): void;
+	/**
+	 * On render callback
+	 */
+	onRender(opts: ClbObj): void;
+	/**
+	 * Callback executed when the `active` event is triggered on component
+	 */
+	onActive(ev: Event): void;
+	/**
+	 * Callback executed when the `disable` event is triggered on component
+	 */
+	onDisable(): void;
+	remove(): this;
+	handleDragStart(event: Event): false | undefined;
+	initClasses(): void;
+	initComponents(opts?: {
+		avoidRender?: boolean;
+	}): void;
+	/**
+	 * Handle any property change
+	 * @private
+	 */
+	handleChange(): void;
+	/**
+	 * Import, if possible, classes inside main container
+	 * @private
+	 * */
+	importClasses(): void;
+	/**
+	 * Update item on status change
+	 * @param  {Event} e
+	 * @private
+	 * */
+	updateStatus(opts?: {
+		noExtHl?: boolean;
+		avoidHover?: boolean;
+	}): void;
+	/**
+	 * Update highlight attribute
+	 * @private
+	 * */
+	updateHighlight(): void;
+	/**
+	 * Update style attribute
+	 * @private
+	 * */
+	updateStyle(m?: any, v?: any, opts?: ObjectAny): void;
+	/**
+	 * Update classe attribute
+	 * @private
+	 * */
+	updateClasses(): void;
+	/**
+	 * Update single attribute
+	 * @param {[type]} name  [description]
+	 * @param {[type]} value [description]
+	 */
+	setAttribute(name: string, value: any): void;
+	/**
+	 * Get classes from attributes.
+	 * This method is called before initialize
+	 *
+	 * @return  {Array}|null
+	 * @private
+	 * */
+	getClasses(): any;
+	/**
+	 * Update attributes
+	 * @private
+	 * */
+	updateAttributes(): void;
+	/**
+	 * Update component content
+	 * @private
+	 * */
+	updateContent(): void;
+	/**
+	 * Prevent default helper
+	 * @param  {Event} e
+	 * @private
+	 */
+	prevDef(e: Event): void;
+	/**
+	 * Render component's script
+	 * @private
+	 */
+	updateScript(): void;
+	/**
+	 * Return children container
+	 * Differently from a simple component where children container is the
+	 * component itself
+	 * <my-comp>
+	 *  <!--
+	 *    <child></child> ...
+	 *   -->
+	 * </my-comp>
+	 * You could have the children container more deeper
+	 * <my-comp>
+	 *  <div></div>
+	 *  <div></div>
+	 *  <div>
+	 *    <div>
+	 *      <!--
+	 *        <child></child> ...
+	 *      -->
+	 *    </div>
+	 *  </div>
+	 * </my-comp>
+	 * @return HTMLElement
+	 * @private
+	 */
+	getChildrenContainer(): HTMLElement;
+	/**
+	 * This returns rect informations not affected by the canvas zoom.
+	 * The method `getBoundingClientRect` doesn't work here and we
+	 * have to take in account offsetParent
+	 */
+	getOffsetRect(): {
+		top: number;
+		left: number;
+		bottom: number;
+		right: number;
+	};
+	isInViewport(): boolean;
+	scrollIntoView(opts?: {
+		force?: boolean;
+	} & ScrollIntoViewOptions): void;
+	/**
+	 * Recreate the element of the view
+	 */
+	reset(): void;
+	_setData(): void;
+	/**
+	 * Render children components
+	 * @private
+	 */
+	renderChildren(): void;
+	renderAttributes(): void;
+	onAttrUpdate(): void;
+	render(): this;
+	postRender(): void;
+	static getEvents(): any;
+}
+declare enum CanvasSpotBuiltInTypes {
+	Select = "select",
+	Hover = "hover",
+	Spacing = "spacing",
+	Target = "target",
+	Resize = "resize"
+}
+export type CanvasSpotBuiltInType = `${CanvasSpotBuiltInTypes}`;
+export type CanvasSpotType = LiteralUnion<CanvasSpotBuiltInType, string>;
+/** @private */
+export interface CanvasSpotBase<T extends CanvasSpotType> {
+	/**
+	 * Spot type, eg. `select`.
+	 */
+	type: T;
+	/**
+	 * Spot ID.
+	 */
+	id: string;
+	/**
+	 * Fixed box rect of the spot, eg. `{ width: 100, height: 100, x: 0, y: 0 }`.
+	 */
+	boxRect?: BoxRect;
+	/**
+	 * Component to which the spot will be attached.
+	 */
+	component?: Component;
+	/**
+	 * ComponentView to which the spot will be attached.
+	 */
+	componentView?: ComponentView;
+	frame?: Frame;
+}
+export interface CanvasSpotProps<T extends CanvasSpotType = CanvasSpotType> extends CanvasSpotBase<T> {
+}
+/**
+ * Canvas spots are elements drawn on top of the canvas. They can be used to represent anything you
+ * might need but the most common use case of canvas spots is rendering information and managing
+ * components rendered in the canvas.
+ * Read here for more information about [Canvas Spots](https://grapesjs.com/docs/modules/Canvas.html#canvas-spots)
+ *
+ * [Component]: component.html
+ *
+ * @property {String} id Spot ID.
+ * @property {String} type Spot type.
+ * @property {[Component]} [component] Component to which the spot will be attached.
+ * @property {ComponentView} [componentView] ComponentView to which the spot will be attached.
+ * @property {Object} [boxRect] Fixed box rect of the spot, eg. `{ width: 100, height: 100, x: 0, y: 0 }`.
+ *
+ */
+export declare class CanvasSpot<T extends CanvasSpotProps = CanvasSpotProps> extends ModuleModel<CanvasModule, T> {
+	defaults(): T;
+	get type(): "" | T["type"];
+	get component(): Component | undefined;
+	get componentView(): ComponentView | undefined;
+	get el(): HTMLElement | undefined;
+	/**
+	 * Get the box rect of the spot.
+	 * @param {Object} [opts={}]
+	 * @returns {Object} The box rect object
+	 * @example
+	 * canvasSpot.getBoxRect();
+	 * // { width: 100, height: 50, x: 0, y: 0 }
+	 */
+	getBoxRect(opts?: GetBoxRectOptions): BoxRect;
+	/**
+	 * Get the style object of the spot.
+	 * @param {Object} [opts={}]
+	 * @returns {CSSStyleDeclaration} [opts]
+	 * @example
+	 * canvasSpot.getStyle();
+	 * // { width: '100px', height: '...', ... }
+	 */
+	getStyle(opts?: {
+		boxRect?: BoxRect;
+	} & GetBoxRectOptions): Partial<CSSStyleDeclaration>;
+	/**
+	 * Check the spot type.
+	 * @param {String} type
+	 * @returns {Boolean}
+	 * @example
+	 * canvasSpot.isType('select');
+	 */
+	isType<E extends T>(type: E["type"]): this is CanvasSpot<E>;
+}
+export interface CanvasConfig {
+	stylePrefix?: string;
+	/**
+	 * Append external scripts to the `<head>` of the iframe.
+	 * Be aware that these scripts will not be printed in the export code.
+	 * @default []
+	 * @example
+	 * scripts: [ 'https://...1.js', 'https://...2.js' ]
+	 * // or passing objects as attributes
+	 * scripts: [ { src: '/file.js', someattr: 'value' }, ... ]
+	 */
+	scripts?: (string | Record<string, any>)[];
+	/**
+	 * Append external styles to the `<head>` of the iframe.
+	 * Be aware that these scripts will not be printed in the export code.
+	 * @default []
+	 * @example
+	 * styles: [ 'https://...1.css', 'https://...2.css' ]
+	 * // or passing objects as attributes
+	 * styles: [ { href: '/style.css', someattr: 'value' }, ... ]
+	 */
+	styles?: (string | Record<string, any>)[];
+	/**
+	 * Add custom badge naming strategy.
+	 * @example
+	 * customBadgeLabel: component => component.getName(),
+	 */
+	customBadgeLabel?: (component: Component) => string;
+	/**
+	 * Indicate when to start the autoscroll of the canvas on component/block dragging (value in px).
+	 * @default 50
+	 */
+	autoscrollLimit?: number;
+	/**
+	 * Experimental: external highlighter box
+	 */
+	extHl?: boolean;
+	/**
+	 * Initial content to load in all frames.
+	 * The default value enables the standard mode for the iframe.
+	 * @default '<!DOCTYPE html>'
+	 */
+	frameContent?: string;
+	/**
+	 * Initial style to load in all frames.
+	 */
+	frameStyle?: string;
+	/**
+	 * When some textable component is selected and focused (eg. input or text component), the editor
+	 * stops some commands (eg. disables the copy/paste of components with CTRL+C/V to allow the copy/paste of the text).
+	 * This option allows to customize, by a selector, which element should not be considered textable.
+	 */
+	notTextable?: string[];
+	/**
+	 * By default, the editor allows to drop external elements by relying on the native HTML5
+	 * drag & drop API (eg. like a D&D of an image file from your desktop).
+	 * If you want to customize how external elements are interpreted by the editor, you can rely
+	 * on `canvas:dragdata` event, eg. https://github.com/GrapesJS/grapesjs/discussions/3849
+	 * @default true
+	 */
+	allowExternalDrop?: boolean;
+	/**
+	 * Disable the rendering of built-in canvas spots.
+	 *
+	 * Read here for more information about [Canvas Spots](https://grapesjs.com/docs/modules/Canvas.html#canvas-spots).
+	 * @example
+	 * // Disable only the hover type spot
+	 * customSpots: { hover: true },
+	 *
+	 * // Disable all built-in spots
+	 * customSpots: true,
+	 */
+	customSpots?: boolean | Partial<Record<CanvasSpotBuiltInTypes, boolean>>;
+	/**
+	 * Experimental: enable infinite canvas.
+	 */
+	infiniteCanvas?: boolean;
+}
+export declare class CanvasSpots extends ModuleCollection<CanvasSpot> {
+	refreshDbn: Debounced;
+	constructor(module: CanvasModule, models?: CanvasSpot[] | CanvasSpotProps[]);
+	get em(): EditorModel;
+	get events(): typeof CanvasEvents;
+	refresh(): void;
+	onAdd(spot: CanvasSpot): void;
+	onChange(spot: CanvasSpot): void;
+	onRemove(spot: CanvasSpot): void;
+	__trgEvent(event: string, props: ObjectAny): void;
+}
+export type CanvasEvent = `${CanvasEvents}`;
+declare class CanvasModule extends Module<CanvasConfig> {
+	/**
+	 * Get configuration object
+	 * @name getConfig
+	 * @function
+	 * @return {Object}
+	 */
+	/**
+	 * Used inside RTE
+	 * @private
+	 */
+	getCanvasView(): CanvasView;
+	canvas: Canvas;
+	model: Canvas;
+	spots: CanvasSpots;
+	events: typeof CanvasEvents;
+	framesById: Record<string, Frame | undefined>;
+	private canvasView?;
+	/**
+	 * Initialize module. Automatically called with a new instance of the editor
+	 * @param {Object} config Configurations
+	 * @private
+	 */
+	constructor(em: EditorModel);
+	postLoad(): void;
+	getModel(): Canvas;
+	/**
+	 * Get the canvas element
+	 * @returns {HTMLElement}
+	 */
+	getElement(): HTMLElement;
+	getFrame(index?: number): Frame;
+	/**
+	 * Get the main frame element of the canvas
+	 * @returns {HTMLIFrameElement}
+	 */
+	getFrameEl(): HTMLIFrameElement;
+	getFramesEl(): HTMLElement;
+	/**
+	 * Get the main frame window instance
+	 * @returns {Window}
+	 */
+	getWindow(): Window;
+	/**
+	 * Get the main frame document element
+	 * @returns {HTMLDocument}
+	 */
+	getDocument(): Document;
+	/**
+	 * Get the main frame body element
+	 * @return {HTMLBodyElement}
+	 */
+	getBody(): HTMLBodyElement;
+	_getLocalEl(globalEl: any, compView: ComponentView, method: keyof FrameView): any;
+	/**
+	 * Returns element containing all global canvas tools
+	 * @returns {HTMLElement}
+	 * @private
+	 */
+	getGlobalToolsEl(): HTMLElement | undefined;
+	/**
+	 * Returns element containing all canvas tools
+	 * @returns {HTMLElement}
+	 * @private
+	 */
+	getToolsEl(compView?: any): any;
+	/**
+	 * Returns highlighter element
+	 * @returns {HTMLElement}
+	 * @private
+	 */
+	getHighlighter(compView?: any): any;
+	/**
+	 * Returns badge element
+	 * @returns {HTMLElement}
+	 * @private
+	 */
+	getBadgeEl(compView: any): any;
+	/**
+	 * Returns placer element
+	 * @returns {HTMLElement}
+	 * @private
+	 */
+	getPlacerEl(): HTMLElement | undefined;
+	/**
+	 * Returns ghost element
+	 * @returns {HTMLElement}
+	 * @private
+	 */
+	getGhostEl(): HTMLElement | undefined;
+	/**
+	 * Returns toolbar element
+	 * @returns {HTMLElement}
+	 * @private
+	 */
+	getToolbarEl(): HTMLElement | undefined;
+	/**
+	 * Returns resizer element
+	 * @returns {HTMLElement}
+	 * @private
+	 */
+	getResizerEl(): HTMLElement | undefined;
+	/**
+	 * Returns offset viewer element
+	 * @returns {HTMLElement}
+	 * @private
+	 */
+	getOffsetViewerEl(compView: any): any;
+	/**
+	 * Returns fixed offset viewer element
+	 * @returns {HTMLElement}
+	 * @private
+	 */
+	getFixedOffsetViewerEl(): HTMLElement | undefined;
+	getSpotsEl(): HTMLElement | undefined;
+	render(): HTMLElement;
+	/**
+	 * Get frame position
+	 * @returns {Object}
+	 * @private
+	 */
+	getOffset(): {
+		top: number;
+		left: number;
+	};
+	/**
+	 * Get the offset of the passed component element
+	 * @param  {HTMLElement} el
+	 * @returns {Object}
+	 * @private
+	 */
+	offset(el: HTMLElement): {
+		top: number;
+		left: number;
+		width: number;
+		height: number;
+	};
+	/**
+	 * Set custom badge naming strategy
+	 * @param  {Function} f
+	 * @example
+	 * canvas.setCustomBadgeLabel(function(component){
+	 *  return component.getName();
+	 * });
+	 */
+	setCustomBadgeLabel(f: Function): void;
+	/**
+	 * Get element position relative to the canvas
+	 * @param {HTMLElement} el
+	 * @returns {Object}
+	 * @private
+	 */
+	getElementPos(el: HTMLElement, opts?: any): {
+		top: number;
+		left: number;
+		height: number;
+		width: number;
+		zoom: number;
+		rect: {
+			top: number;
+			left: number;
+			width: number;
+			height: number;
+		};
+	};
+	/**
+	 * Returns element's offsets like margins and paddings
+	 * @param {HTMLElement} el
+	 * @returns {Object}
+	 * @private
+	 */
+	getElementOffsets(el: HTMLElement): MarginPaddingOffsets;
+	/**
+	 * Get canvas rectangular data
+	 * @returns {Object}
+	 */
+	getRect(): {
+		topScroll: number;
+		leftScroll: number;
+		top: number;
+		left: number;
+		width: number;
+		height: number;
+	};
+	/**
+	 * This method comes handy when you need to attach something like toolbars
+	 * to elements inside the canvas, dealing with all relative position,
+	 * offsets, etc. and returning as result the object with positions which are
+	 * viewable by the user (when the canvas is scrolled the top edge of the element
+	 * is not viewable by the user anymore so the new top edge is the one of the canvas)
+	 *
+	 * The target should be visible before being passed here as invisible elements
+	 * return empty string as width
+	 * @param {HTMLElement} target The target in this case could be the toolbar
+	 * @param {HTMLElement} element The element on which I'd attach the toolbar
+	 * @param {Object} options Custom options
+	 * @param {Boolean} options.toRight Set to true if you want the toolbar attached to the right
+	 * @return {Object}
+	 * @private
+	 */
+	getTargetToElementDim(target: HTMLElement, element: HTMLElement, options?: any): {
+		top: number;
+		left: any;
+		elementTop: any;
+		elementLeft: any;
+		elementWidth: any;
+		elementHeight: any;
+		targetWidth: number;
+		targetHeight: number;
+		canvasTop: number;
+		canvasLeft: number;
+		canvasWidth: number;
+		canvasHeight: number;
+	} | undefined;
+	canvasRectOffset(el: HTMLElement, pos: {
+		top: number;
+		left: number;
+	}, opts?: any): {
+		top: number;
+		left: number;
+	};
+	/**
+	 *
+	 * @param {HTMLElement} el The component element in the canvas
+	 * @param {HTMLElement} targetEl The target element to position (eg. toolbar)
+	 * @param {Object} opts
+	 * @private
+	 */
+	getTargetToElementFixed(el: HTMLElement, targetEl: HTMLElement, opts?: any): {
+		top: number;
+		left: any;
+		canvasOffsetTop: any;
+		canvasOffsetLeft: any;
+		elRect: any;
+		canvasOffset: any;
+		canvasRect: ElementRect;
+		targetWidth: number;
+		targetHeight: number;
+	};
+	/**
+	 * Instead of simply returning e.clientX and e.clientY this function
+	 * calculates also the offset based on the canvas. This is helpful when you
+	 * need to get X and Y position while moving between the editor area and
+	 * canvas area, which is in the iframe
+	 * @param {Event} e
+	 * @return {Object}
+	 * @private
+	 */
+	getMouseRelativePos(e: any, opts?: any): {
+		y: number;
+		x: number;
+	};
+	/**
+	 * X and Y mouse position relative to the canvas
+	 * @param {Event} ev
+	 * @return {Object}
+	 * @private
+	 */
+	getMouseRelativeCanvas(ev: MouseEvent, opts: any): {
+		y: number;
+		x: number;
+	};
+	/**
+	 * Check if the canvas is focused
+	 * @returns {Boolean}
+	 */
+	hasFocus(): boolean;
+	/**
+	 * Detects if some input is focused (input elements, text components, etc.)
+	 * @return {Boolean}
+	 * @private
+	 */
+	isInputFocused(): boolean | null;
+	/**
+	 * Scroll canvas to the element if it's not visible. The scrolling is
+	 * executed via `scrollIntoView` API and options of this method are
+	 * passed to it. For instance, you can scroll smoothly by using
+	 * `{ behavior: 'smooth' }`.
+	 * @param  {HTMLElement|[Component]} el
+	 * @param  {Object} [opts={}] Options, same as options for `scrollIntoView`
+	 * @param  {Boolean} [opts.force=false] Force the scroll, even if the element is already visible
+	 * @example
+	 * const selected = editor.getSelected();
+	 * // Scroll smoothly (this behavior can be polyfilled)
+	 * canvas.scrollTo(selected, { behavior: 'smooth' });
+	 * // Force the scroll, even if the element is alredy visible
+	 * canvas.scrollTo(selected, { force: true });
+	 */
+	scrollTo(el: any, opts?: {}): void;
+	/**
+	 * Start autoscroll
+	 * @private
+	 */
+	startAutoscroll(frame: Frame): void;
+	/**
+	 * Stop autoscroll
+	 * @private
+	 */
+	stopAutoscroll(frame: Frame): void;
+	/**
+	 * Set canvas zoom value
+	 * @param {Number} value The zoom value, from 0 to 100
+	 * @returns {this}
+	 * @example
+	 * canvas.setZoom(50); // set zoom to 50%
+	 */
+	setZoom(value: number | string): this;
+	/**
+	 * Get canvas zoom value
+	 * @returns {Number}
+	 * @example
+	 * canvas.setZoom(50); // set zoom to 50%
+	 * const zoom = canvas.getZoom(); // 50
+	 */
+	getZoom(): number;
+	/**
+	 * Set canvas position coordinates
+	 * @param {Number} x Horizontal position
+	 * @param {Number} y Vertical position
+	 * @returns {this}
+	 * @example
+	 * canvas.setCoords(100, 100);
+	 */
+	setCoords(x?: string | number, y?: string | number, opts?: ToWorldOption): this;
+	/**
+	 * Get canvas position coordinates
+	 * @returns {Object} Object containing coordinates
+	 * @example
+	 * canvas.setCoords(100, 100);
+	 * const coords = canvas.getCoords();
+	 * // { x: 100, y: 100 }
+	 */
+	getCoords(): Coordinates;
+	/**
+	 * Get canvas pointer position coordinates.
+	 * @returns {Object} Object containing pointer coordinates
+	 * @private
+	 * @example
+	 * const worldPointer = canvas.getPointer();
+	 * const screenPointer = canvas.getPointer(true);
+	 */
+	getPointer(screen?: boolean): Coordinates;
+	getZoomDecimal(): number;
+	getZoomMultiplier(): number;
+	fitViewport(opts?: FitViewportOptions): void;
+	toggleFramesEvents(on: boolean): void;
+	getFrames(): Frame[];
+	/**
+	 * Add new frame to the canvas
+	 * @param {Object} props Frame properties
+	 * @returns {[Frame]}
+	 * @private
+	 * @example
+	 * canvas.addFrame({
+	 *   name: 'Mobile home page',
+	 *   x: 100, // Position in canvas
+	 *   y: 100,
+	 *   width: 500, // Frame dimensions
+	 *   height: 600,
+	 *   // device: 'DEVICE-ID',
+	 *   components: [
+	 *     '<h1 class="testh">Title frame</h1>',
+	 *     '<p class="testp">Paragraph frame</p>',
+	 *   ],
+	 *   styles: `
+	 *     .testh { color: red; }
+	 *     .testp { color: blue; }
+	 *   `,
+	 * });
+	 */
+	addFrame(props?: {}, opts?: {}): Frame;
+	/**
+	 * Get the last created Component from a drag & drop to the canvas.
+	 * @returns {[Component]|undefined}
+	 */
+	getLastDragResult(): Component | undefined;
+	/**
+	 * Add or update canvas spot.
+	 * @param {Object} props Canvas spot properties.
+	 * @param opts
+	 * @returns {[CanvasSpot]}
+	 * @example
+	 * // Add new canvas spot
+	 * const spot = canvas.addSpot({
+	 *  type: 'select', // 'select' is one of the built-in spots
+	 *  component: editor.getSelected(),
+	 * });
+	 *
+	 * // Add custom canvas spot
+	 * const spot = canvas.addSpot({
+	 *  type: 'my-custom-spot',
+	 *  component: editor.getSelected(),
+	 * });
+	 * // Update the same spot by reusing its ID
+	 * canvas.addSpot({
+	 *  id: spot.id,
+	 *  component: anotherComponent,
+	 * });
+	 */
+	addSpot<T extends CanvasSpotProps>(props: Omit<T, "id"> & {
+		id?: string;
+	}, opts?: AddOptions): CanvasSpot<T>;
+	/**
+	 * Get canvas spots.
+	 * @param {Object} [spotProps] Canvas spot properties for filtering the result. With no properties, all available spots will be returned.
+	 * @returns {[CanvasSpot][]}
+	 * @example
+	 * canvas.addSpot({ type: 'select', component: cmp1 });
+	 * canvas.addSpot({ type: 'select', component: cmp2 });
+	 * canvas.addSpot({ type: 'target', component: cmp3 });
+	 *
+	 * // Get all spots
+	 * const allSpots = canvas.getSpots();
+	 * allSpots.length; // 3
+	 *
+	 * // Get all 'select' spots
+	 * const allSelectSpots = canvas.getSpots({ type: 'select' });
+	 * allSelectSpots.length; // 2
+	 */
+	getSpots<T extends CanvasSpotProps>(spotProps?: Partial<T>): CanvasSpot<T>[];
+	/**
+	 * Remove canvas spots.
+	 * @param {Object|[CanvasSpot][]} [spotProps] Canvas spot properties for filtering spots to remove or an array of spots to remove. With no properties, all available spots will be removed.
+	 * @returns {[CanvasSpot][]}
+	 * @example
+	 * canvas.addSpot({ type: 'select', component: cmp1 });
+	 * canvas.addSpot({ type: 'select', component: cmp2 });
+	 * canvas.addSpot({ type: 'target', component: cmp3 });
+	 *
+	 * // Remove all 'select' spots
+	 * canvas.removeSpots({ type: 'select' });
+	 *
+	 * // Remove spots by an array of canvas spots
+	 * const filteredSpots = canvas.getSpots().filter(spot => myCustomCondition);
+	 * canvas.removeSpots(filteredSpots);
+	 *
+	 * // Remove all spots
+	 * canvas.removeSpots();
+	 */
+	removeSpots<T extends CanvasSpotProps>(spotProps?: Partial<T> | CanvasSpot[]): CanvasSpot<T>[];
+	/**
+	 * Check if the built-in canvas spot has a declared custom rendering.
+	 * @param {String} type Built-in canvas spot type
+	 * @returns {Boolean}
+	 * @example
+	 * grapesjs.init({
+	 *  // ...
+	 *  canvas: {
+	 *    // avoid rendering the built-in 'target' canvas spot
+	 *    customSpots: { target: true }
+	 *  }
+	 * });
+	 * // ...
+	 * canvas.hasCustomSpot('select'); // false
+	 * canvas.hasCustomSpot('target'); // true
+	 */
+	hasCustomSpot(type?: CanvasSpotBuiltInTypes): boolean;
+	/**
+	 * Transform a box rect from the world coordinate system to the screen one.
+	 * @param {Object} boxRect
+	 * @returns {Object}
+	 */
+	getWorldRectToScreen(boxRect: Parameters<CanvasView["getRectToScreen"]>[0]): BoxRect | undefined;
+	refreshSpots(): void;
+	destroy(): void;
+}
+/**
+ * @property {Object|String} component Wrapper component definition. You can also pass an HTML string as components of the default wrapper component.
+ * @property {String} [width=''] Width of the frame. By default, the canvas width will be taken.
+ * @property {String} [height=''] Height of the frame. By default, the canvas height will be taken.
+ * @property {Number} [x=0] Horizontal position of the frame in the canvas.
+ * @property {Number} [y=0] Vertical position of the frame in the canvas.
+ *
+ */
+export declare class Frame extends ModuleModel<CanvasModule> {
+	defaults(): {
+		x: number;
+		y: number;
+		changesCount: number;
+		attributes: {};
+		width: null;
+		height: null;
+		head: never[];
+		component: string;
+		styles: string;
+		refFrame: null;
+		_undo: boolean;
+		_undoexc: string[];
+	};
+	view?: FrameView;
+	/**
+	 * @hideconstructor
+	 */
+	constructor(module: CanvasModule, attr: any);
+	get width(): number;
+	get height(): number;
+	get head(): {
+		tag: string;
+		attributes: any;
+	}[];
+	get refFrame(): Frame | undefined;
+	get root(): ComponentWrapper;
+	initRefs(): void;
+	getBoxRect(): BoxRect;
+	onRemove(): void;
+	changesUp(opt?: any): void;
+	getComponent(): ComponentWrapper;
+	getStyles(): any;
+	disable(): void;
+	remove(): this;
+	getHead(): {
+		tag: string;
+		attributes: any;
+	}[];
+	setHead(value: {
+		tag: string;
+		attributes: any;
+	}[]): this;
+	addHeadItem(item: {
+		tag: string;
+		attributes: any;
+	}): void;
+	getHeadByAttr(attr: string, value: any, tag: string): {
+		tag: string;
+		attributes: any;
+	};
+	removeHeadByAttr(attr: string, value: any, tag: string): void;
+	addLink(href: string): void;
+	removeLink(href: string): void;
+	addScript(src: string): void;
+	removeScript(src: string): void;
+	getPage(): Page | undefined;
+	_emitUpdated(data?: {}): void;
+	hasAutoHeight(): boolean;
+	toJSON(opts?: any): any;
+}
 declare class TraitView extends View<Trait> {
 	pfx: string;
 	ppfx: string;
@@ -995,429 +2825,6 @@ export declare class Traits extends Collection<Trait> {
 	setTarget(target: Component): void;
 	add(model: string | TraitProperties | Trait, options?: AddOptions): Trait;
 	add(models: Array<string | TraitProperties | Trait>, options?: AddOptions): Trait[];
-}
-export declare class Canvas extends ModuleModel<CanvasModule> {
-	defaults(): {
-		frame: string;
-		frames: never[];
-		rulers: boolean;
-		zoom: number;
-		x: number;
-		y: number;
-		scripts: never[];
-		styles: never[];
-		pointer: Coordinates;
-		pointerScreen: Coordinates;
-	};
-	constructor(module: CanvasModule);
-	get frames(): Frames;
-	init(): void;
-	_pageUpdated(page: Page, prev?: Page): void;
-	updateDevice(opts?: any): void;
-	onZoomChange(): void;
-	onCoordsChange(): void;
-	onPointerChange(): void;
-	getPointerCoords(type?: CoordinatesTypes): Coordinates;
-}
-declare abstract class ModuleDomainViews<TCollection extends ModuleCollection, TItemView extends ModuleView> extends ModuleView<TCollection> {
-	itemsView: string;
-	protected itemType: string;
-	reuseView: boolean;
-	viewCollection: TItemView[];
-	constructor(opts?: any, autoAdd?: boolean);
-	/**
-	 * Add new model to the collection
-	 * @param {ModuleModel} model
-	 * @private
-	 * */
-	private addTo;
-	private itemViewNotFound;
-	protected abstract renderView(model: ModuleModel, itemType: string): TItemView;
-	/**
-	 * Render new model inside the view
-	 * @param {ModuleModel} model
-	 * @param {Object} fragment Fragment collection
-	 * @private
-	 * */
-	private add;
-	render(): this;
-	onRender(): void;
-	onRemoveBefore(items: TItemView[], opts: any): void;
-	onRemove(items: TItemView[], opts: any): void;
-	remove(opts?: any): this;
-	clearItems(): void;
-}
-export type DraggerPosition = Position & {
-	end?: boolean;
-};
-export type Guide = {
-	x: number;
-	y: number;
-	lock?: number;
-	active?: boolean;
-};
-export interface DraggerOptions {
-	/**
-	 * Element on which the drag will be executed. By default, the document will be used
-	 */
-	container?: HTMLElement;
-	/**
-	 * Callback on drag start.
-	 * @example
-	 * onStart(ev, dragger) {
-	 *  console.log('pointer start', dragger.startPointer, 'position start', dragger.startPosition);
-	 * }
-	 */
-	onStart?: (ev: Event, dragger: Dragger) => void;
-	/**
-	 * Callback on drag.
-	 * @example
-	 * onDrag(ev, dragger) {
-	 *  console.log('pointer', dragger.currentPointer, 'position', dragger.position, 'delta', dragger.delta);
-	 * }
-	 */
-	onDrag?: (ev: Event, dragger: Dragger) => void;
-	/**
-	 * Callback on drag end.
-	 * @example
-	 * onEnd(ev, dragger) {
-	 *   console.log('pointer', dragger.currentPointer, 'position', dragger.position, 'delta', dragger.delta);
-	 * }
-	 */
-	onEnd?: (ev: Event, dragger: Dragger, opts: {
-		cancelled: boolean;
-	}) => void;
-	/**
-	 * Indicate a callback where to pass an object with new coordinates
-	 */
-	setPosition?: (position: DraggerPosition) => void;
-	/**
-	 * Indicate a callback where to get initial coordinates.
-	 * @example
-	 * getPosition: () => {
-	 *   // ...
-	 *   return { x: 10, y: 100 }
-	 * }
-	 */
-	getPosition?: () => DraggerPosition;
-	/**
-	 * Indicate a callback where to get pointer coordinates.
-	 */
-	getPointerPosition?: (ev: Event) => DraggerPosition;
-	/**
-	 * Static guides to be snapped.
-	 */
-	guidesStatic?: () => Guide[];
-	/**
-	 * Target guides that will snap to static one.
-	 */
-	guidesTarget?: () => Guide[];
-	/**
-	 * Offset before snap to guides.
-	 * @default 5
-	 */
-	snapOffset?: number;
-	/**
-	 * Document on which listen to pointer events.
-	 */
-	doc?: Document;
-	/**
-	 * Scale result points, can also be a function.
-	 * @default 1
-	 */
-	scale?: number | (() => number);
-}
-declare class Dragger {
-	opts: DraggerOptions;
-	startPointer: DraggerPosition;
-	delta: DraggerPosition;
-	lastScroll: DraggerPosition;
-	lastScrollDiff: DraggerPosition;
-	startPosition: DraggerPosition;
-	globScrollDiff: DraggerPosition;
-	currentPointer: DraggerPosition;
-	position: DraggerPosition;
-	el?: HTMLElement;
-	guidesStatic: Guide[];
-	guidesTarget: Guide[];
-	lockedAxis?: any;
-	docs: Document[];
-	trgX?: Guide;
-	trgY?: Guide;
-	/**
-	 * Init the dragger
-	 * @param  {Object} opts
-	 */
-	constructor(opts?: DraggerOptions);
-	/**
-	 * Update options
-	 * @param {Object} options
-	 */
-	setOptions(opts?: Partial<DraggerOptions>): void;
-	toggleDrag(enable?: boolean): void;
-	handleScroll(): void;
-	/**
-	 * Start dragging
-	 * @param  {Event} e
-	 */
-	start(ev: Event): void;
-	/**
-	 * Drag event
-	 * @param  {Event} event
-	 */
-	drag(ev: Event): void;
-	/**
-	 * Check if the delta hits some guide
-	 */
-	snapGuides(delta: DraggerPosition): {
-		newDelta: DraggerPosition;
-		trgX: Guide | undefined;
-		trgY: Guide | undefined;
-	};
-	isPointIn(src: number, trg: number, { offset }?: {
-		offset?: number;
-	}): boolean;
-	setGuideLock(guide: Guide, value: any): Guide;
-	/**
-	 * Stop dragging
-	 */
-	stop(ev: Event, opts?: {
-		cancel?: boolean;
-	}): void;
-	keyHandle(ev: Event): void;
-	/**
-	 * Move the element
-	 * @param  {integer} x
-	 * @param  {integer} y
-	 */
-	move(x: number, y: number, end?: boolean): void;
-	getContainerEl(): HTMLElement[] | Document[];
-	getWindowEl(): any[];
-	/**
-	 * Returns documents
-	 */
-	getDocumentEl(el?: HTMLElement): Document[];
-	/**
-	 * Get mouse coordinates
-	 * @param  {Event} event
-	 * @return {Object}
-	 */
-	getPointerPos(ev: Event): DraggerPosition;
-	getStartPosition(): {
-		x: number;
-		y: number;
-	};
-	getScrollInfo(): {
-		y: number;
-		x: number;
-	};
-	detectAxisLock(x: number, y: number): "x" | "y" | undefined;
-}
-declare class FrameWrapView extends ModuleView<Frame> {
-	events(): {
-		"click [data-action-remove]": string;
-		"mousedown [data-action-move]": string;
-	};
-	elTools?: HTMLElement;
-	frame: FrameView;
-	dragger?: Dragger;
-	cv: CanvasView;
-	classAnim: string;
-	sizeObserver?: ResizeObserver;
-	constructor(model: Frame, canvasView: CanvasView);
-	setupDragger(): void;
-	startDrag(ev?: Event): void;
-	__clear(opts?: any): void;
-	remove(opts?: any): this;
-	updateOffset(): void;
-	updatePos(md?: boolean): void;
-	updateSize(): void;
-	/**
-	 * Update dimensions of the frame
-	 * @private
-	 */
-	updateDim(): void;
-	onScroll(): void;
-	frameLoaded(): void;
-	__handleSize(): {
-		noChanges: boolean;
-		width: any;
-		height: any;
-		newW: any;
-		newH: any;
-	};
-	render(): this;
-}
-declare class FramesView extends ModuleDomainViews<Frames, FrameWrapView> {
-	canvasView: CanvasView;
-	private _module;
-	constructor(opts: {} | undefined, config: any);
-	onRemoveBefore(items: FrameWrapView[], opts?: {}): void;
-	onRender(): void;
-	clearItems(): void;
-	protected renderView(item: any, type: string): FrameWrapView;
-}
-export interface MarginPaddingOffsets {
-	marginTop?: number;
-	marginRight?: number;
-	marginBottom?: number;
-	marginLeft?: number;
-	paddingTop?: number;
-	paddingRight?: number;
-	paddingBottom?: number;
-	paddingLeft?: number;
-}
-export type ElementPosOpts = {
-	avoidFrameOffset?: boolean;
-	avoidFrameZoom?: boolean;
-	noScroll?: boolean;
-};
-export interface FitViewportOptions {
-	frame?: Frame;
-	gap?: number | {
-		x: number;
-		y: number;
-	};
-	ignoreHeight?: boolean;
-	el?: HTMLElement;
-}
-declare class CanvasView extends ModuleView<Canvas> {
-	template(): string;
-	hlEl?: HTMLElement;
-	badgeEl?: HTMLElement;
-	placerEl?: HTMLElement;
-	ghostEl?: HTMLElement;
-	toolbarEl?: HTMLElement;
-	resizerEl?: HTMLElement;
-	offsetEl?: HTMLElement;
-	fixedOffsetEl?: HTMLElement;
-	toolsGlobEl?: HTMLElement;
-	toolsEl?: HTMLElement;
-	framesArea?: HTMLElement;
-	toolsWrapper?: HTMLElement;
-	spotsEl?: HTMLElement;
-	cvStyle?: HTMLElement;
-	clsUnscale: string;
-	ready: boolean;
-	frames: FramesView;
-	frame?: FrameView;
-	private timerZoom?;
-	private frmOff?;
-	private cvsOff?;
-	constructor(model: Canvas);
-	_onFramesUpdate(): void;
-	_initFrames(): void;
-	checkSelected(component: Component, opts?: {
-		scroll?: ScrollIntoViewOptions;
-	}): void;
-	remove(...args: any): this;
-	preventDefault(ev: Event): void;
-	toggleListeners(enable: boolean): void;
-	screenToWorld(x: number, y: number): Coordinates;
-	onPointer(ev: WheelEvent): void;
-	onKeyPress(ev: KeyboardEvent): void;
-	onWheel(ev: WheelEvent): void;
-	updateFrames(ev: Event): void;
-	updateFramesArea(): void;
-	fitViewport(opts?: FitViewportOptions): void;
-	/**
-	 * Checks if the element is visible in the canvas's viewport
-	 * @param  {HTMLElement}  el
-	 * @return {Boolean}
-	 */
-	isElInViewport(el: HTMLElement): boolean;
-	/**
-	 * Get the offset of the element
-	 * @param  {HTMLElement} el
-	 * @return { {top: number, left: number, width: number, height: number} }
-	 */
-	offset(el?: HTMLElement, opts?: ElementPosOpts): {
-		top: number;
-		left: number;
-		width: number;
-		height: number;
-	};
-	getRectToScreen(boxRect: Partial<BoxRect>): BoxRect;
-	getElBoxRect(el: HTMLElement, opts?: GetBoxRectOptions): BoxRect;
-	getViewportRect(opts?: ToWorldOption): BoxRect;
-	getViewportDelta(opts?: {
-		withZoom?: number;
-	}): Coordinates;
-	/**
-	 * Cleare cached offsets
-	 * @private
-	 */
-	clearOff(): void;
-	/**
-	 * Return frame offset
-	 * @return { {top: number, left: number, width: number, height: number} }
-	 * @public
-	 */
-	getFrameOffset(el?: HTMLElement): {
-		top: number;
-		left: number;
-		width: number;
-		height: number;
-	};
-	/**
-	 * Return canvas offset
-	 * @return { {top: number, left: number, width: number, height: number} }
-	 * @public
-	 */
-	getCanvasOffset(): {
-		top: number;
-		left: number;
-		width: number;
-		height: number;
-	};
-	/**
-	 * Returns element's rect info
-	 * @param {HTMLElement} el
-	 * @param {object} opts
-	 * @return { {top: number, left: number, width: number, height: number, zoom: number, rect: any} }
-	 * @public
-	 */
-	getElementPos(el: HTMLElement, opts?: ElementPosOpts): {
-		top: number;
-		left: number;
-		height: number;
-		width: number;
-		zoom: number;
-		rect: {
-			top: number;
-			left: number;
-			width: number;
-			height: number;
-		};
-	};
-	/**
-	 * Returns element's offsets like margins and paddings
-	 * @param {HTMLElement} el
-	 * @return { MarginPaddingOffsets }
-	 * @public
-	 */
-	getElementOffsets(el: HTMLElement): MarginPaddingOffsets;
-	/**
-	 * Returns position data of the canvas element
-	 * @return { {top: number, left: number, width: number, height: number} } obj Position object
-	 * @public
-	 */
-	getPosition(opts?: any): ElementRect;
-	/**
-	 * Update javascript of a specific component passed by its View
-	 * @param {ModuleView} view Component's View
-	 * @private
-	 */
-	updateScript(view: any): void;
-	/**
-	 * Get javascript container
-	 * @private
-	 */
-	getJsContainer(view?: ComponentView): HTMLElement | undefined;
-	getFrameView(view?: ComponentView): FrameView | undefined;
-	_renderFrames(): void;
-	renderFrames(): void;
-	render(): this;
 }
 export type RectDim = {
 	t: number;
@@ -2027,1284 +3434,18 @@ export interface ComponentOptions {
 	temporary?: boolean;
 	avoidChildren?: boolean;
 }
-/** @private */
-export interface PageProperties {
-	/**
-	 * Panel id.
-	 */
-	id?: string;
-	/**
-	 * Page name.
-	 */
-	name?: string;
-	/**
-	 * HTML to load as page content.
-	 */
-	component?: string | ComponentDefinition | ComponentDefinition[];
-	/**
-	 * CSS to load with the page.
-	 */
-	styles?: string | CssRuleJSON[];
-	[key: string]: unknown;
-}
-export interface PagePropertiesDefined extends Pick<PageProperties, "id" | "name"> {
-	frames: Frames;
-	[key: string]: unknown;
-}
-export declare class Page extends Model<PagePropertiesDefined> {
-	defaults(): {
-		name: string;
-		frames: Frames;
-		_undo: boolean;
-	};
-	em: EditorModel;
-	constructor(props: any, opts?: {
-		em?: EditorModel;
-		config?: PageManagerConfig;
-	});
-	onRemove(): void;
-	getFrames(): Frames;
-	/**
-	 * Get page id
-	 * @returns {String}
-	 */
-	getId(): string;
-	/**
-	 * Get page name
-	 * @returns {String}
-	 */
-	getName(): string;
-	/**
-	 * Update page name
-	 * @param {String} name New page name
-	 * @example
-	 * page.setName('New name');
-	 */
-	setName(name: string): this;
-	/**
-	 * Get all frames
-	 * @returns {Array<Frame>}
-	 * @example
-	 * const arrayOfFrames = page.getAllFrames();
-	 */
-	getAllFrames(): Frame[];
-	/**
-	 * Get the first frame of the page (identified always as the main one)
-	 * @returns {Frame}
-	 * @example
-	 * const mainFrame = page.getMainFrame();
-	 */
-	getMainFrame(): Frame;
-	/**
-	 * Get the root component (usually is the `wrapper` component) from the main frame
-	 * @returns {Component}
-	 * @example
-	 * const rootComponent = page.getMainComponent();
-	 * console.log(rootComponent.toHTML());
-	 */
-	getMainComponent(): ComponentWrapper;
-	toJSON(opts?: {}): any;
-}
-/**
- * @property {Object|String} component Wrapper component definition. You can also pass an HTML string as components of the default wrapper component.
- * @property {String} [width=''] Width of the frame. By default, the canvas width will be taken.
- * @property {String} [height=''] Height of the frame. By default, the canvas height will be taken.
- * @property {Number} [x=0] Horizontal position of the frame in the canvas.
- * @property {Number} [y=0] Vertical position of the frame in the canvas.
- *
- */
-export declare class Frame extends ModuleModel<CanvasModule> {
-	defaults(): {
-		x: number;
-		y: number;
-		changesCount: number;
-		attributes: {};
-		width: null;
-		height: null;
-		head: never[];
-		component: string;
-		styles: string;
-		refFrame: null;
-		_undo: boolean;
-		_undoexc: string[];
-	};
-	view?: FrameView;
-	/**
-	 * @hideconstructor
-	 */
-	constructor(module: CanvasModule, attr: any);
-	get width(): number;
-	get height(): number;
-	get head(): {
-		tag: string;
-		attributes: any;
-	}[];
-	get refFrame(): Frame | undefined;
-	get root(): ComponentWrapper;
-	initRefs(): void;
-	getBoxRect(): BoxRect;
-	onRemove(): void;
-	changesUp(opt?: any): void;
-	getComponent(): ComponentWrapper;
-	getStyles(): any;
-	disable(): void;
-	remove(): this;
-	getHead(): {
-		tag: string;
-		attributes: any;
-	}[];
-	setHead(value: {
-		tag: string;
-		attributes: any;
-	}[]): this;
-	addHeadItem(item: {
-		tag: string;
-		attributes: any;
-	}): void;
-	getHeadByAttr(attr: string, value: any, tag: string): {
-		tag: string;
-		attributes: any;
-	};
-	removeHeadByAttr(attr: string, value: any, tag: string): void;
-	addLink(href: string): void;
-	removeLink(href: string): void;
-	addScript(src: string): void;
-	removeScript(src: string): void;
-	getPage(): Page | undefined;
-	_emitUpdated(data?: {}): void;
-	hasAutoHeight(): boolean;
-	toJSON(opts?: any): any;
-}
-declare enum CanvasSpotBuiltInTypes {
-	Select = "select",
-	Hover = "hover",
-	Spacing = "spacing",
-	Target = "target",
-	Resize = "resize"
-}
-export type CanvasSpotBuiltInType = `${CanvasSpotBuiltInTypes}`;
-export type CanvasSpotType = LiteralUnion<CanvasSpotBuiltInType, string>;
-/** @private */
-export interface CanvasSpotBase<T extends CanvasSpotType> {
-	type: T;
-	id: string;
-	boxRect?: BoxRect;
-	component?: Component;
-	componentView?: ComponentView;
-	frame?: Frame;
-}
-/** @private */
-export interface CanvasSpotProps<T extends CanvasSpotType = CanvasSpotType> extends CanvasSpotBase<T> {
-}
-declare class CanvasSpot<T extends CanvasSpotProps = CanvasSpotProps> extends ModuleModel<CanvasModule, T> {
-	defaults(): T;
-	get type(): "" | T["type"];
-	get component(): Component | undefined;
-	get componentView(): ComponentView | undefined;
-	get el(): HTMLElement | undefined;
-	getBoxRect(opts?: GetBoxRectOptions): BoxRect;
-	getStyle(opts?: {
-		boxRect?: BoxRect;
-	} & GetBoxRectOptions): Partial<CSSStyleDeclaration>;
-	isType<E extends T>(type: E["type"]): this is CanvasSpot<E>;
-}
-export interface CanvasConfig {
-	stylePrefix?: string;
-	/**
-	 * Append external scripts to the `<head>` of the iframe.
-	 * Be aware that these scripts will not be printed in the export code.
-	 * @default []
-	 * @example
-	 * scripts: [ 'https://...1.js', 'https://...2.js' ]
-	 * // or passing objects as attributes
-	 * scripts: [ { src: '/file.js', someattr: 'value' }, ... ]
-	 */
-	scripts?: (string | Record<string, any>)[];
-	/**
-	 * Append external styles to the `<head>` of the iframe.
-	 * Be aware that these scripts will not be printed in the export code.
-	 * @default []
-	 * @example
-	 * styles: [ 'https://...1.css', 'https://...2.css' ]
-	 * // or passing objects as attributes
-	 * styles: [ { href: '/style.css', someattr: 'value' }, ... ]
-	 */
-	styles?: (string | Record<string, any>)[];
-	/**
-	 * Add custom badge naming strategy.
-	 * @example
-	 * customBadgeLabel: component => component.getName(),
-	 */
-	customBadgeLabel?: (component: Component) => string;
-	/**
-	 * Indicate when to start the autoscroll of the canvas on component/block dragging (value in px).
-	 * @default 50
-	 */
-	autoscrollLimit?: number;
-	/**
-	 * Experimental: external highlighter box
-	 */
-	extHl?: boolean;
-	/**
-	 * Initial content to load in all frames.
-	 * The default value enables the standard mode for the iframe.
-	 * @default '<!DOCTYPE html>'
-	 */
-	frameContent?: string;
-	/**
-	 * Initial style to load in all frames.
-	 */
-	frameStyle?: string;
-	/**
-	 * When some textable component is selected and focused (eg. input or text component), the editor
-	 * stops some commands (eg. disables the copy/paste of components with CTRL+C/V to allow the copy/paste of the text).
-	 * This option allows to customize, by a selector, which element should not be considered textable.
-	 */
-	notTextable?: string[];
-	/**
-	 * By default, the editor allows to drop external elements by relying on the native HTML5
-	 * drag & drop API (eg. like a D&D of an image file from your desktop).
-	 * If you want to customize how external elements are interpreted by the editor, you can rely
-	 * on `canvas:dragdata` event, eg. https://github.com/GrapesJS/grapesjs/discussions/3849
-	 * @default true
-	 */
-	allowExternalDrop?: boolean;
-	customSpots?: boolean | Partial<Record<CanvasSpotBuiltInTypes, boolean>>;
-	/**
-	 * Experimental: enable infinite canvas.
-	 */
-	infiniteCanvas?: boolean;
-}
-declare class CanvasSpots extends ModuleCollection<CanvasSpot> {
-	refreshDbn: Debounced;
-	constructor(module: CanvasModule, models?: CanvasSpot[] | CanvasSpotProps[]);
-	get em(): EditorModel;
-	get events(): typeof CanvasEvents;
-	refresh(): void;
-	onAdd(spot: CanvasSpot): void;
-	onChange(spot: CanvasSpot): void;
-	onRemove(spot: CanvasSpot): void;
-	__trgEvent(event: string, props: ObjectAny): void;
-}
-export type CanvasEvent = `${CanvasEvents}`;
-declare class CanvasModule extends Module<CanvasConfig> {
-	/**
-	 * Get configuration object
-	 * @name getConfig
-	 * @function
-	 * @return {Object}
-	 */
-	/**
-	 * Used inside RTE
-	 * @private
-	 */
-	getCanvasView(): CanvasView;
-	canvas: Canvas;
-	model: Canvas;
-	spots: CanvasSpots;
-	events: typeof CanvasEvents;
-	framesById: Record<string, Frame | undefined>;
-	private canvasView?;
-	/**
-	 * Initialize module. Automatically called with a new instance of the editor
-	 * @param {Object} config Configurations
-	 * @private
-	 */
-	constructor(em: EditorModel);
-	postLoad(): void;
-	getModel(): Canvas;
-	/**
-	 * Get the canvas element
-	 * @returns {HTMLElement}
-	 */
-	getElement(): HTMLElement;
-	getFrame(index?: number): Frame;
-	/**
-	 * Get the main frame element of the canvas
-	 * @returns {HTMLIFrameElement}
-	 */
-	getFrameEl(): HTMLIFrameElement;
-	getFramesEl(): HTMLElement;
-	/**
-	 * Get the main frame window instance
-	 * @returns {Window}
-	 */
-	getWindow(): Window;
-	/**
-	 * Get the main frame document element
-	 * @returns {HTMLDocument}
-	 */
-	getDocument(): Document;
-	/**
-	 * Get the main frame body element
-	 * @return {HTMLBodyElement}
-	 */
-	getBody(): HTMLBodyElement;
-	_getLocalEl(globalEl: any, compView: ComponentView, method: keyof FrameView): any;
-	/**
-	 * Returns element containing all global canvas tools
-	 * @returns {HTMLElement}
-	 * @private
-	 */
-	getGlobalToolsEl(): HTMLElement | undefined;
-	/**
-	 * Returns element containing all canvas tools
-	 * @returns {HTMLElement}
-	 * @private
-	 */
-	getToolsEl(compView?: any): any;
-	/**
-	 * Returns highlighter element
-	 * @returns {HTMLElement}
-	 * @private
-	 */
-	getHighlighter(compView?: any): any;
-	/**
-	 * Returns badge element
-	 * @returns {HTMLElement}
-	 * @private
-	 */
-	getBadgeEl(compView: any): any;
-	/**
-	 * Returns placer element
-	 * @returns {HTMLElement}
-	 * @private
-	 */
-	getPlacerEl(): HTMLElement | undefined;
-	/**
-	 * Returns ghost element
-	 * @returns {HTMLElement}
-	 * @private
-	 */
-	getGhostEl(): HTMLElement | undefined;
-	/**
-	 * Returns toolbar element
-	 * @returns {HTMLElement}
-	 * @private
-	 */
-	getToolbarEl(): HTMLElement | undefined;
-	/**
-	 * Returns resizer element
-	 * @returns {HTMLElement}
-	 * @private
-	 */
-	getResizerEl(): HTMLElement | undefined;
-	/**
-	 * Returns offset viewer element
-	 * @returns {HTMLElement}
-	 * @private
-	 */
-	getOffsetViewerEl(compView: any): any;
-	/**
-	 * Returns fixed offset viewer element
-	 * @returns {HTMLElement}
-	 * @private
-	 */
-	getFixedOffsetViewerEl(): HTMLElement | undefined;
-	getSpotsEl(): HTMLElement | undefined;
-	render(): HTMLElement;
-	/**
-	 * Get frame position
-	 * @returns {Object}
-	 * @private
-	 */
-	getOffset(): {
-		top: number;
-		left: number;
-	};
-	/**
-	 * Get the offset of the passed component element
-	 * @param  {HTMLElement} el
-	 * @returns {Object}
-	 * @private
-	 */
-	offset(el: HTMLElement): {
-		top: number;
-		left: number;
-		width: number;
-		height: number;
-	};
-	/**
-	 * Set custom badge naming strategy
-	 * @param  {Function} f
-	 * @example
-	 * canvas.setCustomBadgeLabel(function(component){
-	 *  return component.getName();
-	 * });
-	 */
-	setCustomBadgeLabel(f: Function): void;
-	/**
-	 * Get element position relative to the canvas
-	 * @param {HTMLElement} el
-	 * @returns {Object}
-	 * @private
-	 */
-	getElementPos(el: HTMLElement, opts?: any): {
-		top: number;
-		left: number;
-		height: number;
-		width: number;
-		zoom: number;
-		rect: {
-			top: number;
-			left: number;
-			width: number;
-			height: number;
-		};
-	};
-	/**
-	 * Returns element's offsets like margins and paddings
-	 * @param {HTMLElement} el
-	 * @returns {Object}
-	 * @private
-	 */
-	getElementOffsets(el: HTMLElement): MarginPaddingOffsets;
-	/**
-	 * Get canvas rectangular data
-	 * @returns {Object}
-	 */
-	getRect(): {
-		topScroll: number;
-		leftScroll: number;
-		top: number;
-		left: number;
-		width: number;
-		height: number;
-	};
-	/**
-	 * This method comes handy when you need to attach something like toolbars
-	 * to elements inside the canvas, dealing with all relative position,
-	 * offsets, etc. and returning as result the object with positions which are
-	 * viewable by the user (when the canvas is scrolled the top edge of the element
-	 * is not viewable by the user anymore so the new top edge is the one of the canvas)
-	 *
-	 * The target should be visible before being passed here as invisible elements
-	 * return empty string as width
-	 * @param {HTMLElement} target The target in this case could be the toolbar
-	 * @param {HTMLElement} element The element on which I'd attach the toolbar
-	 * @param {Object} options Custom options
-	 * @param {Boolean} options.toRight Set to true if you want the toolbar attached to the right
-	 * @return {Object}
-	 * @private
-	 */
-	getTargetToElementDim(target: HTMLElement, element: HTMLElement, options?: any): {
-		top: number;
-		left: any;
-		elementTop: any;
-		elementLeft: any;
-		elementWidth: any;
-		elementHeight: any;
-		targetWidth: number;
-		targetHeight: number;
-		canvasTop: number;
-		canvasLeft: number;
-		canvasWidth: number;
-		canvasHeight: number;
-	} | undefined;
-	canvasRectOffset(el: HTMLElement, pos: {
-		top: number;
-		left: number;
-	}, opts?: any): {
-		top: number;
-		left: number;
-	};
-	/**
-	 *
-	 * @param {HTMLElement} el The component element in the canvas
-	 * @param {HTMLElement} targetEl The target element to position (eg. toolbar)
-	 * @param {Object} opts
-	 * @private
-	 */
-	getTargetToElementFixed(el: HTMLElement, targetEl: HTMLElement, opts?: any): {
-		top: number;
-		left: any;
-		canvasOffsetTop: any;
-		canvasOffsetLeft: any;
-		elRect: any;
-		canvasOffset: any;
-		canvasRect: ElementRect;
-		targetWidth: number;
-		targetHeight: number;
-	};
-	/**
-	 * Instead of simply returning e.clientX and e.clientY this function
-	 * calculates also the offset based on the canvas. This is helpful when you
-	 * need to get X and Y position while moving between the editor area and
-	 * canvas area, which is in the iframe
-	 * @param {Event} e
-	 * @return {Object}
-	 * @private
-	 */
-	getMouseRelativePos(e: any, opts?: any): {
-		y: number;
-		x: number;
-	};
-	/**
-	 * X and Y mouse position relative to the canvas
-	 * @param {Event} ev
-	 * @return {Object}
-	 * @private
-	 */
-	getMouseRelativeCanvas(ev: MouseEvent, opts: any): {
-		y: number;
-		x: number;
-	};
-	/**
-	 * Check if the canvas is focused
-	 * @returns {Boolean}
-	 */
-	hasFocus(): boolean;
-	/**
-	 * Detects if some input is focused (input elements, text components, etc.)
-	 * @return {Boolean}
-	 * @private
-	 */
-	isInputFocused(): boolean | null;
-	/**
-	 * Scroll canvas to the element if it's not visible. The scrolling is
-	 * executed via `scrollIntoView` API and options of this method are
-	 * passed to it. For instance, you can scroll smoothly by using
-	 * `{ behavior: 'smooth' }`.
-	 * @param  {HTMLElement|[Component]} el
-	 * @param  {Object} [opts={}] Options, same as options for `scrollIntoView`
-	 * @param  {Boolean} [opts.force=false] Force the scroll, even if the element is already visible
-	 * @example
-	 * const selected = editor.getSelected();
-	 * // Scroll smoothly (this behavior can be polyfilled)
-	 * canvas.scrollTo(selected, { behavior: 'smooth' });
-	 * // Force the scroll, even if the element is alredy visible
-	 * canvas.scrollTo(selected, { force: true });
-	 */
-	scrollTo(el: any, opts?: {}): void;
-	/**
-	 * Start autoscroll
-	 * @private
-	 */
-	startAutoscroll(frame: Frame): void;
-	/**
-	 * Stop autoscroll
-	 * @private
-	 */
-	stopAutoscroll(frame: Frame): void;
-	/**
-	 * Set canvas zoom value
-	 * @param {Number} value The zoom value, from 0 to 100
-	 * @returns {this}
-	 * @example
-	 * canvas.setZoom(50); // set zoom to 50%
-	 */
-	setZoom(value: number | string): this;
-	/**
-	 * Get canvas zoom value
-	 * @returns {Number}
-	 * @example
-	 * canvas.setZoom(50); // set zoom to 50%
-	 * const zoom = canvas.getZoom(); // 50
-	 */
-	getZoom(): number;
-	/**
-	 * Set canvas position coordinates
-	 * @param {Number} x Horizontal position
-	 * @param {Number} y Vertical position
-	 * @returns {this}
-	 * @example
-	 * canvas.setCoords(100, 100);
-	 */
-	setCoords(x?: string | number, y?: string | number, opts?: ToWorldOption): this;
-	/**
-	 * Get canvas position coordinates
-	 * @returns {Object} Object containing coordinates
-	 * @example
-	 * canvas.setCoords(100, 100);
-	 * const coords = canvas.getCoords();
-	 * // { x: 100, y: 100 }
-	 */
-	getCoords(): Coordinates;
-	/**
-	 * Get canvas pointer position coordinates.
-	 * @returns {Object} Object containing pointer coordinates
-	 * @private
-	 * @example
-	 * const worldPointer = canvas.getPointer();
-	 * const screenPointer = canvas.getPointer(true);
-	 */
-	getPointer(screen?: boolean): Coordinates;
-	getZoomDecimal(): number;
-	getZoomMultiplier(): number;
-	fitViewport(opts?: FitViewportOptions): void;
-	toggleFramesEvents(on: boolean): void;
-	getFrames(): Frame[];
-	/**
-	 * Add new frame to the canvas
-	 * @param {Object} props Frame properties
-	 * @returns {[Frame]}
-	 * @example
-	 * canvas.addFrame({
-	 *   name: 'Mobile home page',
-	 *   x: 100, // Position in canvas
-	 *   y: 100,
-	 *   width: 500, // Frame dimensions
-	 *   height: 600,
-	 *   // device: 'DEVICE-ID',
-	 *   components: [
-	 *     '<h1 class="testh">Title frame</h1>',
-	 *     '<p class="testp">Paragraph frame</p>',
-	 *   ],
-	 *   styles: `
-	 *     .testh { color: red; }
-	 *     .testp { color: blue; }
-	 *   `,
-	 * });
-	 */
-	addFrame(props?: {}, opts?: {}): Frame;
-	/**
-	 * Get the last created Component from a drag & drop to the canvas.
-	 * @returns {[Component]|undefined}
-	 */
-	getLastDragResult(): Component | undefined;
-	destroy(): void;
-	getRectToScreen(boxRect: Parameters<CanvasView["getRectToScreen"]>[0]): BoxRect | undefined;
-	addSpot<T extends CanvasSpotProps>(props: Omit<T, "id"> & {
-		id?: string;
-	}, opts?: AddOptions): CanvasSpot<T>;
-	getSpots<T extends CanvasSpotProps>(spotProps?: Partial<T>): CanvasSpot<T>[];
-	removeSpots<T extends CanvasSpotProps>(spotProps?: Partial<T>): CanvasSpot<T>[];
-	refreshSpots(): void;
-	hasCustomSpot(type?: CanvasSpotBuiltInTypes): boolean;
-}
-export type DragStop = (cancel?: boolean) => void;
-export type DragContent = (content: any) => void;
-declare class Droppable {
-	em: EditorModel;
-	canvas: CanvasModule;
-	el: HTMLElement;
-	counter: number;
-	sortOpts?: Record<string, any> | null;
-	over?: boolean;
-	dragStop?: DragStop;
-	dragContent?: DragContent;
-	sorter?: any;
-	constructor(em: EditorModel, rootEl?: HTMLElement);
-	toggleEffects(el: HTMLElement, enable: boolean): void;
-	__customTglEff(enable: boolean): void;
-	startCustom(): void;
-	endCustom(cancel?: boolean): void;
-	/**
-	 * This function is expected to be always executed at the end of d&d.
-	 */
-	endDrop(cancel?: boolean, ev?: Event): void;
-	handleDragLeave(ev: Event): void;
-	updateCounter(value: number, ev: Event): void;
-	handleDragEnter(ev: DragEvent | Event): void;
-	handleDragEnd(model: any, dt: any): void;
-	/**
-	 * Always need to have this handler active for enabling the drop
-	 * @param {Event} ev
-	 */
-	handleDragOver(ev: Event): void;
-	/**
-	 * WARNING: This function might fail to run on drop, for example, when the
-	 * drop, accidentally, happens on some external element (DOM not inside the iframe)
-	 */
-	handleDrop(ev: Event | DragEvent): void;
-	getContentByData(dt: any): {
-		content: any;
-	};
-}
-declare class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
-	/** @ts-ignore */
-	get tagName(): string;
-	/** @ts-ignore */
-	get attributes(): {
-		allowfullscreen: string;
-	};
-	dragging: boolean;
-	loaded: boolean;
-	droppable?: Droppable;
-	rect?: DOMRect;
-	lastClientY?: number;
-	lastMaxHeight: number;
-	private jsContainer?;
-	private tools;
-	private wrapper?;
-	private frameWrapView?;
-	constructor(model: Frame, view?: FrameWrapView);
-	getBoxRect(): BoxRect;
-	/**
-	 * Update `<head>` content of the frame
-	 */
-	updateHead(): void;
-	getEl(): HTMLIFrameElement;
-	getCanvasModel(): Canvas;
-	getWindow(): Window;
-	getDoc(): Document;
-	getHead(): HTMLHeadElement;
-	getBody(): HTMLBodyElement;
-	getWrapper(): HTMLElement;
-	getJsContainer(): HTMLElement;
-	getToolsEl(): HTMLElement;
-	getGlobalToolsEl(): HTMLElement;
-	getHighlighter(): HTMLElement;
-	getBadgeEl(): HTMLElement;
-	getOffsetViewerEl(): HTMLElement;
-	getRect(): DOMRect;
-	/**
-	 * Get rect data, not affected by the canvas zoom
-	 */
-	getOffsetRect(): {
-		top: number;
-		left: number;
-		height: number;
-		width: number;
-		scrollTop: number;
-		scrollLeft: number;
-		scrollBottom: number;
-		scrollRight: number;
-	};
-	_getTool(name: string): HTMLElement;
-	remove(...args: any): this;
-	startAutoscroll(): void;
-	autoscroll(): void;
-	updateClientY(ev: Event): void;
-	showGlobalTools(): void;
-	stopAutoscroll(): void;
-	_toggleAutoscrollFx(enable: boolean): void;
-	render(): this;
-	renderScripts(): void;
-	renderStyles(opts?: any): void;
-	renderBody(): void;
-	_toggleEffects(enable: boolean): void;
-	_emitUpdate(): void;
-}
-export interface CssComposerConfig {
-	/**
-	 * Style prefix.
-	 * @default 'css-'
-	 */
-	stylePrefix?: string;
-	/**
-	 * Default CSS style rules
-	 */
-	rules?: Array<string>;
-}
-export declare class CssRules extends Collection<CssRule> {
-	editor: EditorModel;
-	constructor(props: any, opt: any);
-	toJSON(opts?: any): any;
-	onAdd(model: CssRule, c: CssRules, o: any): void;
-	onRemove(removed: CssRule): void;
-	/** @ts-ignore */
-	add(models: any, opt?: any): any[];
-}
-declare class CssRulesView extends View {
-	atRules: Record<string, any>;
-	config: Record<string, any>;
-	em: EditorModel;
-	pfx: string;
-	renderStarted?: boolean;
-	constructor(o: any);
-	/**
-	 * Add to collection
-	 * @param {Object} model
-	 * @private
-	 * */
-	addTo(model: CssRule): void;
-	/**
-	 * Add new object to collection
-	 * @param {Object} model
-	 * @param {Object} fragmentEl
-	 * @return {Object}
-	 * @private
-	 * */
-	addToCollection(model: CssRule, fragmentEl?: DocumentFragment): HTMLElement | undefined;
-	getMediaWidth(mediaText: string): string;
-	sortRules(a: number, b: number): number;
-	render(): this;
-}
-/** @private */
-export interface RuleOptions {
-	/**
-	 * At-rule type, eg. `media`
-	 */
-	atRuleType?: string;
-	/**
-	 * At-rule parameters, eg. `(min-width: 500px)`
-	 */
-	atRuleParams?: string;
-}
-/** @private */
-export interface SetRuleOptions extends RuleOptions {
-	/**
-	 * If the rule exists already, merge passed styles instead of replacing them.
-	 */
-	addStyles?: boolean;
-}
-/** @private */
-export interface GetSetRuleOptions {
-	state?: string;
-	mediaText?: string;
-	addOpts?: ObjectAny;
-	current?: boolean;
-}
-export type CssRuleStyle = Required<CssRuleProperties>["style"];
-declare class CssComposer extends ItemManagerModule<CssComposerConfig & {
-	pStylePrefix?: string;
-}> {
-	rules: CssRules;
-	rulesView?: CssRulesView;
-	Selectors: typeof Selectors;
-	storageKey: string;
-	/**
-	 * Initializes module. Automatically called with a new instance of the editor
-	 * @param {Object} config Configurations
-	 * @private
-	 */
-	constructor(em: EditorModel);
-	/**
-	 * On load callback
-	 * @private
-	 */
-	onLoad(): void;
-	/**
-	 * Do stuff after load
-	 * @param  {Editor} em
-	 * @private
-	 */
-	postLoad(): void;
-	store(): any;
-	load(data: any): any;
-	/**
-	 * Add new rule to the collection, if not yet exists with the same selectors
-	 * @param {Array<Selector>} selectors Array of selectors
-	 * @param {String} state Css rule state
-	 * @param {String} width For which device this style is oriented
-	 * @param {Object} props Other props for the rule
-	 * @param {Object} opts Options for the add of new rule
-	 * @return {Model}
-	 * @private
-	 * @example
-	 * var sm = editor.SelectorManager;
-	 * var sel1 = sm.add('myClass1');
-	 * var sel2 = sm.add('myClass2');
-	 * var rule = cssComposer.add([sel1, sel2], 'hover');
-	 * rule.set('style', {
-	 *   width: '100px',
-	 *   color: '#fff',
-	 * });
-	 * */
-	add(selectors: any, state?: string, width?: string, opts?: {}, addOpts?: {}): CssRule;
-	/**
-	 * Get the rule
-	 * @param {String|Array<Selector>} selectors Array of selectors or selector string, eg `.myClass1.myClass2`
-	 * @param {String} state Css rule state, eg. 'hover'
-	 * @param {String} width Media rule value, eg. '(max-width: 992px)'
-	 * @param {Object} ruleProps Other rule props
-	 * @return  {Model|null}
-	 * @private
-	 * @example
-	 * const sm = editor.SelectorManager;
-	 * const sel1 = sm.add('myClass1');
-	 * const sel2 = sm.add('myClass2');
-	 * const rule = cssComposer.get([sel1, sel2], 'hover', '(max-width: 992px)');
-	 * // Update the style
-	 * rule.set('style', {
-	 *   width: '300px',
-	 *   color: '#000',
-	 * });
-	 * */
-	get(selectors: any, state?: string, width?: string, ruleProps?: Omit<CssRuleProperties, "selectors">): CssRule | undefined;
-	getAll(): CssRules;
-	/**
-	 * Add a raw collection of rule objects
-	 * This method overrides styles, in case, of already defined rule
-	 * @param {String|Array<Object>} data CSS string or an array of rule objects, eg. [{selectors: ['class1'], style: {....}}, ..]
-	 * @param {Object} opts Options
-	 * @param {Object} props Additional properties to add on rules
-	 * @return {Array<Model>}
-	 * @private
-	 */
-	addCollection(data: string | CssRuleJSON[], opts?: Record<string, any>, props?: {}): CssRule[];
-	/**
-	 * Add CssRules via CSS string.
-	 * @param {String} css CSS string of rules to add.
-	 * @returns {Array<[CssRule]>} Array of rules
-	 * @example
-	 * const addedRules = css.addRules('.my-cls{ color: red } @media (max-width: 992px) { .my-cls{ color: darkred } }');
-	 * // Check rules
-	 * console.log(addedRules.map(rule => rule.toCSS()));
-	 */
-	addRules(css: string): CssRule[];
-	/**
-	 * Add/update the CssRule.
-	 * @param {String} selectors Selector string, eg. `.myclass`
-	 * @param {Object} style  Style properties and values. If the rule exists, styles will be replaced unless `addStyles` option is used.
-	 * @param {Object} [opts={}]  Additional properties.
-	 * @param {String} [opts.atRuleType='']  At-rule type, eg. `media`.
-	 * @param {String} [opts.atRuleParams='']  At-rule parameters, eg. `(min-width: 500px)`.
-	 * @param {Boolean} [opts.addStyles=false] If the rule exists already, merge passed styles instead of replacing them.
-	 * @returns {[CssRule]} The new/updated CssRule.
-	 * @example
-	 * // Simple class-based rule
-	 * const rule = css.setRule('.class1.class2', { color: 'red' });
-	 * console.log(rule.toCSS()) // output: .class1.class2 { color: red }
-	 * // With state and other mixed selector
-	 * const rule = css.setRule('.class1.class2:hover, div#myid', { color: 'red' });
-	 * // output: .class1.class2:hover, div#myid { color: red }
-	 * // With media
-	 * const rule = css.setRule('.class1:hover', { color: 'red' }, {
-	 *  atRuleType: 'media',
-	 *  atRuleParams: '(min-width: 500px)',
-	 * });
-	 * // output: `@media (min-width: 500px) { .class1:hover { color: red } }`
-	 *
-	 * // Update styles of existent rule
-	 * css.setRule('.class1', { color: 'red', background: 'red' });
-	 * css.setRule('.class1', { color: 'blue' }, { addStyles: true });
-	 * // output: .class1 { color: blue; background: red }
-	 */
-	setRule(selectors: any, style?: CssRuleProperties["style"], opts?: SetRuleOptions): CssRule;
-	/**
-	 * Get the CssRule.
-	 * @param {String} selectors Selector string, eg. `.myclass:hover`
-	 * @param {Object} [opts={}]  Additional properties
-	 * @param {String} [opts.atRuleType='']  At-rule type, eg. `media`
-	 * @param {String} [opts.atRuleParams='']  At-rule parameters, eg. '(min-width: 500px)'
-	 * @returns {[CssRule]}
-	 * @example
-	 * const rule = css.getRule('.myclass1:hover');
-	 * const rule2 = css.getRule('.myclass1:hover, div#myid');
-	 * const rule3 = css.getRule('.myclass1', {
-	 *  atRuleType: 'media',
-	 *  atRuleParams: '(min-width: 500px)',
-	 * });
-	 */
-	getRule(selectors: any, opts?: RuleOptions): CssRule | undefined;
-	/**
-	 * Get all rules or filtered by a matching selector.
-	 * @param {String} [selector=''] Selector, eg. `.myclass`
-	 * @returns {Array<[CssRule]>}
-	 * @example
-	 * // Take all the component specific rules
-	 * const id = someComponent.getId();
-	 * const rules = css.getRules(`#${id}`);
-	 * console.log(rules.map(rule => rule.toCSS()))
-	 * // All rules in the project
-	 * console.log(css.getRules())
-	 */
-	getRules(selector: string): CssRule[];
-	/**
-	 * Add/update the CSS rule with id selector
-	 * @param {string} name Id selector name, eg. 'my-id'
-	 * @param {Object} style  Style properties and values
-	 * @param {Object} [opts={}]  Custom options, like `state` and `mediaText`
-	 * @return {CssRule} The new/updated rule
-	 * @private
-	 * @example
-	 * const rule = css.setIdRule('myid', { color: 'red' });
-	 * const ruleHover = css.setIdRule('myid', { color: 'blue' }, { state: 'hover' });
-	 * // This will add current CSS:
-	 * // #myid { color: red }
-	 * // #myid:hover { color: blue }
-	 */
-	setIdRule(name: string, style?: CssRuleStyle, opts?: GetSetRuleOptions): CssRule;
-	/**
-	 * Get the CSS rule by id selector
-	 * @param {string} name Id selector name, eg. 'my-id'
-	 * @param  {Object} [opts={}]  Custom options, like `state` and `mediaText`
-	 * @return {CssRule}
-	 * @private
-	 * @example
-	 * const rule = css.getIdRule('myid');
-	 * const ruleHover = css.setIdRule('myid', { state: 'hover' });
-	 */
-	getIdRule(name: string, opts?: GetSetRuleOptions): CssRule | undefined;
-	/**
-	 * Add/update the CSS rule with class selector
-	 * @param {string} name Class selector name, eg. 'my-class'
-	 * @param {Object} style  Style properties and values
-	 * @param {Object} [opts={}]  Custom options, like `state` and `mediaText`
-	 * @return {CssRule} The new/updated rule
-	 * @private
-	 * @example
-	 * const rule = css.setClassRule('myclass', { color: 'red' });
-	 * const ruleHover = css.setClassRule('myclass', { color: 'blue' }, { state: 'hover' });
-	 * // This will add current CSS:
-	 * // .myclass { color: red }
-	 * // .myclass:hover { color: blue }
-	 */
-	setClassRule(name: string, style?: CssRuleStyle, opts?: GetSetRuleOptions): CssRule;
-	/**
-	 * Get the CSS rule by class selector
-	 * @param {string} name Class selector name, eg. 'my-class'
-	 * @param  {Object} [opts={}]  Custom options, like `state` and `mediaText`
-	 * @return {CssRule}
-	 * @private
-	 * @example
-	 * const rule = css.getClassRule('myclass');
-	 * const ruleHover = css.getClassRule('myclass', { state: 'hover' });
-	 */
-	getClassRule(name: string, opts?: GetSetRuleOptions): CssRule | undefined;
-	/**
-	 * Remove rule, by CssRule or matching selector (eg. the selector will match also at-rules like `@media`)
-	 * @param {String|[CssRule]|Array<[CssRule]>} rule CssRule or matching selector.
-	 * @return {Array<[CssRule]>} Removed rules
-	 * @example
-	 * // Remove by CssRule
-	 * const toRemove = css.getRules('.my-cls');
-	 * css.remove(toRemove);
-	 * // Remove by selector
-	 * css.remove('.my-cls-2');
-	 */
-	remove(rule: string | CssRule, opts?: any): CssRule[] | (CssRule & any[]);
-	/**
-	 * Remove all rules
-	 * @return {this}
-	 */
-	clear(opts?: {}): this;
-	getComponentRules(cmp: Component, opts?: GetSetRuleOptions): CssRule[];
-	/**
-	 * Render the block of CSS rules
-	 * @return {HTMLElement}
-	 * @private
-	 */
-	render(): HTMLElement;
-	destroy(): void;
-}
-declare class ComponentsView extends View {
-	opts: any;
-	config: DomComponentsConfig & {
-		frameView?: FrameView;
-	};
-	em: EditorModel;
-	parentEl?: HTMLElement;
-	compView: typeof ComponentView;
-	initialize(o: any): void;
-	removeChildren(removed: Component, coll: any, opts?: {}): void;
-	/**
-	 * Add to collection
-	 * @param {Model} model
-	 * @param {Collection} coll
-	 * @param {Object} opts
-	 * @private
-	 * */
-	addTo(model: Component, coll?: any, opts?: {
-		temporary?: boolean;
-	}): void;
-	/**
-	 * Add new object to collection
-	 * @param  {Object}  Model
-	 * @param  {Object}   Fragment collection
-	 * @param  {Integer}  Index of append
-	 *
-	 * @return   {Object}   Object rendered
-	 * @private
-	 * */
-	addToCollection(model: Component, fragmentEl?: DocumentFragment | null, index?: number): HTMLElement | Text;
-	resetChildren(models: Components, { previousModels }?: {
-		previousModels?: never[] | undefined;
-	}): void;
-	render(parent?: HTMLElement): this;
-}
-export type ClbObj = ReturnType<ComponentView["_clbObj"]>;
-export interface Rect {
-	top?: number;
-	left?: number;
-	bottom?: number;
-	right?: number;
-}
-export interface IComponentView extends ExtractMethods<ComponentView> {
-}
-export declare class ComponentView extends View</**
- * Keep this format to avoid errors in TS bundler */ 
-/** @ts-ignore */
-Component> {
-	/** @ts-ignore */
-	model: Component;
-	/** @ts-ignore */
-	className(): any;
-	/** @ts-ignore */
-	tagName(): string;
-	modelOpt: ComponentOptions;
-	em: EditorModel;
-	opts?: any;
-	pfx?: string;
-	ppfx?: string;
-	attr?: Record<string, any>;
-	classe?: string;
-	config: DomComponentsConfig;
-	childrenView?: ComponentsView;
-	getChildrenSelector?: Function;
-	getTemplate?: Function;
-	scriptContainer?: HTMLElement;
-	initialize(opt?: any): void;
-	get __cmpStyleOpts(): GetSetRuleOptions;
-	get frameView(): FrameView;
-	__isDraggable(): string | boolean | DraggableDroppableFn | undefined;
-	_clbObj(): {
-		editor: Editor;
-		model: Component;
-		el: HTMLElement;
-	};
-	/**
-	 * Initialize callback
-	 */
-	init(opts: ClbObj): void;
-	/**
-	 * Remove callback
-	 */
-	removed(opts: ClbObj): void;
-	/**
-	 * On render callback
-	 */
-	onRender(opts: ClbObj): void;
-	/**
-	 * Callback executed when the `active` event is triggered on component
-	 */
-	onActive(ev: Event): void;
-	/**
-	 * Callback executed when the `disable` event is triggered on component
-	 */
-	onDisable(): void;
-	remove(): this;
-	handleDragStart(event: Event): false | undefined;
-	initClasses(): void;
-	initComponents(opts?: {
-		avoidRender?: boolean;
-	}): void;
-	/**
-	 * Handle any property change
-	 * @private
-	 */
-	handleChange(): void;
-	/**
-	 * Import, if possible, classes inside main container
-	 * @private
-	 * */
-	importClasses(): void;
-	/**
-	 * Update item on status change
-	 * @param  {Event} e
-	 * @private
-	 * */
-	updateStatus(opts?: {
-		noExtHl?: boolean;
-		avoidHover?: boolean;
-	}): void;
-	/**
-	 * Update highlight attribute
-	 * @private
-	 * */
-	updateHighlight(): void;
-	/**
-	 * Update style attribute
-	 * @private
-	 * */
-	updateStyle(m?: any, v?: any, opts?: ObjectAny): void;
-	/**
-	 * Update classe attribute
-	 * @private
-	 * */
-	updateClasses(): void;
-	/**
-	 * Update single attribute
-	 * @param {[type]} name  [description]
-	 * @param {[type]} value [description]
-	 */
-	setAttribute(name: string, value: any): void;
-	/**
-	 * Get classes from attributes.
-	 * This method is called before initialize
-	 *
-	 * @return  {Array}|null
-	 * @private
-	 * */
-	getClasses(): any;
-	/**
-	 * Update attributes
-	 * @private
-	 * */
-	updateAttributes(): void;
-	/**
-	 * Update component content
-	 * @private
-	 * */
-	updateContent(): void;
-	/**
-	 * Prevent default helper
-	 * @param  {Event} e
-	 * @private
-	 */
-	prevDef(e: Event): void;
-	/**
-	 * Render component's script
-	 * @private
-	 */
-	updateScript(): void;
-	/**
-	 * Return children container
-	 * Differently from a simple component where children container is the
-	 * component itself
-	 * <my-comp>
-	 *  <!--
-	 *    <child></child> ...
-	 *   -->
-	 * </my-comp>
-	 * You could have the children container more deeper
-	 * <my-comp>
-	 *  <div></div>
-	 *  <div></div>
-	 *  <div>
-	 *    <div>
-	 *      <!--
-	 *        <child></child> ...
-	 *      -->
-	 *    </div>
-	 *  </div>
-	 * </my-comp>
-	 * @return HTMLElement
-	 * @private
-	 */
-	getChildrenContainer(): HTMLElement;
-	/**
-	 * This returns rect informations not affected by the canvas zoom.
-	 * The method `getBoundingClientRect` doesn't work here and we
-	 * have to take in account offsetParent
-	 */
-	getOffsetRect(): Rect;
-	isInViewport({ rect }?: {
-		rect?: Rect;
-	}): boolean;
-	scrollIntoView(opts?: {
-		force?: boolean;
-	} & ScrollIntoViewOptions): void;
-	/**
-	 * Recreate the element of the view
-	 */
-	reset(): void;
-	_setData(): void;
-	/**
-	 * Render children components
-	 * @private
-	 */
-	renderChildren(): void;
-	renderAttributes(): void;
-	onAttrUpdate(): void;
-	render(): this;
-	postRender(): void;
-	static getEvents(): any;
-}
-declare class ComponentWrapperView extends ComponentView {
-	tagName(): string;
-}
-declare class ComponentTable extends Component {
+declare class ComponentFrame extends Component {
 	get defaults(): {
 		type: string;
 		tagName: string;
-		droppable: string[];
+		droppable: boolean;
+		resizable: boolean;
+		traits: string[];
+		attributes: {
+			frameborder: string;
+		};
 		components?: ComponentDefinitionDefined | ComponentDefinitionDefined[] | undefined;
-		traits?: (string | Partial<TraitProperties>)[] | undefined;
 	};
-	initialize(props: any, opts: any): void;
 	static isComponent(el: HTMLElement): boolean;
 }
 declare class ComponentImage extends Component {
@@ -3361,6 +3502,28 @@ declare class ComponentImage extends Component {
 		query: ObjectStrings;
 	};
 	static isComponent(el: HTMLElement): boolean;
+}
+declare class ComponentText extends Component {
+	get defaults(): {
+		type: string;
+		droppable: boolean;
+		editable: boolean;
+		components?: ComponentDefinitionDefined | ComponentDefinitionDefined[] | undefined;
+		traits?: (string | Partial<TraitProperties>)[] | undefined;
+	};
+	initialize(props: any, opts: any): void;
+	__checkInnerChilds(): void;
+}
+declare class ComponentLink extends ComponentText {
+	get defaults(): {
+		type: string;
+		tagName: string;
+		traits: string[];
+		droppable: boolean;
+		editable: boolean;
+		components?: ComponentDefinitionDefined | ComponentDefinitionDefined[] | undefined;
+	};
+	static isComponent(el: HTMLElement, opts?: any): any;
 }
 declare class ComponentMap extends ComponentImage {
 	/** @ts-ignore */
@@ -3436,6 +3599,283 @@ declare class ComponentMap extends ComponentImage {
 		src: string;
 	} | undefined;
 }
+declare class ComponentScript extends Component {
+	get defaults(): {
+		type: string;
+		tagName: string;
+		droppable: boolean;
+		draggable: boolean;
+		layerable: boolean;
+		components?: ComponentDefinitionDefined | ComponentDefinitionDefined[] | undefined;
+		traits?: (string | Partial<TraitProperties>)[] | undefined;
+	};
+	static isComponent(el: HTMLImageElement): any;
+}
+declare class ComponentSvg extends Component {
+	get defaults(): {
+		type: string;
+		tagName: string;
+		highlightable: boolean;
+		resizable: {
+			ratioDefault: boolean;
+		};
+		components?: ComponentDefinitionDefined | ComponentDefinitionDefined[] | undefined;
+		traits?: (string | Partial<TraitProperties>)[] | undefined;
+	};
+	getName(): any;
+	static isComponent(el: HTMLElement): boolean;
+}
+declare class ComponentSvgIn extends ComponentSvg {
+	get defaults(): {
+		selectable: boolean;
+		hoverable: boolean;
+		layerable: boolean;
+		type: string;
+		tagName: string;
+		highlightable: boolean;
+		resizable: {
+			ratioDefault: boolean;
+		};
+		components?: ComponentDefinitionDefined | ComponentDefinitionDefined[] | undefined;
+		traits?: (string | Partial<TraitProperties>)[] | undefined;
+	};
+	static isComponent(el: any, opts?: any): boolean;
+}
+declare class ComponentTable extends Component {
+	get defaults(): {
+		type: string;
+		tagName: string;
+		droppable: string[];
+		components?: ComponentDefinitionDefined | ComponentDefinitionDefined[] | undefined;
+		traits?: (string | Partial<TraitProperties>)[] | undefined;
+	};
+	initialize(props: any, opts: any): void;
+	static isComponent(el: HTMLElement): boolean;
+}
+declare class ComponentTableCell extends Component {
+	get defaults(): {
+		type: string;
+		tagName: string;
+		draggable: string[];
+		components?: ComponentDefinitionDefined | ComponentDefinitionDefined[] | undefined;
+		traits?: (string | Partial<TraitProperties>)[] | undefined;
+	};
+	static isComponent(el: HTMLElement): boolean;
+}
+declare class ComponentTableRow extends Component {
+	get defaults(): {
+		tagName: string;
+		draggable: string[];
+		droppable: string[];
+		components?: ComponentDefinitionDefined | ComponentDefinitionDefined[] | undefined;
+		traits?: (string | Partial<TraitProperties>)[] | undefined;
+	};
+	static isComponent(el: HTMLElement): boolean;
+}
+declare class ComponentTextNode extends Component {
+	get defaults(): {
+		tagName: string;
+		droppable: boolean;
+		layerable: boolean;
+		selectable: boolean;
+		editable: boolean;
+		components?: ComponentDefinitionDefined | ComponentDefinitionDefined[] | undefined;
+		traits?: (string | Partial<TraitProperties>)[] | undefined;
+	};
+	toHTML(): string;
+	__escapeContent(content: string): string;
+	static isComponent(el: HTMLElement): {
+		type: string;
+		content: string;
+	} | undefined;
+}
+declare class ComponentVideo extends ComponentImage {
+	get defaults(): {
+		type: string;
+		tagName: string;
+		videoId: string;
+		void: boolean;
+		provider: string;
+		ytUrl: string;
+		ytncUrl: string;
+		viUrl: string;
+		loop: boolean;
+		poster: string;
+		muted: number;
+		autoplay: boolean;
+		controls: boolean;
+		color: string;
+		list: string;
+		rel: number;
+		modestbranding: number;
+		sources: never[];
+		attributes: {
+			allowfullscreen: string;
+		};
+		droppable: number;
+		editable: number;
+		highlightable: number;
+		resizable: {
+			ratioDefault: number;
+		};
+		traits: string[];
+		src: string;
+		fallback: string;
+		file: string;
+		components?: ComponentDefinitionDefined | ComponentDefinitionDefined[] | undefined;
+	};
+	initialize(props: any, opts: any): void;
+	updatePropsFromAttr(): void;
+	/**
+	 * Update traits by provider
+	 * @private
+	 */
+	updateTraits(): void;
+	/**
+	 * Set attributes by src string
+	 */
+	parseFromSrc(): void;
+	/**
+	 * Update src on change of video ID
+	 * @private
+	 */
+	updateSrc(): void;
+	/**
+	 * Returns object of attributes for HTML
+	 * @return {Object}
+	 * @private
+	 */
+	getAttrToHTML(): {
+		[x: string]: any;
+	};
+	/**
+	 * Return the provider trait
+	 * @return {Object}
+	 * @private
+	 */
+	getProviderTrait(): {
+		type: string;
+		label: string;
+		name: string;
+		changeProp: boolean;
+		options: {
+			value: string;
+			name: string;
+		}[];
+	};
+	/**
+	 * Return traits for the source provider
+	 * @return {Array<Object>}
+	 * @private
+	 */
+	getSourceTraits(): ({
+		type: string;
+		label: string;
+		name: string;
+		changeProp: boolean;
+	} | {
+		label: string;
+		name: string;
+		placeholder: string;
+		changeProp: boolean;
+	} | {
+		label: string;
+		name: string;
+		placeholder: string;
+		changeProp?: undefined;
+	})[];
+	/**
+	 * Return traits for the source provider
+	 * @return {Array<Object>}
+	 * @private
+	 */
+	getYoutubeTraits(): ({
+		type: string;
+		label: string;
+		name: string;
+		changeProp: boolean;
+	} | {
+		label: string;
+		name: string;
+		placeholder: string;
+		changeProp: boolean;
+	})[];
+	/**
+	 * Return traits for the source provider
+	 * @return {Array<Object>}
+	 * @private
+	 */
+	getVimeoTraits(): ({
+		type: string;
+		label: string;
+		name: string;
+		changeProp: boolean;
+	} | {
+		label: string;
+		name: string;
+		placeholder: string;
+		changeProp: boolean;
+	})[];
+	/**
+	 * Return object trait
+	 * @return {Object}
+	 * @private
+	 */
+	getAutoplayTrait(): {
+		type: string;
+		label: string;
+		name: string;
+		changeProp: boolean;
+	};
+	/**
+	 * Return object trait
+	 * @return {Object}
+	 * @private
+	 */
+	getLoopTrait(): {
+		type: string;
+		label: string;
+		name: string;
+		changeProp: boolean;
+	};
+	/**
+	 * Return object trait
+	 * @return {Object}
+	 * @private
+	 */
+	getControlsTrait(): {
+		type: string;
+		label: string;
+		name: string;
+		changeProp: boolean;
+	};
+	/**
+	 * Returns url to youtube video
+	 * @return {string}
+	 * @private
+	 */
+	getYoutubeSrc(): string;
+	/**
+	 * Returns url to youtube no cookie video
+	 * @return {string}
+	 * @private
+	 */
+	getYoutubeNoCookieSrc(): string;
+	/**
+	 * Returns url to vimeo video
+	 * @return {string}
+	 * @private
+	 */
+	getVimeoSrc(): string;
+	static isComponent(el: HTMLVideoElement): any;
+}
+declare class ComponentFrameView extends ComponentView {
+	tagName(): string;
+	initialize(props: any): void;
+	updateSrc(): void;
+	render(): this;
+	__getSrc(): any;
+}
 declare class ComponentImageView extends ComponentView {
 	classEmpty: string;
 	model: ComponentImage;
@@ -3463,41 +3903,6 @@ declare class ComponentImageView extends ComponentView {
 	onLoad(): void;
 	noDrag(ev: Event): boolean;
 	render(): this;
-}
-declare class ComponentMapView extends ComponentImageView {
-	iframe?: HTMLIFrameElement;
-	tagName(): string;
-	events(): {};
-	initialize(props: any): void;
-	/**
-	 * Update the map on the canvas
-	 * @private
-	 */
-	updateSrc(): void;
-	getIframe(): HTMLIFrameElement;
-	render(): this;
-}
-declare class ComponentText extends Component {
-	get defaults(): {
-		type: string;
-		droppable: boolean;
-		editable: boolean;
-		components?: ComponentDefinitionDefined | ComponentDefinitionDefined[] | undefined;
-		traits?: (string | Partial<TraitProperties>)[] | undefined;
-	};
-	initialize(props: any, opts: any): void;
-	__checkInnerChilds(): void;
-}
-declare class ComponentLink extends ComponentText {
-	get defaults(): {
-		type: string;
-		tagName: string;
-		traits: string[];
-		droppable: boolean;
-		editable: boolean;
-		components?: ComponentDefinitionDefined | ComponentDefinitionDefined[] | undefined;
-	};
-	static isComponent(el: HTMLElement, opts?: any): any;
 }
 export interface CustomRTE<T = any> {
 	/**
@@ -3862,185 +4267,43 @@ declare class ComponentTextView extends ComponentView {
 declare class ComponentLinkView extends ComponentTextView {
 	render(): this;
 }
-declare class ComponentVideo extends ComponentImage {
-	get defaults(): {
-		type: string;
-		tagName: string;
-		videoId: string;
-		void: boolean;
-		provider: string;
-		ytUrl: string;
-		ytncUrl: string;
-		viUrl: string;
-		loop: boolean;
-		poster: string;
-		muted: number;
-		autoplay: boolean;
-		controls: boolean;
-		color: string;
-		list: string;
-		rel: number;
-		modestbranding: number;
-		sources: never[];
-		attributes: {
-			allowfullscreen: string;
-		};
-		droppable: number;
-		editable: number;
-		highlightable: number;
-		resizable: {
-			ratioDefault: number;
-		};
-		traits: string[];
-		src: string;
-		fallback: string;
-		file: string;
-		components?: ComponentDefinitionDefined | ComponentDefinitionDefined[] | undefined;
-	};
-	initialize(props: any, opts: any): void;
-	updatePropsFromAttr(): void;
+declare class ComponentMapView extends ComponentImageView {
+	iframe?: HTMLIFrameElement;
+	tagName(): string;
+	events(): {};
+	initialize(props: any): void;
 	/**
-	 * Update traits by provider
-	 * @private
-	 */
-	updateTraits(): void;
-	/**
-	 * Set attributes by src string
-	 */
-	parseFromSrc(): void;
-	/**
-	 * Update src on change of video ID
+	 * Update the map on the canvas
 	 * @private
 	 */
 	updateSrc(): void;
-	/**
-	 * Returns object of attributes for HTML
-	 * @return {Object}
-	 * @private
-	 */
-	getAttrToHTML(): {
-		[x: string]: any;
-	};
-	/**
-	 * Return the provider trait
-	 * @return {Object}
-	 * @private
-	 */
-	getProviderTrait(): {
-		type: string;
-		label: string;
-		name: string;
-		changeProp: boolean;
-		options: {
-			value: string;
-			name: string;
-		}[];
-	};
-	/**
-	 * Return traits for the source provider
-	 * @return {Array<Object>}
-	 * @private
-	 */
-	getSourceTraits(): ({
-		type: string;
-		label: string;
-		name: string;
-		changeProp: boolean;
-	} | {
-		label: string;
-		name: string;
-		placeholder: string;
-		changeProp: boolean;
-	} | {
-		label: string;
-		name: string;
-		placeholder: string;
-		changeProp?: undefined;
-	})[];
-	/**
-	 * Return traits for the source provider
-	 * @return {Array<Object>}
-	 * @private
-	 */
-	getYoutubeTraits(): ({
-		type: string;
-		label: string;
-		name: string;
-		changeProp: boolean;
-	} | {
-		label: string;
-		name: string;
-		placeholder: string;
-		changeProp: boolean;
-	})[];
-	/**
-	 * Return traits for the source provider
-	 * @return {Array<Object>}
-	 * @private
-	 */
-	getVimeoTraits(): ({
-		type: string;
-		label: string;
-		name: string;
-		changeProp: boolean;
-	} | {
-		label: string;
-		name: string;
-		placeholder: string;
-		changeProp: boolean;
-	})[];
-	/**
-	 * Return object trait
-	 * @return {Object}
-	 * @private
-	 */
-	getAutoplayTrait(): {
-		type: string;
-		label: string;
-		name: string;
-		changeProp: boolean;
-	};
-	/**
-	 * Return object trait
-	 * @return {Object}
-	 * @private
-	 */
-	getLoopTrait(): {
-		type: string;
-		label: string;
-		name: string;
-		changeProp: boolean;
-	};
-	/**
-	 * Return object trait
-	 * @return {Object}
-	 * @private
-	 */
-	getControlsTrait(): {
-		type: string;
-		label: string;
-		name: string;
-		changeProp: boolean;
-	};
-	/**
-	 * Returns url to youtube video
-	 * @return {string}
-	 * @private
-	 */
-	getYoutubeSrc(): string;
-	/**
-	 * Returns url to youtube no cookie video
-	 * @return {string}
-	 * @private
-	 */
-	getYoutubeNoCookieSrc(): string;
-	/**
-	 * Returns url to vimeo video
-	 * @return {string}
-	 * @private
-	 */
-	getVimeoSrc(): string;
-	static isComponent(el: HTMLVideoElement): any;
+	getIframe(): HTMLIFrameElement;
+	render(): this;
+}
+declare class ComponentScriptView extends ComponentView {
+	tagName(): string;
+	events(): {};
+	render(): this;
+}
+declare class ComponentSvgView extends ComponentView {
+	_createElement(tagName: string): SVGElement;
+}
+declare class ComponentTableCellView extends ComponentView {
+}
+declare class ComponentTableRowView extends ComponentView {
+}
+declare class ComponentTextNodeView extends ComponentView {
+	_setAttributes(): void;
+	renderAttributes(): void;
+	updateStatus(): void;
+	updateClasses(): void;
+	setAttribute(): void;
+	updateAttributes(): void;
+	initClasses(): void;
+	initComponents(): void;
+	delegateEvents(): this;
+	_createElement(): Text;
+	render(): this;
 }
 declare class ComponentVideoView extends ComponentImageView {
 	videoEl?: HTMLVideoElement | HTMLIFrameElement;
@@ -4071,85 +4334,8 @@ declare class ComponentVideoView extends ComponentImageView {
 	initVideoEl(el: HTMLElement): void;
 	render(): this;
 }
-declare class ComponentScript extends Component {
-	get defaults(): {
-		type: string;
-		tagName: string;
-		droppable: boolean;
-		draggable: boolean;
-		layerable: boolean;
-		components?: ComponentDefinitionDefined | ComponentDefinitionDefined[] | undefined;
-		traits?: (string | Partial<TraitProperties>)[] | undefined;
-	};
-	static isComponent(el: HTMLImageElement): any;
-}
-declare class ComponentScriptView extends ComponentView {
+declare class ComponentWrapperView extends ComponentView {
 	tagName(): string;
-	events(): {};
-	render(): this;
-}
-declare class ComponentSvg extends Component {
-	get defaults(): {
-		type: string;
-		tagName: string;
-		highlightable: boolean;
-		resizable: {
-			ratioDefault: boolean;
-		};
-		components?: ComponentDefinitionDefined | ComponentDefinitionDefined[] | undefined;
-		traits?: (string | Partial<TraitProperties>)[] | undefined;
-	};
-	getName(): any;
-	static isComponent(el: HTMLElement): boolean;
-}
-declare class ComponentSvgIn extends ComponentSvg {
-	get defaults(): {
-		selectable: boolean;
-		hoverable: boolean;
-		layerable: boolean;
-		type: string;
-		tagName: string;
-		highlightable: boolean;
-		resizable: {
-			ratioDefault: boolean;
-		};
-		components?: ComponentDefinitionDefined | ComponentDefinitionDefined[] | undefined;
-		traits?: (string | Partial<TraitProperties>)[] | undefined;
-	};
-	static isComponent(el: any, opts?: any): boolean;
-}
-declare class ComponentSvgView extends ComponentView {
-	_createElement(tagName: string): SVGElement;
-}
-declare class ComponentTextNode extends Component {
-	get defaults(): {
-		tagName: string;
-		droppable: boolean;
-		layerable: boolean;
-		selectable: boolean;
-		editable: boolean;
-		components?: ComponentDefinitionDefined | ComponentDefinitionDefined[] | undefined;
-		traits?: (string | Partial<TraitProperties>)[] | undefined;
-	};
-	toHTML(): string;
-	__escapeContent(content: string): string;
-	static isComponent(el: HTMLElement): {
-		type: string;
-		content: string;
-	} | undefined;
-}
-declare class ComponentTextNodeView extends ComponentView {
-	_setAttributes(): void;
-	renderAttributes(): void;
-	updateStatus(): void;
-	updateClasses(): void;
-	setAttribute(): void;
-	updateAttributes(): void;
-	initClasses(): void;
-	initComponents(): void;
-	delegateEvents(): this;
-	_createElement(): Text;
-	render(): this;
 }
 export type ComponentEvent = "component:create" | "component:mount" | "component:add" | "component:remove" | "component:remove:before" | "component:clone" | "component:update" | "component:styleUpdate" | "component:selected" | "component:deselected" | "component:toggled" | "component:type:add" | "component:type:update" | "component:drag:start" | "component:drag" | "component:drag:end" | "component:resize";
 export interface ComponentModelDefinition extends IComponent {
@@ -4191,6 +4377,14 @@ export interface CanMoveResult {
 export declare class ComponentManager extends ItemManagerModule<DomComponentsConfig, any> {
 	componentTypes: ({
 		id: string;
+		model: typeof ComponentTableCell;
+		view: typeof ComponentTableCellView;
+	} | {
+		id: string;
+		model: typeof ComponentTableRow;
+		view: typeof ComponentTableRowView;
+	} | {
+		id: string;
 		model: typeof ComponentTable;
 		view: any;
 	} | {
@@ -4219,8 +4413,24 @@ export declare class ComponentManager extends ItemManagerModule<DomComponentsCon
 		view: typeof ComponentSvgView;
 	} | {
 		id: string;
+		model: typeof ComponentSvg;
+		view: typeof ComponentSvgView;
+	} | {
+		id: string;
+		model: typeof ComponentFrame;
+		view: typeof ComponentFrameView;
+	} | {
+		id: string;
 		model: typeof ComponentTextNode;
 		view: typeof ComponentTextNodeView;
+	} | {
+		id: string;
+		model: typeof ComponentText;
+		view: typeof ComponentTextView;
+	} | {
+		id: string;
+		model: typeof ComponentWrapper;
+		view: typeof ComponentWrapperView;
 	} | {
 		id: string;
 		model: typeof Component;
@@ -4232,6 +4442,7 @@ export declare class ComponentManager extends ItemManagerModule<DomComponentsCon
 	componentView?: ComponentWrapperView;
 	Component: typeof Component;
 	Components: typeof Components;
+	ComponentView: typeof ComponentView;
 	ComponentsView: typeof ComponentsView;
 	/**
 	 * Name of the module
@@ -4386,6 +4597,14 @@ export declare class ComponentManager extends ItemManagerModule<DomComponentsCon
 	 */
 	getTypes(): ({
 		id: string;
+		model: typeof ComponentTableCell;
+		view: typeof ComponentTableCellView;
+	} | {
+		id: string;
+		model: typeof ComponentTableRow;
+		view: typeof ComponentTableRowView;
+	} | {
+		id: string;
 		model: typeof ComponentTable;
 		view: any;
 	} | {
@@ -4414,8 +4633,24 @@ export declare class ComponentManager extends ItemManagerModule<DomComponentsCon
 		view: typeof ComponentSvgView;
 	} | {
 		id: string;
+		model: typeof ComponentSvg;
+		view: typeof ComponentSvgView;
+	} | {
+		id: string;
+		model: typeof ComponentFrame;
+		view: typeof ComponentFrameView;
+	} | {
+		id: string;
 		model: typeof ComponentTextNode;
 		view: typeof ComponentTextNodeView;
+	} | {
+		id: string;
+		model: typeof ComponentText;
+		view: typeof ComponentTextView;
+	} | {
+		id: string;
+		model: typeof ComponentWrapper;
+		view: typeof ComponentWrapperView;
 	} | {
 		id: string;
 		model: typeof Component;
@@ -4429,6 +4664,15 @@ export declare class ComponentManager extends ItemManagerModule<DomComponentsCon
 	 */
 	componentHovered(): void;
 	getShallowWrapper(): Component | undefined;
+	/**
+	 * Check if the object is a [Component].
+	 * @param {Object} obj
+	 * @returns {Boolean}
+	 * @example
+	 * cmp.isComponent(editor.getSelected()); // true
+	 * cmp.isComponent({}); // false
+	 */
+	isComponent(obj?: ObjectAny): obj is Component;
 	/**
 	 * Check if a component can be moved inside another one.
 	 * @param {[Component]} target The target component is the one that is supposed to receive the source one.
@@ -4574,6 +4818,7 @@ export declare class Component extends StyleableModel<ComponentProperties> {
 	get traits(): Traits;
 	get content(): string;
 	get toolbar(): ToolbarButtonProps[];
+	get resizable(): boolean | ResizerOptions;
 	/**
 	 * Hook method, called once the model is created
 	 */
@@ -7874,7 +8119,7 @@ declare class BlockManager extends ItemManagerModule<BlockManagerConfig, Blocks>
 	 * const newBlocksEl = blockManager.render(filtered, { external: true });
 	 * document.getElementById('some-id').appendChild(newBlocksEl);
 	 */
-	render(blocks: Block[], opts?: {
+	render(blocks?: Block[], opts?: {
 		external?: boolean;
 	}): HTMLElement | undefined;
 	destroy(): void;
@@ -8148,8 +8393,8 @@ declare class PropertyView extends View<Property> {
 	$input?: any;
 	constructor(o?: {});
 	events(): {
-		[x: string]: string;
 		change: string;
+		"click [data-clear-style]": string;
 	};
 	template(model: any): string;
 	templateLabel(model: Property): string;
@@ -8242,6 +8487,7 @@ declare class PropertyStackView extends PropertyCompositeView {
 	events(): {
 		"click [data-add-layer]": string;
 		change: string;
+		"click [data-clear-style]": string;
 	};
 	templateInput(): string;
 	init(): void;
@@ -10691,7 +10937,7 @@ declare class UtilsModule extends Module {
 		find: (arr: any[], test: (item: any, i: number, arr: any[]) => boolean) => null;
 		escape: (str?: string) => string;
 		escapeNodeContent: (str?: string) => string;
-		deepMerge: (...args: Record<string, any>[]) => {
+		deepMerge: (...args: ObjectAny[]) => {
 			[x: string]: any;
 		};
 		isComponent: (obj: any) => obj is Component;
@@ -10704,7 +10950,7 @@ declare class UtilsModule extends Module {
 		getModel: (el: any, $?: any) => any;
 		camelCase: (value: string) => string;
 		getElement: (el: HTMLElement) => any;
-		shallowDiff: (objOrig: Record<string, any>, objNew: Record<string, any>) => Record<string, any>;
+		shallowDiff: (objOrig: ObjectAny, objNew: ObjectAny) => ObjectAny;
 		normalizeFloat: (value: any, step?: number, valueDef?: number) => any;
 		getUnitFromValue: (value: any) => any;
 		capitalize: (str?: string) => string;
@@ -10714,8 +10960,8 @@ declare class UtilsModule extends Module {
 			unique?: boolean | undefined;
 			prepand?: boolean | undefined;
 		}) => void;
-		isObject: (val: any) => val is Object;
-		isEmptyObj: (val: Record<string, any>) => boolean;
+		isObject: (val: any) => val is ObjectAny;
+		isEmptyObj: (val: ObjectAny) => boolean;
 		createId: (length?: number) => string;
 		isRule: (obj: any) => any;
 	};
@@ -11334,7 +11580,7 @@ declare class CommandsModule extends Module<CommandsConfig & {
 	 * Get an object containing all the commands
 	 * @return {Object}
 	 */
-	getAll(): Record<string, CommandObject<any, {}>>;
+	getAll(): Record<string, CommandObject>;
 	/**
 	 * Execute the command
 	 * @param {String} id Command ID

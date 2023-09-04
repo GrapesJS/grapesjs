@@ -23,4 +23,5 @@ jobs:
           cache: 'yarn'
       - run: yarn --frozen-lockfile
       - run: npm run lint
+      - run: npm run ts:build:check
       - run: npm test

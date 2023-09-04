@@ -1,14 +1,10 @@
-import Assets from 'asset_manager/model/Assets';
+import Assets from '../../../../src/asset_manager/model/Assets';
 
 describe('Assets', () => {
-  var obj;
+  let obj: Assets;
 
   beforeEach(() => {
     obj = new Assets();
-  });
-
-  afterEach(() => {
-    obj = null;
   });
 
   test('Object exists', () => {

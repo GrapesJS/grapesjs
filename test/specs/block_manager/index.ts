@@ -1,11 +1,12 @@
-import Editor from 'editor';
+import { BlockProperties } from '../../../src/block_manager/model/Block';
+import Editor from '../../../src/editor';
 
 describe('BlockManager', () => {
   describe('Main', () => {
-    let obj;
-    let idTest;
-    let optsTest;
-    let editor;
+    let obj: Editor['Blocks'];
+    const idTest = 'h1-block';
+    let optsTest: BlockProperties = { label: '', content: '' };
+    let editor: Editor;
 
     beforeEach(() => {
       editor = new Editor({
@@ -13,8 +14,6 @@ describe('BlockManager', () => {
           blocks: [],
         },
       });
-
-      idTest = 'h1-block';
       optsTest = {
         label: 'Heading',
         content: '<h1>Test</h1>',
@@ -25,7 +24,6 @@ describe('BlockManager', () => {
 
     afterEach(() => {
       editor.destroy();
-      obj = null;
     });
 
     test('Object exists', () => {
@@ -54,12 +52,12 @@ describe('BlockManager', () => {
     test('Add block with attributes', () => {
       optsTest.attributes = { class: 'test' };
       var model = obj.add(idTest, optsTest);
-      expect(model.get('attributes').class).toEqual('test');
+      expect(model.get('attributes')!.class).toEqual('test');
     });
 
     test('The id of the block is unique', () => {
       var model = obj.add(idTest, optsTest);
-      var model2 = obj.add(idTest, { other: 'test' });
+      var model2 = obj.add(idTest, { ...optsTest, content: 'test' });
       expect(model).toEqual(model2);
     });
 

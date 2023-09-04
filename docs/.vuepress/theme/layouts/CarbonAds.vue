@@ -4,17 +4,17 @@ export default {
     return h('div', { class: 'carbon-ads', attrs: { id: 'native-carbon' }})
   },
   mounted () {
-    window.BSANativeCallback = (a) => {
-      const total = a.ads.length;
-
-      if (!total) {
-        const src = document.createElement('script');
-        src.src = `//cdn.carbonads.com/carbon.js?serve=CEAIVK77&placement=grapesjscom`;
-        src.setAttribute('id', '_carbonads_js');
-        const adCont = document.getElementById('native-carbon');
-        adCont && adCont.appendChild(src);
-      }
-    };
+    // window.BSANativeCallback = (a) => {
+    //   const total = a.ads.length;
+    //
+    //   if (!total) {
+    //     const src = document.createElement('script');
+    //     src.src = `//cdn.carbonads.com/carbon.js?serve=CEAIVK77&placement=grapesjscom`;
+    //     src.setAttribute('id', '_carbonads_js');
+    //     const adCont = document.getElementById('native-carbon');
+    //     adCont && adCont.appendChild(src);
+    //   }
+    // };
     this.load();
   },
   watch: {
@@ -38,10 +38,16 @@ export default {
       }
     },
     load () {
-      const s = document.createElement('script');
-      s.src = `//m.servedby-buysellads.com/monetization.js`;
-      s.onload = () => this.initCarbon();
-      this.$el.appendChild(s);
+      // const s = document.createElement('script');
+      // s.src = `//m.servedby-buysellads.com/monetization.js`;
+      // s.onload = () => this.initCarbon();
+      // this.$el.appendChild(s);
+
+      const src = document.createElement('script');
+      src.src = `//cdn.carbonads.com/carbon.js?serve=CEAIVK77&placement=grapesjscom`;
+      src.setAttribute('id', '_carbonads_js');
+      const adCont = document.getElementById('native-carbon');
+      adCont && adCont.appendChild(src);
     }
   }
 }
