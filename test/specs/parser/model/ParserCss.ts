@@ -288,6 +288,33 @@ describe('ParserCss', () => {
     expect(obj.parse(str)).toEqual([result]);
   });
 
+  // Unsupported by CSSOM parser
+  test.skip('Parse rule with @container at-rule', () => {
+    const atRuleType = 'container';
+    const atRuleText = 'somename (min-width: 300px)';
+    const input = `@${atRuleType} ${atRuleText} {
+      .cls1{ height: 100px }
+      .cls2{ height: 200px }
+    }`;
+    const output = [
+      {
+        selectors: ['cls1'],
+        selectorsAdd: '',
+        atRuleType,
+        mediaText: atRuleText,
+        style: { height: '100px' },
+      },
+      {
+        selectors: ['cls2'],
+        selectorsAdd: '',
+        atRuleType,
+        mediaText: atRuleText,
+        style: { height: '200px' },
+      },
+    ];
+    expect(obj.parse(input)).toEqual(output);
+  });
+
   test('Parses multiple font-face at-rules', () => {
     const str = `
       @font-face {

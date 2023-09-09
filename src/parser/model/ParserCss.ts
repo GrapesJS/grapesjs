@@ -7,18 +7,18 @@ import BrowserCssParser, { parseSelector, createNode } from './BrowserParserCss'
 const ParserCss = (em?: EditorModel, config: ParserConfig = {}) => ({
   /**
    * Parse CSS string to a desired model object
-   * @param  {String} str CSS string
+   * @param  {String} input CSS string
    * @return {Array<Object>}
    */
-  parse(str: string) {
-    let result: CssRuleJSON[] = [];
+  parse(input: string) {
+    let output: CssRuleJSON[] = [];
     const { parserCss } = config;
     const editor = em?.Editor;
-    const nodes = parserCss ? parserCss(str, editor!) : BrowserCssParser(str);
-    nodes.forEach(node => (result = result.concat(this.checkNode(node))));
-    em?.trigger('parse:css', { input: str, output: result });
+    const nodes = parserCss ? parserCss(input, editor!) : BrowserCssParser(input);
+    nodes.forEach(node => (output = output.concat(this.checkNode(node))));
+    em?.trigger('parse:css', { input, output, nodes });
 
-    return result;
+    return output;
   },
 
   /**
