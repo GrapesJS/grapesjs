@@ -207,7 +207,7 @@ export default class Sorter extends View {
   updateTextViewCursorPosition(e: any) {
     const { em } = this;
     if (!em) return;
-    const Canvas = em.get('Canvas');
+    const Canvas = em.Canvas;
     const targetDoc = Canvas.getDocument();
     let range = null;
 
@@ -223,8 +223,8 @@ export default class Sorter extends View {
 
     const sel = Canvas.getWindow().getSelection();
     Canvas.getFrameEl().focus();
-    sel.removeAllRanges();
-    range && sel.addRange(range);
+    sel?.removeAllRanges();
+    range && sel?.addRange(range);
     this.setContentEditable(this.activeTextModel, true);
   }
 
@@ -242,7 +242,7 @@ export default class Sorter extends View {
    */
   toggleSortCursor(active?: boolean) {
     const { em } = this;
-    const cv = em && em.get('Canvas');
+    const cv = em?.Canvas;
 
     // Avoid updating body className as it causes a huge repaint
     // Noticeable with "fast" drag of blocks
@@ -527,7 +527,7 @@ export default class Sorter extends View {
     var rX = e.pageX - this.elL + this.el.scrollLeft;
 
     if (this.canvasRelative && em) {
-      const mousePos = em.get('Canvas').getMouseRelativeCanvas(e, { noScroll: 1 });
+      const mousePos = em.Canvas.getMouseRelativeCanvas(e, { noScroll: 1 });
       rX = mousePos.x;
       rY = mousePos.y;
     }

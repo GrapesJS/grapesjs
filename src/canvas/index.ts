@@ -555,7 +555,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
    * Start autoscroll
    * @private
    */
-  startAutoscroll(frame: Frame) {
+  startAutoscroll(frame?: Frame) {
     const fr = (frame && frame.view) || this.em.getCurrentFrame();
     fr && fr.startAutoscroll();
   }
@@ -564,7 +564,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
    * Stop autoscroll
    * @private
    */
-  stopAutoscroll(frame: Frame) {
+  stopAutoscroll(frame?: Frame) {
     const fr = (frame && frame.view) || this.em.getCurrentFrame();
     fr && fr.stopAutoscroll();
   }

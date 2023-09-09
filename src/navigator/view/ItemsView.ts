@@ -42,6 +42,7 @@ export default class ItemsView extends View {
         nested: 1,
         ppfx,
         pfx,
+        em,
       });
     }
 
