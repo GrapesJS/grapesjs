@@ -19,25 +19,7 @@
  * blockManager.add(...);
  * ```
  *
- * ## Available Events
- * * `block:add` - Block added. The [Block] is passed as an argument to the callback.
- * * `block:remove` - Block removed. The [Block] is passed as an argument to the callback.
- * * `block:update` - Block updated. The [Block] and the object containing changes are passed as arguments to the callback.
- * * `block:drag:start` - Started dragging block, the [Block] is passed as an argument.
- * * `block:drag` - Dragging block, the [Block] is passed as an argument.
- * * `block:drag:stop` - Dragging of the block is stopped. The dropped [Component] (if dropped successfully) and the [Block] are passed as arguments.
- * * `block` - Catch-all event for all the events mentioned above. An object containing all the available data about the triggered event is passed as an argument to the callback.
- *
- * ## Methods
- * * [add](#add)
- * * [get](#get)
- * * [getAll](#getall)
- * * [getAllVisible](#getallvisible)
- * * [remove](#remove)
- * * [getConfig](#getconfig)
- * * [getCategories](#getcategories)
- * * [getContainer](#getcontainer)
- * * [render](#render)
+ * {REPLACE_EVENTS}
  *
  * [Block]: block.html
  * [Component]: component.html
@@ -54,38 +36,10 @@ import Block, { BlockProperties } from './model/Block';
 import Blocks from './model/Blocks';
 import Categories from './model/Categories';
 import Category from './model/Category';
+import { BlocksEvents } from './types';
 import BlocksView from './view/BlocksView';
 
-export type BlockEvent =
-  | 'block:add'
-  | 'block:remove'
-  | 'block:drag:start'
-  | 'block:drag'
-  | 'block:drag:stop'
-  | 'block:custom';
-
-export const evAll = 'block';
-export const evPfx = `${evAll}:`;
-export const evAdd = `${evPfx}add`;
-export const evUpdate = `${evPfx}update`;
-export const evRemove = `${evPfx}remove`;
-export const evRemoveBefore = `${evRemove}:before`;
-export const evDrag = `${evPfx}drag`;
-export const evDragStart = `${evDrag}:start`;
-export const evDragStop = `${evDrag}:stop`;
-export const evCustom = `${evPfx}custom`;
-
-const blockEvents = {
-  all: evAll,
-  update: evUpdate,
-  add: evAdd,
-  remove: evRemove,
-  removeBefore: evRemoveBefore,
-  drag: evDrag,
-  dragStart: evDragStart,
-  dragEnd: evDragStop,
-  custom: evCustom,
-};
+export type BlockEvent = `${BlocksEvents}`;
 
 export default class BlockManager extends ItemManagerModule<BlockManagerConfig, Blocks> {
   blocks: Blocks;
@@ -94,7 +48,7 @@ export default class BlockManager extends ItemManagerModule<BlockManagerConfig, 
   blocksView?: BlocksView;
   _dragBlock?: Block;
   _bhv?: Record<string, any>;
-  events!: typeof blockEvents;
+  events = BlocksEvents;
 
   Block = Block;
 
@@ -107,7 +61,7 @@ export default class BlockManager extends ItemManagerModule<BlockManagerConfig, 
   storageKey = '';
 
   constructor(em: EditorModel) {
-    super(em, 'BlockManager', new Blocks(em.config.blockManager?.blocks || []), blockEvents, defaults);
+    super(em, 'BlockManager', new Blocks(em.config.blockManager?.blocks || []), BlocksEvents, defaults);
 
     // Global blocks collection
     this.blocks = this.all;
