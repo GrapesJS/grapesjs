@@ -37,9 +37,8 @@ import CssRule from '../../css_composer/model/CssRule';
 import { HTMLGeneratorBuildOptions } from '../../code_manager/model/HtmlGenerator';
 import { CssGeneratorBuildOptions } from '../../code_manager/model/CssGenerator';
 import ComponentView from '../../dom_components/view/ComponentView';
-import { ProjectData } from '../../storage_manager/model/IStorage';
+import { ProjectData, StorageOptions } from '../../storage_manager/model/IStorage';
 import CssRules from '../../css_composer/model/CssRules';
-import Frame from '../../canvas/model/Frame';
 import { ComponentAdd, DragMode } from '../../dom_components/model/types';
 import ComponentWrapper from '../../dom_components/model/ComponentWrapper';
 import { CanvasSpotBuiltInTypes } from '../../canvas/model/CanvasSpot';
@@ -821,7 +820,7 @@ export default class EditorModel extends Model {
    * Store data to the current storage.
    * @public
    */
-  async store(options?: any) {
+  async store<T extends StorageOptions>(options?: T) {
     const data = this.storeData();
     await this.Storage.store(data, options);
     this.clearDirtyCount();
@@ -832,7 +831,7 @@ export default class EditorModel extends Model {
    * Load data from the current storage.
    * @public
    */
-  async load(options?: any) {
+  async load<T extends StorageOptions>(options?: T) {
     const result = await this.Storage.load(options);
     this.loadData(result);
     // Wait in order to properly update the dirty counter (#5385)

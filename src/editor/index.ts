@@ -81,8 +81,7 @@ import { CustomParserCss } from '../parser/config/config';
 import RichTextEditorModule, { RichTextEditorEvent } from '../rich_text_editor';
 import { CustomRTE } from '../rich_text_editor/config/config';
 import SelectorManager, { SelectorEvent } from '../selector_manager';
-import StorageManager, { StorageEvent } from '../storage_manager';
-import { ProjectData } from '../storage_manager/model/IStorage';
+import StorageManager, { StorageEvent, StorageOptions, ProjectData } from '../storage_manager';
 import StyleManager, { StyleManagerEvent } from '../style_manager';
 import TraitManager from '../trait_manager';
 import UndoManagerModule from '../undo_manager';
@@ -540,7 +539,7 @@ export default class Editor implements IBaseModule<EditorConfig> {
    * @example
    * const storedData = await editor.store();
    */
-  async store(options: any) {
+  async store<T extends StorageOptions>(options?: T) {
     return await this.em.store(options);
   }
 
@@ -551,7 +550,7 @@ export default class Editor implements IBaseModule<EditorConfig> {
    * @example
    * const data = await editor.load();
    */
-  async load(options: any) {
+  async load<T extends StorageOptions>(options?: T) {
     return await this.em.load(options);
   }
 

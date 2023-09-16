@@ -59,6 +59,8 @@ import RemoteStorage from './model/RemoteStorage';
 import EditorModel from '../editor/model/Editor';
 import IStorage, { StorageOptions, ProjectData } from './model/IStorage';
 
+export type * from './model/IStorage';
+
 export type StorageEvent =
   | 'storage:start'
   | 'storage:start:store'
