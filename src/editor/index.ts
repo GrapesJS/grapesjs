@@ -88,7 +88,7 @@ import UndoManagerModule from '../undo_manager';
 import UtilsModule from '../utils';
 import html from '../utils/html';
 import defaults, { EditorConfig, EditorConfigKeys } from './config/config';
-import EditorModel from './model/Editor';
+import EditorModel, { EditorLoadOptions } from './model/Editor';
 import EditorView from './view/EditorView';
 
 export type ParsedRule = {
@@ -546,12 +546,14 @@ export default class Editor implements IBaseModule<EditorConfig> {
   /**
    * Load data from the current storage.
    * @param {Object} [options] Storage options.
+   * @param {Object} [loadOptions={}] Load options.
+   * @param {Boolean} [loadOptions.clear=false] Clear the editor state (eg. dirty counter, undo manager, etc.).
    * @returns {Object} Loaded data.
    * @example
    * const data = await editor.load();
    */
-  async load<T extends StorageOptions>(options?: T) {
-    return await this.em.load(options);
+  async load<T extends StorageOptions>(options?: T, loadOptions: EditorLoadOptions = {}) {
+    return await this.em.load(options, loadOptions);
   }
 
   /**

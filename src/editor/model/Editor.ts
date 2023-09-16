@@ -81,6 +81,11 @@ const logs = {
   error: console.error,
 };
 
+export interface EditorLoadOptions {
+  /** Clear the editor state (eg. dirty counter, undo manager, etc.). */
+  clear?: boolean;
+}
+
 export default class EditorModel extends Model {
   defaults() {
     return {
@@ -831,11 +836,17 @@ export default class EditorModel extends Model {
    * Load data from the current storage.
    * @public
    */
-  async load<T extends StorageOptions>(options?: T) {
+  async load<T extends StorageOptions>(options?: T, loadOptions: EditorLoadOptions = {}) {
     const result = await this.Storage.load(options);
     this.loadData(result);
     // Wait in order to properly update the dirty counter (#5385)
     await wait();
+
+    if (loadOptions.clear) {
+      this.UndoManager.clear();
+      this.clearDirtyCount();
+    }
+
     return result;
   }
 
