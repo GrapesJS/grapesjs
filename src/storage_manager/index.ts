@@ -153,8 +153,7 @@ export default class StorageManager extends Module<
    * });
    * */
   add<T extends StorageOptions>(type: string, storage: IStorage<T>) {
-    // @ts-ignore
-    this.storages[type] = storage;
+    this.storages[type] = storage as IStorage;
     return this;
   }
 
@@ -214,7 +213,7 @@ export default class StorageManager extends Module<
    * const data = editor.getProjectData();
    * await storageManager.store(data);
    * */
-  async store(data: ProjectData, options: StorageOptions = {}) {
+  async store<T extends StorageOptions>(data: ProjectData, options: T = {} as T) {
     const st = this.getCurrentStorage();
     const opts = { ...this.getCurrentOptions(), ...options };
     const recovery = this.getRecoveryStorage();
@@ -242,7 +241,7 @@ export default class StorageManager extends Module<
    * const data = await storageManager.load();
    * editor.loadProjectData(data);
    * */
-  async load(options = {}) {
+  async load<T extends StorageOptions>(options: T = {} as T) {
     const st = this.getCurrentStorage();
     const opts = { ...this.getCurrentOptions(), ...options };
     const recoveryStorage = this.getRecoveryStorage();
