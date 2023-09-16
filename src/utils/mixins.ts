@@ -5,6 +5,8 @@ import { isTextNode } from './dom';
 import Component from '../dom_components/model/Component';
 import { ObjectAny } from '../common';
 
+export const wait = (mls: number = 0) => new Promise(res => setTimeout(res, mls));
+
 export const isDef = (value: any) => typeof value !== 'undefined';
 
 export const hasWin = () => typeof window !== 'undefined';

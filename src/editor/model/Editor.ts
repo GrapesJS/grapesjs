@@ -2,7 +2,7 @@ import { isUndefined, isArray, contains, toArray, keys, bindAll } from 'undersco
 import Backbone from 'backbone';
 import $ from '../../utils/cash-dom';
 import Extender from '../../utils/extender';
-import { getModel, hasWin, isEmptyObj } from '../../utils/mixins';
+import { getModel, hasWin, isEmptyObj, wait } from '../../utils/mixins';
 import { AddOptions, Model } from '../../common';
 import Selected from './Selected';
 import FrameView from '../../canvas/view/FrameView';
@@ -835,6 +835,8 @@ export default class EditorModel extends Model {
   async load(options?: any) {
     const result = await this.Storage.load(options);
     this.loadData(result);
+    // Wait in order to properly update the dirty counter (#5385)
+    await wait();
     return result;
   }
 
