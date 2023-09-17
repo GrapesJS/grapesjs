@@ -438,6 +438,9 @@ Load data from the current storage.
 ### Parameters
 
 *   `options` **[Object][16]?** Storage options.
+*   `loadOptions` **[Object][16]** Load options. (optional, default `{}`)
+
+    *   `loadOptions.clear` **[Boolean][17]** Clear the editor state (eg. dirty counter, undo manager, etc.). (optional, default `false`)
 
 ### Examples
 

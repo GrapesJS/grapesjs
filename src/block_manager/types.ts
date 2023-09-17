@@ -64,3 +64,6 @@ export enum BlocksEvents {
   all = 'block',
 }
 /**{END_EVENTS}*/
+
+// need this to avoid the TS documentation generator to break
+export default BlocksEvents;
