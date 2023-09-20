@@ -11,7 +11,8 @@
   "exports": {
     ".": {
       "import": "./dist/grapes.mjs",
-      "require": "./dist/grapes.min.js"
+      "require": "./dist/grapes.min.js",
+      "types": "./dist/index.d.ts"
     },
     "./*": "./*"
   },
