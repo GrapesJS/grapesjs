@@ -18,7 +18,8 @@
   },
   "files": [
     "dist",
-    "locale"
+    "locale",
+    "src/styles"
   ],
   "sideEffects": [
     "*.vue",
