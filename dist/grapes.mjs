@@ -38059,6 +38059,8 @@ var BlocksEvents;
     BlocksEvents["all"] = "block";
 })(BlocksEvents || (BlocksEvents = {}));
 /**{END_EVENTS}*/
+// need this to avoid the TS documentation generator to break
+/* harmony default export */ const block_manager_types = ((/* unused pure expression or super */ null && (BlocksEvents)));
 
 ;// CONCATENATED MODULE: ./src/block_manager/view/BlockView.ts
 var BlockView_extends = (undefined && undefined.__extends) || (function () {
@@ -61246,7 +61248,7 @@ var grapesjs = {
     plugins: plugins,
     usePlugin: usePlugin,
     // @ts-ignore Will be replaced on build
-    version: '0.21.6',
+    version: '0.21.7',
     /**
      * Initialize the editor with passed options
      * @param {Object} config Configuration object
