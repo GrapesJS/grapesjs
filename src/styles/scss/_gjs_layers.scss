@@ -1,5 +1,4 @@
 $layerIconSize: 15px !default;
-$layerNameSpacing: 5px !default;
 
 .#{$nv-prefix} {
   &selected-parent {
@@ -18,25 +17,38 @@ $layerNameSpacing: 5px !default;
     font-size: $fontSizeS;
     display: grid;
 
+    &-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 5px 10px;
+
+        &-left,
+        &-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        &-left {
+            width: 100%;
+        }
+    }
+
     &-hidden {
       @include opacity(0.55);
     }
 
-    &-count {
-      position: absolute;
-      right: 27px;
-      top: 9px;
-    }
-
     &-vis {
-      left: 0;
-      top: 0;
-      padding: 7px 5px 7px 10px;
-      position: absolute;
       box-sizing: content-box;
       cursor: pointer;
-      width: 13px;
       z-index: 1;
+
+      &-on,
+      &-off {
+        display: flex;
+        width: 13px;
+      }
 
       &-off {
         display: none;
@@ -54,35 +66,36 @@ $layerNameSpacing: 5px !default;
 
     &-caret {
       width: 15px;
-      padding: 2px;
       cursor: pointer;
-      position: absolute;
       box-sizing: content-box;
-      left: -15px;
-      top: 0;
       transform: rotate(90deg);
       @include opacity(0.7);
 
       &:hover {
         @include opacity(1);
       }
+    }
 
-      &.#{$nv-prefix}layer-open {
+    &.open > &-item &-caret {
         transform: rotate(180deg);
-      }
     }
 
     &-title {
       @extend .#{$app-prefix}category-title;
 
-      padding: 3px 10px 5px 30px;
+      padding: 0;
       display: flex;
       align-items: center;
+      background-color: transparent !important;
 
       &-inn {
         align-items: center;
         position: relative;
         display: flex;
+        gap: 5px;
+      }
+
+      &-c {
         width: 100%;
       }
     }
@@ -100,13 +113,10 @@ $layerNameSpacing: 5px !default;
     }
 
     &-name {
-      padding: $layerNameSpacing 0;
       display: inline-block;
       box-sizing: content-box;
-      overflow: hidden;
-      white-space: nowrap;
-      margin: 0 30px 0 $layerNameSpacing;
       max-width: 170px;
+      height: auto;
       @extend .#{$app-prefix}no-user-select;
 
       &--no-edit {
@@ -127,25 +137,20 @@ $layerNameSpacing: 5px !default;
     }
 
     &-move {
-      padding: 9px 7px;
-      position: absolute;
       width: 13px;
       box-sizing: content-box;
       cursor: move;
-      right: 0;
-      top: 0;
     }
 
-    &.#{$nv-prefix}hovered .#{$nv-prefix}layer-title {
-      background-color: rgba(255, 255, 255, 0.015);
+    &.#{$nv-prefix}hovered .#{$nv-prefix}layer-item {
+      background-color: rgba(255, 255, 255, 0.15);
     }
 
-    &.#{$nv-prefix}selected .#{$nv-prefix}layer-title {
-      background-color: rgba(255, 255, 255, 0.1);
+    &.#{$nv-prefix}selected .#{$nv-prefix}layer-item {
+      background-color: rgba(255, 255, 255, 0.3);
     }
   }
 }
-
 
 .#{$app-prefix}layers {
   position: relative;
