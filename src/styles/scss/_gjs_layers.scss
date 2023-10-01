@@ -3,7 +3,7 @@ $layerNameSpacing: 5px !default;
 
 .#{$nv-prefix} {
   &selected-parent {
-    border: 1px solid $colorYell;
+    border: 1px solid var(--color-yellow);
   }
 
   &opac50 {
@@ -15,7 +15,7 @@ $layerNameSpacing: 5px !default;
     text-align: left;
     position: relative;
     background-color: rgba(0, 0, 0, 0.1);
-    font-size: $fontSizeS;
+    font-size: var(--font-size);
     display: grid;
 
     &-hidden {
@@ -160,7 +160,7 @@ $layerNameSpacing: 5px !default;
       padding: 1px;
 
       &.#{$nv-prefix}insert {
-        background-color: $colorGreen;
+        background-color: var(--color-green);
       }
     }
   }

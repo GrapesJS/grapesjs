@@ -16,30 +16,30 @@
   }
 
   &commands {
-    width: (100% - $leftWidth);
+    width: calc(100% - var(--left-width));
     left: 0;
     top: 0;
-    box-shadow: 0 0 5px $mainDkColor;
+    box-shadow: 0 0 5px var(--main-dark-color);
   }
 
   &options {
-    right: $leftWidth;
+    right: var(--left-width);
     top: 0;
   }
 
   &views {
-    border-bottom: 2px solid $mainDkColor;
+    border-bottom: 2px solid var(--main-dark-color);
     right: 0;
-    width: $leftWidth;
+    width: var(--left-width);
     z-index: 4;
 
     &-container {
       height: 100%;
       padding: 42px 0 0;
       right: 0;
-      width: $leftWidth;
+      width: var(--left-width);
       overflow: auto;
-      box-shadow: 0 0 5px $mainDkColor;
+      box-shadow: 0 0 5px var(--main-dark-color);
     }
   }
 
