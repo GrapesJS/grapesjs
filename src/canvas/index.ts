@@ -485,9 +485,12 @@ export default class CanvasModule extends Module<CanvasConfig> {
       addLeft = frameRect.left || 0;
     }
 
+    const zoom = this.getZoomDecimal();
+    const zoomOffset = 1 / zoom;
+
     return {
-      y: e.clientY + addTop - yOffset,
-      x: e.clientX + addLeft - xOffset,
+      y: (e.clientY + addTop - yOffset) * zoomOffset,
+      x: (e.clientX + addLeft - xOffset) * zoomOffset,
     };
   }
 
