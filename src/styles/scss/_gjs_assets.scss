@@ -102,7 +102,7 @@
 }
 
 .#{$am-prefix}asset {
-  border-bottom: 1px solid darken($mainDkColor, 3%);
+  border-bottom: 1px solid darken-color(var(--grapes-main-dark-color), 3%);
   padding: 5px;
   cursor: pointer;
   position: relative;

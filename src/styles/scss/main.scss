@@ -5,6 +5,14 @@
 @import "spectrum.scss";
 @import "gjs_variables.scss";
 
+@function darken-color($color, $percentage) {
+  @return color-mix(in srgb, $color, black $percentage)
+}
+
+@function lighten-color($color, $percentage) {
+  @return color-mix(in srgb, $color, white $percentage)
+}
+
 @mixin user-select($v) {
   -moz-user-select: $v;
   -khtml-user-select: $v;
@@ -374,7 +382,7 @@ $colorsAll: (one, var(--grapes-primary-color)),
 
 	  	&.#{$am-prefix}hover {
 			border: 2px solid var(--grapes-color-green);
-			color: lighten($colorGreen, 5%); /*#7ee07e*/
+			color: lighten-color(var(--grapes-color-green), 5%);
 		}
 
 		&.#{$am-prefix}disabled{

@@ -283,9 +283,9 @@
   }
 
   .#{$sm-prefix}btn {
-    background-color: lighten($mainDkColor, 13%);
+    background-color: lighten-color(var(--grapes-main-dark-color), 13%);
     border-radius: 2px;
-    box-shadow: 1px 1px 0 lighten($mainDkColor, 2%), 1px 1px 0 lighten($mainDkColor, 17%) inset;
+    box-shadow: 1px 1px 0 lighten-color(var(--grapes-main-dark-color), 2%), 1px 1px 0 lighten-color(var(--grapes-main-dark-color), 17%) inset;
     padding: 5px;
     position: relative;
     text-align: center;
@@ -321,7 +321,7 @@
   margin-top: 5px;
   position: relative;
   overflow: hidden;
-  border: 1px solid darken($lightBorder, 1%);
+  border: 1px solid darken-color(var(--grapes-light-border), 1%);
   padding: 3px 20px;
 
   &-cnt {
