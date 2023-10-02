@@ -391,8 +391,9 @@ export default {
 
     if (model && resizable) {
       canvas.addSpot({ type: spotTypeResize, component: model });
+      const el = isElement(elem) ? elem : model.getEl();
 
-      if (hasCustomResize) return;
+      if (hasCustomResize || !el) return;
 
       let modelToStyle: any;
       const { config } = em;
@@ -409,7 +410,6 @@ export default {
           });
       };
 
-      const el = isElement(elem) ? elem : model.getEl();
       const options: ResizerOptions = {
         // Here the resizer is updated with the current element height and width
         onStart(e: Event, opts: any = {}) {

@@ -14,7 +14,7 @@ const getEventsMdFromTypes = async (filePath) => {
   const dirname = filePath.replace(path.basename(filePath), '');
   const typesFilePath = `${dirname}types.ts`;
 
-  if (fs.existsSync(typesFilePath) && typesFilePath.includes('canvas')) {
+  if (fs.existsSync(typesFilePath)) {
     const resTypes = await documentation.build([typesFilePath], { shallow: true })
       .then(cm => documentation.formats.md(cm, /*{ markdownToc: true }*/));
     const indexFrom = resTypes.indexOf(START_EVENTS) + START_EVENTS.length;
@@ -26,6 +26,7 @@ const getEventsMdFromTypes = async (filePath) => {
       .replace(/## /gi, '* ')
       .replace(/\\`/gi, '`')
       .replace(/##/gi, '')
+      .replace(/\\\[/gi, '[')
       .trim();
 
     return result

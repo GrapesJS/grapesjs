@@ -102,7 +102,6 @@ export default class BlocksView extends View {
 
   onMove(ev: Event) {
     this.__getModule().__drag(ev);
-    this.em.trigger('block:drag:move', ev); // old event
   }
 
   onDrop(component?: Component) {

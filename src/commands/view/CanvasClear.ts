@@ -2,7 +2,7 @@ import { CommandObject } from './CommandAbstract';
 
 export default {
   run(ed) {
-    ed.DomComponents.clear();
-    ed.CssComposer.clear();
+    ed.Components.clear();
+    ed.Css.clear();
   },
 } as CommandObject;

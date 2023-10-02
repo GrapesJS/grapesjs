@@ -2290,12 +2290,12 @@ declare class CanvasModule extends Module<CanvasConfig> {
 	 * Start autoscroll
 	 * @private
 	 */
-	startAutoscroll(frame: Frame): void;
+	startAutoscroll(frame?: Frame): void;
 	/**
 	 * Stop autoscroll
 	 * @private
 	 */
-	stopAutoscroll(frame: Frame): void;
+	stopAutoscroll(frame?: Frame): void;
 	/**
 	 * Set canvas zoom value
 	 * @param {Number} value The zoom value, from 0 to 100
@@ -3955,7 +3955,7 @@ export interface RichTextEditorConfig {
 }
 export interface RichTextEditorAction {
 	name: string;
-	icon: string;
+	icon: string | HTMLElement;
 	event?: string;
 	attributes?: Record<string, any>;
 	result: (rte: RichTextEditor, action: RichTextEditorAction) => void;
@@ -7923,6 +7923,62 @@ export declare class Blocks extends Collection<Block> {
 }
 export declare class Categories extends Collection<Category> {
 }
+declare enum BlocksEvents {
+	/**
+	 * @event `block:add` New block added to the collection. The [Block] is passed as an argument to the callback.
+	 * @example
+	 * editor.on('block:add', (block) => { ... });
+	 */
+	add = "block:add",
+	/**
+	 * @event `block:remove` Block removed from the collection. The [Block] is passed as an argument to the callback.
+	 * @example
+	 * editor.on('block:remove', (block) => { ... });
+	 */
+	remove = "block:remove",
+	/**
+	 * @event `block:remove:before` Event triggered before Block remove.
+	 * @example
+	 * editor.on('block:remove:before', (block, remove, opts) => { ... });
+	 */
+	removeBefore = "block:remove:before",
+	/**
+	 * @event `block:update` Block updated. The [Block] and the object containing changes are passed as arguments to the callback.
+	 * @example
+	 * editor.on('block:update', (block, updatedProps) => { ... });
+	 */
+	update = "block:update",
+	/**
+	 * @event `block:drag:start` Started dragging block. The [Block] is passed as an argument.
+	 * @example
+	 * editor.on('block:drag:start', (block) => { ... });
+	 */
+	dragStart = "block:drag:start",
+	/**
+	 * @event `block:drag` The block is dragging. The [Block] is passed as an argument.
+	 * @example
+	 * editor.on('block:drag', (block) => { ... });
+	 */
+	drag = "block:drag",
+	/**
+	 * @event `block:drag:stop` Dragging of the block is stopped. The dropped [Component] (if dropped successfully) and the [Block] are passed as arguments.
+	 * @example
+	 * editor.on('block:drag:stop', (component, block) => { ... });
+	 */
+	dragEnd = "block:drag:stop",
+	/**
+	 * @event `block:custom` Event to use in case of [custom Block Manager UI](https://grapesjs.com/docs/modules/Blocks.html#customization).
+	 * @example
+	 * editor.on('block:custom', ({ container, blocks, ... }) => { ... });
+	 */
+	custom = "block:custom",
+	/**
+	 * @event `block` Catch-all event for all the events mentioned above. An object containing all the available data about the triggered event is passed as an argument to the callback.
+	 * @example
+	 * editor.on('block', ({ event, model, ... }) => { ... });
+	 */
+	all = "block"
+}
 export interface BlocksViewConfig {
 	em: EditorModel;
 	pStylePrefix?: string;
@@ -7971,18 +8027,7 @@ declare class BlocksView extends View {
 	append(el: HTMLElement | DocumentFragment): void;
 	render(): this;
 }
-export type BlockEvent = "block:add" | "block:remove" | "block:drag:start" | "block:drag" | "block:drag:stop" | "block:custom";
-declare const blockEvents: {
-	all: string;
-	update: string;
-	add: string;
-	remove: string;
-	removeBefore: string;
-	drag: string;
-	dragStart: string;
-	dragEnd: string;
-	custom: string;
-};
+export type BlockEvent = `${BlocksEvents}`;
 declare class BlockManager extends ItemManagerModule<BlockManagerConfig, Blocks> {
 	blocks: Blocks;
 	blocksVisible: Blocks;
@@ -7990,7 +8035,7 @@ declare class BlockManager extends ItemManagerModule<BlockManagerConfig, Blocks>
 	blocksView?: BlocksView;
 	_dragBlock?: Block;
 	_bhv?: Record<string, any>;
-	events: typeof blockEvents;
+	events: typeof BlocksEvents;
 	Block: typeof Block;
 	Blocks: typeof Blocks;
 	Category: typeof Category;
@@ -9335,10 +9380,10 @@ declare class SelectorManager extends ItemManagerModule<SelectorManagerConfig & 
 declare const ParserCss: (em?: EditorModel, config?: ParserConfig) => {
 	/**
 	 * Parse CSS string to a desired model object
-	 * @param  {String} str CSS string
+	 * @param  {String} input CSS string
 	 * @return {Array<Object>}
 	 */
-	parse(str: string): CssRuleJSON[];
+	parse(input: string): CssRuleJSON[];
 	/**
 	 * Check the returned node from a custom parser and transforms it to
 	 * a valid object for the CSS composer
@@ -9538,7 +9583,7 @@ declare class StorageManager extends Module<StorageManagerConfig & {
 	 * const data = editor.getProjectData();
 	 * await storageManager.store(data);
 	 * */
-	store(data: ProjectData, options?: StorageOptions): Promise<ProjectData>;
+	store<T extends StorageOptions>(data: ProjectData, options?: T): Promise<ProjectData>;
 	/**
 	 * Load resource from the current storage by keys
 	 * @param {Object} [options] Storage options.
@@ -9547,7 +9592,7 @@ declare class StorageManager extends Module<StorageManagerConfig & {
 	 * const data = await storageManager.load();
 	 * editor.loadProjectData(data);
 	 * */
-	load(options?: {}): Promise<ProjectData>;
+	load<T extends StorageOptions>(options?: T): Promise<ProjectData>;
 	__askRecovery(): Promise<unknown>;
 	getRecovery(): StorageManagerConfig["recovery"];
 	getRecoveryStorage(): false | IStorage<StorageOptions> | undefined;
@@ -10929,6 +10974,7 @@ declare class UtilsModule extends Module {
 	Resizer: typeof Resizer;
 	Dragger: typeof Dragger;
 	helpers: {
+		wait: (mls?: number) => Promise<unknown>;
 		isDef: (value: any) => boolean;
 		hasWin: () => boolean;
 		getGlobal: () => typeof globalThis;
@@ -11648,6 +11694,10 @@ declare class CommandsModule extends Module<CommandsConfig & {
 	create(command: CommandObject): any;
 	destroy(): void;
 }
+export interface EditorLoadOptions {
+	/** Clear the editor state (eg. dirty counter, undo manager, etc.). */
+	clear?: boolean;
+}
 declare class EditorModel extends Model {
 	defaults(): {
 		editing: number;
@@ -11879,12 +11929,12 @@ declare class EditorModel extends Model {
 	 * Store data to the current storage.
 	 * @public
 	 */
-	store(options?: any): Promise<ProjectData>;
+	store<T extends StorageOptions>(options?: T): Promise<ProjectData>;
 	/**
 	 * Load data from the current storage.
 	 * @public
 	 */
-	load(options?: any): Promise<ProjectData>;
+	load<T extends StorageOptions>(options?: T, loadOptions?: EditorLoadOptions): Promise<ProjectData>;
 	storeData(): ProjectData;
 	loadData(data?: ProjectData): ProjectData;
 	/**
@@ -12324,15 +12374,17 @@ export declare class Editor implements IBaseModule<EditorConfig> {
 	 * @example
 	 * const storedData = await editor.store();
 	 */
-	store(options: any): Promise<ProjectData>;
+	store<T extends StorageOptions>(options?: T): Promise<ProjectData>;
 	/**
 	 * Load data from the current storage.
 	 * @param {Object} [options] Storage options.
+	 * @param {Object} [loadOptions={}] Load options.
+	 * @param {Boolean} [loadOptions.clear=false] Clear the editor state (eg. dirty counter, undo manager, etc.).
 	 * @returns {Object} Loaded data.
 	 * @example
 	 * const data = await editor.load();
 	 */
-	load(options: any): Promise<ProjectData>;
+	load<T extends StorageOptions>(options?: T, loadOptions?: EditorLoadOptions): Promise<ProjectData>;
 	/**
 	 * Get the JSON project data, which could be stored and loaded back with `editor.loadProjectData(json)`
 	 * @returns {Object}

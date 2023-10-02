@@ -1,22 +1,53 @@
 import { keys } from 'underscore';
-import { CssRuleJSON, CssRuleProperties } from '../../css_composer/model/CssRule';
+import { CssRuleJSON } from '../../css_composer/model/CssRule';
+import { ObjectStrings } from '../../common';
 
-// At-rules
-// https://developer.mozilla.org/it/docs/Web/API/CSSRule#Type_constants
-const atRules: Record<string, string> = {
-  4: 'media',
-  5: 'font-face',
-  6: 'page',
-  7: 'keyframes',
-  11: 'counter-style',
-  12: 'supports',
-  13: 'document',
-  14: 'font-feature-values',
-  15: 'viewport',
+/** @see https://developer.mozilla.org/en-US/docs/Web/API/CSSRule/type */
+const CSS_RULE_TYPES = {
+  STYLE_RULE: 1,
+  CHARSET_RULE: 2,
+  IMPORT_RULE: 3,
+  MEDIA_RULE: 4,
+  FONT_FACE_RULE: 5,
+  PAGE_RULE: 6,
+  KEYFRAMES_RULE: 7,
+  KEYFRAME_RULE: 8,
+  NAMESPACE_RULE: 10,
+  COUNTER_STYLE_RULE: 11,
+  SUPPORTS_RULE: 12,
+  DOCUMENT_RULE: 13,
+  FONT_FEATURE_VALUES_RULE: 14,
+  VIEWPORT_RULE: 15,
+  REGION_STYLE_RULE: 16,
 };
-const atRuleKeys = keys(atRules);
-const singleAtRules = ['5', '6', '11', '15'];
-const singleAtRulesNames = ['font-face', 'page', 'counter-style', 'viewport'];
+
+/** @see https://developer.mozilla.org/en-US/docs/Web/CSS/At-rule  */
+const AT_RULE_NAMES: ObjectStrings = {
+  [CSS_RULE_TYPES.MEDIA_RULE]: 'media',
+  [CSS_RULE_TYPES.FONT_FACE_RULE]: 'font-face',
+  [CSS_RULE_TYPES.PAGE_RULE]: 'page',
+  [CSS_RULE_TYPES.KEYFRAMES_RULE]: 'keyframes',
+  [CSS_RULE_TYPES.COUNTER_STYLE_RULE]: 'counter-style',
+  [CSS_RULE_TYPES.SUPPORTS_RULE]: 'supports',
+  [CSS_RULE_TYPES.DOCUMENT_RULE]: 'document',
+  [CSS_RULE_TYPES.FONT_FEATURE_VALUES_RULE]: 'font-feature-values',
+  [CSS_RULE_TYPES.VIEWPORT_RULE]: 'viewport',
+};
+
+const AT_RULE_KEYS = keys(AT_RULE_NAMES);
+
+const SINGLE_AT_RULE_TYPES = [
+  CSS_RULE_TYPES.FONT_FACE_RULE,
+  CSS_RULE_TYPES.PAGE_RULE,
+  CSS_RULE_TYPES.COUNTER_STYLE_RULE,
+  CSS_RULE_TYPES.VIEWPORT_RULE,
+];
+
+const NESTABLE_AT_RULE_NAMES = AT_RULE_KEYS.filter(i => SINGLE_AT_RULE_TYPES.indexOf(Number(i)) < 0)
+  .map(i => AT_RULE_NAMES[i])
+  .concat(['container', 'layer']);
+
+const SINGLE_AT_RULE_NAMES = SINGLE_AT_RULE_TYPES.map(n => AT_RULE_NAMES[n]);
 
 /**
  * Parse selector string to array.
@@ -100,7 +131,7 @@ export const createNode = (selectors: string[], style = {}, opts = {}): CssRuleJ
   const state = stateArr[1];
   // @ts-ignore
   const { atRule, selectorsAdd, mediaText } = opts;
-  const singleAtRule = singleAtRulesNames.indexOf(atRule) >= 0;
+  const singleAtRule = SINGLE_AT_RULE_NAMES.indexOf(atRule) >= 0;
   singleAtRule && (node.singleAtRule = true);
   atRule && (node.atRuleType = atRule);
   selectorsAdd && (node.selectorsAdd = selectorsAdd);
@@ -119,6 +150,11 @@ export const createNode = (selectors: string[], style = {}, opts = {}): CssRuleJ
   return node as CssRuleJSON;
 };
 
+export const getNestableAtRule = (node: CSSRule) => {
+  const { cssText = '' } = node;
+  return NESTABLE_AT_RULE_NAMES.find(name => cssText.indexOf(`@${name}`) === 0);
+};
+
 /**
  * Fetch data from node
  * @param  {StyleSheet|CSSRule} el
@@ -129,28 +165,28 @@ export const parseNode = (el: CSSStyleSheet | CSSRule) => {
   const nodes = (el as CSSStyleSheet).cssRules || [];
 
   for (let i = 0, len = nodes.length; i < len; i++) {
-    const node: CSSRule = nodes[i];
-    const type = node.type.toString();
+    const node = nodes[i];
+    const { type } = node;
     let singleAtRule = false;
     let atRuleType = '';
     let condition = '';
-    // @ts-ignore keyText is for CSSKeyframeRule
-    let sels: string = node.selectorText || node.keyText;
-    const isSingleAtRule = singleAtRules.indexOf(type) >= 0;
+    const sels = (node as CSSStyleRule).selectorText || (node as CSSKeyframeRule).keyText || '';
+    const isSingleAtRule = SINGLE_AT_RULE_TYPES.indexOf(type) >= 0;
 
     // Check if the node is an at-rule
     if (isSingleAtRule) {
       singleAtRule = true;
-      atRuleType = atRules[type];
+      atRuleType = AT_RULE_NAMES[type];
       condition = parseCondition(node);
-    } else if (atRuleKeys.indexOf(type) >= 0) {
+    } else if (AT_RULE_KEYS.indexOf(`${type}`) >= 0 || (!type && getNestableAtRule(node))) {
       const subRules = parseNode(node);
+      const subAtRuleType = AT_RULE_NAMES[type] || getNestableAtRule(node);
       condition = parseCondition(node);
 
       for (let s = 0, lens = subRules.length; s < lens; s++) {
         const subRule = subRules[s];
         condition && (subRule.mediaText = condition);
-        subRule.atRuleType = atRules[type];
+        subRule.atRuleType = subAtRuleType;
       }
       result = result.concat(subRules);
     }
@@ -166,7 +202,7 @@ export const parseNode = (el: CSSStyleSheet | CSSRule) => {
     // For each group of selectors
     for (let k = 0, len3 = selsArr.length; k < len3; k++) {
       const model = createNode(selsArr[k], style, {
-        atRule: atRules[type],
+        atRule: AT_RULE_NAMES[type],
       });
       result.push(model);
       lastRule = model;
@@ -206,8 +242,8 @@ export default (str: string) => {
 
   // There is no .sheet before adding it to the <head>
   document.head.appendChild(el);
-  const sheet = el.sheet!;
+  const sheet = el.sheet;
   document.head.removeChild(el);
 
-  return parseNode(sheet);
+  return sheet ? parseNode(sheet) : [];
 };

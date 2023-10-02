@@ -268,7 +268,7 @@ export default class CssRule extends StyleableModel<CssRuleProperties> {
     const sel = this.getSelectors() as any;
     const sngl = sel.length == 1 && sel.at(0);
     const cmpId = sngl && sngl.isId() && sngl.get('name');
-    return (cmpId && this.em?.get('DomComponents').getById(cmpId)) || null;
+    return (cmpId && this.em?.Components.getById(cmpId)) || null;
   }
 
   /**

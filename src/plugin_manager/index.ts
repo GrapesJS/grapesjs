@@ -19,7 +19,9 @@ const getPluginById = (pluginId: string, plugins: PluginManager) => {
 };
 
 export const getPlugin = (plugin: string | Plugin<any>, plugins: PluginManager) => {
-  return isString(plugin) ? getPluginById(plugin, plugins) : plugin;
+  return isString(plugin)
+    ? getPluginById(plugin, plugins)
+    : (plugin as unknown as { default: Plugin<any> })?.default || plugin;
 };
 
 export const logPluginWarn = (editor: Editor, plugin: string) => {

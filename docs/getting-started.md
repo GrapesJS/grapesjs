@@ -669,23 +669,8 @@ If you prefer you could also disable the autosaving and use a custom command to 
 To get a better overview of the Storage Manager and how you should store/load the template, or how to define new storages you should read the [Storage Manager Module](modules/Storage.html) page.
 
 ## Theming
-One last step that might actually improve a lot your editor personality is how it looks visually. To achieve an easy theming we have adapted an atomic design for this purpose. To customize the main palette of colors all you have to do is to change a few CSS rules. Alternatively if you include GrapesJS styles via SCSS you can make use of its [internal variables](https://github.com/GrapesJS/grapesjs/blob/dev/src/styles/scss/_gjs_variables.scss) and declare your variables before the import:
+One last step that might actually improve a lot your editor personality is how it looks visually. To achieve an easy theming we have adapted an atomic design for this purpose. So for example to customize the main palette of colors all you have to do is to place your custom CSS rules after the GrapesJS styles.
 
-```scss
-// Put your variables before the GrapesJS style import
-
-// Palette variables
-$primaryColor: #444;
-$secondaryColor: #ddd;
-$tertiaryColor: #804f7b;
-$quaternaryColor: #d278c9;
-
-// ...
-
-@import "grapesjs/src/styles/scss/main.scss";
-```
-
-In the case of a simple CSS you'll have to put your rules after the GrapesJS styles.
 To complete our builder let's customize its color palette and to make it more visually "readable" we can replace all button labels with SVG icons:
 
 ```css

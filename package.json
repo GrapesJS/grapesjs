@@ -1,12 +1,26 @@
 {
   "name": "grapesjs",
   "description": "Free and Open Source Web Builder Framework",
-  "version": "0.21.5",
+  "version": "0.21.7",
   "author": "Artur Arseniev",
   "license": "BSD-3-Clause",
   "homepage": "http://grapesjs.com",
   "main": "dist/grapes.min.js",
   "types": "dist/index.d.ts",
+  "module": "dist/grapes.mjs",
+  "exports": {
+    ".": {
+      "import": "./dist/grapes.mjs",
+      "require": "./dist/grapes.min.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./*": "./*"
+  },
+  "files": [
+    "dist",
+    "locale",
+    "src/styles"
+  ],
   "sideEffects": [
     "*.vue",
     "*.css",
@@ -107,8 +121,10 @@
     "lint": "eslint . --ext .ts,.js && npm run lint:ts",
     "check": "npm run lint && npm run test",
     "lint:ts": "tsc --noEmit",
-    "build": "npm run check && run-s build:* && npm run ts:check",
+    "build": "npm run check && npm run build-all && npm run ts:check",
+    "build-all": "run-s build:*",
     "build:js": "grapesjs-cli build --targets=\"> 1%, ie 11, safari 8, not dead\" --statsOutput=\"stats.json\" --localePath=\"src/i18n/locale\"",
+    "build:mjs": "BUILD_MODULE=true grapesjs-cli build --dts='skip' --patch=0 --targets=\"> 1%, ie 11, safari 8, not dead\"",
     "build:css": "sass src/styles/scss/main.scss dist/css/grapes.min.css --no-source-map --style=compressed --load-path=node_modules",
     "ts:build": "grapesjs-cli build --dts='only' --patch=0",
     "ts:check": "tsc --noEmit --esModuleInterop dist/index.d.ts",

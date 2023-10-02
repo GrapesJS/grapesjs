@@ -38,6 +38,7 @@ export default class LayersView extends View<Layer> {
           containerSel: `.${pfx}layers`,
           itemSel: `.${pfx}layer`,
           pfx: config.pStylePrefix,
+          em,
         })
       : '';
     // @ts-ignore

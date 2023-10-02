@@ -244,8 +244,8 @@ describe('DOM Components', () => {
 
     test('Remove and undo component with styles', done => {
       const id = 'idtest2';
-      const um = em.get('UndoManager');
-      const cc = em.get('CssComposer');
+      const um = em.UndoManager;
+      const cc = em.Css;
       const component = obj.addComponent(`
       <div id="${id}" style="color:red; padding: 50px 100px">Text</div>
       <style>
@@ -272,7 +272,7 @@ describe('DOM Components', () => {
         expect(rule.toCSS()).toEqual(css);
 
         done();
-      });
+      }, 10);
     });
 
     describe('Custom components with styles', () => {
