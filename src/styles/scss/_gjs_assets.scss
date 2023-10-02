@@ -48,7 +48,7 @@
   position: relative;
   height: 70px;
   width: 30%;
-  background-color: var(--main-color);
+  background-color: var(--grapes-main-color);
   border-radius: 2px;
   float: left;
   overflow: hidden;
@@ -115,11 +115,11 @@
 }
 
 .#{$am-prefix}highlight {
-  background-color: var(--main-light-color);
+  background-color: var(--grapes-main-light-color);
 }
 
 .#{$am-prefix}assets-cont {
-  background-color: var(--secondary-dark-color);
+  background-color: var(--grapes-secondary-dark-color);
   border-radius: 3px;
   box-sizing: border-box;
   padding: 10px;

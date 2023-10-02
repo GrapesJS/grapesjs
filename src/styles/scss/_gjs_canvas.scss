@@ -192,14 +192,14 @@ $guide_pad: 5px !default;
 
 .#{$cv-prefix}canvas {
   box-sizing: border-box;
-  width: calc(100% - var(--left-width));
-  height: calc(100% - var(--canvas-top));
+  width: calc(100% - var(--grapes-left-width));
+  height: calc(100% - var(--grapes-canvas-top));
   bottom: 0;
   overflow: hidden;
   z-index: 1;
   position: absolute;
   left: 0;
-  top: var(--canvas-top);
+  top: var(--grapes-canvas-top);
 
   &-bg {
     background-color: rgba(0, 0, 0, 0.15);
@@ -246,7 +246,7 @@ $guide_pad: 5px !default;
   .#{$app-prefix}highlighter,
   .#{$app-prefix}highlighter-sel {
     position: absolute;
-    outline: 1px solid var(--color-blue);
+    outline: 1px solid var(--grapes-color-blue);
     outline-offset: -1px;
     pointer-events: none;
     width: 100%;
@@ -254,11 +254,11 @@ $guide_pad: 5px !default;
   }
 
   .#{$app-prefix}highlighter-warning {
-    outline: 3px solid var(--color-yellow);
+    outline: 3px solid var(--grapes-color-yellow);
   }
 
   .#{$app-prefix}highlighter-sel {
-    outline: 2px solid var(--color-blue);
+    outline: 2px solid var(--grapes-color-blue);
     outline-offset: -2px;
   }
 
@@ -303,7 +303,7 @@ $guide_pad: 5px !default;
 
 .#{$app-prefix}toolbar {
   position: absolute;
-  background-color: var(--color-blue);
+  background-color: var(--grapes-color-blue);
   white-space: nowrap;
   color: white;
   z-index: 10;
@@ -359,11 +359,11 @@ $guide_pad: 5px !default;
 .#{$app-prefix}resizer-h {
   pointer-events: all;
   position: absolute;
-  border: 3px solid var(--color-blue);
+  border: 3px solid var(--grapes-color-blue);
   width: 10px;
   height: 10px;
   background-color: #fff;
-  margin: var(--handle-margin);
+  margin: var(--grapes-handle-margin);
 }
 
 .#{$app-prefix}resizer-h-tl {
@@ -380,7 +380,7 @@ $guide_pad: 5px !default;
 
 .#{$app-prefix}resizer-h-tc {
   top: 0;
-  margin: var(--handle-margin) auto;
+  margin: var(--grapes-handle-margin) auto;
   left: 0;
   right: 0;
   cursor: ns-resize;
@@ -388,14 +388,14 @@ $guide_pad: 5px !default;
 
 .#{$app-prefix}resizer-h-cl {
   left: 0;
-  margin: auto var(--handle-margin);
+  margin: auto var(--grapes-handle-margin);
   top: 0;
   bottom: 0;
   cursor: ew-resize;
 }
 
 .#{$app-prefix}resizer-h-cr {
-  margin: auto var(--handle-margin);
+  margin: auto var(--grapes-handle-margin);
   top: 0;
   bottom: 0;
   right: 0;
@@ -410,7 +410,7 @@ $guide_pad: 5px !default;
 
 .#{$app-prefix}resizer-h-bc {
   bottom: 0;
-  margin: var(--handle-margin) auto;
+  margin: var(--grapes-handle-margin) auto;
   left: 0;
   right: 0;
   cursor: ns-resize;

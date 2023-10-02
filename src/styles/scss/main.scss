@@ -36,11 +36,11 @@ $prefix: $app-prefix;
 
 @import "gjs_status";
 
-$colorsAll: (one, var(--primary-color)),
-  (two, var(--secondary-color)),
-  (three, var(--tertiary-color)),
-  (four, var(--quaternary-color)),
-  (danger, var(--color-red));
+$colorsAll: (one, var(--grapes-primary-color)),
+  (two, var(--grapes-secondary-color)),
+  (three, var(--grapes-tertiary-color)),
+  (four, var(--grapes-quaternary-color)),
+  (danger, var(--grapes-color-red));
 
 .#{$prefix} {
   @each $cnum, $ccol in $colorsAll {
@@ -63,29 +63,29 @@ $colorsAll: (one, var(--primary-color)),
 
 .#{$app-prefix}bg {
   &-main {
-    background-color: var(--main-color);
+    background-color: var(--grapes-main-color);
   }
 }
 
 .#{$app-prefix}color {
   &-main {
-    color: var(--font-color);
-    fill: var(--font-color);
+    color: var(--grapes-font-color);
+    fill: var(--grapes-font-color);
   }
 
   &-active {
-    color: var(--font-color-active);
-    fill: var(--font-color-active);
+    color: var(--grapes-font-color-active);
+    fill: var(--grapes-font-color-active);
   }
 
   &-warn {
-    color: var(--color-warn);
-    fill: var(--color-warn);
+    color: var(--grapes-color-warn);
+    fill: var(--grapes-color-warn);
   }
 
   &-hl {
-    color: var(--color-highlight);
-    fill: var(--color-highlight);
+    color: var(--grapes-color-highlight);
+    fill: var(--grapes-color-highlight);
   }
 }
 
@@ -130,7 +130,7 @@ $colorsAll: (one, var(--primary-color)),
 }
 
 .#{$app-prefix}drag-helper {
-  background-color: var(--color-blue) !important;
+  background-color: var(--grapes-color-blue) !important;
   pointer-events: none !important;
   position: absolute !important;
   z-index: 10 !important;
@@ -165,7 +165,7 @@ $colorsAll: (one, var(--primary-color)),
 
 // Custom scrollbars for Chrome
 .#{$app-prefix}editor-cont ::-webkit-scrollbar-track {
-  background: var(--secondary-dark-color);
+  background: var(--grapes-secondary-dark-color);
 }
 
 .#{$app-prefix}editor-cont ::-webkit-scrollbar-thumb {
@@ -184,37 +184,37 @@ $colorsAll: (one, var(--primary-color)),
 // }
 
 :root {
-  --main-color: #{$mainColor};
-  --primary-color: #{$primaryColor};
-  --secondary-color: #{$secondaryColor};
-  --tertiary-color: #{$tertiaryColor};
-  --quaternary-color: #{$quaternaryColor};
-  --font-color: #{$fontColor};
-  --font-color-active: #{$fontColorActive};
-  --main-dark-color: #{$mainDkColor};
-  --secondary-dark-color: #{$mainDklColor};
-  --main-light-color: #{$mainLhColor};
-  --secondary-light-color: #{$mainLhlColor};
-  --color-blue: #{$colorBlue};
-  --color-red: #{$colorRed};
-  --color-yellow: #{$colorYell};
-  --color-green: #{$colorGreen};
-  --left-width: #{$leftWidth};
-  --color-highlight: #{$colorHighlight};
-  --color-warn: #{$colorWarn};
-  --handle-margin: #{$hndlMargin};
-  --light-border: #{$lightBorder};
-  --arrow-color: #{$arrowColor};
-  --dark-text-shadow: #{$darkTextShadow};
-  --color-input-padding: #{$colorpSize};
-  --input-padding: #{$inputPadding}; // Has to be a single value
-  --padding-elem-classmanager: #{$paddElClm};
-  --upload-padding: #{$uploadPadding};
-  --animation-duration: #{$animSpeed};
-  --main-font: #{$mainFont};
-  --font-size: #{$fontSize};
-  --placeholder-background-color: #{$placeholderColor};
-  --canvas-top: #{$canvasTop};
+  --grapes-main-color: #{$mainColor};
+  --grapes-primary-color: #{$primaryColor};
+  --grapes-secondary-color: #{$secondaryColor};
+  --grapes-tertiary-color: #{$tertiaryColor};
+  --grapes-quaternary-color: #{$quaternaryColor};
+  --grapes-font-color: #{$fontColor};
+  --grapes-font-color-active: #{$fontColorActive};
+  --grapes-main-dark-color: #{$mainDkColor};
+  --grapes-secondary-dark-color: #{$mainDklColor};
+  --grapes-main-light-color: #{$mainLhColor};
+  --grapes-secondary-light-color: #{$mainLhlColor};
+  --grapes-color-blue: #{$colorBlue};
+  --grapes-color-red: #{$colorRed};
+  --grapes-color-yellow: #{$colorYell};
+  --grapes-color-green: #{$colorGreen};
+  --grapes-left-width: #{$leftWidth};
+  --grapes-color-highlight: #{$colorHighlight};
+  --grapes-color-warn: #{$colorWarn};
+  --grapes-handle-margin: #{$hndlMargin};
+  --grapes-light-border: #{$lightBorder};
+  --grapes-arrow-color: #{$arrowColor};
+  --grapes-dark-text-shadow: #{$darkTextShadow};
+  --grapes-color-input-padding: #{$colorpSize};
+  --grapes-input-padding: #{$inputPadding}; // Has to be a single value
+  --grapes-padding-elem-classmanager: #{$paddElClm};
+  --grapes-upload-padding: #{$uploadPadding};
+  --grapes-animation-duration: #{$animSpeed};
+  --grapes-main-font: #{$mainFont};
+  --grapes-font-size: #{$fontSize};
+  --grapes-placeholder-background-color: #{$placeholderColor};
+  --grapes-canvas-top: #{$canvasTop};
 }
 
 .clear{ clear:both }
@@ -234,8 +234,8 @@ $colorsAll: (one, var(--primary-color)),
   }
 
   &editor {
-    font-family: var(--main-font);
-    font-size: var(--font-size);
+    font-family: var(--grapes-main-font);
+    font-size: var(--grapes-font-size);
     position: relative;
     box-sizing: border-box;
     height: 100%;
@@ -267,7 +267,7 @@ $colorsAll: (one, var(--primary-color)),
 
 .#{$com-prefix}badge, .#{$app-prefix}badge{
 	pointer-events: none;
-	background-color: var(--color-blue);
+	background-color: var(--grapes-color-blue);
 	color: #fff;
 	padding: 2px 5px;
 	position: absolute; z-index: 1;
@@ -276,7 +276,7 @@ $colorsAll: (one, var(--primary-color)),
   display: none;
 }
 .#{$app-prefix}badge-warning{
-	background-color: var(--color-yellow);
+	background-color: var(--grapes-color-yellow);
 }
 .#{$app-prefix}placeholder,
 .#{$com-prefix}placeholder,
@@ -292,14 +292,14 @@ $colorsAll: (one, var(--primary-color)),
   border-style: solid !important;
   outline: none;
   box-sizing: border-box;
-  transition: top var(--animation-duration), left var(--animation-duration),
-    width var(--animation-duration), height var(--animation-duration);
+  transition: top var(--grapes-animation-duration), left var(--grapes-animation-duration),
+    width var(--grapes-animation-duration), height var(--grapes-animation-duration);
 }
 
 .#{$app-prefix}placeholder.horizontal,
 .#{$com-prefix}placeholder.horizontal,
 .#{$nv-prefix}placeholder.horizontal {
-  border-color: transparent var(--placeholder-background-color);
+  border-color: transparent var(--grapes-placeholder-background-color);
   border-width: 3px 5px;
   margin: -3px 0 0;
 }
@@ -307,7 +307,7 @@ $colorsAll: (one, var(--primary-color)),
 .#{$app-prefix}placeholder.vertical,
 .#{$com-prefix}placeholder.vertical,
 .#{$nv-prefix}placeholder.vertical {
-  border-color: var(--placeholder-background-color) transparent;
+  border-color: var(--grapes-placeholder-background-color) transparent;
   border-width: 5px 3px;
   margin: 0 0 0 -3px;
 }
@@ -315,7 +315,7 @@ $colorsAll: (one, var(--primary-color)),
 .#{$app-prefix}placeholder-int,
 .#{$com-prefix}placeholder-int,
 .#{$nv-prefix}placeholder-int {
-	background-color: var(--placeholder-background-color);
+	background-color: var(--grapes-placeholder-background-color);
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
 	height: 100%; width: 100%;
 	pointer-events: none;
@@ -342,7 +342,7 @@ $colorsAll: (one, var(--primary-color)),
   @extend .no-select;
 
   font-weight: lighter;
-  background-color: var(--secondary-dark-color);
+  background-color: var(--grapes-secondary-dark-color);
   letter-spacing: 1px;
   padding: 9px 10px 9px 20px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.25);
@@ -365,7 +365,7 @@ $colorsAll: (one, var(--primary-color)),
 	float:left;
 
 	> form {
-	  background-color: var(--secondary-dark-color);
+	  background-color: var(--grapes-secondary-dark-color);
 	  border: 2px dashed;
 	  border-radius: 3px;
 	  position: relative;
@@ -373,7 +373,7 @@ $colorsAll: (one, var(--primary-color)),
 	  margin-bottom: 15px;
 
 	  	&.#{$am-prefix}hover {
-			border: 2px solid var(--color-green);
+			border: 2px solid var(--grapes-color-green);
 			color: lighten($colorGreen, 5%); /*#7ee07e*/
 		}
 
@@ -383,7 +383,7 @@ $colorsAll: (one, var(--primary-color)),
 
 	  	##{$am-prefix}uploadFile{
 	  		@include opacity(0);
-	  		padding: var(--upload-padding);
+	  		padding: var(--grapes-upload-padding);
 		  	width: 100%;
 		  	box-sizing: border-box;
 		}
@@ -391,7 +391,7 @@ $colorsAll: (one, var(--primary-color)),
 
 	##{$am-prefix}title {
 		position: absolute;
-		padding: var(--upload-padding);
+		padding: var(--grapes-upload-padding);
 		width: 100%;
 	}
 }
@@ -413,7 +413,7 @@ $colorsAll: (one, var(--primary-color)),
 
 	&##{$cm-prefix}htmlmixed {
 		padding-right: 10px;
-		border-right: 1px solid var(--main-dark-color);
+		border-right: 1px solid var(--grapes-main-dark-color);
 		##{$cm-prefix}title { color: #a97d44;}
 	}
 	&##{$cm-prefix}css {
@@ -421,7 +421,7 @@ $colorsAll: (one, var(--primary-color)),
 		##{$cm-prefix}title { color: #ddca7e;}
 	}
 	##{$cm-prefix}title {
-	  background-color: var(--main-dark-color);
+	  background-color: var(--grapes-main-dark-color);
 	  font-size: 12px;
 	  padding: 5px 10px 3px;
 	  text-align: right;
@@ -441,12 +441,12 @@ $colorsAll: (one, var(--primary-color)),
   .sp-hue{ left: 90%; }
   .sp-color{right: 15%;}
   .sp-container {
-    border: 1px solid var(--main-dark-color);
-    box-shadow: 0 0 7px var(--main-dark-color);
+    border: 1px solid var(--grapes-main-dark-color);
+    box-shadow: 0 0 7px var(--grapes-main-dark-color);
     border-radius: 3px;
   }
   .sp-picker-container{border:none;}
-  .colpick_dark .colpick_color {  outline: 1px solid var(--main-dark-color);}
+  .colpick_dark .colpick_color {  outline: 1px solid var(--grapes-main-dark-color);}
   .sp-cancel, .sp-cancel:hover {
     bottom: -8px;
     color: #777 !important;
@@ -476,9 +476,9 @@ $colorsAll: (one, var(--primary-color)),
   	text-align: right;
   }
   .sp-container button, .sp-container button:hover, .sp-container button:active{
-  	background: var(--main-dark-color);
-    border-color: var(--main-dark-color);
-    color: var(--font-color);
+  	background: var(--grapes-main-dark-color);
+    border-color: var(--grapes-main-dark-color);
+    color: var(--grapes-font-color);
     text-shadow: none;
     box-shadow: none;
     padding: 3px 5px;
