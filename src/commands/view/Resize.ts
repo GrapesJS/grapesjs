@@ -10,7 +10,7 @@ export default {
       appendTo: canvas.getResizerEl(),
       prefix: editor.getConfig().stylePrefix,
       posFetcher: canvasView.getElementPos.bind(canvasView),
-      mousePosFetcher: canvas.getMouseRelativePos,
+      mousePosFetcher: canvas.getMouseRelativePos.bind(canvas),
       ...(opt.options || {}),
     };
     let { canvasResizer } = this;
