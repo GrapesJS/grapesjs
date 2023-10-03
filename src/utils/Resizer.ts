@@ -465,16 +465,13 @@ export default class Resizer {
     this.handlerAttr = target.getAttribute(attrName)!;
     this.clickedHandler = target;
     this.startDim = {
-      t: rect.top,
-      l: rect.left,
+      t: Number.parseFloat(el?.computedStyleMap().get('top')?.toString() ?? '0'),
+      l: Number.parseFloat(el?.computedStyleMap().get('left')?.toString() ?? '0'),
       w: rect.width,
       h: rect.height,
     };
     this.rectDim = {
-      t: rect.top,
-      l: rect.left,
-      w: rect.width,
-      h: rect.height,
+      ...this.startDim,
     };
     this.startPos = mouseFetch
       ? mouseFetch(e)
