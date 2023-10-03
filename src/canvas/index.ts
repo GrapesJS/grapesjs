@@ -470,14 +470,15 @@ export default class CanvasModule extends Module<CanvasConfig> {
    * @private
    */
   getMouseRelativePos(e: any, opts: any = {}) {
-    var addTop = 0;
-    var addLeft = 0;
-    var subWinOffset = opts.subWinOffset;
-    var doc = e.target.ownerDocument;
-    var win = doc.defaultView || doc.parentWindow;
-    var frame = win.frameElement;
-    var yOffset = subWinOffset ? win.pageYOffset : 0;
-    var xOffset = subWinOffset ? win.pageXOffset : 0;
+    const subWinOffset = opts.subWinOffset;
+    const doc = e.target.ownerDocument;
+    const win = doc.defaultView || doc.parentWindow;
+    const frame = win.frameElement;
+    const yOffset = subWinOffset ? win.pageYOffset : 0;
+    const xOffset = subWinOffset ? win.pageXOffset : 0;
+    const zoomMlt = this.getZoomMultiplier();
+    let addTop = 0;
+    let addLeft = 0;
 
     if (frame) {
       var frameRect = frame.getBoundingClientRect();
@@ -485,12 +486,9 @@ export default class CanvasModule extends Module<CanvasConfig> {
       addLeft = frameRect.left || 0;
     }
 
-    const zoom = this.getZoomDecimal();
-    const zoomOffset = 1 / zoom;
-
     return {
-      y: (e.clientY + addTop - yOffset) * zoomOffset,
-      x: (e.clientX + addLeft - xOffset) * zoomOffset,
+      y: (e.clientY + addTop - yOffset) * zoomMlt,
+      x: (e.clientX + addLeft - xOffset) * zoomMlt,
     };
   }
 
