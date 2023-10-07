@@ -88,7 +88,7 @@ export default class ClassTagsView extends View<Selector> {
     this.listenTo(em, toList, this.componentChanged);
     this.listenTo(em, 'styleManager:update', this.componentChanged);
     this.listenTo(em, toListCls, this.__handleStateChange);
-    this.listenTo(em, 'styleable:change change:device', this.checkSync); // component:styleUpdate
+    this.listenTo(em, 'styleable:change change:device', this.checkSync);
     this.listenTo(coll, 'add', this.addNew);
     this.listenTo(coll, 'reset', this.renderClasses);
     this.listenTo(coll, 'remove', this.tagRemoved);

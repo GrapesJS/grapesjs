@@ -318,6 +318,18 @@ export default class Component extends StyleableModel<ComponentProperties> {
     }
   }
 
+  __onStyleChange(newStyles: StyleProps) {
+    const { em } = this;
+    if (!em) return;
+
+    const event = 'component:styleUpdate';
+    const styleKeys = keys(newStyles);
+    const pros = { style: newStyles };
+
+    em.trigger(event, this, pros);
+    styleKeys.forEach(key => em.trigger(`${event}:${key}`, this, pros));
+  }
+
   __changesUp(opts: any) {
     const { em, frame } = this;
     [frame, em].forEach(md => md && md.changesUp(opts));
@@ -617,6 +629,10 @@ export default class Component extends StyleableModel<ComponentProperties> {
       keys(diff).forEach(pr => this.trigger(`change:style:${pr}`));
     } else {
       prop = super.setStyle.apply(this, arguments as any);
+    }
+
+    if (!opt.temporary) {
+      this.__onStyleChange(opts.addStyle || prop);
     }
 
     return prop;

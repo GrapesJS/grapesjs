@@ -725,21 +725,20 @@ export default class StyleManager extends ItemManagerModule<
 
   __emitCmpStyleUpdate(style: StyleProps, opts: { components?: Component | Component[] } = {}) {
     const { em } = this;
-    const event = 'component:styleUpdate';
 
     // Ignore partial updates
     if (!style.__p) {
+      const allSel = this.getSelectedAll();
       const cmp = opts.components || em.getSelectedAll();
       const cmps = Array.isArray(cmp) ? cmp : [cmp];
-      const newStyle = { ...style };
-      delete newStyle.__p;
-      const styleKeys = Object.keys(newStyle);
-      const optsToPass = { style: newStyle };
+      const newStyles = { ...style };
+      delete newStyles.__p;
 
-      cmps.forEach(component => {
-        em.trigger(event, component, optsToPass);
-        styleKeys.forEach(key => em.trigger(`${event}:${key}`, component, optsToPass));
-      });
+      cmps.forEach(
+        cmp =>
+          // if cmp is part of selected, the event should already been triggered
+          !allSel.includes(cmp as any) && cmp.__onStyleChange(newStyles)
+      );
     }
   }
 
