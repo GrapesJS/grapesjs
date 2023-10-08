@@ -675,8 +675,14 @@ export default class Component extends StyleableModel<ComponentProperties> {
         addId = !!sm?.get(id, sm.Selector.TYPE_ID);
       }
 
-      // Symbols should always have an id
-      if (this.__getSymbol() || this.__getSymbols()) {
+      if (
+        // Symbols should always have an id
+        this.__getSymbol() ||
+        this.__getSymbols() ||
+        // Components with script should always have an id
+        this.get('script-export') ||
+        this.get('script')
+      ) {
         addId = true;
       }
 
