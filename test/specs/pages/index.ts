@@ -233,4 +233,35 @@ describe('Managing pages', () => {
     expect(event).toBeCalledTimes(1);
     expect(event).toBeCalledWith(page, up, opts);
   });
+
+  test('Prevent duplicate ids in components and styles', () => {
+    const id = 'myid';
+    const idSel = `#${id}`;
+    pm.add({
+      component: `<div id="${id}">My Page</div>`,
+      styles: `${idSel} { color: red }`,
+    })!;
+    pm.add({
+      component: `<div id="${id}">My Page</div>`,
+      styles: `${idSel} { color: blue }`,
+    })!;
+
+    expect(pm.getAll().length).toBe(3);
+
+    // Check component/rule from the first page
+    const cmp1 = domc.allById()[id];
+    const rule1 = em.Css.getRule(idSel)!;
+    expect(cmp1.getId()).toBe(id);
+    expect(rule1.getSelectorsString()).toBe(idSel);
+    expect(rule1.getStyle()).toEqual({ color: 'red' });
+
+    // Check component/rule from the second page
+    const id2 = 'myid-2';
+    const idSel2 = `#${id2}`;
+    const cmp2 = domc.allById()[id2];
+    const rule2 = em.Css.getRule(idSel2)!;
+    expect(cmp2.getId()).toBe(id2);
+    expect(rule2.getSelectorsString()).toBe(idSel2);
+    expect(rule2.getStyle()).toEqual({ color: 'blue' });
+  });
 });

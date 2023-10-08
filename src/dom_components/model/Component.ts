@@ -32,7 +32,7 @@ import {
 import Frame from '../../canvas/model/Frame';
 import { DomComponentsConfig } from '../config/config';
 import ComponentView from '../view/ComponentView';
-import { AddOptions, ExtractMethods, ObjectAny, ObjectStrings, SetOptions } from '../../common';
+import { AddOptions, ExtractMethods, ObjectAny, PrevToNewIdMap, SetOptions } from '../../common';
 import CssRule, { CssRuleJSON } from '../../css_composer/model/CssRule';
 import Trait, { TraitProperties } from '../../trait_manager/model/Trait';
 import { ToolbarButtonProps } from './ToolbarButton';
@@ -2096,10 +2096,10 @@ export default class Component extends StyleableModel<ComponentProperties> {
     components: ComponentDefinitionDefined | ComponentDefinitionDefined[],
     styles: CssRuleJSON[] = [],
     list: ObjectAny = {},
-    opts: { keepIds?: string[] } = {}
+    opts: { keepIds?: string[]; idMap?: PrevToNewIdMap } = {}
   ) {
     const comps = isArray(components) ? components : [components];
-    const { keepIds = [] } = opts;
+    const { keepIds = [], idMap = {} } = opts;
     comps.forEach(comp => {
       comp.attributes;
       const { attributes = {}, components } = comp;
@@ -2108,6 +2108,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
       // Check if we have collisions with current components
       if (id && list[id] && keepIds.indexOf(id) < 0) {
         const newId = Component.getIncrementId(id, list);
+        idMap[id] = newId;
         attributes.id = newId;
         // Update passed styles
         isArray(styles) &&
