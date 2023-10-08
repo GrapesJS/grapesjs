@@ -32,7 +32,7 @@ import {
 import Frame from '../../canvas/model/Frame';
 import { DomComponentsConfig } from '../config/config';
 import ComponentView from '../view/ComponentView';
-import { AddOptions, ExtractMethods, ObjectAny, ObjectStrings, SetOptions } from '../../common';
+import { AddOptions, ExtractMethods, ObjectAny, PrevToNewIdMap, SetOptions } from '../../common';
 import CssRule, { CssRuleJSON } from '../../css_composer/model/CssRule';
 import Trait, { TraitProperties } from '../../trait_manager/model/Trait';
 import { ToolbarButtonProps } from './ToolbarButton';
@@ -316,6 +316,18 @@ export default class Component extends StyleableModel<ComponentProperties> {
       this.__changesUp(opts);
       this.__propSelfToParent({ component: this, changed, options: opts });
     }
+  }
+
+  __onStyleChange(newStyles: StyleProps) {
+    const { em } = this;
+    if (!em) return;
+
+    const event = 'component:styleUpdate';
+    const styleKeys = keys(newStyles);
+    const pros = { style: newStyles };
+
+    em.trigger(event, this, pros);
+    styleKeys.forEach(key => em.trigger(`${event}:${key}`, this, pros));
   }
 
   __changesUp(opts: any) {
@@ -619,6 +631,10 @@ export default class Component extends StyleableModel<ComponentProperties> {
       prop = super.setStyle.apply(this, arguments as any);
     }
 
+    if (!opt.temporary) {
+      this.__onStyleChange(opts.addStyle || prop);
+    }
+
     return prop;
   }
 
@@ -659,8 +675,14 @@ export default class Component extends StyleableModel<ComponentProperties> {
         addId = !!sm?.get(id, sm.Selector.TYPE_ID);
       }
 
-      // Symbols should always have an id
-      if (this.__getSymbol() || this.__getSymbols()) {
+      if (
+        // Symbols should always have an id
+        this.__getSymbol() ||
+        this.__getSymbols() ||
+        // Components with script should always have an id
+        this.get('script-export') ||
+        this.get('script')
+      ) {
         addId = true;
       }
 
@@ -2080,10 +2102,10 @@ export default class Component extends StyleableModel<ComponentProperties> {
     components: ComponentDefinitionDefined | ComponentDefinitionDefined[],
     styles: CssRuleJSON[] = [],
     list: ObjectAny = {},
-    opts: { keepIds?: string[] } = {}
+    opts: { keepIds?: string[]; idMap?: PrevToNewIdMap } = {}
   ) {
     const comps = isArray(components) ? components : [components];
-    const { keepIds = [] } = opts;
+    const { keepIds = [], idMap = {} } = opts;
     comps.forEach(comp => {
       comp.attributes;
       const { attributes = {}, components } = comp;
@@ -2092,6 +2114,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
       // Check if we have collisions with current components
       if (id && list[id] && keepIds.indexOf(id) < 0) {
         const newId = Component.getIncrementId(id, list);
+        idMap[id] = newId;
         attributes.id = newId;
         // Update passed styles
         isArray(styles) &&

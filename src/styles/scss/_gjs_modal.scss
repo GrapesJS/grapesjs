@@ -1,6 +1,6 @@
 .#{$mdl-prefix} {
   &container {
-    font-family: $mainFont;
+    font-family: var(--gjs-main-font);
     overflow-y: auto;
     position: fixed;
     background-color: rgba(0, 0, 0, 0.5);
@@ -48,7 +48,7 @@
 
   &header {
     position: relative;
-    border-bottom: 1px solid $mainDkColor;
+    border-bottom: 1px solid var(--gjs-main-dark-color);
     padding: 15px 15px 7px;
   }
 }

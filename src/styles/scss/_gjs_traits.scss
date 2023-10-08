@@ -1,6 +1,6 @@
 .#{$app-prefix} {
   &traits-label {
-    border-bottom: 1px solid $mainDkColor;
+    border-bottom: 1px solid var(--gjs-main-dark-color);
     font-weight: lighter;
     margin-bottom: 5px;
     padding: 10px;
@@ -37,7 +37,7 @@
   text-align: left;
 
   &s {
-    font-size: $fontSizeS;
+    font-size: var(--gjs-font-size);
   }
 
   .#{$app-prefix}label {

@@ -12,7 +12,7 @@ $sm-prefix:         $app-prefix + 'sm-' !default;
 $cv-prefix:         $app-prefix + 'cv-' !default;
 $clm-prefix:        $app-prefix + 'clm-' !default;
 $trt-prefix:        $app-prefix + 'trt-' !default;
-$cui-cls:        $app-prefix + 'cui' !default;
+$cui-cls:           $app-prefix + 'cui' !default;
 
 /*
   New Pattern Color System
@@ -33,14 +33,10 @@ $mainDkColor:       rgba(0, 0, 0, 0.2) !default;/* darken($mainColor, 4%) - #383
 $mainDklColor:      rgba(0, 0, 0, 0.1) !default;
 $mainLhColor:       rgba(255, 255, 255, 0.1) !default; /* #515151 */
 $mainLhlColor:      rgba(255, 255, 255, 0.7) !default;
-$fontColorDk:       #777 !default;
 $colorBlue:         #3b97e3 !default;
 $colorRed:          #dd3636 !default;
 $colorYell:         #ffca6f !default;
 $colorGreen:        #62c462 !default;
-$tagBg:             #804f7b !default;
-$secColor:          $tagBg !default;
-$imageCompDim:      50px !default;
 $leftWidth:         15% !default;
 
 /* Color Helpers */
@@ -49,18 +45,16 @@ $colorWarn:         #ffca6f !default;
 
 /* Canvas */
 $hndlMargin:        -5px !default;
+$canvasTop:         40px !default;
 
 /* Components / Inputs */
 $lightBorder:       rgba(255, 255, 255, 0.05) !default;
-$inputFontColor:    $mainLhlColor !default; /* #d5d5d5 */
 $arrowColor:        $mainLhlColor !default; /* b1b1b1 */
 $darkTextShadow:    $mainDkColor !default; /* #252525 */
-$darkBorder:        rgba(0, 0, 0, 0.15) !default; /* 303030 */
 $colorpSize:        22px !default;
 $inputPadding:      5px !default; // Has to be a single value
 
 /* Class manager */
-$addBtnBg:          lighten($mainDkColor, 10%) !default;
 $paddElClm:         5px 6px !default;
 
 /* File uploader */
@@ -71,8 +65,7 @@ $animSpeed:         0.2s !default;
 
 /* Fonts */
 $mainFont:          Helvetica, sans-serif !default;
-$fontSize:           0.7rem !default;
-$fontSizeS:          0.75rem !default;
+$fontSize:          0.75rem !default;
 
 /* Tools */
-$placeholderColor:   $colorGreen !default;
+$placeholderColor:   var(--gjs-color-green) !default;

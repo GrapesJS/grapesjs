@@ -5,6 +5,14 @@
 @import "spectrum.scss";
 @import "gjs_variables.scss";
 
+@function darken-color($color, $percentage) {
+  @return color-mix(in srgb, $color, black $percentage)
+}
+
+@function lighten-color($color, $percentage) {
+  @return color-mix(in srgb, $color, white $percentage)
+}
+
 @mixin user-select($v) {
   -moz-user-select: $v;
   -khtml-user-select: $v;
@@ -36,11 +44,11 @@ $prefix: $app-prefix;
 
 @import "gjs_status";
 
-$colorsAll: (one, $primaryColor),
-  (two, $secondaryColor),
-  (three, $tertiaryColor),
-  (four, $quaternaryColor),
-  (danger, $colorRed);
+$colorsAll: (one, var(--gjs-primary-color)),
+  (two, var(--gjs-secondary-color)),
+  (three, var(--gjs-tertiary-color)),
+  (four, var(--gjs-quaternary-color)),
+  (danger, var(--gjs-color-red));
 
 .#{$prefix} {
   @each $cnum, $ccol in $colorsAll {
@@ -63,29 +71,29 @@ $colorsAll: (one, $primaryColor),
 
 .#{$app-prefix}bg {
   &-main {
-    background-color: $mainColor;
+    background-color: var(--gjs-main-color);
   }
 }
 
 .#{$app-prefix}color {
   &-main {
-    color: $fontColor;
-    fill: $fontColor;
+    color: var(--gjs-font-color);
+    fill: var(--gjs-font-color);
   }
 
   &-active {
-    color: $fontColorActive;
-    fill: $fontColorActive;
+    color: var(--gjs-font-color-active);
+    fill: var(--gjs-font-color-active);
   }
 
   &-warn {
-    color: $colorWarn;
-    fill: $colorWarn;
+    color: var(--gjs-color-warn);
+    fill: var(--gjs-color-warn);
   }
 
   &-hl {
-    color: $colorHighlight;
-    fill: $colorHighlight;
+    color: var(--gjs-color-highlight);
+    fill: var(--gjs-color-highlight);
   }
 }
 
@@ -130,7 +138,7 @@ $colorsAll: (one, $primaryColor),
 }
 
 .#{$app-prefix}drag-helper {
-  background-color: $colorBlue !important;
+  background-color: var(--gjs-color-blue) !important;
   pointer-events: none !important;
   position: absolute !important;
   z-index: 10 !important;
@@ -165,7 +173,7 @@ $colorsAll: (one, $primaryColor),
 
 // Custom scrollbars for Chrome
 .#{$app-prefix}editor-cont ::-webkit-scrollbar-track {
-  background: $mainDklColor;
+  background: var(--gjs-secondary-dark-color);
 }
 
 .#{$app-prefix}editor-cont ::-webkit-scrollbar-thumb {
@@ -177,6 +185,46 @@ $colorsAll: (one, $primaryColor),
 }
 
 /********************* MAIN ************************/
+// @property --input-padding {
+//   syntax: "<length>";
+//   inherits: false;
+//   initial-value: #{$inputPadding};
+// }
+
+:root {
+  --gjs-main-color: #{$mainColor};
+  --gjs-primary-color: #{$primaryColor};
+  --gjs-secondary-color: #{$secondaryColor};
+  --gjs-tertiary-color: #{$tertiaryColor};
+  --gjs-quaternary-color: #{$quaternaryColor};
+  --gjs-font-color: #{$fontColor};
+  --gjs-font-color-active: #{$fontColorActive};
+  --gjs-main-dark-color: #{$mainDkColor};
+  --gjs-secondary-dark-color: #{$mainDklColor};
+  --gjs-main-light-color: #{$mainLhColor};
+  --gjs-secondary-light-color: #{$mainLhlColor};
+  --gjs-color-blue: #{$colorBlue};
+  --gjs-color-red: #{$colorRed};
+  --gjs-color-yellow: #{$colorYell};
+  --gjs-color-green: #{$colorGreen};
+  --gjs-left-width: #{$leftWidth};
+  --gjs-color-highlight: #{$colorHighlight};
+  --gjs-color-warn: #{$colorWarn};
+  --gjs-handle-margin: #{$hndlMargin};
+  --gjs-light-border: #{$lightBorder};
+  --gjs-arrow-color: #{$arrowColor};
+  --gjs-dark-text-shadow: #{$darkTextShadow};
+  --gjs-color-input-padding: #{$colorpSize};
+  --gjs-input-padding: #{$inputPadding}; // Has to be a single value
+  --gjs-padding-elem-classmanager: #{$paddElClm};
+  --gjs-upload-padding: #{$uploadPadding};
+  --gjs-animation-duration: #{$animSpeed};
+  --gjs-main-font: #{$mainFont};
+  --gjs-font-size: #{$fontSize};
+  --gjs-placeholder-background-color: #{$placeholderColor};
+  --gjs-canvas-top: #{$canvasTop};
+}
+
 .clear{ clear:both }
 
 .no-select{
@@ -194,8 +242,8 @@ $colorsAll: (one, $primaryColor),
   }
 
   &editor {
-    font-family: $mainFont;
-    font-size: $fontSizeS;
+    font-family: var(--gjs-main-font);
+    font-size: var(--gjs-font-size);
     position: relative;
     box-sizing: border-box;
     height: 100%;
@@ -227,7 +275,7 @@ $colorsAll: (one, $primaryColor),
 
 .#{$com-prefix}badge, .#{$app-prefix}badge{
 	pointer-events: none;
-	background-color: $colorBlue;
+	background-color: var(--gjs-color-blue);
 	color: #fff;
 	padding: 2px 5px;
 	position: absolute; z-index: 1;
@@ -236,7 +284,7 @@ $colorsAll: (one, $primaryColor),
   display: none;
 }
 .#{$app-prefix}badge-warning{
-	background-color: $colorYell;
+	background-color: var(--gjs-color-yellow);
 }
 .#{$app-prefix}placeholder,
 .#{$com-prefix}placeholder,
@@ -252,14 +300,14 @@ $colorsAll: (one, $primaryColor),
   border-style: solid !important;
   outline: none;
   box-sizing: border-box;
-  transition: top $animSpeed, left $animSpeed,
-    width $animSpeed, height $animSpeed;
+  transition: top var(--gjs-animation-duration), left var(--gjs-animation-duration),
+    width var(--gjs-animation-duration), height var(--gjs-animation-duration);
 }
 
 .#{$app-prefix}placeholder.horizontal,
 .#{$com-prefix}placeholder.horizontal,
 .#{$nv-prefix}placeholder.horizontal {
-  border-color: transparent $placeholderColor;
+  border-color: transparent var(--gjs-placeholder-background-color);
   border-width: 3px 5px;
   margin: -3px 0 0;
 }
@@ -267,7 +315,7 @@ $colorsAll: (one, $primaryColor),
 .#{$app-prefix}placeholder.vertical,
 .#{$com-prefix}placeholder.vertical,
 .#{$nv-prefix}placeholder.vertical {
-  border-color: $placeholderColor transparent;
+  border-color: var(--gjs-placeholder-background-color) transparent;
   border-width: 5px 3px;
   margin: 0 0 0 -3px;
 }
@@ -275,7 +323,7 @@ $colorsAll: (one, $primaryColor),
 .#{$app-prefix}placeholder-int,
 .#{$com-prefix}placeholder-int,
 .#{$nv-prefix}placeholder-int {
-	background-color: $placeholderColor;
+	background-color: var(--gjs-placeholder-background-color);
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
 	height: 100%; width: 100%;
 	pointer-events: none;
@@ -302,7 +350,7 @@ $colorsAll: (one, $primaryColor),
   @extend .no-select;
 
   font-weight: lighter;
-  background-color: $mainDklColor;
+  background-color: var(--gjs-secondary-dark-color);
   letter-spacing: 1px;
   padding: 9px 10px 9px 20px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.25);
@@ -325,7 +373,7 @@ $colorsAll: (one, $primaryColor),
 	float:left;
 
 	> form {
-	  background-color: $mainDklColor;
+	  background-color: var(--gjs-secondary-dark-color);
 	  border: 2px dashed;
 	  border-radius: 3px;
 	  position: relative;
@@ -333,8 +381,8 @@ $colorsAll: (one, $primaryColor),
 	  margin-bottom: 15px;
 
 	  	&.#{$am-prefix}hover {
-			border: 2px solid $colorGreen;
-			color: lighten($colorGreen, 5%); /*#7ee07e*/
+			border: 2px solid var(--gjs-color-green);
+			color: lighten-color(var(--gjs-color-green), 5%);
 		}
 
 		&.#{$am-prefix}disabled{
@@ -343,7 +391,7 @@ $colorsAll: (one, $primaryColor),
 
 	  	##{$am-prefix}uploadFile{
 	  		@include opacity(0);
-	  		padding: $uploadPadding;
+	  		padding: var(--gjs-upload-padding);
 		  	width: 100%;
 		  	box-sizing: border-box;
 		}
@@ -351,7 +399,7 @@ $colorsAll: (one, $primaryColor),
 
 	##{$am-prefix}title {
 		position: absolute;
-		padding: $uploadPadding;
+		padding: var(--gjs-upload-padding);
 		width: 100%;
 	}
 }
@@ -373,7 +421,7 @@ $colorsAll: (one, $primaryColor),
 
 	&##{$cm-prefix}htmlmixed {
 		padding-right: 10px;
-		border-right: 1px solid $mainDkColor;
+		border-right: 1px solid var(--gjs-main-dark-color);
 		##{$cm-prefix}title { color: #a97d44;}
 	}
 	&##{$cm-prefix}css {
@@ -381,7 +429,7 @@ $colorsAll: (one, $primaryColor),
 		##{$cm-prefix}title { color: #ddca7e;}
 	}
 	##{$cm-prefix}title {
-	  background-color: $mainDkColor;
+	  background-color: var(--gjs-main-dark-color);
 	  font-size: 12px;
 	  padding: 5px 10px 3px;
 	  text-align: right;
@@ -401,12 +449,12 @@ $colorsAll: (one, $primaryColor),
   .sp-hue{ left: 90%; }
   .sp-color{right: 15%;}
   .sp-container {
-    border: 1px solid $mainDkColor;
-    box-shadow: 0 0 7px $mainDkColor;
+    border: 1px solid var(--gjs-main-dark-color);
+    box-shadow: 0 0 7px var(--gjs-main-dark-color);
     border-radius: 3px;
   }
   .sp-picker-container{border:none;}
-  .colpick_dark .colpick_color {  outline: 1px solid $mainDkColor;}
+  .colpick_dark .colpick_color {  outline: 1px solid var(--gjs-main-dark-color);}
   .sp-cancel, .sp-cancel:hover {
     bottom: -8px;
     color: #777 !important;
@@ -436,9 +484,9 @@ $colorsAll: (one, $primaryColor),
   	text-align: right;
   }
   .sp-container button, .sp-container button:hover, .sp-container button:active{
-  	background: $mainDkColor;
-    border-color: $mainDkColor;
-    color: $fontColor;
+  	background: var(--gjs-main-dark-color);
+    border-color: var(--gjs-main-dark-color);
+    color: var(--gjs-font-color);
     text-shadow: none;
     box-shadow: none;
     padding: 3px 5px;

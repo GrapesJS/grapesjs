@@ -1,5 +1,4 @@
 $frameAnimation: 0.35s ease !default;
-$canvasTop: 40px !default;
 $guide_pad: 5px !default;
 
 .#{$prefix} {
@@ -193,14 +192,14 @@ $guide_pad: 5px !default;
 
 .#{$cv-prefix}canvas {
   box-sizing: border-box;
-  width: (100% - $leftWidth);
-  height: calc(100% - #{$canvasTop});
+  width: calc(100% - var(--gjs-left-width));
+  height: calc(100% - var(--gjs-canvas-top));
   bottom: 0;
   overflow: hidden;
   z-index: 1;
   position: absolute;
   left: 0;
-  top: $canvasTop;
+  top: var(--gjs-canvas-top);
 
   &-bg {
     background-color: rgba(0, 0, 0, 0.15);
@@ -247,7 +246,7 @@ $guide_pad: 5px !default;
   .#{$app-prefix}highlighter,
   .#{$app-prefix}highlighter-sel {
     position: absolute;
-    outline: 1px solid $colorBlue;
+    outline: 1px solid var(--gjs-color-blue);
     outline-offset: -1px;
     pointer-events: none;
     width: 100%;
@@ -255,11 +254,11 @@ $guide_pad: 5px !default;
   }
 
   .#{$app-prefix}highlighter-warning {
-    outline: 3px solid $colorYell;
+    outline: 3px solid var(--gjs-color-yellow);
   }
 
   .#{$app-prefix}highlighter-sel {
-    outline: 2px solid $colorBlue;
+    outline: 2px solid var(--gjs-color-blue);
     outline-offset: -2px;
   }
 
@@ -304,7 +303,7 @@ $guide_pad: 5px !default;
 
 .#{$app-prefix}toolbar {
   position: absolute;
-  background-color: $colorBlue;
+  background-color: var(--gjs-color-blue);
   white-space: nowrap;
   color: white;
   z-index: 10;
@@ -335,10 +334,6 @@ $guide_pad: 5px !default;
   z-index: 9;
 }
 
-.#{$app-prefix}margin-v {
-
-}
-
 .#{$app-prefix}margin-v-el,
 .#{$app-prefix}padding-v-el,
 .#{$app-prefix}fixedmargin-v-el,
@@ -364,11 +359,11 @@ $guide_pad: 5px !default;
 .#{$app-prefix}resizer-h {
   pointer-events: all;
   position: absolute;
-  border: 3px solid $colorBlue;
+  border: 3px solid var(--gjs-color-blue);
   width: 10px;
   height: 10px;
   background-color: #fff;
-  margin: $hndlMargin;
+  margin: var(--gjs-handle-margin);
 }
 
 .#{$app-prefix}resizer-h-tl {
@@ -385,7 +380,7 @@ $guide_pad: 5px !default;
 
 .#{$app-prefix}resizer-h-tc {
   top: 0;
-  margin: $hndlMargin auto;
+  margin: var(--gjs-handle-margin) auto;
   left: 0;
   right: 0;
   cursor: ns-resize;
@@ -393,14 +388,14 @@ $guide_pad: 5px !default;
 
 .#{$app-prefix}resizer-h-cl {
   left: 0;
-  margin: auto $hndlMargin;
+  margin: auto var(--gjs-handle-margin);
   top: 0;
   bottom: 0;
   cursor: ew-resize;
 }
 
 .#{$app-prefix}resizer-h-cr {
-  margin: auto $hndlMargin;
+  margin: auto var(--gjs-handle-margin);
   top: 0;
   bottom: 0;
   right: 0;
@@ -415,7 +410,7 @@ $guide_pad: 5px !default;
 
 .#{$app-prefix}resizer-h-bc {
   bottom: 0;
-  margin: $hndlMargin auto;
+  margin: var(--gjs-handle-margin) auto;
   left: 0;
   right: 0;
   cursor: ns-resize;

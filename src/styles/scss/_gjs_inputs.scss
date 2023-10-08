@@ -3,14 +3,14 @@
 @mixin rangeThumbStyle() {
   height: 10px;
   width: 10px;
-  border: 1px solid $mainDkColor;
+  border: 1px solid var(--gjs-main-dark-color);
   border-radius: 100%;
-  background-color: $fontColor;
+  background-color: var(--gjs-font-color);
   cursor: pointer;
 }
 
 @mixin rangeTrackStyle() {
-  background-color: $mainDkColor;
+  background-color: var(--gjs-main-dark-color);
   border-radius: 1px;
   margin-top: 3px;
   height: 3px;
@@ -37,7 +37,7 @@
   &select:-moz-focusring,
   &select select:-moz-focusring {
     color: transparent;
-    text-shadow: 0 0 0 $mainLhlColor;
+    text-shadow: 0 0 0 var(--gjs-secondary-light-color);
   }
 
   &input:focus,
@@ -60,7 +60,7 @@
       box-sizing: border-box;
       width: 100%;
       position: relative;
-      padding: $inputPadding;
+      padding: var(--gjs-input-padding);
       z-index: 1;
 
       &:focus {
@@ -96,12 +96,12 @@
 .#{$sm-prefix}select option,
 .#{$app-prefix}fields option,
 .#{$sm-prefix}unit option {
-  background-color: $mainColor;
-  color: $fontColor;
+  background-color: var(--gjs-main-color);
+  color: var(--gjs-font-color);
 }
 
 .#{$app-prefix}field {
-  background-color: $mainDkColor;
+  background-color: var(--gjs-main-dark-color);
   border: none;
   box-shadow: none;
   border-radius: 2px;
@@ -126,8 +126,8 @@
     bottom: 0;
     top: 0;
     margin: auto;
-    right: $inputPadding;
-    border-top: 4px solid $arrowColor;
+    right: var(--gjs-input-padding);
+    border-top: 4px solid var(--gjs-arrow-color);
     position: absolute;
     height: 0;
     width: 0;
@@ -144,7 +144,7 @@
     width: 9px;
     z-index: 10;
     bottom: 0;
-    right: $inputPadding - 2px;
+    right: calc(var(--gjs-input-padding) - 2px);
     top: 0;
   }
 
@@ -156,20 +156,20 @@
 
 .#{$app-prefix}field-color {
   input {
-    padding-right: $colorpSize;
+    padding-right: var(--gjs-color-input-padding);
     box-sizing: border-box;
   }
 }
 
 .#{$app-prefix}field-colorp {
-  border-left: 1px solid $mainDkColor;
+  border-left: 1px solid var(--gjs-main-dark-color);
   box-sizing: border-box;
   height: 100%;
   padding: 2px;
   position: absolute;
   right: 0;
   top: 0;
-  width: $colorpSize;
+  width: var(--gjs-color-input-padding);
   z-index: 10;
 
   .#{$app-prefix}checker-bg {
@@ -188,11 +188,11 @@
 }
 
 .#{$app-prefix}field-color-picker {
-  background-color: $fontColor;
+  background-color: var(--gjs-font-color);
   cursor: pointer;
   height: 100%;
   width: 100%;
-  box-shadow: 0 0 1px $mainDkColor;
+  box-shadow: 0 0 1px var(--gjs-main-dark-color);
   border-radius: 1px;
   position: absolute;
   top: 0;
@@ -220,14 +220,14 @@
 .#{$app-prefix}radio-item {
   flex: 1 1 auto;
   text-align: center;
-  border-left: 1px solid $darkTextShadow;
+  border-left: 1px solid var(--gjs-dark-text-shadow);
 
   &:first-child {
     border: none;
   }
 
   &:hover {
-    background: $mainDkColor;
+    background: var(--gjs-main-dark-color);
   }
 
   input {
@@ -246,7 +246,7 @@
 .#{$app-prefix}radio-item-label {
   cursor: pointer;
   display: block;
-  padding: $inputPadding;
+  padding: var(--gjs-input-padding);
 }
 
 .#{$app-prefix}field-units {
@@ -262,7 +262,7 @@
   right: 10px;
   top: 3px;
   font-size: 10px;
-  color: $arrowColor;
+  color: var(--gjs-arrow-color);
   cursor: pointer;
 }
 
@@ -277,13 +277,13 @@
   width: 0;
   border-left: 3px solid transparent;
   border-right: 4px solid transparent;
-  border-top: 4px solid $arrowColor;
+  border-top: 4px solid var(--gjs-arrow-color);
   bottom: 4px;
   cursor: pointer;
 }
 
 .#{$app-prefix}field-arrow-u {
-  border-bottom: 4px solid $arrowColor;
+  border-bottom: 4px solid var(--gjs-arrow-color);
   border-top: none;
   top: 4px;
 }
@@ -339,15 +339,15 @@
 .#{$app-prefix}btn {
   &-prim {
     color: inherit;
-    background-color: $mainLhColor;
+    background-color: var(--gjs-main-light-color);
     border-radius: 2px;
     padding: 3px 6px;
-    padding: $inputPadding;
+    padding: var(--gjs-input-padding);
     cursor: pointer;
     border: none;
 
     &:active {
-      background-color: $mainLhColor;
+      background-color: var(--gjs-main-light-color);
     }
   }
 
@@ -369,7 +369,7 @@
 .#{$app-prefix}add-trasp {
   background: none;
   border: none;
-  color: $fontColor;
+  color: var(--gjs-font-color);
   cursor: pointer;
   font-size: 1em;
   border-radius: 2px;

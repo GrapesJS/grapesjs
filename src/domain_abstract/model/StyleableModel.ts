@@ -8,6 +8,7 @@ export type StyleProps = Record<string, string | string[]>;
 
 export type UpdateStyleOptions = ObjectAny & {
   partial?: boolean;
+  addStyle?: StyleProps;
 };
 
 const parserHtml = ParserHtml();
@@ -109,6 +110,7 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
       opts = value || {};
     }
 
+    opts.addStyle = prop;
     prop = this.extendStyle(prop);
     this.setStyle(prop, opts);
   }

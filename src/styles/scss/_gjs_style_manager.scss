@@ -46,7 +46,7 @@
   }
 
   &properties {
-    font-size: $fontSizeS;
+    font-size: var(--gjs-font-size);
     padding: 10px 5px;
     display: flex;
     flex-wrap: wrap;
@@ -109,7 +109,7 @@
 
   select:-moz-focusring {
     color: transparent;
-    text-shadow: 0 0 0 $mainLhlColor;
+    text-shadow: 0 0 0 var(--gjs-secondary-light-color);
   }
 
   input:focus,
@@ -122,7 +122,7 @@
     right: 10px;
     top: 3px;
     font-size: 10px;
-    color: $mainLhlColor;
+    color: var(--gjs-secondary-light-color);
     cursor: pointer;
   }
 
@@ -154,14 +154,14 @@
   }
 
   .#{$sm-prefix}u-arrow {
-    border-bottom: 4px solid $mainLhlColor;
+    border-bottom: 4px solid var(--gjs-secondary-light-color);
     top: 4px;
   }
 
   .#{$clm-prefix}d-s-arrow,
   .#{$sm-prefix}d-arrow,
   .#{$sm-prefix}d-s-arrow {
-    border-top: 4px solid $mainLhlColor;
+    border-top: 4px solid var(--gjs-secondary-light-color);
     bottom: 4px;
   }
 
@@ -175,10 +175,10 @@
   &.#{$sm-prefix}integer,
   &.#{$sm-prefix}list,
   &.#{$sm-prefix}select {
-    background-color: $mainDkColor;
+    background-color: var(--gjs-main-dark-color);
     border: 1px solid rgba(0, 0, 0, 0.1);
-    box-shadow: 1px 1px 0 $mainLhColor;
-    color: $mainLhlColor;
+    box-shadow: 1px 1px 0 var(--gjs-main-light-color);
+    color: var(--gjs-secondary-light-color);
     border-radius: 2px;
     box-sizing: border-box;
     padding: 0 5px;
@@ -201,7 +201,7 @@
   }
 
   &.#{$sm-prefix}composite {
-    background-color: $mainDklColor;
+    background-color: var(--gjs-secondary-dark-color);
     border: 1px solid rgba(0, 0, 0, 0.25);
   }
 
@@ -244,14 +244,14 @@
 
 .#{$sm-prefix}list .#{$sm-prefix}el {
   float: left;
-  border-left: 1px solid $mainDkColor;
+  border-left: 1px solid var(--gjs-main-dark-color);
 
   &:first-child {
     border: none;
   }
 
   &:hover {
-    background: $mainDkColor;
+    background: var(--gjs-main-dark-color);
   }
 }
 
@@ -283,18 +283,18 @@
   }
 
   .#{$sm-prefix}btn {
-    background-color: lighten($mainDkColor, 13%);
+    background-color: lighten-color(var(--gjs-main-dark-color), 13%);
     border-radius: 2px;
-    box-shadow: 1px 1px 0 lighten($mainDkColor, 2%), 1px 1px 0 lighten($mainDkColor, 17%) inset;
+    box-shadow: 1px 1px 0 lighten-color(var(--gjs-main-dark-color), 2%), 1px 1px 0 lighten-color(var(--gjs-main-dark-color), 17%) inset;
     padding: 5px;
     position: relative;
     text-align: center;
     height: auto;
     width: 100%;
     cursor: pointer;
-    color: $fontColor;
+    color: var(--gjs-font-color);
     box-sizing: border-box;
-    text-shadow: -1px -1px 0 $mainDkColor;
+    text-shadow: -1px -1px 0 var(--gjs-main-dark-color);
     border: none;
 
     @include opacity(0.85);
@@ -316,12 +316,12 @@
 }
 
 .#{$sm-prefix}preview-file {
-  background-color: $lightBorder;
+  background-color: var(--gjs-light-border);
   border-radius: 2px;
   margin-top: 5px;
   position: relative;
   overflow: hidden;
-  border: 1px solid darken($lightBorder, 1%);
+  border: 1px solid darken-color(var(--gjs-light-border), 1%);
   padding: 3px 20px;
 
   &-cnt {
@@ -458,12 +458,12 @@
 }
 
 .#{$sm-prefix}color-picker {
-  background-color: $fontColor;
+  background-color: var(--gjs-font-color);
   cursor: pointer;
   height: 16px;
   width: 100%;
   margin-top: -16px;
-  box-shadow: 0 0 1px $mainDkColor;
+  box-shadow: 0 0 1px var(--gjs-main-dark-color);
   border-radius: 1px;
 }
 

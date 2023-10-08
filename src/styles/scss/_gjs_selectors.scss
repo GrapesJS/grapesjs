@@ -75,7 +75,7 @@
 }
 
 .#{$clm-prefix}tags {
-  font-size: $fontSizeS;
+  font-size: var(--gjs-font-size);
   padding: 10px 5px;
 
   ##{$clm-prefix}sel {
@@ -106,8 +106,8 @@
   ##{$clm-prefix}new {
     @extend  .#{$app-prefix}invis-invis;
 
-    color: $fontColor;
-    padding: $paddElClm;
+    color: var(--gjs-font-color);
+    padding: var(--gjs-padding-elem-classmanager);
     display: none;
   }
 

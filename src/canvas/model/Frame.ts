@@ -1,12 +1,13 @@
-import { forEach, isEmpty, isNumber, isString, result } from 'underscore';
+import { forEach, isEmpty, isNumber, isString, keys, result } from 'underscore';
 import CanvasModule from '..';
 import { ModuleModel } from '../../abstract';
-import { BoxRect } from '../../common';
+import { BoxRect, PrevToNewIdMap } from '../../common';
 import ComponentWrapper from '../../dom_components/model/ComponentWrapper';
 import Page from '../../pages/model/Page';
 import { createId, isComponent, isObject } from '../../utils/mixins';
 import FrameView from '../view/FrameView';
 import Frames from './Frames';
+import { CssRuleJSON } from '../../css_composer/model/CssRule';
 
 const keyAutoW = '__aw';
 const keyAutoH = '__ah';
@@ -63,7 +64,7 @@ export default class Frame extends ModuleModel<CanvasModule> {
     const domc = em.Components;
     const conf = domc.getConfig();
     const allRules = em.Css.getAll();
-    const idMap: any = {};
+    const idMap: PrevToNewIdMap = {};
     const modOpts = { em, config: conf, frame: this, idMap };
 
     if (!isComponent(component)) {
@@ -76,27 +77,15 @@ export default class Frame extends ModuleModel<CanvasModule> {
     if (!styles) {
       this.set('styles', allRules);
     } else if (!isObject(styles)) {
+      let newStyles = styles as string | CssRuleJSON[];
+
       // Avoid losing styles on remapped components
-      const idMapKeys = Object.keys(idMap);
-      if (idMapKeys.length && Array.isArray(styles)) {
-        styles.forEach(style => {
-          const sel = style.selectors;
-          if (sel && sel.length == 1) {
-            const sSel = sel[0];
-            const idSel = sSel.name && sSel.type === 2 && sSel;
-            if (idSel && idMap[idSel.name]) {
-              idSel.name = idMap[idSel.name];
-            } else if (isString(sSel) && sSel[0] === '#') {
-              const prevId = sSel.substring(1);
-              if (prevId && idMap[prevId]) {
-                sel[0] = `#${idMap[prevId]}`;
-              }
-            }
-          }
-        });
+      if (keys(idMap).length) {
+        newStyles = isString(newStyles) ? em.Parser.parseCss(newStyles) : newStyles;
+        em.Css.checkId(newStyles, { idMap });
       }
 
-      allRules.add(styles);
+      allRules.add(newStyles);
       this.set('styles', allRules);
     }
 

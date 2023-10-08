@@ -2,7 +2,7 @@ $layerIconSize: 15px !default;
 
 .#{$nv-prefix} {
   &selected-parent {
-    border: 1px solid $colorYell;
+    border: 1px solid var(--gjs-color-yellow);
   }
 
   &opac50 {
@@ -14,7 +14,7 @@ $layerIconSize: 15px !default;
     text-align: left;
     position: relative;
     background-color: rgba(0, 0, 0, 0.1);
-    font-size: $fontSizeS;
+    font-size: var(--gjs-font-size);
     display: grid;
 
     &-item {
@@ -165,7 +165,7 @@ $layerIconSize: 15px !default;
       padding: 1px;
 
       &.#{$nv-prefix}insert {
-        background-color: $colorGreen;
+        background-color: var(--gjs-color-green);
       }
     }
   }

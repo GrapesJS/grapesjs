@@ -48,7 +48,7 @@
   position: relative;
   height: 70px;
   width: 30%;
-  background-color: $mainColor;
+  background-color: var(--gjs-main-color);
   border-radius: 2px;
   float: left;
   overflow: hidden;
@@ -102,7 +102,7 @@
 }
 
 .#{$am-prefix}asset {
-  border-bottom: 1px solid darken($mainDkColor, 3%);
+  border-bottom: 1px solid darken-color(var(--gjs-main-dark-color), 3%);
   padding: 5px;
   cursor: pointer;
   position: relative;
@@ -115,11 +115,11 @@
 }
 
 .#{$am-prefix}highlight {
-  background-color: $mainLhColor;
+  background-color: var(--gjs-main-light-color);
 }
 
 .#{$am-prefix}assets-cont {
-  background-color: $mainDklColor;
+  background-color: var(--gjs-secondary-dark-color);
   border-radius: 3px;
   box-sizing: border-box;
   padding: 10px;

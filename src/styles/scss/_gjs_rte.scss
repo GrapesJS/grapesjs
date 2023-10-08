@@ -7,7 +7,7 @@
   }
 
   &toolbar-ui {
-    border: 1px solid $mainDkColor;
+    border: 1px solid var(--gjs-main-dark-color);
     border-radius: 3px;
   }
 
@@ -21,7 +21,7 @@
     justify-content: center;
     padding: 5px;
     width: 25px;
-    border-right: 1px solid $mainDkColor;
+    border-right: 1px solid var(--gjs-main-dark-color);
     text-align: center;
     cursor: pointer;
     outline: none;
@@ -31,15 +31,15 @@
     }
 
     &:hover {
-      background-color: $mainLhColor;
+      background-color: var(--gjs-main-light-color);
     }
   }
 
   &active {
-    background-color: $mainLhColor;
+    background-color: var(--gjs-main-light-color);
   }
   &disabled {
-    color: $mainLhColor;
+    color: var(--gjs-main-light-color);
     cursor: not-allowed;
     &:hover {
       background-color: unset;

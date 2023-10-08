@@ -79,3 +79,5 @@ export const DEFAULT_BOXRECT: BoxRect = {
   width: 0,
   height: 0,
 };
+
+export type PrevToNewIdMap = Record<string, string>;

@@ -38,7 +38,7 @@ import CssRulesView from './view/CssRulesView';
 import { ItemManagerModule } from '../abstract/Module';
 import EditorModel from '../editor/model/Editor';
 import Component from '../dom_components/model/Component';
-import { ObjectAny } from '../common';
+import { ObjectAny, PrevToNewIdMap } from '../common';
 
 /** @private */
 interface RuleOptions {
@@ -516,6 +516,41 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
       config: this.config,
     });
     return this.rulesView.render().el;
+  }
+
+  checkId(rule: CssRuleJSON | CssRuleJSON[], opts: { idMap?: PrevToNewIdMap } = {}) {
+    const { idMap = {} } = opts;
+    const changed: CssRuleJSON[] = [];
+
+    if (!Object.keys(idMap).length) return changed;
+
+    const rules = Array.isArray(rule) ? rule : [rule];
+    rules.forEach(rule => {
+      const sel = rule.selectors;
+
+      if (sel && sel.length == 1) {
+        const sSel = sel[0];
+
+        if (isString(sSel)) {
+          if (sSel[0] === '#') {
+            const prevId = sSel.substring(1);
+            const newId = idMap[prevId];
+            if (prevId && newId) {
+              sel[0] = `#${newId}`;
+              changed.push(rule);
+            }
+          }
+        } else if (sSel.name && sSel.type === Selector.TYPE_ID) {
+          const newId = idMap[sSel.name];
+          if (newId) {
+            sSel.name = newId;
+            changed.push(rule);
+          }
+        }
+      }
+    });
+
+    return changed;
   }
 
   destroy() {

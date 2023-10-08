@@ -89,11 +89,7 @@ export default {
     methods[method](listenToEl, 'scroll', this.onContainerChange);
     em[method]('component:toggled component:update undo redo', this.onSelect, this);
     em[method]('change:componentHovered', this.onHovered, this);
-    em[method](
-      'component:resize styleable:change component:input', // component:styleUpdate
-      this.updateGlobalPos,
-      this
-    );
+    em[method]('component:resize styleable:change component:input', this.updateGlobalPos, this);
     em[method]('component:update:toolbar', this._upToolbar, this);
     em[method]('change:canvasOffset', this.updateAttached, this);
     em[method]('frame:updated', this.onFrameUpdated, this);
