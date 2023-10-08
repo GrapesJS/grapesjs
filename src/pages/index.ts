@@ -182,7 +182,7 @@ export default class PageManager extends ItemManagerModule<PageManagerConfig, Pa
       return page;
     };
     !opts.silent && em.trigger(evPageAddBefore, props, add, opts);
-    return !opts.abort && add();
+    return !opts.abort ? add() : undefined;
   }
 
   /**
