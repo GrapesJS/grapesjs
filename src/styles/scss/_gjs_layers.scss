@@ -2,7 +2,7 @@ $layerIconSize: 15px !default;
 
 .#{$nv-prefix} {
   &selected-parent {
-    border: 1px solid var(--gjs-color-yellow);
+    border: 1px solid $colorYell;
   }
 
   &opac50 {
@@ -14,7 +14,7 @@ $layerIconSize: 15px !default;
     text-align: left;
     position: relative;
     background-color: rgba(0, 0, 0, 0.1);
-    font-size: var(--gjs-font-size);
+    font-size: $fontSizeS;
     display: grid;
 
     &-item {
@@ -22,6 +22,7 @@ $layerIconSize: 15px !default;
         align-items: center;
         justify-content: space-between;
         padding: 5px 10px;
+        border-bottom: 1px solid rgba(0,0,0,.25);
 
         &-left,
         &-right {
@@ -87,6 +88,7 @@ $layerIconSize: 15px !default;
       display: flex;
       align-items: center;
       background-color: transparent !important;
+      border-bottom: none;
 
       &-inn {
         align-items: center;
@@ -115,6 +117,8 @@ $layerIconSize: 15px !default;
     &-name {
       display: inline-block;
       box-sizing: content-box;
+      overflow: hidden;
+      white-space: nowrap;
       max-width: 170px;
       height: auto;
       @extend .#{$app-prefix}no-user-select;
@@ -137,6 +141,7 @@ $layerIconSize: 15px !default;
     }
 
     &-move {
+      display: flex;
       width: 13px;
       box-sizing: content-box;
       cursor: move;
@@ -165,7 +170,7 @@ $layerIconSize: 15px !default;
       padding: 1px;
 
       &.#{$nv-prefix}insert {
-        background-color: var(--gjs-color-green);
+        background-color: $colorGreen;
       }
     }
   }
