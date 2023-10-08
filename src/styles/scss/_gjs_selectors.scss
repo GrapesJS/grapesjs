@@ -75,7 +75,7 @@
 }
 
 .#{$clm-prefix}tags {
-  font-size: var(--grapes-font-size);
+  font-size: var(--gjs-font-size);
   padding: 10px 5px;
 
   ##{$clm-prefix}sel {
@@ -106,8 +106,8 @@
   ##{$clm-prefix}new {
     @extend  .#{$app-prefix}invis-invis;
 
-    color: var(--grapes-font-color);
-    padding: var(--grapes-padding-elem-classmanager);
+    color: var(--gjs-font-color);
+    padding: var(--gjs-padding-elem-classmanager);
     display: none;
   }
 

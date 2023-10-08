@@ -708,10 +708,10 @@ There is also a bunch of [CSS custom properties (variables)](https://developer.m
 For example, you could achieve the same result as above by doing this:
 ```css
 :root {
-  --grapes-primary-color: #78366a;
-  --grapes-secondary-color: rgba(255, 255, 255, 0.7);
-  --grapes-tertiary-color: #ec5896;
-  --grapes-quaternary-color: #ec5896;
+  --gjs-primary-color: #78366a;
+  --gjs-secondary-color: rgba(255, 255, 255, 0.7);
+  --gjs-tertiary-color: #ec5896;
+  --gjs-quaternary-color: #ec5896;
 }
 ```
 
