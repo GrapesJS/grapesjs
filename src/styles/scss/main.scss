@@ -5,6 +5,14 @@
 @import "spectrum.scss";
 @import "gjs_variables.scss";
 
+@function darken-color($color, $percentage) {
+  @return color-mix(in srgb, $color, black $percentage)
+}
+
+@function lighten-color($color, $percentage) {
+  @return color-mix(in srgb, $color, white $percentage)
+}
+
 @mixin user-select($v) {
   -moz-user-select: $v;
   -khtml-user-select: $v;
@@ -36,11 +44,11 @@ $prefix: $app-prefix;
 
 @import "gjs_status";
 
-$colorsAll: (one, $primaryColor),
-  (two, $secondaryColor),
-  (three, $tertiaryColor),
-  (four, $quaternaryColor),
-  (danger, $colorRed);
+$colorsAll: (one, var(--grapes-primary-color)),
+  (two, var(--grapes-secondary-color)),
+  (three, var(--grapes-tertiary-color)),
+  (four, var(--grapes-quaternary-color)),
+  (danger, var(--grapes-color-red));
 
 .#{$prefix} {
   @each $cnum, $ccol in $colorsAll {
@@ -63,29 +71,29 @@ $colorsAll: (one, $primaryColor),
 
 .#{$app-prefix}bg {
   &-main {
-    background-color: $mainColor;
+    background-color: var(--grapes-main-color);
   }
 }
 
 .#{$app-prefix}color {
   &-main {
-    color: $fontColor;
-    fill: $fontColor;
+    color: var(--grapes-font-color);
+    fill: var(--grapes-font-color);
   }
 
   &-active {
-    color: $fontColorActive;
-    fill: $fontColorActive;
+    color: var(--grapes-font-color-active);
+    fill: var(--grapes-font-color-active);
   }
 
   &-warn {
-    color: $colorWarn;
-    fill: $colorWarn;
+    color: var(--grapes-color-warn);
+    fill: var(--grapes-color-warn);
   }
 
   &-hl {
-    color: $colorHighlight;
-    fill: $colorHighlight;
+    color: var(--grapes-color-highlight);
+    fill: var(--grapes-color-highlight);
   }
 }
 
@@ -130,7 +138,7 @@ $colorsAll: (one, $primaryColor),
 }
 
 .#{$app-prefix}drag-helper {
-  background-color: $colorBlue !important;
+  background-color: var(--grapes-color-blue) !important;
   pointer-events: none !important;
   position: absolute !important;
   z-index: 10 !important;
@@ -165,7 +173,7 @@ $colorsAll: (one, $primaryColor),
 
 // Custom scrollbars for Chrome
 .#{$app-prefix}editor-cont ::-webkit-scrollbar-track {
-  background: $mainDklColor;
+  background: var(--grapes-secondary-dark-color);
 }
 
 .#{$app-prefix}editor-cont ::-webkit-scrollbar-thumb {
@@ -177,6 +185,46 @@ $colorsAll: (one, $primaryColor),
 }
 
 /********************* MAIN ************************/
+// @property --input-padding {
+//   syntax: "<length>";
+//   inherits: false;
+//   initial-value: #{$inputPadding};
+// }
+
+:root {
+  --grapes-main-color: #{$mainColor};
+  --grapes-primary-color: #{$primaryColor};
+  --grapes-secondary-color: #{$secondaryColor};
+  --grapes-tertiary-color: #{$tertiaryColor};
+  --grapes-quaternary-color: #{$quaternaryColor};
+  --grapes-font-color: #{$fontColor};
+  --grapes-font-color-active: #{$fontColorActive};
+  --grapes-main-dark-color: #{$mainDkColor};
+  --grapes-secondary-dark-color: #{$mainDklColor};
+  --grapes-main-light-color: #{$mainLhColor};
+  --grapes-secondary-light-color: #{$mainLhlColor};
+  --grapes-color-blue: #{$colorBlue};
+  --grapes-color-red: #{$colorRed};
+  --grapes-color-yellow: #{$colorYell};
+  --grapes-color-green: #{$colorGreen};
+  --grapes-left-width: #{$leftWidth};
+  --grapes-color-highlight: #{$colorHighlight};
+  --grapes-color-warn: #{$colorWarn};
+  --grapes-handle-margin: #{$hndlMargin};
+  --grapes-light-border: #{$lightBorder};
+  --grapes-arrow-color: #{$arrowColor};
+  --grapes-dark-text-shadow: #{$darkTextShadow};
+  --grapes-color-input-padding: #{$colorpSize};
+  --grapes-input-padding: #{$inputPadding}; // Has to be a single value
+  --grapes-padding-elem-classmanager: #{$paddElClm};
+  --grapes-upload-padding: #{$uploadPadding};
+  --grapes-animation-duration: #{$animSpeed};
+  --grapes-main-font: #{$mainFont};
+  --grapes-font-size: #{$fontSize};
+  --grapes-placeholder-background-color: #{$placeholderColor};
+  --grapes-canvas-top: #{$canvasTop};
+}
+
 .clear{ clear:both }
 
 .no-select{
@@ -194,8 +242,8 @@ $colorsAll: (one, $primaryColor),
   }
 
   &editor {
-    font-family: $mainFont;
-    font-size: $fontSizeS;
+    font-family: var(--grapes-main-font);
+    font-size: var(--grapes-font-size);
     position: relative;
     box-sizing: border-box;
     height: 100%;
@@ -227,7 +275,7 @@ $colorsAll: (one, $primaryColor),
 
 .#{$com-prefix}badge, .#{$app-prefix}badge{
 	pointer-events: none;
-	background-color: $colorBlue;
+	background-color: var(--grapes-color-blue);
 	color: #fff;
 	padding: 2px 5px;
 	position: absolute; z-index: 1;
@@ -236,7 +284,7 @@ $colorsAll: (one, $primaryColor),
   display: none;
 }
 .#{$app-prefix}badge-warning{
-	background-color: $colorYell;
+	background-color: var(--grapes-color-yellow);
 }
 .#{$app-prefix}placeholder,
 .#{$com-prefix}placeholder,
@@ -252,14 +300,14 @@ $colorsAll: (one, $primaryColor),
   border-style: solid !important;
   outline: none;
   box-sizing: border-box;
-  transition: top $animSpeed, left $animSpeed,
-    width $animSpeed, height $animSpeed;
+  transition: top var(--grapes-animation-duration), left var(--grapes-animation-duration),
+    width var(--grapes-animation-duration), height var(--grapes-animation-duration);
 }
 
 .#{$app-prefix}placeholder.horizontal,
 .#{$com-prefix}placeholder.horizontal,
 .#{$nv-prefix}placeholder.horizontal {
-  border-color: transparent $placeholderColor;
+  border-color: transparent var(--grapes-placeholder-background-color);
   border-width: 3px 5px;
   margin: -3px 0 0;
 }
@@ -267,7 +315,7 @@ $colorsAll: (one, $primaryColor),
 .#{$app-prefix}placeholder.vertical,
 .#{$com-prefix}placeholder.vertical,
 .#{$nv-prefix}placeholder.vertical {
-  border-color: $placeholderColor transparent;
+  border-color: var(--grapes-placeholder-background-color) transparent;
   border-width: 5px 3px;
   margin: 0 0 0 -3px;
 }
@@ -275,7 +323,7 @@ $colorsAll: (one, $primaryColor),
 .#{$app-prefix}placeholder-int,
 .#{$com-prefix}placeholder-int,
 .#{$nv-prefix}placeholder-int {
-	background-color: $placeholderColor;
+	background-color: var(--grapes-placeholder-background-color);
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
 	height: 100%; width: 100%;
 	pointer-events: none;
@@ -302,7 +350,7 @@ $colorsAll: (one, $primaryColor),
   @extend .no-select;
 
   font-weight: lighter;
-  background-color: $mainDklColor;
+  background-color: var(--grapes-secondary-dark-color);
   letter-spacing: 1px;
   padding: 9px 10px 9px 20px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.25);
@@ -325,7 +373,7 @@ $colorsAll: (one, $primaryColor),
 	float:left;
 
 	> form {
-	  background-color: $mainDklColor;
+	  background-color: var(--grapes-secondary-dark-color);
 	  border: 2px dashed;
 	  border-radius: 3px;
 	  position: relative;
@@ -333,8 +381,8 @@ $colorsAll: (one, $primaryColor),
 	  margin-bottom: 15px;
 
 	  	&.#{$am-prefix}hover {
-			border: 2px solid $colorGreen;
-			color: lighten($colorGreen, 5%); /*#7ee07e*/
+			border: 2px solid var(--grapes-color-green);
+			color: lighten-color(var(--grapes-color-green), 5%);
 		}
 
 		&.#{$am-prefix}disabled{
@@ -343,7 +391,7 @@ $colorsAll: (one, $primaryColor),
 
 	  	##{$am-prefix}uploadFile{
 	  		@include opacity(0);
-	  		padding: $uploadPadding;
+	  		padding: var(--grapes-upload-padding);
 		  	width: 100%;
 		  	box-sizing: border-box;
 		}
@@ -351,7 +399,7 @@ $colorsAll: (one, $primaryColor),
 
 	##{$am-prefix}title {
 		position: absolute;
-		padding: $uploadPadding;
+		padding: var(--grapes-upload-padding);
 		width: 100%;
 	}
 }
@@ -373,7 +421,7 @@ $colorsAll: (one, $primaryColor),
 
 	&##{$cm-prefix}htmlmixed {
 		padding-right: 10px;
-		border-right: 1px solid $mainDkColor;
+		border-right: 1px solid var(--grapes-main-dark-color);
 		##{$cm-prefix}title { color: #a97d44;}
 	}
 	&##{$cm-prefix}css {
@@ -381,7 +429,7 @@ $colorsAll: (one, $primaryColor),
 		##{$cm-prefix}title { color: #ddca7e;}
 	}
 	##{$cm-prefix}title {
-	  background-color: $mainDkColor;
+	  background-color: var(--grapes-main-dark-color);
 	  font-size: 12px;
 	  padding: 5px 10px 3px;
 	  text-align: right;
@@ -401,12 +449,12 @@ $colorsAll: (one, $primaryColor),
   .sp-hue{ left: 90%; }
   .sp-color{right: 15%;}
   .sp-container {
-    border: 1px solid $mainDkColor;
-    box-shadow: 0 0 7px $mainDkColor;
+    border: 1px solid var(--grapes-main-dark-color);
+    box-shadow: 0 0 7px var(--grapes-main-dark-color);
     border-radius: 3px;
   }
   .sp-picker-container{border:none;}
-  .colpick_dark .colpick_color {  outline: 1px solid $mainDkColor;}
+  .colpick_dark .colpick_color {  outline: 1px solid var(--grapes-main-dark-color);}
   .sp-cancel, .sp-cancel:hover {
     bottom: -8px;
     color: #777 !important;
@@ -436,9 +484,9 @@ $colorsAll: (one, $primaryColor),
   	text-align: right;
   }
   .sp-container button, .sp-container button:hover, .sp-container button:active{
-  	background: $mainDkColor;
-    border-color: $mainDkColor;
-    color: $fontColor;
+  	background: var(--grapes-main-dark-color);
+    border-color: var(--grapes-main-dark-color);
+    color: var(--grapes-font-color);
     text-shadow: none;
     box-shadow: none;
     padding: 3px 5px;

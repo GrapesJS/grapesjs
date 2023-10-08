@@ -703,6 +703,19 @@ To complete our builder let's customize its color palette and to make it more vi
 }
 ```
 
+There is also a bunch of [CSS custom properties (variables)](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties) that you can use to customize the styles of the editor.
+
+For example, you could achieve the same result as above by doing this:
+```css
+:root {
+  --grapes-primary-color: #78366a;
+  --grapes-secondary-color: rgba(255, 255, 255, 0.7);
+  --grapes-tertiary-color: #ec5896;
+  --grapes-quaternary-color: #ec5896;
+}
+```
+
+
 And here is our final result:
 
 <Demo id="final-result">
