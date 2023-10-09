@@ -203,6 +203,7 @@ $colorsAll: (one, var(--gjs-primary-color)),
   --gjs-secondary-dark-color: #{$mainDklColor};
   --gjs-main-light-color: #{$mainLhColor};
   --gjs-secondary-light-color: #{$mainLhlColor};
+  --gjs-soft-light-color: #{$softLhColor};
   --gjs-color-blue: #{$colorBlue};
   --gjs-color-red: #{$colorRed};
   --gjs-color-yellow: #{$colorYell};
@@ -223,6 +224,7 @@ $colorsAll: (one, var(--gjs-primary-color)),
   --gjs-font-size: #{$fontSize};
   --gjs-placeholder-background-color: #{$placeholderColor};
   --gjs-canvas-top: #{$canvasTop};
+  --gjs-flex-item-gap: 5px;
 }
 
 .clear{ clear:both }

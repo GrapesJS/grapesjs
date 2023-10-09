@@ -2,7 +2,7 @@ $layerIconSize: 15px !default;
 
 .#{$nv-prefix} {
   &selected-parent {
-    border: 1px solid $colorYell;
+    border: 1px solid var(--gjs-color-yellow);
   }
 
   &opac50 {
@@ -13,8 +13,7 @@ $layerIconSize: 15px !default;
     font-weight: lighter;
     text-align: left;
     position: relative;
-    background-color: rgba(0, 0, 0, 0.1);
-    font-size: $fontSize;
+    font-size: var(--gjs-font-size);
     display: grid;
 
     &-item {
@@ -22,13 +21,16 @@ $layerIconSize: 15px !default;
         align-items: center;
         justify-content: space-between;
         padding: 5px 10px;
-        border-bottom: 1px solid rgba(0,0,0,.25);
+        border-bottom: 1px solid var(--gjs-main-dark-color);
+        background-color: var(--gjs-secondary-dark-color);
+        gap: var(--gjs-flex-item-gap);
+        cursor: pointer;
 
         &-left,
         &-right {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: var(--gjs-flex-item-gap);
         }
 
         &-left {
@@ -60,7 +62,7 @@ $layerIconSize: 15px !default;
           display: none;
         }
         .#{$nv-prefix}layer-vis-off {
-          display: block;
+          display: flex;
         }
       }
     }
@@ -70,6 +72,7 @@ $layerIconSize: 15px !default;
       cursor: pointer;
       box-sizing: content-box;
       transform: rotate(90deg);
+      display: flex;
       @include opacity(0.7);
 
       &:hover {
@@ -94,7 +97,7 @@ $layerIconSize: 15px !default;
         align-items: center;
         position: relative;
         display: flex;
-        gap: 5px;
+        gap: var(--gjs-flex-item-gap);
       }
 
       &-c {
@@ -137,7 +140,7 @@ $layerIconSize: 15px !default;
     }
 
     &-no-chld > .#{$nv-prefix}layer-title-inn > .#{$nv-prefix}layer-caret {
-      display: none;
+      visibility: hidden;
     }
 
     &-move {
@@ -148,11 +151,11 @@ $layerIconSize: 15px !default;
     }
 
     &.#{$nv-prefix}hovered .#{$nv-prefix}layer-item {
-      background-color: rgba(255, 255, 255, 0.15);
+      background-color: var(--gjs-soft-light-color);
     }
 
     &.#{$nv-prefix}selected .#{$nv-prefix}layer-item {
-      background-color: rgba(255, 255, 255, 0.3);
+      background-color: var(--gjs-main-light-color);
     }
   }
 }
@@ -170,7 +173,7 @@ $layerIconSize: 15px !default;
       padding: 1px;
 
       &.#{$nv-prefix}insert {
-        background-color: $colorGreen;
+        background-color: var(--gjs-color-green);
       }
     }
   }

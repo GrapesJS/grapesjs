@@ -42,12 +42,11 @@ export default class ItemView extends View {
     const { hidable } = config;
     const count = module.getComponents(model).length;
     const addClass = !count ? this.clsNoChild : '';
-    const clsItem = `${pfx}layer-item ${ppfx}one-bg`;
     const clsTitle = `${this.clsTitle} ${addClass}`;
     const clsTitleC = `${this.clsTitleC}`;
     const clsInput = `${this.inputNameCls} ${clsNoEdit} ${ppfx}no-app`;
-    const level = opt.level + 1;
-    const gut = `${10 + level * 10}px`;
+    const level = opt.level || 0;
+    const gut = `${level * 10}px`;
     const name = model.getName();
     const icon = model.getIcon();
     const clsBase = `${pfx}layer`;
@@ -55,18 +54,18 @@ export default class ItemView extends View {
     const { move, eye, eyeOff, chevron } = icons!;
 
     return `
-      <div class="${clsItem}">
+      <div class="${pfx}layer-item ${ppfx}one-bg" data-toggle-select>
         <div class="${pfx}layer-item-left">
           ${
             hidable
               ? `<i class="${pfx}layer-vis" data-toggle-visible>
-              <i class="${pfx}layer-vis-on">${eye}</i>
-              <i class="${pfx}layer-vis-off">${eyeOff}</i>
-            </i>`
+                <i class="${pfx}layer-vis-on">${eye}</i>
+                <i class="${pfx}layer-vis-off">${eyeOff}</i>
+              </i>`
               : ''
           }
           <div class="${clsTitleC}">
-            <div class="${clsTitle}" style="padding-left: ${gut}" data-toggle-select>
+            <div class="${clsTitle}" style="padding-left: ${gut}">
               <div class="${pfx}layer-title-inn" title="${name}">
                 <i class="${this.clsCaret}" data-toggle-open>${chevron}</i>
                   ${icon ? `<span class="${clsBase}__icon">${icon}</span>` : ''}
@@ -175,7 +174,7 @@ export default class ItemView extends View {
 
   getVisibilityEl() {
     if (!this.eyeEl) {
-      this.eyeEl = this.$el.children(`.${this.pfx}layer-vis`);
+      this.eyeEl = this.$el.children('[data-toggle-select]').find('[data-toggle-visible]');
     }
 
     return this.eyeEl;
@@ -197,7 +196,7 @@ export default class ItemView extends View {
    * @return 	void
    * */
   toggleVisibility(ev?: MouseEvent) {
-    ev?.stopPropagation();
+    ev?.stopImmediatePropagation();
     const { module, model } = this;
     module.setVisible(model, !module.isVisible(model));
   }
