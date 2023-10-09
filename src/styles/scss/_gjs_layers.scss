@@ -1,5 +1,4 @@
 $layerIconSize: 15px !default;
-$layerNameSpacing: 5px !default;
 
 .#{$nv-prefix} {
   &selected-parent {
@@ -14,29 +13,45 @@ $layerNameSpacing: 5px !default;
     font-weight: lighter;
     text-align: left;
     position: relative;
-    background-color: rgba(0, 0, 0, 0.1);
     font-size: var(--gjs-font-size);
     display: grid;
+
+    &-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 5px 10px;
+        border-bottom: 1px solid var(--gjs-main-dark-color);
+        background-color: var(--gjs-secondary-dark-color);
+        gap: var(--gjs-flex-item-gap);
+        cursor: pointer;
+
+        &-left,
+        &-right {
+            display: flex;
+            align-items: center;
+            gap: var(--gjs-flex-item-gap);
+        }
+
+        &-left {
+            width: 100%;
+        }
+    }
 
     &-hidden {
       @include opacity(0.55);
     }
 
-    &-count {
-      position: absolute;
-      right: 27px;
-      top: 9px;
-    }
-
     &-vis {
-      left: 0;
-      top: 0;
-      padding: 7px 5px 7px 10px;
-      position: absolute;
       box-sizing: content-box;
       cursor: pointer;
-      width: 13px;
       z-index: 1;
+
+      &-on,
+      &-off {
+        display: flex;
+        width: 13px;
+      }
 
       &-off {
         display: none;
@@ -47,42 +62,45 @@ $layerNameSpacing: 5px !default;
           display: none;
         }
         .#{$nv-prefix}layer-vis-off {
-          display: block;
+          display: flex;
         }
       }
     }
 
     &-caret {
       width: 15px;
-      padding: 2px;
       cursor: pointer;
-      position: absolute;
       box-sizing: content-box;
-      left: -15px;
-      top: 0;
       transform: rotate(90deg);
+      display: flex;
       @include opacity(0.7);
 
       &:hover {
         @include opacity(1);
       }
+    }
 
-      &.#{$nv-prefix}layer-open {
+    &.open > &-item &-caret {
         transform: rotate(180deg);
-      }
     }
 
     &-title {
       @extend .#{$app-prefix}category-title;
 
-      padding: 3px 10px 5px 30px;
+      padding: 0;
       display: flex;
       align-items: center;
+      background-color: transparent !important;
+      border-bottom: none;
 
       &-inn {
         align-items: center;
         position: relative;
         display: flex;
+        gap: var(--gjs-flex-item-gap);
+      }
+
+      &-c {
         width: 100%;
       }
     }
@@ -100,13 +118,12 @@ $layerNameSpacing: 5px !default;
     }
 
     &-name {
-      padding: $layerNameSpacing 0;
       display: inline-block;
       box-sizing: content-box;
       overflow: hidden;
       white-space: nowrap;
-      margin: 0 30px 0 $layerNameSpacing;
       max-width: 170px;
+      height: auto;
       @extend .#{$app-prefix}no-user-select;
 
       &--no-edit {
@@ -123,29 +140,25 @@ $layerNameSpacing: 5px !default;
     }
 
     &-no-chld > .#{$nv-prefix}layer-title-inn > .#{$nv-prefix}layer-caret {
-      display: none;
+      visibility: hidden;
     }
 
     &-move {
-      padding: 9px 7px;
-      position: absolute;
+      display: flex;
       width: 13px;
       box-sizing: content-box;
       cursor: move;
-      right: 0;
-      top: 0;
     }
 
-    &.#{$nv-prefix}hovered .#{$nv-prefix}layer-title {
-      background-color: rgba(255, 255, 255, 0.015);
+    &.#{$nv-prefix}hovered .#{$nv-prefix}layer-item {
+      background-color: var(--gjs-soft-light-color);
     }
 
-    &.#{$nv-prefix}selected .#{$nv-prefix}layer-title {
-      background-color: rgba(255, 255, 255, 0.1);
+    &.#{$nv-prefix}selected .#{$nv-prefix}layer-item {
+      background-color: var(--gjs-main-light-color);
     }
   }
 }
-
 
 .#{$app-prefix}layers {
   position: relative;

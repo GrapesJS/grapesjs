@@ -43,10 +43,10 @@ export default class ItemView extends View {
     const count = module.getComponents(model).length;
     const addClass = !count ? this.clsNoChild : '';
     const clsTitle = `${this.clsTitle} ${addClass}`;
-    const clsTitleC = `${this.clsTitleC} ${ppfx}one-bg`;
+    const clsTitleC = `${this.clsTitleC}`;
     const clsInput = `${this.inputNameCls} ${clsNoEdit} ${ppfx}no-app`;
-    const level = opt.level + 1;
-    const gut = `${30 + level * 10}px`;
+    const level = opt.level || 0;
+    const gut = `${level * 10}px`;
     const name = model.getName();
     const icon = model.getIcon();
     const clsBase = `${pfx}layer`;
@@ -54,26 +54,33 @@ export default class ItemView extends View {
     const { move, eye, eyeOff, chevron } = icons!;
 
     return `
-      ${
-        hidable
-          ? `<i class="${pfx}layer-vis" data-toggle-visible>
-            <i class="${pfx}layer-vis-on">${eye}</i>
-            <i class="${pfx}layer-vis-off">${eyeOff}</i>
-          </i>`
-          : ''
-      }
-      <div class="${clsTitleC}">
-        <div class="${clsTitle}" style="padding-left: ${gut}" data-toggle-select>
-          <div class="${pfx}layer-title-inn" title="${name}">
-            <i class="${this.clsCaret}" data-toggle-open>${chevron}</i>
-            ${icon ? `<span class="${clsBase}__icon">${icon}</span>` : ''}
-            <span class="${clsInput}" data-name>${name}</span>
+      <div class="${pfx}layer-item ${ppfx}one-bg" data-toggle-select>
+        <div class="${pfx}layer-item-left">
+          ${
+            hidable
+              ? `<i class="${pfx}layer-vis" data-toggle-visible>
+                <i class="${pfx}layer-vis-on">${eye}</i>
+                <i class="${pfx}layer-vis-off">${eyeOff}</i>
+              </i>`
+              : ''
+          }
+          <div class="${clsTitleC}">
+            <div class="${clsTitle}" style="padding-left: ${gut}">
+              <div class="${pfx}layer-title-inn" title="${name}">
+                <i class="${this.clsCaret}" data-toggle-open>${chevron}</i>
+                  ${icon ? `<span class="${clsBase}__icon">${icon}</span>` : ''}
+                <span class="${clsInput}" data-name>${name}</span>
+              </div>
+            </div>
           </div>
         </div>
+        <div class="${pfx}layer-item-right">
+          ${count ? `<div class="${this.clsCount}" data-count>${count || ''}</div>` : ''}
+          <div class="${this.clsMove}" data-toggle-move>${move || ''}</div>
+        </div>
       </div>
-      <div class="${this.clsCount}" data-count>${count || ''}</div>
-      <div class="${this.clsMove}" data-toggle-move>${move || ''}</div>
-      <div class="${this.clsChildren}"></div>`;
+      <div class="${this.clsChildren}"></div>
+    `;
   }
 
   public get em(): EditorModel {
@@ -167,7 +174,7 @@ export default class ItemView extends View {
 
   getVisibilityEl() {
     if (!this.eyeEl) {
-      this.eyeEl = this.$el.children(`.${this.pfx}layer-vis`);
+      this.eyeEl = this.$el.children('[data-toggle-select]').find('[data-toggle-visible]');
     }
 
     return this.eyeEl;
@@ -189,7 +196,7 @@ export default class ItemView extends View {
    * @return 	void
    * */
   toggleVisibility(ev?: MouseEvent) {
-    ev?.stopPropagation();
+    ev?.stopImmediatePropagation();
     const { module, model } = this;
     module.setVisible(model, !module.isVisible(model));
   }
