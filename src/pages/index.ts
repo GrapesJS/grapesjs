@@ -89,6 +89,7 @@ const pageEvents = {
 
 export interface PageManagerConfig extends ModuleConfig {
   pages?: any[];
+  activePage?: string;
 }
 
 export default class PageManager extends ItemManagerModule<PageManagerConfig, Pages> {
@@ -226,6 +227,15 @@ export default class PageManager extends ItemManagerModule<PageManagerConfig, Pa
   getMain() {
     const { pages } = this;
     return pages.filter(p => p.get('type') === typeMain)[0] || pages.at(0);
+  }
+
+  getPreselectedPage() {
+    const { pages, config } = this;
+    if (config.activePage) {
+      return pages.find(p => p.getId() === config.activePage);
+    } else {
+      return null;
+    }
   }
 
   /**
