@@ -1,9 +1,15 @@
-import { isArray, isElement, isUndefined, keys } from 'underscore';
+import { isArray, isElement, isFunction, isUndefined, keys } from 'underscore';
 import ComponentView from '../dom_components/view/ComponentView';
 import EditorModel from '../editor/model/Editor';
 import { isTextNode } from './dom';
 import Component from '../dom_components/model/Component';
 import { ObjectAny } from '../common';
+
+const obj: ObjectAny = {};
+
+export const isBultInMethod = (key: string) => isFunction(obj[key]);
+
+export const normalizeKey = (key: string) => (isBultInMethod(key) ? `_${key}` : key);
 
 export const wait = (mls: number = 0) => new Promise(res => setTimeout(res, mls));
 

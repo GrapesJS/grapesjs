@@ -18,13 +18,17 @@ export const getComponentIds = (cmp?: Component | Component[] | Components, res:
   return res;
 };
 
-const getComponentsFromDefs = (items: any, all: ObjectAny = {}, opts: any = {}) => {
+const getComponentsFromDefs = (
+  items: ReturnType<Components['parseString']>,
+  all: ReturnType<ComponentManager['allById']> = {},
+  opts: any = {}
+) => {
   opts.visitedCmps = opts.visitedCmps || {};
   const { visitedCmps } = opts;
   const itms = isArray(items) ? items : [items];
 
   return itms.map(item => {
-    const { attributes = {}, components, tagName } = item;
+    const { attributes = {}, components, tagName, style } = item;
     let { id, draggable, ...restAttr } = attributes;
     let result = item;
 
@@ -35,9 +39,11 @@ const getComponentsFromDefs = (items: any, all: ObjectAny = {}, opts: any = {}) 
 
         // Update the component if exists already
         if (all[id]) {
-          result = all[id];
-          tagName && result.set({ tagName }, { ...opts, silent: true });
-          keys(restAttr).length && result.addAttributes(restAttr, { ...opts });
+          result = all[id] as any;
+          const cmp = result as unknown as Component;
+          tagName && cmp.set({ tagName }, { ...opts, silent: true });
+          keys(restAttr).length && cmp.addAttributes(restAttr, { ...opts });
+          keys(style).length && cmp.addStyle(style, opts);
         }
       } else {
         // Found another component with the same ID, treat it as a new component
