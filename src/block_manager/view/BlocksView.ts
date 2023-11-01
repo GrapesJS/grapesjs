@@ -19,7 +19,7 @@ export default class BlocksView extends View {
   em: EditorModel;
   config: BlocksViewConfig;
   categories: Categories;
-  renderedCategories: Record<string, CategoryView>;
+  renderedCategories = new Map<string, CategoryView>();
   ppfx: string;
   noCatClass: string;
   blockContClass: string;
@@ -34,7 +34,6 @@ export default class BlocksView extends View {
     bindAll(this, 'getSorter', 'onDrag', 'onDrop', 'onMove');
     this.config = config || {};
     this.categories = opts.categories || '';
-    this.renderedCategories = {};
     const ppfx = this.config.pStylePrefix || '';
     this.ppfx = ppfx;
     this.noCatClass = `${ppfx}blocks-no-cat`;
@@ -126,7 +125,7 @@ export default class BlocksView extends View {
    * @private
    * */
   add(model: Block, fragment?: DocumentFragment) {
-    const { config } = this;
+    const { config, renderedCategories } = this;
     const view = new BlockView(
       {
         model,
@@ -148,13 +147,13 @@ export default class BlocksView extends View {
       const catModel = this.categories.add(category);
       const catId = catModel.get('id')!;
       const categories = this.getCategoriesEl();
-      let catView = this.renderedCategories[catId];
+      let catView = renderedCategories.get(catId);
       // @ts-ignore
       model.set('category', catModel, { silent: true });
 
       if (!catView && categories) {
         catView = new CategoryView({ model: catModel }, config).render();
-        this.renderedCategories[catId] = catView;
+        renderedCategories.set(catId, catView);
         categories.appendChild(catView.el);
       }
 
@@ -191,7 +190,7 @@ export default class BlocksView extends View {
     const frag = document.createDocumentFragment();
     delete this.catsEl;
     delete this.blocksEl;
-    this.renderedCategories = {};
+    this.renderedCategories = new Map();
     this.el.innerHTML = `
       <div class="${this.catsClass}"></div>
       <div class="${this.noCatClass}">
