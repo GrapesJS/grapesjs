@@ -400,30 +400,35 @@ export default class Property<T extends Record<string, any> = PropertyProps> ext
   parseValue(value: string, opts: { complete?: boolean; numeric?: boolean } = {}): Partial<T> {
     const result = { value } as any;
     const imp = '!important';
+    const fn = this.get('functionName') || '';
 
     if (isString(value) && value.indexOf(imp) !== -1) {
       result.value = value.replace(imp, '').trim();
       result.important = true;
     }
 
-    if (!this.get('functionName') && !opts.complete) {
+    if (!fn && !opts.complete) {
       return result;
     }
 
     const args = [];
-    let valueStr = `${result.value}`;
-    let start = valueStr.indexOf('(') + 1;
-    let end = valueStr.lastIndexOf(')');
-    const functionName = valueStr.substring(0, start - 1);
-    if (functionName) result.functionName = functionName;
-    args.push(start);
+    const valueStr = `${result.value}`.trim();
+    const start = valueStr.indexOf('(') + 1;
+    const functionName = fn || valueStr.substring(0, start - 1);
 
-    // Will try even if the last closing parentheses is not found
-    if (end >= 0) {
-      args.push(end);
+    if (functionName) {
+      result.functionName = functionName;
     }
 
-    result.value = String.prototype.substring.apply(valueStr, args as any);
+    if (!fn || valueStr.indexOf(`${fn}(`) === 0) {
+      const end = valueStr.lastIndexOf(')');
+      args.push(start);
+
+      // Will try even if the last closing parentheses is not found
+      end >= 0 && args.push(end);
+
+      result.value = String.prototype.substring.apply(valueStr, args as any);
+    }
 
     if (opts.numeric) {
       const num = parseFloat(result.value);
