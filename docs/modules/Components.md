@@ -116,7 +116,7 @@ You can read properties with the `get` method, like, for example, the `type`
 ```js
 const componentType = component.get('type'); // eg. 'image'
 ```
-and to update properties you'd use `set`, which might change the way a component behavies in the canvas.
+and to update properties you'd use `set`, which might change the way a component behaves in the canvas.
 ```js
 // Make the component not draggable
 component.set('draggable', false);
