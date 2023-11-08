@@ -503,16 +503,18 @@ export default class Component extends StyleableModel<ComponentProperties> {
   /**
    * Replace a component with another one
    * @param {String|Component} el Component or HTML string
-   * @return {Component|Array<Component>} New added component/s
+   * @param {Object} [opts={}] Options for the append action
+   * @returns {Array<Component>} New replaced components
    * @example
-   * component.replaceWith('<div>Some new content</div>');
-   * // -> Component
+   * const result = component.replaceWith('<div>Some new content</div>');
+   * // result -> [Component]
    */
-  replaceWith(el: Component | String) {
+  replaceWith<C extends Component = Component>(el: ComponentAdd, opts: AddOptions = {}): C[] {
     const coll = this.collection;
     const at = coll.indexOf(this);
     coll.remove(this);
-    return coll.add(el, { at });
+    const result = coll.add(el, { ...opts, at });
+    return isArray(result) ? result : [result];
   }
 
   /**
