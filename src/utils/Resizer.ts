@@ -573,8 +573,6 @@ export default class Resizer {
       const elStyle = el.style as Record<string, any>;
       elStyle[keyWidth!] = rect.w + unitWidth!;
       elStyle[keyHeight!] = rect.h + unitHeight!;
-      elStyle.top = rect.t + unitHeight!;
-      elStyle.left = rect.l + unitWidth!;
     }
 
     this.updateContainer();
