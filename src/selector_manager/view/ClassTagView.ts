@@ -2,6 +2,8 @@ import { View } from '../../common';
 import Selector from '../model/Selector';
 import html from '../../utils/html';
 import EditorModel from '../../editor/model/Editor';
+import SelectorManager from '..';
+import { SelectorManagerConfig } from '../config/config';
 
 const inputProp = 'contentEditable';
 
@@ -13,7 +15,7 @@ export default class ClassTagView extends View<Selector> {
     return html`
       <span id="${pfx}checkbox" class="${pfx}tag-status" data-tag-status></span>
       <span id="${pfx}tag-label" data-tag-name>${label}</span>
-      <span id="${pfx}close" class="${pfx}tag-close" data-tag-remove> $${config.iconTagRemove} </span>
+      <span id="${pfx}close" class="${pfx}tag-close" data-tag-remove> $${config.iconTagRemove!} </span>
     `;
   }
 
@@ -25,11 +27,11 @@ export default class ClassTagView extends View<Selector> {
       'focusout [data-tag-name]': 'endEditTag',
     };
   }
-  config: any;
-  module: any;
+  config: SelectorManagerConfig;
+  module: SelectorManager;
   coll: any;
-  pfx: any;
-  ppfx: any;
+  pfx: string;
+  ppfx: string;
   em: EditorModel;
   inputEl?: HTMLElement;
 
@@ -64,7 +66,6 @@ export default class ClassTagView extends View<Selector> {
   startEditTag() {
     const { em } = this;
     const inputEl = this.getInputEl();
-    inputEl;
     inputEl[inputProp] = 'true';
     inputEl.focus();
     em?.setEditing(true);
@@ -84,7 +85,7 @@ export default class ClassTagView extends View<Selector> {
     em?.setEditing(false);
 
     if (sm && sm.rename(model, label) !== model) {
-      inputEl.innerText = model.get('label');
+      inputEl.innerText = model.getLabel();
     }
   }
 
@@ -94,7 +95,7 @@ export default class ClassTagView extends View<Selector> {
    */
   changeStatus() {
     const { model } = this;
-    model.set('active', !model.get('active'));
+    model.set('active', !model.getActive());
   }
 
   /**
@@ -116,19 +117,21 @@ export default class ClassTagView extends View<Selector> {
     const $chk = $el.find('[data-tag-status]');
 
     if (model.get('active')) {
-      $chk.html(iconTagOn);
+      $chk.html(iconTagOn!);
       $el.removeClass('opac50');
     } else {
-      $chk.html(iconTagOff);
+      $chk.html(iconTagOff!);
       $el.addClass('opac50');
     }
   }
 
   render() {
-    const pfx = this.pfx;
-    const ppfx = this.ppfx;
-    this.$el.html(this.template());
-    this.$el.attr('class', `${pfx}tag ${ppfx}three-bg`);
+    const { pfx, ppfx, $el, model } = this;
+    const mainCls = `${pfx}tag`;
+    const classes = [`${mainCls} ${ppfx}three-bg`];
+    model.get('protected') && classes.push(`${mainCls}-protected`);
+    $el.html(this.template());
+    $el.attr('class', classes.join(' '));
     this.updateStatus();
     return this;
   }

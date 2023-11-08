@@ -23,7 +23,7 @@ export interface SelectorProps {
  * @property {Boolean} [private=false] If true, it can't be seen by the Style Manager, but it will be rendered in the canvas and in export code.
  * @property {Boolean} [protected=false] If true, it can't be removed from the attached component.
  */
-export default class Selector extends Model {
+export default class Selector extends Model<SelectorProps & { [key: string]: unknown }> {
   defaults() {
     return {
       name: '',
@@ -57,7 +57,7 @@ export default class Selector extends Model {
       this.set('label', name);
     }
 
-    const namePreEsc = this.get('name');
+    const namePreEsc = this.get('name')!;
     const { escapeName } = config;
     const nameEsc = escapeName ? escapeName(namePreEsc) : Selector.escapeName(namePreEsc);
     this.set('name', nameEsc);
@@ -102,6 +102,18 @@ export default class Selector extends Model {
   }
 
   /**
+   * Get selector name.
+   * @returns {String}
+   * @example
+   * // Given such selector: { name: 'my-selector', label: 'My selector' }
+   * console.log(selector.getLabel());
+   * // -> `my-selector`
+   */
+  getName() {
+    return this.get('name') || '';
+  }
+
+  /**
    * Get selector label.
    * @returns {String}
    * @example
@@ -110,7 +122,7 @@ export default class Selector extends Model {
    * // -> `My selector`
    */
   getLabel() {
-    return this.get('label');
+    return this.get('label') || '';
   }
 
   /**
@@ -130,8 +142,8 @@ export default class Selector extends Model {
    * Get selector active state.
    * @returns {Boolean}
    */
-  getActive(): boolean {
-    return this.get('active');
+  getActive() {
+    return !!this.get('active');
   }
 
   /**

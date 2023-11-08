@@ -211,7 +211,7 @@ Component> {
   importClasses() {
     const { em, model } = this;
     const sm = em.Selectors;
-    sm && model.classes.forEach(s => sm.add(s.get('name')));
+    sm && model.classes.forEach(s => sm.add(s.getName()));
   }
 
   /**

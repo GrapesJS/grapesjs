@@ -655,7 +655,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     if (opts.noClass) {
       delete attributes.class;
     } else {
-      this.classes.forEach(cls => classes.push(isString(cls) ? cls : cls.get('name')));
+      this.classes.forEach(cls => classes.push(isString(cls) ? cls : cls.getName()));
       classes.length && (attributes.class = classes.join(' '));
     }
 
