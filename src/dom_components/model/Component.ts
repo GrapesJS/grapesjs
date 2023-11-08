@@ -508,7 +508,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * component.replaceWith('<div>Some new content</div>');
    * // -> Component
    */
-  replaceWith(el: Component) {
+  replaceWith(el: Component | String) {
     const coll = this.collection;
     const at = coll.indexOf(this);
     coll.remove(this);
