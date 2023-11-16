@@ -53,6 +53,13 @@ export interface DomComponentsConfig {
    * https://www.w3.org/TR/2011/WD-html-markup-20110113/syntax.html#void-elements
    */
   voidElements?: string[];
+
+  /**
+   * Experimental: Use the frame document for DOM element creation.
+   * This option might be useful when elements require the local document context to
+   * work properly (eg. Web Components).
+   */
+  useFrameDoc?: boolean;
 }
 
 export default {
@@ -61,6 +68,7 @@ export default {
   draggableComponents: true,
   disableTextInnerChilds: false,
   processor: undefined,
+  useFrameDoc: false,
   voidElements: [
     'area',
     'base',
