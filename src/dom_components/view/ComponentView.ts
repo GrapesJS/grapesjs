@@ -48,6 +48,10 @@ Component> {
   getTemplate?: Function;
   scriptContainer?: HTMLElement;
 
+  preinitialize(opt: any = {}) {
+    this.opts = opt;
+  }
+
   initialize(opt: any = {}) {
     const model = this.model;
     const config = opt.config || {};
