@@ -306,8 +306,13 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
           type: 'text/javascript',
           ...(isString(src) ? { src } : src),
         });
-        scriptEl.onerror = scriptEl.onload = appendScript.bind(null, scripts);
         el.contentDocument?.head.appendChild(scriptEl);
+
+        if (scriptEl.hasAttribute('nomodule') && 'noModule' in HTMLScriptElement.prototype) {
+          appendScript(scripts);
+        } else {
+          scriptEl.onerror = scriptEl.onload = appendScript.bind(null, scripts);
+        }
       } else {
         this.renderBody();
         em && em.trigger(evLoad, evOpts);
