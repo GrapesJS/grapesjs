@@ -100,6 +100,36 @@ export enum CanvasEvents {
    * });
    */
   pointer = 'canvas:pointer',
+
+  /**
+   * @event `canvas:frame:load` Frame loaded in canvas.
+   * The event is triggered right after iframe's `onload`.
+   * @example
+   * editor.on('canvas:frame:load', ({ window }) => {
+   *  console.log('Frame loaded', window);
+   * });
+   */
+  frameLoad = 'canvas:frame:load',
+
+  /**
+   * @event `canvas:frame:load:head` Frame head loaded in canvas.
+   * The event is triggered right after iframe's finished to load the head elemenets (eg. scripts)
+   * @example
+   * editor.on('canvas:frame:load:head', ({ window }) => {
+   *  console.log('Frame head loaded', window);
+   * });
+   */
+  frameLoadHead = 'canvas:frame:load:head',
+
+  /**
+   * @event `canvas:frame:load:body` Frame body loaded in canvas.
+   * The event is triggered when the body is rendered with components.
+   * @example
+   * editor.on('canvas:frame:load:body', ({ window }) => {
+   *  console.log('Frame completed the body render', window);
+   * });
+   */
+  frameLoadBody = 'canvas:frame:load:body',
 }
 /**{END_EVENTS}*/
 
