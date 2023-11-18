@@ -16,6 +16,7 @@ export type DraggableDroppableFn = (source: Component, target: Component, index?
 
 export interface ComponentDelegateProps {
   remove?: (cmp: Component) => Component | Nullable;
+  move?: (cmp: Component) => Component | Nullable;
 }
 
 export interface ComponentProperties {
@@ -177,6 +178,7 @@ export interface ComponentProperties {
    * Delegate actions to other components.
    */
   delegate?: ComponentDelegateProps;
+
   ///**
   // * Children components. Default: `null`
   // */
