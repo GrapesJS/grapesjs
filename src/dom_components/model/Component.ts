@@ -110,7 +110,7 @@ export const keyUpdateInside = `${keyUpdate}-inside`;
  * Eg. `toolbar: [ { attributes: {class: 'fa fa-arrows'}, command: 'tlb-move' }, ... ]`.
  * By default, when `toolbar` property is falsy the editor will add automatically commands `core:component-exit` (select parent component, added if there is one), `tlb-move` (added if `draggable`) , `tlb-clone` (added if `copyable`), `tlb-delete` (added if `removable`).
  * @property {Collection<Component>} [components=null] Children components. Default: `null`
- * @property {Object} [delegate=null] Delegate commands to other components. Available commands `remove` | `move` | `copy`. eg. `{ remove: (cmp) => cmp.closestType('other-type') }`
+ * @property {Object} [delegate=null] Delegate commands to other components. Available commands `remove` | `move` | `copy` | `select`. eg. `{ remove: (cmp) => cmp.closestType('other-type') }`
  *
  * @module docsjs.Component
  */
@@ -1663,6 +1663,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     delete obj.status;
     delete obj.open; // used in Layers
     delete obj._undoexc;
+    delete obj.delegate;
 
     if (!opts.fromUndo) {
       const symbol = obj[keySymbol];
