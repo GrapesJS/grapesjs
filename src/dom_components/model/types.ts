@@ -14,9 +14,34 @@ export type DragMode = 'translate' | 'absolute' | '';
 
 export type DraggableDroppableFn = (source: Component, target: Component, index?: number) => boolean | void;
 
+/**
+ * Delegate commands to other components.
+ */
 export interface ComponentDelegateProps {
+  /**
+   * Delegate remove command to another component.
+   * @example
+   * delegate: {
+   *  remove: (cmp) => cmp.closestType('other-type'),
+   * }
+   */
   remove?: (cmp: Component) => Component | Nullable;
+  /**
+   * Delegate move command to another component.
+   * @example
+   * delegate: {
+   *  move: (cmp) => cmp.closestType('other-type'),
+   * }
+   */
   move?: (cmp: Component) => Component | Nullable;
+  /**
+   * Delegate copy command to another component.
+   * @example
+   * delegate: {
+   *  copy: (cmp) => cmp.closestType('other-type'),
+   * }
+   */
+  copy?: (cmp: Component) => Component | Nullable;
 }
 
 export interface ComponentProperties {
@@ -175,7 +200,7 @@ export interface ComponentProperties {
   toolbar?: ToolbarButtonProps[];
 
   /**
-   * Delegate actions to other components.
+   * Delegate commands to other components.
    */
   delegate?: ComponentDelegateProps;
 
