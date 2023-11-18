@@ -42,6 +42,14 @@ export interface ComponentDelegateProps {
    * }
    */
   copy?: (cmp: Component) => Component | Nullable;
+  /**
+   * Delegate select command to another component.
+   * @example
+   * delegate: {
+   *  select: (cmp) => cmp.findType('other-type')[0],
+   * }
+   */
+  select?: (cmp: Component) => Component | Nullable;
 }
 
 export interface ComponentProperties {

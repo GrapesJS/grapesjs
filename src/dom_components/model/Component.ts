@@ -584,7 +584,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * component.removeAttributes('some-attr');
    * component.removeAttributes(['some-attr1', 'some-attr2']);
    */
-  removeAttributes(attrs: string[] = [], opts: SetOptions = {}) {
+  removeAttributes(attrs: string | string[] = [], opts: SetOptions = {}) {
     const attrArr = Array.isArray(attrs) ? attrs : [attrs];
     const compAttr = this.getAttributes();
     attrArr.map(i => delete compAttr[i]);

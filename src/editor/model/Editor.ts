@@ -480,7 +480,7 @@ export default class EditorModel extends Model {
     const { event } = opts;
     const ctrlKey = event && (event.ctrlKey || event.metaKey);
     const { shiftKey } = event || {};
-    const els = (isArray(el) ? el : [el]).map(el => getModel(el, $));
+    const els = (isArray(el) ? el : [el]).map(el => getModel(el, $)).map(cmp => cmp?.delegate?.select?.(cmp) || cmp);
     const selected = this.getSelectedAll();
     const mltSel = this.getConfig().multipleSelection;
     let added;
@@ -501,7 +501,7 @@ export default class EditorModel extends Model {
           if (opts.useValid) {
             let parent = model.parent();
             while (parent && !parent.get('selectable')) parent = parent.parent();
-            model = parent;
+            model = parent!;
           } else {
             return;
           }
