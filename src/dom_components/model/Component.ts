@@ -154,6 +154,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
       propagate: '',
       dmode: '',
       toolbar: null,
+      delegate: null,
       [keySymbol]: 0,
       [keySymbols]: 0,
       [keySymbolOvrd]: 0,
@@ -180,6 +181,10 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
   get resizable() {
     return this.get('resizable')!;
+  }
+
+  get delegate() {
+    return this.get('delegate');
   }
 
   /**

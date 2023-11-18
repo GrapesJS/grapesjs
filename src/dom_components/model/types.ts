@@ -1,4 +1,5 @@
 import Frame from '../../canvas/model/Frame';
+import { Nullable } from '../../common';
 import EditorModel from '../../editor/model/Editor';
 import Selectors from '../../selector_manager/model/Selectors';
 import { TraitProperties } from '../../trait_manager/model/Trait';
@@ -12,6 +13,10 @@ import { ToolbarButtonProps } from './ToolbarButton';
 export type DragMode = 'translate' | 'absolute' | '';
 
 export type DraggableDroppableFn = (source: Component, target: Component, index?: number) => boolean | void;
+
+export interface ComponentDelegateProps {
+  remove?: (cmp: Component) => Component | Nullable;
+}
 
 export interface ComponentProperties {
   /**
@@ -167,6 +172,11 @@ export interface ComponentProperties {
    * By default, when `toolbar` property is falsy the editor will add automatically commands `core:component-exit` (select parent component, added if there is one), `tlb-move` (added if `draggable`) , `tlb-clone` (added if `copyable`), `tlb-delete` (added if `removable`).
    */
   toolbar?: ToolbarButtonProps[];
+
+  /**
+   * Delegate actions to other components.
+   */
+  delegate?: ComponentDelegateProps;
   ///**
   // * Children components. Default: `null`
   // */
