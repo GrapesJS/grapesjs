@@ -106,7 +106,7 @@ export default class Selector extends Model<SelectorProps & { [key: string]: unk
    * @returns {String}
    * @example
    * // Given such selector: { name: 'my-selector', label: 'My selector' }
-   * console.log(selector.getLabel());
+   * console.log(selector.getName());
    * // -> `my-selector`
    */
   getName() {
