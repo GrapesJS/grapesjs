@@ -6,11 +6,12 @@ import Editor from '../../editor';
 export default {
   run(ed, s, opts = {}) {
     const em = ed.getModel();
-    const clp: Component[] = em.get('clipboard');
+    const clp: Component[] | null = em.get('clipboard');
     const lastSelected = ed.getSelected();
 
-    if (clp && lastSelected) {
-      ed.getSelectedAll().forEach(selected => {
+    if (clp?.length && lastSelected) {
+      ed.getSelectedAll().forEach(sel => {
+        const selected = sel.delegate?.copy?.(sel) || sel;
         const { collection } = selected;
         let added;
         if (collection) {

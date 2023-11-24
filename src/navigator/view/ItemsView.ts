@@ -1,5 +1,5 @@
 import { View } from '../../common';
-import Component, { eventDrag } from '../../dom_components/model/Component';
+import Component from '../../dom_components/model/Component';
 import EditorModel from '../../editor/model/Editor';
 import ItemView from './ItemView';
 
@@ -33,11 +33,6 @@ export default class ItemsView extends View {
         containerSel: `.${this.className}`,
         itemSel: `.${pfx}layer`,
         ignoreViewChildren: 1,
-        onEndMove(created: any, sorter: any, data: any) {
-          const srcModel = sorter.getSourceModel();
-          em.setSelected(srcModel, { forceChange: 1 });
-          em.trigger(`${eventDrag}:end`, data);
-        },
         avoidSelectOnEnd: 1,
         nested: 1,
         ppfx,

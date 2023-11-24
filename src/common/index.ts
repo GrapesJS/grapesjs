@@ -19,6 +19,8 @@ export type ObjectAny = Record<string, any>;
 
 export type ObjectStrings = Record<string, string>;
 
+export type Nullable = undefined | null | false;
+
 // https://github.com/microsoft/TypeScript/issues/29729#issuecomment-1483854699
 export type LiteralUnion<T, U> = T | (U & NOOP);
 

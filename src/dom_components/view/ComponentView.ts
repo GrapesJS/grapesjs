@@ -48,6 +48,10 @@ Component> {
   getTemplate?: Function;
   scriptContainer?: HTMLElement;
 
+  preinitialize(opt: any = {}) {
+    this.opts = opt;
+  }
+
   initialize(opt: any = {}) {
     const model = this.model;
     const config = opt.config || {};
@@ -91,6 +95,11 @@ Component> {
 
   get frameView(): FrameView {
     return this.opts.config.frameView;
+  }
+
+  get createDoc() {
+    const doc = this.frameView?.getDoc() || document;
+    return this.opts.config?.useFrameDoc ? doc : document;
   }
 
   __isDraggable() {
@@ -510,6 +519,10 @@ Component> {
     const collection = model.components();
     const view = this;
     this.$el.data({ model, collection, view });
+  }
+
+  _createElement(tagName: string): Node {
+    return this.createDoc.createElement(tagName);
   }
 
   /**

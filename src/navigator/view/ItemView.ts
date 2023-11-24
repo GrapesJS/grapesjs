@@ -1,12 +1,13 @@
 import { bindAll, isString } from 'underscore';
 import { View, ViewOptions } from '../../common';
-import Component, { eventDrag } from '../../dom_components/model/Component';
+import Component from '../../dom_components/model/Component';
 import ComponentView from '../../dom_components/view/ComponentView';
 import EditorModel from '../../editor/model/Editor';
 import { isEnterKey, isEscKey } from '../../utils/dom';
 import { getModel } from '../../utils/mixins';
 import LayerManager from '../index';
 import ItemsView from './ItemsView';
+import { getOnComponentDrag, getOnComponentDragEnd, getOnComponentDragStart } from '../../commands';
 
 export type ItemViewProps = ViewOptions & {
   ItemView: ItemView;
@@ -317,14 +318,17 @@ export default class ItemView extends View {
    * */
   startSort(ev: MouseEvent) {
     ev.stopPropagation();
-    const { em, sorter } = this;
+    const { em, sorter, model } = this;
     // Right or middel click
     if (ev.button && ev.button !== 0) return;
 
     if (sorter) {
-      sorter.onStart = (data: any) => em.trigger(`${eventDrag}:start`, data);
-      sorter.onMoveClb = (data: any) => em.trigger(eventDrag, data);
-      sorter.startSort(ev.target);
+      const toMove = model.delegate?.move?.(model) || model;
+      sorter.onStart = getOnComponentDragStart(em);
+      sorter.onMoveClb = getOnComponentDrag(em);
+      sorter.onEndMove = getOnComponentDragEnd(em, [toMove]);
+      const itemEl = (toMove as any).viewLayer?.el || ev.target;
+      sorter.startSort(itemEl);
     }
   }
 

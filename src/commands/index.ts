@@ -46,7 +46,7 @@ import { isFunction, includes } from 'underscore';
 import CommandAbstract, { Command, CommandOptions, CommandObject, CommandFunction } from './view/CommandAbstract';
 import defaults, { CommandsConfig } from './config/config';
 import { Module } from '../abstract';
-import { eventDrag } from '../dom_components/model/Component';
+import Component, { eventDrag } from '../dom_components/model/Component';
 import Editor from '../editor/model/Editor';
 import { ObjectAny } from '../common';
 
@@ -78,6 +78,27 @@ const commandsDef = [
   ['component-style-clear', 'ComponentStyleClear'],
   ['component-drag', 'ComponentDrag'],
 ];
+
+const defComOptions = { preserveSelected: 1 };
+
+export const getOnComponentDragStart = (em: Editor) => (data: any) => em.trigger(`${eventDrag}:start`, data);
+
+export const getOnComponentDrag = (em: Editor) => (data: any) => em.trigger(eventDrag, data);
+
+export const getOnComponentDragEnd =
+  (em: Editor, targets: Component[], opts: { altMode?: boolean } = {}) =>
+  (a: any, b: any, data: any) => {
+    targets.forEach(trg => trg.set('status', trg.get('selectable') ? 'selected' : ''));
+    em.setSelected(targets);
+    targets[0].emitUpdate();
+    em.trigger(`${eventDrag}:end`, data);
+
+    // Defer selectComponent in order to prevent canvas "freeze" #2692
+    setTimeout(() => em.runDefault(defComOptions));
+
+    // Dirty patch to prevent parent selection on drop
+    (opts.altMode || data.cancelled) && em.set('_cmpDrag', 1);
+  };
 
 export default class CommandsModule extends Module<CommandsConfig & { pStylePrefix?: string }> {
   CommandAbstract = CommandAbstract;
@@ -118,54 +139,39 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
     };
 
     defaultCommands['tlb-move'] = {
-      run(ed, sender, opts = {}) {
+      run(ed, s, opts = {}) {
         let dragger;
         const em = ed.getModel();
-        const event = opts && opts.event;
-        const { target } = opts;
-        const sel = target || ed.getSelected();
-        const selAll = target ? [target] : [...ed.getSelectedAll()];
-        const nativeDrag = event && event.type == 'dragstart';
-        const defComOptions = { preserveSelected: 1 };
+        const { event } = opts;
+        const trg = opts.target as Component | undefined;
+        const trgs = trg ? [trg] : [...ed.getSelectedAll()];
+        const targets = trgs.map(trg => trg.delegate?.move?.(trg) || trg).filter(Boolean);
+        const target = targets[0] as Component | undefined;
+        const nativeDrag = event?.type === 'dragstart';
         const modes = ['absolute', 'translate'];
 
-        if (!sel || !sel.get('draggable')) {
+        if (!target?.get('draggable')) {
           return em.logWarning('The element is not draggable');
         }
 
-        const mode = sel.get('dmode') || em.get('dmode');
+        const mode = target.get('dmode') || em.get('dmode');
         const hideTlb = () => em.stopDefault(defComOptions);
         const altMode = includes(modes, mode);
-        selAll.forEach(sel => sel.trigger('disable'));
+        targets.forEach(trg => trg.trigger('disable'));
 
         // Without setTimeout the ghost image disappears
         nativeDrag ? setTimeout(hideTlb, 0) : hideTlb();
 
-        const onStart = (data: any) => {
-          em.trigger(`${eventDrag}:start`, data);
-        };
-        const onDrag = (data: any) => {
-          em.trigger(eventDrag, data);
-        };
-        const onEnd = (e: any, opts: any, data: any) => {
-          selAll.forEach(sel => sel.set('status', 'selected'));
-          ed.select(selAll);
-          sel.emitUpdate();
-          em.trigger(`${eventDrag}:end`, data);
-
-          // Defer selectComponent in order to prevent canvas "freeze" #2692
-          setTimeout(() => em.runDefault(defComOptions));
-
-          // Dirty patch to prevent parent selection on drop
-          (altMode || data.cancelled) && em.set('_cmpDrag', 1);
-        };
+        const onStart = getOnComponentDragStart(em);
+        const onDrag = getOnComponentDrag(em);
+        const onEnd = getOnComponentDragEnd(em, targets, { altMode });
 
         if (altMode) {
           // TODO move grabbing func in editor/canvas from the Sorter
           dragger = ed.runCommand('core:component-drag', {
             guidesInfo: 1,
             mode,
-            target: sel,
+            target,
             onStart,
             onDrag,
             onEnd,
@@ -173,7 +179,7 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
           });
         } else {
           if (nativeDrag) {
-            event.dataTransfer.setDragImage(sel.view.el, 0, 0);
+            event.dataTransfer.setDragImage(target.view?.el, 0, 0);
             //sel.set('status', 'freezed');
           }
 
@@ -182,10 +188,10 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
           cmdMove.onDrag = onDrag;
           cmdMove.onEndMoveFromModel = onEnd;
           // @ts-ignore
-          cmdMove.initSorterFromModels(selAll);
+          cmdMove.initSorterFromModels(targets);
         }
 
-        selAll.forEach(sel => sel.set('status', 'freezed-selected'));
+        targets.filter(sel => sel.get('selectable')).forEach(sel => sel.set('status', 'freezed-selected'));
       },
     };
 

@@ -1,6 +1,6 @@
 import { bindAll, debounce, isString, isUndefined } from 'underscore';
 import { ModuleView } from '../../abstract';
-import { BoxRect } from '../../common';
+import { BoxRect, ObjectAny } from '../../common';
 import CssRulesView from '../../css_composer/view/CssRulesView';
 import ComponentWrapperView from '../../dom_components/view/ComponentWrapperView';
 import Droppable from '../../utils/Droppable';
@@ -18,6 +18,7 @@ import { hasDnd, setViewEl } from '../../utils/mixins';
 import Canvas from '../model/Canvas';
 import Frame from '../model/Frame';
 import FrameWrapView from './FrameWrapView';
+import CanvasEvents from '../types';
 
 export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
   /** @ts-ignore */
@@ -290,14 +291,14 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
     const { $el, ppfx, em } = this;
     $el.attr({ class: `${ppfx}frame` });
     this.renderScripts();
-    em.trigger('frame:render', this);
+    em.trigger('frame:render', this); // deprecated
     return this;
   }
 
   renderScripts() {
     const { el, model, em } = this;
     const evLoad = 'frame:load';
-    const evOpts = { el, model, view: this };
+    const evOpts: ObjectAny = { el, model, view: this };
     const canvas = this.getCanvasModel();
     const appendScript = (scripts: any[]) => {
       if (scripts.length > 0) {
@@ -306,11 +307,18 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
           type: 'text/javascript',
           ...(isString(src) ? { src } : src),
         });
-        scriptEl.onerror = scriptEl.onload = appendScript.bind(null, scripts);
         el.contentDocument?.head.appendChild(scriptEl);
+
+        if (scriptEl.hasAttribute('nomodule') && 'noModule' in HTMLScriptElement.prototype) {
+          appendScript(scripts);
+        } else {
+          scriptEl.onerror = scriptEl.onload = appendScript.bind(null, scripts);
+        }
       } else {
+        em?.trigger(CanvasEvents.frameLoadHead, evOpts);
         this.renderBody();
-        em && em.trigger(evLoad, evOpts);
+        em?.trigger(CanvasEvents.frameLoadBody, evOpts);
+        em?.trigger(evLoad, evOpts); // deprecated
       }
     };
 
@@ -322,7 +330,9 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
         doc.write(frameContent);
         doc.close();
       }
-      em && em.trigger(`${evLoad}:before`, evOpts);
+      evOpts.window = this.getWindow();
+      em?.trigger(`${evLoad}:before`, evOpts); // deprecated
+      em?.trigger(CanvasEvents.frameLoad, evOpts);
       appendScript([...canvas.get('scripts')]);
     };
   }

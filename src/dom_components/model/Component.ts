@@ -110,6 +110,7 @@ export const keyUpdateInside = `${keyUpdate}-inside`;
  * Eg. `toolbar: [ { attributes: {class: 'fa fa-arrows'}, command: 'tlb-move' }, ... ]`.
  * By default, when `toolbar` property is falsy the editor will add automatically commands `core:component-exit` (select parent component, added if there is one), `tlb-move` (added if `draggable`) , `tlb-clone` (added if `copyable`), `tlb-delete` (added if `removable`).
  * @property {Collection<Component>} [components=null] Children components. Default: `null`
+ * @property {Object} [delegate=null] Delegate commands to other components. Available commands `remove` | `move` | `copy` | `select`. eg. `{ remove: (cmp) => cmp.closestType('other-type') }`
  *
  * @module docsjs.Component
  */
@@ -154,6 +155,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
       propagate: '',
       dmode: '',
       toolbar: null,
+      delegate: null,
       [keySymbol]: 0,
       [keySymbols]: 0,
       [keySymbolOvrd]: 0,
@@ -180,6 +182,10 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
   get resizable() {
     return this.get('resizable')!;
+  }
+
+  get delegate() {
+    return this.get('delegate');
   }
 
   /**
@@ -578,7 +584,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * component.removeAttributes('some-attr');
    * component.removeAttributes(['some-attr1', 'some-attr2']);
    */
-  removeAttributes(attrs: string[] = [], opts: SetOptions = {}) {
+  removeAttributes(attrs: string | string[] = [], opts: SetOptions = {}) {
     const attrArr = Array.isArray(attrs) ? attrs : [attrs];
     const compAttr = this.getAttributes();
     attrArr.map(i => delete compAttr[i]);
@@ -1657,6 +1663,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     delete obj.status;
     delete obj.open; // used in Layers
     delete obj._undoexc;
+    delete obj.delegate;
 
     if (!opts.fromUndo) {
       const symbol = obj[keySymbol];

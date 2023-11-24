@@ -15,7 +15,8 @@ const command: CommandObject<{ component?: Component }> = {
           component,
         });
       }
-      component.remove();
+      const cmp = component.delegate?.remove?.(component) || component;
+      cmp.remove();
     });
 
     ed.select(toSelect);
