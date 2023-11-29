@@ -3,7 +3,7 @@ import Backbone from 'backbone';
 import $ from '../../utils/cash-dom';
 import Extender from '../../utils/extender';
 import { getModel, hasWin, isEmptyObj, wait } from '../../utils/mixins';
-import { AddOptions, Model } from '../../common';
+import { AddOptions, Model, ObjectAny } from '../../common';
 import Selected from './Selected';
 import FrameView from '../../canvas/view/FrameView';
 import Editor from '..';
@@ -363,11 +363,14 @@ export default class EditorModel extends Model {
    * and there are unsaved changes
    * @private
    */
-  updateChanges() {
+  updateChanges(m: any, v: any, opts: ObjectAny) {
     const stm = this.Storage;
     const changes = this.getDirtyCount();
-    this.updateItr && clearTimeout(this.updateItr);
-    this.updateItr = setTimeout(() => this.trigger('update'));
+
+    if (!opts.isClear) {
+      this.updateItr && clearTimeout(this.updateItr);
+      this.updateItr = setTimeout(() => this.trigger('update'));
+    }
 
     if (this.config.noticeOnUnload) {
       window.onbeforeunload = changes ? () => true : null;
@@ -975,7 +978,7 @@ export default class EditorModel extends Model {
   }
 
   clearDirtyCount() {
-    return this.set({ changesCount: 0 }, { silent: true });
+    return this.set({ changesCount: 0 }, { isClear: true });
   }
 
   getZoomDecimal() {
