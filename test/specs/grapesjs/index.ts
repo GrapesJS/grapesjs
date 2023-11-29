@@ -496,8 +496,7 @@ describe('GrapesJS', () => {
         editor.select(el1);
         expect(editor.getSelected()).toBe(el1);
         expect(editor.getSelectedAll().length).toBe(1);
-        // Select via element
-        editor.select(el2.getEl() as any);
+        editor.select(el2);
         expect(editor.getSelected()).toBe(el2);
         expect(editor.getSelectedAll().length).toBe(1);
         // Deselect via empty array
@@ -508,7 +507,7 @@ describe('GrapesJS', () => {
 
       test('Select multiple components', () => {
         // Select at first el1 and el3
-        editor.select([el1, el3.getEl() as any]);
+        editor.select([el1, el3]);
         expect(editor.getSelected()).toBe(el3);
         expect(editor.getSelectedAll().length).toBe(2);
         // Add el2
