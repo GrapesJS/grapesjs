@@ -315,7 +315,7 @@ export default class EditorModel extends Model {
    */
   loadOnStart() {
     const { projectData, headless } = this.config;
-    const sm = this.get('StorageManager');
+    const sm = this.Storage;
 
     // In `onLoad`, the module will try to load the data from its configurations.
     this.toLoad.reverse().forEach(mdl => mdl.onLoad());
@@ -364,7 +364,7 @@ export default class EditorModel extends Model {
    * @private
    */
   updateChanges() {
-    const stm = this.get('StorageManager');
+    const stm = this.Storage;
     const changes = this.getDirtyCount();
     this.updateItr && clearTimeout(this.updateItr);
     this.updateItr = setTimeout(() => this.trigger('update'));
@@ -512,7 +512,7 @@ export default class EditorModel extends Model {
       if (ctrlKey && mltSel) {
         return this.toggleSelected(model);
       } else if (shiftKey && mltSel) {
-        this.clearSelection(this.get('Canvas').getWindow());
+        this.clearSelection(this.Canvas.getWindow());
         const coll = model.collection;
         const index = model.index();
         let min: number | undefined, max: number | undefined;
@@ -975,7 +975,7 @@ export default class EditorModel extends Model {
   }
 
   clearDirtyCount() {
-    return this.set('changesCount', 0);
+    return this.set({ changesCount: 0 }, { silent: true });
   }
 
   getZoomDecimal() {
