@@ -19,7 +19,6 @@ export default {
           const addOpts = { at, action: opts.action || 'paste-component' };
 
           if (contains(clp, selected) && selected.get('copyable')) {
-            // @ts-ignore
             added = collection.add(selected.clone(), addOpts);
           } else {
             added = doAdd(ed, clp, selected.parent()!, addOpts);
@@ -46,7 +45,6 @@ function doAdd(ed: Editor, clp: Component[], parent: Component, addOpts: any): C
   const copyable = clp.filter(cop => cop.get('copyable'));
   const pasteable = copyable.filter(cop => ed.Components.canMove(parent, cop).result);
   return parent.components().add(
-    // @ts-ignore
     pasteable.map(cop => cop.clone()),
     addOpts
   );
