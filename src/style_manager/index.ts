@@ -552,33 +552,33 @@ export default class StyleManager extends ItemManagerModule<
       const useClasses = !smConf.componentFirst || options.useClasses;
       const addOpts = { noCount: 1 };
       const opts = { state, addOpts };
-      let rule;
 
-      // I stop undo manager here as after adding the CSSRule (generally after
+      // Skipping undo manager here as after adding the CSSRule (generally after
       // selecting the component) and calling undo() it will remove the rule from
       // the collection, therefore updating it in style manager will not affect it
       // #268
-      um.stop();
+      um.skip(() => {
+        let rule;
 
-      if (hasClasses && useClasses) {
-        const deviceW = em.getCurrentMedia();
-        rule = cssC.get(valid, state, deviceW);
+        if (hasClasses && useClasses) {
+          const deviceW = em.getCurrentMedia();
+          rule = cssC.get(valid, state, deviceW);
 
-        if (!rule && !skipAdd) {
-          rule = cssC.add(valid, state, deviceW, {}, addOpts);
+          if (!rule && !skipAdd) {
+            rule = cssC.add(valid, state, deviceW, {}, addOpts);
+          }
+        } else if (config.avoidInlineStyle) {
+          const id = model.getId();
+          rule = cssC.getIdRule(id, opts);
+          !rule && !skipAdd && (rule = cssC.setIdRule(id, {}, opts));
+          if (model.is('wrapper')) {
+            // @ts-ignore
+            rule!.set('wrapper', 1, addOpts);
+          }
         }
-      } else if (config.avoidInlineStyle) {
-        const id = model.getId();
-        rule = cssC.getIdRule(id, opts);
-        !rule && !skipAdd && (rule = cssC.setIdRule(id, {}, opts));
-        if (model.is('wrapper')) {
-          // @ts-ignore
-          rule!.set('wrapper', 1, addOpts);
-        }
-      }
 
-      rule && (model = rule);
-      um.start();
+        rule && (model = rule);
+      });
     }
 
     return model;

@@ -323,9 +323,11 @@ export default class UndoManagerModule extends Module<UndoManagerConfig & { name
   }
 
   skip(clb: Function) {
-    this.stop();
+    const isTracking = !!this.um.isTracking();
+
+    isTracking && this.stop();
     clb();
-    this.start();
+    isTracking && this.start();
   }
 
   getGroupedStack(): UndoGroup[] {
