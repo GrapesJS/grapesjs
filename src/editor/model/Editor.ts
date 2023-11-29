@@ -2,7 +2,7 @@ import { isUndefined, isArray, contains, toArray, keys, bindAll } from 'undersco
 import Backbone from 'backbone';
 import $ from '../../utils/cash-dom';
 import Extender from '../../utils/extender';
-import { getModel, hasWin, isEmptyObj, wait } from '../../utils/mixins';
+import { hasWin, isEmptyObj, wait } from '../../utils/mixins';
 import { AddOptions, Model, ObjectAny } from '../../common';
 import Selected from './Selected';
 import FrameView from '../../canvas/view/FrameView';
@@ -475,7 +475,7 @@ export default class EditorModel extends Model {
 
   /**
    * Select a component
-   * @param  {Component|HTMLElement} el Component to select
+   * @param  {Component} el Component to select
    * @param  {Object} [opts={}] Options, optional
    * @public
    */
@@ -483,19 +483,18 @@ export default class EditorModel extends Model {
     const { event } = opts;
     const ctrlKey = event && (event.ctrlKey || event.metaKey);
     const { shiftKey } = event || {};
-    const els = (isArray(el) ? el : [el]).map(el => getModel(el, $)).map(cmp => cmp?.delegate?.select?.(cmp) || cmp);
+    const models = (isArray(el) ? el : [el])
+      .map(cmp => cmp?.delegate?.select?.(cmp) || cmp)
+      .filter(Boolean) as Component[];
     const selected = this.getSelectedAll();
     const mltSel = this.getConfig().multipleSelection;
-    let added;
 
     // If an array is passed remove all selected
     // expect those yet to be selected
     const multiple = isArray(el);
-    multiple && this.removeSelected(selected.filter(s => !contains(els, s)));
+    multiple && this.removeSelected(selected.filter(s => !contains(models, s)));
 
-    els.forEach(el => {
-      let model = getModel(el, undefined);
-
+    models.forEach(model => {
       if (model) {
         this.trigger('component:select:before', model, opts);
 
@@ -554,19 +553,17 @@ export default class EditorModel extends Model {
 
       !multiple && this.removeSelected(selected.filter(s => s !== model));
       this.addSelected(model, opts);
-      added = model;
     });
   }
 
   /**
    * Add component to selection
-   * @param  {Component|HTMLElement} el Component to select
+   * @param  {Component|Array<Component>} component Component to select
    * @param  {Object} [opts={}] Options, optional
    * @public
    */
-  addSelected(el: Component | Component[], opts: any = {}) {
-    const model = getModel(el, $);
-    const models: Component[] = isArray(model) ? model : [model];
+  addSelected(component: Component | Component[], opts: any = {}) {
+    const models: Component[] = isArray(component) ? component : [component];
 
     models.forEach(model => {
       const { selected } = this;
@@ -594,12 +591,11 @@ export default class EditorModel extends Model {
 
   /**
    * Remove component from selection
-   * @param  {Component|HTMLElement} el Component to select
+   * @param  {Component|Array<Component>} component Component to select
    * @param  {Object} [opts={}] Options, optional
    * @public
    */
-  removeSelected(el: Component | Component[], opts = {}) {
-    const component = getModel(el, $);
+  removeSelected(component: Component | Component[], opts = {}) {
     this.selected.removeComponent(component, opts);
     const cmps: Component[] = isArray(component) ? component : [component];
     cmps.forEach(component =>
@@ -612,13 +608,12 @@ export default class EditorModel extends Model {
 
   /**
    * Toggle component selection
-   * @param  {Component|HTMLElement} el Component to select
+   * @param  {Component|Array<Component>} component Component to select
    * @param  {Object} [opts={}] Options, optional
    * @public
    */
-  toggleSelected(el: Component | Component[], opts: any = {}) {
-    const model = getModel(el, $);
-    const models = isArray(model) ? model : [model];
+  toggleSelected(component: Component | Component[], opts: any = {}) {
+    const models = isArray(component) ? component : [component];
 
     models.forEach(model => {
       if (this.selected.hasComponent(model)) {
@@ -631,7 +626,7 @@ export default class EditorModel extends Model {
 
   /**
    * Hover a component
-   * @param  {Component|HTMLElement} cmp Component to select
+   * @param  {Component|Array<Component>} cmp Component to select
    * @param  {Object} [opts={}] Options, optional
    * @private
    */
@@ -662,27 +657,23 @@ export default class EditorModel extends Model {
     }
 
     const ev = 'component:hover';
-    let model = getModel(cmp, undefined) as Component | undefined;
-
-    if (!model) return;
-
     opts.forceChange && upHovered();
-    this.trigger(`${ev}:before`, model, opts);
+    this.trigger(`${ev}:before`, cmp, opts);
 
     // Check for valid hoverable
-    if (!model.get('hoverable')) {
+    if (!cmp.get('hoverable')) {
       if (opts.useValid && !opts.abort) {
-        let parent = model.parent();
+        let parent = cmp.parent();
         while (parent && !parent.get('hoverable')) parent = parent.parent();
-        model = parent;
+        cmp = parent;
       } else {
         return;
       }
     }
 
     if (!opts.abort) {
-      upHovered(model, opts);
-      this.trigger(ev, model, opts);
+      upHovered(cmp, opts);
+      this.trigger(ev, cmp, opts);
     }
   }
 

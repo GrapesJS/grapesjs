@@ -3,9 +3,8 @@ import { ObjectAny } from '../../common';
 import RichTextEditorModule from '../../rich_text_editor';
 import RichTextEditor from '../../rich_text_editor/model/RichTextEditor';
 import { off, on } from '../../utils/dom';
-import { getModel } from '../../utils/mixins';
+import { getComponentModel } from '../../utils/mixins';
 import Component from '../model/Component';
-import ComponentText from '../model/ComponentText';
 import { getComponentIds } from '../model/Components';
 import { ComponentDefinition } from '../model/types';
 import ComponentView from './ComponentView';
@@ -180,7 +179,7 @@ export default class ComponentTextView extends ComponentView {
       const range = selection.getRangeAt(0);
       const textNode = range.startContainer;
       const offset = range.startOffset;
-      const textModel = getModel(textNode) as ComponentText;
+      const textModel = getComponentModel(textNode);
       const newCmps: (ComponentDefinition | Component)[] = [];
 
       if (textModel && textModel.is?.('textnode')) {

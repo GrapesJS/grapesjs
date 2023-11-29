@@ -5,7 +5,7 @@ import { isString } from 'underscore';
 import RichTextEditorModule from '..';
 import EditorModel from '../../editor/model/Editor';
 import { getPointerEvent, off, on } from '../../utils/dom';
-import { getModel } from '../../utils/mixins';
+import { getComponentModel } from '../../utils/mixins';
 
 export interface RichTextEditorAction {
   name: string;
@@ -416,7 +416,7 @@ export default class RichTextEditor {
     const sel = doc.getSelection();
 
     if (sel && sel.rangeCount) {
-      const model = getModel(el);
+      const model = getComponentModel(el) || em.getSelected();
       const node = doc.createElement('div');
       const range = sel.getRangeAt(0);
       range.deleteContents();
