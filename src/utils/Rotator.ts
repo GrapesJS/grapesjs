@@ -146,6 +146,7 @@ export default class Rotator {
   startPos?: Position;
   currentPos?: Position;
   docs?: Document[];
+  keys?: { shift: boolean; ctrl: boolean; alt: boolean };
   snapOffset?: number;
   snapPoints?: number;
   mousePosFetcher?: RotatorOptions['mousePosFetcher'];
@@ -409,6 +410,11 @@ export default class Rotator {
       x: aX - this.center!.x,
       y: aY - this.center!.y,
     };
+    this.keys = {
+      shift: e.shiftKey,
+      ctrl: e.ctrlKey,
+      alt: e.altKey,
+    }
 
     this.rectDim = this.calc(this);
     this.updateRect(false);
@@ -542,8 +548,13 @@ export default class Rotator {
 
     const isWithinSnapRange = Math.abs(angle - closestSnappingPoint) < snappingOffset;
 
+    // Enforce rotation snapping (unless shift key is being held)
+    const shouldSnap = !data.keys!.shift && isWithinSnapRange;
+
     // Override the rotation when the element is supposed to snap
-    box.r = isWithinSnapRange ? closestSnappingPoint : box.r;
+    if (shouldSnap) {
+      box.r = closestSnappingPoint;
+    }
 
     return box;
   }
