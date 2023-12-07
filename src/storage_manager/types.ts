@@ -1,18 +1,9 @@
 /**{START_EVENTS}*/
 export enum StorageEvents {
   /**
-   * @event `canvas:spot` Spots updated.
-   * @example
-   * editor.on('canvas:spot', () => {
-   *  console.log('Spots', editor.Canvas.getSpots());
-   * });
-   */
-  spot = 'canvas:spot',
-
-  /**
    * @event `storage:start` Storage request start.
    * @example
-   * editor.on('storage:start', () => {
+   * editor.on('storage:start', (type) => {
    *  console.log('Storage start');
    * });
    */
@@ -22,7 +13,7 @@ export enum StorageEvents {
    * @event `storage:start:store` Storage store request start.
    * The project JSON object to store is passed as an argument (which you can edit).
    * @example
-   * editor.on('storage:start:store', () => {
+   * editor.on('storage:start:store', (data) => {
    *  console.log('Storage start store');
    * });
    */
@@ -41,7 +32,7 @@ export enum StorageEvents {
    * @event `storage:load` Storage loaded the project.
    * The loaded project is passed as an argument.
    * @example
-   * editor.on('storage:load', () => {
+   * editor.on('storage:load', (data, res) => {
    *  console.log('Storage loaded the project');
    * });
    */
@@ -51,16 +42,28 @@ export enum StorageEvents {
    * @event `storage:store` Storage stored the project.
    * The stored project is passed as an argument.
    * @example
-   * editor.on('storage:store', () => {
+   * editor.on('storage:store', (data, res) => {
    *  console.log('Storage stored the project');
    * });
    */
   store = 'storage:store',
 
   /**
-   * @event `storage:end` Storage request ended.
+   * @event `storage:after` Storage request completed.
    * @example
-   * editor.on('storage:end', () => {
+   * editor.on('storage:after', (type) => {
+   *  console.log('Storage request completed');
+   * });
+   */
+  after = 'storage:after',
+  afterStore = 'storage:after:store',
+  afterLoad = 'storage:after:load',
+
+  /**
+   * @event `storage:end` Storage request ended.
+   * This event triggers also in case of errors.
+   * @example
+   * editor.on('storage:end', (type) => {
    *  console.log('Storage request ended');
    * });
    */
@@ -68,6 +71,7 @@ export enum StorageEvents {
 
   /**
    * @event `storage:end:store` Storage store request ended.
+   * This event triggers also in case of errors.
    * @example
    * editor.on('storage:end:store', () => {
    *  console.log('Storage store request ended');
@@ -77,6 +81,7 @@ export enum StorageEvents {
 
   /**
    * @event `storage:end:load` Storage load request ended.
+   * This event triggers also in case of errors.
    * @example
    * editor.on('storage:end:load', () => {
    *  console.log('Storage load request ended');
@@ -87,7 +92,7 @@ export enum StorageEvents {
   /**
    * @event `storage:error` Error on storage request.
    * @example
-   * editor.on('storage:error', () => {
+   * editor.on('storage:error', (err) => {
    *  console.log('Storage error');
    * });
    */
@@ -96,7 +101,7 @@ export enum StorageEvents {
   /**
    * @event `storage:error:store` Error on store request.
    * @example
-   * editor.on('storage:error:store', () => {
+   * editor.on('storage:error:store', (err) => {
    *  console.log('Error on store');
    * });
    */
@@ -105,7 +110,7 @@ export enum StorageEvents {
   /**
    * @event `storage:error:load` Error on load request.
    * @example
-   * editor.on('storage:error:load', () => {
+   * editor.on('storage:error:load', (err) => {
    *  console.log('Error on load');
    * });
    */

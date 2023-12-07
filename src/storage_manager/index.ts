@@ -19,18 +19,7 @@
  * storageManager.add(...);
  * ```
  *
- * ## Available Events
- * * `storage:start` - Before the storage request is started
- * * `storage:start:store` - Before the store request. The object to store is passed as an argument (which you can edit)
- * * `storage:start:load` - Before the load request. Items to load are passed as an argument (which you can edit)
- * * `storage:load` - Triggered when something was loaded from the storage, loaded object passed as an argument
- * * `storage:store` - Triggered when something is stored to the storage, stored object passed as an argument
- * * `storage:end` - After the storage request is ended
- * * `storage:end:store` - After the store request
- * * `storage:end:load` - After the load request
- * * `storage:error` - On any error on storage request, passes the error as an argument
- * * `storage:error:store` - Error on store request, passes the error as an argument
- * * `storage:error:load` - Error on load request, passes the error as an argument
+ * {REPLACE_EVENTS}
  *
  * ## Methods
  * * [getConfig](#getconfig)
@@ -58,26 +47,13 @@ import LocalStorage from './model/LocalStorage';
 import RemoteStorage from './model/RemoteStorage';
 import EditorModel from '../editor/model/Editor';
 import IStorage, { StorageOptions, ProjectData } from './model/IStorage';
+import StorageEvents from './types';
 
 export type * from './model/IStorage';
 
-export type StorageEvent =
-  | 'storage:start'
-  | 'storage:start:store'
-  | 'storage:start:load'
-  | 'storage:load'
-  | 'storage:store'
-  | 'storage:end'
-  | 'storage:end:store'
-  | 'storage:end:load'
-  | 'storage:error'
-  | 'storage:error:store'
-  | 'storage:error:load';
+export type StorageEvent = `${StorageEvents}`;
 
-const eventStart = 'storage:start';
-const eventAfter = 'storage:after';
-const eventEnd = 'storage:end';
-const eventError = 'storage:error';
+type StorageEventType = 'store' | 'load';
 
 const STORAGE_LOCAL = 'local';
 const STORAGE_REMOTE = 'remote';
@@ -86,6 +62,7 @@ export default class StorageManager extends Module<
   StorageManagerConfig & { name?: string; _disable?: boolean; currentStorage?: string }
 > {
   storages: Record<string, IStorage> = {};
+  events = StorageEvents;
 
   constructor(em: EditorModel) {
     super(em, 'StorageManager', defaults);
@@ -315,7 +292,7 @@ export default class StorageManager extends Module<
         result = (onLoad && (await onLoad(result, editor))) || result;
       }
       this.onAfter(ev, result, response);
-      this.onEnd(ev, result);
+      this.onEnd(ev, result, response);
     } catch (error) {
       this.onError(ev, error);
       throw error;
@@ -347,11 +324,12 @@ export default class StorageManager extends Module<
    * On start callback
    * @private
    */
-  onStart(ctx: string, data?: ProjectData) {
+  onStart(type: StorageEventType, data?: ProjectData) {
     const { em } = this;
     if (em) {
-      em.trigger(eventStart);
-      ctx && em.trigger(`${eventStart}:${ctx}`, data);
+      const ev = type === 'load' ? StorageEvents.startLoad : StorageEvents.startStore;
+      em.trigger(StorageEvents.start, type, data);
+      em.trigger(ev, data);
     }
   }
 
@@ -359,12 +337,14 @@ export default class StorageManager extends Module<
    * On after callback (before passing data to the callback)
    * @private
    */
-  onAfter(ctx: string, data: ProjectData, response: any) {
+  onAfter(type: StorageEventType, data: ProjectData, response: any) {
     const { em } = this;
     if (em) {
-      em.trigger(eventAfter);
-      em.trigger(`${eventAfter}:${ctx}`, data, response);
-      em.trigger(`storage:${ctx}`, data, response);
+      const evAfter = type === 'load' ? StorageEvents.afterLoad : StorageEvents.afterStore;
+      em.trigger(StorageEvents.after);
+      em.trigger(evAfter, data, response);
+      const ev = type === 'load' ? StorageEvents.load : StorageEvents.store;
+      em.trigger(ev, data, response);
     }
   }
 
@@ -372,11 +352,12 @@ export default class StorageManager extends Module<
    * On end callback
    * @private
    */
-  onEnd(ctx: string, data: ProjectData) {
+  onEnd(type: StorageEventType, data: ProjectData, response?: any) {
     const { em } = this;
     if (em) {
-      em.trigger(eventEnd);
-      ctx && em.trigger(`${eventEnd}:${ctx}`, data);
+      const ev = type === 'load' ? StorageEvents.endLoad : StorageEvents.endStore;
+      em.trigger(StorageEvents.end, type, data, response);
+      em.trigger(ev, data, response);
     }
   }
 
@@ -384,12 +365,13 @@ export default class StorageManager extends Module<
    * On error callback
    * @private
    */
-  onError(ctx: string, data: any) {
+  onError(type: StorageEventType, error: any) {
     const { em } = this;
     if (em) {
-      em.trigger(eventError, data);
-      ctx && em.trigger(`${eventError}:${ctx}`, data);
-      this.onEnd(ctx, data);
+      const ev = type === 'load' ? StorageEvents.errorLoad : StorageEvents.errorStore;
+      em.trigger(StorageEvents.error, error, type);
+      em.trigger(ev, error);
+      this.onEnd(type, error);
     }
   }
 
