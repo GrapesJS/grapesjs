@@ -1,7 +1,7 @@
 import { each, isEmpty, keys, result } from 'underscore';
 import { CanvasSpotBuiltInTypes } from '../../canvas/model/CanvasSpot';
 import FrameView from '../../canvas/view/FrameView';
-import { ExtractMethods, ObjectAny, View } from '../../common';
+import { DisableOptions, ExtractMethods, ObjectAny, View } from '../../common';
 import { GetSetRuleOptions } from '../../css_composer';
 import Editor from '../../editor';
 import EditorModel from '../../editor/model/Editor';
@@ -140,7 +140,7 @@ Component> {
   /**
    * Callback executed when the `disable` event is triggered on component
    */
-  onDisable() {}
+  onDisable(opts?: DisableOptions) {}
 
   remove() {
     super.remove();

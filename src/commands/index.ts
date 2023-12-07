@@ -157,7 +157,7 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
         const mode = target.get('dmode') || em.get('dmode');
         const hideTlb = () => em.stopDefault(defComOptions);
         const altMode = includes(modes, mode);
-        targets.forEach(trg => trg.trigger('disable'));
+        targets.forEach(trg => trg.trigger('disable', { fromMove: true }));
 
         // Without setTimeout the ghost image disappears
         nativeDrag ? setTimeout(hideTlb, 0) : hideTlb();

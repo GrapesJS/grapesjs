@@ -9,6 +9,8 @@ export type SetOptions = Backbone.ModelSetOptions & { avoidStore?: boolean };
 
 export type AddOptions = Backbone.AddOptions & { temporary?: boolean };
 
+export type DisableOptions = { fromMove?: boolean };
+
 export type RemoveOptions = Backbone.Silenceable;
 
 export type EventHandler = Backbone.EventHandler;

@@ -1,5 +1,5 @@
 import { bindAll } from 'underscore';
-import { ObjectAny } from '../../common';
+import { DisableOptions, ObjectAny } from '../../common';
 import RichTextEditorModule from '../../rich_text_editor';
 import RichTextEditor from '../../rich_text_editor/model/RichTextEditor';
 import { off, on } from '../../utils/dom';
@@ -99,15 +99,15 @@ export default class ComponentTextView extends ComponentView {
     this.toggleEvents(true);
   }
 
-  onDisable() {
-    this.disableEditing();
+  onDisable(opts?: DisableOptions) {
+    this.disableEditing(opts);
   }
 
   /**
    * Disable element content editing
    * @private
    * */
-  async disableEditing(opts = {}) {
+  async disableEditing(opts: DisableOptions = {}) {
     const { model, rte, activeRte, em } = this;
     // There are rare cases when disableEditing is called when the view is already removed
     // so, we have to check for the model, this will avoid breaking stuff.
@@ -115,7 +115,7 @@ export default class ComponentTextView extends ComponentView {
 
     if (rte) {
       try {
-        await rte.disable(this, activeRte);
+        await rte.disable(this, activeRte, opts);
       } catch (err) {
         em.logError(err as any);
       }
@@ -242,8 +242,8 @@ export default class ComponentTextView extends ComponentView {
 
     // The ownerDocument is from the frame
     var elDocs = [this.el.ownerDocument, document];
-    mixins.off(elDocs, 'mousedown', this.onDisable);
-    mixins[method](elDocs, 'mousedown', this.onDisable);
+    mixins.off(elDocs, 'mousedown', this.onDisable as any);
+    mixins[method](elDocs, 'mousedown', this.onDisable as any);
     em[method]('toolbar:run:before', this.onDisable);
     if (model) {
       model[method]('removed', this.onDisable);

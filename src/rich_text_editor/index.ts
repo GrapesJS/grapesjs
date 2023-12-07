@@ -39,7 +39,7 @@
 
 import { debounce, isFunction, isString } from 'underscore';
 import { Module } from '../abstract';
-import { Debounced, Model } from '../common';
+import { Debounced, DisableOptions, Model } from '../common';
 import ComponentView from '../dom_components/view/ComponentView';
 import EditorModel from '../editor/model/Editor';
 import { createEl, cx, on, removeEl } from '../utils/dom';
@@ -398,7 +398,7 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
    * @param {Object} rte The instance of already defined RTE
    * @private
    * */
-  disable(view: ComponentView, rte?: RichTextEditor) {
+  disable(view: ComponentView, rte?: RichTextEditor, opts: DisableOptions = {}) {
     const { em } = this;
     const customRte = this.customRte;
     // @ts-ignore
@@ -414,7 +414,7 @@ export default class RichTextEditorModule extends Module<RichTextEditorConfig & 
 
     if (em) {
       em.off(eventsUp, this.updatePosition, this);
-      em.trigger('rte:disable', view, rte);
+      !opts.fromMove && em.trigger('rte:disable', view, rte);
     }
 
     this.model.unset('currentView');
