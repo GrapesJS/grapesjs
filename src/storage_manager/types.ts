@@ -50,6 +50,7 @@ export enum StorageEvents {
 
   /**
    * @event `storage:after` Storage request completed.
+   * Triggered right after `storage:load`/`storage:store`.
    * @example
    * editor.on('storage:after', (type) => {
    *  console.log('Storage request completed');
@@ -92,7 +93,7 @@ export enum StorageEvents {
   /**
    * @event `storage:error` Error on storage request.
    * @example
-   * editor.on('storage:error', (err) => {
+   * editor.on('storage:error', (err, type) => {
    *  console.log('Storage error');
    * });
    */
