@@ -30,6 +30,7 @@ export default class ComponentVideo extends ComponentImage {
       controls: true,
       color: '',
       list: '',
+      src: '',
       rel: 1, // YT related videos
       modestbranding: 0, // YT modest branding
       sources: [],
@@ -317,7 +318,7 @@ export default class ComponentVideo extends ComponentImage {
     const list = this.get('list');
     url += id + (id.indexOf('?') < 0 ? '?' : '');
     url += list ? `&list=${list}` : '';
-    url += this.get('autoplay') ? '&autoplay=1&muted=1' : '';
+    url += this.get('autoplay') ? '&autoplay=1&mute=1' : '';
     url += !this.get('controls') ? '&controls=0&showinfo=0' : '';
     // Loop works only with playlist enabled
     // https://stackoverflow.com/questions/25779966/youtube-iframe-loop-doesnt-work
