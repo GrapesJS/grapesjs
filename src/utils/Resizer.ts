@@ -9,6 +9,7 @@ type RectDim = {
   l: number;
   w: number;
   h: number;
+  r: number;
 };
 
 type BoundingRect = {
@@ -24,6 +25,8 @@ type CallbackOptions = {
   el: HTMLElement;
   resizer: Resizer;
 };
+
+type Coordinate = Pick<RectDim, 't'|'l'>;
 
 export interface ResizerOptions {
   /**
@@ -444,6 +447,59 @@ export default class Resizer {
   }
 
   /**
+   * Get any of the 8 handlers from the rectangle, 
+   * and get it's coordinates based on zero degrees rotation.
+   */
+  private getRectCoordiante(handler: string, rect: RectDim): Coordinate {
+    switch (handler) {
+      case 'tl': return { t: rect.t, l: rect.l };
+      case 'tr': return { t: rect.t, l: rect.l + rect.w };
+      case 'bl': return { t: rect.t + rect.h, l: rect.l };
+      case 'br': return { t: rect.t + rect.h, l: rect.l + rect.w };
+      case 'tc': return { t: rect.t, l: rect.l + (rect.w / 2) };
+      case 'cr': return { t: rect.t + (rect.h / 2), l: rect.l + rect.w };
+      case 'bc': return { t: rect.t + rect.h, l: rect.l + (rect.w / 2) };
+      case 'cl': return { t: rect.t + (rect.h / 2), l: rect.l };
+      default: throw new Error('Invalid handler ' + handler);
+    }
+  } 
+
+  /**
+   * Get opposite coordinate on rectangle based on distance to center
+   */
+  private getOppositeRectCoordinate(coordinate: Coordinate, rect: RectDim): Coordinate {
+    const cx = rect.l + (rect.w / 2);
+    const cy = rect.t + (rect.h / 2);
+
+    const dx = cx - coordinate.l;
+    const dy = cy - coordinate.t;
+
+    const nx = cx + dx;
+    const ny = cy + dy;
+
+    return { l: nx, t: ny }
+  }
+
+  /**
+   * Rotate a rectangle coordinate around it's center and given rectangle rotation
+   */
+  private rotateCoordinate(coordinate: Coordinate, rect: RectDim): Coordinate {
+    const cx = rect.l + (rect.w / 2);
+    const cy = rect.t + (rect.h / 2);
+
+    const a = ((rect.r));
+    const theta = a * (Math.PI / 180);
+
+    const x = coordinate.l;
+    const y = coordinate.t;
+
+    const rx = (x - cx) * Math.cos(theta) - (y - cy) * Math.sin(theta) + cx;
+    const ry = (x - cx) * Math.sin(theta) + (y - cy) * Math.cos(theta) + cy;
+
+    return { l: rx, t: ry }
+  }
+
+  /**
    * Start resizing
    * @param  {Event} e
    */
@@ -462,13 +518,18 @@ export default class Resizer {
     const rect = this.getElementPos(el!, { avoidFrameZoom: true, avoidFrameOffset: true });
     const parentRect = this.getElementPos(parentEl!);
     const target = e.target as HTMLElement;
+    const _rotation = getComputedStyle(el).rotate;
+    const rotation = (Number((_rotation === 'none' ? '0deg' : _rotation).replace('deg', '')) + 360) % 360;
+
     this.handlerAttr = target.getAttribute(attrName)!;
     this.clickedHandler = target;
+
     this.startDim = {
       t: Number.parseFloat(el?.computedStyleMap().get('top')?.toString() ?? '0'),
       l: Number.parseFloat(el?.computedStyleMap().get('left')?.toString() ?? '0'),
       w: rect.width,
       h: rect.height,
+      r: rotation
     };
     this.rectDim = {
       ...this.startDim,
@@ -484,6 +545,7 @@ export default class Resizer {
       l: parentRect.left,
       w: parentRect.width,
       h: parentRect.height,
+      r: 0
     };
 
     // Listen events
@@ -512,9 +574,18 @@ export default class Resizer {
           y: e.clientY,
         };
     this.currentPos = currentPos;
+
+    // Calculate delta based on rotation and x,y shift
+    const theta = (Math.PI / 180) * -this.startDim!.r;
+
+    const sx = this.startPos!.x * Math.cos(theta) - this.startPos!.y * Math.sin(theta);
+    const sy = this.startPos!.x * Math.sin(theta) + this.startPos!.y * Math.cos(theta);
+    const cx = currentPos.x * Math.cos(theta) - currentPos.y * Math.sin(theta);
+    const cy = currentPos.x * Math.sin(theta) + currentPos.y * Math.cos(theta);
+
     this.delta = {
-      x: currentPos.x - this.startPos!.x,
-      y: currentPos.y - this.startPos!.y,
+      x: cx - sx,
+      y: cy - sy
     };
     this.keys = {
       shift: e.shiftKey,
@@ -555,14 +626,26 @@ export default class Resizer {
     const config = this.opts;
     const rect = this.rectDim!;
     const updateTarget = this.updateTarget;
-    const selectedHandler = this.getSelectedHandler();
     const { unitHeight, unitWidth, keyWidth, keyHeight } = config;
+
+    // Calculate difference between locking point after new dimensions
+    const coordiantes = [this.startDim!, rect].map(rect => {
+      const handlerCoordinate = this.getRectCoordiante(this.handlerAttr!, rect); 
+      const oppositeCoordinate = this.getOppositeRectCoordinate(handlerCoordinate, rect);
+      return this.rotateCoordinate(oppositeCoordinate, rect);
+    })
+
+    const diffX = coordiantes[0].l - coordiantes[1].l;
+    const diffY = coordiantes[0].t - coordiantes[1].t;
+
+    rect.t += diffY;
+    rect.l += diffX;
 
     // Use custom updating strategy if requested
     if (isFunction(updateTarget)) {
       updateTarget(el, rect, {
         store,
-        selectedHandler,
+        selectedHandler: this.handlerAttr,
         resizer,
         config,
       });
@@ -596,22 +679,6 @@ export default class Resizer {
         ...opt,
       },
     });
-  }
-
-  /**
-   * Get selected handler name
-   * @return {string}
-   */
-  getSelectedHandler() {
-    var handlers = this.handlers;
-
-    if (!this.selectedHandler) {
-      return;
-    }
-
-    for (let n in handlers) {
-      if (handlers[n] === this.selectedHandler) return n;
-    }
   }
 
   /**
@@ -667,6 +734,7 @@ export default class Resizer {
       l: startDim.l,
       w: startW,
       h: startH,
+      r: startDim.r
     };
 
     if (!data) return;
@@ -718,13 +786,6 @@ export default class Resizer {
       } else {
         box.w = Math.round(box.h * ratio);
       }
-    }
-
-    if (~attr.indexOf('l')) {
-      box.l += startDim.w - box.w;
-    }
-    if (~attr.indexOf('t')) {
-      box.t += startDim.h - box.h;
     }
 
     for (const key in box) {
