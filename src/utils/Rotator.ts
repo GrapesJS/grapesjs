@@ -1,26 +1,9 @@
 import { bindAll, isFunction, each } from 'underscore';
 import { Position } from '../common';
-import { on, off, normalizeFloat } from './mixins';
+import { on, off } from './dom';
+import { BoundingRect, CallbackOptions, RectDim } from './types';
 
-type RectDim = {
-  w: number;
-  h: number;
-  t: number;
-  l: number;
-  r: number;
-};
-
-type BoundingRect = {
-  left: number;
-  top: number;
-  width: number;
-  height: number;
-};
-
-type CallbackOptions = {
-  docs: any;
-  config: any;
-  el: HTMLElement;
+type RotatorCallbackOptions = CallbackOptions & {
   rotator: Rotator;
 };
 
@@ -43,7 +26,7 @@ export interface RotatorOptions {
   /**
    * On rotate start callback.
    */
-  onStart?: (ev: Event, opts: CallbackOptions) => void;
+  onStart?: (ev: Event, opts: RotatorCallbackOptions) => void;
 
   /**
    * On rotate move callback.
@@ -53,7 +36,7 @@ export interface RotatorOptions {
   /**
    * On rotate end callback.
    */
-  onEnd?: (ev: Event, opts: CallbackOptions) => void;
+  onEnd?: (ev: Event, opts: RotatorCallbackOptions) => void;
 
   /**
    * On container update callback.

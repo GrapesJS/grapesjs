@@ -3,23 +3,9 @@ import { ElementPosOpts } from '../canvas/view/CanvasView';
 import { Position } from '../common';
 import { off, on } from './dom';
 import { normalizeFloat } from './mixins';
+import { BoundingRect, CallbackOptions, RectDim } from './types';
 
-type RectDim = {
-  t: number;
-  l: number;
-  w: number;
-  h: number;
-  r: number;
-};
-
-type BoundingRect = {
-  left: number;
-  top: number;
-  width: number;
-  height: number;
-};
-
-type CallbackOptions = {
+type ReizerCallbackOptions = CallbackOptions & {
   docs: any;
   config: any;
   el: HTMLElement;
@@ -53,7 +39,7 @@ export interface ResizerOptions {
   /**
    * On resize start callback.
    */
-  onStart?: (ev: Event, opts: CallbackOptions) => void;
+  onStart?: (ev: Event, opts: ReizerCallbackOptions) => void;
 
   /**
    * On resize move callback.
@@ -63,7 +49,7 @@ export interface ResizerOptions {
   /**
    * On resize end callback.
    */
-  onEnd?: (ev: Event, opts: CallbackOptions) => void;
+  onEnd?: (ev: Event, opts: ReizerCallbackOptions) => void;
 
   /**
    * On container update callback.
