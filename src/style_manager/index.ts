@@ -594,19 +594,26 @@ export default class StyleManager extends ItemManagerModule<
       const cssGen = em.CodeManager.getGenerator('css');
       // @ts-ignore
       const cmp = target.toHTML ? target : target.getComponent();
-      const optsSel = { combination: true, array: true };
-      let cmpRules = [];
-      let otherRules = [];
-      let rules = [];
+      const optsSel = { array: true } as const;
+      let cmpRules: CssRule[] = [];
+      let otherRules: CssRule[] = [];
+      let rules: CssRule[] = [];
+
+      const rulesBySelectors = (values: string[]) => {
+        return cssC.getRules().filter(rule => {
+          const rSels = rule.getSelectors().map(s => s.getFullName());
+          return rSels.every(rSel => values.indexOf(rSel) >= 0);
+        });
+      };
 
       // Componente related rule
       if (cmp) {
         cmpRules = cssC.getRules(`#${cmp.getId()}`);
-        otherRules = sel ? cssC.getRules(sel.getSelectors().getFullName(optsSel) as string) : [];
+        otherRules = sel ? rulesBySelectors(sel.getSelectors().getFullName(optsSel)) : [];
         rules = otherRules.concat(cmpRules);
       } else {
         cmpRules = sel ? cssC.getRules(`#${sel.getId()}`) : [];
-        otherRules = cssC.getRules(target.getSelectors().getFullName(optsSel) as string);
+        otherRules = rulesBySelectors(target.getSelectors().getFullName(optsSel));
         rules = cmpRules.concat(otherRules);
       }
 
