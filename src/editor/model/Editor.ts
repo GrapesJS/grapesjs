@@ -488,11 +488,11 @@ export default class EditorModel extends Model {
       .filter(Boolean) as Component[];
     const selected = this.getSelectedAll();
     const mltSel = this.getConfig().multipleSelection;
-
-    // If an array is passed remove all selected
-    // expect those yet to be selected
     const multiple = isArray(el);
-    multiple && this.removeSelected(selected.filter(s => !contains(models, s)));
+
+    if (multiple || !el) {
+      this.removeSelected(selected.filter(s => !contains(models, s)));
+    }
 
     models.forEach(model => {
       if (model) {
