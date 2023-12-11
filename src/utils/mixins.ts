@@ -241,6 +241,22 @@ export const buildBase64UrlFromSvg = (svg: string) => {
   return svg;
 };
 
+export const getRotation = (style: CSSStyleDeclaration) => {
+  const _rotation = style.rotate;
+  return (Number((_rotation === 'none' ? '0deg' : _rotation).replace('deg', '')) + 360) % 360;
+}
+
+export const getRotatedCoordiante = (angle: number, point: { x: number; y: number; }): { x: number, y: number } => {
+  const theta = angle * (Math.PI / 180);
+
+  const { x, y } = point;
+
+  const rx = x * Math.cos(theta) - y * Math.sin(theta);
+  const ry = x * Math.sin(theta) + y * Math.cos(theta);
+
+  return { x: rx, y: ry }
+}
+
 export {
   hasDnd,
   upFirst,

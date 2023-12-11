@@ -3,7 +3,7 @@ import Component from '../../dom_components/model/Component';
 import Toolbar from '../../dom_components/model/Toolbar';
 import ToolbarView from '../../dom_components/view/ToolbarView';
 import { isDoc, isTaggableNode, isVisible, off, on } from '../../utils/dom';
-import { getComponentModel, getComponentView, getUnitFromValue, getViewEl, hasWin, isObject } from '../../utils/mixins';
+import { getComponentModel, getComponentView, getRotation, getUnitFromValue, getViewEl, hasWin, isObject } from '../../utils/mixins';
 import { CommandObject } from './CommandAbstract';
 import { CanvasSpotBuiltInTypes } from '../../canvas/model/CanvasSpot';
 import { ResizerOptions } from '../../utils/Resizer';
@@ -513,6 +513,13 @@ export default {
     const rotateClass = `${pfx}rotating`;
     const model = !isElement(elem) && isTaggableNode(elem) ? elem : em.getSelected();
     const rotatable = model && model.get('rotatable');
+
+    if (!editor || !rotatable) {
+      editor.stopCommand('rotate');
+      this.rotator = null;
+      return;
+    }
+
     let options = {};
     let modelToStyle: any;
 
@@ -526,82 +533,75 @@ export default {
         });
     };
 
-    if (editor && rotatable) {
-      const el = isElement(elem) ? elem : model.getEl();
-      options = {
-        // Here the rotator is updated with the current element height and width
-        onStart(e: Event, opts: any = {}) {
-          const { el, rotator } = opts;
-          toggleBodyClass('add', e, opts);
-          modelToStyle = em.Styles.getModelToStyle(model);
-          canvas.toggleFramesEvents(false);
-          const computedStyle = getComputedStyle(el);
-          const modelStyle = modelToStyle.getStyle();
+    const el = isElement(elem) ? elem : model.getEl();
+    options = {
+      // Here the rotator is updated with the current element height and width
+      onStart(e: Event, opts: any = {}) {
+        const { el, rotator } = opts;
+        toggleBodyClass('add', e, opts);
+        modelToStyle = em.Styles.getModelToStyle(model);
+        canvas.toggleFramesEvents(false);
+        const computedStyle = getComputedStyle(el);
+        const modelStyle = modelToStyle.getStyle();
 
-          let currentWidth = modelStyle['width'];
-          if (isNaN(parseFloat(currentWidth))) {
-            currentWidth = computedStyle['width'];
-          }
+        let currentWidth = modelStyle['width'];
+        if (isNaN(parseFloat(currentWidth))) {
+          currentWidth = computedStyle['width'];
+        }
 
-          let currentHeight = modelStyle['height'];
-          if (isNaN(parseFloat(currentHeight))) {
-            currentHeight = computedStyle['height'];
-          }
+        let currentHeight = modelStyle['height'];
+        if (isNaN(parseFloat(currentHeight))) {
+          currentHeight = computedStyle['height'];
+        }
 
-          let currentRotation = computedStyle.getPropertyValue('rotate')?.replace('deg', '') ?? '0';
+        rotator.startDim.r = getRotation(computedStyle);
+        showOffsets = false;
+      },
 
-          rotator.startDim.r = parseFloat(currentRotation);
-          showOffsets = false;
-        },
+      // Update all positioned elements (eg. component toolbar)
+      onMove() {
+        editor.trigger('component:rotate');
+      },
 
-        // Update all positioned elements (eg. component toolbar)
-        onMove() {
-          editor.trigger('component:rotate');
-        },
+      onEnd(e: Event, opts: any) {
+        toggleBodyClass('remove', e, opts);
+        editor.trigger('component:rotate');
+        canvas.toggleFramesEvents(true);
+        showOffsets = true;
+      },
 
-        onEnd(e: Event, opts: any) {
-          toggleBodyClass('remove', e, opts);
-          editor.trigger('component:rotate');
-          canvas.toggleFramesEvents(true);
-          showOffsets = true;
-        },
+      updateTarget(el: any, rect: any, options: any = {}) {
+        if (!modelToStyle) {
+          return;
+        }
 
-        updateTarget(el: any, rect: any, options: any = {}) {
-          if (!modelToStyle) {
-            return;
-          }
+        const { store, config } = options;
+        const { keyHeight, keyWidth } = config;
+        const style: any = {};
 
-          const { store, config } = options;
-          const { keyHeight, keyWidth } = config;
-          const style: any = {};
+        if (em.getDragMode(model)) {
+          style.rotate = `${rect.r}deg`;
+        }
 
-          if (em.getDragMode(model)) {
-            style.rotate = `${rect.r}deg`;
-          }
+        modelToStyle.addStyle(
+          {
+            ...style,
+            // value for the partial update
+            __p: !store ? 1 : '',
+          },
+          { avoidStore: !store }
+        );
+        const updateEvent = 'update:component:style';
+        const eventToListen = `${updateEvent}:${keyHeight} ${updateEvent}:${keyWidth}`;
+        em && em.trigger(eventToListen, null, null, { noEmit: 1 });
+      },
+    };
 
-          modelToStyle.addStyle(
-            {
-              ...style,
-              // value for the partial update
-              __p: !store ? 1 : '',
-            },
-            { avoidStore: !store }
-          );
-          const updateEvent = 'update:component:style';
-          const eventToListen = `${updateEvent}:${keyHeight} ${updateEvent}:${keyWidth}`;
-          em && em.trigger(eventToListen, null, null, { noEmit: 1 });
-        },
-      };
-
-      if (typeof rotatable == 'object') {
-        options = { ...options, ...rotatable, parent: options };
-      }
-
-      this.rotator = editor.runCommand('rotate', { el, options, force: 1 });
-    } else {
-      editor.stopCommand('rotate');
-      this.rotator = null;
+    if (typeof rotatable == 'object') {
+      options = { ...options, ...rotatable, parent: options };
     }
+
+    this.rotator = editor.runCommand('rotate', { el, options, force: 1 });
   },
 
   /**

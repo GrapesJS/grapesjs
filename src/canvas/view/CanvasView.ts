@@ -548,8 +548,8 @@ export default class CanvasView extends ModuleView<Canvas> {
     const { noScroll } = opts;
 
     return {
-      top: fo.top + (noScroll ? 0 : bEl.scrollTop) - co.top,
-      left: fo.left + (noScroll ? 0 : bEl.scrollLeft) - co.left,
+      top: fo.top + (noScroll ? 0 : bEl.scrollTop) * zoom - co.top,
+      left: fo.left + (noScroll ? 0 : bEl.scrollLeft) * zoom - co.left,
       width: co.width,
       height: co.height,
     };

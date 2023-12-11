@@ -273,8 +273,8 @@ export default class Rotator {
    * @returns {number} rotation
    */
   getElementRotation(el: HTMLElement): number {
-    var rotation = window.getComputedStyle(el, null).getPropertyValue('rotate') ?? null;
-    return rotation ? Number(rotation.replace('deg', '')) : 0;
+    var rotation = window.getComputedStyle(el, null).getPropertyValue('rotate') ?? '0deg';
+    return Number(rotation.replace('deg', ''));
   }
 
   /**
@@ -319,17 +319,14 @@ export default class Rotator {
     const config = this.opts || {};
     const attrName = 'data-' + config.prefix + 'handler';
     const rectRotation = this.getElementRotation(el!);
-    const rect = this.getElementPos(el!, { avoidFrameZoom: true, });
+    const rect = this.getElementPos(el!, { avoidFrameZoom: true });
     const target = e.target as HTMLElement;
     this.handlerAttr = target.getAttribute(attrName)!;
 
-    const mouseFetch = this.mousePosFetcher;
-    this.startPos = mouseFetch
-      ? mouseFetch(e)
-      : {
-          x: e.clientX,
-          y: e.clientY,
-        };
+    this.startPos = this.mousePosFetcher?.(e) ?? {
+      x: e.clientX,
+      y: e.clientY,
+    };
 
     this.startDim = {
       t: rect.top,
@@ -348,8 +345,8 @@ export default class Rotator {
 
     const dims = this.getElementPos(el!, { avoidFrameZoom: true, avoidFrameOffset: true });
     this.center = {
-      x: dims.left + (dims.width / 2),
-      y: dims.top + (dims.height / 2),
+      x: dims.left + dims.width / 2,
+      y: dims.top + dims.height / 2,
     };
 
     // Listen events
@@ -385,9 +382,8 @@ export default class Rotator {
 
     const vX = currentPos.x - this.center!.x;
     const vY = currentPos.y - this.center!.y;
-    const magV = Math.sqrt(vX * vX + vY * vY);
-    const aX = this.center!.x + vX / magV * R;
-    const aY = this.center!.y + vY / magV * R;
+    const aX = this.center!.x + vX * R;
+    const aY = this.center!.y + vY * R;
 
     this.delta = {
       x: aX - this.center!.x,
@@ -397,7 +393,7 @@ export default class Rotator {
       shift: e.shiftKey,
       ctrl: e.ctrlKey,
       alt: e.altKey,
-    }
+    };
 
     this.rectDim = this.calc(this);
     this.updateRect(false);
@@ -517,8 +513,12 @@ export default class Rotator {
 
     if (!data) return;
 
-    const angle = (Math.atan2(deltaY, deltaX) * 180 / Math.PI) + 90;
-    
+    // If we are holding shift, no snapping should occur
+    if (data.keys!.shift) return box;
+
+    // Override the rotation when the element is supposed to snap
+    const angle = (Math.atan2(deltaY, deltaX) * 180) / Math.PI + 90;
+
     box.r = angle;
 
     const snappingPoints = this.defOpts.snapPoints!;
@@ -531,11 +531,7 @@ export default class Rotator {
 
     const isWithinSnapRange = Math.abs(angle - closestSnappingPoint) < snappingOffset;
 
-    // Enforce rotation snapping (unless shift key is being held)
-    const shouldSnap = !data.keys!.shift && isWithinSnapRange;
-
-    // Override the rotation when the element is supposed to snap
-    if (shouldSnap) {
+    if (isWithinSnapRange) {
       box.r = closestSnappingPoint;
     }
 

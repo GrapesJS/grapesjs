@@ -2,10 +2,10 @@ import { bindAll, each, isFunction } from 'underscore';
 import { ElementPosOpts } from '../canvas/view/CanvasView';
 import { Position } from '../common';
 import { off, on } from './dom';
-import { normalizeFloat } from './mixins';
+import { getRotatedCoordiante, getRotation, normalizeFloat } from './mixins';
 import { BoundingRect, CallbackOptions, RectDim } from './types';
 
-type ReizerCallbackOptions = CallbackOptions & {
+type ResizerCallbackOptions = CallbackOptions & {
   docs: any;
   config: any;
   el: HTMLElement;
@@ -39,7 +39,7 @@ export interface ResizerOptions {
   /**
    * On resize start callback.
    */
-  onStart?: (ev: Event, opts: ReizerCallbackOptions) => void;
+  onStart?: (ev: Event, opts: ResizerCallbackOptions) => void;
 
   /**
    * On resize move callback.
@@ -49,7 +49,7 @@ export interface ResizerOptions {
   /**
    * On resize end callback.
    */
-  onEnd?: (ev: Event, opts: ReizerCallbackOptions) => void;
+  onEnd?: (ev: Event, opts: ResizerCallbackOptions) => void;
 
   /**
    * On container update callback.
@@ -437,15 +437,17 @@ export default class Resizer {
    * and get it's coordinates based on zero degrees rotation.
    */
   private getRectCoordiante(handler: string, rect: RectDim): Coordinate {
+    const { t, l, w, h } = rect;
+
     switch (handler) {
-      case 'tl': return { t: rect.t, l: rect.l };
-      case 'tr': return { t: rect.t, l: rect.l + rect.w };
-      case 'bl': return { t: rect.t + rect.h, l: rect.l };
-      case 'br': return { t: rect.t + rect.h, l: rect.l + rect.w };
-      case 'tc': return { t: rect.t, l: rect.l + (rect.w / 2) };
-      case 'cr': return { t: rect.t + (rect.h / 2), l: rect.l + rect.w };
-      case 'bc': return { t: rect.t + rect.h, l: rect.l + (rect.w / 2) };
-      case 'cl': return { t: rect.t + (rect.h / 2), l: rect.l };
+      case 'tl': return { t: t,           l: l };
+      case 'tr': return { t: t,           l: l + w };
+      case 'bl': return { t: t + h,       l: l };
+      case 'br': return { t: t + h,       l: l + w };
+      case 'tc': return { t: t,           l: l + (w / 2) };
+      case 'cr': return { t: t + (h / 2), l: l + w };
+      case 'bc': return { t: t + h,       l: l + (w / 2) };
+      case 'cl': return { t: t + (h / 2), l: l };
       default: throw new Error('Invalid handler ' + handler);
     }
   } 
@@ -473,16 +475,14 @@ export default class Resizer {
     const cx = rect.l + (rect.w / 2);
     const cy = rect.t + (rect.h / 2);
 
-    const a = ((rect.r));
-    const theta = a * (Math.PI / 180);
+    const point = {
+      x: coordinate.l - cx,
+      y: coordinate.t - cy
+    };
 
-    const x = coordinate.l;
-    const y = coordinate.t;
+    const newPoint = getRotatedCoordiante(rect.r, point);
 
-    const rx = (x - cx) * Math.cos(theta) - (y - cy) * Math.sin(theta) + cx;
-    const ry = (x - cx) * Math.sin(theta) + (y - cy) * Math.cos(theta) + cy;
-
-    return { l: rx, t: ry }
+    return { l: newPoint.x + cx, t: newPoint.y + cy };
   }
 
   /**
@@ -504,8 +504,7 @@ export default class Resizer {
     const rect = this.getElementPos(el!, { avoidFrameZoom: true, avoidFrameOffset: true });
     const parentRect = this.getElementPos(parentEl!);
     const target = e.target as HTMLElement;
-    const _rotation = getComputedStyle(el).rotate;
-    const rotation = (Number((_rotation === 'none' ? '0deg' : _rotation).replace('deg', '')) + 360) % 360;
+    const rotation = getRotation(getComputedStyle(el));
 
     this.handlerAttr = target.getAttribute(attrName)!;
     this.clickedHandler = target;
@@ -561,13 +560,8 @@ export default class Resizer {
         };
     this.currentPos = currentPos;
 
-    // Calculate delta based on rotation and x,y shift
-    const theta = (Math.PI / 180) * -this.startDim!.r;
-
-    const sx = this.startPos!.x * Math.cos(theta) - this.startPos!.y * Math.sin(theta);
-    const sy = this.startPos!.x * Math.sin(theta) + this.startPos!.y * Math.cos(theta);
-    const cx = currentPos.x * Math.cos(theta) - currentPos.y * Math.sin(theta);
-    const cy = currentPos.x * Math.sin(theta) + currentPos.y * Math.cos(theta);
+    const { x: sx, y: sy } = getRotatedCoordiante(-this.startDim!.r, this.startPos!);
+    const { x: cx, y: cy } = getRotatedCoordiante(-this.startDim!.r, currentPos);
 
     this.delta = {
       x: cx - sx,
