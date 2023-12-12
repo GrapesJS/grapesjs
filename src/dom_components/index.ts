@@ -80,7 +80,7 @@ import ComponentTextNode from './model/ComponentTextNode';
 import ComponentVideo from './model/ComponentVideo';
 import ComponentWrapper from './model/ComponentWrapper';
 import Components from './model/Components';
-import { ComponentAdd, ComponentDefinition, ComponentDefinitionDefined } from './model/types';
+import { ComponentAdd, ComponentDefinition, ComponentDefinitionDefined, ComponentStackItem } from './model/types';
 import ComponentCommentView from './view/ComponentCommentView';
 import ComponentFrameView from './view/ComponentFrameView';
 import ComponentImageView from './view/ComponentImageView';
@@ -164,7 +164,7 @@ export interface CanMoveResult {
 }
 
 export default class ComponentManager extends ItemManagerModule<DomComponentsConfig, any> {
-  componentTypes = [
+  componentTypes: ComponentStackItem[] = [
     {
       id: 'cell',
       model: ComponentTableCell,

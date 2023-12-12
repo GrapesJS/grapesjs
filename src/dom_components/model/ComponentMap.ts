@@ -25,13 +25,13 @@ export default class ComponentMap extends ComponentImage {
           label: 'Address',
           name: 'address',
           placeholder: 'eg. London, UK',
-          changeProp: 1,
+          changeProp: true,
         },
         {
           type: 'select',
           label: 'Map type',
           name: 'mapType',
-          changeProp: 1,
+          changeProp: true,
           options: [
             { value: 'q', name: 'Roadmap' },
             { value: 'w', name: 'Satellite' },
@@ -41,9 +41,9 @@ export default class ComponentMap extends ComponentImage {
           label: 'Zoom',
           name: 'zoom',
           type: 'range',
-          min: '1',
-          max: '20',
-          changeProp: 1,
+          min: 1,
+          max: 20,
+          changeProp: true,
         },
       ],
     };

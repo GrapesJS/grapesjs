@@ -6,6 +6,7 @@ import { TraitProperties } from '../../trait_manager/model/Trait';
 import Traits from '../../trait_manager/model/Traits';
 import { ResizerOptions } from '../../utils/Resizer';
 import { DomComponentsConfig } from '../config/config';
+import ComponentView from '../view/ComponentView';
 import Component from './Component';
 import Components from './Components';
 import { ToolbarButtonProps } from './ToolbarButton';
@@ -13,6 +14,12 @@ import { ToolbarButtonProps } from './ToolbarButton';
 export type DragMode = 'translate' | 'absolute' | '';
 
 export type DraggableDroppableFn = (source: Component, target: Component, index?: number) => boolean | void;
+
+export interface ComponentStackItem {
+  id: string;
+  model: typeof Component;
+  view: typeof ComponentView;
+}
 
 /**
  * Delegate commands to other components.
