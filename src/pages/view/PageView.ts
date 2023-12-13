@@ -3,6 +3,7 @@ import { View } from '../../common';
 import EditorModel from '../../editor/model/Editor';
 import { hasDnd } from '../../utils/mixins';
 import Page from '../../pages/model/Page';
+import TraitTextView from '../../common/traits/view/TraitTextView';
 
 export type ItemViewProps = {
   level: number;
@@ -26,8 +27,10 @@ export default class PageView extends View<Page> {
   highlightedClass = 'gjs-three-bg';
 
   render() {
+    const { em, pfx, ppfx, model } = this;
     this.$el.attr('class', this.className);
-    this.$el.append(this.page.getName());
+    let input = new TraitTextView('name', model, { em, pfx, ppfx });
+    this.$el.append(input.render().el);
     return this;
   }
   events() {
@@ -39,8 +42,6 @@ export default class PageView extends View<Page> {
   constructor(opt: any, config: PageViewConfig) {
     super(opt);
     this.config = config;
-    this.page.setName('Default');
-
     const { model, pfx, ppfx } = this;
     const type = model.get('type') || 'default';
     this.className = `${ppfx}layer ${ppfx}layer__t-${type} no-select ${pfx}two-color`;

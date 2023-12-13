@@ -55,6 +55,7 @@ import ComponentWrapper from '../dom_components/model/ComponentWrapper';
 import { AddOptions, Model, RemoveOptions, SetOptions, View } from '../common';
 import PagesView from './view/PagesView';
 import config, { PageManagerConfig } from './config/config';
+import TraitTextView from '../common/traits/view/TraitTextView';
 
 interface SelectableOption {
   /**
@@ -312,8 +313,13 @@ export default class PageManager extends ItemManagerModule<PageManagerConfig, Pa
       },
       { ...config, em }
     );
-    let $el = this.view.render().$el;
-    $el.append('');
-    return this.view.render().el;
+    let el = document.createElement('div');
+    el.append(this.view.render().el);
+    const ppfx = config.pStylePrefix || '';
+    const pfx = ppfx + config.stylePrefix || '';
+    const name = 'name';
+    let input = new TraitTextView('name', this.getSelected()!, { em, pfx, ppfx, name });
+    el.append(input.render().el);
+    return el;
   }
 }
