@@ -66,6 +66,7 @@ const commandsDef = [
   ['open-traits', 'OpenTraitManager', 'open-tm'],
   ['open-blocks', 'OpenBlocks', 'open-blocks'],
   ['open-assets', 'OpenAssets', 'open-assets'],
+  ['open-pages', 'OpenPages', 'open-pages'],
   ['component-select', 'SelectComponent', 'select-comp'],
   ['component-outline', 'SwitchVisibility', 'sw-visibility'],
   ['component-offset', 'ShowOffset', 'show-offset'],

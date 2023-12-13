@@ -6,6 +6,7 @@ const osm = 'open-sm';
 const otm = 'open-tm';
 const ola = 'open-layers';
 const obl = 'open-blocks';
+const opa = 'open-pages';
 const ful = 'fullscreen';
 const prv = 'preview';
 
@@ -104,6 +105,13 @@ const config: PanelsConfig = {
           command: obl,
           togglable: false,
           attributes: { title: 'Open Blocks' },
+        },
+        {
+          id: opa,
+          className: 'fa fa-th-large',
+          command: opa,
+          togglable: false,
+          attributes: { title: 'Open Pages' },
         },
       ],
     },
