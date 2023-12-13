@@ -1,39 +1,49 @@
-import { isFunction } from 'underscore';
 import { View } from '../../common';
-import EditorModel from '../../editor/model/Editor';
-import { hasDnd } from '../../utils/mixins';
-import Page from '../../pages/model/Page';
 import TraitTextView from '../../common/traits/view/TraitTextView';
+import EditorModel from '../../editor/model/Editor';
+import Page from '../../pages/model/Page';
 
 export interface PageViewConfig {
   em?: EditorModel;
   pStylePrefix?: string;
 }
 
-export default class PageView extends View<Page> {
+export default class PageEditView extends View<Page> {
   className: string;
 
   highlightedClass = 'gjs-three-bg';
 
   render() {
-    const { em, pfx, ppfx, model } = this;
+    const { em } = this;
+    this.$el.empty();
     this.$el.attr('class', this.className);
-    let input = new TraitTextView('name', model, { em });
-    this.$el.append(input.render().el);
+    if (this.model) {
+      let input = new TraitTextView('name', this.model, { em, name: 'name' });
+      this.$el.append(input.render().el);
+      let input2 = new TraitTextView('route', this.model, { em, name: 'route' });
+      this.$el.append(input2.render().el);
+    }
     return this;
   }
+
   events() {
     return {
       click: () => this.trigger('onClick', this),
     };
   }
 
-  constructor(opt: any, config: PageViewConfig) {
-    super(opt);
+  constructor(model: Page, config: PageViewConfig) {
+    super({ model });
     this.config = config;
-    const { model, pfx, ppfx } = this;
-    const type = model.get('type') || 'default';
-    this.className = `${ppfx}layer ${ppfx}layer__t-${type} no-select ${pfx}two-color`;
+
+    const { pfx, ppfx } = this;
+    this.className = `${ppfx}layer no-select ${pfx}two-color`;
+  }
+
+  changePage(page: Page) {
+    this.model = page;
+    this.render();
+    console.log('changePage');
   }
 
   public get em(): EditorModel {
@@ -54,7 +64,7 @@ export default class PageView extends View<Page> {
 
   config: any;
 
-  get page() {
+  get page(): Page | undefined {
     return this.model;
   }
 }

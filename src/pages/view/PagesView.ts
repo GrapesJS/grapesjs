@@ -102,6 +102,7 @@ export default class PagesView extends View<Page> {
   selectedHandler(view: PageView) {
     this.em.Pages.select(view.model);
     this.selectedView?.setHighlighted(false);
+    this.trigger('selected', view.model);
     this.selectedView = view;
     this.selectedView.setHighlighted(true);
   }

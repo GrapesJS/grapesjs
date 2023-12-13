@@ -8,8 +8,6 @@ import Trait, { OnUpdateView } from '../model/Trait';
 export interface TraitViewOpts {
   em: EditorModel;
   default?: any;
-  pfx: string;
-  ppfx: string;
   name?: string;
 }
 
@@ -22,7 +20,10 @@ export default abstract class TraitView<TModel extends Model, TraitValueType>
   name?: string;
   protected abstract type: string;
 
-  clsField: string;
+  get clsField() {
+    const { ppfx, type } = this;
+    return `${ppfx}field ${ppfx}field-${type}`;
+  }
   elInput?: HTMLInputElement;
   input?: HTMLInputElement;
   $input?: JQuery<HTMLInputElement>;
@@ -48,15 +49,14 @@ export default abstract class TraitView<TModel extends Model, TraitValueType>
   constructor(popertyName: string, model: TModel, opts: TraitViewOpts) {
     super({ model });
     const { eventCapture } = this;
-    const { type } = model.attributes;
     this.em = opts.em;
-    this.ppfx = opts.ppfx;
-    this.pfx = opts.pfx;
+    const config = this.em.Traits.config;
+    this.ppfx = config.pStylePrefix || '';
+    this.pfx = this.ppfx + config.stylePrefix || '';
     this.name = opts.name;
     this.target = new Trait(popertyName, model, opts.default ?? '');
     this.target.registerForUpdateEvent(this);
     const { ppfx } = this;
-    this.clsField = `${ppfx}field ${ppfx}field-${type}`;
 
     this.listenTo(model, 'change:label', this.render);
     this.listenTo(model, 'change:placeholder', this.rerender);

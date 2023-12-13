@@ -56,6 +56,7 @@ import { AddOptions, Model, RemoveOptions, SetOptions, View } from '../common';
 import PagesView from './view/PagesView';
 import config, { PageManagerConfig } from './config/config';
 import TraitTextView from '../common/traits/view/TraitTextView';
+import PageEditView from './view/PageEditView';
 
 interface SelectableOption {
   /**
@@ -306,20 +307,21 @@ export default class PageManager extends ItemManagerModule<PageManagerConfig, Pa
     const { em } = this;
     const pages = this.all;
 
-    this.view = new PagesView(
+    let view = new PagesView(
       {
         collection: pages,
         module: this,
       },
       { ...config, em }
     );
+
+    let selectedView = new PageEditView(this.getSelected()!, { ...config, em });
+    view.on('selected', selectedView.changePage, selectedView);
     let el = document.createElement('div');
-    el.append(this.view.render().el);
-    const ppfx = config.pStylePrefix || '';
-    const pfx = ppfx + config.stylePrefix || '';
-    const name = 'name';
-    let input = new TraitTextView('name', this.getSelected()!, { em, pfx, ppfx, name });
-    el.append(input.render().el);
+
+    el.append(selectedView.render().el);
+    el.append(view.render().el);
+
     return el;
   }
 }

@@ -6,6 +6,7 @@ import ComponentWrapper from '../../dom_components/model/ComponentWrapper';
 import EditorModel from '../../editor/model/Editor';
 import { CssRuleJSON } from '../../css_composer/model/CssRule';
 import { ComponentDefinition } from '../../dom_components/model/types';
+import RelativeRoute from './RelativeRoute';
 
 /** @private */
 export interface PageProperties {
@@ -28,6 +29,8 @@ export interface PageProperties {
    * CSS to load with the page.
    */
   styles?: string | CssRuleJSON[];
+
+  route?: RelativeRoute;
 
   [key: string]: unknown;
 }
