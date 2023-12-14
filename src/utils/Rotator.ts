@@ -382,12 +382,10 @@ export default class Rotator {
 
     const vX = currentPos.x - this.center!.x;
     const vY = currentPos.y - this.center!.y;
-    const aX = this.center!.x + vX * R;
-    const aY = this.center!.y + vY * R;
 
     this.delta = {
-      x: aX - this.center!.x,
-      y: aY - this.center!.y,
+      x: vX * R,
+      y: vY * R,
     };
     this.keys = {
       shift: e.shiftKey,
