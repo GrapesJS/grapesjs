@@ -527,7 +527,7 @@ export default class Sorter extends View {
     var rX = e.pageX - this.elL + this.el.scrollLeft;
 
     if (this.canvasRelative && em) {
-      const mousePos = em.Canvas.getMouseRelativeCanvas(e, { noScroll: 1 });
+      const mousePos = em.Canvas.getMouseRelativeCanvas(e);
       rX = mousePos.x;
       rY = mousePos.y;
     }

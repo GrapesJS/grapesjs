@@ -422,6 +422,19 @@ $guide_pad: 5px !default;
   cursor: nwse-resize;
 }
 
+.#{$app-prefix}rotator-c {
+  pointer-events: all;
+  position: absolute;
+  border: 3px solid $colorBlue;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #fff;
+  margin: $hndlMargin;
+  top: -20px;
+  left: 50%;
+}
+
 .#{$pn-prefix}panel {
   .#{$app-prefix}resizer-h {
     background-color: rgba(0, 0, 0, 0.2);

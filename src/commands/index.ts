@@ -55,6 +55,7 @@ export type CommandEvent = 'run' | 'stop' | `run:${string}` | `stop:${string}` |
 const commandsDef = [
   ['preview', 'Preview', 'preview'],
   ['resize', 'Resize', 'resize'],
+  ['rotate', 'Rotate', 'rotate'],
   ['fullscreen', 'Fullscreen', 'fullscreen'],
   ['copy', 'CopyComponent'],
   ['paste', 'PasteComponent'],

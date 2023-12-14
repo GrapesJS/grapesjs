@@ -35,6 +35,7 @@ export type ElementPosOpts = {
   avoidFrameOffset?: boolean;
   avoidFrameZoom?: boolean;
   noScroll?: boolean;
+  nativeBoundingRect?: boolean;
 };
 
 export interface FitViewportOptions {
@@ -340,9 +341,10 @@ export default class CanvasView extends ModuleView<Canvas> {
    * @return { {top: number, left: number, width: number, height: number} }
    */
   offset(el?: HTMLElement, opts: ElementPosOpts = {}) {
-    const { noScroll } = opts;
-    const rect = getElRect(el);
+    const { noScroll, nativeBoundingRect } = opts;
+    const rect = getElRect(el, nativeBoundingRect);
     const scroll = noScroll ? { x: 0, y: 0 } : getDocumentScroll(el);
+    const docBody = el?.ownerDocument.body;
 
     return {
       top: rect.top + scroll.y,
@@ -454,7 +456,7 @@ export default class CanvasView extends ModuleView<Canvas> {
       const frame = this.frame?.el;
       const winEl = el?.ownerDocument.defaultView;
       const frEl = winEl ? (winEl.frameElement as HTMLElement) : frame;
-      this.frmOff = this.offset(frEl || frame);
+      this.frmOff = this.offset(frEl || frame, { nativeBoundingRect: true });
     }
     return this.frmOff;
   }

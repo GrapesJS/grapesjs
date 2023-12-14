@@ -498,13 +498,14 @@ export default class CanvasModule extends Module<CanvasConfig> {
    * @return {Object}
    * @private
    */
-  getMouseRelativeCanvas(ev: MouseEvent, opts: any) {
+  getMouseRelativeCanvas(ev: MouseEvent) {
     const zoom = this.getZoomDecimal();
-    const { top = 0, left = 0 } = this.getCanvasView().getPosition(opts) ?? {};
+    const zoomOffset = 1 / zoom;
+    const { top: frameTop = 0, left: frameLeft = 0 } = this.getCanvasView().getFrameOffset() ?? {};
 
     return {
-      y: ev.clientY * zoom + top,
-      x: ev.clientX * zoom + left,
+      y: (ev.clientY - frameTop) * zoomOffset,
+      x: (ev.clientX - frameLeft) * zoomOffset,
     };
   }
 
