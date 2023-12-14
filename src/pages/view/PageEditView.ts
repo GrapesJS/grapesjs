@@ -1,4 +1,5 @@
 import { View } from '../../common';
+import TraitNumberView, { TraitNumberUnitView } from '../../common/traits/view/TraitNumberView';
 import TraitTextView from '../../common/traits/view/TraitTextView';
 import EditorModel from '../../editor/model/Editor';
 import Page from '../../pages/model/Page';
@@ -18,9 +19,12 @@ export default class PageEditView extends View<Page> {
     this.$el.empty();
     this.$el.attr('class', this.className);
     if (this.model) {
-      let input = new TraitTextView('name', this.model, { em, name: 'name' });
+      let input = new TraitNumberView('name', this.model, { em, name: 'name', min: 0 });
       this.$el.append(input.render().el);
-      let input2 = new TraitTextView('route', this.model, { em, name: 'route' });
+
+      let input3 = new TraitNumberUnitView('name', this.model, { em, name: 'name', min: 0, units: ['px', '%'] });
+      this.$el.append(input3.render().el);
+      let input2 = new TraitTextView('name', this.model, { em, name: 'route' });
       this.$el.append(input2.render().el);
     }
     return this;

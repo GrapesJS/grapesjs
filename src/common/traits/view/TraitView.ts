@@ -1,3 +1,4 @@
+import { EventsHash } from 'backbone';
 import { isUndefined } from 'underscore';
 import { Model } from '../..';
 import { $, View } from '../../../common';
@@ -9,6 +10,7 @@ export interface TraitViewOpts {
   em: EditorModel;
   default?: any;
   name?: string;
+  paceholder?: string;
 }
 
 export default abstract class TraitView<TModel extends Model, TraitValueType>
@@ -18,12 +20,14 @@ export default abstract class TraitView<TModel extends Model, TraitValueType>
   pfx: string;
   ppfx: string;
   name?: string;
+  paceholder?: string;
   protected abstract type: string;
 
   get clsField() {
     const { ppfx, type } = this;
     return `${ppfx}field ${ppfx}field-${type}`;
   }
+
   elInput?: HTMLInputElement;
   input?: HTMLInputElement;
   $input?: JQuery<HTMLInputElement>;
@@ -31,7 +35,12 @@ export default abstract class TraitView<TModel extends Model, TraitValueType>
   noLabel?: boolean;
   em: EditorModel;
   target: Trait<TraitValueType>;
-  events: any = {};
+
+  events(): EventsHash {
+    return {
+      change: this.onChange,
+    };
+  }
 
   appendInput = true;
 
@@ -48,7 +57,6 @@ export default abstract class TraitView<TModel extends Model, TraitValueType>
 
   constructor(popertyName: string, model: TModel, opts: TraitViewOpts) {
     super({ model });
-    const { eventCapture } = this;
     this.em = opts.em;
     const config = this.em.Traits.config;
     this.ppfx = config.pStylePrefix || '';
@@ -56,29 +64,25 @@ export default abstract class TraitView<TModel extends Model, TraitValueType>
     this.name = opts.name;
     this.target = new Trait(popertyName, model, opts.default ?? '');
     this.target.registerForUpdateEvent(this);
-    const { ppfx } = this;
 
     this.listenTo(model, 'change:label', this.render);
     this.listenTo(model, 'change:placeholder', this.rerender);
-    this.events = {};
-    eventCapture.forEach(event => (this.events[event] = 'onChange'));
   }
+
+  abstract get inputValue(): TraitValueType;
+
+  abstract set inputValue(value: TraitValueType);
 
   /**
    * Fires when the input is changed
    * @private
    */
-  onChange(event: Event) {
-    const el = this.getInputElem();
-    if (el && !isUndefined(el.value)) {
-      this.target.value = el.value as any;
-    }
+  onChange() {
+    this.target.value = this.inputValue;
   }
 
   onUpdateEvent(value: TraitValueType) {
-    const el = this.getInputElem();
-    el && (el.value = value as any);
-    return el as any;
+    this.inputValue = value;
   }
 
   /**
@@ -109,7 +113,7 @@ export default abstract class TraitView<TModel extends Model, TraitValueType>
       const input: JQuery<HTMLInputElement> = $(`<input type="${type}">`);
       const i18nAttr = em.t(`traitManager.traits.attributes.${name}`) || {};
       input.attr({
-        placeholder: value,
+        placeholder: this.paceholder || value,
         ...i18nAttr,
       });
 
@@ -120,11 +124,6 @@ export default abstract class TraitView<TModel extends Model, TraitValueType>
       this.$input = input;
     }
     return this.$input.get(0);
-  }
-
-  getInputElem() {
-    const { input, $input } = this;
-    return input || ($input && $input.get && $input.get(0)) || this.getElInput();
   }
 
   getElInput() {
@@ -175,5 +174,3 @@ export default abstract class TraitView<TModel extends Model, TraitValueType>
     return this;
   }
 }
-
-TraitView.prototype.eventCapture = ['change'];
