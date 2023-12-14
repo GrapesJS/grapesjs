@@ -11,6 +11,11 @@ const combine = (tail: string[], curr: string): string[] => {
   );
 };
 
+export interface FullNameOptions {
+  combination?: boolean;
+  array?: boolean;
+}
+
 export default class Selectors extends Collection<Selector> {
   modelId(attr: any) {
     return `${attr.name}_${attr.type || Selector.TYPE_CLASS}`;
@@ -32,7 +37,7 @@ export default class Selectors extends Collection<Selector> {
     return result.join('').trim();
   }
 
-  getFullName(opts: any = {}) {
+  getFullName<T extends FullNameOptions>(opts: T = {} as T) {
     const { combination, array } = opts;
     let result: string[] = [];
     const sels = this.map(s => s.getFullName(opts)).sort();
@@ -45,7 +50,9 @@ export default class Selectors extends Collection<Selector> {
       result = sels;
     }
 
-    return array ? result : combination ? result.join(',') : result.join('');
+    return (array ? result : combination ? result.join(',') : result.join('')) as T['array'] extends true
+      ? string[]
+      : string;
   }
 }
 

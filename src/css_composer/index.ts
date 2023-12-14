@@ -370,7 +370,7 @@ export default class CssComposer extends ItemManagerModule<CssComposerConfig & {
    * // All rules in the project
    * console.log(css.getRules())
    */
-  getRules(selector: string) {
+  getRules(selector?: string) {
     const rules = this.getAll();
     if (!selector) return [...rules.models];
     const optRuleSel = { sort: true };
