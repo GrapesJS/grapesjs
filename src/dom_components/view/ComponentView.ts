@@ -18,10 +18,10 @@ type ClbObj = ReturnType<ComponentView['_clbObj']>;
 
 export interface IComponentView extends ExtractMethods<ComponentView> {}
 
-export default class ComponentView extends View</**
+export default class ComponentView<TComponent extends Component = Component> extends View</**
  * Keep this format to avoid errors in TS bundler */
 /** @ts-ignore */
-Component> {
+TComponent> {
   /** @ts-ignore */
   model!: Component;
 
