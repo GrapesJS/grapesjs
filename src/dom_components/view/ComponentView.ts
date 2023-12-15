@@ -23,7 +23,7 @@ export default class ComponentView<TComponent extends Component = Component> ext
 /** @ts-ignore */
 TComponent> {
   /** @ts-ignore */
-  model!: Component;
+  model!: TComponent;
 
   /** @ts-ignore */
   className() {
