@@ -59,8 +59,14 @@ export interface TraitProperties {
     trait: Trait;
     component: Component;
     partial: boolean;
+    options: TraitSetValueOptions;
     emitUpdate: () => void;
   }) => void;
+}
+
+interface TraitSetValueOptions {
+  partial?: boolean;
+  [key: string]: unknown;
 }
 
 type TraitOption = {
@@ -110,12 +116,15 @@ export default class Trait extends Model<TraitProperties> {
 
   setTarget(target: Component) {
     if (target) {
-      const { name, changeProp, value: initValue } = this.attributes;
+      const { name, changeProp, value: initValue, getValue } = this.attributes;
       this.target = target;
       this.unset('target');
       const targetEvent = changeProp ? `change:${name}` : `change:attributes:${name}`;
       this.listenTo(target, targetEvent, this.targetUpdated);
-      const value = initValue || this.getValue();
+      const value =
+        initValue ||
+        // Avoid the risk of loops in case the trait has a custom getValue
+        (!getValue ? this.getValue() : undefined);
       !isUndefined(value) && this.set({ value }, { silent: true });
     }
   }
@@ -173,7 +182,7 @@ export default class Trait extends Model<TraitProperties> {
    * @param {Object} [opts={}] Options.
    * @param {Boolean} [opts.partial] If `true` the update won't be considered complete (not stored in UndoManager).
    */
-  setValue(value: any, opts: { partial?: boolean } = {}) {
+  setValue(value: any, opts: TraitSetValueOptions = {}) {
     const valueOpts: { avoidStore?: boolean } = {};
     const setValue = this.get('setValue');
 
@@ -184,6 +193,7 @@ export default class Trait extends Model<TraitProperties> {
         trait: this,
         component: this.target,
         partial: !!opts.partial,
+        options: opts,
         emitUpdate: () => this.targetUpdated(),
       });
       return;
