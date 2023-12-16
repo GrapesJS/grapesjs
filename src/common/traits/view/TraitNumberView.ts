@@ -1,5 +1,6 @@
 import { bindAll, indexOf, isUndefined } from 'underscore';
 import { Model, $ } from '../..';
+import EditorModel from '../../../editor/model/Editor';
 import { off, on } from '../../../utils/dom';
 import TraitView, { TraitViewOpts } from './TraitView';
 
@@ -31,8 +32,8 @@ abstract class TraitNumberViewAbstract<TModel extends Model, TraitValueType> ext
     };
   }
 
-  constructor(popertyName: string, model: TModel, opts: TraitNumberViewOpts) {
-    super(popertyName, model, opts);
+  constructor(em: EditorModel, opts: TraitNumberViewOpts) {
+    super(em, opts);
     bindAll(this, 'moveIncrement', 'upIncrement');
     this.step = opts.step ?? 1;
     this.min = opts.min;
@@ -245,11 +246,11 @@ abstract class TraitNumberViewAbstract<TModel extends Model, TraitValueType> ext
   }
 }
 
-export default class TraitNumberView<TModel extends Model> extends TraitNumberViewAbstract<TModel, number> {
+export class TraitNumberView<TModel extends Model> extends TraitNumberViewAbstract<TModel, number> {
   unitEl?: any;
 
-  constructor(popertyName: string, model: TModel, opts: TraitNumberViewOpts) {
-    super(popertyName, model, opts);
+  constructor(em: EditorModel, opts: TraitNumberViewOpts) {
+    super(em, opts);
   }
 
   get inputValue(): number {
@@ -269,8 +270,8 @@ export class TraitNumberUnitView<TModel extends Model> extends TraitNumberViewAb
   unitEl?: HTMLSelectElement;
   units: string[];
 
-  constructor(popertyName: string, model: TModel, opts: TraitNumberUnitViewOpts) {
-    super(popertyName, model, opts);
+  constructor(em: EditorModel, opts: TraitNumberUnitViewOpts) {
+    super(em, opts);
     this.units = opts.units;
   }
 

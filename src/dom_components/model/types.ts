@@ -1,9 +1,9 @@
 import Frame from '../../canvas/model/Frame';
 import { Nullable } from '../../common';
+import { InputProperties, InputViewProperties } from '../../common/traits';
 import EditorModel from '../../editor/model/Editor';
 import Selectors from '../../selector_manager/model/Selectors';
 import { TraitProperties } from '../../trait_manager/model/Trait';
-import Traits from '../../trait_manager/model/Traits';
 import { ResizerOptions } from '../../utils/Resizer';
 import { DomComponentsConfig } from '../config/config';
 import Component from './Component';
@@ -189,9 +189,9 @@ export interface ComponentProperties {
   //script-export?: string | ((...params: any[]) => any);
   /**
    * Component's traits. More about it [here](/modules/Traits.html). Default: `['id', 'title']`
-   * @default ''
+   * @default []
    */
-  traits?: Traits;
+  traits?: (string | (InputProperties & (InputViewProperties | {})))[];
   /**
        * Indicates an array of properties which will be inhereted by all NEW appended children.
        For example if you create a component likes this: `{ removable: false, draggable: false, propagate: ['removable', 'draggable'] }`

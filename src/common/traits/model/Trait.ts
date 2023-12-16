@@ -4,17 +4,23 @@ export interface OnUpdateView<TraitValueType> {
   onUpdateEvent(value: TraitValueType): void;
 }
 
-export default class Trait<TraitValueType> {
-  private name: string;
-  private defaultValue: TraitValueType;
-  private model: Model;
+export interface TraitProperties {
+  default?: any;
+  value?: any;
+  changeProp?: boolean;
+}
+
+export default class Trait<TraitValueType = any> {
+  readonly name: string;
+  opts: TraitProperties;
+  readonly model: Model;
   private view?: OnUpdateView<TraitValueType>;
 
-  constructor(name: string, model: Model, defaultValue: TraitValueType) {
+  constructor(name: string, model: Model, opts?: TraitProperties) {
     this.name = name;
     model.on('change:' + name, this.setValueFromModel, this);
     this.model = model;
-    this.defaultValue = defaultValue;
+    this.opts = { ...opts, default: opts?.value ?? opts?.default ?? '' };
   }
 
   public registerForUpdateEvent(view: OnUpdateView<TraitValueType>) {
@@ -22,13 +28,29 @@ export default class Trait<TraitValueType> {
   }
 
   public get value(): TraitValueType {
-    return this.model.get(this.name) ?? this.defaultValue;
+    const { changeProp, model, name } = this;
+    const value = changeProp
+      ? model.get(name)
+      : // @ts-ignore TODO update post component update
+        model.getAttributes()[name];
+
+    return value ?? this.opts.default;
+  }
+  public get changeProp(): boolean {
+    return this.opts.changeProp ?? false;
   }
 
   private updatingValue = false;
   public set value(value: TraitValueType) {
+    const { name, model, changeProp } = this;
     this.updatingValue = true;
-    this.model.set(this.name, value);
+
+    if (changeProp) {
+      model.set(name, value);
+    } else {
+      //@ts-ignore
+      model.addAttributes({ [name]: value });
+    }
     this.updatingValue = false;
   }
 
@@ -36,5 +58,9 @@ export default class Trait<TraitValueType> {
     if (!this.updatingValue) {
       this.view?.onUpdateEvent(this.value);
     }
+  }
+
+  updateOpts(opts: any) {
+    this.opts = { ...this.opts, ...opts };
   }
 }

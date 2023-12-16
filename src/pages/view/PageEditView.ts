@@ -2,7 +2,7 @@ import { View } from '../../common';
 import TraitButtonView from '../../common/traits/view/TraitButtonView';
 import TraitCheckboxView from '../../common/traits/view/TraitCheckboxView';
 import TraitColorView from '../../common/traits/view/TraitColorView';
-import TraitNumberView, { TraitNumberUnitView } from '../../common/traits/view/TraitNumberView';
+import { TraitNumberView, TraitNumberUnitView } from '../../common/traits/view/TraitNumberView';
 import TraitSelectView from '../../common/traits/view/TraitSelectView';
 import TraitTextView from '../../common/traits/view/TraitTextView';
 import EditorModel from '../../editor/model/Editor';
@@ -23,29 +23,40 @@ export default class PageEditView extends View<Page> {
     this.$el.empty();
     this.$el.attr('class', this.className);
     if (this.model) {
-      let input = new TraitNumberView('name', this.model, { em, name: 'name', min: 0 });
+      let input = new TraitNumberView(em, { name: 'name', min: 0 });
+      input.setTarget('name', this.model, { changeProp: true });
       this.$el.append(input.render().el);
 
-      let input3 = new TraitNumberUnitView('name', this.model, { em, name: 'name', min: 0, units: ['px', '%'] });
+      let input3 = new TraitNumberUnitView(em, { name: 'name', min: 0, units: ['px', '%'] });
+      input3.setTarget('name', this.model, { changeProp: true });
       this.$el.append(input3.render().el);
 
-      this.$el.append(new TraitSelectView('name', this.model, { em, name: 'name', options: ['px', '%'] }).render().el);
-
-      this.$el.append(new TraitCheckboxView('name', this.model, { em, name: 'name' }).render().el);
+      this.$el.append(
+        new TraitSelectView(em, { name: 'name', options: ['px', '%'] })
+          .setTarget('name', this.model, { changeProp: true })
+          .render().el
+      );
 
       this.$el.append(
-        new TraitButtonView('name', this.model, {
-          em,
+        new TraitCheckboxView(em, { name: 'name' }).setTarget('name', this.model, { changeProp: true }).render().el
+      );
+
+      this.$el.append(
+        new TraitButtonView(em, {
           name: 'name',
           text: 'Ok',
           command: () => {
             console.log('click');
           },
-        }).render().el
+        })
+          .setTarget('name', this.model, { changeProp: true })
+          .render().el
       );
-      this.$el.append(new TraitColorView('name', this.model, { em, name: 'name' }).render().el);
+      this.$el.append(
+        new TraitColorView(em, { name: 'name' }).setTarget('name', this.model, { changeProp: true }).render().el
+      );
 
-      let input2 = new TraitTextView('name', this.model, { em, name: 'route' });
+      let input2 = new TraitTextView(em, { name: 'route' }).setTarget('name', this.model, { changeProp: true });
       this.$el.append(input2.render().el);
     }
     return this;
@@ -68,7 +79,6 @@ export default class PageEditView extends View<Page> {
   changePage(page: Page) {
     this.model = page;
     this.render();
-    console.log('changePage');
   }
 
   public get em(): EditorModel {

@@ -5147,7 +5147,6 @@ export declare class Component extends StyleableModel<ComponentProperties> {
 	 * @private
 	 */
 	initToolbar(): void;
-	__loadTraits(tr?: Traits | TraitProperties[], opts?: {}): this;
 	/**
 	 * Get traits.
 	 * @returns {Array<Trait>}

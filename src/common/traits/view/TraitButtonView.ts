@@ -1,6 +1,7 @@
 import { isString } from 'underscore';
 import { Model, $ } from '../..';
 import Editor from '../../../editor';
+import EditorModel from '../../../editor/model/Editor';
 import TraitView, { TraitViewOpts } from './TraitView';
 
 export interface TraitButtonViewOpts<TModel> extends TraitViewOpts {
@@ -20,8 +21,8 @@ export default class TraitButtonView<TModel extends Model> extends TraitView<TMo
     };
   }
 
-  constructor(popertyName: string, model: TModel, opts: TraitButtonViewOpts<TModel>) {
-    super(popertyName, model, opts);
+  constructor(em: EditorModel, opts: TraitButtonViewOpts<TModel>) {
+    super(em, opts);
     this.command = opts.command;
     this.text = opts.text;
     this.full = opts.full;

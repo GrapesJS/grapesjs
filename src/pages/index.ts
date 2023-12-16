@@ -55,7 +55,6 @@ import ComponentWrapper from '../dom_components/model/ComponentWrapper';
 import { AddOptions, Model, RemoveOptions, SetOptions, View } from '../common';
 import PagesView from './view/PagesView';
 import config, { PageManagerConfig } from './config/config';
-import TraitTextView from '../common/traits/view/TraitTextView';
 import PageEditView from './view/PageEditView';
 
 interface SelectableOption {

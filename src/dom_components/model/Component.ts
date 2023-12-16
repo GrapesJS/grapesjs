@@ -17,7 +17,6 @@ import { Model } from 'backbone';
 import Components from './Components';
 import Selector from '../../selector_manager/model/Selector';
 import Selectors from '../../selector_manager/model/Selectors';
-import Traits from '../../trait_manager/model/Traits';
 import EditorModel from '../../editor/model/Editor';
 import {
   ComponentAdd,
@@ -34,8 +33,9 @@ import { DomComponentsConfig } from '../config/config';
 import ComponentView from '../view/ComponentView';
 import { AddOptions, ExtractMethods, ObjectAny, PrevToNewIdMap, SetOptions } from '../../common';
 import CssRule, { CssRuleJSON } from '../../css_composer/model/CssRule';
-import Trait, { TraitProperties } from '../../trait_manager/model/Trait';
 import { ToolbarButtonProps } from './ToolbarButton';
+import InputFactory, { InputProperties, InputViewProperties } from '../../common/traits';
+import Trait from '../../common/traits/model/Trait';
 
 export interface IComponent extends ExtractMethods<Component> {}
 
@@ -168,8 +168,8 @@ export default class Component extends StyleableModel<ComponentProperties> {
     return this.get('classes')!;
   }
 
-  get traits() {
-    return this.get('traits')!;
+  get traits(): Trait[] {
+    return this.get('traits')! as any;
   }
 
   get content() {
@@ -271,7 +271,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     this.views = [];
 
     // Register global updates for collection properties
-    ['classes', 'traits', 'components'].forEach(name => {
+    ['classes', 'components'].forEach(name => {
       const events = `add remove ${name !== 'components' ? 'change' : ''}`;
       this.listenTo(this.get(name), events.trim(), (...args) => this.emitUpdate(name, ...args));
     });
@@ -1059,16 +1059,6 @@ export default class Component extends StyleableModel<ComponentProperties> {
     const event = 'change:traits';
     this.off(event, this.initTraits);
     this.__loadTraits();
-    const attrs = { ...this.get('attributes') };
-    const traits = this.traits;
-    traits.each(trait => {
-      if (!trait.get('changeProp')) {
-        const name = trait.get('name');
-        const value = trait.getInitValue();
-        if (name && value) attrs[name] = value;
-      }
-    });
-    traits.length && this.set('attributes', attrs);
     this.on(event, this.initTraits);
     changed && em && em.trigger('component:toggled');
     return this;
@@ -1252,22 +1242,18 @@ export default class Component extends StyleableModel<ComponentProperties> {
     }
   }
 
-  __loadTraits(tr?: Traits | TraitProperties[], opts = {}) {
-    let traitsI = tr || this.traits;
-
-    if (!(traitsI instanceof Traits)) {
-      traitsI = (isFunction(traitsI) ? traitsI(this) : traitsI) as TraitProperties[];
-      const traits = new Traits([], this.opt as any);
-      traits.setTarget(this);
-
-      if (traitsI.length) {
-        traitsI.forEach(tr => tr.attributes && delete tr.attributes.value);
-        traits.add(traitsI);
+  __loadTraits(tr?: (Trait | (InputViewProperties & InputProperties) | string)[]) {
+    let traits = tr || this.traits;
+    this.set('traits', traits.map(trait => InputFactory.build(this as any, trait)) as any);
+    const attrs = { ...this.get('attributes') };
+    this.traits.forEach(trait => {
+      if (!trait.changeProp) {
+        const name = trait.name;
+        const value = trait.value;
+        if (name && value) attrs[name] = value;
       }
-
-      this.set({ traits }, opts);
-    }
-
+    });
+    traits.length && this.set('attributes', attrs);
     return this;
   }
 
@@ -1280,8 +1266,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * // [Trait, Trait, Trait, ...]
    */
   getTraits(): Trait[] {
-    this.__loadTraits();
-    return [...this.traits.models];
+    return this.traits;
   }
 
   /**
@@ -1293,10 +1278,9 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * console.log(traits);
    * // [Trait, ...]
    */
-  setTraits(traits: TraitProperties[]) {
+  setTraits(traits: (Trait | (InputViewProperties & InputProperties) | string)[]) {
     const tr = isArray(traits) ? traits : [traits];
-    // @ts-ignore
-    this.set({ traits: tr });
+    this.__loadTraits(tr);
     return this.getTraits();
   }
 
@@ -1309,11 +1293,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * traitTitle && traitTitle.set('label', 'New label');
    */
   getTrait(id: string) {
-    return (
-      this.getTraits().filter(trait => {
-        return trait.get('id') === id || trait.get('name') === id;
-      })[0] || null
-    );
+    return this.getTraits().find(trait => trait.name === id) || null;
   }
 
   /**
@@ -1327,9 +1307,9 @@ export default class Component extends StyleableModel<ComponentProperties> {
    *  options: [ 'Option 1', 'Option 2' ],
    * });
    */
-  updateTrait(id: string, props: Partial<TraitProperties>) {
+  updateTrait(id: string, props: Partial<InputViewProperties>) {
     const trait = this.getTrait(id);
-    trait && trait.set(props);
+    trait?.updateOpts(props);
     this.em?.trigger('component:toggled');
     return this;
   }
@@ -1358,9 +1338,12 @@ export default class Component extends StyleableModel<ComponentProperties> {
    */
   removeTrait(id: string | string[]) {
     const ids = isArray(id) ? id : [id];
-    const toRemove = ids.map(id => this.getTrait(id));
-    const { traits } = this;
-    const removed = toRemove.length ? traits.remove(toRemove) : [];
+    const removed = ids.map(id => {
+      const index = this.getTraitIndex(id);
+      if (index != -1) {
+        return this.traits.splice(index, 1)[0];
+      }
+    });
     this.em?.trigger('component:toggled');
     return isArray(removed) ? removed : [removed];
   }
@@ -1378,11 +1361,15 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * });
    * component.addTrait(['title', {...}, ...]);
    */
-  addTrait(trait: Parameters<Traits['add']>[0], opts: AddOptions = {}) {
-    this.__loadTraits();
-    const added = this.traits.add(trait, opts);
+  addTrait(trait: (Trait | (InputViewProperties & InputProperties) | string)[], opts: AddOptions = {}) {
+    const traits = isArray(trait) ? trait : [trait];
+    const added = traits.map(add => {
+      const tr = InputFactory.build(this as any, add);
+      this.traits.push(tr);
+      return tr;
+    });
     this.em?.trigger('component:toggled');
-    return isArray(added) ? added : [added];
+    return added;
   }
 
   /**
@@ -1418,7 +1405,6 @@ export default class Component extends StyleableModel<ComponentProperties> {
     attr.components = [];
     // @ts-ignore
     attr.classes = [];
-    // @ts-ignore
     attr.traits = [];
 
     if (this.__isSymbolTop()) {
@@ -1429,9 +1415,8 @@ export default class Component extends StyleableModel<ComponentProperties> {
       // @ts-ignore
       attr.components[i] = md.clone({ ...opt, _inner: 1 });
     });
-    this.get('traits')!.each((md, i) => {
-      // @ts-ignore
-      attr.traits[i] = md.clone();
+    this.traits.forEach((md, i) => {
+      attr.traits![i] = { ...md.opts, name: md.name };
     });
     this.get('classes')!.each((md, i) => {
       // @ts-ignore

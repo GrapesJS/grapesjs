@@ -11,7 +11,9 @@ import TraitColorView from './view/TraitColorView';
 import TraitButtonView from './view/TraitButtonView';
 import EditorModel from '../editor/model/Editor';
 import Component from '../dom_components/model/Component';
-import Trait from './model/Trait';
+import Trait from '../common/traits/model/Trait';
+import TraitViewList from '../common/traits/view/TraitViewList';
+import InputFactory from '../common/traits';
 
 export const evAll = 'trait';
 export const evPfx = `${evAll}:`;
@@ -39,7 +41,7 @@ interface ITraitView {
 export type CustomTrait<T> = ITraitView & T & ThisType<T & TraitView>;
 
 export default class TraitManager extends Module<TraitManagerConfig & { pStylePrefix?: string }> {
-  view?: TraitsView;
+  view?: TraitViewList;
   types: { [id: string]: { new (o: any): TraitView } };
   model: Model;
   __ctn?: any;
@@ -85,8 +87,8 @@ export default class TraitManager extends Module<TraitManagerConfig & { pStylePr
   }
 
   select(component?: Component) {
-    const traits = component ? component.getTraits() : [];
-    this.model.set({ component, traits });
+    this.model.set({ component });
+    this.render();
     this.__trgCustom();
   }
 
@@ -98,7 +100,7 @@ export default class TraitManager extends Module<TraitManagerConfig & { pStylePr
    * Get traits from the currently selected component.
    */
   getCurrent(): Trait[] {
-    return this.model.get('traits') || [];
+    return this.getSelected()?.traits || [];
   }
 
   __trgCustom(opts: any = {}) {
@@ -149,19 +151,11 @@ export default class TraitManager extends Module<TraitManagerConfig & { pStylePr
 
   render() {
     let { view, em } = this;
-    const config = this.getConfig();
-    const el = view && view.el;
-    view = new TraitsView(
-      {
-        el,
-        collection: [],
-        editor: em,
-        config,
-      },
-      this.getTypes()
-    );
-    this.view = view;
-    return view.el;
+    const el = view?.el;
+    const traitViews = this.getCurrent().map(trait => InputFactory.buildView(trait, em, trait.opts as any));
+    this.view = new TraitViewList(traitViews, el).render();
+
+    return this.view.el;
   }
 
   destroy() {

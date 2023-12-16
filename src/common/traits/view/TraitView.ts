@@ -1,19 +1,21 @@
 import { EventsHash } from 'backbone';
-import { isUndefined } from 'underscore';
+import { isString, isUndefined } from 'underscore';
+import { InputViewProperties } from '..';
 import { Model } from '../..';
 import { $, View } from '../../../common';
 import EditorModel from '../../../editor/model/Editor';
 import { capitalize } from '../../../utils/mixins';
-import Trait, { OnUpdateView } from '../model/Trait';
+import Trait, { OnUpdateView, TraitProperties } from '../model/Trait';
 
 export interface TraitViewOpts {
-  em: EditorModel;
   default?: any;
   name?: string;
+  label?: string;
   paceholder?: string;
+  noLabel?: boolean;
 }
 
-export default abstract class TraitView<TModel extends Model, TraitValueType>
+export default abstract class TraitView<TModel extends Model = Model, TraitValueType = any>
   extends View<TModel>
   implements OnUpdateView<TraitValueType>
 {
@@ -32,9 +34,9 @@ export default abstract class TraitView<TModel extends Model, TraitValueType>
   input?: HTMLInputElement;
   $input?: JQuery<HTMLInputElement>;
   eventCapture!: string[];
-  noLabel?: boolean;
+  noLabel: boolean;
   em: EditorModel;
-  target: Trait<TraitValueType>;
+  target!: Trait<TraitValueType>;
 
   events(): EventsHash {
     return {
@@ -55,18 +57,29 @@ export default abstract class TraitView<TModel extends Model, TraitValueType>
     return `<div class="${clsField}" data-input></div>`;
   }
 
-  constructor(popertyName: string, model: TModel, opts: TraitViewOpts) {
-    super({ model });
-    this.em = opts.em;
+  constructor(em: EditorModel, opts?: TraitViewOpts) {
+    super({});
+    this.em = em;
     const config = this.em.Traits.config;
     this.ppfx = config.pStylePrefix || '';
     this.pfx = this.ppfx + config.stylePrefix || '';
-    this.name = opts.name;
-    this.target = new Trait(popertyName, model, opts.default ?? '');
-    this.target.registerForUpdateEvent(this);
+    this.name = opts?.name;
+    this.noLabel = opts?.noLabel ?? false;
+  }
 
+  setTarget(popertyName: string, model: TModel, opts?: TraitProperties): this;
+  setTarget(target: Trait<TraitValueType>): this;
+  setTarget(target: unknown, model?: TModel, opts?: TraitProperties) {
+    if (isString(target) && model !== undefined) {
+      target = new Trait(target, model, opts);
+    }
+    this.target = target as Trait<TraitValueType>;
+    this.model = this.target.model as any;
+    this.name ?? (this.name = this.target.name);
     this.listenTo(model, 'change:label', this.render);
     this.listenTo(model, 'change:placeholder', this.rerender);
+    this.target.registerForUpdateEvent(this);
+    return this;
   }
 
   abstract get inputValue(): TraitValueType;
@@ -146,8 +159,7 @@ export default abstract class TraitView<TModel extends Model, TraitValueType>
   }
 
   hasLabel() {
-    const { label } = this.model.attributes;
-    return !this.noLabel && label !== false;
+    return !this.noLabel;
   }
 
   rerender() {
@@ -157,7 +169,7 @@ export default abstract class TraitView<TModel extends Model, TraitValueType>
 
   render() {
     const { $el, pfx, ppfx, name, type } = this;
-    const hasLabel = this.hasLabel && this.hasLabel();
+    const hasLabel = this.hasLabel();
     const cls = `${pfx}trait`;
     delete this.$input;
     let tmpl = `<div class="${cls} ${cls}--${type}">

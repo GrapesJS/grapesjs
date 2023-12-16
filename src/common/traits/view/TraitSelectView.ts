@@ -1,5 +1,6 @@
 import { isString, isUndefined } from 'underscore';
 import { Model, $ } from '../..';
+import EditorModel from '../../../editor/model/Editor';
 import TraitView, { TraitViewOpts } from './TraitView';
 
 type SelectOption =
@@ -18,8 +19,8 @@ export default class TraitSelectView<TModel extends Model> extends TraitView<TMo
   protected type = 'select';
   options: SelectOption[];
 
-  constructor(popertyName: string, model: TModel, opts: TraitSelectViewOpts) {
-    super(popertyName, model, opts);
+  constructor(em: EditorModel, opts: TraitSelectViewOpts) {
+    super(em, opts);
     this.options = opts.options;
   }
 

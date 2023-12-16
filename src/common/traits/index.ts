@@ -1,9 +1,12 @@
+import { isString } from 'underscore';
 import { Model } from '..';
 import EditorModel from '../../editor/model/Editor';
+import Trait, { TraitProperties } from './model/Trait';
 import TraitButtonView, { TraitButtonViewOpts } from './view/TraitButtonView';
 import TraitCheckboxView from './view/TraitCheckboxView';
 import TraitColorView from './view/TraitColorView';
-import TraitNumberView, {
+import {
+  TraitNumberView,
   TraitNumberUnitView,
   TraitNumberUnitViewOpts,
   TraitNumberViewOpts,
@@ -12,57 +15,53 @@ import TraitSelectView, { TraitSelectViewOpts } from './view/TraitSelectView';
 import TraitTextView from './view/TraitTextView';
 import TraitView, { TraitViewOpts } from './view/TraitView';
 
-type InputProperties =
-  | { type?: string; opts: { em: EditorModel; name?: string } }
-  | {
-      type: 'text';
-      opts: TraitViewOpts;
-    }
-  | {
-      type: 'number';
-      opts: TraitNumberViewOpts | TraitNumberUnitViewOpts;
-    }
-  | {
-      type: 'select';
-      opts: TraitSelectViewOpts;
-    }
-  | {
-      type: 'checkbox';
-      opts: TraitViewOpts;
-    }
-  | {
-      type: 'color';
-      opts: TraitViewOpts;
-    }
-  | {
-      type: 'button';
-      opts: TraitButtonViewOpts<Model>;
-    };
-
+export type InputViewProperties =
+  | ({ type?: '' } & TraitViewOpts)
+  | ({ type: 'text' } & TraitViewOpts)
+  | ({ type: 'number' } & (TraitNumberViewOpts | TraitNumberUnitViewOpts))
+  | ({ type: 'select' } & TraitSelectViewOpts)
+  | ({ type: 'checkbox' } & TraitViewOpts)
+  | ({ type: 'color' } & TraitViewOpts)
+  | ({ type: 'button' } & TraitButtonViewOpts<Model>);
+export type InputProperties = TraitProperties & { name: string };
 export default abstract class InputFactory {
+  static build(model: Model, trait: string | (InputProperties & InputViewProperties) | Trait): Trait {
+    if (!(trait instanceof Trait)) {
+      return isString(trait) ? new Trait(trait, model) : new Trait(trait.name, model, trait);
+    } else {
+      return trait;
+    }
+  }
   /**
    * Build props object by their name
    */
-  static build<M extends Model>(name: string, model: M, prop: InputProperties): TraitView<M, any> {
-    let type = 'text';
-    let opts: any = { name, ...prop.opts };
-    if (prop.type !== undefined) {
-      type = prop.type;
-      opts = prop.opts;
+  static buildView<M extends Model, T extends any>(
+    target: Trait<T>,
+    em: EditorModel,
+    opts?: InputViewProperties
+  ): TraitView<M, T | any> {
+    let type: string | undefined;
+    let prop: any = { name: target.name, ...opts };
+    if (opts !== undefined) {
+      type = opts.type;
+      prop = opts;
     }
-
-    switch (name) {
+    let view: TraitView<M, T | any>;
+    switch (target.name) {
       case 'target':
-        const options = opts.em.Traits.config.optionsTarget;
-        return new TraitSelectView(name, model, { ...prop.opts, name, default: false, options });
+        const options = em.Traits.config.optionsTarget;
+        view = new TraitSelectView(em, { name: target.name, ...prop, default: false, options });
+        break;
       default:
-        const ViewClass = this.getView(type, opts);
+        const ViewClass = this.getView(type, prop);
         //@ts-ignore
-        return new ViewClass(name, model, opts);
+        view = new ViewClass(em, opts);
+        break;
     }
+    return view.setTarget(target);
   }
 
-  private static getView<M extends Model>(type: string, opts: any) {
+  private static getView(type?: string, opts?: any) {
     switch (type) {
       case 'text':
         return TraitTextView;
@@ -81,3 +80,11 @@ export default abstract class InputFactory {
     }
   }
 }
+
+export type { default as TraitButtonView } from './view/TraitButtonView';
+export type { default as TraitCheckboxView } from './view/TraitCheckboxView';
+export type { default as TraitColorView } from './view/TraitColorView';
+export type { TraitNumberView, TraitNumberUnitView } from './view/TraitNumberView';
+export type { default as TraitSelectView } from './view/TraitSelectView';
+export type { default as TraitTextView } from './view/TraitTextView';
+export type { default as TraitView } from './view/TraitView';

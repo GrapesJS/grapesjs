@@ -18,7 +18,7 @@ export default class PageView extends View<Page> {
   render() {
     const { em, pfx, ppfx, model } = this;
     this.$el.attr('class', this.className);
-    let input = new TraitTextView('name', model, { em });
+    let input = new TraitTextView(em).setTarget('name', this.model, { changeProp: true });
     this.$el.append(input.render().el);
     return this;
   }
