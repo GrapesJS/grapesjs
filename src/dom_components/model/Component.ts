@@ -1801,7 +1801,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
       if (isFunction(scr)) {
         let scrStr = scr.toString().trim();
         scrStr = scrStr.slice(scrStr.indexOf('{') + 1, scrStr.lastIndexOf('}'));
-        scr = scrStr.trim();
+        scr = scrStr.replaceAll('_this', 'this').trim();
       }
 
       const config = this.em.getConfig();
