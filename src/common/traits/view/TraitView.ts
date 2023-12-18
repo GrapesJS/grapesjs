@@ -15,9 +15,12 @@ export interface TraitViewOpts {
   noLabel?: boolean;
 }
 
-export default abstract class TraitView<TModel extends Model = Model, TraitValueType = any>
-  extends View<TModel>
-  implements OnUpdateView<TraitValueType>
+type ModelFromTrait<TTarget extends Trait> = TTarget extends Trait<infer M, any> ? M : unknown;
+type ValueFromTrait<TTarget extends Trait> = TTarget extends Trait<any, infer M> ? M : unknown;
+
+export default abstract class TraitView<Target extends Trait = Trait>
+  extends View<ModelFromTrait<Target>>
+  implements OnUpdateView<ValueFromTrait<Target>>
 {
   pfx: string;
   ppfx: string;
@@ -36,7 +39,7 @@ export default abstract class TraitView<TModel extends Model = Model, TraitValue
   eventCapture!: string[];
   noLabel: boolean;
   em: EditorModel;
-  target!: Trait<TraitValueType>;
+  target!: Target;
 
   events(): EventsHash {
     return {
@@ -52,7 +55,7 @@ export default abstract class TraitView<TModel extends Model = Model, TraitValue
     return `<div class="${ppfx}label" title="${name}">${label}</div>`;
   }
 
-  templateInput(defaultValue: TraitValueType) {
+  templateInput(defaultValue: ValueFromTrait<Target>) {
     const { clsField } = this;
     return `<div class="${clsField}" data-input></div>`;
   }
@@ -67,24 +70,24 @@ export default abstract class TraitView<TModel extends Model = Model, TraitValue
     this.noLabel = opts?.noLabel ?? false;
   }
 
-  setTarget(popertyName: string, model: TModel, opts?: TraitProperties): this;
-  setTarget(target: Trait<TraitValueType>): this;
-  setTarget(target: unknown, model?: TModel, opts?: TraitProperties) {
+  setTarget(popertyName: string, model: ModelFromTrait<Target>, opts?: TraitProperties): this;
+  setTarget(target: Target): this;
+  setTarget(target: unknown, model?: ModelFromTrait<Target>, opts?: TraitProperties) {
     if (isString(target) && model !== undefined) {
       target = new Trait(target, model, opts);
     }
-    this.target = target as Trait<TraitValueType>;
+    this.target = target as Target;
     this.model = this.target.model as any;
     this.name ?? (this.name = this.target.name);
-    this.listenTo(model, 'change:label', this.render);
-    this.listenTo(model, 'change:placeholder', this.rerender);
+    // this.listenTo(model, 'change:label', this.render);
+    // this.listenTo(model, 'change:placeholder', this.rerender);
     this.target.registerForUpdateEvent(this);
     return this;
   }
 
-  abstract get inputValue(): TraitValueType;
+  abstract get inputValue(): ValueFromTrait<Target>;
 
-  abstract set inputValue(value: TraitValueType);
+  abstract set inputValue(value: ValueFromTrait<Target>);
 
   /**
    * Fires when the input is changed
@@ -94,7 +97,7 @@ export default abstract class TraitView<TModel extends Model = Model, TraitValue
     this.target.value = this.inputValue;
   }
 
-  onUpdateEvent(value: TraitValueType) {
+  onUpdateEvent(value: ValueFromTrait<Target>) {
     this.inputValue = value;
   }
 

@@ -2,6 +2,7 @@ import { bindAll, indexOf, isUndefined } from 'underscore';
 import { Model, $ } from '../..';
 import EditorModel from '../../../editor/model/Editor';
 import { off, on } from '../../../utils/dom';
+import Trait from '../model/Trait';
 import TraitView, { TraitViewOpts } from './TraitView';
 
 export interface TraitNumberViewOpts extends TraitViewOpts {
@@ -11,7 +12,9 @@ export interface TraitNumberViewOpts extends TraitViewOpts {
   fixedValues?: string[];
 }
 
-abstract class TraitNumberViewAbstract<TModel extends Model, TraitValueType> extends TraitView<TModel, TraitValueType> {
+abstract class TraitNumberViewAbstract<TModel extends Model, TraitValueType> extends TraitView<
+  Trait<TModel, TraitValueType>
+> {
   protected type = 'number';
   moved?: boolean;
   prValue?: number;

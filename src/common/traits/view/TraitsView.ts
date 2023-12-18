@@ -1,12 +1,11 @@
 import { TraitView } from '..';
 import { View } from '../..';
 
-export default class TraitViewList extends View {
+export default class TraitsView extends View {
   inputs: TraitView[];
   constructor(inputs?: TraitView[], el?: any) {
     super({ el });
     this.inputs = inputs ?? [];
-    console.log(this.inputs);
   }
 
   add(input: TraitView) {
@@ -24,11 +23,9 @@ export default class TraitViewList extends View {
     if (this.inputs.length) {
       this.inputs.forEach(view => {
         const rendered = view.render().el;
-        console.log(rendered);
         frag.appendChild(rendered);
       });
     }
-    console.log(frag);
 
     this.$el.append(frag);
     return this;

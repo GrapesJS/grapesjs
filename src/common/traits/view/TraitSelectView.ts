@@ -1,6 +1,7 @@
 import { isString, isUndefined } from 'underscore';
 import { Model, $ } from '../..';
 import EditorModel from '../../../editor/model/Editor';
+import Trait from '../model/Trait';
 import TraitView, { TraitViewOpts } from './TraitView';
 
 type SelectOption =
@@ -15,7 +16,7 @@ export interface TraitSelectViewOpts extends TraitViewOpts {
   options: SelectOption[];
 }
 
-export default class TraitSelectView<TModel extends Model> extends TraitView<TModel, string> {
+export default class TraitSelectView<TModel extends Model> extends TraitView<Trait<TModel, string>> {
   protected type = 'select';
   options: SelectOption[];
 

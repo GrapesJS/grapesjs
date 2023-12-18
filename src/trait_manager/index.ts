@@ -2,7 +2,6 @@ import { debounce } from 'underscore';
 import { Model } from '../common';
 import { Module } from '../abstract';
 import defaults, { TraitManagerConfig } from './config/config';
-import TraitsView from './view/TraitsView';
 import TraitView from './view/TraitView';
 import TraitSelectView from './view/TraitSelectView';
 import TraitCheckboxView from './view/TraitCheckboxView';
@@ -12,7 +11,7 @@ import TraitButtonView from './view/TraitButtonView';
 import EditorModel from '../editor/model/Editor';
 import Component from '../dom_components/model/Component';
 import Trait from '../common/traits/model/Trait';
-import TraitViewList from '../common/traits/view/TraitViewList';
+import TraitsView from '../common/traits/view/TraitsView';
 import InputFactory from '../common/traits';
 
 export const evAll = 'trait';
@@ -41,7 +40,7 @@ interface ITraitView {
 export type CustomTrait<T> = ITraitView & T & ThisType<T & TraitView>;
 
 export default class TraitManager extends Module<TraitManagerConfig & { pStylePrefix?: string }> {
-  view?: TraitViewList;
+  view?: TraitsView;
   types: { [id: string]: { new (o: any): TraitView } };
   model: Model;
   __ctn?: any;
@@ -153,7 +152,7 @@ export default class TraitManager extends Module<TraitManagerConfig & { pStylePr
     let { view, em } = this;
     const el = view?.el;
     const traitViews = this.getCurrent().map(trait => InputFactory.buildView(trait, em, trait.opts as any));
-    this.view = new TraitViewList(traitViews, el).render();
+    this.view = new TraitsView(traitViews, el).render();
 
     return this.view.el;
   }

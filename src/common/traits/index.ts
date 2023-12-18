@@ -2,9 +2,11 @@ import { isString } from 'underscore';
 import { Model } from '..';
 import EditorModel from '../../editor/model/Editor';
 import Trait, { TraitProperties } from './model/Trait';
+import TraitList from './model/TraitList';
 import TraitButtonView, { TraitButtonViewOpts } from './view/TraitButtonView';
 import TraitCheckboxView from './view/TraitCheckboxView';
 import TraitColorView from './view/TraitColorView';
+import TraitListView from './view/TraitListView';
 import {
   TraitNumberView,
   TraitNumberUnitView,
@@ -22,12 +24,24 @@ export type InputViewProperties =
   | ({ type: 'select' } & TraitSelectViewOpts)
   | ({ type: 'checkbox' } & TraitViewOpts)
   | ({ type: 'color' } & TraitViewOpts)
-  | ({ type: 'button' } & TraitButtonViewOpts<Model>);
+  | ({ type: 'button' } & TraitButtonViewOpts<Model>)
+  | ({ type: 'list' } & TraitButtonViewOpts<Model>);
+
 export type InputProperties = TraitProperties & { name: string };
+
 export default abstract class InputFactory {
   static build(model: Model, trait: string | (InputProperties & InputViewProperties) | Trait): Trait {
     if (!(trait instanceof Trait)) {
-      return isString(trait) ? new Trait(trait, model) : new Trait(trait.name, model, trait);
+      if (isString(trait)) {
+        return new Trait(trait, model);
+      } else {
+        switch (trait.type) {
+          case 'list':
+            return new TraitList(trait.name, model, trait);
+          default:
+            return new Trait(trait.name, model, trait);
+        }
+      }
     } else {
       return trait;
     }
@@ -35,22 +49,18 @@ export default abstract class InputFactory {
   /**
    * Build props object by their name
    */
-  static buildView<M extends Model, T extends any>(
-    target: Trait<T>,
-    em: EditorModel,
-    opts?: InputViewProperties
-  ): TraitView<M, T | any> {
+  static buildView<T extends Trait<Model, any>>(target: T, em: EditorModel, opts?: InputViewProperties): TraitView<T> {
     let type: string | undefined;
     let prop: any = { name: target.name, ...opts };
     if (opts !== undefined) {
       type = opts.type;
       prop = opts;
     }
-    let view: TraitView<M, T | any>;
+    let view: TraitView<T>;
     switch (target.name) {
       case 'target':
         const options = em.Traits.config.optionsTarget;
-        view = new TraitSelectView(em, { name: target.name, ...prop, default: false, options });
+        view = new TraitSelectView(em, { name: target.name, ...prop, default: false, options }) as any;
         break;
       default:
         const ViewClass = this.getView(type, prop);
@@ -75,6 +85,8 @@ export default abstract class InputFactory {
         return TraitColorView;
       case 'button':
         return TraitButtonView;
+      case 'list':
+        return TraitListView;
       default:
         return TraitTextView;
     }

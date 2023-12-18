@@ -2,6 +2,7 @@ import { isString } from 'underscore';
 import { Model, $ } from '../..';
 import Editor from '../../../editor';
 import EditorModel from '../../../editor/model/Editor';
+import Trait from '../model/Trait';
 import TraitView, { TraitViewOpts } from './TraitView';
 
 export interface TraitButtonViewOpts<TModel> extends TraitViewOpts {
@@ -10,7 +11,7 @@ export interface TraitButtonViewOpts<TModel> extends TraitViewOpts {
   full?: boolean;
 }
 
-export default class TraitButtonView<TModel extends Model> extends TraitView<TModel, any> {
+export default class TraitButtonView<TModel extends Model> extends TraitView<Trait<TModel, any>> {
   type = 'button';
   command: string | ((e: Editor, m: TModel) => void);
   text?: string;

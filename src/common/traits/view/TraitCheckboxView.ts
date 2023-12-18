@@ -1,7 +1,8 @@
 import { Model } from 'backbone';
+import Trait from '../model/Trait';
 import TraitView from './TraitView';
 
-export default class TraitCheckboxView<TModel extends Model> extends TraitView<TModel, boolean> {
+export default class TraitCheckboxView<TModel extends Model> extends TraitView<Trait<TModel, boolean>> {
   type = 'checkbox';
   appendInput = false;
 

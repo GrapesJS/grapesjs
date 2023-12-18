@@ -1,7 +1,8 @@
 import { Model } from '../..';
+import Trait from '../model/Trait';
 import TraitView from './TraitView';
 
-export default class TraitTextView<TModel extends Model> extends TraitView<TModel, string> {
+export default class TraitTextView<TModel extends Model> extends TraitView<Trait<TModel, string>> {
   protected type: string = 'text';
 
   getInputElem() {

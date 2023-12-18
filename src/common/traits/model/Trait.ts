@@ -10,13 +10,13 @@ export interface TraitProperties {
   changeProp?: boolean;
 }
 
-export default class Trait<TraitValueType = any> {
+export default class Trait<TModel extends Model = Model, TraitValueType = any> {
   readonly name: string;
   opts: TraitProperties;
-  readonly model: Model;
-  private view?: OnUpdateView<TraitValueType>;
+  readonly model: TModel;
+  protected view?: OnUpdateView<TraitValueType>;
 
-  constructor(name: string, model: Model, opts?: TraitProperties) {
+  constructor(name: string, model: TModel, opts?: TraitProperties) {
     this.name = name;
     model.on('change:' + name, this.setValueFromModel, this);
     this.model = model;
@@ -31,8 +31,8 @@ export default class Trait<TraitValueType = any> {
     const { changeProp, model, name } = this;
     const value = changeProp
       ? model.get(name)
-      : // @ts-ignore TODO update post component update
-        model.getAttributes()[name];
+      : // TODO update post component update
+        model.get('attributes')[name];
 
     return value ?? this.opts.default;
   }
@@ -40,7 +40,7 @@ export default class Trait<TraitValueType = any> {
     return this.opts.changeProp ?? false;
   }
 
-  private updatingValue = false;
+  protected updatingValue = false;
   public set value(value: TraitValueType) {
     const { name, model, changeProp } = this;
     this.updatingValue = true;
@@ -48,13 +48,12 @@ export default class Trait<TraitValueType = any> {
     if (changeProp) {
       model.set(name, value);
     } else {
-      //@ts-ignore
-      model.addAttributes({ [name]: value });
+      model.set('attributes', { ...model.get('attributes'), [name]: value });
     }
     this.updatingValue = false;
   }
 
-  private setValueFromModel() {
+  protected setValueFromModel() {
     if (!this.updatingValue) {
       this.view?.onUpdateEvent(this.value);
     }
