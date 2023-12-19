@@ -2730,8 +2730,13 @@ export interface TraitProperties {
 		trait: Trait;
 		component: Component;
 		partial: boolean;
+		options: TraitSetValueOptions;
 		emitUpdate: () => void;
 	}) => void;
+}
+export interface TraitSetValueOptions {
+	partial?: boolean;
+	[key: string]: unknown;
 }
 export type TraitOption = {
 	id: string;
@@ -2802,9 +2807,7 @@ export declare class Trait extends Model<TraitProperties> {
 	 * @param {Object} [opts={}] Options.
 	 * @param {Boolean} [opts.partial] If `true` the update won't be considered complete (not stored in UndoManager).
 	 */
-	setValue(value: any, opts?: {
-		partial?: boolean;
-	}): void;
+	setValue(value: any, opts?: TraitSetValueOptions): void;
 	/**
 	 * Get default value.
 	 */
