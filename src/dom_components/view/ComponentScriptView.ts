@@ -1,16 +1,16 @@
-import ComponentView from './ComponentImageView';
+import ComponentView from './ComponentView';
 
 export default class ComponentScriptView extends ComponentView {
   tagName() {
     return 'script';
   }
 
-  // @ts-ignore
   events() {
     return {};
   }
 
   render() {
+    this.renderAttributes();
     const { model, em } = this;
     const src = model.get('src');
     const scrCnt = em && em.get('scriptCount');
