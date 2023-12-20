@@ -3,17 +3,17 @@ import { Model, $ } from '../..';
 import Editor from '../../../editor';
 import EditorModel from '../../../editor/model/Editor';
 import Trait from '../model/Trait';
-import TraitView, { TraitViewOpts } from './TraitView';
+import TraitInputView, { TraitInputViewOpts } from './TraitInputView';
 
-export interface TraitButtonViewOpts<TModel> extends TraitViewOpts {
-  command: string | ((e: Editor, m: TModel) => void);
+export interface TraitButtonViewOpts extends TraitInputViewOpts<'button'> {
+  command: string | ((e: Editor, m: Model) => void);
   text?: string;
   full?: boolean;
 }
 
-export default class TraitButtonView<TModel extends Model> extends TraitView<Trait<TModel, any>> {
+export default class TraitButtonView extends TraitInputView<Trait<any>> {
   type = 'button';
-  command: string | ((e: Editor, m: TModel) => void);
+  command: string | ((e: Editor, m: Model) => void);
   text?: string;
   full?: boolean;
   events() {
@@ -22,7 +22,7 @@ export default class TraitButtonView<TModel extends Model> extends TraitView<Tra
     };
   }
 
-  constructor(em: EditorModel, opts: TraitButtonViewOpts<TModel>) {
+  constructor(em: EditorModel, opts: TraitButtonViewOpts) {
     super(em, opts);
     this.command = opts.command;
     this.text = opts.text;

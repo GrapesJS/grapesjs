@@ -1,8 +1,8 @@
 import { isString, isUndefined } from 'underscore';
-import { Model, $ } from '../..';
 import EditorModel from '../../../editor/model/Editor';
+import { $ } from '../..';
 import Trait from '../model/Trait';
-import TraitView, { TraitViewOpts } from './TraitView';
+import TraitInputView, { TraitInputViewOpts } from './TraitInputView';
 
 type SelectOption =
   | string
@@ -12,11 +12,11 @@ type SelectOption =
       style?: string;
     };
 
-export interface TraitSelectViewOpts extends TraitViewOpts {
+export interface TraitSelectViewOpts extends TraitInputViewOpts<'select'> {
   options: SelectOption[];
 }
 
-export default class TraitSelectView<TModel extends Model> extends TraitView<Trait<TModel, string>> {
+export default class TraitSelectView extends TraitInputView<Trait<string>> {
   protected type = 'select';
   options: SelectOption[];
 

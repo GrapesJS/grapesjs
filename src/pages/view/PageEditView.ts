@@ -23,40 +23,35 @@ export default class PageEditView extends View<Page> {
     this.$el.empty();
     this.$el.attr('class', this.className);
     if (this.model) {
-      let input = new TraitNumberView(em, { name: 'name', min: 0 });
+      let input = new TraitNumberView(em, { min: 0 });
       input.setTarget('name', this.model, { changeProp: true });
       this.$el.append(input.render().el);
 
-      let input3 = new TraitNumberUnitView(em, { name: 'name', min: 0, units: ['px', '%'] });
+      let input3 = new TraitNumberUnitView(em, { min: 0, units: ['px', '%'] });
       input3.setTarget('name', this.model, { changeProp: true });
       this.$el.append(input3.render().el);
 
       this.$el.append(
-        new TraitSelectView(em, { name: 'name', options: ['px', '%'] })
-          .setTarget('name', this.model, { changeProp: true })
-          .render().el
+        new TraitSelectView(em, { options: ['px', '%'] }).setTarget('name', this.model, { changeProp: true }).render()
+          .el
       );
 
-      this.$el.append(
-        new TraitCheckboxView(em, { name: 'name' }).setTarget('name', this.model, { changeProp: true }).render().el
-      );
+      this.$el.append(new TraitCheckboxView(em).setTarget('name', this.model, { changeProp: true }).render().el);
 
       this.$el.append(
         new TraitButtonView(em, {
-          name: 'name',
           text: 'Ok',
           command: () => {
             console.log('click');
           },
+          full: true,
         })
           .setTarget('name', this.model, { changeProp: true })
           .render().el
       );
-      this.$el.append(
-        new TraitColorView(em, { name: 'name' }).setTarget('name', this.model, { changeProp: true }).render().el
-      );
+      this.$el.append(new TraitColorView(em, {}).setTarget('name', this.model, { changeProp: true }).render().el);
 
-      let input2 = new TraitTextView(em, { name: 'route' }).setTarget('name', this.model, { changeProp: true });
+      let input2 = new TraitTextView(em, {}).setTarget('route', this.model, { changeProp: true });
       this.$el.append(input2.render().el);
     }
     return this;

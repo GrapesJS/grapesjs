@@ -1,20 +1,18 @@
 import { bindAll, indexOf, isUndefined } from 'underscore';
-import { Model, $ } from '../..';
+import { $ } from '../..';
 import EditorModel from '../../../editor/model/Editor';
 import { off, on } from '../../../utils/dom';
 import Trait from '../model/Trait';
-import TraitView, { TraitViewOpts } from './TraitView';
+import TraitInputView, { TraitInputViewOpts } from './TraitInputView';
 
-export interface TraitNumberViewOpts extends TraitViewOpts {
+export interface TraitNumberViewOpts extends TraitInputViewOpts<'number'> {
   step?: number;
   min?: number;
   max?: number;
   fixedValues?: string[];
 }
 
-abstract class TraitNumberViewAbstract<TModel extends Model, TraitValueType> extends TraitView<
-  Trait<TModel, TraitValueType>
-> {
+abstract class TraitNumberViewAbstract<TraitValueType = any> extends TraitInputView<Trait<TraitValueType>> {
   protected type = 'number';
   moved?: boolean;
   prValue?: number;
@@ -35,13 +33,13 @@ abstract class TraitNumberViewAbstract<TModel extends Model, TraitValueType> ext
     };
   }
 
-  constructor(em: EditorModel, opts: TraitNumberViewOpts) {
+  constructor(em: EditorModel, opts?: TraitNumberViewOpts) {
     super(em, opts);
     bindAll(this, 'moveIncrement', 'upIncrement');
-    this.step = opts.step ?? 1;
-    this.min = opts.min;
-    this.max = opts.max;
-    this.fixedValues = opts.fixedValues ?? [];
+    this.step = opts?.step ?? 1;
+    this.min = opts?.min;
+    this.max = opts?.max;
+    this.fixedValues = opts?.fixedValues ?? [];
   }
 
   get inputNumberValue(): number {
@@ -249,10 +247,10 @@ abstract class TraitNumberViewAbstract<TModel extends Model, TraitValueType> ext
   }
 }
 
-export class TraitNumberView<TModel extends Model> extends TraitNumberViewAbstract<TModel, number> {
+export class TraitNumberView extends TraitNumberViewAbstract<number> {
   unitEl?: any;
 
-  constructor(em: EditorModel, opts: TraitNumberViewOpts) {
+  constructor(em: EditorModel, opts?: TraitNumberViewOpts) {
     super(em, opts);
   }
 
@@ -269,7 +267,7 @@ export interface TraitNumberUnitViewOpts extends TraitNumberViewOpts {
   units: string[];
 }
 
-export class TraitNumberUnitView<TModel extends Model> extends TraitNumberViewAbstract<TModel, string> {
+export class TraitNumberUnitView extends TraitNumberViewAbstract<string> {
   unitEl?: HTMLSelectElement;
   units: string[];
 

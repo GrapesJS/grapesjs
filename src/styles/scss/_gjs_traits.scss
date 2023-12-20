@@ -21,6 +21,13 @@
       flex-grow: 1;
     }
   }
+
+  &caret {
+    width: 17px;
+    height: 17px;
+    min-width: 17px;
+    transform: rotate(-90deg);
+  }
 }
 
 .#{$trt-prefix}header {

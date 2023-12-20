@@ -1292,8 +1292,8 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * const traitTitle = component.getTrait('title');
    * traitTitle && traitTitle.set('label', 'New label');
    */
-  getTrait(id: string) {
-    return this.getTraits().find(trait => trait.name === id) || null;
+  getTrait(id: string): Trait | null {
+    return this.traits.find(trait => trait.name === id) || null;
   }
 
   /**

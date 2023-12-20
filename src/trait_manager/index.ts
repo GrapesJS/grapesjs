@@ -151,8 +151,9 @@ export default class TraitManager extends Module<TraitManagerConfig & { pStylePr
   render() {
     let { view, em } = this;
     const el = view?.el;
-    const traitViews = this.getCurrent().map(trait => InputFactory.buildView(trait, em, trait.opts as any));
-    this.view = new TraitsView(traitViews, el).render();
+    const traits = this.getCurrent(); //.map(trait => InputFactory.buildView(trait as any, em, trait.opts as any));
+    console.log(traits);
+    this.view = new TraitsView(em, { el, traits }).render();
 
     return this.view.el;
   }

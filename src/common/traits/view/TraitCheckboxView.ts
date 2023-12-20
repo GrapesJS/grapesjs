@@ -1,10 +1,14 @@
-import { Model } from 'backbone';
+import EditorModel from '../../../editor/model/Editor';
 import Trait from '../model/Trait';
-import TraitView from './TraitView';
+import TraitInputView, { TraitInputViewOpts } from './TraitInputView';
 
-export default class TraitCheckboxView<TModel extends Model> extends TraitView<Trait<TModel, boolean>> {
+export default class TraitCheckboxView extends TraitInputView<Trait<boolean>> {
   type = 'checkbox';
   appendInput = false;
+
+  constructor(em: EditorModel, opts?: TraitInputViewOpts<'checkbox'>) {
+    super(em, opts);
+  }
 
   templateInput() {
     const { ppfx, clsField } = this;

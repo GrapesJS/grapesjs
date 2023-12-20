@@ -1,9 +1,13 @@
-import { Model } from '../..';
+import EditorModel from '../../../editor/model/Editor';
 import Trait from '../model/Trait';
-import TraitView from './TraitView';
+import TraitInputView, { TraitInputViewOpts } from './TraitInputView';
 
-export default class TraitTextView<TModel extends Model> extends TraitView<Trait<TModel, string>> {
+export default class TraitTextView extends TraitInputView<Trait<string>> {
   protected type: string = 'text';
+
+  constructor(em: EditorModel, opts?: TraitInputViewOpts<'text'>) {
+    super(em, opts);
+  }
 
   getInputElem() {
     const { input, $input } = this;
@@ -16,7 +20,6 @@ export default class TraitTextView<TModel extends Model> extends TraitView<Trait
   }
 
   set inputValue(value: string) {
-    console.log('Text input value ' + value);
     const el = this.getInputElem();
     el && (el.value = value as any);
   }

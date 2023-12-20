@@ -1,8 +1,9 @@
-import TraitView from './TraitView';
+import TraitInputView, { TraitInputViewOpts } from './TraitInputView';
 import { Model, $ } from '../..';
 import { isUndefined } from 'underscore';
 import ColorPicker from '../../../utils/ColorPicker';
 import Trait from '../model/Trait';
+import EditorModel from '../../../editor/model/Editor';
 
 $ && ColorPicker($);
 
@@ -12,11 +13,15 @@ const getColor = (color: any) => {
   return name || cl.replace(/ /g, '');
 };
 
-export default class TraitColorView<TModel extends Model> extends TraitView<Trait<TModel, any>> {
+export default class TraitColorView extends TraitInputView<Trait<any>> {
   type = 'text';
   colorPicker?: any;
   templateInput() {
     return '';
+  }
+
+  constructor(em: EditorModel, opts?: TraitInputViewOpts<'color'>) {
+    super(em, opts);
   }
 
   get inputValue(): any {

@@ -5,21 +5,21 @@ export interface OnUpdateView<TraitValueType> {
 }
 
 export interface TraitProperties {
+  name: string;
   default?: any;
   value?: any;
   changeProp?: boolean;
 }
 
-export default class Trait<TModel extends Model = Model, TraitValueType = any> {
-  readonly name: string;
-  opts: TraitProperties;
-  readonly model: TModel;
+export default abstract class Trait<TraitValueType = any> {
+  opts: any;
   protected view?: OnUpdateView<TraitValueType>;
 
-  constructor(name: string, model: TModel, opts?: TraitProperties) {
-    this.name = name;
-    model.on('change:' + name, this.setValueFromModel, this);
-    this.model = model;
+  public get name() {
+    return this.opts.name;
+  }
+
+  constructor(opts: TraitProperties) {
     this.opts = { ...opts, default: opts?.value ?? opts?.default ?? '' };
   }
 
@@ -27,29 +27,22 @@ export default class Trait<TModel extends Model = Model, TraitValueType = any> {
     this.view = view;
   }
 
-  public get value(): TraitValueType {
-    const { changeProp, model, name } = this;
-    const value = changeProp
-      ? model.get(name)
-      : // TODO update post component update
-        model.get('attributes')[name];
+  protected abstract getValue(): TraitValueType;
 
-    return value ?? this.opts.default;
-  }
+  protected abstract setValue(value: TraitValueType): void;
+
   public get changeProp(): boolean {
     return this.opts.changeProp ?? false;
   }
 
+  public get value(): TraitValueType {
+    return this.getValue() ?? this.opts.default;
+  }
+
   protected updatingValue = false;
   public set value(value: TraitValueType) {
-    const { name, model, changeProp } = this;
     this.updatingValue = true;
-
-    if (changeProp) {
-      model.set(name, value);
-    } else {
-      model.set('attributes', { ...model.get('attributes'), [name]: value });
-    }
+    this.setValue(value);
     this.updatingValue = false;
   }
 
