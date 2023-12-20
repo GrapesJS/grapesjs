@@ -13,19 +13,11 @@ export default class ComponentScript extends Component {
       droppable: false,
       draggable: false,
       layerable: false,
+      highlightable: false,
     };
   }
 
-  static isComponent(el: HTMLImageElement) {
-    if (toLowerCase(el.tagName) == type) {
-      const result: any = { type };
-
-      if (el.src) {
-        result.src = el.src;
-        result.onload = el.onload;
-      }
-
-      return result;
-    }
+  static isComponent(el: HTMLScriptElement) {
+    return toLowerCase(el.tagName) === type;
   }
 }
