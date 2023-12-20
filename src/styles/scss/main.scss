@@ -537,3 +537,21 @@ $colorsAll: (one, var(--gjs-primary-color)),
 .cm-s-hopscotch span.cm-error {
     color: #ffffff;
 }
+
+.dialog-opacity {
+  -webkit-transition: opacity 300ms ease-out;  
+  -moz-transition: opacity 300ms ease-in-out; 
+  // background-color: #000 !important;
+  color: #fff !important;
+  opacity: 0.7 !important;
+
+  box-shadow: 0 0 8px 4px #41a7df,
+  0 0 20px 7px #ebecca,
+  
+}
+
+.dialog-opacity:hover {
+  opacity: 0.9 !important;
+  -webkit-transition: opacity 300ms ease-out;  
+  -moz-transition: opacity 300ms ease-in-out;   
+}
