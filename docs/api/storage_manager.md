@@ -24,18 +24,101 @@ storageManager.add(...);
 ```
 
 ## Available Events
+* `storage:start` Storage request start.
 
-*   `storage:start` - Before the storage request is started
-*   `storage:start:store` - Before the store request. The object to store is passed as an argument (which you can edit)
-*   `storage:start:load` - Before the load request. Items to load are passed as an argument (which you can edit)
-*   `storage:load` - Triggered when something was loaded from the storage, loaded object passed as an argument
-*   `storage:store` - Triggered when something is stored to the storage, stored object passed as an argument
-*   `storage:end` - After the storage request is ended
-*   `storage:end:store` - After the store request
-*   `storage:end:load` - After the load request
-*   `storage:error` - On any error on storage request, passes the error as an argument
-*   `storage:error:store` - Error on store request, passes the error as an argument
-*   `storage:error:load` - Error on load request, passes the error as an argument
+```javascript
+editor.on('storage:start', (type) => {
+ console.log('Storage start');
+});
+```
+
+* `storage:start:store` Storage store request start.&#xA;The project JSON object to store is passed as an argument (which you can edit).
+
+```javascript
+editor.on('storage:start:store', (data) => {
+ console.log('Storage start store');
+});
+```
+
+* `storage:start:load` Storage load request start.
+
+```javascript
+editor.on('storage:start:load', () => {
+ console.log('Storage start load');
+});
+```
+
+* `storage:load` Storage loaded the project.&#xA;The loaded project is passed as an argument.
+
+```javascript
+editor.on('storage:load', (data, res) => {
+ console.log('Storage loaded the project');
+});
+```
+
+* `storage:store` Storage stored the project.&#xA;The stored project is passed as an argument.
+
+```javascript
+editor.on('storage:store', (data, res) => {
+ console.log('Storage stored the project');
+});
+```
+
+* `storage:after` Storage request completed.&#xA;Triggered right after `storage:load`/`storage:store`.
+
+```javascript
+editor.on('storage:after', (type) => {
+ console.log('Storage request completed');
+});
+```
+
+* `storage:end` Storage request ended.&#xA;This event triggers also in case of errors.
+
+```javascript
+editor.on('storage:end', (type) => {
+ console.log('Storage request ended');
+});
+```
+
+* `storage:end:store` Storage store request ended.&#xA;This event triggers also in case of errors.
+
+```javascript
+editor.on('storage:end:store', () => {
+ console.log('Storage store request ended');
+});
+```
+
+* `storage:end:load` Storage load request ended.&#xA;This event triggers also in case of errors.
+
+```javascript
+editor.on('storage:end:load', () => {
+ console.log('Storage load request ended');
+});
+```
+
+* `storage:error` Error on storage request.
+
+```javascript
+editor.on('storage:error', (err, type) => {
+ console.log('Storage error');
+});
+```
+
+* `storage:error:store` Error on store request.
+
+```javascript
+editor.on('storage:error:store', (err) => {
+ console.log('Error on store');
+});
+```
+
+* `storage:error:load` Error on load request.
+
+```javascript
+editor.on('storage:error:load', (err) => {
+ console.log('Error on load');
+});
+```
 
 ## Methods
 
@@ -160,7 +243,7 @@ Store data in the current storage.
 ### Parameters
 
 *   `data` **[Object][16]** Project data.
-*   `options` **[Object][16]?** Storage options. (optional, default `{}`)
+*   `options` **[Object][16]?** Storage options. (optional, default `{}as T`)
 
 ### Examples
 
@@ -177,7 +260,7 @@ Load resource from the current storage by keys
 
 ### Parameters
 
-*   `options` **[Object][16]?** Storage options. (optional, default `{}`)
+*   `options` **[Object][16]?** Storage options. (optional, default `{}as T`)
 
 ### Examples
 
