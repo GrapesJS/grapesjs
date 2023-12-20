@@ -27,6 +27,20 @@ console.log(selector.toString());
 
 Returns **[String][1]** 
 
+### getName
+
+Get selector name.
+
+#### Examples
+
+```javascript
+// Given such selector: { name: 'my-selector', label: 'My selector' }
+console.log(selector.getName());
+// -> `my-selector`
+```
+
+Returns **[String][1]** 
+
 ### getLabel
 
 Get selector label.

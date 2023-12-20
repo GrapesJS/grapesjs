@@ -62,6 +62,7 @@ component.get('tagName');
     Eg. `toolbar: [ { attributes: {class: 'fa fa-arrows'}, command: 'tlb-move' }, ... ]`.
     By default, when `toolbar` property is falsy the editor will add automatically commands `core:component-exit` (select parent component, added if there is one), `tlb-move` (added if `draggable`) , `tlb-clone` (added if `copyable`), `tlb-delete` (added if `removable`).
 *   `components` **Collection\<Component>?** Children components. Default: `null`
+*   `delegate` **[Object][2]?** Delegate commands to other components. Available commands `remove` | `move` | `copy` | `select`. eg. `{ remove: (cmp) => cmp.closestType('other-type') }`
 
 ## init
 
@@ -219,15 +220,16 @@ Replace a component with another one
 ### Parameters
 
 *   `el` **([String][1] | Component)** Component or HTML string
+*   `opts` **[Object][2]** Options for the append action (optional, default `{}`)
 
 ### Examples
 
 ```javascript
-component.replaceWith('<div>Some new content</div>');
-// -> Component
+const result = component.replaceWith('<div>Some new content</div>');
+// result -> [Component]
 ```
 
-Returns **(Component | [Array][5]\<Component>)** New added component/s
+Returns **[Array][5]\<Component>** New replaced components
 
 ## setAttributes
 
