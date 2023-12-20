@@ -3,7 +3,7 @@ import Modal from '../model/Modal';
 
 export default class ModalView extends ModuleView<Modal> {
   template({ pfx, ppfx, content, title }: any) {
-    return `<div class="${pfx}dialog ${ppfx}one-bg ${ppfx}two-color">
+    return `<div class="${pfx}dialog ${ppfx}one-bg ${ppfx}two-color dialog-opacity">
       <div class="${pfx}header">
         <div class="${pfx}title">${title}</div>
         <div class="${pfx}btn-close" data-close-modal>&Cross;</div>
