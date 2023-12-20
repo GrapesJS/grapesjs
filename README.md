@@ -151,6 +151,8 @@ $ yarn test
 
 ## Plugins
 
+[Official Plugins](https://github.com/orgs/GrapesJS/repositories?q=-repo%3Agrapesjs%2Fgrapesjs&type=source) | [Community Plugins](https://github.com/topics/grapesjs-plugin)
+
 ### Wrappers
 
 * [@grapesjs/react](https://github.com/GrapesJS/react) - GrapesJS wrapper for React that allows you to build custom and declarative UI for your editor.
@@ -161,7 +163,6 @@ $ yarn test
 * [grapesjs-plugin-export](https://github.com/GrapesJS/export) - Export GrapesJS templates in a zip archive
 * [grapesjs-plugin-filestack](https://github.com/GrapesJS/filestack) - Add Filestack uploader in Asset Manager
 * [grapesjs-plugin-ckeditor](https://github.com/GrapesJS/ckeditor) - Replaces the built-in RTE with CKEditor
-* [grapesjs-aviary](https://github.com/GrapesJS/aviary) - Add the Aviary Image Editor (dismissed, use the plugin below instead)
 * [grapesjs-tui-image-editor](https://github.com/GrapesJS/tui-image-editor) - GrapesJS TOAST UI Image Editor
 * [grapesjs-blocks-basic](https://github.com/GrapesJS/blocks-basic) - Basic set of blocks
 * [grapesjs-plugin-forms](https://github.com/GrapesJS/components-forms) - Set of form components and blocks
