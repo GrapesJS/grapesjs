@@ -6,10 +6,11 @@ import { off, on } from '../../utils/dom';
 import { getComponentModel } from '../../utils/mixins';
 import Component from '../model/Component';
 import { getComponentIds } from '../model/Components';
+import ComponentText from '../model/ComponentText';
 import { ComponentDefinition } from '../model/types';
 import ComponentView from './ComponentView';
 
-export default class ComponentTextView extends ComponentView {
+export default class ComponentTextView extends ComponentView<ComponentText> {
   rte?: RichTextEditorModule;
   rteEnabled?: boolean;
   activeRte?: RichTextEditor;
