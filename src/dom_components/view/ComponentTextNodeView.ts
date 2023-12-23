@@ -1,6 +1,9 @@
+import ComponentTextNode from '../model/ComponentTextNode';
 import ComponentView from './ComponentView';
 
-export default class ComponentTextNodeView extends ComponentView {
+export default class ComponentTextNodeView<
+  TComp extends ComponentTextNode = ComponentTextNode
+> extends ComponentView<TComp> {
   // Clear methods used on Nodes with attributes
   _setAttributes() {}
   renderAttributes() {}

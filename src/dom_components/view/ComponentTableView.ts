@@ -1,5 +1,8 @@
+import ComponentTable from '../model/ComponentTable';
 import ComponentView from './ComponentView';
 
-export default ComponentView.extend({
-  events: {},
-});
+export default class ComponentTableView extends ComponentView<ComponentTable> {
+  events() {
+    return {};
+  }
+}

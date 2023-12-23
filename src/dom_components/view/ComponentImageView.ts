@@ -3,9 +3,8 @@ import { ObjectAny } from '../../common';
 import ComponentImage from '../model/ComponentImage';
 import ComponentView from './ComponentView';
 
-export default class ComponentImageView extends ComponentView {
+export default class ComponentImageView<TComp extends ComponentImage = ComponentImage> extends ComponentView<TComp> {
   classEmpty!: string;
-  model!: ComponentImage;
   el!: HTMLImageElement;
 
   tagName() {
