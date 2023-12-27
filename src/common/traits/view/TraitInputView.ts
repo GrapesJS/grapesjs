@@ -28,6 +28,11 @@ export default abstract class TraitInputView<Target extends Trait = Trait>
     return `${ppfx}field ${ppfx}field-${type}`;
   }
 
+  get clsLabel() {
+    const { ppfx } = this;
+    return `${ppfx}label-wrp`;
+  }
+
   elInput?: HTMLInputElement;
   input?: HTMLInputElement;
   $input?: JQuery<HTMLInputElement>;
@@ -140,12 +145,12 @@ export default abstract class TraitInputView<Target extends Trait = Trait>
   }
 
   render() {
-    const { $el, pfx, ppfx, name, type } = this;
+    const { $el, pfx, ppfx, name, type, clsLabel } = this;
     const hasLabel = this.hasLabel();
     const cls = `${pfx}trait`;
     delete this.$input;
     let tmpl = `<div class="${cls} ${cls}--${type}">
-      ${hasLabel ? `<div class="${ppfx}label-wrp" data-label></div>` : ''}
+      ${hasLabel ? `<div class="${clsLabel}" data-label></div>` : ''}
       <div class="${ppfx}field-wrp ${ppfx}field-wrp--${type}" data-input>
         ${this.templateInput(this.target.value)}
       </div>

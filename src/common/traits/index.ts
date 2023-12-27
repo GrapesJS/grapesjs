@@ -20,6 +20,7 @@ import TraitsView from './view/TraitsView';
 import TraitTextView from './view/TraitTextView';
 import TraitInputView, { TraitInputViewOpts } from './view/TraitInputView';
 import TraitView from './view/TraitView';
+import TraitFunctionView from './view/TraitFunctionView';
 
 export type InputViewProperties =
   | ({ type: 'text' } & TraitInputViewOpts<'text'>)
@@ -66,8 +67,6 @@ export default abstract class InputFactory {
       type = opts.type;
       prop = opts;
     }
-    console.log(target);
-    console.log(opts);
     let view: TraitView<any>;
     switch (target.name) {
       case 'target':
@@ -103,6 +102,8 @@ export default abstract class InputFactory {
         return TraitButtonView;
       case 'list':
         return TraitListView;
+      case 'function':
+        return TraitFunctionView;
       default:
         return TraitTextView;
     }
