@@ -31,12 +31,16 @@
     "url": "https://github.com/GrapesJS/grapesjs.git"
   },
   "dependencies": {
+    "@codemirror/theme-one-dark": "^6.1.2",
+    "@qwex/codemirror-beautify": "^0.0.3",
     "@types/backbone": "^1.4.15",
     "backbone": "1.4.1",
     "backbone-undo": "^0.2.5",
-    "codemirror": "^5.63.0",
+    "codemirror": "^6.0.1",
     "codemirror-formatting": "^1.0.0",
+    "codemirror-readonly-ranges": "^0.1.0-alpha.2",
     "promise-polyfill": "^8.1.3",
+    "thememirror": "^2.0.1",
     "underscore": "^1.13.1"
   },
   "devDependencies": {

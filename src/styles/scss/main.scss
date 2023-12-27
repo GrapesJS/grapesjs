@@ -1,6 +1,4 @@
 /* stylelint-disable */
-@import "codemirror/lib/codemirror";
-@import "codemirror/theme/hopscotch";
 
 @import "spectrum.scss";
 @import "gjs_variables.scss";
@@ -414,7 +412,7 @@ $colorsAll: (one, var(--gjs-primary-color)),
 	box-sizing: border-box;
 	width:50%;
 
-	.CodeMirror{
+	.cm-editor{
 		 height: 450px;
 	}
 }

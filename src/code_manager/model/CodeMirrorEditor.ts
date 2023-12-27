@@ -1,19 +1,20 @@
 import { bindAll } from 'underscore';
 import { Model } from '../../common';
-import { hasWin } from '../../utils/mixins';
-
-let CodeMirror: any;
-
-if (hasWin()) {
-  CodeMirror = require('codemirror/lib/codemirror');
-  require('codemirror/mode/htmlmixed/htmlmixed');
-  require('codemirror/mode/css/css');
-  require('codemirror-formatting');
-}
+import { EditorState, Extension, Compartment } from '@codemirror/state';
+import { EditorViewConfig } from '@codemirror/view';
+import readOnlyRangesExtension from 'codemirror-readonly-ranges';
+import { EditorView, basicSetup } from 'codemirror';
+import { LanguageSupport, syntaxHighlighting } from '@codemirror/language';
+import { oneDarkTheme, oneDarkHighlightStyle } from '@codemirror/theme-one-dark';
+import { autoFormaAll } from '@qwex/codemirror-beautify';
+import { javascript } from '@codemirror/lang-javascript';
+import { html } from '@codemirror/lang-html';
+import { css } from '@codemirror/lang-css';
 
 export default class CodeMirrorEditor extends Model {
-  editor?: any;
+  editor?: EditorView;
   element?: HTMLElement;
+  private readOnlyCompartment = new Compartment();
 
   defaults() {
     return {
@@ -24,19 +25,77 @@ export default class CodeMirrorEditor extends Model {
       readOnly: true,
       lineNumbers: true,
       autoFormat: true,
+      readOnlyRanges: (targetState: EditorState) => {
+        return [] as Array<{ from: number | undefined; to: number | undefined }>;
+      },
     };
   }
 
-  init(el: HTMLElement) {
+  get readonly(): boolean {
+    return this.get('readOnly');
+  }
+
+  get readOnlyRanges() {
+    return this.get('readOnlyRanges');
+  }
+
+  private editorFromTextArea(textarea: HTMLTextAreaElement, config: EditorViewConfig) {
+    let view = new EditorView({ doc: textarea.value, ...config });
+    textarea.parentNode?.insertBefore(view.dom, textarea);
+    textarea.style.display = 'none';
+    if (textarea.form)
+      textarea.form.addEventListener('submit', () => {
+        textarea.value = view.state.doc.toString();
+      });
+    return view;
+  }
+
+  private getCodeLanguage(name: string) {
+    switch (name) {
+      case 'htmlmixed':
+        return html();
+      case 'css':
+        return css();
+      case 'js':
+        return javascript();
+      default:
+        return undefined;
+    }
+  }
+
+  private setReadonlyState(readOnly: boolean) {
+    const { editor, readOnlyCompartment } = this;
+    if (editor) {
+      const readonlyState = editor.state.update({
+        effects: [readOnlyCompartment.reconfigure(EditorState.readOnly.of(readOnly))],
+      });
+      editor.update([readonlyState]);
+    }
+  }
+
+  init(el: HTMLTextAreaElement) {
+    console.log('init');
     bindAll(this, 'onChange');
-    this.editor = CodeMirror.fromTextArea(el, {
-      dragDrop: false,
-      lineWrapping: true,
-      mode: this.get('codeName'),
+    const languageState = this.getCodeLanguage(this.get('codeName'));
+
+    let extensions: Extension[] = [];
+    extensions.push(basicSetup);
+    extensions.push(oneDarkTheme);
+    extensions.push(syntaxHighlighting(oneDarkHighlightStyle));
+    languageState && extensions.push(languageState);
+    extensions.push(this.readOnlyCompartment.of(EditorState.readOnly.of(this.readonly)));
+    extensions.push(readOnlyRangesExtension(this.readOnlyRanges));
+    const state = EditorState.create({
+      doc: el.value,
+      extensions,
+    });
+
+    this.editor = this.editorFromTextArea(el, {
+      state,
       ...this.attributes,
     });
     this.element = el;
-    this.editor.on('change', this.onChange);
+    this.editor.dom.addEventListener('change', this.onChange);
 
     return this;
   }
@@ -46,7 +105,7 @@ export default class CodeMirrorEditor extends Model {
   }
 
   getEditor() {
-    return this.editor;
+    return this.editor!;
   }
 
   /**
@@ -70,15 +129,6 @@ export default class CodeMirrorEditor extends Model {
   }
 
   /**
-   * Refresh the viewer
-   * @return {self}
-   */
-  refresh() {
-    this.getEditor().refresh();
-    return this;
-  }
-
-  /**
    * Focus the viewer
    * @return {self}
    */
@@ -89,28 +139,28 @@ export default class CodeMirrorEditor extends Model {
 
   getContent() {
     const ed = this.getEditor();
-    return ed && ed.getValue();
+    return ed && ed.state.doc;
   }
 
   /** @inheritdoc */
   setContent(value: string, opts: any = {}) {
-    const { editor } = this;
-    if (!editor) return;
-    editor.setValue(value);
-    const autoFormat = this.get('autoFormat');
-    const canAutoFormat =
-      editor.autoFormatRange &&
-      (autoFormat === true || (Array.isArray(autoFormat) && autoFormat.includes(this.get('codeName'))));
+    const { readonly } = this;
+    if (this.editor) {
+      this.setReadonlyState(false);
+      const state = this.editor.state;
+      const update = state.update({ changes: { from: 0, to: state.doc.length, insert: value } });
+      this.editor.update([update]);
+      const autoFormat = this.get('autoFormat');
+      const canAutoFormat =
+        autoFormat === true || (Array.isArray(autoFormat) && autoFormat.includes(this.get('codeName')));
 
-    if (canAutoFormat) {
-      CodeMirror.commands.selectAll(editor);
-      editor.autoFormatRange(editor.getCursor(true), editor.getCursor(false));
-      CodeMirror.commands.goDocStart(editor);
+      if (canAutoFormat) {
+        autoFormaAll(this.editor);
+      }
+      this.setReadonlyState(readonly);
     }
-
-    !opts.noRefresh && setTimeout(() => this.refresh());
   }
 }
 
 // @ts-ignore
-CodeMirrorEditor.prototype.CodeMirror = CodeMirror;
+CodeMirrorEditor.prototype.CodeMirror = EditorView;
