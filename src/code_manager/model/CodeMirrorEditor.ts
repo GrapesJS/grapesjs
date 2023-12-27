@@ -74,7 +74,6 @@ export default class CodeMirrorEditor extends Model {
   }
 
   init(el: HTMLTextAreaElement) {
-    console.log('init');
     bindAll(this, 'onChange');
     const languageState = this.getCodeLanguage(this.get('codeName'));
 
