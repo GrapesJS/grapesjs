@@ -75,9 +75,9 @@ export default class TraitFunctionView extends TraitInputView<Trait<string>> {
     const inputs = $el.find('[data-input]');
     const el = inputs[inputs.length - 1];
     const txtarea = document.createElement('textarea');
-    txtarea.value = `function(${variables?.join(', ') ?? ''}){ \n //TODO: implementing it \n}`;
+    txtarea.value = `(${variables?.join(', ') ?? ''}) => { \n \n}`;
     el.appendChild(txtarea);
-    const editor = new CodeMirrorEditor({
+    this.editor = new CodeMirrorEditor({
       el: txtarea,
       readOnly: false,
       lineNumbers: false,
@@ -97,8 +97,8 @@ export default class TraitFunctionView extends TraitInputView<Trait<string>> {
     //   readOnlyRanges: (state: EditorState) =>
     //   [{to: state.doc.line(1).to}, {from: state.doc.line(state.doc.lines).from}]
     // });
-    editor.init(txtarea);
-    editor.on('update', this.codeUpdated, this);
+    this.editor.init(txtarea);
+    this.editor.on('update', this.codeUpdated, this);
     // editor.setContent(`function(){ \n //TODO: implementing it \n}`)
     // editor.setElement(el);
     // if (!elInput) {

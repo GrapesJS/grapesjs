@@ -1,7 +1,7 @@
 import { bindAll } from 'underscore';
 import { Model } from '../../common';
 import { EditorState, Extension, Compartment } from '@codemirror/state';
-import { EditorViewConfig, lineNumbers, lineNumberMarkers, gutterLineClass } from '@codemirror/view';
+import { EditorViewConfig, lineNumbers, lineNumberMarkers, gutterLineClass, ViewUpdate } from '@codemirror/view';
 import readOnlyRangesExtension from 'codemirror-readonly-ranges';
 import { EditorView, basicSetup } from 'codemirror';
 import { LanguageSupport, syntaxHighlighting } from '@codemirror/language';
@@ -75,7 +75,7 @@ export default class CodeMirrorEditor extends Model {
   }
 
   init(el: HTMLTextAreaElement) {
-    bindAll(this, 'onChange');
+    // bindAll(this, 'onChange');
     const languageState = this.getCodeLanguage(this.get('codeName'));
 
     let extensions: Extension[] = [];
@@ -86,23 +86,28 @@ export default class CodeMirrorEditor extends Model {
     languageState && extensions.push(languageState);
     extensions.push(this.readOnlyCompartment.of(EditorState.readOnly.of(this.readonly)));
     extensions.push(readOnlyRangesExtension(this.readOnlyRanges));
+    extensions.push(
+      EditorView.updateListener.of((v: ViewUpdate) => {
+        if (v.docChanged) {
+          console.log(this);
+          // Document changed
+          this.trigger('update', this);
+        }
+      })
+    );
     const state = EditorState.create({
       doc: el.value,
       extensions,
     });
+    this.on('update', () => console.log('change'));
 
     this.editor = this.editorFromTextArea(el, {
       state,
       ...this.attributes,
     });
     this.element = el;
-    this.editor.dom.addEventListener('change', this.onChange);
 
     return this;
-  }
-
-  onChange() {
-    this.trigger('update', this);
   }
 
   getEditor() {

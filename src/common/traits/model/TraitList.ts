@@ -42,18 +42,13 @@ export default class TraitList<TModel extends Model = Model>
   setParentValue(name: string, value: any): void {
     let values = this.value;
     const index = values.findIndex(item => item.id == name);
-    console.log(value);
-    console.log(values);
     values[index] = { id: name, value };
-    console.log(values);
-    this.setValue(values);
+    this.value = values;
   }
 
   private initTrait(index: string, value?: any) {
     const { templates } = this;
     const traits = this.templates;
-    console.log('paklsjdf;lkj;laksdjf;lakjdsf;lakjsdf;laksjf;laksej;lsdk');
-    console.log(value);
     // console.log(this.traits)
     // const index = this.traits.length as any
     if (isArray(templates) && templates.length > 1) {
