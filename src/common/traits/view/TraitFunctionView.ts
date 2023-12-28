@@ -4,16 +4,23 @@ import Trait from '../model/Trait';
 import TraitInputView, { TraitInputViewOpts } from './TraitInputView';
 import { EditorState } from '@codemirror/state';
 
-export default class TraitTextView extends TraitInputView<Trait<string>> {
+export interface TraitFunctionViewOpts extends TraitInputViewOpts<'function'> {
+  variables?: string[];
+}
+
+export default class TraitFunctionView extends TraitInputView<Trait<string>> {
   protected type: string = 'function';
+  variables?: string[];
+  private editor?: CodeMirrorEditor;
 
   get clsLabel() {
     const { ppfx } = this;
     return `${ppfx}field`;
   }
 
-  constructor(em: EditorModel, opts?: TraitInputViewOpts<'function'>) {
+  constructor(em: EditorModel, opts?: TraitFunctionViewOpts) {
     super(em, opts);
+    this.variables = opts?.variables;
   }
 
   getInputElem() {
@@ -55,12 +62,20 @@ export default class TraitTextView extends TraitInputView<Trait<string>> {
   templateInput() {
     return '';
   }
+
+  private codeUpdated() {
+    const { editor } = this;
+    if (editor) {
+      this.target.value = editor.getContent().toString();
+    }
+  }
+
   renderField() {
-    const { $el, appendInput, elInput } = this;
+    const { $el, variables } = this;
     const inputs = $el.find('[data-input]');
     const el = inputs[inputs.length - 1];
     const txtarea = document.createElement('textarea');
-    txtarea.value = 'function(){ \n //TODO: implementing it \n}';
+    txtarea.value = `function(${variables?.join(', ') ?? ''}){ \n //TODO: implementing it \n}`;
     el.appendChild(txtarea);
     const editor = new CodeMirrorEditor({
       el: txtarea,
@@ -83,6 +98,7 @@ export default class TraitTextView extends TraitInputView<Trait<string>> {
     //   [{to: state.doc.line(1).to}, {from: state.doc.line(state.doc.lines).from}]
     // });
     editor.init(txtarea);
+    editor.on('update', this.codeUpdated, this);
     // editor.setContent(`function(){ \n //TODO: implementing it \n}`)
     // editor.setElement(el);
     // if (!elInput) {

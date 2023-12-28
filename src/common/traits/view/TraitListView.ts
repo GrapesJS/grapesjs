@@ -35,20 +35,17 @@ export default class TraitListView<TModel extends Model = Model> extends TraitVi
     });
     if (!isUndefined(e)) {
       var selected = $(e.target).closest(`.${ppfx}title`).find('.data-item');
-      console.log(selected);
       this.selectedEl = selected;
       selected.get(0)!.style.display = '';
     } else if (!isUndefined(selectedEl)) {
       selectedEl.get(0)!.style.display = '';
     }
-    console.log(e);
     // $el[isOpen ? 'addClass' : 'removeClass'](`${pfx}open`);
     // this.getPropertiesEl().style.display = isOpen ? '' : 'none';
   }
 
   constructor(em: EditorModel, opts: TraitListViewOpts) {
     super(em, { ...opts });
-    console.log(opts);
     this.templates = opts.traits;
   }
 
