@@ -133,7 +133,5 @@ export type { default as PropertyComposite } from './style_manager/model/Propert
 export type { default as PropertyStack } from './style_manager/model/PropertyStack';
 export type { default as Sector } from './style_manager/model/Sector';
 export type { default as Sectors } from './style_manager/model/Sectors';
-export type { default as Trait } from './trait_manager/model/Trait';
-export type { default as Traits } from './trait_manager/model/Traits';
 
 export default grapesjs;

@@ -2,46 +2,22 @@ import { debounce } from 'underscore';
 import { Model } from '../common';
 import { Module } from '../abstract';
 import defaults, { TraitManagerConfig } from './config/config';
-import TraitView from './view/TraitView';
-import TraitSelectView from './view/TraitSelectView';
-import TraitCheckboxView from './view/TraitCheckboxView';
-import TraitNumberView from './view/TraitNumberView';
-import TraitColorView from './view/TraitColorView';
-import TraitButtonView from './view/TraitButtonView';
 import EditorModel from '../editor/model/Editor';
 import Component from '../dom_components/model/Component';
 import Trait from '../common/traits/model/Trait';
 import TraitsView from '../common/traits/view/TraitsView';
+import TraitView from '../common/traits/view/TraitView';
 import InputFactory from '../common/traits';
 
 export const evAll = 'trait';
 export const evPfx = `${evAll}:`;
 export const evCustom = `${evPfx}custom`;
 
-const typesDef: { [id: string]: { new (o: any): TraitView } } = {
-  text: TraitView,
-  number: TraitNumberView,
-  select: TraitSelectView,
-  checkbox: TraitCheckboxView,
-  color: TraitColorView,
-  button: TraitButtonView,
-};
-
-interface ITraitView {
-  noLabel?: TraitView['noLabel'];
-  eventCapture?: TraitView['eventCapture'];
-  templateInput?: TraitView['templateInput'];
-  onEvent?: TraitView['onEvent'];
-  onUpdate?: TraitView['onUpdate'];
-  createInput?: TraitView['createInput'];
-  createLabel?: TraitView['createLabel'];
-}
-
-export type CustomTrait<T> = ITraitView & T & ThisType<T & TraitView>;
+export type CustomTrait<T> = T & ThisType<T & TraitView>;
 
 export default class TraitManager extends Module<TraitManagerConfig & { pStylePrefix?: string }> {
   view?: TraitsView;
-  types: { [id: string]: { new (o: any): TraitView } };
+  types: { [id: string]: { new (o: any): TraitView } } = {};
   model: Model;
   __ctn?: any;
   TraitsView = TraitsView;
@@ -66,7 +42,6 @@ export default class TraitManager extends Module<TraitManagerConfig & { pStylePr
     super(em, 'TraitManager', defaults);
     const model = new Model();
     this.model = model;
-    this.types = typesDef;
 
     const upAll = debounce(() => this.__upSel(), 0);
     model.listenTo(em, 'component:toggled', upAll);

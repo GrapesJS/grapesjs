@@ -3,7 +3,6 @@ import { Nullable } from '../../common';
 import { InputProperties, InputViewProperties } from '../../common/traits';
 import EditorModel from '../../editor/model/Editor';
 import Selectors from '../../selector_manager/model/Selectors';
-import { TraitProperties } from '../../trait_manager/model/Trait';
 import { ResizerOptions } from '../../utils/Resizer';
 import { DomComponentsConfig } from '../config/config';
 import Component from './Component';
@@ -235,7 +234,7 @@ export interface ComponentDefinition extends Omit<ComponentProperties, 'componen
    * Children components.
    */
   components?: string | ComponentDefinition | (string | ComponentDefinition)[];
-  traits?: (Partial<TraitProperties> | string)[];
+  traits?: (Partial<InputProperties & (InputViewProperties | {})> | string)[];
   attributes?: Record<string, any>;
   [key: string]: unknown;
 }

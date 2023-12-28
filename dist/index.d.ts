@@ -2593,256 +2593,6 @@ export type InputViewProperties = ({
 	type: "list";
 } & TraitListProperties);
 export type InputProperties = TraitProperties | TraitListProperties;
-declare class TraitView extends View<Trait> {
-	pfx: string;
-	ppfx: string;
-	config: any;
-	clsField: string;
-	elInput: HTMLInputElement;
-	input?: HTMLInputElement;
-	$input?: JQuery<HTMLInputElement>;
-	eventCapture: string[];
-	noLabel?: boolean;
-	em: EditorModel;
-	target: Component;
-	createLabel?: (data: {
-		label: string;
-		component: Component;
-		trait: TraitView;
-	}) => string | HTMLElement;
-	createInput?: (data: ReturnType<TraitView["getClbOpts"]>) => string | HTMLElement;
-	events: any;
-	appendInput: boolean;
-	/** @ts-ignore */
-	attributes(): Record<string, any>;
-	templateLabel(cmp?: Component): string;
-	templateInput(data: ReturnType<TraitView["getClbOpts"]>): string;
-	constructor(o?: any);
-	getClbOpts(): {
-		component: Component;
-		trait: Trait;
-		elInput: HTMLInputElement;
-	};
-	removeView(): void;
-	init(): void;
-	removed(): void;
-	onRender(props: ReturnType<TraitView["getClbOpts"]>): void;
-	onUpdate(props: ReturnType<TraitView["getClbOpts"]>): void;
-	onEvent(props: ReturnType<TraitView["getClbOpts"]> & {
-		event: Event;
-	}): void;
-	/**
-	 * Fires when the input is changed
-	 * @private
-	 */
-	onChange(event: Event): void;
-	getValueForTarget(): any;
-	setInputValue(value: string): void;
-	/**
-	 * On change callback
-	 * @private
-	 */
-	onValueChange(model: Trait, value: string, opts?: SetOptions & {
-		fromTarget?: boolean;
-	}): void;
-	/**
-	 * Render label
-	 * @private
-	 */
-	renderLabel(): void;
-	/**
-	 * Returns label for the input
-	 * @return {string}
-	 * @private
-	 */
-	getLabel(): any;
-	/**
-	 * Returns current target component
-	 */
-	getComponent(): Component;
-	/**
-	 * Returns input element
-	 * @return {HTMLElement}
-	 * @private
-	 */
-	getInputEl(): HTMLInputElement | undefined;
-	getInputElem(): HTMLInputElement;
-	getModelValue(): any;
-	getElInput(): HTMLInputElement;
-	/**
-	 * Renders input
-	 * @private
-	 * */
-	renderField(): void;
-	hasLabel(): boolean;
-	rerender(): void;
-	postUpdate(): void;
-	render(): this;
-}
-/** @private */
-export interface TraitProperties {
-	/**
-	 * Trait type, defines how the trait should rendered.
-	 * Possible values: `text` (default), `number`, `select`, `checkbox`, `color`, `button`
-	 */
-	type?: string;
-	/**
-	 * The name of the trait used as a key for the attribute/property.
-	 * By default, the name is used as attribute name or property in case `changeProp` in enabled.
-	 */
-	name: string;
-	/**
-	 * Trait id, eg. `my-trait-id`.
-	 * If not specified, the `name` will be used as id.
-	 */
-	id?: string;
-	/**
-	 * The trait label to show for the rendered trait.
-	 */
-	label?: string | false;
-	/**
-	 * If `true` the trait value is applied on component
-	 */
-	changeProp?: boolean;
-	attributes?: Record<string, any>;
-	valueTrue?: string;
-	valueFalse?: string;
-	min?: number;
-	max?: number;
-	unit?: string;
-	step?: number;
-	value?: any;
-	target?: Component;
-	default?: any;
-	placeholder?: string;
-	command?: string | ((editor: Editor, trait: Trait) => any);
-	options?: Record<string, any>[];
-	labelButton?: string;
-	text?: string;
-	full?: boolean;
-	getValue?: (props: {
-		editor: Editor;
-		trait: Trait;
-		component: Component;
-	}) => any;
-	setValue?: (props: {
-		value: any;
-		editor: Editor;
-		trait: Trait;
-		component: Component;
-		partial: boolean;
-		emitUpdate: () => void;
-	}) => void;
-}
-export type TraitOption = {
-	id: string;
-	label?: string;
-};
-/**
- * @typedef Trait
- * @property {String} id Trait id, eg. `my-trait-id`.
- * @property {String} type Trait type, defines how the trait should rendered. Possible values: `text` (default), `number`, `select`, `checkbox`, `color`, `button`
- * @property {String} label The trait label to show for the rendered trait.
- * @property {String} name The name of the trait used as a key for the attribute/property. By default, the name is used as attribute name or property in case `changeProp` in enabled.
- * @property {Boolean} changeProp If `true` the trait value is applied on component
- *
- */
-export declare class Trait extends Model<TraitProperties> {
-	target: Component;
-	em: EditorModel;
-	view?: TraitView;
-	el?: HTMLElement;
-	defaults(): {
-		type: string;
-		label: string;
-		name: string;
-		unit: string;
-		step: number;
-		value: string;
-		default: string;
-		placeholder: string;
-		changeProp: boolean;
-		options: never[];
-	};
-	constructor(prop: TraitProperties, em: EditorModel);
-	setTarget(target: Component): void;
-	/**
-	 * Get the trait id.
-	 * @returns {String}
-	 */
-	getId(): string;
-	/**
-	 * Get the trait type.
-	 * @returns {String}
-	 */
-	getType(): string;
-	/**
-	 * Get the trait name.
-	 * @returns {String}
-	 */
-	getName(): string;
-	/**
-	 * Get the trait label.
-	 * @param {Object} [opts={}] Options.
-	 * @param {Boolean} [opts.locale=true] Use the locale string from i18n module.
-	 * @returns {String}
-	 */
-	getLabel(opts?: {
-		locale?: boolean;
-	}): any;
-	/**
-	 * Get the trait value.
-	 * The value is taken from component attributes by default or from properties if the trait has the `changeProp` enabled.
-	 * @returns {any}
-	 */
-	getValue(): any;
-	/**
-	 * Update the trait value.
-	 * The value is applied on component attributes by default or on properties if the trait has the `changeProp` enabled.
-	 * @param {any} value Value of the trait.
-	 * @param {Object} [opts={}] Options.
-	 * @param {Boolean} [opts.partial] If `true` the update won't be considered complete (not stored in UndoManager).
-	 */
-	setValue(value: any, opts?: {
-		partial?: boolean;
-	}): void;
-	/**
-	 * Get default value.
-	 */
-	getDefault(): any;
-	/**
-	 * Get trait options.
-	 */
-	getOptions(): TraitOption[];
-	/**
-	 * Get current selected option or by id.
-	 * @param {String} [id] Option id.
-	 * @returns {Object | null}
-	 */
-	getOption(id?: string): TraitOption | undefined;
-	/**
-	 * Get the option id from the option object.
-	 * @param {Object} option Option object
-	 * @returns {String} Option id
-	 */
-	getOptionId(option: TraitOption): any;
-	/**
-	 * Get option label.
-	 * @param {String|Object} id Option id or the option object
-	 * @param {Object} [opts={}] Options
-	 * @param {Boolean} [opts.locale=true] Use the locale string from i18n module
-	 * @returns {String} Option label
-	 */
-	getOptionLabel(id: string | TraitOption, opts?: {
-		locale?: boolean;
-	}): string;
-	props(): Partial<TraitProperties>;
-	targetUpdated(): void;
-	getTargetValue(): any;
-	setTargetValue(value: any, opts?: SetOptions): void;
-	setValueFromInput(value: any, final?: boolean, opts?: SetOptions): void;
-	getInitValue(): any;
-}
 export type RectDim = {
 	t: number;
 	l: number;
@@ -3452,7 +3202,7 @@ export interface ComponentDefinition extends Omit<ComponentProperties, "componen
 	 * Children components.
 	 */
 	components?: string | ComponentDefinition | (string | ComponentDefinition)[];
-	traits?: (Partial<TraitProperties> | string)[];
+	traits?: (Partial<InputProperties & (InputViewProperties | {})> | string)[];
 	attributes?: Record<string, any>;
 	[key: string]: unknown;
 }
@@ -9833,16 +9583,7 @@ declare class TraitsView extends TraitView {
 	onUpdateEvent(value: any): void;
 	render(): this;
 }
-export interface ITraitView {
-	noLabel?: TraitView["noLabel"];
-	eventCapture?: TraitView["eventCapture"];
-	templateInput?: TraitView["templateInput"];
-	onEvent?: TraitView["onEvent"];
-	onUpdate?: TraitView["onUpdate"];
-	createInput?: TraitView["createInput"];
-	createLabel?: TraitView["createLabel"];
-}
-export type CustomTrait<T> = ITraitView & T & ThisType<T & TraitView>;
+export type CustomTrait<T> = T & ThisType<T & TraitView>;
 declare class TraitManager extends Module<TraitManagerConfig & {
 	pStylePrefix?: string;
 }> {
@@ -9897,13 +9638,13 @@ declare class TraitManager extends Module<TraitManagerConfig & {
 	 * @param {string} name Type name
 	 * @return {Object}
 	 */
-	getType(name: string): new (o: any) => TraitView;
+	getType(name: string): new (o: any) => TraitView<Trait<any>>;
 	/**
 	 * Get all trait types
 	 * @returns {Object}
 	 */
 	getTypes(): {
-		[id: string]: new (o: any) => TraitView;
+		[id: string]: new (o: any) => TraitView<Trait<any>>;
 	};
 	render(): HTMLElement;
 	destroy(): void;
@@ -12938,30 +12679,6 @@ export declare class PropertyRadio extends PropertySelect {
 }
 export declare class PropertySlider extends PropertyNumber {
 	defaults(): any;
-}
-declare class TraitFactory {
-	config: Partial<TraitManagerConfig>;
-	constructor(config?: Partial<TraitManagerConfig>);
-	/**
-	 * Build props object by their name
-	 */
-	build(prop: string | TraitProperties, em: EditorModel): Trait;
-	private buildFromString;
-}
-export declare class Traits extends Collection<Trait> {
-	em: EditorModel;
-	target: Component;
-	tf: TraitFactory;
-	constructor(coll: TraitProperties[], options: {
-		em: EditorModel;
-	});
-	handleReset(coll: TraitProperties[], { previousModels }?: {
-		previousModels?: Trait[];
-	}): void;
-	handleAdd(model: Trait): void;
-	setTarget(target: Component): void;
-	add(model: string | TraitProperties | Trait, options?: AddOptions): Trait;
-	add(models: Array<string | TraitProperties | Trait>, options?: AddOptions): Trait[];
 }
 export declare const usePlugin: <P extends string | Plugin<any>>(plugin: P, opts?: (P extends Plugin<infer C extends {
 	[x: string]: any;
