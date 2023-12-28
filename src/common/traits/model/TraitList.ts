@@ -10,7 +10,10 @@ export interface TraitListProperties extends TraitProperties {
   default?: any[];
 }
 
-export default class TraitList<TModel extends Model = Model> extends Trait<any[]> implements ParentTrait<any> {
+export default class TraitList<TModel extends Model = Model>
+  extends Trait<{ id: string; value: any }[]>
+  implements ParentTrait<any>
+{
   readonly model: TModel;
   templates: any[] | any;
   // traits: (TraitGroupItem|TraitGroup)[];
@@ -20,7 +23,7 @@ export default class TraitList<TModel extends Model = Model> extends Trait<any[]
     this.model = model;
     // this.model.on("all", (e) => console.log(e))
     // this.traits = opts?.traits ?? [{type: "list"}]
-    model.get(name) ?? model.set(name, []);
+    model.get(name) ?? model.set(name, [], { silent: true });
     // this.value= model.get("values")
     this.templates = opts.traits;
 
@@ -29,21 +32,28 @@ export default class TraitList<TModel extends Model = Model> extends Trait<any[]
     //   this.value.forEach(v => this.traits.push(this.initTrait(v)))
   }
   get traits() {
-    return this.value.map((v, index) => this.initTrait(v, index + ''));
-  }
-  getParentValue(name: string) {
-    return this.value[name as any];
-  }
-  setParentValue(name: string, value: any): void {
-    let values = this.value;
-    values[name as any] = value;
-    this.value = values;
-    console.log('setvalue');
+    return this.value.map(v => this.initTrait(v.id, v.value));
   }
 
-  private initTrait(value?: any, index?: any) {
+  getParentValue(name: string) {
+    return this.value.find(item => item.id == name)?.value;
+  }
+
+  setParentValue(name: string, value: any): void {
+    let values = this.value;
+    const index = values.findIndex(item => item.id == name);
+    console.log(value);
+    console.log(values);
+    values[index] = { id: name, value };
+    console.log(values);
+    this.setValue(values);
+  }
+
+  private initTrait(index: string, value?: any) {
     const { templates } = this;
     const traits = this.templates;
+    console.log('paklsjdf;lkj;laksdjf;lakjdsf;lakjsdf;laksjf;laksej;lsdk');
+    console.log(value);
     // console.log(this.traits)
     // const index = this.traits.length as any
     if (isArray(templates) && templates.length > 1) {
@@ -53,28 +63,31 @@ export default class TraitList<TModel extends Model = Model> extends Trait<any[]
     }
   }
 
-  protected getValue(): any[] {
+  protected getValue(): { id: string; value: any }[] {
     const { model, name } = this;
-    return model.get(name);
+    return model.get(name).map((value: any, id: number) => ({ id: id + '', value }));
   }
 
-  protected setValue(values: any[]) {
+  protected setValue(values: { id: string; value: any }[]) {
     const { name, model } = this;
-    console.log('setValue');
 
-    model.set(name, values);
+    model.set(
+      name,
+      values.map(item => item.value)
+    );
   }
 
-  public add(key: string) {
-    const { model, name } = this;
-    this.value.push('');
-    model.trigger(`change:${name}`);
+  public add() {
+    this.setValue([...this.value, { id: this.value.length + '', value: '' }]);
+    this.model.trigger(`change:${this.name}`);
   }
 
-  public remove(key: string) {
-    const index = this.traits?.findIndex(tr => tr.name == key) ?? -1;
-    //   if (index > -1) {
-    //     this.value.splice(index, 1);
-    //   }
+  public remove(id: string) {
+    const { value } = this;
+    const index = value?.findIndex(tr => tr.id == id) ?? -1;
+    if (index > -1) {
+      value.splice(index, 1);
+    }
+    this.setValue(value);
   }
 }

@@ -59,17 +59,13 @@ export default class TraitListView<TModel extends Model = Model> extends TraitVi
 
   private addItem(e: any) {
     e.preventDefault();
-    this.target.add('');
-    // this.render()
-    console.log(this.target);
+    this.target.add();
   }
 
   private removeItem(e: any) {
     e.preventDefault();
 
-    this.target.add('');
-    console.log('remove');
-    console.log(this.target);
+    this.target.remove(this.selectedEl?.attr('item-id') as any);
   }
 
   renderToolbar() {
@@ -101,6 +97,7 @@ export default class TraitListView<TModel extends Model = Model> extends TraitVi
     console.log(itemEl);
     var itemDataEl = document.createElement('div');
     itemDataEl.className = 'data-item';
+    itemDataEl.setAttribute('item-id', trait.name);
     itemDataEl.append(view.el);
     console.log(itemEl);
     return $(itemEl).append(itemDataEl);
@@ -115,7 +112,6 @@ export default class TraitListView<TModel extends Model = Model> extends TraitVi
     console.log('render');
     const hasLabel = this.hasLabel();
     const cls = `${pfx}trait`;
-    const { em } = this;
     var frag = document.createDocumentFragment();
     this.$el.empty();
     this.renderItems();

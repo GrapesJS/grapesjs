@@ -4556,68 +4556,6 @@ Component> {
 }
 export interface IComponent extends ExtractMethods<Component> {
 }
-/**
- * The Component object represents a single node of our template structure, so when you update its properties the changes are
- * immediately reflected on the canvas and in the code to export (indeed, when you ask to export the code we just go through all
- * the tree of nodes).
- * An example on how to update properties:
- * ```js
- * component.set({
- *  tagName: 'span',
- *  attributes: { ... },
- *  removable: false,
- * });
- * component.get('tagName');
- * // -> 'span'
- * ```
- *
- * [Component]: component.html
- *
- * @property {String} [type=''] Component type, eg. `text`, `image`, `video`, etc.
- * @property {String} [tagName='div'] HTML tag of the component, eg. `span`. Default: `div`
- * @property {Object} [attributes={}] Key-value object of the component's attributes, eg. `{ title: 'Hello' }` Default: `{}`
- * @property {String} [name=''] Name of the component. Will be used, for example, in Layers and badges
- * @property {Boolean} [removable=true] When `true` the component is removable from the canvas, default: `true`
- * @property {Boolean|String|Function} [draggable=true] Indicates if it's possible to drag the component inside others.
- *  You can also specify a query string to indentify elements,
- *  eg. `'.some-class[title=Hello], [data-gjs-type=column]'` means you can drag the component only inside elements
- *  containing `some-class` class and `Hello` title, and `column` components. In the case of a function, target and destination components are passed as arguments, return a Boolean to indicate if the drag is possible. Default: `true`
- * @property {Boolean|String|Function} [droppable=true] Indicates if it's possible to drop other components inside. You can use
- * a query string as with `draggable`. In the case of a function, target and destination components are passed as arguments, return a Boolean to indicate if the drop is possible. Default: `true`
- * @property {Boolean} [badgable=true] Set to false if you don't want to see the badge (with the name) over the component. Default: `true`
- * @property {Boolean|Array<String>} [stylable=true] True if it's possible to style the component.
- * You can also indicate an array of CSS properties which is possible to style, eg. `['color', 'width']`, all other properties
- * will be hidden from the style manager. Default: `true`
- * @property {Array<String>} [stylable-require=[]] Indicate an array of style properties to show up which has been marked as `toRequire`. Default: `[]`
- * @property {Array<String>} [unstylable=[]] Indicate an array of style properties which should be hidden from the style manager. Default: `[]`
- * @property {Boolean} [highlightable=true] It can be highlighted with 'dotted' borders if true. Default: `true`
- * @property {Boolean} [copyable=true] True if it's possible to clone the component. Default: `true`
- * @property {Boolean} [resizable=false] Indicates if it's possible to resize the component. It's also possible to pass an object as [options for the Resizer](https://github.com/GrapesJS/grapesjs/blob/master/src/utils/Resizer.js). Default: `false`
- * @property {Boolean} [editable=false] Allow to edit the content of the component (used on Text components). Default: `false`
- * @property {Boolean} [layerable=true] Set to `false` if you need to hide the component inside Layers. Default: `true`
- * @property {Boolean} [selectable=true] Allow component to be selected when clicked. Default: `true`
- * @property {Boolean} [hoverable=true] Shows a highlight outline when hovering on the element if `true`. Default: `true`
- * @property {Boolean} [locked=false] Disable the selection of the component and its children in the canvas. Default: `false`
- * @property {Boolean} [void=false] This property is used by the HTML exporter as void elements don't have closing tags, eg. `<br/>`, `<hr/>`, etc. Default: `false`
- * @property {Object} [style={}] Component default style, eg. `{ width: '100px', height: '100px', 'background-color': 'red' }`
- * @property {String} [styles=''] Component related styles, eg. `.my-component-class { color: red }`
- * @property {String} [content=''] Content of the component (not escaped) which will be appended before children rendering. Default: `''`
- * @property {String} [icon=''] Component's icon, this string will be inserted before the name (in Layers and badge), eg. it can be an HTML string '<i class="fa fa-square-o"></i>'. Default: `''`
- * @property {String|Function} [script=''] Component's javascript. More about it [here](/modules/Components-js.html). Default: `''`
- * @property {String|Function} [script-export=''] You can specify javascript available only in export functions (eg. when you get the HTML).
- * If this property is defined it will overwrite the `script` one (in export functions). Default: `''`
- * @property {Array<Object|String>} [traits=''] Component's traits. More about it [here](/modules/Traits.html). Default: `['id', 'title']`
- * @property {Array<String>} [propagate=[]] Indicates an array of properties which will be inhereted by all NEW appended children.
- *  For example if you create a component likes this: `{ removable: false, draggable: false, propagate: ['removable', 'draggable'] }`
- *  and append some new component inside, the new added component will get the exact same properties indicated in the `propagate` array (and the `propagate` property itself). Default: `[]`
- * @property {Array<Object>} [toolbar=null] Set an array of items to show up inside the toolbar when the component is selected (move, clone, delete).
- * Eg. `toolbar: [ { attributes: {class: 'fa fa-arrows'}, command: 'tlb-move' }, ... ]`.
- * By default, when `toolbar` property is falsy the editor will add automatically commands `core:component-exit` (select parent component, added if there is one), `tlb-move` (added if `draggable`) , `tlb-clone` (added if `copyable`), `tlb-delete` (added if `removable`).
- * @property {Collection<Component>} [components=null] Children components. Default: `null`
- * @property {Object} [delegate=null] Delegate commands to other components. Available commands `remove` | `move` | `copy` | `select`. eg. `{ remove: (cmp) => cmp.closestType('other-type') }`
- *
- * @module docsjs.Component
- */
 export declare class Component extends StyleableModel<ComponentProperties> {
 	/**
 	 * @private

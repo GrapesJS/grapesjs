@@ -24,7 +24,7 @@ export default class TraitGroup extends Trait<{ [name: string]: any }> implement
     if (!isObject(parent.getParentValue(name))) {
       parent.setParentValue(name, {});
     }
-    console.log(this);
+    console.log(this.value);
   }
   getParentValue(name: string) {
     return this.value[name];

@@ -577,6 +577,7 @@ export default class CanvasView extends ModuleView<Canvas> {
     const scriptFn = model.getScriptString();
     const scriptFnStr = model.get('script-props') ? scriptFn : `function(){\n${scriptFn}\n;}`;
     const scriptProps = JSON.stringify(model.__getScriptProps());
+    console.log(script);
     script.innerHTML = `
       setTimeout(function() {
         var item = document.getElementById('${id}');
