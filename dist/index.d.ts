@@ -1,4 +1,5 @@
 import Backbone from 'backbone';
+import { EventsHash } from 'backbone';
 
 export interface NOOP {
 }
@@ -11,11 +12,15 @@ export type SetOptions = Backbone.ModelSetOptions & {
 export type AddOptions = Backbone.AddOptions & {
 	temporary?: boolean;
 };
+export type DisableOptions = {
+	fromMove?: boolean;
+};
 export type RemoveOptions = Backbone.Silenceable;
 export type EventHandler = Backbone.EventHandler;
 export type ObjectHash = Backbone.ObjectHash;
 export type ObjectAny = Record<string, any>;
 export type ObjectStrings = Record<string, string>;
+export type Nullable = undefined | null | false;
 export type LiteralUnion<T, U> = T | (U & NOOP);
 export type Position = {
 	x: number;
@@ -54,6 +59,7 @@ declare enum CoordinatesTypes {
 	Screen = "screen",
 	World = "world"
 }
+export type PrevToNewIdMap = Record<string, string>;
 export interface SelectorProps {
 	name: string;
 	label?: string;
@@ -71,7 +77,9 @@ export interface SelectorProps {
  * @property {Boolean} [private=false] If true, it can't be seen by the Style Manager, but it will be rendered in the canvas and in export code.
  * @property {Boolean} [protected=false] If true, it can't be removed from the attached component.
  */
-export declare class Selector extends Model {
+export declare class Selector extends Model<SelectorProps & {
+	[key: string]: unknown;
+}> {
 	defaults(): {
 		name: string;
 		label: string;
@@ -101,6 +109,15 @@ export declare class Selector extends Model {
 	 */
 	toString(): string;
 	/**
+	 * Get selector name.
+	 * @returns {String}
+	 * @example
+	 * // Given such selector: { name: 'my-selector', label: 'My selector' }
+	 * console.log(selector.getName());
+	 * // -> `my-selector`
+	 */
+	getName(): string;
+	/**
 	 * Get selector label.
 	 * @returns {String}
 	 * @example
@@ -108,7 +125,7 @@ export declare class Selector extends Model {
 	 * console.log(selector.getLabel());
 	 * // -> `My selector`
 	 */
-	getLabel(): any;
+	getLabel(): string;
 	/**
 	 * Update selector label.
 	 * @param {String} label New label
@@ -138,6 +155,10 @@ export declare class Selector extends Model {
 	 */
 	static escapeName(name: string): string;
 }
+export interface FullNameOptions {
+	combination?: boolean;
+	array?: boolean;
+}
 export declare class Selectors extends Collection<Selector> {
 	modelId(attr: any): string;
 	getStyleable(): Selector[];
@@ -145,11 +166,12 @@ export declare class Selectors extends Collection<Selector> {
 	getFullString(collection?: Selector[] | null, opts?: {
 		sort?: boolean;
 	}): string;
-	getFullName(opts?: any): string | string[];
+	getFullName<T extends FullNameOptions>(opts?: T): T["array"] extends true ? string[] : string;
 }
 export type StyleProps = Record<string, string | string[]>;
 export type UpdateStyleOptions = ObjectAny & {
 	partial?: boolean;
+	addStyle?: StyleProps;
 };
 declare class StyleableModel<T extends ObjectHash = any> extends Model<T> {
 	/**
@@ -250,6 +272,12 @@ export interface DomComponentsConfig {
 	 * https://www.w3.org/TR/2011/WD-html-markup-20110113/syntax.html#void-elements
 	 */
 	voidElements?: string[];
+	/**
+	 * Experimental: Use the frame document for DOM element creation.
+	 * This option might be useful when elements require the local document context to
+	 * work properly (eg. Web Components).
+	 */
+	useFrameDoc?: boolean;
 }
 declare class ModuleModel<TModule extends IBaseModule<any> = Module, T extends ObjectHash = any, S = SetOptions, E = any> extends Model<T, S, E> {
 	private _module;
@@ -321,143 +349,25 @@ declare class Droppable {
 		content: any;
 	};
 }
-export declare class Pages extends Collection<Page> {
-	constructor(models: any, em: EditorModel);
-	onReset(m: Page, opts?: {
-		previousModels?: Pages;
-	}): void;
-	onRemove(removed?: Page): void;
-}
-declare class ComponentWrapper extends Component {
-	get defaults(): {
-		tagName: string;
-		removable: boolean;
-		copyable: boolean;
-		draggable: boolean;
-		components: never[];
-		traits: never[];
-		stylable: string[];
-	};
-	__postAdd(): void;
-	__postRemove(): void;
-	static isComponent(): boolean;
-}
-export interface SelectableOption {
+export interface PageManagerConfig {
 	/**
-	 * Select the page.
+	 * Style prefix.
+	 * @default 'pgs-'
 	 */
-	select?: boolean;
-}
-export interface AbortOption {
-	abort?: boolean;
-}
-declare const pageEvents: {
-	all: string;
-	select: string;
-	selectBefore: string;
-	update: string;
-	add: string;
-	addBefore: string;
-	remove: string;
-	removeBefore: string;
-};
-export interface PageManagerConfig extends ModuleConfig {
+	stylePrefix?: string;
+	/**
+	 * Specify the element to use as a container, string (query) or HTMLElement.
+	 * With the empty value, nothing will be rendered.
+	 * @default ''
+	 */
+	appendTo?: string | HTMLElement;
+	/**
+	 * Avoid rendering the default Trait Manager UI.
+	 * @default false
+	 */
+	custom?: boolean;
+	optionsTarget?: Record<string, any>[];
 	pages?: any[];
-}
-declare class PageManager extends ItemManagerModule<PageManagerConfig, Pages> {
-	events: typeof pageEvents;
-	storageKey: string;
-	get pages(): Pages;
-	model: ModuleModel;
-	getAll(): Page[];
-	/**
-	 * Get all pages
-	 * @name getAll
-	 * @function
-	 * @returns {Array<[Page]>}
-	 * @example
-	 * const arrayOfPages = pageManager.getAll();
-	 */
-	/**
-	 * Initialize module
-	 * @hideconstructor
-	 * @param {Object} config Configurations
-	 */
-	constructor(em: EditorModel);
-	__onChange(event: string, page: Page, coll: Pages, opts?: any): void;
-	onLoad(): void;
-	_onPageChange(m: any, page: Page, opts: any): void;
-	postLoad(): void;
-	/**
-	 * Add new page
-	 * @param {Object} props Page properties
-	 * @param {Object} [opts] Options
-	 * @returns {[Page]}
-	 * @example
-	 * const newPage = pageManager.add({
-	 *  id: 'new-page-id', // without an explicit ID, a random one will be created
-	 *  styles: `.my-class { color: red }`, // or a JSON of styles
-	 *  component: '<div class="my-class">My element</div>', // or a JSON of components
-	 * });
-	 */
-	add(props: PageProperties, opts?: AddOptions & SelectableOption & AbortOption): false | Page;
-	/**
-	 * Remove page
-	 * @param {String|[Page]} page Page or page id
-	 * @returns {[Page]} Removed Page
-	 * @example
-	 * const removedPage = pageManager.remove('page-id');
-	 * // or by passing the page
-	 * const somePage = pageManager.get('page-id');
-	 * pageManager.remove(somePage);
-	 */
-	remove(page: string | Page, opts?: RemoveOptions & AbortOption): false | Page | undefined;
-	/**
-	 * Get page by id
-	 * @param {String} id Page id
-	 * @returns {[Page]}
-	 * @example
-	 * const somePage = pageManager.get('page-id');
-	 */
-	get(id: string): Page | undefined;
-	/**
-	 * Get main page (the first one available)
-	 * @returns {[Page]}
-	 * @example
-	 * const mainPage = pageManager.getMain();
-	 */
-	getMain(): Page;
-	/**
-	 * Get wrapper components (aka body) from all pages and frames.
-	 * @returns {Array<[Component]>}
-	 * @example
-	 * const wrappers = pageManager.getAllWrappers();
-	 * // Get all `image` components from the project
-	 * const allImages = wrappers.map(wrp => wrp.findType('image')).flat();
-	 */
-	getAllWrappers(): ComponentWrapper[];
-	/**
-	 * Change the selected page. This will switch the page rendered in canvas
-	 * @param {String|[Page]} page Page or page id
-	 * @returns {this}
-	 * @example
-	 * pageManager.select('page-id');
-	 * // or by passing the page
-	 * const somePage = pageManager.get('page-id');
-	 * pageManager.select(somePage);
-	 */
-	select(page: string | Page, opts?: SetOptions): this;
-	/**
-	 * Get the selected page
-	 * @returns {[Page]}
-	 * @example
-	 * const selectedPage = pageManager.getSelected();
-	 */
-	getSelected(): Page | undefined;
-	destroy(): void;
-	store(): any;
-	load(data: any): any;
-	_createId(): string;
 }
 export declare class Frames extends ModuleCollection<Frame> {
 	loadedItems: number;
@@ -473,6 +383,20 @@ export declare class Frames extends ModuleCollection<Frame> {
 	itemLoaded(): void;
 	listenToLoad(): void;
 	listenToLoadItems(on: boolean): void;
+}
+declare class ComponentWrapper extends Component {
+	get defaults(): {
+		tagName: string;
+		removable: boolean;
+		copyable: boolean;
+		draggable: boolean;
+		components: never[];
+		traits: never[];
+		stylable: string[];
+	};
+	__postAdd(): void;
+	__postRemove(): void;
+	static isComponent(): boolean;
 }
 /** @private */
 export interface CssRuleProperties {
@@ -654,6 +578,10 @@ export declare class CssRule extends StyleableModel<CssRuleProperties> {
 	 */
 	compare(selectors: any, state?: string, width?: string, ruleProps?: Partial<CssRuleProperties>): boolean;
 }
+declare class RelativeRoute {
+	constructor(path: string);
+	path: string;
+}
 /** @private */
 export interface PageProperties {
 	/**
@@ -672,6 +600,7 @@ export interface PageProperties {
 	 * CSS to load with the page.
 	 */
 	styles?: string | CssRuleJSON[];
+	route?: RelativeRoute;
 	[key: string]: unknown;
 }
 export interface PagePropertiesDefined extends Pick<PageProperties, "id" | "name"> {
@@ -1007,7 +936,34 @@ declare enum CanvasEvents {
 	 *  console.log('Canvas pointer updated:', editor.Canvas.getPointer());
 	 * });
 	 */
-	pointer = "canvas:pointer"
+	pointer = "canvas:pointer",
+	/**
+	 * @event `canvas:frame:load` Frame loaded in canvas.
+	 * The event is triggered right after iframe's `onload`.
+	 * @example
+	 * editor.on('canvas:frame:load', ({ window }) => {
+	 *  console.log('Frame loaded', window);
+	 * });
+	 */
+	frameLoad = "canvas:frame:load",
+	/**
+	 * @event `canvas:frame:load:head` Frame head loaded in canvas.
+	 * The event is triggered right after iframe's finished to load the head elemenets (eg. scripts)
+	 * @example
+	 * editor.on('canvas:frame:load:head', ({ window }) => {
+	 *  console.log('Frame head loaded', window);
+	 * });
+	 */
+	frameLoadHead = "canvas:frame:load:head",
+	/**
+	 * @event `canvas:frame:load:body` Frame body loaded in canvas.
+	 * The event is triggered when the body is rendered with components.
+	 * @example
+	 * editor.on('canvas:frame:load:body', ({ window }) => {
+	 *  console.log('Frame completed the body render', window);
+	 * });
+	 */
+	frameLoadBody = "canvas:frame:load:body"
 }
 declare abstract class ModuleDomainViews<TCollection extends ModuleCollection, TItemView extends ModuleView> extends ModuleView<TCollection> {
 	itemsView: string;
@@ -1523,7 +1479,7 @@ declare class CssComposer extends ItemManagerModule<CssComposerConfig & {
 	 * // All rules in the project
 	 * console.log(css.getRules())
 	 */
-	getRules(selector: string): CssRule[];
+	getRules(selector?: string): CssRule[];
 	/**
 	 * Add/update the CSS rule with id selector
 	 * @param {string} name Id selector name, eg. 'my-id'
@@ -1600,6 +1556,9 @@ declare class CssComposer extends ItemManagerModule<CssComposerConfig & {
 	 * @private
 	 */
 	render(): HTMLElement;
+	checkId(rule: CssRuleJSON | CssRuleJSON[], opts?: {
+		idMap?: PrevToNewIdMap;
+	}): CssRuleJSON[];
 	destroy(): void;
 }
 declare class ComponentsView extends View {
@@ -1662,9 +1621,11 @@ Component> {
 	getChildrenSelector?: Function;
 	getTemplate?: Function;
 	scriptContainer?: HTMLElement;
+	preinitialize(opt?: any): void;
 	initialize(opt?: any): void;
 	get __cmpStyleOpts(): GetSetRuleOptions;
 	get frameView(): FrameView;
+	get createDoc(): Document;
 	__isDraggable(): string | boolean | DraggableDroppableFn | undefined;
 	_clbObj(): {
 		editor: Editor;
@@ -1690,7 +1651,7 @@ Component> {
 	/**
 	 * Callback executed when the `disable` event is triggered on component
 	 */
-	onDisable(): void;
+	onDisable(opts?: DisableOptions): void;
 	remove(): this;
 	handleDragStart(event: Event): false | undefined;
 	initClasses(): void;
@@ -1811,6 +1772,7 @@ Component> {
 	 */
 	reset(): void;
 	_setData(): void;
+	_createElement(tagName: string): Node;
 	/**
 	 * Render children components
 	 * @private
@@ -2533,6 +2495,104 @@ export declare class Frame extends ModuleModel<CanvasModule> {
 	hasAutoHeight(): boolean;
 	toJSON(opts?: any): any;
 }
+export interface OnUpdateView<TraitValueType> {
+	onUpdateEvent(value: TraitValueType): void;
+}
+export interface TraitProperties {
+	name: string;
+	default?: any;
+	value?: any;
+	changeProp?: boolean;
+}
+declare abstract class Trait<TraitValueType = any> {
+	opts: any;
+	protected view?: OnUpdateView<TraitValueType>;
+	get name(): any;
+	constructor(opts: TraitProperties);
+	registerForUpdateEvent(view: OnUpdateView<TraitValueType>): void;
+	protected abstract getValue(): TraitValueType;
+	protected abstract setValue(value: TraitValueType): void;
+	get changeProp(): boolean;
+	get value(): TraitValueType;
+	protected updatingValue: boolean;
+	set value(value: TraitValueType);
+	protected setValueFromModel(): void;
+	updateOpts(opts: any): void;
+}
+export interface TraitListProperties extends TraitProperties {
+	traits: any[];
+}
+export interface TraitViewOpts<Type> {
+	type?: Type;
+	label?: string | false;
+	noLabel?: boolean;
+	el?: HTMLElement;
+}
+export type ValueFromTrait<TTarget extends Trait> = TTarget extends Trait<infer M> ? M : unknown;
+declare abstract class TraitView<Target extends Trait = Trait> extends View implements OnUpdateView<ValueFromTrait<Target>> {
+	pfx: string;
+	ppfx: string;
+	get name(): any;
+	protected abstract type: string;
+	get clsField(): string;
+	private _label?;
+	get label(): string;
+	noLabel: boolean;
+	em: EditorModel;
+	target: Target;
+	protected constructor(em: EditorModel, opts?: TraitViewOpts<string>);
+	setTarget(popertyName: string, model: Model, opts?: Omit<TraitProperties, "name">): this;
+	setTarget(target: Target): this;
+	abstract onUpdateEvent(value: ValueFromTrait<Target>): void;
+	/**
+	 * Returns label for the input
+	 */
+	protected getLabelText(): string | undefined;
+	hasLabel(): boolean;
+	abstract render(): typeof this;
+}
+export interface TraitInputViewOpts<Type> extends TraitViewOpts<Type> {
+	default?: any;
+	paceholder?: string;
+}
+export interface TraitButtonViewOpts extends TraitInputViewOpts<"button"> {
+	command: string | ((e: Editor, m: Model) => void);
+	text?: string;
+	full?: boolean;
+}
+export interface TraitNumberViewOpts extends TraitInputViewOpts<"number"> {
+	step?: number;
+	min?: number;
+	max?: number;
+	fixedValues?: string[];
+}
+export interface TraitNumberUnitViewOpts extends TraitNumberViewOpts {
+	units: string[];
+}
+export type SelectOption = string | {
+	name: string;
+	value: string;
+	style?: string;
+};
+export interface TraitSelectViewOpts extends TraitInputViewOpts<"select"> {
+	options: SelectOption[];
+}
+export type InputViewProperties = ({
+	type: "text";
+} & TraitInputViewOpts<"text">) | ({
+	type: "number";
+} & (TraitNumberViewOpts | TraitNumberUnitViewOpts)) | ({
+	type: "select";
+} & TraitSelectViewOpts) | ({
+	type: "checkbox";
+} & TraitInputViewOpts<"checkbox">) | ({
+	type: "color";
+} & TraitInputViewOpts<"color">) | ({
+	type: "button";
+} & TraitButtonViewOpts) | ({
+	type: "list";
+} & TraitListProperties);
+export type InputProperties = TraitProperties | TraitListProperties;
 declare class TraitView extends View<Trait> {
 	pfx: string;
 	ppfx: string;
@@ -2782,49 +2842,6 @@ export declare class Trait extends Model<TraitProperties> {
 	setTargetValue(value: any, opts?: SetOptions): void;
 	setValueFromInput(value: any, final?: boolean, opts?: SetOptions): void;
 	getInitValue(): any;
-}
-export interface TraitManagerConfig {
-	/**
-	 * Style prefix.
-	 * @default 'trt-'
-	 */
-	stylePrefix?: string;
-	/**
-	 * Specify the element to use as a container, string (query) or HTMLElement.
-	 * With the empty value, nothing will be rendered.
-	 * @default ''
-	 */
-	appendTo?: string | HTMLElement;
-	/**
-	 * Avoid rendering the default Trait Manager UI.
-	 * @default false
-	 */
-	custom?: boolean;
-	optionsTarget?: Record<string, any>[];
-}
-declare class TraitFactory {
-	config: Partial<TraitManagerConfig>;
-	constructor(config?: Partial<TraitManagerConfig>);
-	/**
-	 * Build props object by their name
-	 */
-	build(prop: string | TraitProperties, em: EditorModel): Trait;
-	private buildFromString;
-}
-export declare class Traits extends Collection<Trait> {
-	em: EditorModel;
-	target: Component;
-	tf: TraitFactory;
-	constructor(coll: TraitProperties[], options: {
-		em: EditorModel;
-	});
-	handleReset(coll: TraitProperties[], { previousModels }?: {
-		previousModels?: Trait[];
-	}): void;
-	handleAdd(model: Trait): void;
-	setTarget(target: Component): void;
-	add(model: string | TraitProperties | Trait, options?: AddOptions): Trait;
-	add(models: Array<string | TraitProperties | Trait>, options?: AddOptions): Trait[];
 }
 export type RectDim = {
 	t: number;
@@ -3235,6 +3252,43 @@ export interface ToolbarButtonProps {
 }
 export type DragMode = "translate" | "absolute" | "";
 export type DraggableDroppableFn = (source: Component, target: Component, index?: number) => boolean | void;
+/**
+ * Delegate commands to other components.
+ */
+export interface ComponentDelegateProps {
+	/**
+	 * Delegate remove command to another component.
+	 * @example
+	 * delegate: {
+	 *  remove: (cmp) => cmp.closestType('other-type'),
+	 * }
+	 */
+	remove?: (cmp: Component) => Component | Nullable;
+	/**
+	 * Delegate move command to another component.
+	 * @example
+	 * delegate: {
+	 *  move: (cmp) => cmp.closestType('other-type'),
+	 * }
+	 */
+	move?: (cmp: Component) => Component | Nullable;
+	/**
+	 * Delegate copy command to another component.
+	 * @example
+	 * delegate: {
+	 *  copy: (cmp) => cmp.closestType('other-type'),
+	 * }
+	 */
+	copy?: (cmp: Component) => Component | Nullable;
+	/**
+	 * Delegate select command to another component.
+	 * @example
+	 * delegate: {
+	 *  select: (cmp) => cmp.findType('other-type')[0],
+	 * }
+	 */
+	select?: (cmp: Component) => Component | Nullable;
+}
 export interface ComponentProperties {
 	/**
 	 * Component type, eg. `text`, `image`, `video`, etc.
@@ -3361,9 +3415,9 @@ export interface ComponentProperties {
 	script?: string | ((...params: any[]) => any);
 	/**
 	 * Component's traits. More about it [here](/modules/Traits.html). Default: `['id', 'title']`
-	 * @default ''
+	 * @default []
 	 */
-	traits?: Traits;
+	traits?: (string | (InputProperties & (InputViewProperties | {})))[];
 	/**
 		 * Indicates an array of properties which will be inhereted by all NEW appended children.
 		 For example if you create a component likes this: `{ removable: false, draggable: false, propagate: ['removable', 'draggable'] }`
@@ -3377,6 +3431,10 @@ export interface ComponentProperties {
 	 * By default, when `toolbar` property is falsy the editor will add automatically commands `core:component-exit` (select parent component, added if there is one), `tlb-move` (added if `draggable`) , `tlb-clone` (added if `copyable`), `tlb-delete` (added if `removable`).
 	 */
 	toolbar?: ToolbarButtonProps[];
+	/**
+	 * Delegate commands to other components.
+	 */
+	delegate?: ComponentDelegateProps;
 	components?: Components;
 	classes?: Selectors;
 	dmode?: DragMode;
@@ -3403,7 +3461,7 @@ export interface ComponentDefinitionDefined extends Omit<ComponentProperties, "c
 	 * Children components.
 	 */
 	components?: ComponentDefinitionDefined[] | ComponentDefinitionDefined;
-	traits?: (Partial<TraitProperties> | string)[];
+	traits?: (Partial<InputProperties & (InputViewProperties | {})> | string)[];
 	[key: string]: any;
 }
 export type ComponentAddType = Component | ComponentDefinition | ComponentDefinitionDefined | string;
@@ -3509,7 +3567,7 @@ declare class ComponentText extends Component {
 		droppable: boolean;
 		editable: boolean;
 		components?: ComponentDefinitionDefined | ComponentDefinitionDefined[] | undefined;
-		traits?: (string | Partial<TraitProperties>)[] | undefined;
+		traits?: (string | Partial<InputProperties & ({} | InputViewProperties)>)[] | undefined;
 	};
 	initialize(props: any, opts: any): void;
 	__checkInnerChilds(): void;
@@ -3607,7 +3665,7 @@ declare class ComponentScript extends Component {
 		draggable: boolean;
 		layerable: boolean;
 		components?: ComponentDefinitionDefined | ComponentDefinitionDefined[] | undefined;
-		traits?: (string | Partial<TraitProperties>)[] | undefined;
+		traits?: (string | Partial<InputProperties & ({} | InputViewProperties)>)[] | undefined;
 	};
 	static isComponent(el: HTMLImageElement): any;
 }
@@ -3620,7 +3678,7 @@ declare class ComponentSvg extends Component {
 			ratioDefault: boolean;
 		};
 		components?: ComponentDefinitionDefined | ComponentDefinitionDefined[] | undefined;
-		traits?: (string | Partial<TraitProperties>)[] | undefined;
+		traits?: (string | Partial<InputProperties & ({} | InputViewProperties)>)[] | undefined;
 	};
 	getName(): any;
 	static isComponent(el: HTMLElement): boolean;
@@ -3637,7 +3695,7 @@ declare class ComponentSvgIn extends ComponentSvg {
 			ratioDefault: boolean;
 		};
 		components?: ComponentDefinitionDefined | ComponentDefinitionDefined[] | undefined;
-		traits?: (string | Partial<TraitProperties>)[] | undefined;
+		traits?: (string | Partial<InputProperties & ({} | InputViewProperties)>)[] | undefined;
 	};
 	static isComponent(el: any, opts?: any): boolean;
 }
@@ -3647,7 +3705,7 @@ declare class ComponentTable extends Component {
 		tagName: string;
 		droppable: string[];
 		components?: ComponentDefinitionDefined | ComponentDefinitionDefined[] | undefined;
-		traits?: (string | Partial<TraitProperties>)[] | undefined;
+		traits?: (string | Partial<InputProperties & ({} | InputViewProperties)>)[] | undefined;
 	};
 	initialize(props: any, opts: any): void;
 	static isComponent(el: HTMLElement): boolean;
@@ -3658,7 +3716,7 @@ declare class ComponentTableCell extends Component {
 		tagName: string;
 		draggable: string[];
 		components?: ComponentDefinitionDefined | ComponentDefinitionDefined[] | undefined;
-		traits?: (string | Partial<TraitProperties>)[] | undefined;
+		traits?: (string | Partial<InputProperties & ({} | InputViewProperties)>)[] | undefined;
 	};
 	static isComponent(el: HTMLElement): boolean;
 }
@@ -3668,7 +3726,7 @@ declare class ComponentTableRow extends Component {
 		draggable: string[];
 		droppable: string[];
 		components?: ComponentDefinitionDefined | ComponentDefinitionDefined[] | undefined;
-		traits?: (string | Partial<TraitProperties>)[] | undefined;
+		traits?: (string | Partial<InputProperties & ({} | InputViewProperties)>)[] | undefined;
 	};
 	static isComponent(el: HTMLElement): boolean;
 }
@@ -3680,7 +3738,7 @@ declare class ComponentTextNode extends Component {
 		selectable: boolean;
 		editable: boolean;
 		components?: ComponentDefinitionDefined | ComponentDefinitionDefined[] | undefined;
-		traits?: (string | Partial<TraitProperties>)[] | undefined;
+		traits?: (string | Partial<InputProperties & ({} | InputViewProperties)>)[] | undefined;
 	};
 	toHTML(): string;
 	__escapeContent(content: string): string;
@@ -3706,6 +3764,7 @@ declare class ComponentVideo extends ComponentImage {
 		controls: boolean;
 		color: string;
 		list: string;
+		src: string;
 		rel: number;
 		modestbranding: number;
 		sources: never[];
@@ -3719,7 +3778,6 @@ declare class ComponentVideo extends ComponentImage {
 			ratioDefault: number;
 		};
 		traits: string[];
-		src: string;
 		fallback: string;
 		file: string;
 		components?: ComponentDefinitionDefined | ComponentDefinitionDefined[] | undefined;
@@ -4207,7 +4265,7 @@ declare class RichTextEditorModule extends Module<RichTextEditorConfig & {
 	 * @param {Object} rte The instance of already defined RTE
 	 * @private
 	 * */
-	disable(view: ComponentView, rte?: RichTextEditor): void;
+	disable(view: ComponentView, rte?: RichTextEditor, opts?: DisableOptions): void;
 }
 declare class ComponentTextView extends ComponentView {
 	rte?: RichTextEditorModule;
@@ -4231,12 +4289,12 @@ declare class ComponentTextView extends ComponentView {
 	 * @private
 	 * */
 	onActive(ev: Event): Promise<void>;
-	onDisable(): void;
+	onDisable(opts?: DisableOptions): void;
 	/**
 	 * Disable element content editing
 	 * @private
 	 * */
-	disableEditing(opts?: {}): Promise<void>;
+	disableEditing(opts?: DisableOptions): Promise<void>;
 	/**
 	 * get content from RTE
 	 * @return string
@@ -4806,6 +4864,7 @@ export interface IComponent extends ExtractMethods<Component> {
  * Eg. `toolbar: [ { attributes: {class: 'fa fa-arrows'}, command: 'tlb-move' }, ... ]`.
  * By default, when `toolbar` property is falsy the editor will add automatically commands `core:component-exit` (select parent component, added if there is one), `tlb-move` (added if `draggable`) , `tlb-clone` (added if `copyable`), `tlb-delete` (added if `removable`).
  * @property {Collection<Component>} [components=null] Children components. Default: `null`
+ * @property {Object} [delegate=null] Delegate commands to other components. Available commands `remove` | `move` | `copy` | `select`. eg. `{ remove: (cmp) => cmp.closestType('other-type') }`
  *
  * @module docsjs.Component
  */
@@ -4815,10 +4874,11 @@ export declare class Component extends StyleableModel<ComponentProperties> {
 	 * @ts-ignore */
 	get defaults(): ComponentDefinitionDefined;
 	get classes(): Selectors;
-	get traits(): Traits;
+	get traits(): Trait[];
 	get content(): string;
 	get toolbar(): ToolbarButtonProps[];
 	get resizable(): boolean | ResizerOptions;
+	get delegate(): ComponentDelegateProps | undefined;
 	/**
 	 * Hook method, called once the model is created
 	 */
@@ -4855,6 +4915,7 @@ export declare class Component extends StyleableModel<ComponentProperties> {
 	}): void;
 	__postRemove(): void;
 	__onChange(m: any, opts: any): void;
+	__onStyleChange(newStyles: StyleProps): void;
 	__changesUp(opts: any): void;
 	__propSelfToParent(props: any): void;
 	__propToParent(props: any): void;
@@ -4947,12 +5008,13 @@ export declare class Component extends StyleableModel<ComponentProperties> {
 	/**
 	 * Replace a component with another one
 	 * @param {String|Component} el Component or HTML string
-	 * @return {Component|Array<Component>} New added component/s
+	 * @param {Object} [opts={}] Options for the append action
+	 * @returns {Array<Component>} New replaced components
 	 * @example
-	 * component.replaceWith('<div>Some new content</div>');
-	 * // -> Component
+	 * const result = component.replaceWith('<div>Some new content</div>');
+	 * // result -> [Component]
 	 */
-	replaceWith(el: Component): any[];
+	replaceWith<C extends Component = Component>(el: ComponentAdd, opts?: AddOptions): C[];
 	/**
 	 * Emit changes for each updated attribute
 	 * @private
@@ -4985,7 +5047,7 @@ export declare class Component extends StyleableModel<ComponentProperties> {
 	 * component.removeAttributes('some-attr');
 	 * component.removeAttributes(['some-attr1', 'some-attr2']);
 	 */
-	removeAttributes(attrs?: string[], opts?: SetOptions): this;
+	removeAttributes(attrs?: string | string[], opts?: SetOptions): this;
 	/**
 	 * Get the style of the component
 	 * @return {Object}
@@ -5147,6 +5209,7 @@ export declare class Component extends StyleableModel<ComponentProperties> {
 	 * @private
 	 */
 	initToolbar(): void;
+	__loadTraits(tr?: (Trait | (InputViewProperties & InputProperties) | string)[]): this;
 	/**
 	 * Get traits.
 	 * @returns {Array<Trait>}
@@ -5165,7 +5228,7 @@ export declare class Component extends StyleableModel<ComponentProperties> {
 	 * console.log(traits);
 	 * // [Trait, ...]
 	 */
-	setTraits(traits: TraitProperties[]): Trait[];
+	setTraits(traits: (Trait | (InputViewProperties & InputProperties) | string)[]): Trait<any>[];
 	/**
 	 * Get the trait by id/name.
 	 * @param  {String} id The `id` or `name` of the trait
@@ -5174,7 +5237,7 @@ export declare class Component extends StyleableModel<ComponentProperties> {
 	 * const traitTitle = component.getTrait('title');
 	 * traitTitle && traitTitle.set('label', 'New label');
 	 */
-	getTrait(id: string): Trait;
+	getTrait(id: string): Trait | null;
 	/**
 	 * Update a trait.
 	 * @param  {String} id The `id` or `name` of the trait
@@ -5186,7 +5249,7 @@ export declare class Component extends StyleableModel<ComponentProperties> {
 	 *  options: [ 'Option 1', 'Option 2' ],
 	 * });
 	 */
-	updateTrait(id: string, props: Partial<TraitProperties>): this;
+	updateTrait(id: string, props: Partial<InputViewProperties>): this;
 	/**
 	 * Get the trait position index by id/name. Useful in case you want to
 	 * replace some trait, at runtime, with something else.
@@ -5205,7 +5268,7 @@ export declare class Component extends StyleableModel<ComponentProperties> {
 	 * component.removeTrait('title');
 	 * component.removeTrait(['title', 'id']);
 	 */
-	removeTrait(id: string | string[]): Trait[];
+	removeTrait(id: string | string[]): (Trait<any> | undefined)[];
 	/**
 	 * Add new trait/s.
 	 * @param  {String|Object|Array<String|Object>} trait Trait to add (or an array of traits)
@@ -5219,7 +5282,9 @@ export declare class Component extends StyleableModel<ComponentProperties> {
 	 * });
 	 * component.addTrait(['title', {...}, ...]);
 	 */
-	addTrait(trait: Parameters<Traits["add"]>[0], opts?: AddOptions): Trait[];
+	addTrait(trait: (Trait | (InputViewProperties & InputProperties) | string)[], opts?: AddOptions): (Trait<any> & {
+		name: string;
+	})[];
 	/**
 	 * Normalize input classes from array to array of objects
 	 * @param {Array} arr
@@ -5434,6 +5499,7 @@ export declare class Component extends StyleableModel<ComponentProperties> {
 	static getList(model: Component): any;
 	static checkId(components: ComponentDefinitionDefined | ComponentDefinitionDefined[], styles?: CssRuleJSON[], list?: ObjectAny, opts?: {
 		keepIds?: string[];
+		idMap?: PrevToNewIdMap;
 	}): void;
 }
 declare class Selectable extends Model {
@@ -6687,6 +6753,25 @@ declare class PluginManager {
 	 */
 	getAll(): Record<string, Plugin<{}>>;
 }
+export interface TraitManagerConfig {
+	/**
+	 * Style prefix.
+	 * @default 'trt-'
+	 */
+	stylePrefix?: string;
+	/**
+	 * Specify the element to use as a container, string (query) or HTMLElement.
+	 * With the empty value, nothing will be rendered.
+	 * @default ''
+	 */
+	appendTo?: string | HTMLElement;
+	/**
+	 * Avoid rendering the default Trait Manager UI.
+	 * @default false
+	 */
+	custom?: boolean;
+	optionsTarget?: Record<string, any>[];
+}
 export interface CommandsConfig {
 	/**
 	 * Style prefix
@@ -7921,6 +8006,9 @@ export type EditorConfigKeys = keyof EditorConfig;
 export declare class Blocks extends Collection<Block> {
 }
 export declare class Categories extends Collection<Category> {
+	/** @ts-ignore */
+	add(model: (BlockCategoryProperties | Category)[] | BlockCategoryProperties | Category, opts?: AddOptions): Category;
+	get(id: string | Category): Category;
 }
 declare enum BlocksEvents {
 	/**
@@ -7988,7 +8076,7 @@ declare class BlocksView extends View {
 	em: EditorModel;
 	config: BlocksViewConfig;
 	categories: Categories;
-	renderedCategories: Record<string, CategoryView>;
+	renderedCategories: Map<string, CategoryView>;
 	ppfx: string;
 	noCatClass: string;
 	blockContClass: string;
@@ -9494,13 +9582,122 @@ declare class ParserModule extends Module<ParserConfig & {
 	parseCss(input: string): CssRuleJSON[];
 	destroy(): void;
 }
-export type StorageEvent = "storage:start" | "storage:start:store" | "storage:start:load" | "storage:load" | "storage:store" | "storage:end" | "storage:end:store" | "storage:end:load" | "storage:error" | "storage:error:store" | "storage:error:load";
+declare enum StorageEvents {
+	/**
+	 * @event `storage:start` Storage request start.
+	 * @example
+	 * editor.on('storage:start', (type) => {
+	 *  console.log('Storage start');
+	 * });
+	 */
+	start = "storage:start",
+	/**
+	 * @event `storage:start:store` Storage store request start.
+	 * The project JSON object to store is passed as an argument (which you can edit).
+	 * @example
+	 * editor.on('storage:start:store', (data) => {
+	 *  console.log('Storage start store');
+	 * });
+	 */
+	startStore = "storage:start:store",
+	/**
+	 * @event `storage:start:load` Storage load request start.
+	 * @example
+	 * editor.on('storage:start:load', () => {
+	 *  console.log('Storage start load');
+	 * });
+	 */
+	startLoad = "storage:start:load",
+	/**
+	 * @event `storage:load` Storage loaded the project.
+	 * The loaded project is passed as an argument.
+	 * @example
+	 * editor.on('storage:load', (data, res) => {
+	 *  console.log('Storage loaded the project');
+	 * });
+	 */
+	load = "storage:load",
+	/**
+	 * @event `storage:store` Storage stored the project.
+	 * The stored project is passed as an argument.
+	 * @example
+	 * editor.on('storage:store', (data, res) => {
+	 *  console.log('Storage stored the project');
+	 * });
+	 */
+	store = "storage:store",
+	/**
+	 * @event `storage:after` Storage request completed.
+	 * Triggered right after `storage:load`/`storage:store`.
+	 * @example
+	 * editor.on('storage:after', (type) => {
+	 *  console.log('Storage request completed');
+	 * });
+	 */
+	after = "storage:after",
+	afterStore = "storage:after:store",
+	afterLoad = "storage:after:load",
+	/**
+	 * @event `storage:end` Storage request ended.
+	 * This event triggers also in case of errors.
+	 * @example
+	 * editor.on('storage:end', (type) => {
+	 *  console.log('Storage request ended');
+	 * });
+	 */
+	end = "storage:end",
+	/**
+	 * @event `storage:end:store` Storage store request ended.
+	 * This event triggers also in case of errors.
+	 * @example
+	 * editor.on('storage:end:store', () => {
+	 *  console.log('Storage store request ended');
+	 * });
+	 */
+	endStore = "storage:end:store",
+	/**
+	 * @event `storage:end:load` Storage load request ended.
+	 * This event triggers also in case of errors.
+	 * @example
+	 * editor.on('storage:end:load', () => {
+	 *  console.log('Storage load request ended');
+	 * });
+	 */
+	endLoad = "storage:end:load",
+	/**
+	 * @event `storage:error` Error on storage request.
+	 * @example
+	 * editor.on('storage:error', (err, type) => {
+	 *  console.log('Storage error');
+	 * });
+	 */
+	error = "storage:error",
+	/**
+	 * @event `storage:error:store` Error on store request.
+	 * @example
+	 * editor.on('storage:error:store', (err) => {
+	 *  console.log('Error on store');
+	 * });
+	 */
+	errorStore = "storage:error:store",
+	/**
+	 * @event `storage:error:load` Error on load request.
+	 * @example
+	 * editor.on('storage:error:load', (err) => {
+	 *  console.log('Error on load');
+	 * });
+	 */
+	errorLoad = "storage:error:load"
+}
+export type StorageEvent = `${StorageEvents}`;
+export type StorageEventType = "store" | "load";
 declare class StorageManager extends Module<StorageManagerConfig & {
 	name?: string;
 	_disable?: boolean;
 	currentStorage?: string;
 }> {
 	storages: Record<string, IStorage>;
+	events: typeof StorageEvents;
 	constructor(em: EditorModel);
 	/**
 	 * Get configuration object
@@ -9602,22 +9799,22 @@ declare class StorageManager extends Module<StorageManagerConfig & {
 	 * On start callback
 	 * @private
 	 */
-	onStart(ctx: string, data?: ProjectData): void;
+	onStart(type: StorageEventType, data?: ProjectData): void;
 	/**
 	 * On after callback (before passing data to the callback)
 	 * @private
 	 */
-	onAfter(ctx: string, data: ProjectData, response: any): void;
+	onAfter(type: StorageEventType, data: ProjectData, response: any): void;
 	/**
 	 * On end callback
 	 * @private
 	 */
-	onEnd(ctx: string, data: ProjectData): void;
+	onEnd(type: StorageEventType, data: ProjectData, response?: any): void;
 	/**
 	 * On error callback
 	 * @private
 	 */
-	onError(ctx: string, data: any): void;
+	onError(type: StorageEventType, error: any): void;
 	/**
 	 * Check if autoload is possible
 	 * @return {Boolean}
@@ -9626,47 +9823,15 @@ declare class StorageManager extends Module<StorageManagerConfig & {
 	canAutoload(): boolean;
 	destroy(): void;
 }
-declare class DomainViews extends View {
-	config?: any;
-	items: any[];
-	ns?: string;
-	itemView?: any;
-	itemsView: string;
-	itemType: string;
-	reuseView: boolean;
-	constructor(opts?: any, config?: any, autoAdd?: boolean);
-	/**
-	 * Add new model to the collection
-	 * @param {Model} model
-	 * @private
-	 * */
-	addTo(model: any): void;
-	itemViewNotFound(type: string): void;
-	/**
-	 * Render new model inside the view
-	 * @param {Model} model
-	 * @param {Object} fragment Fragment collection
-	 * @private
-	 * */
-	add(model: any, fragment?: DocumentFragment): void;
-	render(): this;
-	onRender(): void;
-	onRemoveBefore(items?: any, opts?: any): void;
-	onRemove(items?: any, opts?: any): void;
-	remove(opts?: {}): this;
-	clearItems(): void;
+export interface TraitsViewOpts extends TraitViewOpts<"object"> {
+	traits: Trait[];
 }
-declare class TraitsView extends DomainViews {
-	reuseView: boolean;
-	em: EditorModel;
-	pfx: string;
-	ppfx: string;
-	constructor(o: any, itemsView: any);
-	/**
-	 * Update view collection
-	 * @private
-	 */
-	updatedCollection(): void;
+declare class TraitsView extends TraitView {
+	type: string;
+	traits: Trait[];
+	constructor(em: EditorModel, opts: TraitsViewOpts);
+	onUpdateEvent(value: any): void;
+	render(): this;
 }
 export interface ITraitView {
 	noLabel?: TraitView["noLabel"];
@@ -10563,6 +10728,181 @@ declare class DeviceManager extends ItemManagerModule<DeviceManagerConfig & {
 	render(): HTMLElement;
 	destroy(): void;
 }
+export declare class Pages extends Collection<Page> {
+	constructor(models: any, em: EditorModel);
+	onReset(m: Page, opts?: {
+		previousModels?: Pages;
+	}): void;
+	onRemove(removed?: Page): void;
+}
+export interface PageViewConfig {
+	em?: EditorModel;
+	pStylePrefix?: string;
+}
+declare class PageView extends View<Page> {
+	className: string;
+	highlightedClass: string;
+	render(): this;
+	events(): EventsHash;
+	constructor(opt: any, config: PageViewConfig);
+	get em(): EditorModel;
+	get ppfx(): string;
+	get pfx(): string;
+	setHighlighted(status: boolean): void;
+	config: any;
+	get page(): Page;
+}
+export interface PagesViewConfig {
+	em: EditorModel;
+	pStylePrefix?: string;
+}
+declare class PagesView extends View<Page> {
+	em: EditorModel;
+	config: PagesViewConfig;
+	ppfx: string;
+	selectedView?: PageView;
+	events(): {
+		[x: string]: () => void;
+	};
+	constructor(opts: any, config: PagesViewConfig);
+	__getModule(): PagesManager;
+	get buttonAddId(): string;
+	get buttonRemoveId(): string;
+	private __addPage;
+	__removePage(): void;
+	/**
+	 * Add new model to the collection
+	 * @param {Model} model
+	 * @private
+	 * */
+	addTo(model: Page): void;
+	/**
+	 * Render new model inside the view
+	 * @param {Model} model
+	 * @param {Object} fragment Fragment collection
+	 * @private
+	 * */
+	add(model: Page, fragment: DocumentFragment): void;
+	selectedHandler(view: PageView): void;
+	getCommandsNav(): any;
+	render(): this;
+}
+export interface SelectableOption {
+	/**
+	 * Select the page.
+	 */
+	select?: boolean;
+}
+export interface AbortOption {
+	abort?: boolean;
+}
+declare const pageEvents: {
+	all: string;
+	select: string;
+	selectBefore: string;
+	update: string;
+	add: string;
+	addBefore: string;
+	remove: string;
+	removeBefore: string;
+};
+declare class PageManager extends ItemManagerModule<PageManagerConfig, Pages> {
+	events: typeof pageEvents;
+	storageKey: string;
+	view?: PagesView;
+	get pages(): Pages;
+	model: ModuleModel;
+	getAll(): Page[];
+	/**
+	 * Get all pages
+	 * @name getAll
+	 * @function
+	 * @returns {Array<[Page]>}
+	 * @example
+	 * const arrayOfPages = pageManager.getAll();
+	 */
+	/**
+	 * Initialize module
+	 * @hideconstructor
+	 * @param {Object} config Configurations
+	 */
+	constructor(em: EditorModel);
+	__onChange(event: string, page: Page, coll: Pages, opts?: any): void;
+	onLoad(): void;
+	_onPageChange(m: any, page: Page, opts: any): void;
+	postLoad(): void;
+	/**
+	 * Add new page
+	 * @param {Object} props Page properties
+	 * @param {Object} [opts] Options
+	 * @returns {[Page]}
+	 * @example
+	 * const newPage = pageManager.add({
+	 *  id: 'new-page-id', // without an explicit ID, a random one will be created
+	 *  styles: `.my-class { color: red }`, // or a JSON of styles
+	 *  component: '<div class="my-class">My element</div>', // or a JSON of components
+	 * });
+	 */
+	add(props: PageProperties, opts?: AddOptions & SelectableOption & AbortOption): Page | undefined;
+	/**
+	 * Remove page
+	 * @param {String|[Page]} page Page or page id
+	 * @returns {[Page]} Removed Page
+	 * @example
+	 * const removedPage = pageManager.remove('page-id');
+	 * // or by passing the page
+	 * const somePage = pageManager.get('page-id');
+	 * pageManager.remove(somePage);
+	 */
+	remove(page: string | Page, opts?: RemoveOptions & AbortOption): false | Page | undefined;
+	/**
+	 * Get page by id
+	 * @param {String} id Page id
+	 * @returns {[Page]}
+	 * @example
+	 * const somePage = pageManager.get('page-id');
+	 */
+	get(id: string): Page | undefined;
+	/**
+	 * Get main page (the first one available)
+	 * @returns {[Page]}
+	 * @example
+	 * const mainPage = pageManager.getMain();
+	 */
+	getMain(): Page;
+	/**
+	 * Get wrapper components (aka body) from all pages and frames.
+	 * @returns {Array<[Component]>}
+	 * @example
+	 * const wrappers = pageManager.getAllWrappers();
+	 * // Get all `image` components from the project
+	 * const allImages = wrappers.map(wrp => wrp.findType('image')).flat();
+	 */
+	getAllWrappers(): ComponentWrapper[];
+	/**
+	 * Change the selected page. This will switch the page rendered in canvas
+	 * @param {String|[Page]} page Page or page id
+	 * @returns {this}
+	 * @example
+	 * pageManager.select('page-id');
+	 * // or by passing the page
+	 * const somePage = pageManager.get('page-id');
+	 * pageManager.select(somePage);
+	 */
+	select(page: string | Page, opts?: SetOptions): this;
+	/**
+	 * Get the selected page
+	 * @returns {[Page]}
+	 * @example
+	 * const selectedPage = pageManager.getSelected();
+	 */
+	getSelected(): Page | undefined;
+	destroy(): void;
+	store(): any;
+	load(data: any): any;
+	_createId(): string;
+	render(opts?: any): HTMLElement;
+}
 export type Messages = Required<I18nConfig>["messages"];
 declare class I18nModule extends Module<I18nConfig & {
 	stylePrefix?: string;
@@ -10973,6 +11313,8 @@ declare class UtilsModule extends Module {
 	Resizer: typeof Resizer;
 	Dragger: typeof Dragger;
 	helpers: {
+		isBultInMethod: (key: string) => boolean;
+		normalizeKey: (key: string) => string;
 		wait: (mls?: number) => Promise<unknown>;
 		isDef: (value: any) => boolean;
 		hasWin: () => boolean;
@@ -10992,7 +11334,7 @@ declare class UtilsModule extends Module {
 		hasDnd: (em: EditorModel) => boolean;
 		upFirst: (value: string) => string;
 		matches: any;
-		getModel: (el: any, $?: any) => any;
+		getModel: (el: any, $?: any) => Component | undefined;
 		camelCase: (value: string) => string;
 		getElement: (el: HTMLElement) => any;
 		shallowDiff: (objOrig: ObjectAny, objNew: ObjectAny) => ObjectAny;
@@ -11771,7 +12113,7 @@ declare class EditorModel extends Model {
 	 * and there are unsaved changes
 	 * @private
 	 */
-	updateChanges(): void;
+	updateChanges(m: any, v: any, opts: ObjectAny): void;
 	/**
 	 * Load generic module
 	 */
@@ -11817,35 +12159,35 @@ declare class EditorModel extends Model {
 	getSelectedAll(): Component[];
 	/**
 	 * Select a component
-	 * @param  {Component|HTMLElement} el Component to select
+	 * @param  {Component} el Component to select
 	 * @param  {Object} [opts={}] Options, optional
 	 * @public
 	 */
 	setSelected(el?: Component | Component[], opts?: any): void;
 	/**
 	 * Add component to selection
-	 * @param  {Component|HTMLElement} el Component to select
+	 * @param  {Component|Array<Component>} component Component to select
 	 * @param  {Object} [opts={}] Options, optional
 	 * @public
 	 */
-	addSelected(el: Component | Component[], opts?: any): void;
+	addSelected(component: Component | Component[], opts?: any): void;
 	/**
 	 * Remove component from selection
-	 * @param  {Component|HTMLElement} el Component to select
+	 * @param  {Component|Array<Component>} component Component to select
 	 * @param  {Object} [opts={}] Options, optional
 	 * @public
 	 */
-	removeSelected(el: Component | Component[], opts?: {}): void;
+	removeSelected(component: Component | Component[], opts?: {}): void;
 	/**
 	 * Toggle component selection
-	 * @param  {Component|HTMLElement} el Component to select
+	 * @param  {Component|Array<Component>} component Component to select
 	 * @param  {Object} [opts={}] Options, optional
 	 * @public
 	 */
-	toggleSelected(el: Component | Component[], opts?: any): void;
+	toggleSelected(component: Component | Component[], opts?: any): void;
 	/**
 	 * Hover a component
-	 * @param  {Component|HTMLElement} cmp Component to select
+	 * @param  {Component|Array<Component>} cmp Component to select
 	 * @param  {Object} [opts={}] Options, optional
 	 * @private
 	 */
@@ -12596,6 +12938,30 @@ export declare class PropertyRadio extends PropertySelect {
 }
 export declare class PropertySlider extends PropertyNumber {
 	defaults(): any;
+}
+declare class TraitFactory {
+	config: Partial<TraitManagerConfig>;
+	constructor(config?: Partial<TraitManagerConfig>);
+	/**
+	 * Build props object by their name
+	 */
+	build(prop: string | TraitProperties, em: EditorModel): Trait;
+	private buildFromString;
+}
+export declare class Traits extends Collection<Trait> {
+	em: EditorModel;
+	target: Component;
+	tf: TraitFactory;
+	constructor(coll: TraitProperties[], options: {
+		em: EditorModel;
+	});
+	handleReset(coll: TraitProperties[], { previousModels }?: {
+		previousModels?: Trait[];
+	}): void;
+	handleAdd(model: Trait): void;
+	setTarget(target: Component): void;
+	add(model: string | TraitProperties | Trait, options?: AddOptions): Trait;
+	add(models: Array<string | TraitProperties | Trait>, options?: AddOptions): Trait[];
 }
 export declare const usePlugin: <P extends string | Plugin<any>>(plugin: P, opts?: (P extends Plugin<infer C extends {
 	[x: string]: any;

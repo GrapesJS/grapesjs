@@ -1,7 +1,7 @@
 import { bindAll } from 'underscore';
 import { Model } from '../../common';
 import { EditorState, Extension, Compartment } from '@codemirror/state';
-import { EditorViewConfig } from '@codemirror/view';
+import { EditorViewConfig, lineNumbers, lineNumberMarkers, gutterLineClass } from '@codemirror/view';
 import readOnlyRangesExtension from 'codemirror-readonly-ranges';
 import { EditorView, basicSetup } from 'codemirror';
 import { LanguageSupport, syntaxHighlighting } from '@codemirror/language';
@@ -15,6 +15,7 @@ export default class CodeMirrorEditor extends Model {
   editor?: EditorView;
   element?: HTMLElement;
   private readOnlyCompartment = new Compartment();
+  private lineNumbersCompartment = new Compartment();
 
   defaults() {
     return {
@@ -74,13 +75,13 @@ export default class CodeMirrorEditor extends Model {
   }
 
   init(el: HTMLTextAreaElement) {
-    console.log('init');
     bindAll(this, 'onChange');
     const languageState = this.getCodeLanguage(this.get('codeName'));
 
     let extensions: Extension[] = [];
     extensions.push(basicSetup);
     extensions.push(oneDarkTheme);
+    extensions.push(this.lineNumbersCompartment.of(lineNumbers()));
     extensions.push(syntaxHighlighting(oneDarkHighlightStyle));
     languageState && extensions.push(languageState);
     extensions.push(this.readOnlyCompartment.of(EditorState.readOnly.of(this.readonly)));

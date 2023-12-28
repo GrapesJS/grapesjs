@@ -4,6 +4,7 @@ import EditorModel from '../../editor/model/Editor';
 import { hasDnd } from '../../utils/mixins';
 import Page from '../../pages/model/Page';
 import TraitTextView from '../../common/traits/view/TraitTextView';
+import { EventsHash } from 'backbone';
 
 export interface PageViewConfig {
   em?: EditorModel;
@@ -22,7 +23,7 @@ export default class PageView extends View<Page> {
     this.$el.append(input.render().el);
     return this;
   }
-  events() {
+  events(): EventsHash {
     return {
       click: () => this.trigger('onClick', this),
     };

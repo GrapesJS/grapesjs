@@ -42,15 +42,12 @@ export default abstract class TraitView<Target extends Trait = Trait>
 
   protected constructor(em: EditorModel, opts?: TraitViewOpts<string>) {
     super({ el: opts?.el });
-    console.log(opts);
     this.em = em;
     const config = this.em.Traits.config;
     this.ppfx = config.pStylePrefix || '';
     this.pfx = this.ppfx + config.stylePrefix || '';
     this._label = opts?.label as any;
     this.noLabel = (opts?.noLabel && opts?.label !== false) ?? false;
-    console.log(opts?.noLabel !== false);
-    console.log(opts?.label);
   }
 
   setTarget(popertyName: string, model: Model, opts?: Omit<TraitProperties, 'name'>): this;

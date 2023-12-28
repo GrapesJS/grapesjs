@@ -52,6 +52,9 @@ export default class TraitTextView extends TraitInputView<Trait<string>> {
   //     return el.get(0);
   //   }
 
+  templateInput() {
+    return '';
+  }
   renderField() {
     const { $el, appendInput, elInput } = this;
     const inputs = $el.find('[data-input]');
@@ -80,9 +83,8 @@ export default class TraitTextView extends TraitInputView<Trait<string>> {
     //   [{to: state.doc.line(1).to}, {from: state.doc.line(state.doc.lines).from}]
     // });
     editor.init(txtarea);
-    console.log(editor.editor?.state.readOnly);
     // editor.setContent(`function(){ \n //TODO: implementing it \n}`)
-    editor.setElement(el);
+    // editor.setElement(el);
     // if (!elInput) {
     //   this.elInput = this.getInputEl();
     //   appendInput ? el.appendChild(this.elInput!) : el.insertBefore(this.elInput!, el.firstChild);

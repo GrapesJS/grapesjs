@@ -1,3 +1,4 @@
+import { EventsHash } from 'backbone';
 import { View } from '../../common';
 import TraitButtonView from '../../common/traits/view/TraitButtonView';
 import TraitCheckboxView from '../../common/traits/view/TraitCheckboxView';
@@ -57,7 +58,7 @@ export default class PageEditView extends View<Page> {
     return this;
   }
 
-  events() {
+  events(): EventsHash {
     return {
       click: () => this.trigger('onClick', this),
     };
