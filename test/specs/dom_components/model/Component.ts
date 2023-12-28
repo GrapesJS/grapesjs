@@ -46,16 +46,16 @@ describe('Component', () => {
   });
 
   test('Clones correctly with traits', () => {
-    obj.traits.at(0).set('value', 'testTitle');
+    obj.traits[0].value = 'testTitle';
     var cloned = obj.clone();
     cloned.set('stylable', 0);
-    cloned.traits.at(0).set('value', 'testTitle2');
-    expect(obj.traits.at(0).get('value')).toEqual('testTitle');
+    cloned.traits[0].value = 'testTitle2';
+    expect(obj.traits[0].value).toEqual('testTitle');
     expect(obj.get('stylable')).toEqual(true);
   });
 
   test('Sets attributes correctly from traits', () => {
-    obj.set('traits', [
+    obj.setTraits([
       {
         label: 'Title',
         name: 'title',
@@ -64,8 +64,8 @@ describe('Component', () => {
       {
         label: 'Context',
         value: 'primary',
-      },
-    ] as any);
+      } as any,
+    ]);
     expect(obj.get('attributes')).toEqual({ title: 'The title' });
   });
 

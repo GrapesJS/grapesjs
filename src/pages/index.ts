@@ -52,7 +52,10 @@ import Pages from './model/Pages';
 import Page, { PageProperties } from './model/Page';
 import EditorModel from '../editor/model/Editor';
 import ComponentWrapper from '../dom_components/model/ComponentWrapper';
-import { AddOptions, RemoveOptions, SetOptions } from '../common';
+import { AddOptions, Model, RemoveOptions, SetOptions, View } from '../common';
+import PagesView from './view/PagesView';
+import config, { PageManagerConfig } from './config/config';
+import PageEditView from './view/PageEditView';
 
 interface SelectableOption {
   /**
@@ -87,13 +90,10 @@ const pageEvents = {
   removeBefore: evPageRemoveBefore,
 };
 
-export interface PageManagerConfig extends ModuleConfig {
-  pages?: any[];
-}
-
 export default class PageManager extends ItemManagerModule<PageManagerConfig, Pages> {
   events!: typeof pageEvents;
   storageKey = 'pages';
+  view?: PagesView;
 
   get pages() {
     return this.all;
@@ -121,7 +121,7 @@ export default class PageManager extends ItemManagerModule<PageManagerConfig, Pa
    * @param {Object} config Configurations
    */
   constructor(em: EditorModel) {
-    super(em, 'PageManager', new Pages([], em), pageEvents);
+    super(em, 'PageManager', new Pages([], em), pageEvents, config);
     bindAll(this, '_onPageChange');
     const model = new ModuleModel({ _undo: true } as any);
     this.model = model;
@@ -299,5 +299,28 @@ export default class PageManager extends ItemManagerModule<PageManagerConfig, Pa
     } while (pagesMap[id]);
 
     return id;
+  }
+
+  render(opts?: any): HTMLElement {
+    const config = this.getConfig();
+    const { em } = this;
+    const pages = this.all;
+
+    let view = new PagesView(
+      {
+        collection: pages,
+        module: this,
+      },
+      { ...config, em }
+    );
+
+    let selectedView = new PageEditView(this.getSelected()!, { ...config, em });
+    view.on('selected', selectedView.changePage, selectedView);
+    let el = document.createElement('div');
+
+    el.append(selectedView.render().el);
+    el.append(view.render().el);
+
+    return el;
   }
 }

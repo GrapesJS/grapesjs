@@ -2,7 +2,6 @@ import { debounce } from 'underscore';
 import { Model } from '../common';
 import { Module } from '../abstract';
 import defaults, { TraitManagerConfig } from './config/config';
-import TraitsView from './view/TraitsView';
 import TraitView from './view/TraitView';
 import TraitSelectView from './view/TraitSelectView';
 import TraitCheckboxView from './view/TraitCheckboxView';
@@ -11,7 +10,9 @@ import TraitColorView from './view/TraitColorView';
 import TraitButtonView from './view/TraitButtonView';
 import EditorModel from '../editor/model/Editor';
 import Component from '../dom_components/model/Component';
-import Trait from './model/Trait';
+import Trait from '../common/traits/model/Trait';
+import TraitsView from '../common/traits/view/TraitsView';
+import InputFactory from '../common/traits';
 
 export const evAll = 'trait';
 export const evPfx = `${evAll}:`;
@@ -85,8 +86,8 @@ export default class TraitManager extends Module<TraitManagerConfig & { pStylePr
   }
 
   select(component?: Component) {
-    const traits = component ? component.getTraits() : [];
-    this.model.set({ component, traits });
+    this.model.set({ component });
+    this.render();
     this.__trgCustom();
   }
 
@@ -98,7 +99,7 @@ export default class TraitManager extends Module<TraitManagerConfig & { pStylePr
    * Get traits from the currently selected component.
    */
   getCurrent(): Trait[] {
-    return this.model.get('traits') || [];
+    return this.getSelected()?.traits || [];
   }
 
   __trgCustom(opts: any = {}) {
@@ -149,19 +150,12 @@ export default class TraitManager extends Module<TraitManagerConfig & { pStylePr
 
   render() {
     let { view, em } = this;
-    const config = this.getConfig();
-    const el = view && view.el;
-    view = new TraitsView(
-      {
-        el,
-        collection: [],
-        editor: em,
-        config,
-      },
-      this.getTypes()
-    );
-    this.view = view;
-    return view.el;
+    const el = view?.el;
+    const traits = this.getCurrent(); //.map(trait => InputFactory.buildView(trait as any, em, trait.opts as any));
+    console.log(traits);
+    this.view = new TraitsView(em, { el, traits }).render();
+
+    return this.view.el;
   }
 
   destroy() {

@@ -64,6 +64,24 @@ export class Collection<T extends Model = Model> extends Backbone.Collection<T> 
 
 export class View<T extends Model | undefined = Model, E extends Element = HTMLElement> extends Backbone.View<T, E> {}
 
+interface CollectionViewOptions<T extends Collection, TElement extends Element = HTMLElement> {
+  collection: T;
+  el?: TElement | JQuery | string | undefined;
+  id?: string | undefined;
+  attributes?: Record<string, any> | undefined;
+  className?: string | undefined;
+  tagName?: string | undefined;
+  events?: Backbone._Result<Backbone.EventsHash> | undefined;
+}
+
+export class CollectionView<T extends Collection, E extends Element = HTMLElement> extends Backbone.View<undefined, E> {
+  collection: T;
+  constructor(opts: CollectionViewOptions<T, E>) {
+    super(opts);
+    this.collection = opts.collection;
+  }
+}
+
 export type PickMatching<T, V> = { [K in keyof T as T[K] extends V ? K : never]: T[K] };
 
 export type ExtractMethods<T> = PickMatching<T, Function>;
