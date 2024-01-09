@@ -391,9 +391,16 @@ declare class ComponentWrapper extends Component {
 		copyable: boolean;
 		draggable: boolean;
 		components: never[];
-		data: {
+		script: (prop: any) => void;
+		"script-global": {
+			id: string;
+			type: string;
+		}[];
+		ajax: {
 			test: {
-				url: string;
+				url: {
+					urlRaw: string;
+				};
 				dataSrc: string;
 				dataIds: string[];
 			};
@@ -402,11 +409,10 @@ declare class ComponentWrapper extends Component {
 			name: string;
 			label: string;
 			type: string;
+			changeProp: boolean;
 			traits: {
 				type: string;
-				name: string;
-				default: string;
-			}[];
+			};
 		}[];
 		stylable: string[];
 	};
@@ -415,12 +421,11 @@ declare class ComponentWrapper extends Component {
 	};
 	constructor(props?: {}, opt?: ComponentOptions);
 	private ajaxFunctionTemplate;
-	get globalScript(): string;
 	renderJsDataUsage(id: string): {
 		dataIds: string[];
 		jsString: string;
 	} | undefined;
-	get data(): {
+	get ajax(): {
 		[id: string]: any;
 	};
 	__postAdd(): void;
@@ -2525,31 +2530,34 @@ export declare class Frame extends ModuleModel<CanvasModule> {
 	toJSON(opts?: any): any;
 }
 export interface OnUpdateView<TraitValueType> {
-	onUpdateEvent(value: TraitValueType): void;
+	onUpdateEvent(value: TraitValueType, fromTarget: boolean): void;
 }
 export interface TraitProperties {
-	name: string;
 	default?: any;
 	value?: any;
+	traits?: any;
 	changeProp?: boolean;
 }
-declare abstract class Trait<TraitValueType = any> {
+declare abstract class Trait<TraitValueType = any, Type extends string = string> {
 	opts: any;
-	protected view?: OnUpdateView<TraitValueType>;
-	get name(): any;
-	constructor(opts: TraitProperties);
+	view?: OnUpdateView<TraitValueType>;
+	readonly name: string;
+	get type(): Type;
+	get templates(): unknown;
+	private _children;
+	get children(): Trait[];
+	set children(children: Trait[]);
+	constructor(name: string, opts: TraitProperties);
 	registerForUpdateEvent(view: OnUpdateView<TraitValueType>): void;
 	protected abstract getValue(): TraitValueType;
 	protected abstract setValue(value: TraitValueType): void;
 	get changeProp(): boolean;
+	abstract get em(): EditorModel;
 	get value(): TraitValueType;
 	protected updatingValue: boolean;
 	set value(value: TraitValueType);
-	protected setValueFromModel(): void;
+	setValueFromModel(): void;
 	updateOpts(opts: any): void;
-}
-export interface TraitListProperties extends TraitProperties {
-	traits: any[];
 }
 export interface TraitViewOpts<Type> {
 	type?: Type;
@@ -2570,9 +2578,12 @@ declare abstract class TraitView<Target extends Trait = Trait> extends View impl
 	em: EditorModel;
 	target: Target;
 	protected constructor(em: EditorModel, opts?: TraitViewOpts<string>);
-	setTarget(popertyName: string, model: Model, opts?: Omit<TraitProperties, "name">): this;
+	setTarget(popertyName: string, model: Model & {
+		em: EditorModel;
+	}, opts?: Omit<TraitProperties, "name">): this;
 	setTarget(target: Target): this;
-	abstract onUpdateEvent(value: ValueFromTrait<Target>): void;
+	initTarget?(target: Target): void;
+	abstract onUpdateEvent(value: ValueFromTrait<Target>, fromTarget: boolean): void;
 	/**
 	 * Returns label for the input
 	 */
@@ -2608,6 +2619,7 @@ export interface TraitSelectViewOpts extends TraitInputViewOpts<"select"> {
 }
 export interface TraitObjectViewOpts<T extends string = "object"> extends TraitViewOpts<T> {
 	traits: any[] | any;
+	title?: string;
 }
 export type InputViewProperties = ({
 	type: "text";
@@ -2624,11 +2636,14 @@ export type InputViewProperties = ({
 } & TraitButtonViewOpts) | ({
 	type: "ajax";
 } & TraitObjectViewOpts<"ajax">) | ({
+	type: "url";
+} & TraitObjectViewOpts<"url">) | ({
 	type: "list";
-} & TraitListProperties) | ({
+} & TraitInputViewOpts<"list">) | ({
+	type: "unique-list";
+} & TraitInputViewOpts<"unique-list">) | ({
 	type: "object";
 } & TraitObjectViewOpts);
-export type InputProperties = TraitProperties | TraitListProperties;
 export type RectDim = {
 	t: number;
 	l: number;
@@ -3203,7 +3218,7 @@ export interface ComponentProperties {
 	 * Component's traits. More about it [here](/modules/Traits.html). Default: `['id', 'title']`
 	 * @default []
 	 */
-	traits?: (string | (InputProperties & (InputViewProperties | {})))[];
+	traits?: (string | (InputViewProperties | {}))[];
 	/**
 		 * Indicates an array of properties which will be inhereted by all NEW appended children.
 		 For example if you create a component likes this: `{ removable: false, draggable: false, propagate: ['removable', 'draggable'] }`
@@ -3238,7 +3253,7 @@ export interface ComponentDefinition extends Omit<ComponentProperties, "componen
 	 * Children components.
 	 */
 	components?: string | ComponentDefinition | (string | ComponentDefinition)[];
-	traits?: (Partial<InputProperties & (InputViewProperties | {})> | string)[];
+	traits?: (Partial<InputViewProperties | {}> | string)[];
 	attributes?: Record<string, any>;
 	[key: string]: unknown;
 }
@@ -3247,7 +3262,7 @@ export interface ComponentDefinitionDefined extends Omit<ComponentProperties, "c
 	 * Children components.
 	 */
 	components?: ComponentDefinitionDefined[] | ComponentDefinitionDefined;
-	traits?: (Partial<InputProperties & (InputViewProperties | {})> | string)[];
+	traits?: (Partial<InputViewProperties | {}> | string)[];
 	[key: string]: any;
 }
 export type ComponentAddType = Component | ComponentDefinition | ComponentDefinitionDefined | string;
@@ -3353,7 +3368,7 @@ declare class ComponentText extends Component {
 		droppable: boolean;
 		editable: boolean;
 		components?: ComponentDefinitionDefined | ComponentDefinitionDefined[] | undefined;
-		traits?: (string | Partial<InputProperties & ({} | InputViewProperties)>)[] | undefined;
+		traits?: (string | Partial<{} | InputViewProperties>)[] | undefined;
 	};
 	initialize(props: any, opts: any): void;
 	__checkInnerChilds(): void;
@@ -3451,7 +3466,7 @@ declare class ComponentScript extends Component {
 		draggable: boolean;
 		layerable: boolean;
 		components?: ComponentDefinitionDefined | ComponentDefinitionDefined[] | undefined;
-		traits?: (string | Partial<InputProperties & ({} | InputViewProperties)>)[] | undefined;
+		traits?: (string | Partial<{} | InputViewProperties>)[] | undefined;
 	};
 	static isComponent(el: HTMLImageElement): any;
 }
@@ -3464,7 +3479,7 @@ declare class ComponentSvg extends Component {
 			ratioDefault: boolean;
 		};
 		components?: ComponentDefinitionDefined | ComponentDefinitionDefined[] | undefined;
-		traits?: (string | Partial<InputProperties & ({} | InputViewProperties)>)[] | undefined;
+		traits?: (string | Partial<{} | InputViewProperties>)[] | undefined;
 	};
 	getName(): any;
 	static isComponent(el: HTMLElement): boolean;
@@ -3481,7 +3496,7 @@ declare class ComponentSvgIn extends ComponentSvg {
 			ratioDefault: boolean;
 		};
 		components?: ComponentDefinitionDefined | ComponentDefinitionDefined[] | undefined;
-		traits?: (string | Partial<InputProperties & ({} | InputViewProperties)>)[] | undefined;
+		traits?: (string | Partial<{} | InputViewProperties>)[] | undefined;
 	};
 	static isComponent(el: any, opts?: any): boolean;
 }
@@ -3491,7 +3506,7 @@ declare class ComponentTable extends Component {
 		tagName: string;
 		droppable: string[];
 		components?: ComponentDefinitionDefined | ComponentDefinitionDefined[] | undefined;
-		traits?: (string | Partial<InputProperties & ({} | InputViewProperties)>)[] | undefined;
+		traits?: (string | Partial<{} | InputViewProperties>)[] | undefined;
 	};
 	initialize(props: any, opts: any): void;
 	static isComponent(el: HTMLElement): boolean;
@@ -3502,7 +3517,7 @@ declare class ComponentTableCell extends Component {
 		tagName: string;
 		draggable: string[];
 		components?: ComponentDefinitionDefined | ComponentDefinitionDefined[] | undefined;
-		traits?: (string | Partial<InputProperties & ({} | InputViewProperties)>)[] | undefined;
+		traits?: (string | Partial<{} | InputViewProperties>)[] | undefined;
 	};
 	static isComponent(el: HTMLElement): boolean;
 }
@@ -3512,7 +3527,7 @@ declare class ComponentTableRow extends Component {
 		draggable: string[];
 		droppable: string[];
 		components?: ComponentDefinitionDefined | ComponentDefinitionDefined[] | undefined;
-		traits?: (string | Partial<InputProperties & ({} | InputViewProperties)>)[] | undefined;
+		traits?: (string | Partial<{} | InputViewProperties>)[] | undefined;
 	};
 	static isComponent(el: HTMLElement): boolean;
 }
@@ -3524,7 +3539,7 @@ declare class ComponentTextNode extends Component {
 		selectable: boolean;
 		editable: boolean;
 		components?: ComponentDefinitionDefined | ComponentDefinitionDefined[] | undefined;
-		traits?: (string | Partial<InputProperties & ({} | InputViewProperties)>)[] | undefined;
+		traits?: (string | Partial<{} | InputViewProperties>)[] | undefined;
 	};
 	toHTML(): string;
 	__escapeContent(content: string): string;
@@ -4695,6 +4710,13 @@ export declare class Component extends StyleableModel<ComponentProperties> {
 	 * @private
 	 * @ts-ignore */
 	collection: Components;
+	get globalVariables(): {
+		id: string;
+		default: any;
+		type: string;
+		_renderJs: string;
+	}[];
+	get globalScript(): string | undefined;
 	initialize(props?: {}, opt?: ComponentOptions): void;
 	__postAdd(opts?: {
 		recursive?: boolean;
@@ -4995,7 +5017,9 @@ export declare class Component extends StyleableModel<ComponentProperties> {
 	 * @private
 	 */
 	initToolbar(): void;
-	__loadTraits(tr?: (Trait | (InputViewProperties & InputProperties) | string)[]): this;
+	__loadTraits(tr?: (Trait | ({
+		name: string;
+	} & InputViewProperties) | string)[]): this;
 	/**
 	 * Get traits.
 	 * @returns {Array<Trait>}
@@ -5014,7 +5038,9 @@ export declare class Component extends StyleableModel<ComponentProperties> {
 	 * console.log(traits);
 	 * // [Trait, ...]
 	 */
-	setTraits(traits: (Trait | (InputViewProperties & InputProperties) | string)[]): Trait<any>[];
+	setTraits(traits: (Trait | ({
+		name: string;
+	} & InputViewProperties) | string)[]): Trait<any, string>[];
 	/**
 	 * Get the trait by id/name.
 	 * @param  {String} id The `id` or `name` of the trait
@@ -5054,7 +5080,7 @@ export declare class Component extends StyleableModel<ComponentProperties> {
 	 * component.removeTrait('title');
 	 * component.removeTrait(['title', 'id']);
 	 */
-	removeTrait(id: string | string[]): (Trait<any> | undefined)[];
+	removeTrait(id: string | string[]): (Trait<any, string> | undefined)[];
 	/**
 	 * Add new trait/s.
 	 * @param  {String|Object|Array<String|Object>} trait Trait to add (or an array of traits)
@@ -5068,7 +5094,9 @@ export declare class Component extends StyleableModel<ComponentProperties> {
 	 * });
 	 * component.addTrait(['title', {...}, ...]);
 	 */
-	addTrait(trait: (Trait | (InputViewProperties & InputProperties) | string)[], opts?: AddOptions): (Trait<any> & {
+	addTrait(trait: (Trait | ({
+		name: string;
+	} & InputViewProperties) | string)[], opts?: AddOptions): (Trait<any, string> & {
 		name: string;
 	})[];
 	/**
@@ -9609,15 +9637,13 @@ declare class StorageManager extends Module<StorageManagerConfig & {
 	canAutoload(): boolean;
 	destroy(): void;
 }
-export interface TraitsViewOpts extends TraitViewOpts<"object"> {
-	traits: Trait[];
-}
 declare class TraitsView extends TraitView {
 	type: string;
-	traits: Trait[];
-	constructor(em: EditorModel, opts: TraitsViewOpts);
-	onUpdateEvent(value: any): void;
-	render(): this;
+	template: any;
+	constructor(em: EditorModel, opts: TraitViewOpts<"object">);
+	onUpdateEvent(value: any, fromTarget: boolean): void;
+	protected renderItem(trait: Trait): JQuery<HTMLElement>;
+	render(traits?: Trait[]): this;
 }
 export type CustomTrait<T> = T & ThisType<T & TraitView>;
 declare class TraitManager extends Module<TraitManagerConfig & {
@@ -9674,13 +9700,13 @@ declare class TraitManager extends Module<TraitManagerConfig & {
 	 * @param {string} name Type name
 	 * @return {Object}
 	 */
-	getType(name: string): new (o: any) => TraitView<Trait<any>>;
+	getType(name: string): new (o: any) => TraitView<Trait<any, string>>;
 	/**
 	 * Get all trait types
 	 * @returns {Object}
 	 */
 	getTypes(): {
-		[id: string]: new (o: any) => TraitView<Trait<any>>;
+		[id: string]: new (o: any) => TraitView<Trait<any, string>>;
 	};
 	render(): HTMLElement;
 	destroy(): void;
