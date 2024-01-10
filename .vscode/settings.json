@@ -1,0 +1,24 @@
+{
+  "grammarly.selectors": [
+    {
+      "language": "markdown",
+      "scheme": "file",
+      "pattern": "c:\\Users\\amirmohammad.r\\Desktop\\pr\\Grapesjs.md"
+    },
+    {
+      "language": "markdown",
+      "scheme": "file",
+      "pattern": "c:\\Users\\amirmohammad.r\\Desktop\\pr\\Grapesjs.md"
+    },
+    {
+      "language": "markdown",
+      "scheme": "file",
+      "pattern": "c:\\Users\\amirmohammad.r\\Desktop\\pr\\Grapesjs.md"
+    },
+    {
+      "language": "markdown",
+      "scheme": "file",
+      "pattern": "c:\\Users\\amirmohammad.r\\Desktop\\pr\\Grapesjs.md"
+    }
+  ]
+}

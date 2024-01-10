@@ -34,8 +34,8 @@ import EditorModel from '../editor/model/Editor';
 import defaults, { BlockManagerConfig } from './config/config';
 import Block, { BlockProperties } from './model/Block';
 import Blocks from './model/Blocks';
-import Categories from './model/Categories';
-import Category from './model/Category';
+import Categories from '../abstract/ModuleCategories';
+import Category from '../abstract/ModuleCategory';
 import { BlocksEvents } from './types';
 import BlocksView from './view/BlocksView';
 

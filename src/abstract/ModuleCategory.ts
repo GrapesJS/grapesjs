@@ -1,7 +1,7 @@
-import { Model } from '../../common';
-import CategoryView from '../view/CategoryView';
+import { Model } from '../common';
+import CategoryView from './ModuleCategoryView';
 
-export interface BlockCategoryProperties {
+export interface CategoryProperties {
   /**
    * Category id.
    */
@@ -26,14 +26,14 @@ export interface BlockCategoryProperties {
   attributes?: Record<string, any>;
 }
 
-export default class Category extends Model<BlockCategoryProperties> {
+export default class Category extends Model<CategoryProperties> {
   view?: CategoryView;
 
   defaults() {
     return {
       id: '',
       label: '',
-      open: true,
+      open: false,
       attributes: {},
     };
   }
