@@ -187,7 +187,7 @@ export const deepMerge = (...args: ObjectAny[]) => {
  * @param  {HTMLElement|Component} el Component or HTML element
  * @return {Component}
  */
-const getModel = (el: any, $?: any): Component | undefined => {
+const getModel = (el: HTMLElement & { __cashData?: any }, $?: any): Component | undefined => {
   let model;
   if (!$ && el && el.__cashData) {
     model = el.__cashData.model;
