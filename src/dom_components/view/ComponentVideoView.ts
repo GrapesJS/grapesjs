@@ -2,9 +2,8 @@ import ComponentVideo from '../model/ComponentVideo';
 import ComponentImageView from './ComponentImageView';
 import ComponentView from './ComponentView';
 
-export default class ComponentVideoView extends ComponentImageView {
+export default class ComponentVideoView extends ComponentImageView<ComponentVideo> {
   videoEl?: HTMLVideoElement | HTMLIFrameElement;
-  model!: ComponentVideo;
 
   tagName() {
     return 'div';

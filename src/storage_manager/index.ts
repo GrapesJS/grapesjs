@@ -49,7 +49,7 @@ import EditorModel from '../editor/model/Editor';
 import IStorage, { StorageOptions, ProjectData } from './model/IStorage';
 import StorageEvents from './types';
 
-export type * from './model/IStorage';
+export type { StorageOptions, ProjectData } from './model/IStorage';
 
 export type StorageEvent = `${StorageEvents}`;
 

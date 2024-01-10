@@ -18,7 +18,7 @@ export type DraggableDroppableFn = (source: Component, target: Component, index?
 export interface ComponentStackItem {
   id: string;
   model: typeof Component;
-  view: typeof ComponentView;
+  view: typeof ComponentView<any>;
 }
 
 /**
