@@ -123,9 +123,6 @@ export default class TraitManager extends Module<TraitManagerConfig & { pStylePr
   }
 
   postRender() {
-    const { categories, config, em } = this;
-    const collection = this.traitsVisible;
-    this.view = new TraitsView({ collection, editor: em, config, categories }, []);
     this.__appendTo();
   }
 
