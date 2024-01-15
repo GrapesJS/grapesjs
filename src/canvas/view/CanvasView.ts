@@ -29,6 +29,7 @@ export interface MarginPaddingOffsets {
   paddingRight?: number;
   paddingBottom?: number;
   paddingLeft?: number;
+  border?: number|string;
 }
 
 export type ElementPosOpts = {
@@ -516,11 +517,22 @@ export default class CanvasView extends ModuleView<Canvas> {
       'paddingRight',
       'paddingBottom',
       'paddingLeft',
+      'border'
     ];
     marginPaddingOffsets.forEach(offset => {
-      result[offset] = parseFloat(styles[offset]) * zoom;
+      const styleString = styles[offset];
+      if (styleString) {
+        if (!Number.isNaN(styleString)) {
+          //@ts-ignore
+          result[offset] = parseFloat(styleString) * zoom;
+        } else {
+          if (styleString.includes('px')) {
+            //@ts-ignore
+            result[offset] = parseFloat(styleString.split(' ')[0].replace('px', ''));
+          }
+        }
+      }
     });
-
     return result;
   }
 

@@ -55,7 +55,7 @@ export interface SorterOptions {
   scale?: number;
 }
 
-const noop = () => {};
+const noop = () => { };
 
 const targetSpotType = CanvasSpotBuiltInTypes.Target;
 
@@ -918,6 +918,13 @@ export default class Sorter extends View {
       left = this.relative ? el.offsetLeft : o.left - (this.wmargin ? -1 : 1) * this.elL;
       height = el.offsetHeight;
       width = el.offsetWidth;
+    }
+
+    if (offsets && offsets.hasOwnProperty('border')) {
+      let border = offsets.border as number;
+      top += border
+      left += border
+      width -= border*2
     }
 
     return { top, left, height, width, offsets };
