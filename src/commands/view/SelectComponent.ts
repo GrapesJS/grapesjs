@@ -388,6 +388,13 @@ export default {
     if (model && resizable) {
       canvas.addSpot({ type: spotTypeResize, component: model });
       const el = isElement(elem) ? elem : model.getEl();
+      const {
+        onStart = () => {},
+        onMove = () => {},
+        onEnd = () => {},
+        updateTarget = () => {},
+        ...resizableOpts
+      } = isObject(resizable) ? resizable : {};
 
       if (hasCustomResize || !el) return;
 
@@ -408,10 +415,11 @@ export default {
 
       const options: ResizerOptions = {
         // Here the resizer is updated with the current element height and width
-        onStart(e: Event, opts: any = {}) {
+        onStart(ev, opts) {
+          onStart(ev, opts);
           const { el, config, resizer } = opts;
           const { keyHeight, keyWidth, currentUnit, keepAutoHeight, keepAutoWidth } = config;
-          toggleBodyClass('add', e, opts);
+          toggleBodyClass('add', ev, opts);
           modelToStyle = em.Styles.getModelToStyle(model);
           canvas.toggleFramesEvents(false);
           const computedStyle = getComputedStyle(el);
@@ -429,8 +437,8 @@ export default {
             currentHeight = computedStyle[keyHeight];
           }
 
-          resizer.startDim.w = parseFloat(currentWidth);
-          resizer.startDim.h = parseFloat(currentHeight);
+          resizer.startDim!.w = parseFloat(currentWidth);
+          resizer.startDim!.h = parseFloat(currentHeight);
           showOffsets = false;
 
           if (currentUnit) {
@@ -440,36 +448,39 @@ export default {
         },
 
         // Update all positioned elements (eg. component toolbar)
-        onMove() {
+        onMove(ev) {
+          onMove(ev);
           editor.trigger('component:resize');
         },
 
-        onEnd(e: Event, opts: any) {
-          toggleBodyClass('remove', e, opts);
+        onEnd(ev, opts) {
+          onEnd(ev, opts);
+          toggleBodyClass('remove', ev, opts);
           editor.trigger('component:resize');
           canvas.toggleFramesEvents(true);
           showOffsets = true;
         },
 
-        updateTarget(el: any, rect: any, options: any = {}) {
+        updateTarget(el, rect, options) {
+          updateTarget(el, rect, options);
           if (!modelToStyle) {
             return;
           }
 
           const { store, selectedHandler, config } = options;
           const { keyHeight, keyWidth, autoHeight, autoWidth, unitWidth, unitHeight } = config;
-          const onlyHeight = ['tc', 'bc'].indexOf(selectedHandler) >= 0;
-          const onlyWidth = ['cl', 'cr'].indexOf(selectedHandler) >= 0;
+          const onlyHeight = ['tc', 'bc'].indexOf(selectedHandler!) >= 0;
+          const onlyWidth = ['cl', 'cr'].indexOf(selectedHandler!) >= 0;
           const style: any = {};
 
           if (!onlyHeight) {
             const bodyw = canvas.getBody().offsetWidth;
             const width = rect.w < bodyw ? rect.w : bodyw;
-            style[keyWidth] = autoWidth ? 'auto' : `${width}${unitWidth}`;
+            style[keyWidth!] = autoWidth ? 'auto' : `${width}${unitWidth}`;
           }
 
           if (!onlyWidth) {
-            style[keyHeight] = autoHeight ? 'auto' : `${rect.h}${unitHeight}`;
+            style[keyHeight!] = autoHeight ? 'auto' : `${rect.h}${unitHeight}`;
           }
 
           if (em.getDragMode(model)) {
@@ -485,7 +496,7 @@ export default {
           modelToStyle.addStyle(finalStyle, { avoidStore: !store });
           em.Styles.__emitCmpStyleUpdate(finalStyle, { components: em.getSelected() });
         },
-        ...(isObject(resizable) ? resizable : {}),
+        ...resizableOpts,
       };
 
       this.resizer = editor.runCommand('resize', { el, options, force: 1 });
