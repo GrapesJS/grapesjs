@@ -4,9 +4,9 @@ import { View } from '../../common';
 import Component from '../../dom_components/model/Component';
 import EditorModel from '../../editor/model/Editor';
 import Block from '../model/Block';
-import Categories from '../model/Categories';
+import Categories from '../../abstract/ModuleCategories';
 import BlockView from './BlockView';
-import CategoryView from './CategoryView';
+import CategoryView from '../../abstract/ModuleCategoryView';
 
 export interface BlocksViewConfig {
   em: EditorModel;
@@ -152,7 +152,7 @@ export default class BlocksView extends View {
       model.set('category', catModel, { silent: true });
 
       if (!catView && categories) {
-        catView = new CategoryView({ model: catModel }, config).render();
+        catView = new CategoryView({ model: catModel }, config, 'block').render();
         renderedCategories.set(catId, catView);
         categories.appendChild(catView.el);
       }

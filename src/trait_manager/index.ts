@@ -12,6 +12,9 @@ import TraitButtonView from './view/TraitButtonView';
 import EditorModel from '../editor/model/Editor';
 import Component from '../dom_components/model/Component';
 import Trait from './model/Trait';
+import Traits from './model/Traits';
+import Category from '../abstract/ModuleCategory';
+import Categories from '../abstract/ModuleCategories';
 
 export const evAll = 'trait';
 export const evPfx = `${evAll}:`;
@@ -43,7 +46,13 @@ export default class TraitManager extends Module<TraitManagerConfig & { pStylePr
   types: { [id: string]: { new (o: any): TraitView } };
   model: Model;
   __ctn?: any;
+  traits: Traits;
+  traitsVisible: Traits;
+  categories: Categories;
+
   TraitsView = TraitsView;
+  Category = Category;
+  Categories = Categories;
 
   events = {
     all: evAll,
@@ -66,6 +75,13 @@ export default class TraitManager extends Module<TraitManagerConfig & { pStylePr
     const model = new Model();
     this.model = model;
     this.types = typesDef;
+    const ppfx = this.config.pStylePrefix;
+    ppfx && (this.config.stylePrefix = `${ppfx}${this.config.stylePrefix}`);
+
+    // Global traits collection
+    this.traits = new Traits([], { em });
+    this.traitsVisible = new Traits(this.traits.models, { em });
+    this.categories = new Categories();
 
     const upAll = debounce(() => this.__upSel(), 0);
     model.listenTo(em, 'component:toggled', upAll);
@@ -149,6 +165,7 @@ export default class TraitManager extends Module<TraitManagerConfig & { pStylePr
 
   render() {
     let { view, em } = this;
+    const { categories } = this;
     const config = this.getConfig();
     const el = view && view.el;
     view = new TraitsView(
@@ -157,6 +174,7 @@ export default class TraitManager extends Module<TraitManagerConfig & { pStylePr
         collection: [],
         editor: em,
         config,
+        categories,
       },
       this.getTypes()
     );
