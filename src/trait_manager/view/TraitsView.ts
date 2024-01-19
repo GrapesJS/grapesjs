@@ -15,6 +15,9 @@ interface TraitsViewProps {
   categories: Categories;
 }
 
+const ATTR_CATEGORIES = 'data-categories';
+const ATTR_NO_CATEGORIES = 'data-no-categories';
+
 export default class TraitsView extends DomainViews {
   reuseView = true;
   em: EditorModel;
@@ -23,7 +26,6 @@ export default class TraitsView extends DomainViews {
   categories: Categories;
   renderedCategories = new Map<string, CategoryView>();
   config: TraitManagerConfigModule;
-  noCatClass: string;
   traitContClass: string;
   catsClass: string;
   catsEl?: HTMLElement;
@@ -44,7 +46,6 @@ export default class TraitsView extends DomainViews {
     this.pfx = ppfx + config.stylePrefix || '';
     this.className = `${this.pfx}traits`;
     this.categories = o.categories || '';
-    this.noCatClass = `${ppfx}traits-no-cat`;
     this.traitContClass = `${ppfx}traits-c`;
     this.catsClass = `${ppfx}trait-categories`;
     this.listenTo(em, 'component:toggled', this.updatedCollection);
@@ -115,14 +116,14 @@ export default class TraitsView extends DomainViews {
 
   getCategoriesEl() {
     if (!this.catsEl) {
-      this.catsEl = this.el.querySelector(`.${this.catsClass}`)!;
+      this.catsEl = this.el.querySelector(`[${ATTR_CATEGORIES}]`)!;
     }
     return this.catsEl;
   }
 
   getTraitsEl() {
     if (!this.traitsEl) {
-      this.traitsEl = this.el.querySelector(`.${this.noCatClass} .${this.traitContClass}`)!;
+      this.traitsEl = this.el.querySelector(`[${ATTR_NO_CATEGORIES}]`)!;
     }
 
     return this.traitsEl;
@@ -134,16 +135,14 @@ export default class TraitsView extends DomainViews {
   }
 
   render() {
-    const { ppfx, catsClass, noCatClass, traitContClass } = this;
+    const { ppfx, catsClass, traitContClass } = this;
     const frag = document.createDocumentFragment();
     delete this.catsEl;
     delete this.traitsEl;
     this.renderedCategories = new Map();
     this.el.innerHTML = `
-      <div class="${catsClass}"></div>
-        <div class="${noCatClass}">
-        <div class="${traitContClass}"></div>
-      </div>
+      <div class="${catsClass}" ${ATTR_CATEGORIES}></div>
+      <div class="${traitContClass}" ${ATTR_NO_CATEGORIES}></div>
     `;
 
     this.collection.forEach(model => this.add(model, frag));
