@@ -33,19 +33,19 @@ export default class TraitsView extends DomainViews {
   rendered?: boolean;
   itemsView: TraitManager['types'];
 
-  constructor(o: TraitsViewProps, itemsView: TraitManager['types']) {
-    super(o);
+  constructor(props: TraitsViewProps, itemsView: TraitManager['types']) {
+    super(props);
     this.itemsView = itemsView;
-    const config = o.config || {};
+    const config = props.config || {};
     this.config = config;
 
-    const em = o.editor;
+    const em = props.editor;
     this.em = em;
     const ppfx = config.pStylePrefix || '';
     this.ppfx = ppfx;
     this.pfx = ppfx + config.stylePrefix || '';
     this.className = `${this.pfx}traits`;
-    this.categories = o.categories || '';
+    this.categories = props.categories || '';
     this.traitContClass = `${ppfx}traits-c`;
     this.catsClass = `${ppfx}trait-categories`;
     this.listenTo(em, 'component:toggled', this.updatedCollection);
