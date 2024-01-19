@@ -1,31 +1,3 @@
-.#{$app-prefix}traits-c {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-}
-
-.#{$app-prefix}trait-categories {
-  display: flex;
-  flex-direction: column;
-}
-
-.#{$app-prefix}trait-category {
-  width: 100%;
-
-  &.#{$app-prefix}open {
-    @extend .#{$app-prefix}category-open;
-  }
-
-  .#{$app-prefix}title {
-    @extend .#{$app-prefix}category-title;
-  }
-
-  .#{$app-prefix}caret-icon {
-    margin-right: 5px;
-  }
-}
-
-
 .#{$app-prefix} {
   &traits-label {
     border-bottom: 1px solid var(--gjs-main-dark-color);
@@ -49,6 +21,32 @@
       flex-grow: 1;
     }
   }
+
+  &traits-c {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &trait-categories {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &trait-category {
+    width: 100%;
+
+    &.#{$app-prefix}open {
+      @extend .#{$app-prefix}category-open;
+    }
+
+    .#{$app-prefix}title {
+      @extend .#{$app-prefix}category-title;
+    }
+
+    .#{$app-prefix}caret-icon {
+      margin-right: 5px;
+    }
+  }
 }
 
 .#{$trt-prefix}header {
@@ -63,6 +61,7 @@
   font-weight: lighter;
   align-items: center;
   text-align: left;
+  gap: 5px;
 
   &s {
     font-size: var(--gjs-font-size);

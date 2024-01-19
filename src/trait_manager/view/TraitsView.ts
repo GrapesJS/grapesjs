@@ -29,13 +29,14 @@ export default class TraitsView extends DomainViews {
 
     const em = o.editor;
     this.em = em;
-    this.ppfx = config.pStylePrefix || '';
-    this.pfx = this.ppfx + config.stylePrefix || '';
+    const ppfx = config.pStylePrefix || '';
+    this.ppfx = ppfx;
+    this.pfx = ppfx + config.stylePrefix || '';
     this.className = `${this.pfx}traits`;
     this.categories = o.categories || '';
-    this.noCatClass = `${this.ppfx}traits-no-cat`;
-    this.traitContClass = `${this.ppfx}traits-c`;
-    this.catsClass = `${this.ppfx}trait-categories`;
+    this.noCatClass = `${ppfx}traits-no-cat`;
+    this.traitContClass = `${ppfx}traits-c`;
+    this.catsClass = `${ppfx}trait-categories`;
     this.listenTo(em, 'component:toggled', this.updatedCollection);
     this.updatedCollection();
   }
@@ -51,15 +52,6 @@ export default class TraitsView extends DomainViews {
     // @ts-ignore
     this.collection = comp ? comp.get('traits') : [];
     this.render();
-  }
-
-  /**
-   * Add new model to the collection
-   * @param {Model} model
-   * @private
-   */
-  addTo(model: Trait) {
-    this.add(model);
   }
 
   /**
@@ -136,32 +128,30 @@ export default class TraitsView extends DomainViews {
   }
 
   append(el: HTMLElement | DocumentFragment) {
-    let traits = this.getTraitsEl();
-    traits && traits.appendChild(el);
+    const traits = this.getTraitsEl();
+    traits?.appendChild(el);
   }
 
   render() {
-    const ppfx = this.ppfx;
+    const { ppfx, catsClass, noCatClass, traitContClass } = this;
     const frag = document.createDocumentFragment();
     delete this.catsEl;
     delete this.traitsEl;
     this.renderedCategories = new Map();
     this.el.innerHTML = `
-    <div class="${this.catsClass}"></div>
-    <div class="${this.noCatClass}">
-    <div class="${this.traitContClass}"></div>
-    </div>
+      <div class="${catsClass}"></div>
+        <div class="${noCatClass}">
+        <div class="${traitContClass}"></div>
+      </div>
     `;
-    if (this.collection.length) {
-      this.collection.each(model => this.add(model, frag));
-    }
+
+    this.collection.forEach(model => this.add(model, frag));
     this.append(frag);
-    const cls = `${this.traitContClass}s ${ppfx}one-bg ${ppfx}two-color`;
+    const cls = `${traitContClass}s ${ppfx}one-bg ${ppfx}two-color`;
     this.$el.addClass(cls);
     this.rendered = true;
     return this;
   }
 }
 
-// @ts-ignore
 TraitsView.prototype.itemView = TraitView;

@@ -92,6 +92,11 @@ export const grapesjs = {
   },
 };
 
+/**
+ * @deprecated Changed to CategoryProperties
+ */
+export type { CategoryProperties as BlockCategoryProperties } from './abstract/ModuleCategory';
+
 // Exports for TS
 export type { default as Asset } from './asset_manager/model/Asset';
 export type { default as Assets } from './asset_manager/model/Assets';

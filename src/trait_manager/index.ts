@@ -46,8 +46,6 @@ export default class TraitManager extends Module<TraitManagerConfig & { pStylePr
   types: { [id: string]: { new (o: any): TraitView } };
   model: Model;
   __ctn?: any;
-  traits: Traits;
-  traitsVisible: Traits;
   categories: Categories;
 
   TraitsView = TraitsView;
@@ -77,10 +75,6 @@ export default class TraitManager extends Module<TraitManagerConfig & { pStylePr
     this.types = typesDef;
     const ppfx = this.config.pStylePrefix;
     ppfx && (this.config.stylePrefix = `${ppfx}${this.config.stylePrefix}`);
-
-    // Global traits collection
-    this.traits = new Traits([], { em });
-    this.traitsVisible = new Traits(this.traits.models, { em });
     this.categories = new Categories();
 
     const upAll = debounce(() => this.__upSel(), 0);
