@@ -12,7 +12,6 @@ import TraitButtonView from './view/TraitButtonView';
 import EditorModel from '../editor/model/Editor';
 import Component from '../dom_components/model/Component';
 import Trait from './model/Trait';
-import Traits from './model/Traits';
 import Category from '../abstract/ModuleCategory';
 import Categories from '../abstract/ModuleCategories';
 
@@ -162,6 +161,14 @@ export default class TraitManager extends Module<TraitManagerConfigModule> {
     return this.types;
   }
 
+  /**
+   * Get all available categories.
+   * @return {Array<Category>}
+   */
+  getCategories() {
+    return [...this.categories.models];
+  }
+
   render() {
     let { view } = this;
     const { categories, em } = this;
@@ -180,7 +187,13 @@ export default class TraitManager extends Module<TraitManagerConfigModule> {
   }
 
   destroy() {
+    const colls = [this.categories];
+    colls.forEach(c => {
+      c.stopListening();
+      c.reset();
+    });
     this.model.stopListening();
     this.model.clear();
+    this.view?.remove();
   }
 }
