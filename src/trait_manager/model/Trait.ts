@@ -5,6 +5,7 @@ import Editor from '../../editor';
 import EditorModel from '../../editor/model/Editor';
 import TraitView from '../view/TraitView';
 import { isDef } from '../../utils/mixins';
+import { CategoryProperties } from '../../abstract/ModuleCategory';
 
 /** @private */
 export interface TraitProperties {
@@ -18,13 +19,19 @@ export interface TraitProperties {
    * The name of the trait used as a key for the attribute/property.
    * By default, the name is used as attribute name or property in case `changeProp` in enabled.
    */
-  name: string;
+  name?: string;
 
   /**
    * Trait id, eg. `my-trait-id`.
    * If not specified, the `name` will be used as id.
    */
-  id?: string;
+  id?: string | number;
+
+  /**
+   * Trait category.
+   * @default ''
+   */
+  category?: string | CategoryProperties;
 
   /**
    * The trait label to show for the rendered trait.
@@ -80,6 +87,7 @@ type TraitOption = {
  * @property {String} type Trait type, defines how the trait should rendered. Possible values: `text` (default), `number`, `select`, `checkbox`, `color`, `button`
  * @property {String} label The trait label to show for the rendered trait.
  * @property {String} name The name of the trait used as a key for the attribute/property. By default, the name is used as attribute name or property in case `changeProp` in enabled.
+ * @property {String} [category=''] Trait category.
  * @property {Boolean} changeProp If `true` the trait value is applied on component
  *
  */
@@ -99,6 +107,7 @@ export default class Trait extends Model<TraitProperties> {
       value: '',
       default: '',
       placeholder: '',
+      category: '',
       changeProp: false,
       options: [],
     };

@@ -12,6 +12,8 @@ import TraitButtonView from './view/TraitButtonView';
 import EditorModel from '../editor/model/Editor';
 import Component from '../dom_components/model/Component';
 import Trait from './model/Trait';
+import Category from '../abstract/ModuleCategory';
+import Categories from '../abstract/ModuleCategories';
 
 export const evAll = 'trait';
 export const evPfx = `${evAll}:`;
@@ -38,12 +40,21 @@ interface ITraitView {
 
 export type CustomTrait<T> = ITraitView & T & ThisType<T & TraitView>;
 
-export default class TraitManager extends Module<TraitManagerConfig & { pStylePrefix?: string }> {
+export interface TraitManagerConfigModule extends TraitManagerConfig {
+  pStylePrefix?: string;
+  em: EditorModel;
+}
+
+export default class TraitManager extends Module<TraitManagerConfigModule> {
   view?: TraitsView;
   types: { [id: string]: { new (o: any): TraitView } };
   model: Model;
   __ctn?: any;
+  categories: Categories;
+
   TraitsView = TraitsView;
+  Category = Category;
+  Categories = Categories;
 
   events = {
     all: evAll,
@@ -62,10 +73,13 @@ export default class TraitManager extends Module<TraitManagerConfig & { pStylePr
    * @private
    */
   constructor(em: EditorModel) {
-    super(em, 'TraitManager', defaults);
+    super(em, 'TraitManager', defaults as any);
     const model = new Model();
     this.model = model;
     this.types = typesDef;
+    const ppfx = this.config.pStylePrefix;
+    ppfx && (this.config.stylePrefix = `${ppfx}${this.config.stylePrefix}`);
+    this.categories = new Categories();
 
     const upAll = debounce(() => this.__upSel(), 0);
     model.listenTo(em, 'component:toggled', upAll);
@@ -147,16 +161,24 @@ export default class TraitManager extends Module<TraitManagerConfig & { pStylePr
     return this.types;
   }
 
+  /**
+   * Get all available categories.
+   * @return {Array<Category>}
+   */
+  getCategories() {
+    return [...this.categories.models];
+  }
+
   render() {
-    let { view, em } = this;
-    const config = this.getConfig();
-    const el = view && view.el;
+    let { view } = this;
+    const { categories, em } = this;
     view = new TraitsView(
       {
-        el,
+        el: view?.el,
         collection: [],
         editor: em,
-        config,
+        config: this.getConfig(),
+        categories,
       },
       this.getTypes()
     );
@@ -165,7 +187,13 @@ export default class TraitManager extends Module<TraitManagerConfig & { pStylePr
   }
 
   destroy() {
+    const colls = [this.categories];
+    colls.forEach(c => {
+      c.stopListening();
+      c.reset();
+    });
     this.model.stopListening();
     this.model.clear();
+    this.view?.remove();
   }
 }
