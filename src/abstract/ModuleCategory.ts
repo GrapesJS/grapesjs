@@ -37,4 +37,8 @@ export default class Category extends Model<CategoryProperties> {
       attributes: {},
     };
   }
+
+  getId() {
+    return this.get('id')!;
+  }
 }

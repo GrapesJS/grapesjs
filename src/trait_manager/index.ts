@@ -41,7 +41,12 @@ interface ITraitView {
 
 export type CustomTrait<T> = ITraitView & T & ThisType<T & TraitView>;
 
-export default class TraitManager extends Module<TraitManagerConfig & { pStylePrefix?: string }> {
+export interface TraitManagerConfigModule extends TraitManagerConfig {
+  pStylePrefix?: string;
+  em: EditorModel;
+}
+
+export default class TraitManager extends Module<TraitManagerConfigModule> {
   view?: TraitsView;
   types: { [id: string]: { new (o: any): TraitView } };
   model: Model;
@@ -69,7 +74,7 @@ export default class TraitManager extends Module<TraitManagerConfig & { pStylePr
    * @private
    */
   constructor(em: EditorModel) {
-    super(em, 'TraitManager', defaults);
+    super(em, 'TraitManager', defaults as any);
     const model = new Model();
     this.model = model;
     this.types = typesDef;
@@ -158,16 +163,14 @@ export default class TraitManager extends Module<TraitManagerConfig & { pStylePr
   }
 
   render() {
-    let { view, em } = this;
-    const { categories } = this;
-    const config = this.getConfig();
-    const el = view && view.el;
+    let { view } = this;
+    const { categories, em } = this;
     view = new TraitsView(
       {
-        el,
+        el: view?.el,
         collection: [],
         editor: em,
-        config,
+        config: this.getConfig(),
         categories,
       },
       this.getTypes()

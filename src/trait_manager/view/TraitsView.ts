@@ -5,6 +5,15 @@ import CategoryView from '../../abstract/ModuleCategoryView';
 import Categories from '../../abstract/ModuleCategories';
 import Trait from '../model/Trait';
 import { isObject, isString } from 'underscore';
+import TraitManager, { TraitManagerConfigModule } from '..';
+
+interface TraitsViewProps {
+  el?: HTMLElement;
+  collection: any[];
+  editor: EditorModel;
+  config: TraitManagerConfigModule;
+  categories: Categories;
+}
 
 export default class TraitsView extends DomainViews {
   reuseView = true;
@@ -13,19 +22,20 @@ export default class TraitsView extends DomainViews {
   ppfx: string;
   categories: Categories;
   renderedCategories = new Map<string, CategoryView>();
+  config: TraitManagerConfigModule;
   noCatClass: string;
   traitContClass: string;
   catsClass: string;
   catsEl?: HTMLElement;
   traitsEl?: HTMLElement;
-  itemView?: any;
-  itemType: any;
   rendered?: boolean;
+  itemsView: TraitManager['types'];
 
-  constructor(o: any = {}, itemsView: any) {
+  constructor(o: TraitsViewProps, itemsView: TraitManager['types']) {
     super(o);
     this.itemsView = itemsView;
     const config = o.config || {};
+    this.config = config;
 
     const em = o.editor;
     this.em = em;
@@ -62,8 +72,8 @@ export default class TraitsView extends DomainViews {
    * */
   add(model: Trait, fragment?: DocumentFragment) {
     const { config, renderedCategories } = this;
-    var itemView = this.itemView;
-    const typeField = model.get(this.itemType);
+    let itemView = this.itemView;
+    const typeField = model.get(this.itemType as any);
     if (this.itemsView && this.itemsView[typeField]) {
       itemView = this.itemsView[typeField];
     }
@@ -75,32 +85,23 @@ export default class TraitsView extends DomainViews {
     const rendered = view.render().el;
     let category = model.get('category');
 
+    // TODO: this part could be consolidated better with BlocksView.ts
     // Check for categories
-    if (category && this.categories && !config.ignoreCategories) {
+    if (category && this.categories && !(config as any).ignoreCategories) {
       if (isString(category)) {
-        category = {
-          id: category,
-          label: category,
-        };
+        category = { id: category, label: category };
       } else if (isObject(category) && !category.id) {
         category.id = category.label;
       }
 
       const catModel = this.categories.add(category);
-      const catId = catModel.get('id')!;
+      const catId = catModel.getId();
       const categories = this.getCategoriesEl();
       let catView = renderedCategories.get(catId);
-      //@ts-ignore
-      model.set('category', catModel, { silent: true });
+      model.set('category', catModel as any, { silent: true });
 
       if (!catView && categories) {
-        catView = new CategoryView(
-          {
-            model: catModel,
-          },
-          config,
-          'trait'
-        ).render();
+        catView = new CategoryView({ model: catModel }, config, 'trait').render();
         renderedCategories.set(catId, catView);
         categories.appendChild(catView.el);
       }
