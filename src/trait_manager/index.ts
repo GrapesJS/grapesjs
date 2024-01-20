@@ -1,53 +1,23 @@
 import { debounce } from 'underscore';
-import { Model } from '../common';
 import { Module } from '../abstract';
-import defaults, { TraitManagerConfig } from './config/config';
-import TraitsView from './view/TraitsView';
-import TraitView from './view/TraitView';
-import TraitSelectView from './view/TraitSelectView';
-import TraitCheckboxView from './view/TraitCheckboxView';
-import TraitNumberView from './view/TraitNumberView';
-import TraitColorView from './view/TraitColorView';
-import TraitButtonView from './view/TraitButtonView';
-import EditorModel from '../editor/model/Editor';
-import Component from '../dom_components/model/Component';
-import Trait from './model/Trait';
-import Category from '../abstract/ModuleCategory';
 import Categories from '../abstract/ModuleCategories';
-
-export const evAll = 'trait';
-export const evPfx = `${evAll}:`;
-export const evCustom = `${evPfx}custom`;
-
-const typesDef: { [id: string]: { new (o: any): TraitView } } = {
-  text: TraitView,
-  number: TraitNumberView,
-  select: TraitSelectView,
-  checkbox: TraitCheckboxView,
-  color: TraitColorView,
-  button: TraitButtonView,
-};
-
-interface ITraitView {
-  noLabel?: TraitView['noLabel'];
-  eventCapture?: TraitView['eventCapture'];
-  templateInput?: TraitView['templateInput'];
-  onEvent?: TraitView['onEvent'];
-  onUpdate?: TraitView['onUpdate'];
-  createInput?: TraitView['createInput'];
-  createLabel?: TraitView['createLabel'];
-}
-
-export type CustomTrait<T> = ITraitView & T & ThisType<T & TraitView>;
-
-export interface TraitManagerConfigModule extends TraitManagerConfig {
-  pStylePrefix?: string;
-  em: EditorModel;
-}
+import Category from '../abstract/ModuleCategory';
+import { Model } from '../common';
+import Component from '../dom_components/model/Component';
+import EditorModel from '../editor/model/Editor';
+import defaults from './config/config';
+import Trait from './model/Trait';
+import { CustomTrait, TraitManagerConfigModule, TraitViewTypes, TraitsEvents } from './types';
+import TraitButtonView from './view/TraitButtonView';
+import TraitCheckboxView from './view/TraitCheckboxView';
+import TraitColorView from './view/TraitColorView';
+import TraitNumberView from './view/TraitNumberView';
+import TraitSelectView from './view/TraitSelectView';
+import TraitView from './view/TraitView';
+import TraitsView from './view/TraitsView';
 
 export default class TraitManager extends Module<TraitManagerConfigModule> {
   view?: TraitsView;
-  types: { [id: string]: { new (o: any): TraitView } };
   model: Model;
   __ctn?: any;
   categories: Categories;
@@ -55,10 +25,14 @@ export default class TraitManager extends Module<TraitManagerConfigModule> {
   TraitsView = TraitsView;
   Category = Category;
   Categories = Categories;
-
-  events = {
-    all: evAll,
-    custom: evCustom,
+  events = TraitsEvents;
+  types: TraitViewTypes = {
+    text: TraitView,
+    number: TraitNumberView,
+    select: TraitSelectView,
+    checkbox: TraitCheckboxView,
+    color: TraitColorView,
+    button: TraitButtonView,
   };
 
   /**
@@ -76,7 +50,6 @@ export default class TraitManager extends Module<TraitManagerConfigModule> {
     super(em, 'TraitManager', defaults as any);
     const model = new Model();
     this.model = model;
-    this.types = typesDef;
     const ppfx = this.config.pStylePrefix;
     ppfx && (this.config.stylePrefix = `${ppfx}${this.config.stylePrefix}`);
     this.categories = new Categories();
