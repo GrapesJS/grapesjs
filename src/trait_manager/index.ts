@@ -1,6 +1,5 @@
 import { debounce } from 'underscore';
 import { Module } from '../abstract';
-import Categories from '../abstract/ModuleCategories';
 import { Model } from '../common';
 import Component from '../dom_components/model/Component';
 import EditorModel from '../editor/model/Editor';
@@ -28,7 +27,6 @@ export default class TraitManager extends Module<TraitManagerConfigModule> {
   TraitsView = TraitsView;
   events = TraitsEvents;
   state = new Model<TraitModuleStateProps>({ traits: [] });
-  categories = new Categories();
   types: TraitViewTypes = {
     text: TraitView,
     number: TraitNumberView,
@@ -61,7 +59,6 @@ export default class TraitManager extends Module<TraitManagerConfigModule> {
     state.listenTo(em, 'trait:update', update);
 
     this.debounced = [upAll, update];
-    this.collections = [this.categories as any];
   }
 
   /**
