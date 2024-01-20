@@ -203,7 +203,7 @@ export default class Trait extends Model<TraitProperties> {
    */
   setValue(value: any, opts: TraitSetValueOptions = {}) {
     const valueOpts: { avoidStore?: boolean } = {};
-    const setValue = this.get('setValue');
+    const { setValue } = this.attributes;
 
     if (setValue) {
       setValue({
@@ -303,6 +303,7 @@ export default class Trait extends Model<TraitProperties> {
     this.em?.trigger('trait:update', {
       trait: this,
       component: this.target,
+      value,
     });
   }
 
