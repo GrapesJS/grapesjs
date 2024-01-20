@@ -6,7 +6,6 @@ import { Model } from '../common';
 import Component from '../dom_components/model/Component';
 import EditorModel from '../editor/model/Editor';
 import defaults from './config/config';
-import Trait from './model/Trait';
 import {
   CustomTrait,
   TraitCustomData,
@@ -68,22 +67,16 @@ export default class TraitManager extends Module<TraitManagerConfigModule> {
     return this;
   }
 
-  __upSel() {
-    this.select(this.em.getSelected());
-  }
-
-  __onUp() {
-    this.select(this.getSelected());
-  }
-
+  /**
+   * Select traits from component.
+   * @param {[Component]} component
+   * @example
+   * traitManager.select(someComponent);
+   */
   select(component?: Component) {
-    const traits = component ? component.getTraits() : [];
+    const traits = component?.getTraits() || [];
     this.state.set({ component, traits });
     this.__trgCustom();
-  }
-
-  getSelected() {
-    return this.state.get('component');
   }
 
   /**
@@ -91,20 +84,6 @@ export default class TraitManager extends Module<TraitManagerConfigModule> {
    */
   getCurrent() {
     return this.state.get('traits') || [];
-  }
-
-  __trgCustom(opts: TraitCustomData = {}) {
-    const { em, events, __ctn } = this;
-    this.__ctn = __ctn || opts.container;
-    em.trigger(events.custom, this.__customData());
-  }
-
-  __customData(): TraitCustomData {
-    return { container: this.__ctn };
-  }
-
-  postRender() {
-    this.__appendTo();
   }
 
   /**
@@ -178,5 +157,27 @@ export default class TraitManager extends Module<TraitManagerConfigModule> {
     this.state.stopListening();
     this.state.clear();
     this.view?.remove();
+  }
+
+  postRender() {
+    this.__appendTo();
+  }
+
+  __trgCustom(opts: TraitCustomData = {}) {
+    const { em, events, __ctn } = this;
+    this.__ctn = __ctn || opts.container;
+    em.trigger(events.custom, this.__customData());
+  }
+
+  __customData(): TraitCustomData {
+    return { container: this.__ctn };
+  }
+
+  __upSel() {
+    this.select(this.em.getSelected());
+  }
+
+  __onUp() {
+    this.select(this.state.get('component'));
   }
 }
