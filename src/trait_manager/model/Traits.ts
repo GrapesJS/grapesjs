@@ -1,11 +1,12 @@
 import { isArray } from 'underscore';
-import { AddOptions, Collection } from '../../common';
+import { CollectionWithCategories } from '../../abstract/CollectionWithCategories';
+import { AddOptions } from '../../common';
 import Component from '../../dom_components/model/Component';
 import EditorModel from '../../editor/model/Editor';
 import Trait, { TraitProperties } from './Trait';
 import TraitFactory from './TraitFactory';
 
-export default class Traits extends Collection<Trait> {
+export default class Traits extends CollectionWithCategories<Trait> {
   em: EditorModel;
   target!: Component;
   tf: TraitFactory;
@@ -24,6 +25,10 @@ export default class Traits extends Collection<Trait> {
     return this.em.Traits;
   }
 
+  get categories() {
+    return this.module.categories;
+  }
+
   handleReset(coll: TraitProperties[], { previousModels = [] }: { previousModels?: Trait[] } = {}) {
     previousModels.forEach(model => model.trigger('remove'));
   }
@@ -35,6 +40,8 @@ export default class Traits extends Collection<Trait> {
     if (target) {
       model.target = target;
     }
+
+    this.initCategory(model);
   }
 
   setTarget(target: Component) {
