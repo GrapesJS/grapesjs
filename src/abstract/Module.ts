@@ -1,5 +1,5 @@
 import { isElement, isUndefined, isString } from 'underscore';
-import { Collection, View } from '../common';
+import { Collection, Debounced, Model, View } from '../common';
 import { EditorConfigKeys } from '../editor/config/config';
 import EditorModel from '../editor/model/Editor';
 import { ProjectData } from '../storage_manager/model/IStorage';
@@ -39,7 +39,10 @@ export default abstract class Module<T extends ModuleConfig = ModuleConfig> impl
   private _em: EditorModel;
   private _config: T & { pStylePrefix?: string };
   private _name: string;
+  debounced: Debounced[] = [];
+  collections: Collection[] = [];
   cls: any[] = [];
+  state?: Model;
   events: any;
   model?: any;
   view?: any;
@@ -67,7 +70,6 @@ export default abstract class Module<T extends ModuleConfig = ModuleConfig> impl
     return this._config;
   }
 
-  abstract destroy(): void;
   render(opts?: any): HTMLElement | JQuery<HTMLElement> | void {}
   postLoad(key: any): void {}
 
@@ -87,6 +89,21 @@ export default abstract class Module<T extends ModuleConfig = ModuleConfig> impl
   }
 
   postRender?(view: any): void;
+
+  destroy() {
+    this.__destroy();
+  }
+
+  __destroy() {
+    this.view?.remove();
+    this.state?.stopListening();
+    this.state?.clear();
+    this.debounced.forEach(d => d.cancel());
+    this.collections.forEach(c => {
+      c.stopListening();
+      c.reset();
+    });
+  }
 
   /**
    * Move the main DOM element of the module.

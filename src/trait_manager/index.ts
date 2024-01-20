@@ -59,12 +59,12 @@ export default class TraitManager extends Module<TraitManagerConfigModule> {
     ppfx && (config.stylePrefix = `${ppfx}${config.stylePrefix}`);
 
     const upAll = debounce(() => this.__upSel(), 0);
-    state.listenTo(em, 'component:toggled', upAll);
-
     const update = debounce(() => this.__onUp(), 0);
+    state.listenTo(em, 'component:toggled', upAll);
     state.listenTo(em, 'trait:update', update);
 
-    return this;
+    this.debounced = [upAll, update];
+    this.collections = [this.categories as any];
   }
 
   /**
@@ -146,17 +146,6 @@ export default class TraitManager extends Module<TraitManagerConfigModule> {
     );
     this.view = view;
     return view.el;
-  }
-
-  destroy() {
-    const colls = [this.categories];
-    colls.forEach(c => {
-      c.stopListening();
-      c.reset();
-    });
-    this.state.stopListening();
-    this.state.clear();
-    this.view?.remove();
   }
 
   postRender() {
