@@ -1,5 +1,7 @@
+import Component from '../dom_components/model/Component';
 import EditorModel from '../editor/model/Editor';
 import { TraitManagerConfig } from './config/config';
+import Trait from './model/Trait';
 import TraitView from './view/TraitView';
 
 export interface TraitViewTypes {
@@ -18,9 +20,18 @@ export interface ITraitView {
 
 export type CustomTrait<T> = ITraitView & T & ThisType<T & TraitView>;
 
+export interface TraitModuleStateProps {
+  component?: Component;
+  traits: Trait[];
+}
+
 export interface TraitManagerConfigModule extends TraitManagerConfig {
   pStylePrefix?: string;
   em: EditorModel;
+}
+
+export interface TraitCustomData {
+  container?: HTMLElement;
 }
 
 export type TraitsEvent = `${TraitsEvents}`;

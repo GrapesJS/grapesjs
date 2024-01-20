@@ -7,7 +7,14 @@ import Component from '../dom_components/model/Component';
 import EditorModel from '../editor/model/Editor';
 import defaults from './config/config';
 import Trait from './model/Trait';
-import { CustomTrait, TraitManagerConfigModule, TraitViewTypes, TraitsEvents } from './types';
+import {
+  CustomTrait,
+  TraitCustomData,
+  TraitManagerConfigModule,
+  TraitModuleStateProps,
+  TraitViewTypes,
+  TraitsEvents,
+} from './types';
 import TraitButtonView from './view/TraitButtonView';
 import TraitCheckboxView from './view/TraitCheckboxView';
 import TraitColorView from './view/TraitColorView';
@@ -17,15 +24,15 @@ import TraitView from './view/TraitView';
 import TraitsView from './view/TraitsView';
 
 export default class TraitManager extends Module<TraitManagerConfigModule> {
+  __ctn?: HTMLElement;
   view?: TraitsView;
-  model: Model;
-  __ctn?: any;
-  categories: Categories;
 
   TraitsView = TraitsView;
   Category = Category;
   Categories = Categories;
   events = TraitsEvents;
+  state = new Model<TraitModuleStateProps>({ traits: [] });
+  categories = new Categories();
   types: TraitViewTypes = {
     text: TraitView,
     number: TraitNumberView,
@@ -48,17 +55,15 @@ export default class TraitManager extends Module<TraitManagerConfigModule> {
    */
   constructor(em: EditorModel) {
     super(em, 'TraitManager', defaults as any);
-    const model = new Model();
-    this.model = model;
-    const ppfx = this.config.pStylePrefix;
-    ppfx && (this.config.stylePrefix = `${ppfx}${this.config.stylePrefix}`);
-    this.categories = new Categories();
+    const { state, config } = this;
+    const ppfx = config.pStylePrefix;
+    ppfx && (config.stylePrefix = `${ppfx}${config.stylePrefix}`);
 
     const upAll = debounce(() => this.__upSel(), 0);
-    model.listenTo(em, 'component:toggled', upAll);
+    state.listenTo(em, 'component:toggled', upAll);
 
     const update = debounce(() => this.__onUp(), 0);
-    model.listenTo(em, 'trait:update', update);
+    state.listenTo(em, 'trait:update', update);
 
     return this;
   }
@@ -73,24 +78,29 @@ export default class TraitManager extends Module<TraitManagerConfigModule> {
 
   select(component?: Component) {
     const traits = component ? component.getTraits() : [];
-    this.model.set({ component, traits });
+    this.state.set({ component, traits });
     this.__trgCustom();
   }
 
-  getSelected(): Component | undefined {
-    return this.model.get('component');
+  getSelected() {
+    return this.state.get('component');
   }
 
   /**
    * Get traits from the currently selected component.
    */
-  getCurrent(): Trait[] {
-    return this.model.get('traits') || [];
+  getCurrent() {
+    return this.state.get('traits') || [];
   }
 
-  __trgCustom(opts: any = {}) {
-    this.__ctn = this.__ctn || opts.container;
-    this.em.trigger(this.events.custom, { container: this.__ctn });
+  __trgCustom(opts: TraitCustomData = {}) {
+    const { em, events, __ctn } = this;
+    this.__ctn = __ctn || opts.container;
+    em.trigger(events.custom, this.__customData());
+  }
+
+  __customData(): TraitCustomData {
+    return { container: this.__ctn };
   }
 
   postRender() {
@@ -165,8 +175,8 @@ export default class TraitManager extends Module<TraitManagerConfigModule> {
       c.stopListening();
       c.reset();
     });
-    this.model.stopListening();
-    this.model.clear();
+    this.state.stopListening();
+    this.state.clear();
     this.view?.remove();
   }
 }
