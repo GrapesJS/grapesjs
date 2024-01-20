@@ -1,7 +1,6 @@
 import { debounce } from 'underscore';
 import { Module } from '../abstract';
 import Categories from '../abstract/ModuleCategories';
-import Category from '../abstract/ModuleCategory';
 import { Model } from '../common';
 import Component from '../dom_components/model/Component';
 import EditorModel from '../editor/model/Editor';
@@ -27,8 +26,6 @@ export default class TraitManager extends Module<TraitManagerConfigModule> {
   view?: TraitsView;
 
   TraitsView = TraitsView;
-  Category = Category;
-  Categories = Categories;
   events = TraitsEvents;
   state = new Model<TraitModuleStateProps>({ traits: [] });
   categories = new Categories();
@@ -124,23 +121,24 @@ export default class TraitManager extends Module<TraitManagerConfigModule> {
   }
 
   /**
-   * Get all available categories.
+   * Get trait categories from the currently selected component.
    * @return {Array<Category>}
    */
   getCategories() {
-    return [...this.categories.models];
+    const cmp = this.state.get('component');
+    const categories = cmp?.traits.categories?.models || [];
+    return [...categories];
   }
 
   render() {
     let { view } = this;
-    const { categories, em } = this;
+    const { em } = this;
     view = new TraitsView(
       {
         el: view?.el,
         collection: [],
         editor: em,
         config: this.getConfig(),
-        categories,
       },
       this.getTypes()
     );

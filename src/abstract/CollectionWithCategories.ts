@@ -11,21 +11,25 @@ interface ModelWithCategoryProps {
 const CATEGORY_KEY = 'category';
 
 export abstract class CollectionWithCategories<T extends Model<ModelWithCategoryProps>> extends Collection<T> {
-  abstract get categories(): Categories;
+  abstract getCategories(): Categories;
 
   initCategory(model: T) {
     let category = model.get(CATEGORY_KEY);
+    const isDefined = category instanceof Category;
 
     // Ensure the category exists and it's not already initialized
-    if (category && !(category instanceof Category)) {
+    if (category && !isDefined) {
       if (isString(category)) {
         category = { id: category, label: category };
       } else if (isObject(category) && !category.id) {
         category.id = category.label;
       }
 
-      const catModel = this.categories.add(category);
+      const catModel = this.getCategories().add(category);
       model.set(CATEGORY_KEY, catModel as any, { silent: true });
+      return catModel;
+    } else if (isDefined) {
+      return category as unknown as Category;
     }
   }
 }

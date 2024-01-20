@@ -6,6 +6,7 @@ import EditorModel from '../../editor/model/Editor';
 import TraitView from '../view/TraitView';
 import { isDef } from '../../utils/mixins';
 import { CategoryProperties } from '../../abstract/ModuleCategory';
+import Traits from './Traits';
 
 /** @private */
 export interface TraitProperties {
@@ -121,6 +122,10 @@ export default class Trait extends Model<TraitProperties> {
       this.setTarget(target);
     }
     this.em = em;
+  }
+
+  get parent() {
+    return this.collection as unknown as Traits;
   }
 
   setTarget(target: Component) {

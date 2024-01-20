@@ -7,13 +7,13 @@ import EditorModel from '../../editor/model/Editor';
 import Trait from '../model/Trait';
 import { TraitManagerConfigModule } from '../types';
 import TraitView from './TraitView';
+import Traits from '../model/Traits';
 
 interface TraitsViewProps {
   el?: HTMLElement;
   collection: any[];
   editor: EditorModel;
   config: TraitManagerConfigModule;
-  categories: Categories;
 }
 
 const ATTR_CATEGORIES = 'data-categories';
@@ -24,7 +24,6 @@ export default class TraitsView extends DomainViews {
   em: EditorModel;
   pfx: string;
   ppfx: string;
-  categories: Categories;
   renderedCategories = new Map<string, CategoryView>();
   config: TraitManagerConfigModule;
   traitContClass: string;
@@ -33,6 +32,7 @@ export default class TraitsView extends DomainViews {
   traitsEl?: HTMLElement;
   rendered?: boolean;
   itemsView: TraitManager['types'];
+  collection: Traits;
 
   constructor(props: TraitsViewProps, itemsView: TraitManager['types']) {
     super(props);
@@ -46,9 +46,9 @@ export default class TraitsView extends DomainViews {
     this.ppfx = ppfx;
     this.pfx = ppfx + config.stylePrefix || '';
     this.className = `${this.pfx}traits`;
-    this.categories = props.categories || '';
     this.traitContClass = `${ppfx}traits-c`;
     this.catsClass = `${ppfx}trait-categories`;
+    this.collection = new Traits([], { em });
     this.listenTo(em, 'component:toggled', this.updatedCollection);
     this.updatedCollection();
   }
@@ -61,8 +61,7 @@ export default class TraitsView extends DomainViews {
     const { ppfx, em } = this;
     const comp = em.getSelected();
     this.el.className = `${this.traitContClass}s ${ppfx}one-bg ${ppfx}two-color`;
-    // @ts-ignore
-    this.collection = comp ? comp.get('traits') : [];
+    this.collection = comp?.traits || new Traits([], { em });
     this.render();
   }
 
@@ -85,30 +84,20 @@ export default class TraitsView extends DomainViews {
       attributes: model.get('attributes'),
     });
     const rendered = view.render().el;
-    let category = model.get('category');
+    const category = model.parent.initCategory(model);
 
-    // TODO: this part could be consolidated better with BlocksView.ts
-    // Check for categories
-    if (category && this.categories && !(config as any).ignoreCategories) {
-      if (isString(category)) {
-        category = { id: category, label: category };
-      } else if (isObject(category) && !category.id) {
-        category.id = category.label;
-      }
-
-      const catModel = this.categories.add(category);
-      const catId = catModel.getId();
+    if (category) {
+      const catId = category.getId();
       const categories = this.getCategoriesEl();
       let catView = renderedCategories.get(catId);
-      model.set('category', catModel as any, { silent: true });
 
       if (!catView && categories) {
-        catView = new CategoryView({ model: catModel }, config, 'trait').render();
+        catView = new CategoryView({ model: category }, config, 'trait').render();
         renderedCategories.set(catId, catView);
         categories.appendChild(catView.el);
       }
 
-      catView && catView.append(rendered);
+      catView?.append(rendered);
       return;
     }
 
@@ -136,12 +125,12 @@ export default class TraitsView extends DomainViews {
   }
 
   render() {
-    const { ppfx, catsClass, traitContClass } = this;
+    const { el, ppfx, catsClass, traitContClass } = this;
     const frag = document.createDocumentFragment();
     delete this.catsEl;
     delete this.traitsEl;
     this.renderedCategories = new Map();
-    this.el.innerHTML = `
+    el.innerHTML = `
       <div class="${catsClass}" ${ATTR_CATEGORIES}></div>
       <div class="${traitContClass}" ${ATTR_NO_CATEGORIES}></div>
     `;

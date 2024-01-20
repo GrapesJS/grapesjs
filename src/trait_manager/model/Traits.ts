@@ -5,11 +5,13 @@ import Component from '../../dom_components/model/Component';
 import EditorModel from '../../editor/model/Editor';
 import Trait, { TraitProperties } from './Trait';
 import TraitFactory from './TraitFactory';
+import Categories from '../../abstract/ModuleCategories';
 
 export default class Traits extends CollectionWithCategories<Trait> {
   em: EditorModel;
   target!: Component;
   tf: TraitFactory;
+  categories = new Categories();
 
   constructor(coll: TraitProperties[], options: { em: EditorModel }) {
     super(coll);
@@ -25,8 +27,8 @@ export default class Traits extends CollectionWithCategories<Trait> {
     return this.em.Traits;
   }
 
-  get categories() {
-    return this.module.categories;
+  getCategories() {
+    return this.categories;
   }
 
   handleReset(coll: TraitProperties[], { previousModels = [] }: { previousModels?: Trait[] } = {}) {
