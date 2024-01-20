@@ -41,4 +41,8 @@ export default class Category extends Model<CategoryProperties> {
   getId() {
     return this.get('id')!;
   }
+
+  getLabel() {
+    return this.get('label')!;
+  }
 }

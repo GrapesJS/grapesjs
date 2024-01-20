@@ -1,11 +1,11 @@
 import { isString, isUndefined } from 'underscore';
-import { Model, SetOptions } from '../../common';
+import { LocaleOptions, Model, SetOptions } from '../../common';
 import Component from '../../dom_components/model/Component';
 import Editor from '../../editor';
 import EditorModel from '../../editor/model/Editor';
 import TraitView from '../view/TraitView';
 import { isDef } from '../../utils/mixins';
-import { CategoryProperties } from '../../abstract/ModuleCategory';
+import Category, { CategoryProperties } from '../../abstract/ModuleCategory';
 import Traits from './Traits';
 
 /** @private */
@@ -126,6 +126,11 @@ export default class Trait extends Model<TraitProperties> {
 
   get parent() {
     return this.collection as unknown as Traits;
+  }
+
+  get category(): Category | undefined {
+    const cat = this.get('category');
+    return cat instanceof Category ? cat : undefined;
   }
 
   setTarget(target: Component) {
@@ -265,13 +270,27 @@ export default class Trait extends Model<TraitProperties> {
    * @param {Boolean} [opts.locale=true] Use the locale string from i18n module
    * @returns {String} Option label
    */
-  getOptionLabel(id: string | TraitOption, opts: { locale?: boolean } = {}): string {
+  getOptionLabel(id: string | TraitOption, opts: LocaleOptions = {}): string {
     const { locale = true } = opts;
     const option = (isString(id) ? this.getOption(id) : id)!;
     const optId = this.getOptionId(option);
     const label = option.label || (option as any).name || optId;
     const propName = this.getName();
     return (locale && this.em?.t(`traitManager.traits.options.${propName}.${optId}`)) || label;
+  }
+
+  /**
+   * Get category label.
+   * @param {Object} [opts={}] Options.
+   * @param {Boolean} [opts.locale=true] Use the locale string from i18n module.
+   * @returns {String}
+   */
+  getCategoryLabel(opts: LocaleOptions = {}): string {
+    const { em, category } = this;
+    const { locale = true } = opts;
+    const catId = category?.getId();
+    const catLabel = category?.getLabel();
+    return (locale && em?.t(`traitManager.categories.${catId}`)) || catLabel || '';
   }
 
   props() {

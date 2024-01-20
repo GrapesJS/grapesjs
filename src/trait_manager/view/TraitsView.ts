@@ -1,13 +1,11 @@
-import { isObject, isString } from 'underscore';
 import TraitManager from '..';
-import Categories from '../../abstract/ModuleCategories';
 import CategoryView from '../../abstract/ModuleCategoryView';
 import DomainViews from '../../domain_abstract/view/DomainViews';
 import EditorModel from '../../editor/model/Editor';
 import Trait from '../model/Trait';
+import Traits from '../model/Traits';
 import { TraitManagerConfigModule } from '../types';
 import TraitView from './TraitView';
-import Traits from '../model/Traits';
 
 interface TraitsViewProps {
   el?: HTMLElement;
