@@ -29,7 +29,9 @@ export abstract class CollectionWithCategories<T extends Model<ModelWithCategory
       model.set(CATEGORY_KEY, catModel as any, { silent: true });
       return catModel;
     } else if (isDefined) {
-      return category as unknown as Category;
+      const catModel = category as unknown as Category;
+      this.getCategories().add(catModel);
+      return catModel;
     }
   }
 }
