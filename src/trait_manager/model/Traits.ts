@@ -13,11 +13,15 @@ export default class Traits extends Collection<Trait> {
   constructor(coll: TraitProperties[], options: { em: EditorModel }) {
     super(coll);
     this.em = options.em;
-    this.listenTo(this, 'add', this.handleAdd);
-    this.listenTo(this, 'reset', this.handleReset);
-    const tm = this.em?.Traits;
+    this.on('add', this.handleAdd);
+    this.on('reset', this.handleReset);
+    const tm = this.module;
     const tmOpts = tm?.getConfig();
     this.tf = new TraitFactory(tmOpts);
+  }
+
+  get module() {
+    return this.em.Traits;
   }
 
   handleReset(coll: TraitProperties[], { previousModels = [] }: { previousModels?: Trait[] } = {}) {
