@@ -26,6 +26,11 @@ export interface CategoryProperties {
   attributes?: Record<string, any>;
 }
 
+export interface ItemsByCategory<T> {
+  category?: Category;
+  items: T[];
+}
+
 export default class Category extends Model<CategoryProperties> {
   view?: CategoryView;
 

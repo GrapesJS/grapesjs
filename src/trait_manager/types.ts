@@ -1,3 +1,4 @@
+import { ItemsByCategory } from '../abstract/ModuleCategory';
 import Component from '../dom_components/model/Component';
 import EditorModel from '../editor/model/Editor';
 import { TraitManagerConfig } from './config/config';
@@ -24,6 +25,8 @@ export interface TraitModuleStateProps {
   component?: Component;
   traits: Trait[];
 }
+
+export interface TraitsByCategory extends ItemsByCategory<Trait> {}
 
 export interface TraitManagerConfigModule extends TraitManagerConfig {
   pStylePrefix?: string;

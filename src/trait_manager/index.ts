@@ -10,6 +10,7 @@ import {
   TraitManagerConfigModule,
   TraitModuleStateProps,
   TraitViewTypes,
+  TraitsByCategory,
   TraitsEvents,
 } from './types';
 import TraitButtonView from './view/TraitButtonView';
@@ -19,6 +20,8 @@ import TraitNumberView from './view/TraitNumberView';
 import TraitSelectView from './view/TraitSelectView';
 import TraitView from './view/TraitView';
 import TraitsView from './view/TraitsView';
+import Category from '../abstract/ModuleCategory';
+import Trait from './model/Trait';
 
 export default class TraitManager extends Module<TraitManagerConfigModule> {
   __ctn?: HTMLElement;
@@ -75,9 +78,43 @@ export default class TraitManager extends Module<TraitManagerConfigModule> {
 
   /**
    * Get traits from the currently selected component.
+   * @return {Array<Trait>}
    */
-  getCurrent() {
-    return this.state.get('traits') || [];
+  getTraits() {
+    return this.getCurrent();
+  }
+
+  /**
+   * Get traits by category from the currently selected component.
+   */
+  getTraitsByCategory(): TraitsByCategory[] {
+    const traits = this.getTraits();
+    const categorySet = new Set<Category>();
+    const categoryMap = new Map<Category, Trait[]>();
+    const emptyItem: TraitsByCategory = { items: [] };
+
+    traits.forEach(trait => {
+      const { category } = trait;
+      if (category) {
+        categorySet.add(category);
+        let categoryItems = categoryMap.get(category);
+
+        if (categoryItems) {
+          categoryItems.push(trait);
+        } else {
+          categoryMap.set(category, [trait]);
+        }
+      } else {
+        emptyItem.items.push(trait);
+      }
+    });
+
+    const categoryWithItems = Array.from(categorySet).map(category => ({
+      category,
+      items: categoryMap.get(category) || [],
+    }));
+
+    return [...categoryWithItems, emptyItem];
   }
 
   /**
@@ -125,6 +162,10 @@ export default class TraitManager extends Module<TraitManagerConfigModule> {
     const cmp = this.state.get('component');
     const categories = cmp?.traits.categories?.models || [];
     return [...categories];
+  }
+
+  getCurrent() {
+    return this.state.get('traits') || [];
   }
 
   render() {
