@@ -61,11 +61,11 @@ export default class BlockManager extends ItemManagerModule<BlockManagerConfig, 
   storageKey = '';
 
   constructor(em: EditorModel) {
-    super(em, 'BlockManager', new Blocks(em.config.blockManager?.blocks || []), BlocksEvents, defaults);
+    super(em, 'BlockManager', new Blocks(em.config.blockManager?.blocks || [], { em }), BlocksEvents, defaults);
 
     // Global blocks collection
     this.blocks = this.all;
-    this.blocksVisible = new Blocks(this.blocks.models);
+    this.blocksVisible = new Blocks(this.blocks.models, { em });
     this.categories = new Categories();
 
     // Setup the sync between the global and public collections
@@ -324,7 +324,7 @@ export default class BlockManager extends ItemManagerModule<BlockManagerConfig, 
     const toRender = blocks || this.getAll().models;
 
     if (opts.external) {
-      const collection = new Blocks(toRender);
+      const collection = new Blocks(toRender, { em });
       return new BlocksView({ collection, categories }, { em, ...config, ...opts }).render().el;
     }
 
