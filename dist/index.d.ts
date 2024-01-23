@@ -14,6 +14,9 @@ export type AddOptions = Backbone.AddOptions & {
 export type DisableOptions = {
 	fromMove?: boolean;
 };
+export type LocaleOptions = {
+	locale?: boolean;
+};
 export type RemoveOptions = Backbone.Silenceable;
 export type EventHandler = Backbone.EventHandler;
 export type ObjectHash = Backbone.ObjectHash;
@@ -1696,12 +1699,12 @@ declare class ComponentsView extends View {
 export type ClbObj = ReturnType<ComponentView["_clbObj"]>;
 export interface IComponentView extends ExtractMethods<ComponentView> {
 }
-export declare class ComponentView extends View</**
+export declare class ComponentView<TComp extends Component = Component> extends View</**
  * Keep this format to avoid errors in TS bundler */ 
 /** @ts-ignore */
-Component> {
+TComp> {
 	/** @ts-ignore */
-	model: Component;
+	model: TComp;
 	/** @ts-ignore */
 	className(): any;
 	/** @ts-ignore */
@@ -1726,7 +1729,7 @@ Component> {
 	__isDraggable(): string | boolean | DraggableDroppableFn | undefined;
 	_clbObj(): {
 		editor: Editor;
-		model: Component;
+		model: TComp;
 		el: HTMLElement;
 	};
 	/**
@@ -1935,7 +1938,7 @@ export declare class CanvasSpot<T extends CanvasSpotProps = CanvasSpotProps> ext
 	defaults(): T;
 	get type(): "" | T["type"];
 	get component(): Component | undefined;
-	get componentView(): ComponentView | undefined;
+	get componentView(): ComponentView<Component> | undefined;
 	get el(): HTMLElement | undefined;
 	/**
 	 * Get the box rect of the spot.
@@ -2678,6 +2681,325 @@ declare class TraitView extends View<Trait> {
 	postUpdate(): void;
 	render(): this;
 }
+export interface CategoryViewConfig {
+	em: EditorModel;
+	pStylePrefix?: string;
+	stylePrefix?: string;
+}
+declare class CategoryView extends View<Category> {
+	em: EditorModel;
+	config: CategoryViewConfig;
+	pfx: string;
+	caretR: string;
+	caretD: string;
+	iconClass: string;
+	activeClass: string;
+	iconEl?: HTMLElement;
+	typeEl?: HTMLElement;
+	catName: string;
+	events(): {
+		"click [data-title]": string;
+	};
+	template({ pfx, label, catName }: {
+		pfx: string;
+		label: string;
+		catName: string;
+	}): string;
+	/** @ts-ignore */
+	attributes(): Record<string, any>;
+	constructor(o: any, config: CategoryViewConfig, catName: string);
+	updateVisibility(): void;
+	open(): void;
+	close(): void;
+	toggle(): void;
+	getIconEl(): HTMLElement;
+	getTypeEl(): HTMLElement;
+	append(el: HTMLElement): void;
+	render(): this;
+}
+interface CategoryProperties {
+	/**
+	 * Category id.
+	 */
+	id: string;
+	/**
+	 * Category label.
+	 */
+	label: string;
+	/**
+	 * Category open state.
+	 * @default true
+	 */
+	open?: boolean;
+	/**
+	 * Category order.
+	 */
+	order?: string | number;
+	/**
+	 * Category attributes.
+	 * @default {}
+	 */
+	attributes?: Record<string, any>;
+}
+export interface ItemsByCategory<T> {
+	category?: Category;
+	items: T[];
+}
+export declare class Category extends Model<CategoryProperties> {
+	view?: CategoryView;
+	defaults(): {
+		id: string;
+		label: string;
+		open: boolean;
+		attributes: {};
+	};
+	getId(): string;
+	getLabel(): string;
+}
+export declare class Categories extends Collection<Category> {
+	/** @ts-ignore */
+	add(model: (CategoryProperties | Category)[] | CategoryProperties | Category, opts?: AddOptions): Category;
+	get(id: string | Category): Category;
+}
+export interface ModelWithCategoryProps {
+	category?: string | CategoryProperties;
+}
+declare abstract class CollectionWithCategories<T extends Model<ModelWithCategoryProps>> extends Collection<T> {
+	abstract getCategories(): Categories;
+	initCategory(model: T): Category | undefined;
+}
+export interface TraitManagerConfig {
+	/**
+	 * Style prefix.
+	 * @default 'trt-'
+	 */
+	stylePrefix?: string;
+	/**
+	 * Specify the element to use as a container, string (query) or HTMLElement.
+	 * With the empty value, nothing will be rendered.
+	 * @default ''
+	 */
+	appendTo?: string | HTMLElement;
+	/**
+	 * Avoid rendering the default Trait Manager UI.
+	 * @default false
+	 */
+	custom?: boolean;
+	optionsTarget?: Record<string, any>[];
+}
+declare class TraitFactory {
+	config: Partial<TraitManagerConfig>;
+	constructor(config?: Partial<TraitManagerConfig>);
+	/**
+	 * Build props object by their name
+	 */
+	build(prop: string | TraitProperties, em: EditorModel): Trait;
+	private buildFromString;
+}
+export interface TraitViewTypes {
+	[id: string]: {
+		new (o: any): TraitView;
+	};
+}
+export interface ITraitView {
+	noLabel?: TraitView["noLabel"];
+	eventCapture?: TraitView["eventCapture"];
+	templateInput?: TraitView["templateInput"];
+	onEvent?: TraitView["onEvent"];
+	onUpdate?: TraitView["onUpdate"];
+	createInput?: TraitView["createInput"];
+	createLabel?: TraitView["createLabel"];
+}
+export type CustomTrait<T> = ITraitView & T & ThisType<T & TraitView>;
+export interface TraitModuleStateProps {
+	component?: Component;
+	traits: Trait[];
+}
+export interface TraitsByCategory extends ItemsByCategory<Trait> {
+}
+export interface TraitManagerConfigModule extends TraitManagerConfig {
+	pStylePrefix?: string;
+	em: EditorModel;
+}
+export interface TraitCustomData {
+	container?: HTMLElement;
+}
+declare enum TraitsEvents {
+	/**
+	 * @event `trait:custom`
+	 * @example
+	 * editor.on('trait:custom', () => { ... });
+	 */
+	custom = "trait:custom",
+	/**
+	 * @event `trait` Catch-all event for all the events mentioned above. An object containing all the available data about the triggered event is passed as an argument to the callback.
+	 * @example
+	 * editor.on('trait', ({ event, model, ... }) => { ... });
+	 */
+	all = "trait"
+}
+declare class DomainViews extends View {
+	config?: any;
+	items: any[];
+	ns?: string;
+	itemView?: any;
+	itemsView: any;
+	itemType: string;
+	reuseView: boolean;
+	constructor(opts?: any, config?: any, autoAdd?: boolean);
+	/**
+	 * Add new model to the collection
+	 * @param {Model} model
+	 * @private
+	 * */
+	addTo(model: any): void;
+	itemViewNotFound(type: string): void;
+	/**
+	 * Render new model inside the view
+	 * @param {Model} model
+	 * @param {Object} fragment Fragment collection
+	 * @private
+	 * */
+	add(model: any, fragment?: DocumentFragment): void;
+	render(): this;
+	onRender(): void;
+	onRemoveBefore(items?: any, opts?: any): void;
+	onRemove(items?: any, opts?: any): void;
+	remove(opts?: {}): this;
+	clearItems(): void;
+}
+export interface TraitsViewProps {
+	el?: HTMLElement;
+	collection: any[];
+	editor: EditorModel;
+	config: TraitManagerConfigModule;
+}
+declare class TraitsView extends DomainViews {
+	reuseView: boolean;
+	em: EditorModel;
+	pfx: string;
+	ppfx: string;
+	renderedCategories: Map<string, CategoryView>;
+	config: TraitManagerConfigModule;
+	traitContClass: string;
+	catsClass: string;
+	catsEl?: HTMLElement;
+	traitsEl?: HTMLElement;
+	rendered?: boolean;
+	itemsView: TraitManager["types"];
+	collection: Traits;
+	constructor(props: TraitsViewProps, itemsView: TraitManager["types"]);
+	/**
+	 * Update view collection
+	 * @private
+	 */
+	updatedCollection(): void;
+	/**
+	 * Render new model inside the view
+	 * @param {Model} model
+	 * @param {Object} fragment Fragment collection
+	 * @private
+	 * */
+	add(model: Trait, fragment?: DocumentFragment): void;
+	getCategoriesEl(): HTMLElement;
+	getTraitsEl(): HTMLElement;
+	append(el: HTMLElement | DocumentFragment): void;
+	render(): this;
+}
+declare class TraitManager extends Module<TraitManagerConfigModule> {
+	__ctn?: HTMLElement;
+	view?: TraitsView;
+	TraitsView: typeof TraitsView;
+	events: typeof TraitsEvents;
+	state: Model<TraitModuleStateProps, SetOptions, any>;
+	types: TraitViewTypes;
+	/**
+	 * Get configuration object
+	 * @name getConfig
+	 * @function
+	 * @return {Object}
+	 */
+	/**
+	 * Initialize module
+	 * @private
+	 */
+	constructor(em: EditorModel);
+	/**
+	 * Select traits from component.
+	 * @param {[Component]} component
+	 * @example
+	 * traitManager.select(someComponent);
+	 */
+	select(component?: Component): void;
+	/**
+	 * Get traits from the currently selected component.
+	 * @return {Array<Trait>}
+	 */
+	getTraits(): Trait[];
+	/**
+	 * Get traits by category from the currently selected component.
+	 * @example
+	 * traitManager.getTraitsByCategory();
+	 * // Returns an array of items of this type
+	 * // > { category?: Category; items: Trait[] }
+	 *
+	 * // NOTE: The item without category is the one containing traits without category.
+	 */
+	getTraitsByCategory(): TraitsByCategory[];
+	/**
+	 *
+	 * Get Traits viewer
+	 * @private
+	 */
+	getTraitsViewer(): TraitsView | undefined;
+	/**
+	 * Add new trait type
+	 * @param {string} name Type name
+	 * @param {Object} methods Object representing the trait
+	 */
+	addType<T>(name: string, trait: CustomTrait<T>): void;
+	/**
+	 * Get trait type
+	 * @param {string} name Type name
+	 * @return {Object}
+	 */
+	getType(name: string): new (o: any) => TraitView;
+	/**
+	 * Get all trait types
+	 * @returns {Object}
+	 */
+	getTypes(): TraitViewTypes;
+	/**
+	 * Get trait categories from the currently selected component.
+	 * @return {Array<Category>}
+	 */
+	getCategories(): Category[];
+	getCurrent(): Trait[];
+	render(): HTMLElement;
+	postRender(): void;
+	__trgCustom(opts?: TraitCustomData): void;
+	__customData(): TraitCustomData;
+	__upSel(): void;
+	__onUp(): void;
+}
+export declare class Traits extends CollectionWithCategories<Trait> {
+	em: EditorModel;
+	target: Component;
+	tf: TraitFactory;
+	categories: Categories;
+	constructor(coll: TraitProperties[], options: {
+		em: EditorModel;
+	});
+	get module(): TraitManager;
+	getCategories(): Categories;
+	handleReset(coll: TraitProperties[], { previousModels }?: {
+		previousModels?: Trait[];
+	}): void;
+	handleAdd(model: Trait): void;
+	setTarget(target: Component): void;
+	add(model: string | TraitProperties | Trait, options?: AddOptions): Trait;
+	add(models: Array<string | TraitProperties | Trait>, options?: AddOptions): Trait[];
+}
 /** @private */
 export interface TraitProperties {
 	/**
@@ -2689,12 +3011,17 @@ export interface TraitProperties {
 	 * The name of the trait used as a key for the attribute/property.
 	 * By default, the name is used as attribute name or property in case `changeProp` in enabled.
 	 */
-	name: string;
+	name?: string;
 	/**
 	 * Trait id, eg. `my-trait-id`.
 	 * If not specified, the `name` will be used as id.
 	 */
-	id?: string;
+	id?: string | number;
+	/**
+	 * Trait category.
+	 * @default ''
+	 */
+	category?: string | CategoryProperties;
 	/**
 	 * The trait label to show for the rendered trait.
 	 */
@@ -2748,6 +3075,7 @@ export type TraitOption = {
  * @property {String} type Trait type, defines how the trait should rendered. Possible values: `text` (default), `number`, `select`, `checkbox`, `color`, `button`
  * @property {String} label The trait label to show for the rendered trait.
  * @property {String} name The name of the trait used as a key for the attribute/property. By default, the name is used as attribute name or property in case `changeProp` in enabled.
+ * @property {String} [category=''] Trait category.
  * @property {Boolean} changeProp If `true` the trait value is applied on component
  *
  */
@@ -2765,16 +3093,19 @@ export declare class Trait extends Model<TraitProperties> {
 		value: string;
 		default: string;
 		placeholder: string;
+		category: string;
 		changeProp: boolean;
 		options: never[];
 	};
 	constructor(prop: TraitProperties, em: EditorModel);
+	get parent(): Traits;
+	get category(): Category | undefined;
 	setTarget(target: Component): void;
 	/**
 	 * Get the trait id.
 	 * @returns {String}
 	 */
-	getId(): string;
+	getId(): string | number;
 	/**
 	 * Get the trait type.
 	 * @returns {String}
@@ -2835,58 +3166,20 @@ export declare class Trait extends Model<TraitProperties> {
 	 * @param {Boolean} [opts.locale=true] Use the locale string from i18n module
 	 * @returns {String} Option label
 	 */
-	getOptionLabel(id: string | TraitOption, opts?: {
-		locale?: boolean;
-	}): string;
+	getOptionLabel(id: string | TraitOption, opts?: LocaleOptions): string;
+	/**
+	 * Get category label.
+	 * @param {Object} [opts={}] Options.
+	 * @param {Boolean} [opts.locale=true] Use the locale string from i18n module.
+	 * @returns {String}
+	 */
+	getCategoryLabel(opts?: LocaleOptions): string;
 	props(): Partial<TraitProperties>;
 	targetUpdated(): void;
 	getTargetValue(): any;
 	setTargetValue(value: any, opts?: SetOptions): void;
 	setValueFromInput(value: any, final?: boolean, opts?: SetOptions): void;
 	getInitValue(): any;
-}
-export interface TraitManagerConfig {
-	/**
-	 * Style prefix.
-	 * @default 'trt-'
-	 */
-	stylePrefix?: string;
-	/**
-	 * Specify the element to use as a container, string (query) or HTMLElement.
-	 * With the empty value, nothing will be rendered.
-	 * @default ''
-	 */
-	appendTo?: string | HTMLElement;
-	/**
-	 * Avoid rendering the default Trait Manager UI.
-	 * @default false
-	 */
-	custom?: boolean;
-	optionsTarget?: Record<string, any>[];
-}
-declare class TraitFactory {
-	config: Partial<TraitManagerConfig>;
-	constructor(config?: Partial<TraitManagerConfig>);
-	/**
-	 * Build props object by their name
-	 */
-	build(prop: string | TraitProperties, em: EditorModel): Trait;
-	private buildFromString;
-}
-export declare class Traits extends Collection<Trait> {
-	em: EditorModel;
-	target: Component;
-	tf: TraitFactory;
-	constructor(coll: TraitProperties[], options: {
-		em: EditorModel;
-	});
-	handleReset(coll: TraitProperties[], { previousModels }?: {
-		previousModels?: Trait[];
-	}): void;
-	handleAdd(model: Trait): void;
-	setTarget(target: Component): void;
-	add(model: string | TraitProperties | Trait, options?: AddOptions): Trait;
-	add(models: Array<string | TraitProperties | Trait>, options?: AddOptions): Trait[];
 }
 export type RectDim = {
 	t: number;
@@ -2906,6 +3199,17 @@ export type CallbackOptions = {
 	el: HTMLElement;
 	resizer: Resizer;
 };
+export interface ResizerUpdateTargetOptions {
+	store: boolean;
+	selectedHandler?: string;
+	resizer: Resizer;
+	config: ResizerOptions;
+}
+export interface ResizerOnUpdateContainerOptions {
+	el: HTMLElement;
+	resizer: Resizer;
+	opts: ResizerOptions;
+}
 export interface ResizerOptions {
 	/**
 	 * Function which returns custom X and Y coordinates of the mouse.
@@ -2914,11 +3218,11 @@ export interface ResizerOptions {
 	/**
 	 * Indicates custom target updating strategy.
 	 */
-	updateTarget?: (el: HTMLElement, rect: RectDim, opts: any) => void;
+	updateTarget?: (el: HTMLElement, rect: RectDim, opts: ResizerUpdateTargetOptions) => void;
 	/**
 	 * Function which gets HTMLElement as an arg and returns it relative position
 	 */
-	posFetcher?: (el: HTMLElement, opts: any) => BoundingRect;
+	posFetcher?: (el: HTMLElement, opts: ElementPosOpts) => BoundingRect;
 	/**
 	 * Indicate if the resizer should keep the default ratio.
 	 * @default false
@@ -2939,7 +3243,7 @@ export interface ResizerOptions {
 	/**
 	 * On container update callback.
 	 */
-	onUpdateContainer?: (opts: any) => void;
+	onUpdateContainer?: (opts: ResizerOnUpdateContainerOptions) => void;
 	/**
 	 * Resize unit step.
 	 * @default 1
@@ -3300,7 +3604,7 @@ export type DraggableDroppableFn = (source: Component, target: Component, index?
 export interface ComponentStackItem {
 	id: string;
 	model: typeof Component;
-	view: typeof ComponentView;
+	view: typeof ComponentView<any>;
 }
 /**
  * Delegate commands to other components.
@@ -4425,8 +4729,8 @@ export declare class Component extends StyleableModel<ComponentProperties> {
 	 * @param {Frame} frame Get View of a specific frame
 	 * @return {ComponentView}
 	 */
-	getView(frame?: Frame): ComponentView | undefined;
-	getCurrentView(): ComponentView | undefined;
+	getView(frame?: Frame): ComponentView<Component> | undefined;
+	getCurrentView(): ComponentView<Component> | undefined;
 	__getScriptProps(): Partial<ComponentProperties>;
 	/**
 	 * Return script in string format, cleans 'function() {..' from scripts
@@ -4680,71 +4984,13 @@ export interface AssetManagerConfig {
 	 */
 	dropzoneContent?: string;
 }
-export interface CategoryViewConfig {
+export declare class Blocks extends CollectionWithCategories<Block> {
 	em: EditorModel;
-	pStylePrefix?: string;
-}
-declare class CategoryView extends View<Category> {
-	em: EditorModel;
-	config: CategoryViewConfig;
-	pfx: string;
-	caretR: string;
-	caretD: string;
-	iconClass: string;
-	activeClass: string;
-	iconEl?: HTMLElement;
-	blocksEl?: HTMLElement;
-	events(): {
-		"click [data-title]": string;
-	};
-	template({ pfx, label }: {
-		pfx: string;
-		label: string;
-	}): string;
-	/** @ts-ignore */
-	attributes(): Record<string, any>;
-	constructor(o: any, config: CategoryViewConfig);
-	updateVisibility(): void;
-	open(): void;
-	close(): void;
-	toggle(): void;
-	getIconEl(): HTMLElement;
-	getBlocksEl(): HTMLElement;
-	append(el: HTMLElement): void;
-	render(): this;
-}
-export interface BlockCategoryProperties {
-	/**
-	 * Category id.
-	 */
-	id: string;
-	/**
-	 * Category label.
-	 */
-	label: string;
-	/**
-	 * Category open state.
-	 * @default true
-	 */
-	open?: boolean;
-	/**
-	 * Category order.
-	 */
-	order?: string | number;
-	/**
-	 * Category attributes.
-	 * @default {}
-	 */
-	attributes?: Record<string, any>;
-}
-export declare class Category extends Model<BlockCategoryProperties> {
-	view?: CategoryView;
-	defaults(): {
-		id: string;
-		label: string;
-		open: boolean;
-		attributes: {};
-	};
+	constructor(coll: any[], options: {
+		em: EditorModel;
+	});
+	getCategories(): Categories;
+	handleAdd(model: Block): void;
 }
 /** @private */
 export interface BlockProperties {
@@ -4765,7 +5011,7 @@ export interface BlockProperties {
 	 * Block category, eg. `Basic blocks`
 	 * @default ''
 	 */
-	category?: string | BlockCategoryProperties;
+	category?: string | CategoryProperties;
 	/**
 	 * If true, triggers the `active` event on the dropped component.
 	 * @default false
@@ -4829,6 +5075,8 @@ export declare class Block extends Model<BlockProperties> {
 		onClick: undefined;
 		attributes: {};
 	};
+	get category(): Category | undefined;
+	get parent(): Blocks;
 	/**
 	 * Get block id
 	 * @returns {String}
@@ -5848,104 +6096,6 @@ export interface CommandsConfig {
 	 */
 	strict?: boolean;
 }
-/** @private */
-export interface SectorProperties {
-	id?: string;
-	name: string;
-	open?: boolean;
-	visible?: boolean;
-	buildProps?: string[];
-	extendBuilded?: boolean;
-	properties?: PropertyProps[];
-}
-/**
- *
- * [Property]: property.html
- *
- * @typedef Sector
- * @property {String} id Sector id, eg. `typography`
- * @property {String} name Sector name, eg. `Typography`
- * @property {Boolean} [open=true] Indicates the open state.
- * @property {Array<Object>} [properties=[]] Indicate an array of Property defintions.
- */
-export declare class Sector extends Model<SectorProperties> {
-	em: EditorModel;
-	defaults(): {
-		id: string;
-		name: string;
-		open: boolean;
-		visible: boolean;
-		extendBuilded: boolean;
-		properties: never[];
-	};
-	/**
-	 * @hideconstructor
-	 */
-	constructor(prp: SectorProperties, opts?: {
-		em?: EditorModel;
-	});
-	get properties(): Collection<Property<PropertyProps>>;
-	/**
-	 * Get sector id.
-	 * @returns {String}
-	 */
-	getId(): string;
-	/**
-	 * Get sector name.
-	 * @returns {String}
-	 */
-	getName(): string;
-	/**
-	 * Update sector name.
-	 * @param {String} value New sector name
-	 */
-	setName(value: string): this;
-	/**
-	 * Check if the sector is open
-	 * @returns {Boolean}
-	 */
-	isOpen(): boolean;
-	/**
-	 * Update Sector open state
-	 * @param {Boolean} value
-	 */
-	setOpen(value: boolean): this;
-	/**
-	 * Check if the sector is visible
-	 * @returns {Boolean}
-	 */
-	isVisible(): boolean;
-	/**
-	 * Get sector properties.
-	 * @param {Object} [opts={}] Options
-	 * @param {Boolean} [opts.withValue=false] Get only properties with value
-	 * @param {Boolean} [opts.withParentValue=false] Get only properties with parent value
-	 * @returns {Array<[Property]>}
-	 */
-	getProperties(opts?: {
-		withValue?: boolean;
-		withParentValue?: boolean;
-	}): Property<PropertyProps>[];
-	getProperty(id: string): Property | undefined;
-	addProperty(property: PropertyProps, opts: AddOptions): any;
-	/**
-	 * Extend properties
-	 * @param {Array<Object>} props Start properties
-	 * @param {Array<Object>} moProps Model props
-	 * @param {Boolean} ex Returns the same amount of passed model props
-	 * @return {Array<Object>} Final props
-	 * @private
-	 */
-	extendProperties(props: PropertyProps[], moProps?: PropertyProps[], ex?: boolean): PropertyProps[];
-	checkExtend(prop: any): PropertyProps;
-	/**
-	 * Build properties
-	 * @param {Array<string>} propr Array of props as sting
-	 * @return {Array<Object>}
-	 * @private
-	 */
-	buildProperties(props: string | string[]): PropertyProps[];
-}
 declare class Input extends View {
 	ppfx: string;
 	em: EditorModel;
@@ -6235,7 +6385,7 @@ export interface PropertyCompositeProps extends PropertyProps {
 	/**
 	 * Value used to split property values, default `" "`.
 	 */
-	separator: string;
+	separator?: string;
 	/**
 	 * Value used to join property values, default `" "`.
 	 */
@@ -6645,824 +6795,103 @@ export declare class Property<T extends Record<string, any> = PropertyProps> ext
 		sectors?: Sector[];
 	}): boolean;
 }
-export interface StyleManagerConfig {
-	/**
-	 * Default sectors and properties
-	 */
-	sectors?: (Omit<SectorProperties, "properties"> & {
-		properties?: (string | PropertyProps)[];
-	})[];
-	/**
-	 * Specify the element to use as a container, string (query) or HTMLElement.
-	 * With the empty value, nothing will be rendered.
-	 */
-	appendTo?: string | HTMLElement;
-	/**
-	 * Style prefix.
-	 * @default 'sm-'
-	 */
-	stylePrefix?: string;
-	/**
-	 * Avoid rendering the default style manager.
-	 * @default false
-	 */
-	custom?: boolean;
-	/**
-	 * Hide the property in case it's not stylable for the
-	 * selected component (each component has 'stylable' property).
-	 * @deprecated
-	 */
-	hideNotStylable?: boolean;
-	/**
-	 * Highlight changed properties of the selected component.
-	 * @deprecated
-	 */
-	highlightChanged?: boolean;
-	/**
-	 * Highlight computed properties of the selected component.
-	 * @deprecated
-	 */
-	highlightComputed?: boolean;
-	/**
-	 * Show computed properties of the selected component, if this value
-	 * is set to false, highlightComputed will not take effect.
-	 * @deprecated
-	 */
-	showComputed?: boolean;
-	/**
-	 * Adds the possibility to clear property value from the target style.
-	 * @deprecated
-	 */
-	clearProperties?: boolean;
-	/**
-	 * Properties not to take in account for computed styles.
-	 * @deprecated
-	 */
-	avoidComputed?: string[];
-	pStylePrefix?: string;
-}
-export type HTMLGeneratorBuildOptions = {
-	/**
-	 * Remove unnecessary IDs (eg. those created automatically).
-	 */
-	cleanId?: boolean;
-	/**
-	 * You can pass an object of custom attributes to replace with the current ones
-	 * or you can even pass a function to generate attributes dynamically.
-	 */
-	attributes?: Record<string, any> | ((component: Component, attr: Record<string, any>) => Record<string, any>);
-};
-export type CssGeneratorBuildOptions = {
-	/**
-	 * Return an array of CssRules instead of the CSS string.
-	 */
-	json?: boolean;
-	/**
-	 * Return only rules matched by the passed component.
-	 */
-	onlyMatched?: boolean;
-	/**
-	 * Force keep all defined rules. Toggle on in case output looks different inside/outside of the editor.
-	 */
-	keepUnusedStyles?: boolean;
-	rules?: CssRule[];
-	clearStyles?: boolean;
-};
-export interface EditorConfig {
-	/**
-	 * Style class name prefix.
-	 * @default 'gjs-'
-	 */
-	stylePrefix?: string;
-	/**
-	 * Selector which indicates where render the editor.
-	 */
-	container?: string | HTMLElement;
-	/**
-	 * If true, auto-render the content
-	 * @default true
-	 */
-	autorender?: boolean;
-	/**
-	 * Array of plugins to execute on start.
-	 * @default []
-	 */
-	plugins?: (string | Plugin<any>)[];
-	/**
-	 * Custom options for plugins
-	 * @default {}
-	 */
-	pluginsOpts?: Record<string, any>;
-	/**
-	 * Init headless editor.
-	 * @default false
-	 */
-	headless?: boolean;
-	/**
-	 * Initial project data (JSON containing your components/styles/etc) to load.
-	 */
-	projectData?: ObjectAny;
-	/**
-	 * HTML string or object of components
-	 * @deprecated Rely on `projectData` option
-	 * @default ''
-	 */
-	components?: string;
-	/**
-	 * CSS string or object of rules
-	 * @deprecated Rely on `projectData` option
-	 * @default ''
-	 */
-	style?: string;
-	/**
-	 * If true, will fetch HTML and CSS from the selected container.
-	 * @deprecated
-	 * @default false
-	 */
-	fromElement?: boolean;
-	/**
-	 * Show an alert before unload the page with unsaved changes
-	 * @default true
-	 */
-	noticeOnUnload?: boolean;
-	/**
-	 * Show paddings and margins.
-	 * @default false
-	 */
-	showOffsets?: boolean;
-	/**
-	 * Show paddings and margins on selected component
-	 * @default false
-	 */
-	showOffsetsSelected?: boolean;
-	/**
-	 * On creation of a new Component (via object), if the 'style' attribute is not
-	 * empty, all those roles will be moved in its new class.
-	 * @default true
-	 */
-	forceClass?: boolean;
-	/**
-	 * Height for the editor container
-	 * @default '900px'
-	 */
-	height?: string;
-	/**
-	 * Width for the editor container
-	 * @default '100%'
-	 */
-	width?: string;
-	/**
-	 * Type of logs to print with the logger (by default is used the devtool console).
-	 * Available by default: debug, info, warning, error.
-	 * You can use `false` to disable all of them or `true` to print all of them.
-	 * @default ['warning', 'error']
-	 */
-	log?: ("debug" | "info" | "warning" | "error")[] | boolean;
-	/**
-	 * By default Grapes injects base CSS into the canvas. For example, it sets body margin to 0
-	 * and sets a default background color of white. This CSS is desired in most cases.
-	 * use this property if you wish to overwrite the base CSS to your own CSS. This is most
-	 * useful if for example your template is not based off a document with 0 as body margin.
-	 * @deprecated in favor of `config.canvas.frameStyle`
-	 * @default ''
-	 */
-	baseCss?: string;
-	/**
-	 * CSS that could only be seen (for instance, inside the code viewer)
-	 * @default '* { box-sizing: border-box; } body {margin: 0;}'
-	 */
-	protectedCss?: string;
-	/**
-	 * CSS for the iframe which containing the canvas, useful if you need to customize
-	 * something inside (eg. the style of the selected component).
-	 * @default ''
-	 */
-	canvasCss?: string;
-	/**
-	 * Default command
-	 * @default 'select-comp'
-	 */
-	defaultCommand?: string;
-	/**
-	 * Show a toolbar when the component is selected
-	 * @default true
-	 */
-	showToolbar?: boolean;
-	/**
-	 * If true render a select of available devices
-	 * @default true
-	 */
-	showDevices?: boolean;
-	/**
-	 * When enabled, on device change media rules won't be created
-	 * @default false
-	 */
-	devicePreviewMode?: boolean;
-	/**
-	 * The condition to use for media queries, eg. 'max-width'.
-	 * Comes handy for mobile-first cases.
-	 * @default 'max-width'
-	 */
-	mediaCondition?: string;
-	/**
-	 * Starting tag for variable inside scripts in Components
-	 * @deprecated Rely on 'script-props' https://grapesjs.com/docs/modules/Components-js.html#passing-properties-to-scripts
-	 * @default '{[ '
-	 */
-	tagVarStart?: string;
-	/**
-	 * Ending tag for variable inside scripts in Components
-	 * @deprecated Rely on 'script-props' https://grapesjs.com/docs/modules/Components-js.html#passing-properties-to-scripts
-	 * @default ' ]}'
-	 */
-	tagVarEnd?: string;
-	/**
-	 * When false, removes empty text nodes when parsed, unless they contain a space.
-	 * @default false
-	 */
-	keepEmptyTextNodes?: boolean;
-	/**
-	 * Return JS of components inside HTML from 'editor.getHtml()'.
-	 * @default true
-	 */
-	jsInHtml?: boolean;
-	/**
-	 * Enable native HTML5 drag and drop.
-	 * @default true
-	 */
-	nativeDnD?: boolean;
-	/**
-	 * Enable multiple component selection.
-	 * @default true
-	 */
-	multipleSelection?: boolean;
-	/**
-	 * Pass default available options wherever `editor.getHtml()` is called.
-	 * @default {}
-	 */
-	optsHtml?: HTMLGeneratorBuildOptions;
-	/**
-	 * Pass default available options wherever `editor.getCss()` is called
-	 * @default {}
-	 */
-	optsCss?: CssGeneratorBuildOptions;
-	/**
-	 * Usually when you update the `style` of the component this changes the
-	 * element's `style` attribute. Unfortunately, inline styling doesn't allow
-	 * use of media queries (@media) or even pseudo selectors (eg. :hover).
-	 * When `avoidInlineStyle` is true all styles are inserted inside the css rule
-	 * @deprecated Don't use this option, we don't support inline styling anymore.
-	 */
-	avoidInlineStyle?: boolean;
-	/**
-	 * Avoid default properties from storable JSON data, like `components` and `styles`.
-	 * With this option enabled your data will be smaller (usefull if need to
-	 * save some storage space).
-	 * @default true
-	 */
-	avoidDefaults?: boolean;
-	/**
-	 * (experimental)
-	 * The structure of components is always on the screen but it's not the same
-	 * for style rules. When you delete a component you might leave a lot of styles
-	 * which will never be used again, therefore they might be removed.
-	 * With this option set to true, styles not used from the CSS generator (so in
-	 * any case where `CssGenerator.build` is used) will be removed automatically.
-	 * But be careful, not always leaving the style not used mean you wouldn't
-	 * use it later, but this option comes really handy when deal with big templates.
-	 * @default false
-	 */
-	clearStyles?: boolean;
-	/**
-	 * Specify the global drag mode of components. By default, components are moved
-	 * following the HTML flow. Two other options are available:
-	 * 'absolute' - Move components absolutely (design tools way)
-	 * 'translate' - Use translate CSS from transform property
-	 * To get more about this feature read: https://github.com/GrapesJS/grapesjs/issues/1936.
-	 */
-	dragMode?: "translate" | "absolute";
-	/**
-	 * When the editor is placed in a scrollable container (eg. modals) this might
-	 * cause elements inside the canvas (eg. floating toolbars) to be misaligned.
-	 * To avoid that, you can specify an array of DOM elements on which their scroll will
-	 * trigger the canvas update.
-	 * Be default, if the array is empty, the first parent element will be appended.
-	 * listenToEl: [document.querySelector('#scrollable-el')],
-	 * @default []
-	 * */
-	listenToEl?: HTMLElement[];
-	/**
-	 * Import asynchronously CSS to use as icons.
-	 * @default 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'
-	 * */
-	cssIcons?: string;
-	/**
-	 * Experimental: don't use.
-	 * Editor icons
-	 */
-	icons?: ObjectAny;
-	/**
-	 * Configurations for I18n.
-	 */
-	i18n?: I18nConfig;
-	/**
-	 * Configurations for Undo Manager
-	 */
-	undoManager?: UndoManagerConfig | boolean;
-	/**
-	 * Configurations for Asset Manager.
-	 */
-	assetManager?: AssetManagerConfig;
-	/**
-	 * Configurations for Canvas.
-	 */
-	canvas?: CanvasConfig;
-	/**
-	 * Configurations for Storage Manager.
-	 */
-	storageManager?: StorageManagerConfig | boolean;
-	/**
-	 * Configurations for Rich Text Editor.
-	 */
-	richTextEditor?: RichTextEditorConfig;
-	/**
-	 * Configurations for DomComponents
-	 */
-	domComponents?: DomComponentsConfig;
-	/**
-	 * Configurations for Modal Dialog.
-	 */
-	modal?: ModalConfig;
-	/**
-	 * Configurations for Code Manager.
-	 */
-	codeManager?: CodeManagerConfig;
-	/**
-	 * Configurations for Panels.
-	 */
-	panels?: PanelsConfig;
-	/**
-	 * Configurations for Commands.
-	 */
-	commands?: CommandsConfig;
-	/**
-	 * Configurations for Css Composer.
-	 */
-	cssComposer?: CssComposerConfig;
-	/**
-	 * Configurations for Selector Manager.
-	 */
-	selectorManager?: SelectorManagerConfig;
-	/**
-	 * Configurations for Device Manager.
-	 */
-	deviceManager?: DeviceManagerConfig;
-	/**
-	 * Configurations for Style Manager.
-	 */
-	styleManager?: StyleManagerConfig;
-	/**
-	 * Configurations for Block Manager.
-	 */
-	blockManager?: BlockManagerConfig;
-	/**
-	 * Configurations for Trait Manager.
-	 */
-	traitManager?: TraitManagerConfig;
-	/**
-	 * Configurations for Page Manager.
-	 */
-	pageManager?: PageManagerConfig;
-	/**
-	 * Configurations for Layer Manager.
-	 */
-	layerManager?: LayerManagerConfig;
-	/**
-	 * Configurations for Parser module.
-	 */
-	parser?: ParserConfig;
-	/** Texts **/
-	textViewCode?: string;
-	/**
-	 * Keep unused styles within the editor.
-	 * @default false
-	 */
-	keepUnusedStyles?: boolean;
-	/**
-	 * Experimental: don't use.
-	 * Avoid default UI styles.
-	 */
-	customUI?: boolean;
-	el?: HTMLElement;
-	/**
-	 * Color picker options.
-	 */
-	colorPicker?: ObjectAny;
-	pStylePrefix?: string;
-}
-export type EditorConfigKeys = keyof EditorConfig;
-export declare class Blocks extends Collection<Block> {
-}
-export declare class Categories extends Collection<Category> {
-	/** @ts-ignore */
-	add(model: (BlockCategoryProperties | Category)[] | BlockCategoryProperties | Category, opts?: AddOptions): Category;
-	get(id: string | Category): Category;
-}
-declare enum BlocksEvents {
-	/**
-	 * @event `block:add` New block added to the collection. The [Block] is passed as an argument to the callback.
-	 * @example
-	 * editor.on('block:add', (block) => { ... });
-	 */
-	add = "block:add",
-	/**
-	 * @event `block:remove` Block removed from the collection. The [Block] is passed as an argument to the callback.
-	 * @example
-	 * editor.on('block:remove', (block) => { ... });
-	 */
-	remove = "block:remove",
-	/**
-	 * @event `block:remove:before` Event triggered before Block remove.
-	 * @example
-	 * editor.on('block:remove:before', (block, remove, opts) => { ... });
-	 */
-	removeBefore = "block:remove:before",
-	/**
-	 * @event `block:update` Block updated. The [Block] and the object containing changes are passed as arguments to the callback.
-	 * @example
-	 * editor.on('block:update', (block, updatedProps) => { ... });
-	 */
-	update = "block:update",
-	/**
-	 * @event `block:drag:start` Started dragging block. The [Block] is passed as an argument.
-	 * @example
-	 * editor.on('block:drag:start', (block) => { ... });
-	 */
-	dragStart = "block:drag:start",
-	/**
-	 * @event `block:drag` The block is dragging. The [Block] is passed as an argument.
-	 * @example
-	 * editor.on('block:drag', (block) => { ... });
-	 */
-	drag = "block:drag",
-	/**
-	 * @event `block:drag:stop` Dragging of the block is stopped. The dropped [Component] (if dropped successfully) and the [Block] are passed as arguments.
-	 * @example
-	 * editor.on('block:drag:stop', (component, block) => { ... });
-	 */
-	dragEnd = "block:drag:stop",
-	/**
-	 * @event `block:custom` Event to use in case of [custom Block Manager UI](https://grapesjs.com/docs/modules/Blocks.html#customization).
-	 * @example
-	 * editor.on('block:custom', ({ container, blocks, ... }) => { ... });
-	 */
-	custom = "block:custom",
-	/**
-	 * @event `block` Catch-all event for all the events mentioned above. An object containing all the available data about the triggered event is passed as an argument to the callback.
-	 * @example
-	 * editor.on('block', ({ event, model, ... }) => { ... });
-	 */
-	all = "block"
-}
-export interface BlocksViewConfig {
-	em: EditorModel;
-	pStylePrefix?: string;
-	ignoreCategories?: boolean;
-	getSorter?: any;
-}
-declare class BlocksView extends View {
-	em: EditorModel;
-	config: BlocksViewConfig;
-	categories: Categories;
-	renderedCategories: Map<string, CategoryView>;
-	ppfx: string;
-	noCatClass: string;
-	blockContClass: string;
-	catsClass: string;
-	catsEl?: HTMLElement;
-	blocksEl?: HTMLElement;
-	rendered?: boolean;
-	sorter: any;
-	constructor(opts: any, config: BlocksViewConfig);
-	__getModule(): BlockManager;
-	updateConfig(opts?: {}): void;
-	/**
-	 * Get sorter
-	 * @private
-	 */
-	getSorter(): any;
-	onDrag(ev: Event): void;
-	onMove(ev: Event): void;
-	onDrop(component?: Component): void;
-	/**
-	 * Add new model to the collection
-	 * @param {Model} model
-	 * @private
-	 * */
-	addTo(model: Block): void;
-	/**
-	 * Render new model inside the view
-	 * @param {Model} model
-	 * @param {Object} fragment Fragment collection
-	 * @private
-	 * */
-	add(model: Block, fragment?: DocumentFragment): void;
-	getCategoriesEl(): HTMLElement;
-	getBlocksEl(): HTMLElement;
-	append(el: HTMLElement | DocumentFragment): void;
-	render(): this;
-}
-export type BlockEvent = `${BlocksEvents}`;
-declare class BlockManager extends ItemManagerModule<BlockManagerConfig, Blocks> {
-	blocks: Blocks;
-	blocksVisible: Blocks;
-	categories: Categories;
-	blocksView?: BlocksView;
-	_dragBlock?: Block;
-	_bhv?: Record<string, any>;
-	events: typeof BlocksEvents;
-	Block: typeof Block;
-	Blocks: typeof Blocks;
-	Category: typeof Category;
-	Categories: typeof Categories;
-	storageKey: string;
-	constructor(em: EditorModel);
-	/**
-	 * Get configuration object
-	 * @name getConfig
-	 * @function
-	 * @return {Object}
-	 */
-	__trgCustom(): void;
-	__customData(): {
-		bm: BlockManager;
-		blocks: Block[];
-		container: any;
-		dragStart: (block: Block, ev?: Event) => void;
-		drag: (ev: Event) => void;
-		dragStop: (cancel?: boolean) => void;
-	};
-	__startDrag(block: Block, ev?: Event): void;
-	__drag(ev: Event): void;
-	__endDrag(opts?: {
-		component?: Component;
-	}): void;
-	__getFrameViews(): FrameView[];
-	__behaviour(opts?: {}): {};
-	__getBehaviour(): Record<string, any>;
-	startDrag(block: Block, ev?: Event): void;
-	endDrag(cancel?: boolean): void;
-	postRender(): void;
-	/**
-	 * Add new block.
-	 * @param {String} id Block ID
-	 * @param {[Block]} props Block properties
-	 * @returns {[Block]} Added block
-	 * @example
-	 * blockManager.add('h1-block', {
-	 *   label: 'Heading',
-	 *   content: '<h1>Put your title here</h1>',
-	 *   category: 'Basic',
-	 *   attributes: {
-	 *     title: 'Insert h1 block'
-	 *   }
-	 * });
-	 */
-	add(id: string, props: BlockProperties, opts?: {}): Block;
-	/**
-	 * Get the block by id.
-	 * @param  {String} id Block id
-	 * @returns {[Block]}
-	 * @example
-	 * const block = blockManager.get('h1-block');
-	 * console.log(JSON.stringify(block));
-	 * // {label: 'Heading', content: '<h1>Put your ...', ...}
-	 */
-	get(id: string): Block;
-	/**
-	 * Return all blocks.
-	 * @returns {Collection<[Block]>}
-	 * @example
-	 * const blocks = blockManager.getAll();
-	 * console.log(JSON.stringify(blocks));
-	 * // [{label: 'Heading', content: '<h1>Put your ...'}, ...]
-	 */
-	getAll(): Blocks;
-	/**
-	 * Return the visible collection, which containes blocks actually rendered
-	 * @returns {Collection<[Block]>}
-	 */
-	getAllVisible(): Blocks;
-	/**
-	 * Remove block.
-	 * @param {String|[Block]} block Block or block ID
-	 * @returns {[Block]} Removed block
-	 * @example
-	 * const removed = blockManager.remove('BLOCK_ID');
-	 * // or by passing the Block
-	 * const block = blockManager.get('BLOCK_ID');
-	 * blockManager.remove(block);
-	 */
-	remove(block: string | Block, opts?: {}): any;
-	/**
-	 * Get all available categories.
-	 * It's possible to add categories only within blocks via 'add()' method
-	 * @return {Array|Collection}
-	 */
-	getCategories(): Categories;
-	/**
-	 * Return the Blocks container element
-	 * @return {HTMLElement}
-	 */
-	getContainer(): HTMLElement | undefined;
-	/**
-	 * Returns currently dragging block.
-	 * Updated when the drag starts and cleared once it's done.
-	 * @returns {[Block]|undefined}
-	 */
-	getDragBlock(): Block | undefined;
-	/**
-	 * Render blocks
-	 * @param  {Array} blocks Blocks to render, without the argument will render all global blocks
-	 * @param  {Object} [opts={}] Options
-	 * @param  {Boolean} [opts.external] Render blocks in a new container (HTMLElement will be returned)
-	 * @param  {Boolean} [opts.ignoreCategories] Render blocks without categories
-	 * @return {HTMLElement} Rendered element
-	 * @example
-	 * // Render all blocks (inside the global collection)
-	 * blockManager.render();
-	 *
-	 * // Render new set of blocks
-	 * const blocks = blockManager.getAll();
-	 * const filtered = blocks.filter(block => block.get('category') == 'sections')
-	 *
-	 * blockManager.render(filtered);
-	 * // Or a new set from an array
-	 * blockManager.render([
-	 *  {label: 'Label text', content: '<div>Content</div>'}
-	 * ]);
-	 *
-	 * // Back to blocks from the global collection
-	 * blockManager.render();
-	 *
-	 * // You can also render your blocks outside of the main block container
-	 * const newBlocksEl = blockManager.render(filtered, { external: true });
-	 * document.getElementById('some-id').appendChild(newBlocksEl);
-	 */
-	render(blocks?: Block[], opts?: {
-		external?: boolean;
-	}): HTMLElement | undefined;
-	destroy(): void;
+/** @private */
+export interface SectorProperties {
+	id?: string;
+	name: string;
+	open?: boolean;
+	visible?: boolean;
+	buildProps?: string[];
+	extendBuilded?: boolean;
+	properties?: PropertyProps[];
 }
 /**
- * @typedef State
- * @property {String} name State name, eg. `hover`, `nth-of-type(2n)`
- * @property {String} label State label, eg. `Hover`, `Even/Odd`
+ *
+ * [Property]: property.html
+ *
+ * @typedef Sector
+ * @property {String} id Sector id, eg. `typography`
+ * @property {String} name Sector name, eg. `Typography`
+ * @property {Boolean} [open=true] Indicates the open state.
+ * @property {Array<Object>} [properties=[]] Indicate an array of Property defintions.
  */
-export declare class State extends Model {
+export declare class Sector extends Model<SectorProperties> {
+	em: EditorModel;
 	defaults(): {
+		id: string;
 		name: string;
-		label: string;
+		open: boolean;
+		visible: boolean;
+		extendBuilded: boolean;
+		properties: never[];
 	};
 	/**
-	 * Get state name
+	 * @hideconstructor
+	 */
+	constructor(prp: SectorProperties, opts?: {
+		em?: EditorModel;
+	});
+	get properties(): Collection<Property<PropertyProps>>;
+	/**
+	 * Get sector id.
+	 * @returns {String}
+	 */
+	getId(): string;
+	/**
+	 * Get sector name.
 	 * @returns {String}
 	 */
 	getName(): string;
 	/**
-	 * Get state label. If label was not provided, the name will be returned.
-	 * @returns {String}
+	 * Update sector name.
+	 * @param {String} value New sector name
 	 */
-	getLabel(): string;
-}
-declare class ClassTagsView extends View<Selector> {
-	template({ labelInfo, labelHead, iconSync, iconAdd, pfx, ppfx }: any): string;
-	events(): {
-		"change [data-states]": string;
-		"click [data-add]": string;
-		"focusout [data-input]": string;
-		"keyup [data-input]": string;
-		"click [data-sync-style]": string;
-	};
-	$input?: JQuery<HTMLElement>;
-	$addBtn?: JQuery<HTMLElement>;
-	$classes?: JQuery<HTMLElement>;
-	$btnSyncEl?: JQuery<HTMLElement>;
-	$states?: JQuery<HTMLElement>;
-	$statesC?: JQuery<HTMLElement>;
-	em: EditorModel;
-	target: EditorModel;
-	module: SelectorManager;
-	pfx: string;
-	ppfx: string;
-	stateInputId: string;
-	stateInputC: string;
-	config: any;
-	states: State[];
-	constructor(o?: any);
-	syncStyle(): void;
+	setName(value: string): this;
 	/**
-	 * Triggered when a tag is removed from collection
-	 * @param {Object} model Removed model
+	 * Check if the sector is open
+	 * @returns {Boolean}
+	 */
+	isOpen(): boolean;
+	/**
+	 * Update Sector open state
+	 * @param {Boolean} value
+	 */
+	setOpen(value: boolean): this;
+	/**
+	 * Check if the sector is visible
+	 * @returns {Boolean}
+	 */
+	isVisible(): boolean;
+	/**
+	 * Get sector properties.
+	 * @param {Object} [opts={}] Options
+	 * @param {Boolean} [opts.withValue=false] Get only properties with value
+	 * @param {Boolean} [opts.withParentValue=false] Get only properties with parent value
+	 * @returns {Array<[Property]>}
+	 */
+	getProperties(opts?: {
+		withValue?: boolean;
+		withParentValue?: boolean;
+	}): Property<PropertyProps>[];
+	getProperty(id: string): Property | undefined;
+	addProperty(property: PropertyProps, opts: AddOptions): any;
+	/**
+	 * Extend properties
+	 * @param {Array<Object>} props Start properties
+	 * @param {Array<Object>} moProps Model props
+	 * @param {Boolean} ex Returns the same amount of passed model props
+	 * @return {Array<Object>} Final props
 	 * @private
 	 */
-	tagRemoved(model?: State): void;
+	extendProperties(props: PropertyProps[], moProps?: PropertyProps[], ex?: boolean): PropertyProps[];
+	checkExtend(prop: any): PropertyProps;
 	/**
-	 * Add new model
-	 * @param {Object} model
+	 * Build properties
+	 * @param {Array<string>} propr Array of props as sting
+	 * @return {Array<Object>}
 	 * @private
 	 */
-	addNew(model: State): void;
-	/**
-	 * Start tag creation
-	 * @param {Object} e
-	 * @private
-	 */
-	startNewTag(): void;
-	/**
-	 * End tag creation
-	 * @param {Object} e
-	 * @private
-	 */
-	endNewTag(): void;
-	/**
-	 * Checks what to do on keyup event
-	 * @param  {Object} e
-	 * @private
-	 */
-	onInputKeyUp(e: KeyboardEvent): void;
-	checkStates(): void;
-	/**
-	 * Triggered when component is changed
-	 * @param  {Object} e
-	 * @public
-	 */
-	componentChanged({ targets }?: any): void;
-	updateSelection(targets: Component | Component[]): Selector[];
-	getCommonSelectors({ targets, opts }?: any): Selector[];
-	_commonSelectors(...args: any): Selector[];
-	checkSync(): void;
-	getTarget(): Component | undefined;
-	getTargets(): Component[];
-	/**
-	 * Update states visibility. Hides states in case there is no tags
-	 * inside collection
-	 * @private
-	 */
-	updateStateVis(targets?: Component[] | Component): void;
-	__handleStateChange(): void;
-	/**
-	 * Update selector helper
-	 * @return {this}
-	 * @private
-	 */
-	updateSelector(targets?: Component[] | Component): void;
-	__getName(target: Component): string;
-	/**
-	 * Triggered when the select with states is changed
-	 * @param  {Object} e
-	 * @private
-	 */
-	stateChanged(ev: any): void;
-	/**
-	 * Add new tag to collection, if possible, and to the component
-	 * @param  {Object} e
-	 * @private
-	 */
-	addNewTag(value: any): void;
-	/**
-	 * Add new object to collection
-	 * @param   {Object} model  Model
-	 * @param   {Object} fragmentEl   Fragment collection
-	 * @return {Object} Object created
-	 * @private
-	 * */
-	addToClasses(model: State, fragmentEl?: DocumentFragment): HTMLElement;
-	/**
-	 * Render the collection of classes
-	 * @private
-	 */
-	renderClasses(): void;
-	/**
-	 * Return classes element
-	 * @return {HTMLElement}
-	 * @private
-	 */
-	getClasses(): JQuery<HTMLElement>;
-	/**
-	 * Return states element
-	 * @return {HTMLElement}
-	 * @private
-	 */
-	getStates(): JQuery<HTMLElement>;
-	/**
-	 * Return states container element
-	 * @return {HTMLElement}
-	 * @private
-	 */
-	getStatesC(): JQuery<HTMLElement>;
-	renderStates(): void;
-	render(): this;
+	buildProperties(props: string | string[]): PropertyProps[];
 }
 export declare class Sectors extends Collection<Sector> {
 	em: EditorModel;
@@ -8303,6 +7732,830 @@ Sectors> {
 	__upProp(prop: any, style: StyleProps, parentStyles: any[], opts: any): void;
 	destroy(): void;
 }
+export interface StyleManagerConfig {
+	/**
+	 * Default sectors and properties
+	 */
+	sectors?: (Omit<SectorProperties, "properties"> & {
+		properties?: (string | PropertyTypes)[];
+	})[];
+	/**
+	 * Specify the element to use as a container, string (query) or HTMLElement.
+	 * With the empty value, nothing will be rendered.
+	 */
+	appendTo?: string | HTMLElement;
+	/**
+	 * Style prefix.
+	 * @default 'sm-'
+	 */
+	stylePrefix?: string;
+	/**
+	 * Avoid rendering the default style manager.
+	 * @default false
+	 */
+	custom?: boolean;
+	/**
+	 * Hide the property in case it's not stylable for the
+	 * selected component (each component has 'stylable' property).
+	 * @deprecated
+	 */
+	hideNotStylable?: boolean;
+	/**
+	 * Highlight changed properties of the selected component.
+	 * @deprecated
+	 */
+	highlightChanged?: boolean;
+	/**
+	 * Highlight computed properties of the selected component.
+	 * @deprecated
+	 */
+	highlightComputed?: boolean;
+	/**
+	 * Show computed properties of the selected component, if this value
+	 * is set to false, highlightComputed will not take effect.
+	 * @deprecated
+	 */
+	showComputed?: boolean;
+	/**
+	 * Adds the possibility to clear property value from the target style.
+	 * @deprecated
+	 */
+	clearProperties?: boolean;
+	/**
+	 * Properties not to take in account for computed styles.
+	 * @deprecated
+	 */
+	avoidComputed?: string[];
+	pStylePrefix?: string;
+}
+export type HTMLGeneratorBuildOptions = {
+	/**
+	 * Remove unnecessary IDs (eg. those created automatically).
+	 */
+	cleanId?: boolean;
+	/**
+	 * You can pass an object of custom attributes to replace with the current ones
+	 * or you can even pass a function to generate attributes dynamically.
+	 */
+	attributes?: Record<string, any> | ((component: Component, attr: Record<string, any>) => Record<string, any>);
+};
+export type CssGeneratorBuildOptions = {
+	/**
+	 * Return an array of CssRules instead of the CSS string.
+	 */
+	json?: boolean;
+	/**
+	 * Return only rules matched by the passed component.
+	 */
+	onlyMatched?: boolean;
+	/**
+	 * Force keep all defined rules. Toggle on in case output looks different inside/outside of the editor.
+	 */
+	keepUnusedStyles?: boolean;
+	rules?: CssRule[];
+	clearStyles?: boolean;
+};
+export interface EditorConfig {
+	/**
+	 * Style class name prefix.
+	 * @default 'gjs-'
+	 */
+	stylePrefix?: string;
+	/**
+	 * Selector which indicates where render the editor.
+	 */
+	container?: string | HTMLElement;
+	/**
+	 * If true, auto-render the content
+	 * @default true
+	 */
+	autorender?: boolean;
+	/**
+	 * Array of plugins to execute on start.
+	 * @default []
+	 */
+	plugins?: (string | Plugin<any>)[];
+	/**
+	 * Custom options for plugins
+	 * @default {}
+	 */
+	pluginsOpts?: Record<string, any>;
+	/**
+	 * Init headless editor.
+	 * @default false
+	 */
+	headless?: boolean;
+	/**
+	 * Initial project data (JSON containing your components/styles/etc) to load.
+	 */
+	projectData?: ObjectAny;
+	/**
+	 * HTML string or object of components
+	 * @deprecated Rely on `projectData` option
+	 * @default ''
+	 */
+	components?: string;
+	/**
+	 * CSS string or object of rules
+	 * @deprecated Rely on `projectData` option
+	 * @default ''
+	 */
+	style?: string;
+	/**
+	 * If true, will fetch HTML and CSS from the selected container.
+	 * @deprecated
+	 * @default false
+	 */
+	fromElement?: boolean;
+	/**
+	 * Show an alert before unload the page with unsaved changes
+	 * @default true
+	 */
+	noticeOnUnload?: boolean;
+	/**
+	 * Show paddings and margins.
+	 * @default false
+	 */
+	showOffsets?: boolean;
+	/**
+	 * Show paddings and margins on selected component
+	 * @default false
+	 */
+	showOffsetsSelected?: boolean;
+	/**
+	 * On creation of a new Component (via object), if the 'style' attribute is not
+	 * empty, all those roles will be moved in its new class.
+	 * @default true
+	 */
+	forceClass?: boolean;
+	/**
+	 * Height for the editor container
+	 * @default '900px'
+	 */
+	height?: string;
+	/**
+	 * Width for the editor container
+	 * @default '100%'
+	 */
+	width?: string;
+	/**
+	 * Type of logs to print with the logger (by default is used the devtool console).
+	 * Available by default: debug, info, warning, error.
+	 * You can use `false` to disable all of them or `true` to print all of them.
+	 * @default ['warning', 'error']
+	 */
+	log?: ("debug" | "info" | "warning" | "error")[] | boolean;
+	/**
+	 * By default Grapes injects base CSS into the canvas. For example, it sets body margin to 0
+	 * and sets a default background color of white. This CSS is desired in most cases.
+	 * use this property if you wish to overwrite the base CSS to your own CSS. This is most
+	 * useful if for example your template is not based off a document with 0 as body margin.
+	 * @deprecated in favor of `config.canvas.frameStyle`
+	 * @default ''
+	 */
+	baseCss?: string;
+	/**
+	 * CSS that could only be seen (for instance, inside the code viewer)
+	 * @default '* { box-sizing: border-box; } body {margin: 0;}'
+	 */
+	protectedCss?: string;
+	/**
+	 * CSS for the iframe which containing the canvas, useful if you need to customize
+	 * something inside (eg. the style of the selected component).
+	 * @default ''
+	 */
+	canvasCss?: string;
+	/**
+	 * Default command
+	 * @default 'select-comp'
+	 */
+	defaultCommand?: string;
+	/**
+	 * Show a toolbar when the component is selected
+	 * @default true
+	 */
+	showToolbar?: boolean;
+	/**
+	 * If true render a select of available devices
+	 * @default true
+	 */
+	showDevices?: boolean;
+	/**
+	 * When enabled, on device change media rules won't be created
+	 * @default false
+	 */
+	devicePreviewMode?: boolean;
+	/**
+	 * The condition to use for media queries, eg. 'max-width'.
+	 * Comes handy for mobile-first cases.
+	 * @default 'max-width'
+	 */
+	mediaCondition?: string;
+	/**
+	 * Starting tag for variable inside scripts in Components
+	 * @deprecated Rely on 'script-props' https://grapesjs.com/docs/modules/Components-js.html#passing-properties-to-scripts
+	 * @default '{[ '
+	 */
+	tagVarStart?: string;
+	/**
+	 * Ending tag for variable inside scripts in Components
+	 * @deprecated Rely on 'script-props' https://grapesjs.com/docs/modules/Components-js.html#passing-properties-to-scripts
+	 * @default ' ]}'
+	 */
+	tagVarEnd?: string;
+	/**
+	 * When false, removes empty text nodes when parsed, unless they contain a space.
+	 * @default false
+	 */
+	keepEmptyTextNodes?: boolean;
+	/**
+	 * Return JS of components inside HTML from 'editor.getHtml()'.
+	 * @default true
+	 */
+	jsInHtml?: boolean;
+	/**
+	 * Enable native HTML5 drag and drop.
+	 * @default true
+	 */
+	nativeDnD?: boolean;
+	/**
+	 * Enable multiple component selection.
+	 * @default true
+	 */
+	multipleSelection?: boolean;
+	/**
+	 * Pass default available options wherever `editor.getHtml()` is called.
+	 * @default {}
+	 */
+	optsHtml?: HTMLGeneratorBuildOptions;
+	/**
+	 * Pass default available options wherever `editor.getCss()` is called
+	 * @default {}
+	 */
+	optsCss?: CssGeneratorBuildOptions;
+	/**
+	 * Usually when you update the `style` of the component this changes the
+	 * element's `style` attribute. Unfortunately, inline styling doesn't allow
+	 * use of media queries (@media) or even pseudo selectors (eg. :hover).
+	 * When `avoidInlineStyle` is true all styles are inserted inside the css rule
+	 * @deprecated Don't use this option, we don't support inline styling anymore.
+	 */
+	avoidInlineStyle?: boolean;
+	/**
+	 * Avoid default properties from storable JSON data, like `components` and `styles`.
+	 * With this option enabled your data will be smaller (usefull if need to
+	 * save some storage space).
+	 * @default true
+	 */
+	avoidDefaults?: boolean;
+	/**
+	 * (experimental)
+	 * The structure of components is always on the screen but it's not the same
+	 * for style rules. When you delete a component you might leave a lot of styles
+	 * which will never be used again, therefore they might be removed.
+	 * With this option set to true, styles not used from the CSS generator (so in
+	 * any case where `CssGenerator.build` is used) will be removed automatically.
+	 * But be careful, not always leaving the style not used mean you wouldn't
+	 * use it later, but this option comes really handy when deal with big templates.
+	 * @default false
+	 */
+	clearStyles?: boolean;
+	/**
+	 * Specify the global drag mode of components. By default, components are moved
+	 * following the HTML flow. Two other options are available:
+	 * 'absolute' - Move components absolutely (design tools way)
+	 * 'translate' - Use translate CSS from transform property
+	 * To get more about this feature read: https://github.com/GrapesJS/grapesjs/issues/1936.
+	 */
+	dragMode?: "translate" | "absolute";
+	/**
+	 * When the editor is placed in a scrollable container (eg. modals) this might
+	 * cause elements inside the canvas (eg. floating toolbars) to be misaligned.
+	 * To avoid that, you can specify an array of DOM elements on which their scroll will
+	 * trigger the canvas update.
+	 * Be default, if the array is empty, the first parent element will be appended.
+	 * listenToEl: [document.querySelector('#scrollable-el')],
+	 * @default []
+	 * */
+	listenToEl?: HTMLElement[];
+	/**
+	 * Import asynchronously CSS to use as icons.
+	 * @default 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'
+	 * */
+	cssIcons?: string;
+	/**
+	 * Experimental: don't use.
+	 * Editor icons
+	 */
+	icons?: ObjectAny;
+	/**
+	 * Configurations for I18n.
+	 */
+	i18n?: I18nConfig;
+	/**
+	 * Configurations for Undo Manager
+	 */
+	undoManager?: UndoManagerConfig | boolean;
+	/**
+	 * Configurations for Asset Manager.
+	 */
+	assetManager?: AssetManagerConfig;
+	/**
+	 * Configurations for Canvas.
+	 */
+	canvas?: CanvasConfig;
+	/**
+	 * Configurations for Storage Manager.
+	 */
+	storageManager?: StorageManagerConfig | boolean;
+	/**
+	 * Configurations for Rich Text Editor.
+	 */
+	richTextEditor?: RichTextEditorConfig;
+	/**
+	 * Configurations for DomComponents
+	 */
+	domComponents?: DomComponentsConfig;
+	/**
+	 * Configurations for Modal Dialog.
+	 */
+	modal?: ModalConfig;
+	/**
+	 * Configurations for Code Manager.
+	 */
+	codeManager?: CodeManagerConfig;
+	/**
+	 * Configurations for Panels.
+	 */
+	panels?: PanelsConfig;
+	/**
+	 * Configurations for Commands.
+	 */
+	commands?: CommandsConfig;
+	/**
+	 * Configurations for Css Composer.
+	 */
+	cssComposer?: CssComposerConfig;
+	/**
+	 * Configurations for Selector Manager.
+	 */
+	selectorManager?: SelectorManagerConfig;
+	/**
+	 * Configurations for Device Manager.
+	 */
+	deviceManager?: DeviceManagerConfig;
+	/**
+	 * Configurations for Style Manager.
+	 */
+	styleManager?: StyleManagerConfig;
+	/**
+	 * Configurations for Block Manager.
+	 */
+	blockManager?: BlockManagerConfig;
+	/**
+	 * Configurations for Trait Manager.
+	 */
+	traitManager?: TraitManagerConfig;
+	/**
+	 * Configurations for Page Manager.
+	 */
+	pageManager?: PageManagerConfig;
+	/**
+	 * Configurations for Layer Manager.
+	 */
+	layerManager?: LayerManagerConfig;
+	/**
+	 * Configurations for Parser module.
+	 */
+	parser?: ParserConfig;
+	/** Texts **/
+	textViewCode?: string;
+	/**
+	 * Keep unused styles within the editor.
+	 * @default false
+	 */
+	keepUnusedStyles?: boolean;
+	/**
+	 * Experimental: don't use.
+	 * Avoid default UI styles.
+	 */
+	customUI?: boolean;
+	el?: HTMLElement;
+	/**
+	 * Color picker options.
+	 */
+	colorPicker?: ObjectAny;
+	pStylePrefix?: string;
+}
+export type EditorConfigKeys = keyof EditorConfig;
+export interface BlocksByCategory extends ItemsByCategory<Block> {
+}
+declare enum BlocksEvents {
+	/**
+	 * @event `block:add` New block added to the collection. The [Block] is passed as an argument to the callback.
+	 * @example
+	 * editor.on('block:add', (block) => { ... });
+	 */
+	add = "block:add",
+	/**
+	 * @event `block:remove` Block removed from the collection. The [Block] is passed as an argument to the callback.
+	 * @example
+	 * editor.on('block:remove', (block) => { ... });
+	 */
+	remove = "block:remove",
+	/**
+	 * @event `block:remove:before` Event triggered before Block remove.
+	 * @example
+	 * editor.on('block:remove:before', (block, remove, opts) => { ... });
+	 */
+	removeBefore = "block:remove:before",
+	/**
+	 * @event `block:update` Block updated. The [Block] and the object containing changes are passed as arguments to the callback.
+	 * @example
+	 * editor.on('block:update', (block, updatedProps) => { ... });
+	 */
+	update = "block:update",
+	/**
+	 * @event `block:drag:start` Started dragging block. The [Block] is passed as an argument.
+	 * @example
+	 * editor.on('block:drag:start', (block) => { ... });
+	 */
+	dragStart = "block:drag:start",
+	/**
+	 * @event `block:drag` The block is dragging. The [Block] is passed as an argument.
+	 * @example
+	 * editor.on('block:drag', (block) => { ... });
+	 */
+	drag = "block:drag",
+	/**
+	 * @event `block:drag:stop` Dragging of the block is stopped. The dropped [Component] (if dropped successfully) and the [Block] are passed as arguments.
+	 * @example
+	 * editor.on('block:drag:stop', (component, block) => { ... });
+	 */
+	dragEnd = "block:drag:stop",
+	/**
+	 * @event `block:custom` Event to use in case of [custom Block Manager UI](https://grapesjs.com/docs/modules/Blocks.html#customization).
+	 * @example
+	 * editor.on('block:custom', ({ container, blocks, ... }) => { ... });
+	 */
+	custom = "block:custom",
+	/**
+	 * @event `block` Catch-all event for all the events mentioned above. An object containing all the available data about the triggered event is passed as an argument to the callback.
+	 * @example
+	 * editor.on('block', ({ event, model, ... }) => { ... });
+	 */
+	all = "block"
+}
+export interface BlocksViewConfig {
+	em: EditorModel;
+	pStylePrefix?: string;
+	ignoreCategories?: boolean;
+	getSorter?: any;
+}
+declare class BlocksView extends View {
+	em: EditorModel;
+	config: BlocksViewConfig;
+	categories: Categories;
+	renderedCategories: Map<string, CategoryView>;
+	ppfx: string;
+	noCatClass: string;
+	blockContClass: string;
+	catsClass: string;
+	catsEl?: HTMLElement;
+	blocksEl?: HTMLElement;
+	rendered?: boolean;
+	sorter: any;
+	constructor(opts: any, config: BlocksViewConfig);
+	__getModule(): BlockManager;
+	updateConfig(opts?: {}): void;
+	/**
+	 * Get sorter
+	 * @private
+	 */
+	getSorter(): any;
+	onDrag(ev: Event): void;
+	onMove(ev: Event): void;
+	onDrop(component?: Component): void;
+	/**
+	 * Add new model to the collection
+	 * @param {Model} model
+	 * @private
+	 * */
+	addTo(model: Block): void;
+	/**
+	 * Render new model inside the view
+	 * @param {Model} model
+	 * @param {Object} fragment Fragment collection
+	 * @private
+	 * */
+	add(model: Block, fragment?: DocumentFragment): void;
+	getCategoriesEl(): HTMLElement;
+	getBlocksEl(): HTMLElement;
+	append(el: HTMLElement | DocumentFragment): void;
+	render(): this;
+}
+export type BlockEvent = `${BlocksEvents}`;
+declare class BlockManager extends ItemManagerModule<BlockManagerConfig, Blocks> {
+	blocks: Blocks;
+	blocksVisible: Blocks;
+	categories: Categories;
+	blocksView?: BlocksView;
+	_dragBlock?: Block;
+	_bhv?: Record<string, any>;
+	events: typeof BlocksEvents;
+	Block: typeof Block;
+	Blocks: typeof Blocks;
+	Category: typeof Category;
+	Categories: typeof Categories;
+	storageKey: string;
+	constructor(em: EditorModel);
+	/**
+	 * Get configuration object
+	 * @name getConfig
+	 * @function
+	 * @return {Object}
+	 */
+	__trgCustom(): void;
+	__customData(): {
+		bm: BlockManager;
+		blocks: Block[];
+		container: any;
+		dragStart: (block: Block, ev?: Event) => void;
+		drag: (ev: Event) => void;
+		dragStop: (cancel?: boolean) => void;
+	};
+	__startDrag(block: Block, ev?: Event): void;
+	__drag(ev: Event): void;
+	__endDrag(opts?: {
+		component?: Component;
+	}): void;
+	__getFrameViews(): FrameView[];
+	__behaviour(opts?: {}): {};
+	__getBehaviour(): Record<string, any>;
+	startDrag(block: Block, ev?: Event): void;
+	endDrag(cancel?: boolean): void;
+	postRender(): void;
+	/**
+	 * Add new block.
+	 * @param {String} id Block ID
+	 * @param {[Block]} props Block properties
+	 * @returns {[Block]} Added block
+	 * @example
+	 * blockManager.add('h1-block', {
+	 *   label: 'Heading',
+	 *   content: '<h1>Put your title here</h1>',
+	 *   category: 'Basic',
+	 *   attributes: {
+	 *     title: 'Insert h1 block'
+	 *   }
+	 * });
+	 */
+	add(id: string, props: BlockProperties, opts?: {}): Block;
+	/**
+	 * Get the block by id.
+	 * @param  {String} id Block id
+	 * @returns {[Block]}
+	 * @example
+	 * const block = blockManager.get('h1-block');
+	 * console.log(JSON.stringify(block));
+	 * // {label: 'Heading', content: '<h1>Put your ...', ...}
+	 */
+	get(id: string): Block;
+	/**
+	 * Return all blocks.
+	 * @returns {Collection<[Block]>}
+	 * @example
+	 * const blocks = blockManager.getAll();
+	 * console.log(JSON.stringify(blocks));
+	 * // [{label: 'Heading', content: '<h1>Put your ...'}, ...]
+	 */
+	getAll(): Blocks;
+	/**
+	 * Return the visible collection, which containes blocks actually rendered
+	 * @returns {Collection<[Block]>}
+	 */
+	getAllVisible(): Blocks;
+	/**
+	 * Remove block.
+	 * @param {String|[Block]} block Block or block ID
+	 * @returns {[Block]} Removed block
+	 * @example
+	 * const removed = blockManager.remove('BLOCK_ID');
+	 * // or by passing the Block
+	 * const block = blockManager.get('BLOCK_ID');
+	 * blockManager.remove(block);
+	 */
+	remove(block: string | Block, opts?: {}): any;
+	/**
+	 * Get all available categories.
+	 * It's possible to add categories only within blocks via 'add()' method
+	 * @return {Array|Collection}
+	 */
+	getCategories(): Categories;
+	/**
+	 * Return the Blocks container element
+	 * @return {HTMLElement}
+	 */
+	getContainer(): HTMLElement | undefined;
+	/**
+	 * Returns currently dragging block.
+	 * Updated when the drag starts and cleared once it's done.
+	 * @returns {[Block]|undefined}
+	 */
+	getDragBlock(): Block | undefined;
+	/**
+	 * Get blocks by category.
+	 * @example
+	 * blockManager.getBlocksByCategory();
+	 * // Returns an array of items of this type
+	 * // > { category?: Category; items: Block[] }
+	 *
+	 * // NOTE: The item without category is the one containing blocks without category.
+	 */
+	getBlocksByCategory(): BlocksByCategory[];
+	/**
+	 * Render blocks
+	 * @param  {Array} blocks Blocks to render, without the argument will render all global blocks
+	 * @param  {Object} [opts={}] Options
+	 * @param  {Boolean} [opts.external] Render blocks in a new container (HTMLElement will be returned)
+	 * @param  {Boolean} [opts.ignoreCategories] Render blocks without categories
+	 * @return {HTMLElement} Rendered element
+	 * @example
+	 * // Render all blocks (inside the global collection)
+	 * blockManager.render();
+	 *
+	 * // Render new set of blocks
+	 * const blocks = blockManager.getAll();
+	 * const filtered = blocks.filter(block => block.get('category') == 'sections')
+	 *
+	 * blockManager.render(filtered);
+	 * // Or a new set from an array
+	 * blockManager.render([
+	 *  {label: 'Label text', content: '<div>Content</div>'}
+	 * ]);
+	 *
+	 * // Back to blocks from the global collection
+	 * blockManager.render();
+	 *
+	 * // You can also render your blocks outside of the main block container
+	 * const newBlocksEl = blockManager.render(filtered, { external: true });
+	 * document.getElementById('some-id').appendChild(newBlocksEl);
+	 */
+	render(blocks?: Block[], opts?: {
+		external?: boolean;
+	}): HTMLElement | undefined;
+	destroy(): void;
+}
+/**
+ * @typedef State
+ * @property {String} name State name, eg. `hover`, `nth-of-type(2n)`
+ * @property {String} label State label, eg. `Hover`, `Even/Odd`
+ */
+export declare class State extends Model {
+	defaults(): {
+		name: string;
+		label: string;
+	};
+	/**
+	 * Get state name
+	 * @returns {String}
+	 */
+	getName(): string;
+	/**
+	 * Get state label. If label was not provided, the name will be returned.
+	 * @returns {String}
+	 */
+	getLabel(): string;
+}
+declare class ClassTagsView extends View<Selector> {
+	template({ labelInfo, labelHead, iconSync, iconAdd, pfx, ppfx }: any): string;
+	events(): {
+		"change [data-states]": string;
+		"click [data-add]": string;
+		"focusout [data-input]": string;
+		"keyup [data-input]": string;
+		"click [data-sync-style]": string;
+	};
+	$input?: JQuery<HTMLElement>;
+	$addBtn?: JQuery<HTMLElement>;
+	$classes?: JQuery<HTMLElement>;
+	$btnSyncEl?: JQuery<HTMLElement>;
+	$states?: JQuery<HTMLElement>;
+	$statesC?: JQuery<HTMLElement>;
+	em: EditorModel;
+	target: EditorModel;
+	module: SelectorManager;
+	pfx: string;
+	ppfx: string;
+	stateInputId: string;
+	stateInputC: string;
+	config: any;
+	states: State[];
+	constructor(o?: any);
+	syncStyle(): void;
+	/**
+	 * Triggered when a tag is removed from collection
+	 * @param {Object} model Removed model
+	 * @private
+	 */
+	tagRemoved(model?: State): void;
+	/**
+	 * Add new model
+	 * @param {Object} model
+	 * @private
+	 */
+	addNew(model: State): void;
+	/**
+	 * Start tag creation
+	 * @param {Object} e
+	 * @private
+	 */
+	startNewTag(): void;
+	/**
+	 * End tag creation
+	 * @param {Object} e
+	 * @private
+	 */
+	endNewTag(): void;
+	/**
+	 * Checks what to do on keyup event
+	 * @param  {Object} e
+	 * @private
+	 */
+	onInputKeyUp(e: KeyboardEvent): void;
+	checkStates(): void;
+	/**
+	 * Triggered when component is changed
+	 * @param  {Object} e
+	 * @public
+	 */
+	componentChanged({ targets }?: any): void;
+	updateSelection(targets: Component | Component[]): Selector[];
+	getCommonSelectors({ targets, opts }?: any): Selector[];
+	_commonSelectors(...args: any): Selector[];
+	checkSync(): void;
+	getTarget(): Component | undefined;
+	getTargets(): Component[];
+	/**
+	 * Update states visibility. Hides states in case there is no tags
+	 * inside collection
+	 * @private
+	 */
+	updateStateVis(targets?: Component[] | Component): void;
+	__handleStateChange(): void;
+	/**
+	 * Update selector helper
+	 * @return {this}
+	 * @private
+	 */
+	updateSelector(targets?: Component[] | Component): void;
+	__getName(target: Component): string;
+	/**
+	 * Triggered when the select with states is changed
+	 * @param  {Object} e
+	 * @private
+	 */
+	stateChanged(ev: any): void;
+	/**
+	 * Add new tag to collection, if possible, and to the component
+	 * @param  {Object} e
+	 * @private
+	 */
+	addNewTag(value: any): void;
+	/**
+	 * Add new object to collection
+	 * @param   {Object} model  Model
+	 * @param   {Object} fragmentEl   Fragment collection
+	 * @return {Object} Object created
+	 * @private
+	 * */
+	addToClasses(model: State, fragmentEl?: DocumentFragment): HTMLElement;
+	/**
+	 * Render the collection of classes
+	 * @private
+	 */
+	renderClasses(): void;
+	/**
+	 * Return classes element
+	 * @return {HTMLElement}
+	 * @private
+	 */
+	getClasses(): JQuery<HTMLElement>;
+	/**
+	 * Return states element
+	 * @return {HTMLElement}
+	 * @private
+	 */
+	getStates(): JQuery<HTMLElement>;
+	/**
+	 * Return states container element
+	 * @return {HTMLElement}
+	 * @private
+	 */
+	getStatesC(): JQuery<HTMLElement>;
+	renderStates(): void;
+	render(): this;
+}
 export type SelectorEvent = "selector:add" | "selector:remove" | "selector:update" | "selector:state" | "selector";
 declare const selectorEvents: {
 	all: string;
@@ -8881,123 +9134,6 @@ declare class StorageManager extends Module<StorageManagerConfig & {
 	canAutoload(): boolean;
 	destroy(): void;
 }
-declare class DomainViews extends View {
-	config?: any;
-	items: any[];
-	ns?: string;
-	itemView?: any;
-	itemsView: string;
-	itemType: string;
-	reuseView: boolean;
-	constructor(opts?: any, config?: any, autoAdd?: boolean);
-	/**
-	 * Add new model to the collection
-	 * @param {Model} model
-	 * @private
-	 * */
-	addTo(model: any): void;
-	itemViewNotFound(type: string): void;
-	/**
-	 * Render new model inside the view
-	 * @param {Model} model
-	 * @param {Object} fragment Fragment collection
-	 * @private
-	 * */
-	add(model: any, fragment?: DocumentFragment): void;
-	render(): this;
-	onRender(): void;
-	onRemoveBefore(items?: any, opts?: any): void;
-	onRemove(items?: any, opts?: any): void;
-	remove(opts?: {}): this;
-	clearItems(): void;
-}
-declare class TraitsView extends DomainViews {
-	reuseView: boolean;
-	em: EditorModel;
-	pfx: string;
-	ppfx: string;
-	constructor(o: any, itemsView: any);
-	/**
-	 * Update view collection
-	 * @private
-	 */
-	updatedCollection(): void;
-}
-export interface ITraitView {
-	noLabel?: TraitView["noLabel"];
-	eventCapture?: TraitView["eventCapture"];
-	templateInput?: TraitView["templateInput"];
-	onEvent?: TraitView["onEvent"];
-	onUpdate?: TraitView["onUpdate"];
-	createInput?: TraitView["createInput"];
-	createLabel?: TraitView["createLabel"];
-}
-export type CustomTrait<T> = ITraitView & T & ThisType<T & TraitView>;
-declare class TraitManager extends Module<TraitManagerConfig & {
-	pStylePrefix?: string;
-}> {
-	view?: TraitsView;
-	types: {
-		[id: string]: {
-			new (o: any): TraitView;
-		};
-	};
-	model: Model;
-	__ctn?: any;
-	TraitsView: typeof TraitsView;
-	events: {
-		all: string;
-		custom: string;
-	};
-	/**
-	 * Get configuration object
-	 * @name getConfig
-	 * @function
-	 * @return {Object}
-	 */
-	/**
-	 * Initialize module
-	 * @private
-	 */
-	constructor(em: EditorModel);
-	__upSel(): void;
-	__onUp(): void;
-	select(component?: Component): void;
-	getSelected(): Component | undefined;
-	/**
-	 * Get traits from the currently selected component.
-	 */
-	getCurrent(): Trait[];
-	__trgCustom(opts?: any): void;
-	postRender(): void;
-	/**
-	 *
-	 * Get Traits viewer
-	 * @private
-	 */
-	getTraitsViewer(): TraitsView | undefined;
-	/**
-	 * Add new trait type
-	 * @param {string} name Type name
-	 * @param {Object} methods Object representing the trait
-	 */
-	addType<T>(name: string, trait: CustomTrait<T>): void;
-	/**
-	 * Get trait type
-	 * @param {string} name Type name
-	 * @return {Object}
-	 */
-	getType(name: string): new (o: any) => TraitView;
-	/**
-	 * Get all trait types
-	 * @returns {Object}
-	 */
-	getTypes(): {
-		[id: string]: new (o: any) => TraitView;
-	};
-	render(): HTMLElement;
-	destroy(): void;
-}
 declare class ItemsView extends View {
 	items: ItemView[];
 	opt: any;
@@ -9071,10 +9207,8 @@ declare class ItemView extends View {
 	clsEdit: string;
 	clsNoEdit: string;
 	_rendered?: boolean;
-	eyeEl?: JQuery<HTMLElement>;
 	caret?: JQuery<HTMLElement>;
 	inputName?: HTMLElement;
-	cnt?: HTMLElement;
 	constructor(opt: ItemViewProps);
 	initComponent(): void;
 	updateName(): void;
@@ -9137,6 +9271,7 @@ declare class ItemView extends View {
 	 * @param	Event
 	 * */
 	updateStatus(): void;
+	getItemContainer(): JQuery<HTMLElement>;
 	/**
 	 * Update item aspect after children changes
 	 *
@@ -9144,7 +9279,7 @@ declare class ItemView extends View {
 	 * */
 	checkChildren(): void;
 	getCaret(): JQuery<HTMLElement>;
-	setRoot(el: Component | string): void;
+	setRoot(cmp: Component | string): void;
 	updateLayerable(): void;
 	__clearItems(): void;
 	remove(...args: [
@@ -10243,13 +10378,15 @@ declare class UtilsModule extends Module {
 			[x: string]: any;
 		};
 		isComponent: (obj: any) => obj is Component;
-		getComponentView: (el?: Node | undefined) => ComponentView | undefined;
+		getComponentView: (el?: Node | undefined) => ComponentView<Component> | undefined;
 		getComponentModel: (el?: Node | undefined) => Component | undefined;
 		buildBase64UrlFromSvg: (svg: string) => string;
 		hasDnd: (em: EditorModel) => boolean;
 		upFirst: (value: string) => string;
 		matches: any;
-		getModel: (el: any, $?: any) => Component | undefined;
+		getModel: (el: HTMLElement & {
+			__cashData?: any;
+		}, $?: any) => Component | undefined;
 		camelCase: (value: string) => string;
 		getElement: (el: HTMLElement) => any;
 		shallowDiff: (objOrig: ObjectAny, objNew: ObjectAny) => ObjectAny;
@@ -11567,7 +11704,10 @@ declare abstract class Module<T extends ModuleConfig = ModuleConfig> implements 
 	private _em;
 	private _config;
 	private _name;
+	debounced: Debounced[];
+	collections: Collection[];
 	cls: any[];
+	state?: Model;
 	events: any;
 	model?: any;
 	view?: any;
@@ -11576,7 +11716,6 @@ declare abstract class Module<T extends ModuleConfig = ModuleConfig> implements 
 	get config(): T & {
 		pStylePrefix?: string | undefined;
 	};
-	abstract destroy(): void;
 	render(opts?: any): HTMLElement | JQuery<HTMLElement> | void;
 	postLoad(key: any): void;
 	get name(): string;
@@ -11585,6 +11724,8 @@ declare abstract class Module<T extends ModuleConfig = ModuleConfig> implements 
 	};
 	__logWarn(str: string, opts?: {}): void;
 	postRender?(view: any): void;
+	destroy(): void;
+	__destroy(): void;
 	/**
 	 * Move the main DOM element of the module.
 	 * To execute only post editor render (in postRender)
@@ -12141,6 +12282,7 @@ export declare const grapesjs: {
 };
 
 export {
+	CategoryProperties as BlockCategoryProperties,
 	grapesjs as default,
 };
 

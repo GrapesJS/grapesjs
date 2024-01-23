@@ -20,7 +20,7 @@ import TraitNumberView from './view/TraitNumberView';
 import TraitSelectView from './view/TraitSelectView';
 import TraitView from './view/TraitView';
 import TraitsView from './view/TraitsView';
-import { getItemsByCategory } from '../abstract/ModuleCategory';
+import Category, { getItemsByCategory } from '../abstract/ModuleCategory';
 import Trait from './model/Trait';
 
 export default class TraitManager extends Module<TraitManagerConfigModule> {
@@ -138,7 +138,7 @@ export default class TraitManager extends Module<TraitManagerConfigModule> {
    * Get trait categories from the currently selected component.
    * @return {Array<Category>}
    */
-  getCategories() {
+  getCategories(): Category[] {
     const cmp = this.state.get('component');
     const categories = cmp?.traits.categories?.models || [];
     return [...categories];

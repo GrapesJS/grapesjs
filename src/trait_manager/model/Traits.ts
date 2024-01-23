@@ -6,6 +6,7 @@ import EditorModel from '../../editor/model/Editor';
 import Trait, { TraitProperties } from './Trait';
 import TraitFactory from './TraitFactory';
 import Categories from '../../abstract/ModuleCategories';
+import TraitManager from '..';
 
 export default class Traits extends CollectionWithCategories<Trait> {
   em: EditorModel;
@@ -23,7 +24,7 @@ export default class Traits extends CollectionWithCategories<Trait> {
     this.tf = new TraitFactory(tmOpts);
   }
 
-  get module() {
+  get module(): TraitManager {
     return this.em.Traits;
   }
 
