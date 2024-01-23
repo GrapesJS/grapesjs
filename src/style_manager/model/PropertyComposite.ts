@@ -31,7 +31,7 @@ export interface PropertyCompositeProps extends PropertyProps {
   /**
    * Value used to split property values, default `" "`.
    */
-  separator: string;
+  separator?: string;
 
   /**
    * Value used to join property values, default `" "`.
