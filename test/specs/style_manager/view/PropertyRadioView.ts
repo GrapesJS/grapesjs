@@ -1,34 +1,34 @@
-import PropertyRadioView from 'style_manager/view/PropertyRadioView';
-import Property from 'style_manager/model/PropertySelect';
-import Component from 'dom_components/model/Component';
-import Editor from 'editor/model/Editor';
-import DomComponents from 'dom_components';
+import PropertyRadioView from '../../../../src/style_manager/view/PropertyRadioView';
+import Property from '../../../../src/style_manager/model/PropertySelect';
+import Component from '../../../../src/dom_components/model/Component';
+import Editor from '../../../../src/editor/model/Editor';
 
 describe('PropertyRadioView', () => {
-  let em;
-  let dcomp;
-  let compOpts;
-  var component;
-  var fixtures;
-  var target;
-  var model;
-  var view;
-  var propName = 'testprop';
-  var propValue = 'test1value';
-  var defValue = 'test2value';
-  var options = [
-    { value: 'test1value', title: 'testtitle' },
-    { name: 'test2', value: 'test2value' },
+  let em: Editor;
+  let dcomp: Editor['Components'];
+  let compOpts: any;
+  let component: Component;
+  let fixtures: HTMLElement;
+  let target: Component;
+  let model: Property;
+  let view: PropertyRadioView;
+  const propName = 'testprop';
+  const propValue = 'test1value';
+  const defValue = 'test2value';
+  const options = [
+    { id: 'test1value', title: 'testtitle' },
+    { id: 'test2', value: 'test2value' },
   ];
 
   // Have some issue with getCheckedEl() and jsdom
   // this view.getInputEl().querySelector('input:checked') return null
   // but view.getInputEl().querySelectorAll('input:checked')[0] works
-  var getCheckedEl = view => view.getInputEl().querySelectorAll('input:checked')[0];
+  const getCheckedEl = (view: PropertyRadioView) =>
+    view.getInputEl().querySelectorAll('input:checked')[0] as HTMLElement;
 
   beforeEach(() => {
     em = new Editor({});
-    dcomp = new DomComponents(em);
+    dcomp = em.Components;
     compOpts = { em, componentTypes: dcomp.componentTypes };
     target = new Component({}, compOpts);
     component = new Component({}, compOpts);
@@ -42,44 +42,41 @@ describe('PropertyRadioView', () => {
     );
     view = new PropertyRadioView({ model });
     document.body.innerHTML = '<div id="fixtures"></div>';
-    fixtures = document.body.firstChild;
+    fixtures = document.body.firstChild as HTMLElement;
     view.render();
     fixtures.appendChild(view.el);
   });
 
   afterEach(() => {
-    //view.remove(); // strange errors ???
-  });
-
-  afterAll(() => {
-    component = null;
+    em.destroy();
   });
 
   test('Rendered correctly', () => {
-    var prop = view.el;
+    const prop = view.el;
     expect(fixtures.querySelector('.property')).toBeTruthy();
     expect(prop.querySelector('.label')).toBeTruthy();
     expect(prop.querySelector('.field')).toBeTruthy();
   });
 
   test('Radio rendered', () => {
-    var prop = view.el;
+    const prop = view.el;
     expect(prop.querySelector('input[type=radio]')).toBeTruthy();
   });
 
   test('Options rendered', () => {
-    var input = view.el.querySelector('.field').firstChild;
+    const input = view.el.querySelector('.field')!.firstChild as HTMLElement;
     expect(input.children.length).toEqual(options.length);
   });
 
   test('Options rendered correctly', () => {
-    var children = view.el.querySelector('.field').firstChild.children;
-    expect(children[0].querySelector('label').textContent).toEqual('test1value');
-    expect(children[1].querySelector('label').textContent).toEqual('test2');
-    expect(children[0].querySelector('input').value).toEqual(options[0].value);
-    expect(children[1].querySelector('input').value).toEqual(options[1].value);
-    expect(children[0].querySelector('label').getAttribute('title')).toEqual(options[0].title);
-    expect(children[1].querySelector('label').getAttribute('title')).toEqual(null);
+    const input = view.el.querySelector('.field')!.firstChild as HTMLElement;
+    const children = input.children;
+    expect(children[0].querySelector('label')!.textContent).toEqual('test1value');
+    expect(children[1].querySelector('label')!.textContent).toEqual('test2');
+    expect(children[0].querySelector('input')!.value).toEqual(options[0].id);
+    expect(children[1].querySelector('input')!.value).toEqual(options[1].id);
+    expect(children[0].querySelector('label')!.getAttribute('title')).toEqual(options[0].title);
+    expect(children[1].querySelector('label')!.getAttribute('title')).toEqual(null);
   });
 
   test('Input should exist', () => {
@@ -102,14 +99,14 @@ describe('PropertyRadioView', () => {
   test('Update input on value change', done => {
     view.model.set('value', propValue);
     setTimeout(() => {
-      expect(getCheckedEl(view).value).toEqual(propValue);
+      expect((getCheckedEl(view) as any).value).toEqual(propValue);
       done();
     }, 15);
   });
 
   describe('Init property', () => {
     beforeEach(() => {
-      component = new Component();
+      component = new Component({}, compOpts);
       model = new Property({
         type: 'select',
         list: options,

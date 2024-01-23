@@ -2,7 +2,6 @@ import PropertyNumberView from '../../../../src/style_manager/view/PropertyNumbe
 import PropertyNumber from '../../../../src/style_manager/model/PropertyNumber';
 import Component from '../../../../src/dom_components/model/Component';
 import Editor from '../../../../src/editor/model/Editor';
-import DomComponents from '../../../../src/dom_components';
 
 describe('PropertyNumberView', () => {
   let em: Editor;
