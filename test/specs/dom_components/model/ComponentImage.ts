@@ -12,7 +12,7 @@ describe('ComponentImage', () => {
   beforeEach(() => {
     em = new Editor({ avoidDefaults: true });
     dcomp = em.Components;
-    em.get('PageManager').onLoad();
+    em.Pages.onLoad();
     compOpts = {
       em,
       componentTypes: dcomp.componentTypes,

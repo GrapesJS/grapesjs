@@ -106,7 +106,7 @@ describe('ComponentView', () => {
   });
 
   test('Init with different tag', () => {
-    model = new Component({ tagName: 'span' });
+    model = new Component({ tagName: 'span' }, compOpts);
     view = new ComponentView({ ...compViewOpst, model });
     fixtures.innerHTML = '';
     fixtures.appendChild(view.render().el);
