@@ -1,7 +1,7 @@
 import { Model } from '../../common';
 import { isFunction } from 'underscore';
 import Editor from '../../editor';
-import { CategoryProperties } from '../../abstract/ModuleCategory';
+import Category, { CategoryProperties } from '../../abstract/ModuleCategory';
 import { ComponentDefinition } from '../../dom_components/model/types';
 
 /** @private */
@@ -91,6 +91,11 @@ export default class Block extends Model<BlockProperties> {
       onClick: undefined,
       attributes: {},
     };
+  }
+
+  get category(): Category | undefined {
+    const cat = this.get('category');
+    return cat instanceof Category ? cat : undefined;
   }
 
   /**

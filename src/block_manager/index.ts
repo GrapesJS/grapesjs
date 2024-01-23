@@ -35,8 +35,8 @@ import defaults, { BlockManagerConfig } from './config/config';
 import Block, { BlockProperties } from './model/Block';
 import Blocks from './model/Blocks';
 import Categories from '../abstract/ModuleCategories';
-import Category from '../abstract/ModuleCategory';
-import { BlocksEvents } from './types';
+import Category, { getItemsByCategory } from '../abstract/ModuleCategory';
+import { BlocksByCategory, BlocksEvents } from './types';
 import BlocksView from './view/BlocksView';
 
 export type BlockEvent = `${BlocksEvents}`;
@@ -276,6 +276,19 @@ export default class BlockManager extends ItemManagerModule<BlockManagerConfig, 
    */
   getDragBlock() {
     return this._dragBlock;
+  }
+
+  /**
+   * Get blocks by category.
+   * @example
+   * blockManager.getBlocksByCategory();
+   * // Returns an array of items of this type
+   * // > { category?: Category; items: Block[] }
+   *
+   * // NOTE: The item without category is the one containing blocks without category.
+   */
+  getBlocksByCategory(): BlocksByCategory[] {
+    return getItemsByCategory<Block>(this.getAll().models);
   }
 
   /**

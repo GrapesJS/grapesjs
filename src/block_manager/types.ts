@@ -1,3 +1,8 @@
+import { ItemsByCategory } from '../abstract/ModuleCategory';
+import Block from './model/Block';
+
+export interface BlocksByCategory extends ItemsByCategory<Block> {}
+
 /**{START_EVENTS}*/
 export enum BlocksEvents {
   /**
