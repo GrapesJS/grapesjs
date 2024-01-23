@@ -20,7 +20,7 @@ import TraitNumberView from './view/TraitNumberView';
 import TraitSelectView from './view/TraitSelectView';
 import TraitView from './view/TraitView';
 import TraitsView from './view/TraitsView';
-import Category from '../abstract/ModuleCategory';
+import { getItemsByCategory } from '../abstract/ModuleCategory';
 import Trait from './model/Trait';
 
 export default class TraitManager extends Module<TraitManagerConfigModule> {
@@ -86,35 +86,15 @@ export default class TraitManager extends Module<TraitManagerConfigModule> {
 
   /**
    * Get traits by category from the currently selected component.
+   * @example
+   * traitManager.getTraitsByCategory();
+   * // Returns an array of items of this type
+   * // > { category?: Category; items: Trait[] }
+   *
+   * // NOTE: The item without category is the one containing traits without category.
    */
   getTraitsByCategory(): TraitsByCategory[] {
-    const traits = this.getTraits();
-    const categorySet = new Set<Category>();
-    const categoryMap = new Map<Category, Trait[]>();
-    const emptyItem: TraitsByCategory = { items: [] };
-
-    traits.forEach(trait => {
-      const { category } = trait;
-      if (category) {
-        categorySet.add(category);
-        let categoryItems = categoryMap.get(category);
-
-        if (categoryItems) {
-          categoryItems.push(trait);
-        } else {
-          categoryMap.set(category, [trait]);
-        }
-      } else {
-        emptyItem.items.push(trait);
-      }
-    });
-
-    const categoryWithItems = Array.from(categorySet).map(category => ({
-      category,
-      items: categoryMap.get(category) || [],
-    }));
-
-    return [...categoryWithItems, emptyItem];
+    return getItemsByCategory<Trait>(this.getTraits());
   }
 
   /**
