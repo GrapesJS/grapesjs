@@ -11,7 +11,7 @@ describe('TraitManager', () => {
       avoidInlineStyle: true,
     });
     tm = em.Traits;
-    // em.get('PageManager').onLoad();
+    // em.Pages.onLoad();
   });
 
   afterEach(() => {
