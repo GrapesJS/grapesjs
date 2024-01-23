@@ -37,7 +37,6 @@ describe('PropertyCompositeView', () => {
     compOpts = { em, componentTypes: dcomp.componentTypes };
     target = new Component({}, compOpts);
     component = new Component({}, compOpts);
-    // target.model = component;
     model = new PropertyComposite(
       {
         type: 'composite',

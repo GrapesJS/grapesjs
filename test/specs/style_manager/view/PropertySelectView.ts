@@ -1,7 +1,6 @@
 import PropertySelectView from '../../../../src/style_manager/view/PropertySelectView';
 import Property from '../../../../src/style_manager/model/PropertyRadio';
 import Editor from '../../../../src/editor/model/Editor';
-import DomComponents from '../../../../src/dom_components';
 import Component from '../../../../src/dom_components/model/Component';
 
 describe('PropertySelectView', () => {
