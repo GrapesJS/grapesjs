@@ -3,6 +3,7 @@ import { isFunction } from 'underscore';
 import Editor from '../../editor';
 import Category, { CategoryProperties } from '../../abstract/ModuleCategory';
 import { ComponentDefinition } from '../../dom_components/model/types';
+import Blocks from './Blocks';
 
 /** @private */
 export interface BlockProperties {
@@ -96,6 +97,10 @@ export default class Block extends Model<BlockProperties> {
   get category(): Category | undefined {
     const cat = this.get('category');
     return cat instanceof Category ? cat : undefined;
+  }
+
+  get parent() {
+    return this.collection as unknown as Blocks;
   }
 
   /**
