@@ -24,7 +24,7 @@ describe('StyleManager', () => {
       dv = em.Devices;
       sm = em.Selectors;
       obj = em.Styles;
-      em.get('PageManager').onLoad();
+      em.Pages.onLoad();
     });
 
     afterEach(() => {

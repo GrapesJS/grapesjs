@@ -21,7 +21,7 @@ describe('Component', () => {
   beforeEach(() => {
     em = new Editor({ avoidDefaults: true });
     dcomp = em.Components;
-    em.get('PageManager').onLoad();
+    em.Pages.onLoad();
     compOpts = {
       em,
       componentTypes: dcomp.componentTypes,
@@ -30,18 +30,18 @@ describe('Component', () => {
     obj = new Component({}, compOpts);
   });
 
+  afterEach(() => {
+    em.destroyAll();
+  });
+
   test('Has no children', () => {
     expect(obj.components().length).toEqual(0);
   });
 
   test('Clones correctly', () => {
-    var sAttr = obj.attributes;
-    var cloned = obj.clone();
-    var eAttr = cloned.attributes;
-    eAttr.components = {};
-    sAttr.components = {} as any;
-    eAttr.traits = {};
-    sAttr.traits = {} as any;
+    const sAttr = obj.attributes;
+    const cloned = obj.clone();
+    const eAttr = cloned.attributes;
     expect(sAttr.length).toEqual(eAttr.length);
   });
 
@@ -454,13 +454,19 @@ describe('Component', () => {
       },
     });
 
-    expect(() => new ExtendedComponent()).not.toThrowError();
+    expect(() => new ExtendedComponent({}, compOpts)).not.toThrowError();
   });
 });
 
 describe('Image Component', () => {
   beforeEach(() => {
-    obj = new ComponentImage();
+    em = new Editor({ avoidDefaults: true });
+    compOpts = { em };
+    obj = new ComponentImage({}, compOpts);
+  });
+
+  afterEach(() => {
+    em.destroyAll();
   });
 
   test('Has src property', () => {
@@ -472,7 +478,7 @@ describe('Image Component', () => {
   });
 
   test('ComponentImage toHTML', () => {
-    obj = new ComponentImage({ src: '' });
+    obj = new ComponentImage({ src: '' }, compOpts);
     expect(obj.toHTML()).toEqual('<img/>');
   });
 
@@ -506,7 +512,13 @@ describe('Image Component', () => {
 
 describe('Text Component', () => {
   beforeEach(() => {
+    em = new Editor({ avoidDefaults: true });
+    compOpts = { em };
     obj = new ComponentText({}, compOpts);
+  });
+
+  afterEach(() => {
+    em.destroyAll();
   });
 
   test('Has content property', () => {
@@ -531,7 +543,13 @@ describe('Text Component', () => {
 
 describe('Text Node Component', () => {
   beforeEach(() => {
+    em = new Editor({ avoidDefaults: true });
+    compOpts = { em };
     obj = new ComponentTextNode({}, compOpts);
+  });
+
+  afterEach(() => {
+    em.destroyAll();
   });
 
   test('Has content property', () => {
@@ -634,8 +652,8 @@ describe('Video Component', () => {
 describe('Components', () => {
   beforeEach(() => {
     em = new Editor({});
-    dcomp = em.get('DomComponents');
-    em.get('PageManager').onLoad();
+    dcomp = em.Components;
+    em.Pages.onLoad();
     compOpts = {
       em,
       componentTypes: dcomp.componentTypes,
@@ -662,8 +680,8 @@ describe('Components', () => {
 
   test('Avoid conflicting components with the same ID', () => {
     const em = new Editor({});
-    dcomp = em.get('DomComponents');
-    em.get('PageManager').onLoad();
+    dcomp = em.Components;
+    em.Pages.onLoad();
     const id = 'myid';
     const idB = 'myid2';
     const block = `

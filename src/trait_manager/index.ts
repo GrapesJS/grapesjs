@@ -1,53 +1,42 @@
 import { debounce } from 'underscore';
-import { Model } from '../common';
 import { Module } from '../abstract';
-import defaults, { TraitManagerConfig } from './config/config';
-import TraitsView from './view/TraitsView';
-import TraitView from './view/TraitView';
-import TraitSelectView from './view/TraitSelectView';
-import TraitCheckboxView from './view/TraitCheckboxView';
-import TraitNumberView from './view/TraitNumberView';
-import TraitColorView from './view/TraitColorView';
-import TraitButtonView from './view/TraitButtonView';
-import EditorModel from '../editor/model/Editor';
+import { Model } from '../common';
 import Component from '../dom_components/model/Component';
+import EditorModel from '../editor/model/Editor';
+import defaults from './config/config';
+import {
+  CustomTrait,
+  TraitCustomData,
+  TraitManagerConfigModule,
+  TraitModuleStateProps,
+  TraitViewTypes,
+  TraitsByCategory,
+  TraitsEvents,
+} from './types';
+import TraitButtonView from './view/TraitButtonView';
+import TraitCheckboxView from './view/TraitCheckboxView';
+import TraitColorView from './view/TraitColorView';
+import TraitNumberView from './view/TraitNumberView';
+import TraitSelectView from './view/TraitSelectView';
+import TraitView from './view/TraitView';
+import TraitsView from './view/TraitsView';
+import Category, { getItemsByCategory } from '../abstract/ModuleCategory';
 import Trait from './model/Trait';
 
-export const evAll = 'trait';
-export const evPfx = `${evAll}:`;
-export const evCustom = `${evPfx}custom`;
-
-const typesDef: { [id: string]: { new (o: any): TraitView } } = {
-  text: TraitView,
-  number: TraitNumberView,
-  select: TraitSelectView,
-  checkbox: TraitCheckboxView,
-  color: TraitColorView,
-  button: TraitButtonView,
-};
-
-interface ITraitView {
-  noLabel?: TraitView['noLabel'];
-  eventCapture?: TraitView['eventCapture'];
-  templateInput?: TraitView['templateInput'];
-  onEvent?: TraitView['onEvent'];
-  onUpdate?: TraitView['onUpdate'];
-  createInput?: TraitView['createInput'];
-  createLabel?: TraitView['createLabel'];
-}
-
-export type CustomTrait<T> = ITraitView & T & ThisType<T & TraitView>;
-
-export default class TraitManager extends Module<TraitManagerConfig & { pStylePrefix?: string }> {
+export default class TraitManager extends Module<TraitManagerConfigModule> {
+  __ctn?: HTMLElement;
   view?: TraitsView;
-  types: { [id: string]: { new (o: any): TraitView } };
-  model: Model;
-  __ctn?: any;
-  TraitsView = TraitsView;
 
-  events = {
-    all: evAll,
-    custom: evCustom,
+  TraitsView = TraitsView;
+  events = TraitsEvents;
+  state = new Model<TraitModuleStateProps>({ traits: [] });
+  types: TraitViewTypes = {
+    text: TraitView,
+    number: TraitNumberView,
+    select: TraitSelectView,
+    checkbox: TraitCheckboxView,
+    color: TraitColorView,
+    button: TraitButtonView,
   };
 
   /**
@@ -62,52 +51,50 @@ export default class TraitManager extends Module<TraitManagerConfig & { pStylePr
    * @private
    */
   constructor(em: EditorModel) {
-    super(em, 'TraitManager', defaults);
-    const model = new Model();
-    this.model = model;
-    this.types = typesDef;
+    super(em, 'TraitManager', defaults as any);
+    const { state, config } = this;
+    const ppfx = config.pStylePrefix;
+    ppfx && (config.stylePrefix = `${ppfx}${config.stylePrefix}`);
 
     const upAll = debounce(() => this.__upSel(), 0);
-    model.listenTo(em, 'component:toggled', upAll);
-
     const update = debounce(() => this.__onUp(), 0);
-    model.listenTo(em, 'trait:update', update);
+    state.listenTo(em, 'component:toggled', upAll);
+    state.listenTo(em, 'trait:update', update);
 
-    return this;
+    this.debounced = [upAll, update];
   }
 
-  __upSel() {
-    this.select(this.em.getSelected());
-  }
-
-  __onUp() {
-    this.select(this.getSelected());
-  }
-
+  /**
+   * Select traits from component.
+   * @param {[Component]} component
+   * @example
+   * traitManager.select(someComponent);
+   */
   select(component?: Component) {
-    const traits = component ? component.getTraits() : [];
-    this.model.set({ component, traits });
+    const traits = component?.getTraits() || [];
+    this.state.set({ component, traits });
     this.__trgCustom();
-  }
-
-  getSelected(): Component | undefined {
-    return this.model.get('component');
   }
 
   /**
    * Get traits from the currently selected component.
+   * @return {Array<Trait>}
    */
-  getCurrent(): Trait[] {
-    return this.model.get('traits') || [];
+  getTraits() {
+    return this.getCurrent();
   }
 
-  __trgCustom(opts: any = {}) {
-    this.__ctn = this.__ctn || opts.container;
-    this.em.trigger(this.events.custom, { container: this.__ctn });
-  }
-
-  postRender() {
-    this.__appendTo();
+  /**
+   * Get traits by category from the currently selected component.
+   * @example
+   * traitManager.getTraitsByCategory();
+   * // Returns an array of items of this type
+   * // > { category?: Category; items: Trait[] }
+   *
+   * // NOTE: The item without category is the one containing traits without category.
+   */
+  getTraitsByCategory(): TraitsByCategory[] {
+    return getItemsByCategory<Trait>(this.getTraits());
   }
 
   /**
@@ -147,16 +134,29 @@ export default class TraitManager extends Module<TraitManagerConfig & { pStylePr
     return this.types;
   }
 
+  /**
+   * Get trait categories from the currently selected component.
+   * @return {Array<Category>}
+   */
+  getCategories(): Category[] {
+    const cmp = this.state.get('component');
+    const categories = cmp?.traits.categories?.models || [];
+    return [...categories];
+  }
+
+  getCurrent() {
+    return this.state.get('traits') || [];
+  }
+
   render() {
-    let { view, em } = this;
-    const config = this.getConfig();
-    const el = view && view.el;
+    let { view } = this;
+    const { em } = this;
     view = new TraitsView(
       {
-        el,
+        el: view?.el,
         collection: [],
         editor: em,
-        config,
+        config: this.getConfig(),
       },
       this.getTypes()
     );
@@ -164,8 +164,25 @@ export default class TraitManager extends Module<TraitManagerConfig & { pStylePr
     return view.el;
   }
 
-  destroy() {
-    this.model.stopListening();
-    this.model.clear();
+  postRender() {
+    this.__appendTo();
+  }
+
+  __trgCustom(opts: TraitCustomData = {}) {
+    const { em, events, __ctn } = this;
+    this.__ctn = __ctn || opts.container;
+    em.trigger(events.custom, this.__customData());
+  }
+
+  __customData(): TraitCustomData {
+    return { container: this.__ctn };
+  }
+
+  __upSel() {
+    this.select(this.em.getSelected());
+  }
+
+  __onUp() {
+    this.select(this.state.get('component'));
   }
 }

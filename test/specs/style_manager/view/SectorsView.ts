@@ -1,10 +1,10 @@
-import SectorsView from 'style_manager/view/SectorsView';
-import Sectors from 'style_manager/model/Sectors';
+import SectorsView from '../../../../src/style_manager/view/SectorsView';
+import Sectors from '../../../../src/style_manager/model/Sectors';
 
 describe('SectorsView', () => {
-  var fixtures;
-  var model;
-  var view;
+  let fixtures: HTMLElement;
+  let model: Sectors;
+  let view: SectorsView;
 
   beforeEach(() => {
     model = new Sectors([]);
@@ -12,7 +12,7 @@ describe('SectorsView', () => {
       collection: model,
     });
     document.body.innerHTML = '<div id="fixtures"></div>';
-    fixtures = document.body.firstChild;
+    fixtures = document.body.firstChild as HTMLElement;
     fixtures.appendChild(view.render().el);
   });
 

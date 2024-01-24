@@ -1,25 +1,25 @@
-import PropertyStackView from 'style_manager/view/PropertyStackView';
-import Property from 'style_manager/model/PropertyStack';
-import Component from 'dom_components/model/Component';
-import Editor from 'editor/model/Editor';
-import DomComponents from 'dom_components';
+import PropertyStackView from '../../../../src/style_manager/view/PropertyStackView';
+import PropertyStack from '../../../../src/style_manager/model/PropertyStack';
+import Component from '../../../../src/dom_components/model/Component';
+import Editor from '../../../../src/editor/model/Editor';
+import DomComponents from '../../../../src/dom_components';
 
 describe('PropertyStackView', () => {
-  let em;
-  let dcomp;
-  let compOpts;
-  var component;
-  var fixtures;
-  var target;
-  var model;
-  var view;
-  var propName = 'testprop';
-  var properties = [
+  let em: Editor;
+  let dcomp: Editor['Components'];
+  let compOpts: any;
+  let component: Component;
+  let fixtures: HTMLElement;
+  let target: Component;
+  let model: PropertyStack;
+  let view: PropertyStackView;
+  const propName = 'testprop';
+  const properties = [
     { property: 'subprop1' },
     {
       type: 'integer',
       property: 'subprop2',
-      defaults: 0,
+      defaults: '0',
       units: ['%', 'px'],
     },
     {
@@ -36,8 +36,7 @@ describe('PropertyStackView', () => {
     compOpts = { em, componentTypes: dcomp.componentTypes };
     target = new Component({}, compOpts);
     component = new Component({}, compOpts);
-    target.model = component;
-    model = new Property({
+    model = new PropertyStack({
       type: 'stack',
       property: propName,
       properties,
@@ -46,19 +45,17 @@ describe('PropertyStackView', () => {
       model,
     });
     document.body.innerHTML = '<div id="fixtures"></div>';
-    fixtures = document.body.firstChild;
+    fixtures = document.body.firstChild as HTMLElement;
     view.render();
     fixtures.appendChild(view.el);
   });
 
-  afterAll(() => {
-    component = null;
-    view = null;
-    model = null;
+  afterEach(() => {
+    em.destroy();
   });
 
   test('Rendered correctly', () => {
-    var prop = view.el;
+    const prop = view.el;
     expect(fixtures.querySelector('.property')).toBeTruthy();
     expect(prop.querySelector('.label')).toBeTruthy();
     expect(prop.querySelector('.field')).toBeTruthy();
@@ -74,12 +71,12 @@ describe('PropertyStackView', () => {
   });
 
   test('Layers rendered correctly', () => {
-    var children = view.el.querySelector('[data-layers-wrapper]').children;
+    const children = view.el.querySelector('[data-layers-wrapper]')!.children;
     expect(children.length).toEqual(1);
   });
 
   test('Layers container is empty', () => {
-    var layers = view.el.querySelector('.layers');
+    const layers = view.el.querySelector('.layers')!;
     expect(layers.innerHTML).toBeFalsy();
   });
 });

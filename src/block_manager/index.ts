@@ -34,9 +34,9 @@ import EditorModel from '../editor/model/Editor';
 import defaults, { BlockManagerConfig } from './config/config';
 import Block, { BlockProperties } from './model/Block';
 import Blocks from './model/Blocks';
-import Categories from './model/Categories';
-import Category from './model/Category';
-import { BlocksEvents } from './types';
+import Categories from '../abstract/ModuleCategories';
+import Category, { getItemsByCategory } from '../abstract/ModuleCategory';
+import { BlocksByCategory, BlocksEvents } from './types';
 import BlocksView from './view/BlocksView';
 
 export type BlockEvent = `${BlocksEvents}`;
@@ -61,11 +61,11 @@ export default class BlockManager extends ItemManagerModule<BlockManagerConfig, 
   storageKey = '';
 
   constructor(em: EditorModel) {
-    super(em, 'BlockManager', new Blocks(em.config.blockManager?.blocks || []), BlocksEvents, defaults);
+    super(em, 'BlockManager', new Blocks(em.config.blockManager?.blocks || [], { em }), BlocksEvents, defaults);
 
     // Global blocks collection
     this.blocks = this.all;
-    this.blocksVisible = new Blocks(this.blocks.models);
+    this.blocksVisible = new Blocks(this.blocks.models, { em });
     this.categories = new Categories();
 
     // Setup the sync between the global and public collections
@@ -279,6 +279,19 @@ export default class BlockManager extends ItemManagerModule<BlockManagerConfig, 
   }
 
   /**
+   * Get blocks by category.
+   * @example
+   * blockManager.getBlocksByCategory();
+   * // Returns an array of items of this type
+   * // > { category?: Category; items: Block[] }
+   *
+   * // NOTE: The item without category is the one containing blocks without category.
+   */
+  getBlocksByCategory(): BlocksByCategory[] {
+    return getItemsByCategory<Block>(this.getAll().models);
+  }
+
+  /**
    * Render blocks
    * @param  {Array} blocks Blocks to render, without the argument will render all global blocks
    * @param  {Object} [opts={}] Options
@@ -311,7 +324,7 @@ export default class BlockManager extends ItemManagerModule<BlockManagerConfig, 
     const toRender = blocks || this.getAll().models;
 
     if (opts.external) {
-      const collection = new Blocks(toRender);
+      const collection = new Blocks(toRender, { em });
       return new BlocksView({ collection, categories }, { em, ...config, ...opts }).render().el;
     }
 

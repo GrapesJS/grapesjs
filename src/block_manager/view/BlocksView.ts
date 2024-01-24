@@ -4,9 +4,9 @@ import { View } from '../../common';
 import Component from '../../dom_components/model/Component';
 import EditorModel from '../../editor/model/Editor';
 import Block from '../model/Block';
-import Categories from '../model/Categories';
+import Categories from '../../abstract/ModuleCategories';
 import BlockView from './BlockView';
-import CategoryView from './CategoryView';
+import CategoryView from '../../abstract/ModuleCategoryView';
 
 export interface BlocksViewConfig {
   em: EditorModel;
@@ -126,38 +126,24 @@ export default class BlocksView extends View {
    * */
   add(model: Block, fragment?: DocumentFragment) {
     const { config, renderedCategories } = this;
-    const view = new BlockView(
-      {
-        model,
-        attributes: model.get('attributes'),
-      },
-      config
-    );
+    const attributes = model.get('attributes');
+    const view = new BlockView({ model, attributes }, config);
     const rendered = view.render().el;
-    let category = model.get('category');
+    const category = model.parent.initCategory(model);
 
     // Check for categories
     if (category && this.categories && !config.ignoreCategories) {
-      if (isString(category)) {
-        category = { id: category, label: category };
-      } else if (isObject(category) && !category.id) {
-        category.id = category.label;
-      }
-
-      const catModel = this.categories.add(category);
-      const catId = catModel.get('id')!;
+      const catId = category.getId();
       const categories = this.getCategoriesEl();
       let catView = renderedCategories.get(catId);
-      // @ts-ignore
-      model.set('category', catModel, { silent: true });
 
       if (!catView && categories) {
-        catView = new CategoryView({ model: catModel }, config).render();
+        catView = new CategoryView({ model: category }, config, 'block').render();
         renderedCategories.set(catId, catView);
         categories.appendChild(catView.el);
       }
 
-      catView && catView.append(rendered);
+      catView?.append(rendered);
       return;
     }
 

@@ -1,8 +1,11 @@
 import Component from '../../../src/dom_components/model/Component';
 import ComponentTextView from '../../../src/dom_components/view/ComponentTextView';
+import Editor from '../../../src/editor/model/Editor';
 import Sorter from '../../../src/utils/Sorter';
 
 describe('Sorter', () => {
+  let em: Editor;
+  let config: any;
   let fixture: HTMLElement;
   let obj: Sorter;
   let parent: HTMLElement;
@@ -16,6 +19,8 @@ describe('Sorter', () => {
   });
 
   beforeEach(() => {
+    em = new Editor();
+    config = { em };
     parent = document.createElement('div');
     parent.setAttribute('class', 'parent1');
     plh = document.createElement('div');
@@ -53,6 +58,7 @@ describe('Sorter', () => {
 
   afterEach(() => {
     document.body.removeChild(fixture);
+    em.destroyAll();
   });
 
   test('matches class', () => {
@@ -433,11 +439,14 @@ describe('Sorter', () => {
       let parentView: ComponentTextView;
 
       beforeEach(() => {
-        parentModel = new Component({
-          droppable: (srcModel, trgModel) => {
-            return srcModel.getEl()!.className === 'canDrop';
+        parentModel = new Component(
+          {
+            droppable: (srcModel, trgModel) => {
+              return srcModel.getEl()!.className === 'canDrop';
+            },
           },
-        });
+          config
+        );
         parentView = new ComponentTextView({
           ...cmpViewOpts,
           model: parentModel,
@@ -449,30 +458,38 @@ describe('Sorter', () => {
       });
 
       test('Droppable function', () => {
-        var srcModel = new Component({
-          tagName: 'div',
-          draggable: true,
-          content: 'Content text',
-          attributes: { class: 'canDrop' },
-        });
+        var srcModel = new Component(
+          {
+            tagName: 'div',
+            draggable: true,
+            content: 'Content text',
+            attributes: { class: 'canDrop' },
+          },
+          config
+        );
         var srcView = new ComponentTextView({
           ...cmpViewOpts,
           model: srcModel,
+          config,
         });
 
         expect(obj.validTarget(parentView.el, srcView.el).valid).toEqual(true);
       });
 
       test('Not droppable function', () => {
-        var srcModel = new Component({
-          tagName: 'div',
-          draggable: true,
-          content: 'Content text',
-          attributes: { class: 'cannotDrop' },
-        });
+        var srcModel = new Component(
+          {
+            tagName: 'div',
+            draggable: true,
+            content: 'Content text',
+            attributes: { class: 'cannotDrop' },
+          },
+          config
+        );
         var srcView = new ComponentTextView({
           ...cmpViewOpts,
           model: srcModel,
+          config,
         });
 
         expect(obj.validTarget(parentView.el, srcView.el).valid).toEqual(false);
@@ -484,14 +501,18 @@ describe('Sorter', () => {
       var srcView: ComponentTextView;
 
       beforeEach(() => {
-        srcModel = new Component({
-          draggable: (srcModel, trgModel) => {
-            return trgModel.getEl()!.className === 'canDrag';
+        srcModel = new Component(
+          {
+            draggable: (srcModel, trgModel) => {
+              return trgModel.getEl()!.className === 'canDrag';
+            },
           },
-        });
+          config
+        );
         srcView = new ComponentTextView({
           ...cmpViewOpts,
           model: srcModel,
+          config,
         });
       });
 
@@ -500,30 +521,38 @@ describe('Sorter', () => {
       });
 
       test('Draggable function', () => {
-        var parentModel = new Component({
-          tagName: 'div',
-          droppable: true,
-          content: 'Content text',
-          attributes: { class: 'canDrag' },
-        });
+        var parentModel = new Component(
+          {
+            tagName: 'div',
+            droppable: true,
+            content: 'Content text',
+            attributes: { class: 'canDrag' },
+          },
+          config
+        );
         var parentView = new ComponentTextView({
           ...cmpViewOpts,
           model: parentModel,
+          config,
         });
 
         expect(obj.validTarget(parentView.el, srcView.el).valid).toEqual(true);
       });
 
       test('Not draggable function', () => {
-        var parentModel = new Component({
-          tagName: 'div',
-          droppable: true,
-          content: 'Content text',
-          attributes: { class: 'cannotDrag' },
-        });
+        var parentModel = new Component(
+          {
+            tagName: 'div',
+            droppable: true,
+            content: 'Content text',
+            attributes: { class: 'cannotDrag' },
+          },
+          config
+        );
         var parentView = new ComponentTextView({
           ...cmpViewOpts,
           model: parentModel,
+          config,
         });
 
         expect(obj.validTarget(parentView.el, srcView.el).valid).toEqual(false);
@@ -540,40 +569,61 @@ describe('Sorter', () => {
     let root: Component;
 
     beforeAll(() => {
-      child00 = new Component({
-        tagName: 'div',
-        name: 'child00',
-      });
-      child01 = new Component({
-        tagName: 'div',
-        name: 'child01',
-      });
-      child0 = new Component({
-        tagName: 'div',
-        name: 'child0',
-        // @ts-ignore
-        components: [child00, child01],
-      });
-      child10 = new Component({
-        tagName: 'div',
-        name: 'child10',
-      });
-      child1 = new Component({
-        tagName: 'div',
-        name: 'child1',
-        // @ts-ignore
-        components: [child10],
-      });
-      child2 = new Component({
-        tagName: 'div',
-        name: 'child2',
-      });
-      root = new Component({
-        tagName: 'div',
-        name: 'root',
-        // @ts-ignore
-        components: [child0, child1, child2],
-      });
+      child00 = new Component(
+        {
+          tagName: 'div',
+          name: 'child00',
+        },
+        config
+      );
+      child01 = new Component(
+        {
+          tagName: 'div',
+          name: 'child01',
+        },
+        config
+      );
+      child0 = new Component(
+        {
+          tagName: 'div',
+          name: 'child0',
+          // @ts-ignore
+          components: [child00, child01],
+        },
+        config
+      );
+      child10 = new Component(
+        {
+          tagName: 'div',
+          name: 'child10',
+        },
+        config
+      );
+      child1 = new Component(
+        {
+          tagName: 'div',
+          name: 'child1',
+          // @ts-ignore
+          components: [child10],
+        },
+        config
+      );
+      child2 = new Component(
+        {
+          tagName: 'div',
+          name: 'child2',
+        },
+        config
+      );
+      root = new Component(
+        {
+          tagName: 'div',
+          name: 'root',
+          // @ts-ignore
+          components: [child0, child1, child2],
+        },
+        config
+      );
     });
     test('Parents', () => {
       expect(obj.parents(root)).toEqual([root]);

@@ -1,25 +1,24 @@
-import PropertyView from 'style_manager/view/PropertyView';
-import Property from 'style_manager/model/Property';
-import Editor from 'editor/model/Editor';
-import DomComponents from 'dom_components';
-import Component from 'dom_components/model/Component';
+import PropertyView from '../../../../src/style_manager/view/PropertyView';
+import Property from '../../../../src/style_manager/model/Property';
+import Editor from '../../../../src/editor/model/Editor';
+import Component from '../../../../src/dom_components/model/Component';
 
 describe('PropertyView', () => {
-  let em;
-  let dcomp;
-  let compOpts;
-  var component;
-  var fixtures;
-  var target;
-  var model;
-  var view;
+  let em: Editor;
+  let dcomp: Editor['Components'];
+  let compOpts: any;
+  var component: Component;
+  var fixtures: HTMLElement;
+  var target: Component;
+  var model: Property;
+  var view: PropertyView;
   var propName = 'testprop';
   var propValue = 'testvalue';
   var defValue = 'testDefault';
 
   beforeEach(() => {
     em = new Editor({});
-    dcomp = new DomComponents(em);
+    dcomp = em.Components;
     compOpts = { em, componentTypes: dcomp.componentTypes };
     target = new Component({}, compOpts);
     component = new Component({}, compOpts);
@@ -29,17 +28,13 @@ describe('PropertyView', () => {
       config: { em },
     });
     document.body.innerHTML = '<div id="fixtures"></div>';
-    fixtures = document.body.firstChild;
+    fixtures = document.body.firstChild as HTMLElement;
     view.render();
     fixtures.appendChild(view.el);
   });
 
   afterEach(() => {
-    //view.remove(); // strange errors ???
-  });
-
-  afterAll(() => {
-    component = null;
+    em.destroy();
   });
 
   test('Rendered correctly', () => {
@@ -82,7 +77,8 @@ describe('PropertyView', () => {
 
   describe('Init property', () => {
     beforeEach(() => {
-      component = new Component();
+      em = new Editor({});
+      component = new Component({}, { em });
       model = new Property({
         property: propName,
         default: defValue,

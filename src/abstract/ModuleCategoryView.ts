@@ -1,11 +1,12 @@
-import { View } from '../../common';
-import EditorModel from '../../editor/model/Editor';
-import html from '../../utils/html';
-import Category from '../model/Category';
+import { View } from '../common';
+import EditorModel from '../editor/model/Editor';
+import html from '../utils/html';
+import Category from './ModuleCategory';
 
 export interface CategoryViewConfig {
   em: EditorModel;
   pStylePrefix?: string;
+  stylePrefix?: string;
 }
 
 export default class CategoryView extends View<Category> {
@@ -17,7 +18,8 @@ export default class CategoryView extends View<Category> {
   iconClass: string;
   activeClass: string;
   iconEl?: HTMLElement;
-  blocksEl?: HTMLElement;
+  typeEl?: HTMLElement;
+  catName: string;
 
   events() {
     return {
@@ -25,13 +27,13 @@ export default class CategoryView extends View<Category> {
     };
   }
 
-  template({ pfx, label }: { pfx: string; label: string }) {
+  template({ pfx, label, catName }: { pfx: string; label: string; catName: string }) {
     return html`
       <div class="${pfx}title" data-title>
         <i class="${pfx}caret-icon"></i>
         ${label}
       </div>
-      <div class="${pfx}blocks-c"></div>
+      <div class="${pfx}${catName}s-c"></div>
     `;
   }
 
@@ -40,17 +42,18 @@ export default class CategoryView extends View<Category> {
     return this.model.get('attributes') || {};
   }
 
-  constructor(o: any, config: CategoryViewConfig) {
+  constructor(o: any, config: CategoryViewConfig, catName: string) {
     super(o);
     this.config = config;
     const pfx = config.pStylePrefix || '';
     this.em = config.em;
+    this.catName = catName;
     this.pfx = pfx;
     this.caretR = 'fa fa-caret-right';
     this.caretD = 'fa fa-caret-down';
     this.iconClass = `${pfx}caret-icon`;
     this.activeClass = `${pfx}open`;
-    this.className = `${pfx}block-category`;
+    this.className = `${pfx}${catName}-category`;
     this.listenTo(this.model, 'change:open', this.updateVisibility);
     this.model.view = this;
   }
@@ -63,13 +66,13 @@ export default class CategoryView extends View<Category> {
   open() {
     this.$el.addClass(this.activeClass);
     this.getIconEl()!.className = `${this.iconClass} ${this.caretD}`;
-    this.getBlocksEl()!.style.display = '';
+    this.getTypeEl()!.style.display = '';
   }
 
   close() {
     this.$el.removeClass(this.activeClass);
     this.getIconEl()!.className = `${this.iconClass} ${this.caretR}`;
-    this.getBlocksEl()!.style.display = 'none';
+    this.getTypeEl()!.style.display = 'none';
   }
 
   toggle() {
@@ -85,22 +88,22 @@ export default class CategoryView extends View<Category> {
     return this.iconEl;
   }
 
-  getBlocksEl() {
-    if (!this.blocksEl) {
-      this.blocksEl = this.el.querySelector(`.${this.pfx}blocks-c`)!;
+  getTypeEl() {
+    if (!this.typeEl) {
+      this.typeEl = this.el.querySelector(`.${this.pfx}${this.catName}s-c`)!;
     }
 
-    return this.blocksEl;
+    return this.typeEl;
   }
 
   append(el: HTMLElement) {
-    this.getBlocksEl().appendChild(el);
+    this.getTypeEl().appendChild(el);
   }
 
   render() {
-    const { em, el, $el, model, pfx } = this;
-    const label = em.t(`blockManager.categories.${model.id}`) || model.get('label');
-    el.innerHTML = this.template({ pfx, label });
+    const { em, el, $el, model, pfx, catName } = this;
+    const label = em.t(`${catName}Manager.categories.${model.id}`) || model.get('label');
+    el.innerHTML = this.template({ pfx, label, catName });
     $el.addClass(this.className!);
     $el.css({ order: model.get('order')! });
     this.updateVisibility();

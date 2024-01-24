@@ -1,30 +1,29 @@
-import PropertyColorView from 'style_manager/view/PropertyColorView';
-import Property from 'style_manager/model/Property';
-import Component from 'dom_components/model/Component';
-import Editor from 'editor/model/Editor';
-import DomComponents from 'dom_components';
+import PropertyColorView from '../../../../src/style_manager/view/PropertyColorView';
+import Property from '../../../../src/style_manager/model/Property';
+import Component from '../../../../src/dom_components/model/Component';
+import Editor from '../../../../src/editor/model/Editor';
 
 describe('PropertyColorView', () => {
-  let em;
-  let dcomp;
-  let compOpts;
-  let component;
-  let fixtures;
-  let target;
-  let model;
-  let view;
+  let em: Editor;
+  let dcomp: Editor['Components'];
+  let compOpts: any;
+  let component: Component;
+  var fixtures: HTMLElement;
+  let target: Component;
+  let model: Property;
+  let view: PropertyColorView;
   let propName = 'testprop';
   let propValue = '#fff';
 
   beforeAll(() => {
-    $.fn.spectrum = function () {
+    ($.fn as any).spectrum = function () {
       return this;
     };
   });
 
   beforeEach(() => {
-    em = new Editor({});
-    dcomp = new DomComponents(em);
+    em = new Editor();
+    dcomp = em.Components;
     compOpts = { em, componentTypes: dcomp.componentTypes };
     target = new Component({}, compOpts);
     component = new Component({}, compOpts);
@@ -37,19 +36,13 @@ describe('PropertyColorView', () => {
     );
     view = new PropertyColorView({ model });
     document.body.innerHTML = '<div id="fixtures"></div>';
-    fixtures = document.body.firstChild;
+    fixtures = document.body.firstChild as HTMLElement;
     view.render();
     fixtures.appendChild(view.el);
   });
 
   afterEach(() => {
-    //view.remove(); // strange errors ???
-  });
-
-  afterAll(() => {
-    component = null;
-    view = null;
-    model = null;
+    em.destroy();
   });
 
   test('Rendered correctly', () => {
@@ -97,7 +90,8 @@ describe('PropertyColorView', () => {
 
   describe('Init property', () => {
     beforeEach(() => {
-      component = new Component();
+      em = new Editor();
+      component = new Component({}, { em });
       model = new Property({
         type: 'color',
         property: propName,
