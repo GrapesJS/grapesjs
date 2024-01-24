@@ -184,6 +184,8 @@ $ yarn test
 * [grapesjs-ui-suggest-classes](https://github.com/silexlabs/grapesjs-ui-suggest-classes) - Enable auto-complete of classes in the SelectorManager UI
 * [grapesjs-fonts](https://github.com/silexlabs/grapesjs-fonts) - Custom Fonts plugin, adds a UI to manage fonts in websites
 * [grapesjs-symbols](https://github.com/silexlabs/grapesjs-symbols) - Symbols plugin to reuse elements in a website and accross pages
+* [grapesjs-click](https://github.com/bgrand-ch/grapesjs-click) - Grab and drop blocks and components with click (no more drag-and-drop)
+* [grapesjs-float](https://github.com/bgrand-ch/grapesjs-float) - Anchor a floating element next to another element (selected component, ...)
 
 ### Presets
 * [grapesjs-preset-webpage](https://github.com/GrapesJS/preset-webpage) - Webpage Builder
