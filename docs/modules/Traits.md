@@ -36,8 +36,8 @@ editor.Components.addType('input', {
           'name', // Same as: { type: 'text', name: 'name' }
           'placeholder',
           {
-            type: 'select', // Type of the trait (required)
-            name: 'type', // The name of the attribute/property to use on component (required)
+            type: 'select', // Type of the trait
+            name: 'type', // (required) The name of the attribute/property to use on component
             label: 'Type', // The label you will see in Settings
             options: [
               { id: 'text', label: 'Text'},
@@ -210,8 +210,8 @@ Select input with options
   type: 'select',
   // ...
   options: [ // Array of options
-    { id: 'opt1', name: 'Option 1'},
-    { id: 'opt2', name: 'Option 2'},
+    { id: 'opt1', label: 'Option 1'},
+    { id: 'opt2', label: 'Option 2'},
   ]
 }
 ```
@@ -263,8 +263,8 @@ If you want, for example, updating some property of the trait, do this:
 // Let's update `options` of our `type` trait, defined in Input component
 const component = editor.getSelected();
 component.getTrait('type').set('options', [
-  { id: 'opt1', name: 'New option 1'},
-  { id: 'opt2', name: 'New option 2'},
+  { id: 'opt1', label: 'New option 1'},
+  { id: 'opt2', label: 'New option 2'},
 ]);
 // or with multiple values
 component.getTrait('type').set({
@@ -330,15 +330,15 @@ editor.Traits.addType('href-next', {
     // Here we can decide to use properties from the trait
     const traitOpts = trait.get('options') || [];
     const options = traitOpts.length ? traitOpts : [
-      { id: 'url', name: 'URL' },
-      { id: 'email', name: 'Email' },
+      { id: 'url', label: 'URL' },
+      { id: 'email', label: 'Email' },
     ];
 
     // Create a new element container and add some content
     const el = document.createElement('div');
     el.innerHTML = `
       <select class="href-next__type">
-        ${options.map(opt => `<option value="${opt.id}">${opt.name}</option>`).join('')}
+        ${options.map(opt => `<option value="${opt.id}">${opt.label}</option>`).join('')}
       </select>
       <div class="href-next__url-inputs">
         <input class="href-next__url" placeholder="Insert URL"/>
