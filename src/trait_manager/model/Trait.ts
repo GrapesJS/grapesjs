@@ -44,23 +44,15 @@ export interface TraitProperties {
    */
   changeProp?: boolean;
 
-  attributes?: Record<string, any>;
-  valueTrue?: string;
-  valueFalse?: string;
-  min?: number;
-  max?: number;
-  unit?: string;
-  step?: number;
-  value?: any;
-  target?: Component;
-  default?: any;
-  placeholder?: string;
-  command?: string | ((editor: Editor, trait: Trait) => any);
-  options?: Record<string, any>[];
-  labelButton?: string;
-  text?: string;
-  full?: boolean;
+  /**
+   * Instead of relying on component props/attributes, define your own
+   * logic on how to get the trait value.
+   */
   getValue?: (props: { editor: Editor; trait: Trait; component: Component }) => any;
+
+  /**
+   * In conjunction with the `getValue`, define your own logic for updating the trait value.
+   */
   setValue?: (props: {
     value: any;
     editor: Editor;
@@ -70,6 +62,61 @@ export interface TraitProperties {
     options: TraitSetValueOptions;
     emitUpdate: () => void;
   }) => void;
+
+  /**
+   * Custom true value for checkbox type.
+   * @default 'true'
+   */
+  valueTrue?: string;
+
+  /**
+   * Custom false value for checkbox type.
+   * * @default 'false'
+   */
+  valueFalse?: string;
+
+  /**
+   * Minimum number value for number type.
+   */
+  min?: number;
+
+  /**
+   * Maximum number value for number type.
+   */
+  max?: number;
+  unit?: string;
+
+  /**
+   * Number of steps for number type.
+   */
+  step?: number;
+  value?: any;
+  target?: Component;
+  default?: any;
+
+  /**
+   * Placeholder to show inside the input.
+   */
+  placeholder?: string;
+
+  /**
+   * Array of options for the select type.
+   */
+  options?: Record<string, any>[];
+
+  /**
+   * Label text to use for the button type.
+   */
+  text?: string;
+  labelButton?: string;
+
+  /**
+   * Command to use for the button type.
+   */
+  command?: string | ((editor: Editor, trait: Trait) => any);
+
+  full?: boolean;
+  attributes?: Record<string, any>;
 }
 
 interface TraitSetValueOptions {
