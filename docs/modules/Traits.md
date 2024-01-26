@@ -7,7 +7,7 @@ title: Trait Manager
 In GrapesJS, Traits define different parameters and behaviors of a component. The user generally will see traits as the *Settings* of a component. A common use of traits is to customize element attributes (eg. `placeholder` for `<input>`) or you can also bind them to the properties of your components and react to their changes.
 
 ::: warning
-This guide is referring to GrapesJS v0.15.3 or higher.<br><br>
+This guide is referring to GrapesJS v0.21.9 or higher.<br><br>
 To get a better understanding of the content in this guide we recommend reading [Components](Components.html) first
 :::
 
@@ -22,7 +22,7 @@ Generally, you define traits on the definition of your new custom components (or
 
 All components, by default, contain two traits: `id` and `title` (at the moment of writing). So, if you select an input and open the Settings panel you will see this:
 
-<img :src="$withBase('/default-traits.png')">
+<img :src="$withBase('/default-traits.png')" class="img-ctr-rad" style="max-width: 200px;" alt="Default traits">
 
 We can start by creating a new custom `input` component in this way:
 
@@ -59,7 +59,7 @@ editor.Components.addType('input', {
 
 Now the result will be
 
-<img :src="$withBase('/input-custom-traits.png')">
+<img :src="$withBase('/input-custom-traits.png')" class="img-ctr-rad" style="max-width: 230px;" alt="Input with custom traits">
 
 If you want you can also define traits dynamically via functions, which will be created on component initialization. It might be useful if you need to create traits based on some other component characteristic.
 
@@ -135,6 +135,36 @@ editor.Components.addType('input', {
   }
 })
 ```
+
+### Categories
+
+It's possible to group your traits into categories, as shown below.
+
+<img :src="$withBase('/trait-categories.png')" class="img-ctr-rad" style="max-width: 250px;" alt="Traits with categories">
+
+```js
+const category1 = { id: 'first', label: 'First category' };
+const category2 = { id: 'second', label: 'Second category', open: false };
+
+editor.Components.addType('input', {
+  model: {
+    defaults: {
+      // ...
+      traits: [
+        { name: 'trait-1', category: category1 },
+        { name: 'trait-2', category: category1 },
+        { name: 'trait-3', category: category2 },
+        { name: 'trait-4', category: category2 },
+        // Traits without categories will be rendered at the bottom
+        { name: 'trait-5' },
+        { name: 'trait-6' },
+      ],
+    },
+  }
+})
+```
+
+
 
 ## Built-in trait types
 
@@ -270,7 +300,7 @@ In that case, you can define a totally new type of trait and bind any kind of el
 
 Let's update the default `link` Component with a new kind of trait. This is the default situation of traits for a simple link.
 
-<img :src="$withBase('/default-link-comp.jpg')">
+<img :src="$withBase('/default-link-comp.jpg')" class="img-ctr-rad" style="max-width: 210px;" alt="Default link component">
 
 Let's just replace all of its traits with a new one, `href-next`, which will allow the user to select the type of href (eg. 'url', 'email', etc.)
 
@@ -343,7 +373,7 @@ editor.Traits.addType('href-next', {
 
 From the example above we simply created our custom inputs (by giving also the possibility to use `option` trait property) and defined some input switch behavior on the type change. Now the result would be something like this
 
-<img :src="$withBase('/docs-init-link-trait.jpg')">
+<img :src="$withBase('/docs-init-link-trait.jpg')" class="img-ctr-rad" style="max-width: 215px;" alt="Link with traits">
 
 ### Update layout
 
@@ -393,7 +423,7 @@ editor.Traits.addType('href-next', {
 });
 ```
 
-<img :src="$withBase('/docs-link-trait-raw.jpg')">
+<img :src="$withBase('/docs-link-trait-raw.jpg')" class="img-ctr-rad" style="max-width: 215px;" alt="Basic custom link trait">
 
 In this case, the result will be quite raw and unstyled but the point of custom trait types is to allow you to reuse your own styled inputs, probably already designed and defined (or implemented in some UI framework).
 For now, let's keep the default input wrapper and continue with the integration of our custom trait.
