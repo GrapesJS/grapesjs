@@ -163,6 +163,13 @@ export type TraitsEvent = `${TraitsEvents}`;
 /**{START_EVENTS}*/
 export enum TraitsEvents {
   /**
+   * @event `trait:value` Trait value updated.
+   * @example
+   * editor.on('trait:value', ({ trait, component, value }) => { ... });
+   */
+  value = 'trait:value',
+
+  /**
    * @event `trait:custom`
    * @example
    * editor.on('trait:custom', () => { ... });

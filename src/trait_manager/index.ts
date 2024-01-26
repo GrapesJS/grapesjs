@@ -52,14 +52,14 @@ export default class TraitManager extends Module<TraitManagerConfigModule> {
    */
   constructor(em: EditorModel) {
     super(em, 'TraitManager', defaults as any);
-    const { state, config } = this;
+    const { state, config, events } = this;
     const ppfx = config.pStylePrefix;
     ppfx && (config.stylePrefix = `${ppfx}${config.stylePrefix}`);
 
     const upAll = debounce(() => this.__upSel(), 0);
     const update = debounce(() => this.__onUp(), 0);
     state.listenTo(em, 'component:toggled', upAll);
-    state.listenTo(em, 'trait:update', update);
+    state.listenTo(em, events.value, update);
 
     this.debounced = [upAll, update];
   }

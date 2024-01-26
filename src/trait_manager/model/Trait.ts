@@ -4,7 +4,7 @@ import { LocaleOptions, Model, SetOptions } from '../../common';
 import Component from '../../dom_components/model/Component';
 import EditorModel from '../../editor/model/Editor';
 import { isDef } from '../../utils/mixins';
-import { TraitOption, TraitProperties, TraitSetValueOptions } from '../types';
+import TraitsEvents, { TraitOption, TraitProperties, TraitSetValueOptions } from '../types';
 import TraitView from '../view/TraitView';
 import Traits from './Traits';
 
@@ -233,11 +233,10 @@ export default class Trait extends Model<TraitProperties> {
     const { component, em } = this;
     const value = this.getTargetValue();
     this.set({ value }, { fromTarget: 1 });
-    em?.trigger('trait:update', {
-      trait: this,
-      component,
-      value,
-    });
+    const props = { trait: this, component, value };
+    em?.trigger(TraitsEvents.value, props);
+    // This should be triggered for any trait prop change
+    em?.trigger('trait:update', props);
   }
 
   getTargetValue() {
