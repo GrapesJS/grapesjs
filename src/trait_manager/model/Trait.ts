@@ -133,13 +133,17 @@ export default class Trait extends Model<TraitProperties> {
     return cat instanceof Category ? cat : undefined;
   }
 
-  setTarget(target: Component) {
-    if (target) {
+  get component() {
+    return this.target;
+  }
+
+  setTarget(component: Component) {
+    if (component) {
       const { name, changeProp, value: initValue, getValue } = this.attributes;
-      this.target = target;
+      this.target = component;
       this.unset('target');
       const targetEvent = changeProp ? `change:${name}` : `change:attributes:${name}`;
-      this.listenTo(target, targetEvent, this.targetUpdated);
+      this.listenTo(component, targetEvent, this.targetUpdated);
       const value =
         initValue ||
         // Avoid the risk of loops in case the trait has a custom getValue
@@ -202,29 +206,31 @@ export default class Trait extends Model<TraitProperties> {
    * @param {Boolean} [opts.partial] If `true` the update won't be considered complete (not stored in UndoManager).
    */
   setValue(value: any, opts: TraitSetValueOptions = {}) {
+    const { component, em } = this;
+    const { partial } = opts;
     const valueOpts: { avoidStore?: boolean } = {};
     const { setValue } = this.attributes;
 
     if (setValue) {
       setValue({
         value,
-        editor: this.em?.getEditor()!,
+        component,
+        editor: em?.getEditor()!,
         trait: this,
-        component: this.target,
-        partial: !!opts.partial,
+        partial: !!partial,
         options: opts,
         emitUpdate: () => this.targetUpdated(),
       });
       return;
     }
 
-    if (opts.partial) {
+    if (partial) {
       valueOpts.avoidStore = true;
     }
 
     this.setTargetValue(value, valueOpts);
 
-    if (opts.partial === false) {
+    if (partial === false) {
       this.setTargetValue('');
       this.setTargetValue(value);
     }
@@ -298,39 +304,40 @@ export default class Trait extends Model<TraitProperties> {
   }
 
   targetUpdated() {
+    const { component, em } = this;
     const value = this.getTargetValue();
     this.set({ value }, { fromTarget: 1 });
-    this.em?.trigger('trait:update', {
+    em?.trigger('trait:update', {
       trait: this,
-      component: this.target,
+      component,
       value,
     });
   }
 
   getTargetValue() {
+    const { component, em } = this;
     const name = this.getName();
-    const target = this.target;
     const getValue = this.get('getValue');
     let value;
 
     if (getValue) {
       value = getValue({
-        editor: this.em?.getEditor()!,
+        editor: em?.getEditor()!,
         trait: this,
-        component: target,
+        component,
       });
     } else if (this.get('changeProp')) {
-      value = target.get(name);
+      value = component.get(name);
     } else {
       // @ts-ignore TODO update post component update
-      value = target.getAttributes()[name];
+      value = component.getAttributes()[name];
     }
 
     return !isUndefined(value) ? value : '';
   }
 
   setTargetValue(value: any, opts: SetOptions = {}) {
-    const { target, attributes } = this;
+    const { component, attributes } = this;
     const name = this.getName();
     if (isUndefined(value)) return;
     let valueToSet = value;
@@ -354,9 +361,9 @@ export default class Trait extends Model<TraitProperties> {
     }
 
     if (this.get('changeProp')) {
-      target.set(name, valueToSet, opts);
+      component.set(name, valueToSet, opts);
     } else {
-      target.addAttributes({ [name]: valueToSet }, opts);
+      component.addAttributes({ [name]: valueToSet }, opts);
     }
   }
 
@@ -372,13 +379,13 @@ export default class Trait extends Model<TraitProperties> {
   }
 
   getInitValue() {
-    const target = this.target;
+    const { component } = this;
     const name = this.getName();
     let value;
 
-    if (target) {
-      const attrs = target.get('attributes')!;
-      value = this.get('changeProp') ? target.get(name) : attrs[name];
+    if (component) {
+      const attrs = component.get('attributes')!;
+      value = this.get('changeProp') ? component.get(name) : attrs[name];
     }
 
     return value || this.get('value') || this.get('default');
