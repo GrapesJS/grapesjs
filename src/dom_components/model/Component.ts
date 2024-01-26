@@ -34,8 +34,9 @@ import { DomComponentsConfig } from '../config/config';
 import ComponentView from '../view/ComponentView';
 import { AddOptions, ExtractMethods, ObjectAny, PrevToNewIdMap, SetOptions } from '../../common';
 import CssRule, { CssRuleJSON } from '../../css_composer/model/CssRule';
-import Trait, { TraitProperties } from '../../trait_manager/model/Trait';
+import Trait from '../../trait_manager/model/Trait';
 import { ToolbarButtonProps } from './ToolbarButton';
+import { TraitProperties } from '../../trait_manager/types';
 
 export interface IComponent extends ExtractMethods<Component> {}
 

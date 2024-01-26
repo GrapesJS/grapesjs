@@ -1,7 +1,8 @@
-import { TraitManagerConfig } from '../config/config';
 import { isString } from 'underscore';
-import Trait, { TraitProperties } from './Trait';
 import EditorModel from '../../editor/model/Editor';
+import { TraitManagerConfig } from '../config/config';
+import { TraitProperties } from '../types';
+import Trait from './Trait';
 
 export default class TraitFactory {
   config: Partial<TraitManagerConfig>;

@@ -36,14 +36,14 @@ editor.Components.addType('input', {
           'name', // Same as: { type: 'text', name: 'name' }
           'placeholder',
           {
-            type: 'select', // Type of the trait
+            type: 'select', // Type of the trait (required)
+            name: 'type', // The name of the attribute/property to use on component (required)
             label: 'Type', // The label you will see in Settings
-            name: 'type', // The name of the attribute/property to use on component
             options: [
-              { id: 'text', name: 'Text'},
-              { id: 'email', name: 'Email'},
-              { id: 'password', name: 'Password'},
-              { id: 'number', name: 'Number'},
+              { id: 'text', label: 'Text'},
+              { id: 'email', label: 'Email'},
+              { id: 'password', label: 'Password'},
+              { id: 'number', label: 'Number'},
             ]
           }, {
             type: 'checkbox',
