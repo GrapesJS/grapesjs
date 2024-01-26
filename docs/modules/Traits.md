@@ -294,7 +294,7 @@ editor.Components.addType('link', {
 Now you'll see a simple text input because we have not yet defined our new trait type, so let's do it:
 
 ```js
-editor.TraitManager.addType('href-next', {
+editor.Traits.addType('href-next', {
   // Expects as return a simple HTML string or an HTML element
   createInput({ trait }) {
     // Here we can decide to use properties from the trait
@@ -352,7 +352,7 @@ Before going forward and making our trait work let's talk about the layout struc
 For the label customization you might use `createLabel`
 
 ```js
-editor.TraitManager.addType('href-next', {
+editor.Traits.addType('href-next', {
   // Expects as return a simple HTML string or an HTML element
   createLabel({ label }) {
     return `<div>
@@ -368,7 +368,7 @@ editor.TraitManager.addType('href-next', {
 You've probably seen already that in trait definition you can setup `label: false` to completely remove the label column, but in case you need to force this behavior in all instances of this trait type you can use `noLabel` property
 
 ```js
-editor.TraitManager.addType('href-next', {
+editor.Traits.addType('href-next', {
   noLabel: true,
   // ...
 });
@@ -377,7 +377,7 @@ editor.TraitManager.addType('href-next', {
 You might also notice that by default GrapesJS applies kind of a wrapper around your inputs, generally is ok for simple inputs but probably is not what you need where you're creating a complex custom trait. To remove the default wrapper you can use the `templateInput` option
 
 ```js
-editor.TraitManager.addType('href-next', {
+editor.Traits.addType('href-next', {
   // Completely remove the wrapper
   templateInput: '',
   // Use a new one, by specifying with `data-input` attribute where to place the input container
@@ -403,7 +403,7 @@ For now, let's keep the default input wrapper and continue with the integration 
 At the current state, our element created in `createInput` is not binded to the component so nothing happens when you update inputs, so let's do it now
 
 ```js
-editor.TraitManager.addType('href-next', {
+editor.Traits.addType('href-next', {
   // ...
 
   // Update the component based on element changes
@@ -433,7 +433,7 @@ Now, most of the stuff should already work (you can update the trait and check t
 By default, the base trait wrapper applies a listener on `change` event and calls `onEvent` on any captured event (to be captured the event should be able to [bubble](https://stackoverflow.com/questions/4616694/what-is-event-bubbling-and-capturing)). If you want, for example, to update the component on `input` event you can change the `eventCapture` property
 
 ```js
-editor.TraitManager.addType('href-next', {
+editor.Traits.addType('href-next', {
   eventCapture: ['input'], // you can use multiple events in the array
   // ...
 });
@@ -442,7 +442,7 @@ editor.TraitManager.addType('href-next', {
 The last thing, you might have noticed the wrong initial render of our trait, where inputs are not populated in case of already defined `href` attribute. This step should be done in `onUpdate` method
 
 ```js
-editor.TraitManager.addType('href-next', {
+editor.Traits.addType('href-next', {
   // ...
 
   // Update elements on the component change
@@ -496,7 +496,7 @@ The final result of what we have done can be seen here
 By looking at the example above might seems like a lot of code, but at the end, it's just about a little bit of logic and the native DOM API which is not super pretty. If you use a modern UI client framework (eg. Vue, React, etc.) you could see that the integration is even easier. There is how it would be integrating a custom [Vue Slider Component](https://github.com/NightCatSama/vue-slider-component) as a trait
 
 ```js
-editor.TraitManager.addType('slider', {
+editor.Traits.addType('slider', {
   createInput({ trait }) {
     const vueInst = new Vue({ render: h => h(VueSlider) }).$mount();
     const sliderInst = vueInst.$children[0];
@@ -528,3 +528,32 @@ The integration with external components is possible by following these simple c
   We've also used `onChange` method which comes handy when you need to trigger manually the `onEvent` event (you should never call directly `onEvent` method, but only via `onChange` when you need)
 1. **Property getters/setters**: [`sliderInst.getValue()`](https://nightcatsama.github.io/vue-slider-component/#/api/methods?hash=getvalue)/ [`sliderInst.setValue(value)`](https://nightcatsama.github.io/vue-slider-component/#/api/methods?hash=setvaluevalue)<br/>
   The component should allow to read and write data from the instance
+
+
+## Customization
+
+The default UI can handle most of the common tasks but in case you need more advanced logic/elements, that requires a replacement of the default UI.
+
+All you have to do is to indicate to the editor your intent to use a custom UI and then subscribe to the `trait:custom` event that will trigger on any necessary update of the UI.
+
+```js
+const editor = grapesjs.init({
+    // ...
+    traitManager: {
+      custom: true,
+      // ...
+    },
+});
+
+editor.on('trait:custom', props => {
+    // props.container (HTMLElement) - The default element where you can append your custom UI
+
+    // Here you would put the logic to render/update your UI.
+});
+```
+
+In the example below we'll replicate most of the default functionality by using solely the Traits API.
+
+TODO
+
+<demo-viewer value="v8cgkLfr" height="500" darkcode/>
