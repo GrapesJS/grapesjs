@@ -4,7 +4,7 @@ title: Trait Manager
 
 # Trait Manager
 
-In GrapesJS, Traits define different parameters and behaviors of a component. The user generally will see traits as the *Settings* of a component. A common use of traits is to customize element attributes (eg. `placeholder` for `<input>`) or you can also bind them to the properties of your components and react on their changes.
+In GrapesJS, Traits define different parameters and behaviors of a component. The user generally will see traits as the *Settings* of a component. A common use of traits is to customize element attributes (eg. `placeholder` for `<input>`) or you can also bind them to the properties of your components and react to their changes.
 
 ::: warning
 This guide is referring to GrapesJS v0.15.3 or higher.<br><br>
@@ -18,7 +18,7 @@ To get a better understanding of the content in this guide we recommend reading 
 
 ## Add Traits to Components
 
-Generally you define traits on the definition of your new custom components (or by extending another one). Let's see in this example how to make inputs more customizable by the editor.
+Generally, you define traits on the definition of your new custom components (or by extending another one). Let's see in this example how to make inputs more customizable by the editor.
 
 All components, by default, contain two traits: `id` and `title` (at the moment of writing). So, if you select an input and open the Settings panel you will see this:
 
@@ -27,8 +27,8 @@ All components, by default, contain two traits: `id` and `title` (at the moment 
 We can start by creating a new custom `input` component in this way:
 
 ```js
-editor.DomComponents.addType('input', {
-    isComponent: el => el.tagName == 'INPUT',
+editor.Components.addType('input', {
+    isComponent: el => el.tagName === 'INPUT',
     model: {
       defaults: {
         traits: [
@@ -49,7 +49,7 @@ editor.DomComponents.addType('input', {
             type: 'checkbox',
             name: 'required',
         }],
-        // As by default, traits are binded to attributes, so to define
+        // As by default, traits are bound to attributes, so to define
         // their initial value we can use attributes
         attributes: { type: 'text', required: true },
       },
@@ -64,8 +64,8 @@ Now the result will be
 If you want you can also define traits dynamically via functions, which will be created on component initialization. It might be useful if you need to create traits based on some other component characteristic.
 
 ```js
-editor.DomComponents.addType('input', {
-    isComponent: el => el.tagName == 'INPUT',
+editor.Components.addType('input', {
+    isComponent: el => el.tagName === 'INPUT',
     model: {
       defaults: {
         traits(component) {
@@ -91,7 +91,7 @@ editor.DomComponents.addType('input', {
 If you need to react to some change of the trait you can subscribe to their attribute listeners
 
 ```js
-editor.DomComponents.addType('input', {
+editor.Components.addType('input', {
   model: {
     defaults: {
       // ...
@@ -111,7 +111,7 @@ editor.DomComponents.addType('input', {
 As already mentioned, by default, traits modify attributes of the model, but you can also bind them to the properties by using `changeProp` options.
 
 ```js
-editor.DomComponents.addType('input', {
+editor.Components.addType('input', {
   model: {
     defaults: {
       // ...
@@ -276,7 +276,7 @@ Let's just replace all of its traits with a new one, `href-next`, which will all
 
 ```js
 // Update component
-editor.DomComponents.addType('link', {
+editor.Components.addType('link', {
   model: {
     defaults: {
       traits: [
