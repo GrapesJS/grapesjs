@@ -291,6 +291,44 @@ component.removeTrait('type');
 
 
 
+
+## I18n
+
+To leverage the [I18n module](I18n.html), you can refer to this schema
+
+```js
+{
+  en: {
+    traitManager: {
+      empty: 'Select an element before using Trait Manager',
+      label: 'Component settings',
+      categories: {
+        categoryId: 'Category label',
+      },
+      traits: {
+        // The trait `name` property is used as a key
+        labels: {
+          href: 'Href label',
+        },
+        // For built-in traits, like `text` type, these are used on input DOM attributes
+        attributes: {
+          href: { placeholder: 'eg. https://google.com' },
+        },
+        // For `select` types, these are used to translate option labels
+        options: {
+          target: {
+            // Here the key is the `id` of the option
+            _blank: 'New window',
+          },
+        },
+      },
+    },
+  }
+}
+```
+
+
+
 ## Define new Trait type
 
 Generally, for most of the cases, default types are enough, but sometimes you might need something more.

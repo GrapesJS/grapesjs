@@ -136,6 +136,9 @@ export default {
   traitManager: {
     empty: 'Select an element before using Trait Manager',
     label: 'Component settings',
+    categories: {
+      // categoryId: 'Category label',
+    },
     traits: {
       // The core library generates the name by their `name` property
       labels: {
