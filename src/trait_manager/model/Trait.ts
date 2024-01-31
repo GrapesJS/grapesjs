@@ -225,6 +225,22 @@ export default class Trait extends Model<TraitProperties> {
     return (locale && em?.t(`traitManager.categories.${catId}`)) || catLabel || '';
   }
 
+  /**
+   * Run the trait command (used on the button trait type).
+   */
+  runCommand() {
+    const { em } = this;
+    const { command } = this.attributes;
+
+    if (command && em) {
+      if (isString(command)) {
+        return em.Commands.run(command);
+      } else {
+        return command(em.Editor, this);
+      }
+    }
+  }
+
   props() {
     return this.attributes;
   }
@@ -255,7 +271,6 @@ export default class Trait extends Model<TraitProperties> {
     } else if (this.get('changeProp')) {
       value = component.get(name);
     } else {
-      // @ts-ignore TODO update post component update
       value = component.getAttributes()[name];
     }
 

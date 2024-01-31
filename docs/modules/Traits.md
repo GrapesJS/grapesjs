@@ -329,12 +329,18 @@ To leverage the [I18n module](I18n.html), you can refer to this schema
 
 
 
-## Define new Trait type
 
-Generally, for most of the cases, default types are enough, but sometimes you might need something more.
-In that case, you can define a totally new type of trait and bind any kind of element to it.
 
-### Create element
+## Customization
+
+The default types should cover most of the common properties but in case you need a more advanced UI you can [define your own types](#define-new-trait-type) or even create a completely [custom Trait Manager UI](#custom-trait-manager) from scratch.
+
+### Define new Trait type
+
+For most of the cases, default types should be enough, but sometimes you might need something more.
+In that case, you can define a new type of trait and bind any kind of element to it.
+
+#### Create element
 
 Let's update the default `link` Component with a new kind of trait. This is the default situation of traits for a simple link.
 
@@ -413,7 +419,7 @@ From the example above we simply created our custom inputs (by giving also the p
 
 <img :src="$withBase('/docs-init-link-trait.jpg')" class="img-ctr-rad" style="max-width: 215px;" alt="Link with traits">
 
-### Update layout
+#### Update layout
 
 Before going forward and making our trait work let's talk about the layout structure of a trait. You might have noticed that the trait is composed by the label and input columns, for this reason, GrapesJS allows you to customize both of them.
 
@@ -466,7 +472,7 @@ editor.Traits.addType('href-next', {
 In this case, the result will be quite raw and unstyled but the point of custom trait types is to allow you to reuse your own styled inputs, probably already designed and defined (or implemented in some UI framework).
 For now, let's keep the default input wrapper and continue with the integration of our custom trait.
 
-### Bind to component
+#### Bind to component
 
 At the current state, our element created in `createInput` is not binded to the component so nothing happens when you update inputs, so let's do it now
 
@@ -554,12 +560,12 @@ To recap what we have done so far, to create a custom trait type all you will ne
 * `onEvent` - How to update the component on inputs changes
 * `onUpdate` - How to update inputs on component changes
 
-### Result
+#### Result
 
 The final result of what we have done can be seen here
 <demo-viewer value="yf6amdqb/10"/>
 
-### Integrate external UI components
+#### Integrate external UI components
 
 By looking at the example above might seems like a lot of code, but at the end, it's just about a little bit of logic and the native DOM API which is not super pretty. If you use a modern UI client framework (eg. Vue, React, etc.) you could see that the integration is even easier. There is how it would be integrating a custom [Vue Slider Component](https://github.com/NightCatSama/vue-slider-component) as a trait
 
@@ -598,9 +604,9 @@ The integration with external components is possible by following these simple c
   The component should allow to read and write data from the instance
 
 
-## Customization
+### Custom Trait Manager
 
-The default UI can handle most of the common tasks but in case you need more advanced logic/elements, that requires a replacement of the default UI.
+The default Trait Manager UI should handle most of the common tasks but in case you need more advanced logic/elements, you can create your custom one from scratch.
 
 All you have to do is to indicate to the editor your intent to use a custom UI and then subscribe to the `trait:custom` event that will trigger on any necessary update of the UI.
 

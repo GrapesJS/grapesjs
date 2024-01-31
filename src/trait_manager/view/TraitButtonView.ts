@@ -11,16 +11,7 @@ export default class TraitButtonView extends TraitView {
   }
 
   handleClick() {
-    const { model, em } = this;
-    const command = model.get('command');
-
-    if (command) {
-      if (isString(command)) {
-        em.Commands.run(command);
-      } else {
-        command(em.Editor, model);
-      }
-    }
+    this.model.runCommand();
   }
 
   renderLabel() {
