@@ -161,11 +161,6 @@ export default class Trait extends Model<TraitProperties> {
     }
 
     this.setTargetValue(value, valueOpts);
-
-    if (partial === false) {
-      this.setTargetValue('');
-      this.setTargetValue(value);
-    }
   }
 
   /**
@@ -320,10 +315,14 @@ export default class Trait extends Model<TraitProperties> {
       }
     }
 
+    const props = { [name]: valueToSet };
+    // This is required for the UndoManager to properly detect changes
+    props.__p = opts.avoidStore ? null : undefined;
+
     if (this.changeProp) {
-      component.set(name, valueToSet, opts);
+      component.set(props, opts);
     } else {
-      component.addAttributes({ [name]: valueToSet }, opts);
+      component.addAttributes(props, opts);
     }
   }
 
