@@ -182,13 +182,13 @@ export default class ComponentTextView extends ComponentView<ComponentText> {
       const offset = range.startOffset;
       const textModel = getComponentModel(textNode);
       const newCmps: (ComponentDefinition | Component)[] = [];
-      let data = textNode.textContent ?? '';
+      const data = textNode.textContent || '';
       if (textModel && textModel.is?.('textnode')) {
         const cmps = textModel.collection;
         cmps.forEach(cmp => {
           if (cmp === textModel) {
             const type = 'textnode';
-            const cnt = (data = '' ? cmp.content : data);
+            const cnt = data || cmp.content;
             newCmps.push({ type, content: cnt.slice(0, offset) });
             newCmps.push(content);
             newCmps.push({ type, content: cnt.slice(offset) });
