@@ -153,6 +153,16 @@ export interface TraitSetValueOptions {
   [key: string]: unknown;
 }
 
+export interface TraitGetValueOptions {
+  /**
+   * Get the value based on type.
+   * With this option enabled, the returned value is normalized based on the
+   * trait type (eg. the checkbox will always return a boolean).
+   * @default false
+   */
+  useType?: boolean;
+}
+
 export type TraitOption = {
   id: string;
   label?: string;

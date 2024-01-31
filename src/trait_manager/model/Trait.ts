@@ -4,7 +4,7 @@ import { LocaleOptions, Model, SetOptions } from '../../common';
 import Component from '../../dom_components/model/Component';
 import EditorModel from '../../editor/model/Editor';
 import { isDef } from '../../utils/mixins';
-import TraitsEvents, { TraitOption, TraitProperties, TraitSetValueOptions } from '../types';
+import TraitsEvents, { TraitGetValueOptions, TraitOption, TraitProperties, TraitSetValueOptions } from '../types';
 import TraitView from '../view/TraitView';
 import Traits from './Traits';
 
@@ -122,10 +122,12 @@ export default class Trait extends Model<TraitProperties> {
   /**
    * Get the trait value.
    * The value is taken from component attributes by default or from properties if the trait has the `changeProp` enabled.
+   * @param {Object} [opts={}] Options.
+   * @param {Boolean} [opts.useType=false] Get the value based on type (eg. the checkbox will always return a boolean).
    * @returns {any}
    */
-  getValue() {
-    return this.getTargetValue();
+  getValue(opts?: TraitGetValueOptions) {
+    return this.getTargetValue(opts);
   }
 
   /**
@@ -251,7 +253,7 @@ export default class Trait extends Model<TraitProperties> {
 
   targetUpdated() {
     const { component, em } = this;
-    const value = this.getTargetValue();
+    const value = this.getTargetValue({ useType: true });
     this.set({ value }, { fromTarget: 1 });
     const props = { trait: this, component, value };
     component.trigger(TraitsEvents.value, props);
@@ -260,7 +262,7 @@ export default class Trait extends Model<TraitProperties> {
     em?.trigger('trait:update', props);
   }
 
-  getTargetValue() {
+  getTargetValue(opts: TraitGetValueOptions = {}) {
     const { component, em } = this;
     const name = this.getName();
     const getValue = this.get('getValue');
@@ -276,6 +278,19 @@ export default class Trait extends Model<TraitProperties> {
       value = component.get(name);
     } else {
       value = component.getAttributes()[name];
+    }
+
+    if (opts.useType) {
+      const type = this.getType();
+      if (type === 'checkbox') {
+        const { valueTrue, valueFalse } = this.attributes;
+
+        if (!isUndefined(valueTrue) && valueTrue === value) {
+          value = true;
+        } else if (!isUndefined(valueFalse) && valueFalse === value) {
+          value = false;
+        }
+      }
     }
 
     return !isUndefined(value) ? value : '';
