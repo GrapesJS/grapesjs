@@ -212,19 +212,7 @@ export default class TraitView extends View<Trait> {
   }
 
   getModelValue() {
-    let value;
-    const model = this.model;
-    const target = this.target;
-    const name = model.getName();
-
-    if (model.get('changeProp')) {
-      value = target.get(name);
-    } else {
-      const attrs = target.get('attributes')!;
-      value = model.get('value') || attrs[name];
-    }
-
-    return !isUndefined(value) ? value : '';
+    return this.model.getValue();
   }
 
   getElInput() {

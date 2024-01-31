@@ -63,6 +63,10 @@ export default class Trait extends Model<TraitProperties> {
     return this.target;
   }
 
+  get changeProp() {
+    return !!this.get('changeProp');
+  }
+
   setTarget(component: Component) {
     if (component) {
       const { name, changeProp, value: initValue, getValue } = this.attributes;
@@ -268,7 +272,7 @@ export default class Trait extends Model<TraitProperties> {
         trait: this,
         component,
       });
-    } else if (this.get('changeProp')) {
+    } else if (this.changeProp) {
       value = component.get(name);
     } else {
       value = component.getAttributes()[name];
@@ -301,7 +305,7 @@ export default class Trait extends Model<TraitProperties> {
       }
     }
 
-    if (this.get('changeProp')) {
+    if (this.changeProp) {
       component.set(name, valueToSet, opts);
     } else {
       component.addAttributes({ [name]: valueToSet }, opts);
@@ -326,7 +330,7 @@ export default class Trait extends Model<TraitProperties> {
 
     if (component) {
       const attrs = component.get('attributes')!;
-      value = this.get('changeProp') ? component.get(name) : attrs[name];
+      value = this.changeProp ? component.get(name) : attrs[name];
     }
 
     return value || this.get('value') || this.get('default');
