@@ -11,11 +11,13 @@ import Traits from './Traits';
 /**
  * @typedef Trait
  * @property {String} id Trait id, eg. `my-trait-id`.
- * @property {String} type Trait type, defines how the trait should rendered. Possible values: `text` (default), `number`, `select`, `checkbox`, `color`, `button`
+ * @property {String} type Trait type, defines how the trait should be rendered. Possible values: `text` (default), `number`, `select`, `checkbox`, `color`, `button`
  * @property {String} label The trait label to show for the rendered trait.
  * @property {String} name The name of the trait used as a key for the attribute/property. By default, the name is used as attribute name or property in case `changeProp` in enabled.
+ * @property {String} default Default value to use in case the value is not defined on the component.
+ * @property {String} placeholder Placeholder to show inside the default input (if the UI type allows it).
  * @property {String} [category=''] Trait category.
- * @property {Boolean} changeProp If `true` the trait value is applied on component
+ * @property {Boolean} changeProp If `true`, the trait value is applied on the component property, otherwise, on component attributes.
  *
  */
 export default class Trait extends Model<TraitProperties> {
@@ -174,7 +176,7 @@ export default class Trait extends Model<TraitProperties> {
    * Get trait options.
    */
   getOptions(): TraitOption[] {
-    return (this.get('options') as TraitOption[]) || [];
+    return this.get('options') || [];
   }
 
   /**
@@ -192,8 +194,8 @@ export default class Trait extends Model<TraitProperties> {
    * @param {Object} option Option object
    * @returns {String} Option id
    */
-  getOptionId(option: TraitOption) {
-    return option.id || (option as any).value;
+  getOptionId(option: TraitOption): string {
+    return option.id || (option.value as string);
   }
 
   /**

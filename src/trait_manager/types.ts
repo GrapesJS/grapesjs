@@ -40,7 +40,7 @@ export interface TraitCustomData {
 
 export interface TraitProperties {
   /**
-   * Trait type, defines how the trait should rendered.
+   * Trait type, defines how the trait should be rendered.
    * Possible values: `text` (default), `number`, `select`, `checkbox`, `color`, `button`
    */
   type?: string;
@@ -69,7 +69,8 @@ export interface TraitProperties {
   label?: string | false;
 
   /**
-   * If `true` the trait value is applied on component
+   * If `true`, the trait value is applied on the component property, otherwise, on component attributes.
+   * @default false
    */
   changeProp?: boolean;
 
@@ -124,14 +125,14 @@ export interface TraitProperties {
   default?: any;
 
   /**
-   * Placeholder to show inside the input.
+   * Placeholder to show inside the default input (if the UI type allows it).
    */
   placeholder?: string;
 
   /**
    * Array of options for the select type.
    */
-  options?: Record<string, any>[];
+  options?: TraitOption[];
 
   /**
    * Label text to use for the button type.
@@ -163,10 +164,11 @@ export interface TraitGetValueOptions {
   useType?: boolean;
 }
 
-export type TraitOption = {
+export interface TraitOption {
   id: string;
   label?: string;
-};
+  [key: string]: unknown;
+}
 
 export type TraitsEvent = `${TraitsEvents}`;
 

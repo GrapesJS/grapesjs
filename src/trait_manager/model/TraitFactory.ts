@@ -28,7 +28,7 @@ export default class TraitFactory {
       case 'target':
         obj.type = 'select';
         obj.default = false;
-        obj.options = this.config.optionsTarget;
+        obj.options = this.config.optionsTarget as any;
         break;
     }
     return new Trait(obj, em);
