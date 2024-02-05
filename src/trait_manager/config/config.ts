@@ -14,6 +14,7 @@ export interface TraitManagerConfig {
 
   /**
    * Avoid rendering the default Trait Manager UI.
+   * More about it here: [Custom Trait Manager](https://grapesjs.com/docs/modules/Traits.html#custom-trait-manager).
    * @default false
    */
   custom?: boolean;

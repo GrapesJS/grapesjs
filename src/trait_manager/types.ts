@@ -182,7 +182,7 @@ export enum TraitsEvents {
   value = 'trait:value',
 
   /**
-   * @event `trait:custom` Event to use in case of [custom Trait Manager UI](https://grapesjs.com/docs/modules/Traits.html#customization).
+   * @event `trait:custom` Event to use in case of [custom Trait Manager UI](https://grapesjs.com/docs/modules/Traits.html#custom-trait-manager).
    * @example
    * editor.on('trait:custom', ({ container }) => { ... });
    */

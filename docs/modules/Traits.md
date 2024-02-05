@@ -626,8 +626,16 @@ editor.on('trait:custom', props => {
 });
 ```
 
-In the example below we'll replicate most of the default functionality by using solely the Traits API.
-
-TODO
+In the example below we'll replicate most of the default functionality by using solely the [Traits API].
 
 <demo-viewer value="v8cgkLfr" height="500" darkcode/>
+
+
+
+
+## Events
+
+For a complete list of available events, you can check it [here](/api/trait_manager.html#available-events).
+
+
+[Traits API]: </api/trait_manager.html>

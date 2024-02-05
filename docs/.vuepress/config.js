@@ -88,6 +88,8 @@ module.exports = {
         ['/api/selector_manager', 'Selector Manager'],
         ['/api/selector', `${subDivider}Selector`],
         ['/api/state', `${subDivider}State`],
+        ['/api/trait_manager', 'Trait Manager'],
+        ['/api/trait', `${subDivider}Trait`],
         ['/api/css_composer', 'CSS Composer'],
         ['/api/css_rule', `${subDivider}CssRule`],
         ['/api/modal_dialog', 'Modal'],
