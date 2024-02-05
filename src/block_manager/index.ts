@@ -286,9 +286,13 @@ export default class BlockManager extends ItemManagerModule<BlockManagerConfig, 
    * // > { category?: Category; items: Block[] }
    *
    * // NOTE: The item without category is the one containing blocks without category.
+   *
+   * // You can also get the same output format by passing your own array of Blocks
+   * const myFilteredBlocks: Block[] = [...];
+   * blockManager.getBlocksByCategorymyFilteredBlocks
    */
-  getBlocksByCategory(): BlocksByCategory[] {
-    return getItemsByCategory<Block>(this.getAll().models);
+  getBlocksByCategory(blocks?: Block[]): BlocksByCategory[] {
+    return getItemsByCategory<Block>(blocks || this.getAll().models);
   }
 
   /**

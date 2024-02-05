@@ -92,9 +92,13 @@ export default class TraitManager extends Module<TraitManagerConfigModule> {
    * // > { category?: Category; items: Trait[] }
    *
    * // NOTE: The item without category is the one containing traits without category.
+   *
+   * // You can also get the same output format by passing your own array of Traits
+   * const myFilteredTraits: Trait[] = [...];
+   * traitManager.getTraitsByCategory(myFilteredTraits);
    */
-  getTraitsByCategory(): TraitsByCategory[] {
-    return getItemsByCategory<Trait>(this.getTraits());
+  getTraitsByCategory(traits?: Trait[]): TraitsByCategory[] {
+    return getItemsByCategory<Trait>(traits || this.getTraits());
   }
 
   /**
