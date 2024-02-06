@@ -9,7 +9,6 @@ import TraitView from '../view/TraitView';
 import Traits from './Traits';
 
 /**
- * @typedef Trait
  * @property {String} id Trait id, eg. `my-trait-id`.
  * @property {String} type Trait type, defines how the trait should be rendered. Possible values: `text` (default), `number`, `select`, `checkbox`, `color`, `button`
  * @property {String} label The trait label to show for the rendered trait.
@@ -18,6 +17,8 @@ import Traits from './Traits';
  * @property {String} placeholder Placeholder to show inside the default input (if the UI type allows it).
  * @property {String} [category=''] Trait category.
  * @property {Boolean} changeProp If `true`, the trait value is applied on the component property, otherwise, on component attributes.
+ *
+ * @module docsjs.Trait
  *
  */
 export default class Trait extends Model<TraitProperties> {

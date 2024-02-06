@@ -2,13 +2,6 @@
 
 ## Trait
 
-
-
-### Parameters
-
-*   `prop` **TraitProperties** 
-*   `em` **EditorModel** 
-
 ### Properties
 
 *   `id` **[String][1]** Trait id, eg. `my-trait-id`.
@@ -20,29 +13,29 @@
 *   `category` **[String][1]?** Trait category.
 *   `changeProp` **[Boolean][2]** If `true`, the trait value is applied on the component property, otherwise, on component attributes.
 
-### getId
+## getId
 
 Get the trait id.
 
 Returns **[String][1]** 
 
-### getType
+## getType
 
 Get the trait type.
 
 Returns **[String][1]** 
 
-### getName
+## getName
 
 Get the trait name.
 
 Returns **[String][1]** 
 
-### getLabel
+## getLabel
 
 Get the trait label.
 
-#### Parameters
+### Parameters
 
 *   `opts` **[Object][3]** Options. (optional, default `{}`)
 
@@ -50,12 +43,12 @@ Get the trait label.
 
 Returns **[String][1]** 
 
-### getValue
+## getValue
 
 Get the trait value.
 The value is taken from component attributes by default or from properties if the trait has the `changeProp` enabled.
 
-#### Parameters
+### Parameters
 
 *   `opts` **[Object][3]** Options. (optional, default `{}`)
 
@@ -63,53 +56,53 @@ The value is taken from component attributes by default or from properties if th
 
 Returns **any** 
 
-### setValue
+## setValue
 
 Update the trait value.
 The value is applied on component attributes by default or on properties if the trait has the `changeProp` enabled.
 
-#### Parameters
+### Parameters
 
 *   `value` **any** Value of the trait.
 *   `opts` **[Object][3]** Options. (optional, default `{}`)
 
     *   `opts.partial` **[Boolean][2]?** If `true` the update won't be considered complete (not stored in UndoManager).
 
-### getDefault
+## getDefault
 
 Get default value.
 
-### getOptions
+## getOptions
 
 Get trait options.
 
 Returns **[Array][4]\<TraitOption>** 
 
-### getOption
+## getOption
 
 Get current selected option or by id.
 
-#### Parameters
+### Parameters
 
 *   `id` **[String][1]?** Option id.
 
 Returns **([Object][3] | null)** 
 
-### getOptionId
+## getOptionId
 
 Get the option id from the option object.
 
-#### Parameters
+### Parameters
 
 *   `option` **[Object][3]** Option object
 
 Returns **[String][1]** Option id
 
-### getOptionLabel
+## getOptionLabel
 
 Get option label.
 
-#### Parameters
+### Parameters
 
 *   `id` **([String][1] | [Object][3])** Option id or the option object
 *   `opts` **[Object][3]** Options (optional, default `{}`)
@@ -118,11 +111,11 @@ Get option label.
 
 Returns **[String][1]** Option label
 
-### getCategoryLabel
+## getCategoryLabel
 
 Get category label.
 
-#### Parameters
+### Parameters
 
 *   `opts` **[Object][3]** Options. (optional, default `{}`)
 
@@ -130,7 +123,7 @@ Get category label.
 
 Returns **[String][1]** 
 
-### runCommand
+## runCommand
 
 Run the trait command (used on the button trait type).
 
