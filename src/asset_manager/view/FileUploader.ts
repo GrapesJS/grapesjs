@@ -155,7 +155,7 @@ export default class FileUploaderView extends View {
 
     if (this.multiUpload) {
       for (let i = 0; i < files.length; i++) {
-        body.append(`${config.uploadName}[]`, files[i]);
+        body.append(`${config.uploadName}${config.multiUploadSuffix}`, files[i]);
       }
     } else if (files.length) {
       body.append(config.uploadName!, files[0]);
