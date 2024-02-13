@@ -12,6 +12,7 @@ describe('ParserHtml', () => {
     var dom = new DomComponents(em);
     obj = ParserHtml(em, {
       textTags: ['br', 'b', 'i', 'u'],
+      textTypes: ['text', 'textnode', 'comment'],
       returnArray: true,
     });
     obj.compTypes = dom.componentTypes as any;
@@ -260,6 +261,36 @@ describe('ParserHtml', () => {
             content: ' test ',
             type: 'textnode',
             tagName: '',
+          },
+        ],
+      },
+    ];
+    expect(obj.parse(str).html).toEqual(result);
+  });
+
+  test('Parse text with few text tags and comment', () => {
+    var str = '<div id="test1">Some text <br/><!-- comment --><b>Bold</b></div>';
+    var result = [
+      {
+        tagName: 'div',
+        attributes: { id: 'test1' },
+        type: 'text',
+        components: [
+          {
+            content: 'Some text ',
+            type: 'textnode',
+            tagName: '',
+          },
+          { tagName: 'br' },
+          {
+            content: ' comment ',
+            type: 'comment',
+            tagName: '',
+          },
+          {
+            components: { type: 'textnode', content: 'Bold' },
+            type: 'text',
+            tagName: 'b',
           },
         ],
       },
