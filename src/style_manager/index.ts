@@ -309,7 +309,7 @@ export default class StyleManager extends ItemManagerModule<
    */
   addProperty(sectorId: string, property: PropertyTypes, opts: AddOptions = {}): Property | undefined {
     const sector = this.getSector(sectorId, { warn: true });
-    let prop = null;
+    let prop;
     if (sector) prop = sector.addProperty(property, opts);
 
     return prop;

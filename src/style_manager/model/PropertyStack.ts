@@ -53,6 +53,7 @@ export interface PropertyStackProps extends Omit<PropertyCompositeProps, 'toStyl
   toStyle?: (values: PropValues, data: ToStyleDataStack) => ReturnType<ToStyle>;
   fromStyle?: (style: StyleProps, data: FromStyleDataStack) => ReturnType<FromStyle>;
   parseLayer?: (data: { value: string; values: PropValues }) => PropValues;
+  emptyValue?: string | ((data: { property: PropertyStack }) => PropValues);
   selectedLayer?: Layer;
   prepend?: boolean;
   __layers?: PropValues[];
@@ -82,6 +83,7 @@ export default class PropertyStack extends PropertyComposite<PropertyStackProps>
     return {
       ...PropertyComposite.getDefaults(),
       layers: [],
+      emptyValue: 'unset',
       layerSeparator: ', ',
       layerJoin: '',
       prepend: 0,
@@ -471,6 +473,7 @@ export default class PropertyStack extends PropertyComposite<PropertyStackProps>
 
   getStyleFromLayers(opts: OptionStyleStack = {}) {
     let result: StyleProps = {};
+    const { emptyValue } = this.attributes;
     const name = this.getName();
     const layers = this.getLayers();
     const props = this.getProperties();
@@ -478,7 +481,6 @@ export default class PropertyStack extends PropertyComposite<PropertyStackProps>
     styles.forEach(style => {
       keys(style).map(key => {
         if (!result[key]) {
-          // @ts-ignore
           result[key] = [];
         }
         // @ts-ignore
@@ -486,8 +488,7 @@ export default class PropertyStack extends PropertyComposite<PropertyStackProps>
       });
     });
     keys(result).map(key => {
-      // @ts-ignore
-      result[key] = result[key].join(this.__getJoinLayers());
+      result[key] = (result[key] as string[]).join(this.__getJoinLayers());
     });
 
     if (this.isDetached()) {
@@ -505,7 +506,38 @@ export default class PropertyStack extends PropertyComposite<PropertyStackProps>
       result = { ...result, ...style };
     }
 
-    return result;
+    return {
+      ...result,
+      ...this.getEmptyValueStyle(),
+    };
+  }
+
+  getEmptyValueStyle() {
+    const { emptyValue } = this.attributes;
+
+    if (emptyValue && !this.getLayers().length) {
+      const name = this.getName();
+      const props = this.getProperties();
+      const result = isString(emptyValue) ? emptyValue : emptyValue({ property: this });
+
+      if (isString(result)) {
+        const style: StyleProps = {};
+
+        if (this.isDetached()) {
+          props.map(prop => {
+            style[prop.getName()] = result;
+          });
+        } else {
+          style[name] = result;
+        }
+
+        return style;
+      } else {
+        return result;
+      }
+    } else {
+      return {};
+    }
   }
 
   __getJoinLayers() {

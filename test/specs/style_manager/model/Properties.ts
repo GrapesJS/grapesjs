@@ -45,6 +45,7 @@ describe('StyleManager properties logic', () => {
     beforeEach(() => {
       rule1 = cssc.addRules('.cls { color: red; }')[0];
       obj.addSector(sectorTest, {
+        name: 'sector',
         properties: [
           {
             extend: propTest,
@@ -463,11 +464,12 @@ describe('StyleManager properties logic', () => {
         }
       `)[0];
       obj.addSector(sectorTest, {
+        name: 'My sector',
         properties: [
           {
             type: 'stack',
             property: propTest,
-            // @ts-ignore
+            emptyValue: '',
             properties: propsTest.map(property => ({ property })),
           },
         ],
@@ -648,6 +650,60 @@ describe('StyleManager properties logic', () => {
       compTypeProp.removeLayerAt(0);
       expect(compTypeProp.getLayers().length).toBe(0);
       expect(rule1.getStyle()).toEqual({});
+    });
+
+    describe('emptyValue', () => {
+      test('Removing all layers with empty value as string', () => {
+        compTypeProp.set('emptyValue', 'unset'), compTypeProp.removeLayerAt(1);
+        compTypeProp.removeLayerAt(0);
+        expect(compTypeProp.getLayers().length).toBe(0);
+        expect(rule1.getStyle()).toEqual({
+          [propTest]: 'unset',
+        });
+      });
+
+      test('Removing all layers with empty value as string (detached)', () => {
+        compTypeProp.set('emptyValue', 'unset'), compTypeProp.set('detached', true);
+        compTypeProp.removeLayerAt(1);
+        compTypeProp.removeLayerAt(0);
+        expect(compTypeProp.getLayers().length).toBe(0);
+        expect(rule1.getStyle()).toEqual({
+          [propATest]: 'unset',
+          [propBTest]: 'unset',
+          [propCTest]: 'unset',
+        });
+      });
+
+      test('Removing all layers with empty value as function', () => {
+        compTypeProp.set('emptyValue', () => ({
+          [propATest]: 'unset-a',
+          [propBTest]: 'unset-b',
+        })),
+          compTypeProp.removeLayerAt(1);
+        compTypeProp.removeLayerAt(0);
+        expect(compTypeProp.getLayers().length).toBe(0);
+        expect(rule1.getStyle()).toEqual({
+          [propATest]: 'unset-a',
+          [propBTest]: 'unset-b',
+        });
+      });
+
+      test('Removing all layers with empty value as function (detached)', () => {
+        compTypeProp.set('detached', true);
+        compTypeProp.set('emptyValue', () => ({
+          [propATest]: 'unset-a',
+          [propBTest]: 'unset-b',
+          [propCTest]: 'unset-c',
+        })),
+          compTypeProp.removeLayerAt(1);
+        compTypeProp.removeLayerAt(0);
+        expect(compTypeProp.getLayers().length).toBe(0);
+        expect(rule1.getStyle()).toEqual({
+          [propATest]: 'unset-a',
+          [propBTest]: 'unset-b',
+          [propCTest]: 'unset-c',
+        });
+      });
     });
 
     test('On clear removes all values', () => {
