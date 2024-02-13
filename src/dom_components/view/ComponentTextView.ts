@@ -171,7 +171,7 @@ export default class ComponentTextView extends ComponentView<ComponentText> {
     }
   }
 
-  insertComponent(content: ComponentDefinition, opts = {}) {
+  insertComponent(content: ComponentDefinition, opts: any = {}) {
     const { model, el } = this;
     const doc = el.ownerDocument;
     const selection = doc.getSelection();
@@ -188,7 +188,10 @@ export default class ComponentTextView extends ComponentView<ComponentText> {
         cmps.forEach(cmp => {
           if (cmp === textModel) {
             const type = 'textnode';
-            const cnt = data || cmp.content;
+            let cnt = cmp.content;
+            if ('useDomContent' in opts && opts.useDomContent) {
+              cnt = data || cmp.content;
+            }
             newCmps.push({ type, content: cnt.slice(0, offset) });
             newCmps.push(content);
             newCmps.push({ type, content: cnt.slice(offset) });
