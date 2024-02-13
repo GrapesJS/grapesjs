@@ -273,7 +273,7 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
               break;
             }
 
-            if (cType == 'textnode') {
+            if (cType === 'textnode') {
               foundTextNode = 1;
             }
           }
