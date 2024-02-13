@@ -33,8 +33,8 @@ export default class ComponentMap extends ComponentImage {
           name: 'mapType',
           changeProp: true,
           options: [
-            { value: 'q', name: 'Roadmap' },
-            { value: 'w', name: 'Satellite' },
+            { id: 'q', label: 'Roadmap' },
+            { id: 'w', label: 'Satellite' },
           ],
         },
         {

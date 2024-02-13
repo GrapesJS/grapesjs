@@ -1,3 +1,33 @@
+/**
+ * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/GrapesJS/grapesjs/blob/master/src/trait_manager/config/config.ts)
+ * ```js
+ * const editor = grapesjs.init({
+ *  traitManager: {
+ *    // options
+ *  }
+ * })
+ * ```
+ *
+ *
+ * Once the editor is instantiated you can use the API below and listen to the events. Before using these methods, you should get the module from the instance.
+ *
+ * ```js
+ * // Listen to events
+ * editor.on('trait:value', () => { ... });
+ *
+ * // Use the Trait Manager API
+ * const tm = editor.Traits;
+ * tm.select(...)
+ * ```
+ *
+ * {REPLACE_EVENTS}
+ *
+ * [Component]: component.html
+ * [Trait]: trait.html
+ *
+ * @module Traits
+ */
+
 import { debounce } from 'underscore';
 import { Module } from '../abstract';
 import { Model } from '../common';
@@ -43,7 +73,7 @@ export default class TraitManager extends Module<TraitManagerConfigModule> {
    * Get configuration object
    * @name getConfig
    * @function
-   * @return {Object}
+   * @returns {Object}
    */
 
   /**
@@ -52,23 +82,23 @@ export default class TraitManager extends Module<TraitManagerConfigModule> {
    */
   constructor(em: EditorModel) {
     super(em, 'TraitManager', defaults as any);
-    const { state, config } = this;
+    const { state, config, events } = this;
     const ppfx = config.pStylePrefix;
     ppfx && (config.stylePrefix = `${ppfx}${config.stylePrefix}`);
 
     const upAll = debounce(() => this.__upSel(), 0);
     const update = debounce(() => this.__onUp(), 0);
     state.listenTo(em, 'component:toggled', upAll);
-    state.listenTo(em, 'trait:update', update);
+    state.listenTo(em, events.value, update);
 
     this.debounced = [upAll, update];
   }
 
   /**
-   * Select traits from component.
+   * Select traits from a component.
    * @param {[Component]} component
    * @example
-   * traitManager.select(someComponent);
+   * tm.select(someComponent);
    */
   select(component?: Component) {
     const traits = component?.getTraits() || [];
@@ -77,8 +107,23 @@ export default class TraitManager extends Module<TraitManagerConfigModule> {
   }
 
   /**
+   * Get trait categories from the currently selected component.
+   * @returns {Array<Category>}
+   * @example
+   * const traitCategories: Category[] = tm.getCategories();
+   *
+   */
+  getCategories(): Category[] {
+    const cmp = this.state.get('component');
+    const categories = cmp?.traits.categories?.models || [];
+    return [...categories];
+  }
+
+  /**
    * Get traits from the currently selected component.
-   * @return {Array<Trait>}
+   * @returns {Array<[Trait]>}
+   * @example
+   * const currentTraits: Trait[] = tm.getTraits();
    */
   getTraits() {
     return this.getCurrent();
@@ -87,14 +132,50 @@ export default class TraitManager extends Module<TraitManagerConfigModule> {
   /**
    * Get traits by category from the currently selected component.
    * @example
-   * traitManager.getTraitsByCategory();
+   * tm.getTraitsByCategory();
    * // Returns an array of items of this type
    * // > { category?: Category; items: Trait[] }
    *
    * // NOTE: The item without category is the one containing traits without category.
+   *
+   * // You can also get the same output format by passing your own array of Traits
+   * const myFilteredTraits: Trait[] = [...];
+   * tm.getTraitsByCategory(myFilteredTraits);
    */
-  getTraitsByCategory(): TraitsByCategory[] {
-    return getItemsByCategory<Trait>(this.getTraits());
+  getTraitsByCategory(traits?: Trait[]): TraitsByCategory[] {
+    return getItemsByCategory<Trait>(traits || this.getTraits());
+  }
+
+  /**
+   * Add new trait type.
+   * More about it here: [Define new Trait type](https://grapesjs.com/docs/modules/Traits.html#define-new-trait-type).
+   * @param {string} name Type name.
+   * @param {Object} methods Object representing the trait.
+   */
+  addType<T>(name: string, methods: CustomTrait<T>) {
+    const baseView = this.getType('text');
+    //@ts-ignore
+    this.types[name] = baseView.extend(methods);
+  }
+
+  /**
+   * Get trait type
+   * @param {string} name Type name
+   * @returns {Object}
+   * @private
+   * const traitView = tm.getType('text');
+   */
+  getType(name: string) {
+    return this.getTypes()[name];
+  }
+
+  /**
+   * Get all trait types
+   * @returns {Object}
+   * @private
+   */
+  getTypes() {
+    return this.types;
   }
 
   /**
@@ -104,44 +185,6 @@ export default class TraitManager extends Module<TraitManagerConfigModule> {
    */
   getTraitsViewer() {
     return this.view;
-  }
-
-  /**
-   * Add new trait type
-   * @param {string} name Type name
-   * @param {Object} methods Object representing the trait
-   */
-  addType<T>(name: string, trait: CustomTrait<T>) {
-    const baseView = this.getType('text');
-    //@ts-ignore
-    this.types[name] = baseView.extend(trait);
-  }
-
-  /**
-   * Get trait type
-   * @param {string} name Type name
-   * @return {Object}
-   */
-  getType(name: string) {
-    return this.getTypes()[name];
-  }
-
-  /**
-   * Get all trait types
-   * @returns {Object}
-   */
-  getTypes() {
-    return this.types;
-  }
-
-  /**
-   * Get trait categories from the currently selected component.
-   * @return {Array<Category>}
-   */
-  getCategories(): Category[] {
-    const cmp = this.state.get('component');
-    const categories = cmp?.traits.categories?.models || [];
-    return [...categories];
   }
 
   getCurrent() {

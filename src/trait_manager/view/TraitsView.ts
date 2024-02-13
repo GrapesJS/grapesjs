@@ -26,6 +26,7 @@ export default class TraitsView extends DomainViews {
   config: TraitManagerConfigModule;
   traitContClass: string;
   catsClass: string;
+  classNoCat: string;
   catsEl?: HTMLElement;
   traitsEl?: HTMLElement;
   rendered?: boolean;
@@ -45,6 +46,7 @@ export default class TraitsView extends DomainViews {
     this.pfx = ppfx + config.stylePrefix || '';
     this.className = `${this.pfx}traits`;
     this.traitContClass = `${ppfx}traits-c`;
+    this.classNoCat = `${ppfx}traits-empty-c`;
     this.catsClass = `${ppfx}trait-categories`;
     this.collection = new Traits([], { em });
     this.listenTo(em, 'component:toggled', this.updatedCollection);
@@ -123,14 +125,14 @@ export default class TraitsView extends DomainViews {
   }
 
   render() {
-    const { el, ppfx, catsClass, traitContClass } = this;
+    const { el, ppfx, catsClass, traitContClass, classNoCat } = this;
     const frag = document.createDocumentFragment();
     delete this.catsEl;
     delete this.traitsEl;
     this.renderedCategories = new Map();
     el.innerHTML = `
       <div class="${catsClass}" ${ATTR_CATEGORIES}></div>
-      <div class="${traitContClass}" ${ATTR_NO_CATEGORIES}></div>
+      <div class="${classNoCat} ${traitContClass}" ${ATTR_NO_CATEGORIES}></div>
     `;
 
     this.collection.forEach(model => this.add(model, frag));

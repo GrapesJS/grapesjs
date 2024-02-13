@@ -1,4 +1,4 @@
-import { each, isEmpty, keys, result } from 'underscore';
+import { each, isBoolean, isEmpty, keys, result } from 'underscore';
 import { CanvasSpotBuiltInTypes } from '../../canvas/model/CanvasSpot';
 import FrameView from '../../canvas/view/FrameView';
 import { DisableOptions, ExtractMethods, ObjectAny, View } from '../../common';
@@ -238,6 +238,7 @@ TComp> {
     const freezedCls = `${ppfx}freezed`;
     const hoveredCls = `${ppfx}hovered`;
     const noPointerCls = `${ppfx}no-pointer`;
+    const pointerInitCls = `${ppfx}pointer-init`;
     const toRemove = [selectedCls, selectedParentCls, freezedCls, hoveredCls, noPointerCls];
     const selCls = extHl && !opts.noExtHl ? '' : selectedCls;
     this.$el.removeClass(toRemove.join(' '));
@@ -265,7 +266,9 @@ TComp> {
         break;
     }
 
-    model.get('locked') && cls.push(noPointerCls);
+    if (isBoolean(model.locked)) {
+      cls.push(model.locked ? noPointerCls : pointerInitCls);
+    }
 
     const clsStr = cls.filter(Boolean).join(' ');
     clsStr && el.setAttribute('class', clsStr);

@@ -1097,9 +1097,13 @@ export default class Sorter extends View {
         const offset = trgDim.offsets || {};
         const pT = offset.paddingTop || margI;
         const pL = offset.paddingLeft || margI;
-        t = trgDim.top + pT;
-        l = trgDim.left + pL;
-        w = parseInt(`${trgDim.width}`) - pL * 2 + un;
+        const bT = offset.borderTopWidth || 0;
+        const bL = offset.borderLeftWidth || 0;
+        const bR = offset.borderRightWidth || 0;
+        const bWidth = bL + bR;
+        t = trgDim.top + pT + bT;
+        l = trgDim.left + pL + bL;
+        w = parseInt(`${trgDim.width}`) - pL * 2 - bWidth + un;
         h = 'auto';
       }
     }

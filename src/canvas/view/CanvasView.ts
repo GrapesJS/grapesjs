@@ -29,6 +29,10 @@ export interface MarginPaddingOffsets {
   paddingRight?: number;
   paddingBottom?: number;
   paddingLeft?: number;
+  borderTopWidth?: number;
+  borderRightWidth?: number;
+  borderBottomWidth?: number;
+  borderLeftWidth?: number;
 }
 
 export type ElementPosOpts = {
@@ -516,6 +520,10 @@ export default class CanvasView extends ModuleView<Canvas> {
       'paddingRight',
       'paddingBottom',
       'paddingLeft',
+      'borderTopWidth',
+      'borderRightWidth',
+      'borderBottomWidth',
+      'borderLeftWidth',
     ];
     marginPaddingOffsets.forEach(offset => {
       result[offset] = parseFloat(styles[offset]) * zoom;

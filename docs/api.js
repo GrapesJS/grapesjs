@@ -27,6 +27,7 @@ const getEventsMdFromTypes = async (filePath) => {
       .replace(/\\`/gi, '`')
       .replace(/##/gi, '')
       .replace(/\\\[/gi, '[')
+      .replace(/\]\\\(/gi, '](')
       .trim();
 
     return result
@@ -57,6 +58,8 @@ async function generateDocs () {
     ['style_manager/model/PropertyStack.ts', 'property_stack.md'],
     ['style_manager/model/Layer.ts', 'layer.md'],
     ['storage_manager/index.ts', 'storage_manager.md'],
+    ['trait_manager/index.ts', 'trait_manager.md'],
+    ['trait_manager/model/Trait.ts', 'trait.md'],
     ['device_manager/index.ts', 'device_manager.md'],
     ['device_manager/model/Device.ts', 'device.md'],
     ['selector_manager/index.ts', 'selector_manager.md'],

@@ -39,7 +39,7 @@ export default class TraitCheckboxView extends TraitView {
       const { valueFalse } = model.attributes;
       const name = model.getName();
 
-      if (model.get('changeProp')) {
+      if (model.changeProp) {
         checked = target.get(name);
         targetValue = checked;
       } else {

@@ -34,8 +34,9 @@ import { DomComponentsConfig } from '../config/config';
 import ComponentView from '../view/ComponentView';
 import { AddOptions, ExtractMethods, ObjectAny, PrevToNewIdMap, SetOptions } from '../../common';
 import CssRule, { CssRuleJSON } from '../../css_composer/model/CssRule';
-import Trait, { TraitProperties } from '../../trait_manager/model/Trait';
+import Trait from '../../trait_manager/model/Trait';
 import { ToolbarButtonProps } from './ToolbarButton';
+import { TraitProperties } from '../../trait_manager/types';
 
 export interface IComponent extends ExtractMethods<Component> {}
 
@@ -93,7 +94,7 @@ export const keyUpdateInside = `${keyUpdate}-inside`;
  * @property {Boolean} [layerable=true] Set to `false` if you need to hide the component inside Layers. Default: `true`
  * @property {Boolean} [selectable=true] Allow component to be selected when clicked. Default: `true`
  * @property {Boolean} [hoverable=true] Shows a highlight outline when hovering on the element if `true`. Default: `true`
- * @property {Boolean} [locked=false] Disable the selection of the component and its children in the canvas. Default: `false`
+ * @property {Boolean} [locked] Disable the selection of the component and its children in the canvas. You can unlock a children by setting its locked property to `false`. Default: `undefined`
  * @property {Boolean} [void=false] This property is used by the HTML exporter as void elements don't have closing tags, eg. `<br/>`, `<hr/>`, etc. Default: `false`
  * @property {Object} [style={}] Component default style, eg. `{ width: '100px', height: '100px', 'background-color': 'red' }`
  * @property {String} [styles=''] Component related styles, eg. `.my-component-class { color: red }`
@@ -138,7 +139,6 @@ export default class Component extends StyleableModel<ComponentProperties> {
       layerable: true,
       selectable: true,
       hoverable: true,
-      locked: false,
       void: false,
       state: '', // Indicates if the component is in some CSS state like ':hover', ':active', etc.
       status: '', // State, eg. 'selected'
@@ -186,6 +186,10 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
   get delegate() {
     return this.get('delegate');
+  }
+
+  get locked() {
+    return this.get('locked');
   }
 
   /**
@@ -1062,8 +1066,8 @@ export default class Component extends StyleableModel<ComponentProperties> {
     const attrs = { ...this.get('attributes') };
     const traits = this.traits;
     traits.each(trait => {
-      if (!trait.get('changeProp')) {
-        const name = trait.get('name');
+      if (!trait.changeProp) {
+        const name = trait.getName();
         const value = trait.getInitValue();
         if (name && value) attrs[name] = value;
       }

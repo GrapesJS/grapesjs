@@ -260,6 +260,7 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
         // be text too otherwise I'm unable to edit texnodes
         const comps = model.components;
         if (!model.type && comps) {
+          const { textTypes = [], textTags = [] } = config;
           let allTxt = 1;
           let foundTextNode = 0;
 
@@ -267,12 +268,12 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
             const comp = comps[ci];
             const cType = comp.type;
 
-            if (['text', 'textnode'].indexOf(cType) < 0 && config.textTags!.indexOf(comp.tagName) < 0) {
+            if (!textTypes.includes(cType) && !textTags.includes(comp.tagName)) {
               allTxt = 0;
               break;
             }
 
-            if (cType == 'textnode') {
+            if (cType === 'textnode') {
               foundTextNode = 1;
             }
           }
@@ -283,7 +284,7 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
         }
 
         // If tagName is still empty and is not a textnode, do not push it
-        if (!model.tagName && model.type != 'textnode') {
+        if (!model.tagName && isUndefined(model.content)) {
           continue;
         }
 

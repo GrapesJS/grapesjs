@@ -2,7 +2,7 @@ import Frame from '../../canvas/model/Frame';
 import { Nullable } from '../../common';
 import EditorModel from '../../editor/model/Editor';
 import Selectors from '../../selector_manager/model/Selectors';
-import { TraitProperties } from '../../trait_manager/model/Trait';
+import { TraitProperties } from '../../trait_manager/types';
 import Traits from '../../trait_manager/model/Traits';
 import { ResizerOptions } from '../../utils/Resizer';
 import { DomComponentsConfig } from '../config/config';
