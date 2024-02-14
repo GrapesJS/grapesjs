@@ -737,12 +737,14 @@ describe('StyleManager properties logic', () => {
 
     describe('emptyValue', () => {
       test('Removing all layers with empty value as string', () => {
-        compTypeProp.set('emptyValue', 'unset'), compTypeProp.removeLayerAt(1);
+        compTypeProp.set('emptyValue', 'unset');
+        compTypeProp.removeLayerAt(1);
         compTypeProp.removeLayerAt(0);
+        const res = { [propTest]: 'unset' };
+        expect(compTypeProp.isEmptyValueStyle(res)).toBe(true);
+        expect(compTypeProp.isEmptyValueStyle({})).toBe(false);
         expect(compTypeProp.getLayers().length).toBe(0);
-        expect(rule1.getStyle()).toEqual({
-          [propTest]: 'unset',
-        });
+        expect(rule1.getStyle()).toEqual(res);
       });
 
       test('Removing all layers with empty value as string (detached)', () => {
