@@ -273,10 +273,11 @@ export default class RichTextEditor {
       if (event) {
         let range = null;
 
+        // Still used as caretPositionFromPoint is not yet well adopted
         if (doc.caretRangeFromPoint) {
           const poiner = getPointerEvent(event);
           range = doc.caretRangeFromPoint(poiner.clientX, poiner.clientY);
-          // @ts-ignore
+          // @ts-ignore for Firefox
         } else if (event.rangeParent) {
           range = doc.createRange();
           // @ts-ignore
@@ -294,8 +295,7 @@ export default class RichTextEditor {
     return this;
   }
 
-  __onKeydown(event: Event) {
-    const ev = event as KeyboardEvent;
+  __onKeydown(ev: KeyboardEvent) {
     const { doc } = this;
     const cmdList = ['insertOrderedList', 'insertUnorderedList'];
 
@@ -305,9 +305,8 @@ export default class RichTextEditor {
     }
   }
 
-  __onPaste(ev: Event) {
-    // @ts-ignore
-    const clipboardData = ev.clipboardData || window.clipboardData;
+  __onPaste(ev: ClipboardEvent) {
+    const clipboardData = ev.clipboardData!;
     const text = clipboardData.getData('text');
     const textHtml = clipboardData.getData('text/html');
     // Replace \n with <br> in case of plain text
