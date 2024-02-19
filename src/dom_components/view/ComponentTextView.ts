@@ -1,5 +1,5 @@
 import { bindAll } from 'underscore';
-import { DisableOptions, ObjectAny } from '../../common';
+import { AddOptions, DisableOptions, ObjectAny } from '../../common';
 import RichTextEditorModule from '../../rich_text_editor';
 import RichTextEditor from '../../rich_text_editor/model/RichTextEditor';
 import { off, on } from '../../utils/dom';
@@ -171,7 +171,7 @@ export default class ComponentTextView extends ComponentView<ComponentText> {
     }
   }
 
-  insertComponent(content: ComponentDefinition, opts: any = {}) {
+  insertComponent(content: ComponentDefinition, opts: AddOptions & { useDomContent?: boolean } = {}) {
     const { model, el } = this;
     const doc = el.ownerDocument;
     const selection = doc.getSelection();
@@ -182,16 +182,13 @@ export default class ComponentTextView extends ComponentView<ComponentText> {
       const offset = range.startOffset;
       const textModel = getComponentModel(textNode);
       const newCmps: (ComponentDefinition | Component)[] = [];
-      const data = textNode.textContent || '';
+
       if (textModel && textModel.is?.('textnode')) {
         const cmps = textModel.collection;
         cmps.forEach(cmp => {
           if (cmp === textModel) {
             const type = 'textnode';
-            let cnt = cmp.content;
-            if ('useDomContent' in opts && opts.useDomContent) {
-              cnt = data || cmp.content;
-            }
+            const cnt = opts.useDomContent ? textNode.textContent || '' : cmp.content;
             newCmps.push({ type, content: cnt.slice(0, offset) });
             newCmps.push(content);
             newCmps.push({ type, content: cnt.slice(offset) });
