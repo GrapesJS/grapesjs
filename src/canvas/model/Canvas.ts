@@ -2,8 +2,8 @@ import CanvasModule from '..';
 import { ModuleModel } from '../../abstract';
 import { Coordinates, CoordinatesTypes, DEFAULT_COORDS } from '../../common';
 import { evUpdate as evDeviceUpdate } from '../../device_manager';
-import { evPageSelect } from '../../pages';
 import Page from '../../pages/model/Page';
+import PagesEvents from '../../pages/types';
 import Frames from './Frames';
 
 export default class Canvas extends ModuleModel<CanvasModule> {
@@ -33,7 +33,7 @@ export default class Canvas extends ModuleModel<CanvasModule> {
     this.on('change:x change:y', this.onCoordsChange);
     this.on('change:pointer change:pointerScreen', this.onPointerChange);
     this.listenTo(em, `change:device ${evDeviceUpdate}`, this.updateDevice);
-    this.listenTo(em, evPageSelect, this._pageUpdated);
+    this.listenTo(em, PagesEvents.select, this._pageUpdated);
   }
 
   get frames(): Frames {

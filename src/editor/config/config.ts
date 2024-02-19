@@ -7,7 +7,7 @@ import { DeviceManagerConfig } from '../../device_manager/config/config';
 import { I18nConfig } from '../../i18n/config';
 import { ModalConfig } from '../../modal_dialog/config/config';
 import { LayerManagerConfig } from '../../navigator/config/config';
-import { PageManagerConfig } from '../../pages';
+import { PageManagerConfig } from '../../pages/types';
 import { PanelsConfig } from '../../panels/config/config';
 import { ParserConfig } from '../../parser/config/config';
 import { RichTextEditorConfig } from '../../rich_text_editor/config/config';

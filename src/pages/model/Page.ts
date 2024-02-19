@@ -1,5 +1,5 @@
 import { forEach, result } from 'underscore';
-import { PageManagerConfig } from '..';
+import { PageManagerConfig } from '../types';
 import Frames from '../../canvas/model/Frames';
 import { Model } from '../../common';
 import ComponentWrapper from '../../dom_components/model/ComponentWrapper';
