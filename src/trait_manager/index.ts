@@ -28,7 +28,7 @@
  * @module Traits
  */
 
-import { debounce } from 'underscore';
+import { bindAll, debounce } from 'underscore';
 import { Module } from '../abstract';
 import { Model } from '../common';
 import Component from '../dom_components/model/Component';
@@ -85,11 +85,13 @@ export default class TraitManager extends Module<TraitManagerConfigModule> {
     const { state, config, events } = this;
     const ppfx = config.pStylePrefix;
     ppfx && (config.stylePrefix = `${ppfx}${config.stylePrefix}`);
+    bindAll(this, '__onSelect');
 
     const upAll = debounce(() => this.__upSel(), 0);
     const update = debounce(() => this.__onUp(), 0);
     state.listenTo(em, 'component:toggled', upAll);
     state.listenTo(em, events.value, update);
+    state.on('change:traits', this.__onSelect);
 
     this.debounced = [upAll, update];
   }
@@ -114,7 +116,7 @@ export default class TraitManager extends Module<TraitManagerConfigModule> {
    *
    */
   getCategories(): Category[] {
-    const cmp = this.state.get('component');
+    const cmp = this.getComponent();
     const categories = cmp?.traits.categories?.models || [];
     return [...categories];
   }
@@ -144,6 +146,16 @@ export default class TraitManager extends Module<TraitManagerConfigModule> {
    */
   getTraitsByCategory(traits?: Trait[]): TraitsByCategory[] {
     return getItemsByCategory<Trait>(traits || this.getTraits());
+  }
+
+  /**
+   * Get component from the currently selected traits.
+   * @example
+   * tm.getComponent();
+   * // Component {}
+   */
+  getComponent() {
+    return this.state.attributes.component;
   }
 
   /**
@@ -211,6 +223,12 @@ export default class TraitManager extends Module<TraitManagerConfigModule> {
     this.__appendTo();
   }
 
+  __onSelect() {
+    const { em, events, state } = this;
+    const { component, traits } = state.attributes;
+    em.trigger(events.select, { component, traits });
+  }
+
   __trgCustom(opts: TraitCustomData = {}) {
     const { em, events, __ctn } = this;
     this.__ctn = __ctn || opts.container;
@@ -226,6 +244,6 @@ export default class TraitManager extends Module<TraitManagerConfigModule> {
   }
 
   __onUp() {
-    this.select(this.state.get('component'));
+    this.select(this.getComponent());
   }
 }
