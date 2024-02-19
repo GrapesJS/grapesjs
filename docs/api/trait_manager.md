@@ -24,6 +24,12 @@ tm.select(...)
 ```
 
 ## Available Events
+* `trait:select` New traits selected (eg. by changing a component).
+
+```javascript
+editor.on('trait:select', ({ traits, component }) => { ... });
+```
+
 * `trait:value` Trait value updated.
 
 ```javascript
@@ -113,6 +119,17 @@ tm.getTraitsByCategory(myFilteredTraits);
 ```
 
 Returns **[Array][3]\<TraitsByCategory>** 
+
+## getComponent
+
+Get component from the currently selected traits.
+
+### Examples
+
+```javascript
+tm.getComponent();
+// Component {}
+```
 
 ## addType
 

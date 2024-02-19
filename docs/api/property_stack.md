@@ -18,12 +18,28 @@
        return `A: ${values['prop-a']} B: ${values['prop-b']}`;
      }
     ```
+*   `emptyValue` **([String][2] | [Function][4])?** Empty value to apply when all layers are removed.
+    ```js
+     // use simple string
+     emptyValue: 'inherit',
+     // or a function for a custom style object
+     emptyValue: () => ({
+       color: 'unset',
+       width: 'auto'
+     }),
+    ```
 
 ### getLayers
 
 Get all available layers.
 
 Returns **[Array][5]<[Layer]>** 
+
+### hasLayers
+
+Check if the property has layers.
+
+Returns **[Boolean][1]** 
 
 ### getLayer
 
@@ -198,6 +214,12 @@ Returns **[Object][8]** Style object
 Get layer separator.
 
 Returns **[RegExp][3]** 
+
+### hasEmptyValue
+
+Check if the property is with an empty value.
+
+Returns **[Boolean][1]** 
 
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
 

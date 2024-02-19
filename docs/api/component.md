@@ -45,7 +45,7 @@ component.get('tagName');
 *   `layerable` **[Boolean][3]?** Set to `false` if you need to hide the component inside Layers. Default: `true`
 *   `selectable` **[Boolean][3]?** Allow component to be selected when clicked. Default: `true`
 *   `hoverable` **[Boolean][3]?** Shows a highlight outline when hovering on the element if `true`. Default: `true`
-*   `locked` **[Boolean][3]?** Disable the selection of the component and its children in the canvas. Default: `false`
+*   `locked` **[Boolean][3]?** Disable the selection of the component and its children in the canvas. You can unlock a children by setting its locked property to `false`. Default: `undefined`
 *   `void` **[Boolean][3]?** This property is used by the HTML exporter as void elements don't have closing tags, eg. `<br/>`, `<hr/>`, etc. Default: `false`
 *   `style` **[Object][2]?** Component default style, eg. `{ width: '100px', height: '100px', 'background-color': 'red' }`
 *   `styles` **[String][1]?** Component related styles, eg. `.my-component-class { color: red }`
