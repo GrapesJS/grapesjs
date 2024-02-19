@@ -626,9 +626,9 @@ editor.on('trait:custom', props => {
 });
 ```
 
-In the example below we'll replicate most of the default functionality by using solely the [Traits API].
+In the example below we'll replicate most of the default functionality by using the [Traits API].
 
-<demo-viewer value="v8cgkLfr" height="500" darkcode/>
+<demo-viewer value="hszpw2rb" height="500" darkcode/>
 
 <!--
 <style>
@@ -737,7 +737,97 @@ In the example below we'll replicate most of the default functionality by using 
 </div>
 <script>
   const myPlugin = (editor) => {
-    // ...
+    const category1 = { id: 'first', label: 'First category' };
+    const category2 = { id: 'second', label: 'Second category', open: false };
+
+    editor.Components.addType('demo-cmp', {
+      model: {
+        defaults: {
+          traits: [
+            {
+              type: 'date',
+              name: 'date-trait',
+              label: 'Date trait',
+              placeholder: 'Insert date',
+            },
+            {
+              type: 'text',
+              name: 'text-trait',
+              label: false,
+              placeholder: 'Insert text',
+              category: category1,
+            },
+            {
+              type: 'select',
+              name: 'select-trait',
+              label: 'Select 1',
+              category: category1,
+              default: 'opt1',
+              options: [
+                { id: 'opt1', name: 'Option 1'},
+                { id: 'opt2', name: 'Option 2'},
+                { id: 'opt3', name: 'Option 3'},
+              ]
+            },
+            {
+              type: 'select',
+              name: 'select-trait2',
+              label: 'Select 2',
+              category: category1,
+              default: 'opt2',
+              options: [
+                { id: 'opt1', name: 'Option 1'},
+                { id: 'opt2', name: 'Option 2'},
+                { id: 'opt3', name: 'Option 3'},
+              ]
+            },
+            {
+              type: 'number',
+              name: 'number-trait',
+              placeholder: '0-100',
+              min: 0,
+              max: 100,
+              step: 5,
+            },
+            {
+              type: 'color',
+              label: 'Color trait',
+              name: 'color-trait',
+            },
+            {
+              type: 'checkbox',
+              label: 'Checkbox trait',
+              name: 'checkbox-trait',
+              valueTrue: 'YES',
+              valueFalse: 'NO',
+            },
+            {
+              type: 'checkbox',
+              name: 'open',
+              category: category2,
+            },
+            {
+              type: 'button',
+              label: 'Button trait',
+              labelButton: 'Alert',
+              name: 'button-trait',
+              category: category2,
+              full: true,
+              command: () => alert('hello'),
+            },
+            {
+              type: 'button',
+              label: false,
+              full: true,
+              category: category2,
+              labelButton: 'Open code',
+              name: 'button-trait2',
+              command: 'core:open-code',
+            },
+          ],
+        },
+      },
+    });
   };
 
   const editor = grapesjs.init({
@@ -745,8 +835,7 @@ In the example below we'll replicate most of the default functionality by using 
     height: '100%',
     storageManager: false,
     fromElement: true,
-    plugins: ['gjs-blocks-basic'],
-    selectorManager: { componentFirst: true },
+    plugins: ['gjs-blocks-basic', myPlugin],
     traitManager: {
       custom: true
     }
