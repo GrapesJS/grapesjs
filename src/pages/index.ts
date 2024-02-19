@@ -21,22 +21,7 @@
  * const pageManager = editor.Pages;
  * ```
  *
- * ## Available Events
- * * `page:add` - Added new page. The page is passed as an argument to the callback
- * * `page:remove` - Page removed. The page is passed as an argument to the callback
- * * `page:select` - New page selected. The newly selected page and the previous one, are passed as arguments to the callback
- * * `page:update` - Page updated. The updated page and the object containing changes are passed as arguments to the callback
- * * `page` - Catch-all event for all the events mentioned above. An object containing all the available data about the triggered event is passed as an argument to the callback
- *
- * ## Methods
- * * [add](#add)
- * * [get](#get)
- * * [getAll](#getall)
- * * [getAllWrappers](#getallwrappers)
- * * [getMain](#getmain)
- * * [remove](#remove)
- * * [select](#select)
- * * [getSelected](#getselected)
+ * {REPLACE_EVENTS}
  *
  * [Page]: page.html
  * [Component]: component.html
