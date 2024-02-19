@@ -630,6 +630,197 @@ In the example below we'll replicate most of the default functionality by using 
 
 <demo-viewer value="v8cgkLfr" height="500" darkcode/>
 
+<!--
+<style>
+  .trait-input-color {
+    width: 16px !important;
+    height: 15px !important;
+    opacity: 0 !important;
+  }
+  /* Vuetify overrides */
+  .v-application {
+    background: transparent !important;
+  }
+  .v-application--wrap {
+    min-height: auto;
+  }
+  .v-input__slot {
+    font-size: 12px;
+    min-height: 10px !important;
+    color-scheme: dark;
+  }
+  .v-select__selections {
+    flex-wrap: nowrap;
+  }
+  .v-text-field .v-input__slot {
+    padding: 0 10px !important;
+  }
+  .v-input--selection-controls {
+    margin-top: 0;
+  }
+  .v-text-field__details, .v-messages {
+    display: none;
+  }
+  .no-cat-header {
+    opacity: 0;
+    padding: 10px;
+    max-height: 10px;
+    pointer-events: none;
+    min-height: auto !important;
+  }
+  .trait-color-prv {
+    border: 1px solid rgba(255,255,255,0.5);
+    border-radius: 3px;
+  }
+</style>
+<div>
+  <div class="vue-app">
+    <v-app>
+      <v-main>
+        <v-expansion-panels accordion multiple v-model="panels">
+          <v-expansion-panel v-for="trc in traitCategories">
+            <v-expansion-panel-header v-if="trc.category">
+              {{ trc.category.getLabel() }}
+            </v-expansion-panel-header>
+            <v-expansion-panel-header class="no-cat-header" v-else></v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <v-row>
+                <trait-field v-for="trait in trc.items" :key="trait.id" :trait="trait"/>
+              </v-row>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+        </v-expansion-panels>
+      </v-main>
+    </v-app>
+  </div>
+
+  <div id="trait-field" style="display: none;">
+    <v-col :class="['py-0 px-1 mb-1', trait.get('full') && 'mb-3']" :cols="12">
+      <v-row class="flex-nowrap" v-if="isTypeNeedLabel">
+        <v-col cols="auto pr-0">{{ trait.getLabel() }}</v-col>
+      </v-row>
+      <div v-if="type === 'number'">
+        <v-text-field :placeholder="placeholder" :value="inputValue" @change="handleChange" outlined dense/>
+      </div>
+      <div v-else-if="type === 'checkbox'">
+        <v-checkbox :label="trait.getLabel()" :input-value="inputValue" @change="handleChange"></v-checkbox>
+      </div>
+      <div v-else-if="type === 'select'">
+        <v-select :items="toOptions" :value="inputValue" @change="handleChange" outlined dense/>
+      </div>
+      <div v-else-if="type === 'color'">
+        <v-text-field :placeholder="placeholder" :value="inputValue" @change="handleChange" outlined dense>
+          <template v-slot:append>
+            <div :style="{ backgroundColor: inputValue || placeholder }" class="trait-color-prv">
+              <input class="trait-input-color"
+                      type="color"
+                      :value="inputValue || placeholder"
+                      @change="(ev) => handleChange(ev.target.value)"
+                      @input="(ev) => handleInput(ev.target.value)"
+                      />
+            </div>
+          </template>
+        </v-text-field>
+      </div>
+      <div v-else-if="type === 'button'">
+        <v-btn block @click="trait.runCommand()">
+          <v-row>
+            <v-col>{{ trait.get('labelButton') }}</v-col>
+          </v-row>
+        </v-btn>
+      </div>
+      <div v-else>
+        <v-text-field :placeholder="placeholder" :type="type" :value="inputValue" @change="handleChange" outlined dense/>
+      </div>
+    </v-col>
+  </div>
+</div>
+<script>
+  const myPlugin = (editor) => {
+    // ...
+  };
+
+  const editor = grapesjs.init({
+    container: '#gjs',
+    height: '100%',
+    storageManager: false,
+    fromElement: true,
+    plugins: ['gjs-blocks-basic'],
+    selectorManager: { componentFirst: true },
+    traitManager: {
+      custom: true
+    }
+  });
+
+  Vue.component('trait-field', {
+    props: { trait: Object },
+    template: '#trait-field',
+    computed: {
+      inputValue() {
+        return this.trait.getValue({ useType: true });
+      },
+      type() {
+        return this.trait.getType();
+      },
+      placeholder() {
+        return this.trait.get('placeholder');
+      },
+      toOptions() {
+        const { trait } = this;
+        return trait.getOptions().map(o => ({ value: trait.getOptionId(o), text: trait.getOptionLabel(o) }))
+      },
+      isTypeNeedLabel() {
+        return !['checkbox', 'button'].includes(this.type);
+      }
+    },
+    methods: {
+      handleChange(value) {
+        this.trait.setValue(value);
+      },
+      handleInput(value) {
+        this.trait.setValue(value, { partial: true });
+      },
+    }
+  });
+
+  const app = new Vue({
+    el: '.vue-app',
+    vuetify: new Vuetify({
+      theme: { dark: true },
+    }),
+    data: {
+      traitCategories: [],
+      panels: [],
+    },
+    mounted() {
+      const { Traits } = editor;
+      // Catch-all event for any spot update
+      editor.on('trait:custom', this.onTraitCustom);
+    },
+    destroyed() {
+      editor.off('trait:custom', this.handleCustom);
+    },
+    methods: {
+      onTraitCustom(props) {
+        const { container } = props;
+        if (container && !container.contains(this.$el)) {
+          container.appendChild(this.$el);
+        }
+        const traitsByCategory = editor.Traits.getTraitsByCategory();
+        const noCategoryIndex = traitsByCategory.findIndex(trc => !trc.category) || 0;
+        // Keep items without categories open
+        if (!this.panels.includes(noCategoryIndex)) {
+          this.panels.push(noCategoryIndex);
+        }
+        this.traitCategories = traitsByCategory;
+      },
+      categoryId(traitCategory) {
+        return traitCategory.category?.id || 'none';
+      },
+    }
+  });
+</script>
+-->
 
 
 
