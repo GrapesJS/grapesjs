@@ -601,10 +601,12 @@ export default class StyleManager extends ItemManagerModule<
       let rules: CssRule[] = [];
 
       const rulesBySelectors = (values: string[]) => {
-        return cssC.getRules().filter(rule => {
-          const rSels = rule.getSelectors().map(s => s.getFullName());
-          return rSels.every(rSel => values.indexOf(rSel) >= 0);
-        });
+        return !values.length
+          ? []
+          : cssC.getRules().filter(rule => {
+              const rSels = rule.getSelectors().map(s => s.getFullName());
+              return !!rSels.length && rSels.every(rSel => values.indexOf(rSel) >= 0);
+            });
       };
 
       // Componente related rule
