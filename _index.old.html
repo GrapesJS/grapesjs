@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>GrapesJS</title>
+    
+    <link rel="stylesheet" href="dist/css/grapes.min.css">
+    <script src="grapes.min.js"></script>
+    <style>
+      body,
+      html {
+        height: 100%;
+        margin: 0;
+      }
+      .gjs-block {
+        width: auto;
+        height: auto;
+        min-height: auto;
+      }
+    </style>
+  </head>
+
+  <body>
+
+
+    <div id="blocks"></div>
+    <iframe src="page.html" id="test" style="display:none"></iframe>
+
+    <script type="text/javascript">
+
+      var frame = document.getElementById('test');
+  
+      frame.addEventListener('load', function() {
+        var innerDoc = frame.contentDocument || frame.contentWindow.document;
+
+      const plhPlugin = editor => {
+        const { Components } = editor;
+        
+        // Create the placeholder component
+        Components.addType('plh', {
+          model: {
+            defaults: {
+              style: {
+                border: '15px solid #d382dc', 
+                opacity: 0.5,
+                'pointer-events': 'none',
+              },
+              highlightable: false,
+              layerable: false,
+              propagate: ['highlightable']
+            },
+            toHTML() {
+              return '';
+            }
+          },
+          
+          isComponent: (el) => el.classList && 
+            el.classList.contains('my-plh'),
+        });
+        
+        // Let's also avoid user dropping stuff inside the wrapper node
+        Components.addType('wrapper', {
+          model: {
+            defaults: {
+              tagName: 'div',
+              droppable: false,
+              selectable: false,
+              hoverable: false,
+            },
+            // Skip wrapper in the HTML output
+            toHTML(opts) {
+              return this.getInnerHTML(opts);
+            }
+          }
+        });
+    };
+
+      var editor = grapesjs.init({
+        showOffsets: 1,
+        noticeOnUnload: 0,
+        //headless: true,
+        container: innerDoc.getElementById('gjs'),
+        height: '100%',
+        fromElement: false,
+        storageManager: { autoload: 0 },
+        panels: { defaults: [] },
+        blockManager: {
+        appendTo: document.getElementById('blocks'),
+        blocks: [
+          {
+            id: 'section', // id is mandatory
+            label: '<b>Section</b>', // You can use HTML/SVG inside labels
+            attributes: { class:'gjs-block-section' },
+            content: `<section>
+              <h1>This is a simple title</h1>
+              <div>This is just a Lorem text: Lorem ipsum dolor sit amet</div>
+            </section>`,
+          }, {
+            id: 'text',
+            label: 'Text',
+            content: '<div data-gjs-type="text">Insert your text here</div>',
+          }, {
+            id: 'image',
+            label: 'Image',
+            // Select the component once it's dropped
+            select: true,
+            // You can pass components as a JSON instead of a simple HTML string,
+            // in this case we also use a defined component type `image`
+            content: { type: 'image' },
+            // This triggers `active` event on dropped components and the `image`
+            // reacts by opening the AssetManager
+            activate: true,
+          }
+        ]
+      },
+        // styleManager : {
+        //   sectors: [{
+        //       name: 'General',
+        //       open: false,
+        //       buildProps: ['float', 'display', 'position', 'top', 'right', 'left', 'bottom']
+        //     },{
+        //       name: 'Flex',
+        //       open: false,
+        //       buildProps: ['flex-direction', 'flex-wrap', 'justify-content', 'align-items', 'align-content', 'order', 'flex-basis', 'flex-grow', 'flex-shrink', 'align-self']
+        //     },{
+        //       name: 'Dimension',
+        //       open: false,
+        //       buildProps: ['width', 'height', 'max-width', 'min-height', 'margin', 'padding'],
+        //     },{
+        //       name: 'Typography',
+        //       open: false,
+        //       buildProps: ['font-family', 'font-size', 'font-weight', 'letter-spacing', 'color', 'line-height', 'text-shadow'],
+        //     },{
+        //       name: 'Decorations',
+        //       open: false,
+        //       buildProps: ['border-radius-c', 'background-color', 'border-radius', 'border', 'box-shadow', 'background'],
+        //     },{
+        //       name: 'Extra',
+        //       open: false,
+        //       buildProps: ['transition', 'perspective', 'transform'],
+        //     }
+        //   ],
+        // },
+        plugins: ['gjs-blocks-basic', plhPlugin],
+        layerManager: { root: '#my-root' }
+      });
+
+      editor.on('frame:load:before', ({ el }) => {
+        const doc = el.contentDocument;
+        doc.open();
+        doc.write("test"); 
+        doc.close();
+      });
+    });
+
+      
+     
+
+      // var editor = grapesjs.init({
+      //   showOffsets: 1,
+      //   noticeOnUnload: 0,
+      //   //headless: true,
+      //   container: innerDoc.getElementById('gjs'),
+      //   height: '100%',
+      //   fromElement: true,
+      //   storageManager: { autoload: 0 },
+      //   styleManager : {
+      //     sectors: [{
+      //         name: 'General',
+      //         open: false,
+      //         buildProps: ['float', 'display', 'position', 'top', 'right', 'left', 'bottom']
+      //       },{
+      //         name: 'Flex',
+      //         open: false,
+      //         buildProps: ['flex-direction', 'flex-wrap', 'justify-content', 'align-items', 'align-content', 'order', 'flex-basis', 'flex-grow', 'flex-shrink', 'align-self']
+      //       },{
+      //         name: 'Dimension',
+      //         open: false,
+      //         buildProps: ['width', 'height', 'max-width', 'min-height', 'margin', 'padding'],
+      //       },{
+      //         name: 'Typography',
+      //         open: false,
+      //         buildProps: ['font-family', 'font-size', 'font-weight', 'letter-spacing', 'color', 'line-height', 'text-shadow'],
+      //       },{
+      //         name: 'Decorations',
+      //         open: false,
+      //         buildProps: ['border-radius-c', 'background-color', 'border-radius', 'border', 'box-shadow', 'background'],
+      //       },{
+      //         name: 'Extra',
+      //         open: false,
+      //         buildProps: ['transition', 'perspective', 'transform'],
+      //       }
+      //     ],
+      //   },
+      //   //layerManager: { root: '#my-root' }
+      // });
+
+      
+
+      // editor.BlockManager.add('testBlock', {
+      //   label: 'Block',
+      //   attributes: { class:'gjs-fonts gjs-f-b1' },
+      //   content: `<div style="padding-top:50px; padding-bottom:50px; text-align:center">Test block</div>`
+      // })
+    </script>
+  </body>
+</html>
