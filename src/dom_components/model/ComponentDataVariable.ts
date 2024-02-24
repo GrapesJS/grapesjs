@@ -9,7 +9,8 @@ export default class ComponentDataVariable extends Component {
       // @ts-ignore
       ...super.defaults,
       type,
-      source: '',
+      path: '',
+      value: '',
     };
   }
 

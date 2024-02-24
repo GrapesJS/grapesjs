@@ -20,3 +20,37 @@ export interface DataRecordProps extends ObjectAny {
    */
   id: string;
 }
+
+/**{START_EVENTS}*/
+export enum DataSourcesEvents {
+  /**
+   * @event `data:add` Added new data source.
+   * @example
+   * editor.on('data:add', (dataSource) => { ... });
+   */
+  add = 'data:add',
+  addBefore = 'data:add:before',
+
+  /**
+   * @event `data:remove` Data source removed.
+   * @example
+   * editor.on('data:remove', (dataSource) => { ... });
+   */
+  remove = 'data:remove',
+  removeBefore = 'data:remove:before',
+
+  /**
+   * @event `data:update` Data source updated.
+   * @example
+   * editor.on('data:update', (dataSource, changes) => { ... });
+   */
+  update = 'data:update',
+
+  /**
+   * @event `data` Catch-all event for all the events mentioned above.
+   * @example
+   * editor.on('data', ({ event, model, ... }) => { ... });
+   */
+  all = 'data',
+}
+/**{END_EVENTS}*/
