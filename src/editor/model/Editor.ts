@@ -42,6 +42,7 @@ import CssRules from '../../css_composer/model/CssRules';
 import { ComponentAdd, DragMode } from '../../dom_components/model/types';
 import ComponentWrapper from '../../dom_components/model/ComponentWrapper';
 import { CanvasSpotBuiltInTypes } from '../../canvas/model/CanvasSpot';
+import DataSourceManager from '../../dataSources';
 
 Backbone.$ = $;
 
@@ -64,6 +65,7 @@ const deps: (new (em: EditorModel) => IModule)[] = [
   CanvasModule,
   CommandsModule,
   BlockManager,
+  DataSourceManager,
 ];
 const storableDeps: (new (em: EditorModel) => IModule & IStorableModule)[] = [
   AssetManager,
@@ -226,6 +228,10 @@ export default class EditorModel extends Model {
 
   get Styles(): StyleManager {
     return this.get('StyleManager');
+  }
+
+  get DataSources(): DataSourceManager {
+    return this.get('DataSources');
   }
 
   constructor(conf: EditorConfig = {}) {

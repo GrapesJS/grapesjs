@@ -5,16 +5,13 @@ export default class ComponentDataVariableView extends ComponentView<ComponentDa
   initialize(opt = {}) {
     super.initialize(opt);
     const { model, em } = this;
-    const { key } = model.attributes;
-    this.listenTo(em, key, () => this.postRender());
+    this.listenTo(em, model.attributes.path, () => this.postRender());
   }
 
   postRender() {
-    const { model, el } = this;
-    const { key, default: def } = model.attributes;
-    // this.el.innerHTML = getValue(key, def);
-    el.innerHTML = def;
-    console.log('this.el.innerHTML', { key, def });
+    const { model, el, em } = this;
+    const { path, value } = model.attributes;
+    el.innerHTML = em.DataSources.getValue(path, value);
     super.postRender();
   }
 }

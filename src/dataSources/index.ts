@@ -1,11 +1,11 @@
-import { ItemManagerModule } from '../abstract/Module';
-import { ObjectAny } from '../common';
+import { ItemManagerModule, ModuleConfig } from '../abstract/Module';
+import { AddOptions, ObjectAny } from '../common';
 import EditorModel from '../editor/model/Editor';
 import { get } from '../utils/mixins';
 import { DataSources } from './model/DataSources';
-import { DataSourcesEvents } from './types';
+import { DataSourceProps, DataSourcesEvents } from './types';
 
-export default class DataSourceManager extends ItemManagerModule<{}, DataSources> {
+export default class DataSourceManager extends ItemManagerModule<ModuleConfig, DataSources> {
   storageKey = '';
   destroy(): void {}
 
@@ -23,5 +23,15 @@ export default class DataSourceManager extends ItemManagerModule<{}, DataSources
     }, {} as ObjectAny);
     console.log('getValue', { context });
     return get(context, key, defValue);
+  }
+
+  add(props: DataSourceProps, opts: AddOptions = {}) {
+    const { all } = this;
+    props.id = props.id || this._createId();
+    return all.add(props, opts);
+  }
+
+  get(id: string) {
+    return this.all.add(id);
   }
 }
