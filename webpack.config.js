@@ -20,6 +20,7 @@ module.exports = ({ config, pkg, webpack }) => {
       ...config.optimization,
       minimize: !BUILD_MODULE,
     },
+    devtool: 'eval-source-map',
     devServer: {
       ...config.devServer,
       static: [rootDir],
