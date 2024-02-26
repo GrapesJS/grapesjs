@@ -566,8 +566,7 @@ export default class CanvasView extends ModuleView<Canvas> {
    * @param {ModuleView} view Component's View
    * @private
    */
-  //TODO change type after the ComponentView was updated to ts
-  updateScript(view: any) {
+  updateScript(view: ComponentView) {
     const model = view.model;
     const id = model.getId();
 
@@ -577,26 +576,29 @@ export default class CanvasView extends ModuleView<Canvas> {
       jsEl?.appendChild(view.scriptContainer);
     }
 
-    view.el.id = id;
-    view.scriptContainer.innerHTML = '';
-    // In editor, I make use of setTimeout as during the append process of elements
-    // those will not be available immediately, therefore 'item' variable
-    const script = document.createElement('script');
-    const scriptFn = model.getScriptString();
-    const scriptFnStr = model.get('script-props') ? scriptFn : `function(){\n${scriptFn}\n;}`;
-    const scriptProps = JSON.stringify(model.__getScriptProps());
-    script.innerHTML = `
+    const scriptComponent = model.scriptSubComp;
+    if (scriptComponent) {
+      view.el.id = id;
+      view.scriptContainer.innerHTML = '';
+      // In editor, I make use of setTimeout as during the append process of elements
+      // those will not be available immediately, therefore 'item' variable
+      const script = document.createElement('script');
+      const scriptFn = scriptComponent.getScriptString();
+      const scriptFnStr = model.get('script-props') ? scriptFn : `function(){\n${scriptFn}\n;}`;
+      const scriptProps = JSON.stringify(scriptComponent.__getScriptProps());
+      script.innerHTML = `
       setTimeout(function() {
         var item = document.getElementById('${id}');
         if (!item) return;
         (${scriptFnStr}.bind(item))(${scriptProps})
       }, 1);`;
-    // #873
-    // Adding setTimeout will make js components work on init of the editor
-    setTimeout(() => {
-      const scr = view.scriptContainer;
-      scr?.appendChild(script);
-    }, 0);
+      // #873
+      // Adding setTimeout will make js components work on init of the editor
+      setTimeout(() => {
+        const scr = view.scriptContainer;
+        scr?.appendChild(script);
+      }, 0);
+    }
   }
 
   /**

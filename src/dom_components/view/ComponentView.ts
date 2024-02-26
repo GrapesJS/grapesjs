@@ -392,7 +392,7 @@ TComp> {
    */
   updateScript() {
     const { model, em } = this;
-    if (!model.get('script')) return;
+    if (!model.scriptSubComp) return;
     em?.Canvas.getCanvasView().updateScript(this);
   }
 

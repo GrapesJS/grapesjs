@@ -37,12 +37,9 @@ import CssRule, { CssRuleJSON } from '../../css_composer/model/CssRule';
 import Trait from '../../trait_manager/model/Trait';
 import { ToolbarButtonProps } from './ToolbarButton';
 import { TraitProperties } from '../../trait_manager/types';
+import ScriptSubComponent, { ScriptData } from './modules/ScriptSubComponent';
 
 export interface IComponent extends ExtractMethods<Component> {}
-
-const escapeRegExp = (str: string) => {
-  return str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
-};
 
 export const avoidInline = (em: EditorModel) => !!em?.getConfig().avoidInlineStyle;
 
@@ -219,6 +216,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
   frame?: Frame;
   rule?: CssRule;
   prevColl?: Components;
+  scriptSubComp?: ScriptSubComponent;
   __hasUm?: boolean;
   __symbReady?: boolean;
   /**
@@ -263,8 +261,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     this.initComponents();
     this.initTraits();
     this.initToolbar();
-    this.initScriptProps();
-    this.listenTo(this, 'change:script', this.scriptUpdated);
+    this.initScript();
     this.listenTo(this, 'change:tagName', this.tagUpdated);
     this.listenTo(this, 'change:attributes', this.attrUpdated);
     this.listenTo(this, 'change:attributes:id', this._idUpdated);
@@ -692,8 +689,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
         this.__getSymbol() ||
         this.__getSymbols() ||
         // Components with script should always have an id
-        this.get('script-export') ||
-        this.get('script')
+        this.scriptSubComp
       ) {
         addId = true;
       }
@@ -1078,24 +1074,17 @@ export default class Component extends StyleableModel<ComponentProperties> {
     return this;
   }
 
-  initScriptProps() {
+  initScript() {
     if (this.opt.temporary) return;
-    const prop = 'script-props';
-    const toListen: any = [`change:${prop}`, this.initScriptProps];
-    this.off(...toListen);
-    const prevProps = this.previous(prop) || [];
-    const newProps = this.get(prop) || [];
-    const prevPropsEv = prevProps.map(e => `change:${e}`).join(' ');
-    const newPropsEv = newProps.map(e => `change:${e}`).join(' ');
-    prevPropsEv && this.off(prevPropsEv, this.__scriptPropsChange);
-    newPropsEv && this.on(newPropsEv, this.__scriptPropsChange);
-    // @ts-ignore
-    this.on(...toListen);
-  }
 
-  __scriptPropsChange(m: any, v: any, opts: any = {}) {
-    if (opts.avoidStore) return;
-    this.trigger('rerender');
+    let scriptData: ScriptData | string | ((...params: any[]) => any) | undefined =
+      this.get('script-export') || (this.get('script') as any);
+    if (!isUndefined(scriptData)) {
+      if (isString(scriptData) || isFunction(scriptData)) {
+        scriptData = { main: scriptData, props: this.get('script-props') ?? [] };
+      }
+      this.scriptSubComp = new ScriptSubComponent(this, scriptData);
+    }
   }
 
   /**
@@ -1210,14 +1199,6 @@ export default class Component extends StyleableModel<ComponentProperties> {
   parents(): Component[] {
     const parent = this.parent();
     return parent ? [parent].concat(parent.parents()) : [];
-  }
-
-  /**
-   * Script updated
-   * @private
-   */
-  scriptUpdated() {
-    this.set('scriptUpdated', 1);
   }
 
   /**
@@ -1772,55 +1753,6 @@ export default class Component extends StyleableModel<ComponentProperties> {
     const frameView = this.em.getCurrentFrame();
     const frame = frameView?.model;
     return this.getView(frame);
-  }
-
-  __getScriptProps() {
-    const modelProps = this.props();
-    const scrProps = this.get('script-props') || [];
-    return scrProps.reduce((acc, prop) => {
-      acc[prop] = modelProps[prop];
-      return acc;
-    }, {} as Partial<ComponentProperties>);
-  }
-
-  /**
-   * Return script in string format, cleans 'function() {..' from scripts
-   * if it's a function
-   * @param {string|Function} script
-   * @return {string}
-   * @private
-   */
-  getScriptString(script?: string | Function) {
-    let scr = script || this.get('script') || '';
-
-    if (!scr) {
-      return scr;
-    }
-
-    if (this.get('script-props')) {
-      scr = scr.toString().trim();
-    } else {
-      // Deprecated
-      // Need to convert script functions to strings
-      if (isFunction(scr)) {
-        let scrStr = scr.toString().trim();
-        scrStr = scrStr.slice(scrStr.indexOf('{') + 1, scrStr.lastIndexOf('}'));
-        scr = scrStr.trim();
-      }
-
-      const config = this.em.getConfig();
-      const tagVarStart = escapeRegExp(config.tagVarStart || '{[ ');
-      const tagVarEnd = escapeRegExp(config.tagVarEnd || ' ]}');
-      const reg = new RegExp(`${tagVarStart}([\\w\\d-]*)${tagVarEnd}`, 'g');
-      scr = scr.replace(reg, (match, v) => {
-        // If at least one match is found I have to track this change for a
-        // better optimization inside JS generator
-        this.scriptUpdated();
-        const result = this.attributes[v] || '';
-        return isArray(result) || typeof result == 'object' ? JSON.stringify(result) : result;
-      });
-    }
-    return scr;
   }
 
   emitUpdate(property?: string, ...args: any[]) {
