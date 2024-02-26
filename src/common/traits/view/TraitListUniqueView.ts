@@ -12,12 +12,11 @@ import TraitObject from '../model/TraitObject';
 import TraitList from '../model/TraitList';
 import TraitListUnique from '../model/TraitListUnique';
 
-export interface TraitListViewOpts<T extends string = 'object'> extends TraitViewOpts<T> {
+export interface TraitListUniqueViewOpts<T extends string = 'object'> extends TraitViewOpts<T> {
   traits: any[] | any;
-  title?: string;
 }
 
-export default class TraitListView extends TraitView<TraitList> {
+export default class TraitListUniqueView extends TraitView<TraitListUnique> {
   protected type = 'list';
   templates: any[];
   private toolbarEl?: HTMLDivElement;
@@ -51,36 +50,18 @@ export default class TraitListView extends TraitView<TraitList> {
     // this.getPropertiesEl().style.display = isOpen ? '' : 'none';
   }
 
-  title?: string;
-
-  constructor(em: EditorModel, opts: TraitListViewOpts) {
+  constructor(em: EditorModel, opts: TraitListUniqueViewOpts) {
     super(em, { ...opts });
     this.templates = opts.traits;
-    this.title = opts.title;
   }
+
   get children() {
     return this.target.children as TraitObjectItem[];
   }
-  //   get traits() {
-  //     return Object.entries(this.target.value).map(([id, value]) => this.initTrait(id, {...this.traitOps?.value, ...value}))
-  //   }
 
-  private initTrait(index: string, value?: any) {
-    const { templates } = this;
-    const traits = this.templates;
-    if (isArray(templates) && templates.length > 1) {
-      return new TraitObjectItem(index, this.target, { name: index, traits, value, ...this.traitOps });
-    } else {
-      return new TraitObjectItem(index, this.target, { name: index, ...traits, value, ...this.traitOps });
-    }
-  }
   get editable() {
     return this.target.opts.editable ?? true;
   }
-
-  //   initTarget(target: Trait){
-  //       this.traits
-  //   }
 
   onUpdateEvent(value: any, fromTarget: boolean): void {
     console.log('aaa', 'onUpdateEvent');
@@ -93,10 +74,7 @@ export default class TraitListView extends TraitView<TraitList> {
   private addItem(e: any) {
     e.preventDefault();
     const name = this.$el.find('[variableName]').val() as any;
-    console.log('alamr', this.target.opts.traits);
-    if (this.target.type == 'list') {
-      this.target.children.push(new TraitListItem(this.target.children.length, this.target, this.target.opts.traits));
-    }
+    this.target.add(name);
     this.render();
   }
 
@@ -128,14 +106,14 @@ export default class TraitListView extends TraitView<TraitList> {
   onItemRender(e: any) {}
 
   renderItem(trait: TraitObjectItem) {
-    const { em, ppfx, title } = this;
+    const { em, ppfx } = this;
     const icons = em?.getConfig().icons;
     const iconCaret = icons?.caret || '';
     const view = InputFactory.buildView(trait, em, { ...trait.opts, noLabel: true }).render();
     view.on('all', this.onItemRender, this);
     var itemEl = document.createElement('div');
     console.log(trait);
-    const itemTitle = title ? trait.value[title] : trait.name;
+    const itemTitle = trait.name;
     itemEl.innerHTML = `
     <div class="${ppfx}item-title" data-item-title>
         <div class="${ppfx}caret">${iconCaret}</div>

@@ -1,6 +1,6 @@
 import Frame from '../../canvas/model/Frame';
 import { Nullable } from '../../common';
-import { InputProperties, InputViewProperties } from '../../common/traits';
+import { InputViewProperties } from '../../common/traits';
 import EditorModel from '../../editor/model/Editor';
 import Selectors from '../../selector_manager/model/Selectors';
 import { ResizerOptions } from '../../utils/Resizer';
@@ -190,7 +190,7 @@ export interface ComponentProperties {
    * Component's traits. More about it [here](/modules/Traits.html). Default: `['id', 'title']`
    * @default []
    */
-  traits?: (string | (InputProperties & (InputViewProperties | {})))[];
+  traits?: (string | (InputViewProperties | {}))[];
   /**
        * Indicates an array of properties which will be inhereted by all NEW appended children.
        For example if you create a component likes this: `{ removable: false, draggable: false, propagate: ['removable', 'draggable'] }`
@@ -234,7 +234,7 @@ export interface ComponentDefinition extends Omit<ComponentProperties, 'componen
    * Children components.
    */
   components?: string | ComponentDefinition | (string | ComponentDefinition)[];
-  traits?: (Partial<InputProperties & (InputViewProperties | {})> | string)[];
+  traits?: (Partial<InputViewProperties | {}> | string)[];
   attributes?: Record<string, any>;
   [key: string]: unknown;
 }
@@ -244,7 +244,7 @@ export interface ComponentDefinitionDefined extends Omit<ComponentProperties, 'c
    * Children components.
    */
   components?: ComponentDefinitionDefined[] | ComponentDefinitionDefined;
-  traits?: (Partial<InputProperties & (InputViewProperties | {})> | string)[];
+  traits?: (Partial<InputViewProperties | {}> | string)[];
   [key: string]: any;
 }
 

@@ -13,7 +13,6 @@ export interface TraitInputViewOpts<Type> extends TraitViewOpts<Type> {
   paceholder?: string;
 }
 
-// type ModelFromTrait<TTarget extends Trait> = TTarget extends Trait<infer M, any> ? M : unknown;
 type ValueFromTrait<TTarget extends Trait> = TTarget extends Trait<infer M> ? M : unknown;
 
 export default abstract class TraitInputView<Target extends Trait = Trait>
@@ -69,13 +68,16 @@ export default abstract class TraitInputView<Target extends Trait = Trait>
    * Fires when the input is changed
    * @private
    */
-  onChange() {
-    console.log('traitchange');
+  onChange(e: any) {
+    e?.stopPropagation();
+    e?.preventDefault();
     this.target.value = this.inputValue;
   }
 
-  onUpdateEvent(value: ValueFromTrait<Target>) {
-    this.inputValue = value;
+  onUpdateEvent(value: ValueFromTrait<Target>, fromTarget: boolean) {
+    if (fromTarget) {
+      this.inputValue = value;
+    }
   }
 
   /**
@@ -111,11 +113,10 @@ export default abstract class TraitInputView<Target extends Trait = Trait>
         ...i18nAttr,
       });
 
-      if (!isUndefined(value)) {
-        input.prop('value', value as any);
-      }
-
       this.$input = input;
+      if (!isUndefined(value)) {
+        this.inputValue = value;
+      }
     }
     return this.$input.get(0);
   }

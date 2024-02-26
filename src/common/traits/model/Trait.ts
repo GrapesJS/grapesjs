@@ -1,26 +1,44 @@
-import { Model } from '../..';
+import EditorModel from '../../../editor/model/Editor';
+import TraitFactory from './TraitFactory';
 
 export interface OnUpdateView<TraitValueType> {
-  onUpdateEvent(value: TraitValueType): void;
+  onUpdateEvent(value: TraitValueType, fromTarget: boolean): void;
 }
 
 export interface TraitProperties {
-  name: string;
   default?: any;
   value?: any;
+  traits?: any;
   changeProp?: boolean;
 }
 
-export default abstract class Trait<TraitValueType = any> {
+export default abstract class Trait<TraitValueType = any, Type extends string = string> {
   opts: any;
-  protected view?: OnUpdateView<TraitValueType>;
+  view?: OnUpdateView<TraitValueType>;
+  get name(): string {
+    return '';
+  }
+  get type(): Type {
+    return this.opts.type;
+  }
 
-  public get name() {
-    return this.opts.name;
+  get templates(): unknown {
+    return this.opts.traits ?? [];
+  }
+
+  private _children: Trait[] = [];
+  get children() {
+    return this._children;
+  }
+
+  set children(children: Trait[]) {
+    this._children = children;
+    console.log('aaaa', children);
+    console.log('aaaa', this.value);
   }
 
   constructor(opts: TraitProperties) {
-    this.opts = { ...opts, default: opts?.value ?? opts?.default ?? '' };
+    this.opts = { ...opts };
   }
 
   public registerForUpdateEvent(view: OnUpdateView<TraitValueType>) {
@@ -35,24 +53,41 @@ export default abstract class Trait<TraitValueType = any> {
     return this.opts.changeProp ?? false;
   }
 
+  abstract get em(): EditorModel;
   public get value(): TraitValueType {
-    return this.getValue() ?? this.opts.default;
+    return (
+      this.getValue() ??
+      (typeof this.opts.default != 'undefined' ? (this.value = this.opts.default) && this.opts.default : '')
+    );
   }
 
   protected updatingValue = false;
   public set value(value: TraitValueType) {
     this.updatingValue = true;
+    console.log('setvalue ' + value);
     this.setValue(value);
     this.updatingValue = false;
   }
 
-  protected setValueFromModel() {
+  setValueFromModel() {
     if (!this.updatingValue) {
-      this.view?.onUpdateEvent(this.value);
+      this.view?.onUpdateEvent(this.value, true);
     }
   }
 
   updateOpts(opts: any) {
     this.opts = { ...this.opts, ...opts };
   }
+
+  get viewType() {
+    return this.type ?? 'text';
+  }
+
+  // set viewType(type: string){
+  //   return this.type ?? 'text';
+  // }
+
+  // protected buildNestedChildren(trait: Trait){
+  //   TraitFactory.buildNestedTraits(this)
+  // }
 }

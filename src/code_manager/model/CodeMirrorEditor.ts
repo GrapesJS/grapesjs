@@ -89,7 +89,6 @@ export default class CodeMirrorEditor extends Model {
     extensions.push(
       EditorView.updateListener.of((v: ViewUpdate) => {
         if (v.docChanged) {
-          console.log(this);
           // Document changed
           this.trigger('update', this);
         }
@@ -99,7 +98,6 @@ export default class CodeMirrorEditor extends Model {
       doc: el.value,
       extensions,
     });
-    this.on('update', () => console.log('change'));
 
     this.editor = this.editorFromTextArea(el, {
       state,

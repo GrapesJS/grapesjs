@@ -6,6 +6,7 @@ import { $, View } from '../..';
 import EditorModel from '../../../editor/model/Editor';
 import { capitalize } from '../../../utils/mixins';
 import Trait, { OnUpdateView, TraitProperties } from '../model/Trait';
+import Component from '../../../dom_components/model/Component';
 
 export interface TraitViewOpts<Type> {
   type?: Type;
@@ -24,7 +25,7 @@ export default abstract class TraitView<Target extends Trait = Trait>
   pfx: string;
   ppfx: string;
   get name() {
-    return this.target?.opts.name;
+    return this.target.name;
   }
   protected abstract type: string;
 
@@ -50,18 +51,23 @@ export default abstract class TraitView<Target extends Trait = Trait>
     this.noLabel = (opts?.noLabel && opts?.label !== false) ?? false;
   }
 
-  setTarget(popertyName: string, model: Model, opts?: Omit<TraitProperties, 'name'>): this;
+  setTarget(popertyName: string, model: Model & { em: EditorModel }, opts?: Omit<TraitProperties, 'name'>): this;
   setTarget(target: Target): this;
-  setTarget(target: unknown, model?: Model, opts?: Omit<TraitProperties, 'name'>) {
+  setTarget(target: unknown, model?: Model & { em: EditorModel }, opts?: Omit<TraitProperties, 'name'>) {
     if (isString(target) && model !== undefined) {
       target = TraitFactory.build(model, { ...opts, type: this.type as any, name: target });
     }
     this.target = target as Target;
+    // console.log("alam",this.target.value)
+    // console.log("alam",this.target)
+    this.initTarget && this.initTarget(this.target);
     this.target.registerForUpdateEvent(this);
     return this;
   }
 
-  abstract onUpdateEvent(value: ValueFromTrait<Target>): void;
+  initTarget?(target: Target): void;
+
+  abstract onUpdateEvent(value: ValueFromTrait<Target>, fromTarget: boolean): void;
 
   /**
    * Returns label for the input

@@ -1,4 +1,4 @@
-import { bindAll, isNumber } from 'underscore';
+import { bindAll, isArray, isNumber, isObject } from 'underscore';
 import { ModuleView } from '../../abstract';
 import { BoxRect, Coordinates, CoordinatesTypes, ElementRect } from '../../common';
 import Component from '../../dom_components/model/Component';
@@ -19,6 +19,7 @@ import Frame from '../model/Frame';
 import { GetBoxRectOptions, ToWorldOption } from '../types';
 import FrameView from './FrameView';
 import FramesView from './FramesView';
+import { renderVariableValue } from '../../common/traits';
 
 export interface MarginPaddingOffsets {
   marginTop?: number;
@@ -559,10 +560,12 @@ export default class CanvasView extends ModuleView<Canvas> {
    * @private
    */
   //TODO change type after the ComponentView was updated to ts
-  updateScript(view: any) {
+  updateScript(view: ComponentView) {
     const model = view.model;
     const id = model.getId();
-
+    console.log(
+      '//////////////////////////////////////////////////////////////////\n/////////////// updateScript////////////////'
+    );
     if (!view.scriptContainer) {
       view.scriptContainer = createEl('div', { 'data-id': id });
       const jsEl = this.getJsContainer();
@@ -570,25 +573,63 @@ export default class CanvasView extends ModuleView<Canvas> {
     }
 
     view.el.id = id;
-    view.scriptContainer.innerHTML = '';
+    // view.scriptContainer.innerHTML = '';
     // In editor, I make use of setTimeout as during the append process of elements
     // those will not be available immediately, therefore 'item' variable
     const script = document.createElement('script');
     const scriptFn = model.getScriptString();
     const scriptFnStr = model.get('script-props') ? scriptFn : `function(){\n${scriptFn}\n;}`;
-    const scriptProps = JSON.stringify(model.__getScriptProps());
+    const scriptProps = renderVariableValue(model.__getScriptProps());
+    // JSON.stringify(model.__getScriptProps(), function(key, val) {
+    //   if (typeof val === 'function') {
+    //     return val + '';
+    //   }
+    //   return val;
+    // });
+    console.log(scriptProps);
+    const eventsStr =
+      model.scriptEvents?.length > 0
+        ? `Object.fromEntries(Object.entries(window.globalEvents['${id}']).map(([id, event])=> [id, event.trigger]))`
+        : 'undefined';
+    // const slotsStr = (model.slots?.length > 0) ? `window.globalSlots['${id}']`: '{}';
+    const objConverter: (obj: any) => string = (obj: any) =>
+      isArray(obj)
+        ? `[${obj.map(o => `${objConverter(o)}`).join(',')}]`
+        : isObject(obj)
+        ? `{${Object.keys(obj)
+            .map(id => `${id}: ${objConverter(obj[id])}`)
+            .join(',')}}`
+        : obj;
+    const scriptPropsStr = objConverter(scriptProps);
+    console.log(scriptPropsStr);
+
+    const signals = model.get('signals');
+    const signalsStr = `{${Object.keys(signals)
+      .map(
+        name =>
+          `${name}: ${
+            signals[name].componentId
+              ? `window.globalSlots[${signals[name].componentId}][${signals[name].slot}]`
+              : '(() => {})'
+          }`
+      )
+      .join(',')}}`;
+
+    script.innerHTML = (model?.globalSlots ?? '') + (model?.globalScript ?? '');
+    if (scriptFnStr) {
+      script.innerHTML += `
+        setTimeout(function() {
+          var item = document.getElementById('${id}');
+          if (!item) return;
+          (${scriptFnStr}.bind(item))({...${scriptPropsStr}, signals:${signalsStr}}, ${eventsStr})
+        }, 1);`;
+    }
     console.log(script);
-    script.innerHTML = `
-      setTimeout(function() {
-        var item = document.getElementById('${id}');
-        if (!item) return;
-        (${scriptFnStr}.bind(item))(${scriptProps})
-      }, 1);`;
     // #873
     // Adding setTimeout will make js components work on init of the editor
     setTimeout(() => {
       const scr = view.scriptContainer;
-      scr?.appendChild(script);
+      scr?.replaceChildren(script);
     }, 0);
   }
 

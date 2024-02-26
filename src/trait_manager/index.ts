@@ -5,7 +5,7 @@ import defaults, { TraitManagerConfig } from './config/config';
 import EditorModel from '../editor/model/Editor';
 import Component from '../dom_components/model/Component';
 import Trait from '../common/traits/model/Trait';
-import TraitsView from '../common/traits/view/TraitsView';
+import TraitObjectView from '../common/traits/view/TraitObjectView';
 import TraitView from '../common/traits/view/TraitView';
 import InputFactory from '../common/traits';
 
@@ -16,11 +16,11 @@ export const evCustom = `${evPfx}custom`;
 export type CustomTrait<T> = T & ThisType<T & TraitView>;
 
 export default class TraitManager extends Module<TraitManagerConfig & { pStylePrefix?: string }> {
-  view?: TraitsView;
+  view?: TraitObjectView;
   types: { [id: string]: { new (o: any): TraitView } } = {};
   model: Model;
   __ctn?: any;
-  TraitsView = TraitsView;
+  TraitsView = TraitObjectView;
 
   events = {
     all: evAll,
@@ -126,9 +126,10 @@ export default class TraitManager extends Module<TraitManagerConfig & { pStylePr
   render() {
     let { view, em } = this;
     const el = view?.el;
-    const traits = this.getCurrent(); //.map(trait => InputFactory.buildView(trait as any, em, trait.opts as any));
+    const traits = this.getCurrent(); //.map(trait => InputFactory.buildView(trait, em, trait.opts));
+
     console.log(traits);
-    this.view = new TraitsView(em, { el, traits }).render();
+    this.view = new TraitObjectView(em, { el }).render(traits);
 
     return this.view.el;
   }

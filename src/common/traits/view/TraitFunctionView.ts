@@ -3,6 +3,7 @@ import EditorModel from '../../../editor/model/Editor';
 import Trait from '../model/Trait';
 import TraitInputView, { TraitInputViewOpts } from './TraitInputView';
 import { EditorState } from '@codemirror/state';
+import { isString, isUndefined } from 'underscore';
 
 export interface TraitFunctionViewOpts extends TraitInputViewOpts<'function'> {
   variables?: string[];
@@ -23,19 +24,12 @@ export default class TraitFunctionView extends TraitInputView<Trait<string>> {
     this.variables = opts?.variables;
   }
 
-  getInputElem() {
-    const { input, $input } = this;
-    return input || ($input && $input.get && $input.get(0)) || this.getElInput();
-  }
-
   get inputValue(): string {
-    const el = this.getInputElem();
-    return el?.value ?? this.target.value;
+    return (this.editor && this.editor?.getContent().toString()) ?? this.target.value;
   }
 
   set inputValue(value: string) {
-    const el = this.getInputElem();
-    el && (el.value = value as any);
+    this.editor?.setContent(value);
   }
 
   //   protected getInputEl() {
@@ -66,16 +60,23 @@ export default class TraitFunctionView extends TraitInputView<Trait<string>> {
   private codeUpdated() {
     const { editor } = this;
     if (editor) {
-      this.target.value = editor.getContent().toString();
+      this.target.value = eval(editor.getContent().toString());
     }
   }
 
   renderField() {
-    const { $el, variables } = this;
+    const { $el, variables, target } = this;
     const inputs = $el.find('[data-input]');
     const el = inputs[inputs.length - 1];
     const txtarea = document.createElement('textarea');
-    txtarea.value = `(${variables?.join(', ') ?? ''}) => { \n \n}`;
+    if (isUndefined(target.value)) {
+      txtarea.value = `(${variables?.join(', ') ?? ''}) => { \n \n}`;
+    } else if (isString(target.value)) {
+      txtarea.value = `(${variables?.join(', ') ?? ''}) => { \n return ${target.value}\n}`;
+    } else {
+      txtarea.value = target.value;
+    }
+
     el.appendChild(txtarea);
     this.editor = new CodeMirrorEditor({
       el: txtarea,

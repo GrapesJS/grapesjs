@@ -86,6 +86,9 @@
         height: '100%',
         fromElement: true,
         storageManager: { autoload: 0 },
+        canvas: {
+                scripts: [{src:'https://code.jquery.com/jquery-3.7.1.min.js', integrity:"sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=", crossorigin:"anonymous"}],
+                },
         styleManager : {
           sectors: [{
               name: 'General',
@@ -122,5 +125,6 @@
         content: `<div style="padding-top:50px; padding-bottom:50px; text-align:center">Test block</div>`
       })
     </script>
+    <script src ='https://code.jquery.com/jquery-3.7.1.min.js', integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=", crossorigin="anonymous"></script>
   </body>
 </html>

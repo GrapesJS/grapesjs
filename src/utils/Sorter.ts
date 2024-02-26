@@ -243,7 +243,6 @@ export default class Sorter extends View {
   toggleSortCursor(active?: boolean) {
     const { em } = this;
     const cv = em?.Canvas;
-
     // Avoid updating body className as it causes a huge repaint
     // Noticeable with "fast" drag of blocks
     cv && (active ? cv.startAutoscroll() : cv.stopAutoscroll());

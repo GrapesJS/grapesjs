@@ -1,5 +1,6 @@
-import { extend } from 'underscore';
+import { extend, isArray, isObject } from 'underscore';
 import { Model } from '../../common';
+import { renderVariableValue } from '../../common/traits';
 import Component from '../../dom_components/model/Component';
 
 function isFunctionEmpty(fn: string) {
@@ -40,7 +41,7 @@ export default class JsGenerator extends Model {
         const mapType = this.mapJs[type];
 
         if (scrProps) {
-          props = model.__getScriptProps();
+          props = renderVariableValue(model.__getScriptProps());
         }
 
         if (mapType) {
@@ -64,8 +65,15 @@ export default class JsGenerator extends Model {
   build(model: Component) {
     this.mapJs = {};
     this.mapModel(model);
-    let code = '';
-
+    let code = model?.globalSlots + model?.globalScript ?? '';
+    const objConverter: (obj: any) => string = (obj: any) =>
+      isArray(obj)
+        ? `[${obj.map(o => `${objConverter(o)}`).join(',')}]`
+        : isObject(obj)
+        ? `{${Object.keys(obj)
+            .map(id => `${id}: ${objConverter(obj[id])}`)
+            .join(',')}}`
+        : obj;
     for (let type in this.mapJs) {
       const mapType = this.mapJs[type];
 
@@ -78,13 +86,25 @@ export default class JsGenerator extends Model {
           continue;
         }
 
+        const signals = model.get('signals');
+        const signalsStr = `{${Object.keys(signals)
+          .map(
+            name =>
+              `${name}: ${
+                signals[name].componentId
+                  ? `window.globalSlots[${signals[name].componentId}][${signals[name].slot}]`
+                  : '(() => {})'
+              }`
+          )
+          .join(',')}}`;
+
         code += `
-          var props = ${JSON.stringify(mapType.props)};
+          var props = ${objConverter(mapType.props)};
           var ids = Object.keys(props).map(function(id) { return '#'+id }).join(',');
           var els = document.querySelectorAll(ids);
           for (var i = 0, len = els.length; i < len; i++) {
             var el = els[i];
-            (${mapType.code}.bind(el))(props[el.id]);
+            (${mapType.code}.bind(el))({...props[el.id], signals: ${signalsStr}}, window.globalSlots[el.id] ?? {});
           }`;
       } else {
         // Deprecated

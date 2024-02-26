@@ -34,8 +34,10 @@ import ComponentView from '../view/ComponentView';
 import { AddOptions, ExtractMethods, ObjectAny, PrevToNewIdMap, SetOptions } from '../../common';
 import CssRule, { CssRuleJSON } from '../../css_composer/model/CssRule';
 import { ToolbarButtonProps } from './ToolbarButton';
-import InputFactory, { InputProperties, InputViewProperties } from '../../common/traits';
+import InputFactory, { InputViewProperties, renderVariableValue } from '../../common/traits';
 import Trait from '../../common/traits/model/Trait';
+import ComponentEventView from '../../common/events/view/ComponentEventView';
+import TraitRoot from '../../common/traits/model/TraitRoot';
 
 export interface IComponent extends ExtractMethods<Component> {}
 
@@ -147,11 +149,26 @@ export default class Component extends StyleableModel<ComponentProperties> {
       style: '',
       styles: '', // Component related styles
       classes: '', // Array of classes
-      script: '',
-      'script-props': '',
+      slots: {
+        test: {
+          script: (params: any) => {
+            alert(params.el);
+          },
+        },
+      },
+      signals: { onload: {} },
+      script: function (prop: any) {
+        prop.signals.onload();
+      },
+      // 'script-props': ['usersAjax'],
+      'script-events': [],
+      'script-global': [],
       'script-export': '',
+      usersAjax: () => {},
+      list: [],
       attributes: {},
-      traits: ['id', 'title'],
+      //@ts-ignore
+      traits: ['id', 'title', { type: 'unique-list', name: 'signals', traits: { type: 'signal' } }], // {type: 'event', name: 'usersAjax'}], //{type: 'list', name: 'list', traits:{ type: 'object', traits: [{type: "url", name: "aef"},{type: 'text', name: 'al'}]}}],// {type: 'link', name: 'test'}, {type: "link", name: "aef"}],//, {type: 'list', name: 'list', traits:{ type: 'object', traits: [{type: "url", name: "aef"},{type: 'text', name: 'al'}]}}],
       propagate: '',
       dmode: '',
       toolbar: null,
@@ -168,8 +185,12 @@ export default class Component extends StyleableModel<ComponentProperties> {
     return this.get('classes')!;
   }
 
-  get traits(): Trait[] {
+  get traits(): ({ name: string } & Trait<any>)[] {
     return this.get('traits')! as any;
+  }
+
+  get slots(): { [name: string]: { script: (el: string, param: any) => void } } {
+    return this.get('slots')! as any;
   }
 
   get content() {
@@ -186,6 +207,10 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
   get delegate() {
     return this.get('delegate');
+  }
+
+  get scriptEvents(): any[] {
+    return this.get('script-events');
   }
 
   /**
@@ -221,6 +246,80 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * @private
    * @ts-ignore */
   collection!: Components;
+
+  get globalVariables() {
+    const { traits, ccid } = this;
+    const variables: { id: string; type: string }[] = this.get('script-global');
+    let globals: { id: string; default: any; type: string; _renderJs: string }[] = [];
+
+    const renderVariable = (id: string, value: any) => {
+      let type;
+      if (value?._type) {
+        type = value._type;
+      } else {
+        type = 'variable';
+      }
+
+      console.log('r===============================================');
+      console.log(value);
+      return { id, default: renderVariableValue(value), type, _renderJs: `window.${ccid}ScopedVariables['${id}']` };
+    };
+
+    variables.forEach(global => {
+      const globalValue = traits.find(tr => tr.name == global.id)?.value;
+      switch (global.type) {
+        case 'data-list':
+          const list = Object.entries(globalValue ?? {});
+          if (list.length > 0) {
+            globals.push(...list.map(([id, value]) => renderVariable(id, value)));
+          }
+          break;
+        default:
+          globals.push(renderVariable(global.id, globalValue));
+          break;
+      }
+    });
+    console.log(globals);
+    return globals;
+  }
+
+  get globalScript() {
+    const { ccid, scriptEvents } = this;
+    const variables = this.globalVariables;
+    if (variables.length > 0) {
+      return `
+      window.${ccid}ScopedVariables = {${variables.map(variable => `${variable.id}: ${variable.default}`).join(',')}};
+
+      window.globalEvents ?? (window.globalEvents  = {})
+      window.globalEvents['${ccid}'] = {${scriptEvents
+        .map(event => `${event.id}: ${new ComponentEventView(event).renderJs()}`)
+        .join(',')}};
+      `;
+    }
+  }
+
+  get globalSlots() {
+    const { ccid, slots } = this;
+    const signals = this.get('signals');
+    const signalsStr = `{${Object.keys(signals)
+      .map(
+        name =>
+          `${name}: ${
+            signals[name].componentId
+              ? `window.globalSlots[${signals[name].componentId}][${signals[name].slot}]`
+              : '(() => {})'
+          }`
+      )
+      .join(',')}}`;
+    console.log('asdfasdf', slots);
+    console.log('qwert', signalsStr);
+    return `
+      window.globalSlots ?? (window.globalSlots  = {})
+      window.globalSlots['${ccid}'] = {${Object.keys(slots)
+      .map(name => `${name}: (param) => ${slots[name].script}({el: '${ccid}', signals: ${signalsStr}}, param)`)
+      .join(',')}};
+      `;
+  }
 
   initialize(props = {}, opt: ComponentOptions = {}) {
     bindAll(this, '__upSymbProps', '__upSymbCls', '__upSymbComps');
@@ -1067,10 +1166,12 @@ export default class Component extends StyleableModel<ComponentProperties> {
   initScriptProps() {
     if (this.opt.temporary) return;
     const prop = 'script-props';
-    const toListen: any = [`change:${prop}`, this.initScriptProps];
+    const global = 'script-global';
+    const signals = 'signals';
+    const toListen: any = [`change:${prop} change:${global} change:${signals}`, this.initScriptProps];
     this.off(...toListen);
-    const prevProps = this.previous(prop) || [];
-    const newProps = this.get(prop) || [];
+    const prevProps = [...(this.previous(prop) ?? []), ...(this.previous(global).map((g: any) => g.id) ?? [])];
+    const newProps = [...(this.get(prop) ?? []), ...(this.get(global).map((g: any) => g.id) ?? [])];
     const prevPropsEv = prevProps.map(e => `change:${e}`).join(' ');
     const newPropsEv = newProps.map(e => `change:${e}`).join(' ');
     prevPropsEv && this.off(prevPropsEv, this.__scriptPropsChange);
@@ -1242,7 +1343,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     }
   }
 
-  __loadTraits(tr?: (Trait | (InputViewProperties & InputProperties) | string)[]) {
+  __loadTraits(tr?: (TraitRoot<any> | ({ name: string } & InputViewProperties) | string)[]) {
     let traits = tr || this.traits;
     this.set('traits', traits.map(trait => InputFactory.build(this as any, trait)) as any);
     const attrs = { ...this.get('attributes') };
@@ -1278,7 +1379,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * console.log(traits);
    * // [Trait, ...]
    */
-  setTraits(traits: (Trait | (InputViewProperties & InputProperties) | string)[]) {
+  setTraits(traits: (TraitRoot<any> | ({ name: string } & InputViewProperties) | string)[]) {
     const tr = isArray(traits) ? traits : [traits];
     this.__loadTraits(tr);
     return this.getTraits();
@@ -1292,7 +1393,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * const traitTitle = component.getTrait('title');
    * traitTitle && traitTitle.set('label', 'New label');
    */
-  getTrait(id: string): Trait | null {
+  getTrait(id: string): ({ name: string } & Trait<any>) | null {
     return this.traits.find(trait => trait.name === id) || null;
   }
 
@@ -1361,7 +1462,10 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * });
    * component.addTrait(['title', {...}, ...]);
    */
-  addTrait(trait: (Trait | (InputViewProperties & InputProperties) | string)[], opts: AddOptions = {}) {
+  addTrait(
+    trait: (({ name: string } & Trait<any>) | ({ name: string } & InputViewProperties) | string)[],
+    opts: AddOptions = {}
+  ) {
     const traits = isArray(trait) ? trait : [trait];
     const added = traits.map(add => {
       const tr = InputFactory.build(this as any, add);

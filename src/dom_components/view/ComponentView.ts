@@ -389,7 +389,7 @@ Component> {
    */
   updateScript() {
     const { model, em } = this;
-    if (!model.get('script')) return;
+    if (!model.get('script') && !model.globalScript && !model.slots) return;
     em?.Canvas.getCanvasView().updateScript(this);
   }
 

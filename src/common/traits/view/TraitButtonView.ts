@@ -3,6 +3,7 @@ import { Model, $ } from '../..';
 import Editor from '../../../editor';
 import EditorModel from '../../../editor/model/Editor';
 import Trait from '../model/Trait';
+import TraitRoot from '../model/TraitRoot';
 import TraitInputView, { TraitInputViewOpts } from './TraitInputView';
 
 export interface TraitButtonViewOpts extends TraitInputViewOpts<'button'> {
@@ -11,7 +12,7 @@ export interface TraitButtonViewOpts extends TraitInputViewOpts<'button'> {
   full?: boolean;
 }
 
-export default class TraitButtonView extends TraitInputView<Trait<any>> {
+export default class TraitButtonView extends TraitInputView<TraitRoot<any>> {
   type = 'button';
   command: string | ((e: Editor, m: Model) => void);
   text?: string;
@@ -42,12 +43,12 @@ export default class TraitButtonView extends TraitInputView<Trait<any>> {
   }
 
   handleClick() {
-    const { model, command, em } = this;
+    const { target, command, em } = this;
     if (command) {
       if (isString(command)) {
         em.Commands.run(command);
       } else {
-        command(em.Editor, model as any);
+        command(em.Editor, target.model);
       }
     }
   }
