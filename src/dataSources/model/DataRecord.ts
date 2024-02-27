@@ -52,8 +52,9 @@ export class DataRecord<T extends DataRecordProps = DataRecordProps> extends Mod
   }
 
   triggerChange(prop?: string) {
-    const { dataSource } = this;
+    const { dataSource, em } = this;
     const data = { dataSource, dataRecord: this };
-    this.getPaths(prop).forEach(path => this.em.trigger(`${DataSourcesEvents.path}:${path}`, { ...data, path }));
+    const paths = this.getPaths(prop);
+    paths.forEach(path => em.trigger(`${DataSourcesEvents.path}:${path}`, { ...data, path }));
   }
 }
