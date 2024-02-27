@@ -11,6 +11,17 @@ const escapeRegExp = (str: string) => {
   return str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
 };
 
+function isFunctionEmpty(fn: string) {
+  const content = fn.toString().match(/\{([\s\S]*)\}/m)?.[1] || ''; // content between first and last { }
+  return content.replace(/^\s*\/\/.*$/gm, '').trim().length === 0; // remove comments
+}
+
+type MapJsItem = {
+  ids: string[];
+  code: string;
+  props?: Record<string, any>;
+};
+
 export default class ScriptSubComponent extends Model {
   defaults() {
     return {
@@ -23,9 +34,14 @@ export default class ScriptSubComponent extends Model {
   constructor(component: Component, script: ScriptData) {
     super({ component, ...script });
     this.listenTo(this, 'change:main', this.scriptUpdated);
+
+    // If the component has scripts we need to expose his ID
+    let attr = this.component.get('attributes');
+    const id = this.component.getId();
+    this.component.set('attributes', { ...attr, id }, { silent: true });
   }
 
-  get component() {
+  get component(): Component {
     return this.get('component');
   }
 
@@ -109,5 +125,86 @@ export default class ScriptSubComponent extends Model {
       });
     }
     return scr;
+  }
+
+  static renderJs(script: ScriptSubComponent | ScriptSubComponent[]) {
+    const scripts = isArray(script) ? script : [script];
+    const mapJs = ScriptSubComponent.mapScripts(scripts);
+
+    let code = '';
+    for (let type in mapJs) {
+      const mapType = mapJs[type];
+
+      if (!mapType.code) {
+        continue;
+      }
+
+      if (mapJs[type].ids.length == 1) {
+        code = `var el = document.getElementById('${mapType.ids[0]}');
+        if (!el) return;
+        (${mapType.code}.bind(el))(${mapType.props ? mapType.props[mapType.ids[0]] : ''})`;
+      } else {
+        if (mapType.props) {
+          if (isFunctionEmpty(mapType.code)) {
+            continue;
+          }
+
+          code += `
+            var props = ${JSON.stringify(mapType.props)};
+            var ids = Object.keys(props).map((id) => \`#\${id}\`).join(',');
+            var els = document.querySelectorAll(ids);
+            for (var i = 0, len = els.length; i < len; i++) {
+              var el = els[i];
+              (${mapType.code}.bind(el))(props[el.id]);
+            }`;
+        } else {
+          // Deprecated
+          const ids = '#' + mapType.ids.join(', #');
+          code += `
+            var els = document.querySelectorAll('${ids}');
+            for (var i = 0, len = els.length; i < len; i++) {
+              var el = els[i];
+              (function(){\n${mapType.code}\n}.bind(el))();
+            }`;
+        }
+      }
+    }
+
+    return code;
+  }
+
+  private static mapScripts(scripts: ScriptSubComponent[]) {
+    const mapJs: { [key: string]: MapJsItem } = {};
+
+    scripts.forEach(script => {
+      const type = script.component.get('type')!;
+      const id = script.component.getId();
+
+      const scrStr = script.getScriptString();
+      const scrProps = script.props;
+
+      // If the script was updated, I'll put its code in a separate container
+      if (script.get('scriptUpdated') && !scrProps) {
+        mapJs[type + '-' + id] = { ids: [id], code: scrStr };
+      } else {
+        let props;
+        const mapType = mapJs[type];
+
+        if (scrProps) {
+          props = script.__getScriptProps();
+        }
+
+        if (mapType) {
+          mapType.ids.push(id);
+          if (props) mapType.props![id] = props;
+        } else {
+          const res: MapJsItem = { ids: [id], code: scrStr };
+          if (props) res.props = { [id]: props };
+          mapJs[type] = res;
+        }
+      }
+    });
+
+    return mapJs;
   }
 }

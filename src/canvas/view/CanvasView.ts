@@ -19,6 +19,7 @@ import Frame from '../model/Frame';
 import { GetBoxRectOptions, ToWorldOption } from '../types';
 import FrameView from './FrameView';
 import FramesView from './FramesView';
+import ScriptSubComponent from '../../dom_components/model/modules/ScriptSubComponent';
 
 export interface MarginPaddingOffsets {
   marginTop?: number;
@@ -583,14 +584,9 @@ export default class CanvasView extends ModuleView<Canvas> {
       // In editor, I make use of setTimeout as during the append process of elements
       // those will not be available immediately, therefore 'item' variable
       const script = document.createElement('script');
-      const scriptFn = scriptComponent.getScriptString();
-      const scriptFnStr = scriptComponent.props ? scriptFn : `function(){\n${scriptFn}\n;}`;
-      const scriptProps = JSON.stringify(scriptComponent.__getScriptProps());
       script.innerHTML = `
       setTimeout(function() {
-        var item = document.getElementById('${id}');
-        if (!item) return;
-        (${scriptFnStr}.bind(item))(${scriptProps})
+        ${ScriptSubComponent.renderJs(scriptComponent)}
       }, 1);`;
       // #873
       // Adding setTimeout will make js components work on init of the editor
