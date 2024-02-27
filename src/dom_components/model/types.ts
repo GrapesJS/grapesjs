@@ -16,10 +16,10 @@ export type DragMode = 'translate' | 'absolute' | '';
 
 export type DraggableDroppableFn = (source: Component, target: Component, index?: number) => boolean | void;
 
-export interface ComponentStackItem {
+export interface ComponentStackItem<TComp extends Component = Component> {
   id: string;
-  model: typeof Component;
-  view: typeof ComponentView;
+  model: new (props: any, opt: ComponentOptions) => TComp;
+  view: new (opt: any) => ComponentView<TComp>;
 }
 
 /**
