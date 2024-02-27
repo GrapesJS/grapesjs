@@ -1079,7 +1079,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
     let scriptData: ScriptData | string | ((...params: any[]) => any) | undefined =
       this.get('script-export') || (this.get('script') as any);
-    if (!isUndefined(scriptData)) {
+    if (scriptData) {
       if (isString(scriptData) || isFunction(scriptData)) {
         scriptData = { main: scriptData, props: this.get('script-props') ?? [] };
       }
