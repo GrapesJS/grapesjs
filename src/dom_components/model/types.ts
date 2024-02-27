@@ -10,6 +10,7 @@ import ComponentView from '../view/ComponentView';
 import Component from './Component';
 import Components from './Components';
 import { ToolbarButtonProps } from './ToolbarButton';
+import { ScriptData } from './modules/ScriptSubComponent';
 
 export type DragMode = 'translate' | 'absolute' | '';
 
@@ -18,7 +19,7 @@ export type DraggableDroppableFn = (source: Component, target: Component, index?
 export interface ComponentStackItem {
   id: string;
   model: typeof Component;
-  view: typeof ComponentView<any>;
+  view: typeof ComponentView;
 }
 
 /**
@@ -187,7 +188,7 @@ export interface ComponentProperties {
    * Component's javascript. More about it [here](/modules/Components-js.html). Default: `''`
    * @default ''
    */
-  script?: string | ((...params: any[]) => any);
+  script?: string | ((...params: any[]) => any) | ScriptData;
   ///**
   // * You can specify javascript available only in export functions (eg. when you get the HTML).
   //If this property is defined it will overwrite the `script` one (in export functions). Default: `''`

@@ -12,11 +12,10 @@ const escapeRegExp = (str: string) => {
 };
 
 export default class ScriptSubComponent extends Model {
-  //@ts-ignore
-  get defaults() {
+  defaults() {
     return {
       main: '',
-      props: '',
+      props: [],
       scriptUpdated: false,
     };
   }
@@ -37,7 +36,7 @@ export default class ScriptSubComponent extends Model {
   initScriptProps() {
     const { component } = this;
     const prop = 'props';
-    const toListen: any = [`change:${prop}`, this.initScriptProps];
+    const toListen: any = [`change:${prop}`, this.initScriptProps, this];
     this.off(...toListen);
     const prevProps: string[] = this.previous(prop) || [];
     const newProps: string[] = this.get(prop) || [];
