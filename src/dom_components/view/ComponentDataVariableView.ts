@@ -1,3 +1,4 @@
+import { DataSourcesEvents } from '../../dataSources/types';
 import ComponentDataVariable from '../model/ComponentDataVariable';
 import ComponentView from './ComponentView';
 
@@ -5,7 +6,8 @@ export default class ComponentDataVariableView extends ComponentView<ComponentDa
   initialize(opt = {}) {
     super.initialize(opt);
     const { model, em } = this;
-    this.listenTo(em, model.attributes.path, () => this.postRender());
+    const { path } = model.attributes;
+    this.listenTo(em, `${DataSourcesEvents.path}:${path}`, () => this.postRender());
   }
 
   postRender() {

@@ -16,12 +16,12 @@ export default class DataSourceManager extends ItemManagerModule<ModuleConfig, D
   getValue(key: string | string[], defValue: any) {
     const context = this.all.reduce((acc, ds) => {
       acc[ds.id] = ds.records.reduce((accR, dr, i) => {
+        accR[i] = dr.attributes;
         accR[dr.id || i] = dr.attributes;
         return accR;
       }, {} as ObjectAny);
       return acc;
     }, {} as ObjectAny);
-    console.log('getValue', { context });
     return get(context, key, defValue);
   }
 

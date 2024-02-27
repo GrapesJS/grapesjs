@@ -47,6 +47,13 @@ export enum DataSourcesEvents {
   update = 'data:update',
 
   /**
+   * @event `data:path` Data record path update.
+   * @example
+   * editor.on('data:path:SOURCE_ID:RECORD_ID:PROP_NAME', ({ dataSource, dataRecord, path }) => { ... });
+   */
+  path = 'data:path',
+
+  /**
    * @event `data` Catch-all event for all the events mentioned above.
    * @example
    * editor.on('data', ({ event, model, ... }) => { ... });
