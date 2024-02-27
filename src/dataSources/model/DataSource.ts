@@ -21,8 +21,6 @@ export class DataSource extends Model<DataSourceProps> {
     if (!(records instanceof DataRecords)) {
       this.set({ records: new DataRecords(records!, { dataSource: this }) });
     }
-
-    console.log('DataSource.constructor', { props, records: this.records, opts, coll: this.collection });
   }
 
   get records() {

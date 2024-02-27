@@ -7,6 +7,7 @@ import { DataSourceProps, DataSourcesEvents } from './types';
 
 export default class DataSourceManager extends ItemManagerModule<ModuleConfig, DataSources> {
   storageKey = '';
+  events = DataSourcesEvents;
   destroy(): void {}
 
   constructor(em: EditorModel) {
