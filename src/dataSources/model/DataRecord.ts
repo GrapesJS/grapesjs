@@ -1,9 +1,9 @@
 import { keys } from 'underscore';
 import { Model } from '../../common';
 import { DataRecordProps, DataSourcesEvents } from '../types';
-import { DataRecords } from './DataRecords';
+import DataRecords from './DataRecords';
 
-export class DataRecord<T extends DataRecordProps = DataRecordProps> extends Model<T> {
+export default class DataRecord<T extends DataRecordProps = DataRecordProps> extends Model<T> {
   constructor(props: T, opts = {}) {
     super(props, opts);
     this.on('change', this.handleChange);

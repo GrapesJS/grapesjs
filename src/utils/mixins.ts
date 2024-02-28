@@ -9,7 +9,8 @@ const obj: ObjectAny = {};
 
 const reEscapeChar = /\\(\\)?/g;
 const rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g;
-const stringToPath = function (string: string) {
+
+export const stringToPath = function (string: string) {
   const result = [];
   if (string.charCodeAt(0) === 46 /* . */) result.push('');
   string.replace(rePropName, (match: string, number, quote, subString) => {

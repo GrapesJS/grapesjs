@@ -21,7 +21,6 @@ describe('DataSourceManager', () => {
       avoidInlineStyle: true,
     });
     dsm = em.DataSources;
-    // em.Pages.onLoad();
   });
 
   afterEach(() => {
@@ -69,8 +68,7 @@ describe('DataSourceManager', () => {
       fixtures.appendChild(wrapperEl.el);
     });
 
-    test('component is properly initiliazed with a value', () => {
-      dsm.add(dsTest);
+    test('component is properly initiliazed with default value', () => {
       const cmpVar = cmpRoot.append({
         type: 'data-variable',
         value: 'default',
@@ -79,9 +77,31 @@ describe('DataSourceManager', () => {
       expect(cmpVar.getEl()?.innerHTML).toBe('default');
     });
 
-    test('component is properly updating on record add', () => {});
+    test('component is properly initiliazed with current value', () => {
+      dsm.add(dsTest);
+      const cmpVar = cmpRoot.append({
+        type: 'data-variable',
+        value: 'default',
+        path: 'ds1.id2.name',
+      })[0];
+      expect(cmpVar.getEl()?.innerHTML).toBe('Name2');
+    });
+
+    test('component is properly updating on record add', () => {
+      const ds = dsm.add(dsTest);
+      const cmpVar = cmpRoot.append({
+        type: 'data-variable',
+        value: 'default',
+        path: 'ds1.id4.name',
+      })[0];
+      ds.addRecord({ id: 'id4', name: 'Name4' });
+      expect(cmpVar.getEl()?.innerHTML).toBe('Name4');
+    });
+
     test('component is properly updating on record change', () => {});
+
     test('component is properly updating on record remove', () => {});
+
     test('component is properly updating on record reset', () => {});
   });
 });

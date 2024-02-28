@@ -1,6 +1,6 @@
 import { ObjectAny } from '../common';
-import { DataRecord } from './model/DataRecord';
-import { DataRecords } from './model/DataRecords';
+import DataRecord from './model/DataRecord';
+import DataRecords from './model/DataRecords';
 
 export interface DataSourceProps {
   /**

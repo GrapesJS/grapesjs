@@ -1,13 +1,13 @@
-import { Collection } from 'backbone';
-import { CombinedModelConstructorOptions, Model } from '../../common';
+import { AddOptions, CombinedModelConstructorOptions, Model } from '../../common';
 import EditorModel from '../../editor/model/Editor';
-import { DataSourceProps } from '../types';
-import { DataRecords } from './DataRecords';
-import { DataSources } from './DataSources';
+import { DataRecordProps, DataSourceProps } from '../types';
+import DataRecord from './DataRecord';
+import DataRecords from './DataRecords';
+import DataSources from './DataSources';
 
 interface DataSourceOptions extends CombinedModelConstructorOptions<{ em: EditorModel }, DataSource> {}
 
-export class DataSource extends Model<DataSourceProps> {
+export default class DataSource extends Model<DataSourceProps> {
   defaults() {
     return {
       records: [],
@@ -21,6 +21,8 @@ export class DataSource extends Model<DataSourceProps> {
     if (!(records instanceof DataRecords)) {
       this.set({ records: new DataRecords(records!, { dataSource: this }) });
     }
+
+    this.listenTo(this.records, 'add', this.onAdd);
   }
 
   get records() {
@@ -29,5 +31,13 @@ export class DataSource extends Model<DataSourceProps> {
 
   get em() {
     return (this.collection as unknown as DataSources).em;
+  }
+
+  onAdd(dr: DataRecord) {
+    dr.triggerChange();
+  }
+
+  addRecord(record: DataRecordProps, opts?: AddOptions) {
+    return this.records.add(record, opts);
   }
 }
