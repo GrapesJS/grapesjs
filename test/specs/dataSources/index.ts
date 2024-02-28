@@ -92,11 +92,17 @@ describe('DataSourceManager', () => {
       const cmpVar = cmpRoot.append({
         type: 'data-variable',
         value: 'default',
-        path: 'ds1.id4.name',
+        path: 'ds1[id4]name',
       })[0];
-      ds.addRecord({ id: 'id4', name: 'Name4' });
+      const newRecord = ds.addRecord({ id: 'id4', name: 'Name4' });
       expect(cmpVar.getEl()?.innerHTML).toBe('Name4');
+      newRecord.set({ name: 'up' });
+      expect(cmpVar.getEl()?.innerHTML).toBe('up');
     });
+
+    test('component is properly updating on data source add', () => {});
+
+    test('component is properly updating on data source reset', () => {});
 
     test('component is properly updating on record change', () => {});
 

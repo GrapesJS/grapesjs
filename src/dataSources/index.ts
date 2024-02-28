@@ -42,12 +42,17 @@ export default class DataSourceManager extends ItemManagerModule<ModuleConfig, D
   }
 
   fromPath(path: string) {
-    const result: [DataSource?, DataRecord?] = [];
-    const [dsId, drId] = stringToPath(path || '');
+    const result: [DataSource?, DataRecord?, string?] = [];
+    const [dsId, drId, ...resPath] = stringToPath(path || '');
     const dataSource = this.get(dsId);
     const dataRecord = dataSource?.records.get(drId);
     dataSource && result.push(dataSource);
-    dataRecord && result.push(dataRecord);
+
+    if (dataRecord) {
+      result.push(dataRecord);
+      resPath.length && result.push(resPath.join('.'));
+    }
+
     return result;
   }
 }
