@@ -6,6 +6,8 @@ import { ComponentProperties } from '../types';
 export interface ScriptData {
   main: string | ((...params: any[]) => any);
   props: string[];
+  signals: Record<string, { componentId: string; slot: string }>;
+  slots: Record<string, { script: string | ((...params: any[]) => any) }>;
 }
 const escapeRegExp = (str: string) => {
   return str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
@@ -27,6 +29,8 @@ export default class ScriptSubComponent extends Model {
     return {
       main: '',
       props: [],
+      signals: {},
+      slots: {},
       scriptUpdated: false,
     };
   }
@@ -34,6 +38,9 @@ export default class ScriptSubComponent extends Model {
   constructor(component: Component, script: ScriptData) {
     super({ component, ...script });
     this.listenTo(this, 'change:main', this.scriptUpdated);
+
+    this.listenTo(this, 'change:signals', this.__scriptPropsChange);
+    this.listenTo(this, 'change:slots', this.__scriptPropsChange);
 
     // If the component has scripts we need to expose his ID
     let attr = this.component.get('attributes');
@@ -47,6 +54,10 @@ export default class ScriptSubComponent extends Model {
 
   get props(): string[] {
     return this.get('props');
+  }
+
+  get dataId() {
+    return this.component.getId();
   }
 
   initScriptProps() {
@@ -127,11 +138,51 @@ export default class ScriptSubComponent extends Model {
     return scr;
   }
 
+  static renderComponentSignals(script: ScriptSubComponent) {
+    const signals = script.get('signals');
+    return `{${Object.keys(signals)
+      .map(
+        name =>
+          `${name}: ${
+            signals[name].componentId
+              ? `window.globalSlots[${signals[name].componentId}][${signals[name].slot}]`
+              : '(() => {})'
+          }`
+      )
+      .join(',')}}`;
+  }
+
+  static renderSlots(scripts: ScriptSubComponent[]) {
+    return `
+    window.globalSlotsParams = {...window.globalSlotsParams, ${scripts
+      .map(
+        script =>
+          `${script.dataId}: {el: document.getElementById('${
+            script.dataId
+          }'), signals: ${ScriptSubComponent.renderComponentSignals(script)}}`
+      )
+      .join(',')}
+    }
+    window.globalSlots  = {...window.globalSlots, ${scripts
+      .map(
+        script =>
+          `${script.dataId}: ${Object.keys(script.get('slots'))
+            .map(
+              name =>
+                `${name}: (param) => ${script.get('slots')[name].script}(windows.globalSlotsParams[${
+                  script.dataId
+                }], param)`
+            )
+            .join(',')}`
+      )
+      .join(',')}}`;
+  }
+
   static renderJs(script: ScriptSubComponent | ScriptSubComponent[]) {
     const scripts = isArray(script) ? script : [script];
     const mapJs = ScriptSubComponent.mapScripts(scripts);
 
-    let code = '';
+    let code = ScriptSubComponent.renderSlots(scripts);
     for (let type in mapJs) {
       const mapType = mapJs[type];
 
