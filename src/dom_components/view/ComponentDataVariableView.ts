@@ -13,13 +13,16 @@ export default class ComponentDataVariableView extends ComponentView<ComponentDa
     const { model, em } = this;
     const { path } = model.attributes;
     const normPath = stringToPath(path || '').join('.');
-    const [ds, dr] = em.DataSources.fromPath(path);
+    const { DataSources } = em;
+    const [ds, dr] = DataSources.fromPath(path);
 
     if (ds) {
+      this.listenTo(ds.records, 'add remove reset', this.postRender);
       this.listenTo(ds.records, 'add remove reset', this.postRender);
       dr && this.listenTo(dr, 'change', this.postRender);
     }
 
+    this.listenTo(DataSources.all, 'add remove reset', this.postRender);
     this.listenTo(em, `${DataSourcesEvents.path}:${normPath}`, this.postRender);
   }
 
