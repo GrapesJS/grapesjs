@@ -89,7 +89,24 @@ describe('DataSourceManager', () => {
       expect(cmpVar.getEl()?.innerHTML).toBe('Name1');
     });
 
-    test.todo('component is properly updating on its property changes');
+    test('component is properly updating on its default value change', () => {
+      const cmpVar = addDataVariable();
+      cmpVar.set({ value: 'none' });
+      expect(cmpVar.getEl()?.innerHTML).toBe('none');
+    });
+
+    test('component is properly updating on its path change', () => {
+      const ds = addDataSource();
+      const cmpVar = addDataVariable();
+      const el = cmpVar.getEl()!;
+      cmpVar.set({ path: 'ds1.id2.name' });
+      expect(el.innerHTML).toBe('Name2');
+      cmpVar.set({ path: 'ds1[id3]name' });
+      expect(el.innerHTML).toBe('Name3');
+
+      ds.getRecord('id3')?.set({ name: 'Name3-UP' });
+      expect(el.innerHTML).toBe('Name3-UP');
+    });
 
     describe('DataSource changes', () => {
       test('component is properly updating on data source add', () => {

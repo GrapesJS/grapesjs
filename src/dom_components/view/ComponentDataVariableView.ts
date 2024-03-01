@@ -24,6 +24,7 @@ export default class ComponentDataVariableView extends ComponentView<ComponentDa
 
     this.listenTo(DataSources.all, 'add remove reset', this.postRender);
     this.listenTo(em, `${DataSourcesEvents.path}:${normPath}`, this.postRender);
+    this.listenTo(model, 'change:path change:value', this.postRender);
   }
 
   postRender() {
