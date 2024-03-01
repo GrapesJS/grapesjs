@@ -1114,7 +1114,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * // append at specific index (eg. at the beginning)
    * someComponent.append(otherComponent, { at: 0 });
    */
-  append(components: ComponentAdd, opts: AddOptions = {}): Component[] {
+  append<T extends Component = Component>(components: ComponentAdd, opts: AddOptions = {}): T[] {
     const compArr = isArray(components) ? [...components] : [components];
     const toAppend = compArr.map(comp => {
       if (isString(comp)) {

@@ -2,6 +2,7 @@ import Editor from '../../../src/editor/model/Editor';
 import DataSourceManager from '../../../src/dataSources';
 import { DataSourceProps, DataSourcesEvents } from '../../../src/dataSources/types';
 import ComponentWrapper from '../../../src/dom_components/model/ComponentWrapper';
+import ComponentDataVariable from '../../../src/dom_components/model/ComponentDataVariable';
 
 describe('DataSourceManager', () => {
   let em: Editor;
@@ -53,6 +54,13 @@ describe('DataSourceManager', () => {
     let fixtures: HTMLElement;
     let cmpRoot: ComponentWrapper;
 
+    const addDataVariable = (path = 'ds1.id1.name') =>
+      cmpRoot.append<ComponentDataVariable>({
+        type: 'data-variable',
+        value: 'default',
+        path,
+      })[0];
+
     beforeEach(() => {
       document.body.innerHTML = '<div id="fixtures"></div>';
       const { Pages, Components } = em;
@@ -69,31 +77,19 @@ describe('DataSourceManager', () => {
     });
 
     test('component is properly initiliazed with default value', () => {
-      const cmpVar = cmpRoot.append({
-        type: 'data-variable',
-        value: 'default',
-        path: 'ds1.id2.name',
-      })[0];
+      const cmpVar = addDataVariable();
       expect(cmpVar.getEl()?.innerHTML).toBe('default');
     });
 
     test('component is properly initiliazed with current value', () => {
       dsm.add(dsTest);
-      const cmpVar = cmpRoot.append({
-        type: 'data-variable',
-        value: 'default',
-        path: 'ds1.id2.name',
-      })[0];
-      expect(cmpVar.getEl()?.innerHTML).toBe('Name2');
+      const cmpVar = addDataVariable();
+      expect(cmpVar.getEl()?.innerHTML).toBe('Name1');
     });
 
     test('component is properly updating on record add', () => {
       const ds = dsm.add(dsTest);
-      const cmpVar = cmpRoot.append({
-        type: 'data-variable',
-        value: 'default',
-        path: 'ds1[id4]name',
-      })[0];
+      const cmpVar = addDataVariable('ds1[id4]name');
       const eventFn = jest.fn();
       em.on(`${DataSourcesEvents.path}:ds1.id4.name`, eventFn);
       const newRecord = ds.addRecord({ id: 'id4', name: 'Name4' });
@@ -104,16 +100,35 @@ describe('DataSourceManager', () => {
     });
 
     test('component is properly updating on data source add', () => {
-      const cmpVar = cmpRoot.append({
-        type: 'data-variable',
-        value: 'default',
-        path: 'ds1.id1.name',
-      })[0];
+      const eventFn = jest.fn();
+      em.on(DataSourcesEvents.add, eventFn);
+      const cmpVar = addDataVariable();
       const ds = dsm.add(dsTest);
+      expect(eventFn).toBeCalledTimes(1);
+      expect(eventFn).toBeCalledWith(ds, expect.any(Object));
       expect(cmpVar.getEl()?.innerHTML).toBe('Name1');
     });
 
-    test('component is properly updating on data source reset', () => {});
+    test('component is properly updating on data source reset', () => {
+      dsm.add(dsTest);
+      const cmpVar = addDataVariable();
+      const el = cmpVar.getEl()!;
+      expect(el.innerHTML).toBe('Name1');
+      dsm.all.reset();
+      expect(el.innerHTML).toBe('default');
+    });
+
+    test('component is properly updating on data source remove', () => {
+      const eventFn = jest.fn();
+      em.on(DataSourcesEvents.remove, eventFn);
+      const ds = dsm.add(dsTest);
+      const cmpVar = addDataVariable();
+      const el = cmpVar.getEl()!;
+      dsm.remove('ds1');
+      expect(eventFn).toBeCalledTimes(1);
+      expect(eventFn).toBeCalledWith(ds, expect.any(Object));
+      expect(el.innerHTML).toBe('default');
+    });
 
     test('component is properly updating on record change', () => {});
 

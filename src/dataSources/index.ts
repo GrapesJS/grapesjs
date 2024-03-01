@@ -1,5 +1,5 @@
 import { ItemManagerModule, ModuleConfig } from '../abstract/Module';
-import { AddOptions, ObjectAny } from '../common';
+import { AddOptions, ObjectAny, RemoveOptions } from '../common';
 import EditorModel from '../editor/model/Editor';
 import { get, stringToPath } from '../utils/mixins';
 import DataRecord from './model/DataRecord';
@@ -28,6 +28,17 @@ export default class DataSourceManager extends ItemManagerModule<ModuleConfig, D
 
   get(id: string) {
     return this.all.get(id);
+  }
+
+  /**
+   * Remove data source.
+   * @param {String|[DataSource]} id Id of the data source
+   * @returns {[DataSource]} Removed data source
+   * @example
+   * const removed = dsm.remove('DS_ID');
+   */
+  remove(id: string | DataSource, opts?: RemoveOptions) {
+    return this.__remove(id, opts);
   }
 
   getContext() {
