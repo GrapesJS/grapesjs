@@ -16,6 +16,8 @@ describe('DataSourceManager', () => {
     ],
   };
 
+  const addDataSource = () => dsm.add(dsTest);
+
   beforeEach(() => {
     em = new Editor({
       mediaCondition: 'max-width',
@@ -35,14 +37,14 @@ describe('DataSourceManager', () => {
   test('add DataSource with records', () => {
     const eventAdd = jest.fn();
     em.on(dsm.events.add, eventAdd);
-    const ds = dsm.add(dsTest);
+    const ds = addDataSource();
     expect(dsm.getAll().length).toBe(1);
     expect(eventAdd).toBeCalledTimes(1);
     expect(ds.getRecords().length).toBe(3);
   });
 
   test('get added DataSource', () => {
-    const ds = dsm.add(dsTest);
+    const ds = addDataSource();
     expect(dsm.get(dsTest.id)).toBe(ds);
   });
 
@@ -82,7 +84,7 @@ describe('DataSourceManager', () => {
     });
 
     test('component is properly initiliazed with current value', () => {
-      dsm.add(dsTest);
+      addDataSource();
       const cmpVar = addDataVariable();
       expect(cmpVar.getEl()?.innerHTML).toBe('Name1');
     });
@@ -94,14 +96,14 @@ describe('DataSourceManager', () => {
         const eventFn = jest.fn();
         em.on(DataSourcesEvents.add, eventFn);
         const cmpVar = addDataVariable();
-        const ds = dsm.add(dsTest);
+        const ds = addDataSource();
         expect(eventFn).toBeCalledTimes(1);
         expect(eventFn).toBeCalledWith(ds, expect.any(Object));
         expect(cmpVar.getEl()?.innerHTML).toBe('Name1');
       });
 
       test('component is properly updating on data source reset', () => {
-        dsm.add(dsTest);
+        addDataSource();
         const cmpVar = addDataVariable();
         const el = cmpVar.getEl()!;
         expect(el.innerHTML).toBe('Name1');
@@ -112,7 +114,7 @@ describe('DataSourceManager', () => {
       test('component is properly updating on data source remove', () => {
         const eventFn = jest.fn();
         em.on(DataSourcesEvents.remove, eventFn);
-        const ds = dsm.add(dsTest);
+        const ds = addDataSource();
         const cmpVar = addDataVariable();
         const el = cmpVar.getEl()!;
         dsm.remove('ds1');
@@ -124,7 +126,7 @@ describe('DataSourceManager', () => {
 
     describe('DataRecord changes', () => {
       test('component is properly updating on record add', () => {
-        const ds = dsm.add(dsTest);
+        const ds = addDataSource();
         const cmpVar = addDataVariable('ds1[id4]name');
         const eventFn = jest.fn();
         em.on(`${DataSourcesEvents.path}:ds1.id4.name`, eventFn);
@@ -136,7 +138,7 @@ describe('DataSourceManager', () => {
       });
 
       test('component is properly updating on record change', () => {
-        const ds = dsm.add(dsTest);
+        const ds = addDataSource();
         const cmpVar = addDataVariable();
         const el = cmpVar.getEl()!;
         ds.getRecord('id1')?.set({ name: 'Name1-UP' });
@@ -144,7 +146,7 @@ describe('DataSourceManager', () => {
       });
 
       test('component is properly updating on record remove', () => {
-        const ds = dsm.add(dsTest);
+        const ds = addDataSource();
         const cmpVar = addDataVariable();
         const el = cmpVar.getEl()!;
         ds.removeRecord('id1');
@@ -152,7 +154,7 @@ describe('DataSourceManager', () => {
       });
 
       test('component is properly updating on record reset', () => {
-        const ds = dsm.add(dsTest);
+        const ds = addDataSource();
         const cmpVar = addDataVariable();
         const el = cmpVar.getEl()!;
         ds.records.reset();
