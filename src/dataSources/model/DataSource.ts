@@ -1,4 +1,4 @@
-import { AddOptions, CombinedModelConstructorOptions, Model } from '../../common';
+import { AddOptions, CombinedModelConstructorOptions, Model, RemoveOptions } from '../../common';
 import EditorModel from '../../editor/model/Editor';
 import { DataRecordProps, DataSourceProps } from '../types';
 import DataRecord from './DataRecord';
@@ -47,5 +47,9 @@ export default class DataSource extends Model<DataSourceProps> {
 
   getRecords() {
     return [...this.records.models];
+  }
+
+  removeRecord(id: string | number, opts?: RemoveOptions): DataRecord | undefined {
+    return this.records.remove(id, opts);
   }
 }

@@ -143,7 +143,13 @@ describe('DataSourceManager', () => {
         expect(el.innerHTML).toBe('Name1-UP');
       });
 
-      test.todo('component is properly updating on record remove');
+      test('component is properly updating on record remove', () => {
+        const ds = dsm.add(dsTest);
+        const cmpVar = addDataVariable();
+        const el = cmpVar.getEl()!;
+        ds.removeRecord('id1');
+        expect(el.innerHTML).toBe('default');
+      });
 
       test.todo('component is properly updating on record reset');
     });
