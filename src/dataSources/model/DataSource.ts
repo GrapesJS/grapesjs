@@ -40,4 +40,12 @@ export default class DataSource extends Model<DataSourceProps> {
   addRecord(record: DataRecordProps, opts?: AddOptions) {
     return this.records.add(record, opts);
   }
+
+  getRecord(id: string | number): DataRecord | undefined {
+    return this.records.get(id);
+  }
+
+  getRecords() {
+    return [...this.records.models];
+  }
 }

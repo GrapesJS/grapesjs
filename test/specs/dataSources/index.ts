@@ -38,7 +38,7 @@ describe('DataSourceManager', () => {
     const ds = dsm.add(dsTest);
     expect(dsm.getAll().length).toBe(1);
     expect(eventAdd).toBeCalledTimes(1);
-    expect(ds.records.length).toBe(3);
+    expect(ds.getRecords().length).toBe(3);
   });
 
   test('get added DataSource', () => {
@@ -87,55 +87,65 @@ describe('DataSourceManager', () => {
       expect(cmpVar.getEl()?.innerHTML).toBe('Name1');
     });
 
-    test('component is properly updating on record add', () => {
-      const ds = dsm.add(dsTest);
-      const cmpVar = addDataVariable('ds1[id4]name');
-      const eventFn = jest.fn();
-      em.on(`${DataSourcesEvents.path}:ds1.id4.name`, eventFn);
-      const newRecord = ds.addRecord({ id: 'id4', name: 'Name4' });
-      expect(cmpVar.getEl()?.innerHTML).toBe('Name4');
-      newRecord.set({ name: 'up' });
-      expect(cmpVar.getEl()?.innerHTML).toBe('up');
-      expect(eventFn).toBeCalledTimes(1);
+    test.todo('component is properly updating on its property changes');
+
+    describe('DataSource changes', () => {
+      test('component is properly updating on data source add', () => {
+        const eventFn = jest.fn();
+        em.on(DataSourcesEvents.add, eventFn);
+        const cmpVar = addDataVariable();
+        const ds = dsm.add(dsTest);
+        expect(eventFn).toBeCalledTimes(1);
+        expect(eventFn).toBeCalledWith(ds, expect.any(Object));
+        expect(cmpVar.getEl()?.innerHTML).toBe('Name1');
+      });
+
+      test('component is properly updating on data source reset', () => {
+        dsm.add(dsTest);
+        const cmpVar = addDataVariable();
+        const el = cmpVar.getEl()!;
+        expect(el.innerHTML).toBe('Name1');
+        dsm.all.reset();
+        expect(el.innerHTML).toBe('default');
+      });
+
+      test('component is properly updating on data source remove', () => {
+        const eventFn = jest.fn();
+        em.on(DataSourcesEvents.remove, eventFn);
+        const ds = dsm.add(dsTest);
+        const cmpVar = addDataVariable();
+        const el = cmpVar.getEl()!;
+        dsm.remove('ds1');
+        expect(eventFn).toBeCalledTimes(1);
+        expect(eventFn).toBeCalledWith(ds, expect.any(Object));
+        expect(el.innerHTML).toBe('default');
+      });
     });
 
-    test('component is properly updating on data source add', () => {
-      const eventFn = jest.fn();
-      em.on(DataSourcesEvents.add, eventFn);
-      const cmpVar = addDataVariable();
-      const ds = dsm.add(dsTest);
-      expect(eventFn).toBeCalledTimes(1);
-      expect(eventFn).toBeCalledWith(ds, expect.any(Object));
-      expect(cmpVar.getEl()?.innerHTML).toBe('Name1');
+    describe('DataRecord changes', () => {
+      test('component is properly updating on record add', () => {
+        const ds = dsm.add(dsTest);
+        const cmpVar = addDataVariable('ds1[id4]name');
+        const eventFn = jest.fn();
+        em.on(`${DataSourcesEvents.path}:ds1.id4.name`, eventFn);
+        const newRecord = ds.addRecord({ id: 'id4', name: 'Name4' });
+        expect(cmpVar.getEl()?.innerHTML).toBe('Name4');
+        newRecord.set({ name: 'up' });
+        expect(cmpVar.getEl()?.innerHTML).toBe('up');
+        expect(eventFn).toBeCalledTimes(1);
+      });
+
+      test('component is properly updating on record change', () => {
+        const ds = dsm.add(dsTest);
+        const cmpVar = addDataVariable();
+        const el = cmpVar.getEl()!;
+        ds.getRecord('id1')?.set({ name: 'Name1-UP' });
+        expect(el.innerHTML).toBe('Name1-UP');
+      });
+
+      test.todo('component is properly updating on record remove');
+
+      test.todo('component is properly updating on record reset');
     });
-
-    test('component is properly updating on data source reset', () => {
-      dsm.add(dsTest);
-      const cmpVar = addDataVariable();
-      const el = cmpVar.getEl()!;
-      expect(el.innerHTML).toBe('Name1');
-      dsm.all.reset();
-      expect(el.innerHTML).toBe('default');
-    });
-
-    test('component is properly updating on data source remove', () => {
-      const eventFn = jest.fn();
-      em.on(DataSourcesEvents.remove, eventFn);
-      const ds = dsm.add(dsTest);
-      const cmpVar = addDataVariable();
-      const el = cmpVar.getEl()!;
-      dsm.remove('ds1');
-      expect(eventFn).toBeCalledTimes(1);
-      expect(eventFn).toBeCalledWith(ds, expect.any(Object));
-      expect(el.innerHTML).toBe('default');
-    });
-
-    test('component is properly updating on record change', () => {});
-
-    test('component is properly updating on record remove', () => {});
-
-    test('component is properly updating on record reset', () => {});
-
-    test('component is properly updating on its prop changes', () => {});
   });
 });
