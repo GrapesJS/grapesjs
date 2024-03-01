@@ -151,7 +151,13 @@ describe('DataSourceManager', () => {
         expect(el.innerHTML).toBe('default');
       });
 
-      test.todo('component is properly updating on record reset');
+      test('component is properly updating on record reset', () => {
+        const ds = dsm.add(dsTest);
+        const cmpVar = addDataVariable();
+        const el = cmpVar.getEl()!;
+        ds.records.reset();
+        expect(el.innerHTML).toBe('default');
+      });
     });
   });
 });
