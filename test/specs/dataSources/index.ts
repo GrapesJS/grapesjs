@@ -48,9 +48,9 @@ describe('DataSourceManager', () => {
     expect(dsm.get(dsTest.id)).toBe(ds);
   });
 
-  test('remove DataSource', () => {});
-  test('update DataSource', () => {});
-  test('update DataSource record', () => {});
+  test.todo('remove DataSource');
+  test.todo('update DataSource');
+  test.todo('update DataSource record');
 
   describe('DataSource with DataVariable component', () => {
     let fixtures: HTMLElement;
@@ -76,6 +76,19 @@ describe('DataSourceManager', () => {
       wrapperEl.render();
       fixtures = document.body.querySelector('#fixtures')!;
       fixtures.appendChild(wrapperEl.el);
+    });
+
+    describe('Export', () => {
+      test('component exports properly with default value', () => {
+        const cmpVar = addDataVariable();
+        expect(cmpVar.toHTML()).toBe('<div>default</div>');
+      });
+
+      test('component exports properly with current value', () => {
+        addDataSource();
+        const cmpVar = addDataVariable();
+        expect(cmpVar.toHTML()).toBe('<div>Name1</div>');
+      });
     });
 
     test('component is properly initiliazed with default value', () => {
