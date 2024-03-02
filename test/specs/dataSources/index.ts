@@ -48,9 +48,15 @@ describe('DataSourceManager', () => {
     expect(dsm.get(dsTest.id)).toBe(ds);
   });
 
-  test.todo('remove DataSource');
-  test.todo('update DataSource');
-  test.todo('update DataSource record');
+  test('remove DataSource', () => {
+    const event = jest.fn();
+    em.on(dsm.events.remove, event);
+    const ds = addDataSource();
+    dsm.remove('ds1');
+    expect(dsm.getAll().length).toBe(0);
+    expect(event).toBeCalledTimes(1);
+    expect(event).toBeCalledWith(ds, expect.any(Object));
+  });
 
   describe('DataSource with DataVariable component', () => {
     let fixtures: HTMLElement;
@@ -88,6 +94,12 @@ describe('DataSourceManager', () => {
         addDataSource();
         const cmpVar = addDataVariable();
         expect(cmpVar.toHTML()).toBe('<div>Name1</div>');
+      });
+
+      test('component exports properly with variable', () => {
+        addDataSource();
+        const cmpVar = addDataVariable();
+        expect(cmpVar.getInnerHTML({ keepVariables: true })).toBe('ds1.id1.name');
       });
     });
 
