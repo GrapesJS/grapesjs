@@ -96,16 +96,26 @@ describe('DataSourceManager', () => {
     });
 
     test('component is properly updating on its path change', () => {
+      const eventFn1 = jest.fn();
+      const eventFn2 = jest.fn();
       const ds = addDataSource();
       const cmpVar = addDataVariable();
       const el = cmpVar.getEl()!;
+      const pathEvent = DataSourcesEvents.path;
+
       cmpVar.set({ path: 'ds1.id2.name' });
       expect(el.innerHTML).toBe('Name2');
+      em.on(`${pathEvent}:ds1.id2.name`, eventFn1);
+      ds.getRecord('id2')?.set({ name: 'Name2-UP' });
+
       cmpVar.set({ path: 'ds1[id3]name' });
       expect(el.innerHTML).toBe('Name3');
-
+      em.on(`${pathEvent}:ds1.id3.name`, eventFn2);
       ds.getRecord('id3')?.set({ name: 'Name3-UP' });
+
       expect(el.innerHTML).toBe('Name3-UP');
+      expect(eventFn1).toBeCalledTimes(1);
+      expect(eventFn2).toBeCalledTimes(1);
     });
 
     describe('DataSource changes', () => {

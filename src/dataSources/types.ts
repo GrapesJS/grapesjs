@@ -21,6 +21,11 @@ export interface DataRecordProps extends ObjectAny {
   id: string;
 }
 
+export interface DataVariableListener {
+  obj: any;
+  event: string;
+}
+
 /**{START_EVENTS}*/
 export enum DataSourcesEvents {
   /**

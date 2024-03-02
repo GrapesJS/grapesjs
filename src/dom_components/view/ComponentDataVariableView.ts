@@ -1,12 +1,15 @@
-import { DataSourcesEvents } from '../../dataSources/types';
+import { DataSourcesEvents, DataVariableListener } from '../../dataSources/types';
 import { stringToPath } from '../../utils/mixins';
 import ComponentDataVariable from '../model/ComponentDataVariable';
 import ComponentView from './ComponentView';
 
 export default class ComponentDataVariableView extends ComponentView<ComponentDataVariable> {
+  dataListeners: DataVariableListener[] = [];
+
   initialize(opt = {}) {
     super.initialize(opt);
     this.listenToData();
+    this.listenTo(this.model, 'change:path', this.listenToData);
   }
 
   listenToData() {
@@ -15,16 +18,21 @@ export default class ComponentDataVariableView extends ComponentView<ComponentDa
     const normPath = stringToPath(path || '').join('.');
     const { DataSources } = em;
     const [ds, dr] = DataSources.fromPath(path);
+    const dataListeners: DataVariableListener[] = [];
+    const prevListeners = this.dataListeners || [];
 
-    if (ds) {
-      this.listenTo(ds.records, 'add remove reset', this.postRender);
-      this.listenTo(ds.records, 'add remove reset', this.postRender);
-      dr && this.listenTo(dr, 'change', this.postRender);
-    }
+    prevListeners.forEach(ls => this.stopListening(ls.obj, ls.event, this.postRender));
 
-    this.listenTo(DataSources.all, 'add remove reset', this.postRender);
-    this.listenTo(em, `${DataSourcesEvents.path}:${normPath}`, this.postRender);
-    this.listenTo(model, 'change:path change:value', this.postRender);
+    ds && dataListeners.push({ obj: ds.records, event: 'add remove reset' });
+    dr && dataListeners.push({ obj: dr, event: 'change' });
+    dataListeners.push(
+      { obj: model, event: 'change:path change:value' },
+      { obj: DataSources.all, event: 'add remove reset' },
+      { obj: em, event: `${DataSourcesEvents.path}:${normPath}` }
+    );
+
+    dataListeners.forEach(ls => this.listenTo(ls.obj, ls.event, this.postRender));
+    this.dataListeners = dataListeners;
   }
 
   postRender() {
