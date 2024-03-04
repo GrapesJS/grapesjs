@@ -982,34 +982,48 @@ export default function ($, undefined?: any) {
 
   /**
    * checkOffset - get the offset below/above and left/right element depending on screen position
-   * Thanks https://github.com/jquery/jquery-ui/blob/master/ui/jquery.ui.datepicker.js
    */
   function getOffset(picker, input) {
-    var extraY = 0;
-    var dpWidth = picker.outerWidth();
-    var dpHeight = picker.outerHeight();
-    var inputHeight = input.outerHeight();
-    var doc = picker[0].ownerDocument;
-    var docElem = doc.documentElement;
-    var cW = docElem.clientWidth;
-    var cH = docElem.clientHeight;
-    var scL = $(doc).scrollLeft();
-    var scT = $(doc).scrollTop();
-    var viewWidth = cW + scL;
-    var viewHeight = cH + scT;
-    var offset = input.offset();
+    // Get editor container
+    const rootElm = document.querySelector('.gjs-editor-cont');
 
-    offset.top += inputHeight;
+    // Ensure DOM elements are not a collections
+    let offsetElm = input.length ? input[0] : input;
+    picker = picker.length ? picker[0] : picker;
 
-    offset.left -= Math.min(
-      offset.left,
-      offset.left + dpWidth > viewWidth && viewWidth > dpWidth ? Math.abs(offset.left + dpWidth - viewWidth) : 0
-    );
+    // Get the input position
+    let rect = offsetElm.getBoundingClientRect();
 
-    offset.top -= Math.min(
-      offset.top,
-      offset.top + dpHeight > viewHeight && viewHeight > dpHeight ? Math.abs(dpHeight + inputHeight - extraY) : extraY
-    );
+    // Accuumulate the input offset
+    let offset = { top: 0, left: 0, width: offsetElm.offsetWidth, height: offsetElm.offsetHeight };
+    while (offsetElm) {
+      // Accumulate offsets
+      offset.top += offsetElm.offsetTop - offsetElm.scrollTop;
+      offset.left += offsetElm.offsetLeft - offsetElm.scrollLeft;
+
+      // Check if the current element in our root, or if the next offset parent is outside of the root
+      if (offsetElm === rootElm || !rootElm.contains(offsetElm.offsetParent)) {
+        break; // Exit the loop if we are at root element
+      }
+
+      // Move to the next offset parent
+      offsetElm = offsetElm.offsetParent;
+    }
+
+    // Input is to close to the right side of the screen to show picker
+    if (rect.right + picker.offsetWidth > window.innerWidth - window.scrollX && rect.right - picker.offsetWidth > 0) {
+      // Right align the picker to the input
+      offset.left -= picker.offsetWidth - offset.width;
+    }
+
+    // Input is to close to the bottom of the screen to show picker above
+    if (rect.bottom + picker.offsetHeight < window.innerHeight - window.scrollY) {
+      // Bottom align the picker to the input
+      offset.top += offset.height;
+    } else {
+      // Top align the picker to the input
+      offset.top -= picker.offsetHeight;
+    }
 
     return offset;
   }
