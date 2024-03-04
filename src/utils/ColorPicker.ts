@@ -7,11 +7,49 @@
 // License: MIT
 import { hasWin } from './mixins';
 
+export interface ColorPickerOptions {
+  beforeShow?: () => void;
+  move?: () => void;
+  change?: () => void;
+  show?: () => void;
+  hide?: () => void;
+  color?: boolean;
+  flat?: boolean;
+  showInput?: boolean;
+  allowEmpty?: boolean;
+  showButtons?: boolean;
+  clickoutFiresChange?: boolean;
+  showInitial?: boolean;
+  showPalette?: boolean;
+  showPaletteOnly?: boolean;
+  hideAfterPaletteSelect?: boolean;
+  togglePaletteOnly?: boolean;
+  showSelectionPalette?: boolean;
+  localStorageKey?: boolean;
+  appendTo?: string;
+  maxSelectionSize?: number;
+  cancelText?: string;
+  chooseText?: string;
+  togglePaletteMoreText?: string;
+  togglePaletteLessText?: string;
+  clearText?: string;
+  noColorSelectedText?: string;
+  preferredFormat?: boolean;
+  containerClassName?: string;
+  replacerClassName?: string;
+  showAlpha?: boolean;
+  theme?: string;
+  palette?: string[][];
+  selectionPalette?: string[];
+  disabled?: boolean;
+  offset?: { top: number; left: number };
+}
+
 export default function ($, undefined?: any) {
   'use strict';
   if (!hasWin()) return;
 
-  var defaultOpts = {
+  var defaultOpts: ColorPickerOptions = {
       // Callbacks
       beforeShow: noop,
       move: noop,
