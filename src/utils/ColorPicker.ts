@@ -984,45 +984,42 @@ export default function ($, undefined?: any) {
    * checkOffset - get the offset below/above and left/right element depending on screen position
    */
   function getOffset(picker, input) {
-    // Get editor container
-    const rootElm = document.querySelector('.gjs-editor-cont');
+    let offsetElm = input[0] as HTMLElement;
+    const pickerEl = picker[0] as HTMLElement;
+    const rootElm = pickerEl.parentElement;
+    const inputRect = offsetElm.getBoundingClientRect();
+    const pickerW = pickerEl.offsetWidth;
+    const pickerH = pickerEl.offsetHeight;
+    const offset = {
+      top: 0,
+      left: 0,
+      width: offsetElm.offsetWidth,
+      height: offsetElm.offsetHeight,
+    };
 
-    // Ensure DOM elements are not a collections
-    let offsetElm = input.length ? input[0] : input;
-    picker = picker.length ? picker[0] : picker;
-
-    // Get the input position
-    let rect = offsetElm.getBoundingClientRect();
-
-    // Accuumulate the input offset
-    let offset = { top: 0, left: 0, width: offsetElm.offsetWidth, height: offsetElm.offsetHeight };
     while (offsetElm) {
-      // Accumulate offsets
       offset.top += offsetElm.offsetTop - offsetElm.scrollTop;
       offset.left += offsetElm.offsetLeft - offsetElm.scrollLeft;
 
       // Check if the current element in our root, or if the next offset parent is outside of the root
       if (offsetElm === rootElm || !rootElm.contains(offsetElm.offsetParent)) {
-        break; // Exit the loop if we are at root element
+        break;
       }
 
-      // Move to the next offset parent
       offsetElm = offsetElm.offsetParent;
     }
 
     // Input is to close to the right side of the screen to show picker
-    if (rect.right + picker.offsetWidth > window.innerWidth - window.scrollX && rect.right - picker.offsetWidth > 0) {
+    if (inputRect.right + pickerW > window.innerWidth - window.scrollX && inputRect.right - pickerW > 0) {
       // Right align the picker to the input
-      offset.left -= picker.offsetWidth - offset.width;
+      offset.left -= pickerW - offset.width;
     }
 
     // Input is to close to the bottom of the screen to show picker above
-    if (rect.bottom + picker.offsetHeight < window.innerHeight - window.scrollY) {
-      // Bottom align the picker to the input
+    if (inputRect.bottom + pickerH < window.innerHeight - window.scrollY) {
       offset.top += offset.height;
     } else {
-      // Top align the picker to the input
-      offset.top -= picker.offsetHeight;
+      offset.top -= pickerH;
     }
 
     return offset;

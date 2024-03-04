@@ -226,8 +226,6 @@ export default class Frame extends ModuleModel<CanvasModule> {
 
   _emitUpdated(data = {}) {
     this.em.trigger('frame:updated', { frame: this, ...data });
-    // When the frame is updated, the canvas should be refreshed. This may be better up stream from here.
-    this.em.refreshCanvas();
   }
 
   hasAutoHeight() {
