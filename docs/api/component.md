@@ -859,7 +859,7 @@ Returns **[Boolean][3]**
 
 [5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
-[6]: https://github.com/GrapesJS/grapesjs/blob/master/src/utils/Resizer.js
+[6]: https://github.com/GrapesJS/grapesjs/blob/master/src/utils/Resizer.ts
 
 [7]: /modules/Components-js.html
 
