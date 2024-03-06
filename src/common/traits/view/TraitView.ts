@@ -81,5 +81,8 @@ export default abstract class TraitView<Target extends Trait = Trait>
     return !this.noLabel;
   }
 
-  abstract render(): typeof this;
+  render(): typeof this {
+    this.trigger('render');
+    return this;
+  }
 }

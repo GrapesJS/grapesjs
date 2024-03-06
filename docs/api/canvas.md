@@ -90,6 +90,30 @@ editor.on('canvas:pointer', () => {
 });
 ```
 
+* `canvas:frame:load` Frame loaded in canvas.&#xA;The event is triggered right after iframe's `onload`.
+
+```javascript
+editor.on('canvas:frame:load', ({ window }) => {
+ console.log('Frame loaded', window);
+});
+```
+
+* `canvas:frame:load:head` Frame head loaded in canvas.&#xA;The event is triggered right after iframe's finished to load the head elemenets (eg. scripts)
+
+```javascript
+editor.on('canvas:frame:load:head', ({ window }) => {
+ console.log('Frame head loaded', window);
+});
+```
+
+* `canvas:frame:load:body` Frame body loaded in canvas.&#xA;The event is triggered when the body is rendered with components.
+
+```javascript
+editor.on('canvas:frame:load:body', ({ window }) => {
+ console.log('Frame completed the body render', window);
+});
+```
+
 [Component]: component.html
 
 [Frame]: frame.html

@@ -32,7 +32,8 @@ export default class PropertyStackView extends PropertyCompositeView {
 
   init() {
     const { model } = this;
-    this.listenTo(model.__getLayers(), 'change reset', this.updateStatus);
+    this.listenTo(model.layers, 'change reset', this.updateStatus);
+    this.listenTo(model, 'change:isEmptyValue', this.updateStatus);
   }
 
   addLayer() {
@@ -75,7 +76,7 @@ export default class PropertyStackView extends PropertyCompositeView {
       propsView.render();
 
       const layersView = new LayersView({
-        collection: model.__getLayers(),
+        collection: model.layers,
         // @ts-ignore
         config,
         propertyView: this,

@@ -273,10 +273,11 @@ export default class RichTextEditor {
       if (event) {
         let range = null;
 
+        // Still used as caretPositionFromPoint is not yet well adopted
         if (doc.caretRangeFromPoint) {
           const poiner = getPointerEvent(event);
           range = doc.caretRangeFromPoint(poiner.clientX, poiner.clientY);
-          // @ts-ignore
+          // @ts-ignore for Firefox
         } else if (event.rangeParent) {
           range = doc.createRange();
           // @ts-ignore
@@ -294,8 +295,14 @@ export default class RichTextEditor {
     return this;
   }
 
-  __onKeydown(event: Event) {
-    const ev = event as KeyboardEvent;
+  __onKeydown(ev: KeyboardEvent) {
+    const { em } = this;
+    const { onKeydown } = em.RichTextEditor.getConfig();
+
+    if (onKeydown) {
+      return onKeydown({ ev, rte: this, editor: em.getEditor() });
+    }
+
     const { doc } = this;
     const cmdList = ['insertOrderedList', 'insertUnorderedList'];
 
@@ -305,12 +312,19 @@ export default class RichTextEditor {
     }
   }
 
-  __onPaste(ev: Event) {
-    // @ts-ignore
-    const clipboardData = ev.clipboardData || window.clipboardData;
+  __onPaste(ev: ClipboardEvent) {
+    const { em } = this;
+    const { onPaste } = em.RichTextEditor.getConfig();
+
+    if (onPaste) {
+      return onPaste({ ev, rte: this, editor: em.getEditor() });
+    }
+
+    const clipboardData = ev.clipboardData!;
     const text = clipboardData.getData('text');
     const textHtml = clipboardData.getData('text/html');
-    // Replace \n with <br> in case of plain text
+
+    // Replace \n with <br> in case of a plain text
     if (text && !textHtml) {
       ev.preventDefault();
       const html = text.replace(/(?:\r\n|\r|\n)/g, '<br/>');

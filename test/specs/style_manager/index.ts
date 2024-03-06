@@ -24,7 +24,7 @@ describe('StyleManager', () => {
       dv = em.Devices;
       sm = em.Selectors;
       obj = em.Styles;
-      em.get('PageManager').onLoad();
+      em.Pages.onLoad();
     });
 
     afterEach(() => {
@@ -73,7 +73,7 @@ describe('StyleManager', () => {
     });
 
     test('Add property to inexistent sector', () => {
-      expect(obj.addProperty('test', { property: 'test' })).toEqual(null);
+      expect(obj.addProperty('test', { property: 'test' })).toEqual(undefined);
     });
 
     test('Add property', () => {

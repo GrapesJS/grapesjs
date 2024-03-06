@@ -25,7 +25,7 @@ type FromStyleDataStack = Omit<FromStyleData, 'property' | 'separator'> & {
   separatorLayers: RegExp;
 };
 
-export type OptionStyleStack = OptionsStyle & { number?: { min?: number; max?: number } };
+export type OptionStyleStack = OptionsStyle & { number?: { min?: number; max?: number }; __clear?: boolean };
 
 /** @private */
 export interface PropertyStackProps extends Omit<PropertyCompositeProps, 'toStyle' | 'fromStyle'> {
@@ -50,12 +50,28 @@ export interface PropertyStackProps extends Omit<PropertyCompositeProps, 'toStyl
    * Custom logic for creating layer labels.
    */
   layerLabel?: (layer: Layer, data: { index: number; values: LayerValues; property: PropertyStack }) => string;
+
+  /**
+   * Empty value to apply when all layers are removed.
+   * @default 'unset'
+   * @example
+   * // use simple string
+   * emptyValue: 'inherit',
+   * // or a function for a custom style object
+   * emptyValue: () => ({
+   *  color: 'unset',
+   *  width: 'auto'
+   * }),
+   */
+  emptyValue?: string | ((data: { property: PropertyStack }) => PropValues);
+
   toStyle?: (values: PropValues, data: ToStyleDataStack) => ReturnType<ToStyle>;
   fromStyle?: (style: StyleProps, data: FromStyleDataStack) => ReturnType<FromStyle>;
   parseLayer?: (data: { value: string; values: PropValues }) => PropValues;
   selectedLayer?: Layer;
   prepend?: boolean;
   __layers?: PropValues[];
+  isEmptyValue?: boolean;
 }
 
 /**
@@ -75,6 +91,17 @@ export interface PropertyStackProps extends Omit<PropertyCompositeProps, 'toStyl
  *    return `A: ${values['prop-a']} B: ${values['prop-b']}`;
  *  }
  *  ```
+ * @property {String|Function} [emptyValue='unset'] Empty value to apply when all layers are removed.
+ * \n
+ * ```js
+ *  // use simple string
+ *  emptyValue: 'inherit',
+ *  // or a function for a custom style object
+ *  emptyValue: () => ({
+ *    color: 'unset',
+ *    width: 'auto'
+ *  }),
+ *  ```
  *
  */
 export default class PropertyStack extends PropertyComposite<PropertyStackProps> {
@@ -82,6 +109,7 @@ export default class PropertyStack extends PropertyComposite<PropertyStackProps>
     return {
       ...PropertyComposite.getDefaults(),
       layers: [],
+      emptyValue: 'unset',
       layerSeparator: ', ',
       layerJoin: '',
       prepend: 0,
@@ -107,16 +135,24 @@ export default class PropertyStack extends PropertyComposite<PropertyStackProps>
     PropertyComposite.callInit(this, props, opts);
   }
 
+  get layers() {
+    return this.get('layers') as unknown as Layers;
+  }
+
   /**
    * Get all available layers.
    * @returns {Array<[Layer]>}
    */
   getLayers() {
-    return this.__getLayers().models;
+    return this.layers.models;
   }
 
-  __getLayers() {
-    return this.get('layers') as unknown as Layers;
+  /**
+   * Check if the property has layers.
+   * @returns {Boolean}
+   */
+  hasLayers() {
+    return this.getLayers().length > 0;
   }
 
   /**
@@ -131,7 +167,7 @@ export default class PropertyStack extends PropertyComposite<PropertyStackProps>
    * const layerLast = property.getLayer(layers.length - 1);
    */
   getLayer(index = 0): Layer | undefined {
-    return this.__getLayers().at(index) || undefined;
+    return this.layers.at(index) || undefined;
   }
 
   /**
@@ -175,11 +211,12 @@ export default class PropertyStack extends PropertyComposite<PropertyStackProps>
    * property.moveLayer(layer, 0);
    */
   moveLayer(layer: Layer, index = 0) {
+    const { layers } = this;
     const currIndex = layer ? layer.getIndex() : -1;
 
-    if (currIndex >= 0 && isNumber(index) && index >= 0 && index < this.getLayers().length && currIndex !== index) {
+    if (currIndex >= 0 && isNumber(index) && index >= 0 && index < layers.length && currIndex !== index) {
       this.removeLayer(layer);
-      this.__getLayers().add(layer, { at: index });
+      layers.add(layer, { at: index });
     }
   }
 
@@ -200,7 +237,7 @@ export default class PropertyStack extends PropertyComposite<PropertyStackProps>
       const value = props[key];
       values[key] = isUndefined(value) ? prop.getDefaultValue() : value;
     });
-    const layer = this.__getLayers().push({ values } as any, opts);
+    const layer = this.layers.push({ values } as any, opts);
 
     return layer;
   }
@@ -214,7 +251,7 @@ export default class PropertyStack extends PropertyComposite<PropertyStackProps>
    * property.removeLayer(layer);
    */
   removeLayer(layer: Layer) {
-    return this.__getLayers().remove(layer);
+    return this.layers.remove(layer);
   }
 
   /**
@@ -342,6 +379,14 @@ export default class PropertyStack extends PropertyComposite<PropertyStackProps>
     return isString(sep) ? new RegExp(`${sep}(?![^\\(]*\\))`) : sep;
   }
 
+  /**
+   * Check if the property is with an empty value.
+   * @returns {Boolean}
+   */
+  hasEmptyValue() {
+    return !this.hasLayers() && !!this.attributes.isEmptyValue;
+  }
+
   __upProperties(prop: Property, opts: any = {}) {
     const layer = this.getSelectedLayer();
     if (!layer) return;
@@ -360,7 +405,7 @@ export default class PropertyStack extends PropertyComposite<PropertyStackProps>
   }
 
   __upTargetsStyleProps(opts = {}) {
-    this.__upTargetsStyle(this.getStyleFromLayers(), opts);
+    this.__upTargetsStyle(this.getStyleFromLayers(opts), opts);
   }
 
   __upTargetsStyle(style: StyleProps, opts: any) {
@@ -392,16 +437,17 @@ export default class PropertyStack extends PropertyComposite<PropertyStackProps>
     return this;
   }
 
-  __setLayers(newLayers: PropValues[] = []) {
-    const layers = this.__getLayers();
+  __setLayers(newLayers: LayerValues[] = [], opts: { isEmptyValue?: boolean } = {}) {
+    const { layers } = this;
     const layersNew = newLayers.map(values => ({ values }));
 
     if (layers.length === layersNew.length) {
       layersNew.map((layer, n) => layers.at(n)?.upValues(layer.values));
     } else {
-      this.__getLayers().reset(layersNew);
+      layers.reset(layersNew);
     }
 
+    this.set({ isEmptyValue: !!opts.isEmptyValue });
     this.__upSelected({ noEvent: true });
   }
 
@@ -429,13 +475,14 @@ export default class PropertyStack extends PropertyComposite<PropertyStackProps>
         }, {} as PropValues);
   }
 
-  __getLayersFromStyle(style: StyleProps = {}) {
+  __getLayersFromStyle(style: StyleProps = {}): LayerValues[] | null {
     if (!this.__styleHasProps(style)) return null;
+    if (this.isEmptyValueStyle(style)) return [];
 
     const name = this.getName();
     const props = this.getProperties();
     const sep = this.getLayerSeparator();
-    const fromStyle = this.get('fromStyle');
+    const { fromStyle } = this.attributes;
     let result = fromStyle ? fromStyle(style, { property: this, name, separatorLayers: sep }) : [];
 
     if (!fromStyle) {
@@ -478,7 +525,6 @@ export default class PropertyStack extends PropertyComposite<PropertyStackProps>
     styles.forEach(style => {
       keys(style).map(key => {
         if (!result[key]) {
-          // @ts-ignore
           result[key] = [];
         }
         // @ts-ignore
@@ -486,8 +532,7 @@ export default class PropertyStack extends PropertyComposite<PropertyStackProps>
       });
     });
     keys(result).map(key => {
-      // @ts-ignore
-      result[key] = result[key].join(this.__getJoinLayers());
+      result[key] = (result[key] as string[]).join(this.__getJoinLayers());
     });
 
     if (this.isDetached()) {
@@ -505,7 +550,44 @@ export default class PropertyStack extends PropertyComposite<PropertyStackProps>
       result = { ...result, ...style };
     }
 
-    return result;
+    return {
+      ...result,
+      ...(opts.__clear ? {} : this.getEmptyValueStyle()),
+    };
+  }
+
+  isEmptyValueStyle(style: StyleProps = {}) {
+    const emptyStyle = this.getEmptyValueStyle({ force: true });
+    const props = keys(emptyStyle);
+    return !!props.length && props.every(prop => emptyStyle[prop] === style[prop]);
+  }
+
+  getEmptyValueStyle(opts: { force?: boolean } = {}) {
+    const { emptyValue } = this.attributes;
+
+    if (emptyValue && (!this.hasLayers() || opts.force)) {
+      const name = this.getName();
+      const props = this.getProperties();
+      const result = isString(emptyValue) ? emptyValue : emptyValue({ property: this });
+
+      if (isString(result)) {
+        const style: StyleProps = {};
+
+        if (this.isDetached()) {
+          props.map(prop => {
+            style[prop.getName()] = result;
+          });
+        } else {
+          style[name] = result;
+        }
+
+        return style;
+      } else {
+        return result;
+      }
+    } else {
+      return {};
+    }
   }
 
   __getJoinLayers() {
@@ -529,7 +611,7 @@ export default class PropertyStack extends PropertyComposite<PropertyStackProps>
   hasValue(opts: { noParent?: boolean } = {}) {
     const { noParent } = opts;
     const parentValue = noParent && this.getParentTarget();
-    return this.getLayers().length > 0 && !parentValue;
+    return (this.hasLayers() || this.hasEmptyValue()) && !parentValue;
   }
 
   /**
@@ -537,13 +619,21 @@ export default class PropertyStack extends PropertyComposite<PropertyStackProps>
    * @private
    */
   clear(opts = {}) {
-    this.__getLayers().reset();
-    this.__upTargetsStyleProps(opts);
+    this.layers.reset();
+    this.__upTargetsStyleProps({ ...opts, __clear: true });
     PropertyBase.prototype.clear.call(this);
     return this;
   }
 
   __canClearProp() {
     return false;
+  }
+
+  /**
+   * @deprecated
+   * @private
+   */
+  __getLayers() {
+    return this.layers;
   }
 }

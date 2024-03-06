@@ -1,4 +1,6 @@
 import EditorModel from '../../../editor/model/Editor';
+import Category from '../../../abstract/ModuleCategory';
+import { LocaleOptions, Model, SetOptions } from '../../../common';
 import TraitFactory from './TraitFactory';
 
 export interface OnUpdateView<TraitValueType> {
@@ -14,7 +16,8 @@ export interface TraitProperties {
 
 export default abstract class Trait<TraitValueType = any, Type extends string = string> {
   opts: any;
-  view?: OnUpdateView<TraitValueType>;
+  private view?: OnUpdateView<TraitValueType>;
+
   get name(): string {
     return '';
   }
@@ -64,15 +67,22 @@ export default abstract class Trait<TraitValueType = any, Type extends string = 
   protected updatingValue = false;
   public set value(value: TraitValueType) {
     this.updatingValue = true;
-    console.log('setvalue ' + value);
+    console.log('setvalue ', this);
     this.setValue(value);
     this.updatingValue = false;
+    this.refreshTrait();
   }
+
+  refreshTrait() {}
 
   setValueFromModel() {
     if (!this.updatingValue) {
-      this.view?.onUpdateEvent(this.value, true);
+      this.onUpdateEvent();
     }
+  }
+
+  onUpdateEvent() {
+    this.view?.onUpdateEvent(this.value, true);
   }
 
   updateOpts(opts: any) {
@@ -83,11 +93,22 @@ export default abstract class Trait<TraitValueType = any, Type extends string = 
     return this.type ?? 'text';
   }
 
-  // set viewType(type: string){
-  //   return this.type ?? 'text';
-  // }
+  get category(): Category | undefined {
+    const cat = this.opts.category;
+    return cat instanceof Category ? cat : undefined;
+  }
 
-  // protected buildNestedChildren(trait: Trait){
-  //   TraitFactory.buildNestedTraits(this)
-  // }
+  /**
+   * Get category label.
+   * @param {Object} [opts={}] Options.
+   * @param {Boolean} [opts.locale=true] Use the locale string from i18n module.
+   * @returns {String}
+   */
+  getCategoryLabel(opts: LocaleOptions = {}): string {
+    const { em, category } = this;
+    const { locale = true } = opts;
+    const catId = category?.getId();
+    const catLabel = category?.getLabel();
+    return (locale && em?.t(`traitManager.categories.${catId}`)) || catLabel || '';
+  }
 }

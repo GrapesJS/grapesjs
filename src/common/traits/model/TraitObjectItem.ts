@@ -15,13 +15,12 @@ export default class TraitObjectItem<TraitValueType extends { [id: string]: any 
     super(opts);
     this.target = target;
     this._name = name;
-
+    console.log(this.value);
     if (!isObject(this.target.value)) {
       this.target.value = {} as TraitValueType;
     }
-    this.view = target.view;
     this.onValueChange = onValueChange;
-    this.value = this.value;
+    // this.value = this.value;
   }
 
   get em() {
@@ -34,11 +33,13 @@ export default class TraitObjectItem<TraitValueType extends { [id: string]: any 
   }
 
   protected setValue(value: any): void {
+    console.log('setValue', value);
+    console.log('setValueTarget', this.target);
     const { name } = this;
     const values = { ...this.target.value, [name]: value };
     this.target.value = values;
     this.onValueChange && this.onValueChange(values);
 
-    // this.target.view?.onUpdateEvent(values, false)
+    // this.target.onUpdateEvent()
   }
 }

@@ -25,7 +25,7 @@ export default class TraitEventSelector extends TraitObject<{ componentId: strin
     if (compId) {
       console.log(compId);
       const wrapper = target.em.Components.getById(compId);
-      options = wrapper.scriptEvents.map(variable => variable.id);
+      // options = wrapper.scriptEvents.map(variable => variable.id);
     }
     // this.eventNameTrait = new TraitObjectItem("eventName", this, {type: "select", options, noLabel: true, width: 50})
     return [
@@ -67,8 +67,8 @@ export default class TraitEventSelector extends TraitObject<{ componentId: strin
       if (compId) {
         console.log(compId);
         const wrapper = this.em.Components.getById(compId);
-        variablesTrait.opts.options = wrapper.globalVariables.map(variable => variable.id);
-        this.target.view?.onUpdateEvent(this.value, true);
+        // variablesTrait.opts.options = wrapper.globalVariables.map(variable => variable.id);
+        this.target.onUpdateEvent();
       }
     }
   }

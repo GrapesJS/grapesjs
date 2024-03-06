@@ -21,6 +21,7 @@ import TraitObject from './TraitObject';
 import TraitList from './TraitList';
 import TraitListUnique from './TraitListUnique';
 import TraitSignal from './js-traits/TraitSignal';
+import TraitVariable from './js-traits/TraitVariable';
 
 // export type InputViewProperties =
 //   | TraitInputViewOpts<'text'>
@@ -109,6 +110,8 @@ export default abstract class TraitFactory {
         return new TraitAjax(trait);
       case 'signal':
         return new TraitSignal(trait);
+      case 'variable':
+        return new TraitVariable(trait);
       case 'event':
         return new TraitEventSelector(trait);
       default:

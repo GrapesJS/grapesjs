@@ -1,4 +1,4 @@
-import { Model } from '../..';
+import { Model, SetOptions } from '../..';
 import Component from '../../../dom_components/model/Component';
 import EditorModel from '../../../editor/model/Editor';
 import Trait, { TraitProperties } from './Trait';
@@ -36,14 +36,19 @@ export default class TraitRoot<
     return value;
   }
 
-  protected setValue(value: TraitValueType): void {
+  protected setValue(value: TraitValueType, opts: SetOptions = {}): void {
     const { name, model, changeProp } = this;
+
+    const props: any = { [name]: value };
+    // This is required for the UndoManager to properly detect changes
+    props.__p = opts.avoidStore ? null : undefined;
+
+    console.log('urlTestTrigger', value);
     if (changeProp) {
-      model.set(name, value);
+      model.set(props, opts);
       model.trigger(`change:${name}`);
     } else {
-      model.set('attributes', { ...model.get('attributes'), [name]: value });
+      model.set('attributes', { ...model.get('attributes'), ...props }, opts);
     }
-    console.log('qwerrsetValue', value);
   }
 }

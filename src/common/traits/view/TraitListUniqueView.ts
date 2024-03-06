@@ -11,12 +11,13 @@ import TraitListItem from '../model/TraitListItem';
 import TraitObject from '../model/TraitObject';
 import TraitList from '../model/TraitList';
 import TraitListUnique from '../model/TraitListUnique';
+import TraitsView from './TraitsView';
 
 export interface TraitListUniqueViewOpts<T extends string = 'object'> extends TraitViewOpts<T> {
   traits: any[] | any;
 }
 
-export default class TraitListUniqueView extends TraitView<TraitListUnique> {
+export default class TraitListUniqueView extends TraitsView<TraitListUnique> {
   protected type = 'list';
   templates: any[];
   private toolbarEl?: HTMLDivElement;
@@ -63,30 +64,19 @@ export default class TraitListUniqueView extends TraitView<TraitListUnique> {
     return this.target.opts.editable ?? true;
   }
 
-  onUpdateEvent(value: any, fromTarget: boolean): void {
-    console.log('aaa', 'onUpdateEvent');
-    console.log('aaa', this.target.children);
-    if (fromTarget) {
-      this.render();
-    }
-  }
-
   private addItem(e: any) {
     e.preventDefault();
     const name = this.$el.find('[variableName]').val() as any;
     this.target.add(name);
-    this.render();
+    // this.render();
   }
 
   private removeItem(e: any) {
     e.preventDefault();
     const { value } = this.target;
     const name = this.selectedEl?.attr('item-id') as any;
-    if (typeof value[name] != 'undefined') {
-      delete value[name];
-      this.target.value = value;
-    }
-    this.render();
+    this.target.remove(name);
+    // this.render();
   }
 
   renderToolbar() {
@@ -103,17 +93,20 @@ export default class TraitListUniqueView extends TraitView<TraitListUnique> {
     return this.toolbarEl!;
   }
 
-  onItemRender(e: any) {}
+  // onItemRender(e: any) {
+  //   console.log("setValueFromModellsadkfj;lkasdj;flk", e)
+  //   console.log("setValueFromModellsadkfj;lkasdj;flk", this.itemsEl?.map(t =>t.get(0)), this.items)
+  //   this.render()
+  // }
 
-  renderItem(trait: TraitObjectItem) {
+  renderItem(view: TraitView) {
     const { em, ppfx } = this;
     const icons = em?.getConfig().icons;
     const iconCaret = icons?.caret || '';
-    const view = InputFactory.buildView(trait, em, { ...trait.opts, noLabel: true }).render();
-    view.on('all', this.onItemRender, this);
+
+    // view.on('all', this.onItemRender, this);
     var itemEl = document.createElement('div');
-    console.log(trait);
-    const itemTitle = trait.name;
+    const itemTitle = view.target.name;
     itemEl.innerHTML = `
     <div class="${ppfx}item-title" data-item-title>
         <div class="${ppfx}caret">${iconCaret}</div>
@@ -124,25 +117,23 @@ export default class TraitListUniqueView extends TraitView<TraitListUnique> {
     console.log(itemEl);
     var itemDataEl = document.createElement('div');
     itemDataEl.className = 'data-item';
-    itemDataEl.setAttribute('item-id', trait.name);
-    itemDataEl.append(view.el);
+    itemDataEl.setAttribute('item-id', view.target.name);
+    $(itemDataEl).append(view.$el);
     console.log(itemEl);
-    itemEl.append(itemDataEl);
-    return $(itemEl);
+
+    const $itemEl = $(itemEl);
+    $itemEl.append(itemDataEl);
+    return $itemEl;
   }
 
-  renderItems() {
-    this.itemsEl = this.children.map(trait => this.renderItem(trait));
-  }
-
-  render() {
+  renderTraits(items: TraitView[]) {
     const { $el, pfx, ppfx, name, type, className } = this;
     const hasLabel = this.hasLabel();
     const cls = `${pfx}trait`;
     var frag = document.createDocumentFragment();
     console.log('aaa', 'render');
     this.$el.empty();
-    this.renderItems();
+    this.itemsEl = items.map(view => this.renderItem(view));
     this.itemsEl?.forEach(el => frag.appendChild(el.get(0)!));
     console.log(this.itemsEl);
     let itemsEl = document.createElement('div');
@@ -155,7 +146,7 @@ export default class TraitListUniqueView extends TraitView<TraitListUnique> {
 
     </div>
   </div>`;
-    this.$el.html(tmpl);
+    this.$el.empty().append(tmpl);
     const dataInput = this.$el.find('[data-input]');
     if (this.editable) {
       dataInput.append(this.renderToolbar());
@@ -165,7 +156,5 @@ export default class TraitListUniqueView extends TraitView<TraitListUnique> {
     // ${itemsEl}
     // console.log(frag);
     this.select();
-
-    return this;
   }
 }

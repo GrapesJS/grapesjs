@@ -1,18 +1,17 @@
-import PropertyCompositeView from 'style_manager/view/PropertyCompositeView';
-import PropertyComposite from 'style_manager/model/PropertyComposite';
-import Component from 'dom_components/model/Component';
-import Editor from 'editor/model/Editor';
-import DomComponents from 'dom_components';
+import PropertyCompositeView from '../../../../src/style_manager/view/PropertyCompositeView';
+import PropertyComposite from '../../../../src/style_manager/model/PropertyComposite';
+import Component from '../../../../src/dom_components/model/Component';
+import Editor from '../../../../src/editor/model/Editor';
 
 describe('PropertyCompositeView', () => {
-  let em;
-  let dcomp;
-  let compOpts;
-  var component;
-  var fixtures;
-  var target;
-  var model;
-  var view;
+  let em: Editor;
+  let dcomp: Editor['Components'];
+  let compOpts: any;
+  var component: Component;
+  var fixtures: HTMLElement;
+  var target: Component;
+  var model: PropertyComposite;
+  var view: PropertyCompositeView;
   var propName = 'testprop';
   var properties = [
     {
@@ -21,7 +20,7 @@ describe('PropertyCompositeView', () => {
     {
       type: 'integer',
       property: 'subprop2',
-      defaults: 0,
+      defaults: '0',
       units: ['%', 'px'],
     },
     {
@@ -33,12 +32,11 @@ describe('PropertyCompositeView', () => {
   ];
 
   beforeEach(() => {
-    em = new Editor({});
-    dcomp = new DomComponents(em);
+    em = new Editor();
+    dcomp = em.Components;
     compOpts = { em, componentTypes: dcomp.componentTypes };
     target = new Component({}, compOpts);
     component = new Component({}, compOpts);
-    target.model = component;
     model = new PropertyComposite(
       {
         type: 'composite',
@@ -49,15 +47,13 @@ describe('PropertyCompositeView', () => {
     );
     view = new PropertyCompositeView({ model });
     document.body.innerHTML = '<div id="fixtures"></div>';
-    fixtures = document.body.firstChild;
+    fixtures = document.body.firstChild as HTMLElement;
     view.render();
     fixtures.appendChild(view.el);
   });
 
-  afterAll(() => {
-    component = null;
-    view = null;
-    model = null;
+  afterEach(() => {
+    em.destroy();
   });
 
   test('Rendered correctly', () => {
@@ -73,7 +69,7 @@ describe('PropertyCompositeView', () => {
   });
 
   test('Properties rendered correctly', () => {
-    var children = view.el.querySelector('.properties').children;
+    var children = view.el.querySelector('.properties')!.children;
     expect(children.length).toEqual(properties.length);
   });
 

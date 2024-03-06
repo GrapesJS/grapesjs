@@ -92,13 +92,18 @@ export const grapesjs = {
   },
 };
 
+/**
+ * @deprecated Changed to CategoryProperties
+ */
+export type { CategoryProperties as BlockCategoryProperties } from './abstract/ModuleCategory';
+
 // Exports for TS
 export type { default as Asset } from './asset_manager/model/Asset';
 export type { default as Assets } from './asset_manager/model/Assets';
 export type { default as Block } from './block_manager/model/Block';
 export type { default as Blocks } from './block_manager/model/Blocks';
-export type { default as Categories } from './block_manager/model/Categories';
-export type { default as Category } from './block_manager/model/Category';
+export type { default as Categories } from './abstract/ModuleCategories';
+export type { default as Category } from './abstract/ModuleCategory';
 export type { default as Canvas } from './canvas/model/Canvas';
 export type { default as CanvasSpot } from './canvas/model/CanvasSpot';
 export type { default as CanvasSpots } from './canvas/model/CanvasSpots';

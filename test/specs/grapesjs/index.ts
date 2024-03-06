@@ -505,6 +505,16 @@ describe('GrapesJS', () => {
         expect(editor.getSelectedAll().length).toBe(0);
       });
 
+      test('Deselect component', () => {
+        editor.select(el1);
+        expect(editor.getSelected()).toBe(el1);
+        expect(editor.getSelectedAll().length).toBe(1);
+        // Deselect with undefined
+        editor.select();
+        expect(editor.getSelected()).toBe(undefined);
+        expect(editor.getSelectedAll().length).toBe(0);
+      });
+
       test('Select multiple components', () => {
         // Select at first el1 and el3
         editor.select([el1, el3]);

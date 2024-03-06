@@ -25,7 +25,7 @@ export default class TraitDataLink extends TraitObject<{ componentId: string; va
     if (compId) {
       console.log(compId);
       const wrapper = target.em.Components.getById(compId);
-      options = wrapper.globalVariables.map(variable => variable.id);
+      // options = wrapper.globalVariables.map(variable => variable.id);
     }
 
     //    return [new TraitObject( "componentId", targetJsModifier, {type: "select", options: compOptions,  default: data?.id, noLabel: true, width: 50}),
@@ -63,8 +63,8 @@ export default class TraitDataLink extends TraitObject<{ componentId: string; va
       if (compId) {
         console.log(compId);
         const wrapper = this.em.Components.getById(compId);
-        variablesTrait.opts.options = wrapper.globalVariables.map(variable => variable.id);
-        this.target.view?.onUpdateEvent(this.value, true);
+        // variablesTrait.opts.options = wrapper.globalVariables.map(variable => variable.id);
+        this.target.onUpdateEvent();
       }
     }
   }

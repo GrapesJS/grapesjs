@@ -69,12 +69,14 @@ export default abstract class TraitInputView<Target extends Trait = Trait>
    * @private
    */
   onChange(e: any) {
+    console.log('setValueOnchange');
     e?.stopPropagation();
     e?.preventDefault();
     this.target.value = this.inputValue;
   }
 
   onUpdateEvent(value: ValueFromTrait<Target>, fromTarget: boolean) {
+    console.log('setValueUpdateEvent');
     if (fromTarget) {
       this.inputValue = value;
     }

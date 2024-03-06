@@ -423,6 +423,10 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
         pointer-events: none;
       }
 
+      .${ppfx}pointer-init {
+        pointer-events: initial;
+      }
+
       .${ppfx}plh-image {
         background: #f5f5f5;
         border: none;

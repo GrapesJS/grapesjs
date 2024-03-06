@@ -1,11 +1,11 @@
-import { PropertyProps } from '../model/Property';
+import { PropertyTypes } from '..';
 import { SectorProperties } from '../model/Sector';
 
 export interface StyleManagerConfig {
   /**
    * Default sectors and properties
    */
-  sectors?: (Omit<SectorProperties, 'properties'> & { properties?: (string | PropertyProps)[] })[];
+  sectors?: (Omit<SectorProperties, 'properties'> & { properties?: (string | PropertyTypes)[] })[];
 
   /**
    * Specify the element to use as a container, string (query) or HTMLElement.

@@ -1,10 +1,10 @@
-import { isString, isUndefined } from 'underscore';
+import { isFunction, isString, isUndefined } from 'underscore';
 import EditorModel from '../../../editor/model/Editor';
 import { $ } from '../..';
 import Trait from '../model/Trait';
 import TraitInputView, { TraitInputViewOpts } from './TraitInputView';
 
-type SelectOption =
+export type SelectOption =
   | string
   | {
       name: string;
@@ -18,7 +18,7 @@ export interface TraitSelectViewOpts extends TraitInputViewOpts<'select'> {
 
 export default class TraitSelectView extends TraitInputView<Trait<string>> {
   protected type = 'select';
-  options: SelectOption[];
+  options: SelectOption[] | ((em: EditorModel) => SelectOption[]);
 
   constructor(em: EditorModel, opts: TraitSelectViewOpts) {
     super(em, opts);
@@ -62,7 +62,9 @@ export default class TraitSelectView extends TraitInputView<Trait<string>> {
       const values: string[] = [];
       let input = '<select>';
 
-      options.forEach(el => {
+      const opts = isFunction(options) ? options(em) : options;
+      console.log('setValueValOptions', opts);
+      opts.forEach(el => {
         let attrs = '';
         let name, value, style;
 

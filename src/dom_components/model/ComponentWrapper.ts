@@ -1,5 +1,7 @@
 import Component from './Component';
+import ScriptSubComponent, { ScriptData } from './modules/ScriptSubComponent';
 import { ComponentOptions } from './types';
+import TaitUrl from '../../common/traits/model/js-traits/TraitUrl';
 
 export default class ComponentWrapper extends Component {
   get defaults() {
@@ -11,9 +13,7 @@ export default class ComponentWrapper extends Component {
       copyable: false,
       draggable: false,
       components: [],
-      script: function (prop: any, events: any) {
-        $.get(prop.ajax).done(data => events['ajax'](data));
-      },
+      script: '',
       'script-props': ['ajax'], //This cause the editor drag drop feature to freeze
       'script-global': [{ id: 'ajax', type: 'data-list' }],
       'script-events': [{ id: 'ajax', params: { type: 'object', inner: { data: { type: 'single' } } } }],
@@ -30,7 +30,20 @@ export default class ComponentWrapper extends Component {
           label: 'ajax',
           type: 'unique-list',
           changeProp: true,
-          traits: { type: 'ajax' },
+          traits: {
+            type: 'object',
+            traits: [
+              { name: 'url', type: 'url' },
+              { name: 'signal', label: 'onLoad', type: 'signal' },
+            ],
+          },
+        },
+        {
+          name: 'variables',
+          label: 'variables',
+          type: 'unique-list',
+          changeProp: true,
+          traits: { type: 'function' },
         },
       ],
       stylable: [
@@ -49,14 +62,47 @@ export default class ComponentWrapper extends Component {
 
   constructor(props = {}, opt: ComponentOptions = {}) {
     super(props, opt);
-    // this.on("change:ajax", () => {
-    //   this.dataIds = {};
-    //   // Object.entries(this.data).map(([id, value]) => (value.url && value.dataSrc) && eval(`(${this.ajaxFunctionTemplate(value)})`)()
-    //   // .done((data: any) => this.dataIds[id] = Object.keys(data[value.dataSrc][0])) )
-    //   // console.log(this.dataIds)
-    //   // this.view?.render()
-    // }, this);
-    console.log(this.globalVariables);
+    this.renderAjaxScripts();
+    this.on(
+      'change:ajax change:variables',
+      () => {
+        console.log('urlTestTriggerChange', this);
+        this.renderAjaxScripts();
+        //.map(([name, params]) => { return[name, function(){}]})});
+        this.dataIds = {};
+        // Object.entries(this.data).map(([id, value]) => (value.url && value.dataSrc) && eval(`(${this.ajaxFunctionTemplate(value)})`)()
+        // .done((data: any) => this.dataIds[id] = Object.keys(data[value.dataSrc][0])) )
+        // console.log(this.dataIds)
+        // this.view?.render()
+      },
+      this
+    );
+  }
+
+  private renderAjaxScripts() {
+    const { ajax, variables } = this;
+    const slots = Object.fromEntries(
+      Object.entries(ajax).map(([name, params]) => [
+        name,
+        {
+          script: `(opts, i) => {
+      ${
+        params.url
+          ? `$.get(${TaitUrl.renderJs(params.url, 'i')}).done(data => opts.signals.${name}(${
+              params.url['dataSrc'] ? `data["${params.url['dataSrc']}"]` : 'data'
+            }, data))`
+          : ''
+      }
+    }`,
+        },
+      ])
+    );
+    const signals = Object.fromEntries(Object.entries(ajax).map(([name, params]) => [name, params.signal]));
+    this.set('script', { main: '', props: [], signals, slots, variables });
+    console.log('setValueValScript', variables);
+    console.log('testtestAjaxSignals', signals);
+    console.log('testtestAjaxVariables', variables);
+    console.log('testtestAjax', this.slots);
   }
   //   (class {
   //     static data = (()=>{
@@ -115,6 +161,10 @@ export default class ComponentWrapper extends Component {
 
   get ajax(): { [id: string]: any } {
     return this.get('ajax');
+  }
+
+  get variables(): { [id: string]: any } {
+    return this.get('variables');
   }
 
   __postAdd() {

@@ -1,15 +1,16 @@
 import { isObject } from 'underscore';
 import Trait from './Trait';
 import TraitFactory from './TraitFactory';
-import TraitModifier from './TraitModifier';
 import TraitObjectItem from './TraitObjectItem';
+import TraitParent from './TraitParent';
 
-export default class TraitListUnique extends TraitModifier<{ [id: string]: any }> {
+export default class TraitListUnique extends TraitParent<{ [id: string]: any }> {
   constructor(target: Trait<{ [id: string]: any }>) {
     target.opts.changeProp = true;
     super(target);
+    console.log(this.value);
     if (!isObject(this.value)) {
-      this.target.value = {};
+      this.value = {};
     }
   }
 
@@ -20,10 +21,6 @@ export default class TraitListUnique extends TraitModifier<{ [id: string]: any }
     });
   }
 
-  protected overrideValue(value: any[]) {
-    return value;
-  }
-
   add(name: string) {
     console.log('qwerr', name);
     if (typeof this.value[name] == 'undefined') {
@@ -31,5 +28,16 @@ export default class TraitListUnique extends TraitModifier<{ [id: string]: any }
         TraitFactory.buildNestedTraits(new TraitObjectItem(name, this.target, this.target.opts.traits))
       );
     }
+    this.onUpdateEvent();
+  }
+
+  remove(name: string) {
+    console.log('qwerr', name);
+    const { value } = this;
+    if (typeof value[name] != 'undefined') {
+      delete value[name];
+      this.value = value;
+    }
+    this.onUpdateEvent();
   }
 }

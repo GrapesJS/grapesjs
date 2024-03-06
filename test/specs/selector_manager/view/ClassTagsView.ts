@@ -45,7 +45,7 @@ describe('ClassTagsView', () => {
       },
     };
 
-    compTest = new Component();
+    compTest = new Component({}, { em });
     testContext.compTargetStub = compTest;
 
     fixtures.innerHTML = '';

@@ -20,9 +20,11 @@ export default abstract class TraitModifier<TraitValueType> extends Trait<TraitV
   }
 
   setValueFromModel() {
+    console.log('setValueFromModel', this.updatingValue);
     if (!this.updatingValue) {
-      this.initChildren();
-      this.view?.onUpdateEvent(this.value, true);
+      this.children = this.initChildren();
+      console.log('setValueFromModel', this.children);
+      this.onUpdateEvent();
     }
   }
 
@@ -37,5 +39,19 @@ export default abstract class TraitModifier<TraitValueType> extends Trait<TraitV
   protected setValue(value: TraitValueType): void {
     this.target.value = this.overrideValue(value);
     console.log('sss', this.target.value);
+  }
+
+  refreshTrait() {
+    const children = this.initChildren();
+    console.log(
+      'setValueRefreshTrait',
+      this.children.map(tr => tr.name).toString(),
+      children.map(tr => tr.name).toString()
+    );
+    if (this.children.map(tr => tr.name).toString() != children.map(tr => tr.name).toString()) {
+      this.children = children;
+      // this.view?.onUpdateEvent(this.value, true);
+    }
+    console.log('setValueFromModel', this.children);
   }
 }

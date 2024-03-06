@@ -12988,14 +12988,22 @@ var __spreadArray = (undefined && undefined.__spreadArray) || function (to, from
 
 /***/ }),
 
+<<<<<<< HEAD
 /***/ 905:
+=======
+/***/ 457:
+>>>>>>> script-module
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+<<<<<<< HEAD
 /* harmony import */ var _utils_dom__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(968);
+=======
+/* harmony import */ var _utils_dom__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(491);
+>>>>>>> script-module
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
     run: function (editor, sender, opts) {
@@ -17454,6 +17462,7 @@ var buildBase64UrlFromSvg = function (svg) {
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var map = {
+<<<<<<< HEAD
 	"./CanvasClear": 266,
 	"./CanvasClear.ts": 266,
 	"./CanvasMove": 142,
@@ -17508,6 +17517,60 @@ var map = {
 	"./ShowOffset.ts": 886,
 	"./SwitchVisibility": 817,
 	"./SwitchVisibility.ts": 817
+=======
+	"./CanvasClear": 858,
+	"./CanvasClear.ts": 858,
+	"./CanvasMove": 884,
+	"./CanvasMove.ts": 884,
+	"./CommandAbstract": 790,
+	"./CommandAbstract.ts": 790,
+	"./ComponentDelete": 180,
+	"./ComponentDelete.ts": 180,
+	"./ComponentDrag": 544,
+	"./ComponentDrag.ts": 544,
+	"./ComponentEnter": 236,
+	"./ComponentEnter.ts": 236,
+	"./ComponentExit": 368,
+	"./ComponentExit.ts": 368,
+	"./ComponentNext": 243,
+	"./ComponentNext.ts": 243,
+	"./ComponentPrev": 400,
+	"./ComponentPrev.ts": 400,
+	"./ComponentStyleClear": 910,
+	"./ComponentStyleClear.ts": 910,
+	"./CopyComponent": 744,
+	"./CopyComponent.ts": 744,
+	"./ExportTemplate": 457,
+	"./ExportTemplate.ts": 457,
+	"./Fullscreen": 975,
+	"./Fullscreen.ts": 975,
+	"./MoveComponent": 191,
+	"./MoveComponent.ts": 191,
+	"./OpenAssets": 912,
+	"./OpenAssets.ts": 912,
+	"./OpenBlocks": 117,
+	"./OpenBlocks.ts": 117,
+	"./OpenLayers": 614,
+	"./OpenLayers.ts": 614,
+	"./OpenStyleManager": 801,
+	"./OpenStyleManager.ts": 801,
+	"./OpenTraitManager": 395,
+	"./OpenTraitManager.ts": 395,
+	"./PasteComponent": 98,
+	"./PasteComponent.ts": 98,
+	"./Preview": 129,
+	"./Preview.ts": 129,
+	"./Resize": 116,
+	"./Resize.ts": 116,
+	"./SelectComponent": 407,
+	"./SelectComponent.ts": 407,
+	"./SelectPosition": 189,
+	"./SelectPosition.ts": 189,
+	"./ShowOffset": 804,
+	"./ShowOffset.ts": 804,
+	"./SwitchVisibility": 434,
+	"./SwitchVisibility.ts": 434
+>>>>>>> script-module
 };
 
 
@@ -30526,12 +30589,162 @@ var TraitListView = /** @class */ (function (_super) {
             'click [data-item-title]': this.select,
         };
     };
+<<<<<<< HEAD
     TraitListView.prototype.select = function (e) {
         var _a;
         var _b = this, model = _b.model, ppfx = _b.ppfx, selectedEl = _b.selectedEl;
         // model.setOpen(!model.get('open'));
         (_a = this.itemsEl) === null || _a === void 0 ? void 0 : _a.forEach(function (el) {
             el.find('.data-item').get(0).style.display = 'none';
+=======
+    Trait.prototype.setTarget = function (target) {
+        if (target) {
+            var _a = this.attributes, name_1 = _a.name, changeProp = _a.changeProp, initValue = _a.value, getValue = _a.getValue;
+            this.target = target;
+            this.unset('target');
+            var targetEvent = changeProp ? "change:".concat(name_1) : "change:attributes:".concat(name_1);
+            this.listenTo(target, targetEvent, this.targetUpdated);
+            var value = initValue ||
+                // Avoid the risk of loops in case the trait has a custom getValue
+                (!getValue ? this.getValue() : undefined);
+            !(0,index_all.isUndefined)(value) && this.set({ value: value }, { silent: true });
+        }
+    };
+    /**
+     * Get the trait id.
+     * @returns {String}
+     */
+    Trait.prototype.getId = function () {
+        return this.get('id');
+    };
+    /**
+     * Get the trait type.
+     * @returns {String}
+     */
+    Trait.prototype.getType = function () {
+        return this.get('type');
+    };
+    /**
+     * Get the trait name.
+     * @returns {String}
+     */
+    Trait.prototype.getName = function () {
+        return this.get('name');
+    };
+    /**
+     * Get the trait label.
+     * @param {Object} [opts={}] Options.
+     * @param {Boolean} [opts.locale=true] Use the locale string from i18n module.
+     * @returns {String}
+     */
+    Trait.prototype.getLabel = function (opts) {
+        var _a;
+        if (opts === void 0) { opts = {}; }
+        var _b = opts.locale, locale = _b === void 0 ? true : _b;
+        var id = this.getId();
+        var name = this.get('label') || this.getName();
+        return (locale && ((_a = this.em) === null || _a === void 0 ? void 0 : _a.t("traitManager.traits.labels.".concat(id)))) || name;
+    };
+    /**
+     * Get the trait value.
+     * The value is taken from component attributes by default or from properties if the trait has the `changeProp` enabled.
+     * @returns {any}
+     */
+    Trait.prototype.getValue = function () {
+        return this.getTargetValue();
+    };
+    /**
+     * Update the trait value.
+     * The value is applied on component attributes by default or on properties if the trait has the `changeProp` enabled.
+     * @param {any} value Value of the trait.
+     * @param {Object} [opts={}] Options.
+     * @param {Boolean} [opts.partial] If `true` the update won't be considered complete (not stored in UndoManager).
+     */
+    Trait.prototype.setValue = function (value, opts) {
+        var _this = this;
+        var _a;
+        if (opts === void 0) { opts = {}; }
+        var valueOpts = {};
+        var setValue = this.get('setValue');
+        if (setValue) {
+            setValue({
+                value: value,
+                editor: (_a = this.em) === null || _a === void 0 ? void 0 : _a.getEditor(),
+                trait: this,
+                component: this.target,
+                partial: !!opts.partial,
+                options: opts,
+                emitUpdate: function () { return _this.targetUpdated(); },
+            });
+            return;
+        }
+        if (opts.partial) {
+            valueOpts.avoidStore = true;
+        }
+        this.setTargetValue(value, valueOpts);
+        if (opts.partial === false) {
+            this.setTargetValue('');
+            this.setTargetValue(value);
+        }
+    };
+    /**
+     * Get default value.
+     */
+    Trait.prototype.getDefault = function () {
+        return this.get('default');
+    };
+    /**
+     * Get trait options.
+     */
+    Trait.prototype.getOptions = function () {
+        return this.get('options') || [];
+    };
+    /**
+     * Get current selected option or by id.
+     * @param {String} [id] Option id.
+     * @returns {Object | null}
+     */
+    Trait.prototype.getOption = function (id) {
+        var _this = this;
+        var idSel = (0,mixins.isDef)(id) ? id : this.getValue();
+        return this.getOptions().filter(function (o) { return _this.getOptionId(o) === idSel; })[0];
+    };
+    /**
+     * Get the option id from the option object.
+     * @param {Object} option Option object
+     * @returns {String} Option id
+     */
+    Trait.prototype.getOptionId = function (option) {
+        return option.id || option.value;
+    };
+    /**
+     * Get option label.
+     * @param {String|Object} id Option id or the option object
+     * @param {Object} [opts={}] Options
+     * @param {Boolean} [opts.locale=true] Use the locale string from i18n module
+     * @returns {String} Option label
+     */
+    Trait.prototype.getOptionLabel = function (id, opts) {
+        var _a;
+        if (opts === void 0) { opts = {}; }
+        var _b = opts.locale, locale = _b === void 0 ? true : _b;
+        var option = ((0,index_all.isString)(id) ? this.getOption(id) : id);
+        var optId = this.getOptionId(option);
+        var label = option.label || option.name || optId;
+        var propName = this.getName();
+        return (locale && ((_a = this.em) === null || _a === void 0 ? void 0 : _a.t("traitManager.traits.options.".concat(propName, ".").concat(optId)))) || label;
+    };
+    Trait.prototype.props = function () {
+        return this.attributes;
+    };
+    Trait.prototype.targetUpdated = function () {
+        var _a;
+        var value = this.getTargetValue();
+        this.set({ value: value }, { fromTarget: 1 });
+        (_a = this.em) === null || _a === void 0 ? void 0 : _a.trigger('trait:update', {
+            trait: this,
+            component: this.target,
+>>>>>>> script-module
         });
         if (!(0,index_all.isUndefined)(e)) {
             var selected = (0,cash_dom["default"])(e.target).closest(".".concat(ppfx, "title")).find('.data-item');
@@ -63969,13 +64182,13 @@ var ComponentMap = /** @class */ (function (_super) {
                         label: 'Address',
                         name: 'address',
                         placeholder: 'eg. London, UK',
-                        changeProp: 1,
+                        changeProp: true,
                     },
                     {
                         type: 'select',
                         label: 'Map type',
                         name: 'mapType',
-                        changeProp: 1,
+                        changeProp: true,
                         options: [
                             { value: 'q', name: 'Roadmap' },
                             { value: 'w', name: 'Satellite' },
@@ -63985,9 +64198,9 @@ var ComponentMap = /** @class */ (function (_super) {
                         label: 'Zoom',
                         name: 'zoom',
                         type: 'range',
-                        min: '1',
-                        max: '20',
-                        changeProp: 1,
+                        min: 1,
+                        max: 20,
+                        changeProp: true,
                     },
                 ] });
         },
@@ -64081,20 +64294,13 @@ var ComponentScript = /** @class */ (function (_super) {
     }
     Object.defineProperty(ComponentScript.prototype, "defaults", {
         get: function () {
-            return ComponentScript_assign(ComponentScript_assign({}, _super.prototype.defaults), { type: ComponentScript_type, tagName: ComponentScript_type, droppable: false, draggable: false, layerable: false });
+            return ComponentScript_assign(ComponentScript_assign({}, _super.prototype.defaults), { type: ComponentScript_type, tagName: ComponentScript_type, droppable: false, draggable: false, layerable: false, highlightable: false });
         },
         enumerable: false,
         configurable: true
     });
     ComponentScript.isComponent = function (el) {
-        if ((0,mixins.toLowerCase)(el.tagName) == ComponentScript_type) {
-            var result = { type: ComponentScript_type };
-            if (el.src) {
-                result.src = el.src;
-                result.onload = el.onload;
-            }
-            return result;
-        }
+        return (0,mixins.toLowerCase)(el.tagName) === ComponentScript_type;
     };
     return ComponentScript;
 }(model_Component));
@@ -66427,36 +66633,11 @@ var ComponentScriptView = /** @class */ (function (_super) {
     ComponentScriptView.prototype.tagName = function () {
         return 'script';
     };
-    // @ts-ignore
     ComponentScriptView.prototype.events = function () {
         return {};
     };
-    ComponentScriptView.prototype.render = function () {
-        var _a = this, model = _a.model, em = _a.em;
-        var src = model.get('src');
-        var scrCnt = em && em.get('scriptCount');
-        var scriptCount = scrCnt ? scrCnt : 0;
-        var content = '';
-        // If it's an external script
-        if (src) {
-            var onload_1 = model.get('onload');
-            var svar = "script".concat(scriptCount);
-            var svarNext = "script".concat(scriptCount + 1);
-            var svarFn = "".concat(svar, "Start");
-            var svarNextFn = "".concat(svarNext, "Start");
-            // Load multiple external scripts in the correct order
-            content = "\n        var ".concat(svar, " = document.createElement('script');\n        ").concat(svar, ".onload = function() {\n          ").concat(onload_1 ? "".concat(onload_1, "();\n") : '', "\n          typeof ").concat(svarNextFn, " == 'function' && ").concat(svarNextFn, "();\n        };\n        ").concat(svar, ".src = '").concat(src, "';\n        function ").concat(svarFn, "() { document.body.appendChild(").concat(svar, "); };\n        ").concat(!scriptCount ? "".concat(svarFn, "();") : '', "\n      ");
-            em && em.set('scriptCount', scriptCount + 1);
-        }
-        else {
-            content = model.__innerHTML();
-        }
-        this.el.innerHTML = content;
-        this.postRender();
-        return this;
-    };
     return ComponentScriptView;
-}(view_ComponentImageView));
+}(view_ComponentView));
 /* harmony default export */ const view_ComponentScriptView = (ComponentScriptView);
 
 ;// CONCATENATED MODULE: ./src/dom_components/view/ComponentSvgView.ts
@@ -73906,7 +74087,11 @@ var ItemsView = /** @class */ (function (_super) {
 /* harmony default export */ const view_ItemsView = (ItemsView);
 
 // EXTERNAL MODULE: ./src/commands/view/CommandAbstract.ts
+<<<<<<< HEAD
 var CommandAbstract = __webpack_require__(458);
+=======
+var CommandAbstract = __webpack_require__(790);
+>>>>>>> script-module
 ;// CONCATENATED MODULE: ./src/commands/config/config.ts
 var commands_config_config_config = {
     stylePrefix: 'com-',
@@ -74013,7 +74198,10 @@ var commandsDef = [
     ['open-traits', 'OpenTraitManager', 'open-tm'],
     ['open-blocks', 'OpenBlocks', 'open-blocks'],
     ['open-assets', 'OpenAssets', 'open-assets'],
+<<<<<<< HEAD
     ['open-pages', 'OpenPages', 'open-pages'],
+=======
+>>>>>>> script-module
     ['component-select', 'SelectComponent', 'select-comp'],
     ['component-outline', 'SwitchVisibility', 'sw-visibility'],
     ['component-offset', 'ShowOffset', 'show-offset'],
@@ -88314,10 +88502,17 @@ var EditorModel = /** @class */ (function (_super) {
             .filter(Boolean);
         var selected = this.getSelectedAll();
         var mltSel = this.getConfig().multipleSelection;
+<<<<<<< HEAD
         // If an array is passed remove all selected
         // expect those yet to be selected
         var multiple = (0,index_all.isArray)(el);
         multiple && this.removeSelected(selected.filter(function (s) { return !(0,index_all.contains)(models, s); }));
+=======
+        var multiple = (0,index_all.isArray)(el);
+        if (multiple || !el) {
+            this.removeSelected(selected.filter(function (s) { return !(0,index_all.contains)(models, s); }));
+        }
+>>>>>>> script-module
         models.forEach(function (model) {
             if (model) {
                 _this.trigger('component:select:before', model, opts);

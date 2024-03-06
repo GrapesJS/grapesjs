@@ -11,6 +11,8 @@ export type AddOptions = Backbone.AddOptions & { temporary?: boolean };
 
 export type DisableOptions = { fromMove?: boolean };
 
+export type LocaleOptions = { locale?: boolean };
+
 export type RemoveOptions = Backbone.Silenceable;
 
 export type EventHandler = Backbone.EventHandler;

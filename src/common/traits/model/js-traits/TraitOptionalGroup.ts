@@ -21,7 +21,7 @@ export default class TraitOptionalGroup extends TraitObject<{ type: string; _js:
     if (compId) {
       console.log(compId);
       const wrapper = target.em.Components.getById(compId);
-      options = wrapper.scriptEvents.map(variable => variable.id);
+      // options = wrapper.scriptEvents.map(variable => variable.id);
     }
     this.children = [
       new TraitObjectItem('type', this, {
@@ -78,8 +78,8 @@ export default class TraitOptionalGroup extends TraitObject<{ type: string; _js:
       if (compId) {
         console.log(compId);
         const wrapper = this.em.Components.getById(compId);
-        variablesTrait.opts.options = wrapper.globalVariables.map(variable => variable.id);
-        this.target.view?.onUpdateEvent(this.value, true);
+        // variablesTrait.opts.options = wrapper.globalVariables.map(variable => variable.id);
+        this.target.onUpdateEvent();
       }
     }
   }

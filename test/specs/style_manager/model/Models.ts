@@ -83,6 +83,7 @@ describe('Sector', () => {
 
   test('Extend composed properties', () => {
     obj = sm.addSector('test', {
+      name: 'test',
       buildProps: ['margin', 'float'],
       properties: [
         {

@@ -1,16 +1,18 @@
-import { isArray, isObject } from 'underscore';
+import { any, isArray, isObject } from 'underscore';
 import InputFactory from '..';
 import EditorModel from '../../../editor/model/Editor';
 import Trait from '../model/Trait';
 import TraitListItem from '../model/TraitListItem';
+import TraitObject from '../model/TraitObject';
 import TraitObjectItem from '../model/TraitObjectItem';
+import TraitsView from './TraitsView';
 import TraitView, { TraitViewOpts } from './TraitView';
 
-export default class TraitObjectView extends TraitView {
+export default class TraitObjectView extends TraitsView<TraitObject> {
   type = 'object';
   template: any;
   constructor(em: EditorModel, opts: TraitViewOpts<'object'>) {
-    super(em, { ...opts });
+    super(em, { ...opts } as any);
     this.className = `${this.pfx}traits`;
   }
 
@@ -29,39 +31,32 @@ export default class TraitObjectView extends TraitView {
   //   console.log("alam",this.traits)
   // }
 
-  onUpdateEvent(value: any, fromTarget: boolean): void {
-    if (fromTarget) {
-      this.render();
-    }
-  }
+  // onUpdateEvent(value: any, fromTarget: boolean): void {
+  //   if (fromTarget) {
+  //     console.log("setValueFromModelChildren5", this)
+  //     console.log("setValueFromModelChildren", this.target?.children)
+  //     this.render();
+  //   }
+  // }
 
-  protected renderItem(trait: Trait) {
-    const { em } = this;
-    const view = InputFactory.buildView(trait, em, trait.opts);
-    trait.view = this;
-    const rendered = view.render().$el;
-    return rendered;
-  }
-
-  render(traits?: Trait[]) {
+  renderTraits(traits: TraitView[]) {
     const { ppfx, className, getLabelText } = this;
     var frag = document.createDocumentFragment();
 
     let index = 0;
     var lineFrag: HTMLDivElement | undefined;
-    (traits ?? this.target.children).forEach(tr => {
-      const rendered = this.renderItem(tr);
-      const width = (tr.opts.width && parseInt(tr.opts.width)) ?? 100;
+    traits.forEach(tr => {
+      const width = (tr.target.opts.width && parseInt(tr.target.opts.width)) ?? 100;
       index += width;
       let view;
       if (width < 100) {
         const divider = document.createElement('div');
         divider.style.width = `${width}%`;
         divider.style.display = 'inline-block';
-        divider.append(rendered.get(0)!);
+        divider.append(tr.$el.get(0)!);
         view = divider;
       } else {
-        view = rendered.get(0)!;
+        view = tr.$el.get(0)!;
       }
 
       if (index > 100) {
@@ -84,9 +79,12 @@ export default class TraitObjectView extends TraitView {
       }
       // frag.appendChild(rendered.get(0)!);
     });
-    this.$el.empty().append().append(frag);
-    this.$el.addClass(`${className} ${ppfx}one-bg ${ppfx}two-color`);
 
+    this.$el.empty().append(frag);
+    this.$el.addClass(`${className} ${ppfx}one-bg ${ppfx}two-color`);
+    console.log('setValueinitChildren', this.target);
+    console.log('setValueFromModel5', this.$el.get(0));
+    console.log('setValueFromModel5', this.el, this.target?.children);
     return this;
   }
 }

@@ -45,7 +45,7 @@ component.get('tagName');
 *   `layerable` **[Boolean][3]?** Set to `false` if you need to hide the component inside Layers. Default: `true`
 *   `selectable` **[Boolean][3]?** Allow component to be selected when clicked. Default: `true`
 *   `hoverable` **[Boolean][3]?** Shows a highlight outline when hovering on the element if `true`. Default: `true`
-*   `locked` **[Boolean][3]?** Disable the selection of the component and its children in the canvas. Default: `false`
+*   `locked` **[Boolean][3]?** Disable the selection of the component and its children in the canvas. You can unlock a children by setting its locked property to `false`. Default: `undefined`
 *   `void` **[Boolean][3]?** This property is used by the HTML exporter as void elements don't have closing tags, eg. `<br/>`, `<hr/>`, etc. Default: `false`
 *   `style` **[Object][2]?** Component default style, eg. `{ width: '100px', height: '100px', 'background-color': 'red' }`
 *   `styles` **[String][1]?** Component related styles, eg. `.my-component-class { color: red }`
@@ -62,6 +62,7 @@ component.get('tagName');
     Eg. `toolbar: [ { attributes: {class: 'fa fa-arrows'}, command: 'tlb-move' }, ... ]`.
     By default, when `toolbar` property is falsy the editor will add automatically commands `core:component-exit` (select parent component, added if there is one), `tlb-move` (added if `draggable`) , `tlb-clone` (added if `copyable`), `tlb-delete` (added if `removable`).
 *   `components` **Collection\<Component>?** Children components. Default: `null`
+*   `delegate` **[Object][2]?** Delegate commands to other components. Available commands `remove` | `move` | `copy` | `select`. eg. `{ remove: (cmp) => cmp.closestType('other-type') }`
 
 ## init
 
@@ -219,15 +220,16 @@ Replace a component with another one
 ### Parameters
 
 *   `el` **([String][1] | Component)** Component or HTML string
+*   `opts` **[Object][2]** Options for the append action (optional, default `{}`)
 
 ### Examples
 
 ```javascript
-component.replaceWith('<div>Some new content</div>');
-// -> Component
+const result = component.replaceWith('<div>Some new content</div>');
+// result -> [Component]
 ```
 
-Returns **(Component | [Array][5]\<Component>)** New added component/s
+Returns **[Array][5]\<Component>** New replaced components
 
 ## setAttributes
 

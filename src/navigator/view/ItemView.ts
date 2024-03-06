@@ -76,7 +76,7 @@ export default class ItemView extends View {
           </div>
         </div>
         <div class="${pfx}layer-item-right">
-          ${count ? `<div class="${this.clsCount}" data-count>${count || ''}</div>` : ''}
+          <div class="${this.clsCount}" data-count>${count || ''}</div>
           <div class="${this.clsMove}" data-toggle-move>${move || ''}</div>
         </div>
       </div>
@@ -115,10 +115,8 @@ export default class ItemView extends View {
   clsEdit: string;
   clsNoEdit: string;
   _rendered?: boolean;
-  eyeEl?: JQuery<HTMLElement>;
   caret?: JQuery<HTMLElement>;
   inputName?: HTMLElement;
-  cnt?: HTMLElement;
 
   constructor(opt: ItemViewProps) {
     super(opt);
@@ -174,11 +172,7 @@ export default class ItemView extends View {
   }
 
   getVisibilityEl() {
-    if (!this.eyeEl) {
-      this.eyeEl = this.$el.children('[data-toggle-select]').find('[data-toggle-visible]');
-    }
-
-    return this.eyeEl;
+    return this.getItemContainer().find('[data-toggle-visible]');
   }
 
   updateVisibility() {
@@ -346,38 +340,37 @@ export default class ItemView extends View {
     ]);
   }
 
+  getItemContainer() {
+    return this.$el.children('[data-toggle-select]');
+  }
+
   /**
    * Update item aspect after children changes
    *
    * @return void
    * */
   checkChildren() {
-    const { model, clsNoChild, $el, module } = this;
+    const { model, clsNoChild, module } = this;
     const count = module.getComponents(model).length;
-    const title = $el.children(`.${this.clsTitleC}`).children(`.${this.clsTitle}`);
-    let { cnt } = this;
-
-    if (!cnt) {
-      cnt = $el.children('[data-count]').get(0);
-      this.cnt = cnt;
-    }
+    const itemEl = this.getItemContainer();
+    const title = itemEl.find(`.${this.clsTitle}`);
+    const countEl = itemEl.find('[data-count]');
 
     title[count ? 'removeClass' : 'addClass'](clsNoChild);
-    if (cnt) cnt.innerHTML = count || '';
+    countEl.html(count || '');
     !count && module.setOpen(model, false);
   }
 
   getCaret() {
     if (!this.caret || !this.caret.length) {
-      this.caret = this.$el.children(`.${this.clsTitleC}`).find(`.${this.clsCaret}`);
+      this.caret = this.getItemContainer().find(`.${this.clsCaret}`);
     }
 
     return this.caret;
   }
 
-  setRoot(el: Component | string) {
-    el = isString(el) ? this.em.getWrapper()?.find(el)[0]! : el;
-    const model = getModel(el);
+  setRoot(cmp: Component | string) {
+    const model = isString(cmp) ? this.em.getWrapper()?.find(cmp)[0]! : cmp;
     if (!model) return;
     this.stopListening();
     this.model = model;

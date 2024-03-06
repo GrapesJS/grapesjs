@@ -33,17 +33,14 @@ import { DomComponentsConfig } from '../config/config';
 import ComponentView from '../view/ComponentView';
 import { AddOptions, ExtractMethods, ObjectAny, PrevToNewIdMap, SetOptions } from '../../common';
 import CssRule, { CssRuleJSON } from '../../css_composer/model/CssRule';
-import { ToolbarButtonProps } from './ToolbarButton';
-import InputFactory, { InputViewProperties, renderVariableValue } from '../../common/traits';
 import Trait from '../../common/traits/model/Trait';
-import ComponentEventView from '../../common/events/view/ComponentEventView';
+import { ToolbarButtonProps } from './ToolbarButton';
+import { TraitProperties } from '../../trait_manager/types';
+import ScriptSubComponent, { ScriptData } from './modules/ScriptSubComponent';
 import TraitRoot from '../../common/traits/model/TraitRoot';
+import InputFactory, { InputViewProperties } from '../../common/traits';
 
 export interface IComponent extends ExtractMethods<Component> {}
-
-const escapeRegExp = (str: string) => {
-  return str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
-};
 
 export const avoidInline = (em: EditorModel) => !!em?.getConfig().avoidInlineStyle;
 
@@ -95,7 +92,7 @@ export const keyUpdateInside = `${keyUpdate}-inside`;
  * @property {Boolean} [layerable=true] Set to `false` if you need to hide the component inside Layers. Default: `true`
  * @property {Boolean} [selectable=true] Allow component to be selected when clicked. Default: `true`
  * @property {Boolean} [hoverable=true] Shows a highlight outline when hovering on the element if `true`. Default: `true`
- * @property {Boolean} [locked=false] Disable the selection of the component and its children in the canvas. Default: `false`
+ * @property {Boolean} [locked] Disable the selection of the component and its children in the canvas. You can unlock a children by setting its locked property to `false`. Default: `undefined`
  * @property {Boolean} [void=false] This property is used by the HTML exporter as void elements don't have closing tags, eg. `<br/>`, `<hr/>`, etc. Default: `false`
  * @property {Object} [style={}] Component default style, eg. `{ width: '100px', height: '100px', 'background-color': 'red' }`
  * @property {String} [styles=''] Component related styles, eg. `.my-component-class { color: red }`
@@ -140,7 +137,6 @@ export default class Component extends StyleableModel<ComponentProperties> {
       layerable: true,
       selectable: true,
       hoverable: true,
-      locked: false,
       void: false,
       state: '', // Indicates if the component is in some CSS state like ':hover', ':active', etc.
       status: '', // State, eg. 'selected'
@@ -149,16 +145,18 @@ export default class Component extends StyleableModel<ComponentProperties> {
       style: '',
       styles: '', // Component related styles
       classes: '', // Array of classes
-      slots: {
-        test: {
-          script: (params: any) => {
-            alert(params.el);
-          },
+      script: {
+        main: function (prop: any) {
+          prop.signals.onload();
         },
-      },
-      signals: { onload: {} },
-      script: function (prop: any) {
-        prop.signals.onload();
+        signals: { onload: {} },
+        slots: {
+          // test: {
+          //   script: (params: any) => {
+          //     alert(params.el);
+          //   },
+          // },
+        },
       },
       // 'script-props': ['usersAjax'],
       'script-events': [],
@@ -168,7 +166,16 @@ export default class Component extends StyleableModel<ComponentProperties> {
       list: [],
       attributes: {},
       //@ts-ignore
-      traits: ['id', 'title', { type: 'unique-list', name: 'signals', traits: { type: 'signal' } }], // {type: 'event', name: 'usersAjax'}], //{type: 'list', name: 'list', traits:{ type: 'object', traits: [{type: "url", name: "aef"},{type: 'text', name: 'al'}]}}],// {type: 'link', name: 'test'}, {type: "link", name: "aef"}],//, {type: 'list', name: 'list', traits:{ type: 'object', traits: [{type: "url", name: "aef"},{type: 'text', name: 'al'}]}}],
+      traits: [
+        'id',
+        'title',
+        { type: 'variable', name: 'teste' },
+        {
+          type: 'object',
+          name: 'script',
+          traits: [{ type: 'unique-list', name: 'signals', traits: { type: 'signal' } }],
+        },
+      ], // {type: 'event', name: 'usersAjax'}], //{type: 'list', name: 'list', traits:{ type: 'object', traits: [{type: "url", name: "aef"},{type: 'text', name: 'al'}]}}],// {type: 'link', name: 'test'}, {type: "link", name: "aef"}],//, {type: 'list', name: 'list', traits:{ type: 'object', traits: [{type: "url", name: "aef"},{type: 'text', name: 'al'}]}}],
       propagate: '',
       dmode: '',
       toolbar: null,
@@ -190,7 +197,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
   }
 
   get slots(): { [name: string]: { script: (el: string, param: any) => void } } {
-    return this.get('slots')! as any;
+    return (this.scriptSubComp?.get('slots')! as any) ?? {};
   }
 
   get content() {
@@ -209,8 +216,8 @@ export default class Component extends StyleableModel<ComponentProperties> {
     return this.get('delegate');
   }
 
-  get scriptEvents(): any[] {
-    return this.get('script-events');
+  get locked() {
+    return this.get('locked');
   }
 
   /**
@@ -240,86 +247,13 @@ export default class Component extends StyleableModel<ComponentProperties> {
   frame?: Frame;
   rule?: CssRule;
   prevColl?: Components;
+  scriptSubComp?: ScriptSubComponent;
   __hasUm?: boolean;
   __symbReady?: boolean;
   /**
    * @private
    * @ts-ignore */
   collection!: Components;
-
-  get globalVariables() {
-    const { traits, ccid } = this;
-    const variables: { id: string; type: string }[] = this.get('script-global');
-    let globals: { id: string; default: any; type: string; _renderJs: string }[] = [];
-
-    const renderVariable = (id: string, value: any) => {
-      let type;
-      if (value?._type) {
-        type = value._type;
-      } else {
-        type = 'variable';
-      }
-
-      console.log('r===============================================');
-      console.log(value);
-      return { id, default: renderVariableValue(value), type, _renderJs: `window.${ccid}ScopedVariables['${id}']` };
-    };
-
-    variables.forEach(global => {
-      const globalValue = traits.find(tr => tr.name == global.id)?.value;
-      switch (global.type) {
-        case 'data-list':
-          const list = Object.entries(globalValue ?? {});
-          if (list.length > 0) {
-            globals.push(...list.map(([id, value]) => renderVariable(id, value)));
-          }
-          break;
-        default:
-          globals.push(renderVariable(global.id, globalValue));
-          break;
-      }
-    });
-    console.log(globals);
-    return globals;
-  }
-
-  get globalScript() {
-    const { ccid, scriptEvents } = this;
-    const variables = this.globalVariables;
-    if (variables.length > 0) {
-      return `
-      window.${ccid}ScopedVariables = {${variables.map(variable => `${variable.id}: ${variable.default}`).join(',')}};
-
-      window.globalEvents ?? (window.globalEvents  = {})
-      window.globalEvents['${ccid}'] = {${scriptEvents
-        .map(event => `${event.id}: ${new ComponentEventView(event).renderJs()}`)
-        .join(',')}};
-      `;
-    }
-  }
-
-  get globalSlots() {
-    const { ccid, slots } = this;
-    const signals = this.get('signals');
-    const signalsStr = `{${Object.keys(signals)
-      .map(
-        name =>
-          `${name}: ${
-            signals[name].componentId
-              ? `window.globalSlots[${signals[name].componentId}][${signals[name].slot}]`
-              : '(() => {})'
-          }`
-      )
-      .join(',')}}`;
-    console.log('asdfasdf', slots);
-    console.log('qwert', signalsStr);
-    return `
-      window.globalSlots ?? (window.globalSlots  = {})
-      window.globalSlots['${ccid}'] = {${Object.keys(slots)
-      .map(name => `${name}: (param) => ${slots[name].script}({el: '${ccid}', signals: ${signalsStr}}, param)`)
-      .join(',')}};
-      `;
-  }
 
   initialize(props = {}, opt: ComponentOptions = {}) {
     bindAll(this, '__upSymbProps', '__upSymbCls', '__upSymbComps');
@@ -358,8 +292,8 @@ export default class Component extends StyleableModel<ComponentProperties> {
     this.initComponents();
     this.initTraits();
     this.initToolbar();
-    this.initScriptProps();
-    this.listenTo(this, 'change:script', this.scriptUpdated);
+    this.initScript();
+    this.listenTo(this, 'change:script', this.initScript);
     this.listenTo(this, 'change:tagName', this.tagUpdated);
     this.listenTo(this, 'change:attributes', this.attrUpdated);
     this.listenTo(this, 'change:attributes:id', this._idUpdated);
@@ -787,8 +721,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
         this.__getSymbol() ||
         this.__getSymbols() ||
         // Components with script should always have an id
-        this.get('script-export') ||
-        this.get('script')
+        this.scriptSubComp
       ) {
         addId = true;
       }
@@ -1163,26 +1096,17 @@ export default class Component extends StyleableModel<ComponentProperties> {
     return this;
   }
 
-  initScriptProps() {
+  initScript() {
     if (this.opt.temporary) return;
-    const prop = 'script-props';
-    const global = 'script-global';
-    const signals = 'signals';
-    const toListen: any = [`change:${prop} change:${global} change:${signals}`, this.initScriptProps];
-    this.off(...toListen);
-    const prevProps = [...(this.previous(prop) ?? []), ...(this.previous(global).map((g: any) => g.id) ?? [])];
-    const newProps = [...(this.get(prop) ?? []), ...(this.get(global).map((g: any) => g.id) ?? [])];
-    const prevPropsEv = prevProps.map(e => `change:${e}`).join(' ');
-    const newPropsEv = newProps.map(e => `change:${e}`).join(' ');
-    prevPropsEv && this.off(prevPropsEv, this.__scriptPropsChange);
-    newPropsEv && this.on(newPropsEv, this.__scriptPropsChange);
-    // @ts-ignore
-    this.on(...toListen);
-  }
 
-  __scriptPropsChange(m: any, v: any, opts: any = {}) {
-    if (opts.avoidStore) return;
-    this.trigger('rerender');
+    let scriptData: ScriptData | string | ((...params: any[]) => any) | undefined =
+      this.get('script-export') || (this.get('script') as any);
+    if (scriptData) {
+      if (isString(scriptData) || isFunction(scriptData)) {
+        scriptData = { main: scriptData, props: this.get('script-props') ?? [], signals: {}, slots: {}, variables: {} };
+      }
+      this.scriptSubComp = new ScriptSubComponent(this, scriptData);
+    }
   }
 
   /**
@@ -1297,14 +1221,6 @@ export default class Component extends StyleableModel<ComponentProperties> {
   parents(): Component[] {
     const parent = this.parent();
     return parent ? [parent].concat(parent.parents()) : [];
-  }
-
-  /**
-   * Script updated
-   * @private
-   */
-  scriptUpdated() {
-    this.set('scriptUpdated', 1);
   }
 
   /**
@@ -1857,55 +1773,6 @@ export default class Component extends StyleableModel<ComponentProperties> {
     const frameView = this.em.getCurrentFrame();
     const frame = frameView?.model;
     return this.getView(frame);
-  }
-
-  __getScriptProps() {
-    const modelProps = this.props();
-    const scrProps = this.get('script-props') || [];
-    return scrProps.reduce((acc, prop) => {
-      acc[prop] = modelProps[prop];
-      return acc;
-    }, {} as Partial<ComponentProperties>);
-  }
-
-  /**
-   * Return script in string format, cleans 'function() {..' from scripts
-   * if it's a function
-   * @param {string|Function} script
-   * @return {string}
-   * @private
-   */
-  getScriptString(script?: string | Function) {
-    let scr = script || this.get('script') || '';
-
-    if (!scr) {
-      return scr;
-    }
-
-    if (this.get('script-props')) {
-      scr = scr.toString().trim();
-    } else {
-      // Deprecated
-      // Need to convert script functions to strings
-      if (isFunction(scr)) {
-        let scrStr = scr.toString().trim();
-        scrStr = scrStr.slice(scrStr.indexOf('{') + 1, scrStr.lastIndexOf('}'));
-        scr = scrStr.trim();
-      }
-
-      const config = this.em.getConfig();
-      const tagVarStart = escapeRegExp(config.tagVarStart || '{[ ');
-      const tagVarEnd = escapeRegExp(config.tagVarEnd || ' ]}');
-      const reg = new RegExp(`${tagVarStart}([\\w\\d-]*)${tagVarEnd}`, 'g');
-      scr = scr.replace(reg, (match, v) => {
-        // If at least one match is found I have to track this change for a
-        // better optimization inside JS generator
-        this.scriptUpdated();
-        const result = this.attributes[v] || '';
-        return isArray(result) || typeof result == 'object' ? JSON.stringify(result) : result;
-      });
-    }
-    return scr;
   }
 
   emitUpdate(property?: string, ...args: any[]) {

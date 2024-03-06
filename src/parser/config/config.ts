@@ -47,6 +47,12 @@ export interface ParserConfig {
   textTags?: string[];
 
   /**
+   * Let the editor know which Component types should be treated as part of the text component.
+   * @default ['text', 'textnode', 'comment']
+   */
+  textTypes?: string[];
+
+  /**
    * Custom CSS parser.
    * @see https://grapesjs.com/docs/guides/Custom-CSS-parser.html
    */
@@ -71,6 +77,7 @@ export interface ParserConfig {
 
 const config: ParserConfig = {
   textTags: ['br', 'b', 'i', 'u', 'a', 'ul', 'ol'],
+  textTypes: ['text', 'textnode', 'comment'],
   parserCss: undefined,
   parserHtml: undefined,
   optionsHtml: {

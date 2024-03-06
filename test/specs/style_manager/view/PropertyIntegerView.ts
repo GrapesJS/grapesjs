@@ -1,30 +1,28 @@
-import PropertyNumberView from 'style_manager/view/PropertyNumberView';
-import PropertyNumber from 'style_manager/model/PropertyNumber';
-import Component from 'dom_components/model/Component';
-import Editor from 'editor/model/Editor';
-import DomComponents from 'dom_components';
+import PropertyNumberView from '../../../../src/style_manager/view/PropertyNumberView';
+import PropertyNumber from '../../../../src/style_manager/model/PropertyNumber';
+import Component from '../../../../src/dom_components/model/Component';
+import Editor from '../../../../src/editor/model/Editor';
 
 describe('PropertyNumberView', () => {
-  let em;
-  let dcomp;
-  let compOpts;
-  var component;
-  var fixtures;
-  var target;
-  var model;
-  var view;
-  var propName = 'testprop';
-  var intValue = '55';
-  var unitValue = 'px';
-  var propValue = intValue + unitValue;
-  var units = ['px', '%', 'em'];
-  var minValue = -15;
-  var maxValue = 75;
-  var unitsElSel = '.field-units select';
+  let em: Editor;
+  let dcomp: Editor['Components'];
+  let compOpts: any;
+  let component: Component;
+  let fixtures: HTMLElement;
+  let target: Component;
+  let model: PropertyNumber;
+  let view: PropertyNumberView;
+  let propName = 'testprop';
+  let intValue = '55';
+  let unitValue = 'px';
+  let units = ['px', '%', 'em'];
+  let minValue = -15;
+  let maxValue = 75;
+  let unitsElSel = '.field-units select';
 
   beforeEach(() => {
-    em = new Editor({});
-    dcomp = new DomComponents(em);
+    em = new Editor();
+    dcomp = em.Components;
     compOpts = { em, componentTypes: dcomp.componentTypes };
     target = new Component({}, compOpts);
     component = new Component({}, compOpts);
@@ -37,19 +35,13 @@ describe('PropertyNumberView', () => {
     );
     view = new PropertyNumberView({ model });
     document.body.innerHTML = '<div id="fixtures"></div>';
-    fixtures = document.body.firstChild;
+    fixtures = document.body.firstChild as HTMLElement;
     view.render();
     fixtures.appendChild(view.el);
   });
 
   afterEach(() => {
-    //view.remove(); // strange errors ???
-  });
-
-  afterAll(() => {
-    component = null;
-    view = null;
-    model = null;
+    em.destroy();
   });
 
   test('Rendered correctly', () => {
@@ -66,12 +58,12 @@ describe('PropertyNumberView', () => {
   });
 
   test('Units rendered', () => {
-    var select = view.el.querySelector(unitsElSel);
+    var select = view.el.querySelector(unitsElSel)!;
     expect(select.children.length).toEqual(units.length + 1); // (+ hidden option)
   });
 
   test('Units rendered correctly', () => {
-    var children = view.el.querySelector(unitsElSel).children;
+    var children = view.el.querySelector(unitsElSel)!.children;
     expect(children[1].textContent).toEqual(units[0]);
     expect(children[2].textContent).toEqual(units[1]);
     expect(children[3].textContent).toEqual(units[2]);
@@ -87,8 +79,8 @@ describe('PropertyNumberView', () => {
 
   test('Update model on setValue', () => {
     view.inputInst.setValue(intValue + unitValue);
-    expect(view.model.get('value')).toEqual(parseFloat(intValue));
-    expect(view.model.get('unit')).toEqual(unitValue);
+    expect(model.get('value')).toEqual(parseFloat(intValue));
+    expect(model.get('unit')).toEqual(unitValue);
     expect(view.getInputEl().value).toEqual(intValue);
   });
 
@@ -100,7 +92,7 @@ describe('PropertyNumberView', () => {
   test('Update model on unit change', () => {
     view.inputInst.unitEl.value = units[1];
     view.inputInst.handleUnitChange({ stopPropagation() {} });
-    expect(view.model.get('unit')).toEqual(units[1]);
+    expect(model.get('unit')).toEqual(units[1]);
   });
 
   test('Update input on value change', () => {
@@ -110,7 +102,7 @@ describe('PropertyNumberView', () => {
 
   describe('Init property', () => {
     beforeEach(() => {
-      component = new Component();
+      component = new Component({}, compOpts);
       model = new PropertyNumber(
         {
           units,
@@ -131,8 +123,8 @@ describe('PropertyNumberView', () => {
     });
 
     test('Value as default', () => {
-      expect(view.model.getValue()).toEqual(intValue);
-      expect(view.model.getUnit()).toEqual(units[1]);
+      expect(model.getValue()).toEqual(intValue);
+      expect(model.getUnit()).toEqual(units[1]);
     });
 
     test('Input value is as default', () => {

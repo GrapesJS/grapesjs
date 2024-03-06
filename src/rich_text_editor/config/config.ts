@@ -1,3 +1,6 @@
+import Editor from '../../editor';
+import RichTextEditor from '../model/RichTextEditor';
+
 export interface CustomRTE<T = any> {
   /**
    * If true, the returned HTML content will be parsed into Components, allowing
@@ -45,6 +48,31 @@ export interface RichTextEditorConfig {
    * @default ['bold', 'italic', 'underline', 'strikethrough', 'link', 'wrap']
    */
   actions?: string[];
+
+  /**
+   * Custom on paste logic for the built-in RTE.
+   * @example
+   * onPaste: ({ ev, rte }) => {
+   *  ev.preventDefault();
+   *  const { clipboardData } = ev;
+   *  const text = clipboardData.getData('text');
+   *  rte.exec('insertHTML', `<b>[ ${text} ]</b>`);
+   * }
+   */
+  onPaste?: (data: { ev: ClipboardEvent; editor: Editor; rte: RichTextEditor }) => void;
+
+  /**
+   * Custom on keydown logic for the built-in RTE.
+   * @example
+   * onKeydown: ({ ev, rte }) => {
+   *  if (ev.key === 'Enter') {
+   *    ev.preventDefault();
+   *    rte.exec('insertHTML', `<br>-- custom line break --<br>`);
+   *  }
+   * }
+   */
+  onKeydown?: (data: { ev: KeyboardEvent; editor: Editor; rte: RichTextEditor }) => void;
+
   /**
    * Avoid rendering the default RTE UI.
    * @default false

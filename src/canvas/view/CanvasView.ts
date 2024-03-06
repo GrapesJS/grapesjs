@@ -19,7 +19,7 @@ import Frame from '../model/Frame';
 import { GetBoxRectOptions, ToWorldOption } from '../types';
 import FrameView from './FrameView';
 import FramesView from './FramesView';
-import { renderVariableValue } from '../../common/traits';
+import ScriptSubComponent from '../../dom_components/model/modules/ScriptSubComponent';
 
 export interface MarginPaddingOffsets {
   marginTop?: number;
@@ -30,6 +30,10 @@ export interface MarginPaddingOffsets {
   paddingRight?: number;
   paddingBottom?: number;
   paddingLeft?: number;
+  borderTopWidth?: number;
+  borderRightWidth?: number;
+  borderBottomWidth?: number;
+  borderLeftWidth?: number;
 }
 
 export type ElementPosOpts = {
@@ -517,6 +521,10 @@ export default class CanvasView extends ModuleView<Canvas> {
       'paddingRight',
       'paddingBottom',
       'paddingLeft',
+      'borderTopWidth',
+      'borderRightWidth',
+      'borderBottomWidth',
+      'borderLeftWidth',
     ];
     marginPaddingOffsets.forEach(offset => {
       result[offset] = parseFloat(styles[offset]) * zoom;
@@ -559,7 +567,6 @@ export default class CanvasView extends ModuleView<Canvas> {
    * @param {ModuleView} view Component's View
    * @private
    */
-  //TODO change type after the ComponentView was updated to ts
   updateScript(view: ComponentView) {
     const model = view.model;
     const id = model.getId();
@@ -572,65 +579,25 @@ export default class CanvasView extends ModuleView<Canvas> {
       jsEl?.appendChild(view.scriptContainer);
     }
 
-    view.el.id = id;
-    // view.scriptContainer.innerHTML = '';
-    // In editor, I make use of setTimeout as during the append process of elements
-    // those will not be available immediately, therefore 'item' variable
-    const script = document.createElement('script');
-    const scriptFn = model.getScriptString();
-    const scriptFnStr = model.get('script-props') ? scriptFn : `function(){\n${scriptFn}\n;}`;
-    const scriptProps = renderVariableValue(model.__getScriptProps());
-    // JSON.stringify(model.__getScriptProps(), function(key, val) {
-    //   if (typeof val === 'function') {
-    //     return val + '';
-    //   }
-    //   return val;
-    // });
-    console.log(scriptProps);
-    const eventsStr =
-      model.scriptEvents?.length > 0
-        ? `Object.fromEntries(Object.entries(window.globalEvents['${id}']).map(([id, event])=> [id, event.trigger]))`
-        : 'undefined';
-    // const slotsStr = (model.slots?.length > 0) ? `window.globalSlots['${id}']`: '{}';
-    const objConverter: (obj: any) => string = (obj: any) =>
-      isArray(obj)
-        ? `[${obj.map(o => `${objConverter(o)}`).join(',')}]`
-        : isObject(obj)
-        ? `{${Object.keys(obj)
-            .map(id => `${id}: ${objConverter(obj[id])}`)
-            .join(',')}}`
-        : obj;
-    const scriptPropsStr = objConverter(scriptProps);
-    console.log(scriptPropsStr);
-
-    const signals = model.get('signals');
-    const signalsStr = `{${Object.keys(signals)
-      .map(
-        name =>
-          `${name}: ${
-            signals[name].componentId
-              ? `window.globalSlots[${signals[name].componentId}][${signals[name].slot}]`
-              : '(() => {})'
-          }`
-      )
-      .join(',')}}`;
-
-    script.innerHTML = (model?.globalSlots ?? '') + (model?.globalScript ?? '');
-    if (scriptFnStr) {
-      script.innerHTML += `
-        setTimeout(function() {
-          var item = document.getElementById('${id}');
-          if (!item) return;
-          (${scriptFnStr}.bind(item))({...${scriptPropsStr}, signals:${signalsStr}}, ${eventsStr})
-        }, 1);`;
+    const scriptComponent = model.scriptSubComp;
+    if (scriptComponent) {
+      view.el.id = id;
+      view.scriptContainer.innerHTML = '';
+      // In editor, I make use of setTimeout as during the append process of elements
+      // those will not be available immediately, therefore 'item' variable
+      const script = document.createElement('script');
+      console.log(ScriptSubComponent.renderJs(scriptComponent));
+      script.innerHTML = `
+      setTimeout(function() {
+        ${ScriptSubComponent.renderJs(scriptComponent)}
+      }, 1);`;
+      // #873
+      // Adding setTimeout will make js components work on init of the editor
+      setTimeout(() => {
+        const scr = view.scriptContainer;
+        scr?.appendChild(script);
+      }, 0);
     }
-    console.log(script);
-    // #873
-    // Adding setTimeout will make js components work on init of the editor
-    setTimeout(() => {
-      const scr = view.scriptContainer;
-      scr?.replaceChildren(script);
-    }, 0);
   }
 
   /**

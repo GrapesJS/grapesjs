@@ -52,7 +52,7 @@ export default class TraitListItem extends Trait<any[]> {
     const values = this.target.value; //, [this.index]: value];
     values[index] = value;
     this.target.value = values;
-    this.target.view?.onUpdateEvent(values, false);
+    this.target.onUpdateEvent();
   }
 
   //   public add() {

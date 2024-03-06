@@ -2,14 +2,14 @@ import { isArray } from 'underscore';
 import Trait from './Trait';
 import TraitFactory from './TraitFactory';
 import TraitListItem from './TraitListItem';
-import TraitModifier from './TraitModifier';
+import TraitParent from './TraitParent';
 
-export default class TraitList extends TraitModifier<any[]> {
+export default class TraitList extends TraitParent<any[]> {
   constructor(target: Trait<any[]>) {
     target.opts.changeProp = true;
     super(target);
     if (!isArray(this.value)) {
-      this.target.value = [];
+      this.value = [];
     }
   }
 
@@ -18,9 +18,5 @@ export default class TraitList extends TraitModifier<any[]> {
     return this.value?.map((value, index) => {
       return TraitFactory.buildNestedTraits(new TraitListItem(index, this, this.target.templates as any));
     });
-  }
-
-  protected overrideValue(value: any[]) {
-    return value;
   }
 }
