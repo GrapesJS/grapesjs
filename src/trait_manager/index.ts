@@ -68,8 +68,6 @@ export default class TraitManager extends Module<TraitManagerConfig & { pStylePr
   constructor(em: EditorModel) {
     super(em, 'TraitManager', defaults);
     const { state, config, events } = this;
-    const ppfx = config.pStylePrefix;
-    ppfx && (config.stylePrefix = `${ppfx}${config.stylePrefix}`);
     bindAll(this, '__onSelect');
 
     const upAll = debounce(() => this.__upSel(), 0);
