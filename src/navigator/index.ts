@@ -367,7 +367,7 @@ export default class LayerManager extends Module<LayerManagerConfig> {
   __isLayerable(cmp: Component): boolean {
     const tag = cmp.get('tagName');
     const hideText = this.config.hideTextnode;
-    const isValid = !hideText || (!cmp.is('textnode') && tag !== 'br');
+    const isValid = !hideText || (!cmp.isInstanceOf('textnode') && tag !== 'br');
 
     return isValid && cmp.get('layerable')!;
   }
