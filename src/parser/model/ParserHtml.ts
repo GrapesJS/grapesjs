@@ -245,7 +245,8 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
           // Throw away empty nodes (keep spaces)
           if (!opts.keepEmptyTextNodes) {
             const content = node.nodeValue;
-            if (content != ' ' && !content!.trim()) {
+            // Handle all white spaces. This checks for tabs, newlines, and multiple spaces
+            if (content!.length > 0 && content!.trim() !== '') {
               continue;
             }
           }
