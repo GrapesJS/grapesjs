@@ -905,9 +905,7 @@ export default class EditorModel extends Model {
    * @public
    */
   refreshCanvas(opts: any = {}) {
-    this.set('canvasOffset', null);
-    this.set('canvasOffset', this.Canvas.getOffset());
-    opts.tools && this.trigger('canvas:updateTools');
+    this.Canvas.refresh({ spots: opts.tools });
   }
 
   /**

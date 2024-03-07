@@ -40,7 +40,7 @@ import Canvas from './model/Canvas';
 import CanvasSpot, { CanvasSpotBuiltInTypes, CanvasSpotProps } from './model/CanvasSpot';
 import CanvasSpots from './model/CanvasSpots';
 import Frame from './model/Frame';
-import { CanvasEvents, ToWorldOption } from './types';
+import { CanvasEvents, CanvasRefreshOptions, ToWorldOption } from './types';
 import CanvasView, { FitViewportOptions } from './view/CanvasView';
 import FrameView from './view/FrameView';
 
@@ -832,6 +832,24 @@ export default class CanvasModule extends Module<CanvasConfig> {
    */
   getWorldRectToScreen(boxRect: Parameters<CanvasView['getRectToScreen']>[0]) {
     return this.canvasView?.getRectToScreen(boxRect);
+  }
+
+  /**
+   * Update canvas for spots/tools positioning.
+   * @param {Object} [opts] Options.
+   * @param {Object} [opts.spots=false] Update the position of spots.
+   */
+  refresh(opts: CanvasRefreshOptions = {}) {
+    const { em, events, canvasView } = this;
+    canvasView?.clearOff();
+
+    if (opts.spots || opts.all) {
+      this.refreshSpots();
+      em.trigger('canvas:updateTools'); // this should be deprecated
+    }
+
+    em.set('canvasOffset', this.getOffset()); // this should be deprecated
+    em.trigger(events.refresh, opts);
   }
 
   refreshSpots() {

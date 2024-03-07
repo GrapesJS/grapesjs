@@ -155,9 +155,10 @@ export default class Sorter extends View {
     this.canvasRelative = !!o.canvasRelative;
     this.selectOnEnd = !o.avoidSelectOnEnd;
     this.scale = o.scale;
+    const { em } = this;
 
-    if (this.em && this.em.on) {
-      this.em.on('change:canvasOffset', this.updateOffset);
+    if (em?.on) {
+      em.on(em.Canvas.events.refresh, this.updateOffset);
       this.updateOffset();
     }
   }
