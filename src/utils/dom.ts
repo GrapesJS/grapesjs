@@ -37,10 +37,7 @@ export const attrUp = (el?: HTMLElement, attrs: ObjectAny = {}) =>
   el && el.setAttribute && each(attrs, (value, key) => el.setAttribute(key, value));
 
 export const isVisible = (el?: HTMLElement) => {
-  if (!el || !(el instanceof HTMLElement)) {
-    return false;
-  }
-  return el && !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length);
+  return el && !!(el.offsetWidth || el.offsetHeight || el.getClientRects?.().length);
 };
 
 export const empty = (node: HTMLElement) => {

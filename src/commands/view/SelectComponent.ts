@@ -91,9 +91,9 @@ export default {
     em[method]('change:componentHovered', this.onHovered, this);
     em[method]('component:resize styleable:change component:input', this.updateGlobalPos, this);
     em[method]('component:update:toolbar', this._upToolbar, this);
-    em[method]('change:canvasOffset', this.updateAttached, this);
     em[method]('frame:updated', this.onFrameUpdated, this);
     em[method]('canvas:updateTools', this.onFrameUpdated, this);
+    em[method](em.Canvas.events.refresh, this.updateAttached, this);
     em.Canvas.getFrames().forEach(frame => {
       const { view } = frame;
       const win = view?.getWindow();
@@ -580,7 +580,7 @@ export default {
   },
 
   onFrameResize() {
-    this.canvas.refreshSpots();
+    this.canvas.refresh({ all: true });
   },
 
   updateTools() {

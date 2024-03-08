@@ -83,7 +83,7 @@ export default class PanelView extends ModuleView<Panel> {
         avoidContainerUpdate: true,
         prefix: editor.getConfig().stylePrefix,
         onEnd() {
-          em && em.trigger('change:canvasOffset');
+          em.Canvas.refresh({ all: true });
         },
         posFetcher: (el: HTMLElement, { target }: any) => {
           const style = el.style as any;

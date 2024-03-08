@@ -4,7 +4,6 @@ import Component from '../../dom_components/model/Component';
 import ComponentView from '../../dom_components/view/ComponentView';
 import EditorModel from '../../editor/model/Editor';
 import { isEnterKey, isEscKey } from '../../utils/dom';
-import { getModel } from '../../utils/mixins';
 import LayerManager from '../index';
 import ItemsView from './ItemsView';
 import { getOnComponentDrag, getOnComponentDragEnd, getOnComponentDragStart } from '../../commands';
@@ -96,8 +95,8 @@ export default class ItemView extends View {
     return this.config.stylePrefix;
   }
 
-  opt: any;
-  module: any;
+  opt: ItemViewProps;
+  module: LayerManager;
   config: any;
   sorter: any;
   /** @ts-ignore */
@@ -357,7 +356,7 @@ export default class ItemView extends View {
     const countEl = itemEl.find('[data-count]');
 
     title[count ? 'removeClass' : 'addClass'](clsNoChild);
-    countEl.html(count || '');
+    countEl.html(`${count || ''}`);
     !count && module.setOpen(model, false);
   }
 
