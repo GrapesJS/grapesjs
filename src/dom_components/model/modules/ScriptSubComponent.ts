@@ -155,7 +155,7 @@ export default class ScriptSubComponent extends Model {
     return `{${Object.keys(signals)
       .map(
         name =>
-          `${name}: ${
+          `'${name}': ${
             signals[name] && signals[name].componentId && signals[name].slot
               ? `window.globalSlots['${signals[name].componentId}']['${signals[name].slot}']`
               : '(() => {})'
@@ -169,12 +169,12 @@ export default class ScriptSubComponent extends Model {
     window.globalScriptParams = {...window.globalScriptParams, ${scripts
       .map(
         script =>
-          `${script.dataId}: {el: document.getElementById('${
+          `'${script.dataId}': {el: document.getElementById('${
             script.dataId
           }'), signals: ${ScriptSubComponent.renderComponentSignals(script)}, props: ${JSON.stringify(
             script.__getScriptProps()
           )},vars: {${Object.keys(script.variables)
-            .map(name => `${name}: (${script.variables[name]})()`)
+            .map(name => `'${name}': (${script.variables[name]})()`)
             .join(',')}}}`
       )
       .join(',')}
@@ -182,10 +182,10 @@ export default class ScriptSubComponent extends Model {
     window.globalSlots  = {...window.globalSlots ${scripts
       .map(script =>
         Object.keys(script.get('slots')).length > 0
-          ? `, ${script.dataId}: {${Object.keys(script.get('slots'))
+          ? `, '${script.dataId}': {${Object.keys(script.get('slots'))
               .map(
                 name =>
-                  `${name}: (param) => (${script.get('slots')[name].script})(window.globalScriptParams['${
+                  `'${name}': (param) => (${script.get('slots')[name].script})(window.globalScriptParams['${
                     script.dataId
                   }'], param)`
               )
