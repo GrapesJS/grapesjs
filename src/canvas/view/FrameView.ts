@@ -382,6 +382,9 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
 
     const colorWarn = '#ffca6f';
 
+    // Added table tags to dashed as well to aid in table editing. RTEs often include table editing features inside of [data-gjs-highlightable] nodes.
+    // May want to add some of these invisible elements to dashed as well? div, blockquote, pre, address, figure, figcaption, form, details, summary, menu, dir, section, article, aside, nav, main, details
+
     append(
       body,
       `<style>
@@ -394,7 +397,8 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
         padding-top: 0.001em;
       }
 
-      .${ppfx}dashed *[data-gjs-highlightable] {
+      .${ppfx}dashed *[data-gjs-highlightable],
+      .${ppfx}dashed *[data-gjs-highlightable] :is(table, td, th) {  
         outline: 1px dashed rgba(170,170,170,0.7);
         outline-offset: -2px;
       }
