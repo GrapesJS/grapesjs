@@ -15840,22 +15840,22 @@ var command = {
     run: function (ed, s, opts) {
         var _this = this;
         if (opts === void 0) { opts = {}; }
-        var toSelect = [];
+        var removed = [];
         var components = opts.component || ed.getSelectedAll();
         components = (0,underscore__WEBPACK_IMPORTED_MODULE_0__.isArray)(components) ? __spreadArray([], components, true) : [components];
         components.filter(Boolean).forEach(function (component) {
             var _a, _b;
             if (!component.get('removable')) {
-                toSelect.push(component);
                 return _this.em.logWarning('The element is not removable', {
                     component: component,
                 });
             }
+            removed.push(component);
             var cmp = ((_b = (_a = component.delegate) === null || _a === void 0 ? void 0 : _a.remove) === null || _b === void 0 ? void 0 : _b.call(_a, component)) || component;
             cmp.remove();
         });
-        ed.select(toSelect);
-        return components;
+        ed.selectRemove(removed);
+        return removed;
     },
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (command);
@@ -16597,14 +16597,11 @@ __webpack_require__.r(__webpack_exports__);
         var pfx = this.enable(targetEl || editor.getContainer());
         this.fsChanged = this.fsChanged.bind(this, pfx);
         document.addEventListener(pfx + 'fullscreenchange', this.fsChanged);
-        editor.trigger('change:canvasOffset');
     },
     stop: function (editor, sender) {
         if (sender && sender.set)
             sender.set('active', false);
         this.disable();
-        if (editor)
-            editor.trigger('change:canvasOffset');
     },
 });
 
@@ -17558,6 +17555,17 @@ var SelectComponent_assign = (undefined && undefined.__assign) || function () {
     };
     return SelectComponent_assign.apply(this, arguments);
 };
+var __rest = (undefined && undefined.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 
 
 
@@ -17635,9 +17643,9 @@ var showOffsets;
         em[method]('change:componentHovered', this.onHovered, this);
         em[method]('component:resize styleable:change component:input', this.updateGlobalPos, this);
         em[method]('component:update:toolbar', this._upToolbar, this);
-        em[method]('change:canvasOffset', this.updateAttached, this);
         em[method]('frame:updated', this.onFrameUpdated, this);
         em[method]('canvas:updateTools', this.onFrameUpdated, this);
+        em[method](em.Canvas.events.refresh, this.updateAttached, this);
         em.Canvas.getFrames().forEach(function (frame) {
             var view = frame.view;
             var win = view === null || view === void 0 ? void 0 : view.getWindow();
@@ -17905,6 +17913,7 @@ var showOffsets;
         if (model && resizable) {
             canvas.addSpot({ type: spotTypeResize, component: model });
             var el = (0,index_all.isElement)(elem) ? elem : model.getEl();
+            var _b = (0,mixins.isObject)(resizable) ? resizable : {}, _c = _b.onStart, onStart_1 = _c === void 0 ? function () { } : _c, _d = _b.onMove, onMove_1 = _d === void 0 ? function () { } : _d, _e = _b.onEnd, onEnd_1 = _e === void 0 ? function () { } : _e, _f = _b.updateTarget, updateTarget_1 = _f === void 0 ? function () { } : _f, resizableOpts = __rest(_b, ["onStart", "onMove", "onEnd", "updateTarget"]);
             if (hasCustomResize || !el)
                 return;
             var modelToStyle_1;
@@ -17922,11 +17931,11 @@ var showOffsets;
             };
             var options = SelectComponent_assign({ 
                 // Here the resizer is updated with the current element height and width
-                onStart: function (e, opts) {
-                    if (opts === void 0) { opts = {}; }
+                onStart: function (ev, opts) {
+                    onStart_1(ev, opts);
                     var el = opts.el, config = opts.config, resizer = opts.resizer;
                     var keyHeight = config.keyHeight, keyWidth = config.keyWidth, currentUnit = config.currentUnit, keepAutoHeight = config.keepAutoHeight, keepAutoWidth = config.keepAutoWidth;
-                    toggleBodyClass_1('add', e, opts);
+                    toggleBodyClass_1('add', ev, opts);
                     modelToStyle_1 = em.Styles.getModelToStyle(model);
                     canvas.toggleFramesEvents(false);
                     var computedStyle = getComputedStyle(el);
@@ -17950,15 +17959,17 @@ var showOffsets;
                     }
                 }, 
                 // Update all positioned elements (eg. component toolbar)
-                onMove: function () {
+                onMove: function (ev) {
+                    onMove_1(ev);
                     editor.trigger('component:resize');
-                }, onEnd: function (e, opts) {
-                    toggleBodyClass_1('remove', e, opts);
+                }, onEnd: function (ev, opts) {
+                    onEnd_1(ev, opts);
+                    toggleBodyClass_1('remove', ev, opts);
                     editor.trigger('component:resize');
                     canvas.toggleFramesEvents(true);
                     showOffsets = true;
                 }, updateTarget: function (el, rect, options) {
-                    if (options === void 0) { options = {}; }
+                    updateTarget_1(el, rect, options);
                     if (!modelToStyle_1) {
                         return;
                     }
@@ -17984,7 +17995,7 @@ var showOffsets;
                         __p: !store });
                     modelToStyle_1.addStyle(finalStyle, { avoidStore: !store });
                     em.Styles.__emitCmpStyleUpdate(finalStyle, { components: em.getSelected() });
-                } }, ((0,mixins.isObject)(resizable) ? resizable : {}));
+                } }, resizableOpts);
             this.resizer = editor.runCommand('resize', { el: el, options: options, force: 1 });
         }
         else {
@@ -18061,7 +18072,7 @@ var showOffsets;
         this.canvas.refreshSpots();
     },
     onFrameResize: function () {
-        this.canvas.refreshSpots();
+        this.canvas.refresh({ all: true });
     },
     updateTools: function () {
         this.updateLocalPos();
@@ -20443,7 +20454,8 @@ var attrUp = function (el, attrs) {
     return el && el.setAttribute && (0,underscore__WEBPACK_IMPORTED_MODULE_0__.each)(attrs, function (value, key) { return el.setAttribute(key, value); });
 };
 var isVisible = function (el) {
-    return el && !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length);
+    var _a;
+    return el && !!(el.offsetWidth || el.offsetHeight || ((_a = el.getClientRects) === null || _a === void 0 ? void 0 : _a.call(el).length));
 };
 var empty = function (node) {
     while (node.firstChild)
@@ -24387,6 +24399,8 @@ var __spreadArray = (undefined && undefined.__spreadArray) || function (to, from
 
 var Module = /** @class */ (function () {
     function Module(em, moduleName, defaults) {
+        this.debounced = [];
+        this.collections = [];
         this.cls = [];
         this._em = em;
         this._name = moduleName;
@@ -24430,6 +24444,20 @@ var Module = /** @class */ (function () {
     Module.prototype.__logWarn = function (str, opts) {
         if (opts === void 0) { opts = {}; }
         this.em.logWarning("[".concat(this.name, "]: ").concat(str), opts);
+    };
+    Module.prototype.destroy = function () {
+        this.__destroy();
+    };
+    Module.prototype.__destroy = function () {
+        var _a, _b, _c;
+        (_a = this.view) === null || _a === void 0 ? void 0 : _a.remove();
+        (_b = this.state) === null || _b === void 0 ? void 0 : _b.stopListening();
+        (_c = this.state) === null || _c === void 0 ? void 0 : _c.clear();
+        this.debounced.forEach(function (d) { return d.cancel(); });
+        this.collections.forEach(function (c) {
+            c.stopListening();
+            c.reset();
+        });
     };
     /**
      * Move the main DOM element of the module.
@@ -25064,6 +25092,48 @@ var DeviceManager = /** @class */ (function (_super) {
 }(ItemManagerModule));
 /* harmony default export */ const device_manager = (DeviceManager);
 
+;// CONCATENATED MODULE: ./src/pages/types.ts
+/**{START_EVENTS}*/
+var PagesEvents;
+(function (PagesEvents) {
+    /**
+     * @event `page:add` Added new page. The page is passed as an argument to the callback.
+     * @example
+     * editor.on('page:add', (page) => { ... });
+     */
+    PagesEvents["add"] = "page:add";
+    PagesEvents["addBefore"] = "page:add:before";
+    /**
+     * @event `page:remove` Page removed. The page is passed as an argument to the callback.
+     * @example
+     * editor.on('page:remove', (page) => { ... });
+     */
+    PagesEvents["remove"] = "page:remove";
+    PagesEvents["removeBefore"] = "page:remove:before";
+    /**
+     * @event `page:select` New page selected. The newly selected page and the previous one, are passed as arguments to the callback.
+     * @example
+     * editor.on('page:select', (page, previousPage) => { ... });
+     */
+    PagesEvents["select"] = "page:select";
+    PagesEvents["selectBefore"] = "page:select:before";
+    /**
+     * @event `page:update` Page updated. The updated page and the object containing changes are passed as arguments to the callback.
+     * @example
+     * editor.on('page:update', (page, changes) => { ... });
+     */
+    PagesEvents["update"] = "page:update";
+    /**
+     * @event `page` Catch-all event for all the events mentioned above. An object containing all the available data about the triggered event is passed as an argument to the callback.
+     * @example
+     * editor.on('page', ({ event, model, ... }) => { ... });
+     */
+    PagesEvents["all"] = "page";
+})(PagesEvents || (PagesEvents = {}));
+/**{END_EVENTS}*/
+// need this to avoid the TS documentation generator to break
+/* harmony default export */ const types = (PagesEvents);
+
 ;// CONCATENATED MODULE: ./src/abstract/ModuleCollection.ts
 var ModuleCollection_extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -25461,482 +25531,6 @@ var Frames = /** @class */ (function (_super) {
 }(abstract_ModuleCollection));
 /* harmony default export */ const model_Frames = (Frames);
 
-;// CONCATENATED MODULE: ./src/pages/model/Page.ts
-var Page_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-
-
-var Page = /** @class */ (function (_super) {
-    Page_extends(Page, _super);
-    function Page(props, opts) {
-        if (opts === void 0) { opts = {}; }
-        var _this = _super.call(this, props, opts) || this;
-        var em = opts.em;
-        var defFrame = {};
-        _this.em = em;
-        if (!props.frames) {
-            defFrame.component = props.component;
-            defFrame.styles = props.styles;
-            ['component', 'styles'].map(function (i) { return _this.unset(i); });
-        }
-        var frms = props.frames || [defFrame];
-        var frames = new model_Frames(em.Canvas, frms);
-        frames.page = _this;
-        _this.set('frames', frames);
-        !_this.getId() && _this.set('id', em === null || em === void 0 ? void 0 : em.Pages._createId());
-        em === null || em === void 0 ? void 0 : em.UndoManager.add(frames);
-        return _this;
-    }
-    Page.prototype.defaults = function () {
-        return {
-            name: '',
-            frames: [],
-            _undo: true,
-        };
-    };
-    Page.prototype.onRemove = function () {
-        this.getFrames().reset();
-    };
-    Page.prototype.getFrames = function () {
-        return this.get('frames');
-    };
-    /**
-     * Get page id
-     * @returns {String}
-     */
-    Page.prototype.getId = function () {
-        return this.id;
-    };
-    /**
-     * Get page name
-     * @returns {String}
-     */
-    Page.prototype.getName = function () {
-        return this.get('name');
-    };
-    /**
-     * Update page name
-     * @param {String} name New page name
-     * @example
-     * page.setName('New name');
-     */
-    Page.prototype.setName = function (name) {
-        return this.set({ name: name });
-    };
-    /**
-     * Get all frames
-     * @returns {Array<Frame>}
-     * @example
-     * const arrayOfFrames = page.getAllFrames();
-     */
-    Page.prototype.getAllFrames = function () {
-        return this.getFrames().models || [];
-    };
-    /**
-     * Get the first frame of the page (identified always as the main one)
-     * @returns {Frame}
-     * @example
-     * const mainFrame = page.getMainFrame();
-     */
-    Page.prototype.getMainFrame = function () {
-        return this.getFrames().at(0);
-    };
-    /**
-     * Get the root component (usually is the `wrapper` component) from the main frame
-     * @returns {Component}
-     * @example
-     * const rootComponent = page.getMainComponent();
-     * console.log(rootComponent.toHTML());
-     */
-    Page.prototype.getMainComponent = function () {
-        var frame = this.getMainFrame();
-        return frame === null || frame === void 0 ? void 0 : frame.getComponent();
-    };
-    Page.prototype.toJSON = function (opts) {
-        if (opts === void 0) { opts = {}; }
-        var obj = common/* Model */.Hn.prototype.toJSON.call(this, opts);
-        var defaults = (0,index_all.result)(this, 'defaults');
-        // Remove private keys
-        (0,index_all.forEach)(obj, function (value, key) {
-            key.indexOf('_') === 0 && delete obj[key];
-        });
-        (0,index_all.forEach)(defaults, function (value, key) {
-            if (obj[key] === value)
-                delete obj[key];
-        });
-        return obj;
-    };
-    return Page;
-}(common/* Model */.Hn));
-/* harmony default export */ const model_Page = (Page);
-
-;// CONCATENATED MODULE: ./src/pages/model/Pages.ts
-var Pages_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var Pages_assign = (undefined && undefined.__assign) || function () {
-    Pages_assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return Pages_assign.apply(this, arguments);
-};
-
-
-var Pages = /** @class */ (function (_super) {
-    Pages_extends(Pages, _super);
-    function Pages(models, em) {
-        var _this = _super.call(this, models) || this;
-        _this.on('reset', _this.onReset);
-        _this.on('remove', _this.onRemove);
-        // @ts-ignore We need to inject `em` for pages created on reset from the Storage load
-        _this.model = function (props, opts) {
-            if (opts === void 0) { opts = {}; }
-            return new model_Page(props, Pages_assign(Pages_assign({}, opts), { em: em }));
-        };
-        return _this;
-    }
-    Pages.prototype.onReset = function (m, opts) {
-        var _this = this;
-        var _a;
-        (_a = opts === null || opts === void 0 ? void 0 : opts.previousModels) === null || _a === void 0 ? void 0 : _a.map(function (p) { return _this.onRemove(p); });
-    };
-    Pages.prototype.onRemove = function (removed) {
-        removed === null || removed === void 0 ? void 0 : removed.onRemove();
-    };
-    return Pages;
-}(common/* Collection */.FE));
-/* harmony default export */ const model_Pages = (Pages);
-
-;// CONCATENATED MODULE: ./src/pages/index.ts
-/**
- * You can customize the initial state of the module from the editor initialization
- * ```js
- * const editor = grapesjs.init({
- *  ....
- *  pageManager: {
- *    pages: [
- *      {
- *        id: 'page-id',
- *        styles: `.my-class { color: red }`, // or a JSON of styles
- *        component: '<div class="my-class">My element</div>', // or a JSON of components
- *      }
- *   ]
- *  },
- * })
- * ```
- *
- * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
- *
- * ```js
- * const pageManager = editor.Pages;
- * ```
- *
- * ## Available Events
- * * `page:add` - Added new page. The page is passed as an argument to the callback
- * * `page:remove` - Page removed. The page is passed as an argument to the callback
- * * `page:select` - New page selected. The newly selected page and the previous one, are passed as arguments to the callback
- * * `page:update` - Page updated. The updated page and the object containing changes are passed as arguments to the callback
- * * `page` - Catch-all event for all the events mentioned above. An object containing all the available data about the triggered event is passed as an argument to the callback
- *
- * ## Methods
- * * [add](#add)
- * * [get](#get)
- * * [getAll](#getall)
- * * [getAllWrappers](#getallwrappers)
- * * [getMain](#getmain)
- * * [remove](#remove)
- * * [select](#select)
- * * [getSelected](#getselected)
- *
- * [Page]: page.html
- * [Component]: component.html
- *
- * @module Pages
- */
-var pages_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var pages_spreadArray = (undefined && undefined.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
-};
-
-
-
-
-
-
-var pages_evAll = 'page';
-var pages_evPfx = "".concat(pages_evAll, ":");
-var evPageSelect = "".concat(pages_evPfx, "select");
-var evPageSelectBefore = "".concat(evPageSelect, ":before");
-var evPageUpdate = "".concat(pages_evPfx, "update");
-var evPageAdd = "".concat(pages_evPfx, "add");
-var evPageAddBefore = "".concat(evPageAdd, ":before");
-var evPageRemove = "".concat(pages_evPfx, "remove");
-var evPageRemoveBefore = "".concat(evPageRemove, ":before");
-var pages_chnSel = 'change:selected';
-var typeMain = 'main';
-var pageEvents = {
-    all: pages_evAll,
-    select: evPageSelect,
-    selectBefore: evPageSelectBefore,
-    update: evPageUpdate,
-    add: evPageAdd,
-    addBefore: evPageAddBefore,
-    remove: evPageRemove,
-    removeBefore: evPageRemoveBefore,
-};
-var PageManager = /** @class */ (function (_super) {
-    pages_extends(PageManager, _super);
-    /**
-     * Get all pages
-     * @name getAll
-     * @function
-     * @returns {Array<[Page]>}
-     * @example
-     * const arrayOfPages = pageManager.getAll();
-     */
-    /**
-     * Initialize module
-     * @hideconstructor
-     * @param {Object} config Configurations
-     */
-    function PageManager(em) {
-        var _this = _super.call(this, em, 'PageManager', new model_Pages([], em), pageEvents) || this;
-        _this.storageKey = 'pages';
-        (0,index_all.bindAll)(_this, '_onPageChange');
-        var model = new ModuleModel/* default */.Z({ _undo: true });
-        _this.model = model;
-        _this.pages.on('reset', function (coll) { return coll.at(0) && _this.select(coll.at(0)); });
-        _this.pages.on('all', _this.__onChange, _this);
-        model.on(pages_chnSel, _this._onPageChange);
-        return _this;
-    }
-    Object.defineProperty(PageManager.prototype, "pages", {
-        get: function () {
-            return this.all;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    PageManager.prototype.getAll = function () {
-        // this avoids issues during the TS build (some getAll are inconsistent)
-        return pages_spreadArray([], this.all.models, true);
-    };
-    PageManager.prototype.__onChange = function (event, page, coll, opts) {
-        var options = opts || coll;
-        this.em.trigger(pages_evAll, { event: event, page: page, options: options });
-    };
-    PageManager.prototype.onLoad = function () {
-        var _a;
-        var _b = this, pages = _b.pages, config = _b.config, em = _b.em;
-        var opt = { silent: true };
-        var configPages = ((_a = config.pages) === null || _a === void 0 ? void 0 : _a.map(function (page) { return new model_Page(page, { em: em, config: config }); })) || [];
-        pages.add(configPages, opt);
-        var mainPage = !pages.length ? this.add({ type: typeMain }, opt) : this.getMain();
-        mainPage && this.select(mainPage, opt);
-    };
-    PageManager.prototype._onPageChange = function (m, page, opts) {
-        var em = this.em;
-        var lm = em.Layers;
-        var mainComp = page.getMainComponent();
-        lm && mainComp && lm.setRoot(mainComp);
-        em.trigger(evPageSelect, page, m.previous('selected'));
-        this.__onChange(pages_chnSel, page, opts);
-    };
-    PageManager.prototype.postLoad = function () {
-        var _a = this, em = _a.em, model = _a.model, pages = _a.pages;
-        var um = em.UndoManager;
-        um.add(model);
-        um.add(pages);
-        pages.on('add remove reset change', function (m, c, o) { return em.changesUp(o || c); });
-    };
-    /**
-     * Add new page
-     * @param {Object} props Page properties
-     * @param {Object} [opts] Options
-     * @returns {[Page]}
-     * @example
-     * const newPage = pageManager.add({
-     *  id: 'new-page-id', // without an explicit ID, a random one will be created
-     *  styles: `.my-class { color: red }`, // or a JSON of styles
-     *  component: '<div class="my-class">My element</div>', // or a JSON of components
-     * });
-     */
-    PageManager.prototype.add = function (props, opts) {
-        var _this = this;
-        if (opts === void 0) { opts = {}; }
-        var em = this.em;
-        props.id = props.id || this._createId();
-        var add = function () {
-            var page = _this.pages.add(new model_Page(props, { em: _this.em, config: _this.config }), opts);
-            opts.select && _this.select(page);
-            return page;
-        };
-        !opts.silent && em.trigger(evPageAddBefore, props, add, opts);
-        return !opts.abort ? add() : undefined;
-    };
-    /**
-     * Remove page
-     * @param {String|[Page]} page Page or page id
-     * @returns {[Page]} Removed Page
-     * @example
-     * const removedPage = pageManager.remove('page-id');
-     * // or by passing the page
-     * const somePage = pageManager.get('page-id');
-     * pageManager.remove(somePage);
-     */
-    PageManager.prototype.remove = function (page, opts) {
-        var _this = this;
-        if (opts === void 0) { opts = {}; }
-        var em = this.em;
-        var pg = (0,index_all.isString)(page) ? this.get(page) : page;
-        var rm = function () {
-            pg && _this.pages.remove(pg, opts);
-            return pg;
-        };
-        !opts.silent && em.trigger(evPageRemoveBefore, pg, rm, opts);
-        return !opts.abort && rm();
-    };
-    /**
-     * Get page by id
-     * @param {String} id Page id
-     * @returns {[Page]}
-     * @example
-     * const somePage = pageManager.get('page-id');
-     */
-    PageManager.prototype.get = function (id) {
-        return this.pages.filter(function (p) { return p.get(p.idAttribute) === id; })[0];
-    };
-    /**
-     * Get main page (the first one available)
-     * @returns {[Page]}
-     * @example
-     * const mainPage = pageManager.getMain();
-     */
-    PageManager.prototype.getMain = function () {
-        var pages = this.pages;
-        return pages.filter(function (p) { return p.get('type') === typeMain; })[0] || pages.at(0);
-    };
-    /**
-     * Get wrapper components (aka body) from all pages and frames.
-     * @returns {Array<[Component]>}
-     * @example
-     * const wrappers = pageManager.getAllWrappers();
-     * // Get all `image` components from the project
-     * const allImages = wrappers.map(wrp => wrp.findType('image')).flat();
-     */
-    PageManager.prototype.getAllWrappers = function () {
-        var pages = this.getAll();
-        return (0,index_all.unique)((0,index_all.flatten)(pages.map(function (page) { return page.getAllFrames().map(function (frame) { return frame.getComponent(); }); })));
-    };
-    /**
-     * Change the selected page. This will switch the page rendered in canvas
-     * @param {String|[Page]} page Page or page id
-     * @returns {this}
-     * @example
-     * pageManager.select('page-id');
-     * // or by passing the page
-     * const somePage = pageManager.get('page-id');
-     * pageManager.select(somePage);
-     */
-    PageManager.prototype.select = function (page, opts) {
-        if (opts === void 0) { opts = {}; }
-        var pg = (0,index_all.isString)(page) ? this.get(page) : page;
-        if (pg) {
-            this.em.trigger(evPageSelectBefore, pg, opts);
-            this.model.set('selected', pg, opts);
-        }
-        return this;
-    };
-    /**
-     * Get the selected page
-     * @returns {[Page]}
-     * @example
-     * const selectedPage = pageManager.getSelected();
-     */
-    PageManager.prototype.getSelected = function () {
-        return this.model.get('selected');
-    };
-    PageManager.prototype.destroy = function () {
-        var _this = this;
-        this.pages.off().reset();
-        this.model.stopListening();
-        this.model.clear({ silent: true });
-        //@ts-ignore
-        ['selected', 'model'].map(function (i) { return (_this[i] = 0); });
-    };
-    PageManager.prototype.store = function () {
-        return this.getProjectData();
-    };
-    PageManager.prototype.load = function (data) {
-        var result = this.loadProjectData(data, { all: this.pages, reset: true });
-        this.pages.forEach(function (page) { return page.getFrames().initRefs(); });
-        return result;
-    };
-    PageManager.prototype._createId = function () {
-        var pages = this.getAll();
-        var len = pages.length + 16;
-        var pagesMap = this.getAllMap();
-        var id;
-        do {
-            id = (0,mixins.createId)(len);
-        } while (pagesMap[id]);
-        return id;
-    };
-    return PageManager;
-}(ItemManagerModule));
-/* harmony default export */ const pages = (PageManager);
-
 ;// CONCATENATED MODULE: ./src/canvas/model/Canvas.ts
 var Canvas_extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -25970,7 +25564,7 @@ var Canvas = /** @class */ (function (_super) {
         _this.on('change:x change:y', _this.onCoordsChange);
         _this.on('change:pointer change:pointerScreen', _this.onPointerChange);
         _this.listenTo(em, "change:device ".concat(evUpdate), _this.updateDevice);
-        _this.listenTo(em, evPageSelect, _this._pageUpdated);
+        _this.listenTo(em, types.select, _this._pageUpdated);
         return _this;
     }
     Canvas.prototype.defaults = function () {
@@ -26197,6 +25791,15 @@ var CanvasEvents;
      */
     CanvasEvents["pointer"] = "canvas:pointer";
     /**
+     * @event `canvas:refresh` Canvas was refreshed to update elements on top,
+     * like spots/tools (eg. via `editor.Canvas.refresh()` or on frame resize).
+     * @example
+     * editor.on('canvas:refresh', (canvasRefreshOptions) => {
+     *  console.log('Canvas refreshed with options:', canvasRefreshOptions);
+     * });
+     */
+    CanvasEvents["refresh"] = "canvas:refresh";
+    /**
      * @event `canvas:frame:load` Frame loaded in canvas.
      * The event is triggered right after iframe's `onload`.
      * @example
@@ -26226,7 +25829,7 @@ var CanvasEvents;
 })(CanvasEvents || (CanvasEvents = {}));
 /**{END_EVENTS}*/
 // need this to avoid the TS documentation generator to break
-/* harmony default export */ const types = (CanvasEvents);
+/* harmony default export */ const canvas_types = (CanvasEvents);
 
 ;// CONCATENATED MODULE: ./src/abstract/ModuleView.ts
 var ModuleView_extends = (undefined && undefined.__extends) || (function () {
@@ -27163,9 +26766,9 @@ var FrameView = /** @class */ (function (_super) {
                 }
             }
             else {
-                em === null || em === void 0 ? void 0 : em.trigger(types.frameLoadHead, evOpts);
+                em === null || em === void 0 ? void 0 : em.trigger(canvas_types.frameLoadHead, evOpts);
                 _this.renderBody();
-                em === null || em === void 0 ? void 0 : em.trigger(types.frameLoadBody, evOpts);
+                em === null || em === void 0 ? void 0 : em.trigger(canvas_types.frameLoadBody, evOpts);
                 em === null || em === void 0 ? void 0 : em.trigger(evLoad, evOpts); // deprecated
             }
         };
@@ -27179,7 +26782,7 @@ var FrameView = /** @class */ (function (_super) {
             }
             evOpts.window = _this.getWindow();
             em === null || em === void 0 ? void 0 : em.trigger("".concat(evLoad, ":before"), evOpts); // deprecated
-            em === null || em === void 0 ? void 0 : em.trigger(types.frameLoad, evOpts);
+            em === null || em === void 0 ? void 0 : em.trigger(canvas_types.frameLoad, evOpts);
             appendScript(FrameView_spreadArray([], canvas.get('scripts'), true));
         };
     };
@@ -27227,7 +26830,7 @@ var FrameView = /** @class */ (function (_super) {
         win._isEditor = true;
         this.renderStyles({ prev: [] });
         var colorWarn = '#ffca6f';
-        (0,dom/* append */.R3)(body, "<style>\n      ".concat(conf.baseCss || config.frameStyle || '', "\n\n      ").concat(hasAutoHeight ? 'body { overflow: hidden }' : '', "\n\n      [data-gjs-type=\"wrapper\"] {\n        ").concat(!hasAutoHeight ? 'min-height: 100vh;' : '', "\n        padding-top: 0.001em;\n      }\n\n      .").concat(ppfx, "dashed *[data-gjs-highlightable] {\n        outline: 1px dashed rgba(170,170,170,0.7);\n        outline-offset: -2px;\n      }\n\n      .").concat(ppfx, "selected {\n        outline: 2px solid #3b97e3 !important;\n        outline-offset: -2px;\n      }\n\n      .").concat(ppfx, "selected-parent {\n        outline: 2px solid ").concat(colorWarn, " !important\n      }\n\n      .").concat(ppfx, "no-select {\n        user-select: none;\n        -webkit-user-select:none;\n        -moz-user-select: none;\n      }\n\n      .").concat(ppfx, "freezed {\n        opacity: 0.5;\n        pointer-events: none;\n      }\n\n      .").concat(ppfx, "no-pointer {\n        pointer-events: none;\n      }\n\n      .").concat(ppfx, "plh-image {\n        background: #f5f5f5;\n        border: none;\n        height: 100px;\n        width: 100px;\n        display: block;\n        outline: 3px solid #ffca6f;\n        cursor: pointer;\n        outline-offset: -2px\n      }\n\n      .").concat(ppfx, "grabbing {\n        cursor: grabbing;\n        cursor: -webkit-grabbing;\n      }\n\n      .").concat(ppfx, "is__grabbing {\n        overflow-x: hidden;\n      }\n\n      .").concat(ppfx, "is__grabbing,\n      .").concat(ppfx, "is__grabbing * {\n        cursor: grabbing !important;\n      }\n\n      ").concat(conf.canvasCss || '', "\n      ").concat(conf.protectedCss || '', "\n    </style>"));
+        (0,dom/* append */.R3)(body, "<style>\n      ".concat(conf.baseCss || config.frameStyle || '', "\n\n      ").concat(hasAutoHeight ? 'body { overflow: hidden }' : '', "\n\n      [data-gjs-type=\"wrapper\"] {\n        ").concat(!hasAutoHeight ? 'min-height: 100vh;' : '', "\n        padding-top: 0.001em;\n      }\n\n      .").concat(ppfx, "dashed *[data-gjs-highlightable] {\n        outline: 1px dashed rgba(170,170,170,0.7);\n        outline-offset: -2px;\n      }\n\n      .").concat(ppfx, "selected {\n        outline: 2px solid #3b97e3 !important;\n        outline-offset: -2px;\n      }\n\n      .").concat(ppfx, "selected-parent {\n        outline: 2px solid ").concat(colorWarn, " !important\n      }\n\n      .").concat(ppfx, "no-select {\n        user-select: none;\n        -webkit-user-select:none;\n        -moz-user-select: none;\n      }\n\n      .").concat(ppfx, "freezed {\n        opacity: 0.5;\n        pointer-events: none;\n      }\n\n      .").concat(ppfx, "no-pointer {\n        pointer-events: none;\n      }\n\n      .").concat(ppfx, "pointer-init {\n        pointer-events: initial;\n      }\n\n      .").concat(ppfx, "plh-image {\n        background: #f5f5f5;\n        border: none;\n        height: 100px;\n        width: 100px;\n        display: block;\n        outline: 3px solid #ffca6f;\n        cursor: pointer;\n        outline-offset: -2px\n      }\n\n      .").concat(ppfx, "grabbing {\n        cursor: grabbing;\n        cursor: -webkit-grabbing;\n      }\n\n      .").concat(ppfx, "is__grabbing {\n        overflow-x: hidden;\n      }\n\n      .").concat(ppfx, "is__grabbing,\n      .").concat(ppfx, "is__grabbing * {\n        cursor: grabbing !important;\n      }\n\n      ").concat(conf.canvasCss || '', "\n      ").concat(conf.protectedCss || '', "\n    </style>"));
         var root = model.root;
         var view = em.Components.getType('wrapper').view;
         this.wrapper = new view({
@@ -27596,7 +27199,7 @@ var CanvasView = /** @class */ (function (_super) {
         _this.className = "".concat(pfx, "canvas ").concat(ppfx, "no-touch-actions").concat(!em.config.customUI ? " ".concat(pfx, "canvas-bg") : '');
         _this.clsUnscale = "".concat(pfx, "unscale");
         _this._initFrames();
-        _this.listenTo(em, 'change:canvasOffset', _this.clearOff);
+        _this.listenTo(em, events.refresh, _this.clearOff);
         _this.listenTo(em, 'component:selected', _this.checkSelected);
         _this.listenTo(em, "".concat(events.coords, " ").concat(events.zoom), _this.updateFrames);
         _this.listenTo(model, 'change:frames', _this._onFramesUpdate);
@@ -27989,6 +27592,10 @@ var CanvasView = /** @class */ (function (_super) {
             'paddingRight',
             'paddingBottom',
             'paddingLeft',
+            'borderTopWidth',
+            'borderRightWidth',
+            'borderBottomWidth',
+            'borderLeftWidth',
         ];
         marginPaddingOffsets.forEach(function (offset) {
             result[offset] = parseFloat(styles[offset]) * zoom;
@@ -28903,6 +28510,22 @@ var CanvasModule = /** @class */ (function (_super) {
         var _a;
         return (_a = this.canvasView) === null || _a === void 0 ? void 0 : _a.getRectToScreen(boxRect);
     };
+    /**
+     * Update canvas for spots/tools positioning.
+     * @param {Object} [opts] Options.
+     * @param {Object} [opts.spots=false] Update the position of spots.
+     */
+    CanvasModule.prototype.refresh = function (opts) {
+        if (opts === void 0) { opts = {}; }
+        var _a = this, em = _a.em, events = _a.events, canvasView = _a.canvasView;
+        canvasView === null || canvasView === void 0 ? void 0 : canvasView.clearOff();
+        if (opts.spots || opts.all) {
+            this.refreshSpots();
+            em.trigger('canvas:updateTools'); // this should be deprecated
+        }
+        em.set('canvasOffset', this.getOffset()); // this should be deprecated
+        em.trigger(events.refresh, opts);
+    };
     CanvasModule.prototype.refreshSpots = function () {
         this.spots.refresh();
     };
@@ -29297,16 +28920,17 @@ var ParserHtml = function (em, config) {
                 // be text too otherwise I'm unable to edit texnodes
                 var comps = model.components;
                 if (!model.type && comps) {
+                    var _a = config.textTypes, textTypes = _a === void 0 ? [] : _a, _b = config.textTags, textTags = _b === void 0 ? [] : _b;
                     var allTxt = 1;
                     var foundTextNode = 0;
                     for (var ci = 0; ci < comps.length; ci++) {
                         var comp = comps[ci];
                         var cType = comp.type;
-                        if (['text', 'textnode'].indexOf(cType) < 0 && config.textTags.indexOf(comp.tagName) < 0) {
+                        if (!textTypes.includes(cType) && !textTags.includes(comp.tagName)) {
                             allTxt = 0;
                             break;
                         }
-                        if (cType == 'textnode') {
+                        if (cType === 'textnode') {
                             foundTextNode = 1;
                         }
                     }
@@ -29315,7 +28939,7 @@ var ParserHtml = function (em, config) {
                     }
                 }
                 // If tagName is still empty and is not a textnode, do not push it
-                if (!model.tagName && model.type != 'textnode') {
+                if (!model.tagName && (0,index_all.isUndefined)(model.content)) {
                     continue;
                 }
                 result.push(model);
@@ -30168,6 +29792,204 @@ var Selectors = /** @class */ (function (_super) {
 /* harmony default export */ const model_Selectors = (Selectors);
 Selectors.prototype.model = model_Selector;
 
+;// CONCATENATED MODULE: ./src/abstract/ModuleCategory.ts
+var ModuleCategory_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var ModuleCategory_spreadArray = (undefined && undefined.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
+
+var Category = /** @class */ (function (_super) {
+    ModuleCategory_extends(Category, _super);
+    function Category() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    Category.prototype.defaults = function () {
+        return {
+            id: '',
+            label: '',
+            open: true,
+            attributes: {},
+        };
+    };
+    Category.prototype.getId = function () {
+        return this.get('id');
+    };
+    Category.prototype.getLabel = function () {
+        return this.get('label');
+    };
+    return Category;
+}(common/* Model */.Hn));
+/* harmony default export */ const ModuleCategory = (Category);
+function getItemsByCategory(allItems) {
+    var categorySet = new Set();
+    var categoryMap = new Map();
+    var emptyItem = { items: [] };
+    allItems.forEach(function (item) {
+        var category = item.category;
+        if (category) {
+            categorySet.add(category);
+            var categoryItems = categoryMap.get(category);
+            if (categoryItems) {
+                categoryItems.push(item);
+            }
+            else {
+                categoryMap.set(category, [item]);
+            }
+        }
+        else {
+            emptyItem.items.push(item);
+        }
+    });
+    var categoryWithItems = Array.from(categorySet).map(function (category) { return ({
+        category: category,
+        items: categoryMap.get(category) || [],
+    }); });
+    return ModuleCategory_spreadArray(ModuleCategory_spreadArray([], categoryWithItems, true), [emptyItem], false);
+}
+
+;// CONCATENATED MODULE: ./src/abstract/CollectionWithCategories.ts
+var CollectionWithCategories_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+
+
+var CATEGORY_KEY = 'category';
+var CollectionWithCategories = /** @class */ (function (_super) {
+    CollectionWithCategories_extends(CollectionWithCategories, _super);
+    function CollectionWithCategories() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    CollectionWithCategories.prototype.initCategory = function (model) {
+        var category = model.get(CATEGORY_KEY);
+        var isDefined = category instanceof ModuleCategory;
+        // Ensure the category exists and it's not already initialized
+        if (category && !isDefined) {
+            if ((0,index_all.isString)(category)) {
+                category = { id: category, label: category };
+            }
+            else if ((0,mixins.isObject)(category) && !category.id) {
+                category.id = category.label;
+            }
+            var catModel = this.getCategories().add(category);
+            model.set(CATEGORY_KEY, catModel, { silent: true });
+            return catModel;
+        }
+        else if (isDefined) {
+            var catModel = category;
+            this.getCategories().add(catModel);
+            return catModel;
+        }
+    };
+    return CollectionWithCategories;
+}(common/* Collection */.FE));
+
+
+;// CONCATENATED MODULE: ./src/abstract/ModuleCategories.ts
+var ModuleCategories_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+
+
+var Categories = /** @class */ (function (_super) {
+    ModuleCategories_extends(Categories, _super);
+    function Categories() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    /** @ts-ignore */
+    Categories.prototype.add = function (model, opts) {
+        var models = (0,index_all.isArray)(model) ? model : [model];
+        models.forEach(function (md) { return md && (md.id = (0,mixins.normalizeKey)("".concat(md.id))); });
+        return _super.prototype.add.call(this, model, opts);
+    };
+    Categories.prototype.get = function (id) {
+        return _super.prototype.get.call(this, (0,index_all.isString)(id) ? (0,mixins.normalizeKey)(id) : id);
+    };
+    return Categories;
+}(common/* Collection */.FE));
+/* harmony default export */ const ModuleCategories = (Categories);
+Categories.prototype.model = ModuleCategory;
+
+;// CONCATENATED MODULE: ./src/trait_manager/types.ts
+/**{START_EVENTS}*/
+var TraitsEvents;
+(function (TraitsEvents) {
+    /**
+     * @event `trait:select` New traits selected (eg. by changing a component).
+     * @example
+     * editor.on('trait:select', ({ traits, component }) => { ... });
+     */
+    TraitsEvents["select"] = "trait:select";
+    /**
+     * @event `trait:value` Trait value updated.
+     * @example
+     * editor.on('trait:value', ({ trait, component, value }) => { ... });
+     */
+    TraitsEvents["value"] = "trait:value";
+    /**
+     * @event `trait:custom` Event to use in case of [custom Trait Manager UI](https://grapesjs.com/docs/modules/Traits.html#custom-trait-manager).
+     * @example
+     * editor.on('trait:custom', ({ container }) => { ... });
+     */
+    TraitsEvents["custom"] = "trait:custom";
+    /**
+     * @event `trait` Catch-all event for all the events mentioned above. An object containing all the available data about the triggered event is passed as an argument to the callback.
+     * @example
+     * editor.on('trait', ({ event, model, ... }) => { ... });
+     */
+    TraitsEvents["all"] = "trait";
+})(TraitsEvents || (TraitsEvents = {}));
+/**{END_EVENTS}*/
+// need this to avoid the TS documentation generator to break
+/* harmony default export */ const trait_manager_types = (TraitsEvents);
+
 ;// CONCATENATED MODULE: ./src/trait_manager/model/Trait.ts
 var Trait_extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -30198,13 +30020,19 @@ var Trait_assign = (undefined && undefined.__assign) || function () {
 
 
 
+
+
 /**
- * @typedef Trait
  * @property {String} id Trait id, eg. `my-trait-id`.
- * @property {String} type Trait type, defines how the trait should rendered. Possible values: `text` (default), `number`, `select`, `checkbox`, `color`, `button`
+ * @property {String} type Trait type, defines how the trait should be rendered. Possible values: `text` (default), `number`, `select`, `checkbox`, `color`, `button`
  * @property {String} label The trait label to show for the rendered trait.
  * @property {String} name The name of the trait used as a key for the attribute/property. By default, the name is used as attribute name or property in case `changeProp` in enabled.
- * @property {Boolean} changeProp If `true` the trait value is applied on component
+ * @property {String} default Default value to use in case the value is not defined on the component.
+ * @property {String} placeholder Placeholder to show inside the default input (if the UI type allows it).
+ * @property {String} [category=''] Trait category.
+ * @property {Boolean} changeProp If `true`, the trait value is applied on the component property, otherwise, on component attributes.
+ *
+ * @module docsjs.Trait
  *
  */
 var Trait = /** @class */ (function (_super) {
@@ -30229,17 +30057,47 @@ var Trait = /** @class */ (function (_super) {
             value: '',
             default: '',
             placeholder: '',
+            category: '',
             changeProp: false,
             options: [],
         };
     };
-    Trait.prototype.setTarget = function (target) {
-        if (target) {
+    Object.defineProperty(Trait.prototype, "parent", {
+        get: function () {
+            return this.collection;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Trait.prototype, "category", {
+        get: function () {
+            var cat = this.get('category');
+            return cat instanceof ModuleCategory ? cat : undefined;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Trait.prototype, "component", {
+        get: function () {
+            return this.target;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Trait.prototype, "changeProp", {
+        get: function () {
+            return !!this.get('changeProp');
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Trait.prototype.setTarget = function (component) {
+        if (component) {
             var _a = this.attributes, name_1 = _a.name, changeProp = _a.changeProp, initValue = _a.value, getValue = _a.getValue;
-            this.target = target;
+            this.target = component;
             this.unset('target');
             var targetEvent = changeProp ? "change:".concat(name_1) : "change:attributes:".concat(name_1);
-            this.listenTo(target, targetEvent, this.targetUpdated);
+            this.listenTo(component, targetEvent, this.targetUpdated);
             var value = initValue ||
                 // Avoid the risk of loops in case the trait has a custom getValue
                 (!getValue ? this.getValue() : undefined);
@@ -30284,10 +30142,12 @@ var Trait = /** @class */ (function (_super) {
     /**
      * Get the trait value.
      * The value is taken from component attributes by default or from properties if the trait has the `changeProp` enabled.
+     * @param {Object} [opts={}] Options.
+     * @param {Boolean} [opts.useType=false] Get the value based on type (eg. the checkbox will always return a boolean).
      * @returns {any}
      */
-    Trait.prototype.getValue = function () {
-        return this.getTargetValue();
+    Trait.prototype.getValue = function (opts) {
+        return this.getTargetValue(opts);
     };
     /**
      * Update the trait value.
@@ -30298,30 +30158,27 @@ var Trait = /** @class */ (function (_super) {
      */
     Trait.prototype.setValue = function (value, opts) {
         var _this = this;
-        var _a;
         if (opts === void 0) { opts = {}; }
+        var _a = this, component = _a.component, em = _a.em;
+        var partial = opts.partial;
         var valueOpts = {};
-        var setValue = this.get('setValue');
+        var setValue = this.attributes.setValue;
         if (setValue) {
             setValue({
                 value: value,
-                editor: (_a = this.em) === null || _a === void 0 ? void 0 : _a.getEditor(),
+                component: component,
+                editor: em === null || em === void 0 ? void 0 : em.getEditor(),
                 trait: this,
-                component: this.target,
-                partial: !!opts.partial,
+                partial: !!partial,
                 options: opts,
                 emitUpdate: function () { return _this.targetUpdated(); },
             });
             return;
         }
-        if (opts.partial) {
+        if (partial) {
             valueOpts.avoidStore = true;
         }
         this.setTargetValue(value, valueOpts);
-        if (opts.partial === false) {
-            this.setTargetValue('');
-            this.setTargetValue(value);
-        }
     };
     /**
      * Get default value.
@@ -30370,44 +30227,85 @@ var Trait = /** @class */ (function (_super) {
         var propName = this.getName();
         return (locale && ((_a = this.em) === null || _a === void 0 ? void 0 : _a.t("traitManager.traits.options.".concat(propName, ".").concat(optId)))) || label;
     };
+    /**
+     * Get category label.
+     * @param {Object} [opts={}] Options.
+     * @param {Boolean} [opts.locale=true] Use the locale string from i18n module.
+     * @returns {String}
+     */
+    Trait.prototype.getCategoryLabel = function (opts) {
+        if (opts === void 0) { opts = {}; }
+        var _a = this, em = _a.em, category = _a.category;
+        var _b = opts.locale, locale = _b === void 0 ? true : _b;
+        var catId = category === null || category === void 0 ? void 0 : category.getId();
+        var catLabel = category === null || category === void 0 ? void 0 : category.getLabel();
+        return (locale && (em === null || em === void 0 ? void 0 : em.t("traitManager.categories.".concat(catId)))) || catLabel || '';
+    };
+    /**
+     * Run the trait command (used on the button trait type).
+     */
+    Trait.prototype.runCommand = function () {
+        var em = this.em;
+        var command = this.attributes.command;
+        if (command && em) {
+            if ((0,index_all.isString)(command)) {
+                return em.Commands.run(command);
+            }
+            else {
+                return command(em.Editor, this);
+            }
+        }
+    };
     Trait.prototype.props = function () {
         return this.attributes;
     };
     Trait.prototype.targetUpdated = function () {
-        var _a;
-        var value = this.getTargetValue();
+        var _a = this, component = _a.component, em = _a.em;
+        var value = this.getTargetValue({ useType: true });
         this.set({ value: value }, { fromTarget: 1 });
-        (_a = this.em) === null || _a === void 0 ? void 0 : _a.trigger('trait:update', {
-            trait: this,
-            component: this.target,
-        });
+        var props = { trait: this, component: component, value: value };
+        component.trigger(trait_manager_types.value, props);
+        em === null || em === void 0 ? void 0 : em.trigger(trait_manager_types.value, props);
+        // This should be triggered for any trait prop change
+        em === null || em === void 0 ? void 0 : em.trigger('trait:update', props);
     };
-    Trait.prototype.getTargetValue = function () {
-        var _a;
+    Trait.prototype.getTargetValue = function (opts) {
+        if (opts === void 0) { opts = {}; }
+        var _a = this, component = _a.component, em = _a.em;
         var name = this.getName();
-        var target = this.target;
         var getValue = this.get('getValue');
         var value;
         if (getValue) {
             value = getValue({
-                editor: (_a = this.em) === null || _a === void 0 ? void 0 : _a.getEditor(),
+                editor: em === null || em === void 0 ? void 0 : em.getEditor(),
                 trait: this,
-                component: target,
+                component: component,
             });
         }
-        else if (this.get('changeProp')) {
-            value = target.get(name);
+        else if (this.changeProp) {
+            value = component.get(name);
         }
         else {
-            // @ts-ignore TODO update post component update
-            value = target.getAttributes()[name];
+            value = component.getAttributes()[name];
+        }
+        if (opts.useType) {
+            var type = this.getType();
+            if (type === 'checkbox') {
+                var _b = this.attributes, valueTrue = _b.valueTrue, valueFalse = _b.valueFalse;
+                if (!(0,index_all.isUndefined)(valueTrue) && valueTrue === value) {
+                    value = true;
+                }
+                else if (!(0,index_all.isUndefined)(valueFalse) && valueFalse === value) {
+                    value = false;
+                }
+            }
         }
         return !(0,index_all.isUndefined)(value) ? value : '';
     };
     Trait.prototype.setTargetValue = function (value, opts) {
         var _a;
         if (opts === void 0) { opts = {}; }
-        var _b = this, target = _b.target, attributes = _b.attributes;
+        var _b = this, component = _b.component, attributes = _b.attributes;
         var name = this.getName();
         if ((0,index_all.isUndefined)(value))
             return;
@@ -30427,11 +30325,14 @@ var Trait = /** @class */ (function (_super) {
                 valueToSet = valueFalse;
             }
         }
-        if (this.get('changeProp')) {
-            target.set(name, valueToSet, opts);
+        var props = (_a = {}, _a[name] = valueToSet, _a);
+        // This is required for the UndoManager to properly detect changes
+        props.__p = opts.avoidStore ? null : undefined;
+        if (this.changeProp) {
+            component.set(props, opts);
         }
         else {
-            target.addAttributes((_a = {}, _a[name] = valueToSet, _a), opts);
+            component.addAttributes(props, opts);
         }
     };
     Trait.prototype.setValueFromInput = function (value, final, opts) {
@@ -30446,12 +30347,12 @@ var Trait = /** @class */ (function (_super) {
         }
     };
     Trait.prototype.getInitValue = function () {
-        var target = this.target;
+        var component = this.component;
         var name = this.getName();
         var value;
-        if (target) {
-            var attrs = target.get('attributes');
-            value = this.get('changeProp') ? target.get(name) : attrs[name];
+        if (component) {
+            var attrs = component.get('attributes');
+            value = this.changeProp ? component.get(name) : attrs[name];
         }
         return value || this.get('value') || this.get('default');
     };
@@ -30511,19 +30412,30 @@ var Traits_extends = (undefined && undefined.__extends) || (function () {
 
 
 
+
 var Traits = /** @class */ (function (_super) {
     Traits_extends(Traits, _super);
     function Traits(coll, options) {
-        var _a;
         var _this = _super.call(this, coll) || this;
+        _this.categories = new ModuleCategories();
         _this.em = options.em;
-        _this.listenTo(_this, 'add', _this.handleAdd);
-        _this.listenTo(_this, 'reset', _this.handleReset);
-        var tm = (_a = _this.em) === null || _a === void 0 ? void 0 : _a.Traits;
+        _this.on('add', _this.handleAdd);
+        _this.on('reset', _this.handleReset);
+        var tm = _this.module;
         var tmOpts = tm === null || tm === void 0 ? void 0 : tm.getConfig();
         _this.tf = new model_TraitFactory(tmOpts);
         return _this;
     }
+    Object.defineProperty(Traits.prototype, "module", {
+        get: function () {
+            return this.em.Traits;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Traits.prototype.getCategories = function () {
+        return this.categories;
+    };
     Traits.prototype.handleReset = function (coll, _a) {
         var _b = _a === void 0 ? {} : _a, _c = _b.previousModels, previousModels = _c === void 0 ? [] : _c;
         previousModels.forEach(function (model) { return model.trigger('remove'); });
@@ -30534,6 +30446,7 @@ var Traits = /** @class */ (function (_super) {
         if (target) {
             model.target = target;
         }
+        this.initCategory(model);
     };
     Traits.prototype.setTarget = function (target) {
         this.target = target;
@@ -30558,7 +30471,7 @@ var Traits = /** @class */ (function (_super) {
         return _super.prototype.add.call(this, trait, opt);
     };
     return Traits;
-}(common/* Collection */.FE));
+}(CollectionWithCategories));
 /* harmony default export */ const model_Traits = (Traits);
 
 ;// CONCATENATED MODULE: ./src/dom_components/model/Component.ts
@@ -30662,12 +30575,12 @@ var keyUpdateInside = "".concat(keyUpdate, "-inside");
  * @property {Array<String>} [unstylable=[]] Indicate an array of style properties which should be hidden from the style manager. Default: `[]`
  * @property {Boolean} [highlightable=true] It can be highlighted with 'dotted' borders if true. Default: `true`
  * @property {Boolean} [copyable=true] True if it's possible to clone the component. Default: `true`
- * @property {Boolean} [resizable=false] Indicates if it's possible to resize the component. It's also possible to pass an object as [options for the Resizer](https://github.com/GrapesJS/grapesjs/blob/master/src/utils/Resizer.js). Default: `false`
+ * @property {Boolean} [resizable=false] Indicates if it's possible to resize the component. It's also possible to pass an object as [options for the Resizer](https://github.com/GrapesJS/grapesjs/blob/master/src/utils/Resizer.ts). Default: `false`
  * @property {Boolean} [editable=false] Allow to edit the content of the component (used on Text components). Default: `false`
  * @property {Boolean} [layerable=true] Set to `false` if you need to hide the component inside Layers. Default: `true`
  * @property {Boolean} [selectable=true] Allow component to be selected when clicked. Default: `true`
  * @property {Boolean} [hoverable=true] Shows a highlight outline when hovering on the element if `true`. Default: `true`
- * @property {Boolean} [locked=false] Disable the selection of the component and its children in the canvas. Default: `false`
+ * @property {Boolean} [locked] Disable the selection of the component and its children in the canvas. You can unlock a children by setting its locked property to `false`. Default: `undefined`
  * @property {Boolean} [void=false] This property is used by the HTML exporter as void elements don't have closing tags, eg. `<br/>`, `<hr/>`, etc. Default: `false`
  * @property {Object} [style={}] Component default style, eg. `{ width: '100px', height: '100px', 'background-color': 'red' }`
  * @property {String} [styles=''] Component related styles, eg. `.my-component-class { color: red }`
@@ -30718,7 +30631,6 @@ var Component = /** @class */ (function (_super) {
                     layerable: true,
                     selectable: true,
                     hoverable: true,
-                    locked: false,
                     void: false,
                     state: '',
                     status: '',
@@ -30786,6 +30698,13 @@ var Component = /** @class */ (function (_super) {
     Object.defineProperty(Component.prototype, "delegate", {
         get: function () {
             return this.get('delegate');
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Component.prototype, "locked", {
+        get: function () {
+            return this.get('locked');
         },
         enumerable: false,
         configurable: true
@@ -31588,8 +31507,8 @@ var Component = /** @class */ (function (_super) {
         var attrs = Component_assign({}, this.get('attributes'));
         var traits = this.traits;
         traits.each(function (trait) {
-            if (!trait.get('changeProp')) {
-                var name_1 = trait.get('name');
+            if (!trait.changeProp) {
+                var name_1 = trait.getName();
                 var value = trait.getInitValue();
                 if (name_1 && value)
                     attrs[name_1] = value;
@@ -32090,7 +32009,8 @@ var Component = /** @class */ (function (_super) {
             (0,index_all.forEach)(props, function (value, key) {
                 var skipProps = ['classes', 'attributes', 'components'];
                 if (key[0] !== '_' && skipProps.indexOf(key) < 0) {
-                    attributes["data-gjs-".concat(key)] = (0,index_all.isArray)(value) || (0,mixins.isObject)(value) ? JSON.stringify(value) : value;
+                    attributes["data-gjs-".concat(key)] =
+                        (0,index_all.isArray)(value) || (0,mixins.isObject)(value) ? JSON.stringify(value) : (0,index_all.isBoolean)(value) ? "".concat(value) : value;
                 }
             });
         }
@@ -32711,7 +32631,6 @@ var ComponentComment = /** @class */ (function (_super) {
         var _a;
         if (el.nodeType == 8) {
             return {
-                tagName: 'NULL',
                 type: 'comment',
                 content: (_a = el.textContent) !== null && _a !== void 0 ? _a : '',
             };
@@ -33181,8 +33100,8 @@ var ComponentMap = /** @class */ (function (_super) {
                         name: 'mapType',
                         changeProp: true,
                         options: [
-                            { value: 'q', name: 'Roadmap' },
-                            { value: 'w', name: 'Satellite' },
+                            { id: 'q', label: 'Roadmap' },
+                            { id: 'w', label: 'Satellite' },
                         ],
                     },
                     {
@@ -34560,6 +34479,7 @@ var ComponentView = /** @class */ (function (_super) {
         var freezedCls = "".concat(ppfx, "freezed");
         var hoveredCls = "".concat(ppfx, "hovered");
         var noPointerCls = "".concat(ppfx, "no-pointer");
+        var pointerInitCls = "".concat(ppfx, "pointer-init");
         var toRemove = [selectedCls, selectedParentCls, freezedCls, hoveredCls, noPointerCls];
         var selCls = extHl && !opts.noExtHl ? '' : selectedCls;
         this.$el.removeClass(toRemove.join(' '));
@@ -34585,7 +34505,9 @@ var ComponentView = /** @class */ (function (_super) {
                 !opts.avoidHover && cls.push(hoveredCls);
                 break;
         }
-        model.get('locked') && cls.push(noPointerCls);
+        if ((0,index_all.isBoolean)(model.locked)) {
+            cls.push(model.locked ? noPointerCls : pointerInitCls);
+        }
         var clsStr = cls.filter(Boolean).join(' ');
         clsStr && el.setAttribute('class', clsStr);
     };
@@ -35090,7 +35012,7 @@ var ComponentImageView = /** @class */ (function (_super) {
     };
     ComponentImageView.prototype.onLoad = function () {
         // Used to update component tools box (eg. toolbar, resizer) once the image is loaded
-        this.em.trigger('change:canvasOffset');
+        this.em.Canvas.refresh({ all: true });
     };
     ComponentImageView.prototype.noDrag = function (ev) {
         ev.preventDefault();
@@ -35110,6 +35032,346 @@ var ComponentImageView = /** @class */ (function (_super) {
     return ComponentImageView;
 }(view_ComponentView));
 /* harmony default export */ const view_ComponentImageView = (ComponentImageView);
+
+;// CONCATENATED MODULE: ./src/dom_components/view/ComponentLabelView.ts
+var ComponentLabelView_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var ComponentLabelView = /** @class */ (function (_super) {
+    ComponentLabelView_extends(ComponentLabelView, _super);
+    function ComponentLabelView() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return ComponentLabelView;
+}(view_ComponentView));
+/* harmony default export */ const view_ComponentLabelView = (ComponentLabelView);
+
+;// CONCATENATED MODULE: ./src/dom_components/view/ComponentLinkView.ts
+var ComponentLinkView_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var ComponentLinkView = /** @class */ (function (_super) {
+    ComponentLinkView_extends(ComponentLinkView, _super);
+    function ComponentLinkView() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    ComponentLinkView.prototype.render = function () {
+        _super.prototype.render.call(this);
+        // I need capturing instead of bubbling as bubbled clicks from other
+        // children will execute the link event
+        this.el.addEventListener('click', this.prevDef, true);
+        return this;
+    };
+    return ComponentLinkView;
+}(view_ComponentView));
+/* harmony default export */ const view_ComponentLinkView = (ComponentLinkView);
+
+;// CONCATENATED MODULE: ./src/dom_components/view/ComponentMapView.ts
+var ComponentMapView_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var ComponentMapView = /** @class */ (function (_super) {
+    ComponentMapView_extends(ComponentMapView, _super);
+    function ComponentMapView() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    ComponentMapView.prototype.tagName = function () {
+        return 'div';
+    };
+    ComponentMapView.prototype.events = function () {
+        return {};
+    };
+    ComponentMapView.prototype.initialize = function (props) {
+        _super.prototype.initialize.call(this, props);
+        this.classEmpty = this.ppfx + 'plh-map';
+    };
+    /**
+     * Update the map on the canvas
+     * @private
+     */
+    ComponentMapView.prototype.updateSrc = function () {
+        this.getIframe().src = this.model.get('src');
+    };
+    ComponentMapView.prototype.getIframe = function () {
+        if (!this.iframe) {
+            var ifrm = document.createElement('iframe');
+            ifrm.src = this.model.get('src');
+            ifrm.frameBorder = '0';
+            ifrm.style.height = '100%';
+            ifrm.style.width = '100%';
+            ifrm.className = this.ppfx + 'no-pointer';
+            this.iframe = ifrm;
+        }
+        return this.iframe;
+    };
+    ComponentMapView.prototype.render = function () {
+        _super.prototype.render.call(this);
+        this.updateClasses();
+        this.el.appendChild(this.getIframe());
+        return this;
+    };
+    return ComponentMapView;
+}(view_ComponentImageView));
+/* harmony default export */ const view_ComponentMapView = (ComponentMapView);
+
+;// CONCATENATED MODULE: ./src/dom_components/view/ComponentScriptView.ts
+var ComponentScriptView_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var ComponentScriptView = /** @class */ (function (_super) {
+    ComponentScriptView_extends(ComponentScriptView, _super);
+    function ComponentScriptView() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    ComponentScriptView.prototype.tagName = function () {
+        return 'script';
+    };
+    ComponentScriptView.prototype.events = function () {
+        return {};
+    };
+    return ComponentScriptView;
+}(view_ComponentView));
+/* harmony default export */ const view_ComponentScriptView = (ComponentScriptView);
+
+;// CONCATENATED MODULE: ./src/dom_components/view/ComponentSvgView.ts
+var ComponentSvgView_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var ComponentSvgView = /** @class */ (function (_super) {
+    ComponentSvgView_extends(ComponentSvgView, _super);
+    function ComponentSvgView() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    ComponentSvgView.prototype._createElement = function (tagName) {
+        return document.createElementNS('http://www.w3.org/2000/svg', tagName);
+    };
+    return ComponentSvgView;
+}(view_ComponentView));
+/* harmony default export */ const view_ComponentSvgView = (ComponentSvgView);
+
+;// CONCATENATED MODULE: ./src/dom_components/view/ComponentTableBodyView.ts
+var ComponentTableBodyView_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var ComponentTableBodyView = /** @class */ (function (_super) {
+    ComponentTableBodyView_extends(ComponentTableBodyView, _super);
+    function ComponentTableBodyView() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return ComponentTableBodyView;
+}(view_ComponentView));
+/* harmony default export */ const view_ComponentTableBodyView = (ComponentTableBodyView);
+
+;// CONCATENATED MODULE: ./src/dom_components/view/ComponentTableCellView.ts
+var ComponentTableCellView_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var ComponentTableCellView = /** @class */ (function (_super) {
+    ComponentTableCellView_extends(ComponentTableCellView, _super);
+    function ComponentTableCellView() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return ComponentTableCellView;
+}(view_ComponentView));
+/* harmony default export */ const view_ComponentTableCellView = (ComponentTableCellView);
+
+;// CONCATENATED MODULE: ./src/dom_components/view/ComponentTableFootView.ts
+var ComponentTableFootView_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var ComponentTableFootView = /** @class */ (function (_super) {
+    ComponentTableFootView_extends(ComponentTableFootView, _super);
+    function ComponentTableFootView() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return ComponentTableFootView;
+}(view_ComponentView));
+/* harmony default export */ const view_ComponentTableFootView = (ComponentTableFootView);
+
+;// CONCATENATED MODULE: ./src/dom_components/view/ComponentTableHeadView.ts
+var ComponentTableHeadView_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var ComponentTableHeadView = /** @class */ (function (_super) {
+    ComponentTableHeadView_extends(ComponentTableHeadView, _super);
+    function ComponentTableHeadView() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return ComponentTableHeadView;
+}(view_ComponentView));
+/* harmony default export */ const view_ComponentTableHeadView = (ComponentTableHeadView);
+
+;// CONCATENATED MODULE: ./src/dom_components/view/ComponentTableRowView.ts
+var ComponentTableRowView_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var ComponentTableRowView = /** @class */ (function (_super) {
+    ComponentTableRowView_extends(ComponentTableRowView, _super);
+    function ComponentTableRowView() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return ComponentTableRowView;
+}(view_ComponentView));
+/* harmony default export */ const view_ComponentTableRowView = (ComponentTableRowView);
+
+;// CONCATENATED MODULE: ./src/dom_components/view/ComponentTableView.ts
+var ComponentTableView_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var ComponentTableView = /** @class */ (function (_super) {
+    ComponentTableView_extends(ComponentTableView, _super);
+    function ComponentTableView() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    ComponentTableView.prototype.events = function () {
+        return {};
+    };
+    return ComponentTableView;
+}(view_ComponentView));
+/* harmony default export */ const view_ComponentTableView = (ComponentTableView);
 
 ;// CONCATENATED MODULE: ./src/dom_components/view/ComponentTextView.ts
 var ComponentTextView_extends = (undefined && undefined.__extends) || (function () {
@@ -35392,16 +35654,16 @@ var ComponentTextView = /** @class */ (function (_super) {
         var selection = doc.getSelection();
         if (selection === null || selection === void 0 ? void 0 : selection.rangeCount) {
             var range = selection.getRangeAt(0);
-            var textNode = range.startContainer;
+            var textNode_1 = range.startContainer;
             var offset_1 = range.startOffset;
-            var textModel_1 = (0,mixins.getComponentModel)(textNode);
+            var textModel_1 = (0,mixins.getComponentModel)(textNode_1);
             var newCmps_1 = [];
             if (textModel_1 && ((_a = textModel_1.is) === null || _a === void 0 ? void 0 : _a.call(textModel_1, 'textnode'))) {
                 var cmps = textModel_1.collection;
                 cmps.forEach(function (cmp) {
                     if (cmp === textModel_1) {
                         var type = 'textnode';
-                        var cnt = cmp.content;
+                        var cnt = opts.useDomContent ? textNode_1.textContent || '' : cmp.content;
                         newCmps_1.push({ type: type, content: cnt.slice(0, offset_1) });
                         newCmps_1.push(content);
                         newCmps_1.push({ type: type, content: cnt.slice(offset_1) });
@@ -35478,323 +35740,6 @@ var ComponentTextView = /** @class */ (function (_super) {
     return ComponentTextView;
 }(view_ComponentView));
 /* harmony default export */ const view_ComponentTextView = (ComponentTextView);
-
-;// CONCATENATED MODULE: ./src/dom_components/view/ComponentLinkView.ts
-var ComponentLinkView_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-var ComponentLinkView = /** @class */ (function (_super) {
-    ComponentLinkView_extends(ComponentLinkView, _super);
-    function ComponentLinkView() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    ComponentLinkView.prototype.render = function () {
-        _super.prototype.render.call(this);
-        // I need capturing instead of bubbling as bubbled clicks from other
-        // children will execute the link event
-        this.el.addEventListener('click', this.prevDef, true);
-        return this;
-    };
-    return ComponentLinkView;
-}(view_ComponentTextView));
-/* harmony default export */ const view_ComponentLinkView = (ComponentLinkView);
-
-;// CONCATENATED MODULE: ./src/dom_components/view/ComponentLabelView.ts
-var ComponentLabelView_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-var ComponentLabelView = /** @class */ (function (_super) {
-    ComponentLabelView_extends(ComponentLabelView, _super);
-    function ComponentLabelView() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    return ComponentLabelView;
-}(view_ComponentLinkView));
-/* harmony default export */ const view_ComponentLabelView = (ComponentLabelView);
-
-;// CONCATENATED MODULE: ./src/dom_components/view/ComponentMapView.ts
-var ComponentMapView_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-var ComponentMapView = /** @class */ (function (_super) {
-    ComponentMapView_extends(ComponentMapView, _super);
-    function ComponentMapView() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    ComponentMapView.prototype.tagName = function () {
-        return 'div';
-    };
-    ComponentMapView.prototype.events = function () {
-        return {};
-    };
-    ComponentMapView.prototype.initialize = function (props) {
-        _super.prototype.initialize.call(this, props);
-        this.classEmpty = this.ppfx + 'plh-map';
-    };
-    /**
-     * Update the map on the canvas
-     * @private
-     */
-    ComponentMapView.prototype.updateSrc = function () {
-        this.getIframe().src = this.model.get('src');
-    };
-    ComponentMapView.prototype.getIframe = function () {
-        if (!this.iframe) {
-            var ifrm = document.createElement('iframe');
-            ifrm.src = this.model.get('src');
-            ifrm.frameBorder = '0';
-            ifrm.style.height = '100%';
-            ifrm.style.width = '100%';
-            ifrm.className = this.ppfx + 'no-pointer';
-            this.iframe = ifrm;
-        }
-        return this.iframe;
-    };
-    ComponentMapView.prototype.render = function () {
-        _super.prototype.render.call(this);
-        this.updateClasses();
-        this.el.appendChild(this.getIframe());
-        return this;
-    };
-    return ComponentMapView;
-}(view_ComponentImageView));
-/* harmony default export */ const view_ComponentMapView = (ComponentMapView);
-
-;// CONCATENATED MODULE: ./src/dom_components/view/ComponentScriptView.ts
-var ComponentScriptView_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-var ComponentScriptView = /** @class */ (function (_super) {
-    ComponentScriptView_extends(ComponentScriptView, _super);
-    function ComponentScriptView() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    ComponentScriptView.prototype.tagName = function () {
-        return 'script';
-    };
-    ComponentScriptView.prototype.events = function () {
-        return {};
-    };
-    return ComponentScriptView;
-}(view_ComponentView));
-/* harmony default export */ const view_ComponentScriptView = (ComponentScriptView);
-
-;// CONCATENATED MODULE: ./src/dom_components/view/ComponentSvgView.ts
-var ComponentSvgView_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-var ComponentSvgView = /** @class */ (function (_super) {
-    ComponentSvgView_extends(ComponentSvgView, _super);
-    function ComponentSvgView() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    ComponentSvgView.prototype._createElement = function (tagName) {
-        return document.createElementNS('http://www.w3.org/2000/svg', tagName);
-    };
-    return ComponentSvgView;
-}(view_ComponentView));
-/* harmony default export */ const view_ComponentSvgView = (ComponentSvgView);
-
-;// CONCATENATED MODULE: ./src/dom_components/view/ComponentTableBodyView.ts
-var ComponentTableBodyView_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-var ComponentTableBodyView = /** @class */ (function (_super) {
-    ComponentTableBodyView_extends(ComponentTableBodyView, _super);
-    function ComponentTableBodyView() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    return ComponentTableBodyView;
-}(view_ComponentView));
-/* harmony default export */ const view_ComponentTableBodyView = (ComponentTableBodyView);
-
-;// CONCATENATED MODULE: ./src/dom_components/view/ComponentTableCellView.ts
-var ComponentTableCellView_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-var ComponentTableCellView = /** @class */ (function (_super) {
-    ComponentTableCellView_extends(ComponentTableCellView, _super);
-    function ComponentTableCellView() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    return ComponentTableCellView;
-}(view_ComponentView));
-/* harmony default export */ const view_ComponentTableCellView = (ComponentTableCellView);
-
-;// CONCATENATED MODULE: ./src/dom_components/view/ComponentTableFootView.ts
-var ComponentTableFootView_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-var ComponentTableFootView = /** @class */ (function (_super) {
-    ComponentTableFootView_extends(ComponentTableFootView, _super);
-    function ComponentTableFootView() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    return ComponentTableFootView;
-}(view_ComponentView));
-/* harmony default export */ const view_ComponentTableFootView = (ComponentTableFootView);
-
-;// CONCATENATED MODULE: ./src/dom_components/view/ComponentTableHeadView.ts
-var ComponentTableHeadView_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-var ComponentTableHeadView = /** @class */ (function (_super) {
-    ComponentTableHeadView_extends(ComponentTableHeadView, _super);
-    function ComponentTableHeadView() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    return ComponentTableHeadView;
-}(view_ComponentView));
-/* harmony default export */ const view_ComponentTableHeadView = (ComponentTableHeadView);
-
-;// CONCATENATED MODULE: ./src/dom_components/view/ComponentTableRowView.ts
-var ComponentTableRowView_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-var ComponentTableRowView = /** @class */ (function (_super) {
-    ComponentTableRowView_extends(ComponentTableRowView, _super);
-    function ComponentTableRowView() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    return ComponentTableRowView;
-}(view_ComponentView));
-/* harmony default export */ const view_ComponentTableRowView = (ComponentTableRowView);
-
-;// CONCATENATED MODULE: ./src/dom_components/view/ComponentTableView.ts
-
-/* harmony default export */ const ComponentTableView = (view_ComponentView.extend({
-    events: {},
-}));
 
 ;// CONCATENATED MODULE: ./src/dom_components/view/ComponentVideoView.ts
 var ComponentVideoView_extends = (undefined && undefined.__extends) || (function () {
@@ -36164,7 +36109,7 @@ var ComponentManager = /** @class */ (function (_super) {
             {
                 id: 'table',
                 model: model_ComponentTable,
-                view: ComponentTableView,
+                view: view_ComponentTableView,
             },
             {
                 id: 'thead',
@@ -37859,6 +37804,7 @@ var Block_extends = (undefined && undefined.__extends) || (function () {
 })();
 
 
+
 /**
  * @property {String} label Block label, eg. `My block`
  * @property {String|Object} content The content of the block. Might be an HTML string or a [Component Defintion](/modules/Components.html#component-definition)
@@ -37892,6 +37838,21 @@ var Block = /** @class */ (function (_super) {
             attributes: {},
         };
     };
+    Object.defineProperty(Block.prototype, "category", {
+        get: function () {
+            var cat = this.get('category');
+            return cat instanceof ModuleCategory ? cat : undefined;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Block.prototype, "parent", {
+        get: function () {
+            return this.collection;
+        },
+        enumerable: false,
+        configurable: true
+    });
     /**
      * Get block id
      * @returns {String}
@@ -37953,86 +37914,22 @@ var Blocks_extends = (undefined && undefined.__extends) || (function () {
 
 var Blocks = /** @class */ (function (_super) {
     Blocks_extends(Blocks, _super);
-    function Blocks() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    function Blocks(coll, options) {
+        var _this = _super.call(this, coll) || this;
+        _this.em = options.em;
+        _this.on('add', _this.handleAdd);
+        return _this;
     }
+    Blocks.prototype.getCategories = function () {
+        return this.em.Blocks.getCategories();
+    };
+    Blocks.prototype.handleAdd = function (model) {
+        this.initCategory(model);
+    };
     return Blocks;
-}(common/* Collection */.FE));
+}(CollectionWithCategories));
 /* harmony default export */ const model_Blocks = (Blocks);
 Blocks.prototype.model = model_Block;
-
-;// CONCATENATED MODULE: ./src/block_manager/model/Category.ts
-var Category_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-var Category = /** @class */ (function (_super) {
-    Category_extends(Category, _super);
-    function Category() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    Category.prototype.defaults = function () {
-        return {
-            id: '',
-            label: '',
-            open: true,
-            attributes: {},
-        };
-    };
-    return Category;
-}(common/* Model */.Hn));
-/* harmony default export */ const model_Category = (Category);
-
-;// CONCATENATED MODULE: ./src/block_manager/model/Categories.ts
-var Categories_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-
-
-
-var Categories = /** @class */ (function (_super) {
-    Categories_extends(Categories, _super);
-    function Categories() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    /** @ts-ignore */
-    Categories.prototype.add = function (model, opts) {
-        var models = (0,index_all.isArray)(model) ? model : [model];
-        models.forEach(function (md) { return md && (md.id = (0,mixins.normalizeKey)("".concat(md.id))); });
-        return _super.prototype.add.call(this, model, opts);
-    };
-    Categories.prototype.get = function (id) {
-        return _super.prototype.get.call(this, (0,index_all.isString)(id) ? (0,mixins.normalizeKey)(id) : id);
-    };
-    return Categories;
-}(common/* Collection */.FE));
-/* harmony default export */ const model_Categories = (Categories);
-Categories.prototype.model = model_Category;
 
 ;// CONCATENATED MODULE: ./src/block_manager/types.ts
 /**{START_EVENTS}*/
@@ -38254,8 +38151,8 @@ var BlockView = /** @class */ (function (_super) {
 }(common/* View */.G7));
 /* harmony default export */ const view_BlockView = (BlockView);
 
-;// CONCATENATED MODULE: ./src/block_manager/view/CategoryView.ts
-var CategoryView_extends = (undefined && undefined.__extends) || (function () {
+;// CONCATENATED MODULE: ./src/abstract/ModuleCategoryView.ts
+var ModuleCategoryView_extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -38270,25 +38167,26 @@ var CategoryView_extends = (undefined && undefined.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var CategoryView_makeTemplateObject = (undefined && undefined.__makeTemplateObject) || function (cooked, raw) {
+var ModuleCategoryView_makeTemplateObject = (undefined && undefined.__makeTemplateObject) || function (cooked, raw) {
     if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
     return cooked;
 };
 
 
 var CategoryView = /** @class */ (function (_super) {
-    CategoryView_extends(CategoryView, _super);
-    function CategoryView(o, config) {
+    ModuleCategoryView_extends(CategoryView, _super);
+    function CategoryView(o, config, catName) {
         var _this = _super.call(this, o) || this;
         _this.config = config;
         var pfx = config.pStylePrefix || '';
         _this.em = config.em;
+        _this.catName = catName;
         _this.pfx = pfx;
         _this.caretR = 'fa fa-caret-right';
         _this.caretD = 'fa fa-caret-down';
         _this.iconClass = "".concat(pfx, "caret-icon");
         _this.activeClass = "".concat(pfx, "open");
-        _this.className = "".concat(pfx, "block-category");
+        _this.className = "".concat(pfx).concat(catName, "-category");
         _this.listenTo(_this.model, 'change:open', _this.updateVisibility);
         _this.model.view = _this;
         return _this;
@@ -38299,8 +38197,8 @@ var CategoryView = /** @class */ (function (_super) {
         };
     };
     CategoryView.prototype.template = function (_a) {
-        var pfx = _a.pfx, label = _a.label;
-        return html(CategoryView_templateObject_1 || (CategoryView_templateObject_1 = CategoryView_makeTemplateObject(["\n      <div class=\"", "title\" data-title>\n        <i class=\"", "caret-icon\"></i>\n        ", "\n      </div>\n      <div class=\"", "blocks-c\"></div>\n    "], ["\n      <div class=\"", "title\" data-title>\n        <i class=\"", "caret-icon\"></i>\n        ", "\n      </div>\n      <div class=\"", "blocks-c\"></div>\n    "])), pfx, pfx, label, pfx);
+        var pfx = _a.pfx, label = _a.label, catName = _a.catName;
+        return html(ModuleCategoryView_templateObject_1 || (ModuleCategoryView_templateObject_1 = ModuleCategoryView_makeTemplateObject(["\n      <div class=\"", "title\" data-title>\n        <i class=\"", "caret-icon\"></i>\n        ", "\n      </div>\n      <div class=\"", "", "s-c\"></div>\n    "], ["\n      <div class=\"", "title\" data-title>\n        <i class=\"", "caret-icon\"></i>\n        ", "\n      </div>\n      <div class=\"", "", "s-c\"></div>\n    "])), pfx, pfx, label, pfx, catName);
     };
     /** @ts-ignore */
     CategoryView.prototype.attributes = function () {
@@ -38315,12 +38213,12 @@ var CategoryView = /** @class */ (function (_super) {
     CategoryView.prototype.open = function () {
         this.$el.addClass(this.activeClass);
         this.getIconEl().className = "".concat(this.iconClass, " ").concat(this.caretD);
-        this.getBlocksEl().style.display = '';
+        this.getTypeEl().style.display = '';
     };
     CategoryView.prototype.close = function () {
         this.$el.removeClass(this.activeClass);
         this.getIconEl().className = "".concat(this.iconClass, " ").concat(this.caretR);
-        this.getBlocksEl().style.display = 'none';
+        this.getTypeEl().style.display = 'none';
     };
     CategoryView.prototype.toggle = function () {
         var model = this.model;
@@ -38332,19 +38230,19 @@ var CategoryView = /** @class */ (function (_super) {
         }
         return this.iconEl;
     };
-    CategoryView.prototype.getBlocksEl = function () {
-        if (!this.blocksEl) {
-            this.blocksEl = this.el.querySelector(".".concat(this.pfx, "blocks-c"));
+    CategoryView.prototype.getTypeEl = function () {
+        if (!this.typeEl) {
+            this.typeEl = this.el.querySelector(".".concat(this.pfx).concat(this.catName, "s-c"));
         }
-        return this.blocksEl;
+        return this.typeEl;
     };
     CategoryView.prototype.append = function (el) {
-        this.getBlocksEl().appendChild(el);
+        this.getTypeEl().appendChild(el);
     };
     CategoryView.prototype.render = function () {
-        var _a = this, em = _a.em, el = _a.el, $el = _a.$el, model = _a.model, pfx = _a.pfx;
-        var label = em.t("blockManager.categories.".concat(model.id)) || model.get('label');
-        el.innerHTML = this.template({ pfx: pfx, label: label });
+        var _a = this, em = _a.em, el = _a.el, $el = _a.$el, model = _a.model, pfx = _a.pfx, catName = _a.catName;
+        var label = em.t("".concat(catName, "Manager.categories.").concat(model.id)) || model.get('label');
+        el.innerHTML = this.template({ pfx: pfx, label: label, catName: catName });
         $el.addClass(this.className);
         $el.css({ order: model.get('order') });
         this.updateVisibility();
@@ -38352,8 +38250,8 @@ var CategoryView = /** @class */ (function (_super) {
     };
     return CategoryView;
 }(common/* View */.G7));
-/* harmony default export */ const view_CategoryView = (CategoryView);
-var CategoryView_templateObject_1;
+/* harmony default export */ const ModuleCategoryView = (CategoryView);
+var ModuleCategoryView_templateObject_1;
 
 ;// CONCATENATED MODULE: ./src/block_manager/view/BlocksView.ts
 var BlocksView_extends = (undefined && undefined.__extends) || (function () {
@@ -38474,32 +38372,21 @@ var BlocksView = /** @class */ (function (_super) {
      * */
     BlocksView.prototype.add = function (model, fragment) {
         var _a = this, config = _a.config, renderedCategories = _a.renderedCategories;
-        var view = new view_BlockView({
-            model: model,
-            attributes: model.get('attributes'),
-        }, config);
+        var attributes = model.get('attributes');
+        var view = new view_BlockView({ model: model, attributes: attributes }, config);
         var rendered = view.render().el;
-        var category = model.get('category');
+        var category = model.parent.initCategory(model);
         // Check for categories
         if (category && this.categories && !config.ignoreCategories) {
-            if ((0,index_all.isString)(category)) {
-                category = { id: category, label: category };
-            }
-            else if ((0,index_all.isObject)(category) && !category.id) {
-                category.id = category.label;
-            }
-            var catModel = this.categories.add(category);
-            var catId = catModel.get('id');
+            var catId = category.getId();
             var categories = this.getCategoriesEl();
             var catView = renderedCategories.get(catId);
-            // @ts-ignore
-            model.set('category', catModel, { silent: true });
             if (!catView && categories) {
-                catView = new view_CategoryView({ model: catModel }, config).render();
+                catView = new ModuleCategoryView({ model: category }, config, 'block').render();
                 renderedCategories.set(catId, catView);
                 categories.appendChild(catView.el);
             }
-            catView && catView.append(rendered);
+            catView === null || catView === void 0 ? void 0 : catView.append(rendered);
             return;
         }
         fragment ? fragment.appendChild(rendered) : this.append(rendered);
@@ -38607,17 +38494,17 @@ var BlockManager = /** @class */ (function (_super) {
     block_manager_extends(BlockManager, _super);
     function BlockManager(em) {
         var _a;
-        var _this = _super.call(this, em, 'BlockManager', new model_Blocks(((_a = em.config.blockManager) === null || _a === void 0 ? void 0 : _a.blocks) || []), BlocksEvents, block_manager_config_config) || this;
+        var _this = _super.call(this, em, 'BlockManager', new model_Blocks(((_a = em.config.blockManager) === null || _a === void 0 ? void 0 : _a.blocks) || [], { em: em }), BlocksEvents, block_manager_config_config) || this;
         _this.events = BlocksEvents;
         _this.Block = model_Block;
         _this.Blocks = model_Blocks;
-        _this.Category = model_Category;
-        _this.Categories = model_Categories;
+        _this.Category = ModuleCategory;
+        _this.Categories = ModuleCategories;
         _this.storageKey = '';
         // Global blocks collection
         _this.blocks = _this.all;
-        _this.blocksVisible = new model_Blocks(_this.blocks.models);
-        _this.categories = new model_Categories();
+        _this.blocksVisible = new model_Blocks(_this.blocks.models, { em: em });
+        _this.categories = new ModuleCategories();
         // Setup the sync between the global and public collections
         _this.blocks.on('add', function (model) { return _this.blocksVisible.add(model); });
         _this.blocks.on('remove', function (model) { return _this.blocksVisible.remove(model); });
@@ -38803,6 +38690,22 @@ var BlockManager = /** @class */ (function (_super) {
         return this._dragBlock;
     };
     /**
+     * Get blocks by category.
+     * @example
+     * blockManager.getBlocksByCategory();
+     * // Returns an array of items of this type
+     * // > { category?: Category; items: Block[] }
+     *
+     * // NOTE: The item without category is the one containing blocks without category.
+     *
+     * // You can also get the same output format by passing your own array of Blocks
+     * const myFilteredBlocks: Block[] = [...];
+     * blockManager.getBlocksByCategorymyFilteredBlocks
+     */
+    BlockManager.prototype.getBlocksByCategory = function (blocks) {
+        return getItemsByCategory(blocks || this.getAll().models);
+    };
+    /**
      * Render blocks
      * @param  {Array} blocks Blocks to render, without the argument will render all global blocks
      * @param  {Object} [opts={}] Options
@@ -38835,7 +38738,7 @@ var BlockManager = /** @class */ (function (_super) {
         var _a = this, categories = _a.categories, config = _a.config, em = _a.em;
         var toRender = blocks || this.getAll().models;
         if (opts.external) {
-            var collection = new model_Blocks(toRender);
+            var collection = new model_Blocks(toRender, { em: em });
             return new view_BlocksView({ collection: collection, categories: categories }, block_manager_assign(block_manager_assign({ em: em }, config), opts)).render().el;
         }
         if (this.blocksView) {
@@ -40022,6 +39925,7 @@ var SelectorManager = /** @class */ (function (_super) {
 ;// CONCATENATED MODULE: ./src/parser/config/config.ts
 var parser_config_config_config = {
     textTags: ['br', 'b', 'i', 'u', 'a', 'ul', 'ol'],
+    textTypes: ['text', 'textnode', 'comment'],
     parserCss: undefined,
     parserHtml: undefined,
     optionsHtml: {
@@ -41631,8 +41535,6 @@ var trait_manager_config_config_config = {
 };
 /* harmony default export */ const trait_manager_config_config = (trait_manager_config_config_config);
 
-// EXTERNAL MODULE: ./src/domain_abstract/view/DomainViews.ts
-var DomainViews = __webpack_require__(330);
 ;// CONCATENATED MODULE: ./src/trait_manager/view/TraitView.ts
 var TraitView_extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -41676,11 +41578,11 @@ var TraitView = /** @class */ (function (_super) {
         var type = model.attributes.type;
         _this.config = config;
         _this.em = config.em;
+        _this.pfx = config.stylePrefix || '';
         _this.ppfx = config.pStylePrefix || '';
-        _this.pfx = _this.ppfx + config.stylePrefix || '';
         _this.target = target;
-        var ppfx = _this.ppfx;
-        _this.clsField = "".concat(ppfx, "field ").concat(ppfx, "field-").concat(type);
+        _this.className = _this.pfx + 'trait';
+        _this.clsField = "".concat(_this.ppfx, "field ").concat(_this.ppfx, "field-").concat(type);
         var evToListen = [
             ['change:value', _this.onValueChange],
             ['remove', _this.removeView],
@@ -41832,18 +41734,7 @@ var TraitView = /** @class */ (function (_super) {
         return input || ($input && $input.get && $input.get(0)) || this.getElInput();
     };
     TraitView.prototype.getModelValue = function () {
-        var value;
-        var model = this.model;
-        var target = this.target;
-        var name = model.getName();
-        if (model.get('changeProp')) {
-            value = target.get(name);
-        }
-        else {
-            var attrs = target.get('attributes');
-            value = model.get('value') || attrs[name];
-        }
-        return !(0,index_all.isUndefined)(value) ? value : '';
+        return this.model.getValue();
     };
     TraitView.prototype.getElInput = function () {
         return this.elInput;
@@ -41905,8 +41796,8 @@ var TraitView = /** @class */ (function (_super) {
 /* harmony default export */ const view_TraitView = (TraitView);
 TraitView.prototype.eventCapture = ['change'];
 
-;// CONCATENATED MODULE: ./src/trait_manager/view/TraitsView.ts
-var TraitsView_extends = (undefined && undefined.__extends) || (function () {
+;// CONCATENATED MODULE: ./src/trait_manager/view/TraitButtonView.ts
+var TraitButtonView_extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -41922,114 +41813,38 @@ var TraitsView_extends = (undefined && undefined.__extends) || (function () {
     };
 })();
 
-
-var TraitsView = /** @class */ (function (_super) {
-    TraitsView_extends(TraitsView, _super);
-    function TraitsView(o, itemsView) {
-        if (o === void 0) { o = {}; }
-        var _this = _super.call(this, o) || this;
-        _this.reuseView = true;
-        _this.itemsView = itemsView;
-        var config = o.config || {};
-        var em = o.editor;
-        _this.config = config;
-        _this.em = em;
-        _this.ppfx = config.pStylePrefix || '';
-        _this.pfx = _this.ppfx + config.stylePrefix || '';
-        _this.className = "".concat(_this.pfx, "traits");
-        _this.listenTo(em, 'component:toggled', _this.updatedCollection);
-        _this.updatedCollection();
-        return _this;
+var TraitButtonView = /** @class */ (function (_super) {
+    TraitButtonView_extends(TraitButtonView, _super);
+    function TraitButtonView() {
+        return _super !== null && _super.apply(this, arguments) || this;
     }
-    /**
-     * Update view collection
-     * @private
-     */
-    TraitsView.prototype.updatedCollection = function () {
-        var _a = this, ppfx = _a.ppfx, className = _a.className, em = _a.em;
-        var comp = em.getSelected();
-        this.el.className = "".concat(className, " ").concat(ppfx, "one-bg ").concat(ppfx, "two-color");
-        // @ts-ignore
-        this.collection = comp ? comp.traits : [];
-        this.render();
+    TraitButtonView.prototype.templateInput = function () {
+        return '';
     };
-    return TraitsView;
-}(DomainViews/* default */.Z));
-/* harmony default export */ const view_TraitsView = (TraitsView);
-// @ts-ignore
-TraitsView.prototype.itemView = view_TraitView;
-
-;// CONCATENATED MODULE: ./src/trait_manager/view/TraitSelectView.ts
-var TraitSelectView_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
+    TraitButtonView.prototype.onChange = function () {
+        this.handleClick();
     };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    TraitButtonView.prototype.handleClick = function () {
+        this.model.runCommand();
     };
-})();
-
-
-
-var TraitSelectView = /** @class */ (function (_super) {
-    TraitSelectView_extends(TraitSelectView, _super);
-    function TraitSelectView(o) {
-        if (o === void 0) { o = {}; }
-        var _this = _super.call(this, o) || this;
-        _this.listenTo(_this.model, 'change:options', _this.rerender);
-        return _this;
-    }
-    TraitSelectView.prototype.templateInput = function () {
-        var _a = this, ppfx = _a.ppfx, clsField = _a.clsField;
-        return "<div class=\"".concat(clsField, "\">\n      <div data-input></div>\n      <div class=\"").concat(ppfx, "sel-arrow\">\n        <div class=\"").concat(ppfx, "d-s-arrow\"></div>\n      </div>\n    </div>");
-    };
-    /**
-     * Returns input element
-     * @return {HTMLElement}
-     * @private
-     */
-    TraitSelectView.prototype.getInputEl = function () {
-        if (!this.$input) {
-            var _a = this, model = _a.model, em_1 = _a.em;
-            var propName_1 = model.get('name');
-            var opts = model.get('options') || [];
-            var values_1 = [];
-            var input_1 = '<select>';
-            opts.forEach(function (el) {
-                var attrs = '';
-                var name, value, style;
-                if ((0,index_all.isString)(el)) {
-                    name = el;
-                    value = el;
-                }
-                else {
-                    name = el.name || el.label || el.value;
-                    value = "".concat((0,index_all.isUndefined)(el.value) ? el.id : el.value).replace(/"/g, '&quot;');
-                    style = el.style ? el.style.replace(/"/g, '&quot;') : '';
-                    attrs += style ? " style=\"".concat(style, "\"") : '';
-                }
-                var resultName = em_1.t("traitManager.traits.options.".concat(propName_1, ".").concat(value)) || name;
-                input_1 += "<option value=\"".concat(value, "\"").concat(attrs, ">").concat(resultName, "</option>");
-                values_1.push(value);
-            });
-            input_1 += '</select>';
-            this.$input = (0,cash_dom["default"])(input_1);
-            var val = model.getTargetValue();
-            var valResult = values_1.indexOf(val) >= 0 ? val : model.get('default');
-            !(0,index_all.isUndefined)(valResult) && this.$input.val(valResult);
+    TraitButtonView.prototype.renderLabel = function () {
+        if (this.model.get('label')) {
+            view_TraitView.prototype.renderLabel.apply(this);
         }
-        return this.$input.get(0);
     };
-    return TraitSelectView;
+    TraitButtonView.prototype.getInputEl = function () {
+        var _a = this, model = _a.model, ppfx = _a.ppfx;
+        var _b = model.props(), labelButton = _b.labelButton, text = _b.text, full = _b.full;
+        var label = labelButton || text;
+        var className = "".concat(ppfx, "btn");
+        var input = "<button type=\"button\" class=\"".concat(className, "-prim").concat(full ? " ".concat(className, "--full") : '', "\">").concat(label, "</button>");
+        return input;
+    };
+    return TraitButtonView;
 }(view_TraitView));
-/* harmony default export */ const view_TraitSelectView = (TraitSelectView);
+/* harmony default export */ const view_TraitButtonView = (TraitButtonView);
+// Fix #4388
+TraitButtonView.prototype.eventCapture = ['click button'];
 
 ;// CONCATENATED MODULE: ./src/trait_manager/view/TraitCheckboxView.ts
 var TraitCheckboxView_extends = (undefined && undefined.__extends) || (function () {
@@ -42088,7 +41903,7 @@ var TraitCheckboxView = /** @class */ (function (_super) {
             var _a = this, model = _a.model, target = _a.target;
             var valueFalse = model.attributes.valueFalse;
             var name_1 = model.getName();
-            if (model.get('changeProp')) {
+            if (model.changeProp) {
                 checked = target.get(name_1);
                 targetValue = checked;
             }
@@ -42106,442 +41921,6 @@ var TraitCheckboxView = /** @class */ (function (_super) {
     return TraitCheckboxView;
 }(view_TraitView));
 /* harmony default export */ const view_TraitCheckboxView = (TraitCheckboxView);
-
-;// CONCATENATED MODULE: ./src/domain_abstract/ui/Input.ts
-var Input_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-var Input = /** @class */ (function (_super) {
-    Input_extends(Input, _super);
-    function Input(opts) {
-        if (opts === void 0) { opts = {}; }
-        var _this = _super.call(this, opts) || this;
-        var ppfx = opts.ppfx || '';
-        _this.opts = opts;
-        _this.ppfx = ppfx;
-        _this.em = opts.target || {};
-        !opts.onChange && _this.listenTo(_this.model, 'change:value', _this.handleModelChange);
-        return _this;
-    }
-    Input.prototype.template = function () {
-        return "<span class=\"".concat(this.holderClass(), "\"></span>");
-    };
-    Input.prototype.inputClass = function () {
-        return "".concat(this.ppfx, "field");
-    };
-    Input.prototype.holderClass = function () {
-        return "".concat(this.ppfx, "input-holder");
-    };
-    /**
-     * Fired when the element of the property is updated
-     */
-    Input.prototype.elementUpdated = function () {
-        this.model.trigger('el:change');
-    };
-    /**
-     * Set value to the input element
-     * @param {string} value
-     */
-    Input.prototype.setValue = function (value, opts) {
-        var model = this.model;
-        var val = value || model.get('defaults');
-        var input = this.getInputEl();
-        input && (input.value = val);
-    };
-    /**
-     * Updates the view when the model is changed
-     * */
-    Input.prototype.handleModelChange = function (model, value, opts) {
-        this.setValue(value, opts);
-    };
-    /**
-     * Handled when the view is changed
-     */
-    Input.prototype.handleChange = function (e) {
-        e.stopPropagation();
-        var value = this.getInputEl().value;
-        this.__onInputChange(value);
-        this.elementUpdated();
-    };
-    Input.prototype.__onInputChange = function (value) {
-        this.model.set({ value: value }, { fromInput: 1 });
-    };
-    /**
-     * Get the input element
-     * @return {HTMLElement}
-     */
-    Input.prototype.getInputEl = function () {
-        if (!this.inputEl) {
-            var _a = this, model = _a.model, opts = _a.opts;
-            var type = opts.type || 'text';
-            var plh = model.get('placeholder') || model.get('defaults') || model.get('default') || '';
-            this.inputEl = (0,cash_dom["default"])("<input type=\"".concat(type, "\" placeholder=\"").concat(plh, "\">"));
-        }
-        return this.inputEl.get(0);
-    };
-    Input.prototype.render = function () {
-        this.inputEl = null;
-        var el = this.$el;
-        el.addClass(this.inputClass());
-        el.html(this.template());
-        el.find(".".concat(this.holderClass())).append(this.getInputEl());
-        return this;
-    };
-    return Input;
-}(common/* View */.G7));
-/* harmony default export */ const ui_Input = (Input);
-Input.prototype.events = {
-    // @ts-ignore
-    change: 'handleChange',
-};
-
-;// CONCATENATED MODULE: ./src/domain_abstract/ui/InputNumber.ts
-var InputNumber_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-
-
-var InputNumber = /** @class */ (function (_super) {
-    InputNumber_extends(InputNumber, _super);
-    function InputNumber(opts) {
-        if (opts === void 0) { opts = {}; }
-        var _this = _super.call(this, opts) || this;
-        (0,index_all.bindAll)(_this, 'moveIncrement', 'upIncrement');
-        _this.doc = document;
-        _this.listenTo(_this.model, 'change:unit', _this.handleModelChange);
-        return _this;
-    }
-    InputNumber.prototype.template = function () {
-        var ppfx = this.ppfx;
-        return "\n      <span class=\"".concat(ppfx, "input-holder\"></span>\n      <span class=\"").concat(ppfx, "field-units\"></span>\n      <div class=\"").concat(ppfx, "field-arrows\" data-arrows>\n        <div class=\"").concat(ppfx, "field-arrow-u\" data-arrow-up></div>\n        <div class=\"").concat(ppfx, "field-arrow-d\" data-arrow-down></div>\n      </div>\n    ");
-    };
-    InputNumber.prototype.inputClass = function () {
-        var ppfx = this.ppfx;
-        return this.opts.contClass || "".concat(ppfx, "field ").concat(ppfx, "field-integer");
-    };
-    /**
-     * Set value to the model
-     * @param {string} value
-     * @param {Object} opts
-     */
-    InputNumber.prototype.setValue = function (value, opts) {
-        var opt = opts || {};
-        var valid = this.validateInputValue(value, { deepCheck: 1 });
-        var validObj = { value: valid.value, unit: '' };
-        // If found some unit value
-        if (valid.unit || valid.force) {
-            validObj.unit = valid.unit;
-        }
-        this.model.set(validObj, opt);
-        // Generally I get silent when I need to reflect data to view without
-        // reupdating the target
-        if (opt.silent) {
-            this.handleModelChange();
-        }
-    };
-    /**
-     * Handled when the view is changed
-     */
-    InputNumber.prototype.handleChange = function (e) {
-        e.stopPropagation();
-        this.setValue(this.getInputEl().value);
-        this.elementUpdated();
-    };
-    /**
-     * Handled when the view is changed
-     */
-    InputNumber.prototype.handleUnitChange = function (e) {
-        e.stopPropagation();
-        var value = this.getUnitEl().value;
-        this.model.set('unit', value);
-        this.elementUpdated();
-    };
-    /**
-     * Handled when user uses keyboard
-     */
-    InputNumber.prototype.handleKeyDown = function (e) {
-        if (e.key === 'ArrowUp') {
-            e.preventDefault();
-            this.upArrowClick();
-        }
-        if (e.key === 'ArrowDown') {
-            e.preventDefault();
-            this.downArrowClick();
-        }
-    };
-    /**
-     * Fired when the element of the property is updated
-     */
-    InputNumber.prototype.elementUpdated = function () {
-        this.model.trigger('el:change');
-    };
-    /**
-     * Updates the view when the model is changed
-     * */
-    InputNumber.prototype.handleModelChange = function () {
-        var model = this.model;
-        this.getInputEl().value = model.get('value');
-        var unitEl = this.getUnitEl();
-        unitEl && (unitEl.value = model.get('unit') || '');
-    };
-    /**
-     * Get the unit element
-     * @return {HTMLElement}
-     */
-    InputNumber.prototype.getUnitEl = function () {
-        if (!this.unitEl) {
-            var model_1 = this.model;
-            var units = model_1.get('units') || [];
-            if (units.length) {
-                var options_1 = ['<option value="" disabled hidden>-</option>'];
-                units.forEach(function (unit) {
-                    var selected = unit == model_1.get('unit') ? 'selected' : '';
-                    options_1.push("<option ".concat(selected, ">").concat(unit, "</option>"));
-                });
-                var temp = document.createElement('div');
-                temp.innerHTML = "<select class=\"".concat(this.ppfx, "input-unit\">").concat(options_1.join(''), "</select>");
-                this.unitEl = temp.firstChild;
-            }
-        }
-        return this.unitEl;
-    };
-    /**
-     * Invoked when the up arrow is clicked
-     * */
-    InputNumber.prototype.upArrowClick = function () {
-        var model = this.model;
-        var step = model.get('step');
-        var value = parseFloat(model.get('value'));
-        this.setValue(this.normalizeValue(value + step));
-        this.elementUpdated();
-    };
-    /**
-     * Invoked when the down arrow is clicked
-     * */
-    InputNumber.prototype.downArrowClick = function () {
-        var model = this.model;
-        var step = model.get('step');
-        var value = parseFloat(model.get('value'));
-        this.setValue(this.normalizeValue(value - step));
-        this.elementUpdated();
-    };
-    /**
-     * Change easily integer input value with click&drag method
-     * @param Event
-     *
-     * @return void
-     * */
-    InputNumber.prototype.downIncrement = function (e) {
-        e.preventDefault();
-        this.moved = false;
-        var value = this.model.get('value') || 0;
-        value = this.normalizeValue(value);
-        this.current = { y: e.pageY, val: value };
-        (0,dom.on)(this.doc, 'mousemove', this.moveIncrement);
-        (0,dom.on)(this.doc, 'mouseup', this.upIncrement);
-    };
-    /** While the increment is clicked, moving the mouse will update input value
-     * @param Object
-     *
-     * @return bool
-     * */
-    InputNumber.prototype.moveIncrement = function (ev) {
-        this.moved = true;
-        var model = this.model;
-        var step = model.get('step');
-        var data = this.current;
-        var pos = this.normalizeValue(data.val + (data.y - ev.pageY) * step);
-        var _a = this.validateInputValue(pos), value = _a.value, unit = _a.unit;
-        this.prValue = value;
-        model.set({ value: value, unit: unit }, { avoidStore: 1 });
-        return false;
-    };
-    /**
-     * Stop moveIncrement method
-     * */
-    InputNumber.prototype.upIncrement = function () {
-        var model = this.model;
-        var step = model.get('step');
-        (0,dom/* off */.S1)(this.doc, 'mouseup', this.upIncrement);
-        (0,dom/* off */.S1)(this.doc, 'mousemove', this.moveIncrement);
-        if (this.prValue && this.moved) {
-            var value = this.prValue - step;
-            // @ts-ignore
-            model.set('value', value, { avoidStore: 1 }).set('value', value + step);
-            this.elementUpdated();
-        }
-    };
-    InputNumber.prototype.normalizeValue = function (value, defValue) {
-        if (defValue === void 0) { defValue = 0; }
-        var model = this.model;
-        var step = model.get('step');
-        var stepDecimals = 0;
-        if (isNaN(value)) {
-            return defValue;
-        }
-        value = parseFloat(value);
-        if (Math.floor(value) !== value) {
-            var side = step.toString().split('.')[1];
-            stepDecimals = side ? side.length : 0;
-        }
-        return stepDecimals ? parseFloat(value.toFixed(stepDecimals)) : value;
-    };
-    /**
-     * Validate input value
-     * @param {String} value Raw value
-     * @param {Object} opts Options
-     * @return {Object} Validated string
-     */
-    InputNumber.prototype.validateInputValue = function (value, opts) {
-        if (opts === void 0) { opts = {}; }
-        var force = 0;
-        var opt = opts || {};
-        var model = this.model;
-        var defValue = ''; //model.get('defaults');
-        var val = !(0,index_all.isUndefined)(value) ? value : defValue;
-        var units = opts.units || model.get('units') || [];
-        var unit = model.get('unit') || (units.length && units[0]) || '';
-        var max = !(0,index_all.isUndefined)(opts.max) ? opts.max : model.get('max');
-        var min = !(0,index_all.isUndefined)(opts.min) ? opts.min : model.get('min');
-        var limitlessMax = !!model.get('limitlessMax');
-        var limitlessMin = !!model.get('limitlessMin');
-        if (opt.deepCheck) {
-            var fixed = model.get('fixedValues') || [];
-            if (val === '')
-                unit = '';
-            if (val) {
-                // If the value is one of the fixed values I leave it as it is
-                var regFixed = new RegExp('^' + fixed.join('|'), 'g');
-                if (fixed.length && regFixed.test(val)) {
-                    val = val.match(regFixed)[0];
-                    unit = '';
-                    force = 1;
-                }
-                else {
-                    var valCopy = val + '';
-                    val += ''; // Make it suitable for replace
-                    val = parseFloat(val.replace(',', '.'));
-                    val = !isNaN(val) ? val : defValue;
-                    var uN = valCopy.replace(val, '');
-                    // Check if exists as unit
-                    if ((0,index_all.indexOf)(units, uN) >= 0)
-                        unit = uN;
-                }
-            }
-        }
-        if (!limitlessMax && !(0,index_all.isUndefined)(max) && max !== '')
-            val = val > max ? max : val;
-        if (!limitlessMin && !(0,index_all.isUndefined)(min) && min !== '')
-            val = val < min ? min : val;
-        return {
-            force: force,
-            value: val,
-            unit: unit,
-        };
-    };
-    InputNumber.prototype.render = function () {
-        ui_Input.prototype.render.call(this);
-        this.unitEl = null;
-        var unit = this.getUnitEl();
-        unit && this.$el.find(".".concat(this.ppfx, "field-units")).get(0).appendChild(unit);
-        return this;
-    };
-    return InputNumber;
-}(ui_Input));
-/* harmony default export */ const ui_InputNumber = (InputNumber);
-InputNumber.prototype.events = {
-    // @ts-ignore
-    'change input': 'handleChange',
-    'change select': 'handleUnitChange',
-    'click [data-arrow-up]': 'upArrowClick',
-    'click [data-arrow-down]': 'downArrowClick',
-    'mousedown [data-arrows]': 'downIncrement',
-    keydown: 'handleKeyDown',
-};
-
-;// CONCATENATED MODULE: ./src/trait_manager/view/TraitNumberView.ts
-var TraitNumberView_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-
-
-var TraitNumberView = /** @class */ (function (_super) {
-    TraitNumberView_extends(TraitNumberView, _super);
-    function TraitNumberView() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    TraitNumberView.prototype.getValueForTarget = function () {
-        var model = this.model;
-        var _a = model.attributes, value = _a.value, unit = _a.unit;
-        return !(0,index_all.isUndefined)(value) && value !== '' ? value + unit : model.get('default');
-    };
-    /**
-     * Returns input element
-     * @return {HTMLElement}
-     * @private
-     */
-    TraitNumberView.prototype.getInputEl = function () {
-        if (!this.input) {
-            var _a = this, ppfx = _a.ppfx, model = _a.model;
-            var value = this.getModelValue();
-            var inputNumber = new ui_InputNumber({
-                contClass: "".concat(ppfx, "field-int"),
-                type: 'number',
-                model: model,
-                ppfx: ppfx,
-            });
-            inputNumber.render();
-            this.$input = inputNumber.inputEl;
-            this.$unit = inputNumber.unitEl;
-            // @ts-ignore
-            model.set('value', value, { fromTarget: true });
-            this.$input.val(value);
-            this.input = inputNumber.el;
-        }
-        return this.input;
-    };
-    return TraitNumberView;
-}(view_TraitView));
-/* harmony default export */ const view_TraitNumberView = (TraitNumberView);
 
 ;// CONCATENATED MODULE: ./src/utils/ColorPicker.ts
 // @ts-nocheck
@@ -43311,25 +42690,41 @@ var TraitNumberView = /** @class */ (function (_super) {
     }
     /**
      * checkOffset - get the offset below/above and left/right element depending on screen position
-     * Thanks https://github.com/jquery/jquery-ui/blob/master/ui/jquery.ui.datepicker.js
      */
     function getOffset(picker, input) {
-        var extraY = 0;
-        var dpWidth = picker.outerWidth();
-        var dpHeight = picker.outerHeight();
-        var inputHeight = input.outerHeight();
-        var doc = picker[0].ownerDocument;
-        var docElem = doc.documentElement;
-        var cW = docElem.clientWidth;
-        var cH = docElem.clientHeight;
-        var scL = $(doc).scrollLeft();
-        var scT = $(doc).scrollTop();
-        var viewWidth = cW + scL;
-        var viewHeight = cH + scT;
-        var offset = input.offset();
-        offset.top += inputHeight;
-        offset.left -= Math.min(offset.left, offset.left + dpWidth > viewWidth && viewWidth > dpWidth ? Math.abs(offset.left + dpWidth - viewWidth) : 0);
-        offset.top -= Math.min(offset.top, offset.top + dpHeight > viewHeight && viewHeight > dpHeight ? Math.abs(dpHeight + inputHeight - extraY) : extraY);
+        var offsetElm = input[0];
+        var pickerEl = picker[0];
+        var rootElm = pickerEl.parentElement;
+        var inputRect = offsetElm.getBoundingClientRect();
+        var pickerW = pickerEl.offsetWidth;
+        var pickerH = pickerEl.offsetHeight;
+        var offset = {
+            top: 0,
+            left: 0,
+            width: offsetElm.offsetWidth,
+            height: offsetElm.offsetHeight,
+        };
+        while (offsetElm) {
+            offset.top += offsetElm.offsetTop - offsetElm.scrollTop;
+            offset.left += offsetElm.offsetLeft - offsetElm.scrollLeft;
+            // Check if the current element in our root, or if the next offset parent is outside of the root
+            if (offsetElm === rootElm || !rootElm.contains(offsetElm.offsetParent)) {
+                break;
+            }
+            offsetElm = offsetElm.offsetParent;
+        }
+        // Input is to close to the right side of the screen to show picker
+        if (inputRect.right + pickerW > window.innerWidth - window.scrollX && inputRect.right - pickerW > 0) {
+            // Right align the picker to the input
+            offset.left -= pickerW - offset.width;
+        }
+        // Input is to close to the bottom of the screen to show picker above
+        if (inputRect.bottom + pickerH < window.innerHeight - window.scrollY) {
+            offset.top += offset.height;
+        }
+        else {
+            offset.top -= pickerH;
+        }
         return offset;
     }
     /**
@@ -44549,6 +43944,107 @@ var TraitNumberView = /** @class */ (function (_super) {
     });
 }
 
+;// CONCATENATED MODULE: ./src/domain_abstract/ui/Input.ts
+var Input_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var Input = /** @class */ (function (_super) {
+    Input_extends(Input, _super);
+    function Input(opts) {
+        if (opts === void 0) { opts = {}; }
+        var _this = _super.call(this, opts) || this;
+        var ppfx = opts.ppfx || '';
+        _this.opts = opts;
+        _this.ppfx = ppfx;
+        _this.em = opts.target || {};
+        !opts.onChange && _this.listenTo(_this.model, 'change:value', _this.handleModelChange);
+        return _this;
+    }
+    Input.prototype.template = function () {
+        return "<span class=\"".concat(this.holderClass(), "\"></span>");
+    };
+    Input.prototype.inputClass = function () {
+        return "".concat(this.ppfx, "field");
+    };
+    Input.prototype.holderClass = function () {
+        return "".concat(this.ppfx, "input-holder");
+    };
+    /**
+     * Fired when the element of the property is updated
+     */
+    Input.prototype.elementUpdated = function () {
+        this.model.trigger('el:change');
+    };
+    /**
+     * Set value to the input element
+     * @param {string} value
+     */
+    Input.prototype.setValue = function (value, opts) {
+        var model = this.model;
+        var val = value || model.get('defaults');
+        var input = this.getInputEl();
+        input && (input.value = val);
+    };
+    /**
+     * Updates the view when the model is changed
+     * */
+    Input.prototype.handleModelChange = function (model, value, opts) {
+        this.setValue(value, opts);
+    };
+    /**
+     * Handled when the view is changed
+     */
+    Input.prototype.handleChange = function (e) {
+        e.stopPropagation();
+        var value = this.getInputEl().value;
+        this.__onInputChange(value);
+        this.elementUpdated();
+    };
+    Input.prototype.__onInputChange = function (value) {
+        this.model.set({ value: value }, { fromInput: 1 });
+    };
+    /**
+     * Get the input element
+     * @return {HTMLElement}
+     */
+    Input.prototype.getInputEl = function () {
+        if (!this.inputEl) {
+            var _a = this, model = _a.model, opts = _a.opts;
+            var type = opts.type || 'text';
+            var plh = model.get('placeholder') || model.get('defaults') || model.get('default') || '';
+            this.inputEl = (0,cash_dom["default"])("<input type=\"".concat(type, "\" placeholder=\"").concat(plh, "\">"));
+        }
+        return this.inputEl.get(0);
+    };
+    Input.prototype.render = function () {
+        this.inputEl = null;
+        var el = this.$el;
+        el.addClass(this.inputClass());
+        el.html(this.template());
+        el.find(".".concat(this.holderClass())).append(this.getInputEl());
+        return this;
+    };
+    return Input;
+}(common/* View */.G7));
+/* harmony default export */ const ui_Input = (Input);
+Input.prototype.events = {
+    // @ts-ignore
+    change: 'handleChange',
+};
+
 ;// CONCATENATED MODULE: ./src/domain_abstract/ui/InputColor.ts
 var InputColor_extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -44779,8 +44275,8 @@ var TraitColorView = /** @class */ (function (_super) {
 }(view_TraitView));
 /* harmony default export */ const view_TraitColorView = (TraitColorView);
 
-;// CONCATENATED MODULE: ./src/trait_manager/view/TraitButtonView.ts
-var TraitButtonView_extends = (undefined && undefined.__extends) || (function () {
+;// CONCATENATED MODULE: ./src/domain_abstract/ui/InputNumber.ts
+var InputNumber_extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -44797,49 +44293,553 @@ var TraitButtonView_extends = (undefined && undefined.__extends) || (function ()
 })();
 
 
-var TraitButtonView = /** @class */ (function (_super) {
-    TraitButtonView_extends(TraitButtonView, _super);
-    function TraitButtonView() {
+
+var InputNumber = /** @class */ (function (_super) {
+    InputNumber_extends(InputNumber, _super);
+    function InputNumber(opts) {
+        if (opts === void 0) { opts = {}; }
+        var _this = _super.call(this, opts) || this;
+        (0,index_all.bindAll)(_this, 'moveIncrement', 'upIncrement');
+        _this.doc = document;
+        _this.listenTo(_this.model, 'change:unit', _this.handleModelChange);
+        return _this;
+    }
+    InputNumber.prototype.template = function () {
+        var ppfx = this.ppfx;
+        return "\n      <span class=\"".concat(ppfx, "input-holder\"></span>\n      <span class=\"").concat(ppfx, "field-units\"></span>\n      <div class=\"").concat(ppfx, "field-arrows\" data-arrows>\n        <div class=\"").concat(ppfx, "field-arrow-u\" data-arrow-up></div>\n        <div class=\"").concat(ppfx, "field-arrow-d\" data-arrow-down></div>\n      </div>\n    ");
+    };
+    InputNumber.prototype.inputClass = function () {
+        var ppfx = this.ppfx;
+        return this.opts.contClass || "".concat(ppfx, "field ").concat(ppfx, "field-integer");
+    };
+    /**
+     * Set value to the model
+     * @param {string} value
+     * @param {Object} opts
+     */
+    InputNumber.prototype.setValue = function (value, opts) {
+        var opt = opts || {};
+        var valid = this.validateInputValue(value, { deepCheck: 1 });
+        var validObj = { value: valid.value, unit: '' };
+        // If found some unit value
+        if (valid.unit || valid.force) {
+            validObj.unit = valid.unit;
+        }
+        this.model.set(validObj, opt);
+        // Generally I get silent when I need to reflect data to view without
+        // reupdating the target
+        if (opt.silent) {
+            this.handleModelChange();
+        }
+    };
+    /**
+     * Handled when the view is changed
+     */
+    InputNumber.prototype.handleChange = function (e) {
+        e.stopPropagation();
+        this.setValue(this.getInputEl().value);
+        this.elementUpdated();
+    };
+    /**
+     * Handled when the view is changed
+     */
+    InputNumber.prototype.handleUnitChange = function (e) {
+        e.stopPropagation();
+        var value = this.getUnitEl().value;
+        this.model.set('unit', value);
+        this.elementUpdated();
+    };
+    /**
+     * Handled when user uses keyboard
+     */
+    InputNumber.prototype.handleKeyDown = function (e) {
+        if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            this.upArrowClick();
+        }
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            this.downArrowClick();
+        }
+    };
+    /**
+     * Fired when the element of the property is updated
+     */
+    InputNumber.prototype.elementUpdated = function () {
+        this.model.trigger('el:change');
+    };
+    /**
+     * Updates the view when the model is changed
+     * */
+    InputNumber.prototype.handleModelChange = function () {
+        var model = this.model;
+        this.getInputEl().value = model.get('value');
+        var unitEl = this.getUnitEl();
+        unitEl && (unitEl.value = model.get('unit') || '');
+    };
+    /**
+     * Get the unit element
+     * @return {HTMLElement}
+     */
+    InputNumber.prototype.getUnitEl = function () {
+        if (!this.unitEl) {
+            var model_1 = this.model;
+            var units = model_1.get('units') || [];
+            if (units.length) {
+                var options_1 = ['<option value="" disabled hidden>-</option>'];
+                units.forEach(function (unit) {
+                    var selected = unit == model_1.get('unit') ? 'selected' : '';
+                    options_1.push("<option ".concat(selected, ">").concat(unit, "</option>"));
+                });
+                var temp = document.createElement('div');
+                temp.innerHTML = "<select class=\"".concat(this.ppfx, "input-unit\">").concat(options_1.join(''), "</select>");
+                this.unitEl = temp.firstChild;
+            }
+        }
+        return this.unitEl;
+    };
+    /**
+     * Invoked when the up arrow is clicked
+     * */
+    InputNumber.prototype.upArrowClick = function () {
+        var model = this.model;
+        var step = model.get('step');
+        var value = parseFloat(model.get('value'));
+        this.setValue(this.normalizeValue(value + step));
+        this.elementUpdated();
+    };
+    /**
+     * Invoked when the down arrow is clicked
+     * */
+    InputNumber.prototype.downArrowClick = function () {
+        var model = this.model;
+        var step = model.get('step');
+        var value = parseFloat(model.get('value'));
+        this.setValue(this.normalizeValue(value - step));
+        this.elementUpdated();
+    };
+    /**
+     * Change easily integer input value with click&drag method
+     * @param Event
+     *
+     * @return void
+     * */
+    InputNumber.prototype.downIncrement = function (e) {
+        e.preventDefault();
+        this.moved = false;
+        var value = this.model.get('value') || 0;
+        value = this.normalizeValue(value);
+        this.current = { y: e.pageY, val: value };
+        (0,dom.on)(this.doc, 'mousemove', this.moveIncrement);
+        (0,dom.on)(this.doc, 'mouseup', this.upIncrement);
+    };
+    /** While the increment is clicked, moving the mouse will update input value
+     * @param Object
+     *
+     * @return bool
+     * */
+    InputNumber.prototype.moveIncrement = function (ev) {
+        this.moved = true;
+        var model = this.model;
+        var step = model.get('step');
+        var data = this.current;
+        var pos = this.normalizeValue(data.val + (data.y - ev.pageY) * step);
+        var _a = this.validateInputValue(pos), value = _a.value, unit = _a.unit;
+        this.prValue = value;
+        model.set({ value: value, unit: unit }, { avoidStore: 1 });
+        return false;
+    };
+    /**
+     * Stop moveIncrement method
+     * */
+    InputNumber.prototype.upIncrement = function () {
+        var model = this.model;
+        var step = model.get('step');
+        (0,dom/* off */.S1)(this.doc, 'mouseup', this.upIncrement);
+        (0,dom/* off */.S1)(this.doc, 'mousemove', this.moveIncrement);
+        if (this.prValue && this.moved) {
+            var value = this.prValue - step;
+            // @ts-ignore
+            model.set('value', value, { avoidStore: 1 }).set('value', value + step);
+            this.elementUpdated();
+        }
+    };
+    InputNumber.prototype.normalizeValue = function (value, defValue) {
+        if (defValue === void 0) { defValue = 0; }
+        var model = this.model;
+        var step = model.get('step');
+        var stepDecimals = 0;
+        if (isNaN(value)) {
+            return defValue;
+        }
+        value = parseFloat(value);
+        if (Math.floor(value) !== value) {
+            var side = step.toString().split('.')[1];
+            stepDecimals = side ? side.length : 0;
+        }
+        return stepDecimals ? parseFloat(value.toFixed(stepDecimals)) : value;
+    };
+    /**
+     * Validate input value
+     * @param {String} value Raw value
+     * @param {Object} opts Options
+     * @return {Object} Validated string
+     */
+    InputNumber.prototype.validateInputValue = function (value, opts) {
+        if (opts === void 0) { opts = {}; }
+        var force = 0;
+        var opt = opts || {};
+        var model = this.model;
+        var defValue = ''; //model.get('defaults');
+        var val = !(0,index_all.isUndefined)(value) ? value : defValue;
+        var units = opts.units || model.get('units') || [];
+        var unit = model.get('unit') || (units.length && units[0]) || '';
+        var max = !(0,index_all.isUndefined)(opts.max) ? opts.max : model.get('max');
+        var min = !(0,index_all.isUndefined)(opts.min) ? opts.min : model.get('min');
+        var limitlessMax = !!model.get('limitlessMax');
+        var limitlessMin = !!model.get('limitlessMin');
+        if (opt.deepCheck) {
+            var fixed = model.get('fixedValues') || [];
+            if (val === '')
+                unit = '';
+            if (val) {
+                // If the value is one of the fixed values I leave it as it is
+                var regFixed = new RegExp('^' + fixed.join('|'), 'g');
+                if (fixed.length && regFixed.test(val)) {
+                    val = val.match(regFixed)[0];
+                    unit = '';
+                    force = 1;
+                }
+                else {
+                    var valCopy = val + '';
+                    val += ''; // Make it suitable for replace
+                    val = parseFloat(val.replace(',', '.'));
+                    val = !isNaN(val) ? val : defValue;
+                    var uN = valCopy.replace(val, '');
+                    // Check if exists as unit
+                    if ((0,index_all.indexOf)(units, uN) >= 0)
+                        unit = uN;
+                }
+            }
+        }
+        if (!limitlessMax && !(0,index_all.isUndefined)(max) && max !== '')
+            val = val > max ? max : val;
+        if (!limitlessMin && !(0,index_all.isUndefined)(min) && min !== '')
+            val = val < min ? min : val;
+        return {
+            force: force,
+            value: val,
+            unit: unit,
+        };
+    };
+    InputNumber.prototype.render = function () {
+        ui_Input.prototype.render.call(this);
+        this.unitEl = null;
+        var unit = this.getUnitEl();
+        unit && this.$el.find(".".concat(this.ppfx, "field-units")).get(0).appendChild(unit);
+        return this;
+    };
+    return InputNumber;
+}(ui_Input));
+/* harmony default export */ const ui_InputNumber = (InputNumber);
+InputNumber.prototype.events = {
+    // @ts-ignore
+    'change input': 'handleChange',
+    'change select': 'handleUnitChange',
+    'click [data-arrow-up]': 'upArrowClick',
+    'click [data-arrow-down]': 'downArrowClick',
+    'mousedown [data-arrows]': 'downIncrement',
+    keydown: 'handleKeyDown',
+};
+
+;// CONCATENATED MODULE: ./src/trait_manager/view/TraitNumberView.ts
+var TraitNumberView_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+
+var TraitNumberView = /** @class */ (function (_super) {
+    TraitNumberView_extends(TraitNumberView, _super);
+    function TraitNumberView() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    TraitButtonView.prototype.templateInput = function () {
-        return '';
+    TraitNumberView.prototype.getValueForTarget = function () {
+        var model = this.model;
+        var _a = model.attributes, value = _a.value, unit = _a.unit;
+        return !(0,index_all.isUndefined)(value) && value !== '' ? value + unit : model.get('default');
     };
-    TraitButtonView.prototype.onChange = function () {
-        this.handleClick();
-    };
-    TraitButtonView.prototype.handleClick = function () {
-        var _a = this, model = _a.model, em = _a.em;
-        var command = model.get('command');
-        if (command) {
-            if ((0,index_all.isString)(command)) {
-                em.Commands.run(command);
-            }
-            else {
-                command(em.Editor, model);
-            }
+    /**
+     * Returns input element
+     * @return {HTMLElement}
+     * @private
+     */
+    TraitNumberView.prototype.getInputEl = function () {
+        if (!this.input) {
+            var _a = this, ppfx = _a.ppfx, model = _a.model;
+            var value = this.getModelValue();
+            var inputNumber = new ui_InputNumber({
+                contClass: "".concat(ppfx, "field-int"),
+                type: 'number',
+                model: model,
+                ppfx: ppfx,
+            });
+            inputNumber.render();
+            this.$input = inputNumber.inputEl;
+            this.$unit = inputNumber.unitEl;
+            // @ts-ignore
+            model.set('value', value, { fromTarget: true });
+            this.$input.val(value);
+            this.input = inputNumber.el;
         }
+        return this.input;
     };
-    TraitButtonView.prototype.renderLabel = function () {
-        if (this.model.get('label')) {
-            view_TraitView.prototype.renderLabel.apply(this);
-        }
-    };
-    TraitButtonView.prototype.getInputEl = function () {
-        var _a = this, model = _a.model, ppfx = _a.ppfx;
-        var _b = model.props(), labelButton = _b.labelButton, text = _b.text, full = _b.full;
-        var label = labelButton || text;
-        var className = "".concat(ppfx, "btn");
-        var input = "<button type=\"button\" class=\"".concat(className, "-prim").concat(full ? " ".concat(className, "--full") : '', "\">").concat(label, "</button>");
-        return input;
-    };
-    return TraitButtonView;
+    return TraitNumberView;
 }(view_TraitView));
-/* harmony default export */ const view_TraitButtonView = (TraitButtonView);
-// Fix #4388
-TraitButtonView.prototype.eventCapture = ['click button'];
+/* harmony default export */ const view_TraitNumberView = (TraitNumberView);
+
+;// CONCATENATED MODULE: ./src/trait_manager/view/TraitSelectView.ts
+var TraitSelectView_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+
+var TraitSelectView = /** @class */ (function (_super) {
+    TraitSelectView_extends(TraitSelectView, _super);
+    function TraitSelectView(o) {
+        if (o === void 0) { o = {}; }
+        var _this = _super.call(this, o) || this;
+        _this.listenTo(_this.model, 'change:options', _this.rerender);
+        return _this;
+    }
+    TraitSelectView.prototype.templateInput = function () {
+        var _a = this, ppfx = _a.ppfx, clsField = _a.clsField;
+        return "<div class=\"".concat(clsField, "\">\n      <div data-input></div>\n      <div class=\"").concat(ppfx, "sel-arrow\">\n        <div class=\"").concat(ppfx, "d-s-arrow\"></div>\n      </div>\n    </div>");
+    };
+    /**
+     * Returns input element
+     * @return {HTMLElement}
+     * @private
+     */
+    TraitSelectView.prototype.getInputEl = function () {
+        if (!this.$input) {
+            var _a = this, model = _a.model, em_1 = _a.em;
+            var propName_1 = model.get('name');
+            var opts = model.get('options') || [];
+            var values_1 = [];
+            var input_1 = '<select>';
+            opts.forEach(function (el) {
+                var attrs = '';
+                var name, value, style;
+                if ((0,index_all.isString)(el)) {
+                    name = el;
+                    value = el;
+                }
+                else {
+                    name = el.name || el.label || el.value;
+                    value = "".concat((0,index_all.isUndefined)(el.value) ? el.id : el.value).replace(/"/g, '&quot;');
+                    style = el.style ? el.style.replace(/"/g, '&quot;') : '';
+                    attrs += style ? " style=\"".concat(style, "\"") : '';
+                }
+                var resultName = em_1.t("traitManager.traits.options.".concat(propName_1, ".").concat(value)) || name;
+                input_1 += "<option value=\"".concat(value, "\"").concat(attrs, ">").concat(resultName, "</option>");
+                values_1.push(value);
+            });
+            input_1 += '</select>';
+            this.$input = (0,cash_dom["default"])(input_1);
+            var val = model.getTargetValue();
+            var valResult = values_1.indexOf(val) >= 0 ? val : model.get('default');
+            !(0,index_all.isUndefined)(valResult) && this.$input.val(valResult);
+        }
+        return this.$input.get(0);
+    };
+    return TraitSelectView;
+}(view_TraitView));
+/* harmony default export */ const view_TraitSelectView = (TraitSelectView);
+
+// EXTERNAL MODULE: ./src/domain_abstract/view/DomainViews.ts
+var DomainViews = __webpack_require__(330);
+;// CONCATENATED MODULE: ./src/trait_manager/view/TraitsView.ts
+var TraitsView_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+
+
+var ATTR_CATEGORIES = 'data-categories';
+var ATTR_NO_CATEGORIES = 'data-no-categories';
+var TraitsView = /** @class */ (function (_super) {
+    TraitsView_extends(TraitsView, _super);
+    function TraitsView(props, itemsView) {
+        var _this = _super.call(this, props) || this;
+        _this.reuseView = true;
+        _this.renderedCategories = new Map();
+        _this.itemsView = itemsView;
+        var config = props.config || {};
+        _this.config = config;
+        var em = props.editor;
+        _this.em = em;
+        var ppfx = config.pStylePrefix || '';
+        _this.ppfx = ppfx;
+        _this.pfx = ppfx + config.stylePrefix || '';
+        _this.className = "".concat(_this.pfx, "traits");
+        _this.traitContClass = "".concat(ppfx, "traits-c");
+        _this.classNoCat = "".concat(ppfx, "traits-empty-c");
+        _this.catsClass = "".concat(ppfx, "trait-categories");
+        _this.collection = new model_Traits([], { em: em });
+        _this.listenTo(em, 'component:toggled', _this.updatedCollection);
+        _this.updatedCollection();
+        return _this;
+    }
+    /**
+     * Update view collection
+     * @private
+     */
+    TraitsView.prototype.updatedCollection = function () {
+        var _a = this, ppfx = _a.ppfx, em = _a.em;
+        var comp = em.getSelected();
+        this.el.className = "".concat(this.traitContClass, "s ").concat(ppfx, "one-bg ").concat(ppfx, "two-color");
+        this.collection = (comp === null || comp === void 0 ? void 0 : comp.traits) || new model_Traits([], { em: em });
+        this.render();
+    };
+    /**
+     * Render new model inside the view
+     * @param {Model} model
+     * @param {Object} fragment Fragment collection
+     * @private
+     * */
+    TraitsView.prototype.add = function (model, fragment) {
+        var _a = this, config = _a.config, renderedCategories = _a.renderedCategories;
+        var itemView = this.itemView;
+        var typeField = model.get(this.itemType);
+        if (this.itemsView && this.itemsView[typeField]) {
+            itemView = this.itemsView[typeField];
+        }
+        var view = new itemView({
+            config: config,
+            model: model,
+            attributes: model.get('attributes'),
+        });
+        var rendered = view.render().el;
+        var category = model.parent.initCategory(model);
+        if (category) {
+            var catId = category.getId();
+            var categories = this.getCategoriesEl();
+            var catView = renderedCategories.get(catId);
+            if (!catView && categories) {
+                catView = new ModuleCategoryView({ model: category }, config, 'trait').render();
+                renderedCategories.set(catId, catView);
+                categories.appendChild(catView.el);
+            }
+            catView === null || catView === void 0 ? void 0 : catView.append(rendered);
+            return;
+        }
+        fragment ? fragment.appendChild(rendered) : this.append(rendered);
+    };
+    TraitsView.prototype.getCategoriesEl = function () {
+        if (!this.catsEl) {
+            this.catsEl = this.el.querySelector("[".concat(ATTR_CATEGORIES, "]"));
+        }
+        return this.catsEl;
+    };
+    TraitsView.prototype.getTraitsEl = function () {
+        if (!this.traitsEl) {
+            this.traitsEl = this.el.querySelector("[".concat(ATTR_NO_CATEGORIES, "]"));
+        }
+        return this.traitsEl;
+    };
+    TraitsView.prototype.append = function (el) {
+        var traits = this.getTraitsEl();
+        traits === null || traits === void 0 ? void 0 : traits.appendChild(el);
+    };
+    TraitsView.prototype.render = function () {
+        var _this = this;
+        var _a = this, el = _a.el, ppfx = _a.ppfx, catsClass = _a.catsClass, traitContClass = _a.traitContClass, classNoCat = _a.classNoCat;
+        var frag = document.createDocumentFragment();
+        delete this.catsEl;
+        delete this.traitsEl;
+        this.renderedCategories = new Map();
+        el.innerHTML = "\n      <div class=\"".concat(catsClass, "\" ").concat(ATTR_CATEGORIES, "></div>\n      <div class=\"").concat(classNoCat, " ").concat(traitContClass, "\" ").concat(ATTR_NO_CATEGORIES, "></div>\n    ");
+        this.collection.forEach(function (model) { return _this.add(model, frag); });
+        this.append(frag);
+        var cls = "".concat(traitContClass, "s ").concat(ppfx, "one-bg ").concat(ppfx, "two-color");
+        this.$el.addClass(cls);
+        this.rendered = true;
+        return this;
+    };
+    return TraitsView;
+}(DomainViews/* default */.Z));
+/* harmony default export */ const view_TraitsView = (TraitsView);
+TraitsView.prototype.itemView = view_TraitView;
 
 ;// CONCATENATED MODULE: ./src/trait_manager/index.ts
+/**
+ * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/GrapesJS/grapesjs/blob/master/src/trait_manager/config/config.ts)
+ * ```js
+ * const editor = grapesjs.init({
+ *  traitManager: {
+ *    // options
+ *  }
+ * })
+ * ```
+ *
+ *
+ * Once the editor is instantiated you can use the API below and listen to the events. Before using these methods, you should get the module from the instance.
+ *
+ * ```js
+ * // Listen to events
+ * editor.on('trait:value', () => { ... });
+ *
+ * // Use the Trait Manager API
+ * const tm = editor.Traits;
+ * tm.select(...)
+ * ```
+ *
+ * {REPLACE_EVENTS}
+ *
+ * [Component]: component.html
+ * [Trait]: trait.html
+ *
+ * @module Traits
+ */
 var trait_manager_extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -44855,35 +44855,35 @@ var trait_manager_extends = (undefined && undefined.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-
-
-
-
-
-
-
-
-
-
-
-var trait_manager_evAll = 'trait';
-var trait_manager_evPfx = "".concat(trait_manager_evAll, ":");
-var trait_manager_evCustom = "".concat(trait_manager_evPfx, "custom");
-var typesDef = {
-    text: view_TraitView,
-    number: view_TraitNumberView,
-    select: view_TraitSelectView,
-    checkbox: view_TraitCheckboxView,
-    color: view_TraitColorView,
-    button: view_TraitButtonView,
+var trait_manager_spreadArray = (undefined && undefined.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
 var TraitManager = /** @class */ (function (_super) {
     trait_manager_extends(TraitManager, _super);
     /**
      * Get configuration object
      * @name getConfig
      * @function
-     * @return {Object}
+     * @returns {Object}
      */
     /**
      * Initialize module
@@ -44892,46 +44892,114 @@ var TraitManager = /** @class */ (function (_super) {
     function TraitManager(em) {
         var _this = _super.call(this, em, 'TraitManager', trait_manager_config_config) || this;
         _this.TraitsView = view_TraitsView;
-        _this.events = {
-            all: trait_manager_evAll,
-            custom: trait_manager_evCustom,
+        _this.events = TraitsEvents;
+        _this.state = new common/* Model */.Hn({ traits: [] });
+        _this.types = {
+            text: view_TraitView,
+            number: view_TraitNumberView,
+            select: view_TraitSelectView,
+            checkbox: view_TraitCheckboxView,
+            color: view_TraitColorView,
+            button: view_TraitButtonView,
         };
-        var model = new common/* Model */.Hn();
-        _this.model = model;
-        _this.types = typesDef;
+        var _a = _this, state = _a.state, config = _a.config, events = _a.events;
+        var ppfx = config.pStylePrefix;
+        ppfx && (config.stylePrefix = "".concat(ppfx).concat(config.stylePrefix));
+        (0,index_all.bindAll)(_this, '__onSelect');
         var upAll = (0,index_all.debounce)(function () { return _this.__upSel(); }, 0);
-        model.listenTo(em, 'component:toggled', upAll);
         var update = (0,index_all.debounce)(function () { return _this.__onUp(); }, 0);
-        model.listenTo(em, 'trait:update', update);
+        state.listenTo(em, 'component:toggled', upAll);
+        state.listenTo(em, events.value, update);
+        state.on('change:traits', _this.__onSelect);
+        _this.debounced = [upAll, update];
         return _this;
     }
-    TraitManager.prototype.__upSel = function () {
-        this.select(this.em.getSelected());
-    };
-    TraitManager.prototype.__onUp = function () {
-        this.select(this.getSelected());
-    };
+    /**
+     * Select traits from a component.
+     * @param {[Component]} component
+     * @example
+     * tm.select(someComponent);
+     */
     TraitManager.prototype.select = function (component) {
-        var traits = component ? component.getTraits() : [];
-        this.model.set({ component: component, traits: traits });
+        var traits = (component === null || component === void 0 ? void 0 : component.getTraits()) || [];
+        this.state.set({ component: component, traits: traits });
         this.__trgCustom();
     };
-    TraitManager.prototype.getSelected = function () {
-        return this.model.get('component');
+    /**
+     * Get trait categories from the currently selected component.
+     * @returns {Array<Category>}
+     * @example
+     * const traitCategories: Category[] = tm.getCategories();
+     *
+     */
+    TraitManager.prototype.getCategories = function () {
+        var _a;
+        var cmp = this.getComponent();
+        var categories = ((_a = cmp === null || cmp === void 0 ? void 0 : cmp.traits.categories) === null || _a === void 0 ? void 0 : _a.models) || [];
+        return trait_manager_spreadArray([], categories, true);
     };
     /**
      * Get traits from the currently selected component.
+     * @returns {Array<[Trait]>}
+     * @example
+     * const currentTraits: Trait[] = tm.getTraits();
      */
-    TraitManager.prototype.getCurrent = function () {
-        return this.model.get('traits') || [];
+    TraitManager.prototype.getTraits = function () {
+        return this.getCurrent();
     };
-    TraitManager.prototype.__trgCustom = function (opts) {
-        if (opts === void 0) { opts = {}; }
-        this.__ctn = this.__ctn || opts.container;
-        this.em.trigger(this.events.custom, { container: this.__ctn });
+    /**
+     * Get traits by category from the currently selected component.
+     * @example
+     * tm.getTraitsByCategory();
+     * // Returns an array of items of this type
+     * // > { category?: Category; items: Trait[] }
+     *
+     * // NOTE: The item without category is the one containing traits without category.
+     *
+     * // You can also get the same output format by passing your own array of Traits
+     * const myFilteredTraits: Trait[] = [...];
+     * tm.getTraitsByCategory(myFilteredTraits);
+     */
+    TraitManager.prototype.getTraitsByCategory = function (traits) {
+        return getItemsByCategory(traits || this.getTraits());
     };
-    TraitManager.prototype.postRender = function () {
-        this.__appendTo();
+    /**
+     * Get component from the currently selected traits.
+     * @example
+     * tm.getComponent();
+     * // Component {}
+     */
+    TraitManager.prototype.getComponent = function () {
+        return this.state.attributes.component;
+    };
+    /**
+     * Add new trait type.
+     * More about it here: [Define new Trait type](https://grapesjs.com/docs/modules/Traits.html#define-new-trait-type).
+     * @param {string} name Type name.
+     * @param {Object} methods Object representing the trait.
+     */
+    TraitManager.prototype.addType = function (name, methods) {
+        var baseView = this.getType('text');
+        //@ts-ignore
+        this.types[name] = baseView.extend(methods);
+    };
+    /**
+     * Get trait type
+     * @param {string} name Type name
+     * @returns {Object}
+     * @private
+     * const traitView = tm.getType('text');
+     */
+    TraitManager.prototype.getType = function (name) {
+        return this.getTypes()[name];
+    };
+    /**
+     * Get all trait types
+     * @returns {Object}
+     * @private
+     */
+    TraitManager.prototype.getTypes = function () {
+        return this.types;
     };
     /**
      *
@@ -44941,47 +45009,43 @@ var TraitManager = /** @class */ (function (_super) {
     TraitManager.prototype.getTraitsViewer = function () {
         return this.view;
     };
-    /**
-     * Add new trait type
-     * @param {string} name Type name
-     * @param {Object} methods Object representing the trait
-     */
-    TraitManager.prototype.addType = function (name, trait) {
-        var baseView = this.getType('text');
-        //@ts-ignore
-        this.types[name] = baseView.extend(trait);
-    };
-    /**
-     * Get trait type
-     * @param {string} name Type name
-     * @return {Object}
-     */
-    TraitManager.prototype.getType = function (name) {
-        return this.getTypes()[name];
-    };
-    /**
-     * Get all trait types
-     * @returns {Object}
-     */
-    TraitManager.prototype.getTypes = function () {
-        return this.types;
+    TraitManager.prototype.getCurrent = function () {
+        return this.state.get('traits') || [];
     };
     TraitManager.prototype.render = function () {
-        var _a = this, view = _a.view, em = _a.em;
-        var config = this.getConfig();
-        var el = view && view.el;
+        var view = this.view;
+        var em = this.em;
         view = new view_TraitsView({
-            el: el,
+            el: view === null || view === void 0 ? void 0 : view.el,
             collection: [],
             editor: em,
-            config: config,
+            config: this.getConfig(),
         }, this.getTypes());
         this.view = view;
         return view.el;
     };
-    TraitManager.prototype.destroy = function () {
-        this.model.stopListening();
-        this.model.clear();
+    TraitManager.prototype.postRender = function () {
+        this.__appendTo();
+    };
+    TraitManager.prototype.__onSelect = function () {
+        var _a = this, em = _a.em, events = _a.events, state = _a.state;
+        var _b = state.attributes, component = _b.component, traits = _b.traits;
+        em.trigger(events.select, { component: component, traits: traits });
+    };
+    TraitManager.prototype.__trgCustom = function (opts) {
+        if (opts === void 0) { opts = {}; }
+        var _a = this, em = _a.em, events = _a.events, __ctn = _a.__ctn;
+        this.__ctn = __ctn || opts.container;
+        em.trigger(events.custom, this.__customData());
+    };
+    TraitManager.prototype.__customData = function () {
+        return { container: this.__ctn };
+    };
+    TraitManager.prototype.__upSel = function () {
+        this.select(this.em.getSelected());
+    };
+    TraitManager.prototype.__onUp = function () {
+        this.select(this.getComponent());
     };
     return TraitManager;
 }(abstract_Module));
@@ -45633,7 +45697,6 @@ var ItemView_extends = (undefined && undefined.__extends) || (function () {
 
 
 
-
 var ItemView_inputProp = 'contentEditable';
 var ItemView = /** @class */ (function (_super) {
     ItemView_extends(ItemView, _super);
@@ -45692,7 +45755,7 @@ var ItemView = /** @class */ (function (_super) {
         var _b = icons, move = _b.move, eye = _b.eye, eyeOff = _b.eyeOff, chevron = _b.chevron;
         return "\n      <div class=\"".concat(pfx, "layer-item ").concat(ppfx, "one-bg\" data-toggle-select>\n        <div class=\"").concat(pfx, "layer-item-left\">\n          ").concat(hidable
             ? "<i class=\"".concat(pfx, "layer-vis\" data-toggle-visible>\n                <i class=\"").concat(pfx, "layer-vis-on\">").concat(eye, "</i>\n                <i class=\"").concat(pfx, "layer-vis-off\">").concat(eyeOff, "</i>\n              </i>")
-            : '', "\n          <div class=\"").concat(clsTitleC, "\">\n            <div class=\"").concat(clsTitle, "\" style=\"padding-left: ").concat(gut, "\">\n              <div class=\"").concat(pfx, "layer-title-inn\" title=\"").concat(name, "\">\n                <i class=\"").concat(this.clsCaret, "\" data-toggle-open>").concat(chevron, "</i>\n                  ").concat(icon ? "<span class=\"".concat(clsBase, "__icon\">").concat(icon, "</span>") : '', "\n                <span class=\"").concat(clsInput, "\" data-name>").concat(name, "</span>\n              </div>\n            </div>\n          </div>\n        </div>\n        <div class=\"").concat(pfx, "layer-item-right\">\n          ").concat(count ? "<div class=\"".concat(this.clsCount, "\" data-count>").concat(count || '', "</div>") : '', "\n          <div class=\"").concat(this.clsMove, "\" data-toggle-move>").concat(move || '', "</div>\n        </div>\n      </div>\n      <div class=\"").concat(this.clsChildren, "\"></div>\n    ");
+            : '', "\n          <div class=\"").concat(clsTitleC, "\">\n            <div class=\"").concat(clsTitle, "\" style=\"padding-left: ").concat(gut, "\">\n              <div class=\"").concat(pfx, "layer-title-inn\" title=\"").concat(name, "\">\n                <i class=\"").concat(this.clsCaret, "\" data-toggle-open>").concat(chevron, "</i>\n                  ").concat(icon ? "<span class=\"".concat(clsBase, "__icon\">").concat(icon, "</span>") : '', "\n                <span class=\"").concat(clsInput, "\" data-name>").concat(name, "</span>\n              </div>\n            </div>\n          </div>\n        </div>\n        <div class=\"").concat(pfx, "layer-item-right\">\n          <div class=\"").concat(this.clsCount, "\" data-count>").concat(count || '', "</div>\n          <div class=\"").concat(this.clsMove, "\" data-toggle-move>").concat(move || '', "</div>\n        </div>\n      </div>\n      <div class=\"").concat(this.clsChildren, "\"></div>\n    ");
     };
     Object.defineProperty(ItemView.prototype, "em", {
         get: function () {
@@ -45744,10 +45807,7 @@ var ItemView = /** @class */ (function (_super) {
         this.getInputName().innerText = this.model.getName();
     };
     ItemView.prototype.getVisibilityEl = function () {
-        if (!this.eyeEl) {
-            this.eyeEl = this.$el.children('[data-toggle-select]').find('[data-toggle-visible]');
-        }
-        return this.eyeEl;
+        return this.getItemContainer().find('[data-toggle-visible]');
     };
     ItemView.prototype.updateVisibility = function () {
         var _a = this, pfx = _a.pfx, model = _a.model, module = _a.module;
@@ -45901,35 +45961,33 @@ var ItemView = /** @class */ (function (_super) {
             },
         ]);
     };
+    ItemView.prototype.getItemContainer = function () {
+        return this.$el.children('[data-toggle-select]');
+    };
     /**
      * Update item aspect after children changes
      *
      * @return void
      * */
     ItemView.prototype.checkChildren = function () {
-        var _a = this, model = _a.model, clsNoChild = _a.clsNoChild, $el = _a.$el, module = _a.module;
+        var _a = this, model = _a.model, clsNoChild = _a.clsNoChild, module = _a.module;
         var count = module.getComponents(model).length;
-        var title = $el.children(".".concat(this.clsTitleC)).children(".".concat(this.clsTitle));
-        var cnt = this.cnt;
-        if (!cnt) {
-            cnt = $el.children('[data-count]').get(0);
-            this.cnt = cnt;
-        }
+        var itemEl = this.getItemContainer();
+        var title = itemEl.find(".".concat(this.clsTitle));
+        var countEl = itemEl.find('[data-count]');
         title[count ? 'removeClass' : 'addClass'](clsNoChild);
-        if (cnt)
-            cnt.innerHTML = count || '';
+        countEl.html("".concat(count || ''));
         !count && module.setOpen(model, false);
     };
     ItemView.prototype.getCaret = function () {
         if (!this.caret || !this.caret.length) {
-            this.caret = this.$el.children(".".concat(this.clsTitleC)).find(".".concat(this.clsCaret));
+            this.caret = this.getItemContainer().find(".".concat(this.clsCaret));
         }
         return this.caret;
     };
-    ItemView.prototype.setRoot = function (el) {
+    ItemView.prototype.setRoot = function (cmp) {
         var _a;
-        el = (0,index_all.isString)(el) ? (_a = this.em.getWrapper()) === null || _a === void 0 ? void 0 : _a.find(el)[0] : el;
-        var model = (0,mixins.getModel)(el);
+        var model = (0,index_all.isString)(cmp) ? (_a = this.em.getWrapper()) === null || _a === void 0 ? void 0 : _a.find(cmp)[0] : cmp;
         if (!model)
             return;
         this.stopListening();
@@ -46359,7 +46417,7 @@ var LayerManager = /** @class */ (function (_super) {
     LayerManager.prototype.__isLayerable = function (cmp) {
         var tag = cmp.get('tagName');
         var hideText = this.config.hideTextnode;
-        var isValid = !hideText || (!cmp.is('textnode') && tag !== 'br');
+        var isValid = !hideText || (!cmp.isInstanceOf('textnode') && tag !== 'br');
         return isValid && cmp.get('layerable');
     };
     LayerManager.prototype.__trgCustom = function (opts) {
@@ -46388,6 +46446,7 @@ var asset_manager_config_config_config = {
     params: {},
     credentials: 'include',
     multiUpload: true,
+    multiUploadSuffix: '[]',
     autoAdd: true,
     customFetch: undefined,
     uploadFile: undefined,
@@ -47230,7 +47289,7 @@ var FileUploaderView = /** @class */ (function (_super) {
         }
         if (this.multiUpload) {
             for (var i = 0; i < files.length; i++) {
-                body.append("".concat(config.uploadName, "[]"), files[i]);
+                body.append("".concat(config.uploadName).concat(config.multiUploadSuffix), files[i]);
             }
         }
         else if (files.length) {
@@ -47928,6 +47987,452 @@ var AssetManager = /** @class */ (function (_super) {
 }(ItemManagerModule));
 /* harmony default export */ const asset_manager = (AssetManager);
 
+;// CONCATENATED MODULE: ./src/pages/model/Page.ts
+var Page_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+
+var Page = /** @class */ (function (_super) {
+    Page_extends(Page, _super);
+    function Page(props, opts) {
+        if (opts === void 0) { opts = {}; }
+        var _this = _super.call(this, props, opts) || this;
+        var em = opts.em;
+        var defFrame = {};
+        _this.em = em;
+        if (!props.frames) {
+            defFrame.component = props.component;
+            defFrame.styles = props.styles;
+            ['component', 'styles'].map(function (i) { return _this.unset(i); });
+        }
+        var frms = props.frames || [defFrame];
+        var frames = new model_Frames(em.Canvas, frms);
+        frames.page = _this;
+        _this.set('frames', frames);
+        !_this.getId() && _this.set('id', em === null || em === void 0 ? void 0 : em.Pages._createId());
+        em === null || em === void 0 ? void 0 : em.UndoManager.add(frames);
+        return _this;
+    }
+    Page.prototype.defaults = function () {
+        return {
+            name: '',
+            frames: [],
+            _undo: true,
+        };
+    };
+    Page.prototype.onRemove = function () {
+        this.getFrames().reset();
+    };
+    Page.prototype.getFrames = function () {
+        return this.get('frames');
+    };
+    /**
+     * Get page id
+     * @returns {String}
+     */
+    Page.prototype.getId = function () {
+        return this.id;
+    };
+    /**
+     * Get page name
+     * @returns {String}
+     */
+    Page.prototype.getName = function () {
+        return this.get('name');
+    };
+    /**
+     * Update page name
+     * @param {String} name New page name
+     * @example
+     * page.setName('New name');
+     */
+    Page.prototype.setName = function (name) {
+        return this.set({ name: name });
+    };
+    /**
+     * Get all frames
+     * @returns {Array<Frame>}
+     * @example
+     * const arrayOfFrames = page.getAllFrames();
+     */
+    Page.prototype.getAllFrames = function () {
+        return this.getFrames().models || [];
+    };
+    /**
+     * Get the first frame of the page (identified always as the main one)
+     * @returns {Frame}
+     * @example
+     * const mainFrame = page.getMainFrame();
+     */
+    Page.prototype.getMainFrame = function () {
+        return this.getFrames().at(0);
+    };
+    /**
+     * Get the root component (usually is the `wrapper` component) from the main frame
+     * @returns {Component}
+     * @example
+     * const rootComponent = page.getMainComponent();
+     * console.log(rootComponent.toHTML());
+     */
+    Page.prototype.getMainComponent = function () {
+        var frame = this.getMainFrame();
+        return frame === null || frame === void 0 ? void 0 : frame.getComponent();
+    };
+    Page.prototype.toJSON = function (opts) {
+        if (opts === void 0) { opts = {}; }
+        var obj = common/* Model */.Hn.prototype.toJSON.call(this, opts);
+        var defaults = (0,index_all.result)(this, 'defaults');
+        // Remove private keys
+        (0,index_all.forEach)(obj, function (value, key) {
+            key.indexOf('_') === 0 && delete obj[key];
+        });
+        (0,index_all.forEach)(defaults, function (value, key) {
+            if (obj[key] === value)
+                delete obj[key];
+        });
+        return obj;
+    };
+    return Page;
+}(common/* Model */.Hn));
+/* harmony default export */ const model_Page = (Page);
+
+;// CONCATENATED MODULE: ./src/pages/model/Pages.ts
+var Pages_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Pages_assign = (undefined && undefined.__assign) || function () {
+    Pages_assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return Pages_assign.apply(this, arguments);
+};
+
+
+var Pages = /** @class */ (function (_super) {
+    Pages_extends(Pages, _super);
+    function Pages(models, em) {
+        var _this = _super.call(this, models) || this;
+        _this.on('reset', _this.onReset);
+        _this.on('remove', _this.onRemove);
+        // @ts-ignore We need to inject `em` for pages created on reset from the Storage load
+        _this.model = function (props, opts) {
+            if (opts === void 0) { opts = {}; }
+            return new model_Page(props, Pages_assign(Pages_assign({}, opts), { em: em }));
+        };
+        return _this;
+    }
+    Pages.prototype.onReset = function (m, opts) {
+        var _this = this;
+        var _a;
+        (_a = opts === null || opts === void 0 ? void 0 : opts.previousModels) === null || _a === void 0 ? void 0 : _a.map(function (p) { return _this.onRemove(p); });
+    };
+    Pages.prototype.onRemove = function (removed) {
+        removed === null || removed === void 0 ? void 0 : removed.onRemove();
+    };
+    return Pages;
+}(common/* Collection */.FE));
+/* harmony default export */ const model_Pages = (Pages);
+
+;// CONCATENATED MODULE: ./src/pages/index.ts
+/**
+ * You can customize the initial state of the module from the editor initialization
+ * ```js
+ * const editor = grapesjs.init({
+ *  ....
+ *  pageManager: {
+ *    pages: [
+ *      {
+ *        id: 'page-id',
+ *        styles: `.my-class { color: red }`, // or a JSON of styles
+ *        component: '<div class="my-class">My element</div>', // or a JSON of components
+ *      }
+ *   ]
+ *  },
+ * })
+ * ```
+ *
+ * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+ *
+ * ```js
+ * const pageManager = editor.Pages;
+ * ```
+ *
+ * {REPLACE_EVENTS}
+ *
+ * [Page]: page.html
+ * [Component]: component.html
+ *
+ * @module Pages
+ */
+var pages_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var pages_spreadArray = (undefined && undefined.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
+
+
+
+
+
+
+
+var pages_chnSel = 'change:selected';
+var typeMain = 'main';
+var PageManager = /** @class */ (function (_super) {
+    pages_extends(PageManager, _super);
+    /**
+     * Get all pages
+     * @name getAll
+     * @function
+     * @returns {Array<[Page]>}
+     * @example
+     * const arrayOfPages = pageManager.getAll();
+     */
+    /**
+     * Initialize module
+     * @hideconstructor
+     * @param {Object} config Configurations
+     */
+    function PageManager(em) {
+        var _this = _super.call(this, em, 'PageManager', new model_Pages([], em), types) || this;
+        _this.events = types;
+        _this.storageKey = 'pages';
+        (0,index_all.bindAll)(_this, '_onPageChange');
+        var model = new ModuleModel/* default */.Z({ _undo: true });
+        _this.model = model;
+        _this.pages.on('reset', function (coll) { return coll.at(0) && _this.select(coll.at(0)); });
+        _this.pages.on('all', _this.__onChange, _this);
+        model.on(pages_chnSel, _this._onPageChange);
+        return _this;
+    }
+    Object.defineProperty(PageManager.prototype, "pages", {
+        get: function () {
+            return this.all;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    PageManager.prototype.getAll = function () {
+        // this avoids issues during the TS build (some getAll are inconsistent)
+        return pages_spreadArray([], this.all.models, true);
+    };
+    PageManager.prototype.__onChange = function (event, page, coll, opts) {
+        var _a = this, em = _a.em, events = _a.events;
+        var options = opts || coll;
+        em.trigger(events.all, { event: event, page: page, options: options });
+    };
+    PageManager.prototype.onLoad = function () {
+        var _a;
+        var _b = this, pages = _b.pages, config = _b.config, em = _b.em;
+        var opt = { silent: true };
+        var configPages = ((_a = config.pages) === null || _a === void 0 ? void 0 : _a.map(function (page) { return new model_Page(page, { em: em, config: config }); })) || [];
+        pages.add(configPages, opt);
+        var mainPage = !pages.length ? this.add({ type: typeMain }, opt) : this.getMain();
+        mainPage && this.select(mainPage, opt);
+    };
+    PageManager.prototype._onPageChange = function (m, page, opts) {
+        var _a = this, em = _a.em, events = _a.events;
+        var lm = em.Layers;
+        var mainComp = page.getMainComponent();
+        lm && mainComp && lm.setRoot(mainComp);
+        em.trigger(events.select, page, m.previous('selected'));
+        this.__onChange(pages_chnSel, page, opts);
+    };
+    PageManager.prototype.postLoad = function () {
+        var _a = this, em = _a.em, model = _a.model, pages = _a.pages;
+        var um = em.UndoManager;
+        um.add(model);
+        um.add(pages);
+        pages.on('add remove reset change', function (m, c, o) { return em.changesUp(o || c); });
+    };
+    /**
+     * Add new page
+     * @param {Object} props Page properties
+     * @param {Object} [opts] Options
+     * @returns {[Page]}
+     * @example
+     * const newPage = pageManager.add({
+     *  id: 'new-page-id', // without an explicit ID, a random one will be created
+     *  styles: `.my-class { color: red }`, // or a JSON of styles
+     *  component: '<div class="my-class">My element</div>', // or a JSON of components
+     * });
+     */
+    PageManager.prototype.add = function (props, opts) {
+        var _this = this;
+        if (opts === void 0) { opts = {}; }
+        var _a = this, em = _a.em, events = _a.events;
+        props.id = props.id || this._createId();
+        var add = function () {
+            var page = _this.pages.add(new model_Page(props, { em: _this.em, config: _this.config }), opts);
+            opts.select && _this.select(page);
+            return page;
+        };
+        !opts.silent && em.trigger(events.addBefore, props, add, opts);
+        return !opts.abort ? add() : undefined;
+    };
+    /**
+     * Remove page
+     * @param {String|[Page]} page Page or page id
+     * @returns {[Page]} Removed Page
+     * @example
+     * const removedPage = pageManager.remove('page-id');
+     * // or by passing the page
+     * const somePage = pageManager.get('page-id');
+     * pageManager.remove(somePage);
+     */
+    PageManager.prototype.remove = function (page, opts) {
+        var _this = this;
+        if (opts === void 0) { opts = {}; }
+        var _a = this, em = _a.em, events = _a.events;
+        var pg = (0,index_all.isString)(page) ? this.get(page) : page;
+        var rm = function () {
+            pg && _this.pages.remove(pg, opts);
+            return pg;
+        };
+        !opts.silent && em.trigger(events.removeBefore, pg, rm, opts);
+        return !opts.abort && rm();
+    };
+    /**
+     * Get page by id
+     * @param {String} id Page id
+     * @returns {[Page]}
+     * @example
+     * const somePage = pageManager.get('page-id');
+     */
+    PageManager.prototype.get = function (id) {
+        return this.pages.filter(function (p) { return p.get(p.idAttribute) === id; })[0];
+    };
+    /**
+     * Get main page (the first one available)
+     * @returns {[Page]}
+     * @example
+     * const mainPage = pageManager.getMain();
+     */
+    PageManager.prototype.getMain = function () {
+        var pages = this.pages;
+        return pages.filter(function (p) { return p.get('type') === typeMain; })[0] || pages.at(0);
+    };
+    /**
+     * Get wrapper components (aka body) from all pages and frames.
+     * @returns {Array<[Component]>}
+     * @example
+     * const wrappers = pageManager.getAllWrappers();
+     * // Get all `image` components from the project
+     * const allImages = wrappers.map(wrp => wrp.findType('image')).flat();
+     */
+    PageManager.prototype.getAllWrappers = function () {
+        var pages = this.getAll();
+        return (0,index_all.unique)((0,index_all.flatten)(pages.map(function (page) { return page.getAllFrames().map(function (frame) { return frame.getComponent(); }); })));
+    };
+    /**
+     * Change the selected page. This will switch the page rendered in canvas
+     * @param {String|[Page]} page Page or page id
+     * @returns {this}
+     * @example
+     * pageManager.select('page-id');
+     * // or by passing the page
+     * const somePage = pageManager.get('page-id');
+     * pageManager.select(somePage);
+     */
+    PageManager.prototype.select = function (page, opts) {
+        if (opts === void 0) { opts = {}; }
+        var _a = this, em = _a.em, model = _a.model, events = _a.events;
+        var pg = (0,index_all.isString)(page) ? this.get(page) : page;
+        if (pg) {
+            em.trigger(events.selectBefore, pg, opts);
+            model.set('selected', pg, opts);
+        }
+        return this;
+    };
+    /**
+     * Get the selected page
+     * @returns {[Page]}
+     * @example
+     * const selectedPage = pageManager.getSelected();
+     */
+    PageManager.prototype.getSelected = function () {
+        return this.model.get('selected');
+    };
+    PageManager.prototype.destroy = function () {
+        var _this = this;
+        this.pages.off().reset();
+        this.model.stopListening();
+        this.model.clear({ silent: true });
+        //@ts-ignore
+        ['selected', 'model'].map(function (i) { return (_this[i] = 0); });
+    };
+    PageManager.prototype.store = function () {
+        return this.getProjectData();
+    };
+    PageManager.prototype.load = function (data) {
+        var result = this.loadProjectData(data, { all: this.pages, reset: true });
+        this.pages.forEach(function (page) { return page.getFrames().initRefs(); });
+        return result;
+    };
+    PageManager.prototype._createId = function () {
+        var pages = this.getAll();
+        var len = pages.length + 16;
+        var pagesMap = this.getAllMap();
+        var id;
+        do {
+            id = (0,mixins.createId)(len);
+        } while (pagesMap[id]);
+        return id;
+    };
+    return PageManager;
+}(ItemManagerModule));
+/* harmony default export */ const pages = (PageManager);
+
 ;// CONCATENATED MODULE: ./src/i18n/locale/en.js
 var traitInputAttr = {
   placeholder: 'eg. Text here'
@@ -48069,6 +48574,9 @@ var traitInputAttr = {
   traitManager: {
     empty: 'Select an element before using Trait Manager',
     label: 'Component settings',
+    categories: {
+      // categoryId: 'Category label',
+    },
     traits: {
       // The core library generates the name by their `name` property
       labels: {
@@ -48407,8 +48915,9 @@ var Sorter = /** @class */ (function (_super) {
         this.canvasRelative = !!o.canvasRelative;
         this.selectOnEnd = !o.avoidSelectOnEnd;
         this.scale = o.scale;
-        if (this.em && this.em.on) {
-            this.em.on('change:canvasOffset', this.updateOffset);
+        var em = this.em;
+        if (em === null || em === void 0 ? void 0 : em.on) {
+            em.on(em.Canvas.events.refresh, this.updateOffset);
             this.updateOffset();
         }
     };
@@ -49271,9 +49780,13 @@ var Sorter = /** @class */ (function (_super) {
                 var offset = trgDim.offsets || {};
                 var pT = offset.paddingTop || margI;
                 var pL = offset.paddingLeft || margI;
-                t = trgDim.top + pT;
-                l = trgDim.left + pL;
-                w = parseInt("".concat(trgDim.width)) - pL * 2 + un;
+                var bT = offset.borderTopWidth || 0;
+                var bL = offset.borderLeftWidth || 0;
+                var bR = offset.borderRightWidth || 0;
+                var bWidth = bL + bR;
+                t = trgDim.top + pT + bT;
+                l = trgDim.left + pL + bL;
+                w = parseInt("".concat(trgDim.width)) - pL * 2 - bWidth + un;
                 h = 'auto';
             }
         }
@@ -51750,7 +52263,7 @@ var PanelView = /** @class */ (function (_super) {
                 cl = resBools[3];
             }
             var resizer_1 = new editor.Utils.Resizer(PanelView_assign({ tc: tc, cr: cr, bc: bc, cl: cl, tl: false, tr: false, bl: false, br: false, appendTo: this.el, silentFrames: true, avoidContainerUpdate: true, prefix: editor.getConfig().stylePrefix, onEnd: function () {
-                    em && em.trigger('change:canvasOffset');
+                    em.Canvas.refresh({ all: true });
                 }, posFetcher: function (el, _a) {
                     var target = _a.target;
                     var style = el.style;
@@ -52923,7 +53436,6 @@ var UndoManagerModule = /** @class */ (function (_super) {
             },
         });
         _this.um.on('undo redo', function () {
-            em.trigger('change:canvasOffset');
             em.getSelectedAll().map(function (c) { return c.trigger('rerender:layer'); });
         });
         ['undo', 'redo'].forEach(function (ev) { return _this.um.on(ev, function () { return em.trigger(ev); }); });
@@ -53399,10 +53911,11 @@ var RichTextEditor = /** @class */ (function () {
             this.updateActiveActions();
             if (event_1) {
                 var range = null;
+                // Still used as caretPositionFromPoint is not yet well adopted
                 if (doc.caretRangeFromPoint) {
                     var poiner = (0,dom/* getPointerEvent */.VB)(event_1);
                     range = doc.caretRangeFromPoint(poiner.clientX, poiner.clientY);
-                    // @ts-ignore
+                    // @ts-ignore for Firefox
                 }
                 else if (event_1.rangeParent) {
                     range = doc.createRange();
@@ -53417,8 +53930,12 @@ var RichTextEditor = /** @class */ (function () {
         }
         return this;
     };
-    RichTextEditor.prototype.__onKeydown = function (event) {
-        var ev = event;
+    RichTextEditor.prototype.__onKeydown = function (ev) {
+        var em = this.em;
+        var onKeydown = em.RichTextEditor.getConfig().onKeydown;
+        if (onKeydown) {
+            return onKeydown({ ev: ev, rte: this, editor: em.getEditor() });
+        }
         var doc = this.doc;
         var cmdList = ['insertOrderedList', 'insertUnorderedList'];
         if (ev.key === 'Enter' && !cmdList.some(function (cmd) { return doc.queryCommandState(cmd); })) {
@@ -53427,11 +53944,15 @@ var RichTextEditor = /** @class */ (function () {
         }
     };
     RichTextEditor.prototype.__onPaste = function (ev) {
-        // @ts-ignore
-        var clipboardData = ev.clipboardData || window.clipboardData;
+        var em = this.em;
+        var onPaste = em.RichTextEditor.getConfig().onPaste;
+        if (onPaste) {
+            return onPaste({ ev: ev, rte: this, editor: em.getEditor() });
+        }
+        var clipboardData = ev.clipboardData;
         var text = clipboardData.getData('text');
         var textHtml = clipboardData.getData('text/html');
-        // Replace \n with <br> in case of plain text
+        // Replace \n with <br> in case of a plain text
         if (text && !textHtml) {
             ev.preventDefault();
             var html = text.replace(/(?:\r\n|\r|\n)/g, '<br/>');
@@ -53666,7 +54187,8 @@ var rich_text_editor_spreadArray = (undefined && undefined.__spreadArray) || fun
 
 
 
-var eventsUp = 'change:canvasOffset frame:scroll component:update';
+
+var eventsUp = "".concat(canvas_types.refresh, " frame:scroll component:update");
 var evEnable = 'rte:enable';
 var evDisable = 'rte:disable';
 var rich_text_editor_evCustom = 'rte:custom';
@@ -55210,6 +55732,17 @@ var PARTS_REG = /\s(?![^(]*\))/;
  *    return `A: ${values['prop-a']} B: ${values['prop-b']}`;
  *  }
  *  ```
+ * @property {String|Function} [emptyValue='unset'] Empty value to apply when all layers are removed.
+ * \n
+ * ```js
+ *  // use simple string
+ *  emptyValue: 'inherit',
+ *  // or a function for a custom style object
+ *  emptyValue: () => ({
+ *    color: 'unset',
+ *    width: 'auto'
+ *  }),
+ *  ```
  *
  */
 var PropertyStack = /** @class */ (function (_super) {
@@ -55218,7 +55751,7 @@ var PropertyStack = /** @class */ (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     PropertyStack.prototype.defaults = function () {
-        return PropertyStack_assign(PropertyStack_assign({}, model_PropertyComposite.getDefaults()), { layers: [], layerSeparator: ', ', layerJoin: '', prepend: 0, preview: false, layerLabel: null, selectedLayer: null });
+        return PropertyStack_assign(PropertyStack_assign({}, model_PropertyComposite.getDefaults()), { layers: [], emptyValue: 'unset', layerSeparator: ', ', layerJoin: '', prepend: 0, preview: false, layerLabel: null, selectedLayer: null });
     };
     PropertyStack.prototype.initialize = function (props, opts) {
         if (props === void 0) { props = {}; }
@@ -55237,15 +55770,26 @@ var PropertyStack = /** @class */ (function (_super) {
         // @ts-ignore
         model_PropertyComposite.callInit(this, props, opts);
     };
+    Object.defineProperty(PropertyStack.prototype, "layers", {
+        get: function () {
+            return this.get('layers');
+        },
+        enumerable: false,
+        configurable: true
+    });
     /**
      * Get all available layers.
      * @returns {Array<[Layer]>}
      */
     PropertyStack.prototype.getLayers = function () {
-        return this.__getLayers().models;
+        return this.layers.models;
     };
-    PropertyStack.prototype.__getLayers = function () {
-        return this.get('layers');
+    /**
+     * Check if the property has layers.
+     * @returns {Boolean}
+     */
+    PropertyStack.prototype.hasLayers = function () {
+        return this.getLayers().length > 0;
     };
     /**
      * Get layer by index.
@@ -55260,7 +55804,7 @@ var PropertyStack = /** @class */ (function (_super) {
      */
     PropertyStack.prototype.getLayer = function (index) {
         if (index === void 0) { index = 0; }
-        return this.__getLayers().at(index) || undefined;
+        return this.layers.at(index) || undefined;
     };
     /**
      * Get selected layer.
@@ -55302,10 +55846,11 @@ var PropertyStack = /** @class */ (function (_super) {
      */
     PropertyStack.prototype.moveLayer = function (layer, index) {
         if (index === void 0) { index = 0; }
+        var layers = this.layers;
         var currIndex = layer ? layer.getIndex() : -1;
-        if (currIndex >= 0 && (0,index_all.isNumber)(index) && index >= 0 && index < this.getLayers().length && currIndex !== index) {
+        if (currIndex >= 0 && (0,index_all.isNumber)(index) && index >= 0 && index < layers.length && currIndex !== index) {
             this.removeLayer(layer);
-            this.__getLayers().add(layer, { at: index });
+            layers.add(layer, { at: index });
         }
     };
     /**
@@ -55327,7 +55872,7 @@ var PropertyStack = /** @class */ (function (_super) {
             var value = props[key];
             values[key] = (0,index_all.isUndefined)(value) ? prop.getDefaultValue() : value;
         });
-        var layer = this.__getLayers().push({ values: values }, opts);
+        var layer = this.layers.push({ values: values }, opts);
         return layer;
     };
     /**
@@ -55339,7 +55884,7 @@ var PropertyStack = /** @class */ (function (_super) {
      * property.removeLayer(layer);
      */
     PropertyStack.prototype.removeLayer = function (layer) {
-        return this.__getLayers().remove(layer);
+        return this.layers.remove(layer);
     };
     /**
      * Remove layer by index.
@@ -55458,6 +56003,13 @@ var PropertyStack = /** @class */ (function (_super) {
         var sep = this.get('layerSeparator');
         return (0,index_all.isString)(sep) ? new RegExp("".concat(sep, "(?![^\\(]*\\))")) : sep;
     };
+    /**
+     * Check if the property is with an empty value.
+     * @returns {Boolean}
+     */
+    PropertyStack.prototype.hasEmptyValue = function () {
+        return !this.hasLayers() && !!this.attributes.isEmptyValue;
+    };
     PropertyStack.prototype.__upProperties = function (prop, opts) {
         var _a;
         if (opts === void 0) { opts = {}; }
@@ -55480,7 +56032,7 @@ var PropertyStack = /** @class */ (function (_super) {
     };
     PropertyStack.prototype.__upTargetsStyleProps = function (opts) {
         if (opts === void 0) { opts = {}; }
-        this.__upTargetsStyle(this.getStyleFromLayers(), opts);
+        this.__upTargetsStyle(this.getStyleFromLayers(opts), opts);
     };
     PropertyStack.prototype.__upTargetsStyle = function (style, opts) {
         return model_Property.prototype.__upTargetsStyle.call(this, style, opts);
@@ -55510,16 +56062,18 @@ var PropertyStack = /** @class */ (function (_super) {
         model_Property.prototype._up.call(this, rest, opts);
         return this;
     };
-    PropertyStack.prototype.__setLayers = function (newLayers) {
+    PropertyStack.prototype.__setLayers = function (newLayers, opts) {
         if (newLayers === void 0) { newLayers = []; }
-        var layers = this.__getLayers();
+        if (opts === void 0) { opts = {}; }
+        var layers = this.layers;
         var layersNew = newLayers.map(function (values) { return ({ values: values }); });
         if (layers.length === layersNew.length) {
             layersNew.map(function (layer, n) { var _a; return (_a = layers.at(n)) === null || _a === void 0 ? void 0 : _a.upValues(layer.values); });
         }
         else {
-            this.__getLayers().reset(layersNew);
+            layers.reset(layersNew);
         }
+        this.set({ isEmptyValue: !!opts.isEmptyValue });
         this.__upSelected({ noEvent: true });
     };
     PropertyStack.prototype.__parseValue = function (value) {
@@ -55549,10 +56103,12 @@ var PropertyStack = /** @class */ (function (_super) {
         if (style === void 0) { style = {}; }
         if (!this.__styleHasProps(style))
             return null;
+        if (this.isEmptyValueStyle(style))
+            return [];
         var name = this.getName();
         var props = this.getProperties();
         var sep = this.getLayerSeparator();
-        var fromStyle = this.get('fromStyle');
+        var fromStyle = this.attributes.fromStyle;
         var result = fromStyle ? fromStyle(style, { property: this, name: name, separatorLayers: sep }) : [];
         if (!fromStyle) {
             // Get layers from the main property
@@ -55597,7 +56153,6 @@ var PropertyStack = /** @class */ (function (_super) {
         styles.forEach(function (style) {
             (0,index_all.keys)(style).map(function (key) {
                 if (!result[key]) {
-                    // @ts-ignore
                     result[key] = [];
                 }
                 // @ts-ignore
@@ -55605,7 +56160,6 @@ var PropertyStack = /** @class */ (function (_super) {
             });
         });
         (0,index_all.keys)(result).map(function (key) {
-            // @ts-ignore
             result[key] = result[key].join(_this.__getJoinLayers());
         });
         if (this.isDetached()) {
@@ -55623,7 +56177,40 @@ var PropertyStack = /** @class */ (function (_super) {
             result[name] = result[name] || '';
             result = PropertyStack_assign(PropertyStack_assign({}, result), style);
         }
-        return result;
+        return PropertyStack_assign(PropertyStack_assign({}, result), (opts.__clear ? {} : this.getEmptyValueStyle()));
+    };
+    PropertyStack.prototype.isEmptyValueStyle = function (style) {
+        if (style === void 0) { style = {}; }
+        var emptyStyle = this.getEmptyValueStyle({ force: true });
+        var props = (0,index_all.keys)(emptyStyle);
+        return !!props.length && props.every(function (prop) { return emptyStyle[prop] === style[prop]; });
+    };
+    PropertyStack.prototype.getEmptyValueStyle = function (opts) {
+        if (opts === void 0) { opts = {}; }
+        var emptyValue = this.attributes.emptyValue;
+        if (emptyValue && (!this.hasLayers() || opts.force)) {
+            var name_1 = this.getName();
+            var props = this.getProperties();
+            var result_1 = (0,index_all.isString)(emptyValue) ? emptyValue : emptyValue({ property: this });
+            if ((0,index_all.isString)(result_1)) {
+                var style_1 = {};
+                if (this.isDetached()) {
+                    props.map(function (prop) {
+                        style_1[prop.getName()] = result_1;
+                    });
+                }
+                else {
+                    style_1[name_1] = result_1;
+                }
+                return style_1;
+            }
+            else {
+                return result_1;
+            }
+        }
+        else {
+            return {};
+        }
     };
     PropertyStack.prototype.__getJoinLayers = function () {
         var join = this.get('layerJoin');
@@ -55644,7 +56231,7 @@ var PropertyStack = /** @class */ (function (_super) {
         if (opts === void 0) { opts = {}; }
         var noParent = opts.noParent;
         var parentValue = noParent && this.getParentTarget();
-        return this.getLayers().length > 0 && !parentValue;
+        return (this.hasLayers() || this.hasEmptyValue()) && !parentValue;
     };
     /**
      * Extended
@@ -55652,13 +56239,20 @@ var PropertyStack = /** @class */ (function (_super) {
      */
     PropertyStack.prototype.clear = function (opts) {
         if (opts === void 0) { opts = {}; }
-        this.__getLayers().reset();
-        this.__upTargetsStyleProps(opts);
+        this.layers.reset();
+        this.__upTargetsStyleProps(PropertyStack_assign(PropertyStack_assign({}, opts), { __clear: true }));
         model_Property.prototype.clear.call(this);
         return this;
     };
     PropertyStack.prototype.__canClearProp = function () {
         return false;
+    };
+    /**
+     * @deprecated
+     * @private
+     */
+    PropertyStack.prototype.__getLayers = function () {
+        return this.layers;
     };
     return PropertyStack;
 }(model_PropertyComposite));
@@ -56361,7 +56955,8 @@ var PropertyStackView = /** @class */ (function (_super) {
     };
     PropertyStackView.prototype.init = function () {
         var model = this.model;
-        this.listenTo(model.__getLayers(), 'change reset', this.updateStatus);
+        this.listenTo(model.layers, 'change reset', this.updateStatus);
+        this.listenTo(model, 'change:isEmptyValue', this.updateStatus);
     };
     PropertyStackView.prototype.addLayer = function () {
         this.model.addLayer({}, { at: 0 });
@@ -56394,7 +56989,7 @@ var PropertyStackView = /** @class */ (function (_super) {
             });
             propsView.render();
             var layersView = new view_LayersView({
-                collection: model.__getLayers(),
+                collection: model.layers,
                 // @ts-ignore
                 config: config,
                 propertyView: this,
@@ -57436,7 +58031,7 @@ var Sector = /** @class */ (function (_super) {
      */
     Sector.prototype.getProperties = function (opts) {
         if (opts === void 0) { opts = {}; }
-        var props = this.get('properties');
+        var props = this.properties;
         var res = (props.models ? Sector_spreadArray([], props.models, true) : props);
         return res.filter(function (prop) {
             var result = true;
@@ -57454,8 +58049,7 @@ var Sector = /** @class */ (function (_super) {
         return this.getProperties().filter(function (prop) { return prop.get('id') === id; })[0] || undefined;
     };
     Sector.prototype.addProperty = function (property, opts) {
-        // @ts-ignore
-        return this.get('properties').add(this.checkExtend(property), opts);
+        return this.properties.add(this.checkExtend(property), opts);
     };
     /**
      * Extend properties
@@ -57516,7 +58110,7 @@ var Sector = /** @class */ (function (_super) {
         var buildP = props || [];
         if (!buildP.length)
             return [];
-        var builtIn = (_a = this.em) === null || _a === void 0 ? void 0 : _a.get('StyleManager').builtIn;
+        var builtIn = (_a = this.em) === null || _a === void 0 ? void 0 : _a.Styles.builtIn;
         return builtIn === null || builtIn === void 0 ? void 0 : builtIn.build(buildP);
     };
     return Sector;
@@ -58562,7 +59156,7 @@ var StyleManager = /** @class */ (function (_super) {
     StyleManager.prototype.addProperty = function (sectorId, property, opts) {
         if (opts === void 0) { opts = {}; }
         var sector = this.getSector(sectorId, { warn: true });
-        var prop = null;
+        var prop;
         if (sector)
             prop = sector.addProperty(property, opts);
         return prop;
@@ -58825,10 +59419,12 @@ var StyleManager = /** @class */ (function (_super) {
             var otherRules = [];
             var rules = [];
             var rulesBySelectors = function (values) {
-                return cssC_2.getRules().filter(function (rule) {
-                    var rSels = rule.getSelectors().map(function (s) { return s.getFullName(); });
-                    return rSels.every(function (rSel) { return values.indexOf(rSel) >= 0; });
-                });
+                return !values.length
+                    ? []
+                    : cssC_2.getRules().filter(function (rule) {
+                        var rSels = rule.getSelectors().map(function (s) { return s.getFullName(); });
+                        return !!rSels.length && rSels.every(function (rSel) { return values.indexOf(rSel) >= 0; });
+                    });
             };
             // Componente related rule
             if (cmp) {
@@ -59001,17 +59597,19 @@ var StyleManager = /** @class */ (function (_super) {
         var isComposite = prop.getType() === 'composite';
         var opt = style_manager_assign(style_manager_assign({}, opts), { __up: true });
         var canUpdate = !isComposite && !isStack;
-        var newLayers = isStack ? prop.__getLayersFromStyle(style) : [];
-        var newProps = isComposite ? prop.__getPropsFromStyle(style) : {};
+        var propStack = prop;
+        var propComp = prop;
+        var newLayers = isStack ? propStack.__getLayersFromStyle(style) : [];
+        var newProps = isComposite ? propComp.__getPropsFromStyle(style) : {};
         var newValue = hasVal ? value : null;
         var parentTarget = null;
         if ((isStack && newLayers === null) || (isComposite && newProps === null)) {
             var method_1 = isStack ? '__getLayersFromStyle' : '__getPropsFromStyle';
-            var parentItem = parentStyles.filter(function (p) { return prop[method_1](p.style) !== null; })[0];
+            var parentItem = parentStyles.filter(function (p) { return propStack[method_1](p.style) !== null; })[0];
             if (parentItem) {
                 newValue = parentItem.style[name];
                 parentTarget = parentItem.target;
-                var val = prop[method_1](parentItem.style);
+                var val = propStack[method_1](parentItem.style);
                 if (isStack) {
                     newLayers = val;
                 }
@@ -59030,18 +59628,22 @@ var StyleManager = /** @class */ (function (_super) {
         }
         prop.__setParentTarget(parentTarget);
         canUpdate && prop.__getFullValue() !== newValue && prop.upValue(newValue, opt);
-        isStack && prop.__setLayers(newLayers || []);
+        if (isStack) {
+            propStack.__setLayers(newLayers || [], {
+                isEmptyValue: propStack.isEmptyValueStyle(style),
+            });
+        }
         if (isComposite) {
-            var props = prop.getProperties();
+            var props = propComp.getProperties();
             // Detached has to be treathed as separate properties
-            if (prop.isDetached()) {
-                var newStyle_1 = prop.__getPropsFromStyle(style, { byName: true }) || {};
-                var newParentStyles_1 = parentStyles.map(function (p) { return (style_manager_assign(style_manager_assign({}, p), { style: prop.__getPropsFromStyle(p.style, { byName: true }) || {} })); });
+            if (propComp.isDetached()) {
+                var newStyle_1 = propComp.__getPropsFromStyle(style, { byName: true }) || {};
+                var newParentStyles_1 = parentStyles.map(function (p) { return (style_manager_assign(style_manager_assign({}, p), { style: propComp.__getPropsFromStyle(p.style, { byName: true }) || {} })); });
                 props.map(function (pr) { return _this.__upProp(pr, newStyle_1, newParentStyles_1, opts); });
             }
             else {
-                prop.__setProperties(newProps || {}, opt);
-                prop.getProperties().map(function (pr) { return pr.__setParentTarget(parentTarget); });
+                propComp.__setProperties(newProps || {}, opt);
+                propComp.getProperties().map(function (pr) { return pr.__setParentTarget(parentTarget); });
             }
         }
     };
@@ -60096,9 +60698,7 @@ var EditorModel = /** @class */ (function (_super) {
      */
     EditorModel.prototype.refreshCanvas = function (opts) {
         if (opts === void 0) { opts = {}; }
-        this.set('canvasOffset', null);
-        this.set('canvasOffset', this.Canvas.getOffset());
-        opts.tools && this.trigger('canvas:updateTools');
+        this.Canvas.refresh({ spots: opts.tools });
     };
     /**
      * Clear all selected stuf inside the window, sometimes is useful to call before
@@ -61389,7 +61989,7 @@ var grapesjs = {
     plugins: plugins,
     usePlugin: usePlugin,
     // @ts-ignore Will be replaced on build
-    version: '0.21.8',
+    version: '0.21.9',
     /**
      * Initialize the editor with passed options
      * @param {Object} config Configuration object
