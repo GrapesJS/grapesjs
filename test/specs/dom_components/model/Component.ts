@@ -152,7 +152,7 @@ describe('Component', () => {
     obj = new Component({}, compOpts);
     obj.set({
       bool: true,
-      boolf: false,
+      removable: false,
       string: 'st\'ri"ng',
       array: [1, 'string', true],
       object: { a: 1, b: 'string', c: true },
@@ -165,12 +165,12 @@ describe('Component', () => {
     let resStr = "st'ri&quot;ng";
     let resArr = '[1,&quot;string&quot;,true]';
     let resObj = '{&quot;a&quot;:1,&quot;b&quot;:&quot;string&quot;,&quot;c&quot;:true}';
-    let res = `<div data-gjs-bool data-gjs-string="${resStr}" data-gjs-array="${resArr}" data-gjs-object="${resObj}" data-gjs-empty="" data-gjs-zero="0"></div>`;
+    let res = `<div data-gjs-removable="false" data-gjs-bool="true" data-gjs-string="${resStr}" data-gjs-array="${resArr}" data-gjs-object="${resObj}" data-gjs-empty="" data-gjs-zero="0"></div>`;
     expect(obj.toHTML({ withProps: true })).toEqual(res);
     resStr = 'st&apos;ri"ng';
     resArr = '[1,"string",true]';
     resObj = '{"a":1,"b":"string","c":true}';
-    res = `<div data-gjs-bool data-gjs-string='${resStr}' data-gjs-array='${resArr}' data-gjs-object='${resObj}' data-gjs-empty="" data-gjs-zero="0"></div>`;
+    res = `<div data-gjs-removable="false" data-gjs-bool="true" data-gjs-string='${resStr}' data-gjs-array='${resArr}' data-gjs-object='${resObj}' data-gjs-empty="" data-gjs-zero="0"></div>`;
     expect(obj.toHTML({ withProps: true, altQuoteAttr: true })).toEqual(res);
   });
 

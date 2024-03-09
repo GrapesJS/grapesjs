@@ -1590,7 +1590,8 @@ export default class Component extends StyleableModel<ComponentProperties> {
       forEach(props, (value, key) => {
         const skipProps = ['classes', 'attributes', 'components'];
         if (key[0] !== '_' && skipProps.indexOf(key) < 0) {
-          attributes[`data-gjs-${key}`] = isArray(value) || isObject(value) ? JSON.stringify(value) : value;
+          attributes[`data-gjs-${key}`] =
+            isArray(value) || isObject(value) ? JSON.stringify(value) : isBoolean(value) ? `${value}` : value;
         }
       });
     }
