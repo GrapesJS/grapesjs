@@ -1036,6 +1036,7 @@ declare class CanvasView extends ModuleView<Canvas> {
 	cvStyle?: HTMLElement;
 	clsUnscale: string;
 	ready: boolean;
+	updatingScriptTimout: Record<string, ReturnType<typeof setTimeout>>;
 	frames: FramesView;
 	frame?: FrameView;
 	private timerZoom?;
@@ -2580,6 +2581,7 @@ declare abstract class Trait<TraitValueType = any, Type extends string = string>
 	private _children;
 	get children(): Trait[];
 	set children(children: Trait[]);
+	abstract get component(): Component;
 	constructor(opts: TraitProperties);
 	registerForUpdateEvent(view: OnUpdateView<TraitValueType>): void;
 	protected abstract getValue(): TraitValueType;
@@ -2602,6 +2604,7 @@ declare abstract class Trait<TraitValueType = any, Type extends string = string>
 	 * @returns {String}
 	 */
 	getCategoryLabel(opts?: LocaleOptions): string;
+	abstract triggerTraitChanged(event?: string): void;
 }
 declare class TraitRoot<TModel extends Model & {
 	em: EditorModel;
@@ -2609,10 +2612,12 @@ declare class TraitRoot<TModel extends Model & {
 	readonly model: TModel;
 	private readonly _name;
 	get name(): string;
+	get component(): Component;
 	constructor(name: string, model: TModel, opts: any);
 	get em(): EditorModel;
 	protected getValue(): TraitValueType;
 	protected setValue(value: TraitValueType, opts?: SetOptions): void;
+	triggerTraitChanged(event?: string): void;
 }
 export interface TraitViewOpts<Type> {
 	type?: Type;
@@ -2681,21 +2686,26 @@ declare class TraitObjectItem<TraitValueType extends {
 	get name(): string;
 	constructor(name: string, target: Trait<TraitValueType>, opts: any, onValueChange?: (value: any) => void);
 	get em(): default;
+	get component(): Component;
 	protected getValue(): any;
 	protected setValue(value: any): void;
+	triggerTraitChanged(event?: string): void;
 }
 declare abstract class TraitParent<TraitValueType = any> extends Trait<TraitValueType> {
 	target: Trait<TraitValueType>;
 	private updateChildren;
 	constructor(target: Trait<TraitValueType>);
 	get name(): string;
+	get component(): Component;
 	protected initChildren(): Trait[];
-	setValueFromModel(): void;
+	refreshChildren(): Promise<void>;
+	setValueFromModel(): Promise<void>;
 	get em(): default;
 	protected getValue(): TraitValueType;
 	protected setValue(value: TraitValueType): void;
-	refreshTrait(): void;
+	refreshTrait(): Promise<void>;
 	childrenChanged(): void;
+	triggerTraitChanged(event?: string): void;
 }
 export interface TraitListViewOpts<T extends string = "object"> extends TraitViewOpts<T> {
 	traits: any[] | any;
@@ -3142,6 +3152,46 @@ export interface ToolbarButtonProps {
 	attributes?: ObjectAny;
 	events?: ObjectAny;
 }
+declare class TraitObject<TraitValueType extends {
+	[id: string]: any;
+} = any> extends TraitParent<TraitValueType> {
+	constructor(target: Trait<TraitValueType>);
+	protected initChildren(): TraitObjectItem<TraitValueType>[];
+	get viewType(): string;
+	get editable(): boolean;
+}
+export type VariableType = {
+	variableType: "global";
+	data: {
+		componentId: string;
+		name: string;
+	};
+} | {
+	variableType: "parameter";
+	data: {
+		default: string;
+	};
+};
+export type ParamType = {
+	type: "list";
+	itemType: ParamType;
+} | {
+	type: "object";
+	params: Record<string, ParamType>;
+} | {
+	type: "string";
+};
+export type SlotType = {
+	script: string | ((...params: any[]) => any);
+	event: {
+		type: string;
+	};
+	params: Record<string, ParamType>;
+	subscription: {
+		componentId?: string;
+		name?: string;
+	};
+};
 export interface ScriptData {
 	main: string | ((...params: any[]) => any);
 	props: string[];
@@ -3152,6 +3202,7 @@ export interface ScriptData {
 	}>;
 	slots: Record<string, {
 		script: string | ((...params: any[]) => any);
+		params: Record<string, ParamType>;
 	}>;
 }
 declare class ScriptSubComponent extends Model {
@@ -3169,7 +3220,6 @@ declare class ScriptSubComponent extends Model {
 	get dataId(): string;
 	initScriptProps(): void;
 	__scriptPropsChange(m?: any, v?: any, opts?: any): void;
-	__scriptChange(): void;
 	/**
 	 * Script updated
 	 * @private
@@ -3184,13 +3234,22 @@ declare class ScriptSubComponent extends Model {
 	 * @private
 	 */
 	getScriptString(script?: string | Function): string;
+	static renderComponentSignal(signal: {
+		componentId: string;
+		slot: string;
+		params: Record<string, any>;
+	}, em: EditorModel): string;
 	static renderComponentSignals(script: ScriptSubComponent): string;
 	static renderSlots(scripts: ScriptSubComponent[]): string;
 	static renderJs(script: ScriptSubComponent | ScriptSubComponent[]): string;
 	private static mapScripts;
 	get variables(): any;
-	get signals(): any;
-	get slots(): any;
+	get signals(): Record<string, {
+		componentId?: string;
+		slot?: string;
+		params?: Record<string, VariableType>;
+	}>;
+	get slots(): Record<string, SlotType>;
 }
 export type DragMode = "translate" | "absolute" | "";
 export type DraggableDroppableFn = (source: Component, target: Component, index?: number) => boolean | void;
@@ -3477,15 +3536,10 @@ declare class ComponentWrapper extends Component {
 			changeProp: boolean;
 			traits: {
 				type: string;
-				traits: ({
+				traits: {
 					name: string;
 					type: string;
-					label?: undefined;
-				} | {
-					name: string;
-					label: string;
-					type: string;
-				})[];
+				}[];
 			};
 		} | {
 			name: string;
@@ -3884,11 +3938,34 @@ export declare class Component extends StyleableModel<ComponentProperties> {
 	get traits(): ({
 		name: string;
 	} & Trait<any>)[];
-	get slots(): {
-		[name: string]: {
-			script: (el: string, param: any) => void;
+	get slots(): Record<string, {
+		script: string | ((...params: any[]) => any);
+		event: {
+			type: string;
 		};
-	};
+		params: Record<string, {
+			type: "list";
+			itemType: any | {
+				type: "object";
+				params: Record<string, any | any | {
+					type: "string";
+				}>;
+			} | {
+				type: "string";
+			};
+		} | {
+			type: "object";
+			params: Record<string, any | any | {
+				type: "string";
+			}>;
+		} | {
+			type: "string";
+		}>;
+		subscription: {
+			componentId?: string | undefined;
+			name?: string | undefined;
+		};
+	}>;
 	get content(): string;
 	get toolbar(): ToolbarButtonProps[];
 	get resizable(): boolean | ResizerOptions;
@@ -9199,16 +9276,6 @@ declare class StorageManager extends Module<StorageManagerConfig & {
 	 * */
 	canAutoload(): boolean;
 	destroy(): void;
-}
-declare class TraitObject<TraitValueType extends {
-	[id: string]: any;
-} = any> extends TraitParent<TraitValueType> {
-	constructor(target: Trait<TraitValueType>);
-	protected initChildren(): (Trait<any, string> & {
-		name: string;
-	})[];
-	get viewType(): string;
-	get editable(): boolean;
 }
 export interface TraitListUniqueViewOpts<T extends string = "object"> extends TraitViewOpts<T> {
 	traits: any[] | any;
