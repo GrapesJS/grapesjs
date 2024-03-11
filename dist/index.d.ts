@@ -15,9 +15,6 @@ export type AddOptions = Backbone.AddOptions & {
 export type DisableOptions = {
 	fromMove?: boolean;
 };
-export type LocaleOptions = {
-	locale?: boolean;
-};
 export type RemoveOptions = Backbone.Silenceable;
 export type EventHandler = Backbone.EventHandler;
 export type ObjectHash = Backbone.ObjectHash;
@@ -1036,6 +1033,7 @@ declare class CanvasView extends ModuleView<Canvas> {
 	cvStyle?: HTMLElement;
 	clsUnscale: string;
 	ready: boolean;
+	updatingScriptTimout: Record<string, ReturnType<typeof setTimeout>>;
 	frames: FramesView;
 	frame?: FrameView;
 	private timerZoom?;
@@ -2487,81 +2485,6 @@ export declare class Frame extends ModuleModel<CanvasModule> {
 	hasAutoHeight(): boolean;
 	toJSON(opts?: any): any;
 }
-export interface CategoryViewConfig {
-	em: EditorModel;
-	pStylePrefix?: string;
-	stylePrefix?: string;
-}
-declare class CategoryView extends View<Category> {
-	em: EditorModel;
-	config: CategoryViewConfig;
-	pfx: string;
-	caretR: string;
-	caretD: string;
-	iconClass: string;
-	activeClass: string;
-	iconEl?: HTMLElement;
-	typeEl?: HTMLElement;
-	catName: string;
-	events(): {
-		"click [data-title]": string;
-	};
-	template({ pfx, label, catName }: {
-		pfx: string;
-		label: string;
-		catName: string;
-	}): string;
-	/** @ts-ignore */
-	attributes(): Record<string, any>;
-	constructor(o: any, config: CategoryViewConfig, catName: string);
-	updateVisibility(): void;
-	open(): void;
-	close(): void;
-	toggle(): void;
-	getIconEl(): HTMLElement;
-	getTypeEl(): HTMLElement;
-	append(el: HTMLElement): void;
-	render(): this;
-}
-interface CategoryProperties {
-	/**
-	 * Category id.
-	 */
-	id: string;
-	/**
-	 * Category label.
-	 */
-	label: string;
-	/**
-	 * Category open state.
-	 * @default true
-	 */
-	open?: boolean;
-	/**
-	 * Category order.
-	 */
-	order?: string | number;
-	/**
-	 * Category attributes.
-	 * @default {}
-	 */
-	attributes?: Record<string, any>;
-}
-export interface ItemsByCategory<T> {
-	category?: Category;
-	items: T[];
-}
-export declare class Category extends Model<CategoryProperties> {
-	view?: CategoryView;
-	defaults(): {
-		id: string;
-		label: string;
-		open: boolean;
-		attributes: {};
-	};
-	getId(): string;
-	getLabel(): string;
-}
 export interface OnUpdateView<TraitValueType> {
 	onUpdateEvent(value: TraitValueType, fromTarget: boolean): void;
 }
@@ -2573,13 +2496,11 @@ export interface TraitProperties {
 }
 declare abstract class Trait<TraitValueType = any, Type extends string = string> {
 	opts: any;
-	private view?;
+	protected view?: OnUpdateView<TraitValueType>;
 	get name(): string;
 	get type(): Type;
-	get templates(): unknown;
-	private _children;
-	get children(): Trait[];
-	set children(children: Trait[]);
+	get templates(): any[];
+	abstract get component(): Component;
 	constructor(opts: TraitProperties);
 	registerForUpdateEvent(view: OnUpdateView<TraitValueType>): void;
 	protected abstract getValue(): TraitValueType;
@@ -2589,19 +2510,34 @@ declare abstract class Trait<TraitValueType = any, Type extends string = string>
 	get value(): TraitValueType;
 	protected updatingValue: boolean;
 	set value(value: TraitValueType);
-	refreshTrait(): void;
-	setValueFromModel(): void;
+	refreshTrait(forced: boolean): void;
+	setValueFromModel(model: Component, opts: any): void;
 	onUpdateEvent(): void;
 	updateOpts(opts: any): void;
 	get viewType(): Type;
-	get category(): Category | undefined;
 	/**
 	 * Get category label.
 	 * @param {Object} [opts={}] Options.
 	 * @param {Boolean} [opts.locale=true] Use the locale string from i18n module.
 	 * @returns {String}
 	 */
-	getCategoryLabel(opts?: LocaleOptions): string;
+	abstract triggerTraitChanged(event?: string): void;
+	abstract get updateEventName(): string;
+	setTraitElement(trait: Trait): void;
+}
+declare abstract class TraitElement<TraitValueType = any> extends Trait<TraitValueType> {
+	target: Trait<TraitValueType>;
+	constructor(target: Trait<TraitValueType>, opts?: any);
+	abstract get name(): string;
+	abstract get defaultValue(): TraitValueType;
+	get component(): Component;
+	get em(): default;
+	protected getValue(): TraitValueType;
+	protected setValue(value: TraitValueType): void;
+	refreshTrait(forced: boolean): void;
+	triggerTraitChanged(event: string): void;
+	get updateEventName(): string;
+	onUpdateEvent(): void;
 }
 declare class TraitRoot<TModel extends Model & {
 	em: EditorModel;
@@ -2609,10 +2545,15 @@ declare class TraitRoot<TModel extends Model & {
 	readonly model: TModel;
 	private readonly _name;
 	get name(): string;
+	traitElement: TraitElement;
+	get component(): Component;
 	constructor(name: string, model: TModel, opts: any);
 	get em(): EditorModel;
 	protected getValue(): TraitValueType;
 	protected setValue(value: TraitValueType, opts?: SetOptions): void;
+	triggerTraitChanged(event: string): void;
+	get updateEventName(): string;
+	setTraitElement(trait: TraitElement): void;
 }
 export interface TraitViewOpts<Type> {
 	type?: Type;
@@ -2670,32 +2611,22 @@ export type SelectOption = string | {
 	style?: string;
 };
 export interface TraitSelectViewOpts extends TraitInputViewOpts<"select"> {
-	options: SelectOption[];
+	readonly options: SelectOption[] | ((em: EditorModel) => SelectOption[]);
 }
-declare class TraitObjectItem<TraitValueType extends {
-	[id: string]: any;
-} = any> extends Trait<any> {
-	target: Trait<TraitValueType>;
-	onValueChange?: (value: any) => void;
-	_name: string;
-	get name(): string;
-	constructor(name: string, target: Trait<TraitValueType>, opts: any, onValueChange?: (value: any) => void);
-	get em(): default;
-	protected getValue(): any;
-	protected setValue(value: any): void;
-}
-declare abstract class TraitParent<TraitValueType = any> extends Trait<TraitValueType> {
-	target: Trait<TraitValueType>;
+declare abstract class TraitParent<CT extends Trait, TraitValueType = any> extends TraitElement<TraitValueType> {
 	private updateChildren;
 	constructor(target: Trait<TraitValueType>);
 	get name(): string;
-	protected initChildren(): Trait[];
-	setValueFromModel(): void;
-	get em(): default;
+	children: CT[];
+	protected abstract initChildren(): CT[];
+	refreshChildren(): void;
 	protected getValue(): TraitValueType;
 	protected setValue(value: TraitValueType): void;
-	refreshTrait(): void;
+	refreshTrait(forced: boolean): void;
 	childrenChanged(): void;
+	protected addChildren(tr: CT): void;
+	protected removeChildren(key: string): void;
+	get updateEventName(): string;
 }
 export interface TraitListViewOpts<T extends string = "object"> extends TraitViewOpts<T> {
 	traits: any[] | any;
@@ -3142,6 +3073,53 @@ export interface ToolbarButtonProps {
 	attributes?: ObjectAny;
 	events?: ObjectAny;
 }
+export type PropsType = {
+	name: string;
+	type: "link";
+};
+declare class PropComponent {
+	private model?;
+	private script;
+	name: string;
+	constructor(script: ScriptSubComponent, opts: PropsType);
+	register(comp: Component): void;
+	deregister(): void;
+	private propChange;
+	static linkToComponent(comp: ScriptSubComponent, name: string): PropComponent;
+}
+export type ParamType = {
+	type: "list";
+	itemType: ParamType;
+} | {
+	type: "object";
+	params: Record<string, ParamType>;
+} | {
+	type: "string";
+} | {
+	type: "unkown";
+};
+export interface ISignal {
+	componentId?: string;
+	slot?: string;
+	optType?: ParamType;
+}
+export type SlotType = {
+	script: string | ((...params: any[]) => any);
+	event: {
+		type: string;
+	};
+	params: {
+		type: "list";
+		itemType: ParamType;
+	} | {
+		type: "object";
+		params: Record<string, ParamType>;
+	};
+	subscription: {
+		componentId?: string;
+		name?: string;
+	};
+};
 export interface ScriptData {
 	main: string | ((...params: any[]) => any);
 	props: string[];
@@ -3149,9 +3127,11 @@ export interface ScriptData {
 	signals: Record<string, {
 		componentId?: string;
 		slot?: string;
+		optType: ParamType;
 	}>;
 	slots: Record<string, {
 		script: string | ((...params: any[]) => any);
+		params: Record<string, ParamType>;
 	}>;
 }
 declare class ScriptSubComponent extends Model {
@@ -3165,17 +3145,16 @@ declare class ScriptSubComponent extends Model {
 	};
 	constructor(component: Component, script: ScriptData);
 	get component(): Component;
-	get props(): string[];
+	get props(): PropComponent[];
+	setProps(props: string[]): void;
 	get dataId(): string;
 	initScriptProps(): void;
+	onChange(): void;
 	__scriptPropsChange(m?: any, v?: any, opts?: any): void;
-	__scriptChange(): void;
-	/**
-	 * Script updated
-	 * @private
-	 */
-	scriptUpdated(): void;
+	private scriptUpdated;
 	__getScriptProps(): Partial<ComponentProperties>;
+	register(): void;
+	deregister(): void;
 	/**
 	 * Return script in string format, cleans 'function() {..' from scripts
 	 * if it's a function
@@ -3184,13 +3163,18 @@ declare class ScriptSubComponent extends Model {
 	 * @private
 	 */
 	getScriptString(script?: string | Function): string;
+	static renderComponentSignal(signal: {
+		componentId: string;
+		slot: string;
+		params: Record<string, any>;
+	}, em: EditorModel): string;
 	static renderComponentSignals(script: ScriptSubComponent): string;
 	static renderSlots(scripts: ScriptSubComponent[]): string;
 	static renderJs(script: ScriptSubComponent | ScriptSubComponent[]): string;
 	private static mapScripts;
 	get variables(): any;
-	get signals(): any;
-	get slots(): any;
+	get signals(): Record<string, ISignal>;
+	get slots(): Record<string, SlotType>;
 }
 export type DragMode = "translate" | "absolute" | "";
 export type DraggableDroppableFn = (source: Component, target: Component, index?: number) => boolean | void;
@@ -3465,9 +3449,43 @@ declare class ComponentWrapper extends Component {
 		}[];
 		ajax: {
 			test: {
+				url: {
+					url: string;
+					variables: {
+						page: {
+							variableType: string;
+							data: {
+								default: string;
+							};
+						};
+					};
+				};
 				urlRaw: string;
 				dataSrc: string;
 				dataIds: string[];
+				optType: {
+					type: string;
+					itemType: {
+						type: string;
+						params: {
+							id: {
+								type: string;
+							};
+							email: {
+								type: string;
+							};
+							first_name: {
+								type: string;
+							};
+							last_name: {
+								type: string;
+							};
+							avatar: {
+								type: string;
+							};
+						};
+					};
+				};
 			};
 		};
 		traits: ({
@@ -3480,11 +3498,11 @@ declare class ComponentWrapper extends Component {
 				traits: ({
 					name: string;
 					type: string;
-					label?: undefined;
+					options?: undefined;
 				} | {
 					name: string;
-					label: string;
 					type: string;
+					options: string[];
 				})[];
 			};
 		} | {
@@ -3884,11 +3902,7 @@ export declare class Component extends StyleableModel<ComponentProperties> {
 	get traits(): ({
 		name: string;
 	} & Trait<any>)[];
-	get slots(): {
-		[name: string]: {
-			script: (el: string, param: any) => void;
-		};
-	};
+	get slots(): Record<string, SlotType>;
 	get content(): string;
 	get toolbar(): ToolbarButtonProps[];
 	get resizable(): boolean | ResizerOptions;
@@ -4669,6 +4683,81 @@ export interface AssetManagerConfig {
 	 * @deprecated
 	 */
 	dropzoneContent?: string;
+}
+export interface CategoryViewConfig {
+	em: EditorModel;
+	pStylePrefix?: string;
+	stylePrefix?: string;
+}
+declare class CategoryView extends View<Category> {
+	em: EditorModel;
+	config: CategoryViewConfig;
+	pfx: string;
+	caretR: string;
+	caretD: string;
+	iconClass: string;
+	activeClass: string;
+	iconEl?: HTMLElement;
+	typeEl?: HTMLElement;
+	catName: string;
+	events(): {
+		"click [data-title]": string;
+	};
+	template({ pfx, label, catName }: {
+		pfx: string;
+		label: string;
+		catName: string;
+	}): string;
+	/** @ts-ignore */
+	attributes(): Record<string, any>;
+	constructor(o: any, config: CategoryViewConfig, catName: string);
+	updateVisibility(): void;
+	open(): void;
+	close(): void;
+	toggle(): void;
+	getIconEl(): HTMLElement;
+	getTypeEl(): HTMLElement;
+	append(el: HTMLElement): void;
+	render(): this;
+}
+interface CategoryProperties {
+	/**
+	 * Category id.
+	 */
+	id: string;
+	/**
+	 * Category label.
+	 */
+	label: string;
+	/**
+	 * Category open state.
+	 * @default true
+	 */
+	open?: boolean;
+	/**
+	 * Category order.
+	 */
+	order?: string | number;
+	/**
+	 * Category attributes.
+	 * @default {}
+	 */
+	attributes?: Record<string, any>;
+}
+export interface ItemsByCategory<T> {
+	category?: Category;
+	items: T[];
+}
+export declare class Category extends Model<CategoryProperties> {
+	view?: CategoryView;
+	defaults(): {
+		id: string;
+		label: string;
+		open: boolean;
+		attributes: {};
+	};
+	getId(): string;
+	getLabel(): string;
 }
 export declare class Categories extends Collection<Category> {
 	/** @ts-ignore */
@@ -9200,27 +9289,39 @@ declare class StorageManager extends Module<StorageManagerConfig & {
 	canAutoload(): boolean;
 	destroy(): void;
 }
+declare class TraitObjectItem<TraitValueType extends {
+	[id: string]: any;
+} = any> extends TraitElement<any> {
+	onValueChange?: (value: any) => void;
+	_name: string;
+	get name(): string;
+	constructor(name: string, target: Trait<TraitValueType>, opts: any, onValueChange?: (value: any) => void);
+	get defaultValue(): undefined;
+	protected getValue(): any;
+	protected setValue(value: any): void;
+	onUpdateEvent(): void;
+}
 declare class TraitObject<TraitValueType extends {
 	[id: string]: any;
-} = any> extends TraitParent<TraitValueType> {
+} = any> extends TraitParent<TraitObjectItem, TraitValueType> {
 	constructor(target: Trait<TraitValueType>);
-	protected initChildren(): (Trait<any, string> & {
-		name: string;
-	})[];
+	protected initChildren(): TraitObjectItem<TraitValueType>[];
+	get defaultValue(): TraitValueType;
 	get viewType(): string;
 	get editable(): boolean;
+	protected getValue(): TraitValueType;
 }
 export interface TraitListUniqueViewOpts<T extends string = "object"> extends TraitViewOpts<T> {
 	traits: any[] | any;
 }
-declare abstract class TraitsView<T extends TraitParent> extends TraitView<T> {
+declare abstract class TraitsView<T extends TraitParent<TraitElement>> extends TraitView<T> {
 	protected type: string;
 	templates: any[];
 	private _items?;
 	protected traitOps?: any;
 	get items(): TraitView<Trait<any, string>>[];
 	constructor(em: EditorModel, opts: TraitListUniqueViewOpts);
-	get children(): TraitObjectItem<any>[];
+	get children(): TraitElement<any>[];
 	onUpdateEvent(value: any, fromTarget: boolean): void;
 	onItemRender(e: any): void;
 	renderItems(traits?: Trait[]): void;
@@ -9266,6 +9367,27 @@ declare enum TraitsEvents {
 	 */
 	all = "trait"
 }
+declare abstract class TraitFactory {
+	static build(model: Model & {
+		em: EditorModel;
+	}, trait: string | ({
+		name: string;
+	} & InputViewProperties) | ({
+		name: string;
+	} & Trait<any>)): Trait<any> & {
+		name: string;
+	};
+	static buildNestedTraits<CT extends Trait>(trait: CT & {
+		name: string;
+	}): CT & {
+		name: string;
+	};
+	static buildNestedTraits(trait: Trait & {
+		name: string;
+	}): Trait & {
+		name: string;
+	};
+}
 export type CustomTrait<T> = T & ThisType<T & TraitView>;
 declare class TraitManager extends Module<TraitManagerConfig & {
 	pStylePrefix?: string;
@@ -9278,6 +9400,7 @@ declare class TraitManager extends Module<TraitManagerConfig & {
 	};
 	__ctn?: HTMLElement;
 	TraitsView: typeof TraitObjectView;
+	TraitFactory: typeof TraitFactory;
 	events: typeof TraitsEvents;
 	state: Model<TraitModuleStateProps, SetOptions, any>;
 	/**
