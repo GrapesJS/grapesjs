@@ -13,7 +13,7 @@ export interface ColorPickerOptions {
   change?: () => void;
   show?: () => void;
   hide?: () => void;
-  color?: boolean;
+  color?: boolean | string;
   flat?: boolean;
   showInput?: boolean;
   allowEmpty?: boolean;
@@ -25,8 +25,8 @@ export interface ColorPickerOptions {
   hideAfterPaletteSelect?: boolean;
   togglePaletteOnly?: boolean;
   showSelectionPalette?: boolean;
-  localStorageKey?: boolean;
-  appendTo?: string;
+  localStorageKey?: boolean | string;
+  appendTo?: string | HTMLElement;
   maxSelectionSize?: number;
   cancelText?: string;
   chooseText?: string;
@@ -34,7 +34,7 @@ export interface ColorPickerOptions {
   togglePaletteLessText?: string;
   clearText?: string;
   noColorSelectedText?: string;
-  preferredFormat?: boolean;
+  preferredFormat?: boolean | string;
   containerClassName?: string;
   replacerClassName?: string;
   showAlpha?: boolean;
