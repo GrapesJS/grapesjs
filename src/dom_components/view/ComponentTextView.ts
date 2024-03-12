@@ -10,7 +10,7 @@ import ComponentText from '../model/ComponentText';
 import { ComponentDefinition } from '../model/types';
 import ComponentView from './ComponentView';
 
-export default class ComponentTextView extends ComponentView<ComponentText> {
+export default class ComponentTextView<TComp extends ComponentText = ComponentText> extends ComponentView<TComp> {
   rte?: RichTextEditorModule;
   rteEnabled?: boolean;
   activeRte?: RichTextEditor;
