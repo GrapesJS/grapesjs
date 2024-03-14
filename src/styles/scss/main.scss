@@ -444,7 +444,13 @@ $colorsAll: (one, var(--gjs-primary-color)),
 
 /********* Spectrum **********/
 
-.#{$app-prefix}editor-cont {
+.#{$app-prefix}editor-sp {
+  border: 1px solid var(--gjs-main-dark-color);
+  box-shadow: 0 0 7px var(--gjs-main-dark-color);
+  border-radius: 3px;
+}
+
+.#{$app-prefix}editor-sp {
   .sp-hue, .sp-slider{ cursor: row-resize;}
   .sp-color, .sp-dragger{ cursor: crosshair;}
   .sp-alpha-inner, .sp-alpha-handle{cursor: col-resize;}

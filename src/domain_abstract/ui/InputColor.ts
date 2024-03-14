@@ -103,7 +103,7 @@ export default class InputColor extends Input {
 
       var colorEl = $(`<div class="${this.ppfx}field-color-picker"></div>`);
       var cpStyle = colorEl.get(0)!.style;
-      var elToAppend = em && em.config ? em.config.el : '';
+      var elToAppend = $('body');
       var colorPickerConfig = (em && em.getConfig && em.getConfig().colorPicker) || {};
 
       this.movedColor = '';
@@ -123,7 +123,7 @@ export default class InputColor extends Input {
       // @ts-ignore
       colorEl.spectrum({
         color: model.getValue() || false,
-        containerClassName: `${ppfx}one-bg ${ppfx}two-color`,
+        containerClassName: `${ppfx}one-bg ${ppfx}two-color ${ppfx}editor-sp`,
         appendTo: elToAppend || 'body',
         maxSelectionSize: 8,
         showPalette: true,
