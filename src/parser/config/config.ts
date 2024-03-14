@@ -33,10 +33,24 @@ export interface HTMLParserOptions {
   allowUnsafeAttr?: boolean;
 
   /**
+   * Allow unsafe HTML attribute values (eg. `src="javascript:..."`).
+   * @default false
+   */
+  allowUnsafeAttrValue?: boolean;
+
+  /**
    * When false, removes empty text nodes when parsed, unless they contain a space.
    * @default false
    */
   keepEmptyTextNodes?: boolean;
+
+  /**
+   * Custom transformer to run before passing the input HTML to the parser.
+   * A common use case might be to sanitize the input string.
+   * @example
+   * preParser: htmlString => DOMPurify.sanitize(htmlString)
+   */
+  preParser?: (input: string, opts: { editor: Editor }) => string;
 }
 
 export interface ParserConfig {
@@ -84,6 +98,7 @@ const config: ParserConfig = {
     htmlType: 'text/html',
     allowScripts: false,
     allowUnsafeAttr: false,
+    allowUnsafeAttrValue: false,
     keepEmptyTextNodes: false,
   },
 };

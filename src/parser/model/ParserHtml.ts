@@ -310,7 +310,9 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
         htmlType: config.optionsHtml?.htmlType || config.htmlType,
         ...opts,
       };
-      const el = isFunction(cf.parserHtml) ? cf.parserHtml(str, options) : BrowserParserHtml(str, options);
+      const { preParser } = options;
+      const input = isFunction(preParser) ? preParser(str, { editor: em?.getEditor()! }) : str;
+      const el = isFunction(cf.parserHtml) ? cf.parserHtml(input, options) : BrowserParserHtml(input, options);
       const scripts = el.querySelectorAll('script');
       let i = scripts.length;
 
@@ -323,8 +325,8 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
       }
 
       // Remove unsafe attributes
-      if (!options.allowUnsafeAttr) {
-        this.__clearUnsafeAttr(el);
+      if (!options.allowUnsafeAttr || !options.allowUnsafeAttrValue) {
+        this.__sanitizeNode(el, options);
       }
 
       // Detach style tags and parse them
@@ -341,26 +343,28 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
         if (styleStr) res.css = parserCss.parse(styleStr);
       }
 
-      em && em.trigger(`${event}:root`, { input: str, root: el });
+      em?.trigger(`${event}:root`, { input, root: el });
       const result = this.parseNode(el, cf);
       // I have to keep it otherwise it breaks the DomComponents.addComponent (returns always array)
       const resHtml = result.length === 1 && !cf.returnArray ? result[0] : result;
       res.html = resHtml;
-      em && em.trigger(event, { input: str, output: res });
+      em?.trigger(event, { input, output: res });
 
       return res;
     },
 
-    __clearUnsafeAttr(node: HTMLElement) {
+    __sanitizeNode(node: HTMLElement, opts: HTMLParserOptions) {
       const attrs = node.attributes || [];
       const nodes = node.childNodes || [];
       const toRemove: string[] = [];
       each(attrs, attr => {
         const name = attr.nodeName || '';
-        name.indexOf('on') === 0 && toRemove.push(name);
+        const value = attr.nodeValue || '';
+        !opts.allowUnsafeAttr && name.startsWith('on') && toRemove.push(name);
+        !opts.allowUnsafeAttrValue && value.startsWith('javascript:') && toRemove.push(name);
       });
       toRemove.map(name => node.removeAttribute(name));
-      each(nodes, node => this.__clearUnsafeAttr(node as HTMLElement));
+      each(nodes, node => this.__sanitizeNode(node as HTMLElement, opts));
     },
   };
 };

@@ -600,4 +600,59 @@ describe('ParserHtml', () => {
     ];
     expect(obj.parse(str).html).toEqual(result);
   });
+
+  describe('Options', () => {
+    test('Remove unsafe attributes', () => {
+      const str = '<img src="path/img" data-test="1" class="test" onload="unsafe"/>';
+      const result = {
+        type: 'image',
+        tagName: 'img',
+        classes: ['test'],
+        attributes: {
+          src: 'path/img',
+          'data-test': '1',
+        },
+      };
+      expect(obj.parse(str).html).toEqual([result]);
+      expect(obj.parse(str, null, { allowUnsafeAttr: true }).html).toEqual([
+        {
+          ...result,
+          attributes: {
+            ...result.attributes,
+            onload: 'unsafe',
+          },
+        },
+      ]);
+    });
+
+    test('Remove unsafe attribute values', () => {
+      const str = '<iframe src="javascript:alert(1)"></iframe>';
+      const result = {
+        type: 'iframe',
+        tagName: 'iframe',
+      };
+      expect(obj.parse(str).html).toEqual([result]);
+      expect(obj.parse(str, null, { allowUnsafeAttrValue: true }).html).toEqual([
+        {
+          ...result,
+          attributes: {
+            src: 'javascript:alert(1)',
+          },
+        },
+      ]);
+    });
+
+    test('Custom preParser option', () => {
+      const str = '<iframe src="javascript:alert(1)"></iframe>';
+      const result = {
+        type: 'iframe',
+        tagName: 'iframe',
+        attributes: {
+          src: 'test:alert(1)',
+        },
+      };
+      const preParser = (str: string) => str.replace('javascript:', 'test:');
+      expect(obj.parse(str, null, { preParser }).html).toEqual([result]);
+    });
+  });
 });
