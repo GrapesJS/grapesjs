@@ -444,17 +444,18 @@ $colorsAll: (one, var(--gjs-primary-color)),
 
 /********* Spectrum **********/
 
-.#{$app-prefix}editor-cont {
+.#{$app-prefix}editor-sp {
+  border: 1px solid var(--gjs-main-dark-color);
+  box-shadow: 0 0 7px var(--gjs-main-dark-color);
+  border-radius: 3px;
+}
+
+.#{$app-prefix}editor-sp {
   .sp-hue, .sp-slider{ cursor: row-resize;}
   .sp-color, .sp-dragger{ cursor: crosshair;}
   .sp-alpha-inner, .sp-alpha-handle{cursor: col-resize;}
   .sp-hue{ left: 90%; }
   .sp-color{right: 15%;}
-  .sp-container {
-    border: 1px solid var(--gjs-main-dark-color);
-    box-shadow: 0 0 7px var(--gjs-main-dark-color);
-    border-radius: 3px;
-  }
   .sp-picker-container{border:none;}
   .colpick_dark .colpick_color {  outline: 1px solid var(--gjs-main-dark-color);}
   .sp-cancel, .sp-cancel:hover {
@@ -484,14 +485,17 @@ $colorsAll: (one, var(--gjs-primary-color)),
   	width: 100%;
   	position: relative;
   	text-align: right;
-  }
-  .sp-container button, .sp-container button:hover, .sp-container button:active{
-  	background: var(--gjs-main-dark-color);
-    border-color: var(--gjs-main-dark-color);
-    color: var(--gjs-font-color);
-    text-shadow: none;
-    box-shadow: none;
-    padding: 3px 5px;
+
+    .sp-choose,
+    .sp-choose:hover,
+    .sp-choose:active {
+      background: var(--gjs-main-dark-color);
+      border-color: var(--gjs-main-dark-color);
+      color: var(--gjs-font-color);
+      text-shadow: none;
+      box-shadow: none;
+      padding: 3px 5px;
+    }
   }
   .sp-palette-container{
     border: none;

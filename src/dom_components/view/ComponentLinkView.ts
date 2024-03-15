@@ -1,7 +1,7 @@
 import ComponentLink from '../model/ComponentLink';
-import ComponentView from './ComponentView';
+import ComponentTextView from './ComponentTextView';
 
-export default class ComponentLinkView extends ComponentView<ComponentLink> {
+export default class ComponentLinkView extends ComponentTextView<ComponentLink> {
   render() {
     super.render();
     // I need capturing instead of bubbling as bubbled clicks from other

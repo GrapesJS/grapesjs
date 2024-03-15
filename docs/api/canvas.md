@@ -90,6 +90,14 @@ editor.on('canvas:pointer', () => {
 });
 ```
 
+* `canvas:refresh` Canvas was refreshed to update elements on top,&#xA;like spots/tools (eg. via `editor.Canvas.refresh()` or on frame resize).
+
+```javascript
+editor.on('canvas:refresh', (canvasRefreshOptions) => {
+ console.log('Canvas refreshed with options:', canvasRefreshOptions);
+});
+```
+
 * `canvas:frame:load` Frame loaded in canvas.&#xA;The event is triggered right after iframe's `onload`.
 
 ```javascript
@@ -395,6 +403,16 @@ Transform a box rect from the world coordinate system to the screen one.
 *   `boxRect` **[Object][2]** 
 
 Returns **[Object][2]** 
+
+## refresh
+
+Update canvas for spots/tools positioning.
+
+### Parameters
+
+*   `opts` **[Object][2]?** Options. (optional, default `{}`)
+
+    *   `opts.spots` **[Object][2]** Update the position of spots. (optional, default `false`)
 
 [1]: https://github.com/GrapesJS/grapesjs/blob/master/src/canvas/config/config.ts
 
