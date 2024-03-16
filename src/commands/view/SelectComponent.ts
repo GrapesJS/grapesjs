@@ -30,6 +30,8 @@ let showOffsets: boolean;
  *
  */
 export default {
+  activeResizer: false,
+
   init() {
     this.onSelect = debounce(this.onSelect, 0);
     bindAll(
@@ -396,12 +398,17 @@ export default {
         ...resizableOpts
       } = isObject(resizable) ? resizable : {};
 
-      if (hasCustomResize || !el) return;
+      if (hasCustomResize || !el || this.activeResizer) return;
 
       let modelToStyle: any;
       const { config } = em;
       const pfx = config.stylePrefix || '';
       const resizeClass = `${pfx}resizing`;
+      const self = this;
+      const resizeEventOpts = {
+        component: model,
+        el,
+      };
 
       const toggleBodyClass = (method: string, e: any, opts: any) => {
         const docs = opts.docs;
@@ -445,20 +452,23 @@ export default {
             config.unitHeight = getUnitFromValue(currentHeight);
             config.unitWidth = getUnitFromValue(currentWidth);
           }
+          self.activeResizer = true;
+          editor.trigger('component:resize', { ...resizeEventOpts, type: 'start' });
         },
 
         // Update all positioned elements (eg. component toolbar)
         onMove(ev) {
           onMove(ev);
-          editor.trigger('component:resize');
+          editor.trigger('component:resize', { ...resizeEventOpts, type: 'move' });
         },
 
         onEnd(ev, opts) {
           onEnd(ev, opts);
           toggleBodyClass('remove', ev, opts);
-          editor.trigger('component:resize');
+          editor.trigger('component:resize', { ...resizeEventOpts, type: 'end' });
           canvas.toggleFramesEvents(true);
           showOffsets = true;
+          self.activeResizer = false;
         },
 
         updateTarget(el, rect, options) {
