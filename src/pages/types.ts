@@ -1,7 +1,16 @@
 import { ModuleConfig } from '../abstract/Module';
+import { PageProperties } from './model/Page';
 
 export interface PageManagerConfig extends ModuleConfig {
-  pages?: any[];
+  /**
+   * Default pages.
+   */
+  pages?: PageProperties[];
+
+  /**
+   * ID of the page to select on editor load.
+   */
+  selected?: string;
 }
 
 export interface SelectableOption {
