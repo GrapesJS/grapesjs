@@ -34,13 +34,15 @@
 
 import { debounce, isFunction } from 'underscore';
 import { ItemManagerModule } from '../abstract/Module';
+import { AddOptions, RemoveOptions } from '../common';
 import EditorModel from '../editor/model/Editor';
+import { ProjectData } from '../storage_manager';
 import defaults, { AssetManagerConfig } from './config/config';
 import Asset from './model/Asset';
 import Assets from './model/Assets';
+import AssetsEvents, { AssetOpenOptions } from './types';
 import AssetsView from './view/AssetsView';
 import FileUploaderView from './view/FileUploader';
-import AssetsEvents, { AssetOpenOptions } from './types';
 
 // TODO
 type AssetProps = Record<string, any>;
@@ -80,40 +82,6 @@ export default class AssetManager extends ItemManagerModule<AssetManagerConfig, 
     this.__onAllEvent = debounce(() => this.__trgCustom(), 0);
 
     return this;
-  }
-
-  __propEv(ev: string, ...data: any[]) {
-    this.em.trigger(ev, ...data);
-    this.getAll().trigger(ev, ...data);
-  }
-
-  __trgCustom() {
-    const bhv = this.__getBehaviour();
-    const custom = this.getConfig().custom;
-
-    if (!bhv.container && !(custom as any).open) {
-      return;
-    }
-    this.em.trigger(this.events.custom, this.__customData());
-  }
-
-  __customData() {
-    const bhv = this.__getBehaviour();
-    return {
-      am: this as AssetManager,
-      open: this.isOpen(),
-      assets: this.getAll().models,
-      types: bhv.types || [],
-      container: bhv.container,
-      close: () => this.close(),
-      remove: (asset: string | Asset, opts?: Record<string, any>) => this.remove(asset, opts),
-      select: (asset: Asset, complete: boolean) => {
-        const res = this.add(asset);
-        isFunction(bhv.select) && bhv.select(res, complete);
-      },
-      // extra
-      options: bhv.options || {},
-    };
   }
 
   /**
@@ -185,7 +153,7 @@ export default class AssetManager extends ItemManagerModule<AssetManagerConfig, 
    * });
    * assetManager.add([{ src: 'img2.jpg' }, { src: 'img2.png' }]);
    */
-  add(asset: string | AssetProps | (string | AssetProps)[], opts: Record<string, any> = {}) {
+  add(asset: string | AssetProps | (string | AssetProps)[], opts: AddOptions = {}) {
     // Put the model at the beginning
     if (typeof opts.at == 'undefined') {
       opts.at = 0;
@@ -231,7 +199,7 @@ export default class AssetManager extends ItemManagerModule<AssetManagerConfig, 
    * const asset = assetManager.get('http://img.jpg');
    * assetManager.remove(asset);
    */
-  remove(asset: string | Asset, opts?: Record<string, any>) {
+  remove(asset: string | Asset, opts?: RemoveOptions) {
     return this.__remove(asset, opts);
   }
 
@@ -239,7 +207,7 @@ export default class AssetManager extends ItemManagerModule<AssetManagerConfig, 
     return this.getProjectData();
   }
 
-  load(data: Record<string, any>) {
+  load(data: ProjectData) {
     return this.loadProjectData(data);
   }
 
@@ -399,6 +367,40 @@ export default class AssetManager extends ItemManagerModule<AssetManagerConfig, 
   onDblClick(func: any) {
     // @ts-ignore
     this.config.onDblClick = func;
+  }
+
+  __propEv(ev: string, ...data: any[]) {
+    this.em.trigger(ev, ...data);
+    this.getAll().trigger(ev, ...data);
+  }
+
+  __trgCustom() {
+    const bhv = this.__getBehaviour();
+    const custom = this.getConfig().custom;
+
+    if (!bhv.container && !(custom as any).open) {
+      return;
+    }
+    this.em.trigger(this.events.custom, this.__customData());
+  }
+
+  __customData() {
+    const bhv = this.__getBehaviour();
+    return {
+      am: this as AssetManager,
+      open: this.isOpen(),
+      assets: this.getAll().models,
+      types: bhv.types || [],
+      container: bhv.container,
+      close: () => this.close(),
+      remove: (asset: string | Asset, opts?: Record<string, any>) => this.remove(asset, opts),
+      select: (asset: Asset, complete: boolean) => {
+        const res = this.add(asset);
+        isFunction(bhv.select) && bhv.select(res, complete);
+      },
+      // extra
+      options: bhv.options || {},
+    };
   }
 
   __behaviour(opts = {}) {
