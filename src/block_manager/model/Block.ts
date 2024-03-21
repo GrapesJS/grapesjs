@@ -14,7 +14,7 @@ export interface BlockProperties {
   /**
    * The content of the block. Might be an HTML string or a [Component Defintion](/modules/Components.html#component-definition)
    */
-  content: string | ComponentDefinition;
+  content: string | ComponentDefinition | (string | ComponentDefinition)[];
   /**
    * HTML string for the media/icon of the block, eg. `<svg ...`, `<img ...`, etc.
    * @default ''
