@@ -1,3 +1,4 @@
+import AssetManager from '..';
 import { View } from '../../common';
 import EditorModel from '../../editor/model/Editor';
 import fetch from '../../utils/fetch';
@@ -18,7 +19,7 @@ export default class FileUploaderView extends View {
   pfx: string;
   ppfx: string;
   em: EditorModel;
-  module: any;
+  module: AssetManager;
   target: any;
   uploadId: string;
   disabled: boolean;
@@ -80,7 +81,7 @@ export default class FileUploaderView extends View {
    */
   onUploadStart() {
     const { module } = this;
-    module && module.__propEv('asset:upload:start');
+    module?.__propEv(module.events.uploadStart);
   }
 
   /**
@@ -90,7 +91,7 @@ export default class FileUploaderView extends View {
    */
   onUploadEnd(res: any) {
     const { $el, module } = this;
-    module && module.__propEv('asset:upload:end', res);
+    module?.__propEv(module.events.uploadEnd, res);
     const input = $el.find('input');
     input && input.val('');
   }
@@ -104,7 +105,7 @@ export default class FileUploaderView extends View {
     const { module } = this;
     console.error(err);
     this.onUploadEnd(err);
-    module && module.__propEv('asset:upload:error', err);
+    module?.__propEv(module.events.uploadError, err);
   }
 
   /**
@@ -121,7 +122,7 @@ export default class FileUploaderView extends View {
       json = text;
     }
 
-    module && module.__propEv('asset:upload:response', json);
+    module?.__propEv(module.events.uploadResponse, json);
 
     if (config.autoAdd && target) {
       target.add(json.data, { at: 0 });

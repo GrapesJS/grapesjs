@@ -14,18 +14,7 @@
  * const assetManager = editor.AssetManager;
  * ```
  *
- * ## Available Events
- * * `asset:open` - Asset Manager opened.
- * * `asset:close` - Asset Manager closed.
- * * `asset:add` - Asset added. The [Asset] is passed as an argument to the callback.
- * * `asset:remove` - Asset removed. The [Asset] is passed as an argument to the callback.
- * * `asset:update` - Asset updated. The updated [Asset] and the object containing changes are passed as arguments to the callback.
- * * `asset:upload:start` - Before the upload is started.
- * * `asset:upload:end` - After the upload is ended.
- * * `asset:upload:error` - On any error in upload, passes the error as an argument.
- * * `asset:upload:response` - On upload response, passes the result as an argument.
- * * `asset` - Catch-all event for all the events mentioned above. An object containing all the available data about the triggered event is passed as an argument to the callback.
- * * `asset:custom` - Event for handling custom Asset Manager UI.
+ * {REPLACE_EVENTS}
  *
  * ## Methods
  * * [open](#open)
@@ -51,61 +40,12 @@ import Asset from './model/Asset';
 import Assets from './model/Assets';
 import AssetsView from './view/AssetsView';
 import FileUploaderView from './view/FileUploader';
-
-export type AssetEvent =
-  | 'asset'
-  | 'asset:open'
-  | 'asset:close'
-  | 'asset:add'
-  | 'asset:remove'
-  | 'asset:update'
-  | 'asset:custom'
-  | 'asset:upload:start'
-  | 'asset:upload:end'
-  | 'asset:upload:error'
-  | 'asset:upload:response';
-
-export const evAll = 'asset';
-export const evPfx = `${evAll}:`;
-export const evSelect = `${evPfx}select`;
-export const evUpdate = `${evPfx}update`;
-export const evAdd = `${evPfx}add`;
-export const evRemove = `${evPfx}remove`;
-export const evRemoveBefore = `${evRemove}:before`;
-export const evCustom = `${evPfx}custom`;
-export const evOpen = `${evPfx}open`;
-export const evClose = `${evPfx}close`;
-export const evUpload = `${evPfx}upload`;
-export const evUploadStart = `${evUpload}:start`;
-export const evUploadEnd = `${evUpload}:end`;
-export const evUploadError = `${evUpload}:error`;
-export const evUploadRes = `${evUpload}:response`;
-const assetCmd = 'open-assets';
-const assetEvents = {
-  all: evAll,
-  select: evSelect,
-  update: evUpdate,
-  add: evAdd,
-  remove: evRemove,
-  removeBefore: evRemoveBefore,
-  custom: evCustom,
-  open: evOpen,
-  close: evClose,
-  uploadStart: evUploadStart,
-  uploadEnd: evUploadEnd,
-  uploadError: evUploadError,
-  uploadResponse: evUploadRes,
-};
+import AssetsEvents, { AssetOpenOptions } from './types';
 
 // TODO
 type AssetProps = Record<string, any>;
 
-type OpenOptions = {
-  select?: (asset: Asset, complete: boolean) => void;
-  types?: string[];
-  accept?: string;
-  target?: any;
-};
+const assetCmd = 'open-assets';
 
 export default class AssetManager extends ItemManagerModule<AssetManagerConfig, Assets> {
   storageKey = 'assets';
@@ -115,7 +55,7 @@ export default class AssetManager extends ItemManagerModule<AssetManagerConfig, 
   am?: AssetsView;
   fu?: FileUploaderView;
   _bhv?: any;
-  events!: typeof assetEvents;
+  events = AssetsEvents;
 
   /**
    * Initialize module
@@ -124,11 +64,10 @@ export default class AssetManager extends ItemManagerModule<AssetManagerConfig, 
    */
   constructor(em: EditorModel) {
     // @ts-ignore
-    super(em, 'AssetManager', new Assets([], em), assetEvents, defaults);
+    super(em, 'AssetManager', new Assets([], em), AssetsEvents, defaults);
     const { all, config } = this;
     // @ts-ignore
     this.assetsVis = new Assets([]);
-    // @ts-ignore
     const ppfx = config.pStylePrefix;
     if (ppfx) {
       config.stylePrefix = `${ppfx}${config.stylePrefix}`;
@@ -197,7 +136,7 @@ export default class AssetManager extends ItemManagerModule<AssetManagerConfig, 
    * // with your custom types (you should have assets with those types declared)
    * assetManager.open({ types: ['doc'], ... });
    */
-  open(options: OpenOptions = {}) {
+  open(options: AssetOpenOptions = {}) {
     const cmd = this.em.Commands;
     cmd.run(assetCmd, {
       types: ['image'],
