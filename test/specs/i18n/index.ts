@@ -1,13 +1,14 @@
-import I18n from 'i18n';
-import Editor from 'editor';
+import I18n from '../../../src/i18n';
+import Editor from '../../../src/editor';
+import { I18nConfig } from '../../../src/i18n/config';
 
 describe('I18n', () => {
   describe('Main', () => {
-    let obj;
+    let obj: I18n;
     let editor = new Editor();
     let em = editor.getModel();
 
-    const newModuleWithConfig = i18n => {
+    const newModuleWithConfig = (i18n: I18nConfig) => {
       const editor = new Editor({ i18n });
       const em = editor.getModel();
       return new I18n(em);
@@ -36,7 +37,7 @@ describe('I18n', () => {
       obj = newModuleWithConfig({
         locale,
         localeFallback,
-        detectLocale: 0,
+        detectLocale: false,
         messages: {
           en: { msg },
         },

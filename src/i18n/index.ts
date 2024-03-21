@@ -89,7 +89,7 @@ export default class I18nModule extends Module<I18nConfig & { stylePrefix?: stri
    * i18n.getMessages('en');
    * // -> { hello: '...' }
    */
-  getMessages(lang: string, opts = {}) {
+  getMessages(lang?: string, opts = {}) {
     const messages = this.config.messages!;
     lang && !messages[lang] && this._debug(`'${lang}' i18n lang not found`, opts);
     return lang ? messages[lang] : messages;
