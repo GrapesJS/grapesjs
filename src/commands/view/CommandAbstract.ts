@@ -2,6 +2,7 @@ import CanvasModule from '../../canvas';
 import { Model, ObjectAny } from '../../common';
 import Editor from '../../editor';
 import EditorModel from '../../editor/model/Editor';
+import CommandsEvents from '../types';
 
 interface ICommand<O extends ObjectAny = any> {
   run?: CommandAbstract<O>['run'];
@@ -108,18 +109,24 @@ export default class CommandAbstract<O extends ObjectAny = any> extends Model {
    * @private
    * */
   callRun(editor: Editor, options: any = {}) {
-    const id = this.id;
-    editor.trigger(`run:${id}:before`, options);
+    const { id } = this;
+    editor.trigger(`${CommandsEvents.runBeforeCommand}${id}`, { options });
+    editor.trigger(`${CommandsEvents._runCommand}${id}:before`, options);
 
-    if (options && options.abort) {
-      editor.trigger(`abort:${id}`, options);
+    if (options.abort) {
+      editor.trigger(`${CommandsEvents.abort}${id}`, { options });
+      editor.trigger(`${CommandsEvents._abort}${id}`, options);
       return;
     }
 
     const sender = options.sender || editor;
     const result = this.run(editor, sender, options);
-    editor.trigger(`run:${id}`, result, options);
-    editor.trigger('run', id, result, options);
+    const data = { id, result, options };
+    editor.trigger(`${CommandsEvents.runCommand}${id}`, data);
+    editor.trigger(CommandsEvents.run, data);
+    // deprecated
+    editor.trigger(`${CommandsEvents._runCommand}${id}`, result, options);
+    editor.trigger(CommandsEvents._run, id, result, options);
     return result;
   }
 
@@ -130,12 +137,18 @@ export default class CommandAbstract<O extends ObjectAny = any> extends Model {
    * @private
    * */
   callStop(editor: Editor, options: any = {}) {
-    const id = this.id;
+    const { id } = this;
     const sender = options.sender || editor;
-    editor.trigger(`stop:${id}:before`, options);
+    editor.trigger(`${CommandsEvents.stopBeforeCommand}${id}`, { options });
+    editor.trigger(`${CommandsEvents._stopCommand}${id}:before`, options);
     const result = this.stop(editor, sender, options);
-    editor.trigger(`stop:${id}`, result, options);
-    editor.trigger('stop', id, result, options);
+    const data = { id, result, options };
+    editor.trigger(`${CommandsEvents.stopCommand}${id}`, data);
+    editor.trigger(CommandsEvents.stop, data);
+
+    // deprecated
+    editor.trigger(`${CommandsEvents._stopCommand}${id}`, result, options);
+    editor.trigger(CommandsEvents._stop, id, result, options);
     return result;
   }
 

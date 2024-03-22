@@ -49,6 +49,7 @@ import { Module } from '../abstract';
 import Component, { eventDrag } from '../dom_components/model/Component';
 import Editor from '../editor/model/Editor';
 import { ObjectAny } from '../common';
+import CommandsEvents from './types';
 
 export type CommandEvent = 'run' | 'stop' | `run:${string}` | `stop:${string}` | `abort:${string}`;
 
@@ -105,6 +106,7 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
   defaultCommands: Record<string, Command> = {};
   commands: Record<string, CommandObject> = {};
   active: Record<string, any> = {};
+  events = CommandsEvents;
 
   /**
    * @private
