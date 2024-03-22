@@ -19,14 +19,7 @@
  * commands.add(...);
  * ```
  *
- ** ## Available Events
- * * `run:{commandName}` - Triggered when some command is called to run (eg. editor.runCommand('preview'))
- * * `stop:{commandName}` - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
- * * `run:{commandName}:before` - Triggered before the command is called
- * * `stop:{commandName}:before` - Triggered before the command is called to stop
- * * `abort:{commandName}` - Triggered when the command execution is aborted (`editor.on(`run:preview:before`, opts => opts.abort = 1);`)
- * * `run` - Triggered on run of any command. The id and the result are passed as arguments to the callback
- * * `stop` - Triggered on stop of any command. The id and the result are passed as arguments to the callback
+ * {REPLACE_EVENTS}
  *
  * ## Methods
  * * [add](#add)

@@ -23,14 +23,59 @@ const commands = editor.Commands;
 commands.add(...);
 ```
 
-*   ## Available Events
-*   `run:{commandName}` - Triggered when some command is called to run (eg. editor.runCommand('preview'))
-*   `stop:{commandName}` - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
-*   `run:{commandName}:before` - Triggered before the command is called
-*   `stop:{commandName}:before` - Triggered before the command is called to stop
-*   `abort:{commandName}` - Triggered when the command execution is aborted (`editor.on(`run:preview:before`, opts => opts.abort = 1);`)
-*   `run` - Triggered on run of any command. The id and the result are passed as arguments to the callback
-*   `stop` - Triggered on stop of any command. The id and the result are passed as arguments to the callback
+## Available Events
+* `command:run` Triggered on run of any command.
+
+```javascript
+editor.on('command:run', ({ id, result, options }) => {
+ console.log('Command id', id, 'command result', result);
+});
+```
+
+* `command:run:COMMAND_ID` Triggered on run of a specific command.
+
+```javascript
+editor.on('command:run:my-command', ({ result, options }) => { ... });
+```
+
+* `command:run:before:COMMAND_ID` Triggered before the command is called.
+
+```javascript
+editor.on('command:run:before:my-command', ({ options }) => { ... });
+```
+
+* `command:abort:COMMAND_ID` Triggered when the command execution is aborted.
+
+```javascript
+editor.on('command:abort:my-command', ({ options }) => { ... });
+
+// The command could be aborted during the before event
+editor.on('command:run:before:my-command', ({ options }) => {
+ if (someCondition) {
+   options.abort = true;
+ }
+});
+```
+
+* `command:stop` Triggered on stop of any command.
+
+```javascript
+editor.on('command:stop', ({ id, result, options }) => {
+ console.log('Command id', id, 'command result', result);
+});
+```
+
+* `command:stop:COMMAND_ID` Triggered on stop of a specific command.
+
+```javascript
+editor.on('command:run:my-command', ({ result, options }) => { ... });
+```
+
+* `command:stop:before:COMMAND_ID` Triggered before the command is called to stop.
+
+```javascript
+editor.on('command:stop:before:my-command', ({ options }) => { ... });
+```
 
 ## Methods
 
