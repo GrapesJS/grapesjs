@@ -436,6 +436,16 @@ export default class CommandsModule extends Module<CommandsConfig & { pStylePref
     return new cmd(this.config);
   }
 
+  __onRun(id: string, clb: () => void) {
+    const { em, events } = this;
+    em.on(`${events.runCommand}${id}`, clb);
+  }
+
+  __onStop(id: string, clb: () => void) {
+    const { em, events } = this;
+    em.on(`${events.stopCommand}${id}`, clb);
+  }
+
   destroy() {
     this.defaultCommands = {};
     this.commands = {};

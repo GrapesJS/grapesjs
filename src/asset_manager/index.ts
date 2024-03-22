@@ -323,8 +323,8 @@ export default class AssetManager extends ItemManagerModule<AssetManagerConfig, 
   onLoad() {
     this.getAll().reset(this.config.assets);
     const { em, events } = this;
-    em.on(`run:${assetCmd}`, () => this.__propEv(events.open));
-    em.on(`stop:${assetCmd}`, () => this.__propEv(events.close));
+    em.Commands.__onRun(assetCmd, () => this.__propEv(events.open));
+    em.Commands.__onStop(assetCmd, () => this.__propEv(events.close));
   }
 
   postRender(editorView: any) {
