@@ -93,7 +93,7 @@ export default class PageManager extends ItemManagerModule<PageManagerConfig, Pa
     const opt = { silent: true };
     const configPages = config.pages?.map(page => new Page(page, { em, config })) || [];
     pages.add(configPages, opt);
-    const mainPage = !pages.length ? this.add({ type: typeMain }, opt) : this.getMain();
+    const mainPage = !pages.length ? this.add({ type: typeMain }, opt) : this._initPage();
     mainPage && this.select(mainPage, opt);
   }
 
@@ -240,6 +240,10 @@ export default class PageManager extends ItemManagerModule<PageManagerConfig, Pa
     const result = this.loadProjectData(data, { all: this.pages, reset: true });
     this.pages.forEach(page => page.getFrames().initRefs());
     return result;
+  }
+
+  _initPage() {
+    return this.get(this.config.selected!) || this.getMain();
   }
 
   _createId() {
