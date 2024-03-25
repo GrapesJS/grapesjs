@@ -18,6 +18,10 @@ export default {
     const zoom = this.em.getZoomDecimal();
     const el = opt.el as HTMLElement | undefined;
 
+    if (!(el instanceof HTMLElement)) {
+      return;
+    }
+
     if (!config.showOffsets || !el || isTextNode(el) || (!config.showOffsetsSelected && state == 'Fixed')) {
       editor.stopCommand(`${this.id}`, opts);
       return;
