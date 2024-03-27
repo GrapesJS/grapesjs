@@ -18,7 +18,7 @@ export default class JsGenerator extends Model {
 
   mapModel(model: Component) {
     let code = '';
-    const script = model.get('script-export') || model.get('script');
+    const script = model.scriptSubComp;
     const type = model.get('type')!;
     const comps = model.get('components')!;
     const id = model.getId();
@@ -28,19 +28,19 @@ export default class JsGenerator extends Model {
       let attr = model.get('attributes');
       attr = extend({}, attr, { id });
       model.set('attributes', attr, { silent: true });
-      // @ts-ignore
-      const scrStr = model.getScriptString(script);
-      const scrProps = model.get('script-props');
+
+      const scrStr = script.getScriptString();
+      const scrProps = script.props;
 
       // If the script was updated, I'll put its code in a separate container
-      if (model.get('scriptUpdated') && !scrProps) {
+      if (script.get('scriptUpdated') && !scrProps) {
         this.mapJs[type + '-' + id] = { ids: [id], code: scrStr };
       } else {
         let props;
         const mapType = this.mapJs[type];
 
         if (scrProps) {
-          props = model.__getScriptProps();
+          props = script.__getScriptProps();
         }
 
         if (mapType) {
