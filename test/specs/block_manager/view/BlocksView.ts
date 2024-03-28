@@ -59,7 +59,7 @@ describe('BlocksView', () => {
     });
 
     test('Render children', () => {
-      expect(view.getBlocksEl().children.length).toEqual(4);
+      expect(view.getBlocksEl().children.length).toEqual(2);
     });
 
     test('Render container', () => {

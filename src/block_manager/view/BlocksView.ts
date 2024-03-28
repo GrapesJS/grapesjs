@@ -227,8 +227,6 @@ export default class BlocksView extends View {
         <div class="${this.blockContClass}"></div>
       </div>
     `;
-
-    this.collection.each(model => this.add(model, frag));
     this.searchField && this.el.prepend(this.searchField.el);
     this.collection.each(model => model.get('visible') && this.add(model, frag));
     this.append(frag);
