@@ -7,6 +7,8 @@ import Block from '../model/Block';
 import Categories from '../../abstract/ModuleCategories';
 import BlockView from './BlockView';
 import CategoryView from '../../abstract/ModuleCategoryView';
+import Filter from '../../abstract/FilterView';
+import blockManagerConfig from '../../block_manager/config/config';
 
 export interface BlocksViewConfig {
   em: EditorModel;
@@ -28,6 +30,8 @@ export default class BlocksView extends View {
   blocksEl?: HTMLElement;
   rendered?: boolean;
   sorter: any;
+  searchField: any;
+  showSearch: any;
 
   constructor(opts: any, config: BlocksViewConfig) {
     super(opts);
@@ -43,9 +47,18 @@ export default class BlocksView extends View {
     this.listenTo(coll, 'add', this.addTo);
     this.listenTo(coll, 'reset', this.render);
     this.em = this.config.em;
+    this.showSearch = blockManagerConfig.showSearch;
 
     if (this.em) {
       this.config.getSorter = this.getSorter;
+    }
+
+    if (this.showSearch) {
+      this.searchField = new Filter({
+        clb: this.searchCallBack.bind(this),
+        editor: this.em,
+        ppfx: this.ppfx,
+      }).render();
     }
   }
 
@@ -93,6 +106,32 @@ export default class BlocksView extends View {
 
     return this.sorter;
   }
+  /**
+   * @private
+   */
+  searchCallBack(value: string) {
+    var index = 1;
+    const processedValue = value ? value.toLowerCase() : '';
+    this.collection.models.forEach(model => {
+      const blockLabel = model
+        .get('label')
+        .toLowerCase()
+        .replace(/(<([^>]+)>|\r\n|\n|\r|  )/gi, '');
+      const category = model.get('category');
+      const categoryLabel = category ? category.id.toLowerCase() : '';
+      if (!blockLabel.includes(processedValue) && !categoryLabel.includes(processedValue)) {
+        model.set('visible', false);
+      } else {
+        model.set('visible', true);
+      }
+
+      if (index >= this.collection.length) {
+        this.render();
+      } else {
+        index++;
+      }
+    });
+  }
 
   onDrag(ev: Event) {
     this.em.stopDefault();
@@ -126,8 +165,13 @@ export default class BlocksView extends View {
    * */
   add(model: Block, fragment?: DocumentFragment) {
     const { config, renderedCategories } = this;
-    const attributes = model.get('attributes');
-    const view = new BlockView({ model, attributes }, config);
+    const view = new BlockView(
+      {
+        model,
+        attributes: model.get('attributes'),
+      },
+      config
+    );
     const rendered = view.render().el;
     const category = model.parent.initCategory(model);
 
@@ -185,6 +229,8 @@ export default class BlocksView extends View {
     `;
 
     this.collection.each(model => this.add(model, frag));
+    this.searchField && this.el.prepend(this.searchField.el);
+    this.collection.each(model => model.get('visible') && this.add(model, frag));
     this.append(frag);
     const cls = `${this.blockContClass}s ${ppfx}one-bg ${ppfx}two-color`;
     this.$el.addClass(cls);

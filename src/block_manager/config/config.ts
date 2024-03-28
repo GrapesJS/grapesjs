@@ -36,6 +36,8 @@ export interface BlockManagerConfig {
    * @default false
    */
   custom?: boolean;
+
+  showSearch?: boolean;
 }
 
 const config: BlockManagerConfig = {
@@ -43,6 +45,7 @@ const config: BlockManagerConfig = {
   blocks: [],
   appendOnClick: false,
   custom: false,
+  showSearch: true,
 };
 
 export default config;
