@@ -1366,7 +1366,10 @@
         var $ = grapesjs.$;
 
         // Show borders by default
-        pn.getButton('options', 'sw-visibility').set('active', 1);
+        pn.getButton('options', 'sw-visibility').set({
+          command: 'core:component-outline',
+          'active': true,
+        });
 
         // Show logo with the version
         var logoCont = document.querySelector('.gjs-logo-cont');
