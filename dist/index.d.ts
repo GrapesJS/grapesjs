@@ -365,7 +365,14 @@ declare class Droppable {
 	};
 }
 export interface PageManagerConfig extends ModuleConfig {
-	pages?: any[];
+	/**
+	 * Default pages.
+	 */
+	pages?: PageProperties[];
+	/**
+	 * ID of the page to select on editor load.
+	 */
+	selected?: string;
 }
 export interface SelectableOption {
 	/**
@@ -5048,7 +5055,7 @@ export interface BlockProperties {
 	/**
 	 * The content of the block. Might be an HTML string or a [Component Defintion](/modules/Components.html#component-definition)
 	 */
-	content: string | ComponentDefinition;
+	content: string | ComponentDefinition | (string | ComponentDefinition)[];
 	/**
 	 * HTML string for the media/icon of the block, eg. `<svg ...`, `<img ...`, etc.
 	 * @default ''
@@ -5143,7 +5150,7 @@ export declare class Block extends Model<BlockProperties> {
 	 * Get block content
 	 * @returns {Object|String|Array<Object|String>}
 	 */
-	getContent(): string | ComponentDefinition | undefined;
+	getContent(): string | ComponentDefinition | (string | ComponentDefinition)[] | undefined;
 	/**
 	 * Get block category label
 	 * @returns {String}
@@ -5740,10 +5747,24 @@ export interface HTMLParserOptions {
 	 */
 	allowUnsafeAttr?: boolean;
 	/**
+	 * Allow unsafe HTML attribute values (eg. `src="javascript:..."`).
+	 * @default false
+	 */
+	allowUnsafeAttrValue?: boolean;
+	/**
 	 * When false, removes empty text nodes when parsed, unless they contain a space.
 	 * @default false
 	 */
 	keepEmptyTextNodes?: boolean;
+	/**
+	 * Custom transformer to run before passing the input HTML to the parser.
+	 * A common use case might be to sanitize the input string.
+	 * @example
+	 * preParser: htmlString => DOMPurify.sanitize(htmlString)
+	 */
+	preParser?: (input: string, opts: {
+		editor: Editor;
+	}) => string;
 }
 export interface ParserConfig {
 	/**
@@ -8212,7 +8233,7 @@ export interface ColorPickerOptions {
 	change?: () => void;
 	show?: () => void;
 	hide?: () => void;
-	color?: boolean;
+	color?: boolean | string;
 	flat?: boolean;
 	showInput?: boolean;
 	allowEmpty?: boolean;
@@ -8224,8 +8245,8 @@ export interface ColorPickerOptions {
 	hideAfterPaletteSelect?: boolean;
 	togglePaletteOnly?: boolean;
 	showSelectionPalette?: boolean;
-	localStorageKey?: boolean;
-	appendTo?: string;
+	localStorageKey?: boolean | string;
+	appendTo?: string | HTMLElement;
 	maxSelectionSize?: number;
 	cancelText?: string;
 	chooseText?: string;
@@ -8233,7 +8254,7 @@ export interface ColorPickerOptions {
 	togglePaletteLessText?: string;
 	clearText?: string;
 	noColorSelectedText?: string;
-	preferredFormat?: boolean;
+	preferredFormat?: boolean | string;
 	containerClassName?: string;
 	replacerClassName?: string;
 	showAlpha?: boolean;
@@ -9280,7 +9301,7 @@ declare const ParserHtml: (em?: EditorModel, config?: ParserConfig & {
 	 * @return {Object}
 	 */
 	parse(str: string, parserCss?: any, opts?: HTMLParserOptions): HTMLParseResult;
-	__clearUnsafeAttr(node: HTMLElement): void;
+	__sanitizeNode(node: HTMLElement, opts: HTMLParserOptions): void;
 };
 declare class ParserModule extends Module<ParserConfig & {
 	name?: string;
@@ -9894,6 +9915,82 @@ export declare class Asset extends Model {
 declare const TypeableCollectionExt: any;
 export declare class Assets extends TypeableCollectionExt<Asset> {
 }
+export type AssetEvent = `${AssetsEvents}`;
+export interface AssetOpenOptions {
+	select?: (asset: Asset, complete: boolean) => void;
+	types?: string[];
+	accept?: string;
+	target?: any;
+}
+declare enum AssetsEvents {
+	/**
+	 * @event `asset:add` New asset added to the collection. The [Asset] is passed as an argument to the callback.
+	 * @example
+	 * editor.on('asset:add', (asset) => { ... });
+	 */
+	add = "asset:add",
+	/**
+	 * @event `asset:remove` Asset removed from the collection. The [Asset] is passed as an argument to the callback.
+	 * @example
+	 * editor.on('asset:remove', (asset) => { ... });
+	 */
+	remove = "asset:remove",
+	removeBefore = "asset:remove:before",
+	/**
+	 * @event `asset:update` Asset updated. The [Asset] and the object containing changes are passed as arguments to the callback.
+	 * @example
+	 * editor.on('asset:update', (asset, updatedProps) => { ... });
+	 */
+	update = "asset:update",
+	/**
+	 * @event `asset:open` Asset Manager opened.
+	 * @example
+	 * editor.on('asset:open', () => { ... });
+	 */
+	open = "asset:open",
+	/**
+	 * @event `asset:close` Asset Manager closed.
+	 * @example
+	 * editor.on('asset:close', () => { ... });
+	 */
+	close = "asset:close",
+	/**
+	 * @event `asset:upload:start` Asset upload start.
+	 * @example
+	 * editor.on('asset:upload:start', () => { ... });
+	 */
+	uploadStart = "asset:upload:start",
+	/**
+	 * @event `asset:upload:end` Asset upload end.
+	 * @example
+	 * editor.on('asset:upload:end', (result) => { ... });
+	 */
+	uploadEnd = "asset:upload:end",
+	/**
+	 * @event `asset:upload:error` Asset upload error.
+	 * @example
+	 * editor.on('asset:upload:error', (error) => { ... });
+	 */
+	uploadError = "asset:upload:error",
+	/**
+	 * @event `asset:upload:response` Asset upload response.
+	 * @example
+	 * editor.on('asset:upload:response', (res) => { ... });
+	 */
+	uploadResponse = "asset:upload:response",
+	/**
+	 * @event `asset:custom` Event to use in case of [custom Asset Manager UI](https://grapesjs.com/docs/modules/Assets.html#customization).
+	 * @example
+	 * editor.on('asset:custom', ({ container, assets, ... }) => { ... });
+	 */
+	custom = "asset:custom",
+	/**
+	 * @event `asset` Catch-all event for all the events mentioned above. An object containing all the available data about the triggered event is passed as an argument to the callback.
+	 * @example
+	 * editor.on('asset', ({ event, model, ... }) => { ... });
+	 */
+	all = "asset"
+}
 declare class AssetsView extends View {
 	options: any;
 	config: AssetManagerConfig;
@@ -9968,7 +10065,7 @@ declare class FileUploaderView extends View {
 	pfx: string;
 	ppfx: string;
 	em: EditorModel;
-	module: any;
+	module: AssetManager;
 	target: any;
 	uploadId: string;
 	disabled: boolean;
@@ -10018,29 +10115,7 @@ declare class FileUploaderView extends View {
 	render(): this;
 	static embedAsBase64(e: DragEvent, clb?: () => void): Promise<void> | undefined;
 }
-export type AssetEvent = "asset" | "asset:open" | "asset:close" | "asset:add" | "asset:remove" | "asset:update" | "asset:custom" | "asset:upload:start" | "asset:upload:end" | "asset:upload:error" | "asset:upload:response";
-declare const assetEvents: {
-	all: string;
-	select: string;
-	update: string;
-	add: string;
-	remove: string;
-	removeBefore: string;
-	custom: string;
-	open: string;
-	close: string;
-	uploadStart: string;
-	uploadEnd: string;
-	uploadError: string;
-	uploadResponse: string;
-};
 export type AssetProps = Record<string, any>;
-export type OpenOptions = {
-	select?: (asset: Asset, complete: boolean) => void;
-	types?: string[];
-	accept?: string;
-	target?: any;
-};
 declare class AssetManager extends ItemManagerModule<AssetManagerConfig, Assets> {
 	storageKey: string;
 	Asset: typeof Asset;
@@ -10049,26 +10124,13 @@ declare class AssetManager extends ItemManagerModule<AssetManagerConfig, Assets>
 	am?: AssetsView;
 	fu?: FileUploaderView;
 	_bhv?: any;
-	events: typeof assetEvents;
+	events: typeof AssetsEvents;
 	/**
 	 * Initialize module
 	 * @param {Object} config Configurations
 	 * @private
 	 */
 	constructor(em: EditorModel);
-	__propEv(ev: string, ...data: any[]): void;
-	__trgCustom(): void;
-	__customData(): {
-		am: AssetManager;
-		open: boolean;
-		assets: any;
-		types: any;
-		container: any;
-		close: () => void;
-		remove: (asset: string | Asset, opts?: Record<string, any>) => any;
-		select: (asset: Asset, complete: boolean) => void;
-		options: any;
-	};
 	/**
 	 * Open the asset manager.
 	 * @param {Object} [options] Options for the asset manager.
@@ -10089,7 +10151,7 @@ declare class AssetManager extends ItemManagerModule<AssetManagerConfig, Assets>
 	 * // with your custom types (you should have assets with those types declared)
 	 * assetManager.open({ types: ['doc'], ... });
 	 */
-	open(options?: OpenOptions): void;
+	open(options?: AssetOpenOptions): void;
 	/**
 	 * Close the asset manager.
 	 * @example
@@ -10122,7 +10184,7 @@ declare class AssetManager extends ItemManagerModule<AssetManagerConfig, Assets>
 	 * });
 	 * assetManager.add([{ src: 'img2.jpg' }, { src: 'img2.png' }]);
 	 */
-	add(asset: string | AssetProps | (string | AssetProps)[], opts?: Record<string, any>): any;
+	add(asset: string | AssetProps | (string | AssetProps)[], opts?: AddOptions): any;
 	/**
 	 * Return asset by URL
 	 * @param  {String} src URL of the asset
@@ -10151,9 +10213,9 @@ declare class AssetManager extends ItemManagerModule<AssetManagerConfig, Assets>
 	 * const asset = assetManager.get('http://img.jpg');
 	 * assetManager.remove(asset);
 	 */
-	remove(asset: string | Asset, opts?: Record<string, any>): any;
+	remove(asset: string | Asset, opts?: RemoveOptions): any;
 	store(): any;
-	load(data: Record<string, any>): any;
+	load(data: ProjectData): any;
 	/**
 	 * Return the Asset Manager Container
 	 * @returns {HTMLElement}
@@ -10247,6 +10309,19 @@ declare class AssetManager extends ItemManagerModule<AssetManagerConfig, Assets>
 	 * @private
 	 */
 	onDblClick(func: any): void;
+	__propEv(ev: string, ...data: any[]): void;
+	__trgCustom(): void;
+	__customData(): {
+		am: AssetManager;
+		open: boolean;
+		assets: any;
+		types: any;
+		container: any;
+		close: () => void;
+		remove: (asset: string | Asset, opts?: Record<string, any>) => any;
+		select: (asset: Asset, complete: boolean) => void;
+		options: any;
+	};
 	__behaviour(opts?: {}): any;
 	__getBehaviour(opts?: {}): any;
 	destroy(): void;
@@ -10488,12 +10563,34 @@ declare class PageManager extends ItemManagerModule<PageManagerConfig, Pages> {
 	destroy(): void;
 	store(): any;
 	load(data: any): any;
+	_initPage(): Page;
 	_createId(): string;
 }
 export type Messages = Required<I18nConfig>["messages"];
+declare enum I18nEvents {
+	/**
+	 * @event `i18n:add` New set of messages is added.
+	 * @example
+	 * editor.on('i18n:add', (messages) => { ... });
+	 */
+	add = "i18n:add",
+	/**
+	 * @event `i18n:update` The set of messages is updated.
+	 * @example
+	 * editor.on('i18n:update', (messages) => { ... });
+	 */
+	update = "i18n:update",
+	/**
+	 * @event `i18n:locale` Locale changed.
+	 * @example
+	 * editor.on('i18n:locale', ({ value, valuePrev }) => { ... });
+	 */
+	locale = "i18n:locale"
+}
 declare class I18nModule extends Module<I18nConfig & {
 	stylePrefix?: string;
 }> {
+	events: typeof I18nEvents;
 	/**
 	 * Initialize module
 	 * @param {Object} config Configurations
@@ -10518,7 +10615,7 @@ declare class I18nModule extends Module<I18nConfig & {
 	 * Get current locale
 	 * @returns {String} Current locale value
 	 */
-	getLocale(): string | undefined;
+	getLocale(): string;
 	/**
 	 * Get all messages
 	 * @param {String} [lang] Specify the language of messages to return
@@ -10531,7 +10628,7 @@ declare class I18nModule extends Module<I18nConfig & {
 	 * i18n.getMessages('en');
 	 * // -> { hello: '...' }
 	 */
-	getMessages(lang: string, opts?: {}): any;
+	getMessages(lang?: string, opts?: {}): any;
 	/**
 	 * Set new set of messages
 	 * @param {Object} msg Set of messages
@@ -11493,6 +11590,66 @@ declare class UndoManagerModule extends Module<UndoManagerConfig & {
 	getInstance(): any;
 	destroy(): void;
 }
+declare enum CommandsEvents {
+	/**
+	 * @event `command:run` Triggered on run of any command.
+	 * @example
+	 * editor.on('command:run', ({ id, result, options }) => {
+	 *  console.log('Command id', id, 'command result', result);
+	 * });
+	 */
+	run = "command:run",
+	_run = "run",
+	/**
+	 * @event `command:run:COMMAND_ID` Triggered on run of a specific command.
+	 * @example
+	 * editor.on('command:run:my-command', ({ result, options }) => { ... });
+	 */
+	runCommand = "command:run:",
+	_runCommand = "run:",
+	/**
+	 * @event `command:run:before:COMMAND_ID` Triggered before the command is called.
+	 * @example
+	 * editor.on('command:run:before:my-command', ({ options }) => { ... });
+	 */
+	runBeforeCommand = "command:run:before:",
+	/**
+	 * @event `command:abort:COMMAND_ID` Triggered when the command execution is aborted.
+	 * @example
+	 * editor.on('command:abort:my-command', ({ options }) => { ... });
+	 *
+	 * // The command could be aborted during the before event
+	 * editor.on('command:run:before:my-command', ({ options }) => {
+	 *  if (someCondition) {
+	 *    options.abort = true;
+	 *  }
+	 * });
+	 */
+	abort = "command:abort:",
+	_abort = "abort:",
+	/**
+	 * @event `command:stop` Triggered on stop of any command.
+	 * @example
+	 * editor.on('command:stop', ({ id, result, options }) => {
+	 *  console.log('Command id', id, 'command result', result);
+	 * });
+	 */
+	stop = "command:stop",
+	_stop = "stop",
+	/**
+	 * @event `command:stop:COMMAND_ID` Triggered on stop of a specific command.
+	 * @example
+	 * editor.on('command:run:my-command', ({ result, options }) => { ... });
+	 */
+	stopCommand = "command:stop:",
+	_stopCommand = "stop:",
+	/**
+	 * @event `command:stop:before:COMMAND_ID` Triggered before the command is called to stop.
+	 * @example
+	 * editor.on('command:stop:before:my-command', ({ options }) => { ... });
+	 */
+	stopBeforeCommand = "command:stop:before:"
+}
 export type CommandEvent = "run" | "stop" | `run:${string}` | `stop:${string}` | `abort:${string}`;
 declare class CommandsModule extends Module<CommandsConfig & {
 	pStylePrefix?: string;
@@ -11501,6 +11658,7 @@ declare class CommandsModule extends Module<CommandsConfig & {
 	defaultCommands: Record<string, Command>;
 	commands: Record<string, CommandObject>;
 	active: Record<string, any>;
+	events: typeof CommandsEvents;
 	/**
 	 * @private
 	 */
@@ -11622,6 +11780,8 @@ declare class CommandsModule extends Module<CommandsConfig & {
 	 * @private
 	 * */
 	create(command: CommandObject): any;
+	__onRun(id: string, clb: () => void): void;
+	__onStop(id: string, clb: () => void): void;
 	destroy(): void;
 }
 export interface EditorLoadOptions {

@@ -15564,6 +15564,82 @@ var CanvasSpot = /** @class */ (function (_super) {
 
 /***/ }),
 
+/***/ 713:
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Z: () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* unused harmony export CommandsEvents */
+/**{START_EVENTS}*/
+var CommandsEvents;
+(function (CommandsEvents) {
+    /**
+     * @event `command:run` Triggered on run of any command.
+     * @example
+     * editor.on('command:run', ({ id, result, options }) => {
+     *  console.log('Command id', id, 'command result', result);
+     * });
+     */
+    CommandsEvents["run"] = "command:run";
+    CommandsEvents["_run"] = "run";
+    /**
+     * @event `command:run:COMMAND_ID` Triggered on run of a specific command.
+     * @example
+     * editor.on('command:run:my-command', ({ result, options }) => { ... });
+     */
+    CommandsEvents["runCommand"] = "command:run:";
+    CommandsEvents["_runCommand"] = "run:";
+    /**
+     * @event `command:run:before:COMMAND_ID` Triggered before the command is called.
+     * @example
+     * editor.on('command:run:before:my-command', ({ options }) => { ... });
+     */
+    CommandsEvents["runBeforeCommand"] = "command:run:before:";
+    /**
+     * @event `command:abort:COMMAND_ID` Triggered when the command execution is aborted.
+     * @example
+     * editor.on('command:abort:my-command', ({ options }) => { ... });
+     *
+     * // The command could be aborted during the before event
+     * editor.on('command:run:before:my-command', ({ options }) => {
+     *  if (someCondition) {
+     *    options.abort = true;
+     *  }
+     * });
+     */
+    CommandsEvents["abort"] = "command:abort:";
+    CommandsEvents["_abort"] = "abort:";
+    /**
+     * @event `command:stop` Triggered on stop of any command.
+     * @example
+     * editor.on('command:stop', ({ id, result, options }) => {
+     *  console.log('Command id', id, 'command result', result);
+     * });
+     */
+    CommandsEvents["stop"] = "command:stop";
+    CommandsEvents["_stop"] = "stop";
+    /**
+     * @event `command:stop:COMMAND_ID` Triggered on stop of a specific command.
+     * @example
+     * editor.on('command:run:my-command', ({ result, options }) => { ... });
+     */
+    CommandsEvents["stopCommand"] = "command:stop:";
+    CommandsEvents["_stopCommand"] = "stop:";
+    /**
+     * @event `command:stop:before:COMMAND_ID` Triggered before the command is called to stop.
+     * @example
+     * editor.on('command:stop:before:my-command', ({ options }) => { ... });
+     */
+    CommandsEvents["stopBeforeCommand"] = "command:stop:before:";
+})(CommandsEvents || (CommandsEvents = {}));
+/**{END_EVENTS}*/
+// need this to avoid the TS documentation generator to break
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (CommandsEvents);
+
+
+/***/ }),
+
 /***/ 858:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -15673,7 +15749,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
 /* harmony export */   defineCommand: () => (/* binding */ defineCommand)
 /* harmony export */ });
-/* harmony import */ var _common__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(346);
+/* harmony import */ var _common__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(346);
+/* harmony import */ var _types__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(713);
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -15689,6 +15766,7 @@ var __extends = (undefined && undefined.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+
 
 function defineCommand(def) {
     return def;
@@ -15764,15 +15842,21 @@ var CommandAbstract = /** @class */ (function (_super) {
     CommandAbstract.prototype.callRun = function (editor, options) {
         if (options === void 0) { options = {}; }
         var id = this.id;
-        editor.trigger("run:".concat(id, ":before"), options);
-        if (options && options.abort) {
-            editor.trigger("abort:".concat(id), options);
+        editor.trigger("".concat(_types__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z.runBeforeCommand).concat(id), { options: options });
+        editor.trigger("".concat(_types__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z._runCommand).concat(id, ":before"), options);
+        if (options.abort) {
+            editor.trigger("".concat(_types__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z.abort).concat(id), { options: options });
+            editor.trigger("".concat(_types__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z._abort).concat(id), options);
             return;
         }
         var sender = options.sender || editor;
         var result = this.run(editor, sender, options);
-        editor.trigger("run:".concat(id), result, options);
-        editor.trigger('run', id, result, options);
+        var data = { id: id, result: result, options: options };
+        editor.trigger("".concat(_types__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z.runCommand).concat(id), data);
+        editor.trigger(_types__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z.run, data);
+        // deprecated
+        editor.trigger("".concat(_types__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z._runCommand).concat(id), result, options);
+        editor.trigger(_types__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z._run, id, result, options);
         return result;
     };
     /**
@@ -15785,10 +15869,15 @@ var CommandAbstract = /** @class */ (function (_super) {
         if (options === void 0) { options = {}; }
         var id = this.id;
         var sender = options.sender || editor;
-        editor.trigger("stop:".concat(id, ":before"), options);
+        editor.trigger("".concat(_types__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z.stopBeforeCommand).concat(id), { options: options });
+        editor.trigger("".concat(_types__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z._stopCommand).concat(id, ":before"), options);
         var result = this.stop(editor, sender, options);
-        editor.trigger("stop:".concat(id), result, options);
-        editor.trigger('stop', id, result, options);
+        var data = { id: id, result: result, options: options };
+        editor.trigger("".concat(_types__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z.stopCommand).concat(id), data);
+        editor.trigger(_types__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z.stop, data);
+        // deprecated
+        editor.trigger("".concat(_types__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z._stopCommand).concat(id), result, options);
+        editor.trigger(_types__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z._stop, id, result, options);
         return result;
     };
     /**
@@ -15812,7 +15901,7 @@ var CommandAbstract = /** @class */ (function (_super) {
      * */
     CommandAbstract.prototype.stop = function (em, sender, options) { };
     return CommandAbstract;
-}(_common__WEBPACK_IMPORTED_MODULE_0__/* .Model */ .Hn));
+}(_common__WEBPACK_IMPORTED_MODULE_1__/* .Model */ .Hn));
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (CommandAbstract);
 
 
@@ -17594,6 +17683,7 @@ var showOffsets;
  *
  */
 /* harmony default export */ const SelectComponent = ({
+    activeResizer: false,
     init: function () {
         this.onSelect = (0,index_all.debounce)(this.onSelect, 0);
         (0,index_all.bindAll)(this, 'onHover', 'onOut', 'onClick', 'onFrameScroll', 'onFrameResize', 'onFrameUpdated', 'onContainerChange');
@@ -17914,12 +18004,17 @@ var showOffsets;
             canvas.addSpot({ type: spotTypeResize, component: model });
             var el = (0,index_all.isElement)(elem) ? elem : model.getEl();
             var _b = (0,mixins.isObject)(resizable) ? resizable : {}, _c = _b.onStart, onStart_1 = _c === void 0 ? function () { } : _c, _d = _b.onMove, onMove_1 = _d === void 0 ? function () { } : _d, _e = _b.onEnd, onEnd_1 = _e === void 0 ? function () { } : _e, _f = _b.updateTarget, updateTarget_1 = _f === void 0 ? function () { } : _f, resizableOpts = __rest(_b, ["onStart", "onMove", "onEnd", "updateTarget"]);
-            if (hasCustomResize || !el)
+            if (hasCustomResize || !el || this.activeResizer)
                 return;
             var modelToStyle_1;
             var config = em.config;
             var pfx = config.stylePrefix || '';
             var resizeClass_1 = "".concat(pfx, "resizing");
+            var self_1 = this;
+            var resizeEventOpts_1 = {
+                component: model,
+                el: el,
+            };
             var toggleBodyClass_1 = function (method, e, opts) {
                 var docs = opts.docs;
                 docs &&
@@ -17957,17 +18052,20 @@ var showOffsets;
                         config.unitHeight = (0,mixins.getUnitFromValue)(currentHeight);
                         config.unitWidth = (0,mixins.getUnitFromValue)(currentWidth);
                     }
+                    self_1.activeResizer = true;
+                    editor.trigger('component:resize', SelectComponent_assign(SelectComponent_assign({}, resizeEventOpts_1), { type: 'start' }));
                 }, 
                 // Update all positioned elements (eg. component toolbar)
                 onMove: function (ev) {
                     onMove_1(ev);
-                    editor.trigger('component:resize');
+                    editor.trigger('component:resize', SelectComponent_assign(SelectComponent_assign({}, resizeEventOpts_1), { type: 'move' }));
                 }, onEnd: function (ev, opts) {
                     onEnd_1(ev, opts);
                     toggleBodyClass_1('remove', ev, opts);
-                    editor.trigger('component:resize');
+                    editor.trigger('component:resize', SelectComponent_assign(SelectComponent_assign({}, resizeEventOpts_1), { type: 'end' }));
                     canvas.toggleFramesEvents(true);
                     showOffsets = true;
+                    self_1.activeResizer = false;
                 }, updateTarget: function (el, rect, options) {
                     updateTarget_1(el, rect, options);
                     if (!modelToStyle_1) {
@@ -25592,7 +25690,7 @@ var Canvas = /** @class */ (function (_super) {
     });
     Canvas.prototype.init = function () {
         var em = this.em;
-        var mainPage = em.Pages.getMain();
+        var mainPage = em.Pages._initPage();
         this.set('frames', mainPage.getFrames());
         this.updateDevice({ frame: mainPage.getMainFrame() });
     };
@@ -28961,7 +29059,9 @@ var ParserHtml = function (em, config) {
             var options = ParserHtml_assign(ParserHtml_assign(ParserHtml_assign({}, config.optionsHtml), { 
                 // @ts-ignore Support previous `configParser.htmlType` option
                 htmlType: ((_a = config.optionsHtml) === null || _a === void 0 ? void 0 : _a.htmlType) || config.htmlType }), opts);
-            var el = (0,index_all.isFunction)(cf.parserHtml) ? cf.parserHtml(str, options) : BrowserParserHtml(str, options);
+            var preParser = options.preParser;
+            var input = (0,index_all.isFunction)(preParser) ? preParser(str, { editor: em === null || em === void 0 ? void 0 : em.getEditor() }) : str;
+            var el = (0,index_all.isFunction)(cf.parserHtml) ? cf.parserHtml(input, options) : BrowserParserHtml(input, options);
             var scripts = el.querySelectorAll('script');
             var i = scripts.length;
             // Support previous `configMain.allowScripts` option
@@ -28972,8 +29072,8 @@ var ParserHtml = function (em, config) {
                     scripts[i].parentNode.removeChild(scripts[i]);
             }
             // Remove unsafe attributes
-            if (!options.allowUnsafeAttr) {
-                this.__clearUnsafeAttr(el);
+            if (!options.allowUnsafeAttr || !options.allowUnsafeAttrValue) {
+                this.__sanitizeNode(el, options);
             }
             // Detach style tags and parse them
             if (parserCss) {
@@ -28987,25 +29087,27 @@ var ParserHtml = function (em, config) {
                 if (styleStr)
                     res.css = parserCss.parse(styleStr);
             }
-            em && em.trigger("".concat(ParserHtml_event, ":root"), { input: str, root: el });
+            em === null || em === void 0 ? void 0 : em.trigger("".concat(ParserHtml_event, ":root"), { input: input, root: el });
             var result = this.parseNode(el, cf);
             // I have to keep it otherwise it breaks the DomComponents.addComponent (returns always array)
             var resHtml = result.length === 1 && !cf.returnArray ? result[0] : result;
             res.html = resHtml;
-            em && em.trigger(ParserHtml_event, { input: str, output: res });
+            em === null || em === void 0 ? void 0 : em.trigger(ParserHtml_event, { input: input, output: res });
             return res;
         },
-        __clearUnsafeAttr: function (node) {
+        __sanitizeNode: function (node, opts) {
             var _this = this;
             var attrs = node.attributes || [];
             var nodes = node.childNodes || [];
             var toRemove = [];
             (0,index_all.each)(attrs, function (attr) {
                 var name = attr.nodeName || '';
-                name.indexOf('on') === 0 && toRemove.push(name);
+                var value = attr.nodeValue || '';
+                !opts.allowUnsafeAttr && name.startsWith('on') && toRemove.push(name);
+                !opts.allowUnsafeAttrValue && value.startsWith('javascript:') && toRemove.push(name);
             });
             toRemove.map(function (name) { return node.removeAttribute(name); });
-            (0,index_all.each)(nodes, function (node) { return _this.__clearUnsafeAttr(node); });
+            (0,index_all.each)(nodes, function (node) { return _this.__sanitizeNode(node, opts); });
         },
     };
 };
@@ -35033,346 +35135,6 @@ var ComponentImageView = /** @class */ (function (_super) {
 }(view_ComponentView));
 /* harmony default export */ const view_ComponentImageView = (ComponentImageView);
 
-;// CONCATENATED MODULE: ./src/dom_components/view/ComponentLabelView.ts
-var ComponentLabelView_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-var ComponentLabelView = /** @class */ (function (_super) {
-    ComponentLabelView_extends(ComponentLabelView, _super);
-    function ComponentLabelView() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    return ComponentLabelView;
-}(view_ComponentView));
-/* harmony default export */ const view_ComponentLabelView = (ComponentLabelView);
-
-;// CONCATENATED MODULE: ./src/dom_components/view/ComponentLinkView.ts
-var ComponentLinkView_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-var ComponentLinkView = /** @class */ (function (_super) {
-    ComponentLinkView_extends(ComponentLinkView, _super);
-    function ComponentLinkView() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    ComponentLinkView.prototype.render = function () {
-        _super.prototype.render.call(this);
-        // I need capturing instead of bubbling as bubbled clicks from other
-        // children will execute the link event
-        this.el.addEventListener('click', this.prevDef, true);
-        return this;
-    };
-    return ComponentLinkView;
-}(view_ComponentView));
-/* harmony default export */ const view_ComponentLinkView = (ComponentLinkView);
-
-;// CONCATENATED MODULE: ./src/dom_components/view/ComponentMapView.ts
-var ComponentMapView_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-var ComponentMapView = /** @class */ (function (_super) {
-    ComponentMapView_extends(ComponentMapView, _super);
-    function ComponentMapView() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    ComponentMapView.prototype.tagName = function () {
-        return 'div';
-    };
-    ComponentMapView.prototype.events = function () {
-        return {};
-    };
-    ComponentMapView.prototype.initialize = function (props) {
-        _super.prototype.initialize.call(this, props);
-        this.classEmpty = this.ppfx + 'plh-map';
-    };
-    /**
-     * Update the map on the canvas
-     * @private
-     */
-    ComponentMapView.prototype.updateSrc = function () {
-        this.getIframe().src = this.model.get('src');
-    };
-    ComponentMapView.prototype.getIframe = function () {
-        if (!this.iframe) {
-            var ifrm = document.createElement('iframe');
-            ifrm.src = this.model.get('src');
-            ifrm.frameBorder = '0';
-            ifrm.style.height = '100%';
-            ifrm.style.width = '100%';
-            ifrm.className = this.ppfx + 'no-pointer';
-            this.iframe = ifrm;
-        }
-        return this.iframe;
-    };
-    ComponentMapView.prototype.render = function () {
-        _super.prototype.render.call(this);
-        this.updateClasses();
-        this.el.appendChild(this.getIframe());
-        return this;
-    };
-    return ComponentMapView;
-}(view_ComponentImageView));
-/* harmony default export */ const view_ComponentMapView = (ComponentMapView);
-
-;// CONCATENATED MODULE: ./src/dom_components/view/ComponentScriptView.ts
-var ComponentScriptView_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-var ComponentScriptView = /** @class */ (function (_super) {
-    ComponentScriptView_extends(ComponentScriptView, _super);
-    function ComponentScriptView() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    ComponentScriptView.prototype.tagName = function () {
-        return 'script';
-    };
-    ComponentScriptView.prototype.events = function () {
-        return {};
-    };
-    return ComponentScriptView;
-}(view_ComponentView));
-/* harmony default export */ const view_ComponentScriptView = (ComponentScriptView);
-
-;// CONCATENATED MODULE: ./src/dom_components/view/ComponentSvgView.ts
-var ComponentSvgView_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-var ComponentSvgView = /** @class */ (function (_super) {
-    ComponentSvgView_extends(ComponentSvgView, _super);
-    function ComponentSvgView() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    ComponentSvgView.prototype._createElement = function (tagName) {
-        return document.createElementNS('http://www.w3.org/2000/svg', tagName);
-    };
-    return ComponentSvgView;
-}(view_ComponentView));
-/* harmony default export */ const view_ComponentSvgView = (ComponentSvgView);
-
-;// CONCATENATED MODULE: ./src/dom_components/view/ComponentTableBodyView.ts
-var ComponentTableBodyView_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-var ComponentTableBodyView = /** @class */ (function (_super) {
-    ComponentTableBodyView_extends(ComponentTableBodyView, _super);
-    function ComponentTableBodyView() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    return ComponentTableBodyView;
-}(view_ComponentView));
-/* harmony default export */ const view_ComponentTableBodyView = (ComponentTableBodyView);
-
-;// CONCATENATED MODULE: ./src/dom_components/view/ComponentTableCellView.ts
-var ComponentTableCellView_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-var ComponentTableCellView = /** @class */ (function (_super) {
-    ComponentTableCellView_extends(ComponentTableCellView, _super);
-    function ComponentTableCellView() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    return ComponentTableCellView;
-}(view_ComponentView));
-/* harmony default export */ const view_ComponentTableCellView = (ComponentTableCellView);
-
-;// CONCATENATED MODULE: ./src/dom_components/view/ComponentTableFootView.ts
-var ComponentTableFootView_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-var ComponentTableFootView = /** @class */ (function (_super) {
-    ComponentTableFootView_extends(ComponentTableFootView, _super);
-    function ComponentTableFootView() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    return ComponentTableFootView;
-}(view_ComponentView));
-/* harmony default export */ const view_ComponentTableFootView = (ComponentTableFootView);
-
-;// CONCATENATED MODULE: ./src/dom_components/view/ComponentTableHeadView.ts
-var ComponentTableHeadView_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-var ComponentTableHeadView = /** @class */ (function (_super) {
-    ComponentTableHeadView_extends(ComponentTableHeadView, _super);
-    function ComponentTableHeadView() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    return ComponentTableHeadView;
-}(view_ComponentView));
-/* harmony default export */ const view_ComponentTableHeadView = (ComponentTableHeadView);
-
-;// CONCATENATED MODULE: ./src/dom_components/view/ComponentTableRowView.ts
-var ComponentTableRowView_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-var ComponentTableRowView = /** @class */ (function (_super) {
-    ComponentTableRowView_extends(ComponentTableRowView, _super);
-    function ComponentTableRowView() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    return ComponentTableRowView;
-}(view_ComponentView));
-/* harmony default export */ const view_ComponentTableRowView = (ComponentTableRowView);
-
-;// CONCATENATED MODULE: ./src/dom_components/view/ComponentTableView.ts
-var ComponentTableView_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-var ComponentTableView = /** @class */ (function (_super) {
-    ComponentTableView_extends(ComponentTableView, _super);
-    function ComponentTableView() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    ComponentTableView.prototype.events = function () {
-        return {};
-    };
-    return ComponentTableView;
-}(view_ComponentView));
-/* harmony default export */ const view_ComponentTableView = (ComponentTableView);
-
 ;// CONCATENATED MODULE: ./src/dom_components/view/ComponentTextView.ts
 var ComponentTextView_extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -35740,6 +35502,346 @@ var ComponentTextView = /** @class */ (function (_super) {
     return ComponentTextView;
 }(view_ComponentView));
 /* harmony default export */ const view_ComponentTextView = (ComponentTextView);
+
+;// CONCATENATED MODULE: ./src/dom_components/view/ComponentLinkView.ts
+var ComponentLinkView_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var ComponentLinkView = /** @class */ (function (_super) {
+    ComponentLinkView_extends(ComponentLinkView, _super);
+    function ComponentLinkView() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    ComponentLinkView.prototype.render = function () {
+        _super.prototype.render.call(this);
+        // I need capturing instead of bubbling as bubbled clicks from other
+        // children will execute the link event
+        this.el.addEventListener('click', this.prevDef, true);
+        return this;
+    };
+    return ComponentLinkView;
+}(view_ComponentTextView));
+/* harmony default export */ const view_ComponentLinkView = (ComponentLinkView);
+
+;// CONCATENATED MODULE: ./src/dom_components/view/ComponentLabelView.ts
+var ComponentLabelView_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var ComponentLabelView = /** @class */ (function (_super) {
+    ComponentLabelView_extends(ComponentLabelView, _super);
+    function ComponentLabelView() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return ComponentLabelView;
+}(view_ComponentLinkView));
+/* harmony default export */ const view_ComponentLabelView = (ComponentLabelView);
+
+;// CONCATENATED MODULE: ./src/dom_components/view/ComponentMapView.ts
+var ComponentMapView_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var ComponentMapView = /** @class */ (function (_super) {
+    ComponentMapView_extends(ComponentMapView, _super);
+    function ComponentMapView() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    ComponentMapView.prototype.tagName = function () {
+        return 'div';
+    };
+    ComponentMapView.prototype.events = function () {
+        return {};
+    };
+    ComponentMapView.prototype.initialize = function (props) {
+        _super.prototype.initialize.call(this, props);
+        this.classEmpty = this.ppfx + 'plh-map';
+    };
+    /**
+     * Update the map on the canvas
+     * @private
+     */
+    ComponentMapView.prototype.updateSrc = function () {
+        this.getIframe().src = this.model.get('src');
+    };
+    ComponentMapView.prototype.getIframe = function () {
+        if (!this.iframe) {
+            var ifrm = document.createElement('iframe');
+            ifrm.src = this.model.get('src');
+            ifrm.frameBorder = '0';
+            ifrm.style.height = '100%';
+            ifrm.style.width = '100%';
+            ifrm.className = this.ppfx + 'no-pointer';
+            this.iframe = ifrm;
+        }
+        return this.iframe;
+    };
+    ComponentMapView.prototype.render = function () {
+        _super.prototype.render.call(this);
+        this.updateClasses();
+        this.el.appendChild(this.getIframe());
+        return this;
+    };
+    return ComponentMapView;
+}(view_ComponentImageView));
+/* harmony default export */ const view_ComponentMapView = (ComponentMapView);
+
+;// CONCATENATED MODULE: ./src/dom_components/view/ComponentScriptView.ts
+var ComponentScriptView_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var ComponentScriptView = /** @class */ (function (_super) {
+    ComponentScriptView_extends(ComponentScriptView, _super);
+    function ComponentScriptView() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    ComponentScriptView.prototype.tagName = function () {
+        return 'script';
+    };
+    ComponentScriptView.prototype.events = function () {
+        return {};
+    };
+    return ComponentScriptView;
+}(view_ComponentView));
+/* harmony default export */ const view_ComponentScriptView = (ComponentScriptView);
+
+;// CONCATENATED MODULE: ./src/dom_components/view/ComponentSvgView.ts
+var ComponentSvgView_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var ComponentSvgView = /** @class */ (function (_super) {
+    ComponentSvgView_extends(ComponentSvgView, _super);
+    function ComponentSvgView() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    ComponentSvgView.prototype._createElement = function (tagName) {
+        return document.createElementNS('http://www.w3.org/2000/svg', tagName);
+    };
+    return ComponentSvgView;
+}(view_ComponentView));
+/* harmony default export */ const view_ComponentSvgView = (ComponentSvgView);
+
+;// CONCATENATED MODULE: ./src/dom_components/view/ComponentTableBodyView.ts
+var ComponentTableBodyView_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var ComponentTableBodyView = /** @class */ (function (_super) {
+    ComponentTableBodyView_extends(ComponentTableBodyView, _super);
+    function ComponentTableBodyView() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return ComponentTableBodyView;
+}(view_ComponentView));
+/* harmony default export */ const view_ComponentTableBodyView = (ComponentTableBodyView);
+
+;// CONCATENATED MODULE: ./src/dom_components/view/ComponentTableCellView.ts
+var ComponentTableCellView_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var ComponentTableCellView = /** @class */ (function (_super) {
+    ComponentTableCellView_extends(ComponentTableCellView, _super);
+    function ComponentTableCellView() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return ComponentTableCellView;
+}(view_ComponentView));
+/* harmony default export */ const view_ComponentTableCellView = (ComponentTableCellView);
+
+;// CONCATENATED MODULE: ./src/dom_components/view/ComponentTableFootView.ts
+var ComponentTableFootView_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var ComponentTableFootView = /** @class */ (function (_super) {
+    ComponentTableFootView_extends(ComponentTableFootView, _super);
+    function ComponentTableFootView() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return ComponentTableFootView;
+}(view_ComponentView));
+/* harmony default export */ const view_ComponentTableFootView = (ComponentTableFootView);
+
+;// CONCATENATED MODULE: ./src/dom_components/view/ComponentTableHeadView.ts
+var ComponentTableHeadView_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var ComponentTableHeadView = /** @class */ (function (_super) {
+    ComponentTableHeadView_extends(ComponentTableHeadView, _super);
+    function ComponentTableHeadView() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return ComponentTableHeadView;
+}(view_ComponentView));
+/* harmony default export */ const view_ComponentTableHeadView = (ComponentTableHeadView);
+
+;// CONCATENATED MODULE: ./src/dom_components/view/ComponentTableRowView.ts
+var ComponentTableRowView_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var ComponentTableRowView = /** @class */ (function (_super) {
+    ComponentTableRowView_extends(ComponentTableRowView, _super);
+    function ComponentTableRowView() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return ComponentTableRowView;
+}(view_ComponentView));
+/* harmony default export */ const view_ComponentTableRowView = (ComponentTableRowView);
+
+;// CONCATENATED MODULE: ./src/dom_components/view/ComponentTableView.ts
+var ComponentTableView_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var ComponentTableView = /** @class */ (function (_super) {
+    ComponentTableView_extends(ComponentTableView, _super);
+    function ComponentTableView() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    ComponentTableView.prototype.events = function () {
+        return {};
+    };
+    return ComponentTableView;
+}(view_ComponentView));
+/* harmony default export */ const view_ComponentTableView = (ComponentTableView);
 
 ;// CONCATENATED MODULE: ./src/dom_components/view/ComponentVideoView.ts
 var ComponentVideoView_extends = (undefined && undefined.__extends) || (function () {
@@ -39932,6 +40034,7 @@ var parser_config_config_config = {
         htmlType: 'text/html',
         allowScripts: false,
         allowUnsafeAttr: false,
+        allowUnsafeAttrValue: false,
         keepEmptyTextNodes: false,
     },
 };
@@ -44156,14 +44259,13 @@ var InputColor = /** @class */ (function (_super) {
             var _a = this, em = _a.em, model_1 = _a.model, opts = _a.opts;
             var ppfx = this.ppfx;
             var onChange_1 = opts.onChange;
-            var colorEl = (0,cash_dom["default"])("<div class=\"".concat(this.ppfx, "field-color-picker\"></div>"));
-            var cpStyle = colorEl.get(0).style;
-            var elToAppend = em && em.config ? em.config.el : '';
+            var colorEl_1 = (0,cash_dom["default"])("<div class=\"".concat(this.ppfx, "field-color-picker\"></div>"));
+            var cpStyle_1 = colorEl_1.get(0).style;
             var colorPickerConfig = (em && em.getConfig && em.getConfig().colorPicker) || {};
             this.movedColor = '';
             var changed_1 = false;
             var previousColor_1;
-            this.$el.find('[data-colorp-c]').append(colorEl);
+            this.$el.find('[data-colorp-c]').append(colorEl_1);
             var handleChange_1 = function (value, complete) {
                 if (complete === void 0) { complete = true; }
                 if (onChange_1) {
@@ -44175,15 +44277,15 @@ var InputColor = /** @class */ (function (_super) {
                 }
             };
             // @ts-ignore
-            colorEl.spectrum(InputColor_assign(InputColor_assign(InputColor_assign({ color: model_1.getValue() || false, containerClassName: "".concat(ppfx, "one-bg ").concat(ppfx, "two-color"), appendTo: elToAppend || 'body', maxSelectionSize: 8, showPalette: true, showAlpha: true, chooseText: 'Ok', cancelText: '⨯', palette: [] }, colorPickerConfig), (model_1.get('colorPicker') || {})), { move: function (color) {
+            colorEl_1.spectrum(InputColor_assign(InputColor_assign(InputColor_assign({ color: model_1.getValue() || false, containerClassName: "".concat(ppfx, "one-bg ").concat(ppfx, "two-color ").concat(ppfx, "editor-sp"), maxSelectionSize: 8, showPalette: true, showAlpha: true, chooseText: 'Ok', cancelText: '⨯', palette: [] }, colorPickerConfig), (model_1.get('colorPicker') || {})), { move: function (color) {
                     var cl = getColor(color);
                     _this.movedColor = cl;
-                    cpStyle.backgroundColor = cl;
+                    cpStyle_1.backgroundColor = cl;
                     handleChange_1(cl, false);
                 }, change: function (color) {
                     changed_1 = true;
                     var cl = getColor(color);
-                    cpStyle.backgroundColor = cl;
+                    cpStyle_1.backgroundColor = cl;
                     handleChange_1(cl);
                     _this.noneColor = false;
                 }, show: function (color) {
@@ -44195,9 +44297,9 @@ var InputColor = /** @class */ (function (_super) {
                         if (_this.noneColor) {
                             previousColor_1 = '';
                         }
-                        cpStyle.backgroundColor = previousColor_1;
+                        cpStyle_1.backgroundColor = previousColor_1;
                         // @ts-ignore
-                        colorEl.spectrum('set', previousColor_1);
+                        colorEl_1.spectrum('set', previousColor_1);
                         handleChange_1(previousColor_1, false);
                     }
                 } }));
@@ -44207,10 +44309,10 @@ var InputColor = /** @class */ (function (_super) {
                     changed_1 = true;
                     _this.movedColor = '';
                     // @ts-ignore
-                    colorEl.spectrum('hide');
+                    colorEl_1.spectrum('hide');
                 });
             }
-            this.colorEl = colorEl;
+            this.colorEl = colorEl_1;
         }
         return this.colorEl;
     };
@@ -45228,6 +45330,8 @@ var commands_config_config_config = {
 };
 /* harmony default export */ const commands_config_config = (commands_config_config_config);
 
+// EXTERNAL MODULE: ./src/commands/types.ts
+var commands_types = __webpack_require__(713);
 ;// CONCATENATED MODULE: ./src/commands/index.ts
 /**
  * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/GrapesJS/grapesjs/blob/master/src/commands/config/config.ts)
@@ -45250,14 +45354,7 @@ var commands_config_config_config = {
  * commands.add(...);
  * ```
  *
- ** ## Available Events
- * * `run:{commandName}` - Triggered when some command is called to run (eg. editor.runCommand('preview'))
- * * `stop:{commandName}` - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
- * * `run:{commandName}:before` - Triggered before the command is called
- * * `stop:{commandName}:before` - Triggered before the command is called to stop
- * * `abort:{commandName}` - Triggered when the command execution is aborted (`editor.on(`run:preview:before`, opts => opts.abort = 1);`)
- * * `run` - Triggered on run of any command. The id and the result are passed as arguments to the callback
- * * `stop` - Triggered on stop of any command. The id and the result are passed as arguments to the callback
+ * {REPLACE_EVENTS}
  *
  * ## Methods
  * * [add](#add)
@@ -45307,6 +45404,7 @@ var commands_spreadArray = (undefined && undefined.__spreadArray) || function (t
     }
     return to.concat(ar || Array.prototype.slice.call(from));
 };
+
 
 
 
@@ -45365,6 +45463,7 @@ var CommandsModule = /** @class */ (function (_super) {
         _this.defaultCommands = {};
         _this.commands = {};
         _this.active = {};
+        _this.events = commands_types/* default */.Z;
         var config = _this.config;
         var ppfx = config.pStylePrefix;
         var defaultCommands = _this.defaultCommands;
@@ -45665,6 +45764,14 @@ var CommandsModule = /** @class */ (function (_super) {
             command.noStop = true;
         var cmd = CommandAbstract["default"].extend(command);
         return new cmd(this.config);
+    };
+    CommandsModule.prototype.__onRun = function (id, clb) {
+        var _a = this, em = _a.em, events = _a.events;
+        em.on("".concat(events.runCommand).concat(id), clb);
+    };
+    CommandsModule.prototype.__onStop = function (id, clb) {
+        var _a = this, em = _a.em, events = _a.events;
+        em.on("".concat(events.stopCommand).concat(id), clb);
     };
     CommandsModule.prototype.destroy = function () {
         this.defaultCommands = {};
@@ -46969,6 +47076,82 @@ Assets.prototype.types = [
     },
 ];
 
+;// CONCATENATED MODULE: ./src/asset_manager/types.ts
+/**{START_EVENTS}*/
+var AssetsEvents;
+(function (AssetsEvents) {
+    /**
+     * @event `asset:add` New asset added to the collection. The [Asset] is passed as an argument to the callback.
+     * @example
+     * editor.on('asset:add', (asset) => { ... });
+     */
+    AssetsEvents["add"] = "asset:add";
+    /**
+     * @event `asset:remove` Asset removed from the collection. The [Asset] is passed as an argument to the callback.
+     * @example
+     * editor.on('asset:remove', (asset) => { ... });
+     */
+    AssetsEvents["remove"] = "asset:remove";
+    AssetsEvents["removeBefore"] = "asset:remove:before";
+    /**
+     * @event `asset:update` Asset updated. The [Asset] and the object containing changes are passed as arguments to the callback.
+     * @example
+     * editor.on('asset:update', (asset, updatedProps) => { ... });
+     */
+    AssetsEvents["update"] = "asset:update";
+    /**
+     * @event `asset:open` Asset Manager opened.
+     * @example
+     * editor.on('asset:open', () => { ... });
+     */
+    AssetsEvents["open"] = "asset:open";
+    /**
+     * @event `asset:close` Asset Manager closed.
+     * @example
+     * editor.on('asset:close', () => { ... });
+     */
+    AssetsEvents["close"] = "asset:close";
+    /**
+     * @event `asset:upload:start` Asset upload start.
+     * @example
+     * editor.on('asset:upload:start', () => { ... });
+     */
+    AssetsEvents["uploadStart"] = "asset:upload:start";
+    /**
+     * @event `asset:upload:end` Asset upload end.
+     * @example
+     * editor.on('asset:upload:end', (result) => { ... });
+     */
+    AssetsEvents["uploadEnd"] = "asset:upload:end";
+    /**
+     * @event `asset:upload:error` Asset upload error.
+     * @example
+     * editor.on('asset:upload:error', (error) => { ... });
+     */
+    AssetsEvents["uploadError"] = "asset:upload:error";
+    /**
+     * @event `asset:upload:response` Asset upload response.
+     * @example
+     * editor.on('asset:upload:response', (res) => { ... });
+     */
+    AssetsEvents["uploadResponse"] = "asset:upload:response";
+    /**
+     * @event `asset:custom` Event to use in case of [custom Asset Manager UI](https://grapesjs.com/docs/modules/Assets.html#customization).
+     * @example
+     * editor.on('asset:custom', ({ container, assets, ... }) => { ... });
+     */
+    AssetsEvents["custom"] = "asset:custom";
+    /**
+     * @event `asset` Catch-all event for all the events mentioned above. An object containing all the available data about the triggered event is passed as an argument to the callback.
+     * @example
+     * editor.on('asset', ({ event, model, ... }) => { ... });
+     */
+    AssetsEvents["all"] = "asset";
+})(AssetsEvents || (AssetsEvents = {}));
+/**{END_EVENTS}*/
+// need this to avoid the TS documentation generator to break
+/* harmony default export */ const asset_manager_types = (AssetsEvents);
+
 ;// CONCATENATED MODULE: ./src/asset_manager/view/AssetsView.ts
 var AssetsView_extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -47222,7 +47405,7 @@ var FileUploaderView = /** @class */ (function (_super) {
      */
     FileUploaderView.prototype.onUploadStart = function () {
         var module = this.module;
-        module && module.__propEv('asset:upload:start');
+        module === null || module === void 0 ? void 0 : module.__propEv(module.events.uploadStart);
     };
     /**
      * Triggered after the upload is ended
@@ -47231,7 +47414,7 @@ var FileUploaderView = /** @class */ (function (_super) {
      */
     FileUploaderView.prototype.onUploadEnd = function (res) {
         var _a = this, $el = _a.$el, module = _a.module;
-        module && module.__propEv('asset:upload:end', res);
+        module === null || module === void 0 ? void 0 : module.__propEv(module.events.uploadEnd, res);
         var input = $el.find('input');
         input && input.val('');
     };
@@ -47244,7 +47427,7 @@ var FileUploaderView = /** @class */ (function (_super) {
         var module = this.module;
         console.error(err);
         this.onUploadEnd(err);
-        module && module.__propEv('asset:upload:error', err);
+        module === null || module === void 0 ? void 0 : module.__propEv(module.events.uploadError, err);
     };
     /**
      * Triggered on upload response
@@ -47260,7 +47443,7 @@ var FileUploaderView = /** @class */ (function (_super) {
         catch (e) {
             json = text;
         }
-        module && module.__propEv('asset:upload:response', json);
+        module === null || module === void 0 ? void 0 : module.__propEv(module.events.uploadResponse, json);
         if (config.autoAdd && target) {
             target.add(json.data, { at: 0 });
         }
@@ -47541,18 +47724,7 @@ var FileUploader_templateObject_1;
  * const assetManager = editor.AssetManager;
  * ```
  *
- * ## Available Events
- * * `asset:open` - Asset Manager opened.
- * * `asset:close` - Asset Manager closed.
- * * `asset:add` - Asset added. The [Asset] is passed as an argument to the callback.
- * * `asset:remove` - Asset removed. The [Asset] is passed as an argument to the callback.
- * * `asset:update` - Asset updated. The updated [Asset] and the object containing changes are passed as arguments to the callback.
- * * `asset:upload:start` - Before the upload is started.
- * * `asset:upload:end` - After the upload is ended.
- * * `asset:upload:error` - On any error in upload, passes the error as an argument.
- * * `asset:upload:response` - On upload response, passes the result as an argument.
- * * `asset` - Catch-all event for all the events mentioned above. An object containing all the available data about the triggered event is passed as an argument to the callback.
- * * `asset:custom` - Event for handling custom Asset Manager UI.
+ * {REPLACE_EVENTS}
  *
  * ## Methods
  * * [open](#open)
@@ -47611,37 +47783,8 @@ var asset_manager_spreadArray = (undefined && undefined.__spreadArray) || functi
 
 
 
-var asset_manager_evAll = 'asset';
-var asset_manager_evPfx = "".concat(asset_manager_evAll, ":");
-var asset_manager_evSelect = "".concat(asset_manager_evPfx, "select");
-var asset_manager_evUpdate = "".concat(asset_manager_evPfx, "update");
-var asset_manager_evAdd = "".concat(asset_manager_evPfx, "add");
-var asset_manager_evRemove = "".concat(asset_manager_evPfx, "remove");
-var asset_manager_evRemoveBefore = "".concat(asset_manager_evRemove, ":before");
-var asset_manager_evCustom = "".concat(asset_manager_evPfx, "custom");
-var evOpen = "".concat(asset_manager_evPfx, "open");
-var evClose = "".concat(asset_manager_evPfx, "close");
-var evUpload = "".concat(asset_manager_evPfx, "upload");
-var evUploadStart = "".concat(evUpload, ":start");
-var evUploadEnd = "".concat(evUpload, ":end");
-var evUploadError = "".concat(evUpload, ":error");
-var evUploadRes = "".concat(evUpload, ":response");
+
 var assetCmd = 'open-assets';
-var assetEvents = {
-    all: asset_manager_evAll,
-    select: asset_manager_evSelect,
-    update: asset_manager_evUpdate,
-    add: asset_manager_evAdd,
-    remove: asset_manager_evRemove,
-    removeBefore: asset_manager_evRemoveBefore,
-    custom: asset_manager_evCustom,
-    open: evOpen,
-    close: evClose,
-    uploadStart: evUploadStart,
-    uploadEnd: evUploadEnd,
-    uploadError: evUploadError,
-    uploadResponse: evUploadRes,
-};
 var AssetManager = /** @class */ (function (_super) {
     asset_manager_extends(AssetManager, _super);
     /**
@@ -47652,14 +47795,14 @@ var AssetManager = /** @class */ (function (_super) {
     function AssetManager(em) {
         var _this = 
         // @ts-ignore
-        _super.call(this, em, 'AssetManager', new model_Assets([], em), assetEvents, asset_manager_config_config) || this;
+        _super.call(this, em, 'AssetManager', new model_Assets([], em), asset_manager_types, asset_manager_config_config) || this;
         _this.storageKey = 'assets';
         _this.Asset = model_Asset;
         _this.Assets = model_Assets;
+        _this.events = asset_manager_types;
         var _a = _this, all = _a.all, config = _a.config;
         // @ts-ignore
         _this.assetsVis = new model_Assets([]);
-        // @ts-ignore
         var ppfx = config.pStylePrefix;
         if (ppfx) {
             config.stylePrefix = "".concat(ppfx).concat(config.stylePrefix);
@@ -47670,42 +47813,6 @@ var AssetManager = /** @class */ (function (_super) {
         _this.__onAllEvent = (0,index_all.debounce)(function () { return _this.__trgCustom(); }, 0);
         return _this;
     }
-    AssetManager.prototype.__propEv = function (ev) {
-        var _a, _b;
-        var data = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            data[_i - 1] = arguments[_i];
-        }
-        (_a = this.em).trigger.apply(_a, asset_manager_spreadArray([ev], data, false));
-        (_b = this.getAll()).trigger.apply(_b, asset_manager_spreadArray([ev], data, false));
-    };
-    AssetManager.prototype.__trgCustom = function () {
-        var bhv = this.__getBehaviour();
-        var custom = this.getConfig().custom;
-        if (!bhv.container && !custom.open) {
-            return;
-        }
-        this.em.trigger(this.events.custom, this.__customData());
-    };
-    AssetManager.prototype.__customData = function () {
-        var _this = this;
-        var bhv = this.__getBehaviour();
-        return {
-            am: this,
-            open: this.isOpen(),
-            assets: this.getAll().models,
-            types: bhv.types || [],
-            container: bhv.container,
-            close: function () { return _this.close(); },
-            remove: function (asset, opts) { return _this.remove(asset, opts); },
-            select: function (asset, complete) {
-                var res = _this.add(asset);
-                (0,index_all.isFunction)(bhv.select) && bhv.select(res, complete);
-            },
-            // extra
-            options: bhv.options || {},
-        };
-    };
     /**
      * Open the asset manager.
      * @param {Object} [options] Options for the asset manager.
@@ -47924,8 +48031,8 @@ var AssetManager = /** @class */ (function (_super) {
         var _this = this;
         this.getAll().reset(this.config.assets);
         var _a = this, em = _a.em, events = _a.events;
-        em.on("run:".concat(assetCmd), function () { return _this.__propEv(events.open); });
-        em.on("stop:".concat(assetCmd), function () { return _this.__propEv(events.close); });
+        em.Commands.__onRun(assetCmd, function () { return _this.__propEv(events.open); });
+        em.Commands.__onStop(assetCmd, function () { return _this.__propEv(events.close); });
     };
     AssetManager.prototype.postRender = function (editorView) {
         var _a;
@@ -47964,6 +48071,42 @@ var AssetManager = /** @class */ (function (_super) {
     AssetManager.prototype.onDblClick = function (func) {
         // @ts-ignore
         this.config.onDblClick = func;
+    };
+    AssetManager.prototype.__propEv = function (ev) {
+        var _a, _b;
+        var data = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            data[_i - 1] = arguments[_i];
+        }
+        (_a = this.em).trigger.apply(_a, asset_manager_spreadArray([ev], data, false));
+        (_b = this.getAll()).trigger.apply(_b, asset_manager_spreadArray([ev], data, false));
+    };
+    AssetManager.prototype.__trgCustom = function () {
+        var bhv = this.__getBehaviour();
+        var custom = this.getConfig().custom;
+        if (!bhv.container && !custom.open) {
+            return;
+        }
+        this.em.trigger(this.events.custom, this.__customData());
+    };
+    AssetManager.prototype.__customData = function () {
+        var _this = this;
+        var bhv = this.__getBehaviour();
+        return {
+            am: this,
+            open: this.isOpen(),
+            assets: this.getAll().models,
+            types: bhv.types || [],
+            container: bhv.container,
+            close: function () { return _this.close(); },
+            remove: function (asset, opts) { return _this.remove(asset, opts); },
+            select: function (asset, complete) {
+                var res = _this.add(asset);
+                (0,index_all.isFunction)(bhv.select) && bhv.select(res, complete);
+            },
+            // extra
+            options: bhv.options || {},
+        };
     };
     AssetManager.prototype.__behaviour = function (opts) {
         if (opts === void 0) { opts = {}; }
@@ -48277,7 +48420,7 @@ var PageManager = /** @class */ (function (_super) {
         var opt = { silent: true };
         var configPages = ((_a = config.pages) === null || _a === void 0 ? void 0 : _a.map(function (page) { return new model_Page(page, { em: em, config: config }); })) || [];
         pages.add(configPages, opt);
-        var mainPage = !pages.length ? this.add({ type: typeMain }, opt) : this.getMain();
+        var mainPage = !pages.length ? this.add({ type: typeMain }, opt) : this._initPage();
         mainPage && this.select(mainPage, opt);
     };
     PageManager.prototype._onPageChange = function (m, page, opts) {
@@ -48418,6 +48561,9 @@ var PageManager = /** @class */ (function (_super) {
         var result = this.loadProjectData(data, { all: this.pages, reset: true });
         this.pages.forEach(function (page) { return page.getFrames().initRefs(); });
         return result;
+    };
+    PageManager.prototype._initPage = function () {
+        return this.get(this.config.selected) || this.getMain();
     };
     PageManager.prototype._createId = function () {
         var pages = this.getAll();
@@ -48619,6 +48765,33 @@ var i18n_config_config = {
 };
 /* harmony default export */ const i18n_config = (i18n_config_config);
 
+;// CONCATENATED MODULE: ./src/i18n/types.ts
+/**{START_EVENTS}*/
+var I18nEvents;
+(function (I18nEvents) {
+    /**
+     * @event `i18n:add` New set of messages is added.
+     * @example
+     * editor.on('i18n:add', (messages) => { ... });
+     */
+    I18nEvents["add"] = "i18n:add";
+    /**
+     * @event `i18n:update` The set of messages is updated.
+     * @example
+     * editor.on('i18n:update', (messages) => { ... });
+     */
+    I18nEvents["update"] = "i18n:update";
+    /**
+     * @event `i18n:locale` Locale changed.
+     * @example
+     * editor.on('i18n:locale', ({ value, valuePrev }) => { ... });
+     */
+    I18nEvents["locale"] = "i18n:locale";
+})(I18nEvents || (I18nEvents = {}));
+/**{END_EVENTS}*/
+// need this to avoid the TS documentation generator to break
+/* harmony default export */ const i18n_types = (I18nEvents);
+
 ;// CONCATENATED MODULE: ./src/i18n/index.ts
 var i18n_extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -48656,13 +48829,11 @@ var i18n_extends = (undefined && undefined.__extends) || (function () {
  * const i18n = editor.I18n;
  * ```
  *
- * ### Events
- * * `i18n:add` - New set of messages is added
- * * `i18n:update` - The set of messages is updated
- * * `i18n:locale` - Locale changed
+ * {REPLACE_EVENTS}
  *
  * @module I18n
  */
+
 
 
 
@@ -48676,6 +48847,7 @@ var I18nModule = /** @class */ (function (_super) {
      */
     function I18nModule(em) {
         var _this = _super.call(this, em, 'I18n', i18n_config) || this;
+        _this.events = i18n_types;
         var add = _this.config.messagesAdd;
         add && _this.addMessages(add);
         if (_this.config.detectLocale) {
@@ -48697,9 +48869,8 @@ var I18nModule = /** @class */ (function (_super) {
      * i18n.setLocale('it');
      */
     I18nModule.prototype.setLocale = function (locale) {
-        var _a = this, em = _a.em, config = _a.config;
-        var evObj = { value: locale, valuePrev: config.locale };
-        em && em.trigger('i18n:locale', evObj);
+        var _a = this, em = _a.em, config = _a.config, events = _a.events;
+        em.trigger(events.locale, { value: locale, valuePrev: config.locale });
         config.locale = locale;
         return this;
     };
@@ -48741,9 +48912,9 @@ var I18nModule = /** @class */ (function (_super) {
      * // -> { en: { msg2: 'Msg 2 up', msg3: 'Msg 3', } }
      */
     I18nModule.prototype.setMessages = function (msg) {
-        var _a = this, em = _a.em, config = _a.config;
+        var _a = this, em = _a.em, config = _a.config, events = _a.events;
         config.messages = msg;
-        em && em.trigger('i18n:update', msg);
+        em.trigger(events.update, msg);
         return this;
     };
     /**
@@ -48759,9 +48930,9 @@ var I18nModule = /** @class */ (function (_super) {
      * // -> { en: { msg1: 'Msg 1', msg2: 'Msg 2 up', msg3: 'Msg 3', } }
      */
     I18nModule.prototype.addMessages = function (msg) {
-        var em = this.em;
-        var messages = this.config.messages;
-        em && em.trigger('i18n:add', msg);
+        var _a = this, em = _a.em, events = _a.events, config = _a.config;
+        var messages = config.messages;
+        em.trigger(events.add, msg);
         this.setMessages((0,mixins.deepMerge)(messages, msg));
         return this;
     };
@@ -61989,7 +62160,7 @@ var grapesjs = {
     plugins: plugins,
     usePlugin: usePlugin,
     // @ts-ignore Will be replaced on build
-    version: '0.21.9',
+    version: '0.21.10',
     /**
      * Initialize the editor with passed options
      * @param {Object} config Configuration object
