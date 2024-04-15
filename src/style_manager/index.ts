@@ -523,7 +523,7 @@ export default class StyleManager extends ItemManagerModule<
    *  options: [{ id: 'value1', label: 'Some label' }, ...],
    * })
    */
-  addBuiltIn(prop: string, definition: Omit<PropertyProps, 'property'> & { proeperty?: 'string' }) {
+  addBuiltIn(prop: string, definition: PropertyProps) {
     return this.builtIn.add(prop, definition);
   }
 
