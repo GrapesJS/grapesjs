@@ -327,7 +327,9 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
       if (frameContent) {
         const doc = this.getDoc();
         doc.open();
-        doc.write(frameContent);
+        if (doc.documentElement) {
+          doc.documentElement.innerHTML = frameContent;
+        }
         doc.close();
       }
       evOpts.window = this.getWindow();
