@@ -1,4 +1,5 @@
 import Component from './Component';
+import ComponentHead, { type as typeHead } from './ComponentHead';
 
 export default class ComponentWrapper extends Component {
   get defaults() {
@@ -11,6 +12,7 @@ export default class ComponentWrapper extends Component {
       draggable: false,
       components: [],
       traits: [],
+      head: null,
       stylable: [
         'background',
         'background-color',
@@ -21,6 +23,21 @@ export default class ComponentWrapper extends Component {
         'background-size',
       ],
     };
+  }
+
+  constructor(...args: ConstructorParameters<typeof Component>) {
+    super(...args);
+    const opts = args[1];
+    const CmpHead = opts?.em?.Components.getType(typeHead)?.model;
+    if (CmpHead) {
+      this.set({
+        head: new CmpHead({}, opts),
+      });
+    }
+  }
+
+  get head(): ComponentHead {
+    return this.get('head');
   }
 
   __postAdd() {

@@ -1,7 +1,7 @@
 import Component from './Component';
 import { toLowerCase } from '../../utils/mixins';
 
-const type = 'head';
+export const type = 'head';
 
 export default class ComponentHead extends Component {
   get defaults() {
