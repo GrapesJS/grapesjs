@@ -12,7 +12,7 @@ describe('TraitModels', () => {
 
   beforeEach(() => {
     em = new Editor().getModel();
-    target = new Component({}, { em });
+    target = new Component({}, { em, config: em.Components.config });
     trait = new Trait(
       {
         name: modelName,

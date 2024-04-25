@@ -1,6 +1,7 @@
 import { ObjectAny } from '../../common';
 import { isDef, isEmptyObj, toLowerCase } from '../../utils/mixins';
 import ComponentImage from './ComponentImage';
+import { ComponentOptions, ComponentProperties } from './types';
 
 const type = 'video';
 const yt = 'yt';
@@ -38,14 +39,13 @@ export default class ComponentVideo extends ComponentImage {
     };
   }
 
-  initialize(props: any, opts: any) {
-    this.em = opts.em;
+  constructor(props: ComponentProperties = {}, opt: ComponentOptions) {
+    super(props, opt);
     if (this.get('src')) this.parseFromSrc();
     this.updatePropsFromAttr();
     this.updateTraits();
     this.on('change:provider', this.updateTraits);
     this.on('change:videoId change:provider', this.updateSrc);
-    super.initialize(props, opts);
   }
 
   updatePropsFromAttr() {

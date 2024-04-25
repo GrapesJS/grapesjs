@@ -5,7 +5,13 @@ import { DomComponentsConfig } from '../config/config';
 import EditorModel from '../../editor/model/Editor';
 import ComponentManager from '..';
 import CssRule from '../../css_composer/model/CssRule';
-import { ComponentAdd, ComponentProperties } from './types';
+import {
+  ComponentAdd,
+  ComponentAddType,
+  ComponentDefinition,
+  ComponentDefinitionDefined,
+  ComponentProperties,
+} from './types';
 import ComponentText from './ComponentText';
 
 export const getComponentIds = (cmp?: Component | Component[] | Components, res: string[] = []) => {
@@ -69,7 +75,7 @@ const getComponentsFromDefs = (
 };
 
 export interface ComponentsOptions {
-  em?: EditorModel;
+  em: EditorModel;
   config?: DomComponentsConfig;
   domc?: ComponentManager;
 }
@@ -80,19 +86,19 @@ export default class Components extends Collection</**
 Component> {
   opt!: ComponentsOptions;
   config?: DomComponentsConfig;
-  em!: EditorModel;
+  em: EditorModel;
   domc?: ComponentManager;
   parent?: Component;
-  __firstAdd?: any;
 
-  initialize(models: any, opt: ComponentsOptions = {}) {
+  constructor(models: any, opt: ComponentsOptions) {
+    super(models, opt);
     this.opt = opt;
     this.listenTo(this, 'add', this.onAdd);
     this.listenTo(this, 'remove', this.removeChildren);
     this.listenTo(this, 'reset', this.resetChildren);
     const { em, config } = opt;
     this.config = config;
-    this.em = em!;
+    this.em = em;
     this.domc = opt.domc || em?.Components;
   }
 
@@ -246,14 +252,16 @@ Component> {
     return parsed.html;
   }
 
-  /** @ts-ignore */
-  add(models: ComponentAdd, opt: AddOptions & { previousModels?: Component[]; keepIds?: string[] } = {}) {
+  add(model: ComponentAddType, opt?: AddOptions & { previousModels?: Component[]; keepIds?: string[] }): Component;
+  add(models: ComponentAddType[], opt?: AddOptions & { previousModels?: Component[]; keepIds?: string[] }): Component[];
+  add(models: unknown, opt: AddOptions & { previousModels?: Component[]; keepIds?: string[] } = {}): unknown {
+    if (models == undefined) return;
+
     opt.keepIds = [...(opt.keepIds || []), ...getComponentIds(opt.previousModels)];
 
     if (isString(models)) {
       models = this.parseString(models, opt)!;
     } else if (isArray(models)) {
-      models = [...models];
       models.forEach((item: string, index: number) => {
         if (isString(item)) {
           const nodes = this.parseString(item, opt);
@@ -262,21 +270,19 @@ Component> {
       });
     }
 
-    const isMult = isArray(models);
-    // @ts-ignore
-    models = (isMult ? models : [models]).filter(Boolean).map((model: any) => this.processDef(model));
-    // @ts-ignore
-    models = isMult ? flatten(models as any, 1) : models[0];
+    const processedModels = (isArray(models) ? models : [models])
+      .filter(Boolean)
+      .map((model: any) => this.processDef(model));
 
-    const result = Collection.prototype.add.apply(this, [models as any, opt]);
-    this.__firstAdd = result;
-    return result;
+    models = isArray(models) ? flatten(processedModels as any, 1) : processedModels[0];
+
+    return super.add(models as any, opt);
   }
 
   /**
    * Process component definition.
    */
-  processDef(mdl: any) {
+  processDef(mdl: Component | ComponentDefinition | ComponentDefinitionDefined) {
     // Avoid processing Models
     if (mdl.cid && mdl.ccid) return mdl;
     const { em, config = {} } = this;
@@ -287,12 +293,14 @@ Component> {
       model = { ...model }; // Avoid 'Cannot delete property ...'
       const modelPr = processor(model);
       if (modelPr) {
+        //@ts-ignore
         each(model, (val, key) => delete model[key]);
         extend(model, modelPr);
       }
     }
 
     // React JSX preset
+    //@ts-ignore
     if (model.$$typeof && typeof model.props == 'object') {
       model = { ...model };
       model.props = { ...model.props };
@@ -301,6 +309,7 @@ Component> {
       const { parserHtml } = parser;
 
       each(model, (value, key) => {
+        //@ts-ignore
         if (!includes(['props', 'type'], key)) delete model[key];
       });
       const { props } = model;
@@ -332,8 +341,7 @@ Component> {
     const avoidInline = em && em.getConfig().avoidInlineStyle;
     domc && domc.Component.ensureInList(model);
 
-    // @ts-ignore
-    if (!isEmpty(style) && !avoidInline && em && em.get && em.getConfig().forceClass && !opts.temporary) {
+    if (!isEmpty(style) && !avoidInline && em && em.getConfig().forceClass && !opts.temporary) {
       const name = model.cid;
       em.Css.setClassRule(name, style);
       model.setStyle({});
@@ -341,34 +349,5 @@ Component> {
     }
 
     model.__postAdd({ recursive: true });
-    // this.__onAddEnd();
   }
-
-  // __onAddEnd = debounce(function () {
-  //   // TODO to check symbols on load, probably this might be removed as symbols
-  //   // are always recovered from the model
-  //   // const { domc } = this;
-  //   // const allComp = (domc && domc.allById()) || {};
-  //   // const firstAdd = this.__firstAdd;
-  //   // const toCheck = isArray(firstAdd) ? firstAdd : [firstAdd];
-  //   // const silent = { silent: true };
-  //   // const onAll = comps => {
-  //   //   comps.forEach(comp => {
-  //   //     const symbol = comp.get(keySymbols);
-  //   //     const symbolOf = comp.get(keySymbol);
-  //   //     if (symbol && isArray(symbol) && isString(symbol[0])) {
-  //   //       comp.set(
-  //   //         keySymbols,
-  //   //         symbol.map(smb => allComp[smb]).filter(i => i),
-  //   //         silent
-  //   //       );
-  //   //     }
-  //   //     if (isString(symbolOf)) {
-  //   //       comp.set(keySymbol, allComp[symbolOf], silent);
-  //   //     }
-  //   //     onAll(comp.components());
-  //   //   });
-  //   // };
-  //   // onAll(toCheck);
-  // });
 }

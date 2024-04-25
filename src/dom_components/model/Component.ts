@@ -226,7 +226,8 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * @ts-ignore */
   collection!: Components;
 
-  initialize(props = {}, opt: ComponentOptions = {}) {
+  constructor(props: ComponentProperties = {}, opt: ComponentOptions) {
+    super(props, opt);
     bindAll(this, '__upSymbProps', '__upSymbCls', '__upSymbComps');
     const em = opt.em;
 
@@ -519,12 +520,12 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * const result = component.replaceWith('<div>Some new content</div>');
    * // result -> [Component]
    */
-  replaceWith<C extends Component = Component>(el: ComponentAdd, opts: AddOptions = {}): C[] {
+  replaceWith<C extends Component = Component>(el: ComponentAdd, opts: AddOptions = {}): C {
     const coll = this.collection;
     const at = coll.indexOf(this);
     coll.remove(this);
     const result = coll.add(el, { ...opts, at });
-    return isArray(result) ? result : [result];
+    return result as C;
   }
 
   /**
@@ -2105,11 +2106,9 @@ export default class Component extends StyleableModel<ComponentProperties> {
   }
 
   static getList(model: Component) {
-    const { opt = {} } = model;
-    // @ts-ignore
-    const { domc, em } = opt;
-    const dm = domc || em?.Components;
-    return dm ? dm.componentsById : {};
+    const { em } = model;
+    const dm = em?.Components;
+    return dm?.componentsById ?? {};
   }
 
   static checkId(

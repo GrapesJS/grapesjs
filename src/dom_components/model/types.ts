@@ -15,10 +15,10 @@ export type DragMode = 'translate' | 'absolute' | '';
 
 export type DraggableDroppableFn = (source: Component, target: Component, index?: number) => boolean | void;
 
-export interface ComponentStackItem {
+export interface ComponentStackItem<C extends Component = Component, CV extends ComponentView<C> = ComponentView<C>> {
   id: string;
-  model: typeof Component;
-  view: typeof ComponentView<any>;
+  model: new (props: any, opt: ComponentOptions) => C;
+  view: new (opt: any) => CV;
 }
 
 /**
@@ -260,7 +260,7 @@ export interface ComponentModelProperties extends ComponentProperties {
   [key: string]: any;
 }
 
-type ComponentAddType = Component | ComponentDefinition | ComponentDefinitionDefined | string;
+export type ComponentAddType = Component | ComponentDefinition | ComponentDefinitionDefined | string;
 
 export type ComponentAdd = ComponentAddType | ComponentAddType[];
 
@@ -288,8 +288,8 @@ export type ToHTMLOptions = {
 };
 
 export interface ComponentOptions {
-  em?: EditorModel;
-  config?: DomComponentsConfig;
+  em: EditorModel;
+  config: DomComponentsConfig;
   frame?: Frame;
   temporary?: boolean;
   avoidChildren?: boolean;
