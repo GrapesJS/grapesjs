@@ -15,7 +15,7 @@ describe('ParserHtml', () => {
       textTypes: ['text', 'textnode', 'comment'],
       returnArray: true,
     });
-    obj.compTypes = dom.componentTypes as any;
+    obj.compTypes = dom.componentTypes;
   });
 
   test('Simple div node', () => {

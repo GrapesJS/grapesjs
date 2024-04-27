@@ -1,6 +1,6 @@
 import { each, isArray, isFunction, isUndefined } from 'underscore';
 import { ObjectAny, ObjectStrings } from '../../common';
-import { ComponentDefinitionDefined } from '../../dom_components/model/types';
+import { ComponentDefinitionDefined, ComponentStackItem } from '../../dom_components/model/types';
 import EditorModel from '../../editor/model/Editor';
 import { HTMLParseResult, HTMLParserOptions, ParseNodeOptions, ParserConfig } from '../config/config';
 import BrowserParserHtml from './BrowserParserHtml';
@@ -11,7 +11,7 @@ const event = 'parse:html';
 
 const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boolean } = {}) => {
   return {
-    compTypes: '',
+    compTypes: [] as ComponentStackItem[],
 
     modelAttrStart,
 
@@ -133,7 +133,6 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
         const nodeName = attrs[i].nodeName;
         let nodeValue: string | boolean = attrs[i].nodeValue!;
 
-        // Isolate attributes
         if (nodeName == 'style') {
           model.style = this.parseStyle(nodeValue);
         } else if (nodeName == 'class') {
@@ -160,15 +159,105 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
       return model;
     },
 
-    parseNode(node: HTMLElement, opts: ParseNodeOptions = {}) {
-      const result = this.parseNodeAttr(node);
-      const nodes = node.childNodes;
+    detectNode(node: HTMLElement, opts: ParseNodeOptions = {}) {
+      const { compTypes } = this;
+      let result: ComponentDefinitionDefined = {};
 
-      if (!!nodes.length) {
-        result.components = this.parseNodes(node, opts);
+      if (compTypes) {
+        let obj;
+        const type = node.getAttribute?.(`${this.modelAttrStart}type`);
+
+        // If the type is already defined, use it
+        if (type) {
+          result = { type };
+        } else {
+          // Find the component type
+          for (let i = 0; i < compTypes.length; i++) {
+            const compType = compTypes[i];
+            obj = compType.model.isComponent(node, opts);
+
+            if (obj) {
+              if (typeof obj !== 'object') {
+                obj = { type: compType.id };
+              }
+              break;
+            }
+          }
+
+          result = obj as ComponentDefinitionDefined;
+        }
       }
 
       return result;
+    },
+
+    parseNode(node: HTMLElement, opts: ParseNodeOptions = {}) {
+      const nodes = node.childNodes;
+      const nodesLen = nodes.length;
+      let model = this.detectNode(node, opts);
+
+      if (!model.tagName) {
+        const tag = node.tagName || '';
+        const ns = node.namespaceURI || '';
+        model.tagName = tag && ns === 'http://www.w3.org/1999/xhtml' ? tag.toLowerCase() : tag;
+      }
+
+      model = this.parseNodeAttr(node, model);
+
+      // Check for custom void elements (valid in XML)
+      if (!nodesLen && `${node.outerHTML}`.slice(-2) === '/>') {
+        model.void = true;
+      }
+
+      // Check for nested elements but avoid it if already provided
+      if (nodesLen && !model.components && !opts.skipChildren) {
+        // Avoid infinite nested text nodes
+        const firstChild = nodes[0];
+
+        // If there is only one child and it's a TEXTNODE
+        // just make it content of the current node
+        if (nodesLen === 1 && firstChild.nodeType === 3) {
+          !model.type && (model.type = 'text');
+          model.components = {
+            type: 'textnode',
+            content: firstChild.nodeValue,
+          };
+        } else {
+          model.components = this.parseNodes(node, {
+            ...opts,
+            inSvg: opts.inSvg || model.type === 'svg',
+          });
+        }
+      }
+
+      // If all children are texts and there is any textnode inside, the parent should
+      // be text too otherwise it won't be possible to edit texnodes.
+      const comps = model.components;
+      if (!model.type && comps?.length) {
+        const { textTypes = [], textTags = [] } = config;
+        let allTxt = true;
+        let foundTextNode = false;
+
+        for (let i = 0; i < comps.length; i++) {
+          const comp = comps[i];
+          const cType = comp.type;
+
+          if (!textTypes.includes(cType) && !textTags.includes(comp.tagName)) {
+            allTxt = false;
+            break;
+          }
+
+          if (cType === 'textnode') {
+            foundTextNode = true;
+          }
+        }
+
+        if (allTxt && foundTextNode) {
+          model.type = 'text';
+        }
+      }
+
+      return model;
     },
 
     /**
@@ -179,105 +268,16 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
     parseNodes(el: HTMLElement, opts: ParseNodeOptions = {}) {
       const result: ComponentDefinitionDefined[] = [];
       const nodes = el.childNodes;
+      const nodesLen = nodes.length;
 
-      for (var i = 0, len = nodes.length; i < len; i++) {
+      for (let i = 0; i < nodesLen; i++) {
         const node = nodes[i] as HTMLElement;
-        const attrs = node.attributes || [];
-        const attrsLen = attrs.length;
         const nodePrev = result[result.length - 1];
-        const nodeChild = node.childNodes.length;
-        const ct = this.compTypes;
-        let model: ComponentDefinitionDefined = {}; // TODO use component properties
+        const model = this.parseNode(node, opts);
 
-        // Start with understanding what kind of component it is
-        if (ct) {
-          let obj: any = '';
-          let type = node.getAttribute && node.getAttribute(`${this.modelAttrStart}type`);
-
-          // If the type is already defined, use it
-          if (type) {
-            model = { type };
-          } else {
-            // Iterate over all available Component Types and
-            // the first with a valid result will be that component
-            for (let it = 0; it < ct.length; it++) {
-              const compType = ct[it];
-              // @ts-ignore
-              obj = compType.model.isComponent(node, opts);
-
-              if (obj) {
-                if (typeof obj !== 'object') {
-                  // @ts-ignore
-                  obj = { type: compType.id };
-                }
-                break;
-              }
-            }
-
-            model = obj;
-          }
-        }
-
-        // Set tag name if not yet done
-        if (!model.tagName) {
-          const tag = node.tagName || '';
-          const ns = node.namespaceURI || '';
-          model.tagName = tag && ns === 'http://www.w3.org/1999/xhtml' ? tag.toLowerCase() : tag;
-        }
-
-        if (attrsLen) {
-          model.attributes = {};
-        }
-
-        // Parse attributes
-        for (let j = 0; j < attrsLen; j++) {
-          const nodeName = attrs[j].nodeName;
-          let nodeValue: string | boolean = attrs[j].nodeValue!;
-
-          // Isolate attributes
-          if (nodeName == 'style') {
-            model.style = this.parseStyle(nodeValue);
-          } else if (nodeName == 'class') {
-            model.classes = this.parseClass(nodeValue);
-          } else if (nodeName == 'contenteditable') {
-            continue;
-          } else if (nodeName.indexOf(this.modelAttrStart) === 0) {
-            const propsResult = this.getPropAttribute(nodeName, nodeValue);
-            model[propsResult.name] = propsResult.value;
-          } else {
-            // @ts-ignore Check for attributes from props (eg. required, disabled)
-            if (nodeValue === '' && node[nodeName] === true) {
-              nodeValue = true;
-            }
-
-            model.attributes[nodeName] = nodeValue;
-          }
-        }
-
-        // Check for nested elements but avoid it if already provided
-        if (nodeChild && !model.components) {
-          // Avoid infinite nested text nodes
-          const firstChild = node.childNodes[0];
-
-          // If there is only one child and it's a TEXTNODE
-          // just make it content of the current node
-          if (nodeChild === 1 && firstChild.nodeType === 3) {
-            !model.type && (model.type = 'text');
-            model.components = {
-              type: 'textnode',
-              content: firstChild.nodeValue,
-            };
-          } else {
-            model.components = this.parseNodes(node, {
-              ...opts,
-              inSvg: opts.inSvg || model.type === 'svg',
-            });
-          }
-        }
-
-        // Check if it's a text node and if could be moved to the prevous model
-        if (model.type == 'textnode') {
-          if (nodePrev && nodePrev.type == 'textnode') {
+        // Check if it's a text node and if it could be moved to the prevous one
+        if (model.type === 'textnode') {
+          if (nodePrev?.type === 'textnode') {
             nodePrev.content += model.content;
             continue;
           }
@@ -291,39 +291,7 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
           }
         }
 
-        // Check for custom void elements (valid in XML)
-        if (!nodeChild && `${node.outerHTML}`.slice(-2) === '/>') {
-          model.void = true;
-        }
-
-        // If all children are texts and there is some textnode the parent should
-        // be text too otherwise I'm unable to edit texnodes
-        const comps = model.components;
-        if (!model.type && comps) {
-          const { textTypes = [], textTags = [] } = config;
-          let allTxt = 1;
-          let foundTextNode = 0;
-
-          for (let ci = 0; ci < comps.length; ci++) {
-            const comp = comps[ci];
-            const cType = comp.type;
-
-            if (!textTypes.includes(cType) && !textTags.includes(comp.tagName)) {
-              allTxt = 0;
-              break;
-            }
-
-            if (cType === 'textnode') {
-              foundTextNode = 1;
-            }
-          }
-
-          if (allTxt && foundTextNode) {
-            model.type = 'text';
-          }
-        }
-
-        // If tagName is still empty and is not a textnode, do not push it
+        // If the tagName is empty and it's not a textnode, skip it
         if (!model.tagName && isUndefined(model.content)) {
           continue;
         }

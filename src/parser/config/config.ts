@@ -23,6 +23,7 @@ export interface HTMLParseResult {
 
 export interface ParseNodeOptions extends HTMLParserOptions {
   inSvg?: boolean;
+  skipChildren?: boolean;
 }
 
 export interface HTMLParserOptions {
