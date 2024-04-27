@@ -205,6 +205,15 @@ export const hasCtrlKey = (ev: WheelEvent) => ev.ctrlKey;
 
 export const hasModifierKey = (ev: WheelEvent) => hasCtrlKey(ev) || ev.metaKey;
 
+// Ref: https://stackoverflow.com/a/10162353
+export const doctypeToString = (dt?: DocumentType | null) => {
+  if (!dt) return '';
+  const { name, publicId, systemId } = dt;
+  const pubId = publicId ? ` PUBLIC "${publicId}"` : '';
+  const sysId = !publicId && systemId ? ` SYSTEM "${systemId}"` : '';
+  return `<!DOCTYPE ${name}${pubId}${sysId}>`;
+};
+
 export const on = <E extends Event = Event>(
   el: EventTarget | EventTarget[],
   ev: string,

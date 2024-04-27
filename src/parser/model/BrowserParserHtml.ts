@@ -13,6 +13,8 @@ export default (str: string, config: HTMLParserOptions = {}) => {
   let res: HTMLElement;
 
   if (toHTML) {
+    if (config.asDocument) return doc;
+
     // Replicate the old parser in order to avoid breaking changes
     const { head, body } = doc;
     // Move all scripts at the bottom of the page

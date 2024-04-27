@@ -1,3 +1,5 @@
+import { CssRuleJSON } from '../../css_composer/model/CssRule';
+import { ComponentDefinitionDefined } from '../../dom_components/model/types';
 import Editor from '../../editor';
 
 export interface ParsedCssRule {
@@ -11,6 +13,18 @@ export type CustomParserCss = (input: string, editor: Editor) => ParsedCssRule[]
 
 export type CustomParserHtml = (input: string, options: HTMLParserOptions) => HTMLElement;
 
+export interface HTMLParseResult {
+  html: ComponentDefinitionDefined | ComponentDefinitionDefined[];
+  css?: CssRuleJSON[];
+  doctype?: string;
+  root?: ComponentDefinitionDefined;
+  head?: ComponentDefinitionDefined;
+}
+
+export interface ParseNodeOptions extends HTMLParserOptions {
+  inSvg?: boolean;
+}
+
 export interface HTMLParserOptions {
   /**
    * DOMParser mime type.
@@ -19,6 +33,12 @@ export interface HTMLParserOptions {
    * @default 'text/html'
    */
   htmlType?: DOMParserSupportedType;
+
+  /**
+   * Parse the string as HTML document. The result will include additional data (eg. doctype, head, etc.)
+   * @default false
+   */
+  asDocument?: boolean;
 
   /**
    * Allow <script> tags.

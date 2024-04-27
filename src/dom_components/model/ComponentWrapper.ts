@@ -13,7 +13,6 @@ export default class ComponentWrapper extends Component {
       draggable: false,
       components: [],
       traits: [],
-      // In case we might need the doctype as component https://stackoverflow.com/a/10162353
       doctype: '',
       head: null,
       stylable: [

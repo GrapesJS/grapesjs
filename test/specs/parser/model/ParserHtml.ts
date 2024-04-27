@@ -654,5 +654,69 @@ describe('ParserHtml', () => {
       const preParser = (str: string) => str.replace('javascript:', 'test:');
       expect(obj.parse(str, null, { preParser }).html).toEqual([result]);
     });
+
+    test.only('parsing as document', () => {
+      const str = `
+        <!DOCTYPE html>
+        <html class="cls-html" lang="en" data-gjs-htmlp="true">
+          <head class="cls-head" data-gjs-headp="true">
+            <meta charset="utf-8">
+            <title>Test</title>
+            <link rel="stylesheet" href="/noop.css">
+            <!-- comment -->
+            <script src="/noop.js"></script>
+            <style>.test { color: red }</style>
+          </head>
+          <body class="cls-body" data-gjs-bodyp="true">
+            <h1>H1</h1>
+          </body>
+        </html>
+      `;
+      // asDocument: true
+      console.log(obj.parse(str, null, { asDocument: true }));
+      expect(obj.parse(str, null, { asDocument: true })).toEqual({
+        doctype: '<!DOCTYPE html>',
+        root: { classes: ['cls-html'], attributes: { lang: 'en' }, htmlp: true },
+        head: {
+          type: 'head',
+          headp: true,
+          classes: ['cls-head'],
+          components: [
+            { tagName: 'meta', attributes: { charset: 'utf-8' } },
+            {
+              tagName: 'title',
+              type: 'text',
+              components: { type: 'textnode', content: 'Test' },
+            },
+            {
+              tagName: 'link',
+              attributes: { rel: 'stylesheet', href: '/noop.css' },
+            },
+            {
+              type: 'comment',
+              tagName: '',
+              content: ' comment ',
+            },
+            {
+              tagName: 'style',
+              type: 'text',
+              components: { type: 'textnode', content: '.test { color: red }' },
+            },
+          ],
+        },
+        html: {
+          tagName: 'body',
+          bodyp: true,
+          classes: ['cls-body'],
+          components: [
+            {
+              tagName: 'h1',
+              type: 'text',
+              components: { type: 'textnode', content: 'H1' },
+            },
+          ],
+        },
+      });
+    });
   });
 });
