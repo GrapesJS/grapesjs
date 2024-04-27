@@ -214,6 +214,12 @@ export const doctypeToString = (dt?: DocumentType | null) => {
   return `<!DOCTYPE ${name}${pubId}${sysId}>`;
 };
 
+export const attrToString = (attrs: ObjectAny = {}) => {
+  const res: string[] = [];
+  each(attrs, (value, key) => res.push(`${key}="${value}"`));
+  return res.join(' ');
+};
+
 export const on = <E extends Event = Event>(
   el: EventTarget | EventTarget[],
   ev: string,

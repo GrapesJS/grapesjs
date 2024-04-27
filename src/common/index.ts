@@ -25,6 +25,13 @@ export type ObjectStrings = Record<string, string>;
 
 export type Nullable = undefined | null | false;
 
+export interface OptionAsDocument {
+  /**
+   * Treat the HTML string as document (option valid on the root component, eg. will include `<head>`, `<html>`, etc.).
+   */
+  asDocument?: boolean;
+}
+
 // https://github.com/microsoft/TypeScript/issues/29729#issuecomment-1483854699
 export type LiteralUnion<T, U> = T | (U & NOOP);
 

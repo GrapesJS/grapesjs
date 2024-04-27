@@ -1,3 +1,4 @@
+import { attrToString } from '../../utils/dom';
 import Component from './Component';
 import ComponentHead, { type as typeHead } from './ComponentHead';
 import { ToHTMLOptions } from './types';
@@ -15,6 +16,7 @@ export default class ComponentWrapper extends Component {
       traits: [],
       doctype: '',
       head: null,
+      docEl: null,
       stylable: [
         'background',
         'background-color',
@@ -30,10 +32,13 @@ export default class ComponentWrapper extends Component {
   constructor(...args: ConstructorParameters<typeof Component>) {
     super(...args);
     const opts = args[1];
-    const CmpHead = opts?.em?.Components.getType(typeHead)?.model;
+    const cmp = opts?.em?.Components;
+    const CmpHead = cmp?.getType(typeHead)?.model;
+    const CmpDef = cmp?.getType('default').model;
     if (CmpHead) {
       this.set({
         head: new CmpHead({}, opts),
+        docEl: new CmpDef({ tagName: 'html' }, opts),
       });
     }
   }
@@ -42,12 +47,19 @@ export default class ComponentWrapper extends Component {
     return this.get('head');
   }
 
+  get docEl(): Component {
+    return this.get('docEl');
+  }
+
   toHTML(opts: ToHTMLOptions = {}) {
     const { asDocument } = opts;
+    const { head, docEl } = this;
     const { doctype = '' } = this.attributes;
     const body = super.toHTML(opts);
-    const head = (asDocument && this.head?.toHTML(opts)) || '';
-    return asDocument ? `${doctype}${head}${body}` : body;
+    const headStr = (asDocument && head?.toHTML(opts)) || '';
+    const docElAttr = (asDocument && attrToString(docEl?.getAttrToHTML())) || '';
+    const docElAttrStr = docElAttr ? ` ${docElAttr}` : '';
+    return asDocument ? `${doctype}<html${docElAttrStr}>${headStr}${body}</html>` : body;
   }
 
   __postAdd() {

@@ -1,5 +1,5 @@
 import Frame from '../../canvas/model/Frame';
-import { Nullable } from '../../common';
+import { Nullable, OptionAsDocument } from '../../common';
 import EditorModel from '../../editor/model/Editor';
 import Selectors from '../../selector_manager/model/Selectors';
 import { TraitProperties } from '../../trait_manager/types';
@@ -264,7 +264,7 @@ type ComponentAddType = Component | ComponentDefinition | ComponentDefinitionDef
 
 export type ComponentAdd = ComponentAddType | ComponentAddType[];
 
-export interface ToHTMLOptions {
+export interface ToHTMLOptions extends OptionAsDocument {
   /**
    * Custom tagName.
    */
@@ -279,11 +279,6 @@ export interface ToHTMLOptions {
    * In case the attribute value contains a `"` char, instead of escaping it (`attr="value &quot;"`), the attribute will be quoted using single quotes (`attr='value "'`).
    */
   altQuoteAttr?: boolean;
-
-  /**
-   * Return the HTML string as document (option valid on the root component, eg. will include the <head>).
-   */
-  asDocument?: boolean;
 
   /**
    * You can pass an object of custom attributes to replace with the current ones
