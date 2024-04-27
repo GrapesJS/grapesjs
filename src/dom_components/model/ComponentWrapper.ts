@@ -1,5 +1,6 @@
 import Component from './Component';
 import ComponentHead, { type as typeHead } from './ComponentHead';
+import { ToHTMLOptions } from './types';
 
 export default class ComponentWrapper extends Component {
   get defaults() {
@@ -12,6 +13,8 @@ export default class ComponentWrapper extends Component {
       draggable: false,
       components: [],
       traits: [],
+      // In case we might need the doctype as component https://stackoverflow.com/a/10162353
+      doctype: '',
       head: null,
       stylable: [
         'background',
@@ -38,6 +41,14 @@ export default class ComponentWrapper extends Component {
 
   get head(): ComponentHead {
     return this.get('head');
+  }
+
+  toHTML(opts: ToHTMLOptions = {}) {
+    const { asDocument } = opts;
+    const { doctype = '' } = this.attributes;
+    const body = super.toHTML(opts);
+    const head = (asDocument && this.head?.toHTML(opts)) || '';
+    return asDocument ? `${doctype}${head}${body}` : body;
   }
 
   __postAdd() {

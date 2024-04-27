@@ -264,7 +264,7 @@ type ComponentAddType = Component | ComponentDefinition | ComponentDefinitionDef
 
 export type ComponentAdd = ComponentAddType | ComponentAddType[];
 
-export type ToHTMLOptions = {
+export interface ToHTMLOptions {
   /**
    * Custom tagName.
    */
@@ -281,11 +281,16 @@ export type ToHTMLOptions = {
   altQuoteAttr?: boolean;
 
   /**
+   * Return the HTML string as document (option valid on the root component, eg. will include the <head>).
+   */
+  asDocument?: boolean;
+
+  /**
    * You can pass an object of custom attributes to replace with the current ones
    * or you can even pass a function to generate attributes dynamically.
    */
   attributes?: Record<string, any> | ((component: Component, attr: Record<string, any>) => Record<string, any>);
-};
+}
 
 export interface ComponentOptions {
   em?: EditorModel;
