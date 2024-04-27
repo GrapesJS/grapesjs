@@ -535,7 +535,6 @@ describe('ParserHtml', () => {
     const result = [
       {
         tagName: 'div',
-        attributes: {},
         type: 'text',
         test: {
           prop1: 'value1',
@@ -553,7 +552,6 @@ describe('ParserHtml', () => {
     const result = [
       {
         tagName: 'div',
-        attributes: {},
         type: 'text',
         test: ['value1', 'value2'],
         components: { type: 'textnode', content: 'test2 ' },
@@ -655,7 +653,7 @@ describe('ParserHtml', () => {
       expect(obj.parse(str, null, { preParser }).html).toEqual([result]);
     });
 
-    test.only('parsing as document', () => {
+    test('parsing as document', () => {
       const str = `
         <!DOCTYPE html>
         <html class="cls-html" lang="en" data-gjs-htmlp="true">
@@ -672,13 +670,13 @@ describe('ParserHtml', () => {
           </body>
         </html>
       `;
-      // asDocument: true
-      console.log(obj.parse(str, null, { asDocument: true }));
+
       expect(obj.parse(str, null, { asDocument: true })).toEqual({
         doctype: '<!DOCTYPE html>',
         root: { classes: ['cls-html'], attributes: { lang: 'en' }, htmlp: true },
         head: {
           type: 'head',
+          tagName: 'head',
           headp: true,
           classes: ['cls-head'],
           components: [

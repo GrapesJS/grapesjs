@@ -363,6 +363,7 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
       let resHtml: HTMLParseResult['html'] = [];
 
       if (asDocument) {
+        console.log(this.detectNode(docEl.head, cf));
         res.head = this.parseNode(docEl.head, cf);
         res.root = this.parseNodeAttr(root);
         resHtml = this.parseNode(docEl.body, cf);

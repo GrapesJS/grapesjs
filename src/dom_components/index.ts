@@ -252,9 +252,9 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
       view: ComponentTextNodeView,
     },
     {
-      id: 'text',
-      model: ComponentText,
-      view: ComponentTextView,
+      id: typeHead,
+      model: ComponentHead,
+      view: ComponentView,
     },
     {
       id: 'wrapper',
@@ -262,9 +262,9 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
       view: ComponentWrapperView,
     },
     {
-      id: typeHead,
-      model: ComponentHead,
-      view: ComponentView,
+      id: 'text',
+      model: ComponentText,
+      view: ComponentTextView,
     },
     {
       id: 'default',
