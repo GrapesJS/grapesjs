@@ -164,6 +164,10 @@ export default class Component extends StyleableModel<ComponentProperties> {
     };
   }
 
+  get tagName() {
+    return this.get('tagName')!;
+  }
+
   get classes() {
     return this.get('classes')!;
   }

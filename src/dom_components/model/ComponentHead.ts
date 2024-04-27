@@ -1,7 +1,9 @@
 import Component from './Component';
 import { toLowerCase } from '../../utils/mixins';
+import { DraggableDroppableFn } from './types';
 
 export const type = 'head';
+const droppable = ['title', 'style', 'base', 'link', 'meta', 'script', 'noscript'];
 
 export default class ComponentHead extends Component {
   get defaults() {
@@ -11,7 +13,7 @@ export default class ComponentHead extends Component {
       type,
       tagName: type,
       draggable: false,
-      droppable: ['title', 'style', 'base', 'link', 'meta', 'script', 'noscript'],
+      droppable: (({ tagName }) => !tagName || droppable.includes(toLowerCase(tagName))) as DraggableDroppableFn,
     };
   }
 
