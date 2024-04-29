@@ -1,4 +1,3 @@
-import DomComponents from '../../../src/dom_components';
 import Components from '../../../src/dom_components/model/Components';
 import EditorModel from '../../../src/editor/model/Editor';
 import Editor from '../../../src/editor';
@@ -8,7 +7,7 @@ import { Component } from '../../../src';
 describe('DOM Components', () => {
   describe('Main', () => {
     var em: EditorModel;
-    var obj: DomComponents;
+    var obj: EditorModel['Components'];
     var config: any;
     var storagMock = utils.storageMock();
     var editorModel = {
@@ -61,10 +60,6 @@ describe('DOM Components', () => {
 
     afterEach(() => {
       em.destroy();
-    });
-
-    test('Object exists', () => {
-      expect(DomComponents).toBeTruthy();
     });
 
     test.skip('Store and load data', () => {
@@ -147,7 +142,6 @@ describe('DOM Components', () => {
     });
 
     test('Add new component type with simple model', () => {
-      obj = em.get('DomComponents');
       const id = 'test-type';
       const testProp = 'testValue';
       const initialTypes = obj.componentTypes.length;
@@ -166,7 +160,6 @@ describe('DOM Components', () => {
     });
 
     test('Add new component type with custom isComponent', () => {
-      obj = em.get('DomComponents');
       const id = 'test-type';
       const testProp = 'testValue';
       obj.addType(id, {
@@ -182,7 +175,6 @@ describe('DOM Components', () => {
     });
 
     test('Extend component type with custom model and view', () => {
-      obj = em.get('DomComponents');
       const id = 'image';
       const testProp = 'testValue';
       const initialTypes = obj.getTypes().length;
@@ -207,7 +199,6 @@ describe('DOM Components', () => {
     });
 
     test('Add new component type by extending another one, without isComponent', () => {
-      obj = em.get('DomComponents');
       const id = 'test-type';
       const testProp = 'testValue';
       obj.addType(id, {
@@ -228,7 +219,6 @@ describe('DOM Components', () => {
     });
 
     test('Add new component type by extending another one, with custom isComponent', () => {
-      obj = em.get('DomComponents');
       const id = 'test-type';
       const testProp = 'testValue';
       obj.addType(id, {
