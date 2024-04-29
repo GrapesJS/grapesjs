@@ -13,6 +13,7 @@ export default class ComponentHead extends Component {
       type,
       tagName: type,
       draggable: false,
+      highlightable: false,
       droppable: (({ tagName }) => !tagName || droppable.includes(toLowerCase(tagName))) as DraggableDroppableFn,
     };
   }

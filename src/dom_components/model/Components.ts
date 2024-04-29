@@ -239,7 +239,9 @@ Component> {
     if (asDocument) {
       const root = parent as ComponentWrapper;
       components = (parsed.html as any).components;
-      root.head.set(parsed.head as any, opt);
+      const { components: headCmps, ...restHead } = parsed.head || {};
+      root.head.set(restHead as any, opt);
+      root.head.components(headCmps);
       root.docEl.set(parsed.root as any, opt);
       root.set({ doctype: parsed.doctype });
     }
