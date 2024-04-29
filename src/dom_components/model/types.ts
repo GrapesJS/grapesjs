@@ -1,5 +1,5 @@
 import Frame from '../../canvas/model/Frame';
-import { Nullable, OptionAsDocument } from '../../common';
+import { AddOptions, Nullable, OptionAsDocument } from '../../common';
 import EditorModel from '../../editor/model/Editor';
 import Selectors from '../../selector_manager/model/Selectors';
 import { TraitProperties } from '../../trait_manager/types';
@@ -14,6 +14,8 @@ import { ToolbarButtonProps } from './ToolbarButton';
 export type DragMode = 'translate' | 'absolute' | '';
 
 export type DraggableDroppableFn = (source: Component, target: Component, index?: number) => boolean | void;
+
+export interface AddComponentsOption extends AddOptions, OptionAsDocument {}
 
 export interface ComponentStackItem {
   id: string;

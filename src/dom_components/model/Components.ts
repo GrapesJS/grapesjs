@@ -5,7 +5,7 @@ import { DomComponentsConfig } from '../config/config';
 import EditorModel from '../../editor/model/Editor';
 import ComponentManager from '..';
 import CssRule from '../../css_composer/model/CssRule';
-import { ComponentAdd, ComponentProperties } from './types';
+import { ComponentAdd, ComponentDefinitionDefined, ComponentProperties } from './types';
 import ComponentText from './ComponentText';
 import ComponentWrapper from './ComponentWrapper';
 
@@ -238,10 +238,12 @@ Component> {
 
     if (asDocument) {
       const root = parent as ComponentWrapper;
-      components = (parsed.html as any).components;
+      const { components: bodyCmps, ...restBody } = (parsed.html as ComponentDefinitionDefined) || {};
       const { components: headCmps, ...restHead } = parsed.head || {};
+      components = bodyCmps!;
+      root.set(restBody as any, opt);
       root.head.set(restHead as any, opt);
-      root.head.components(headCmps);
+      root.head.components(headCmps, opt);
       root.docEl.set(parsed.root as any, opt);
       root.set({ doctype: parsed.doctype });
     }

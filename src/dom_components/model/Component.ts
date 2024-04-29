@@ -20,6 +20,7 @@ import Selectors from '../../selector_manager/model/Selectors';
 import Traits from '../../trait_manager/model/Traits';
 import EditorModel from '../../editor/model/Editor';
 import {
+  AddComponentsOption,
   ComponentAdd,
   ComponentDefinition,
   ComponentDefinitionDefined,
@@ -1149,7 +1150,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
    */
   components<T extends ComponentAdd | undefined>(
     components?: T,
-    opts: any = {}
+    opts: AddComponentsOption = {}
   ): undefined extends T ? Components : Component[] {
     const coll = this.get('components')!;
 
