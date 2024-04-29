@@ -1,3 +1,4 @@
+import { isUndefined } from 'underscore';
 import { attrToString } from '../../utils/dom';
 import Component from './Component';
 import ComponentHead, { type as typeHead } from './ComponentHead';
@@ -52,14 +53,14 @@ export default class ComponentWrapper extends Component {
   }
 
   toHTML(opts: ToHTMLOptions = {}) {
-    const { asDocument } = opts;
-    const { head, docEl } = this;
     const { doctype = '' } = this.attributes;
+    const asDoc = !isUndefined(opts.asDocument) ? opts.asDocument : !!doctype;
+    const { head, docEl } = this;
     const body = super.toHTML(opts);
-    const headStr = (asDocument && head?.toHTML(opts)) || '';
-    const docElAttr = (asDocument && attrToString(docEl?.getAttrToHTML())) || '';
+    const headStr = (asDoc && head?.toHTML(opts)) || '';
+    const docElAttr = (asDoc && attrToString(docEl?.getAttrToHTML())) || '';
     const docElAttrStr = docElAttr ? ` ${docElAttr}` : '';
-    return asDocument ? `${doctype}<html${docElAttrStr}>${headStr}${body}</html>` : body;
+    return asDoc ? `${doctype}<html${docElAttrStr}>${headStr}${body}</html>` : body;
   }
 
   __postAdd() {
