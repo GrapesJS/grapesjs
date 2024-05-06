@@ -182,4 +182,4 @@ grapesjs.init({
 
 ## Boilerplate
 
-For fast plugin development, we highly recommend using [grapesjs-cli](https://github.com/GrapesJS/cli) which helps to avoid the hassle of setting up all the dependencies and configurations for development and building (no need to touch Webpack o Babel configurations). For more information check the repository.
+For fast plugin development, we highly recommend using [grapesjs-cli](https://github.com/GrapesJS/cli) which helps to avoid the hassle of setting up all the dependencies and configurations for development and building (no need to touch Webpack or Babel configurations). For more information check the repository.
