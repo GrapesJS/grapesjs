@@ -263,7 +263,7 @@ describe('DOM Components', () => {
         expect(rule.toCSS()).toEqual(css);
 
         done();
-      }, 10);
+      }, 20);
     });
 
     describe('Custom components with styles', () => {
