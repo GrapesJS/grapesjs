@@ -81,8 +81,7 @@ import StyleableModel, { StyleProps } from '../domain_abstract/model/StyleableMo
 import { CustomPropertyView } from './view/PropertyView';
 import { PropertySelectProps } from './model/PropertySelect';
 import { PropertyNumberProps } from './model/PropertyNumber';
-import PropertyStack, { PropertyStackProps } from './model/PropertyStack';
-import PropertyComposite from './model/PropertyComposite';
+import { PropertyStackProps } from './model/PropertyStack';
 
 export type PropertyTypes = PropertyStackProps | PropertySelectProps | PropertyNumberProps;
 
@@ -310,7 +309,7 @@ export default class StyleManager extends ItemManagerModule<
    */
   addProperty(sectorId: string, property: PropertyTypes, opts: AddOptions = {}): Property | undefined {
     const sector = this.getSector(sectorId, { warn: true });
-    let prop;
+    let prop = null;
     if (sector) prop = sector.addProperty(property, opts);
 
     return prop;
@@ -523,7 +522,7 @@ export default class StyleManager extends ItemManagerModule<
    *  options: [{ id: 'value1', label: 'Some label' }, ...],
    * })
    */
-  addBuiltIn(prop: string, definition: PropertyProps) {
+  addBuiltIn(prop: string, definition: Omit<PropertyProps, 'property'> & { proeperty?: 'string' }) {
     return this.builtIn.add(prop, definition);
   }
 
@@ -597,27 +596,53 @@ export default class StyleManager extends ItemManagerModule<
       const cmp = target.toHTML ? target : target.getComponent();
       const optsSel = { array: true } as const;
       let cmpRules: CssRule[] = [];
+      let tagNameRules: CssRule[] = [];
       let otherRules: CssRule[] = [];
       let rules: CssRule[] = [];
 
       const rulesBySelectors = (values: string[]) => {
-        return !values.length
-          ? []
-          : cssC.getRules().filter(rule => {
-              const rSels = rule.getSelectors().map(s => s.getFullName());
-              return !!rSels.length && rSels.every(rSel => values.indexOf(rSel) >= 0);
+        return cssC.getRules().filter(rule => {
+          const rSels = rule.getSelectors().map(s => s.getFullName());
+
+          // rSels is equal to 0 when rule selectors contain tagName like : p {}, .logo path {}, ul li {}
+          if (rSels.length === 0) {
+            return false;
+          }
+
+          return rSels.every(rSel => values.indexOf(rSel) >= 0);
+        });
+      };
+
+      const rulesByTagName = (tagName: string) => {
+        return cssC.getRules().filter(rule => {
+          const ruleTags = rule
+            .selectorsToString()
+            .split(' ')
+            .filter(item => {
+              return item.startsWith('.') === false && item.startsWith('#') === false;
             });
+
+          if (ruleTags.length === 0) {
+            return false;
+          }
+
+          const lastTags = ruleTags[ruleTags.length - 1];
+
+          return lastTags === tagName;
+        });
       };
 
       // Componente related rule
       if (cmp) {
         cmpRules = cssC.getRules(`#${cmp.getId()}`);
+        tagNameRules = rulesByTagName(cmp.get('tagName'));
         otherRules = sel ? rulesBySelectors(sel.getSelectors().getFullName(optsSel)) : [];
-        rules = otherRules.concat(cmpRules);
+        rules = otherRules.concat(tagNameRules).concat(cmpRules);
       } else {
         cmpRules = sel ? cssC.getRules(`#${sel.getId()}`) : [];
+        tagNameRules = rulesByTagName(sel?.get('tagName') || '');
         otherRules = rulesBySelectors(target.getSelectors().getFullName(optsSel));
-        rules = cmpRules.concat(otherRules);
+        rules = tagNameRules.concat(cmpRules).concat(otherRules);
       }
 
       const all = rules
@@ -788,7 +813,7 @@ export default class StyleManager extends ItemManagerModule<
     });
   }
 
-  __upProp(prop: Property, style: StyleProps, parentStyles: any[], opts: any) {
+  __upProp(prop: any, style: StyleProps, parentStyles: any[], opts: any) {
     const name = prop.getName();
     const value = style[name];
     const hasVal = propDef(value);
@@ -796,21 +821,19 @@ export default class StyleManager extends ItemManagerModule<
     const isComposite = prop.getType() === 'composite';
     const opt = { ...opts, __up: true };
     const canUpdate = !isComposite && !isStack;
-    const propStack = prop as PropertyStack;
-    const propComp = prop as PropertyComposite;
-    let newLayers = isStack ? propStack.__getLayersFromStyle(style) : [];
-    let newProps = isComposite ? propComp.__getPropsFromStyle(style) : {};
+    let newLayers = isStack ? prop.__getLayersFromStyle(style) : [];
+    let newProps = isComposite ? prop.__getPropsFromStyle(style) : {};
     let newValue = hasVal ? value : null;
     let parentTarget: any = null;
 
     if ((isStack && newLayers === null) || (isComposite && newProps === null)) {
       const method = isStack ? '__getLayersFromStyle' : '__getPropsFromStyle';
-      const parentItem = parentStyles.filter(p => propStack[method](p.style) !== null)[0];
+      const parentItem = parentStyles.filter(p => prop[method](p.style) !== null)[0];
 
       if (parentItem) {
         newValue = parentItem.style[name];
         parentTarget = parentItem.target;
-        const val = propStack[method](parentItem.style);
+        const val = prop[method](parentItem.style);
         if (isStack) {
           newLayers = val;
         } else {
@@ -828,26 +851,22 @@ export default class StyleManager extends ItemManagerModule<
     }
 
     prop.__setParentTarget(parentTarget);
-    canUpdate && prop.__getFullValue() !== newValue && prop.upValue(newValue as string, opt);
-    if (isStack) {
-      propStack.__setLayers(newLayers || [], {
-        isEmptyValue: propStack.isEmptyValueStyle(style),
-      });
-    }
+    canUpdate && prop.__getFullValue() !== newValue && prop.upValue(newValue, opt);
+    isStack && prop.__setLayers(newLayers || []);
     if (isComposite) {
-      const props = propComp.getProperties();
+      const props = prop.getProperties();
 
       // Detached has to be treathed as separate properties
-      if (propComp.isDetached()) {
-        const newStyle = propComp.__getPropsFromStyle(style, { byName: true }) || {};
+      if (prop.isDetached()) {
+        const newStyle = prop.__getPropsFromStyle(style, { byName: true }) || {};
         const newParentStyles = parentStyles.map(p => ({
           ...p,
-          style: propComp.__getPropsFromStyle(p.style, { byName: true }) || {},
+          style: prop.__getPropsFromStyle(p.style, { byName: true }) || {},
         }));
         props.map((pr: any) => this.__upProp(pr, newStyle, newParentStyles, opts));
       } else {
-        propComp.__setProperties(newProps || {}, opt);
-        propComp.getProperties().map(pr => pr.__setParentTarget(parentTarget));
+        prop.__setProperties(newProps || {}, opt);
+        prop.getProperties().map((pr: any) => pr.__setParentTarget(parentTarget));
       }
     }
   }
