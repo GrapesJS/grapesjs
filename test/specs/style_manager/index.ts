@@ -73,7 +73,7 @@ describe('StyleManager', () => {
     });
 
     test('Add property to inexistent sector', () => {
-      expect(obj.addProperty('test', { property: 'test' })).toEqual(null);
+      expect(obj.addProperty('test', { property: 'test' })).toEqual(undefined);
     });
 
     test('Add property', () => {
@@ -182,6 +182,19 @@ describe('StyleManager', () => {
         expect(obj.getSelectedParents()).toEqual([rule2]);
       });
 
+      test('With ID + class, component first', () => {
+        sm.setComponentFirst(true);
+        const cmp = domc.addComponent('<div class="cls" id="id-test"></div>');
+        const [rule1, rule2] = cssc.addRules(`
+          .cls { color: red; }
+          #id-test { color: blue; }
+        `);
+        em.setSelected(cmp);
+        obj.__upSel();
+        expect(obj.getSelected()).toBe(rule2);
+        expect(obj.getSelectedParents()).toEqual([rule1]);
+      });
+
       test('With multiple classes, should both be in parents list', () => {
         const cmp = domc.addComponent('<div class="cls cls2"></div>');
         const [rule1, rule2] = cssc.addRules(`
@@ -220,19 +233,6 @@ describe('StyleManager', () => {
         expect(obj.getSelectedParents()).toEqual([rule3, rule2]);
       });
 
-      test('With ID + class, component first', () => {
-        sm.setComponentFirst(true);
-        const cmp = domc.addComponent('<div class="cls" id="id-test"></div>');
-        const [rule1, rule2] = cssc.addRules(`
-          .cls { color: red; }
-          #id-test { color: blue; }
-        `);
-        em.setSelected(cmp);
-        obj.__upSel();
-        expect(obj.getSelected()).toBe(rule2);
-        expect(obj.getSelectedParents()).toEqual([rule1]);
-      });
-
       test('With ID + class, multiple devices', () => {
         sm.setComponentFirst(true);
         const cmp = domc.addComponent('<div class="cls" id="id-test"></div>');
@@ -251,11 +251,15 @@ describe('StyleManager', () => {
 
       test('Mixed classes', () => {
         const cmp = domc.addComponent('<div class="cls1 cls2"></div>');
-        const [rule1, rule2] = cssc.addRules(`
+        const [a, b, rule1, rule2] = cssc.addRules(`
+          h1 { color: white; }
+          h1 .test { color: black; }
           .cls1 { color: red; }
           .cls1.cls2 { color: blue; }
           .cls2 { color: green; }
           .cls1.cls3 { color: green; }
+          h2 { color: white; }
+          h2 .test { color: black; }
         `);
         em.setSelected(cmp);
         obj.__upSel();

@@ -81,7 +81,8 @@ import StyleableModel, { StyleProps } from '../domain_abstract/model/StyleableMo
 import { CustomPropertyView } from './view/PropertyView';
 import { PropertySelectProps } from './model/PropertySelect';
 import { PropertyNumberProps } from './model/PropertyNumber';
-import { PropertyStackProps } from './model/PropertyStack';
+import PropertyStack, { PropertyStackProps } from './model/PropertyStack';
+import PropertyComposite from './model/PropertyComposite';
 
 export type PropertyTypes = PropertyStackProps | PropertySelectProps | PropertyNumberProps;
 
@@ -309,7 +310,7 @@ export default class StyleManager extends ItemManagerModule<
    */
   addProperty(sectorId: string, property: PropertyTypes, opts: AddOptions = {}): Property | undefined {
     const sector = this.getSector(sectorId, { warn: true });
-    let prop = null;
+    let prop;
     if (sector) prop = sector.addProperty(property, opts);
 
     return prop;
@@ -522,7 +523,7 @@ export default class StyleManager extends ItemManagerModule<
    *  options: [{ id: 'value1', label: 'Some label' }, ...],
    * })
    */
-  addBuiltIn(prop: string, definition: Omit<PropertyProps, 'property'> & { proeperty?: 'string' }) {
+  addBuiltIn(prop: string, definition: PropertyProps) {
     return this.builtIn.add(prop, definition);
   }
 
@@ -597,6 +598,7 @@ export default class StyleManager extends ItemManagerModule<
       const optsSel = { array: true } as const;
       let cmpRules: CssRule[] = [];
       let tagNameRules: CssRule[] = [];
+      let invisibleRules: CssRule[] = [];
       let otherRules: CssRule[] = [];
       let rules: CssRule[] = [];
 
@@ -641,8 +643,19 @@ export default class StyleManager extends ItemManagerModule<
       } else {
         cmpRules = sel ? cssC.getRules(`#${sel.getId()}`) : [];
         tagNameRules = rulesByTagName(sel?.get('tagName') || '');
+        // Get rules set on active and visible selectors
         otherRules = rulesBySelectors(target.getSelectors().getFullName(optsSel));
-        rules = tagNameRules.concat(cmpRules).concat(otherRules);
+        // Get rules set on invisible selectors like private one
+        const allCmpClasses = sel?.getSelectors().getFullName(optsSel) || [];
+        const invisibleSel = allCmpClasses.filter(
+          (item: string) =>
+            target
+              .getSelectors()
+              .getFullName(optsSel)
+              .findIndex(sel => sel === item) === -1
+        );
+        invisibleRules = rulesBySelectors(invisibleSel);
+        rules = tagNameRules.concat(cmpRules).concat(invisibleRules).concat(otherRules);
       }
 
       const all = rules
@@ -813,7 +826,7 @@ export default class StyleManager extends ItemManagerModule<
     });
   }
 
-  __upProp(prop: any, style: StyleProps, parentStyles: any[], opts: any) {
+  __upProp(prop: Property, style: StyleProps, parentStyles: any[], opts: any) {
     const name = prop.getName();
     const value = style[name];
     const hasVal = propDef(value);
@@ -821,19 +834,21 @@ export default class StyleManager extends ItemManagerModule<
     const isComposite = prop.getType() === 'composite';
     const opt = { ...opts, __up: true };
     const canUpdate = !isComposite && !isStack;
-    let newLayers = isStack ? prop.__getLayersFromStyle(style) : [];
-    let newProps = isComposite ? prop.__getPropsFromStyle(style) : {};
+    const propStack = prop as PropertyStack;
+    const propComp = prop as PropertyComposite;
+    let newLayers = isStack ? propStack.__getLayersFromStyle(style) : [];
+    let newProps = isComposite ? propComp.__getPropsFromStyle(style) : {};
     let newValue = hasVal ? value : null;
     let parentTarget: any = null;
 
     if ((isStack && newLayers === null) || (isComposite && newProps === null)) {
       const method = isStack ? '__getLayersFromStyle' : '__getPropsFromStyle';
-      const parentItem = parentStyles.filter(p => prop[method](p.style) !== null)[0];
+      const parentItem = parentStyles.filter(p => propStack[method](p.style) !== null)[0];
 
       if (parentItem) {
         newValue = parentItem.style[name];
         parentTarget = parentItem.target;
-        const val = prop[method](parentItem.style);
+        const val = propStack[method](parentItem.style);
         if (isStack) {
           newLayers = val;
         } else {
@@ -851,22 +866,26 @@ export default class StyleManager extends ItemManagerModule<
     }
 
     prop.__setParentTarget(parentTarget);
-    canUpdate && prop.__getFullValue() !== newValue && prop.upValue(newValue, opt);
-    isStack && prop.__setLayers(newLayers || []);
+    canUpdate && prop.__getFullValue() !== newValue && prop.upValue(newValue as string, opt);
+    if (isStack) {
+      propStack.__setLayers(newLayers || [], {
+        isEmptyValue: propStack.isEmptyValueStyle(style),
+      });
+    }
     if (isComposite) {
-      const props = prop.getProperties();
+      const props = propComp.getProperties();
 
       // Detached has to be treathed as separate properties
-      if (prop.isDetached()) {
-        const newStyle = prop.__getPropsFromStyle(style, { byName: true }) || {};
+      if (propComp.isDetached()) {
+        const newStyle = propComp.__getPropsFromStyle(style, { byName: true }) || {};
         const newParentStyles = parentStyles.map(p => ({
           ...p,
-          style: prop.__getPropsFromStyle(p.style, { byName: true }) || {},
+          style: propComp.__getPropsFromStyle(p.style, { byName: true }) || {},
         }));
         props.map((pr: any) => this.__upProp(pr, newStyle, newParentStyles, opts));
       } else {
-        prop.__setProperties(newProps || {}, opt);
-        prop.getProperties().map((pr: any) => pr.__setParentTarget(parentTarget));
+        propComp.__setProperties(newProps || {}, opt);
+        propComp.getProperties().map(pr => pr.__setParentTarget(parentTarget));
       }
     }
   }
