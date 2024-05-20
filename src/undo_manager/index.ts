@@ -321,6 +321,14 @@ export default class UndoManagerModule extends Module<UndoManagerConfig & { name
     return result;
   }
 
+  /**
+   * Execute the provided callback temporarily stopping tracking changes
+   * @param clb The callback to execute with changes tracking stopped
+   * @example
+   * um.skip(() => {
+   *  // Do stuff without tracking
+   * });
+   */
   skip(clb: Function) {
     const isTracking = !!this.um.isTracking();
 
