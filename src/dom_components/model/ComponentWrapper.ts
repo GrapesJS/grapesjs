@@ -55,8 +55,12 @@ export default class ComponentWrapper extends Component {
     return this.get('docEl');
   }
 
+  get doctype(): string {
+    return this.attributes.doctype || '';
+  }
+
   toHTML(opts: ToHTMLOptions = {}) {
-    const { doctype = '' } = this.attributes;
+    const { doctype } = this;
     const asDoc = !isUndefined(opts.asDocument) ? opts.asDocument : !!doctype;
     const { head, docEl } = this;
     const body = super.toHTML(opts);

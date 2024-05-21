@@ -1,3 +1,4 @@
+import { OptionAsDocument } from '../../common';
 import { CssRuleJSON } from '../../css_composer/model/CssRule';
 import { ComponentDefinitionDefined } from '../../dom_components/model/types';
 import Editor from '../../editor';
@@ -26,7 +27,7 @@ export interface ParseNodeOptions extends HTMLParserOptions {
   skipChildren?: boolean;
 }
 
-export interface HTMLParserOptions {
+export interface HTMLParserOptions extends OptionAsDocument {
   /**
    * DOMParser mime type.
    * If you use the `text/html` parser, it will fix the invalid syntax automatically.
@@ -34,12 +35,6 @@ export interface HTMLParserOptions {
    * @default 'text/html'
    */
   htmlType?: DOMParserSupportedType;
-
-  /**
-   * Parse the string as HTML document. The result will include additional data (eg. doctype, head, etc.)
-   * @default false
-   */
-  asDocument?: boolean;
 
   /**
    * Allow <script> tags.

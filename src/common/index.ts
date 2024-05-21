@@ -27,7 +27,7 @@ export type Nullable = undefined | null | false;
 
 export interface OptionAsDocument {
   /**
-   * Treat the HTML string as document (option valid on the root component, eg. will include `<head>`, `<html>`, etc.).
+   * Treat the HTML string as document (option valid on the root component, eg. will include doctype, html, head, etc.).
    */
   asDocument?: boolean;
 }

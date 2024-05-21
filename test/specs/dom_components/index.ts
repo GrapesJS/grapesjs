@@ -375,7 +375,7 @@ describe('DOM Components', () => {
         expect(head.get('headp')).toBe(true);
         expect(docEl.get('htmlp')).toBe(true);
         expect(root.get('bodyp')).toBe(true);
-        expect(root.get('doctype')).toBe('<!DOCTYPE html>');
+        expect(root.doctype).toBe('<!DOCTYPE html>');
 
         const outputHtml = `
           <!DOCTYPE html>
