@@ -69,7 +69,7 @@ export default class ParserModule extends Module<ParserConfig & { name?: string 
    */
   parseHtml(input: string, options: HTMLParserOptions = {}) {
     const { em, parserHtml } = this;
-    parserHtml.compTypes = (em.Components.getTypes() || {}) as any;
+    parserHtml.compTypes = em.Components.getTypes() || [];
     return parserHtml.parse(input, this.parserCss, options);
   }
 

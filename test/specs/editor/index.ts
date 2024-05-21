@@ -1,7 +1,7 @@
 import Editor from '../../../src/editor';
+import { DEFAULT_CMPS } from '../../common';
 
 const { keys } = Object;
-const initComps = 1;
 
 describe('Editor', () => {
   let editor: Editor;
@@ -24,7 +24,7 @@ describe('Editor', () => {
     const all = editor.Components.allById();
     const allKeys = keys(all);
     // By default 1 wrapper components is created
-    expect(allKeys.length).toBe(initComps);
+    expect(allKeys.length).toBe(DEFAULT_CMPS);
     expect(all[allKeys[0]].get('type')).toBe('wrapper');
   });
 
@@ -50,7 +50,7 @@ describe('Editor', () => {
     const all = editor.Components.allById();
     const wrapper = editor.getWrapper()!;
     wrapper.append('<div>Component</div>'); // Div component + textnode
-    expect(keys(all).length).toBe(2 + initComps);
+    expect(keys(all).length).toBe(2 + DEFAULT_CMPS);
   });
 
   test('Components are correctly tracked on add and remove', () => {
@@ -60,16 +60,16 @@ describe('Editor', () => {
         <div>Component 1</div>
         <div></div>
     `);
-    expect(keys(all).length).toBe(3 + initComps);
+    expect(keys(all).length).toBe(3 + DEFAULT_CMPS);
     const secComp = added[1];
     secComp.append(`
         <div>Component 2</div>
         <div>Component 3</div>
     `);
-    expect(keys(all).length).toBe(7 + initComps);
+    expect(keys(all).length).toBe(7 + DEFAULT_CMPS);
     wrapper.empty();
     expect(wrapper.components().length).toBe(0);
-    expect(keys(all).length).toBe(initComps);
+    expect(keys(all).length).toBe(DEFAULT_CMPS);
   });
 
   test('Components are correctly tracked with UndoManager', () => {
@@ -82,9 +82,9 @@ describe('Editor', () => {
     expect(umStack.length).toBe(1);
     wrapper.empty();
     expect(umStack.length).toBe(2);
-    expect(keys(all).length).toBe(initComps);
+    expect(keys(all).length).toBe(DEFAULT_CMPS);
     um.undo(false);
-    expect(keys(all).length).toBe(2 + initComps);
+    expect(keys(all).length).toBe(2 + DEFAULT_CMPS);
   });
 
   test('Components are correctly tracked with UndoManager and mutiple operations', () => {
@@ -98,13 +98,13 @@ describe('Editor', () => {
         <div>Component 2</div>
     </div>`);
     expect(umStack.length).toBe(1); // UM counts first children
-    expect(keys(all).length).toBe(5 + initComps);
+    expect(keys(all).length).toBe(5 + DEFAULT_CMPS);
     wrapper.components().at(0).components().at(0).remove(); // Remove 1 component
 
     expect(umStack.length).toBe(2);
-    expect(keys(all).length).toBe(3 + initComps);
+    expect(keys(all).length).toBe(3 + DEFAULT_CMPS);
     wrapper.empty();
     expect(umStack.length).toBe(3);
-    expect(keys(all).length).toBe(initComps);
+    expect(keys(all).length).toBe(DEFAULT_CMPS);
   });
 });
