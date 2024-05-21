@@ -192,7 +192,7 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
     },
 
     parseNode(node: HTMLElement, opts: ParseNodeOptions = {}) {
-      const nodes = node.childNodes;
+      const nodes = (node as HTMLTemplateElement).content?.childNodes || node.childNodes;
       const nodesLen = nodes.length;
       let model = this.detectNode(node, opts);
 
@@ -267,7 +267,7 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
      */
     parseNodes(el: HTMLElement, opts: ParseNodeOptions = {}) {
       const result: ComponentDefinitionDefined[] = [];
-      const nodes = el.childNodes;
+      const nodes = (el as HTMLTemplateElement).content?.childNodes || el.childNodes;
       const nodesLen = nodes.length;
 
       for (let i = 0; i < nodesLen; i++) {

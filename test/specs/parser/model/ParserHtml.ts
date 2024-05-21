@@ -599,6 +599,34 @@ describe('ParserHtml', () => {
     expect(obj.parse(str).html).toEqual(result);
   });
 
+  test('<template> with content is properly parsed', () => {
+    const str = `<template class="test">
+      <tr>
+        <td>Cell</td>
+      </tr>
+    </template>`;
+    const result = [
+      {
+        tagName: 'template',
+        classes: ['test'],
+        components: [
+          {
+            type: 'row',
+            tagName: 'tr',
+            components: [
+              {
+                type: 'cell',
+                tagName: 'td',
+                components: { type: 'textnode', content: 'Cell' },
+              },
+            ],
+          },
+        ],
+      },
+    ];
+    expect(obj.parse(str).html).toEqual(result);
+  });
+
   describe('Options', () => {
     test('Remove unsafe attributes', () => {
       const str = '<img src="path/img" data-test="1" class="test" onload="unsafe"/>';
