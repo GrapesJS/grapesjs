@@ -3,6 +3,8 @@ import { ModuleView } from '../../abstract';
 import { BoxRect, ObjectAny } from '../../common';
 import CssRulesView from '../../css_composer/view/CssRulesView';
 import ComponentWrapperView from '../../dom_components/view/ComponentWrapperView';
+import ComponentView from '../../dom_components/view/ComponentView';
+import { type as typeHead } from '../../dom_components/model/ComponentHead';
 import Droppable from '../../utils/Droppable';
 import {
   append,
@@ -40,6 +42,7 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
   private jsContainer?: HTMLElement;
   private tools: { [key: string]: HTMLElement } = {};
   private wrapper?: ComponentWrapperView;
+  private headView?: ComponentView;
   private frameWrapView?: FrameWrapView;
 
   constructor(model: Frame, view?: FrameWrapView) {
@@ -333,6 +336,7 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
       evOpts.window = this.getWindow();
       em?.trigger(`${evLoad}:before`, evOpts); // deprecated
       em?.trigger(CanvasEvents.frameLoad, evOpts);
+      this.renderHead();
       appendScript([...canvas.get('scripts')]);
     };
   }
@@ -366,6 +370,20 @@ export default class FrameView extends ModuleView<Frame, HTMLIFrameElement> {
       el?.parentNode?.removeChild(el);
     });
     appendVNodes(head, toAdd);
+  }
+
+  renderHead() {
+    const { model, em } = this;
+    const { root } = model;
+    const HeadView = em.Components.getType(typeHead)!.view;
+    this.headView = new HeadView({
+      el: this.getHead(),
+      model: root.head,
+      config: {
+        ...root.config,
+        frameView: this,
+      },
+    }).render();
   }
 
   renderBody() {

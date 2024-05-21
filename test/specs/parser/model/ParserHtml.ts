@@ -15,7 +15,7 @@ describe('ParserHtml', () => {
       textTypes: ['text', 'textnode', 'comment'],
       returnArray: true,
     });
-    obj.compTypes = dom.componentTypes as any;
+    obj.compTypes = dom.componentTypes;
   });
 
   test('Simple div node', () => {
@@ -535,7 +535,6 @@ describe('ParserHtml', () => {
     const result = [
       {
         tagName: 'div',
-        attributes: {},
         type: 'text',
         test: {
           prop1: 'value1',
@@ -553,7 +552,6 @@ describe('ParserHtml', () => {
     const result = [
       {
         tagName: 'div',
-        attributes: {},
         type: 'text',
         test: ['value1', 'value2'],
         components: { type: 'textnode', content: 'test2 ' },
@@ -592,6 +590,34 @@ describe('ParserHtml', () => {
                   d: 'M13 12h7v1.5h-7m0-4h7V11h-7m0 3.5h7V16h-7m8-12H3c-1.1 0-2 .9-2 2v13c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2m0 15h-9V6h9',
                 },
                 type: 'svg-in',
+              },
+            ],
+          },
+        ],
+      },
+    ];
+    expect(obj.parse(str).html).toEqual(result);
+  });
+
+  test('<template> with content is properly parsed', () => {
+    const str = `<template class="test">
+      <tr>
+        <td>Cell</td>
+      </tr>
+    </template>`;
+    const result = [
+      {
+        tagName: 'template',
+        classes: ['test'],
+        components: [
+          {
+            type: 'row',
+            tagName: 'tr',
+            components: [
+              {
+                type: 'cell',
+                tagName: 'td',
+                components: { type: 'textnode', content: 'Cell' },
               },
             ],
           },
@@ -653,6 +679,70 @@ describe('ParserHtml', () => {
       };
       const preParser = (str: string) => str.replace('javascript:', 'test:');
       expect(obj.parse(str, null, { preParser }).html).toEqual([result]);
+    });
+
+    test('parsing as document', () => {
+      const str = `
+        <!DOCTYPE html>
+        <html class="cls-html" lang="en" data-gjs-htmlp="true">
+          <head class="cls-head" data-gjs-headp="true">
+            <meta charset="utf-8">
+            <title>Test</title>
+            <link rel="stylesheet" href="/noop.css">
+            <!-- comment -->
+            <script src="/noop.js"></script>
+            <style>.test { color: red }</style>
+          </head>
+          <body class="cls-body" data-gjs-bodyp="true">
+            <h1>H1</h1>
+          </body>
+        </html>
+      `;
+
+      expect(obj.parse(str, null, { asDocument: true })).toEqual({
+        doctype: '<!DOCTYPE html>',
+        root: { classes: ['cls-html'], attributes: { lang: 'en' }, htmlp: true },
+        head: {
+          type: 'head',
+          tagName: 'head',
+          headp: true,
+          classes: ['cls-head'],
+          components: [
+            { tagName: 'meta', attributes: { charset: 'utf-8' } },
+            {
+              tagName: 'title',
+              type: 'text',
+              components: { type: 'textnode', content: 'Test' },
+            },
+            {
+              tagName: 'link',
+              attributes: { rel: 'stylesheet', href: '/noop.css' },
+            },
+            {
+              type: 'comment',
+              tagName: '',
+              content: ' comment ',
+            },
+            {
+              tagName: 'style',
+              type: 'text',
+              components: { type: 'textnode', content: '.test { color: red }' },
+            },
+          ],
+        },
+        html: {
+          tagName: 'body',
+          bodyp: true,
+          classes: ['cls-body'],
+          components: [
+            {
+              tagName: 'h1',
+              type: 'text',
+              components: { type: 'textnode', content: 'H1' },
+            },
+          ],
+        },
+      });
     });
   });
 });

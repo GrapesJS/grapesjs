@@ -20,6 +20,7 @@ import Selectors from '../../selector_manager/model/Selectors';
 import Traits from '../../trait_manager/model/Traits';
 import EditorModel from '../../editor/model/Editor';
 import {
+  AddComponentsOption,
   ComponentAdd,
   ComponentDefinition,
   ComponentDefinitionDefined,
@@ -162,6 +163,10 @@ export default class Component extends StyleableModel<ComponentProperties> {
       _undo: true,
       _undoexc: ['status', 'open'],
     };
+  }
+
+  get tagName() {
+    return this.get('tagName')!;
   }
 
   get classes() {
@@ -1145,7 +1150,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
    */
   components<T extends ComponentAdd | undefined>(
     components?: T,
-    opts: any = {}
+    opts: AddComponentsOption = {}
   ): undefined extends T ? Components : Component[] {
     const coll = this.get('components')!;
 
@@ -2035,7 +2040,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     return result(this.prototype, 'defaults');
   }
 
-  static isComponent(el: HTMLElement): ComponentDefinitionDefined | boolean | undefined {
+  static isComponent(el: HTMLElement, opts?: any): ComponentDefinitionDefined | boolean | undefined {
     return { tagName: toLowerCase(el.tagName) };
   }
 

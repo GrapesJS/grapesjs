@@ -189,6 +189,13 @@ export enum TraitsEvents {
   value = 'trait:value',
 
   /**
+   * @event `trait:category:update` Trait category updated.
+   * @example
+   * editor.on('trait:category:update', ({ category, changes }) => { ... });
+   */
+  categoryUpdate = 'trait:category:update',
+
+  /**
    * @event `trait:custom` Event to use in case of [custom Trait Manager UI](https://grapesjs.com/docs/modules/Traits.html#custom-trait-manager).
    * @example
    * editor.on('trait:custom', ({ container }) => { ... });

@@ -703,7 +703,8 @@ describe('Components', () => {
     const added = dcomp.addComponent(block) as Component;
     const addComps = added.components();
     // Let's check if everthing is working as expected
-    expect(Object.keys(dcomp.componentsById).length).toBe(3); // + 1 wrapper
+    // 2 test components + 1 wrapper + 1 head + 1 docEl
+    expect(Object.keys(dcomp.componentsById).length).toBe(5);
     expect(added.getId()).toBe(id);
     expect(addComps.at(0).getId()).toBe(idB);
     const cc = em.get('CssComposer');
