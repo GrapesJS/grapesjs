@@ -5,7 +5,7 @@ import Categories from '../../abstract/ModuleCategories';
 import { AddOptions } from '../../common';
 import Component from '../../dom_components/model/Component';
 import EditorModel from '../../editor/model/Editor';
-import { TraitProperties } from '../types';
+import TraitsEvents, { TraitProperties } from '../types';
 import Trait from './Trait';
 import TraitFactory from './TraitFactory';
 
@@ -17,7 +17,12 @@ export default class Traits extends CollectionWithCategories<Trait> {
 
   constructor(coll: TraitProperties[], options: { em: EditorModel }) {
     super(coll);
-    this.em = options.em;
+    const { em } = options;
+    this.em = em;
+    this.categories = new Categories([], {
+      em,
+      events: { update: TraitsEvents.categoryUpdate },
+    });
     this.on('add', this.handleAdd);
     this.on('reset', this.handleReset);
     const tm = this.module;

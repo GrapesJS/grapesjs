@@ -2,6 +2,7 @@ import { ComponentDefinition } from '../../../src/dom_components/model/types';
 import Editor from '../../../src/editor';
 import EditorModel from '../../../src/editor/model/Editor';
 import { PageProperties } from '../../../src/pages/model/Page';
+import { DEFAULT_CMPS } from '../../common';
 
 describe('Pages', () => {
   let editor: Editor;
@@ -50,7 +51,7 @@ describe('Pages', () => {
     const frameCmp = frame.getComponent();
     expect(frameCmp.components().length).toBe(0);
     expect(frame.getStyles().length).toBe(0);
-    expect(initCmpLen).toBe(1);
+    expect(initCmpLen).toBe(DEFAULT_CMPS);
   });
 
   test('Adding new page with selection', () => {
@@ -143,8 +144,8 @@ describe('Pages', () => {
         .filter(i => i.is('wrapper'));
       expect(wrappers.length).toBe(initPages.length);
       // Components container should contain the right amount of components
-      // Number of wrappers (eg. 3) where each one containes 1 component and 1 textnode (3 * 3)
-      expect(initCmpLen).toBe(initPages.length * 3);
+      // Number of wrappers (eg. 3) where each one containes 1 component and 1 textnode (5 * 3)
+      expect(initCmpLen).toBe((2 + DEFAULT_CMPS) * 3);
       // Each page contains 1 rule per component
       expect(em.Css.getAll().length).toBe(initPages.length);
     });

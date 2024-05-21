@@ -101,6 +101,7 @@ import ComponentVideoView from './view/ComponentVideoView';
 import ComponentView, { IComponentView } from './view/ComponentView';
 import ComponentWrapperView from './view/ComponentWrapperView';
 import ComponentsView from './view/ComponentsView';
+import ComponentHead, { type as typeHead } from './model/ComponentHead';
 
 export type ComponentEvent =
   | 'component:create'
@@ -251,14 +252,19 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
       view: ComponentTextNodeView,
     },
     {
-      id: 'text',
-      model: ComponentText,
-      view: ComponentTextView,
+      id: typeHead,
+      model: ComponentHead,
+      view: ComponentView,
     },
     {
       id: 'wrapper',
       model: ComponentWrapper,
       view: ComponentWrapperView,
+    },
+    {
+      id: 'text',
+      model: ComponentText,
+      view: ComponentTextView,
     },
     {
       id: 'default',

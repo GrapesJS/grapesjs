@@ -55,6 +55,13 @@ export enum BlocksEvents {
   dragEnd = 'block:drag:stop',
 
   /**
+   * @event `block:category:update` Block category updated.
+   * @example
+   * editor.on('block:category:update', ({ category, changes }) => { ... });
+   */
+  categoryUpdate = 'block:category:update',
+
+  /**
    * @event `block:custom` Event to use in case of [custom Block Manager UI](https://grapesjs.com/docs/modules/Blocks.html#customization).
    * @example
    * editor.on('block:custom', ({ container, blocks, ... }) => { ... });

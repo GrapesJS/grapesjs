@@ -66,7 +66,10 @@ export default class BlockManager extends ItemManagerModule<BlockManagerConfig, 
     // Global blocks collection
     this.blocks = this.all;
     this.blocksVisible = new Blocks(this.blocks.models, { em });
-    this.categories = new Categories();
+    this.categories = new Categories([], {
+      em,
+      events: { update: BlocksEvents.categoryUpdate },
+    });
 
     // Setup the sync between the global and public collections
     this.blocks.on('add', model => this.blocksVisible.add(model));
