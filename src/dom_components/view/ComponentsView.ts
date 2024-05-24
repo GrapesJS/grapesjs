@@ -7,6 +7,7 @@ import Component from '../model/Component';
 import ComponentView from './ComponentView';
 import FrameView from '../../canvas/view/FrameView';
 import Components from '../model/Components';
+import { ComponentsEvents } from '../types';
 
 export default class ComponentsView extends View {
   opts!: any;
@@ -53,7 +54,7 @@ export default class ComponentsView extends View {
 
     if (em && !opts.temporary) {
       const triggerAdd = (model: Component) => {
-        em.trigger('component:add', model);
+        em.trigger(ComponentsEvents.add, model, opts);
         model.components().forEach(comp => triggerAdd(comp));
       };
       triggerAdd(model);

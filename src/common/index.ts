@@ -7,7 +7,7 @@ export type Debounced = Function & { cancel(): void };
 
 export type SetOptions = Backbone.ModelSetOptions & { avoidStore?: boolean };
 
-export type AddOptions = Backbone.AddOptions & { temporary?: boolean };
+export type AddOptions = Backbone.AddOptions & { temporary?: boolean; action?: string };
 
 export type DisableOptions = { fromMove?: boolean };
 

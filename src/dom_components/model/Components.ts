@@ -8,6 +8,7 @@ import CssRule from '../../css_composer/model/CssRule';
 import { ComponentAdd, ComponentDefinitionDefined, ComponentProperties } from './types';
 import ComponentText from './ComponentText';
 import ComponentWrapper from './ComponentWrapper';
+import { ComponentsEvents } from '../types';
 
 export const getComponentIds = (cmp?: Component | Component[] | Components, res: string[] = []) => {
   if (!cmp) return [];
@@ -181,7 +182,7 @@ Component> {
         });
         removed.removed();
         removed.trigger('removed');
-        em.trigger('component:remove', removed);
+        em.trigger(ComponentsEvents.remove, removed);
       }
 
       const inner = removed.components();
