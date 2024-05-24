@@ -1,13 +1,17 @@
+import { isUndefined } from 'underscore';
 import { View } from '../../common';
 import Component from '../../dom_components/model/Component';
 import EditorModel from '../../editor/model/Editor';
 import ItemView from './ItemView';
+import Components from '../../dom_components/model/Components';
 
 export default class ItemsView extends View {
   items: ItemView[];
   opt: any;
   config: any;
   parentView: ItemView;
+  /** @ts-ignore */
+  collection!: Components;
 
   constructor(opt: any = {}) {
     super(opt);
@@ -47,11 +51,9 @@ export default class ItemsView extends View {
   }
 
   removeChildren(removed: Component) {
-    // @ts-ignore
     const view = removed.viewLayer;
     if (!view) return;
     view.remove();
-    // @ts-ignore
     delete removed.viewLayer;
   }
 
@@ -62,8 +64,7 @@ export default class ItemsView extends View {
    * @return Object
    * */
   addTo(model: Component) {
-    var i = this.collection.indexOf(model);
-    this.addToCollection(model, null, i);
+    this.addToCollection(model, null, this.collection.indexOf(model));
   }
 
   /**
@@ -74,41 +75,47 @@ export default class ItemsView extends View {
    *
    * @return Object Object created
    * */
-  addToCollection(model: Component, fragmentEl: DocumentFragment | null, index?: number) {
-    const { parentView, opt, config } = this;
+  addToCollection(model: Component, fragment: DocumentFragment | null, index?: number) {
+    const { parentView, opt, config, el } = this;
     const { ItemView, opened, module, level, sorter } = opt;
-    const fragment = fragmentEl || null;
-    const item = new ItemView({
-      ItemView,
-      level,
-      model,
-      parentView,
-      config,
-      sorter,
-      opened,
-      module,
-    });
+    const item: ItemView =
+      model.viewLayer ||
+      new ItemView({
+        ItemView,
+        level,
+        model,
+        parentView,
+        config,
+        sorter,
+        opened,
+        module,
+      });
     const rendered = item.render().el;
 
     if (fragment) {
       fragment.appendChild(rendered);
     } else {
-      if (typeof index !== 'undefined') {
-        var method = 'before';
+      const parent = el;
+      const children = parent.childNodes;
+
+      if (!isUndefined(index)) {
+        const lastIndex = children.length == index;
+
         // If the added model is the last of collection
         // need to change the logic of append
-        if (this.$el.children().length == index) {
+        if (lastIndex) {
           index--;
-          method = 'after';
         }
+
         // In case the added is new in the collection index will be -1
-        if (index < 0) {
-          this.$el.append(rendered);
+        if (lastIndex || !children.length) {
+          parent.appendChild(rendered);
         } else {
-          // @ts-ignore
-          this.$el.children().eq(index)[method](rendered);
+          parent.insertBefore(rendered, children[index]);
         }
-      } else this.$el.append(rendered);
+      } else {
+        parent.appendChild(rendered);
+      }
     }
     this.items.push(item);
     return rendered;

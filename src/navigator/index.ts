@@ -324,7 +324,6 @@ export default class LayerManager extends Module<LayerManagerConfig> {
     }
 
     if (selected && scrollLayers) {
-      // @ts-ignore
       const el = selected.viewLayer?.el;
       el?.scrollIntoView(scrollLayers);
     }

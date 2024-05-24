@@ -358,6 +358,14 @@ Component> {
     }
 
     model.__postAdd({ recursive: true });
+
+    if (em && !opts.temporary) {
+      const triggerAdd = (model: Component) => {
+        em.trigger(ComponentsEvents.add, model, opts);
+        model.components().forEach(comp => triggerAdd(comp));
+      };
+      triggerAdd(model);
+    }
     // this.__onAddEnd();
   }
 

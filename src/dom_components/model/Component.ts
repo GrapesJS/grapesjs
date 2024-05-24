@@ -39,6 +39,7 @@ import Trait from '../../trait_manager/model/Trait';
 import { ToolbarButtonProps } from './ToolbarButton';
 import { TraitProperties } from '../../trait_manager/types';
 import { ActionLabelComponents, ComponentsEvents } from '../types';
+import ItemView from '../../navigator/view/ItemView';
 
 export interface IComponent extends ExtractMethods<Component> {}
 
@@ -222,6 +223,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
   ccid!: string;
   views!: ComponentView[];
   view?: ComponentView;
+  viewLayer?: ItemView;
   frame?: Frame;
   rule?: CssRule;
   prevColl?: Components;
