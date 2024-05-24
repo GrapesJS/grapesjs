@@ -550,7 +550,11 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
     const attrPrev = { ...this.previous('attributes') };
     const diff = shallowDiff(attrPrev, this.get('attributes')!);
-    keys(diff).forEach(pr => this.trigger(`change:attributes:${pr}`, this, diff[pr], opts));
+    keys(diff).forEach(pr => {
+      const attrKey = `attributes:${pr}`;
+      this.trigger(`change:${attrKey}`, this, diff[pr], opts);
+      this.em?.trigger(`${keyUpdate}:${attrKey}`, this, diff[pr], opts);
+    });
   }
 
   /**
