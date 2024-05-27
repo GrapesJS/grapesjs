@@ -57,8 +57,23 @@ Newsletter Demo - http://grapesjs.com/demo-newsletter-editor.html<br/>
 
 * Default built-in commands (basically for creating and managing different components)
 
+## Applying Hover Effects
 
+To apply hover effects using CSS for padding and margin, you can edit the component's CSS directly in the Style Manager. Here are examples of how to use the `:hover` pseudo-class to adjust both padding and margin on hover:
 
+```css
+/* Increase padding on hover */
+.my-component:hover {
+  padding: 20px;
+}
+
+/* Increase margin on hover */
+.my-component:hover {
+  margin: 20px;
+}
+```
+
+These CSS code snippets demonstrate the basic usage of the `:hover` pseudo-class to dynamically adjust the padding and margin of a component when it is hovered over.
 
 
 ## Download
