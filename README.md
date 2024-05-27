@@ -21,9 +21,19 @@ This demos show examples of what is possible to achieve:<br/>
 Webpage Demo - http://grapesjs.com/demo.html<br/>
 Newsletter Demo - http://grapesjs.com/demo-newsletter-editor.html<br/>
 
+## Visual Studio Code Extension for GrapesJS
 
+The GrapesJS Visual Studio Code extension brings the power of GrapesJS directly into your favorite code editor. This extension allows you to work on your GrapesJS projects within Visual Studio Code, providing a seamless development experience.
 
+### Features
 
+- Drag-and-drop interface integrated into VS Code.
+- Component palette for easy access to GrapesJS components.
+- Live preview to see your changes in real-time.
+
+### Installation
+
+To install the GrapesJS VS Code extension, search for "GrapesJS" in the Visual Studio Code Marketplace or install it directly from the [Visual Studio Code Marketplace](https://marketplace.visualstudio.com/items?itemName=grapesjs.grapesjs-extension).
 
 ## Table of contents
 

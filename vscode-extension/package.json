@@ -1,0 +1,40 @@
+{
+  "name": "grapesjs-vscode-extension",
+  "displayName": "GrapesJS",
+  "description": "Visual Studio Code extension for GrapesJS.",
+  "version": "1.0.0",
+  "publisher": "grapesjs",
+  "engines": {
+    "vscode": "^1.58.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:extension.grapesjsOpen"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "extension.grapesjsOpen",
+        "title": "Open GrapesJS"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "postinstall": "node ./node_modules/vsce/out/vsce install",
+    "test": "npm run compile && node ./node_modules/vscode/bin/test",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "typescript": "^4.0.2",
+    "vscode": "^1.1.37",
+    "vsce": "^1.95.0",
+    "eslint": "^7.7.0",
+    "mocha": "^8.1.3"
+  }
+}

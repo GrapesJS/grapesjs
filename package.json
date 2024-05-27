@@ -37,7 +37,8 @@
     "codemirror": "^5.63.0",
     "codemirror-formatting": "^1.0.0",
     "promise-polyfill": "^8.1.3",
-    "underscore": "^1.13.1"
+    "underscore": "^1.13.1",
+    "vsce": "^2.5.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.15.7",
@@ -126,6 +127,7 @@
     "build:js": "grapesjs-cli build --targets=\"> 1%, ie 11, safari 8, not dead\" --statsOutput=\"stats.json\" --localePath=\"src/i18n/locale\"",
     "build:mjs": "BUILD_MODULE=true grapesjs-cli build --dts='skip' --patch=0 --targets=\"> 1%, ie 11, safari 8, not dead\"",
     "build:css": "sass src/styles/scss/main.scss dist/css/grapes.min.css --no-source-map --style=compressed --load-path=node_modules",
+    "build:vscode-extension": "tsc -p ./vscode-extension",
     "ts:build": "grapesjs-cli build --dts='only' --patch=0",
     "ts:check": "tsc --noEmit --esModuleInterop dist/index.d.ts",
     "ts:build:check": "npm run ts:build && npm run ts:check",
