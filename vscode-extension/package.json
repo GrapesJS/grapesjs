@@ -33,7 +33,7 @@
   "devDependencies": {
     "typescript": "^4.0.2",
     "vscode": "^1.1.37",
-    "vsce": "^1.95.0",
+    "@vscode/vsce": "^2.5.3",
     "eslint": "^7.7.0",
     "mocha": "^8.1.3"
   }
