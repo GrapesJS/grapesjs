@@ -1,18 +1,15 @@
 import { isEmpty, isArray, isString, isFunction, each, includes, extend, flatten, keys } from 'underscore';
 import Component from './Component';
-import { AddOptions, Collection, ObjectAny } from '../../common';
+import { AddOptions, Collection, OptionAsDocument } from '../../common';
 import { DomComponentsConfig } from '../config/config';
 import EditorModel from '../../editor/model/Editor';
 import ComponentManager from '..';
 import CssRule from '../../css_composer/model/CssRule';
-import {
-  ComponentAdd,
-  ComponentAddType,
-  ComponentDefinition,
-  ComponentDefinitionDefined,
-  ComponentProperties,
-} from './types';
+
+import { ComponentAddType, ComponentDefinition, ComponentDefinitionDefined, ComponentProperties } from './types';
 import ComponentText from './ComponentText';
+import ComponentWrapper from './ComponentWrapper';
+import { ComponentsEvents } from '../types';
 
 export const getComponentIds = (cmp?: Component | Component[] | Components, res: string[] = []) => {
   if (!cmp) return [];
@@ -186,7 +183,7 @@ Component> {
         });
         removed.removed();
         removed.trigger('removed');
-        em.trigger('component:remove', removed);
+        em.trigger(ComponentsEvents.remove, removed);
       }
 
       const inner = removed.components();
@@ -234,12 +231,27 @@ Component> {
     return new model(attrs, options) as Component;
   }
 
-  parseString(value: string, opt: AddOptions & { temporary?: boolean; keepIds?: string[] } = {}) {
-    const { em, domc } = this;
+  parseString(value: string, opt: AddOptions & OptionAsDocument & { temporary?: boolean; keepIds?: string[] } = {}) {
+    const { em, domc, parent } = this;
+    const asDocument = opt.asDocument && parent?.is('wrapper');
     const cssc = em.Css;
-    const parsed = em.Parser.parseHtml(value);
+    const parsed = em.Parser.parseHtml(value, { asDocument });
+    let components = parsed.html;
+
+    if (asDocument) {
+      const root = parent as ComponentWrapper;
+      const { components: bodyCmps, ...restBody } = (parsed.html as ComponentDefinitionDefined) || {};
+      const { components: headCmps, ...restHead } = parsed.head || {};
+      components = bodyCmps!;
+      root.set(restBody as any, opt);
+      root.head.set(restHead as any, opt);
+      root.head.components(headCmps, opt);
+      root.docEl.set(parsed.root as any, opt);
+      root.set({ doctype: parsed.doctype });
+    }
+
     // We need this to avoid duplicate IDs
-    Component.checkId(parsed.html!, parsed.css, domc!.componentsById, opt);
+    Component.checkId(components, parsed.css, domc!.componentsById, opt);
 
     if (parsed.css && cssc && !opt.temporary) {
       const { at, ...optsToPass } = opt;
@@ -249,7 +261,7 @@ Component> {
       });
     }
 
-    return parsed.html;
+    return components;
   }
 
   add(model: ComponentAddType, opt?: AddOptions & { previousModels?: Component[]; keepIds?: string[] }): Component;
@@ -349,5 +361,13 @@ Component> {
     }
 
     model.__postAdd({ recursive: true });
+
+    if (em && !opts.temporary) {
+      const triggerAdd = (model: Component) => {
+        em.trigger(ComponentsEvents.add, model, opts);
+        model.components().forEach(comp => triggerAdd(comp));
+      };
+      triggerAdd(model);
+    }
   }
 }

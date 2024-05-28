@@ -1,3 +1,6 @@
+import { OptionAsDocument } from '../../common';
+import { CssRuleJSON } from '../../css_composer/model/CssRule';
+import { ComponentDefinitionDefined } from '../../dom_components/model/types';
 import Editor from '../../editor';
 
 export interface ParsedCssRule {
@@ -11,7 +14,20 @@ export type CustomParserCss = (input: string, editor: Editor) => ParsedCssRule[]
 
 export type CustomParserHtml = (input: string, options: HTMLParserOptions) => HTMLElement;
 
-export interface HTMLParserOptions {
+export interface HTMLParseResult {
+  html: ComponentDefinitionDefined | ComponentDefinitionDefined[];
+  css?: CssRuleJSON[];
+  doctype?: string;
+  root?: ComponentDefinitionDefined;
+  head?: ComponentDefinitionDefined;
+}
+
+export interface ParseNodeOptions extends HTMLParserOptions {
+  inSvg?: boolean;
+  skipChildren?: boolean;
+}
+
+export interface HTMLParserOptions extends OptionAsDocument {
   /**
    * DOMParser mime type.
    * If you use the `text/html` parser, it will fix the invalid syntax automatically.

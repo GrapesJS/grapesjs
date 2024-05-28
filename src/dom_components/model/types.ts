@@ -1,5 +1,5 @@
 import Frame from '../../canvas/model/Frame';
-import { Nullable } from '../../common';
+import { AddOptions, Nullable, OptionAsDocument } from '../../common';
 import EditorModel from '../../editor/model/Editor';
 import Selectors from '../../selector_manager/model/Selectors';
 import { TraitProperties } from '../../trait_manager/types';
@@ -15,7 +15,9 @@ export type DragMode = 'translate' | 'absolute' | '';
 
 export type DraggableDroppableFn = (source: Component, target: Component, index?: number) => boolean | void;
 
-export interface ComponentStackItem<C extends Component = Component, CV extends ComponentView<C> = ComponentView<C>> {
+export interface AddComponentsOption extends AddOptions, OptionAsDocument {}
+
+export interface ComponentStackItem<C extends Component = Component, CV extends ComponentView<C> = ComponentView<C>>{
   id: string;
   model: new (props: any, opt: ComponentOptions) => C;
   view: new (opt: any) => CV;
@@ -264,7 +266,7 @@ export type ComponentAddType = Component | ComponentDefinition | ComponentDefini
 
 export type ComponentAdd = ComponentAddType | ComponentAddType[];
 
-export type ToHTMLOptions = {
+export interface ToHTMLOptions extends OptionAsDocument {
   /**
    * Custom tagName.
    */
@@ -285,7 +287,7 @@ export type ToHTMLOptions = {
    * or you can even pass a function to generate attributes dynamically.
    */
   attributes?: Record<string, any> | ((component: Component, attr: Record<string, any>) => Record<string, any>);
-};
+}
 
 export interface ComponentOptions {
   em: EditorModel;

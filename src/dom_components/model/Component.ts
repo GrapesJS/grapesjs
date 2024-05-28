@@ -20,6 +20,7 @@ import Selectors from '../../selector_manager/model/Selectors';
 import Traits from '../../trait_manager/model/Traits';
 import EditorModel from '../../editor/model/Editor';
 import {
+  AddComponentsOption,
   ComponentAdd,
   ComponentDefinition,
   ComponentDefinitionDefined,
@@ -37,6 +38,8 @@ import CssRule, { CssRuleJSON } from '../../css_composer/model/CssRule';
 import Trait from '../../trait_manager/model/Trait';
 import { ToolbarButtonProps } from './ToolbarButton';
 import { TraitProperties } from '../../trait_manager/types';
+import { ActionLabelComponents, ComponentsEvents } from '../types';
+import ItemView from '../../navigator/view/ItemView';
 
 export interface IComponent extends ExtractMethods<Component> {}
 
@@ -164,6 +167,10 @@ export default class Component extends StyleableModel<ComponentProperties> {
     };
   }
 
+  get tagName() {
+    return this.get('tagName')!;
+  }
+
   get classes() {
     return this.get('classes')!;
   }
@@ -216,6 +223,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
   ccid!: string;
   views!: ComponentView[];
   view?: ComponentView;
+  viewLayer?: ItemView;
   frame?: Frame;
   rule?: CssRule;
   prevColl?: Components;
@@ -292,7 +300,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
       this.__postAdd();
       this.init();
       this.__isSymbolOrInst() && this.__initSymb();
-      em && em.trigger('component:create', this);
+      em?.trigger(ComponentsEvents.create, this, opt);
     }
   }
 
@@ -546,7 +554,11 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
     const attrPrev = { ...this.previous('attributes') };
     const diff = shallowDiff(attrPrev, this.get('attributes')!);
-    keys(diff).forEach(pr => this.trigger(`change:attributes:${pr}`, this, diff[pr], opts));
+    keys(diff).forEach(pr => {
+      const attrKey = `attributes:${pr}`;
+      this.trigger(`change:${attrKey}`, this, diff[pr], opts);
+      this.em?.trigger(`${keyUpdate}:${attrKey}`, this, diff[pr], opts);
+    });
   }
 
   /**
@@ -1126,7 +1138,10 @@ export default class Component extends StyleableModel<ComponentProperties> {
         return comp;
       }
     });
-    const result = this.components().add(toAppend, opts);
+    const result = this.components().add(toAppend, {
+      action: ActionLabelComponents.add,
+      ...opts,
+    });
     return isArray(result) ? result : [result];
   }
 
@@ -1146,7 +1161,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
    */
   components<T extends ComponentAdd | undefined>(
     components?: T,
-    opts: any = {}
+    opts: AddComponentsOption = {}
   ): undefined extends T ? Components : Component[] {
     const coll = this.get('components')!;
 
@@ -1883,7 +1898,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     const { em } = this;
     const coll = this.collection;
     const remove = () => {
-      coll && coll.remove(this, { ...opts, action: 'remove-component' });
+      coll && coll.remove(this, { action: ActionLabelComponents.remove, ...opts });
       // Component without parent
       if (!coll) {
         this.components('', opts);
@@ -1891,7 +1906,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
       }
     };
     const rmOpts = { ...opts };
-    [this, em].map(i => i.trigger('component:remove:before', this, remove, rmOpts));
+    [this, em].map(i => i.trigger(ComponentsEvents.removeBefore, this, remove, rmOpts));
     !rmOpts.abort && remove();
     return this;
   }
@@ -1917,8 +1932,9 @@ export default class Component extends StyleableModel<ComponentProperties> {
         if (sameParent && at && at > index) {
           opts.at = at - 1;
         }
-        this.remove({ temporary: 1 });
-        component.append(this, opts);
+        const action = ActionLabelComponents.move;
+        this.remove({ action, temporary: 1 });
+        component.append(this, { action, ...opts });
         this.emitUpdate();
       }
     }
@@ -2036,7 +2052,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     return result(this.prototype, 'defaults');
   }
 
-  static isComponent(el: HTMLElement): ComponentDefinitionDefined | boolean | undefined {
+  static isComponent(el: HTMLElement, opts?: any): ComponentDefinitionDefined | boolean | undefined {
     return { tagName: toLowerCase(el.tagName) };
   }
 

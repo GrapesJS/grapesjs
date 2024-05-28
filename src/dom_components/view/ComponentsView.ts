@@ -46,18 +46,8 @@ export default class ComponentsView extends View {
    * @param {Object} opts
    * @private
    * */
-  addTo(model: Component, coll: any = {}, opts: { temporary?: boolean } = {}) {
-    const { em } = this;
-    const i = this.collection.indexOf(model);
-    this.addToCollection(model, null, i);
-
-    if (em && !opts.temporary) {
-      const triggerAdd = (model: Component) => {
-        em.trigger('component:add', model);
-        model.components().forEach(comp => triggerAdd(comp));
-      };
-      triggerAdd(model);
-    }
+  addTo(model: Component) {
+    this.addToCollection(model, null, this.collection.indexOf(model));
   }
 
   /**
@@ -69,10 +59,8 @@ export default class ComponentsView extends View {
    * @return   {Object}   Object rendered
    * @private
    * */
-  addToCollection(model: Component, fragmentEl?: DocumentFragment | null, index?: number) {
-    // if (!this.compView) this.compView = require('./ComponentView').default;
+  addToCollection(model: Component, fragment?: DocumentFragment | null, index?: number) {
     const { config, opts, em } = this;
-    const fragment = fragmentEl || null;
     const { frameView } = config;
     const sameFrameView = frameView?.model && model.getView(frameView.model);
     const dt = opts.componentTypes || em?.Components.getTypes();
