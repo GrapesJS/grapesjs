@@ -6,7 +6,7 @@ import EditorModel from '../../editor/model/Editor';
 import ComponentManager from '..';
 import CssRule from '../../css_composer/model/CssRule';
 
-import { ComponentAddType, ComponentDefinition, ComponentDefinitionDefined, ComponentProperties } from './types';
+import { ComponentAdd, ComponentAddType, ComponentDefinition, ComponentDefinitionDefined, ComponentProperties } from './types';
 import ComponentText from './ComponentText';
 import ComponentWrapper from './ComponentWrapper';
 import { ComponentsEvents } from '../types';
@@ -264,8 +264,9 @@ Component> {
     return components;
   }
 
-  add(model: ComponentAddType, opt?: AddOptions & { previousModels?: Component[]; keepIds?: string[] }): Component;
+  add(model: Exclude<ComponentAddType,string>, opt?: AddOptions & { previousModels?: Component[]; keepIds?: string[] }): Component;
   add(models: ComponentAddType[], opt?: AddOptions & { previousModels?: Component[]; keepIds?: string[] }): Component[];
+  add(models: ComponentAdd, opt?: AddOptions & { previousModels?: Component[]; keepIds?: string[] }): Component|Component[];
   add(models: unknown, opt: AddOptions & { previousModels?: Component[]; keepIds?: string[] } = {}): unknown {
     if (models == undefined) return;
 
