@@ -20,7 +20,7 @@ export interface AddComponentsOption extends AddOptions, OptionAsDocument {}
 
 interface ComponentWithCheck<C extends Component>{
   new (props: any, opt: ComponentOptions): C;
-  isComponent(node: HTMLElement, opts?: ParseNodeOptions): C|undefined;
+  isComponent(node: HTMLElement, opts?: ParseNodeOptions): ComponentDefinitionDefined|undefined|boolean;
 }
 
 export interface ComponentStackItem<C extends Component = Component, CV extends ComponentView<C> = ComponentView<C>>{
