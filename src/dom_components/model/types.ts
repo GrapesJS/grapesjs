@@ -10,6 +10,7 @@ import ComponentView from '../view/ComponentView';
 import Component from './Component';
 import Components from './Components';
 import { ToolbarButtonProps } from './ToolbarButton';
+import { ParseNodeOptions } from '../../parser/config/config';
 
 export type DragMode = 'translate' | 'absolute' | '';
 
@@ -17,9 +18,14 @@ export type DraggableDroppableFn = (source: Component, target: Component, index?
 
 export interface AddComponentsOption extends AddOptions, OptionAsDocument {}
 
+interface ComponentWithCheck<C extends Component>{
+  new (props: any, opt: ComponentOptions): C;
+  isComponent(node: HTMLElement, opts?: ParseNodeOptions): C|undefined;
+}
+
 export interface ComponentStackItem<C extends Component = Component, CV extends ComponentView<C> = ComponentView<C>>{
   id: string;
-  model: new (props: any, opt: ComponentOptions) => C;
+  model: ComponentWithCheck<C>;
   view: new (opt: any) => CV;
 }
 
