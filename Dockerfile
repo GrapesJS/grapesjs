@@ -1,23 +1,36 @@
-# Use Node.js LTS as base image
-FROM node:lts-alpine
+# syntax=docker/dockerfile:1.4
 
-# Set working directory
+# 1. For build React app
+FROM node:lts AS builder
+
 WORKDIR /app
 
-# Copy package.json and package-lock.json to the working directory
-COPY package*.json ./
+# Copy package files first to leverage Docker cache for dependencies
+COPY package.json yarn.lock ./
 
 # Install dependencies
-RUN npm install
+RUN yarn install --frozen-lockfile
 
-# Copy the rest of the application
+# Copy the rest of the application code
 COPY . .
 
-# Build TypeScript code
-RUN npm run build
+# Set environment variables
+ENV API=000000000
+ENV PORT=8080
 
-# Expose the port your app runs on
-EXPOSE 8080
+# Build the app
+RUN yarn build
 
-# Command to run your app
-CMD ["npm", "start"]
+# 2. For Nginx setup
+FROM nginx:alpine
+
+WORKDIR /usr/share/nginx/html
+
+# Remove default nginx static assets
+RUN rm -rf ./*
+
+# Copy static assets from the builder stage
+COPY --from=builder /app/dist .
+
+# Containers run nginx with global directives and daemon off
+CMD ["nginx", "-g", "daemon off;"]
