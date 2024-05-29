@@ -598,31 +598,31 @@ export default class StyleManager extends ItemManagerModule<
       const optsSel = { array: true } as const;
       let cmpRules: CssRule[] = [];
       let tagNameRules: CssRule[] = [];
-      let invisibleRules: CssRule[] = [];
+      let invisibleAndOtherRules: CssRule[] = [];
       let otherRules: CssRule[] = [];
       let rules: CssRule[] = [];
 
       const rulesBySelectors = (values: string[]) => {
-        return cssC.getRules().filter(rule => {
-          const rSels = rule.getSelectors().map(s => s.getFullName());
+        return !values.length
+          ? []
+          : cssC.getRules().filter(rule => {
+              const rSels = rule.getSelectors().map(s => s.getFullName());
 
-          // rSels is equal to 0 when rule selectors contain tagName like : p {}, .logo path {}, ul li {}
-          if (rSels.length === 0) {
-            return false;
-          }
+              // rSels is equal to 0 when rule selectors contain tagName like : p {}, .logo path {}, ul li {}
+              if (rSels.length === 0) {
+                return false;
+              }
 
-          return rSels.every(rSel => values.indexOf(rSel) >= 0);
-        });
+              return rSels.every(rSel => values.indexOf(rSel) >= 0);
+            });
       };
 
       const rulesByTagName = (tagName: string) => {
         return cssC.getRules().filter(rule => {
-          const ruleTags = rule
-            .selectorsToString()
-            .split(' ')
-            .filter(item => {
-              return item.startsWith('.') === false && item.startsWith('#') === false;
-            });
+          const splittedRule = rule.selectorsToString().split(' ');
+          const ruleTags = splittedRule.filter(item => {
+            return item.startsWith('.') === false && item.startsWith('#') === false;
+          });
 
           if (ruleTags.length === 0) {
             return false;
@@ -630,7 +630,7 @@ export default class StyleManager extends ItemManagerModule<
 
           const lastTags = ruleTags[ruleTags.length - 1];
 
-          return lastTags === tagName;
+          return lastTags === tagName && lastTags === splittedRule[splittedRule.length - 1];
         });
       };
 
@@ -643,8 +643,6 @@ export default class StyleManager extends ItemManagerModule<
       } else {
         cmpRules = sel ? cssC.getRules(`#${sel.getId()}`) : [];
         tagNameRules = rulesByTagName(sel?.get('tagName') || '');
-        // Get rules set on active and visible selectors
-        otherRules = rulesBySelectors(target.getSelectors().getFullName(optsSel));
         // Get rules set on invisible selectors like private one
         const allCmpClasses = sel?.getSelectors().getFullName(optsSel) || [];
         const invisibleSel = allCmpClasses.filter(
@@ -654,8 +652,9 @@ export default class StyleManager extends ItemManagerModule<
               .getFullName(optsSel)
               .findIndex(sel => sel === item) === -1
         );
-        invisibleRules = rulesBySelectors(invisibleSel);
-        rules = tagNameRules.concat(cmpRules).concat(invisibleRules).concat(otherRules);
+        // Get rules set on active and visible selectors
+        invisibleAndOtherRules = rulesBySelectors(invisibleSel.concat(target.getSelectors().getFullName(optsSel)));
+        rules = tagNameRules.concat(cmpRules).concat(invisibleAndOtherRules);
       }
 
       const all = rules

@@ -220,6 +220,20 @@ describe('StyleManager', () => {
         expect(obj.getSelectedParents()).toEqual([rule2]);
       });
 
+      test('Should ignore rules with tagName in the selector path but the rule is not apply on the tagName', () => {
+        const cmp = domc.addComponent('<div class="cls" id="id-test"></div>');
+        const [rule1, rule2] = cssc.addRules(`
+          .cls { color: red; }
+          div { color: yellow; }
+          div .child { padding: 10px; }
+        `);
+        em.setSelected(cmp);
+        obj.__upSel();
+        // getSelectedParents should only have 1 rule as the third one is not applied on the div
+        expect(obj.getSelected()).toBe(rule1);
+        expect(obj.getSelectedParents()).toEqual([rule2]);
+      });
+
       test('With tagName + ID + class, class first, ID second', () => {
         const cmp = domc.addComponent('<div class="cls" id="id-test"></div>');
         const [rule1, rule2, rule3] = cssc.addRules(`
