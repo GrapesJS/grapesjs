@@ -16,7 +16,9 @@ COPY . .
 
 # Set environment variables
 ENV API=000000000
-ENV PORT=8080
+ENV PORT=3000
+
+RUN npx update-browserslist-db@latest
 
 # Build the app
 RUN yarn build
