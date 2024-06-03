@@ -3,6 +3,7 @@ import TraitView from '../../../../src/trait_manager/view/TraitView';
 import Component from '../../../../src/dom_components/model/Component';
 import EditorModel from '../../../../src/editor/model/Editor';
 import Editor from '../../../../src/editor';
+import { ComponentOptions } from '../../../../src/dom_components/model/types';
 
 describe('TraitView', () => {
   let obj: TraitView;
@@ -10,11 +11,11 @@ describe('TraitView', () => {
   let modelName = 'title';
   let target: Component;
   let em: EditorModel;
-  let config: { em: EditorModel };
+  let config: ComponentOptions;
 
   beforeEach(() => {
     em = new Editor().getModel();
-    config = { em };
+    config = { em, config: em.Components.config };
     target = new Component({}, config);
     trait = new Trait(
       {

@@ -9,7 +9,7 @@ describe('ComponentImageView', () => {
 
   beforeEach(() => {
     em = new Editor();
-    model = new Component({}, { em });
+    model = new Component({}, { em, config: em.Components.config });
     const cmpViewOpts = {
       model,
       config: { em },
