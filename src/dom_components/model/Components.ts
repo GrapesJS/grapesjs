@@ -6,7 +6,13 @@ import EditorModel from '../../editor/model/Editor';
 import ComponentManager from '..';
 import CssRule from '../../css_composer/model/CssRule';
 
-import { ComponentAdd, ComponentAddType, ComponentDefinition, ComponentDefinitionDefined, ComponentProperties } from './types';
+import {
+  ComponentAdd,
+  ComponentAddType,
+  ComponentDefinition,
+  ComponentDefinitionDefined,
+  ComponentProperties,
+} from './types';
 import ComponentText from './ComponentText';
 import ComponentWrapper from './ComponentWrapper';
 import { ComponentsEvents } from '../types';
@@ -75,6 +81,11 @@ export interface ComponentsOptions {
   em: EditorModel;
   config?: DomComponentsConfig;
   domc?: ComponentManager;
+}
+
+interface AddComponentOptions extends AddOptions {
+  previousModels?: Component[];
+  keepIds?: string[];
 }
 
 export default class Components extends Collection</**
@@ -264,10 +275,10 @@ Component> {
     return components;
   }
 
-  add(model: Exclude<ComponentAddType,string>, opt?: AddOptions & { previousModels?: Component[]; keepIds?: string[] }): Component;
-  add(models: ComponentAddType[], opt?: AddOptions & { previousModels?: Component[]; keepIds?: string[] }): Component[];
-  add(models: ComponentAdd, opt?: AddOptions & { previousModels?: Component[]; keepIds?: string[] }): Component|Component[];
-  add(models: unknown, opt: AddOptions & { previousModels?: Component[]; keepIds?: string[] } = {}): unknown {
+  add(model: Exclude<ComponentAddType, string>, opt?: AddComponentOptions): Component;
+  add(models: ComponentAddType[], opt?: AddComponentOptions): Component[];
+  add(models: ComponentAdd, opt?: AddComponentOptions): Component | Component[];
+  add(models: unknown, opt: AddComponentOptions = {}): unknown {
     if (models == undefined) return;
 
     opt.keepIds = [...(opt.keepIds || []), ...getComponentIds(opt.previousModels)];
