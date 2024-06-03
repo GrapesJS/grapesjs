@@ -3,8 +3,8 @@ import Selectors from '../../../../src/selector_manager/model/Selectors';
 
 describe('Selector', () => {
   let obj: Selector;
-  const nameToEscape = '@Te s:T*';
-  const nameEscaped = '@Te-s:T-';
+  const nameToEscape = '@Te sT:*[]().%/+#';
+  const nameEscaped = '@Te-sT:-[]().%/+#';
 
   beforeEach(() => {
     obj = new Selector({});

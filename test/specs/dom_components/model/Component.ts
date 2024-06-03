@@ -328,8 +328,9 @@ describe('Component', () => {
     obj.append([{}, {}]);
     const comps = obj.components();
     expect(comps.length).toEqual(2);
-    obj.append({});
+    const result = obj.append({});
     expect(comps.length).toEqual(3);
+    expect(result[0].em).toEqual(em);
   });
 
   test('components() set new collection', () => {
@@ -338,6 +339,8 @@ describe('Component', () => {
     const result = obj.components();
     expect(result.length).toEqual(1);
     expect(result.models[0].get('tagName')).toEqual('span');
+
+    expect(result.em).toEqual(em);
   });
 
   test('Propagate properties to children', () => {
@@ -664,18 +667,21 @@ describe('Components', () => {
     var c = new Components([], compOpts);
     var m = c.add({});
     expect(m instanceof Component).toEqual(true);
+    expect(m.em).toEqual(em);
   });
 
   test('Creates image component correctly', () => {
     var c = new Components([], compOpts);
     var m = c.add({ type: 'image' });
     expect(m instanceof ComponentImage).toEqual(true);
+    expect(m.em).toEqual(em);
   });
 
   test('Creates text component correctly', () => {
     var c = new Components([], compOpts);
     var m = c.add({ type: 'text' });
     expect(m instanceof ComponentText).toEqual(true);
+    expect(m.em).toEqual(em);
   });
 
   test('Avoid conflicting components with the same ID', () => {
