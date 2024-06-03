@@ -529,12 +529,12 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * const result = component.replaceWith('<div>Some new content</div>');
    * // result -> [Component]
    */
-  replaceWith(el: ComponentAdd, opts: AddOptions = {}): Component[] {
+  replaceWith<C extends Component = Component>(el: ComponentAdd, opts: AddOptions = {}): C[] {
     const coll = this.collection;
     const at = coll.indexOf(this);
     coll.remove(this);
-    const result = coll.add(el, { ...opts, at });
-    return isArray(result) ? result : [result];;
+    const result = coll.add(el, { ...opts, at }) as C | C[];
+    return isArray(result) ? result : [result];
   }
 
   /**
