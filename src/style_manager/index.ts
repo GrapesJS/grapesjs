@@ -618,20 +618,7 @@ export default class StyleManager extends ItemManagerModule<
       };
 
       const rulesByTagName = (tagName: string) => {
-        return cssC.getRules().filter(rule => {
-          const splittedRule = rule.selectorsToString().split(' ');
-          const ruleTags = splittedRule.filter(item => {
-            return item.startsWith('.') === false && item.startsWith('#') === false;
-          });
-
-          if (ruleTags.length === 0) {
-            return false;
-          }
-
-          const lastTags = ruleTags[ruleTags.length - 1];
-
-          return lastTags === tagName && lastTags === splittedRule[splittedRule.length - 1];
-        });
+        return !tagName ? [] : cssC.getRules().filter(rule => rule.selectorsToString() === tagName);
       };
 
       // Componente related rule

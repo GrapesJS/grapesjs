@@ -234,6 +234,20 @@ describe('StyleManager', () => {
         expect(obj.getSelectedParents()).toEqual([rule2]);
       });
 
+      test('Should tagName rules if the selectors does not contain only the tagNale', () => {
+        const cmp = domc.addComponent('<div class="cls" id="id-test"></div>');
+        const [rule1, rule2] = cssc.addRules(`
+          .cls { color: red; }
+          div { color: yellow; }
+          .child div { padding: 10px; }
+        `);
+        em.setSelected(cmp);
+        obj.__upSel();
+        // getSelectedParents should only have 1 rule as the third one is not applied on the div
+        expect(obj.getSelected()).toBe(rule1);
+        expect(obj.getSelectedParents()).toEqual([rule2]);
+      });
+
       test('With tagName + ID + class, class first, ID second', () => {
         const cmp = domc.addComponent('<div class="cls" id="id-test"></div>');
         const [rule1, rule2, rule3] = cssc.addRules(`
