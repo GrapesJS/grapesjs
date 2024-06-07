@@ -333,6 +333,11 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
     return this;
   }
 
+  postLoad() {
+    const um = this.em.UndoManager;
+    um.add(this.symbols);
+  }
+
   load(data: any) {
     return this.loadProjectData(data, {
       onResult: (result: Component) => {

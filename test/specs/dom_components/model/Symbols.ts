@@ -5,6 +5,7 @@ describe('Symbols', () => {
   let editor: Editor;
   let wrapper: NonNullable<ReturnType<Editor['getWrapper']>>;
   let cmps: Editor['Components'];
+  let um: Editor['UndoManager'];
 
   const createSymbol = (comp: Component): Component => {
     const symbol = comp.clone({ symbol: true });
@@ -44,7 +45,6 @@ describe('Symbols', () => {
         return attr;
       },
     });
-  const getUm = (cmp: Component) => cmp.em.get('UndoManager');
   const getInnerComp = (cmp: Component, i = 0) => cmp.components().at(i);
   const getFirstInnSymbol = (cmp: Component) => getInnerComp(cmp).__getSymbol();
   const getInnSymbol = (cmp: Component, i = 0) => getInnerComp(cmp, i).__getSymbol();
@@ -61,19 +61,23 @@ describe('Symbols', () => {
 
   beforeAll(() => {
     editor = new Editor();
-    editor.getModel().get('PageManager').onLoad();
+    editor.Components.postLoad();
+    editor.Pages.onLoad();
     wrapper = editor.getWrapper()!;
     cmps = editor.Components;
+    um = editor.UndoManager;
+  });
+
+  beforeEach(() => {
+    editor.UndoManager.clear();
+  });
+
+  afterEach(() => {
+    wrapper.components().reset();
   });
 
   afterAll(() => {
     editor.destroy();
-  });
-
-  beforeEach(() => {});
-
-  afterEach(() => {
-    wrapper.components().reset();
   });
 
   test("Simple clone doesn't create any symbol", () => {
@@ -98,10 +102,8 @@ describe('Symbols', () => {
     });
 
     const symbol = cmps.createSymbol(comp);
-    const symbolInfoMain = cmps.getSymbolInfo(symbol);
-    const symbolInfoInst = cmps.getSymbolInfo(comp);
 
-    expect(symbolInfoMain).toEqual({
+    expect(cmps.getSymbolInfo(symbol)).toEqual({
       isSymbol: true,
       isMain: true,
       isInstance: false,
@@ -109,7 +111,7 @@ describe('Symbols', () => {
       instances: [comp],
       relatives: [comp],
     });
-    expect(symbolInfoInst).toEqual({
+    expect(cmps.getSymbolInfo(comp)).toEqual({
       isSymbol: true,
       isMain: false,
       isInstance: true,
@@ -126,31 +128,73 @@ describe('Symbols', () => {
 
   test('Create 1 symbol and clone the instance for another one', () => {
     const comp = wrapper.append(simpleComp)[0];
-    const symbol = createSymbol(comp);
-    const comp2 = createSymbol(comp);
-    const symbs = symbol.__getSymbols();
-    expect(symbs?.length).toBe(2);
-    expect(symbs?.[0]).toBe(comp);
-    expect(symbs?.[1]).toBe(comp2);
-    expect(comp2.__getSymbol()).toBe(symbol);
+    const symbol = cmps.createSymbol(comp);
+    const comp2 = cmps.createSymbol(comp);
+
+    const commonInfo = {
+      isSymbol: true,
+      main: symbol,
+      instances: [comp, comp2],
+    };
+
+    expect(cmps.getSymbolInfo(symbol)).toEqual({
+      ...commonInfo,
+      isMain: true,
+      isInstance: false,
+      relatives: commonInfo.instances,
+    });
+    expect(cmps.getSymbolInfo(comp)).toEqual({
+      ...commonInfo,
+      isMain: false,
+      isInstance: true,
+      relatives: [symbol, comp2],
+    });
+    expect(cmps.getSymbolInfo(comp2)).toEqual({
+      ...commonInfo,
+      isMain: false,
+      isInstance: true,
+      relatives: [symbol, comp],
+    });
+
     expect(toHTML(comp2)).toBe(toHTML(symbol));
   });
 
   test('Create 1 symbol and clone it to have another instance', () => {
     const comp = wrapper.append(simpleComp)[0];
-    const symbol = createSymbol(comp);
-    const comp2 = createSymbol(symbol);
-    const symbs = symbol.__getSymbols();
-    expect(symbs?.length).toBe(2);
-    expect(symbs?.[0]).toBe(comp);
-    expect(symbs?.[1]).toBe(comp2);
-    expect(comp2.__getSymbol()).toBe(symbol);
+    const symbol = cmps.createSymbol(comp);
+    const comp2 = cmps.createSymbol(symbol);
+
+    const commonInfo = {
+      isSymbol: true,
+      main: symbol,
+      instances: [comp, comp2],
+    };
+
+    expect(cmps.getSymbolInfo(symbol)).toEqual({
+      ...commonInfo,
+      isMain: true,
+      isInstance: false,
+      relatives: commonInfo.instances,
+    });
+    expect(cmps.getSymbolInfo(comp)).toEqual({
+      ...commonInfo,
+      isMain: false,
+      isInstance: true,
+      relatives: [symbol, comp2],
+    });
+    expect(cmps.getSymbolInfo(comp2)).toEqual({
+      ...commonInfo,
+      isMain: false,
+      isInstance: true,
+      relatives: [symbol, comp],
+    });
+
     expect(toHTML(comp2)).toBe(toHTML(symbol));
   });
 
   test('Symbols and instances are correctly serialized', () => {
     const comp = wrapper.append(simpleComp)[0];
-    const symbol = createSymbol(comp);
+    const symbol = cmps.createSymbol(comp);
     const idComp = comp.getId();
     const idSymb = symbol.getId();
     const jsonComp = JSON.parse(JSON.stringify(comp));
@@ -161,7 +205,7 @@ describe('Symbols', () => {
 
   test('Serialized symbol references are always recovered', () => {
     const comp = wrapper.append(simpleComp)[0];
-    const symbol = createSymbol(comp);
+    const symbol = cmps.createSymbol(comp);
     const idComp = comp.getId();
     const idSymb = symbol.getId();
     // Serialize symbols
@@ -187,9 +231,27 @@ describe('Symbols', () => {
       attributes: { id: idSymb },
     };
     const [comp, symbol] = wrapper.append([defComp, defSymb]);
-    expect(comp.__getSymbol()).toBe(symbol);
+
+    const commonInfo = {
+      isSymbol: true,
+      main: symbol,
+      instances: [comp],
+    };
+
+    expect(cmps.getSymbolInfo(symbol)).toEqual({
+      ...commonInfo,
+      isMain: true,
+      isInstance: false,
+      relatives: commonInfo.instances,
+    });
+    expect(cmps.getSymbolInfo(comp)).toEqual({
+      ...commonInfo,
+      isMain: false,
+      isInstance: true,
+      relatives: [symbol],
+    });
+
     expect(comp.get(keySymbol)).toBe(symbol);
-    expect(symbol.__getSymbols()?.[0]).toBe(comp);
     expect(symbol.get(keySymbols)[0]).toBe(comp);
     basicSymbUpdate(comp, symbol);
     basicSymbUpdate(symbol, comp);
@@ -197,47 +259,96 @@ describe('Symbols', () => {
 
   test("Removing one instance doesn't affect others", () => {
     const comp = wrapper.append(simpleComp)[0];
-    const symbol = createSymbol(comp);
-    const comp2 = createSymbol(comp);
-    expect(wrapper.components().length).toBe(3);
-    comp.remove();
+    const symbol = cmps.createSymbol(comp);
+    const comp2 = cmps.createSymbol(comp);
+    wrapper.append(comp2);
+
     expect(wrapper.components().length).toBe(2);
-    expect(comp2.__getSymbol()).toBe(symbol);
+    comp.remove();
+    expect(wrapper.components().models).toEqual([comp2]);
+
+    const commonInfo = {
+      isSymbol: true,
+      main: symbol,
+      instances: [comp2],
+    };
+
+    expect(cmps.getSymbolInfo(symbol)).toEqual({
+      ...commonInfo,
+      isMain: true,
+      isInstance: false,
+      relatives: [comp2],
+    });
+    expect(cmps.getSymbolInfo(comp2)).toEqual({
+      ...commonInfo,
+      isMain: false,
+      isInstance: true,
+      relatives: [symbol],
+    });
   });
 
   test('New component added to an instance is correctly propogated to all others', () => {
     const comp = wrapper.append(compMultipleNodes)[0];
     const compLen = comp.components().length;
-    const symbol = createSymbol(comp);
+    const symbol = cmps.createSymbol(comp);
     // Create and add 2 instances
-    const comp2 = createSymbol(comp);
-    const comp3 = createSymbol(comp2);
+    const comp2 = cmps.createSymbol(comp);
+    const comp3 = cmps.createSymbol(comp2);
     const allInst = [comp, comp2, comp3];
     const all = [...allInst, symbol];
     all.forEach(cmp => expect(cmp.components().length).toBe(compLen));
-    expect(wrapper.components().length).toBe(4);
+    wrapper.append([comp2, comp3]);
+    expect(wrapper.components().length).toBe(3);
     // Append new component to one of the instances
-    const added = comp3.append(simpleComp, { at: 0 })[0];
+    const comp3Added = comp3.append(simpleComp, { at: 0 })[0];
     // The append should be propagated
     all.forEach(cmp => expect(cmp.components().length).toBe(compLen + 1));
     // The new added component became part of the symbol instance
-    const addedSymb = added.__getSymbol();
     const symbAdded = symbol.components().at(0);
-    expect(addedSymb).toBe(symbAdded);
-    allInst.forEach(cmp => expect(cmp.components().at(0).__getSymbol()).toBe(symbAdded));
-    // The new main Symbol should keep the track of all instances
-    expect(symbAdded.__getSymbols()?.length).toBe(allInst.length);
+    const compAdded = comp.components().at(0);
+    const comp2Added = comp2.components().at(0);
+    const commonInfo = {
+      isSymbol: true,
+      main: symbAdded,
+      instances: [comp3Added, compAdded, comp2Added], // comp3 was edited first
+    };
+    expect(cmps.getSymbolInfo(symbAdded)).toEqual({
+      ...commonInfo,
+      isMain: true,
+      isInstance: false,
+      relatives: commonInfo.instances,
+    });
+    expect(cmps.getSymbolInfo(compAdded)).toEqual({
+      ...commonInfo,
+      isMain: false,
+      isInstance: true,
+      relatives: [symbAdded, comp3Added, comp2Added],
+    });
+    expect(cmps.getSymbolInfo(comp2Added)).toEqual({
+      ...commonInfo,
+      isMain: false,
+      isInstance: true,
+      relatives: [symbAdded, comp3Added, compAdded],
+    });
+    expect(cmps.getSymbolInfo(comp3Added)).toEqual({
+      ...commonInfo,
+      isMain: false,
+      isInstance: true,
+      relatives: [symbAdded, compAdded, comp2Added],
+    });
   });
 
   describe('Creating 3 symbols in the wrapper', () => {
     beforeEach(() => {
       comp = wrapper.append(compMultipleNodes)[0];
       compInitChild = comp.components().length;
-      symbol = createSymbol(comp);
-      const comp2 = createSymbol(comp);
-      const comp3 = createSymbol(comp);
+      symbol = cmps.createSymbol(comp);
+      const comp2 = cmps.createSymbol(comp);
+      const comp3 = cmps.createSymbol(comp);
       allInst = [comp, comp2, comp3];
       all = [...allInst, symbol];
+      wrapper.append([comp2, comp3]);
+      editor.UndoManager.clear();
     });
 
     afterEach(() => {
@@ -245,7 +356,7 @@ describe('Symbols', () => {
     });
 
     test('The wrapper contains all the symbols', () => {
-      expect(wrapper.components().length).toBe(all.length);
+      expect(wrapper.components().length).toBe(allInst.length);
     });
 
     test('All the symbols contain the same amount of children', () => {
@@ -253,18 +364,18 @@ describe('Symbols', () => {
     });
 
     test('Removing one instance, will remove the reference from the symbol', () => {
-      expect(symbol.__getSymbols()?.length).toBe(allInst.length);
+      expect(cmps.getSymbolInfo(symbol).instances.length).toBe(allInst.length);
       allInst[2].remove();
-      expect(symbol.__getSymbols()?.length).toBe(allInst.length - 1);
+      expect(cmps.getSymbolInfo(symbol).instances.length).toBe(allInst.length - 1);
     });
 
     test('Removing one instance, works with UndoManager', done => {
       setTimeout(() => {
         // This will commit the undo
-        const um = getUm(comp);
         allInst[0].remove();
         um.undo();
-        expect(symbol.__getSymbols()?.length).toBe(allInst.length);
+        expect(wrapper.components().length).toBe(allInst.length);
+        expect(cmps.getSymbolInfo(symbol).instances.length).toBe(allInst.length);
         done();
       });
     });
@@ -273,7 +384,15 @@ describe('Symbols', () => {
       const added = symbol.append(simpleComp, { at: 0 })[0];
       all.forEach(cmp => expect(cmp.components().length).toBe(compInitChild + 1));
       // Check symbol references
-      expect(added.__getSymbols()?.length).toBe(allInst.length);
+      const addedInstances = allInst.map(cmp => cmp.components().at(0));
+      expect(cmps.getSymbolInfo(added)).toEqual({
+        isSymbol: true,
+        isMain: true,
+        isInstance: false,
+        main: added,
+        instances: addedInstances,
+        relatives: addedInstances,
+      });
       allInst.forEach(cmp => expect(getFirstInnSymbol(cmp)).toBe(added));
     });
 
@@ -281,14 +400,21 @@ describe('Symbols', () => {
       const added = comp.append(simpleComp, { at: 0 })[0];
       all.forEach(cmp => expect(cmp.components().length).toBe(compInitChild + 1));
       // Check symbol references
-      const addSymb = added.__getSymbol();
-      expect(symbol.components().at(0)).toBe(addSymb);
+      const addSymb = symbol.components().at(0);
+      const addedInstances = allInst.map(cmp => cmp.components().at(0));
+      expect(cmps.getSymbolInfo(added)).toEqual({
+        isSymbol: true,
+        isMain: false,
+        isInstance: true,
+        main: addSymb,
+        instances: addedInstances,
+        relatives: [addSymb, ...addedInstances.filter(s => s !== added)],
+      });
       allInst.forEach(cmp => expect(getFirstInnSymbol(cmp)).toBe(addSymb));
     });
 
     test('Adding a new component to an instance of the symbol, works correctly with Undo Manager', () => {
       const added = comp.append(simpleComp, { at: 0 })[0];
-      const um = getUm(added);
       um.undo();
       all.forEach(cmp => expect(cmp.components().length).toBe(compInitChild));
       um.redo();
@@ -296,8 +422,16 @@ describe('Symbols', () => {
       um.redo(); // check multiple undo/redo
       all.forEach(cmp => expect(cmp.components().length).toBe(compInitChild + 1));
       // Check symbol references
-      const addSymbs = added.__getSymbol()?.__getSymbols();
-      expect(addSymbs?.length).toBe(allInst.length);
+      const addSymb = symbol.components().at(0);
+      const addedInstances = allInst.map(cmp => cmp.components().at(0));
+      expect(cmps.getSymbolInfo(added)).toEqual({
+        isSymbol: true,
+        isMain: false,
+        isInstance: true,
+        main: addSymb,
+        instances: addedInstances,
+        relatives: [addSymb, ...addedInstances.filter(s => s !== added)],
+      });
     });
 
     test('Moving a new added component in the instance, will propagate the action in all symbols', () => {
@@ -307,25 +441,51 @@ describe('Symbols', () => {
       added.move(comp, { at: 0 });
       expect(added.index()).toBe(0); // extra checks
       expect(added.parent()).toBe(comp);
-      const symbRef = added.__getSymbol();
+
+      const addSymb = symbol.components().at(0);
+      const addedInstances = allInst.map(cmp => cmp.components().at(0));
+      const commonInfo = {
+        isSymbol: true,
+        main: addSymb,
+        instances: addedInstances,
+      };
+      expect(cmps.getSymbolInfo(added)).toEqual({
+        ...commonInfo,
+        isMain: false,
+        isInstance: true,
+        relatives: [addSymb, ...addedInstances.filter(s => s !== added)],
+      });
+      expect(cmps.getSymbolInfo(addSymb)).toEqual({
+        ...commonInfo,
+        isMain: true,
+        isInstance: false,
+        relatives: addedInstances,
+      });
+
       // All symbols still have the same amount of components
       all.forEach(cmp => expect(cmp.components().length).toBe(newChildLen));
       // All instances refer to the same symbol
-      allInst.forEach(cmp => expect(getFirstInnSymbol(cmp)).toBe(symbRef));
-      // The moved symbol contains all its instances
-      expect(getInnerComp(symbol).__getSymbols()?.length).toBe(allInst.length);
+      allInst.forEach(cmp => expect(getFirstInnSymbol(cmp)).toBe(addSymb));
     });
 
     test('Moving a new added component in the symbol, will propagate the action in all instances', () => {
-      const added = symbol.append(simpleComp)[0];
+      const addSymb = symbol.append(simpleComp)[0];
       const newChildLen = compInitChild + 1;
-      added.move(symbol, { at: 0 });
+      addSymb.move(symbol, { at: 0 });
       // All symbols still have the same amount of components
       all.forEach(cmp => expect(cmp.components().length).toBe(newChildLen));
       // All instances refer to the same symbol
-      allInst.forEach(cmp => expect(getFirstInnSymbol(cmp)).toBe(added));
+      allInst.forEach(cmp => expect(getFirstInnSymbol(cmp)).toBe(addSymb));
       // The moved symbol contains all its instances
-      expect(added.__getSymbols()?.length).toBe(allInst.length);
+      const addedInstances = allInst.map(cmp => cmp.components().at(0));
+      expect(cmps.getSymbolInfo(addSymb)).toEqual({
+        isSymbol: true,
+        isMain: true,
+        isInstance: false,
+        main: addSymb,
+        instances: addedInstances,
+        relatives: addedInstances,
+      });
     });
 
     test('Adding a class, reflects changes to all symbols', () => {
