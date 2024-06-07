@@ -294,6 +294,7 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
   storageKey = 'components';
 
   shallow?: Component;
+  symbols: Components;
 
   /**
    * Initialize module. Called on a new instance of the editor with configurations passed
@@ -303,18 +304,20 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
    */
   constructor(em: EditorModel) {
     super(em, 'DomComponents', new Components(undefined, { em }));
+    const { config } = this;
+    this.symbols = new Components([], { em, config });
 
     if (em) {
       //@ts-ignore
       this.config.components = em.config.components || this.config.components;
     }
 
-    for (var name in defaults) {
+    for (let name in defaults) {
       //@ts-ignore
       if (!(name in this.config)) this.config[name] = defaults[name];
     }
 
-    var ppfx = this.config.pStylePrefix;
+    const ppfx = this.config.pStylePrefix;
     if (ppfx) this.config.stylePrefix = ppfx + this.config.stylePrefix;
 
     // Load dependencies
@@ -670,6 +673,52 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
    */
   isComponent(obj?: ObjectAny): obj is Component {
     return isComponent(obj);
+  }
+
+  /**
+   * Create a new symbol from component.
+   * If the passed component is not a symbol, it will be converted to an instance and the menthod will
+   * return the main symbol.
+   * If the passed component is already an instance, a new instance will be created and returned.
+   * If the passed component is the main symbol, a new instance will be created and returned.
+   * @param {[Component]} cmp Component from which to create a symbol.
+   * @returns {[Component]}
+   */
+  createSymbol(cmp: Component) {
+    const symbol = cmp.clone({ symbol: true });
+    this.symbols.add(symbol);
+    return symbol;
+  }
+
+  /**
+   * Get the array of all available symbols.
+   * @returns {Array<[Component]>}
+   */
+  getSymbols() {
+    return [...this.symbols.models];
+  }
+
+  /**
+   *
+   * @param cmp
+   * @returns
+   */
+  getSymbolInfo(cmp: Component) {
+    const isMain = cmp.__isSymbol();
+    const mainRef = cmp.__getSymbol();
+    const isInstance = !!mainRef;
+    const instances = (isMain ? cmp.__getSymbols() : mainRef?.__getSymbols()) || [];
+    const main = mainRef || (isMain ? cmp : undefined);
+    const relatives = isMain ? instances : [main, ...instances].filter(s => s && s !== cmp);
+
+    return {
+      isSymbol: isMain || isInstance,
+      isMain,
+      isInstance,
+      main,
+      instances: instances,
+      relatives: relatives || [],
+    };
   }
 
   /**

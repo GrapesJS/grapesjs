@@ -838,7 +838,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
         symb = 0;
       }
     }
-    return symb;
+    return symb || undefined;
   }
 
   __getSymbols(): Component[] | undefined {
@@ -1427,7 +1427,8 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * Override original clone method
    * @private
    */
-  clone(opt: { symbol?: boolean; symbolInv?: boolean } = {}) {
+  /** @ts-ignore */
+  clone(opt: { symbol?: boolean; symbolInv?: boolean } = {}): this {
     const em = this.em;
     const attr = { ...this.attributes };
     const opts = { ...this.opt };

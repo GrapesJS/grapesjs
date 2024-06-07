@@ -4,6 +4,7 @@ import Component, { keySymbol, keySymbols, keySymbolOvrd } from '../../../../src
 describe('Symbols', () => {
   let editor: Editor;
   let wrapper: NonNullable<ReturnType<Editor['getWrapper']>>;
+  let cmps: Editor['Components'];
 
   const createSymbol = (comp: Component): Component => {
     const symbol = comp.clone({ symbol: true });
@@ -62,6 +63,7 @@ describe('Symbols', () => {
     editor = new Editor();
     editor.getModel().get('PageManager').onLoad();
     wrapper = editor.getWrapper()!;
+    cmps = editor.Components;
   });
 
   afterAll(() => {
@@ -85,14 +87,42 @@ describe('Symbols', () => {
 
   test('Create symbol from a component', () => {
     const comp = wrapper.append(simpleComp)[0];
-    const symbol = createSymbol(comp);
-    const symbs = symbol.__getSymbols();
-    expect(symbol.__isSymbol()).toBe(true);
-    expect(comp.__getSymbol()).toBe(symbol);
-    expect(symbs?.length).toBe(1);
-    expect(symbs?.[0]).toBe(comp);
+
+    expect(cmps.getSymbolInfo(comp)).toEqual({
+      isSymbol: false,
+      isMain: false,
+      isInstance: false,
+      main: undefined,
+      instances: [],
+      relatives: [],
+    });
+
+    const symbol = cmps.createSymbol(comp);
+    const symbolInfoMain = cmps.getSymbolInfo(symbol);
+    const symbolInfoInst = cmps.getSymbolInfo(comp);
+
+    expect(symbolInfoMain).toEqual({
+      isSymbol: true,
+      isMain: true,
+      isInstance: false,
+      main: symbol,
+      instances: [comp],
+      relatives: [comp],
+    });
+    expect(symbolInfoInst).toEqual({
+      isSymbol: true,
+      isMain: false,
+      isInstance: true,
+      main: symbol,
+      instances: [comp],
+      relatives: [symbol],
+    });
+
     expect(toHTML(comp)).toBe(toHTML(symbol));
   });
+
+  test.todo('Symbols are properly stored in project data');
+  test.todo('Symbols are properly loaded from project data');
 
   test('Create 1 symbol and clone the instance for another one', () => {
     const comp = wrapper.append(simpleComp)[0];
