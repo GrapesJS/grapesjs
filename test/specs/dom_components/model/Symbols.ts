@@ -542,14 +542,28 @@ describe('Symbols', () => {
       const clonedSymb = symbol.components().at(1);
       const newLen = comp.components().length;
       expect(newLen).toBe(compInitChild + 1);
-      expect(cloned.__getSymbol()).toBe(clonedSymb);
       // All symbols have the same amount of components
       all.forEach(cmp => expect(cmp.components().length).toBe(newLen));
       // All instances refer to the same symbol
       allInst.forEach(cmp => expect(getInnSymbol(cmp, 1)).toBe(clonedSymb));
-      // Symbol contains the reference of instances
-      const innerSymb = allInst.map(i => getInnerComp(i, 1));
-      expect(clonedSymb.__getSymbols()).toEqual(innerSymb);
+
+      const commonInfo = {
+        isSymbol: true,
+        main: clonedSymb,
+        instances: allInst.map(cmp => cmp.components().at(1)),
+      };
+      expect(cmps.getSymbolInfo(cloned)).toEqual({
+        ...commonInfo,
+        isMain: false,
+        isInstance: true,
+        relatives: [clonedSymb, ...commonInfo.instances.filter(i => i !== cloned)],
+      });
+      expect(cmps.getSymbolInfo(clonedSymb)).toEqual({
+        ...commonInfo,
+        isMain: true,
+        isInstance: false,
+        relatives: commonInfo.instances,
+      });
     });
 
     test('Cloning a component in a symbol, reflects changes to all instances', () => {
@@ -558,11 +572,26 @@ describe('Symbols', () => {
       const newLen = symbol.components().length;
       // As above
       expect(newLen).toBe(compInitChild + 1);
-      expect(cloned.__getSymbol()).toBe(clonedSymb);
       all.forEach(cmp => expect(cmp.components().length).toBe(newLen));
       allInst.forEach(cmp => expect(getInnSymbol(cmp, 1)).toBe(clonedSymb));
-      const innerSymb = allInst.map(i => getInnerComp(i, 1));
-      expect(clonedSymb.__getSymbols()).toEqual(innerSymb);
+
+      const commonInfo = {
+        isSymbol: true,
+        main: clonedSymb,
+        instances: allInst.map(cmp => cmp.components().at(1)),
+      };
+      expect(cmps.getSymbolInfo(cloned)).toEqual({
+        ...commonInfo,
+        isMain: false,
+        isInstance: true,
+        relatives: [clonedSymb, ...commonInfo.instances.filter(i => i !== cloned)],
+      });
+      expect(cmps.getSymbolInfo(clonedSymb)).toEqual({
+        ...commonInfo,
+        isMain: true,
+        isInstance: false,
+        relatives: commonInfo.instances,
+      });
     });
 
     describe('Symbols override', () => {
