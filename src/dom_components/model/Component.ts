@@ -22,6 +22,7 @@ import EditorModel from '../../editor/model/Editor';
 import {
   AddComponentsOption,
   ComponentAdd,
+  ComponentAddType,
   ComponentDefinition,
   ComponentDefinitionDefined,
   ComponentOptions,
@@ -38,6 +39,8 @@ import CssRule, { CssRuleJSON } from '../../css_composer/model/CssRule';
 import Trait from '../../trait_manager/model/Trait';
 import { ToolbarButtonProps } from './ToolbarButton';
 import { TraitProperties } from '../../trait_manager/types';
+import { ActionLabelComponents, ComponentsEvents } from '../types';
+import ItemView from '../../navigator/view/ItemView';
 
 export interface IComponent extends ExtractMethods<Component> {}
 
@@ -221,6 +224,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
   ccid!: string;
   views!: ComponentView[];
   view?: ComponentView;
+  viewLayer?: ItemView;
   frame?: Frame;
   rule?: CssRule;
   prevColl?: Components;
@@ -231,7 +235,8 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * @ts-ignore */
   collection!: Components;
 
-  initialize(props = {}, opt: ComponentOptions = {}) {
+  constructor(props: ComponentProperties = {}, opt: ComponentOptions) {
+    super(props, opt);
     bindAll(this, '__upSymbProps', '__upSymbCls', '__upSymbComps');
     const em = opt.em;
 
@@ -296,7 +301,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
       this.__postAdd();
       this.init();
       this.__isSymbolOrInst() && this.__initSymb();
-      em && em.trigger('component:create', this);
+      em?.trigger(ComponentsEvents.create, this, opt);
     }
   }
 
@@ -524,12 +529,12 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * const result = component.replaceWith('<div>Some new content</div>');
    * // result -> [Component]
    */
-  replaceWith<C extends Component = Component>(el: ComponentAdd, opts: AddOptions = {}): C[] {
+  replaceWith(el: ComponentAdd, opts: AddOptions = {}): Component[] {
     const coll = this.collection;
     const at = coll.indexOf(this);
     coll.remove(this);
     const result = coll.add(el, { ...opts, at });
-    return isArray(result) ? result : [result];
+    return isArray(result) ? result : [result];;
   }
 
   /**
@@ -550,7 +555,11 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
     const attrPrev = { ...this.previous('attributes') };
     const diff = shallowDiff(attrPrev, this.get('attributes')!);
-    keys(diff).forEach(pr => this.trigger(`change:attributes:${pr}`, this, diff[pr], opts));
+    keys(diff).forEach(pr => {
+      const attrKey = `attributes:${pr}`;
+      this.trigger(`change:${attrKey}`, this, diff[pr], opts);
+      this.em?.trigger(`${keyUpdate}:${attrKey}`, this, diff[pr], opts);
+    });
   }
 
   /**
@@ -1130,7 +1139,10 @@ export default class Component extends StyleableModel<ComponentProperties> {
         return comp;
       }
     });
-    const result = this.components().add(toAppend, opts);
+    const result = this.components().add(toAppend, {
+      action: ActionLabelComponents.add,
+      ...opts,
+    });
     return isArray(result) ? result : [result];
   }
 
@@ -1887,7 +1899,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     const { em } = this;
     const coll = this.collection;
     const remove = () => {
-      coll && coll.remove(this, { ...opts, action: 'remove-component' });
+      coll && coll.remove(this, { action: ActionLabelComponents.remove, ...opts });
       // Component without parent
       if (!coll) {
         this.components('', opts);
@@ -1895,7 +1907,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
       }
     };
     const rmOpts = { ...opts };
-    [this, em].map(i => i.trigger('component:remove:before', this, remove, rmOpts));
+    [this, em].map(i => i.trigger(ComponentsEvents.removeBefore, this, remove, rmOpts));
     !rmOpts.abort && remove();
     return this;
   }
@@ -1921,8 +1933,9 @@ export default class Component extends StyleableModel<ComponentProperties> {
         if (sameParent && at && at > index) {
           opts.at = at - 1;
         }
-        this.remove({ temporary: 1 });
-        component.append(this, opts);
+        const action = ActionLabelComponents.move;
+        this.remove({ action, temporary: 1 });
+        component.append(this, { action, ...opts });
         this.emitUpdate();
       }
     }
@@ -2110,11 +2123,9 @@ export default class Component extends StyleableModel<ComponentProperties> {
   }
 
   static getList(model: Component) {
-    const { opt = {} } = model;
-    // @ts-ignore
-    const { domc, em } = opt;
-    const dm = domc || em?.Components;
-    return dm ? dm.componentsById : {};
+    const { em } = model;
+    const dm = em?.Components;
+    return dm?.componentsById ?? {};
   }
 
   static checkId(

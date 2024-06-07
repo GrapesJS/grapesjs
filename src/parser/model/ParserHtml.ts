@@ -164,7 +164,6 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
       let result: ComponentDefinitionDefined = {};
 
       if (compTypes) {
-        let obj;
         const type = node.getAttribute?.(`${this.modelAttrStart}type`);
 
         // If the type is already defined, use it
@@ -174,17 +173,16 @@ const ParserHtml = (em?: EditorModel, config: ParserConfig & { returnArray?: boo
           // Find the component type
           for (let i = 0; i < compTypes.length; i++) {
             const compType = compTypes[i];
-            obj = compType.model.isComponent(node, opts);
+            let obj = compType.model.isComponent(node, opts);
 
             if (obj) {
               if (typeof obj !== 'object') {
                 obj = { type: compType.id };
               }
+              result = obj
               break;
             }
           }
-
-          result = obj as ComponentDefinitionDefined;
         }
       }
 

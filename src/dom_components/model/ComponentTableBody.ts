@@ -1,5 +1,6 @@
 import Component from './Component';
 import { toLowerCase } from '../../utils/mixins';
+import { ComponentOptions, ComponentProperties } from './types';
 
 const type = 'tbody';
 
@@ -17,8 +18,8 @@ export default class ComponentTableBody extends Component {
     };
   }
 
-  initialize(props: any, opts: any) {
-    super.initialize(props, opts);
+  constructor(props: ComponentProperties = {}, opt: ComponentOptions) {
+    super(props, opt);
     const components = this.get('components')!;
     let columns = this.get('columns');
     let rows = this.get('rows');

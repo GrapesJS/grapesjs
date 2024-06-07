@@ -10,6 +10,7 @@ import ComponentView from '../view/ComponentView';
 import Component from './Component';
 import Components from './Components';
 import { ToolbarButtonProps } from './ToolbarButton';
+import { ParseNodeOptions } from '../../parser/config/config';
 
 export type DragMode = 'translate' | 'absolute' | '';
 
@@ -17,10 +18,15 @@ export type DraggableDroppableFn = (source: Component, target: Component, index?
 
 export interface AddComponentsOption extends AddOptions, OptionAsDocument {}
 
-export interface ComponentStackItem {
+interface ComponentWithCheck<C extends Component>{
+  new (props: any, opt: ComponentOptions): C;
+  isComponent(node: HTMLElement, opts?: ParseNodeOptions): ComponentDefinitionDefined|undefined|boolean;
+}
+
+export interface ComponentStackItem<C extends Component = Component, CV extends ComponentView<C> = ComponentView<C>>{
   id: string;
-  model: typeof Component;
-  view: typeof ComponentView<any>;
+  model: ComponentWithCheck<C>;
+  view: new (opt: any) => CV;
 }
 
 /**
@@ -262,7 +268,7 @@ export interface ComponentModelProperties extends ComponentProperties {
   [key: string]: any;
 }
 
-type ComponentAddType = Component | ComponentDefinition | ComponentDefinitionDefined | string;
+export type ComponentAddType = Component | ComponentDefinition | ComponentDefinitionDefined | string;
 
 export type ComponentAdd = ComponentAddType | ComponentAddType[];
 
@@ -290,8 +296,8 @@ export interface ToHTMLOptions extends OptionAsDocument {
 }
 
 export interface ComponentOptions {
-  em?: EditorModel;
-  config?: DomComponentsConfig;
+  em: EditorModel;
+  config: DomComponentsConfig;
   frame?: Frame;
   temporary?: boolean;
   avoidChildren?: boolean;
