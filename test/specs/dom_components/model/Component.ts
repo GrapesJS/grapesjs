@@ -280,11 +280,11 @@ describe('Component', () => {
       class: 'class1 class2',
       style: 'color: white; background: #fff',
     });
+    // Style is not in attributes because it has not been set as inline
     expect(obj.getAttributes()).toEqual({
       id: 'test',
       class: 'class1 class2',
       'data-test': 'value',
-      style: 'color:white;background:#fff;',
     });
     expect(obj.classes.length).toEqual(2);
     expect(obj.getStyle()).toEqual({
@@ -298,12 +298,21 @@ describe('Component', () => {
     expect(obj.getStyle()).toEqual(CSS_BG_OBJ);
   });
 
+  test('set style on id and inline style', () => {
+    obj.setStyle({ color: 'red' }); // Should be set on id
+    obj.setStyle({ display: 'flex' }, { inline: true }); // Should be set as inline
+
+    expect(obj.getStyle()).toEqual({
+      color: 'red',
+    });
+    expect(obj.getStyle({ inline: true })).toEqual({
+      display: 'flex',
+    });
+  });
+
   test('get proper style from style with multiple values of the same key', () => {
-    obj.setAttributes({ style: CSS_BG_STR });
-    const attrToCheck = obj.getAttributes();
-    expect(attrToCheck.id).toBeDefined();
-    delete attrToCheck.id;
-    expect(attrToCheck).toEqual({
+    obj.setAttributes({ style: CSS_BG_STR }, { inline: true });
+    expect(obj.getAttributes()).toEqual({
       style: CSS_BG_STR.split('\n').join(''),
     });
   });

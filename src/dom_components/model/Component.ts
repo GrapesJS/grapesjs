@@ -540,7 +540,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
     // Handle style
     const style = attrs.style;
-    style && this.setStyle(style);
+    style && this.setStyle(style, opts);
     delete attrs.style;
 
     const attrPrev = { ...this.previous('attributes') };
@@ -671,9 +671,9 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
     // Add style
     if (!opts.noStyle) {
-      const style = this.getStyle();
+      const style = this.getStyle({ inline: true });
       if (isObject(style) && !isEmptyObj(style)) {
-        attributes.style = this.styleToString();
+        attributes.style = this.styleToString({ inline: true });
       }
     }
 
