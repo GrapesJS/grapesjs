@@ -613,6 +613,10 @@ export default class Component extends StyleableModel<ComponentProperties> {
       if (rule) {
         return rule.getStyle(prop);
       }
+
+      // Return empty style if not rule have been found. We cannot return inline style with the next return
+      // because else on load inline style is set a #id or .class style
+      return {};
     }
 
     return super.getStyle.call(this, prop);
